@@ -1,1 +1,1 @@
-// Reexport your entry components here
+export { Collapsible } from './components/Collapsible';
