@@ -47,5 +47,6 @@
 	data-state={open ? 'open' : 'closed'}
 	data-disabled={disabled ? 'true' : 'false'}
 >
+	{open}
 	<slot />
 </div>

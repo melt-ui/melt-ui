@@ -26,16 +26,18 @@
 					</Collapsible.Trigger>
 				</div>
 
-				<div class="bg-white rounded my-[10px] p-[10px] shadow-[0_2px_10px] shadow-gray-600">
+				<div class="bg-white rounded my-2 p-[10px] shadow-[0_2px_10px] shadow-gray-600">
 					<span class="text-violet-800 text-[15px] leading-[25px]">@radix-ui/primitives</span>
 				</div>
 
-				<Collapsible.Content>
-					<div class="bg-white rounded my-[10px] p-[10px] shadow-[0_2px_10px] shadow-gray-600">
-						<span class="text-violet-800 text-[15px] leading-[25px]">@radix-ui/colors</span>
-					</div>
-					<div class="bg-white rounded my-[10px] p-[10px] shadow-[0_2px_10px] shadow-gray-600">
-						<span class="text-violet-800 text-[15px] leading-[25px]">@stitches/react</span>
+				<Collapsible.Content transition={{ duration: 300 }}>
+					<div class="flex flex-col gap-2">
+						<div class="bg-white rounded p-[10px] shadow-[0_2px_10px] shadow-gray-600">
+							<span class="text-violet-800 text-[15px] leading-[25px]">@radix-ui/colors</span>
+						</div>
+						<div class="bg-white rounded p-[10px] shadow-[0_2px_10px] shadow-gray-600">
+							<span class="text-violet-800 text-[15px] leading-[25px]">@stitches/react</span>
+						</div>
 					</div>
 				</Collapsible.Content>
 			</Collapsible.Root>

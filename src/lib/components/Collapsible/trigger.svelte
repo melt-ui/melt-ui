@@ -9,7 +9,10 @@
 
 <button
 	{...$$restProps}
-	on:click={() => ($open = !$open)}
+	on:click={() => {
+		console.log('clicked', $open);
+		open.update((v) => !v);
+	}}
 	data-state={$open ? 'open' : 'closed'}
 	data-disabled={$disabled ? 'true' : undefined}
 	disabled={$disabled}
