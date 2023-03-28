@@ -22,7 +22,7 @@
 
 	import type { BaseProps } from '$lib/types';
 	import { getContext, setContext } from 'svelte';
-	import { derived, type Readable, type Writable } from 'svelte/store';
+	import { derived, writable, type Readable, type Writable } from 'svelte/store';
 
 	type $$Props = Props;
 
@@ -33,7 +33,7 @@
 	const writableOpen = controllableState(open || defaultOpen, (v) => (open = v));
 	$: $writableOpen = open || defaultOpen;
 
-	const writableDisabled = controllableState(disabled, (v) => (disabled = v));
+	const writableDisabled = writable(disabled);
 	$: $writableDisabled = disabled;
 
 	setContext<Context>(key, {
