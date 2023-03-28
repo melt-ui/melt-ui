@@ -23,7 +23,8 @@ This is not a 1:1 re-implementation of Radix UI. The goal is to provide a simila
 
 ### Components
 
-- [ ] Collapsible
+- [x] Collapsible
+  - [ ] Missing
 - [ ] Accordion
 - [ ] Etc.
 
