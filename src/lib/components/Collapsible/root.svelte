@@ -39,7 +39,11 @@
 	});
 </script>
 
-<div {...$$restProps}>
+<div
+	{...$$restProps}
+	data-state={open ? 'open' : 'closed'}
+	data-disabled={disabled ? 'true' : 'false'}
+>
 	Inner open: {open}
 	<slot />
 </div>
