@@ -4,14 +4,15 @@
 
 	type $$Props = BaseProps;
 
-	const { open, setOpen, disabled } = getCollapsibleContext();
+	const { open, disabled } = getCollapsibleContext();
 </script>
 
 <button
 	{...$$restProps}
-	on:click={() => setOpen(!$open)}
+	on:click={() => ($open = !$open)}
 	data-state={$open ? 'open' : 'closed'}
-	data-disabled={disabled ? 'true' : undefined}
+	data-disabled={$disabled ? 'true' : undefined}
+	disabled={$disabled}
 >
 	<slot />
 </button>

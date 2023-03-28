@@ -11,7 +11,7 @@
 	<div
 		{...$$restProps}
 		data-state={$open ? 'open' : 'closed'}
-		data-disabled={disabled ? 'true' : 'false'}
+		data-disabled={$disabled ? 'true' : 'false'}
 	>
 		<slot />
 	</div>
