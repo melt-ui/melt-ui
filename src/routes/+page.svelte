@@ -48,8 +48,11 @@
 <style lang="postcss">
 	.wrapper {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
 		padding: theme('spacing.4');
+
+		@media screen('md') {
+			grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+		}
 	}
 
 	.comp-preview {
@@ -64,8 +67,13 @@
 				theme('colors.indigo.800') 100%
 			);
 
-			padding: theme('spacing.16');
 			border-radius: theme('borderRadius.lg');
+
+			padding: theme('spacing.8');
+
+			@media screen('md') {
+				padding: theme('spacing.16');
+			}
 		}
 
 		.title {
