@@ -17,17 +17,27 @@ This is not a 1:1 re-implementation of Radix UI. The goal is to provide a simila
 - Two-way binding is used instead of event handlers.
 - No `asChild` prop (for now).
 
-## TODO
+## Roadmap
 
-- [ ] Docs website
+### Core
+
+- [ ] Storybook/Histoire
+- [ ] Accessibility testing
 
 ### Components
 
-- [x] Collapsible
-  - [ ] Missing
+- [ ] Collapsible
+  - [x] Implementation
+  - [x] Example
+  - [x] Animation
+  - [ ] Storybook/Histoire
+  - [ ] Tests
+  - [ ] Docs
 - [ ] Accordion
+  - [ ] Implementation
+  - [ ] Example
+  - [ ] Animation
+  - [ ] Storybook/Histoire
+  - [ ] Tests
+  - [ ] Docs
 - [ ] Etc.
-
-## Ideas
-
-- [ ] ?
