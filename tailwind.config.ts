@@ -1,4 +1,6 @@
-const config = {
+import type { Config } from 'tailwindcss';
+
+export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 
 	theme: {
@@ -10,6 +12,4 @@ const config = {
 	},
 
 	plugins: []
-};
-
-module.exports = config;
+} satisfies Config;
