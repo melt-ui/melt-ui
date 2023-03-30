@@ -18,26 +18,30 @@
 				<Accordion.Header class="flex">
 					<Accordion.Trigger class="accordion-trigger">Is it accessible?</Accordion.Trigger>
 				</Accordion.Header>
-				<Accordion.Content class="accordion-content">
+				<Accordion.Content class="accordion-content" transition>
 					<div class="px-5 py-4">Yes. It adheres to the WAI-ARIA design pattern.</div>
 				</Accordion.Content>
 			</Accordion.Item>
 
 			<Accordion.Item class="accordion-item" value="item-2">
 				<Accordion.Header class="flex">
-					<Accordion.Trigger class="accordion-trigger">Is it accessible?</Accordion.Trigger>
+					<Accordion.Trigger class="accordion-trigger">Is it unstyled?</Accordion.Trigger>
 				</Accordion.Header>
-				<Accordion.Content class="accordion-content">
-					<div class="px-5 py-4">Yes. It adheres to the WAI-ARIA design pattern.</div>
+				<Accordion.Content class="accordion-content" transition>
+					<div class="px-5 py-4">
+						Yes. It's unstyled by default, giving you freedom over the look and feel.
+					</div>
 				</Accordion.Content>
 			</Accordion.Item>
 
 			<Accordion.Item class="accordion-item" value="item-3">
 				<Accordion.Header class="flex">
-					<Accordion.Trigger class="accordion-trigger">Is it accessible?</Accordion.Trigger>
+					<Accordion.Trigger class="accordion-trigger">Can it be animated?</Accordion.Trigger>
 				</Accordion.Header>
-				<Accordion.Content class="accordion-content">
-					<div class="px-5 py-4">Yes. It adheres to the WAI-ARIA design pattern.</div>
+				<Accordion.Content class="accordion-content" transition>
+					<div class="px-5 py-4">
+						Yes! You can use the transition prop to configure the animation.
+					</div>
 				</Accordion.Content>
 			</Accordion.Item>
 		</Accordion.Root>

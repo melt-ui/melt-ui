@@ -1,11 +1,15 @@
+<script lang="ts" context="module">
+	export type CollapsibleContentProps = BaseProps & {
+		transition?: boolean | SlideParams;
+	};
+</script>
+
 <script lang="ts">
 	import type { BaseProps } from '$lib/types';
 	import { slide, type SlideParams } from 'svelte/transition';
 	import { getCollapsibleContext } from './root.svelte';
 
-	type $$Props = BaseProps & {
-		transition?: boolean | SlideParams;
-	};
+	type $$Props = CollapsibleContentProps
 
 	export let transition: $$Props['transition'] = undefined;
 

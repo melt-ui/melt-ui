@@ -1,8 +1,12 @@
+<script lang="ts" context="module">
+	export type AccordionContentProps = CollapsibleContentProps;
+</script>
+
 <script lang="ts">
-	import type { BaseProps } from '$lib/types';
+	import type { CollapsibleContentProps } from '../Collapsible';
 	import { Collapsible } from '../Collapsible';
 
-	type $$Props = BaseProps;
+	type $$Props = AccordionContentProps;
 </script>
 
 <Collapsible.Content {...$$restProps}>
