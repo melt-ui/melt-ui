@@ -10,9 +10,9 @@
 	import '@fontsource/inter/900.css';
 </script>
 
-<nav class="border-b border-b-white/50">
-	<a class="flex items-center gap-2 uppercase font-mono" href="/">
-		<img class="w-12 h-10 object-contain" src="/logo.svg" alt="Radix and Svelte logos" />
+<nav class="border-b border-b-white/50 py-2 px-4">
+	<a class="flex items-center gap-2 font-sans font-thin text-xl" href="/">
+		<img class="w-9 h-9 object-contain rounded-sm" src="/logo.svg" alt="Radix and Svelte logos" />
 		Radix Svelte
 	</a>
 </nav>

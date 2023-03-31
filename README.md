@@ -1,5 +1,5 @@
 <p align="center">
-  <img align="center" src="./static/logo_github.svg" height="108" />
+  <img align="center" src="./static/logo.svg" height="108" />
   
  <h1 align="center">
    Radix Svelte
@@ -19,25 +19,4 @@ This is not a 1:1 re-implementation of Radix UI. The goal is to provide a simila
 
 ## Roadmap
 
-### Core
-
-- [ ] Storybook/Histoire
-- [ ] Accessibility testing
-
-### Components
-
-- [ ] Collapsible
-  - [x] Implementation
-  - [x] Example
-  - [x] Animation
-  - [ ] Storybook/Histoire
-  - [ ] Tests
-  - [ ] Docs
-- [ ] Accordion
-  - [ ] Implementation
-  - [ ] Example
-  - [ ] Animation
-  - [ ] Storybook/Histoire
-  - [ ] Tests
-  - [ ] Docs
-- [ ] Etc.
+You can check the planned features and bugs in the [issues tab](https://github.com/TGlide/radix-svelte/issues)
