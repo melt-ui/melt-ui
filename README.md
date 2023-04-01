@@ -1,5 +1,5 @@
 <p align="center">
-  <img align="center" src="./static/logo.svg" height="108" />
+  <img align="center" src="https://raw.githubusercontent.com/TGlide/radix-svelte/main/static/logo.svg" height="108" />
   
  <h1 align="center">
    Radix Svelte
