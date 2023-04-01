@@ -7,10 +7,9 @@
 		"preview": "vite preview",
 		"package": "svelte-kit sync && svelte-package && publint",
 		"prepublishOnly": "npm run package",
-		"test": "playwright test",
+		"test:cmp": "vitest --run && playwright test -c playwright-ct.config.ts",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"test:unit": "vitest",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"format": "prettier --plugin-search-dir . --write .",
 		"generate:icons": "node ./src/lib/components/Icon/generateComponents.js",
@@ -30,6 +29,7 @@
 		"svelte": "^3.54.0"
 	},
 	"devDependencies": {
+		"@playwright/experimental-ct-svelte": "^1.32.1",
 		"@playwright/test": "^1.28.1",
 		"@storybook/addon-essentials": "^7.0.0",
 		"@storybook/addon-interactions": "^7.0.0",
@@ -57,6 +57,7 @@
 		"jest-axe": "^7.0.1",
 		"jest-environment-jsdom": "^29.5.0",
 		"jsdom": "^21.1.1",
+		"playwright": "^1.32.1",
 		"postcss": "^8.4.14",
 		"postcss-load-config": "^4.0.1",
 		"prettier": "^2.8.7",
