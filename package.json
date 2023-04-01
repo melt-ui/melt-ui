@@ -23,7 +23,8 @@
 		}
 	},
 	"files": [
-		"dist"
+		"dist",
+    "!dist/**/tests"
 	],
 	"peerDependencies": {
 		"svelte": "^3.54.0"
