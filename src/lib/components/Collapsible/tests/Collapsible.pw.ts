@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect, test } from '@playwright/experimental-ct-svelte';
 import Collapsible from './cmp.svelte';
 
 test('Test Collapsible.svelte', async ({ mount }) => {
-	const cmp = await mount(Collapsible as any);
+	const cmp = await mount(Collapsible);
 
 	const trigger = await cmp.getByTestId('trigger');
 
