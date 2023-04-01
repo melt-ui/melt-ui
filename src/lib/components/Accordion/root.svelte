@@ -27,7 +27,7 @@
 	$: if (type) $writableType = type;
 
 	export let value: $$Props['value'] = '';
-	const writableValue = controllableState<$$Props['value']>(value, (v) => (value = v));
+	const writableValue = controllableState(value, (v) => (value = v));
 	$: if (value) $writableValue = value;
 
 	setContext({
