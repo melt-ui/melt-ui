@@ -1,6 +1,6 @@
 {
 	"name": "radix-svelte",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
