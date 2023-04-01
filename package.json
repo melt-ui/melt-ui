@@ -24,7 +24,7 @@
 	},
 	"files": [
 		"dist",
-    "!dist/**/tests"
+		"!dist/**/tests"
 	],
 	"peerDependencies": {
 		"svelte": "^3.54.0"
@@ -76,12 +76,10 @@
 		"tslib": "^2.4.1",
 		"typescript": "^5.0.0",
 		"vite": "^4.2.0",
-		"vitest": "^0.25.3"
+		"vitest": "^0.25.3",
+		"@fontsource/inter": "^4.5.15"
 	},
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
-	"type": "module",
-	"dependencies": {
-		"@fontsource/inter": "^4.5.15"
-	}
+	"type": "module"
 }
