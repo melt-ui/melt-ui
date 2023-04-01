@@ -17,6 +17,29 @@ This is not a 1:1 re-implementation of Radix UI. The goal is to provide a simila
 - Two-way binding is used instead of event handlers.
 - No `asChild` prop (for now).
 
+## Usage
+
+Install the package:
+
+```
+npm install radix-svelte
+# or yarn, pnpm, etc.
+```
+
+Import the components you need:
+
+```svelte
+<script>
+	import { Toggle } from 'radix-svelte';
+
+	let pressed = false;
+</script>
+
+<Toggle bind:pressed>
+	{pressed ? 'Pressed' : 'Not pressed'}
+</Toggle>
+```
+
 ## Roadmap
 
 You can check the planned features and bugs in the [issues tab](https://github.com/TGlide/radix-svelte/issues)
