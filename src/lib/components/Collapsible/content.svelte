@@ -16,7 +16,7 @@
 	$: transitionParams = (function getParams(): SlideParams {
 		if (!transition) {
 			return {
-				duration: 500
+				duration: 0
 			};
 		}
 
