@@ -9,7 +9,7 @@
 	import { slide, type SlideParams } from 'svelte/transition';
 	import { getCollapsibleContext } from './root.svelte';
 
-	type $$Props = CollapsibleContentProps
+	type $$Props = CollapsibleContentProps;
 
 	export let transition: $$Props['transition'] = undefined;
 

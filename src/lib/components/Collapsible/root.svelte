@@ -1,4 +1,10 @@
 <script lang="ts" context="module">
+	export type CollapsibleRootProps = BaseProps & {
+		open?: boolean;
+		defaultOpen?: boolean;
+		disabled?: boolean;
+	};
+
 	export type Context = {
 		open: Writable<boolean>;
 		disabled: Readable<boolean>;
@@ -15,12 +21,7 @@
 	import type { BaseProps } from '$lib/types';
 	import { derived, writable, type Readable, type Writable } from 'svelte/store';
 
-	type $$Props = BaseProps & {
-		open?: boolean;
-		defaultOpen?: boolean;
-		disabled?: boolean;
-	};
-
+	type $$Props = CollapsibleRootProps;
 	export let open = false;
 	export let defaultOpen = false;
 	export let disabled = false;

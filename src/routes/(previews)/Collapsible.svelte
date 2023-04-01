@@ -12,7 +12,7 @@
 			@peduarte starred 3 repositories
 		</span>
 		<Collapsible.Trigger
-			class="rounded-full data-[disabled]:opacity-75 data-[disabled]:cursor-not-allowed h-[25px] w-[25px] inline-grid place-items-center text-violet-500 shadow-[0_2px_10px] shadow-gray-600 outline-none data-[state=closed]:bg-white data-[state=open]:bg-violet-100 hover:bg-violet-300 focus:ring focus:ring-gray-800"
+			class="inline-grid h-[25px] w-[25px] place-items-center rounded-full text-violet-500 shadow-[0_2px_10px] shadow-gray-600 outline-none hover:bg-violet-300 focus:ring focus:ring-gray-800 data-[disabled]:cursor-not-allowed data-[state=closed]:bg-white data-[state=open]:bg-violet-100 data-[disabled]:opacity-75"
 		>
 			{#if open}
 				<Cross2Icon />
@@ -22,17 +22,17 @@
 		</Collapsible.Trigger>
 	</div>
 
-	<div class="bg-white rounded my-2 p-[10px] shadow-[0_2px_10px] shadow-gray-600">
-		<span class="text-violet-800 text-[15px] leading-[25px]">@radix-ui/primitives</span>
+	<div class="my-2 rounded bg-white p-[10px] shadow-[0_2px_10px] shadow-gray-600">
+		<span class="text-[15px] leading-[25px] text-violet-800">@radix-ui/primitives</span>
 	</div>
 
 	<Collapsible.Content transition={{ duration: 300 }}>
 		<div class="flex flex-col gap-2">
-			<div class="bg-white rounded p-[10px] shadow-[0_2px_10px] shadow-gray-600">
-				<span class="text-violet-800 text-[15px] leading-[25px]">@radix-ui/colors</span>
+			<div class="rounded bg-white p-[10px] shadow-[0_2px_10px] shadow-gray-600">
+				<span class="text-[15px] leading-[25px] text-violet-800">@radix-ui/colors</span>
 			</div>
-			<div class="bg-white rounded p-[10px] shadow-[0_2px_10px] shadow-gray-600">
-				<span class="text-violet-800 text-[15px] leading-[25px]">@stitches/react</span>
+			<div class="rounded bg-white p-[10px] shadow-[0_2px_10px] shadow-gray-600">
+				<span class="text-[15px] leading-[25px] text-violet-800">@stitches/react</span>
 			</div>
 		</div>
 	</Collapsible.Content>
