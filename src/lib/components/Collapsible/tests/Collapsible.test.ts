@@ -1,16 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { render, type RenderResult } from '@testing-library/svelte';
+import CollapsibleTest from './CollapsibleTest.svelte';
 import { axe } from 'jest-axe';
-import Collapsible from './cmp.svelte';
+import { render } from '@testing-library/svelte';
 
 describe('Collapsible', () => {
-	let rendered: RenderResult<any>;
-
-	beforeEach(() => {
-		rendered = render(Collapsible as any);
-	});
-
 	it('should have no accessibility violations', async () => {
+		const rendered = render(CollapsibleTest);
 		expect(await axe(rendered.container)).toHaveNoViolations();
 	});
 });

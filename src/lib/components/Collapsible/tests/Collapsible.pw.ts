@@ -1,16 +1,24 @@
 import { expect, test } from '@playwright/experimental-ct-svelte';
-import Collapsible from './cmp.svelte';
 
-test('Test Collapsible.svelte', async ({ mount }) => {
-	const cmp = await mount(Collapsible);
+import CollapsibleTest from './CollapsibleTest.svelte';
 
-	const trigger = await cmp.getByTestId('trigger');
+test.describe('Collapsible', () => {
+	test('Toggles when clicked', async ({ mount }) => {
+		const cmp = await mount(CollapsibleTest);
 
-	await expect(cmp).toBeVisible();
+		const trigger = await cmp.getByTestId('trigger');
 
-	await expect(cmp.getByTestId('content')).not.toBeVisible();
-	await trigger.click();
-	await expect(cmp.getByTestId('content')).toBeVisible();
-	await trigger.click();
-	await expect(cmp.getByTestId('content')).not.toBeVisible();
+		await expect(cmp).toBeVisible();
+
+		await expect(cmp.getByTestId('content')).not.toBeVisible();
+		await trigger.click();
+		await expect(cmp.getByTestId('content')).toBeVisible();
+		await trigger.click();
+		await expect(cmp.getByTestId('content')).not.toBeVisible();
+	})
+
+	test('Should be open when open prop is true', async ({ mount }) => {
+		const cmp = await mount(CollapsibleTest, { props: { open: true } });
+		await expect(cmp.getByTestId('content')).toBeVisible();
+	});
 });
