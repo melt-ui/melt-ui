@@ -20,3 +20,7 @@ This is not a 1:1 re-implementation of Radix UI. The goal is to provide a simila
 ## Roadmap
 
 You can check the planned features and bugs in the [issues tab](https://github.com/TGlide/radix-svelte/issues)
+
+## Community
+
+- [Discord](https://discord.gg/XqEF4tr4)
