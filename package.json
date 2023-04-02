@@ -14,9 +14,7 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
-		"format": "prettier --plugin-search-dir . --write .",
-		"storybook": "storybook dev -p 6006",
-		"build-storybook": "storybook build"
+		"format": "prettier --plugin-search-dir . --write ."		
 	},
 	"exports": {
 		".": {
@@ -37,14 +35,6 @@
 		"@iconify-json/radix-icons": "^1.1.10",
 		"@playwright/experimental-ct-svelte": "^1.32.1",
 		"@playwright/test": "^1.28.1",
-		"@storybook/addon-essentials": "^7.0.0",
-		"@storybook/addon-interactions": "^7.0.0",
-		"@storybook/addon-links": "^7.0.0",
-		"@storybook/addon-styling": "^0.3.2",
-		"@storybook/blocks": "^7.0.0",
-		"@storybook/svelte": "^7.0.0",
-		"@storybook/sveltekit": "^7.0.0",
-		"@storybook/testing-library": "^0.0.14-next.2",
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/kit": "^1.5.0",
 		"@sveltejs/package": "^2.0.0",
@@ -54,7 +44,6 @@
 		"autoprefixer": "^10.4.7",
 		"eslint": "^8.28.0",
 		"eslint-config-prettier": "^8.5.0",
-		"eslint-plugin-storybook": "^0.6.11",
 		"eslint-plugin-svelte3": "^4.0.0",
 		"glob": "^9.3.2",
 		"jsdom": "^21.1.1",
@@ -67,7 +56,6 @@
 		"publint": "^0.1.9",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"storybook": "^7.0.0",
 		"svelte": "^3.54.0",
 		"svelte-check": "^3.0.1",
 		"svelte-htm": "^1.2.0",
