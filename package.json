@@ -30,6 +30,7 @@
 		"svelte": "^3.54.0"
 	},
 	"devDependencies": {
+		"@fontsource/inter": "^4.5.15",
 		"@playwright/experimental-ct-svelte": "^1.32.1",
 		"@playwright/test": "^1.28.1",
 		"@storybook/addon-essentials": "^7.0.0",
@@ -70,14 +71,12 @@
 		"storybook": "^7.0.0",
 		"svelte": "^3.54.0",
 		"svelte-check": "^3.0.1",
-		"svelte-htm": "^1.2.0",
 		"svelte-preprocess": "^4.10.7",
 		"tailwindcss": "^3.3.0",
 		"tslib": "^2.4.1",
 		"typescript": "^5.0.0",
 		"vite": "^4.2.0",
-		"vitest": "^0.25.3",
-		"@fontsource/inter": "^4.5.15"
+		"vitest": "^0.25.3"
 	},
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
