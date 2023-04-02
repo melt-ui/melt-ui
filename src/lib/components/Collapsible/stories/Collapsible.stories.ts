@@ -7,7 +7,7 @@ import html from 'svelte-htm'
 // More on how to set up stories at: https://storybook.js.org/docs/7.0/svelte/writing-stories/introduction
 const meta = {
 	title: 'components/Collapsible',
-	component: html`<${CollapsibleStyled}>`,
+	component: html`<${CollapsibleStyled} />`,
 	tags: ['autodocs'],
 } satisfies Meta<CollapsibleStyled>;
 
