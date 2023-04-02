@@ -1,24 +1,29 @@
 <script lang="ts" context="module">
-	import { controllableState } from '$lib/helpers/controllableState';
 	import type { BaseProps } from '$lib/types';
 
-	export type ToggleProps = BaseProps & {
+	export type ToggleProps = BaseProps<HTMLButtonElement> & {
+		/** The controlled pressed state of the toggle. */
 		pressed?: boolean;
+		/** When true, prevents the user from interacting with the toggle. */
 		disabled?: boolean;
+		/** The pressed state of the toggle when it is initially rendered.
+		 *  Use when you do not need to control its pressed state. */
+		defaultPressed?: boolean;
 	};
 </script>
 
 <script lang="ts">
 	type $$Props = ToggleProps;
 
-	export let pressed: $$Props['pressed'] = false;
+	export let defaultPressed: $$Props['defaultPressed'] = undefined;
+	export let pressed: $$Props['pressed'] = defaultPressed ?? false;
 	export let disabled: $$Props['disabled'] = false;
 </script>
 
 <button
 	{disabled}
-	data-state={pressed ? 'on' : 'off'}
 	on:click={() => (pressed = !pressed)}
+	data-state={pressed ? 'on' : 'off'}
 	data-disabled={disabled || undefined}
 	{...$$restProps}
 >

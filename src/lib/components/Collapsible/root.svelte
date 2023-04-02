@@ -1,7 +1,17 @@
 <script lang="ts" context="module">
 	export type CollapsibleRootProps = BaseProps & {
+		/**
+		 * The controlled open state of the collapsible.
+		 */
 		open?: boolean;
+		/**
+		 * The open state of the collapsible when it is initially rendered.
+		 * Use when you do not need to control its open state.
+		 */
 		defaultOpen?: boolean;
+		/**
+		 * When `true`, prevents the user from interacting with the collapsible.
+		 */
 		disabled?: boolean;
 	};
 
