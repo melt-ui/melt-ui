@@ -8,7 +8,17 @@
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"sourceMap": true,
-		"strict": true
+		"strict": true,
+
+		// Path aliases need to be defined in tsconfig.json in addtion to svelte.config.js for playwright
+		// Bug: https://github.com/sveltejs/kit/issues/8742
+		"baseUrl": ".",
+		"paths": {
+			"$lib": ["src/lib"],
+			"$lib/*": ["src/lib/*"],
+			"$test-helpers": ["test-helpers/"],
+			"$test-helpers/*": ["test-helpers/*"]
+		}
 	},
 	"include": ["**/*.test.ts"]
 

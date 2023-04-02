@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/experimental-ct-svelte';
 
 import AccordionTest from './AccordionTest.svelte';
-import { axeViolations } from '../../../helpers/axeTester.js';
+import { axeViolations } from '$test-helpers/axeTester.js';
 
 test.describe('Accordion', () => {
   test.describe('Single', () => {
