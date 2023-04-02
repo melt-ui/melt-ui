@@ -1,16 +1,31 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { render, type RenderResult } from '@testing-library/svelte';
-import { axe } from 'jest-axe';
-import Collapsible from './cmp.svelte';
+import { expect, test } from '@playwright/experimental-ct-svelte';
 
-describe('Collapsible', () => {
-	let rendered: RenderResult<any>;
+import CollapsibleTest from './CollapsibleTest.svelte';
+import { axeViolations } from '$test-helpers/axeTester.js';
 
-	beforeEach(() => {
-		rendered = render(Collapsible as any);
+test.describe('Collapsible', () => {
+	test('No accesibility violations', async ({ mount, page }) => {
+		await mount(CollapsibleTest);
+		expect(await axeViolations(page)).toEqual([]);
+
 	});
 
-	it('should have no accessibility violations', async () => {
-		expect(await axe(rendered.container)).toHaveNoViolations();
+	test('Toggles when clicked', async ({ mount }) => {
+		const cmp = await mount(CollapsibleTest);
+
+		const trigger = await cmp.getByTestId('trigger');
+
+		await expect(cmp).toBeVisible();
+
+		await expect(cmp.getByTestId('content')).not.toBeVisible();
+		await trigger.click();
+		await expect(cmp.getByTestId('content')).toBeVisible();
+		await trigger.click();
+		await expect(cmp.getByTestId('content')).not.toBeVisible();
+	})
+
+	test('Should be open when open prop is true', async ({ mount }) => {
+		const cmp = await mount(CollapsibleTest, { props: { open: true } });
+		await expect(cmp.getByTestId('content')).toBeVisible();
 	});
 });

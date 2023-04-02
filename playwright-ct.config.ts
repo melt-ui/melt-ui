@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/experimental-ct-svelte';
+
 import { resolve } from 'node:path';
 
 /**
@@ -6,7 +7,7 @@ import { resolve } from 'node:path';
  */
 export default defineConfig({
 	testDir: './',
-	testMatch: '*.pw.ts',
+	testMatch: '*.test.ts',
 	/* The base directory, relative to the config file, for snapshot files created with toMatchSnapshot and toHaveScreenshot. */
 	snapshotDir: './__snapshots__',
 	/* Maximum time one test can run for. */

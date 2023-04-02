@@ -9,8 +9,19 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
-		"types": ["vitest/globals", "@testing-library/jest-dom"]
-	}
+
+		// Path aliases need to be defined in tsconfig.json in addtion to svelte.config.js for playwright
+		// Bug: https://github.com/sveltejs/kit/issues/8742
+		"baseUrl": ".",
+		"paths": {
+			"$lib": ["src/lib"],
+			"$lib/*": ["src/lib/*"],
+			"$test-helpers": ["test-helpers/"],
+			"$test-helpers/*": ["test-helpers/*"]
+		}
+	},
+	"include": ["**/*.test.ts"]
+
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	//
 	// If you want to overwrite includes/excludes, make sure to copy over the relevant includes/excludes

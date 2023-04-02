@@ -10,10 +10,6 @@ export default defineConfig({
 		})
 	],
 	test: {
-		// Jest like globals
-		globals: true,
-		environment: 'jsdom',
-		include: ['src/**/*.{test,spec}.{js,ts}'],
-		setupFiles: ['./scripts/setup-test.js']
+		include: ['src/**/*.spec.{js,ts}'],
 	}
 });
