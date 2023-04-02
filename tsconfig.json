@@ -10,7 +10,7 @@
 		"sourceMap": true,
 		"strict": true
 	},
-	"include": ["**/*.pw.ts"]
+	"include": ["**/*.test.ts"]
 
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	//
