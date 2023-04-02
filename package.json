@@ -1,6 +1,7 @@
 {
 	"name": "radix-svelte",
-	"version": "0.0.4",
+	"version": "0.0.6",
+	"license": "MIT",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
@@ -14,7 +15,6 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"format": "prettier --plugin-search-dir . --write .",
-		"generate:icons": "node ./src/lib/components/Icon/generateComponents.js",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build"
 	},
@@ -34,6 +34,7 @@
 	"devDependencies": {
 		"@axe-core/playwright": "^4.6.1",
 		"@fontsource/inter": "^4.5.15",
+		"@iconify-json/radix-icons": "^1.1.10",
 		"@playwright/experimental-ct-svelte": "^1.32.1",
 		"@playwright/test": "^1.28.1",
 		"@storybook/addon-essentials": "^7.0.0",
@@ -74,6 +75,7 @@
 		"tailwindcss": "^3.3.0",
 		"tslib": "^2.4.1",
 		"typescript": "^5.0.0",
+		"unplugin-icons": "^0.16.1",
 		"vite": "^4.2.0",
 		"vitest": "^0.25.3"
 	},
