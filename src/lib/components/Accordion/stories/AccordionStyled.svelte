@@ -4,7 +4,7 @@
 	let value = 'item-2';
 </script>
 
-<div class="grid place-items-center max-w-xl p-4 mx-auto">
+<div class="mx-auto grid max-w-xl place-items-center p-4">
 	<div class="comp-preview w-full">
 		<div class="content h-96">
 			<Accordion.Root
@@ -13,6 +13,7 @@
 				bind:value
 				defaultValue="item-1"
 				collapsible
+				{...$$restProps}
 			>
 				<Accordion.Item class="accordion-item" value="item-1">
 					<Accordion.Header class="flex">
