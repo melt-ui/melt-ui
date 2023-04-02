@@ -1,8 +1,15 @@
 import { expect, test } from '@playwright/experimental-ct-svelte';
 
 import CollapsibleTest from './CollapsibleTest.svelte';
+import { axeViolations } from '../../../helpers/axeTester.js';
 
 test.describe('Collapsible', () => {
+	test('No accesibility violations', async ({ mount, page }) => {
+		await mount(CollapsibleTest);
+		expect(await axeViolations(page)).toEqual([]);
+
+	});
+
 	test('Toggles when clicked', async ({ mount }) => {
 		const cmp = await mount(CollapsibleTest);
 
