@@ -1,16 +1,29 @@
+<script lang="ts" context="module">
+	export const props = {
+		Root: {
+			value: {
+				type: 'string'
+			}
+		},
+		Content: {},
+		Trigger: {},
+		Header: {},
+		Item: {}
+	} satisfies PreviewProps<typeof Accordion>;
+</script>
+
 <script lang="ts">
 	import { Accordion } from '$lib';
+	import { getPropsObj, type PreviewProps } from '../helpers';
 
-	let value = 'item-2';
+	export let propsObj = getPropsObj(props);
 </script>
 
 <div class="contents">
 	<Accordion.Root
 		class="rounded-md bg-[--line-color] shadow-[0_2px_10px] shadow-black/5"
 		type="single"
-		bind:value
-		defaultValue="item-1"
-		collapsible
+		bind:value={propsObj.Root.value}
 	>
 		<Accordion.Item class="accordion-item" value="item-1">
 			<Accordion.Header class="flex">
