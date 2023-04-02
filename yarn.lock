@@ -15,6 +15,19 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@antfu/install-pkg@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@antfu/install-pkg/-/install-pkg-0.1.1.tgz#157bb04f0de8100b9e4c01734db1a6c77e98bbb5"
+  integrity sha512-LyB/8+bSfa0DFGC06zpCEfs89/XoWZwws5ygEa5D+Xsm3OfI+aXQ86VgVG7Acyef+rSZ5HE7J8rrxzrQeM3PjQ==
+  dependencies:
+    execa "^5.1.1"
+    find-up "^5.0.0"
+
+"@antfu/utils@^0.7.2":
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/@antfu/utils/-/utils-0.7.2.tgz#3bb6f37a6b188056fe9e2f363b6aa735ed65d7ca"
+  integrity sha512-vy9fM3pIxZmX07dL+VX1aZe7ynZ+YyB0jY+jE6r3hOK6GNY2t6W8rzpFC4tgpbXUYABkFQwgJq2XYXlxbXAI0g==
+
 "@aw-web-design/x-default-browser@1.4.88":
   version "1.4.88"
   resolved "https://registry.yarnpkg.com/@aw-web-design/x-default-browser/-/x-default-browser-1.4.88.tgz#33d869cb2a537cd6d2a8369d4dc8ea4988d4be89"
@@ -1301,6 +1314,30 @@
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
+
+"@iconify-json/radix-icons@^1.1.10":
+  version "1.1.10"
+  resolved "https://registry.yarnpkg.com/@iconify-json/radix-icons/-/radix-icons-1.1.10.tgz#151649caff9108953604062c1871316b4a8e3a84"
+  integrity sha512-7ivY9XvUe1CWsuR1qy/icK6tfl1+Xq3sh2AqQuGHNx49VCJyXQq+RRr6bqf3u36mPPzV+C8oRlfifNt8iWK2Ew==
+  dependencies:
+    "@iconify/types" "*"
+
+"@iconify/types@*", "@iconify/types@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@iconify/types/-/types-2.0.0.tgz#ab0e9ea681d6c8a1214f30cd741fe3a20cc57f57"
+  integrity sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==
+
+"@iconify/utils@^2.1.5":
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/@iconify/utils/-/utils-2.1.5.tgz#75c17410aadec724d2ab7bd71e8710e448102438"
+  integrity sha512-6MvDI+I6QMvXn5rK9KQGdpEE4mmLTcuQdLZEiX5N+uZB+vc4Yw9K1OtnOgkl8mp4d9X0UrILREyZgF1NUwUt+Q==
+  dependencies:
+    "@antfu/install-pkg" "^0.1.1"
+    "@antfu/utils" "^0.7.2"
+    "@iconify/types" "^2.0.0"
+    debug "^4.3.4"
+    kolorist "^1.7.0"
+    local-pkg "^0.4.3"
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
@@ -5519,6 +5556,11 @@ kleur@^4.1.5:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-4.1.5.tgz#95106101795f7050c6c650f350c683febddb1780"
   integrity sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==
 
+kolorist@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/kolorist/-/kolorist-1.7.0.tgz#8e22bc470ea2d2743dbd461808f8b5246b19f5f4"
+  integrity sha512-ymToLHqL02udwVdbkowNpzjFd6UzozMtshPQKVi5k1EjKRqKqBrOnE9QbLEb0/pV76SAiIT13hdL8R6suc+f3g==
+
 lazy-universal-dotenv@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/lazy-universal-dotenv/-/lazy-universal-dotenv-4.0.0.tgz#0b220c264e89a042a37181a4928cdd298af73422"
@@ -5559,7 +5601,7 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.2.4.tgz#eca284f75d2965079309dc0ad9255abb2ebc1632"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
-local-pkg@^0.4.2:
+local-pkg@^0.4.2, local-pkg@^0.4.3:
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/local-pkg/-/local-pkg-0.4.3.tgz#0ff361ab3ae7f1c19113d9bb97b98b905dbc4963"
   integrity sha512-SFppqq5p42fe2qcZQqqEOiVRXl+WCP1MdT6k7BDEW1j++sp5fIY+/fdRQitvKgB5BrBcmrs5m/L0v2FrU5MY1g==
@@ -7788,6 +7830,19 @@ unpipe@1.0.0, unpipe@~1.0.0:
   resolved "https://registry.yarnpkg.com/unpipe/-/unpipe-1.0.0.tgz#b2bf4ee8514aae6165b4817829d21b2ef49904ec"
   integrity sha512-pjy2bYhSsufwWlKwPc+l3cN7+wuJlK6uz0YdJEOlQDbl6jo/YlPi4mb8agUkVC8BF7V8NuzeyPNqRksA3hztKQ==
 
+unplugin-icons@^0.16.1:
+  version "0.16.1"
+  resolved "https://registry.yarnpkg.com/unplugin-icons/-/unplugin-icons-0.16.1.tgz#e341185e17f4a7a9171b6dd932b5bf26a2f31fb9"
+  integrity sha512-qTunFUkpAyDnwzwV7YV1ZgCWRYfLuURcCurhhXOWMy2ipY88qx1pADvral2hJu4Xymh0X0t3Zcll3BIru2AVLQ==
+  dependencies:
+    "@antfu/install-pkg" "^0.1.1"
+    "@antfu/utils" "^0.7.2"
+    "@iconify/utils" "^2.1.5"
+    debug "^4.3.4"
+    kolorist "^1.7.0"
+    local-pkg "^0.4.3"
+    unplugin "^1.3.1"
+
 unplugin@^0.10.2:
   version "0.10.2"
   resolved "https://registry.yarnpkg.com/unplugin/-/unplugin-0.10.2.tgz#0f7089c3666f592cc448d746e39e7f41e9afb01a"
@@ -7797,6 +7852,16 @@ unplugin@^0.10.2:
     chokidar "^3.5.3"
     webpack-sources "^3.2.3"
     webpack-virtual-modules "^0.4.5"
+
+unplugin@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/unplugin/-/unplugin-1.3.1.tgz#7af993ba8695d17d61b0845718380caf6af5109f"
+  integrity sha512-h4uUTIvFBQRxUKS2Wjys6ivoeofGhxzTe2sRWlooyjHXVttcVfV/JiavNd3d4+jty0SVV0dxGw9AkY9MwiaCEw==
+  dependencies:
+    acorn "^8.8.2"
+    chokidar "^3.5.3"
+    webpack-sources "^3.2.3"
+    webpack-virtual-modules "^0.5.0"
 
 untildify@^4.0.0:
   version "4.0.0"
@@ -7955,6 +8020,11 @@ webpack-virtual-modules@^0.4.5:
   version "0.4.6"
   resolved "https://registry.yarnpkg.com/webpack-virtual-modules/-/webpack-virtual-modules-0.4.6.tgz#3e4008230731f1db078d9cb6f68baf8571182b45"
   integrity sha512-5tyDlKLqPfMqjT3Q9TAqf2YqjwmnUleZwzJi1A5qXnlBCdj2AtOJ6wAWdglTIDOPgOiOrXeBeFcsQ8+aGQ6QbA==
+
+webpack-virtual-modules@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/webpack-virtual-modules/-/webpack-virtual-modules-0.5.0.tgz#362f14738a56dae107937ab98ea7062e8bdd3b6c"
+  integrity sha512-kyDivFZ7ZM0BVOUteVbDFhlRt7Ah/CSPwJdi8hBpkK7QLumUqdLtVfm/PX/hkcnrvr0i77fO5+TjZ94Pe+C9iw==
 
 whatwg-encoding@^2.0.0:
   version "2.0.0"
