@@ -5,10 +5,10 @@
 <div class="wrapper">
 	{#each Object.entries(schemas) as [title, schema]}
 		<div class="comp-preview">
-			<div class="flex items-baseline justify-between">
+			<a href={`/${title}`} class="flex items-baseline justify-between">
 				<h2 class="title capitalize">{title}</h2>
-				<a href={`/${title}`} class="text-sm text-slate-300">View docs</a>
-			</div>
+				<span class="text-sm text-slate-300">View docs</span></a
+			>
 			<div class="content">
 				<svelte:component this={schema.example} />
 			</div>
