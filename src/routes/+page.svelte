@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Accordion from './(previews)/Accordion.svelte';
-	import Collapsible from './(previews)/Collapsible.svelte';
+	import Collapsible from './(previews)/CollapsibleExample.svelte';
 	import Toggle from './(previews)/Toggle.svelte';
 
 	const previews = {

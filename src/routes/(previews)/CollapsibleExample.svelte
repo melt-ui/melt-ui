@@ -3,11 +3,10 @@
 	import Cross2Icon from '~icons/radix-icons/cross-2';
 	import RowSpacingIcon from '~icons/radix-icons/row-spacing';
 
-	export let open = false;
-	export let disabled = false;
+	export let props: any;
 </script>
 
-<Collapsible.Root bind:open {disabled}>
+<Collapsible.Root bind:open={props.Root.open} disabled={props.Root.disabled}>
 	<div class="flex items-center justify-between">
 		<span class="text-violet11 text-sm leading-6 text-white">
 			@peduarte starred 3 repositories
@@ -17,7 +16,7 @@
 			shadow-gray-600 outline-none hover:bg-violet-300 focus:ring focus:ring-gray-800 data-[disabled]:cursor-not-allowed 
 			data-[state=closed]:bg-white data-[state=open]:bg-violet-100 data-[disabled]:opacity-75"
 		>
-			{#if open}
+			{#if props.Root.open}
 				<Cross2Icon />
 			{:else}
 				<RowSpacingIcon />
@@ -29,7 +28,7 @@
 		<span class="text-base leading-[25px] text-violet-800">@radix-ui/primitives</span>
 	</div>
 
-	<Collapsible.Content transition={{ duration: 300 }}>
+	<Collapsible.Content transition={props.Content.transition ? { duration: 300 } : false}>
 		<div class="flex flex-col gap-2">
 			<div class="rounded bg-white p-3 shadow-[0_2px_10px] shadow-gray-600">
 				<span class="text-base leading-[25px] text-violet-800">@radix-ui/colors</span>
