@@ -5,11 +5,6 @@
 		 */
 		open?: boolean;
 		/**
-		 * The open state of the collapsible when it is initially rendered.
-		 * Use when you do not need to control its open state.
-		 */
-		defaultOpen?: boolean;
-		/**
 		 * When `true`, prevents the user from interacting with the collapsible.
 		 */
 		disabled?: boolean;
@@ -33,11 +28,10 @@
 
 	type $$Props = CollapsibleRootProps;
 	export let open = false;
-	export let defaultOpen = false;
 	export let disabled = false;
 
-	const writableOpen = controllableState(open || defaultOpen, (v) => (open = v));
-	$: $writableOpen = open || defaultOpen;
+	const writableOpen = controllableState(open, (v) => (open = v));
+	$: $writableOpen = open;
 
 	const writableDisabled = writable(disabled);
 	$: $writableDisabled = disabled;
