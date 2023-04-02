@@ -1,60 +1,46 @@
 <script lang="ts">
-	import type { PageData } from './$types';
+	import { getPropsObj } from '$routes/(previews)/helpers';
 
-	export let data: PageData;
+	export let data;
 
-	import { collapsible } from '../(previews)/collapsible';
+	const cmpSchema = data.schema;
 
-	const componentData = collapsible;
-
-	// Construct nested object of props with default values
-	let props = Object.entries(componentData.props).reduce(
-		(acc, [objectName, props]) => ({
-			...acc,
-			[objectName]: Object.entries(props).reduce(
-				(acc, [propName, prop]) => ({
-					...acc,
-					[propName]: false
-				}),
-				{}
-			)
-		}),
-		{}
-	);
-
-	$: {
-		console.log(props);
-	}
-	// const props = Object.entries(componentData.props).map(([objectName, props]) =>
-	// 	Object.entries(props).map(([propName, prop]) => false)
-	// );
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let props = getPropsObj(cmpSchema.props) as any;
 </script>
 
-<div class="p-8">
-	<div>
-		<h2 class="text-xl font-bold">{componentData.title}</h2>
-		<span>{componentData.description}</span>
-		<div class="preview">
-			<svelte:component this={componentData.example} bind:props />
+<div class="mx-auto max-w-5xl p-8">
+	<h2 class="text-xl font-bold">{cmpSchema.title}</h2>
+	<p class="text-slate-300">{cmpSchema.description}</p>
+	<div class="preview mt-4 h-96">
+		<div class="mx-auto max-w-[600px]">
+			<svelte:component this={cmpSchema.example} bind:propsObj={props} />
 		</div>
-		<table class="mt-4 w-full table-auto border-collapse border border-slate-500">
-			{#each Object.entries(componentData.props) as [propObject, propEntries]}
-				<tr>
-					<th class="p-2 text-left">{componentData.title}.{propObject}</th>
-				</tr>
-				{#each Object.entries(propEntries) as [propKey, propDefinition]}
-					<tr>
-						<td class="border border-slate-600 p-2 font-mono">{propKey}</td>
-						<td class="border border-slate-600 p-2 font-mono">{propDefinition.type}</td>
-						<td class="border border-slate-600 p-2 font-mono"
-							><input type="checkbox" bind:checked={props[propObject][propKey]} /></td
-						>
-					</tr>
-				{/each}
-			{/each}
-		</table>
-		<div />
 	</div>
+
+	{#each Object.entries(cmpSchema.props) as [subCmp, subCmpProps]}
+		<div class="mt-4 grid grid-cols-12 gap-y-2 rounded-md bg-zinc-900 p-4 text-white">
+			<h2 class="col-span-12 font-bold">{cmpSchema.title}.{subCmp}</h2>
+
+			<span class="col-span-4 text-sm text-zinc-300">Prop</span>
+			<span class="col-span-4 text-sm text-zinc-300">Type</span>
+			<span class="col-span-4 text-sm text-zinc-300">Control</span>
+
+			<hr class="col-span-12 opacity-25" />
+
+			{#each Object.entries(subCmpProps) as [propKey, propDefinition]}
+				<span class="col-span-4 font-mono">{propKey}</span>
+				<span class="col-span-4 font-mono">{propDefinition.type}</span>
+				<span class="col-span-4">
+					<input type="checkbox" bind:checked={props[subCmp][propKey]} />
+				</span>
+			{:else}
+				<p class="col-span-12 text-sm">No props</p>
+			{/each}
+		</div>
+	{/each}
+
+	<div />
 </div>
 
 <style lang="postcss">
