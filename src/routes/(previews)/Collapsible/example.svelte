@@ -11,7 +11,8 @@
 		Trigger: {},
 		Content: {
 			transition: {
-				type: 'boolean'
+				type: 'boolean',
+				default: true
 			}
 		}
 	} satisfies PreviewProps<typeof Collapsible>;
