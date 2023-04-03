@@ -1,6 +1,6 @@
+import Icons from 'unplugin-icons/vite';
 import { defineConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
-import Icons from 'unplugin-icons/vite';
 
 export default defineConfig({
 	plugins: [
