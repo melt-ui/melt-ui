@@ -4,7 +4,7 @@ import type { SlideParams } from "svelte/transition";
 
 type RadixComponentGroup = { [key: string]: typeof SvelteComponent }
 
-export type PreviewSchema<T extends RadixComponentGroup> = {
+export type PreviewSchema<T extends RadixComponentGroup = RadixComponentGroup> = {
 	title: string;
 	description: string;
 	example: unknown;
@@ -29,10 +29,10 @@ type PreviewComponentProps<T extends SvelteComponent, P = ComponentProps<T>> = {
 	never;
 };
 
-type PreviewPropBoolean = { type: 'boolean', default?: boolean };
-type PreviewPropString = { type: 'string', default?: string };
-type PreviewPropNumber = { type: 'number', default?: number };
-type PreviewPropEnum<T extends string> = { type: 'enum', values: T[], default?: T };
+export type PreviewPropBoolean = { type: 'boolean', default?: boolean };
+export type PreviewPropString = { type: 'string', default?: string };
+export type PreviewPropNumber = { type: 'number', default?: number };
+export type PreviewPropEnum<T extends string> = { type: 'enum', values: T[], default?: T };
 
 export type PreviewProps<T extends RadixComponentGroup> = {
 	[K in keyof T]: PreviewComponentProps<InstanceType<T[K]>>;

@@ -1,5 +1,11 @@
 <script lang="ts">
-	import { getPropsObj } from '$routes/(previews)/helpers';
+	import {
+		getPropsObj,
+		type PreviewPropBoolean,
+		type PreviewPropEnum,
+		type PreviewPropNumber,
+		type PreviewPropString
+	} from '$routes/(previews)/helpers';
 
 	export let data;
 
@@ -7,6 +13,15 @@
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let props = getPropsObj<{}>(cmpSchema.props) as any;
+
+	function castPreviewProps(
+		component: Record<
+			string,
+			PreviewPropBoolean | PreviewPropNumber | PreviewPropString | PreviewPropEnum<string>
+		>
+	) {
+		return component;
+	}
 </script>
 
 <div class="mx-auto max-w-5xl p-8">
@@ -28,7 +43,7 @@
 
 			<hr class="col-span-12 opacity-25" />
 
-			{#each Object.entries(subCmpProps) as [propKey, propDefinition]}
+			{#each Object.entries(castPreviewProps(subCmpProps)) as [propKey, propDefinition]}
 				<span class="col-span-4 font-mono">{propKey}</span>
 				<span class="col-span-4 font-mono">{propDefinition.type}</span>
 				<span class="col-span-4 text-black">
