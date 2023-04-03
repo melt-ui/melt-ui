@@ -1,27 +1,32 @@
-type RadixComponent = Record<string, unknown>;
+import type { ComponentProps, SvelteComponent } from "svelte";
 
-export type PreviewSchema<T extends RadixComponent> = {
+type RadixComponentGroup = { [key: string]: typeof SvelteComponent }
+
+export type PreviewSchema<T extends RadixComponentGroup> = {
 	title: string;
 	description: string;
 	example: unknown;
 	props: PreviewProps<T>;
 };
 
-export type PreviewProps<T extends RadixComponent> = {
-	// I'd want this to be strongly typed using ComponentProps
-	[K in keyof T]: Record<string, { type: 'boolean' | 'string' | 'number'; default?: unknown }>;
+type PreviewComponentProps<T extends SvelteComponent, P = ComponentProps<T>> = {
+	[K in keyof P]: { type: 'boolean', default?: boolean } | { type: 'string', default?: string } | { type: 'number', default?: number };
 };
 
-export type ResolvedProps<T> = {
+export type PreviewProps<T extends RadixComponentGroup> = {
+	[K in keyof T]: PreviewComponentProps<InstanceType<T[K]>>;
+};
+
+type ResolvedProps<T> = {
 	[K in keyof T]: T[K] extends { type: 'boolean' }
-		? boolean
-		: T[K] extends { type: 'string' }
-		? string
-		: T[K] extends { type: 'number' }
-		? number
-		: T[K] extends object
-		? ResolvedProps<T[K]>
-		: never;
+	? boolean
+	: T[K] extends { type: 'string' }
+	? string
+	: T[K] extends { type: 'number' }
+	? number
+	: T[K] extends object
+	? ResolvedProps<T[K]>
+	: never;
 };
 
 const typeDefaults = {
@@ -30,7 +35,7 @@ const typeDefaults = {
 	number: 0
 };
 
-export function getPropsObj<P extends PreviewProps<RadixComponent>>(props: P) {
+export function getPropsObj<P extends PreviewProps<RadixComponentGroup>>(props: P) {
 	return Object.entries(props).reduce<P>(
 		(acc, [subCmp, props]) => ({
 			...acc,

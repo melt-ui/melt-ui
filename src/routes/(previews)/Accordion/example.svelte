@@ -8,7 +8,11 @@
 		Content: {},
 		Trigger: {},
 		Header: {},
-		Item: {}
+		Item: {
+			value: {
+				type: 'string'
+			}
+		}
 	} satisfies PreviewProps<typeof Accordion>;
 </script>
 
