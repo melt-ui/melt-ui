@@ -1,8 +1,10 @@
 <script lang="ts" context="module">
 	export const props = {
 		Root: {
-			pressed: {
-				type: 'boolean'
+			props: {
+				pressed: {
+					type: 'boolean'
+				}
 			}
 		}
 	} satisfies PreviewProps<typeof Toggle>;

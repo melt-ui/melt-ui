@@ -1,24 +1,34 @@
 <script lang="ts" context="module">
 	export const props = {
 		Root: {
-			checked: {
-				type: 'boolean',
-				default: false
+			props: {
+				checked: {
+					type: 'boolean',
+					default: false
+				},
+				disabled: {
+					type: 'boolean'
+				},
+				required: {
+					type: 'boolean',
+					hideControls: true
+				},
+				name: {
+					type: 'string',
+					hideControls: true
+				},
+				value: {
+					type: 'string',
+					hideControls: true
+				}
 			},
-			disabled: {
-				type: 'boolean'
-			},
-			required: {
-				type: 'boolean',
-				hideControls: true
-			},
-			name: {
-				type: 'string',
-				hideControls: true
-			},
-			value: {
-				type: 'string',
-				hideControls: true
+			dataAttributes: {
+				'data-disabled': {
+					values: ['true', 'false']
+				},
+				'data-state': {
+					values: ['checked', 'unchecked', 'indeterminate']
+				}
 			}
 		},
 		Indicator: {}

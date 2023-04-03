@@ -1,18 +1,22 @@
 <script lang="ts" context="module">
 	export const props = {
 		Root: {
-			open: {
-				type: 'boolean'
-			},
-			disabled: {
-				type: 'boolean'
+			props: {
+				open: {
+					type: 'boolean'
+				},
+				disabled: {
+					type: 'boolean'
+				}
 			}
 		},
 		Trigger: {},
 		Content: {
-			transition: {
-				type: 'boolean',
-				default: true
+			props: {
+				transition: {
+					type: 'boolean',
+					default: true
+				}
 			}
 		}
 	} satisfies PreviewProps<typeof Collapsible>;

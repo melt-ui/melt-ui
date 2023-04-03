@@ -1,28 +1,34 @@
 <script lang="ts" context="module">
 	export const props = {
 		Root: {
-			value: {
-				type: 'enum',
-				values: ['item-1', 'item-2', 'item-3']
-			},
-			type: {
-				type: 'enum',
-				values: ['multiple', 'single'],
-				default: 'single'
+			props: {
+				value: {
+					type: 'enum',
+					options: ['item-1', 'item-2', 'item-3']
+				},
+				type: {
+					type: 'enum',
+					options: ['multiple', 'single'],
+					default: 'single'
+				}
 			}
 		},
 		Content: {
-			transition: {
-				type: 'boolean',
-				default: true
+			props: {
+				transition: {
+					type: 'boolean',
+					default: true
+				}
 			}
 		},
 		Trigger: {},
 		Header: {},
 		Item: {
-			value: {
-				type: 'string',
-				hideControls: true
+			props: {
+				value: {
+					type: 'string',
+					hideControls: true
+				}
 			}
 		}
 	} satisfies PreviewProps<typeof Accordion>;
