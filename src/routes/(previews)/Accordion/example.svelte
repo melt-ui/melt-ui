@@ -1,22 +1,49 @@
+<script lang="ts" context="module">
+	export const props = {
+		Root: {
+			value: {
+				type: 'string'
+			},
+			type: {
+				type: 'enum',
+				values: ['multiple', 'single'],
+				default: 'single'
+			}
+		},
+		Content: {
+			transition: {
+				type: 'boolean',
+				default: true
+			}
+		},
+		Trigger: {},
+		Header: {},
+		Item: {
+			value: {
+				type: 'string'
+			}
+		}
+	} satisfies PreviewProps<typeof Accordion>;
+</script>
+
 <script lang="ts">
 	import { Accordion } from '$lib';
+	import { getPropsObj, type PreviewProps } from '../helpers';
 
-	let value = 'item-2';
+	export let propsObj = getPropsObj<typeof Accordion>(props);
 </script>
 
 <div class="contents">
 	<Accordion.Root
 		class="rounded-md bg-[--line-color] shadow-[0_2px_10px] shadow-black/5"
-		type="single"
-		bind:value
-		defaultValue="item-1"
-		collapsible
+		bind:value={propsObj.Root.value}
+		bind:type={propsObj.Root.type}
 	>
 		<Accordion.Item class="accordion-item" value="item-1">
 			<Accordion.Header class="flex">
 				<Accordion.Trigger class="accordion-trigger">Is it accessible?</Accordion.Trigger>
 			</Accordion.Header>
-			<Accordion.Content class="accordion-content" transition>
+			<Accordion.Content class="accordion-content" transition={propsObj.Content.transition}>
 				<div class="px-5 py-4">Yes. It adheres to the WAI-ARIA design pattern.</div>
 			</Accordion.Content>
 		</Accordion.Item>
@@ -25,7 +52,7 @@
 			<Accordion.Header class="flex">
 				<Accordion.Trigger class="accordion-trigger">Is it unstyled?</Accordion.Trigger>
 			</Accordion.Header>
-			<Accordion.Content class="accordion-content" transition>
+			<Accordion.Content class="accordion-content" transition={propsObj.Content.transition}>
 				<div class="px-5 py-4">
 					Yes. It's unstyled by default, giving you freedom over the look and feel.
 				</div>
@@ -36,7 +63,7 @@
 			<Accordion.Header class="flex">
 				<Accordion.Trigger class="accordion-trigger">Can it be animated?</Accordion.Trigger>
 			</Accordion.Header>
-			<Accordion.Content class="accordion-content" transition>
+			<Accordion.Content class="accordion-content" transition={propsObj.Content.transition}>
 				<div class="px-5 py-4">
 					Yes! You can use the transition prop to configure the animation.
 				</div>

@@ -2,7 +2,7 @@
 	import { uniqueContext } from '$lib/helpers/uniqueContext';
 
 	type ItemContext = {
-		value: Writable<string>;
+		value?: Writable<string>;
 	};
 
 	const { getContext, setContext } = uniqueContext<ItemContext>();
@@ -16,10 +16,10 @@
 	import { getAccordionContext } from './root.svelte';
 
 	type $$Props = BaseProps & {
-		value: string;
+		value?: string;
 	};
 
-	export let value: string;
+	export let value: string | undefined = undefined;
 	const writableValue = writable(value);
 	$: if (value) $writableValue = value;
 

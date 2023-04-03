@@ -1,21 +1,16 @@
 <script lang="ts">
-	import Accordion from './(previews)/Accordion.svelte';
-	import Collapsible from './(previews)/Collapsible.svelte';
-	import Toggle from './(previews)/Toggle.svelte';
-
-	const previews = {
-		Accordion,
-		Collapsible,
-		Toggle
-	};
+	import schemas from './(previews)/schemas';
 </script>
 
 <div class="wrapper">
-	{#each Object.entries(previews) as [title, component]}
+	{#each Object.entries(schemas) as [title, schema]}
 		<div class="comp-preview">
-			<h2 class="title">{title}</h2>
+			<a href={`/${title}`} class="flex items-baseline justify-between">
+				<h2 class="title capitalize">{title}</h2>
+				<span class="text-sm text-slate-300">View docs</span></a
+			>
 			<div class="content">
-				<svelte:component this={component} />
+				<svelte:component this={schema.example} />
 			</div>
 		</div>
 	{/each}
