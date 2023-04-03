@@ -31,13 +31,19 @@
 			{#each Object.entries(subCmpProps) as [propKey, propDefinition]}
 				<span class="col-span-4 font-mono">{propKey}</span>
 				<span class="col-span-4 font-mono">{propDefinition.type}</span>
-				<span class="col-span-4">
+				<span class="col-span-4 text-black">
 					{#if propDefinition.type === 'boolean'}
 						<input type="checkbox" bind:checked={props[subCmp][propKey]} />
 					{:else if propDefinition.type === 'string'}
-						<input type="text" class="text-black" bind:value={props[subCmp][propKey]} />
+						<input type="text" bind:value={props[subCmp][propKey]} />
 					{:else if propDefinition.type === 'number'}
 						<input type="number" bind:value={props[subCmp][propKey]} />
+					{:else if propDefinition.type === 'enum'}
+						<select bind:value={props[subCmp][propKey]}>
+							{#each propDefinition.values as value}
+								<option {value}>{value}</option>
+							{/each}
+						</select>
 					{/if}
 				</span>
 			{:else}
