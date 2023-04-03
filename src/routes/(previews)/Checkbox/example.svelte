@@ -9,13 +9,16 @@
 				type: 'boolean'
 			},
 			required: {
-				type: 'boolean'
+				type: 'boolean',
+				hideControls: true
 			},
 			name: {
-				type: 'string'
+				type: 'string',
+				hideControls: true
 			},
 			value: {
-				type: 'string'
+				type: 'string',
+				hideControls: true
 			}
 		},
 		Indicator: {}
