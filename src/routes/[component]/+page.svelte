@@ -6,7 +6,7 @@
 	const cmpSchema = data.schema;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let props = getPropsObj(cmpSchema.props) as any;
+	let props = getPropsObj<{}>(cmpSchema.props) as any;
 </script>
 
 <div class="mx-auto max-w-5xl p-8">
