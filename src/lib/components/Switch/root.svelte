@@ -6,7 +6,6 @@
 		/** The controlled checked state of the switch. */
 		checked?: boolean;
 		/** When `true`, prevents the user from interacting with the switch. */
-		required?: boolean;
 		disabled?: boolean;
 		/** When `true`, indicates that the user must check the switch before the owning form can be submitted. */
 		required?: boolean;

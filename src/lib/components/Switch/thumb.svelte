@@ -2,11 +2,11 @@
 	import type { BaseProps } from '$lib/types';
 	import { getSwitchContext, getState } from './root.svelte';
 
-	export type Props = BaseProps<HTMLSpanElement>;
+	export type SwitchThumbProps = BaseProps<HTMLSpanElement>;
 </script>
 
 <script lang="ts">
-	type $$Props = Props;
+	type $$Props = SwitchThumbProps;
 	const { checked, disabled } = getSwitchContext();
 </script>
 
