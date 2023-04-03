@@ -20,7 +20,6 @@
 	export type AccordionContext = {
 		type: Readable<Type>;
 		value: Writable<AccordionRootProps['value']>;
-		items: Writable<Array<HTMLElement>>;
 	};
 
 	const { getContext, setContext } = uniqueContext<AccordionContext>();
@@ -41,15 +40,12 @@
 	const writableValue = controllableState(value, (v) => (value = v));
 	$: if (value) $writableValue = value;
 
-	let items = writable<Array<HTMLElement>>([]);
-
 	setContext({
 		type: derived(writableType, (v) => v),
-		value: writableValue,
-		items
+		value: writableValue
 	});
 </script>
 
-<div {...$$restProps}>
+<div {...$$restProps} data-radix-accordion-root>
 	<slot />
 </div>

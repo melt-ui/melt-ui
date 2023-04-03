@@ -3,85 +3,69 @@
 </script>
 
 <script lang="ts">
-	import { Collapsible } from '../Collapsible';
+	import { focus } from '$lib/helpers/dom';
 	import type { BaseProps } from '$lib/types';
+	import { onMount } from 'svelte';
+	import { Collapsible } from '../Collapsible';
 	import { getItemContext } from './item.svelte';
 	import { getAccordionContext } from './root.svelte';
-	import { focus } from '$lib/helpers/dom';
-	import { onDestroy, onMount } from 'svelte';
 
 	type $$Props = AccordionTriggerProps;
 
 	const { value: itemValue } = getItemContext();
-	const { value: accordionValue, type, items } = getAccordionContext();
+	const { value: accordionValue, type } = getAccordionContext();
 
 	const handleKeyDown = (e: KeyboardEvent) => {
 		const target = e.target as HTMLElement;
-
-		const currentIdx = $items.findIndex((item) => item.contains(target));
 
 		switch (e.key) {
 			case 'ArrowDown': {
 				e.preventDefault();
 				e.stopPropagation();
-				focus($items[currentIdx + 1]?.querySelector('.accordion-trigger'));
+				const nextItem = target.closest('[data-radix-accordion-item]')?.nextElementSibling;
+				focus(nextItem?.querySelector('[data-radix-accordion-trigger]'));
 				break;
 			}
 			case 'ArrowUp': {
 				e.preventDefault();
 				e.stopPropagation();
-				focus($items[currentIdx - 1]?.querySelector('.accordion-trigger'));
+				const prevItem = target.closest('[data-radix-accordion-item]')?.previousElementSibling;
+				focus(prevItem?.querySelector('[data-radix-accordion-trigger]'));
 				break;
 			}
 			case 'Home': {
 				e.preventDefault();
 				e.stopPropagation();
-				focus($items[0]?.querySelector('.accordion-trigger'));
+				const firstItem = target.closest('[data-radix-accordion-root]')?.firstElementChild;
+				focus(firstItem?.querySelector('[data-radix-accordion-trigger]'));
 				break;
 			}
 			case 'End': {
 				e.preventDefault();
 				e.stopPropagation();
-				focus($items[$items.length - 1]?.querySelector('.accordion-trigger'));
+				const lastItem = target.closest('[data-radix-accordion-root]')?.lastElementChild;
+				focus(lastItem?.querySelector('[data-radix-accordion-trigger]'));
 				break;
 			}
 		}
 	};
-
-	let ref: HTMLElement;
-
-	onMount(() => {
-		let idx = -1;
-		items.update((v) => {
-			idx = v.length;
-			return [...v, ref];
-		});
-
-		onDestroy(() => {
-			items.update((v) => {
-				v.splice(idx, 1);
-				return v;
-			});
-		});
-	});
 </script>
 
-<div style:display="contents" bind:this={ref}>
-	<Collapsible.Trigger
-		on:change={(e) => {
-			const value = e.detail;
-			if ($type === 'single') {
-				$accordionValue = value ? $itemValue : null;
-			} else {
-				const prevValue = Array.isArray($accordionValue) ? $accordionValue : [];
-				$accordionValue = value
-					? [...prevValue, $itemValue]
-					: prevValue.filter((v) => v !== $itemValue);
-			}
-		}}
-		on:keydown={handleKeyDown}
-		{...$$restProps}
-	>
-		<slot />
-	</Collapsible.Trigger>
-</div>
+<Collapsible.Trigger
+	on:change={(e) => {
+		const value = e.detail;
+		if ($type === 'single') {
+			$accordionValue = value ? $itemValue : null;
+		} else {
+			const prevValue = Array.isArray($accordionValue) ? $accordionValue : [];
+			$accordionValue = value
+				? [...prevValue, $itemValue]
+				: prevValue.filter((v) => v !== $itemValue);
+		}
+	}}
+	on:keydown={handleKeyDown}
+	{...$$restProps}
+	data-radix-accordion-trigger
+>
+	<slot />
+</Collapsible.Trigger>

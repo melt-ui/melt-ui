@@ -46,6 +46,7 @@
 	data-state={open ? 'open' : 'closed'}
 	data-disabled={disabled ? 'true' : 'false'}
 	{...$$restProps}
+	data-radix-collapsible-root
 >
 	<slot />
 </div>

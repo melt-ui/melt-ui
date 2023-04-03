@@ -34,6 +34,6 @@
 	});
 </script>
 
-<Collapsible.Root open={isOpen} {...$$restProps}>
+<Collapsible.Root open={isOpen} {...$$restProps} data-radix-accordion-item>
 	<slot />
 </Collapsible.Root>
