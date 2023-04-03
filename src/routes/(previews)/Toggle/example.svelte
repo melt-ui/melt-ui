@@ -7,13 +7,13 @@
 				}
 			}
 		}
-	} satisfies RadixComponentGroupPreview<typeof Toggle>;
+	} satisfies PreviewProps<typeof Toggle>;
 </script>
 
 <script lang="ts">
 	import { Toggle } from '$lib';
 	import FontItalicIcon from '~icons/radix-icons/font-italic';
-	import { getPropsObj, type RadixComponentGroupPreview } from '../helpers';
+	import { getPropsObj, type PreviewProps } from '../helpers';
 
 	export let propsObj = getPropsObj(props);
 </script>

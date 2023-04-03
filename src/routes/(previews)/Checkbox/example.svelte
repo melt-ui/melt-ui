@@ -32,12 +32,12 @@
 			}
 		},
 		Indicator: {}
-	} satisfies RadixComponentGroupPreview<typeof Checkbox>;
+	} satisfies PreviewProps<typeof Checkbox>;
 </script>
 
 <script lang="ts">
 	import { Checkbox } from '$lib/components/Checkbox';
-	import { getPropsObj, type RadixComponentGroupPreview } from '../helpers';
+	import { getPropsObj, type PreviewProps } from '../helpers';
 
 	import CheckIcon from '~icons/radix-icons/check';
 

@@ -8,7 +8,7 @@ export type PreviewSchema<GROUP extends RadixComponentGroup = RadixComponentGrou
 	title: string;
 	description: string;
 	example: unknown;
-	props: RadixComponentGroupPreview<GROUP>;
+	props: PreviewProps<GROUP>;
 };
 
 // Check if type are equal or just extends
@@ -63,7 +63,7 @@ export type PreviewDataAttribute = { values: string[] };
 /**
  * Preview definition for a component group
  */
-export type RadixComponentGroupPreview<GROUP extends RadixComponentGroup> = {
+export type PreviewProps<GROUP extends RadixComponentGroup> = {
 	[K in keyof GROUP]: RadixComponentPreview<GROUP[K]>;
 };
 
@@ -83,9 +83,7 @@ function getPreviewPropsOfComponent<CMP extends typeof SvelteComponent>(
 		return { ...acc, [propName]: defaultValue };
 	}, {});
 }
-export function getPropsObj<GROUP extends RadixComponentGroup>(
-	previewProps: RadixComponentGroupPreview<GROUP>
-) {
+export function getPropsObj<GROUP extends RadixComponentGroup>(previewProps: PreviewProps<GROUP>) {
 	return Object.entries(previewProps).reduce(
 		(acc, [cmp, previewProps]) => ({
 			...acc,

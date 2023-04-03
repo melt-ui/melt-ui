@@ -31,12 +31,12 @@
 				}
 			}
 		}
-	} satisfies RadixComponentGroupPreview<typeof Accordion>;
+	} satisfies PreviewProps<typeof Accordion>;
 </script>
 
 <script lang="ts">
 	import { Accordion } from '$lib';
-	import { getPropsObj, type RadixComponentGroupPreview } from '../helpers';
+	import { getPropsObj, type PreviewProps } from '../helpers';
 
 	export let propsObj = getPropsObj<typeof Accordion>(props);
 </script>
