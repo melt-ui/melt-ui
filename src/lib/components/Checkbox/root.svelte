@@ -20,7 +20,7 @@
 	type CheckedState = boolean | 'indeterminate';
 
 	type CheckboxContext = {
-		state: Readable<CheckedState>;
+		checked: Readable<CheckedState>;
 		disabled: Readable<boolean>;
 	};
 
@@ -45,14 +45,14 @@
 	export let name: $$Props['name'] = '';
 	export let value: $$Props['value'] = '';
 
-	const writableState = controllableState(checked, (v) => (checked = v));
-	$: $writableState = checked;
+	const writableCheckedState = controllableState(checked, (v) => (checked = v));
+	$: $writableCheckedState = checked;
 
 	const writableDisabled = controllableState(disabled, (v) => (disabled = v));
 	$: $writableDisabled = disabled;
 
 	setContext({
-		state: derived(writableState, (v) => v),
+		checked: derived(writableCheckedState, (v) => v),
 		disabled: derived(writableDisabled, (v) => v)
 	});
 </script>

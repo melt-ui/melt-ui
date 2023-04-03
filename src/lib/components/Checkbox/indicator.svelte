@@ -10,13 +10,13 @@
 
 	type $$Props = Props;
 
-	const { state, disabled } = getCheckboxContext();
+	const { checked, disabled } = getCheckboxContext();
 </script>
 
-{#if isIndeterminate($state) || !!$state}
+{#if isIndeterminate($checked) || !!$checked}
 	<span
 		{...$$restProps}
-		data-state={getState($state)}
+		data-state={getState($checked)}
 		data-disabled={$disabled ? '' : undefined}
 		style:pointer-events="none"
 	>
