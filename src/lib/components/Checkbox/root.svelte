@@ -39,7 +39,7 @@
 <script lang="ts">
 	type $$Props = Props;
 
-	export let checked: CheckedState = 'indeterminate';
+	export let checked: CheckedState = false;
 	export let disabled: boolean = false;
 	export let required: $$Props['required'] = false;
 	export let name: $$Props['name'] = '';
