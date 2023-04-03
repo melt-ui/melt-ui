@@ -1,4 +1,3 @@
-import type { PreviewSchema } from '$routes/(previews)/helpers';
 import { error } from '@sveltejs/kit';
 import schemas from '$routes/(previews)/schemas';
 
