@@ -16,9 +16,10 @@
 
 <Collapsible.Trigger
 	{...$$restProps}
-	on:change={(v) => {
+	on:change={(e) => {
+		const value = e.detail;
 		if ($type === 'single') {
-			$accordionValue = v ? $itemValue : null;
+			$accordionValue = value ? $itemValue : null;
 		}
 	}}
 >
