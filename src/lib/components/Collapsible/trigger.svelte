@@ -20,6 +20,7 @@
 			return !v;
 		});
 	}}
+	on:keydown
 	data-state={$open ? 'open' : 'closed'}
 	data-disabled={$disabled ? 'true' : undefined}
 	disabled={$disabled}

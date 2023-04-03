@@ -26,6 +26,7 @@
 				show: null
 			}
 		}
+		// Casting here instead of satisfies because of the discriminated union in AccordionRootProps
 	} as PreviewProps<typeof Accordion>;
 </script>
 
@@ -83,7 +84,7 @@
 
 		:global(.accordion-item) {
 			@apply mt-px overflow-hidden  first:mt-0 first:rounded-t last:rounded-b 
-			focus-within:relative focus-within:z-10 focus-within:ring focus-within:ring-black;
+			focus-within:relative focus-within:z-10 focus-within:ring-2 focus-within:ring-black;
 		}
 
 		:global(.accordion-trigger) {
