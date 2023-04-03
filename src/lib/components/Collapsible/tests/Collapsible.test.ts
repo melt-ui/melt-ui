@@ -7,7 +7,6 @@ test.describe('Collapsible', () => {
 	test('No accesibility violations', async ({ mount, page }) => {
 		await mount(CollapsibleTest);
 		expect(await axeViolations(page)).toEqual([]);
-
 	});
 
 	test('Toggles when clicked', async ({ mount }) => {
@@ -22,7 +21,7 @@ test.describe('Collapsible', () => {
 		await expect(cmp.getByTestId('content')).toBeVisible();
 		await trigger.click();
 		await expect(cmp.getByTestId('content')).not.toBeVisible();
-	})
+	});
 
 	test('Should be open when open prop is true', async ({ mount }) => {
 		const cmp = await mount(CollapsibleTest, { props: { open: true } });

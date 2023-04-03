@@ -1,7 +1,12 @@
 <script lang="ts" context="module">
 	export type CollapsibleRootProps = BaseProps & {
+		/**
+		 * The controlled open state of the collapsible.
+		 */
 		open?: boolean;
-		defaultOpen?: boolean;
+		/**
+		 * When `true`, prevents the user from interacting with the collapsible.
+		 */
 		disabled?: boolean;
 	};
 
@@ -23,11 +28,10 @@
 
 	type $$Props = CollapsibleRootProps;
 	export let open = false;
-	export let defaultOpen = false;
 	export let disabled = false;
 
-	const writableOpen = controllableState(open || defaultOpen, (v) => (open = v));
-	$: $writableOpen = open || defaultOpen;
+	const writableOpen = controllableState(open, (v) => (open = v));
+	$: $writableOpen = open;
 
 	const writableDisabled = writable(disabled);
 	$: $writableDisabled = disabled;

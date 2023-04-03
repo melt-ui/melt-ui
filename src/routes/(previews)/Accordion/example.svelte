@@ -2,7 +2,8 @@
 	export const props = {
 		Root: {
 			value: {
-				type: 'string'
+				type: 'enum',
+				values: ['item-1', 'item-2', 'item-3']
 			},
 			type: {
 				type: 'enum',
@@ -20,7 +21,8 @@
 		Header: {},
 		Item: {
 			value: {
-				type: 'string'
+				type: 'string',
+				hideControls: true
 			}
 		}
 	} satisfies PreviewProps<typeof Accordion>;
