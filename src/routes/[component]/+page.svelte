@@ -11,7 +11,7 @@
 
 	const cmpSchema = data.schema;
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
 	let props = getPropsObj<{}>(cmpSchema.props) as any;
 
 	function castPreviewProps(
@@ -46,21 +46,35 @@
 			{#each Object.entries(castPreviewProps(subCmpProps)) as [propKey, propDefinition]}
 				<span class="col-span-4 font-mono">{propKey}</span>
 				<span class="col-span-4 font-mono">{propDefinition.type}</span>
-				<span class="col-span-4 text-black">
-					{#if propDefinition.type === 'boolean'}
+				<div class="col-span-4">
+					{#if propDefinition.hideControls}
+						<span class="font-mono text-sm"> N/A </span>
+					{:else if propDefinition.type === 'boolean'}
 						<input type="checkbox" bind:checked={props[subCmp][propKey]} />
 					{:else if propDefinition.type === 'string'}
-						<input type="text" bind:value={props[subCmp][propKey]} />
+						<input
+							class="rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
+							type="text"
+							bind:value={props[subCmp][propKey]}
+						/>
 					{:else if propDefinition.type === 'number'}
-						<input type="number" bind:value={props[subCmp][propKey]} />
+						<input
+							class="rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
+							type="number"
+							bind:value={props[subCmp][propKey]}
+						/>
 					{:else if propDefinition.type === 'enum'}
-						<select bind:value={props[subCmp][propKey]}>
+						<select
+							class="rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
+							bind:value={props[subCmp][propKey]}
+						>
+							<option value="" hidden />
 							{#each propDefinition.values as value}
 								<option {value}>{value}</option>
 							{/each}
 						</select>
 					{/if}
-				</span>
+				</div>
 			{:else}
 				<p class="col-span-12 text-sm">No props</p>
 			{/each}
