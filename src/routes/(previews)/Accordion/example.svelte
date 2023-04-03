@@ -1,42 +1,48 @@
 <script lang="ts" context="module">
-	export const props = {
+	export const meta = {
 		Root: {
-			value: {
-				type: 'enum',
-				values: ['item-1', 'item-2', 'item-3'],
-				show: 'value'
-			},
-			type: {
-				type: 'enum',
-				values: ['multiple', 'single'],
-				default: 'single'
+			props: {
+				value: {
+					type: 'enum',
+					options: ['item-1', 'item-2', 'item-3'],
+					show: 'value'
+				},
+				type: {
+					type: 'enum',
+					options: ['multiple', 'single'],
+					default: 'single'
+				}
 			}
 		},
 		Content: {
-			transition: {
-				type: 'boolean',
-				default: true
+			props: {
+				transition: {
+					type: 'boolean',
+					default: true
+				}
 			}
 		},
 		Trigger: {},
 		Header: {},
 		Item: {
-			value: {
-				type: 'string',
-				show: null
+			props: {
+				value: {
+					type: 'string',
+					show: null
+				}
 			}
 		}
 		// Casting here instead of satisfies because of the discriminated union in AccordionRootProps
-	} as PreviewProps<typeof Accordion>;
+	} as PreviewMeta<typeof Accordion>;
 </script>
 
 <script lang="ts">
 	import { Accordion } from '$lib';
-	import { getPropsObj, type PreviewProps } from '../helpers';
+	import { getPropsObj, type PreviewMeta } from '../helpers';
 	// Since we use a discriminated union in AccordionRootProps, we need to cast it to any
 	// to satisfy the type checker. TODO: Find a better way to do this.
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	export let propsObj = getPropsObj<typeof Accordion>(props) as any;
+	export let propsObj = getPropsObj<typeof Accordion>(meta) as any;
 </script>
 
 <div class="contents">

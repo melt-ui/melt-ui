@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {
 		getPropsObj,
+		type PreviewDataAttribute,
 		type PreviewPropBoolean,
 		type PreviewPropEnum,
 		type PreviewPropNumber,
@@ -12,15 +13,22 @@
 	const cmpSchema = data.schema;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
-	let props = getPropsObj<{}>(cmpSchema.props) as any;
+	let props = getPropsObj<{}>(cmpSchema.meta) as any;
 
-	function castPreviewProps(
-		component: Record<
+	function castPreviewProps(component: {
+		props?: Record<
 			string,
 			PreviewPropBoolean | PreviewPropNumber | PreviewPropString | PreviewPropEnum<string>
-		>
-	) {
-		return component;
+		>;
+	}) {
+		return component.props || {};
+	}
+
+	function castPreviewDataAttribute(component: {
+		props?: unknown;
+		dataAttributes?: Record<string, PreviewDataAttribute>;
+	}) {
+		return component.dataAttributes || {};
 	}
 </script>
 
@@ -33,7 +41,7 @@
 		</div>
 	</div>
 
-	{#each Object.entries(cmpSchema.props) as [subCmp, subCmpProps]}
+	{#each Object.entries(cmpSchema.meta) as [subCmp, subCmpProps]}
 		<div class="mt-4 grid grid-cols-12 gap-y-2 rounded-md bg-zinc-900 p-4 text-white">
 			<h2 class="col-span-12 font-bold">{cmpSchema.title}.{subCmp}</h2>
 
@@ -71,7 +79,7 @@
 							bind:value={props[subCmp][propKey]}
 						>
 							<option value="" hidden />
-							{#each propDefinition.values as value}
+							{#each propDefinition.options as value}
 								<option {value}>{value}</option>
 							{/each}
 						</select>
@@ -79,6 +87,23 @@
 				</div>
 			{:else}
 				<p class="col-span-12 text-sm">No props</p>
+			{/each}
+
+			<hr class="col-span-12 h-4 opacity-0" />
+
+			<span class="col-span-4 text-sm text-zinc-300">Data Attribute</span>
+			<span class="col-span-4 text-sm text-zinc-300">Value</span>
+			<span class="col-span-4 text-sm text-zinc-300">Inspect</span>
+
+			<hr class="col-span-12 opacity-25" />
+
+			{#each Object.entries(castPreviewDataAttribute(subCmpProps)) as [propKey, dataAttributeDefinition]}
+				<span class="col-span-4 font-mono">[{propKey}]</span>
+				<span class="col-span-4 font-mono">{dataAttributeDefinition.values.join(', ')}</span>
+				<!-- How might we dynamically read the data attributes from the example? -->
+				<div class="col-span-4" />
+			{:else}
+				<p class="col-span-12 text-sm">No Data Attributes</p>
 			{/each}
 		</div>
 	{/each}

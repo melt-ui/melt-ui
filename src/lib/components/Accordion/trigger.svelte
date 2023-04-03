@@ -5,7 +5,6 @@
 <script lang="ts">
 	import { focus } from '$lib/helpers/dom';
 	import type { BaseProps } from '$lib/types';
-	import { onMount } from 'svelte';
 	import { Collapsible } from '../Collapsible';
 	import { getItemContext } from './item.svelte';
 	import { getAccordionContext } from './root.svelte';
