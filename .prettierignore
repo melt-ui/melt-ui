@@ -6,6 +6,11 @@ node_modules
 .env
 .env.*
 !.env.example
+playwright/.cache/
+playwright-report/
+dist/
+.github/
+.vscode/
 
 # Ignore files for PNPM, NPM and YARN
 pnpm-lock.yaml
