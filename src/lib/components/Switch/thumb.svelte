@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { getState, getSwitchContext } from "./root.svelte";
+	import { getState, getSwitchContext } from './root.svelte';
 
-    const { checked, disabled } = getSwitchContext();
+	const { checked, disabled } = getSwitchContext();
 </script>
 
 <span
-    class={$$props.class}
-    data-state={getState($checked)}
-    data-disabled={$disabled ? '' : undefined}
->
-</span>
+	class={$$props.class}
+	data-state={getState($checked)}
+	data-disabled={$disabled ? '' : undefined}
+/>

@@ -28,7 +28,7 @@
 	<h2 class="text-xl font-bold">{cmpSchema.title}</h2>
 	<p class="text-slate-300">{cmpSchema.description}</p>
 	<div class="preview mt-4 h-96">
-		<div class="mx-auto max-w-[600px] h-full flex justify-center items-center">
+		<div class="mx-auto flex h-full max-w-[600px] items-center justify-center">
 			<svelte:component this={cmpSchema.example} bind:propsObj={props} />
 		</div>
 	</div>
