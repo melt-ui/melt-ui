@@ -2,7 +2,7 @@
 	import { controllableState } from '$lib/helpers/controllableState';
 	import { uniqueContext } from '$lib/helpers/uniqueContext';
 	import type { BaseProps } from '$lib/types';
-	import { derived, type Readable, type Writable } from 'svelte/store';
+	import { derived, type Readable } from 'svelte/store';
 
 	export type Props = BaseProps<HTMLButtonElement> & {
 		/** The controlled checked state of the checkbox. */
@@ -40,7 +40,7 @@
 	type $$Props = Props;
 
 	export let checked: CheckedState = false;
-	export let disabled: boolean = false;
+	export let disabled = false;
 	export let required: $$Props['required'] = false;
 	export let name: $$Props['name'] = '';
 	export let value: $$Props['value'] = '';
