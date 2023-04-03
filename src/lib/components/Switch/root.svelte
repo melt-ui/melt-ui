@@ -2,18 +2,23 @@
 	import type { BaseProps } from '$lib/types';
 	import { uniqueContext } from '$lib/helpers/uniqueContext';
 
-	export type SwitchProps = BaseProps<HTMLButtonElement> & {
+	export type SwitchRootProps = BaseProps<HTMLButtonElement> & {
+		/** The controlled checked state of the switch. */
 		checked?: boolean;
 		defaultChecked?: boolean;
-		required?: boolean;
+		/** When `true`, prevents the user from interacting with the switch. */
 		disabled?: boolean;
+		/** When `true`, indicates that the user must check the switch before the owning form can be submitted. */
+		required?: boolean;
+		/** The name of the switch. Submitted with its owning form as part of a name/value pair. */
 		name?: string;
+		/** The value given as data when submitted with a `name`. */
 		value?: string;
 	};
 
 	type SwitchContext = {
-		checked: Writable<SwitchProps['checked']>;
-		disabled: Readable<SwitchProps['disabled']>;
+		checked: Writable<SwitchRootProps['checked']>;
+		disabled: Readable<SwitchRootProps['disabled']>;
 	};
 
 	const { getContext, setContext } = uniqueContext<SwitchContext>();
@@ -25,7 +30,7 @@
 </script>
 
 <script lang="ts">
-	type $$Props = SwitchProps;
+	type $$Props = SwitchRootProps;
 
 	import { derived, writable, type Readable, type Writable } from 'svelte/store';
 	import { controllableState } from '$lib/helpers/controllableState';
@@ -55,9 +60,7 @@
 	bind:this={button}
 	type="button"
 	role="switch"
-	class={$$props.class}
 	aria-checked={checked}
-	aria-required={required}
 	aria-labelledby={$$props.id}
 	data-state={getState(checked)}
 	data-disabled={disabled ? '' : undefined}
@@ -65,17 +68,19 @@
 	{disabled}
 	{...$$restProps}
 	on:click={() => {
-		$writableChecked = !$writableChecked;
+		checked = !checked;
 	}}
 >
 	<slot />
 </button>
 
 {#if isFormControl}
+	{$$props.name}
 	<input
 		type="checkbox"
-		aria-hidden
-		tabindex="-1"
+		aria-hidden="true"
+		hidden
+		tabIndex={-1}
 		name={$$props.name}
 		{value}
 		{checked}
