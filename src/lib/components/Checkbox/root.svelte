@@ -4,7 +4,7 @@
 	import type { BaseProps } from '$lib/types';
 	import { derived, type Readable } from 'svelte/store';
 
-	export type Props = BaseProps<HTMLButtonElement> & {
+	export type CheckboxRootProps = BaseProps<HTMLButtonElement> & {
 		/** The controlled checked state of the checkbox. */
 		checked?: CheckedState;
 		/** When `true`, prevents the user from interacting with the checkbox. */
@@ -37,7 +37,7 @@
 </script>
 
 <script lang="ts">
-	type $$Props = Props;
+	type $$Props = CheckboxRootProps;
 
 	export let checked: CheckedState = false;
 	export let disabled = false;
@@ -84,7 +84,8 @@
 	<!-- Hidden input to bubble value up to form -->
 	<input
 		type="checkbox"
-		aria-hidden
+		aria-hidden="true"
+		hidden
 		tabIndex={-1}
 		{name}
 		{value}
