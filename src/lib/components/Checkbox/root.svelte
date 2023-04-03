@@ -61,7 +61,7 @@
 </script>
 
 <button
-	on:click|stopPropagation={(event) => {
+	on:click|stopPropagation={() => {
 		if (isIndeterminate(checked)) {
 			checked = true;
 		} else {
