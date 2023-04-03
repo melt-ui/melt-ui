@@ -1,17 +1,19 @@
 <script lang="ts" context="module">
 	export const props = {
 		Root: {
-			pressed: {
-				type: 'boolean'
+			props: {
+				pressed: {
+					type: 'boolean'
+				}
 			}
 		}
-	} satisfies PreviewProps<typeof Toggle>;
+	} satisfies RadixComponentGroupPreview<typeof Toggle>;
 </script>
 
 <script lang="ts">
 	import { Toggle } from '$lib';
 	import FontItalicIcon from '~icons/radix-icons/font-italic';
-	import { getPropsObj, type PreviewProps } from '../helpers';
+	import { getPropsObj, type RadixComponentGroupPreview } from '../helpers';
 
 	export let propsObj = getPropsObj(props);
 </script>

@@ -4,11 +4,11 @@ import type { SlideParams } from 'svelte/transition';
 
 type RadixComponentGroup = { [key: string]: typeof SvelteComponent };
 
-export type PreviewSchema<T extends RadixComponentGroup = RadixComponentGroup> = {
+export type PreviewSchema<GROUP extends RadixComponentGroup = RadixComponentGroup> = {
 	title: string;
 	description: string;
 	example: unknown;
-	props: PreviewProps<T>;
+	props: RadixComponentGroupPreview<GROUP>;
 };
 
 // Check if type are equal or just extends
@@ -18,10 +18,10 @@ type IfEquals<T, U, Y = unknown, N = never> = (<G>() => G extends T ? 1 : 2) ext
 	? Y
 	: N;
 
-type PreviewComponentProps<T extends SvelteComponent, P = ComponentProps<T>> = {
-	[K in keyof P]: // If key matches "data-"
-	K extends `data-${string}`
-		? PreviewDataAttribute
+type PreviewComponentProps<CMP extends SvelteComponent, P = ComponentProps<CMP>> = {
+	[K in keyof P]: K extends  // If key matches "data-"
+	`data-${string}`
+		? never
 		: // If type is boolean
 		boolean extends NonNullable<P[K]>
 		? PreviewPropBoolean
@@ -42,8 +42,14 @@ type PreviewComponentProps<T extends SvelteComponent, P = ComponentProps<T>> = {
 		: never;
 };
 
+type PreviewComponentDataAttributes<CMP extends SvelteComponent, P = ComponentProps<CMP>> = {
+	[K in keyof P]: K extends  // If key matches "data-"
+	`data-${string}`
+		? PreviewDataAttribute
+		: never;
+};
+
 type BasePreviewProp<T> = { hideControls?: boolean; default?: T };
-export type PreviewDataAttribute = { type: 'data-attribute'; values: string[] };
 export type PreviewPropBoolean = { type: 'boolean' } & BasePreviewProp<boolean>;
 export type PreviewPropString = { type: 'string' } & BasePreviewProp<string>;
 export type PreviewPropNumber = { type: 'number' } & BasePreviewProp<number>;
@@ -52,23 +58,39 @@ export type PreviewPropEnum<T extends string> = {
 	options: T[];
 } & BasePreviewProp<T>;
 
-export type PreviewProps<T extends RadixComponentGroup> = {
-	[K in keyof T]: PreviewComponentProps<InstanceType<T[K]>>;
+export type PreviewDataAttribute = { values: string[] };
+
+/**
+ * Preview definition for a component group
+ */
+export type RadixComponentGroupPreview<GROUP extends RadixComponentGroup> = {
+	[K in keyof GROUP]: RadixComponentPreview<GROUP[K]>;
 };
 
-type ResolvedProps<T extends RadixComponentGroup> = {
-	[K in keyof T]: ComponentProps<InstanceType<T[K]>>;
+type RadixComponentPreview<CMP extends typeof SvelteComponent> = {
+	props?: PreviewComponentProps<InstanceType<CMP>>;
+	dataAttributes?: PreviewComponentDataAttributes<InstanceType<CMP>>;
+};
+type ResolvedProps<GROUP extends RadixComponentGroup> = {
+	[K in keyof GROUP]: ComponentProps<InstanceType<GROUP[K]>>;
 };
 
-export function getPropsObj<T extends RadixComponentGroup>(props: PreviewProps<T>) {
-	return Object.entries(props).reduce(
-		(acc, [subCmp, props]) => ({
+function getPreviewPropsOfComponent<CMP extends typeof SvelteComponent>(
+	previewProps: RadixComponentPreview<CMP>
+) {
+	return Object.entries(previewProps.props || {}).reduce((acc, [propName, propConfig]) => {
+		const defaultValue = (propConfig as BasePreviewProp<unknown>).default;
+		return { ...acc, [propName]: defaultValue };
+	}, {});
+}
+export function getPropsObj<GROUP extends RadixComponentGroup>(
+	previewProps: RadixComponentGroupPreview<GROUP>
+) {
+	return Object.entries(previewProps).reduce(
+		(acc, [cmp, previewProps]) => ({
 			...acc,
-			[subCmp]: Object.entries(props).reduce((acc, [propName, propConfig]) => {
-				const defaultValue = (propConfig as BasePreviewProp<unknown>).default;
-				return { ...acc, [propName]: defaultValue };
-			}, {})
+			[cmp]: getPreviewPropsOfComponent(previewProps)
 		}),
-		{} as PreviewProps<T>
-	) as ResolvedProps<T>;
+		{}
+	) as ResolvedProps<GROUP>;
 }

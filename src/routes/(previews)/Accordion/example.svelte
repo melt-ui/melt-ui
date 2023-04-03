@@ -1,36 +1,42 @@
 <script lang="ts" context="module">
 	export const props = {
 		Root: {
-			value: {
-				type: 'enum',
-				options: ['item-1', 'item-2', 'item-3']
-			},
-			type: {
-				type: 'enum',
-				options: ['multiple', 'single'],
-				default: 'single'
+			props: {
+				value: {
+					type: 'enum',
+					options: ['item-1', 'item-2', 'item-3']
+				},
+				type: {
+					type: 'enum',
+					options: ['multiple', 'single'],
+					default: 'single'
+				}
 			}
 		},
 		Content: {
-			transition: {
-				type: 'boolean',
-				default: true
+			props: {
+				transition: {
+					type: 'boolean',
+					default: true
+				}
 			}
 		},
 		Trigger: {},
 		Header: {},
 		Item: {
-			value: {
-				type: 'string',
-				hideControls: true
+			props: {
+				value: {
+					type: 'string',
+					hideControls: true
+				}
 			}
 		}
-	} satisfies PreviewProps<typeof Accordion>;
+	} satisfies RadixComponentGroupPreview<typeof Accordion>;
 </script>
 
 <script lang="ts">
 	import { Accordion } from '$lib';
-	import { getPropsObj, type PreviewProps } from '../helpers';
+	import { getPropsObj, type RadixComponentGroupPreview } from '../helpers';
 
 	export let propsObj = getPropsObj<typeof Accordion>(props);
 </script>

@@ -1,41 +1,43 @@
 <script lang="ts" context="module">
 	export const props = {
 		Root: {
-			checked: {
-				type: 'boolean',
-				default: false
+			props: {
+				checked: {
+					type: 'boolean',
+					default: false
+				},
+				disabled: {
+					type: 'boolean'
+				},
+				required: {
+					type: 'boolean',
+					hideControls: true
+				},
+				name: {
+					type: 'string',
+					hideControls: true
+				},
+				value: {
+					type: 'string',
+					hideControls: true
+				}
 			},
-			disabled: {
-				type: 'boolean'
-			},
-			required: {
-				type: 'boolean',
-				hideControls: true
-			},
-			name: {
-				type: 'string',
-				hideControls: true
-			},
-			value: {
-				type: 'string',
-				hideControls: true
-			},
-			'data-disabled': {
-				type: 'data-attribute',
-				values: ['true', 'false']
-			},
-			'data-state': {
-				type: 'data-attribute',
-				values: ['checked', 'unchecked', 'indeterminate']
+			dataAttributes: {
+				'data-disabled': {
+					values: ['true', 'false']
+				},
+				'data-state': {
+					values: ['checked', 'unchecked', 'indeterminate']
+				}
 			}
 		},
 		Indicator: {}
-	} satisfies PreviewProps<typeof Checkbox>;
+	} satisfies RadixComponentGroupPreview<typeof Checkbox>;
 </script>
 
 <script lang="ts">
 	import { Checkbox } from '$lib/components/Checkbox';
-	import { getPropsObj, type PreviewProps } from '../helpers';
+	import { getPropsObj, type RadixComponentGroupPreview } from '../helpers';
 
 	import CheckIcon from '~icons/radix-icons/check';
 
