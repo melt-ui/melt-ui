@@ -32,7 +32,13 @@
 				<span class="col-span-4 font-mono">{propKey}</span>
 				<span class="col-span-4 font-mono">{propDefinition.type}</span>
 				<span class="col-span-4">
-					<input type="checkbox" bind:checked={props[subCmp][propKey]} />
+					{#if propDefinition.type === 'boolean'}
+						<input type="checkbox" bind:checked={props[subCmp][propKey]} />
+					{:else if propDefinition.type === 'string'}
+						<input type="text" class="text-black" bind:value={props[subCmp][propKey]} />
+					{:else if propDefinition.type === 'number'}
+						<input type="number" bind:value={props[subCmp][propKey]} />
+					{/if}
 				</span>
 			{:else}
 				<p class="col-span-12 text-sm">No props</p>

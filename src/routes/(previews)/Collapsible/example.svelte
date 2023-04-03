@@ -24,7 +24,7 @@
 	import RowSpacingIcon from '~icons/radix-icons/row-spacing';
 	import { getPropsObj, type PreviewProps } from '../helpers';
 
-	export let propsObj = getPropsObj(props);
+	export let propsObj = getPropsObj<typeof Collapsible>(props);
 </script>
 
 <Collapsible.Root bind:open={propsObj.Root.open} disabled={propsObj.Root.disabled}>
@@ -49,7 +49,7 @@
 		<span class="text-base leading-[25px] text-violet-800">@radix-ui/primitives</span>
 	</div>
 
-	<Collapsible.Content transition={propsObj.Content.transition ? { duration: 300 } : false}>
+	<Collapsible.Content transition={propsObj.Content.transition}>
 		<div class="flex flex-col gap-2">
 			<div class="rounded bg-white p-3 shadow-[0_2px_10px] shadow-gray-600">
 				<span class="text-base leading-[25px] text-violet-800">@radix-ui/colors</span>
