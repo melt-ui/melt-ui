@@ -19,11 +19,11 @@ type IfEquals<T, U, Y = unknown, N = never> =
 type PreviewComponentProps<T extends SvelteComponent, P = ComponentProps<T>> = {
 	[K in keyof P]:
 	// If type is boolean 
-	NonNullable<P[K]> extends boolean ? PreviewPropBoolean :
+	boolean extends NonNullable<P[K]> ? PreviewPropBoolean :
 	// If type is string
 	NonNullable<P[K]> extends string ? IfEquals<NonNullable<P[K]>, string, PreviewPropString, PreviewPropEnum<NonNullable<P[K]>>> :
 	// If type is number
-	NonNullable<P[K]> extends number ? PreviewPropNumber :
+	number extends NonNullable<P[K]> ? PreviewPropNumber :
 	// Special type for slide transition
 	NonNullable<P[K]> extends boolean | SlideParams ? PreviewPropBoolean :
 	never;
