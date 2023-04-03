@@ -5,8 +5,8 @@
 	export type SwitchRootProps = BaseProps<HTMLButtonElement> & {
 		/** The controlled checked state of the switch. */
 		checked?: boolean;
-		defaultChecked?: boolean;
 		/** When `true`, prevents the user from interacting with the switch. */
+		required?: boolean;
 		disabled?: boolean;
 		/** When `true`, indicates that the user must check the switch before the owning form can be submitted. */
 		required?: boolean;
@@ -35,11 +35,10 @@
 	import { derived, writable, type Readable, type Writable } from 'svelte/store';
 	import { controllableState } from '$lib/helpers/controllableState';
 
-	export let defaultChecked: $$Props['checked'] = false;
 	export let required: $$Props['required'] = false;
 	export let value: $$Props['value'] = 'on';
 
-	export let checked: $$Props['checked'] = defaultChecked;
+	export let checked: $$Props['checked'];
 	const writableChecked = controllableState(checked, (v) => (checked = v));
 	$: $writableChecked = checked;
 
@@ -61,7 +60,6 @@
 	type="button"
 	role="switch"
 	aria-checked={checked}
-	aria-labelledby={$$props.id}
 	data-state={getState(checked)}
 	data-disabled={disabled ? '' : undefined}
 	{value}
