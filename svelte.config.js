@@ -19,7 +19,8 @@ const config = {
 		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
 		adapter: adapter(),
 		alias: {
-			$routes: 'src/routes'
+			$routes: 'src/routes',
+			'$test-helpers': 'src/test-helpers'
 		},
 		typescript: {
 			config: (config) => {
@@ -29,8 +30,8 @@ const config = {
 						baseUrl: '.',
 						paths: {
 							...config.compilerOptions.paths,
-							'$test-helpers': ['src/test-helpers/'],
-							'$test-helpers/*': ['src/test-helpers/*']
+							'$test-helpers': ['../src/test-helpers/'],
+							'$test-helpers/*': ['../src/test-helpers/*']
 						}
 					},
 					include: [...config.include, '**/*.test.ts']
