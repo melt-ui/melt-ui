@@ -3,11 +3,11 @@
 		Root: {
 			value: {
 				type: 'enum',
-				values: ['item-1', 'item-2', 'item-3']
+				options: ['item-1', 'item-2', 'item-3']
 			},
 			type: {
 				type: 'enum',
-				values: ['multiple', 'single'],
+				options: ['multiple', 'single'],
 				default: 'single'
 			}
 		},

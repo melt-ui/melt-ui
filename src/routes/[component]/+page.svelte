@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {
 		getPropsObj,
+		type PreviewDataAttribute,
 		type PreviewPropBoolean,
 		type PreviewPropEnum,
 		type PreviewPropNumber,
@@ -17,7 +18,11 @@
 	function castPreviewProps(
 		component: Record<
 			string,
-			PreviewPropBoolean | PreviewPropNumber | PreviewPropString | PreviewPropEnum<string>
+			| PreviewPropBoolean
+			| PreviewPropNumber
+			| PreviewPropString
+			| PreviewPropEnum<string>
+			| PreviewDataAttribute
 		>
 	) {
 		return component;
@@ -44,39 +49,60 @@
 			<hr class="col-span-12 opacity-25" />
 
 			{#each Object.entries(castPreviewProps(subCmpProps)) as [propKey, propDefinition]}
-				<span class="col-span-4 font-mono">{propKey}</span>
-				<span class="col-span-4 font-mono">{propDefinition.type}</span>
-				<div class="col-span-4">
-					{#if propDefinition.hideControls}
-						<span class="font-mono text-sm"> N/A </span>
-					{:else if propDefinition.type === 'boolean'}
-						<input type="checkbox" bind:checked={props[subCmp][propKey]} />
-					{:else if propDefinition.type === 'string'}
-						<input
-							class="rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
-							type="text"
-							bind:value={props[subCmp][propKey]}
-						/>
-					{:else if propDefinition.type === 'number'}
-						<input
-							class="rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
-							type="number"
-							bind:value={props[subCmp][propKey]}
-						/>
-					{:else if propDefinition.type === 'enum'}
-						<select
-							class="rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
-							bind:value={props[subCmp][propKey]}
-						>
-							<option value="" hidden />
-							{#each propDefinition.values as value}
-								<option {value}>{value}</option>
-							{/each}
-						</select>
-					{/if}
-				</div>
+				{#if propDefinition.type !== 'data-attribute'}
+					<span class="col-span-4 font-mono">{propKey}</span>
+					<span class="col-span-4 font-mono">{propDefinition.type}</span>
+					<div class="col-span-4">
+						{#if propDefinition.hideControls}
+							<span class="font-mono text-sm"> N/A </span>
+						{:else if propDefinition.type === 'boolean'}
+							<input type="checkbox" bind:checked={props[subCmp][propKey]} />
+						{:else if propDefinition.type === 'string'}
+							<input
+								class="rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
+								type="text"
+								bind:value={props[subCmp][propKey]}
+							/>
+						{:else if propDefinition.type === 'number'}
+							<input
+								class="rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
+								type="number"
+								bind:value={props[subCmp][propKey]}
+							/>
+						{:else if propDefinition.type === 'enum'}
+							<select
+								class="rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
+								bind:value={props[subCmp][propKey]}
+							>
+								<option value="" hidden />
+								{#each propDefinition.options as value}
+									<option {value}>{value}</option>
+								{/each}
+							</select>
+						{/if}
+					</div>
+				{/if}
 			{:else}
 				<p class="col-span-12 text-sm">No props</p>
+			{/each}
+
+			<hr class="col-span-12 h-4 opacity-0" />
+
+			<span class="col-span-4 text-sm text-zinc-300">Data Attribute</span>
+			<span class="col-span-4 text-sm text-zinc-300">Value</span>
+			<span class="col-span-4 text-sm text-zinc-300">Inspect</span>
+
+			<hr class="col-span-12 opacity-25" />
+
+			{#each Object.entries(castPreviewProps(subCmpProps)) as [propKey, propDefinition]}
+				{#if propDefinition.type == 'data-attribute'}
+					<span class="col-span-4 font-mono">[{propKey}]</span>
+					<span class="col-span-4 font-mono">{propDefinition.values.join(', ')}</span>
+					<!-- How might we dynamically read the data attributes from the example? -->
+					<div class="col-span-4" />
+				{/if}
+			{:else}
+				<p class="col-span-12 text-sm">No Data Attributes</p>
 			{/each}
 		</div>
 	{/each}

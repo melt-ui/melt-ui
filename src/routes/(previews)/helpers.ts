@@ -19,7 +19,11 @@ type IfEquals<T, U, Y = unknown, N = never> = (<G>() => G extends T ? 1 : 2) ext
 	: N;
 
 type PreviewComponentProps<T extends SvelteComponent, P = ComponentProps<T>> = {
-	[K in keyof P]: boolean extends NonNullable<P[K]> // If type is boolean
+	[K in keyof P]: // If key matches "data-"
+	K extends `data-${string}`
+		? PreviewDataAttribute
+		: // If type is boolean
+		boolean extends NonNullable<P[K]>
 		? PreviewPropBoolean
 		: // If type is string
 		NonNullable<P[K]> extends string
@@ -39,12 +43,13 @@ type PreviewComponentProps<T extends SvelteComponent, P = ComponentProps<T>> = {
 };
 
 type BasePreviewProp<T> = { hideControls?: boolean; default?: T };
+export type PreviewDataAttribute = { type: 'data-attribute'; values: string[] };
 export type PreviewPropBoolean = { type: 'boolean' } & BasePreviewProp<boolean>;
 export type PreviewPropString = { type: 'string' } & BasePreviewProp<string>;
 export type PreviewPropNumber = { type: 'number' } & BasePreviewProp<number>;
 export type PreviewPropEnum<T extends string> = {
 	type: 'enum';
-	values: T[];
+	options: T[];
 } & BasePreviewProp<T>;
 
 export type PreviewProps<T extends RadixComponentGroup> = {

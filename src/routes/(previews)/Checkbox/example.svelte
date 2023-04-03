@@ -19,6 +19,14 @@
 			value: {
 				type: 'string',
 				hideControls: true
+			},
+			'data-disabled': {
+				type: 'data-attribute',
+				values: ['true', 'false']
+			},
+			'data-state': {
+				type: 'data-attribute',
+				values: ['checked', 'unchecked', 'indeterminate']
 			}
 		},
 		Indicator: {}
