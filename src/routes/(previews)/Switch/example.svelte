@@ -2,7 +2,6 @@
 	export const props = {
 		Root: {
 			checked: { type: 'boolean' },
-			defaultChecked: { type: 'boolean' },
 			required: { type: 'boolean' },
 			disabled: { type: 'boolean' },
 			name: { type: 'string' },

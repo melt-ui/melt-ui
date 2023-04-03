@@ -3,8 +3,7 @@
 	import { uniqueContext } from '$lib/helpers/uniqueContext';
 
 	export type SwitchProps = BaseProps<HTMLButtonElement> & {
-		checked?: boolean;
-		defaultChecked?: boolean;
+		checked: boolean;
 		required?: boolean;
 		disabled?: boolean;
 		name?: string;
@@ -30,11 +29,10 @@
 	import { derived, writable, type Readable, type Writable } from 'svelte/store';
 	import { controllableState } from '$lib/helpers/controllableState';
 
-	export let defaultChecked: $$Props['checked'] = false;
 	export let required: $$Props['required'] = false;
 	export let value: $$Props['value'] = 'on';
 
-	export let checked: $$Props['checked'] = defaultChecked;
+	export let checked: $$Props['checked'];
 	const writableChecked = controllableState(checked, (v) => (checked = v));
 	$: $writableChecked = checked;
 
