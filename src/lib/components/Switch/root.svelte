@@ -58,7 +58,6 @@
 	class={$$props.class}
 	aria-checked={checked}
 	aria-required={required}
-	aria-labelledby={$$props.id}
 	data-state={getState(checked)}
 	data-disabled={disabled ? '' : undefined}
 	{value}
