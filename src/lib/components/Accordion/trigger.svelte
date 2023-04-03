@@ -1,10 +1,14 @@
+<script lang="ts" context="module">
+	export type AccordionTriggerProps = BaseProps;
+</script>
+
 <script lang="ts">
 	import { Collapsible } from '../Collapsible';
 	import type { BaseProps } from '$lib/types';
 	import { getItemContext } from './item.svelte';
 	import { getAccordionContext } from './root.svelte';
 
-	type $$Props = BaseProps;
+	type $$Props = AccordionTriggerProps;
 
 	const { value: itemValue } = getItemContext();
 	const { value: accordionValue, type } = getAccordionContext();

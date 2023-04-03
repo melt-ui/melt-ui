@@ -4,6 +4,11 @@
 
 	type Type = 'single' | 'multiple';
 
+	export type AccordionRootProps = BaseProps & {
+		type?: Type;
+		value?: string | null;
+	};
+
 	export type AccordionContext = {
 		type: Readable<Type>;
 		value: Writable<string | null | undefined>;
@@ -17,10 +22,7 @@
 	import type { BaseProps } from '$lib/types';
 	import { derived, writable, type Readable, type Writable } from 'svelte/store';
 
-	type $$Props = BaseProps & {
-		type?: Type;
-		value?: string | null;
-	};
+	type $$Props = AccordionRootProps;
 
 	export let type: $$Props['type'] = 'single';
 	const writableType = writable(type);

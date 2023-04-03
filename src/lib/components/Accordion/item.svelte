@@ -1,6 +1,10 @@
 <script lang="ts" context="module">
 	import { uniqueContext } from '$lib/helpers/uniqueContext';
 
+	export type AccordionItemProps = BaseProps & {
+		value?: string;
+	};
+
 	type ItemContext = {
 		value?: Writable<string>;
 	};
@@ -15,9 +19,7 @@
 	import { Collapsible } from '../index';
 	import { getAccordionContext } from './root.svelte';
 
-	type $$Props = BaseProps & {
-		value?: string;
-	};
+	type $$Props = AccordionItemProps;
 
 	export let value: string | undefined = undefined;
 	const writableValue = writable(value);
