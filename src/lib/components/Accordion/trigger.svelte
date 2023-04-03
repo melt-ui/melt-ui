@@ -20,6 +20,11 @@
 		const value = e.detail;
 		if ($type === 'single') {
 			$accordionValue = value ? $itemValue : null;
+		} else {
+			const prevValue = Array.isArray($accordionValue) ? $accordionValue : [];
+			$accordionValue = value
+				? [...prevValue, $itemValue]
+				: prevValue.filter((v) => v !== $itemValue);
 		}
 	}}
 >

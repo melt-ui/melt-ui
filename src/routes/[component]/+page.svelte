@@ -39,7 +39,7 @@
 
 			<span class="col-span-4 text-sm text-zinc-300">Prop</span>
 			<span class="col-span-4 text-sm text-zinc-300">Type</span>
-			<span class="col-span-4 text-sm text-zinc-300">Control</span>
+			<span class="col-span-4 text-sm text-zinc-300">Control / Value</span>
 
 			<hr class="col-span-12 opacity-25" />
 
@@ -47,8 +47,10 @@
 				<span class="col-span-4 font-mono">{propKey}</span>
 				<span class="col-span-4 font-mono">{propDefinition.type}</span>
 				<div class="col-span-4">
-					{#if propDefinition.hideControls}
+					{#if propDefinition.show === null}
 						<span class="font-mono text-sm"> N/A </span>
+					{:else if propDefinition.show === 'value'}
+						<span class="font-mono text-sm">{JSON.stringify(props[subCmp][propKey])}</span>
 					{:else if propDefinition.type === 'boolean'}
 						<input type="checkbox" bind:checked={props[subCmp][propKey]} />
 					{:else if propDefinition.type === 'string'}

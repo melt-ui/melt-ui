@@ -38,7 +38,7 @@ type PreviewComponentProps<T extends SvelteComponent, P = ComponentProps<T>> = {
 		: never;
 };
 
-type BasePreviewProp<T> = { hideControls?: boolean; default?: T };
+type BasePreviewProp<T> = { show?: 'controls' | 'value' | null; default?: T };
 export type PreviewPropBoolean = { type: 'boolean' } & BasePreviewProp<boolean>;
 export type PreviewPropString = { type: 'string' } & BasePreviewProp<string>;
 export type PreviewPropNumber = { type: 'number' } & BasePreviewProp<number>;

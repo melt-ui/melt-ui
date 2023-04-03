@@ -2,11 +2,11 @@
 	import { uniqueContext } from '$lib/helpers/uniqueContext';
 
 	export type AccordionItemProps = BaseProps & {
-		value?: string;
+		value: string;
 	};
 
 	type ItemContext = {
-		value?: Writable<string>;
+		value: Writable<string>;
 	};
 
 	const { getContext, setContext } = uniqueContext<ItemContext>();
@@ -21,7 +21,7 @@
 
 	type $$Props = AccordionItemProps;
 
-	export let value: string | undefined = undefined;
+	export let value: string;
 	const writableValue = writable(value);
 	$: if (value) $writableValue = value;
 

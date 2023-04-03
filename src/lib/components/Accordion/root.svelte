@@ -4,14 +4,22 @@
 
 	type Type = 'single' | 'multiple';
 
-	export type AccordionRootProps = BaseProps & {
-		type?: Type;
+	type SingleAccordionRootProps = {
+		type?: 'single';
 		value?: string | null;
 	};
 
+	type MultipleAccordionRootProps = {
+		type: 'multiple';
+		value?: string[];
+	};
+
+	export type AccordionRootProps = BaseProps &
+		(SingleAccordionRootProps | MultipleAccordionRootProps);
+
 	export type AccordionContext = {
 		type: Readable<Type>;
-		value: Writable<string | null | undefined>;
+		value: Writable<AccordionRootProps['value']>;
 	};
 
 	const { getContext, setContext } = uniqueContext<AccordionContext>();
@@ -28,7 +36,7 @@
 	const writableType = writable(type);
 	$: if (type) $writableType = type;
 
-	export let value: $$Props['value'] = '';
+	export let value: $$Props['value'] = null;
 	const writableValue = controllableState(value, (v) => (value = v));
 	$: if (value) $writableValue = value;
 

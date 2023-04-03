@@ -3,7 +3,8 @@
 		Root: {
 			value: {
 				type: 'enum',
-				values: ['item-1', 'item-2', 'item-3']
+				values: ['item-1', 'item-2', 'item-3'],
+				show: 'value'
 			},
 			type: {
 				type: 'enum',
@@ -22,17 +23,19 @@
 		Item: {
 			value: {
 				type: 'string',
-				hideControls: true
+				show: null
 			}
 		}
-	} satisfies PreviewProps<typeof Accordion>;
+	} as PreviewProps<typeof Accordion>;
 </script>
 
 <script lang="ts">
 	import { Accordion } from '$lib';
 	import { getPropsObj, type PreviewProps } from '../helpers';
-
-	export let propsObj = getPropsObj<typeof Accordion>(props);
+	// Since we use a discriminated union in AccordionRootProps, we need to cast it to any
+	// to satisfy the type checker. TODO: Find a better way to do this.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	export let propsObj = getPropsObj<typeof Accordion>(props) as any;
 </script>
 
 <div class="contents">
