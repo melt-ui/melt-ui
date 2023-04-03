@@ -8,7 +8,7 @@
 	import { getItemContext } from './item.svelte';
 	import { getAccordionContext } from './root.svelte';
 	import { focus } from '$lib/helpers/dom';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	type $$Props = AccordionTriggerProps;
 
@@ -51,7 +51,18 @@
 	let ref: HTMLElement;
 
 	onMount(() => {
-		items.update((v) => [...v, ref]);
+		let idx = -1;
+		items.update((v) => {
+			idx = v.length;
+			return [...v, ref];
+		});
+
+		onDestroy(() => {
+			items.update((v) => {
+				v.splice(idx, 1);
+				return v;
+			});
+		});
 	});
 </script>
 
