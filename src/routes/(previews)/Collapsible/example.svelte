@@ -5,6 +5,9 @@
 	import type { ResolvedProps } from '../helpers';
 
 	export let propsObj: ResolvedProps<typeof Collapsible>;
+
+	// Set defaults for the example
+	propsObj.Content.transition = true;
 </script>
 
 <Collapsible.Root bind:open={propsObj.Root.open} disabled={propsObj.Root.disabled} class="w-full">
