@@ -1,21 +1,21 @@
 <script lang="ts" context="module">
-	import { uniqueContext } from '$lib/helpers/uniqueContext';
+	import { reactiveContext } from '$lib/helpers/reactiveContext';
 
 	export type AccordionItemProps = BaseProps & {
 		value: string;
 	};
 
 	type ItemContext = {
-		value: Writable<string>;
+		value: string;
 	};
 
-	const { getContext, setContext } = uniqueContext<ItemContext>();
+	const { getContext, setContext } = reactiveContext<ItemContext>();
 	export const getItemContext = getContext;
 </script>
 
 <script lang="ts">
 	import type { BaseProps } from '$lib/types';
-	import { writable, type Writable } from 'svelte/store';
+	import { writable } from 'svelte/store';
 	import { Collapsible } from '../index';
 	import { getAccordionContext } from './root.svelte';
 
@@ -29,9 +29,10 @@
 
 	$: isOpen = $accordionValue === value;
 
-	setContext({
-		value: writableValue
+	const setContextStores = setContext({
+		value: [value, (v) => (value = v)]
 	});
+	$: setContextStores({ value });
 </script>
 
 <Collapsible.Root open={isOpen} {...$$restProps} data-radix-accordion-item>

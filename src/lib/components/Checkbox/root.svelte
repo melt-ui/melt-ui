@@ -1,9 +1,6 @@
 <script lang="ts" context="module">
-	import { controllableState } from '$lib/helpers/controllableState';
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
-	import { uniqueContext } from '$lib/helpers/uniqueContext';
 	import type { BaseProps } from '$lib/types';
-	import { derived, type Readable } from 'svelte/store';
 
 	export type CheckboxRootProps = BaseProps<HTMLButtonElement> & {
 		/** The controlled checked state of the checkbox. */
@@ -49,12 +46,11 @@
 	export let name: $$Props['name'] = '';
 	export let value: $$Props['value'] = '';
 
-	const contextStores = setContext({
+	const setContextStores = setContext({
 		checked: [checked, (v) => (checked = v)],
 		disabled: [disabled, (v) => (disabled = v)]
 	});
-	$: contextStores.checked.set(checked);
-	$: contextStores.disabled.set(disabled);
+	$: setContextStores({ checked, disabled });
 </script>
 
 <button
