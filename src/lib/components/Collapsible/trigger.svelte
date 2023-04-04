@@ -5,11 +5,11 @@
 <script lang="ts">
 	import type { BaseProps } from '$lib/types';
 	import { createEventDispatcher } from 'svelte';
-	import { getCollapsibleContext } from './root.svelte';
+	import { getRootContext } from './root.svelte';
 
 	type $$Props = CollapsibleTriggerProps;
 
-	const { open, disabled } = getCollapsibleContext();
+	const ctx = getRootContext();
 
 	const dispatch = createEventDispatcher<{
 		change: boolean;
@@ -19,15 +19,15 @@
 <button
 	{...$$restProps}
 	on:click={() => {
-		open.update((v) => {
-			dispatch('change', !v);
-			return !v;
+		ctx.update((v) => {
+			dispatch('change', !v.open);
+			return { ...v, open: !v.open };
 		});
 	}}
 	on:keydown
-	data-state={$open ? 'open' : 'closed'}
-	data-disabled={$disabled ? 'true' : undefined}
-	disabled={$disabled}
+	data-state={$ctx.open ? 'open' : 'closed'}
+	data-disabled={$ctx.disabled ? 'true' : undefined}
+	disabled={$ctx.disabled}
 >
 	<slot />
 </button>

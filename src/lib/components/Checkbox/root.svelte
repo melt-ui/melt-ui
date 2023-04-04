@@ -1,8 +1,6 @@
 <script lang="ts" context="module">
-	import { controllableState } from '$lib/helpers/controllableState';
-	import { uniqueContext } from '$lib/helpers/uniqueContext';
+	import { reactiveContext } from '$lib/helpers/reactiveContext';
 	import type { BaseProps } from '$lib/types';
-	import { derived, type Readable } from 'svelte/store';
 
 	export type CheckboxRootProps = BaseProps<HTMLButtonElement> & {
 		/** The controlled checked state of the checkbox. */
@@ -23,12 +21,12 @@
 	type CheckedState = boolean | 'indeterminate';
 
 	type CheckboxContext = {
-		checked: Readable<CheckedState>;
-		disabled: Readable<boolean>;
+		checked: CheckedState;
+		disabled: boolean;
 	};
 
-	const { getContext, setContext } = uniqueContext<CheckboxContext>();
-	export const getCheckboxContext = getContext;
+	const { getContext, setContext } = reactiveContext<CheckboxContext>();
+	export const getRootContext = getContext;
 
 	export function isIndeterminate(checked?: CheckedState): checked is 'indeterminate' {
 		return checked === 'indeterminate';
@@ -48,16 +46,11 @@
 	export let name: $$Props['name'] = '';
 	export let value: $$Props['value'] = '';
 
-	const writableCheckedState = controllableState(checked, (v) => (checked = v));
-	$: $writableCheckedState = checked;
-
-	const writableDisabled = controllableState(disabled, (v) => (disabled = v));
-	$: $writableDisabled = disabled;
-
-	setContext({
-		checked: derived(writableCheckedState, (v) => v),
-		disabled: derived(writableDisabled, (v) => v)
+	const ctxStore = setContext({
+		checked: [checked, (v) => (checked = v)],
+		disabled: [disabled, (v) => (disabled = v)]
 	});
+	$: ctxStore.set({ checked, disabled });
 </script>
 
 <button

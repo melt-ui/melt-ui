@@ -7,7 +7,7 @@
 <script lang="ts">
 	import type { BaseProps } from '$lib/types';
 	import { slide, type SlideParams } from 'svelte/transition';
-	import { getCollapsibleContext } from './root.svelte';
+	import { getRootContext } from './root.svelte';
 
 	type $$Props = CollapsibleContentProps;
 
@@ -27,14 +27,14 @@
 		};
 	})();
 
-	const { open, disabled } = getCollapsibleContext();
+	const ctx = getRootContext();
 </script>
 
-{#if $open}
+{#if $ctx.open}
 	<div
 		{...$$restProps}
-		data-state={$open ? 'open' : 'closed'}
-		data-disabled={$disabled ? 'true' : 'false'}
+		data-state={$ctx.open ? 'open' : 'closed'}
+		data-disabled={$ctx.disabled ? 'true' : 'false'}
 		transition:slide|local={transitionParams}
 	>
 		<slot />

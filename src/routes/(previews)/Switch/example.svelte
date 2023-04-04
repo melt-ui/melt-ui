@@ -1,21 +1,11 @@
 <script lang="ts" context="module">
-	export const props = {
-		Root: {
-			checked: { type: 'boolean' },
-			required: { type: 'boolean' },
-			disabled: { type: 'boolean' },
-			name: { type: 'string' },
-			value: { type: 'string' }
-		},
-		Thumb: {}
-	} satisfies PreviewProps<typeof Switch>;
 </script>
 
 <script lang="ts">
 	import { Switch } from '$lib';
-	import { getPropsObj, type PreviewProps } from '../helpers';
+	import type { ResolvedProps } from '../helpers';
 
-	export let propsObj = getPropsObj<typeof Switch>(props);
+	export let propsObj: ResolvedProps<typeof Switch>;
 </script>
 
 <form>

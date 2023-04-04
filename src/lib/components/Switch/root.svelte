@@ -1,6 +1,5 @@
 <script lang="ts" context="module">
 	import type { BaseProps } from '$lib/types';
-	import { uniqueContext } from '$lib/helpers/uniqueContext';
 
 	export type SwitchRootProps = BaseProps<HTMLButtonElement> & {
 		/** The controlled checked state of the switch. */
@@ -16,12 +15,12 @@
 	};
 
 	type SwitchContext = {
-		checked: Writable<SwitchRootProps['checked']>;
-		disabled: Readable<SwitchRootProps['disabled']>;
+		checked: SwitchRootProps['checked'];
+		disabled: SwitchRootProps['disabled'];
 	};
 
-	const { getContext, setContext } = uniqueContext<SwitchContext>();
-	export const getSwitchContext = getContext;
+	const { getContext, setContext } = reactiveContext<SwitchContext>();
+	export const getRootContext = getContext;
 
 	export function getState(checked: boolean | undefined) {
 		return checked ? 'checked' : 'unchecked';
@@ -31,27 +30,22 @@
 <script lang="ts">
 	type $$Props = SwitchRootProps;
 
-	import { derived, writable, type Readable, type Writable } from 'svelte/store';
-	import { controllableState } from '$lib/helpers/controllableState';
+	import { reactiveContext } from '$lib/helpers/reactiveContext';
 
 	export let required: $$Props['required'] = false;
 	export let value: $$Props['value'] = 'on';
 
-	export let checked: $$Props['checked'];
-	const writableChecked = controllableState(checked, (v) => (checked = v));
-	$: $writableChecked = checked;
-
+	export let checked: $$Props['checked'] = false;
 	export let disabled: $$Props['disabled'] = false;
-	const writableDisabled = writable(disabled);
-	$: if (typeof disabled !== 'undefined') $writableDisabled = disabled;
 
 	let button: HTMLButtonElement;
 	$: isFormControl = button ? button.closest('form') : true;
 
-	setContext({
-		checked: writableChecked,
-		disabled: derived(writableDisabled, (v) => v)
+	const ctxStore = setContext({
+		checked: [checked, (v) => (checked = v)],
+		disabled: [disabled, (v) => (disabled = v)]
 	});
+	$: ctxStore.set({ checked, disabled });
 </script>
 
 <button
@@ -72,7 +66,6 @@
 </button>
 
 {#if isFormControl}
-	{$$props.name}
 	<input
 		type="checkbox"
 		aria-hidden="true"

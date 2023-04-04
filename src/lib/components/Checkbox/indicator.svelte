@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	import type { BaseProps } from '$lib/types';
-	import { getCheckboxContext, getState } from './root.svelte';
+	import { getRootContext, getState } from './root.svelte';
 
 	export type Props = BaseProps<HTMLSpanElement>;
 </script>
@@ -10,14 +10,14 @@
 
 	type $$Props = Props;
 
-	const { checked, disabled } = getCheckboxContext();
+	const ctx = getRootContext();
 </script>
 
-{#if isIndeterminate($checked) || !!$checked}
+{#if isIndeterminate($ctx.checked) || !!$ctx.checked}
 	<span
 		{...$$restProps}
-		data-state={getState($checked)}
-		data-disabled={$disabled ? '' : undefined}
+		data-state={getState($ctx.checked)}
+		data-disabled={$ctx.disabled ? '' : undefined}
 		style:pointer-events="none"
 	>
 		<slot />
