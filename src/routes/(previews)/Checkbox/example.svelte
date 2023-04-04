@@ -1,41 +1,51 @@
 <script lang="ts" context="module">
-	export const props = {
+	export const meta = {
 		Root: {
-			checked: {
-				type: 'boolean',
-				default: false
+			props: {
+				checked: {
+					type: 'boolean',
+					default: false
+				},
+				disabled: {
+					type: 'boolean'
+				},
+				required: {
+					type: 'boolean',
+					show: null
+				},
+				name: {
+					type: 'string',
+					show: null
+				},
+				value: {
+					type: 'string',
+					show: null
+				}
 			},
-			disabled: {
-				type: 'boolean'
-			},
-			required: {
-				type: 'boolean',
-				hideControls: true
-			},
-			name: {
-				type: 'string',
-				hideControls: true
-			},
-			value: {
-				type: 'string',
-				hideControls: true
+			dataAttributes: {
+				'data-disabled': {
+					values: ['true', 'false']
+				},
+				'data-state': {
+					values: ['checked', 'unchecked', 'indeterminate']
+				}
 			}
 		},
 		Indicator: {}
-	} satisfies PreviewProps<typeof Checkbox>;
+	} satisfies PreviewMeta<typeof Checkbox>;
 </script>
 
 <script lang="ts">
 	import { Checkbox } from '$lib/components/Checkbox';
-	import { getPropsObj, type PreviewProps } from '../helpers';
+	import { getPropsObj, type PreviewMeta } from '../helpers';
 
 	import CheckIcon from '~icons/radix-icons/check';
 
-	export let propsObj = getPropsObj<typeof Checkbox>(props);
+	export let propsObj = getPropsObj<typeof Checkbox>(meta);
 </script>
 
-<form>
-	<div class="flex items-center">
+<form class="grid h-full place-items-center">
+	<div class="flex items-center justify-center">
 		<Checkbox.Root
 			class="flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-[4px] bg-white shadow-[0_2px_10px] shadow-black/10 outline-none hover:bg-violet-100 focus:shadow-[0_0_0_2px_black] disabled:bg-violet-300 "
 			disabled={propsObj.Root.disabled}

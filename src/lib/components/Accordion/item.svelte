@@ -1,8 +1,12 @@
 <script lang="ts" context="module">
 	import { uniqueContext } from '$lib/helpers/uniqueContext';
 
+	export type AccordionItemProps = BaseProps & {
+		value: string;
+	};
+
 	type ItemContext = {
-		value?: Writable<string>;
+		value: Writable<string>;
 	};
 
 	const { getContext, setContext } = uniqueContext<ItemContext>();
@@ -15,11 +19,9 @@
 	import { Collapsible } from '../index';
 	import { getAccordionContext } from './root.svelte';
 
-	type $$Props = BaseProps & {
-		value?: string;
-	};
+	type $$Props = AccordionItemProps;
 
-	export let value: string | undefined = undefined;
+	export let value: string;
 	const writableValue = writable(value);
 	$: if (value) $writableValue = value;
 
@@ -32,6 +34,6 @@
 	});
 </script>
 
-<Collapsible.Root open={isOpen} {...$$restProps}>
+<Collapsible.Root open={isOpen} {...$$restProps} data-radix-accordion-item>
 	<slot />
 </Collapsible.Root>

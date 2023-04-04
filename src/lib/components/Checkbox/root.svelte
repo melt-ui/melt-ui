@@ -15,6 +15,9 @@
 		name?: string;
 		/** The value given as data when submitted with a `name`. */
 		value?: string;
+
+		readonly 'data-state'?: 'checked' | 'unchecked' | 'indeterminate';
+		readonly 'data-disabled'?: boolean;
 	};
 
 	type CheckedState = boolean | 'indeterminate';
@@ -58,7 +61,7 @@
 </script>
 
 <button
-	on:click|stopPropagation={(event) => {
+	on:click|stopPropagation={() => {
 		if (isIndeterminate(checked)) {
 			checked = true;
 		} else {
