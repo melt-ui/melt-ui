@@ -5,11 +5,11 @@
 <script lang="ts">
 	import type { BaseProps } from '$lib/types';
 	import { createEventDispatcher } from 'svelte';
-	import { getCollapsibleContext } from './root.svelte';
+	import { getRootContext } from './root.svelte';
 
 	type $$Props = CollapsibleTriggerProps;
 
-	const ctx = getCollapsibleContext();
+	const ctx = getRootContext();
 
 	const dispatch = createEventDispatcher<{
 		change: boolean;

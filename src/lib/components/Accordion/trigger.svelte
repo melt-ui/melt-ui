@@ -7,12 +7,12 @@
 	import type { BaseProps } from '$lib/types';
 	import { Collapsible } from '../Collapsible';
 	import { getItemContext } from './item.svelte';
-	import { getAccordionContext } from './root.svelte';
+	import { getRootCtx } from './root.svelte';
 
 	type $$Props = AccordionTriggerProps;
 
 	const itemCtx = getItemContext();
-	const rootCtx = getAccordionContext();
+	const rootCtx = getRootCtx();
 
 	const handleKeyDown = (e: KeyboardEvent) => {
 		const target = e.target as HTMLElement;

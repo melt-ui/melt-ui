@@ -22,7 +22,7 @@
 	};
 
 	const { getContext, setContext } = reactiveContext<AccordionContext>();
-	export const getAccordionContext = getContext;
+	export const getRootCtx = getContext;
 </script>
 
 <script lang="ts">

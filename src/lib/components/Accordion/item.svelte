@@ -16,13 +16,13 @@
 <script lang="ts">
 	import type { BaseProps } from '$lib/types';
 	import { Collapsible } from '../index';
-	import { getAccordionContext } from './root.svelte';
+	import { getRootCtx } from './root.svelte';
 
 	type $$Props = AccordionItemProps;
 
 	export let value: string;
 
-	const rootCtx = getAccordionContext();
+	const rootCtx = getRootCtx();
 
 	$: isOpen = Array.isArray($rootCtx.value)
 		? $rootCtx.value.includes(value)

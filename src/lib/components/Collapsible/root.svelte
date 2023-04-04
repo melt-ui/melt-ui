@@ -16,7 +16,7 @@
 	};
 
 	const { getContext, setContext } = reactiveContext<Context>();
-	export const getCollapsibleContext = getContext;
+	export const getRootContext = getContext;
 </script>
 
 <script lang="ts">

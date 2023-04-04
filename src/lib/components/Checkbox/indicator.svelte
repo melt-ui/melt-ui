@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	import type { BaseProps } from '$lib/types';
-	import { getCheckboxContext, getState } from './root.svelte';
+	import { getRootContext, getState } from './root.svelte';
 
 	export type Props = BaseProps<HTMLSpanElement>;
 </script>
@@ -10,7 +10,7 @@
 
 	type $$Props = Props;
 
-	const ctx = getCheckboxContext();
+	const ctx = getRootContext();
 </script>
 
 {#if isIndeterminate($ctx.checked) || !!$ctx.checked}

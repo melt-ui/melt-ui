@@ -26,7 +26,7 @@
 	};
 
 	const { getContext, setContext } = reactiveContext<CheckboxContext>();
-	export const getCheckboxContext = getContext;
+	export const getRootContext = getContext;
 
 	export function isIndeterminate(checked?: CheckedState): checked is 'indeterminate' {
 		return checked === 'indeterminate';
