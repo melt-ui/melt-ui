@@ -1,9 +1,13 @@
+<script lang="ts" context="module">
+	export type CollapsibleTriggerProps = BaseProps;
+</script>
+
 <script lang="ts">
 	import type { BaseProps } from '$lib/types';
 	import { createEventDispatcher } from 'svelte';
 	import { getCollapsibleContext } from './root.svelte';
 
-	type $$Props = BaseProps;
+	type $$Props = CollapsibleTriggerProps;
 
 	const { open, disabled } = getCollapsibleContext();
 
@@ -20,6 +24,7 @@
 			return !v;
 		});
 	}}
+	on:keydown
 	data-state={$open ? 'open' : 'closed'}
 	data-disabled={$disabled ? 'true' : undefined}
 	disabled={$disabled}

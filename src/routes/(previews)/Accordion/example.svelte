@@ -1,10 +1,11 @@
 <script lang="ts" context="module">
-	export const props = {
+	export const meta = {
 		Root: {
 			props: {
 				value: {
 					type: 'enum',
-					options: ['item-1', 'item-2', 'item-3']
+					options: ['item-1', 'item-2', 'item-3'],
+					show: 'value'
 				},
 				type: {
 					type: 'enum',
@@ -27,23 +28,26 @@
 			props: {
 				value: {
 					type: 'string',
-					hideControls: true
+					show: null
 				}
 			}
 		}
-	} satisfies PreviewProps<typeof Accordion>;
+		// Casting here instead of satisfies because of the discriminated union in AccordionRootProps
+	} as PreviewMeta<typeof Accordion>;
 </script>
 
 <script lang="ts">
 	import { Accordion } from '$lib';
-	import { getPropsObj, type PreviewProps } from '../helpers';
-
-	export let propsObj = getPropsObj<typeof Accordion>(props);
+	import { getPropsObj, type PreviewMeta } from '../helpers';
+	// Since we use a discriminated union in AccordionRootProps, we need to cast it to any
+	// to satisfy the type checker. TODO: Find a better way to do this.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	export let propsObj = getPropsObj<typeof Accordion>(meta) as any;
 </script>
 
 <div class="contents">
 	<Accordion.Root
-		class="rounded-md bg-[--line-color] shadow-[0_2px_10px] shadow-black/5"
+		class="w-full rounded-md bg-[--line-color] shadow-[0_2px_10px] shadow-black/5"
 		bind:value={propsObj.Root.value}
 		bind:type={propsObj.Root.type}
 	>
@@ -86,7 +90,7 @@
 
 		:global(.accordion-item) {
 			@apply mt-px overflow-hidden  first:mt-0 first:rounded-t last:rounded-b 
-			focus-within:relative focus-within:z-10 focus-within:ring focus-within:ring-black;
+			focus-within:relative focus-within:z-10 focus-within:ring-2 focus-within:ring-black;
 		}
 
 		:global(.accordion-trigger) {

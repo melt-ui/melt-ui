@@ -1,15 +1,9 @@
 import type { ComponentProps, SvelteComponent } from 'svelte';
-
 import type { SlideParams } from 'svelte/transition';
 
-type RadixComponentGroup = { [key: string]: typeof SvelteComponent };
-
-export type PreviewSchema<GROUP extends RadixComponentGroup = RadixComponentGroup> = {
-	title: string;
-	description: string;
-	example: unknown;
-	props: PreviewProps<GROUP>;
-};
+/* -------------*/
+/* Helper types */
+/* -------------*/
 
 // Check if type are equal or just extends
 type IfEquals<T, U, Y = unknown, N = never> = (<G>() => G extends T ? 1 : 2) extends <
@@ -17,6 +11,20 @@ type IfEquals<T, U, Y = unknown, N = never> = (<G>() => G extends T ? 1 : 2) ext
 >() => G extends U ? 1 : 2
 	? Y
 	: N;
+
+type RadixComponentGroup = { [key: string]: typeof SvelteComponent };
+
+/* --------------*/
+/* Preview Props */
+/* --------------*/
+type BasePreviewProp<T> = { show?: 'controls' | 'value' | null; default?: T };
+export type PreviewPropBoolean = { type: 'boolean' } & BasePreviewProp<boolean>;
+export type PreviewPropString = { type: 'string' } & BasePreviewProp<string>;
+export type PreviewPropNumber = { type: 'number' } & BasePreviewProp<number>;
+export type PreviewPropEnum<T extends string> = {
+	type: 'enum';
+	options: T[];
+} & BasePreviewProp<T>;
 
 type PreviewComponentProps<CMP extends SvelteComponent, P = ComponentProps<CMP>> = {
 	[K in keyof P]: K extends  // If key matches "data-"
@@ -42,6 +50,14 @@ type PreviewComponentProps<CMP extends SvelteComponent, P = ComponentProps<CMP>>
 		: never;
 };
 
+type ResolvedProps<GROUP extends RadixComponentGroup> = {
+	[K in keyof GROUP]: ComponentProps<InstanceType<GROUP[K]>>;
+};
+
+/* ------------------------*/
+/* Preview Data Attributes */
+/* ------------------------*/
+export type PreviewDataAttribute = { values: string[] };
 type PreviewComponentDataAttributes<CMP extends SvelteComponent, P = ComponentProps<CMP>> = {
 	[K in keyof P]: K extends  // If key matches "data-"
 	`data-${string}`
@@ -49,32 +65,28 @@ type PreviewComponentDataAttributes<CMP extends SvelteComponent, P = ComponentPr
 		: never;
 };
 
-type BasePreviewProp<T> = { hideControls?: boolean; default?: T };
-export type PreviewPropBoolean = { type: 'boolean' } & BasePreviewProp<boolean>;
-export type PreviewPropString = { type: 'string' } & BasePreviewProp<string>;
-export type PreviewPropNumber = { type: 'number' } & BasePreviewProp<number>;
-export type PreviewPropEnum<T extends string> = {
-	type: 'enum';
-	options: T[];
-} & BasePreviewProp<T>;
-
-export type PreviewDataAttribute = { values: string[] };
-
-/**
- * Preview definition for a component group
- */
-export type PreviewProps<GROUP extends RadixComponentGroup> = {
-	[K in keyof GROUP]: RadixComponentPreview<GROUP[K]>;
-};
-
+/* --------------------- */
+/* Preview Meta & Schema */
+/* --------------------- */
 type RadixComponentPreview<CMP extends typeof SvelteComponent> = {
 	props?: PreviewComponentProps<InstanceType<CMP>>;
 	dataAttributes?: PreviewComponentDataAttributes<InstanceType<CMP>>;
 };
-type ResolvedProps<GROUP extends RadixComponentGroup> = {
-	[K in keyof GROUP]: ComponentProps<InstanceType<GROUP[K]>>;
+
+export type PreviewMeta<GROUP extends RadixComponentGroup> = {
+	[K in keyof GROUP]: RadixComponentPreview<GROUP[K]>;
 };
 
+export type PreviewSchema<GROUP extends RadixComponentGroup = RadixComponentGroup> = {
+	title: string;
+	description: string;
+	example: unknown;
+	meta: PreviewMeta<GROUP>;
+};
+
+/* --------------- */
+/* Preview Getters */
+/* --------------- */
 function getPreviewPropsOfComponent<CMP extends typeof SvelteComponent>(
 	previewProps: RadixComponentPreview<CMP>
 ) {
@@ -83,8 +95,9 @@ function getPreviewPropsOfComponent<CMP extends typeof SvelteComponent>(
 		return { ...acc, [propName]: defaultValue };
 	}, {});
 }
-export function getPropsObj<GROUP extends RadixComponentGroup>(previewProps: PreviewProps<GROUP>) {
-	return Object.entries(previewProps).reduce(
+
+export function getPropsObj<GROUP extends RadixComponentGroup>(previewMeta: PreviewMeta<GROUP>) {
+	return Object.entries(previewMeta).reduce(
 		(acc, [cmp, previewProps]) => ({
 			...acc,
 			[cmp]: getPreviewPropsOfComponent(previewProps)
