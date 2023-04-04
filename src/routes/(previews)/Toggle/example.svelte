@@ -1,21 +1,9 @@
-<script lang="ts" context="module">
-	export const meta = {
-		Root: {
-			props: {
-				pressed: {
-					type: 'boolean'
-				}
-			}
-		}
-	} satisfies PreviewMeta<typeof Toggle>;
-</script>
-
 <script lang="ts">
 	import { Toggle } from '$lib';
 	import FontItalicIcon from '~icons/radix-icons/font-italic';
-	import { getPropsObj, type PreviewMeta } from '../helpers';
+	import type { ResolvedProps } from '../helpers';
 
-	export let propsObj = getPropsObj(meta);
+	export let propsObj: ResolvedProps<typeof Toggle>;
 </script>
 
 <div class="grid h-full place-items-center">

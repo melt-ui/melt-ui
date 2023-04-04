@@ -1,34 +1,10 @@
-<script lang="ts" context="module">
-	export const meta = {
-		Root: {
-			props: {
-				open: {
-					type: 'boolean'
-				},
-				disabled: {
-					type: 'boolean'
-				}
-			}
-		},
-		Trigger: {},
-		Content: {
-			props: {
-				transition: {
-					type: 'boolean',
-					default: true
-				}
-			}
-		}
-	} satisfies PreviewMeta<typeof Collapsible>;
-</script>
-
 <script lang="ts">
 	import { Collapsible } from '$lib';
 	import Cross2Icon from '~icons/radix-icons/cross-2';
 	import RowSpacingIcon from '~icons/radix-icons/row-spacing';
-	import { getPropsObj, type PreviewMeta } from '../helpers';
+	import type { ResolvedProps } from '../helpers';
 
-	export let propsObj = getPropsObj<typeof Collapsible>(meta);
+	export let propsObj: ResolvedProps<typeof Collapsible>;
 </script>
 
 <Collapsible.Root bind:open={propsObj.Root.open} disabled={propsObj.Root.disabled} class="w-full">

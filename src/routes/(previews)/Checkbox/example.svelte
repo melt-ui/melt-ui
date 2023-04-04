@@ -1,47 +1,10 @@
-<script lang="ts" context="module">
-	export const meta = {
-		Root: {
-			props: {
-				checked: {
-					type: 'boolean',
-					default: false
-				},
-				disabled: {
-					type: 'boolean'
-				},
-				required: {
-					type: 'boolean',
-					show: null
-				},
-				name: {
-					type: 'string',
-					show: null
-				},
-				value: {
-					type: 'string',
-					show: null
-				}
-			},
-			dataAttributes: {
-				'data-disabled': {
-					values: ['true', 'false']
-				},
-				'data-state': {
-					values: ['checked', 'unchecked', 'indeterminate']
-				}
-			}
-		},
-		Indicator: {}
-	} satisfies PreviewMeta<typeof Checkbox>;
-</script>
-
 <script lang="ts">
 	import { Checkbox } from '$lib/components/Checkbox';
-	import { getPropsObj, type PreviewMeta } from '../helpers';
 
 	import CheckIcon from '~icons/radix-icons/check';
+	import type { ResolvedProps } from '../helpers';
 
-	export let propsObj = getPropsObj<typeof Checkbox>(meta);
+	export let propsObj: ResolvedProps<typeof Checkbox>;
 </script>
 
 <form class="grid h-full place-items-center">
