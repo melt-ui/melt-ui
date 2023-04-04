@@ -66,7 +66,6 @@
 </button>
 
 {#if isFormControl}
-	{$$props.name}
 	<input
 		type="checkbox"
 		aria-hidden="true"
