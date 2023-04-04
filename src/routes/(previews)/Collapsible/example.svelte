@@ -31,7 +31,7 @@
 	export let propsObj = getPropsObj<typeof Collapsible>(meta);
 </script>
 
-<Collapsible.Root bind:open={propsObj.Root.open} disabled={propsObj.Root.disabled}>
+<Collapsible.Root bind:open={propsObj.Root.open} disabled={propsObj.Root.disabled} class="w-full">
 	<div class="flex items-center justify-between">
 		<span class="text-violet11 text-sm leading-6 text-white">
 			@peduarte starred 3 repositories

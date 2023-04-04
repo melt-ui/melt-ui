@@ -33,16 +33,18 @@
 </script>
 
 <div class="mx-auto max-w-5xl p-8">
-	<h2 class="text-xl font-bold">{cmpSchema.title}</h2>
-	<p class="text-slate-300">{cmpSchema.description}</p>
-	<div class="preview mt-4 h-96">
-		<div class="mx-auto max-w-[600px]">
+	<div>
+		<h2 class="text-xl font-bold">{cmpSchema.title}</h2>
+		<p class="text-slate-300">{cmpSchema.description}</p>
+	</div>
+	<div class="comp-preview mt-4 h-96">
+		<div class="mx-auto w-[512px]">
 			<svelte:component this={cmpSchema.example} bind:propsObj={props} />
 		</div>
 	</div>
 
 	{#each Object.entries(cmpSchema.meta) as [subCmp, subCmpProps]}
-		<div class="mt-4 grid grid-cols-12 gap-y-2 rounded-md bg-zinc-900 p-4 text-white">
+		<div class="mt-2 grid grid-cols-12 gap-y-2 rounded-md bg-zinc-900 p-4 text-white">
 			<h2 class="col-span-12 font-bold">{cmpSchema.title}.{subCmp}</h2>
 
 			<span class="col-span-4 text-sm text-zinc-300">Prop</span>
@@ -110,21 +112,3 @@
 
 	<div />
 </div>
-
-<style lang="postcss">
-	.preview {
-		background-image: linear-gradient(
-			330deg,
-			theme('colors.purple.500') 0%,
-			theme('colors.indigo.800') 100%
-		);
-
-		border-radius: theme('borderRadius.lg');
-
-		padding: theme('spacing.8');
-
-		@media screen('md') {
-			padding: theme('spacing.16');
-		}
-	}
-</style>

@@ -47,7 +47,7 @@
 
 <div class="contents">
 	<Accordion.Root
-		class="rounded-md bg-[--line-color] shadow-[0_2px_10px] shadow-black/5"
+		class="w-full rounded-md bg-[--line-color] shadow-[0_2px_10px] shadow-black/5"
 		bind:value={propsObj.Root.value}
 		bind:type={propsObj.Root.type}
 	>
