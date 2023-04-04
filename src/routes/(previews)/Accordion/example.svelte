@@ -1,48 +1,13 @@
-<script lang="ts" context="module">
-	export const meta = {
-		Root: {
-			props: {
-				value: {
-					type: 'enum',
-					options: ['item-1', 'item-2', 'item-3'],
-					show: 'value'
-				},
-				type: {
-					type: 'enum',
-					options: ['multiple', 'single'],
-					default: 'single'
-				}
-			}
-		},
-		Content: {
-			props: {
-				transition: {
-					type: 'boolean',
-					default: true
-				}
-			}
-		},
-		Trigger: {},
-		Header: {},
-		Item: {
-			props: {
-				value: {
-					type: 'string',
-					show: null
-				}
-			}
-		}
-		// Casting here instead of satisfies because of the discriminated union in AccordionRootProps
-	} as PreviewMeta<typeof Accordion>;
-</script>
-
 <script lang="ts">
 	import { Accordion } from '$lib';
-	import { getPropsObj, type PreviewMeta } from '../helpers';
+
 	// Since we use a discriminated union in AccordionRootProps, we need to cast it to any
 	// to satisfy the type checker. TODO: Find a better way to do this.
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	export let propsObj = getPropsObj<typeof Accordion>(meta) as any;
+	export let propsObj: any;
+
+	// Set defaults for the example
+	propsObj.Content.transition = true;
 </script>
 
 <div class="contents">
