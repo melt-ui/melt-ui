@@ -46,4 +46,4 @@ You can check the planned features and bugs in the [issues tab](https://github.c
 
 ## Community
 
-- [Discord](https://discord.gg/XqEF4tr4)
+- [Discord](https://discord.gg/gQrpPs34xH)

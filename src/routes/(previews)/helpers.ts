@@ -1,4 +1,5 @@
 import type { ComponentProps, SvelteComponent } from 'svelte';
+
 import type { SlideParams } from 'svelte/transition';
 
 /* -------------*/
@@ -50,7 +51,7 @@ type PreviewComponentProps<CMP extends SvelteComponent, P = ComponentProps<CMP>>
 		: never;
 };
 
-type ResolvedProps<GROUP extends RadixComponentGroup> = {
+export type ResolvedProps<GROUP extends RadixComponentGroup> = {
 	[K in keyof GROUP]: ComponentProps<InstanceType<GROUP[K]>>;
 };
 
