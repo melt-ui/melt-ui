@@ -11,8 +11,8 @@
 
 	type $$Props = AccordionTriggerProps;
 
-	const { value: itemValue } = getItemContext();
-	const { value: accordionValue, type } = getAccordionContext();
+	const itemCtx = getItemContext();
+	const rootCtx = getAccordionContext();
 
 	const handleKeyDown = (e: KeyboardEvent) => {
 		const target = e.target as HTMLElement;
@@ -53,13 +53,13 @@
 <Collapsible.Trigger
 	on:change={(e) => {
 		const value = e.detail;
-		if ($type === 'single') {
-			$accordionValue = value ? $itemValue : null;
+		if ($rootCtx.type === 'single') {
+			$rootCtx.value = value ? $itemCtx.value : null;
 		} else {
-			const prevValue = Array.isArray($accordionValue) ? $accordionValue : [];
-			$accordionValue = value
-				? [...prevValue, $itemValue]
-				: prevValue.filter((v) => v !== $itemValue);
+			const prevValue = Array.isArray($rootCtx.value) ? $rootCtx.value : [];
+			$rootCtx.value = value
+				? [...prevValue, $itemCtx.value]
+				: prevValue.filter((v) => v !== $itemCtx.value);
 		}
 	}}
 	on:keydown={handleKeyDown}

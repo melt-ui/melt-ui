@@ -27,14 +27,14 @@
 		};
 	})();
 
-	const { open, disabled } = getCollapsibleContext();
+	const ctx = getCollapsibleContext();
 </script>
 
-{#if $open}
+{#if $ctx.open}
 	<div
 		{...$$restProps}
-		data-state={$open ? 'open' : 'closed'}
-		data-disabled={$disabled ? 'true' : 'false'}
+		data-state={$ctx.open ? 'open' : 'closed'}
+		data-disabled={$ctx.disabled ? 'true' : 'false'}
 		transition:slide|local={transitionParams}
 	>
 		<slot />

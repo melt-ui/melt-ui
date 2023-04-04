@@ -28,11 +28,11 @@
 	export let open = false;
 	export let disabled = false;
 
-	const setContextStores = setContext({
+	const contextStore = setContext({
 		open: [open, (v) => (open = v)],
 		disabled: [disabled, (v) => (disabled = v)]
 	});
-	$: setContextStores({ open, disabled });
+	$: contextStore.set({ open, disabled });
 </script>
 
 <div

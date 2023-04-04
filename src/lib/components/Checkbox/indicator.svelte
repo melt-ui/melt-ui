@@ -10,14 +10,14 @@
 
 	type $$Props = Props;
 
-	const { checked, disabled } = getCheckboxContext();
+	const ctx = getCheckboxContext();
 </script>
 
-{#if isIndeterminate($checked) || !!$checked}
+{#if isIndeterminate($ctx.checked) || !!$ctx.checked}
 	<span
 		{...$$restProps}
-		data-state={getState($checked)}
-		data-disabled={$disabled ? '' : undefined}
+		data-state={getState($ctx.checked)}
+		data-disabled={$ctx.disabled ? '' : undefined}
 		style:pointer-events="none"
 	>
 		<slot />

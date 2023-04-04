@@ -1,5 +1,5 @@
-import type { Writable } from 'svelte/store';
-import { controllableState } from './controllableState';
+import { writable, type Writable } from 'svelte/store';
+
 import { objectEntries } from './object';
 import { uniqueContext } from './uniqueContext';
 
@@ -13,28 +13,47 @@ type Values<T> = {
 	[K in keyof T]: T[K];
 };
 
-type GetContextReturn<T extends Record<string, unknown>> = {
-	[K in keyof T]: Writable<T[K]>;
-};
+type GetContextReturn<T extends Record<string, unknown>> = Writable<Values<T>>;
 
 export function reactiveContext<T extends Record<string, unknown>>() {
 	const initialContext = uniqueContext<GetContextReturn<T>>();
 
 	const setContext = (values: ValueSetterPairs<T>) => {
-		const writeableValues = objectEntries(values).reduce((acc, [key, value]) => {
-			acc[key] = controllableState(value[0], value[1]);
-			return acc;
-		}, {} as GetContextReturn<T>);
+		const store = writable(
+			objectEntries(values).reduce((acc, [key, value]) => {
+				acc[key] = value[0];
+				return acc;
+			}, {} as Values<T>)
+		);
 
-		initialContext.setContext(writeableValues);
-
-		const setContextStores = (values: Values<T>) => {
-			objectEntries(values).forEach(([key, value]) => {
-				writeableValues[key].set(value);
+		const set = (v: Values<T>) => {
+			store.set(v);
+			objectEntries(v).forEach(([key, value]) => {
+				const setter = values[key][1];
+				setter(value);
 			});
 		};
 
-		return setContextStores;
+		const update = (updater: (state: Values<T>) => Values<T>) => {
+			store.update((v) => {
+				const newState = updater(v);
+				objectEntries(newState).forEach(([key, value]) => {
+					const setter = values[key][1];
+					setter(value);
+				});
+				return newState;
+			});
+		};
+
+		const contextStore = {
+			...store,
+			set,
+			update
+		};
+
+		initialContext.setContext(contextStore);
+
+		return contextStore;
 	};
 
 	return { ...initialContext, setContext };

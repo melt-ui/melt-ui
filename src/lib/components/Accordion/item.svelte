@@ -15,24 +15,23 @@
 
 <script lang="ts">
 	import type { BaseProps } from '$lib/types';
-	import { writable } from 'svelte/store';
 	import { Collapsible } from '../index';
 	import { getAccordionContext } from './root.svelte';
 
 	type $$Props = AccordionItemProps;
 
 	export let value: string;
-	const writableValue = writable(value);
-	$: if (value) $writableValue = value;
 
-	const { value: accordionValue } = getAccordionContext();
+	const rootCtx = getAccordionContext();
 
-	$: isOpen = $accordionValue === value;
+	$: isOpen = Array.isArray($rootCtx.value)
+		? $rootCtx.value.includes(value)
+		: $rootCtx.value === value;
 
-	const setContextStores = setContext({
+	const itemCtx = setContext({
 		value: [value, (v) => (value = v)]
 	});
-	$: setContextStores({ value });
+	$: itemCtx.set({ value });
 </script>
 
 <Collapsible.Root open={isOpen} {...$$restProps} data-radix-accordion-item>

@@ -33,11 +33,11 @@
 	export let type: $$Props['type'] = 'single';
 	export let value: $$Props['value'] = null;
 
-	const setContextStores = setContext({
+	const contextStore = setContext({
 		type: [type ?? 'single', (v) => (type = v)],
 		value: [value, (v) => (value = v)]
 	});
-	$: setContextStores({ type: type ?? 'single', value });
+	$: contextStore.set({ type: type ?? 'single', value });
 </script>
 
 <div {...$$restProps} data-radix-accordion-root>

@@ -46,11 +46,11 @@
 	export let name: $$Props['name'] = '';
 	export let value: $$Props['value'] = '';
 
-	const setContextStores = setContext({
+	const ctxStore = setContext({
 		checked: [checked, (v) => (checked = v)],
 		disabled: [disabled, (v) => (disabled = v)]
 	});
-	$: setContextStores({ checked, disabled });
+	$: ctxStore.set({ checked, disabled });
 </script>
 
 <button
