@@ -25,18 +25,18 @@
 	function getValueFromPointer(pointerPosition: number) {
 		if (!rect) rect = slider.getBoundingClientRect();
 		if (!rect) return 0;
+
 		const input: [number, number] = [0, rect.height];
 		const output: [number, number] = isSlidingFromBottom ? [max, min] : [min, max];
 		const value = linearScale(input, output);
-
-		return value(pointerPosition - rect.left);
+		return value(pointerPosition - rect.top);
 	}
 
 	setOrientationContext({
 		startEdge: isSlidingFromBottom ? 'bottom' : 'top',
 		endEdge: isSlidingFromBottom ? 'top' : 'bottom',
 		size: 'height',
-		direction: isSlidingFromBottom ? 1 : -1
+		direction: isSlidingFromBottom ? -1 : 1
 	});
 </script>
 
