@@ -6,12 +6,15 @@ export type SvelteActionReturnType<P> = {
 
 export type SvelteHTMLActionType<P> = (node: HTMLElement, params?: P) => SvelteActionReturnType<P>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type HTMLActionEntry<P = any> = SvelteHTMLActionType<P> | [SvelteHTMLActionType<P>, P];
 
 export type HTMLActionArray = HTMLActionEntry[];
 
-export function useActions(node: HTMLElement | SVGElement, actions: HTMLActionArray) {
-	const actionReturns: SvelteActionReturnType<any>[] = [];
+export type ActionArray = HTMLActionArray;
+
+export function useActions(node: HTMLElement | SVGElement, actions: ActionArray) {
+	const actionReturns: SvelteActionReturnType<unknown>[] = [];
 
 	if (actions) {
 		for (let i = 0; i < actions.length; i++) {
@@ -26,7 +29,7 @@ export function useActions(node: HTMLElement | SVGElement, actions: HTMLActionAr
 	}
 
 	return {
-		update(actions: HTMLActionArray) {
+		update(actions: ActionArray) {
 			if (((actions && actions.length) || 0) != actionReturns.length) {
 				throw new Error('You must not change the length of an actions array.');
 			}

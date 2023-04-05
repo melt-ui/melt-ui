@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getRootContext, getThumbCollectionContext } from '../root.svelte';
+	import { getThumbCollectionContext } from '../root.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { ARROW_KEYS, PAGE_KEYS } from './utils';
 
@@ -14,7 +14,6 @@
 		slideEnd: PointerEvent;
 	}>();
 
-	const rootCtx = getRootContext();
 	const thumbCollection = getThumbCollectionContext();
 </script>
 
