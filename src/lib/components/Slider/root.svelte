@@ -87,7 +87,7 @@
 				onChange(v);
 			}
 		],
-		min: [$$restProps.min],
+		min: [min],
 		max: [max],
 		disabled: [disabled],
 		orientation: [orientation],
