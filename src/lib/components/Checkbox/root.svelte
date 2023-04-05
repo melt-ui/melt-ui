@@ -21,8 +21,8 @@
 	type CheckedState = boolean | 'indeterminate';
 
 	type CheckboxContext = {
-		checked: CheckedState;
-		disabled: boolean;
+		readonly checked: CheckedState;
+		readonly disabled: boolean;
 	};
 
 	const { getContext, setContext } = reactiveContext<CheckboxContext>();
@@ -47,8 +47,8 @@
 	export let value: $$Props['value'] = '';
 
 	const ctxStore = setContext({
-		checked: [checked, (v) => (checked = v)],
-		disabled: [disabled, (v) => (disabled = v)]
+		checked: [checked],
+		disabled: [disabled]
 	});
 	$: ctxStore.set({ checked, disabled });
 </script>

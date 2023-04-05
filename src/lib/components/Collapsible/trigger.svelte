@@ -19,10 +19,8 @@
 <button
 	{...$$restProps}
 	on:click={() => {
-		ctx.update((v) => {
-			dispatch('change', !v.open);
-			return { ...v, open: !v.open };
-		});
+		$ctx.open = !$ctx.open;
+		dispatch('change', $ctx.open);
 	}}
 	on:keydown
 	data-state={$ctx.open ? 'open' : 'closed'}

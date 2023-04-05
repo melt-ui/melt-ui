@@ -23,10 +23,10 @@
 
 	type RootContext = {
 		values: number[];
-		min: number;
-		max: number;
-		disabled: boolean;
-		orientation: Orientation;
+		readonly min: number;
+		readonly max: number;
+		readonly disabled: boolean;
+		readonly orientation: Orientation;
 		thumbs: Array<HTMLElement>;
 		valueIndexToChange: number;
 	};
@@ -78,9 +78,7 @@
 		valueChange: number[];
 	}>();
 
-	let thumbs = new Array<HTMLElement>();
-	let valueIndexToChange = 0;
-
+	// Create root context with initial values
 	const contextStore = setContext({
 		values: [
 			value,
@@ -89,21 +87,22 @@
 				onChange(v);
 			}
 		],
-		min: [min, (v) => (min = v)],
-		max: [max, (v) => (max = v)],
-		disabled: [disabled, (v) => (disabled = v)],
-		orientation: [orientation, (v) => (orientation = v)],
-		thumbs: [thumbs, (v) => (thumbs = v)],
-		valueIndexToChange: [valueIndexToChange, (v) => (valueIndexToChange = v)]
+		min: [$$restProps.min],
+		max: [max],
+		disabled: [disabled],
+		orientation: [orientation],
+		thumbs: [[], () => {}],
+		valueIndexToChange: [-1, () => {}]
 	});
+
+	// Update context when props change
 	$: contextStore.set({
+		...$contextStore,
 		values: value,
 		min,
 		max,
 		disabled,
-		orientation,
-		thumbs,
-		valueIndexToChange
+		orientation
 	});
 
 	orientationContext.setContext(
@@ -166,17 +165,17 @@
 		const { value } = detail;
 		const closestIndex = getClosestValueIndex($contextStore.values, value);
 		updateValues(value, closestIndex);
-		thumbs[valueIndexToChange]?.focus();
+		$contextStore.thumbs[$contextStore.valueIndexToChange]?.focus();
 	}}
 	on:slideMove={({ detail }) => {
 		if (disabled) return;
 		const { value } = detail;
-		updateValues(value, valueIndexToChange);
+		updateValues(value, $contextStore.valueIndexToChange);
 	}}
 	on:slideEnd={() => {
 		if (disabled) return;
-		const prevValue = valuesBeforeSlideStart[valueIndexToChange];
-		const nextValue = $contextStore.values[valueIndexToChange];
+		const prevValue = valuesBeforeSlideStart[$contextStore.valueIndexToChange];
+		const nextValue = $contextStore.values[$contextStore.valueIndexToChange];
 		const hasChanged = nextValue !== prevValue;
 		if (hasChanged) onValueCommit($contextStore.values);
 	}}
@@ -189,7 +188,7 @@
 			const isPageKey = PAGE_KEYS.includes(event.key);
 			const isSkipKey = isPageKey || (event.shiftKey && ARROW_KEYS.includes(event.key));
 			const multiplier = isSkipKey ? 10 : 1;
-			const atIndex = valueIndexToChange;
+			const atIndex = $contextStore.valueIndexToChange;
 			const value = $contextStore.values[atIndex];
 			const stepInDirection = step * multiplier * stepDirection;
 			updateValues(value + stepInDirection, atIndex, { commit: true });

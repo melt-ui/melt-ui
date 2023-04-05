@@ -12,7 +12,7 @@
 
 	export type Context = {
 		open: boolean;
-		disabled: boolean;
+		readonly disabled: boolean;
 	};
 
 	const { getContext, setContext } = reactiveContext<Context>();
@@ -30,7 +30,7 @@
 
 	const contextStore = setContext({
 		open: [open, (v) => (open = v)],
-		disabled: [disabled, (v) => (disabled = v)]
+		disabled: [disabled]
 	});
 	$: contextStore.set({ open, disabled });
 </script>

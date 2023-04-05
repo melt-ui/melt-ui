@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Slider } from '$lib';
-	import type { SliderRootProps } from '../root.svelte';
+	import type { SliderRootProps } from '..';
 
 	type $$Props = SliderRootProps;
 </script>

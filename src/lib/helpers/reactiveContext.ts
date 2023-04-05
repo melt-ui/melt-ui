@@ -2,11 +2,19 @@ import { writable, type Writable } from 'svelte/store';
 
 import { objectEntries } from './object';
 import { uniqueContext } from './uniqueContext';
+import type { IfEquals } from './types';
 
 type ValueSetterPair<T> = [T, (v: T) => void];
+type ValueSetterReadonly<T> = [T];
 
-type ValueSetterPairs<T> = {
-	[K in keyof T]: ValueSetterPair<T[K]>;
+type ValueSetters<T> = {
+	// If T[K] is readonly, make it ValueSetterReadonly, otherwise make it ValueSetterPair
+	[K in keyof T]: IfEquals<
+		{ [Q in K]: T[K] },
+		{ -readonly [Q in K]: T[K] },
+		ValueSetterPair<T[K]>,
+		ValueSetterReadonly<T[K]>
+	>;
 };
 
 type Values<T> = {
@@ -18,7 +26,7 @@ type GetContextReturn<T extends Record<string, unknown>> = Writable<Values<T>>;
 export function reactiveContext<T extends Record<string, unknown>>() {
 	const initialContext = uniqueContext<GetContextReturn<T>>();
 
-	const setContext = (values: ValueSetterPairs<T>) => {
+	const setContext = (values: ValueSetters<T>) => {
 		const store = writable(
 			objectEntries(values).reduce((acc, [key, value]) => {
 				acc[key] = value[0];
@@ -30,7 +38,7 @@ export function reactiveContext<T extends Record<string, unknown>>() {
 			store.set(v);
 			objectEntries(v).forEach(([key, value]) => {
 				const setter = values[key][1];
-				setter(value);
+				setter?.(value);
 			});
 		};
 
@@ -39,7 +47,7 @@ export function reactiveContext<T extends Record<string, unknown>>() {
 				const newState = updater(v);
 				objectEntries(newState).forEach(([key, value]) => {
 					const setter = values[key][1];
-					setter(value);
+					setter?.(value);
 				});
 				return newState;
 			});
