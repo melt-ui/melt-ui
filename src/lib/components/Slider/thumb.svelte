@@ -14,10 +14,9 @@
 	const orientation = getOrientationContext();
 
 	let size = { width: 0, height: 0 };
-	let thumb: HTMLElement;
+	let index: number;
 
 	const thumbComponentsContext = getThumbCollectionContext();
-	$: index = $thumbComponentsContext.indexOf(thumb);
 	$: value = $rootCtx.values[index];
 
 	$: percentage = convertValueToPercentage(value, $rootCtx.min, $rootCtx.max);
@@ -51,6 +50,10 @@
 		const offset = linearScale([0, halfPercent], [0, halfWidth]);
 		return (halfWidth - offset(left) * direction) * direction;
 	}
+
+	function onIndexChange(newIndex: number) {
+		index = newIndex;
+	}
 </script>
 
 <span
@@ -59,11 +62,10 @@
 	style="{$orientation.startEdge}: calc({percentage}% + {thumbInBoundsOffset}px)"
 >
 	<span
-		use:useComponentCollection={{ collection: thumbComponentsContext }}
+		use:useComponentCollection={{ collection: thumbComponentsContext, onIndexChange }}
 		{...$$restProps}
 		bind:clientHeight={size.height}
 		bind:clientWidth={size.width}
-		bind:this={thumb}
 		role="slider"
 		aria-label={$$props['aria-label'] || label}
 		aria-valuemin={$rootCtx.min}
