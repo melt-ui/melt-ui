@@ -192,6 +192,5 @@
 		name={name ? name + ($contextStore.values.length > 1 ? '[]' : '') : undefined}
 		{value}
 		style:display="none"
-		{...$$restProps}
 	/>
 {/each}
