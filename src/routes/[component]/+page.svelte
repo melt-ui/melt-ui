@@ -2,10 +2,7 @@
 	import {
 		getPropsObj,
 		type PreviewDataAttribute,
-		type PreviewPropBoolean,
-		type PreviewPropEnum,
-		type PreviewPropNumber,
-		type PreviewPropString
+		type PreviewProps
 	} from '$routes/(previews)/helpers';
 
 	export let data;
@@ -15,12 +12,7 @@
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
 	let props = getPropsObj<{}>(cmpSchema.meta) as any;
 
-	function castPreviewProps(component: {
-		props?: Record<
-			string,
-			PreviewPropBoolean | PreviewPropNumber | PreviewPropString | PreviewPropEnum<string>
-		>;
-	}) {
+	function castPreviewProps(component: { props?: Record<string, PreviewProps> }) {
 		return component.props || {};
 	}
 
@@ -85,6 +77,8 @@
 								<option {value}>{value}</option>
 							{/each}
 						</select>
+					{:else}
+						{props[subCmp][propKey]}
 					{/if}
 				</div>
 			{:else}

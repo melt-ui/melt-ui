@@ -42,9 +42,7 @@
 	}>;
 
 	const orientationContext = uniqueContext<OrientationContext>();
-
 	export const getOrientationContext = orientationContext.getContext;
-	export const setOrientationContext = orientationContext.setContext;
 </script>
 
 <script lang="ts">

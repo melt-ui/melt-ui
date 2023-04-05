@@ -18,10 +18,17 @@ type RadixComponentGroup = { [key: string]: typeof SvelteComponent };
 /* --------------*/
 /* Preview Props */
 /* --------------*/
+export type PreviewProps =
+	| PreviewPropBoolean
+	| PreviewPropString
+	| PreviewPropNumber
+	| PreviewPropArray<number | string>
+	| PreviewPropEnum<string>;
 type BasePreviewProp<T> = { show?: 'controls' | 'value' | null; default?: T };
 export type PreviewPropBoolean = { type: 'boolean' } & BasePreviewProp<boolean>;
 export type PreviewPropString = { type: 'string' } & BasePreviewProp<string>;
 export type PreviewPropNumber = { type: 'number' } & BasePreviewProp<number>;
+export type PreviewPropArray<T> = { type: 'number[]' | 'string[]' } & BasePreviewProp<T[]>;
 export type PreviewPropEnum<T extends string> = {
 	type: 'enum';
 	options: T[];
@@ -42,9 +49,15 @@ type PreviewComponentProps<CMP extends SvelteComponent, P = ComponentProps<CMP>>
 				PreviewPropString | PreviewPropEnum<NonNullable<P[K]>>,
 				PreviewPropEnum<NonNullable<P[K]>>
 		  >
+		: // If type is string[]
+		NonNullable<P[K]> extends string[]
+		? PreviewPropArray<string>
 		: // If type is number
 		number extends NonNullable<P[K]>
 		? PreviewPropNumber
+		: // If type is number[]
+		NonNullable<P[K]> extends number[]
+		? PreviewPropArray<number>
 		: // Special type for slide transition
 		NonNullable<P[K]> extends boolean | SlideParams
 		? PreviewPropBoolean
