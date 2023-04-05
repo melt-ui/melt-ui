@@ -4,6 +4,7 @@
 	import { uniqueContext } from '$lib/helpers/uniqueContext';
 	import type { BaseProps } from '$lib/types';
 	import { createEventDispatcher } from 'svelte';
+	import { writable, type Writable } from 'svelte/store';
 
 	type Orientation = 'horizontal' | 'vertical';
 
@@ -33,14 +34,15 @@
 	const { getContext, setContext } = reactiveContext<RootContext>();
 	export const getRootContext = getContext;
 
-	type OrientationContext = {
+	type OrientationContext = Writable<{
 		startEdge: 'top' | 'right' | 'bottom' | 'left';
 		endEdge: 'top' | 'right' | 'bottom' | 'left';
 		size: 'width' | 'height';
 		direction: number;
-	};
+	}>;
 
 	const orientationContext = uniqueContext<OrientationContext>();
+
 	export const getOrientationContext = orientationContext.getContext;
 	export const setOrientationContext = orientationContext.setContext;
 </script>
@@ -106,8 +108,17 @@
 		valueIndexToChange
 	});
 
+	orientationContext.setContext(
+		writable({
+			startEdge: 'left',
+			endEdge: 'right',
+			size: 'width',
+			direction: 1
+		})
+	);
+
 	// Pick the correct orientation component
-	const SliderOrientation = orientation === 'horizontal' ? SliderHorizontal : SliderVertical;
+	$: SliderOrientation = orientation === 'horizontal' ? SliderHorizontal : SliderVertical;
 
 	let valuesBeforeSlideStart = value;
 
@@ -148,6 +159,7 @@
 	{inverted}
 	aria-disabled={disabled}
 	data-disabled={disabled ? '' : undefined}
+	data-orientation={orientation}
 	on:pointerDown={() => {
 		if (!disabled) valuesBeforeSlideStart = $contextStore.values;
 	}}

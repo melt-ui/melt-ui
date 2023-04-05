@@ -32,9 +32,9 @@
 	$: percentage = convertValueToPercentage(value, $rootCtx.min, $rootCtx.max);
 	$: label = getLabel(index, $rootCtx.values.length);
 
-	$: orientationSize = size[orientation.size];
+	$: orientationSize = size[$orientation.size];
 	$: thumbInBoundsOffset = orientationSize
-		? getThumbInBoundsOffset(orientationSize, percentage, orientation.direction)
+		? getThumbInBoundsOffset(orientationSize, percentage, $orientation.direction)
 		: 0;
 
 	/**
@@ -65,7 +65,7 @@
 <span
 	style:transform="var(--radix-slider-thumb-transform)"
 	style:position="absolute"
-	style="{orientation.startEdge}: calc({percentage}% + {thumbInBoundsOffset}px)"
+	style="{$orientation.startEdge}: calc({percentage}% + {thumbInBoundsOffset}px)"
 >
 	<span
 		bind:this={thumb}

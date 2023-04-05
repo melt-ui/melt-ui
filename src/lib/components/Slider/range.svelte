@@ -25,8 +25,8 @@
 	data-orientation={$rootCtx.orientation}
 	data-disabled={$rootCtx.disabled ? '' : undefined}
 	style="{$$restProps.style}; 
-        {orientation.startEdge}: {offsetStart}%; 
-        {orientation.endEdge}: {offsetEnd}%;"
+        {$orientation.startEdge}: {offsetStart}%; 
+        {$orientation.endEdge}: {offsetEnd}%;"
 >
 	<slot />
 </span>

@@ -92,12 +92,3 @@ export function hasMinStepsBetweenValues(values: number[], minStepsBetweenValues
 	}
 	return true;
 }
-
-export function createOrientationContext() {
-	return uniqueContext<{
-		startEdge: Side;
-		endEdge: Side;
-		size: 'width' | 'height';
-		direction: number;
-	}>();
-}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Slider } from '$lib';
+	import Root from '$lib/components/Accordion/root.svelte';
 	import type { ResolvedProps } from '../helpers';
 
 	export let propsObj: ResolvedProps<typeof Slider>;
@@ -16,9 +17,15 @@
 		data-[orientation=vertical]:flex-col
 		"
 		bind:value={propsObj.Root.value}
-		max={100}
-		step={1}
-		orientation="horizontal"
+		min={propsObj.Root.min}
+		max={propsObj.Root.max}
+		step={propsObj.Root.step}
+		orientation={propsObj.Root.orientation}
+		name={propsObj.Root.name}
+		minStepsBetweenThumbs={propsObj.Root.minStepsBetweenThumbs}
+		inverted={propsObj.Root.inverted}
+		dir={propsObj.Root.dir}
+		disabled={propsObj.Root.disabled}
 		aria-label="Volume"
 	>
 		<Slider.Track

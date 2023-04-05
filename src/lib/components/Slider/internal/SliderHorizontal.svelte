@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import { setOrientationContext } from '../root.svelte';
+	import { getOrientationContext, setOrientationContext } from '../root.svelte';
 	import SliderImpl from './SliderImpl.svelte';
 	import { BACK_KEYS, linearScale } from './utils';
 
@@ -19,8 +19,10 @@
 	export let dir: 'ltr' | 'rtl';
 	export let inverted: boolean;
 
-	const isDirectionLTR = dir === 'ltr';
-	const isSlidingFromLeft = (isDirectionLTR && !inverted) || (!isDirectionLTR && inverted);
+	const orientation = getOrientationContext();
+
+	$: isDirectionLTR = dir === 'ltr';
+	$: isSlidingFromLeft = (isDirectionLTR && !inverted) || (!isDirectionLTR && inverted);
 
 	let rect: DOMRect | undefined;
 
@@ -34,12 +36,12 @@
 		return value(pointerPosition - rect.left);
 	}
 
-	setOrientationContext({
+	$: $orientation = {
 		startEdge: isSlidingFromLeft ? 'left' : 'right',
 		endEdge: isSlidingFromLeft ? 'right' : 'left',
 		size: 'width',
 		direction: isSlidingFromLeft ? 1 : -1
-	});
+	};
 </script>
 
 <SliderImpl
