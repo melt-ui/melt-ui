@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Slider } from '$lib';
-	import Root from '$lib/components/Accordion/root.svelte';
 	import type { ResolvedProps } from '../helpers';
 
 	export let propsObj: ResolvedProps<typeof Slider>;
@@ -8,7 +7,7 @@
 	propsObj.Root.value = [20];
 </script>
 
-<form>
+<form class="grid h-full place-items-center">
 	<Slider.Root
 		class="relative flex h-5
 		w-[200px] touch-none select-none items-center 

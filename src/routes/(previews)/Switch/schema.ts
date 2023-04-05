@@ -12,8 +12,8 @@ export const schema = {
 				checked: { type: 'boolean' },
 				required: { type: 'boolean' },
 				disabled: { type: 'boolean' },
-				name: { type: 'string' },
-				value: { type: 'string' }
+				name: { type: 'string', show: null },
+				value: { type: 'string', show: null }
 			}
 		},
 		Thumb: {}

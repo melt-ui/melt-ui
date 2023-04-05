@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import { getOrientationContext, setOrientationContext } from '../root.svelte';
+	import { getOrientationContext } from '../root.svelte';
 	import SliderImpl from './SliderImpl.svelte';
 	import { BACK_KEYS, linearScale } from './utils';
 
 	const dispatch = createEventDispatcher<{
 		slideStart: { value: number };
 		slideMove: { value: number };
-		slideEnd: {};
+		slideEnd: Record<string, never>;
 		stepKeyDown: { event: KeyboardEvent; direction: number };
 		homeKeyDown: { event: KeyboardEvent };
 		endKeyDown: { event: KeyboardEvent };

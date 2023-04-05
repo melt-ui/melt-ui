@@ -1,5 +1,4 @@
 import { clamp } from '$lib/helpers/numbers';
-import { uniqueContext } from '$lib/helpers/uniqueContext';
 
 export type Direction = 'ltr' | 'rtl';
 export type Side = 'top' | 'right' | 'bottom' | 'left';

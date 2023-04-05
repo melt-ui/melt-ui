@@ -2,7 +2,9 @@
 	import { getPropsObj } from './(previews)/helpers';
 	import schemas from './(previews)/schemas';
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function getPropsObjForSchema(schema: (typeof schemas)[keyof typeof schemas]): any {
+		// eslint-disable-next-line @typescript-eslint/ban-types
 		return getPropsObj<{}>(schema.meta);
 	}
 </script>
@@ -30,7 +32,7 @@
 
 		@media screen('md') {
 			grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-			grid-template-rows: repeat(auto-fill, minmax(400px, 1fr));
+			grid-auto-rows: minmax(400px, auto);
 		}
 	}
 </style>
