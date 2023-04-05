@@ -34,6 +34,6 @@
 	$: itemCtx.set({ value });
 </script>
 
-<Collapsible.Root open={isOpen} {...$$restProps} data-radix-accordion-item>
+<Collapsible.Root open={isOpen} {...$$restProps}>
 	<slot />
 </Collapsible.Root>

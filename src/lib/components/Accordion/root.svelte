@@ -1,4 +1,5 @@
 <script lang="ts" context="module">
+	import { componentCollectionContext } from '$lib/helpers/componentCollectionContext';
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
 
 	type Type = 'single' | 'multiple';
@@ -23,6 +24,10 @@
 
 	const { getContext, setContext } = reactiveContext<AccordionContext>();
 	export const getRootCtx = getContext;
+
+	// Create a context for all trigger components
+	const triggerCollectionContext = componentCollectionContext();
+	export const getTriggerCollection = triggerCollectionContext.getContext;
 </script>
 
 <script lang="ts">
@@ -38,6 +43,8 @@
 		value: [value, (v) => (value = v)]
 	});
 	$: contextStore.set({ type: type ?? 'single', value });
+
+	triggerCollectionContext.createContext();
 </script>
 
 <div {...$$restProps} data-radix-accordion-root>

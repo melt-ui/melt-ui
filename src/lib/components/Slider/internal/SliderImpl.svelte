@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getRootContext } from '../root.svelte';
+	import { getRootContext, getThumbCollectionContext } from '../root.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { ARROW_KEYS, PAGE_KEYS } from './utils';
 
@@ -15,6 +15,7 @@
 	}>();
 
 	const rootCtx = getRootContext();
+	const thumbCollection = getThumbCollectionContext();
 </script>
 
 <span
@@ -42,7 +43,7 @@
 		event.preventDefault();
 		// Touch devices have a delay before focusing so won't focus if touch immediately moves
 		// away from target (sliding). We want thumb to focus regardless.
-		if ($rootCtx.thumbs.includes(target)) {
+		if ($thumbCollection.includes(target)) {
 			target.focus();
 		} else {
 			dispatch('slideStart', event);

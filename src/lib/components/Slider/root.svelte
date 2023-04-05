@@ -1,4 +1,5 @@
 <script lang="ts" context="module">
+	import { componentCollectionContext } from '$lib/helpers/componentCollectionContext';
 	import { clamp } from '$lib/helpers/numbers';
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
 	import { uniqueContext } from '$lib/helpers/uniqueContext';
@@ -27,7 +28,6 @@
 		max: number;
 		disabled: boolean;
 		orientation: Orientation;
-		thumbs: Array<HTMLElement>;
 		valueIndexToChange: number;
 	};
 
@@ -43,6 +43,10 @@
 
 	const orientationContext = uniqueContext<OrientationContext>();
 	export const getOrientationContext = orientationContext.getContext;
+
+	// Create a context for all thumb components
+	const thumbCollectionContext = componentCollectionContext();
+	export const getThumbCollectionContext = thumbCollectionContext.getContext;
 </script>
 
 <script lang="ts">
@@ -78,7 +82,6 @@
 		valueChange: number[];
 	}>();
 
-	let thumbs = new Array<HTMLElement>();
 	let valueIndexToChange = 0;
 
 	const contextStore = setContext({
@@ -93,7 +96,6 @@
 		max: [max, (v) => (max = v)],
 		disabled: [disabled, (v) => (disabled = v)],
 		orientation: [orientation, (v) => (orientation = v)],
-		thumbs: [thumbs, (v) => (thumbs = v)],
 		valueIndexToChange: [valueIndexToChange, (v) => (valueIndexToChange = v)]
 	});
 	$: contextStore.set({
@@ -102,7 +104,6 @@
 		max,
 		disabled,
 		orientation,
-		thumbs,
 		valueIndexToChange
 	});
 
@@ -114,6 +115,8 @@
 			direction: 1
 		})
 	);
+
+	const thumbComponents = thumbCollectionContext.createContext();
 
 	// Pick the correct orientation component
 	$: SliderOrientation = orientation === 'horizontal' ? SliderHorizontal : SliderVertical;
@@ -166,7 +169,7 @@
 		const { value } = detail;
 		const closestIndex = getClosestValueIndex($contextStore.values, value);
 		updateValues(value, closestIndex);
-		thumbs[valueIndexToChange]?.focus();
+		$thumbComponents.at(valueIndexToChange)?.focus();
 	}}
 	on:slideMove={({ detail }) => {
 		if (disabled) return;
