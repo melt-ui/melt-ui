@@ -1,15 +1,17 @@
 import { schema as Switch } from './Switch/schema';
-import { schema as accordion } from './Accordion/schema';
-import { schema as checkbox } from './Checkbox/schema';
-import { schema as collapsible } from './Collapsible/schema';
-import { schema as slider } from './Slider/schema';
-import { schema as toggle } from './Toggle/schema';
+import { schema as Accordion } from './Accordion/schema';
+import { schema as Checkbox } from './Checkbox/schema';
+import { schema as Collapsible } from './Collapsible/schema';
+import { schema as Slider } from './Slider/schema';
+import { schema as Toggle } from './Toggle/schema';
+import { schema as AspectRatio } from './AspectRatio/schema';
 
 export default {
-	accordion,
-	checkbox,
-	collapsible,
-	Switch,
-	slider,
-	toggle
+	accordion: Accordion,
+	'aspect-ratio': AspectRatio,
+	checkbox: Checkbox,
+	collapsible: Collapsible,
+	slider: Slider,
+	switch: Switch,
+	toggle: Toggle
 };
