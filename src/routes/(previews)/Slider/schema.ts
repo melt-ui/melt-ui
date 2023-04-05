@@ -8,10 +8,49 @@ export const schema = {
 	example,
 	meta: {
 		Root: {
-			value: {
-				type: 'number',
-				show: 'value'
+			props: {
+				value: {
+					type: 'number',
+					show: 'value'
+				},
+				min: {
+					type: 'number',
+					default: 0
+				},
+				max: {
+					type: 'number',
+					default: 100
+				},
+				step: {
+					type: 'number',
+					default: 1
+				},
+				orientation: {
+					type: 'enum',
+					options: ['horizontal', 'vertical'],
+					default: 'horizontal'
+				},
+				dir: {
+					type: 'enum',
+					options: ['ltr', 'rtl'],
+					default: 'ltr'
+				},
+				disabled: {
+					type: 'boolean',
+					default: false
+				},
+				inverted: {
+					type: 'boolean',
+					default: false
+				},
+				minStepsBetweenThumbs: {
+					type: 'number',
+					default: 0
+				}
 			}
-		}
+		},
+		Track: {},
+		Thumb: {},
+		Range: {}
 	}
 } satisfies PreviewSchema<typeof Slider>;
