@@ -6,14 +6,14 @@
 </h1>
 </p>
 
+## Description
+
+This is a port of [Radix UI](https://www.radix-ui.com/) for Svelte.
+
 [![](https://img.shields.io/npm/v/radix-svelte?style=flat-square)](https://www.npmjs.com/package/radix-svelte)
 [![](https://img.shields.io/github/actions/workflow/status/TGlide/radix-svelte/ci.yaml?style=flat-square)](https://github.com/TGlide/radix-svelte/actions/workflows/ci.yaml)
 ![](https://img.shields.io/github/license/TGlide/radix-svelte?style=flat-square)
 [![](https://dcbadge.vercel.app/api/server/gQrpPs34xH?style=flat-square)](https://discord.gg/gQrpPs34xH)
-
-## Description
-
-This is a port of [Radix UI](https://www.radix-ui.com/) for Svelte.
 
 ### Design Principles
 
