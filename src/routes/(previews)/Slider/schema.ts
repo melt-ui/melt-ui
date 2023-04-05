@@ -10,7 +10,7 @@ export const schema = {
 		Root: {
 			props: {
 				value: {
-					type: 'number',
+					type: 'number[]',
 					show: 'value'
 				},
 				min: {
