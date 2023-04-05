@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/experimental-ct-svelte';
 
+import type { Locator } from '@playwright/test';
 import SliderTest from './SliderTest.svelte';
 import { axeViolations } from '$test-helpers/axeTester.js';
 
@@ -9,36 +10,40 @@ test.describe('Slider', () => {
 		expect(await axeViolations(page)).toEqual([]);
 	});
 
+	let root: Locator;
+	let input: Locator;
+	let thumb: Locator;
+	test.beforeEach(async ({ page }) => {
+		root = page.getByTestId('slider-root');
+		input = page.locator('input');
+		thumb = page.getByTestId('slider-thumb');
+	});
+
 	test('Horizontal value updates when clicked', async ({ mount }) => {
-		const cmp = await mount(SliderTest);
-		const root = cmp.getByTestId('slider-root');
-		const input = cmp.locator('input');
+		await mount(SliderTest);
 
 		await root.click({
 			position: { x: 40, y: 0 }
 		});
 
-		await expect(cmp.getByTestId('slider-thumb')).toBeFocused();
+		await expect(thumb).toBeFocused();
 		await expect(input).toHaveAttribute('value', '40');
 	});
 
 	test('Vertical value updates when clicked', async ({ mount }) => {
-		const cmp = await mount(SliderTest, { props: { orientation: 'vertical' } });
-		const root = cmp.getByTestId('slider-root');
-		const input = cmp.locator('input');
+		await mount(SliderTest, { props: { orientation: 'vertical' } });
 
 		await root.click({
 			position: { x: 0, y: 40 }
 		});
 
-		await expect(cmp.getByTestId('slider-thumb')).toBeFocused();
+		await expect(thumb).toBeFocused();
 		await expect(input).toHaveAttribute('value', '60');
 	});
 
 	test('Value gets inverted', async ({ mount }) => {
-		const cmp = await mount(SliderTest, { props: { inverted: true } });
-		const root = cmp.getByTestId('slider-root');
-		const input = cmp.locator('input');
+		await mount(SliderTest, { props: { inverted: true } });
+
 		await root.click({
 			position: { x: 40, y: 0 }
 		});
@@ -46,9 +51,8 @@ test.describe('Slider', () => {
 	});
 
 	test('Min / max values are respected', async ({ mount }) => {
-		const cmp = await mount(SliderTest, { props: { min: 100, max: 200 } });
-		const root = cmp.getByTestId('slider-root');
-		const input = cmp.locator('input');
+		await mount(SliderTest, { props: { min: 100, max: 200 } });
+
 		await root.click({
 			position: { x: 40, y: 0 }
 		});
@@ -56,12 +60,10 @@ test.describe('Slider', () => {
 	});
 
 	test('Should be disabled when disabled prop is true', async ({ mount }) => {
-		const cmp = await mount(SliderTest, { props: { disabled: true } });
-		const root = cmp.getByTestId('slider-root');
-		const input = cmp.locator('input');
+		await mount(SliderTest, { props: { disabled: true } });
 
 		await expect(root).toHaveAttribute('data-disabled', '');
-		await expect(cmp.getByTestId('slider-thumb')).toHaveAttribute('data-disabled', '');
+		await expect(thumb).toHaveAttribute('data-disabled', '');
 
 		await root.click({
 			position: { x: 40, y: 0 }
@@ -70,9 +72,7 @@ test.describe('Slider', () => {
 	});
 
 	test('Keyboard interaction', async ({ mount, page }) => {
-		const cmp = await mount(SliderTest);
-		const thumb = cmp.getByTestId('slider-thumb');
-		const input = cmp.locator('input');
+		await mount(SliderTest);
 
 		await thumb.focus();
 		await page.keyboard.press('ArrowRight');
@@ -80,5 +80,23 @@ test.describe('Slider', () => {
 
 		await page.keyboard.press('Shift+ArrowRight');
 		await expect(input).toHaveAttribute('value', '11');
+	});
+
+	test('Increased step size', async ({ mount }) => {
+		await mount(SliderTest, { props: { step: 25 } });
+
+		await root.click({
+			position: { x: 40, y: 0 }
+		});
+		await expect(input).toHaveAttribute('value', '50');
+	});
+
+	test('RTL Direction flips the values', async ({ mount }) => {
+		await mount(SliderTest, { props: { dir: 'rtl' } });
+
+		await root.click({
+			position: { x: 40, y: 0 }
+		});
+		await expect(input).toHaveAttribute('value', '60');
 	});
 });
