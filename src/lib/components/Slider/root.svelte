@@ -94,13 +94,7 @@
 		disabled: [disabled, (v) => (disabled = v)],
 		orientation: [orientation, (v) => (orientation = v)],
 		thumbs: [thumbs, (v) => (thumbs = v)],
-		valueIndexToChange: [
-			valueIndexToChange,
-			(v) => {
-				valueIndexToChange = v;
-				thumbs[valueIndexToChange]?.focus();
-			}
-		]
+		valueIndexToChange: [valueIndexToChange, (v) => (valueIndexToChange = v)]
 	});
 	$: contextStore.set({
 		values: value,
@@ -162,6 +156,7 @@
 		const { value } = detail;
 		const closestIndex = getClosestValueIndex($contextStore.values, value);
 		updateValues(value, closestIndex);
+		thumbs[valueIndexToChange]?.focus();
 	}}
 	on:slideMove={({ detail }) => {
 		if (disabled) return;
