@@ -8,7 +8,7 @@
 	export let propsObj: ResolvedProps<typeof Switch>;
 </script>
 
-<form class="grid h-full place-items-center">
+<form>
 	<div class="flex items-center">
 		<label class="pr-[15px] text-[15px] leading-none text-white" for="airplane-mode">
 			Airplane mode
