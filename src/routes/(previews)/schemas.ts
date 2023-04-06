@@ -5,6 +5,7 @@ import { schema as Collapsible } from './Collapsible/schema';
 import { schema as Slider } from './Slider/schema';
 import { schema as Toggle } from './Toggle/schema';
 import { schema as AspectRatio } from './AspectRatio/schema';
+import { schema as Progress } from './Progress/schema';
 
 export default {
 	accordion: Accordion,
@@ -13,5 +14,6 @@ export default {
 	collapsible: Collapsible,
 	slider: Slider,
 	switch: Switch,
-	toggle: Toggle
+	toggle: Toggle,
+	progress: Progress
 };
