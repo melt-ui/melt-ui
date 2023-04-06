@@ -30,7 +30,7 @@
 		<p class="text-slate-300">{cmpSchema.description}</p>
 	</div>
 	<div class="comp-preview mt-4 h-96">
-		<div class="mx-auto flex grow place-items-center">
+		<div class="max-w-md grow flex justify-center items-center">
 			<svelte:component this={cmpSchema.example} bind:propsObj={props} />
 		</div>
 	</div>
