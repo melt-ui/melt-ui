@@ -17,7 +17,7 @@
 		(SingleAccordionRootProps | MultipleAccordionRootProps);
 
 	export type AccordionContext = {
-		type: Type;
+		readonly type: Type;
 		value: AccordionRootProps['value'];
 	};
 
@@ -30,11 +30,11 @@
 
 	type $$Props = AccordionRootProps;
 
-	export let type: $$Props['type'] = 'single';
+	export let type: NonNullable<$$Props['type']> = 'single';
 	export let value: $$Props['value'] = null;
 
 	const contextStore = setContext({
-		type: [type ?? 'single', (v) => (type = v)],
+		type: [type],
 		value: [value, (v) => (value = v)]
 	});
 	$: contextStore.set({ type: type ?? 'single', value });

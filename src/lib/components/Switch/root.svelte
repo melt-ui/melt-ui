@@ -16,7 +16,7 @@
 
 	type SwitchContext = {
 		checked: SwitchRootProps['checked'];
-		disabled: SwitchRootProps['disabled'];
+		readonly disabled: SwitchRootProps['disabled'];
 	};
 
 	const { getContext, setContext } = reactiveContext<SwitchContext>();
@@ -43,7 +43,7 @@
 
 	const ctxStore = setContext({
 		checked: [checked, (v) => (checked = v)],
-		disabled: [disabled, (v) => (disabled = v)]
+		disabled: [disabled]
 	});
 	$: ctxStore.set({ checked, disabled });
 </script>
