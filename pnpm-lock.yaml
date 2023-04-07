@@ -2,6 +2,8 @@ lockfileVersion: 5.4
 
 specifiers:
   '@axe-core/playwright': ^4.6.1
+  '@floating-ui/core': ^1.2.6
+  '@floating-ui/dom': ^1.2.6
   '@fontsource/inter': ^4.5.15
   '@iconify-json/radix-icons': ^1.1.10
   '@playwright/experimental-ct-svelte': ^1.32.1
@@ -37,6 +39,10 @@ specifiers:
   unplugin-icons: ^0.16.1
   vite: ^4.2.0
   vitest: ^0.25.3
+
+dependencies:
+  '@floating-ui/core': 1.2.6
+  '@floating-ui/dom': 1.2.6
 
 devDependencies:
   '@axe-core/playwright': 4.6.1_playwright@1.32.2
@@ -368,6 +374,16 @@ packages:
     resolution: {integrity: sha512-x5vzdtOOGgFVDCUs81QRB2+liax8rFg3+7hqM+QhBG0/G3F1ZsoYl97UrqgHgQ9KKT7G6c4V+aTUCgu/n22v1A==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dev: true
+
+  /@floating-ui/core/1.2.6:
+    resolution: {integrity: sha512-EvYTiXet5XqweYGClEmpu3BoxmsQ4hkj3QaYA6qEnigCWffTP3vNRwBReTdrwDwo7OoJ3wM8Uoe9Uk4n+d4hfg==}
+    dev: false
+
+  /@floating-ui/dom/1.2.6:
+    resolution: {integrity: sha512-02vxFDuvuVPs22iJICacezYJyf7zwwOCWkPNkWNBr1U0Qt1cKFYzWvxts0AmqcOQGwt/3KJWcWIgtbUU38keyw==}
+    dependencies:
+      '@floating-ui/core': 1.2.6
+    dev: false
 
   /@fontsource/inter/4.5.15:
     resolution: {integrity: sha512-FzleM9AxZQK2nqsTDtBiY0PMEVWvnKnuu2i09+p6DHvrHsuucoV2j0tmw+kAT3L4hvsLdAIDv6MdGehsPIdT+Q==}

@@ -30,6 +30,10 @@
 	"peerDependencies": {
 		"svelte": "^3.54.0"
 	},
+	"dependencies": {
+		"@floating-ui/core": "^1.2.6",
+		"@floating-ui/dom": "^1.2.6"
+	},
 	"devDependencies": {
 		"@axe-core/playwright": "^4.6.1",
 		"@fontsource/inter": "^4.5.15",
