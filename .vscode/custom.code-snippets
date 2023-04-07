@@ -5,11 +5,11 @@
 			"<script lang=\"ts\" context=\"module\">",
 			"\timport type { BaseProps } from '$$lib/types';",
 			"",
-			"\texport type $1Props = BaseProps;",
+			"\texport type ${TM_DIRECTORY/.+\\/(.+)/$1/}${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}Props = BaseProps;",
 			"</script>",
 			"",
 			"<script lang=\"ts\">",
-			"\ttype $$$Props = $1Props;",
+			"\ttype $$$Props = ${TM_DIRECTORY/.+\\/(.+)/$1/}${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}Props;",
 			"</script>",
 			"",
 			"<div {...$$$restProps}>",
@@ -20,11 +20,13 @@
 		"description": "Component Template"
 	},
 	"Controlled Prop": {
-		"prefix": "ctrl-prop",
+		"prefix": "reactive-ctx",
 		"body": [
-			"export let $1: $$$Props['$1'] = $2;",
-			"const writable${1/(.*)/${1:/capitalize}/} = controllableState($1, (v) => ($1 = v));",
-			"$: if ($1) $$writable${1/(.*)/${1:/capitalize}/} = $1;"
+			"type ${TM_DIRECTORY/.+\\/(.+)/$1/}${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}Context = {",
+			"};",
+			"",
+			"const { getContext, setContext } = reactiveContext<${TM_DIRECTORY/.+\\/(.+)/$1/}${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}Context>();",
+			"export const get${TM_DIRECTORY/.+\\/(.+)/$1/}${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}Context = getContext;"
 		],
 		"description": "Controlled Prop"
 	}
