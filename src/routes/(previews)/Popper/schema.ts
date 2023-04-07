@@ -13,17 +13,6 @@ export const schema = {
 		Arrow: {},
 		Content: {
 			props: {
-				//  side?: Side;
-				//  sideOffset?: number;
-				//  align?: Align;
-				//  alignOffset?: number;
-				//  arrowPadding?: number;
-				//  collisionBoundary?: Boundary | Boundary[];
-				//  collisionPadding?: number | Partial<Record<Side, number>>;
-				//  sticky?: 'partial' | 'always';
-				//  hideWhenDetached?: boolean;
-				//  avoidCollisions?: boolean;
-
 				side: {
 					type: 'enum',
 					options: ['top', 'right', 'bottom', 'left'],
