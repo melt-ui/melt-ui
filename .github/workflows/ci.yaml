@@ -13,7 +13,7 @@ concurrency:
 
 permissions:
   contents: read # to fetch code (actions/checkout)
-
+  
 jobs:
   Lint:
     runs-on: ubuntu-latest
@@ -21,26 +21,36 @@ jobs:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v2
         with:
-          node-version: '16.x'
-          cache: 'yarn'
-      - run: yarn --frozen-lockfile
-      - run: yarn run lint
-      - run: yarn run check
+          version: 7.24.2
+          run_install: true
+      - run: pnpm run lint
+
+  Check:
+    runs-on: ubuntu-latest
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7.24.2
+          run_install: true
+      - run: pnpm run check
+      
 
   Tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v2
         with:
-          node-version: '16.x'
-          cache: 'yarn'
-      - run: yarn --frozen-lockfile
+          version: 7.24.2
+          run_install: true
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      - run: yarn run test
+      - run: pnpm run test
       - uses: actions/upload-artifact@v3
         if: always()
         with:

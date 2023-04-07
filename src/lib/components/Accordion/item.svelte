@@ -6,7 +6,7 @@
 	};
 
 	type ItemContext = {
-		value: string;
+		readonly value: string;
 	};
 
 	const { getContext, setContext } = reactiveContext<ItemContext>();
@@ -29,7 +29,7 @@
 		: $rootCtx.value === value;
 
 	const itemCtx = setContext({
-		value: [value, (v) => (value = v)]
+		value: [value]
 	});
 	$: itemCtx.set({ value });
 </script>

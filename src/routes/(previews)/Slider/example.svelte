@@ -7,7 +7,7 @@
 	propsObj.Root.value = [20];
 </script>
 
-<form class="grid h-full place-items-center">
+<form>
 	<Slider.Root
 		class="relative flex h-5
 		w-[200px] touch-none select-none items-center 

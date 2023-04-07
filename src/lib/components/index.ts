@@ -5,3 +5,4 @@ export { Slider } from './Slider';
 export { Toggle } from './Toggle';
 export { Switch } from './Switch';
 export { AspectRatio } from './AspectRatio';
+export { Progress } from './Progress';
