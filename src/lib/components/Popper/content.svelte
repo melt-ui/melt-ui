@@ -48,7 +48,6 @@
 
 	import { computePosition } from '@floating-ui/core';
 
-	import { browser } from '$app/environment';
 	import { onDestroy } from 'svelte';
 	import { getRootContext } from './root.svelte';
 	import { getSideAndAlignFromPlacement, isDefined, isNotNull, transformOrigin } from './utils';
@@ -177,7 +176,7 @@
 		});
 	}
 
-	$: contentZIndex = (content && browser && window.getComputedStyle(content).zIndex) || 0;
+	$: contentZIndex = (content && window?.getComputedStyle(content).zIndex) || 0;
 </script>
 
 <div
