@@ -1,6 +1,6 @@
-<!-- Svelte -->
 <script lang="ts" context="module">
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
+	import { generateId } from '$lib/internal';
 
 	export type DialogRootProps = {
 		open?: boolean;
@@ -9,6 +9,9 @@
 
 	type DialogRootContext = {
 		open: boolean;
+		readonly titleId: string;
+		readonly descriptionId: string;
+		readonly contentId: string;
 	};
 
 	const { getContext, setContext } = reactiveContext<DialogRootContext>();
@@ -20,9 +23,12 @@
 
 	export let open: $$Props['open'] = false;
 	const rootCtx = setContext({
-		open: [open ?? false, (value) => (open = value)]
+		open: [open ?? false, (value) => (open = value)],
+		titleId: [generateId()],
+		descriptionId: [generateId()],
+		contentId: [generateId()]
 	});
-	$: typeof open !== 'undefined' && rootCtx.set({ open });
+	$: typeof open !== 'undefined' && ($rootCtx.open = open);
 </script>
 
 <slot />

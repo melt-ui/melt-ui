@@ -8,7 +8,14 @@ export const schema = {
 		'A window overlaid on either the primary window or another dialog window, rendering the content underneath inert.',
 	example,
 	meta: {
-		Root: {},
+		Root: {
+			props: {
+				open: {
+					type: 'boolean',
+					default: false
+				}
+			}
+		},
 		Close: {},
 		Content: {},
 		Portal: {},
