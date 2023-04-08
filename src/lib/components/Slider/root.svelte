@@ -91,8 +91,8 @@
 		max: [max],
 		disabled: [disabled],
 		orientation: [orientation],
-		thumbs: [[], () => {}],
-		valueIndexToChange: [-1, () => {}]
+		thumbs: [[]],
+		valueIndexToChange: [-1]
 	});
 
 	// Update context when props change

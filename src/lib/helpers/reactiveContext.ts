@@ -12,7 +12,7 @@ type ValueSetters<T> = {
 	[K in keyof T]: IfEquals<
 		{ [Q in K]: T[K] },
 		{ -readonly [Q in K]: T[K] },
-		ValueSetterPair<T[K]>,
+		ValueSetterPair<T[K]> | ValueSetterReadonly<T[K]>,
 		ValueSetterReadonly<T[K]>
 	>;
 };

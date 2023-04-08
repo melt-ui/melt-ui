@@ -6,6 +6,7 @@ import { schema as Slider } from './Slider/schema';
 import { schema as Toggle } from './Toggle/schema';
 import { schema as AspectRatio } from './AspectRatio/schema';
 import { schema as Progress } from './Progress/schema';
+import { schema as Dialog } from './Dialog/schema';
 
 export default {
 	accordion: Accordion,
@@ -15,5 +16,6 @@ export default {
 	slider: Slider,
 	switch: Switch,
 	toggle: Toggle,
-	progress: Progress
+	progress: Progress,
+	dialog: Dialog
 };

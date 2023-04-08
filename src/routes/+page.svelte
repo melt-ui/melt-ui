@@ -7,10 +7,14 @@
 		// eslint-disable-next-line @typescript-eslint/ban-types
 		return getPropsObj<{}>(schema.meta);
 	}
+
+	$: sortedEntries = Object.entries(schemas).sort((a, b) => {
+		return a[1].title.toLowerCase().localeCompare(b[1].title.toLowerCase());
+	});
 </script>
 
 <div class="wrapper">
-	{#each Object.entries(schemas) as [identifier, schema]}
+	{#each sortedEntries as [identifier, schema]}
 		{@const propsObj = getPropsObjForSchema(schema)}
 		<div class="flex h-full flex-col gap-2 overflow-hidden">
 			<a href={`/${identifier}`} class="flex items-baseline justify-between">
