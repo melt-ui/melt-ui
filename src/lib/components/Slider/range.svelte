@@ -1,4 +1,5 @@
 <script lang="ts" context="module">
+	import { useActions } from '$lib/helpers/useActions';
 	import type { BaseProps } from '$lib/types';
 	import { convertValueToPercentage } from './internal/utils';
 	import { getOrientationContext, getRootContext } from './root.svelte';
@@ -22,6 +23,7 @@
 
 <span
 	{...$$restProps}
+	use:useActions={$$restProps.use}
 	data-orientation={$rootCtx.orientation}
 	data-disabled={$rootCtx.disabled ? '' : undefined}
 	style="{$$restProps.style}; 

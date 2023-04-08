@@ -1,5 +1,6 @@
 <script lang="ts" context="module">
 	import { useCollection } from '$lib/helpers/collectionContext';
+	import { useActions } from '$lib/helpers/useActions';
 	import type { BaseProps } from '$lib/types';
 	import { convertValueToPercentage, linearScale } from './internal/utils';
 	import { getOrientationContext, getRootContext, getThumbCollectionContext } from './root.svelte';
@@ -64,6 +65,7 @@
 	<span
 		use:useCollection={{ collection: thumbComponentsContext, onIndexChange }}
 		{...$$restProps}
+		use:useActions={$$restProps.use}
 		bind:clientHeight={size.height}
 		bind:clientWidth={size.width}
 		role="slider"

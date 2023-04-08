@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
 	import { collectionContext } from '$lib/helpers/collectionContext';
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
+	import { useActions } from '$lib/helpers/useActions';
 
 	type Type = 'single' | 'multiple';
 
@@ -47,6 +48,6 @@
 	triggerCollectionContext.createContext();
 </script>
 
-<div {...$$restProps} data-radix-accordion-root>
+<div {...$$restProps} use:useActions={$$restProps.use} data-radix-accordion-root>
 	<slot />
 </div>

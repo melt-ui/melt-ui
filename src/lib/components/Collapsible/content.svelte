@@ -8,6 +8,7 @@
 	import type { BaseProps } from '$lib/types';
 	import { slide, type SlideParams } from 'svelte/transition';
 	import { getRootContext } from './root.svelte';
+	import { useActions } from '$lib/helpers/useActions';
 
 	type $$Props = CollapsibleContentProps;
 
@@ -33,6 +34,7 @@
 {#if $ctx.open}
 	<div
 		{...$$restProps}
+		use:useActions={$$restProps.use}
 		data-state={$ctx.open ? 'open' : 'closed'}
 		data-disabled={$ctx.disabled ? 'true' : 'false'}
 		transition:slide|local={transitionParams}

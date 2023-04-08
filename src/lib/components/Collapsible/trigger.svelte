@@ -3,15 +3,13 @@
 </script>
 
 <script lang="ts">
-	import { useActions, type ActionArray } from '$lib/helpers/useActions';
+	import { useActions } from '$lib/helpers/useActions';
 
 	import type { BaseProps } from '$lib/types';
 	import { createEventDispatcher } from 'svelte';
 	import { getRootContext } from './root.svelte';
 
 	type $$Props = CollapsibleTriggerProps;
-
-	export let use: ActionArray = [];
 
 	const ctx = getRootContext();
 
@@ -22,7 +20,7 @@
 
 <button
 	{...$$restProps}
-	use:useActions={use}
+	use:useActions={$$restProps.use}
 	on:click={() => {
 		$ctx.open = !$ctx.open;
 		dispatch('change', $ctx.open);

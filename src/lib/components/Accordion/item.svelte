@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
 
-	export type AccordionItemProps = BaseProps & {
+	export type AccordionItemProps = CollapsibleRootProps & {
 		value: string;
 	};
 
@@ -14,7 +14,7 @@
 </script>
 
 <script lang="ts">
-	import type { BaseProps } from '$lib/types';
+	import type { CollapsibleRootProps } from '../Collapsible';
 	import { Collapsible } from '../index';
 	import { getRootCtx } from './root.svelte';
 
