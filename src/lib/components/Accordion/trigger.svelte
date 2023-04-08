@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-	import { useComponentCollection } from '$lib/helpers/componentCollectionContext';
+	import { useCollection } from '$lib/helpers/collectionContext';
 
 	import type { BaseProps } from '$lib/types';
 	import { Collapsible } from '../Collapsible';
@@ -53,8 +53,9 @@
 
 <Collapsible.Trigger
 	use={[
+		...$$restProps.use,
 		[
-			useComponentCollection,
+			useCollection,
 			{
 				collection: triggerCollection,
 				onIndexChange

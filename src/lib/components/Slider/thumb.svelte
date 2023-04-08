@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import { useComponentCollection } from '$lib/helpers/componentCollectionContext';
+	import { useCollection } from '$lib/helpers/collectionContext';
 	import type { BaseProps } from '$lib/types';
 	import { convertValueToPercentage, linearScale } from './internal/utils';
 	import { getOrientationContext, getRootContext, getThumbCollectionContext } from './root.svelte';
@@ -62,7 +62,7 @@
 	style="{$orientation.startEdge}: calc({percentage}% + {thumbInBoundsOffset}px)"
 >
 	<span
-		use:useComponentCollection={{ collection: thumbComponentsContext, onIndexChange }}
+		use:useCollection={{ collection: thumbComponentsContext, onIndexChange }}
 		{...$$restProps}
 		bind:clientHeight={size.height}
 		bind:clientWidth={size.width}

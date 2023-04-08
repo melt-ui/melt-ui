@@ -1,5 +1,4 @@
 <script lang="ts" context="module">
-	import { componentCollectionContext } from '$lib/helpers/componentCollectionContext';
 	import { clamp } from '$lib/helpers/numbers';
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
 	import { uniqueContext } from '$lib/helpers/uniqueContext';
@@ -45,11 +44,12 @@
 	export const getOrientationContext = orientationContext.getContext;
 
 	// Create a context for all thumb components
-	const thumbCollectionContext = componentCollectionContext();
+	const thumbCollectionContext = collectionContext();
 	export const getThumbCollectionContext = thumbCollectionContext.getContext;
 </script>
 
 <script lang="ts">
+	import { collectionContext } from '$lib/helpers/collectionContext';
 	import SliderHorizontal from './internal/SliderHorizontal.svelte';
 	import SliderVertical from './internal/SliderVertical.svelte';
 	import {
@@ -95,7 +95,7 @@
 		max: [max],
 		disabled: [disabled],
 		orientation: [orientation],
-		valueIndexToChange: [-1, () => {}]
+		valueIndexToChange: [-1, () => null]
 	});
 
 	// Update context when props change

@@ -34,16 +34,16 @@ export function useActions(node: HTMLElement | SVGElement, actions: ActionArray)
 				throw new Error('You must not change the length of an actions array.');
 			}
 
-			if (actions) {
-				for (let i = 0; i < actions.length; i++) {
-					const returnEntry = actionReturns[i];
-					if (returnEntry && returnEntry.update) {
-						const actionEntry = actions[i];
-						if (Array.isArray(actionEntry) && actionEntry.length > 1) {
-							returnEntry.update(actionEntry[1]);
-						} else {
-							returnEntry.update();
-						}
+			if (!actions) return;
+
+			for (let i = 0; i < actions.length; i++) {
+				const returnEntry = actionReturns[i];
+				if (returnEntry && returnEntry.update) {
+					const actionEntry = actions[i];
+					if (Array.isArray(actionEntry) && actionEntry.length > 1) {
+						returnEntry.update(actionEntry[1]);
+					} else {
+						returnEntry.update();
 					}
 				}
 			}

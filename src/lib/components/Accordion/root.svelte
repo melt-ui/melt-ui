@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import { componentCollectionContext } from '$lib/helpers/componentCollectionContext';
+	import { collectionContext } from '$lib/helpers/collectionContext';
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
 
 	type Type = 'single' | 'multiple';
@@ -26,7 +26,7 @@
 	export const getRootCtx = getContext;
 
 	// Create a context for all trigger components
-	const triggerCollectionContext = componentCollectionContext();
+	const triggerCollectionContext = collectionContext();
 	export const getTriggerCollection = triggerCollectionContext.getContext;
 </script>
 
