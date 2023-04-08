@@ -53,7 +53,7 @@
 
 <Collapsible.Trigger
 	use={[
-		...$$restProps.use,
+		...($$restProps.use || []),
 		[
 			useCollection,
 			{
