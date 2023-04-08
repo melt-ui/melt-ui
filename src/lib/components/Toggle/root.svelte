@@ -1,4 +1,5 @@
 <script lang="ts" context="module">
+	import { useActions } from '$lib/helpers/useActions';
 	import type { BaseProps } from '$lib/types';
 
 	export type ToggleRootProps = BaseProps<HTMLButtonElement> & {
@@ -22,6 +23,7 @@
 	data-state={pressed ? 'on' : 'off'}
 	data-disabled={disabled || undefined}
 	{...$$restProps}
+	use:useActions={$$restProps.use}
 >
 	<slot />
 </button>

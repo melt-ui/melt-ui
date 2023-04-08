@@ -1,5 +1,6 @@
 <script lang="ts" context="module">
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
+	import { useActions } from '$lib/helpers/useActions';
 	import type { BaseProps } from '$lib/types';
 
 	export type ProgressRootProps = BaseProps<HTMLProgressElement> & {
@@ -52,6 +53,7 @@
 	aria-valuenow={value}
 	aria-valuetext={`${(100 * (value ?? 0)) / (max ?? 1)}%`}
 	{...$$restProps}
+	use:useActions={$$restProps.use}
 >
 	<slot />
 </div>

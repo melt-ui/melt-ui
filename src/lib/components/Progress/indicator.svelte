@@ -1,4 +1,5 @@
 <script lang="ts" context="module">
+	import { useActions } from '$lib/helpers/useActions';
 	import type { BaseProps } from '$lib/types';
 	import { getRootContext, getState } from './root.svelte';
 
@@ -13,6 +14,7 @@
 
 <div
 	{...$$restProps}
+	use:useActions={$$restProps.use}
 	data-value={$ctx.value}
 	data-max={$ctx.max}
 	data-state={getState($ctx.value, $ctx.max)}

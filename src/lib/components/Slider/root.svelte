@@ -27,7 +27,6 @@
 		readonly max: number;
 		readonly disabled: boolean;
 		readonly orientation: Orientation;
-		thumbs: Array<HTMLElement>;
 		valueIndexToChange: number;
 	};
 
@@ -43,9 +42,14 @@
 
 	const orientationContext = uniqueContext<OrientationContext>();
 	export const getOrientationContext = orientationContext.getContext;
+
+	// Create a context for all thumb components
+	const thumbCollectionContext = collectionContext();
+	export const getThumbCollectionContext = thumbCollectionContext.getContext;
 </script>
 
 <script lang="ts">
+	import { collectionContext } from '$lib/helpers/collectionContext';
 	import SliderHorizontal from './internal/SliderHorizontal.svelte';
 	import SliderVertical from './internal/SliderVertical.svelte';
 	import {
@@ -91,8 +95,7 @@
 		max: [max],
 		disabled: [disabled],
 		orientation: [orientation],
-		thumbs: [[], () => {}],
-		valueIndexToChange: [-1, () => {}]
+		valueIndexToChange: [-1, () => null]
 	});
 
 	// Update context when props change
@@ -113,6 +116,8 @@
 			direction: 1
 		})
 	);
+
+	const thumbComponents = thumbCollectionContext.createContext();
 
 	// Pick the correct orientation component
 	$: SliderOrientation = orientation === 'horizontal' ? SliderHorizontal : SliderVertical;
@@ -165,7 +170,7 @@
 		const { value } = detail;
 		const closestIndex = getClosestValueIndex($contextStore.values, value);
 		updateValues(value, closestIndex);
-		$contextStore.thumbs[$contextStore.valueIndexToChange]?.focus();
+		$thumbComponents.at($contextStore.valueIndexToChange)?.focus();
 	}}
 	on:slideMove={({ detail }) => {
 		if (disabled) return;
