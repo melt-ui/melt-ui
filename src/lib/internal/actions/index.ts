@@ -1,0 +1,1 @@
+export { focusTrap } from './focusTrap';
