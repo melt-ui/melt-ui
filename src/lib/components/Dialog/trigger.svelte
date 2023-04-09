@@ -1,4 +1,5 @@
 <script lang="ts" context="module">
+	import { generateId } from '$lib/internal';
 	import type { BaseProps } from '$lib/types';
 	import { getDataState } from './internal/helpers';
 	import { getDialogRootContext } from './root.svelte';
@@ -10,6 +11,7 @@
 	type $$Props = DialogTriggerProps;
 
 	const rootCtx = getDialogRootContext();
+	const id = generateId();
 </script>
 
 <!-- TODO: include aria-controls -->
@@ -17,8 +19,10 @@
 	aria-haspopup="dialog"
 	aria-expanded={$rootCtx.open}
 	data-state={getDataState($rootCtx.open)}
+	{id}
 	on:click={() => {
 		$rootCtx.open = !$rootCtx.open;
+		$rootCtx.triggeredId = $rootCtx.open ? id : null;
 	}}
 	{...$$restProps}
 >

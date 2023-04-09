@@ -10,7 +10,6 @@
 	type $$Props = DialogOverlayProps;
 
 	const rootCtx = getDialogRootContext();
-	$: console.log('overlay', $rootCtx);
 </script>
 
 {#if $rootCtx.modal}

@@ -1,6 +1,8 @@
 <script lang="ts" context="module">
+	import { focus } from '$lib/helpers/dom';
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
 	import { generateId } from '$lib/internal';
+	import { tick } from 'svelte';
 
 	export type DialogRootProps = {
 		open?: boolean;
@@ -13,6 +15,7 @@
 		readonly titleId: string;
 		readonly descriptionId: string;
 		readonly contentId: string;
+		triggeredId: string | null;
 	};
 
 	const { getContext, setContext } = reactiveContext<DialogRootContext>();
@@ -31,13 +34,20 @@
 		titleId: [generateId()],
 		descriptionId: [generateId()],
 		contentId: [generateId()],
+		triggeredId: [null],
 	});
 	$: rootCtx.update((v) => ({
 		...v,
 		open: typeof open === 'boolean' ? open : v.open,
 		modal: typeof modal === 'boolean' ? modal : v.modal,
 	}));
-	$: console.log('root', $rootCtx);
+
+	$: if (!$rootCtx.open && $rootCtx.triggeredId) {
+		tick().then(() => {
+			focus(`#${$rootCtx.triggeredId}`);
+			$rootCtx.triggeredId = null;
+		});
+	}
 </script>
 
 <slot />
