@@ -2,7 +2,7 @@
 	import type { BaseProps } from '$lib/types';
 	import { getRootContext, getState } from './root.svelte';
 
-	export type SwitchThumbProps = BaseProps<HTMLSpanElement>;
+	export type SwitchThumbProps = BaseProps<'span'>;
 </script>
 
 <script lang="ts">

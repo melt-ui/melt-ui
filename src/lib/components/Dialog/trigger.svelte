@@ -3,7 +3,7 @@
 	import { getDataState } from './internal/helpers';
 	import { getDialogRootContext } from './root.svelte';
 
-	export type DialogTriggerProps = BaseProps<HTMLButtonElement>;
+	export type DialogTriggerProps = BaseProps<'button'>;
 </script>
 
 <script lang="ts">

@@ -1,4 +1,5 @@
 <script lang="ts" context="module">
+	import FocusTrap from '$lib/internal/components/FocusTrap.svelte';
 	import type { BaseProps } from '$lib/types';
 
 	export type DialogContentProps = BaseProps;
@@ -8,6 +9,6 @@
 	type $$Props = DialogContentProps;
 </script>
 
-<div {...$$restProps}>
+<FocusTrap role="dialog" {...$$restProps}>
 	<slot />
-</div>
+</FocusTrap>

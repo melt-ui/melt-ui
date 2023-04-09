@@ -3,15 +3,18 @@
 	import { getDataState } from './internal/helpers';
 	import { getDialogRootContext } from './root.svelte';
 
-	export type DialogOverlayProps = BaseProps;
+	export type DialogOverlayProps = BaseProps<'div'>;
 </script>
 
 <script lang="ts">
 	type $$Props = DialogOverlayProps;
 
 	const rootCtx = getDialogRootContext();
+	$: console.log('overlay', $rootCtx);
 </script>
 
-<div data-state={getDataState($rootCtx.open)} {...$$restProps}>
-	<slot />
-</div>
+{#if $rootCtx.modal}
+	<div data-state={getDataState($rootCtx.open)} {...$$restProps}>
+		<slot />
+	</div>
+{/if}

@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	import type { BaseProps } from '$lib/types';
 
-	export type AspectRatioProps = BaseProps<HTMLDivElement> & {
+	export type AspectRatioProps = BaseProps & {
 		ratio?: number;
 	};
 </script>

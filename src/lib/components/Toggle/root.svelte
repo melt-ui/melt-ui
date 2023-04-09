@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	import type { BaseProps } from '$lib/types';
 
-	export type ToggleRootProps = BaseProps<HTMLButtonElement> & {
+	export type ToggleRootProps = BaseProps<'button'> & {
 		/** The controlled pressed state of the toggle. */
 		pressed?: boolean;
 		/** When true, prevents the user from interacting with the toggle. */

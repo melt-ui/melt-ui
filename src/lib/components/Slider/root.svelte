@@ -8,7 +8,7 @@
 
 	type Orientation = 'horizontal' | 'vertical';
 
-	export type SliderRootProps = BaseProps<HTMLSpanElement> & {
+	export type SliderRootProps = BaseProps<'span'> & {
 		name?: string;
 		disabled?: boolean;
 		orientation?: Orientation;
@@ -56,7 +56,7 @@
 		hasMinStepsBetweenValues,
 		PAGE_KEYS,
 		roundValue,
-		type Direction
+		type Direction,
 	} from './internal/utils';
 
 	type $$Props = SliderRootProps;
@@ -85,14 +85,14 @@
 			(v) => {
 				value = v;
 				onChange(v);
-			}
+			},
 		],
 		min: [min],
 		max: [max],
 		disabled: [disabled],
 		orientation: [orientation],
 		thumbs: [[]],
-		valueIndexToChange: [-1]
+		valueIndexToChange: [-1],
 	});
 
 	// Update context when props change
@@ -102,7 +102,7 @@
 		min,
 		max,
 		disabled,
-		orientation
+		orientation,
 	});
 
 	orientationContext.setContext(
@@ -110,7 +110,7 @@
 			startEdge: 'left',
 			endEdge: 'right',
 			size: 'width',
-			direction: 1
+			direction: 1,
 		})
 	);
 

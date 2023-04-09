@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	import type { BaseProps } from '$lib/types';
 
-	export type SwitchRootProps = BaseProps<HTMLButtonElement> & {
+	export type SwitchRootProps = BaseProps<'button'> & {
 		/** The controlled checked state of the switch. */
 		checked?: boolean;
 		/** When `true`, prevents the user from interacting with the switch. */
@@ -43,7 +43,7 @@
 
 	const ctxStore = setContext({
 		checked: [checked, (v) => (checked = v)],
-		disabled: [disabled]
+		disabled: [disabled],
 	});
 	$: ctxStore.set({ checked, disabled });
 </script>

@@ -2,7 +2,7 @@
 	import type { BaseProps } from '$lib/types';
 	import { getRootContext, getState } from './root.svelte';
 
-	export type Props = BaseProps<HTMLDivElement>;
+	export type Props = BaseProps;
 </script>
 
 <script lang="ts">

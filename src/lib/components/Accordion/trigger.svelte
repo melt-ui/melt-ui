@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	export type AccordionTriggerProps = BaseProps;
+	export type AccordionTriggerProps = BaseProps<'button'>;
 </script>
 
 <script lang="ts">

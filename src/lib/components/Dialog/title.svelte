@@ -2,7 +2,7 @@
 	import type { BaseProps } from '$lib/types';
 	import { getDialogRootContext } from './root.svelte';
 
-	export type DialogTitleProps = BaseProps<HTMLHeadingElement>;
+	export type DialogTitleProps = BaseProps<'h2'>;
 </script>
 
 <script lang="ts">

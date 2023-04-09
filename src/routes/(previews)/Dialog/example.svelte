@@ -6,7 +6,7 @@
 	export let propsObj: ResolvedProps<typeof Dialog>;
 </script>
 
-<Dialog.Root bind:open={propsObj.Root.open}>
+<Dialog.Root bind:open={propsObj.Root.open} bind:modal={propsObj.Root.modal}>
 	<Dialog.Trigger
 		class="text-violet-800 shadow-blackA7 hover:bg-mauve3 inline-flex h-[35px] items-center
     justify-center rounded-[4px] bg-white px-[15px] font-medium leading-none shadow-[0_2px_10px]
@@ -43,7 +43,13 @@
 					value="@peduarte"
 				/>
 			</fieldset>
-			<div class="mt-[25px] flex justify-end">
+			<div class="mt-[25px] flex justify-end gap-4">
+				<Dialog.Close
+					class="bg-slate-100 text-slate-600 hover:bg-green5 focus:shadow-green7 inline-flex h-[35px] items-center justify-center
+				rounded-[4px] px-[15px] font-medium leading-none focus:shadow-[0_0_0_2px] focus:outline-none"
+				>
+					Cancel
+				</Dialog.Close>
 				<Dialog.Close
 					class="bg-green-100 text-green-600 hover:bg-green5 focus:shadow-green7 inline-flex h-[35px] items-center justify-center
 				rounded-[4px] px-[15px] font-medium leading-none focus:shadow-[0_0_0_2px] focus:outline-none"

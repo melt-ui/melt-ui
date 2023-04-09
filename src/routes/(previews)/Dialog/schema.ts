@@ -12,13 +12,20 @@ export const schema = {
 			props: {
 				open: {
 					type: 'boolean',
-					default: false
-				}
-			}
+					default: false,
+				},
+				modal: {
+					type: 'boolean',
+					default: true,
+				},
+			},
 		},
 		Close: {},
 		Content: {},
 		Portal: {},
-		Trigger: {}
-	}
+		Trigger: {},
+		Description: {},
+		Title: {},
+		Overlay: {},
+	},
 } satisfies PreviewSchema<typeof Dialog>;

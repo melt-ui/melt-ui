@@ -9,6 +9,7 @@
 
 	type DialogRootContext = {
 		open: boolean;
+		modal: boolean;
 		readonly titleId: string;
 		readonly descriptionId: string;
 		readonly contentId: string;
@@ -22,13 +23,21 @@
 	type $$Props = DialogRootProps;
 
 	export let open: $$Props['open'] = false;
+	export let modal: $$Props['modal'] = false;
+
 	const rootCtx = setContext({
 		open: [open ?? false, (value) => (open = value)],
+		modal: [modal ?? false, (value) => (modal = value)],
 		titleId: [generateId()],
 		descriptionId: [generateId()],
-		contentId: [generateId()]
+		contentId: [generateId()],
 	});
-	$: typeof open !== 'undefined' && ($rootCtx.open = open);
+	$: rootCtx.update((v) => ({
+		...v,
+		open: typeof open === 'boolean' ? open : v.open,
+		modal: typeof modal === 'boolean' ? modal : v.modal,
+	}));
+	$: console.log('root', $rootCtx);
 </script>
 
 <slot />

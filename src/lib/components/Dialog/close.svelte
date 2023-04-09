@@ -2,7 +2,7 @@
 	import type { BaseProps } from '$lib/types';
 	import { getDialogRootContext } from './root.svelte';
 
-	export type DialogCloseProps = BaseProps<HTMLButtonElement>;
+	export type DialogCloseProps = BaseProps<'button'>;
 </script>
 
 <script lang="ts">

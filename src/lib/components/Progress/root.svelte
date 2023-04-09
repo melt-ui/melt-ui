@@ -2,7 +2,7 @@
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
 	import type { BaseProps } from '$lib/types';
 
-	export type ProgressRootProps = BaseProps<HTMLProgressElement> & {
+	export type ProgressRootProps = BaseProps<'progress'> & {
 		/** The maximum progress value. */
 		max?: number;
 		/** The progress value. */
@@ -37,7 +37,7 @@
 
 	const ctxStore = setContext({
 		max: [max, (v) => (max = v)],
-		value: [value, (v) => (value = v)]
+		value: [value, (v) => (value = v)],
 	});
 	$: ctxStore.set({ value, max });
 </script>
