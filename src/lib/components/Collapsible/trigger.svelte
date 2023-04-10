@@ -3,6 +3,8 @@
 </script>
 
 <script lang="ts">
+	import { useActions } from '$lib/helpers/useActions';
+
 	import type { BaseProps } from '$lib/types';
 	import { createEventDispatcher } from 'svelte';
 	import { getRootContext } from './root.svelte';
@@ -18,6 +20,7 @@
 
 <button
 	{...$$restProps}
+	use:useActions={$$restProps.use}
 	on:click={() => {
 		$ctx.open = !$ctx.open;
 		dispatch('change', $ctx.open);

@@ -1,5 +1,6 @@
 <script lang="ts" context="module">
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
+	import { useActions } from '$lib/helpers/useActions';
 	import type { BaseProps } from '$lib/types';
 
 	export type CheckboxRootProps = BaseProps<'button'> & {
@@ -74,6 +75,7 @@
 	{disabled}
 	{value}
 	{...$$restProps}
+	use:useActions={$$restProps.use}
 >
 	<slot />
 

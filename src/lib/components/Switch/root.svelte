@@ -31,6 +31,7 @@
 	type $$Props = SwitchRootProps;
 
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
+	import { useActions } from '$lib/helpers/useActions';
 
 	export let required: $$Props['required'] = false;
 	export let value: $$Props['value'] = 'on';
@@ -58,6 +59,7 @@
 	{value}
 	{disabled}
 	{...$$restProps}
+	use:useActions={$$restProps.use}
 	on:click={() => {
 		checked = !checked;
 	}}
