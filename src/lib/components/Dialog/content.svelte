@@ -23,7 +23,7 @@
 <div
 	role="dialog"
 	{...$$restProps}
-	use:focusTrap={{ disable: !$rootCtx.modal }}
+	use:focusTrap={{ disable: !$rootCtx.modal, autofocus: $rootCtx.openAutoFocus }}
 	use:dismissable={{
 		onPointerDownDismiss: (e) => {
 			onPointerDownOutside?.(e);

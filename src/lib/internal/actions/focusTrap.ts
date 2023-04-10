@@ -13,6 +13,15 @@ function getFocusableElements(container: HTMLElement) {
 
 type Params = {
 	disable?: boolean;
+	autofocus?: boolean;
+};
+
+const getParams = (params?: Params) => {
+	return {
+		disable: false,
+		autofocus: true,
+		...params,
+	};
 };
 
 export const focusTrap = ((container, params?: Params) => {
@@ -44,15 +53,19 @@ export const focusTrap = ((container, params?: Params) => {
 		}
 	};
 
-	const update = (params?: Params) => {
+	const update = (newParams?: Params) => {
+		const params = getParams(newParams);
+
 		document.removeEventListener('focusin', handleFocusIn);
 		container.removeEventListener('keydown', handleKeyDown);
 		if (params?.disable) return;
 
 		// Autofocus the first focusable element in the container
-		const focusableElements = getFocusableElements(container);
-		if (focusableElements.length > 0) {
-			tick().then(() => focusableElements[0].focus());
+		if (params?.autofocus) {
+			const focusableElements = getFocusableElements(container);
+			if (focusableElements.length > 0) {
+				tick().then(() => focusableElements[0].focus());
+			}
 		}
 
 		document.addEventListener('focusin', handleFocusIn);

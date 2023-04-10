@@ -7,6 +7,8 @@
 	export type DialogRootProps = {
 		open?: boolean;
 		modal?: boolean;
+		openAutoFocus?: boolean;
+		closeAutoFocus?: boolean;
 	};
 
 	type DialogRootContext = {
@@ -16,6 +18,7 @@
 		readonly descriptionId: string;
 		readonly contentId: string;
 		triggeredId: string | null;
+		openAutoFocus?: boolean;
 	};
 
 	const { getContext, setContext } = reactiveContext<DialogRootContext>();
@@ -27,6 +30,8 @@
 
 	export let open: $$Props['open'] = false;
 	export let modal: $$Props['modal'] = false;
+	export let openAutoFocus: $$Props['openAutoFocus'] = true;
+	export let closeAutoFocus: $$Props['closeAutoFocus'] = true;
 
 	const rootCtx = setContext({
 		open: [open ?? false, (value) => (open = value)],
@@ -35,14 +40,16 @@
 		descriptionId: [generateId()],
 		contentId: [generateId()],
 		triggeredId: [null],
+		openAutoFocus: [openAutoFocus, (value) => (openAutoFocus = value)],
 	});
 	$: rootCtx.update((v) => ({
 		...v,
 		open: typeof open === 'boolean' ? open : v.open,
 		modal: typeof modal === 'boolean' ? modal : v.modal,
+		openAutoFocus,
 	}));
 
-	$: if (!$rootCtx.open && $rootCtx.triggeredId) {
+	$: if (!$rootCtx.open && $rootCtx.triggeredId && closeAutoFocus) {
 		tick().then(() => {
 			focus(`#${$rootCtx.triggeredId}`);
 			$rootCtx.triggeredId = null;

@@ -6,7 +6,7 @@
 	export let propsObj: ResolvedProps<typeof Dialog>;
 </script>
 
-<Dialog.Root bind:open={propsObj.Root.open} bind:modal={propsObj.Root.modal}>
+<Dialog.Root bind:open={propsObj.Root.open} bind:modal={propsObj.Root.modal} openAutoFocus={false}>
 	<Dialog.Trigger
 		class="text-violet-800 shadow-blackA7 hover:bg-mauve3 inline-flex h-[35px] items-center
     justify-center rounded-[4px] bg-white px-[15px] font-medium leading-none shadow-[0_2px_10px]
