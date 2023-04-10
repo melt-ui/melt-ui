@@ -26,8 +26,8 @@ test.describe('Checkbox', () => {
 		const cmp = await mount(ProgressTest, {
 			props: {
 				value: 100,
-				max: 200
-			}
+				max: 200,
+			},
 		});
 
 		await expect(cmp).toBeVisible();

@@ -41,7 +41,7 @@
 
 	const contextStore = setContext({
 		type: [type],
-		value: [value, (v) => (value = v)]
+		value: [value, (v) => (value = v)],
 	});
 	$: contextStore.set({ type: type ?? 'single', value });
 

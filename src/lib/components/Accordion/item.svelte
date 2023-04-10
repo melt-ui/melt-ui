@@ -29,7 +29,7 @@
 		: $rootCtx.value === value;
 
 	const itemCtx = setContext({
-		value: [value]
+		value: [value],
 	});
 	$: itemCtx.set({ value });
 </script>

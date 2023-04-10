@@ -38,7 +38,7 @@
 		startEdge: isSlidingFromBottom ? 'bottom' : 'top',
 		endEdge: isSlidingFromBottom ? 'top' : 'bottom',
 		size: 'height',
-		direction: isSlidingFromBottom ? -1 : 1
+		direction: isSlidingFromBottom ? -1 : 1,
 	};
 </script>
 

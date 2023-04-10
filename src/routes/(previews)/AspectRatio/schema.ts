@@ -11,9 +11,9 @@ export const schema = {
 			props: {
 				ratio: {
 					type: 'number',
-					default: 1.75
-				}
-			}
-		}
-	}
+					default: 1.75,
+				},
+			},
+		},
+	},
 } satisfies PreviewSchema<typeof AspectRatio>;

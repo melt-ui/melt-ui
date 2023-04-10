@@ -2,7 +2,7 @@
 	import {
 		getPropsObj,
 		type PreviewDataAttribute,
-		type PreviewProps
+		type PreviewProps,
 	} from '$routes/(previews)/helpers';
 
 	export let data;

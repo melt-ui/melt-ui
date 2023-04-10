@@ -9,8 +9,8 @@ const config = {
 	preprocess: [
 		vitePreprocess(),
 		preprocess({
-			postcss: true
-		})
+			postcss: true,
+		}),
 	],
 
 	kit: {
@@ -20,7 +20,7 @@ const config = {
 		adapter: adapter(),
 		alias: {
 			$routes: 'src/routes',
-			'$test-helpers': 'src/test-helpers'
+			'$test-helpers': 'src/test-helpers',
 		},
 		typescript: {
 			config: (config) => {
@@ -31,14 +31,14 @@ const config = {
 						paths: {
 							...config.compilerOptions.paths,
 							'$test-helpers': ['../src/test-helpers/'],
-							'$test-helpers/*': ['../src/test-helpers/*']
-						}
+							'$test-helpers/*': ['../src/test-helpers/*'],
+						},
 					},
-					include: [...config.include, '**/*.test.ts']
+					include: [...config.include, '**/*.test.ts'],
 				};
-			}
-		}
-	}
+			},
+		},
+	},
 };
 
 export default config;

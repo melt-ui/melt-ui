@@ -8,5 +8,5 @@ export type { CollapsibleRootProps } from './root.svelte';
 export const Collapsible = {
 	Content,
 	Trigger,
-	Root
+	Root,
 };

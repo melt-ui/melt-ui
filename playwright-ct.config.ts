@@ -33,25 +33,25 @@ export default defineConfig({
 			resolve: {
 				alias: {
 					// Setup the built-in $lib alias in SvelteKit
-					$lib: resolve('src/lib')
-				}
-			}
-		}
+					$lib: resolve('src/lib'),
+				},
+			},
+		},
 	},
 
 	/* Configure projects for major browsers */
 	projects: [
 		{
 			name: 'chromium',
-			use: { ...devices['Desktop Chrome'] }
+			use: { ...devices['Desktop Chrome'] },
 		},
 		{
 			name: 'firefox',
-			use: { ...devices['Desktop Firefox'] }
+			use: { ...devices['Desktop Firefox'] },
 		},
 		{
 			name: 'webkit',
-			use: { ...devices['Desktop Safari'] }
-		}
-	]
+			use: { ...devices['Desktop Safari'] },
+		},
+	],
 });

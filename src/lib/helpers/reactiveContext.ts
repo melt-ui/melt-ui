@@ -56,7 +56,7 @@ export function reactiveContext<T extends Record<string, unknown>>() {
 		const contextStore = {
 			...store,
 			set,
-			update
+			update,
 		};
 
 		initialContext.setContext(contextStore);

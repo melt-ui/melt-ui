@@ -5,6 +5,6 @@ export function uniqueContext<T>() {
 
 	return {
 		getContext: () => getContext<T>(key),
-		setContext: (value: T) => setContext<T>(key, value)
+		setContext: (value: T) => setContext<T>(key, value),
 	};
 }

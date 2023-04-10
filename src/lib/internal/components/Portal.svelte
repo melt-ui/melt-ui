@@ -41,7 +41,7 @@
 		update(target);
 		return {
 			update,
-			destroy
+			destroy,
 		};
 	}
 </script>

@@ -17,14 +17,14 @@
 	$: transitionParams = (function getParams(): SlideParams {
 		if (!transition) {
 			return {
-				duration: 0
+				duration: 0,
 			};
 		}
 
 		let transitionObj = typeof transition === 'object' ? transition : {};
 		return {
 			duration: 300,
-			...transitionObj
+			...transitionObj,
 		};
 	})();
 

@@ -6,10 +6,10 @@ export default defineConfig({
 	plugins: [
 		sveltekit(),
 		Icons({
-			compiler: 'svelte'
-		})
+			compiler: 'svelte',
+		}),
 	],
 	test: {
-		include: ['src/**/*.spec.{js,ts}']
-	}
+		include: ['src/**/*.spec.{js,ts}'],
+	},
 });

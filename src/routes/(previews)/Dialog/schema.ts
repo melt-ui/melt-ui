@@ -1,4 +1,4 @@
-import type { AspectRatio, Dialog } from '$lib';
+import type { Dialog } from '$lib';
 import type { PreviewSchema } from '../helpers';
 import example from './example.svelte';
 

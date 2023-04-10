@@ -41,6 +41,6 @@ export const useCollection: SvelteHTMLActionType<{
 		destroy: () => {
 			unsubscribe();
 			store.update((nodes) => nodes.filter((n) => n !== node));
-		}
+		},
 	};
 };

@@ -13,26 +13,26 @@ export const schema = {
 				value: {
 					type: 'number',
 					show: 'controls',
-					default: 40
+					default: 40,
 				},
 				max: {
 					type: 'number',
 					show: 'controls',
-					default: 100
-				}
+					default: 100,
+				},
 			},
 			dataAttributes: {
 				'data-value': {
-					values: ['0', '40', '100']
+					values: ['0', '40', '100'],
 				},
 				'data-state': {
-					values: ['complete', 'indeterminate', 'loading']
+					values: ['complete', 'indeterminate', 'loading'],
 				},
 				'data-max': {
-					values: ['100']
-				}
-			}
+					values: ['100'],
+				},
+			},
 		},
-		Indicator: {}
-	}
+		Indicator: {},
+	},
 } satisfies PreviewSchema<typeof Progress>;

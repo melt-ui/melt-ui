@@ -58,9 +58,9 @@
 			useCollection,
 			{
 				collection: triggerCollection,
-				onIndexChange
-			}
-		]
+				onIndexChange,
+			},
+		],
 	]}
 	on:change={(e) => {
 		const value = e.detail;

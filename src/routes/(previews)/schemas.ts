@@ -17,5 +17,5 @@ export default {
 	switch: Switch,
 	toggle: Toggle,
 	progress: Progress,
-	dialog: Dialog
+	dialog: Dialog,
 };

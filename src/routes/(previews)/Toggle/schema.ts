@@ -10,9 +10,9 @@ export const schema = {
 		Root: {
 			props: {
 				pressed: {
-					type: 'boolean'
-				}
-			}
-		}
-	}
+					type: 'boolean',
+				},
+			},
+		},
+	},
 } satisfies PreviewSchema<typeof Toggle>;
