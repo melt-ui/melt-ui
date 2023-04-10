@@ -1,32 +1,35 @@
 import type { Action } from 'svelte/action';
+import { handleAndDispatchCustomEvent } from '../helpers/event';
 
 type Params = {
-	onDismiss?: () => void;
 	disable?: boolean;
+	onPointerDownDismiss?: (e: CustomEvent<{ originalEvent: MouseEvent }>) => void;
+	onEscDismiss?: (e: CustomEvent<{ originalEvent: KeyboardEvent }>) => void;
 };
 
-export const dismissable = ((node, params: Params) => {
-	let onDismiss: Params['onDismiss'] | null = null;
+export const dismissable = ((node, params?: Params) => {
+	let onPointerDownDismiss: Params['onPointerDownDismiss'];
+	let onEscDismiss: Params['onEscDismiss'];
 
-	// Dismiss when clicking outside or pressing escape
 	const handleDismiss = (event: KeyboardEvent | MouseEvent) => {
-		console.log('handleDismiss', event);
-		if (event instanceof KeyboardEvent && event.key !== 'Escape') {
-			return;
+		if (event instanceof KeyboardEvent && event.key === 'Escape') {
+			handleAndDispatchCustomEvent('escDismiss', onEscDismiss, { originalEvent: event });
 		}
 
-		if (event instanceof MouseEvent && node.contains(event.target as Node)) {
-			return;
+		if (event instanceof MouseEvent && !node.contains(event.target as Node)) {
+			handleAndDispatchCustomEvent('pointerDownDismiss', onPointerDownDismiss, {
+				originalEvent: event,
+			});
 		}
-
-		onDismiss?.();
 	};
 
-	const update = (params: Params) => {
+	const update = (params?: Params) => {
 		document.removeEventListener('keydown', handleDismiss);
 		document.removeEventListener('click', handleDismiss);
-		if (params.disable) return;
-		onDismiss = params.onDismiss;
+		if (params?.disable) return;
+
+		onPointerDownDismiss = params?.onPointerDownDismiss;
+		onEscDismiss = params?.onEscDismiss;
 		document.addEventListener('keydown', handleDismiss);
 		document.addEventListener('click', handleDismiss);
 	};

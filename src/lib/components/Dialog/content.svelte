@@ -6,11 +6,16 @@
 	import { getDataState } from './internal/helpers';
 	import { getDialogRootContext } from './root.svelte';
 
-	export type DialogContentProps = BaseProps;
+	export type DialogContentProps = BaseProps<'div'> & {
+		onPointerDownOutside?: (event: CustomEvent<{ originalEvent: MouseEvent }>) => void;
+		onEscapeKeyDown?: (event: CustomEvent<{ originalEvent: KeyboardEvent }>) => void;
+	};
 </script>
 
 <script lang="ts">
 	type $$Props = DialogContentProps;
+	export let onPointerDownOutside: $$Props['onPointerDownOutside'] = undefined;
+	export let onEscapeKeyDown: $$Props['onEscapeKeyDown'] = undefined;
 
 	const rootCtx = getDialogRootContext();
 </script>
@@ -19,7 +24,20 @@
 	role="dialog"
 	{...$$restProps}
 	use:focusTrap={{ disable: !$rootCtx.modal }}
-	use:dismissable={{ onDismiss: () => ($rootCtx.open = !$rootCtx.open) }}
+	use:dismissable={{
+		onPointerDownDismiss: (e) => {
+			onPointerDownOutside?.(e);
+			if (!e.defaultPrevented) {
+				$rootCtx.open = false;
+			}
+		},
+		onEscDismiss: (e) => {
+			onEscapeKeyDown?.(e);
+			if (!e.defaultPrevented) {
+				$rootCtx.open = false;
+			}
+		},
+	}}
 	use:removeScroll={{ disable: !$rootCtx.modal }}
 	id={$rootCtx.contentId}
 	aria-labelledby={$rootCtx.titleId}
