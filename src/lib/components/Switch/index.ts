@@ -5,5 +5,5 @@ export type { SwitchRootProps } from './root.svelte';
 export type { SwitchThumbProps } from './thumb.svelte';
 export const Switch = {
 	Root,
-	Thumb
+	Thumb,
 };

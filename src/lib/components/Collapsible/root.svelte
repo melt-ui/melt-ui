@@ -31,7 +31,7 @@
 
 	const contextStore = setContext({
 		open: [open, (v) => (open = v)],
-		disabled: [disabled]
+		disabled: [disabled],
 	});
 	$: contextStore.set({ open, disabled });
 </script>

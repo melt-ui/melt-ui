@@ -40,7 +40,7 @@
 		startEdge: isSlidingFromLeft ? 'left' : 'right',
 		endEdge: isSlidingFromLeft ? 'right' : 'left',
 		size: 'width',
-		direction: isSlidingFromLeft ? 1 : -1
+		direction: isSlidingFromLeft ? 1 : -1,
 	};
 </script>
 

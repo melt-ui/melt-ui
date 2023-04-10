@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	import { useActions } from '$lib/helpers/useActions';
 	import type { BaseProps } from '$lib/types';
-	export type SliderTrackProps = BaseProps<HTMLSpanElement>;
+	export type SliderTrackProps = BaseProps<'span'>;
 </script>
 
 <script lang="ts">

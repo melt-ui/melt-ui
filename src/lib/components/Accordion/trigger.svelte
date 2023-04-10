@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	export type AccordionTriggerProps = BaseProps;
+	export type AccordionTriggerProps = BaseProps<'button'>;
 </script>
 
 <script lang="ts">
@@ -58,9 +58,9 @@
 			useCollection,
 			{
 				collection: triggerCollection,
-				onIndexChange
-			}
-		]
+				onIndexChange,
+			},
+		],
 	]}
 	on:change={(e) => {
 		const value = e.detail;

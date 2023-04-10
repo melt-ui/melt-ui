@@ -5,7 +5,7 @@ export const load = async ({ params }) => {
 	const cmp = params.component;
 	if (cmp in schemas) {
 		return {
-			schema: schemas[cmp as keyof typeof schemas]
+			schema: schemas[cmp as keyof typeof schemas],
 		};
 	}
 

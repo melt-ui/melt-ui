@@ -5,7 +5,7 @@
 	import { convertValueToPercentage, linearScale } from './internal/utils';
 	import { getOrientationContext, getRootContext, getThumbCollectionContext } from './root.svelte';
 
-	export type SliderThumbProps = BaseProps<HTMLSpanElement>;
+	export type SliderThumbProps = BaseProps<'span'>;
 </script>
 
 <script lang="ts">

@@ -11,5 +11,5 @@ export const Slider = {
 	Root,
 	Track,
 	Range,
-	Thumb
+	Thumb,
 };

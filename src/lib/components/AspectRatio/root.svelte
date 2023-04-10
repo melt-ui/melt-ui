@@ -2,7 +2,7 @@
 	import { useActions } from '$lib/helpers/useActions';
 	import type { BaseProps } from '$lib/types';
 
-	export type AspectRatioProps = BaseProps<HTMLDivElement> & {
+	export type AspectRatioProps = BaseProps & {
 		ratio?: number;
 	};
 </script>

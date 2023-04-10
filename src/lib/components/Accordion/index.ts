@@ -15,5 +15,5 @@ export const Accordion = {
 	Item,
 	Header,
 	Content,
-	Trigger
+	Trigger,
 };

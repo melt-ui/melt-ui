@@ -13,22 +13,22 @@ export const schema = {
 				value: {
 					type: 'enum',
 					options: ['item-1', 'item-2', 'item-3'],
-					show: 'value'
+					show: 'value',
 				},
 				type: {
 					type: 'enum',
 					options: ['multiple', 'single'],
-					default: 'single'
-				}
-			}
+					default: 'single',
+				},
+			},
 		},
 		Content: {
 			props: {
 				transition: {
 					type: 'boolean',
-					default: false
-				}
-			}
+					default: false,
+				},
+			},
 		},
 		Trigger: {},
 		Header: {},
@@ -36,10 +36,10 @@ export const schema = {
 			props: {
 				value: {
 					type: 'string',
-					show: null
-				}
-			}
-		}
+					show: null,
+				},
+			},
+		},
 		// Casting here instead of satisfies because of the discriminated union in AccordionRootProps
-	} as PreviewMeta<typeof Accordion>
+	} as PreviewMeta<typeof Accordion>,
 } satisfies PreviewSchema<typeof Accordion>;

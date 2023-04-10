@@ -4,7 +4,7 @@
 	import { convertValueToPercentage } from './internal/utils';
 	import { getOrientationContext, getRootContext } from './root.svelte';
 
-	export type SliderRangeProps = BaseProps<HTMLSpanElement>;
+	export type SliderRangeProps = BaseProps<'span'>;
 </script>
 
 <script lang="ts">

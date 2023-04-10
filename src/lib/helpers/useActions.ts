@@ -56,6 +56,6 @@ export function useActions(node: HTMLElement | SVGElement, actions: ActionArray)
 					returnEntry.destroy();
 				}
 			}
-		}
+		},
 	};
 }

@@ -13,9 +13,9 @@ export const schema = {
 				required: { type: 'boolean' },
 				disabled: { type: 'boolean' },
 				name: { type: 'string', show: null },
-				value: { type: 'string', show: null }
-			}
+				value: { type: 'string', show: null },
+			},
 		},
-		Thumb: {}
-	}
+		Thumb: {},
+	},
 } satisfies PreviewSchema<typeof Switch>;
