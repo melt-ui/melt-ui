@@ -6,7 +6,12 @@
 	export let propsObj: ResolvedProps<typeof Dialog>;
 </script>
 
-<Dialog.Root bind:open={propsObj.Root.open} bind:modal={propsObj.Root.modal} openAutoFocus={false}>
+<Dialog.Root
+	bind:open={propsObj.Root.open}
+	bind:modal={propsObj.Root.modal}
+	openAutoFocus={propsObj.Root.openAutoFocus}
+	closeAutoFocus={propsObj.Root.closeAutoFocus}
+>
 	<Dialog.Trigger
 		class="text-violet-800 shadow-blackA7 hover:bg-mauve3 inline-flex h-[35px] items-center
     justify-center rounded-[4px] bg-white px-[15px] font-medium leading-none shadow-[0_2px_10px]
@@ -25,12 +30,13 @@
 			<Dialog.Description class="text-slate-500 mt-[10px] mb-5 text-[15px] leading-normal">
 				Make changes to your profile here. Click save when you're done.
 			</Dialog.Description>
+
 			<fieldset class="mb-4 flex items-center gap-5">
 				<label class="text-violet-800 w-[90px] text-right text-[15px]" for="name"> Name </label>
 				<input
 					class="text-violet-800 shadow-violet7 focus:shadow-violet8 inline-flex h-[35px] w-full flex-1 items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none shadow-[0_0_0_1px] outline-none focus:shadow-[0_0_0_2px]"
 					id="name"
-					value="Pedro Duarte"
+					value="Thomas G. Lopes"
 				/>
 			</fieldset>
 			<fieldset class="mb-[15px] flex items-center gap-5">
@@ -40,7 +46,7 @@
 				<input
 					class="text-violet-800 shadow-violet7 focus:shadow-violet8 inline-flex h-[35px] w-full flex-1 items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none shadow-[0_0_0_1px] outline-none focus:shadow-[0_0_0_2px]"
 					id="username"
-					value="@peduarte"
+					value="@thomasglopes"
 				/>
 			</fieldset>
 			<div class="mt-[25px] flex justify-end gap-4">
@@ -57,6 +63,7 @@
 					Save changes
 				</Dialog.Close>
 			</div>
+
 			<Dialog.Close
 				class="text-violet-800 hover:bg-violet-100 focus:shadow-violet-400 absolute top-[10px] right-[10px] inline-flex h-[25px] w-[25px] appearance-none
 			items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none"

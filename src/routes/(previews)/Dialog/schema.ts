@@ -18,14 +18,57 @@ export const schema = {
 					type: 'boolean',
 					default: true,
 				},
+				openAutoFocus: {
+					type: 'boolean',
+					default: true,
+				},
+				closeAutoFocus: {
+					type: 'boolean',
+					default: true,
+				},
 			},
 		},
-		Close: {},
-		Content: {},
-		Portal: {},
-		Trigger: {},
-		Description: {},
+		Trigger: {
+			dataAttributes: {
+				'data-state': {
+					values: ['open', 'closed'],
+				},
+			},
+		},
+		Portal: {
+			props: {
+				container: {
+					type: 'HTMLElement | string',
+					show: null,
+				},
+			},
+		},
+		Overlay: {
+			dataAttributes: {
+				'data-state': {
+					values: ['open', 'closed'],
+				},
+			},
+		},
+		Content: {
+			props: {
+				onPointerDownOutside: {
+					type: 'function',
+					show: null,
+				},
+				onEscapeKeyDown: {
+					type: 'function',
+					show: null,
+				},
+			},
+			dataAttributes: {
+				'data-state': {
+					values: ['open', 'closed'],
+				},
+			},
+		},
 		Title: {},
-		Overlay: {},
+		Description: {},
+		Close: {},
 	},
 } satisfies PreviewSchema<typeof Dialog>;
