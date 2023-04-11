@@ -68,7 +68,7 @@
 	export let step = 1;
 	export let minStepsBetweenThumbs = 0;
 	export let inverted = false;
-	// Todo - Get global dir from Direction Provider
+	// TODO - Get global dir from Direction Provider
 	export let dir: NonNullable<$$Props['dir']> = 'ltr';
 	export let min: NonNullable<$$Props['min']> = 0;
 	export let max: NonNullable<$$Props['max']> = 100;

@@ -7,6 +7,7 @@ import { schema as Toggle } from './Toggle/schema';
 import { schema as AspectRatio } from './AspectRatio/schema';
 import { schema as Progress } from './Progress/schema';
 import { schema as Dialog } from './Dialog/schema';
+import { schema as Tabs } from './Tabs/schema';
 
 export default {
 	accordion: Accordion,
@@ -18,4 +19,5 @@ export default {
 	toggle: Toggle,
 	progress: Progress,
 	dialog: Dialog,
+	tabs: Tabs,
 };
