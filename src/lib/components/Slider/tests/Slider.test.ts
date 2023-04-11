@@ -23,7 +23,7 @@ test.describe('Slider', () => {
 		await mount(SliderTest);
 
 		await root.click({
-			position: { x: 40, y: 0 }
+			position: { x: 40, y: 0 },
 		});
 
 		await expect(thumb).toBeFocused();
@@ -34,7 +34,7 @@ test.describe('Slider', () => {
 		await mount(SliderTest, { props: { orientation: 'vertical' } });
 
 		await root.click({
-			position: { x: 0, y: 40 }
+			position: { x: 0, y: 40 },
 		});
 
 		await expect(thumb).toBeFocused();
@@ -45,7 +45,7 @@ test.describe('Slider', () => {
 		await mount(SliderTest, { props: { inverted: true } });
 
 		await root.click({
-			position: { x: 40, y: 0 }
+			position: { x: 40, y: 0 },
 		});
 		await expect(input).toHaveAttribute('value', '60');
 	});
@@ -54,7 +54,7 @@ test.describe('Slider', () => {
 		await mount(SliderTest, { props: { min: 100, max: 200 } });
 
 		await root.click({
-			position: { x: 40, y: 0 }
+			position: { x: 40, y: 0 },
 		});
 		await expect(input).toHaveAttribute('value', '140');
 	});
@@ -66,7 +66,7 @@ test.describe('Slider', () => {
 		await expect(thumb).toHaveAttribute('data-disabled', '');
 
 		await root.click({
-			position: { x: 40, y: 0 }
+			position: { x: 40, y: 0 },
 		});
 		await expect(input).toHaveAttribute('value', '0');
 	});
@@ -86,7 +86,7 @@ test.describe('Slider', () => {
 		await mount(SliderTest, { props: { step: 25 } });
 
 		await root.click({
-			position: { x: 40, y: 0 }
+			position: { x: 40, y: 0 },
 		});
 		await expect(input).toHaveAttribute('value', '50');
 	});
@@ -95,7 +95,7 @@ test.describe('Slider', () => {
 		await mount(SliderTest, { props: { dir: 'rtl' } });
 
 		await root.click({
-			position: { x: 40, y: 0 }
+			position: { x: 40, y: 0 },
 		});
 		await expect(input).toHaveAttribute('value', '60');
 	});

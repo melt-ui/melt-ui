@@ -5,5 +5,5 @@ export { Collapsible } from './Collapsible';
 export { Slider } from './Slider';
 export { Switch } from './Switch';
 export { Toggle } from './Toggle';
-export { Popper } from './Popper';
 export { Progress } from './Progress';
+export { Dialog } from './Dialog';

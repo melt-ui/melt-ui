@@ -1,7 +1,7 @@
 import Root from './root.svelte';
 
 export const AspectRatio = {
-	Root
+	Root,
 };
 
 export type { AspectRatioProps } from './root.svelte';

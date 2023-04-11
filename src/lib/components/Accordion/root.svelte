@@ -1,5 +1,7 @@
 <script lang="ts" context="module">
+	import { collectionContext } from '$lib/helpers/collectionContext';
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
+	import { useActions } from '$lib/helpers/useActions';
 
 	type Type = 'single' | 'multiple';
 
@@ -23,6 +25,10 @@
 
 	const { getContext, setContext } = reactiveContext<AccordionContext>();
 	export const getRootCtx = getContext;
+
+	// Create a context for all trigger components
+	const triggerCollectionContext = collectionContext();
+	export const getTriggerCollection = triggerCollectionContext.getContext;
 </script>
 
 <script lang="ts">
@@ -35,11 +41,13 @@
 
 	const contextStore = setContext({
 		type: [type],
-		value: [value, (v) => (value = v)]
+		value: [value, (v) => (value = v)],
 	});
 	$: contextStore.set({ type: type ?? 'single', value });
+
+	triggerCollectionContext.createContext();
 </script>
 
-<div {...$$restProps} data-radix-accordion-root>
+<div {...$$restProps} use:useActions={$$restProps.use} data-radix-accordion-root>
 	<slot />
 </div>

@@ -23,6 +23,12 @@ export type PreviewPropEnum<T extends string> = {
 	type: 'enum';
 	options: T[];
 } & BasePreviewProp<T>;
+export type PreviewPropAny = {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	type: any;
+	show: 'value' | null;
+	default?: never;
+};
 
 type PreviewComponentProps<CMP extends SvelteComponent, P = ComponentProps<CMP>> = {
 	[K in keyof P]: K extends  // If key matches "data-"
@@ -51,7 +57,8 @@ type PreviewComponentProps<CMP extends SvelteComponent, P = ComponentProps<CMP>>
 		: // Special type for slide transition
 		NonNullable<P[K]> extends boolean | SlideParams
 		? PreviewPropBoolean
-		: never;
+		: // If doesn't match any of the above
+		  PreviewPropAny;
 };
 
 export type ResolvedProps<GROUP extends RadixComponentGroup> = {
@@ -62,11 +69,8 @@ export type ResolvedProps<GROUP extends RadixComponentGroup> = {
 /* Preview Data Attributes */
 /* ------------------------*/
 export type PreviewDataAttribute = { values: string[] };
-type PreviewComponentDataAttributes<CMP extends SvelteComponent, P = ComponentProps<CMP>> = {
-	[K in keyof P]: K extends  // If key matches "data-"
-	`data-${string}`
-		? PreviewDataAttribute
-		: never;
+type PreviewComponentDataAttributes = {
+	[key: `data-${string}`]: PreviewDataAttribute;
 };
 
 /* --------------------- */
@@ -74,7 +78,7 @@ type PreviewComponentDataAttributes<CMP extends SvelteComponent, P = ComponentPr
 /* --------------------- */
 type RadixComponentPreview<CMP extends typeof SvelteComponent> = {
 	props?: PreviewComponentProps<InstanceType<CMP>>;
-	dataAttributes?: PreviewComponentDataAttributes<InstanceType<CMP>>;
+	dataAttributes?: PreviewComponentDataAttributes;
 };
 
 export type PreviewMeta<GROUP extends RadixComponentGroup> = {
@@ -95,7 +99,7 @@ function getPreviewPropsOfComponent<CMP extends typeof SvelteComponent>(
 	previewProps: RadixComponentPreview<CMP>
 ) {
 	return Object.entries(previewProps.props || {}).reduce((acc, [propName, propConfig]) => {
-		const defaultValue = (propConfig as BasePreviewProp<unknown>).default;
+		const defaultValue = (propConfig as BasePreviewProp<unknown>)?.default;
 		return { ...acc, [propName]: defaultValue };
 	}, {});
 }
@@ -104,7 +108,7 @@ export function getPropsObj<GROUP extends RadixComponentGroup>(previewMeta: Prev
 	return Object.entries(previewMeta).reduce(
 		(acc, [cmp, previewProps]) => ({
 			...acc,
-			[cmp]: getPreviewPropsOfComponent(previewProps)
+			[cmp]: getPreviewPropsOfComponent(previewProps),
 		}),
 		{}
 	) as ResolvedProps<GROUP>;

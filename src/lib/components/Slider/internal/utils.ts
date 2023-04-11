@@ -11,7 +11,7 @@ export const BACK_KEYS: Record<SlideDirection, string[]> = {
 	'from-left': ['Home', 'PageDown', 'ArrowDown', 'ArrowLeft'],
 	'from-right': ['Home', 'PageDown', 'ArrowDown', 'ArrowRight'],
 	'from-bottom': ['Home', 'PageDown', 'ArrowDown', 'ArrowLeft'],
-	'from-top': ['Home', 'PageDown', 'ArrowUp', 'ArrowLeft']
+	'from-top': ['Home', 'PageDown', 'ArrowUp', 'ArrowLeft'],
 };
 
 // https://github.com/tmcw-up-for-adoption/simple-linear-scale/blob/master/index.js

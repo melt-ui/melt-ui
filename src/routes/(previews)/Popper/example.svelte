@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Popper } from '$lib/components/Popper';
+	import { Popper } from '$lib/internal/components/Popper';
 
 	import type { ResolvedProps } from '../helpers';
 

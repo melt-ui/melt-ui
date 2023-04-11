@@ -13,7 +13,7 @@
 <Collapsible.Root bind:open={propsObj.Root.open} disabled={propsObj.Root.disabled} class="w-full">
 	<div class="flex items-center justify-between">
 		<span class="text-violet11 text-sm leading-6 text-white">
-			@peduarte starred 3 repositories
+			@thomasglopes starred 3 repositories
 		</span>
 		<Collapsible.Trigger
 			class="inline-grid h-6 w-6 place-items-center rounded-full text-sm  text-violet-500 shadow-[0_2px_10px]

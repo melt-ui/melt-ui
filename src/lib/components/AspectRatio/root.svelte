@@ -1,7 +1,8 @@
 <script lang="ts" context="module">
+	import { useActions } from '$lib/helpers/useActions';
 	import type { BaseProps } from '$lib/types';
 
-	export type AspectRatioProps = BaseProps<HTMLDivElement> & {
+	export type AspectRatioProps = BaseProps & {
 		ratio?: number;
 	};
 </script>
@@ -25,6 +26,7 @@
 		style:left="0"
 		style={$$props.style}
 		{...$$restProps}
+		use:useActions={$$restProps.use}
 	>
 		<slot />
 	</div>

@@ -21,6 +21,7 @@
 
 <script lang="ts">
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
+	import { useActions } from '$lib/helpers/useActions';
 
 	import type { BaseProps } from '$lib/types';
 
@@ -30,7 +31,7 @@
 
 	const contextStore = setContext({
 		open: [open, (v) => (open = v)],
-		disabled: [disabled]
+		disabled: [disabled],
 	});
 	$: contextStore.set({ open, disabled });
 </script>
@@ -39,6 +40,7 @@
 	data-state={open ? 'open' : 'closed'}
 	data-disabled={disabled ? 'true' : 'false'}
 	{...$$restProps}
+	use:useActions={$$restProps.use}
 	data-radix-collapsible-root
 >
 	<slot />

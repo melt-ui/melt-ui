@@ -2,6 +2,7 @@ import { schema as Accordion } from './Accordion/schema';
 import { schema as AspectRatio } from './AspectRatio/schema';
 import { schema as Checkbox } from './Checkbox/schema';
 import { schema as Collapsible } from './Collapsible/schema';
+import { schema as Dialog } from './Dialog/schema';
 import { schema as Popper } from './Popper/schema';
 import { schema as Progress } from './Progress/schema';
 import { schema as Slider } from './Slider/schema';
@@ -16,14 +17,15 @@ export const components = {
 	slider: Slider,
 	switch: Switch,
 	toggle: Toggle,
-	progress: Progress
+	progress: Progress,
+	dialog: Dialog,
 };
 
 export const internal = {
-	popper: Popper
+	popper: Popper,
 };
 
 export const allSchemas = {
 	...components,
-	...internal
+	...internal,
 };

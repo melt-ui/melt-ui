@@ -4,7 +4,7 @@
 
 	const categories = {
 		components,
-		internal
+		internal,
 	};
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -12,13 +12,20 @@
 		// eslint-disable-next-line @typescript-eslint/ban-types
 		return getPropsObj<{}>(schema.meta);
 	}
+
+	$: categoriesWithSortedEntries = Object.entries(categories).map(([category, schemas]) => {
+		const sortedEntries = Object.entries(schemas).sort((a, b) => {
+			return a[1].title.toLowerCase().localeCompare(b[1].title.toLowerCase());
+		});
+		return [category, sortedEntries];
+	});
 </script>
 
 <main>
-	{#each Object.entries(categories) as [category, schemas]}
+	{#each categoriesWithSortedEntries as [category, schemas]}
 		<h2 class="mb-4 mt-8 text-4xl font-bold capitalize text-white">{category}</h2>
 		<div class="wrapper">
-			{#each Object.entries(schemas) as [identifier, schema]}
+			{#each schemas as [identifier, schema]}
 				{@const propsObj = getPropsObjForSchema(schema)}
 				<div class="flex h-full flex-col gap-2 overflow-hidden">
 					<a href={`/${identifier}`} class="flex items-baseline justify-between">

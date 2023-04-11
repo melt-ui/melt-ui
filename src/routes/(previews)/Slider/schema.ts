@@ -11,46 +11,46 @@ export const schema = {
 			props: {
 				value: {
 					type: 'number[]',
-					show: 'value'
+					show: 'value',
 				},
 				min: {
 					type: 'number',
-					default: 0
+					default: 0,
 				},
 				max: {
 					type: 'number',
-					default: 100
+					default: 100,
 				},
 				step: {
 					type: 'number',
-					default: 1
+					default: 1,
 				},
 				orientation: {
 					type: 'enum',
 					options: ['horizontal', 'vertical'],
-					default: 'horizontal'
+					default: 'horizontal',
 				},
 				dir: {
 					type: 'enum',
 					options: ['ltr', 'rtl'],
-					default: 'ltr'
+					default: 'ltr',
 				},
 				disabled: {
 					type: 'boolean',
-					default: false
+					default: false,
 				},
 				inverted: {
 					type: 'boolean',
-					default: false
+					default: false,
 				},
 				minStepsBetweenThumbs: {
 					type: 'number',
-					default: 0
-				}
-			}
+					default: 0,
+				},
+			},
 		},
 		Track: {},
 		Thumb: {},
-		Range: {}
-	}
+		Range: {},
+	},
 } satisfies PreviewSchema<typeof Slider>;

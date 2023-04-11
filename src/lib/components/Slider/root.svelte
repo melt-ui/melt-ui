@@ -8,7 +8,7 @@
 
 	type Orientation = 'horizontal' | 'vertical';
 
-	export type SliderRootProps = BaseProps<HTMLSpanElement> & {
+	export type SliderRootProps = BaseProps<'span'> & {
 		name?: string;
 		disabled?: boolean;
 		orientation?: Orientation;
@@ -27,7 +27,6 @@
 		readonly max: number;
 		readonly disabled: boolean;
 		readonly orientation: Orientation;
-		thumbs: Array<HTMLElement>;
 		valueIndexToChange: number;
 	};
 
@@ -43,9 +42,14 @@
 
 	const orientationContext = uniqueContext<OrientationContext>();
 	export const getOrientationContext = orientationContext.getContext;
+
+	// Create a context for all thumb components
+	const thumbCollectionContext = collectionContext();
+	export const getThumbCollectionContext = thumbCollectionContext.getContext;
 </script>
 
 <script lang="ts">
+	import { collectionContext } from '$lib/helpers/collectionContext';
 	import SliderHorizontal from './internal/SliderHorizontal.svelte';
 	import SliderVertical from './internal/SliderVertical.svelte';
 	import {
@@ -56,7 +60,7 @@
 		hasMinStepsBetweenValues,
 		PAGE_KEYS,
 		roundValue,
-		type Direction
+		type Direction,
 	} from './internal/utils';
 
 	type $$Props = SliderRootProps;
@@ -85,14 +89,13 @@
 			(v) => {
 				value = v;
 				onChange(v);
-			}
+			},
 		],
 		min: [min],
 		max: [max],
 		disabled: [disabled],
 		orientation: [orientation],
-		thumbs: [[], () => {}],
-		valueIndexToChange: [-1, () => {}]
+		valueIndexToChange: [-1],
 	});
 
 	// Update context when props change
@@ -102,7 +105,7 @@
 		min,
 		max,
 		disabled,
-		orientation
+		orientation,
 	});
 
 	orientationContext.setContext(
@@ -110,9 +113,11 @@
 			startEdge: 'left',
 			endEdge: 'right',
 			size: 'width',
-			direction: 1
+			direction: 1,
 		})
 	);
+
+	const thumbComponents = thumbCollectionContext.createContext();
 
 	// Pick the correct orientation component
 	$: SliderOrientation = orientation === 'horizontal' ? SliderHorizontal : SliderVertical;
@@ -165,7 +170,7 @@
 		const { value } = detail;
 		const closestIndex = getClosestValueIndex($contextStore.values, value);
 		updateValues(value, closestIndex);
-		$contextStore.thumbs[$contextStore.valueIndexToChange]?.focus();
+		$thumbComponents.at($contextStore.valueIndexToChange)?.focus();
 	}}
 	on:slideMove={({ detail }) => {
 		if (disabled) return;

@@ -10,21 +10,21 @@ export const schema = {
 		Root: {
 			props: {
 				open: {
-					type: 'boolean'
+					type: 'boolean',
 				},
 				disabled: {
-					type: 'boolean'
-				}
-			}
+					type: 'boolean',
+				},
+			},
 		},
 		Trigger: {},
 		Content: {
 			props: {
 				transition: {
 					type: 'boolean',
-					default: false
-				}
-			}
-		}
-	}
+					default: false,
+				},
+			},
+		},
+	},
 } satisfies PreviewSchema<typeof Collapsible>;

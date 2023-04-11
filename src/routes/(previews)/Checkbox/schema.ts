@@ -11,33 +11,33 @@ export const schema = {
 			props: {
 				checked: {
 					type: 'boolean',
-					default: false
+					default: false,
 				},
 				disabled: {
-					type: 'boolean'
+					type: 'boolean',
 				},
 				required: {
 					type: 'boolean',
-					show: null
+					show: null,
 				},
 				name: {
 					type: 'string',
-					show: null
+					show: null,
 				},
 				value: {
 					type: 'string',
-					show: null
-				}
+					show: null,
+				},
 			},
 			dataAttributes: {
 				'data-disabled': {
-					values: ['true', 'false']
+					values: ['true', 'false'],
 				},
 				'data-state': {
-					values: ['checked', 'unchecked', 'indeterminate']
-				}
-			}
+					values: ['checked', 'unchecked', 'indeterminate'],
+				},
+			},
 		},
-		Indicator: {}
-	}
+		Indicator: {},
+	},
 } satisfies PreviewSchema<typeof Checkbox>;

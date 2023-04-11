@@ -1,10 +1,11 @@
 <script lang="ts" context="module">
+	import { useCollection } from '$lib/helpers/collectionContext';
+	import { useActions } from '$lib/helpers/useActions';
 	import type { BaseProps } from '$lib/types';
-	import { onDestroy, onMount } from 'svelte';
 	import { convertValueToPercentage, linearScale } from './internal/utils';
-	import { getOrientationContext, getRootContext } from './root.svelte';
+	import { getOrientationContext, getRootContext, getThumbCollectionContext } from './root.svelte';
 
-	export type SliderThumbProps = BaseProps<HTMLSpanElement>;
+	export type SliderThumbProps = BaseProps<'span'>;
 </script>
 
 <script lang="ts">
@@ -13,20 +14,10 @@
 	const rootCtx = getRootContext();
 	const orientation = getOrientationContext();
 
-	let thumb: HTMLSpanElement;
 	let size = { width: 0, height: 0 };
+	let index: number;
 
-	// Register the thumb with the root context
-	onMount(() => {
-		$rootCtx.thumbs = [...$rootCtx.thumbs, thumb];
-	});
-
-	// Unregister the thumb with the root context
-	onDestroy(() => {
-		$rootCtx.thumbs = $rootCtx.thumbs.filter((t) => t !== thumb);
-	});
-
-	$: index = $rootCtx.thumbs.indexOf(thumb);
+	const thumbComponentsContext = getThumbCollectionContext();
 	$: value = $rootCtx.values[index];
 
 	$: percentage = convertValueToPercentage(value, $rootCtx.min, $rootCtx.max);
@@ -60,6 +51,10 @@
 		const offset = linearScale([0, halfPercent], [0, halfWidth]);
 		return (halfWidth - offset(left) * direction) * direction;
 	}
+
+	function onIndexChange(newIndex: number) {
+		index = newIndex;
+	}
 </script>
 
 <span
@@ -68,8 +63,9 @@
 	style="{$orientation.startEdge}: calc({percentage}% + {thumbInBoundsOffset}px)"
 >
 	<span
-		bind:this={thumb}
+		use:useCollection={{ collection: thumbComponentsContext, onIndexChange }}
 		{...$$restProps}
+		use:useActions={$$restProps.use}
 		bind:clientHeight={size.height}
 		bind:clientWidth={size.width}
 		role="slider"

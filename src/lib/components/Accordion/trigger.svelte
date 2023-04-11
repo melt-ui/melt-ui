@@ -1,56 +1,67 @@
 <script lang="ts" context="module">
-	export type AccordionTriggerProps = BaseProps;
+	export type AccordionTriggerProps = BaseProps<'button'>;
 </script>
 
 <script lang="ts">
-	import { focus } from '$lib/helpers/dom';
+	import { useCollection } from '$lib/helpers/collectionContext';
+
 	import type { BaseProps } from '$lib/types';
 	import { Collapsible } from '../Collapsible';
 	import { getItemContext } from './item.svelte';
-	import { getRootCtx } from './root.svelte';
+	import { getRootCtx, getTriggerCollection } from './root.svelte';
 
 	type $$Props = AccordionTriggerProps;
 
 	const itemCtx = getItemContext();
 	const rootCtx = getRootCtx();
+	const triggerCollection = getTriggerCollection();
+	let triggerIndex = 0;
 
 	const handleKeyDown = (e: KeyboardEvent) => {
-		const target = e.target as HTMLElement;
-
 		switch (e.key) {
 			case 'ArrowDown': {
 				e.preventDefault();
 				e.stopPropagation();
-				const nextItem = target.closest('[data-radix-accordion-item]')?.nextElementSibling;
-				focus(nextItem?.querySelector('[data-radix-accordion-trigger]'));
+				$triggerCollection[triggerIndex + 1]?.focus();
 				break;
 			}
 			case 'ArrowUp': {
 				e.preventDefault();
 				e.stopPropagation();
-				const prevItem = target.closest('[data-radix-accordion-item]')?.previousElementSibling;
-				focus(prevItem?.querySelector('[data-radix-accordion-trigger]'));
+				$triggerCollection[triggerIndex - 1]?.focus();
 				break;
 			}
 			case 'Home': {
 				e.preventDefault();
 				e.stopPropagation();
-				const firstItem = target.closest('[data-radix-accordion-root]')?.firstElementChild;
-				focus(firstItem?.querySelector('[data-radix-accordion-trigger]'));
+				$triggerCollection[0]?.focus();
 				break;
 			}
 			case 'End': {
 				e.preventDefault();
 				e.stopPropagation();
-				const lastItem = target.closest('[data-radix-accordion-root]')?.lastElementChild;
-				focus(lastItem?.querySelector('[data-radix-accordion-trigger]'));
+				$triggerCollection.at(-1)?.focus();
 				break;
 			}
 		}
 	};
+
+	function onIndexChange(index: number) {
+		triggerIndex = index;
+	}
 </script>
 
 <Collapsible.Trigger
+	use={[
+		...($$restProps.use || []),
+		[
+			useCollection,
+			{
+				collection: triggerCollection,
+				onIndexChange,
+			},
+		],
+	]}
 	on:change={(e) => {
 		const value = e.detail;
 		if ($rootCtx.type === 'single') {
@@ -64,7 +75,6 @@
 	}}
 	on:keydown={handleKeyDown}
 	{...$$restProps}
-	data-radix-accordion-trigger
 >
 	<slot />
 </Collapsible.Trigger>

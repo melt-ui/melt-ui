@@ -3,6 +3,8 @@
 		"prefix": "comp",
 		"body": [
 			"<script lang=\"ts\" context=\"module\">",
+			"\timport { useActions } from '$$lib/helpers/useActions';",
+			"",
 			"\timport type { BaseProps } from '$$lib/types';",
 			"",
 			"\texport type ${TM_DIRECTORY/.+\\/(.+)/$1/}${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}Props = BaseProps;",
@@ -12,7 +14,7 @@
 			"\ttype $$$Props = ${TM_DIRECTORY/.+\\/(.+)/$1/}${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}Props;",
 			"</script>",
 			"",
-			"<div {...$$$restProps}>",
+			"<div {...$$$restProps} use:useActions={$$$restProps.use}>",
 			"\t<slot />",
 			"</div>",
 			""

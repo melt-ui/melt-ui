@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	import type { BaseProps } from '$lib/types';
 
-	export type ArrowRootProps = BaseProps<SVGElement> & {
+	export type ArrowRootProps = BaseProps<'svg'> & {
 		width?: number;
 		height?: number;
 	};

@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	import type { BaseProps } from '$lib/types';
 
-	export type SwitchRootProps = BaseProps<HTMLButtonElement> & {
+	export type SwitchRootProps = BaseProps<'button'> & {
 		/** The controlled checked state of the switch. */
 		checked?: boolean;
 		/** When `true`, prevents the user from interacting with the switch. */
@@ -31,6 +31,7 @@
 	type $$Props = SwitchRootProps;
 
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
+	import { useActions } from '$lib/helpers/useActions';
 
 	export let required: $$Props['required'] = false;
 	export let value: $$Props['value'] = 'on';
@@ -43,7 +44,7 @@
 
 	const ctxStore = setContext({
 		checked: [checked, (v) => (checked = v)],
-		disabled: [disabled]
+		disabled: [disabled],
 	});
 	$: ctxStore.set({ checked, disabled });
 </script>
@@ -58,6 +59,7 @@
 	{value}
 	{disabled}
 	{...$$restProps}
+	use:useActions={$$restProps.use}
 	on:click={() => {
 		checked = !checked;
 	}}

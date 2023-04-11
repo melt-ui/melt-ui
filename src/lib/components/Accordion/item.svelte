@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
 
-	export type AccordionItemProps = BaseProps & {
+	export type AccordionItemProps = CollapsibleRootProps & {
 		value: string;
 	};
 
@@ -14,7 +14,7 @@
 </script>
 
 <script lang="ts">
-	import type { BaseProps } from '$lib/types';
+	import type { CollapsibleRootProps } from '../Collapsible';
 	import { Collapsible } from '../index';
 	import { getRootCtx } from './root.svelte';
 
@@ -29,11 +29,11 @@
 		: $rootCtx.value === value;
 
 	const itemCtx = setContext({
-		value: [value]
+		value: [value],
 	});
 	$: itemCtx.set({ value });
 </script>
 
-<Collapsible.Root open={isOpen} {...$$restProps} data-radix-accordion-item>
+<Collapsible.Root open={isOpen} {...$$restProps}>
 	<slot />
 </Collapsible.Root>

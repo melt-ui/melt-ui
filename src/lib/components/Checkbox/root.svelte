@@ -1,8 +1,9 @@
 <script lang="ts" context="module">
 	import { reactiveContext } from '$lib/helpers/reactiveContext';
+	import { useActions } from '$lib/helpers/useActions';
 	import type { BaseProps } from '$lib/types';
 
-	export type CheckboxRootProps = BaseProps<HTMLButtonElement> & {
+	export type CheckboxRootProps = BaseProps<'button'> & {
 		/** The controlled checked state of the checkbox. */
 		checked?: CheckedState;
 		/** When `true`, prevents the user from interacting with the checkbox. */
@@ -48,7 +49,7 @@
 
 	const ctxStore = setContext({
 		checked: [checked],
-		disabled: [disabled]
+		disabled: [disabled],
 	});
 	$: ctxStore.set({ checked, disabled });
 </script>
@@ -74,6 +75,7 @@
 	{disabled}
 	{value}
 	{...$$restProps}
+	use:useActions={$$restProps.use}
 >
 	<slot />
 
