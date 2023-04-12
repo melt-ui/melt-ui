@@ -17,8 +17,8 @@
 	type $$Props = PopperRootProps;
 
 	setContext({
-		anchor: [null, () => {}],
-		arrow: [null, () => {}],
+		anchor: [null],
+		arrow: [null],
 	});
 </script>
 

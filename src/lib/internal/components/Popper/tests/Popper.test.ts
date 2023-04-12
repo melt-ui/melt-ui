@@ -9,7 +9,7 @@ test.describe('Popper', () => {
 		expect(await axeViolations(page)).toEqual([]);
 	});
 
-	test('Opens up when clicked', async ({ mount, page }) => {
+	test('Opens up when clicked', async ({ mount }) => {
 		const cmp = await mount(PopperTest);
 		const anchor = cmp.getByTestId('anchor');
 		const content = cmp.getByTestId('content');
