@@ -28,7 +28,7 @@
 		"!dist/**/tests"
 	],
 	"peerDependencies": {
-		"svelte": "^3.54.0"
+		"svelte": "^3.58.0"
 	},
 	"devDependencies": {
 		"@axe-core/playwright": "^4.6.1",
