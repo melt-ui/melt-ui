@@ -1,5 +1,5 @@
-import type { SvelteHTMLElements } from 'svelte/elements';
 import type { ActionArray } from './helpers/useActions';
+import type { SvelteHTMLElements } from 'svelte/elements';
 
 export type Nullable<T> = T | null;
 
