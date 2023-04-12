@@ -1,6 +1,6 @@
 {
 	"name": "radix-svelte",
-	"version": "0.0.9",
+	"version": "0.0.10",
 	"license": "MIT",
 	"scripts": {
 		"dev": "vite dev",
@@ -28,7 +28,7 @@
 		"!dist/**/tests"
 	],
 	"peerDependencies": {
-		"svelte": "^3.54.0"
+		"svelte": "^3.58.0"
 	},
 	"dependencies": {
 		"@floating-ui/core": "^1.2.6",
