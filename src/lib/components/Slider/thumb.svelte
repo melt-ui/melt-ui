@@ -1,5 +1,6 @@
 <script lang="ts" context="module">
 	import { useCollection } from '$lib/helpers/collectionContext';
+	import { styleToString } from '$lib/helpers/style';
 	import { useActions } from '$lib/helpers/useActions';
 	import type { BaseProps } from '$lib/types';
 	import { convertValueToPercentage, linearScale } from './internal/utils';
@@ -55,13 +56,15 @@
 	function onIndexChange(newIndex: number) {
 		index = newIndex;
 	}
+
+	$: style = styleToString({
+		transform: `var(--radix-slider-thumb-transform)`,
+		position: 'absolute',
+		[$orientation.startEdge]: `calc(${percentage}% + ${thumbInBoundsOffset}px)`,
+	});
 </script>
 
-<span
-	style:transform="var(--radix-slider-thumb-transform)"
-	style:position="absolute"
-	style="{$orientation.startEdge}: calc({percentage}% + {thumbInBoundsOffset}px)"
->
+<span {style}>
 	<span
 		use:useCollection={{ collection: thumbComponentsContext, onIndexChange }}
 		{...$$restProps}
