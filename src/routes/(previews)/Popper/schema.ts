@@ -1,4 +1,4 @@
-import type { Popper } from '$lib';
+import type { Popper } from '$lib/internal';
 import type { PreviewSchema } from '../helpers';
 import example from './example.svelte';
 
