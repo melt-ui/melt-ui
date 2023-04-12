@@ -23,13 +23,13 @@
 
 <main>
 	{#each categoriesWithSortedEntries as [category, schemas]}
-		<h2 class="mb-4 mt-8 text-4xl font-bold capitalize text-white">{category}</h2>
+		<h2 class="mb-4 mt-8 first:mt-0 text-4xl font-bold capitalize text-white">{category}</h2>
 		<div class="wrapper">
 			{#each schemas as [identifier, schema]}
 				{@const propsObj = getPropsObjForSchema(schema)}
 				<div class="flex h-full flex-col gap-2 overflow-hidden">
 					<a href={`/${identifier}`} class="flex items-baseline justify-between">
-						<h2 class="text-2xl font-bold capitalize text-white">{schema.title}</h2>
+						<h2 class="text-2xl font-normal capitalize text-white">{schema.title}</h2>
 						<span class="text-sm text-slate-300">View docs</span></a
 					>
 					<div class="comp-preview grow place-items-center">
