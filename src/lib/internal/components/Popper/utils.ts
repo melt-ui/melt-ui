@@ -48,7 +48,7 @@ export const transformOrigin = (options: {
 			y = isArrowHidden ? noArrowAlign : `${arrowYCenter}px`;
 		}
 		return { data: { x, y } };
-	}
+	},
 });
 
 export function getSideAndAlignFromPlacement(placement: Placement) {

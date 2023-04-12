@@ -42,7 +42,7 @@
 		type ComputePositionConfig,
 		type MiddlewareData,
 		type Placement,
-		type Strategy
+		type Strategy,
 	} from '@floating-ui/core';
 	import { autoUpdate, platform } from '@floating-ui/dom';
 
@@ -68,7 +68,7 @@
 		placedSide: [side],
 		arrowX: [undefined],
 		arrowY: [undefined],
-		shouldHideArrow: [false]
+		shouldHideArrow: [false],
 	});
 	const contentContext = getPopperContentContext();
 
@@ -93,7 +93,7 @@
 		padding: collisionPadding,
 		boundary: boundary.filter(isNotNull),
 		// with `strategy: 'fixed'`, this is the only way to get it to respect boundaries
-		altBoundary: hasExplicitBoundaries
+		altBoundary: hasExplicitBoundaries,
 	};
 
 	let strategy: Strategy | null;
@@ -134,7 +134,7 @@
 								mainAxis: true,
 								crossAxis: false,
 								limiter: sticky === 'partial' ? limitShift() : undefined,
-								...detectOverflowOptions
+								...detectOverflowOptions,
 						  })
 						: undefined,
 					avoidCollisions ? flip({ ...detectOverflowOptions }) : undefined,
@@ -147,12 +147,12 @@
 							contentStyle.setProperty('--radix-popper-available-height', `${availableHeight}px`);
 							contentStyle.setProperty('--radix-popper-anchor-width', `${anchorWidth}px`);
 							contentStyle.setProperty('--radix-popper-anchor-height', `${anchorHeight}px`);
-						}
+						},
 					}),
 					arrow ? floatingUIarrow({ element: arrow, padding: arrowPadding }) : undefined,
 					transformOrigin({ arrowWidth, arrowHeight }),
-					hideWhenDetached ? hide({ strategy: 'referenceHidden' }) : undefined
-				].filter(isDefined)
+					hideWhenDetached ? hide({ strategy: 'referenceHidden' }) : undefined,
+				].filter(isDefined),
 			})
 		);
 	}
@@ -172,7 +172,7 @@
 			placedSide,
 			arrowX,
 			arrowY,
-			shouldHideArrow: cannotCenterArrow
+			shouldHideArrow: cannotCenterArrow,
 		});
 	}
 

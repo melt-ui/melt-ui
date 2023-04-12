@@ -18,5 +18,5 @@ export const Popper = {
 	Root,
 	Anchor,
 	Arrow,
-	Content
+	Content,
 };

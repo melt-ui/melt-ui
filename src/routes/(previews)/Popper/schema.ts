@@ -16,46 +16,46 @@ export const schema = {
 				side: {
 					type: 'enum',
 					options: ['top', 'right', 'bottom', 'left'],
-					default: 'bottom'
+					default: 'bottom',
 				},
 				sideOffset: {
 					type: 'number',
-					default: 0
+					default: 0,
 				},
 				align: {
 					type: 'enum',
 					options: ['start', 'center', 'end'],
-					default: 'center'
+					default: 'center',
 				},
 				alignOffset: {
 					type: 'number',
-					default: 0
+					default: 0,
 				},
 				arrowPadding: {
 					type: 'number',
-					default: 0
+					default: 0,
 				},
 				// collisionBoundary: {
 				//   type: 'enum',
 				// },
 				collisionPadding: {
 					type: 'number',
-					default: 0
+					default: 0,
 				},
 				sticky: {
 					type: 'enum',
 					options: ['partial', 'always'],
-					default: 'partial'
+					default: 'partial',
 				},
 				hideWhenDetached: {
 					type: 'boolean',
-					default: false
+					default: false,
 				},
 				avoidCollisions: {
 					type: 'boolean',
-					default: true
-				}
-			}
-		}
-	}
+					default: true,
+				},
+			},
+		},
+	},
 } satisfies PreviewSchema<typeof Popper>;

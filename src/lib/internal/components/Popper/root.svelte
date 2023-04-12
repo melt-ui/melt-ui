@@ -18,7 +18,7 @@
 
 	setContext({
 		anchor: [null, () => {}],
-		arrow: [null, () => {}]
+		arrow: [null, () => {}],
 	});
 </script>
 
