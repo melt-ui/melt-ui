@@ -23,7 +23,7 @@
 
 <main>
 	{#each categoriesWithSortedEntries as [category, schemas]}
-		<h2 class="mb-4 mt-8 first:mt-0 text-4xl font-bold capitalize text-white">{category}</h2>
+		<h2 class="mb-4 mt-8 first:hidden text-3xl font-bold capitalize text-white">{category}</h2>
 		<div class="wrapper">
 			{#each schemas as [identifier, schema]}
 				{@const propsObj = getPropsObjForSchema(schema)}
