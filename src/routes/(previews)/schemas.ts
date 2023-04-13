@@ -1,15 +1,16 @@
-import { schema as Switch } from './Switch/schema';
 import { schema as Accordion } from './Accordion/schema';
+import { schema as AspectRatio } from './AspectRatio/schema';
 import { schema as Checkbox } from './Checkbox/schema';
 import { schema as Collapsible } from './Collapsible/schema';
-import { schema as Slider } from './Slider/schema';
-import { schema as Toggle } from './Toggle/schema';
-import { schema as AspectRatio } from './AspectRatio/schema';
-import { schema as Progress } from './Progress/schema';
 import { schema as Dialog } from './Dialog/schema';
+import { schema as Popper } from './Popper/schema';
+import { schema as Progress } from './Progress/schema';
+import { schema as Slider } from './Slider/schema';
+import { schema as Switch } from './Switch/schema';
 import { schema as Tabs } from './Tabs/schema';
+import { schema as Toggle } from './Toggle/schema';
 
-export default {
+export const components = {
 	accordion: Accordion,
 	'aspect-ratio': AspectRatio,
 	checkbox: Checkbox,
@@ -20,4 +21,13 @@ export default {
 	progress: Progress,
 	dialog: Dialog,
 	tabs: Tabs,
+};
+
+export const internal = {
+	popper: Popper,
+};
+
+export const allSchemas = {
+	...components,
+	...internal,
 };
