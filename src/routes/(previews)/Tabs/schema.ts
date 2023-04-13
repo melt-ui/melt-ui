@@ -7,7 +7,25 @@ export const schema = {
 	description: '',
 	example,
 	meta: {
-		Root: {},
+		Root: {
+			props: {
+				activateOn: {
+					type: 'enum',
+					options: ['click', 'focus'],
+					default: 'focus',
+				},
+				orientation: {
+					type: 'enum',
+					options: ['horizontal', 'vertical'],
+					default: 'horizontal',
+				},
+				dir: {
+					type: 'enum',
+					options: ['ltr', 'rtl'],
+					default: 'ltr',
+				},
+			},
+		},
 		List: {},
 		Trigger: {},
 		Content: {},

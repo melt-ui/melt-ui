@@ -4,9 +4,9 @@
 
 	import type { BaseProps } from '$lib/types';
 
-	type Orientation = 'horizontal' | 'vertical';
-	type Direction = 'ltr' | 'rtl';
-	type ActivateOn = 'focus' | 'click';
+	export type Orientation = 'horizontal' | 'vertical';
+	export type Direction = 'ltr' | 'rtl';
+	export type ActivateOn = 'focus' | 'click';
 
 	export type TabsRootProps = BaseProps<'div'> & {
 		value?: string;
@@ -17,7 +17,9 @@
 
 	type TabsRootContext = {
 		value?: string;
-		activateOn?: ActivateOn;
+		readonly activateOn?: ActivateOn;
+		readonly orientation?: Orientation;
+		readonly dir?: Direction;
 	};
 
 	const { getContext, setContext } = reactiveContext<TabsRootContext>();
@@ -35,9 +37,11 @@
 
 	const ctx = setContext({
 		value: [value, (v) => (value = v)],
-		activateOn: [activateOn, (v) => (activateOn = v)],
+		activateOn: [activateOn],
+		orientation: [orientation],
+		dir: [dir],
 	});
-	$: ctx.update((old) => ({ ...old, value, activateOn }));
+	$: ctx.update((old) => ({ ...old, value, activateOn, orientation, dir }));
 </script>
 
 <div {dir} data-orientation={orientation} {...$$restProps} use:useActions={$$restProps.use}>

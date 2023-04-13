@@ -24,6 +24,7 @@
 		{...$$restProps}
 		use:useActions={$$restProps.use}
 		data-state={selected ? 'active' : 'inactive'}
+		data-orientation={$rootCtx.orientation}
 		role="tabpanel"
 		tabindex="0"
 	>

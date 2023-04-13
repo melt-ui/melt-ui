@@ -23,6 +23,7 @@
 
 <button
 	data-state={selected ? 'active' : 'inactive'}
+	data-orientation={$rootCtx.orientation}
 	role="tab"
 	tabindex={selected ? 0 : -1}
 	on:click={() => ($rootCtx.value = value)}
