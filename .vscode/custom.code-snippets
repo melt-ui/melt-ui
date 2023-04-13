@@ -7,7 +7,7 @@
 			"",
 			"\timport type { BaseProps } from '$$lib/types';",
 			"",
-			"\texport type ${TM_DIRECTORY/.+\\/(.+)/$1/}${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}Props = BaseProps;",
+			"\texport type ${TM_DIRECTORY/.+\\/(.+)/$1/}${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}Props = BaseProps<'div'>;",
 			"</script>",
 			"",
 			"<script lang=\"ts\">",
@@ -25,11 +25,31 @@
 		"prefix": "reactive-ctx",
 		"body": [
 			"type ${TM_DIRECTORY/.+\\/(.+)/$1/}${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}Context = {",
+			"\t$1",
 			"};",
 			"",
 			"const { getContext, setContext } = reactiveContext<${TM_DIRECTORY/.+\\/(.+)/$1/}${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}Context>();",
 			"export const get${TM_DIRECTORY/.+\\/(.+)/$1/}${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}Context = getContext;"
 		],
 		"description": "Controlled Prop"
+	},
+	"Component Schema": {
+		"prefix": "schema",
+		"body": [
+			"import type { ${TM_DIRECTORY/^.+\\\\/(.*)$/$1/} } from '$$lib';",
+			"import type { PreviewSchema } from '../helpers';",
+			"import example from './example.svelte';",
+			"",
+			"export const schema = {",
+			"\ttitle: '${TM_DIRECTORY/^.+\\\\/(.*)$/$1/}',",
+			"\tdescription: '',",
+			"\texample,",
+			"\tmeta: {",
+			"\t\t$1",
+			"\t}",
+			"} satisfies PreviewSchema<typeof ${TM_DIRECTORY/^.+\\\\/(.*)$/$1/}>;",
+			""
+		],
+		"description": "Component Schema"
 	}
 }

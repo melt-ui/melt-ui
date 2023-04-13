@@ -7,6 +7,7 @@ import { schema as Popper } from './Popper/schema';
 import { schema as Progress } from './Progress/schema';
 import { schema as Slider } from './Slider/schema';
 import { schema as Switch } from './Switch/schema';
+import { schema as Tabs } from './Tabs/schema';
 import { schema as Toggle } from './Toggle/schema';
 
 export const components = {
@@ -19,6 +20,7 @@ export const components = {
 	toggle: Toggle,
 	progress: Progress,
 	dialog: Dialog,
+	tabs: Tabs,
 };
 
 export const internal = {

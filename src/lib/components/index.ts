@@ -7,3 +7,4 @@ export { Switch } from './Switch';
 export { Toggle } from './Toggle';
 export { Progress } from './Progress';
 export { Dialog } from './Dialog';
+export { Tabs } from './Tabs';
