@@ -4,7 +4,7 @@
 	import { useActions } from '$lib/helpers/useActions';
 
 	import type { BaseProps } from '$lib/types';
-	import { getTabsRootContext, type Direction, type Orientation } from './root.svelte';
+	import { getTabsRootContext } from './root.svelte';
 
 	export type TabsListProps = BaseProps<'div'>;
 

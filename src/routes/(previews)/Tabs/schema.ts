@@ -25,9 +25,38 @@ export const schema = {
 					default: 'ltr',
 				},
 			},
+			dataAttributes: {
+				'data-orientation': {
+					values: ['horizontal', 'vertical'],
+				},
+			},
 		},
-		List: {},
-		Trigger: {},
-		Content: {},
+		List: {
+			dataAttributes: {
+				'data-orientation': {
+					values: ['horizontal', 'vertical'],
+				},
+			},
+		},
+		Trigger: {
+			dataAttributes: {
+				'data-state': {
+					values: ['active', 'inactive'],
+				},
+				'data-orientation': {
+					values: ['horizontal', 'vertical'],
+				},
+			},
+		},
+		Content: {
+			dataAttributes: {
+				'data-state': {
+					values: ['active', 'inactive'],
+				},
+				'data-orientation': {
+					values: ['horizontal', 'vertical'],
+				},
+			},
+		},
 	},
 } satisfies PreviewSchema<typeof Tabs>;

@@ -15,7 +15,7 @@
 		dir={propsObj.Root.dir}
 	>
 		<Tabs.List
-			class="flex shrink-0 border-b border-purple-600 bg-white data-[orientation=vertical]:flex-col
+			class="flex shrink-0 border-b border-purple-100 bg-white data-[orientation=vertical]:flex-col
 			data-[orientation=vertical]:border-r"
 			aria-label="Manage your account"
 		>
@@ -24,7 +24,7 @@
 			<Tabs.Trigger class="trigger" value="tab3">Settings</Tabs.Trigger>
 		</Tabs.List>
 		<Tabs.Content
-			class="w-[350px] grow  bg-white p-5 outline-none focus:shadow-[0_0_0_2px] focus:shadow-black"
+			class="w-[350px] grow bg-white p-5 outline-none focus:shadow-[0_0_0_2px] focus:shadow-black"
 			value="tab1"
 		>
 			<p class="mb-5 text-[15px] leading-normal text-violet-950">
@@ -35,7 +35,7 @@
 					Name
 				</label>
 				<input
-					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-700 outline-none focus:shadow-[0_0_0_2px]"
+					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-300 outline-none focus:shadow-[0_0_0_2px]"
 					id="name"
 					value="Thomas G. Lopes"
 				/>
@@ -45,14 +45,14 @@
 					Username
 				</label>
 				<input
-					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-700 outline-none focus:shadow-[0_0_0_2px]"
+					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-300 outline-none focus:shadow-[0_0_0_2px]"
 					id="username"
 					value="@thomasglopes"
 				/>
 			</fieldset>
 			<div class="mt-5 flex justify-end">
 				<button
-					class="inline-flex h-[35px] cursor-default items-center justify-center rounded bg-green-400 px-[15px] text-[15px] font-medium leading-none text-green-900 outline-none hover:bg-green-500 focus:shadow-[0_0_0_2px] focus:shadow-green-700"
+					class="inline-flex h-[35px] cursor-default items-center justify-center rounded bg-green-200/75 px-[15px] text-[15px] font-medium leading-none text-green-900 outline-none hover:bg-green-500 focus:shadow-[0_0_0_2px] focus:shadow-green-700"
 				>
 					Save changes
 				</button>
@@ -70,7 +70,7 @@
 					Current password
 				</label>
 				<input
-					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-700 outline-none focus:shadow-[0_0_0_2px]"
+					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-300 outline-none focus:shadow-[0_0_0_2px]"
 					id="currentPassword"
 					type="password"
 				/>
@@ -80,7 +80,7 @@
 					New password
 				</label>
 				<input
-					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-700 outline-none focus:shadow-[0_0_0_2px]"
+					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-300 outline-none focus:shadow-[0_0_0_2px]"
 					id="newPassword"
 					type="password"
 				/>
@@ -90,14 +90,14 @@
 					Confirm password
 				</label>
 				<input
-					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-700 outline-none focus:shadow-[0_0_0_2px]"
+					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-300 outline-none focus:shadow-[0_0_0_2px]"
 					id="confirmPassword"
 					type="password"
 				/>
 			</fieldset>
 			<div class="mt-5 flex justify-end">
 				<button
-					class="inline-flex h-[35px] cursor-default items-center justify-center rounded bg-green-400 px-[15px] text-[15px] font-medium leading-none text-green-900 outline-none hover:bg-green-500 focus:shadow-[0_0_0_2px] focus:shadow-green-700"
+					class="inline-flex h-[35px] cursor-default items-center justify-center rounded bg-green-200/75 px-[15px] text-[15px] font-medium leading-none text-green-900 outline-none hover:bg-green-500 focus:shadow-[0_0_0_2px] focus:shadow-green-700"
 				>
 					Change password
 				</button>
@@ -115,7 +115,7 @@
 					Current password
 				</label>
 				<input
-					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-700 outline-none focus:shadow-[0_0_0_2px]"
+					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-300 outline-none focus:shadow-[0_0_0_2px]"
 					id="currentPassword"
 					type="password"
 				/>
@@ -125,7 +125,7 @@
 					New password
 				</label>
 				<input
-					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-700 outline-none focus:shadow-[0_0_0_2px]"
+					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-300 outline-none focus:shadow-[0_0_0_2px]"
 					id="newPassword"
 					type="password"
 				/>
@@ -135,14 +135,14 @@
 					Confirm password
 				</label>
 				<input
-					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-700 outline-none focus:shadow-[0_0_0_2px]"
+					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-300 outline-none focus:shadow-[0_0_0_2px]"
 					id="confirmPassword"
 					type="password"
 				/>
 			</fieldset>
 			<div class="mt-5 flex justify-end">
 				<button
-					class="inline-flex h-[35px] cursor-default items-center justify-center rounded bg-green-400 px-[15px] text-[15px] font-medium leading-none text-green-900 outline-none hover:bg-green-500 focus:shadow-[0_0_0_2px] focus:shadow-green-700"
+					class="inline-flex h-[35px] cursor-default items-center justify-center rounded bg-green-200/75 px-[15px] text-[15px] font-medium leading-none text-green-900 outline-none hover:bg-green-500 focus:shadow-[0_0_0_2px] focus:shadow-green-700"
 				>
 					Change password
 				</button>
@@ -159,11 +159,11 @@
 	}
 
 	.contents :global(.trigger[data-orientation='vertical']) {
-		@apply w-full flex-grow-0 rounded-none border-b border-b-purple-500 py-4  last:border-b-0;
+		@apply w-full flex-grow-0 rounded-none border-b border-b-purple-100 py-4  last:border-b-0;
 	}
 
 	.contents :global(.trigger[data-state='active']) {
-		@apply text-violet-900 focus:relative;
+		@apply text-violet-700 focus:relative;
 	}
 
 	.contents :global(.trigger[data-state='active'][data-orientation='horizontal']) {
