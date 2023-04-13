@@ -85,16 +85,7 @@
 					type="password"
 				/>
 			</fieldset>
-			<fieldset class="mb-[15px] flex w-full flex-col justify-start">
-				<label class="mb-2.5 block text-[13px] leading-none text-violet-950" for="confirmPassword">
-					Confirm password
-				</label>
-				<input
-					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-300 outline-none focus:shadow-[0_0_0_2px]"
-					id="confirmPassword"
-					type="password"
-				/>
-			</fieldset>
+
 			<div class="mt-5 flex justify-end">
 				<button
 					class="inline-flex h-[35px] cursor-default items-center justify-center rounded bg-green-200/75 px-[15px] text-[15px] font-medium leading-none text-green-900 outline-none hover:bg-green-500 focus:shadow-[0_0_0_2px] focus:shadow-green-700"
@@ -127,16 +118,6 @@
 				<input
 					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-300 outline-none focus:shadow-[0_0_0_2px]"
 					id="newPassword"
-					type="password"
-				/>
-			</fieldset>
-			<fieldset class="mb-[15px] flex w-full flex-col justify-start">
-				<label class="mb-2.5 block text-[13px] leading-none text-violet-950" for="confirmPassword">
-					Confirm password
-				</label>
-				<input
-					class="focus:shadow-violet8 h-[35px] shrink-0 grow rounded px-2.5 text-[15px] leading-none text-violet-900 shadow-[0_0_0_1px] shadow-violet-300 outline-none focus:shadow-[0_0_0_2px]"
-					id="confirmPassword"
 					type="password"
 				/>
 			</fieldset>
