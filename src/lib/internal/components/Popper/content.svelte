@@ -23,6 +23,8 @@
 		readonly arrowX?: number;
 		readonly arrowY?: number;
 		readonly shouldHideArrow?: boolean;
+		arrowWidth?: number;
+		arrowHeight?: number;
 	};
 
 	const { getContext, setContext } = reactiveContext<PopperContentContext>();
@@ -33,7 +35,6 @@
 	type $$Props = PopperContentProps;
 	import {
 		flip,
-		arrow as floatingUIarrow,
 		hide,
 		limitShift,
 		offset,
@@ -44,11 +45,11 @@
 		type Placement,
 		type Strategy,
 	} from '@floating-ui/core';
-	import { autoUpdate, platform } from '@floating-ui/dom';
+	import { autoUpdate, platform, arrow as floatingUIarrow } from '@floating-ui/dom';
 
 	import { computePosition } from '@floating-ui/core';
 
-	import { onDestroy } from 'svelte';
+	import { onDestroy, tick } from 'svelte';
 	import { getRootContext } from './root.svelte';
 	import { getSideAndAlignFromPlacement, isDefined, isNotNull, transformOrigin } from './utils';
 
@@ -63,21 +64,17 @@
 	export let hideWhenDetached: NonNullable<$$Props['hideWhenDetached']> = false;
 	export let avoidCollisions: NonNullable<$$Props['avoidCollisions']> = true;
 
-	const rootContext = getRootContext();
-	setContext({
+	const rootCtx = getRootContext();
+	const ctx = setContext({
 		placedSide: [side],
 		arrowX: [undefined],
 		arrowY: [undefined],
 		shouldHideArrow: [false],
+		arrowWidth: [undefined],
+		arrowHeight: [undefined],
 	});
-	const contentContext = getPopperContentContext();
 
 	let content: HTMLElement;
-
-	$: arrow = $rootContext.arrow;
-	$: arrowSize = arrow?.getBoundingClientRect();
-	$: arrowWidth = arrowSize?.width ?? 0;
-	$: arrowHeight = arrowSize?.height ?? 0;
 
 	$: desiredPlacement = (side + (align !== 'center' ? '-' + align : '')) as Placement;
 
@@ -99,11 +96,11 @@
 	let strategy: Strategy | null;
 	let placement: Placement | null;
 	let middlewareData: MiddlewareData | null;
-	let x: number | null,
-		y: number | null = null;
+	let x: number | null = null;
+	let y: number | null = null;
 
 	function updatePosition(options: ComputePositionConfig) {
-		computePosition($rootContext.anchor, content, options).then(
+		computePosition($rootCtx.anchor, content, options).then(
 			async (position) => {
 				({ strategy, placement, middlewareData, x, y } = position);
 			},
@@ -119,9 +116,13 @@
 		cleanup?.();
 	});
 
-	$: if (content && $rootContext.anchor) {
+	$: if (content && $rootCtx.anchor) {
 		if (cleanup) cleanup();
-		cleanup = autoUpdate($rootContext.anchor, content, () =>
+
+		cleanup = autoUpdate($rootCtx.anchor, content, () => {
+			const arrowWidth = $ctx.arrowWidth ?? 0;
+			const arrowHeight = $ctx.arrowHeight ?? 0;
+
 			updatePosition({
 				platform,
 				strategy: 'fixed',
@@ -149,12 +150,14 @@
 							contentStyle.setProperty('--radix-popper-anchor-height', `${anchorHeight}px`);
 						},
 					}),
-					arrow ? floatingUIarrow({ element: arrow, padding: arrowPadding }) : undefined,
 					transformOrigin({ arrowWidth, arrowHeight }),
 					hideWhenDetached ? hide({ strategy: 'referenceHidden' }) : undefined,
+					$rootCtx.arrow
+						? floatingUIarrow({ element: $rootCtx.arrow, padding: arrowPadding })
+						: undefined,
 				].filter(isDefined),
-			})
-		);
+			});
+		});
 	}
 
 	$: isPlaced = x !== null && y !== null;
@@ -168,12 +171,13 @@
 		const arrowY = middlewareData?.arrow?.y || 0;
 		const cannotCenterArrow = middlewareData?.arrow?.centerOffset !== 0;
 
-		contentContext.set({
+		ctx.update((old) => ({
+			...old,
 			placedSide,
 			arrowX,
 			arrowY,
 			shouldHideArrow: cannotCenterArrow,
-		});
+		}));
 	}
 
 	$: contentZIndex = (content && window?.getComputedStyle(content).zIndex) || 0;

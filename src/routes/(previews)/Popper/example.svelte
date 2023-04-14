@@ -11,7 +11,8 @@
 <div class="flex h-96 items-center justify-center">
 	<Popper.Root {...propsObj.Root}>
 		<Popper.Anchor
-			class="rounded-lg bg-purple-300 p-4"
+			class="shadow-blackA7 hover:bg-mauve3 py-2
+			rounded-md bg-white px-4 font-medium leading-none text-violet-800 shadow-md"
 			on:click={() => (open = true)}
 			{...propsObj.Anchor}>open</Popper.Anchor
 		>

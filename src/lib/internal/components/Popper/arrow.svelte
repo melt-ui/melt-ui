@@ -15,9 +15,12 @@
 		bottom: 'top',
 		left: 'right',
 	};
+	export let width: $$Props['width'] = undefined;
+	export let height: $$Props['height'] = undefined;
 
-	const contentContext = getPopperContentContext();
 	const rootContext = getRootContext();
+	const contentContext = getPopperContentContext();
+	$: contentContext.update((old) => ({ ...old, arrowWidth: width, arrowHeight: height }));
 	$: baseSide = OPPSITE_SIDE[$contentContext.placedSide];
 </script>
 
@@ -41,5 +44,5 @@
 	}[$contentContext.placedSide]}
 	style:visibility={$contentContext.shouldHideArrow ? 'hidden' : 'initial'}
 >
-	<Arrow.Root {...$$restProps} style="{$$restProps.style ?? ''}; display:block" />
+	<Arrow.Root {...$$restProps} style="{$$restProps.style ?? ''}; display:block" {width} {height} />
 </span>
