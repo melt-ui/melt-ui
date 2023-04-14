@@ -45,11 +45,11 @@
 		type Placement,
 		type Strategy,
 	} from '@floating-ui/core';
-	import { autoUpdate, platform, arrow as floatingUIarrow } from '@floating-ui/dom';
+	import { autoUpdate, arrow as floatingUIarrow, platform } from '@floating-ui/dom';
 
 	import { computePosition } from '@floating-ui/core';
 
-	import { onDestroy, tick } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import { getRootContext } from './root.svelte';
 	import { getSideAndAlignFromPlacement, isDefined, isNotNull, transformOrigin } from './utils';
 
@@ -150,11 +150,11 @@
 							contentStyle.setProperty('--radix-popper-anchor-height', `${anchorHeight}px`);
 						},
 					}),
-					transformOrigin({ arrowWidth, arrowHeight }),
-					hideWhenDetached ? hide({ strategy: 'referenceHidden' }) : undefined,
 					$rootCtx.arrow
 						? floatingUIarrow({ element: $rootCtx.arrow, padding: arrowPadding })
 						: undefined,
+					transformOrigin({ arrowWidth, arrowHeight }),
+					hideWhenDetached ? hide({ strategy: 'referenceHidden' }) : undefined,
 				].filter(isDefined),
 			});
 		});

@@ -1,5 +1,6 @@
 <script lang="ts" context="module">
 	import { Arrow, type ArrowRootProps } from '$lib/components/Arrow';
+	import { styleToString } from '$lib/helpers/style';
 	import { getPopperContentContext } from './content.svelte';
 	import { getRootContext } from './root.svelte';
 
@@ -9,7 +10,7 @@
 <script lang="ts">
 	type $$Props = PopperArrowProps;
 
-	const OPPSITE_SIDE = {
+	const OPPOSITE_SIDE = {
 		top: 'bottom',
 		right: 'left',
 		bottom: 'top',
@@ -21,28 +22,29 @@
 	const rootContext = getRootContext();
 	const contentContext = getPopperContentContext();
 	$: contentContext.update((old) => ({ ...old, arrowWidth: width, arrowHeight: height }));
-	$: baseSide = OPPSITE_SIDE[$contentContext.placedSide];
+	$: baseSide = OPPOSITE_SIDE[$contentContext.placedSide];
+
+	$: style = styleToString({
+		position: 'absolute',
+		left: $contentContext.arrowX ? $contentContext.arrowX + 'px' : undefined,
+		top: $contentContext.arrowY ? $contentContext.arrowY + 'px' : undefined,
+		[baseSide]: 0,
+		'transform-origin': {
+			top: '',
+			right: '0 0',
+			bottom: 'center 0',
+			left: '100% 0',
+		}[$contentContext.placedSide],
+		transform: {
+			top: 'translateY(100%)',
+			right: 'translateY(50%) rotate(90deg) translateX(-50%)',
+			bottom: `rotate(180deg)`,
+			left: 'translateY(50%) rotate(-90deg) translateX(50%)',
+		}[$contentContext.placedSide],
+		visibility: $contentContext.shouldHideArrow ? 'hidden' : 'initial',
+	});
 </script>
 
-<span
-	bind:this={$rootContext.arrow}
-	style="{baseSide}: 0;"
-	style:position="absolute"
-	style:left={$contentContext.arrowX + 'px'}
-	style:top={$contentContext.arrowY + 'px'}
-	style:transform-origin={{
-		top: '',
-		right: '0 0',
-		bottom: 'center 0',
-		left: '100% 0',
-	}[$contentContext.placedSide]}
-	style:transform={{
-		top: 'translateY(100%)',
-		right: 'translateY(50%) rotate(90deg) translateX(-50%)',
-		bottom: `rotate(180deg)`,
-		left: 'translateY(50%) rotate(-90deg) translateX(50%)',
-	}[$contentContext.placedSide]}
-	style:visibility={$contentContext.shouldHideArrow ? 'hidden' : 'initial'}
->
+<span bind:this={$rootContext.arrow} {style}>
 	<Arrow.Root {...$$restProps} style="{$$restProps.style ?? ''}; display:block" {width} {height} />
 </span>
