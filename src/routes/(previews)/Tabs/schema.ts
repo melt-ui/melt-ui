@@ -4,7 +4,8 @@ import example from './example.svelte';
 
 export const schema = {
 	title: 'Tabs',
-	description: '',
+	description:
+		'A set of layered sections of content—known as tab panels—that are displayed one at a time.',
 	example,
 	meta: {
 		Root: {
