@@ -48,7 +48,12 @@
 <div class="relative grid grow place-items-center">
 	<div class="flex w-full flex-col items-center gap-16 overflow-hidden py-2">
 		<div class="w-full overflow-hidden">
-			<div class="wrapper" style:--gap={`${GAP}px`} on:scroll={handleScroll} bind:this={wrapperEl}>
+			<div
+				class="wrapper scroll-h"
+				style:--gap={`${GAP}px`}
+				on:scroll={handleScroll}
+				bind:this={wrapperEl}
+			>
 				{#each sortedSchemas as [identifier, schema], idx}
 					{@const propsObj = getPropsObjForSchema(schema)}
 					<div
@@ -99,6 +104,10 @@
 			padding-right: calc(calc(100vw - 600px) / 2);
 			padding-block: theme('spacing.16');
 			scrollbar-width: none;
+
+			&::-webkit-scrollbar {
+				display: none;
+			}
 		}
 	}
 
