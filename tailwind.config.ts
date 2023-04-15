@@ -5,6 +5,21 @@ export default {
 
 	theme: {
 		extend: {
+			colors: {
+				vermilion: {
+					'50': '#fff5ec',
+					'100': '#ffe9d3',
+					'200': '#ffcea5',
+					'300': '#ffac6d',
+					'400': '#ff7d32',
+					'500': '#ff590a',
+					'600': '#ff3e00',
+					'700': '#cc2902',
+					'800': '#a1210b',
+					'900': '#821e0c',
+					'950': '#460b04',
+				},
+			},
 			fontFamily: {
 				sans: ['Inter', 'sans-serif'],
 			},

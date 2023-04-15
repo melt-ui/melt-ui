@@ -10,7 +10,9 @@
 <form>
 	<div class="flex items-center justify-center">
 		<Checkbox.Root
-			class="flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-[4px] bg-white shadow-[0_2px_10px] shadow-black/10 outline-none hover:bg-violet-100 focus:shadow-[0_0_0_2px_black] disabled:bg-violet-300 "
+			class="flex h-6 w-6 appearance-none items-center justify-center
+			rounded-sm bg-white shadow-lg outline-none hover:opacity-75
+			focus:ring focus:ring-black disabled:bg-vermilion-300"
 			disabled={propsObj.Root.disabled}
 			bind:checked={propsObj.Root.checked}
 			name={propsObj.Root.name}
@@ -18,7 +20,7 @@
 			required={propsObj.Root.required}
 			id="c1"
 		>
-			<Checkbox.Indicator class="text-violet-700">
+			<Checkbox.Indicator class="text-vermilion-700">
 				<CheckIcon />
 			</Checkbox.Indicator>
 		</Checkbox.Root>

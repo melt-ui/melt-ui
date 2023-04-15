@@ -5,7 +5,7 @@
 	export let propsObj: ResolvedProps<typeof AspectRatio>;
 </script>
 
-<div class="w-[300px] overflow-hidden rounded-md shadow-[0_2px_10px] shadow-black/25">
+<div class="w-[300px] overflow-hidden rounded-md shadow-lg">
 	<AspectRatio.Root ratio={propsObj.Root.ratio}>
 		<img
 			class="h-full w-full object-cover"

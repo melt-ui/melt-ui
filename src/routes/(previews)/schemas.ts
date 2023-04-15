@@ -10,7 +10,7 @@ import { schema as Switch } from './Switch/schema';
 import { schema as Tabs } from './Tabs/schema';
 import { schema as Toggle } from './Toggle/schema';
 
-export const components = {
+export const schemas = {
 	accordion: Accordion,
 	'aspect-ratio': AspectRatio,
 	checkbox: Checkbox,
@@ -19,15 +19,7 @@ export const components = {
 	switch: Switch,
 	toggle: Toggle,
 	progress: Progress,
+	popper: Popper,
 	dialog: Dialog,
 	tabs: Tabs,
-};
-
-export const internal = {
-	popper: Popper,
-};
-
-export const allSchemas = {
-	...components,
-	...internal,
 };

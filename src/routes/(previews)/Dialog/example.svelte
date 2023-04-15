@@ -13,9 +13,9 @@
 	closeAutoFocus={propsObj.Root.closeAutoFocus}
 >
 	<Dialog.Trigger
-		class="shadow-blackA7 hover:bg-mauve3 inline-flex h-[35px] items-center justify-center
-    rounded-[4px] bg-white px-[15px] font-medium leading-none text-violet-800 shadow-[0_2px_10px]
-    focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none"
+		class="shadow-lg hover:opacity-75 inline-flex px-4 py-2 items-center justify-center
+    rounded-md bg-white font-medium leading-none text-vermilion-800
+    focus:ring focus:ring-black focus:outline-none"
 	>
 		Open Dialog
 	</Dialog.Trigger>
@@ -23,28 +23,28 @@
 		<Dialog.Overlay class="fixed inset-0 bg-black/50 data-[state=open]:animate-overlayShow" />
 		<Dialog.Content
 			class="fixed left-[50%] top-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] 
-			translate-y-[-50%] rounded-[6px] bg-white p-[25px] shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] 
+			translate-y-[-50%] rounded-[6px] bg-white p-[25px] shadow-lg
 			focus:outline-none data-[state=open]:animate-contentShow"
 		>
 			<Dialog.Title class="m-0 text-lg font-medium text-black">Edit profile</Dialog.Title>
-			<Dialog.Description class="mb-5 mt-[10px] text-[15px] leading-normal text-slate-500">
+			<Dialog.Description class="mb-5 mt-[10px] leading-normal text-slate-500">
 				Make changes to your profile here. Click save when you're done.
 			</Dialog.Description>
 
 			<fieldset class="mb-4 flex items-center gap-5">
-				<label class="w-[90px] text-right text-[15px] text-violet-800" for="name"> Name </label>
+				<label class="w-[90px] text-right text-vermilion-800" for="name"> Name </label>
 				<input
-					class="shadow-violet7 focus:shadow-violet8 inline-flex h-[35px] w-full flex-1 items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-violet-800 shadow-[0_0_0_1px] outline-none focus:shadow-[0_0_0_2px]"
+					class="inline-flex h-8 w-full flex-1 items-center justify-center rounded-sm px-3
+					leading-none text-vermilion-800 border border-solid border-vermilion-200 outline-none focus:shadow-[0_0_0_2px]"
 					id="name"
 					value="Thomas G. Lopes"
 				/>
 			</fieldset>
 			<fieldset class="mb-[15px] flex items-center gap-5">
-				<label class="w-[90px] text-right text-[15px] text-violet-900/75" for="username">
-					Username
-				</label>
+				<label class="w-[90px] text-right text-vermilion-800" for="username"> Username </label>
 				<input
-					class="shadow-violet7 focus:shadow-violet8 inline-flex h-[35px] w-full flex-1 items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-violet-800 shadow-[0_0_0_1px] outline-none focus:shadow-[0_0_0_2px]"
+					class="inline-flex h-8 w-full flex-1 items-center justify-center rounded-sm px-3
+				leading-none text-vermilion-800 border border-solid border-vermilion-200 outline-none focus:shadow-[0_0_0_2px]"
 					id="username"
 					value="@thomasglopes"
 				/>

@@ -12,13 +12,11 @@
 
 <Collapsible.Root bind:open={propsObj.Root.open} disabled={propsObj.Root.disabled} class="w-full">
 	<div class="flex items-center justify-between">
-		<span class="text-violet11 text-sm leading-6 text-white">
-			@thomasglopes starred 3 repositories
-		</span>
+		<span class="text-sm leading-6 text-white"> @thomasglopes starred 3 repositories </span>
 		<Collapsible.Trigger
-			class="inline-grid h-6 w-6 place-items-center rounded-full text-sm  text-violet-500 shadow-[0_2px_10px]
-			shadow-gray-600 outline-none hover:bg-violet-300 focus:ring focus:ring-gray-800 data-[disabled]:cursor-not-allowed 
-			data-[state=closed]:bg-white data-[state=open]:bg-violet-100 data-[disabled]:opacity-75"
+			class="inline-grid h-6 w-6 place-items-center rounded-full text-sm  text-vermilion-700 shadow-lg
+			outline-none hover:opacity-75 focus:ring focus:ring-black data-[disabled]:cursor-not-allowed 
+			bg-white data-[disabled]:opacity-75"
 		>
 			{#if propsObj.Root.open}
 				<Cross2Icon />
@@ -28,17 +26,17 @@
 		</Collapsible.Trigger>
 	</div>
 
-	<div class="my-2 rounded bg-white p-3 shadow-[0_2px_10px] shadow-gray-600">
-		<span class="text-base leading-[25px] text-violet-800">@radix-ui/primitives</span>
+	<div class="my-2 rounded bg-white p-3 shadow-lg">
+		<span class="text-base leading-[25px] text-vermilion-800">@radix-ui/primitives</span>
 	</div>
 
 	<Collapsible.Content transition={propsObj.Content.transition}>
 		<div class="flex flex-col gap-2">
-			<div class="rounded bg-white p-3 shadow-[0_2px_10px] shadow-gray-600">
-				<span class="text-base leading-[25px] text-violet-800">@radix-ui/colors</span>
+			<div class="rounded bg-white p-3 shadow-lg">
+				<span class="text-base leading-[25px] text-vermilion-800">@radix-ui/colors</span>
 			</div>
-			<div class="rounded bg-white p-3 shadow-[0_2px_10px] shadow-gray-600">
-				<span class="text-base leading-[25px] text-violet-800">@stitches/react</span>
+			<div class="rounded bg-white p-3 shadow-lg">
+				<span class="text-base leading-[25px] text-vermilion-800">@stitches/react</span>
 			</div>
 		</div>
 	</Collapsible.Content>

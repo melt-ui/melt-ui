@@ -1,11 +1,11 @@
-import { allSchemas } from '$routes/(previews)/schemas';
+import { schemas } from '$routes/(previews)/schemas';
 import { error } from '@sveltejs/kit';
 
 export const load = async ({ params }) => {
 	const cmp = params.component;
-	if (cmp in allSchemas) {
+	if (cmp in schemas) {
 		return {
-			schema: allSchemas[cmp as keyof typeof allSchemas],
+			schema: schemas[cmp as keyof typeof schemas],
 		};
 	}
 
