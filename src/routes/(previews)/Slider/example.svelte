@@ -39,7 +39,7 @@
 		</Slider.Track>
 		<Slider.Thumb
 			class="block h-5 w-5 rounded-[10px] bg-white shadow-[0_2px_10px] shadow-black/10 
-					hover:bg-violet-100 focus:shadow-[0_0_0_5px] focus:shadow-black/30 focus:outline-none"
+					hover:bg-vermilion-100 focus:shadow-[0_0_0_5px] focus:shadow-black/30 focus:outline-none"
 		/>
 	</Slider.Root>
 </form>

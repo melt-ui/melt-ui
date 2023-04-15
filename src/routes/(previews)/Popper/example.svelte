@@ -12,9 +12,9 @@
 	<Popper.Root {...propsObj.Root}>
 		<Popper.Anchor
 			class="shadow-blackA7 hover:bg-mauve3 py-2
-			rounded-md bg-white px-4 font-medium leading-none text-violet-800 shadow-md"
+			rounded-md bg-white px-4 font-medium leading-none text-vermilion-800 shadow-lg"
 			on:click={() => (open = true)}
-			{...propsObj.Anchor}>open</Popper.Anchor
+			{...propsObj.Anchor}>Open</Popper.Anchor
 		>
 		{#if open}
 			<Popper.Content sideOffset={10} class="rounded-lg bg-black/20 p-4" {...propsObj.Content}>

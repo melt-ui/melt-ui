@@ -1,22 +1,22 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { schemas } from '$routes/(previews)/schemas';
-	import { cn } from '$routes/helpers';
+	import { cn, sortedEntries } from '$routes/helpers';
 
 	type Link = {
 		title: string;
 		href: string;
 	};
 
-	let links: Link[] = Object.entries(schemas).map(([key, schema]) => ({
+	let links: Link[] = sortedEntries(schemas).map(([key, schema]) => ({
 		title: schema.title,
 		href: `/docs/${key}`,
 	}));
 </script>
 
-<div class="flex grid-cols-12 flex-col gap-8 py-6 lg:grid lg:px-4">
+<div class="flex grid-cols-12 flex-col gap-8 py-6 lg:grid lg:px-4 overflow-hidden">
 	<div class="col-span-2">
-		<ul class="flex w-full overflow-x-scroll px-4 pb-2 lg:block lg:px-0">
+		<ul class="flex w-full overflow-x-auto px-4 pb-2 lg:block lg:px-0">
 			{#each links as link}
 				<li>
 					<a

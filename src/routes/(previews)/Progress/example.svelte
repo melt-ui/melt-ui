@@ -8,7 +8,7 @@
 <form class="grid h-full place-items-center">
 	<div class="flex items-center justify-center">
 		<Progress.Root
-			class="relative h-[25px] w-[300px] overflow-hidden rounded-[99999px] bg-black/40"
+			class="relative h-6 w-[300px] overflow-hidden rounded-[99999px] bg-black/40"
 			value={propsObj.Root.value}
 			max={propsObj.Root.max}
 			id="c1"
