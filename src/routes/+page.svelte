@@ -15,7 +15,6 @@
 		return a[1].title.toLowerCase().localeCompare(b[1].title.toLowerCase());
 	});
 
-	let vw = 0;
 	let scrollX = 0;
 	let wrapperEl: HTMLElement;
 
@@ -46,24 +45,15 @@
 	}
 </script>
 
-<svelte:window bind:innerWidth={vw} />
-
-<div class="grid grow place-items-center relative">
-	<div class="flex flex-col items-center gap-16 w-full overflow-hidden">
+<div class="relative grid grow place-items-center">
+	<div class="flex w-full flex-col items-center gap-16 overflow-hidden py-2">
 		<div class="w-full overflow-hidden">
-			<div
-				class="wrapper"
-				style:--pl={`${(vw - 600) / 2}px`}
-				style:--pr={`${(vw - 600) / 2}px`}
-				style:--gap={`${GAP}px`}
-				on:scroll={handleScroll}
-				bind:this={wrapperEl}
-			>
+			<div class="wrapper" style:--gap={`${GAP}px`} on:scroll={handleScroll} bind:this={wrapperEl}>
 				{#each sortedSchemas as [identifier, schema], idx}
 					{@const propsObj = getPropsObjForSchema(schema)}
 					<div
 						class={cn(
-							'flex w-full lg:h-[600px] lg:min-w-[600px] flex-col gap-2 overflow-hidden transition lg:opacity-50',
+							'flex w-full flex-col gap-2 overflow-hidden transition lg:h-[600px] lg:min-w-[600px] lg:opacity-50',
 							activeIndex === idx && 'lg:scale-105 lg:opacity-100'
 						)}
 					>
@@ -79,16 +69,14 @@
 			</div>
 		</div>
 
-		<div class="hidden lg:flex items-center gap-16">
-			<button
-				class="grid h-9 w-9 place-items-center rounded-full bg-zinc-900 text-white"
-				on:click={handlePrev}
-			>
+		<div class="hidden items-center gap-16 lg:flex">
+			<button class="button" on:click={handlePrev} disabled={activeIndex === 0}>
 				<ChevronLeft />
 			</button>
 			<button
-				class="grid h-9 w-9 place-items-center rounded-full bg-zinc-900 text-white"
+				class="button"
 				on:click={handleNext}
+				disabled={activeIndex === sortedSchemas.length - 1}
 			>
 				<ChevronRight />
 			</button>
@@ -107,10 +95,36 @@
 			overflow-x: scroll;
 			width: 100%;
 			gap: var(--gap);
-			padding-left: var(--pl);
-			padding-right: var(--pr);
+			padding-left: calc(calc(100vw - 600px) / 2);
+			padding-right: calc(calc(100vw - 600px) / 2);
 			padding-block: theme('spacing.16');
 			scrollbar-width: none;
+		}
+	}
+
+	.button {
+		display: grid;
+		place-items: center;
+
+		width: theme('width.9');
+		height: theme('height.9');
+
+		background-color: theme('colors.zinc.700');
+		border-radius: theme('borderRadius.full');
+		color: theme('colors.white');
+
+		outline: none;
+
+		&:focus {
+			@apply ring ring-vermilion-600;
+		}
+
+		&:disabled {
+			opacity: 0.5;
+		}
+
+		&:hover:not(:disabled) {
+			background-color: theme('colors.zinc.800');
 		}
 	}
 </style>

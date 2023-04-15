@@ -1,19 +1,29 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import {
 		getPropsObj,
 		type PreviewDataAttribute,
 		type PreviewProps,
 	} from '$routes/(previews)/helpers';
+	import { schemas } from '$routes/(previews)/schemas.js';
 
 	export let data;
 
-	const cmpSchema = data.schema;
-
+	let cmpSchema = schemas[data.cmp as keyof typeof schemas];
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
 	let props = getPropsObj<{}>(cmpSchema.meta) as any;
 
-	function castPreviewProps(component: { props?: Record<string, PreviewProps> }) {
-		return component.props || {};
+	function reset(cmp: string) {
+		cmpSchema = schemas[cmp as keyof typeof schemas];
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
+		props = getPropsObj<{}>(cmpSchema.meta) as any;
+	}
+
+	$: reset(data.cmp);
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	function castPreviewProps(component?: any) {
+		return (component.props || {}) as Record<string, PreviewProps>;
 	}
 
 	function castPreviewDataAttribute(component: {
@@ -24,7 +34,7 @@
 	}
 </script>
 
-<div class="mx-auto max-w-5xl p-8">
+<div>
 	<div>
 		<h2 class="text-xl font-bold">{cmpSchema.title}</h2>
 		<p class="text-slate-300">{cmpSchema.description}</p>
