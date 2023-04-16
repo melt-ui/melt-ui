@@ -8,6 +8,7 @@
 		type PreviewProps,
 	} from '$routes/(previews)/helpers';
 	import { schemas } from '$routes/(previews)/schemas.js';
+	import { page } from '$app/stores';
 
 	export let data;
 
@@ -41,12 +42,16 @@
 	}
 
 	let showCode = false;
+	$: {
+		$page.url.pathname;
+		showCode = false;
+	}
 </script>
 
 <div>
 	<div>
-		<h2 class="text-xl font-bold">{cmpSchema.title}</h2>
-		<p class="text-slate-300">{cmpSchema.description}</p>
+		<h1 class="text-3xl font-bold">{cmpSchema.title}</h1>
+		<p class="text-slate-300 mt-2">{cmpSchema.description}</p>
 	</div>
 
 	<div class="comp-preview mt-4 h-96">
@@ -77,9 +82,11 @@
 		</div>
 	</div>
 
+	<h2 class="mt-8 text-2xl font-semibold">API Reference</h2>
+
 	{#each Object.entries(cmpSchema.meta) as [subCmp, subCmpSchema]}
 		<div
-			class="mt-2 grid gap-x-4 gap-y-2 overflow-auto whitespace-nowrap rounded-md bg-zinc-900 p-4 text-white"
+			class="mt-4 grid gap-x-4 gap-y-2 overflow-auto whitespace-nowrap rounded-md bg-zinc-900 p-4 text-white"
 		>
 			<h2 class="col-span-3 font-bold">{cmpSchema.title}.{subCmp}</h2>
 
