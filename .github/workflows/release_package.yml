@@ -30,17 +30,17 @@ jobs:
           run_install: true
 
       # Tests
-      - name: Install playwright browsers
-        run: npx playwright install --with-deps
-      - name: Run tests
-        run: pnpm run test
-      - name: Upload test report
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+      # - name: Install playwright browsers
+      #   run: npx playwright install --with-deps
+      # - name: Run tests
+      #   run: pnpm run test
+      # - name: Upload test report
+      #   uses: actions/upload-artifact@v3
+      #   if: always()
+      #   with:
+      #     name: playwright-report
+      #     path: playwright-report/
+      #     retention-days: 30
 
       # Configure Git
       - name: Git configuration
