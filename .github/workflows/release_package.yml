@@ -30,10 +30,12 @@ jobs:
           run_install: true
 
       # Tests
-      - name: Run tests
+      - name: Install playwright browsers
         run: npx playwright install --with-deps
-      - run: pnpm run test
-      - uses: actions/upload-artifact@v3
+      - name: Run tests
+        run: pnpm run test
+      - name: Upload test report
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: playwright-report
