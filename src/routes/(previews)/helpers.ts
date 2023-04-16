@@ -1,6 +1,5 @@
 import type { ComponentProps, SvelteComponent } from 'svelte';
 
-import type { IfEquals } from '$lib/helpers/types';
 import type { SlideParams } from 'svelte/transition';
 
 type RadixComponentGroup = { [key: string]: typeof SvelteComponent };
@@ -39,12 +38,7 @@ type PreviewComponentProps<CMP extends SvelteComponent, P = ComponentProps<CMP>>
 		? PreviewPropBoolean
 		: // If type is string
 		NonNullable<P[K]> extends string
-		? IfEquals<
-				NonNullable<P[K]>,
-				string,
-				PreviewPropString | PreviewPropEnum<NonNullable<P[K]>>,
-				PreviewPropEnum<NonNullable<P[K]>>
-		  >
+		? PreviewPropString | PreviewPropEnum<NonNullable<P[K]>>
 		: // If type is string[]
 		NonNullable<P[K]> extends string[]
 		? PreviewPropArray<string>

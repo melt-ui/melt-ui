@@ -3,13 +3,13 @@
 	import type { BaseProps } from '$lib/types';
 	import { getRootContext, getState } from './root.svelte';
 
-	export type Props = BaseProps<'span'>;
+	export type CheckboxIndicatorProps = BaseProps<'span'>;
 </script>
 
 <script lang="ts">
 	import { isIndeterminate } from './root.svelte';
 
-	type $$Props = Props;
+	type $$Props = CheckboxIndicatorProps;
 
 	const ctx = getRootContext();
 </script>
