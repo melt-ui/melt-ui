@@ -51,7 +51,7 @@
 <div>
 	<div>
 		<h1 class="text-3xl font-bold">{cmpSchema.title}</h1>
-		<p class="text-slate-300 mt-2">{cmpSchema.description}</p>
+		<p class="mt-2 text-slate-300">{cmpSchema.description}</p>
 	</div>
 
 	<div class="comp-preview mt-4 h-96">
