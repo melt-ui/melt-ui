@@ -65,7 +65,7 @@
 					class="rounded-lg border border-vermilion-600/20 bg-zinc-900 px-4 py-1 text-sm hover:border-vermilion-600/70"
 					on:click={() => (showCode = !showCode)}
 				>
-					Expand code
+					{showCode ? 'Collapse code' : 'Expand code'}
 				</button>
 			</div>
 		</div>
