@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import type { BaseProps } from '$lib/types';
+	import type { BaseProps } from '$lib/internal/types';
 	import { getDataState } from './internal/helpers';
 	import { getDialogRootContext } from './root.svelte';
 

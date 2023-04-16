@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
-	import { collectionContext } from '$lib/helpers/collectionContext';
-	import { reactiveContext } from '$lib/helpers/reactiveContext';
-	import { useActions } from '$lib/helpers/useActions';
+	import { collectionContext } from '$lib/internal/helpers/collectionContext';
+	import { reactiveContext } from '$lib/internal/helpers/reactiveContext';
+	import { useActions } from '$lib/internal/helpers/useActions';
 
 	type Type = 'single' | 'multiple';
 
@@ -32,7 +32,7 @@
 </script>
 
 <script lang="ts">
-	import type { BaseProps } from '$lib/types';
+	import type { BaseProps } from '$lib/internal/types';
 
 	type $$Props = AccordionRootProps;
 

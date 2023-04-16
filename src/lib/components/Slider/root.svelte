@@ -1,8 +1,8 @@
 <script lang="ts" context="module">
-	import { clamp } from '$lib/helpers/numbers';
-	import { reactiveContext } from '$lib/helpers/reactiveContext';
-	import { uniqueContext } from '$lib/helpers/uniqueContext';
-	import type { BaseProps } from '$lib/types';
+	import { clamp } from '$lib/internal/helpers/numbers';
+	import { reactiveContext } from '$lib/internal/helpers/reactiveContext';
+	import { uniqueContext } from '$lib/internal/helpers/uniqueContext';
+	import type { BaseProps } from '$lib/internal/types';
 	import { createEventDispatcher } from 'svelte';
 	import { writable, type Writable } from 'svelte/store';
 
@@ -49,7 +49,7 @@
 </script>
 
 <script lang="ts">
-	import { collectionContext } from '$lib/helpers/collectionContext';
+	import { collectionContext } from '$lib/internal/helpers/collectionContext';
 	import SliderHorizontal from './internal/SliderHorizontal.svelte';
 	import SliderVertical from './internal/SliderVertical.svelte';
 	import {

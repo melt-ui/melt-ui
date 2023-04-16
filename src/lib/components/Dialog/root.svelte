@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
-	import { focus } from '$lib/helpers/dom';
-	import { reactiveContext } from '$lib/helpers/reactiveContext';
-	import { generateId } from '$lib/internal';
+	import { focus } from '$lib/internal/helpers';
+	import { reactiveContext } from '$lib/internal/helpers';
+	import { generateId } from '$lib/internal/helpers';
 	import { tick } from 'svelte';
 
 	export type DialogRootProps = {

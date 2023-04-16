@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
-	import { useActions } from '$lib/helpers/useActions';
-	import type { BaseProps } from '$lib/types';
+	import { useActions } from '$lib/internal/helpers/useActions';
+	import type { BaseProps } from '$lib/internal/types';
 
 	export type AspectRatioProps = BaseProps & {
 		ratio?: number;

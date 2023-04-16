@@ -1,9 +1,9 @@
 <script lang="ts" context="module">
-	import { next, prev } from '$lib/helpers/array';
-	import { collectionContext } from '$lib/helpers/collectionContext';
-	import { useActions } from '$lib/helpers/useActions';
+	import { next, prev } from '$lib/internal/helpers/array';
+	import { collectionContext } from '$lib/internal/helpers/collectionContext';
+	import { useActions } from '$lib/internal/helpers/useActions';
 
-	import type { BaseProps } from '$lib/types';
+	import type { BaseProps } from '$lib/internal/types';
 	import { getTabsRootContext } from './root.svelte';
 
 	export type TabsListProps = BaseProps<'div'>;

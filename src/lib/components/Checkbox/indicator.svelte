@@ -1,15 +1,15 @@
 <script lang="ts" context="module">
-	import { useActions } from '$lib/helpers/useActions';
-	import type { BaseProps } from '$lib/types';
+	import { useActions } from '$lib/internal/helpers/useActions';
+	import type { BaseProps } from '$lib/internal/types';
 	import { getRootContext, getState } from './root.svelte';
 
-	export type Props = BaseProps<'span'>;
+	export type CheckboxIndicatorProps = BaseProps<'span'>;
 </script>
 
 <script lang="ts">
 	import { isIndeterminate } from './root.svelte';
 
-	type $$Props = Props;
+	type $$Props = CheckboxIndicatorProps;
 
 	const ctx = getRootContext();
 </script>

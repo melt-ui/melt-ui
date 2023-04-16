@@ -1,6 +1,5 @@
 import type { ComponentProps, SvelteComponent } from 'svelte';
 
-import type { IfEquals } from '$lib/helpers/types';
 import type { SlideParams } from 'svelte/transition';
 
 type RadixComponentGroup = { [key: string]: typeof SvelteComponent };
@@ -39,12 +38,7 @@ type PreviewComponentProps<CMP extends SvelteComponent, P = ComponentProps<CMP>>
 		? PreviewPropBoolean
 		: // If type is string
 		NonNullable<P[K]> extends string
-		? IfEquals<
-				NonNullable<P[K]>,
-				string,
-				PreviewPropString | PreviewPropEnum<NonNullable<P[K]>>,
-				PreviewPropEnum<NonNullable<P[K]>>
-		  >
+		? PreviewPropString | PreviewPropEnum<NonNullable<P[K]>>
 		: // If type is string[]
 		NonNullable<P[K]> extends string[]
 		? PreviewPropArray<string>
@@ -65,6 +59,19 @@ export type ResolvedProps<GROUP extends RadixComponentGroup> = {
 	[K in keyof GROUP]: ComponentProps<InstanceType<GROUP[K]>>;
 };
 
+/* -------------- */
+/* Preview Events */
+/* -------------- */
+export type PreviewEvent<T> = {
+	payload: T | Array<T>;
+};
+
+type PreviewComponentEvents<CMP extends SvelteComponent> = {
+	[K in keyof CMP['$$events_def']]: CMP['$$events_def'][K] extends CustomEvent<infer U>
+		? PreviewEvent<U>
+		: never;
+};
+
 /* ------------------------*/
 /* Preview Data Attributes */
 /* ------------------------*/
@@ -79,6 +86,7 @@ type PreviewComponentDataAttributes = {
 type RadixComponentPreview<CMP extends typeof SvelteComponent> = {
 	props?: PreviewComponentProps<InstanceType<CMP>>;
 	dataAttributes?: PreviewComponentDataAttributes;
+	events?: PreviewComponentEvents<InstanceType<CMP>>;
 };
 
 export type PreviewMeta<GROUP extends RadixComponentGroup> = {

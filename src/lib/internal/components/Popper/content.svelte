@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
-	import { reactiveContext } from '$lib/helpers/reactiveContext';
-	import type { BaseProps } from '$lib/types';
+	import { reactiveContext } from '$lib/internal/helpers/reactiveContext';
+	import type { BaseProps } from '$lib/internal/types';
 	import type { Align, Side } from '.';
 
 	type Boundary = Element | null;

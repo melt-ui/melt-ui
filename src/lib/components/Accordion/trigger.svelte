@@ -3,9 +3,9 @@
 </script>
 
 <script lang="ts">
-	import { useCollection } from '$lib/helpers/collectionContext';
+	import { useCollection } from '$lib/internal/helpers/collectionContext';
 
-	import type { BaseProps } from '$lib/types';
+	import type { BaseProps } from '$lib/internal/types';
 	import { Collapsible } from '../Collapsible';
 	import { getItemContext } from './item.svelte';
 	import { getRootCtx, getTriggerCollection } from './root.svelte';

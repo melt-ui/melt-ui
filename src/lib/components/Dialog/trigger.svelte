@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
-	import { generateId } from '$lib/internal';
-	import type { BaseProps } from '$lib/types';
+	import { generateId } from '$lib/internal/helpers';
+	import type { BaseProps } from '$lib/internal/types';
 	import { getDataState } from './internal/helpers';
 	import { getDialogRootContext } from './root.svelte';
 

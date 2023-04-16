@@ -49,6 +49,10 @@ Import the components you need:
 
 You can check the planned features and bugs in the [issues tab](https://github.com/TGlide/radix-svelte/issues)
 
+## Contributing
+
+Check out our [contributing guide](./CONTRIBUTING.md)
+
 ## Community
 
 - [Discord](https://discord.gg/gQrpPs34xH)

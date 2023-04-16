@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import type { BaseProps } from '$lib/types';
+	import type { BaseProps } from '$lib/internal/types';
 
 	export type SwitchRootProps = BaseProps<'button'> & {
 		/** The controlled checked state of the switch. */
@@ -30,8 +30,8 @@
 <script lang="ts">
 	type $$Props = SwitchRootProps;
 
-	import { reactiveContext } from '$lib/helpers/reactiveContext';
-	import { useActions } from '$lib/helpers/useActions';
+	import { reactiveContext } from '$lib/internal/helpers/reactiveContext';
+	import { useActions } from '$lib/internal/helpers/useActions';
 
 	export let required: $$Props['required'] = false;
 	export let value: $$Props['value'] = 'on';

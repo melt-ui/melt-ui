@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
-	import { useActions } from '$lib/helpers/useActions';
+	import { useActions } from '$lib/internal/helpers/useActions';
 
-	import type { BaseProps } from '$lib/types';
+	import type { BaseProps } from '$lib/internal/types';
 
 	export type TabsContentProps = BaseProps<'div'> & {
 		value: string;
