@@ -4,7 +4,7 @@
 sh scripts/check-git-status.sh || exit 1
 
 # run npx standard-version with all arguments
-npx standard-version "$@"
+pnpm dlx standard-version "$@"
 
 # Check if tag was created
 if [ -z "$(git tag --points-at HEAD)" ]; then
