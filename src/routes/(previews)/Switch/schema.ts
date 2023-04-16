@@ -1,11 +1,13 @@
 import type { Switch } from '$lib';
 import type { PreviewSchema } from '../helpers';
 import example from './example.svelte';
+import code from './example.svelte?raw';
 
 export const schema = {
 	title: 'Switch',
 	description: 'A control that allows the user to toggle between checked and not checked.',
 	example,
+	code,
 	meta: {
 		Root: {
 			props: {

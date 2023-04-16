@@ -1,12 +1,13 @@
 import type { Popper } from '$lib/internal/components';
 import type { PreviewSchema } from '../helpers';
 import example from './example.svelte';
+import code from './example.svelte?raw';
 
 export const schema = {
 	title: 'Popper',
 	description: 'An interactive component which expands/collapses a panel.',
 	example,
-
+	code,
 	meta: {
 		Root: {},
 		Anchor: {},
