@@ -8,3 +8,4 @@ export { Toggle } from './Toggle';
 export { Progress } from './Progress';
 export { Dialog } from './Dialog';
 export { Tabs } from './Tabs';
+export { Avatar } from './Avatar';
