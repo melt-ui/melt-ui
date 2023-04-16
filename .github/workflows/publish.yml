@@ -5,6 +5,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
     steps:
       # Checkout project repository
       - name: Checkout
@@ -17,6 +19,13 @@ jobs:
           registry-url: https://registry.npmjs.org/
           node-version: '18'
 
+      # Install dependencies
+      - name: Install dependencies
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7.24.2
+          run_install: true
+          
       # Publish version to public repository
       - name: Publish
         run: npm publish --verbose --access public 
