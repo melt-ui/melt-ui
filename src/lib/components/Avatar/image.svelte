@@ -1,12 +1,12 @@
 <script lang="ts" context="module">
-	import { useActions } from '$lib/helpers/useActions';
+	import { useActions } from '$lib/internal/helpers/useActions';
 
 	import { browser } from '$app/environment';
-	import { isMountedStore } from '$lib/internal';
-	import type { BaseProps } from '$lib/types';
+	import { isMountedStore } from '$lib/internal/stores';
+	import type { BaseProps } from '$lib/internal/types';
 	import { getAvatarRootContext, type ImageLoadingStatus } from './root.svelte';
 	import { createEventDispatcher } from 'svelte';
-	import type { Detailed } from '$lib/helpers/types';
+	import type { Detailed } from '$lib/internal/types';
 
 	export type AvatarImageProps = BaseProps<'img'> & {
 		src?: string;

@@ -52,7 +52,7 @@
 
 	{#each Object.entries(cmpSchema.meta) as [subCmp, subCmpSchema]}
 		<div
-			class="mt-2 grid grid-cols-12 gap-y-2 gap-x-2 rounded-md bg-zinc-900 p-4 text-white overflow-auto"
+			class="mt-2 grid grid-cols-12 gap-x-2 gap-y-2 overflow-auto rounded-md bg-zinc-900 p-4 text-white"
 		>
 			<h2 class="col-span-12 font-bold">{cmpSchema.title}.{subCmp}</h2>
 
@@ -67,9 +67,9 @@
 				<span class="col-span-4 font-mono">{propDefinition.type}</span>
 				<div class="col-span-4">
 					{#if propDefinition.show === null}
-						<span class="w-full font-mono text-sm white"> N/A </span>
+						<span class="white w-full font-mono text-sm"> N/A </span>
 					{:else if propDefinition.show === 'value'}
-						<span class="w-full font-mono text-sm white"
+						<span class="white w-full font-mono text-sm"
 							>{JSON.stringify(props[subCmp][propKey])}</span
 						>
 					{:else if propDefinition.type === 'boolean'}

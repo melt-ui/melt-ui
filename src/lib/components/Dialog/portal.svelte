@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import { Portal } from '$lib/internal';
+	import { Portal } from '$lib/internal/components';
 	import type { ComponentProps } from 'svelte';
 
 	type PortalProps = ComponentProps<InstanceType<typeof Portal>>;

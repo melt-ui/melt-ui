@@ -3,7 +3,7 @@
 		"prefix": "comp",
 		"body": [
 			"<script lang=\"ts\" context=\"module\">",
-			"\timport { useActions } from '$$lib/helpers/useActions';",
+			"\timport { useActions } from '$$lib/internal/helpers';",
 			"",
 			"\timport type { BaseProps } from '$$lib/types';",
 			"",

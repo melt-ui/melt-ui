@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
-	import { useActions } from '$lib/helpers/useActions';
-	import type { BaseProps } from '$lib/types';
+	import { useActions } from '$lib/internal/helpers/useActions';
+	import type { BaseProps } from '$lib/internal/types';
 	import { convertValueToPercentage } from './internal/utils';
 	import { getOrientationContext, getRootContext } from './root.svelte';
 

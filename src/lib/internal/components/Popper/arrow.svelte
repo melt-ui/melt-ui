@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	import { Arrow, type ArrowRootProps } from '$lib/components/Arrow';
-	import { styleToString } from '$lib/helpers/style';
+	import { styleToString } from '$lib/internal/helpers';
 	import { getPopperContentContext } from './content.svelte';
 	import { getRootContext } from './root.svelte';
 

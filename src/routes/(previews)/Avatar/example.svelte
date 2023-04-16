@@ -19,7 +19,7 @@
 			class="flex h-full w-full items-center justify-center bg-white text-4xl font-medium text-vermilion-500"
 			delayMs={propsObj.Fallback.delayMs}
 		>
-			TL
+			TGL
 		</Avatar.Fallback>
 	</Avatar.Root>
 </div>

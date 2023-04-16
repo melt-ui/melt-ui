@@ -1,8 +1,8 @@
 <script lang="ts" context="module">
-	import { reactiveContext } from '$lib/helpers/reactiveContext';
-	import { useActions } from '$lib/helpers/useActions';
+	import { reactiveContext } from '$lib/internal/helpers/reactiveContext';
+	import { useActions } from '$lib/internal/helpers/useActions';
 
-	import type { BaseProps } from '$lib/types';
+	import type { BaseProps } from '$lib/internal/types';
 
 	export type AvatarRootProps = BaseProps<'span'>;
 

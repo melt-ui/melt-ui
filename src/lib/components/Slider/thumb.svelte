@@ -1,8 +1,8 @@
 <script lang="ts" context="module">
-	import { useCollection } from '$lib/helpers/collectionContext';
-	import { styleToString } from '$lib/helpers/style';
-	import { useActions } from '$lib/helpers/useActions';
-	import type { BaseProps } from '$lib/types';
+	import { useCollection } from '$lib/internal/helpers/collectionContext';
+	import { styleToString } from '$lib/internal/helpers/style';
+	import { useActions } from '$lib/internal/helpers/useActions';
+	import type { BaseProps } from '$lib/internal/types';
 	import { convertValueToPercentage, linearScale } from './internal/utils';
 	import { getOrientationContext, getRootContext, getThumbCollectionContext } from './root.svelte';
 

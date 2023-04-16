@@ -1,8 +1,8 @@
 <script lang="ts" context="module">
-	import { useCollection } from '$lib/helpers/collectionContext';
-	import { useActions } from '$lib/helpers/useActions';
+	import { useCollection } from '$lib/internal/helpers/collectionContext';
+	import { useActions } from '$lib/internal/helpers/useActions';
 
-	import type { BaseProps } from '$lib/types';
+	import type { BaseProps } from '$lib/internal/types';
 	import { getTriggerCollection } from './list.svelte';
 	import { getTabsRootContext } from './root.svelte';
 
