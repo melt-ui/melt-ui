@@ -145,6 +145,6 @@
 
 <style lang="postcss">
 	:global(.hljs) {
-		@apply bg-zinc-900;
+		background-color: transparent !important;
 	}
 </style>
