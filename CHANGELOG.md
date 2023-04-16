@@ -4,16 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.3.1](https://github.com/TGlide/radix-svelte/compare/v0.3.0...v0.3.1) (2023-04-16)
 
-
 ### Features
 
-* add avatar ([fb0a39b](https://github.com/TGlide/radix-svelte/commit/fb0a39bfe7aadef820d76576e421ad5b1fba90ce))
-
+- add avatar ([fb0a39b](https://github.com/TGlide/radix-svelte/commit/fb0a39bfe7aadef820d76576e421ad5b1fba90ce))
+- add code snippets to docs ([PR #88](https://github.com/TGlide/radix-svelte/pull/88))
 
 ### Bug Fixes
 
-* docs table overflow ([78e485a](https://github.com/TGlide/radix-svelte/commit/78e485ae6080491638fad582d29e6ce3897d250a))
-* lint and ts errors ([a0a55d9](https://github.com/TGlide/radix-svelte/commit/a0a55d95409b41f4fb989b75d57c77193864b18a))
+- docs table overflow ([78e485a](https://github.com/TGlide/radix-svelte/commit/78e485ae6080491638fad582d29e6ce3897d250a))
+- lint and ts errors ([a0a55d9](https://github.com/TGlide/radix-svelte/commit/a0a55d95409b41f4fb989b75d57c77193864b18a))
 
 ## [0.3.0](https://github.com/TGlide/radix-svelte/compare/v0.1.4...v0.3.0) (2023-04-16)
 
