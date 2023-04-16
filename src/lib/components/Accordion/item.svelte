@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import { reactiveContext } from '$lib/helpers/reactiveContext';
+	import { reactiveContext } from '$lib/internal/helpers/reactiveContext';
 
 	export type AccordionItemProps = CollapsibleRootProps & {
 		value: string;

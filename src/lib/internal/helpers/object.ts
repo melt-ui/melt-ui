@@ -1,4 +1,4 @@
-import type { ValueOf } from '$lib/types';
+import type { ValueOf } from '$lib/internal/types';
 
 export function omit<T extends Record<string, PropertyKey>, K extends keyof T>(
 	obj: T,

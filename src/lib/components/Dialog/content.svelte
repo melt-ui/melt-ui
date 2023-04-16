@@ -1,8 +1,8 @@
 <script lang="ts" context="module">
-	import { focusTrap } from '$lib/internal';
+	import { focusTrap } from '$lib/internal/actions';
 	import { dismissable } from '$lib/internal/actions/dismissable';
 	import { removeScroll } from '$lib/internal/actions/removeScroll';
-	import type { BaseProps } from '$lib/types';
+	import type { BaseProps } from '$lib/internal/types';
 	import { getDataState } from './internal/helpers';
 	import { getDialogRootContext } from './root.svelte';
 

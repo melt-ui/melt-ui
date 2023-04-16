@@ -1,1 +1,3 @@
-export { focusTrap } from './focusTrap';
+export * from './focusTrap';
+export * from './dismissable';
+export * from './removeScroll';

@@ -1,4 +1,4 @@
-import { clamp } from '$lib/helpers/numbers';
+import { clamp } from '$lib/internal/helpers/numbers';
 
 export type Direction = 'ltr' | 'rtl';
 export type Side = 'top' | 'right' | 'bottom' | 'left';

@@ -10,9 +10,12 @@ import { schema as Switch } from './Switch/schema';
 import { schema as Tabs } from './Tabs/schema';
 import { schema as Toggle } from './Toggle/schema';
 
+import { schema as Avatar } from './Avatar/schema';
+
 export const schemas = {
 	accordion: Accordion,
 	'aspect-ratio': AspectRatio,
+	avatar: Avatar,
 	checkbox: Checkbox,
 	collapsible: Collapsible,
 	slider: Slider,

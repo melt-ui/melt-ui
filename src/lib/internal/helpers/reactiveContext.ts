@@ -2,7 +2,7 @@ import { writable, type Writable } from 'svelte/store';
 
 import { objectEntries } from './object';
 import { uniqueContext } from './uniqueContext';
-import type { IfEquals } from './types';
+import type { IfEquals } from '../types';
 
 type ValueSetterPair<T> = [T, (v: T) => void];
 type ValueSetterReadonly<T> = [T];
