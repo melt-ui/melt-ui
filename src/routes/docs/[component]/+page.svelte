@@ -52,20 +52,20 @@
 
 	{#each Object.entries(cmpSchema.meta) as [subCmp, subCmpSchema]}
 		<div
-			class="mt-2 grid grid-cols-12 gap-x-2 gap-y-2 overflow-auto rounded-md bg-zinc-900 p-4 text-white"
+			class="mt-2 grid gap-x-4 gap-y-2 overflow-auto whitespace-nowrap rounded-md bg-zinc-900 p-4 text-white"
 		>
-			<h2 class="col-span-12 font-bold">{cmpSchema.title}.{subCmp}</h2>
+			<h2 class="col-span-3 font-bold">{cmpSchema.title}.{subCmp}</h2>
 
-			<span class="col-span-4 text-sm text-zinc-300">Prop</span>
-			<span class="col-span-4 text-sm text-zinc-300">Type</span>
-			<span class="col-span-4 text-sm text-zinc-300">Control / Value</span>
+			<span class=" text-sm text-zinc-300">Prop</span>
+			<span class=" text-sm text-zinc-300">Type</span>
+			<span class=" text-sm text-zinc-300">Control / Value</span>
 
-			<hr class="col-span-12 opacity-25" />
+			<hr class="col-span-3 opacity-25" />
 
 			{#each Object.entries(castPreviewProps(subCmpSchema)) as [propKey, propDefinition]}
-				<span class="col-span-4 font-mono">{propKey}</span>
-				<span class="col-span-4 font-mono">{propDefinition.type}</span>
-				<div class="col-span-4">
+				<span class=" font-mono">{propKey}</span>
+				<span class=" font-mono">{propDefinition.type}</span>
+				<div class="">
 					{#if propDefinition.show === null}
 						<span class="white w-full font-mono text-sm"> N/A </span>
 					{:else if propDefinition.show === 'value'}
@@ -101,43 +101,43 @@
 					{/if}
 				</div>
 			{:else}
-				<p class="col-span-12 text-sm">No props</p>
+				<p class="col-span-3 text-sm">No props</p>
 			{/each}
 
-			<hr class="col-span-12 h-4 opacity-0" />
+			<hr class="col-span-3 h-4 opacity-0" />
 
 			<!-- Events -->
-			<span class="col-span-4 text-sm text-zinc-300">Event</span>
-			<span class="col-span-4 text-sm text-zinc-300">Payload</span>
-			<span class="col-span-4 text-sm text-zinc-300" />
+			<span class=" text-sm text-zinc-300">Event</span>
+			<span class=" text-sm text-zinc-300">Payload</span>
+			<span class=" text-sm text-zinc-300" />
 
-			<hr class="col-span-12 opacity-25" />
+			<hr class="col-span-3 opacity-25" />
 
 			{#each Object.entries(castPreviewEvents(subCmpSchema)) as [eventKey, eventDef]}
-				<span class="col-span-4 font-mono">{eventKey}</span>
-				<span class="col-span-4 font-mono">
+				<span class=" font-mono">{eventKey}</span>
+				<span class=" font-mono">
 					{Array.isArray(eventDef.payload)
 						? eventDef.payload.join(' | ')
 						: JSON.stringify(eventDef.payload)}
 				</span>
-				<div class="col-span-4" />
+				<div class="" />
 			{/each}
 
-			<hr class="col-span-12 h-4 opacity-0" />
+			<hr class="col-span-3 h-4 opacity-0" />
 
-			<span class="col-span-4 text-sm text-zinc-300">Data Attribute</span>
-			<span class="col-span-4 text-sm text-zinc-300">Value</span>
-			<span class="col-span-4 text-sm text-zinc-300">Inspect</span>
+			<span class=" text-sm text-zinc-300">Data Attribute</span>
+			<span class=" text-sm text-zinc-300">Value</span>
+			<span class=" text-sm text-zinc-300">Inspect</span>
 
-			<hr class="col-span-12 opacity-25" />
+			<hr class="col-span-3 opacity-25" />
 
 			{#each Object.entries(castPreviewDataAttributes(subCmpSchema)) as [attrKey, attrDef]}
-				<span class="col-span-4 font-mono">[{attrKey}]</span>
-				<span class="col-span-4 font-mono">{attrDef.values.join(', ')}</span>
+				<span class=" font-mono">[{attrKey}]</span>
+				<span class=" font-mono">{attrDef.values.join(', ')}</span>
 				<!-- How might we dynamically read the data attributes from the example? -->
-				<div class="col-span-4" />
+				<div class="" />
 			{:else}
-				<p class="col-span-12 text-sm">No Data Attributes</p>
+				<p class="col-span-3 text-sm">No Data Attributes</p>
 			{/each}
 		</div>
 	{/each}
