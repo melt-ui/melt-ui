@@ -1,11 +1,13 @@
 import example from './example.svelte';
 import type { PreviewSchema } from '../helpers';
 import type { Slider } from '$lib';
+import code from './example.svelte?raw';
 
 export const schema = {
 	title: 'Slider',
 	description: 'An input where the user selects a value from within a given range.',
 	example,
+	code,
 	meta: {
 		Root: {
 			props: {

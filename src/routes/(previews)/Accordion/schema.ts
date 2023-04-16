@@ -1,12 +1,14 @@
 import type { Accordion } from '$lib';
 import type { PreviewMeta, PreviewSchema } from '../helpers';
 import example from './example.svelte';
+import code from './example.svelte?raw';
 
 export const schema = {
 	title: 'Accordion',
 	description:
 		'A vertically stacked set of interactive headings that each reveal an associated section of content.',
 	example,
+	code,
 	meta: {
 		Root: {
 			props: {
