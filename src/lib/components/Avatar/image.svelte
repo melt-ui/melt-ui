@@ -1,7 +1,6 @@
 <script lang="ts" context="module">
 	import { useActions } from '$lib/internal/helpers/useActions';
 
-	import { browser } from '$app/environment';
 	import { isMountedStore } from '$lib/internal/stores';
 	import type { BaseProps } from '$lib/internal/types';
 	import { getAvatarRootContext, type ImageLoadingStatus } from './root.svelte';
@@ -32,7 +31,7 @@
 	const rootCtx = getAvatarRootContext();
 
 	function handleLoad(src: $$Props['src']) {
-		if (!browser) return;
+		if (typeof window === 'undefined') return;
 		if (!src) {
 			$rootCtx.imageLoadingStatus = 'error';
 			return;
