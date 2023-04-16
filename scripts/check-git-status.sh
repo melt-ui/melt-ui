@@ -4,14 +4,14 @@ CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo "Checking git status on branch $CURRENT_BRANCH"
 
 
-# Check if there are uncommitted changes
+# # Check if there are uncommitted changes
 if [ -n "$(git status --porcelain)" ]; then
     echo "There are uncommitted changes. Please commit them and try again."
     exit 1
 fi
 
 # Check if the current branch name starts with "release"
-if [ "$CURRENT_BRANCH" != release* ]; then
+if echo "$CURRENT_BRANCH" | grep -q -v "release"; then
     echo "You are not on a release branch. Please switch to a release branch and try again."
     exit 1
 fi
