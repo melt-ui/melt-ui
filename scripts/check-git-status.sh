@@ -1,6 +1,8 @@
 #!/bin/sh
 
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+echo "Checking git status on branch $CURRENT_BRANCH"
+
 
 # Check if there are uncommitted changes
 if [ -n "$(git status --porcelain)" ]; then
