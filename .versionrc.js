@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	bumpFiles: [
 		{
 			filename: 'package.json',
