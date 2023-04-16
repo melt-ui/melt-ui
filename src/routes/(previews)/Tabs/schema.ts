@@ -1,12 +1,14 @@
 import type { Tabs } from '$lib';
 import type { PreviewSchema } from '../helpers';
 import example from './example.svelte';
+import code from './example.svelte?raw';
 
 export const schema = {
 	title: 'Tabs',
 	description:
 		'A set of layered sections of content—known as tab panels—that are displayed one at a time.',
 	example,
+	code,
 	meta: {
 		Root: {
 			props: {

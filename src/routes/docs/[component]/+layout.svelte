@@ -1,4 +1,5 @@
 <script lang="ts">
+	import theme from 'svelte-highlight/styles/tomorrow-night';
 	import { page } from '$app/stores';
 	import { schemas } from '$routes/(previews)/schemas';
 	import { cn, sortedEntries } from '$routes/helpers';
@@ -13,6 +14,10 @@
 		href: `/docs/${key}`,
 	}));
 </script>
+
+<svelte:head>
+	{@html theme}
+</svelte:head>
 
 <div class="flex grid-cols-12 flex-col gap-8 overflow-hidden py-6 lg:grid lg:px-4">
 	<div class="col-span-2">

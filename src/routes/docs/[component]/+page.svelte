@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { HighlightSvelte } from 'svelte-highlight';
+
 	import {
 		getPropsObj,
 		type PreviewDataAttribute,
@@ -31,6 +33,8 @@
 	}) {
 		return component.dataAttributes || {};
 	}
+
+	let showCode = false;
 </script>
 
 <div>
@@ -38,9 +42,32 @@
 		<h2 class="text-xl font-bold">{cmpSchema.title}</h2>
 		<p class="text-slate-300">{cmpSchema.description}</p>
 	</div>
+
 	<div class="comp-preview mt-4 h-96">
 		<div class="flex max-w-md grow items-center justify-center">
 			<svelte:component this={cmpSchema.example} bind:propsObj={props} />
+		</div>
+	</div>
+
+	<div
+		class="relative mt-2 overflow-hidden rounded-lg {showCode
+			? 'max-h-[auto] overflow-auto'
+			: 'max-h-36 overflow-hidden'}"
+	>
+		<HighlightSvelte code={cmpSchema.code} class="bg-zinc-900 text-sm" />
+		<div
+			class="absolute bg-gradient-to-t from-zinc-900/90 to-vermilion-900/30 {showCode
+				? 'inset-x-0 bottom-0'
+				: 'inset-0'}"
+		>
+			<div class="absolute inset-x-0 bottom-3 flex justify-center">
+				<button
+					class="rounded-lg border border-vermilion-600/20 bg-zinc-900 px-4 py-1 text-sm hover:border-vermilion-600/70"
+					on:click={() => (showCode = !showCode)}
+				>
+					{showCode ? 'Collapse code' : 'Expand code'}
+				</button>
+			</div>
 		</div>
 	</div>
 
@@ -115,3 +142,9 @@
 
 	<div />
 </div>
+
+<style lang="postcss">
+	:global(.hljs) {
+		background-color: transparent !important;
+	}
+</style>

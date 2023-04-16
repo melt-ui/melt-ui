@@ -89,6 +89,7 @@ export type PreviewSchema<GROUP extends RadixComponentGroup = RadixComponentGrou
 	title: string;
 	description: string;
 	example: unknown;
+	code: string;
 	meta: PreviewMeta<GROUP>;
 };
 

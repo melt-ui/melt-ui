@@ -1,11 +1,13 @@
 import type { Collapsible } from '$lib';
 import type { PreviewSchema } from '../helpers';
 import example from './example.svelte';
+import code from './example.svelte?raw';
 
 export const schema = {
 	title: 'Collapsible',
 	description: 'An interactive component which expands/collapses a panel.',
 	example,
+	code,
 	meta: {
 		Root: {
 			props: {

@@ -1,12 +1,14 @@
 import type { Dialog } from '$lib';
 import type { PreviewSchema } from '../helpers';
 import example from './example.svelte';
+import code from './example.svelte?raw';
 
 export const schema = {
 	title: 'Dialog',
 	description:
 		'A window overlaid on either the primary window or another dialog window, rendering the content underneath inert.',
 	example,
+	code,
 	meta: {
 		Root: {
 			props: {

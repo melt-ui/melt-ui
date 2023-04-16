@@ -63,6 +63,9 @@ devDependencies:
   glob:
     specifier: ^9.3.2
     version: 9.3.4
+  highlight.js:
+    specifier: ^11.7.0
+    version: 11.7.0
   jsdom:
     specifier: ^21.1.1
     version: 21.1.1
@@ -99,6 +102,9 @@ devDependencies:
   svelte-check:
     specifier: ^3.0.1
     version: 3.2.0(postcss-load-config@4.0.1)(postcss@8.4.21)(svelte@3.58.0)
+  svelte-highlight:
+    specifier: ^7.2.1
+    version: 7.2.1
   svelte-htm:
     specifier: ^1.2.0
     version: 1.2.0(svelte@3.58.0)
@@ -1769,6 +1775,11 @@ packages:
       function-bind: 1.1.1
     dev: true
 
+  /highlight.js@11.7.0:
+    resolution: {integrity: sha512-1rRqesRFhMO/PRF+G86evnyJkCgaZFOI+Z6kdj15TA18funfoqJXvgPCLSf0SWq3SRfg1j3HlDs8o4s3EGq1oQ==}
+    engines: {node: '>=12.0.0'}
+    dev: true
+
   /htm@3.1.1:
     resolution: {integrity: sha512-983Vyg8NwUE7JkZ6NmOqpCZ+sh1bKv2iYTlUkzlWmA5JD2acKoxd4KVxbMmxX/85mtfdnDmTFoNKcg5DGAvxNQ==}
     dev: true
@@ -3098,6 +3109,12 @@ packages:
       svelte: 3.x
     dependencies:
       svelte: 3.58.0
+    dev: true
+
+  /svelte-highlight@7.2.1:
+    resolution: {integrity: sha512-Qyxd4CFbvufKo661AmtIFLFh7bW8BZ6G5vUGYdRlyhaoWEOCyCgKimdKW8/8aJ4/kKidSFbgY/2/fyzwYDEjWg==}
+    dependencies:
+      highlight.js: 11.7.0
     dev: true
 
   /svelte-hmr@0.15.1(svelte@3.58.0):
