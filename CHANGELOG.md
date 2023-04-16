@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.4](https://github.com/TGlide/radix-svelte/compare/v0.1.3...v0.1.4) (2023-04-16)
+
+
+### Bug Fixes
+
+* publish action ([34da902](https://github.com/TGlide/radix-svelte/commit/34da902819c02d1f0f64a4405d5f14e33c23a702))
+
 ### [0.1.3](https://github.com/TGlide/radix-svelte/compare/v0.1.2...v0.1.3) (2023-04-16)
 
 ### [0.1.2](https://github.com/TGlide/radix-svelte/compare/v0.1.1...v0.1.2) (2023-04-16)
