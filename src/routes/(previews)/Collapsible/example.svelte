@@ -14,9 +14,9 @@
 	<div class="flex items-center justify-between">
 		<span class="text-sm leading-6 text-white"> @thomasglopes starred 3 repositories </span>
 		<Collapsible.Trigger
-			class="inline-grid h-6 w-6 place-items-center rounded-full text-sm  text-vermilion-700 shadow-lg
-			outline-none hover:opacity-75 focus:ring focus:ring-black data-[disabled]:cursor-not-allowed 
-			bg-white data-[disabled]:opacity-75"
+			class="inline-grid h-6 w-6 place-items-center rounded-full bg-white  text-sm text-vermilion-700
+			shadow-lg outline-none hover:opacity-75 focus:ring focus:ring-black 
+			data-[disabled]:cursor-not-allowed data-[disabled]:opacity-75"
 		>
 			{#if propsObj.Root.open}
 				<Cross2Icon />

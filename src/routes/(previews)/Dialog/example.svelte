@@ -52,13 +52,13 @@
 			<div class="mt-[25px] flex justify-end gap-4">
 				<Dialog.Close
 					class="hover:bg-green5 focus:shadow-green7 inline-flex h-[35px] items-center justify-center rounded-[4px] bg-slate-100
-				px-4 font-medium leading-none text-slate-600 focus:ring-2 focus:ring-black focus:outline-none"
+				px-4 font-medium leading-none text-slate-600 focus:outline-none focus:ring-2 focus:ring-black"
 				>
 					Cancel
 				</Dialog.Close>
 				<Dialog.Close
 					class="hover:bg-green5 focus:shadow-green7 inline-flex h-[35px] items-center justify-center rounded-[4px] bg-green-100
-				px-4 font-medium leading-none text-green-900 focus:ring-2 focus:ring-black focus:outline-none"
+				px-4 font-medium leading-none text-green-900 focus:outline-none focus:ring-2 focus:ring-black"
 				>
 					Save changes
 				</Dialog.Close>
@@ -66,7 +66,7 @@
 
 			<Dialog.Close
 				class="absolute right-[10px] top-[10px] inline-flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-full
-			text-vermilion-800 hover:bg-vermilion-100 focus:ring-2 focus:ring-black focus:shadow-vermilion-400 focus:outline-none"
+			text-vermilion-800 hover:bg-vermilion-100 focus:shadow-vermilion-400 focus:outline-none focus:ring-2 focus:ring-black"
 				aria-label="Close"
 			>
 				<Cross2Icon />

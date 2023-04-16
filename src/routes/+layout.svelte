@@ -15,16 +15,16 @@
 	inject({ mode: dev ? 'development' : 'production' });
 </script>
 
-<main class="flex flex-col min-h-screen">
-	<nav class="flex justify-between items-center border-b border-zinc-400 px-4 py-2">
+<main class="flex min-h-screen flex-col">
+	<nav class="flex items-center justify-between border-b border-zinc-400 px-4 py-2">
 		<a class="flex items-center gap-2 font-sans text-xl font-semibold" href="/">
 			<img class="h-9 w-9 rounded-sm object-contain" src="/logo.svg" alt="Radix and Svelte logos" />
 			Radix Svelte
 		</a>
 
-		<a href="/docs/accordion" class="hover:opacity-75 underline">Documentation</a>
+		<a href="/docs/accordion" class="underline hover:opacity-75">Documentation</a>
 	</nav>
-	<div class="grow flex flex-col">
+	<div class="flex grow flex-col">
 		<slot />
 	</div>
 </main>

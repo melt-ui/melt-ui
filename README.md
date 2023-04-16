@@ -40,9 +40,9 @@ Import the components you need:
 	let pressed = false;
 </script>
 
-<Toggle bind:pressed>
+<Toggle.Root bind:pressed>
 	{pressed ? 'Pressed' : 'Not pressed'}
-</Toggle>
+</Toggle.Root>
 ```
 
 ## Roadmap
