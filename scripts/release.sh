@@ -16,7 +16,7 @@ fi
 VERSION=$(git describe --tags --abbrev=0)
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-git push --follow-tags origin $CURRENT_BRANCH --no-verify
+# git push --follow-tags origin $CURRENT_BRANCH --no-verify
 
 # Success message
 echo "Successfully bumped to $VERSION and pushed to origin"
