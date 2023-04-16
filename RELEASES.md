@@ -7,6 +7,8 @@ Every release is generated manually while in a `release/xxx` branch.
 - Whenever the release is tested and ready to be deployed, **generate a new version** to be merged to `develop`
 - Also merge the release branch to `develop` – which, at this time, could have more commits (and even received new features)
 
+Develop is the staging branch. When you're ready to deploy the new release to production and publish the package, merge `develop` to `master`, and create the release with the already created tag in GitHub. That will automatically publish the package to `npm`.
+
 ## Generating releases
 
 When the app is internally tested and approved, it's time to generate a release.
