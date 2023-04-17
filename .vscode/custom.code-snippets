@@ -5,7 +5,7 @@
 			"<script lang=\"ts\" context=\"module\">",
 			"\timport { useActions } from '$$lib/internal/helpers';",
 			"",
-			"\timport type { BaseProps } from '$$lib/types';",
+			"\timport type { BaseProps } from '$$lib/internal/types';",
 			"",
 			"\texport type ${TM_DIRECTORY/.+\\/(.+)/$1/}${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}Props = BaseProps<'div'>;",
 			"</script>",
