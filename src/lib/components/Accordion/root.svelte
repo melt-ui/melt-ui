@@ -15,7 +15,7 @@
 		value?: string[];
 	};
 
-	export type AccordionRootProps = BaseProps &
+	export type AccordionRootProps = BaseProps<'div'> &
 		(SingleAccordionRootProps | MultipleAccordionRootProps);
 
 	export type AccordionContext = {
@@ -36,7 +36,7 @@
 
 	type $$Props = AccordionRootProps;
 
-	export let type: NonNullable<$$Props['type']> = 'single';
+	export let type: $$Props['type'] = 'single';
 	export let value: $$Props['value'] = null;
 
 	const contextStore = setContext({
