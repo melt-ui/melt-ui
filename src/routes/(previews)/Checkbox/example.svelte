@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Checkbox } from '$lib/components/Checkbox';
-	import type { ResolvedProps } from '$lib/internal/helpers';
+	import { Checkbox } from '$lib';
+	import type { ResolvedProps } from '$lib';
 	// These are internal icons, but they're not exported from the package.
 	// Use your own icons instead.
 	import CheckIcon from '~icons/radix-icons/check';
