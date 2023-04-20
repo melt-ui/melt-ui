@@ -1,5 +1,6 @@
 import type { Popper } from '$lib/internal/components';
-import type { PreviewSchema } from '../helpers';
+import type { PreviewSchema } from '$lib/internal/helpers';
+
 import example from './example.svelte';
 import code from './example.svelte?raw';
 

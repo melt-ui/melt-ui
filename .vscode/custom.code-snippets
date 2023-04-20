@@ -37,8 +37,8 @@
 		"prefix": "schema",
 		"body": [
 			"import type { ${TM_DIRECTORY/^.+\\\\/(.*)$/$1/} } from '$$lib';",
-			"import type { PreviewSchema } from '../helpers';",
-			"import example from './example.svelte';",
+			"import type { PreviewSchema } from '$lib/internal/helpers';
+","import example from './example.svelte';",
 			"",
 			"export const schema = {",
 			"\ttitle: '${TM_DIRECTORY/^.+\\\\/(.*)$/$1/}',",
