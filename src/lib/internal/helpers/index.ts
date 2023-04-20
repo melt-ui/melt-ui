@@ -9,3 +9,4 @@ export * from './reactiveContext';
 export * from './style';
 export * from './uniqueContext';
 export * from './useActions';
+export * from './preview';

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Tabs } from '$lib/components/Tabs';
-	import type { ResolvedProps } from '../helpers';
+	import type { ResolvedProps } from '$lib/internal/helpers';
 
 	export let propsObj: ResolvedProps<typeof Tabs>;
 </script>
