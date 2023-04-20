@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { AspectRatio } from '$lib';
-	import type { ResolvedProps } from '$lib/internal/helpers';
+	import type { ResolvedProps } from '$lib';
 
 	export let propsObj: ResolvedProps<typeof AspectRatio>;
 </script>
