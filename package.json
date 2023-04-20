@@ -23,6 +23,25 @@
 		".": {
 			"types": "./dist/index.d.ts",
 			"svelte": "./dist/index.js"
+		},
+		"./internal/actions": {
+			"types": "./dist/internal/actions/index.d.ts",
+			"svelte": "./dist/internal/actions/index.js"
+		},
+		"./internal/components": {
+			"types": "./dist/internal/components/index.d.ts",
+			"svelte": "./dist/internal/components/index.js"
+		},
+		"./internal/helpers": {
+			"types": "./dist/internal/helpers/index.d.ts",
+			"svelte": "./dist/internal/helpers/index.js"
+		},
+		"./internal/stores": {
+			"types": "./dist/internal/stores/index.d.ts",
+			"svelte": "./dist/internal/stores/index.js"
+		},
+		"./internal/types": {
+			"types": "./dist/internal/types.d.ts"
 		}
 	},
 	"files": [
