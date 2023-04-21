@@ -1,5 +1,5 @@
 import type { Accordion } from '$lib';
-import type { PreviewMeta, PreviewSchema } from '../helpers';
+import type { PreviewMeta, PreviewSchema } from '$lib/internal/helpers';
 import example from './example.svelte';
 import code from './example.svelte?raw';
 

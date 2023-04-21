@@ -1,5 +1,6 @@
 import example from './example.svelte';
-import type { PreviewSchema } from '../helpers';
+import type { PreviewSchema } from '$lib/internal/helpers';
+
 import type { Slider } from '$lib';
 import code from './example.svelte?raw';
 

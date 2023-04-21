@@ -6,9 +6,10 @@
 		type PreviewDataAttribute,
 		type PreviewEvent,
 		type PreviewProps,
-	} from '$routes/(previews)/helpers';
+	} from '$lib/internal/helpers';
 	import { schemas } from '$routes/(previews)/schemas.js';
 	import { page } from '$app/stores';
+	import { cleanupCodeExample } from '$routes/helpers';
 
 	export let data;
 
@@ -34,11 +35,9 @@
 		return (component.events || {}) as Record<string, PreviewEvent<unknown>>;
 	}
 
-	function castPreviewDataAttributes(component: {
-		props?: unknown;
-		dataAttributes?: Record<string, PreviewDataAttribute>;
-	}) {
-		return component.dataAttributes || {};
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	function castPreviewDataAttributes(component: any) {
+		return (component.dataAttributes || {}) as Record<string, PreviewDataAttribute>;
 	}
 
 	let showCode = false;
@@ -51,7 +50,7 @@
 <div>
 	<div>
 		<h1 class="text-3xl font-bold">{cmpSchema.title}</h1>
-		<p class="text-slate-300 mt-2">{cmpSchema.description}</p>
+		<p class="mt-2 text-slate-300">{cmpSchema.description}</p>
 	</div>
 
 	<div class="comp-preview mt-4 h-96">
@@ -65,7 +64,7 @@
 			? 'max-h-[auto] overflow-auto'
 			: 'max-h-36 overflow-hidden'}"
 	>
-		<HighlightSvelte code={cmpSchema.code} class="bg-zinc-900 text-sm" />
+		<HighlightSvelte code={cleanupCodeExample(cmpSchema.code)} class="bg-zinc-900 text-sm" />
 		<div
 			class="absolute bg-gradient-to-t from-zinc-900/90 to-vermilion-900/30 {showCode
 				? 'inset-x-0 bottom-0'

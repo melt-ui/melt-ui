@@ -9,7 +9,7 @@ test.describe('Avatar', () => {
 		expect(await axeViolations(page)).toEqual([]);
 	});
 
-	test('Should render fallback initially', async ({ mount, page }) => {
+	test('Should render fallback initially', async ({ mount }) => {
 		const cmp = await mount(WorkingSrc);
 		expect(cmp.getByTestId('fallback')).toBeTruthy();
 	});

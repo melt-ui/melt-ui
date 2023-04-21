@@ -5,7 +5,7 @@
 			"<script lang=\"ts\" context=\"module\">",
 			"\timport { useActions } from '$$lib/internal/helpers';",
 			"",
-			"\timport type { BaseProps } from '$$lib/types';",
+			"\timport type { BaseProps } from '$$lib/internal/types';",
 			"",
 			"\texport type ${TM_DIRECTORY/.+\\/(.+)/$1/}${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}Props = BaseProps<'div'>;",
 			"</script>",
@@ -37,8 +37,8 @@
 		"prefix": "schema",
 		"body": [
 			"import type { ${TM_DIRECTORY/^.+\\\\/(.*)$/$1/} } from '$$lib';",
-			"import type { PreviewSchema } from '../helpers';",
-			"import example from './example.svelte';",
+			"import type { PreviewSchema } from '$lib/internal/helpers';
+","import example from './example.svelte';",
 			"",
 			"export const schema = {",
 			"\ttitle: '${TM_DIRECTORY/^.+\\\\/(.*)$/$1/}',",
