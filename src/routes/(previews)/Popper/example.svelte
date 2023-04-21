@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Popper } from '$lib';
-	import type { ResolvedProps } from '$lib';
+	import { Popper } from '$lib/internal/components';
+	import type { ResolvedProps } from '$lib/internal/helpers';
 
 	export let propsObj: ResolvedProps<typeof Popper>;
 

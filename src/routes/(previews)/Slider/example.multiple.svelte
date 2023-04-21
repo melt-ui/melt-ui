@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Slider } from '$lib';
-	import type { ResolvedProps } from '$lib';
+	import type { ResolvedProps } from '$lib/internal/helpers';
 	export let propsObj: ResolvedProps<typeof Slider>;
 
 	propsObj.Root.value = [20, 60];

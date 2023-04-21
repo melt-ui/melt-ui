@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Avatar } from '$lib';
-	import type { ResolvedProps } from '$lib';
+	import type { ResolvedProps } from '$lib/internal/helpers';
 
 	export let propsObj: ResolvedProps<typeof Avatar>;
 </script>

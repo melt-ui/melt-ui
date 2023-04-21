@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Switch } from '$lib';
-	import type { ResolvedProps } from '$lib';
+	import type { ResolvedProps } from '$lib/internal/helpers';
 
 	export let propsObj: ResolvedProps<typeof Switch>;
 </script>

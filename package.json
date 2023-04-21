@@ -23,6 +23,27 @@
 		".": {
 			"types": "./dist/index.d.ts",
 			"svelte": "./dist/index.js"
+		},
+		"./internal/*": {
+			"types": "./dist/internal/*/index.d.ts",
+			"svelte": "./dist/internal/*/index.js"
+		},
+		"./internal/types": {
+			"types": "./dist/internal/types.d.ts",
+			"svelte": "./dist/internal/types.js"
+		}
+	},
+	"typesVersions": {
+		">4.0": {
+			"index": [
+				"./dist/index.d.ts"
+			],
+			"internal/*": [
+				"./dist/internal/*/index.d.ts"
+			],
+			"internal/types": [
+				"./dist/internal/types.d.ts"
+			]
 		}
 	},
 	"files": [

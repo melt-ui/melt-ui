@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Toggle } from '$lib';
-	import type { ResolvedProps } from '$lib';
+	import type { ResolvedProps } from '$lib/internal/helpers';
 	// These are internal icons, but they're not exported from the package.
 	// Use your own icons instead.
 	import FontItalicIcon from '~icons/radix-icons/font-italic';

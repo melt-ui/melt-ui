@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Progress } from '$lib';
-	import type { ResolvedProps } from '$lib';
+	import type { ResolvedProps } from '$lib/internal/helpers';
 
 	export let propsObj: ResolvedProps<typeof Progress>;
 </script>

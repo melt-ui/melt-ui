@@ -44,7 +44,6 @@
 
 <SliderImpl
 	bind:element={slider}
-	data-orientation="vertical"
 	style="{$$restProps.style}; --radix-slider-thumb-transform: translateY(-50%)"
 	on:slideStart={(event) => {
 		const value = getValueFromPointer(event.detail.clientY);

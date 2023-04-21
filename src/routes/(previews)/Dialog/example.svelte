@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Dialog } from '$lib';
-	import type { ResolvedProps } from '$lib';
+	import type { ResolvedProps } from '$lib/internal/helpers';
 	// These are internal icons, but they're not exported from the package.
 	// Use your own icons instead.
 	import Cross2Icon from '~icons/radix-icons/cross-2';
