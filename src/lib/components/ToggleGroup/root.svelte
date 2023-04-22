@@ -101,17 +101,29 @@
 		vertical: 'ArrowUp',
 	}[orientation ?? 'horizontal'];
 
+	const listeners = new Map();
 	itemStore.subscribe((items) => {
+		const enabledItems = items.filter((i) => !i.dataset.disabled);
+
 		items.forEach((item, index) => {
-			item.addEventListener('keydown', (e) => {
+			const prevCallback = listeners.get(index);
+			if (prevCallback) {
+				item.removeEventListener('keydown', prevCallback);
+			}
+
+			const enabledIdx = enabledItems.indexOf(item);
+			const listener = (e: KeyboardEvent) => {
 				if (e.key === nextKey) {
 					e.preventDefault();
-					next(items, index)?.focus();
+					next(enabledItems, enabledIdx)?.focus();
 				} else if (e.key === prevKey) {
 					e.preventDefault();
-					prev(items, index)?.focus();
+					prev(enabledItems, enabledIdx)?.focus();
 				}
-			});
+			};
+
+			listeners.set(index, listener);
+			item.addEventListener('keydown', listener);
 		});
 	});
 </script>

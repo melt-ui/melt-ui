@@ -20,7 +20,7 @@
 		<ToggleGroup.Item class="toggle-item" value="left" aria-label="Left aligned">
 			<TextAlignLeftIcon />
 		</ToggleGroup.Item>
-		<ToggleGroup.Item class="toggle-item" value="center" aria-label="Center aligned" disabled>
+		<ToggleGroup.Item class="toggle-item" value="center" aria-label="Center aligned">
 			<TextAlignCenterIcon />
 		</ToggleGroup.Item>
 		<ToggleGroup.Item class="toggle-item" value="right" aria-label="Right aligned">
