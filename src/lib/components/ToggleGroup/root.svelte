@@ -1,5 +1,11 @@
 <script lang="ts" context="module">
-	import { collectionContext, reactiveContext, useActions } from '$lib/internal/helpers';
+	import {
+		collectionContext,
+		next,
+		prev,
+		reactiveContext,
+		useActions,
+	} from '$lib/internal/helpers';
 	import type { BaseProps } from '$lib/internal/types';
 
 	type Type = 'single' | 'multiple';
@@ -83,9 +89,33 @@
 	});
 
 	// Item logic
-	itemCollection.createContext();
+	const itemStore = itemCollection.createContext();
+
+	$: nextKey = {
+		horizontal: dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight',
+		vertical: 'ArrowDown',
+	}[orientation ?? 'horizontal'];
+
+	$: prevKey = {
+		horizontal: dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft',
+		vertical: 'ArrowUp',
+	}[orientation ?? 'horizontal'];
+
+	itemStore.subscribe((items) => {
+		items.forEach((item, index) => {
+			item.addEventListener('keydown', (e) => {
+				if (e.key === nextKey) {
+					e.preventDefault();
+					next(items, index)?.focus();
+				} else if (e.key === prevKey) {
+					e.preventDefault();
+					prev(items, index)?.focus();
+				}
+			});
+		});
+	});
 </script>
 
-<div {...$$restProps} use:useActions={$$restProps.use} data-orientation={orientation}>
+<div {dir} {...$$restProps} use:useActions={$$restProps.use} data-orientation={orientation}>
 	<slot />
 </div>

@@ -20,8 +20,46 @@ export const schema = {
 					type: 'string',
 					show: 'value',
 				},
+				dir: {
+					type: 'enum',
+					options: ['ltr', 'rtl'],
+					default: 'ltr',
+				},
+				orientation: {
+					type: 'enum',
+					options: ['horizontal', 'vertical'],
+					default: 'horizontal',
+				},
+			},
+			dataAttributes: {
+				'data-orientation': {
+					values: ['horizontal', 'vertical'],
+				},
 			},
 		},
-		Item: {},
+		Item: {
+			props: {
+				value: {
+					type: 'string',
+					show: null,
+				},
+				disabled: {
+					type: 'boolean',
+					default: false,
+					show: 'value',
+				},
+			},
+			dataAttributes: {
+				'data-orientation': {
+					values: ['horizontal', 'vertical'],
+				},
+				'data-state': {
+					values: ['on', 'off'],
+				},
+				'data-disabled': {
+					values: ['true', 'false'],
+				},
+			},
+		},
 	},
 } satisfies PreviewSchema<typeof ToggleGroup>;

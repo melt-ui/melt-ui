@@ -12,6 +12,7 @@
 
 	type $$Props = ToggleGroupItemProps;
 	export let value: $$Props['value'];
+	export let disabled: $$Props['disabled'] = false;
 
 	const rootCtx = getToggleGroupRootContext();
 	const itemCollection = getToggleGroupItemCollection();
@@ -38,10 +39,12 @@
 			},
 		],
 	]}
+	disabled={$rootCtx.disabled || disabled}
 	pressed={Array.isArray($rootCtx.value)
 		? $rootCtx.value.includes(value)
 		: $rootCtx.value === value}
 	on:change={(e) => handleChange(e)}
+	{...{ ['data-orientation']: $rootCtx.orientation }}
 >
 	<slot />
 </Toggle.Root>

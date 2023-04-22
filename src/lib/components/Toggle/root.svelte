@@ -21,6 +21,7 @@
 		change: CustomEvent<boolean>;
 	};
 	const dispatch = createEventDispatcher<Detailed<$$Events>>();
+	export let use: $$Props['use'] = [];
 </script>
 
 <button
@@ -31,8 +32,8 @@
 	}}
 	data-state={pressed ? 'on' : 'off'}
 	data-disabled={disabled || undefined}
+	use:useActions={use ?? []}
 	{...$$restProps}
-	use:useActions={$$restProps.use}
 >
 	<slot />
 </button>
