@@ -1,5 +1,5 @@
 import example from './example.svelte';
-import type { PreviewSchema } from '$lib/internal/helpers';
+import type { PreviewMeta, PreviewSchema } from '$lib/internal/helpers';
 import type { ToggleGroup } from '$lib';
 import code from './example.svelte?raw';
 
@@ -65,5 +65,5 @@ export const schema = {
 				},
 			},
 		},
-	},
+	} as PreviewMeta<typeof ToggleGroup>,
 } satisfies PreviewSchema<typeof ToggleGroup>;

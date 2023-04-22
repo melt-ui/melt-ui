@@ -40,7 +40,7 @@
 	export let value: $$Props['value'] = null;
 
 	const contextStore = setContext({
-		type: [type],
+		type: [type ?? 'single'],
 		value: [value, (v) => (value = v)],
 	});
 	$: contextStore.set({ type: type ?? 'single', value });

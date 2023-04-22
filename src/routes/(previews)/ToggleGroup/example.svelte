@@ -1,18 +1,26 @@
 <script lang="ts">
 	import { ToggleGroup } from '$lib';
 	import type { ResolvedProps } from '$lib/internal/helpers';
+	// These are internal icons, but they're not exported from the package.
+	// Use your own icons instead.
 	import TextAlignLeftIcon from '~icons/radix-icons/text-align-left';
 	import TextAlignCenterIcon from '~icons/radix-icons/text-align-center';
 	import TextAlignRightIcon from '~icons/radix-icons/text-align-right';
 
 	export let propsObj: ResolvedProps<typeof ToggleGroup>;
+	// Since we use a discriminated union in ToggleGroup.Root, we need to cast
+	// some props to any to satisfy the type checker. TODO: Find a better way to do this.
+	$: castPropsObj = propsObj as ResolvedProps<typeof ToggleGroup> & {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		Root: { type: any; value: any };
+	};
 </script>
 
 <div class="contents">
 	<ToggleGroup.Root
 		class="flex items-center data-[orientation='vertical']:flex-col"
-		type={propsObj.Root.type}
-		bind:value={propsObj.Root.value}
+		type={castPropsObj.Root.type}
+		bind:value={castPropsObj.Root.value}
 		dir={propsObj.Root.dir}
 		orientation={propsObj.Root.orientation}
 		rovingFocus={propsObj.Root.rovingFocus}
