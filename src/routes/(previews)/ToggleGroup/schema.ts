@@ -30,6 +30,10 @@ export const schema = {
 					options: ['horizontal', 'vertical'],
 					default: 'horizontal',
 				},
+				rovingFocus: {
+					type: 'boolean',
+					default: true,
+				},
 			},
 			dataAttributes: {
 				'data-orientation': {

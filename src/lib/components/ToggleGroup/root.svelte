@@ -115,10 +115,10 @@
 			const listener = (e: KeyboardEvent) => {
 				if (e.key === nextKey) {
 					e.preventDefault();
-					next(enabledItems, enabledIdx)?.focus();
+					next(enabledItems, enabledIdx, rovingFocus)?.focus();
 				} else if (e.key === prevKey) {
 					e.preventDefault();
-					prev(enabledItems, enabledIdx)?.focus();
+					prev(enabledItems, enabledIdx, rovingFocus)?.focus();
 				}
 			};
 

@@ -15,6 +15,7 @@
 		bind:value={propsObj.Root.value}
 		dir={propsObj.Root.dir}
 		orientation={propsObj.Root.orientation}
+		rovingFocus={propsObj.Root.rovingFocus}
 		aria-label="Text alignment"
 	>
 		<ToggleGroup.Item class="toggle-item" value="left" aria-label="Left aligned">
