@@ -1,3 +1,4 @@
+import { schema as ToggleGroup } from './ToggleGroup/schema';
 import { schema as Accordion } from './Accordion/schema';
 import { schema as AspectRatio } from './AspectRatio/schema';
 import { schema as Checkbox } from './Checkbox/schema';
@@ -25,4 +26,5 @@ export const schemas = {
 	popper: Popper,
 	dialog: Dialog,
 	tabs: Tabs,
+	togglegroup: ToggleGroup,
 };

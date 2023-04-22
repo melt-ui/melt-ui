@@ -49,6 +49,9 @@ export const schema = {
 				'data-orientation': {
 					values: ['horizontal', 'vertical'],
 				},
+				'data-disabled': {
+					values: ['true', 'false'],
+				},
 			},
 		},
 		Content: {

@@ -15,6 +15,7 @@
 	type $$Props = TabsTriggerProps;
 
 	export let value: $$Props['value'];
+	export let disabled: $$Props['disabled'] = false;
 
 	const rootCtx = getTabsRootContext();
 	const triggerCollection = getTriggerCollection();
@@ -32,9 +33,11 @@
 			$rootCtx.value = value;
 		}
 	}}
-	{...$$restProps}
 	use:useActions={$$restProps.use}
 	use:useCollection={{ collection: triggerCollection }}
+	{disabled}
+	data-disabled={disabled || undefined}
+	{...$$restProps}
 >
 	<slot />
 </button>

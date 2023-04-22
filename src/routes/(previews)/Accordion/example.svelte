@@ -1,10 +1,14 @@
 <script lang="ts">
 	import { Accordion } from '$lib';
+	import type { ResolvedProps } from '$lib/internal/helpers';
 
-	// Since we use a discriminated union in AccordionRootProps, we need to cast it to any
-	// to satisfy the type checker. TODO: Find a better way to do this.
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	export let propsObj: any;
+	export let propsObj: ResolvedProps<typeof Accordion>;
+	// Since we use a discriminated union in ToggleGroup.Root, we need to cast
+	// some props to any to satisfy the type checker. TODO: Find a better way to do this.
+	$: castPropsObj = propsObj as ResolvedProps<typeof Accordion> & {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		Root: { value: any; type: any };
+	};
 
 	// Set defaults for the example
 	propsObj.Content.transition = true;
@@ -13,8 +17,8 @@
 <div class="contents">
 	<Accordion.Root
 		class="w-full rounded-md bg-[--line-color] shadow-lg"
-		bind:value={propsObj.Root.value}
-		bind:type={propsObj.Root.type}
+		bind:value={castPropsObj.Root.value}
+		bind:type={castPropsObj.Root.type}
 	>
 		<Accordion.Item class="accordion-item" value="item-1">
 			<Accordion.Header class="flex">
