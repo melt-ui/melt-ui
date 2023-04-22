@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ChevronLeft from '~icons/radix-icons/chevron-left';
 	import ChevronRight from '~icons/radix-icons/chevron-right';
-	import { getPropsObj } from './(previews)/helpers';
+	import { getPropsObj } from '$lib/internal/helpers';
 	import { schemas } from './(previews)/schemas';
 	import { cn } from './helpers';
 

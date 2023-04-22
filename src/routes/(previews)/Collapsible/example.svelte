@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { Collapsible } from '$lib';
+	import type { ResolvedProps } from '$lib/internal/helpers';
+	// These are internal icons, but they're not exported from the package.
+	// Use your own icons instead.
 	import Cross2Icon from '~icons/radix-icons/cross-2';
 	import RowSpacingIcon from '~icons/radix-icons/row-spacing';
-	import type { ResolvedProps } from '../helpers';
 
 	export let propsObj: ResolvedProps<typeof Collapsible>;
 

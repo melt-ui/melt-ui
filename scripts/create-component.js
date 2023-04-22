@@ -172,7 +172,8 @@ rl.question('Please enter a component name: ', (inputComponentName) => {
 				schemaFile,
 				toLines(
 					`import example from './example.svelte';`,
-					`import type { PreviewSchema } from '../helpers';`,
+					`import type { PreviewSchema } from '$lib/internal/helpers';
+`,
 					`import type { ${componentName} } from '${importDir}';`,
 					`import code from './example.svelte?raw';`,
 					``,

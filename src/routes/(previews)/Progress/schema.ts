@@ -1,5 +1,6 @@
 import type { Progress } from '$lib';
-import type { PreviewSchema } from '../helpers';
+import type { PreviewSchema } from '$lib/internal/helpers';
+
 import example from './example.svelte';
 import code from './example.svelte?raw';
 
