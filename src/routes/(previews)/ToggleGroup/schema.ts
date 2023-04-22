@@ -1,5 +1,5 @@
 import example from './example.svelte';
-import type { PreviewSchema } from '../helpers';
+import type { PreviewSchema } from '$lib/internal/helpers';
 import type { ToggleGroup } from '$lib';
 import code from './example.svelte?raw';
 
@@ -9,7 +9,19 @@ export const schema = {
 	example,
 	code,
 	meta: {
-		Root: {},
+		Root: {
+			props: {
+				type: {
+					type: 'enum',
+					options: ['single', 'multiple'],
+					default: 'single',
+				},
+				value: {
+					type: 'string',
+					show: 'value',
+				},
+			},
+		},
 		Item: {},
 	},
 } satisfies PreviewSchema<typeof ToggleGroup>;

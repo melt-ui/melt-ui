@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import { reactiveContext, useActions } from '$lib/internal/helpers';
+	import { collectionContext, reactiveContext, useActions } from '$lib/internal/helpers';
 	import type { BaseProps } from '$lib/internal/types';
 
 	type Type = 'single' | 'multiple';
@@ -48,6 +48,9 @@
 
 	const { getContext, setContext } = reactiveContext<ToggleGroupRootContext>();
 	export const getToggleGroupRootContext = getContext;
+
+	const itemCollection = collectionContext();
+	export const getToggleGroupItemCollection = itemCollection.getContext;
 </script>
 
 <script lang="ts">
@@ -78,8 +81,11 @@
 		disabled: disabled ?? defaults.disabled,
 		value,
 	});
+
+	// Item logic
+	itemCollection.createContext();
 </script>
 
-<div {...$$restProps} use:useActions={$$restProps.use}>
+<div {...$$restProps} use:useActions={$$restProps.use} data-orientation={orientation}>
 	<slot />
 </div>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { ToggleGroup } from '$lib';
-	import type { ResolvedProps } from '../helpers';
+	import type { ResolvedProps } from '$lib/internal/helpers';
 	import TextAlignLeftIcon from '~icons/radix-icons/text-align-left';
 	import TextAlignCenterIcon from '~icons/radix-icons/text-align-center';
 	import TextAlignRightIcon from '~icons/radix-icons/text-align-right';
@@ -9,7 +9,12 @@
 </script>
 
 <div class="contents">
-	<ToggleGroup.Root class="flex items-center" type="single" aria-label="Text alignment">
+	<ToggleGroup.Root
+		class="flex items-center"
+		type={propsObj.Root.type}
+		bind:value={propsObj.Root.value}
+		aria-label="Text alignment"
+	>
 		<ToggleGroup.Item class="toggle-item" value="left" aria-label="Left aligned">
 			<TextAlignLeftIcon />
 		</ToggleGroup.Item>

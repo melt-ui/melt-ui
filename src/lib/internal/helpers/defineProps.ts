@@ -4,7 +4,7 @@ type DefinedObj<T> = {
 	[K in keyof T]: T[K] extends undefined ? never : T[K];
 };
 
-export function defineDefaults<T extends object>(defaults?: D) {
+export function defineDefaults<T extends object, D>(defaults?: D) {
 	function withDefaults(props: T) {
 		// Return defaults + props that are not undefined
 		const definedProps = objectKeys(props).reduce((acc, key) => {

@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
 	import { useActions } from '$lib/internal/helpers/useActions';
-	import type { BaseProps } from '$lib/internal/types';
+	import type { BaseProps, Detailed } from '$lib/internal/types';
+	import { createEventDispatcher } from 'svelte';
 
 	export type ToggleRootProps = BaseProps<'button'> & {
 		/** The controlled pressed state of the toggle. */
@@ -15,11 +16,19 @@
 
 	export let pressed: $$Props['pressed'] = false;
 	export let disabled: $$Props['disabled'] = false;
+
+	type $$Events = {
+		change: CustomEvent<boolean>;
+	};
+	const dispatch = createEventDispatcher<Detailed<$$Events>>();
 </script>
 
 <button
 	{disabled}
-	on:click={() => (pressed = !pressed)}
+	on:click={() => {
+		pressed = !pressed;
+		dispatch('change', pressed);
+	}}
 	data-state={pressed ? 'on' : 'off'}
 	data-disabled={disabled || undefined}
 	{...$$restProps}
