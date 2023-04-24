@@ -52,6 +52,7 @@
 	import { onDestroy } from 'svelte';
 	import { getRootContext } from './root.svelte';
 	import { getSideAndAlignFromPlacement, isDefined, isNotNull, transformOrigin } from './utils';
+	import { useActions } from '$lib/internal/helpers';
 
 	export let side: NonNullable<$$Props['side']> = 'bottom';
 	export let sideOffset: NonNullable<$$Props['sideOffset']> = 0;
@@ -198,6 +199,7 @@
 		' ' +
 		middlewareData?.transformOrigin?.y}
 	dir={$$restProps.dir}
+	use:useActions={$$restProps.use}
 >
 	<div
 		data-side={placedSide}

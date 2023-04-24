@@ -44,10 +44,15 @@
 			destroy,
 		};
 	}
+
+	export type PortalProps = {
+		target?: HTMLElement | string;
+	};
 </script>
 
 <script lang="ts">
-	export let target: HTMLElement | string = 'body';
+	type $$Props = PortalProps;
+	export let target: $$Props['target'] = 'body';
 </script>
 
 <div use:portal={target} hidden>
