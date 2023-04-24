@@ -29,16 +29,16 @@
 	</div>
 
 	<div class="my-2 rounded bg-white p-3 shadow-lg">
-		<span class="text-base leading-[25px] text-vermilion-800">@radix-ui/primitives</span>
+		<span class="text-base leading-[25px] text-vermilion-800">tglide/radix-svelte</span>
 	</div>
 
 	<Collapsible.Content transition={propsObj.Content.transition}>
 		<div class="flex flex-col gap-2">
 			<div class="rounded bg-white p-3 shadow-lg">
-				<span class="text-base leading-[25px] text-vermilion-800">@radix-ui/colors</span>
+				<span class="text-base leading-[25px] text-vermilion-800">sveltejs/svelte</span>
 			</div>
 			<div class="rounded bg-white p-3 shadow-lg">
-				<span class="text-base leading-[25px] text-vermilion-800">@stitches/react</span>
+				<span class="text-base leading-[25px] text-vermilion-800">sveltejs/kit</span>
 			</div>
 		</div>
 	</Collapsible.Content>

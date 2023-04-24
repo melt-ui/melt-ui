@@ -16,6 +16,8 @@
 	type $$Props = TabsListProps;
 
 	const rootCtx = getTabsRootContext();
+
+	// Trigger logic
 	const triggerStore = triggerCollection.createContext();
 
 	$: nextKey = {
@@ -28,17 +30,29 @@
 		vertical: 'ArrowUp',
 	}[$rootCtx.orientation ?? 'horizontal'];
 
+	const listeners = new Map();
 	triggerStore.subscribe((triggers) => {
+		const enabledTriggers = triggers.filter((t) => !t.dataset.disabled);
+		console.log('enabledTriggers', enabledTriggers, triggers);
+
 		triggers.forEach((trigger, index) => {
-			trigger.addEventListener('keydown', (e) => {
+			const prevCallback = listeners.get(index);
+			if (prevCallback) {
+				trigger.removeEventListener('keydown', prevCallback);
+			}
+
+			const enabledIdx = enabledTriggers.indexOf(trigger);
+			const listener = (e: KeyboardEvent) => {
 				if (e.key === nextKey) {
 					e.preventDefault();
-					next(triggers, index)?.focus();
+					next(enabledTriggers, enabledIdx)?.focus();
 				} else if (e.key === prevKey) {
 					e.preventDefault();
-					prev(triggers, index)?.focus();
+					prev(enabledTriggers, enabledIdx)?.focus();
 				}
-			});
+			};
+			listeners.set(index, listener);
+			trigger.addEventListener('keydown', listener);
 		});
 	});
 </script>

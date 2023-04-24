@@ -8,6 +8,5 @@ export function handleAndDispatchCustomEvent<E extends CustomEvent, OriginalEven
 	const event = new CustomEvent(name, { cancelable: true, detail });
 	if (handler) target.addEventListener(name, handler as EventListener, { once: true });
 
-	console.log(target);
 	target.dispatchEvent(event);
 }
