@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.5](https://github.com/TGlide/radix-svelte/compare/v0.3.4...v0.3.5) (2023-04-24)
+
+
+### Features
+
+* kbd navigation ([7dfb6c2](https://github.com/TGlide/radix-svelte/commit/7dfb6c29d6dd20c55bd1389eab224ae61175a33d))
+* rovingFocus prop toggle group ([6920ef9](https://github.com/TGlide/radix-svelte/commit/6920ef989aab4634b9ea022cfd74ff8a19694a18))
+* toggle group basic functionality ([cccdf11](https://github.com/TGlide/radix-svelte/commit/cccdf11f4a905ce028a80bf75f03f613b23d89ec))
+* toggle group scaffolding ([3d7ad93](https://github.com/TGlide/radix-svelte/commit/3d7ad9371ae153512e2441feb5468870810a9730))
+
+
+### Bug Fixes
+
+* eslint & type warnings ([668a817](https://github.com/TGlide/radix-svelte/commit/668a81762a5080cdccebce9a9d3b287f4d7b29e2))
+* kbd navigation with disabled items ([f2d4e06](https://github.com/TGlide/radix-svelte/commit/f2d4e065cd8c36974516984a56646f29c11b8798))
+
 ### [0.3.4](https://github.com/TGlide/radix-svelte/compare/v0.3.3...v0.3.4) (2023-04-21)
 
 ### [0.3.3](https://github.com/TGlide/radix-svelte/compare/v0.3.2...v0.3.3) (2023-04-20)
