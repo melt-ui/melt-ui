@@ -17,7 +17,7 @@
 
 <main class="flex min-h-screen flex-col">
 	<nav class="flex items-center justify-between border-b border-zinc-400 px-4 py-2">
-		<a class="flex items-center gap-2 font-sans text-xl font-semibold" href="/">
+		<a class="flex items-center gap-2 text-xl font-sans font-bold" href="/">
 			<img class="h-9 w-9 rounded-sm object-contain" src="/logo.svg" alt="Radix and Svelte logos" />
 			Radix Svelte
 		</a>
