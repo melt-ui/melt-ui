@@ -93,7 +93,7 @@
 	.wrapper {
 		display: grid;
 		gap: theme('spacing.4');
-		padding: theme('spacing.6');
+		padding: theme('spacing.2');
 
 		@media screen('lg') {
 			display: flex;
