@@ -1,6 +1,4 @@
 <script lang="ts">
-	import ChevronLeft from '~icons/radix-icons/chevron-left';
-	import ChevronRight from '~icons/radix-icons/chevron-right';
 	import { getPropsObj } from '$lib/internal/helpers';
 	import { schemas } from './(previews)/schemas';
 	import { cn } from './helpers';
@@ -15,77 +13,49 @@
 		return a[1].title.toLowerCase().localeCompare(b[1].title.toLowerCase());
 	});
 
-	let scrollX = 0;
-	let wrapperEl: HTMLElement;
-
-	const handleScroll = (e: Event) => {
-		scrollX = (e.target as HTMLElement).scrollLeft;
-	};
-
-	// TODO: Improve
-	$: activeIndex = Math.floor((scrollX + 300 + GAP / 2) / (600 + GAP));
-
-	const GAP = 64;
-
-	function handlePrev() {
-		const newIndex = Math.max(activeIndex - 1, 0);
-		// Take the gap into account
-		wrapperEl.scrollTo({
-			left: newIndex * 600 + GAP * newIndex,
-			behavior: 'smooth',
-		});
-	}
-
-	function handleNext() {
-		const newIndex = Math.min(activeIndex + 1, sortedSchemas.length - 1);
-		wrapperEl.scrollTo({
-			left: newIndex * 600 + GAP * newIndex,
-			behavior: 'smooth',
-		});
+	function copyNpmCommand() {
+		navigator.clipboard.writeText(`npm install radix-ui-svelte`);
 	}
 </script>
 
-<div class="relative grid grow place-items-center">
-	<div class="flex w-full flex-col items-center gap-16 overflow-hidden py-2">
-		<div class="w-full overflow-hidden">
-			<div
-				class="wrapper scroll-h"
-				style:--gap={`${GAP}px`}
-				on:scroll={handleScroll}
-				bind:this={wrapperEl}
-			>
-				{#each sortedSchemas as [identifier, schema], idx}
-					{@const propsObj = getPropsObjForSchema(schema)}
-					<div
-						class={cn(
-							'flex w-full flex-col gap-2 overflow-hidden transition lg:h-[600px] lg:min-w-[600px] lg:opacity-50',
-							activeIndex === idx && 'lg:scale-105 lg:opacity-100'
-						)}
-					>
-						<a href={`/docs/${identifier}`} class="flex items-baseline justify-between">
-							<h2 class="text-2xl font-normal capitalize text-white">{schema.title}</h2>
-							<span class="text-sm text-slate-300">View docs</span></a
-						>
-						<div class="comp-preview grow place-items-center">
-							<svelte:component this={schema.example} {propsObj} />
-						</div>
-					</div>
-				{/each}
+<div class="relative grid grow place-items-center p-6">
+	<div class="grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-3">
+		<div class="col-span-full flex flex-col gap-4 py-24">
+			<h1 class="text-4xl font-bold text-white lg:text-5xl">Don’t reinvent the wheel.</h1>
+			<p class="text-lg text-white opacity-75 lg:text-xl">
+				Unstyled, accessible components for building high‑quality design systems and web apps, now
+				in Svelte.
+			</p>
+			<div class="flex flex-row gap-4">
+				<button
+					on:click={copyNpmCommand}
+					class="text-md rounded bg-neutral-900 p-4 font-mono text-white transition hover:bg-neutral-800 active:translate-y-1"
+					>npm install radix-svelte</button
+				>
+				<a
+					href="/docs/accordion"
+					class="text-md rounded border border-vermilion-500 p-4 font-sans text-white transition hover:bg-neutral-800 active:translate-y-1"
+				>
+					Read the docs
+				</a>
 			</div>
 		</div>
-
-		<div class="hidden items-center gap-16 lg:flex">
-			<button class="button" on:click={handlePrev} disabled={activeIndex === 0}>
-				<ChevronLeft />
-			</button>
-			<button
-				class="button"
-				on:click={handleNext}
-				disabled={activeIndex === sortedSchemas.length - 1}
+		{#each sortedSchemas as [identifier, schema], idx}
+			{@const propsObj = getPropsObjForSchema(schema)}
+			<div
+				class={cn(
+					'flex min-h-[256px] w-full flex-col gap-2 overflow-hidden transition lg:h-[512px] lg:max-w-[512px]'
+				)}
 			>
-				<ChevronRight />
-			</button>
-		</div>
+				<a href={`/docs/${identifier}`} class="flex items-baseline justify-between">
+					<h2 class="text-xl font-normal capitalize text-white">{schema.title}</h2>
+					<span class="text-md text-white opacity-75 hover:opacity-100">View docs</span></a
+				>
+				<div class="comp-preview grow place-items-center">
+					<svelte:component this={schema.example} {propsObj} />
+				</div>
+			</div>
+		{/each}
 	</div>
 </div>
 

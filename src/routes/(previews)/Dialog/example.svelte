@@ -29,7 +29,7 @@
 			focus:outline-none data-[state=open]:animate-contentShow"
 		>
 			<Dialog.Title class="m-0 text-lg font-medium text-black">Edit profile</Dialog.Title>
-			<Dialog.Description class="mb-5 mt-[10px] leading-normal text-slate-500">
+			<Dialog.Description class="mb-5 mt-[10px] leading-normal text-neutral-600">
 				Make changes to your profile here. Click save when you're done.
 			</Dialog.Description>
 
@@ -53,8 +53,8 @@
 			</fieldset>
 			<div class="mt-[25px] flex justify-end gap-4">
 				<Dialog.Close
-					class="hover:bg-green5 focus:shadow-green7 inline-flex h-[35px] items-center justify-center rounded-[4px] bg-slate-100
-				px-4 font-medium leading-none text-slate-600 focus:outline-none focus:ring-2 focus:ring-black"
+					class="hover:bg-green5 focus:shadow-green7 inline-flex h-[35px] items-center justify-center rounded-[4px] bg-neutral-100
+				px-4 font-medium leading-none text-neutral-600 focus:outline-none focus:ring-2 focus:ring-black"
 				>
 					Cancel
 				</Dialog.Close>

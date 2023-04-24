@@ -21,7 +21,20 @@ export default {
 				},
 			},
 			fontFamily: {
-				sans: ['Inter', 'sans-serif'],
+				sans: [
+					'Overpass',
+					'Seravek',
+					'Gill Sans Nova',
+					'Ubuntu',
+					'Calibri',
+					'DejaVu Sans',
+					'source-sans-pro',
+					'Apple Color Emoji',
+					'Segoe UI Emoji',
+					'Segoe UI Symbol',
+					'Noto Color Emoji',
+					'sans-serif',
+				],
 			},
 			keyframes: {
 				overlayShow: {
