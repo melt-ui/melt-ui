@@ -3,9 +3,9 @@
 	import type { ResolvedProps } from '$lib/internal/helpers';
 	// These are internal icons, but they're not exported from the package.
 	// Use your own icons instead.
-	import TextAlignLeftIcon from '~icons/radix-icons/text-align-left';
-	import TextAlignCenterIcon from '~icons/radix-icons/text-align-center';
-	import TextAlignRightIcon from '~icons/radix-icons/text-align-right';
+	import AlignLeft from '~icons/lucide/align-left';
+	import AlignCenter from '~icons/lucide/align-center';
+	import AlignRight from '~icons/lucide/align-right';
 
 	export let propsObj: ResolvedProps<typeof ToggleGroup>;
 	// Since we use a discriminated union in ToggleGroup.Root, we need to cast
@@ -27,13 +27,13 @@
 		aria-label="Text alignment"
 	>
 		<ToggleGroup.Item class="toggle-item" value="left" aria-label="Left aligned">
-			<TextAlignLeftIcon />
+			<AlignLeft />
 		</ToggleGroup.Item>
 		<ToggleGroup.Item class="toggle-item" value="center" aria-label="Center aligned">
-			<TextAlignCenterIcon />
+			<AlignCenter />
 		</ToggleGroup.Item>
 		<ToggleGroup.Item class="toggle-item" value="right" aria-label="Right aligned">
-			<TextAlignRightIcon />
+			<AlignRight />
 		</ToggleGroup.Item>
 	</ToggleGroup.Root>
 </div>

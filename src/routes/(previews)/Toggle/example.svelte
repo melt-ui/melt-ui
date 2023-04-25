@@ -3,7 +3,7 @@
 	import type { ResolvedProps } from '$lib/internal/helpers';
 	// These are internal icons, but they're not exported from the package.
 	// Use your own icons instead.
-	import FontItalicIcon from '~icons/radix-icons/font-italic';
+	import Italic from '~icons/lucide/italic';
 
 	export let propsObj: ResolvedProps<typeof Toggle>;
 </script>
@@ -16,5 +16,5 @@
 	data-[state=on]:bg-vermilion-200 data-[state=on]:text-vermilion-900"
 	bind:pressed={propsObj.Root.pressed}
 >
-	<FontItalicIcon />
+	<Italic />
 </Toggle.Root>
