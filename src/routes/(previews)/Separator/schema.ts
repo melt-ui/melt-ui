@@ -11,7 +11,6 @@ export const schema = {
 	code,
 	meta: {
 		Root: {
-			/*
 			props: {
 				orientation: { 
 					type: "enum",
@@ -20,7 +19,12 @@ export const schema = {
 					show: null
 				},
 				decorative: { type: 'boolean', show: null },
-			}, */
+			},
+			dataAttributes: {
+				'data-orientation': {
+					values: ['horizontal', 'vertical'],
+				},
+			},
 		},
 	},
 } satisfies PreviewSchema<typeof Separator>;
