@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { getPropsObj } from '$lib/internal/helpers';
 	import { schemas } from './(previews)/schemas';
-	import { cn } from './helpers';
+
+	import Copy from '~icons/lucide/copy';
+	import Check from '~icons/lucide/check';
+	import ArrowRight from '~icons/lucide/arrow-right';
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function getPropsObjForSchema(schema: (typeof schemas)[keyof typeof schemas]): any {
@@ -13,8 +16,13 @@
 		return a[1].title.toLowerCase().localeCompare(b[1].title.toLowerCase());
 	});
 
-	function copyNpmCommand() {
+	let copied = false;
+	function copyInstallCommand() {
 		navigator.clipboard.writeText(`npm install radix-svelte`);
+		copied = true;
+		setTimeout(() => {
+			copied = false;
+		}, 2500);
 	}
 </script>
 
@@ -27,29 +35,36 @@
 				in Svelte.
 			</p>
 			<div class="flex flex-row gap-4">
-				<button
-					on:click={copyNpmCommand}
-					class="text-md rounded bg-neutral-900 p-4 font-mono text-white transition hover:bg-neutral-800 active:translate-y-1"
-					>npm install radix-svelte</button
-				>
 				<a
 					href="/docs/accordion"
-					class="text-md rounded border border-vermilion-500 p-4 font-sans text-white transition hover:bg-neutral-800 active:translate-y-1"
+					class="text-md rounded bg-vermilion-600 p-4 font-sans font-semibold text-white transition hover:bg-vermilion-800 active:translate-y-0.5"
 				>
 					Read the docs
+					<ArrowRight class="inline-block w-5 h-5 ml-2 text-white" />
 				</a>
+				<button
+					on:click={copyInstallCommand}
+					class="group text-md rounded bg-zinc-900 p-4 font-mono text-white transition hover:bg-zinc-800 active:translate-y-0.5"
+					><span>npm install radix-svelte</span>
+					{#if copied}
+						<Check class="inline-block w-5 h-5 ml-2 text-vermilion-500" />
+					{:else}
+						<Copy class="inline-block w-5 h-5 ml-2 group-hover:text-vermilion-500" />
+					{/if}
+				</button>
 			</div>
 		</div>
 		{#each sortedSchemas as [identifier, schema], idx}
 			{@const propsObj = getPropsObjForSchema(schema)}
 			<div
-				class={cn(
-					'flex min-h-[256px] w-full flex-col gap-2 overflow-hidden transition lg:h-[512px] lg:max-w-[512px]'
-				)}
+				class="flex min-h-[256px] w-full flex-col gap-2 overflow-hidden transition lg:h-[512px] lg:max-w-[512px]"
 			>
 				<a href={`/docs/${identifier}`} class="flex items-baseline justify-between">
 					<h2 class="text-xl font-normal capitalize text-white">{schema.title}</h2>
-					<span class="text-md text-white opacity-75 hover:opacity-100">View docs</span></a
+					<span
+						class="text-md text-white underline-offset-2 opacity-75 hover:underline hover:opacity-100 focus:underline active:opacity-75"
+						>View docs</span
+					></a
 				>
 				<div class="comp-preview grow place-items-center">
 					<svelte:component this={schema.example} {propsObj} />
@@ -58,52 +73,3 @@
 		{/each}
 	</div>
 </div>
-
-<style lang="postcss">
-	.wrapper {
-		display: grid;
-		gap: theme('spacing.4');
-		padding: theme('spacing.2');
-
-		@media screen('lg') {
-			display: flex;
-			overflow-x: scroll;
-			width: 100%;
-			gap: var(--gap);
-			padding-left: calc(calc(100vw - 600px) / 2);
-			padding-right: calc(calc(100vw - 600px) / 2);
-			padding-block: theme('spacing.16');
-			scrollbar-width: none;
-
-			&::-webkit-scrollbar {
-				display: none;
-			}
-		}
-	}
-
-	.button {
-		display: grid;
-		place-items: center;
-
-		width: theme('width.9');
-		height: theme('height.9');
-
-		background-color: theme('colors.zinc.700');
-		border-radius: theme('borderRadius.full');
-		color: theme('colors.white');
-
-		outline: none;
-
-		&:focus {
-			@apply ring ring-vermilion-600;
-		}
-
-		&:disabled {
-			opacity: 0.5;
-		}
-
-		&:hover:not(:disabled) {
-			background-color: theme('colors.zinc.800');
-		}
-	}
-</style>

@@ -1,6 +1,20 @@
 <script>
 	import '../app.postcss';
 
+	import '@fontsource/overpass/400.css';
+	import '@fontsource/overpass/600.css';
+	import '@fontsource/overpass/700.css';
+	import '@fontsource/overpass/400-italic.css';
+	import '@fontsource/overpass/600-italic.css';
+	import '@fontsource/overpass/700-italic.css';
+
+	import '@fontsource/overpass-mono/400.css';
+	import '@fontsource/overpass-mono/600.css';
+	import '@fontsource/overpass-mono/700.css';
+
+	import GitHub from '~icons/simple-icons/github';
+	import Discord from '~icons/simple-icons/discord';
+
 	import { dev } from '$app/environment';
 	import { inject } from '@vercel/analytics';
 
@@ -9,9 +23,9 @@
 
 <main class="flex min-h-screen flex-col">
 	<nav class="flex items-end justify-between px-6 py-4">
-		<a class="flex items-center gap-2 font-sans text-xl" href="/">
+		<a class="flex items-end gap-2 font-sans text-xl" href="/">
 			<img
-				class="h-8 w-8 rounded-sm object-contain"
+				class="h-8 w-8 rounded-sm object-contain fill-vermilion-500"
 				src="/radix-svelte.svg"
 				alt="Radix and Svelte logos"
 			/>
@@ -21,12 +35,27 @@
 		<div class="flex flex-row gap-4">
 			<a
 				href="https://github.com/TGlide/radix-svelte"
-				class="underline-offset-2 opacity-75 hover:underline hover:opacity-100 focus:underline active:opacity-75"
-				>GitHub</a
+				target="_blank"
+				class="underline-offset-2 opacity-75 hover:underline hover:opacity-100 focus:underline active:translate-y-px"
 			>
+				<span class="hidden lg:block">GitHub</span>
+				<GitHub
+					class="lg:hidden h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px"
+				/>
+			</a>
+			<a
+				href="https://discord.com/invite/gQrpPs34xH"
+				target="_blank"
+				class="underline-offset-2 opacity-75 hover:underline hover:opacity-100 focus:underline active:translate-y-px"
+			>
+				<span class="hidden lg:block">Discord</span>
+				<Discord
+					class="lg:hidden h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px"
+				/>
+			</a>
 			<a
 				href="/docs/accordion"
-				class="underline-offset-2 opacity-75 hover:underline hover:opacity-100 focus:underline active:opacity-75"
+				class="underline-offset-2 opacity-75 hover:underline hover:opacity-100 focus:underline active:translate-y-px"
 				>Documentation</a
 			>
 		</div>
@@ -38,12 +67,14 @@
 		<div
 			class="flex flex-col items-start justify-between gap-2 px-6 py-4 lg:flex-row lg:items-center"
 		>
-			<span class="flex gap-1">
-				Inspired by <a
+			<div class="flex flex-row gap-1">
+				<span class="flex gap-1 opacity-50">Inspired by</span>
+				<a
 					href="https://radix-ui.com/"
-					class="hover:underline focus:underline active:opacity-75">Radix UI</a
+					class="underline-offset-2 opacity-75 hover:underline hover:opacity-100 focus:underline active:translate-y-px"
+					>Radix UI</a
 				>
-			</span>
+			</div>
 			<span class="opacity-50"> Not affiliated with Radix UI or WorkOS. </span>
 		</div>
 	</footer>
