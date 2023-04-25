@@ -35,6 +35,20 @@ export default {
 					'Noto Color Emoji',
 					'sans-serif',
 				],
+				mono: [
+					'Overpass Mono',
+					'ui-monospace',
+					'Source Code Pro',
+					'Cascadia Code',
+					'Menlo',
+					'Consolas',
+					'DejaVu Sans Mono',
+					'Apple Color Emoji',
+					'Segoe UI Emoji',
+					'Segoe UI Symbol',
+					'Noto Color Emoji',
+					'monospace',
+				],
 			},
 			keyframes: {
 				overlayShow: {

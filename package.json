@@ -55,12 +55,15 @@
 	},
 	"dependencies": {
 		"@floating-ui/core": "^1.2.6",
-		"@floating-ui/dom": "^1.2.6"
+		"@floating-ui/dom": "^1.2.6",
+		"@fontsource/overpass": "^4.5.11",
+		"@fontsource/overpass-mono": "^4.5.11",
+		"@fontsource/source-code-pro": "^4.5.14",
+		"@iconify-json/lucide": "^1.1.82",
+		"@iconify-json/simple-icons": "^1.1.50"
 	},
 	"devDependencies": {
 		"@axe-core/playwright": "^4.6.1",
-		"@fontsource/inter": "^4.5.15",
-		"@iconify-json/radix-icons": "^1.1.10",
 		"@playwright/experimental-ct-svelte": "^1.32.1",
 		"@playwright/test": "^1.28.1",
 		"@sveltejs/adapter-auto": "^2.0.0",
