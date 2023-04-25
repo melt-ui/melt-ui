@@ -21,7 +21,7 @@
 
 <div class="flex grid-cols-12 flex-col gap-8 overflow-hidden py-6 lg:grid lg:px-6">
 	<div class="col-span-2">
-		<ul class="flex w-full flex-col gap-2 overflow-x-auto p-2">
+		<ul class="flex w-full flex-col overflow-x-auto p-2">
 			{#each links as link}
 				<li>
 					<a
