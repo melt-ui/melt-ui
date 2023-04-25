@@ -14,7 +14,7 @@
 	});
 
 	function copyNpmCommand() {
-		navigator.clipboard.writeText(`npm install radix-ui-svelte`);
+		navigator.clipboard.writeText(`npm install radix-svelte`);
 	}
 </script>
 
