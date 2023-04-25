@@ -12,11 +12,11 @@ export const schema = {
 	meta: {
 		Root: {
 			props: {
-				orientation: { 
-					type: "enum",
-					options: ["horizontal", "vertical"],
-					default: "horizontal",
-					show: null
+				orientation: {
+					type: 'enum',
+					options: ['horizontal', 'vertical'],
+					default: 'horizontal',
+					show: null,
 				},
 				decorative: { type: 'boolean', show: null },
 			},
