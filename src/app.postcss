@@ -1,6 +1,4 @@
 /* Write your global styles here, in PostCSS syntax */
-@import url('https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,7 +15,7 @@ body {
 		justify-content: center;
 		align-items: center;
 
-		background-color: theme('colors.neutral.900');
+		background: linear-gradient(315deg, theme('colors.zinc.800'), theme('colors.zinc.900'));
 
 		border-radius: theme('borderRadius.lg');
 		padding: theme('spacing.8');
@@ -39,17 +37,18 @@ body {
 
 :where(input, textarea, select) {
 	::-webkit-scrollbar-track {
-		background: theme(colors.neutral.800);
+		background: theme(colors.zinc.800);
 		left: 4px;
 	}
 }
 
 ::-webkit-scrollbar-thumb {
-	background: theme(colors.neutral.800);
+	transition: background 150ms ease-out;
+	background: theme(colors.zinc.800);
 	border: 3px solid theme(colors.black);
 	border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: theme(colors.neutral.700);
+	background: theme(colors.zinc.600);
 }
