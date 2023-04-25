@@ -7,18 +7,21 @@
 	import '@fontsource/overpass/400-italic.css';
 	import '@fontsource/overpass/600-italic.css';
 	import '@fontsource/overpass/700-italic.css';
-
 	import '@fontsource/overpass-mono/400.css';
 	import '@fontsource/overpass-mono/600.css';
 	import '@fontsource/overpass-mono/700.css';
-
+  
+	import { dev } from '$app/environment';
+	import { onMount } from 'svelte';
+  
 	import GitHub from '~icons/simple-icons/github';
 	import Discord from '~icons/simple-icons/discord';
 
-	import { dev } from '$app/environment';
-	import { inject } from '@vercel/analytics';
+	onMount(async () => {
+		const { inject } = await import('@vercel/analytics');
 
-	inject({ mode: dev ? 'development' : 'production' });
+		inject({ mode: dev ? 'development' : 'production' });
+	});
 </script>
 
 <main class="flex min-h-screen flex-col">

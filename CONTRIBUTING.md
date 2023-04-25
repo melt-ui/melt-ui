@@ -39,6 +39,10 @@ There are a lot of great resources on creating a good pull request. We've includ
 
 - [How to Contribute to a Project on GitHub](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github)
 
+## Creating a new component?
+
+The best way to bootstrap a new component is to use the `create:cmp` script, by running `pnpm run create:cmp` command. This command is in active development, so some bugs are to be expected!
+
 ## Preparing a Pull Request
 
 [Pull Requests](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request) are always welcome, but before working on a large change, it is best to open an issue first to discuss it with maintainers, or check if there is already an issue for it.
