@@ -8,14 +8,17 @@
 	import '@fontsource/inter/700.css';
 	import '@fontsource/inter/800.css';
 	import '@fontsource/inter/900.css';
+	import { dev } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	import GithubLogo from '~icons/radix-icons/github-logo';
 	import DiscordLogo from '~icons/radix-icons/discord-logo';
 
-	import { dev } from '$app/environment';
-	import { inject } from '@vercel/analytics';
+	onMount(async () => {
+		const { inject } = await import('@vercel/analytics');
 
-	inject({ mode: dev ? 'development' : 'production' });
+		inject({ mode: dev ? 'development' : 'production' });
+	});
 </script>
 
 <main class="flex min-h-screen flex-col">

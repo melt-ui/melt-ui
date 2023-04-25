@@ -18,7 +18,7 @@
 
 <div class="contents">
 	<ToggleGroup.Root
-		class="flex items-center data-[orientation='vertical']:flex-col"
+		class=""
 		type={castPropsObj.Root.type}
 		bind:value={castPropsObj.Root.value}
 		dir={propsObj.Root.dir}
@@ -26,13 +26,13 @@
 		rovingFocus={propsObj.Root.rovingFocus}
 		aria-label="Text alignment"
 	>
-		<ToggleGroup.Item class="toggle-item" value="left" aria-label="Left aligned">
+		<ToggleGroup.Item class="" value="left" aria-label="Left aligned">
 			<TextAlignLeftIcon />
 		</ToggleGroup.Item>
-		<ToggleGroup.Item class="toggle-item" value="center" aria-label="Center aligned">
+		<ToggleGroup.Item class="" value="center" aria-label="Center aligned">
 			<TextAlignCenterIcon />
 		</ToggleGroup.Item>
-		<ToggleGroup.Item class="toggle-item" value="right" aria-label="Right aligned">
+		<ToggleGroup.Item class="" value="right" aria-label="Right aligned">
 			<TextAlignRightIcon />
 		</ToggleGroup.Item>
 	</ToggleGroup.Root>

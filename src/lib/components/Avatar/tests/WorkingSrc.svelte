@@ -10,7 +10,6 @@
 			class="h-full w-full rounded-[inherit] object-cover"
 			src="https://avatars.githubusercontent.com/u/26071571"
 			alt="Alt"
-			on:loadingStatusChange={(e) => console.log(e.detail)}
 		/>
 		<Avatar.Fallback
 			class="flex h-full w-full items-center justify-center bg-white text-4xl font-medium text-vermilion-500"
