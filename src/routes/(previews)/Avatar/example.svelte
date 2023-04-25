@@ -13,7 +13,6 @@
 			class="h-full w-full rounded-[inherit] object-cover"
 			src={propsObj.Image.src}
 			alt={propsObj.Image.alt}
-			on:loadingStatusChange={(e) => console.log(e.detail)}
 		/>
 		<Avatar.Fallback
 			class="flex h-full w-full items-center justify-center bg-white text-4xl font-medium text-vermilion-500"
