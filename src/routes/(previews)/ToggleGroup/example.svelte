@@ -18,7 +18,7 @@
 
 <div class="contents">
 	<ToggleGroup.Root
-		class=""
+		class="flex items-center data-[orientation='vertical']:flex-col"
 		type={castPropsObj.Root.type}
 		bind:value={castPropsObj.Root.value}
 		dir={propsObj.Root.dir}

@@ -72,7 +72,7 @@
 		"@testing-library/svelte": "^3.2.2",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
-		"@vercel/analytics": "^0.1.11",
+		"@vercel/analytics": "^1.0.0",
 		"autoprefixer": "^10.4.7",
 		"clsx": "^1.2.1",
 		"eslint": "^8.28.0",
