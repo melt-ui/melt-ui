@@ -17,11 +17,12 @@
 
 	export let orientation: $$Props['orientation'] = 'horizontal';
 	export let decorative: $$Props['decorative'] = false;
+	export let use: $$Props['use'] = [];
 </script>
 
 <div
 	data-orientation={orientation}
 	role={decorative ? 'none' : 'separator'}
 	{...$$restProps}
-	use:useActions={$$restProps.use}
+	use:useActions={use ?? []}
 />
