@@ -22,10 +22,10 @@
 </script>
 
 <main class="flex min-h-screen flex-col">
-	<nav class="flex items-center justify-between gap-2 border-b border-zinc-400 px-2 lg:px-4 py-2">
-		<a class="flex items-center gap-2 lg:text-xl font-sans font-bold" href="/">
+	<nav class="flex items-center justify-between gap-2 border-b border-zinc-400 px-2 py-2 lg:px-4">
+		<a class="flex items-center gap-2 font-sans font-bold lg:text-xl" href="/">
 			<img
-				class="w-7 h-7 lg:h-9 lg:w-9 rounded-sm object-contain"
+				class="h-7 w-7 rounded-sm object-contain lg:h-9 lg:w-9"
 				src="/logo.svg"
 				alt="Radix and Svelte logos"
 			/>
