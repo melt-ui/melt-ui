@@ -36,3 +36,5 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
+
+To reproduce using Stackblitz, use this [template](https://stackblitz.com/edit/node-rvtbvk?file=package.json) and modify the `src/routes/+page.svelte` file.
