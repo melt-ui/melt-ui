@@ -100,14 +100,9 @@
 	let y: number | null = null;
 
 	function updatePosition(options: ComputePositionConfig) {
-		computePosition($rootCtx.anchor, content, options).then(
-			async (position) => {
-				({ strategy, placement, middlewareData, x, y } = position);
-			},
-			(error) => {
-				console.error(error);
-			}
-		);
+		computePosition($rootCtx.anchor, content, options).then(async (position) => {
+			({ strategy, placement, middlewareData, x, y } = position);
+		});
 	}
 
 	let cleanup: (() => void) | null = null;

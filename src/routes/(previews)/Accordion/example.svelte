@@ -18,7 +18,8 @@
 	<Accordion.Root
 		class="w-full rounded-md bg-[--line-color] shadow-lg"
 		bind:value={castPropsObj.Root.value}
-		bind:type={castPropsObj.Root.type}
+		type={castPropsObj.Root.type}
+		disabled={castPropsObj.Root.disabled}
 	>
 		<Accordion.Item class="accordion-item" value="item-1">
 			<Accordion.Header class="flex">

@@ -22,6 +22,10 @@ export const schema = {
 					options: ['multiple', 'single'],
 					default: 'single',
 				},
+				disabled: {
+					type: 'boolean',
+					default: false,
+				},
 			},
 		},
 		Content: {
@@ -31,14 +35,48 @@ export const schema = {
 					default: false,
 				},
 			},
+			dataAttributes: {
+				'data-disabled': {
+					values: 'Present when disabled',
+				},
+				'data-state': {
+					values: ['open', 'closed'],
+				},
+			},
 		},
-		Trigger: {},
-		Header: {},
+		Trigger: {
+			dataAttributes: {
+				'data-disabled': {
+					values: 'Present when disabled',
+				},
+				'data-state': {
+					values: ['open', 'closed'],
+				},
+			},
+		},
+		Header: {
+			dataAttributes: {
+				'data-disabled': {
+					values: 'Present when disabled',
+				},
+				'data-state': {
+					values: ['open', 'closed'],
+				},
+			},
+		},
 		Item: {
 			props: {
 				value: {
 					type: 'string',
 					show: null,
+				},
+			},
+			dataAttributes: {
+				'data-disabled': {
+					values: 'Present when disabled',
+				},
+				'data-state': {
+					values: ['open', 'closed'],
 				},
 			},
 		},
