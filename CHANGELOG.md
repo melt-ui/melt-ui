@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.6](https://github.com/TGlide/radix-svelte/compare/v0.3.5...v0.3.6) (2023-04-27)
+
+
+### Features
+
+* add github & discord links ([9350d7c](https://github.com/TGlide/radix-svelte/commit/9350d7c4fb9b460a3273c5791a966b137da144c6))
+* add missing data attributes to accordion ([c4f97e6](https://github.com/TGlide/radix-svelte/commit/c4f97e6fab7237c7c5a30572888ff9d605f6fe64))
+* add separator component ([403c39a](https://github.com/TGlide/radix-svelte/commit/403c39aa2f9fc9011e45987acaba6b871c0c4866))
+
+
+### Bug Fixes
+
+* toggle group example ([653c97f](https://github.com/TGlide/radix-svelte/commit/653c97faa97a46c9f4008a5c10f0fd7700982ad9))
+
 ### [0.3.5](https://github.com/TGlide/radix-svelte/compare/v0.3.4...v0.3.5) (2023-04-24)
 
 
