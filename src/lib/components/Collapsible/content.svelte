@@ -36,7 +36,7 @@
 		{...$$restProps}
 		use:useActions={$$restProps.use}
 		data-state={$ctx.open ? 'open' : 'closed'}
-		data-disabled={$ctx.disabled ? 'true' : 'false'}
+		data-disabled={$ctx.disabled ? 'true' : undefined}
 		transition:slide|local={transitionParams}
 	>
 		<slot />

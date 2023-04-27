@@ -28,6 +28,7 @@
 	type $$Props = CollapsibleRootProps;
 	export let open = false;
 	export let disabled = false;
+	export let use: $$Props['use'] = [];
 
 	const contextStore = setContext({
 		open: [open, (v) => (open = v)],
@@ -38,10 +39,10 @@
 
 <div
 	data-state={open ? 'open' : 'closed'}
-	data-disabled={disabled ? 'true' : 'false'}
-	{...$$restProps}
-	use:useActions={$$restProps.use}
+	data-disabled={disabled ? 'true' : undefined}
+	use:useActions={use ?? []}
 	data-radix-collapsible-root
+	{...$$restProps}
 >
 	<slot />
 </div>

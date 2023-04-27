@@ -26,18 +26,18 @@
 	$: reset(data.cmp);
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	function castPreviewProps(component?: any) {
-		return (component.props || {}) as Record<string, PreviewProps>;
+	function castProps(component?: any) {
+		return Object.entries((component.props || {}) as Record<string, PreviewProps>);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	function castPreviewEvents(component?: any) {
-		return (component.events || {}) as Record<string, PreviewEvent<unknown>>;
+	function castEvents(component?: any) {
+		return Object.entries((component.events || {}) as Record<string, PreviewEvent<unknown>>);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	function castPreviewDataAttributes(component: any) {
-		return (component.dataAttributes || {}) as Record<string, PreviewDataAttribute>;
+	function castDataAttrs(component: any) {
+		return Object.entries((component.dataAttributes || {}) as Record<string, PreviewDataAttribute>);
 	}
 
 	let showCode = false;
@@ -95,7 +95,7 @@
 
 			<hr class="col-span-3 opacity-25" />
 
-			{#each Object.entries(castPreviewProps(subCmpSchema)) as [propKey, propDefinition]}
+			{#each castProps(subCmpSchema) as [propKey, propDefinition]}
 				<span class=" font-mono">{propKey}</span>
 				<span class=" font-mono">{propDefinition.type}</span>
 				<div class="">
@@ -137,41 +137,46 @@
 				<p class="col-span-3 text-sm">No props</p>
 			{/each}
 
-			<hr class="col-span-3 h-4 opacity-0" />
-
 			<!-- Events -->
-			<span class=" text-sm text-zinc-300">Event</span>
-			<span class=" text-sm text-zinc-300">Payload</span>
-			<span class=" text-sm text-zinc-300" />
+			{#if castEvents(subCmpSchema).length}
+				<hr class="col-span-3 h-4 opacity-0" />
 
-			<hr class="col-span-3 opacity-25" />
+				<span class=" text-sm text-zinc-300">Event</span>
+				<span class=" text-sm text-zinc-300">Payload</span>
+				<span class=" text-sm text-zinc-300" />
 
-			{#each Object.entries(castPreviewEvents(subCmpSchema)) as [eventKey, eventDef]}
-				<span class=" font-mono">{eventKey}</span>
-				<span class=" font-mono">
-					{Array.isArray(eventDef.payload)
-						? eventDef.payload.join(' | ')
-						: JSON.stringify(eventDef.payload)}
-				</span>
-				<div class="" />
-			{/each}
+				<hr class="col-span-3 opacity-25" />
 
-			<hr class="col-span-3 h-4 opacity-0" />
+				{#each castEvents(subCmpSchema) as [eventKey, eventDef]}
+					<span class=" font-mono">{eventKey}</span>
+					<span class=" font-mono">
+						{Array.isArray(eventDef.payload)
+							? eventDef.payload.join(' | ')
+							: JSON.stringify(eventDef.payload)}
+					</span>
+					<div class="" />
+				{/each}
+			{/if}
 
-			<span class=" text-sm text-zinc-300">Data Attribute</span>
-			<span class=" text-sm text-zinc-300">Value</span>
-			<span class=" text-sm text-zinc-300">Inspect</span>
+			<!-- Data Attributes -->
+			{#if castDataAttrs(subCmpSchema).length}
+				<hr class="col-span-3 h-4 opacity-0" />
 
-			<hr class="col-span-3 opacity-25" />
+				<span class=" text-sm text-zinc-300">Data Attribute</span>
+				<span class=" text-sm text-zinc-300">Value</span>
+				<span class=" text-sm text-zinc-300">Inspect</span>
 
-			{#each Object.entries(castPreviewDataAttributes(subCmpSchema)) as [attrKey, attrDef]}
-				<span class=" font-mono">[{attrKey}]</span>
-				<span class=" font-mono">{attrDef.values.join(', ')}</span>
-				<!-- How might we dynamically read the data attributes from the example? -->
-				<div class="" />
-			{:else}
-				<p class="col-span-3 text-sm">No Data Attributes</p>
-			{/each}
+				<hr class="col-span-3 opacity-25" />
+
+				{#each castDataAttrs(subCmpSchema) as [attrKey, attrDef]}
+					<span class="font-mono">[{attrKey}]</span>
+					<span class="font-mono">
+						{Array.isArray(attrDef.values) ? attrDef.values.join(' | ') : attrDef.values}
+					</span>
+					<!-- How might we dynamically read the data attributes from the example? -->
+					<div class="" />
+				{/each}
+			{/if}
 		</div>
 	{/each}
 	<div />
