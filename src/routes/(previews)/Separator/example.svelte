@@ -1,5 +1,10 @@
 <script lang="ts">
 	import { Separator } from '$lib';
+	import type { ResolvedProps } from '$lib/internal/helpers';
+
+	// We define and use propsObj here to avoid a type bug. TODO: Fix this.
+	export let propsObj: ResolvedProps<typeof Separator>;
+	propsObj;
 </script>
 
 <div class="mx-4 w-full max-w-xs">
