@@ -7,6 +7,11 @@ dependencies:
   '@floating-ui/dom':
     specifier: ^1.2.6
     version: 1.2.6
+
+devDependencies:
+  '@axe-core/playwright':
+    specifier: ^4.6.1
+    version: 4.6.1(playwright@1.32.2)
   '@fontsource/overpass':
     specifier: ^4.5.11
     version: 4.5.11
@@ -22,11 +27,6 @@ dependencies:
   '@iconify-json/simple-icons':
     specifier: ^1.1.50
     version: 1.1.50
-
-devDependencies:
-  '@axe-core/playwright':
-    specifier: ^4.6.1
-    version: 4.6.1(playwright@1.32.2)
   '@playwright/experimental-ct-svelte':
     specifier: ^1.32.1
     version: 1.32.2(svelte@3.58.0)
@@ -447,15 +447,15 @@ packages:
 
   /@fontsource/overpass-mono@4.5.11:
     resolution: {integrity: sha512-JggIvXo6+Ia6Zs84JkJbpkdp7eJxAQKHywVfGgETdXtW7HPPokFAjzKL3Km8dpAx/WtjJYe84hY3hT+3psgt5A==}
-    dev: false
+    dev: true
 
   /@fontsource/overpass@4.5.11:
     resolution: {integrity: sha512-x6A3fpFQdaqZ7O6LKyoeKzfzxjZhnJw1I7Yf4D8xKO8GM4N+0P8Ch6jIVD/DAgDmlc3/us5ZZEuaxwHJGiAkMA==}
-    dev: false
+    dev: true
 
   /@fontsource/source-code-pro@4.5.14:
     resolution: {integrity: sha512-EWE0djE7wFCBmExWa9oT1vIp+qj5MUroVvXWb9G7Ig4t4aXDd9QDidYZzMzNemb8gQxTdOzGmhx6EZnDTFMh5Q==}
-    dev: false
+    dev: true
 
   /@humanwhocodes/config-array@0.11.8:
     resolution: {integrity: sha512-UybHIJzJnR5Qc/MsD9Kr+RpO2h+/P1GhOwdiLPXK5TWk5sgTdu88bTD9UP+CKbPPh5Rni1u0GjAdYQLemG8g+g==}
@@ -481,16 +481,17 @@ packages:
     resolution: {integrity: sha512-w6cPF3amtYHoqjNASOoMbcTSCp7nSShWJ28TrGYwEky8Ki/gDg6aozxKT5Jw8MNNAgu6hMiP169awPXoSQF66w==}
     dependencies:
       '@iconify/types': 2.0.0
-    dev: false
+    dev: true
 
   /@iconify-json/simple-icons@1.1.50:
     resolution: {integrity: sha512-UFLZau2s5KGyq5GMcnjaT/OE9r5atGP7Jq8icZvgqKiH24JWvGXqX+YY92g81krXIEH0F4buq0ltxG/s2z1jbg==}
     dependencies:
       '@iconify/types': 2.0.0
-    dev: false
+    dev: true
 
   /@iconify/types@2.0.0:
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
+    dev: true
 
   /@iconify/utils@2.1.5:
     resolution: {integrity: sha512-6MvDI+I6QMvXn5rK9KQGdpEE4mmLTcuQdLZEiX5N+uZB+vc4Yw9K1OtnOgkl8mp4d9X0UrILREyZgF1NUwUt+Q==}

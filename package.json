@@ -55,12 +55,7 @@
 	},
 	"dependencies": {
 		"@floating-ui/core": "^1.2.6",
-		"@floating-ui/dom": "^1.2.6",
-		"@fontsource/overpass": "^4.5.11",
-		"@fontsource/overpass-mono": "^4.5.11",
-		"@fontsource/source-code-pro": "^4.5.14",
-		"@iconify-json/lucide": "^1.1.82",
-		"@iconify-json/simple-icons": "^1.1.50"
+		"@floating-ui/dom": "^1.2.6"
 	},
 	"devDependencies": {
 		"@axe-core/playwright": "^4.6.1",
@@ -101,7 +96,12 @@
 		"typescript": "^5.0.0",
 		"unplugin-icons": "^0.16.1",
 		"vite": "^4.2.0",
-		"vitest": "^0.25.3"
+		"vitest": "^0.25.3",
+		"@fontsource/overpass": "^4.5.11",
+		"@fontsource/overpass-mono": "^4.5.11",
+		"@fontsource/source-code-pro": "^4.5.14",
+		"@iconify-json/lucide": "^1.1.82",
+		"@iconify-json/simple-icons": "^1.1.50"
 	},
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
