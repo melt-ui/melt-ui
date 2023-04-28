@@ -15,12 +15,14 @@
 		value?: string[];
 	};
 
-	export type AccordionRootProps = BaseProps<'div'> &
-		(SingleAccordionRootProps | MultipleAccordionRootProps);
+	export type AccordionRootProps = BaseProps<'div'> & {
+		disabled?: boolean;
+	} & (SingleAccordionRootProps | MultipleAccordionRootProps);
 
 	export type AccordionContext = {
 		readonly type: Type;
 		value: AccordionRootProps['value'];
+		readonly disabled: boolean;
 	};
 
 	const { getContext, setContext } = reactiveContext<AccordionContext>();
@@ -38,12 +40,14 @@
 
 	export let type: $$Props['type'] = 'single';
 	export let value: $$Props['value'] = null;
+	export let disabled: $$Props['disabled'] = false;
 
 	const contextStore = setContext({
 		type: [type ?? 'single'],
 		value: [value, (v) => (value = v)],
+		disabled: [disabled ?? false],
 	});
-	$: contextStore.set({ type: type ?? 'single', value });
+	$: contextStore.set({ type: type ?? 'single', value, disabled: disabled ?? false });
 
 	triggerCollectionContext.createContext();
 </script>

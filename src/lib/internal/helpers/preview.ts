@@ -75,7 +75,7 @@ type PreviewComponentEvents<CMP extends SvelteComponent> = {
 /* ------------------------*/
 /* Preview Data Attributes */
 /* ------------------------*/
-export type PreviewDataAttribute = { values: string[] };
+export type PreviewDataAttribute = { values: string[] | string };
 type PreviewComponentDataAttributes = {
 	[key: `data-${string}`]: PreviewDataAttribute;
 };
