@@ -30,26 +30,34 @@
 	<div class="grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-3">
 		<div class="col-span-full flex flex-col gap-4 py-24">
 			<h1 class="text-4xl font-bold text-white lg:text-5xl">Don’t reinvent the wheel.</h1>
-			<p class="text-lg text-white opacity-75 lg:text-xl">
-				Unstyled, accessible components for building high‑quality design systems and web apps, now
-				in Svelte.
+			<p class="text-lg text-white lg:text-xl">
+				<span class="opacity-75"
+					>Radix Svelte is an unofficial community-led Svelte port of
+				</span><a
+					href="https://radix-ui.com/"
+					class="max-w-prose underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-vermilion-500 hocus:opacity-100"
+					>Radix UI Primitives</a
+				><span class="opacity-75"
+					>, a set of unstyled, accessible components for building high‑quality design systems and
+					web apps.</span
+				>
 			</p>
-			<div class="flex flex-row gap-4">
+			<div class="flex flex-col gap-4 sm:flex-row">
 				<a
 					href="/docs/accordion"
-					class="text-md rounded bg-vermilion-600 p-4 font-sans font-semibold text-white transition hover:bg-vermilion-800 active:translate-y-0.5"
+					class="text-md flex justify-between gap-4 rounded bg-vermilion-600 p-4 font-sans font-semibold text-white transition active:translate-y-0.5 active:bg-vermilion-800 sm:shrink"
 				>
 					Read the docs
-					<ArrowRight class="inline-block w-5 h-5 ml-2 text-white" />
+					<ArrowRight class="inline-block h-5 w-5 text-white" />
 				</a>
 				<button
 					on:click={copyInstallCommand}
-					class="group text-md rounded bg-zinc-900 p-4 font-mono text-white transition hover:bg-zinc-800 active:translate-y-0.5"
+					class="text-md group flex justify-between gap-4 rounded bg-zinc-900 p-4 font-mono text-white transition active:translate-y-0.5 active:bg-zinc-800 sm:shrink"
 					><span>npm install radix-svelte</span>
 					{#if copied}
-						<Check class="inline-block w-5 h-5 ml-2 text-vermilion-500" />
+						<Check class="inline-block h-5 w-5 text-vermilion-500" />
 					{:else}
-						<Copy class="inline-block w-5 h-5 ml-2 group-hover:text-vermilion-500" />
+						<Copy class="inline-block h-5 w-5 group-hover:text-vermilion-500" />
 					{/if}
 				</button>
 			</div>
@@ -57,12 +65,12 @@
 		{#each sortedSchemas as [identifier, schema], idx}
 			{@const propsObj = getPropsObjForSchema(schema)}
 			<div
-				class="flex min-h-[256px] w-full flex-col gap-2 overflow-hidden transition lg:h-[512px] lg:max-w-[512px]"
+				class="group flex min-h-[256px] w-full flex-col gap-2 overflow-hidden transition lg:h-[512px] lg:max-w-[512px]"
 			>
 				<a href={`/docs/${identifier}`} class="flex items-baseline justify-between">
 					<h2 class="text-xl font-normal capitalize text-white">{schema.title}</h2>
 					<span
-						class="text-md text-white underline-offset-2 opacity-75 hover:underline hover:opacity-100 focus:underline active:opacity-75"
+						class="text-md text-white underline decoration-white/50 underline-offset-4 opacity-75 active:opacity-75 group-focus-within:decoration-vermilion-500 group-focus-within:opacity-100 hocus:decoration-vermilion-500 hocus:opacity-100"
 						>View docs</span
 					></a
 				>

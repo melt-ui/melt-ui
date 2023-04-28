@@ -10,10 +10,10 @@
 	import '@fontsource/overpass-mono/400.css';
 	import '@fontsource/overpass-mono/600.css';
 	import '@fontsource/overpass-mono/700.css';
-  
+
 	import { dev } from '$app/environment';
 	import { onMount } from 'svelte';
-  
+
 	import GitHub from '~icons/simple-icons/github';
 	import Discord from '~icons/simple-icons/discord';
 
@@ -28,7 +28,7 @@
 	<nav class="flex items-end justify-between px-6 py-4">
 		<a class="flex items-end gap-2 font-sans text-xl" href="/">
 			<img
-				class="h-8 w-8 rounded-sm object-contain fill-vermilion-500"
+				class="h-8 w-8 rounded-sm fill-vermilion-500 object-contain"
 				src="/radix-svelte.svg"
 				alt="Radix and Svelte logos"
 			/>
@@ -39,26 +39,26 @@
 			<a
 				href="https://github.com/TGlide/radix-svelte"
 				target="_blank"
-				class="underline-offset-2 opacity-75 hover:underline hover:opacity-100 focus:underline active:translate-y-px"
+				class="underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-vermilion-500 hocus:opacity-100"
 			>
 				<span class="hidden lg:block">GitHub</span>
 				<GitHub
-					class="lg:hidden h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px"
+					class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px lg:hidden"
 				/>
 			</a>
 			<a
 				href="https://discord.com/invite/gQrpPs34xH"
 				target="_blank"
-				class="underline-offset-2 opacity-75 hover:underline hover:opacity-100 focus:underline active:translate-y-px"
+				class="underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-vermilion-500 hocus:opacity-100"
 			>
 				<span class="hidden lg:block">Discord</span>
 				<Discord
-					class="lg:hidden h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px"
+					class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px lg:hidden"
 				/>
 			</a>
 			<a
 				href="/docs/accordion"
-				class="underline-offset-2 opacity-75 hover:underline hover:opacity-100 focus:underline active:translate-y-px"
+				class="underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-vermilion-500 hocus:opacity-100"
 				>Documentation</a
 			>
 		</div>
@@ -74,7 +74,7 @@
 				<span class="flex gap-1 opacity-50">Inspired by</span>
 				<a
 					href="https://radix-ui.com/"
-					class="underline-offset-2 opacity-75 hover:underline hover:opacity-100 focus:underline active:translate-y-px"
+					class="underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-vermilion-500 hocus:opacity-100"
 					>Radix UI</a
 				>
 			</div>

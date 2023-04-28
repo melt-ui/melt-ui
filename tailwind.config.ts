@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+import plugin from 'tailwindcss/plugin';
 
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
@@ -67,5 +68,9 @@ export default {
 		},
 	},
 
-	plugins: [],
+	plugins: [
+		plugin(function ({ addVariant }) {
+			addVariant('hocus', ['&:hover', '&:focus']);
+		}),
+	],
 } satisfies Config;
