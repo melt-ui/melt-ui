@@ -35,6 +35,7 @@
 					>Radix Svelte is an unofficial community-led Svelte port of
 				</span><a
 					href="https://radix-ui.com/"
+					target="_blank"
 					class="max-w-prose underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-vermilion-500 hocus:opacity-100"
 					>Radix UI Primitives</a
 				><span class="opacity-75"
@@ -52,7 +53,7 @@
 				</a>
 				<button
 					on:click={copyInstallCommand}
-					class="text-md group flex justify-between gap-4 rounded bg-zinc-900 p-4 font-mono text-white transition active:translate-y-0.5 active:bg-zinc-800 sm:shrink"
+					class="text-md group flex justify-between gap-4 rounded bg-zinc-800 p-4 font-mono text-white transition active:translate-y-0.5 active:bg-zinc-900 sm:shrink"
 					><span>npm install radix-svelte</span>
 					{#if copied}
 						<Check class="inline-block h-5 w-5 text-vermilion-500" />

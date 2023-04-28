@@ -26,7 +26,7 @@
 
 <main class="flex min-h-screen flex-col">
 	<nav class="flex items-end justify-between px-6 py-4">
-		<a class="flex items-end gap-2 font-sans text-xl" href="/">
+		<a class="flex items-end gap-1 font-sans text-xl" href="/">
 			<img
 				class="h-8 w-8 rounded-sm fill-vermilion-500 object-contain"
 				src="/radix-svelte.svg"
@@ -74,6 +74,7 @@
 				<span class="flex gap-1 opacity-50">Inspired by</span>
 				<a
 					href="https://radix-ui.com/"
+					target="_blank"
 					class="underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-vermilion-500 hocus:opacity-100"
 					>Radix UI</a
 				>
