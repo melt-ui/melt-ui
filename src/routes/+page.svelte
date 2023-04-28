@@ -17,10 +17,12 @@
 	});
 
 	let copied = false;
+	let copytimeout: ReturnType<typeof setTimeout>;
 	function copyInstallCommand() {
 		navigator.clipboard.writeText(`npm install radix-svelte`);
 		copied = true;
-		setTimeout(() => {
+		clearTimeout(copytimeout);
+		copytimeout = setTimeout(() => {
 			copied = false;
 		}, 2500);
 	}
@@ -46,19 +48,19 @@
 			<div class="flex flex-col gap-4 sm:flex-row">
 				<a
 					href="/docs/accordion"
-					class="text-md flex justify-between gap-4 rounded bg-vermilion-600 p-4 font-sans font-semibold text-white transition active:translate-y-0.5 active:bg-vermilion-800 sm:shrink"
+					class="text-md flex justify-between gap-4 rounded bg-vermilion-600 p-4 font-sans font-semibold text-white transition hover:bg-vermilion-400 active:translate-y-0.5 active:bg-vermilion-800 sm:shrink"
 				>
 					Read the docs
 					<ArrowRight class="inline-block h-5 w-5 text-white" />
 				</a>
 				<button
 					on:click={copyInstallCommand}
-					class="text-md group flex justify-between gap-4 rounded bg-zinc-800 p-4 font-mono text-white transition active:translate-y-0.5 active:bg-zinc-900 sm:shrink"
+					class="text-md group flex justify-between gap-4 rounded bg-zinc-800 p-4 font-mono text-white transition hover:bg-zinc-700 active:translate-y-0.5 active:bg-zinc-900 sm:shrink"
 					><span>npm install radix-svelte</span>
 					{#if copied}
-						<Check class="inline-block h-5 w-5 text-vermilion-500" />
+						<Check class="inline-block h-5 w-5 text-vermilion-500 transition" />
 					{:else}
-						<Copy class="inline-block h-5 w-5 group-hover:text-vermilion-500" />
+						<Copy class="inline-block h-5 w-5 transition" />
 					{/if}
 				</button>
 			</div>
@@ -66,9 +68,9 @@
 		{#each sortedSchemas as [identifier, schema], idx}
 			{@const propsObj = getPropsObjForSchema(schema)}
 			<div
-				class="group flex min-h-[256px] w-full flex-col gap-2 overflow-hidden transition lg:h-[512px] lg:max-w-[512px]"
+				class="flex min-h-[256px] w-full flex-col gap-2 overflow-hidden transition lg:h-[512px] lg:max-w-[512px]"
 			>
-				<a href={`/docs/${identifier}`} class="flex items-baseline justify-between">
+				<a href={`/docs/${identifier}`} class="group flex items-baseline justify-between">
 					<h2 class="text-xl font-normal capitalize text-white">{schema.title}</h2>
 					<span
 						class="text-md text-white underline decoration-white/50 underline-offset-4 opacity-75 active:opacity-75 group-focus-within:decoration-vermilion-500 group-focus-within:opacity-100 hocus:decoration-vermilion-500 hocus:opacity-100"
