@@ -30,13 +30,13 @@
 	<div class="grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-3">
 		<div class="col-span-full flex flex-col gap-4 py-24">
 			<h1 class="text-4xl font-bold text-white lg:text-5xl">Don’t reinvent the wheel.</h1>
-			<p class="text-lg text-white lg:text-xl">
+			<p class="max-w-prose text-lg text-white lg:text-xl">
 				<span class="opacity-75"
 					>Radix Svelte is an unofficial community-led Svelte port of
 				</span><a
 					href="https://radix-ui.com/"
 					target="_blank"
-					class="max-w-prose underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-vermilion-500 hocus:opacity-100"
+					class="underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-vermilion-500 hocus:opacity-100"
 					>Radix UI Primitives</a
 				><span class="opacity-75"
 					>, a set of unstyled, accessible components for building high‑quality design systems and
