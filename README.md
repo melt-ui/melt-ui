@@ -5,14 +5,14 @@
  </h1>
 </p>
 
-Unofficial community-led Svelte port of [Radix UI Primitives](https://www.radix-ui.com/), a set of unstyled, accessible components for building high‑quality design systems and web apps.
+[Radix Svelte](https://www.radix-svelte.com/) is an unofficial community-led Svelte port of [Radix UI Primitives](https://www.radix-ui.com/), a set of unstyled, accessible components for building high‑quality design systems and web apps.
 
 [![](https://img.shields.io/npm/v/radix-svelte?style=flat-square)](https://www.npmjs.com/package/radix-svelte)
 [![](https://img.shields.io/github/actions/workflow/status/TGlide/radix-svelte/ci.yaml?style=flat-square)](https://github.com/TGlide/radix-svelte/actions/workflows/ci.yaml)
 ![](https://img.shields.io/github/license/TGlide/radix-svelte?style=flat-square)
 [![](https://dcbadge.vercel.app/api/server/gQrpPs34xH?style=flat-square)](https://discord.gg/gQrpPs34xH)
 
-> **Note** <br> > **We are not affiliated with or endorsed by Radix UI/WorkOS.** This is a volunteer driven project born out of the need for a similar component library for the Svelte ecosystem.
+> **Note** <br> **We are not affiliated with or endorsed by Radix UI/WorkOS.** <br> This is a volunteer driven project born out of the need for a similar component library for the Svelte ecosystem.
 
 ## About
 
@@ -42,7 +42,6 @@ Import the components to your code and start using them:
 ```html
 <script>
 	import { Toggle } from 'radix-svelte';
-
 	let pressed = false;
 </script>
 
