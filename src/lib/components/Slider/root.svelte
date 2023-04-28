@@ -2,7 +2,7 @@
 	import { clamp } from '$lib/internal/helpers/numbers';
 	import { reactiveContext } from '$lib/internal/helpers/reactiveContext';
 	import { uniqueContext } from '$lib/internal/helpers/uniqueContext';
-	import type { BaseProps } from '$lib/internal/types';
+	import type { BaseProps, UnwrapCustomEvents, WrapWithCustomEvent } from '$lib/internal/types';
 	import { createEventDispatcher } from 'svelte';
 	import { writable, type Writable } from 'svelte/store';
 
@@ -77,10 +77,11 @@
 	export let orientation: NonNullable<$$Props['orientation']> = 'horizontal';
 	export let name: $$Props['name'] = undefined;
 
-	const dispatch = createEventDispatcher<{
+	type $$Events = WrapWithCustomEvent<{
 		valueCommit: number[];
 		valueChange: number[];
-	}>();
+	}>;
+	const dispatch = createEventDispatcher<UnwrapCustomEvents<$$Events>>();
 
 	// Create root context with initial values
 	const contextStore = setContext({
