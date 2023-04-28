@@ -5,7 +5,7 @@
  </h1>
 </p>
 
-[Radix Svelte](https://www.radix-svelte.com/) is an unofficial community-led Svelte port of [Radix UI Primitives](https://www.radix-ui.com/), a set of unstyled, accessible components for building high‑quality design systems and web apps.
+[Radix Svelte](https://www.radix-svelte.com/) is an unofficial community-led [Svelte](https://svelte.dev) port of [Radix UI Primitives](https://www.radix-ui.com/), a set of unstyled, accessible components for building high‑quality design systems and web apps.
 
 [![](https://img.shields.io/npm/v/radix-svelte?style=flat-square)](https://www.npmjs.com/package/radix-svelte)
 [![](https://img.shields.io/github/actions/workflow/status/TGlide/radix-svelte/ci.yaml?style=flat-square)](https://github.com/TGlide/radix-svelte/actions/workflows/ci.yaml)
@@ -19,8 +19,8 @@
 Radix Svelte is meant to be used as a base for your own styles and components. It offers:
 
 - Treeshakable components with individual parts that can be styled separately
-- Typescript and SvelteKit support out-of-the-box
-- Strict adherence to WAI-ARIA guidelines
+- Typescript and [SvelteKit](https://kit.svelte.dev/) support out-of-the-box
+- Strict adherence to [WAI-ARIA guidelines](https://www.w3.org/WAI/ARIA/apg/)
 - Easy to use examples and documentation
 - A high emphasis on accessibility, extensibility, quality and consistency
 
@@ -70,3 +70,19 @@ Our [Discord community](https://discord.gg/gQrpPs34xH) is a great place to get i
   <img alt="Radix Svelte Discord community" src="https://invidget.switchblade.xyz/gQrpPs34xH?theme=light">
 </picture>
 </a>
+
+## Similar projects
+
+Looking for more? Check out these other projects too:
+
+- [Svelte Material UI](https://sveltematerialui.com/)
+- [Svelte Headless UI](https://svelte-headlessui.goss.io/docs)
+- [Skeleton UI](https://skeleton.dev/)
+- [SvelteStrap](https://github.com/bestguy/sveltestrap)
+- [Flowbite Svelte](https://flowbite-svelte.com/)
+- [Carbon Components Svelte](https://github.com/carbon-design-system/carbon-components-svelte/)
+- [Noir UI](https://github.com/khairulhaaziq/noir-ui)
+- [Grail UI](https://grail-ui.vercel.app/)
+
+This list is not exhaustive or sorted in any particular order. If you know of any other similar projects for Svelte, feel free to open a PR to add them here.
+These projects are not affiliated with Radix Svelte in any way.
