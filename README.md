@@ -12,7 +12,7 @@ Unofficial community-led Svelte port of [Radix UI Primitives](https://www.radix-
 ![](https://img.shields.io/github/license/TGlide/radix-svelte?style=flat-square)
 [![](https://dcbadge.vercel.app/api/server/gQrpPs34xH?style=flat-square)](https://discord.gg/gQrpPs34xH)
 
-> **Note** <br> 
+> **Note** <br>
 > **We are not affiliated with or endorsed by Radix UI/WorkOS.** This is a volunteer driven project born out of the need for a similar component library for the Svelte ecosystem.
 
 ## About
@@ -42,21 +42,19 @@ Import the components to your code and start using them:
 
 ```html
 <script>
-    import { Toggle } from 'radix-svelte';
+	import { Toggle } from 'radix-svelte';
 
-    let pressed = false;
+	let pressed = false;
 </script>
 
-<Toggle.Root bind:pressed>
-    {pressed ? 'Pressed' : 'Not pressed'}
-</Toggle.Root>
+<Toggle.Root bind:pressed> {pressed ? 'Pressed' : 'Not pressed'} </Toggle.Root>
 ```
 
 ## Contributing
 
 **Contributions are welcome and encouraged!**
 
-Radix Svelte is under active development, and currently planned features and bugs are in the [issues tab](https://github.com/TGlide/radix-svelte/issues). 
+Radix Svelte is under active development, and currently planned features and bugs are in the [issues tab](https://github.com/TGlide/radix-svelte/issues).
 
 We work on this project on a volunteer basis in our free time. If you notice something that hasn't been implemented yet or could be improved, do consider contributing to the project. The goal is to enhance the experience of building with Svelte and improve the ecosystem for everyone.
 
@@ -64,9 +62,9 @@ Check out our [Contributing guide](./CONTRIBUTING.md) to learn more.
 
 ## Community
 
-Got any questions? Want to talk to the maintainers? 
+Got any questions? Want to talk to the maintainers?
 
-Our [Discord community](https://discord.gg/gQrpPs34xH) is a great place to get in touch with us, and we'd love to have you there. 
+Our [Discord community](https://discord.gg/gQrpPs34xH) is a great place to get in touch with us, and we'd love to have you there.
 
 <a href="https://discord.gg/gQrpPs34xH" alt="Radix Svelte Discord community">
 <picture>
