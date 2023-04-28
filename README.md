@@ -12,8 +12,8 @@ Unofficial community-led Svelte port of Radix UI Primitives, a set of unstyled, 
 ![](https://img.shields.io/github/license/TGlide/radix-svelte?style=flat-square)
 [![](https://dcbadge.vercel.app/api/server/gQrpPs34xH?style=flat-square)](https://discord.gg/gQrpPs34xH)
 
-> **Note**
-> We are not affiliated with or endorsed by Radix UI/WorkOS. This is a volunteer driven project born out of the need for a similar component library for the Svelte ecosystem.
+> **Note** <br> 
+> **We are not affiliated with or endorsed by Radix UI/WorkOS.** This is a volunteer driven project born out of the need for a similar component library for the Svelte ecosystem.
 
 ## About
 
