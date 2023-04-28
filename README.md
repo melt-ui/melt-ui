@@ -5,7 +5,7 @@
  </h1>
 </p>
 
-Unofficial community-led Svelte port of Radix UI Primitives, a set of unstyled, accessible components for building high‑quality design systems and web apps.
+Unofficial community-led Svelte port of [Radix UI Primitives](https://www.radix-ui.com/), a set of unstyled, accessible components for building high‑quality design systems and web apps.
 
 [![](https://img.shields.io/npm/v/radix-svelte?style=flat-square)](https://www.npmjs.com/package/radix-svelte)
 [![](https://img.shields.io/github/actions/workflow/status/TGlide/radix-svelte/ci.yaml?style=flat-square)](https://github.com/TGlide/radix-svelte/actions/workflows/ci.yaml)
@@ -25,7 +25,7 @@ Radix Svelte is meant to be used as a base for your own styles and components. I
 - Easy to use examples and documentation
 - A high emphasis on accessibility, extensibility, quality and consistency
 
-While Radix Svelte is not a 1:1 reimplementation of Radix UI Primitives, we follow the same principles, patterns, and goals outlined by them on their site. Any changes that may be introduced as a part of porting it to Svelte will be documented and mentioned accordingly.
+While Radix Svelte is not a 1:1 reimplementation of [Radix UI Primitives](https://www.radix-ui.com/), we follow the same principles, patterns, and goals outlined by them on their site. Any changes that may be introduced as a part of porting it to Svelte will be documented and mentioned accordingly.
 
 ## Getting started
 
@@ -52,14 +52,25 @@ Import the components to your code and start using them:
 </Toggle.Root>
 ```
 
-## Roadmap
-
-You can check the planned features and bugs in the [issues tab](https://github.com/TGlide/radix-svelte/issues)
-
 ## Contributing
 
-Check out our [contributing guide](./CONTRIBUTING.md)
+**Contributions are welcome and encouraged!**
+
+Radix Svelte is under active development, and currently planned features and bugs are in the [issues tab](https://github.com/TGlide/radix-svelte/issues). 
+
+We work on this project on a volunteer basis in our free time. If you notice something that hasn't been implemented yet or could be improved, do consider contributing to the project. The goal is to enhance the experience of building with Svelte and improve the ecosystem for everyone.
+
+Check out our [Contributing guide](./CONTRIBUTING.md) to learn more.
 
 ## Community
 
-- [Discord](https://discord.gg/gQrpPs34xH)
+Got any questions? Want to talk to the maintainers? 
+
+Our [Discord community](https://discord.gg/gQrpPs34xH) is a great place to get in touch with us, and we'd love to have you there. 
+
+<a href="https://discord.gg/gQrpPs34xH" alt="Radix Svelte Discord community">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://invidget.switchblade.xyz/gQrpPs34xH">
+  <img alt="Radix Svelte Discord community" src="https://invidget.switchblade.xyz/gQrpPs34xH?theme=light">
+</picture>
+</a>
