@@ -1,47 +1,54 @@
 <p align="center">
-  <img align="center" src="https://raw.githubusercontent.com/TGlide/radix-svelte/main/static/logo.svg" height="108" />
-  
+ <img align="center" src="https://raw.githubusercontent.com/TGlide/radix-svelte/main/static/logo.svg" height="96" />
  <h1 align="center">
-   Radix Svelte
-</h1>
+  Radix Svelte
+ </h1>
 </p>
 
-## Description
-
-This is a port of [Radix UI](https://www.radix-ui.com/) for Svelte.
+Unofficial community-led Svelte port of Radix UI Primitives, a set of unstyled, accessible components for building high‑quality design systems and web apps.
 
 [![](https://img.shields.io/npm/v/radix-svelte?style=flat-square)](https://www.npmjs.com/package/radix-svelte)
 [![](https://img.shields.io/github/actions/workflow/status/TGlide/radix-svelte/ci.yaml?style=flat-square)](https://github.com/TGlide/radix-svelte/actions/workflows/ci.yaml)
 ![](https://img.shields.io/github/license/TGlide/radix-svelte?style=flat-square)
 [![](https://dcbadge.vercel.app/api/server/gQrpPs34xH?style=flat-square)](https://discord.gg/gQrpPs34xH)
 
-### Design Principles
+> **Note**
+> We are not affiliated with or endorsed by Radix UI/WorkOS. This is a volunteer driven project born out of the need for a similar component library for the Svelte ecosystem.
 
-This is not a 1:1 re-implementation of Radix UI. The goal is to provide a similar API and experience, but with a few differences:
+## About
 
-- Two-way binding is used instead of event handlers.
-- No `asChild` prop (for now).
+Radix Svelte is meant to be used as a base for your own styles and components. It offers:
 
-## Usage
+- Treeshakable components with individual parts that can be styled separately
+- Typescript and SvelteKit support out-of-the-box
+- Strict adherence to WAI-ARIA guidelines
+- Easy to use examples and documentation
+- A high emphasis on accessibility, extensibility, quality and consistency
 
-Install the package:
+While Radix Svelte is not a 1:1 reimplementation of Radix UI Primitives, we follow the same principles, patterns, and goals outlined by them on their site. Any changes that may be introduced as a part of porting it to Svelte will be documented and mentioned accordingly.
 
-```
+## Getting started
+
+Install the `radix-svelte` package with your package manager of choice:
+
+```sh
 npm install radix-svelte
-# or yarn, pnpm, etc.
+yarn add radix-svelte
+pnpm add radix-svelte
+bun add radix-svelte
 ```
 
-Import the components you need:
+Import the components to your code and start using them:
 
-```svelte
+```html
 <script>
-	import { Toggle } from 'radix-svelte';
+    import { Toggle } from 'radix-svelte';
 
-	let pressed = false;
+    let pressed = false;
 </script>
 
 <Toggle.Root bind:pressed>
-	{pressed ? 'Pressed' : 'Not pressed'}
+    {pressed ? 'Pressed' : 'Not pressed'}
 </Toggle.Root>
 ```
 
