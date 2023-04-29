@@ -77,7 +77,7 @@ Looking for more? Check out these other projects too:
 
 - [Svelte Material UI](https://sveltematerialui.com/)
 - [Svelte Headless UI](https://svelte-headlessui.goss.io/docs)
-- [Skeleton UI](https://skeleton.dev/)
+- [Skeleton](https://skeleton.dev/)
 - [SvelteStrap](https://github.com/bestguy/sveltestrap)
 - [Flowbite Svelte](https://flowbite-svelte.com/)
 - [Carbon Components Svelte](https://github.com/carbon-design-system/carbon-components-svelte/)
