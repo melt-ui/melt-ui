@@ -18,7 +18,7 @@
 
 Radix Svelte is meant to be used as a base for your own styles and components. It offers:
 
-- Treeshakable components with individual parts that can be styled separately
+- Tree-shakeable components with individual parts that can be styled separately
 - Typescript and [SvelteKit](https://kit.svelte.dev/) support out-of-the-box
 - Strict adherence to [WAI-ARIA guidelines](https://www.w3.org/WAI/ARIA/apg/)
 - Easy to use examples and documentation
