@@ -1,3 +1,4 @@
+import { schema as Select } from './Select/schema';
 import { schema as ToggleGroup } from './ToggleGroup/schema';
 import { schema as Accordion } from './Accordion/schema';
 import { schema as AspectRatio } from './AspectRatio/schema';
@@ -29,4 +30,5 @@ export const schemas = {
 	dialog: Dialog,
 	tabs: Tabs,
 	togglegroup: ToggleGroup,
+	select: Select,
 };

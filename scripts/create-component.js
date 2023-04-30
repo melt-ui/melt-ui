@@ -73,9 +73,10 @@ rl.question('Please enter a component name: ', (inputComponentName) => {
 						``,
 						`<script lang="ts">`,
 						`\ttype $$Props = ${pascalCaseName}Props;`,
+						`\texport let use: $$Props['use'] = [];`,
 						`</script>`,
 						``,
-						`<div {...$$restProps} use:useActions={$$restProps.use}>`,
+						`<div {...$$restProps} use:useActions={use ?? []}>`,
 						`\t<slot />`,
 						`</div>`
 					)
@@ -141,7 +142,7 @@ rl.question('Please enter a component name: ', (inputComponentName) => {
 			const mainIndexFileContent = fs.readFileSync(mainIndexFile, 'utf8');
 			const newMainIndexFileContent = toLines(
 				mainIndexFileContent,
-				`export { ${toPascalCase(componentName)} } from './${componentName}';`
+				`export * from './${componentName}';`
 			);
 
 			fs.writeFileSync(mainIndexFile, newMainIndexFileContent);
@@ -158,7 +159,7 @@ rl.question('Please enter a component name: ', (inputComponentName) => {
 				toLines(
 					`<script lang="ts">`,
 					`\timport { ${toPascalCase(componentName)} } from '${importDir}';`,
-					`\timport type { ResolvedProps } from '../helpers';`,
+					`\timport type { ResolvedProps } from '$lib/internal/helpers';`,
 					``,
 					`\texport let propsObj: ResolvedProps<typeof ${toPascalCase(componentName)}>;`,
 					`</script>`,

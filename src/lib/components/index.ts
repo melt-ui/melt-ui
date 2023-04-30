@@ -1,14 +1,14 @@
-export { AspectRatio } from './AspectRatio';
-export { Accordion } from './Accordion';
-export { Checkbox } from './Checkbox';
-export { Collapsible } from './Collapsible';
-export { Separator } from './Separator';
-export { Slider } from './Slider';
-export { Switch } from './Switch';
-export { Toggle } from './Toggle';
-export { Progress } from './Progress';
-export { Dialog } from './Dialog';
-export { Tabs } from './Tabs';
-export { Avatar } from './Avatar';
-
-export { ToggleGroup } from './ToggleGroup';
+export * from './AspectRatio';
+export * from './Accordion';
+export * from './Checkbox';
+export * from './Collapsible';
+export * from './Separator';
+export * from './Slider';
+export * from './Switch';
+export * from './Toggle';
+export * from './Progress';
+export * from './Dialog';
+export * from './Tabs';
+export * from './Avatar';
+export * from './ToggleGroup';
+export * from './Select';

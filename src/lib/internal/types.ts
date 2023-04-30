@@ -23,3 +23,7 @@ export type BaseProps<El extends keyof SvelteHTMLElements = 'div'> = SvelteHTMLE
 	['data-testid']?: string;
 	[key: `data-${string}`]: string | boolean | undefined;
 };
+
+export type Defaults<T> = {
+	[K in keyof T]?: NonNullable<T[K]>;
+};

@@ -31,7 +31,7 @@
 <Toggle.Root
 	{...$$restProps}
 	use={[
-		...($$restProps.use || []),
+		...($$restProps.use ?? []),
 		[
 			useCollection,
 			{
