@@ -87,7 +87,7 @@
 		<div
 			class="mt-4 grid gap-x-4 gap-y-2 overflow-auto whitespace-nowrap rounded-md bg-zinc-900 p-4 text-white"
 		>
-			<h2 class="col-span-3 font-bold">{cmpSchema.title}.{subCmp}</h2>
+			<h2 class="col-span-3 font-bold">{subCmp}</h2>
 
 			<span class=" text-sm text-zinc-300">Prop</span>
 			<span class=" text-sm text-zinc-300">Type</span>

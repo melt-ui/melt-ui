@@ -5,7 +5,7 @@ import type { Select } from '$lib';
 import code from './example.svelte?raw';
 
 export const schema = {
-	title: 'Select',
+	title: 'Select (WIP)',
 	description: 'TODO: Add description',
 	example,
 	code,
@@ -26,5 +26,5 @@ export const schema = {
 		Label: {},
 		Separator: {},
 		Arrow: {},
-	}
+	},
 } satisfies PreviewSchema<typeof Select>;
