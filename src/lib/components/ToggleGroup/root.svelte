@@ -103,14 +103,13 @@
 
 	const listeners = new Map();
 	itemStore.subscribe((items) => {
-		const enabledItems = items.filter((i) => !i.dataset.disabled);
-
 		items.forEach((item, index) => {
 			const prevCallback = listeners.get(index);
 			if (prevCallback) {
 				item.removeEventListener('keydown', prevCallback);
 			}
 
+			const enabledItems = items.filter((i) => i.dataset.disabled === undefined);
 			const enabledIdx = enabledItems.indexOf(item);
 			const listener = (e: KeyboardEvent) => {
 				if (!rovingFocus) return;

@@ -31,7 +31,7 @@
 		dispatch('change', pressed);
 	}}
 	data-state={pressed ? 'on' : 'off'}
-	data-disabled={disabled || undefined}
+	data-disabled={disabled ? '' : undefined}
 	use:useActions={use ?? []}
 	{...$$restProps}
 >

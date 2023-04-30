@@ -68,7 +68,7 @@ rl.question('Please enter a component name: ', (inputComponentName) => {
 						`<script lang="ts" context="module">`,
 						`\timport { useActions } from '$lib/internal/helpers';`,
 						`\timport type { BaseProps } from '$lib/internal/types';`,
-						`\texport type ${pascalCaseName}Props = BaseProps<'div'>;`,
+						`\n\texport type ${pascalCaseName}Props = BaseProps<'div'>;`,
 						`</script>`,
 						``,
 						`<script lang="ts">`,

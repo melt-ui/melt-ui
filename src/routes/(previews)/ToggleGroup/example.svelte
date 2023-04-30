@@ -19,11 +19,13 @@
 <div class="contents">
 	<ToggleGroup.Root
 		class="flex items-center data-[orientation='vertical']:flex-col"
-		type={castPropsObj.Root.type}
 		bind:value={castPropsObj.Root.value}
+		type={castPropsObj.Root.type}
 		dir={propsObj.Root.dir}
 		orientation={propsObj.Root.orientation}
 		rovingFocus={propsObj.Root.rovingFocus}
+		loop={propsObj.Root.loop}
+		disabled={propsObj.Root.disabled}
 		aria-label="Text alignment"
 	>
 		<ToggleGroup.Item class="toggle-item" value="left" aria-label="Left aligned">
