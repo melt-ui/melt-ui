@@ -11,6 +11,7 @@
 	import { getToggleGroupItemCollection, getToggleGroupRootContext } from './root.svelte';
 
 	type $$Props = ToggleGroupItemProps;
+	export let use: $$Props['use'] = [];
 	export let value: $$Props['value'];
 	export let disabled: $$Props['disabled'] = false;
 
@@ -31,7 +32,7 @@
 <Toggle.Root
 	{...$$restProps}
 	use={[
-		...($$restProps.use ?? []),
+		...(use ?? []),
 		[
 			useCollection,
 			{

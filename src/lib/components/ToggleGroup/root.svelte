@@ -103,22 +103,22 @@
 
 	const listeners = new Map();
 	itemStore.subscribe((items) => {
-		const enabledItems = items.filter((i) => !i.dataset.disabled);
-
 		items.forEach((item, index) => {
 			const prevCallback = listeners.get(index);
 			if (prevCallback) {
 				item.removeEventListener('keydown', prevCallback);
 			}
 
+			const enabledItems = items.filter((i) => i.dataset.disabled === undefined);
 			const enabledIdx = enabledItems.indexOf(item);
 			const listener = (e: KeyboardEvent) => {
+				if (!rovingFocus) return;
 				if (e.key === nextKey) {
 					e.preventDefault();
-					next(enabledItems, enabledIdx, rovingFocus)?.focus();
+					next(enabledItems, enabledIdx, loop)?.focus();
 				} else if (e.key === prevKey) {
 					e.preventDefault();
-					prev(enabledItems, enabledIdx, rovingFocus)?.focus();
+					prev(enabledItems, enabledIdx, loop)?.focus();
 				}
 			};
 

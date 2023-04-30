@@ -12,3 +12,5 @@ export * from './Tabs';
 export * from './Avatar';
 export * from './ToggleGroup';
 export * from './Select';
+
+export * from './RadioGroup';
