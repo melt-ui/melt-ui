@@ -48,7 +48,7 @@
 			<div class="flex flex-col gap-4 sm:flex-row">
 				<a
 					href="/docs/accordion"
-					class="text-md flex justify-between gap-4 rounded bg-vermilion-600 p-4 font-sans font-semibold text-white transition hover:bg-vermilion-400 active:translate-y-0.5 active:bg-vermilion-800 sm:shrink"
+					class="text-md flex justify-between gap-4 rounded bg-vermilion-600 p-4 font-sans font-semibold text-white transition hover:bg-vermilion-500 active:translate-y-0.5 active:bg-vermilion-800 sm:shrink"
 				>
 					Read the docs
 					<ArrowRight class="inline-block h-5 w-5 text-white" />
@@ -68,7 +68,7 @@
 		{#each sortedSchemas as [identifier, schema], idx}
 			{@const propsObj = getPropsObjForSchema(schema)}
 			<div
-				class="flex min-h-[256px] w-full flex-col gap-2 overflow-hidden transition lg:h-[512px] lg:max-w-[512px]"
+				class="flex min-h-[256px] w-full flex-col gap-2 overflow-hidden transition lg:h-[400px] lg:w-[400px]"
 			>
 				<a href={`/docs/${identifier}`} class="group flex items-baseline justify-between">
 					<h2 class="text-xl font-normal capitalize text-white">{schema.title}</h2>

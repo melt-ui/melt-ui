@@ -23,10 +23,7 @@
 			<Tabs.Trigger class="trigger" value="tab2">Password</Tabs.Trigger>
 			<Tabs.Trigger class="trigger" value="tab3">Settings</Tabs.Trigger>
 		</Tabs.List>
-		<Tabs.Content
-			class="w-[350px] grow bg-white p-5 outline-none focus:ring-2 focus:ring-black"
-			value="tab1"
-		>
+		<Tabs.Content class="grow bg-white p-5 outline-none focus:ring-2 focus:ring-black" value="tab1">
 			<p class="mb-5 leading-normal text-vermilion-950">
 				Make changes to your account here. Click save when you're done.
 			</p>
@@ -41,17 +38,7 @@
 					value="Thomas G. Lopes"
 				/>
 			</fieldset>
-			<fieldset class="mb-[15px] flex w-full flex-col justify-start">
-				<label class="mb-2.5 block text-sm leading-none text-vermilion-950" for="username">
-					Username
-				</label>
-				<input
-					class="h-8 shrink-0 grow rounded border px-2.5
-				leading-none text-vermilion-900 outline-none focus:ring-2 focus:ring-vermilion-800"
-					id="username"
-					value="@thomasglopes"
-				/>
-			</fieldset>
+
 			<div class="mt-5 flex justify-end">
 				<button
 					class="inline-flex h-8 cursor-default items-center justify-center rounded
@@ -61,24 +48,10 @@
 				</button>
 			</div>
 		</Tabs.Content>
-		<Tabs.Content
-			class="w-[350px] grow bg-white p-5 outline-none focus:ring-2 focus:ring-black"
-			value="tab2"
-		>
+		<Tabs.Content class="grow bg-white p-5 outline-none focus:ring-2 focus:ring-black" value="tab2">
 			<p class="mb-5 leading-normal text-vermilion-950">
 				Change your password here. Click save when you're done.
 			</p>
-			<fieldset class="mb-4 flex w-full flex-col justify-start">
-				<label class="mb-2.5 block text-sm leading-none text-vermilion-950" for="current">
-					Current password
-				</label>
-				<input
-					class="h-8 shrink-0 grow rounded border px-2.5
-					leading-none text-vermilion-900 outline-none focus:ring-2 focus:ring-vermilion-800"
-					id="current"
-					type="password"
-				/>
-			</fieldset>
 			<fieldset class="mb-[15px] flex w-full flex-col justify-start">
 				<label class="mb-2.5 block text-sm leading-none text-vermilion-950" for="new">
 					New password
@@ -99,27 +72,14 @@
 				</button>
 			</div>
 		</Tabs.Content>
-		<Tabs.Content
-			class="w-[350px] grow bg-white p-5 outline-none focus:ring-2 focus:ring-black"
-			value="tab3"
-		>
+		<Tabs.Content class="grow bg-white p-5 outline-none focus:ring-2 focus:ring-black" value="tab3">
 			<p class="mb-5 leading-normal text-vermilion-950">
-				Change your password here. Click save when you're done.
+				Change your settings here. Click save when you're done.
 			</p>
-			<fieldset class="mb-4 flex w-full flex-col justify-start">
-				<label class="mb-2.5 block text-sm leading-none text-vermilion-950" for="current">
-					Current password
-				</label>
-				<input
-					class="h-8 shrink-0 grow rounded border px-2.5
-				leading-none text-vermilion-900 outline-none focus:ring-2 focus:ring-vermilion-800"
-					id="current"
-					type="password"
-				/>
-			</fieldset>
+
 			<fieldset class="mb-[15px] flex w-full flex-col justify-start">
 				<label class="mb-2.5 block text-sm leading-none text-vermilion-950" for="new">
-					New password
+					New email
 				</label>
 				<input
 					class="h-8 shrink-0 grow rounded border px-2.5

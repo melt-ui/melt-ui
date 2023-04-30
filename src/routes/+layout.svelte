@@ -25,13 +25,14 @@
 </script>
 
 <main class="flex min-h-screen flex-col">
-	<nav class="flex items-end justify-between px-6 py-4">
+	<nav class="flex items-center justify-between p-4 lg:px-6">
 		<a class="flex items-end gap-1 font-sans text-xl" href="/">
 			<img
 				class="h-8 w-8 rounded-sm fill-vermilion-500 object-contain"
 				src="/radix-svelte.svg"
 				alt="Radix and Svelte logos"
 			/>
+
 			<span class="font-bold">Radix</span> Svelte
 		</a>
 
@@ -59,8 +60,10 @@
 			<a
 				href="/docs/accordion"
 				class="underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-vermilion-500 hocus:opacity-100"
-				>Documentation</a
 			>
+				<span class="hidden lg:block"> Documentation </span>
+				<span class="block lg:hidden"> Docs </span>
+			</a>
 		</div>
 	</nav>
 	<div class="flex grow flex-col">
