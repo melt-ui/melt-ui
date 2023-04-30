@@ -113,12 +113,13 @@
 
 			const enabledIdx = enabledItems.indexOf(item);
 			const listener = (e: KeyboardEvent) => {
+				if (!rovingFocus) return;
 				if (e.key === nextKey) {
 					e.preventDefault();
-					next(enabledItems, enabledIdx, rovingFocus)?.focus();
+					next(enabledItems, enabledIdx, loop)?.focus();
 				} else if (e.key === prevKey) {
 					e.preventDefault();
-					prev(enabledItems, enabledIdx, rovingFocus)?.focus();
+					prev(enabledItems, enabledIdx, loop)?.focus();
 				}
 			};
 
