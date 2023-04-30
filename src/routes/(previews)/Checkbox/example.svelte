@@ -3,7 +3,7 @@
 	import type { ResolvedProps } from '$lib/internal/helpers';
 	// These are internal icons, but they're not exported from the package.
 	// Use your own icons instead.
-	import CheckIcon from '~icons/radix-icons/check';
+	import Check from '~icons/lucide/check';
 
 	export let propsObj: ResolvedProps<typeof Checkbox>;
 </script>
@@ -22,7 +22,7 @@
 			id="c1"
 		>
 			<Checkbox.Indicator class="text-vermilion-700">
-				<CheckIcon />
+				<Check />
 			</Checkbox.Indicator>
 		</Checkbox.Root>
 		<label class="pl-[15px] text-[15px] leading-none text-white" for="c1">

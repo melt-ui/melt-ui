@@ -12,12 +12,21 @@ devDependencies:
   '@axe-core/playwright':
     specifier: ^4.6.1
     version: 4.6.1(playwright@1.32.2)
-  '@fontsource/inter':
-    specifier: ^4.5.15
-    version: 4.5.15
-  '@iconify-json/radix-icons':
-    specifier: ^1.1.10
-    version: 1.1.10
+  '@fontsource/overpass':
+    specifier: ^4.5.11
+    version: 4.5.11
+  '@fontsource/overpass-mono':
+    specifier: ^4.5.11
+    version: 4.5.11
+  '@fontsource/source-code-pro':
+    specifier: ^4.5.14
+    version: 4.5.14
+  '@iconify-json/lucide':
+    specifier: ^1.1.82
+    version: 1.1.82
+  '@iconify-json/simple-icons':
+    specifier: ^1.1.50
+    version: 1.1.50
   '@playwright/experimental-ct-svelte':
     specifier: ^1.32.1
     version: 1.32.2(svelte@3.58.0)
@@ -436,8 +445,16 @@ packages:
       '@floating-ui/core': 1.2.6
     dev: false
 
-  /@fontsource/inter@4.5.15:
-    resolution: {integrity: sha512-FzleM9AxZQK2nqsTDtBiY0PMEVWvnKnuu2i09+p6DHvrHsuucoV2j0tmw+kAT3L4hvsLdAIDv6MdGehsPIdT+Q==}
+  /@fontsource/overpass-mono@4.5.11:
+    resolution: {integrity: sha512-JggIvXo6+Ia6Zs84JkJbpkdp7eJxAQKHywVfGgETdXtW7HPPokFAjzKL3Km8dpAx/WtjJYe84hY3hT+3psgt5A==}
+    dev: true
+
+  /@fontsource/overpass@4.5.11:
+    resolution: {integrity: sha512-x6A3fpFQdaqZ7O6LKyoeKzfzxjZhnJw1I7Yf4D8xKO8GM4N+0P8Ch6jIVD/DAgDmlc3/us5ZZEuaxwHJGiAkMA==}
+    dev: true
+
+  /@fontsource/source-code-pro@4.5.14:
+    resolution: {integrity: sha512-EWE0djE7wFCBmExWa9oT1vIp+qj5MUroVvXWb9G7Ig4t4aXDd9QDidYZzMzNemb8gQxTdOzGmhx6EZnDTFMh5Q==}
     dev: true
 
   /@humanwhocodes/config-array@0.11.8:
@@ -460,8 +477,14 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
 
-  /@iconify-json/radix-icons@1.1.10:
-    resolution: {integrity: sha512-7ivY9XvUe1CWsuR1qy/icK6tfl1+Xq3sh2AqQuGHNx49VCJyXQq+RRr6bqf3u36mPPzV+C8oRlfifNt8iWK2Ew==}
+  /@iconify-json/lucide@1.1.82:
+    resolution: {integrity: sha512-w6cPF3amtYHoqjNASOoMbcTSCp7nSShWJ28TrGYwEky8Ki/gDg6aozxKT5Jw8MNNAgu6hMiP169awPXoSQF66w==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
+
+  /@iconify-json/simple-icons@1.1.50:
+    resolution: {integrity: sha512-UFLZau2s5KGyq5GMcnjaT/OE9r5atGP7Jq8icZvgqKiH24JWvGXqX+YY92g81krXIEH0F4buq0ltxG/s2z1jbg==}
     dependencies:
       '@iconify/types': 2.0.0
     dev: true

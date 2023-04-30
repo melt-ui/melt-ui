@@ -47,13 +47,13 @@
 	}
 </script>
 
-<div>
+<div class="flex flex-col gap-4">
 	<div>
 		<h1 class="text-3xl font-bold">{cmpSchema.title}</h1>
-		<p class="mt-2 text-slate-300">{cmpSchema.description}</p>
+		<p class="mt-2 text-zinc-400">{cmpSchema.description}</p>
 	</div>
 
-	<div class="comp-preview mt-4 h-96">
+	<div class="comp-preview comp-preview-colored mt-4 h-96">
 		<div class="flex max-w-md grow items-center justify-center">
 			<svelte:component this={cmpSchema.example} bind:propsObj={props} />
 		</div>

@@ -15,17 +15,47 @@ body {
 		justify-content: center;
 		align-items: center;
 
-		background-image: linear-gradient(
-			330deg,
-			theme('colors.vermilion.600') 0%,
-			theme('colors.vermilion.900') 100%
-		);
+		background: linear-gradient(315deg, theme('colors.zinc.800'), theme('colors.zinc.900'));
 
 		border-radius: theme('borderRadius.lg');
 		padding: theme('spacing.8');
 
 		@media screen('md') {
-			padding: theme('spacing.16');
+			padding: theme('spacing.12');
 		}
 	}
+	.comp-preview-colored {
+		background: linear-gradient(
+			315deg,
+			theme('colors.vermilion.600'),
+			theme('colors.vermilion.900')
+		);
+	}
+}
+
+::-webkit-scrollbar {
+	width: 12px;
+}
+
+::-webkit-scrollbar-track {
+	background: theme(colors.black);
+	left: 4px;
+}
+
+:where(input, textarea, select) {
+	::-webkit-scrollbar-track {
+		background: theme(colors.zinc.800);
+		left: 4px;
+	}
+}
+
+::-webkit-scrollbar-thumb {
+	transition: background 150ms ease-out;
+	background: theme(colors.zinc.800);
+	border: 3px solid theme(colors.black);
+	border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: theme(colors.zinc.600);
 }
