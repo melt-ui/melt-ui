@@ -64,7 +64,10 @@
 			? 'max-h-[auto] overflow-auto'
 			: 'max-h-36 overflow-hidden'}"
 	>
-		<HighlightSvelte code={cleanupCodeExample(cmpSchema.code)} class="bg-zinc-900 text-sm" />
+		<HighlightSvelte
+			code={cleanupCodeExample(cmpSchema.code, cmpSchema)}
+			class="bg-zinc-900 text-sm"
+		/>
 		<div
 			class="absolute bg-gradient-to-t from-zinc-900/90 to-vermilion-900/30 {showCode
 				? 'inset-x-0 bottom-0'

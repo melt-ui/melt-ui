@@ -37,8 +37,10 @@
 			{/each}
 		</ul>
 	</div>
-	<div class="col-span-8 px-4 pt-2 lg:px-0">
-		<slot />
+	<div class="col-span-8 flex flex-col items-center px-4 pt-2 lg:px-0">
+		<div class="w-full max-w-7xl">
+			<slot />
+		</div>
 	</div>
 	<div class="col-span-2" />
 </div>
