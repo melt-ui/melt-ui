@@ -38,6 +38,7 @@
 		loop: true,
 		rovingFocus: true,
 		disabled: false,
+		role: 'group',
 	} satisfies {
 		[key in keyof ToggleGroupRootProps]?: ToggleGroupRootProps[key];
 	};
@@ -49,6 +50,7 @@
 		readonly loop: boolean;
 		readonly rovingFocus: boolean;
 		readonly disabled: ToggleGroupRootProps['disabled'];
+		readonly role: ToggleGroupRootProps['role'];
 		value: ToggleGroupRootProps['value'];
 	};
 
@@ -68,6 +70,7 @@
 	export let dir: Direction = defaults.dir;
 	export let loop: boolean = defaults.loop;
 	export let disabled: boolean = defaults.disabled;
+	export let role: $$Props['role'] = defaults.role;
 
 	const ctx = setContext({
 		type: [type ?? defaults.type],
@@ -76,6 +79,7 @@
 		loop: [loop ?? defaults.loop],
 		rovingFocus: [rovingFocus ?? defaults.rovingFocus],
 		disabled: [false],
+		role: ['group'],
 		value: [value, (v) => (value = v)],
 	});
 	$: ctx.set({
@@ -85,6 +89,7 @@
 		loop: loop ?? defaults.loop,
 		rovingFocus: rovingFocus ?? defaults.rovingFocus,
 		disabled: disabled ?? defaults.disabled,
+		role: role ?? defaults.role,
 		value,
 	});
 
@@ -128,6 +133,6 @@
 	});
 </script>
 
-<div {dir} {...$$restProps} use:useActions={$$restProps.use} data-orientation={orientation}>
+<div {role} {dir} {...$$restProps} use:useActions={$$restProps.use} data-orientation={orientation}>
 	<slot />
 </div>
