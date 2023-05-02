@@ -24,12 +24,17 @@ body {
 			padding: theme('spacing.12');
 		}
 	}
+
 	.comp-preview-colored {
 		background: linear-gradient(
 			315deg,
 			theme('colors.vermilion.600'),
 			theme('colors.vermilion.900')
 		);
+	}
+
+	.link {
+		@apply underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-vermilion-500 hocus:opacity-100;
 	}
 }
 

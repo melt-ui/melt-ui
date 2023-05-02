@@ -35,11 +35,7 @@
 			<p class="max-w-prose text-lg text-white lg:text-xl">
 				<span class="opacity-75"
 					>Radix Svelte is an unofficial community-led Svelte port of
-				</span><a
-					href="https://radix-ui.com/"
-					target="_blank"
-					class="underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-vermilion-500 hocus:opacity-100"
-					>Radix UI Primitives</a
+				</span><a href="https://radix-ui.com/" target="_blank" class="link">Radix UI Primitives</a
 				><span class="opacity-75"
 					>, a set of unstyled, accessible components for building high‑quality design systems and
 					web apps.</span
@@ -72,10 +68,7 @@
 			>
 				<a href={`/docs/${identifier}`} class="group flex items-baseline justify-between">
 					<h2 class="text-xl font-normal capitalize text-white">{schema.title}</h2>
-					<span
-						class="text-md text-white underline decoration-white/50 underline-offset-4 opacity-75 active:opacity-75 group-focus-within:decoration-vermilion-500 group-focus-within:opacity-100 hocus:decoration-vermilion-500 hocus:opacity-100"
-						>View docs</span
-					></a
+					<span class="link">View docs</span></a
 				>
 				<div class="comp-preview grow place-items-center">
 					<svelte:component this={schema.example} {propsObj} />

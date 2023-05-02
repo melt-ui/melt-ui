@@ -37,30 +37,19 @@
 		</a>
 
 		<div class="flex flex-row gap-4">
-			<a
-				href="https://github.com/TGlide/radix-svelte"
-				target="_blank"
-				class="underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-vermilion-500 hocus:opacity-100"
-			>
+			<a href="https://github.com/TGlide/radix-svelte" target="_blank" class="link">
 				<span class="hidden lg:block">GitHub</span>
 				<GitHub
 					class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px lg:hidden"
 				/>
 			</a>
-			<a
-				href="https://discord.com/invite/gQrpPs34xH"
-				target="_blank"
-				class="underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-vermilion-500 hocus:opacity-100"
-			>
+			<a href="https://discord.com/invite/gQrpPs34xH" target="_blank" class="link">
 				<span class="hidden lg:block">Discord</span>
 				<Discord
 					class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px lg:hidden"
 				/>
 			</a>
-			<a
-				href="/docs/accordion"
-				class="underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-vermilion-500 hocus:opacity-100"
-			>
+			<a href="/docs/accordion" class="link">
 				<span class="hidden lg:block"> Documentation </span>
 				<span class="block lg:hidden"> Docs </span>
 			</a>
@@ -75,12 +64,7 @@
 		>
 			<div class="flex flex-row gap-1">
 				<span class="flex gap-1 opacity-50">Inspired by</span>
-				<a
-					href="https://radix-ui.com/"
-					target="_blank"
-					class="underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-vermilion-500 hocus:opacity-100"
-					>Radix UI</a
-				>
+				<a href="https://radix-ui.com/" target="_blank" class="link">Radix UI</a>
 			</div>
 			<span class="opacity-50"> Not affiliated with Radix UI or WorkOS. </span>
 		</div>
