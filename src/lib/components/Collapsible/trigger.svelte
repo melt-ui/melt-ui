@@ -29,6 +29,7 @@
 	data-state={$ctx.open ? 'open' : 'closed'}
 	data-disabled={$ctx.disabled ? 'true' : undefined}
 	disabled={$ctx.disabled}
+	type="button"
 >
 	<slot />
 </button>
