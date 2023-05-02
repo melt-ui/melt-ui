@@ -6,16 +6,23 @@
 		type PreviewDataAttribute,
 		type PreviewEvent,
 		type PreviewProps,
+		type PreviewSchema,
 	} from '$lib/internal/helpers';
 	import { schemas } from '$routes/(previews)/schemas.js';
 	import { page } from '$app/stores';
 	import { cleanupCodeExample } from '$routes/helpers';
+	import Copy from '~icons/lucide/copy';
+	import Check from '~icons/lucide/check';
+	import { fly } from 'svelte/transition';
 
 	export let data;
 
 	let cmpSchema = schemas[data.cmp as keyof typeof schemas];
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
 	let props = getPropsObj<{}>(cmpSchema.meta) as any;
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const castSchema = cmpSchema as PreviewSchema<any>;
 
 	function reset(cmp: string) {
 		cmpSchema = schemas[cmp as keyof typeof schemas];
@@ -45,6 +52,19 @@
 		$page.url.pathname;
 		showCode = false;
 	}
+
+	$: cleanedUpCode = cleanupCodeExample(cmpSchema.code, castSchema);
+
+	let copied = false;
+	let copytimeout: ReturnType<typeof setTimeout>;
+	function copyCode() {
+		navigator.clipboard.writeText(cleanedUpCode);
+		copied = true;
+		clearTimeout(copytimeout);
+		copytimeout = setTimeout(() => {
+			copied = false;
+		}, 2500);
+	}
 </script>
 
 <div class="flex flex-col gap-4">
@@ -64,10 +84,18 @@
 			? 'max-h-[auto] overflow-auto'
 			: 'max-h-36 overflow-hidden'}"
 	>
-		<HighlightSvelte
-			code={cleanupCodeExample(cmpSchema.code, cmpSchema)}
-			class="bg-zinc-900 text-sm"
-		/>
+		<button class="absolute right-3 top-3 z-10" aria-label="copy" on:click={copyCode}>
+			{#if copied}
+				<div in:fly={{ y: -4 }}>
+					<Check class="text-vermilion-500" />
+				</div>
+			{:else}
+				<div in:fly={{ y: 4 }}>
+					<Copy class="hover:text-vermilion-500" />
+				</div>
+			{/if}
+		</button>
+		<HighlightSvelte code={cleanedUpCode} class="bg-zinc-900 text-sm" />
 		<div
 			class="absolute bg-gradient-to-t from-zinc-900/90 to-vermilion-900/30 {showCode
 				? 'inset-x-0 bottom-0'

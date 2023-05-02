@@ -52,6 +52,7 @@
 				<button
 					on:click={copyInstallCommand}
 					class="text-md group flex justify-between gap-4 rounded bg-zinc-800 p-4 font-mono text-white transition hover:bg-zinc-700 active:translate-y-0.5 active:bg-zinc-900 sm:shrink"
+					aria-label="Copy install command"
 					><span>npm install radix-svelte</span>
 					{#if copied}
 						<Check class="inline-block h-5 w-5 text-vermilion-500 transition" />
