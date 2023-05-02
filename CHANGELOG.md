@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.7](https://github.com/TGlide/radix-svelte/compare/v0.3.6...v0.3.7) (2023-05-02)
+
+
+### Features
+
+* copy btn ([1637f37](https://github.com/TGlide/radix-svelte/commit/1637f37c66bdab780dd6dadbf9d76318cd500343))
+* improve code snippets ([696dede](https://github.com/TGlide/radix-svelte/commit/696dede614b98206ec1f4b3bb81ffe63c8ee400f))
+* radio group cmp ([e745b59](https://github.com/TGlide/radix-svelte/commit/e745b59ae7bea25d9482b1c8198fae06ccc467f9))
+* **WIP:** select basic functionality ([47932b1](https://github.com/TGlide/radix-svelte/commit/47932b14cdc6d2d29e117f1defee4a9705a95312))
+
+
+### Bug Fixes
+
+* add missing name prop to slider ([41d86c1](https://github.com/TGlide/radix-svelte/commit/41d86c1547e8ce0c8dcf2365e6def386901e6c16))
+* docs style fixes ([81932e4](https://github.com/TGlide/radix-svelte/commit/81932e486415dd80be95df6f70a3346e4af65730))
+* lint errors ([e0ca969](https://github.com/TGlide/radix-svelte/commit/e0ca9696ce94c4e9229244109a87f303c405e575))
+* lint fixes ([2e9afd9](https://github.com/TGlide/radix-svelte/commit/2e9afd922b0f6eddf1b11261cfc5f511bff6732b))
+* missing types on slider component ([85ca71f](https://github.com/TGlide/radix-svelte/commit/85ca71fa20ad46528f375b01a2c49325739334fd))
+* radio grouup accesibility tests ([9b3c830](https://github.com/TGlide/radix-svelte/commit/9b3c830b98a422b98c3b13891ba62c98cf6e391e))
+* toggle group rovingfocus & loop behaviour ([13dc17b](https://github.com/TGlide/radix-svelte/commit/13dc17b202c73b0ae8f3b1dedbfc5faf4ed399ad))
+* type warnings ([769bed4](https://github.com/TGlide/radix-svelte/commit/769bed4492d717b9f385b2039b08b515353be90f))
+
 ### [0.3.6](https://github.com/TGlide/radix-svelte/compare/v0.3.5...v0.3.6) (2023-04-27)
 
 
