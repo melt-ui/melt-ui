@@ -60,6 +60,10 @@
 		}
 	}
 
+	.contents :global(.toggle-item[data-disabled]) {
+		@apply cursor-not-allowed;
+	}
+
 	.contents :global(.toggle-item[data-orientation='horizontal']:dir(ltr)) {
 		@apply border-x border-l-transparent  border-r-vermilion-200;
 

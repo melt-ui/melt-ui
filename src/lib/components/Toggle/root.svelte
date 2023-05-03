@@ -25,11 +25,13 @@
 </script>
 
 <button
+	type="button"
 	{disabled}
 	on:click={() => {
 		pressed = !pressed;
 		dispatch('change', pressed);
 	}}
+	aria-pressed={pressed}
 	data-state={pressed ? 'on' : 'off'}
 	data-disabled={disabled ? '' : undefined}
 	use:useActions={use ?? []}
