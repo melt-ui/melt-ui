@@ -59,6 +59,11 @@
 	},
 	"devDependencies": {
 		"@axe-core/playwright": "^4.6.1",
+		"@fontsource/overpass": "^4.5.11",
+		"@fontsource/overpass-mono": "^4.5.11",
+		"@fontsource/source-code-pro": "^4.5.14",
+		"@iconify-json/lucide": "^1.1.82",
+		"@iconify-json/simple-icons": "^1.1.50",
 		"@playwright/experimental-ct-svelte": "^1.32.1",
 		"@playwright/test": "^1.28.1",
 		"@sveltejs/adapter-auto": "^2.0.0",
@@ -67,7 +72,6 @@
 		"@testing-library/svelte": "^3.2.2",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
-		"@vercel/analytics": "^1.0.0",
 		"autoprefixer": "^10.4.7",
 		"clsx": "^1.2.1",
 		"eslint": "^8.28.0",
@@ -96,12 +100,7 @@
 		"typescript": "^5.0.0",
 		"unplugin-icons": "^0.16.1",
 		"vite": "^4.2.0",
-		"vitest": "^0.25.3",
-		"@fontsource/overpass": "^4.5.11",
-		"@fontsource/overpass-mono": "^4.5.11",
-		"@fontsource/source-code-pro": "^4.5.14",
-		"@iconify-json/lucide": "^1.1.82",
-		"@iconify-json/simple-icons": "^1.1.50"
+		"vitest": "^0.25.3"
 	},
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",

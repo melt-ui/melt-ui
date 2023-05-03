@@ -16,7 +16,7 @@
 	const orientation = getOrientationContext();
 
 	let size = { width: 0, height: 0 };
-	let index: number;
+	let index = 0;
 
 	const thumbComponentsContext = getThumbCollectionContext();
 	$: value = $rootCtx.values[index];

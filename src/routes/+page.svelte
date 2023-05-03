@@ -28,6 +28,10 @@
 	}
 </script>
 
+{#each { length: 6 } as _, n}
+	<div class="cummulative-gradient" style:--n={n + 1} />
+{/each}
+
 <div class="relative grid grow place-items-center p-6">
 	<div class="grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-3">
 		<div class="col-span-full flex flex-col gap-4 py-24">
@@ -78,3 +82,29 @@
 		{/each}
 	</div>
 </div>
+
+<style lang="postcss">
+	.cummulative-gradient {
+		--size: calc(var(--n) * 20rem);
+
+		position: absolute;
+		top: 32px;
+		left: 40px;
+		width: var(--size);
+		height: var(--size);
+		border-radius: 100%;
+		z-index: -1;
+
+		translate: calc(var(--size) / -2) calc(var(--size) / -2);
+
+		background: linear-gradient(
+			180deg,
+			theme('colors.vermilion.600/0.25'),
+			theme('colors.vermilion.800/0.25')
+		);
+
+		opacity: 0.25;
+
+		display: none;
+	}
+</style>

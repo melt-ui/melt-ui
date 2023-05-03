@@ -11,21 +11,21 @@
 	import '@fontsource/overpass-mono/600.css';
 	import '@fontsource/overpass-mono/700.css';
 
-	import { dev } from '$app/environment';
-	import { onMount } from 'svelte';
-
 	import GitHub from '~icons/simple-icons/github';
 	import Discord from '~icons/simple-icons/discord';
+	import { cn } from './helpers';
+	import { page } from '$app/stores';
 
-	onMount(async () => {
-		const { inject } = await import('@vercel/analytics');
-
-		inject({ mode: dev ? 'development' : 'production' });
-	});
+	$: isRoot = $page.url.pathname === '/';
 </script>
 
 <main class="flex min-h-screen flex-col">
-	<nav class="flex items-center justify-between p-4 lg:px-6">
+	<nav
+		class={cn(
+			'flex items-center justify-between p-4 lg:px-6',
+			!isRoot && 'border-b border-b-zinc-700'
+		)}
+	>
 		<a class="flex items-end gap-1 font-sans text-xl" href="/">
 			<img
 				class="h-8 w-8 rounded-sm fill-vermilion-500 object-contain"
