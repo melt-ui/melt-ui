@@ -38,6 +38,7 @@
 		loop: true,
 		rovingFocus: true,
 		disabled: false,
+		role: 'group',
 	} satisfies {
 		[key in keyof ToggleGroupRootProps]?: ToggleGroupRootProps[key];
 	};
@@ -68,6 +69,7 @@
 	export let dir: $$Props['dir'] = defaults.dir;
 	export let loop: $$Props['loop'] = defaults.loop;
 	export let disabled: $$Props['disabled'] = defaults.disabled;
+	export let role: $$Props['role'] = defaults.role;
 
 	const ctx = setContext({
 		type: [type ?? defaults.type],
@@ -128,6 +130,6 @@
 	});
 </script>
 
-<div {dir} {...$$restProps} use:useActions={$$restProps.use} data-orientation={orientation}>
+<div {role} {dir} {...$$restProps} use:useActions={$$restProps.use} data-orientation={orientation}>
 	<slot />
 </div>

@@ -62,14 +62,14 @@ export const schema = {
 				},
 			},
 			dataAttributes: {
+				'data-disabled': {
+					values: 'Present when disabled',
+				},
 				'data-orientation': {
 					values: ['horizontal', 'vertical'],
 				},
 				'data-state': {
 					values: ['on', 'off'],
-				},
-				'data-disabled': {
-					values: ['true', 'false'],
 				},
 			},
 		},
