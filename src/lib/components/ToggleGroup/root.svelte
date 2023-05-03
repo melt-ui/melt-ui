@@ -50,7 +50,6 @@
 		readonly loop: boolean;
 		readonly rovingFocus: boolean;
 		readonly disabled: ToggleGroupRootProps['disabled'];
-		readonly role: ToggleGroupRootProps['role'];
 		value: ToggleGroupRootProps['value'];
 	};
 
@@ -79,7 +78,6 @@
 		loop: [loop ?? defaults.loop],
 		rovingFocus: [rovingFocus ?? defaults.rovingFocus],
 		disabled: [false],
-		role: ['group'],
 		value: [value, (v) => (value = v)],
 	});
 	$: ctx.set({
@@ -89,7 +87,6 @@
 		loop: loop ?? defaults.loop,
 		rovingFocus: rovingFocus ?? defaults.rovingFocus,
 		disabled: disabled ?? defaults.disabled,
-		role: role ?? defaults.role,
 		value,
 	});
 
