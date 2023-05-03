@@ -13,7 +13,7 @@
 	type $$Props = ToggleGroupItemProps;
 	export let use: $$Props['use'] = [];
 	export let value: $$Props['value'];
-	export let disabled = false;
+	export let disabled: $$Props['disabled'] = false;
 
 	const rootCtx = getToggleGroupRootContext();
 	const itemCollection = getToggleGroupItemCollection();

@@ -14,8 +14,8 @@
 <script lang="ts">
 	type $$Props = ToggleRootProps;
 
-	export let pressed = false;
-	export let disabled = false;
+	export let pressed: $$Props['pressed'] = false;
+	export let disabled: $$Props['disabled'] = false;
 
 	type $$Events = WrapWithCustomEvent<{
 		change: boolean;

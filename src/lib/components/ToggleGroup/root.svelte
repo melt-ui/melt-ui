@@ -63,13 +63,13 @@
 
 <script lang="ts">
 	type $$Props = ToggleGroupRootProps;
-	export let type: Type = defaults.type;
+	export let type: $$Props['type'] = defaults.type;
 	export let value: $$Props['value'] = null;
-	export let rovingFocus: boolean = defaults.rovingFocus;
-	export let orientation: Orientation = defaults.orientation;
-	export let dir: Direction = defaults.dir;
-	export let loop: boolean = defaults.loop;
-	export let disabled: boolean = defaults.disabled;
+	export let rovingFocus: $$Props['rovingFocus'] = defaults.rovingFocus;
+	export let orientation: $$Props['orientation'] = defaults.orientation;
+	export let dir: $$Props['dir'] = defaults.dir;
+	export let loop: $$Props['loop'] = defaults.loop;
+	export let disabled: $$Props['disabled'] = defaults.disabled;
 	export let role: $$Props['role'] = defaults.role;
 
 	const ctx = setContext({
