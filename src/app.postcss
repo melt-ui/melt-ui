@@ -37,30 +37,3 @@ body {
 		@apply underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-vermilion-500 hocus:opacity-100;
 	}
 }
-
-::-webkit-scrollbar {
-	width: 12px;
-}
-
-::-webkit-scrollbar-track {
-	background: theme(colors.black);
-	left: 4px;
-}
-
-:where(input, textarea, select) {
-	::-webkit-scrollbar-track {
-		background: theme(colors.zinc.800);
-		left: 4px;
-	}
-}
-
-::-webkit-scrollbar-thumb {
-	transition: background 150ms ease-out;
-	background: theme(colors.zinc.800);
-	border: 3px solid theme(colors.black);
-	border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-	background: theme(colors.zinc.600);
-}
