@@ -1,6 +1,7 @@
 <script>
 	import '../app.postcss';
 
+	import '@fontsource/overpass/300.css';
 	import '@fontsource/overpass/400.css';
 	import '@fontsource/overpass/600.css';
 	import '@fontsource/overpass/700.css';

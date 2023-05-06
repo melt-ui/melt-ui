@@ -11,6 +11,7 @@ export const schema = {
 	code,
 	meta: {
 		Root: {
+			description: 'Contains all the parts of an accordion.',
 			props: {
 				value: {
 					type: 'enum',
@@ -25,6 +26,47 @@ export const schema = {
 				disabled: {
 					type: 'boolean',
 					default: false,
+				},
+			},
+		},
+		Item: {
+			description: 'Contains all the parts of a collapsible section.',
+			props: {
+				value: {
+					type: 'string',
+					show: null,
+				},
+			},
+			dataAttributes: {
+				'data-disabled': {
+					values: 'Present when disabled',
+				},
+				'data-state': {
+					values: ['open', 'closed'],
+				},
+			},
+		},
+		Header: {
+			description:
+				'Wraps an *Accordion.Trigger*. Use the *asChild* prop to update it to the appropriate heading level for your page.',
+			dataAttributes: {
+				'data-disabled': {
+					values: 'Present when disabled',
+				},
+				'data-state': {
+					values: ['open', 'closed'],
+				},
+			},
+		},
+		Trigger: {
+			description:
+				'Toggles the collapsed state of its associated item. It should be nested inside of an *Accordion.Header*.',
+			dataAttributes: {
+				'data-disabled': {
+					values: 'Present when disabled',
+				},
+				'data-state': {
+					values: ['open', 'closed'],
 				},
 			},
 		},
@@ -44,42 +86,7 @@ export const schema = {
 				},
 			},
 		},
-		Trigger: {
-			dataAttributes: {
-				'data-disabled': {
-					values: 'Present when disabled',
-				},
-				'data-state': {
-					values: ['open', 'closed'],
-				},
-			},
-		},
-		Header: {
-			dataAttributes: {
-				'data-disabled': {
-					values: 'Present when disabled',
-				},
-				'data-state': {
-					values: ['open', 'closed'],
-				},
-			},
-		},
-		Item: {
-			props: {
-				value: {
-					type: 'string',
-					show: null,
-				},
-			},
-			dataAttributes: {
-				'data-disabled': {
-					values: 'Present when disabled',
-				},
-				'data-state': {
-					values: ['open', 'closed'],
-				},
-			},
-		},
+
 		// Casting here instead of satisfies because of the discriminated union in AccordionRootProps
 	} as PreviewMeta<typeof Accordion>,
 } satisfies PreviewSchema<typeof Accordion>;

@@ -84,6 +84,7 @@ type PreviewComponentDataAttributes = {
 /* Preview Meta & Schema */
 /* --------------------- */
 type RadixComponentPreview<CMP extends typeof SvelteComponent> = {
+	description?: string;
 	props?: PreviewComponentProps<InstanceType<CMP>>;
 	dataAttributes?: PreviewComponentDataAttributes;
 	events?: PreviewComponentEvents<InstanceType<CMP>>;
