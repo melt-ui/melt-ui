@@ -1,3 +1,4 @@
+import { schema as AlertDialog } from './AlertDialog/schema';
 import { schema as RadioGroup } from './RadioGroup/schema';
 import { schema as Select } from './Select/schema';
 import { schema as ToggleGroup } from './ToggleGroup/schema';
@@ -33,4 +34,5 @@ export const schemas = {
 	togglegroup: ToggleGroup,
 	select: Select,
 	radiogroup: RadioGroup,
+	alertdialog: AlertDialog,
 };
