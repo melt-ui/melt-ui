@@ -31,28 +31,4 @@ test.describe('Label', () => {
 
 		expect(activeElementId).toBe(inputId);
 	});
-
-	/* 	// in firefox, window.getSelection() returns label even when visually it isn't selected but the input is.
-	test('Label text is not selected when double clicked', async ({ mount, page }) => {
-		const cmp = await mount(LabelTest);
-		const label = cmp.getByTestId(labelDataTestId);
-
-		await label.dblclick();
-
-		const selection = await page.evaluate(() => {
-			const selection = window.getSelection();
-
-			if (!selection) {
-				return undefined;
-			}
-
-			return {
-				nodeValue: selection.anchorNode?.nodeValue,
-				dataTestId: selection.anchorNode?.parentElement?.dataset['testid'],
-			};
-		});
-
-		expect(selection?.nodeValue).not.toBe(labelText);
-		expect(selection?.dataTestId).not.toBe(labelDataTestId);
-	}); */
 });
