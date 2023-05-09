@@ -1,14 +1,17 @@
-<script lang="ts">
-	import { Label } from '$lib/components/Label';
-	import { labelDataTestId, inputId, labelText } from './constants';
-
-	type MouseDownEvent = MouseEvent & {
-		currentTarget: EventTarget & HTMLLabelElement;
+<script context="module">
+	export const testConstants = {
+		labelDataTestId: 'label',
+		inputId: 'input-id',
 	};
-	export let onMouseDown: (event: MouseDownEvent) => void;
 </script>
 
-<Label.Root data-testid={labelDataTestId} aria-label="basic label" {onMouseDown} for={inputId}
-	>{labelText}</Label.Root
+<script lang="ts">
+	import { Label } from '$lib/components/Label';
+</script>
+
+<Label.Root
+	data-testid={testConstants.labelDataTestId}
+	aria-label="basic label"
+	for={testConstants.inputId}>Label text</Label.Root
 >
-<input type="text" id={inputId} />
+<input type="text" id={testConstants.inputId} />

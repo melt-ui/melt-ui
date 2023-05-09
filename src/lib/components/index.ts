@@ -9,5 +9,6 @@ export { Progress } from './Progress';
 export { Dialog } from './Dialog';
 export { Tabs } from './Tabs';
 export { Avatar } from './Avatar';
+export { Label } from './Label';
 
 export { ToggleGroup } from './ToggleGroup';
