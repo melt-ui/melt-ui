@@ -2,7 +2,7 @@
 	import { useActions } from '$lib/internal/helpers';
 	import type { BaseProps } from '$lib/internal/types';
 
-	export type TooltipProviderProps = {
+	export type TooltipProviderProps = BaseProps & {
 		delayDuration?: number;
 		skipDelayDuration?: number;
 	};

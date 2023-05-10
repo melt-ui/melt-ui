@@ -10,7 +10,7 @@
 
 <Toggle.Root
 	aria-label="Toggle italic"
-	class="grid justify-center items-center place-items-center w-9 h-9 text-base leading-4 bg-white rounded shadow-lg focus:ring-2 focus:ring-black text-vermilion-800 data-[disabled]:cursor-not-allowed data-[state=on]:bg-vermilion-200 data-[state=on]:text-vermilion-900 hover:bg-vermilion-100"
+	class="grid h-9 w-9 place-items-center items-center justify-center rounded bg-white text-base leading-4 text-vermilion-800 shadow-lg hover:bg-vermilion-100 focus:ring-2 focus:ring-black data-[disabled]:cursor-not-allowed data-[state=on]:bg-vermilion-200 data-[state=on]:text-vermilion-900"
 	bind:pressed={propsObj.Root.pressed}
 	bind:disabled={propsObj.Root.disabled}
 >

@@ -5,6 +5,7 @@
 	import Copy from '~icons/lucide/copy';
 	import Check from '~icons/lucide/check';
 	import ArrowRight from '~icons/lucide/arrow-right';
+	import { fly } from 'svelte/transition';
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function getPropsObjForSchema(schema: (typeof schemas)[keyof typeof schemas]): any {
@@ -59,9 +60,13 @@
 					aria-label="Copy install command"
 					><span>npm install radix-svelte</span>
 					{#if copied}
-						<Check class="inline-block h-5 w-5 text-vermilion-500 transition" />
+						<div in:fly={{ y: -4 }}>
+							<Check class="inline-block h-5 w-5 text-vermilion-500 transition" />
+						</div>
 					{:else}
-						<Copy class="inline-block h-5 w-5 transition" />
+						<div in:fly={{ y: 4 }}>
+							<Copy class="inline-block h-5 w-5 transition" />
+						</div>
 					{/if}
 				</button>
 			</div>

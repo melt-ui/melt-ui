@@ -10,13 +10,13 @@ import type { SvelteHTMLActionType } from './useActions';
 export function collectionContext() {
 	const initialContext = uniqueContext<Writable<Array<HTMLElement>>>();
 
-	const createContext = () => {
+	const setContext = () => {
 		const store = writable<HTMLElement[]>([]);
 		initialContext.setContext(store);
 		return store;
 	};
 
-	return { createContext, getContext: initialContext.getContext };
+	return { setContext, getContext: initialContext.getContext };
 }
 
 /**

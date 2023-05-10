@@ -21,6 +21,7 @@ const config = {
 		alias: {
 			$routes: 'src/routes',
 			'$test-helpers': 'src/test-helpers',
+			$constants: 'src/constants',
 		},
 		typescript: {
 			config: (config) => {

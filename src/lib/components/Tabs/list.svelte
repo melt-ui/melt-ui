@@ -18,7 +18,7 @@
 	const rootCtx = getTabsRootContext();
 
 	// Trigger logic
-	const triggerStore = triggerCollection.createContext();
+	const triggerStore = triggerCollection.setContext();
 
 	$: nextKey = {
 		horizontal: $rootCtx.dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight',

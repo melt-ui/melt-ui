@@ -5,7 +5,7 @@
 	// Use your own icons instead.
 	import Check from '~icons/lucide/check';
 
-	export let propsObj: ResolvedProps<typeof Checkbox>['Root']['checked'];
+	export let propsObj: ResolvedProps<typeof Checkbox>;
 </script>
 
 <form>

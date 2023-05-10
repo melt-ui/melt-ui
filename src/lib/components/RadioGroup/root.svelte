@@ -65,7 +65,7 @@
 	$: ctx.set({ value, disabled, required, name });
 
 	// Item logic
-	const itemStore = itemCollection.createContext();
+	const itemStore = itemCollection.setContext();
 	$: nextKeys = {
 		horizontal: [dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight'],
 		vertical: ['ArrowDown'],

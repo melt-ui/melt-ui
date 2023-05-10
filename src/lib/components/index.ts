@@ -14,3 +14,5 @@ export * from './ToggleGroup';
 export * from './Select';
 
 export * from './RadioGroup';
+
+export * from './AlertDialog';

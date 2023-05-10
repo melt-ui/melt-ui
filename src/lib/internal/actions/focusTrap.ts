@@ -13,7 +13,7 @@ function getFocusableElements(container: HTMLElement) {
 
 type Params = {
 	disable?: boolean;
-	autofocus?: boolean;
+	autofocus?: boolean | HTMLElement;
 };
 
 const getParams = (params?: Params) => {
@@ -64,7 +64,13 @@ export const focusTrap = ((container, params?: Params) => {
 		if (params?.autofocus) {
 			const focusableElements = getFocusableElements(container);
 			if (focusableElements.length > 0) {
-				tick().then(() => focusableElements[0].focus());
+				tick().then(() => {
+					if (typeof params.autofocus === 'boolean') {
+						focusableElements[0].focus();
+					} else if (focusableElements.includes(params.autofocus)) {
+						params.autofocus.focus();
+					}
+				});
 			}
 		}
 

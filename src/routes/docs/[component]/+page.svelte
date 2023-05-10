@@ -33,7 +33,9 @@
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const castSchema = cmpSchema as PreviewSchema<any>;
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function castMeta(component: any) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		return Object.entries((component.meta || {}) as PreviewMeta<any>);
 	}
 
@@ -144,7 +146,7 @@
 					<div>
 						<code class="font-mono">{propKey}</code>
 					</div>
-					<span class="font-mono">{propDefinition.type}</span>
+					<span class="font-mono">{propDefinition.typeLabel ?? propDefinition.type}</span>
 					<div class="">
 						{#if propDefinition.show === null}
 							<span class="white w-full font-mono text-sm"> N/A </span>
