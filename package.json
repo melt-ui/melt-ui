@@ -16,7 +16,7 @@
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"lint:write": "prettier --plugin-search-dir . --write . && eslint . --fix",
 		"format": "prettier --plugin-search-dir . --write .",
-		"release": "bash ./scripts/release.sh",
+		"release": "npm run build && changeset publish",
 		"create:cmp": "node ./scripts/create-component.js"
 	},
 	"exports": {
@@ -59,6 +59,7 @@
 	},
 	"devDependencies": {
 		"@axe-core/playwright": "^4.6.1",
+		"@changesets/cli": "^2.26.1",
 		"@fontsource/overpass": "^4.5.11",
 		"@fontsource/overpass-mono": "^4.5.11",
 		"@fontsource/source-code-pro": "^4.5.14",
