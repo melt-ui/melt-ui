@@ -49,7 +49,7 @@
 	});
 	$: contextStore.set({ type: type ?? 'single', value, disabled: disabled ?? false });
 
-	triggerCollectionContext.createContext();
+	triggerCollectionContext.setContext();
 </script>
 
 <div {...$$restProps} use:useActions={$$restProps.use} data-radix-accordion-root>

@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	import type { DialogRootProps } from '../Dialog';
 
-	export type AlertDialogRootProps = DialogRootProps;
+	export type AlertDialogRootProps = Omit<DialogRootProps, 'modal'>;
 </script>
 
 <script lang="ts">
@@ -10,6 +10,6 @@
 	type $$Props = AlertDialogRootProps;
 </script>
 
-<Dialog.Root {...$$restProps}>
+<Dialog.Root {...$$restProps} modal>
 	<slot />
 </Dialog.Root>

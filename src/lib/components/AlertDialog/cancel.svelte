@@ -1,15 +1,28 @@
 <script lang="ts" context="module">
-	import { useActions } from '$lib/internal/helpers';
-	import type { BaseProps } from '$lib/internal/types';
+	import { useCollection } from '$lib/internal/helpers';
+	import { Dialog, type DialogCloseProps } from '../Dialog';
+	import { getCancelCollection } from './content.svelte';
 
-	export type AlertDialogCancelProps = BaseProps<'div'>;
+	export type AlertDialogActionProps = DialogCloseProps;
 </script>
 
 <script lang="ts">
-	type $$Props = AlertDialogCancelProps;
-	export let use: $$Props['use'] = [];
+	type $$Props = AlertDialogActionProps;
+
+	const cancelCollection = getCancelCollection();
 </script>
 
-<div {...$$restProps} use:useActions={use ?? []}>
+<Dialog.Close
+	{...$$restProps}
+	use={[
+		...($$restProps.use ?? []),
+		[
+			useCollection,
+			{
+				collection: cancelCollection,
+			},
+		],
+	]}
+>
 	<slot />
-</div>
+</Dialog.Close>

@@ -13,7 +13,7 @@ export type PreviewProps =
 	| PreviewPropNumber
 	| PreviewPropArray<number | string>
 	| PreviewPropEnum<string>;
-type BasePreviewProp<T> = { show?: 'controls' | 'value' | null; default?: T };
+type BasePreviewProp<T> = { show?: 'controls' | 'value' | null; default?: T; typeLabel?: string };
 export type PreviewPropBoolean = { type: 'boolean' } & BasePreviewProp<boolean>;
 export type PreviewPropString = { type: 'string' } & BasePreviewProp<string>;
 export type PreviewPropNumber = { type: 'number' } & BasePreviewProp<number>;

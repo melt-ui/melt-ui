@@ -21,7 +21,7 @@
 	data-state={getDataState($rootCtx.open)}
 	{id}
 	on:click={() => {
-		$rootCtx.open = !$rootCtx.open;
+		$rootCtx.open = true;
 		$rootCtx.triggeredId = $rootCtx.open ? id : null;
 	}}
 	{...$$restProps}

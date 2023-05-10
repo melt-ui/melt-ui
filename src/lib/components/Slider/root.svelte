@@ -118,7 +118,7 @@
 		})
 	);
 
-	const thumbComponents = thumbCollectionContext.createContext();
+	const thumbComponents = thumbCollectionContext.setContext();
 
 	// Pick the correct orientation component
 	$: SliderOrientation = orientation === 'horizontal' ? SliderHorizontal : SliderVertical;

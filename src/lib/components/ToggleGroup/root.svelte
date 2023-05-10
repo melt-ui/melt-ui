@@ -91,7 +91,7 @@
 	});
 
 	// Item logic
-	const itemStore = itemCollection.createContext();
+	const itemStore = itemCollection.setContext();
 
 	$: nextKey = {
 		horizontal: dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight',

@@ -1,15 +1,13 @@
 <script lang="ts" context="module">
-	import { useActions } from '$lib/internal/helpers';
-	import type { BaseProps } from '$lib/internal/types';
+	import { Dialog, type DialogOverlayProps } from '../Dialog';
 
-	export type AlertDialogOverlayProps = BaseProps<'div'>;
+	export type AlertDialogOverlayProps = DialogOverlayProps;
 </script>
 
 <script lang="ts">
 	type $$Props = AlertDialogOverlayProps;
-	export let use: $$Props['use'] = [];
 </script>
 
-<div {...$$restProps} use:useActions={use ?? []}>
+<Dialog.Overlay {...$$restProps}>
 	<slot />
-</div>
+</Dialog.Overlay>

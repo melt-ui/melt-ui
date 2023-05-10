@@ -1,15 +1,13 @@
 <script lang="ts" context="module">
-	import { useActions } from '$lib/internal/helpers';
-	import type { BaseProps } from '$lib/internal/types';
+	import { Dialog, type DialogDescriptionProps } from '../Dialog';
 
-	export type AlertDialogDescriptionProps = BaseProps<'div'>;
+	export type AlertDialogDescriptionProps = DialogDescriptionProps;
 </script>
 
 <script lang="ts">
 	type $$Props = AlertDialogDescriptionProps;
-	export let use: $$Props['use'] = [];
 </script>
 
-<div {...$$restProps} use:useActions={use ?? []}>
+<Dialog.Description {...$$restProps}>
 	<slot />
-</div>
+</Dialog.Description>

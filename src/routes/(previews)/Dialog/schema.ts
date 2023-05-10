@@ -21,14 +21,6 @@ export const schema = {
 					type: 'boolean',
 					default: true,
 				},
-				openAutoFocus: {
-					type: 'boolean',
-					default: true,
-				},
-				closeAutoFocus: {
-					type: 'boolean',
-					default: true,
-				},
 			},
 		},
 		Trigger: {
@@ -62,6 +54,15 @@ export const schema = {
 				onEscapeKeyDown: {
 					type: 'function',
 					show: null,
+				},
+				openAutoFocus: {
+					type: 'boolean',
+					typeLabel: 'boolean | HTMLElement',
+					default: true,
+				},
+				closeAutoFocus: {
+					type: 'boolean',
+					default: true,
 				},
 			},
 			dataAttributes: {

@@ -1,15 +1,28 @@
 <script lang="ts" context="module">
-	import { useActions } from '$lib/internal/helpers';
-	import type { BaseProps } from '$lib/internal/types';
+	import { collectionContext } from '$lib/internal/helpers';
+	import { Dialog, type DialogContentProps } from '../Dialog';
 
-	export type AlertDialogContentProps = BaseProps<'div'>;
+	export type AlertDialogContentProps = DialogContentProps;
+
+	const cancelCollectionCtx = collectionContext();
+	export const getCancelCollection = cancelCollectionCtx.getContext;
 </script>
 
 <script lang="ts">
 	type $$Props = AlertDialogContentProps;
-	export let use: $$Props['use'] = [];
+	const cancelCollection = cancelCollectionCtx.setContext();
+
+	export let openAutoFocus: $$Props['openAutoFocus'] = undefined;
+	$: resolvedOpenAutoFocus = openAutoFocus === undefined ? $cancelCollection[0] : true;
 </script>
 
-<div {...$$restProps} use:useActions={use ?? []}>
+<Dialog.Content
+	role="alertdialog"
+	onPointerDownOutside={(e) => {
+		e.preventDefault();
+	}}
+	openAutoFocus={resolvedOpenAutoFocus}
+	{...$$restProps}
+>
 	<slot />
-</div>
+</Dialog.Content>
