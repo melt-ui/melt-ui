@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - develop
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          registry-url: https://registry.npmjs.org/
+          node-version: '18'
+
+      - name: Install dependencies
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7.24.2
+          run_install: true
+
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          publish: npm run release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPMJS_ACCESS_TOKEN }}
