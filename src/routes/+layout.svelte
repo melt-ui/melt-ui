@@ -31,7 +31,7 @@
 <main class="flex min-h-screen flex-col">
 	<nav
 		class={cn(
-			'flex items-center justify-between p-4 lg:px-6',
+			'flex items-center justify-between px-4 py-3 lg:px-6',
 			!isRoot && 'border-b border-b-zinc-700'
 		)}
 	>

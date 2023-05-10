@@ -19,9 +19,9 @@
 	{@html theme}
 </svelte:head>
 
-<div class="flex grid-cols-12 flex-col gap-8 overflow-hidden py-6 lg:grid lg:px-6">
+<div class="flex grid-cols-12 flex-col gap-8 overflow-hidden py-2 lg:grid lg:px-6 lg:py-6">
 	<div class="col-span-2">
-		<ul class="flex w-full flex-col overflow-x-auto p-2">
+		<ul class="flex w-full overflow-x-auto p-2 lg:flex-col">
 			{#each links as link}
 				<li>
 					<a
