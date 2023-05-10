@@ -75,12 +75,12 @@ Our [Discord community](https://discord.gg/gQrpPs34xH) is a great place to get i
 
 Looking for more? Check out these other projects too:
 
-- [Svelte Material UI](https://sveltematerialui.com/)
-- [Svelte Headless UI](https://svelte-headlessui.goss.io/docs)
 - [Skeleton](https://skeleton.dev/)
-- [SvelteStrap](https://github.com/bestguy/sveltestrap)
+- [Svelte Headless UI](https://svelte-headlessui.goss.io/docs)
 - [Flowbite Svelte](https://flowbite-svelte.com/)
 - [Carbon Components Svelte](https://github.com/carbon-design-system/carbon-components-svelte/)
+- [Svelte Material UI](https://sveltematerialui.com/)
+- [SvelteStrap](https://github.com/bestguy/sveltestrap)
 - [Noir UI](https://github.com/khairulhaaziq/noir-ui)
 - [Grail UI](https://grail-ui.vercel.app/)
 
