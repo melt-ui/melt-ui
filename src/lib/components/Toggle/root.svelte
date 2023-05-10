@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	import { useActions } from '$lib/internal/helpers/useActions';
-	import type { BaseProps, Detailed } from '$lib/internal/types';
+	import type { BaseProps, UnwrapCustomEvents, WrapWithCustomEvent } from '$lib/internal/types';
 	import { createEventDispatcher } from 'svelte';
 
 	export type ToggleRootProps = BaseProps<'button'> & {
@@ -17,21 +17,23 @@
 	export let pressed: $$Props['pressed'] = false;
 	export let disabled: $$Props['disabled'] = false;
 
-	type $$Events = {
-		change: CustomEvent<boolean>;
-	};
-	const dispatch = createEventDispatcher<Detailed<$$Events>>();
+	type $$Events = WrapWithCustomEvent<{
+		change: boolean;
+	}>;
+	const dispatch = createEventDispatcher<UnwrapCustomEvents<$$Events>>();
 	export let use: $$Props['use'] = [];
 </script>
 
 <button
+	type="button"
 	{disabled}
 	on:click={() => {
 		pressed = !pressed;
 		dispatch('change', pressed);
 	}}
+	aria-pressed={pressed}
 	data-state={pressed ? 'on' : 'off'}
-	data-disabled={disabled || undefined}
+	data-disabled={disabled ? '' : undefined}
 	use:useActions={use ?? []}
 	{...$$restProps}
 >

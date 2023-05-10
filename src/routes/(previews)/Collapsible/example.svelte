@@ -3,8 +3,8 @@
 	import type { ResolvedProps } from '$lib/internal/helpers';
 	// These are internal icons, but they're not exported from the package.
 	// Use your own icons instead.
-	import Cross2Icon from '~icons/radix-icons/cross-2';
-	import RowSpacingIcon from '~icons/radix-icons/row-spacing';
+	import X from '~icons/lucide/x';
+	import ChevronsUpDown from '~icons/lucide/chevrons-up-down';
 
 	export let propsObj: ResolvedProps<typeof Collapsible>;
 
@@ -21,24 +21,24 @@
 			data-[disabled]:cursor-not-allowed data-[disabled]:opacity-75"
 		>
 			{#if propsObj.Root.open}
-				<Cross2Icon />
+				<X />
 			{:else}
-				<RowSpacingIcon />
+				<ChevronsUpDown />
 			{/if}
 		</Collapsible.Trigger>
 	</div>
 
 	<div class="my-2 rounded bg-white p-3 shadow-lg">
-		<span class="text-base leading-[25px] text-vermilion-800">@radix-ui/primitives</span>
+		<span class="text-base leading-[25px] text-vermilion-800">tglide/radix-svelte</span>
 	</div>
 
 	<Collapsible.Content transition={propsObj.Content.transition}>
 		<div class="flex flex-col gap-2">
 			<div class="rounded bg-white p-3 shadow-lg">
-				<span class="text-base leading-[25px] text-vermilion-800">@radix-ui/colors</span>
+				<span class="text-base leading-[25px] text-vermilion-800">sveltejs/svelte</span>
 			</div>
 			<div class="rounded bg-white p-3 shadow-lg">
-				<span class="text-base leading-[25px] text-vermilion-800">@stitches/react</span>
+				<span class="text-base leading-[25px] text-vermilion-800">sveltejs/kit</span>
 			</div>
 		</div>
 	</Collapsible.Content>

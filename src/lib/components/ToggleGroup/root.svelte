@@ -38,6 +38,7 @@
 		loop: true,
 		rovingFocus: true,
 		disabled: false,
+		role: 'group',
 	} satisfies {
 		[key in keyof ToggleGroupRootProps]?: ToggleGroupRootProps[key];
 	};
@@ -68,6 +69,7 @@
 	export let dir: $$Props['dir'] = defaults.dir;
 	export let loop: $$Props['loop'] = defaults.loop;
 	export let disabled: $$Props['disabled'] = defaults.disabled;
+	export let role: $$Props['role'] = defaults.role;
 
 	const ctx = setContext({
 		type: [type ?? defaults.type],
@@ -89,7 +91,7 @@
 	});
 
 	// Item logic
-	const itemStore = itemCollection.createContext();
+	const itemStore = itemCollection.setContext();
 
 	$: nextKey = {
 		horizontal: dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight',
@@ -103,22 +105,22 @@
 
 	const listeners = new Map();
 	itemStore.subscribe((items) => {
-		const enabledItems = items.filter((i) => !i.dataset.disabled);
-
 		items.forEach((item, index) => {
 			const prevCallback = listeners.get(index);
 			if (prevCallback) {
 				item.removeEventListener('keydown', prevCallback);
 			}
 
+			const enabledItems = items.filter((i) => i.dataset.disabled === undefined);
 			const enabledIdx = enabledItems.indexOf(item);
 			const listener = (e: KeyboardEvent) => {
+				if (!rovingFocus) return;
 				if (e.key === nextKey) {
 					e.preventDefault();
-					next(enabledItems, enabledIdx, rovingFocus)?.focus();
+					next(enabledItems, enabledIdx, loop)?.focus();
 				} else if (e.key === prevKey) {
 					e.preventDefault();
-					prev(enabledItems, enabledIdx, rovingFocus)?.focus();
+					prev(enabledItems, enabledIdx, loop)?.focus();
 				}
 			};
 
@@ -128,6 +130,6 @@
 	});
 </script>
 
-<div {dir} {...$$restProps} use:useActions={$$restProps.use} data-orientation={orientation}>
+<div {role} {dir} {...$$restProps} use:useActions={$$restProps.use} data-orientation={orientation}>
 	<slot />
 </div>

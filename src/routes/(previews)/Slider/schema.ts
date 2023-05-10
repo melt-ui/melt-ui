@@ -50,6 +50,9 @@ export const schema = {
 					type: 'number',
 					default: 0,
 				},
+				name: {
+					type: 'string',
+				},
 			},
 		},
 		Track: {},

@@ -1,6 +1,6 @@
 {
 	"name": "radix-svelte",
-	"version": "0.3.4",
+	"version": "0.3.7",
 	"license": "MIT",
 	"scripts": {
 		"dev": "vite dev",
@@ -59,8 +59,11 @@
 	},
 	"devDependencies": {
 		"@axe-core/playwright": "^4.6.1",
-		"@fontsource/inter": "^4.5.15",
-		"@iconify-json/radix-icons": "^1.1.10",
+		"@fontsource/overpass": "^4.5.11",
+		"@fontsource/overpass-mono": "^4.5.11",
+		"@fontsource/source-code-pro": "^4.5.14",
+		"@iconify-json/lucide": "^1.1.82",
+		"@iconify-json/simple-icons": "^1.1.50",
 		"@playwright/experimental-ct-svelte": "^1.32.1",
 		"@playwright/test": "^1.28.1",
 		"@sveltejs/adapter-auto": "^2.0.0",
@@ -69,7 +72,7 @@
 		"@testing-library/svelte": "^3.2.2",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
-		"@vercel/analytics": "^0.1.11",
+		"@vercel/analytics": "^1.0.1",
 		"autoprefixer": "^10.4.7",
 		"clsx": "^1.2.1",
 		"eslint": "^8.28.0",

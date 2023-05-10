@@ -4,7 +4,7 @@ import type { ToggleGroup } from '$lib';
 import code from './example.svelte?raw';
 
 export const schema = {
-	title: 'ToggleGroup',
+	title: 'Toggle Group',
 	description: 'A set of two-state buttons that can be toggled on or off.',
 	example,
 	code,
@@ -34,6 +34,14 @@ export const schema = {
 					type: 'boolean',
 					default: true,
 				},
+				loop: {
+					type: 'boolean',
+					default: true,
+				},
+				disabled: {
+					type: 'boolean',
+					default: false,
+				},
 			},
 			dataAttributes: {
 				'data-orientation': {
@@ -54,14 +62,14 @@ export const schema = {
 				},
 			},
 			dataAttributes: {
+				'data-disabled': {
+					values: 'Present when disabled',
+				},
 				'data-orientation': {
 					values: ['horizontal', 'vertical'],
 				},
 				'data-state': {
 					values: ['on', 'off'],
-				},
-				'data-disabled': {
-					values: ['true', 'false'],
 				},
 			},
 		},

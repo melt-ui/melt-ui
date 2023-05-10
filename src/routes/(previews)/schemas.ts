@@ -1,3 +1,6 @@
+import { schema as AlertDialog } from './AlertDialog/schema';
+import { schema as RadioGroup } from './RadioGroup/schema';
+import { schema as Select } from './Select/schema';
 import { schema as ToggleGroup } from './ToggleGroup/schema';
 import { schema as Accordion } from './Accordion/schema';
 import { schema as AspectRatio } from './AspectRatio/schema';
@@ -13,6 +16,7 @@ import { schema as Tabs } from './Tabs/schema';
 import { schema as Toggle } from './Toggle/schema';
 
 import { schema as Avatar } from './Avatar/schema';
+import { schema as Separator } from './Separator/schema';
 
 export const schemas = {
 	accordion: Accordion,
@@ -20,6 +24,7 @@ export const schemas = {
 	avatar: Avatar,
 	checkbox: Checkbox,
 	collapsible: Collapsible,
+	separator: Separator,
 	slider: Slider,
 	switch: Switch,
 	toggle: Toggle,
@@ -29,4 +34,7 @@ export const schemas = {
 	tabs: Tabs,
 	togglegroup: ToggleGroup,
 	label: Label,
+	select: Select,
+	radiogroup: RadioGroup,
+	alertdialog: AlertDialog,
 };

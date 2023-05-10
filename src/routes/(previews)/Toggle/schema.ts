@@ -15,6 +15,17 @@ export const schema = {
 				pressed: {
 					type: 'boolean',
 				},
+				disabled: {
+					type: 'boolean',
+				},
+			},
+			dataAttributes: {
+				'data-disabled': {
+					values: 'Present when disabled',
+				},
+				'data-state': {
+					values: ['on', 'off'],
+				},
 			},
 		},
 	},

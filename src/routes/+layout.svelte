@@ -1,30 +1,81 @@
 <script>
 	import '../app.postcss';
 
-	import '@fontsource/inter/300.css';
-	import '@fontsource/inter/400.css';
-	import '@fontsource/inter/500.css';
-	import '@fontsource/inter/600.css';
-	import '@fontsource/inter/700.css';
-	import '@fontsource/inter/800.css';
-	import '@fontsource/inter/900.css';
+	import '@fontsource/overpass/300.css';
+	import '@fontsource/overpass/400.css';
+	import '@fontsource/overpass/600.css';
+	import '@fontsource/overpass/700.css';
+	import '@fontsource/overpass/400-italic.css';
+	import '@fontsource/overpass/600-italic.css';
+	import '@fontsource/overpass/700-italic.css';
+	import '@fontsource/overpass-mono/400.css';
+	import '@fontsource/overpass-mono/600.css';
+	import '@fontsource/overpass-mono/700.css';
 
+	import GitHub from '~icons/simple-icons/github';
+	import Discord from '~icons/simple-icons/discord';
+	import { cn } from './helpers';
+	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 	import { dev } from '$app/environment';
-	import { inject } from '@vercel/analytics';
 
-	inject({ mode: dev ? 'development' : 'production' });
+	$: isRoot = $page.url.pathname === '/';
+
+	onMount(async () => {
+		const { inject } = await import('@vercel/analytics');
+
+		inject({ mode: dev ? 'development' : 'production' });
+	});
 </script>
 
 <main class="flex min-h-screen flex-col">
-	<nav class="flex items-center justify-between border-b border-zinc-400 px-4 py-2">
-		<a class="flex items-center gap-2 font-sans text-xl font-semibold" href="/">
-			<img class="h-9 w-9 rounded-sm object-contain" src="/logo.svg" alt="Radix and Svelte logos" />
-			Radix Svelte
+	<nav
+		class={cn(
+			'flex items-center justify-between p-4 lg:px-6',
+			!isRoot && 'border-b border-b-zinc-700'
+		)}
+	>
+		<a class="flex items-end gap-1 font-sans text-xl" href="/">
+			<img
+				class="h-8 w-8 rounded-sm fill-vermilion-500 object-contain"
+				src="/radix-svelte.svg"
+				alt="Radix and Svelte logos"
+			/>
+
+			<span class="font-bold">Radix</span> Svelte
 		</a>
 
-		<a href="/docs/accordion" class="underline hover:opacity-75">Documentation</a>
+		<div class="flex flex-row gap-4">
+			<a href="https://github.com/TGlide/radix-svelte" target="_blank" class="link">
+				<span class="hidden lg:block">GitHub</span>
+				<GitHub
+					class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px lg:hidden"
+				/>
+			</a>
+			<a href="https://discord.com/invite/gQrpPs34xH" target="_blank" class="link">
+				<span class="hidden lg:block">Discord</span>
+				<Discord
+					class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px lg:hidden"
+				/>
+			</a>
+			<a href="/docs/accordion" class="link">
+				<span class="hidden lg:block"> Documentation </span>
+				<span class="block lg:hidden"> Docs </span>
+			</a>
+		</div>
 	</nav>
 	<div class="flex grow flex-col">
 		<slot />
 	</div>
+	<footer>
+		<div
+			class="flex flex-col items-start justify-between gap-2 px-6 py-4 lg:flex-row lg:items-center"
+		>
+			<div class="flex flex-row gap-1">
+				<span class="flex gap-1 opacity-50">Inspired by</span>
+				<a href="https://radix-ui.com/" target="_blank" class="link">Radix UI</a>
+			</div>
+			<span class="opacity-50"> Not affiliated with Radix UI or WorkOS. </span>
+		</div>
+	</footer>
 </main>

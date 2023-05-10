@@ -18,7 +18,7 @@
 	const rootCtx = getTabsRootContext();
 
 	// Trigger logic
-	const triggerStore = triggerCollection.createContext();
+	const triggerStore = triggerCollection.setContext();
 
 	$: nextKey = {
 		horizontal: $rootCtx.dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight',
@@ -33,7 +33,6 @@
 	const listeners = new Map();
 	triggerStore.subscribe((triggers) => {
 		const enabledTriggers = triggers.filter((t) => !t.dataset.disabled);
-		console.log('enabledTriggers', enabledTriggers, triggers);
 
 		triggers.forEach((trigger, index) => {
 			const prevCallback = listeners.get(index);

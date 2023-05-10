@@ -19,9 +19,9 @@
 	{@html theme}
 </svelte:head>
 
-<div class="flex grid-cols-12 flex-col gap-8 overflow-hidden py-6 lg:grid lg:px-4">
+<div class="flex grid-cols-12 flex-col gap-8 overflow-hidden py-6 lg:grid lg:px-6">
 	<div class="col-span-2">
-		<ul class="flex w-full overflow-x-auto px-4 pb-2 lg:block lg:px-0">
+		<ul class="flex w-full flex-col overflow-x-auto p-2">
 			{#each links as link}
 				<li>
 					<a
@@ -37,8 +37,10 @@
 			{/each}
 		</ul>
 	</div>
-	<div class="col-span-8 px-4 lg:px-0">
-		<slot />
+	<div class="col-span-8 flex flex-col items-center px-4 pt-2 lg:px-0">
+		<div class="w-full max-w-7xl">
+			<slot />
+		</div>
 	</div>
 	<div class="col-span-2" />
 </div>

@@ -3,17 +3,12 @@
 	import type { ResolvedProps } from '$lib/internal/helpers';
 	// These are internal icons, but they're not exported from the package.
 	// Use your own icons instead.
-	import Cross2Icon from '~icons/radix-icons/cross-2';
+	import X from '~icons/lucide/x';
 
 	export let propsObj: ResolvedProps<typeof Dialog>;
 </script>
 
-<Dialog.Root
-	bind:open={propsObj.Root.open}
-	bind:modal={propsObj.Root.modal}
-	openAutoFocus={propsObj.Root.openAutoFocus}
-	closeAutoFocus={propsObj.Root.closeAutoFocus}
->
+<Dialog.Root bind:modal={propsObj.Root.modal}>
 	<Dialog.Trigger
 		class="inline-flex items-center justify-center rounded-md bg-white px-4 py-2
     font-medium leading-none text-vermilion-800 shadow-lg hover:opacity-75
@@ -27,9 +22,11 @@
 			class="fixed left-[50%] top-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] 
 			translate-y-[-50%] rounded-md bg-white p-[25px] shadow-lg
 			focus:outline-none data-[state=open]:animate-contentShow"
+			openAutoFocus={propsObj.Content.openAutoFocus}
+			closeAutoFocus={propsObj.Content.closeAutoFocus}
 		>
 			<Dialog.Title class="m-0 text-lg font-medium text-black">Edit profile</Dialog.Title>
-			<Dialog.Description class="mb-5 mt-[10px] leading-normal text-slate-500">
+			<Dialog.Description class="mb-5 mt-[10px] leading-normal text-zinc-600">
 				Make changes to your profile here. Click save when you're done.
 			</Dialog.Description>
 
@@ -53,8 +50,8 @@
 			</fieldset>
 			<div class="mt-[25px] flex justify-end gap-4">
 				<Dialog.Close
-					class="hover:bg-green5 focus:shadow-green7 inline-flex h-[35px] items-center justify-center rounded-[4px] bg-slate-100
-				px-4 font-medium leading-none text-slate-600 focus:outline-none focus:ring-2 focus:ring-black"
+					class="hover:bg-green5 focus:shadow-green7 inline-flex h-[35px] items-center justify-center rounded-[4px] bg-zinc-100
+				px-4 font-medium leading-none text-zinc-600 focus:outline-none focus:ring-2 focus:ring-black"
 				>
 					Cancel
 				</Dialog.Close>
@@ -71,7 +68,7 @@
 			text-vermilion-800 hover:bg-vermilion-100 focus:shadow-vermilion-400 focus:outline-none focus:ring-2 focus:ring-black"
 				aria-label="Close"
 			>
-				<Cross2Icon />
+				<X />
 			</Dialog.Close>
 		</Dialog.Content>
 	</Dialog.Portal>

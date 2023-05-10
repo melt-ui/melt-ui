@@ -1,11 +1,9 @@
 <script lang="ts" context="module">
 	import { useActions } from '$lib/internal/helpers/useActions';
-
 	import { isMountedStore } from '$lib/internal/stores';
-	import type { BaseProps } from '$lib/internal/types';
+	import type { BaseProps, UnwrapCustomEvents, WrapWithCustomEvent } from '$lib/internal/types';
 	import { getAvatarRootContext, type ImageLoadingStatus } from './root.svelte';
 	import { createEventDispatcher } from 'svelte';
-	import type { Detailed } from '$lib/internal/types';
 
 	export type AvatarImageProps = BaseProps<'img'> & {
 		src?: string;
@@ -18,10 +16,10 @@
 	export let src: $$Props['src'] = undefined;
 	export let alt: $$Props['alt'] = undefined;
 
-	type $$Events = {
-		loadingStatusChange: CustomEvent<ImageLoadingStatus>;
-	};
-	const dispatch = createEventDispatcher<Detailed<$$Events>>();
+	type $$Events = WrapWithCustomEvent<{
+		loadingStatusChange: ImageLoadingStatus;
+	}>;
+	const dispatch = createEventDispatcher<UnwrapCustomEvents<$$Events>>();
 
 	$: if ($rootCtx.imageLoadingStatus !== 'idle') {
 		dispatch('loadingStatusChange', $rootCtx.imageLoadingStatus);

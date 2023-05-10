@@ -1,39 +1,36 @@
 <script lang="ts">
 	import { ToggleGroup } from '$lib';
-	import type { ResolvedProps } from '$lib/internal/helpers';
 	// These are internal icons, but they're not exported from the package.
 	// Use your own icons instead.
-	import TextAlignLeftIcon from '~icons/radix-icons/text-align-left';
-	import TextAlignCenterIcon from '~icons/radix-icons/text-align-center';
-	import TextAlignRightIcon from '~icons/radix-icons/text-align-right';
+	import AlignCenter from '~icons/lucide/align-center';
+	import AlignLeft from '~icons/lucide/align-left';
+	import AlignRight from '~icons/lucide/align-right';
 
-	export let propsObj: ResolvedProps<typeof ToggleGroup>;
 	// Since we use a discriminated union in ToggleGroup.Root, we need to cast
 	// some props to any to satisfy the type checker. TODO: Find a better way to do this.
-	$: castPropsObj = propsObj as ResolvedProps<typeof ToggleGroup> & {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		Root: { type: any; value: any };
-	};
+	export let propsObj: any;
 </script>
 
 <div class="contents">
 	<ToggleGroup.Root
 		class="flex items-center data-[orientation='vertical']:flex-col"
-		type={castPropsObj.Root.type}
-		bind:value={castPropsObj.Root.value}
+		bind:value={propsObj.Root.value}
+		type={propsObj.Root.type}
 		dir={propsObj.Root.dir}
 		orientation={propsObj.Root.orientation}
 		rovingFocus={propsObj.Root.rovingFocus}
+		loop={propsObj.Root.loop}
+		disabled={propsObj.Root.disabled}
 		aria-label="Text alignment"
 	>
 		<ToggleGroup.Item class="toggle-item" value="left" aria-label="Left aligned">
-			<TextAlignLeftIcon />
+			<AlignLeft />
 		</ToggleGroup.Item>
 		<ToggleGroup.Item class="toggle-item" value="center" aria-label="Center aligned">
-			<TextAlignCenterIcon />
+			<AlignCenter />
 		</ToggleGroup.Item>
 		<ToggleGroup.Item class="toggle-item" value="right" aria-label="Right aligned">
-			<TextAlignRightIcon />
+			<AlignRight />
 		</ToggleGroup.Item>
 	</ToggleGroup.Root>
 </div>
@@ -61,6 +58,10 @@
 			z-index: 10;
 			@apply ring-2 ring-black;
 		}
+	}
+
+	.contents :global(.toggle-item[data-disabled]) {
+		@apply cursor-not-allowed;
 	}
 
 	.contents :global(.toggle-item[data-orientation='horizontal']:dir(ltr)) {

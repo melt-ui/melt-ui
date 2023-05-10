@@ -34,6 +34,6 @@
 	$: itemCtx.set({ value });
 </script>
 
-<Collapsible.Root open={isOpen} {...$$restProps}>
+<Collapsible.Root open={isOpen} disabled={$rootCtx.disabled} {...$$restProps}>
 	<slot />
 </Collapsible.Root>

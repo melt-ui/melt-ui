@@ -52,6 +52,7 @@
 	import { onDestroy } from 'svelte';
 	import { getRootContext } from './root.svelte';
 	import { getSideAndAlignFromPlacement, isDefined, isNotNull, transformOrigin } from './utils';
+	import { useActions } from '$lib/internal/helpers';
 
 	export let side: NonNullable<$$Props['side']> = 'bottom';
 	export let sideOffset: NonNullable<$$Props['sideOffset']> = 0;
@@ -100,14 +101,9 @@
 	let y: number | null = null;
 
 	function updatePosition(options: ComputePositionConfig) {
-		computePosition($rootCtx.anchor, content, options).then(
-			async (position) => {
-				({ strategy, placement, middlewareData, x, y } = position);
-			},
-			(error) => {
-				console.error(error);
-			}
-		);
+		computePosition($rootCtx.anchor, content, options).then(async (position) => {
+			({ strategy, placement, middlewareData, x, y } = position);
+		});
 	}
 
 	let cleanup: (() => void) | null = null;
@@ -198,6 +194,7 @@
 		' ' +
 		middlewareData?.transformOrigin?.y}
 	dir={$$restProps.dir}
+	use:useActions={$$restProps.use}
 >
 	<div
 		data-side={placedSide}
