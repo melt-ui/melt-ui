@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.1
+
+### Patch Changes
+
+- 1126917: empty update
+
 ## 0.4.0
 
 ### Minor Changes
