@@ -3,11 +3,11 @@
 	import { Dialog, type DialogCloseProps } from '../Dialog';
 	import { getCancelCollection } from './content.svelte';
 
-	export type AlertDialogActionProps = DialogCloseProps;
+	export type AlertDialogCancelProps = DialogCloseProps;
 </script>
 
 <script lang="ts">
-	type $$Props = AlertDialogActionProps;
+	type $$Props = AlertDialogCancelProps;
 
 	const cancelCollection = getCancelCollection();
 </script>

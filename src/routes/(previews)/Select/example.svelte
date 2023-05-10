@@ -7,6 +7,7 @@
 	import CheckIcon from '~icons/lucide/check';
 
 	export let propsObj: ResolvedProps<typeof Select>;
+	propsObj;
 </script>
 
 <Select.Root>

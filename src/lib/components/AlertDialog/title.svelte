@@ -1,6 +1,4 @@
 <script lang="ts" context="module">
-	import { useActions } from '$lib/internal/helpers';
-	import type { BaseProps } from '$lib/internal/types';
 	import type { DialogTitleProps } from '../Dialog';
 
 	export type AlertDialogTitleProps = DialogTitleProps;
