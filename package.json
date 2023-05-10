@@ -1,6 +1,6 @@
 {
 	"name": "radix-svelte",
-	"version": "0.4.1",
+	"version": "0.4.2",
 	"license": "MIT",
 	"scripts": {
 		"dev": "vite dev",
@@ -16,7 +16,7 @@
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"lint:write": "prettier --plugin-search-dir . --write . && eslint . --fix",
 		"format": "prettier --plugin-search-dir . --write .",
-		"ci:publish": "pnpm publish -r",
+		"ci:publish": "changeset publish",
 		"create:cmp": "node ./scripts/create-component.js"
 	},
 	"exports": {
