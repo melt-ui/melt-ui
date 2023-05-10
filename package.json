@@ -16,7 +16,7 @@
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"lint:write": "prettier --plugin-search-dir . --write . && eslint . --fix",
 		"format": "prettier --plugin-search-dir . --write .",
-		"release": "npm run package && changeset publish",
+		"ci:publish": "pnpm publish -r",
 		"create:cmp": "node ./scripts/create-component.js"
 	},
 	"exports": {

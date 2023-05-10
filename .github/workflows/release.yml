@@ -21,17 +21,17 @@ jobs:
           registry-url: https://registry.npmjs.org/
           node-version: '18'
 
+      - name: install pnpm
+        run: npm i pnpm@latest -g
+
       - name: Install dependencies
-        uses: pnpm/action-setup@v2
-        with:
-          version: 7.24.2
-          run_install: true
+        run: pnpm install
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: npm run release
+          publish: pnpm ci:publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPMJS_ACCESS_TOKEN }}
