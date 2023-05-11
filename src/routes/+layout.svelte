@@ -14,6 +14,7 @@
 
 	import GitHub from '~icons/simple-icons/github';
 	import Discord from '~icons/simple-icons/discord';
+	import Book from '~icons/lucide/book';
 	import { cn } from './helpers';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
@@ -31,7 +32,7 @@
 <main class="flex min-h-screen flex-col">
 	<nav
 		class={cn(
-			'flex items-center justify-between px-4 py-3 lg:px-6',
+			'flex items-center justify-between px-4 py-4 md:px-6 ',
 			!isRoot && 'border-b border-b-zinc-700'
 		)}
 	>
@@ -47,21 +48,23 @@
 
 		<div class="flex flex-row gap-4">
 			<a href="https://github.com/TGlide/radix-svelte" target="_blank" class="link">
-				<span class="hidden lg:block">GitHub</span>
+				<span class="hidden md:block">GitHub</span>
 				<GitHub
-					class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px lg:hidden"
+					class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px md:hidden"
 				/>
 			</a>
 			<a href="https://discord.com/invite/gQrpPs34xH" target="_blank" class="link">
-				<span class="hidden lg:block">Discord</span>
+				<span class="hidden md:block">Discord</span>
 				<Discord
-					class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px lg:hidden"
+					class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px md:hidden"
 				/>
 			</a>
 			<a href="/docs/accordion" class="link">
-				<span class="hidden lg:block"> Documentation </span>
-				<span class="block lg:hidden"> Docs </span>
-			</a>
+				<span class="hidden md:block">Docs</span>
+				<Book
+					class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px md:hidden"
+				/></a
+			>
 		</div>
 	</nav>
 	<div class="flex grow flex-col">
@@ -69,7 +72,7 @@
 	</div>
 	<footer>
 		<div
-			class="flex flex-col items-start justify-between gap-2 px-6 py-4 lg:flex-row lg:items-center"
+			class="flex flex-col items-start justify-between gap-2 px-4 py-4 lg:flex-row lg:items-center"
 		>
 			<div class="flex flex-row gap-1">
 				<span class="flex gap-1 opacity-50">Inspired by</span>
