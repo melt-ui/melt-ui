@@ -1,8 +1,18 @@
 <script lang="ts">
 	import theme from 'svelte-highlight/styles/tomorrow-night';
 	import { page } from '$app/stores';
+	import { getContext } from 'svelte';
 	import { schemas } from '$routes/(previews)/schemas';
 	import { cn, sortedEntries } from '$routes/helpers';
+	import type { Writable } from 'svelte/store';
+	import { afterNavigate } from '$app/navigation';
+
+	const menu = getContext('menu') as {
+		get(): Writable<boolean>;
+		set(open: boolean): void;
+	};
+
+	const isMenuOpen = menu.get();
 
 	type Link = {
 		title: string;
@@ -13,15 +23,29 @@
 		title: schema.title,
 		href: `/docs/${key}`,
 	}));
+
+	afterNavigate(() => {
+		$isMenuOpen = false;
+	});
 </script>
 
 <svelte:head>
 	{@html theme}
 </svelte:head>
 
-<div class="flex max-w-full flex-col gap-8 py-2 lg:flex-row lg:px-6 lg:py-6">
-	<div class="w-auto min-w-[256px] lg:max-w-sm">
-		<ul class="flex w-full overflow-x-auto p-2 lg:flex-col">
+<div class="flex max-w-full flex-col gap-8 py-2 md:flex-row md:px-6 md:py-6">
+	<div
+		class={cn(
+			$isMenuOpen ? 'block' : 'hidden md:block',
+			'z-10 w-full min-w-[256px] md:w-auto md:max-w-sm'
+		)}
+	>
+		<ul class="flex w-full flex-col p-2">
+			<li
+				class="text-md block whitespace-nowrap rounded-md border border-transparent px-3 py-2 text-sm font-semibold uppercase tracking-wider text-zinc-400"
+			>
+				Components
+			</li>
 			{#each links as link}
 				<li>
 					<a
@@ -31,13 +55,15 @@
 							'data-[active=true]:border-vermilion-600 data-[active=true]:bg-vermilion-600/25'
 						)}
 						data-active={$page.url.pathname === link.href}
-						href={link.href}>{link.title}</a
+						href={link.href}
 					>
+						{link.title}
+					</a>
 				</li>
 			{/each}
 		</ul>
 	</div>
-	<div class="flex w-full justify-center overflow-y-auto">
+	<div class={cn($isMenuOpen ? 'hidden md:flex' : 'flex', `w-full justify-center overflow-y-auto`)}>
 		<div class="w-full max-w-7xl items-center px-4 pt-2">
 			<div class="w-full">
 				<slot />
