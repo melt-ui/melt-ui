@@ -9,7 +9,5 @@ assignees: ''
 
 - [ ] Implementation
 - [ ] Example
-- [ ] Animation
-- [ ] Storybook/Histoire
 - [ ] Tests
 - [ ] Docs
