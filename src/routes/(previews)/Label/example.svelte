@@ -6,7 +6,7 @@
 
 <div>
 	<fieldset class="flex w-full flex-col justify-start">
-		<Label.Root class="mb-2.5 block text-white text-sm leading-none" for="firstName">
+		<Label.Root class="mb-2.5 block text-sm leading-none text-white" for="firstName">
 			Name
 		</Label.Root>
 		<input

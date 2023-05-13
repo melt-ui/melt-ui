@@ -71,6 +71,41 @@ Our [Discord community](https://discord.gg/gQrpPs34xH) is a great place to get i
 </picture>
 </a>
 
+## Roadmap
+
+| Component name  | Status |
+| --------------- | ------ |
+| Accordion       | ✅     |
+| Alert Dialog    | ✅     |
+| Aspect Ratio    | ✅     |
+| Avatar          | ✅     |
+| Checkbox        | ✅     |
+| Collapsible     | ✅     |
+| Context Menu    |        |
+| Dialog          | ✅     |
+| Dropdown Menu   |        |
+| Form            |        |
+| Hover Card      |        |
+| Label           | ✅     |
+| Menubar         |        |
+| Navigation Menu |        |
+| Popover         |        |
+| Progress        | ✅     |
+| Radio Group     | ✅     |
+| Scroll Area     |        |
+| Select          | 🔨     |
+| Separator       | ✅     |
+| Slider          | ✅     |
+| Switch          | ✅     |
+| Tabs            | ✅     |
+| Toast           |        |
+| Toggle          | ✅     |
+| Toggle Group    | ✅     |
+| Toolbar         |        |
+| Tooltip         | 🔨     |
+
+| Dropdown Menu
+
 ## Similar projects
 
 Looking for more? Check out these other projects too:

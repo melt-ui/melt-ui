@@ -15,7 +15,7 @@
 
 	$: sortedSchemas = Object.entries(schemas).sort((a, b) => {
 		return a[1].title.toLowerCase().localeCompare(b[1].title.toLowerCase());
-	});
+	}) as any;
 
 	let copied = false;
 	let copytimeout: ReturnType<typeof setTimeout>;
@@ -30,7 +30,7 @@
 </script>
 
 {#each { length: 6 } as _, n}
-	<div class="cummulative-gradient" style:--n={n + 1} />
+	<div class="cumulative-gradient" style:--n={n + 1} />
 {/each}
 
 <div class="relative grid grow place-items-center p-6">
@@ -42,23 +42,23 @@
 					>Radix Svelte is an unofficial community-led Svelte port of
 				</span><a href="https://radix-ui.com/" target="_blank" class="link">Radix UI Primitives</a
 				><span class="opacity-75"
-					>, a set of unstyled, accessible components for building high‑quality design systems and
+					>, a set of unstyled, accessible components for building high-quality design systems and
 					web apps.</span
 				>
 			</p>
 			<div class="flex flex-col gap-4 sm:flex-row">
 				<a
 					href="/docs/accordion"
-					class="text-md flex justify-between gap-4 rounded bg-vermilion-600 p-4 font-sans font-semibold text-white transition hover:bg-vermilion-500 active:translate-y-0.5 active:bg-vermilion-800 sm:shrink"
+					class="flex items-center justify-between gap-4 rounded bg-vermilion-600 px-4 py-3 font-sans text-lg font-semibold text-white transition hover:bg-vermilion-700 active:translate-y-0.5 active:bg-vermilion-700 sm:shrink"
 				>
 					Read the docs
 					<ArrowRight class="inline-block h-5 w-5 text-white" />
 				</a>
 				<button
 					on:click={copyInstallCommand}
-					class="text-md group flex justify-between gap-4 rounded bg-zinc-800 p-4 font-mono text-white transition hover:bg-zinc-700 active:translate-y-0.5 active:bg-zinc-900 sm:shrink"
+					class="group flex items-center justify-between gap-4 break-keep rounded bg-zinc-600 px-4 py-3 text-left font-mono text-lg text-white transition hover:bg-zinc-700 active:translate-y-0.5 active:bg-zinc-700 sm:shrink"
 					aria-label="Copy install command"
-					><span>npm install radix-svelte</span>
+					><span>npm install <span class="whitespace-nowrap">radix-svelte</span></span>
 					{#if copied}
 						<div in:fly={{ y: -4 }}>
 							<Check class="inline-block h-5 w-5 text-vermilion-500 transition" />
@@ -89,7 +89,7 @@
 </div>
 
 <style lang="postcss">
-	.cummulative-gradient {
+	.cumulative-gradient {
 		--size: calc(var(--n) * 20rem);
 
 		position: absolute;

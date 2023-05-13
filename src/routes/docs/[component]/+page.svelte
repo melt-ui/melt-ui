@@ -1,20 +1,21 @@
 <script lang="ts">
 	import { HighlightSvelte } from 'svelte-highlight';
 
+	import { page } from '$app/stores';
 	import {
 		getPropsObj,
 		type PreviewDataAttribute,
 		type PreviewEvent,
 		type PreviewMeta,
 		type PreviewProps,
-		type PreviewSchema,
 	} from '$lib/internal/helpers';
 	import { schemas } from '$routes/(previews)/schemas.js';
-	import { page } from '$app/stores';
 	import { cleanupCodeExample } from '$routes/helpers';
-	import Copy from '~icons/lucide/copy';
-	import Check from '~icons/lucide/check';
 	import { fly } from 'svelte/transition';
+	import Check from '~icons/lucide/check';
+	import Copy from '~icons/lucide/copy';
+	import Table from './Table.svelte';
+	import TableWrapper from './TableWrapper.svelte';
 
 	export let data;
 
@@ -30,8 +31,7 @@
 
 	$: reset(data.cmp);
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const castSchema = cmpSchema as PreviewSchema<any>;
+	const castSchema = cmpSchema as any;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function castMeta(component: any) {
@@ -52,6 +52,15 @@
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function castDataAttrs(component: any) {
 		return Object.entries((component.dataAttributes || {}) as Record<string, PreviewDataAttribute>);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	function hasPropsOrEventsOrDataAttrs(component: any) {
+		return (
+			Object.keys(component.props || {}).length > 0 ||
+			Object.keys(component.events || {}).length > 0 ||
+			Object.keys(component.dataAttributes || {}).length > 0
+		);
 	}
 
 	let showCode = false;
@@ -84,7 +93,7 @@
 
 <div class="comp-preview comp-preview-colored mt-8 h-96">
 	<div class="flex max-w-md grow items-center justify-center">
-		<svelte:component this={cmpSchema.example} bind:propsObj={props} />
+		<svelte:component this={castSchema.example} bind:propsObj={props} />
 	</div>
 </div>
 
@@ -125,108 +134,118 @@
 
 <div class="mt-8 flex flex-col gap-8">
 	{#each castMeta(cmpSchema) as [subCmp, subCmpSchema]}
-		<div>
-			<h2 class="col-span-3 text-xl font-bold">{subCmp}</h2>
+		<div class="flex w-full flex-col">
+			<h2 class="text-xl font-bold">{subCmp}</h2>
 			{#if subCmpSchema.description}
-				<p class="col-span-3 text-lg font-thin text-zinc-400">
+				<p class="text-lg font-thin text-zinc-400">
 					{@html getDescriptionHtml(subCmpSchema.description)}
 				</p>
 			{/if}
 
-			<div
-				class="mt-4 grid gap-x-4 gap-y-2 overflow-auto whitespace-nowrap rounded-md bg-zinc-900 p-4 text-white"
-			>
-				<span class=" text-sm text-zinc-300">Prop</span>
-				<span class=" text-sm text-zinc-300">Type</span>
-				<span class=" text-sm text-zinc-300">Control / Value</span>
+			{#if !hasPropsOrEventsOrDataAttrs(subCmpSchema)}
+				<p class="text-lg font-thin text-zinc-400">
+					No props, events or data attributes are explicitly required.
+				</p>
+			{:else}
+				<TableWrapper>
+					<Table
+						head={['Prop', 'Type', 'Control / Value']}
+						headMobile="Props"
+						data={castProps(subCmpSchema)}
+					>
+						<div class="contents" slot="row" let:datum>
+							{@const propKey = datum[0]}
+							{@const propDefinition = datum[1]}
+							<div>
+								<code class="font-mono">{propKey}</code>
+							</div>
+							<span class="font-mono">{propDefinition.typeLabel ?? propDefinition.type}</span>
+							<div>
+								{#if propDefinition.show === null}
+									<span class="white w-full font-mono text-sm"> N/A </span>
+								{:else if propDefinition.show === 'value'}
+									<span class="white w-full font-mono text-sm"
+										>{JSON.stringify(props[subCmp][propKey])}</span
+									>
+								{:else if propDefinition.type === 'boolean'}
+									<input type="checkbox" bind:checked={props[subCmp][propKey]} />
+								{:else if propDefinition.type === 'string'}
+									<input
+										class="w-full rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
+										type="text"
+										bind:value={props[subCmp][propKey]}
+									/>
+								{:else if propDefinition.type === 'number'}
+									<input
+										class="w-full rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
+										type="number"
+										bind:value={props[subCmp][propKey]}
+									/>
+								{:else if propDefinition.type === 'enum'}
+									<select
+										class="w-full rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
+										bind:value={props[subCmp][propKey]}
+									>
+										<option value="" hidden />
+										{#each propDefinition.options as value}
+											<option {value}>{value}</option>
+										{/each}
+									</select>
+								{:else}
+									{props[subCmp][propKey]}
+								{/if}
+							</div>
+						</div>
+						<p slot="empty">No Props</p>
+					</Table>
 
-				<hr class="col-span-3 opacity-25" />
+					<!-- Events -->
+					{#if castEvents(subCmpSchema).length}
+						<hr class="col-span-3 h-4 opacity-0" />
 
-				{#each castProps(subCmpSchema) as [propKey, propDefinition]}
-					<div>
-						<code class="font-mono">{propKey}</code>
-					</div>
-					<span class="font-mono">{propDefinition.typeLabel ?? propDefinition.type}</span>
-					<div class="">
-						{#if propDefinition.show === null}
-							<span class="white w-full font-mono text-sm"> N/A </span>
-						{:else if propDefinition.show === 'value'}
-							<span class="white w-full font-mono text-sm"
-								>{JSON.stringify(props[subCmp][propKey])}</span
-							>
-						{:else if propDefinition.type === 'boolean'}
-							<input type="checkbox" bind:checked={props[subCmp][propKey]} />
-						{:else if propDefinition.type === 'string'}
-							<input
-								class="w-full rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
-								type="text"
-								bind:value={props[subCmp][propKey]}
-							/>
-						{:else if propDefinition.type === 'number'}
-							<input
-								class="w-full rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
-								type="number"
-								bind:value={props[subCmp][propKey]}
-							/>
-						{:else if propDefinition.type === 'enum'}
-							<select
-								class="w-full rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
-								bind:value={props[subCmp][propKey]}
-							>
-								<option value="" hidden />
-								{#each propDefinition.options as value}
-									<option {value}>{value}</option>
-								{/each}
-							</select>
-						{:else}
-							{props[subCmp][propKey]}
-						{/if}
-					</div>
-				{:else}
-					<p class="col-span-3 text-sm">No props</p>
-				{/each}
+						<Table head={['Event', 'Payload']} headMobile="Events" data={castEvents(subCmpSchema)}>
+							<div class="contents" slot="row" let:datum>
+								{@const eventKey = datum[0]}
+								{@const eventDef = datum[1]}
+								<div>
+									<code class="font-mono">{eventKey}</code>
+								</div>
+								<span class="font-mono">
+									{Array.isArray(eventDef.payload)
+										? eventDef.payload.join(' | ')
+										: JSON.stringify(eventDef.payload)}
+								</span>
+								<div class="" />
+							</div>
+							<p slot="empty">No Events</p>
+						</Table>
+					{/if}
 
-				<!-- Events -->
-				{#if castEvents(subCmpSchema).length}
-					<hr class="col-span-3 h-4 opacity-0" />
+					<!-- Data Attributes -->
+					{#if castDataAttrs(subCmpSchema).length}
+						<hr class="col-span-3 h-4 opacity-0" />
 
-					<span class=" text-sm text-zinc-300">Event</span>
-					<span class=" text-sm text-zinc-300">Payload</span>
-					<span class=" text-sm text-zinc-300" />
-
-					<hr class="col-span-3 opacity-25" />
-
-					{#each castEvents(subCmpSchema) as [eventKey, eventDef]}
-						<span class=" font-mono">{eventKey}</span>
-						<span class=" font-mono">
-							{Array.isArray(eventDef.payload)
-								? eventDef.payload.join(' | ')
-								: JSON.stringify(eventDef.payload)}
-						</span>
-						<div class="" />
-					{/each}
-				{/if}
-
-				<!-- Data Attributes -->
-				{#if castDataAttrs(subCmpSchema).length}
-					<hr class="col-span-3 h-4 opacity-0" />
-
-					<span class=" text-sm text-zinc-300">Data Attribute</span>
-					<span class=" text-sm text-zinc-300">Value</span>
-					<span class=" text-sm text-zinc-300">Inspect</span>
-
-					<hr class="col-span-3 opacity-25" />
-
-					{#each castDataAttrs(subCmpSchema) as [attrKey, attrDef]}
-						<span class="font-mono">[{attrKey}]</span>
-						<span class="font-mono">
-							{Array.isArray(attrDef.values) ? attrDef.values.join(' | ') : attrDef.values}
-						</span>
-						<!-- How might we dynamically read the data attributes from the example? -->
-						<div class="" />
-					{/each}
-				{/if}
-			</div>
+						<Table
+							head={['Data Attribute', 'Value']}
+							headMobile="Data Attributes"
+							data={castDataAttrs(subCmpSchema)}
+						>
+							<div class="contents" slot="row" let:datum>
+								{@const attrKey = datum[0]}
+								{@const attrDef = datum[1]}
+								<div>
+									<code class="font-mono">{attrKey}</code>
+								</div>
+								<span class="font-mono">
+									{Array.isArray(attrDef.values) ? attrDef.values.join(' | ') : attrDef.values}
+								</span>
+								<div class="" />
+							</div>
+							<p slot="empty">No Data Attributes</p>
+						</Table>
+					{/if}
+				</TableWrapper>
+			{/if}
 		</div>
 	{/each}
 </div>

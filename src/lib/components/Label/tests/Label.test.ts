@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/experimental-ct-svelte';
 
-import LabelTest, { testConstants } from './LabelTest.svelte';
+import LabelTest from './LabelTest.svelte';
 import { axeViolations } from '$test-helpers/axeTester.js';
+import { constants } from './constants.js';
 
 test.describe('Label', () => {
 	test('No accessibility violations', async ({ mount, page }) => {
@@ -11,23 +12,23 @@ test.describe('Label', () => {
 
 	test('Input is focused when label is clicked', async ({ mount, page }) => {
 		const cmp = await mount(LabelTest);
-		const label = cmp.getByTestId(testConstants.labelDataTestId);
+		const label = cmp.getByTestId(constants.labelDataTestId);
 
 		await label.click();
 
 		const activeElementId = await page.evaluate(() => document.activeElement?.id);
 
-		expect(activeElementId).toBe(testConstants.inputId);
+		expect(activeElementId).toBe(constants.inputId);
 	});
 
 	test('Input is focused when label is double-clicked', async ({ mount, page }) => {
 		const cmp = await mount(LabelTest);
-		const label = cmp.getByTestId(testConstants.labelDataTestId);
+		const label = cmp.getByTestId(constants.labelDataTestId);
 
 		await label.dblclick();
 
 		const activeElementId = await page.evaluate(() => document.activeElement?.id);
 
-		expect(activeElementId).toBe(testConstants.inputId);
+		expect(activeElementId).toBe(constants.inputId);
 	});
 });

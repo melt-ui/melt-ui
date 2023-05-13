@@ -4,7 +4,7 @@
 
 	export let propsObj: ResolvedProps<typeof Slider>;
 
-	propsObj.Root.value = [20];
+	propsObj.Root.value = 20;
 </script>
 
 <form>
