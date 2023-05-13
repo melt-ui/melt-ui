@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0
+
+### Minor Changes
+
+- 1e81e11: feat: select number prop
+
 ## 0.4.2
 
 ### Patch Changes
