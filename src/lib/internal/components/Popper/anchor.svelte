@@ -14,6 +14,6 @@
 	$: $rootContext.anchor = element;
 </script>
 
-<div {...$$restProps} bind:this={element} on:click>
+<div {...$$restProps} bind:this={element} on:click on:pointerenter on:pointerleave on:focus on:blur on:touchstart>
 	<slot />
 </div>
