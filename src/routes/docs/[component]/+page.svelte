@@ -14,6 +14,8 @@
 	import { fly } from 'svelte/transition';
 	import Check from '~icons/lucide/check';
 	import Copy from '~icons/lucide/copy';
+	import Table from './Table.svelte';
+	import TableWrapper from './TableWrapper.svelte';
 
 	export let data;
 
@@ -145,18 +147,15 @@
 					No props, events or data attributes are explicitly required.
 				</p>
 			{:else}
-				<div
-					class="mt-4 flex flex-col gap-x-4 gap-y-2 overflow-auto whitespace-nowrap rounded-md bg-zinc-900 p-4 text-white lg:grid"
-				>
-					<span class="hidden text-sm text-zinc-300 lg:block">Prop</span>
-					<span class="hidden text-sm text-zinc-300 lg:block">Type</span>
-					<span class="hidden text-sm text-zinc-300 lg:block">Control / Value</span>
-					<span class="text-sm text-zinc-300 lg:hidden">Props</span>
-
-					<hr class="col-span-3 opacity-25" />
-
-					{#each castProps(subCmpSchema) as [propKey, propDefinition]}
-						<div class="flex flex-col gap-2 border-b border-b-zinc-700 py-3 lg:contents">
+				<TableWrapper>
+					<Table
+						head={['Prop', 'Type', 'Control / Value']}
+						headMobile="Props"
+						data={castProps(subCmpSchema)}
+					>
+						<div class="contents" slot="row" let:datum>
+							{@const propKey = datum[0]}
+							{@const propDefinition = datum[1]}
 							<div>
 								<code class="font-mono">{propKey}</code>
 							</div>
@@ -197,51 +196,55 @@
 								{/if}
 							</div>
 						</div>
-					{:else}
-						<p class="col-span-3 text-sm">No props</p>
-					{/each}
+						<p slot="empty">No Props</p>
+					</Table>
 
 					<!-- Events -->
 					{#if castEvents(subCmpSchema).length}
 						<hr class="col-span-3 h-4 opacity-0" />
 
-						<span class="text-sm text-zinc-300">Event</span>
-						<span class="text-sm text-zinc-300">Payload</span>
-						<span class="text-sm text-zinc-300" />
-
-						<hr class="col-span-3 opacity-25" />
-
-						{#each castEvents(subCmpSchema) as [eventKey, eventDef]}
-							<span class=" font-mono">{eventKey}</span>
-							<span class=" font-mono">
-								{Array.isArray(eventDef.payload)
-									? eventDef.payload.join(' | ')
-									: JSON.stringify(eventDef.payload)}
-							</span>
-							<div class="" />
-						{/each}
+						<Table head={['Event', 'Payload']} headMobile="Events" data={castEvents(subCmpSchema)}>
+							<div class="contents" slot="row" let:datum>
+								{@const eventKey = datum[0]}
+								{@const eventDef = datum[1]}
+								<div>
+									<code class="font-mono">{eventKey}</code>
+								</div>
+								<span class="font-mono">
+									{Array.isArray(eventDef.payload)
+										? eventDef.payload.join(' | ')
+										: JSON.stringify(eventDef.payload)}
+								</span>
+								<div class="" />
+							</div>
+							<p slot="empty">No Events</p>
+						</Table>
 					{/if}
 
 					<!-- Data Attributes -->
 					{#if castDataAttrs(subCmpSchema).length}
 						<hr class="col-span-3 h-4 opacity-0" />
 
-						<span class=" text-sm text-zinc-300">Data Attribute</span>
-						<span class=" text-sm text-zinc-300">Value</span>
-						<span class=" text-sm text-zinc-300">Inspect</span>
-
-						<hr class="col-span-3 opacity-25" />
-
-						{#each castDataAttrs(subCmpSchema) as [attrKey, attrDef]}
-							<span class="font-mono">[{attrKey}]</span>
-							<span class="font-mono">
-								{Array.isArray(attrDef.values) ? attrDef.values.join(' | ') : attrDef.values}
-							</span>
-							<!-- How might we dynamically read the data attributes from the example? -->
-							<div class="" />
-						{/each}
+						<Table
+							head={['Data Attribute', 'Value']}
+							headMobile="Data Attributes"
+							data={castDataAttrs(subCmpSchema)}
+						>
+							<div class="contents" slot="row" let:datum>
+								{@const attrKey = datum[0]}
+								{@const attrDef = datum[1]}
+								<div>
+									<code class="font-mono">{attrKey}</code>
+								</div>
+								<span class="font-mono">
+									{Array.isArray(attrDef.values) ? attrDef.values.join(' | ') : attrDef.values}
+								</span>
+								<div class="" />
+							</div>
+							<p slot="empty">No Data Attributes</p>
+						</Table>
 					{/if}
-				</div>
+				</TableWrapper>
 			{/if}
 		</div>
 	{/each}

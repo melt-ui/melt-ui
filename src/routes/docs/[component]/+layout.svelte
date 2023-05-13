@@ -25,11 +25,11 @@
 	{@html theme}
 </svelte:head>
 
-<div class="flex max-w-full grid-cols-12 flex-col gap-8 py-2 md:grid md:px-6 md:py-6">
+<div class="flex max-w-full grid-cols-12 flex-col gap-8 py-2 xl:grid xl:px-6 xl:py-6">
 	<div
 		class={cn(
-			$isMenuOpen ? 'block' : 'hidden md:block',
-			'z-10 col-span-2 w-full min-w-[256px] md:w-auto md:max-w-xs'
+			$isMenuOpen ? 'block' : 'hidden xl:block',
+			'z-10 col-span-2 w-full xl:w-auto xl:max-w-xs'
 		)}
 	>
 		<ul class="flex w-full flex-col p-2">
@@ -57,7 +57,7 @@
 	</div>
 	<div
 		class={cn(
-			$isMenuOpen ? 'hidden md:flex' : 'flex',
+			$isMenuOpen ? 'hidden xl:flex' : 'flex',
 			`col-span-8 w-full justify-center overflow-y-auto`
 		)}
 	>
