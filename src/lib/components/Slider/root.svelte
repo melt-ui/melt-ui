@@ -17,7 +17,7 @@
 		max?: number;
 		step?: number;
 		minStepsBetweenThumbs?: number;
-		value?: number[];
+		value?: number[] | number;
 		inverted?: boolean;
 	};
 
@@ -84,11 +84,15 @@
 	const dispatch = createEventDispatcher<UnwrapCustomEvents<$$Events>>();
 
 	// Create root context with initial values
-	const contextStore = setContext({
+	const ctx = setContext({
 		values: [
-			value,
+			Array.isArray(value) ? value : [value],
 			(v) => {
-				value = v;
+				if (Array.isArray(value)) {
+					value = Array.isArray(v) ? v : [v];
+				} else {
+					value = Array.isArray(v) ? v[0] : v;
+				}
 				onChange(v);
 			},
 		],
@@ -100,9 +104,9 @@
 	});
 
 	// Update context when props change
-	$: contextStore.set({
-		...$contextStore,
-		values: value,
+	$: ctx.set({
+		...$ctx,
+		values: Array.isArray(value) ? value : [value],
 		min,
 		max,
 		disabled,
@@ -123,7 +127,7 @@
 	// Pick the correct orientation component
 	$: SliderOrientation = orientation === 'horizontal' ? SliderHorizontal : SliderVertical;
 
-	let valuesBeforeSlideStart = value;
+	let valuesBeforeSlideStart = $ctx.values;
 
 	// Update the value when the user interacts with the slider
 	function updateValues(value: number, atIndex: number, { commit } = { commit: false }) {
@@ -131,15 +135,15 @@
 		const snapToStep = roundValue(Math.round((value - min) / step) * step + min, decimalCount);
 		const nextValue = clamp(snapToStep, [min, max]);
 
-		const prevValues = $contextStore.values;
+		const prevValues = $ctx.values;
 		const nextValues = getNextSortedValues(prevValues, nextValue, atIndex);
 		if (hasMinStepsBetweenValues(nextValues, minStepsBetweenThumbs * step)) {
-			$contextStore.valueIndexToChange = nextValues.indexOf(nextValue);
+			$ctx.valueIndexToChange = nextValues.indexOf(nextValue);
 
 			const hasChanged = String(nextValues) !== String(prevValues);
 			if (hasChanged && commit) onValueCommit(nextValues);
 			if (hasChanged) {
-				$contextStore.values = nextValues;
+				$ctx.values = nextValues;
 			}
 		}
 	}
@@ -164,47 +168,46 @@
 	data-disabled={disabled ? '' : undefined}
 	data-orientation={orientation}
 	on:pointerDown={() => {
-		if (!disabled) valuesBeforeSlideStart = $contextStore.values;
+		if (!disabled) valuesBeforeSlideStart = $ctx.values;
 	}}
 	on:slideStart={({ detail }) => {
 		if (disabled) return;
 		const { value } = detail;
-		const closestIndex = getClosestValueIndex($contextStore.values, value);
+		const closestIndex = getClosestValueIndex($ctx.values, value);
 		updateValues(value, closestIndex);
-		$thumbComponents.at($contextStore.valueIndexToChange)?.focus();
+		$thumbComponents.at($ctx.valueIndexToChange)?.focus();
 	}}
 	on:slideMove={({ detail }) => {
 		if (disabled) return;
 		const { value } = detail;
-		updateValues(value, $contextStore.valueIndexToChange);
+		updateValues(value, $ctx.valueIndexToChange);
 	}}
 	on:slideEnd={() => {
 		if (disabled) return;
-		const prevValue = valuesBeforeSlideStart[$contextStore.valueIndexToChange];
-		const nextValue = $contextStore.values[$contextStore.valueIndexToChange];
+		const prevValue = valuesBeforeSlideStart[$ctx.valueIndexToChange];
+		const nextValue = $ctx.values[$ctx.valueIndexToChange];
 		const hasChanged = nextValue !== prevValue;
-		if (hasChanged) onValueCommit($contextStore.values);
+		if (hasChanged) onValueCommit($ctx.values);
 	}}
 	on:homeKeyDown={() => !disabled && updateValues(min, 0, { commit: true })}
-	on:endKeyDown={() =>
-		!disabled && updateValues(max, $contextStore.values.length - 1, { commit: true })}
+	on:endKeyDown={() => !disabled && updateValues(max, $ctx.values.length - 1, { commit: true })}
 	on:stepKeyDown={({ detail }) => {
 		if (!disabled) {
 			const { event, direction: stepDirection } = detail;
 			const isPageKey = PAGE_KEYS.includes(event.key);
 			const isSkipKey = isPageKey || (event.shiftKey && ARROW_KEYS.includes(event.key));
 			const multiplier = isSkipKey ? 10 : 1;
-			const atIndex = $contextStore.valueIndexToChange;
-			const value = $contextStore.values[atIndex];
+			const atIndex = $ctx.valueIndexToChange;
+			const value = $ctx.values[atIndex];
 			const stepInDirection = step * multiplier * stepDirection;
 			updateValues(value + stepInDirection, atIndex, { commit: true });
 		}
 	}}><slot /></svelte:component
 >
-{#each $contextStore.values as value}
+{#each $ctx.values as value}
 	<input
 		type="hidden"
-		name={name ? name + ($contextStore.values.length > 1 ? '[]' : '') : undefined}
+		name={name ? name + ($ctx.values.length > 1 ? '[]' : '') : undefined}
 		{value}
 		style:display="none"
 	/>
