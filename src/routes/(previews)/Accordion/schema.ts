@@ -48,7 +48,7 @@ export const schema = {
 		},
 		Header: {
 			description:
-				'Wraps an *Accordion.Trigger*. Use the *asChild* prop to update it to the appropriate heading level for your page.',
+				'Wraps an *Accordion.Trigger*.',
 			dataAttributes: {
 				'data-disabled': {
 					values: 'Present when disabled',

@@ -1,17 +1,9 @@
-<script context="module">
-	export const testConstants = {
-		labelDataTestId: 'label',
-		inputId: 'input-id',
-	};
-</script>
-
 <script lang="ts">
 	import { Label } from '$lib/components/Label';
+	import { constants } from './constants';
 </script>
 
-<Label.Root
-	data-testid={testConstants.labelDataTestId}
-	aria-label="basic label"
-	for={testConstants.inputId}>Label text</Label.Root
+<Label.Root data-testid={constants.labelDataTestId} aria-label="basic label" for={constants.inputId}
+	>Label text</Label.Root
 >
-<input type="text" id={testConstants.inputId} />
+<input type="text" id={constants.inputId} />
