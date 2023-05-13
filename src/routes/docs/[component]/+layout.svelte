@@ -1,18 +1,10 @@
 <script lang="ts">
-	import theme from 'svelte-highlight/styles/tomorrow-night';
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { getContext } from 'svelte';
 	import { schemas } from '$routes/(previews)/schemas';
 	import { cn, sortedEntries } from '$routes/helpers';
-	import type { Writable } from 'svelte/store';
-	import { afterNavigate } from '$app/navigation';
-
-	const menu = getContext('menu') as {
-		get(): Writable<boolean>;
-		set(open: boolean): void;
-	};
-
-	const isMenuOpen = menu.get();
+	import theme from 'svelte-highlight/styles/tomorrow-night';
+	import { isMenuOpen } from '$routes/+layout.svelte';
 
 	type Link = {
 		title: string;
@@ -33,11 +25,11 @@
 	{@html theme}
 </svelte:head>
 
-<div class="flex max-w-full flex-col gap-8 py-2 md:flex-row md:px-6 md:py-6">
+<div class="flex max-w-full grid-cols-12 flex-col gap-8 py-2 md:grid md:px-6 md:py-6">
 	<div
 		class={cn(
 			$isMenuOpen ? 'block' : 'hidden md:block',
-			'z-10 w-full min-w-[256px] md:w-auto md:max-w-sm'
+			'z-10 col-span-2 w-full min-w-[256px] md:w-auto md:max-w-xs'
 		)}
 	>
 		<ul class="flex w-full flex-col p-2">
@@ -63,11 +55,17 @@
 			{/each}
 		</ul>
 	</div>
-	<div class={cn($isMenuOpen ? 'hidden md:flex' : 'flex', `w-full justify-center overflow-y-auto`)}>
+	<div
+		class={cn(
+			$isMenuOpen ? 'hidden md:flex' : 'flex',
+			`col-span-8 w-full justify-center overflow-y-auto`
+		)}
+	>
 		<div class="w-full max-w-7xl items-center px-4 pt-2">
 			<div class="w-full">
 				<slot />
 			</div>
 		</div>
 	</div>
+	<div class="col-span-2" />
 </div>

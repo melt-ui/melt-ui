@@ -1,20 +1,19 @@
 <script lang="ts">
 	import { HighlightSvelte } from 'svelte-highlight';
 
+	import { page } from '$app/stores';
 	import {
 		getPropsObj,
 		type PreviewDataAttribute,
 		type PreviewEvent,
 		type PreviewMeta,
 		type PreviewProps,
-		type PreviewSchema,
 	} from '$lib/internal/helpers';
 	import { schemas } from '$routes/(previews)/schemas.js';
-	import { page } from '$app/stores';
 	import { cleanupCodeExample } from '$routes/helpers';
-	import Copy from '~icons/lucide/copy';
-	import Check from '~icons/lucide/check';
 	import { fly } from 'svelte/transition';
+	import Check from '~icons/lucide/check';
+	import Copy from '~icons/lucide/copy';
 
 	export let data;
 
@@ -30,8 +29,7 @@
 
 	$: reset(data.cmp);
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const castSchema = cmpSchema as PreviewSchema<any>;
+	const castSchema = cmpSchema as any;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function castMeta(component: any) {
@@ -93,7 +91,7 @@
 
 <div class="comp-preview comp-preview-colored mt-8 h-96">
 	<div class="flex max-w-md grow items-center justify-center">
-		<svelte:component this={cmpSchema.example} bind:propsObj={props} />
+		<svelte:component this={castSchema.example} bind:propsObj={props} />
 	</div>
 </div>
 

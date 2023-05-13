@@ -1,3 +1,7 @@
+<script lang="ts" context="module">
+	export const isMenuOpen = writable(false);
+</script>
+
 <script lang="ts">
 	import '../app.postcss';
 
@@ -22,17 +26,6 @@
 	import { writable } from 'svelte/store';
 	import { onMount } from 'svelte';
 	import { dev } from '$app/environment';
-	import { setContext } from 'svelte';
-
-	let isMenuOpen = writable(false);
-	setContext('menu', {
-		get() {
-			return isMenuOpen;
-		},
-		set(open: boolean) {
-			isMenuOpen.set(open);
-		},
-	});
 
 	$: isRoot = $page.url.pathname === '/';
 
@@ -80,21 +73,17 @@
 						class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px md:hidden"
 					/>
 				</a>
-			{:else if !$isMenuOpen}
+			{:else}
 				<button
 					class="block h-6 w-6 md:hidden"
-					aria-label="Open menu"
-					on:click={() => ($isMenuOpen = true)}
+					aria-label="Toggle menu"
+					on:click={() => ($isMenuOpen = !$isMenuOpen)}
 				>
-					<Menu class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px" />
-				</button>
-			{:else if $isMenuOpen}
-				<button
-					class="block h-6 w-6 md:hidden"
-					aria-label="Close menu"
-					on:click={() => ($isMenuOpen = false)}
-				>
-					<X class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px" />
+					{#if $isMenuOpen}
+						<X class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px" />
+					{:else}
+						<Menu class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px" />
+					{/if}
 				</button>
 			{/if}
 		</div>

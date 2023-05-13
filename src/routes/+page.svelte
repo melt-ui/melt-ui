@@ -15,7 +15,7 @@
 
 	$: sortedSchemas = Object.entries(schemas).sort((a, b) => {
 		return a[1].title.toLowerCase().localeCompare(b[1].title.toLowerCase());
-	});
+	}) as any;
 
 	let copied = false;
 	let copytimeout: ReturnType<typeof setTimeout>;
