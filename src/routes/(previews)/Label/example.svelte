@@ -13,7 +13,7 @@
 			class="h-8 shrink-0 grow rounded border px-2.5
 				leading-none text-vermilion-900 outline-none focus:ring-2 focus:ring-vermilion-800"
 			id="firstName"
-			value="Thomas G. Glopes"
+			value="Thomas G. Lopes"
 			type="text"
 		/>
 	</fieldset>

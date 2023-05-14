@@ -17,6 +17,7 @@
 
 {#each data as datum, i}
 	{@const isLast = i === data.length - 1}
+
 	<div class={cn('flex flex-col gap-2 py-3 lg:contents', !isLast && 'border-b border-b-zinc-700')}>
 		<slot name="row" {datum} />
 	</div>

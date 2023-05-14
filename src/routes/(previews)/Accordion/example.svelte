@@ -4,9 +4,6 @@
 	// Since we use a discriminated union in ToggleGroup.Root, we need to cast
 	// some props to any to satisfy the type checker. TODO: Find a better way to do this.
 	export let propsObj: any;
-
-	// Set defaults for the example
-	propsObj.Content.transition = true;
 </script>
 
 <div class="contents">

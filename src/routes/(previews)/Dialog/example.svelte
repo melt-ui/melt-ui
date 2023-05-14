@@ -8,7 +8,7 @@
 	export let propsObj: ResolvedProps<typeof Dialog>;
 </script>
 
-<Dialog.Root bind:modal={propsObj.Root.modal}>
+<Dialog.Root bind:modal={propsObj.Root.modal} bind:open={propsObj.Root.open}>
 	<Dialog.Trigger
 		class="inline-flex items-center justify-center rounded-md bg-white px-4 py-2
     font-medium leading-none text-vermilion-800 shadow-lg hover:opacity-75

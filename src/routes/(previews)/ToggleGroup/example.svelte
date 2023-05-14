@@ -13,7 +13,7 @@
 
 <div class="contents">
 	<ToggleGroup.Root
-		class="flex items-center data-[orientation='vertical']:flex-col"
+		class="flex items-center  data-[orientation='vertical']:flex-col"
 		bind:value={propsObj.Root.value}
 		type={propsObj.Root.type}
 		dir={propsObj.Root.dir}
@@ -64,8 +64,8 @@
 		@apply cursor-not-allowed;
 	}
 
-	.contents :global(.toggle-item[data-orientation='horizontal']:dir(ltr)) {
-		@apply border-x border-l-transparent  border-r-vermilion-200;
+	.contents :global(.toggle-item[data-orientation='horizontal']) {
+		@apply border-x border-l-transparent border-r-vermilion-200;
 
 		&:first-child {
 			@apply rounded-l;

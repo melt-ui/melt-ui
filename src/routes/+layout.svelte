@@ -39,7 +39,7 @@
 <main class="flex min-h-screen flex-col">
 	<nav
 		class={cn(
-			'flex items-center justify-between px-4 py-4 md:px-8 ',
+			'flex items-center justify-between px-4 py-4 xl:px-8 ',
 			!isRoot && 'border-b border-b-zinc-700'
 		)}
 	>
@@ -68,16 +68,19 @@
 			</a>
 			{#if isRoot}
 				<a href="/docs/accordion" class="link">
-					<span class="hidden md:block">Docs</span>
+					<span class="hidden lg:block">Docs</span>
 					<Book
-						class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px md:hidden"
+						class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px lg:hidden"
 					/>
 				</a>
 			{:else}
 				<button
-					class="block h-6 w-6 md:hidden"
+					class="block h-6 w-6 xl:hidden"
 					aria-label="Toggle menu"
-					on:click={() => ($isMenuOpen = !$isMenuOpen)}
+					on:click={() => {
+						console.log('clicking', $isMenuOpen);
+						$isMenuOpen = !$isMenuOpen;
+					}}
 				>
 					{#if $isMenuOpen}
 						<X class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px" />

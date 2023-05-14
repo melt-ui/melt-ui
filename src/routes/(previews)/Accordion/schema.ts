@@ -74,7 +74,7 @@ export const schema = {
 			props: {
 				transition: {
 					type: 'boolean',
-					default: false,
+					default: true,
 				},
 			},
 			dataAttributes: {

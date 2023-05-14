@@ -2,36 +2,26 @@
 	import { HighlightSvelte } from 'svelte-highlight';
 
 	import { page } from '$app/stores';
-	import {
-		getPropsObj,
-		type PreviewDataAttribute,
-		type PreviewEvent,
-		type PreviewMeta,
-		type PreviewProps,
+	import type {
+		PreviewDataAttribute,
+		PreviewEvent,
+		PreviewMeta,
+		PreviewProps,
 	} from '$lib/internal/helpers';
-	import { schemas } from '$routes/(previews)/schemas.js';
+
 	import { cleanupCodeExample } from '$routes/helpers';
 	import { fly } from 'svelte/transition';
 	import Check from '~icons/lucide/check';
 	import Copy from '~icons/lucide/copy';
 	import Table from './Table.svelte';
 	import TableWrapper from './TableWrapper.svelte';
+	import { schemas } from '$routes/(previews)/schemas';
 
 	export let data;
-
-	let cmpSchema = schemas[data.cmp as keyof typeof schemas];
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
-	let props = getPropsObj<{}>(cmpSchema.meta) as any;
-
-	function reset(cmp: string) {
-		cmpSchema = schemas[cmp as keyof typeof schemas];
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
-		props = getPropsObj<{}>(cmpSchema.meta) as any;
-	}
-
-	$: reset(data.cmp);
-
-	const castSchema = cmpSchema as any;
+	$: cmpSchema = schemas[data.cmp as keyof typeof schemas];
+	$: props = data.props;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	$: castSchema = cmpSchema as any;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function castMeta(component: any) {
@@ -153,46 +143,44 @@
 						headMobile="Props"
 						data={castProps(subCmpSchema)}
 					>
-						<div class="contents" slot="row" let:datum>
-							{@const propKey = datum[0]}
-							{@const propDefinition = datum[1]}
+						<div class="contents" slot="row" let:datum={[key, definition]}>
 							<div>
-								<code class="font-mono">{propKey}</code>
+								<code class="font-mono">{key}</code>
 							</div>
-							<span class="font-mono">{propDefinition.typeLabel ?? propDefinition.type}</span>
+							<span class="font-mono">{definition.typeLabel ?? definition.type}</span>
 							<div>
-								{#if propDefinition.show === null}
+								{#if definition.show === null}
 									<span class="white w-full font-mono text-sm"> N/A </span>
-								{:else if propDefinition.show === 'value'}
+								{:else if definition.show === 'value'}
 									<span class="white w-full font-mono text-sm"
-										>{JSON.stringify(props[subCmp][propKey])}</span
+										>{JSON.stringify(props[subCmp][key])}</span
 									>
-								{:else if propDefinition.type === 'boolean'}
-									<input type="checkbox" bind:checked={props[subCmp][propKey]} />
-								{:else if propDefinition.type === 'string'}
+								{:else if definition.type === 'boolean'}
+									<input type="checkbox" bind:checked={props[subCmp][key]} />
+								{:else if definition.type === 'string'}
 									<input
 										class="w-full rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
 										type="text"
-										bind:value={props[subCmp][propKey]}
+										bind:value={props[subCmp][key]}
 									/>
-								{:else if propDefinition.type === 'number'}
+								{:else if definition.type === 'number'}
 									<input
 										class="w-full rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
 										type="number"
-										bind:value={props[subCmp][propKey]}
+										bind:value={props[subCmp][key]}
 									/>
-								{:else if propDefinition.type === 'enum'}
+								{:else if definition.type === 'enum'}
 									<select
 										class="w-full rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
-										bind:value={props[subCmp][propKey]}
+										bind:value={props[subCmp][key]}
 									>
 										<option value="" hidden />
-										{#each propDefinition.options as value}
+										{#each definition.options as value}
 											<option {value}>{value}</option>
 										{/each}
 									</select>
 								{:else}
-									{props[subCmp][propKey]}
+									{props[subCmp][key]}
 								{/if}
 							</div>
 						</div>
@@ -204,16 +192,14 @@
 						<hr class="col-span-3 h-4 opacity-0" />
 
 						<Table head={['Event', 'Payload']} headMobile="Events" data={castEvents(subCmpSchema)}>
-							<div class="contents" slot="row" let:datum>
-								{@const eventKey = datum[0]}
-								{@const eventDef = datum[1]}
+							<div class="contents" slot="row" let:datum={[key, definition]}>
 								<div>
-									<code class="font-mono">{eventKey}</code>
+									<code class="font-mono">{key}</code>
 								</div>
 								<span class="font-mono">
-									{Array.isArray(eventDef.payload)
-										? eventDef.payload.join(' | ')
-										: JSON.stringify(eventDef.payload)}
+									{Array.isArray(definition.payload)
+										? definition.payload.join(' | ')
+										: JSON.stringify(definition.payload)}
 								</span>
 								<div class="" />
 							</div>
@@ -230,14 +216,14 @@
 							headMobile="Data Attributes"
 							data={castDataAttrs(subCmpSchema)}
 						>
-							<div class="contents" slot="row" let:datum>
-								{@const attrKey = datum[0]}
-								{@const attrDef = datum[1]}
+							<div class="contents" slot="row" let:datum={[key, definition]}>
 								<div>
-									<code class="font-mono">{attrKey}</code>
+									<code class="font-mono">{key}</code>
 								</div>
 								<span class="font-mono">
-									{Array.isArray(attrDef.values) ? attrDef.values.join(' | ') : attrDef.values}
+									{Array.isArray(definition.values)
+										? definition.values.join(' | ')
+										: definition.values}
 								</span>
 								<div class="" />
 							</div>
