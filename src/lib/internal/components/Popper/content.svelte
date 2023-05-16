@@ -5,7 +5,14 @@
 
 	type Boundary = Element | null;
 
-	export type PopperContentProps = BaseProps & {
+	export type PopperContentEventProps = {
+		onPointerEnter?: BaseProps['on:pointerenter'];
+		onPointerLeave?: BaseProps['on:pointerleave'];
+		onFocus?: BaseProps['on:focus'];
+		onBlur?: BaseProps['on:blur'];
+	}
+
+	export type PopperContentProps = BaseProps & PopperContentEventProps & {
 		side?: Side;
 		sideOffset?: number;
 		align?: Align;
@@ -64,6 +71,11 @@
 	export let sticky: NonNullable<$$Props['sticky']> = 'partial';
 	export let hideWhenDetached: NonNullable<$$Props['hideWhenDetached']> = false;
 	export let avoidCollisions: NonNullable<$$Props['avoidCollisions']> = true;
+
+	export let onPointerEnter: $$Props['onPointerEnter'] = null;
+	export let onPointerLeave: $$Props['onPointerLeave'] = null;
+	export let onBlur: $$Props['onBlur'] = null;
+	export let onFocus: $$Props['onFocus'] = null;
 
 	const rootCtx = getRootContext();
 	const ctx = setContext({
@@ -181,6 +193,10 @@
 
 <div
 	bind:this={content}
+	on:pointerenter={e => onPointerEnter?.(e)}
+	on:pointerleave={e => onPointerLeave?.(e)}
+	on:blur={e => onBlur?.(e)}
+	on:focus={e => onFocus?.(e)}
 	data-radix-popper-content-wrapper=""
 	style:position={strategy}
 	style:left={0}
