@@ -5,14 +5,14 @@
 
 	type Boundary = Element | null;
 
-	export type PopperContentEventProps = {
-		onPointerEnter?: BaseProps['on:pointerenter'];
-		onPointerLeave?: BaseProps['on:pointerleave'];
-		onFocus?: BaseProps['on:focus'];
-		onBlur?: BaseProps['on:blur'];
-	}
+	export type PopperContentEvents = {
+		pointerenter?: BaseProps['on:pointerenter'];
+		pointerleave?: BaseProps['on:pointerleave'];
+		focus?: BaseProps['on:focus'];
+		blur?: BaseProps['on:blur'];
+	};
 
-	export type PopperContentProps = BaseProps & PopperContentEventProps & {
+	export type PopperContentProps = BaseProps & {
 		side?: Side;
 		sideOffset?: number;
 		align?: Align;
@@ -71,11 +71,6 @@
 	export let sticky: NonNullable<$$Props['sticky']> = 'partial';
 	export let hideWhenDetached: NonNullable<$$Props['hideWhenDetached']> = false;
 	export let avoidCollisions: NonNullable<$$Props['avoidCollisions']> = true;
-
-	export let onPointerEnter: $$Props['onPointerEnter'] = null;
-	export let onPointerLeave: $$Props['onPointerLeave'] = null;
-	export let onBlur: $$Props['onBlur'] = null;
-	export let onFocus: $$Props['onFocus'] = null;
 
 	const rootCtx = getRootContext();
 	const ctx = setContext({
@@ -193,10 +188,10 @@
 
 <div
 	bind:this={content}
-	on:pointerenter={e => onPointerEnter?.(e)}
-	on:pointerleave={e => onPointerLeave?.(e)}
-	on:blur={e => onBlur?.(e)}
-	on:focus={e => onFocus?.(e)}
+	on:pointerenter
+	on:pointerleave
+	on:blur
+	on:focus
 	data-radix-popper-content-wrapper=""
 	style:position={strategy}
 	style:left={0}
@@ -213,9 +208,9 @@
 	use:useActions={$$restProps.use}
 >
 	<div
+		{...$$restProps}
 		data-side={placedSide}
 		data-align={placedAlign}
-		{...$$restProps}
 		style:animation="{isPlaced ? undefined : 'none'},"
 		style:opacity={middlewareData?.hide?.referenceHidden ? 0 : undefined}
 	>

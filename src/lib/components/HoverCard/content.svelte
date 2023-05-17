@@ -1,39 +1,55 @@
-<script lang='ts' context='module'>
-    export type HoverCardContentProps = Exclude<ComponentProps<InstanceType<typeof Popper.Content>>, Required<PopperContentEventProps>>;
+<script lang="ts" context="module">
+	export type HoverCardContentProps = PopperContentProps;
 </script>
 
-<script lang='ts'>
-    import {Popper} from '$lib/internal/components';
-	import type { PopperContentEventProps } from '$lib/internal/components/Popper/content.svelte';
-    import {getRootContext} from './root.svelte';
+<script lang="ts">
+	import { Popper } from '$lib/internal/components';
+	import type { PopperContentProps } from '$lib/internal/components/Popper';
 
-    import type {ComponentProps} from 'svelte';
+	import { getRootContext } from './root.svelte';
 
-    type $$Props = HoverCardContentProps;
+	type $$Props = HoverCardContentProps;
 
-    const ctx = getRootContext();
+	const ctx = getRootContext();
 
-    export let side: NonNullable<$$Props['side']> = 'bottom';
-	export let sideOffset: NonNullable<$$Props['sideOffset']> = 0;
-	export let align: NonNullable<$$Props['align']> = 'center';
-	export let alignOffset: NonNullable<$$Props['alignOffset']> = 0;
-	export let arrowPadding: NonNullable<$$Props['arrowPadding']> = 0;
+	export let side: $$Props['side'] = 'bottom';
+	export let sideOffset: $$Props['sideOffset'] = 0;
+	export let align: $$Props['align'] = 'center';
+	export let alignOffset: $$Props['alignOffset'] = 0;
+	export let arrowPadding: $$Props['arrowPadding'] = 0;
 	export let collisionBoundary: $$Props['collisionBoundary'] = [];
-	export let collisionPadding: NonNullable<$$Props['collisionPadding']> = 0;
-	export let sticky: NonNullable<$$Props['sticky']> = 'partial';
-	export let hideWhenDetached: NonNullable<$$Props['hideWhenDetached']> = false;
-	export let avoidCollisions: NonNullable<$$Props['avoidCollisions']> = true;
+	export let collisionPadding: $$Props['collisionPadding'] = 0;
+	export let sticky: $$Props['sticky'] = 'partial';
+	export let hideWhenDetached: $$Props['hideWhenDetached'] = false;
+	export let avoidCollisions: $$Props['avoidCollisions'] = true;
 
-    function active() {
-        clearTimeout($ctx.closeTimer);
-        $ctx.closeTimer = undefined;
-    }
+	function active() {
+		clearTimeout($ctx.closeTimer);
+		$ctx.closeTimer = undefined;
+	}
 
-    function inactive() {
-        $ctx.closeTimer = setTimeout(() => $ctx.open = false, $ctx.closeDelay);
-    }
+	function inactive() {
+		$ctx.closeTimer = setTimeout(() => ($ctx.open = false), $ctx.closeDelay);
+	}
 </script>
 
-<Popper.Content onPointerEnter={active} onPointerLeave={inactive} onFocus={active} onBlur={inactive} {side} {sideOffset} {align} {alignOffset} {arrowPadding} {collisionBoundary} {collisionPadding} {sticky} {hideWhenDetached} {avoidCollisions} {...$$restProps}>
-    <slot></slot>
+<Popper.Content
+	on:pointerenter={active}
+	on:pointerleave={inactive}
+	on:focus={active}
+	on:blur={inactive}
+	{side}
+	{sideOffset}
+	{align}
+	{alignOffset}
+	{arrowPadding}
+	{collisionBoundary}
+	{collisionPadding}
+	{sticky}
+	{hideWhenDetached}
+	{avoidCollisions}
+	data-state={$ctx.open ? 'open' : 'closed'}
+	{...$$restProps}
+>
+	<slot />
 </Popper.Content>

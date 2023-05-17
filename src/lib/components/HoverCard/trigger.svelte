@@ -19,18 +19,15 @@
 	const ctx = getRootContext();
 	const dispatch = createEventDispatcher<UnwrapCustomEvents<$$Events>>();
 
-	const change = (open: boolean) => {
-		$ctx.open = open;
-	};
-
 	const open = () => {
+		console.log('focus');
 		clearTimeout($ctx.closeTimer);
-		$ctx.openTimer = setTimeout(() => change(true), $ctx.openDelay);
+		$ctx.openTimer = setTimeout(() => ($ctx.open = true), $ctx.openDelay);
 	};
 
 	const close = () => {
 		clearTimeout($ctx.openTimer);
-		$ctx.closeTimer = setTimeout(() => change(false), $ctx.closeDelay);
+		$ctx.closeTimer = setTimeout(() => ($ctx.open = false), $ctx.closeDelay);
 	};
 
 	$: dispatch('change', $ctx.open);
@@ -43,6 +40,7 @@
 	on:blur={close}
 	on:touchstart={(e) => e.preventDefault()}
 	use={[...(use ?? [])]}
+	data-state={$ctx.open ? 'open' : 'closed'}
 >
-	<slot data-state={$ctx.open ? 'open' : 'close'} />
+	<slot />
 </Popper.Anchor>
