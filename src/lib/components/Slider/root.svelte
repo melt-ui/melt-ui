@@ -1,6 +1,5 @@
 <script lang="ts" context="module">
 	import { clamp } from '$lib/internal/helpers/numbers';
-	import { reactiveContext } from '$lib/internal/helpers/reactiveContext';
 	import { uniqueContext } from '$lib/internal/helpers/uniqueContext';
 	import type { BaseProps, UnwrapCustomEvents, WrapWithCustomEvent } from '$lib/internal/types';
 	import { createEventDispatcher } from 'svelte';
@@ -30,7 +29,13 @@
 		valueIndexToChange: number;
 	};
 
-	const { getContext, setContext } = reactiveContext<RootContext>();
+	const { getContext, setContext, defaults } = newReactiveContext<RootContext>({
+		min: 0,
+		max: 100,
+		disabled: false,
+		orientation: 'horizontal',
+		valueIndexToChange: -1,
+	});
 	export const getRootContext = getContext;
 
 	type OrientationContext = Writable<{
@@ -50,15 +55,16 @@
 
 <script lang="ts">
 	import { collectionContext } from '$lib/internal/helpers/collectionContext';
+	import { newReactiveContext } from '$lib/internal/helpers/newReactiveContext';
 	import SliderHorizontal from './internal/SliderHorizontal.svelte';
 	import SliderVertical from './internal/SliderVertical.svelte';
 	import {
 		ARROW_KEYS,
+		PAGE_KEYS,
 		getClosestValueIndex,
 		getDecimalCount,
 		getNextSortedValues,
 		hasMinStepsBetweenValues,
-		PAGE_KEYS,
 		roundValue,
 		type Direction,
 	} from './internal/utils';
@@ -69,12 +75,12 @@
 	export let minStepsBetweenThumbs = 0;
 	export let inverted = false;
 	// TODO - Get global dir from Direction Provider
-	export let dir: NonNullable<$$Props['dir']> = 'ltr';
-	export let min: NonNullable<$$Props['min']> = 0;
-	export let max: NonNullable<$$Props['max']> = 100;
-	export let value: NonNullable<$$Props['value']> = [min];
-	export let disabled: NonNullable<$$Props['disabled']> = false;
-	export let orientation: NonNullable<$$Props['orientation']> = 'horizontal';
+	export let dir: $$Props['dir'] = 'ltr';
+	export let min: $$Props['min'] = defaults?.min;
+	export let max: $$Props['max'] = defaults?.max;
+	export let disabled: $$Props['disabled'] = defaults?.disabled;
+	export let orientation: $$Props['orientation'] = defaults?.orientation;
+	export let value: $$Props['value'] = [min ?? 0];
 	export let name: $$Props['name'] = undefined;
 
 	type $$Events = WrapWithCustomEvent<{
@@ -85,33 +91,26 @@
 
 	// Create root context with initial values
 	const ctx = setContext({
-		values: [
-			Array.isArray(value) ? value : [value],
-			(v) => {
-				if (Array.isArray(value)) {
-					value = Array.isArray(v) ? v : [v];
-				} else {
-					value = Array.isArray(v) ? v[0] : v;
-				}
-				onChange(v);
-			},
-		],
-		min: [min],
-		max: [max],
-		disabled: [disabled],
-		orientation: [orientation],
-		valueIndexToChange: [-1],
+		values: (v) => {
+			if (Array.isArray(value)) {
+				value = Array.isArray(v) ? v : [v];
+			} else {
+				value = Array.isArray(v) ? v[0] : v;
+			}
+			onChange(v);
+		},
+		valueIndexToChange: undefined,
 	});
 
 	// Update context when props change
-	$: ctx.set({
-		...$ctx,
-		values: Array.isArray(value) ? value : [value],
+	$: ctx.update((prev) => ({
+		...prev,
+		values: Array.isArray(value) ? value : [value ?? 0],
 		min,
 		max,
 		disabled,
 		orientation,
-	});
+	}));
 
 	orientationContext.setContext(
 		writable({
@@ -132,8 +131,11 @@
 	// Update the value when the user interacts with the slider
 	function updateValues(value: number, atIndex: number, { commit } = { commit: false }) {
 		const decimalCount = getDecimalCount(step);
-		const snapToStep = roundValue(Math.round((value - min) / step) * step + min, decimalCount);
-		const nextValue = clamp(snapToStep, [min, max]);
+		const snapToStep = roundValue(
+			Math.round((value - $ctx.min) / step) * step + $ctx.min,
+			decimalCount
+		);
+		const nextValue = clamp(snapToStep, [$ctx.min, $ctx.max]);
 
 		const prevValues = $ctx.values;
 		const nextValues = getNextSortedValues(prevValues, nextValue, atIndex);
@@ -160,9 +162,9 @@
 <svelte:component
 	this={SliderOrientation}
 	{...$$restProps}
-	{dir}
-	{min}
-	{max}
+	dir={dir ?? 'ltr'}
+	min={$ctx.min}
+	max={$ctx.max}
 	{inverted}
 	aria-disabled={disabled}
 	data-disabled={disabled ? '' : undefined}
@@ -189,8 +191,9 @@
 		const hasChanged = nextValue !== prevValue;
 		if (hasChanged) onValueCommit($ctx.values);
 	}}
-	on:homeKeyDown={() => !disabled && updateValues(min, 0, { commit: true })}
-	on:endKeyDown={() => !disabled && updateValues(max, $ctx.values.length - 1, { commit: true })}
+	on:homeKeyDown={() => !disabled && updateValues($ctx.min, 0, { commit: true })}
+	on:endKeyDown={() =>
+		!disabled && updateValues($ctx.max, $ctx.values.length - 1, { commit: true })}
 	on:stepKeyDown={({ detail }) => {
 		if (!disabled) {
 			const { event, direction: stepDirection } = detail;

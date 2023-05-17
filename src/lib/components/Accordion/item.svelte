@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import { reactiveContext } from '$lib/internal/helpers/reactiveContext';
+	import { newReactiveContext } from '$lib/internal/helpers/newReactiveContext';
 
 	export type AccordionItemProps = CollapsibleRootProps & {
 		value: string;
@@ -9,7 +9,7 @@
 		readonly value: string;
 	};
 
-	const { getContext, setContext } = reactiveContext<ItemContext>();
+	const { getContext, setContext } = newReactiveContext<ItemContext>();
 	export const getItemContext = getContext;
 </script>
 
@@ -28,9 +28,7 @@
 		? $rootCtx.value.includes(value)
 		: $rootCtx.value === value;
 
-	const itemCtx = setContext({
-		value: [value],
-	});
+	const itemCtx = setContext();
 	$: itemCtx.set({ value });
 </script>
 
