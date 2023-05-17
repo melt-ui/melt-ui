@@ -20,7 +20,6 @@
 	const dispatch = createEventDispatcher<UnwrapCustomEvents<$$Events>>();
 
 	const open = () => {
-		console.log('focus');
 		clearTimeout($ctx.closeTimer);
 		$ctx.openTimer = setTimeout(() => ($ctx.open = true), $ctx.openDelay);
 	};
