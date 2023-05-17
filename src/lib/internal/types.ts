@@ -40,6 +40,7 @@ export type ValueOf<T> = T[keyof T];
 export type BaseProps<El extends keyof SvelteHTMLElements = 'div'> = SvelteHTMLElements[El] & {
 	use?: ActionArray;
 	['data-testid']?: string;
+	['data-state']?: string;
 	[key: `data-${string}`]: string | boolean | undefined;
 };
 

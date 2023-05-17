@@ -1,4 +1,5 @@
 <script lang="ts" context="module">
+	import { useActions } from '$lib/internal/helpers';
 	import type { BaseProps } from '$lib/internal/types';
 	import { getRootContext } from './root.svelte';
 
@@ -7,6 +8,7 @@
 
 <script lang="ts">
 	type $$Props = PopperAnchorProps;
+	export let use: $$Props['use'] = [];
 
 	let element: HTMLDivElement;
 
@@ -14,6 +16,16 @@
 	$: $rootContext.anchor = element;
 </script>
 
-<div {...$$restProps} bind:this={element} on:click>
+<div
+	{...$$restProps}
+	use:useActions={use ?? []}
+	bind:this={element}
+	on:click
+	on:pointerenter
+	on:pointerleave
+	on:focus
+	on:blur
+	on:touchstart
+>
 	<slot />
 </div>

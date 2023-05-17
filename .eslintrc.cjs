@@ -25,4 +25,7 @@ module.exports = {
 	rules: {
 		'no-console': 'warn',
 	},
+	globals: {
+		NodeJS: true,
+	},
 };
