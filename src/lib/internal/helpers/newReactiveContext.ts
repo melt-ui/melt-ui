@@ -9,10 +9,10 @@ type WithoutNever<T> = Pick<T, { [K in keyof T]: T[K] extends never ? never : K 
 
 type ValueSetters<T> = WithoutNever<{
 	// If T[K] is readonly, make it ValueSetterReadonly, otherwise make it ValueSetterPair
-	[K in keyof T]: IfEquals<
+	[K in keyof T]?: IfEquals<
 		{ [Q in K]: T[K] },
 		{ -readonly [Q in K]: T[K] },
-		ValueSetter<T[K]> | undefined,
+		ValueSetter<T[K]>,
 		never
 	>;
 }>;

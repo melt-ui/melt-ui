@@ -99,7 +99,6 @@
 			}
 			onChange(v);
 		},
-		valueIndexToChange: undefined,
 	});
 
 	// Update context when props change
