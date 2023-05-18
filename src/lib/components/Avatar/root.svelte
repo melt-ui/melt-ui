@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import { newReactiveContext } from '$lib/internal/helpers/newReactiveContext';
+	import { reactiveContext } from '$lib/internal/helpers';
 	import { useActions } from '$lib/internal/helpers/useActions';
 
 	import type { BaseProps } from '$lib/internal/types';
@@ -11,7 +11,7 @@
 		imageLoadingStatus: ImageLoadingStatus;
 	};
 
-	const { getContext, setContext } = newReactiveContext<AvatarRootContext>({
+	const { getContext, setContext } = reactiveContext<AvatarRootContext>({
 		imageLoadingStatus: 'idle',
 	});
 	export const getAvatarRootContext = getContext;

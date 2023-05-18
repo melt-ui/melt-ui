@@ -1,12 +1,7 @@
 <script lang="ts" context="module">
-	import {
-		collectionContext,
-		next,
-		prev,
-		reactiveContext,
-		useActions,
-	} from '$lib/internal/helpers';
-	import type { BaseProps, Defaults } from '$lib/internal/types';
+	import { collectionContext, next, prev, useActions } from '$lib/internal/helpers';
+	import { reactiveContext, type Defaults } from '$lib/internal/helpers';
+	import type { BaseProps } from '$lib/internal/types';
 
 	type Orientation = 'horizontal' | 'vertical';
 	type Direction = 'ltr' | 'rtl';
@@ -21,16 +16,6 @@
 		loop?: boolean;
 	};
 
-	const defaults: Defaults<RadioGroupRootProps> = {
-		value: undefined,
-		dir: 'ltr',
-		disabled: false,
-		required: false,
-		orientation: undefined,
-		name: undefined,
-		loop: true,
-	};
-
 	type RadioGroupRootContext = {
 		value?: string;
 		readonly disabled?: boolean;
@@ -38,7 +23,13 @@
 		readonly name?: string;
 	};
 
-	const { getContext, setContext } = reactiveContext<RadioGroupRootContext>();
+	const defaults = {
+		value: undefined,
+		disabled: false,
+		required: false,
+		name: undefined,
+	} satisfies Defaults<RadioGroupRootContext>;
+	const { getContext, setContext } = reactiveContext<RadioGroupRootContext>(defaults);
 	export const getRadioGroupRootContext = getContext;
 
 	const itemCollection = collectionContext();
@@ -49,21 +40,15 @@
 	type $$Props = RadioGroupRootProps;
 	export let use: $$Props['use'] = [];
 	export let value: $$Props['value'] = defaults.value;
-	export let dir: $$Props['dir'] = defaults.dir;
+	export let dir: $$Props['dir'] = 'ltr';
 	export let disabled: $$Props['disabled'] = defaults.disabled;
 	export let required: $$Props['required'] = defaults.required;
-	export let orientation: $$Props['orientation'] = defaults.orientation;
+	export let orientation: $$Props['orientation'] = undefined;
 	export let name: $$Props['name'] = defaults.name;
-	export let loop: $$Props['loop'] = defaults.loop;
+	export let loop: $$Props['loop'] = true;
 
-	const ctx = setContext({
-		value: [value, (v) => (value = v)],
-		disabled: [disabled],
-		required: [required],
-		name: [name],
-	});
+	const ctx = setContext({ value: (v) => (value = v) });
 	$: ctx.set({ value, disabled, required, name });
-
 	// Item logic
 	const itemStore = itemCollection.setContext();
 	$: nextKeys = {

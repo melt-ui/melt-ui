@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
-	import { newReactiveContext } from '$lib/internal/helpers/newReactiveContext';
+	import { reactiveContext, type Defaults } from '$lib/internal/helpers';
 	import { useActions } from '$lib/internal/helpers/useActions';
-	import type { BaseProps, Defaults } from '$lib/internal/types';
+	import type { BaseProps } from '$lib/internal/types';
 
 	export type CheckboxRootProps = BaseProps<'button'> & {
 		/** The controlled checked state of the checkbox. */
@@ -31,7 +31,7 @@
 		disabled: false,
 	} satisfies Defaults<CheckboxContext>;
 
-	const { getContext, setContext } = newReactiveContext<CheckboxContext>(defaults);
+	const { getContext, setContext } = reactiveContext<CheckboxContext>(defaults);
 	export const getRootContext = getContext;
 
 	export function isIndeterminate(checked?: CheckedState): checked is 'indeterminate' {

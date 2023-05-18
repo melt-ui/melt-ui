@@ -14,12 +14,16 @@
 		value?: string;
 	};
 
-	type SwitchContext = {
+	type SwitchRootContext = {
 		checked: SwitchRootProps['checked'];
 		readonly disabled: SwitchRootProps['disabled'];
 	};
 
-	const { getContext, setContext } = reactiveContext<SwitchContext>();
+	const defaults = {
+		checked: false,
+		disabled: false,
+	} satisfies Defaults<SwitchRootContext>;
+	const { getContext, setContext } = reactiveContext<SwitchRootContext>(defaults);
 	export const getRootContext = getContext;
 
 	export function getState(checked: boolean | undefined) {
@@ -30,22 +34,19 @@
 <script lang="ts">
 	type $$Props = SwitchRootProps;
 
-	import { reactiveContext } from '$lib/internal/helpers/reactiveContext';
 	import { useActions } from '$lib/internal/helpers/useActions';
+	import { reactiveContext, type Defaults } from '$lib/internal/helpers';
 
 	export let required: $$Props['required'] = false;
 	export let value: $$Props['value'] = 'on';
 
-	export let checked: $$Props['checked'] = false;
-	export let disabled: $$Props['disabled'] = false;
+	export let checked: $$Props['checked'] = defaults.checked;
+	export let disabled: $$Props['disabled'] = defaults.disabled;
 
 	let button: HTMLButtonElement;
 	$: isFormControl = button ? button.closest('form') : true;
 
-	const ctxStore = setContext({
-		checked: [checked, (v) => (checked = v)],
-		disabled: [disabled],
-	});
+	const ctxStore = setContext({ checked: (v) => (checked = v) });
 	$: ctxStore.set({ checked, disabled });
 </script>
 

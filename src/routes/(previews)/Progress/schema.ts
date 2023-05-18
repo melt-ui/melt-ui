@@ -26,13 +26,13 @@ export const schema = {
 			},
 			dataAttributes: {
 				'data-value': {
-					values: ['0', '40', '100'],
+					values: 'number',
 				},
 				'data-state': {
 					values: ['complete', 'indeterminate', 'loading'],
 				},
 				'data-max': {
-					values: ['100'],
+					values: 'number',
 				},
 			},
 		},

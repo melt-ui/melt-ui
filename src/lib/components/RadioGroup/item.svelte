@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
-	import { reactiveContext, useActions, useCollection } from '$lib/internal/helpers';
-	import type { BaseProps, Defaults } from '$lib/internal/types';
+	import { useActions, useCollection } from '$lib/internal/helpers';
+	import { reactiveContext, type Defaults } from '$lib/internal/helpers/reactiveContext';
+	import type { BaseProps } from '$lib/internal/types';
 	import { getRadioGroupItemCollection, getRadioGroupRootContext } from './root.svelte';
 
 	export type RadioGroupItemProps = BaseProps<'button'> & {
@@ -9,17 +10,16 @@
 		required?: boolean;
 	};
 
-	const defaults: Defaults<RadioGroupItemProps> = {
-		disabled: false,
-		required: false,
-	};
-
 	type RadioGroupItemContext = {
 		readonly checked: boolean;
 		readonly disabled?: boolean;
 	};
 
-	const { getContext, setContext } = reactiveContext<RadioGroupItemContext>();
+	const defaults = {
+		disabled: false,
+	} satisfies Defaults<RadioGroupItemContext>;
+
+	const { getContext, setContext } = reactiveContext<RadioGroupItemContext>(defaults);
 	export const getRadioGroupItemContext = getContext;
 </script>
 
@@ -28,7 +28,7 @@
 	export let use: $$Props['use'] = [];
 	export let value: $$Props['value'];
 	export let disabled: $$Props['disabled'] = defaults.disabled;
-	export let required: $$Props['required'] = defaults.required;
+	export let required: $$Props['required'] = false;
 
 	const rootCtx = getRadioGroupRootContext();
 	const itemCollection = getRadioGroupItemCollection();
@@ -39,7 +39,7 @@
 		required: required || $rootCtx.required,
 	};
 
-	const ctx = setContext({ checked: [checked], disabled: [merged?.disabled] });
+	const ctx = setContext();
 	$: ctx.set({ checked, disabled: merged.disabled });
 </script>
 
@@ -55,7 +55,8 @@
 		if ($rootCtx.disabled) {
 			return;
 		}
-		$rootCtx.value = value;
+
+		rootCtx.set({ value });
 	}}
 	{...$$restProps}
 	use:useActions={[

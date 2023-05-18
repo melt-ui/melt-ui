@@ -32,14 +32,14 @@
 
 			<div class="mt-[25px] flex justify-end gap-4">
 				<AlertDialog.Cancel
-					class="hover:bg-green5 focus:shadow-green7 inline-flex h-[35px] items-center justify-center rounded-[4px] bg-zinc-100
+					class=" inline-flex h-9 items-center justify-center rounded-md bg-zinc-100
 				px-4 font-medium leading-none text-zinc-600 focus:outline-none focus:ring-2 focus:ring-black"
 				>
 					Cancel
 				</AlertDialog.Cancel>
 				<AlertDialog.Action
-					class="hover:bg-green5 focus:shadow-green7 inline-flex h-[35px] items-center justify-center rounded-[4px] bg-zinc-100
-				px-4 font-medium leading-none text-zinc-600 focus:outline-none focus:ring-2 focus:ring-black"
+					class="inline-flex h-9 items-center justify-center rounded-md bg-red-100
+				px-4 font-medium leading-none text-red-600 focus:outline-none focus:ring-2 focus:ring-black"
 				>
 					Yes, delete account
 				</AlertDialog.Action>

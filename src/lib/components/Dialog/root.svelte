@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	import { generateId } from '$lib/internal/helpers';
-	import { newReactiveContext } from '$lib/internal/helpers/newReactiveContext';
+	import { reactiveContext } from '$lib/internal/helpers';
 
 	export type DialogRootProps = {
 		open?: boolean;
@@ -16,7 +16,7 @@
 		readonly contentId: string;
 	};
 
-	const { getContext, setContext, defaults } = newReactiveContext<DialogRootContext>({
+	const { getContext, setContext, defaults } = reactiveContext<DialogRootContext>({
 		open: false,
 		modal: false,
 		titleId: generateId(),
@@ -37,16 +37,10 @@
 		open: (v) => (open = v),
 		modal: (v) => (modal = v),
 	});
-	$: {
-		// We need this as a dependency for some reason, otherwise it won't open.
-		// TODO: figure out why
-		$rootCtx;
-		rootCtx.update((v) => ({
-			...v,
-			open: typeof open === 'boolean' ? open : v.open,
-			modal: typeof modal === 'boolean' ? modal : v.modal,
-		}));
-	}
+	// We need this as a dependency for some reason, otherwise it won't open.
+	// TODO: figure out why
+
+	$: rootCtx.update((v) => ({ ...v, open, modal }));
 </script>
 
 <slot />

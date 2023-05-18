@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	import { collectionContext } from '$lib/internal/helpers/collectionContext';
-	import { newReactiveContext } from '$lib/internal/helpers/newReactiveContext';
+	import { reactiveContext } from '$lib/internal/helpers';
 	import { useActions } from '$lib/internal/helpers/useActions';
 
 	type Type = 'single' | 'multiple';
@@ -25,7 +25,7 @@
 		value: AccordionRootProps['value'];
 	};
 
-	const { getContext, setContext, defaults } = newReactiveContext<AccordionContext>({
+	const { getContext, setContext, defaults } = reactiveContext<AccordionContext>({
 		type: 'single',
 		value: null,
 		disabled: false,

@@ -29,7 +29,7 @@
 		valueIndexToChange: number;
 	};
 
-	const { getContext, setContext, defaults } = newReactiveContext<RootContext>({
+	const { getContext, setContext, defaults } = reactiveContext<RootContext>({
 		min: 0,
 		max: 100,
 		disabled: false,
@@ -55,7 +55,7 @@
 
 <script lang="ts">
 	import { collectionContext } from '$lib/internal/helpers/collectionContext';
-	import { newReactiveContext } from '$lib/internal/helpers/newReactiveContext';
+	import { reactiveContext } from '$lib/internal/helpers';
 	import SliderHorizontal from './internal/SliderHorizontal.svelte';
 	import SliderVertical from './internal/SliderVertical.svelte';
 	import {

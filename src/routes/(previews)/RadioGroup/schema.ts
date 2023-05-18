@@ -38,7 +38,7 @@ export const schema = {
 				dir: {
 					type: 'enum',
 					options: ['ltr', 'rtl'],
-					default: undefined,
+					default: 'ltr',
 				},
 				loop: {
 					type: 'boolean',

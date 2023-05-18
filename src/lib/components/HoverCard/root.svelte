@@ -22,15 +22,15 @@
 		closeDelay: 300,
 	} satisfies Defaults<RootContext>;
 
-	const { getContext, setContext } = newReactiveContext<RootContext>(defaults);
+	const { getContext, setContext } = reactiveContext<RootContext>(defaults);
 	export const getRootContext = getContext;
 </script>
 
 <script lang="ts">
-	import type { BaseProps, Defaults } from '$lib/internal/types';
+	import type { BaseProps } from '$lib/internal/types';
 
 	import { Popper } from '$lib/internal/components';
-	import { newReactiveContext } from '$lib/internal/helpers/newReactiveContext';
+	import { reactiveContext, type Defaults } from '$lib/internal/helpers';
 
 	type $$Props = HoverCardRootProps;
 

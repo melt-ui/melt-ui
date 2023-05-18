@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import { newReactiveContext } from '$lib/internal/helpers/newReactiveContext';
+	import { reactiveContext, type Defaults } from '$lib/internal/helpers';
 
 	export type CollapsibleRootProps = BaseProps & {
 		/**
@@ -22,14 +22,14 @@
 		disabled: false,
 	} satisfies Defaults<RootContext>;
 
-	const { getContext, setContext } = newReactiveContext<RootContext>(defaults);
+	const { getContext, setContext } = reactiveContext<RootContext>(defaults);
 	export const getCollapsibleRootContext = getContext;
 </script>
 
 <script lang="ts">
 	import { useActions } from '$lib/internal/helpers/useActions';
 
-	import type { BaseProps, Defaults } from '$lib/internal/types';
+	import type { BaseProps } from '$lib/internal/types';
 
 	type $$Props = CollapsibleRootProps;
 	export let open: $$Props['open'] = defaults.open;
