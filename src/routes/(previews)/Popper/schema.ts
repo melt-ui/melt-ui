@@ -58,6 +58,15 @@ export const schema = {
 					default: true,
 				},
 			},
+
+			dataAttributes: {
+				'data-side': {
+					values: ['top', 'right', 'bottom', 'left'],
+				},
+				'data-align': {
+					values: ['start', 'center', 'end'],
+				},
+			},
 		},
 	},
 } satisfies PreviewSchema<typeof Popper>;

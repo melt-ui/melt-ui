@@ -5,6 +5,13 @@
 
 	type Boundary = Element | null;
 
+	export type PopperContentEvents = {
+		pointerenter?: BaseProps['on:pointerenter'];
+		pointerleave?: BaseProps['on:pointerleave'];
+		focus?: BaseProps['on:focus'];
+		blur?: BaseProps['on:blur'];
+	};
+
 	export type PopperContentProps = BaseProps & {
 		side?: Side;
 		sideOffset?: number;
@@ -181,6 +188,10 @@
 
 <div
 	bind:this={content}
+	on:pointerenter
+	on:pointerleave
+	on:blur
+	on:focus
 	data-radix-popper-content-wrapper=""
 	style:position={strategy}
 	style:left={0}
@@ -197,9 +208,9 @@
 	use:useActions={$$restProps.use}
 >
 	<div
+		{...$$restProps}
 		data-side={placedSide}
 		data-align={placedAlign}
-		{...$$restProps}
 		style:animation="{isPlaced ? undefined : 'none'},"
 		style:opacity={middlewareData?.hide?.referenceHidden ? 0 : undefined}
 	>

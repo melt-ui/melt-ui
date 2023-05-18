@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0
+
+### Minor Changes
+
+- 04ac30d: New component: HoverCard
+
 ## 0.5.0
 
 ### Minor Changes

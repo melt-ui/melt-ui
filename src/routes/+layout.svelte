@@ -78,7 +78,6 @@
 					class="block h-6 w-6 xl:hidden"
 					aria-label="Toggle menu"
 					on:click={() => {
-						console.log('clicking', $isMenuOpen);
 						$isMenuOpen = !$isMenuOpen;
 					}}
 				>

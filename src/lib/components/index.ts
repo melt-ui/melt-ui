@@ -15,3 +15,4 @@ export * from './Select';
 export * from './Label';
 export * from './RadioGroup';
 export * from './AlertDialog';
+export * from './HoverCard';
