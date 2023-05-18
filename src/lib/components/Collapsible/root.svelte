@@ -1,4 +1,6 @@
 <script lang="ts" context="module">
+	import { newReactiveContext } from '$lib/internal/helpers/newReactiveContext';
+
 	export type CollapsibleRootProps = BaseProps & {
 		/**
 		 * The controlled open state of the collapsible.
@@ -10,31 +12,32 @@
 		disabled?: boolean;
 	};
 
-	export type Context = {
+	type RootContext = {
 		open: boolean;
 		readonly disabled: boolean;
 	};
 
-	const { getContext, setContext } = reactiveContext<Context>();
-	export const getRootContext = getContext;
+	const defaults = {
+		open: false,
+		disabled: false,
+	} satisfies Defaults<RootContext>;
+
+	const { getContext, setContext } = newReactiveContext<RootContext>(defaults);
+	export const getCollapsibleRootContext = getContext;
 </script>
 
 <script lang="ts">
-	import { reactiveContext } from '$lib/internal/helpers/reactiveContext';
 	import { useActions } from '$lib/internal/helpers/useActions';
 
-	import type { BaseProps } from '$lib/internal/types';
+	import type { BaseProps, Defaults } from '$lib/internal/types';
 
 	type $$Props = CollapsibleRootProps;
-	export let open = false;
-	export let disabled = false;
+	export let open: $$Props['open'] = defaults.open;
+	export let disabled: $$Props['disabled'] = defaults.disabled;
 	export let use: $$Props['use'] = [];
 
-	const contextStore = setContext({
-		open: [open, (v) => (open = v)],
-		disabled: [disabled],
-	});
-	$: contextStore.set({ open, disabled });
+	const ctx = setContext({ open: (v) => (open = v) });
+	$: ctx.set({ open, disabled });
 </script>
 
 <div

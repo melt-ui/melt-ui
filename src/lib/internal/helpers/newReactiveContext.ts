@@ -1,8 +1,8 @@
 import { writable, type Writable } from 'svelte/store';
 
-import { objectEntries, objectKeys } from './object';
-import { uniqueContext } from './uniqueContext';
 import type { IfEquals } from '../types';
+import { joinKeys, objectEntries } from './object';
+import { uniqueContext } from './uniqueContext';
 
 type ValueSetter<T> = (v: T) => void;
 type WithoutNever<T> = Pick<T, { [K in keyof T]: T[K] extends never ? never : K }[keyof T]>;
@@ -29,11 +29,10 @@ export function newReactiveContext<T extends Record<string, any>>(defaults?: Def
 	const initialContext = uniqueContext<GetContextReturn<T>>();
 
 	const setContext = (values?: ValueSetters<T>) => {
-		const keys = new Set([...objectKeys(values ?? {}), ...objectKeys(defaults ?? {})]);
-		const keysArr = [...keys] as (keyof T)[];
+		const keys = joinKeys<keyof T>(defaults ?? {}, values ?? {});
 
 		const store = writable(
-			keysArr.reduce((acc, key) => {
+			keys.reduce((acc, key) => {
 				if (defaults?.[key] !== undefined) {
 					acc[key] = defaults[key] as T[keyof T];
 				}
@@ -43,7 +42,9 @@ export function newReactiveContext<T extends Record<string, any>>(defaults?: Def
 		);
 
 		const set = (v: Partial<T>) => {
-			const withDefaults = keysArr.reduce((acc, key) => {
+			const keys = joinKeys<keyof T>(defaults ?? {}, v ?? {});
+
+			const withDefaults = keys.reduce((acc, key) => {
 				acc[key] = (v[key] === undefined ? defaults?.[key] : v[key]) as T[keyof T];
 				return acc;
 			}, {} as T);
@@ -61,7 +62,8 @@ export function newReactiveContext<T extends Record<string, any>>(defaults?: Def
 		const update = (updater: (state: T) => Partial<T>) => {
 			store.update((v) => {
 				const newState = updater(v);
-				const withDefaults = keysArr.reduce((acc, key) => {
+				const keys = joinKeys<keyof T>(defaults ?? {}, newState ?? {});
+				const withDefaults = keys.reduce((acc, key) => {
 					if (newState[key] === undefined && defaults?.[key] !== undefined) {
 						acc[key] = defaults[key] as T[keyof T];
 					} else {
