@@ -20,8 +20,12 @@ type ValueSetters<T> = WithoutNever<{
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type GetContextReturn<T extends Record<string, any>> = Writable<T>;
 
+export type Defaults<T extends Record<string, unknown>> = {
+	[K in keyof T]?: T[K];
+};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function newReactiveContext<T extends Record<string, any>>(defaults?: Partial<T>) {
+export function newReactiveContext<T extends Record<string, any>>(defaults?: Defaults<T>) {
 	const initialContext = uniqueContext<GetContextReturn<T>>();
 
 	const setContext = (values?: ValueSetters<T>) => {
