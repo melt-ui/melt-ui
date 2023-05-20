@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
-	import { reactiveContext, useActions } from '$lib/internal/helpers';
-	import type { BaseProps, Defaults } from '$lib/internal/types';
+	import { useActions } from '$lib/internal/helpers';
+	import type { BaseProps } from '$lib/internal/types';
 
 	export type Direction = 'ltr' | 'rtl';
 	export type SelectRootProps = BaseProps<'div'> & {
@@ -12,39 +12,35 @@
 		required?: boolean;
 	};
 
-	const defaults = {
-		dir: 'ltr',
-		required: false,
-		disabled: false,
-		open: false,
-	} satisfies Defaults<SelectRootProps>;
-
 	type SelectRootContext = {
 		open: boolean;
 		value?: string;
 	};
 
-	const { getContext, setContext } = reactiveContext<SelectRootContext>();
+	const defaults = {
+		open: false,
+		value: undefined,
+	} satisfies Defaults<SelectRootContext>;
+
+	const { getContext, setContext } = reactiveContext<SelectRootContext>(defaults);
 	export const getSelectRootContext = getContext;
 </script>
 
 <script lang="ts">
 	import { Popper } from '$lib/internal/components';
+	import { reactiveContext, type Defaults } from '$lib/internal/helpers';
 
 	type $$Props = SelectRootProps;
 	export let use: $$Props['use'] = [];
 	export let value: $$Props['value'] = undefined;
 	export let open: $$Props['open'] = defaults.open;
 	export let name: $$Props['name'] = '';
-	export let dir: $$Props['dir'] = defaults.dir;
-	export let disabled: $$Props['disabled'] = defaults.disabled;
-	export let required: $$Props['required'] = defaults.required;
+	export let dir: $$Props['dir'] = 'ltr';
+	export let disabled: $$Props['disabled'] = false;
+	export let required: $$Props['required'] = false;
 
-	const ctx = setContext({
-		open: [open ?? defaults.open, (value) => (open = value)],
-		value: [value, (v) => (value = v)],
-	});
-	$: ctx.set({ open: open ?? defaults.open, value });
+	const ctx = setContext({ open: (v) => (open = v), value: (v) => (value = v) });
+	$: ctx.set({ open: open, value });
 </script>
 
 <Popper.Root>

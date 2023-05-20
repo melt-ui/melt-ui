@@ -21,7 +21,8 @@
 
 	const open = () => {
 		clearTimeout($ctx.closeTimer);
-		$ctx.openTimer = setTimeout(() => ($ctx.open = true), $ctx.openDelay);
+		const timer = setTimeout(() => ($ctx.open = true), $ctx.openDelay);
+		$ctx.openTimer = timer;
 	};
 
 	const close = () => {

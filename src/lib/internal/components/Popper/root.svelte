@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import { reactiveContext } from '$lib/internal/helpers/reactiveContext';
+	import { reactiveContext } from '$lib/internal/helpers';
 	import type { BaseProps } from '$lib/internal/types';
 
 	export type PopperRootProps = BaseProps;
@@ -9,17 +9,17 @@
 		arrow: HTMLElement | null;
 	};
 
-	const { getContext, setContext } = reactiveContext<RootContext>();
+	const { getContext, setContext } = reactiveContext<RootContext>({
+		anchor: null,
+		arrow: null,
+	});
 	export const getRootContext = getContext;
 </script>
 
 <script lang="ts">
 	type $$Props = PopperRootProps;
 
-	setContext({
-		anchor: [null],
-		arrow: [null],
-	});
+	setContext();
 </script>
 
 <slot />

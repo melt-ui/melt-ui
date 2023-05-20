@@ -1,5 +1,4 @@
 <script lang="ts" context="module">
-	import { reactiveContext } from '$lib/internal/helpers/reactiveContext';
 	import type { BaseProps } from '$lib/internal/types';
 	import type { Align, Side } from '.';
 
@@ -34,7 +33,10 @@
 		arrowHeight?: number;
 	};
 
-	const { getContext, setContext } = reactiveContext<PopperContentContext>();
+	const defaults = {
+		placedSide: 'bottom',
+	} satisfies Defaults<PopperContentContext>;
+	const { getContext, setContext } = reactiveContext<PopperContentContext>(defaults);
 	export const getPopperContentContext = getContext;
 </script>
 
@@ -60,8 +62,9 @@
 	import { getRootContext } from './root.svelte';
 	import { getSideAndAlignFromPlacement, isDefined, isNotNull, transformOrigin } from './utils';
 	import { useActions } from '$lib/internal/helpers';
+	import { reactiveContext, type Defaults } from '$lib/internal/helpers';
 
-	export let side: NonNullable<$$Props['side']> = 'bottom';
+	export let side: NonNullable<$$Props['side']> = defaults.placedSide;
 	export let sideOffset: NonNullable<$$Props['sideOffset']> = 0;
 	export let align: NonNullable<$$Props['align']> = 'center';
 	export let alignOffset: NonNullable<$$Props['alignOffset']> = 0;
@@ -73,14 +76,7 @@
 	export let avoidCollisions: NonNullable<$$Props['avoidCollisions']> = true;
 
 	const rootCtx = getRootContext();
-	const ctx = setContext({
-		placedSide: [side],
-		arrowX: [undefined],
-		arrowY: [undefined],
-		shouldHideArrow: [false],
-		arrowWidth: [undefined],
-		arrowHeight: [undefined],
-	});
+	const ctx = setContext();
 
 	let content: HTMLElement;
 

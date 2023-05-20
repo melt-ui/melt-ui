@@ -7,11 +7,11 @@
 
 	import type { BaseProps } from '$lib/internal/types';
 	import { createEventDispatcher } from 'svelte';
-	import { getRootContext } from './root.svelte';
+	import { getCollapsibleRootContext } from './root.svelte';
 
 	type $$Props = CollapsibleTriggerProps;
 
-	const ctx = getRootContext();
+	const ctx = getCollapsibleRootContext();
 
 	const dispatch = createEventDispatcher<{
 		change: boolean;

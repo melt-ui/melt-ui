@@ -29,3 +29,13 @@ export function objectKeys<O extends object>(object: O) {
 export function objectEntries<T extends object>(obj: T) {
 	return Object.entries(obj) as Array<[keyof T, T[keyof T]]>;
 }
+
+/**
+ * Function that returns an array of keys given multiple objects.
+ * The array of keys has no duplicates.
+ *
+ * @category Object
+ */
+export function joinKeys<T extends string | number | symbol>(...objects: object[]) {
+	return [...new Set(objects.flatMap(Object.keys))] as T[];
+}
