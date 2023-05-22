@@ -31,17 +31,29 @@
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function castProps(component: any) {
-		return Object.entries((component.props || {}) as Record<string, PreviewProps>);
+		return Object.entries((component.props || {}) as Record<string, PreviewProps>).map(
+			([key, definition]) => {
+				return { key, definition };
+			}
+		);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function castEvents(component: any) {
-		return Object.entries((component.events || {}) as Record<string, PreviewEvent<unknown>>);
+		return Object.entries((component.events || {}) as Record<string, PreviewEvent<unknown>>).map(
+			([key, definition]) => {
+				return { key, definition };
+			}
+		);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function castDataAttrs(component: any) {
-		return Object.entries((component.dataAttributes || {}) as Record<string, PreviewDataAttribute>);
+		return Object.entries(
+			(component.dataAttributes || {}) as Record<string, PreviewDataAttribute>
+		).map(([key, definition]) => {
+			return { key, definition };
+		});
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -143,44 +155,44 @@
 						headMobile="Props"
 						data={castProps(subCmpSchema)}
 					>
-						<div class="contents" slot="row" let:datum={[key, definition]}>
+						<div class="contents" slot="row" let:datum={d}>
 							<div>
-								<code class="font-mono">{key}</code>
+								<code class="font-mono">{d.key}</code>
 							</div>
-							<span class="font-mono">{definition.typeLabel ?? definition.type}</span>
+							<span class="font-mono">{d.definition.typeLabel ?? d.definition.type}</span>
 							<div>
-								{#if definition.show === null}
+								{#if d.definition.show === null}
 									<span class="white w-full font-mono text-sm"> N/A </span>
-								{:else if definition.show === 'value'}
+								{:else if d.definition.show === 'value'}
 									<span class="white w-full font-mono text-sm"
-										>{JSON.stringify(props[subCmp][key])}</span
+										>{JSON.stringify(props[subCmp][d.key])}</span
 									>
-								{:else if definition.type === 'boolean'}
-									<input type="checkbox" bind:checked={props[subCmp][key]} />
-								{:else if definition.type === 'string'}
+								{:else if d.definition.type === 'boolean'}
+									<input type="checkbox" bind:checked={props[subCmp][d.key]} />
+								{:else if d.definition.type === 'string'}
 									<input
 										class="w-full rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
 										type="text"
-										bind:value={props[subCmp][key]}
+										bind:value={props[subCmp][d.key]}
 									/>
-								{:else if definition.type === 'number'}
+								{:else if d.definition.type === 'number'}
 									<input
 										class="w-full rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
 										type="number"
-										bind:value={props[subCmp][key]}
+										bind:value={props[subCmp][d.key]}
 									/>
-								{:else if definition.type === 'enum'}
+								{:else if d.definition.type === 'enum'}
 									<select
 										class="w-full rounded-sm border border-zinc-400 bg-zinc-950 px-2 py-1 text-white"
-										bind:value={props[subCmp][key]}
+										bind:value={props[subCmp][d.key]}
 									>
 										<option value="" hidden />
-										{#each definition.options as value}
+										{#each d.definition.options as value}
 											<option {value}>{value}</option>
 										{/each}
 									</select>
 								{:else}
-									{props[subCmp][key]}
+									{props[subCmp][d.key]}
 								{/if}
 							</div>
 						</div>
@@ -192,14 +204,14 @@
 						<hr class="col-span-3 h-4 opacity-0" />
 
 						<Table head={['Event', 'Payload']} headMobile="Events" data={castEvents(subCmpSchema)}>
-							<div class="contents" slot="row" let:datum={[key, definition]}>
+							<div class="contents" slot="row" let:datum={d}>
 								<div>
-									<code class="font-mono">{key}</code>
+									<code class="font-mono">{d.key}</code>
 								</div>
 								<span class="font-mono">
-									{Array.isArray(definition.payload)
-										? definition.payload.join(' | ')
-										: JSON.stringify(definition.payload)}
+									{Array.isArray(d.definition.payload)
+										? d.definition.payload.join(' | ')
+										: JSON.stringify(d.definition.payload)}
 								</span>
 								<div class="" />
 							</div>
@@ -216,14 +228,14 @@
 							headMobile="Data Attributes"
 							data={castDataAttrs(subCmpSchema)}
 						>
-							<div class="contents" slot="row" let:datum={[key, definition]}>
+							<div class="contents" slot="row" let:datum={d}>
 								<div>
-									<code class="font-mono">{key}</code>
+									<code class="font-mono">{d.key}</code>
 								</div>
 								<span class="font-mono">
-									{Array.isArray(definition.values)
-										? definition.values.join(' | ')
-										: definition.values}
+									{Array.isArray(d.definition.values)
+										? d.definition.values.join(' | ')
+										: d.definition.values}
 								</span>
 								<div class="" />
 							</div>

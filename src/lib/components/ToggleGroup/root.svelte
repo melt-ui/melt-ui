@@ -1,11 +1,6 @@
 <script lang="ts" context="module">
-	import {
-		collectionContext,
-		next,
-		prev,
-		reactiveContext,
-		useActions,
-	} from '$lib/internal/helpers';
+	import { collectionContext, next, prev, useActions } from '$lib/internal/helpers';
+	import { reactiveContext, type Defaults } from '$lib/internal/helpers';
 	import type { BaseProps } from '$lib/internal/types';
 
 	type Type = 'single' | 'multiple';
@@ -31,18 +26,6 @@
 			dir?: Direction;
 		};
 
-	const defaults = {
-		type: 'single',
-		orientation: 'horizontal',
-		dir: 'ltr',
-		loop: true,
-		rovingFocus: true,
-		disabled: false,
-		role: 'group',
-	} satisfies {
-		[key in keyof ToggleGroupRootProps]?: ToggleGroupRootProps[key];
-	};
-
 	type ToggleGroupRootContext = {
 		readonly type: Type;
 		readonly orientation: Orientation;
@@ -53,7 +36,17 @@
 		value: ToggleGroupRootProps['value'];
 	};
 
-	const { getContext, setContext } = reactiveContext<ToggleGroupRootContext>();
+	const defaults = {
+		type: 'single',
+		orientation: 'horizontal',
+		dir: 'ltr',
+		loop: true,
+		rovingFocus: true,
+		disabled: false,
+		value: null,
+	} satisfies Defaults<ToggleGroupRootContext>;
+
+	const { getContext, setContext } = reactiveContext<ToggleGroupRootContext>(defaults);
 	export const getToggleGroupRootContext = getContext;
 
 	const itemCollection = collectionContext();
@@ -69,26 +62,10 @@
 	export let dir: $$Props['dir'] = defaults.dir;
 	export let loop: $$Props['loop'] = defaults.loop;
 	export let disabled: $$Props['disabled'] = defaults.disabled;
-	export let role: $$Props['role'] = defaults.role;
+	export let role: $$Props['role'] = 'group';
 
-	const ctx = setContext({
-		type: [type ?? defaults.type],
-		orientation: [orientation ?? defaults.orientation],
-		dir: [dir ?? defaults.dir],
-		loop: [loop ?? defaults.loop],
-		rovingFocus: [rovingFocus ?? defaults.rovingFocus],
-		disabled: [false],
-		value: [value, (v) => (value = v)],
-	});
-	$: ctx.set({
-		type: type ?? defaults.type,
-		orientation: orientation ?? defaults.orientation,
-		dir: dir ?? defaults.dir,
-		loop: loop ?? defaults.loop,
-		rovingFocus: rovingFocus ?? defaults.rovingFocus,
-		disabled: disabled ?? defaults.disabled,
-		value,
-	});
+	const ctx = setContext({ value: (v) => (value = v) });
+	$: ctx.set({ type, orientation, dir, loop, rovingFocus, disabled, value });
 
 	// Item logic
 	const itemStore = itemCollection.setContext();

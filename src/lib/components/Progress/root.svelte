@@ -1,5 +1,6 @@
 <script lang="ts" context="module">
-	import { reactiveContext } from '$lib/internal/helpers/reactiveContext';
+	import { reactiveContext, type Defaults } from '$lib/internal/helpers';
+
 	import { useActions } from '$lib/internal/helpers/useActions';
 	import type { BaseProps } from '$lib/internal/types';
 
@@ -19,7 +20,11 @@
 		value?: number | null;
 	};
 
-	const { getContext, setContext } = reactiveContext<ProgressContext>();
+	const defaults = {
+		max: 1,
+		value: null,
+	} satisfies Defaults<ProgressContext>;
+	const { getContext, setContext } = reactiveContext<ProgressContext>(defaults);
 	export const getRootContext = getContext;
 
 	export function getState(
@@ -33,13 +38,10 @@
 <script lang="ts">
 	type $$Props = ProgressRootProps;
 
-	export let max: $$Props['max'] = 1;
-	export let value: $$Props['value'] = null;
+	export let max: $$Props['max'] = defaults.max;
+	export let value: $$Props['value'] = defaults.value;
 
-	const ctxStore = setContext({
-		max: [max, (v) => (max = v)],
-		value: [value, (v) => (value = v)],
-	});
+	const ctxStore = setContext({ value: (v) => (value = v), max: (m) => (max = m) });
 	$: ctxStore.set({ value, max });
 </script>
 

@@ -1,55 +1,78 @@
-import { writable, type Writable } from 'svelte/store';
+import { get, writable, type Writable } from 'svelte/store';
 
-import { objectEntries } from './object';
-import { uniqueContext } from './uniqueContext';
 import type { IfEquals } from '../types';
+import { joinKeys, objectEntries } from './object';
+import { uniqueContext } from './uniqueContext';
 
-type ValueSetterPair<T> = [T, (v: T) => void];
-type ValueSetterReadonly<T> = [T];
+type ValueSetter<T> = (v: T) => void;
+type WithoutNever<T> = Pick<T, { [K in keyof T]: T[K] extends never ? never : K }[keyof T]>;
 
-type ValueSetters<T> = {
+type ValueSetters<T> = WithoutNever<{
 	// If T[K] is readonly, make it ValueSetterReadonly, otherwise make it ValueSetterPair
-	[K in keyof T]: IfEquals<
+	[K in keyof T]?: IfEquals<
 		{ [Q in K]: T[K] },
 		{ -readonly [Q in K]: T[K] },
-		ValueSetterPair<T[K]> | ValueSetterReadonly<T[K]>,
-		ValueSetterReadonly<T[K]>
+		ValueSetter<T[K]>,
+		never
 	>;
+}>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type GetContextReturn<T extends Record<string, any>> = Writable<T>;
+
+export type Defaults<T extends Record<string, unknown>> = {
+	[K in keyof T]?: T[K];
 };
 
-type Values<T> = {
-	[K in keyof T]: T[K];
-};
-
-type GetContextReturn<T extends Record<string, unknown>> = Writable<Values<T>>;
-
-export function reactiveContext<T extends Record<string, unknown>>() {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function reactiveContext<T extends Record<string, any>>(defaults?: Defaults<T>) {
 	const initialContext = uniqueContext<GetContextReturn<T>>();
 
-	const setContext = (values: ValueSetters<T>) => {
+	const setContext = (values?: ValueSetters<T>) => {
+		const keys = joinKeys<keyof T>(defaults ?? {}, values ?? {});
+
 		const store = writable(
-			objectEntries(values).reduce((acc, [key, value]) => {
-				acc[key] = value[0];
+			keys.reduce((acc, key) => {
+				if (defaults?.[key] !== undefined) {
+					acc[key] = defaults[key] as T[keyof T];
+				}
+
 				return acc;
-			}, {} as Values<T>)
+			}, {} as T)
 		);
 
-		const set = (v: Values<T>) => {
-			store.set(v);
-			objectEntries(v).forEach(([key, value]) => {
-				const setter = values[key][1];
-				setter?.(value);
-			});
+		const set = (v: Partial<T>) => {
+			const keys = joinKeys<keyof T>(defaults ?? {}, v ?? {});
+
+			const withDefaults = keys.reduce((acc, key) => {
+				acc[key] = (v[key] === undefined ? defaults?.[key] : v[key]) as T[keyof T];
+				return acc;
+			}, {} as T);
+
+			store.set(withDefaults);
 		};
 
-		const update = (updater: (state: Values<T>) => Values<T>) => {
+		const update = (updater: (state: T) => Partial<T>) => {
 			store.update((v) => {
 				const newState = updater(v);
-				objectEntries(newState).forEach(([key, value]) => {
-					const setter = values[key][1];
-					setter?.(value);
+				const keys = joinKeys<keyof T>(defaults ?? {}, newState ?? {});
+				const withDefaults = keys.reduce((acc, key) => {
+					if (newState[key] === undefined && defaults?.[key] !== undefined) {
+						acc[key] = defaults[key] as T[keyof T];
+					} else {
+						acc[key] = newState[key] as T[keyof T];
+					}
+					return acc;
+				}, {} as T);
+
+				objectEntries(withDefaults).forEach(([key, value]) => {
+					if (values) {
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
+						const setter = key in values ? (values[key] as any) : undefined;
+						setter?.(value);
+					}
 				});
-				return newState;
+				return withDefaults;
 			});
 		};
 
@@ -64,5 +87,5 @@ export function reactiveContext<T extends Record<string, unknown>>() {
 		return contextStore;
 	};
 
-	return { ...initialContext, setContext };
+	return { ...initialContext, setContext, defaults };
 }

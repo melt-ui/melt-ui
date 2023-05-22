@@ -8,40 +8,39 @@
 		closeDelay?: number;
 	};
 
-	export type Context = {
+	type RootContext = {
 		open: boolean;
-
-		readonly openDelay: number;
-		readonly closeDelay: number;
-
 		openTimer: NodeJS.Timeout | undefined;
 		closeTimer: NodeJS.Timeout | undefined;
+		readonly openDelay: number;
+		readonly closeDelay: number;
 	};
 
-	const { getContext, setContext } = reactiveContext<Context>();
+	const defaults = {
+		open: false,
+		openDelay: 750,
+		closeDelay: 300,
+	} satisfies Defaults<RootContext>;
+
+	const { getContext, setContext } = reactiveContext<RootContext>(defaults);
 	export const getRootContext = getContext;
 </script>
 
 <script lang="ts">
 	import type { BaseProps } from '$lib/internal/types';
 
-	import { reactiveContext } from '$lib/internal/helpers/reactiveContext';
-
 	import { Popper } from '$lib/internal/components';
+	import { reactiveContext, type Defaults } from '$lib/internal/helpers';
 
 	type $$Props = HoverCardRootProps;
 
-	export let open = false;
-	export let openDelay = 750;
-	export let closeDelay = 300;
+	export let open: $$Props['open'] = defaults.open;
+	export let openDelay: $$Props['openDelay'] = defaults.openDelay;
+	export let closeDelay: $$Props['closeDelay'] = defaults.closeDelay;
 	export let use: $$Props['use'] = [];
 
 	const ctx = setContext({
-		open: [open, (v) => (open = v)],
-		openDelay: [openDelay],
-		closeDelay: [closeDelay],
-		openTimer: [undefined],
-		closeTimer: [undefined],
+		open: (v) => (open = v),
 	});
 
 	$: ctx.update((prev) => ({

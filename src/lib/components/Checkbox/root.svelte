@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import { reactiveContext } from '$lib/internal/helpers/reactiveContext';
+	import { reactiveContext, type Defaults } from '$lib/internal/helpers';
 	import { useActions } from '$lib/internal/helpers/useActions';
 	import type { BaseProps } from '$lib/internal/types';
 
@@ -26,7 +26,12 @@
 		readonly disabled: boolean;
 	};
 
-	const { getContext, setContext } = reactiveContext<CheckboxContext>();
+	const defaults = {
+		checked: false,
+		disabled: false,
+	} satisfies Defaults<CheckboxContext>;
+
+	const { getContext, setContext } = reactiveContext<CheckboxContext>(defaults);
 	export const getRootContext = getContext;
 
 	export function isIndeterminate(checked?: CheckedState): checked is 'indeterminate' {
@@ -41,17 +46,14 @@
 <script lang="ts">
 	type $$Props = CheckboxRootProps;
 
-	export let checked: CheckedState = false;
-	export let disabled = false;
+	export let checked: $$Props['checked'] = defaults.checked;
+	export let disabled: $$Props['disabled'] = defaults.disabled;
 	export let required: $$Props['required'] = false;
 	export let name: $$Props['name'] = '';
 	export let value: $$Props['value'] = '';
 
-	const ctxStore = setContext({
-		checked: [checked],
-		disabled: [disabled],
-	});
-	$: ctxStore.set({ checked, disabled });
+	const ctx = setContext();
+	$: ctx.set({ checked, disabled });
 </script>
 
 <button
@@ -70,7 +72,7 @@
 	role="checkbox"
 	aria-checked={isIndeterminate(checked) ? 'mixed' : checked}
 	aria-required={required}
-	data-state={getState(checked)}
+	data-state={getState($ctx.checked)}
 	data-disabled={disabled ? '' : undefined}
 	{disabled}
 	{value}

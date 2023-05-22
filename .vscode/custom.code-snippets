@@ -58,5 +58,13 @@
 		"body": [
 			"use={[...(use ?? [])]}"
 		]
+	},
+	"Defaults": {
+		"prefix": "defaults",
+		"body": [
+			" const defaults = {",
+			"\t$2",
+			"} satisfies Defaults<$1>;"
+		],
 	}
 }
