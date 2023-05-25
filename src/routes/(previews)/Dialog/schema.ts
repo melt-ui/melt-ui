@@ -19,7 +19,7 @@ export const schema = {
 				},
 				modal: {
 					type: 'boolean',
-					default: true,
+					default: false,
 				},
 			},
 		},
