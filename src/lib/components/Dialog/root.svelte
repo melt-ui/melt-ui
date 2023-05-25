@@ -18,7 +18,7 @@
 
 	const { getContext, setContext, defaults } = reactiveContext<DialogRootContext>({
 		open: false,
-		modal: false,
+		modal: true,
 		titleId: generateId(),
 		descriptionId: generateId(),
 		contentId: generateId(),
