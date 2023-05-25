@@ -11,10 +11,11 @@
 		openDelay={propsObj.Root.openDelay}
 		closeDelay={propsObj.Root.closeDelay}
 	>
-		<HoverCard.Trigger>
-			<a href="https://github.com/TGlide/radix-svelte">
-				<img class="h-8 w-8" src="/radix-svelte.svg" alt="Radix and Svelte logos" />
-			</a>
+		<HoverCard.Trigger
+			href="https://github.com/TGlide/radix-svelte"
+			class="rounded-full p-2 outline-none ring-black focus:ring"
+		>
+			<img class="h-8 w-8" src="/radix-svelte.svg" alt="Radix and Svelte logos" />
 		</HoverCard.Trigger>
 		<HoverCard.Portal>
 			<HoverCard.Content
