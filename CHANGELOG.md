@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.7.0
+
+### Minor Changes
+
+- e6b9db1: feat: tooltip
+
+### Patch Changes
+
+- 9801790: improve hovercard accessibility
+- c55306d: Change `Dialog.Root` `modal` prop default from `false` to `true`
+
 ## 0.6.0
 
 ### Minor Changes
