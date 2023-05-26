@@ -5,6 +5,7 @@
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { TOOLTIP_OPEN } from '../constants';
 	import { getTooltipRootContext } from '../root.svelte';
+	import { fade } from 'svelte/transition';
 
 	export type TooltipContentImplProps = PopperContentProps;
 </script>

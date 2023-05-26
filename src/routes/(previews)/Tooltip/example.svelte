@@ -36,10 +36,13 @@
 				sticky={propsObj.Content.sticky}
 				hideWhenDetached={propsObj.Content.hideWhenDetached}
 				avoidCollisions={propsObj.Content.avoidCollisions}
-				class="select-none rounded-md bg-white px-4 py-2 leading-none text-vermilion-500 shadow-md 
-				will-change-[transform,opacity]"
+				class="select-none rounded-md
+				bg-white px-4
+				py-2 leading-none text-vermilion-500 shadow-md will-change-[transform,opacity] data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade 
+				data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade"
 			>
 				Add to library
+
 				<Tooltip.Arrow
 					width={propsObj.Arrow.width}
 					height={propsObj.Arrow.height}

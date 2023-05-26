@@ -64,6 +64,7 @@
 	import { getSideAndAlignFromPlacement, isDefined, isNotNull, transformOrigin } from './utils';
 	import { useActions } from '$lib/internal/helpers';
 	import { reactiveContext, type Defaults } from '$lib/internal/helpers';
+	import { fade, fly, slide } from 'svelte/transition';
 
 	export let use: $$Props['use'] = [];
 	export let ref: $$Props['ref'] = null;
