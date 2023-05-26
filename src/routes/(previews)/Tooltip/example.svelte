@@ -8,8 +8,16 @@
 	export let propsObj: ResolvedProps<typeof Tooltip>;
 </script>
 
-<Tooltip.Provider>
-	<Tooltip.Root bind:open={propsObj.Root.open}>
+<Tooltip.Provider
+	delayDuration={propsObj.Provider.delayDuration}
+	skipDelayDuration={propsObj.Provider.skipDelayDuration}
+	disableHoverableContent={propsObj.Provider.disableHoverableContent}
+>
+	<Tooltip.Root
+		bind:open={propsObj.Root.open}
+		delayDuration={propsObj.Root.delayDuration}
+		disableHoverableContent={propsObj.Root.disableHoverableContent}
+	>
 		<Tooltip.Trigger
 			class="hover:opacity/75 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white
 			text-vermilion-500 shadow-sm outline-none focus:ring focus:ring-black"
@@ -19,12 +27,24 @@
 		</Tooltip.Trigger>
 		<Tooltip.Portal>
 			<Tooltip.Content
+				side={propsObj.Content.side}
+				sideOffset={propsObj.Content.sideOffset}
+				align={propsObj.Content.align}
+				alignOffset={propsObj.Content.alignOffset}
+				arrowPadding={propsObj.Content.arrowPadding}
+				collisionPadding={propsObj.Content.collisionPadding}
+				sticky={propsObj.Content.sticky}
+				hideWhenDetached={propsObj.Content.hideWhenDetached}
+				avoidCollisions={propsObj.Content.avoidCollisions}
 				class="select-none rounded-md bg-white px-4 py-2 leading-none text-vermilion-500 shadow-md 
 				will-change-[transform,opacity]"
-				sideOffset={8}
 			>
 				Add to library
-				<Tooltip.Arrow class="fill-white" />
+				<Tooltip.Arrow
+					width={propsObj.Arrow.width}
+					height={propsObj.Arrow.height}
+					class="fill-white"
+				/>
 			</Tooltip.Content>
 		</Tooltip.Portal>
 	</Tooltip.Root>

@@ -10,7 +10,6 @@
 
 	import type { ComponentProps } from 'svelte';
 	import { getTooltipRootContext } from './root.svelte';
-	import { browser } from '$app/environment';
 
 	type $$Props = TooltipPortalProps;
 
