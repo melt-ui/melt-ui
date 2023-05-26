@@ -34,11 +34,10 @@
 	import type { BaseProps } from '$lib/internal/types';
 
 	import { Popper } from '$lib/internal/components';
-	import { generateId, reactiveContext, type Defaults } from '$lib/internal/helpers';
+	import { generateId, isBrowser, reactiveContext, type Defaults } from '$lib/internal/helpers';
 	import { onDestroy } from 'svelte';
-	import { getTooltipProviderContext } from './provider.svelte';
-	import { browser } from '$app/environment';
 	import { TOOLTIP_OPEN } from './constants';
+	import { getTooltipProviderContext } from './provider.svelte';
 
 	type $$Props = TooltipRootProps;
 
@@ -75,12 +74,12 @@
 		ctx.update((p) => ({ ...p, open: true }));
 	};
 	const handleClose = () => {
-		if (!browser) return;
+		if (!isBrowser) return;
 		window.clearTimeout(openTimer);
 		ctx.update((p) => ({ ...p, open: false }));
 	};
 	const handleDelayedOpen = () => {
-		if (!browser) return;
+		if (!isBrowser) return;
 
 		window.clearTimeout(openTimer);
 		openTimer = window.setTimeout(() => {
@@ -106,7 +105,7 @@
 	};
 
 	onDestroy(() => {
-		if (!browser) return;
+		if (!isBrowser) return;
 		window.clearTimeout(openTimer);
 	});
 

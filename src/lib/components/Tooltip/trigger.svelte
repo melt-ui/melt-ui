@@ -6,10 +6,10 @@
 <script lang="ts">
 	import { Popper } from '$lib/internal/components';
 
+	import { isBrowser } from '$lib/internal/helpers';
 	import { onDestroy } from 'svelte';
 	import { getTooltipProviderContext } from './provider.svelte';
 	import { getTooltipRootContext } from './root.svelte';
-	import { browser } from '$app/environment';
 
 	type $$Props = TooltipTriggerProps;
 
@@ -25,7 +25,7 @@
 	};
 
 	onDestroy(() => {
-		if (!browser) return;
+		if (!isBrowser) return;
 		document.removeEventListener('pointerup', handlePointerUp);
 	});
 </script>
@@ -50,7 +50,7 @@
 	}}
 	on:pointerdown
 	on:pointerdown={() => {
-		if (!browser) return;
+		if (!isBrowser) return;
 
 		isPointerDown = true;
 		document.addEventListener('pointerup', handlePointerUp, { once: true });

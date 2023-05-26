@@ -1,6 +1,5 @@
 <script lang="ts" context="module">
-	import { browser } from '$app/environment';
-	import { reactiveContext, useActions, type Defaults } from '$lib/internal/helpers';
+	import { reactiveContext, type Defaults, isBrowser } from '$lib/internal/helpers';
 	import type { Writable } from 'svelte/store';
 
 	export type TooltipProviderProps = {
@@ -41,13 +40,13 @@
 	let isOpenDelayed: boolean = defaults.isOpenDelayed;
 
 	const handleOpen = () => {
-		if (!browser) return;
+		if (!isBrowser) return;
 		window.clearTimeout(skipDelayTimer);
 		isOpenDelayed = false;
 	};
 
 	const handleClose = () => {
-		if (!browser) return;
+		if (!isBrowser) return;
 
 		window.clearTimeout(skipDelayTimer);
 		skipDelayTimer = window.setTimeout(() => {
