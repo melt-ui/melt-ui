@@ -48,6 +48,7 @@
 
 	const handleClose = () => {
 		if (!browser) return;
+
 		window.clearTimeout(skipDelayTimer);
 		skipDelayTimer = window.setTimeout(() => {
 			isOpenDelayed = true;
@@ -65,4 +66,5 @@
 	}));
 </script>
 
+{$ctx.isOpenDelayed}
 <slot />

@@ -7,7 +7,7 @@
 </script>
 
 <Tooltip.Provider>
-	<Tooltip.Root>
+	<Tooltip.Root disableHoverableContent>
 		<Tooltip.Trigger
 			class="shadow-blackA7 hover:bg-violet3 inline-flex h-[35px] w-[35px] items-center justify-center rounded-full bg-white text-vermilion-500 shadow-[0_2px_10px] outline-none focus:shadow-[0_0_0_2px] focus:shadow-black"
 		>

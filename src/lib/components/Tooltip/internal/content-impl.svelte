@@ -66,5 +66,5 @@
 	data-state={$rootCtx.stateAttribute}
 >
 	<!-- TODO: Implement visually hidden -->
-	<slot />aa
+	<slot />
 </Popper.Content>

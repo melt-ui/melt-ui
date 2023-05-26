@@ -73,7 +73,7 @@
 	const handleOpen = () => {
 		window.clearTimeout(openTimer);
 		wasOpenDelayed = false;
-		$ctx.open = true;
+		ctx.update((p) => ({ ...p, open: true }));
 	};
 	const handleClose = () => {
 		if (!browser) return;
@@ -82,13 +82,11 @@
 	};
 	const handleDelayedOpen = () => {
 		if (!browser) return;
-		console.log('delayed open init');
 
 		window.clearTimeout(openTimer);
 		openTimer = window.setTimeout(() => {
 			wasOpenDelayed = true;
-			$ctx.open = true;
-			console.log('delayed open cb', $ctx.open);
+			ctx.update((p) => ({ ...p, open: true }));
 		}, delayDuration);
 	};
 
@@ -124,7 +122,9 @@
 	});
 </script>
 
-{console.log({ $ctx })}
-<Popper.Root {use} {...$$restProps}>
-	<slot />
-</Popper.Root>
+<div class="flex flex-col items-center">
+	<pre>{JSON.stringify({ $ctx }, null, 2)}</pre>
+	<Popper.Root {use} {...$$restProps}>
+		<slot />
+	</Popper.Root>
+</div>

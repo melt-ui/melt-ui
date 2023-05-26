@@ -183,6 +183,7 @@
 	$: {
 		$rootCtx.trigger?.removeEventListener('pointerleave', handleTriggerLeave);
 		ref?.removeEventListener('pointerleave', handleContentLeave);
+		console.log($rootCtx.trigger, ref);
 		if ($rootCtx.trigger && ref) {
 			addHandlers($rootCtx.trigger, ref);
 		}
@@ -209,6 +210,7 @@
 		document.removeEventListener('pointermove', handleTrackPointerGrace);
 		if (pointerGraceArea) {
 			addTrackHandler(pointerGraceArea);
+			console.log('adding track handler');
 			document.addEventListener('pointermove', handleTrackPointerGrace);
 		}
 	}

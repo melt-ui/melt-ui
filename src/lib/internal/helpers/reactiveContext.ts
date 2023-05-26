@@ -31,6 +31,16 @@ export function reactiveContext<T extends Record<string, any>>(defaults?: Defaul
 	const setContext = (setters?: ValueSetters<T>) => {
 		const keys = joinKeys<keyof T>(defaults ?? {}, setters ?? {});
 
+		const runSetters = (state: T) => {
+			objectEntries(state).forEach(([key, value]) => {
+				if (setters) {
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					const setter = key in setters ? (setters[key] as any) : undefined;
+					setter?.(value);
+				}
+			});
+		};
+
 		const store = writable(
 			keys.reduce((acc, key) => {
 				if (defaults?.[key] !== undefined) {
@@ -49,6 +59,7 @@ export function reactiveContext<T extends Record<string, any>>(defaults?: Defaul
 				return acc;
 			}, {} as T);
 
+			runSetters(withDefaults);
 			store.set(withDefaults);
 		};
 
@@ -65,13 +76,7 @@ export function reactiveContext<T extends Record<string, any>>(defaults?: Defaul
 					return acc;
 				}, {} as T);
 
-				objectEntries(withDefaults).forEach(([key, value]) => {
-					if (setters) {
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-						const setter = key in setters ? (setters[key] as any) : undefined;
-						setter?.(value);
-					}
-				});
+				runSetters(withDefaults);
 				return withDefaults;
 			});
 		};
