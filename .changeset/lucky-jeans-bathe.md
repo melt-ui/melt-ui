@@ -1,5 +1,5 @@
 ---
-"radix-svelte": minor
+'radix-svelte': minor
 ---
 
 feat: tooltip

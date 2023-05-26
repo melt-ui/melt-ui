@@ -11,7 +11,10 @@
 		</a>
 	</HoverCard.Trigger>
 	<HoverCard.Portal>
-		<HoverCard.Content data-testid="hovercard-content" class="w-80 rounded-sm bg-white p-5 shadow-sm">
+		<HoverCard.Content
+			data-testid="hovercard-content"
+			class="w-80 rounded-sm bg-white p-5 shadow-sm"
+		>
 			<HoverCard.Arrow width={20} height={10} class="fill-white" />
 			<div class="flex flex-col gap-2">
 				<img

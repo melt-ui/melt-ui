@@ -15,7 +15,7 @@ import { schema as Slider } from './Slider/schema';
 import { schema as Switch } from './Switch/schema';
 import { schema as Tabs } from './Tabs/schema';
 import { schema as Toggle } from './Toggle/schema';
-import {schema as HoverCard} from './HoverCard/schema';
+import { schema as HoverCard } from './HoverCard/schema';
 
 import { schema as Avatar } from './Avatar/schema';
 import { schema as Separator } from './Separator/schema';

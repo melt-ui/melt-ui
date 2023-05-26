@@ -2,11 +2,11 @@
 	import { focusTrap } from '$lib/internal/actions';
 	import { dismissable, type ForwardedEvent } from '$lib/internal/actions/dismissable';
 	import { removeScroll } from '$lib/internal/actions/removeScroll';
-	import type { BaseProps, UnwrapCustomEvents, WrapWithCustomEvent } from '$lib/internal/types';
+	import { focus, useActions } from '$lib/internal/helpers';
+	import type { BaseProps, UnwrapCustomEvents } from '$lib/internal/types';
 	import { createEventDispatcher, tick } from 'svelte';
 	import { getDataState } from './internal/helpers';
 	import { getDialogRootContext } from './root.svelte';
-	import { focus, useActions } from '$lib/internal/helpers';
 
 	export type DialogContentProps = BaseProps<'div'> & {
 		openAutoFocus?: boolean | HTMLElement;

@@ -59,12 +59,10 @@
 
 	import { computePosition } from '@floating-ui/core';
 
+	import { reactiveContext, useActions, type Defaults } from '$lib/internal/helpers';
 	import { onDestroy } from 'svelte';
 	import { getRootContext } from './root.svelte';
 	import { getSideAndAlignFromPlacement, isDefined, isNotNull, transformOrigin } from './utils';
-	import { useActions } from '$lib/internal/helpers';
-	import { reactiveContext, type Defaults } from '$lib/internal/helpers';
-	import { fade, fly, slide } from 'svelte/transition';
 
 	export let use: $$Props['use'] = [];
 	export let ref: $$Props['ref'] = null;
