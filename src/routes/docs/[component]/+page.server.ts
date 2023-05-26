@@ -14,6 +14,6 @@ export function load({ params }) {
 
 	return {
 		cmp,
-		props
+		props,
 	};
 }

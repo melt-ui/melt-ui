@@ -10,3 +10,4 @@ export * from './style';
 export * from './uniqueContext';
 export * from './useActions';
 export * from './preview';
+export * from './browser';

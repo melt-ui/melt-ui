@@ -1,21 +1,21 @@
 <script lang="ts" context="module">
 	type PortalProps = ComponentProps<InstanceType<typeof Portal>>;
-	export type HoverCardPortalProps = Omit<PortalProps, 'target'> & {
+	export type TooltipPortalProps = Omit<PortalProps, 'target'> & {
 		container?: PortalProps['target'];
 	};
 </script>
 
 <script lang="ts">
 	import { Portal } from '$lib/internal/components';
-	import { getRootContext } from './root.svelte';
 
 	import type { ComponentProps } from 'svelte';
+	import { getTooltipRootContext } from './root.svelte';
 
-	type $$Props = HoverCardPortalProps;
+	type $$Props = TooltipPortalProps;
 
 	export let container: $$Props['container'] = 'body';
 
-	const ctx = getRootContext();
+	const ctx = getTooltipRootContext();
 </script>
 
 {#if $ctx.open}

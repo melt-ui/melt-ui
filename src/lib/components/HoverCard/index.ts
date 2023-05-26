@@ -9,9 +9,9 @@ export type { HoverCardContentProps } from './content.svelte';
 import Arrow from '$lib/internal/components/Popper/arrow.svelte';
 
 export const HoverCard = {
-    Root,
-    Portal,
-    Trigger,
-    Content,
-    Arrow
+	Root,
+	Portal,
+	Trigger,
+	Content,
+	Arrow,
 };

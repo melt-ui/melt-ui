@@ -63,8 +63,8 @@
 		"prefix": "defaults",
 		"body": [
 			" const defaults = {",
-			"\t$2",
-			"} satisfies Defaults<$1>;"
+			"\t$1",
+			"} satisfies Defaults<${TM_DIRECTORY/.+\\/(.+)/$1/}${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}Context>;"
 		],
 	}
 }

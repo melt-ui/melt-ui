@@ -48,14 +48,6 @@ export const schema = {
 		Content: {
 			description: 'Contains content to be rendered when the dialog is open.',
 			props: {
-				onPointerDownOutside: {
-					type: 'function',
-					show: null,
-				},
-				onEscapeKeyDown: {
-					type: 'function',
-					show: null,
-				},
 				openAutoFocus: {
 					type: 'boolean',
 					typeLabel: 'boolean | HTMLElement',
@@ -65,6 +57,11 @@ export const schema = {
 				closeAutoFocus: {
 					type: 'boolean',
 					default: true,
+				},
+			},
+			events: {
+				escapeKeyDown: {
+					payload: 'CustomEvent<{ originalEvent: MouseEvent; preventDefault: () => void; }>',
 				},
 			},
 			dataAttributes: {

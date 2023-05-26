@@ -14,7 +14,7 @@ export const schema = {
 			props: {
 				value: {
 					type: 'number',
-					typeLabel: 'number | number[]',					
+					typeLabel: 'number | number[]',
 					show: 'value',
 				},
 				min: {
