@@ -12,7 +12,18 @@ export const schema = {
 	meta: {
 		Root: {},
 		Anchor: {},
-		Arrow: {},
+		Arrow: {
+			props: {
+				width: {
+					type: 'number',
+					default: 10,
+				},
+				height: {
+					type: 'number',
+					default: 5,
+				},
+			},
+		},
 		Content: {
 			props: {
 				side: {

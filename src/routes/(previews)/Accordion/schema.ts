@@ -47,8 +47,7 @@ export const schema = {
 			},
 		},
 		Header: {
-			description:
-				'Wraps an *Accordion.Trigger*.',
+			description: 'Wraps an *Accordion.Trigger*.',
 			dataAttributes: {
 				'data-disabled': {
 					values: 'Present when disabled',

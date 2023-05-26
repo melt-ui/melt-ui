@@ -8,7 +8,7 @@ import { schema as PopperSchema } from '../Popper/schema';
 
 export const schema = {
 	title: 'Hover Card',
-	description: 'For sighted users to preview content available behind a link',
+	description: 'For sighted users to preview content available behind a link.',
 	example,
 	code,
 	meta: {

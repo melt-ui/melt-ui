@@ -63,7 +63,7 @@ export type ResolvedProps<GROUP extends RadixComponentGroup> = {
 /* Preview Events */
 /* -------------- */
 export type PreviewEvent<T> = {
-	payload: T | Array<T>;
+	payload: T | Array<T> | string;
 };
 
 type PreviewComponentEvents<CMP extends SvelteComponent> = {

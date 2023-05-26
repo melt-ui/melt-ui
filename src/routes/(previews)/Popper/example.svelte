@@ -28,7 +28,11 @@
 				avoidCollisions={propsObj.Content.avoidCollisions}
 			>
 				<button on:click={() => (open = false)}>close</button>
-				<Popper.Arrow width={20} height={10} class="fill-black/20" />
+				<Popper.Arrow
+					width={propsObj.Arrow.width}
+					height={propsObj.Arrow.height}
+					class="fill-black/20"
+				/>
 			</Popper.Content>
 		{/if}
 	</Popper.Root>

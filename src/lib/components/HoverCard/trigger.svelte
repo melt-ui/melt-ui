@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	import type { BaseProps, UnwrapCustomEvents, WrapWithCustomEvent } from '$lib/internal/types';
-	export type HoverCardTriggerProps = BaseProps<'div'>;
+	export type HoverCardTriggerProps = BaseProps<'a'>;
 </script>
 
 <script lang="ts">
@@ -34,6 +34,7 @@
 </script>
 
 <Popper.Anchor
+	as="a"
 	on:pointerenter={open}
 	on:pointerleave={close}
 	on:focus={open}
@@ -41,6 +42,7 @@
 	on:touchstart={(e) => e.preventDefault()}
 	use={[...(use ?? [])]}
 	data-state={$ctx.open ? 'open' : 'closed'}
+	{...$$restProps}
 >
 	<slot />
 </Popper.Anchor>

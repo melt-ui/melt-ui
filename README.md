@@ -85,7 +85,7 @@ Our [Discord community](https://discord.gg/gQrpPs34xH) is a great place to get i
 | Dialog          | ✅     |
 | Dropdown Menu   |        |
 | Form            |        |
-| Hover Card      |        |
+| Hover Card      | ✅     |
 | Label           | ✅     |
 | Menubar         |        |
 | Navigation Menu |        |
@@ -102,9 +102,7 @@ Our [Discord community](https://discord.gg/gQrpPs34xH) is a great place to get i
 | Toggle          | ✅     |
 | Toggle Group    | ✅     |
 | Toolbar         |        |
-| Tooltip         | 🔨     |
-
-| Dropdown Menu
+| Tooltip         | ✅     |
 
 ## Similar projects
 

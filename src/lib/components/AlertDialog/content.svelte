@@ -18,8 +18,8 @@
 
 <Dialog.Content
 	role="alertdialog"
-	onPointerDownOutside={(e) => {
-		e.preventDefault();
+	on:pointerDownOutside={(e) => {
+		e.detail.preventDefault();
 	}}
 	openAutoFocus={resolvedOpenAutoFocus}
 	{...$$restProps}
