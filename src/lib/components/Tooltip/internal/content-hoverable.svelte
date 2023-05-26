@@ -1,7 +1,4 @@
 <script lang="ts" context="module">
-	import { useActions } from '$lib/internal/helpers';
-
-	import type { BaseProps } from '$lib/internal/types';
 	import { onDestroy } from 'svelte';
 	import { getTooltipProviderContext } from '../provider.svelte';
 	import { getTooltipRootContext } from '../root.svelte';
@@ -119,10 +116,10 @@
 </script>
 
 <script lang="ts">
+	import { createCallAndCleanup } from '$lib/internal/stores/callAndCleanup';
 	import ContentImpl from './content-impl.svelte';
 
 	type $$Props = TooltipContentHoverableProps;
-	export let use: $$Props['use'] = [];
 
 	const providerCtx = getTooltipProviderContext();
 	const rootCtx = getTooltipRootContext();
@@ -162,58 +159,54 @@
 		});
 	};
 
+	const handlerEffect = createCallAndCleanup();
+	$: $handlerEffect(() => {
+		if (ref && $rootCtx.trigger) {
+			const trigger = $rootCtx.trigger;
+			const content = ref;
+
+			const handleTriggerLeave = (event: PointerEvent) => handleCreateGraceArea(event, content);
+			const handleContentLeave = (event: PointerEvent) => handleCreateGraceArea(event, trigger);
+
+			$rootCtx.trigger.addEventListener('pointerleave', handleTriggerLeave);
+			ref.addEventListener('pointerleave', handleContentLeave);
+
+			return () => {
+				$rootCtx.trigger?.removeEventListener('pointerleave', handleTriggerLeave);
+				ref?.removeEventListener('pointerleave', handleContentLeave);
+			};
+		}
+	});
+
+	const pgaEffect = createCallAndCleanup();
+	$: $pgaEffect(() => {
+		if (pointerGraceArea) {
+			const pga = pointerGraceArea;
+
+			const handleTrackPointerGrace = (event: PointerEvent) => {
+				const target = event.target as HTMLElement;
+				const pointerPosition = { x: event.clientX, y: event.clientY };
+				const hasEnteredTarget = $rootCtx.trigger?.contains(target) || ref?.contains(target);
+				const isPointerOutsideGraceArea = !isPointInPolygon(pointerPosition, pga);
+
+				if (hasEnteredTarget) {
+					handleRemoveGraceArea();
+				} else if (isPointerOutsideGraceArea) {
+					handleRemoveGraceArea();
+					$rootCtx.onClose();
+				}
+			};
+
+			document.addEventListener('pointermove', handleTrackPointerGrace);
+			return () => {
+				document.removeEventListener('pointermove', handleTrackPointerGrace);
+			};
+		}
+	});
+
 	onDestroy(() => {
 		handleRemoveGraceArea();
 	});
-
-	let handleTriggerLeave: (event: PointerEvent) => void;
-	let handleContentLeave: (event: PointerEvent) => void;
-
-	function addHandlers(
-		trigger: NonNullable<typeof $rootCtx.trigger>,
-		content: NonNullable<typeof ref>
-	) {
-		handleTriggerLeave = (event: PointerEvent) => handleCreateGraceArea(event, content);
-		handleContentLeave = (event: PointerEvent) => handleCreateGraceArea(event, trigger);
-
-		trigger.addEventListener('pointerleave', handleTriggerLeave);
-		content.addEventListener('pointerleave', handleContentLeave);
-	}
-
-	$: {
-		$rootCtx.trigger?.removeEventListener('pointerleave', handleTriggerLeave);
-		ref?.removeEventListener('pointerleave', handleContentLeave);
-		console.log($rootCtx.trigger, ref);
-		if ($rootCtx.trigger && ref) {
-			addHandlers($rootCtx.trigger, ref);
-		}
-	}
-
-	let handleTrackPointerGrace: (event: PointerEvent) => void;
-	function addTrackHandler(pga: NonNullable<typeof pointerGraceArea>) {
-		handleTrackPointerGrace = (event: PointerEvent) => {
-			const target = event.target as HTMLElement;
-			const pointerPosition = { x: event.clientX, y: event.clientY };
-			const hasEnteredTarget = $rootCtx.trigger?.contains(target) || ref?.contains(target);
-			const isPointerOutsideGraceArea = !isPointInPolygon(pointerPosition, pga);
-
-			if (hasEnteredTarget) {
-				handleRemoveGraceArea();
-			} else if (isPointerOutsideGraceArea) {
-				handleRemoveGraceArea();
-				$rootCtx.onClose();
-			}
-		};
-	}
-
-	$: {
-		document.removeEventListener('pointermove', handleTrackPointerGrace);
-		if (pointerGraceArea) {
-			addTrackHandler(pointerGraceArea);
-			console.log('adding track handler');
-			document.addEventListener('pointermove', handleTrackPointerGrace);
-		}
-	}
 </script>
 
 <ContentImpl bind:ref {...$$restProps}>

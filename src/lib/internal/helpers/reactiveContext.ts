@@ -31,16 +31,6 @@ export function reactiveContext<T extends Record<string, any>>(defaults?: Defaul
 	const setContext = (setters?: ValueSetters<T>) => {
 		const keys = joinKeys<keyof T>(defaults ?? {}, setters ?? {});
 
-		const runSetters = (state: T) => {
-			objectEntries(state).forEach(([key, value]) => {
-				if (setters) {
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					const setter = key in setters ? (setters[key] as any) : undefined;
-					setter?.(value);
-				}
-			});
-		};
-
 		const store = writable(
 			keys.reduce((acc, key) => {
 				if (defaults?.[key] !== undefined) {
@@ -51,21 +41,9 @@ export function reactiveContext<T extends Record<string, any>>(defaults?: Defaul
 			}, {} as T)
 		);
 
-		const set = (v: Partial<T>) => {
-			const keys = joinKeys<keyof T>(defaults ?? {}, v ?? {});
-
-			const withDefaults = keys.reduce((acc, key) => {
-				acc[key] = (v[key] === undefined ? defaults?.[key] : v[key]) as T[keyof T];
-				return acc;
-			}, {} as T);
-
-			runSetters(withDefaults);
-			store.set(withDefaults);
-		};
-
 		const update = (updater: (state: T) => Partial<T>) => {
-			store.update((v) => {
-				const newState = updater(v);
+			store.update((prev) => {
+				const newState = updater(prev);
 				const keys = joinKeys<keyof T>(defaults ?? {}, newState ?? {});
 				const withDefaults = keys.reduce((acc, key) => {
 					if (newState[key] === undefined && defaults?.[key] !== undefined) {
@@ -76,9 +54,21 @@ export function reactiveContext<T extends Record<string, any>>(defaults?: Defaul
 					return acc;
 				}, {} as T);
 
-				runSetters(withDefaults);
+				objectEntries(withDefaults).forEach(([key, value]) => {
+					if (setters) {
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
+						const setter = key in setters ? (setters[key] as any) : undefined;
+
+						setter?.(value);
+					}
+				});
+
 				return withDefaults;
 			});
+		};
+
+		const set = (v: Partial<T>) => {
+			update(() => v);
 		};
 
 		const contextStore = {

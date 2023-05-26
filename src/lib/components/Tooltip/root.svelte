@@ -23,6 +23,7 @@
 	const defaults = {
 		open: false,
 		contentId: generateId(),
+		trigger: null,
 	} satisfies Defaults<TooltipRootContext>;
 
 	const { getContext, setContext } = reactiveContext<TooltipRootContext>(defaults);
@@ -59,8 +60,6 @@
 		},
 	});
 
-	let trigger: HTMLButtonElement | null = null;
-
 	let openTimer = 0;
 	$: disableHoverableContent = disableHoverableContent ?? $providerCtx?.disableHoverableContent;
 	$: delayDuration = delayDuration ?? $providerCtx?.delayDuration;
@@ -78,7 +77,7 @@
 	const handleClose = () => {
 		if (!browser) return;
 		window.clearTimeout(openTimer);
-		$ctx.open = false;
+		ctx.update((p) => ({ ...p, open: false }));
 	};
 	const handleDelayedOpen = () => {
 		if (!browser) return;
@@ -88,6 +87,22 @@
 			wasOpenDelayed = true;
 			ctx.update((p) => ({ ...p, open: true }));
 		}, delayDuration);
+	};
+
+	const onTriggerEnter = () => {
+		if ($providerCtx?.isOpenDelayed) {
+			handleDelayedOpen();
+		} else {
+			handleOpen();
+		}
+	};
+
+	const onTriggerLeave = () => {
+		if (disableHoverableContent) {
+			handleClose();
+		} else {
+			window.clearTimeout(openTimer);
+		}
 	};
 
 	onDestroy(() => {
@@ -100,21 +115,8 @@
 			...prev,
 			open,
 			stateAttribute,
-			trigger,
-			onTriggerEnter: () => {
-				if ($providerCtx?.isOpenDelayed) {
-					handleDelayedOpen();
-				} else {
-					handleOpen();
-				}
-			},
-			onTriggerLeave: () => {
-				if (disableHoverableContent) {
-					handleClose();
-				} else {
-					window.clearTimeout(openTimer);
-				}
-			},
+			onTriggerEnter,
+			onTriggerLeave,
 			onOpen: handleOpen,
 			onClose: handleClose,
 			disableHoverableContent,
@@ -122,9 +124,6 @@
 	});
 </script>
 
-<div class="flex flex-col items-center">
-	<pre>{JSON.stringify({ $ctx }, null, 2)}</pre>
-	<Popper.Root {use} {...$$restProps}>
-		<slot />
-	</Popper.Root>
-</div>
+<Popper.Root {use} {...$$restProps}>
+	<slot />
+</Popper.Root>

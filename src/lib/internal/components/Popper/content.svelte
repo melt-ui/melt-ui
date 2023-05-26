@@ -82,7 +82,9 @@
 	const ctx = setContext();
 
 	let content: HTMLElement;
-	$: if (content) ref = content;
+	$: if (content) {
+		ref = content;
+	}
 	onDestroy(() => {
 		ref = null;
 	});

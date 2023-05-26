@@ -1,11 +1,10 @@
 <script lang="ts" context="module">
-	import { Popper, type PopperContentProps } from '$lib/internal/components/Popper';
-	import { useActions } from '$lib/internal/helpers';
-	import { createEventDispatcher, onMount } from 'svelte';
-	import { getTooltipRootContext } from '../root.svelte';
-	import { TOOLTIP_OPEN } from '../constants';
 	import { dismissable, type ForwardedEvent } from '$lib/internal/actions';
+	import { Popper, type PopperContentProps } from '$lib/internal/components/Popper';
 	import type { UnwrapCustomEvents } from '$lib/internal/types';
+	import { createEventDispatcher, onMount } from 'svelte';
+	import { TOOLTIP_OPEN } from '../constants';
+	import { getTooltipRootContext } from '../root.svelte';
 
 	export type TooltipContentImplProps = PopperContentProps;
 </script>
@@ -19,6 +18,7 @@
 	const dispatch = createEventDispatcher<UnwrapCustomEvents<$$Events>>();
 
 	export let use: $$Props['use'] = [];
+	export let ref: $$Props['ref'] = undefined;
 
 	const rootCtx = getTooltipRootContext();
 
@@ -31,11 +31,15 @@
 
 	const handleScroll = (event: Event) => {
 		const target = event.target as HTMLElement;
-		if (target?.contains($rootCtx.trigger)) $rootCtx.onClose();
+
+		if (target?.contains($rootCtx.trigger)) {
+			$rootCtx.onClose();
+		}
 	};
 
 	$: {
 		window.removeEventListener('scroll', handleScroll, { capture: true });
+
 		if ($rootCtx.trigger) {
 			window.addEventListener('scroll', handleScroll, { capture: true });
 		}
@@ -59,11 +63,14 @@
 			{
 				onPointerDownOutside,
 				onEscapeKeyDown,
-				onDismiss: $rootCtx.onClose,
+				onDismiss: () => {
+					$rootCtx.onClose();
+				},
 			},
 		],
 	]}
 	data-state={$rootCtx.stateAttribute}
+	bind:ref
 >
 	<!-- TODO: Implement visually hidden -->
 	<slot />

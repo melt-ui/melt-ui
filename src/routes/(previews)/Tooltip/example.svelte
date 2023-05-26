@@ -1,25 +1,26 @@
 <script lang="ts">
 	import { Tooltip } from '$lib';
 	import type { ResolvedProps } from '$lib/internal/helpers';
+	// These are internal icons, but they're not exported from the package.
+	// Use your own icons instead.
 	import Plus from '~icons/lucide/plus';
 
 	export let propsObj: ResolvedProps<typeof Tooltip>;
 </script>
 
 <Tooltip.Provider>
-	<Tooltip.Root disableHoverableContent>
+	<Tooltip.Root bind:open={propsObj.Root.open}>
 		<Tooltip.Trigger
-			class="shadow-blackA7 hover:bg-violet3 inline-flex h-[35px] w-[35px] items-center justify-center rounded-full bg-white text-vermilion-500 shadow-[0_2px_10px] outline-none focus:shadow-[0_0_0_2px] focus:shadow-black"
+			class="hover:opacity/75 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white
+			text-vermilion-500 shadow-sm outline-none focus:ring focus:ring-black"
+			aria-label="Add to library"
 		>
 			<Plus />
 		</Tooltip.Trigger>
 		<Tooltip.Portal>
 			<Tooltip.Content
-				class="a data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade
-				data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade
-				data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade 
-				select-none rounded-[4px] bg-white px-[15px] py-[10px] text-[15px] leading-none 
-				text-vermilion-500 shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] will-change-[transform,opacity]"
+				class="select-none rounded-md bg-white px-4 py-2 leading-none text-vermilion-500 shadow-md 
+				will-change-[transform,opacity]"
 				sideOffset={8}
 			>
 				Add to library

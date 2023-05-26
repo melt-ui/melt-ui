@@ -18,7 +18,6 @@
 	const ctx = getTooltipRootContext();
 	const providerCtx = getTooltipProviderContext();
 
-	let ref: HTMLButtonElement | null = null;
 	let isPointerDown = false;
 	let hasPointerMoveOpened = false;
 	const handlePointerUp = () => {
@@ -35,7 +34,7 @@
 	as="button"
 	aria-describedby={$ctx.open ? $ctx.contentId : undefined}
 	data-state={$ctx.stateAttribute}
-	bind:ref
+	bind:ref={$ctx.trigger}
 	on:pointermove
 	on:pointermove={(event) => {
 		if (event.pointerType === 'touch') return;
@@ -52,6 +51,7 @@
 	on:pointerdown
 	on:pointerdown={() => {
 		if (!browser) return;
+
 		isPointerDown = true;
 		document.addEventListener('pointerup', handlePointerUp, { once: true });
 	}}

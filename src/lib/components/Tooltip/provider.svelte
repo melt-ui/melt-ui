@@ -66,5 +66,4 @@
 	}));
 </script>
 
-{$ctx.isOpenDelayed}
 <slot />
