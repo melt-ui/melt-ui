@@ -1,4 +1,4 @@
-import { get, writable, type Writable } from 'svelte/store';
+import { writable, type Writable } from 'svelte/store';
 
 import type { IfEquals } from '../types';
 import { joinKeys, objectEntries } from './object';
@@ -28,8 +28,8 @@ export type Defaults<T extends Record<string, unknown>> = {
 export function reactiveContext<T extends Record<string, any>>(defaults?: Defaults<T>) {
 	const initialContext = uniqueContext<GetContextReturn<T>>();
 
-	const setContext = (values?: ValueSetters<T>) => {
-		const keys = joinKeys<keyof T>(defaults ?? {}, values ?? {});
+	const setContext = (setters?: ValueSetters<T>) => {
+		const keys = joinKeys<keyof T>(defaults ?? {}, setters ?? {});
 
 		const store = writable(
 			keys.reduce((acc, key) => {
@@ -66,9 +66,9 @@ export function reactiveContext<T extends Record<string, any>>(defaults?: Defaul
 				}, {} as T);
 
 				objectEntries(withDefaults).forEach(([key, value]) => {
-					if (values) {
+					if (setters) {
 						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-						const setter = key in values ? (values[key] as any) : undefined;
+						const setter = key in setters ? (setters[key] as any) : undefined;
 						setter?.(value);
 					}
 				});

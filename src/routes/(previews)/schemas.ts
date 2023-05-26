@@ -1,3 +1,4 @@
+import { schema as Tooltip } from './Tooltip/schema';
 import { schema as AlertDialog } from './AlertDialog/schema';
 import { schema as RadioGroup } from './RadioGroup/schema';
 import { schema as Select } from './Select/schema';
@@ -39,4 +40,5 @@ export const schemas = {
 	radiogroup: RadioGroup,
 	alertdialog: AlertDialog,
 	hovercard: HoverCard,
+	tooltip: Tooltip,
 };

@@ -5,6 +5,7 @@
 
 	export type PopperAnchorProps = BaseProps & {
 		as?: 'div' | 'button' | 'a';
+		ref?: HTMLElement | null;
 	};
 </script>
 
@@ -12,8 +13,10 @@
 	type $$Props = PopperAnchorProps;
 	export let use: $$Props['use'] = [];
 	export let as: $$Props['as'] = 'div';
+	export let ref: $$Props['ref'] = null;
 
 	let element: HTMLElement;
+	$: if (element) ref = element;
 
 	const rootContext = getRootContext();
 	$: $rootContext.anchor = element;
@@ -26,7 +29,9 @@
 	bind:this={element}
 	on:click
 	on:pointerenter
+	on:pointermove
 	on:pointerleave
+	on:pointerdown
 	on:focus
 	on:blur
 	on:touchstart

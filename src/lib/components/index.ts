@@ -16,3 +16,4 @@ export * from './Label';
 export * from './RadioGroup';
 export * from './AlertDialog';
 export * from './HoverCard';
+export * from './Tooltip';

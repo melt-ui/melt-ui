@@ -47,14 +47,6 @@ export const schema = {
 		},
 		Content: {
 			props: {
-				onPointerDownOutside: {
-					type: 'function',
-					show: null,
-				},
-				onEscapeKeyDown: {
-					type: 'function',
-					show: null,
-				},
 				openAutoFocus: {
 					type: 'boolean',
 					typeLabel: 'boolean | HTMLElement',
@@ -68,6 +60,14 @@ export const schema = {
 			dataAttributes: {
 				'data-state': {
 					values: ['open', 'closed'],
+				},
+			},
+			events: {
+				pointerDownOutside: {
+					payload: 'CustomEvent<{ originalEvent: MouseEvent; preventDefault: () => void; }>',
+				},
+				escapeKeyDown: {
+					payload: 'CustomEvent<{ originalEvent: MouseEvent; preventDefault: () => void; }>',
 				},
 			},
 		},

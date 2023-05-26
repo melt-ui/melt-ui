@@ -1,16 +1,14 @@
 <script lang="ts" context="module">
 	import { focusTrap } from '$lib/internal/actions';
-	import { dismissable } from '$lib/internal/actions/dismissable';
+	import { dismissable, type ForwardedEvent } from '$lib/internal/actions/dismissable';
 	import { removeScroll } from '$lib/internal/actions/removeScroll';
-	import type { BaseProps } from '$lib/internal/types';
-	import { tick } from 'svelte';
+	import type { BaseProps, UnwrapCustomEvents, WrapWithCustomEvent } from '$lib/internal/types';
+	import { createEventDispatcher, tick } from 'svelte';
 	import { getDataState } from './internal/helpers';
 	import { getDialogRootContext } from './root.svelte';
 	import { focus, useActions } from '$lib/internal/helpers';
 
 	export type DialogContentProps = BaseProps<'div'> & {
-		onPointerDownOutside?: (event: CustomEvent<{ originalEvent: MouseEvent }>) => void;
-		onEscapeKeyDown?: (event: CustomEvent<{ originalEvent: KeyboardEvent }>) => void;
 		openAutoFocus?: boolean | HTMLElement;
 		closeAutoFocus?: boolean;
 	};
@@ -18,8 +16,11 @@
 
 <script lang="ts">
 	type $$Props = DialogContentProps;
-	export let onPointerDownOutside: $$Props['onPointerDownOutside'] = undefined;
-	export let onEscapeKeyDown: $$Props['onEscapeKeyDown'] = undefined;
+	type $$Events = {
+		pointerDownOutside: ForwardedEvent<MouseEvent>;
+		escapeKeyDown: ForwardedEvent<KeyboardEvent>;
+	};
+	const dispatch = createEventDispatcher<UnwrapCustomEvents<$$Events>>();
 
 	export let openAutoFocus: $$Props['openAutoFocus'] = true;
 	export let closeAutoFocus: $$Props['closeAutoFocus'] = true;
@@ -40,17 +41,14 @@
 	{...$$restProps}
 	use:focusTrap={{ disable: !$rootCtx.modal, autofocus: openAutoFocus }}
 	use:dismissable={{
-		onPointerDownDismiss: (e) => {
-			onPointerDownOutside?.(e);
-			if (!e.defaultPrevented) {
-				$rootCtx.open = false;
-			}
+		onPointerDownOutside: (event) => {
+			dispatch('pointerDownOutside', event.detail);
 		},
-		onEscDismiss: (e) => {
-			onEscapeKeyDown?.(e);
-			if (!e.defaultPrevented) {
-				$rootCtx.open = false;
-			}
+		onEscapeKeyDown: (event) => {
+			dispatch('escapeKeyDown', event.detail);
+		},
+		onDismiss: () => {
+			$rootCtx.open = false;
 		},
 	}}
 	use:removeScroll={{ disable: !$rootCtx.modal }}

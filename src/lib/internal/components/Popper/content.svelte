@@ -22,6 +22,7 @@
 		sticky?: 'partial' | 'always';
 		hideWhenDetached?: boolean;
 		avoidCollisions?: boolean;
+		ref?: HTMLElement | null;
 	};
 
 	type PopperContentContext = {
@@ -64,6 +65,8 @@
 	import { useActions } from '$lib/internal/helpers';
 	import { reactiveContext, type Defaults } from '$lib/internal/helpers';
 
+	export let use: $$Props['use'] = [];
+	export let ref: $$Props['ref'] = null;
 	export let side: NonNullable<$$Props['side']> = defaults.placedSide;
 	export let sideOffset: NonNullable<$$Props['sideOffset']> = 0;
 	export let align: NonNullable<$$Props['align']> = 'center';
@@ -79,6 +82,10 @@
 	const ctx = setContext();
 
 	let content: HTMLElement;
+	$: if (content) ref = content;
+	onDestroy(() => {
+		ref = null;
+	});
 
 	$: desiredPlacement = (side + (align !== 'center' ? '-' + align : '')) as Placement;
 
@@ -201,7 +208,7 @@
 		' ' +
 		middlewareData?.transformOrigin?.y}
 	dir={$$restProps.dir}
-	use:useActions={$$restProps.use}
+	use:useActions={use ?? []}
 >
 	<div
 		{...$$restProps}
