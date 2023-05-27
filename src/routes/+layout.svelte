@@ -5,13 +5,16 @@
 <script lang="ts">
 	import '../app.postcss';
 
+	import '@fontsource/overpass/100.css';
+	import '@fontsource/overpass/200.css';
 	import '@fontsource/overpass/300.css';
 	import '@fontsource/overpass/400.css';
+	import '@fontsource/overpass/500.css';
 	import '@fontsource/overpass/600.css';
 	import '@fontsource/overpass/700.css';
-	import '@fontsource/overpass/400-italic.css';
-	import '@fontsource/overpass/600-italic.css';
-	import '@fontsource/overpass/700-italic.css';
+	import '@fontsource/overpass/800.css';
+	import '@fontsource/overpass/900.css';
+
 	import '@fontsource/overpass-mono/400.css';
 	import '@fontsource/overpass-mono/600.css';
 	import '@fontsource/overpass-mono/700.css';
@@ -39,11 +42,11 @@
 <main class="flex min-h-screen flex-col">
 	<nav
 		class={cn(
-			'flex items-center justify-between px-4 py-4 xl:px-8 ',
-			!isRoot && 'border-b border-b-zinc-700'
+			'flex h-14 items-center justify-between bg-neutral-900 px-4 xl:px-8',
+			!isRoot && 'sticky top-0 z-50 border-b border-b-zinc-700'
 		)}
 	>
-		<a class="flex items-end gap-1 font-sans text-xl" href="/">
+		<a class="flex items-end gap-1 text-xl" href="/">
 			<img
 				class="h-8 w-8 rounded-sm fill-vermilion-500 object-contain"
 				src="/radix-svelte.svg"
@@ -93,7 +96,7 @@
 	<div class="flex grow flex-col">
 		<slot />
 	</div>
-	<footer>
+	<footer class={cn(!isRoot && 'border-t border-t-zinc-700')}>
 		<div
 			class="flex flex-col items-start justify-between gap-2 px-4 py-4 lg:flex-row lg:items-center"
 		>

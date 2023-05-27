@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 body {
-	background-color: theme('colors.black');
+	background-color: theme('colors.neutral.900');
 	color: theme('colors.white');
 	min-height: 100vh;
 }
@@ -15,7 +15,7 @@ body {
 		justify-content: center;
 		align-items: center;
 
-		background: linear-gradient(315deg, theme('colors.zinc.800'), theme('colors.zinc.900'));
+		background: theme('colors.zinc.800');
 
 		border-radius: theme('borderRadius.lg');
 		padding: theme('spacing.8');
@@ -28,8 +28,8 @@ body {
 	.comp-preview-colored {
 		background: linear-gradient(
 			315deg,
-			theme('colors.vermilion.600'),
-			theme('colors.vermilion.900')
+			theme('colors.vermilion.600/0.75'),
+			theme('colors.vermilion.900/0.75')
 		);
 	}
 

@@ -57,7 +57,7 @@
 
 		:global(.accordion-trigger) {
 			@apply flex h-12 flex-1  cursor-pointer items-center
-			justify-between bg-white px-5 text-base font-medium leading-none text-vermilion-700 shadow-[0_1px_0]
+			justify-between bg-white px-5 text-base leading-none text-vermilion-700 shadow-[0_1px_0]
 			shadow-[--line-color] outline-none hover:bg-gray-200;
 		}
 

@@ -25,16 +25,19 @@
 	{@html theme}
 </svelte:head>
 
-<div class="flex max-w-full grid-cols-12 flex-col gap-8 py-2 xl:grid xl:px-6 xl:py-6">
+<div class="flex max-w-full flex-col gap-8 xl:flex-row xl:px-6">
 	<div
 		class={cn(
-			$isMenuOpen ? 'block' : 'hidden xl:block',
-			'z-10 col-span-2 w-full xl:w-auto xl:max-w-xs'
+			'z-10 flex-shrink-0 flex-grow basis-[min(20vw,250px)] xl:w-auto xl:max-w-xs',
+			$isMenuOpen ? 'block' : 'hidden xl:block'
 		)}
 	>
-		<ul class="flex w-full flex-col p-2">
+		<ul
+			class="flex w-full flex-col overflow-y-auto py-8
+			pl-2 pr-4 xl:sticky xl:top-14 xl:h-[calc(100vh-3.5rem)]"
+		>
 			<li
-				class="text-md block whitespace-nowrap rounded-md border border-transparent px-3 py-2 text-sm font-semibold uppercase tracking-wider text-zinc-400"
+				class="text-md block whitespace-nowrap rounded-md border border-transparent px-3 pb-2 text-sm font-semibold uppercase tracking-wider text-zinc-400"
 			>
 				Components
 			</li>
@@ -57,15 +60,15 @@
 	</div>
 	<div
 		class={cn(
-			$isMenuOpen ? 'hidden xl:flex' : 'flex',
-			`col-span-8 w-full justify-center overflow-y-auto`
+			`flex-shrink flex-grow justify-center overflow-y-auto`,
+			$isMenuOpen ? 'hidden xl:flex' : 'flex'
 		)}
 	>
-		<div class="w-full max-w-7xl items-center px-4 pt-2">
+		<div class="w-full max-w-7xl items-center px-4 py-8">
 			<div class="w-full">
 				<slot />
 			</div>
 		</div>
 	</div>
-	<div class="col-span-2" />
+	<div class="flex-shrink-0 flex-grow basis-[min(20vw,250px)]" />
 </div>

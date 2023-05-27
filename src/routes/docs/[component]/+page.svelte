@@ -134,12 +134,12 @@
 
 <h2 class="mt-12 text-3xl font-semibold">API Reference</h2>
 
-<div class="mt-8 flex flex-col gap-8">
+<div class="mt-8 flex flex-col gap-12">
 	{#each castMeta(cmpSchema) as [subCmp, subCmpSchema]}
 		<div class="flex w-full flex-col">
 			<h2 class="text-xl font-bold">{subCmp}</h2>
 			{#if subCmpSchema.description}
-				<p class="text-lg font-thin text-zinc-400">
+				<p class="text-lg font-thin">
 					{@html getDescriptionHtml(subCmpSchema.description)}
 				</p>
 			{/if}
@@ -155,7 +155,7 @@
 						headMobile="Props"
 						data={castProps(subCmpSchema)}
 					>
-						<div class="contents" slot="row" let:datum={d}>
+						<svelte:fragment slot="row" let:datum={d}>
 							<div>
 								<code class="font-mono">{d.key}</code>
 							</div>
@@ -195,7 +195,7 @@
 									{props[subCmp][d.key]}
 								{/if}
 							</div>
-						</div>
+						</svelte:fragment>
 						<p slot="empty">No Props</p>
 					</Table>
 

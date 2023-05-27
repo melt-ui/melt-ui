@@ -21,9 +21,6 @@ devDependencies:
   '@fontsource/overpass-mono':
     specifier: ^4.5.11
     version: 4.5.11
-  '@fontsource/source-code-pro':
-    specifier: ^4.5.14
-    version: 4.5.14
   '@iconify-json/lucide':
     specifier: ^1.1.82
     version: 1.1.82
@@ -3028,10 +3025,6 @@ packages:
 
   /@fontsource/overpass@4.5.11:
     resolution: {integrity: sha512-x6A3fpFQdaqZ7O6LKyoeKzfzxjZhnJw1I7Yf4D8xKO8GM4N+0P8Ch6jIVD/DAgDmlc3/us5ZZEuaxwHJGiAkMA==}
-    dev: true
-
-  /@fontsource/source-code-pro@4.5.14:
-    resolution: {integrity: sha512-EWE0djE7wFCBmExWa9oT1vIp+qj5MUroVvXWb9G7Ig4t4aXDd9QDidYZzMzNemb8gQxTdOzGmhx6EZnDTFMh5Q==}
     dev: true
 
   /@humanwhocodes/config-array@0.11.8:

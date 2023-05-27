@@ -1,6 +1,20 @@
 import type { Config } from 'tailwindcss';
 import plugin from 'tailwindcss/plugin';
 
+const humanist = [
+	'Seravek',
+	'Gill Sans Nova',
+	'Ubuntu',
+	'Calibri',
+	'DejaVu Sans',
+	'source-sans-pro',
+	'Apple Color Emoji',
+	'Segoe UI Emoji',
+	'Segoe UI Symbol',
+	'Noto Color Emoji',
+	'sans-serif',
+];
+
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 
@@ -22,20 +36,7 @@ export default {
 				},
 			},
 			fontFamily: {
-				sans: [
-					'Overpass',
-					'Seravek',
-					'Gill Sans Nova',
-					'Ubuntu',
-					'Calibri',
-					'DejaVu Sans',
-					'source-sans-pro',
-					'Apple Color Emoji',
-					'Segoe UI Emoji',
-					'Segoe UI Symbol',
-					'Noto Color Emoji',
-					'sans-serif',
-				],
+				sans: ['Overpass', ...humanist],
 				mono: [
 					'Overpass Mono',
 					'ui-monospace',
