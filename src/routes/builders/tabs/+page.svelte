@@ -6,7 +6,7 @@
 	import theme from 'svelte-highlight/styles/tomorrow-night';
 	import { createTabs } from '$lib/builders/tabs/tabs';
 
-	const { rootAttrs, listAttrs, getContentAttrs, getTriggerAttrs } = createTabs({
+	const { root, list, content, trigger } = createTabs({
 		value: 'scoped',
 	});
 </script>
@@ -18,25 +18,25 @@
 <Preview />
 
 <div class="mx-auto mt-8 max-w-6xl overflow-x-auto rounded-md">
-	<div {...rootAttrs}>
-		<div class="flex gap-4" {...listAttrs}>
+	<div {...root}>
+		<div class="flex gap-4" {...list}>
 			<div
 				class="cursor-pointer opacity-50 hover:opacity-75 data-[state=active]:opacity-100"
-				{...$getTriggerAttrs('scoped')}
+				{...$trigger('scoped')}
 			>
 				Scoped
 			</div>
 			<div
 				class="cursor-pointer opacity-50 hover:opacity-75 data-[state=active]:opacity-100"
-				{...$getTriggerAttrs('tailwind')}
+				{...$trigger('tailwind')}
 			>
 				Tailwind
 			</div>
 		</div>
-		<div {...$getContentAttrs('scoped')}>
+		<div {...$content('scoped')}>
 			<HighlightSvelte code={scopedCode} class=" text-sm" />
 		</div>
-		<div {...$getContentAttrs('tailwind')}>
+		<div {...$content('tailwind')}>
 			<HighlightSvelte code={twCode} class=" text-sm" />
 		</div>
 	</div>

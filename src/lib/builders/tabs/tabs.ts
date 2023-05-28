@@ -21,19 +21,19 @@ export function createTabs(args?: CreateTabsArgs) {
 	const value = writable(options.value);
 
 	// Root
-	const rootAttrs = {
+	const root = {
 		'data-orientation': options.orientation,
 		id: generateId(),
 	};
 
 	// List
-	const listAttrs = {
+	const list = {
 		role: 'tablist',
 		'aria-orientation': options.orientation,
 	};
 
 	// Trigger
-	const getTriggerAttrs = derived(value, ($value) => {
+	const trigger = derived(value, ($value) => {
 		return (tabValue: string) => {
 			const id = generateId();
 
@@ -62,9 +62,9 @@ export function createTabs(args?: CreateTabsArgs) {
 			}[options.orientation ?? 'horizontal'];
 
 			const onKeyDown = (e: KeyboardEvent) => {
-				const root = document.getElementById(rootAttrs.id);
-				if (!root) return;
-				const triggers = Array.from(root.querySelectorAll('[role="tab"]')) as HTMLElement[];
+				const rootEl = document.getElementById(root.id);
+				if (!rootEl) return;
+				const triggers = Array.from(rootEl.querySelectorAll('[role="tab"]')) as HTMLElement[];
 				const triggerIdx = Array.from(triggers ?? []).findIndex((el) => el === e.target);
 
 				if (e.key === nextKey) {
@@ -99,7 +99,7 @@ export function createTabs(args?: CreateTabsArgs) {
 	});
 
 	// Content
-	const getContentAttrs = derived(value, ($value) => {
+	const content = derived(value, ($value) => {
 		return (tabValue: string) => {
 			return {
 				role: 'tabpanel',
@@ -115,9 +115,9 @@ export function createTabs(args?: CreateTabsArgs) {
 
 	return {
 		value,
-		rootAttrs,
-		listAttrs,
-		getTriggerAttrs,
-		getContentAttrs,
+		root: root,
+		list: list,
+		trigger: trigger,
+		content: content,
 	};
 }

@@ -1,19 +1,19 @@
 <script lang="ts">
 	import { createTabs } from '$lib/builders/tabs/tabs';
 
-	const { rootAttrs, listAttrs, getContentAttrs, getTriggerAttrs } = createTabs({
+	const { root, list, content, trigger } = createTabs({
 		value: 'tab1',
 	});
 </script>
 
 <div class="comp-preview comp-preview-colored">
-	<div {...rootAttrs} class="root">
-		<div {...listAttrs} class="list" aria-label="Manage your account">
-			<div {...$getTriggerAttrs('tab1')} class="trigger">Account</div>
-			<div {...$getTriggerAttrs('tab2')} class="trigger">Password</div>
-			<div {...$getTriggerAttrs('tab3')} class="trigger">Settings</div>
+	<div {...root} class="root">
+		<div {...list} class="list" aria-label="Manage your account">
+			<div {...$trigger('tab1')} class="trigger">Account</div>
+			<div {...$trigger('tab2')} class="trigger">Password</div>
+			<div {...$trigger('tab3')} class="trigger">Settings</div>
 		</div>
-		<div {...$getContentAttrs('tab1')} class="content">
+		<div {...$content('tab1')} class="content">
 			<p class="description">Make changes to your account here. Click save when you're done.</p>
 			<fieldset>
 				<label for="name"> Name </label>
@@ -24,7 +24,7 @@
 				<button>Save changes</button>
 			</div>
 		</div>
-		<div {...$getContentAttrs('tab2')} class="content">
+		<div {...$content('tab2')} class="content">
 			<p class="description">Change your password here. Click save when you're done.</p>
 			<fieldset>
 				<label for="new"> New password </label>
@@ -34,7 +34,7 @@
 				<button>Save changes</button>
 			</div>
 		</div>
-		<div {...$getContentAttrs('tab3')} class="content">
+		<div {...$content('tab3')} class="content">
 			<p class="description">Change your settings here. Click save when you're done.</p>
 
 			<fieldset>
