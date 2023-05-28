@@ -21,7 +21,7 @@
 </script>
 
 <div
-	class="code-block relative mt-2 overflow-hidden rounded-lg {showCode
+	class="code-block relative mb-12 mt-2 overflow-hidden rounded-lg {showCode
 		? 'max-h-[auto] overflow-auto'
 		: 'max-h-36 overflow-hidden'}"
 >

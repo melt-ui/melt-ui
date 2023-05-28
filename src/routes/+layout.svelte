@@ -42,7 +42,7 @@
 <main class="flex min-h-screen flex-col">
 	<nav
 		class={cn(
-			'flex h-14 items-center justify-between bg-neutral-900 px-4 xl:px-8',
+			'flex h-14 items-center justify-between bg-neutral-950 px-4 xl:px-8',
 			!isRoot && 'sticky top-0 z-50 border-b border-b-zinc-700'
 		)}
 	>

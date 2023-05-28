@@ -92,7 +92,6 @@
 		"glob": "^9.3.2",
 		"highlight.js": "^11.7.0",
 		"jsdom": "^21.1.1",
-		"mdsvex": "^0.10.6",
 		"playwright": "^1.32.1",
 		"postcss": "^8.4.14",
 		"postcss-load-config": "^4.0.1",

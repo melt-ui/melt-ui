@@ -13,8 +13,8 @@
 	import { fly } from 'svelte/transition';
 	import Check from '~icons/lucide/check';
 	import Copy from '~icons/lucide/copy';
-	import Table from './Table.svelte';
-	import TableWrapper from './TableWrapper.svelte';
+	import Table from '../(components)/table.svelte';
+	import TableWrapper from '../(components)/table-wrapper.svelte';
 	import { schemas } from '$routes/(previews)/schemas';
 
 	export let data;
