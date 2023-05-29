@@ -6,12 +6,14 @@
 	import twCode from './preview-tw.svelte?raw';
 	import PreviewControlled from './preview-controlled.svelte';
 	import controlledCode from './preview-controlled.svelte?raw';
+	import PreviewNoValueArg from './preview-no-value-arg.svelte';
+	import noValueArgCode from './preview-no-value-arg.svelte?raw';
 
 	import theme from 'svelte-highlight/styles/tomorrow-night';
 	import { createTabs } from '$lib/builders/tabs';
 
 	const { value, root, list, content, trigger } = createTabs({
-		value: 'tailwind',
+		value: 'no-value-arg',
 	});
 </script>
 
@@ -25,6 +27,8 @@
 	<PreviewTw />
 {:else if $value === 'controlled'}
 	<PreviewControlled />
+{:else if $value === 'no-value-arg'}
+	<PreviewNoValueArg />
 {/if}
 
 <div class="mx-auto mt-8 max-w-6xl overflow-x-auto rounded-md">
@@ -48,6 +52,12 @@
 			>
 				Controlled
 			</div>
+			<div
+				class="cursor-pointer opacity-50 hover:opacity-75 data-[state=active]:opacity-100"
+				{...$trigger({ value: 'no-value-arg' })}
+			>
+				No value arg
+			</div>
 		</div>
 		<div {...$content('scoped')}>
 			<HighlightSvelte code={scopedCode} class=" text-sm" />
@@ -57,6 +67,9 @@
 		</div>
 		<div {...$content('controlled')}>
 			<HighlightSvelte code={controlledCode} class=" text-sm" />
+		</div>
+		<div {...$content('no-value-arg')}>
+			<HighlightSvelte code={noValueArgCode} class=" text-sm" />
 		</div>
 	</div>
 </div>

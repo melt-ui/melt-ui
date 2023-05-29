@@ -23,6 +23,7 @@ export function createTabs(args?: CreateTabsArgs) {
 	const options = { ...defaults, ...args };
 
 	const value = writable(options.value);
+	let ssrValue = options.value;
 	value.subscribe((value) => {
 		options.onChange?.(value);
 	});
@@ -60,6 +61,10 @@ export function createTabs(args?: CreateTabsArgs) {
 		return (args: TriggerArgs) => {
 			const { value: tabValue, disabled } = parseTriggerArgs(args);
 			const triggerId = uuid();
+			if (!$value && !ssrValue) {
+				ssrValue = tabValue;
+				value.set(tabValue);
+			}
 
 			// Event handlers
 			const onFocus = () => {
@@ -129,7 +134,13 @@ export function createTabs(args?: CreateTabsArgs) {
 			return {
 				'data-radix-id': triggerId,
 				role: 'tab',
-				'data-state': $value === tabValue ? 'active' : 'inactive',
+				'data-state': isBrowser
+					? $value === tabValue
+						? 'active'
+						: 'inactive'
+					: ssrValue === tabValue
+					? 'active'
+					: 'inactive',
 				tabIndex: $value === tabValue ? 0 : -1,
 				'data-orientation': options.orientation,
 				'data-disabled': disabled ? '' : undefined,
@@ -145,7 +156,13 @@ export function createTabs(args?: CreateTabsArgs) {
 				role: 'tabpanel',
 				// TODO: improve
 				'aria-labelledby': tabValue,
-				hidden: $value === tabValue ? undefined : true,
+				hidden: isBrowser
+					? $value === tabValue
+						? undefined
+						: true
+					: ssrValue === tabValue
+					? undefined
+					: true,
 				tabIndex: 0,
 			};
 		};
