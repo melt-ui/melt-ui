@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createAccordion } from '$lib/builders/accordion';
-	import { fade, fly, slide } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 
 	const { content, item, trigger, isSelected } = createAccordion();
 </script>

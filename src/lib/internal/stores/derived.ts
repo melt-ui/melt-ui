@@ -61,5 +61,14 @@ export function elementDerived<S extends Stores, T>(
 		return fn($storeValues, attach);
 	});
 
-	return derivedStore;
+	return {
+		subscribe: (...args: Parameters<typeof derivedStore.subscribe>) => {
+			const unsub = derivedStore.subscribe(...args);
+			return () => {
+				unsub();
+				unsubscribers.forEach((fn) => fn());
+				unsubscribers = [];
+			};
+		},
+	};
 }

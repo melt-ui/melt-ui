@@ -28,7 +28,9 @@ export function createCollapsible(args?: CreateCollapsibleArgs) {
 
 	const trigger = elementDerived(open, ($open, attach) => {
 		const id = uuid();
-		attach(id, 'click', () => open.set(!$open));
+		if (!options.disabled) {
+			attach(id, 'click', () => open.set(!$open));
+		}
 
 		return {
 			'data-state': $open ? 'open' : 'closed',
