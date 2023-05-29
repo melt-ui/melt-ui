@@ -1,19 +1,39 @@
-import { generateId, isBrowser, next, prev } from '$lib/internal/helpers';
+import { isBrowser, next, prev } from '$lib/internal/helpers';
 import { tick } from 'svelte';
-import { derived, writable } from 'svelte/store';
+import { derived, writable, type Writable } from 'svelte/store';
 
 type CreateTabsArgs = {
 	value?: string;
 	dir?: 'ltr' | 'rtl';
 	orientation?: 'horizontal' | 'vertical';
 	activateOnFocus?: boolean;
+	loop?: boolean;
 };
 
 const defaults = {
 	dir: 'ltr',
 	orientation: 'horizontal',
 	activateOnFocus: true,
+	loop: true,
 } satisfies CreateTabsArgs;
+
+const hackDerived = <T>(store: Writable<T>, fn: (value: T) => void) => {
+	return {
+		subscribe: () => {
+			return store.subscribe(fn);
+		},
+	};
+};
+
+let idCount = 0;
+
+function generateId() {
+	return `${idCount++}`;
+}
+
+function getElementById(id: string) {
+	return document.querySelector(`[data-radix-id="${id}"]`) as HTMLElement | null;
+}
 
 export function createTabs(args?: CreateTabsArgs) {
 	const options = { ...defaults, ...args };
@@ -23,7 +43,7 @@ export function createTabs(args?: CreateTabsArgs) {
 	// Root
 	const root = {
 		'data-orientation': options.orientation,
-		id: generateId(),
+		'data-radix-id': generateId(),
 	};
 
 	// List
@@ -33,10 +53,16 @@ export function createTabs(args?: CreateTabsArgs) {
 	};
 
 	// Trigger
-	const trigger = derived(value, ($value) => {
-		return (tabValue: string) => {
-			const id = generateId();
 
+	let counter = 0;
+	let unsubscribers: (() => void)[] = [];
+	const trigger = derived(value, ($value) => {
+		console.log('derived');
+		counter = 0;
+		unsubscribers.forEach((fn) => fn());
+		unsubscribers = [];
+		return (tabValue: string) => {
+			const triggerId = generateId();
 			// Event handlers
 			const onFocus = () => {
 				if (options.activateOnFocus) {
@@ -62,17 +88,17 @@ export function createTabs(args?: CreateTabsArgs) {
 			}[options.orientation ?? 'horizontal'];
 
 			const onKeyDown = (e: KeyboardEvent) => {
-				const rootEl = document.getElementById(root.id);
+				const rootEl = getElementById(root['data-radix-id']);
 				if (!rootEl) return;
 				const triggers = Array.from(rootEl.querySelectorAll('[role="tab"]')) as HTMLElement[];
 				const triggerIdx = Array.from(triggers ?? []).findIndex((el) => el === e.target);
 
 				if (e.key === nextKey) {
 					e.preventDefault();
-					next(triggers, triggerIdx)?.focus();
+					next(triggers, triggerIdx, options.loop)?.focus();
 				} else if (e.key === prevKey) {
 					e.preventDefault();
-					prev(triggers, triggerIdx)?.focus();
+					prev(triggers, triggerIdx, options.loop)?.focus();
 				} else if (e.key === 'Enter' || e.key === ' ') {
 					e.preventDefault();
 					value.set(tabValue);
@@ -80,16 +106,25 @@ export function createTabs(args?: CreateTabsArgs) {
 			};
 
 			if (isBrowser) {
+				counter++;
+				console.log('innerderived from', counter);
 				tick().then(() => {
-					const el = document.getElementById(id);
+					const el = getElementById(triggerId);
 					el?.addEventListener('focus', onFocus);
 					el?.addEventListener('click', onClick);
 					el?.addEventListener('keydown', onKeyDown);
 				});
+
+				unsubscribers.push(() => {
+					const el = getElementById(triggerId);
+					el?.removeEventListener('focus', onFocus);
+					el?.removeEventListener('click', onClick);
+					el?.removeEventListener('keydown', onKeyDown);
+				});
 			}
 
 			return {
-				id,
+				'data-radix-id': triggerId,
 				role: 'tab',
 				'data-state': $value === tabValue ? 'active' : 'inactive',
 				tabIndex: $value === tabValue ? 0 : -1,

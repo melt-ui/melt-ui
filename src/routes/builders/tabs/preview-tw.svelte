@@ -1,10 +1,18 @@
 <script lang="ts">
 	import { createTabs } from '$lib/builders/tabs/tabs';
 
-	const { root, list, content, trigger } = createTabs({
+	let loop = true;
+	const { root, list, content, trigger, value } = createTabs({
 		value: 'tab1',
 	});
 </script>
+
+<div class="mx-auto mt-16 w-full max-w-xl">
+	<label>
+		<input type="checkbox" bind:checked={loop} />
+		<span class="ml-2">Loop</span>
+	</label>
+</div>
 
 <div class="comp-preview comp-preview-colored mx-auto mt-16 h-96 w-screen max-w-xl">
 	<div
@@ -21,6 +29,9 @@
 			<div {...$trigger('tab1')} class="trigger">Account</div>
 			<div {...$trigger('tab2')} class="trigger">Password</div>
 			<div {...$trigger('tab3')} class="trigger">Settings</div>
+			{#if $value === 'tab3' || $value === 'tab4'}
+				<div {...$trigger('tab4')} class="trigger">Secret!</div>
+			{/if}
 		</div>
 		<div {...$content('tab1')} class="grow bg-white p-5 outline-none focus:ring-2 focus:ring-black">
 			<p class="mb-5 leading-normal text-vermilion-950">
@@ -95,6 +106,9 @@
 					Save changes
 				</button>
 			</div>
+		</div>
+		<div {...$content('tab4')} class="grow bg-white p-5 outline-none focus:ring-2 focus:ring-black">
+			<p class="mb-5 leading-normal text-vermilion-950">Hush hush</p>
 		</div>
 	</div>
 </div>
