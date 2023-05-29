@@ -1,5 +1,7 @@
 <script lang="ts" context="module">
-	export type CollapsibleTriggerProps = BaseProps;
+	export type CollapsibleTriggerProps = BaseProps & {
+		asChild?: boolean;
+	};
 </script>
 
 <script lang="ts">
@@ -9,11 +11,16 @@
 	import { getCollapsibleRootContext } from './root.svelte';
 
 	type $$Props = CollapsibleTriggerProps;
+	export let asChild: $$Props['asChild'] = false;
 
 	const ctx = getCollapsibleRootContext();
 	$: trigger = $ctx?.trigger ?? {};
 </script>
 
-<button {...$$restProps} {...$trigger} use:useActions={$$restProps.use} type="button">
-	<slot />
-</button>
+{#if asChild}
+	<slot trigger={$trigger} />
+{:else}
+	<button {...$$restProps} {...$trigger} use:useActions={$$restProps.use} type="button">
+		<slot trigger={$trigger} />
+	</button>
+{/if}

@@ -5,6 +5,7 @@
 	export type CollapsibleRootProps = BaseProps & {
 		open?: boolean;
 		disabled?: boolean;
+		asChild?: boolean;
 	};
 
 	type CollapsibleRootContext = ReturnType<typeof createCollapsible>;
@@ -23,6 +24,7 @@
 	export let open: $$Props['open'] = false;
 	export let disabled: $$Props['disabled'] = false;
 	export let use: $$Props['use'] = [];
+	export let asChild: $$Props['asChild'] = false;
 
 	const dispatch = createEventDispatcher<{
 		change: boolean;
@@ -39,8 +41,14 @@
 	});
 
 	setContext(collapsible);
+
+	$: root = $collapsible.root;
 </script>
 
-<div {...$$restProps} {...$collapsible.root} use:useActions={use ?? []}>
-	<slot />
-</div>
+{#if asChild}
+	<slot root={$root} />
+{:else}
+	<div {...$$restProps} {...$root} use:useActions={use ?? []}>
+		<slot root={$root} />
+	</div>
+{/if}
