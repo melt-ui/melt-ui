@@ -1,9 +1,10 @@
 import { isBrowser, next, prev } from '$lib/internal/helpers';
 import { tick } from 'svelte';
-import { derived, writable, type Writable } from 'svelte/store';
+import { derived, writable, type Readable, type Writable } from 'svelte/store';
 
 type CreateTabsArgs = {
 	value?: string;
+	onChange?: (value: string) => void;
 	dir?: 'ltr' | 'rtl';
 	orientation?: 'horizontal' | 'vertical';
 	activateOnFocus?: boolean;
@@ -25,28 +26,39 @@ function getElementById(id: string) {
 	return document.querySelector(`[data-radix-id="${id}"]`) as HTMLElement | null;
 }
 
-const derivedWithUnsubscribe = <T, D>(
-	store: Writable<T>,
-	fn: (value: T, onUnsubscribe: (cb: () => void) => void) => D
-) => {
+type Stores = Readable<any> | [Readable<any>, ...Array<Readable<any>>] | Array<Readable<any>>;
+/** One or more values from `Readable` stores. */
+type StoresValues<T> = T extends Readable<infer U>
+	? U
+	: {
+			[K in keyof T]: T[K] extends Readable<infer U> ? U : never;
+	  };
+
+function derivedWithUnsubscribe<S extends Stores, T>(
+	stores: S,
+	fn: (values: StoresValues<S>, onUnsubscribe: (cb: () => void) => void) => T
+) {
 	let unsubscribers: (() => void)[] = [];
 	const onUnsubscribe = (cb: () => void) => {
 		unsubscribers.push(cb);
 	};
 
-	const derivedStore = derived(store, ($value) => {
+	const derivedStore = derived(stores, ($storeValues) => {
 		unsubscribers.forEach((fn) => fn());
 		unsubscribers = [];
-		return fn($value, onUnsubscribe);
+		return fn($storeValues, onUnsubscribe);
 	});
 
 	return derivedStore;
-};
+}
 
 export function createTabs(args?: CreateTabsArgs) {
 	const options = { ...defaults, ...args };
 
 	const value = writable(options.value);
+	value.subscribe((value) => {
+		options.onChange?.(value);
+	});
 
 	// Root
 	const root = {

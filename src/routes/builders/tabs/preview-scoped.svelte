@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { createTabs } from '$lib/builders/tabs/tabs';
 
-	const { root, list, content, trigger } = createTabs({
-		value: 'tab1',
-	});
+	const { root, list, content, trigger } = createTabs({ value: 'tab1' });
 </script>
 
 <div class="comp-preview comp-preview-colored">
