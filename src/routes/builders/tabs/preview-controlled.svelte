@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { createTabs } from '$lib/builders/tabs/tabs';
+	import { createTabs } from '$lib/builders/tabs';
 
 	let loop = true;
-	let controlValue = 'tab1';
+	let value = 'tab1';
 
-	$: ({ root, list, content, trigger, value } = createTabs({
-		value: controlValue,
-		onChange: (value) => (controlValue = value),
+	$: ({ root, list, content, trigger } = createTabs({
+		value: value,
+		onChange: (v) => (value = v),
 		loop,
 	}));
 </script>
 
 <div class="mx-auto mt-16 flex w-full max-w-xl flex-wrap gap-4">
-	<select bind:value={controlValue} class="bg-black">
+	<select bind:value class="bg-black">
 		<option value="tab1">Tab 1</option>
 		<option value="tab2">Tab 2</option>
 		<option value="tab3">Tab 3</option>
@@ -36,11 +36,11 @@
 			data-[orientation=vertical]:border-r"
 			aria-label="Manage your account"
 		>
-			<div {...$trigger('tab1')} class="trigger">Account</div>
-			<div {...$trigger('tab2')} class="trigger">Password</div>
-			<div {...$trigger('tab3')} class="trigger">Settings</div>
-			{#if controlValue === 'tab3' || controlValue === 'tab4'}
-				<div {...$trigger('tab4')} class="trigger">Secret!</div>
+			<div {...$trigger({ value: 'tab1' })} class="trigger">Account</div>
+			<div {...$trigger({ value: 'tab2' })} class="trigger">Password</div>
+			<div {...$trigger({ value: 'tab3' })} class="trigger">Settings</div>
+			{#if value === 'tab3' || value === 'tab4'}
+				<div {...$trigger({ value: 'tab4' })} class="trigger">Secret!</div>
 			{/if}
 		</div>
 		<div {...$content('tab1')} class="grow bg-white p-5 outline-none focus:ring-2 focus:ring-black">

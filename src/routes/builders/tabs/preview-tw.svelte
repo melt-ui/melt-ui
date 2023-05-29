@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { createTabs } from '$lib/builders/tabs/tabs';
+	import { createTabs } from '$lib/builders/tabs';
 
-	const { root, list, content, trigger } = createTabs({ value: 'tab1' });
+	const { root, list, content, trigger } = createTabs({ value: 'tab1', orientation: 'vertical' });
 </script>
 
 <div class="comp-preview comp-preview-colored mx-auto mt-16 h-96 w-screen max-w-xl">
@@ -16,9 +16,9 @@
 			data-[orientation=vertical]:border-r"
 			aria-label="Manage your account"
 		>
-			<div {...$trigger('tab1')} class="trigger">Account</div>
-			<div {...$trigger('tab2')} class="trigger">Password</div>
-			<div {...$trigger('tab3')} class="trigger">Settings</div>
+			<div {...$trigger({ value: 'tab1' })} class="trigger">Account</div>
+			<div {...$trigger({ value: 'tab2' })} class="trigger">Password</div>
+			<div {...$trigger({ value: 'tab3' })} class="trigger">Settings</div>
 		</div>
 		<div {...$content('tab1')} class="grow bg-white p-5 outline-none focus:ring-2 focus:ring-black">
 			<p class="mb-5 leading-normal text-vermilion-950">

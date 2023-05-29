@@ -1,6 +1,7 @@
-import { isBrowser, next, prev } from '$lib/internal/helpers';
+import { getElementById, isBrowser, last, next, prev, uuid } from '$lib/internal/helpers';
+import { derivedWithUnsubscribe } from '$lib/internal/stores';
 import { tick } from 'svelte';
-import { derived, writable, type Readable, type Writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 
 type CreateTabsArgs = {
 	value?: string;
@@ -18,40 +19,6 @@ const defaults = {
 	loop: true,
 } satisfies CreateTabsArgs;
 
-function generateId() {
-	return crypto.randomUUID();
-}
-
-function getElementById(id: string) {
-	return document.querySelector(`[data-radix-id="${id}"]`) as HTMLElement | null;
-}
-
-type Stores = Readable<any> | [Readable<any>, ...Array<Readable<any>>] | Array<Readable<any>>;
-/** One or more values from `Readable` stores. */
-type StoresValues<T> = T extends Readable<infer U>
-	? U
-	: {
-			[K in keyof T]: T[K] extends Readable<infer U> ? U : never;
-	  };
-
-function derivedWithUnsubscribe<S extends Stores, T>(
-	stores: S,
-	fn: (values: StoresValues<S>, onUnsubscribe: (cb: () => void) => void) => T
-) {
-	let unsubscribers: (() => void)[] = [];
-	const onUnsubscribe = (cb: () => void) => {
-		unsubscribers.push(cb);
-	};
-
-	const derivedStore = derived(stores, ($storeValues) => {
-		unsubscribers.forEach((fn) => fn());
-		unsubscribers = [];
-		return fn($storeValues, onUnsubscribe);
-	});
-
-	return derivedStore;
-}
-
 export function createTabs(args?: CreateTabsArgs) {
 	const options = { ...defaults, ...args };
 
@@ -63,20 +30,37 @@ export function createTabs(args?: CreateTabsArgs) {
 	// Root
 	const root = {
 		'data-orientation': options.orientation,
-		'data-radix-id': generateId(),
+		'data-radix-id': uuid(),
 	};
 
 	// List
 	const list = {
 		role: 'tablist',
 		'aria-orientation': options.orientation,
+		'data-orientation': options.orientation,
 	};
 
 	// Trigger
+	type TriggerArgs =
+		| {
+				value: string;
+				disabled?: boolean;
+		  }
+		| string;
+
+	const parseTriggerArgs = (args: TriggerArgs) => {
+		if (typeof args === 'string') {
+			return { value: args };
+		} else {
+			return args;
+		}
+	};
 
 	const trigger = derivedWithUnsubscribe(value, ($value, onUnsubscribe) => {
-		return (tabValue: string) => {
-			const triggerId = generateId();
+		return (args: TriggerArgs) => {
+			const { value: tabValue, disabled } = parseTriggerArgs(args);
+			const triggerId = uuid();
+
 			// Event handlers
 			const onFocus = () => {
 				if (options.activateOnFocus) {
@@ -105,21 +89,28 @@ export function createTabs(args?: CreateTabsArgs) {
 				const rootEl = getElementById(root['data-radix-id']);
 				if (!rootEl) return;
 				const triggers = Array.from(rootEl.querySelectorAll('[role="tab"]')) as HTMLElement[];
-				const triggerIdx = Array.from(triggers ?? []).findIndex((el) => el === e.target);
+				const enabledTriggers = triggers.filter((el) => !el.hasAttribute('data-disabled'));
+				const triggerIdx = Array.from(enabledTriggers ?? []).findIndex((el) => el === e.target);
 
 				if (e.key === nextKey) {
 					e.preventDefault();
-					next(triggers, triggerIdx, options.loop)?.focus();
+					next(enabledTriggers, triggerIdx, options.loop)?.focus();
 				} else if (e.key === prevKey) {
 					e.preventDefault();
-					prev(triggers, triggerIdx, options.loop)?.focus();
+					prev(enabledTriggers, triggerIdx, options.loop)?.focus();
 				} else if (e.key === 'Enter' || e.key === ' ') {
 					e.preventDefault();
 					value.set(tabValue);
+				} else if (e.key === 'Home') {
+					e.preventDefault();
+					enabledTriggers[0]?.focus();
+				} else if (e.key === 'End') {
+					e.preventDefault();
+					last(enabledTriggers)?.focus();
 				}
 			};
 
-			if (isBrowser) {
+			if (isBrowser && !disabled) {
 				tick().then(() => {
 					const el = getElementById(triggerId);
 					el?.addEventListener('focus', onFocus);
@@ -141,6 +132,8 @@ export function createTabs(args?: CreateTabsArgs) {
 				'data-state': $value === tabValue ? 'active' : 'inactive',
 				tabIndex: $value === tabValue ? 0 : -1,
 				'data-orientation': options.orientation,
+				'data-disabled': disabled ? '' : undefined,
+				disabled,
 			};
 		};
 	});
@@ -157,8 +150,6 @@ export function createTabs(args?: CreateTabsArgs) {
 			};
 		};
 	});
-
-	// Set event handlers
 
 	return {
 		value,

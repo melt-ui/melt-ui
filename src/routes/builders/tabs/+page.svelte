@@ -8,10 +8,10 @@
 	import controlledCode from './preview-controlled.svelte?raw';
 
 	import theme from 'svelte-highlight/styles/tomorrow-night';
-	import { createTabs } from '$lib/builders/tabs/tabs';
+	import { createTabs } from '$lib/builders/tabs';
 
 	const { value, root, list, content, trigger } = createTabs({
-		value: 'scoped',
+		value: 'tailwind',
 	});
 </script>
 
@@ -32,19 +32,19 @@
 		<div class="flex gap-4" {...list}>
 			<div
 				class="cursor-pointer opacity-50 hover:opacity-75 data-[state=active]:opacity-100"
-				{...$trigger('scoped')}
+				{...$trigger({ value: 'scoped' })}
 			>
 				Scoped
 			</div>
 			<div
 				class="cursor-pointer opacity-50 hover:opacity-75 data-[state=active]:opacity-100"
-				{...$trigger('tailwind')}
+				{...$trigger({ value: 'tailwind' })}
 			>
 				Tailwind
 			</div>
 			<div
 				class="cursor-pointer opacity-50 hover:opacity-75 data-[state=active]:opacity-100"
-				{...$trigger('controlled')}
+				{...$trigger({ value: 'controlled' })}
 			>
 				Controlled
 			</div>

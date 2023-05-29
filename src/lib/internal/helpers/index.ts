@@ -11,3 +11,4 @@ export * from './uniqueContext';
 export * from './useActions';
 export * from './preview';
 export * from './browser';
+export * from './uuid';

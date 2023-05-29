@@ -22,3 +22,7 @@ export function prev<T>(array: T[], index: number, loop = true): T | undefined {
 	}
 	return array[index - 1];
 }
+
+export function last<T>(array: T[]): T | undefined {
+	return array[array.length - 1];
+}

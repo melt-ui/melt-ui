@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createTabs } from '$lib/builders/tabs/tabs';
+	import { createTabs } from '$lib/builders/tabs';
 
 	const { root, list, content, trigger } = createTabs({ value: 'tab1' });
 </script>
@@ -7,9 +7,10 @@
 <div class="comp-preview comp-preview-colored">
 	<div {...root} class="root">
 		<div {...list} class="list" aria-label="Manage your account">
-			<div {...$trigger('tab1')} class="trigger">Account</div>
-			<div {...$trigger('tab2')} class="trigger">Password</div>
-			<div {...$trigger('tab3')} class="trigger">Settings</div>
+			<button {...$trigger('tab1')} class="trigger">Account</button>
+			<button {...$trigger('tab2')} class="trigger">Password</button>
+			<button {...$trigger({ value: 'tab3', disabled: true })} class="trigger">Disabled</button>
+			<button {...$trigger('tab4')} class="trigger">Settings</button>
 		</div>
 		<div {...$content('tab1')} class="content">
 			<p class="description">Make changes to your account here. Click save when you're done.</p>
@@ -32,7 +33,7 @@
 				<button>Save changes</button>
 			</div>
 		</div>
-		<div {...$content('tab3')} class="content">
+		<div {...$content('tab4')} class="content">
 			<p class="description">Change your settings here. Click save when you're done.</p>
 
 			<fieldset>
@@ -64,8 +65,8 @@
 
 	.trigger {
 		@apply flex h-11 flex-1 cursor-default select-none items-center
-      justify-center bg-white px-5 leading-none text-vermilion-900 outline-none
-			focus:relative focus:ring-2 focus:ring-black;
+      justify-center rounded-none bg-white px-5 leading-none text-vermilion-900
+			outline-none focus:relative focus:ring-2 focus:ring-black;
 	}
 
 	.trigger[data-orientation='vertical'] {
