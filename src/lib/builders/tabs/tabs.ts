@@ -17,23 +17,31 @@ const defaults = {
 	loop: true,
 } satisfies CreateTabsArgs;
 
-const hackDerived = <T>(store: Writable<T>, fn: (value: T) => void) => {
-	return {
-		subscribe: () => {
-			return store.subscribe(fn);
-		},
-	};
-};
-
-let idCount = 0;
-
 function generateId() {
-	return `${idCount++}`;
+	return crypto.randomUUID();
 }
 
 function getElementById(id: string) {
 	return document.querySelector(`[data-radix-id="${id}"]`) as HTMLElement | null;
 }
+
+const derivedWithUnsubscribe = <T, D>(
+	store: Writable<T>,
+	fn: (value: T, onUnsubscribe: (cb: () => void) => void) => D
+) => {
+	let unsubscribers: (() => void)[] = [];
+	const onUnsubscribe = (cb: () => void) => {
+		unsubscribers.push(cb);
+	};
+
+	const derivedStore = derived(store, ($value) => {
+		unsubscribers.forEach((fn) => fn());
+		unsubscribers = [];
+		return fn($value, onUnsubscribe);
+	});
+
+	return derivedStore;
+};
 
 export function createTabs(args?: CreateTabsArgs) {
 	const options = { ...defaults, ...args };
@@ -54,13 +62,7 @@ export function createTabs(args?: CreateTabsArgs) {
 
 	// Trigger
 
-	let counter = 0;
-	let unsubscribers: (() => void)[] = [];
-	const trigger = derived(value, ($value) => {
-		console.log('derived');
-		counter = 0;
-		unsubscribers.forEach((fn) => fn());
-		unsubscribers = [];
+	const trigger = derivedWithUnsubscribe(value, ($value, onUnsubscribe) => {
 		return (tabValue: string) => {
 			const triggerId = generateId();
 			// Event handlers
@@ -106,8 +108,6 @@ export function createTabs(args?: CreateTabsArgs) {
 			};
 
 			if (isBrowser) {
-				counter++;
-				console.log('innerderived from', counter);
 				tick().then(() => {
 					const el = getElementById(triggerId);
 					el?.addEventListener('focus', onFocus);
@@ -115,7 +115,7 @@ export function createTabs(args?: CreateTabsArgs) {
 					el?.addEventListener('keydown', onKeyDown);
 				});
 
-				unsubscribers.push(() => {
+				onUnsubscribe(() => {
 					const el = getElementById(triggerId);
 					el?.removeEventListener('focus', onFocus);
 					el?.removeEventListener('click', onClick);
@@ -134,7 +134,7 @@ export function createTabs(args?: CreateTabsArgs) {
 	});
 
 	// Content
-	const content = derived(value, ($value) => {
+	const content = derivedWithUnsubscribe(value, ($value) => {
 		return (tabValue: string) => {
 			return {
 				role: 'tabpanel',
