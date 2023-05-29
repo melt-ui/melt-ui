@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { HighlightSvelte } from 'svelte-highlight';
-	import Preview from './preview-tw.svelte';
+	import Preview from './preview-scoped.svelte';
 	import twCode from './preview-tw.svelte?raw';
 	import scopedCode from './preview-scoped.svelte?raw';
 	import theme from 'svelte-highlight/styles/tomorrow-night';

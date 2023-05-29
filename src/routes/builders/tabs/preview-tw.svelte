@@ -2,9 +2,10 @@
 	import { createTabs } from '$lib/builders/tabs/tabs';
 
 	let loop = true;
-	const { root, list, content, trigger, value } = createTabs({
+	$: ({ root, list, content, trigger, value } = createTabs({
 		value: 'tab1',
-	});
+		loop,
+	}));
 </script>
 
 <div class="mx-auto mt-16 w-full max-w-xl">
