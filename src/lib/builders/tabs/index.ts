@@ -1,6 +1,5 @@
 import { getElementById, isBrowser, last, next, prev, uuid } from '$lib/internal/helpers';
-import { derivedWithUnsubscribe } from '$lib/internal/stores';
-import { tick } from 'svelte';
+import { derivedWithUnsubscribe, elementDerived } from '$lib/internal/stores';
 import { writable } from 'svelte/store';
 
 type CreateTabsArgs = {
@@ -57,7 +56,7 @@ export function createTabs(args?: CreateTabsArgs) {
 		}
 	};
 
-	const trigger = derivedWithUnsubscribe(value, ($value, onUnsubscribe) => {
+	const trigger = elementDerived(value, ($value, attach) => {
 		return (args: TriggerArgs) => {
 			const { value: tabValue, disabled } = parseTriggerArgs(args);
 			const triggerId = uuid();
@@ -67,18 +66,18 @@ export function createTabs(args?: CreateTabsArgs) {
 			}
 
 			// Event handlers
-			const onFocus = () => {
+			attach(triggerId, 'focus', () => {
 				if (options.activateOnFocus) {
 					value.set(tabValue);
 				}
-			};
+			});
 
-			const onClick = (e: MouseEvent) => {
+			attach(triggerId, 'click', (e) => {
 				const el = e.currentTarget;
 				if (el && 'focus' in el) {
 					(el as HTMLElement).focus();
 				}
-			};
+			});
 
 			const nextKey = {
 				horizontal: options.dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight',
@@ -90,7 +89,7 @@ export function createTabs(args?: CreateTabsArgs) {
 				vertical: 'ArrowUp',
 			}[options.orientation ?? 'horizontal'];
 
-			const onKeyDown = (e: KeyboardEvent) => {
+			attach(triggerId, 'keydown', (e) => {
 				const rootEl = getElementById(root['data-radix-id']);
 				if (!rootEl) return;
 				const triggers = Array.from(rootEl.querySelectorAll('[role="tab"]')) as HTMLElement[];
@@ -113,23 +112,7 @@ export function createTabs(args?: CreateTabsArgs) {
 					e.preventDefault();
 					last(enabledTriggers)?.focus();
 				}
-			};
-
-			if (isBrowser && !disabled) {
-				tick().then(() => {
-					const el = getElementById(triggerId);
-					el?.addEventListener('focus', onFocus);
-					el?.addEventListener('click', onClick);
-					el?.addEventListener('keydown', onKeyDown);
-				});
-
-				onUnsubscribe(() => {
-					const el = getElementById(triggerId);
-					el?.removeEventListener('focus', onFocus);
-					el?.removeEventListener('click', onClick);
-					el?.removeEventListener('keydown', onKeyDown);
-				});
-			}
+			});
 
 			return {
 				'data-radix-id': triggerId,

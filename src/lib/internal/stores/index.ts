@@ -1,3 +1,3 @@
 export * from './isMounted';
-export * from './derivedWithUnsubscribe';
+export * from './derived';
 export * from './callAndCleanup';

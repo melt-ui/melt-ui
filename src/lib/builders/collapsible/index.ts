@@ -1,6 +1,5 @@
-import { getElementById, isBrowser, uuid } from '$lib/internal/helpers';
-import { derivedWithUnsubscribe } from '$lib/internal/stores';
-import { tick } from 'svelte';
+import { uuid } from '$lib/internal/helpers';
+import { elementDerived } from '$lib/internal/stores';
 import { derived, writable } from 'svelte/store';
 
 type CreateCollapsibleArgs = {
@@ -22,32 +21,14 @@ export function createCollapsible(args?: CreateCollapsibleArgs) {
 		options.onChange?.(open);
 	});
 
-	// Root
 	const root = derived(open, ($open) => ({
 		'data-state': $open ? 'open' : 'closed',
 		'data-disabled': options.disabled ? 'true' : 'undefined',
 	}));
 
-	// Trigger
-	const trigger = derivedWithUnsubscribe(open, ($open, onUnsubscribe) => {
+	const trigger = elementDerived(open, ($open, attach) => {
 		const id = uuid();
-
-		if (isBrowser && !options.disabled) {
-			const onClick = () => {
-				open.set(!$open);
-			};
-
-			tick().then(() => {
-				const el = getElementById(id);
-				console.log('el', el, id);
-				el?.addEventListener('click', onClick);
-			});
-
-			onUnsubscribe(() => {
-				const el = getElementById(id);
-				el?.removeEventListener('click', onClick);
-			});
-		}
+		attach(id, 'click', () => open.set(!$open));
 
 		return {
 			'data-state': $open ? 'open' : 'closed',
@@ -56,7 +37,6 @@ export function createCollapsible(args?: CreateCollapsibleArgs) {
 		};
 	});
 
-	// Content
 	const content = derived(open, ($open) => ({
 		'data-state': $open ? 'open' : 'closed',
 		'data-disabled': options.disabled ? 'true' : undefined,

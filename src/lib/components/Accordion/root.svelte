@@ -52,6 +52,6 @@
 	triggerCollectionContext.setContext();
 </script>
 
-<div {...$$restProps} use:useActions={$$restProps.use} data-radix-accordion-root>
+<div {...$$restProps} use:useActions={$$restProps.use}>
 	<slot />
 </div>
