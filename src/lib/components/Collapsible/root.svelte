@@ -44,7 +44,6 @@
 	data-state={open ? 'open' : 'closed'}
 	data-disabled={disabled ? 'true' : undefined}
 	use:useActions={use ?? []}
-	data-radix-collapsible-root
 	{...$$restProps}
 >
 	<slot />
