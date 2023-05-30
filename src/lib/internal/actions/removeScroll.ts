@@ -12,7 +12,7 @@ export const removeScroll = ((node, params) => {
 		document.body.style.width = params.disable ? '' : '100%';
 
 		if (params.disable) {
-			const top = document.body.style.top.replaceAll(/[^0-9]/g, '') as unknown as number;
+			const top = document.body.style.top.replace(/[^0-9]/g, '') as unknown as number;
 			document.body.style.removeProperty('top');
 			window.scrollTo(window.scrollX, top);
 		}
