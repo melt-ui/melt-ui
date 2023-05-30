@@ -6,7 +6,10 @@ type Params = {
 
 export const removeScroll = ((node, params) => {
 	const update = (params: Params) => {
-		if (document.body.clientHeight > window.innerHeight) {
+		if (
+			document.body.clientHeight > window.innerHeight &&
+			window.getComputedStyle(document.body).overflowY !== 'hidden'
+		) {
 			if (!params.disable) document.body.style.top = `-${window.scrollY}px`;
 			document.body.style.position = params.disable ? '' : 'fixed';
 			document.body.style.overflowY = params.disable ? '' : 'scroll';
