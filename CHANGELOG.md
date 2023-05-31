@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.1
+
+### Patch Changes
+
+- d369c17: feat: improve scrollbar locking (affects dialog and alert dialog)
+
 ## 0.7.0
 
 ### Minor Changes
