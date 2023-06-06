@@ -1,5 +1,13 @@
-import { isBrowser, last, next, prev, uuid } from '$lib/internal/helpers';
-import { derivedWithUnsubscribe, elementDerived, getElementByRadixId } from '$lib/internal/helpers';
+import {
+	derivedWithUnsubscribe,
+	elementMultiDerived,
+	getElementByRadixId,
+	isBrowser,
+	last,
+	next,
+	prev,
+	uuid,
+} from '$lib/internal/helpers';
 import { writable } from 'svelte/store';
 
 type CreateTabsArgs = {
@@ -59,7 +67,7 @@ export function createTabs(args?: CreateTabsArgs) {
 		}
 	};
 
-	const trigger = elementDerived(value, ($value, createAttach) => {
+	const trigger = elementMultiDerived(value, ($value, createAttach) => {
 		return (args: TriggerArgs) => {
 			const { value: tabValue, disabled } = parseTriggerArgs(args);
 			const attach = createAttach();

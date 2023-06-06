@@ -1,4 +1,4 @@
-import { elementDerived } from '$lib/internal/helpers';
+import { elementMultiDerived } from '$lib/internal/helpers';
 import { derived, writable } from 'svelte/store';
 
 type BaseAccordionArgs = {
@@ -66,7 +66,7 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		};
 	});
 
-	const trigger = elementDerived(value, ($value, createAttach) => {
+	const trigger = elementMultiDerived(value, ($value, createAttach) => {
 		return (args: ItemArgs) => {
 			const attach = createAttach();
 			const { value: itemValue } = parseItemArgs(args);

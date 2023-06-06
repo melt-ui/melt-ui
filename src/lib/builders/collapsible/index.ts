@@ -25,8 +25,7 @@ export function createCollapsible(args?: CreateCollapsibleArgs) {
 		'data-disabled': options.disabled ? 'true' : 'undefined',
 	}));
 
-	const trigger = elementDerived(open, ($open, createAttach) => {
-		const attach = createAttach();
+	const trigger = elementDerived(open, ($open, attach) => {
 		if (!options.disabled) {
 			attach('click', () => open.set(!$open));
 		}

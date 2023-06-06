@@ -33,52 +33,77 @@ export function derivedWithUnsubscribe<S extends Stores, T>(
 	return derivedStore;
 }
 
-type Attach = <T extends keyof HTMLElementEventMap>(
+type Attach = (<T extends keyof HTMLElementEventMap>(
 	type: T,
 	listener: (ev: HTMLElementEventMap[T]) => void,
 	options?: boolean | AddEventListenerOptions
-) => void;
+) => void) & {
+	getElement: () => Promise<HTMLElement | null>;
+};
 
-export function element<T>(fn: (createAttach: () => Attach) => T) {
+/**
+ * Creates a derived store that contains attributes for an element.
+ * Exposes an `attach` function to attach events to the element.
+ */
+export function elementDerived<S extends Stores, T extends Record<string, unknown>>(
+	stores: S,
+	fn: (values: StoresValues<S>, attach: Attach) => T
+) {
+	let eventRemovers: (() => void)[] = [];
+	const removeEvents = () => {
+		eventRemovers.forEach((fn) => fn());
+		eventRemovers = [];
+	};
+
 	// Id outside of scope so we can pass it as an attribute
-	let id = uuid();
-	const createAttach = (): Attach => {
-		id = uuid();
-		// Make sure the id is the same on tick
-		const constantId = id;
-		return (event, listener, options) => {
-			if (!isBrowser) return;
-			tick().then(() => {
-				const element = getElementByRadixId(constantId);
-				element?.addEventListener(event, listener, options);
-			});
-		};
+	const id = uuid();
+	const attach: Attach = (event, listener, options) => {
+		if (!isBrowser) return;
+		tick().then(() => {
+			const element = getElementByRadixId(id);
+			element?.addEventListener(event, listener, options);
+		});
+
+		eventRemovers.push(() => {
+			const element = getElementByRadixId(id);
+			element?.removeEventListener(event, listener, options);
+		});
 	};
-	return () => {
-		const returned = fn(createAttach);
-		if (typeof returned === 'function') {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			return (...args: any[]) => {
-				return { ...returned(...args), 'data-radix-id': id };
-			};
-		}
-		return { ...fn(createAttach), 'data-radix-id': id };
-	};
+	attach.getElement = () =>
+		tick().then(() => {
+			if (!isBrowser) return null;
+			return getElementByRadixId(id);
+		});
+
+	return derived(stores, ($storeValues) => {
+		removeEvents();
+		return { ...fn($storeValues, attach), 'data-radix-id': id };
+	});
 }
 
-export function elementDerived<S extends Stores, T>(
-	stores: S,
-	fn: (values: StoresValues<S>, createAttach: () => Attach) => T
-) {
+type ReturnWithObj<T extends () => void, Obj> = ReturnType<T> extends void
+	? Obj
+	: ReturnType<T> & Obj;
+
+/**
+ * Creates a derived store that contains a function, that can be called on multiple elements.
+ * Has a `createAttach` function that can be used to attach events to the elements.
+ * The `createAttach` function will create a new id on every call, so only use it once per element.
+ */
+export function elementMultiDerived<
+	S extends Stores,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	T extends (...args: any[]) => Record<string, unknown> | void
+>(stores: S, fn: (values: StoresValues<S>, createAttach: () => Attach) => T) {
 	let unsubscribers: (() => void)[] = [];
 
 	// Id outside of scope so we can pass it as an attribute
 	let id = uuid();
-	const createAttach = (): Attach => {
+	const createAttach = () => {
 		id = uuid();
 		// Make sure the id is the same on tick
 		const constantId = id;
-		return (event, listener, options) => {
+		const attach: Attach = (event, listener, options) => {
 			if (!isBrowser) return;
 			tick().then(() => {
 				const element = getElementByRadixId(constantId);
@@ -90,29 +115,21 @@ export function elementDerived<S extends Stores, T>(
 				element?.removeEventListener(event, listener, options);
 			});
 		};
+		attach.getElement = () =>
+			tick().then(() => {
+				if (!isBrowser) return null;
+				return getElementByRadixId(constantId);
+			});
+		return attach;
 	};
 
-	const derivedStore = derived(stores, ($storeValues) => {
+	return derived(stores, ($storeValues) => {
 		unsubscribers.forEach((fn) => fn());
 		unsubscribers = [];
 		const returned = fn($storeValues, createAttach);
-		if (typeof returned === 'function') {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			return (...args: any[]) => {
-				return { ...returned(...args), 'data-radix-id': id };
-			};
-		}
-		return { ...fn($storeValues, createAttach), 'data-radix-id': id };
-	});
-
-	return {
-		subscribe: (...args: Parameters<typeof derivedStore.subscribe>) => {
-			const unsub = derivedStore.subscribe(...args);
-			return () => {
-				unsub();
-				unsubscribers.forEach((fn) => fn());
-				unsubscribers = [];
-			};
-		},
-	};
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		return (...args: any[]) => {
+			return { ...returned(...args), 'data-radix-id': id };
+		};
+	}) as Readable<(...args: Parameters<T>) => ReturnWithObj<T, { 'data-radix-id': string }>>;
 }
