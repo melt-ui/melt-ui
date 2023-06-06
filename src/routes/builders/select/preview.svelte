@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createSelect } from '$lib/builders';
 
-	const { open, selected, trigger, menu, option } = createSelect();
+	const { open, selectedText, trigger, menu, option } = createSelect();
 </script>
 
 <div class="comp-preview comp-preview-colored mx-auto mt-16 h-96 w-screen max-w-xl">
@@ -10,20 +10,21 @@
 	hover:opacity-75 focus:ring focus:ring-black"
 		{...$trigger()}
 	>
-		{$selected || 'Select an option'}
+		{$selectedText || 'Select an option'}
 	</button>
+
 	<ul
 		class="absolute flex min-w-[200px] translate-y-2 flex-col gap-2 rounded-md bg-white p-2 text-vermilion-700"
 		{...$menu}
 	>
 		<li
-			class="cursor-pointer rounded-md px-4 py-1 hover:bg-zinc-200"
+			class="cursor-pointer rounded-md px-4 py-1 outline-none hocus:bg-zinc-200"
 			{...$option({ value: 'option-1' })}
 		>
 			Option 1
 		</li>
 		<li
-			class="cursor-pointer rounded-md px-4 py-1 hover:bg-zinc-200"
+			class="cursor-pointer rounded-md px-4 py-1 outline-none hocus:bg-zinc-200"
 			{...$option({ value: 'option-2' })}
 		>
 			Option 2

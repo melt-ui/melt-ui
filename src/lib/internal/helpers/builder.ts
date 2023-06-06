@@ -1,4 +1,4 @@
-import { tick } from 'svelte';
+import { onDestroy, tick } from 'svelte';
 import { derived, type Readable } from 'svelte/store';
 import { isBrowser, uuid } from '.';
 
@@ -31,6 +31,26 @@ export function derivedWithUnsubscribe<S extends Stores, T>(
 	});
 
 	return derivedStore;
+}
+
+export function effect<S extends Stores>(
+	stores: S,
+	fn: (values: StoresValues<S>) => (() => void) | void
+) {
+	const unsub = derivedWithUnsubscribe(stores, (stores, onUnsubscribe) => {
+		return {
+			stores,
+			onUnsubscribe,
+		};
+	}).subscribe(({ stores, onUnsubscribe }) => {
+		const returned = fn(stores);
+		if (returned) {
+			onUnsubscribe(returned);
+		}
+	});
+
+	onDestroy(unsub);
+	return unsub;
 }
 
 type Attach = (<T extends keyof HTMLElementEventMap>(
