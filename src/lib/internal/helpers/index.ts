@@ -12,3 +12,4 @@ export * from './useActions';
 export * from './preview';
 export * from './browser';
 export * from './uuid';
+export * from './builder';

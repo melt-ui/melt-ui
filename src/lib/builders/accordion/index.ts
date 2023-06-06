@@ -1,5 +1,4 @@
-import { uuid } from '$lib/internal/helpers';
-import { elementDerived } from '$lib/internal/stores';
+import { elementDerived } from '$lib/internal/helpers';
 import { derived, writable } from 'svelte/store';
 
 type BaseAccordionArgs = {
@@ -67,11 +66,12 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		};
 	});
 
-	const trigger = elementDerived(value, ($value, attach) => {
+	const trigger = elementDerived(value, ($value, createAttach) => {
 		return (args: ItemArgs) => {
+			const attach = createAttach();
 			const { value: itemValue } = parseItemArgs(args);
-			const id = uuid();
-			attach(id, 'click', () => {
+
+			attach('click', () => {
 				if (options.type === 'single') {
 					value.set($value === itemValue ? undefined : itemValue);
 				} else {
@@ -88,9 +88,7 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 				}
 			});
 
-			return {
-				'data-radix-id': id,
-			};
+			return {};
 		};
 	});
 

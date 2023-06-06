@@ -1,6 +1,10 @@
 import { tick } from 'svelte';
 import { derived, type Readable } from 'svelte/store';
-import { getElementById, isBrowser } from '../helpers';
+import { isBrowser, uuid } from '.';
+
+export function getElementByRadixId(id: string) {
+	return document.querySelector(`[data-radix-id="${id}"]`) as HTMLElement | null;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Stores = Readable<any> | [Readable<any>, ...Array<Readable<any>>] | Array<Readable<any>>;
@@ -30,7 +34,6 @@ export function derivedWithUnsubscribe<S extends Stores, T>(
 }
 
 type Attach = <T extends keyof HTMLElementEventMap>(
-	radixId: string,
 	type: T,
 	listener: (ev: HTMLElementEventMap[T]) => void,
 	options?: boolean | AddEventListenerOptions
@@ -38,27 +41,41 @@ type Attach = <T extends keyof HTMLElementEventMap>(
 
 export function elementDerived<S extends Stores, T>(
 	stores: S,
-	fn: (values: StoresValues<S>, attach: Attach) => T
+	fn: (values: StoresValues<S>, createAttach: () => Attach) => T
 ) {
 	let unsubscribers: (() => void)[] = [];
-	const attach: Attach = (id, event, listener, options) => {
-		if (isBrowser) {
+
+	// Id outside of scope so we can pass it as an attribute
+	let id = uuid();
+	const createAttach = (): Attach => {
+		id = uuid();
+		// Make sure the id is the same on tick
+		const constantId = id;
+		return (event, listener, options) => {
+			if (!isBrowser) return;
 			tick().then(() => {
-				const element = getElementById(id);
+				const element = getElementByRadixId(constantId);
 				element?.addEventListener(event, listener, options);
 			});
 
 			unsubscribers.push(() => {
-				const element = getElementById(id);
+				const element = getElementByRadixId(constantId);
 				element?.removeEventListener(event, listener, options);
 			});
-		}
+		};
 	};
 
 	const derivedStore = derived(stores, ($storeValues) => {
 		unsubscribers.forEach((fn) => fn());
 		unsubscribers = [];
-		return fn($storeValues, attach);
+		const returned = fn($storeValues, createAttach);
+		if (typeof returned === 'function') {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			return (...args: any[]) => {
+				return { ...returned(...args), 'data-radix-id': id };
+			};
+		}
+		return { ...fn($storeValues, createAttach), 'data-radix-id': id };
 	});
 
 	return {

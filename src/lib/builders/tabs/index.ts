@@ -1,5 +1,5 @@
-import { getElementById, isBrowser, last, next, prev, uuid } from '$lib/internal/helpers';
-import { derivedWithUnsubscribe, elementDerived } from '$lib/internal/stores';
+import { isBrowser, last, next, prev, uuid } from '$lib/internal/helpers';
+import { derivedWithUnsubscribe, elementDerived, getElementByRadixId } from '$lib/internal/helpers';
 import { writable } from 'svelte/store';
 
 type CreateTabsArgs = {
@@ -9,6 +9,8 @@ type CreateTabsArgs = {
 	orientation?: 'horizontal' | 'vertical';
 	activateOnFocus?: boolean;
 	loop?: boolean;
+	/** In case no value is set on initialization, sets the value to the first tab */
+	autoSet?: boolean;
 };
 
 const defaults = {
@@ -16,6 +18,7 @@ const defaults = {
 	orientation: 'horizontal',
 	activateOnFocus: true,
 	loop: true,
+	autoSet: true,
 } satisfies CreateTabsArgs;
 
 export function createTabs(args?: CreateTabsArgs) {
@@ -56,23 +59,23 @@ export function createTabs(args?: CreateTabsArgs) {
 		}
 	};
 
-	const trigger = elementDerived(value, ($value, attach) => {
+	const trigger = elementDerived(value, ($value, createAttach) => {
 		return (args: TriggerArgs) => {
 			const { value: tabValue, disabled } = parseTriggerArgs(args);
-			const triggerId = uuid();
-			if (!$value && !ssrValue) {
+			const attach = createAttach();
+			if (!$value && !ssrValue && options.autoSet) {
 				ssrValue = tabValue;
 				value.set(tabValue);
 			}
 
 			// Event handlers
-			attach(triggerId, 'focus', () => {
+			attach('focus', () => {
 				if (options.activateOnFocus) {
 					value.set(tabValue);
 				}
 			});
 
-			attach(triggerId, 'click', (e) => {
+			attach('click', (e) => {
 				const el = e.currentTarget;
 				if (el && 'focus' in el) {
 					(el as HTMLElement).focus();
@@ -89,8 +92,8 @@ export function createTabs(args?: CreateTabsArgs) {
 				vertical: 'ArrowUp',
 			}[options.orientation ?? 'horizontal'];
 
-			attach(triggerId, 'keydown', (e) => {
-				const rootEl = getElementById(root['data-radix-id']);
+			attach('keydown', (e) => {
+				const rootEl = getElementByRadixId(root['data-radix-id']);
 				if (!rootEl) return;
 				const triggers = Array.from(rootEl.querySelectorAll('[role="tab"]')) as HTMLElement[];
 				const enabledTriggers = triggers.filter((el) => !el.hasAttribute('data-disabled'));
@@ -115,7 +118,6 @@ export function createTabs(args?: CreateTabsArgs) {
 			});
 
 			return {
-				'data-radix-id': triggerId,
 				role: 'tab',
 				'data-state': isBrowser
 					? $value === tabValue

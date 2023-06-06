@@ -1,5 +1,4 @@
-import { uuid } from '$lib/internal/helpers';
-import { elementDerived } from '$lib/internal/stores';
+import { elementDerived } from '$lib/internal/helpers';
 import { derived, writable } from 'svelte/store';
 
 type CreateCollapsibleArgs = {
@@ -26,16 +25,15 @@ export function createCollapsible(args?: CreateCollapsibleArgs) {
 		'data-disabled': options.disabled ? 'true' : 'undefined',
 	}));
 
-	const trigger = elementDerived(open, ($open, attach) => {
-		const id = uuid();
+	const trigger = elementDerived(open, ($open, createAttach) => {
+		const attach = createAttach();
 		if (!options.disabled) {
-			attach(id, 'click', () => open.set(!$open));
+			attach('click', () => open.set(!$open));
 		}
 
 		return {
 			'data-state': $open ? 'open' : 'closed',
 			'data-disabled': options.disabled ? 'true' : undefined,
-			'data-radix-id': id,
 		};
 	});
 
