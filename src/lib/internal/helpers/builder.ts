@@ -39,6 +39,33 @@ type Attach = <T extends keyof HTMLElementEventMap>(
 	options?: boolean | AddEventListenerOptions
 ) => void;
 
+export function element<T>(fn: (createAttach: () => Attach) => T) {
+	// Id outside of scope so we can pass it as an attribute
+	let id = uuid();
+	const createAttach = (): Attach => {
+		id = uuid();
+		// Make sure the id is the same on tick
+		const constantId = id;
+		return (event, listener, options) => {
+			if (!isBrowser) return;
+			tick().then(() => {
+				const element = getElementByRadixId(constantId);
+				element?.addEventListener(event, listener, options);
+			});
+		};
+	};
+	return () => {
+		const returned = fn(createAttach);
+		if (typeof returned === 'function') {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			return (...args: any[]) => {
+				return { ...returned(...args), 'data-radix-id': id };
+			};
+		}
+		return { ...fn(createAttach), 'data-radix-id': id };
+	};
+}
+
 export function elementDerived<S extends Stores, T>(
 	stores: S,
 	fn: (values: StoresValues<S>, createAttach: () => Attach) => T
