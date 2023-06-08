@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Preview from './preview.svelte';
 	import code from './code.svelte?raw';
-	import { Docs, type APISchema } from '../(components)';
+	import { Docs, type APISchema } from '$routes/(components)';
 
 	const schemas: APISchema[] = [
 		{

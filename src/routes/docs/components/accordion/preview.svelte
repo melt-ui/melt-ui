@@ -1,9 +1,9 @@
 <script>
 	import { Accordion } from '$lib';
-	import PreviewWrapper from '../(components)/preview-wrapper.svelte';
+	import { Docs } from '$routes/(components)';
 </script>
 
-<PreviewWrapper>
+<Docs.PreviewWrapper>
 	<div class="contents">
 		<Accordion.Root class="w-full rounded-md bg-[--line-color] shadow-lg">
 			<Accordion.Item class="accordion-item" value="item-1">
@@ -38,7 +38,7 @@
 			</Accordion.Item>
 		</Accordion.Root>
 	</div>
-</PreviewWrapper>
+</Docs.PreviewWrapper>
 
 <style lang="postcss">
 	.contents {

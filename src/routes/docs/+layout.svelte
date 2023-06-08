@@ -6,15 +6,7 @@
 	import theme from 'svelte-highlight/styles/tomorrow-night';
 	import { isMenuOpen } from '$routes/+layout.svelte';
 
-	type Link = {
-		title: string;
-		href: string;
-	};
-
-	let links: Link[] = sortedEntries(schemas).map(([key, schema]) => ({
-		title: schema.title,
-		href: `/docs/${key}`,
-	}));
+	export let data;
 
 	afterNavigate(() => {
 		$isMenuOpen = false;
@@ -41,18 +33,18 @@
 			>
 				Components
 			</li>
-			{#each links as link}
+			{#each data.components as link}
 				<li>
 					<a
 						class={cn(
-							'block whitespace-nowrap rounded-md border border-transparent px-3 py-2',
+							'block whitespace-nowrap rounded-md border border-transparent px-3 py-2 capitalize',
 							'hover:bg-vermilion-600/25',
 							'data-[active=true]:border-vermilion-600 data-[active=true]:bg-vermilion-600/25'
 						)}
 						data-active={$page.url.pathname === link.href}
 						href={link.href}
 					>
-						{link.title}
+						{link.name}
 					</a>
 				</li>
 			{/each}
