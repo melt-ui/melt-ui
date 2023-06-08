@@ -1,5 +1,6 @@
 import type { Action } from 'svelte/action';
 import { handleAndDispatchCustomEvent } from '../helpers/event';
+import { sleep } from '../helpers/sleep';
 
 export type ForwardedEvent<T extends Event> = CustomEvent<{
 	originalEvent: T;
@@ -66,5 +67,3 @@ export const dismissable = ((node, params?: Params) => {
 		},
 	};
 }) satisfies Action;
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

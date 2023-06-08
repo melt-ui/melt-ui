@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
 	export type CollapsibleContentProps = BaseProps & {
 		transition?: boolean | SlideParams;
+		asChild?: boolean;
 	};
 </script>
 
@@ -13,6 +14,7 @@
 	type $$Props = CollapsibleContentProps;
 
 	export let transition: $$Props['transition'] = undefined;
+	export let asChild: $$Props['asChild'] = false;
 
 	$: transitionParams = (function getParams(): SlideParams {
 		if (!transition) {
@@ -29,16 +31,20 @@
 	})();
 
 	const ctx = getCollapsibleRootContext();
+	$: ({ content, open } = $ctx);
 </script>
 
-{#if $ctx.open}
+{#if asChild}
+	{#if $open}
+		<slot content={$content} />
+	{/if}
+{:else if $open}
 	<div
 		{...$$restProps}
+		{...$content}
 		use:useActions={$$restProps.use}
-		data-state={$ctx.open ? 'open' : 'closed'}
-		data-disabled={$ctx.disabled ? 'true' : undefined}
 		transition:slide|local={transitionParams}
 	>
-		<slot />
+		<slot content={$content} />
 	</div>
 {/if}
