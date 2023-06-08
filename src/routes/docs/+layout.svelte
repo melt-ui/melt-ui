@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { schemas } from '$routes/(previews)/schemas';
-	import { cn, sortedEntries } from '$routes/helpers';
-	import theme from 'svelte-highlight/styles/tomorrow-night';
 	import { isMenuOpen } from '$routes/+layout.svelte';
+	import { cn } from '$routes/helpers';
+	import theme from 'svelte-highlight/styles/tomorrow-night';
 
 	export let data;
 
@@ -38,8 +37,8 @@
 					<a
 						class={cn(
 							'block whitespace-nowrap rounded-md border border-transparent px-3 py-2 capitalize',
-							'hover:bg-vermilion-600/25',
-							'data-[active=true]:border-vermilion-600 data-[active=true]:bg-vermilion-600/25'
+							'hover:bg-casablanca-600/25',
+							'data-[active=true]:border-casablanca-600 data-[active=true]:bg-casablanca-600/25'
 						)}
 						data-active={$page.url.pathname === link.href}
 						href={link.href}

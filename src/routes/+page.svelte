@@ -1,26 +1,15 @@
 <script lang="ts">
 	import { getPropsObj } from '$lib/internal/helpers';
-	import { schemas } from './(previews)/schemas';
 
 	import Copy from '~icons/lucide/copy';
 	import Check from '~icons/lucide/check';
 	import ArrowRight from '~icons/lucide/arrow-right';
 	import { fly } from 'svelte/transition';
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	function getPropsObjForSchema(schema: (typeof schemas)[keyof typeof schemas]): any {
-		// eslint-disable-next-line @typescript-eslint/ban-types
-		return getPropsObj<{}>(schema.meta);
-	}
-
-	$: sortedSchemas = Object.entries(schemas).sort((a, b) => {
-		return a[1].title.toLowerCase().localeCompare(b[1].title.toLowerCase());
-	}) as any;
-
 	let copied = false;
 	let copytimeout: ReturnType<typeof setTimeout>;
 	function copyInstallCommand() {
-		navigator.clipboard.writeText(`npm install radix-svelte`);
+		navigator.clipboard.writeText(`npm install melt-ui`);
 		copied = true;
 		clearTimeout(copytimeout);
 		copytimeout = setTimeout(() => {
@@ -36,33 +25,18 @@
 <div class="relative grid grow place-items-center p-6">
 	<div class="grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-3">
 		<div class="col-span-full flex flex-col gap-4 py-24">
-			<h1 class="text-4xl font-bold text-white lg:text-5xl">Don’t reinvent the wheel.</h1>
-			<p class="max-w-prose text-lg text-white lg:text-xl">
-				<span class="opacity-75"
-					>Radix Svelte is an unofficial community-led Svelte port of
-				</span><a href="https://radix-ui.com/" target="_blank" class="link">Radix UI Primitives</a
-				><span class="opacity-75"
-					>, a set of unstyled, accessible components for building high-quality design systems and
-					web apps.</span
-				>
-			</p>
-			<div class="flex flex-col gap-4 sm:flex-row">
-				<a
-					href="/docs/accordion"
-					class="flex items-center justify-between gap-4 rounded bg-vermilion-600 px-4 py-3 font-sans text-lg font-semibold text-white transition hover:bg-vermilion-700 active:translate-y-0.5 active:bg-vermilion-700 sm:shrink"
-				>
-					Read the docs
-					<ArrowRight class="inline-block h-5 w-5 text-white" />
-				</a>
+			<div class="flex flex-col items-center">
+				<img src="/logo.svg" alt="Melt UI" />
 				<button
 					on:click={copyInstallCommand}
-					class="group flex items-center justify-between gap-4 break-keep rounded bg-zinc-700 px-4 py-3 text-left font-mono text-lg
-					transition hover:bg-zinc-700/75 active:translate-y-0.5 sm:shrink"
+					class="group mt-8 flex items-center justify-between gap-4 break-keep rounded bg-zinc-800
+					 px-4 py-3 text-left font-mono text-lg transition hover:bg-zinc-800/75 active:translate-y-0.5 sm:shrink"
 					aria-label="Copy install command"
-					><span>npm install <span class="whitespace-nowrap">radix-svelte</span></span>
+				>
+					<span>npm install <span class="whitespace-nowrap">@melt-ui/svelte</span></span>
 					{#if copied}
 						<div in:fly={{ y: -4 }}>
-							<Check class="inline-block h-5 w-5 text-vermilion-500 transition" />
+							<Check class="inline-block h-5 w-5 text-casablanca-500 transition" />
 						</div>
 					{:else}
 						<div in:fly={{ y: 4 }}>
@@ -70,22 +44,16 @@
 						</div>
 					{/if}
 				</button>
+				<a
+					href="/docs/components/collapsible"
+					class="mt-4 flex items-center justify-between gap-4 rounded bg-casablanca-600 px-4 py-3
+					font-sans text-lg font-semibold text-white transition hover:bg-casablanca-700 active:translate-y-0.5 active:bg-casablanca-700 sm:shrink"
+				>
+					Read the docs
+					<ArrowRight class="inline-block h-5 w-5 text-white" />
+				</a>
 			</div>
 		</div>
-		{#each sortedSchemas as [identifier, schema], idx}
-			{@const propsObj = getPropsObjForSchema(schema)}
-			<div
-				class="flex min-h-[256px] w-full flex-col gap-2 overflow-hidden transition lg:h-[400px] lg:w-[400px]"
-			>
-				<a href={`/docs/${identifier}`} class="group flex items-baseline justify-between">
-					<h2 class="text-xl font-normal capitalize text-white">{schema.title}</h2>
-					<span class="link">View docs</span></a
-				>
-				<div class="comp-preview grow place-items-center">
-					<svelte:component this={schema.example} {propsObj} />
-				</div>
-			</div>
-		{/each}
 	</div>
 </div>
 
@@ -105,8 +73,8 @@
 
 		background: linear-gradient(
 			180deg,
-			theme('colors.vermilion.600/0.25'),
-			theme('colors.vermilion.800/0.25')
+			theme('colors.casablanca.600/0.25'),
+			theme('colors.casablanca.800/0.25')
 		);
 
 		opacity: 0.25;

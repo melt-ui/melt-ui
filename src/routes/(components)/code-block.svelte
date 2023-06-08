@@ -28,23 +28,23 @@
 	<button class="absolute right-3 top-3 z-10" aria-label="copy" on:click={copyCode}>
 		{#if copied}
 			<div in:fly|local={{ y: -4 }}>
-				<Check class="text-vermilion-500" />
+				<Check class="text-casablanca-500" />
 			</div>
 		{:else}
 			<div in:fly|local={{ y: 4 }}>
-				<Copy class="hover:text-vermilion-500" />
+				<Copy class="hover:text-casablanca-500" />
 			</div>
 		{/if}
 	</button>
 	<HighlightSvelte {code} class="text-sm" />
 	<div
-		class="absolute bg-gradient-to-t from-zinc-900/90 to-vermilion-900/30 {showCode
+		class="absolute bg-gradient-to-t from-zinc-900/90 to-casablanca-900/30 {showCode
 			? 'inset-x-0 bottom-0'
 			: 'inset-0'}"
 	>
 		<div class="absolute inset-x-0 bottom-3 flex justify-center">
 			<button
-				class="rounded-lg border border-vermilion-600/20 bg-zinc-900 px-4 py-1 text-sm hover:border-vermilion-600/70"
+				class="rounded-lg border border-casablanca-600/20 bg-zinc-900 px-4 py-1 text-sm hover:border-casablanca-600/70"
 				on:click={() => (showCode = !showCode)}
 			>
 				{showCode ? 'Collapse code' : 'Expand code'}

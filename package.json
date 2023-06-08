@@ -1,6 +1,6 @@
 {
-	"name": "radix-svelte",
-	"version": "0.7.1",
+	"name": "@melt-ui/svelte",
+	"version": "0.0.1",
 	"license": "MIT",
 	"scripts": {
 		"dev": "vite dev",
@@ -62,8 +62,6 @@
 	"devDependencies": {
 		"@axe-core/playwright": "^4.6.1",
 		"@changesets/cli": "^2.26.1",
-		"@fontsource/overpass": "^4.5.11",
-		"@fontsource/overpass-mono": "^4.5.11",
 		"@iconify-json/lucide": "^1.1.82",
 		"@iconify-json/simple-icons": "^1.1.50",
 		"@playwright/experimental-ct-svelte": "^1.32.1",

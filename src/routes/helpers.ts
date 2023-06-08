@@ -29,8 +29,8 @@ function camelCase(...str: string[]) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function cleanupCodeExample(code: string, { meta }: PreviewSchema<any>): string {
-	// Change '$lib' imports to 'radix-svelte'
-	code = code.replace(/\$lib/g, 'radix-svelte');
+	// Change '$lib' imports to 'melt-ui'
+	code = code.replace(/\$lib/g, 'melt-ui');
 
 	// Replace export let propsObj with various let declarations
 	const propDeclarations = [];

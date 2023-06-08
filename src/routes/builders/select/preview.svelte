@@ -6,7 +6,7 @@
 
 <div class="comp-preview comp-preview-colored mx-auto mt-16 h-96 w-screen max-w-xl">
 	<button
-		class="rounded-md bg-white px-4 py-1 text-vermilion-700 outline-none
+		class="rounded-md bg-white px-4 py-1 text-casablanca-700 outline-none
 	hover:opacity-75 focus:ring focus:ring-black"
 		{...$trigger()}
 	>
@@ -14,7 +14,7 @@
 	</button>
 
 	<ul
-		class="absolute flex min-w-[200px] translate-y-2 flex-col gap-2 rounded-md bg-white p-2 text-vermilion-700"
+		class="absolute flex min-w-[200px] translate-y-2 flex-col gap-2 rounded-md bg-white p-2 text-casablanca-700"
 		{...$menu}
 	>
 		<li

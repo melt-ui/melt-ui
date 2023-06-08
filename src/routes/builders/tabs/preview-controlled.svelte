@@ -32,7 +32,7 @@
 	>
 		<div
 			{...list}
-			class="flex shrink-0 border-b border-vermilion-100 bg-white data-[orientation=vertical]:flex-col
+			class="flex shrink-0 border-b border-casablanca-100 bg-white data-[orientation=vertical]:flex-col
 			data-[orientation=vertical]:border-r"
 			aria-label="Manage your account"
 		>
@@ -44,16 +44,16 @@
 			{/if}
 		</div>
 		<div {...$content('tab1')} class="grow bg-white p-5 outline-none focus:ring-2 focus:ring-black">
-			<p class="mb-5 leading-normal text-vermilion-950">
+			<p class="mb-5 leading-normal text-casablanca-950">
 				Make changes to your account here. Click save when you're done.
 			</p>
 			<fieldset class="mb-4 flex w-full flex-col justify-start">
-				<label class="mb-2.5 block text-sm leading-none text-vermilion-950" for="name">
+				<label class="mb-2.5 block text-sm leading-none text-casablanca-950" for="name">
 					Name
 				</label>
 				<input
 					class="h-8 shrink-0 grow rounded border px-2.5
-					leading-none text-vermilion-900 outline-none focus:ring-2 focus:ring-vermilion-800"
+					leading-none text-casablanca-900 outline-none focus:ring-2 focus:ring-casablanca-800"
 					id="name"
 					value="Thomas G. Lopes"
 				/>
@@ -69,16 +69,16 @@
 			</div>
 		</div>
 		<div {...$content('tab2')} class="grow bg-white p-5 outline-none focus:ring-2 focus:ring-black">
-			<p class="mb-5 leading-normal text-vermilion-950">
+			<p class="mb-5 leading-normal text-casablanca-950">
 				Change your password here. Click save when you're done.
 			</p>
 			<fieldset class="mb-[15px] flex w-full flex-col justify-start">
-				<label class="mb-2.5 block text-sm leading-none text-vermilion-950" for="new">
+				<label class="mb-2.5 block text-sm leading-none text-casablanca-950" for="new">
 					New password
 				</label>
 				<input
 					class="h-8 shrink-0 grow rounded border px-2.5
-				leading-none text-vermilion-900 outline-none focus:ring-2 focus:ring-vermilion-800"
+				leading-none text-casablanca-900 outline-none focus:ring-2 focus:ring-casablanca-800"
 					id="new"
 					type="password"
 				/>
@@ -93,17 +93,17 @@
 			</div>
 		</div>
 		<div {...$content('tab3')} class="grow bg-white p-5 outline-none focus:ring-2 focus:ring-black">
-			<p class="mb-5 leading-normal text-vermilion-950">
+			<p class="mb-5 leading-normal text-casablanca-950">
 				Change your settings here. Click save when you're done.
 			</p>
 
 			<fieldset class="mb-[15px] flex w-full flex-col justify-start">
-				<label class="mb-2.5 block text-sm leading-none text-vermilion-950" for="new">
+				<label class="mb-2.5 block text-sm leading-none text-casablanca-950" for="new">
 					New email
 				</label>
 				<input
 					class="h-8 shrink-0 grow rounded border px-2.5
-			leading-none text-vermilion-900 outline-none focus:ring-2 focus:ring-vermilion-800"
+			leading-none text-casablanca-900 outline-none focus:ring-2 focus:ring-casablanca-800"
 					id="new"
 					type="password"
 				/>
@@ -118,7 +118,7 @@
 			</div>
 		</div>
 		<div {...$content('tab4')} class="grow bg-white p-5 outline-none focus:ring-2 focus:ring-black">
-			<p class="mb-5 leading-normal text-vermilion-950">Hush hush</p>
+			<p class="mb-5 leading-normal text-casablanca-950">Hush hush</p>
 		</div>
 	</div>
 </div>
@@ -126,16 +126,16 @@
 <style lang="postcss">
 	.trigger {
 		@apply flex h-11 flex-1 cursor-default select-none items-center
-      justify-center bg-white px-5 leading-none text-vermilion-900 outline-none
+      justify-center bg-white px-5 leading-none text-casablanca-900 outline-none
 			focus:relative focus:ring-2 focus:ring-black;
 	}
 
 	.trigger[data-orientation='vertical'] {
-		@apply w-full flex-grow-0 rounded-none border-b border-r-2 border-transparent border-b-vermilion-100 py-4  last:border-b-0;
+		@apply w-full flex-grow-0 rounded-none border-b border-r-2 border-transparent border-b-casablanca-100 py-4  last:border-b-0;
 	}
 
 	.trigger[data-state='active'] {
-		@apply text-vermilion-700 focus:relative;
+		@apply text-casablanca-700 focus:relative;
 	}
 
 	.trigger[data-state='active'][data-orientation='horizontal'] {
@@ -143,6 +143,6 @@
 	}
 
 	.trigger[data-state='active'][data-orientation='vertical'] {
-		@apply border-r-vermilion-500;
+		@apply border-r-casablanca-500;
 	}
 </style>

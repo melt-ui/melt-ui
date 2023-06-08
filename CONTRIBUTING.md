@@ -1,8 +1,8 @@
-# Contributing to Radix Svelte
+# Contributing to Melt UI
 
 ## Code of Conduct
 
-Radix Svelte has adopted the [Contributor Covenant](https://www.contributor-covenant.org/) as its Code of Conduct, and we expect project participants to adhere to it.
+Melt UI has adopted the [Contributor Covenant](https://www.contributor-covenant.org/) as its Code of Conduct, and we expect project participants to adhere to it.
 
 Please read [the full text](/CODE_OF_CONDUCT.md) so that you can understand what actions will and will not be tolerated.
 
@@ -22,16 +22,16 @@ Please read [the full text](/CODE_OF_CONDUCT.md) so that you can understand what
 
 ## Questions
 
-If you have questions about Radix Svelte, be sure to check out the docs where we have several examples and detailed API references that may help you solve your problem. You can also share your questions on our Discord community (link on [README.md](/README.md)). We're happy to help!
+If you have questions about Melt UI, be sure to check out the docs where we have several examples and detailed API references that may help you solve your problem. You can also share your questions on our Discord community (link on [README.md](/README.md)). We're happy to help!
 
 ## How to contribute
 
 There are many ways to contribute to the project. Code is just one possible means of contribution.
 
 - **Feedback.** Tell us what we're doing well or where we can improve.
-- **Support.** You can answer questions on Discord, or provide solutions for others in [open issues](https://github.com/TGlide/radix-svelte/issues).
-- **Write.** If you come up with an interesting example, write about it. Post it to your blog and share it with us. We'd love to see what folks in the community build with Radix Svelte!
-- **Report.** Create issues with bug reports so we can make Radix Svelte even better.
+- **Support.** You can answer questions on Discord, or provide solutions for others in [open issues](https://github.com/melt-ui/melt-ui/issues).
+- **Write.** If you come up with an interesting example, write about it. Post it to your blog and share it with us. We'd love to see what folks in the community build with Melt UI!
+- **Report.** Create issues with bug reports so we can make Melt UI even better.
 
 ## Working on your first Pull Request?
 
@@ -54,9 +54,9 @@ A good PR is small, focuses on a single feature or improvement, and clearly comm
 2. Clone the fork to your local machine and add upstream remote:
 
 ```sh
-git clone https://github.com/<your username>/radix-svelte.git
-cd radix-svelte
-git remote add upstream https://github.com/tglide/radix-svelte.git
+git clone https://github.com/<your username>/melt-ui.git
+cd melt-ui
+git remote add upstream https://github.com/melt-ui/melt-ui.git
 ```
 
 1. Synchronize your local `develop` branch with the upstream remote:
@@ -84,7 +84,7 @@ git checkout -b fix/bug-being-fixed
 git push -u origin HEAD
 ```
 
-7. Go to [the repository](https://github.com/tglide/radix-svelte) and [make a Pull Request](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
+7. Go to [the repository](https://github.com/melt-ui/melt-ui) and [make a Pull Request](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
 
 8. We will review your Pull Request and either merge it, request changes to it, or close it with an explanation.
 

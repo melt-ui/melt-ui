@@ -15,12 +15,6 @@ devDependencies:
   '@changesets/cli':
     specifier: ^2.26.1
     version: 2.26.1
-  '@fontsource/overpass':
-    specifier: ^4.5.11
-    version: 4.5.11
-  '@fontsource/overpass-mono':
-    specifier: ^4.5.11
-    version: 4.5.11
   '@iconify-json/lucide':
     specifier: ^1.1.82
     version: 1.1.82
@@ -3018,14 +3012,6 @@ packages:
     dependencies:
       '@floating-ui/core': 1.2.6
     dev: false
-
-  /@fontsource/overpass-mono@4.5.11:
-    resolution: {integrity: sha512-JggIvXo6+Ia6Zs84JkJbpkdp7eJxAQKHywVfGgETdXtW7HPPokFAjzKL3Km8dpAx/WtjJYe84hY3hT+3psgt5A==}
-    dev: true
-
-  /@fontsource/overpass@4.5.11:
-    resolution: {integrity: sha512-x6A3fpFQdaqZ7O6LKyoeKzfzxjZhnJw1I7Yf4D8xKO8GM4N+0P8Ch6jIVD/DAgDmlc3/us5ZZEuaxwHJGiAkMA==}
-    dev: true
 
   /@humanwhocodes/config-array@0.11.8:
     resolution: {integrity: sha512-UybHIJzJnR5Qc/MsD9Kr+RpO2h+/P1GhOwdiLPXK5TWk5sgTdu88bTD9UP+CKbPPh5Rni1u0GjAdYQLemG8g+g==}
