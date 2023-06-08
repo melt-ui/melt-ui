@@ -1,23 +1,14 @@
-<script lang="ts">
-	import { Accordion } from '$lib';
-
-	// Since we use a discriminated union in ToggleGroup.Root, we need to cast
-	// some props to any to satisfy the type checker. TODO: Find a better way to do this.
-	export let propsObj: any;
+<script>
+	import { Accordion } from 'radix-svelte';
 </script>
 
 <div class="contents">
-	<Accordion.Root
-		class="w-full rounded-md bg-[--line-color] shadow-lg"
-		bind:value={propsObj.Root.value}
-		type={propsObj.Root.type}
-		disabled={propsObj.Root.disabled}
-	>
+	<Accordion.Root class="w-full rounded-md bg-[--line-color] shadow-lg">
 		<Accordion.Item class="accordion-item" value="item-1">
 			<Accordion.Header class="flex">
 				<Accordion.Trigger class="accordion-trigger">Is it accessible?</Accordion.Trigger>
 			</Accordion.Header>
-			<Accordion.Content class="accordion-content" transition={propsObj.Content.transition}>
+			<Accordion.Content class="accordion-content" transition>
 				<div class="px-5 py-4">Yes. It adheres to the WAI-ARIA design pattern.</div>
 			</Accordion.Content>
 		</Accordion.Item>
@@ -26,7 +17,7 @@
 			<Accordion.Header class="flex">
 				<Accordion.Trigger class="accordion-trigger">Is it unstyled?</Accordion.Trigger>
 			</Accordion.Header>
-			<Accordion.Content class="accordion-content" transition={propsObj.Content.transition}>
+			<Accordion.Content class="accordion-content" transition>
 				<div class="px-5 py-4">
 					Yes. It's unstyled by default, giving you freedom over the look and feel.
 				</div>
@@ -37,7 +28,7 @@
 			<Accordion.Header class="flex">
 				<Accordion.Trigger class="accordion-trigger">Can it be animated?</Accordion.Trigger>
 			</Accordion.Header>
-			<Accordion.Content class="accordion-content" transition={propsObj.Content.transition}>
+			<Accordion.Content class="accordion-content" transition>
 				<div class="px-5 py-4">
 					Yes! You can use the transition prop to configure the animation.
 				</div>

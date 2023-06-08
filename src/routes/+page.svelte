@@ -56,7 +56,8 @@
 				</a>
 				<button
 					on:click={copyInstallCommand}
-					class="group flex items-center justify-between gap-4 break-keep rounded bg-zinc-600 px-4 py-3 text-left font-mono text-lg text-white transition hover:bg-zinc-700 active:translate-y-0.5 active:bg-zinc-700 sm:shrink"
+					class="group flex items-center justify-between gap-4 break-keep rounded bg-zinc-700 px-4 py-3 text-left font-mono text-lg
+					transition hover:bg-zinc-700/75 active:translate-y-0.5 sm:shrink"
 					aria-label="Copy install command"
 					><span>npm install <span class="whitespace-nowrap">radix-svelte</span></span>
 					{#if copied}

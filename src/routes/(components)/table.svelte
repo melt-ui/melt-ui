@@ -9,18 +9,22 @@
 </script>
 
 {#each head as h}
-	<span class="hidden text-sm text-zinc-300 lg:block">{h}</span>
+	<span class="hidden text-sm font-light text-zinc-400 lg:block">{h}</span>
 {/each}
-<span class="text-sm text-zinc-300 lg:hidden">{headMobile}</span>
+<span class="text-sm text-zinc-400 lg:hidden">{headMobile}</span>
 
-<hr class="col-span-3 opacity-25" />
+<hr class="col-span-3 opacity-50" />
 
 {#each data as datum, i}
 	{@const isLast = i === data.length - 1}
 
-	<div class={cn('flex flex-col gap-2 py-3 lg:contents', !isLast && 'border-b border-b-zinc-700')}>
+	<div class={cn('flex flex-col gap-2 py-3 lg:contents')}>
 		<slot name="row" {datum} />
 	</div>
+
+	{#if !isLast}
+		<hr class="col-span-3 opacity-25" />
+	{/if}
 {:else}
 	<slot name="empty" />
 {/each}
