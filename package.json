@@ -74,7 +74,7 @@
 		"@storybook/svelte": "^7.0.18",
 		"@storybook/sveltekit": "^7.0.18",
 		"@storybook/testing-library": "^0.0.14-next.2",
-		"@sveltejs/adapter-auto": "^2.0.0",
+		"@sveltejs/adapter-cloudflare": "^2.3.0",
 		"@sveltejs/kit": "^1.5.0",
 		"@sveltejs/package": "^2.0.0",
 		"@testing-library/svelte": "^3.2.2",
