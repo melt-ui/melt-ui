@@ -14,13 +14,8 @@
 	{@html theme}
 </svelte:head>
 
-<div class="flex max-w-full flex-col gap-8 xl:flex-row xl:px-6">
-	<div
-		class={cn(
-			'z-10 flex-shrink-0 flex-grow basis-[min(20vw,250px)] xl:w-auto xl:max-w-xs',
-			$isMenuOpen ? 'block' : 'hidden xl:block'
-		)}
-	>
+<div class="flex max-w-full flex-col gap-8 xl:grid xl:grid-cols-[250px,1fr,250px] xl:px-6">
+	<div class={cn('z-10 ', $isMenuOpen ? 'block' : 'hidden xl:block')}>
 		<Sidebar />
 	</div>
 	<div
@@ -35,5 +30,5 @@
 			</div>
 		</div>
 	</div>
-	<div class="flex-shrink-0 flex-grow basis-[min(20vw,250px)]" />
+	<div class="" />
 </div>
