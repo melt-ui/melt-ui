@@ -26,14 +26,10 @@ body {
 	}
 
 	.comp-preview-colored {
-		background: linear-gradient(
-			315deg,
-			theme('colors.casablanca.700'),
-			theme('colors.casablanca.600')
-		);
+		background: linear-gradient(315deg, theme('colors.magnum.700'), theme('colors.magnum.600'));
 	}
 
 	.link {
-		@apply underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-casablanca-500 hocus:opacity-100;
+		@apply hocus:decoration-magnum-500 underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:opacity-100;
 	}
 }

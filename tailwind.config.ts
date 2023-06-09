@@ -7,7 +7,7 @@ export default {
 	theme: {
 		extend: {
 			colors: {
-				casablanca: {
+				magnum: {
 					'50': '#fff9ed',
 					'100': '#fef2d6',
 					'200': '#fce0ac',

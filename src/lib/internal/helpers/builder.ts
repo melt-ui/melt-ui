@@ -2,8 +2,8 @@ import { onDestroy, tick } from 'svelte';
 import { derived, type Readable } from 'svelte/store';
 import { isBrowser, uuid } from '.';
 
-export function getElementByRadixId(id: string) {
-	return document.querySelector(`[data-radix-id="${id}"]`) as HTMLElement | null;
+export function getElementByMeltId(id: string) {
+	return document.querySelector(`[data-melt-id="${id}"]`) as HTMLElement | null;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -80,24 +80,24 @@ export function elementDerived<S extends Stores, T extends Record<string, unknow
 	const attach: Attach = (event, listener, options) => {
 		if (!isBrowser) return;
 		tick().then(() => {
-			const element = getElementByRadixId(id);
+			const element = getElementByMeltId(id);
 			element?.addEventListener(event, listener, options);
 		});
 
 		eventRemovers.push(() => {
-			const element = getElementByRadixId(id);
+			const element = getElementByMeltId(id);
 			element?.removeEventListener(event, listener, options);
 		});
 	};
 	attach.getElement = () =>
 		tick().then(() => {
 			if (!isBrowser) return null;
-			return getElementByRadixId(id);
+			return getElementByMeltId(id);
 		});
 
 	return derived(stores, ($storeValues) => {
 		removeEvents();
-		return { ...fn($storeValues, attach), 'data-radix-id': id };
+		return { ...fn($storeValues, attach), 'data-melt-id': id };
 	});
 }
 
@@ -126,19 +126,19 @@ export function elementMultiDerived<
 		const attach: Attach = (event, listener, options) => {
 			if (!isBrowser) return;
 			tick().then(() => {
-				const element = getElementByRadixId(constantId);
+				const element = getElementByMeltId(constantId);
 				element?.addEventListener(event, listener, options);
 			});
 
 			unsubscribers.push(() => {
-				const element = getElementByRadixId(constantId);
+				const element = getElementByMeltId(constantId);
 				element?.removeEventListener(event, listener, options);
 			});
 		};
 		attach.getElement = () =>
 			tick().then(() => {
 				if (!isBrowser) return null;
-				return getElementByRadixId(constantId);
+				return getElementByMeltId(constantId);
 			});
 		return attach;
 	};
@@ -149,7 +149,7 @@ export function elementMultiDerived<
 		const returned = fn($storeValues, createAttach);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		return (...args: any[]) => {
-			return { ...returned(...args), 'data-radix-id': id };
+			return { ...returned(...args), 'data-melt-id': id };
 		};
-	}) as Readable<(...args: Parameters<T>) => ReturnWithObj<T, { 'data-radix-id': string }>>;
+	}) as Readable<(...args: Parameters<T>) => ReturnWithObj<T, { 'data-melt-id': string }>>;
 }

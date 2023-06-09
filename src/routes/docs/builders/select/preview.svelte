@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { createSelect } from '$lib/builders';
+	import { createSelect } from '@melt-ui/svelte';
+	import { Docs } from '$routes/(components)';
 
-	const { open, selectedText, trigger, menu, option } = createSelect();
+	const { selectedText, trigger, menu, option } = createSelect();
 </script>
 
-<div class="comp-preview comp-preview-colored mx-auto mt-16 h-96 w-screen max-w-xl">
+<Docs.PreviewWrapper>
 	<button
 		class="rounded-md bg-white px-4 py-1 text-magnum-700 outline-none
 	hover:opacity-75 focus:ring focus:ring-black"
@@ -30,4 +31,4 @@
 			Option 2
 		</li>
 	</ul>
-</div>
+</Docs.PreviewWrapper>

@@ -1,15 +1,17 @@
 <script lang="ts">
 	import { createTabs } from '$lib/builders/tabs';
+	import { Docs } from '$routes/(components)';
 
-	const { root, list, content, trigger } = createTabs();
+	const { root, list, content, trigger } = createTabs({ value: 'tab1' });
 </script>
 
-<div class="comp-preview comp-preview-colored">
+<Docs.PreviewWrapper>
 	<div {...root} class="root">
 		<div {...list} class="list" aria-label="Manage your account">
 			<button {...$trigger('tab1')} class="trigger">Account</button>
 			<button {...$trigger('tab2')} class="trigger">Password</button>
-			<button {...$trigger('tab3')} class="trigger">Settings</button>
+			<button {...$trigger({ value: 'tab3', disabled: true })} class="trigger">Disabled</button>
+			<button {...$trigger('tab4')} class="trigger">Settings</button>
 		</div>
 		<div {...$content('tab1')} class="content">
 			<p class="description">Make changes to your account here. Click save when you're done.</p>
@@ -32,7 +34,7 @@
 				<button>Save changes</button>
 			</div>
 		</div>
-		<div {...$content('tab3')} class="content">
+		<div {...$content('tab4')} class="content">
 			<p class="description">Change your settings here. Click save when you're done.</p>
 
 			<fieldset>
@@ -44,14 +46,9 @@
 			</div>
 		</div>
 	</div>
-</div>
+</Docs.PreviewWrapper>
 
 <style lang="postcss">
-	/* Wrapper */
-	.comp-preview {
-		@apply mx-auto mt-16 h-96 w-screen max-w-xl;
-	}
-
 	/* Tab Parts */
 	.root {
 		@apply flex flex-col overflow-hidden rounded-md shadow-lg data-[orientation=vertical]:flex-row;
@@ -60,6 +57,7 @@
 	.list {
 		@apply flex shrink-0 border-b border-magnum-100 bg-white data-[orientation=vertical]:flex-col
 			data-[orientation=vertical]:border-r;
+		overflow-x: auto;
 	}
 
 	.trigger {

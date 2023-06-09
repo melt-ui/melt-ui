@@ -1,7 +1,7 @@
 import {
 	derivedWithUnsubscribe,
 	elementMultiDerived,
-	getElementByRadixId,
+	getElementByMeltId,
 	isBrowser,
 	last,
 	next,
@@ -41,7 +41,7 @@ export function createTabs(args?: CreateTabsArgs) {
 	// Root
 	const root = {
 		'data-orientation': options.orientation,
-		'data-radix-id': uuid(),
+		'data-melt-id': uuid(),
 	};
 
 	// List
@@ -101,7 +101,7 @@ export function createTabs(args?: CreateTabsArgs) {
 			}[options.orientation ?? 'horizontal'];
 
 			attach('keydown', (e) => {
-				const rootEl = getElementByRadixId(root['data-radix-id']);
+				const rootEl = getElementByMeltId(root['data-melt-id']);
 				if (!rootEl) return;
 				const triggers = Array.from(rootEl.querySelectorAll('[role="tab"]')) as HTMLElement[];
 				const enabledTriggers = triggers.filter((el) => !el.hasAttribute('data-disabled'));

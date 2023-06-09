@@ -2,7 +2,7 @@ import {
 	effect,
 	elementDerived,
 	elementMultiDerived,
-	getElementByRadixId,
+	getElementByMeltId,
 	isBrowser,
 	styleToString,
 } from '$lib/internal/helpers';
@@ -134,7 +134,7 @@ export function createSelect() {
 	effect([open, menu, activeTrigger], ([$open, $menu, $activeTrigger]) => {
 		if (!isBrowser) return;
 
-		const menuEl = getElementByRadixId($menu['data-radix-id']);
+		const menuEl = getElementByMeltId($menu['data-melt-id']);
 		if (menuEl && $open) {
 			// Focus on selected option or first option
 			const selectedOption = menuEl.querySelector('[data-selected]') as HTMLElement | undefined;

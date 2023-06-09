@@ -4,7 +4,7 @@
 
 	const sections = {
 		overview: ['introduction'],
-		components: ['accordion', 'collapsible'],
+		builders: ['accordion', 'collapsible', 'select', 'tabs'],
 	};
 
 	const format = (s: string) => {
@@ -17,7 +17,7 @@
 </script>
 
 <ul
-	class="flex w-full flex-col gap-8 overflow-y-auto py-8 pr-4 xl:sticky xl:top-14 xl:h-[calc(100vh-3.5rem)]"
+	class="flex w-full flex-col gap-8 overflow-y-auto px-4 py-8 xl:sticky xl:top-14 xl:h-[calc(100vh-3.5rem)]"
 >
 	{#each Object.entries(sections) as [section, routes]}
 		<li>
@@ -34,8 +34,8 @@
 							{href}
 							class={cn(
 								'block whitespace-nowrap rounded-md border border-transparent px-3 py-2 capitalize',
-								'hover:bg-casablanca-600/25',
-								'data-[active=true]:border-casablanca-600 data-[active=true]:bg-casablanca-600/25'
+								'hover:bg-magnum-600/25',
+								'data-[active=true]:border-magnum-600 data-[active=true]:bg-magnum-600/25'
 							)}
 							data-active={$page.url.pathname === href}
 						>

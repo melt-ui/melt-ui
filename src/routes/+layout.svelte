@@ -35,14 +35,14 @@
 					class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px md:hidden"
 				/>
 			</a>
-			<a href="https://discord.com/invite/gQrpPs34xH" target="_blank" class="link">
+			<a href="https://discord.com/invite/2QDjZkYunf" target="_blank" class="link">
 				<span class="hidden md:block">Discord</span>
 				<Discord
 					class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px md:hidden"
 				/>
 			</a>
 			{#if isRoot}
-				<a href="/docs/accordion" class="link">
+				<a href="/docs" class="link">
 					<span class="hidden lg:block">Docs</span>
 					<Book
 						class="h-6 w-6 text-white opacity-75 hover:opacity-100 active:translate-y-px lg:hidden"
