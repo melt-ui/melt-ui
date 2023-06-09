@@ -1,5 +1,5 @@
 <h1 align="center">
- <img align="center" src="https://raw.githubusercontent.com/melt-ui/melt-ui/main/static/logo.svg" height="96" />
+ <img align="center" src="https://raw.githubusercontent.com/melt-ui/melt-ui/main/static/banner.png"  />
 </h1>
 
 [Melt UI](https://www.melt-ui.com/) is a set of headless, accessible component builders for your Svelte or SvelteKit application.
