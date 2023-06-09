@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
-	import { page } from '$app/stores';
 	import { isMenuOpen } from '$routes/+layout.svelte';
 	import { cn } from '$routes/helpers';
 	import theme from 'svelte-highlight/styles/tomorrow-night';
-
-	export let data;
+	import Sidebar from './sidebar.svelte';
 
 	afterNavigate(() => {
 		$isMenuOpen = false;
@@ -23,31 +21,7 @@
 			$isMenuOpen ? 'block' : 'hidden xl:block'
 		)}
 	>
-		<ul
-			class="flex w-full flex-col overflow-y-auto py-8
-			pl-2 pr-4 xl:sticky xl:top-14 xl:h-[calc(100vh-3.5rem)]"
-		>
-			<li
-				class="text-md block whitespace-nowrap rounded-md border border-transparent px-3 pb-2 text-sm font-semibold uppercase tracking-wider text-zinc-400"
-			>
-				Components
-			</li>
-			{#each data.components as link}
-				<li>
-					<a
-						class={cn(
-							'block whitespace-nowrap rounded-md border border-transparent px-3 py-2 capitalize',
-							'hover:bg-casablanca-600/25',
-							'data-[active=true]:border-casablanca-600 data-[active=true]:bg-casablanca-600/25'
-						)}
-						data-active={$page.url.pathname === link.href}
-						href={link.href}
-					>
-						{link.name}
-					</a>
-				</li>
-			{/each}
-		</ul>
+		<Sidebar />
 	</div>
 	<div
 		class={cn(

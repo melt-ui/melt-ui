@@ -28,7 +28,7 @@
 <main class="flex min-h-screen flex-col">
 	<nav
 		class={cn(
-			'flex h-16 items-center justify-between bg-[#171717] px-4 xl:px-8',
+			'flex h-16 items-center justify-between bg-neutral-800 px-4 xl:px-8',
 			!isRoot && 'sticky top-0 z-50'
 		)}
 	>
@@ -36,7 +36,7 @@
 			<img class="h-10 rounded-sm" src="/logo.svg" alt="Melt UI" />
 		</a>
 
-		<div class="flex flex-row gap-4">
+		<div class="flex flex-row items-center gap-4 text-lg">
 			<a href="https://github.com/melt-ui/melt-ui" target="_blank" class="link">
 				<span class="hidden md:block">GitHub</span>
 				<GitHub

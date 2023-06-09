@@ -29,17 +29,17 @@
 				<img src="/logo.svg" alt="Melt UI" />
 				<button
 					on:click={copyInstallCommand}
-					class="group mt-8 flex items-center justify-between gap-4 break-keep rounded bg-zinc-800
-					 px-4 py-3 text-left font-mono text-lg transition hover:bg-zinc-800/75 active:translate-y-0.5 sm:shrink"
+					class="text-md group mt-8 flex items-center justify-between gap-4 break-keep rounded
+					 bg-zinc-800 px-4 py-3 text-left font-mono transition hover:bg-zinc-800/75 active:translate-y-0.5 sm:shrink"
 					aria-label="Copy install command"
 				>
 					<span>npm install <span class="whitespace-nowrap">@melt-ui/svelte</span></span>
 					{#if copied}
-						<div in:fly={{ y: -4 }}>
+						<div in:fly|local={{ y: -4 }}>
 							<Check class="inline-block h-5 w-5 text-casablanca-500 transition" />
 						</div>
 					{:else}
-						<div in:fly={{ y: 4 }}>
+						<div in:fly|local={{ y: 4 }}>
 							<Copy class="inline-block h-5 w-5 transition" />
 						</div>
 					{/if}

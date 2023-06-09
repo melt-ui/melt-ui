@@ -5,8 +5,8 @@ import Description from './description.svelte';
 import PreviewWrapper from './preview-wrapper.svelte';
 import H1 from './h1.svelte';
 import H2 from './h2.svelte';
-import code from './code.svelte';
-
+import Code from './code.svelte';
+import P from './p.svelte';
 export const Docs = {
 	API,
 	CodeBlock,
@@ -14,5 +14,6 @@ export const Docs = {
 	PreviewWrapper,
 	H1,
 	H2,
-	code,
+	Code,
+	P,
 };

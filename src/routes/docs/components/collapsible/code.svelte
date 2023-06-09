@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { createCollapsible } from '$lib/builders/collapsible';
-	import { X, ChevronsUpDown } from 'icons';
+	import { createCollapsible } from '@melt-ui/svelte';
 	import { slide } from 'svelte/transition';
+	import { X, ChevronsUpDown } from 'icons'; // Be sure to use your own icons, this is just for the demo!
 
 	const { open, root, content, trigger } = createCollapsible();
 </script>

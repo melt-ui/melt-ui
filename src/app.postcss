@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 body {
-	background-color: theme('colors.neutral.950');
+	background-color: theme('colors.neutral.900');
 	color: theme('colors.white');
 	min-height: 100vh;
 }
@@ -26,8 +26,11 @@ body {
 	}
 
 	.comp-preview-colored {
-		background: transparent;
-		border: 2px solid theme('colors.casablanca.100');
+		background: linear-gradient(
+			315deg,
+			theme('colors.casablanca.700'),
+			theme('colors.casablanca.600')
+		);
 	}
 
 	.link {

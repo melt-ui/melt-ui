@@ -14,15 +14,17 @@
 				<span class="text-sm leading-6 text-white"> @thomasglopes starred 3 repositories </span>
 				<button
 					{...$trigger}
-					class="inline-grid h-6 w-6 place-items-center rounded-full bg-white text-sm text-casablanca-700
+					class="relative h-6 w-6 place-items-center rounded-full bg-white text-sm text-casablanca-700
 			shadow-lg outline-none hover:opacity-75 focus:ring focus:ring-black
 			data-[disabled]:cursor-not-allowed data-[disabled]:opacity-75"
 				>
-					{#if $open}
-						<X />
-					{:else}
-						<ChevronsUpDown />
-					{/if}
+					<div class="abs-center">
+						{#if $open}
+							<X />
+						{:else}
+							<ChevronsUpDown />
+						{/if}
+					</div>
 				</button>
 			</div>
 
@@ -45,3 +47,12 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	.abs-center {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+</style>

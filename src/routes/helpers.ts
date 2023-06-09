@@ -17,53 +17,66 @@ export function sortedEntries<T>(obj: Record<string, T>): [string, T][] {
 	return Object.entries(obj).sort(([a], [b]) => a.localeCompare(b));
 }
 
-function camelCase(...str: string[]) {
-	return (
-		str[0].toLowerCase() +
-		str
-			.slice(1)
-			.map((s) => s[0].toUpperCase() + s.slice(1))
-			.join('')
-	);
-}
+export type Tree = {
+	[key: string]: Tree | string;
+};
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function cleanupCodeExample(code: string, { meta }: PreviewSchema<any>): string {
-	// Change '$lib' imports to 'melt-ui'
-	code = code.replace(/\$lib/g, 'melt-ui');
+type ConstructTreeArgs<T> = {
+	paths: Record<string, T>;
+	basePath: string;
+};
 
-	// Replace export let propsObj with various let declarations
-	const propDeclarations = [];
-	const propNameMap: Array<{ old: string; new: string }> = [];
-	for (const [subCmp, { props }] of Object.entries(meta)) {
-		if (!props) continue;
-		for (const [prop, { default: defaultValue, type }] of Object.entries(props)) {
-			const propName = camelCase(subCmp, prop);
-			propNameMap.push({
-				old: `propsObj.${subCmp}.${prop}`,
-				new: propName,
-			});
+export function constructTree<T>({ paths, basePath }: ConstructTreeArgs<T>): Tree {
+	const tree: Tree = {};
 
-			let strType = '';
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			if ((type as any) !== 'enum') {
-				strType = `: ${type}`;
+	for (const path in paths) {
+		const cleanPath = path.replace(basePath, '').replace('/+page.svelte', '');
+		const segments = cleanPath.split('/');
+
+		let currentLevel = tree;
+		for (const segment of segments.slice(0, -1)) {
+			if (!(segment in currentLevel)) {
+				currentLevel[segment] = {} as Tree;
 			}
-
-			// TODO: Add types
-			if (defaultValue) {
-				propDeclarations.push(`let ${propName}${strType} = ${JSON.stringify(defaultValue)};`);
-			} else {
-				propDeclarations.push(`let ${propName}${strType};`);
-			}
+			currentLevel = currentLevel[segment] as Tree;
 		}
+
+		const lastSegment = segments[segments.length - 1];
+		currentLevel[lastSegment] = `/${cleanPath}`;
 	}
 
-	code = code.replace(/export let propsObj.*/, propDeclarations.join('\n\t'));
+	return tree;
+}
 
-	propNameMap.forEach(({ old, new: newName }) => {
-		code = code.replaceAll(old, newName);
-	});
+export function getFromTree(path: string, tree: Tree) {
+	const segments = path.split('/');
 
-	return code;
+	let currentLevel = tree;
+	for (const segment of segments) {
+		if (!(segment in currentLevel)) {
+			return null;
+		}
+		currentLevel = currentLevel[segment] as Tree;
+	}
+
+	return currentLevel;
+}
+
+type IsInTreeArgs = {
+	path: string;
+	tree: Tree;
+};
+
+export function isInTree({ path, tree }: IsInTreeArgs) {
+	const segments = path.split('/');
+
+	let currentLevel = tree;
+	for (const segment of segments) {
+		if (!(segment in currentLevel)) {
+			return false;
+		}
+		currentLevel = currentLevel[segment] as Tree;
+	}
+
+	return true;
 }
