@@ -1,4 +1,4 @@
-import { elementMultiDerived } from '$lib/internal/helpers';
+import { elementMultiDerived, getElementByMeltId, uuid } from '$lib/internal/helpers';
 import { derived, writable } from 'svelte/store';
 
 type BaseAccordionArgs = {
@@ -39,6 +39,10 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 	const isSelectedStore = derived(value, ($value) => {
 		return (key: string) => isSelected(key, $value);
 	});
+
+	const root = {
+		'data-melt-id': uuid(),
+	};
 
 	type ItemArgs =
 		| {
@@ -88,7 +92,42 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 				}
 			});
 
-			return {};
+			attach('keydown', (e) => {
+				if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) {
+					return;
+				}
+				e.preventDefault();
+
+				const el = e.target as HTMLElement;
+				const rootEl = getElementByMeltId(root['data-melt-id']);
+
+				if (!rootEl) return;
+				const items = Array.from(
+					rootEl.querySelectorAll('[data-melt-part="trigger"]')
+				) as HTMLElement[];
+
+				if (!items.length) return;
+				const elIdx = items.indexOf(el);
+
+				if (e.key === 'ArrowDown') {
+					items[(elIdx + 1) % items.length].focus();
+				}
+				if (e.key === 'ArrowUp') {
+					items[(elIdx - 1 + items.length) % items.length].focus();
+				}
+				if (e.key === 'Home') {
+					items[0].focus();
+				}
+				if (e.key === 'End') {
+					items[items.length - 1].focus();
+				}
+			});
+
+			return {
+				'data-melt-part': 'trigger',
+				'aria-expanded': isSelected(itemValue, $value) ? true : false,
+				// TODO: aria-controls, aria-labelledby
+			};
 		};
 	});
 
@@ -105,6 +144,7 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 	});
 
 	return {
+		root,
 		value,
 		item,
 		trigger,

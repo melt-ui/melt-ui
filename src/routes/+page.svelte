@@ -1,10 +1,8 @@
 <script lang="ts">
-	import { getPropsObj } from '$lib/internal/helpers';
-
-	import Copy from '~icons/lucide/copy';
-	import Check from '~icons/lucide/check';
-	import ArrowRight from '~icons/lucide/arrow-right';
 	import { fly } from 'svelte/transition';
+	import ArrowRight from '~icons/lucide/arrow-right';
+	import Check from '~icons/lucide/check';
+	import Copy from '~icons/lucide/copy';
 
 	let copied = false;
 	let copytimeout: ReturnType<typeof setTimeout>;
@@ -45,7 +43,7 @@
 					{/if}
 				</button>
 				<a
-					href="/docs/components/collapsible"
+					href="/docs"
 					class="mt-4 flex items-center justify-between gap-4 rounded bg-casablanca-600 px-4 py-3
 					font-sans text-lg font-semibold text-white transition hover:bg-casablanca-700 active:translate-y-0.5 active:bg-casablanca-700 sm:shrink"
 				>

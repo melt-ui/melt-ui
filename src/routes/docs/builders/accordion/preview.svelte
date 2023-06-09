@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { createAccordion } from '$lib/builders/accordion';
+	import { Docs } from '$routes/(components)';
 	import { slide } from 'svelte/transition';
 
-	const { content, item, trigger, isSelected } = createAccordion();
+	const { content, item, trigger, isSelected, root } = createAccordion();
 </script>
 
-<div class="comp-preview comp-preview-colored mx-auto mt-16 h-96 w-screen max-w-xl">
-	<div class="w-full rounded-md bg-[--line-color] shadow-lg">
+<Docs.PreviewWrapper>
+	<div class="w-full rounded-md bg-[--line-color] shadow-lg" {...root}>
 		<div {...$item('item-1')} class="accordion-item">
 			<h3 class="flex">
 				<button {...$trigger('item-1')} class="accordion-trigger">Is it accessible?</button>
@@ -36,7 +37,7 @@
 				<button class="accordion-trigger" {...$trigger('item-3')}>Can it be animated?</button>
 			</h3>
 			{#if $isSelected('item-3')}
-				<div class="accordion-content" {...$content('item-3')} transition:slide>
+				<div class="accordion-content" {...$content('item-3')} transition:slide|local>
 					<div class="px-5 py-4">
 						Yes! You can use the transition prop to configure the animation.
 					</div>
@@ -44,7 +45,7 @@
 			{/if}
 		</div>
 	</div>
-</div>
+</Docs.PreviewWrapper>
 
 <style lang="postcss">
 	.comp-preview {

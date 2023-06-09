@@ -23,6 +23,7 @@ const config = {
 			$routes: 'src/routes',
 			'$test-helpers': 'src/test-helpers',
 			$constants: 'src/constants',
+			'@melt-ui/svelte': 'src/lib',
 		},
 		typescript: {
 			config: (config) => {

@@ -60,10 +60,10 @@ Got any questions? Want to talk to the maintainers?
 
 Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get in touch with us, and we'd love to have you there.
 
-<a href="https://discord.gg/2QDjZkYunf" alt="Radix Svelte Discord community">
+<a href="https://discord.gg/2QDjZkYunf" alt="Melt UI Discord community">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://invidget.switchblade.xyz/2QDjZkYunf">
-  <img alt="Radix Svelte Discord community" src="https://invidget.switchblade.xyz/2QDjZkYunf?theme=light">
+  <img alt="Melt UI Discord community" src="https://invidget.switchblade.xyz/2QDjZkYunf?theme=light">
 </picture>
 </a>
 
@@ -103,7 +103,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 
 Looking for more? Check out these other projects too:
 
-- [Radix Svelte](https://radix-svelte.com/)
+- [Melt UI](https://melt-ui.com/)
 - [Skeleton](https://skeleton.dev/)
 - [Svelte Headless UI](https://svelte-headlessui.goss.io/docs)
 - [Flowbite Svelte](https://flowbite-svelte.com/)
@@ -114,4 +114,4 @@ Looking for more? Check out these other projects too:
 - [Grail UI](https://grail-ui.vercel.app/)
 
 This list is not exhaustive or sorted in any particular order. If you know of any other similar projects for Svelte, feel free to open a PR to add them here.
-These projects are not affiliated with Radix Svelte in any way.
+These projects are not affiliated with Melt UI in any way.

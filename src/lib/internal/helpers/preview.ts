@@ -2,7 +2,7 @@ import type { ComponentProps, SvelteComponent } from 'svelte';
 
 import type { SlideParams } from 'svelte/transition';
 
-type RadixComponentGroup = { [key: string]: typeof SvelteComponent };
+type MeltComponentGroup = { [key: string]: typeof SvelteComponent };
 
 /* --------------*/
 /* Preview Props */
@@ -55,7 +55,7 @@ type PreviewComponentProps<CMP extends SvelteComponent, P = ComponentProps<CMP>>
 		  PreviewPropAny;
 };
 
-export type ResolvedProps<GROUP extends RadixComponentGroup> = {
+export type ResolvedProps<GROUP extends MeltComponentGroup> = {
 	[K in keyof GROUP]: ComponentProps<InstanceType<GROUP[K]>>;
 };
 
@@ -83,18 +83,18 @@ type PreviewComponentDataAttributes = {
 /* --------------------- */
 /* Preview Meta & Schema */
 /* --------------------- */
-type RadixComponentPreview<CMP extends typeof SvelteComponent> = {
+type MeltComponentPreview<CMP extends typeof SvelteComponent> = {
 	description?: string;
 	props?: PreviewComponentProps<InstanceType<CMP>>;
 	dataAttributes?: PreviewComponentDataAttributes;
 	events?: PreviewComponentEvents<InstanceType<CMP>>;
 };
 
-export type PreviewMeta<GROUP extends RadixComponentGroup> = {
-	[K in keyof GROUP]: RadixComponentPreview<GROUP[K]>;
+export type PreviewMeta<GROUP extends MeltComponentGroup> = {
+	[K in keyof GROUP]: MeltComponentPreview<GROUP[K]>;
 };
 
-export type PreviewSchema<GROUP extends RadixComponentGroup = RadixComponentGroup> = {
+export type PreviewSchema<GROUP extends MeltComponentGroup = MeltComponentGroup> = {
 	title: string;
 	description: string;
 	example: unknown;
@@ -106,7 +106,7 @@ export type PreviewSchema<GROUP extends RadixComponentGroup = RadixComponentGrou
 /* Preview Getters */
 /* --------------- */
 function getPreviewPropsOfComponent<CMP extends typeof SvelteComponent>(
-	previewProps: RadixComponentPreview<CMP>
+	previewProps: MeltComponentPreview<CMP>
 ) {
 	return Object.entries(previewProps.props || {}).reduce((acc, [propName, propConfig]) => {
 		const defaultValue = (propConfig as BasePreviewProp<unknown>)?.default;
@@ -114,7 +114,7 @@ function getPreviewPropsOfComponent<CMP extends typeof SvelteComponent>(
 	}, {});
 }
 
-export function getPropsObj<GROUP extends RadixComponentGroup>(previewMeta: PreviewMeta<GROUP>) {
+export function getPropsObj<GROUP extends MeltComponentGroup>(previewMeta: PreviewMeta<GROUP>) {
 	return Object.entries(previewMeta).reduce(
 		(acc, [cmp, previewProps]) => ({
 			...acc,
