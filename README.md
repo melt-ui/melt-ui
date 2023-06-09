@@ -1,6 +1,117 @@
-<p align="center">
+<h1 align="center">
  <img align="center" src="https://raw.githubusercontent.com/melt-ui/melt-ui/main/static/logo.svg" height="96" />
- <h1 align="center">
-  Melt UI
- </h1>
-</p>
+</h1>
+
+[Melt UI](https://www.melt-ui.com/) is a set of headless, accessible component builders for your Svelte or SvelteKit application.
+
+[![](https://img.shields.io/npm/v/@melt-ui/svelte?style=flat-square)](https://www.npmjs.com/package/@melt-ui/svelte)
+[![](https://img.shields.io/github/actions/workflow/status/melt-ui/melt-ui/ci.yaml?style=flat-square)](https://github.com/melt-ui/melt-ui/actions/workflows/ci.yaml)
+![](https://img.shields.io/github/license/melt-ui/melt-ui?style=flat-square)
+[![](https://dcbadge.vercel.app/api/server/2QDjZkYunf?style=flat-square)](https://discord.gg/2QDjZkYunf)
+
+## About
+
+Melt UI is meant to be used as a base for your own styles and components. It offers:
+
+- Uncoupled builders that can be attached to any element/component
+- Typescript and [SvelteKit](https://kit.svelte.dev/) support out-of-the-box
+- Strict adherence to [WAI-ARIA guidelines](https://www.w3.org/WAI/ARIA/apg/)
+- Easy to use examples and documentation
+- A high emphasis on accessibility, extensibility, quality and consistency
+
+## Getting started
+
+Install the `npm i @melt-ui/svelte` package with your package manager of choice:
+
+```sh
+npm install npm i @melt-ui/svelte
+yarn add npm i @melt-ui/svelte
+pnpm add npm i @melt-ui/svelte
+bun add npm i @melt-ui/svelte
+```
+
+Import the builders to your code and start using them:
+
+```html
+<script>
+	import { createCollapsible } from '@melt-ui/svelte';
+	const { open, root, content, trigger } = createCollapsible();
+</script>
+
+<div {...$root}>
+	<button {...$trigger}>{$open ? 'Close' : 'Open'}</button>
+	<div {...$content}>Obi-Wan says: Hello there!</div>
+</div>
+```
+
+## Contributing
+
+**Contributions are welcome and encouraged!**
+
+Melt UI is under active development. Currently planned features can be found in the [roadmap](#roadmap), or in the [issues tab](https://github.com/melt-ui/melt-ui/issues), alongside bug reports.
+
+We work on this project on a volunteer basis in our free time. If you notice something that hasn't been implemented yet or could be improved, do consider contributing to the project. The goal is to enhance the experience of building with Svelte and improve the ecosystem for everyone.
+
+Check out our [Contributing guide](./CONTRIBUTING.md) to learn more.
+
+## Community
+
+Got any questions? Want to talk to the maintainers?
+
+Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get in touch with us, and we'd love to have you there.
+
+<a href="https://discord.gg/2QDjZkYunf" alt="Radix Svelte Discord community">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://invidget.switchblade.xyz/2QDjZkYunf">
+  <img alt="Radix Svelte Discord community" src="https://invidget.switchblade.xyz/2QDjZkYunf?theme=light">
+</picture>
+</a>
+
+## Roadmap
+
+| Component name  | Status |
+| --------------- | ------ |
+| Accordion       | ✅     |
+| Alert Dialog    |        |
+| Aspect Ratio    |        |
+| Avatar          |        |
+| Checkbox        |        |
+| Collapsible     | ✅     |
+| Context Menu    |        |
+| Dialog          |        |
+| Dropdown Menu   |        |
+| Hover Card      |        |
+| Label           |        |
+| Menubar         |        |
+| Navigation Menu |        |
+| Popover         |        |
+| Progress        |        |
+| Radio Group     |        |
+| Scroll Area     |        |
+| Select          | ✅     |
+| Separator       |        |
+| Slider          |        |
+| Switch          |        |
+| Tabs            | ✅     |
+| Toast           |        |
+| Toggle          |        |
+| Toggle Group    |        |
+| Toolbar         |        |
+| Tooltip         |        |
+
+## Similar projects
+
+Looking for more? Check out these other projects too:
+
+- [Radix Svelte](https://radix-svelte.com/)
+- [Skeleton](https://skeleton.dev/)
+- [Svelte Headless UI](https://svelte-headlessui.goss.io/docs)
+- [Flowbite Svelte](https://flowbite-svelte.com/)
+- [Carbon Components Svelte](https://github.com/carbon-design-system/carbon-components-svelte/)
+- [Svelte Material UI](https://sveltematerialui.com/)
+- [SvelteStrap](https://github.com/bestguy/sveltestrap)
+- [Noir UI](https://github.com/khairulhaaziq/noir-ui)
+- [Grail UI](https://grail-ui.vercel.app/)
+
+This list is not exhaustive or sorted in any particular order. If you know of any other similar projects for Svelte, feel free to open a PR to add them here.
+These projects are not affiliated with Radix Svelte in any way.

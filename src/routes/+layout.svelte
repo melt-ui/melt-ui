@@ -13,16 +13,8 @@
 	import { cn } from './helpers';
 	import { page } from '$app/stores';
 	import { writable } from 'svelte/store';
-	import { onMount } from 'svelte';
-	import { dev } from '$app/environment';
 
 	$: isRoot = $page.url.pathname === '/';
-
-	onMount(async () => {
-		const { inject } = await import('@vercel/analytics');
-
-		inject({ mode: dev ? 'development' : 'production' });
-	});
 </script>
 
 <main class="flex min-h-screen flex-col">

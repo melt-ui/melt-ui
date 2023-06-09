@@ -69,9 +69,6 @@ devDependencies:
   '@typescript-eslint/parser':
     specifier: ^5.45.0
     version: 5.57.1(eslint@8.37.0)(typescript@5.0.3)
-  '@vercel/analytics':
-    specifier: ^1.0.1
-    version: 1.0.1
   autoprefixer:
     specifier: ^10.4.7
     version: 10.4.14(postcss@8.4.21)
@@ -4738,10 +4735,6 @@ packages:
     dependencies:
       '@typescript-eslint/types': 5.57.1
       eslint-visitor-keys: 3.4.0
-    dev: true
-
-  /@vercel/analytics@1.0.1:
-    resolution: {integrity: sha512-Ux0c9qUfkcPqng3vrR0GTrlQdqNJ2JREn/2ydrVuKwM3RtMfF2mWX31Ijqo1opSjNAq6rK76PwtANw6kl6TAow==}
     dev: true
 
   /@webassemblyjs/ast@1.11.6:
