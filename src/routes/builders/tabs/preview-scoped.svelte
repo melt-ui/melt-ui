@@ -59,22 +59,22 @@
 	}
 
 	.list {
-		@apply flex shrink-0 border-b border-casablanca-100 bg-white data-[orientation=vertical]:flex-col
+		@apply flex shrink-0 border-b border-magnum-100 bg-white data-[orientation=vertical]:flex-col
 			data-[orientation=vertical]:border-r;
 	}
 
 	.trigger {
 		@apply flex h-11 flex-1 cursor-default select-none items-center
-      justify-center rounded-none bg-white px-5 leading-none text-casablanca-900
+      justify-center rounded-none bg-white px-5 leading-none text-magnum-900
 			outline-none focus:relative focus:ring-2 focus:ring-black;
 	}
 
 	.trigger[data-orientation='vertical'] {
-		@apply w-full flex-grow-0 rounded-none border-b border-r-2 border-transparent border-b-casablanca-100 py-4  last:border-b-0;
+		@apply w-full flex-grow-0 rounded-none border-b border-r-2 border-transparent border-b-magnum-100 py-4  last:border-b-0;
 	}
 
 	.trigger[data-state='active'] {
-		@apply text-casablanca-700 focus:relative;
+		@apply text-magnum-700 focus:relative;
 	}
 
 	.trigger[data-state='active'][data-orientation='horizontal'] {
@@ -82,7 +82,7 @@
 	}
 
 	.trigger[data-state='active'][data-orientation='vertical'] {
-		@apply border-r-casablanca-500;
+		@apply border-r-magnum-500;
 	}
 
 	.content {
@@ -91,7 +91,7 @@
 
 	/* Content Elements */
 	.description {
-		@apply mb-5 leading-normal text-casablanca-950;
+		@apply mb-5 leading-normal text-magnum-950;
 	}
 
 	fieldset {
@@ -99,11 +99,11 @@
 	}
 
 	label {
-		@apply mb-2.5 block text-sm leading-none text-casablanca-950;
+		@apply mb-2.5 block text-sm leading-none text-magnum-950;
 	}
 
 	input {
-		@apply h-8 shrink-0 grow rounded border px-2.5 leading-none text-casablanca-900 outline-none focus:ring-2 focus:ring-casablanca-800;
+		@apply h-8 shrink-0 grow rounded border px-2.5 leading-none text-magnum-900 outline-none focus:ring-2 focus:ring-magnum-800;
 	}
 
 	.actions {

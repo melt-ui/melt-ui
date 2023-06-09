@@ -4,10 +4,9 @@
 	import Preview from './preview.svelte';
 </script>
 
-<Docs.H1>Accordion</Docs.H1>
+<Docs.H1>Select</Docs.H1>
 <Docs.Description>
-	A vertically stacked set of interactive headings that each reveal an associated section of
-	content.
+	Displays a list of options for the user to pick from—triggered by a button.
 </Docs.Description>
 
 <Preview />

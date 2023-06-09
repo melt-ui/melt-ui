@@ -138,8 +138,8 @@
 		font-family: theme('fontFamily.mono');
 
 		&.colored {
-			background-color: theme('colors.casablanca.900/0.5');
-			color: theme('colors.casablanca.300');
+			background-color: theme('colors.magnum.900/0.5');
+			color: theme('colors.magnum.300');
 		}
 	}
 </style>

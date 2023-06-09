@@ -4,10 +4,9 @@
 	import Preview from './preview.svelte';
 </script>
 
-<Docs.H1>Accordion</Docs.H1>
+<Docs.H1>Tabs</Docs.H1>
 <Docs.Description>
-	A vertically stacked set of interactive headings that each reveal an associated section of
-	content.
+	A set of layered sections of content—known as tab panels—that are displayed one at a time.
 </Docs.Description>
 
 <Preview />
