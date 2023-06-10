@@ -101,6 +101,10 @@ export function elementDerived<S extends Stores, T extends Record<string, unknow
 	});
 }
 
+export function element<T extends Record<string, unknown>>(fn: (attach: Attach) => T) {
+	return elementDerived([], (_, attach) => fn(attach));
+}
+
 type ReturnWithObj<T extends () => void, Obj> = ReturnType<T> extends void
 	? Obj
 	: ReturnType<T> & Obj;
@@ -152,4 +156,11 @@ export function elementMultiDerived<
 			return { ...returned(...args), 'data-melt-id': id };
 		};
 	}) as Readable<(...args: Parameters<T>) => ReturnWithObj<T, { 'data-melt-id': string }>>;
+}
+
+export function elementMulti<
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	T extends (...args: any[]) => Record<string, unknown> | void
+>(fn: (createAttach: () => Attach) => T) {
+	return elementMultiDerived([], (_, createAttach) => fn(createAttach));
 }

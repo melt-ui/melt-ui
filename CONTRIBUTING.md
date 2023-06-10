@@ -39,9 +39,19 @@ There are a lot of great resources on creating a good pull request. We've includ
 
 - [How to Contribute to a Project on GitHub](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github)
 
-## Creating a new component?
+## Creating a new component builder?
 
-The best way to bootstrap a new component is to use the `create:cmp` script, by running `pnpm run create:cmp` command. This command is in active development, so some bugs are to be expected!
+The Builder API is fairly new in its conception. As such, there aren't strict conventions around it.
+
+Under the hood, the "elements" that builder exposes are nothing more than objects. The trick is, these objects contain an UUID that is used to identify them. This UUID is then used to get the element via document.querySelector and pass events to it.
+
+You'll see two methods commonly appearing inside builders. `elementDerived` and `elementMultiDerived`. In general, elementDerived is to be used when only a single instance of an element is expected to be used (e.g. `root`), while elementMultiDerived accepts multiple instances of an element (e.g. Tabs `trigger`). You pass in a store to them, and a callback that accepts both the store values, and an `attach` method for attaching event listeners. This callback must return an object in `elementDerived` and a function in `elementMultiDerived`.
+
+In case you don't need to use stores, you also have the `element` and `elementMulti` methods, which are just wrappers around the derived methods that don't accept a store.
+
+In some cases, you'll want to run an effect whenever an internal value changes. You have the `effect` method for that.
+
+In case of any doubts, you can always check the source code of existing builders, or reach out to us on Discord. We're more than happy to help!
 
 ## Preparing a Pull Request
 
