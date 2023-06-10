@@ -2,7 +2,7 @@
 	import { afterNavigate } from '$app/navigation';
 	import { isMenuOpen } from '$routes/+layout.svelte';
 	import { cn } from '$routes/helpers';
-	import theme from 'svelte-highlight/styles/tomorrow-night';
+	import theme from 'svelte-highlight/styles/atom-one-dark';
 	import Sidebar from './sidebar.svelte';
 
 	afterNavigate(() => {

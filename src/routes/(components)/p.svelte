@@ -1,1 +1,1 @@
-<p class="py-2 text-lg"><slot /></p>
+<p class="py-1 text-lg"><slot /></p>

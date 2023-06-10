@@ -2,7 +2,7 @@
  <img align="center" src="https://raw.githubusercontent.com/melt-ui/melt-ui/main/static/banner.png"  />
 </h1>
 
-[Melt UI](https://www.melt-ui.com/) is a set of headless, accessible component builders for your Svelte or SvelteKit application.
+[Melt UI](https://www.melt-ui.com/) is a set of headless, accessible component builders for Svelte.
 
 [![](https://img.shields.io/npm/v/@melt-ui/svelte?style=flat-square)](https://www.npmjs.com/package/@melt-ui/svelte)
 [![](https://img.shields.io/github/actions/workflow/status/melt-ui/melt-ui/ci.yaml?style=flat-square)](https://github.com/melt-ui/melt-ui/actions/workflows/ci.yaml)
@@ -103,7 +103,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 
 Looking for more? Check out these other projects too:
 
-- [Melt UI](https://melt-ui.com/)
+- [Radix Svelte](https://radix-svelte.com/)
 - [Skeleton](https://skeleton.dev/)
 - [Svelte Headless UI](https://svelte-headlessui.goss.io/docs)
 - [Flowbite Svelte](https://flowbite-svelte.com/)

@@ -17,7 +17,7 @@
 </script>
 
 <ul
-	class="flex w-full flex-col gap-8 overflow-y-auto px-4 py-8 xl:sticky xl:top-14 xl:h-[calc(100vh-3.5rem)]"
+	class="flex w-full flex-col gap-8 overflow-y-auto px-4 py-8 xl:sticky xl:top-16 xl:h-[calc(100vh-4rem)]"
 >
 	{#each Object.entries(sections) as [section, routes]}
 		<li>
