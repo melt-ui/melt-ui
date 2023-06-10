@@ -34,7 +34,7 @@
 					<span>npm install <span class="whitespace-nowrap">@melt-ui/svelte</span></span>
 					{#if copied}
 						<div in:fly|local={{ y: -4 }}>
-							<Check class="text-magnum-500 inline-block h-5 w-5 transition" />
+							<Check class="inline-block h-5 w-5 text-magnum-500 transition" />
 						</div>
 					{:else}
 						<div in:fly|local={{ y: 4 }}>
@@ -44,8 +44,8 @@
 				</button>
 				<a
 					href="/docs"
-					class="bg-magnum-600 hover:bg-magnum-700 active:bg-magnum-700 mt-4 flex items-center justify-between gap-4 rounded
-					px-4 py-3 font-sans text-lg font-semibold text-white transition active:translate-y-0.5 sm:shrink"
+					class="mt-4 flex items-center justify-between gap-4 rounded bg-magnum-600 px-4 py-3
+					font-sans text-lg font-semibold text-white transition hover:bg-magnum-700 active:translate-y-0.5 active:bg-magnum-700 sm:shrink"
 				>
 					Read the docs
 					<ArrowRight class="inline-block h-5 w-5 text-white" />

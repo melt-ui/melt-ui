@@ -28,5 +28,5 @@ export const Docs = {
 	Li,
 	A,
 	Hr,
-	Tabs
+	Tabs,
 };

@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { Collapsible, type CollapsibleContentProps } from '$lib';
-	import type { ResolvedProps } from '$lib/internal/helpers';
 	// These are internal icons, but they're not exported from the package.
 	// Use your own icons instead.
-	import X from '~icons/lucide/x';
 	import ChevronsUpDown from '~icons/lucide/chevrons-up-down';
+	import X from '~icons/lucide/x';
 
 	export let open: boolean;
 	export let disabled: boolean;

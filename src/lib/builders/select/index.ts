@@ -8,7 +8,7 @@ import {
 } from '$lib/internal/helpers';
 import { sleep } from '$lib/internal/helpers/sleep';
 import { computePosition } from '@floating-ui/dom';
-import { onMount, tick } from 'svelte';
+import { onMount } from 'svelte';
 import { writable } from 'svelte/store';
 
 /**
@@ -43,11 +43,10 @@ export function createSelect() {
 		};
 	});
 
-	const trigger = elementMultiDerived([open], ([$open], createAttach) => {
+	const trigger = elementMultiDerived([open], (_, createAttach) => {
 		return () => {
 			const attach = createAttach();
 			attach('click', (e) => {
-				console.log('click', $open);
 				e.stopPropagation();
 				const triggerEl = e.currentTarget as HTMLElement;
 				open.update((prev) => {
@@ -91,7 +90,7 @@ export function createSelect() {
 		value: string;
 	};
 
-	const option = elementMultiDerived([open, selected], ([$open, $selected], createAttach) => {
+	const option = elementMultiDerived([selected], ([$selected], createAttach) => {
 		return ({ value }: OptionArgs) => {
 			const attach = createAttach();
 			attach('click', (e) => {

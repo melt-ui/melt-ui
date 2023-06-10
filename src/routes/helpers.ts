@@ -1,4 +1,3 @@
-import type { PreviewSchema } from '$lib/internal/helpers';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 

@@ -51,18 +51,18 @@
 	}
 
 	.list {
-		@apply border-magnum-100 flex shrink-0 border-b bg-white data-[orientation=vertical]:flex-col
+		@apply flex shrink-0 border-b border-magnum-100 bg-white data-[orientation=vertical]:flex-col
 			data-[orientation=vertical]:border-r;
 	}
 
 	.trigger {
-		@apply text-magnum-900 flex h-11 flex-1 cursor-default select-none
-      items-center justify-center rounded-none bg-white px-5 leading-none
+		@apply flex h-11 flex-1 cursor-default select-none items-center
+      justify-center rounded-none bg-white px-5 leading-none text-magnum-900
 			outline-none focus:relative focus:ring-2 focus:ring-black;
 	}
 
 	.trigger[data-orientation='vertical'] {
-		@apply border-b-magnum-100 w-full flex-grow-0 rounded-none border-b border-r-2 border-transparent py-4  last:border-b-0;
+		@apply w-full flex-grow-0 rounded-none border-b border-r-2 border-transparent border-b-magnum-100 py-4  last:border-b-0;
 	}
 
 	.trigger[data-state='active'] {
@@ -83,7 +83,7 @@
 
 	/* Content Elements */
 	.description {
-		@apply text-magnum-950 mb-5 leading-normal;
+		@apply mb-5 leading-normal text-magnum-950;
 	}
 
 	fieldset {
@@ -91,11 +91,11 @@
 	}
 
 	label {
-		@apply text-magnum-950 mb-2.5 block text-sm leading-none;
+		@apply mb-2.5 block text-sm leading-none text-magnum-950;
 	}
 
 	input {
-		@apply text-magnum-900 focus:ring-magnum-800 h-8 shrink-0 grow rounded border px-2.5 leading-none outline-none focus:ring-2;
+		@apply h-8 shrink-0 grow rounded border px-2.5 leading-none text-magnum-900 outline-none focus:ring-2 focus:ring-magnum-800;
 	}
 
 	.actions {
