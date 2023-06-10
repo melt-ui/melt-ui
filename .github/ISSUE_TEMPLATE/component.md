@@ -1,13 +1,9 @@
 ---
-name: Component
-about: Component creation request
-title: "✨ Component:"
-labels: component
+name: Builder
+about: Builder creation request
+title: "✨ Builder:"
+labels: builder
 assignees: ''
 
 ---
 
-- [ ] Implementation
-- [ ] Example
-- [ ] Tests
-- [ ] Docs

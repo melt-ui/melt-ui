@@ -57,3 +57,16 @@
 </Docs.P>
 
 <Docs.CodeBlock code={snippets.svelteTransitions} collapsible={false} />
+
+<Docs.H2>Need help?</Docs.H2>
+<Docs.P>
+	In case you've run into a bug, an unexpected behaviour, or would like to request new features,
+	feel free to <Docs.A href="https://github.com/melt-ui/melt-ui/issues/new/choose">
+		open an issue up on GitHub
+	</Docs.A>.
+</Docs.P>
+<Docs.P>
+	You can also reach out to us over on <Docs.A href="https://discord.com/invite/2QDjZkYunf">
+		Discord
+	</Docs.A>.
+</Docs.P>
