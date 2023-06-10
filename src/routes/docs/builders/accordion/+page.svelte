@@ -60,6 +60,8 @@
 <Docs.P>To programatically control the Accordion, you can use a reactive statement.</Docs.P>
 <Docs.CodeBlock code={snippets.controlled} />
 
+<Docs.H2>Accessibility</Docs.H2>
+
 <Docs.H2>API Reference</Docs.H2>
 <Docs.API
 	schema={{

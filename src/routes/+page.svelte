@@ -45,7 +45,7 @@
 				<a
 					href="/docs"
 					class="mt-4 flex items-center justify-between gap-4 rounded bg-magnum-600 px-4 py-3
-					font-sans text-lg font-semibold text-white transition hover:bg-magnum-700 active:translate-y-0.5 active:bg-magnum-700 sm:shrink"
+					font-sans font-semibold text-white transition hover:bg-magnum-700 active:translate-y-0.5 active:bg-magnum-700 sm:shrink"
 				>
 					Read the docs
 					<ArrowRight class="inline-block h-5 w-5 text-white" />

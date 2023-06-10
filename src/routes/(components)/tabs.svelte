@@ -8,7 +8,7 @@
 	});
 </script>
 
-<div {...root} class="my-2">
+<div {...root} class="mt-2">
 	<div class="flex gap-2" {...list}>
 		{#each tabs as tab}
 			<button

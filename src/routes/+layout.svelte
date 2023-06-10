@@ -28,7 +28,7 @@
 			<img class="h-10 rounded-sm" src="/logo.svg" alt="Melt UI" />
 		</a>
 
-		<div class="flex flex-row items-center gap-4 text-lg">
+		<div class="flex flex-row items-center gap-4">
 			<a href="https://github.com/melt-ui/melt-ui" target="_blank" class="link">
 				<span class="hidden md:block">GitHub</span>
 				<GitHub

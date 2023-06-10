@@ -46,12 +46,12 @@
 <div class="mb-12">
 	<h3 class="text-xl font-bold">{schema.title}</h3>
 
-	<p class="text-lg font-light">
+	<p class="mt-1 opacity-75">
 		{@html htmlDescription}
 	</p>
 
 	{#if empty}
-		<p class="mt-4 text-lg font-light text-zinc-400">
+		<p class="mt-4 text-lg text-zinc-400">
 			No props, events or data attributes are explicitly required.
 		</p>
 	{:else}

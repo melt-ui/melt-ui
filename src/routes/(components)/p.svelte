@@ -4,4 +4,4 @@
 	export let sidenote = false;
 </script>
 
-<p class={cn('py-1 text-lg', sidenote && 'text-base italic opacity-50')}><slot /></p>
+<p class={cn('py-1', sidenote && 'text-base italic opacity-50')}><slot /></p>

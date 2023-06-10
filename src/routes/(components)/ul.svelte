@@ -1,1 +1,1 @@
-<ul class="list-disc pl-4 text-lg"><slot /></ul>
+<ul class="list-disc pl-4"><slot /></ul>
