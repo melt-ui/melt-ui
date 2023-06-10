@@ -1,6 +1,5 @@
 <script>
 	import { Docs } from '$routes/(components)';
-	import CodeBlock from '$routes/(components)/code-block.svelte';
 	import { snippets } from './(snippets)';
 </script>
 

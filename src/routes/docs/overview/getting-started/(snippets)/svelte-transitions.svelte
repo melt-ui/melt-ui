@@ -1,0 +1,28 @@
+<script lang="ts">
+	import { createCollapsible } from '@melt-ui/svelte';
+	import { slide } from 'svelte/transition';
+
+	const { root, content, trigger, open } = createCollapsible();
+</script>
+
+<div {...$root}>
+	<button {...$trigger}> Toggle </button>
+
+	{#if $open}
+		<div class="content" {...$content} transition:slide|local>
+			<p>sveltejs/svelte</p>
+			<p>sveltejs/kit</p>
+		</div>
+	{/if}
+</div>
+
+<style>
+	.content {
+		display: block !important; /* Ignore the hidden attribute */
+		transition: opacity 200ms ease;
+	}
+
+	.content[data-state='closed'] {
+		opacity: 0;
+	}
+</style>

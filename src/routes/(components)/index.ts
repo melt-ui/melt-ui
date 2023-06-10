@@ -12,6 +12,7 @@ import Ul from './ul.svelte';
 import Li from './li.svelte';
 import A from './a.svelte';
 import Hr from './hr.svelte';
+import Tabs from './tabs.svelte';
 
 export const Docs = {
 	API,
@@ -27,4 +28,5 @@ export const Docs = {
 	Li,
 	A,
 	Hr,
+	Tabs
 };

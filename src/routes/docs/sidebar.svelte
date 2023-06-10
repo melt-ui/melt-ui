@@ -3,7 +3,7 @@
 	import { cn } from '../helpers';
 
 	const sections = {
-		overview: ['introduction'],
+		overview: ['introduction', 'getting-started'],
 		builders: ['accordion', 'collapsible', 'select', 'tabs', 'toggle'],
 	};
 
