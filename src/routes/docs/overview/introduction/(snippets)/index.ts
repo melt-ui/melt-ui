@@ -1,5 +1,5 @@
-import builder from './builder.svelte?raw';
-import extensible from './extensible.svelte?raw';
+import builder from './builder.ignore-svelte?raw';
+import extensible from './extensible.ignore-svelte?raw';
 
 export const snippets = {
 	builder,

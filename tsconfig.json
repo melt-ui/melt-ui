@@ -12,6 +12,10 @@
 	},
 	"types": [
 		"unplugin-icons/types/svelte"
+	],
+	"exclude": [
+		"*.ignore-ts",
+		"*.ignore-svelte"
 	]
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	//

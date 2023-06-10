@@ -1,0 +1,1 @@
+<div class="accordion-item" {...$item({ value: 'item-3', disabled: true })}>Item 3</div>

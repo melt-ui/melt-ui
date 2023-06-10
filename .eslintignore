@@ -15,4 +15,5 @@ yarn.lock
 
 CHANGELOG.md
 
-(snippets)
+*.ignore-ts
+*.ignore-svelte

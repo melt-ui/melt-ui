@@ -3,6 +3,7 @@
 		label: string;
 		type: string;
 		default?: unknown;
+		required?: boolean;
 	}>;
 
 	export type Events = Array<{
@@ -15,9 +16,13 @@
 		value: string | string[];
 	}>;
 
-	export type APISchema = {
+	type BaseAPISchema = {
 		title: string;
 		description: string;
+	};
+
+	export type APISchema = BaseAPISchema & {
+		args?: Props;
 		props?: Props;
 		events?: Events;
 		dataAttributes?: DataAttributes;
@@ -30,7 +35,7 @@
 
 	export let schema: APISchema;
 
-	$: empty = !schema.props && !schema.events && !schema.dataAttributes;
+	$: empty = !schema.args && !schema.props && !schema.events && !schema.dataAttributes;
 
 	$: htmlDescription = (function parseDescription(description: string) {
 		// replace `$1` with <code>$1</code>
@@ -39,7 +44,7 @@
 </script>
 
 <div class="mb-12">
-	<h2 class="text-xl font-bold">{schema.title}</h2>
+	<h3 class="text-xl font-bold">{schema.title}</h3>
 
 	<p class="text-lg font-light">
 		{@html htmlDescription}
@@ -51,11 +56,31 @@
 		</p>
 	{:else}
 		<TableWrapper>
+			{#if schema.args}
+				<Table head={['Arg', 'Type', 'Default']} headMobile="Args" data={schema.args}>
+					<svelte:fragment slot="row" let:datum={d}>
+						<div>
+							<code class="colored">{d.label}{d.required ? '*' : ''}</code>
+						</div>
+						<div>
+							<code>{d.type}</code>
+						</div>
+						<div>
+							{#if d.default}
+								<code>{d.default}</code>
+							{:else}
+								<span>-</span>
+							{/if}
+						</div>
+					</svelte:fragment>
+				</Table>
+			{/if}
+
 			{#if schema.props}
 				<Table head={['Prop', 'Type', 'Default']} headMobile="Props" data={schema.props}>
 					<svelte:fragment slot="row" let:datum={d}>
 						<div>
-							<code class="colored">{d.label}</code>
+							<code class="colored">{d.label}{d.required ? '*' : ''}</code>
 						</div>
 						<div>
 							<code>{d.type}</code>
@@ -133,7 +158,7 @@
 		background-color: theme('colors.zinc.800');
 		color: theme('colors.zinc.300');
 		padding-inline: theme('spacing.1');
-		padding-block-start: theme('spacing[0.5]');
+		padding-block: theme('spacing[0.5]');
 		border-radius: theme('borderRadius.sm');
 		font-family: theme('fontFamily.mono');
 

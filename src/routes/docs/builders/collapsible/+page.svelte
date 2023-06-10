@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
-	import code from './code.svelte?raw';
+	import code from './code.ignore-svelte?raw';
 	import Preview from './preview.svelte';
 </script>
 

@@ -1,0 +1,40 @@
+<script lang="ts">
+	import { createAccordion } from '@melt-ui/svelte';
+
+	let value = 'item-1';
+	$: ({ content, item, trigger, root } = createAccordion({
+		value,
+	}));
+</script>
+
+<button
+	on:click={() => {
+		const randPick = Math.floor(Math.random() * 3) + 1;
+		value = `item-${randPick}`;
+	}}
+>
+	Trigger randomly
+</button>
+
+<div {...root}>
+	<div {...$item('item-1')}>
+		<button {...$trigger('item-1')}>Is it accessible?</button>
+		<div {...$content('item-1')}>
+			<div>Yes. It adheres to the WAI-ARIA design pattern.</div>
+		</div>
+	</div>
+
+	<div {...$item('item-2')}>
+		<button {...$trigger('item-2')}>Is it accessible?</button>
+		<div {...$content('item-2')}>
+			<div>Yes. It adheres to the WAI-ARIA design pattern.</div>
+		</div>
+	</div>
+
+	<div {...$item('item-3')}>
+		<button {...$trigger('item-3')}>Is it accessible?</button>
+		<div {...$content('item-3')}>
+			<div>Yes. It adheres to the WAI-ARIA design pattern.</div>
+		</div>
+	</div>
+</div>

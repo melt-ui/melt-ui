@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "*.ignore-svelte": "svelte",
+    "*.ignore-ts": "typescript",
+  }
+}
