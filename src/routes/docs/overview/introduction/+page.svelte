@@ -22,7 +22,7 @@
 <Docs.CodeBlock code={snippets.builder} collapsible={false} />
 <Docs.P>
 	This is all you need to have a working Collapsible component in your Svelte application. The props
-	automatically apply the needed props and event handlers to the element or component they are
+	automatically apply the needed attributes and event handlers to the element or component they are
 	applied to.
 </Docs.P>
 
