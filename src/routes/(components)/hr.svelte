@@ -1,1 +1,1 @@
-<hr class="my-4 opacity-25" />
+<hr class="my-4 border-neutral-600" />

@@ -61,6 +61,55 @@
 <Docs.CodeBlock code={snippets.controlled} />
 
 <Docs.H2>Accessibility</Docs.H2>
+<Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/accordion/">WAI-ARIA pattern</Docs.A>
+
+<Docs.H3>Keyboard Navigation</Docs.H3>
+
+<Docs.Ul>
+	<Docs.Li>
+		<Docs.Kbd>Enter</Docs.Kbd> or <Docs.Kbd>Space</Docs.Kbd>:
+		<Docs.Ul>
+			<Docs.Li>
+				When focus is on the accordion header for a collapsed panel, expands the associated panel.
+				If the implementation allows only one panel to be expanded, and if another panel is
+				expanded, collapses that panel.
+			</Docs.Li>
+
+			<Docs.Li>
+				When focus is on the accordion header for an expanded panel, collapses the panel if the
+				implementation supports collapsing. Some implementations require one panel to be expanded at
+				all times and allow only one panel to be expanded; so, they do not support a collapse
+				function.
+			</Docs.Li>
+		</Docs.Ul>
+	</Docs.Li>
+	<Docs.Li>
+		<Docs.Kbd>Tab</Docs.Kbd>: Moves focus to the next focusable element; all focusable elements in
+		the accordion are included in the page Tab sequence.
+	</Docs.Li>
+	<Docs.Li>
+		<Docs.Kbd>Shift</Docs.Kbd> + <Docs.Kbd>Tab</Docs.Kbd>: Moves focus to the previous focusable
+		element; all focusable elements in the accordion are included in the page Tab sequence.
+	</Docs.Li>
+	<Docs.Li>
+		<Docs.Kbd>Down Arrow</Docs.Kbd>: If focus is on an accordion header, moves focus to the next
+		accordion header. If focus is on the last accordion header, either does nothing or moves focus
+		to the first accordion header.
+	</Docs.Li>
+	<Docs.Li>
+		<Docs.Kbd>Up Arrow</Docs.Kbd>: If focus is on an accordion header, moves focus to the previous
+		accordion header. If focus is on the first accordion header, either does nothing or moves focus
+		to the last accordion header.
+	</Docs.Li>
+	<Docs.Li>
+		<Docs.Kbd>Home</Docs.Kbd>: When focus is on an accordion header, moves focus to the first
+		accordion header.
+	</Docs.Li>
+	<Docs.Li>
+		<Docs.Kbd>End</Docs.Kbd>: When focus is on an accordion header, moves focus to the last
+		accordion header.
+	</Docs.Li>
+</Docs.Ul>
 
 <Docs.H2>API Reference</Docs.H2>
 <Docs.API
