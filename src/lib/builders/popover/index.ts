@@ -60,15 +60,16 @@ export function createPopover(args?: CreatePopoverArgs) {
 		};
 	});
 
+	let cleanupPopover: (() => void) | undefined = undefined;
+
 	const popover = elementDerived(
 		[open, activeTrigger, positioning],
 		([$open, $activeTrigger, $positioning], attach) => {
 			attach.getElement().then((popoverEl) => {
 				if (!($open && $activeTrigger && popoverEl)) return;
 
-				// TODO: Determine if this is okay or are we creating a memory leak/a ton of listeners
-				// if not okay, need to determine what the best approach is for calling a function onDestroy
-				getPlacement($activeTrigger, popoverEl, $positioning);
+				// TODO: Determine if this is an adequate way to handle such cases
+				cleanupPopover = getPlacement($activeTrigger, popoverEl, $positioning);
 			});
 
 			return {
@@ -90,10 +91,21 @@ export function createPopover(args?: CreatePopoverArgs) {
 		}),
 	}));
 
-	effect([open, popover, activeTrigger], ([$open, $menu, $activeTrigger]) => {
+	effect([open, popover], ([$open, $popover]) => {
 		if (!isBrowser) return;
 
-		const popoverEl = getElementByMeltId($menu['data-melt-id']);
+		const popoverEl = getElementByMeltId($popover['data-melt-id']);
+
+		if (!$open && !popoverEl && cleanupPopover) {
+			cleanupPopover();
+		}
+	});
+
+	effect([open, popover, activeTrigger], ([$open, $popover, $activeTrigger]) => {
+		if (!isBrowser) return;
+
+		const popoverEl = getElementByMeltId($popover['data-melt-id']);
+
 		if (popoverEl && $open) {
 			if ($activeTrigger) {
 				getPlacement($activeTrigger, popoverEl);

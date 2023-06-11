@@ -8,12 +8,12 @@ import { writable } from 'svelte/store';
 import { createFocusTrap as _createFocusTrap } from 'focus-trap';
 import { toReadable } from '$lib/internal/helpers';
 
-export const createFocusTrap = (config: FocusTrapConfig = {}): FocusTrapReturn => {
+export function createFocusTrap(config: FocusTrapConfig = {}): FocusTrapReturn {
 	let trap: undefined | FocusTrap;
 
 	const { immediate, ...focusTrapOptions } = config;
-	const hasFocus = writable<boolean>(false);
-	const isPaused = writable<boolean>(false);
+	const hasFocus = writable(false);
+	const isPaused = writable(false);
 
 	const activate = (opts?: ActivateOptions) => trap?.activate(opts);
 	const deactivate = (opts?: DeactivateOptions) => trap?.deactivate(opts);
@@ -66,4 +66,4 @@ export const createFocusTrap = (config: FocusTrapConfig = {}): FocusTrapReturn =
 		pause,
 		unpause,
 	};
-};
+}
