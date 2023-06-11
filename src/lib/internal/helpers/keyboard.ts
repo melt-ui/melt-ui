@@ -20,4 +20,4 @@ export const kbd = {
 	SHIFT: 'Shift',
 	SPACE: ' ',
 	TAB: 'Tab',
-};
+} as const;
