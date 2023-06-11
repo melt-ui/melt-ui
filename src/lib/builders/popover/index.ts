@@ -34,22 +34,6 @@ export function createPopover(args?: CreatePopoverArgs) {
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
-	onMount(() => {
-		const listener = () => {
-			open.set(false);
-		};
-
-		if (isBrowser) {
-			document.addEventListener('click', listener);
-		}
-
-		return () => {
-			if (isBrowser) {
-				document.removeEventListener('click', listener);
-			}
-		};
-	});
-
 	const trigger = elementMultiDerived([open], ([$open], createAttach) => {
 		return () => {
 			const attach = createAttach();
@@ -90,6 +74,7 @@ export function createPopover(args?: CreatePopoverArgs) {
 
 			return {
 				hidden: $open ? undefined : true,
+				tabindex: '-1',
 				style: styleToString({
 					display: $open ? undefined : 'none',
 				}),
