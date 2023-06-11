@@ -4,7 +4,7 @@
 
 	const sections = {
 		overview: ['introduction', 'getting-started'],
-		builders: ['accordion', 'collapsible', 'select', 'tabs', 'toggle'],
+		builders: ['accordion', 'checkbox', 'collapsible', 'select', 'tabs', 'toggle'],
 	};
 
 	const format = (s: string) => {

@@ -3,3 +3,4 @@ export * from './collapsible';
 export * from './tabs';
 export * from './select';
 export * from './toggle';
+export * from './checkbox';
