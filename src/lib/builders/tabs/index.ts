@@ -3,6 +3,7 @@ import {
 	elementMultiDerived,
 	getElementByMeltId,
 	isBrowser,
+	kbd,
 	last,
 	next,
 	prev,
@@ -91,13 +92,13 @@ export function createTabs(args?: CreateTabsArgs) {
 			});
 
 			const nextKey = {
-				horizontal: options.dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight',
-				vertical: 'ArrowDown',
+				horizontal: options.dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
+				vertical: kbd.ARROW_DOWN,
 			}[options.orientation ?? 'horizontal'];
 
 			const prevKey = {
-				horizontal: options.dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft',
-				vertical: 'ArrowUp',
+				horizontal: options.dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
+				vertical: kbd.ARROW_UP,
 			}[options.orientation ?? 'horizontal'];
 
 			attach('keydown', (e) => {
@@ -113,13 +114,13 @@ export function createTabs(args?: CreateTabsArgs) {
 				} else if (e.key === prevKey) {
 					e.preventDefault();
 					prev(enabledTriggers, triggerIdx, options.loop)?.focus();
-				} else if (e.key === 'Enter' || e.key === ' ') {
+				} else if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
 					e.preventDefault();
 					value.set(tabValue);
-				} else if (e.key === 'Home') {
+				} else if (e.key === kbd.HOME) {
 					e.preventDefault();
 					enabledTriggers[0]?.focus();
-				} else if (e.key === 'End') {
+				} else if (e.key === kbd.END) {
 					e.preventDefault();
 					last(enabledTriggers)?.focus();
 				}
