@@ -18,8 +18,6 @@
 <Docs.H2>Features</Docs.H2>
 <Docs.Ul>
 	<Docs.Li>Full keyboard navigation.</Docs.Li>
-	<Docs.Li>Supports horizontal/vertical orientation.</Docs.Li>
-	<Docs.Li>Supports Right to Left direction.</Docs.Li>
 	<Docs.Li>Can expand one or multiple items.</Docs.Li>
 	<Docs.Li>Can be controlled or uncontrolled.</Docs.Li>
 </Docs.Ul>
