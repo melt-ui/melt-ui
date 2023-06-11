@@ -91,14 +91,14 @@ export type PositionOptions = {
 	boundary?: Boundary;
 };
 
-const defaultOptions: PositionOptions = {
+const defaultOptions = {
 	strategy: 'absolute',
-	placement: 'bottom',
+	placement: 'top',
 	gutter: 5,
 	flip: true,
 	sameWidth: false,
 	overflowPadding: 8,
-};
+} satisfies PositionOptions;
 
 const ARROW_TRANSFORM = {
 	bottom: 'rotate(45deg)',
@@ -120,7 +120,7 @@ export function getPlacement(
 ) {
 	if (!floating || !reference) return;
 
-	const options = Object.assign({}, defaultOptions, opts);
+	const options = { ...defaultOptions, ...opts };
 
 	const arrowEl = floating.querySelector<HTMLElement>('[data-arrow=true]');
 	const middleware: Middleware[] = [];

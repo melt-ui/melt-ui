@@ -9,11 +9,28 @@ import {
 	isBrowser,
 	styleToString,
 	sleep,
-	arrowAttrs,
+	type PositionOptions,
 } from '$lib/internal/helpers';
 
-export function createPopover() {
-	const open = writable(false);
+type CreatePopoverArgs = {
+	positioning?: PositionOptions;
+	arrowSize?: number;
+	open?: boolean;
+};
+
+const defaults = {
+	positioning: {
+		placement: 'bottom',
+	},
+	arrowSize: 8,
+	open: false,
+} satisfies CreatePopoverArgs;
+
+export function createPopover(args?: CreatePopoverArgs) {
+	const options = { ...defaults, ...args } as CreatePopoverArgs;
+	const positioning = writable(options.positioning);
+	const arrowSize = writable(options.arrowSize);
+	const open = writable(options.open);
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
@@ -60,21 +77,34 @@ export function createPopover() {
 		};
 	});
 
-	const popover = elementDerived([open, activeTrigger], ([$open, $activeTrigger], attach) => {
-		attach.getElement().then((popoverEl) => {
-			if (!($open && $activeTrigger && popoverEl)) return;
+	const popover = elementDerived(
+		[open, activeTrigger, positioning],
+		([$open, $activeTrigger, $positioning], attach) => {
+			attach.getElement().then((popoverEl) => {
+				if (!($open && $activeTrigger && popoverEl)) return;
 
-			// TODO: Determine if this is okay or are we creating a memory leak/a bunch of listeners
-			getPlacement($activeTrigger, popoverEl);
-		});
+				// TODO: Determine if this is okay or are we creating a memory leak/a ton of listeners
+				// if not okay, need to determine what the best approach is for calling a function onDestroy
+				getPlacement($activeTrigger, popoverEl, $positioning);
+			});
 
-		return {
-			hidden: $open ? undefined : true,
-			style: styleToString({
-				display: $open ? undefined : 'none',
-			}),
-		};
-	});
+			return {
+				hidden: $open ? undefined : true,
+				style: styleToString({
+					display: $open ? undefined : 'none',
+				}),
+			};
+		}
+	);
+
+	const arrow = derived(arrowSize, ($arrowSize) => ({
+		'data-arrow': true,
+		style: styleToString({
+			position: 'absolute',
+			width: `var(--arrow-size, ${$arrowSize}px)`,
+			height: `var(--arrow-size, ${$arrowSize}px)`,
+		}),
+	}));
 
 	effect([open, popover, activeTrigger], ([$open, $menu, $activeTrigger]) => {
 		if (!isBrowser) return;
@@ -98,5 +128,5 @@ export function createPopover() {
 		}
 	});
 
-	return { trigger, open, popover, arrow: arrowAttrs };
+	return { trigger, open, popover, arrow };
 }
