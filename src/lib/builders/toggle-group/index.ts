@@ -153,10 +153,17 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 		};
 	});
 
+	const isPressed = derived(value, ($value) => {
+		return (itemValue: string) => {
+			return Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
+		};
+	});
+
 	return {
 		options,
 		value,
 		root,
 		item,
+		isPressed,
 	};
 }
