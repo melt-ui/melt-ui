@@ -18,7 +18,8 @@ hover:opacity-75 focus:ring focus:ring-black"
 	{#if $open}
 		<div
 			{...$popover}
-			class="absolute flex min-w-[200px] translate-y-2 flex-col gap-2 rounded-md bg-white p-2 text-magnum-700"
+			class="flex min-w-[200px] flex-col gap-2 rounded-md bg-white p-2 text-magnum-700"
+			aria-label="Update Settings"
 		>
 			<div class="p-4">
 				<input type="text" class="w-full rounded-md border border-magnum-300 p-2" />

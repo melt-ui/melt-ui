@@ -16,7 +16,7 @@ import {
 
 import { derived, readable, writable } from 'svelte/store';
 
-type CreatePopoverArgs = {
+export type CreatePopoverArgs = {
 	positioning?: PositionOptions;
 	arrowSize?: number;
 	open?: boolean;
@@ -37,33 +37,6 @@ export function createPopover(args?: CreatePopoverArgs) {
 	const open = writable(options.open);
 
 	const activeTrigger = writable<HTMLElement | null>(null);
-
-	const trigger = elementMultiDerived([open], ([$open], createAttach) => {
-		return () => {
-			const attach = createAttach();
-			attach('click', (e) => {
-				e.stopPropagation();
-				const triggerEl = e.currentTarget as HTMLElement;
-
-				open.update((prev) => {
-					const isOpen = !prev;
-					if (isOpen) {
-						activeTrigger.set(triggerEl);
-					} else {
-						activeTrigger.set(null);
-					}
-					return isOpen;
-				});
-			});
-
-			return {
-				role: 'button' as const,
-				'aria-haspopup': 'dialog' as const,
-				'aria-expanded': $open,
-				'data-state': $open ? 'open' : 'closed',
-			};
-		};
-	});
 
 	const popover = elementDerived(
 		[open, activeTrigger, positioning],
@@ -107,6 +80,34 @@ export function createPopover(args?: CreatePopoverArgs) {
 			};
 		}
 	);
+
+	const trigger = elementMultiDerived([open, popover], ([$open, $popover], createAttach) => {
+		return () => {
+			const attach = createAttach();
+			attach('click', (e) => {
+				e.stopPropagation();
+				const triggerEl = e.currentTarget as HTMLElement;
+
+				open.update((prev) => {
+					const isOpen = !prev;
+					if (isOpen) {
+						activeTrigger.set(triggerEl);
+					} else {
+						activeTrigger.set(null);
+					}
+					return isOpen;
+				});
+			});
+
+			return {
+				role: 'button' as const,
+				'aria-haspopup': 'dialog' as const,
+				'aria-expanded': $open,
+				'data-state': $open ? 'open' : 'closed',
+				'aria-controls': $popover['data-melt-id'],
+			};
+		};
+	});
 
 	const arrow = derived(arrowSize, ($arrowSize) => ({
 		'data-arrow': true,
