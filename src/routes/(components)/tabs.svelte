@@ -14,7 +14,7 @@
 			<button
 				{...$trigger(tab)}
 				class="rounded-md border border-transparent bg-neutral-800 px-3 py-1 text-neutral-500 opacity-75 outline-none transition
-        hover:opacity-100 focus:ring-2 focus:ring-magnum-700
+        hover:opacity-100 focus:ring focus:ring-magnum-700
         data-[state=active]:border-magnum-700 data-[state=active]:text-magnum-500 data-[state=active]:opacity-100"
 			>
 				{tab}
