@@ -5,8 +5,6 @@
 
 <Docs.H1>Getting Started</Docs.H1>
 
-<Docs.Hr />
-
 <Docs.H2>Installing</Docs.H2>
 <Docs.P>
 	First off, install Melt UI into your project by running the following command in your terminal:

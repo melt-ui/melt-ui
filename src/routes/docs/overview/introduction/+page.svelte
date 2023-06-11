@@ -9,8 +9,6 @@
 	<Docs.A href="https://svelte.dev/">Svelte</Docs.A>
 </Docs.P>
 
-<Docs.Hr />
-
 <Docs.H2>Features</Docs.H2>
 
 <Docs.H3>Builder API</Docs.H3>

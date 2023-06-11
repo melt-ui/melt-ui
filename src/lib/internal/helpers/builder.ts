@@ -191,19 +191,22 @@ export function elementMultiDerived<
 		// Generate a new id for each call to `createAttach`
 		id = uuid();
 
+		// Make sure the id is the same on tick
+		const constantId = id;
+
 		// Function that attaches an event listener to an element
 		const attach: Attach = (event, listener, options) => {
 			if (!isBrowser) return;
 
 			// Wait for the next tick to ensure that the element has been rendered
 			tick().then(() => {
-				const element = getElementByMeltId(id);
+				const element = getElementByMeltId(constantId);
 				element?.addEventListener(event, listener, options);
 			});
 
 			// Add a function to the `unsubscribers` array that removes the event listener
 			unsubscribers.push(() => {
-				const element = getElementByMeltId(id);
+				const element = getElementByMeltId(constantId);
 				element?.removeEventListener(event, listener, options);
 			});
 		};
@@ -212,7 +215,7 @@ export function elementMultiDerived<
 		attach.getElement = () =>
 			tick().then(() => {
 				if (!isBrowser) return null;
-				return getElementByMeltId(id);
+				return getElementByMeltId(constantId);
 			});
 
 		return attach;
