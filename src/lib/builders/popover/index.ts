@@ -1,16 +1,20 @@
 import {
-	createFocusTrap,
 	effect,
 	elementDerived,
 	elementMultiDerived,
-	getPlacement,
 	isBrowser,
 	sleep,
 	styleToString,
+} from '$lib/internal/helpers';
+
+import {
+	createFocusTrap,
+	getPlacement,
 	useClickOutside,
 	type PositionOptions,
-} from '$lib/internal/helpers';
-import { derived, writable } from 'svelte/store';
+} from '$lib/internal/actions';
+
+import { derived, readable, writable } from 'svelte/store';
 
 type CreatePopoverArgs = {
 	positioning?: PositionOptions;
@@ -28,8 +32,8 @@ const defaults = {
 
 export function createPopover(args?: CreatePopoverArgs) {
 	const options = { ...defaults, ...args } as CreatePopoverArgs;
-	const positioning = writable(options.positioning);
-	const arrowSize = writable(options.arrowSize);
+	const positioning = readable(options.positioning);
+	const arrowSize = readable(options.arrowSize);
 	const open = writable(options.open);
 
 	const activeTrigger = writable<HTMLElement | null>(null);
