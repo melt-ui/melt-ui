@@ -14,6 +14,7 @@ const defaults = {
 
 export function createCollapsible(args?: CreateCollapsibleArgs) {
 	const options = { ...defaults, ...args };
+	const disabled = writable(options.disabled);
 
 	const open = writable(options.open);
 	open.subscribe((open) => {
@@ -25,20 +26,20 @@ export function createCollapsible(args?: CreateCollapsibleArgs) {
 		'data-disabled': options.disabled ? 'true' : 'undefined',
 	}));
 
-	const trigger = elementDerived(open, ($open, attach) => {
-		if (!options.disabled) {
+	const trigger = elementDerived([open, disabled], ([$open, $disabled], attach) => {
+		if (!$disabled) {
 			attach('click', () => open.set(!$open));
 		}
 
 		return {
 			'data-state': $open ? 'open' : 'closed',
-			'data-disabled': options.disabled ? 'true' : undefined,
+			'data-disabled': $disabled ? 'true' : undefined,
 		};
 	});
 
-	const content = derived(open, ($open) => ({
+	const content = derived([open, disabled], ([$open, $disabled]) => ({
 		'data-state': $open ? 'open' : 'closed',
-		'data-disabled': options.disabled ? 'true' : undefined,
+		'data-disabled': $disabled ? 'true' : undefined,
 		hidden: $open ? undefined : true,
 	}));
 
@@ -47,5 +48,6 @@ export function createCollapsible(args?: CreateCollapsibleArgs) {
 		trigger,
 		content,
 		open,
+		disabled,
 	};
 }
