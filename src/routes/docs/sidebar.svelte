@@ -4,7 +4,16 @@
 
 	const sections = {
 		overview: ['introduction', 'getting-started'],
-		builders: ['accordion', 'checkbox', 'collapsible', 'select', 'switch', 'tabs', 'toggle'],
+		builders: [
+			'accordion',
+			'checkbox',
+			'collapsible',
+			'select',
+			'switch',
+			'tabs',
+			'toggle',
+			'toggle-group',
+		],
 	};
 
 	const format = (s: string) => {

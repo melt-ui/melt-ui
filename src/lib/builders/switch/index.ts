@@ -49,7 +49,7 @@ export function createSwitch(args: CreateSwitchArgs = {}) {
 		} as const;
 	});
 
-	const input = elementDerived([checked, options], ([$checked, $options]) => {
+	const input = derived([checked, options], ([$checked, $options]) => {
 		return {
 			type: 'checkbox' as const,
 			'aria-hidden': true,
