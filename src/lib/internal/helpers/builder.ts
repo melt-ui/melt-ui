@@ -61,18 +61,20 @@ type Attach = (<T extends keyof HTMLElementEventMap>(
 	getElement: () => Promise<HTMLElement | null>;
 };
 
+type AddUnsubscriber = (cb: (() => void) | Array<undefined | (() => void)>) => void;
+
 /**
  * Creates a derived store that contains attributes for an element.
  * Exposes an `attach` function to attach events to the element.
  */
 export function elementDerived<S extends Stores, T extends Record<string, unknown>>(
 	stores: S,
-	fn: (values: StoresValues<S>, attach: Attach) => T
+	fn: (values: StoresValues<S>, attach: Attach, addUnsubscriber: AddUnsubscriber) => T
 ) {
-	let eventRemovers: (() => void)[] = [];
-	const removeEvents = () => {
-		eventRemovers.forEach((fn) => fn());
-		eventRemovers = [];
+	let unsubscribers: (() => void)[] = [];
+	const unsubscribe = () => {
+		unsubscribers.forEach((fn) => fn());
+		unsubscribers = [];
 	};
 
 	// Id outside of scope so we can pass it as an attribute
@@ -84,25 +86,36 @@ export function elementDerived<S extends Stores, T extends Record<string, unknow
 			element?.addEventListener(event, listener, options);
 		});
 
-		eventRemovers.push(() => {
+		unsubscribers.push(() => {
 			const element = getElementByMeltId(id);
 			element?.removeEventListener(event, listener, options);
 		});
 	};
-	attach.getElement = () =>
-		tick().then(() => {
+	attach.getElement = () => {
+		return tick().then(() => {
 			if (!isBrowser) return null;
 			return getElementByMeltId(id);
 		});
+	};
+
+	const addUnsubscriber: AddUnsubscriber = (cb) => {
+		if (Array.isArray(cb)) {
+			unsubscribers.push(...(cb.filter((a) => a !== undefined) as (() => void)[]));
+		} else {
+			unsubscribers.push(cb);
+		}
+	};
 
 	return derived(stores, ($storeValues) => {
-		removeEvents();
-		return { ...fn($storeValues, attach), 'data-melt-id': id };
+		unsubscribe();
+		return { ...fn($storeValues, attach, addUnsubscriber), 'data-melt-id': id };
 	});
 }
 
-export function element<T extends Record<string, unknown>>(fn: (attach: Attach) => T) {
-	return elementDerived([], (_, attach) => fn(attach));
+export function element<T extends Record<string, unknown>>(
+	fn: (attach: Attach, addUnsubscriber: AddUnsubscriber) => T
+) {
+	return elementDerived([], (_, attach, addUnsubscriber) => fn(attach, addUnsubscriber));
 }
 
 type ReturnWithObj<T extends () => void, Obj> = ReturnType<T> extends void
@@ -118,7 +131,10 @@ export function elementMultiDerived<
 	S extends Stores,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	T extends (...args: any[]) => Record<string, unknown> | void
->(stores: S, fn: (values: StoresValues<S>, createAttach: () => Attach) => T) {
+>(
+	stores: S,
+	fn: (values: StoresValues<S>, createAttach: () => Attach, addUnsubscriber: AddUnsubscriber) => T
+) {
 	let unsubscribers: (() => void)[] = [];
 
 	// Id outside of scope so we can pass it as an attribute
@@ -147,10 +163,18 @@ export function elementMultiDerived<
 		return attach;
 	};
 
+	const addUnsubscriber: AddUnsubscriber = (cb) => {
+		if (Array.isArray(cb)) {
+			unsubscribers.push(...(cb.filter((a) => a !== undefined) as (() => void)[]));
+		} else {
+			unsubscribers.push(cb);
+		}
+	};
+
 	return derived(stores, ($storeValues) => {
 		unsubscribers.forEach((fn) => fn());
 		unsubscribers = [];
-		const returned = fn($storeValues, createAttach);
+		const returned = fn($storeValues, createAttach, addUnsubscriber);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		return (...args: any[]) => {
 			return { ...returned(...args), 'data-melt-id': id };
@@ -161,15 +185,8 @@ export function elementMultiDerived<
 export function elementMulti<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	T extends (...args: any[]) => Record<string, unknown> | void
->(fn: (createAttach: () => Attach) => T) {
-	return elementMultiDerived([], (_, createAttach) => fn(createAttach));
-}
-
-export function cleanup(fns: ((() => void) | undefined)[]): ((() => void) | undefined)[] {
-	fns.forEach((fn) => {
-		if (fn) {
-			fn();
-		}
-	});
-	return [];
+>(fn: (createAttach: () => Attach, addUnsubscriber: AddUnsubscriber) => T) {
+	return elementMultiDerived([], (_, createAttach, addUnsubscriber) =>
+		fn(createAttach, addUnsubscriber)
+	);
 }

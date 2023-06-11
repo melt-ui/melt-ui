@@ -1,18 +1,16 @@
-import { derived, writable } from 'svelte/store';
 import {
+	createFocusTrap,
 	effect,
 	elementDerived,
 	elementMultiDerived,
-	getElementByMeltId,
 	getPlacement,
 	isBrowser,
-	styleToString,
 	sleep,
-	type PositionOptions,
-	createFocusTrap,
-	cleanup,
+	styleToString,
 	useClickOutside,
+	type PositionOptions,
 } from '$lib/internal/helpers';
+import { derived, writable } from 'svelte/store';
 
 type CreatePopoverArgs = {
 	positioning?: PositionOptions;
@@ -63,14 +61,12 @@ export function createPopover(args?: CreatePopoverArgs) {
 		};
 	});
 
-	let popoverCleanup: ((() => void) | undefined)[] = [];
-
 	const popover = elementDerived(
 		[open, activeTrigger, positioning],
-		([$open, $activeTrigger, $positioning], attach) => {
+		([$open, $activeTrigger, $positioning], attach, addUnsubscriber) => {
 			attach.getElement().then((popoverEl) => {
 				if (!($open && $activeTrigger && popoverEl)) return;
-				popoverCleanup = cleanup(popoverCleanup);
+
 				const placement = getPlacement($activeTrigger, popoverEl, $positioning);
 
 				const { deactivate, useFocusTrap } = createFocusTrap({
@@ -95,18 +91,12 @@ export function createPopover(args?: CreatePopoverArgs) {
 					},
 				});
 
-				popoverCleanup = [
-					...popoverCleanup,
-					placement,
-					focusTrapAction,
-					clickOutsideAction,
-					deactivate,
-				];
+				addUnsubscriber([placement, focusTrapAction, clickOutsideAction, deactivate]);
 			});
 
 			return {
 				hidden: $open ? undefined : true,
-				tabindex: '-1',
+				tabindex: -1,
 				style: styleToString({
 					display: $open ? undefined : 'none',
 				}),
@@ -122,17 +112,6 @@ export function createPopover(args?: CreatePopoverArgs) {
 			height: `var(--arrow-size, ${$arrowSize}px)`,
 		}),
 	}));
-
-	// Cleanup popover when it's closed and removed from the DOM
-	effect([open, popover], ([$open, $popover]) => {
-		if (!isBrowser) return;
-
-		const popoverEl = getElementByMeltId($popover['data-melt-id']);
-
-		if (!$open && !popoverEl) {
-			popoverCleanup = cleanup(popoverCleanup);
-		}
-	});
 
 	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
 		if (!isBrowser) return;
