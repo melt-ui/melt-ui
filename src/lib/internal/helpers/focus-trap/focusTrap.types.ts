@@ -1,3 +1,7 @@
+// Modified from Grail UI v0.9.6 (2023-06-10)
+// Source: https://github.com/grail-ui/grail-ui
+// https://github.com/grail-ui/grail-ui/tree/master/packages/grail-ui/src/focusTrap/focusTrap.types.ts
+
 import type { ActivateOptions, DeactivateOptions, Options as FocusTrapOptions } from 'focus-trap';
 import type { Action } from 'svelte/action';
 import type { Readable } from 'svelte/store';

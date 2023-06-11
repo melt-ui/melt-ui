@@ -1,4 +1,3 @@
-import { onMount } from 'svelte';
 import { derived, writable } from 'svelte/store';
 import {
 	effect,

@@ -1,10 +1,9 @@
+// Modified from Grail UI v0.9.6 (2023-06-10)
 // Source: https://github.com/grail-ui/grail-ui
 // https://github.com/grail-ui/grail-ui/tree/master/packages/grail-ui/src/floating/placement.ts
-// Represents version v0.9.6 (2023-06-10)
 
 import {
 	flip,
-	type Boundary,
 	type Middleware,
 	offset,
 	arrow,
@@ -13,83 +12,7 @@ import {
 	computePosition,
 	autoUpdate,
 } from '@floating-ui/dom';
-import { readable } from 'svelte/store';
-
-export type PositionOptions = {
-	/**
-	 * The strategy to use for positioning.
-	 * @defaultValue `"absolute"`
-	 */
-	strategy?: 'absolute' | 'fixed';
-
-	/**
-	 *
-	 *
-	 */
-	/**
-	 * The initial placement of the floating element.
-	 * @defaultValue `"top"`
-	 */
-	placement?:
-		| 'top'
-		| 'top-start'
-		| 'top-end'
-		| 'right'
-		| 'right-start'
-		| 'right-end'
-		| 'bottom'
-		| 'bottom-start'
-		| 'bottom-end'
-		| 'left'
-		| 'left-start'
-		| 'left-end';
-
-	/**
-	 * The offset of the floating element.
-	 */
-	offset?: { mainAxis?: number; crossAxis?: number };
-
-	/**
-	 * The main axis offset or gap between the reference and floating elements.
-	 * @defaultValue `5`
-	 */
-	gutter?: number;
-
-	/**
-	 * The virtual padding around the viewport edges to check for overflow.
-	 * @defaultValue `8`
-	 */
-	overflowPadding?: number;
-
-	/**
-	 * Whether to flip the placement.
-	 * @defaultValue `true`
-	 */
-	flip?: boolean;
-
-	/**
-	 * Whether the floating element can overlap the reference element.
-	 * @defaultValue `false`
-	 */
-	overlap?: boolean;
-
-	/**
-	 * Whether to make the floating element same width as the reference element.
-	 * @defaultValue `false`
-	 */
-	sameWidth?: boolean;
-
-	/**
-	 * Whether the floating element should fit the viewport.
-	 * @defaultValue `false`
-	 */
-	fitViewport?: boolean;
-
-	/**
-	 * The overflow boundary of the reference element.
-	 */
-	boundary?: Boundary;
-};
+import type { PositionOptions } from './floating.types';
 
 const defaultOptions = {
 	strategy: 'absolute',
@@ -106,12 +29,6 @@ const ARROW_TRANSFORM = {
 	top: 'rotate(225deg)',
 	right: 'rotate(315deg)',
 };
-
-export const arrowAttrs = (arrowSize = 8) =>
-	readable({
-		'data-arrow': 'true',
-		style: `position: absolute; width: var(--arrow-size, ${arrowSize}px); height: var(--arrow-size, ${arrowSize}px);`,
-	});
 
 export function getPlacement(
 	reference: HTMLElement | undefined,
