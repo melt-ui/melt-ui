@@ -10,6 +10,8 @@ import {
 	sleep,
 	type PositionOptions,
 	createFocusTrap,
+	cleanup,
+	useClickOutside,
 } from '$lib/internal/helpers';
 
 type CreatePopoverArgs = {
@@ -61,19 +63,45 @@ export function createPopover(args?: CreatePopoverArgs) {
 		};
 	});
 
-	let cleanupPopover: (() => void) | undefined = undefined;
+	let popoverCleanup: ((() => void) | undefined)[] = [];
 
 	const popover = elementDerived(
 		[open, activeTrigger, positioning],
 		([$open, $activeTrigger, $positioning], attach) => {
 			attach.getElement().then((popoverEl) => {
 				if (!($open && $activeTrigger && popoverEl)) return;
+				popoverCleanup = cleanup(popoverCleanup);
+				const placement = getPlacement($activeTrigger, popoverEl, $positioning);
 
-				// TODO: Determine if this is an adequate way to handle such cases
-				if (cleanupPopover) {
-					cleanupPopover();
-				}
-				cleanupPopover = getPlacement($activeTrigger, popoverEl, $positioning);
+				const { deactivate, useFocusTrap } = createFocusTrap({
+					immediate: true,
+					escapeDeactivates: false,
+					allowOutsideClick: true,
+					returnFocusOnDeactivate: false,
+					fallbackFocus: popoverEl,
+				});
+
+				const focusTrapAction = useFocusTrap(popoverEl);
+
+				const clickOutsideAction = useClickOutside(popoverEl, {
+					enabled: open,
+					handler: (e: PointerEvent) => {
+						if (e.defaultPrevented) return;
+
+						if (!$activeTrigger?.contains(e.target as Element)) {
+							open.set(false);
+							$activeTrigger.focus();
+						}
+					},
+				});
+
+				popoverCleanup = [
+					...popoverCleanup,
+					placement,
+					focusTrapAction,
+					clickOutsideAction,
+					deactivate,
+				];
 			});
 
 			return {
@@ -101,47 +129,19 @@ export function createPopover(args?: CreatePopoverArgs) {
 
 		const popoverEl = getElementByMeltId($popover['data-melt-id']);
 
-		if (!$open && !popoverEl && cleanupPopover) {
-			cleanupPopover();
+		if (!$open && !popoverEl) {
+			popoverCleanup = cleanup(popoverCleanup);
 		}
 	});
 
-	effect([open, popover, activeTrigger], ([$open, $popover, $activeTrigger]) => {
+	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
 		if (!isBrowser) return;
 
-		const popoverEl = getElementByMeltId($popover['data-melt-id']);
-
-		if (popoverEl && $open) {
-			if ($activeTrigger) {
-				getPlacement($activeTrigger, popoverEl);
-			}
-			const firstFocusableChild = popoverEl.querySelector('[tabindex]:not([tabindex="-1"])') as
-				| HTMLElement
-				| undefined;
-			if (firstFocusableChild) {
-				sleep(1).then(() => firstFocusableChild?.focus());
-			} else {
-				sleep(1).then(() => popoverEl.focus());
-			}
-		} else if (!$open && $activeTrigger && isBrowser) {
+		if (!$open && $activeTrigger && isBrowser) {
 			// Prevent the keydown event from triggering on the trigger
 			sleep(1).then(() => $activeTrigger.focus());
 		}
 	});
 
 	return { trigger, open, popover, arrow };
-}
-
-function setupPopover(element: HTMLElement, open: boolean) {
-	const { activate, deactivate, useFocusTrap } = createFocusTrap({
-		immediate: false,
-		escapeDeactivates: false,
-		allowOutsideClick: true,
-		returnFocusOnDeactivate: false,
-		fallbackFocus: element,
-	});
-
-	const focusTrapAction = useFocusTrap(element);
-
-	const clickOutSideAction = useClick;
 }

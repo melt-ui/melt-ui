@@ -164,3 +164,12 @@ export function elementMulti<
 >(fn: (createAttach: () => Attach) => T) {
 	return elementMultiDerived([], (_, createAttach) => fn(createAttach));
 }
+
+export function cleanup(fns: ((() => void) | undefined)[]): ((() => void) | undefined)[] {
+	fns.forEach((fn) => {
+		if (fn) {
+			fn();
+		}
+	});
+	return [];
+}

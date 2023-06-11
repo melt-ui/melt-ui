@@ -50,7 +50,7 @@ export type ClickOutsideConfig = {
 };
 
 export const useClickOutside = (node: HTMLElement, config: ClickOutsideConfig = {}) => {
-	let options = { enabled: true, ...config };
+	const options = { enabled: true, ...config };
 
 	// Returns true if the click outside handler is enabled
 	function isEnabled(): boolean {
@@ -90,12 +90,16 @@ export const useClickOutside = (node: HTMLElement, config: ClickOutsideConfig = 
 		options.handler?.(e);
 	});
 
-	return {
-		update(params: Partial<ClickOutsideConfig>) {
-			options = { ...options, ...params };
-		},
-		destroy() {
-			unsubscribe();
-		},
+	return () => {
+		unsubscribe();
 	};
+
+	// return {
+	// 	update(params: Partial<ClickOutsideConfig>) {
+	// 		options = { ...options, ...params };
+	// 	},
+	// 	destroy() {
+	// 		unsubscribe();
+	// 	},
+	// };
 };

@@ -49,11 +49,9 @@ export function createFocusTrap(config: FocusTrapConfig = {}): FocusTrapReturn {
 			activate();
 		}
 
-		return {
-			destroy() {
-				deactivate();
-				trap = undefined;
-			},
+		return () => {
+			deactivate();
+			trap = undefined;
 		};
 	};
 

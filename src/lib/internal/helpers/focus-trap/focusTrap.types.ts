@@ -3,15 +3,14 @@
 // https://github.com/grail-ui/grail-ui/tree/master/packages/grail-ui/src/focusTrap/focusTrap.types.ts
 
 import type { ActivateOptions, DeactivateOptions, Options as FocusTrapOptions } from 'focus-trap';
-import type { Action } from 'svelte/action';
 import type { Readable } from 'svelte/store';
 
-export interface FocusTrapConfig extends FocusTrapOptions {
+export type FocusTrapConfig = FocusTrapOptions & {
 	/**
 	 * Immediately activate the trap
 	 */
 	immediate?: boolean;
-}
+};
 
 export type FocusTrapReturn = {
 	/**
@@ -55,5 +54,5 @@ export type FocusTrapReturn = {
 	/**
 	 * Action to attach to the element that you want to act as a focus trap.
 	 */
-	useFocusTrap: Action<HTMLElement, void>;
+	useFocusTrap: (node: HTMLElement) => () => void;
 };

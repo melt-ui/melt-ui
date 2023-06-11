@@ -1,5 +1,6 @@
 export * from './array';
 export * from './builder';
+export * from './clickOutside';
 export * from './collectionContext';
 export * from './dom';
 export * from './event';
