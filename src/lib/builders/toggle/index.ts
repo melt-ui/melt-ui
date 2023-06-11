@@ -22,7 +22,7 @@ export function createToggle(args: ToggleArgs = {}) {
 			'data-state': $pressed ? 'on' : 'off',
 			'aria-pressed': $pressed,
 			type: 'button',
-		};
+		} as const;
 	});
 
 	return {
