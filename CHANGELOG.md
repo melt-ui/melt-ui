@@ -1,5 +1,12 @@
 # @melt-ui/svelte
 
+## 0.3.0
+
+### Minor Changes
+
+- 1ba6b49: add radio group
+- 5c4ed8c: add progress
+
 ## 0.2.0
 
 ### Minor Changes
