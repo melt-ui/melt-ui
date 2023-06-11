@@ -1,5 +1,6 @@
 <script>
 	import { Docs } from '$routes/(components)';
+
 	import { snippets } from './(snippets)';
 </script>
 
@@ -8,6 +9,11 @@
 	Melt UI is a set of headless, accessible component builders for
 	<Docs.A href="https://svelte.dev/">Svelte</Docs.A>
 </Docs.P>
+
+<Docs.Construction
+	>Melt UI is in its early stages. Expect breaking changes! And lots of new stuff coming in quickly
+	🔥</Docs.Construction
+>
 
 <Docs.H2>Features</Docs.H2>
 

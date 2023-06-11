@@ -10,7 +10,9 @@
 		<div {...list} class="list" aria-label="Manage your account">
 			<button {...$trigger('tab1')} class="trigger">Account</button>
 			<button {...$trigger('tab2')} class="trigger">Password</button>
-			<button {...$trigger({ value: 'tab3', disabled: true })} class="trigger">Disabled</button>
+			<button {...$trigger({ value: 'tab3', disabled: true })} class="trigger opacity-50"
+				>Disabled</button
+			>
 			<button {...$trigger('tab4')} class="trigger">Settings</button>
 		</div>
 		<div {...$content('tab1')} class="content">
