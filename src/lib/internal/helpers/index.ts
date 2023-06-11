@@ -9,3 +9,4 @@ export * from './sleep';
 export * from './store';
 export * from './style';
 export * from './uuid';
+export * from './keyboard';

@@ -3,6 +3,7 @@ import {
 	elementDerived,
 	elementMultiDerived,
 	isBrowser,
+	kbd,
 	sleep,
 	styleToString,
 } from '$lib/internal/helpers';
@@ -69,6 +70,12 @@ export function createPopover(args?: CreatePopoverArgs) {
 				});
 
 				addUnsubscriber([placement, focusTrapAction, clickOutsideAction, deactivate]);
+			});
+
+			attach('keydown', (e) => {
+				if (!e.defaultPrevented && e.key === kbd.ESCAPE) {
+					open.set(false);
+				}
 			});
 
 			return {
