@@ -1,7 +1,8 @@
-import { readable, type Readable } from 'svelte/store';
+import { readable } from 'svelte/store';
 import { addEventListener } from '$lib/internal/helpers/event';
 import { get } from 'svelte/store';
 import { isFunction } from '$lib/internal/helpers/is';
+import type { ClickOutsideConfig } from './clickOutside.types';
 
 /**
  * Creates a readable store that tracks the latest PointerEvent that occurred on the document.
@@ -29,25 +30,6 @@ const documentClickStore = readable<PointerEvent | undefined>(undefined, (set): 
 	// Returns a function to unsubscribe from the event listener and stop tracking pointer events.
 	return unsubscribe;
 });
-
-export type ClickOutsideConfig = {
-	/**
-	 * Whether the listener is active.
-	 *
-	 * @defaultValue `true`
-	 */
-	enabled?: boolean | Readable<boolean>;
-
-	/**
-	 * Callback when user clicks outside a given element.
-	 */
-	handler?: (evt: PointerEvent) => void;
-
-	/**
-	 * A predicate function or a list of elements that should not trigger the event.
-	 */
-	ignore?: ((e: PointerEvent) => boolean) | Element[];
-};
 
 export const useClickOutside = (node: HTMLElement, config: ClickOutsideConfig = {}) => {
 	const options = { enabled: true, ...config };
@@ -93,13 +75,4 @@ export const useClickOutside = (node: HTMLElement, config: ClickOutsideConfig = 
 	return () => {
 		unsubscribe();
 	};
-
-	// return {
-	// 	update(params: Partial<ClickOutsideConfig>) {
-	// 		options = { ...options, ...params };
-	// 	},
-	// 	destroy() {
-	// 		unsubscribe();
-	// 	},
-	// };
 };
