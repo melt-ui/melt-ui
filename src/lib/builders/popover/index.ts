@@ -9,6 +9,7 @@ import {
 	styleToString,
 	sleep,
 	type PositionOptions,
+	createFocusTrap,
 } from '$lib/internal/helpers';
 
 type CreatePopoverArgs = {
@@ -69,6 +70,9 @@ export function createPopover(args?: CreatePopoverArgs) {
 				if (!($open && $activeTrigger && popoverEl)) return;
 
 				// TODO: Determine if this is an adequate way to handle such cases
+				if (cleanupPopover) {
+					cleanupPopover();
+				}
 				cleanupPopover = getPlacement($activeTrigger, popoverEl, $positioning);
 			});
 
@@ -91,6 +95,7 @@ export function createPopover(args?: CreatePopoverArgs) {
 		}),
 	}));
 
+	// Cleanup popover when it's closed and removed from the DOM
 	effect([open, popover], ([$open, $popover]) => {
 		if (!isBrowser) return;
 
@@ -125,4 +130,18 @@ export function createPopover(args?: CreatePopoverArgs) {
 	});
 
 	return { trigger, open, popover, arrow };
+}
+
+function setupPopover(element: HTMLElement, open: boolean) {
+	const { activate, deactivate, useFocusTrap } = createFocusTrap({
+		immediate: false,
+		escapeDeactivates: false,
+		allowOutsideClick: true,
+		returnFocusOnDeactivate: false,
+		fallbackFocus: element,
+	});
+
+	const focusTrapAction = useFocusTrap(element);
+
+	const clickOutSideAction = useClick;
 }
