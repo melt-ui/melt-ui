@@ -12,3 +12,5 @@
 <Preview />
 
 <Docs.CodeBlock {code} />
+
+<Docs.Construction />

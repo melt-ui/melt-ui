@@ -58,7 +58,7 @@
 	.trigger {
 		@apply flex h-11 flex-1 cursor-default select-none items-center
       justify-center rounded-none bg-white px-5 leading-none text-magnum-900
-			outline-none focus:relative focus:ring-2 focus:ring-black;
+			outline-none focus:relative focus:ring focus:ring-magnum-400;
 	}
 
 	.trigger[data-orientation='vertical'] {
@@ -70,7 +70,7 @@
 	}
 
 	.trigger[data-state='active'][data-orientation='horizontal'] {
-		@apply shadow-[inset_0_-1px_0_0,0_1px_0_0] shadow-current focus:relative focus:ring-2 focus:ring-black;
+		@apply shadow-[inset_0_-1px_0_0,0_1px_0_0] shadow-current focus:relative focus:ring focus:ring-magnum-400;
 	}
 
 	.trigger[data-state='active'][data-orientation='vertical'] {
@@ -78,7 +78,7 @@
 	}
 
 	.content {
-		@apply grow bg-white p-5 outline-none focus:ring-2 focus:ring-black;
+		@apply grow bg-white p-5 outline-none focus:ring focus:ring-magnum-400;
 	}
 
 	/* Content Elements */
@@ -95,7 +95,7 @@
 	}
 
 	input {
-		@apply h-8 shrink-0 grow rounded border px-2.5 leading-none text-magnum-900 outline-none focus:ring-2 focus:ring-magnum-800;
+		@apply h-8 shrink-0 grow rounded border px-2.5 leading-none text-magnum-900 outline-none focus:ring focus:ring-magnum-800;
 	}
 
 	.actions {
@@ -103,6 +103,6 @@
 	}
 
 	button {
-		@apply inline-flex h-8 cursor-default items-center justify-center rounded bg-green-100 px-[15px] font-medium leading-none text-green-900 outline-none focus:ring-2 focus:ring-black;
+		@apply inline-flex h-8 cursor-default items-center justify-center rounded bg-green-100 px-[15px] font-medium leading-none text-green-900 outline-none focus:ring focus:ring-magnum-400;
 	}
 </style>

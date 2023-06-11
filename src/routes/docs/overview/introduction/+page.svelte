@@ -1,5 +1,6 @@
 <script>
 	import { Docs } from '$routes/(components)';
+
 	import { snippets } from './(snippets)';
 </script>
 
@@ -9,7 +10,10 @@
 	<Docs.A href="https://svelte.dev/">Svelte</Docs.A>
 </Docs.P>
 
-<Docs.Hr />
+<Docs.Construction
+	>Melt UI is in its early stages. Expect breaking changes! And lots of new stuff coming in quickly
+	🔥</Docs.Construction
+>
 
 <Docs.H2>Features</Docs.H2>
 

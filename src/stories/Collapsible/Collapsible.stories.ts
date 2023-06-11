@@ -20,9 +20,5 @@ export const Example: Story = {
 	args: {
 		open: false,
 		disabled: false,
-		transition: {
-			duration: 300,
-			delay: 0,
-		},
 	},
 };

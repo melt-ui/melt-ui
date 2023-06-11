@@ -21,7 +21,8 @@ export function createToggle(args: ToggleArgs = {}) {
 			'data-disabled': $disabled ? '' : undefined,
 			'data-state': $pressed ? 'on' : 'off',
 			'aria-pressed': $pressed,
-		};
+			type: 'button',
+		} as const;
 	});
 
 	return {

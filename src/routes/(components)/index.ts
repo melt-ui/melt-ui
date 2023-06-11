@@ -14,10 +14,12 @@ import A from './a.svelte';
 import Hr from './hr.svelte';
 import Tabs from './tabs.svelte';
 import Kbd from './kbd.svelte';
+import Construction from './construction.svelte';
 
 export const Docs = {
 	API,
 	CodeBlock,
+	Construction,
 	Description,
 	PreviewWrapper,
 	H1,

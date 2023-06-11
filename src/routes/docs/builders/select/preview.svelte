@@ -8,7 +8,7 @@
 <Docs.PreviewWrapper>
 	<button
 		class="rounded-md bg-white px-4 py-1 text-magnum-700 outline-none
-	hover:opacity-75 focus:ring focus:ring-black"
+	hover:opacity-75 focus:ring focus:ring-magnum-400"
 		{...$trigger()}
 	>
 		{$selectedText || 'Select an option'}

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - develop
   pull_request:
 
 # cancel in-progress runs on new commits to same PR (gitub.event.number)
@@ -23,7 +24,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2
         with:
-          version: 7.24.2
+          version: 8.6.1
           run_install: true
       - run: pnpm run lint
 
@@ -35,7 +36,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2
         with:
-          version: 7.24.2
+          version: 8.6.1
           run_install: true
       - run: pnpm run check
       
@@ -46,7 +47,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2
         with:
-          version: 7.24.2
+          version: 8.6.1
           run_install: true
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps

@@ -2,9 +2,14 @@
 	import { page } from '$app/stores';
 	import { cn } from '../helpers';
 
+	const buildersGlob = import.meta.glob('./builders/**/+page.svelte');
+	const builders = Object.keys(buildersGlob)
+		.map((path) => path.split('/')[2])
+		.sort();
+
 	const sections = {
 		overview: ['introduction', 'getting-started'],
-		builders: ['accordion', 'collapsible', 'popover', 'select', 'tabs', 'toggle'],
+		builders,
 	};
 
 	const format = (s: string) => {
