@@ -4,20 +4,20 @@
  * hard-coded strings throughout.
  */
 export const kbd = {
+	ARROW_DOWN: 'ArrowDown',
+	ARROW_LEFT: 'ArrowLeft',
+	ARROW_RIGHT: 'ArrowRight',
+	ARROW_UP: 'ArrowUp',
 	BACKSPACE: 'Backspace',
 	CONTROL: 'Control',
 	DELETE: 'Delete',
-	DOWN_ARROW: 'ArrowDown',
 	END: 'End',
 	ENTER: 'Enter',
 	ESCAPE: 'Escape',
 	HOME: 'Home',
-	LEFT_ARROW: 'ArrowLeft',
 	PAGE_DOWN: 'PageDown',
 	PAGE_UP: 'PageUp',
-	RIGHT_ARROW: 'ArrowRight',
 	SHIFT: 'Shift',
 	SPACE: ' ',
 	TAB: 'Tab',
-	UP_ARROW: 'ArrowUp',
 };
