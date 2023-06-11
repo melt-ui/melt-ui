@@ -1,3 +1,9 @@
+/**
+ * A function that generates a UUID (version 4) using the `crypto.randomUUID`
+ * function if available, or a fallback implementation if not.
+ *
+ * @returns A UUID (version 4)
+ */
 export function uuid() {
 	try {
 		return crypto.randomUUID();
