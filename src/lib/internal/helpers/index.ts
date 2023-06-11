@@ -13,3 +13,5 @@ export * from './preview';
 export * from './browser';
 export * from './uuid';
 export * from './builder';
+export * from './floating';
+export * from './sleep';

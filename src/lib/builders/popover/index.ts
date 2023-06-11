@@ -1,19 +1,20 @@
 import { onMount } from 'svelte';
-import { writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import {
 	effect,
 	elementDerived,
 	elementMultiDerived,
 	getElementByMeltId,
+	getPlacement,
 	isBrowser,
 	styleToString,
+	sleep,
+	arrowAttrs,
 } from '$lib/internal/helpers';
-import { computePosition } from '@floating-ui/dom';
-import { sleep } from '@melt-ui/svelte/internal/helpers/sleep';
 
 export function createPopover() {
 	const open = writable(false);
-	const portal = writable('body');
+
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	onMount(() => {
@@ -63,11 +64,8 @@ export function createPopover() {
 		attach.getElement().then((popoverEl) => {
 			if (!($open && $activeTrigger && popoverEl)) return;
 
-			computePosition($activeTrigger, popoverEl).then((position) => {
-				popoverEl.getBoundingClientRect();
-				popoverEl.style.left = `${position.x}px`;
-				popoverEl.style.top = `${position.y}px`;
-			});
+			// TODO: Determine if this is okay or are we creating a memory leak/a bunch of listeners
+			getPlacement($activeTrigger, popoverEl);
 		});
 
 		return {
@@ -83,6 +81,9 @@ export function createPopover() {
 
 		const popoverEl = getElementByMeltId($menu['data-melt-id']);
 		if (popoverEl && $open) {
+			if ($activeTrigger) {
+				getPlacement($activeTrigger, popoverEl);
+			}
 			const firstFocusableChild = popoverEl.querySelector('[tabindex]:not([tabindex="-1"])') as
 				| HTMLElement
 				| undefined;
@@ -97,5 +98,5 @@ export function createPopover() {
 		}
 	});
 
-	return { trigger, open, popover };
+	return { trigger, open, popover, arrow: arrowAttrs };
 }
