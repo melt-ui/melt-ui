@@ -73,10 +73,11 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | --------------- | ------ |
 | Accordion       | ✅     |
 | Alert Dialog    |        |
-| Aspect Ratio    |        |
 | Avatar          |        |
-| Checkbox        |        |
+| Calendar        |        |
+| Checkbox        | ✅     |
 | Collapsible     | ✅     |
+| ComboBox        |        |
 | Context Menu    |        |
 | Dialog          |        |
 | Dropdown Menu   |        |
@@ -84,20 +85,24 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Label           |        |
 | Menubar         |        |
 | Navigation Menu |        |
+| Pin Input       |        |
 | Popover         |        |
-| Progress        |        |
-| Radio Group     |        |
+| Progress        | ✅     |
+| Radio Group     | ✅     |
 | Scroll Area     |        |
 | Select          | ✅     |
 | Separator       |        |
 | Slider          |        |
-| Switch          |        |
+| Switch          | ✅     |
 | Tabs            | ✅     |
+| Tags Input      |        |
 | Toast           |        |
-| Toggle          |        |
-| Toggle Group    |        |
+| Toggle          | ✅     |
+| Toggle Group    | ✅     |
 | Toolbar         |        |
 | Tooltip         |        |
+
+And more!
 
 ## Similar projects
 
