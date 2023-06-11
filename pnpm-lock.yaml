@@ -55,9 +55,9 @@ devDependencies:
   '@storybook/testing-library':
     specifier: ^0.0.14-next.2
     version: 0.0.14-next.2
-  '@sveltejs/adapter-cloudflare':
-    specifier: ^2.3.0
-    version: 2.3.0(@sveltejs/kit@1.15.2)
+  '@sveltejs/adapter-auto':
+    specifier: ^2.1.0
+    version: 2.1.0(@sveltejs/kit@1.15.2)
   '@sveltejs/kit':
     specifier: ^1.5.0
     version: 1.15.2(svelte@3.58.0)(vite@4.2.1)
@@ -2728,10 +2728,6 @@ packages:
       prettier: 2.8.7
     dev: true
 
-  /@cloudflare/workers-types@4.20230518.0:
-    resolution: {integrity: sha512-A0w1V+5SUawGaaPRlhFhSC/SCDT9oQG8TMoWOKFLA4qbqagELqEAFD4KySBIkeVOvCBLT1DZSYBMCxbXddl0kw==}
-    dev: true
-
   /@colors/colors@1.5.0:
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
@@ -4415,15 +4411,13 @@ packages:
       file-system-cache: 2.3.0
     dev: true
 
-  /@sveltejs/adapter-cloudflare@2.3.0(@sveltejs/kit@1.15.2):
-    resolution: {integrity: sha512-4rUtQG1rfenLh3V+w8DSfmtv/l3pGBdxjvJ68oAVX7Lpm2yHUaKPmPVOA7EuQiP0BOB/TSZVmIF8c5SnTlrYXQ==}
+  /@sveltejs/adapter-auto@2.1.0(@sveltejs/kit@1.15.2):
+    resolution: {integrity: sha512-o2pZCfATFtA/Gw/BB0Xm7k4EYaekXxaPGER3xGSY3FvzFJGTlJlZjBseaXwYSM94lZ0HniOjTokN3cWaLX6fow==}
     peerDependencies:
       '@sveltejs/kit': ^1.0.0
     dependencies:
-      '@cloudflare/workers-types': 4.20230518.0
       '@sveltejs/kit': 1.15.2(svelte@3.58.0)(vite@4.2.1)
-      esbuild: 0.17.19
-      worktop: 0.8.0-next.15
+      import-meta-resolve: 3.0.0
     dev: true
 
   /@sveltejs/kit@1.15.2(svelte@3.58.0)(vite@4.2.1):
@@ -7590,6 +7584,10 @@ packages:
       resolve-from: 4.0.0
     dev: true
 
+  /import-meta-resolve@3.0.0:
+    resolution: {integrity: sha512-4IwhLhNNA8yy445rPjD/lWh++7hMDOml2eHtd58eG7h+qK3EryMuuRbsHGPikCoAgIkkDnckKfWSk2iDla/ejg==}
+    dev: true
+
   /imurmurhash@0.1.4:
     resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
     engines: {node: '>=0.8.19'}
@@ -9777,11 +9775,6 @@ packages:
       functions-have-names: 1.2.3
     dev: true
 
-  /regexparam@2.0.1:
-    resolution: {integrity: sha512-zRgSaYemnNYxUv+/5SeoHI0eJIgTL/A2pUtXUPLHQxUldagouJ9p+K6IbIZ/JiQuCEv2E2B1O11SjVQy3aMCkw==}
-    engines: {node: '>=8'}
-    dev: true
-
   /regexpp@3.2.0:
     resolution: {integrity: sha512-pq2bWo9mVD43nbts2wGv17XLiNLya+GklZ8kaDLV2Z08gDCsGpnKn9BFMepvWuHCbyVvY7J5o5+BVvoQbmlJLg==}
     engines: {node: '>=8'}
@@ -11554,14 +11547,6 @@ packages:
 
   /wordwrap@1.0.0:
     resolution: {integrity: sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==}
-    dev: true
-
-  /worktop@0.8.0-next.15:
-    resolution: {integrity: sha512-0ycNO52P6nVwsjr1y20zuf0nqJatAb8L7MODBfQIxbxndHV5O4s50oZZMHWhJG1RLpHwbK0Epq8aaQK4E2GlgQ==}
-    engines: {node: '>=12'}
-    dependencies:
-      mrmime: 1.0.1
-      regexparam: 2.0.1
     dev: true
 
   /wrap-ansi@6.2.0:
