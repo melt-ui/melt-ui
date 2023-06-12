@@ -1,4 +1,4 @@
-import { elementMultiDerived, getElementByMeltId, uuid } from '$lib/internal/helpers';
+import { elementMultiDerived, getElementByMeltId, kbd, uuid } from '$lib/internal/helpers';
 import { derived, writable } from 'svelte/store';
 
 type BaseAccordionArgs = {
@@ -93,7 +93,7 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 			});
 
 			attach('keydown', (e) => {
-				if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) {
+				if (![kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.HOME, kbd.END].includes(e.key)) {
 					return;
 				}
 				e.preventDefault();
@@ -109,16 +109,16 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 				if (!items.length) return;
 				const elIdx = items.indexOf(el);
 
-				if (e.key === 'ArrowDown') {
+				if (e.key === kbd.ARROW_DOWN) {
 					items[(elIdx + 1) % items.length].focus();
 				}
-				if (e.key === 'ArrowUp') {
+				if (e.key === kbd.ARROW_UP) {
 					items[(elIdx - 1 + items.length) % items.length].focus();
 				}
-				if (e.key === 'Home') {
+				if (e.key === kbd.HOME) {
 					items[0].focus();
 				}
-				if (e.key === 'End') {
+				if (e.key === kbd.END) {
 					items[items.length - 1].focus();
 				}
 			});

@@ -1,4 +1,4 @@
-import { elementMultiDerived } from '@melt-ui/svelte/internal/helpers';
+import { elementMultiDerived, kbd } from '@melt-ui/svelte/internal/helpers';
 import { derived, writable } from 'svelte/store';
 
 type Orientation = 'horizontal' | 'vertical';
@@ -88,13 +88,13 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 			// TODO: detect dir
 			const dir = 'ltr' as 'ltr' | 'rtl';
 			const nextKey = {
-				horizontal: dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight',
-				vertical: 'ArrowDown',
+				horizontal: dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
+				vertical: kbd.ARROW_DOWN,
 			}[$options.orientation ?? 'horizontal'];
 
 			const prevKey = {
-				horizontal: dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft',
-				vertical: 'ArrowUp',
+				horizontal: dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
+				vertical: kbd.ARROW_UP,
 			}[$options.orientation ?? 'horizontal'];
 
 			attach('keydown', (e) => {
@@ -128,10 +128,10 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 					} else {
 						items[prevIndex].focus();
 					}
-				} else if (e.key === 'Home') {
+				} else if (e.key === kbd.HOME) {
 					e.preventDefault();
 					items[0].focus();
-				} else if (e.key === 'End') {
+				} else if (e.key === kbd.END) {
 					e.preventDefault();
 					items[items.length - 1].focus();
 				}

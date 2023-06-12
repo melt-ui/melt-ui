@@ -4,6 +4,7 @@ import {
 	elementMultiDerived,
 	getElementByMeltId,
 	isBrowser,
+	kbd,
 	styleToString,
 } from '$lib/internal/helpers';
 import { sleep } from '$lib/internal/helpers/sleep';
@@ -101,7 +102,7 @@ export function createSelect() {
 			});
 
 			attach('keydown', (e) => {
-				if (e.key === 'Enter') {
+				if (e.key === kbd.ENTER) {
 					e.stopPropagation();
 					e.stopImmediatePropagation();
 					const el = e.currentTarget as HTMLElement;
@@ -145,7 +146,7 @@ export function createSelect() {
 			}
 
 			const keydownListener = (e: KeyboardEvent) => {
-				if (e.key === 'Escape') {
+				if (e.key === kbd.ESCAPE) {
 					open.set(false);
 					activeTrigger.set(null);
 					return;
@@ -155,12 +156,12 @@ export function createSelect() {
 				const focusedOption = allOptions.find((el) => el === document.activeElement);
 				const focusedIndex = allOptions.indexOf(focusedOption as HTMLElement);
 
-				if (e.key === 'ArrowDown') {
+				if (e.key === kbd.ARROW_DOWN) {
 					e.preventDefault();
 					const nextIndex = focusedIndex + 1 > allOptions.length - 1 ? 0 : focusedIndex + 1;
 					const nextOption = allOptions[nextIndex] as HTMLElement;
 					nextOption.focus();
-				} else if (e.key === 'ArrowUp') {
+				} else if (e.key === kbd.ARROW_UP) {
 					e.preventDefault();
 					const prevIndex = focusedIndex - 1 < 0 ? allOptions.length - 1 : focusedIndex - 1;
 					const prevOption = allOptions[prevIndex] as HTMLElement;
