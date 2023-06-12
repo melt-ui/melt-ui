@@ -71,7 +71,7 @@
 	}
 
 	.close {
-		@apply absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full;
+		@apply absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full;
 		@apply text-magnum-900 transition-colors hover:bg-magnum-500/10 focus-visible:outline-none;
 		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
 		@apply bg-white p-0 text-sm font-medium;
