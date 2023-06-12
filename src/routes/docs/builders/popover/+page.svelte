@@ -4,7 +4,7 @@
 	import previewCode from './preview.svelte?raw';
 </script>
 
-<Docs.H1>Popover</Docs.H1>
+<Docs.H1>Popover (WIP)</Docs.H1>
 <Docs.Description>Displays rich content in a portal, triggered by a button.</Docs.Description>
 
 <Preview />
