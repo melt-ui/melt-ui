@@ -1,3 +1,4 @@
+import { usePopper } from '$lib/internal/actions/popper';
 import {
 	effect,
 	elementDerived,
@@ -8,9 +9,8 @@ import {
 	styleToString,
 } from '$lib/internal/helpers';
 import { sleep } from '$lib/internal/helpers/sleep';
-import { computePosition } from '@floating-ui/dom';
-import { onMount } from 'svelte';
-import { writable } from 'svelte/store';
+import type { FloatingConfig } from '$lib/internal/actions';
+import { derived, writable } from 'svelte/store';
 
 /**
  * Features:
@@ -21,28 +21,26 @@ import { writable } from 'svelte/store';
  * - [ ] Floating UI
  **/
 
-export function createSelect() {
+type CreateSelectArgs = {
+	positioning?: FloatingConfig;
+	arrowSize?: number;
+};
+
+const defaults = {
+	arrowSize: 8,
+	positioning: {
+		placement: 'bottom',
+	},
+} satisfies CreateSelectArgs;
+
+export function createSelect(args?: CreateSelectArgs) {
+	const withDefaults = { ...defaults, ...args } as CreateSelectArgs;
+	const options = writable({ ...withDefaults });
+
 	const open = writable(false);
 	const selected = writable<string | null>(null);
 	const selectedText = writable<string | null>(null);
 	const activeTrigger = writable<HTMLElement | null>(null);
-
-	// Dumb click outside
-	onMount(() => {
-		const listener = () => {
-			open.set(false);
-		};
-
-		if (isBrowser) {
-			document.addEventListener('click', listener);
-		}
-
-		return () => {
-			if (isBrowser) {
-				document.removeEventListener('click', listener);
-			}
-		};
-	});
 
 	const trigger = elementMultiDerived([open], (_, { createAttach }) => {
 		return () => {
@@ -68,24 +66,42 @@ export function createSelect() {
 		};
 	});
 
-	const menu = elementDerived([open, activeTrigger], ([$open, $activeTrigger], { attach }) => {
-		attach.getElement().then((menuEl) => {
-			if (!($open && $activeTrigger && menuEl)) return;
+	const menu = elementDerived(
+		[open, activeTrigger, options],
+		([$open, $activeTrigger, $options], { attach, addUnsubscriber }) => {
+			attach.getElement().then((menuEl) => {
+				if (!($open && $activeTrigger && menuEl)) return;
 
-			computePosition($activeTrigger, menuEl).then((position) => {
-				menuEl.getBoundingClientRect();
-				menuEl.style.left = `${position.x}px`;
-				menuEl.style.top = `${position.y}px`;
+				const { unsubscribe } = usePopper({
+					anchorElement: $activeTrigger,
+					popperElement: menuEl,
+					open,
+					attach,
+					options: {
+						floating: $options.positioning,
+					},
+				});
+
+				addUnsubscriber([unsubscribe]);
 			});
-		});
 
-		return {
-			hidden: $open ? undefined : true,
-			style: styleToString({
-				display: $open ? undefined : 'none',
-			}),
-		};
-	});
+			return {
+				hidden: $open ? undefined : true,
+				style: styleToString({
+					display: $open ? undefined : 'none',
+				}),
+			};
+		}
+	);
+
+	const arrow = derived(options, ($options) => ({
+		'data-arrow': true,
+		style: styleToString({
+			position: 'absolute',
+			width: `var(--arrow-size, ${$options.arrowSize}px)`,
+			height: `var(--arrow-size, ${$options.arrowSize}px)`,
+		}),
+	}));
 
 	type OptionArgs = {
 		value: string;
@@ -179,5 +195,5 @@ export function createSelect() {
 		}
 	});
 
-	return { trigger, menu, open, option, selected, selectedText };
+	return { trigger, menu, open, option, selected, selectedText, arrow };
 }

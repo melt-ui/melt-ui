@@ -1,4 +1,4 @@
-import { elementDerived } from '@melt-ui/svelte/internal/helpers';
+import { elementDerived } from '$lib/internal/helpers';
 import { writable } from 'svelte/store';
 
 type ToggleArgs = {

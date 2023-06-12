@@ -1,4 +1,4 @@
-import { elementMultiDerived, kbd } from '@melt-ui/svelte/internal/helpers';
+import { elementMultiDerived, kbd } from '$lib/internal/helpers';
 import { derived, writable } from 'svelte/store';
 
 type Orientation = 'horizontal' | 'vertical';

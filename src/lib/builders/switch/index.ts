@@ -1,4 +1,4 @@
-import { elementDerived, styleToString } from '@melt-ui/svelte/internal/helpers';
+import { elementDerived, styleToString } from '$lib/internal/helpers';
 import { derived, writable } from 'svelte/store';
 
 type CreateSwitchArgs = {

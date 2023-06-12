@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createTabs } from '@melt-ui/svelte';
+	import { createTabs } from '$lib';
 
 	export let tabs: string[] = [];
 

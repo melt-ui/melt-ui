@@ -1,4 +1,4 @@
-import { elementDerived, kbd, styleToString } from '@melt-ui/svelte/internal/helpers';
+import { elementDerived, kbd, styleToString } from '$lib/internal/helpers';
 import { derived, writable } from 'svelte/store';
 
 type CheckedState = boolean | 'indeterminate';

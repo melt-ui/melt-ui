@@ -7,10 +7,8 @@ import {
 	styleToString,
 } from '$lib/internal/helpers';
 
-import type { FloatingConfig } from '$lib/internal/actions';
-
+import { usePopper, type FloatingConfig } from '$lib/internal/actions';
 import { derived, readable, writable } from 'svelte/store';
-import { usePopper } from '@melt-ui/svelte/internal/actions/popper';
 
 export type CreatePopoverArgs = {
 	positioning?: FloatingConfig;
