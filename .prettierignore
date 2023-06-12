@@ -20,4 +20,4 @@ yarn.lock
 tsconfig.json
 
 CHANGELOG.md
-
+.changeset
