@@ -10,7 +10,7 @@ import {
 } from '$lib/internal/helpers';
 import { sleep } from '$lib/internal/helpers/sleep';
 import type { FloatingConfig } from '$lib/internal/actions';
-import { derived, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 
 /**
  * Features:
@@ -27,7 +27,6 @@ type CreateSelectArgs = {
 };
 
 const defaults = {
-	arrowSize: 8,
 	positioning: {
 		placement: 'bottom',
 	},
@@ -93,15 +92,6 @@ export function createSelect(args?: CreateSelectArgs) {
 			};
 		}
 	);
-
-	const arrow = derived(options, ($options) => ({
-		'data-arrow': true,
-		style: styleToString({
-			position: 'absolute',
-			width: `var(--arrow-size, ${$options.arrowSize}px)`,
-			height: `var(--arrow-size, ${$options.arrowSize}px)`,
-		}),
-	}));
 
 	type OptionArgs = {
 		value: string;
@@ -195,5 +185,5 @@ export function createSelect(args?: CreateSelectArgs) {
 		}
 	});
 
-	return { trigger, menu, open, option, selected, selectedText, arrow };
+	return { trigger, menu, open, option, selected, selectedText };
 }
