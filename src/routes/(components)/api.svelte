@@ -66,7 +66,7 @@
 							<code>{d.type}</code>
 						</div>
 						<div>
-							{#if d.default}
+							{#if d.default !== undefined}
 								<code>{d.default}</code>
 							{:else}
 								<span>-</span>
@@ -86,7 +86,7 @@
 							<code>{d.type}</code>
 						</div>
 						<div>
-							{#if d.default}
+							{#if d.default !== undefined}
 								<code>{d.default}</code>
 							{:else}
 								<span>-</span>

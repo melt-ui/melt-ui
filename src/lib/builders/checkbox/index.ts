@@ -15,8 +15,6 @@ const defaults = {
 	checked: false,
 	disabled: false,
 	required: false,
-	name: '',
-	value: '',
 } satisfies CreateCheckboxArgs;
 
 export function createCheckbox(args: CreateCheckboxArgs = {}) {

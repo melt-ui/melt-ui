@@ -56,8 +56,8 @@
 
 <Docs.H3>Controlled access</Docs.H3>
 <Docs.P>
-	To programatically control the Accordion, you can directly set the `value`` store. You can also
-	update the `options` store with new arguments.
+	To programatically control the Accordion, you can directly set the <Docs.Code>value</Docs.Code> store.
+	You can also update the <Docs.Code>options</Docs.Code> store with new arguments.
 </Docs.P>
 <Docs.CodeBlock code={snippets.controlled} />
 
