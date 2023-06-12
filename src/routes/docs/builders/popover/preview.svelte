@@ -3,6 +3,7 @@
 	import { Docs } from '$routes/(components)';
 	import { fade } from 'svelte/transition';
 	import Settings2 from '~icons/lucide/settings2';
+	import X from '~icons/lucide/x';
 
 	const { trigger, content, open, arrow } = createPopover();
 </script>
@@ -35,6 +36,9 @@
 					<input id="maxHeight" class="PopoverInput" />
 				</fieldset>
 			</div>
+			<button class="PopoverClose">
+				<X class="h-6 w-6" />
+			</button>
 		</div>
 	{/if}
 </Docs.PreviewWrapper>
@@ -45,10 +49,26 @@
 	}
 
 	label {
-		@apply w-[75px] text-sm text-magnum-700;
+		@apply w-[75px] text-sm text-neutral-700;
 	}
 
 	p {
 		@apply mb-2 font-medium text-neutral-900;
+	}
+
+	.PopoverInput {
+		@apply flex h-8 w-full flex-1 items-center justify-center rounded-md border border-magnum-500 bg-transparent px-2.5 text-sm  leading-none text-magnum-700 ring-offset-magnum-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-magnum-400 focus-visible:ring-offset-1;
+	}
+
+	.PopoverTrigger {
+		@apply inline-flex h-10 w-10 items-center justify-center rounded-full bg-white p-0 text-sm font-medium  text-neutral-900 ring-neutral-800/50 transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+	}
+
+	.PopoverClose {
+		@apply inline-flex h-10 w-10 items-center justify-center rounded-full bg-white p-0 text-sm font-medium  text-neutral-900 ring-white/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+	}
+
+	.PopoverContent {
+		@apply z-10 w-64 rounded-md bg-white p-5 shadow-sm;
 	}
 </style>
