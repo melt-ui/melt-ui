@@ -1,5 +1,16 @@
 # @melt-ui/svelte
 
+## 0.4.0
+
+### Minor Changes
+
+- 444f570: feat: popover
+- 6fd8efe: update accordion return
+
+### Patch Changes
+
+- 7971876: use popper action on select
+
 ## 0.3.0
 
 ### Minor Changes
