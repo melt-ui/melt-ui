@@ -20,19 +20,19 @@
 				<p>Dimensions</p>
 				<fieldset>
 					<label for="width"> Width </label>
-					<input id="width" value="100%" />
+					<input id="width" value="100%" class="PopoverInput" />
 				</fieldset>
 				<fieldset>
 					<label for="maxWidth"> Max. width </label>
-					<input id="maxWidth" value="300px" />
+					<input id="maxWidth" value="300px" class="PopoverInput" />
 				</fieldset>
 				<fieldset>
 					<label for="height"> Height </label>
-					<input id="height" value="25px" />
+					<input id="height" value="25px" class="PopoverInput" />
 				</fieldset>
 				<fieldset>
 					<label for="maxHeight"> Max. height </label>
-					<input id="maxHeight" />
+					<input id="maxHeight" class="PopoverInput" />
 				</fieldset>
 			</div>
 		</div>
@@ -50,22 +50,5 @@
 
 	p {
 		@apply mb-2 font-medium text-neutral-900;
-	}
-
-	input {
-		@apply flex h-8 w-full rounded-md border border-magnum-800 bg-transparent px-2.5 text-sm;
-		@apply ring-offset-magnum-300 focus-visible:outline-none focus-visible:ring-2;
-		@apply focus-visible:ring-magnum-400 focus-visible:ring-offset-1;
-		@apply flex-1 items-center justify-center;
-		@apply px-2.5 text-sm leading-none text-magnum-700;
-	}
-	.PopoverContent {
-		@apply z-10 w-60 rounded-[4px] bg-white p-5 shadow-sm;
-	}
-
-	.PopoverTrigger {
-		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0 text-sm font-medium;
-		@apply text-magnum-900 transition-colors hover:bg-white/90 focus-visible:outline-none;
-		@apply focus-visible:ring-2 focus-visible:ring-offset-2;
 	}
 </style>
