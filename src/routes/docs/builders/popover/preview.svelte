@@ -36,8 +36,8 @@
 					<input id="maxHeight" class="input" />
 				</fieldset>
 			</div>
-			<button class="PopoverClose">
-				<X class="h-6 w-6" />
+			<button class="close" {...$trigger()}>
+				<X class="h-4 w-4 " />
 			</button>
 		</div>
 	{/if}
@@ -68,6 +68,13 @@
 		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0 text-sm font-medium;
 		@apply text-magnum-900 transition-colors hover:bg-white/90 focus-visible:outline-none;
 		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
+	}
+
+	.close {
+		@apply absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full;
+		@apply text-magnum-900 transition-colors hover:bg-magnum-500/10 focus-visible:outline-none;
+		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
+		@apply bg-white p-0 text-sm font-medium;
 	}
 
 	.content {
