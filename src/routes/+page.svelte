@@ -24,7 +24,7 @@
 	<div class="grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-3">
 		<div class="col-span-full flex flex-col gap-4 py-24">
 			<div class="flex flex-col items-center">
-				<img src="/logo.svg" alt="Melt UI" />
+				<img class="logo" src="/logo.svg" alt="Melt UI" />
 				<button
 					on:click={copyInstallCommand}
 					class="text-md group mt-8 flex items-center justify-between gap-4 break-keep rounded
@@ -56,27 +56,9 @@
 </div>
 
 <style lang="postcss">
-	.cumulative-gradient {
-		--size: calc(var(--n) * 20rem);
-
-		position: absolute;
-		top: 32px;
-		left: 40px;
-		width: var(--size);
-		height: var(--size);
-		border-radius: 100%;
-		z-index: -1;
-
-		translate: calc(var(--size) / -2) calc(var(--size) / -2);
-
-		background: linear-gradient(
-			180deg,
-			theme('colors.magnum.600/0.25'),
-			theme('colors.magnum.800/0.25')
-		);
-
-		opacity: 0.25;
-
-		display: none;
+	.logo {
+		aspect-ratio: 340/109;
+		width: 340px;
+		max-width: 100%;
 	}
 </style>
