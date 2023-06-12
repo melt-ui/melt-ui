@@ -108,6 +108,7 @@ And more!
 
 Looking for more? Check out these other projects too:
 
+- [Shadcn Svelte](https://shadcn-svelte.com/)
 - [Radix Svelte](https://radix-svelte.com/)
 - [Skeleton](https://skeleton.dev/)
 - [Svelte Headless UI](https://svelte-headlessui.goss.io/docs)

@@ -3,7 +3,6 @@ import { derived, writable } from 'svelte/store';
 
 type BaseAccordionArgs = {
 	disabled?: boolean;
-	onChange?: (value: string | string[] | undefined) => void;
 };
 
 type SingleAccordionArgs = {
@@ -23,12 +22,13 @@ const defaults = {
 } satisfies CreateAccordionArgs;
 
 export const createAccordion = (args?: CreateAccordionArgs) => {
-	const options = { ...defaults, ...args } as CreateAccordionArgs;
-
-	const value = writable<string | string[] | undefined>(options.value);
-	value.subscribe((value) => {
-		options.onChange?.(value);
+	const withDefaults = { ...defaults, ...args } as CreateAccordionArgs;
+	const options = writable({
+		disabled: withDefaults.disabled,
+		type: withDefaults.type,
 	});
+
+	const value = writable<string | string[] | undefined>(withDefaults.value);
 
 	const isSelected = (key: string, v: string | string[] | undefined) => {
 		if (v === undefined) return false;
@@ -70,13 +70,13 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		};
 	});
 
-	const trigger = elementMultiDerived(value, ($value, createAttach) => {
+	const trigger = elementMultiDerived([value, options], ([$value, $options], createAttach) => {
 		return (args: ItemArgs) => {
 			const attach = createAttach();
 			const { value: itemValue } = parseItemArgs(args);
 
 			attach('click', () => {
-				if (options.type === 'single') {
+				if ($options.type === 'single') {
 					value.set($value === itemValue ? undefined : itemValue);
 				} else {
 					const arrValue = $value as string[] | undefined;
@@ -131,13 +131,13 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		};
 	});
 
-	const content = derived(value, ($value) => {
+	const content = derived([value, options], ([$value, $options]) => {
 		return (args: ItemArgs) => {
 			const { value: itemValue } = parseItemArgs(args);
 			const selected = isSelected(itemValue, $value);
 			return {
 				'data-state': selected ? 'open' : 'closed',
-				'data-disabled': options.disabled ? 'true' : undefined,
+				'data-disabled': $options.disabled ? 'true' : undefined,
 				hidden: selected ? undefined : true,
 			};
 		};
@@ -150,5 +150,6 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		trigger,
 		content,
 		isSelected: isSelectedStore,
+		options,
 	};
 };

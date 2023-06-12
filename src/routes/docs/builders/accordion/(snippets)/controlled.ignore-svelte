@@ -1,10 +1,24 @@
 <script lang="ts">
 	import { createAccordion } from '@melt-ui/svelte';
 
-	let value = 'item-1';
-	$: ({ content, item, trigger, root } = createAccordion({
+	let value: string | string[] | undefined = 'item-1';
+	let disabled = false;
+
+	const {
+		content,
+		item,
+		trigger,
+		root,
+		value: valueStore,
+		options,
+	} = createAccordion({
 		value,
-	}));
+		disabled,
+	});
+
+	$: valueStore.set(value);
+	valueStore.subscribe((v) => (value = v));
+	$: options.update((o) => ({ ...o, disabled }));
 </script>
 
 <button
@@ -15,6 +29,8 @@
 >
 	Trigger randomly
 </button>
+
+<p>Value: {value} Value Store: {$valueStore}</p>
 
 <div {...root}>
 	<div {...$item('item-1')}>
