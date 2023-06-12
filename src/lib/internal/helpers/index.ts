@@ -1,12 +1,13 @@
 export * from './array';
-
+export * from './builder';
 export * from './dom';
 export * from './event';
-
+export * from './is';
 export * from './numbers';
 export * from './object';
+export * from './sleep';
+export * from './store';
 export * from './style';
-export * from './browser';
 export * from './uuid';
-export * from './builder';
 export * from './keyboard';
+export * from './callbacks';

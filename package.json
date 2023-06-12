@@ -57,7 +57,8 @@
 	},
 	"dependencies": {
 		"@floating-ui/core": "^1.2.6",
-		"@floating-ui/dom": "^1.2.6"
+		"@floating-ui/dom": "^1.2.6",
+		"focus-trap": "^7.4.3"
 	},
 	"devDependencies": {
 		"@axe-core/playwright": "^4.6.1",

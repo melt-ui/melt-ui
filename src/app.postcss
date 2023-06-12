@@ -32,4 +32,22 @@ body {
 	.link {
 		@apply underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-magnum-500 hocus:opacity-100;
 	}
+
+	.PopoverInput {
+		@apply flex h-8 w-full rounded-md border border-magnum-800 bg-transparent px-2.5 text-sm;
+		@apply ring-offset-magnum-300 focus-visible:outline-none focus-visible:ring-2;
+		@apply focus-visible:ring-magnum-400 focus-visible:ring-offset-1;
+		@apply flex-1 items-center justify-center;
+		@apply px-2.5 text-sm leading-none text-magnum-700;
+	}
+
+	.PopoverTrigger {
+		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0 text-sm font-medium;
+		@apply text-magnum-900 transition-colors hover:bg-white/90 focus-visible:outline-none;
+		@apply focus-visible:ring-2 focus-visible:ring-offset-2;
+	}
+
+	.PopoverContent {
+		@apply z-10 w-60 rounded-[4px] bg-white p-5 shadow-sm;
+	}
 }

@@ -89,13 +89,15 @@ export function effect<S extends Stores>(
  * @param listener - The function to call when the event is triggered
  * @param options - An optional object that specifies options for the event listener
  */
-type Attach = (<T extends keyof HTMLElementEventMap>(
+export type Attach = (<T extends keyof HTMLElementEventMap>(
 	type: T,
 	listener: (ev: HTMLElementEventMap[T]) => void,
 	options?: boolean | AddEventListenerOptions
 ) => void) & {
 	getElement: () => Promise<HTMLElement | null>;
 };
+
+type AddUnsubscriber = (cb: (() => void) | Array<undefined | (() => void)>) => void;
 
 /**
  * Creates a derived store that contains attributes for an element.
@@ -109,15 +111,12 @@ type Attach = (<T extends keyof HTMLElementEventMap>(
  */
 export function elementDerived<S extends Stores, T extends Record<string, unknown>>(
 	stores: S,
-	fn: (values: StoresValues<S>, attach: Attach) => T
+	fn: (values: StoresValues<S>, attach: Attach, addUnsubscriber: AddUnsubscriber) => T
 ) {
-	// An array of functions that will be called to unsubscribe from events
-	let eventRemovers: (() => void)[] = [];
-
-	// A function that removes all event listeners
-	const removeEvents = () => {
-		eventRemovers.forEach((fn) => fn());
-		eventRemovers = [];
+	let unsubscribers: (() => void)[] = [];
+	const unsubscribe = () => {
+		unsubscribers.forEach((fn) => fn());
+		unsubscribers = [];
 	};
 
 	// Unique id used to attach events to the element
@@ -133,30 +132,36 @@ export function elementDerived<S extends Stores, T extends Record<string, unknow
 			element?.addEventListener(event, listener, options);
 		});
 
-		// Add a function to the `eventRemovers` array that removes the event listener
-		eventRemovers.push(() => {
+		unsubscribers.push(() => {
 			const element = getElementByMeltId(id);
 			element?.removeEventListener(event, listener, options);
 		});
 	};
-
-	// Function that returns the element with the current `id`
-	attach.getElement = () =>
-		tick().then(() => {
+	attach.getElement = () => {
+		return tick().then(() => {
 			if (!isBrowser) return null;
 			return getElementByMeltId(id);
 		});
+	};
+
+	const addUnsubscriber: AddUnsubscriber = (cb) => {
+		if (Array.isArray(cb)) {
+			unsubscribers.push(...(cb.filter((a) => a !== undefined) as (() => void)[]));
+		} else {
+			unsubscribers.push(cb);
+		}
+	};
 
 	return derived(stores, ($storeValues) => {
-		// Remove all event listeners
-		removeEvents();
-
-		return { ...fn($storeValues, attach), 'data-melt-id': id };
+		unsubscribe();
+		return { ...fn($storeValues, attach, addUnsubscriber), 'data-melt-id': id };
 	});
 }
 
-export function element<T extends Record<string, unknown>>(fn: (attach: Attach) => T) {
-	return elementDerived([], (_, attach) => fn(attach));
+export function element<T extends Record<string, unknown>>(
+	fn: (attach: Attach, addUnsubscriber: AddUnsubscriber) => T
+) {
+	return elementDerived([], (_, attach, addUnsubscriber) => fn(attach, addUnsubscriber));
 }
 
 type ReturnWithObj<T extends () => void, Obj> = ReturnType<T> extends void
@@ -179,8 +184,10 @@ export function elementMultiDerived<
 	S extends Stores,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	T extends (...args: any[]) => Record<string, unknown> | void
->(stores: S, fn: (values: StoresValues<S>, createAttach: () => Attach) => T) {
-	// An array of functions that will be called to unsubscribe from events
+>(
+	stores: S,
+	fn: (values: StoresValues<S>, createAttach: () => Attach, addUnsubscriber: AddUnsubscriber) => T
+) {
 	let unsubscribers: (() => void)[] = [];
 
 	// Unique id used to attach events to the elements
@@ -221,13 +228,19 @@ export function elementMultiDerived<
 		return attach;
 	};
 
+	const addUnsubscriber: AddUnsubscriber = (cb) => {
+		if (Array.isArray(cb)) {
+			unsubscribers.push(...(cb.filter((a) => a !== undefined) as (() => void)[]));
+		} else {
+			unsubscribers.push(cb);
+		}
+	};
+
 	return derived(stores, ($storeValues) => {
 		// Unsubscribe from all events
 		unsubscribers.forEach((fn) => fn());
 		unsubscribers = [];
-
-		const returned = fn($storeValues, createAttach);
-
+		const returned = fn($storeValues, createAttach, addUnsubscriber);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		return (...args: any[]) => {
 			return { ...returned(...args), 'data-melt-id': id };
@@ -246,7 +259,8 @@ export function elementMultiDerived<
 export function elementMulti<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	T extends (...args: any[]) => Record<string, unknown> | void
->(fn: (createAttach: () => Attach) => T) {
-	// Create a derived store that contains the attributes for each element
-	return elementMultiDerived([], (_, createAttach) => fn(createAttach));
+>(fn: (createAttach: () => Attach, addUnsubscriber: AddUnsubscriber) => T) {
+	return elementMultiDerived([], (_, createAttach, addUnsubscriber) =>
+		fn(createAttach, addUnsubscriber)
+	);
 }
