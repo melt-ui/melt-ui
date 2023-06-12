@@ -4,7 +4,7 @@
 	import { fade } from 'svelte/transition';
 	import Settings2 from '~icons/lucide/settings2';
 
-	const { trigger, popover, open, arrow } = createPopover();
+	const { trigger, content, open, arrow } = createPopover();
 </script>
 
 <Docs.PreviewWrapper>
@@ -14,7 +14,7 @@
 	</button>
 
 	{#if $open}
-		<div {...$popover} transition:fade|local={{ duration: 100 }} class="PopoverContent">
+		<div {...$content} transition:fade|local={{ duration: 100 }} class="PopoverContent">
 			<div {...$arrow} />
 			<div class="flex flex-col gap-2.5">
 				<p>Dimensions</p>

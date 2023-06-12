@@ -34,15 +34,15 @@ export function createPopover(args?: CreatePopoverArgs) {
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
-	const popover = elementDerived(
+	const content = elementDerived(
 		[open, activeTrigger, positioning],
 		([$open, $activeTrigger, $positioning], attach, addUnsubscriber) => {
-			attach.getElement().then((popoverEl) => {
-				if (!($open && $activeTrigger && popoverEl)) return;
+			attach.getElement().then((contentEl) => {
+				if (!($open && $activeTrigger && contentEl)) return;
 
 				const { unsubscribe } = usePopper({
 					anchorElement: $activeTrigger,
-					popperElement: popoverEl,
+					popperElement: contentEl,
 					open,
 					attach,
 					options: {
@@ -63,7 +63,7 @@ export function createPopover(args?: CreatePopoverArgs) {
 		}
 	);
 
-	const trigger = elementMultiDerived([open, popover], ([$open, $popover], createAttach) => {
+	const trigger = elementMultiDerived([open, content], ([$open, $content], createAttach) => {
 		return () => {
 			const attach = createAttach();
 			attach('click', (e) => {
@@ -86,7 +86,7 @@ export function createPopover(args?: CreatePopoverArgs) {
 				'aria-haspopup': 'dialog' as const,
 				'aria-expanded': $open,
 				'data-state': $open ? 'open' : 'closed',
-				'aria-controls': $popover['data-melt-id'],
+				'aria-controls': $content['data-melt-id'],
 			};
 		};
 	});
@@ -109,5 +109,5 @@ export function createPopover(args?: CreatePopoverArgs) {
 		}
 	});
 
-	return { trigger, open, popover, arrow };
+	return { trigger, open, content, arrow };
 }
