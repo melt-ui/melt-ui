@@ -3,19 +3,14 @@ import {
 	elementDerived,
 	elementMultiDerived,
 	isBrowser,
-	kbd,
 	sleep,
 	styleToString,
 } from '$lib/internal/helpers';
 
-import {
-	createFocusTrap,
-	useFloating,
-	useClickOutside,
-	type FloatingConfig,
-} from '$lib/internal/actions';
+import type { FloatingConfig } from '$lib/internal/actions';
 
 import { derived, readable, writable } from 'svelte/store';
+import { usePopper } from '@melt-ui/svelte/internal/actions/popper';
 
 export type CreatePopoverArgs = {
 	positioning?: FloatingConfig;
@@ -45,42 +40,17 @@ export function createPopover(args?: CreatePopoverArgs) {
 			attach.getElement().then((popoverEl) => {
 				if (!($open && $activeTrigger && popoverEl)) return;
 
-				const floating = useFloating($activeTrigger, popoverEl, $positioning);
-
-				const { deactivate, useFocusTrap } = createFocusTrap({
-					immediate: true,
-					escapeDeactivates: false,
-					allowOutsideClick: true,
-					returnFocusOnDeactivate: false,
-					fallbackFocus: popoverEl,
-				});
-
-				const focusTrapAction = useFocusTrap(popoverEl);
-
-				const clickOutsideAction = useClickOutside(popoverEl, {
-					enabled: open,
-					handler: (e: PointerEvent) => {
-						if (e.defaultPrevented) return;
-
-						if (!$activeTrigger?.contains(e.target as Element)) {
-							open.set(false);
-							$activeTrigger.focus();
-						}
+				const { unsubscribe } = usePopper({
+					anchorElement: $activeTrigger,
+					popperElement: popoverEl,
+					open,
+					attach,
+					options: {
+						floating: $positioning,
 					},
 				});
 
-				addUnsubscriber([floating, focusTrapAction, clickOutsideAction, deactivate]);
-			});
-
-			attach('keydown', (e) => {
-				if (!e.defaultPrevented) {
-					switch (e.key) {
-						case kbd.ESCAPE:
-							open.set(false);
-							break;
-						default:
-					}
-				}
+				addUnsubscriber([unsubscribe]);
 			});
 
 			return {

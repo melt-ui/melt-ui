@@ -1,7 +1,6 @@
 import { createFocusTrap, useFloating, useClickOutside } from '$lib/internal/actions';
-import type { Writable } from 'svelte/store';
-import type { PopperConfig } from './popper.types';
-import { executeCallbacks } from '$lib/internal/helpers';
+import type { PopperArgs, PopperConfig } from './popper.types';
+import { executeCallbacks, kbd } from '$lib/internal/helpers';
 
 const defaultConfig = {
 	floating: {},
@@ -9,28 +8,25 @@ const defaultConfig = {
 	clickOutside: {},
 } satisfies PopperConfig;
 
-export function usePopper(
-	anchorElement: HTMLElement,
-	contentElement: HTMLElement,
-	open: Writable<boolean>,
-	opts?: PopperConfig
-) {
-	const options = { ...defaultConfig, ...opts } as PopperConfig;
+export function usePopper(args: PopperArgs) {
+	const { anchorElement, popperElement, open, options, attach } = args;
 
-	const unsubscribeFloating = useFloating(anchorElement, contentElement, options.floating);
+	const opts = { ...defaultConfig, ...options } as PopperConfig;
+
+	const unsubscribeFloating = useFloating(anchorElement, popperElement, opts.floating);
 
 	const { useFocusTrap, ...restFocusTrap } = createFocusTrap({
 		immediate: true,
 		escapeDeactivates: false,
 		allowOutsideClick: true,
 		returnFocusOnDeactivate: false,
-		fallbackFocus: contentElement,
-		...options.focusTrap,
+		fallbackFocus: popperElement,
+		...opts.focusTrap,
 	});
 
-	const unsubscribeFocusTrap = useFocusTrap(contentElement);
+	const unsubscribeFocusTrap = useFocusTrap(popperElement);
 
-	const unsubscribeClickOutside = useClickOutside(contentElement, {
+	const unsubscribeClickOutside = useClickOutside(popperElement, {
 		enabled: open,
 		handler: (e: PointerEvent) => {
 			if (e.defaultPrevented) return;
@@ -40,7 +36,18 @@ export function usePopper(
 				anchorElement.focus();
 			}
 		},
-		...options.clickOutside,
+		...opts.clickOutside,
+	});
+
+	attach('keydown', (e) => {
+		if (!e.defaultPrevented) {
+			switch (e.key) {
+				case kbd.ESCAPE:
+					open.set(false);
+					break;
+				default:
+			}
+		}
 	});
 
 	const unsubscribe = executeCallbacks(

@@ -89,7 +89,7 @@ export function effect<S extends Stores>(
  * @param listener - The function to call when the event is triggered
  * @param options - An optional object that specifies options for the event listener
  */
-type Attach = (<T extends keyof HTMLElementEventMap>(
+export type Attach = (<T extends keyof HTMLElementEventMap>(
 	type: T,
 	listener: (ev: HTMLElementEventMap[T]) => void,
 	options?: boolean | AddEventListenerOptions
