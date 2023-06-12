@@ -40,13 +40,13 @@ export function usePopper(args: PopperArgs) {
 	});
 
 	attach('keydown', (e) => {
-		if (!e.defaultPrevented) {
-			switch (e.key) {
-				case kbd.ESCAPE:
-					open.set(false);
-					break;
-				default:
-			}
+		if (e.defaultPrevented) return;
+
+		switch (e.key) {
+			case kbd.ESCAPE:
+				open.set(false);
+				break;
+			default:
 		}
 	});
 
