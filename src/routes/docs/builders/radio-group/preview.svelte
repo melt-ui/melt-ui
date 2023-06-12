@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
-	import { createRadioGroup } from '@melt-ui/svelte';
+	import { createRadioGroup } from '$lib';
 
 	const { root, item, isChecked } = createRadioGroup({
 		value: 'default',

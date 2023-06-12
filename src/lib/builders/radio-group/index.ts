@@ -1,4 +1,4 @@
-import { elementMultiDerived, kbd } from '@melt-ui/svelte/internal/helpers';
+import { elementMultiDerived, kbd } from '$lib/internal/helpers';
 import { derived, writable } from 'svelte/store';
 
 type Orientation = 'horizontal' | 'vertical';
@@ -43,7 +43,7 @@ export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 				disabled?: boolean;
 		  }
 		| string;
-	const item = elementMultiDerived([options, value], ([$options, $value], createAttach) => {
+	const item = elementMultiDerived([options, value], ([$options, $value], { createAttach }) => {
 		return (args: RadioGroupItemArgs) => {
 			const itemValue = typeof args === 'string' ? args : args.value;
 			const argDisabled = typeof args === 'string' ? false : !!args.disabled;

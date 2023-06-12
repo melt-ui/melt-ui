@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
-	import { createProgress } from '@melt-ui/svelte';
+	import { createProgress } from '$lib';
 
 	const { progress, value, max } = createProgress({
 		value: 30,

@@ -1,4 +1,4 @@
-import { elementDerived, styleToString } from '@melt-ui/svelte/internal/helpers';
+import { elementDerived, styleToString } from '$lib/internal/helpers';
 import { derived, writable } from 'svelte/store';
 
 type CreateSwitchArgs = {
@@ -32,7 +32,7 @@ export function createSwitch(args: CreateSwitchArgs = {}) {
 	});
 	const checked = writable(argsWithDefaults.checked);
 
-	const root = elementDerived([checked, options], ([$checked, $options], attach) => {
+	const root = elementDerived([checked, options], ([$checked, $options], { attach }) => {
 		attach('click', () => {
 			if ($options.disabled) return;
 

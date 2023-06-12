@@ -1,0 +1,15 @@
+<script lang="ts">
+	import { createCheckbox } from '@melt-ui/svelte';
+
+	export let checked: boolean | 'indeterminate' = true;
+	export let disabled = false;
+
+	const { checked: checkedStore, options } = createCheckbox({
+		disabled,
+		checked,
+	});
+
+	$: checkedStore.set(checked);
+	checkedStore.subscribe((v) => (checked = v));
+	$: options.update((o) => ({ ...o, disabled }));
+</script>

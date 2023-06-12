@@ -1,4 +1,4 @@
-import { elementDerived, kbd, styleToString } from '@melt-ui/svelte/internal/helpers';
+import { elementDerived, kbd, styleToString } from '$lib/internal/helpers';
 import { derived, writable } from 'svelte/store';
 
 type CheckedState = boolean | 'indeterminate';
@@ -15,8 +15,6 @@ const defaults = {
 	checked: false,
 	disabled: false,
 	required: false,
-	name: '',
-	value: '',
 } satisfies CreateCheckboxArgs;
 
 export function createCheckbox(args: CreateCheckboxArgs = {}) {
@@ -29,7 +27,7 @@ export function createCheckbox(args: CreateCheckboxArgs = {}) {
 	});
 	const checked = writable(argsWithDefaults.checked);
 
-	const root = elementDerived([checked, options], ([$checked, $options], attach) => {
+	const root = elementDerived([checked, options], ([$checked, $options], { attach }) => {
 		attach('keydown', (event) => {
 			// According to WAI ARIA, Checkboxes don't activate on enter keypress
 			if (event.key === kbd.ENTER) event.preventDefault();

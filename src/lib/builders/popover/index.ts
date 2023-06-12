@@ -7,10 +7,8 @@ import {
 	styleToString,
 } from '$lib/internal/helpers';
 
-import type { FloatingConfig } from '$lib/internal/actions';
-
+import { usePopper, type FloatingConfig } from '$lib/internal/actions';
 import { derived, readable, writable } from 'svelte/store';
-import { usePopper } from '@melt-ui/svelte/internal/actions/popper';
 
 export type CreatePopoverArgs = {
 	positioning?: FloatingConfig;
@@ -36,7 +34,7 @@ export function createPopover(args?: CreatePopoverArgs) {
 
 	const content = elementDerived(
 		[open, activeTrigger, positioning],
-		([$open, $activeTrigger, $positioning], attach, addUnsubscriber) => {
+		([$open, $activeTrigger, $positioning], { attach, addUnsubscriber }) => {
 			attach.getElement().then((contentEl) => {
 				if (!($open && $activeTrigger && contentEl)) return;
 
@@ -63,7 +61,7 @@ export function createPopover(args?: CreatePopoverArgs) {
 		}
 	);
 
-	const trigger = elementMultiDerived([open, content], ([$open, $content], createAttach) => {
+	const trigger = elementMultiDerived([open, content], ([$open, $content], { createAttach }) => {
 		return () => {
 			const attach = createAttach();
 			attach('click', (e) => {

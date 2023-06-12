@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
-	import { createToggle } from '@melt-ui/svelte/builders/toggle';
+	import { createToggle } from '$lib/builders/toggle';
 	import Italic from '~icons/lucide/italic';
 
 	const { toggle } = createToggle();

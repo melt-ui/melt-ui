@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
-	import { createSwitch } from '@melt-ui/svelte';
+	import { createSwitch } from '$lib';
 
 	const { root, input, isChecked } = createSwitch();
 </script>
