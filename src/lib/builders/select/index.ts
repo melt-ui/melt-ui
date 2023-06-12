@@ -14,11 +14,13 @@ import { derived, writable } from 'svelte/store';
 
 /**
  * Features:
- * - [ ] Click outside
- * - [ ] Keyboard navigation
- * - [ ] Focus management
+ * - [X] Click outside
+ * - [X] Keyboard navigation
+ * - [X] Focus management
+ * - [ ] Detect overflow
+ * - [ ] Same width as trigger
  * - [ ] A11y
- * - [ ] Floating UI
+ * - [X] Floating UI
  **/
 
 type CreateSelectArgs = {
@@ -118,7 +120,7 @@ export function createSelect(args?: CreateSelectArgs) {
 			});
 
 			attach('keydown', (e) => {
-				if (e.key === kbd.ENTER) {
+				if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
 					e.stopPropagation();
 					e.stopImmediatePropagation();
 					const el = e.currentTarget as HTMLElement;
@@ -182,6 +184,14 @@ export function createSelect(args?: CreateSelectArgs) {
 					const prevIndex = focusedIndex - 1 < 0 ? allOptions.length - 1 : focusedIndex - 1;
 					const prevOption = allOptions[prevIndex] as HTMLElement;
 					prevOption.focus();
+				} else if (e.key === kbd.HOME) {
+					e.preventDefault();
+					const firstOption = allOptions[0] as HTMLElement;
+					firstOption.focus();
+				} else if (e.key === kbd.END) {
+					e.preventDefault();
+					const lastOption = allOptions[allOptions.length - 1] as HTMLElement;
+					lastOption.focus();
 				}
 			};
 
@@ -195,5 +205,12 @@ export function createSelect(args?: CreateSelectArgs) {
 		}
 	});
 
-	return { trigger, menu, open, option, selected, selectedText, arrow };
+	const isSelected = derived(
+		[selected],
+		([$selected]) =>
+			(value: string) =>
+				$selected === value
+	);
+
+	return { trigger, menu, open, option, selected, selectedText, arrow, isSelected, options };
 }
