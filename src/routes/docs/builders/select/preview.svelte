@@ -2,7 +2,7 @@
 	import { createSelect } from '$lib';
 	import { Docs } from '$routes/(components)';
 
-	const { selectedText, trigger, menu, option, arrow } = createSelect();
+	const { selectedText, trigger, menu, option } = createSelect();
 </script>
 
 <Docs.PreviewWrapper>
@@ -15,10 +15,9 @@
 	</button>
 
 	<ul
-		class="absolute flex min-w-[200px] translate-y-2 flex-col gap-2 rounded-md bg-white p-2 text-magnum-700"
+		class="z-10 flex min-w-[200px] flex-col gap-2 rounded-md bg-white p-2 text-magnum-700"
 		{...$menu}
 	>
-		<div {...$arrow} />
 		<li
 			class="cursor-pointer rounded-md px-4 py-1 outline-none hocus:bg-zinc-200"
 			{...$option({ value: 'option-1' })}
