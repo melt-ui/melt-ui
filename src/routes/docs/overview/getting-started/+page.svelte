@@ -13,7 +13,7 @@
 	{#if tab === 'npm'}
 		<Docs.CodeBlock inline code={'npm install @melt-ui/svelte'} collapsible={false} />
 	{:else if tab === 'yarn'}
-		<Docs.CodeBlock inline code={'yarn install @melt-ui/svelte'} collapsible={false} />
+		<Docs.CodeBlock inline code={'yarn add @melt-ui/svelte'} collapsible={false} />
 	{:else if tab === 'pnpm'}
 		<Docs.CodeBlock inline code={'pnpm install @melt-ui/svelte'} collapsible={false} />
 	{/if}

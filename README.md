@@ -26,7 +26,7 @@ Install the `@melt-ui/svelte` package with your package manager of choice:
 ```sh
 npm install @melt-ui/svelte
 yarn add @melt-ui/svelte
-pnpm add @melt-ui/svelte
+pnpm install @melt-ui/svelte
 bun add @melt-ui/svelte
 ```
 
