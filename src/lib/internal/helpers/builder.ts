@@ -111,7 +111,7 @@ type AddUnsubscriber = (cb: (() => void) | Array<undefined | (() => void)>) => v
  */
 export function elementDerived<S extends Stores, T extends Record<string, unknown>>(
 	stores: S,
-	fn: (values: StoresValues<S>, attach: Attach, addUnsubscriber: AddUnsubscriber) => T
+	fn: (values: StoresValues<S>, helpers: { attach: Attach; addUnsubscriber: AddUnsubscriber }) => T
 ) {
 	let unsubscribers: (() => void)[] = [];
 	const unsubscribe = () => {
@@ -154,14 +154,14 @@ export function elementDerived<S extends Stores, T extends Record<string, unknow
 
 	return derived(stores, ($storeValues) => {
 		unsubscribe();
-		return { ...fn($storeValues, attach, addUnsubscriber), 'data-melt-id': id };
+		return { ...fn($storeValues, { attach, addUnsubscriber }), 'data-melt-id': id };
 	});
 }
 
 export function element<T extends Record<string, unknown>>(
-	fn: (attach: Attach, addUnsubscriber: AddUnsubscriber) => T
+	fn: (helpers: { attach: Attach; addUnsubscriber: AddUnsubscriber }) => T
 ) {
-	return elementDerived([], (_, attach, addUnsubscriber) => fn(attach, addUnsubscriber));
+	return elementDerived([], (_, helpers) => fn(helpers));
 }
 
 type ReturnWithObj<T extends () => void, Obj> = ReturnType<T> extends void
@@ -186,7 +186,10 @@ export function elementMultiDerived<
 	T extends (...args: any[]) => Record<string, unknown> | void
 >(
 	stores: S,
-	fn: (values: StoresValues<S>, createAttach: () => Attach, addUnsubscriber: AddUnsubscriber) => T
+	fn: (
+		values: StoresValues<S>,
+		helpers: { createAttach: () => Attach; addUnsubscriber: AddUnsubscriber }
+	) => T
 ) {
 	let unsubscribers: (() => void)[] = [];
 
@@ -240,7 +243,7 @@ export function elementMultiDerived<
 		// Unsubscribe from all events
 		unsubscribers.forEach((fn) => fn());
 		unsubscribers = [];
-		const returned = fn($storeValues, createAttach, addUnsubscriber);
+		const returned = fn($storeValues, { createAttach, addUnsubscriber });
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		return (...args: any[]) => {
 			return { ...returned(...args), 'data-melt-id': id };
@@ -259,8 +262,6 @@ export function elementMultiDerived<
 export function elementMulti<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	T extends (...args: any[]) => Record<string, unknown> | void
->(fn: (createAttach: () => Attach, addUnsubscriber: AddUnsubscriber) => T) {
-	return elementMultiDerived([], (_, createAttach, addUnsubscriber) =>
-		fn(createAttach, addUnsubscriber)
-	);
+>(fn: (helpers: { createAttach: () => Attach; addUnsubscriber: AddUnsubscriber }) => T) {
+	return elementMultiDerived([], (_, helpers) => fn(helpers));
 }

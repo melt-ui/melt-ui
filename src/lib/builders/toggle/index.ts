@@ -10,7 +10,7 @@ export function createToggle(args: ToggleArgs = {}) {
 	const pressed = writable(args.pressed ?? false);
 	const disabled = writable(args.disabled ?? false);
 
-	const toggle = elementDerived([pressed, disabled], ([$pressed, $disabled], attach) => {
+	const toggle = elementDerived([pressed, disabled], ([$pressed, $disabled], { attach }) => {
 		attach('click', () => {
 			if (!$disabled) {
 				pressed.update((p) => !p);

@@ -29,7 +29,7 @@ export function createCheckbox(args: CreateCheckboxArgs = {}) {
 	});
 	const checked = writable(argsWithDefaults.checked);
 
-	const root = elementDerived([checked, options], ([$checked, $options], attach) => {
+	const root = elementDerived([checked, options], ([$checked, $options], { attach }) => {
 		attach('keydown', (event) => {
 			// According to WAI ARIA, Checkboxes don't activate on enter keypress
 			if (event.key === kbd.ENTER) event.preventDefault();

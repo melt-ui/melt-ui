@@ -44,7 +44,7 @@ export function createSelect() {
 		};
 	});
 
-	const trigger = elementMultiDerived([open], (_, createAttach) => {
+	const trigger = elementMultiDerived([open], (_, { createAttach }) => {
 		return () => {
 			const attach = createAttach();
 			attach('click', (e) => {
@@ -68,7 +68,7 @@ export function createSelect() {
 		};
 	});
 
-	const menu = elementDerived([open, activeTrigger], ([$open, $activeTrigger], attach) => {
+	const menu = elementDerived([open, activeTrigger], ([$open, $activeTrigger], { attach }) => {
 		attach.getElement().then((menuEl) => {
 			if (!($open && $activeTrigger && menuEl)) return;
 
@@ -91,7 +91,7 @@ export function createSelect() {
 		value: string;
 	};
 
-	const option = elementMultiDerived([selected], ([$selected], createAttach) => {
+	const option = elementMultiDerived([selected], ([$selected], { createAttach }) => {
 		return ({ value }: OptionArgs) => {
 			const attach = createAttach();
 			attach('click', (e) => {

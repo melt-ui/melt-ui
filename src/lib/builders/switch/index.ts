@@ -32,7 +32,7 @@ export function createSwitch(args: CreateSwitchArgs = {}) {
 	});
 	const checked = writable(argsWithDefaults.checked);
 
-	const root = elementDerived([checked, options], ([$checked, $options], attach) => {
+	const root = elementDerived([checked, options], ([$checked, $options], { attach }) => {
 		attach('click', () => {
 			if ($options.disabled) return;
 

@@ -68,7 +68,7 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 				disabled?: boolean;
 		  }
 		| string;
-	const item = elementMultiDerived([options, value], ([$options, $value], createAttach) => {
+	const item = elementMultiDerived([options, value], ([$options, $value], { createAttach }) => {
 		return (args: ToggleGroupItemArgs) => {
 			const itemValue = typeof args === 'string' ? args : args.value;
 			const argDisabled = typeof args === 'string' ? false : !!args.disabled;

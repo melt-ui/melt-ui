@@ -43,7 +43,7 @@ export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 				disabled?: boolean;
 		  }
 		| string;
-	const item = elementMultiDerived([options, value], ([$options, $value], createAttach) => {
+	const item = elementMultiDerived([options, value], ([$options, $value], { createAttach }) => {
 		return (args: RadioGroupItemArgs) => {
 			const itemValue = typeof args === 'string' ? args : args.value;
 			const argDisabled = typeof args === 'string' ? false : !!args.disabled;
