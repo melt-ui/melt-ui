@@ -12,16 +12,17 @@ import {
 	computePosition,
 	autoUpdate,
 } from '@floating-ui/dom';
-import type { PositionOptions } from './floating.types';
+import type { FloatingConfig } from './floating.types';
+import { noop } from '$lib/internal/helpers';
 
-const defaultOptions = {
+const defaultConfig = {
 	strategy: 'absolute',
 	placement: 'top',
 	gutter: 5,
 	flip: true,
 	sameWidth: false,
 	overflowPadding: 8,
-} satisfies PositionOptions;
+} satisfies FloatingConfig;
 
 const ARROW_TRANSFORM = {
 	bottom: 'rotate(45deg)',
@@ -30,14 +31,14 @@ const ARROW_TRANSFORM = {
 	right: 'rotate(315deg)',
 };
 
-export function getPlacement(
+export function useFloating(
 	reference: HTMLElement | undefined,
 	floating: HTMLElement | undefined,
-	opts: PositionOptions = {}
+	opts: FloatingConfig = {}
 ) {
-	if (!floating || !reference) return;
+	if (!floating || !reference) return noop;
 
-	const options = { ...defaultOptions, ...opts };
+	const options = { ...defaultConfig, ...opts };
 
 	const arrowEl = floating.querySelector<HTMLElement>('[data-arrow=true]');
 	const middleware: Middleware[] = [];

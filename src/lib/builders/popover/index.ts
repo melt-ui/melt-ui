@@ -10,15 +10,15 @@ import {
 
 import {
 	createFocusTrap,
-	getPlacement,
+	useFloating,
 	useClickOutside,
-	type PositionOptions,
+	type FloatingConfig,
 } from '$lib/internal/actions';
 
 import { derived, readable, writable } from 'svelte/store';
 
 export type CreatePopoverArgs = {
-	positioning?: PositionOptions;
+	positioning?: FloatingConfig;
 	arrowSize?: number;
 	open?: boolean;
 };
@@ -45,7 +45,7 @@ export function createPopover(args?: CreatePopoverArgs) {
 			attach.getElement().then((popoverEl) => {
 				if (!($open && $activeTrigger && popoverEl)) return;
 
-				const placement = getPlacement($activeTrigger, popoverEl, $positioning);
+				const floating = useFloating($activeTrigger, popoverEl, $positioning);
 
 				const { deactivate, useFocusTrap } = createFocusTrap({
 					immediate: true,
@@ -69,12 +69,17 @@ export function createPopover(args?: CreatePopoverArgs) {
 					},
 				});
 
-				addUnsubscriber([placement, focusTrapAction, clickOutsideAction, deactivate]);
+				addUnsubscriber([floating, focusTrapAction, clickOutsideAction, deactivate]);
 			});
 
 			attach('keydown', (e) => {
-				if (!e.defaultPrevented && e.key === kbd.ESCAPE) {
-					open.set(false);
+				if (!e.defaultPrevented) {
+					switch (e.key) {
+						case kbd.ESCAPE:
+							open.set(false);
+							break;
+						default:
+					}
 				}
 			});
 

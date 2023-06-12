@@ -4,7 +4,7 @@
 
 import type { Boundary } from '@floating-ui/dom';
 
-export type PositionOptions = {
+export type FloatingConfig = {
 	/**
 	 * The initial placement of the floating element.
 	 * @defaultValue `"top"`
