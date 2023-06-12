@@ -21,13 +21,13 @@ Melt UI is meant to be used as a base for your own styles and components. It off
 
 ## Getting started
 
-Install the `npm i @melt-ui/svelte` package with your package manager of choice:
+Install the `@melt-ui/svelte` package with your package manager of choice:
 
 ```sh
-npm install npm i @melt-ui/svelte
-yarn add npm i @melt-ui/svelte
-pnpm add npm i @melt-ui/svelte
-bun add npm i @melt-ui/svelte
+npm install @melt-ui/svelte
+yarn add @melt-ui/svelte
+pnpm add @melt-ui/svelte
+bun add @melt-ui/svelte
 ```
 
 Import the builders to your code and start using them:
