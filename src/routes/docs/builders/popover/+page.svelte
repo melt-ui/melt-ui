@@ -5,7 +5,8 @@
 </script>
 
 <Docs.H1>Popover</Docs.H1>
-<Docs.Description>A popover component.</Docs.Description>
+<Docs.Description>Displays rich content in a portal (soon), triggered by a button.</Docs.Description
+>
 
 <Preview />
 

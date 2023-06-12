@@ -1,31 +1,71 @@
 <script lang="ts">
 	import { createPopover } from '@melt-ui/svelte';
 	import { Docs } from '$routes/(components)';
+	import { fade } from 'svelte/transition';
+	import Settings2 from '~icons/lucide/settings2';
 
 	const { trigger, popover, open, arrow } = createPopover();
 </script>
 
 <Docs.PreviewWrapper>
-	<button
-		type="button"
-		class="rounded-md bg-white px-4 py-1 text-magnum-700 outline-none
-hover:opacity-75 focus:ring focus:ring-black"
-		{...$trigger()}
-	>
-		Open Popover
+	<button type="button" class="PopoverTrigger" {...$trigger()} aria-label="Update dimensions">
+		<Settings2 class="h-4 w-4" />
+		<span class="sr-only">Open Popover</span>
 	</button>
 
 	{#if $open}
-		<div
-			{...$popover}
-			class="flex min-w-[200px] flex-col gap-2 rounded-md bg-white p-2 text-magnum-700"
-			aria-label="Update Settings"
-		>
-			<div class="p-4">
-				<input type="text" class="w-full rounded-md border border-magnum-300 p-2" />
-				<p class="text-magnum-700">Popover content</p>
-			</div>
+		<div {...$popover} transition:fade|local={{ duration: 100 }} class="PopoverContent">
 			<div {...$arrow} />
+			<div class="flex flex-col gap-2.5">
+				<p>Dimensions</p>
+				<fieldset>
+					<label for="width"> Width </label>
+					<input id="width" value="100%" />
+				</fieldset>
+				<fieldset>
+					<label for="maxWidth"> Max. width </label>
+					<input id="maxWidth" value="300px" />
+				</fieldset>
+				<fieldset>
+					<label for="height"> Height </label>
+					<input id="height" value="25px" />
+				</fieldset>
+				<fieldset>
+					<label for="maxHeight"> Max. height </label>
+					<input id="maxHeight" />
+				</fieldset>
+			</div>
 		</div>
 	{/if}
 </Docs.PreviewWrapper>
+
+<style>
+	fieldset {
+		@apply flex items-center gap-5;
+	}
+
+	label {
+		@apply w-[75px] text-sm text-magnum-700;
+	}
+
+	p {
+		@apply mb-2 font-medium text-neutral-900;
+	}
+
+	input {
+		@apply flex h-8 w-full rounded-md border border-magnum-800 bg-transparent px-2.5 text-sm;
+		@apply ring-offset-magnum-300 focus-visible:outline-none focus-visible:ring-2;
+		@apply focus-visible:ring-magnum-400 focus-visible:ring-offset-1;
+		@apply flex-1 items-center justify-center;
+		@apply px-2.5 text-sm leading-none text-magnum-700;
+	}
+	.PopoverContent {
+		@apply z-10 w-60 rounded-[4px] bg-white p-5 shadow-sm;
+	}
+
+	.PopoverTrigger {
+		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0 text-sm font-medium;
+		@apply text-magnum-900 transition-colors hover:bg-white/90 focus-visible:outline-none;
+		@apply focus-visible:ring-2 focus-visible:ring-offset-2;
+	}
+</style>
