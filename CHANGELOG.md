@@ -1,5 +1,16 @@
 # @melt-ui/svelte
 
+## 0.5.0
+
+### Minor Changes
+
+- fc18981: add select features (typeahead) & refactor internals
+- 0f1a1f6: Select: add isSelected and options to returned object; Add HOME and END kbd listeners
+
+### Patch Changes
+
+- cb1b21c: Adjust browser detection function
+
 ## 0.4.0
 
 ### Minor Changes
