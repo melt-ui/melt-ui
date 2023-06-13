@@ -1,4 +1,4 @@
-import { createFocusTrap, useFloating, useClickOutside } from '$lib/internal/actions';
+import { createFocusTrap, useFloating, useClickOutside, usePortal } from '$lib/internal/actions';
 import type { PopperArgs, PopperConfig } from './popper.types';
 import { executeCallbacks, kbd } from '$lib/internal/helpers';
 
@@ -25,6 +25,8 @@ export function usePopper(args: PopperArgs) {
 	});
 
 	const unsubscribeFocusTrap = useFocusTrap(popperElement);
+
+	const unsubscribePortal = usePortal(popperElement);
 
 	const unsubscribeClickOutside = useClickOutside(popperElement, {
 		enabled: open,
@@ -53,7 +55,8 @@ export function usePopper(args: PopperArgs) {
 	const unsubscribe = executeCallbacks(
 		unsubscribeFloating,
 		unsubscribeClickOutside,
-		unsubscribeFocusTrap
+		unsubscribeFocusTrap,
+		unsubscribePortal
 	);
 
 	return {
