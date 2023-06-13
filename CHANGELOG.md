@@ -1,5 +1,12 @@
 # @melt-ui/svelte
 
+## 0.6.0
+
+### Minor Changes
+
+- f7dc717: change select trigger to be single derived
+- 6f98aa5: add dialog
+
 ## 0.5.0
 
 ### Minor Changes
