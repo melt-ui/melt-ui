@@ -16,7 +16,7 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 
 	const opts = { ...defaultConfig, ...options } as PopperConfig;
 
-	const unsubscribePortal = usePortal(popperElement).destroy;
+	const portal = usePortal(popperElement);
 
 	const unsubscribeFloating = useFloating(anchorElement, popperElement, opts.floating).destroy;
 
@@ -61,7 +61,7 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 		unsubscribeClickOutside,
 		focusTrap && focusTrap.destroy ? focusTrap.destroy : noop,
 		removeKeydown,
-		unsubscribePortal
+		portal && portal.destroy ? portal.destroy : noop
 	);
 
 	return {

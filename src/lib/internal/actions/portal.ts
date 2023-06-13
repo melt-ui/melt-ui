@@ -1,13 +1,9 @@
 import { tick } from 'svelte';
+import type { Action } from 'svelte/action';
 
-export type PortalConfig = {
-	/**
-	 * DOM element or CSS selector to be appended to.
-	 */
-	target?: string | HTMLElement;
-};
+export type PortalConfig = string | HTMLElement;
 
-export function usePortal(el: HTMLElement, target: HTMLElement | string = 'body') {
+export const usePortal: Action<HTMLElement, PortalConfig> = (el, target = 'body') => {
 	let targetEl;
 	const parent = el.parentNode;
 
@@ -48,4 +44,4 @@ export function usePortal(el: HTMLElement, target: HTMLElement | string = 'body'
 		update,
 		destroy,
 	};
-}
+};
