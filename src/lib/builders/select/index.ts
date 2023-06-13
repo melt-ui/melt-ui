@@ -32,6 +32,7 @@ const defaults = {
 	arrowSize: 8,
 	positioning: {
 		placement: 'bottom',
+		sameWidth: true,
 	},
 } satisfies CreateSelectArgs;
 
