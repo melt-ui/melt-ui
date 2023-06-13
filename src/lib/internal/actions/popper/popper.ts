@@ -26,7 +26,7 @@ export function usePopper(args: PopperArgs) {
 
 	const unsubscribeFocusTrap = useFocusTrap(popperElement);
 
-	const unsubscribePortal = usePortal(popperElement);
+	// const unsubscribePortal = usePortal(popperElement);
 
 	const unsubscribeClickOutside = useClickOutside(popperElement, {
 		enabled: open,
@@ -55,8 +55,8 @@ export function usePopper(args: PopperArgs) {
 	const unsubscribe = executeCallbacks(
 		unsubscribeFloating,
 		unsubscribeClickOutside,
-		unsubscribeFocusTrap,
-		unsubscribePortal
+		unsubscribeFocusTrap
+		// unsubscribePortal
 	);
 
 	return {

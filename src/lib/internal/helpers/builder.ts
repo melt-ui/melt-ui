@@ -89,15 +89,21 @@ export function effect<S extends Stores>(
  * @param listener - The function to call when the event is triggered
  * @param options - An optional object that specifies options for the event listener
  */
-export type Attach = (<T extends keyof HTMLElementEventMap>(
+export type Attach = <T extends keyof HTMLElementEventMap>(
 	type: T,
 	listener: (ev: HTMLElementEventMap[T]) => void,
 	options?: boolean | AddEventListenerOptions
-) => void) & {
-	getElement: () => Promise<HTMLElement | null>;
-};
+) => void;
 
 type AddUnsubscriber = (cb: (() => void) | Array<undefined | (() => void)>) => void;
+
+type GetElement = () => Promise<HTMLElement | null>;
+
+type Helpers = {
+	attach: Attach;
+	addUnsubscriber: AddUnsubscriber;
+	getElement: GetElement;
+};
 
 const initElementHelpers = (setId: (id: string) => void) => {
 	let unsubscribers: (() => void)[] = [];
@@ -107,7 +113,7 @@ const initElementHelpers = (setId: (id: string) => void) => {
 	};
 
 	// Create an `Attach` function that can be used to attach events to the elements
-	const createAttach = () => {
+	const createElInterface = () => {
 		// Make sure the id is the same on tick
 		const id = uuid();
 		setId(id);
@@ -125,13 +131,13 @@ const initElementHelpers = (setId: (id: string) => void) => {
 		};
 
 		// A function that returns the element associated with the current `id`
-		attach.getElement = () =>
+		const getElement: GetElement = () =>
 			tick().then(() => {
 				if (!isBrowser) return null;
 				return getElementByMeltId(id);
 			});
 
-		return attach;
+		return { attach, getElement };
 	};
 
 	const addUnsubscriber: AddUnsubscriber = (cb) => {
@@ -144,7 +150,7 @@ const initElementHelpers = (setId: (id: string) => void) => {
 
 	return {
 		unsubscribe,
-		createAttach,
+		createElInterface,
 		addUnsubscriber,
 	};
 };
@@ -165,17 +171,17 @@ type ReturnWithObj<T extends () => void, Obj> = ReturnType<T> extends void
  */
 export function elementDerived<S extends Stores, T extends Record<string, unknown>>(
 	stores: S,
-	fn: (values: StoresValues<S>, helpers: { attach: Attach; addUnsubscriber: AddUnsubscriber }) => T
+	fn: (values: StoresValues<S>, helpers: Helpers) => T
 ) {
 	let id: string;
-	const { addUnsubscriber, createAttach, unsubscribe } = initElementHelpers(
+	const { addUnsubscriber, createElInterface, unsubscribe } = initElementHelpers(
 		(newId) => (id = newId)
 	);
-	const attach = createAttach();
+	const { attach, getElement } = createElInterface();
 
 	return derived(stores, ($storeValues) => {
 		unsubscribe();
-		return { ...fn($storeValues, { attach, addUnsubscriber }), 'data-melt-id': id };
+		return { ...fn($storeValues, { attach, getElement, addUnsubscriber }), 'data-melt-id': id };
 	});
 }
 
@@ -187,9 +193,7 @@ export function elementDerived<S extends Stores, T extends Record<string, unknow
  * @param fn - The function that returns the attributes object
  * @returns An object that contains the attributes for each element
  */
-export function element<T extends Record<string, unknown>>(
-	fn: (helpers: { attach: Attach; addUnsubscriber: AddUnsubscriber }) => T
-) {
+export function element<T extends Record<string, unknown>>(fn: (helpers: Helpers) => T) {
 	return elementDerived([], (_, helpers) => fn(helpers));
 }
 
@@ -209,24 +213,19 @@ export function elementMultiDerived<
 	S extends Stores,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	T extends (...args: any[]) => Record<string, unknown> | void
->(
-	stores: S,
-	fn: (
-		values: StoresValues<S>,
-		helpers: { createAttach: () => Attach; addUnsubscriber: AddUnsubscriber }
-	) => T
-) {
+>(stores: S, fn: (values: StoresValues<S>, helpers: Helpers) => T) {
 	let id: string;
-	const { addUnsubscriber, createAttach, unsubscribe } = initElementHelpers(
+	const { addUnsubscriber, createElInterface, unsubscribe } = initElementHelpers(
 		(newId) => (id = newId)
 	);
 
 	return derived(stores, ($storeValues) => {
 		// Unsubscribe from all events
 		unsubscribe();
-		const returned = fn($storeValues, { createAttach, addUnsubscriber });
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		return (...args: any[]) => {
+			const { attach, getElement } = createElInterface();
+			const returned = fn($storeValues, { attach, getElement, addUnsubscriber });
 			return { ...returned(...args), 'data-melt-id': id };
 		};
 	}) as Readable<(...args: Parameters<T>) => ReturnWithObj<T, { 'data-melt-id': string }>>;
@@ -243,6 +242,6 @@ export function elementMultiDerived<
 export function elementMulti<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	T extends (...args: any[]) => Record<string, unknown> | void
->(fn: (helpers: { createAttach: () => Attach; addUnsubscriber: AddUnsubscriber }) => T) {
+>(fn: (helpers: Helpers) => T) {
 	return elementMultiDerived([], (_, helpers) => fn(helpers));
 }

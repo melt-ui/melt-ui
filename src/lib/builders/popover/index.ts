@@ -34,8 +34,8 @@ export function createPopover(args?: CreatePopoverArgs) {
 
 	const content = elementDerived(
 		[open, activeTrigger, positioning],
-		([$open, $activeTrigger, $positioning], { attach, addUnsubscriber }) => {
-			attach.getElement().then((contentEl) => {
+		([$open, $activeTrigger, $positioning], { attach, getElement, addUnsubscriber }) => {
+			getElement().then((contentEl) => {
 				if (!($open && $activeTrigger && contentEl)) return;
 
 				const { unsubscribe } = usePopper({
@@ -61,9 +61,8 @@ export function createPopover(args?: CreatePopoverArgs) {
 		}
 	);
 
-	const trigger = elementMultiDerived([open, content], ([$open, $content], { createAttach }) => {
+	const trigger = elementMultiDerived([open, content], ([$open, $content], { attach }) => {
 		return () => {
-			const attach = createAttach();
 			attach('click', (e) => {
 				e.stopPropagation();
 				const triggerEl = e.currentTarget as HTMLElement;

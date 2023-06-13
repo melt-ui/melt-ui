@@ -68,10 +68,10 @@ export function createTabs(args?: CreateTabsArgs) {
 		}
 	};
 
-	const trigger = elementMultiDerived(value, ($value, { createAttach }) => {
+	const trigger = elementMultiDerived(value, ($value, { attach }) => {
 		return (args: TriggerArgs) => {
 			const { value: tabValue, disabled } = parseTriggerArgs(args);
-			const attach = createAttach();
+
 			if (!$value && !ssrValue && options.autoSet) {
 				ssrValue = tabValue;
 				value.set(tabValue);

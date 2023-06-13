@@ -70,9 +70,8 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		};
 	});
 
-	const trigger = elementMultiDerived([value, options], ([$value, $options], { createAttach }) => {
+	const trigger = elementMultiDerived([value, options], ([$value, $options], { attach }) => {
 		return (args: ItemArgs) => {
-			const attach = createAttach();
 			const { value: itemValue } = parseItemArgs(args);
 
 			attach('click', () => {

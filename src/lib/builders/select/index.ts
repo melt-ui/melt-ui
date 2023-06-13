@@ -54,8 +54,8 @@ export function createSelect(args?: CreateSelectArgs) {
 
 	const menu = elementDerived(
 		[open, activeTrigger, options],
-		([$open, $activeTrigger, $options], { attach, addUnsubscriber }) => {
-			attach.getElement().then((menuEl) => {
+		([$open, $activeTrigger, $options], { attach, getElement, addUnsubscriber }) => {
+			getElement().then((menuEl) => {
 				if (!($open && $activeTrigger && menuEl)) return;
 
 				const { unsubscribe } = usePopper({
@@ -126,9 +126,8 @@ export function createSelect(args?: CreateSelectArgs) {
 		value: string;
 	};
 
-	const option = elementMultiDerived([selected], ([$selected], { createAttach }) => {
+	const option = elementMultiDerived([selected], ([$selected], { attach }) => {
 		return ({ value }: OptionArgs) => {
-			const attach = createAttach();
 			attach('click', (e) => {
 				const el = e.currentTarget as HTMLElement;
 				selected.set(value);
