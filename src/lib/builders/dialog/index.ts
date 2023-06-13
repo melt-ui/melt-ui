@@ -6,11 +6,11 @@ import {
 	elementMulti,
 	elementMultiDerived,
 	isBrowser,
-	noop,
 	sleep,
 	styleToString,
 	uuid,
 } from '$lib/internal/helpers';
+import { removeScroll } from '$lib/internal/helpers/scroll';
 import { writable } from 'svelte/store';
 
 type CreateDialogArgs = {
@@ -77,6 +77,8 @@ export function createDialog(args: CreateDialogArgs = {}) {
 			style: styleToString({
 				display: $open ? undefined : 'none',
 			}),
+			'aria-hidden': true,
+			'data-state': $open ? 'open' : 'closed',
 		} as const;
 	});
 
@@ -121,17 +123,21 @@ export function createDialog(args: CreateDialogArgs = {}) {
 	});
 
 	effect([open, options], ([$open, $options]) => {
-		let unsub = noop;
+		const unsubs: Array<() => void> = [];
 		if ($options.closeOnEscape && $open) {
-			unsub = addEventListener(document, 'keydown', (e) => {
-				if (e.key === 'Escape') {
-					open.set(false);
-				}
-			});
+			unsubs.push(
+				addEventListener(document, 'keydown', (e) => {
+					if (e.key === 'Escape') {
+						open.set(false);
+					}
+				})
+			);
+
+			unsubs.push(removeScroll());
 		}
 
 		return () => {
-			unsub();
+			unsubs.forEach((unsub) => unsub());
 		};
 	});
 

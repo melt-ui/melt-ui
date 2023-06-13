@@ -85,6 +85,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Label           |        |
 | Menubar         |        |
 | Navigation Menu |        |
+| Pagination      |        |
 | Pin Input       |        |
 | Popover         |        |
 | Progress        | ✅     |

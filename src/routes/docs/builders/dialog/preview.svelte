@@ -17,9 +17,12 @@
 			Open Dialog
 		</button>
 		<div use:portal>
-			<div {...$overlay} class="fixed inset-0 bg-black/50 data-[state=open]:animate-overlayShow" />
 			<div
-				class="fixed left-[50%] top-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%]
+				{...$overlay}
+				class="fixed inset-0 z-20 bg-black/50 data-[state=open]:animate-overlayShow"
+			/>
+			<div
+				class="fixed left-[50%] top-[50%] z-30 max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%]
 				translate-y-[-50%] rounded-md bg-white p-[25px] shadow-lg
 				focus:outline-none data-[state=open]:animate-contentShow"
 				{...$content}
