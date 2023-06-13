@@ -8,6 +8,7 @@ import {
 	isBrowser,
 	kbd,
 	styleToString,
+	uuid,
 } from '$lib/internal/helpers';
 import { sleep } from '$lib/internal/helpers/sleep';
 import type { FloatingConfig } from '$lib/internal/actions';
@@ -49,6 +50,7 @@ export function createSelect(args?: CreateSelectArgs) {
 	const selected = writable<string | null>(null);
 	const selectedText = writable<string | null>(null);
 	const activeTrigger = writable<HTMLElement | null>(null);
+	const triggerId = uuid();
 
 	const menu = elementDerived(
 		[open, activeTrigger, options],
@@ -74,6 +76,7 @@ export function createSelect(args?: CreateSelectArgs) {
 				style: styleToString({
 					display: $open ? undefined : 'none',
 				}),
+				'aria-labelledby': triggerId,
 			};
 		}
 	);
@@ -105,6 +108,7 @@ export function createSelect(args?: CreateSelectArgs) {
 				'aria-required': $options.required,
 				'data-state': $open ? 'open' : 'closed',
 				'data-disabled': $options.disabled ? '' : undefined,
+				id: triggerId,
 			};
 		}
 	);

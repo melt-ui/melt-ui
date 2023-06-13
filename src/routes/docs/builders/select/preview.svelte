@@ -13,11 +13,10 @@
 </script>
 
 <Docs.PreviewWrapper>
-	<button class="trigger" {...$trigger}>
+	<button class="trigger" {...$trigger} aria-label="Food">
 		{$selectedText || 'Select an option'}
-		<span class="opacity-50">
-			<ChevronDown />
-		</span>
+
+		<ChevronDown />
 	</button>
 
 	<ul class="menu" {...$menu}>

@@ -99,68 +99,6 @@ export type Attach = (<T extends keyof HTMLElementEventMap>(
 
 type AddUnsubscriber = (cb: (() => void) | Array<undefined | (() => void)>) => void;
 
-/**
- * Creates a derived store that contains attributes for an element.
- * Exposes an `attach` function to attach events to the element.
- *
- * @template S - The type of the stores object
- * @template T - The type of the attributes object
- * @param stores - The stores object to derive from
- * @param fn - The function to derive the attributes from
- * @returns A derived store that contains the attributes for an element
- */
-export function elementDerived<S extends Stores, T extends Record<string, unknown>>(
-	stores: S,
-	fn: (values: StoresValues<S>, helpers: { attach: Attach; addUnsubscriber: AddUnsubscriber }) => T
-) {
-	let unsubscribers: (() => void)[] = [];
-	const unsubscribe = () => {
-		unsubscribers.forEach((fn) => fn());
-		unsubscribers = [];
-	};
-
-	// Unique id used to attach events to the element
-	const id = uuid();
-
-	// A function that attaches an event listener to the element
-	const attach: Attach = (event, listener, options) => {
-		if (!isBrowser) return;
-
-		// Wait for the next tick to ensure that the element has been rendered
-		tick().then(() => {
-			const element = getElementByMeltId(id);
-			if (!element) return;
-			unsubscribers.push(addEventListener(element, event, listener, options));
-		});
-	};
-
-	attach.getElement = () => {
-		return tick().then(() => {
-			if (!isBrowser) return null;
-			return getElementByMeltId(id);
-		});
-	};
-
-	const addUnsubscriber: AddUnsubscriber = (cb) => {
-		if (Array.isArray(cb)) {
-			unsubscribers.push(...(cb.filter((a) => a !== undefined) as (() => void)[]));
-		} else {
-			unsubscribers.push(cb);
-		}
-	};
-
-	return derived(stores, ($storeValues) => {
-		unsubscribe();
-		return { ...fn($storeValues, { attach, addUnsubscriber }), 'data-melt-id': id };
-	});
-}
-
-export function element<T extends Record<string, unknown>>(
-	fn: (helpers: { attach: Attach; addUnsubscriber: AddUnsubscriber }) => T
-) {
-	return elementDerived([], (_, helpers) => fn(helpers));
-}
-
 type ReturnWithObj<T extends () => void, Obj> = ReturnType<T> extends void
 	? Obj
 	: ReturnType<T> & Obj;
@@ -241,6 +179,68 @@ export function elementMultiDerived<
 			return { ...returned(...args), 'data-melt-id': id };
 		};
 	}) as Readable<(...args: Parameters<T>) => ReturnWithObj<T, { 'data-melt-id': string }>>;
+}
+
+/**
+ * Creates a derived store that contains attributes for an element.
+ * Exposes an `attach` function to attach events to the element.
+ *
+ * @template S - The type of the stores object
+ * @template T - The type of the attributes object
+ * @param stores - The stores object to derive from
+ * @param fn - The function to derive the attributes from
+ * @returns A derived store that contains the attributes for an element
+ */
+export function elementDerived<S extends Stores, T extends Record<string, unknown>>(
+	stores: S,
+	fn: (values: StoresValues<S>, helpers: { attach: Attach; addUnsubscriber: AddUnsubscriber }) => T
+) {
+	let unsubscribers: (() => void)[] = [];
+	const unsubscribe = () => {
+		unsubscribers.forEach((fn) => fn());
+		unsubscribers = [];
+	};
+
+	// Unique id used to attach events to the element
+	const id = uuid();
+
+	// A function that attaches an event listener to the element
+	const attach: Attach = (event, listener, options) => {
+		if (!isBrowser) return;
+
+		// Wait for the next tick to ensure that the element has been rendered
+		tick().then(() => {
+			const element = getElementByMeltId(id);
+			if (!element) return;
+			unsubscribers.push(addEventListener(element, event, listener, options));
+		});
+	};
+
+	attach.getElement = () => {
+		return tick().then(() => {
+			if (!isBrowser) return null;
+			return getElementByMeltId(id);
+		});
+	};
+
+	const addUnsubscriber: AddUnsubscriber = (cb) => {
+		if (Array.isArray(cb)) {
+			unsubscribers.push(...(cb.filter((a) => a !== undefined) as (() => void)[]));
+		} else {
+			unsubscribers.push(cb);
+		}
+	};
+
+	return derived(stores, ($storeValues) => {
+		unsubscribe();
+		return { ...fn($storeValues, { attach, addUnsubscriber }), 'data-melt-id': id };
+	});
+}
+
+export function element<T extends Record<string, unknown>>(
+	fn: (helpers: { attach: Attach; addUnsubscriber: AddUnsubscriber }) => T
+) {
+	return elementDerived([], (_, helpers) => fn(helpers));
 }
 
 /**
