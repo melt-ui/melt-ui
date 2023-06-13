@@ -70,12 +70,15 @@ export function createTooltip(args?: CreateTooltipArgs) {
 	}) as Readable<() => void>;
 
 	const trigger = elementDerived(
-		[open, openTooltip, closeTooltip],
-		([$open, $openTooltip, $closeTooltip], { attach }) => {
+		[open, openTooltip, closeTooltip, options],
+		([$open, $openTooltip, $closeTooltip, $options], { attach }) => {
 			attach('mouseover', $openTooltip);
 			attach('mouseout', $closeTooltip);
 			attach('focus', () => open.set(true));
 			attach('blur', () => open.set(false));
+			if ($options.closeOnPointerDown) {
+				attach('pointerdown', () => open.set(false));
+			}
 
 			return {
 				role: 'button' as const,

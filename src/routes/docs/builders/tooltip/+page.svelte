@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
 	import Preview from './preview.svelte';
-	import previewCode from './preview.svelte?raw';
+	import previewCode from './code.ignore-svelte?raw';
 </script>
 
 <Docs.H1>Tooltip</Docs.H1>

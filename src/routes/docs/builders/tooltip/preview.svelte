@@ -3,12 +3,13 @@
 	import { Docs } from '$routes/(components)';
 	import { fade } from 'svelte/transition';
 	import Plus from '~icons/lucide/plus';
-	import X from '~icons/lucide/x';
 
 	const { trigger, content, open, arrow } = createTooltip({
 		positioning: {
 			placement: 'top',
 		},
+		openDelay: 500,
+		closeDelay: 250,
 	});
 </script>
 
