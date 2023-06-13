@@ -39,7 +39,7 @@
 
 <style lang="postcss">
 	.label {
-		@apply py-1 pl-4 pr-4 font-bold capitalize text-neutral-800;
+		@apply py-1 pl-4 pr-4 font-semibold capitalize text-neutral-800;
 	}
 	.menu {
 		@apply z-10 flex max-h-[300px] flex-col gap-2 overflow-y-auto;
