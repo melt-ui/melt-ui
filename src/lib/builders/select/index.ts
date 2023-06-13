@@ -26,10 +26,14 @@ import { derived, writable } from 'svelte/store';
 type CreateSelectArgs = {
 	positioning?: FloatingConfig;
 	arrowSize?: number;
+	required?: boolean;
+	disabled?: boolean;
 };
 
 const defaults = {
 	arrowSize: 8,
+	required: false,
+	disabled: false,
 	positioning: {
 		placement: 'bottom',
 		sameWidth: true,
@@ -44,30 +48,6 @@ export function createSelect(args?: CreateSelectArgs) {
 	const selected = writable<string | null>(null);
 	const selectedText = writable<string | null>(null);
 	const activeTrigger = writable<HTMLElement | null>(null);
-
-	const trigger = elementMultiDerived([open], (_, { createAttach }) => {
-		return () => {
-			const attach = createAttach();
-			attach('click', (e) => {
-				e.stopPropagation();
-				const triggerEl = e.currentTarget as HTMLElement;
-				open.update((prev) => {
-					const isOpen = !prev;
-					if (isOpen) {
-						activeTrigger.set(triggerEl);
-					} else {
-						activeTrigger.set(null);
-					}
-
-					return isOpen;
-				});
-			});
-
-			return {
-				role: 'button',
-			};
-		};
-	});
 
 	const menu = elementDerived(
 		[open, activeTrigger, options],
@@ -93,6 +73,38 @@ export function createSelect(args?: CreateSelectArgs) {
 				style: styleToString({
 					display: $open ? undefined : 'none',
 				}),
+			};
+		}
+	);
+
+	const trigger = elementMultiDerived(
+		[open, menu, options],
+		([$open, $menu, $options], { createAttach }) => {
+			return () => {
+				const attach = createAttach();
+				attach('click', (e) => {
+					e.stopPropagation();
+					const triggerEl = e.currentTarget as HTMLElement;
+					open.update((prev) => {
+						const isOpen = !prev;
+						if (isOpen) {
+							activeTrigger.set(triggerEl);
+						} else {
+							activeTrigger.set(null);
+						}
+
+						return isOpen;
+					});
+				});
+
+				return {
+					role: 'combobox',
+					'aria-controls': $menu['data-melt-id'],
+					'aria-expanded': $open,
+					'aria-required': $options.required,
+					'data-state': $open ? 'open' : 'closed',
+					'data-disabled': $options.disabled ? '' : undefined,
+				};
 			};
 		}
 	);
