@@ -78,34 +78,33 @@ export function createSelect(args?: CreateSelectArgs) {
 		}
 	);
 
-	const trigger = elementMultiDerived(
-		[open, menu, options],
-		([$open, $menu, $options], { createAttach }) => {
-			return () => {
-				const attach = createAttach();
-				attach('click', (e) => {
-					e.stopPropagation();
-					const triggerEl = e.currentTarget as HTMLElement;
-					open.update((prev) => {
-						const isOpen = !prev;
-						if (isOpen) {
-							activeTrigger.set(triggerEl);
-						} else {
-							activeTrigger.set(null);
-						}
+	const menuId = derived(menu, ($menu) => $menu['data-melt-id']);
 
-						return isOpen;
-					});
+	const trigger = elementDerived(
+		[open, menuId, options],
+		([$open, $menuId, $options], { attach }) => {
+			attach('click', (e) => {
+				e.stopPropagation();
+				const triggerEl = e.currentTarget as HTMLElement;
+				open.update((prev) => {
+					const isOpen = !prev;
+					if (isOpen) {
+						activeTrigger.set(triggerEl);
+					} else {
+						activeTrigger.set(null);
+					}
+
+					return isOpen;
 				});
+			});
 
-				return {
-					role: 'combobox',
-					'aria-controls': $menu['data-melt-id'],
-					'aria-expanded': $open,
-					'aria-required': $options.required,
-					'data-state': $open ? 'open' : 'closed',
-					'data-disabled': $options.disabled ? '' : undefined,
-				};
+			return {
+				role: 'combobox',
+				'aria-controls': $menuId,
+				'aria-expanded': $open,
+				'aria-required': $options.required,
+				'data-state': $open ? 'open' : 'closed',
+				'data-disabled': $options.disabled ? '' : undefined,
 			};
 		}
 	);

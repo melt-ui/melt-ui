@@ -13,7 +13,7 @@
 </script>
 
 <Docs.PreviewWrapper>
-	<button class="trigger" {...$trigger()}>
+	<button class="trigger" {...$trigger}>
 		{$selectedText || 'Select an option'}
 		<span class="opacity-50">
 			<ChevronDown />
