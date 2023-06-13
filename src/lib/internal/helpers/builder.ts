@@ -99,9 +99,99 @@ export type Attach = (<T extends keyof HTMLElementEventMap>(
 
 type AddUnsubscriber = (cb: (() => void) | Array<undefined | (() => void)>) => void;
 
+const initElementHelpers = (setId: (id: string) => void) => {
+	let unsubscribers: (() => void)[] = [];
+	const unsubscribe = () => {
+		unsubscribers.forEach((fn) => fn());
+		unsubscribers = [];
+	};
+
+	// Create an `Attach` function that can be used to attach events to the elements
+	const createAttach = () => {
+		// Make sure the id is the same on tick
+		const id = uuid();
+		setId(id);
+
+		// Function that attaches an event listener to an element
+		const attach: Attach = (event, listener, options) => {
+			if (!isBrowser) return;
+
+			// Wait for the next tick to ensure that the element has been rendered
+			tick().then(() => {
+				const element = getElementByMeltId(id);
+				if (!element) return;
+				unsubscribers.push(addEventListener(element, event, listener, options));
+			});
+		};
+
+		// A function that returns the element associated with the current `id`
+		attach.getElement = () =>
+			tick().then(() => {
+				if (!isBrowser) return null;
+				return getElementByMeltId(id);
+			});
+
+		return attach;
+	};
+
+	const addUnsubscriber: AddUnsubscriber = (cb) => {
+		if (Array.isArray(cb)) {
+			unsubscribers.push(...(cb.filter((a) => a !== undefined) as (() => void)[]));
+		} else {
+			unsubscribers.push(cb);
+		}
+	};
+
+	return {
+		unsubscribe,
+		createAttach,
+		addUnsubscriber,
+	};
+};
+
 type ReturnWithObj<T extends () => void, Obj> = ReturnType<T> extends void
 	? Obj
 	: ReturnType<T> & Obj;
+
+/**
+ * Creates a derived store that contains attributes for an element.
+ * Exposes an `attach` function to attach events to the element.
+ *
+ * @template S - The type of the stores object
+ * @template T - The type of the attributes object
+ * @param stores - The stores object to derive from
+ * @param fn - The function to derive the attributes from
+ * @returns A derived store that contains the attributes for an element
+ */
+export function elementDerived<S extends Stores, T extends Record<string, unknown>>(
+	stores: S,
+	fn: (values: StoresValues<S>, helpers: { attach: Attach; addUnsubscriber: AddUnsubscriber }) => T
+) {
+	let id: string;
+	const { addUnsubscriber, createAttach, unsubscribe } = initElementHelpers(
+		(newId) => (id = newId)
+	);
+	const attach = createAttach();
+
+	return derived(stores, ($storeValues) => {
+		unsubscribe();
+		return { ...fn($storeValues, { attach, addUnsubscriber }), 'data-melt-id': id };
+	});
+}
+
+/**
+ * A utility function that creates a element component from a function that
+ * returns an object of attributes for each element.
+ *
+ * @template T - The type of the function that returns the attributes object
+ * @param fn - The function that returns the attributes object
+ * @returns An object that contains the attributes for each element
+ */
+export function element<T extends Record<string, unknown>>(
+	fn: (helpers: { attach: Attach; addUnsubscriber: AddUnsubscriber }) => T
+) {
+	return elementDerived([], (_, helpers) => fn(helpers));
+}
 
 /**
  * Creates a derived store that contains a function that can be called on multiple elements.
@@ -126,53 +216,14 @@ export function elementMultiDerived<
 		helpers: { createAttach: () => Attach; addUnsubscriber: AddUnsubscriber }
 	) => T
 ) {
-	let unsubscribers: (() => void)[] = [];
-
-	// Unique id used to attach events to the elements
-	let id = uuid();
-
-	// Create an `Attach` function that can be used to attach events to the elements
-	const createAttach = () => {
-		// Generate a new id for each call to `createAttach`
-		id = uuid();
-
-		// Make sure the id is the same on tick
-		const constantId = id;
-
-		// Function that attaches an event listener to an element
-		const attach: Attach = (event, listener, options) => {
-			if (!isBrowser) return;
-
-			// Wait for the next tick to ensure that the element has been rendered
-			tick().then(() => {
-				const element = getElementByMeltId(constantId);
-				if (!element) return;
-				unsubscribers.push(addEventListener(element, event, listener, options));
-			});
-		};
-
-		// A function that returns the element associated with the current `id`
-		attach.getElement = () =>
-			tick().then(() => {
-				if (!isBrowser) return null;
-				return getElementByMeltId(constantId);
-			});
-
-		return attach;
-	};
-
-	const addUnsubscriber: AddUnsubscriber = (cb) => {
-		if (Array.isArray(cb)) {
-			unsubscribers.push(...(cb.filter((a) => a !== undefined) as (() => void)[]));
-		} else {
-			unsubscribers.push(cb);
-		}
-	};
+	let id: string;
+	const { addUnsubscriber, createAttach, unsubscribe } = initElementHelpers(
+		(newId) => (id = newId)
+	);
 
 	return derived(stores, ($storeValues) => {
 		// Unsubscribe from all events
-		unsubscribers.forEach((fn) => fn());
-		unsubscribers = [];
+		unsubscribe();
 		const returned = fn($storeValues, { createAttach, addUnsubscriber });
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		return (...args: any[]) => {
@@ -182,70 +233,8 @@ export function elementMultiDerived<
 }
 
 /**
- * Creates a derived store that contains attributes for an element.
- * Exposes an `attach` function to attach events to the element.
- *
- * @template S - The type of the stores object
- * @template T - The type of the attributes object
- * @param stores - The stores object to derive from
- * @param fn - The function to derive the attributes from
- * @returns A derived store that contains the attributes for an element
- */
-export function elementDerived<S extends Stores, T extends Record<string, unknown>>(
-	stores: S,
-	fn: (values: StoresValues<S>, helpers: { attach: Attach; addUnsubscriber: AddUnsubscriber }) => T
-) {
-	let unsubscribers: (() => void)[] = [];
-	const unsubscribe = () => {
-		unsubscribers.forEach((fn) => fn());
-		unsubscribers = [];
-	};
-
-	// Unique id used to attach events to the element
-	const id = uuid();
-
-	// A function that attaches an event listener to the element
-	const attach: Attach = (event, listener, options) => {
-		if (!isBrowser) return;
-
-		// Wait for the next tick to ensure that the element has been rendered
-		tick().then(() => {
-			const element = getElementByMeltId(id);
-			if (!element) return;
-			unsubscribers.push(addEventListener(element, event, listener, options));
-		});
-	};
-
-	attach.getElement = () => {
-		return tick().then(() => {
-			if (!isBrowser) return null;
-			return getElementByMeltId(id);
-		});
-	};
-
-	const addUnsubscriber: AddUnsubscriber = (cb) => {
-		if (Array.isArray(cb)) {
-			unsubscribers.push(...(cb.filter((a) => a !== undefined) as (() => void)[]));
-		} else {
-			unsubscribers.push(cb);
-		}
-	};
-
-	return derived(stores, ($storeValues) => {
-		unsubscribe();
-		return { ...fn($storeValues, { attach, addUnsubscriber }), 'data-melt-id': id };
-	});
-}
-
-export function element<T extends Record<string, unknown>>(
-	fn: (helpers: { attach: Attach; addUnsubscriber: AddUnsubscriber }) => T
-) {
-	return elementDerived([], (_, helpers) => fn(helpers));
-}
-
-/**
  * A utility function that creates a multi-element component from a function that
- * returns an object of attributes for each element.
+ * returns another function, that in turn returns an object of attributes for each element.
  *
  * @template T - The type of the function that returns the attributes object
  * @param fn - The function that returns the attributes object
