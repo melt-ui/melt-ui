@@ -1,6 +1,7 @@
 import { onDestroy, tick } from 'svelte';
 import { derived, type Readable } from 'svelte/store';
 import { addEventListener, isBrowser, uuid } from '.';
+import type { Action } from 'svelte/action';
 
 export function getElementByMeltId(id: string) {
 	return document.querySelector(`[data-melt-id="${id}"]`) as HTMLElement | null;
@@ -8,6 +9,8 @@ export function getElementByMeltId(id: string) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Stores = Readable<any> | [Readable<any>, ...Array<Readable<any>>] | Array<Readable<any>>;
+
+type ActionParameters<T extends Action> = T extends Action<HTMLElement, infer P, any> ? P : never;
 
 /** One or more values from `Readable` stores. */
 type StoresValues<T> = T extends Readable<infer U>
@@ -99,10 +102,13 @@ type AddUnsubscriber = (cb: (() => void) | Array<undefined | (() => void)>) => v
 
 type GetElement = () => Promise<HTMLElement | null>;
 
+type AddAction = <T extends Action>(action: Action, parameters: ActionParameters<T>) => void;
+
 type Helpers = {
 	attach: Attach;
 	addUnsubscriber: AddUnsubscriber;
 	getElement: GetElement;
+	addAction: AddAction;
 };
 
 const initElementHelpers = (setId: (id: string) => void) => {
@@ -131,13 +137,27 @@ const initElementHelpers = (setId: (id: string) => void) => {
 		};
 
 		// A function that returns the element associated with the current `id`
-		const getElement: GetElement = () =>
-			tick().then(() => {
+		const getElement: GetElement = () => {
+			return tick().then(() => {
 				if (!isBrowser) return null;
 				return getElementByMeltId(id);
 			});
+		};
 
-		return { attach, getElement };
+		const addAction: AddAction = (action, parameters) => {
+			return getElement().then(() => {
+				if (!isBrowser) return;
+				const element = getElementByMeltId(id);
+				if (!element) return;
+
+				const ac = action(element, parameters);
+				if (ac) {
+					unsubscribers.push(() => ac.destroy?.());
+				}
+			});
+		};
+
+		return { attach, getElement, addAction };
 	};
 
 	const addUnsubscriber: AddUnsubscriber = (cb) => {
@@ -177,11 +197,14 @@ export function elementDerived<S extends Stores, T extends Record<string, unknow
 	const { addUnsubscriber, createElInterface, unsubscribe } = initElementHelpers(
 		(newId) => (id = newId)
 	);
-	const { attach, getElement } = createElInterface();
+	const { attach, getElement, addAction } = createElInterface();
 
 	return derived(stores, ($storeValues) => {
 		unsubscribe();
-		return { ...fn($storeValues, { attach, getElement, addUnsubscriber }), 'data-melt-id': id };
+		return {
+			...fn($storeValues, { attach, getElement, addUnsubscriber, addAction }),
+			'data-melt-id': id,
+		};
 	});
 }
 
@@ -224,8 +247,8 @@ export function elementMultiDerived<
 		unsubscribe();
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		return (...args: any[]) => {
-			const { attach, getElement } = createElInterface();
-			const returned = fn($storeValues, { attach, getElement, addUnsubscriber });
+			const { attach, getElement, addAction } = createElInterface();
+			const returned = fn($storeValues, { attach, getElement, addUnsubscriber, addAction });
 			return { ...returned(...args), 'data-melt-id': id };
 		};
 	}) as Readable<(...args: Parameters<T>) => ReturnWithObj<T, { 'data-melt-id': string }>>;

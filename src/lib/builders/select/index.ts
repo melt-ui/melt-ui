@@ -54,22 +54,16 @@ export function createSelect(args?: CreateSelectArgs) {
 
 	const menu = elementDerived(
 		[open, activeTrigger, options],
-		([$open, $activeTrigger, $options], { attach, getElement, addUnsubscriber }) => {
-			getElement().then((menuEl) => {
-				if (!($open && $activeTrigger && menuEl)) return;
-
-				const { unsubscribe } = usePopper({
+		([$open, $activeTrigger, $options], { addAction }) => {
+			if ($open && $activeTrigger) {
+				addAction(usePopper, {
 					anchorElement: $activeTrigger,
-					popperElement: menuEl,
 					open,
-					attach,
 					options: {
 						floating: $options.positioning,
 					},
 				});
-
-				addUnsubscriber([unsubscribe]);
-			});
+			}
 
 			return {
 				hidden: $open ? undefined : true,

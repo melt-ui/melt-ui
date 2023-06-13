@@ -36,7 +36,10 @@ export function useFloating(
 	floating: HTMLElement | undefined,
 	opts: FloatingConfig = {}
 ) {
-	if (!floating || !reference) return noop;
+	if (!floating || !reference)
+		return {
+			destroy: noop,
+		};
 
 	const options = { ...defaultConfig, ...opts };
 
@@ -136,5 +139,7 @@ export function useFloating(
 		position: options.strategy,
 	});
 
-	return autoUpdate(reference, floating, compute);
+	return {
+		destroy: autoUpdate(reference, floating, compute),
+	};
 }

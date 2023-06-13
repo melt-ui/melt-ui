@@ -34,22 +34,17 @@ export function createPopover(args?: CreatePopoverArgs) {
 
 	const content = elementDerived(
 		[open, activeTrigger, positioning],
-		([$open, $activeTrigger, $positioning], { attach, getElement, addUnsubscriber }) => {
-			getElement().then((contentEl) => {
-				if (!($open && $activeTrigger && contentEl)) return;
-
-				const { unsubscribe } = usePopper({
+		([$open, $activeTrigger, $positioning], { attach, addAction }) => {
+			if ($open && $activeTrigger) {
+				addAction(usePopper, {
 					anchorElement: $activeTrigger,
-					popperElement: contentEl,
 					open,
 					attach,
 					options: {
 						floating: $positioning,
 					},
 				});
-
-				addUnsubscriber([unsubscribe]);
-			});
+			}
 
 			return {
 				hidden: $open ? undefined : true,

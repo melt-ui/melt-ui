@@ -12,6 +12,5 @@ export type PopperArgs = {
 	anchorElement: HTMLElement;
 	popperElement: HTMLElement;
 	open: Writable<boolean>;
-	attach: Attach;
 	options?: PopperConfig;
 };

@@ -7,36 +7,45 @@ export type PortalConfig = {
 	target?: string | HTMLElement;
 };
 
-export const usePortal = (node: HTMLElement, config: PortalConfig = {}) => {
-	async function move() {
-		const { target } = config;
+export function usePortal(el: HTMLElement, target: HTMLElement | string = 'body') {
+	let targetEl;
+	const parent = el.parentNode;
 
-		let targetEl: HTMLElement | null;
-
-		if (!target) {
-			targetEl = document.body;
-		} else if (typeof target === 'string') {
+	async function update(newTarget: HTMLElement | string) {
+		target = newTarget;
+		if (typeof target === 'string') {
 			targetEl = document.querySelector(target);
 			if (targetEl === null) {
 				await tick();
 				targetEl = document.querySelector(target);
 			}
 			if (targetEl === null) {
-				throw new Error(`No element found matching selector: "${target}"`);
+				throw new Error(`No element found matching css selector: "${target}"`);
 			}
 		} else if (target instanceof HTMLElement) {
 			targetEl = target;
 		} else {
 			throw new TypeError(
-				`Unknown portal target type: ${target === null ? 'null' : typeof target}`
+				`Unknown portal target type: ${
+					target === null ? 'null' : typeof target
+				}. Allowed types: string (CSS selector) or HTMLElement.`
 			);
 		}
-		targetEl.appendChild(node);
+		targetEl.appendChild(el);
+		el.hidden = false;
 	}
 
-	move();
+	function destroy() {
+		if (parent) {
+			parent?.appendChild(el);
+		} else {
+			el.remove();
+		}
+	}
 
-	return () => {
-		node.remove();
+	update(target);
+	return {
+		update,
+		destroy,
 	};
-};
+}
