@@ -4,7 +4,10 @@ import {
 	effect,
 	elementDerived,
 	elementMulti,
+	elementMultiDerived,
+	isBrowser,
 	noop,
+	sleep,
 	styleToString,
 	uuid,
 } from '$lib/internal/helpers';
@@ -27,6 +30,7 @@ const defaults = {
 export function createDialog(args: CreateDialogArgs = {}) {
 	const withDefaults = { ...defaults, ...args };
 	const options = writable({ ...withDefaults });
+	const activeTrigger = writable<HTMLElement | null>(null);
 
 	const ids = {
 		content: uuid(),
@@ -36,17 +40,20 @@ export function createDialog(args: CreateDialogArgs = {}) {
 
 	const open = writable(false);
 
-	const trigger = elementDerived(open, ($open, { attach }) => {
-		attach('click', () => {
-			open.set(true);
-		});
+	const trigger = elementMultiDerived(open, ($open, { attach }) => {
+		return () => {
+			attach('click', (e) => {
+				const el = e.currentTarget as HTMLElement;
+				open.set(true);
+				activeTrigger.set(el);
+			});
 
-		return {
-			'aria-haspopup': 'dialog',
-			'aria-expanded': $open,
-			// TODO: aria-controls should be the id of the dialog
-			'aria-controls': 'dialog',
-		} as const;
+			return {
+				'aria-haspopup': 'dialog',
+				'aria-expanded': $open,
+				'aria-controls': ids.content,
+			} as const;
+		};
 	});
 
 	const overlay = elementDerived([open, options], ([$open, $options], { attach }) => {
@@ -126,6 +133,15 @@ export function createDialog(args: CreateDialogArgs = {}) {
 		return () => {
 			unsub();
 		};
+	});
+
+	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
+		if (!isBrowser) return;
+
+		if (!$open && $activeTrigger && isBrowser) {
+			// Prevent the keydown event from triggering on the trigger
+			sleep(1).then(() => $activeTrigger.focus());
+		}
 	});
 
 	return {

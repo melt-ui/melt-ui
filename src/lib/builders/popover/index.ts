@@ -34,12 +34,11 @@ export function createPopover(args?: CreatePopoverArgs) {
 
 	const content = elementDerived(
 		[open, activeTrigger, positioning],
-		([$open, $activeTrigger, $positioning], { attach, addAction }) => {
+		([$open, $activeTrigger, $positioning], { addAction }) => {
 			if ($open && $activeTrigger) {
 				addAction(usePopper, {
 					anchorElement: $activeTrigger,
 					open,
-					attach,
 					options: {
 						floating: $positioning,
 					},
