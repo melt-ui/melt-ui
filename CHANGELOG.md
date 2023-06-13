@@ -1,5 +1,16 @@
 # @melt-ui/svelte
 
+## 0.7.0
+
+### Minor Changes
+
+- f9ec447: add tooltip
+
+### Patch Changes
+
+- 62f7413: dialog improvements
+- 4e27f95: close tooltip on pointer down functionality
+
 ## 0.6.0
 
 ### Minor Changes
