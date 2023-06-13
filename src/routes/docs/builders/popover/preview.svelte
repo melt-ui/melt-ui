@@ -5,11 +5,11 @@
 	import Settings2 from '~icons/lucide/settings2';
 	import X from '~icons/lucide/x';
 
-	const { trigger, content, open, arrow } = createPopover();
+	const { trigger, content, open, arrow, close } = createPopover();
 </script>
 
 <Docs.PreviewWrapper>
-	<button type="button" class="trigger" {...$trigger()} aria-label="Update dimensions">
+	<button type="button" class="trigger" {...$trigger} aria-label="Update dimensions">
 		<Settings2 class="h-4 w-4" />
 		<span class="sr-only">Open Popover</span>
 	</button>
@@ -36,7 +36,7 @@
 					<input id="maxHeight" class="input" />
 				</fieldset>
 			</div>
-			<button class="close" {...$trigger()}>
+			<button class="close" {...$close()}>
 				<X class="h-4 w-4 " />
 			</button>
 		</div>

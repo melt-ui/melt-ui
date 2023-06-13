@@ -1,3 +1,4 @@
+import type { FloatingConfig } from '$lib/internal/actions';
 import { usePopper } from '$lib/internal/actions/popper';
 import {
 	debounce,
@@ -11,7 +12,6 @@ import {
 	uuid,
 } from '$lib/internal/helpers';
 import { sleep } from '$lib/internal/helpers/sleep';
-import type { FloatingConfig } from '$lib/internal/actions';
 import { derived, writable } from 'svelte/store';
 
 /**
@@ -50,7 +50,11 @@ export function createSelect(args?: CreateSelectArgs) {
 	const selected = writable<string | null>(null);
 	const selectedText = writable<string | null>(null);
 	const activeTrigger = writable<HTMLElement | null>(null);
-	const triggerId = uuid();
+
+	const ids = {
+		menu: uuid(),
+		trigger: uuid(),
+	};
 
 	const menu = elementDerived(
 		[open, activeTrigger, options],
@@ -70,42 +74,37 @@ export function createSelect(args?: CreateSelectArgs) {
 				style: styleToString({
 					display: $open ? undefined : 'none',
 				}),
-				'aria-labelledby': triggerId,
+				'aria-labelledby': ids.trigger,
 			};
 		}
 	);
 
-	const menuId = derived(menu, ($menu) => $menu['data-melt-id']);
+	const trigger = elementDerived([open, options], ([$open, $options], { attach }) => {
+		attach('click', (e) => {
+			e.stopPropagation();
+			const triggerEl = e.currentTarget as HTMLElement;
+			open.update((prev) => {
+				const isOpen = !prev;
+				if (isOpen) {
+					activeTrigger.set(triggerEl);
+				} else {
+					activeTrigger.set(null);
+				}
 
-	const trigger = elementDerived(
-		[open, menuId, options],
-		([$open, $menuId, $options], { attach }) => {
-			attach('click', (e) => {
-				e.stopPropagation();
-				const triggerEl = e.currentTarget as HTMLElement;
-				open.update((prev) => {
-					const isOpen = !prev;
-					if (isOpen) {
-						activeTrigger.set(triggerEl);
-					} else {
-						activeTrigger.set(null);
-					}
-
-					return isOpen;
-				});
+				return isOpen;
 			});
+		});
 
-			return {
-				role: 'combobox',
-				'aria-controls': $menuId,
-				'aria-expanded': $open,
-				'aria-required': $options.required,
-				'data-state': $open ? 'open' : 'closed',
-				'data-disabled': $options.disabled ? '' : undefined,
-				id: triggerId,
-			};
-		}
-	);
+		return {
+			role: 'combobox',
+			'aria-controls': ids.menu,
+			'aria-expanded': $open,
+			'aria-required': $options.required,
+			'data-state': $open ? 'open' : 'closed',
+			'data-disabled': $options.disabled ? '' : undefined,
+			id: ids.trigger,
+		};
+	});
 
 	const arrow = derived(options, ($options) => ({
 		'data-arrow': true,
