@@ -1,5 +1,6 @@
 import { usePopper } from '$lib/internal/actions/popper';
 import {
+	debounce,
 	effect,
 	elementDerived,
 	elementMultiDerived,
@@ -162,6 +163,11 @@ export function createSelect(args?: CreateSelectArgs) {
 		};
 	});
 
+	let typed: string[] = [];
+	const resetTyped = debounce(() => {
+		typed = [];
+	});
+
 	effect([open, menu, activeTrigger], ([$open, $menu, $activeTrigger]) => {
 		if (!isBrowser) return;
 
@@ -183,7 +189,7 @@ export function createSelect(args?: CreateSelectArgs) {
 					return;
 				}
 
-				const allOptions = Array.from(menuEl.querySelectorAll('[role="option"]'));
+				const allOptions = Array.from(menuEl.querySelectorAll('[role="option"]')) as HTMLElement[];
 				const focusedOption = allOptions.find((el) => el === document.activeElement);
 				const focusedIndex = allOptions.indexOf(focusedOption as HTMLElement);
 
@@ -192,19 +198,38 @@ export function createSelect(args?: CreateSelectArgs) {
 					const nextIndex = focusedIndex + 1 > allOptions.length - 1 ? 0 : focusedIndex + 1;
 					const nextOption = allOptions[nextIndex] as HTMLElement;
 					nextOption.focus();
+					return;
 				} else if (e.key === kbd.ARROW_UP) {
 					e.preventDefault();
 					const prevIndex = focusedIndex - 1 < 0 ? allOptions.length - 1 : focusedIndex - 1;
 					const prevOption = allOptions[prevIndex] as HTMLElement;
 					prevOption.focus();
+					return;
 				} else if (e.key === kbd.HOME) {
 					e.preventDefault();
 					const firstOption = allOptions[0] as HTMLElement;
 					firstOption.focus();
+					return;
 				} else if (e.key === kbd.END) {
 					e.preventDefault();
 					const lastOption = allOptions[allOptions.length - 1] as HTMLElement;
 					lastOption.focus();
+					return;
+				}
+
+				// Typeahead
+				const isAlphaNumericOrSpace = /^[a-z0-9 ]$/i.test(e.key);
+				if (isAlphaNumericOrSpace) {
+					typed.push(e.key.toLowerCase());
+					const typedString = typed.join('');
+					const matchingOption = allOptions.find((el) =>
+						el.innerText.toLowerCase().startsWith(typedString)
+					);
+					if (matchingOption) {
+						matchingOption.focus();
+					}
+
+					resetTyped();
 				}
 			};
 

@@ -11,3 +11,4 @@ export * from './style';
 export * from './uuid';
 export * from './keyboard';
 export * from './callbacks';
+export * from './debounce';
