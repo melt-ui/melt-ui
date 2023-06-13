@@ -1,6 +1,6 @@
 import { onDestroy, tick } from 'svelte';
 import { derived, type Readable } from 'svelte/store';
-import { isBrowser, uuid } from '.';
+import { addEventListener, isBrowser, uuid } from '.';
 
 export function getElementByMeltId(id: string) {
 	return document.querySelector(`[data-melt-id="${id}"]`) as HTMLElement | null;
@@ -129,14 +129,11 @@ export function elementDerived<S extends Stores, T extends Record<string, unknow
 		// Wait for the next tick to ensure that the element has been rendered
 		tick().then(() => {
 			const element = getElementByMeltId(id);
-			element?.addEventListener(event, listener, options);
-		});
-
-		unsubscribers.push(() => {
-			const element = getElementByMeltId(id);
-			element?.removeEventListener(event, listener, options);
+			if (!element) return;
+			unsubscribers.push(addEventListener(element, event, listener, options));
 		});
 	};
+
 	attach.getElement = () => {
 		return tick().then(() => {
 			if (!isBrowser) return null;
@@ -211,13 +208,8 @@ export function elementMultiDerived<
 			// Wait for the next tick to ensure that the element has been rendered
 			tick().then(() => {
 				const element = getElementByMeltId(constantId);
-				element?.addEventListener(event, listener, options);
-			});
-
-			// Add a function to the `unsubscribers` array that removes the event listener
-			unsubscribers.push(() => {
-				const element = getElementByMeltId(constantId);
-				element?.removeEventListener(event, listener, options);
+				if (!element) return;
+				unsubscribers.push(addEventListener(element, event, listener, options));
 			});
 		};
 
