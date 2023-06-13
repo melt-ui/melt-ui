@@ -3,7 +3,7 @@ import type { Writable } from 'svelte/store';
 
 export type PopperConfig = {
 	floating?: FloatingConfig;
-	focusTrap?: FocusTrapConfig;
+	focusTrap?: FocusTrapConfig | null;
 	clickOutside?: ClickOutsideConfig;
 };
 

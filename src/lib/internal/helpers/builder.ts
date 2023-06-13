@@ -4,6 +4,7 @@ import { addEventListener, isBrowser, uuid } from '.';
 import type { Action } from 'svelte/action';
 
 export function getElementByMeltId(id: string) {
+	if (!isBrowser) return null;
 	return document.querySelector(`[data-melt-id="${id}"]`) as HTMLElement | null;
 }
 

@@ -2,7 +2,6 @@ import {
 	effect,
 	elementDerived,
 	elementMulti,
-	elementMultiDerived,
 	isBrowser,
 	sleep,
 	styleToString,

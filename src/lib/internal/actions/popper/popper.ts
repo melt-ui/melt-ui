@@ -20,16 +20,23 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 
 	const unsubscribeFloating = useFloating(anchorElement, popperElement, opts.floating).destroy;
 
-	const { useFocusTrap } = createFocusTrap({
-		immediate: true,
-		escapeDeactivates: false,
-		allowOutsideClick: true,
-		returnFocusOnDeactivate: false,
-		fallbackFocus: popperElement,
-		...opts.focusTrap,
-	});
+	let unSubfocusTrap = noop;
+	if (options.focusTrap !== null) {
+		const { useFocusTrap } = createFocusTrap({
+			immediate: true,
+			escapeDeactivates: false,
+			allowOutsideClick: true,
+			returnFocusOnDeactivate: false,
+			fallbackFocus: popperElement,
+			...opts.focusTrap,
+		});
 
-	const focusTrap = useFocusTrap(popperElement);
+		const usedFocusTrap = useFocusTrap(popperElement);
+
+		if (usedFocusTrap && usedFocusTrap.destroy) {
+			unSubfocusTrap = usedFocusTrap.destroy;
+		}
+	}
 
 	const unsubscribeClickOutside = useClickOutside(popperElement, {
 		enabled: open,
@@ -59,7 +66,7 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 	const unsubscribe = executeCallbacks(
 		unsubscribeFloating,
 		unsubscribeClickOutside,
-		focusTrap && focusTrap.destroy ? focusTrap.destroy : noop,
+		unSubfocusTrap,
 		removeKeydown,
 		portal && portal.destroy ? portal.destroy : noop
 	);
