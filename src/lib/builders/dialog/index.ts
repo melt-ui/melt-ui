@@ -132,9 +132,9 @@ export function createDialog(args: CreateDialogArgs = {}) {
 					}
 				})
 			);
-
-			unsubs.push(removeScroll());
 		}
+
+		if ($options.preventScroll && $open) unsubs.push(removeScroll());
 
 		return () => {
 			unsubs.forEach((unsub) => unsub());
