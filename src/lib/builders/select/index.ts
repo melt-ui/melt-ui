@@ -1,5 +1,7 @@
+import type { FloatingConfig } from '$lib/internal/actions';
 import { usePopper } from '$lib/internal/actions/popper';
 import {
+	debounce,
 	effect,
 	elementDerived,
 	elementMultiDerived,
@@ -7,9 +9,9 @@ import {
 	isBrowser,
 	kbd,
 	styleToString,
+	uuid,
 } from '$lib/internal/helpers';
 import { sleep } from '$lib/internal/helpers/sleep';
-import type { FloatingConfig } from '$lib/internal/actions';
 import { derived, writable } from 'svelte/store';
 
 /**
@@ -26,12 +28,17 @@ import { derived, writable } from 'svelte/store';
 type CreateSelectArgs = {
 	positioning?: FloatingConfig;
 	arrowSize?: number;
+	required?: boolean;
+	disabled?: boolean;
 };
 
 const defaults = {
 	arrowSize: 8,
+	required: false,
+	disabled: false,
 	positioning: {
 		placement: 'bottom',
+		sameWidth: true,
 	},
 } satisfies CreateSelectArgs;
 
@@ -44,57 +51,60 @@ export function createSelect(args?: CreateSelectArgs) {
 	const selectedText = writable<string | null>(null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
-	const trigger = elementMultiDerived([open], (_, { createAttach }) => {
-		return () => {
-			const attach = createAttach();
-			attach('click', (e) => {
-				e.stopPropagation();
-				const triggerEl = e.currentTarget as HTMLElement;
-				open.update((prev) => {
-					const isOpen = !prev;
-					if (isOpen) {
-						activeTrigger.set(triggerEl);
-					} else {
-						activeTrigger.set(null);
-					}
-
-					return isOpen;
-				});
-			});
-
-			return {
-				role: 'button',
-			};
-		};
-	});
+	const ids = {
+		menu: uuid(),
+		trigger: uuid(),
+	};
 
 	const menu = elementDerived(
 		[open, activeTrigger, options],
-		([$open, $activeTrigger, $options], { attach, addUnsubscriber }) => {
-			attach.getElement().then((menuEl) => {
-				if (!($open && $activeTrigger && menuEl)) return;
-
-				const { unsubscribe } = usePopper({
+		([$open, $activeTrigger, $options], { addAction }) => {
+			if ($open && $activeTrigger) {
+				addAction(usePopper, {
 					anchorElement: $activeTrigger,
-					popperElement: menuEl,
 					open,
-					attach,
 					options: {
 						floating: $options.positioning,
 					},
 				});
-
-				addUnsubscriber([unsubscribe]);
-			});
+			}
 
 			return {
 				hidden: $open ? undefined : true,
 				style: styleToString({
 					display: $open ? undefined : 'none',
 				}),
+				'aria-labelledby': ids.trigger,
 			};
 		}
 	);
+
+	const trigger = elementDerived([open, options], ([$open, $options], { attach }) => {
+		attach('click', (e) => {
+			e.stopPropagation();
+			const triggerEl = e.currentTarget as HTMLElement;
+			open.update((prev) => {
+				const isOpen = !prev;
+				if (isOpen) {
+					activeTrigger.set(triggerEl);
+				} else {
+					activeTrigger.set(null);
+				}
+
+				return isOpen;
+			});
+		});
+
+		return {
+			role: 'combobox',
+			'aria-controls': ids.menu,
+			'aria-expanded': $open,
+			'aria-required': $options.required,
+			'data-state': $open ? 'open' : 'closed',
+			'data-disabled': $options.disabled ? '' : undefined,
+			id: ids.trigger,
+		};
+	});
 
 	const arrow = derived(options, ($options) => ({
 		'data-arrow': true,
@@ -109,9 +119,8 @@ export function createSelect(args?: CreateSelectArgs) {
 		value: string;
 	};
 
-	const option = elementMultiDerived([selected], ([$selected], { createAttach }) => {
+	const option = elementMultiDerived([selected], ([$selected], { attach }) => {
 		return ({ value }: OptionArgs) => {
-			const attach = createAttach();
 			attach('click', (e) => {
 				const el = e.currentTarget as HTMLElement;
 				selected.set(value);
@@ -149,6 +158,11 @@ export function createSelect(args?: CreateSelectArgs) {
 		};
 	});
 
+	let typed: string[] = [];
+	const resetTyped = debounce(() => {
+		typed = [];
+	});
+
 	effect([open, menu, activeTrigger], ([$open, $menu, $activeTrigger]) => {
 		if (!isBrowser) return;
 
@@ -170,7 +184,7 @@ export function createSelect(args?: CreateSelectArgs) {
 					return;
 				}
 
-				const allOptions = Array.from(menuEl.querySelectorAll('[role="option"]'));
+				const allOptions = Array.from(menuEl.querySelectorAll('[role="option"]')) as HTMLElement[];
 				const focusedOption = allOptions.find((el) => el === document.activeElement);
 				const focusedIndex = allOptions.indexOf(focusedOption as HTMLElement);
 
@@ -179,19 +193,38 @@ export function createSelect(args?: CreateSelectArgs) {
 					const nextIndex = focusedIndex + 1 > allOptions.length - 1 ? 0 : focusedIndex + 1;
 					const nextOption = allOptions[nextIndex] as HTMLElement;
 					nextOption.focus();
+					return;
 				} else if (e.key === kbd.ARROW_UP) {
 					e.preventDefault();
 					const prevIndex = focusedIndex - 1 < 0 ? allOptions.length - 1 : focusedIndex - 1;
 					const prevOption = allOptions[prevIndex] as HTMLElement;
 					prevOption.focus();
+					return;
 				} else if (e.key === kbd.HOME) {
 					e.preventDefault();
 					const firstOption = allOptions[0] as HTMLElement;
 					firstOption.focus();
+					return;
 				} else if (e.key === kbd.END) {
 					e.preventDefault();
 					const lastOption = allOptions[allOptions.length - 1] as HTMLElement;
 					lastOption.focus();
+					return;
+				}
+
+				// Typeahead
+				const isAlphaNumericOrSpace = /^[a-z0-9 ]$/i.test(e.key);
+				if (isAlphaNumericOrSpace) {
+					typed.push(e.key.toLowerCase());
+					const typedString = typed.join('');
+					const matchingOption = allOptions.find((el) =>
+						el.innerText.toLowerCase().startsWith(typedString)
+					);
+					if (matchingOption) {
+						matchingOption.focus();
+					}
+
+					resetTyped();
 				}
 			};
 

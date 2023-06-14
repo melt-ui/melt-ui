@@ -10,3 +10,5 @@ export * from './toggle-group';
 export * from './progress';
 export * from './radio-group';
 export * from './slider';
+export * from './dialog';
+export * from './tooltip';

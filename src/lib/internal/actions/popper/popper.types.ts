@@ -1,17 +1,14 @@
-import type { FocusTrapConfig, FloatingConfig, ClickOutsideConfig } from '$lib/internal/actions';
-import type { Attach } from '$lib/internal/helpers';
+import type { ClickOutsideConfig, FloatingConfig, FocusTrapConfig } from '$lib/internal/actions';
 import type { Writable } from 'svelte/store';
 
 export type PopperConfig = {
 	floating?: FloatingConfig;
-	focusTrap?: FocusTrapConfig;
+	focusTrap?: FocusTrapConfig | null;
 	clickOutside?: ClickOutsideConfig;
 };
 
 export type PopperArgs = {
 	anchorElement: HTMLElement;
-	popperElement: HTMLElement;
 	open: Writable<boolean>;
-	attach: Attach;
 	options?: PopperConfig;
 };

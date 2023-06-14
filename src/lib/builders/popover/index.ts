@@ -1,10 +1,11 @@
 import {
 	effect,
 	elementDerived,
-	elementMultiDerived,
+	elementMulti,
 	isBrowser,
 	sleep,
 	styleToString,
+	uuid,
 } from '$lib/internal/helpers';
 
 import { usePopper, type FloatingConfig } from '$lib/internal/actions';
@@ -32,24 +33,22 @@ export function createPopover(args?: CreatePopoverArgs) {
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
+	const ids = {
+		content: uuid(),
+	};
+
 	const content = elementDerived(
 		[open, activeTrigger, positioning],
-		([$open, $activeTrigger, $positioning], { attach, addUnsubscriber }) => {
-			attach.getElement().then((contentEl) => {
-				if (!($open && $activeTrigger && contentEl)) return;
-
-				const { unsubscribe } = usePopper({
+		([$open, $activeTrigger, $positioning], { addAction }) => {
+			if ($open && $activeTrigger) {
+				addAction(usePopper, {
 					anchorElement: $activeTrigger,
-					popperElement: contentEl,
 					open,
-					attach,
 					options: {
 						floating: $positioning,
 					},
 				});
-
-				addUnsubscriber([unsubscribe]);
-			});
+			}
 
 			return {
 				hidden: $open ? undefined : true,
@@ -57,35 +56,33 @@ export function createPopover(args?: CreatePopoverArgs) {
 				style: styleToString({
 					display: $open ? undefined : 'none',
 				}),
+				id: ids.content,
 			};
 		}
 	);
 
-	const trigger = elementMultiDerived([open, content], ([$open, $content], { createAttach }) => {
-		return () => {
-			const attach = createAttach();
-			attach('click', (e) => {
-				e.stopPropagation();
-				const triggerEl = e.currentTarget as HTMLElement;
+	const trigger = elementDerived([open], ([$open], { attach }) => {
+		attach('click', (e) => {
+			e.stopPropagation();
+			const triggerEl = e.currentTarget as HTMLElement;
 
-				open.update((prev) => {
-					const isOpen = !prev;
-					if (isOpen) {
-						activeTrigger.set(triggerEl);
-					} else {
-						activeTrigger.set(null);
-					}
-					return isOpen;
-				});
+			open.update((prev) => {
+				const isOpen = !prev;
+				if (isOpen) {
+					activeTrigger.set(triggerEl);
+				} else {
+					activeTrigger.set(null);
+				}
+				return isOpen;
 			});
+		});
 
-			return {
-				role: 'button' as const,
-				'aria-haspopup': 'dialog' as const,
-				'aria-expanded': $open,
-				'data-state': $open ? 'open' : 'closed',
-				'aria-controls': $content['data-melt-id'],
-			};
+		return {
+			role: 'button' as const,
+			'aria-haspopup': 'dialog' as const,
+			'aria-expanded': $open,
+			'data-state': $open ? 'open' : 'closed',
+			'aria-controls': ids.content,
 		};
 	});
 
@@ -98,6 +95,15 @@ export function createPopover(args?: CreatePopoverArgs) {
 		}),
 	}));
 
+	const close = elementMulti(({ attach }) => {
+		return () => {
+			attach('click', () => {
+				open.set(false);
+			});
+			return {};
+		};
+	});
+
 	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
 		if (!isBrowser) return;
 
@@ -107,5 +113,5 @@ export function createPopover(args?: CreatePopoverArgs) {
 		}
 	});
 
-	return { trigger, open, content, arrow };
+	return { trigger, open, content, arrow, close };
 }

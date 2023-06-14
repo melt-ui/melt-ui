@@ -41,8 +41,8 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 
 	const thumb = elementDerived(
 		[value, min, max],
-		([$value, $min, $max], { attach, addUnsubscriber }) => {
-			attach.getElement().then((thumbEl) => {
+		([$value, $min, $max], { getElement, addUnsubscriber }) => {
+			getElement().then((thumbEl) => {
 				if (!thumbEl) return;
 
 				const keydown = (event: KeyboardEvent) => {

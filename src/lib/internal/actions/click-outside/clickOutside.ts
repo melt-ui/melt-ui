@@ -1,3 +1,7 @@
+// Modified from Grail UI v0.9.6 (2023-06-10)
+// Source: https://github.com/grail-ui/grail-ui
+// https://github.com/grail-ui/grail-ui/tree/master/packages/grail-ui/src/clickOutside/clickOutside.ts
+
 import { readable } from 'svelte/store';
 import { addEventListener } from '$lib/internal/helpers/event';
 import { get } from 'svelte/store';
@@ -32,7 +36,7 @@ const documentClickStore = readable<PointerEvent | undefined>(undefined, (set): 
 });
 
 export const useClickOutside = (node: HTMLElement, config: ClickOutsideConfig = {}) => {
-	const options = { enabled: true, ...config };
+	let options = { enabled: true, ...config };
 
 	// Returns true if the click outside handler is enabled
 	function isEnabled(): boolean {
@@ -72,7 +76,12 @@ export const useClickOutside = (node: HTMLElement, config: ClickOutsideConfig = 
 		options.handler?.(e);
 	});
 
-	return () => {
-		unsubscribe();
+	return {
+		update(params: Partial<ClickOutsideConfig>) {
+			options = { ...options, ...params };
+		},
+		destroy() {
+			unsubscribe();
+		},
 	};
 };

@@ -1,5 +1,34 @@
 # @melt-ui/svelte
 
+## 0.7.0
+
+### Minor Changes
+
+- f9ec447: add tooltip
+
+### Patch Changes
+
+- 62f7413: dialog improvements
+- 4e27f95: close tooltip on pointer down functionality
+
+## 0.6.0
+
+### Minor Changes
+
+- f7dc717: change select trigger to be single derived
+- 6f98aa5: add dialog
+
+## 0.5.0
+
+### Minor Changes
+
+- fc18981: add select features (typeahead) & refactor internals
+- 0f1a1f6: Select: add isSelected and options to returned object; Add HOME and END kbd listeners
+
+### Patch Changes
+
+- cb1b21c: Adjust browser detection function
+
 ## 0.4.0
 
 ### Minor Changes
