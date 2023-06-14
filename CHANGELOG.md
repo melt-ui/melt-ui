@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.8.0
+
+### Minor Changes
+
+- 4c481ee: feat: pagination
+
 ## 0.7.1
 
 ### Patch Changes
