@@ -4,10 +4,9 @@
 	import Preview from './preview.svelte';
 </script>
 
-<Docs.H1>Progress</Docs.H1>
+<Docs.H1>Slider</Docs.H1>
 <Docs.Description>
-	Displays an indicator showing the completion progress of a task, typically displayed as a progress
-	bar.
+	An input where the user selects a value from within a given range
 </Docs.Description>
 
 <Preview />
