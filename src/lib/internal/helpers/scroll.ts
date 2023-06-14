@@ -1,3 +1,7 @@
+// Modified from @zag-js/remove-scroll v0.10.2 (2023-06-10)
+// Source: https://github.com/chakra-ui/zag
+// https://github.com/chakra-ui/zag/blob/main/packages/utilities/remove-scroll/src/index.ts
+
 import { isIos } from './platform';
 
 const LOCK_CLASSNAME = 'data-melt-scroll-lock';
