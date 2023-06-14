@@ -30,30 +30,11 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 	const min = writable(withDefaults.min);
 	const isActive = writable(false);
 
-	const root = elementDerived(
-		[value, min, max],
-		([$value, $min, $max], { attach, addUnsubscriber }) => {
-			return {
-				value: $value,
-				max: $max,
-				role: 'meter',
-				'aria-valuemin': $min,
-				'aria-valuemax': $max,
-				'aria-valuenow': $value,
-				'data-value': $value,
-				'data-min': $min,
-				'data-max': $max,
-			};
-		}
-	);
-
-	const range = derived([value, min, max, isActive], ([$value, $min, $max]) => {
-		return { style: `position: absolute; left: 0; right: calc(${100 - ($value ?? 0)}%)` };
-	});
-
-	const thumb = elementDerived([value, min, max], ([$value, $min, $max]) => {
+	const root = elementDerived([value, min, max], ([$value, $min, $max]) => {
 		return {
+			value: $value,
 			max: $max,
+			role: 'meter',
 			'aria-valuemin': $min,
 			'aria-valuemax': $max,
 			'aria-valuenow': $value,
@@ -62,6 +43,45 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 			'data-max': $max,
 		};
 	});
+
+	const range = derived(value, ($value) => {
+		return { style: `position: absolute; left: 0; right: calc(${100 - ($value ?? 0)}%)` };
+	});
+
+	const thumb = elementDerived(
+		[value, min, max],
+		([$value, $min, $max], { attach, addUnsubscriber }) => {
+			attach.getElement().then((thumbEl) => {
+				if (!thumbEl) return;
+
+				const keydown = (event: KeyboardEvent) => {
+					if (![kbd.ARROW_LEFT, kbd.ARROW_RIGHT].includes(event.key)) return;
+
+					const step = withDefaults.step;
+					const val = $value ?? 0;
+
+					if (val < $max && kbd.ARROW_RIGHT === event.key) {
+						value.update((prev) => (prev ?? 0) + step);
+					} else if (val > $min && kbd.ARROW_LEFT === event.key) {
+						value.update((prev) => (prev ?? 0) - step);
+					}
+				};
+
+				thumbEl.addEventListener('keydown', keydown);
+
+				addUnsubscriber([() => thumbEl.removeEventListener('keydown', keydown)]);
+			});
+
+			return {
+				role: 'slider',
+				'aria-label': 'Volume',
+				'aria-valuemin': $min,
+				'aria-valuemax': $max,
+				'aria-valuenow': $value,
+				tabindex: 0,
+			};
+		}
+	);
 
 	effect([isActive, root, thumb, min, max], ([$isActive, $root, $thumb, $min, $max]) => {
 		if (!isBrowser) return;
@@ -84,16 +104,10 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 			if (!sliderEl?.contains(e.target as HTMLElement)) return;
 
 			thumbEl.focus();
+			isActive.set(true);
 
-			isActive.update((prev) => {
-				const active = !prev;
-				if (active) {
-					const { left, right } = sliderEl.getBoundingClientRect();
-					applyPosition(e.clientX, left, right);
-				}
-
-				return active;
-			});
+			const { left, right } = sliderEl.getBoundingClientRect();
+			applyPosition(e.clientX, left, right);
 		};
 
 		const pointerUp = () => {
