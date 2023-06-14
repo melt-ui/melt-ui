@@ -1,4 +1,4 @@
-import { elementDerived, elementMultiDerived, omit } from '$lib/internal/helpers';
+import { elementDerived, elementMultiDerived, kbd, omit } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 
@@ -34,6 +34,10 @@ export function createPagination(args: CreatePaginationArgs) {
 		return { start, end };
 	});
 
+	const root = {
+		'data-scope': 'pagination',
+	};
+
 	type Page = {
 		type: 'page';
 		value: number;
@@ -43,37 +47,76 @@ export function createPagination(args: CreatePaginationArgs) {
 		type: 'ellipsis';
 	};
 
-	type PageItem = Page | Ellipsis;
+	type PageItem = (Page | Ellipsis) & {
+		/** Unique key for the item, to be passed to svelte #each block */
+		key: string;
+	};
 
 	const pages = derived([page, totalPages, options], ([$page, $totalPages, { siblingCount }]) => {
-		const res: Array<PageItem> = [{ type: 'page', value: 1 }];
+		const res: Array<PageItem> = [];
+		const addPage = (value: number) => {
+			res.push({ type: 'page', value, key: `page-${value}` });
+		};
+		const addEllipsis = () => {
+			res.push({ type: 'ellipsis', key: `ellipsis-${res.length}` });
+		};
+
+		addPage(1);
 
 		const firstItemWithSiblings = 3 + siblingCount;
 		const lastItemWithSiblings = $totalPages - 3 - siblingCount;
 
-		console.log(firstItemWithSiblings, lastItemWithSiblings);
-
 		if ($page < firstItemWithSiblings) {
 			for (let i = 2; i <= firstItemWithSiblings + siblingCount; i++) {
-				res.push({ type: 'page', value: i });
+				addPage(i);
 			}
-			res.push({ type: 'ellipsis' });
+			addEllipsis();
 		} else if ($page > lastItemWithSiblings) {
-			res.push({ type: 'ellipsis' });
+			addEllipsis();
 			for (let i = lastItemWithSiblings - siblingCount + 1; i <= $totalPages - 1; i++) {
-				res.push({ type: 'page', value: i });
+				addPage(i);
 			}
 		} else {
-			res.push({ type: 'ellipsis' });
+			addEllipsis();
 			for (let i = $page - siblingCount; i <= $page + siblingCount; i++) {
-				res.push({ type: 'page', value: i });
+				addPage(i);
 			}
-			res.push({ type: 'ellipsis' });
+			addEllipsis();
 		}
 
-		res.push({ type: 'page', value: $totalPages });
+		addPage($totalPages);
 		return res;
 	});
+
+	const keydown = (e: KeyboardEvent) => {
+		const thisEl = e.target as HTMLElement;
+		const rootEl = thisEl.closest('[data-scope="pagination"]') as HTMLElement | null;
+		if (!rootEl) return;
+		const triggers = Array.from(
+			rootEl.querySelectorAll('[data-melt-part="page-trigger"]')
+		) as Array<HTMLElement>;
+		const prevButton = rootEl.querySelector(
+			'[data-melt-part="page-prev-button"]'
+		) as HTMLElement | null;
+		const nextButton = rootEl.querySelector(
+			'[data-melt-part="page-next-button"]'
+		) as HTMLElement | null;
+
+		const elements = [...triggers];
+		if (prevButton) elements.unshift(prevButton);
+		if (nextButton) elements.push(nextButton);
+		const index = Array.from(elements).indexOf(thisEl);
+
+		if (e.key === kbd.ARROW_LEFT && index !== 0) {
+			elements[index - 1].focus();
+		} else if (e.key === kbd.ARROW_RIGHT && index !== elements.length - 1) {
+			elements[index + 1].focus();
+		} else if (e.key === kbd.HOME) {
+			elements[0].focus();
+		} else if (e.key === kbd.END) {
+			elements[elements.length - 1].focus();
+		}
+	};
 
 	const pageTrigger = elementMultiDerived(page, ($page, { attach }) => {
 		return (pageItem: Page) => {
@@ -81,9 +124,12 @@ export function createPagination(args: CreatePaginationArgs) {
 				page.set(pageItem.value);
 			});
 
+			attach('keydown', keydown);
+
 			return {
 				'aria-label': `Page ${pageItem.value}`,
 				'data-selected': pageItem.value === $page ? '' : undefined,
+				'data-melt-part': 'page-trigger',
 			};
 		};
 	});
@@ -95,9 +141,12 @@ export function createPagination(args: CreatePaginationArgs) {
 			});
 		}
 
+		attach('keydown', keydown);
+
 		return {
 			'aria-label': 'Previous',
 			disabled: $page <= 1,
+			'data-melt-part': 'page-prev-button',
 		} as const;
 	});
 
@@ -108,13 +157,17 @@ export function createPagination(args: CreatePaginationArgs) {
 			});
 		}
 
+		attach('keydown', keydown);
+
 		return {
 			'aria-label': 'Next',
 			disabled: $page >= $numPages,
+			'data-melt-part': 'page-next-button',
 		} as const;
 	});
 
 	return {
+		root,
 		options,
 		page,
 		pages,

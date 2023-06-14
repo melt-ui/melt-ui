@@ -1,24 +1,60 @@
 <script lang="ts">
-	import { Docs } from '$routes/(components)';
-	import { createSwitch } from '@melt-ui/svelte';
+	import { createPagination } from '@melt-ui/svelte';
+	import { ChevronLeft, ChevronRight } from 'icons';
 
-	const { root, input, isChecked } = createSwitch();
+	const { prevButton, nextButton, pages, pageTrigger, range, root } = createPagination({
+		count: 1000,
+		perPage: 10,
+		siblingCount: 1,
+	});
 </script>
 
-<form>
-	<div class="flex items-center">
-		<label class="pr-4 leading-none text-white" for="airplane-mode"> Airplane mode </label>
-		<button
-			{...$root}
-			class="relative h-6 w-11 cursor-default rounded-full bg-magnum-800 outline-none
-			focus:ring focus:ring-magnum-400 data-[state=checked]:bg-magnum-950"
-			id="airplane-mode"
-		>
-			<span
-				class="block h-5 w-5 translate-x-0.5 rounded-full bg-white transition-transform will-change-transform
-					{$isChecked && 'translate-x-[22px]'}"
-			/>
-			<input {...$input} />
-		</button>
+<nav class="flex flex-col items-center gap-4" aria-label="pagination" {...root}>
+	<p class="text-center">Showing items {$range.start} - {$range.end}</p>
+	<div class="flex items-center gap-2">
+		<button {...$prevButton}><ChevronLeft /></button>
+		{#each $pages as page (page.key)}
+			{#if page.type === 'ellipsis'}
+				<span>...</span>
+			{:else}
+				<button {...$pageTrigger(page)}>{page.value}</button>
+			{/if}
+		{/each}
+		<button {...$nextButton}><ChevronRight /></button>
 	</div>
-</form>
+</nav>
+
+<style lang="postcss">
+	button {
+		display: grid;
+		place-items: center;
+		border-radius: theme('borderRadius.sm');
+		background-color: theme('colors.white');
+		color: theme('colors.magnum.700');
+		box-shadow: theme('boxShadow.sm');
+
+		font-size: theme('fontSize.sm');
+
+		padding-inline: theme('spacing.3');
+		height: theme('spacing.8');
+
+		&:hover {
+			opacity: 0.75;
+		}
+
+		&:focus {
+			@apply ring ring-magnum-400;
+			outline: none;
+		}
+
+		&:disabled {
+			cursor: not-allowed;
+			opacity: 0.5;
+		}
+
+		&[data-selected] {
+			background-color: theme('colors.magnum.900');
+			color: theme('colors.white');
+		}
+	}
+</style>
