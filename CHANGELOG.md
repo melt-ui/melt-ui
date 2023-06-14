@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.7.1
+
+### Patch Changes
+
+- c824aa4: improve scroll lock
+
 ## 0.7.0
 
 ### Minor Changes
