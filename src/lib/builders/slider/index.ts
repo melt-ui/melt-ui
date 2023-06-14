@@ -1,13 +1,4 @@
-import {
-	effect,
-	elementDerived,
-	elementMultiDerived,
-	getElementByMeltId,
-	isBrowser,
-	kbd,
-	uuid,
-} from '$lib/internal/helpers';
-import { onMount } from 'svelte';
+import { effect, elementDerived, getElementByMeltId, isBrowser, kbd } from '$lib/internal/helpers';
 import { derived, writable } from 'svelte/store';
 
 type CreateSliderArgs = {
