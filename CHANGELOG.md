@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.8.1
+
+### Patch Changes
+
+- 12c9700: fix: prevent default pagination keydown handler
+
 ## 0.8.0
 
 ### Minor Changes
