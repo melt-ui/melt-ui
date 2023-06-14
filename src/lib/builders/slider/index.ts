@@ -130,8 +130,6 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 	});
 
 	return {
-		value,
-		max,
 		root,
 		slider: root,
 		range,

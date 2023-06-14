@@ -2,7 +2,7 @@
 	import { createSlider } from '$lib';
 	import { Docs } from '$routes/(components)';
 
-	const { slider, range, thumb, value, max } = createSlider({
+	const { slider, range, thumb } = createSlider({
 		value: 30,
 		max: 100,
 	});
