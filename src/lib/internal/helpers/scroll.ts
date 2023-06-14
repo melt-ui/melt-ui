@@ -2,6 +2,7 @@
 // Source: https://github.com/chakra-ui/zag
 // https://github.com/chakra-ui/zag/blob/main/packages/utilities/remove-scroll/src/index.ts
 
+import { noop } from './callbacks';
 import { isIos } from './platform';
 
 const LOCK_CLASSNAME = 'data-melt-scroll-lock';
@@ -35,14 +36,14 @@ function getPaddingProperty(documentElement: HTMLElement) {
 	return scrollbarX ? 'paddingLeft' : 'paddingRight';
 }
 
-export function removeScroll(_document?: Document) {
+export function removeScroll(_document?: Document): () => void {
 	const doc = _document ?? document;
 	const win = doc.defaultView ?? window;
 
 	const { documentElement, body } = doc;
 
 	const locked = body.hasAttribute(LOCK_CLASSNAME);
-	if (locked) return;
+	if (locked) return noop;
 
 	body.setAttribute(LOCK_CLASSNAME, '');
 
