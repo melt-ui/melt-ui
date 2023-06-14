@@ -12,3 +12,5 @@ export * from './uuid';
 export * from './keyboard';
 export * from './callbacks';
 export * from './debounce';
+export * from './platform';
+export * from './scroll';
