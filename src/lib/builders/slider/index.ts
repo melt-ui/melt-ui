@@ -124,5 +124,6 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		slider: root,
 		range,
 		thumb,
+		value,
 	};
 };
