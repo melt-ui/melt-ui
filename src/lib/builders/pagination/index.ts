@@ -108,12 +108,16 @@ export function createPagination(args: CreatePaginationArgs) {
 		const index = Array.from(elements).indexOf(thisEl);
 
 		if (e.key === kbd.ARROW_LEFT && index !== 0) {
+			e.preventDefault();
 			elements[index - 1].focus();
 		} else if (e.key === kbd.ARROW_RIGHT && index !== elements.length - 1) {
+			e.preventDefault();
 			elements[index + 1].focus();
 		} else if (e.key === kbd.HOME) {
+			e.preventDefault();
 			elements[0].focus();
 		} else if (e.key === kbd.END) {
+			e.preventDefault();
 			elements[elements.length - 1].focus();
 		}
 	};
