@@ -16,11 +16,9 @@
 			<span {...$range} class="h-[3px] bg-white" />
 		</span>
 
-		<span style:translate="-50% 0" style:left={`${$value}%`} class="absolute">
-			<span
-				{...$thumb}
-				class="block h-5 w-5 rounded-full bg-white focus:outline-none focus:ring-4 focus:ring-black/40"
-			/>
-		</span>
+		<span
+			{...$thumb}
+			class="block h-5 w-5 rounded-full bg-white focus:outline-none focus:ring-4 focus:ring-black/40"
+		/>
 	</span>
 </Docs.PreviewWrapper>

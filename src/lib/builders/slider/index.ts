@@ -69,6 +69,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 				'aria-valuemin': $min,
 				'aria-valuemax': $max,
 				'aria-valuenow': $value,
+				style: `position: absolute; left: ${$value}%; translate: -50% 0`,
 				tabindex: 0,
 			};
 		}
