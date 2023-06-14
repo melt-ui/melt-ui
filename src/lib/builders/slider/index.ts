@@ -21,18 +21,8 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 	const min = writable(withDefaults.min);
 	const isActive = writable(false);
 
-	const root = elementDerived([value, min, max], ([$value, $min, $max]) => {
-		return {
-			value: $value,
-			max: $max,
-			role: 'meter',
-			'aria-valuemin': $min,
-			'aria-valuemax': $max,
-			'aria-valuenow': $value,
-			'data-value': $value,
-			'data-min': $min,
-			'data-max': $max,
-		};
+	const root = elementDerived([value], ([$value]) => {
+		return { value: $value };
 	});
 
 	const range = derived(value, ($value) => {
