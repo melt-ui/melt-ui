@@ -14,3 +14,16 @@ export type Nullable<T> = T | null;
 export type ValueOf<T> = T[keyof T];
 
 export type Arrayable<T> = T | T[];
+
+export type CreatePaginationArgs = {
+	count: number;
+	perPage?: number;
+};
+
+type NullableKeys<T> = {
+	[K in keyof T]: undefined extends T[K] ? K : never;
+}[keyof T];
+
+export type Defaults<T> = {
+	[K in NullableKeys<T>]?: T[K];
+};

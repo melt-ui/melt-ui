@@ -12,6 +12,7 @@ import {
 	uuid,
 } from '$lib/internal/helpers';
 import { sleep } from '$lib/internal/helpers/sleep';
+import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 
 /**
@@ -25,7 +26,7 @@ import { derived, writable } from 'svelte/store';
  * - [X] Floating UI
  **/
 
-type CreateSelectArgs = {
+export type CreateSelectArgs = {
 	positioning?: FloatingConfig;
 	arrowSize?: number;
 	required?: boolean;
@@ -40,7 +41,7 @@ const defaults = {
 		placement: 'bottom',
 		sameWidth: true,
 	},
-} satisfies CreateSelectArgs;
+} satisfies Defaults<CreateSelectArgs>;
 
 export function createSelect(args?: CreateSelectArgs) {
 	const withDefaults = { ...defaults, ...args } as CreateSelectArgs;

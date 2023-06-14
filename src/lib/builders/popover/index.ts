@@ -10,6 +10,7 @@ import {
 
 import { usePopper, type FloatingConfig } from '$lib/internal/actions';
 import { derived, readable, writable } from 'svelte/store';
+import type { Defaults } from '$lib/internal/types';
 
 export type CreatePopoverArgs = {
 	positioning?: FloatingConfig;
@@ -23,7 +24,7 @@ const defaults = {
 	},
 	arrowSize: 8,
 	open: false,
-} satisfies CreatePopoverArgs;
+} satisfies Defaults<CreatePopoverArgs>;
 
 export function createPopover(args?: CreatePopoverArgs) {
 	const options = { ...defaults, ...args } as CreatePopoverArgs;

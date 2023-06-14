@@ -1,4 +1,5 @@
 import { elementMultiDerived, getElementByMeltId, kbd, uuid } from '$lib/internal/helpers';
+import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 
 type BaseAccordionArgs = {
@@ -15,11 +16,11 @@ type MultipleAccordionArgs = {
 	type: 'multiple';
 };
 
-type CreateAccordionArgs = BaseAccordionArgs & (SingleAccordionArgs | MultipleAccordionArgs);
+export type CreateAccordionArgs = BaseAccordionArgs & (SingleAccordionArgs | MultipleAccordionArgs);
 
 const defaults = {
 	type: 'single',
-} satisfies CreateAccordionArgs;
+} satisfies Defaults<CreateAccordionArgs>;
 
 export const createAccordion = (args?: CreateAccordionArgs) => {
 	const withDefaults = { ...defaults, ...args } as CreateAccordionArgs;

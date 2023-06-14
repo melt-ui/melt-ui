@@ -1,13 +1,14 @@
+import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 
-type CreateProgressArgs = {
+export type CreateProgressArgs = {
 	value?: number;
 	max?: number;
 };
 
 const defaults = {
 	max: 100,
-} satisfies CreateProgressArgs;
+} satisfies Defaults<CreateProgressArgs>;
 
 export const createProgress = (args: CreateProgressArgs = defaults) => {
 	const withDefaults = { ...defaults, ...args };

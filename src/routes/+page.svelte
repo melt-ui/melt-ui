@@ -16,6 +16,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Melt UI</title>
+</svelte:head>
+
 {#each { length: 6 } as _, n}
 	<div class="cumulative-gradient" style:--n={n + 1} />
 {/each}

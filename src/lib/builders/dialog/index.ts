@@ -11,9 +11,10 @@ import {
 	uuid,
 } from '$lib/internal/helpers';
 import { removeScroll } from '$lib/internal/helpers/scroll';
+import type { Defaults } from '$lib/internal/types';
 import { writable } from 'svelte/store';
 
-type CreateDialogArgs = {
+export type CreateDialogArgs = {
 	preventScroll?: boolean;
 	closeOnEscape?: boolean;
 	closeOnOutsideClick?: boolean;
@@ -25,7 +26,7 @@ const defaults = {
 	closeOnEscape: true,
 	closeOnOutsideClick: true,
 	role: 'dialog',
-} satisfies CreateDialogArgs;
+} satisfies Defaults<CreateDialogArgs>;
 
 export function createDialog(args: CreateDialogArgs = {}) {
 	const withDefaults = { ...defaults, ...args };

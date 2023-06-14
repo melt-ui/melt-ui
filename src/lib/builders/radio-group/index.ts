@@ -1,9 +1,10 @@
 import { elementMultiDerived, kbd } from '$lib/internal/helpers';
+import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 
 type Orientation = 'horizontal' | 'vertical';
 
-type CreateRadioGroupArgs = {
+export type CreateRadioGroupArgs = {
 	disabled?: boolean;
 	loop?: boolean;
 	orientation?: Orientation;
@@ -16,7 +17,7 @@ const defaults = {
 	loop: true,
 	disabled: false,
 	required: false,
-} satisfies CreateRadioGroupArgs;
+} satisfies Defaults<CreateRadioGroupArgs>;
 
 export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 	const withDefaults = { ...defaults, ...args };
