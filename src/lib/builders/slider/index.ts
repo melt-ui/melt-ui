@@ -102,7 +102,16 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 					const index = thumbs.indexOf(target);
 					currentThumbIndex.set(index);
 
-					if (![kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.ARROW_UP, kbd.ARROW_DOWN].includes(event.key))
+					if (
+						![
+							kbd.ARROW_LEFT,
+							kbd.ARROW_RIGHT,
+							kbd.ARROW_UP,
+							kbd.ARROW_DOWN,
+							kbd.HOME,
+							kbd.END,
+						].includes(event.key)
+					)
 						return;
 
 					event.preventDefault();
@@ -110,23 +119,48 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 					const step = withDefaults.step;
 					const $value = get(value);
 
-					if (withDefaults.orientation === 'horizontal') {
-						if ($value[index] < $max && kbd.ARROW_RIGHT === event.key) {
-							const newValue = $value[index] + step;
-							updatePosition(newValue, index, target);
-						} else if ($value[index] > $min && kbd.ARROW_LEFT === event.key) {
-							const newValue = $value[index] - step;
-							updatePosition(newValue, index, target);
+					switch (event.key) {
+						case kbd.HOME: {
+							updatePosition($min, index, target);
+							break;
 						}
-					}
-
-					if (withDefaults.orientation === 'vertical') {
-						if ($value[index] < $max && kbd.ARROW_DOWN === event.key) {
-							const newValue = $value[index] + step;
-							updatePosition(newValue, index, target);
-						} else if ($value[index] > $min && kbd.ARROW_UP === event.key) {
-							const newValue = $value[index] - step;
-							updatePosition(newValue, index, target);
+						case kbd.END: {
+							updatePosition($max, index, target);
+							break;
+						}
+						case kbd.ARROW_LEFT: {
+							if ($value[index] > $min && withDefaults.orientation === 'horizontal') {
+								const newValue = $value[index] - step;
+								updatePosition(newValue, index, target);
+							}
+							break;
+						}
+						case kbd.ARROW_RIGHT: {
+							if ($value[index] < $max && withDefaults.orientation === 'horizontal') {
+								const newValue = $value[index] + step;
+								updatePosition(newValue, index, target);
+							}
+							break;
+						}
+						case kbd.ARROW_UP: {
+							if ($value[index] > $min && withDefaults.orientation === 'vertical') {
+								const newValue = $value[index] - step;
+								updatePosition(newValue, index, target);
+							} else if ($value[index] < $max) {
+								const newValue = $value[index] + step;
+								updatePosition(newValue, index, target);
+							}
+							break;
+						}
+						case kbd.ARROW_DOWN: {
+							if ($value[index] < $max && withDefaults.orientation === 'vertical') {
+								const newValue = $value[index] + step;
+								updatePosition(newValue, index, target);
+							} else if ($value[index] > $min) {
+								const newValue = $value[index] - step;
+								updatePosition(newValue, index, target);
+							}
+							break;
 						}
 					}
 				});
