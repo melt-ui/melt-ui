@@ -52,6 +52,9 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	// Open timer
 	const openTimer = writable<number | null>(null);
 
+	// Currently Focused Item
+	const focusedItem = writable<HTMLElement | null>(null);
+
 	const ids = {
 		menu: uuid(),
 		trigger: uuid(),
@@ -153,23 +156,24 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 							gutter: 0,
 							overflowPadding: 0,
 						},
+						focusTrap: null,
 					},
 				});
 
-				attach('pointermove', (e) => {
-					if (e.pointerType !== 'mouse') return undefined;
-					const target = e.target as HTMLElement;
-					const _lastPointerX = get(lastPointerX);
-					const pointerXHasChanged = _lastPointerX !== e.clientX;
+				// attach('pointermove', (e) => {
+				// 	if (e.pointerType !== 'mouse') return undefined;
+				// 	const target = e.target as HTMLElement;
+				// 	const _lastPointerX = get(lastPointerX);
+				// 	const pointerXHasChanged = _lastPointerX !== e.clientX;
 
-					// if opensubmenus includes entries after this one, remove them
+				// 	// if opensubmenus includes entries after this one, remove them
 
-					if ((e.currentTarget as HTMLElement).contains(target) && pointerXHasChanged) {
-						const newDir = e.clientX > _lastPointerX ? 'right' : 'left';
-						pointerDirection.set(newDir);
-						lastPointerX.set(e.clientX);
-					}
-				});
+				// 	if ((e.currentTarget as HTMLElement).contains(target) && pointerXHasChanged) {
+				// 		const newDir = e.clientX > _lastPointerX ? 'right' : 'left';
+				// 		pointerDirection.set(newDir);
+				// 		lastPointerX.set(e.clientX);
+				// 	}
+				// });
 			}
 			return {
 				id: args.id,
@@ -238,28 +242,23 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					open.set(false);
 				});
 
-				attach('keydown', (e) => {
-					if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
-						e.preventDefault();
-						open.set(false);
-					}
+				// attach('keydown', (e) => {
+				// 	if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
+				// 		e.preventDefault();
+				// 		open.set(false);
+				// 	}
+				// });
+
+				attach('pointerover', (e) => {
+					(e.target as HTMLElement).focus();
 				});
 
-				attach('mousemove', (e) => {
-					const el = e.currentTarget as HTMLElement;
-					el.focus();
-				});
-
-				attach('pointerleave', (e) => {
-					if (e.pointerType !== 'mouse') return undefined;
-					if (isPointerMovingToSubmenu(e)) {
-						return;
-					}
-
-					const menuEl = (e.target as HTMLElement).closest("[role='menu']") as HTMLElement | null;
-					if (!menuEl) return;
-					menuEl.focus();
-				});
+				// attach('pointerleave', (e) => {
+				// 	if (e.pointerType !== 'mouse') return undefined;
+				// 	if (isPointerMovingToSubmenu(e)) {
+				// 		return;
+				// 	}
+				// });
 
 				return {
 					role: 'menuitem',
@@ -270,78 +269,78 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				};
 			}
 
-			attach('pointermove', (e) => {
-				if (e.pointerType !== 'mouse') return undefined;
-				if (isPointerMovingToSubmenu(e)) {
-					e.preventDefault();
-					return;
-				}
-				(e.currentTarget as HTMLElement).focus();
-				if (!args.triggerFor) return;
+			// attach('pointermove', (e) => {
+			// 	if (e.pointerType !== 'mouse') return undefined;
+			// 	if (isPointerMovingToSubmenu(e)) {
+			// 		e.preventDefault();
+			// 		return;
+			// 	}
+			// 	(e.currentTarget as HTMLElement).focus();
+			// 	if (!args.triggerFor) return;
 
-				if (!args.disabled && !isSubmenuOpen(args.triggerFor) && !get(openTimer)) {
-					pointerGraceIntent.set(null);
-					openTimer.set(
-						window.setTimeout(() => {
-							if (!args.triggerFor) return;
-							addOpenSubmenu(args.triggerFor);
-							clearOpenTimer();
-						}, 100)
-					);
-					document.getElementById(args.triggerFor)?.focus();
-				}
-			});
+			// 	if (!args.disabled && !isSubmenuOpen(args.triggerFor) && !get(openTimer)) {
+			// 		pointerGraceIntent.set(null);
+			// 		openTimer.set(
+			// 			window.setTimeout(() => {
+			// 				if (!args.triggerFor) return;
+			// 				addOpenSubmenu(args.triggerFor);
+			// 				clearOpenTimer();
+			// 			}, 100)
+			// 		);
+			// 		document.getElementById(args.triggerFor)?.focus();
+			// 	}
+			// });
 
-			attach('pointerleave', (e) => {
-				if (e.pointerType !== 'mouse') return undefined;
-				clearOpenTimer();
-				const menuEl = (e.target as HTMLElement).closest("[role='menu']") as HTMLElement | null;
-				if (!menuEl) return;
+			// attach('pointerleave', (e) => {
+			// 	if (e.pointerType !== 'mouse') return undefined;
+			// 	clearOpenTimer();
+			// 	const menuEl = (e.target as HTMLElement).closest("[role='menu']") as HTMLElement | null;
+			// 	if (!menuEl) return;
 
-				const menuRect = (e.target as HTMLElement)
-					.closest("[role='menu']")
-					?.getBoundingClientRect();
+			// 	const menuRect = (e.target as HTMLElement)
+			// 		.closest("[role='menu']")
+			// 		?.getBoundingClientRect();
 
-				if (menuRect) {
-					const side = menuEl?.dataset.side as Side;
-					const rightSide = side === 'right';
-					const bleed = rightSide ? -5 : 5;
-					const contentNearEdge = menuRect[rightSide ? 'left' : 'right'];
-					const contentFarEdge = menuRect[rightSide ? 'right' : 'left'];
+			// 	if (menuRect) {
+			// 		const side = menuEl?.dataset.side as Side;
+			// 		const rightSide = side === 'right';
+			// 		const bleed = rightSide ? -5 : 5;
+			// 		const contentNearEdge = menuRect[rightSide ? 'left' : 'right'];
+			// 		const contentFarEdge = menuRect[rightSide ? 'right' : 'left'];
 
-					pointerGraceIntent.set({
-						area: [
-							// Apply a bleed on clientX to ensure that our exit point is
-							// consistently within polygon bounds
-							{ x: e.clientX + bleed, y: e.clientY },
-							{ x: contentNearEdge, y: menuRect.top },
-							{ x: contentFarEdge, y: menuRect.top },
-							{ x: contentFarEdge, y: menuRect.bottom },
-							{ x: contentNearEdge, y: menuRect.bottom },
-						],
-						side,
-					});
+			// 		pointerGraceIntent.set({
+			// 			area: [
+			// 				// Apply a bleed on clientX to ensure that our exit point is
+			// 				// consistently within polygon bounds
+			// 				{ x: e.clientX + bleed, y: e.clientY },
+			// 				{ x: contentNearEdge, y: menuRect.top },
+			// 				{ x: contentFarEdge, y: menuRect.top },
+			// 				{ x: contentFarEdge, y: menuRect.bottom },
+			// 				{ x: contentNearEdge, y: menuRect.bottom },
+			// 			],
+			// 			side,
+			// 		});
 
-					const timeout = $pointerGraceTimer;
-					if (timeout) {
-						window.clearTimeout(timeout);
+			// 		const timeout = $pointerGraceTimer;
+			// 		if (timeout) {
+			// 			window.clearTimeout(timeout);
 
-						pointerGraceTimer.set(window.setTimeout(() => pointerGraceIntent.set(null), 300));
-					}
-				} else {
-					if (isPointerMovingToSubmenu(e)) {
-						e.preventDefault();
-					}
-					if (e.defaultPrevented) return;
+			// 			pointerGraceTimer.set(window.setTimeout(() => pointerGraceIntent.set(null), 300));
+			// 		}
+			// 	} else {
+			// 		if (isPointerMovingToSubmenu(e)) {
+			// 			e.preventDefault();
+			// 		}
+			// 		if (e.defaultPrevented) return;
 
-					// There's 100ms where the user may leave an item before the submenu was opened.
-					pointerGraceIntent.set(null);
-				}
-			});
+			// 		// There's 100ms where the user may leave an item before the submenu was opened.
+			// 		pointerGraceIntent.set(null);
+			// 	}
+			// });
 
 			attach('pointerover', (e) => {
 				if (e.pointerType !== 'mouse') return undefined;
-				(e.currentTarget as HTMLElement).focus();
+				(e.target as HTMLElement).focus();
 				openSubMenus.update((prev) => {
 					if (options.triggerFor && !prev.includes(options.triggerFor)) {
 						return [...prev, options.triggerFor];
@@ -365,14 +364,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					e.preventDefault();
 					open.set(false);
 				}
-			});
-
-			attach('mousemove', (e) => {
-				(e.currentTarget as HTMLElement).focus();
-			});
-
-			attach('mouseout', (e) => {
-				(e.currentTarget as HTMLElement).focus();
 			});
 
 			return {
