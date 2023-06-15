@@ -98,7 +98,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 
 				const currentThumb = get(currentThumbIndex);
 
-				if (currentThumb < withDefaults.value.length) {
+				if (currentThumb < $value.length) {
 					currentThumbIndex.update((prev) => prev + 1);
 				}
 
