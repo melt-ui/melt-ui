@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.8.3
+
+### Patch Changes
+
+- f63cf06: fix: export pagination
+
 ## 0.8.2
 
 ### Patch Changes

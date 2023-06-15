@@ -53,7 +53,7 @@ export function createSelect(args?: CreateSelectArgs) {
 
 	const open = writable(false);
 	const selected = writable(withDefaults.selected ?? null);
-	const selectedText = writable<string | null>(null);
+	const selectedText = writable<string | number | null>(null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	const ids = {
@@ -159,6 +159,8 @@ export function createSelect(args?: CreateSelectArgs) {
 				role: 'option',
 				'aria-selected': $selected === value,
 				'data-selected': $selected === value ? '' : undefined,
+				'data-value': value,
+				'data-type': typeof value,
 				tabindex: 0,
 			};
 		};
@@ -253,7 +255,14 @@ export function createSelect(args?: CreateSelectArgs) {
 				| HTMLElement
 				| undefined;
 			if (selectedOption) {
-				selectedText.set(selectedOption.innerText);
+				const data = selectedOption.getAttribute('data-value');
+				if (data) {
+					if (selectedOption.getAttribute('data-type') === 'number') {
+						selectedText.set(+data);
+					} else {
+						selectedText.set(data);
+					}
+				}
 			}
 		});
 	});
