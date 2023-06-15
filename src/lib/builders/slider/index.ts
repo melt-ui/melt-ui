@@ -150,7 +150,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		}
 	);
 
-	effect([allThumbs, min, max, disabled], ([$allThumbs, $min, $max, $disabled]) => {
+	effect([root, allThumbs, min, max, disabled], ([$root, $allThumbs, $min, $max, $disabled]) => {
 		if (!isBrowser || $disabled) return;
 
 		const applyPosition = (
@@ -191,7 +191,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		const pointerDown = (e: PointerEvent) => {
 			e.preventDefault();
 
-			const sliderEl = getElementByMeltId(get(root)['data-melt-id']) as HTMLElement;
+			const sliderEl = getElementByMeltId($root['data-melt-id']) as HTMLElement;
 			const closestThumb = getClosestThumb(e);
 			if (!closestThumb || !sliderEl) return;
 
@@ -217,7 +217,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		const pointerMove = (e: PointerEvent) => {
 			if (!get(isActive)) return;
 
-			const sliderEl = getElementByMeltId(get(root)['data-melt-id']) as HTMLElement;
+			const sliderEl = getElementByMeltId($root['data-melt-id']) as HTMLElement;
 			const closestThumb = get(activeThumb);
 			if (!sliderEl || !closestThumb) return;
 
