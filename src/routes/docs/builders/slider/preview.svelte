@@ -1,19 +1,20 @@
 <script lang="ts">
 	import { createSlider } from '$lib';
+	import { sleep } from '$lib/internal/helpers';
 	import { Docs } from '$routes/(components)';
 
-	const { slider, range, thumb, value, disabled } = createSlider({
+	const { slider, range, thumb, value } = createSlider({
 		value: [30, 70],
 		max: 100,
+	});
+
+	sleep(1000).then(() => {
+		value.set([50, 80]);
 	});
 </script>
 
 <Docs.PreviewWrapper>
-	<span
-		{...$slider}
-		class:opacity-60={$disabled}
-		class="relative flex h-[20px] w-[200px] items-center"
-	>
+	<span {...$slider} class="relative flex h-[20px] w-[200px] items-center">
 		<span class="block h-[3px] w-full bg-black/40">
 			<span {...$range} class="h-[3px] bg-white" />
 		</span>
