@@ -4,46 +4,40 @@
 	import { slide } from 'svelte/transition';
 
 	const { content, item, trigger, isSelected, root } = createAccordion();
+
+	const items = [
+		{
+			id: 'item-1',
+			title: 'Is it accessible?',
+			content: 'Yes. It adheres to the WAI-ARIA design pattern.',
+		},
+		{
+			id: 'item-2',
+			title: 'Is it unstyled?',
+			content: "Yes. It's unstyled by default, giving you freedom over the look and feel.",
+		},
+		{
+			id: 'item-3',
+			title: 'Can it be animated?',
+			content: 'Yes! You can use the transition prop to configure the animation.',
+		},
+	];
 </script>
 
 <Docs.PreviewWrapper>
 	<div class="w-full rounded-md bg-[--line-color] shadow-lg" {...root}>
-		<div {...$item('item-1')} class="accordion-item">
-			<h3 class="flex">
-				<button {...$trigger('item-1')} class="accordion-trigger">Is it accessible?</button>
-			</h3>
-			{#if $isSelected('item-1')}
-				<div class="accordion-content" {...$content('item-1')} transition:slide|local>
-					<div class="px-5 py-4">Yes. It adheres to the WAI-ARIA design pattern.</div>
-				</div>
-			{/if}
-		</div>
-
-		<div class="accordion-item" {...$item('item-2')}>
-			<h3 class="flex">
-				<button class="accordion-trigger" {...$trigger('item-2')}>Is it unstyled?</button>
-			</h3>
-			{#if $isSelected('item-2')}
-				<div class="accordion-content" {...$content('item-2')} transition:slide|local>
-					<div class="px-5 py-4">
-						Yes. It's unstyled by default, giving you freedom over the look and feel.
+		{#each items as accItem}
+			<div {...$item(accItem.id)} class="accordion-item">
+				<h2 class="flex">
+					<button {...$trigger(accItem.id)} class="accordion-trigger">{accItem.title}</button>
+				</h2>
+				{#if $isSelected(accItem.id)}
+					<div class="accordion-content" {...$content(accItem.id)} transition:slide|local>
+						<div class="px-5 py-4">{accItem.content}</div>
 					</div>
-				</div>
-			{/if}
-		</div>
-
-		<div class="accordion-item" {...$item('item-3')}>
-			<h3 class="flex">
-				<button class="accordion-trigger" {...$trigger('item-3')}>Can it be animated?</button>
-			</h3>
-			{#if $isSelected('item-3')}
-				<div class="accordion-content" {...$content('item-3')} transition:slide|local>
-					<div class="px-5 py-4">
-						Yes! You can use the transition prop to configure the animation.
-					</div>
-				</div>
-			{/if}
-		</div>
+				{/if}
+			</div>
+		{/each}
 	</div>
 </Docs.PreviewWrapper>
 
