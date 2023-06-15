@@ -55,7 +55,7 @@
 						Check out your latest updates.
 					</p>
 					<section>
-						<div class="rounded-md bg-gray-100/80 p-4 text-zinc-800">
+						<div class="rounded-md bg-gray-100/80 p-4 text-zinc-800 shadow">
 							<h3 class="mb-3 text-base font-semibold">New invitation</h3>
 							<p class="text-sm">
 								You have been invited to join the <strong>Designers</strong> team.
