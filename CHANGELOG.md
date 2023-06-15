@@ -1,5 +1,13 @@
 # @melt-ui/svelte
 
+## 0.8.2
+
+### Patch Changes
+
+- 6a370c6: fix dialog scroll lock
+- 63d6c02: add selected arg to select; add number support to select
+- 63d6c02: improve select focus management
+
 ## 0.8.1
 
 ### Patch Changes
