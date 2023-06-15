@@ -38,7 +38,7 @@
 	}
 	.menu {
 		@apply z-10 flex max-h-[300px] flex-col gap-2 overflow-y-auto;
-		@apply rounded-md bg-white p-1 lg:max-h-none;
+		@apply rounded-md bg-white p-1;
 	}
 	.option {
 		@apply relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800;
