@@ -79,21 +79,21 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Collapsible     | ✅     |
 | ComboBox        |        |
 | Context Menu    |        |
-| Dialog          |        |
+| Dialog          | ✅     |
 | Dropdown Menu   |        |
 | Hover Card      |        |
 | Label           |        |
 | Menubar         |        |
 | Navigation Menu |        |
-| Pagination      |        |
+| Pagination      | ✅     |
 | Pin Input       |        |
-| Popover         |        |
+| Popover         | ✅     |
 | Progress        | ✅     |
 | Radio Group     | ✅     |
 | Scroll Area     |        |
 | Select          | ✅     |
 | Separator       |        |
-| Slider          |        |
+| Slider          | ✅     |
 | Switch          | ✅     |
 | Tabs            | ✅     |
 | Tags Input      |        |
@@ -101,7 +101,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Toggle          | ✅     |
 | Toggle Group    | ✅     |
 | Toolbar         |        |
-| Tooltip         |        |
+| Tooltip         | ✅     |
 
 And more!
 

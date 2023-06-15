@@ -8,6 +8,7 @@ import {
 	getElementByMeltId,
 	isBrowser,
 	kbd,
+	omit,
 	styleToString,
 	uuid,
 } from '$lib/internal/helpers';
@@ -33,6 +34,7 @@ export type CreateSelectArgs = {
 	required?: boolean;
 	disabled?: boolean;
 	selected?: string | number;
+	name?: string;
 };
 
 const defaults = {
@@ -47,11 +49,11 @@ const defaults = {
 
 export function createSelect(args?: CreateSelectArgs) {
 	const withDefaults = { ...defaults, ...args } as CreateSelectArgs;
-	const options = writable({ ...withDefaults });
+	const options = writable(omit(withDefaults, 'selected'));
 
 	const open = writable(false);
 	const selected = writable(withDefaults.selected ?? null);
-	const selectedText = writable<string | null>(null);
+	const selectedText = writable<string | number | null>(null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	const ids = {
@@ -157,6 +159,8 @@ export function createSelect(args?: CreateSelectArgs) {
 				role: 'option',
 				'aria-selected': $selected === value,
 				'data-selected': $selected === value ? '' : undefined,
+				'data-value': value,
+				'data-type': typeof value,
 				tabindex: 0,
 			};
 		};
@@ -251,7 +255,14 @@ export function createSelect(args?: CreateSelectArgs) {
 				| HTMLElement
 				| undefined;
 			if (selectedOption) {
-				selectedText.set(selectedOption.innerText);
+				const data = selectedOption.getAttribute('data-value');
+				if (data) {
+					if (selectedOption.getAttribute('data-type') === 'number') {
+						selectedText.set(+data);
+					} else {
+						selectedText.set(data);
+					}
+				}
 			}
 		});
 	});
@@ -262,5 +273,25 @@ export function createSelect(args?: CreateSelectArgs) {
 		};
 	});
 
-	return { trigger, menu, open, option, selected, selectedText, arrow, isSelected, options };
+	const input = derived([selected, options], ([$selected, $options]) => {
+		return {
+			type: 'hidden',
+			name: $options.name,
+			value: $selected,
+			'aria-hidden': true,
+			hidden: true,
+			tabIndex: -1,
+			required: $options.required,
+			disabled: $options.disabled,
+			style: styleToString({
+				position: 'absolute',
+				opacity: 0,
+				'pointer-events': 'none',
+				margin: 0,
+				transform: 'translateX(-100%)',
+			}),
+		};
+	});
+
+	return { trigger, menu, open, option, selected, selectedText, arrow, isSelected, options, input };
 }
