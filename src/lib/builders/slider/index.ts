@@ -1,5 +1,6 @@
 import {
 	effect,
+	elementDerived,
 	elementMultiDerived,
 	getElementByMeltId,
 	isBrowser,
@@ -13,6 +14,7 @@ type CreateSliderArgs = {
 	min?: number;
 	max?: number;
 	step?: number;
+	disabled?: boolean;
 };
 
 const defaults = {
@@ -20,6 +22,7 @@ const defaults = {
 	min: 0,
 	max: 100,
 	step: 1,
+	disabled: false,
 } satisfies CreateSliderArgs;
 
 export const createSlider = (args: CreateSliderArgs = defaults) => {
@@ -27,14 +30,15 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 	const value = writable(withDefaults.value);
 	const max = writable(withDefaults.max);
 	const min = writable(withDefaults.min);
+	const disabled = writable(withDefaults.disabled);
 
 	const isActive = writable(false);
 	const currentThumbIndex = writable<number>(0);
 	const activeThumb = writable<{ thumb: HTMLElement; index: number } | null>(null);
 
-	const root = {
-		'data-melt-id': uuid(),
-	};
+	const root = elementDerived(disabled, ($disabled) => {
+		return { disabled: $disabled };
+	});
 
 	const range = derived(value, ($value) => {
 		return {
@@ -45,7 +49,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 	});
 
 	const getAllThumbs = () => {
-		const rootEl = getElementByMeltId(root['data-melt-id']) as HTMLElement;
+		const rootEl = getElementByMeltId(get(root)['data-melt-id']) as HTMLElement;
 		if (!rootEl) return;
 
 		return Array.from(rootEl.querySelectorAll('[data-melt-part="thumb"]')) as Array<HTMLElement>;
@@ -63,7 +67,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		});
 	};
 
-	const thumb = elementMultiDerived([min, max], ([$min, $max], { attach }) => {
+	const thumb = elementMultiDerived([min, max, disabled], ([$min, $max, $disabled], { attach }) => {
 		return () => {
 			const currentThumb = get(currentThumbIndex);
 
@@ -72,6 +76,8 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 			}
 
 			attach('keydown', (event) => {
+				if ($disabled) return;
+
 				const target = event.currentTarget as HTMLElement;
 
 				const thumbs = getAllThumbs();
@@ -103,13 +109,13 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 				'aria-valuenow': withDefaults.value[currentThumb],
 				'data-melt-part': 'thumb',
 				style: `position: absolute;  left: ${withDefaults.value[currentThumb]}%; translate: -50% 0`,
-				tabindex: 0,
+				tabindex: $disabled ? -1 : 0,
 			};
 		};
 	});
 
-	effect([min, max], ([$min, $max]) => {
-		if (!isBrowser) return;
+	effect([min, max, disabled], ([$min, $max, $disabled]) => {
+		if (!isBrowser || $disabled) return;
 
 		const applyPosition = (
 			clientX: number,
@@ -146,7 +152,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		const pointerDown = (e: PointerEvent) => {
 			e.preventDefault();
 
-			const sliderEl = getElementByMeltId(root['data-melt-id']) as HTMLElement;
+			const sliderEl = getElementByMeltId(get(root)['data-melt-id']) as HTMLElement;
 			const closestThumb = getClosestThumb(e.clientX);
 			if (!closestThumb || !sliderEl) return;
 
@@ -169,7 +175,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 
 			const { clientX } = event;
 
-			const sliderEl = getElementByMeltId(root['data-melt-id']) as HTMLElement;
+			const sliderEl = getElementByMeltId(get(root)['data-melt-id']) as HTMLElement;
 			const closestThumb = get(activeThumb);
 			if (!sliderEl || !closestThumb) return;
 
@@ -198,5 +204,6 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		range,
 		thumb,
 		value,
+		disabled,
 	};
 };
