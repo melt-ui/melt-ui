@@ -276,6 +276,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					e.preventDefault();
 					return;
 				}
+				(e.currentTarget as HTMLElement).focus();
 				if (!args.triggerFor) return;
 
 				if (!args.disabled && !isSubmenuOpen(args.triggerFor) && !get(openTimer)) {
@@ -367,13 +368,11 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			});
 
 			attach('mousemove', (e) => {
-				const el = e.currentTarget as HTMLElement;
-				el.focus();
+				(e.currentTarget as HTMLElement).focus();
 			});
 
 			attach('mouseout', (e) => {
-				const el = e.currentTarget as HTMLElement;
-				el.blur();
+				(e.currentTarget as HTMLElement).focus();
 			});
 
 			return {
