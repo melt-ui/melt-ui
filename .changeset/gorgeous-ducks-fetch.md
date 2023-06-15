@@ -1,5 +1,5 @@
 ---
-"@melt-ui/svelte": patch
+"@melt-ui/svelte": minor
 ---
 
 feat: add slider
