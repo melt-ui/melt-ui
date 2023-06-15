@@ -51,7 +51,7 @@ export function createSelect(args?: CreateSelectArgs) {
 
 	const open = writable(false);
 	const selected = writable(withDefaults.selected ?? null);
-	const selectedText = writable<string | null>(null);
+	const selectedText = writable<string | number | null>(null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	const ids = {
