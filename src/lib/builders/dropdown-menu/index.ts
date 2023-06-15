@@ -22,6 +22,7 @@ export type CreateDropdownMenuArgs = {
 	arrowSize?: number;
 	required?: boolean;
 	disabled?: boolean;
+	selected?: string | number;
 };
 
 const defaults = {
@@ -47,9 +48,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	const pointerGraceTimer = writable(0);
 	const pointerDirection = writable<Side>('left');
 	const lastPointerX = writable(0);
-
-	// currentItemId
-	const currentItemId = writable<string | null>(null);
 
 	// Open timer
 	const openTimer = writable<number | null>(null);
@@ -155,7 +153,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 							gutter: 0,
 							overflowPadding: 0,
 						},
-						focusTrap: null,
 					},
 				});
 
@@ -165,16 +162,12 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					const _lastPointerX = get(lastPointerX);
 					const pointerXHasChanged = _lastPointerX !== e.clientX;
 
+					// if opensubmenus includes entries after this one, remove them
+
 					if ((e.currentTarget as HTMLElement).contains(target) && pointerXHasChanged) {
 						const newDir = e.clientX > _lastPointerX ? 'right' : 'left';
 						pointerDirection.set(newDir);
 						lastPointerX.set(e.clientX);
-					}
-				});
-
-				attach('focusout', (e) => {
-					if (e.target !== triggerEl) {
-						removeOpenSubmenu(args.id);
 					}
 				});
 			}
@@ -266,7 +259,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					const menuEl = (e.target as HTMLElement).closest("[role='menu']") as HTMLElement | null;
 					if (!menuEl) return;
 					menuEl.focus();
-					currentItemId.set(null);
 				});
 
 				return {
@@ -310,7 +302,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					?.getBoundingClientRect();
 
 				if (menuRect) {
-					// TODO: make sure to update this when we change positioning logic
 					const side = menuEl?.dataset.side as Side;
 					const rightSide = side === 'right';
 					const bleed = rightSide ? -5 : 5;
