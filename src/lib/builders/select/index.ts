@@ -27,7 +27,7 @@ import { derived, writable } from 'svelte/store';
  * - [X] Floating UI
  **/
 
-export type CreateSelectArgs = {
+export type CreateDropdownMenuArgs = {
 	positioning?: FloatingConfig;
 	arrowSize?: number;
 	required?: boolean;
@@ -43,10 +43,10 @@ const defaults = {
 		placement: 'bottom',
 		sameWidth: true,
 	},
-} satisfies Defaults<CreateSelectArgs>;
+} satisfies Defaults<CreateDropdownMenuArgs>;
 
-export function createSelect(args?: CreateSelectArgs) {
-	const withDefaults = { ...defaults, ...args } as CreateSelectArgs;
+export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
+	const withDefaults = { ...defaults, ...args } as CreateDropdownMenuArgs;
 	const options = writable({ ...withDefaults });
 
 	const open = writable(false);
