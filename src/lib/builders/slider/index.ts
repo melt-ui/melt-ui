@@ -7,7 +7,7 @@ import {
 	kbd,
 	styleToString,
 } from '$lib/internal/helpers';
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, type Readable } from 'svelte/store';
 
 type CreateSliderArgs = {
 	value: number[];
@@ -60,12 +60,14 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		};
 	});
 
-	const getAllThumbs = () => {
-		const rootEl = getElementByMeltId(get(root)['data-melt-id']) as HTMLElement;
-		if (!rootEl) return;
+	const allThumbs = derived(root, ($root) => {
+		return () => {
+			const rootEl = getElementByMeltId($root['data-melt-id']) as HTMLElement;
+			if (!rootEl) return;
 
-		return Array.from(rootEl.querySelectorAll('[data-melt-part="thumb"]')) as Array<HTMLElement>;
-	};
+			return Array.from(rootEl.querySelectorAll('[data-melt-part="thumb"]')) as Array<HTMLElement>;
+		};
+	}) as Readable<() => HTMLElement[]>;
 
 	const updatePosition = (val: number, index: number, target: HTMLElement) => {
 		value.update((prev) => {
@@ -81,73 +83,74 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		});
 	};
 
-	const thumb = elementMultiDerived([min, max, disabled], ([$min, $max, $disabled], { attach }) => {
-		return () => {
-			const currentThumb = get(currentThumbIndex);
+	const thumb = elementMultiDerived(
+		[allThumbs, min, max, disabled],
+		([$allThumbs, $min, $max, $disabled], { attach }) => {
+			return () => {
+				const currentThumb = get(currentThumbIndex);
 
-			if (currentThumb < withDefaults.value.length) {
-				currentThumbIndex.update((prev) => prev + 1);
-			}
-
-			attach('keydown', (event) => {
-				if ($disabled) return;
-
-				const target = event.currentTarget as HTMLElement;
-
-				const thumbs = getAllThumbs();
-				if (!thumbs) return;
-
-				const index = thumbs.indexOf(target);
-				currentThumbIndex.set(index);
-
-				if (![kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.ARROW_UP, kbd.ARROW_DOWN].includes(event.key))
-					return;
-
-				event.preventDefault();
-
-				const step = withDefaults.step;
-				const $value = get(value);
-
-				if (withDefaults.orientation === 'horizontal') {
-					if ($value[index] < $max && kbd.ARROW_RIGHT === event.key) {
-						const newValue = $value[index] + step;
-						updatePosition(newValue, index, target);
-					} else if ($value[index] > $min && kbd.ARROW_LEFT === event.key) {
-						const newValue = $value[index] - step;
-						updatePosition(newValue, index, target);
-					}
+				if (currentThumb < withDefaults.value.length) {
+					currentThumbIndex.update((prev) => prev + 1);
 				}
 
-				if (withDefaults.orientation === 'vertical') {
-					if ($value[index] < $max && kbd.ARROW_DOWN === event.key) {
-						const newValue = $value[index] + step;
-						updatePosition(newValue, index, target);
-					} else if ($value[index] > $min && kbd.ARROW_UP === event.key) {
-						const newValue = $value[index] - step;
-						updatePosition(newValue, index, target);
-					}
-				}
-			});
+				attach('keydown', (event) => {
+					if ($disabled) return;
 
-			return {
-				role: 'slider',
-				'aria-label': 'Volume',
-				'aria-valuemin': $min,
-				'aria-valuemax': $max,
-				'aria-valuenow': withDefaults.value[currentThumb],
-				'data-melt-part': 'thumb',
-				style: `position: absolute;
+					const target = event.currentTarget as HTMLElement;
+					const thumbs = $allThumbs();
+
+					const index = thumbs.indexOf(target);
+					currentThumbIndex.set(index);
+
+					if (![kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.ARROW_UP, kbd.ARROW_DOWN].includes(event.key))
+						return;
+
+					event.preventDefault();
+
+					const step = withDefaults.step;
+					const $value = get(value);
+
+					if (withDefaults.orientation === 'horizontal') {
+						if ($value[index] < $max && kbd.ARROW_RIGHT === event.key) {
+							const newValue = $value[index] + step;
+							updatePosition(newValue, index, target);
+						} else if ($value[index] > $min && kbd.ARROW_LEFT === event.key) {
+							const newValue = $value[index] - step;
+							updatePosition(newValue, index, target);
+						}
+					}
+
+					if (withDefaults.orientation === 'vertical') {
+						if ($value[index] < $max && kbd.ARROW_DOWN === event.key) {
+							const newValue = $value[index] + step;
+							updatePosition(newValue, index, target);
+						} else if ($value[index] > $min && kbd.ARROW_UP === event.key) {
+							const newValue = $value[index] - step;
+							updatePosition(newValue, index, target);
+						}
+					}
+				});
+
+				return {
+					role: 'slider',
+					'aria-label': 'Volume',
+					'aria-valuemin': $min,
+					'aria-valuemax': $max,
+					'aria-valuenow': withDefaults.value[currentThumb],
+					'data-melt-part': 'thumb',
+					style: `position: absolute;
 				${
 					withDefaults.orientation === 'horizontal'
 						? `left: ${withDefaults.value[currentThumb]}%; translate: -50% 0`
 						: `top: ${withDefaults.value[currentThumb]}%; translate: 0 -50%`
 				}`,
-				tabindex: $disabled ? -1 : 0,
+					tabindex: $disabled ? -1 : 0,
+				};
 			};
-		};
-	});
+		}
+	);
 
-	effect([min, max, disabled], ([$min, $max, $disabled]) => {
+	effect([allThumbs, min, max, disabled], ([$allThumbs, $min, $max, $disabled]) => {
 		if (!isBrowser || $disabled) return;
 
 		const applyPosition = (
@@ -166,9 +169,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		};
 
 		const getClosestThumb = (e: PointerEvent) => {
-			const thumbs = getAllThumbs();
-			if (!thumbs) return;
-
+			const thumbs = $allThumbs();
 			thumbs.forEach((thumb) => thumb.blur());
 
 			const distances = thumbs.map((thumb) => {
