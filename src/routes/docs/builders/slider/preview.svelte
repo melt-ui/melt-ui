@@ -1,20 +1,13 @@
 <script lang="ts">
 	import { createSlider } from '$lib';
-	import { isBrowser } from '$lib/internal/helpers';
 	import { Docs } from '$routes/(components)';
-	import { onMount } from 'svelte';
 
 	const { slider, range, thumb, value } = createSlider({
 		value: [30, 70],
 		max: 100,
 	});
-
-	onMount(() => {
-		if (!isBrowser) return;
-	});
 </script>
 
-{$value}
 <Docs.PreviewWrapper>
 	<span {...$slider} class="relative flex h-[20px] w-[200px] items-center">
 		<span class="block h-[3px] w-full bg-black/40">
