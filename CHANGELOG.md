@@ -1,5 +1,24 @@
 # @melt-ui/svelte
 
+## 0.9.0
+
+### Minor Changes
+
+- 897a45d: feat: add slider
+
+### Patch Changes
+
+- 9c960cb: refactor: update selectedText to support numbers
+- ad4436b: feat: export input el from select
+  refactor: change pagination default perPage to 1
+- 2d224d1: fix(slider): correct slider value return; steps functionality on mouse drag
+
+## 0.8.3
+
+### Patch Changes
+
+- f63cf06: fix: export pagination
+
 ## 0.8.2
 
 ### Patch Changes
