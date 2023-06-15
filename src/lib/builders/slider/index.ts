@@ -5,6 +5,7 @@ import {
 	getElementByMeltId,
 	isBrowser,
 	kbd,
+	styleToString,
 } from '$lib/internal/helpers';
 import { derived, get, writable } from 'svelte/store';
 
@@ -28,6 +29,7 @@ const defaults = {
 
 export const createSlider = (args: CreateSliderArgs = defaults) => {
 	const withDefaults = { ...defaults, ...args };
+
 	const value = writable(withDefaults.value);
 	const max = writable(withDefaults.max);
 	const min = writable(withDefaults.min);
@@ -42,19 +44,20 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 	});
 
 	const range = derived(value, ($value) => {
-		if (withDefaults.orientation === 'horizontal') {
-			return {
-				style: `position: absolute;
-								left: ${$value.length > 1 ? Math.min(...$value) ?? 0 : 0}%;
-								right: calc(${100 - (Math.max(...$value) ?? 0)}%)`,
-			};
-		} else {
-			return {
-				style: `position: absolute;
-								top: ${$value.length > 1 ? Math.min(...$value) ?? 0 : 0}%;
-								bottom: calc(${100 - (Math.max(...$value) ?? 0)}%)`,
-			};
-		}
+		return {
+			style: styleToString({
+				position: 'absolute',
+				...(withDefaults.orientation === 'horizontal'
+					? {
+							left: `${$value.length > 1 ? Math.min(...$value) ?? 0 : 0}%`,
+							right: `calc(${100 - (Math.max(...$value) ?? 0)}%)`,
+					  }
+					: {
+							top: `${$value.length > 1 ? Math.min(...$value) ?? 0 : 0}%`,
+							bottom: `calc(${100 - (Math.max(...$value) ?? 0)}%)`,
+					  }),
+			}),
+		};
 	});
 
 	const getAllThumbs = () => {
