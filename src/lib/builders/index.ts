@@ -11,3 +11,4 @@ export * from './progress';
 export * from './radio-group';
 export * from './dialog';
 export * from './tooltip';
+export * from './pagination';
