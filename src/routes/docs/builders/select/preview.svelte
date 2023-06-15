@@ -23,7 +23,7 @@
 		{#each Object.entries(options) as [key, arr]}
 			<li class="label">{key}</li>
 			{#each arr as item}
-				<li class="option" {...$option({ value: item })}>
+				<li class="option" {...$option(item)}>
 					{#if $isSelected(item)}
 						<div class="check">
 							<Check />
@@ -46,7 +46,7 @@
 	}
 	.option {
 		@apply relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800;
-		@apply outline-none hocus:bg-magnum-100 hocus:text-magnum-700;
+		@apply outline-none focus:bg-magnum-100 focus:text-magnum-700;
 	}
 	.trigger {
 		@apply flex h-10 w-[180px] items-center justify-between rounded-md bg-white px-3;

@@ -58,12 +58,6 @@ export function createDialog(args: CreateDialogArgs = {}) {
 	});
 
 	const overlay = elementDerived([open, options], ([$open, $options], { attach }) => {
-		if ($options.closeOnOutsideClick) {
-			attach('click', () => {
-				open.set(false);
-			});
-		}
-
 		if ($options.closeOnEscape) {
 			attach('keydown', (e) => {
 				if (e.key === 'Escape') {
@@ -83,12 +77,19 @@ export function createDialog(args: CreateDialogArgs = {}) {
 		} as const;
 	});
 
-	const content = elementDerived(open, ($open, { addAction }) => {
+	const content = elementDerived([open, options], ([$open, $options], { addAction }) => {
 		if ($open) {
 			const { useFocusTrap } = createFocusTrap({
 				immediate: true,
 				escapeDeactivates: false,
-				allowOutsideClick: true,
+				allowOutsideClick: (e) => {
+					e.preventDefault();
+					if ($options.closeOnOutsideClick) {
+						open.set(false);
+					}
+
+					return false;
+				},
 				returnFocusOnDeactivate: false,
 			});
 			addAction(useFocusTrap);

@@ -13,6 +13,7 @@ import {
 } from '$lib/internal/helpers';
 import { sleep } from '$lib/internal/helpers/sleep';
 import type { Defaults } from '$lib/internal/types';
+import { tick } from 'svelte';
 import { derived, writable } from 'svelte/store';
 
 /**
@@ -31,6 +32,7 @@ export type CreateSelectArgs = {
 	arrowSize?: number;
 	required?: boolean;
 	disabled?: boolean;
+	selected?: string | number;
 };
 
 const defaults = {
@@ -48,7 +50,7 @@ export function createSelect(args?: CreateSelectArgs) {
 	const options = writable({ ...withDefaults });
 
 	const open = writable(false);
-	const selected = writable<string | null>(null);
+	const selected = writable(withDefaults.selected ?? null);
 	const selectedText = writable<string | null>(null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
@@ -75,6 +77,7 @@ export function createSelect(args?: CreateSelectArgs) {
 				style: styleToString({
 					display: $open ? undefined : 'none',
 				}),
+				id: ids.menu,
 				'aria-labelledby': ids.trigger,
 			};
 		}
@@ -116,31 +119,31 @@ export function createSelect(args?: CreateSelectArgs) {
 		}),
 	}));
 
-	type OptionArgs = {
-		value: string;
-	};
+	type OptionArgs =
+		| {
+				value: string | number;
+		  }
+		| string
+		| number;
 
 	const option = elementMultiDerived([selected], ([$selected], { attach }) => {
-		return ({ value }: OptionArgs) => {
-			attach('click', (e) => {
-				const el = e.currentTarget as HTMLElement;
+		return (args: OptionArgs) => {
+			const value = typeof args === 'object' ? args.value : args;
+
+			attach('click', () => {
 				selected.set(value);
-				selectedText.set(el.innerText);
 				open.set(false);
 			});
 
 			attach('keydown', (e) => {
 				if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
-					e.stopPropagation();
-					e.stopImmediatePropagation();
-					const el = e.currentTarget as HTMLElement;
+					e.preventDefault();
 					selected.set(value);
-					selectedText.set(el.innerText);
 					open.set(false);
 				}
 			});
 
-			attach('mouseover', (e) => {
+			attach('mousemove', (e) => {
 				const el = e.currentTarget as HTMLElement;
 				el.focus();
 			});
@@ -239,12 +242,25 @@ export function createSelect(args?: CreateSelectArgs) {
 		}
 	});
 
-	const isSelected = derived(
-		[selected],
-		([$selected]) =>
-			(value: string) =>
-				$selected === value
-	);
+	effect([menu], ([$menu]) => {
+		tick().then(() => {
+			const menuEl = getElementByMeltId($menu['data-melt-id']);
+			if (!menuEl) return;
+
+			const selectedOption = menuEl.querySelector('[role=option][data-selected]') as
+				| HTMLElement
+				| undefined;
+			if (selectedOption) {
+				selectedText.set(selectedOption.innerText);
+			}
+		});
+	});
+
+	const isSelected = derived([selected], ([$selected]) => {
+		return (value: string | number) => {
+			return $selected === value;
+		};
+	});
 
 	return { trigger, menu, open, option, selected, selectedText, arrow, isSelected, options };
 }
