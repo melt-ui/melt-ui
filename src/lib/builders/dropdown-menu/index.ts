@@ -338,7 +338,9 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				}
 			});
 
-			attach('pointerover', () => {
+			attach('pointerover', (e) => {
+				if (e.pointerType !== 'mouse') return undefined;
+				(e.currentTarget as HTMLElement).focus();
 				openSubMenus.update((prev) => {
 					if (options.triggerFor && !prev.includes(options.triggerFor)) {
 						return [...prev, options.triggerFor];
