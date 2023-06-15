@@ -172,12 +172,12 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 					'aria-valuemax': $max,
 					'aria-valuenow': withDefaults.value[currentThumb],
 					'data-melt-part': 'thumb',
-					style: `position: absolute;
-				${
-					withDefaults.orientation === 'horizontal'
-						? `left: ${withDefaults.value[currentThumb]}%; translate: -50% 0`
-						: `top: ${withDefaults.value[currentThumb]}%; translate: 0 -50%`
-				}`,
+					style: styleToString({
+						position: 'absolute',
+						...(withDefaults.orientation === 'horizontal'
+							? { left: `${withDefaults.value[currentThumb]}%;`, translate: '-50% 0' }
+							: { top: `${withDefaults.value[currentThumb]}%;`, translate: '0 -50%`' }),
+					}),
 					tabindex: $disabled ? -1 : 0,
 				};
 			};
