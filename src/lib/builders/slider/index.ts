@@ -69,7 +69,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 
 			return Array.from(rootEl.querySelectorAll('[data-melt-part="thumb"]')) as Array<HTMLElement>;
 		};
-	}) as Readable<() => HTMLElement[]>;
+	}) as Readable<() => HTMLElement[] | undefined>;
 
 	const updatePosition = (val: number, index: number, target: HTMLElement) => {
 		value.update((prev) => {
@@ -77,18 +77,25 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 
 			prev[index] = val;
 
-			if (withDefaults.orientation === 'horizontal') target.style.left = `${val}%`;
-			else target.style.top = `${val}%`;
+			// if (withDefaults.orientation === 'horizontal') target.style.left = `${val}%`;
+			// else target.style.top = `${val}%`;
 
-			target.setAttribute('aria-valuenow', val.toString());
+			// target.setAttribute('aria-valuenow', val.toString());
 			return prev.map(Math.abs);
 		});
 	};
 
+	let thumbIndex = 0;
+
 	const thumb = elementMultiDerived(
-		[getAllThumbs, options],
-		([$allThumbs, { min: $min, max: $max, disabled: $disabled }], { attach }) => {
+		[value, getAllThumbs, options],
+		([$value, $getAllThumbs, $options], { attach, addUnsubscriber }) => {
 			return () => {
+				const { min: $min, max: $max, disabled: $disabled } = $options;
+
+				const currIdx = thumbIndex++;
+				addUnsubscriber(() => (thumbIndex -= 1));
+
 				const currentThumb = get(currentThumbIndex);
 
 				if (currentThumb < withDefaults.value.length) {
@@ -99,7 +106,8 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 					if ($disabled) return;
 
 					const target = event.currentTarget as HTMLElement;
-					const thumbs = $allThumbs();
+					const thumbs = $getAllThumbs();
+					if (!thumbs) return;
 
 					const index = thumbs.indexOf(target);
 					currentThumbIndex.set(index);
@@ -119,7 +127,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 
 					event.preventDefault();
 
-					const step = withDefaults.step;
+					const step = $options.step;
 					const $value = get(value);
 
 					switch (event.key) {
@@ -132,21 +140,21 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 							break;
 						}
 						case kbd.ARROW_LEFT: {
-							if ($value[index] > $min && withDefaults.orientation === 'horizontal') {
+							if ($value[index] > $min && $options.orientation === 'horizontal') {
 								const newValue = $value[index] - step;
 								updatePosition(newValue, index, target);
 							}
 							break;
 						}
 						case kbd.ARROW_RIGHT: {
-							if ($value[index] < $max && withDefaults.orientation === 'horizontal') {
+							if ($value[index] < $max && $options.orientation === 'horizontal') {
 								const newValue = $value[index] + step;
 								updatePosition(newValue, index, target);
 							}
 							break;
 						}
 						case kbd.ARROW_UP: {
-							if ($value[index] > $min && withDefaults.orientation === 'vertical') {
+							if ($value[index] > $min && $options.orientation === 'vertical') {
 								const newValue = $value[index] - step;
 								updatePosition(newValue, index, target);
 							} else if ($value[index] < $max) {
@@ -156,7 +164,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 							break;
 						}
 						case kbd.ARROW_DOWN: {
-							if ($value[index] < $max && withDefaults.orientation === 'vertical') {
+							if ($value[index] < $max && $options.orientation === 'vertical') {
 								const newValue = $value[index] + step;
 								updatePosition(newValue, index, target);
 							} else if ($value[index] > $min) {
@@ -173,13 +181,14 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 					'aria-label': 'Volume',
 					'aria-valuemin': $min,
 					'aria-valuemax': $max,
-					'aria-valuenow': withDefaults.value[currentThumb],
+					'aria-valuenow': $value[currIdx],
 					'data-melt-part': 'thumb',
+					'data-index': currIdx,
 					style: styleToString({
 						position: 'absolute',
-						...(withDefaults.orientation === 'horizontal'
-							? { left: `${withDefaults.value[currentThumb]}%;`, translate: '-50% 0' }
-							: { top: `${withDefaults.value[currentThumb]}%;`, translate: '0 -50%`' }),
+						...($options.orientation === 'horizontal'
+							? { left: `${$value[currIdx]}%;`, translate: '-50% 0' }
+							: { top: `${$value[currIdx]}%;`, translate: '0 -50%`' }),
 					}),
 					tabindex: $disabled ? -1 : 0,
 				};
@@ -189,7 +198,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 
 	effect(
 		[root, getAllThumbs, options],
-		([$root, $allThumbs, { min: $min, max: $max, disabled: $disabled }]) => {
+		([$root, $getAllThumbs, { min: $min, max: $max, disabled: $disabled }]) => {
 			if (!isBrowser || $disabled) return;
 
 			const applyPosition = (
@@ -208,7 +217,8 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 			};
 
 			const getClosestThumb = (e: PointerEvent) => {
-				const thumbs = $allThumbs();
+				const thumbs = $getAllThumbs();
+				if (!thumbs) return;
 				thumbs.forEach((thumb) => thumb.blur());
 
 				const distances = thumbs.map((thumb) => {
