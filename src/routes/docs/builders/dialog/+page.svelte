@@ -27,6 +27,4 @@
 
 <Docs.CodeBlock code={drawerCode} />
 
-<Docs.CodeBlock code={drawerCode} />
-
 <Docs.Construction />
