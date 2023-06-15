@@ -1,44 +1,34 @@
-import { elementMultiDerived, kbd } from '$lib/internal/helpers';
+import { elementMultiDerived, kbd, omit } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 
-type Orientation = 'horizontal' | 'vertical';
-
-type SingleToggleGroupRootArgs = {
+type SingleToolbarGroupRootArgs = {
 	type?: 'single';
 	value?: string | null;
 };
 
-type MultipleToggleGroupRootProps = {
+type MultipleToolbarGroupRootProps = {
 	type: 'multiple';
 	value?: string[];
 };
 
-export type CreateToggleGroupArgs = (SingleToggleGroupRootArgs | MultipleToggleGroupRootProps) & {
+export type CreateToolbarGroupArgs = (
+	| SingleToolbarGroupRootArgs
+	| MultipleToolbarGroupRootProps
+) & {
 	disabled?: boolean;
-	rovingFocus?: boolean;
-	loop?: boolean;
-	orientation?: Orientation;
 };
 
 const defaults = {
 	type: 'single',
-	orientation: 'horizontal',
-	loop: true,
-	rovingFocus: true,
+
 	disabled: false,
 	value: null,
-} satisfies Defaults<CreateToggleGroupArgs>;
+} satisfies Defaults<CreateToolbarGroupArgs>;
 
-export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
+export function createToolbarGroup(args: CreateToolbarGroupArgs = {}) {
 	const withDefaults = { ...defaults, ...args };
-	const options = writable({
-		disabled: withDefaults.disabled,
-		rovingFocus: withDefaults.rovingFocus,
-		loop: withDefaults.loop,
-		orientation: withDefaults.orientation,
-		type: withDefaults.type,
-	});
+	const options = writable(omit(withDefaults, 'value'));
 	const value = writable(withDefaults.value);
 
 	options.subscribe((o) => {
@@ -58,19 +48,18 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 	const root = derived(options, ($options) => {
 		return {
 			role: 'group',
-			'data-orientation': $options.orientation,
-			'data-melt-part': 'toggle-group',
+			'data-melt-part': 'toolbar-group',
 		} as const;
 	});
 
-	type ToggleGroupItemArgs =
+	type ToolbarGroupItemArgs =
 		| {
 				value: string;
 				disabled?: boolean;
 		  }
 		| string;
 	const item = elementMultiDerived([options, value], ([$options, $value], { attach }) => {
-		return (args: ToggleGroupItemArgs) => {
+		return (args: ToolbarGroupItemArgs) => {
 			const itemValue = typeof args === 'string' ? args : args.value;
 			const argDisabled = typeof args === 'string' ? false : !!args.disabled;
 			const disabled = $options.disabled || argDisabled;
@@ -101,10 +90,10 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 				if (!$options.rovingFocus) return;
 
 				const el = e.currentTarget as HTMLElement;
-				const root = el.closest('[data-melt-part="toggle-group"]') as HTMLElement;
+				const root = el.closest('[data-melt-part="toolbar-group"]') as HTMLElement;
 
 				const items = Array.from(
-					root.querySelectorAll('[data-melt-part="toggle-group-item"]')
+					root.querySelectorAll('[data-melt-part="toolbar-group-item"]')
 				) as Array<HTMLElement>;
 				const currentIndex = items.indexOf(el);
 
@@ -147,7 +136,7 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 				'data-state': pressed ? 'on' : 'off',
 				'aria-pressed': pressed,
 				type: 'button',
-				'data-melt-part': 'toggle-group-item',
+				'data-melt-part': 'toolbar-group-item',
 				tabindex: anyPressed ? (pressed ? 0 : -1) : 0,
 			} as const;
 		};
