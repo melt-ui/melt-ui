@@ -9,9 +9,10 @@ import {
 	prev,
 	uuid,
 } from '$lib/internal/helpers';
+import type { Defaults } from '$lib/internal/types';
 import { writable } from 'svelte/store';
 
-type CreateTabsArgs = {
+export type CreateTabsArgs = {
 	value?: string;
 	onChange?: (value: string) => void;
 	dir?: 'ltr' | 'rtl';
@@ -28,7 +29,7 @@ const defaults = {
 	activateOnFocus: true,
 	loop: true,
 	autoSet: true,
-} satisfies CreateTabsArgs;
+} satisfies Defaults<CreateTabsArgs>;
 
 export function createTabs(args?: CreateTabsArgs) {
 	const options = { ...defaults, ...args };

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { cn } from '../helpers';
+	import { cn, formatStr } from '../helpers';
 
 	const buildersGlob = import.meta.glob('./builders/**/+page.svelte');
 	const builders = Object.keys(buildersGlob)
@@ -10,14 +10,6 @@
 	const sections = {
 		overview: ['introduction', 'getting-started'],
 		builders,
-	};
-
-	const format = (s: string) => {
-		// Capitalize and remove dashes
-		return s
-			.split('-')
-			.map((word) => word[0].toUpperCase() + word.slice(1))
-			.join(' ');
 	};
 </script>
 
@@ -29,7 +21,7 @@
 			<span
 				class="text-md block whitespace-nowrap rounded-md border border-transparent px-3 pb-2 text-sm font-semibold uppercase tracking-wider text-zinc-400"
 			>
-				{format(section)}
+				{formatStr(section)}
 			</span>
 			<ul>
 				{#each routes as route}
@@ -44,7 +36,7 @@
 							)}
 							data-active={$page.url.pathname === href}
 						>
-							{format(route)}
+							{formatStr(route)}
 						</a>
 					</li>
 				{/each}

@@ -1,9 +1,10 @@
 import { elementDerived, kbd, styleToString } from '$lib/internal/helpers';
+import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 
 type CheckedState = boolean | 'indeterminate';
 
-type CreateCheckboxArgs = {
+export type CreateCheckboxArgs = {
 	checked?: CheckedState;
 	disabled?: boolean;
 	required?: boolean;
@@ -15,7 +16,7 @@ const defaults = {
 	checked: false,
 	disabled: false,
 	required: false,
-} satisfies CreateCheckboxArgs;
+} satisfies Defaults<CreateCheckboxArgs>;
 
 export function createCheckbox(args: CreateCheckboxArgs = {}) {
 	const argsWithDefaults = { ...defaults, ...args };

@@ -8,6 +8,7 @@ import {
 
 import { usePopper, type FloatingConfig } from '$lib/internal/actions';
 import { derived, writable, type Readable } from 'svelte/store';
+import type { Defaults } from '$lib/internal/types';
 
 export type CreateTooltipArgs = {
 	positioning?: FloatingConfig;
@@ -27,7 +28,7 @@ const defaults = {
 	closeOnPointerDown: true,
 	openDelay: 1000,
 	closeDelay: 500,
-} satisfies CreateTooltipArgs;
+} satisfies Defaults<CreateTooltipArgs>;
 
 // TODO: Add grace area to prevent tooltip from closing when moving from trigger to tooltip
 

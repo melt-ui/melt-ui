@@ -11,9 +11,10 @@ import {
 	uuid,
 } from '$lib/internal/helpers';
 import { removeScroll } from '$lib/internal/helpers/scroll';
+import type { Defaults } from '$lib/internal/types';
 import { writable } from 'svelte/store';
 
-type CreateDialogArgs = {
+export type CreateDialogArgs = {
 	preventScroll?: boolean;
 	closeOnEscape?: boolean;
 	closeOnOutsideClick?: boolean;
@@ -25,7 +26,7 @@ const defaults = {
 	closeOnEscape: true,
 	closeOnOutsideClick: true,
 	role: 'dialog',
-} satisfies CreateDialogArgs;
+} satisfies Defaults<CreateDialogArgs>;
 
 export function createDialog(args: CreateDialogArgs = {}) {
 	const withDefaults = { ...defaults, ...args };
@@ -57,12 +58,6 @@ export function createDialog(args: CreateDialogArgs = {}) {
 	});
 
 	const overlay = elementDerived([open, options], ([$open, $options], { attach }) => {
-		if ($options.closeOnOutsideClick) {
-			attach('click', () => {
-				open.set(false);
-			});
-		}
-
 		if ($options.closeOnEscape) {
 			attach('keydown', (e) => {
 				if (e.key === 'Escape') {
@@ -82,12 +77,19 @@ export function createDialog(args: CreateDialogArgs = {}) {
 		} as const;
 	});
 
-	const content = elementDerived(open, ($open, { addAction }) => {
+	const content = elementDerived([open, options], ([$open, $options], { addAction }) => {
 		if ($open) {
 			const { useFocusTrap } = createFocusTrap({
 				immediate: true,
 				escapeDeactivates: false,
-				allowOutsideClick: true,
+				allowOutsideClick: (e) => {
+					e.preventDefault();
+					if ($options.closeOnOutsideClick) {
+						open.set(false);
+					}
+
+					return false;
+				},
 				returnFocusOnDeactivate: false,
 			});
 			addAction(useFocusTrap);
@@ -132,9 +134,9 @@ export function createDialog(args: CreateDialogArgs = {}) {
 					}
 				})
 			);
-
-			unsubs.push(removeScroll());
 		}
+
+		if ($options.preventScroll && $open) unsubs.push(removeScroll());
 
 		return () => {
 			unsubs.forEach((unsub) => unsub());

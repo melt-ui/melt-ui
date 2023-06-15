@@ -1,16 +1,21 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { isMenuOpen } from '$routes/+layout.svelte';
-	import { cn } from '$routes/helpers';
+	import { cn, formatStr } from '$routes/helpers';
 	import theme from 'svelte-highlight/styles/atom-one-dark';
 	import Sidebar from './sidebar.svelte';
+	import { page } from '$app/stores';
 
 	afterNavigate(() => {
 		$isMenuOpen = false;
 	});
+
+	$: pageTitle = formatStr($page.url.pathname.split('/').pop() ?? '');
 </script>
 
 <svelte:head>
+	<title>{pageTitle} - Melt UI</title>
+
 	{@html theme}
 </svelte:head>
 

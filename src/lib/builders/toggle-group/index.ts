@@ -1,4 +1,5 @@
 import { elementMultiDerived, kbd } from '$lib/internal/helpers';
+import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 
 type Orientation = 'horizontal' | 'vertical';
@@ -13,7 +14,7 @@ type MultipleToggleGroupRootProps = {
 	value?: string[];
 };
 
-type CreateToggleGroupArgs = (SingleToggleGroupRootArgs | MultipleToggleGroupRootProps) & {
+export type CreateToggleGroupArgs = (SingleToggleGroupRootArgs | MultipleToggleGroupRootProps) & {
 	disabled?: boolean;
 	rovingFocus?: boolean;
 	loop?: boolean;
@@ -27,7 +28,7 @@ const defaults = {
 	rovingFocus: true,
 	disabled: false,
 	value: null,
-} satisfies CreateToggleGroupArgs;
+} satisfies Defaults<CreateToggleGroupArgs>;
 
 export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 	const withDefaults = { ...defaults, ...args };

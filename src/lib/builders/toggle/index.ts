@@ -1,12 +1,12 @@
 import { elementDerived } from '$lib/internal/helpers';
 import { writable } from 'svelte/store';
 
-type ToggleArgs = {
+export type CreateToggleArgs = {
 	disabled?: boolean;
 	pressed?: boolean;
 };
 
-export function createToggle(args: ToggleArgs = {}) {
+export function createToggle(args: CreateToggleArgs = {}) {
 	const pressed = writable(args.pressed ?? false);
 	const disabled = writable(args.disabled ?? false);
 

@@ -1,7 +1,8 @@
 import { elementDerived, styleToString } from '$lib/internal/helpers';
+import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 
-type CreateSwitchArgs = {
+export type CreateSwitchArgs = {
 	/** The controlled checked state of the switch. */
 	checked?: boolean;
 	/** When `true`, prevents the user from interacting with the switch. */
@@ -20,7 +21,7 @@ const defaults = {
 	required: false,
 	name: '',
 	value: '',
-} satisfies CreateSwitchArgs;
+} satisfies Defaults<CreateSwitchArgs>;
 
 export function createSwitch(args: CreateSwitchArgs = {}) {
 	const argsWithDefaults = { ...defaults, ...args };

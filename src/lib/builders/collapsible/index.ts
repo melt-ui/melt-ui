@@ -1,7 +1,8 @@
 import { elementDerived } from '$lib/internal/helpers';
+import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 
-type CreateCollapsibleArgs = {
+export type CreateCollapsibleArgs = {
 	open?: boolean;
 	onChange?: (open: boolean) => void;
 	disabled?: boolean;
@@ -10,7 +11,7 @@ type CreateCollapsibleArgs = {
 const defaults = {
 	open: false,
 	disabled: false,
-} satisfies CreateCollapsibleArgs;
+} satisfies Defaults<CreateCollapsibleArgs>;
 
 export function createCollapsible(args?: CreateCollapsibleArgs) {
 	const options = { ...defaults, ...args };
