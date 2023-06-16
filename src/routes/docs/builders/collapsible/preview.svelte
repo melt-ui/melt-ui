@@ -9,7 +9,7 @@
 </script>
 
 <Docs.PreviewWrapper fullwidth>
-	<div {...$root} class="w-full">
+	<div {...$root} class="mx-auto w-full max-w-md">
 		<div class="flex items-center justify-between">
 			<span class="text-sm leading-6 text-white"> @thomasglopes starred 3 repositories </span>
 			<button

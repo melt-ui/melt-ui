@@ -25,7 +25,7 @@
 </script>
 
 <Docs.PreviewWrapper fullwidth>
-	<div class="w-full rounded-md bg-[--line-color] shadow-lg" {...root}>
+	<div class="mx-auto w-full max-w-md rounded-md bg-[--line-color] shadow-lg" {...root}>
 		{#each items as accItem}
 			<div {...$item(accItem.id)} class="accordion-item">
 				<h2 class="flex">
