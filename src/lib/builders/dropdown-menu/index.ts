@@ -360,6 +360,7 @@ export function createSubMenu(args?: CreateSubMenuArgs) {
 				const parentMenu = el.closest(
 					'[data-melt-part="menu-root"], [data-melt-part="menu-sub"]'
 				) as HTMLElement | null;
+				console.log('parentMenu', parentMenu);
 				if (!parentMenu) return;
 
 				if (parentMenu.getAttribute('data-melt-part') === 'menu-root') {
@@ -375,15 +376,14 @@ export function createSubMenu(args?: CreateSubMenuArgs) {
 					 */
 					let sibling: HTMLElement | null = parentMenu;
 					while (sibling) {
-						console.log(sibling);
 						if (sibling.getAttribute('data-melt-part') === 'menu-root') {
 							rootMenuElement = sibling;
-							return;
+							break;
 						}
 						sibling = sibling.previousElementSibling as HTMLElement | null;
 					}
 				}
-				console.log(rootMenuElement);
+				return;
 			});
 
 			return {
@@ -395,7 +395,7 @@ export function createSubMenu(args?: CreateSubMenuArgs) {
 				'aria-required': $options.required,
 				'data-state': $open ? 'open' : 'closed',
 				'data-disabled': $options.disabled ? '' : undefined,
-				'data-melt-menu': '',
+				'data-melt-menu': rootMenuElement ? rootMenuElement.id : '', // <- FIXME:
 			};
 		}
 	);
