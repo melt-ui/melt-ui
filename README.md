@@ -72,7 +72,6 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Component name  | Status |
 | --------------- | ------ |
 | Accordion       | ✅     |
-| Alert Dialog    |        |
 | Avatar          |        |
 | Calendar        |        |
 | Checkbox        | ✅     |
@@ -100,10 +99,11 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Toast           |        |
 | Toggle          | ✅     |
 | Toggle Group    | ✅     |
-| Toolbar         |        |
+| Toolbar         | ✅     |
 | Tooltip         | ✅     |
+| ???             |        |
 
-And more!
+**Progress:** 16/30+
 
 ## Similar projects
 
