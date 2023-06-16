@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
-	import Kbd from '$routes/(components)/kbd.svelte';
 	import { snippets } from './(snippets)';
 	import code from './code.ignore-svelte?raw';
 	import Preview from './preview.svelte';
@@ -17,9 +16,9 @@
 
 <Docs.H2>Features</Docs.H2>
 <Docs.Ul>
-	<Docs.Li>Supports indeterminate state.</Docs.Li>
-	<Docs.Li>Full keyboard navigation.</Docs.Li>
-	<Docs.Li>Can be controlled or uncontrolled.</Docs.Li>
+	<Docs.Li>Supports indeterminate state</Docs.Li>
+	<Docs.Li>Full keyboard navigation</Docs.Li>
+	<Docs.Li>Can be controlled or uncontrolled</Docs.Li>
 </Docs.Ul>
 
 <Docs.H2>Anatomy</Docs.H2>
@@ -58,7 +57,7 @@
 <Docs.H2>Accessibility</Docs.H2>
 <Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/">WAI-ARIA pattern</Docs.A>
 
-<Docs.H3>Keyboard Navigation</Docs.H3>
+<Docs.H3>Keyboard Interactions</Docs.H3>
 
 <Docs.P>
 	When the checkbox has focus, pressing the <Docs.Kbd>Space</Docs.Kbd> key changes the state of the checkbox.
