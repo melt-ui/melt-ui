@@ -88,6 +88,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				}),
 				id: ids.menu,
 				'aria-labelledby': ids.trigger,
+				'data-melt-part': 'menu-root',
 			};
 		}
 	);
@@ -135,7 +136,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	const item = elementMultiDerived([selected, menu], ([$selected, $menu], { attach }) => {
 		return () => {
 			attach('keydown', (e) => {
-				console.log(e);
 				if (e.shiftKey && e.key === kbd.TAB) {
 					e.preventDefault();
 					e.stopPropagation();
@@ -183,7 +183,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					return;
 				}
 
-				const allOptions = Array.from(menuEl.querySelectorAll('[role="option"]')) as HTMLElement[];
+				const allOptions = Array.from(menuEl.querySelectorAll(itemSelector)) as HTMLElement[];
+				console.log(allOptions);
 				const focusedOption = allOptions.find((el) => el === document.activeElement);
 				const focusedIndex = allOptions.indexOf(focusedOption as HTMLElement);
 
@@ -258,7 +259,7 @@ export function createSubMenu(args?: CreateSubMenuArgs) {
 
 	const subMenu = elementDerived(
 		[open, activeTrigger, options],
-		([$open, $activeTrigger, $options], { addAction }) => {
+		([$open, $activeTrigger, $options], { addAction, getElement }) => {
 			if ($open && $activeTrigger) {
 				addAction(usePopper, {
 					anchorElement: $activeTrigger,
@@ -278,35 +279,23 @@ export function createSubMenu(args?: CreateSubMenuArgs) {
 				}),
 				id: ids.menu,
 				'aria-labelledby': ids.trigger,
-				'data-submenu': true,
+				'data-melt-part': 'menu-sub',
 			};
 		}
 	);
 
-	const subTrigger = elementDerived([open, options], ([$open, $options], { attach }) => {
-		attach('pointerdown', (e) => {
-			e.stopImmediatePropagation();
-		});
-		attach('click', (e) => {
-			e.stopPropagation();
-			e.preventDefault();
+	const subTrigger = elementDerived(
+		[open, options],
+		([$open, $options], { attach, getElement }) => {
+			let rootMenuElement: HTMLElement | null = null;
 
-			const triggerEl = e.currentTarget as HTMLElement;
-			open.update((prev) => {
-				const isOpen = !prev;
-				if (isOpen) {
-					activeTrigger.set(triggerEl);
-				} else {
-					activeTrigger.set(null);
-				}
-
-				return isOpen;
+			attach('pointerdown', (e) => {
+				e.stopImmediatePropagation();
 			});
-		});
-
-		attach('keydown', (e) => {
-			if (TRIGGER_OPEN_KEYS.includes(e.key)) {
+			attach('click', (e) => {
+				e.stopPropagation();
 				e.preventDefault();
+
 				const triggerEl = e.currentTarget as HTMLElement;
 				open.update((prev) => {
 					const isOpen = !prev;
@@ -318,38 +307,98 @@ export function createSubMenu(args?: CreateSubMenuArgs) {
 
 					return isOpen;
 				});
-			}
-		});
-
-		attach('mouseover', (e) => {
-			const triggerEl = e.currentTarget as HTMLElement;
-
-			open.update((prev) => {
-				const isOpen = prev;
-				if (!isOpen) {
-					activeTrigger.set(triggerEl);
-					return !prev;
-				}
-				return prev;
 			});
-		});
 
-		attach('mouseout', (e) => {
-			const el = e.currentTarget as HTMLElement;
-			el.blur();
-		});
+			attach('keydown', (e) => {
+				if (TRIGGER_OPEN_KEYS.includes(e.key)) {
+					e.preventDefault();
+					const triggerEl = e.currentTarget as HTMLElement;
+					open.update((prev) => {
+						const isOpen = !prev;
+						if (isOpen) {
+							activeTrigger.set(triggerEl);
+						} else {
+							activeTrigger.set(null);
+						}
 
-		return {
-			role: 'menuitem',
-			'aria-controls': ids.menu,
-			'aria-expanded': $open,
-			'aria-required': $options.required,
-			'data-state': $open ? 'open' : 'closed',
-			'data-disabled': $options.disabled ? '' : undefined,
-			id: ids.trigger,
-			tabindex: -1,
-		};
-	});
+						return isOpen;
+					});
+				}
+			});
+
+			attach('mouseover', (e) => {
+				const triggerEl = e.currentTarget as HTMLElement;
+
+				open.update((prev) => {
+					const isOpen = prev;
+					if (!isOpen) {
+						activeTrigger.set(triggerEl);
+						return !prev;
+					}
+					return prev;
+				});
+			});
+
+			attach('mouseout', (e) => {
+				const el = e.currentTarget as HTMLElement;
+				el.blur();
+			});
+
+			/**
+			 * To set the `data-melt-menu` attribute on this trigger item, we
+			 * need to find the root menu. We need this attribute to be set so
+			 * these items are considered for keyboard navigation.
+			 */
+			getElement().then((el) => {
+				if (!el) return;
+
+				/**
+				 * Get the trigger's parent menu.
+				 * *Note*: This is not the menu that the trigger opens, but the
+				 * menu that the trigger menuitem belongs to.
+				 */
+				const parentMenu = el.closest(
+					'[data-melt-part="menu-root"], [data-melt-part="menu-sub"]'
+				) as HTMLElement | null;
+				if (!parentMenu) return;
+
+				if (parentMenu.getAttribute('data-melt-part') === 'menu-root') {
+					/**
+					 * If the parent menu is a root menu, then we set the
+					 * `rootMenuElement` to the parent menu.
+					 */
+					rootMenuElement = parentMenu;
+				} else {
+					/**
+					 * We'll loop through the parent menu's siblings to find
+					 * the closest root menu.
+					 */
+					let sibling: HTMLElement | null = parentMenu;
+					while (sibling) {
+						console.log(sibling);
+						if (sibling.getAttribute('data-melt-part') === 'menu-root') {
+							rootMenuElement = sibling;
+							return;
+						}
+						sibling = sibling.previousElementSibling as HTMLElement | null;
+					}
+				}
+				console.log(rootMenuElement);
+			});
+
+			return {
+				role: 'menuitem',
+				id: ids.trigger,
+				tabindex: -1,
+				'aria-controls': ids.menu,
+				'aria-expanded': $open,
+				'aria-required': $options.required,
+				'data-state': $open ? 'open' : 'closed',
+				'data-disabled': $options.disabled ? '' : undefined,
+				'data-melt-menu': '',
+			};
+		}
+	);
 
 	const arrow = derived(options, ($options) => ({
 		'data-arrow': true,
@@ -376,4 +425,15 @@ export function createSubMenu(args?: CreateSubMenuArgs) {
 		arrow,
 		options,
 	};
+}
+
+function getRootMenuElement(element: HTMLElement): HTMLElement | null {
+	let sibling = element.previousElementSibling;
+	while (sibling) {
+		if (sibling.getAttribute('data-melt-part') === 'menu-root') {
+			return sibling as HTMLElement;
+		}
+		sibling = sibling.previousElementSibling;
+	}
+	return null;
 }
