@@ -14,6 +14,7 @@ import {
 } from '$lib/internal/helpers';
 import { sleep } from '$lib/internal/helpers/sleep';
 import type { Defaults } from '$lib/internal/types';
+import { createFocusTrap } from 'focus-trap';
 import { tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 
@@ -100,21 +101,22 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					open,
 					options: {
 						floating: $options.positioning,
+						focusTrap: null,
 					},
 				});
 
-				attach('pointermove', (e) => {
-					if (e.pointerType !== 'mouse') return undefined;
-					const target = e.target as HTMLElement;
-					const _lastPointerX = get(lastPointerX);
-					const pointerXHasChanged = _lastPointerX !== e.clientX;
+				// attach('pointermove', (e) => {
+				// 	if (e.pointerType !== 'mouse') return undefined;
+				// 	const target = e.target as HTMLElement;
+				// 	const _lastPointerX = get(lastPointerX);
+				// 	const pointerXHasChanged = _lastPointerX !== e.clientX;
 
-					if ((e.currentTarget as HTMLElement).contains(target) && pointerXHasChanged) {
-						const newDir = e.clientX > _lastPointerX ? 'right' : 'left';
-						pointerDirection.set(newDir);
-						lastPointerX.set(e.clientX);
-					}
-				});
+				// 	if ((e.currentTarget as HTMLElement).contains(target) && pointerXHasChanged) {
+				// 		const newDir = e.clientX > _lastPointerX ? 'right' : 'left';
+				// 		pointerDirection.set(newDir);
+				// 		lastPointerX.set(e.clientX);
+				// 	}
+				// });
 			}
 
 			return {
@@ -250,7 +252,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				// });
 
 				attach('pointerover', (e) => {
-					(e.target as HTMLElement).focus();
+					focusedItem.set(e.target as HTMLElement);
 				});
 
 				// attach('pointerleave', (e) => {
@@ -339,8 +341,9 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			// });
 
 			attach('pointerover', (e) => {
-				if (e.pointerType !== 'mouse') return undefined;
-				(e.target as HTMLElement).focus();
+				console.log(e);
+				focusedItem.set(e.target as HTMLElement);
+
 				openSubMenus.update((prev) => {
 					if (options.triggerFor && !prev.includes(options.triggerFor)) {
 						return [...prev, options.triggerFor];
@@ -389,94 +392,102 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			openSubMenus.set([]);
 		}
 
-		const menuEl = getElementByMeltId($menu['data-melt-id']);
-		if (menuEl && $open) {
-			// Focus on selected option or first option
-			const selectedOption = menuEl.querySelector('[data-selected]') as HTMLElement | undefined;
-			if (!selectedOption) {
-				const firstOption = menuEl.querySelector('[role="menuitem"]') as HTMLElement | undefined;
-				sleep(1).then(() => firstOption?.focus());
-			} else {
-				sleep(1).then(() => selectedOption.focus());
-			}
+		// const menuEl = getElementByMeltId($menu['data-melt-id']);
+		// if (menuEl && $open) {
+		// 	// Focus on selected option or first option
+		// 	// const selectedOption = menuEl.querySelector('[data-selected]') as HTMLElement | undefined;
+		// 	// if (!selectedOption) {
+		// 	// 	const firstOption = menuEl.querySelector('[role="menuitem"]') as HTMLElement | undefined;
+		// 	// 	sleep(1).then(() => firstOption?.focus());
+		// 	// } else {
+		// 	// 	sleep(1).then(() => selectedOption.focus());
+		// 	// }
 
-			const keydownListener = (e: KeyboardEvent) => {
-				if (e.key === kbd.ESCAPE) {
-					open.set(false);
-					activeTrigger.set(null);
-					return;
-				}
+		// 	const keydownListener = (e: KeyboardEvent) => {
+		// 		if (e.key === kbd.ESCAPE) {
+		// 			open.set(false);
+		// 			activeTrigger.set(null);
+		// 			return;
+		// 		}
 
-				const allOptions = Array.from(
-					menuEl.querySelectorAll('[role="menuitem"]')
-				) as HTMLElement[];
+		// 		const allOptions = Array.from(
+		// 			menuEl.querySelectorAll('[role="menuitem"]')
+		// 		) as HTMLElement[];
 
-				const focusedOption = allOptions.find((el) => el === document.activeElement);
-				const focusedIndex = allOptions.indexOf(focusedOption as HTMLElement);
+		// 		const focusedOption = allOptions.find((el) => el === document.activeElement);
+		// 		const focusedIndex = allOptions.indexOf(focusedOption as HTMLElement);
 
-				if (e.key === kbd.ARROW_DOWN) {
-					e.preventDefault();
-					const nextIndex = focusedIndex + 1 > allOptions.length - 1 ? 0 : focusedIndex + 1;
-					const nextOption = allOptions[nextIndex] as HTMLElement;
-					nextOption.focus();
-					return;
-				} else if (e.key === kbd.ARROW_UP) {
-					e.preventDefault();
-					const prevIndex = focusedIndex - 1 < 0 ? allOptions.length - 1 : focusedIndex - 1;
-					const prevOption = allOptions[prevIndex] as HTMLElement;
-					prevOption.focus();
-					return;
-				} else if (e.key === kbd.HOME) {
-					e.preventDefault();
-					const firstOption = allOptions[0] as HTMLElement;
-					firstOption.focus();
-					return;
-				} else if (e.key === kbd.END) {
-					e.preventDefault();
-					const lastOption = allOptions[allOptions.length - 1] as HTMLElement;
-					lastOption.focus();
-					return;
-				}
+		// 		if (e.key === kbd.ARROW_DOWN) {
+		// 			e.preventDefault();
+		// 			const nextIndex = focusedIndex + 1 > allOptions.length - 1 ? 0 : focusedIndex + 1;
+		// 			const nextOption = allOptions[nextIndex] as HTMLElement;
+		// 			nextOption.focus();
+		// 			return;
+		// 		} else if (e.key === kbd.ARROW_UP) {
+		// 			e.preventDefault();
+		// 			const prevIndex = focusedIndex - 1 < 0 ? allOptions.length - 1 : focusedIndex - 1;
+		// 			const prevOption = allOptions[prevIndex] as HTMLElement;
+		// 			prevOption.focus();
+		// 			return;
+		// 		} else if (e.key === kbd.HOME) {
+		// 			e.preventDefault();
+		// 			const firstOption = allOptions[0] as HTMLElement;
+		// 			firstOption.focus();
+		// 			return;
+		// 		} else if (e.key === kbd.END) {
+		// 			e.preventDefault();
+		// 			const lastOption = allOptions[allOptions.length - 1] as HTMLElement;
+		// 			lastOption.focus();
+		// 			return;
+		// 		}
 
-				// Typeahead
-				const isAlphaNumericOrSpace = /^[a-z0-9 ]$/i.test(e.key);
-				if (isAlphaNumericOrSpace) {
-					typed.push(e.key.toLowerCase());
-					const typedString = typed.join('');
-					const matchingOption = allOptions.find((el) =>
-						el.innerText.toLowerCase().startsWith(typedString)
-					);
-					if (matchingOption) {
-						matchingOption.focus();
-					}
+		// 		// Typeahead
+		// 		const isAlphaNumericOrSpace = /^[a-z0-9 ]$/i.test(e.key);
+		// 		if (isAlphaNumericOrSpace) {
+		// 			typed.push(e.key.toLowerCase());
+		// 			const typedString = typed.join('');
+		// 			const matchingOption = allOptions.find((el) =>
+		// 				el.innerText.toLowerCase().startsWith(typedString)
+		// 			);
+		// 			if (matchingOption) {
+		// 				matchingOption.focus();
+		// 			}
 
-					resetTyped();
-				}
-			};
+		// 			resetTyped();
+		// 		}
+		// 	};
 
-			document.addEventListener('keydown', keydownListener);
-			return () => {
-				document.removeEventListener('keydown', keydownListener);
-			};
-		} else if (!$open && $activeTrigger && isBrowser) {
-			// Hacky way to prevent the keydown event from triggering on the trigger
-			sleep(1).then(() => $activeTrigger.focus());
+		// 	document.addEventListener('keydown', keydownListener);
+		// 	return () => {
+		// 		document.removeEventListener('keydown', keydownListener);
+		// 	};
+		// } else if (!$open && $activeTrigger && isBrowser) {
+		// 	// Hacky way to prevent the keydown event from triggering on the trigger
+		// 	sleep(1).then(() => $activeTrigger.focus());
+		// }
+	});
+
+	effect([focusedItem], ([$focusedItem]) => {
+		if (!isBrowser) return;
+		console.log($focusedItem);
+		if ($focusedItem) {
+			$focusedItem.focus();
 		}
 	});
 
-	effect([menu], ([$menu]) => {
-		tick().then(() => {
-			const menuEl = getElementByMeltId($menu['data-melt-id']);
-			if (!menuEl) return;
+	// effect([menu], ([$menu]) => {
+	// 	tick().then(() => {
+	// 		const menuEl = getElementByMeltId($menu['data-melt-id']);
+	// 		if (!menuEl) return;
 
-			const selectedOption = menuEl.querySelector('[role=menuitem][data-selected]') as
-				| HTMLElement
-				| undefined;
-			if (selectedOption) {
-				selectedText.set(selectedOption.innerText);
-			}
-		});
-	});
+	// 		const selectedOption = menuEl.querySelector('[role=menuitem][data-selected]') as
+	// 			| HTMLElement
+	// 			| undefined;
+	// 		if (selectedOption) {
+	// 			selectedText.set(selectedOption.innerText);
+	// 		}
+	// 	});
+	// });
 
 	return { trigger, menu, open, item, subMenu, arrow, options };
 }
