@@ -15,6 +15,7 @@ import {
 import type { Defaults } from '$lib/internal/types';
 import { createFocusTrap } from 'focus-trap';
 import { derived, get, writable } from 'svelte/store';
+import useFocusTrap from '../../internal/actions/focus-trap/focusTrap';
 
 export type CreateDropdownMenuArgs = {
 	positioning?: FloatingConfig;
@@ -103,18 +104,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					},
 				});
 
-				// attach('pointermove', (e) => {
-				// 	if (e.pointerType !== 'mouse') return undefined;
-				// 	const target = e.target as HTMLElement;
-				// 	const _lastPointerX = get(lastPointerX);
-				// 	const pointerXHasChanged = _lastPointerX !== e.clientX;
-
-				// 	if ((e.currentTarget as HTMLElement).contains(target) && pointerXHasChanged) {
-				// 		const newDir = e.clientX > _lastPointerX ? 'right' : 'left';
-				// 		pointerDirection.set(newDir);
-				// 		lastPointerX.set(e.clientX);
-				// 	}
-				// });
+				addAction(useFocusTrap);
 			}
 
 			return {
@@ -160,20 +150,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					},
 				});
 
-				// attach('pointermove', (e) => {
-				// 	if (e.pointerType !== 'mouse') return undefined;
-				// 	const target = e.target as HTMLElement;
-				// 	const _lastPointerX = get(lastPointerX);
-				// 	const pointerXHasChanged = _lastPointerX !== e.clientX;
-
-				// 	// if opensubmenus includes entries after this one, remove them
-
-				// 	if ((e.currentTarget as HTMLElement).contains(target) && pointerXHasChanged) {
-				// 		const newDir = e.clientX > _lastPointerX ? 'right' : 'left';
-				// 		pointerDirection.set(newDir);
-				// 		lastPointerX.set(e.clientX);
-				// 	}
-				// });
+				addAction(useFocusTrap);
 			}
 			return {
 				id: args.id,
@@ -259,7 +236,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			}
 
 			attach('pointerenter', (e) => {
-				e.stopPropagation();
+				e.stopImmediatePropagation();
 				if (get(focusedItem) !== e.target) {
 					focusedItem.set(e.currentTarget as HTMLElement);
 				}
@@ -303,6 +280,21 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	let typed: string[] = [];
 	const resetTyped = debounce(() => {
 		typed = [];
+	});
+	effect([open, focusedItem], ([$open, $focusedItem]) => {
+		if (!isBrowser) return;
+		const menuObj = get(menu);
+		if (!menuObj) return;
+		const menuEl = getElementByMeltId(menuObj['data-melt-id']);
+		if (!menuEl) return;
+		if ($focusedItem) {
+			$focusedItem.focus();
+			createFocusTrap(menuEl, {
+				onActivate: () => {
+					$focusedItem?.focus();
+				},
+			});
+		}
 	});
 
 	effect([open, menu, activeTrigger], ([$open, $menu, $activeTrigger]) => {
@@ -385,18 +377,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		// 	// Hacky way to prevent the keydown event from triggering on the trigger
 		// 	sleep(1).then(() => $activeTrigger.focus());
 		// }
-	});
-
-	effect([focusedItem], ([$focusedItem]) => {
-		if (!isBrowser) return;
-		const menuObj = get(menu);
-		if (!menuObj) return;
-		const menuEl = getElementByMeltId(menuObj['data-melt-id']);
-		if (!menuEl) return;
-		if ($focusedItem) {
-			$focusedItem.focus();
-		}
-		createFocusTrap(menuEl, { initialFocus: menuEl });
 	});
 
 	return { trigger, menu, open, item, subMenu, arrow, options };
