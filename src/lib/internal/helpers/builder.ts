@@ -126,18 +126,18 @@ const initElementHelpers = (setId: (id: string) => void) => {
 	};
 
 	let index = 0;
-
-	const ids: string[] = [];
-	const getId = (index: number) => ids[index] || (ids[index] = uuid());
+	let ids: string[] = [];
 
 	// Create an `Attach` function that can be used to attach events to the elements
 	const createElInterface = () => {
+		const id = uuid();
+		ids.push(id);
+		setId(id);
+
 		addUnsubscriber(() => {
+			ids = ids.filter((i) => i !== id);
 			index--;
 		});
-
-		const id = getId(index);
-		setId(id);
 
 		// Function that attaches an event listener to an element
 		const attach: Attach = async (event, listener, options) => {
@@ -150,6 +150,7 @@ const initElementHelpers = (setId: (id: string) => void) => {
 		// A function that returns the element associated with the current `id`
 		const getElement: Helpers['getElement'] = async () => {
 			if (!isBrowser) return null;
+
 			const el = getElementByMeltId(id);
 			if (!el) {
 				return await tick().then(() => getElementByMeltId(id));
