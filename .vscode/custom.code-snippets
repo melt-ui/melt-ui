@@ -1,8 +1,33 @@
 {
+	"Builder": {
+		"prefix": "builder",
+		"body": [
+			"import type { Defaults } from '$$lib/internal/types';",
+			"import { writable } from 'svelte/store';",
+			"",
+			"type Create${TM_DIRECTORY/.+\\/(.+)/${1:/capitalize}/}Args = {",
+			"\t$1",
+			"};",
+			"",
+			"const defaults = {",
+			"\t$2",
+			"} satisfies Defaults<Create${TM_DIRECTORY/.+\\/(.+)/${1:/capitalize}/}Args>;",
+			"",
+			"export function create${TM_DIRECTORY/.+\\/(.+)/${1:/capitalize}/}(args: Create${TM_DIRECTORY/.+\\/(.+)/${1:/capitalize}/}Args) {",
+			"\tconst withDefaults = { ...defaults, ...args };",
+			"\tconst options = writable({...withDefaults});",
+			"",
+			"\treturn {",
+			"\t\toptions,",
+			"\t\t$3",
+			"\t};",
+			"}"
+		]
+	},
 	"Defaults": {
 		"prefix": "defaults",
 		"body": [
-			" const defaults = {",
+			"const defaults = {",
 			"\t$1",
 			"} satisfies Defaults<Create${TM_DIRECTORY/.+\\/(.+)/${1:/capitalize}/}Args>;"
 		],

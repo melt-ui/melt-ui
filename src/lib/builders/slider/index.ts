@@ -8,7 +8,7 @@ import {
 	omit,
 	styleToString,
 } from '$lib/internal/helpers';
-import { derived, get, writable, type Readable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 
 type CreateSliderArgs = {
 	value: number[];
@@ -62,15 +62,6 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		};
 	});
 
-	const getAllThumbs = derived(root, ($root) => {
-		return () => {
-			const rootEl = getElementByMeltId($root['data-melt-id']) as HTMLElement;
-			if (!rootEl) return;
-
-			return Array.from(rootEl.querySelectorAll('[data-melt-part="thumb"]')) as Array<HTMLElement>;
-		};
-	}) as Readable<() => HTMLElement[] | undefined>;
-
 	const updatePosition = (val: number, index: number) => {
 		value.update((prev) => {
 			if (!prev) return [val];
@@ -91,8 +82,8 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 	};
 
 	const thumb = elementMultiDerived(
-		[value, getAllThumbs, options],
-		([$value, $getAllThumbs, $options], { attach, index }) => {
+		[value, options],
+		([$value, $options], { attach, index, getAllElements }) => {
 			return () => {
 				const { min: $min, max: $max, disabled: $disabled } = $options;
 
@@ -106,7 +97,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 					if ($disabled) return;
 
 					const target = event.currentTarget as HTMLElement;
-					const thumbs = $getAllThumbs();
+					const thumbs = getAllElements();
 					if (!thumbs) return;
 
 					const index = thumbs.indexOf(target);
@@ -195,7 +186,9 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		}
 	);
 
-	effect([root, getAllThumbs, options], ([$root, $getAllThumbs, $options]) => {
+	const getAllThumbs = () => thumb.getAllElements().filter(Boolean) as HTMLElement[];
+
+	effect([root, options], ([$root, $options]) => {
 		const { min: $min, max: $max, disabled: $disabled } = $options;
 		if (!isBrowser || $disabled) return;
 
@@ -216,9 +209,9 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		};
 
 		const getClosestThumb = (e: PointerEvent) => {
-			const thumbs = $getAllThumbs();
+			const thumbs = getAllThumbs();
 			if (!thumbs) return;
-			thumbs.forEach((thumb) => thumb.blur());
+			thumbs.forEach((thumb) => thumb?.blur());
 
 			const distances = thumbs.map((thumb) => {
 				if ($options.orientation === 'horizontal') {
@@ -237,13 +230,12 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		};
 
 		const pointerDown = (e: PointerEvent) => {
-			e.preventDefault();
-
 			const sliderEl = getElementByMeltId($root['data-melt-id']) as HTMLElement;
 			const closestThumb = getClosestThumb(e);
 			if (!closestThumb || !sliderEl) return;
 
 			if (!sliderEl.contains(e.target as HTMLElement)) return;
+			e.preventDefault();
 
 			activeThumb.set(closestThumb);
 			closestThumb.thumb.focus();

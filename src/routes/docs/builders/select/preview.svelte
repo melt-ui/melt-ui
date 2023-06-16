@@ -7,8 +7,8 @@
 	const { selectedText, trigger, menu, option, isSelected } = createSelect();
 
 	const options = {
-		fruits: ['Apple', 'Banana', 'Orange', 'Pineapple'],
-		vegetables: ['Broccoli', 'Carrot', 'Potato', 'Tomato'],
+		fruits: ['Apple', 'Banana', 'Pineapple'],
+		vegetables: ['Broccoli', 'Potato', 'Tomato'],
 	};
 </script>
 
@@ -41,16 +41,16 @@
 		@apply py-1 pl-4 pr-4 font-semibold capitalize text-neutral-800;
 	}
 	.menu {
-		@apply z-10 flex max-h-[300px] flex-col gap-2 overflow-y-auto;
-		@apply rounded-md bg-white p-1 lg:max-h-none;
+		@apply z-10 flex max-h-[360px] flex-col gap-2 overflow-y-auto;
+		@apply rounded-md bg-white p-1;
 	}
 	.option {
 		@apply relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800;
-		@apply outline-none focus:bg-magnum-100 focus:text-magnum-700;
+		@apply focus:bg-magnum-100 focus:text-magnum-700;
 	}
 	.trigger {
 		@apply flex h-10 w-[180px] items-center justify-between rounded-md bg-white px-3;
-		@apply py-2 text-magnum-700 outline-none hover:opacity-75 focus:ring focus:ring-magnum-400;
+		@apply py-2 text-magnum-700  hover:opacity-75;
 	}
 	.check {
 		@apply absolute left-2 top-1/2 text-magnum-500;
