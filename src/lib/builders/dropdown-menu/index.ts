@@ -288,6 +288,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	return { trigger, menu, open, item, selected, selectedText, arrow, isSelected, options, input };
 }
 
+const TRIGGER_OPEN_KEYS = [kbd.ENTER, kbd.SPACE, kbd.ARROW_RIGHT, kbd.TAB];
+
 export type CreateSubMenuArgs = CreateDropdownMenuArgs & {
 	parentOpen: Writable<boolean>;
 };
@@ -366,8 +368,19 @@ export function createSubMenu(args?: CreateSubMenuArgs) {
 		});
 
 		attach('keydown', (e) => {
-			if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
+			if (TRIGGER_OPEN_KEYS.includes(e.key)) {
 				e.preventDefault();
+				const triggerEl = e.currentTarget as HTMLElement;
+				open.update((prev) => {
+					const isOpen = !prev;
+					if (isOpen) {
+						activeTrigger.set(triggerEl);
+					} else {
+						activeTrigger.set(null);
+					}
+
+					return isOpen;
+				});
 			}
 		});
 
