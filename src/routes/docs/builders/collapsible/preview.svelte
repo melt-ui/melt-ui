@@ -8,7 +8,7 @@
 	const { open, root, content, trigger } = createCollapsible();
 </script>
 
-<Docs.PreviewWrapper>
+<Docs.PreviewWrapper fullwidth>
 	<div {...$root} class="w-full">
 		<div class="flex items-center justify-between">
 			<span class="text-sm leading-6 text-white"> @thomasglopes starred 3 repositories </span>

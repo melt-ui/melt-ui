@@ -24,7 +24,7 @@
 	];
 </script>
 
-<Docs.PreviewWrapper>
+<Docs.PreviewWrapper fullwidth>
 	<div class="w-full rounded-md bg-[--line-color] shadow-lg" {...root}>
 		{#each items as accItem}
 			<div {...$item(accItem.id)} class="accordion-item">
@@ -42,10 +42,6 @@
 </Docs.PreviewWrapper>
 
 <style lang="postcss">
-	.comp-preview {
-		--line-color: theme('colors.gray.300');
-	}
-
 	.accordion-item {
 		@apply mt-px overflow-hidden first:mt-0 first:rounded-t last:rounded-b 
 				focus-within:relative focus-within:z-10 focus-within:ring focus-within:ring-magnum-400;
