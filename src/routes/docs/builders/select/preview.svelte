@@ -15,7 +15,6 @@
 <Docs.PreviewWrapper>
 	<button class="trigger" {...$trigger} aria-label="Food">
 		{$selectedText || 'Select an option'}
-
 		<ChevronDown />
 	</button>
 
