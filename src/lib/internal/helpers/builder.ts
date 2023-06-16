@@ -115,6 +115,7 @@ type Helpers = {
 
 type MultiHelpers = Helpers & {
 	index: number;
+	getAllElements: () => Promise<Array<HTMLElement | null>>;
 };
 
 const initElementHelpers = (setId: (id: string) => void) => {
@@ -124,46 +125,50 @@ const initElementHelpers = (setId: (id: string) => void) => {
 		unsubscribers = [];
 	};
 
+	let index = 0;
+
+	const ids: string[] = [];
+	const getId = (index: number) => ids[index] || (ids[index] = uuid());
+
 	// Create an `Attach` function that can be used to attach events to the elements
 	const createElInterface = () => {
-		// Make sure the id is the same on tick
-		const id = uuid();
+		addUnsubscriber(() => {
+			index--;
+		});
+
+		const id = getId(index);
 		setId(id);
 
 		// Function that attaches an event listener to an element
-		const attach: Attach = (event, listener, options) => {
+		const attach: Attach = async (event, listener, options) => {
 			if (!isBrowser) return;
-
-			// Wait for the next tick to ensure that the element has been rendered
-			tick().then(() => {
-				const element = getElementByMeltId(id);
-				if (!element) return;
-				unsubscribers.push(addEventListener(element, event, listener, options));
-			});
+			const element = await getElement();
+			if (!element) return;
+			unsubscribers.push(addEventListener(element, event, listener, options));
 		};
 
 		// A function that returns the element associated with the current `id`
-		const getElement: GetElement = () => {
-			return tick().then(() => {
-				if (!isBrowser) return null;
-				return getElementByMeltId(id);
-			});
+		const getElement: Helpers['getElement'] = async () => {
+			if (!isBrowser) return null;
+			const el = getElementByMeltId(id);
+			if (!el) {
+				return await tick().then(() => getElementByMeltId(id));
+			}
+
+			return el;
 		};
 
-		const addAction: AddAction = (action, parameters) => {
-			return getElement().then(() => {
-				if (!isBrowser) return;
-				const element = getElementByMeltId(id);
-				if (!element) return;
+		const addAction: AddAction = async (action, parameters) => {
+			const element = await getElement();
+			if (!element) return;
 
-				const ac = action(element, parameters);
-				if (ac) {
-					unsubscribers.push(() => ac.destroy?.());
-				}
-			});
+			const ac = action(element, parameters);
+			if (ac) {
+				unsubscribers.push(() => ac.destroy?.());
+			}
 		};
 
-		return { attach, getElement, addAction };
+		return { attach, getElement, addAction, index: index++ };
 	};
 
 	const addUnsubscriber: AddUnsubscriber = (cb) => {
@@ -174,10 +179,15 @@ const initElementHelpers = (setId: (id: string) => void) => {
 		}
 	};
 
+	const getAllElements = () => {
+		return Promise.all(ids.map((id) => getElementByMeltId(id)));
+	};
+
 	return {
 		unsubscribe,
 		createElInterface,
 		addUnsubscriber,
+		getAllElements,
 	};
 };
 
@@ -244,26 +254,24 @@ export function elementMultiDerived<
 	T extends (...args: any[]) => Record<string, unknown> | void
 >(stores: S, fn: (values: StoresValues<S>, helpers: MultiHelpers) => T) {
 	let id: string;
-	const { addUnsubscriber, createElInterface, unsubscribe } = initElementHelpers(
+	const { addUnsubscriber, createElInterface, unsubscribe, getAllElements } = initElementHelpers(
 		(newId) => (id = newId)
 	);
-
-	let index = 0;
 
 	return derived(stores, ($storeValues) => {
 		// Unsubscribe from all events
 		unsubscribe();
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		return (...args: any[]) => {
-			const { attach, getElement, addAction } = createElInterface();
+			const { attach, getElement, addAction, index } = createElInterface();
 			const returned = fn($storeValues, {
 				attach,
 				getElement,
 				addUnsubscriber,
 				addAction,
-				index: index++,
+				index,
+				getAllElements,
 			});
-			addUnsubscriber(() => index--);
 			return { ...returned(...args), 'data-melt-id': id };
 		};
 	}) as Readable<(...args: Parameters<T>) => ReturnWithObj<T, { 'data-melt-id': string }>>;
