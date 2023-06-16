@@ -283,18 +283,3 @@ export function elementMulti<
 >(fn: (helpers: Helpers) => T) {
 	return elementMultiDerived([], (_, helpers) => fn(helpers));
 }
-
-type UseAction = <T extends Action>(
-	element: HTMLElement,
-	action: T,
-	parameters?: ActionParameters<T>
-) => void;
-
-export const useAction: UseAction = (element, action, parameters) => {
-	if (!isBrowser) return;
-
-	const ac = action(element, parameters);
-	if (ac) {
-		unsubscribers.push(() => ac.destroy?.());
-	}
-};

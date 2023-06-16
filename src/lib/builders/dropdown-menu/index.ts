@@ -12,10 +12,8 @@ import {
 	styleToString,
 	uuid,
 } from '$lib/internal/helpers';
-import { sleep } from '$lib/internal/helpers/sleep';
 import type { Defaults } from '$lib/internal/types';
 import { createFocusTrap } from 'focus-trap';
-import { tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 
 export type CreateDropdownMenuArgs = {
@@ -244,23 +242,12 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					open.set(false);
 				});
 
-				// attach('keydown', (e) => {
-				// 	if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
-				// 		e.preventDefault();
-				// 		open.set(false);
-				// 	}
-				// });
-
-				attach('pointerover', (e) => {
-					focusedItem.set(e.target as HTMLElement);
+				attach('pointerenter', (e) => {
+					e.stopPropagation();
+					if (get(focusedItem) !== e.target) {
+						focusedItem.set(e.currentTarget as HTMLElement);
+					}
 				});
-
-				// attach('pointerleave', (e) => {
-				// 	if (e.pointerType !== 'mouse') return undefined;
-				// 	if (isPointerMovingToSubmenu(e)) {
-				// 		return;
-				// 	}
-				// });
 
 				return {
 					role: 'menuitem',
@@ -271,78 +258,11 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				};
 			}
 
-			// attach('pointermove', (e) => {
-			// 	if (e.pointerType !== 'mouse') return undefined;
-			// 	if (isPointerMovingToSubmenu(e)) {
-			// 		e.preventDefault();
-			// 		return;
-			// 	}
-			// 	(e.currentTarget as HTMLElement).focus();
-			// 	if (!args.triggerFor) return;
-
-			// 	if (!args.disabled && !isSubmenuOpen(args.triggerFor) && !get(openTimer)) {
-			// 		pointerGraceIntent.set(null);
-			// 		openTimer.set(
-			// 			window.setTimeout(() => {
-			// 				if (!args.triggerFor) return;
-			// 				addOpenSubmenu(args.triggerFor);
-			// 				clearOpenTimer();
-			// 			}, 100)
-			// 		);
-			// 		document.getElementById(args.triggerFor)?.focus();
-			// 	}
-			// });
-
-			// attach('pointerleave', (e) => {
-			// 	if (e.pointerType !== 'mouse') return undefined;
-			// 	clearOpenTimer();
-			// 	const menuEl = (e.target as HTMLElement).closest("[role='menu']") as HTMLElement | null;
-			// 	if (!menuEl) return;
-
-			// 	const menuRect = (e.target as HTMLElement)
-			// 		.closest("[role='menu']")
-			// 		?.getBoundingClientRect();
-
-			// 	if (menuRect) {
-			// 		const side = menuEl?.dataset.side as Side;
-			// 		const rightSide = side === 'right';
-			// 		const bleed = rightSide ? -5 : 5;
-			// 		const contentNearEdge = menuRect[rightSide ? 'left' : 'right'];
-			// 		const contentFarEdge = menuRect[rightSide ? 'right' : 'left'];
-
-			// 		pointerGraceIntent.set({
-			// 			area: [
-			// 				// Apply a bleed on clientX to ensure that our exit point is
-			// 				// consistently within polygon bounds
-			// 				{ x: e.clientX + bleed, y: e.clientY },
-			// 				{ x: contentNearEdge, y: menuRect.top },
-			// 				{ x: contentFarEdge, y: menuRect.top },
-			// 				{ x: contentFarEdge, y: menuRect.bottom },
-			// 				{ x: contentNearEdge, y: menuRect.bottom },
-			// 			],
-			// 			side,
-			// 		});
-
-			// 		const timeout = $pointerGraceTimer;
-			// 		if (timeout) {
-			// 			window.clearTimeout(timeout);
-
-			// 			pointerGraceTimer.set(window.setTimeout(() => pointerGraceIntent.set(null), 300));
-			// 		}
-			// 	} else {
-			// 		if (isPointerMovingToSubmenu(e)) {
-			// 			e.preventDefault();
-			// 		}
-			// 		if (e.defaultPrevented) return;
-
-			// 		// There's 100ms where the user may leave an item before the submenu was opened.
-			// 		pointerGraceIntent.set(null);
-			// 	}
-			// });
-
-			attach('pointerover', (e) => {
-				console.log(e);
-				focusedItem.set(e.target as HTMLElement);
+			attach('pointerenter', (e) => {
+				e.stopPropagation();
+				if (get(focusedItem) !== e.target) {
+					focusedItem.set(e.currentTarget as HTMLElement);
+				}
 
 				openSubMenus.update((prev) => {
 					if (options.triggerFor && !prev.includes(options.triggerFor)) {
@@ -469,25 +389,15 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 	effect([focusedItem], ([$focusedItem]) => {
 		if (!isBrowser) return;
-		console.log($focusedItem);
+		const menuObj = get(menu);
+		if (!menuObj) return;
+		const menuEl = getElementByMeltId(menuObj['data-melt-id']);
+		if (!menuEl) return;
 		if ($focusedItem) {
 			$focusedItem.focus();
 		}
+		createFocusTrap(menuEl, { initialFocus: menuEl });
 	});
-
-	// effect([menu], ([$menu]) => {
-	// 	tick().then(() => {
-	// 		const menuEl = getElementByMeltId($menu['data-melt-id']);
-	// 		if (!menuEl) return;
-
-	// 		const selectedOption = menuEl.querySelector('[role=menuitem][data-selected]') as
-	// 			| HTMLElement
-	// 			| undefined;
-	// 		if (selectedOption) {
-	// 			selectedText.set(selectedOption.innerText);
-	// 		}
-	// 	});
-	// });
 
 	return { trigger, menu, open, item, subMenu, arrow, options };
 }

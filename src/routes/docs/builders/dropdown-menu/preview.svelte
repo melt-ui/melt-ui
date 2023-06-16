@@ -40,7 +40,7 @@
 	}
 	.item {
 		@apply relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800;
-		@apply outline-none hocus:bg-magnum-100 hocus:text-magnum-700;
+		@apply z-20 outline-none hocus:bg-magnum-100 hocus:text-magnum-700;
 	}
 	.trigger {
 		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0 text-sm font-medium;
