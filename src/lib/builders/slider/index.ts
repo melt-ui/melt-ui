@@ -230,13 +230,12 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		};
 
 		const pointerDown = (e: PointerEvent) => {
-			e.preventDefault();
-
 			const sliderEl = getElementByMeltId($root['data-melt-id']) as HTMLElement;
 			const closestThumb = getClosestThumb(e);
 			if (!closestThumb || !sliderEl) return;
 
 			if (!sliderEl.contains(e.target as HTMLElement)) return;
+			e.preventDefault();
 
 			activeThumb.set(closestThumb);
 			closestThumb.thumb.focus();

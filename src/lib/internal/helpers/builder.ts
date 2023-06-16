@@ -40,14 +40,19 @@ export function derivedWithUnsubscribe<S extends Stores, T>(
 		unsubscribers.push(cb);
 	};
 
-	const derivedStore = derived(stores, ($storeValues) => {
+	const unsubscribe = () => {
 		// Call all of the unsubscribe functions from the previous run of the function
 		unsubscribers.forEach((fn) => fn());
 		// Clear the list of unsubscribe functions
 		unsubscribers = [];
+	};
 
+	const derivedStore = derived(stores, ($storeValues) => {
+		unsubscribe();
 		return fn($storeValues, onUnsubscribe);
 	});
+
+	onDestroy(unsubscribe);
 
 	return derivedStore;
 }
