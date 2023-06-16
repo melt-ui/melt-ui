@@ -55,7 +55,7 @@ export function createSwitch(args: CreateSwitchArgs = {}) {
 			type: 'checkbox' as const,
 			'aria-hidden': true,
 			hidden: true,
-			tabIndex: -1,
+			tabindex: -1,
 			name: $options.name,
 			value: $options.value,
 			checked: $checked,

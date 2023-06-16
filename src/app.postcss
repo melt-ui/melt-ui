@@ -33,3 +33,10 @@ body {
 		@apply underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-magnum-500 hocus:opacity-100;
 	}
 }
+
+* {
+	outline: none !important;
+	&:focus {
+		@apply !ring !ring-magnum-400;
+	}
+}

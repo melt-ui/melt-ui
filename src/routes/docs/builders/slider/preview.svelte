@@ -17,7 +17,7 @@
 		{#each { length: $value.length } as _}
 			<span
 				{...$thumb()}
-				class="block h-5 w-5 rounded-full bg-white focus:outline-none focus:ring-4 focus:ring-black/40"
+				class="block h-5 w-5 rounded-full bg-white focus:ring-4 focus:ring-black/40"
 			/>
 		{/each}
 	</span>

@@ -47,7 +47,6 @@
 
 		&:focus {
 			z-index: 10;
-			@apply ring-2 ring-magnum-400;
 		}
 	}
 

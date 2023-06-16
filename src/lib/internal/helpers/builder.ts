@@ -169,6 +169,8 @@ const initElementHelpers = (setId: (id: string) => void) => {
 			}
 		};
 
+		onDestroy(unsubscribe);
+
 		return { attach, getElement, addAction, index: index++ };
 	};
 
