@@ -287,8 +287,6 @@ export function createSubMenu(args?: CreateSubMenuArgs) {
 	const subTrigger = elementDerived(
 		[open, options],
 		([$open, $options], { attach, getElement }) => {
-			let rootMenuElement: HTMLElement | null = null;
-
 			attach('pointerdown', (e) => {
 				e.stopImmediatePropagation();
 			});
@@ -351,39 +349,42 @@ export function createSubMenu(args?: CreateSubMenuArgs) {
 			 */
 			getElement().then((el) => {
 				if (!el) return;
+				let rootMenuElement: HTMLElement | null = null;
 
 				/**
 				 * Get the trigger's parent menu.
-				 * *Note*: This is not the menu that the trigger opens, but the
-				 * menu that the trigger menuitem belongs to.
+				 * NOTE: This is not the menu that the trigger opens, but the
+				 * menu that the trigger `menuitem` is a part of.
 				 */
 				const parentMenu = el.closest(
 					'[data-melt-part="menu-root"], [data-melt-part="menu-sub"]'
 				) as HTMLElement | null;
-				console.log('parentMenu', parentMenu);
 				if (!parentMenu) return;
 
-				if (parentMenu.getAttribute('data-melt-part') === 'menu-root') {
+				const parentMenuPart = parentMenu.getAttribute('data-melt-part');
+
+				if (parentMenuPart === 'menu-root') {
 					/**
 					 * If the parent menu is a root menu, then we set the
-					 * `rootMenuElement` to the parent menu.
+					 * `data-melt-menu` property of the trigger to the
+					 * parent menu's ID
 					 */
-					rootMenuElement = parentMenu;
+					el.setAttribute('data-melt-menu', parentMenu.id);
 				} else {
 					/**
-					 * We'll loop through the parent menu's siblings to find
+					 * Otherwise, we'll loop through the parent menu's siblings to find
 					 * the closest root menu.
 					 */
 					let sibling: HTMLElement | null = parentMenu;
 					while (sibling) {
-						if (sibling.getAttribute('data-melt-part') === 'menu-root') {
-							rootMenuElement = sibling;
+						const siblingPart = sibling.getAttribute('data-melt-part');
+						if (siblingPart === 'menu-root') {
+							el.setAttribute('data-melt-menu', sibling.id);
 							break;
 						}
 						sibling = sibling.previousElementSibling as HTMLElement | null;
 					}
 				}
-				return;
 			});
 
 			return {
@@ -395,7 +396,6 @@ export function createSubMenu(args?: CreateSubMenuArgs) {
 				'aria-required': $options.required,
 				'data-state': $open ? 'open' : 'closed',
 				'data-disabled': $options.disabled ? '' : undefined,
-				'data-melt-menu': rootMenuElement ? rootMenuElement.id : '', // <- FIXME:
 			};
 		}
 	);
