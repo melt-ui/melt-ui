@@ -1,9 +1,19 @@
 <script lang="ts">
-	import { createDropdownMenu } from '$lib';
+	import { createDropdownMenu, createSubMenu } from '$lib';
 	import { Docs } from '$routes/(components)';
 	import AlignJustify from '~icons/lucide/align-justify';
 
-	const { trigger, menu, item, subMenu, arrow } = createDropdownMenu();
+	const { trigger, menu, item, arrow, open } = createDropdownMenu();
+	const {
+		subMenu,
+		subTrigger,
+		open: subMenuOpen,
+	} = createSubMenu({
+		parentOpen: open,
+	});
+	const { subMenu: subMenu2, subTrigger: subTrigger2 } = createSubMenu({
+		parentOpen: subMenuOpen,
+	});
 </script>
 
 <Docs.PreviewWrapper>
@@ -15,12 +25,12 @@
 	<div class="menu" {...$menu}>
 		<div class="item" {...$item()}>New Tab</div>
 		<div class="item" {...$item()}>New Window</div>
-		<div class="item" {...$item({ triggerFor: 'submenu-1' })}>More Tools</div>
-		<div class="menu" {...$subMenu({ id: 'submenu-1' })}>
+		<div class="item" {...$subTrigger}>More Tools</div>
+		<div class="menu" {...$subMenu}>
 			<div class="item" {...$item()}>New Tab</div>
 			<div class="item" {...$item()}>New Window</div>
-			<div class="item" {...$item({ triggerFor: 'submenu-2' })}>Even More</div>
-			<div class="menu" {...$subMenu({ id: 'submenu-2' })}>
+			<div class="item" {...$subTrigger2}>Even More</div>
+			<div class="menu" {...$subMenu2}>
 				<div class="item" {...$item()}>New Tool</div>
 				<div class="item" {...$item()}>New Shiny Thing</div>
 			</div>
