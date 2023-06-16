@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.10.0
+
+### Minor Changes
+
+- d3aeed2: add toolbar
+
+### Patch Changes
+
+- eb2afe5: fix slider intercepting document clicks
+
 ## 0.9.0
 
 ### Minor Changes
