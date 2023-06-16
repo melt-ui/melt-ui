@@ -3,7 +3,7 @@
 	import { Docs } from '$routes/(components)';
 
 	const { slider, range, thumb, value } = createSlider({
-		value: [30],
+		value: [30, 70, 90],
 		max: 100,
 	});
 </script>

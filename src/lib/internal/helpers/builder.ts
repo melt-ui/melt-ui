@@ -115,7 +115,7 @@ type Helpers = {
 
 type MultiHelpers = Helpers & {
 	index: number;
-	getAllElements: () => Promise<Array<HTMLElement | null>>;
+	getAllElements: () => Array<HTMLElement | null>;
 };
 
 const initElementHelpers = (setId: (id: string) => void) => {
@@ -180,7 +180,7 @@ const initElementHelpers = (setId: (id: string) => void) => {
 	};
 
 	const getAllElements = () => {
-		return Promise.all(ids.map((id) => getElementByMeltId(id)));
+		return ids.map((id) => getElementByMeltId(id));
 	};
 
 	return {
@@ -258,23 +258,26 @@ export function elementMultiDerived<
 		(newId) => (id = newId)
 	);
 
-	return derived(stores, ($storeValues) => {
-		// Unsubscribe from all events
-		unsubscribe();
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		return (...args: any[]) => {
-			const { attach, getElement, addAction, index } = createElInterface();
-			const returned = fn($storeValues, {
-				attach,
-				getElement,
-				addUnsubscriber,
-				addAction,
-				index,
-				getAllElements,
-			});
-			return { ...returned(...args), 'data-melt-id': id };
-		};
-	}) as Readable<(...args: Parameters<T>) => ReturnWithObj<T, { 'data-melt-id': string }>>;
+	return {
+		...(derived(stores, ($storeValues) => {
+			// Unsubscribe from all events
+			unsubscribe();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			return (...args: any[]) => {
+				const { attach, getElement, addAction, index } = createElInterface();
+				const returned = fn($storeValues, {
+					attach,
+					getElement,
+					addUnsubscriber,
+					addAction,
+					index,
+					getAllElements,
+				});
+				return { ...returned(...args), 'data-melt-id': id };
+			};
+		}) as Readable<(...args: Parameters<T>) => ReturnWithObj<T, { 'data-melt-id': string }>>),
+		getAllElements,
+	};
 }
 
 /**
