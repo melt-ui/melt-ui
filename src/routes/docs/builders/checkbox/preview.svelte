@@ -15,8 +15,8 @@
 			<button
 				{...$root}
 				class="flex h-6 w-6 appearance-none items-center
-				justify-center rounded-sm bg-white text-magnum-600 shadow-lg outline-none
-				hover:opacity-75 focus:ring focus:ring-magnum-400"
+				justify-center rounded-sm bg-white text-magnum-600 shadow-lg
+				hover:opacity-75"
 				id="checkbox"
 			>
 				{#if $isIndeterminate}

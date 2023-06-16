@@ -27,9 +27,9 @@
 
 <div
 	class={cn(
-		'code-block relative  my-2 overflow-hidden rounded-lg',
+		'code-block relative overflow-hidden rounded-lg',
 		collapsed ? 'max-h-36 overflow-hidden' : 'max-h-[auto] overflow-auto',
-		inline && 'inline-block overflow-hidden pr-12'
+		inline ? 'inline-block overflow-hidden pr-12' : 'my-2'
 	)}
 >
 	<button class="absolute right-3 top-3 z-10" aria-label="copy" on:click={copyCode}>
