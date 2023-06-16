@@ -1,23 +1,10 @@
 <script lang="ts">
 	import { createDialog } from '$lib/builders/dialog';
 	import { Docs } from '$routes/(components)';
-	import { expoOut } from 'svelte/easing';
-	import { fade } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import X from '~icons/lucide/x';
 
 	const { trigger, portal, overlay, content, title, description, close, open } = createDialog();
-
-	function slide(node: HTMLElement, options: { x: number; duration: number }) {
-		return {
-			duration: options.duration,
-			delay: 0,
-			css: (t: number) => {
-				const p = t * (0 - options.x) + options.x;
-				return `transform: translateX(${p}px)`;
-			},
-			easing: expoOut,
-		};
-	}
 </script>
 
 <Docs.PreviewWrapper>
@@ -38,10 +25,10 @@
 					transition:fade|local={{ duration: 150 }}
 				/>
 				<div
-					transition:slide|local={{ x: -350, duration: 200 }}
-					class="fixed left-0 top-0 z-[50] h-screen w-full max-w-[350px] bg-white p-[25px] shadow-lg
-				focus:outline-none"
 					{...$content}
+					class="fixed left-0 top-0 z-50 h-screen w-full max-w-[350px] bg-white p-[25px] shadow-lg
+				focus:outline-none"
+					transition:fly|local={{ x: -350, duration: 300, opacity: 1 }}
 				>
 					<button
 						{...$close()}
