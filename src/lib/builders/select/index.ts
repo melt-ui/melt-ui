@@ -96,6 +96,10 @@ export function createSelect(args?: CreateSelectArgs) {
 			});
 		});
 
+		attach('mousedown', (e) => {
+			e.preventDefault();
+		});
+
 		return {
 			role: 'combobox',
 			'aria-controls': ids.menu,
