@@ -13,7 +13,7 @@ import {
 	uuid,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable, type Writable } from 'svelte/store';
+import { derived, writable, type Writable } from 'svelte/store';
 
 type Direction = 'ltr' | 'rtl';
 
@@ -196,14 +196,15 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			[subOpen, subActiveTrigger, subOptions],
 			([$subOpen, $activeTrigger, $subOptions], { addAction, attach }) => {
 				if ($subOpen && $activeTrigger) {
-					const rootMenu = document.getElementById(rootIds.menu);
+					const parentMenuEl = getParentMenu($activeTrigger) as HTMLElement | undefined;
+
 					addAction(usePopper, {
 						anchorElement: $activeTrigger,
 						open: subOpen,
 						options: {
 							floating: $subOptions.positioning,
 							clickOutside: null,
-							portal: rootMenu ? rootMenu : undefined,
+							portal: parentMenuEl ? parentMenuEl : undefined,
 						},
 					});
 				}

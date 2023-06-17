@@ -17,10 +17,10 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 
 	const opts = { ...defaultConfig, ...options } as PopperConfig;
 
-	let portal: ReturnType<typeof usePortal> | undefined = undefined;
+	let portal: ReturnType<typeof usePortal> | null = null;
 
-	if (opts.portal !== null) {
-		portal = usePortal(popperElement, opts.portal);
+	if (options.portal !== null) {
+		portal = usePortal(popperElement, options.portal);
 	}
 
 	const unsubscribeFloating = useFloating(anchorElement, popperElement, opts.floating).destroy;
@@ -44,6 +44,7 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 	}
 
 	let unsubClickOutside = noop;
+
 	if (options.clickOutside !== null) {
 		unsubClickOutside = useClickOutside(popperElement, {
 			enabled: open,
