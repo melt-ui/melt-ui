@@ -114,3 +114,5 @@ export const getKeydownHandler = (options: Pick<CreateToolbarArgs, 'orientation'
 		}
 	};
 };
+
+export { createToolbarGroup } from './group';

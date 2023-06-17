@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { createToolbar } from '$lib';
-	import { createToolbarGroup } from '$lib/builders/toolbar/group';
+	import { createToolbar, createToolbarGroup } from '$lib';
+
 	import { Docs } from '$routes/(components)';
 
 	import Bold from '~icons/lucide/bold';
