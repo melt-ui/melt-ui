@@ -1,7 +1,6 @@
 import type { FloatingConfig } from '$lib/internal/actions';
 import { usePopper } from '$lib/internal/actions/popper';
 import {
-	debounce,
 	effect,
 	elementDerived,
 	elementMultiDerived,
@@ -15,6 +14,21 @@ import {
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, writable, type Writable } from 'svelte/store';
+
+type Direction = 'ltr' | 'rtl';
+
+const SELECTION_KEYS = [kbd.ENTER, kbd.SPACE];
+const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
+const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
+const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
+const SUB_OPEN_KEYS: Record<Direction, string[]> = {
+	ltr: [...SELECTION_KEYS, kbd.ARROW_RIGHT],
+	rtl: [...SELECTION_KEYS, kbd.ARROW_LEFT],
+};
+const SUB_CLOSE_KEYS: Record<Direction, string[]> = {
+	ltr: [kbd.ARROW_LEFT],
+	rtl: [kbd.ARROW_RIGHT],
+};
 
 /**
  * Features:
@@ -51,6 +65,9 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 	const rootOpen = writable(false);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
+
+	// The currently open submenu ids
+	const openSubMenus = writable<string[]>([]);
 
 	const rootIds = {
 		menu: uuid(),
@@ -108,9 +125,20 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				});
 			});
 
-			attach('pointerover', (e) => {
+			attach('keydown', (e) => {
 				const triggerEl = e.currentTarget as HTMLElement;
-				triggerEl.focus();
+				if (e.key === kbd.ARROW_DOWN) {
+					rootOpen.update((prev) => {
+						const isOpen = !prev;
+						if (isOpen) {
+							rootActiveTrigger.set(triggerEl);
+						} else {
+							rootActiveTrigger.set(null);
+						}
+
+						return isOpen;
+					});
+				}
 			});
 
 			return {
@@ -134,32 +162,22 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		}),
 	}));
 
-	const item = elementMultiDerived([rootMenu], ([$rootMenu], { attach }) => {
+	const item = elementMultiDerived([], (_, { attach, getElement }) => {
 		return () => {
-			attach('keydown', (e) => {
-				if (e.shiftKey && e.key === kbd.TAB) {
-					e.preventDefault();
-					e.stopPropagation();
-					e.stopImmediatePropagation();
-				}
-				if (e.key === kbd.ENTER || e.key === kbd.SPACE || e.key === kbd.TAB) {
-					e.preventDefault();
-				}
-			});
+			getElement().then((el) => setMeltMenuAttribute(el));
+
+			attach('keydown', (e) => onMenuItemKeydown(e));
 
 			attach('mousemove', (e) => {
-				const el = e.currentTarget as HTMLElement;
-				el.focus();
+				(e.currentTarget as HTMLElement).focus();
 			});
 
 			attach('mouseout', (e) => {
-				const el = e.currentTarget as HTMLElement;
-				el.blur();
+				(e.currentTarget as HTMLElement).blur();
 			});
 
 			return {
 				role: 'menuitem',
-				'data-melt-menu': $rootMenu.id,
 				tabindex: -1,
 			};
 		};
@@ -171,7 +189,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			placement: 'right-start',
 			gutter: 0,
 		},
-	} satisfies Defaults<CreateSubMenuArgs>;
+	} satisfies Defaults<CreateDropdownMenuArgs>;
 
 	const createSubMenu = (args?: CreateDropdownMenuArgs) => {
 		const withDefaults = { ...subMenuDefaults, ...args } as CreateDropdownMenuArgs;
@@ -214,28 +232,15 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 		const subTrigger = elementDerived(
 			[subOpen, subOptions],
-			([$subOpen, $subOptions], { attach }) => {
+			([$subOpen, $subOptions], { attach, getElement }) => {
+				getElement().then((el) => setMeltMenuAttribute(el));
+
 				attach('click', (e) => {
 					e.stopPropagation();
 					e.preventDefault();
 				});
 
-				attach('keydown', (e) => {
-					if (TRIGGER_OPEN_KEYS.includes(e.key)) {
-						e.preventDefault();
-						const triggerEl = e.currentTarget as HTMLElement;
-						subOpen.update((prev) => {
-							const isOpen = !prev;
-							if (isOpen) {
-								subActiveTrigger.set(triggerEl);
-							} else {
-								subActiveTrigger.set(null);
-							}
-
-							return isOpen;
-						});
-					}
-				});
+				attach('keydown', (e) => onSubTriggerKeydown(e, subOpen, subActiveTrigger));
 
 				attach('mouseover', (e) => {
 					const triggerEl = e.currentTarget as HTMLElement;
@@ -264,7 +269,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					'data-state': $subOpen ? 'open' : 'closed',
 					'data-disabled': $subOptions.disabled ? '' : undefined,
 					'data-melt-part': 'menu-sub-trigger',
-					'data-melt-menu': rootIds.menu,
+					'aria-haspopop': 'menu',
 				};
 			}
 		);
@@ -282,6 +287,23 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			if (!$rootOpen) {
 				subOpen.set(false);
 				subActiveTrigger.set(null);
+				openSubMenus.set([]);
+			}
+		});
+
+		effect([openSubMenus], ([$openSubMenus]) => {
+			// If there are no submenus open, close the current submenu
+			if ($openSubMenus.length === 0) {
+				subOpen.set(false);
+				subActiveTrigger.set(null);
+				return;
+			}
+
+			// If the current sub menu is not in the open sub menus, close it
+			if ($openSubMenus.indexOf(subIds.menu) === -1) {
+				subOpen.set(false);
+				subActiveTrigger.set(null);
+				return;
 			}
 		});
 
@@ -300,59 +322,164 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		const menuEl = getElementByMeltId($rootMenu['data-melt-id']);
 		if (menuEl && $rootOpen) {
 			// Selector to get menu items belonging to menu
-			const allItemsSelector = `[role="menuitem"][data-melt-menu="${$rootMenu.id}"]`;
-
-			const menuItemSelector = '[role="menuitem"]';
+			const rootMenuItemSelector = `[role="menuitem"][data-melt-menu="${menuEl.id}"]`;
 
 			// Focus on first menu item
-			const firstOption = document.querySelector(allItemsSelector) as HTMLElement | undefined;
+			const firstOption = document.querySelector(rootMenuItemSelector) as HTMLElement | undefined;
 			sleep(1).then(() => firstOption?.focus());
-
-			const keydownListener = (e: KeyboardEvent) => {
-				if (e.key === kbd.ESCAPE) {
-					rootOpen.set(false);
-					rootActiveTrigger.set(null);
-					return;
-				}
-
-				const allOptions = Array.from(menuEl.querySelectorAll(allItemsSelector)) as HTMLElement[];
-				const focusedOption = allOptions.find((el) => el === document.activeElement);
-				const focusedIndex = allOptions.indexOf(focusedOption as HTMLElement);
-
-				if (e.key === kbd.ARROW_DOWN) {
-					e.preventDefault();
-					const nextIndex = focusedIndex + 1 > allOptions.length - 1 ? 0 : focusedIndex + 1;
-					const nextOption = allOptions[nextIndex] as HTMLElement;
-					nextOption.focus();
-					return;
-				} else if (e.key === kbd.ARROW_UP) {
-					e.preventDefault();
-					const prevIndex = focusedIndex - 1 < 0 ? allOptions.length - 1 : focusedIndex - 1;
-					const prevOption = allOptions[prevIndex] as HTMLElement;
-					prevOption.focus();
-					return;
-				} else if (e.key === kbd.HOME) {
-					e.preventDefault();
-					const firstOption = allOptions[0] as HTMLElement;
-					firstOption.focus();
-					return;
-				} else if (e.key === kbd.END) {
-					e.preventDefault();
-					const lastOption = allOptions[allOptions.length - 1] as HTMLElement;
-					lastOption.focus();
-					return;
-				}
-			};
-
-			document.addEventListener('keydown', keydownListener);
-			return () => {
-				document.removeEventListener('keydown', keydownListener);
-			};
 		} else if (!$rootOpen && $rootActiveTrigger && isBrowser) {
 			// Hacky way to prevent the keydown event from triggering on the trigger
 			sleep(1).then(() => $rootActiveTrigger.focus());
 		}
 	});
+
+	/* -------------------------------------------------------------------------------------------------
+	 * Keyboard Navigation
+	 * -----------------------------------------------------------------------------------------------*/
+
+	function onMenuItemKeydown(e: KeyboardEvent) {
+		const target = e.currentTarget as HTMLElement;
+
+		if (e.key === kbd.SPACE || FIRST_LAST_KEYS.includes(e.key)) e.preventDefault();
+
+		const nav = getMenuItemNav(target);
+		if (!nav) return;
+
+		const { next, prev } = nav;
+
+		if (e.key === kbd.ARROW_DOWN) {
+			next?.focus();
+		}
+		if (e.key === kbd.ARROW_UP) {
+			prev?.focus();
+		}
+		if (SUB_CLOSE_KEYS['ltr'].includes(e.key)) {
+			handleCloseSubmenu(target);
+		}
+	}
+
+	function onSubTriggerKeydown(
+		e: KeyboardEvent,
+		open: Writable<boolean>,
+		activeTrigger: Writable<HTMLElement | null>
+	) {
+		const target = e.currentTarget as HTMLElement;
+
+		if (FIRST_LAST_KEYS.includes(e.key)) e.preventDefault();
+
+		const nav = getMenuItemNav(target);
+		if (!nav) return;
+
+		const { next, prev } = nav;
+
+		if (e.key === kbd.ARROW_DOWN) {
+			return next?.focus();
+		}
+		if (e.key === kbd.ARROW_UP) {
+			return prev?.focus();
+		}
+
+		if (SUB_OPEN_KEYS['ltr'].includes(e.key)) {
+			e.preventDefault();
+			open.update((prev) => {
+				const isOpen = !prev;
+				if (isOpen) {
+					activeTrigger.set(target);
+					return isOpen;
+				}
+				return prev;
+			});
+
+			const submenuId = target.getAttribute('aria-controls');
+			if (!submenuId) return;
+			const menuItemsSelector = `[role="menuitem"][data-melt-menu="${submenuId}"]`;
+			const firstOption = document.querySelector(menuItemsSelector) as HTMLElement | undefined;
+			openSubMenus.update((prev) => {
+				const openSubMenus = prev;
+				if (openSubMenus.includes(submenuId)) return prev;
+				return [...prev, submenuId];
+			});
+			sleep(1).then(() => firstOption?.focus());
+			return;
+		}
+
+		if (SUB_CLOSE_KEYS['ltr'].includes(e.key)) {
+			return handleCloseSubmenu(target);
+		}
+	}
+
+	/* -------------------------------------------------------------------------------------------------
+	 * Helper Functions
+	 * -----------------------------------------------------------------------------------------------*/
+
+	/**
+	 * Get the parent menu element for a menu item.
+	 * @param itemEl
+	 */
+
+	function getParentMenu(itemEl: HTMLElement) {
+		const menuId = itemEl.getAttribute('data-melt-menu');
+		if (!menuId) return null;
+
+		const menuEl = document.getElementById(menuId);
+		if (!menuEl) return null;
+
+		return menuEl;
+	}
+
+	function handleCloseSubmenu(element: HTMLElement) {
+		if (!isItemInSubmenu(element)) return;
+		const menuId = element.getAttribute('data-melt-menu');
+		if (!menuId) return;
+		openSubMenus.update((prev) => {
+			const next = prev.filter((id) => id !== menuId);
+			return next;
+		});
+		const previousTrigger = document.querySelector(`[aria-controls="${menuId}"]`) as
+			| HTMLElement
+			| undefined;
+		sleep(1).then(() => previousTrigger?.focus());
+	}
+
+	function setMeltMenuAttribute(el: HTMLElement | null) {
+		if (!el) return;
+		const menuEl = el.closest(
+			'[data-melt-part="menu-root"], [data-melt-part="menu-sub"]'
+		) as HTMLElement | null;
+		if (!menuEl) return;
+		el.setAttribute('data-melt-menu', menuEl.id);
+	}
+
+	function isItemInSubmenu(itemEl: HTMLElement) {
+		const menuEl = getParentMenu(itemEl);
+		if (!menuEl) return false;
+
+		return menuEl.getAttribute('data-melt-part') === 'menu-sub';
+	}
+
+	function getCurrentMenuItems(itemEl: HTMLElement) {
+		const menuEl = getParentMenu(itemEl);
+		if (!menuEl) return null;
+
+		return Array.from(
+			menuEl.querySelectorAll(`[role="menuitem"][data-melt-menu="${menuEl.id}"`)
+		) as HTMLElement[];
+	}
+
+	function getMenuItemNav(itemEl: HTMLElement) {
+		const menuItems = getCurrentMenuItems(itemEl);
+		if (!menuItems) return null;
+
+		const currentIndex = menuItems.indexOf(itemEl);
+
+		const next = currentIndex + 1 < menuItems.length ? menuItems[currentIndex + 1] : undefined;
+		const prev = currentIndex - 1 >= 0 ? menuItems[currentIndex - 1] : undefined;
+
+		return {
+			next,
+			prev,
+		};
+	}
 
 	return {
 		trigger: rootTrigger,
@@ -362,213 +489,5 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		arrow: rootArrow,
 		options: rootOptions,
 		createSubMenu,
-	};
-}
-
-/**
- *
- *  Remove below after build return is done
- *
- */
-
-const TRIGGER_OPEN_KEYS = [kbd.ENTER, kbd.SPACE, kbd.ARROW_RIGHT];
-
-export type CreateSubMenuArgs = CreateDropdownMenuArgs & {
-	parentOpen: Writable<boolean>;
-};
-
-const subDefaults = {
-	arrowSize: 8,
-	required: false,
-	disabled: false,
-	positioning: {
-		placement: 'right-start',
-	},
-	parentOpen: writable(false),
-} satisfies CreateSubMenuArgs;
-
-export function createSubMenu(args?: CreateSubMenuArgs) {
-	const withDefaults = { ...subDefaults, ...args } as CreateSubMenuArgs;
-	const options = writable(omit(withDefaults, 'selected'));
-
-	const { parentOpen } = withDefaults;
-	const open = writable(false);
-	const selected = writable(withDefaults.selected ?? null);
-	const selectedText = writable<string | number | null>(null);
-	const activeTrigger = writable<HTMLElement | null>(null);
-
-	const ids = {
-		menu: uuid(),
-		trigger: uuid(),
-	};
-
-	const subMenu = elementDerived(
-		[open, activeTrigger, options],
-		([$open, $activeTrigger, $options], { addAction }) => {
-			if ($open && $activeTrigger) {
-				addAction(usePopper, {
-					anchorElement: $activeTrigger,
-					open,
-					options: {
-						floating: $options.positioning,
-						clickOutside: null,
-					},
-				});
-			}
-
-			return {
-				role: 'menu',
-				hidden: $open ? undefined : true,
-				style: styleToString({
-					display: $open ? undefined : 'none',
-				}),
-				id: ids.menu,
-				'aria-labelledby': ids.trigger,
-				'data-melt-part': 'menu-sub',
-			};
-		}
-	);
-
-	const subTrigger = elementDerived(
-		[open, options],
-		([$open, $options], { attach, getElement }) => {
-			attach('pointerdown', (e) => {
-				e.stopImmediatePropagation();
-			});
-			attach('click', (e) => {
-				e.stopPropagation();
-				e.preventDefault();
-
-				const triggerEl = e.currentTarget as HTMLElement;
-				open.update((prev) => {
-					const isOpen = !prev;
-					if (isOpen) {
-						activeTrigger.set(triggerEl);
-					} else {
-						activeTrigger.set(null);
-					}
-
-					return isOpen;
-				});
-			});
-
-			attach('keydown', (e) => {
-				if (TRIGGER_OPEN_KEYS.includes(e.key)) {
-					e.preventDefault();
-					const triggerEl = e.currentTarget as HTMLElement;
-					open.update((prev) => {
-						const isOpen = !prev;
-						if (isOpen) {
-							activeTrigger.set(triggerEl);
-						} else {
-							activeTrigger.set(null);
-						}
-
-						return isOpen;
-					});
-				}
-			});
-
-			attach('mouseover', (e) => {
-				const triggerEl = e.currentTarget as HTMLElement;
-
-				open.update((prev) => {
-					const isOpen = prev;
-					if (!isOpen) {
-						activeTrigger.set(triggerEl);
-						return !prev;
-					}
-					return prev;
-				});
-			});
-
-			attach('mouseout', (e) => {
-				const el = e.currentTarget as HTMLElement;
-				el.blur();
-			});
-
-			/**
-			 * To set the `data-melt-menu` attribute on this trigger item, we
-			 * need to find the root menu. We need this attribute to be set so
-			 * these items are considered for keyboard navigation.
-			 */
-			getElement().then((el) => {
-				if (!el) return;
-				/**
-				 * Get the trigger's parent menu.
-				 * NOTE: This is not the menu that the trigger opens, but the
-				 * menu that the trigger `menuitem` is a part of.
-				 */
-				const parentMenu = el.closest(
-					'[data-melt-part="menu-root"], [data-melt-part="menu-sub"]'
-				) as HTMLElement | null;
-				if (!parentMenu) return;
-
-				const parentMenuPart = parentMenu.getAttribute('data-melt-part');
-
-				if (parentMenuPart === 'menu-root') {
-					/**
-					 * If the parent menu is a root menu, then we set the
-					 * `data-melt-menu` property of the trigger to the
-					 * parent menu's ID
-					 */
-					el.setAttribute('data-melt-menu', parentMenu.id);
-				} else {
-					/**
-					 * Otherwise, we'll loop through the parent menu's siblings to find
-					 * the closest root menu.
-					 */
-					let sibling: HTMLElement | null = parentMenu;
-					while (sibling) {
-						const siblingPart = sibling.getAttribute('data-melt-part');
-						if (siblingPart === 'menu-root') {
-							el.setAttribute('data-melt-menu', sibling.id);
-							break;
-						}
-						sibling = sibling.previousElementSibling as HTMLElement | null;
-					}
-				}
-			});
-
-			return {
-				role: 'menuitem',
-				id: ids.trigger,
-				tabindex: -1,
-				'aria-controls': ids.menu,
-				'aria-expanded': $open,
-				'aria-required': $options.required,
-				'data-state': $open ? 'open' : 'closed',
-				'data-disabled': $options.disabled ? '' : undefined,
-				'data-melt-part': 'menu-sub-trigger',
-			};
-		}
-	);
-
-	const arrow = derived(options, ($options) => ({
-		'data-arrow': true,
-		style: styleToString({
-			position: 'absolute',
-			width: `var(--arrow-size, ${$options.arrowSize}px)`,
-			height: `var(--arrow-size, ${$options.arrowSize}px)`,
-		}),
-	}));
-
-	effect([parentOpen], ([$parentOpen]) => {
-		if (!$parentOpen) {
-			open.set(false);
-			activeTrigger.set(null);
-		}
-	});
-
-	// effect([open], ([$open]) => {});
-
-	return {
-		subTrigger,
-		subMenu,
-		open,
-		selected,
-		selectedText,
-		arrow,
-		options,
 	};
 }
