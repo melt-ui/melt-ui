@@ -62,6 +62,23 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	const rootOpen = writable(false);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
 
+	// Grace period handling
+	const rootTimer = writable(0);
+	const rootPointerGraceTimer = writable(0);
+	const rootPointerGraceIntent = writable<GraceIntent | null>(null);
+	const rootPointerDir = writable<Side>('right');
+	const rootLastPointerX = writable(0);
+
+	const rootisPointerMovingToSubmenu = derivedWithUnsubscribe(
+		[rootPointerDir, rootPointerGraceIntent],
+		([$rootPointerDir, $rootPointerGraceIntent]) => {
+			return (event: PointerEvent) => {
+				const isMovingTowards = $rootPointerDir === $rootPointerGraceIntent?.side;
+				return isMovingTowards && isPointerInGraceArea(event, $rootPointerGraceIntent?.area);
+			};
+		}
+	);
+
 	// The currently open submenu ids
 	const openSubMenus = writable<string[]>([]);
 
@@ -72,7 +89,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 	const rootMenu = elementDerived(
 		[rootOpen, rootActiveTrigger, rootOptions],
-		([$rootOpen, $rootActiveTrigger, $rootOptions], { addAction }) => {
+		([$rootOpen, $rootActiveTrigger, $rootOptions], { addAction, attach }) => {
 			if ($rootOpen && $rootActiveTrigger) {
 				addAction(usePopper, {
 					anchorElement: $rootActiveTrigger,
@@ -89,6 +106,27 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 							},
 						},
 					},
+				});
+
+				attach('blur', (e) => {
+					if (!(e.currentTarget as HTMLElement).contains(e.target as HTMLElement)) {
+						window.clearTimeout(get(rootTimer));
+					}
+				});
+
+				attach('pointermove', (e) => {
+					if (e.pointerType === 'mouse') {
+						const target = e.target as HTMLElement;
+						const $lastPointerX = get(rootLastPointerX);
+						const pointerXHasChanged = $lastPointerX !== e.clientX;
+
+						if ((e.currentTarget as HTMLElement).contains(target) && pointerXHasChanged) {
+							const newDir = e.clientX > $lastPointerX ? 'right' : 'left';
+							rootPointerDir.set(newDir);
+							rootLastPointerX.set(e.clientX);
+						}
+					}
+					return undefined;
 				});
 			}
 
@@ -199,18 +237,18 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		const subActiveTrigger = writable<HTMLElement | null>(null);
 
 		// Grace period handling
-		const timer = writable(0);
-		const pointerGraceTimer = writable(0);
-		const pointerGraceIntent = writable<GraceIntent | null>(null);
-		const pointerDir = writable<Side>('right');
-		const lastPointerX = writable(0);
+		const subTimer = writable(0);
+		const subPointerGraceTimer = writable(0);
+		const subPointerGraceIntent = writable<GraceIntent | null>(null);
+		const subPointerDir = writable<Side>('right');
+		const subLastPointerX = writable(0);
 
 		const isPointerMovingToSubmenu = derivedWithUnsubscribe(
-			[pointerDir, pointerGraceIntent],
-			([$pointerDir, $pointerGraceIntent]) => {
+			[subPointerDir, subPointerGraceIntent],
+			([$subPointerDir, $subPointerGraceIntent]) => {
 				return (event: PointerEvent) => {
-					const isMovingTowards = $pointerDir === $pointerGraceIntent?.side;
-					return isMovingTowards && isPointerInGraceArea(event, $pointerGraceIntent?.area);
+					const isMovingTowards = $subPointerDir === $subPointerGraceIntent?.side;
+					return isMovingTowards && isPointerInGraceArea(event, $subPointerGraceIntent?.area);
 				};
 			}
 		);
@@ -239,20 +277,20 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 				attach('blur', (e) => {
 					if (!(e.currentTarget as HTMLElement).contains(e.target as HTMLElement)) {
-						window.clearTimeout(get(timer));
+						window.clearTimeout(get(subTimer));
 					}
 				});
 
 				attach('pointermove', (e) => {
 					if (e.pointerType === 'mouse') {
 						const target = e.target as HTMLElement;
-						const $lastPointerX = get(lastPointerX);
+						const $lastPointerX = get(subLastPointerX);
 						const pointerXHasChanged = $lastPointerX !== e.clientX;
 
 						if ((e.currentTarget as HTMLElement).contains(target) && pointerXHasChanged) {
 							const newDir = e.clientX > $lastPointerX ? 'right' : 'left';
-							pointerDir.set(newDir);
-							lastPointerX.set(e.clientX);
+							subPointerDir.set(newDir);
+							subLastPointerX.set(e.clientX);
 						}
 					}
 					return undefined;
@@ -395,24 +433,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			}
 		});
 
-		function onItemEnter(event: PointerEvent) {
-			const pointerMovingToSubmenu = get(isPointerMovingToSubmenu)(event);
-			if (pointerMovingToSubmenu) event.preventDefault();
-		}
-
-		function onItemLeave(event: PointerEvent) {
-			const pointerMovingToSubmenu = get(isPointerMovingToSubmenu)(event);
-			if (pointerMovingToSubmenu) return;
-			const menuEl = (event.target as HTMLElement).closest('[role="menu"]') as HTMLElement | null;
-			if (!menuEl) return;
-			menuEl.focus();
-		}
-
-		function onTriggerLeave(event: PointerEvent) {
-			const pointerMovingToSubmenu = get(isPointerMovingToSubmenu)(event);
-			if (pointerMovingToSubmenu) event.preventDefault();
-		}
-
 		return {
 			subTrigger,
 			subMenu,
@@ -457,8 +477,26 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	});
 
 	/* -------------------------------------------------------------------------------------------------
-	 * Grace Period Handling
+	 * Pointer Event Effects
 	 * -----------------------------------------------------------------------------------------------*/
+
+	function onItemEnter(event: PointerEvent, isPointerMovingToSubmenu: PointerToSubmenu) {
+		const pointerMovingToSubmenu = get(isPointerMovingToSubmenu)(event);
+		if (pointerMovingToSubmenu) event.preventDefault();
+	}
+
+	function onItemLeave(event: PointerEvent, isPointerMovingToSubmenu: PointerToSubmenu) {
+		const pointerMovingToSubmenu = get(isPointerMovingToSubmenu)(event);
+		if (pointerMovingToSubmenu) return;
+		const menuEl = (event.target as HTMLElement).closest('[role="menu"]') as HTMLElement | null;
+		if (!menuEl) return;
+		menuEl.focus();
+	}
+
+	function onTriggerLeave(event: PointerEvent, isPointerMovingToSubmenu: PointerToSubmenu) {
+		const pointerMovingToSubmenu = get(isPointerMovingToSubmenu)(event);
+		if (pointerMovingToSubmenu) event.preventDefault();
+	}
 
 	function isPointInPolygon(point: Point, polygon: Polygon) {
 		const { x, y } = point;
@@ -635,3 +673,5 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		createSubMenu,
 	};
 }
+
+type PointerToSubmenu = Readable<(event: PointerEvent) => boolean>;
