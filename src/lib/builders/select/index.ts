@@ -14,7 +14,6 @@ import {
 } from '$lib/internal/helpers';
 import { sleep } from '$lib/internal/helpers/sleep';
 import type { Defaults } from '$lib/internal/types';
-import { tick } from 'svelte';
 import { derived, writable } from 'svelte/store';
 
 /**
@@ -33,7 +32,7 @@ export type CreateSelectArgs = {
 	arrowSize?: number;
 	required?: boolean;
 	disabled?: boolean;
-	selected?: string | number;
+	selected?: unknown;
 	name?: string;
 };
 
@@ -52,7 +51,7 @@ export function createSelect(args?: CreateSelectArgs) {
 	const options = writable(omit(withDefaults, 'selected'));
 
 	const open = writable(false);
-	const selected = writable(withDefaults.selected ?? null);
+	const selected = writable<unknown>(withDefaults.selected ?? null);
 	const selectedText = writable<string | number | null>(null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
@@ -101,6 +100,10 @@ export function createSelect(args?: CreateSelectArgs) {
 			});
 		});
 
+		attach('mousedown', (e) => {
+			e.preventDefault();
+		});
+
 		return {
 			role: 'combobox',
 			'aria-controls': ids.menu,
@@ -121,26 +124,28 @@ export function createSelect(args?: CreateSelectArgs) {
 		}),
 	}));
 
-	type OptionArgs =
-		| {
-				value: string | number;
-		  }
-		| string
-		| number;
+	type OptionArgs = {
+		value: unknown;
+		label?: string;
+	};
 
 	const option = elementMultiDerived([selected], ([$selected], { attach }) => {
 		return (args: OptionArgs) => {
-			const value = typeof args === 'object' ? args.value : args;
+			const { value, label } = args;
 
-			attach('click', () => {
+			attach('click', (e) => {
+				const el = e.currentTarget as HTMLElement | null;
 				selected.set(value);
+				selectedText.set(label ?? el?.textContent ?? null);
 				open.set(false);
 			});
 
 			attach('keydown', (e) => {
+				const el = e.currentTarget as HTMLElement | null;
 				if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
 					e.preventDefault();
 					selected.set(value);
+					selectedText.set(label ?? el?.textContent ?? null);
 					open.set(false);
 				}
 			});
@@ -159,8 +164,6 @@ export function createSelect(args?: CreateSelectArgs) {
 				role: 'option',
 				'aria-selected': $selected === value,
 				'data-selected': $selected === value ? '' : undefined,
-				'data-value': value,
-				'data-type': typeof value,
 				tabindex: 0,
 			};
 		};
@@ -244,27 +247,6 @@ export function createSelect(args?: CreateSelectArgs) {
 			// Hacky way to prevent the keydown event from triggering on the trigger
 			sleep(1).then(() => $activeTrigger.focus());
 		}
-	});
-
-	effect([menu], ([$menu]) => {
-		tick().then(() => {
-			const menuEl = getElementByMeltId($menu['data-melt-id']);
-			if (!menuEl) return;
-
-			const selectedOption = menuEl.querySelector('[role=option][data-selected]') as
-				| HTMLElement
-				| undefined;
-			if (selectedOption) {
-				const data = selectedOption.getAttribute('data-value');
-				if (data) {
-					if (selectedOption.getAttribute('data-type') === 'number') {
-						selectedText.set(+data);
-					} else {
-						selectedText.set(data);
-					}
-				}
-			}
-		});
 	});
 
 	const isSelected = derived([selected], ([$selected]) => {

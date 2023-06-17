@@ -39,7 +39,11 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 	const activeThumb = writable<{ thumb: HTMLElement; index: number } | null>(null);
 
 	const root = elementDerived(options, ($options) => {
-		return { disabled: $options.disabled, 'data-orientation': $options.orientation };
+		return {
+			disabled: $options.disabled,
+			'data-orientation': $options.orientation,
+			style: 'touch-action: none;',
+		};
 	});
 
 	const range = derived([value, options], ([$value, $options]) => {
@@ -230,13 +234,12 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		};
 
 		const pointerDown = (e: PointerEvent) => {
-			e.preventDefault();
-
 			const sliderEl = getElementByMeltId($root['data-melt-id']) as HTMLElement;
 			const closestThumb = getClosestThumb(e);
 			if (!closestThumb || !sliderEl) return;
 
 			if (!sliderEl.contains(e.target as HTMLElement)) return;
+			e.preventDefault();
 
 			activeThumb.set(closestThumb);
 			closestThumb.thumb.focus();

@@ -58,7 +58,7 @@
 
 	.input {
 		@apply flex h-8 w-full rounded-md border border-magnum-800 bg-transparent px-2.5 text-sm;
-		@apply ring-offset-magnum-300 focus-visible:outline-none focus-visible:ring;
+		@apply ring-offset-magnum-300 focus-visible:ring;
 		@apply focus-visible:ring-magnum-400 focus-visible:ring-offset-1;
 		@apply flex-1 items-center justify-center;
 		@apply px-2.5 text-sm leading-none text-magnum-700;
@@ -66,13 +66,13 @@
 
 	.trigger {
 		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0 text-sm font-medium;
-		@apply text-magnum-900 transition-colors hover:bg-white/90 focus-visible:outline-none;
+		@apply text-magnum-900 transition-colors hover:bg-white/90;
 		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
 	}
 
 	.close {
 		@apply absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full;
-		@apply text-magnum-900 transition-colors hover:bg-magnum-500/10 focus-visible:outline-none;
+		@apply text-magnum-900 transition-colors hover:bg-magnum-500/10;
 		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
 		@apply bg-white p-0 text-sm font-medium;
 	}

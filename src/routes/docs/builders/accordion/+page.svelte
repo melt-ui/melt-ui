@@ -17,9 +17,9 @@
 
 <Docs.H2>Features</Docs.H2>
 <Docs.Ul>
-	<Docs.Li>Full keyboard navigation.</Docs.Li>
-	<Docs.Li>Can expand one or multiple items.</Docs.Li>
-	<Docs.Li>Can be controlled or uncontrolled.</Docs.Li>
+	<Docs.Li>Full keyboard navigation</Docs.Li>
+	<Docs.Li>Can expand one or multiple items</Docs.Li>
+	<Docs.Li>Can be controlled or uncontrolled</Docs.Li>
 </Docs.Ul>
 
 <Docs.H2>Anatomy</Docs.H2>
@@ -64,7 +64,7 @@
 <Docs.H2>Accessibility</Docs.H2>
 <Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/accordion/">WAI-ARIA pattern</Docs.A>
 
-<Docs.H3>Keyboard Navigation</Docs.H3>
+<Docs.H3>Keyboard Interactions</Docs.H3>
 
 <Docs.Ul>
 	<Docs.Li>
@@ -115,8 +115,8 @@
 <Docs.H2>API Reference</Docs.H2>
 <Docs.API
 	schema={{
-		title: 'createAccordion Config',
-		description: 'Creates an accordion component.',
+		title: 'CreateAccordionArgs',
+		description: 'The object you pass into createAccordion. Optional.',
 		args: [
 			{
 				label: 'type',

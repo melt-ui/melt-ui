@@ -1,5 +1,30 @@
 # @melt-ui/svelte
 
+## 0.10.2
+
+### Patch Changes
+
+- 1cf6fb8: fix toolbar exports
+
+## 0.10.1
+
+### Patch Changes
+
+- c0616cc: remove onChange from collapsible
+- 600a530: fix slider dragging screen on mobile
+- 55754c1: refactor(select): label attr & unknown value
+- cefa91e: fix(select): prevent focus on mousedown
+
+## 0.10.0
+
+### Minor Changes
+
+- d3aeed2: add toolbar
+
+### Patch Changes
+
+- eb2afe5: fix slider intercepting document clicks
+
 ## 0.9.0
 
 ### Minor Changes

@@ -34,7 +34,7 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 		const usedFocusTrap = useFocusTrap(popperElement);
 
 		if (usedFocusTrap && usedFocusTrap.destroy) {
-			unSubfocusTrap = usedFocusTrap.destroy;
+			unSubfocusTrap = () => usedFocusTrap.destroy;
 		}
 	}
 
