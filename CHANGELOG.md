@@ -1,5 +1,42 @@
 # @melt-ui/svelte
 
+## 0.10.0
+
+### Minor Changes
+
+- d3aeed2: add toolbar
+
+### Patch Changes
+
+- eb2afe5: fix slider intercepting document clicks
+
+## 0.9.0
+
+### Minor Changes
+
+- 897a45d: feat: add slider
+
+### Patch Changes
+
+- 9c960cb: refactor: update selectedText to support numbers
+- ad4436b: feat: export input el from select
+  refactor: change pagination default perPage to 1
+- 2d224d1: fix(slider): correct slider value return; steps functionality on mouse drag
+
+## 0.8.3
+
+### Patch Changes
+
+- f63cf06: fix: export pagination
+
+## 0.8.2
+
+### Patch Changes
+
+- 6a370c6: fix dialog scroll lock
+- 63d6c02: add selected arg to select; add number support to select
+- 63d6c02: improve select focus management
+
 ## 0.8.1
 
 ### Patch Changes

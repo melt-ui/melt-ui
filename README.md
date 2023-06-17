@@ -72,38 +72,38 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Component name  | Status |
 | --------------- | ------ |
 | Accordion       | ✅     |
-| Alert Dialog    |        |
 | Avatar          |        |
 | Calendar        |        |
 | Checkbox        | ✅     |
 | Collapsible     | ✅     |
 | ComboBox        |        |
 | Context Menu    |        |
-| Dialog          |        |
+| Dialog          | ✅     |
 | Dropdown Menu   |        |
 | Hover Card      |        |
 | Label           |        |
 | Menubar         |        |
 | Navigation Menu |        |
-| Pagination      |        |
+| Pagination      | ✅     |
 | Pin Input       |        |
-| Popover         |        |
+| Popover         | ✅     |
 | Progress        | ✅     |
 | Radio Group     | ✅     |
 | Scroll Area     |        |
 | Select          | ✅     |
 | Separator       |        |
-| Slider          |        |
+| Slider          | ✅     |
 | Switch          | ✅     |
 | Tabs            | ✅     |
 | Tags Input      |        |
 | Toast           |        |
 | Toggle          | ✅     |
 | Toggle Group    | ✅     |
-| Toolbar         |        |
-| Tooltip         |        |
+| Toolbar         | ✅     |
+| Tooltip         | ✅     |
+| ???             |        |
 
-And more!
+**Progress:** 16/30+
 
 ## Similar projects
 

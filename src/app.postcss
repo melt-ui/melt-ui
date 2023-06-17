@@ -10,26 +10,14 @@ body {
 }
 
 @layer components {
-	.comp-preview {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-
-		background: theme('colors.zinc.800');
-
-		border-radius: theme('borderRadius.lg');
-		padding: theme('spacing.8');
-
-		@media screen('md') {
-			padding: theme('spacing.12');
-		}
-	}
-
-	.comp-preview-colored {
-		background: linear-gradient(315deg, theme('colors.magnum.700'), theme('colors.magnum.600'));
-	}
-
 	.link {
 		@apply underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-magnum-500 hocus:opacity-100;
+	}
+}
+
+* {
+	outline: none !important;
+	&:focus {
+		@apply !ring !ring-magnum-400;
 	}
 }

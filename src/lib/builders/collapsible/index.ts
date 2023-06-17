@@ -4,7 +4,6 @@ import { derived, writable } from 'svelte/store';
 
 export type CreateCollapsibleArgs = {
 	open?: boolean;
-	onChange?: (open: boolean) => void;
 	disabled?: boolean;
 };
 
@@ -18,10 +17,6 @@ export function createCollapsible(args?: CreateCollapsibleArgs) {
 	const disabled = writable(options.disabled);
 
 	const open = writable(options.open);
-	open.subscribe((open) => {
-		options.onChange?.(open);
-	});
-
 	const root = derived(open, ($open) => ({
 		'data-state': $open ? 'open' : 'closed',
 		'data-disabled': options.disabled ? 'true' : 'undefined',
