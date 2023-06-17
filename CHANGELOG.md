@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.10.2
+
+### Patch Changes
+
+- 1cf6fb8: fix toolbar exports
+
 ## 0.10.1
 
 ### Patch Changes
