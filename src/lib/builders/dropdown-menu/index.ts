@@ -30,17 +30,6 @@ const SUB_CLOSE_KEYS: Record<Direction, string[]> = {
 	rtl: [kbd.ARROW_RIGHT],
 };
 
-/**
- * Features:
- * - [X] Click outside
- * - [X] Keyboard navigation
- * - [X] Focus management
- * - [ ] Detect overflow
- * - [ ] Same width as trigger
- * - [ ] A11y
- * - [X] Floating UI
- **/
-
 export type CreateDropdownMenuArgs = {
 	positioning?: FloatingConfig;
 	arrowSize?: number;
@@ -257,15 +246,9 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						if (isOpen) {
 							subActiveTrigger.set(triggerEl);
 							return isOpen;
-						} else {
-							subActiveTrigger.set(null);
 						}
-						return isOpen;
+						return prev;
 					});
-				});
-
-				attach('pointerleave', () => {
-					// TODO: handle grace period
 				});
 
 				return {
