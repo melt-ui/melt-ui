@@ -13,7 +13,7 @@ import {
 	uuid,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, writable, type Writable } from 'svelte/store';
+import { derived, get, writable, type Writable } from 'svelte/store';
 
 type Direction = 'ltr' | 'rtl';
 
@@ -205,7 +205,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 		const subMenu = elementDerived(
 			[subOpen, subActiveTrigger, subOptions],
-			([$subOpen, $activeTrigger, $subOptions], { addAction }) => {
+			([$subOpen, $activeTrigger, $subOptions], { addAction, attach }) => {
 				if ($subOpen && $activeTrigger) {
 					addAction(usePopper, {
 						anchorElement: $activeTrigger,
@@ -216,6 +216,14 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						},
 					});
 				}
+
+				attach('pointerenter', (e) => {
+					// handle grace period
+				});
+
+				attach('pointerleave', (e) => {
+					// handle grace period
+				});
 
 				return {
 					role: 'menu',
@@ -242,21 +250,22 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 				attach('keydown', (e) => onSubTriggerKeydown(e, subOpen, subActiveTrigger));
 
-				attach('mouseover', (e) => {
+				attach('pointerover', (e) => {
 					const triggerEl = e.currentTarget as HTMLElement;
-
 					subOpen.update((prev) => {
-						const isOpen = prev;
-						if (!isOpen) {
+						const isOpen = !prev;
+						if (isOpen) {
 							subActiveTrigger.set(triggerEl);
-							return !prev;
+							return isOpen;
+						} else {
+							subActiveTrigger.set(null);
 						}
-						return prev;
+						return isOpen;
 					});
 				});
 
-				attach('mouseout', (e) => {
-					(e.currentTarget as HTMLElement).blur();
+				attach('pointerleave', (e) => {
+					// handle grace period
 				});
 
 				return {
@@ -327,6 +336,18 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			// Focus on first menu item
 			const firstOption = document.querySelector(rootMenuItemSelector) as HTMLElement | undefined;
 			sleep(1).then(() => firstOption?.focus());
+
+			const keydownListener = (e: KeyboardEvent) => {
+				if (e.key === kbd.ESCAPE) {
+					rootOpen.set(false);
+					rootActiveTrigger.set(null);
+					return;
+				}
+			};
+			document.addEventListener('keydown', keydownListener);
+			return () => {
+				document.removeEventListener('keydown', keydownListener);
+			};
 		} else if (!$rootOpen && $rootActiveTrigger && isBrowser) {
 			// Hacky way to prevent the keydown event from triggering on the trigger
 			sleep(1).then(() => $rootActiveTrigger.focus());
