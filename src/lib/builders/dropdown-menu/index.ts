@@ -47,31 +47,29 @@ const defaults = {
 
 export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	const withDefaults = { ...defaults, ...args } as CreateDropdownMenuArgs;
-	const options = writable(omit(withDefaults, 'selected'));
+	const rootOptions = writable(omit(withDefaults, 'selected'));
 
-	const open = writable(false);
-	const selected = writable(withDefaults.selected ?? null);
-	const selectedText = writable<string | number | null>(null);
-	const activeTrigger = writable<HTMLElement | null>(null);
+	const rootOpen = writable(false);
+	const rootActiveTrigger = writable<HTMLElement | null>(null);
 
-	const ids = {
+	const rootIds = {
 		menu: uuid(),
 		trigger: uuid(),
 	};
 
-	const menu = elementDerived(
-		[open, activeTrigger, options],
-		([$open, $activeTrigger, $options], { addAction }) => {
-			if ($open && $activeTrigger) {
+	const rootMenu = elementDerived(
+		[rootOpen, rootActiveTrigger, rootOptions],
+		([$rootOpen, $rootActiveTrigger, $rootOptions], { addAction }) => {
+			if ($rootOpen && $rootActiveTrigger) {
 				addAction(usePopper, {
-					anchorElement: $activeTrigger,
-					open,
+					anchorElement: $rootActiveTrigger,
+					open: rootOpen,
 					options: {
-						floating: $options.positioning,
+						floating: $rootOptions.positioning,
 						clickOutside: {
 							ignore: (e) => {
 								const target = e.target as HTMLElement;
-								if (target.closest(`[data-submenu]`)) {
+								if (target.closest(`[data-melt-part="menu-sub"]`)) {
 									return true;
 								}
 								return false;
@@ -82,58 +80,61 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			}
 
 			return {
-				hidden: $open ? undefined : true,
+				hidden: $rootOpen ? undefined : true,
 				style: styleToString({
-					display: $open ? undefined : 'none',
+					display: $rootOpen ? undefined : 'none',
 				}),
-				id: ids.menu,
-				'aria-labelledby': ids.trigger,
+				id: rootIds.menu,
+				'aria-labelledby': rootIds.trigger,
 				'data-melt-part': 'menu-root',
 			};
 		}
 	);
 
-	const trigger = elementDerived([open, options], ([$open, $options], { attach }) => {
-		attach('click', (e) => {
-			const triggerEl = e.currentTarget as HTMLElement;
-			open.update((prev) => {
-				const isOpen = !prev;
-				if (isOpen) {
-					activeTrigger.set(triggerEl);
-				} else {
-					activeTrigger.set(null);
-				}
+	const rootTrigger = elementDerived(
+		[rootOpen, rootOptions],
+		([$rootOpen, $rootOptions], { attach }) => {
+			attach('click', (e) => {
+				const triggerEl = e.currentTarget as HTMLElement;
+				rootOpen.update((prev) => {
+					const isOpen = !prev;
+					if (isOpen) {
+						rootActiveTrigger.set(triggerEl);
+					} else {
+						rootActiveTrigger.set(null);
+					}
 
-				return isOpen;
+					return isOpen;
+				});
 			});
-		});
 
-		attach('pointerover', (e) => {
-			const triggerEl = e.currentTarget as HTMLElement;
-			triggerEl.focus();
-		});
+			attach('pointerover', (e) => {
+				const triggerEl = e.currentTarget as HTMLElement;
+				triggerEl.focus();
+			});
 
-		return {
-			role: 'menu',
-			'aria-controls': ids.menu,
-			'aria-expanded': $open,
-			'aria-required': $options.required,
-			'data-state': $open ? 'open' : 'closed',
-			'data-disabled': $options.disabled ? '' : undefined,
-			id: ids.trigger,
-		};
-	});
+			return {
+				role: 'menu',
+				'aria-controls': rootIds.menu,
+				'aria-expanded': $rootOpen,
+				'aria-required': $rootOptions.required,
+				'data-state': $rootOpen ? 'open' : 'closed',
+				'data-disabled': $rootOptions.disabled ? '' : undefined,
+				id: rootIds.trigger,
+			};
+		}
+	);
 
-	const arrow = derived(options, ($options) => ({
+	const rootArrow = derived(rootOptions, ($rootOptions) => ({
 		'data-arrow': true,
 		style: styleToString({
 			position: 'absolute',
-			width: `var(--arrow-size, ${$options.arrowSize}px)`,
-			height: `var(--arrow-size, ${$options.arrowSize}px)`,
+			width: `var(--arrow-size, ${$rootOptions.arrowSize}px)`,
+			height: `var(--arrow-size, ${$rootOptions.arrowSize}px)`,
 		}),
 	}));
 
-	const item = elementMultiDerived([selected, menu], ([$selected, $menu], { attach }) => {
+	const item = elementMultiDerived([rootMenu], ([$rootMenu], { attach }) => {
 		return () => {
 			attach('keydown', (e) => {
 				if (e.shiftKey && e.key === kbd.TAB) {
@@ -158,19 +159,149 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 			return {
 				role: 'menuitem',
-				'data-melt-menu': $menu.id,
+				'data-melt-menu': $rootMenu.id,
 				tabindex: -1,
 			};
 		};
 	});
 
-	effect([open, menu, activeTrigger], ([$open, $menu, $activeTrigger]) => {
+	const subMenuDefaults = {
+		...defaults,
+		positioning: {
+			placement: 'right-start',
+		},
+	} satisfies Defaults<CreateSubMenuArgs>;
+
+	const createSubMenu = (args?: CreateDropdownMenuArgs) => {
+		const withDefaults = { ...subMenuDefaults, ...args } as CreateDropdownMenuArgs;
+		const subOptions = writable(omit(withDefaults, 'selected'));
+
+		const subOpen = writable(false);
+		const subActiveTrigger = writable<HTMLElement | null>(null);
+
+		const subIds = {
+			menu: uuid(),
+			trigger: uuid(),
+		};
+
+		const subMenu = elementDerived(
+			[subOpen, subActiveTrigger, subOptions],
+			([$subOpen, $activeTrigger, $subOptions], { addAction }) => {
+				if ($subOpen && $activeTrigger) {
+					addAction(usePopper, {
+						anchorElement: $activeTrigger,
+						open: subOpen,
+						options: {
+							floating: $subOptions.positioning,
+							clickOutside: null,
+						},
+					});
+				}
+
+				return {
+					role: 'menu',
+					hidden: $subOpen ? undefined : true,
+					style: styleToString({
+						display: $subOpen ? undefined : 'none',
+					}),
+					id: subIds.menu,
+					'aria-labelledby': subIds.trigger,
+					'data-melt-part': 'menu-sub',
+				};
+			}
+		);
+
+		const subTrigger = elementDerived(
+			[subOpen, subOptions],
+			([$subOpen, $subOptions], { attach, getElement }) => {
+				attach('click', (e) => {
+					e.stopPropagation();
+					e.preventDefault();
+				});
+
+				attach('keydown', (e) => {
+					if (TRIGGER_OPEN_KEYS.includes(e.key)) {
+						e.preventDefault();
+						const triggerEl = e.currentTarget as HTMLElement;
+						subOpen.update((prev) => {
+							const isOpen = !prev;
+							if (isOpen) {
+								subActiveTrigger.set(triggerEl);
+							} else {
+								subActiveTrigger.set(null);
+							}
+
+							return isOpen;
+						});
+					}
+				});
+
+				attach('mouseover', (e) => {
+					const triggerEl = e.currentTarget as HTMLElement;
+
+					subOpen.update((prev) => {
+						const isOpen = prev;
+						if (!isOpen) {
+							subActiveTrigger.set(triggerEl);
+							return !prev;
+						}
+						return prev;
+					});
+				});
+
+				attach('mouseout', (e) => {
+					(e.currentTarget as HTMLElement).blur();
+				});
+
+				return {
+					role: 'menuitem',
+					id: subIds.trigger,
+					tabindex: -1,
+					'aria-controls': subIds.menu,
+					'aria-expanded': $subOpen,
+					'aria-required': $subOptions.required,
+					'data-state': $subOpen ? 'open' : 'closed',
+					'data-disabled': $subOptions.disabled ? '' : undefined,
+					'data-melt-part': 'menu-sub-trigger',
+					'data-melt-menu': rootIds.menu,
+				};
+			}
+		);
+
+		const subArrow = derived(subOptions, ($subOptions) => ({
+			'data-arrow': true,
+			style: styleToString({
+				position: 'absolute',
+				width: `var(--arrow-size, ${$subOptions.arrowSize}px)`,
+				height: `var(--arrow-size, ${$subOptions.arrowSize}px)`,
+			}),
+		}));
+
+		effect([rootOpen], ([$rootOpen]) => {
+			if (!$rootOpen) {
+				subOpen.set(false);
+				subActiveTrigger.set(null);
+			}
+		});
+
+		// effect([open], ([$open]) => {});
+
+		return {
+			subTrigger,
+			subMenu,
+			subOpen,
+			subArrow,
+			subOptions,
+		};
+	};
+
+	effect([rootOpen, rootMenu, rootActiveTrigger], ([$rootOpen, $rootMenu, $rootActiveTrigger]) => {
 		if (!isBrowser) return;
 
-		const menuEl = getElementByMeltId($menu['data-melt-id']);
-		if (menuEl && $open) {
+		const menuEl = getElementByMeltId($rootMenu['data-melt-id']);
+		if (menuEl && $rootOpen) {
 			// Selector to get menu items belonging to menu
-			const itemSelector = `[role="menuitem"][data-melt-menu="${$menu.id}"]`;
+			const itemSelector = `[role="menuitem"][data-melt-menu="${$rootMenu.id}"]`;
 
 			// Focus on first menu item
 			const firstOption = document.querySelector(itemSelector) as HTMLElement | undefined;
@@ -178,13 +309,12 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 			const keydownListener = (e: KeyboardEvent) => {
 				if (e.key === kbd.ESCAPE) {
-					open.set(false);
-					activeTrigger.set(null);
+					rootOpen.set(false);
+					rootActiveTrigger.set(null);
 					return;
 				}
 
 				const allOptions = Array.from(menuEl.querySelectorAll(itemSelector)) as HTMLElement[];
-				console.log(allOptions);
 				const focusedOption = allOptions.find((el) => el === document.activeElement);
 				const focusedIndex = allOptions.indexOf(focusedOption as HTMLElement);
 
@@ -217,14 +347,28 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			return () => {
 				document.removeEventListener('keydown', keydownListener);
 			};
-		} else if (!$open && $activeTrigger && isBrowser) {
+		} else if (!$rootOpen && $rootActiveTrigger && isBrowser) {
 			// Hacky way to prevent the keydown event from triggering on the trigger
-			sleep(1).then(() => $activeTrigger.focus());
+			sleep(1).then(() => $rootActiveTrigger.focus());
 		}
 	});
 
-	return { trigger, menu, open, item, selected, selectedText, arrow, options };
+	return {
+		trigger: rootTrigger,
+		menu: rootMenu,
+		open: rootOpen,
+		item,
+		arrow: rootArrow,
+		options: rootOptions,
+		createSubMenu,
+	};
 }
+
+/**
+ *
+ *  Remove below after build return is done
+ *
+ */
 
 const TRIGGER_OPEN_KEYS = [kbd.ENTER, kbd.SPACE, kbd.ARROW_RIGHT];
 
@@ -259,7 +403,7 @@ export function createSubMenu(args?: CreateSubMenuArgs) {
 
 	const subMenu = elementDerived(
 		[open, activeTrigger, options],
-		([$open, $activeTrigger, $options], { addAction, getElement }) => {
+		([$open, $activeTrigger, $options], { addAction }) => {
 			if ($open && $activeTrigger) {
 				addAction(usePopper, {
 					anchorElement: $activeTrigger,
@@ -349,8 +493,6 @@ export function createSubMenu(args?: CreateSubMenuArgs) {
 			 */
 			getElement().then((el) => {
 				if (!el) return;
-				let rootMenuElement: HTMLElement | null = null;
-
 				/**
 				 * Get the trigger's parent menu.
 				 * NOTE: This is not the menu that the trigger opens, but the
@@ -396,6 +538,7 @@ export function createSubMenu(args?: CreateSubMenuArgs) {
 				'aria-required': $options.required,
 				'data-state': $open ? 'open' : 'closed',
 				'data-disabled': $options.disabled ? '' : undefined,
+				'data-melt-part': 'menu-sub-trigger',
 			};
 		}
 	);
@@ -416,6 +559,8 @@ export function createSubMenu(args?: CreateSubMenuArgs) {
 		}
 	});
 
+	// effect([open], ([$open]) => {});
+
 	return {
 		subTrigger,
 		subMenu,
@@ -425,15 +570,4 @@ export function createSubMenu(args?: CreateSubMenuArgs) {
 		arrow,
 		options,
 	};
-}
-
-function getRootMenuElement(element: HTMLElement): HTMLElement | null {
-	let sibling = element.previousElementSibling;
-	while (sibling) {
-		if (sibling.getAttribute('data-melt-part') === 'menu-root') {
-			return sibling as HTMLElement;
-		}
-		sibling = sibling.previousElementSibling;
-	}
-	return null;
 }

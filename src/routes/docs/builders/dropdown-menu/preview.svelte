@@ -1,19 +1,12 @@
 <script lang="ts">
-	import { createDropdownMenu, createSubMenu } from '$lib';
+	import { createDropdownMenu } from '$lib';
 	import { Docs } from '$routes/(components)';
 	import AlignJustify from '~icons/lucide/align-justify';
 
-	const { trigger, menu, item, arrow, open } = createDropdownMenu();
-	const {
-		subMenu,
-		subTrigger,
-		open: subMenuOpen,
-	} = createSubMenu({
-		parentOpen: open,
-	});
-	const { subMenu: subMenu2, subTrigger: subTrigger2 } = createSubMenu({
-		parentOpen: subMenuOpen,
-	});
+	const { trigger, menu, item, arrow, open, createSubMenu } = createDropdownMenu();
+
+    const { subMenu: subMenu1, subTrigger: subTrigger1 } = createSubMenu();
+    const { subMenu: subMenu2, subTrigger: subTrigger2 } = createSubMenu();
 </script>
 
 <Docs.PreviewWrapper>
@@ -25,8 +18,8 @@
 	<div class="menu" {...$menu}>
 		<div class="item" {...$item()}>New Tab</div>
 		<div class="item" {...$item()}>New Window</div>
-		<div class="item" {...$subTrigger}>More Tools</div>
-		<div class="menu" {...$subMenu}>
+		<div class="item" {...$subTrigger1}>More Tools</div>
+		<div class="menu" {...$subMenu1}>
 			<div class="item" {...$item()}>New Tab</div>
 			<div class="item" {...$item()}>New Window</div>
 			<div class="item" {...$subTrigger2}>Even More</div>
