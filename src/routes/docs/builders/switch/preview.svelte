@@ -12,7 +12,7 @@
 			<button
 				{...$root}
 				class="relative h-6 w-11 cursor-default rounded-full bg-magnum-800 outline-none
-			focus:ring focus:ring-magnum-400 data-[state=checked]:bg-magnum-950"
+				transition-colors focus:ring focus:ring-magnum-400 data-[state=checked]:bg-magnum-950"
 				id="airplane-mode"
 			>
 				<span
