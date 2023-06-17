@@ -169,6 +169,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		...defaults,
 		positioning: {
 			placement: 'right-start',
+			gutter: 0,
 		},
 	} satisfies Defaults<CreateSubMenuArgs>;
 
@@ -213,7 +214,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 		const subTrigger = elementDerived(
 			[subOpen, subOptions],
-			([$subOpen, $subOptions], { attach, getElement }) => {
+			([$subOpen, $subOptions], { attach }) => {
 				attach('click', (e) => {
 					e.stopPropagation();
 					e.preventDefault();
@@ -284,8 +285,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			}
 		});
 
-		// effect([open], ([$open]) => {});
-
 		return {
 			subTrigger,
 			subMenu,
@@ -301,10 +300,12 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		const menuEl = getElementByMeltId($rootMenu['data-melt-id']);
 		if (menuEl && $rootOpen) {
 			// Selector to get menu items belonging to menu
-			const itemSelector = `[role="menuitem"][data-melt-menu="${$rootMenu.id}"]`;
+			const allItemsSelector = `[role="menuitem"][data-melt-menu="${$rootMenu.id}"]`;
+
+			const menuItemSelector = '[role="menuitem"]';
 
 			// Focus on first menu item
-			const firstOption = document.querySelector(itemSelector) as HTMLElement | undefined;
+			const firstOption = document.querySelector(allItemsSelector) as HTMLElement | undefined;
 			sleep(1).then(() => firstOption?.focus());
 
 			const keydownListener = (e: KeyboardEvent) => {
@@ -314,7 +315,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					return;
 				}
 
-				const allOptions = Array.from(menuEl.querySelectorAll(itemSelector)) as HTMLElement[];
+				const allOptions = Array.from(menuEl.querySelectorAll(allItemsSelector)) as HTMLElement[];
 				const focusedOption = allOptions.find((el) => el === document.activeElement);
 				const focusedIndex = allOptions.indexOf(focusedOption as HTMLElement);
 
