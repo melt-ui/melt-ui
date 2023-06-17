@@ -8,6 +8,7 @@ const defaultConfig = {
 	floating: {},
 	focusTrap: {},
 	clickOutside: {},
+	portal: 'body',
 } satisfies PopperConfig;
 
 export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) => {
@@ -16,11 +17,15 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 
 	const opts = { ...defaultConfig, ...options } as PopperConfig;
 
-	const portal = usePortal(popperElement);
+	let portal: ReturnType<typeof usePortal> | null = null;
 
-	const unsubscribeFloating = useFloating(anchorElement, popperElement, opts.floating).destroy;
+	if (options.portal !== null) {
+		portal = usePortal(popperElement, options.portal);
+	}
 
-	let unSubfocusTrap = noop;
+	const unsubFloating = useFloating(anchorElement, popperElement, opts.floating).destroy;
+
+	let unsubFocusTrap = noop;
 	if (options.focusTrap !== null) {
 		const { useFocusTrap } = createFocusTrap({
 			immediate: true,
@@ -34,22 +39,26 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 		const usedFocusTrap = useFocusTrap(popperElement);
 
 		if (usedFocusTrap && usedFocusTrap.destroy) {
-			unSubfocusTrap = () => usedFocusTrap.destroy;
+			unsubFocusTrap = () => usedFocusTrap.destroy;
 		}
 	}
 
-	const unsubscribeClickOutside = useClickOutside(popperElement, {
-		enabled: open,
-		handler: (e: PointerEvent) => {
-			if (e.defaultPrevented) return;
+	let unsubClickOutside = noop;
 
-			if (!anchorElement?.contains(e.target as Element)) {
-				open.set(false);
-				anchorElement.focus();
-			}
-		},
-		...opts.clickOutside,
-	}).destroy;
+	if (options.clickOutside !== null) {
+		unsubClickOutside = useClickOutside(popperElement, {
+			enabled: open,
+			handler: (e: PointerEvent) => {
+				if (e.defaultPrevented) return;
+
+				if (!anchorElement?.contains(e.target as Element)) {
+					open.set(false);
+					anchorElement.focus();
+				}
+			},
+			...opts.clickOutside,
+		}).destroy;
+	}
 
 	const removeKeydown = addEventListener(popperElement, 'keydown', (e) => {
 		if (e.defaultPrevented) return;
@@ -64,9 +73,9 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 	});
 
 	const unsubscribe = executeCallbacks(
-		unsubscribeFloating,
-		unsubscribeClickOutside,
-		unSubfocusTrap,
+		unsubFloating,
+		unsubClickOutside,
+		unsubFocusTrap,
 		removeKeydown,
 		portal && portal.destroy ? portal.destroy : noop
 	);
