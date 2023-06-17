@@ -39,7 +39,11 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 	const activeThumb = writable<{ thumb: HTMLElement; index: number } | null>(null);
 
 	const root = elementDerived(options, ($options) => {
-		return { disabled: $options.disabled, 'data-orientation': $options.orientation };
+		return {
+			disabled: $options.disabled,
+			'data-orientation': $options.orientation,
+			style: 'touch-action: none;',
+		};
 	});
 
 	const range = derived([value, options], ([$value, $options]) => {
