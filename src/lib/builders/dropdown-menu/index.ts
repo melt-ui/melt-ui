@@ -13,7 +13,7 @@ import {
 	uuid,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable, type Writable } from 'svelte/store';
+import { derived, writable, type Writable } from 'svelte/store';
 
 type Direction = 'ltr' | 'rtl';
 
@@ -217,12 +217,12 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					});
 				}
 
-				attach('pointerenter', (e) => {
-					// handle grace period
+				attach('pointerenter', () => {
+					// TODO: handle grace period
 				});
 
-				attach('pointerleave', (e) => {
-					// handle grace period
+				attach('pointerleave', () => {
+					// TODO: handle grace period
 				});
 
 				return {
@@ -264,8 +264,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					});
 				});
 
-				attach('pointerleave', (e) => {
-					// handle grace period
+				attach('pointerleave', () => {
+					// TODO: handle grace period
 				});
 
 				return {
