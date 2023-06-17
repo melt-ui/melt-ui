@@ -4,10 +4,10 @@
 	import AlignJustify from '~icons/lucide/align-justify';
 	import ChevronRight from '~icons/lucide/chevron-right';
 
-	const { trigger, menu, item, arrow, open, createSubMenu } = createDropdownMenu();
+	const { trigger, menu, item, arrow, createSubMenu } = createDropdownMenu();
 
-	const { subMenu: subMenu1, subTrigger: subTrigger1 } = createSubMenu();
-	const { subMenu: subMenu2, subTrigger: subTrigger2 } = createSubMenu();
+	const { subMenu: subMenuA, subTrigger: subTriggerA, subItem: itemA } = createSubMenu();
+	const { subMenu: subMenuB, subTrigger: subTriggerB, subItem: itemB } = createSubMenu();
 </script>
 
 <Docs.PreviewWrapper>
@@ -19,20 +19,20 @@
 	<div class="menu" {...$menu}>
 		<div class="item" {...$item()}>New Tab</div>
 		<div class="item" {...$item()}>New Window</div>
-		<div class="item" {...$subTrigger1}>
+		<div class="item" {...$subTriggerA}>
 			More Tools
 			<ChevronRight class="h-4 w-4" />
 		</div>
-		<div class="menu subMenu" {...$subMenu1}>
-			<div class="item" {...$item()}>New Tab</div>
-			<div class="item" {...$item()}>New Window</div>
-			<div class="item" {...$subTrigger2}>
+		<div class="menu subMenu" {...$subMenuA}>
+			<div class="item" {...$itemA()}>New Tab</div>
+			<div class="item" {...$itemA()}>New Window</div>
+			<div class="item" {...$subTriggerB}>
 				Even More
 				<ChevronRight class="h-4 w-4" />
 			</div>
-			<div class="menu subMenu" {...$subMenu2}>
-				<div class="item" {...$item()}>New Tool</div>
-				<div class="item" {...$item()}>New Shiny Thing</div>
+			<div class="menu subMenu" {...$subMenuB}>
+				<div class="item" {...$itemB()}>New Tool</div>
+				<div class="item" {...$itemB()}>New Shiny Thing</div>
 			</div>
 		</div>
 		<div class="item" {...$item()}>Show Bookmarks</div>
