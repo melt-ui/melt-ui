@@ -13,7 +13,7 @@ import {
 	uuid,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, writable, type Writable } from 'svelte/store';
+import { derived, get, writable, type Writable } from 'svelte/store';
 
 type Direction = 'ltr' | 'rtl';
 
@@ -86,6 +86,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			}
 
 			return {
+				role: 'menu',
 				hidden: $rootOpen ? undefined : true,
 				style: styleToString({
 					display: $rootOpen ? undefined : 'none',
@@ -131,7 +132,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			});
 
 			return {
-				role: 'menu',
 				'aria-controls': rootIds.menu,
 				'aria-expanded': $rootOpen,
 				'aria-required': $rootOptions.required,
@@ -196,18 +196,25 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			[subOpen, subActiveTrigger, subOptions],
 			([$subOpen, $activeTrigger, $subOptions], { addAction, attach }) => {
 				if ($subOpen && $activeTrigger) {
+					const rootMenu = document.getElementById(rootIds.menu);
 					addAction(usePopper, {
 						anchorElement: $activeTrigger,
 						open: subOpen,
 						options: {
 							floating: $subOptions.positioning,
 							clickOutside: null,
+							portal: rootMenu ? rootMenu : undefined,
 						},
 					});
 				}
 
 				attach('pointerenter', () => {
-					// TODO: handle grace period
+					// const openSubMenusArr = get(openSubMenus);
+					// const indexOf = openSubMenusArr.indexOf(subIds.menu);
+					// if (indexOf !== openSubMenusArr.length - 1) {
+					// 	console.log(openSubMenusArr);
+					// 	sleep(1).then(() => openSubMenus.update((prev) => [...prev.splice(indexOf + 1)]));
+					// }
 				});
 
 				attach('pointerleave', () => {
@@ -242,10 +249,10 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				attach('pointerover', (e) => {
 					const triggerEl = e.currentTarget as HTMLElement;
 					subOpen.update((prev) => {
-						const isOpen = !prev;
-						if (isOpen) {
+						const isAlreadyOpen = prev;
+						if (!isAlreadyOpen) {
 							subActiveTrigger.set(triggerEl);
-							return isOpen;
+							return !prev;
 						}
 						return prev;
 					});
@@ -284,19 +291,44 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		});
 
 		effect([openSubMenus], ([$openSubMenus]) => {
-			// If there are no submenus open, close the current submenu
+			const currentSubIndex = $openSubMenus.indexOf(subIds.menu);
 			if ($openSubMenus.length === 0) {
 				subOpen.set(false);
 				subActiveTrigger.set(null);
 				return;
 			}
 
-			// If the current sub menu is not in the open sub menus, close it
-			if ($openSubMenus.indexOf(subIds.menu) === -1) {
+			if (currentSubIndex === -1) {
 				subOpen.set(false);
 				subActiveTrigger.set(null);
 				return;
 			}
+		});
+
+		effect([subOpen], ([$subOpen]) => {
+			if ($subOpen) {
+				// if the submenu is open, add it to the open submenus
+				openSubMenus.update((prev) => [...prev, subIds.menu]);
+			}
+			if (!$subOpen) {
+				// if the submenu is closed, remove it from the open submenus
+				openSubMenus.update((prev) => prev.filter((id) => id !== subIds.menu));
+			}
+
+			// // If there are no submenus open, close the current submenu
+			// const currentSubIndex = $openSubMenus.indexOf(subIds.menu);
+			// if ($openSubMenus.length === 0) {
+			// 	subOpen.set(false);
+			// 	subActiveTrigger.set(null);
+			// 	return;
+			// }
+
+			// // If the current sub menu is not in the open sub menus, close it
+			// if (currentSubIndex === -1) {
+			// 	subOpen.set(false);
+			// 	subActiveTrigger.set(null);
+			// 	return;
+			// }
 		});
 
 		return {
@@ -422,13 +454,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	 */
 
 	function getParentMenu(itemEl: HTMLElement) {
-		const menuId = itemEl.getAttribute('data-melt-menu');
-		if (!menuId) return null;
-
-		const menuEl = document.getElementById(menuId);
-		if (!menuEl) return null;
-
-		return menuEl;
+		return itemEl.closest('[role="menu"]');
 	}
 
 	function handleCloseSubmenu(element: HTMLElement) {

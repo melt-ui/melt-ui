@@ -8,6 +8,7 @@ const defaultConfig = {
 	floating: {},
 	focusTrap: {},
 	clickOutside: {},
+	portal: 'body',
 } satisfies PopperConfig;
 
 export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) => {
@@ -16,7 +17,11 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 
 	const opts = { ...defaultConfig, ...options } as PopperConfig;
 
-	const portal = usePortal(popperElement);
+	let portal: ReturnType<typeof usePortal> | undefined = undefined;
+
+	if (opts.portal !== null) {
+		portal = usePortal(popperElement, opts.portal);
+	}
 
 	const unsubscribeFloating = useFloating(anchorElement, popperElement, opts.floating).destroy;
 
