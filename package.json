@@ -37,7 +37,7 @@
 	},
 	"typesVersions": {
 		">4.0": {
-			"index": [
+			"index.d.ts": [
 				"./dist/index.d.ts"
 			],
 			"internal/*": [
