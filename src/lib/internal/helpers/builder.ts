@@ -1,7 +1,7 @@
 import { onDestroy, tick } from 'svelte';
+import type { Action } from 'svelte/action';
 import { derived, type Readable } from 'svelte/store';
 import { addEventListener, isBrowser, uuid } from '.';
-import type { Action } from 'svelte/action';
 
 export function getElementByMeltId(id: string) {
 	if (!isBrowser) return null;
@@ -170,7 +170,9 @@ const initElementHelpers = (setId: (id: string) => void) => {
 
 			const ac = action(element, parameters);
 			if (ac) {
-				unsubscribers.push(() => ac.destroy?.());
+				unsubscribers.push(function actionUnsub() {
+					ac.destroy?.();
+				});
 			}
 		};
 
