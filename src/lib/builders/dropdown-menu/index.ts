@@ -222,7 +222,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					});
 				}
 
-				attach('focusin', (e) => {
+				attach('focusin', () => {
 					clearOpenTimer(subOpenTimer);
 				});
 
