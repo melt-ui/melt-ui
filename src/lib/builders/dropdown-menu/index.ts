@@ -239,12 +239,23 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 				attach('focusout', (event) => {
 					event.preventDefault();
-					const menuElement = event.currentTarget as HTMLElement;
-					const relatedTarget = event.relatedTarget as HTMLElement;
 
-					if (!menuElement.contains(relatedTarget) && relatedTarget !== $activeTrigger) {
-						subOpen.set(false);
-						subActiveTrigger.set(null);
+					if (get(isUsingKeyboard)) {
+						const submenuElement = document.getElementById(subIds.menu);
+						if (
+							!submenuElement?.contains(event.target as HTMLElement) &&
+							event.target !== $activeTrigger
+						) {
+							subOpen.set(false);
+							subActiveTrigger.set(null);
+						}
+					} else {
+						const menuElement = event.currentTarget as HTMLElement;
+						const relatedTarget = event.relatedTarget as HTMLElement;
+						if (!menuElement.contains(relatedTarget) && relatedTarget !== $activeTrigger) {
+							subOpen.set(false);
+							subActiveTrigger.set(null);
+						}
 					}
 				});
 
@@ -355,20 +366,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					}
 				});
 
-				attach('focusout', (e) => {
-					e.preventDefault();
-
-					subOpenTimer.set(
-						window.setTimeout(() => {
-							subOpen.update(() => {
-								subActiveTrigger.set(null);
-								return false;
-							});
-							clearOpenTimer(subOpenTimer);
-						}, 250)
-					);
-				});
-
 				return {
 					role: 'menuitem',
 					id: subIds.trigger,
@@ -468,6 +465,21 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			if (!$subOpen) {
 				// if the submenu is closed, remove it from the open submenus
 				openSubMenus.update((prev) => prev.filter((id) => id !== subIds.menu));
+			}
+		});
+
+		effect([subOpen, subMenu, subActiveTrigger], ([$subOpen, $subMenu, $subActiveTrigger]) => {
+			if (!isBrowser) return;
+			const menuElement = getElementByMeltId($subMenu['data-melt-id']);
+			if (menuElement && $subOpen && get(isUsingKeyboard)) {
+				// Selector to get menu items belonging to menu
+				const rootMenuItemSelector = `[role="menuitem"][data-melt-menu="${menuElement.id}"]`;
+
+				// Focus on first menu item
+				const firstOption = document.querySelector(rootMenuItemSelector) as HTMLElement | undefined;
+				sleep(1).then(() => (firstOption ? firstOption.focus() : undefined));
+			} else if (!$subOpen && $subActiveTrigger && isBrowser) {
+				sleep(1).then(() => $subActiveTrigger.focus());
 			}
 		});
 
@@ -648,17 +660,11 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 			const submenuId = target.getAttribute('aria-controls');
 			if (!submenuId) return;
-			const menuItemsSelector = `[role="menuitem"][data-melt-menu="${submenuId}"]`;
-			const firstOption = document.querySelector(menuItemsSelector) as HTMLElement | undefined;
-			openSubMenus.update((prev) => {
-				const openSubMenus = prev;
-				if (openSubMenus.includes(submenuId)) return prev;
-				return [...prev, submenuId];
-			});
-			if (get(isUsingKeyboard)) {
-				sleep(1).then(() => (firstOption ? firstOption.focus() : undefined));
-			}
-			event.preventDefault();
+
+			const submenu = document.getElementById(submenuId);
+			if (!submenu) return;
+
+			submenu.focus();
 		}
 
 		if (SUB_CLOSE_KEYS['ltr'].includes(event.key)) {
