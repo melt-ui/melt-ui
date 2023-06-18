@@ -58,9 +58,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	// The currently open submenu ids
 	const openSubMenus = writable<string[]>([]);
 
-	// The currently focused menu item
-	const focusedMenuItem = writable<HTMLElement | null>(null);
-
 	const rootIds = {
 		menu: uuid(),
 		trigger: uuid(),
@@ -84,6 +81,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 								return false;
 							},
 						},
+						focusTrap: null,
 					},
 				});
 			}
@@ -164,7 +162,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				if (e.pointerType !== 'mouse') {
 					return undefined;
 				}
-				focusMenuItem(e.currentTarget as HTMLElement);
+				(e.currentTarget as HTMLElement).focus();
 			});
 
 			attach('pointerleave', (e) => {
@@ -208,7 +206,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 		const subMenu = elementDerived(
 			[subOpen, subActiveTrigger, subOptions],
-			([$subOpen, $activeTrigger, $subOptions], { addAction }) => {
+			([$subOpen, $activeTrigger, $subOptions], { addAction, attach }) => {
 				if ($subOpen && $activeTrigger) {
 					const parentMenuEl = getParentMenu($activeTrigger) as HTMLElement | undefined;
 
@@ -219,9 +217,14 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 							floating: $subOptions.positioning,
 							clickOutside: null,
 							portal: parentMenuEl ? parentMenuEl : undefined,
+							focusTrap: null,
 						},
 					});
 				}
+
+				attach('focusin', (e) => {
+					clearOpenTimer(subOpenTimer);
+				});
 
 				return {
 					role: 'menu',
@@ -249,7 +252,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				attach('click', (e) => {
 					// Manually focus because iOS Safari doesn't always focus on click (e.g. buttons)
 					const triggerEl = e.currentTarget as HTMLElement;
-					focusMenuItem(triggerEl);
+					triggerEl.focus();
 					if (!get(subOpen)) {
 						subOpen.update((prev) => {
 							const isAlreadyOpen = prev;
@@ -269,7 +272,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						return undefined;
 					}
 					const triggerEl = e.currentTarget as HTMLElement;
-					focusMenuItem(triggerEl);
+					triggerEl.focus();
 					const open = get(subOpen);
 					const openTimer = get(subOpenTimer);
 					if (!open && !openTimer) {
@@ -291,6 +294,20 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					}
 
 					clearOpenTimer(subOpenTimer);
+				});
+
+				attach('focusout', (e) => {
+					e.preventDefault();
+
+					subOpenTimer.set(
+						window.setTimeout(() => {
+							subOpen.update(() => {
+								subActiveTrigger.set(null);
+								return false;
+							});
+							clearOpenTimer(subOpenTimer);
+						}, 250)
+					);
 				});
 
 				return {
@@ -315,11 +332,12 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				attach('keydown', (e) => onMenuItemKeydown(e));
 
 				attach('pointermove', (e) => {
+					e.preventDefault();
 					if (e.pointerType !== 'mouse') {
 						return undefined;
 					}
 
-					focusMenuItem(e.currentTarget as HTMLElement);
+					(e.currentTarget as HTMLElement).focus();
 				});
 
 				attach('pointerleave', (e) => {
@@ -327,13 +345,17 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						return undefined;
 					}
 					onItemLeave(e);
-					const parentMenu = document.getElementById(subIds.menu);
-					if (!parentMenu) return;
-					const hasFocusedSubmenuItem = parentMenu.matches(':focus-within');
+				});
 
-					if (!hasFocusedSubmenuItem) {
-						subActiveTrigger.set(null);
+				attach('blur', (e) => {
+					const menuEl = document.getElementById(subIds.menu);
+					if (!menuEl) return;
+					const hasFocusedSubmenuItem = menuEl.matches(':focus-within');
+					const relatedTarget = e.relatedTarget as HTMLElement | null;
+
+					if (!hasFocusedSubmenuItem && relatedTarget?.id !== subIds.trigger) {
 						subOpen.set(false);
+						subActiveTrigger.set(null);
 					}
 				});
 
@@ -415,7 +437,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 			// Focus on first menu item
 			const firstOption = document.querySelector(rootMenuItemSelector) as HTMLElement | undefined;
-			sleep(1).then(() => (firstOption ? focusMenuItem(firstOption) : undefined));
+			sleep(1).then(() => (firstOption ? firstOption.focus() : undefined));
 
 			const keydownListener = (e: KeyboardEvent) => {
 				if (e.key === kbd.ESCAPE) {
@@ -437,18 +459,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	/* -------------------------------------------------------------------------------------------------
 	 * Pointer Event Effects
 	 * -----------------------------------------------------------------------------------------------*/
-
-	function focusMenuItem(menuItem: HTMLElement) {
-		if (get(focusedMenuItem) === menuItem) return;
-
-		focusedMenuItem.update((prev) => {
-			if (prev) {
-				prev.blur();
-			}
-			return menuItem;
-		});
-		menuItem.focus();
-	}
 
 	function clearOpenTimer(openTimer: Writable<number | null>) {
 		if (!isBrowser) return;
@@ -480,10 +490,10 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		const { next, prev } = nav;
 
 		if (e.key === kbd.ARROW_DOWN) {
-			return next ? focusMenuItem(next) : undefined;
+			return next ? next.focus() : undefined;
 		}
 		if (e.key === kbd.ARROW_UP) {
-			return prev ? focusMenuItem(prev) : undefined;
+			return prev ? prev.focus() : undefined;
 		}
 		if (SUB_CLOSE_KEYS['ltr'].includes(e.key)) {
 			handleCloseSubmenu(target);
@@ -505,10 +515,10 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		const { next, prev } = nav;
 
 		if (e.key === kbd.ARROW_DOWN) {
-			return next ? focusMenuItem(next) : undefined;
+			return next ? next.focus() : undefined;
 		}
 		if (e.key === kbd.ARROW_UP) {
-			return prev ? focusMenuItem(prev) : undefined;
+			return prev ? prev.focus() : undefined;
 		}
 
 		if (SUB_OPEN_KEYS['ltr'].includes(e.key)) {
@@ -531,7 +541,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				if (openSubMenus.includes(submenuId)) return prev;
 				return [...prev, submenuId];
 			});
-			sleep(1).then(() => (firstOption ? focusMenuItem(firstOption) : undefined));
+			sleep(1).then(() => (firstOption ? firstOption.focus() : undefined));
 			return;
 		}
 
@@ -565,7 +575,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			return next;
 		});
 
-		sleep(1).then(() => (previousTrigger ? focusMenuItem(previousTrigger) : undefined));
+		sleep(1).then(() => (previousTrigger ? previousTrigger.focus() : undefined));
 	}
 
 	function setMeltMenuAttribute(el: HTMLElement | null) {
