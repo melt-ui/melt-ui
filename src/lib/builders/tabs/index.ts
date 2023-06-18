@@ -9,13 +9,13 @@ import {
 	prev,
 	uuid,
 } from '$lib/internal/helpers';
-import type { Defaults, TextDirection } from '$lib/internal/types';
+import { getBrowserTextDirection } from '$lib/internal/helpers/locale';
+import type { Defaults } from '$lib/internal/types';
 import { writable } from 'svelte/store';
 
 export type CreateTabsArgs = {
 	value?: string;
 	onChange?: (value: string) => void;
-	dir?: TextDirection;
 	orientation?: 'horizontal' | 'vertical';
 	activateOnFocus?: boolean;
 	loop?: boolean;
@@ -24,7 +24,6 @@ export type CreateTabsArgs = {
 };
 
 const defaults = {
-	dir: 'ltr',
 	orientation: 'horizontal',
 	activateOnFocus: true,
 	loop: true,
@@ -92,13 +91,14 @@ export function createTabs(args?: CreateTabsArgs) {
 				}
 			});
 
+			const dir = getBrowserTextDirection();
 			const nextKey = {
-				horizontal: options.dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
+				horizontal: dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
 				vertical: kbd.ARROW_DOWN,
 			}[options.orientation ?? 'horizontal'];
 
 			const prevKey = {
-				horizontal: options.dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
+				horizontal: dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
 				vertical: kbd.ARROW_UP,
 			}[options.orientation ?? 'horizontal'];
 
