@@ -1,6 +1,7 @@
 import type { FloatingConfig } from '$lib/internal/actions';
 import { usePopper } from '$lib/internal/actions/popper';
 import {
+	derivedWithUnsubscribe,
 	effect,
 	elementDerived,
 	elementMultiDerived,
@@ -55,6 +56,21 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	const rootOpen = writable(false);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
 
+	const lastPointerX = writable(0);
+	const isUsingKeyboard = writable(false);
+	const pointerGraceIntent = writable<GraceIntent | null>(null);
+	const pointerDir = writable<Side>('right');
+
+	const isPointerMovingToSubmenu = derivedWithUnsubscribe(
+		[pointerDir, pointerGraceIntent],
+		([$pointerDir, $pointerGraceIntent]) => {
+			return (event: PointerEvent) => {
+				const isMovingTowards = $pointerDir === $pointerGraceIntent?.side;
+				return isMovingTowards && isPointerInGraceArea(event, $pointerGraceIntent?.area);
+			};
+		}
+	);
+
 	// The currently open submenu ids
 	const openSubMenus = writable<string[]>([]);
 
@@ -73,8 +89,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					options: {
 						floating: $rootOptions.positioning,
 						clickOutside: {
-							ignore: (e) => {
-								const target = e.target as HTMLElement;
+							ignore: (event) => {
+								const target = event.target as HTMLElement;
 								if (target.closest(`[data-melt-part="menu-sub"]`)) {
 									return true;
 								}
@@ -154,21 +170,16 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 	const rootItem = elementMultiDerived([], (_, { attach, getElement }) => {
 		return () => {
-			getElement().then((el) => setMeltMenuAttribute(el));
+			getElement().then((element) => setMeltMenuAttribute(element));
 
-			attach('keydown', (e) => onMenuItemKeydown(e));
+			attach('keydown', (event) => onMenuItemKeydown(event));
 
-			attach('pointermove', (e) => {
-				if (e.pointerType !== 'mouse') {
-					return undefined;
-				}
-				(e.currentTarget as HTMLElement).focus();
+			attach('pointermove', (event) => {
+				onMenuItemPointerMove(event);
 			});
 
-			attach('pointerleave', (e) => {
-				if (e.pointerType !== 'mouse') {
-					return undefined;
-				}
+			attach('pointerleave', (event) => {
+				onMenuItemPointerLeave(event);
 			});
 
 			return {
@@ -186,7 +197,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		...defaults,
 		positioning: {
 			placement: 'right-start',
-			gutter: 0,
+			gutter: 8,
 		},
 	} satisfies Defaults<CreateDropdownMenuArgs>;
 
@@ -196,8 +207,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 		const subOpen = writable(false);
 		const subActiveTrigger = writable<HTMLElement | null>(null);
-
 		const subOpenTimer = writable<number | null>(null);
+		const pointerGraceTimer = writable(0);
 
 		const subIds = {
 			menu: uuid(),
@@ -222,8 +233,19 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					});
 				}
 
-				attach('focusin', () => {
-					clearOpenTimer(subOpenTimer);
+				attach('pointermove', (event) => {
+					onMenuPointerMove(event);
+				});
+
+				attach('focusout', (event) => {
+					event.preventDefault();
+					const menuElement = event.currentTarget as HTMLElement;
+					const relatedTarget = event.relatedTarget as HTMLElement;
+
+					if (!menuElement.contains(relatedTarget) && relatedTarget !== $activeTrigger) {
+						subOpen.set(false);
+						subActiveTrigger.set(null);
+					}
 				});
 
 				return {
@@ -242,16 +264,18 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		const subTrigger = elementDerived(
 			[subOpen, subOptions],
 			([$subOpen, $subOptions], { attach, getElement, addUnsubscriber }) => {
-				getElement().then((el) => setMeltMenuAttribute(el));
+				getElement().then((element) => setMeltMenuAttribute(element));
 
 				addUnsubscriber(() => {
 					if (!isBrowser) return;
 					clearOpenTimer(subOpenTimer);
+					window.clearTimeout(get(pointerGraceTimer));
+					pointerGraceIntent.set(null);
 				});
 
-				attach('click', (e) => {
+				attach('click', (event) => {
 					// Manually focus because iOS Safari doesn't always focus on click (e.g. buttons)
-					const triggerEl = e.currentTarget as HTMLElement;
+					const triggerEl = event.currentTarget as HTMLElement;
 					triggerEl.focus();
 					if (!get(subOpen)) {
 						subOpen.update((prev) => {
@@ -265,17 +289,18 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					}
 				});
 
-				attach('keydown', (e) => onSubTriggerKeydown(e, subOpen, subActiveTrigger));
+				attach('keydown', (event) => onSubTriggerKeydown(event, subOpen, subActiveTrigger));
 
-				attach('pointermove', (e) => {
-					if (e.pointerType !== 'mouse') {
+				attach('pointermove', (event) => {
+					if (event.pointerType !== 'mouse') {
 						return undefined;
 					}
-					const triggerEl = e.currentTarget as HTMLElement;
-					triggerEl.focus();
-					const open = get(subOpen);
+					onItemEnter(event);
+					if (event.defaultPrevented) return;
+
+					const triggerEl = event.currentTarget as HTMLElement;
 					const openTimer = get(subOpenTimer);
-					if (!open && !openTimer) {
+					if (!$subOpen && !openTimer) {
 						subOpenTimer.set(
 							window.setTimeout(() => {
 								subOpen.update(() => {
@@ -288,12 +313,46 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					}
 				});
 
-				attach('pointerleave', (e) => {
-					if (e.pointerType !== 'mouse') {
-						return undefined;
-					}
-
+				attach('pointerleave', (event) => {
+					if (event.pointerType !== 'mouse') return undefined;
 					clearOpenTimer(subOpenTimer);
+
+					const submenuElement = document.getElementById(subIds.menu);
+
+					const contentRect = submenuElement?.getBoundingClientRect();
+					if (contentRect) {
+						const side = submenuElement?.dataset.side as Side;
+						const rightSide = side === 'right';
+						const bleed = rightSide ? -5 : +5;
+						const contentNearEdge = contentRect[rightSide ? 'left' : 'right'];
+						const contentFarEdge = contentRect[rightSide ? 'right' : 'left'];
+
+						pointerGraceIntent.set({
+							area: [
+								// Apply a bleed on clientX to ensure that our exit point is
+								// consistently within polygon bounds
+								{ x: event.clientX + bleed, y: event.clientY },
+								{ x: contentNearEdge, y: contentRect.top },
+								{ x: contentFarEdge, y: contentRect.top },
+								{ x: contentFarEdge, y: contentRect.bottom },
+								{ x: contentNearEdge, y: contentRect.bottom },
+							],
+							side,
+						});
+
+						window.clearTimeout(get(pointerGraceTimer));
+						pointerGraceTimer.set(
+							window.setTimeout(() => {
+								pointerGraceIntent.set(null);
+							}, 300)
+						);
+					} else {
+						onTriggerLeave(event);
+						if (event.defaultPrevented) return;
+
+						// There's 100ms where the user may leave an item before the submenu was opened.
+						pointerGraceIntent.set(null);
+					}
 				});
 
 				attach('focusout', (e) => {
@@ -327,37 +386,29 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 		const subItem = elementMultiDerived([], (_, { attach, getElement }) => {
 			return () => {
-				getElement().then((el) => setMeltMenuAttribute(el));
+				getElement().then((element) => setMeltMenuAttribute(element));
 
-				attach('keydown', (e) => onMenuItemKeydown(e));
+				attach('keydown', (event) => onMenuItemKeydown(event));
 
-				attach('pointermove', (e) => {
-					e.preventDefault();
-					if (e.pointerType !== 'mouse') {
-						return undefined;
-					}
-
-					(e.currentTarget as HTMLElement).focus();
+				attach('pointermove', (event) => {
+					onMenuItemPointerMove(event);
 				});
 
-				attach('pointerleave', (e) => {
-					if (e.pointerType !== 'mouse') {
-						return undefined;
-					}
-					onItemLeave(e);
+				attach('pointerleave', (event) => {
+					onMenuItemPointerLeave(event);
 				});
 
-				attach('blur', (e) => {
-					const menuEl = document.getElementById(subIds.menu);
-					if (!menuEl) return;
-					const hasFocusedSubmenuItem = menuEl.matches(':focus-within');
-					const relatedTarget = e.relatedTarget as HTMLElement | null;
+				// attach('blur', (event) => {
+				// 	const menuElement = document.getElementById(subIds.menu);
+				// 	if (!menuElement) return;
+				// 	const hasFocusedSubmenuItem = menuElement.matches(':focus-within');
+				// 	const relatedTarget = event.relatedTarget as HTMLElement | null;
 
-					if (!hasFocusedSubmenuItem && relatedTarget?.id !== subIds.trigger) {
-						subOpen.set(false);
-						subActiveTrigger.set(null);
-					}
-				});
+				// 	if (!hasFocusedSubmenuItem && relatedTarget?.id !== subIds.trigger) {
+				// 		subOpen.set(false);
+				// 		subActiveTrigger.set(null);
+				// 	}
+				// });
 
 				return {
 					role: 'menuitem',
@@ -384,6 +435,13 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				subOpen.set(false);
 				subActiveTrigger.set(null);
 				openSubMenus.set([]);
+			}
+		});
+
+		effect([pointerGraceIntent], ([$pointerGraceIntent]) => {
+			if (!isBrowser) return;
+			if (!$pointerGraceIntent) {
+				window.clearTimeout(get(pointerGraceTimer));
 			}
 		});
 
@@ -430,17 +488,25 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	effect([rootOpen, rootMenu, rootActiveTrigger], ([$rootOpen, $rootMenu, $rootActiveTrigger]) => {
 		if (!isBrowser) return;
 
-		const menuEl = getElementByMeltId($rootMenu['data-melt-id']);
-		if (menuEl && $rootOpen) {
+		const menuElement = getElementByMeltId($rootMenu['data-melt-id']);
+		if (menuElement && $rootOpen) {
+			const handlePointer = () => isUsingKeyboard.set(false);
+			const handleKeyDown = () => {
+				isUsingKeyboard.set(true);
+				document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
+				document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
+			};
+			document.addEventListener('keydown', handleKeyDown, { capture: true });
+
 			// Selector to get menu items belonging to menu
-			const rootMenuItemSelector = `[role="menuitem"][data-melt-menu="${menuEl.id}"]`;
+			const rootMenuItemSelector = `[role="menuitem"][data-melt-menu="${menuElement.id}"]`;
 
 			// Focus on first menu item
 			const firstOption = document.querySelector(rootMenuItemSelector) as HTMLElement | undefined;
 			sleep(1).then(() => (firstOption ? firstOption.focus() : undefined));
 
-			const keydownListener = (e: KeyboardEvent) => {
-				if (e.key === kbd.ESCAPE) {
+			const keydownListener = (event: KeyboardEvent) => {
+				if (event.key === kbd.ESCAPE) {
 					rootOpen.set(false);
 					rootActiveTrigger.set(null);
 					return;
@@ -448,6 +514,9 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			};
 			document.addEventListener('keydown', keydownListener);
 			return () => {
+				document.removeEventListener('keydown', handleKeyDown, { capture: true });
+				document.removeEventListener('pointerdown', handlePointer, { capture: true });
+				document.removeEventListener('pointermove', handlePointer, { capture: true });
 				document.removeEventListener('keydown', keydownListener);
 			};
 		} else if (!$rootOpen && $rootActiveTrigger && isBrowser) {
@@ -469,60 +538,105 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		}
 	}
 
+	function onItemEnter(event: PointerEvent) {
+		if (get(isPointerMovingToSubmenu)(event)) {
+			event.preventDefault();
+		}
+	}
+
 	function onItemLeave(event: PointerEvent) {
+		if (get(isPointerMovingToSubmenu)(event)) {
+			return;
+		}
 		const menuEl = (event.target as HTMLElement).closest('[role="menu"]') as HTMLElement | null;
 		if (!menuEl) return;
 		menuEl.focus();
+	}
+
+	function onTriggerLeave(event: PointerEvent) {
+		if (get(isPointerMovingToSubmenu)(event)) {
+			event.preventDefault();
+		}
+	}
+
+	function onMenuPointerMove(event: PointerEvent) {
+		if (event.pointerType !== 'mouse') return;
+		const target = event.target as HTMLElement;
+
+		const $lastPointerX = get(lastPointerX);
+
+		const pointerXHasChanged = $lastPointerX !== event.clientX;
+
+		// We don't use `event.movementX` for this check because Safari will
+		// always return `0` on a pointer event.
+		if ((event.currentTarget as HTMLElement).contains(target) && pointerXHasChanged) {
+			const newDir = event.clientX > $lastPointerX ? 'right' : 'left';
+			pointerDir.set(newDir);
+			lastPointerX.set(event.clientX);
+		}
+	}
+
+	function onMenuItemPointerMove(event: PointerEvent) {
+		if (event.pointerType !== 'mouse') return;
+		onItemEnter(event);
+		if (!event.defaultPrevented) {
+			(event.currentTarget as HTMLElement).focus();
+		}
+	}
+
+	function onMenuItemPointerLeave(event: PointerEvent) {
+		if (event.pointerType !== 'mouse') return;
+		onItemLeave(event);
 	}
 
 	/* -------------------------------------------------------------------------------------------------
 	 * Keyboard Navigation
 	 * -----------------------------------------------------------------------------------------------*/
 
-	function onMenuItemKeydown(e: KeyboardEvent) {
-		const target = e.currentTarget as HTMLElement;
+	function onMenuItemKeydown(event: KeyboardEvent) {
+		const target = event.currentTarget as HTMLElement;
 
-		if (e.key === kbd.SPACE || FIRST_LAST_KEYS.includes(e.key)) e.preventDefault();
+		if (event.key === kbd.SPACE || FIRST_LAST_KEYS.includes(event.key)) event.preventDefault();
 
 		const nav = getMenuItemNav(target);
 		if (!nav) return;
 
 		const { next, prev } = nav;
 
-		if (e.key === kbd.ARROW_DOWN) {
+		if (event.key === kbd.ARROW_DOWN) {
 			return next ? next.focus() : undefined;
 		}
-		if (e.key === kbd.ARROW_UP) {
+		if (event.key === kbd.ARROW_UP) {
 			return prev ? prev.focus() : undefined;
 		}
-		if (SUB_CLOSE_KEYS['ltr'].includes(e.key)) {
+		if (SUB_CLOSE_KEYS['ltr'].includes(event.key)) {
 			handleCloseSubmenu(target);
 		}
 	}
 
 	function onSubTriggerKeydown(
-		e: KeyboardEvent,
+		event: KeyboardEvent,
 		open: Writable<boolean>,
 		activeTrigger: Writable<HTMLElement | null>
 	) {
-		const target = e.currentTarget as HTMLElement;
+		const target = event.currentTarget as HTMLElement;
 
-		if (FIRST_LAST_KEYS.includes(e.key)) e.preventDefault();
+		if (FIRST_LAST_KEYS.includes(event.key)) event.preventDefault();
 
 		const nav = getMenuItemNav(target);
 		if (!nav) return;
 
 		const { next, prev } = nav;
 
-		if (e.key === kbd.ARROW_DOWN) {
+		if (event.key === kbd.ARROW_DOWN) {
 			return next ? next.focus() : undefined;
 		}
-		if (e.key === kbd.ARROW_UP) {
+		if (event.key === kbd.ARROW_UP) {
 			return prev ? prev.focus() : undefined;
 		}
 
-		if (SUB_OPEN_KEYS['ltr'].includes(e.key)) {
-			e.preventDefault();
+		if (SUB_OPEN_KEYS['ltr'].includes(event.key)) {
+			event.preventDefault();
 			open.update((prev) => {
 				const isOpen = !prev;
 				if (isOpen) {
@@ -541,11 +655,13 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				if (openSubMenus.includes(submenuId)) return prev;
 				return [...prev, submenuId];
 			});
-			sleep(1).then(() => (firstOption ? firstOption.focus() : undefined));
-			return;
+			if (get(isUsingKeyboard)) {
+				sleep(1).then(() => (firstOption ? firstOption.focus() : undefined));
+			}
+			event.preventDefault();
 		}
 
-		if (SUB_CLOSE_KEYS['ltr'].includes(e.key)) {
+		if (SUB_CLOSE_KEYS['ltr'].includes(event.key)) {
 			return handleCloseSubmenu(target);
 		}
 	}
@@ -556,11 +672,11 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 	/**
 	 * Get the parent menu element for a menu item.
-	 * @param itemEl
+	 * @param element The menu item element
 	 */
 
-	function getParentMenu(itemEl: HTMLElement) {
-		return itemEl.closest('[role="menu"]');
+	function getParentMenu(element: HTMLElement) {
+		return element.closest('[role="menu"]');
 	}
 
 	function handleCloseSubmenu(element: HTMLElement) {
@@ -578,24 +694,24 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		sleep(1).then(() => (previousTrigger ? previousTrigger.focus() : undefined));
 	}
 
-	function setMeltMenuAttribute(el: HTMLElement | null) {
-		if (!el) return;
-		const menuEl = el.closest(
+	function setMeltMenuAttribute(element: HTMLElement | null) {
+		if (!element) return;
+		const menuEl = element.closest(
 			'[data-melt-part="menu-root"], [data-melt-part="menu-sub"]'
 		) as HTMLElement | null;
 		if (!menuEl) return;
-		el.setAttribute('data-melt-menu', menuEl.id);
+		element.setAttribute('data-melt-menu', menuEl.id);
 	}
 
-	function isItemInSubmenu(itemEl: HTMLElement) {
-		const menuEl = getParentMenu(itemEl);
+	function isItemInSubmenu(element: HTMLElement) {
+		const menuEl = getParentMenu(element);
 		if (!menuEl) return false;
 
 		return menuEl.getAttribute('data-melt-part') === 'menu-sub';
 	}
 
-	function getCurrentMenuItems(itemEl: HTMLElement) {
-		const menuEl = getParentMenu(itemEl);
+	function getCurrentMenuItems(element: HTMLElement) {
+		const menuEl = getParentMenu(element);
 		if (!menuEl) return null;
 
 		return Array.from(
@@ -603,11 +719,11 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		) as HTMLElement[];
 	}
 
-	function getMenuItemNav(itemEl: HTMLElement) {
-		const menuItems = getCurrentMenuItems(itemEl);
+	function getMenuItemNav(element: HTMLElement) {
+		const menuItems = getCurrentMenuItems(element);
 		if (!menuItems) return null;
 
-		const currentIndex = menuItems.indexOf(itemEl);
+		const currentIndex = menuItems.indexOf(element);
 
 		const next = currentIndex + 1 < menuItems.length ? menuItems[currentIndex + 1] : undefined;
 		const prev = currentIndex - 1 >= 0 ? menuItems[currentIndex - 1] : undefined;
@@ -627,4 +743,34 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		options: rootOptions,
 		createSubMenu,
 	};
+}
+
+type Point = { x: number; y: number };
+type Polygon = Point[];
+type Side = 'left' | 'right';
+type GraceIntent = { area: Polygon; side: Side };
+
+// Determine if a point is inside of a polygon.
+// Based on https://github.com/substack/point-in-polygon
+function isPointInPolygon(point: Point, polygon: Polygon) {
+	const { x, y } = point;
+	let inside = false;
+	for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+		const xi = polygon[i].x;
+		const yi = polygon[i].y;
+		const xj = polygon[j].x;
+		const yj = polygon[j].y;
+
+		// prettier-ignore
+		const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+		if (intersect) inside = !inside;
+	}
+
+	return inside;
+}
+
+function isPointerInGraceArea(event: PointerEvent, area?: Polygon) {
+	if (!area) return false;
+	const cursorPos = { x: event.clientX, y: event.clientY };
+	return isPointInPolygon(cursorPos, area);
 }
