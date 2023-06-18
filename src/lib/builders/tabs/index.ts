@@ -9,13 +9,13 @@ import {
 	prev,
 	uuid,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
+import type { Defaults, TextDirection } from '$lib/internal/types';
 import { writable } from 'svelte/store';
 
 export type CreateTabsArgs = {
 	value?: string;
 	onChange?: (value: string) => void;
-	dir?: 'ltr' | 'rtl';
+	dir?: TextDirection;
 	orientation?: 'horizontal' | 'vertical';
 	activateOnFocus?: boolean;
 	loop?: boolean;

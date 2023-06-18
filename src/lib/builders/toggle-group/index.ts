@@ -1,4 +1,5 @@
 import { elementMultiDerived, kbd } from '$lib/internal/helpers';
+import { getBrowserTextDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 
@@ -85,8 +86,7 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 				});
 			});
 
-			// TODO: detect dir
-			const dir = 'ltr' as 'ltr' | 'rtl';
+			const dir = getBrowserTextDirection();
 			const nextKey = {
 				horizontal: dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
 				vertical: kbd.ARROW_DOWN,
