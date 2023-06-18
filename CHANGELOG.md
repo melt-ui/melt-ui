@@ -1,5 +1,13 @@
 # @melt-ui/svelte
 
+## 0.10.3
+
+### Patch Changes
+
+- 517b1c1: fix: slider not working properly with low values
+- 5ff87f6: fix: focusTrap not unsubbing
+- bc51681: fix: Adjusts `typeVerisons` map to fix incorrect auto-imported path
+
 ## 0.10.2
 
 ### Patch Changes
