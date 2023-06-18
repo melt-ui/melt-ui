@@ -46,17 +46,22 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		};
 	});
 
-	const range = derived([value, options], ([$value, $options]) => {
+	const position = derived(options, ($options) => {
+		return (val: number) => {
+			const pos = ((val - $options.min) / ($options.max - $options.min)) * 100;
+
+			return Math.abs(pos);
+		};
+	});
+
+	const range = derived([value, options, position], ([$value, $options, $position]) => {
+		const minimum = $value.length > 1 ? $position(Math.min(...$value) ?? 0) : 0;
+		const maximum = 100 - $position(Math.max(...$value) ?? 0);
+
 		const orientationStyles =
 			$options.orientation === 'horizontal'
-				? {
-						left: `${$value.length > 1 ? Math.min(...$value) ?? 0 : 0}%`,
-						right: `calc(${100 - (Math.max(...$value) ?? 0)}%)`,
-				  }
-				: {
-						top: `${$value.length > 1 ? Math.min(...$value) ?? 0 : 0}%`,
-						bottom: `calc(${100 - (Math.max(...$value) ?? 0)}%)`,
-				  };
+				? { left: `${minimum}%`, right: `${maximum}%` }
+				: { top: `${minimum}%`, bottom: `${maximum}%` };
 
 		return {
 			style: styleToString({
@@ -86,8 +91,8 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 	};
 
 	const thumb = elementMultiDerived(
-		[value, options],
-		([$value, $options], { attach, index, getAllElements }) => {
+		[value, options, position],
+		([$value, $options, $position], { attach, index, getAllElements }) => {
 			return () => {
 				const { min: $min, max: $max, disabled: $disabled } = $options;
 
@@ -171,6 +176,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 					}
 				});
 
+				const thumbPosition = `${$position($value[index])}%`;
 				return {
 					role: 'slider',
 					'aria-label': 'Volume',
@@ -181,8 +187,8 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 					style: styleToString({
 						position: 'absolute',
 						...($options.orientation === 'horizontal'
-							? { left: `${$value[index]}%;`, translate: '-50% 0' }
-							: { top: `${$value[index]}%;`, translate: '0 -50%`' }),
+							? { left: thumbPosition, translate: '-50% 0' }
+							: { top: thumbPosition, translate: '0 -50%`' }),
 					}),
 					tabindex: $disabled ? -1 : 0,
 				};
