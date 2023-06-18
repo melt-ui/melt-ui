@@ -1,3 +1,4 @@
+import { isBrowser } from '$lib/internal/helpers/is';
 import type { TextDirection } from '$lib/internal/types';
 
 /**
@@ -5,6 +6,8 @@ import type { TextDirection } from '$lib/internal/types';
  * @returns {TextDirection} The text direction ('ltr' for left-to-right or 'rtl' for right-to-left).
  */
 export function getBrowserTextDirection(): TextDirection {
+	if (!isBrowser) return 'ltr';
+
 	const language = navigator.language;
 	const locale = new Intl.Locale(language);
 	const direction = locale.textInfo?.direction;
