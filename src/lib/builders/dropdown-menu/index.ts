@@ -66,6 +66,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		([$pointerDir, $pointerGraceIntent]) => {
 			return (event: PointerEvent) => {
 				const isMovingTowards = $pointerDir === $pointerGraceIntent?.side;
+
 				return isMovingTowards && isPointerInGraceArea(event, $pointerGraceIntent?.area);
 			};
 		}
@@ -366,8 +367,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				});
 
 				attach('focusout', (event) => {
-					event.preventDefault();
-
 					if (get(isUsingKeyboard)) {
 						const submenuElement = document.getElementById(subIds.menu);
 						if (
@@ -433,9 +432,20 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				attach('keydown', (event) => {
 					if (SUB_OPEN_KEYS['ltr'].includes(event.key)) {
 						const triggerElement = event.currentTarget as HTMLElement;
-						triggerElement.click();
 
-						event.preventDefault();
+						if (!$subOpen) {
+							triggerElement.click();
+							event.preventDefault();
+							return;
+						}
+
+						const menuId = triggerElement.getAttribute('aria-controls');
+						if (!menuId) return;
+						const menuElement = document.getElementById(menuId);
+						if (!menuElement) return;
+
+						const firstItem = getMenuItems(menuElement)[0];
+						firstItem.focus();
 					}
 				});
 
@@ -445,6 +455,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					}
 					onItemEnter(event);
 					if (event.defaultPrevented) return;
+					(event.currentTarget as HTMLElement).focus();
 
 					const triggerEl = event.currentTarget as HTMLElement;
 					const openTimer = get(subOpenTimer);
@@ -500,6 +511,20 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 						// There's 100ms where the user may leave an item before the submenu was opened.
 						pointerGraceIntent.set(null);
+					}
+				});
+
+				attach('focusout', (event) => {
+					const target = event.target as HTMLElement;
+					const relatedTarget = event.relatedTarget as HTMLElement | null;
+					if (!relatedTarget) return;
+					const menuId = target.getAttribute('aria-controls');
+					if (!menuId) return;
+					const menu = document.getElementById(menuId);
+
+					if (menu && !menu.contains(relatedTarget)) {
+						subOpen.set(false);
+						subActiveTrigger.set(null);
 					}
 				});
 
@@ -682,12 +707,14 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 	function onItemEnter(event: PointerEvent) {
 		if (get(isPointerMovingToSubmenu)(event)) {
+			console.log('pointer is moving to submenu');
 			event.preventDefault();
 		}
 	}
 
 	function onItemLeave(event: PointerEvent) {
 		if (get(isPointerMovingToSubmenu)(event)) {
+			console.log('pointer is moving to submenu');
 			return;
 		}
 		const menuEl = (event.target as HTMLElement).closest('[role="menu"]') as HTMLElement | null;
@@ -697,6 +724,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 	function onTriggerLeave(event: PointerEvent) {
 		if (get(isPointerMovingToSubmenu)(event)) {
+			console.log('pointer is moving to submenu');
 			event.preventDefault();
 		}
 	}
