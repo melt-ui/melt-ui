@@ -47,6 +47,7 @@
 	.menu {
 		@apply z-10 flex max-h-[300px] w-52 flex-col shadow-lg;
 		@apply rounded-md bg-white p-1 lg:max-h-none;
+        @apply ring-0 !important;
 	}
 	.subMenu {
 		@apply shadow-md shadow-neutral-900/50;

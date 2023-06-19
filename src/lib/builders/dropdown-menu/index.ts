@@ -708,14 +708,12 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 	function onItemEnter(event: PointerEvent) {
 		if (get(isPointerMovingToSubmenu)(event)) {
-			console.log('pointer is moving to submenu');
 			event.preventDefault();
 		}
 	}
 
 	function onItemLeave(event: PointerEvent) {
 		if (get(isPointerMovingToSubmenu)(event)) {
-			console.log('pointer is moving to submenu');
 			return;
 		}
 		const menuEl = (event.target as HTMLElement).closest('[role="menu"]') as HTMLElement | null;
@@ -725,7 +723,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 	function onTriggerLeave(event: PointerEvent) {
 		if (get(isPointerMovingToSubmenu)(event)) {
-			console.log('pointer is moving to submenu');
 			event.preventDefault();
 		}
 	}
