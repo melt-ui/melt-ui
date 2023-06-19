@@ -2,19 +2,34 @@
 	import { createDropdownMenu } from '@melt-ui/svelte';
     import { AlignJustify, ChevronRight } from 'icons'
 
-	const { trigger, menu, item, arrow, createSubMenu } = createDropdownMenu();
+	const { trigger, menu, item, arrow, createSubMenu } = createDropdownMenu({
+		defaults: {
+			onItemSelect: handleItemSelect,
+		},
+	});
 
 	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
 	const { subMenu: subMenuB, subTrigger: subTriggerB } = createSubMenu();
 
-	function handleItemClick(event: MouseEvent) {
+	function handleItemSelect(event: Event) {
+		/**
+		 * If you want to set a default function to handle item selection, you can
+		 * do so. This function will be called for every item that is selected. The default
+		 * behavior of closing the menu and focusing the trigger will occur after this function
+		 * is called.
+		 */
 		if (!(event.target instanceof HTMLElement)) return;
-        if (event.defaultPrevented) {
-            alert(`You clicked on "${event.target.textContent}" and prevented the default action which is to close the menu from happening!`);
-            return;
-        } else {
-            alert(`You clicked on "${event.target.textContent}"`);
-        }
+		alert(`You clicked on "${event.target.textContent}"`);
+	}
+
+	function handleCustomClick(event: Event) {
+		/**
+		 * You can use custom event handlers along with `|preventDefault` to override
+		 * the default behavior when selecting an item. The default behavior is to close
+		 * the menu and focus the trigger.
+		 */
+		if (!(event.target instanceof HTMLElement)) return;
+		console.log(`You overrode everything and clicked on "${event.target.textContent}"`);
 	}
 </script>
 
@@ -24,26 +39,30 @@
 </button>
 
 <div class="menu" {...$menu}>
-    <div class="item" {...$item()} on:click={handleItemClick}>New Tab</div>
-    <div class="item" {...$item()} on:click|preventDefault={handleItemClick}>New Window</div>
+    <div class="item" {...$item({ disableDefault: true })}>
+        New Tab
+    </div>
+    <div class="item" {...$item()}>New Window</div>
     <div class="item" {...$subTriggerA}>
         More Tools
         <ChevronRight class="h-4 w-4" />
     </div>
     <div class="menu subMenu" {...$subMenuA}>
-        <div class="item" {...$item()} on:click={handleItemClick}>Save Page As..</div>
-        <div class="item" {...$item()} on:click={handleItemClick}>Create Shortcut..</div>
+        <div class="item" {...$item()} on:click|preventDefault={handleCustomClick}>
+            Save Page As..
+        </div>
+        <div class="item" {...$item()}>Create Shortcut..</div>
         <div class="item" {...$subTriggerB}>
             Preferences
             <ChevronRight class="h-4 w-4" />
         </div>
         <div class="menu subMenu" {...$subMenuB}>
-            <div class="item" {...$item()} on:click={handleItemClick}>Keyboard Shortcuts</div>
-            <div class="item" {...$item()} on:click={handleItemClick}>Accessibility</div>
+            <div class="item" {...$item()}>Keyboard Shortcuts</div>
+            <div class="item" {...$item()}>Accessibility</div>
         </div>
     </div>
-    <div class="item" {...$item()} on:click={handleItemClick}>Show Bookmarks</div>
-    <div class="item" {...$item()} on:click={handleItemClick}>Show Full URLs</div>
+    <div class="item" {...$item()}>Show Bookmarks</div>
+    <div class="item" {...$item()}>Show Full URLs</div>
     <div {...$arrow} />
 </div>
 
