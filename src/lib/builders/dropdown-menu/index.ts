@@ -61,7 +61,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	const pointerGraceIntent = writable<GraceIntent | null>(null);
 	const pointerDir = writable<Side>('right');
 
-	const isPointerMovingToSubmenu = derivedWithUnsubscribe(
+	const pointerMovingToSubmenu = derivedWithUnsubscribe(
 		[pointerDir, pointerGraceIntent],
 		([$pointerDir, $pointerGraceIntent]) => {
 			return (event: PointerEvent) => {
@@ -86,28 +86,24 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					open: rootOpen,
 					options: {
 						floating: $rootOptions.positioning,
-						clickOutside: {
-							ignore: (event) => {
-								const target = event.target as HTMLElement;
-								if (target.closest(`[data-melt-part="menu-sub"]`)) {
-									return true;
-								}
-								return false;
-							},
-						},
 						focusTrap: null,
 					},
 				});
 
 				attach('keydown', (event) => {
-					// submenu key events bubble through portals, we only care about
-					// keys in the root menu
-					const target = event.target as HTMLElement;
+					// submenu key events bubble through portals
+					// we only care about key events that happen inside this menu
+					const target = event.target as HTMLElement | null;
+					if (!target) return;
 					const isKeyDownInside = target.closest('[data-melt-menu]') === event.currentTarget;
 
 					const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
 					const isCharacterKey = event.key.length === 1;
 					if (!isKeyDownInside) return;
+
+					if (FIRST_LAST_KEYS.includes(event.key)) {
+						handleMenuNavigation(event);
+					}
 
 					// menus should not be navigated using tab so we prevent it
 					// reference: https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
@@ -116,10 +112,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					if (!isModifierKey && isCharacterKey) {
 						// typeahead logic
 					}
-
-					// focus first/last item based on key
-					if (!FIRST_LAST_KEYS.includes(event.key)) return;
-					handleMenuNavigation(event);
 				});
 			}
 
@@ -159,8 +151,10 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			});
 
 			attach('keydown', (event) => {
-				const triggerElement = event.currentTarget as HTMLElement;
-				if (SELECTION_KEYS.includes(event.key)) {
+				const triggerElement = event.currentTarget as HTMLElement | null;
+				if (!triggerElement) return;
+
+				if (SELECTION_KEYS.includes(event.key) || event.key === kbd.ARROW_DOWN) {
 					rootOpen.update((prev) => {
 						const isOpen = !prev;
 						if (isOpen) {
@@ -171,14 +165,17 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 						return isOpen;
 					});
+
+					const menuId = triggerElement.getAttribute('aria-controls');
+					if (!menuId) return;
+					const menu = document.getElementById(menuId);
+					if (!menu) return;
+					const menuItems = getMenuItems(menu);
+					if (!menuItems.length) return;
+
+					sleep(1).then(() => menuItems[0].focus());
 				}
 
-				if (event.key === kbd.ARROW_DOWN) {
-					rootOpen.update(() => {
-						rootActiveTrigger.set(triggerElement);
-						return true;
-					});
-				}
 				event.preventDefault();
 			});
 
@@ -299,8 +296,12 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					if (!isKeyDownInside) return;
 
 					if (FIRST_LAST_KEYS.includes(event.key)) {
+						// prevent events from bubbling
 						event.stopImmediatePropagation();
+						handleMenuNavigation(event);
 					}
+
+					// close the submenu if the user presses a close key
 					if (isCloseKey) {
 						event.preventDefault();
 						subOpen.update(() => {
@@ -309,16 +310,13 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 							return false;
 						});
 					}
+
 					// menus should not be navigated using tab so we prevent it
 					// reference: https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
 					if (event.key === 'Tab') event.preventDefault();
 					if (!isModifierKey && isCharacterKey) {
 						// typeahead logic
 					}
-
-					// focus first/last item based on key
-					if (!FIRST_LAST_KEYS.includes(event.key)) return;
-					handleMenuNavigation(event);
 				});
 
 				attach('pointermove', (event) => {
@@ -607,39 +605,33 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	 * Pointer Event Effects
 	 * -----------------------------------------------------------------------------------------------*/
 
-	function clearOpenTimer(openTimer: Writable<number | null>) {
-		if (!isBrowser) return;
-		const timer = get(openTimer);
-		if (timer) {
-			window.clearTimeout(timer);
-			openTimer.set(null);
-		}
-	}
-
 	function onItemEnter(event: PointerEvent) {
-		if (get(isPointerMovingToSubmenu)(event)) {
+		if (isPointerMovingToSubmenu(event)) {
 			event.preventDefault();
 		}
 	}
 
 	function onItemLeave(event: PointerEvent) {
-		if (get(isPointerMovingToSubmenu)(event)) {
+		if (isPointerMovingToSubmenu(event)) {
 			return;
 		}
-		const menuEl = (event.target as HTMLElement).closest('[role="menu"]') as HTMLElement | null;
+		const target = event.target as HTMLElement | null;
+		if (!target) return;
+		const menuEl = getParentMenu(target);
 		if (!menuEl) return;
 		menuEl.focus();
 	}
 
 	function onTriggerLeave(event: PointerEvent) {
-		if (get(isPointerMovingToSubmenu)(event)) {
+		if (isPointerMovingToSubmenu(event)) {
 			event.preventDefault();
 		}
 	}
 
 	function onMenuPointerMove(event: PointerEvent) {
 		if (event.pointerType !== 'mouse') return;
-		const target = event.target as HTMLElement;
+		const target = (event.target as HTMLElement) || null;
+		if (!target) return;
 
 		const $lastPointerX = get(lastPointerX);
 
@@ -658,7 +650,10 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		if (event.pointerType !== 'mouse') return;
 		onItemEnter(event);
 		if (!event.defaultPrevented) {
-			(event.currentTarget as HTMLElement).focus();
+			const currentTarget = event.currentTarget as HTMLElement | null;
+			if (!currentTarget) return;
+			// focus on the current menu item
+			currentTarget.focus();
 		}
 	}
 
@@ -671,19 +666,40 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	 * Helper Functions
 	 * -----------------------------------------------------------------------------------------------*/
 
+	function isPointerMovingToSubmenu(event: PointerEvent) {
+		return get(pointerMovingToSubmenu)(event);
+	}
+
+	function clearOpenTimer(openTimer: Writable<number | null>) {
+		if (!isBrowser) return;
+		const timer = get(openTimer);
+		if (timer) {
+			window.clearTimeout(timer);
+			openTimer.set(null);
+		}
+	}
+
 	function handleMenuNavigation(event: KeyboardEvent) {
 		event.preventDefault();
-		const currentItem = document.activeElement as HTMLElement;
 
-		// menu items of the target menu
-		const candidateNodes = getMenuItems(event.currentTarget as HTMLElement);
+		// currently focused menu item
+		const currentFocusedItem = document.activeElement as HTMLElement | null;
+		if (!currentFocusedItem) return;
 
-		// Get the index of the current item in the candidate nodes array
-		const currentIndex = candidateNodes.indexOf(currentItem);
+		// menu element being navigated
+		const currentTarget = event.currentTarget as HTMLElement | null;
+		if (!currentTarget) return;
 
-		// Calculate the index of the next item
+		// menu items of the current menu
+		const candidateNodes = getMenuItems(currentTarget);
+		if (!candidateNodes.length) return;
+
+		// Index of the currently focused item in the candidate nodes array
+		const currentIndex = candidateNodes.indexOf(currentFocusedItem);
+
+		// Calculate the index of the next menu item
 		const nextIndex =
-			event.key === 'ArrowUp'
+			event.key === kbd.ARROW_UP
 				? currentIndex > 0
 					? currentIndex - 1
 					: 0
@@ -692,19 +708,21 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				: currentIndex;
 
 		// Focus the next item
-		const nextItem = candidateNodes[nextIndex];
-		sleep(1).then(() => nextItem.focus());
+		sleep(1).then(() => candidateNodes[nextIndex].focus());
 	}
 
 	/**
 	 * Get the parent menu element for a menu item.
 	 * @param element The menu item element
 	 */
-
-	function getParentMenu(element: HTMLElement) {
+	function getParentMenu(element: HTMLElement): HTMLElement | null {
 		return element.closest('[role="menu"]');
 	}
 
+	/**
+	 * Set the `data-melt-menu-id` attribute on a menu item element.
+	 * @param element The menu item element
+	 */
 	function setMeltMenuAttribute(element: HTMLElement | null) {
 		if (!element) return;
 		const menuEl = element.closest(
@@ -714,6 +732,12 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		element.setAttribute('data-melt-menu-id', menuEl.id);
 	}
 
+	/**
+	 * Get the menu items for a given menu element.
+	 * This only selects menu items that are direct children of the menu element,
+	 * not menu items that are nested in submenus.
+	 * @param element The menu item element
+	 */
 	function getMenuItems(menuElement: HTMLElement) {
 		return Array.from(
 			menuElement.querySelectorAll(`[role="menuitem"][data-melt-menu-id="${menuElement.id}"]`)
