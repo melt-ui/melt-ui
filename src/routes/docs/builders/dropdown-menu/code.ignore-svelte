@@ -1,44 +1,41 @@
 <script lang="ts">
 	import { createDropdownMenu } from '@melt-ui/svelte';
-    import { Docs } from '$routes/(components)';
-	import AlignJustify from '~icons/lucide/align-justify';
-	import ChevronRight from '~icons/lucide/chevron-right';
+    import { AlignJustify, ChevronRight } from 'icons'
 
 	const { trigger, menu, item, arrow, createSubMenu } = createDropdownMenu();
 
-	const { subMenu: subMenuA, subTrigger: subTriggerA, subItem: subItemA } = createSubMenu();
-	const { subMenu: subMenuB, subTrigger: subTriggerB, subItem: subItemB } = createSubMenu();
+	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
+	const { subMenu: subMenuB, subTrigger: subTriggerB } = createSubMenu();
 </script>
 
-<Docs.PreviewWrapper>
-	<button type="button" class="trigger" {...$trigger} aria-label="Update dimensions">
-		<AlignJustify class="h-4 w-4" />
-		<span class="sr-only">Open Popover</span>
-	</button>
+<button type="button" class="trigger" {...$trigger} aria-label="Update dimensions">
+    <AlignJustify class="h-4 w-4" />
+    <span class="sr-only">Open Menu</span>
+</button>
 
-	<div class="menu" {...$menu}>
-		<div class="item" {...$item()}>New Tab</div>
-		<div class="item" {...$item()}>New Window</div>
-		<div class="item" {...$subTriggerA}>
-			More Tools
-			<ChevronRight class="h-4 w-4" />
-		</div>
-		<div class="menu subMenu" {...$subMenuA}>
-			<div class="item" {...$subItemA()}>New Tab</div>
-			<div class="item" {...$subItemA()}>New Window</div>
-			<div class="item" {...$subTriggerB}>
-				Even More
-				<ChevronRight class="h-4 w-4" />
-			</div>
-			<div class="menu subMenu" {...$subMenuB}>
-				<div class="item" {...$subItemB()}>New Tool</div>
-				<div class="item" {...$subItemB()}>New Shiny Thing</div>
-			</div>
-		</div>
-		<div class="item" {...$item()}>Show Bookmarks</div>
-		<div {...$arrow} />
-	</div>
-</Docs.PreviewWrapper>
+<div class="menu" {...$menu}>
+    <div class="item" {...$item()}>New Tab</div>
+    <div class="item" {...$item()}>New Window</div>
+    <div class="item" {...$subTriggerA}>
+        More Tools
+        <ChevronRight class="h-4 w-4" />
+    </div>
+    <div class="menu subMenu" {...$subMenuA}>
+        <div class="item" {...$item()}>Save Page As..</div>
+        <div class="item" {...$item()}>Create Shortcut..</div>
+        <div class="item" {...$subTriggerB}>
+            Preferences
+            <ChevronRight class="h-4 w-4" />
+        </div>
+        <div class="menu subMenu" {...$subMenuB}>
+            <div class="item" {...$item()}>Keyboard Shortcuts</div>
+            <div class="item" {...$item()}>Accessibility</div>
+        </div>
+    </div>
+    <div class="item" {...$item()}>Show Bookmarks</div>
+    <div class="item" {...$item()}>Show Full URLs</div>
+    <div {...$arrow} />
+</div>
 
 <style lang="postcss">
 	.label {
@@ -47,7 +44,7 @@
 	.menu {
 		@apply z-10 flex max-h-[300px] w-52 flex-col shadow-lg;
 		@apply rounded-md bg-white p-1 lg:max-h-none;
-        @apply ring-0 !important;
+		@apply ring-0 !important;
 	}
 	.subMenu {
 		@apply shadow-md shadow-neutral-900/50;

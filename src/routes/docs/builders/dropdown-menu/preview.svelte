@@ -6,8 +6,8 @@
 
 	const { trigger, menu, item, arrow, createSubMenu } = createDropdownMenu();
 
-	const { subMenu: subMenuA, subTrigger: subTriggerA, subItem: itemA } = createSubMenu();
-	const { subMenu: subMenuB, subTrigger: subTriggerB, subItem: itemB } = createSubMenu();
+	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
+	const { subMenu: subMenuB, subTrigger: subTriggerB } = createSubMenu();
 </script>
 
 <Docs.PreviewWrapper>
@@ -24,18 +24,19 @@
 			<ChevronRight class="h-4 w-4" />
 		</div>
 		<div class="menu subMenu" {...$subMenuA}>
-			<div class="item" {...$itemA()}>New Tab</div>
-			<div class="item" {...$itemA()}>New Window</div>
+			<div class="item" {...$item()}>Save Page As..</div>
+			<div class="item" {...$item()}>Create Shortcut..</div>
 			<div class="item" {...$subTriggerB}>
-				Even More
+				Preferences
 				<ChevronRight class="h-4 w-4" />
 			</div>
 			<div class="menu subMenu" {...$subMenuB}>
-				<div class="item" {...$itemB()}>New Tool</div>
-				<div class="item" {...$itemB()}>New Shiny Thing</div>
+				<div class="item" {...$item()}>Keyboard Shortcuts</div>
+				<div class="item" {...$item()}>Accessibility</div>
 			</div>
 		</div>
 		<div class="item" {...$item()}>Show Bookmarks</div>
+		<div class="item" {...$item()}>Show Full URLs</div>
 		<div {...$arrow} />
 	</div>
 </Docs.PreviewWrapper>
@@ -47,7 +48,7 @@
 	.menu {
 		@apply z-10 flex max-h-[300px] w-52 flex-col shadow-lg;
 		@apply rounded-md bg-white p-1 lg:max-h-none;
-        @apply ring-0 !important;
+		@apply ring-0 !important;
 	}
 	.subMenu {
 		@apply shadow-md shadow-neutral-900/50;

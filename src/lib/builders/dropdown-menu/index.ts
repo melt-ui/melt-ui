@@ -72,9 +72,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		}
 	);
 
-	// The currently open submenu ids
-	const openSubMenus = writable<string[]>([]);
-
 	const rootIds = {
 		menu: uuid(),
 		trigger: uuid(),
@@ -544,39 +541,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			}
 		);
 
-		const subItem = elementMultiDerived([], (_, { attach, getElement }) => {
-			return () => {
-				getElement().then((element) => setMeltMenuAttribute(element));
-
-				attach('pointermove', (event) => {
-					onMenuItemPointerMove(event);
-				});
-
-				attach('pointerleave', (event) => {
-					onMenuItemPointerLeave(event);
-				});
-
-				attach('keydown', (event) => {
-					// TODO: abstract this out to reuse with both root & submenu items
-					if (SELECTION_KEYS.includes(event.key)) {
-						(event.currentTarget as HTMLElement).click();
-						/**
-						 * We prevent default browser behaviour for selection keys as they should trigger
-						 * a selection only:
-						 * - prevents space from scrolling the page.
-						 * - if keydown causes focus to move, prevents keydown from firing on the new target.
-						 */
-						event.preventDefault();
-					}
-				});
-
-				return {
-					role: 'menuitem',
-					tabindex: -1,
-				};
-			};
-		});
-
 		const subArrow = derived(subOptions, ($subOptions) => ({
 			'data-arrow': true,
 			style: styleToString({
@@ -604,21 +568,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			}
 		});
 
-		effect([openSubMenus], ([$openSubMenus]) => {
-			const currentSubIndex = $openSubMenus.indexOf(subIds.menu);
-			if ($openSubMenus.length === 0) {
-				subOpen.set(false);
-				subActiveTrigger.set(null);
-				return;
-			}
-
-			if (currentSubIndex === -1) {
-				subOpen.set(false);
-				subActiveTrigger.set(null);
-				return;
-			}
-		});
-
 		effect([subOpen, subMenu, subActiveTrigger], ([$subOpen, $subMenu, $subActiveTrigger]) => {
 			if (!isBrowser) return;
 			const menuElement = getElementByMeltId($subMenu['data-melt-id']);
@@ -640,7 +589,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			subOpen,
 			subArrow,
 			subOptions,
-			subItem,
 		};
 	};
 
@@ -756,10 +704,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		if (event.pointerType !== 'mouse') return;
 		onItemLeave(event);
 	}
-
-	/* -------------------------------------------------------------------------------------------------
-	 * Keyboard Navigation
-	 * -----------------------------------------------------------------------------------------------*/
 
 	/* -------------------------------------------------------------------------------------------------
 	 * Helper Functions
