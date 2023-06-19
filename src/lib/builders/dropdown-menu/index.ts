@@ -173,7 +173,10 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					const menuItems = getMenuItems(menu);
 					if (!menuItems.length) return;
 
-					sleep(1).then(() => menuItems[0].focus());
+					const nextFocusedElement = menuItems[0];
+					if (!nextFocusedElement) return;
+
+					handleRovingFocus(nextFocusedElement);
 				}
 
 				event.preventDefault();
@@ -305,7 +308,9 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					if (isCloseKey) {
 						event.preventDefault();
 						subOpen.update(() => {
-							$activeTrigger?.focus();
+							if ($activeTrigger) {
+								handleRovingFocus($activeTrigger);
+							}
 							subActiveTrigger.set(null);
 							return false;
 						});
@@ -372,13 +377,15 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 				attach('click', (event) => {
 					// Manually focus because iOS Safari doesn't always focus on click (e.g. buttons)
-					const triggerElement = event.currentTarget as HTMLElement;
-					triggerElement.focus();
+					const currentTarget = event.currentTarget as HTMLElement | null;
+					if (!currentTarget) return;
+
+					handleRovingFocus(currentTarget);
 					if (!get(subOpen)) {
 						subOpen.update((prev) => {
 							const isAlreadyOpen = prev;
 							if (!isAlreadyOpen) {
-								subActiveTrigger.set(triggerElement);
+								subActiveTrigger.set(currentTarget);
 								return !prev;
 							}
 							return prev;
@@ -388,40 +395,42 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 				attach('keydown', (event) => {
 					if (SUB_OPEN_KEYS['ltr'].includes(event.key)) {
-						const triggerElement = event.currentTarget as HTMLElement;
+						const currentTarget = event.currentTarget as HTMLElement | null;
+						if (!currentTarget) return;
 
 						if (!$subOpen) {
-							triggerElement.click();
+							currentTarget.click();
 							event.preventDefault();
 							return;
 						}
 
-						const menuId = triggerElement.getAttribute('aria-controls');
+						const menuId = currentTarget.getAttribute('aria-controls');
 						if (!menuId) return;
 						const menuElement = document.getElementById(menuId);
 						if (!menuElement) return;
 
 						const firstItem = getMenuItems(menuElement)[0];
-						firstItem.focus();
+						handleRovingFocus(firstItem);
 					}
 					return;
 				});
 
 				attach('pointermove', (event) => {
-					if (event.pointerType !== 'mouse') {
-						return undefined;
-					}
+					if (!isMouse(event)) return;
+
 					onItemEnter(event);
 					if (event.defaultPrevented) return;
-					(event.currentTarget as HTMLElement).focus();
+					const currentTarget = event.currentTarget as HTMLElement | null;
+					if (!currentTarget) return;
 
-					const triggerEl = event.currentTarget as HTMLElement;
+					handleRovingFocus(currentTarget);
+
 					const openTimer = get(subOpenTimer);
 					if (!$subOpen && !openTimer) {
 						subOpenTimer.set(
 							window.setTimeout(() => {
 								subOpen.update(() => {
-									subActiveTrigger.set(triggerEl);
+									subActiveTrigger.set(currentTarget);
 									return true;
 								});
 								clearOpenTimer(subOpenTimer);
@@ -431,7 +440,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				});
 
 				attach('pointerleave', (event) => {
-					if (event.pointerType !== 'mouse') return undefined;
+					if (!isMouse(event)) return;
 					clearOpenTimer(subOpenTimer);
 
 					const submenuElement = document.getElementById(subIds.menu);
@@ -537,9 +546,9 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 				// Focus on first menu item
 				const firstOption = document.querySelector(rootMenuItemSelector) as HTMLElement | undefined;
-				sleep(1).then(() => (firstOption ? firstOption.focus() : undefined));
+				sleep(1).then(() => (firstOption ? handleRovingFocus(firstOption) : undefined));
 			} else if (!$subOpen && $subActiveTrigger && isBrowser) {
-				sleep(1).then(() => $subActiveTrigger.focus());
+				sleep(1).then(() => handleRovingFocus($subActiveTrigger));
 			}
 		});
 
@@ -557,12 +566,12 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	 * -----------------------------------------------------------------------------------------------*/
 	effect([rootOpen, rootActiveTrigger], ([$rootOpen, $rootActiveTrigger]) => {
 		if (!isBrowser) return;
-		const menuElement = document.getElementById(rootIds.menu);
-		if (menuElement && $rootOpen) {
-			sleep(1).then(() => menuElement.focus());
+		const rootMenuElement = document.getElementById(rootIds.menu);
+		if (rootMenuElement && $rootOpen) {
+			handleRovingFocus(rootMenuElement);
 		}
 		if (!$rootOpen && $rootActiveTrigger) {
-			$rootActiveTrigger?.focus();
+			handleRovingFocus($rootActiveTrigger);
 		}
 	});
 
@@ -597,7 +606,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			};
 		} else if (!$rootOpen && $rootActiveTrigger && isBrowser) {
 			// Hacky way to prevent the keydown event from triggering on the trigger
-			sleep(1).then(() => $rootActiveTrigger.focus());
+			sleep(1).then(() => handleRovingFocus($rootActiveTrigger));
 		}
 	});
 
@@ -617,9 +626,9 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		}
 		const target = event.target as HTMLElement | null;
 		if (!target) return;
-		const menuEl = getParentMenu(target);
-		if (!menuEl) return;
-		menuEl.focus();
+		const parentMenuElement = getParentMenu(target);
+		if (!parentMenuElement) return;
+		handleRovingFocus(parentMenuElement);
 	}
 
 	function onTriggerLeave(event: PointerEvent) {
@@ -629,17 +638,20 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	}
 
 	function onMenuPointerMove(event: PointerEvent) {
-		if (event.pointerType !== 'mouse') return;
-		const target = (event.target as HTMLElement) || null;
+		if (!isMouse(event)) return;
+
+		const target = event.target as HTMLElement | null;
 		if (!target) return;
 
-		const $lastPointerX = get(lastPointerX);
+		const currentTarget = event.currentTarget as HTMLElement | null;
+		if (!currentTarget) return;
 
+		const $lastPointerX = get(lastPointerX);
 		const pointerXHasChanged = $lastPointerX !== event.clientX;
 
 		// We don't use `event.movementX` for this check because Safari will
 		// always return `0` on a pointer event.
-		if ((event.currentTarget as HTMLElement).contains(target) && pointerXHasChanged) {
+		if (currentTarget.contains(target) && pointerXHasChanged) {
 			const newDir = event.clientX > $lastPointerX ? 'right' : 'left';
 			pointerDir.set(newDir);
 			lastPointerX.set(event.clientX);
@@ -647,18 +659,18 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	}
 
 	function onMenuItemPointerMove(event: PointerEvent) {
-		if (event.pointerType !== 'mouse') return;
+		if (!isMouse(event)) return;
 		onItemEnter(event);
 		if (!event.defaultPrevented) {
 			const currentTarget = event.currentTarget as HTMLElement | null;
 			if (!currentTarget) return;
 			// focus on the current menu item
-			currentTarget.focus();
+			handleRovingFocus(currentTarget);
 		}
 	}
 
 	function onMenuItemPointerLeave(event: PointerEvent) {
-		if (event.pointerType !== 'mouse') return;
+		if (!isMouse(event)) return;
 		onItemLeave(event);
 	}
 
@@ -666,10 +678,43 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	 * Helper Functions
 	 * -----------------------------------------------------------------------------------------------*/
 
+	/**
+	 * Manage roving focus between elements. Sets the current active element to
+	 * tabindex -1 and the next element to tabindex 0.
+	 *
+	 * @param nextElement The element to focus on
+	 */
+	function handleRovingFocus(nextElement: HTMLElement) {
+		if (!isBrowser) return;
+
+		const currentFocusedElement = document.activeElement as HTMLElement | null;
+		if (!currentFocusedElement) return;
+
+		// if we already have focus on the next element, do nothing
+		if (currentFocusedElement === nextElement) return;
+
+		currentFocusedElement.tabIndex = -1;
+		nextElement.tabIndex = 0;
+
+		sleep(1).then(() => nextElement.focus());
+	}
+
 	function isPointerMovingToSubmenu(event: PointerEvent) {
 		return get(pointerMovingToSubmenu)(event);
 	}
 
+	/**
+	 * Check if the event is a mouse event
+	 * @param event The pointer event
+	 */
+	function isMouse(event: PointerEvent) {
+		return event.pointerType === 'mouse';
+	}
+
+	/**
+	 * Given a timer store, clear the timeout and set the store to null
+	 * @param openTimer The timer store
+	 */
 	function clearOpenTimer(openTimer: Writable<number | null>) {
 		if (!isBrowser) return;
 		const timer = get(openTimer);
@@ -679,6 +724,10 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		}
 	}
 
+	/**
+	 * Keyboard event handler for menu navigation
+	 * @param event The keyboard event
+	 */
 	function handleMenuNavigation(event: KeyboardEvent) {
 		event.preventDefault();
 
@@ -707,8 +756,9 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				? currentIndex + 1
 				: currentIndex;
 
-		// Focus the next item
-		sleep(1).then(() => candidateNodes[nextIndex].focus());
+		const nextFocusedItem = candidateNodes[nextIndex];
+
+		handleRovingFocus(nextFocusedItem);
 	}
 
 	/**
