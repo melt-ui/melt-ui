@@ -8,6 +8,16 @@
 
 	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
 	const { subMenu: subMenuB, subTrigger: subTriggerB } = createSubMenu();
+
+	function handleItemClick(event: MouseEvent) {
+		if (!(event.target instanceof HTMLElement)) return;
+        if (event.defaultPrevented) {
+            alert(`You clicked on "${event.target.textContent}" and prevented the default action which is to close the menu from happening!`);
+            return;
+        } else {
+            alert(`You clicked on "${event.target.textContent}"`);
+        }
+	}
 </script>
 
 <Docs.PreviewWrapper>
@@ -17,26 +27,26 @@
 	</button>
 
 	<div class="menu" {...$menu}>
-		<div class="item" {...$item()}>New Tab</div>
-		<div class="item" {...$item()}>New Window</div>
+		<div class="item" {...$item()} on:click={handleItemClick}>New Tab</div>
+		<div class="item" {...$item()} on:click|preventDefault={handleItemClick}>New Window</div>
 		<div class="item" {...$subTriggerA}>
 			More Tools
 			<ChevronRight class="h-4 w-4" />
 		</div>
 		<div class="menu subMenu" {...$subMenuA}>
-			<div class="item" {...$item()}>Save Page As..</div>
-			<div class="item" {...$item()}>Create Shortcut..</div>
+			<div class="item" {...$item()} on:click={handleItemClick}>Save Page As..</div>
+			<div class="item" {...$item()} on:click={handleItemClick}>Create Shortcut..</div>
 			<div class="item" {...$subTriggerB}>
 				Preferences
 				<ChevronRight class="h-4 w-4" />
 			</div>
 			<div class="menu subMenu" {...$subMenuB}>
-				<div class="item" {...$item()}>Keyboard Shortcuts</div>
-				<div class="item" {...$item()}>Accessibility</div>
+				<div class="item" {...$item()} on:click={handleItemClick}>Keyboard Shortcuts</div>
+				<div class="item" {...$item()} on:click={handleItemClick}>Accessibility</div>
 			</div>
 		</div>
-		<div class="item" {...$item()}>Show Bookmarks</div>
-		<div class="item" {...$item()}>Show Full URLs</div>
+		<div class="item" {...$item()} on:click={handleItemClick}>Show Bookmarks</div>
+		<div class="item" {...$item()} on:click={handleItemClick}>Show Full URLs</div>
 		<div {...$arrow} />
 	</div>
 </Docs.PreviewWrapper>

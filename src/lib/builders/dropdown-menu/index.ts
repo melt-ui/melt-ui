@@ -202,9 +202,15 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		}),
 	}));
 
-	const rootItem = elementMultiDerived([], (_, { attach, getElement }) => {
+	const item = elementMultiDerived([], (_, { attach, getElement }) => {
 		return () => {
 			getElement().then((element) => setMeltMenuAttribute(element));
+
+			attach('click', (event) => {
+				if (event.defaultPrevented) return;
+				rootActiveTrigger.set(null);
+				rootOpen.set(false);
+			});
 
 			attach('keydown', (event) => {
 				if (SELECTION_KEYS.includes(event.key)) {
@@ -262,12 +268,12 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 		const subMenu = elementDerived(
 			[subOpen, subActiveTrigger, subOptions],
-			([$subOpen, $activeTrigger, $subOptions], { addAction, attach }) => {
-				if ($subOpen && $activeTrigger) {
-					const parentMenuEl = getParentMenu($activeTrigger) as HTMLElement | undefined;
+			([$subOpen, $subActiveTrigger, $subOptions], { addAction, attach }) => {
+				if ($subOpen && $subActiveTrigger) {
+					const parentMenuEl = getParentMenu($subActiveTrigger) as HTMLElement | undefined;
 
 					addAction(usePopper, {
-						anchorElement: $activeTrigger,
+						anchorElement: $subActiveTrigger,
 						open: subOpen,
 						options: {
 							floating: $subOptions.positioning,
@@ -308,8 +314,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					if (isCloseKey) {
 						event.preventDefault();
 						subOpen.update(() => {
-							if ($activeTrigger) {
-								handleRovingFocus($activeTrigger);
+							if ($subActiveTrigger) {
+								handleRovingFocus($subActiveTrigger);
 							}
 							subActiveTrigger.set(null);
 							return false;
@@ -333,7 +339,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						const submenuElement = document.getElementById(subIds.menu);
 						if (
 							!submenuElement?.contains(event.target as HTMLElement) &&
-							event.target !== $activeTrigger
+							event.target !== $subActiveTrigger
 						) {
 							subOpen.set(false);
 							subActiveTrigger.set(null);
@@ -341,7 +347,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					} else {
 						const menuElement = event.currentTarget as HTMLElement;
 						const relatedTarget = event.relatedTarget as HTMLElement;
-						if (!menuElement.contains(relatedTarget) && relatedTarget !== $activeTrigger) {
+						if (!menuElement.contains(relatedTarget) && relatedTarget !== $subActiveTrigger) {
 							subOpen.set(false);
 							subActiveTrigger.set(null);
 						}
@@ -406,6 +412,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 						const menuId = currentTarget.getAttribute('aria-controls');
 						if (!menuId) return;
+
 						const menuElement = document.getElementById(menuId);
 						if (!menuElement) return;
 
@@ -419,7 +426,9 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					if (!isMouse(event)) return;
 
 					onItemEnter(event);
+
 					if (event.defaultPrevented) return;
+
 					const currentTarget = event.currentTarget as HTMLElement | null;
 					if (!currentTarget) return;
 
@@ -444,8 +453,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					clearOpenTimer(subOpenTimer);
 
 					const submenuElement = document.getElementById(subIds.menu);
-
 					const contentRect = submenuElement?.getBoundingClientRect();
+
 					if (contentRect) {
 						const side = submenuElement?.dataset.side as Side;
 						const rightSide = side === 'right';
@@ -482,11 +491,15 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				});
 
 				attach('focusout', (event) => {
-					const target = event.target as HTMLElement;
+					const target = event.target as HTMLElement | null;
+					if (!target) return;
+
 					const relatedTarget = event.relatedTarget as HTMLElement | null;
 					if (!relatedTarget) return;
+
 					const menuId = target.getAttribute('aria-controls');
 					if (!menuId) return;
+
 					const menu = document.getElementById(menuId);
 
 					if (menu && !menu.contains(relatedTarget)) {
@@ -798,7 +811,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		trigger: rootTrigger,
 		menu: rootMenu,
 		open: rootOpen,
-		item: rootItem,
+		item,
 		arrow: rootArrow,
 		options: rootOptions,
 		createSubMenu,
