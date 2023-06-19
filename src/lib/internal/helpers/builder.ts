@@ -156,12 +156,7 @@ const initElementHelpers = (setId: (id: string) => void) => {
 		const getElement: Helpers['getElement'] = async () => {
 			if (!isBrowser) return null;
 
-			const el = getElementByMeltId(id);
-			if (!el) {
-				return await tick().then(() => getElementByMeltId(id));
-			}
-
-			return el;
+			return await tick().then(() => getElementByMeltId(id));
 		};
 
 		const addAction: AddAction = async (action, parameters) => {
