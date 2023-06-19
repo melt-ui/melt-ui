@@ -21,3 +21,33 @@ export const kbd = {
 	SPACE: ' ',
 	TAB: 'Tab',
 };
+
+export const getNextKey = (
+	dir: 'ltr' | 'rtl' = 'ltr',
+	orientation: 'horizontal' | 'vertical' = 'horizontal'
+) => {
+	return {
+		horizontal: dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
+		vertical: kbd.ARROW_DOWN,
+	}[orientation ?? 'horizontal'];
+};
+
+export const getPrevKey = (
+	dir: 'ltr' | 'rtl' = 'ltr',
+	orientation: 'horizontal' | 'vertical' = 'horizontal'
+) => {
+	return {
+		horizontal: dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
+		vertical: kbd.ARROW_UP,
+	}[orientation ?? 'horizontal'];
+};
+
+export const getDirectionalKeys = (
+	dir: 'ltr' | 'rtl' = 'ltr',
+	orientation: 'horizontal' | 'vertical' = 'horizontal'
+) => {
+	return {
+		nextKey: getNextKey(dir, orientation),
+		prevKey: getPrevKey(dir, orientation),
+	};
+};

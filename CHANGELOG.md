@@ -1,5 +1,23 @@
 # @melt-ui/svelte
 
+## 0.11.1
+
+### Patch Changes
+
+- 7b07c53: fix: focus trap not working in certain components
+
+## 0.11.0
+
+### Minor Changes
+
+- 3df8740: expose options store in tabs
+
+### Patch Changes
+
+- fb9e489: fix(select): selectedText not being set onMount
+- 3df8740: refactor: improve dir detection
+- 4d3ab1d: feat: support RTL directions
+
 ## 0.10.3
 
 ### Patch Changes

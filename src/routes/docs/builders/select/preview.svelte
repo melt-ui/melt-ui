@@ -22,7 +22,7 @@
 		{#each Object.entries(options) as [key, arr]}
 			<li class="label">{key}</li>
 			{#each arr as item}
-				<li class="option" {...$option({ value: item })}>
+				<li class="option" {...$option({ value: item, label: item })}>
 					{#if $isSelected(item)}
 						<div class="check">
 							<Check />
