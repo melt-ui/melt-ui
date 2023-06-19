@@ -14,6 +14,7 @@ import {
 } from '$lib/internal/helpers';
 import { sleep } from '$lib/internal/helpers/sleep';
 import type { Defaults } from '$lib/internal/types';
+import { onMount } from 'svelte';
 import { derived, writable } from 'svelte/store';
 
 /**
@@ -59,6 +60,17 @@ export function createSelect(args?: CreateSelectArgs) {
 		menu: uuid(),
 		trigger: uuid(),
 	};
+
+	onMount(() => {
+		if (!isBrowser) return;
+		const menuEl = document.getElementById(ids.menu);
+		if (!menuEl) return;
+
+		const selectedEl = menuEl.querySelector('[data-selected]') as HTMLElement | undefined;
+		if (!selectedEl) return;
+		const label = selectedEl.getAttribute('data-label');
+		selectedText.set(label ?? selectedEl.textContent ?? null);
+	});
 
 	const menu = elementDerived(
 		[open, activeTrigger, options],
@@ -164,6 +176,7 @@ export function createSelect(args?: CreateSelectArgs) {
 				role: 'option',
 				'aria-selected': $selected === value,
 				'data-selected': $selected === value ? '' : undefined,
+				'data-label': label ?? undefined,
 				tabindex: 0,
 			};
 		};
