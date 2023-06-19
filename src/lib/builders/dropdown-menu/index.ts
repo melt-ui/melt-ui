@@ -126,14 +126,18 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					// menu items of the target menu
 					const candidateNodes = getMenuItems(currentTarget);
 
-					if (LAST_KEYS.includes(event.key)) {
-						candidateNodes.reverse();
-					}
 					// Get the index of the current item in the candidate nodes array
 					const currentIndex = candidateNodes.indexOf(currentItem);
 
 					// Calculate the index of the next item
-					const nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : 0;
+					const nextIndex =
+						event.key === 'ArrowUp'
+							? currentIndex > 0
+								? currentIndex - 1
+								: 0
+							: currentIndex < candidateNodes.length - 1
+							? currentIndex + 1
+							: currentIndex;
 
 					// Focus the next item
 					const nextItem = candidateNodes[nextIndex];
@@ -345,14 +349,16 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 					// Calculate the index of the next item based on the arrow key
 					const currentIndex = candidateNodes.indexOf(currentItem);
+
+					// Calculate the index of the next item
 					const nextIndex =
 						event.key === 'ArrowUp'
 							? currentIndex > 0
 								? currentIndex - 1
-								: candidateNodes.length - 1
+								: 0
 							: currentIndex < candidateNodes.length - 1
 							? currentIndex + 1
-							: 0;
+							: currentIndex;
 
 					// Focus the next item
 					const nextItem = candidateNodes[nextIndex];
