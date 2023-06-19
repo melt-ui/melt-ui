@@ -85,6 +85,8 @@ export function createDialog(args: CreateDialogArgs = {}) {
 				immediate: true,
 				escapeDeactivates: false,
 				allowOutsideClick: (e) => {
+					if (isAlertDialog) return false;
+
 					e.preventDefault();
 					if ($options.closeOnOutsideClick) {
 						open.set(false);
