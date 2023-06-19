@@ -1,5 +1,5 @@
 import { elementMultiDerived, kbd, omit } from '$lib/internal/helpers';
-import { getBrowserTextDirection } from '$lib/internal/helpers/locale';
+import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 
@@ -80,17 +80,6 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 				});
 			});
 
-			const dir = getBrowserTextDirection();
-			const nextKey = {
-				horizontal: dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
-				vertical: kbd.ARROW_DOWN,
-			}[$options.orientation ?? 'horizontal'];
-
-			const prevKey = {
-				horizontal: dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
-				vertical: kbd.ARROW_UP,
-			}[$options.orientation ?? 'horizontal'];
-
 			attach('keydown', (e) => {
 				if (!$options.rovingFocus) return;
 
@@ -102,6 +91,16 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 				) as Array<HTMLElement>;
 				const currentIndex = items.indexOf(el);
 
+				const dir = getElemDirection(el);
+				const nextKey = {
+					horizontal: dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
+					vertical: kbd.ARROW_DOWN,
+				}[$options.orientation ?? 'horizontal'];
+
+				const prevKey = {
+					horizontal: dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
+					vertical: kbd.ARROW_UP,
+				}[$options.orientation ?? 'horizontal'];
 				if (e.key === nextKey) {
 					e.preventDefault();
 					const nextIndex = currentIndex + 1;

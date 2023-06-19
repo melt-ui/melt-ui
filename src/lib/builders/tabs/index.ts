@@ -1,17 +1,17 @@
 import {
 	derivedWithUnsubscribe,
 	elementMultiDerived,
-	getElementByMeltId,
+	getDirectionalKeys,
 	isBrowser,
 	kbd,
 	last,
 	next,
+	omit,
 	prev,
-	uuid,
 } from '$lib/internal/helpers';
-import { getBrowserTextDirection } from '$lib/internal/helpers/locale';
+import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
-import { writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 
 export type CreateTabsArgs = {
 	value?: string;
@@ -31,26 +31,31 @@ const defaults = {
 } satisfies Defaults<CreateTabsArgs>;
 
 export function createTabs(args?: CreateTabsArgs) {
-	const options = { ...defaults, ...args };
+	const withDefaults = { ...defaults, ...args };
+	const options = writable(omit(withDefaults, 'value'));
 
-	const value = writable(options.value);
-	let ssrValue = options.value;
+	const value = writable(withDefaults.value);
+	let ssrValue = withDefaults.value;
 	value.subscribe((value) => {
-		options.onChange?.(value);
+		withDefaults.onChange?.(value);
 	});
 
 	// Root
-	const root = {
-		'data-orientation': options.orientation,
-		'data-melt-id': uuid(),
-	};
+	const root = derived(options, ($options) => {
+		return {
+			'data-orientation': $options.orientation,
+			'data-melt-part': 'tabs-root',
+		};
+	});
 
 	// List
-	const list = {
-		role: 'tablist',
-		'aria-orientation': options.orientation,
-		'data-orientation': options.orientation,
-	};
+	const list = derived(options, ($options) => {
+		return {
+			role: 'tablist',
+			'aria-orientation': $options.orientation,
+			'data-orientation': $options.orientation,
+		};
+	});
 
 	// Trigger
 	type TriggerArgs =
@@ -68,18 +73,18 @@ export function createTabs(args?: CreateTabsArgs) {
 		}
 	};
 
-	const trigger = elementMultiDerived(value, ($value, { attach }) => {
+	const trigger = elementMultiDerived([value, options], ([$value, $options], { attach }) => {
 		return (args: TriggerArgs) => {
 			const { value: tabValue, disabled } = parseTriggerArgs(args);
 
-			if (!$value && !ssrValue && options.autoSet) {
+			if (!$value && !ssrValue && $options.autoSet) {
 				ssrValue = tabValue;
 				value.set(tabValue);
 			}
 
 			// Event handlers
 			attach('focus', () => {
-				if (options.activateOnFocus) {
+				if ($options.activateOnFocus) {
 					value.set(tabValue);
 				}
 			});
@@ -91,30 +96,24 @@ export function createTabs(args?: CreateTabsArgs) {
 				}
 			});
 
-			const dir = getBrowserTextDirection();
-			const nextKey = {
-				horizontal: dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
-				vertical: kbd.ARROW_DOWN,
-			}[options.orientation ?? 'horizontal'];
-
-			const prevKey = {
-				horizontal: dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
-				vertical: kbd.ARROW_UP,
-			}[options.orientation ?? 'horizontal'];
-
 			attach('keydown', (e) => {
-				const rootEl = getElementByMeltId(root['data-melt-id']);
+				const el = e.currentTarget as HTMLElement;
+				const rootEl = el.closest('[data-melt-part="tabs-root"]') as HTMLElement | null;
 				if (!rootEl) return;
+
 				const triggers = Array.from(rootEl.querySelectorAll('[role="tab"]')) as HTMLElement[];
 				const enabledTriggers = triggers.filter((el) => !el.hasAttribute('data-disabled'));
 				const triggerIdx = Array.from(enabledTriggers ?? []).findIndex((el) => el === e.target);
 
+				const dir = getElemDirection(rootEl);
+				const { nextKey, prevKey } = getDirectionalKeys(dir, $options.orientation);
+
 				if (e.key === nextKey) {
 					e.preventDefault();
-					next(enabledTriggers, triggerIdx, options.loop)?.focus();
+					next(enabledTriggers, triggerIdx, $options.loop)?.focus();
 				} else if (e.key === prevKey) {
 					e.preventDefault();
-					prev(enabledTriggers, triggerIdx, options.loop)?.focus();
+					prev(enabledTriggers, triggerIdx, $options.loop)?.focus();
 				} else if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
 					e.preventDefault();
 					value.set(tabValue);
@@ -137,7 +136,7 @@ export function createTabs(args?: CreateTabsArgs) {
 					? 'active'
 					: 'inactive',
 				tabindex: $value === tabValue ? 0 : -1,
-				'data-orientation': options.orientation,
+				'data-orientation': $options.orientation,
 				'data-disabled': disabled ? '' : undefined,
 				disabled,
 			};
@@ -169,5 +168,6 @@ export function createTabs(args?: CreateTabsArgs) {
 		list: list,
 		trigger: trigger,
 		content: content,
+		options,
 	};
 }

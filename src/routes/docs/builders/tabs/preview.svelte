@@ -6,8 +6,8 @@
 </script>
 
 <Docs.PreviewWrapper>
-	<div {...root} class="root">
-		<div {...list} class="list" aria-label="Manage your account">
+	<div {...$root} class="root">
+		<div {...$list} class="list" aria-label="Manage your account">
 			<button {...$trigger('tab1')} class="trigger">Account</button>
 			<button {...$trigger('tab2')} class="trigger">Password</button>
 			<button {...$trigger({ value: 'tab3', disabled: true })} class="trigger opacity-50"
