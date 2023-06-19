@@ -32,6 +32,8 @@ export function createDialog(args: CreateDialogArgs = {}) {
 	const withDefaults = { ...defaults, ...args };
 	const options = writable({ ...withDefaults });
 	const activeTrigger = writable<HTMLElement | null>(null);
+	
+	const isAlertDialog = args.role === 'alertdialog';
 
 	const ids = {
 		content: uuid(),
@@ -58,13 +60,13 @@ export function createDialog(args: CreateDialogArgs = {}) {
 	});
 
 	const overlay = elementDerived([open, options], ([$open, $options], { attach }) => {
-		if ($options.closeOnOutsideClick) {
+		if ($options.closeOnOutsideClick && !isAlertDialog) {
 			attach('click', () => {
 				open.set(false);
 			});
 		}
 
-		if ($options.closeOnEscape) {
+		if ($options.closeOnEscape && !isAlertDialog) {
 			attach('keydown', (e) => {
 				if (e.key === 'Escape') {
 					open.set(false);
@@ -125,7 +127,7 @@ export function createDialog(args: CreateDialogArgs = {}) {
 
 	effect([open, options], ([$open, $options]) => {
 		const unsubs: Array<() => void> = [];
-		if ($options.closeOnEscape && $open) {
+		if ($options.closeOnEscape && !isAlertDialog && $open) {
 			unsubs.push(
 				addEventListener(document, 'keydown', (e) => {
 					if (e.key === 'Escape') {
