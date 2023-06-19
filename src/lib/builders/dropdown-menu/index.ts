@@ -11,7 +11,6 @@ import {
 	sleep,
 	styleToString,
 	uuid,
-	type EventHandler,
 	isHTMLElement,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
@@ -37,9 +36,6 @@ export type CreateDropdownMenuArgs = {
 	arrowSize?: number;
 	disabled?: boolean;
 	name?: string;
-	defaults?: {
-		onItemSelect?: EventHandler<MouseEvent>;
-	};
 };
 
 const defaults = {
@@ -210,33 +206,33 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 	type ItemArgs = {
 		disabled?: boolean;
-		disableDefault?: boolean;
 	};
 
 	const itemDefaults = {
 		disabled: false,
-		disableDefault: false,
 	} satisfies Defaults<ItemArgs>;
 
-	const item = elementMultiDerived([rootOptions], ([$rootOptions], { attach, getElement }) => {
+	const item = elementMultiDerived([], (_, { attach, getElement }) => {
 		return (args?: ItemArgs) => {
 			const itemArgs = { ...itemDefaults, ...args } as ItemArgs;
-			getElement().then((element) => setMeltMenuAttribute(element));
+			getElement().then((element) => {
+				setMeltMenuAttribute(element);
+				if (itemArgs.disabled) {
+					element?.setAttribute('data-disabled', '');
+				}
+			});
 
 			attach('click', (event) => {
+				if (itemArgs.disabled) {
+					event.preventDefault();
+					return;
+				}
 				if (event.defaultPrevented) {
 					const currentTarget = event.currentTarget;
 					if (!isHTMLElement(currentTarget)) return;
 
 					handleRovingFocus(currentTarget);
 					return;
-				}
-
-				if (itemArgs.disabled) {
-					return;
-				}
-				if (!itemArgs.disableDefault && $rootOptions.defaults?.onItemSelect) {
-					$rootOptions.defaults.onItemSelect(event);
 				}
 
 				rootOpen.set(false);

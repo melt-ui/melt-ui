@@ -4,34 +4,18 @@
 	import AlignJustify from '~icons/lucide/align-justify';
 	import ChevronRight from '~icons/lucide/chevron-right';
 
-	const { trigger, menu, item, arrow, createSubMenu } = createDropdownMenu({
-		defaults: {
-			onItemSelect: handleItemSelect,
-		},
-	});
+	const { trigger, menu, item, arrow, createSubMenu } = createDropdownMenu();
 
 	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
 	const { subMenu: subMenuB, subTrigger: subTriggerB } = createSubMenu();
 
 	function handleItemSelect(event: Event) {
 		/**
-		 * If you want to set a default function to handle item selection, you can
-		 * do so. This function will be called for every item that is selected. The default
-		 * behavior of closing the menu and focusing the trigger will occur after this function
-		 * is called.
+		 * You only need to worry about the 'click' event. Even if the user
+         * selects an item using the keyboard, the 'click' event will still fire.
 		 */
 		if (!(event.target instanceof HTMLElement)) return;
-		alert(`You clicked on "${event.target.textContent}"`);
-	}
-
-	function handleCustomClick(event: Event) {
-		/**
-		 * You can use custom event handlers along with `|preventDefault` to override
-		 * the default behavior when selecting an item. The default behavior is to close
-		 * the menu and focus the trigger.
-		 */
-		if (!(event.target instanceof HTMLElement)) return;
-		console.log(`You overrode everything and clicked on "${event.target.textContent}"`);
+		alert('You clicked on ' + event.target.textContent);
 	}
 </script>
 
@@ -42,19 +26,13 @@
 	</button>
 
 	<div class="menu" {...$menu}>
-		<div
-			class="item"
-			{...$item({
-				disableDefault: true,
-			})}
-		>
-			New Tab
-		</div>
+		<div class="item" {...$item()} on:click={handleItemSelect}>New Tab</div>
 		<div
 			class="item"
 			{...$item({
 				disabled: true,
 			})}
+			on:click={handleItemSelect}
 		>
 			New Window
 		</div>
@@ -63,21 +41,19 @@
 			<ChevronRight class="h-4 w-4" />
 		</div>
 		<div class="menu subMenu" {...$subMenuA}>
-			<div class="item" {...$item()} on:click|preventDefault={handleCustomClick}>
-				Save Page As..
-			</div>
-			<div class="item" {...$item()}>Create Shortcut..</div>
+			<div class="item" {...$item()} on:click={handleItemSelect}>Save Page As..</div>
+			<div class="item" {...$item()} on:click={handleItemSelect}>Create Shortcut..</div>
 			<div class="item" {...$subTriggerB}>
 				Preferences
 				<ChevronRight class="h-4 w-4" />
 			</div>
 			<div class="menu subMenu" {...$subMenuB}>
-				<div class="item" {...$item()}>Keyboard Shortcuts</div>
-				<div class="item" {...$item()}>Accessibility</div>
+				<div class="item" {...$item()} on:click={handleItemSelect}>Keyboard Shortcuts</div>
+				<div class="item" {...$item()} on:click={handleItemSelect}>Accessibility</div>
 			</div>
 		</div>
-		<div class="item" {...$item()}>Show Bookmarks</div>
-		<div class="item" {...$item()}>Show Full URLs</div>
+		<div class="item" {...$item()} on:click={handleItemSelect}>Show Bookmarks</div>
+		<div class="item" {...$item()} on:click={handleItemSelect}>Show Full URLs</div>
 		<div {...$arrow} />
 	</div>
 </Docs.PreviewWrapper>
