@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.11.1
+
+### Patch Changes
+
+- 7b07c53: fix: focus trap not working in certain components
+
 ## 0.11.0
 
 ### Minor Changes
