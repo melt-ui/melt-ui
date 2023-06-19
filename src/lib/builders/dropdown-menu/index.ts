@@ -8,10 +8,11 @@ import {
 	getElementByMeltId,
 	isBrowser,
 	kbd,
-	omit,
 	sleep,
 	styleToString,
 	uuid,
+	type EventHandler,
+	isHTMLElement,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable, type Writable } from 'svelte/store';
@@ -34,15 +35,15 @@ const SUB_CLOSE_KEYS: Record<Direction, string[]> = {
 export type CreateDropdownMenuArgs = {
 	positioning?: FloatingConfig;
 	arrowSize?: number;
-	required?: boolean;
 	disabled?: boolean;
-	selected?: string | number;
 	name?: string;
+	defaults?: {
+		onItemSelect?: EventHandler<MouseEvent>;
+	};
 };
 
 const defaults = {
 	arrowSize: 8,
-	required: false,
 	disabled: false,
 	positioning: {
 		placement: 'bottom',
@@ -51,7 +52,7 @@ const defaults = {
 
 export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	const withDefaults = { ...defaults, ...args } as CreateDropdownMenuArgs;
-	const rootOptions = writable(omit(withDefaults, 'selected'));
+	const rootOptions = writable(withDefaults);
 
 	const rootOpen = writable(false);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
@@ -93,8 +94,9 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				attach('keydown', (event) => {
 					// submenu key events bubble through portals
 					// we only care about key events that happen inside this menu
-					const target = event.target as HTMLElement | null;
-					if (!target) return;
+					const target = event.target;
+					if (!isHTMLElement(target)) return;
+
 					const isKeyDownInside = target.closest('[data-melt-menu]') === event.currentTarget;
 
 					const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
@@ -134,9 +136,12 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		[rootOpen, rootOptions],
 		([$rootOpen, $rootOptions], { attach }) => {
 			attach('pointerdown', (event) => {
-				const triggerElement = event.currentTarget as HTMLElement;
+				const triggerElement = event.currentTarget;
+				if (!isHTMLElement(triggerElement)) return;
+
 				const triggerControls = triggerElement.getAttribute('aria-controls');
 				if (!triggerControls) return;
+
 				rootOpen.update((prev) => {
 					const isOpen = !prev;
 					if (isOpen) {
@@ -151,8 +156,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			});
 
 			attach('keydown', (event) => {
-				const triggerElement = event.currentTarget as HTMLElement | null;
-				if (!triggerElement) return;
+				const triggerElement = event.currentTarget;
+				if (!isHTMLElement(triggerElement)) return;
 
 				if (SELECTION_KEYS.includes(event.key) || event.key === kbd.ARROW_DOWN) {
 					rootOpen.update((prev) => {
@@ -168,13 +173,15 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 					const menuId = triggerElement.getAttribute('aria-controls');
 					if (!menuId) return;
+
 					const menu = document.getElementById(menuId);
-					if (!menu) return;
+					if (!isHTMLElement(menu)) return;
+
 					const menuItems = getMenuItems(menu);
 					if (!menuItems.length) return;
 
 					const nextFocusedElement = menuItems[0];
-					if (!nextFocusedElement) return;
+					if (!isHTMLElement(nextFocusedElement)) return;
 
 					handleRovingFocus(nextFocusedElement);
 				}
@@ -185,7 +192,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			return {
 				'aria-controls': rootIds.menu,
 				'aria-expanded': $rootOpen,
-				'aria-required': $rootOptions.required,
 				'data-state': $rootOpen ? 'open' : 'closed',
 				'data-disabled': $rootOptions.disabled ? '' : undefined,
 				id: rootIds.trigger,
@@ -202,19 +208,46 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		}),
 	}));
 
-	const item = elementMultiDerived([], (_, { attach, getElement }) => {
-		return () => {
+	type ItemArgs = {
+		disabled?: boolean;
+		disableDefault?: boolean;
+	};
+
+	const itemDefaults = {
+		disabled: false,
+		disableDefault: false,
+	} satisfies Defaults<ItemArgs>;
+
+	const item = elementMultiDerived([rootOptions], ([$rootOptions], { attach, getElement }) => {
+		return (args?: ItemArgs) => {
+			const itemArgs = { ...itemDefaults, ...args } as ItemArgs;
 			getElement().then((element) => setMeltMenuAttribute(element));
 
 			attach('click', (event) => {
-				if (event.defaultPrevented) return;
-				rootActiveTrigger.set(null);
+				if (event.defaultPrevented) {
+					const currentTarget = event.currentTarget;
+					if (!isHTMLElement(currentTarget)) return;
+
+					handleRovingFocus(currentTarget);
+					return;
+				}
+
+				if (itemArgs.disabled) {
+					return;
+				}
+				if (!itemArgs.disableDefault && $rootOptions.defaults?.onItemSelect) {
+					$rootOptions.defaults.onItemSelect(event);
+				}
+
 				rootOpen.set(false);
 			});
 
 			attach('keydown', (event) => {
 				if (SELECTION_KEYS.includes(event.key)) {
-					(event.currentTarget as HTMLElement).click();
+					const currentTarget = event.currentTarget;
+					if (!isHTMLElement(currentTarget)) return;
+
+					currentTarget.click();
 					/**
 					 * We prevent default browser behaviour for selection keys as they should trigger
 					 * a selection only:
@@ -254,7 +287,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 	const createSubMenu = (args?: CreateDropdownMenuArgs) => {
 		const withDefaults = { ...subMenuDefaults, ...args } as CreateDropdownMenuArgs;
-		const subOptions = writable(omit(withDefaults, 'selected'));
+		const subOptions = writable(withDefaults);
 
 		const subOpen = writable(false);
 		const subActiveTrigger = writable<HTMLElement | null>(null);
@@ -270,7 +303,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			[subOpen, subActiveTrigger, subOptions],
 			([$subOpen, $subActiveTrigger, $subOptions], { addAction, attach }) => {
 				if ($subOpen && $subActiveTrigger) {
-					const parentMenuEl = getParentMenu($subActiveTrigger) as HTMLElement | undefined;
+					const parentMenuEl = getParentMenu($subActiveTrigger);
 
 					addAction(usePopper, {
 						anchorElement: $subActiveTrigger,
@@ -278,7 +311,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						options: {
 							floating: $subOptions.positioning,
 							clickOutside: null,
-							portal: parentMenuEl ? parentMenuEl : undefined,
+							portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
 							focusTrap: null,
 						},
 					});
@@ -291,11 +324,17 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 					// Submenu key events bubble through portals.
 					// We only want the keys in this menu.
-					const target = event.target as HTMLElement;
-					const currentTarget = event.currentTarget as HTMLElement;
+					const target = event.target;
+					if (!isHTMLElement(target)) return;
+
+					const currentTarget = event.currentTarget;
+					if (!isHTMLElement(currentTarget)) return;
+
 					const targetMeltMenuId = target.getAttribute('data-melt-menu-id');
+					if (!targetMeltMenuId) return;
+
 					const isKeyDownInside =
-						target.closest('[data-melt-menu]') === event.currentTarget &&
+						target.closest('[data-melt-menu]') === currentTarget &&
 						targetMeltMenuId === currentTarget.id;
 
 					const isCloseKey = SUB_CLOSE_KEYS['ltr'].includes(event.key);
@@ -336,17 +375,23 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 				attach('focusout', (event) => {
 					if (get(isUsingKeyboard)) {
+						const target = event.target;
+						if (!isHTMLElement(target)) return;
+
 						const submenuElement = document.getElementById(subIds.menu);
-						if (
-							!submenuElement?.contains(event.target as HTMLElement) &&
-							event.target !== $subActiveTrigger
-						) {
+						if (!isHTMLElement(submenuElement)) return;
+
+						if (!submenuElement?.contains(target) && target !== $subActiveTrigger) {
 							subOpen.set(false);
 							subActiveTrigger.set(null);
 						}
 					} else {
-						const menuElement = event.currentTarget as HTMLElement;
-						const relatedTarget = event.relatedTarget as HTMLElement;
+						const menuElement = event.currentTarget;
+						if (!isHTMLElement(menuElement)) return;
+
+						const relatedTarget = event.relatedTarget;
+						if (!isHTMLElement(relatedTarget)) return;
+
 						if (!menuElement.contains(relatedTarget) && relatedTarget !== $subActiveTrigger) {
 							subOpen.set(false);
 							subActiveTrigger.set(null);
@@ -383,8 +428,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 				attach('click', (event) => {
 					// Manually focus because iOS Safari doesn't always focus on click (e.g. buttons)
-					const currentTarget = event.currentTarget as HTMLElement | null;
-					if (!currentTarget) return;
+					const currentTarget = event.currentTarget;
+					if (!isHTMLElement(currentTarget)) return;
 
 					handleRovingFocus(currentTarget);
 					if (!get(subOpen)) {
@@ -401,8 +446,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 				attach('keydown', (event) => {
 					if (SUB_OPEN_KEYS['ltr'].includes(event.key)) {
-						const currentTarget = event.currentTarget as HTMLElement | null;
-						if (!currentTarget) return;
+						const currentTarget = event.currentTarget;
+						if (!isHTMLElement(currentTarget)) return;
 
 						if (!$subOpen) {
 							currentTarget.click();
@@ -414,9 +459,11 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						if (!menuId) return;
 
 						const menuElement = document.getElementById(menuId);
-						if (!menuElement) return;
+						if (!isHTMLElement(menuElement)) return;
 
 						const firstItem = getMenuItems(menuElement)[0];
+						if (!isHTMLElement(firstItem)) return;
+
 						handleRovingFocus(firstItem);
 					}
 					return;
@@ -429,8 +476,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 					if (event.defaultPrevented) return;
 
-					const currentTarget = event.currentTarget as HTMLElement | null;
-					if (!currentTarget) return;
+					const currentTarget = event.currentTarget;
+					if (!isHTMLElement(currentTarget)) return;
 
 					handleRovingFocus(currentTarget);
 
@@ -491,18 +538,18 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				});
 
 				attach('focusout', (event) => {
-					const target = event.target as HTMLElement | null;
-					if (!target) return;
+					const target = event.target;
+					if (!isHTMLElement(target)) return;
 
-					const relatedTarget = event.relatedTarget as HTMLElement | null;
-					if (!relatedTarget) return;
+					const relatedTarget = event.relatedTarget;
+					if (!isHTMLElement(relatedTarget)) return;
 
 					const menuId = target.getAttribute('aria-controls');
 					if (!menuId) return;
 
 					const menu = document.getElementById(menuId);
 
-					if (menu && !menu.contains(relatedTarget)) {
+					if (isHTMLElement(menu) && !menu.contains(relatedTarget)) {
 						subActiveTrigger.set(null);
 						subOpen.set(false);
 					}
@@ -514,7 +561,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					tabindex: -1,
 					'aria-controls': subIds.menu,
 					'aria-expanded': $subOpen,
-					'aria-required': $subOptions.required,
 					'data-state': $subOpen ? 'open' : 'closed',
 					'data-disabled': $subOptions.disabled ? '' : undefined,
 					'data-melt-part': 'menu-sub-trigger',
@@ -538,8 +584,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 		effect([rootOpen], ([$rootOpen]) => {
 			if (!$rootOpen) {
-				subOpen.set(false);
 				subActiveTrigger.set(null);
+				subOpen.set(false);
 			}
 		});
 
@@ -553,13 +599,18 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		effect([subOpen, subMenu, subActiveTrigger], ([$subOpen, $subMenu, $subActiveTrigger]) => {
 			if (!isBrowser) return;
 			const menuElement = getElementByMeltId($subMenu['data-melt-id']);
-			if (menuElement && $subOpen && get(isUsingKeyboard)) {
+			if (isHTMLElement(menuElement) && $subOpen && get(isUsingKeyboard)) {
 				// Selector to get menu items belonging to menu
 				const rootMenuItemSelector = `[role="menuitem"][data-melt-menu-id="${menuElement.id}"]`;
 
 				// Focus on first menu item
-				const firstOption = document.querySelector(rootMenuItemSelector) as HTMLElement | undefined;
-				sleep(1).then(() => (firstOption ? handleRovingFocus(firstOption) : undefined));
+				const firstOption = document.querySelector(rootMenuItemSelector);
+
+				if (get(isUsingKeyboard)) {
+					sleep(1).then(() =>
+						isHTMLElement(firstOption) ? handleRovingFocus(firstOption) : undefined
+					);
+				}
 			} else if (!$subOpen && $subActiveTrigger && isBrowser) {
 				sleep(1).then(() => handleRovingFocus($subActiveTrigger));
 			}
@@ -605,7 +656,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			const keydownListener = (event: KeyboardEvent) => {
 				if (event.key === kbd.ESCAPE) {
 					rootOpen.set(false);
-					rootActiveTrigger.set(null);
 					return;
 				}
 			};
@@ -637,10 +687,12 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		if (isPointerMovingToSubmenu(event)) {
 			return;
 		}
-		const target = event.target as HTMLElement | null;
-		if (!target) return;
+		const target = event.target;
+		if (!isHTMLElement(target)) return;
+
 		const parentMenuElement = getParentMenu(target);
-		if (!parentMenuElement) return;
+		if (!isHTMLElement(parentMenuElement)) return;
+
 		handleRovingFocus(parentMenuElement);
 	}
 
@@ -653,11 +705,11 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	function onMenuPointerMove(event: PointerEvent) {
 		if (!isMouse(event)) return;
 
-		const target = event.target as HTMLElement | null;
-		if (!target) return;
+		const target = event.target;
+		if (!isHTMLElement(target)) return;
 
-		const currentTarget = event.currentTarget as HTMLElement | null;
-		if (!currentTarget) return;
+		const currentTarget = event.currentTarget;
+		if (!isHTMLElement(currentTarget)) return;
 
 		const $lastPointerX = get(lastPointerX);
 		const pointerXHasChanged = $lastPointerX !== event.clientX;
@@ -675,8 +727,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		if (!isMouse(event)) return;
 		onItemEnter(event);
 		if (!event.defaultPrevented) {
-			const currentTarget = event.currentTarget as HTMLElement | null;
-			if (!currentTarget) return;
+			const currentTarget = event.currentTarget;
+			if (!isHTMLElement(currentTarget)) return;
 			// focus on the current menu item
 			handleRovingFocus(currentTarget);
 		}
@@ -700,8 +752,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	function handleRovingFocus(nextElement: HTMLElement) {
 		if (!isBrowser) return;
 
-		const currentFocusedElement = document.activeElement as HTMLElement | null;
-		if (!currentFocusedElement) return;
+		const currentFocusedElement = document.activeElement;
+		if (!isHTMLElement(currentFocusedElement)) return;
 
 		// if we already have focus on the next element, do nothing
 		if (currentFocusedElement === nextElement) return;
@@ -745,12 +797,12 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		event.preventDefault();
 
 		// currently focused menu item
-		const currentFocusedItem = document.activeElement as HTMLElement | null;
-		if (!currentFocusedItem) return;
+		const currentFocusedItem = document.activeElement;
+		if (!isHTMLElement(currentFocusedItem)) return;
 
 		// menu element being navigated
-		const currentTarget = event.currentTarget as HTMLElement | null;
-		if (!currentTarget) return;
+		const currentTarget = event.currentTarget;
+		if (!isHTMLElement(currentTarget)) return;
 
 		// menu items of the current menu
 		const candidateNodes = getMenuItems(currentTarget);
@@ -760,14 +812,23 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		const currentIndex = candidateNodes.indexOf(currentFocusedItem);
 
 		// Calculate the index of the next menu item
-		const nextIndex =
-			event.key === kbd.ARROW_UP
-				? currentIndex > 0
-					? currentIndex - 1
-					: 0
-				: currentIndex < candidateNodes.length - 1
-				? currentIndex + 1
-				: currentIndex;
+		let nextIndex: number;
+		switch (event.key) {
+			case kbd.ARROW_DOWN:
+				nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : currentIndex;
+				break;
+			case kbd.ARROW_UP:
+				nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
+				break;
+			case kbd.HOME:
+				nextIndex = 0;
+				break;
+			case kbd.END:
+				nextIndex = candidateNodes.length - 1;
+				break;
+			default:
+				return;
+		}
 
 		const nextFocusedItem = candidateNodes[nextIndex];
 
@@ -778,7 +839,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	 * Get the parent menu element for a menu item.
 	 * @param element The menu item element
 	 */
-	function getParentMenu(element: HTMLElement): HTMLElement | null {
+	function getParentMenu(element: HTMLElement) {
 		return element.closest('[role="menu"]');
 	}
 
@@ -788,10 +849,9 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	 */
 	function setMeltMenuAttribute(element: HTMLElement | null) {
 		if (!element) return;
-		const menuEl = element.closest(
-			'[data-melt-part="menu-root"], [data-melt-part="menu-sub"]'
-		) as HTMLElement | null;
-		if (!menuEl) return;
+		const menuEl = element.closest('[data-melt-part="menu-root"], [data-melt-part="menu-sub"]');
+
+		if (!isHTMLElement(menuEl)) return;
 		element.setAttribute('data-melt-menu-id', menuEl.id);
 	}
 
