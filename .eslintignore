@@ -17,3 +17,6 @@ CHANGELOG.md
 
 *.ignore-ts
 *.ignore-svelte
+
+docs/builders/**/(css)
+docs/builders/**/(tailwind)

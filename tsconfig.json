@@ -15,7 +15,9 @@
 	],
 	"exclude": [
 		"*.ignore-ts",
-		"*.ignore-svelte"
+		"*.ignore-svelte",
+		"docs/builders/**/(css)",
+		"docs/builders/**/(tailwind)"
 	]
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	//

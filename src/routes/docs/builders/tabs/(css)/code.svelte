@@ -47,12 +47,24 @@
 <style lang="postcss">
 	/* Tab Parts */
 	.root {
-		@apply flex flex-col overflow-hidden rounded-md shadow-lg data-[orientation=vertical]:flex-row;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		border-radius: 0.375rem;
+		box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+	}
+
+	.root[data-orientation='vertical'] {
+		flex-direction: row;
 	}
 
 	.list {
 		@apply flex shrink-0 border-b border-magnum-100 bg-white data-[orientation=vertical]:flex-col
 			data-[orientation=vertical]:border-r;
+		display: flex;
+		flex-shrink: 0;
+		border-bottom: 1px solid #e2e8f0;
+		background-color: #fff;
 	}
 
 	.trigger {

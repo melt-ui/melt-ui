@@ -12,9 +12,13 @@ import Ul from './ul.svelte';
 import Li from './li.svelte';
 import A from './a.svelte';
 import Hr from './hr.svelte';
-import Tabs from './tabs.svelte';
+import { Tabs, TabsRoot, TabsList } from './tabs';
 import Kbd from './kbd.svelte';
 import Construction from './construction.svelte';
+import Preview from './preview.svelte';
+export type { PreviewProps } from './preview.svelte';
+import Switch from './switch.svelte';
+import Select from './select.svelte';
 
 export const Docs = {
 	API,
@@ -32,5 +36,10 @@ export const Docs = {
 	A,
 	Hr,
 	Tabs,
+	TabsRoot,
+	TabsList,
 	Kbd,
+	Preview,
+	Switch,
+	Select,
 };

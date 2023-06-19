@@ -1,54 +1,51 @@
 <script lang="ts">
 	import { createTabs } from '$lib/builders/tabs';
-	import { Docs } from '$routes/(components)';
 
 	const { root, list, content, trigger } = createTabs({ value: 'tab1' });
 </script>
 
-<Docs.PreviewWrapper>
-	<div {...root} class="root">
-		<div {...list} class="list" aria-label="Manage your account">
-			<button {...$trigger('tab1')} class="trigger">Account</button>
-			<button {...$trigger('tab2')} class="trigger">Password</button>
-			<button {...$trigger({ value: 'tab3', disabled: true })} class="trigger opacity-50"
-				>Disabled</button
-			>
-			<button {...$trigger('tab4')} class="trigger">Settings</button>
-		</div>
-		<div {...$content('tab1')} class="content">
-			<p class="description">Make changes to your account here. Click save when you're done.</p>
-			<fieldset>
-				<label for="name"> Name </label>
-				<input id="name" value="Thomas G. Lopes" />
-			</fieldset>
+<div {...root} class="root">
+	<div {...list} class="list" aria-label="Manage your account">
+		<button {...$trigger('tab1')} class="trigger">Account</button>
+		<button {...$trigger('tab2')} class="trigger">Password</button>
+		<button {...$trigger({ value: 'tab3', disabled: true })} class="trigger opacity-50"
+			>Disabled</button
+		>
+		<button {...$trigger('tab4')} class="trigger">Settings</button>
+	</div>
+	<div {...$content('tab1')} class="content">
+		<p class="description">Make changes to your account here. Click save when you're done.</p>
+		<fieldset>
+			<label for="name"> Name </label>
+			<input id="name" value="Thomas G. Lopes" />
+		</fieldset>
 
-			<div class="actions">
-				<button>Save changes</button>
-			</div>
-		</div>
-		<div {...$content('tab2')} class="content">
-			<p class="description">Change your password here. Click save when you're done.</p>
-			<fieldset>
-				<label for="new"> New password </label>
-				<input id="new" type="password" />
-			</fieldset>
-			<div class="actions">
-				<button>Save changes</button>
-			</div>
-		</div>
-		<div {...$content('tab4')} class="content">
-			<p class="description">Change your settings here. Click save when you're done.</p>
-
-			<fieldset>
-				<label for="new"> New email </label>
-				<input id="new" type="password" />
-			</fieldset>
-			<div class="actions">
-				<button>Save changes</button>
-			</div>
+		<div class="actions">
+			<button>Save changes</button>
 		</div>
 	</div>
-</Docs.PreviewWrapper>
+	<div {...$content('tab2')} class="content">
+		<p class="description">Change your password here. Click save when you're done.</p>
+		<fieldset>
+			<label for="new"> New password </label>
+			<input id="new" type="password" />
+		</fieldset>
+		<div class="actions">
+			<button>Save changes</button>
+		</div>
+	</div>
+	<div {...$content('tab4')} class="content">
+		<p class="description">Change your settings here. Click save when you're done.</p>
+
+		<fieldset>
+			<label for="new"> New email </label>
+			<input id="new" type="password" />
+		</fieldset>
+		<div class="actions">
+			<button>Save changes</button>
+		</div>
+	</div>
+</div>
 
 <style lang="postcss">
 	/* Tab Parts */
