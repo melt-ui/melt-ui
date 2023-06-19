@@ -13,8 +13,8 @@
 		{#each tabs as tab}
 			<button
 				{...$trigger(tab)}
-				class="rounded-md border border-transparent bg-neutral-800 px-3 py-1 text-neutral-500 opacity-75 outline-none transition
-        hover:opacity-100 focus:ring focus:ring-magnum-700
+				class="rounded-md border border-transparent bg-neutral-800 px-3 py-1 text-neutral-500 opacity-75 transition
+        hover:opacity-100 focus:!border-magnum-400
         data-[state=active]:border-magnum-700 data-[state=active]:text-magnum-500 data-[state=active]:opacity-100"
 			>
 				{tab}
@@ -22,7 +22,7 @@
 		{/each}
 	</div>
 	{#each tabs as tab}
-		<div {...$content(tab)} class="outline-none">
+		<div {...$content(tab)} class="mt-2">
 			<slot {tab} />
 		</div>
 	{/each}

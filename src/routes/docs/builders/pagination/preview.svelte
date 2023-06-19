@@ -44,11 +44,6 @@
 			opacity: 0.75;
 		}
 
-		&:focus {
-			@apply ring ring-magnum-400;
-			outline: none;
-		}
-
 		&:disabled {
 			cursor: not-allowed;
 			opacity: 0.5;

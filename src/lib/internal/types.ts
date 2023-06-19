@@ -27,3 +27,5 @@ type NullableKeys<T> = {
 export type Defaults<T> = {
 	[K in NullableKeys<T>]?: T[K];
 };
+
+export type TextDirection = 'ltr' | 'rtl';

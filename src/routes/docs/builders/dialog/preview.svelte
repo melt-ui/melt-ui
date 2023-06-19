@@ -14,7 +14,7 @@
 			{...$trigger()}
 			class="inline-flex items-center justify-center rounded-md bg-white px-4 py-2
 			font-medium leading-none text-magnum-700 shadow-lg hover:opacity-75
-			focus:outline-none focus:ring focus:ring-magnum-400"
+			"
 		>
 			Open Dialog
 		</button>
@@ -26,9 +26,9 @@
 					transition:fade|local={{ duration: 150 }}
 				/>
 				<div
-					class="fixed left-[50%] top-[50%] z-30 max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%]
-				translate-y-[-50%] rounded-md bg-white p-[25px] shadow-lg
-				focus:outline-none"
+					class="fixed left-[50%] top-[50%] z-30 max-h-[85vh] w-[90vw] max-w-[450px]
+				translate-x-[-50%] translate-y-[-50%] rounded-md bg-white p-[25px]
+				shadow-lg"
 					transition:flyAndScale|local={{ duration: 150, y: 8, start: 0.96 }}
 					{...$content}
 				>
@@ -41,7 +41,7 @@
 						<label class="w-[90px] text-right text-magnum-800" for="name"> Name </label>
 						<input
 							class="inline-flex h-8 w-full flex-1 items-center justify-center rounded-sm border
-						border-solid px-3 leading-none text-magnum-800 outline-none focus:ring-2 focus:ring-magnum-400"
+						border-solid px-3 leading-none text-magnum-800"
 							id="name"
 							value="Thomas G. Lopes"
 						/>
@@ -50,7 +50,7 @@
 						<label class="w-[90px] text-right text-magnum-800" for="username"> Username </label>
 						<input
 							class="inline-flex h-8 w-full flex-1 items-center justify-center rounded-sm border
-						border-solid px-3 leading-none text-magnum-800 outline-none focus:ring-2 focus:ring-magnum-400"
+						border-solid px-3 leading-none text-magnum-800"
 							id="username"
 							value="@thomasglopes"
 						/>
@@ -59,14 +59,14 @@
 						<button
 							{...$close()}
 							class="inline-flex h-[35px] items-center justify-center rounded-[4px] bg-zinc-100
-					px-4 font-medium leading-none text-zinc-600 focus:outline-none focus:ring-2 focus:ring-magnum-400"
+					px-4 font-medium leading-none text-zinc-600"
 						>
 							Cancel
 						</button>
 						<button
 							{...$close()}
 							class="inline-flex h-[35px] items-center justify-center rounded-[4px] bg-magnum-100
-					px-4 font-medium leading-none text-magnum-900 focus:outline-none focus:ring-2 focus:ring-magnum-400"
+					px-4 font-medium leading-none text-magnum-900"
 						>
 							Save changes
 						</button>
@@ -75,7 +75,7 @@
 					<button
 						{...$close()}
 						class="absolute right-[10px] top-[10px] inline-flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-full
-				text-magnum-800 hover:bg-magnum-100 focus:shadow-magnum-400 focus:outline-none focus:ring-2 focus:ring-magnum-400"
+				text-magnum-800 hover:bg-magnum-100 focus:shadow-magnum-400"
 					>
 						<X />
 					</button>
