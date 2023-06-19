@@ -140,7 +140,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 					// Focus the next item
 					const nextItem = candidateNodes[nextIndex];
-					nextItem.focus();
+					sleep(1).then(() => nextItem.focus());
 				});
 			}
 
@@ -447,6 +447,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						const firstItem = getMenuItems(menuElement)[0];
 						firstItem.focus();
 					}
+					return;
 				});
 
 				attach('pointermove', (event) => {
@@ -523,8 +524,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					const menu = document.getElementById(menuId);
 
 					if (menu && !menu.contains(relatedTarget)) {
-						subOpen.set(false);
 						subActiveTrigger.set(null);
+						subOpen.set(false);
 					}
 				});
 
