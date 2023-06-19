@@ -266,9 +266,23 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				onMenuItemPointerLeave(event);
 			});
 
+			attach('focusin', (event) => {
+				const currentTarget = event.currentTarget;
+				if (!isHTMLElement(currentTarget)) return;
+				currentTarget.setAttribute('data-highlighted', '');
+			});
+
+			attach('focusout', (event) => {
+				const currentTarget = event.currentTarget;
+				if (!isHTMLElement(currentTarget)) return;
+				currentTarget.removeAttribute('data-highlighted');
+			});
+
 			return {
 				role: 'menuitem',
 				tabindex: -1,
+				'data-disabled': itemArgs.disabled ? '' : undefined,
+				'data-orientation': 'vertical',
 			};
 		};
 	});
@@ -538,13 +552,16 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				});
 
 				attach('focusout', (event) => {
-					const target = event.target;
-					if (!isHTMLElement(target)) return;
+					const currentTarget = event.currentTarget;
+					if (!isHTMLElement(currentTarget)) return;
+
+					if (!isHTMLElement(currentTarget)) return;
+					currentTarget.removeAttribute('data-highlighted');
 
 					const relatedTarget = event.relatedTarget;
 					if (!isHTMLElement(relatedTarget)) return;
 
-					const menuId = target.getAttribute('aria-controls');
+					const menuId = currentTarget.getAttribute('aria-controls');
 					if (!menuId) return;
 
 					const menu = document.getElementById(menuId);
@@ -553,6 +570,12 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						subActiveTrigger.set(null);
 						subOpen.set(false);
 					}
+				});
+
+				attach('focusin', (event) => {
+					const currentTarget = event.currentTarget;
+					if (!isHTMLElement(currentTarget)) return;
+					currentTarget.setAttribute('data-highlighted', '');
 				});
 
 				return {
@@ -628,6 +651,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	/* -------------------------------------------------------------------------------------------------
 	 * Root Effects
 	 * -----------------------------------------------------------------------------------------------*/
+
 	effect([rootOpen, rootActiveTrigger], ([$rootOpen, $rootActiveTrigger]) => {
 		if (!isBrowser) return;
 		const rootMenuElement = document.getElementById(rootIds.menu);
@@ -759,8 +783,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		if (currentFocusedElement === nextElement) return;
 
 		currentFocusedElement.tabIndex = -1;
-		nextElement.tabIndex = 0;
 
+		nextElement.tabIndex = 0;
 		sleep(1).then(() => nextElement.focus());
 	}
 

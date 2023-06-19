@@ -80,7 +80,7 @@
 	}
 	.item {
 		@apply relative h-[25px] min-h-[25px] cursor-pointer rounded-md pl-4 pr-1 text-neutral-800;
-		@apply z-20 outline-none focus:bg-magnum-100 focus:text-magnum-700;
+		@apply z-20 outline-none data-[highlighted]:bg-magnum-100 data-[highlighted]:text-magnum-700;
 		@apply flex items-center justify-between text-sm leading-none;
 		@apply ring-0 !important;
 	}

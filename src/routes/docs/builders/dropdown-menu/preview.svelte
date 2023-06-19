@@ -30,7 +30,6 @@
 		 * the default behavior when selecting an item. The default behavior is to close
 		 * the menu and focus the trigger.
 		 */
-
 		if (!(event.target instanceof HTMLElement)) return;
 		console.log(`You overrode everything and clicked on "${event.target.textContent}"`);
 	}
@@ -51,7 +50,14 @@
 		>
 			New Tab
 		</div>
-		<div class="item" {...$item()}>New Window</div>
+		<div
+			class="item"
+			{...$item({
+				disabled: true,
+			})}
+		>
+			New Window
+		</div>
 		<div class="item" {...$subTriggerA}>
 			More Tools
 			<ChevronRight class="h-4 w-4" />
@@ -90,15 +96,15 @@
 	}
 	.item {
 		@apply relative h-[25px] min-h-[25px] cursor-pointer rounded-md pl-4 pr-1 text-neutral-800;
-		@apply z-20 outline-none focus:bg-magnum-100 focus:text-magnum-700;
+		@apply z-20 outline-none data-[highlighted]:bg-magnum-100 data-[highlighted]:text-magnum-700;
 		@apply flex items-center justify-between text-sm leading-none;
 		@apply ring-0 !important;
 	}
 
 	.trigger {
 		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0 text-sm font-medium;
-		@apply text-magnum-900 transition-colors hover:bg-white/90 focus-visible:outline-none;
-		@apply focus-visible:ring-magnum-400 focus-visible:ring-offset-2 !important;
+		@apply text-magnum-900 transition-colors hover:bg-white/90 data-[highlighted]:outline-none;
+		@apply data-[highlighted]:ring-magnum-400 data-[highlighted]:ring-offset-2 !important;
 		@apply ring-0 !important;
 	}
 	.check {
