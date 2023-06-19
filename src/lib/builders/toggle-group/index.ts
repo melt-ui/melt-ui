@@ -1,4 +1,4 @@
-import { elementMultiDerived, kbd } from '$lib/internal/helpers';
+import { elementMultiDerived, kbd, omit } from '$lib/internal/helpers';
 import { getBrowserTextDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
@@ -33,13 +33,7 @@ const defaults = {
 
 export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 	const withDefaults = { ...defaults, ...args };
-	const options = writable({
-		disabled: withDefaults.disabled,
-		rovingFocus: withDefaults.rovingFocus,
-		loop: withDefaults.loop,
-		orientation: withDefaults.orientation,
-		type: withDefaults.type,
-	});
+	const options = writable(omit(withDefaults, 'value'));
 	const value = writable(withDefaults.value);
 
 	options.subscribe((o) => {
@@ -148,7 +142,8 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 				'aria-pressed': pressed,
 				type: 'button',
 				'data-melt-part': 'toggle-group-item',
-				tabIndex: anyPressed ? (pressed ? 0 : -1) : 0,
+				role: $options.type === 'single' ? 'radio' : undefined,
+				tabindex: anyPressed ? (pressed ? 0 : -1) : 0,
 			} as const;
 		};
 	});

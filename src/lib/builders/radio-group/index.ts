@@ -121,7 +121,7 @@ export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 				type: 'button',
 				role: 'radio',
 				'data-melt-part': 'radio-group-item',
-				tabIndex: $value === null ? 0 : checked ? 0 : -1,
+				tabindex: $value === null ? 0 : checked ? 0 : -1,
 			} as const;
 		};
 	});
@@ -135,7 +135,7 @@ export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 			return {
 				type: 'hidden',
 				'aria-hidden': true,
-				tabIndex: -1,
+				tabindex: -1,
 				value: itemValue,
 				checked: $value === itemValue,
 				disabled,

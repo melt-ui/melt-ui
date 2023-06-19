@@ -8,14 +8,14 @@
 	const { open, root, content, trigger } = createCollapsible();
 </script>
 
-<Docs.PreviewWrapper>
-	<div {...$root} class="w-full">
+<Docs.PreviewWrapper fullwidth>
+	<div {...$root} class="mx-auto w-full max-w-md">
 		<div class="flex items-center justify-between">
 			<span class="text-sm leading-6 text-white"> @thomasglopes starred 3 repositories </span>
 			<button
 				{...$trigger}
 				class="relative h-6 w-6 place-items-center rounded-full bg-white text-sm text-magnum-700
-			shadow-lg outline-none hover:opacity-75 focus:ring focus:ring-magnum-400
+			shadow-lg hover:opacity-75
 			data-[disabled]:cursor-not-allowed data-[disabled]:opacity-75"
 			>
 				<div class="abs-center">

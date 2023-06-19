@@ -1,7 +1,7 @@
 import { onDestroy, tick } from 'svelte';
+import type { Action } from 'svelte/action';
 import { derived, type Readable } from 'svelte/store';
 import { addEventListener, isBrowser, uuid } from '.';
-import type { Action } from 'svelte/action';
 
 export function getElementByMeltId(id: string) {
 	if (!isBrowser) return null;
@@ -40,14 +40,19 @@ export function derivedWithUnsubscribe<S extends Stores, T>(
 		unsubscribers.push(cb);
 	};
 
-	const derivedStore = derived(stores, ($storeValues) => {
+	const unsubscribe = () => {
 		// Call all of the unsubscribe functions from the previous run of the function
 		unsubscribers.forEach((fn) => fn());
 		// Clear the list of unsubscribe functions
 		unsubscribers = [];
+	};
 
+	const derivedStore = derived(stores, ($storeValues) => {
+		unsubscribe();
 		return fn($storeValues, onUnsubscribe);
 	});
+
+	onDestroy(unsubscribe);
 
 	return derivedStore;
 }
@@ -113,6 +118,11 @@ type Helpers = {
 	addAction: AddAction;
 };
 
+type MultiHelpers = Helpers & {
+	index: number;
+	getAllElements: () => Array<HTMLElement | null>;
+};
+
 const initElementHelpers = (setId: (id: string) => void) => {
 	let unsubscribers: (() => void)[] = [];
 	const unsubscribe = () => {
@@ -120,46 +130,55 @@ const initElementHelpers = (setId: (id: string) => void) => {
 		unsubscribers = [];
 	};
 
+	let index = 0;
+	let ids: string[] = [];
+
 	// Create an `Attach` function that can be used to attach events to the elements
 	const createElInterface = () => {
-		// Make sure the id is the same on tick
 		const id = uuid();
+		ids.push(id);
 		setId(id);
 
-		// Function that attaches an event listener to an element
-		const attach: Attach = (event, listener, options) => {
-			if (!isBrowser) return;
+		addUnsubscriber(() => {
+			ids = ids.filter((i) => i !== id);
+			index--;
+		});
 
-			// Wait for the next tick to ensure that the element has been rendered
-			tick().then(() => {
-				const element = getElementByMeltId(id);
-				if (!element) return;
-				unsubscribers.push(addEventListener(element, event, listener, options));
-			});
+		// Function that attaches an event listener to an element
+		const attach: Attach = async (event, listener, options) => {
+			if (!isBrowser) return;
+			const element = await getElement();
+			if (!element) return;
+			unsubscribers.push(addEventListener(element, event, listener, options));
 		};
 
 		// A function that returns the element associated with the current `id`
-		const getElement: GetElement = () => {
-			return tick().then(() => {
-				if (!isBrowser) return null;
-				return getElementByMeltId(id);
-			});
+		const getElement: Helpers['getElement'] = async () => {
+			if (!isBrowser) return null;
+
+			const el = getElementByMeltId(id);
+			if (!el) {
+				return await tick().then(() => getElementByMeltId(id));
+			}
+
+			return el;
 		};
 
-		const addAction: AddAction = (action, parameters) => {
-			return getElement().then(() => {
-				if (!isBrowser) return;
-				const element = getElementByMeltId(id);
-				if (!element) return;
+		const addAction: AddAction = async (action, parameters) => {
+			const element = await getElement();
+			if (!element) return;
 
-				const ac = action(element, parameters);
-				if (ac) {
-					unsubscribers.push(() => ac.destroy?.());
-				}
-			});
+			const ac = action(element, parameters);
+			if (ac) {
+				unsubscribers.push(function actionUnsub() {
+					ac.destroy?.();
+				});
+			}
 		};
 
-		return { attach, getElement, addAction };
+		onDestroy(unsubscribe);
+
+		return { attach, getElement, addAction, index: index++ };
 	};
 
 	const addUnsubscriber: AddUnsubscriber = (cb) => {
@@ -170,10 +189,15 @@ const initElementHelpers = (setId: (id: string) => void) => {
 		}
 	};
 
+	const getAllElements = () => {
+		return ids.map((id) => getElementByMeltId(id));
+	};
+
 	return {
 		unsubscribe,
 		createElInterface,
 		addUnsubscriber,
+		getAllElements,
 	};
 };
 
@@ -238,22 +262,32 @@ export function elementMultiDerived<
 	S extends Stores,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	T extends (...args: any[]) => Record<string, unknown> | void
->(stores: S, fn: (values: StoresValues<S>, helpers: Helpers) => T) {
+>(stores: S, fn: (values: StoresValues<S>, helpers: MultiHelpers) => T) {
 	let id: string;
-	const { addUnsubscriber, createElInterface, unsubscribe } = initElementHelpers(
+	const { addUnsubscriber, createElInterface, unsubscribe, getAllElements } = initElementHelpers(
 		(newId) => (id = newId)
 	);
 
-	return derived(stores, ($storeValues) => {
-		// Unsubscribe from all events
-		unsubscribe();
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		return (...args: any[]) => {
-			const { attach, getElement, addAction } = createElInterface();
-			const returned = fn($storeValues, { attach, getElement, addUnsubscriber, addAction });
-			return { ...returned(...args), 'data-melt-id': id };
-		};
-	}) as Readable<(...args: Parameters<T>) => ReturnWithObj<T, { 'data-melt-id': string }>>;
+	return {
+		...(derived(stores, ($storeValues) => {
+			// Unsubscribe from all events
+			unsubscribe();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			return (...args: any[]) => {
+				const { attach, getElement, addAction, index } = createElInterface();
+				const returned = fn($storeValues, {
+					attach,
+					getElement,
+					addUnsubscriber,
+					addAction,
+					index,
+					getAllElements,
+				});
+				return { ...returned(...args), 'data-melt-id': id };
+			};
+		}) as Readable<(...args: Parameters<T>) => ReturnWithObj<T, { 'data-melt-id': string }>>),
+		getAllElements,
+	};
 }
 
 /**

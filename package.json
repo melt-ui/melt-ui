@@ -1,6 +1,6 @@
 {
 	"name": "@melt-ui/svelte",
-	"version": "0.8.1",
+	"version": "0.10.3",
 	"license": "MIT",
 	"scripts": {
 		"dev": "vite dev",
@@ -37,7 +37,7 @@
 	},
 	"typesVersions": {
 		">4.0": {
-			"index": [
+			"index.d.ts": [
 				"./dist/index.d.ts"
 			],
 			"internal/*": [

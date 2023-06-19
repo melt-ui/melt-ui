@@ -8,11 +8,13 @@ import {
 	getElementByMeltId,
 	isBrowser,
 	kbd,
+	omit,
 	styleToString,
 	uuid,
 } from '$lib/internal/helpers';
 import { sleep } from '$lib/internal/helpers/sleep';
 import type { Defaults } from '$lib/internal/types';
+import { onMount } from 'svelte';
 import { derived, writable } from 'svelte/store';
 
 /**
@@ -31,6 +33,8 @@ export type CreateSelectArgs = {
 	arrowSize?: number;
 	required?: boolean;
 	disabled?: boolean;
+	selected?: unknown;
+	name?: string;
 };
 
 const defaults = {
@@ -45,17 +49,28 @@ const defaults = {
 
 export function createSelect(args?: CreateSelectArgs) {
 	const withDefaults = { ...defaults, ...args } as CreateSelectArgs;
-	const options = writable({ ...withDefaults });
+	const options = writable(omit(withDefaults, 'selected'));
 
 	const open = writable(false);
-	const selected = writable<string | null>(null);
-	const selectedText = writable<string | null>(null);
+	const selected = writable<unknown>(withDefaults.selected ?? null);
+	const selectedText = writable<string | number | null>(null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	const ids = {
 		menu: uuid(),
 		trigger: uuid(),
 	};
+
+	onMount(() => {
+		if (!isBrowser) return;
+		const menuEl = document.getElementById(ids.menu);
+		if (!menuEl) return;
+
+		const selectedEl = menuEl.querySelector('[data-selected]') as HTMLElement | undefined;
+		if (!selectedEl) return;
+		const label = selectedEl.getAttribute('data-label');
+		selectedText.set(label ?? selectedEl.textContent ?? null);
+	});
 
 	const menu = elementDerived(
 		[open, activeTrigger, options],
@@ -75,6 +90,7 @@ export function createSelect(args?: CreateSelectArgs) {
 				style: styleToString({
 					display: $open ? undefined : 'none',
 				}),
+				id: ids.menu,
 				'aria-labelledby': ids.trigger,
 			};
 		}
@@ -94,6 +110,10 @@ export function createSelect(args?: CreateSelectArgs) {
 
 				return isOpen;
 			});
+		});
+
+		attach('mousedown', (e) => {
+			e.preventDefault();
 		});
 
 		return {
@@ -117,30 +137,32 @@ export function createSelect(args?: CreateSelectArgs) {
 	}));
 
 	type OptionArgs = {
-		value: string;
+		value: unknown;
+		label?: string;
 	};
 
 	const option = elementMultiDerived([selected], ([$selected], { attach }) => {
-		return ({ value }: OptionArgs) => {
+		return (args: OptionArgs) => {
+			const { value, label } = args;
+
 			attach('click', (e) => {
-				const el = e.currentTarget as HTMLElement;
+				const el = e.currentTarget as HTMLElement | null;
 				selected.set(value);
-				selectedText.set(el.innerText);
+				selectedText.set(label ?? el?.textContent ?? null);
 				open.set(false);
 			});
 
 			attach('keydown', (e) => {
+				const el = e.currentTarget as HTMLElement | null;
 				if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
-					e.stopPropagation();
-					e.stopImmediatePropagation();
-					const el = e.currentTarget as HTMLElement;
+					e.preventDefault();
 					selected.set(value);
-					selectedText.set(el.innerText);
+					selectedText.set(label ?? el?.textContent ?? null);
 					open.set(false);
 				}
 			});
 
-			attach('mouseover', (e) => {
+			attach('mousemove', (e) => {
 				const el = e.currentTarget as HTMLElement;
 				el.focus();
 			});
@@ -154,6 +176,7 @@ export function createSelect(args?: CreateSelectArgs) {
 				role: 'option',
 				'aria-selected': $selected === value,
 				'data-selected': $selected === value ? '' : undefined,
+				'data-label': label ?? undefined,
 				tabindex: 0,
 			};
 		};
@@ -239,12 +262,31 @@ export function createSelect(args?: CreateSelectArgs) {
 		}
 	});
 
-	const isSelected = derived(
-		[selected],
-		([$selected]) =>
-			(value: string) =>
-				$selected === value
-	);
+	const isSelected = derived([selected], ([$selected]) => {
+		return (value: string | number) => {
+			return $selected === value;
+		};
+	});
 
-	return { trigger, menu, open, option, selected, selectedText, arrow, isSelected, options };
+	const input = derived([selected, options], ([$selected, $options]) => {
+		return {
+			type: 'hidden',
+			name: $options.name,
+			value: $selected,
+			'aria-hidden': true,
+			hidden: true,
+			tabIndex: -1,
+			required: $options.required,
+			disabled: $options.disabled,
+			style: styleToString({
+				position: 'absolute',
+				opacity: 0,
+				'pointer-events': 'none',
+				margin: 0,
+				transform: 'translateX(-100%)',
+			}),
+		};
+	});
+
+	return { trigger, menu, open, option, selected, selectedText, arrow, isSelected, options, input };
 }

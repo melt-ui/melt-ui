@@ -136,7 +136,7 @@ export function createTabs(args?: CreateTabsArgs) {
 					: ssrValue === tabValue
 					? 'active'
 					: 'inactive',
-				tabIndex: $value === tabValue ? 0 : -1,
+				tabindex: $value === tabValue ? 0 : -1,
 				'data-orientation': options.orientation,
 				'data-disabled': disabled ? '' : undefined,
 				disabled,
@@ -158,7 +158,7 @@ export function createTabs(args?: CreateTabsArgs) {
 					: ssrValue === tabValue
 					? undefined
 					: true,
-				tabIndex: 0,
+				tabindex: 0,
 			};
 		};
 	});

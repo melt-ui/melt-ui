@@ -1,5 +1,65 @@
 # @melt-ui/svelte
 
+## 0.10.3
+
+### Patch Changes
+
+- 517b1c1: fix: slider not working properly with low values
+- 5ff87f6: fix: focusTrap not unsubbing
+- bc51681: fix: Adjusts `typeVerisons` map to fix incorrect auto-imported path
+
+## 0.10.2
+
+### Patch Changes
+
+- 1cf6fb8: fix toolbar exports
+
+## 0.10.1
+
+### Patch Changes
+
+- c0616cc: remove onChange from collapsible
+- 600a530: fix slider dragging screen on mobile
+- 55754c1: refactor(select): label attr & unknown value
+- cefa91e: fix(select): prevent focus on mousedown
+
+## 0.10.0
+
+### Minor Changes
+
+- d3aeed2: add toolbar
+
+### Patch Changes
+
+- eb2afe5: fix slider intercepting document clicks
+
+## 0.9.0
+
+### Minor Changes
+
+- 897a45d: feat: add slider
+
+### Patch Changes
+
+- 9c960cb: refactor: update selectedText to support numbers
+- ad4436b: feat: export input el from select
+  refactor: change pagination default perPage to 1
+- 2d224d1: fix(slider): correct slider value return; steps functionality on mouse drag
+
+## 0.8.3
+
+### Patch Changes
+
+- f63cf06: fix: export pagination
+
+## 0.8.2
+
+### Patch Changes
+
+- 6a370c6: fix dialog scroll lock
+- 63d6c02: add selected arg to select; add number support to select
+- 63d6c02: improve select focus management
+
 ## 0.8.1
 
 ### Patch Changes

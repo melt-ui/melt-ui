@@ -1,21 +1,18 @@
 <script lang="ts">
 	import { createSelect } from '@melt-ui/svelte';
-	import Check from '~icons/lucide/check';
-	import ChevronDown from '~icons/lucide/chevron-down';
+	import { Check, ChevronDown } from 'icons';
 
 	const { selectedText, trigger, menu, option, isSelected } = createSelect();
 
 	const options = {
-		fruits: ['Apple', 'Banana', 'Orange', 'Pineapple'],
-		vegetables: ['Broccoli', 'Carrot', 'Potato', 'Tomato'],
+		fruits: ['Apple', 'Banana', 'Pineapple'],
+		vegetables: ['Broccoli', 'Potato', 'Tomato'],
 	};
 </script>
 
-<button class="trigger" {...$trigger}>
+<button class="trigger" {...$trigger} aria-label="Food">
 	{$selectedText || 'Select an option'}
-	<span class="opacity-50">
-		<ChevronDown />
-	</span>
+	<ChevronDown />
 </button>
 
 <ul class="menu" {...$menu}>
@@ -36,15 +33,15 @@
 
 <style lang="postcss">
 	.label {
-		@apply py-1 pl-4 pr-4 font-bold capitalize text-neutral-800;
+		@apply py-1 pl-4 pr-4 font-semibold capitalize text-neutral-800;
 	}
 	.menu {
-		@apply z-10 flex max-h-[300px] flex-col gap-2 overflow-y-auto;
-		@apply rounded-md bg-white p-1 lg:max-h-none;
+		@apply z-10 flex max-h-[360px] flex-col gap-2 overflow-y-auto;
+		@apply rounded-md bg-white p-1;
 	}
 	.option {
 		@apply relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800;
-		@apply outline-none hocus:bg-magnum-100 hocus:text-magnum-700;
+		@apply outline-none focus:bg-magnum-100 focus:text-magnum-700;
 	}
 	.trigger {
 		@apply flex h-10 w-[180px] items-center justify-between rounded-md bg-white px-3;

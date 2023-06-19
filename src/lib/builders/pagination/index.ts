@@ -14,7 +14,7 @@ export type CreatePaginationArgs = {
 };
 
 const defaults = {
-	perPage: 10,
+	perPage: 1,
 	siblingCount: 1,
 	page: 1,
 } satisfies Defaults<CreatePaginationArgs>;

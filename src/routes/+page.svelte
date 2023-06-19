@@ -7,7 +7,7 @@
 	let copied = false;
 	let copytimeout: ReturnType<typeof setTimeout>;
 	function copyInstallCommand() {
-		navigator.clipboard.writeText(`npm install melt-ui`);
+		navigator.clipboard.writeText(`npm install @melt-ui/svelte`);
 		copied = true;
 		clearTimeout(copytimeout);
 		copytimeout = setTimeout(() => {
