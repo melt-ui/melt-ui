@@ -125,16 +125,3 @@ export const formatStr = (s: string) => {
 		.map((word) => word[0].toUpperCase() + word.slice(1))
 		.join(' ');
 };
-
-export const getImporters = (baseURL: string) => {
-	return {
-		getComponent: async (path: string) => {
-			const resolved = new URL(path, baseURL).pathname;
-			return await import(resolved).then((module) => module.default);
-		},
-		getCode: async (path: string) => {
-			const resolved = new URL(`${path}`, baseURL).pathname;
-			return await import(resolved + '?raw').then((module) => module.default);
-		},
-	};
-};
