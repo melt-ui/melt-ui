@@ -178,13 +178,13 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				if (!$rootOpen) event.preventDefault();
 			});
 
-			attach('keydown', (e) => {
-				const triggerEl = e.currentTarget as HTMLElement;
-				if (e.key === kbd.ARROW_DOWN) {
+			attach('keydown', (event) => {
+				const triggerElement = event.currentTarget as HTMLElement;
+				if (SELECTION_KEYS.includes(event.key)) {
 					rootOpen.update((prev) => {
 						const isOpen = !prev;
 						if (isOpen) {
-							rootActiveTrigger.set(triggerEl);
+							rootActiveTrigger.set(triggerElement);
 						} else {
 							rootActiveTrigger.set(null);
 						}
@@ -192,6 +192,14 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						return isOpen;
 					});
 				}
+
+				if (event.key === kbd.ARROW_DOWN) {
+					rootOpen.update(() => {
+						rootActiveTrigger.set(triggerElement);
+						return true;
+					});
+				}
+				event.preventDefault();
 			});
 
 			return {
@@ -291,20 +299,27 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				}
 
 				attach('keydown', (event) => {
+					if (event.key === kbd.ESCAPE) {
+						return;
+					}
+
 					// Submenu key events bubble through portals.
 					// We only want to the keys in this menu.
 					const target = event.target as HTMLElement;
 					const currentTarget = event.currentTarget as HTMLElement;
-
 					const targetMeltMenuId = target.getAttribute('data-melt-menu-id');
 					const isKeyDownInside =
 						target.closest('[data-melt-menu]') === event.currentTarget &&
 						targetMeltMenuId === currentTarget.id;
+
 					const isCloseKey = SUB_CLOSE_KEYS['ltr'].includes(event.key);
 					const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
 					const isCharacterKey = event.key.length === 1;
 
 					if (isKeyDownInside) {
+						if (FIRST_LAST_KEYS.includes(event.key)) {
+							event.stopImmediatePropagation();
+						}
 						if (isCloseKey) {
 							event.preventDefault();
 							subOpen.update(() => {
@@ -333,7 +348,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					// Calculate the index of the next item based on the arrow key
 					const currentIndex = candidateNodes.indexOf(currentItem);
 					const nextIndex =
-						event.key === 'ArrowDown'
+						event.key === 'ArrowUp'
 							? currentIndex > 0
 								? currentIndex - 1
 								: candidateNodes.length - 1
@@ -593,21 +608,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			}
 		});
 
-		function setSubOpen(open: boolean, triggerElement?: HTMLElement | null) {
-			const trigger = triggerElement ? triggerElement : get(rootActiveTrigger);
-
-			rootOpen.update((prev) => {
-				if (open) {
-					if (prev) return prev;
-					rootActiveTrigger.set(trigger);
-					return true;
-				} else {
-					rootActiveTrigger.set(null);
-					return false;
-				}
-			});
-		}
-
 		return {
 			subTrigger,
 			subMenu,
@@ -621,11 +621,14 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	/* -------------------------------------------------------------------------------------------------
 	 * Root Effects
 	 * -----------------------------------------------------------------------------------------------*/
-	effect([rootOpen], ([$rootOpen]) => {
+	effect([rootOpen, rootActiveTrigger], ([$rootOpen, $rootActiveTrigger]) => {
 		if (!isBrowser) return;
 		const menuElement = document.getElementById(rootIds.menu);
 		if (menuElement && $rootOpen) {
 			sleep(1).then(() => menuElement.focus());
+		}
+		if (!$rootOpen && $rootActiveTrigger) {
+			$rootActiveTrigger?.focus();
 		}
 	});
 
@@ -645,7 +648,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 			const keydownListener = (event: KeyboardEvent) => {
 				if (event.key === kbd.ESCAPE) {
-					setRootOpen(false);
+					rootOpen.set(false);
+					rootActiveTrigger.set(null);
 					return;
 				}
 			};
@@ -659,6 +663,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			};
 		} else if (!$rootOpen && $rootActiveTrigger && isBrowser) {
 			// Hacky way to prevent the keydown event from triggering on the trigger
+			sleep(1).then(() => $rootActiveTrigger.focus());
 		}
 	});
 
@@ -733,35 +738,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	/* -------------------------------------------------------------------------------------------------
 	 * Helper Functions
 	 * -----------------------------------------------------------------------------------------------*/
-
-	function focusFirst(candidates: HTMLElement[]) {
-		if (!isBrowser) return;
-		const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
-		for (const candidate of candidates) {
-			if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) {
-				return;
-			}
-			candidate.focus();
-			if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) {
-				return;
-			}
-		}
-	}
-
-	function setRootOpen(open: boolean, triggerElement?: HTMLElement | null) {
-		const trigger = triggerElement ? triggerElement : get(rootActiveTrigger);
-
-		rootOpen.update((prev) => {
-			if (open) {
-				if (prev) return prev;
-				rootActiveTrigger.set(trigger);
-				return true;
-			} else {
-				rootActiveTrigger.set(null);
-				return false;
-			}
-		});
-	}
 
 	/**
 	 * Get the parent menu element for a menu item.
