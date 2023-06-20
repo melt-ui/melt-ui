@@ -10,99 +10,49 @@
 	const { subMenu: subMenuB, subTrigger: subTriggerB } = createSubMenu();
 
 	function onSelect(event: Event) {
-		/**
-		 * You only need to worry about the 'click' event. Even if the user
-		 * selects an item using the keyboard, the 'click' event will still fire.
-		 */
-		if (!(event.target instanceof HTMLElement)) return;
-		alert('You clicked on ' + event.target.textContent);
+		console.log(event);
 	}
+    function onOpen() {
+        console.log('opened')
+    }
+
+    function onClose() {
+        console.log('closed')
+    }
 </script>
 
 <Docs.PreviewWrapper>
-	<button type="button" class="trigger" {...$trigger} aria-label="Update dimensions">
+	<button
+		type="button"
+		class="trigger"
+		{...$trigger}
+		aria-label="Update dimensions"
+	>
 		<AlignJustify class="h-4 w-4" />
 		<span class="sr-only">Open Popover</span>
 	</button>
 
-	<div class="menu" {...$menu}>
-		<div
-			class="item"
-			{...$item({
-				onSelect,
-			})}
-		>
-			New Tab
-		</div>
-		<div
-			class="item"
-			{...$item({
-				onSelect,
-			})}
-			aria-disabled="true"
-		>
-			New Window
-		</div>
+	<div class="menu" {...$menu} on:m-open={onOpen} on:m-close={onClose}>
+		<div class="item" {...$item()} on:m-select={onSelect}>New Tab</div>
+		<div class="item" {...$item()} on:m-select={onSelect} aria-disabled="true">New Window</div>
 		<div class="item" {...$subTriggerA}>
 			More Tools
 			<ChevronRight class="h-4 w-4" />
 		</div>
 		<div class="menu subMenu" {...$subMenuA}>
-			<div
-				class="item"
-				{...$item({
-					onSelect,
-				})}
-			>
-				Save Page As..
-			</div>
-			<div
-				class="item"
-				{...$item({
-					onSelect,
-				})}
-			>
-				Create Shortcut..
-			</div>
+			<div class="item" {...$item()} on:m-select={onSelect}>Save Page As..</div>
+			<div class="item" {...$item()} on:m-select={onSelect}>Create Shortcut..</div>
 			<div class="item" {...$subTriggerB}>
 				Preferences
 				<ChevronRight class="h-4 w-4" />
 			</div>
 			<div class="menu subMenu" {...$subMenuB}>
-				<div
-					class="item"
-					{...$item({
-						onSelect,
-					})}
-				>
-					Keyboard Shortcuts
-				</div>
-				<div
-					class="item"
-					{...$item({
-						onSelect,
-					})}
-				>
-					Accessibility
-				</div>
+				<div class="item" {...$item()} on:m-select={onSelect}>Keyboard Shortcuts</div>
+				<div class="item" {...$item()} on:m-select={onSelect}>Accessibility</div>
 			</div>
 		</div>
-		<div
-			class="item"
-			{...$item({
-				onSelect,
-			})}
-		>
-			Show Bookmarks
-		</div>
-		<div
-			class="item"
-			{...$item({
-				onSelect,
-			})}
-		>
-			Show Full URLs
-		</div>
+		<div class="item" {...$item()} on:m-select={onSelect}>Show Bookmarks</div>
+		<div class="item" {...$item()} on:m-select={onSelect}>Show Full URLs</div>
 		<div {...$arrow} />
 	</div>
 </Docs.PreviewWrapper>

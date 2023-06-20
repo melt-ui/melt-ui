@@ -12,11 +12,12 @@ import {
 	styleToString,
 	uuid,
 	isHTMLElement,
-	type EventHandler,
 	isElementDisabled,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable, type Writable } from 'svelte/store';
+import type { HTMLAttributes as SvelteHTMLAttributes } from 'svelte/elements';
+import type { ActionReturn } from 'svelte/action';
 
 type Direction = 'ltr' | 'rtl';
 
@@ -135,20 +136,36 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		}
 	);
 
-	const rootTrigger = elementDerived(
-		[rootOpen, rootOptions],
-		([$rootOpen, $rootOptions], { attach, getElement }) => {
-			getElement().then((element) => {
-				applyAttrsIfDisabled(element);
+	const rootTrigger = elementDerived([rootOpen], ([$rootOpen], { attach, getElement }) => {
+		getElement().then((element) => {
+			applyAttrsIfDisabled(element);
+		});
+
+		attach('pointerdown', (e) => {
+			const triggerElement = e.currentTarget;
+			if (!isHTMLElement(triggerElement)) return;
+
+			const triggerControls = triggerElement.getAttribute('aria-controls');
+			if (!triggerControls) return;
+
+			rootOpen.update((prev) => {
+				const isOpen = !prev;
+				if (isOpen) {
+					rootActiveTrigger.set(triggerElement);
+				} else {
+					rootActiveTrigger.set(null);
+				}
+
+				return isOpen;
 			});
+			if (!$rootOpen) e.preventDefault();
+		});
 
-			attach('pointerdown', (e) => {
-				const triggerElement = e.currentTarget;
-				if (!isHTMLElement(triggerElement)) return;
+		attach('keydown', (e) => {
+			const triggerElement = e.currentTarget;
+			if (!isHTMLElement(triggerElement)) return;
 
-				const triggerControls = triggerElement.getAttribute('aria-controls');
-				if (!triggerControls) return;
-
+			if (SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN) {
 				rootOpen.update((prev) => {
 					const isOpen = !prev;
 					if (isOpen) {
@@ -159,52 +176,32 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 					return isOpen;
 				});
-				if (!$rootOpen) e.preventDefault();
-			});
 
-			attach('keydown', (e) => {
-				const triggerElement = e.currentTarget;
-				if (!isHTMLElement(triggerElement)) return;
+				const menuId = triggerElement.getAttribute('aria-controls');
+				if (!menuId) return;
 
-				if (SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN) {
-					rootOpen.update((prev) => {
-						const isOpen = !prev;
-						if (isOpen) {
-							rootActiveTrigger.set(triggerElement);
-						} else {
-							rootActiveTrigger.set(null);
-						}
+				const menu = document.getElementById(menuId);
+				if (!isHTMLElement(menu)) return;
 
-						return isOpen;
-					});
+				const menuItems = getMenuItems(menu);
+				if (!menuItems.length) return;
 
-					const menuId = triggerElement.getAttribute('aria-controls');
-					if (!menuId) return;
+				const nextFocusedElement = menuItems[0];
+				if (!isHTMLElement(nextFocusedElement)) return;
 
-					const menu = document.getElementById(menuId);
-					if (!isHTMLElement(menu)) return;
+				handleRovingFocus(nextFocusedElement);
+			}
 
-					const menuItems = getMenuItems(menu);
-					if (!menuItems.length) return;
+			e.preventDefault();
+		});
 
-					const nextFocusedElement = menuItems[0];
-					if (!isHTMLElement(nextFocusedElement)) return;
-
-					handleRovingFocus(nextFocusedElement);
-				}
-
-				e.preventDefault();
-			});
-
-			return {
-				'aria-controls': rootIds.menu,
-				'aria-expanded': $rootOpen,
-				'data-state': $rootOpen ? 'open' : 'closed',
-				'data-disabled': $rootOptions.disabled ? '' : undefined,
-				id: rootIds.trigger,
-			};
-		}
-	);
+		return {
+			'aria-controls': rootIds.menu,
+			'aria-expanded': $rootOpen,
+			'data-state': $rootOpen ? 'open' : 'closed',
+			id: rootIds.trigger,
+		};
+	});
 
 	const rootArrow = derived(rootOptions, ($rootOptions) => ({
 		'data-arrow': true,
@@ -215,17 +212,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		}),
 	}));
 
-	type ItemArgs = {
-		onSelect?: EventHandler;
-	};
-
-	const itemDefaults = {} satisfies Defaults<ItemArgs>;
-
 	const item = elementMultiDerived([], (_, { attach, getElement }) => {
-		return (args?: ItemArgs) => {
-			const itemArgs = { ...itemDefaults, ...args } as ItemArgs;
-			const { onSelect } = itemArgs;
-
+		return () => {
 			getElement().then((element) => {
 				setMeltMenuAttribute(element);
 				applyAttrsIfDisabled(element);
@@ -254,7 +242,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					handleRovingFocus(itemElement);
 					return;
 				}
-				onSelect?.(e);
+				itemElement.dispatchEvent(new CustomEvent('m-select', { bubbles: false }));
 				rootOpen.set(false);
 			});
 
@@ -682,6 +670,17 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	 * Root Effects
 	 * -----------------------------------------------------------------------------------------------*/
 
+	effect([rootOpen], ([$rootOpen]) => {
+		if (!isBrowser) return;
+		const rootMenuElement = document.getElementById(rootIds.menu);
+		if (rootMenuElement && $rootOpen) {
+			rootMenuElement.dispatchEvent(new CustomEvent('m-open'));
+		}
+		if (rootMenuElement && !$rootOpen) {
+			rootMenuElement.dispatchEvent(new CustomEvent('m-close'));
+		}
+	});
+
 	effect([rootOpen, rootActiveTrigger], ([$rootOpen, $rootActiveTrigger]) => {
 		if (!isBrowser) return;
 		const rootMenuElement = document.getElementById(rootIds.menu);
@@ -979,4 +978,33 @@ function isPointerInGraceArea(e: PointerEvent, area?: Polygon) {
 	if (!area) return false;
 	const cursorPos = { x: e.clientX, y: e.clientY };
 	return isPointInPolygon(cursorPos, area);
+}
+
+/**
+ * Custom MeltUI Dropdown Events
+ */
+
+declare global {
+	// eslint-disable-next-line @typescript-eslint/no-namespace
+	namespace svelteHTML {
+		interface HTMLAttributes<T extends EventTarget> extends SvelteHTMLAttributes<T> {
+			/**
+			 * Event listener for when an item is selected.
+			 * @param event The custom event.
+			 */
+			'on:m-select'?: (event: CustomEvent<T>) => void;
+
+			/**
+			 * Event listener for when the menu is open.
+			 * @param event The custom event.
+			 */
+			'on:m-open'?: (event: CustomEvent<T>) => void;
+
+			/**
+			 * Event listener for when the menu is closed.
+			 * @param event The custom event.
+			 */
+			'on:m-close'?: (event: CustomEvent<T>) => void;
+		}
+	}
 }
