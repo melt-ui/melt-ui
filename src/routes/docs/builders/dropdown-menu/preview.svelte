@@ -109,16 +109,18 @@
 
 <style lang="postcss">
 	.menu {
-		@apply z-10 flex max-h-[300px] w-52 flex-col shadow-lg;
+		@apply z-10 flex max-h-[300px] w-52 flex-col shadow-lg shadow-neutral-900/30;
 		@apply rounded-md bg-white p-1 lg:max-h-none;
 		@apply ring-0 !important;
 	}
 	.subMenu {
-		@apply shadow-md shadow-neutral-900/50;
+		@apply shadow-md shadow-neutral-900/30;
 	}
 	.item {
-		@apply relative h-[25px] min-h-[25px] select-none rounded-md pl-4 pr-1 text-magnum-600;
-		@apply z-20 outline-none data-[highlighted]:bg-magnum-100 data-[highlighted]:text-magnum-700;
+		@apply relative h-[25px] min-h-[25px] select-none rounded-md pl-4 pr-1;
+		@apply z-20 text-magnum-900 outline-none;
+		@apply data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900;
+		@apply data-[disabled]:text-neutral-300;
 		@apply flex items-center justify-between text-sm leading-none;
 		@apply ring-0 !important;
 	}
