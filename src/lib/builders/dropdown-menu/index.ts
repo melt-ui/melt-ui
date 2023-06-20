@@ -986,7 +986,7 @@ function isPointerInGraceArea(e: PointerEvent, area?: Polygon) {
 declare global {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace svelteHTML {
-		interface HTMLAttributes<T extends EventTarget> {
+		interface HTMLAttributes<T> extends T {
 			/**
 			 * Event listener for when an item is selected.
 			 * @param event The custom event.

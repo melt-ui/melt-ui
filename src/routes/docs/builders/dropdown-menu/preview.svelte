@@ -35,7 +35,7 @@
 			More Tools
 			<ChevronRight class="h-4 w-4" />
 		</div>
-		<div class="menu subMenu" {...$subMenuA}>
+		<div class="menu subMenu" data-testid="hello" {...$subMenuA}>
 			<div class="item" {...$item()} on:m-select={onSelect}>Save Page As..</div>
 			<div class="item" {...$item()} on:m-select={onSelect}>Create Shortcut..</div>
 			<div class="item" {...$subTriggerB}>
