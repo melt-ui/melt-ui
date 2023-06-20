@@ -1,5 +1,5 @@
 import { createFocusTrap, useClickOutside, useFloating, usePortal } from '$lib/internal/actions';
-import { addEventListener, executeCallbacks, kbd } from '$lib/internal/helpers';
+import { addEventListener, executeCallbacks, kbd, type Callback } from '$lib/internal/helpers';
 import type { Action } from 'svelte/action';
 import { noop } from 'svelte/internal';
 import type { PopperArgs, PopperConfig } from './popper.types';
@@ -8,6 +8,7 @@ const defaultConfig = {
 	floating: {},
 	focusTrap: {},
 	clickOutside: {},
+	portal: 'body',
 } satisfies PopperConfig;
 
 export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) => {
@@ -16,11 +17,17 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 
 	const opts = { ...defaultConfig, ...options } as PopperConfig;
 
-	const portal = usePortal(popperElement);
+	const callbacks: Callback[] = [];
 
-	const unsubscribeFloating = useFloating(anchorElement, popperElement, opts.floating).destroy;
+	if (options.portal !== null) {
+		const portal = usePortal(popperElement, options.portal);
+		if (portal?.destroy) {
+			callbacks.push(portal.destroy);
+		}
+	}
 
-	let unSubfocusTrap = noop;
+	callbacks.push(useFloating(anchorElement, popperElement, opts.floating).destroy);
+
 	if (options.focusTrap !== null) {
 		const { useFocusTrap } = createFocusTrap({
 			immediate: true,
@@ -33,45 +40,47 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 
 		const usedFocusTrap = useFocusTrap(popperElement);
 
-		if (usedFocusTrap && usedFocusTrap.destroy) {
-			unSubfocusTrap = () => usedFocusTrap.destroy;
+		if (usedFocusTrap?.destroy) {
+			callbacks.push(usedFocusTrap.destroy);
 		}
 	}
 
-	const unsubscribeClickOutside = useClickOutside(popperElement, {
-		enabled: open,
-		handler: (e: PointerEvent) => {
+	if (options.clickOutside !== null) {
+		callbacks.push(
+			useClickOutside(popperElement, {
+				enabled: open,
+				handler: (e: PointerEvent) => {
+					if (e.defaultPrevented) return;
+
+					if (!anchorElement?.contains(e.target as Element)) {
+						open.set(false);
+						anchorElement.focus();
+					}
+				},
+				...opts.clickOutside,
+			}).destroy
+		);
+	}
+
+	callbacks.push(
+		addEventListener(popperElement, 'keydown', (e) => {
 			if (e.defaultPrevented) return;
+			const event = e as KeyboardEvent;
 
-			if (!anchorElement?.contains(e.target as Element)) {
-				open.set(false);
-				anchorElement.focus();
+			switch (event.key) {
+				case kbd.ESCAPE:
+					open.set(false);
+					break;
+				default:
 			}
-		},
-		...opts.clickOutside,
-	}).destroy;
-
-	const removeKeydown = addEventListener(popperElement, 'keydown', (e) => {
-		if (e.defaultPrevented) return;
-		const event = e as KeyboardEvent;
-
-		switch (event.key) {
-			case kbd.ESCAPE:
-				open.set(false);
-				break;
-			default:
-		}
-	});
-
-	const unsubscribe = executeCallbacks(
-		unsubscribeFloating,
-		unsubscribeClickOutside,
-		unSubfocusTrap,
-		removeKeydown,
-		portal && portal.destroy ? portal.destroy : noop
+		})
 	);
 
+	const unsubscribe = executeCallbacks(...callbacks);
+
 	return {
-		destroy: unsubscribe,
+		destroy() {
+			unsubscribe();
+		},
 	};
 };

@@ -2,7 +2,7 @@
  * A callback function that takes an array of arguments of type `T` and returns `void`.
  * @template T The types of the arguments that the callback function takes.
  */
-type Callback<T extends unknown[]> = (...args: T) => void;
+export type Callback<T extends unknown[] = unknown[]> = (...args: T) => void;
 
 /**
  * Executes an array of callback functions with the same arguments.

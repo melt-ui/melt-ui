@@ -1,13 +1,16 @@
 <script lang="ts">
 	import { createTabs } from '@melt-ui/svelte';
+
 	const { root, list, content, trigger } = createTabs({ value: 'tab1' });
 </script>
 
-<div {...root} class="root">
-	<div {...list} class="list" aria-label="Manage your account">
+<div {...$root} class="root">
+	<div {...$list} class="list" aria-label="Manage your account">
 		<button {...$trigger('tab1')} class="trigger">Account</button>
 		<button {...$trigger('tab2')} class="trigger">Password</button>
-		<button {...$trigger({ value: 'tab3', disabled: true })} class="trigger">Disabled</button>
+		<button {...$trigger({ value: 'tab3', disabled: true })} class="trigger opacity-50"
+			>Disabled</button
+		>
 		<button {...$trigger('tab4')} class="trigger">Settings</button>
 	</div>
 	<div {...$content('tab1')} class="content">
@@ -65,12 +68,13 @@
 		flex-shrink: 0;
 		border-bottom: 1px solid #e2e8f0;
 		background-color: #fff;
+		overflow-x: auto;
 	}
 
 	.trigger {
 		@apply flex h-11 flex-1 cursor-default select-none items-center
       justify-center rounded-none bg-white px-5 leading-none text-magnum-900
-			outline-none focus:relative focus:ring focus:ring-magnum-400;
+			 focus:relative;
 	}
 
 	.trigger[data-orientation='vertical'] {
@@ -82,7 +86,7 @@
 	}
 
 	.trigger[data-state='active'][data-orientation='horizontal'] {
-		@apply shadow-[inset_0_-1px_0_0,0_1px_0_0] shadow-current focus:relative focus:ring focus:ring-magnum-400;
+		@apply shadow-[inset_0_-1px_0_0,0_1px_0_0] shadow-current focus:relative;
 	}
 
 	.trigger[data-state='active'][data-orientation='vertical'] {
@@ -90,7 +94,7 @@
 	}
 
 	.content {
-		@apply grow bg-white p-5 outline-none focus:ring focus:ring-magnum-400;
+		@apply grow bg-white p-5;
 	}
 
 	/* Content Elements */
@@ -107,7 +111,7 @@
 	}
 
 	input {
-		@apply h-8 shrink-0 grow rounded border px-2.5 leading-none text-magnum-900 outline-none focus:ring focus:ring-magnum-800;
+		@apply h-8 shrink-0 grow rounded border px-2.5 leading-none text-magnum-900  focus:ring focus:ring-magnum-800;
 	}
 
 	.actions {
@@ -115,6 +119,6 @@
 	}
 
 	button {
-		@apply inline-flex h-8 cursor-default items-center justify-center rounded bg-green-100 px-[15px] font-medium leading-none text-green-900 outline-none focus:ring focus:ring-magnum-400;
+		@apply inline-flex h-8 cursor-default items-center justify-center rounded bg-green-100 px-[15px] font-medium leading-none text-green-900;
 	}
 </style>

@@ -1,4 +1,5 @@
-import { elementMultiDerived, kbd } from '$lib/internal/helpers';
+import { elementMultiDerived, getDirectionalKeys, kbd } from '$lib/internal/helpers';
+import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 
@@ -60,18 +61,6 @@ export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 				el.click();
 			});
 
-			// TODO: detect dir
-			const dir = 'ltr' as 'ltr' | 'rtl';
-			const nextKey = {
-				horizontal: dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
-				vertical: kbd.ARROW_DOWN,
-			}[$options.orientation ?? 'horizontal'];
-
-			const prevKey = {
-				horizontal: dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
-				vertical: kbd.ARROW_UP,
-			}[$options.orientation ?? 'horizontal'];
-
 			attach('keydown', (e) => {
 				const el = e.currentTarget as HTMLElement;
 				const root = el.closest('[data-melt-part="radio-group"]') as HTMLElement;
@@ -80,6 +69,9 @@ export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 					root.querySelectorAll('[data-melt-part="radio-group-item"]')
 				) as Array<HTMLElement>;
 				const currentIndex = items.indexOf(el);
+
+				const dir = getElemDirection(root);
+				const { nextKey, prevKey } = getDirectionalKeys(dir, $options.orientation);
 
 				if (e.key === nextKey) {
 					e.preventDefault();
