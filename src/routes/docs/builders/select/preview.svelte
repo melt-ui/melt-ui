@@ -4,7 +4,7 @@
 	import Check from '~icons/lucide/check';
 	import ChevronDown from '~icons/lucide/chevron-down';
 
-	const { selectedText, trigger, menu, option, isSelected } = createSelect();
+	const { label, trigger, menu, option, isSelected } = createSelect();
 
 	const options = {
 		fruits: ['Apple', 'Banana', 'Pineapple'],
@@ -14,7 +14,7 @@
 
 <Docs.PreviewWrapper>
 	<button class="trigger" {...$trigger} aria-label="Food">
-		{$selectedText || 'Select an option'}
+		{$label || 'Select an option'}
 		<ChevronDown />
 	</button>
 
