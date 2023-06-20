@@ -12,6 +12,8 @@ import {
 	styleToString,
 	uuid,
 	isHTMLElement,
+	type EventHandler,
+	isElementDisabled,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable, type Writable } from 'svelte/store';
@@ -61,10 +63,10 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	const pointerMovingToSubmenu = derivedWithUnsubscribe(
 		[pointerDir, pointerGraceIntent],
 		([$pointerDir, $pointerGraceIntent]) => {
-			return (event: PointerEvent) => {
+			return (e: PointerEvent) => {
 				const isMovingTowards = $pointerDir === $pointerGraceIntent?.side;
 
-				return isMovingTowards && isPointerInGraceArea(event, $pointerGraceIntent?.area);
+				return isMovingTowards && isPointerInGraceArea(e, $pointerGraceIntent?.area);
 			};
 		}
 	);
@@ -76,8 +78,16 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 	const rootMenu = elementDerived(
 		[rootOpen, rootActiveTrigger, rootOptions],
-		([$rootOpen, $rootActiveTrigger, $rootOptions], { addAction, attach }) => {
+		([$rootOpen, $rootActiveTrigger, $rootOptions], { addAction, attach, getElement }) => {
 			if ($rootOpen && $rootActiveTrigger) {
+				getElement().then((element) => {
+					if (!isBrowser) return;
+					if (!isHTMLElement(element)) return;
+					setMeltMenuAttribute(element);
+					if (isElementDisabled(element)) {
+						element.setAttribute('data-disabled', '');
+					}
+				});
 				addAction(usePopper, {
 					anchorElement: $rootActiveTrigger,
 					open: rootOpen,
@@ -87,25 +97,25 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					},
 				});
 
-				attach('keydown', (event) => {
+				attach('keydown', (e) => {
 					// submenu key events bubble through portals
 					// we only care about key events that happen inside this menu
-					const target = event.target;
+					const target = e.target;
 					if (!isHTMLElement(target)) return;
 
-					const isKeyDownInside = target.closest('[data-melt-menu]') === event.currentTarget;
+					const isKeyDownInside = target.closest('[data-melt-menu]') === e.currentTarget;
 
-					const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
-					const isCharacterKey = event.key.length === 1;
+					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
+					const isCharacterKey = e.key.length === 1;
 					if (!isKeyDownInside) return;
 
-					if (FIRST_LAST_KEYS.includes(event.key)) {
-						handleMenuNavigation(event);
+					if (FIRST_LAST_KEYS.includes(e.key)) {
+						handleMenuNavigation(e);
 					}
 
 					// menus should not be navigated using tab so we prevent it
 					// reference: https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
-					if (event.key === 'Tab') event.preventDefault();
+					if (e.key === 'Tab') e.preventDefault();
 
 					if (!isModifierKey && isCharacterKey) {
 						// typeahead logic
@@ -131,8 +141,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	const rootTrigger = elementDerived(
 		[rootOpen, rootOptions],
 		([$rootOpen, $rootOptions], { attach }) => {
-			attach('pointerdown', (event) => {
-				const triggerElement = event.currentTarget;
+			attach('pointerdown', (e) => {
+				const triggerElement = e.currentTarget;
 				if (!isHTMLElement(triggerElement)) return;
 
 				const triggerControls = triggerElement.getAttribute('aria-controls');
@@ -148,14 +158,14 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 					return isOpen;
 				});
-				if (!$rootOpen) event.preventDefault();
+				if (!$rootOpen) e.preventDefault();
 			});
 
-			attach('keydown', (event) => {
-				const triggerElement = event.currentTarget;
+			attach('keydown', (e) => {
+				const triggerElement = e.currentTarget;
 				if (!isHTMLElement(triggerElement)) return;
 
-				if (SELECTION_KEYS.includes(event.key) || event.key === kbd.ARROW_DOWN) {
+				if (SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN) {
 					rootOpen.update((prev) => {
 						const isOpen = !prev;
 						if (isOpen) {
@@ -182,7 +192,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					handleRovingFocus(nextFocusedElement);
 				}
 
-				event.preventDefault();
+				e.preventDefault();
 			});
 
 			return {
@@ -205,79 +215,95 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	}));
 
 	type ItemArgs = {
-		disabled?: boolean;
+		onSelect?: EventHandler;
 	};
 
-	const itemDefaults = {
-		disabled: false,
-	} satisfies Defaults<ItemArgs>;
+	const itemDefaults = {} satisfies Defaults<ItemArgs>;
 
 	const item = elementMultiDerived([], (_, { attach, getElement }) => {
 		return (args?: ItemArgs) => {
 			const itemArgs = { ...itemDefaults, ...args } as ItemArgs;
+			const { onSelect } = itemArgs;
+
 			getElement().then((element) => {
 				setMeltMenuAttribute(element);
-				if (itemArgs.disabled) {
-					element?.setAttribute('data-disabled', '');
+				handleDisabledMenuItem(element);
+			});
+
+			attach('pointerdown', (e) => {
+				const itemElement = e.currentTarget;
+				if (!isHTMLElement(itemElement)) return;
+				if (isElementDisabled(itemElement)) {
+					e.preventDefault();
+					return;
 				}
 			});
 
-			attach('click', (event) => {
-				if (itemArgs.disabled) {
-					event.preventDefault();
-					return;
-				}
-				if (event.defaultPrevented) {
-					const currentTarget = event.currentTarget;
-					if (!isHTMLElement(currentTarget)) return;
-
-					handleRovingFocus(currentTarget);
+			attach('click', (e) => {
+				const itemElement = e.currentTarget;
+				if (!isHTMLElement(itemElement)) return;
+				if (isElementDisabled(itemElement)) {
+					e.preventDefault();
 					return;
 				}
 
+				if (e.defaultPrevented) {
+					if (!isHTMLElement(itemElement)) return;
+
+					handleRovingFocus(itemElement);
+					return;
+				}
+				onSelect?.(e);
 				rootOpen.set(false);
 			});
 
-			attach('keydown', (event) => {
-				if (SELECTION_KEYS.includes(event.key)) {
-					const currentTarget = event.currentTarget;
-					if (!isHTMLElement(currentTarget)) return;
+			attach('keydown', (e) => {
+				if (SELECTION_KEYS.includes(e.key)) {
+					const itemElement = e.currentTarget;
+					if (!isHTMLElement(itemElement)) return;
 
-					currentTarget.click();
+					itemElement.click();
 					/**
 					 * We prevent default browser behaviour for selection keys as they should trigger
 					 * a selection only:
 					 * - prevents space from scrolling the page.
 					 * - if keydown causes focus to move, prevents keydown from firing on the new target.
 					 */
-					event.preventDefault();
+					e.preventDefault();
 				}
 			});
 
-			attach('pointermove', (event) => {
-				onMenuItemPointerMove(event);
+			attach('pointermove', (e) => {
+				const itemElement = e.currentTarget;
+				if (!isHTMLElement(itemElement)) return;
+
+				if (isElementDisabled(itemElement)) {
+					onItemLeave(e);
+					return;
+				}
+
+				onMenuItemPointerMove(e);
 			});
 
-			attach('pointerleave', (event) => {
-				onMenuItemPointerLeave(event);
+			attach('pointerleave', (e) => {
+				onMenuItemPointerLeave(e);
 			});
 
-			attach('focusin', (event) => {
-				const currentTarget = event.currentTarget;
-				if (!isHTMLElement(currentTarget)) return;
-				currentTarget.setAttribute('data-highlighted', '');
+			attach('focusin', (e) => {
+				const itemElement = e.currentTarget;
+				if (!isHTMLElement(itemElement)) return;
+				itemElement.setAttribute('data-highlighted', '');
 			});
 
-			attach('focusout', (event) => {
-				const currentTarget = event.currentTarget;
-				if (!isHTMLElement(currentTarget)) return;
-				currentTarget.removeAttribute('data-highlighted');
+			attach('focusout', (e) => {
+				const itemElement = e.currentTarget;
+				if (!isHTMLElement(itemElement)) return;
+				itemElement.removeAttribute('data-highlighted');
 			});
 
 			return {
 				role: 'menuitem',
 				tabindex: -1,
-				'data-disabled': itemArgs.disabled ? '' : undefined,
 				'data-orientation': 'vertical',
 			};
 		};
@@ -327,17 +353,17 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					});
 				}
 
-				attach('keydown', (event) => {
-					if (event.key === kbd.ESCAPE) {
+				attach('keydown', (e) => {
+					if (e.key === kbd.ESCAPE) {
 						return;
 					}
 
 					// Submenu key events bubble through portals.
 					// We only want the keys in this menu.
-					const target = event.target;
+					const target = e.target;
 					if (!isHTMLElement(target)) return;
 
-					const currentTarget = event.currentTarget;
+					const currentTarget = e.currentTarget;
 					if (!isHTMLElement(currentTarget)) return;
 
 					const targetMeltMenuId = target.getAttribute('data-melt-menu-id');
@@ -347,21 +373,21 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						target.closest('[data-melt-menu]') === currentTarget &&
 						targetMeltMenuId === currentTarget.id;
 
-					const isCloseKey = SUB_CLOSE_KEYS['ltr'].includes(event.key);
-					const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
-					const isCharacterKey = event.key.length === 1;
+					const isCloseKey = SUB_CLOSE_KEYS['ltr'].includes(e.key);
+					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
+					const isCharacterKey = e.key.length === 1;
 
 					if (!isKeyDownInside) return;
 
-					if (FIRST_LAST_KEYS.includes(event.key)) {
+					if (FIRST_LAST_KEYS.includes(e.key)) {
 						// prevent events from bubbling
-						event.stopImmediatePropagation();
-						handleMenuNavigation(event);
+						e.stopImmediatePropagation();
+						handleMenuNavigation(e);
 					}
 
 					// close the submenu if the user presses a close key
 					if (isCloseKey) {
-						event.preventDefault();
+						e.preventDefault();
 						subOpen.update(() => {
 							if ($subActiveTrigger) {
 								handleRovingFocus($subActiveTrigger);
@@ -373,19 +399,19 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 					// menus should not be navigated using tab so we prevent it
 					// reference: https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
-					if (event.key === 'Tab') event.preventDefault();
+					if (e.key === 'Tab') e.preventDefault();
 					if (!isModifierKey && isCharacterKey) {
 						// typeahead logic
 					}
 				});
 
-				attach('pointermove', (event) => {
-					onMenuPointerMove(event);
+				attach('pointermove', (e) => {
+					onMenuPointerMove(e);
 				});
 
-				attach('focusout', (event) => {
+				attach('focusout', (e) => {
 					if (get(isUsingKeyboard)) {
-						const target = event.target;
+						const target = e.target;
 						if (!isHTMLElement(target)) return;
 
 						const submenuElement = document.getElementById(subIds.menu);
@@ -396,10 +422,10 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 							subActiveTrigger.set(null);
 						}
 					} else {
-						const menuElement = event.currentTarget;
+						const menuElement = e.currentTarget;
 						if (!isHTMLElement(menuElement)) return;
 
-						const relatedTarget = event.relatedTarget;
+						const relatedTarget = e.relatedTarget;
 						if (!isHTMLElement(relatedTarget)) return;
 
 						if (!menuElement.contains(relatedTarget) && relatedTarget !== $subActiveTrigger) {
@@ -427,7 +453,10 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		const subTrigger = elementDerived(
 			[subOpen, subOptions],
 			([$subOpen, $subOptions], { attach, getElement, addUnsubscriber }) => {
-				getElement().then((element) => setMeltMenuAttribute(element));
+				getElement().then((element) => {
+					setMeltMenuAttribute(element);
+					handleDisabledMenuItem(element);
+				});
 
 				addUnsubscriber(() => {
 					if (!isBrowser) return;
@@ -436,17 +465,17 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					pointerGraceIntent.set(null);
 				});
 
-				attach('click', (event) => {
+				attach('click', (e) => {
 					// Manually focus because iOS Safari doesn't always focus on click (e.g. buttons)
-					const currentTarget = event.currentTarget;
-					if (!isHTMLElement(currentTarget)) return;
+					const triggerElement = e.currentTarget;
+					if (!isHTMLElement(triggerElement)) return;
 
-					handleRovingFocus(currentTarget);
+					handleRovingFocus(triggerElement);
 					if (!get(subOpen)) {
 						subOpen.update((prev) => {
 							const isAlreadyOpen = prev;
 							if (!isAlreadyOpen) {
-								subActiveTrigger.set(currentTarget);
+								subActiveTrigger.set(triggerElement);
 								return !prev;
 							}
 							return prev;
@@ -454,18 +483,18 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					}
 				});
 
-				attach('keydown', (event) => {
-					if (SUB_OPEN_KEYS['ltr'].includes(event.key)) {
-						const currentTarget = event.currentTarget;
-						if (!isHTMLElement(currentTarget)) return;
+				attach('keydown', (e) => {
+					if (SUB_OPEN_KEYS['ltr'].includes(e.key)) {
+						const triggerElement = e.currentTarget;
+						if (!isHTMLElement(triggerElement)) return;
 
 						if (!$subOpen) {
-							currentTarget.click();
-							event.preventDefault();
+							triggerElement.click();
+							e.preventDefault();
 							return;
 						}
 
-						const menuId = currentTarget.getAttribute('aria-controls');
+						const menuId = triggerElement.getAttribute('aria-controls');
 						if (!menuId) return;
 
 						const menuElement = document.getElementById(menuId);
@@ -479,24 +508,24 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					return;
 				});
 
-				attach('pointermove', (event) => {
-					if (!isMouse(event)) return;
+				attach('pointermove', (e) => {
+					if (!isMouse(e)) return;
 
-					onItemEnter(event);
+					onItemEnter(e);
 
-					if (event.defaultPrevented) return;
+					if (e.defaultPrevented) return;
 
-					const currentTarget = event.currentTarget;
-					if (!isHTMLElement(currentTarget)) return;
+					const triggerElement = e.currentTarget;
+					if (!isHTMLElement(triggerElement)) return;
 
-					handleRovingFocus(currentTarget);
+					handleRovingFocus(triggerElement);
 
 					const openTimer = get(subOpenTimer);
 					if (!$subOpen && !openTimer) {
 						subOpenTimer.set(
 							window.setTimeout(() => {
 								subOpen.update(() => {
-									subActiveTrigger.set(currentTarget);
+									subActiveTrigger.set(triggerElement);
 									return true;
 								});
 								clearOpenTimer(subOpenTimer);
@@ -505,8 +534,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					}
 				});
 
-				attach('pointerleave', (event) => {
-					if (!isMouse(event)) return;
+				attach('pointerleave', (e) => {
+					if (!isMouse(e)) return;
 					clearOpenTimer(subOpenTimer);
 
 					const submenuElement = document.getElementById(subIds.menu);
@@ -523,7 +552,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 							area: [
 								// Apply a bleed on clientX to ensure that our exit point is
 								// consistently within polygon bounds
-								{ x: event.clientX + bleed, y: event.clientY },
+								{ x: e.clientX + bleed, y: e.clientY },
 								{ x: contentNearEdge, y: contentRect.top },
 								{ x: contentFarEdge, y: contentRect.top },
 								{ x: contentFarEdge, y: contentRect.bottom },
@@ -539,25 +568,25 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 							}, 300)
 						);
 					} else {
-						onTriggerLeave(event);
-						if (event.defaultPrevented) return;
+						onTriggerLeave(e);
+						if (e.defaultPrevented) return;
 
 						// There's 100ms where the user may leave an item before the submenu was opened.
 						pointerGraceIntent.set(null);
 					}
 				});
 
-				attach('focusout', (event) => {
-					const currentTarget = event.currentTarget;
-					if (!isHTMLElement(currentTarget)) return;
+				attach('focusout', (e) => {
+					const triggerElement = e.currentTarget;
+					if (!isHTMLElement(triggerElement)) return;
 
-					if (!isHTMLElement(currentTarget)) return;
-					currentTarget.removeAttribute('data-highlighted');
+					if (!isHTMLElement(triggerElement)) return;
+					triggerElement.removeAttribute('data-highlighted');
 
-					const relatedTarget = event.relatedTarget;
+					const relatedTarget = e.relatedTarget;
 					if (!isHTMLElement(relatedTarget)) return;
 
-					const menuId = currentTarget.getAttribute('aria-controls');
+					const menuId = triggerElement.getAttribute('aria-controls');
 					if (!menuId) return;
 
 					const menu = document.getElementById(menuId);
@@ -568,10 +597,10 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					}
 				});
 
-				attach('focusin', (event) => {
-					const currentTarget = event.currentTarget;
-					if (!isHTMLElement(currentTarget)) return;
-					currentTarget.setAttribute('data-highlighted', '');
+				attach('focusin', (e) => {
+					const triggerElement = e.currentTarget;
+					if (!isHTMLElement(triggerElement)) return;
+					triggerElement.setAttribute('data-highlighted', '');
 				});
 
 				return {
@@ -673,8 +702,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			};
 			document.addEventListener('keydown', handleKeyDown, { capture: true });
 
-			const keydownListener = (event: KeyboardEvent) => {
-				if (event.key === kbd.ESCAPE) {
+			const keydownListener = (e: KeyboardEvent) => {
+				if (e.key === kbd.ESCAPE) {
 					rootOpen.set(false);
 					return;
 				}
@@ -688,7 +717,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				document.removeEventListener('keydown', keydownListener);
 			};
 		} else if (!$rootOpen && $rootActiveTrigger && isBrowser) {
-			// Hacky way to prevent the keydown event from triggering on the trigger
+			// Hacky way to prevent the keydown e from triggering on the trigger
 			sleep(1).then(() => handleRovingFocus($rootActiveTrigger));
 		}
 	});
@@ -697,17 +726,17 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	 * Pointer Event Effects
 	 * -----------------------------------------------------------------------------------------------*/
 
-	function onItemEnter(event: PointerEvent) {
-		if (isPointerMovingToSubmenu(event)) {
-			event.preventDefault();
+	function onItemEnter(e: PointerEvent) {
+		if (isPointerMovingToSubmenu(e)) {
+			e.preventDefault();
 		}
 	}
 
-	function onItemLeave(event: PointerEvent) {
-		if (isPointerMovingToSubmenu(event)) {
+	function onItemLeave(e: PointerEvent) {
+		if (isPointerMovingToSubmenu(e)) {
 			return;
 		}
-		const target = event.target;
+		const target = e.target;
 		if (!isHTMLElement(target)) return;
 
 		const parentMenuElement = getParentMenu(target);
@@ -716,52 +745,61 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		handleRovingFocus(parentMenuElement);
 	}
 
-	function onTriggerLeave(event: PointerEvent) {
-		if (isPointerMovingToSubmenu(event)) {
-			event.preventDefault();
+	function onTriggerLeave(e: PointerEvent) {
+		if (isPointerMovingToSubmenu(e)) {
+			e.preventDefault();
 		}
 	}
 
-	function onMenuPointerMove(event: PointerEvent) {
-		if (!isMouse(event)) return;
+	function onMenuPointerMove(e: PointerEvent) {
+		if (!isMouse(e)) return;
 
-		const target = event.target;
+		const target = e.target;
 		if (!isHTMLElement(target)) return;
 
-		const currentTarget = event.currentTarget;
+		const currentTarget = e.currentTarget;
 		if (!isHTMLElement(currentTarget)) return;
 
 		const $lastPointerX = get(lastPointerX);
-		const pointerXHasChanged = $lastPointerX !== event.clientX;
+		const pointerXHasChanged = $lastPointerX !== e.clientX;
 
-		// We don't use `event.movementX` for this check because Safari will
-		// always return `0` on a pointer event.
+		// We don't use `e.movementX` for this check because Safari will
+		// always return `0` on a pointer e.
 		if (currentTarget.contains(target) && pointerXHasChanged) {
-			const newDir = event.clientX > $lastPointerX ? 'right' : 'left';
+			const newDir = e.clientX > $lastPointerX ? 'right' : 'left';
 			pointerDir.set(newDir);
-			lastPointerX.set(event.clientX);
+			lastPointerX.set(e.clientX);
 		}
 	}
 
-	function onMenuItemPointerMove(event: PointerEvent) {
-		if (!isMouse(event)) return;
-		onItemEnter(event);
-		if (!event.defaultPrevented) {
-			const currentTarget = event.currentTarget;
+	function onMenuItemPointerMove(e: PointerEvent) {
+		if (!isMouse(e)) return;
+		onItemEnter(e);
+		if (!e.defaultPrevented) {
+			const currentTarget = e.currentTarget;
 			if (!isHTMLElement(currentTarget)) return;
 			// focus on the current menu item
 			handleRovingFocus(currentTarget);
 		}
 	}
 
-	function onMenuItemPointerLeave(event: PointerEvent) {
-		if (!isMouse(event)) return;
-		onItemLeave(event);
+	function onMenuItemPointerLeave(e: PointerEvent) {
+		if (!isMouse(e)) return;
+		onItemLeave(e);
 	}
 
 	/* -------------------------------------------------------------------------------------------------
 	 * Helper Functions
 	 * -----------------------------------------------------------------------------------------------*/
+
+	function handleDisabledMenuItem(element: HTMLElement | null) {
+		if (!isBrowser) return;
+		if (!isHTMLElement(element)) return;
+		if (isElementDisabled(element)) {
+			element.setAttribute('data-disabled', '');
+			element.setAttribute('aria-disabled', 'true');
+		}
+	}
 
 	/**
 	 * Manage roving focus between elements. Sets the current active element to
@@ -784,16 +822,16 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		sleep(1).then(() => nextElement.focus());
 	}
 
-	function isPointerMovingToSubmenu(event: PointerEvent) {
-		return get(pointerMovingToSubmenu)(event);
+	function isPointerMovingToSubmenu(e: PointerEvent) {
+		return get(pointerMovingToSubmenu)(e);
 	}
 
 	/**
 	 * Check if the event is a mouse event
-	 * @param event The pointer event
+	 * @param e The pointer event
 	 */
-	function isMouse(event: PointerEvent) {
-		return event.pointerType === 'mouse';
+	function isMouse(e: PointerEvent) {
+		return e.pointerType === 'mouse';
 	}
 
 	/**
@@ -811,29 +849,39 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 	/**
 	 * Keyboard event handler for menu navigation
-	 * @param event The keyboard event
+	 * @param e The keyboard event
 	 */
-	function handleMenuNavigation(event: KeyboardEvent) {
-		event.preventDefault();
+	function handleMenuNavigation(e: KeyboardEvent) {
+		e.preventDefault();
 
 		// currently focused menu item
 		const currentFocusedItem = document.activeElement;
 		if (!isHTMLElement(currentFocusedItem)) return;
 
 		// menu element being navigated
-		const currentTarget = event.currentTarget;
+		const currentTarget = e.currentTarget;
 		if (!isHTMLElement(currentTarget)) return;
 
 		// menu items of the current menu
-		const candidateNodes = getMenuItems(currentTarget);
-		if (!candidateNodes.length) return;
+		const menuItems = getMenuItems(currentTarget);
+		if (!menuItems.length) return;
+
+		const candidateNodes = menuItems.filter((item) => {
+			if (item.hasAttribute('data-disabled')) {
+				return false;
+			}
+			if (item.getAttribute('disabled') === 'true') {
+				return false;
+			}
+			return true;
+		});
 
 		// Index of the currently focused item in the candidate nodes array
 		const currentIndex = candidateNodes.indexOf(currentFocusedItem);
 
 		// Calculate the index of the next menu item
 		let nextIndex: number;
-		switch (event.key) {
+		switch (e.key) {
 			case kbd.ARROW_DOWN:
 				nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : currentIndex;
 				break;
@@ -922,8 +970,8 @@ function isPointInPolygon(point: Point, polygon: Polygon) {
 	return inside;
 }
 
-function isPointerInGraceArea(event: PointerEvent, area?: Polygon) {
+function isPointerInGraceArea(e: PointerEvent, area?: Polygon) {
 	if (!area) return false;
-	const cursorPos = { x: event.clientX, y: event.clientY };
+	const cursorPos = { x: e.clientX, y: e.clientY };
 	return isPointInPolygon(cursorPos, area);
 }
