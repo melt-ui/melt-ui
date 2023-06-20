@@ -4,7 +4,7 @@
 	const { root, list, content, trigger } = createTabs({ value: 'tab1' });
 </script>
 
-<div {...root} class="root">
+<div {...$root} class="root">
 	<div {...list} class="list" aria-label="Manage your account">
 		<button {...$trigger('tab1')} class="trigger">Account</button>
 		<button {...$trigger('tab2')} class="trigger">Password</button>

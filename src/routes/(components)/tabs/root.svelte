@@ -24,6 +24,6 @@
 	setTabsContext({ content, list, trigger, tabs });
 </script>
 
-<div {...root}>
+<div {...$root}>
 	<slot tab={$value} />
 </div>

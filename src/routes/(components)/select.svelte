@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { createSelect } from '$lib';
+	import { createSelect, type SelectOptionArgs } from '$lib';
 	import ChevronDown from '~icons/lucide/chevron-down';
 	import Check from '~icons/lucide/check';
 
-	export let options: string[] = [];
-	export let selected: string = options[0];
+	export let options: SelectOptionArgs<string>[] = [];
+	export let selected: string = options[0].value;
 
 	const {
 		selectedText,
@@ -40,16 +40,16 @@
 >
 	{#each options as o}
 		<li
-			class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-500
-      outline-none focus:!text-magnum-500 data-[selected]:text-magnum-600"
-			{...$option({ value: o })}
+			class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-500 outline-none focus:!text-magnum-500
+			data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[selected]:text-magnum-600 data-[disabled]:line-through"
+			{...$option({ ...o })}
 		>
-			{#if $isSelected(o)}
+			{#if $isSelected(o.value)}
 				<div class="check">
 					<Check />
 				</div>
 			{/if}
-			{o}
+			{o.label}
 		</li>
 	{/each}
 </ul>

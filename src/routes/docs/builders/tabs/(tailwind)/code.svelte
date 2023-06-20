@@ -4,7 +4,7 @@
 </script>
 
 <div
-	{...root}
+	{...$root}
 	class="flex flex-col overflow-hidden rounded-md shadow-lg data-[orientation=vertical]:flex-row"
 >
 	<div

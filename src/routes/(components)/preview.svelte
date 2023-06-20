@@ -6,14 +6,14 @@
 		code: {
 			[codingStyle: string]: {
 				[fileName: string]: string;
-			};
+			} | null;
 		};
 		fullwidth?: boolean;
 	};
 </script>
 
 <script lang="ts">
-	import { createSelect } from '$lib';
+	import { createSelect, type CreateSelectArgs, type SelectOptionArgs } from '$lib';
 	import CodeBlock from './code-block.svelte';
 	import PreviewWrapper from './preview-wrapper.svelte';
 	import Select from './select.svelte';
@@ -27,7 +27,8 @@
 	export let fullwidth: $$Props['fullwidth'] = false;
 
 	let codingStyle = Object.keys(code)[0];
-	$: files = Object.keys(code[codingStyle]);
+	$: codingStyleObj = code[codingStyle];
+	$: files = codingStyleObj !== null ? Object.keys(codingStyleObj) : [];
 
 	const { selected } = createSelect({
 		selected: codingStyle,
@@ -37,6 +38,14 @@
 	});
 
 	let viewCode = false;
+
+	$: codeOptions = Object.entries(code).map(([key, value]) => {
+		return {
+			value: key,
+			label: key,
+			disabled: value === null,
+		} satisfies SelectOptionArgs<string>;
+	});
 </script>
 
 <div class="mt-4">
@@ -51,11 +60,12 @@
 					<TabsList />
 				{/if}
 				<div class="ml-auto">
-					<Select options={Object.keys(code)} bind:selected={codingStyle} />
+					<Select options={codeOptions} bind:selected={codingStyle} />
 				</div>
 			</div>
-
-			<CodeBlock code={code[codingStyle][tab]} />
+			{#if codingStyleObj}
+				<CodeBlock code={codingStyleObj[tab]} />
+			{/if}
 		</TabsRoot>
 	{:else}
 		<PreviewWrapper {fullwidth}>

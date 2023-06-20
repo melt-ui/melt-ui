@@ -28,13 +28,19 @@ import { derived, writable } from 'svelte/store';
  * - [X] Floating UI
  **/
 
-export type CreateSelectArgs = {
+export type CreateSelectArgs<T = unknown> = {
 	positioning?: FloatingConfig;
 	arrowSize?: number;
 	required?: boolean;
 	disabled?: boolean;
-	selected?: unknown;
+	selected?: T;
 	name?: string;
+};
+
+export type SelectOptionArgs<T = unknown> = {
+	value: T;
+	label?: string;
+	disabled?: boolean;
 };
 
 const defaults = {
@@ -136,48 +142,47 @@ export function createSelect(args?: CreateSelectArgs) {
 		}),
 	}));
 
-	type OptionArgs = {
-		value: unknown;
-		label?: string;
-	};
-
 	const option = elementMultiDerived([selected], ([$selected], { attach }) => {
-		return (args: OptionArgs) => {
-			const { value, label } = args;
+		return (args: SelectOptionArgs) => {
+			const { value, label, disabled } = args;
 
-			attach('click', (e) => {
-				const el = e.currentTarget as HTMLElement | null;
-				selected.set(value);
-				selectedText.set(label ?? el?.textContent ?? null);
-				open.set(false);
-			});
-
-			attach('keydown', (e) => {
-				const el = e.currentTarget as HTMLElement | null;
-				if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
-					e.preventDefault();
+			if (!disabled) {
+				attach('click', (e) => {
+					const el = e.currentTarget as HTMLElement | null;
 					selected.set(value);
 					selectedText.set(label ?? el?.textContent ?? null);
 					open.set(false);
-				}
-			});
+				});
 
-			attach('mousemove', (e) => {
-				const el = e.currentTarget as HTMLElement;
-				el.focus();
-			});
+				attach('keydown', (e) => {
+					const el = e.currentTarget as HTMLElement | null;
+					if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
+						e.preventDefault();
+						selected.set(value);
+						selectedText.set(label ?? el?.textContent ?? null);
+						open.set(false);
+					}
+				});
 
-			attach('mouseout', (e) => {
-				const el = e.currentTarget as HTMLElement;
-				el.blur();
-			});
+				attach('mousemove', (e) => {
+					const el = e.currentTarget as HTMLElement;
+					el.focus();
+				});
+
+				attach('mouseout', (e) => {
+					const el = e.currentTarget as HTMLElement;
+					el.blur();
+				});
+			}
 
 			return {
 				role: 'option',
 				'aria-selected': $selected === value,
 				'data-selected': $selected === value ? '' : undefined,
 				'data-label': label ?? undefined,
-				tabindex: 0,
+				'data-disabled': disabled ? '' : undefined,
+				disabled: disabled ? true : undefined,
+				tabindex: disabled ? -1 : 0,
 			};
 		};
 	});
@@ -195,7 +200,10 @@ export function createSelect(args?: CreateSelectArgs) {
 			// Focus on selected option or first option
 			const selectedOption = menuEl.querySelector('[data-selected]') as HTMLElement | undefined;
 			if (!selectedOption) {
-				const firstOption = menuEl.querySelector('[role="option"]') as HTMLElement | undefined;
+				// get first non-disabled option
+				const firstOption = menuEl.querySelector('[role="option"]:not([data-disabled])') as
+					| HTMLElement
+					| undefined;
 				sleep(1).then(() => firstOption?.focus());
 			} else {
 				sleep(1).then(() => selectedOption.focus());
@@ -208,7 +216,9 @@ export function createSelect(args?: CreateSelectArgs) {
 					return;
 				}
 
-				const allOptions = Array.from(menuEl.querySelectorAll('[role="option"]')) as HTMLElement[];
+				const allOptions = Array.from(
+					menuEl.querySelectorAll('[role="option"]:not([data-disabled])')
+				) as HTMLElement[];
 				const focusedOption = allOptions.find((el) => el === document.activeElement);
 				const focusedIndex = allOptions.indexOf(focusedOption as HTMLElement);
 

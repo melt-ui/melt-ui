@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
 	import { snippets } from './(snippets)';
-	import code from './code.ignore-svelte?raw';
-	import Preview from './preview.svelte';
+
+	export let data;
 </script>
 
 <Docs.H1>Accordion</Docs.H1>
@@ -11,9 +11,7 @@
 	content.
 </Docs.Description>
 
-<Preview />
-
-<Docs.CodeBlock {code} />
+<Docs.Preview {...data.preview} fullwidth />
 
 <Docs.H2>Features</Docs.H2>
 <Docs.Ul>
