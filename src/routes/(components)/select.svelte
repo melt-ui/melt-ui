@@ -4,23 +4,23 @@
 	import Check from '~icons/lucide/check';
 
 	export let options: SelectOptionArgs<string>[] = [];
-	export let selected: string = options[0].value;
+	export let value: string = options[0].value;
 
 	const {
-		selectedText,
+		label,
 		trigger,
 		menu,
 		option,
 		isSelected,
-		selected: localSelected,
+		value: localValue,
 	} = createSelect({
-		selected,
+		value,
 	});
 
-	localSelected.subscribe((value) => {
-		typeof value === 'string' && (selected = value);
+	localValue.subscribe((v) => {
+		typeof v === 'string' && (value = v);
 	});
-	$: localSelected.set(selected);
+	$: localValue.set(value);
 </script>
 
 <button
@@ -29,7 +29,7 @@
 	{...$trigger}
 	aria-label="Select"
 >
-	{$selectedText || 'Select an option'}
+	{$label || 'Select an option'}
 	<ChevronDown />
 </button>
 

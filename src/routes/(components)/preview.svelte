@@ -31,11 +31,11 @@
 	$: codingStyleObj = code[codingStyle];
 	$: files = codingStyleObj !== null ? Object.keys(codingStyleObj) : [];
 
-	const { selected } = createSelect({
-		selected: codingStyle,
+	const { value } = createSelect({
+		value: codingStyle,
 	});
-	selected.subscribe((value) => {
-		typeof value === 'string' && (codingStyle = value);
+	value.subscribe((v) => {
+		typeof v === 'string' && (codingStyle = v);
 	});
 
 	let viewCode = true;
@@ -52,7 +52,7 @@
 <div class="mt-4 flex flex-row items-center justify-between">
 	<div class="flex h-10 items-center lg:hidden">
 		{#if viewCode}
-			<Select options={codeOptions} bind:selected={codingStyle} />
+			<Select options={codeOptions} bind:value={codingStyle} />
 		{/if}
 	</div>
 
@@ -70,7 +70,7 @@
 				</div>
 
 				<div class="ml-auto hidden lg:block">
-					<Select options={codeOptions} bind:selected={codingStyle} />
+					<Select options={codeOptions} bind:value={codingStyle} />
 				</div>
 			</div>
 			{#if codingStyleObj}
