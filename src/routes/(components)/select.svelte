@@ -24,7 +24,7 @@
 </script>
 
 <button
-	class="flex w-[180px] items-center justify-between rounded-md border border-magnum-700 bg-neutral-800 px-3 py-1 text-magnum-600
+	class="flex w-[140px] items-center justify-between rounded-md border border-magnum-700 bg-neutral-800 px-3 py-1 text-magnum-600
   outline-none transition-opacity hover:opacity-75 focus:!border-magnum-500 focus:!text-magnum-500"
 	{...$trigger}
 	aria-label="Select"

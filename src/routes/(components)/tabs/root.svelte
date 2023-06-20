@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	type TabsContext = Pick<ReturnType<typeof createTabs>, 'content' | 'list' | 'trigger'> & {
-		tabs: string[];
+		tabs: Writable<string[]>;
 	};
 
 	const setTabsContext = (context: TabsContext) => {
@@ -13,6 +13,7 @@
 <script lang="ts">
 	import { createTabs } from '$lib';
 	import { getContext, setContext } from 'svelte';
+	import { writable, type Writable } from 'svelte/store';
 
 	export let tabs: string[] = [];
 
@@ -21,7 +22,10 @@
 	});
 	$: value.set(tabs[0]);
 
-	setTabsContext({ content, list, trigger, tabs });
+	const tabsStore = writable(tabs);
+	$: tabsStore.set(tabs);
+
+	setTabsContext({ content, list, trigger, tabs: tabsStore });
 </script>
 
 <div {...$root}>

@@ -5,7 +5,7 @@
 </script>
 
 <div class="flex gap-2" {...list}>
-	{#each tabs as tab}
+	{#each $tabs as tab}
 		<button
 			{...$trigger(tab)}
 			class="rounded-md border border-transparent bg-neutral-800 px-3 py-1 text-neutral-500 opacity-75 transition

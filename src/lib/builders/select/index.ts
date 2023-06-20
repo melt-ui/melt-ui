@@ -14,7 +14,7 @@ import {
 } from '$lib/internal/helpers';
 import { sleep } from '$lib/internal/helpers/sleep';
 import type { Defaults } from '$lib/internal/types';
-import { onMount } from 'svelte';
+import { tick } from 'svelte';
 import { derived, writable } from 'svelte/store';
 
 /**
@@ -66,17 +66,6 @@ export function createSelect(args?: CreateSelectArgs) {
 		menu: uuid(),
 		trigger: uuid(),
 	};
-
-	onMount(() => {
-		if (!isBrowser) return;
-		const menuEl = document.getElementById(ids.menu);
-		if (!menuEl) return;
-
-		const selectedEl = menuEl.querySelector('[data-selected]') as HTMLElement | undefined;
-		if (!selectedEl) return;
-		const label = selectedEl.getAttribute('data-label');
-		selectedText.set(label ?? selectedEl.textContent ?? null);
-	});
 
 	const menu = elementDerived(
 		[open, activeTrigger, options],
@@ -147,19 +136,15 @@ export function createSelect(args?: CreateSelectArgs) {
 			const { value, label, disabled } = args;
 
 			if (!disabled) {
-				attach('click', (e) => {
-					const el = e.currentTarget as HTMLElement | null;
+				attach('click', () => {
 					selected.set(value);
-					selectedText.set(label ?? el?.textContent ?? null);
 					open.set(false);
 				});
 
 				attach('keydown', (e) => {
-					const el = e.currentTarget as HTMLElement | null;
 					if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
 						e.preventDefault();
 						selected.set(value);
-						selectedText.set(label ?? el?.textContent ?? null);
 						open.set(false);
 					}
 				});
@@ -270,6 +255,20 @@ export function createSelect(args?: CreateSelectArgs) {
 			// Hacky way to prevent the keydown event from triggering on the trigger
 			sleep(1).then(() => $activeTrigger.focus());
 		}
+	});
+
+	effect([selected], () => {
+		tick().then(() => {
+			if (!isBrowser) return;
+
+			const menuEl = document.getElementById(ids.menu);
+			if (!menuEl) return;
+
+			const selectedEl = menuEl.querySelector('[data-selected]') as HTMLElement | undefined;
+			if (!selectedEl) return;
+			const label = selectedEl.getAttribute('data-label');
+			selectedText.set(label ?? selectedEl.textContent ?? null);
+		});
 	});
 
 	const isSelected = derived([selected], ([$selected]) => {

@@ -14,6 +14,7 @@
 
 <script lang="ts">
 	import { createSelect, type CreateSelectArgs, type SelectOptionArgs } from '$lib';
+	import { cn } from '$routes/helpers';
 	import CodeBlock from './code-block.svelte';
 	import PreviewWrapper from './preview-wrapper.svelte';
 	import Select from './select.svelte';
@@ -37,7 +38,7 @@
 		typeof value === 'string' && (codingStyle = value);
 	});
 
-	let viewCode = false;
+	let viewCode = true;
 
 	$: codeOptions = Object.entries(code).map(([key, value]) => {
 		return {
@@ -48,18 +49,27 @@
 	});
 </script>
 
-<div class="mt-4">
-	<Switch bind:checked={viewCode} />
+<div class="mt-4 flex flex-row items-center justify-between">
+	<div class="flex h-10 items-center lg:hidden">
+		{#if viewCode}
+			<Select options={codeOptions} bind:selected={codingStyle} />
+		{/if}
+	</div>
+
+	<div class="ml-auto">
+		<Switch bind:checked={viewCode} />
+	</div>
 </div>
 
 <div class="relative mt-2 rounded-md">
 	{#if viewCode}
 		<TabsRoot tabs={files} let:tab>
-			<div class="flex h-10 items-center">
-				{#if files.length > 1}
+			<div class="flex h-10 flex-col-reverse gap-4 lg:flex-row lg:items-center">
+				<div class={cn(files.length === 1 && 'lg:hidden')}>
 					<TabsList />
-				{/if}
-				<div class="ml-auto">
+				</div>
+
+				<div class="ml-auto hidden lg:block">
 					<Select options={codeOptions} bind:selected={codingStyle} />
 				</div>
 			</div>

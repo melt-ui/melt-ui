@@ -4,7 +4,7 @@
 	export let fullwidth = false;
 </script>
 
-<div class="comp-preview h-96 overflow-x-auto lg:overflow-x-hidden">
+<div class="comp-preview h-[20rem] overflow-x-auto lg:h-[28rem] lg:overflow-x-hidden">
 	<div class={cn('mx-auto max-w-md px-4', fullwidth && 'w-full max-w-none')}>
 		<slot />
 	</div>
