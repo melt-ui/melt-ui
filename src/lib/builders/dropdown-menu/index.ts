@@ -16,7 +16,6 @@ import {
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable, type Writable } from 'svelte/store';
-import type { HTMLAttributes as SvelteHTMLAttributes } from 'svelte/elements';
 
 type Direction = 'ltr' | 'rtl';
 
