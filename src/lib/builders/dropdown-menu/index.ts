@@ -505,7 +505,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 						handleRovingFocus(firstItem);
 					}
-					return;
 				});
 
 				attach('pointermove', (e) => {
@@ -718,7 +717,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			};
 		} else if (!$rootOpen && $rootActiveTrigger && isBrowser) {
 			// Hacky way to prevent the keydown e from triggering on the trigger
-			sleep(1).then(() => handleRovingFocus($rootActiveTrigger));
+			handleRovingFocus($rootActiveTrigger);
 		}
 	});
 
