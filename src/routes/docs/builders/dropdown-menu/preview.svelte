@@ -9,25 +9,21 @@
 	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
 	const { subMenu: subMenuB, subTrigger: subTriggerB } = createSubMenu();
 
-	function onSelect(event: Event) {
-		console.log(event);
+	function onSelect() {
+		alert('You selected an item!');
 	}
-    function onOpen() {
-        console.log('opened')
-    }
 
-    function onClose() {
-        console.log('closed')
-    }
+	function onOpen() {
+		// do something
+	}
+
+	function onClose() {
+		// do something
+	}
 </script>
 
 <Docs.PreviewWrapper>
-	<button
-		type="button"
-		class="trigger"
-		{...$trigger}
-		aria-label="Update dimensions"
-	>
+	<button type="button" class="trigger" {...$trigger} aria-label="Update dimensions">
 		<AlignJustify class="h-4 w-4" />
 		<span class="sr-only">Open Popover</span>
 	</button>
