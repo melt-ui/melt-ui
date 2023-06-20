@@ -38,7 +38,7 @@
 		typeof v === 'string' && (codingStyle = v);
 	});
 
-	let viewCode = true;
+	let viewCode = false;
 
 	$: codeOptions = Object.entries(code).map(([key, value]) => {
 		return {

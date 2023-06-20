@@ -44,7 +44,7 @@
 <Docs.P>
 	To disable a single item, you can pass in an object instead of a string to the function.
 </Docs.P>
-<Docs.CodeBlock collapsible={false} code={snippets.disable} />
+<Docs.CodeBlock code={snippets.disable} />
 
 <Docs.H3>Opening multiple items at once</Docs.H3>
 <Docs.P>

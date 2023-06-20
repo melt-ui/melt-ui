@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
-	import code from './code.ignore-svelte?raw';
-	import Preview from './preview.svelte';
+
+	export let data;
 </script>
 
 <Docs.H1>Slider</Docs.H1>
@@ -9,8 +9,6 @@
 	An input where the user selects a value from within a given range
 </Docs.Description>
 
-<Preview />
-
-<Docs.CodeBlock {code} />
+<Docs.Preview {...data.preview} />
 
 <Docs.Construction />

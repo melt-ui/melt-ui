@@ -25,7 +25,7 @@
 
 <button
 	class="flex w-[140px] items-center justify-between rounded-md border border-magnum-700 bg-neutral-800 px-3 py-1 text-magnum-600
-  outline-none transition-opacity hover:opacity-75 focus:!border-magnum-500 focus:!text-magnum-500"
+  outline-none transition-opacity hover:opacity-75 focus:!border-magnum-400 focus:!text-magnum-400"
 	{...$trigger}
 	aria-label="Select"
 >
@@ -40,7 +40,7 @@
 >
 	{#each options as o}
 		<li
-			class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-500 outline-none focus:!text-magnum-500
+			class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-500 outline-none focus:!text-magnum-400
 			data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[selected]:text-magnum-600 data-[disabled]:line-through"
 			{...$option({ ...o })}
 		>

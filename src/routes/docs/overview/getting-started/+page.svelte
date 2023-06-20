@@ -11,11 +11,11 @@
 </Docs.P>
 <Docs.Tabs tabs={['npm', 'yarn', 'pnpm']} let:tab>
 	{#if tab === 'npm'}
-		<Docs.CodeBlock inline code={'npm install @melt-ui/svelte'} collapsible={false} />
+		<Docs.CodeBlock inline code={'npm install @melt-ui/svelte'} />
 	{:else if tab === 'yarn'}
-		<Docs.CodeBlock inline code={'yarn add @melt-ui/svelte'} collapsible={false} />
+		<Docs.CodeBlock inline code={'yarn add @melt-ui/svelte'} />
 	{:else if tab === 'pnpm'}
-		<Docs.CodeBlock inline code={'pnpm install @melt-ui/svelte'} collapsible={false} />
+		<Docs.CodeBlock inline code={'pnpm install @melt-ui/svelte'} />
 	{/if}
 </Docs.Tabs>
 <Docs.P sidenote>P.S. These tabs were built using Melt! Try using them with Arrow keys.</Docs.P>
@@ -25,7 +25,7 @@
 	Melt UI exposes a number of component builders. Say you want a Collapsible component:
 </Docs.P>
 
-<Docs.CodeBlock code={snippets.builder} collapsible={false} />
+<Docs.CodeBlock code={snippets.builder} />
 
 <Docs.P>
 	You'll see that createCollapsible exposes a number of stores. Be careful! That is not always the
@@ -39,7 +39,7 @@
 	utility framework such as Tailwind, or even outside components (as long as you can pass in Melt's
 	props to it).
 </Docs.P>
-<Docs.CodeBlock code={snippets.extensible} collapsible={false} />
+<Docs.CodeBlock code={snippets.extensible} />
 
 <Docs.H3>Animating</Docs.H3>
 <Docs.P>
@@ -47,14 +47,14 @@
 	data and aria attributes. You can then use them for animation, if you wish.
 </Docs.P>
 
-<Docs.CodeBlock code={snippets.animation} collapsible={false} />
+<Docs.CodeBlock code={snippets.animation} />
 
 <Docs.P>
 	You can also use Svelte transitions if you wish. But beware, this may break some default behaviour
 	in certain components, such as focus management.
 </Docs.P>
 
-<Docs.CodeBlock code={snippets.svelteTransitions} collapsible={false} />
+<Docs.CodeBlock code={snippets.svelteTransitions} />
 
 <Docs.H2>Need help?</Docs.H2>
 <Docs.P>

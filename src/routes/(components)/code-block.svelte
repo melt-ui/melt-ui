@@ -22,7 +22,7 @@
 
 <div
 	class={cn(
-		'code-block relative overflow-hidden rounded-lg',
+		'code-block relative rounded-lg',
 		'max-h-[17rem] overflow-auto lg:max-h-[25rem]',
 		inline ? 'inline-block overflow-hidden pr-12' : 'my-2'
 	)}

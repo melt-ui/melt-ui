@@ -1,15 +1,14 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
-	import Preview from './preview.svelte';
-	import code from './code.ignore-svelte?raw';
+
+	export let data;
 </script>
 
 <Docs.H1>Popover</Docs.H1>
 <Docs.Description>Displays rich content in a portal, triggered by a button.</Docs.Description>
 
-<Preview />
+<Docs.Preview {...data.preview} />
 
-<Docs.CodeBlock {code} />
 <Docs.H2>Features</Docs.H2>
 <Docs.Ul>
 	<Docs.Li>Full keyboard navigation.</Docs.Li>

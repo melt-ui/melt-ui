@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
 	import { snippets } from './(snippets)';
-	import code from './code.ignore-svelte?raw';
-	import Preview from './preview.svelte';
+
+	export let data;
 </script>
 
 <Docs.H1>Checkbox</Docs.H1>
@@ -10,9 +10,7 @@
 	>A control that allows the user to toggle between checked and not checked.</Docs.Description
 >
 
-<Preview />
-
-<Docs.CodeBlock {code} />
+<Docs.Preview {...data.preview} />
 
 <Docs.H2>Features</Docs.H2>
 <Docs.Ul>
@@ -38,21 +36,21 @@
 	To create an indeterminate checkbox, set the <Docs.Code>checked</Docs.Code> argument as
 	<Docs.Code>indeterminate</Docs.Code>.
 </Docs.P>
-<Docs.CodeBlock collapsible={false} code={snippets.indeterminate} />
+<Docs.CodeBlock code={snippets.indeterminate} />
 
 <Docs.H3>Disabling the checkbox</Docs.H3>
 <Docs.P>
 	To disable the checkbox, set the <Docs.Code>disabled</Docs.Code> argument as
 	<Docs.Code>true</Docs.Code>.
 </Docs.P>
-<Docs.CodeBlock collapsible={false} code={snippets.disable} />
+<Docs.CodeBlock code={snippets.disable} />
 
 <Docs.H3>Controlled access</Docs.H3>
 <Docs.P>
 	To programatically control the checkbox, you can directly set the <Docs.Code>checked</Docs.Code> store.
 	You can also update the <Docs.Code>options</Docs.Code> store with new arguments.
 </Docs.P>
-<Docs.CodeBlock collapsible={false} code={snippets.controlled} />
+<Docs.CodeBlock code={snippets.controlled} />
 
 <Docs.H2>Accessibility</Docs.H2>
 <Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/">WAI-ARIA pattern</Docs.A>

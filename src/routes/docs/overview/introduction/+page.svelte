@@ -22,7 +22,7 @@
 	Melt UI exposes builders, not components. A builder is a function that returns a set of props that
 	can be passed to elements or components:
 </Docs.P>
-<Docs.CodeBlock code={snippets.builder} collapsible={false} />
+<Docs.CodeBlock code={snippets.builder} />
 <Docs.P>
 	This is all you need to have a working Collapsible component in your Svelte application. The props
 	automatically apply the needed attributes and event handlers to the element or component they are
@@ -35,7 +35,7 @@
 	extend them however you like, using your preferred styling solution, or adding custom
 	functionality:
 </Docs.P>
-<Docs.CodeBlock code={snippets.extensible} collapsible={false} />
+<Docs.CodeBlock code={snippets.extensible} />
 
 <Docs.H3>
 	Strict adherence to <Docs.A href="https://www.w3.org/WAI/ARIA/apg/">WAI-ARIA guidelines</Docs.A>

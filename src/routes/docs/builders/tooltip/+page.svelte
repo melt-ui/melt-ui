@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
-	import Preview from './preview.svelte';
-	import previewCode from './code.ignore-svelte?raw';
+
+	export let data;
 </script>
 
 <Docs.H1>Tooltip</Docs.H1>
@@ -10,8 +10,6 @@
 	or the mouse hovers over it.
 </Docs.Description>
 
-<Preview />
-
-<Docs.CodeBlock code={previewCode} />
+<Docs.Preview {...data.preview} />
 
 <Docs.Construction />
