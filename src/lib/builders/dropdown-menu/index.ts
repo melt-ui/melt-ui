@@ -81,12 +81,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		([$rootOpen, $rootActiveTrigger, $rootOptions], { addAction, attach, getElement }) => {
 			if ($rootOpen && $rootActiveTrigger) {
 				getElement().then((element) => {
-					if (!isBrowser) return;
-					if (!isHTMLElement(element)) return;
 					setMeltMenuAttribute(element);
-					if (isElementDisabled(element)) {
-						element.setAttribute('data-disabled', '');
-					}
 				});
 				addAction(usePopper, {
 					anchorElement: $rootActiveTrigger,
@@ -104,18 +99,20 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					if (!isHTMLElement(target)) return;
 
 					const isKeyDownInside = target.closest('[data-melt-menu]') === e.currentTarget;
-
-					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-					const isCharacterKey = e.key.length === 1;
 					if (!isKeyDownInside) return;
-
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						handleMenuNavigation(e);
 					}
 
 					// menus should not be navigated using tab so we prevent it
 					// reference: https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
-					if (e.key === 'Tab') e.preventDefault();
+					if (e.key === 'Tab') {
+						e.preventDefault();
+						return;
+					}
+
+					const isCharacterKey = e.key.length === 1;
+					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
 
 					if (!isModifierKey && isCharacterKey) {
 						// typeahead logic
@@ -140,7 +137,11 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 	const rootTrigger = elementDerived(
 		[rootOpen, rootOptions],
-		([$rootOpen, $rootOptions], { attach }) => {
+		([$rootOpen, $rootOptions], { attach, getElement }) => {
+			getElement().then((element) => {
+				applyAttrsIfDisabled(element);
+			});
+
 			attach('pointerdown', (e) => {
 				const triggerElement = e.currentTarget;
 				if (!isHTMLElement(triggerElement)) return;
@@ -227,7 +228,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 			getElement().then((element) => {
 				setMeltMenuAttribute(element);
-				handleDisabledMenuItem(element);
+				applyAttrsIfDisabled(element);
 			});
 
 			attach('pointerdown', (e) => {
@@ -373,17 +374,18 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						target.closest('[data-melt-menu]') === currentTarget &&
 						targetMeltMenuId === currentTarget.id;
 
-					const isCloseKey = SUB_CLOSE_KEYS['ltr'].includes(e.key);
-					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-					const isCharacterKey = e.key.length === 1;
-
 					if (!isKeyDownInside) return;
 
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						// prevent events from bubbling
 						e.stopImmediatePropagation();
 						handleMenuNavigation(e);
+						return;
 					}
+
+					const isCloseKey = SUB_CLOSE_KEYS['ltr'].includes(e.key);
+					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
+					const isCharacterKey = e.key.length === 1;
 
 					// close the submenu if the user presses a close key
 					if (isCloseKey) {
@@ -395,11 +397,16 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 							subActiveTrigger.set(null);
 							return false;
 						});
+						return;
 					}
 
 					// menus should not be navigated using tab so we prevent it
 					// reference: https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
-					if (e.key === 'Tab') e.preventDefault();
+					if (e.key === 'Tab') {
+						e.preventDefault();
+						return;
+					}
+
 					if (!isModifierKey && isCharacterKey) {
 						// typeahead logic
 					}
@@ -455,7 +462,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			([$subOpen, $subOptions], { attach, getElement, addUnsubscriber }) => {
 				getElement().then((element) => {
 					setMeltMenuAttribute(element);
-					handleDisabledMenuItem(element);
+					applyAttrsIfDisabled(element);
 				});
 
 				addUnsubscriber(() => {
@@ -466,10 +473,11 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				});
 
 				attach('click', (e) => {
-					// Manually focus because iOS Safari doesn't always focus on click (e.g. buttons)
 					const triggerElement = e.currentTarget;
 					if (!isHTMLElement(triggerElement)) return;
+					if (isElementDisabled(triggerElement) || e.defaultPrevented) return;
 
+					// Manually focus because iOS Safari doesn't always focus on click (e.g. buttons)
 					handleRovingFocus(triggerElement);
 					if (!get(subOpen)) {
 						subOpen.update((prev) => {
@@ -484,10 +492,11 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				});
 
 				attach('keydown', (e) => {
-					if (SUB_OPEN_KEYS['ltr'].includes(e.key)) {
-						const triggerElement = e.currentTarget;
-						if (!isHTMLElement(triggerElement)) return;
+					const triggerElement = e.currentTarget;
+					if (!isHTMLElement(triggerElement)) return;
+					if (isElementDisabled(triggerElement)) return;
 
+					if (SUB_OPEN_KEYS['ltr'].includes(e.key)) {
 						if (!$subOpen) {
 							triggerElement.click();
 							e.preventDefault();
@@ -509,7 +518,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 				attach('pointermove', (e) => {
 					if (!isMouse(e)) return;
-
 					onItemEnter(e);
 
 					if (e.defaultPrevented) return;
@@ -520,7 +528,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					handleRovingFocus(triggerElement);
 
 					const openTimer = get(subOpenTimer);
-					if (!$subOpen && !openTimer) {
+					if (!$subOpen && !openTimer && !isElementDisabled(triggerElement)) {
 						subOpenTimer.set(
 							window.setTimeout(() => {
 								subOpen.update(() => {
@@ -654,12 +662,10 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				const firstOption = document.querySelector(rootMenuItemSelector);
 
 				if (get(isUsingKeyboard)) {
-					sleep(1).then(() =>
-						isHTMLElement(firstOption) ? handleRovingFocus(firstOption) : undefined
-					);
+					isHTMLElement(firstOption) ? handleRovingFocus(firstOption) : undefined;
 				}
 			} else if (!$subOpen && $subActiveTrigger && isBrowser) {
-				sleep(1).then(() => handleRovingFocus($subActiveTrigger));
+				handleRovingFocus($subActiveTrigger);
 			}
 		});
 
@@ -791,7 +797,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	 * Helper Functions
 	 * -----------------------------------------------------------------------------------------------*/
 
-	function handleDisabledMenuItem(element: HTMLElement | null) {
+	function applyAttrsIfDisabled(element: HTMLElement | null) {
 		if (!isBrowser) return;
 		if (!isHTMLElement(element)) return;
 		if (isElementDisabled(element)) {
