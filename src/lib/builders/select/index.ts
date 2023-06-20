@@ -33,7 +33,8 @@ export type CreateSelectArgs = {
 	arrowSize?: number;
 	required?: boolean;
 	disabled?: boolean;
-	selected?: unknown;
+	value?: unknown;
+	label?: string;
 	name?: string;
 };
 
@@ -49,11 +50,11 @@ const defaults = {
 
 export function createSelect(args?: CreateSelectArgs) {
 	const withDefaults = { ...defaults, ...args } as CreateSelectArgs;
-	const options = writable(omit(withDefaults, 'selected'));
+	const options = writable(omit(withDefaults, 'value', 'label'));
 
 	const open = writable(false);
-	const selected = writable<unknown>(withDefaults.selected ?? null);
-	const selectedText = writable<string | number | null>(null);
+	const value = writable<unknown>(withDefaults.value ?? null);
+	const label = writable<string | number | null>(withDefaults.label ?? null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	const ids = {
@@ -68,8 +69,8 @@ export function createSelect(args?: CreateSelectArgs) {
 
 		const selectedEl = menuEl.querySelector('[data-selected]') as HTMLElement | undefined;
 		if (!selectedEl) return;
-		const label = selectedEl.getAttribute('data-label');
-		selectedText.set(label ?? selectedEl.textContent ?? null);
+		const dataLabel = selectedEl.getAttribute('data-label');
+		label.set(dataLabel ?? selectedEl.textContent ?? null);
 	});
 
 	const menu = elementDerived(
@@ -97,24 +98,26 @@ export function createSelect(args?: CreateSelectArgs) {
 	);
 
 	const trigger = elementDerived([open, options], ([$open, $options], { attach }) => {
-		attach('click', (e) => {
-			e.stopPropagation();
-			const triggerEl = e.currentTarget as HTMLElement;
-			open.update((prev) => {
-				const isOpen = !prev;
-				if (isOpen) {
-					activeTrigger.set(triggerEl);
-				} else {
-					activeTrigger.set(null);
-				}
+		if (!$options.disabled) {
+			attach('click', (e) => {
+				e.stopPropagation();
+				const triggerEl = e.currentTarget as HTMLElement;
+				open.update((prev) => {
+					const isOpen = !prev;
+					if (isOpen) {
+						activeTrigger.set(triggerEl);
+					} else {
+						activeTrigger.set(null);
+					}
 
-				return isOpen;
+					return isOpen;
+				});
 			});
-		});
 
-		attach('mousedown', (e) => {
-			e.preventDefault();
-		});
+			attach('mousedown', (e) => {
+				e.preventDefault();
+			});
+		}
 
 		return {
 			role: 'combobox',
@@ -123,6 +126,7 @@ export function createSelect(args?: CreateSelectArgs) {
 			'aria-required': $options.required,
 			'data-state': $open ? 'open' : 'closed',
 			'data-disabled': $options.disabled ? '' : undefined,
+			disabled: $options.disabled,
 			id: ids.trigger,
 		};
 	});
@@ -141,14 +145,12 @@ export function createSelect(args?: CreateSelectArgs) {
 		label?: string;
 	};
 
-	const option = elementMultiDerived([selected], ([$selected], { attach }) => {
+	const option = elementMultiDerived([value], ([$value], { attach }) => {
 		return (args: OptionArgs) => {
-			const { value, label } = args;
-
 			attach('click', (e) => {
 				const el = e.currentTarget as HTMLElement | null;
-				selected.set(value);
-				selectedText.set(label ?? el?.textContent ?? null);
+				value.set(args.value);
+				label.set(args?.label ?? el?.textContent ?? null);
 				open.set(false);
 			});
 
@@ -156,8 +158,8 @@ export function createSelect(args?: CreateSelectArgs) {
 				const el = e.currentTarget as HTMLElement | null;
 				if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
 					e.preventDefault();
-					selected.set(value);
-					selectedText.set(label ?? el?.textContent ?? null);
+					value.set(args.value);
+					label.set(args?.label ?? el?.textContent ?? null);
 					open.set(false);
 				}
 			});
@@ -174,9 +176,9 @@ export function createSelect(args?: CreateSelectArgs) {
 
 			return {
 				role: 'option',
-				'aria-selected': $selected === value,
-				'data-selected': $selected === value ? '' : undefined,
-				'data-label': label ?? undefined,
+				'aria-selected': $value === args?.value,
+				'data-selected': $value === args?.value ? '' : undefined,
+				'data-label': args.label ?? undefined,
 				tabindex: 0,
 			};
 		};
@@ -262,17 +264,17 @@ export function createSelect(args?: CreateSelectArgs) {
 		}
 	});
 
-	const isSelected = derived([selected], ([$selected]) => {
+	const isSelected = derived([value], ([$value]) => {
 		return (value: string | number) => {
-			return $selected === value;
+			return $value === value;
 		};
 	});
 
-	const input = derived([selected, options], ([$selected, $options]) => {
+	const input = derived([value, options], ([$value, $options]) => {
 		return {
 			type: 'hidden',
 			name: $options.name,
-			value: $selected,
+			value: $value,
 			'aria-hidden': true,
 			hidden: true,
 			tabIndex: -1,
@@ -288,5 +290,16 @@ export function createSelect(args?: CreateSelectArgs) {
 		};
 	});
 
-	return { trigger, menu, open, option, selected, selectedText, arrow, isSelected, options, input };
+	return {
+		trigger,
+		menu,
+		open,
+		option,
+		value,
+		label,
+		arrow,
+		isSelected,
+		options,
+		input,
+	};
 }
