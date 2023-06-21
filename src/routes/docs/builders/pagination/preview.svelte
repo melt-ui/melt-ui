@@ -56,5 +56,10 @@
 			background-color: theme('colors.magnum.900');
 			color: theme('colors.white');
 		}
+
+		&:first-child,
+		&:last-child {
+			padding-inline: theme('spacing.2');
+		}
 	}
 </style>
