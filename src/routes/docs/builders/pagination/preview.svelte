@@ -5,7 +5,9 @@
 	import ChevronRight from '~icons/lucide/chevron-right';
 
 	const { prevButton, nextButton, pages, pageTrigger, range, root } = createPagination({
-		count: 1000,
+		count: 90,
+		perPage: 10,
+		page: 4,
 	});
 </script>
 
