@@ -1,5 +1,16 @@
 # @melt-ui/svelte
 
+## 0.12.0
+
+### Minor Changes
+
+- dc17ef5: feat(select): option to set default label; rename selected to value & selectedText to label
+
+### Patch Changes
+
+- a5d6d37: fix: pagination edge cases
+- dc17ef5: fix(select): disabled select trigger no longer opens menu
+
 ## 0.11.1
 
 ### Patch Changes
