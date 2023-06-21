@@ -66,25 +66,34 @@ export function createPagination(args: CreatePaginationArgs) {
 		const firstItemWithSiblings = 3 + siblingCount;
 		const lastItemWithSiblings = $totalPages - 3 - siblingCount;
 
-		if ($page < firstItemWithSiblings) {
-			for (let i = 2; i <= firstItemWithSiblings + siblingCount; i++) {
-				addPage(i);
-			}
-			addEllipsis();
-		} else if ($page > lastItemWithSiblings) {
-			addEllipsis();
-			for (let i = lastItemWithSiblings - siblingCount + 1; i <= $totalPages - 1; i++) {
+		if ($totalPages <= 6) {
+			// 6 or fewer pages. Show them all
+			for (let i = 2; i <= $totalPages - 1; i++) {
 				addPage(i);
 			}
 		} else {
-			addEllipsis();
-			for (let i = $page - siblingCount; i <= $page + siblingCount; i++) {
-				addPage(i);
+			// 7 or more pages
+			if ($page < firstItemWithSiblings) {
+				for (let i = 2; i <= firstItemWithSiblings + siblingCount; i++) {
+					addPage(i);
+				}
+				addEllipsis();
+			} else if ($page > lastItemWithSiblings) {
+				addEllipsis();
+				for (let i = lastItemWithSiblings - siblingCount + 1; i <= $totalPages - 1; i++) {
+					addPage(i);
+				}
+			} else {
+				addEllipsis();
+				for (let i = $page - siblingCount; i <= $page + siblingCount; i++) {
+					addPage(i);
+				}
+				addEllipsis();
 			}
-			addEllipsis();
 		}
 
-		addPage($totalPages);
+		if ($totalPages > 1) addPage($totalPages);
+
 		return res;
 	});
 
