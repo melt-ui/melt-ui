@@ -990,19 +990,19 @@ declare global {
 			 * Event listener for when an item is selected.
 			 * @param event The custom event.
 			 */
-			'on:m-select'?: (event: CustomEvent<T>) => void;
+			'on:m-select'?: (event: Event) => void;
 
 			/**
 			 * Event listener for when the menu is open.
 			 * @param event The custom event.
 			 */
-			'on:m-open'?: (event: CustomEvent<T>) => void;
+			'on:m-open'?: (event: Event) => void;
 
 			/**
 			 * Event listener for when the menu is closed.
 			 * @param event The custom event.
 			 */
-			'on:m-close'?: (event: CustomEvent<T>) => void;
+			'on:m-close'?: (event: Event) => void;
 		}
 	}
 }
