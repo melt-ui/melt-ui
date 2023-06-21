@@ -3,7 +3,7 @@ import {
 	getElementByMeltId,
 	omit,
 	styleToString,
-	uuid,
+	generateId,
 } from '$lib/internal/helpers';
 
 import { usePopper, type FloatingConfig } from '$lib/internal/actions';
@@ -39,7 +39,7 @@ export function createTooltip(args?: CreateTooltipArgs) {
 	const open = writable(withDefaults.open);
 
 	const ids = {
-		content: uuid(),
+		content: generateId(),
 	};
 
 	let timeout: number | null = null;

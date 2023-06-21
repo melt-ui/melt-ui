@@ -10,7 +10,7 @@ import {
 	kbd,
 	omit,
 	styleToString,
-	uuid,
+	generateId,
 } from '$lib/internal/helpers';
 import { sleep } from '$lib/internal/helpers/sleep';
 import type { Defaults } from '$lib/internal/types';
@@ -58,8 +58,8 @@ export function createSelect(args?: CreateSelectArgs) {
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	const ids = {
-		menu: uuid(),
-		trigger: uuid(),
+		menu: generateId(),
+		trigger: generateId(),
 	};
 
 	onMount(() => {

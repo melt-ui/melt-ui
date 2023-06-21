@@ -8,7 +8,7 @@ import {
 	isBrowser,
 	sleep,
 	styleToString,
-	uuid,
+	generateId,
 } from '$lib/internal/helpers';
 import { removeScroll } from '$lib/internal/helpers/scroll';
 import type { Defaults } from '$lib/internal/types';
@@ -34,9 +34,9 @@ export function createDialog(args: CreateDialogArgs = {}) {
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	const ids = {
-		content: uuid(),
-		title: uuid(),
-		description: uuid(),
+		content: generateId(),
+		title: generateId(),
+		description: generateId(),
 	};
 
 	const open = writable(false);

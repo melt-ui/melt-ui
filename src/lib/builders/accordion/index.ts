@@ -1,4 +1,4 @@
-import { elementMultiDerived, getElementByMeltId, kbd, uuid } from '$lib/internal/helpers';
+import { elementMultiDerived, getElementByMeltId, kbd, generateId } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 
@@ -42,7 +42,7 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 	});
 
 	const root = {
-		'data-melt-id': uuid(),
+		'data-melt-id': generateId(),
 	};
 
 	type ItemArgs =

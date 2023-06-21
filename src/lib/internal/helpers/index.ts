@@ -8,7 +8,7 @@ export * from './object';
 export * from './sleep';
 export * from './store';
 export * from './style';
-export * from './uuid';
+export * from './id';
 export * from './keyboard';
 export * from './callbacks';
 export * from './debounce';
