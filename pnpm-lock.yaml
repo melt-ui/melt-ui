@@ -19,9 +19,6 @@ dependencies:
     version: 4.0.2
 
 devDependencies:
-  '@axe-core/playwright':
-    specifier: ^4.6.1
-    version: 4.6.1(playwright@1.32.2)
   '@changesets/cli':
     specifier: ^2.26.1
     version: 2.26.1
@@ -31,12 +28,6 @@ devDependencies:
   '@iconify-json/simple-icons':
     specifier: ^1.1.50
     version: 1.1.50
-  '@playwright/experimental-ct-svelte':
-    specifier: ^1.32.1
-    version: 1.32.2(less@4.1.3)(svelte@3.58.0)
-  '@playwright/test':
-    specifier: ^1.28.1
-    version: 1.32.2
   '@storybook/addon-essentials':
     specifier: ^7.0.18
     version: 7.0.18(react-dom@18.2.0)(react@18.2.0)
@@ -82,6 +73,9 @@ devDependencies:
   '@testing-library/user-event':
     specifier: ^14.4.3
     version: 14.4.3(@testing-library/dom@9.3.1)
+  '@types/jest-axe':
+    specifier: ^3.5.5
+    version: 3.5.5
   '@types/testing-library__jest-dom':
     specifier: ^5.14.6
     version: 5.14.6
@@ -118,12 +112,12 @@ devDependencies:
   highlight.js:
     specifier: ^11.7.0
     version: 11.7.0
+  jest-axe:
+    specifier: ^7.0.1
+    version: 7.0.1
   jsdom:
     specifier: ^21.1.1
     version: 21.1.1
-  playwright:
-    specifier: ^1.32.1
-    version: 1.32.2
   postcss:
     specifier: ^8.4.14
     version: 8.4.21
@@ -218,15 +212,6 @@ packages:
     hasBin: true
     dependencies:
       default-browser-id: 3.0.0
-    dev: true
-
-  /@axe-core/playwright@4.6.1(playwright@1.32.2):
-    resolution: {integrity: sha512-XMKP2OzGfGIYpU9G9FgI2ulyjEXQDP6qtZerOwdQ7YC1w4SFgofK3ogSk0qVoy0QI+q6XWLUJMfMMkUwdTR2dA==}
-    peerDependencies:
-      playwright: '>= 1.0.0'
-    dependencies:
-      axe-core: 4.6.3
-      playwright: 1.32.2
     dev: true
 
   /@babel/code-frame@7.21.4:
@@ -3477,36 +3462,6 @@ packages:
       fastq: 1.15.0
     dev: true
 
-  /@playwright/experimental-ct-svelte@1.32.2(less@4.1.3)(svelte@3.58.0):
-    resolution: {integrity: sha512-LvxOcOrFbEKNAj/XWdIDIOok/JuETkiceBBXyO/sVWEhwdxsVz8klMI9wD6W5SSsAgvhHARTHIZhPB6xq8lu0A==}
-    engines: {node: '>=14'}
-    hasBin: true
-    dependencies:
-      '@playwright/test': 1.32.2
-      '@sveltejs/vite-plugin-svelte': 2.0.4(svelte@3.58.0)(vite@4.2.1)
-      vite: 4.2.1(@types/node@18.15.11)(less@4.1.3)
-    transitivePeerDependencies:
-      - '@types/node'
-      - less
-      - sass
-      - stylus
-      - sugarss
-      - supports-color
-      - svelte
-      - terser
-    dev: true
-
-  /@playwright/test@1.32.2:
-    resolution: {integrity: sha512-nhaTSDpEdTTttdkDE8Z6K3icuG1DVRxrl98Qq0Lfc63SS9a2sjc9+x8ezysh7MzCKz6Y+nArml3/mmt+gqRmQQ==}
-    engines: {node: '>=14'}
-    hasBin: true
-    dependencies:
-      '@types/node': 18.15.11
-      playwright-core: 1.32.2
-    optionalDependencies:
-      fsevents: 2.3.2
-    dev: true
-
   /@polka/url@1.0.0-next.21:
     resolution: {integrity: sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==}
     dev: true
@@ -4743,6 +4698,13 @@ packages:
       '@types/istanbul-lib-report': 3.0.0
     dev: true
 
+  /@types/jest-axe@3.5.5:
+    resolution: {integrity: sha512-b8WDIdoeKtr/JDJ2+QjFXMuS8UhfdMA6+15Z5KjjIie3jQrSXD9KZWMSQxc0nPtx7L9rIFKdiDpQk+m7s4a/8w==}
+    dependencies:
+      '@types/jest': 29.5.2
+      axe-core: 3.5.6
+    dev: true
+
   /@types/jest@29.5.2:
     resolution: {integrity: sha512-mSoZVJF5YzGVCk+FsDxzDuH7s+SCkzrgKZzf0Z0T2WudhBUPoF6ktoTPC4R0ZoCPCV5xUvuU6ias5NvxcBcMMg==}
     dependencies:
@@ -5439,8 +5401,13 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /axe-core@4.6.3:
-    resolution: {integrity: sha512-/BQzOX780JhsxDnPpH4ZiyrJAzcd8AfzFPkv+89veFSr1rcMjuq2JDCwypKaPeB6ljHp9KjXhPpjgCvQlWYuqg==}
+  /axe-core@3.5.6:
+    resolution: {integrity: sha512-LEUDjgmdJoA3LqklSTwKYqkjcZ4HKc4ddIYGSAiSkr46NTjzg2L9RNB+lekO9P7Dlpa87+hBtzc2Fzn/+GUWMQ==}
+    engines: {node: '>=4'}
+    dev: true
+
+  /axe-core@4.5.1:
+    resolution: {integrity: sha512-1exVbW0X1O/HSr/WMwnaweyqcWOgZgLiVxdLG34pvSQk4NlYQr9OUy0JLwuhFfuVNQzzqgH57eYzkFBCb3bIsQ==}
     engines: {node: '>=4'}
     dev: true
 
@@ -8149,6 +8116,16 @@ packages:
       minimatch: 3.1.2
     dev: true
 
+  /jest-axe@7.0.1:
+    resolution: {integrity: sha512-1JoEla6gL4rcsTxEWm+VBcWMwOhP3f9w4dH7/YW3H41nU08Dds3gUFqxgdAq/pzBNPpauC3QPr/BuO+0W8eamg==}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      axe-core: 4.5.1
+      chalk: 4.1.2
+      jest-matcher-utils: 29.2.2
+      lodash.merge: 4.6.2
+    dev: true
+
   /jest-diff@29.5.0:
     resolution: {integrity: sha512-LtxijLLZBduXnHSniy0WMdaHjmQnt3g5sa16W4p0HqukYTTsyTW3GD1q41TyGl5YFXj/5B2U6dlh5FM1LIMgxw==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -8181,6 +8158,16 @@ packages:
       walker: 1.0.8
     optionalDependencies:
       fsevents: 2.3.2
+    dev: true
+
+  /jest-matcher-utils@29.2.2:
+    resolution: {integrity: sha512-4DkJ1sDPT+UX2MR7Y3od6KtvRi9Im1ZGLGgdLFLm4lPexbTaCgJW5NN3IOXlQHF7NSHY/VHhflQ+WoKtD/vyCw==}
+    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    dependencies:
+      chalk: 4.1.2
+      jest-diff: 29.5.0
+      jest-get-type: 29.4.3
+      pretty-format: 29.5.0
     dev: true
 
   /jest-matcher-utils@29.5.0:
@@ -9402,21 +9389,6 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       find-up: 5.0.0
-    dev: true
-
-  /playwright-core@1.32.2:
-    resolution: {integrity: sha512-zD7aonO+07kOTthsrCR3YCVnDcqSHIJpdFUtZEMOb6//1Rc7/6mZDRdw+nlzcQiQltOOsiqI3rrSyn/SlyjnJQ==}
-    engines: {node: '>=14'}
-    hasBin: true
-    dev: true
-
-  /playwright@1.32.2:
-    resolution: {integrity: sha512-jHVnXJke0PXpuPszKtk9y1zZSlzO5+2a+aockT/AND0oeXx46FiJEFrafthurglLygVZA+1gEbtUM1C7qtTV+Q==}
-    engines: {node: '>=14'}
-    hasBin: true
-    requiresBuild: true
-    dependencies:
-      playwright-core: 1.32.2
     dev: true
 
   /polished@4.2.2:

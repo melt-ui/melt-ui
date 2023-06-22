@@ -7,9 +7,12 @@ import { readable } from 'svelte/store';
 import * as environment from '$app/environment';
 import * as navigation from '$app/navigation';
 import * as stores from '$app/stores';
+import { toHaveNoViolations } from 'jest-axe';
 
 // Add custom jest matchers
 expect.extend(matchers);
+
+expect.extend(toHaveNoViolations as never);
 
 // Mock SvelteKit runtime module $app/environment
 vi.mock('$app/environment', (): typeof environment => ({
