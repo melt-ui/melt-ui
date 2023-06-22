@@ -299,3 +299,14 @@ export function elementMulti<
 >(fn: (helpers: Helpers) => T) {
 	return elementMultiDerived([], (_, helpers) => fn(helpers));
 }
+
+export const hiddenAction = <T extends Record<string, unknown>>(obj: T) => {
+	return new Proxy(obj, {
+		get(target, prop, receiver) {
+			return Reflect.get(target, prop, receiver);
+		},
+		ownKeys(target) {
+			return Reflect.ownKeys(target).filter((key) => key !== 'action');
+		},
+	});
+};
