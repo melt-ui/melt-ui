@@ -10,9 +10,10 @@ import {
 	kbd,
 	sleep,
 	styleToString,
-	uuid,
+	generateId,
 	isHTMLElement,
 	isElementDisabled,
+	debounce,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable, type Writable } from 'svelte/store';
@@ -59,6 +60,24 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	const pointerGraceIntent = writable<GraceIntent | null>(null);
 	const pointerDir = writable<Side>('right');
 
+	let typed: string[] = [];
+	const resetTyped = debounce(() => {
+		typed = [];
+	});
+
+	const handleTypeaheadSearch = (key: string, menuItems: HTMLElement[]) => {
+		typed.push(key.toLowerCase());
+		const typedString = typed.join('');
+		const matchingOption = menuItems.find((el) =>
+			el.innerText.toLowerCase().startsWith(typedString)
+		);
+		if (matchingOption) {
+			handleRovingFocus(matchingOption);
+		}
+
+		resetTyped();
+	};
+
 	const pointerMovingToSubmenu = derivedWithUnsubscribe(
 		[pointerDir, pointerGraceIntent],
 		([$pointerDir, $pointerGraceIntent]) => {
@@ -71,8 +90,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	);
 
 	const rootIds = {
-		menu: uuid(),
-		trigger: uuid(),
+		menu: generateId(),
+		trigger: generateId(),
 	};
 
 	const rootMenu = elementDerived(
@@ -97,7 +116,10 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					const target = e.target;
 					if (!isHTMLElement(target)) return;
 
-					const isKeyDownInside = target.closest('[data-melt-menu]') === e.currentTarget;
+					const menuElement = e.currentTarget;
+					if (!isHTMLElement(menuElement)) return;
+
+					const isKeyDownInside = target.closest('[data-melt-menu]') === menuElement;
 					if (!isKeyDownInside) return;
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						handleMenuNavigation(e);
@@ -115,6 +137,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 					if (!isModifierKey && isCharacterKey) {
 						// typeahead logic
+						handleTypeaheadSearch(e.key, getMenuItems(menuElement));
 					}
 				});
 			}
@@ -245,6 +268,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			});
 
 			attach('keydown', (e) => {
+				const isTypingAhead = typed.length > 0;
+				if (isTypingAhead && e.key === kbd.SPACE) return;
 				if (SELECTION_KEYS.includes(e.key)) {
 					const itemElement = e.currentTarget;
 					if (!isHTMLElement(itemElement)) return;
@@ -318,8 +343,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		const pointerGraceTimer = writable(0);
 
 		const subIds = {
-			menu: uuid(),
-			trigger: uuid(),
+			menu: generateId(),
+			trigger: generateId(),
 		};
 
 		const subMenu = elementDerived(
@@ -350,15 +375,15 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					const target = e.target;
 					if (!isHTMLElement(target)) return;
 
-					const currentTarget = e.currentTarget;
-					if (!isHTMLElement(currentTarget)) return;
+					const menuElement = e.currentTarget;
+					if (!isHTMLElement(menuElement)) return;
 
 					const targetMeltMenuId = target.getAttribute('data-melt-menu-id');
 					if (!targetMeltMenuId) return;
 
 					const isKeyDownInside =
-						target.closest('[data-melt-menu]') === currentTarget &&
-						targetMeltMenuId === currentTarget.id;
+						target.closest('[data-melt-menu]') === menuElement &&
+						targetMeltMenuId === menuElement.id;
 
 					if (!isKeyDownInside) return;
 
@@ -395,6 +420,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 					if (!isModifierKey && isCharacterKey) {
 						// typeahead logic
+						handleTypeaheadSearch(e.key, getMenuItems(menuElement));
 					}
 				});
 
@@ -481,6 +507,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					const triggerElement = e.currentTarget;
 					if (!isHTMLElement(triggerElement)) return;
 					if (isElementDisabled(triggerElement)) return;
+					const isTypingAhead = typed.length > 0;
+					if (isTypingAhead && e.key === kbd.SPACE) return;
 
 					if (SUB_OPEN_KEYS['ltr'].includes(e.key)) {
 						if (!$subOpen) {
