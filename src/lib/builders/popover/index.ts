@@ -5,7 +5,7 @@ import {
 	isBrowser,
 	sleep,
 	styleToString,
-	uuid,
+	generateId,
 } from '$lib/internal/helpers';
 
 import { usePopper, type FloatingConfig } from '$lib/internal/actions';
@@ -35,7 +35,7 @@ export function createPopover(args?: CreatePopoverArgs) {
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	const ids = {
-		content: uuid(),
+		content: generateId(),
 	};
 
 	const content = elementDerived(

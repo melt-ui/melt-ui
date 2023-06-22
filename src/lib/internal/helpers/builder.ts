@@ -1,7 +1,7 @@
 import { onDestroy, tick } from 'svelte';
 import type { Action } from 'svelte/action';
 import { derived, type Readable } from 'svelte/store';
-import { addEventListener, isBrowser, uuid } from '.';
+import { addEventListener, isBrowser, generateId } from '.';
 
 export function getElementByMeltId(id: string) {
 	if (!isBrowser) return null;
@@ -135,7 +135,7 @@ const initElementHelpers = (setId: (id: string) => void) => {
 
 	// Create an `Attach` function that can be used to attach events to the elements
 	const createElInterface = () => {
-		const id = uuid();
+		const id = generateId();
 		ids.push(id);
 		setId(id);
 

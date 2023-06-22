@@ -5,7 +5,10 @@
 	import ChevronRight from '~icons/lucide/chevron-right';
 
 	const { prevButton, nextButton, pages, pageTrigger, range, root } = createPagination({
-		count: 1000,
+		count: 100,
+		perPage: 10,
+		page: 1,
+		siblingCount: 1,
 	});
 </script>
 
@@ -52,6 +55,11 @@
 		&[data-selected] {
 			background-color: theme('colors.magnum.900');
 			color: theme('colors.white');
+		}
+
+		&:first-child,
+		&:last-child {
+			padding-inline: theme('spacing.2');
 		}
 	}
 </style>
