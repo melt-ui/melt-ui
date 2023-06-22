@@ -99,7 +99,6 @@ export function createTabs(args?: CreateTabsArgs) {
 			attach('keydown', (e) => {
 				const el = e.currentTarget as HTMLElement;
 				const rootEl = el.closest('[data-melt-part="tabs-root"]') as HTMLElement | null;
-				console.log(rootEl);
 				if (!rootEl) return;
 
 				const triggers = Array.from(rootEl.querySelectorAll('[role="tab"]')) as HTMLElement[];
@@ -109,7 +108,6 @@ export function createTabs(args?: CreateTabsArgs) {
 				const dir = getElemDirection(rootEl);
 				const { nextKey, prevKey } = getDirectionalKeys(dir, $options.orientation);
 
-				console.log(nextKey, prevKey);
 				if (e.key === nextKey) {
 					e.preventDefault();
 					next(enabledTriggers, triggerIdx, $options.loop)?.focus();
