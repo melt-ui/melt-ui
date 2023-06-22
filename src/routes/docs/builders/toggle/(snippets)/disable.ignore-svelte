@@ -1,0 +1,11 @@
+<script lang="ts">
+	import { createToggle } from '@melt-ui/svelte';
+
+	const { toggle, pressed, disabled } = createToggle({
+		disabled: true,
+	});
+	// or
+	disabled.set(true);
+	// or
+	disabled.update((d) => !d);
+</script>
