@@ -1,0 +1,15 @@
+<script lang="ts">
+	import { createSwitch } from '@melt-ui/svelte';
+
+	export let checked = true;
+	export let disabled = false;
+
+	const { checked: checkedStore, options } = createSwitch({
+		disabled,
+		checked,
+	});
+
+	$: checkedStore.set(checked);
+	checkedStore.subscribe((v) => (checked = v));
+	$: options.update((o) => ({ ...o, disabled }));
+</script>
