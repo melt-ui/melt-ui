@@ -28,5 +28,6 @@ export function createToggle(args: CreateToggleArgs = {}) {
 	return {
 		toggle,
 		pressed,
+		disabled,
 	};
 }
