@@ -1,6 +1,13 @@
-import { elementMultiDerived, getElementByMeltId, kbd, generateId } from '$lib/internal/helpers';
+import {
+	elementMultiDerived,
+	getElementByMeltId,
+	kbd,
+	generateId,
+	addEventListener,
+	executeCallbacks,
+} from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 
 type BaseAccordionArgs = {
 	disabled?: boolean;
@@ -71,65 +78,79 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		};
 	});
 
-	const trigger = elementMultiDerived([value, options], ([$value, $options], { attach }) => {
-		return (args: ItemArgs) => {
-			const { value: itemValue } = parseItemArgs(args);
+	const trigger = {
+		...derived([value, options], ([$value, $options]) => {
+			return (args: ItemArgs) => {
+				const { value: itemValue, disabled } = parseItemArgs(args);
 
-			attach('click', () => {
-				if ($options.type === 'single') {
-					value.set($value === itemValue ? undefined : itemValue);
-				} else {
-					const arrValue = $value as string[] | undefined;
-					if (arrValue === undefined) {
-						value.set([itemValue]);
-					} else {
-						value.set(
-							arrValue.includes(itemValue)
-								? arrValue.filter((v) => v !== itemValue)
-								: [...arrValue, itemValue]
-						);
+				return {
+					'data-melt-part': 'trigger',
+					'aria-expanded': isSelected(itemValue, $value) ? true : false,
+					disabled: $options.disabled || disabled,
+					// TODO: aria-controls, aria-labelledby
+				};
+			};
+		}),
+		action: (node: HTMLElement, args: ItemArgs) => {
+			const { value: itemValue, disabled } = parseItemArgs(args);
+
+			const unsub = executeCallbacks(
+				addEventListener(node, 'click', () => {
+					const $options = get(options);
+					if (disabled || $options.disabled) return;
+
+					value.update(($value) => {
+						if ($options.type === 'single') {
+							return $value === itemValue ? undefined : itemValue;
+						} else {
+							const arrValue = $value as string[] | undefined;
+							if (arrValue === undefined) {
+								return [itemValue];
+							} else {
+								return arrValue.includes(itemValue)
+									? arrValue.filter((v) => v !== itemValue)
+									: [...arrValue, itemValue];
+							}
+						}
+					});
+				}),
+				addEventListener(node, 'keydown', (e) => {
+					if (![kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.HOME, kbd.END].includes(e.key)) {
+						return;
 					}
-				}
-			});
+					e.preventDefault();
 
-			attach('keydown', (e) => {
-				if (![kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.HOME, kbd.END].includes(e.key)) {
-					return;
-				}
-				e.preventDefault();
+					const el = e.target as HTMLElement;
+					const rootEl = getElementByMeltId(root['data-melt-id']);
 
-				const el = e.target as HTMLElement;
-				const rootEl = getElementByMeltId(root['data-melt-id']);
+					if (!rootEl) return;
+					const items = Array.from(
+						rootEl.querySelectorAll('[data-melt-part="trigger"]')
+					) as HTMLElement[];
 
-				if (!rootEl) return;
-				const items = Array.from(
-					rootEl.querySelectorAll('[data-melt-part="trigger"]')
-				) as HTMLElement[];
+					if (!items.length) return;
+					const elIdx = items.indexOf(el);
 
-				if (!items.length) return;
-				const elIdx = items.indexOf(el);
-
-				if (e.key === kbd.ARROW_DOWN) {
-					items[(elIdx + 1) % items.length].focus();
-				}
-				if (e.key === kbd.ARROW_UP) {
-					items[(elIdx - 1 + items.length) % items.length].focus();
-				}
-				if (e.key === kbd.HOME) {
-					items[0].focus();
-				}
-				if (e.key === kbd.END) {
-					items[items.length - 1].focus();
-				}
-			});
+					if (e.key === kbd.ARROW_DOWN) {
+						items[(elIdx + 1) % items.length].focus();
+					}
+					if (e.key === kbd.ARROW_UP) {
+						items[(elIdx - 1 + items.length) % items.length].focus();
+					}
+					if (e.key === kbd.HOME) {
+						items[0].focus();
+					}
+					if (e.key === kbd.END) {
+						items[items.length - 1].focus();
+					}
+				})
+			);
 
 			return {
-				'data-melt-part': 'trigger',
-				'aria-expanded': isSelected(itemValue, $value) ? true : false,
-				// TODO: aria-controls, aria-labelledby
+				destroy: unsub,
 			};
-		};
-	});
+		},
+	};
 
 	const content = derived([value, options], ([$value, $options]) => {
 		return (args: ItemArgs) => {

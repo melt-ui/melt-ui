@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createAccordion } from '$lib/builders/accordion';
 	import { Docs } from '$routes/(components)';
+	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 
 	const { content, item, trigger, isSelected, root } = createAccordion();
@@ -9,31 +10,38 @@
 		{
 			id: 'item-1',
 			title: 'Is it accessible?',
-			content: 'Yes. It adheres to the WAI-ARIA design pattern.',
+			description: 'Yes. It adheres to the WAI-ARIA design pattern.',
 		},
 		{
 			id: 'item-2',
 			title: 'Is it unstyled?',
-			content: "Yes. It's unstyled by default, giving you freedom over the look and feel.",
+			description: "Yes. It's unstyled by default, giving you freedom over the look and feel.",
 		},
 		{
 			id: 'item-3',
 			title: 'Can it be animated?',
-			content: 'Yes! You can use the transition prop to configure the animation.',
+			description: 'Yes! You can use the transition prop to configure the animation.',
 		},
 	];
 </script>
 
 <Docs.PreviewWrapper fullwidth>
 	<div class="mx-auto w-full max-w-md rounded-md bg-[--line-color] shadow-lg" {...root}>
-		{#each items as accItem}
-			<div {...$item(accItem.id)} class="accordion-item">
+		{#each items as { id, title, description }, i}
+			<div {...$item(id)} class="accordion-item">
 				<h2 class="flex">
-					<button {...$trigger(accItem.id)} class="accordion-trigger">{accItem.title}</button>
+					<button
+						id={i === 0 ? 'trigger' : undefined}
+						{...$trigger(id)}
+						use:trigger.action={id}
+						class="accordion-trigger"
+					>
+						{title}
+					</button>
 				</h2>
-				{#if $isSelected(accItem.id)}
-					<div class="accordion-content" {...$content(accItem.id)} transition:slide|local>
-						<div class="px-5 py-4">{accItem.content}</div>
+				{#if $isSelected(id)}
+					<div class="accordion-content" {...$content(id)} transition:slide|local>
+						<div class="px-5 py-4">{description}</div>
 					</div>
 				{/if}
 			</div>
