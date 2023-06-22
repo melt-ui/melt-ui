@@ -58,6 +58,7 @@
 	"dependencies": {
 		"@floating-ui/core": "^1.2.6",
 		"@floating-ui/dom": "^1.2.6",
+		"@types/prettier": "^2.7.3",
 		"focus-trap": "^7.4.3"
 	},
 	"devDependencies": {
