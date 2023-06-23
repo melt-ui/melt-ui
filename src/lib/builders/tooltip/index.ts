@@ -121,7 +121,7 @@ export function createTooltip(args?: CreateTooltipArgs) {
 			const portalReturn = usePortal(node);
 
 			let unsubFloating = noop;
-			open.subscribe(($open) => {
+			const unsubOpen = open.subscribe(($open) => {
 				if ($open) {
 					tick().then(() => {
 						const triggerEl = document.getElementById(ids.trigger);
@@ -138,7 +138,8 @@ export function createTooltip(args?: CreateTooltipArgs) {
 			unsub = executeCallbacks(
 				addEventListener(node, 'mouseover', () => get(openTooltip)()),
 				addEventListener(node, 'mouseout', () => get(closeTooltip)()),
-				portalReturn && portalReturn.destroy ? portalReturn.destroy : noop
+				portalReturn && portalReturn.destroy ? portalReturn.destroy : noop,
+				unsubOpen
 			);
 
 			return {
