@@ -40,17 +40,17 @@
 
 <style lang="postcss">
 	.accordion-item {
-		@apply mt-px overflow-hidden first:mt-0 first:rounded-t last:rounded-b 
-				focus-within:relative focus-within:z-10 focus-within:ring focus-within:ring-magnum-400;
+		@apply mt-px overflow-hidden transition-colors first:mt-0 first:rounded-t 
+				last:rounded-b focus-within:relative focus-within:z-10 focus-within:ring focus-within:ring-magnum-400;
 	}
 
 	.accordion-trigger {
 		@apply flex h-12 flex-1  cursor-pointer items-center
 				justify-between bg-white px-5 text-base font-medium leading-none text-magnum-700 shadow-[0_1px_0]
-				shadow-[--line-color]  hover:bg-gray-200;
+				shadow-[--line-color]  transition-colors hover:bg-opacity-95;
 	}
 
 	.accordion-content {
-		@apply overflow-hidden bg-gray-100 text-sm text-gray-900;
+		@apply overflow-hidden bg-neutral-100 text-sm text-neutral-900;
 	}
 </style>
