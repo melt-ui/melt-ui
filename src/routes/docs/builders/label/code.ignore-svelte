@@ -1,0 +1,16 @@
+<script lang="ts">
+  import { createLabel } from '@melt-ui/svelte';
+
+  const { root, labelValue, labelContainer } = createLabel({
+    isRequired: false,
+    for: 'test',
+    labelValue: 'Test',
+  });
+</script>
+
+<div class="flex items-center justify-center">
+  <label {...$root}>
+    <span {...$labelContainer}>{$labelValue}</span>
+    <input type="text" id="test" />
+  </label>
+</div>
