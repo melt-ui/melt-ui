@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
 	import { snippets } from './(snippets)';
+	import { schemas } from './schemas';
 
 	export let data;
 
@@ -61,28 +62,11 @@
 <Docs.CodeBlock code={snippets.controlled} />
 
 <Docs.H2>API Reference</Docs.H2>
-<Docs.API
-	schema={{
-		title: 'CreateAccordionArgs',
-		description: 'The object you pass into createAccordion. Optional.',
-		args: [
-			{
-				label: 'type',
-				type: "'single' | 'multiple'",
-				default: "'single'",
-			},
-			{
-				label: 'disabled',
-				type: 'boolean',
-				default: false,
-			},
-			{
-				label: 'value',
-				type: 'string | string[] | undefined',
-			},
-		],
-	}}
-/>
+<Docs.API schema={schemas.builder} />
+<Docs.API schema={schemas.root} />
+<Docs.API schema={schemas.item} />
+<Docs.API schema={schemas.trigger} />
+<Docs.API schema={schemas.content} />
 
 <Docs.H2>Accessibility</Docs.H2>
 <Docs.P>
@@ -92,49 +76,4 @@
 	>
 </Docs.P>
 
-<Docs.API
-	schema={{
-		title: 'Keyboard Interactions',
-		description: '',
-		keyboardInteractions: [
-			{
-				key: 'Space',
-				description: 'When a trigger of a collapsed section is focused, expands the section.',
-			},
-			{
-				key: 'Enter',
-				description: 'When a trigger of a collapsed section is focused, expands the section.',
-			},
-			{
-				key: 'Tab',
-				description:
-					'Shifts focus to the next element in the tab sequence. All focusable elements in the accordion are included in the page Tab sequence.',
-			},
-			{
-				key: 'Shift + Tab',
-				description:
-					'Shifts focus to the previous element in the tab sequence. All focusable elements in the accordion are included in the page Tab sequence.',
-			},
-			{
-				key: 'ArrowDown',
-				description:
-					'If an accordion header currently has focus, shifts focus to the subsequent header. If the last header currently has focus, focus will either remain the same, or it will move to the first header.',
-			},
-			{
-				key: 'ArrowUp',
-				description:
-					'When an accordion header is focused, shifts focus to the previous header. If the first header currently has focus, focus will either remain the same, or it will move to the final header.',
-			},
-			{
-				key: 'Home',
-				description:
-					'When an accordion header is focused, shifts focus to the first accordion header.',
-			},
-			{
-				key: 'End',
-				description:
-					'When an accordion header is focused, shifts focus to the last accordion header.',
-			},
-		],
-	}}
-/>
+<Docs.API schema={schemas.keyboard} />

@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	export type Props = Array<{
 		label: string;
-		type: string;
+		type: string | string[];
 		default?: unknown;
 		required?: boolean;
 	}>;
@@ -45,10 +45,10 @@
 
 	export let schema: APISchema;
 
-    function parseContent(content: string) {
-        // replace `$1` with <code>$1</code>
+	function parseContent(content: string) {
+		// replace `$1` with <code>$1</code>
 		return content.replace(/`([^`]+)`/g, '<code>$1</code>');
-    }
+	}
 
 	$: empty =
 		!schema.args &&
@@ -57,13 +57,13 @@
 		!schema.dataAttributes &&
 		!schema.keyboardInteractions;
 
-	$: htmlDescription = parseContent(schema.description)
+	$: htmlDescription = parseContent(schema.description);
 </script>
 
 <div class="mb-12">
-	<H3 class="mt-8 text-xl font-bold">{schema.title}</H3>
+	<H3 class="mb-2 text-xl font-bold">{schema.title}</H3>
 
-	<P>
+	<P class="!mt-2 text-neutral-300/95">
 		{@html htmlDescription}
 	</P>
 
@@ -79,7 +79,13 @@
 						<code class="colored">{d.label}{d.required ? '*' : ''}</code>
 					</Table.Cell>
 					<Table.Cell>
-						<code>{d.type}</code>
+						{#if Array.isArray(d.type)}
+							<code>{d.type.join(' | ').replaceAll('"', "'")}</code>
+						{:else}
+							<code>
+								{d.type}
+							</code>
+						{/if}
 					</Table.Cell>
 					<Table.Cell>
 						{#if d.default !== undefined}
@@ -99,6 +105,13 @@
 						<code class="colored">{d.label}{d.required ? '*' : ''}</code>
 					</Table.Cell>
 					<Table.Cell>
+						{#if Array.isArray(d.type)}
+							<code>{d.type.join(' | ').replaceAll('"', "'")}</code>
+						{:else}
+							<code>
+								{d.type}
+							</code>
+						{/if}
 						<code>{d.type}</code>
 					</Table.Cell>
 					<Table.Cell>
@@ -125,7 +138,7 @@
 					</Table.Cell>
 					<Table.Cell>
 						{#if Array.isArray(d.payload)}
-							<code>{d.payload.join(' | ')}</code>
+							<code>{d.payload.join(' | ').replaceAll('"', "'")}</code>
 						{:else}
 							<span>
 								{d.payload}
@@ -142,20 +155,21 @@
 				<hr class="col-span-3 h-4 opacity-0" />
 			{/if}
 
-			<TableWrapper head={['Data Attribute', 'Values']} data={schema.dataAttributes}>
+			<TableWrapper head={['Data Attribute', 'Values', ]} data={schema.dataAttributes}>
 				<svelte:fragment slot="row" let:datum={d}>
 					<Table.Cell class="pl-0 pr-4">
 						<code class="colored">{d.label}</code>
 					</Table.Cell>
 					<Table.Cell>
 						{#if Array.isArray(d.value)}
-							<code>{d.value.join(' | ')}</code>
+							<code>{d.value.join(' | ').replaceAll('"', "'")}</code>
 						{:else}
 							<span>
 								{d.value}
 							</span>
 						{/if}
 					</Table.Cell>
+					
 				</svelte:fragment>
 			</TableWrapper>
 		{/if}
