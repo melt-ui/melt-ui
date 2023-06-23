@@ -20,7 +20,7 @@
 
 <div class="relative flex min-h-screen flex-col">
 	<header class={cn('w-full bg-neutral-900 shadow-sm', !isRoot && 'sticky top-0 z-50')}>
-		<div class="container flex items-center justify-between px-2 py-4">
+		<div class="container flex items-center justify-between px-2 pt-4">
 			<div class="flex h-14 w-full items-center justify-between rounded-lg bg-neutral-800 px-6">
 				<div class="mr-4 flex w-full">
 					<a href="/" class="flex items-center space-x-2">
@@ -68,7 +68,7 @@
 			</div>
 		</div>
 	</header>
-	<div class="flex-1">
+	<div class="flex-1 py-2">
 		<slot />
 	</div>
 	{#if dev}

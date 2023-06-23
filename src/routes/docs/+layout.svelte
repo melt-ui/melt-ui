@@ -5,6 +5,7 @@
 	import theme from 'svelte-highlight/styles/atom-one-dark';
 	import Sidebar from './sidebar.svelte';
 	import { page } from '$app/stores';
+	import TableOfContents from '$routes/(components)/table-of-contents/table-of-contents.svelte';
 
 	afterNavigate(() => {
 		$isMenuOpen = false;
@@ -42,6 +43,13 @@
 	>
 		<div class="mx-auto w-full min-w-0 max-w-4xl">
 			<slot />
+		</div>
+		<div class="hidden text-sm xl:block">
+			<div class="sticky top-16 -mt-10 h-[calc(100vh-3.5rem)] pt-6">
+				{#key $page.url.pathname}
+					<TableOfContents />
+				{/key}
+			</div>
 		</div>
 	</main>
 </div>
