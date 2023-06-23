@@ -5,6 +5,8 @@
 	export { className as class };
 </script>
 
-<Balancer>
-	<p class={cn('mt-2 text-xl text-neutral-400', className)}><slot /></p>
-</Balancer>
+<p class={cn('mt-2 text-xl text-neutral-400', className)}>
+	<Balancer>
+		<slot />
+	</Balancer>
+</p>
