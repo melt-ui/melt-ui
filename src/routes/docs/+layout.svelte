@@ -36,11 +36,11 @@
 	</aside>
 	<main
 		class={cn(
-			'relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]',
-			$isMenuOpen ? 'hidden xl:grid' : 'flex flex-shrink flex-grow overflow-y-auto'
+			'relative py-6 lg:gap-10 lg:py-8  ',
+			$isMenuOpen ? 'hidden ' : 'flex flex-shrink flex-grow overflow-y-auto'
 		)}
 	>
-		<div class="mx-auto w-full min-w-0">
+		<div class="mx-auto w-full min-w-0 max-w-4xl">
 			<slot />
 		</div>
 	</main>
