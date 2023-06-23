@@ -16,6 +16,3 @@
 >
 	<slot />
 </p>
-
-<style>
-</style>
