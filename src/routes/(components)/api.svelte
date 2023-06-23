@@ -11,6 +11,11 @@
 		payload?: unknown;
 	}>;
 
+	export type KeyboardInteractions = Array<{
+		key: string;
+		description: string;
+	}>;
+
 	export type DataAttributes = Array<{
 		label: string;
 		value: string | string[];
@@ -26,16 +31,25 @@
 		props?: Props;
 		events?: Events;
 		dataAttributes?: DataAttributes;
+		keyboardInteractions?: KeyboardInteractions;
 	};
 </script>
 
 <script lang="ts">
-	import TableWrapper from './table-wrapper.svelte';
-	import Table from './table.svelte';
+	import Kbd from './kbd.svelte';
+	import TableWrapper from './table.svelte';
+	import { Table } from './table';
+	import P from './p.svelte';
+	import H3 from './h3.svelte';
 
 	export let schema: APISchema;
 
-	$: empty = !schema.args && !schema.props && !schema.events && !schema.dataAttributes;
+	$: empty =
+		!schema.args &&
+		!schema.props &&
+		!schema.events &&
+		!schema.dataAttributes &&
+		!schema.keyboardInteractions;
 
 	$: htmlDescription = (function parseDescription(description: string) {
 		// replace `$1` with <code>$1</code>
@@ -44,112 +58,121 @@
 </script>
 
 <div class="mb-12">
-	<h3 class="text-xl font-bold">{schema.title}</h3>
+	<H3 class="mt-8 text-xl font-bold">{schema.title}</H3>
 
-	<p class="mt-1 opacity-75">
+	<P class="opacity-75">
 		{@html htmlDescription}
-	</p>
+	</P>
 
 	{#if empty}
 		<p class="mt-4 text-lg text-zinc-400">
 			No props, events or data attributes are explicitly required.
 		</p>
 	{:else}
-		<TableWrapper>
-			{#if schema.args}
-				<Table head={['Arg', 'Type', 'Default']} headMobile="Args" data={schema.args}>
-					<svelte:fragment slot="row" let:datum={d}>
-						<div>
-							<code class="colored">{d.label}{d.required ? '*' : ''}</code>
-						</div>
-						<div>
-							<code>{d.type}</code>
-						</div>
-						<div>
-							{#if d.default !== undefined}
-								<code>{d.default}</code>
-							{:else}
-								<span>-</span>
-							{/if}
-						</div>
-					</svelte:fragment>
-				</Table>
-			{/if}
+		{#if schema.args}
+			<TableWrapper head={['Arg', 'Type', 'Default']} data={schema.args}>
+				<svelte:fragment slot="row" let:datum={d}>
+					<Table.Cell class="pl-0 pr-4">
+						<code class="colored">{d.label}{d.required ? '*' : ''}</code>
+					</Table.Cell>
+					<Table.Cell>
+						<code>{d.type}</code>
+					</Table.Cell>
+					<Table.Cell>
+						{#if d.default !== undefined}
+							<code>{d.default}</code>
+						{:else}
+							<span>-</span>
+						{/if}
+					</Table.Cell>
+				</svelte:fragment>
+			</TableWrapper>
+		{/if}
 
+		{#if schema.props}
+			<TableWrapper head={['Prop', 'Type', 'Default']} data={schema.props}>
+				<svelte:fragment slot="row" let:datum={d}>
+					<Table.Cell class="pl-0 pr-4">
+						<code class="colored">{d.label}{d.required ? '*' : ''}</code>
+					</Table.Cell>
+					<Table.Cell>
+						<code>{d.type}</code>
+					</Table.Cell>
+					<Table.Cell>
+						{#if d.default !== undefined}
+							<code>{d.default}</code>
+						{:else}
+							<span>-</span>
+						{/if}
+					</Table.Cell>
+				</svelte:fragment>
+			</TableWrapper>
+		{/if}
+
+		<!-- Events -->
+		{#if schema.events}
 			{#if schema.props}
-				<Table head={['Prop', 'Type', 'Default']} headMobile="Props" data={schema.props}>
-					<svelte:fragment slot="row" let:datum={d}>
-						<div>
-							<code class="colored">{d.label}{d.required ? '*' : ''}</code>
-						</div>
-						<div>
-							<code>{d.type}</code>
-						</div>
-						<div>
-							{#if d.default !== undefined}
-								<code>{d.default}</code>
-							{:else}
-								<span>-</span>
-							{/if}
-						</div>
-					</svelte:fragment>
-				</Table>
+				<hr class="col-span-3 h-4 opacity-0" />
 			{/if}
 
-			<!-- Events -->
-			{#if schema.events}
-				{#if schema.props}
-					<hr class="col-span-3 h-4 opacity-0" />
-				{/if}
+			<TableWrapper head={['Event', 'Payload']} data={schema.events}>
+				<svelte:fragment slot="row" let:datum={d}>
+					<Table.Cell class="pl-0 pr-4">
+						<code class="colored">{d.label}</code>
+					</Table.Cell>
+					<Table.Cell>
+						{#if Array.isArray(d.payload)}
+							<code>{d.payload.join(' | ')}</code>
+						{:else}
+							<span>
+								{d.payload}
+							</span>
+						{/if}
+					</Table.Cell>
+				</svelte:fragment>
+			</TableWrapper>
+		{/if}
 
-				<Table head={['Event', 'Payload']} headMobile="Events" data={schema.events}>
-					<div class="contents" slot="row" let:datum={d}>
-						<div>
-							<code class="colored">{d.label}</code>
-						</div>
-						<div>
-							{#if Array.isArray(d.payload)}
-								<code>{d.payload.join(' | ')}</code>
-							{:else}
-								<span>
-									{d.payload}
-								</span>
-							{/if}
-						</div>
-						<div class="" />
-					</div>
-				</Table>
+		<!-- Data Attributes -->
+		{#if schema.dataAttributes}
+			{#if schema.props || schema.events}
+				<hr class="col-span-3 h-4 opacity-0" />
 			{/if}
 
-			<!-- Data Attributes -->
-			{#if schema.dataAttributes}
-				{#if schema.props || schema.events}
-					<hr class="col-span-3 h-4 opacity-0" />
-				{/if}
+			<TableWrapper head={['Data Attribute', 'Values']} data={schema.dataAttributes}>
+				<svelte:fragment slot="row" let:datum={d}>
+					<Table.Cell class="pl-0 pr-4">
+						<code class="colored">{d.label}</code>
+					</Table.Cell>
+					<Table.Cell>
+						{#if Array.isArray(d.value)}
+							<code>{d.value.join(' | ')}</code>
+						{:else}
+							<span>
+								{d.value}
+							</span>
+						{/if}
+					</Table.Cell>
+				</svelte:fragment>
+			</TableWrapper>
+		{/if}
 
-				<Table
-					head={['Data Attribute', 'Values']}
-					headMobile="Data Attributes"
-					data={schema.dataAttributes}
-				>
-					<div class="contents" slot="row" let:datum={d}>
-						<div>
-							<code class="colored">{d.label}</code>
-						</div>
-						<div>
-							{#if Array.isArray(d.value)}
-								<code>{d.value.join(' | ')}</code>
-							{:else}
-								<span>
-									{d.value}
-								</span>
-							{/if}
-						</div>
-						<div class="" />
-					</div>
-				</Table>
+		{#if schema.keyboardInteractions}
+			{#if schema.props || schema.events}
+				<hr class="col-span-3 h-4 opacity-0" />
 			{/if}
-		</TableWrapper>
+
+			<TableWrapper head={['Key', 'Description']} data={schema.keyboardInteractions}>
+				<svelte:fragment slot="row" let:datum={d}>
+					<Table.Cell class="pl-0 pr-4">
+						<Kbd>{d.key}</Kbd>
+					</Table.Cell>
+					<Table.Cell>
+						<div class="whitespace-normal leading-normal">{d.description}</div>
+					</Table.Cell>
+				</svelte:fragment>
+			</TableWrapper>
+		{/if}
 	{/if}
 </div>
 
@@ -157,7 +180,7 @@
 	code {
 		background-color: theme('colors.zinc.800');
 		color: theme('colors.zinc.300');
-		padding-inline: theme('spacing.1');
+		padding-inline: 3.2px 4.8px;
 		padding-block: theme('spacing[0.5]');
 		border-radius: theme('borderRadius.sm');
 		font-family: theme('fontFamily.mono');

@@ -17,6 +17,9 @@ dependencies:
   focus-trap:
     specifier: ^7.4.3
     version: 7.4.3
+  svelte-wrap-balancer:
+    specifier: ^0.0.3
+    version: 0.0.3
 
 devDependencies:
   '@axe-core/playwright':
@@ -10645,6 +10648,10 @@ packages:
       svelte: 3.58.0
       typescript: 5.0.3
     dev: true
+
+  /svelte-wrap-balancer@0.0.3:
+    resolution: {integrity: sha512-NlHMz+5hy2GiH+JqA1ECdMIG540nKa3ZfbsxBo/LxvP03rkvJ7W6+FeeP2YU38Z5LX8rqV/sSwreF3WPMPRjmw==}
+    dev: false
 
   /svelte2tsx@0.6.11(svelte@3.58.0)(typescript@5.0.3):
     resolution: {integrity: sha512-rRW/3V/6mcejYWmSqcHpmILOSPsOhLgkbKbrTOz82s2n8TywmIsqj2jYPsiL6HeGoUM/atiTD0YKguW4b7ECog==}
