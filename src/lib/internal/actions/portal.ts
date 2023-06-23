@@ -5,7 +5,6 @@ export type PortalConfig = string | HTMLElement;
 
 export const usePortal: Action<HTMLElement, PortalConfig> = (el, target = 'body') => {
 	let targetEl;
-	const parent = el.parentNode;
 
 	async function update(newTarget: HTMLElement | string) {
 		target = newTarget;
@@ -32,11 +31,7 @@ export const usePortal: Action<HTMLElement, PortalConfig> = (el, target = 'body'
 	}
 
 	function destroy() {
-		if (parent) {
-			parent?.appendChild(el);
-		} else {
-			el.remove();
-		}
+		el.remove();
 	}
 
 	update(target);
