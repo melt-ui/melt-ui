@@ -4,7 +4,7 @@
   export let isRequired = false;
   export let inputId = 'test'
 
-  const { root, labelValue, labelContainer } = createLabel({
+  const { root, labelValue, asterisk } = createLabel({
     isRequired,
     for: inputId,
     labelValue: 'Test'
@@ -13,7 +13,9 @@
 
 <div>
   <label {...$root}>
-    <span {...$labelContainer}>{$labelValue}</span>
+    <span>{$labelValue}
+      <span {...$asterisk}>*</span>
+    </span>
     <input type="text" id={inputId} />
   </label>
 </div>

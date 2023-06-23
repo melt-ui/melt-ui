@@ -1,4 +1,4 @@
-import { elementDerived, omit, styleToString } from '$lib/internal/helpers';
+import { effect, elementDerived, isBrowser, omit, styleToString } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 
@@ -37,16 +37,32 @@ export function createLabel(args: CreateLabelArgs = defaults) {
 		};
 	});
 
-	const labelContainer = derived(options, ($options) => {
-		const requiredStyles = $options.isRequired ? "after:content-['_*']" : null;
+	const asterisk = derived(options, ($options) => {
+		const style = styleToString({
+			display: $options.isRequired ? undefined : 'none',
+		});
+
 		return {
-			class: requiredStyles,
+			style,
+		};
+	});
+
+	effect([root], () => {
+		if (!isBrowser) return;
+		const mouseDown = (e: MouseEvent) => {
+			if (!e.defaultPrevented && e.detail > 1) {
+				e.preventDefault();
+			}
+		};
+		document.addEventListener('mousedown', mouseDown);
+		return () => {
+			document.removeEventListener('mousedown', mouseDown);
 		};
 	});
 
 	return {
 		root,
-		labelContainer,
 		labelValue,
+		asterisk,
 	};
 }
