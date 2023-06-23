@@ -5,6 +5,6 @@
 	export { className as class };
 </script>
 
-<ul class={cn('my-6 ml-6 list-disc', className)} {...$$restProps}>
+<h4 class={cn('mt-8 scroll-m-20 text-lg font-semibold tracking-tight', className)} {...$$restProps}>
 	<slot />
-</ul>
+</h4>

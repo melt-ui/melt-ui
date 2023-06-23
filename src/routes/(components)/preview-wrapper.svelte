@@ -16,7 +16,7 @@
 		/* justify-content: center; */
 		align-items: center;
 
-		background: linear-gradient(315deg, theme('colors.magnum.700'), theme('colors.magnum.600'));
+		background: linear-gradient(315deg, theme('colors.magnum.600'), theme('colors.magnum.500'));
 
 		border-radius: theme('borderRadius.lg');
 		/* padding: theme('spacing.8'); */

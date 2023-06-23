@@ -19,6 +19,9 @@ import Preview from './preview.svelte';
 export type { PreviewProps } from './preview.svelte';
 import Switch from './switch.svelte';
 import Select from './select.svelte';
+import H4 from './h4.svelte';
+import H5 from './h5.svelte';
+import Ol from './ol.svelte';
 
 export const Docs = {
 	API,
@@ -33,6 +36,9 @@ export const Docs = {
 	P,
 	Ul,
 	Li,
+	Ol,
+	H4,
+	H5,
 	A,
 	Hr,
 	Tabs,

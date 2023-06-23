@@ -1,10 +1,18 @@
 import type { Config } from 'tailwindcss';
 import plugin from 'tailwindcss/plugin';
+import colors from 'tailwindcss/colors';
 
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 
 	theme: {
+		container: {
+			center: true,
+			padding: '2rem',
+			screens: {
+				'2xl': '1400px',
+			},
+		},
 		extend: {
 			colors: {
 				magnum: {
@@ -20,6 +28,7 @@ export default {
 					'900': '#793a15',
 					'950': '#411c09',
 				},
+				neutral: colors.zinc,
 			},
 			fontFamily: {
 				sans: [

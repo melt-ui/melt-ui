@@ -11,11 +11,11 @@
 </Docs.P>
 <Docs.Tabs tabs={['npm', 'yarn', 'pnpm']} let:tab>
 	{#if tab === 'npm'}
-		<Docs.CodeBlock inline code={'npm install @melt-ui/svelte'} />
+		<Docs.CodeBlock code={'npm install @melt-ui/svelte'} />
 	{:else if tab === 'yarn'}
-		<Docs.CodeBlock inline code={'yarn add @melt-ui/svelte'} />
+		<Docs.CodeBlock code={'yarn add @melt-ui/svelte'} />
 	{:else if tab === 'pnpm'}
-		<Docs.CodeBlock inline code={'pnpm install @melt-ui/svelte'} />
+		<Docs.CodeBlock code={'pnpm install @melt-ui/svelte'} />
 	{/if}
 </Docs.Tabs>
 <Docs.P sidenote>P.S. These tabs were built using Melt! Try using them with Arrow keys.</Docs.P>
