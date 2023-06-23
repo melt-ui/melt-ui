@@ -4,18 +4,18 @@
   export let isRequired = true;
   export let inputId = 'email'
 
-  const { root, labelValue, asterisk } = createLabel({
+  const { root, asterisk } = createLabel({
     isRequired,
-    for: inputId,
-    labelValue: 'Email',
   });
 </script>
 
-<div class="flex items-center justify-center">
-  <label {...$root}>
-    <span>{$labelValue}
-      <span {...$asterisk}>*</span>
-    </span>
-    <input type="text" id={inputId} />
-  </label>
-</div>
+<form>
+  <div class="flex items-center justify-center">
+    <label {...$root} for={inputId}>
+      <span>Email
+        <span {...$asterisk}>*</span>
+      </span>
+      <input type="text" id={inputId} />
+    </label>
+  </div>
+</form>

@@ -2,19 +2,16 @@
   import { createLabel } from '$lib';
   import { Docs } from '$routes/(components)';
 
-  const { root, labelValue, asterisk } = createLabel({
-    isRequired: true,
-    for: 'email',
-    labelValue: 'Email',
+  const { asterisk } = createLabel({
+    isRequired: true
   });
 </script>
 
 <Docs.PreviewWrapper>
   <form>
     <div class="flex flex-col items-start justify-center">
-      <label for={$root.for} class="text-black">
-        <span>
-          {$labelValue}
+      <label for="email" class="text-black">
+        <span>Email
           <span {...$asterisk}>*</span>
         </span>
       </label>
