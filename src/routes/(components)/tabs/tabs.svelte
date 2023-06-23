@@ -7,7 +7,7 @@
 
 <Root {tabs} let:tab>
 	<List />
-	<div class="mt-2">
+	<div>
 		<slot {tab} />
 	</div>
 </Root>

@@ -4,7 +4,7 @@
 	const { list, trigger, tabs } = getTabsContext();
 </script>
 
-<div class="mt-2 flex gap-2" {...list}>
+<div class="flex items-center gap-2" {...list}>
 	{#each $tabs as tab}
 		<button
 			{...$trigger(tab)}
