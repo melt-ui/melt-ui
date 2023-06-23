@@ -11,8 +11,7 @@ import {
 } from '$lib/internal/helpers';
 import { removeScroll } from '$lib/internal/helpers/scroll';
 import type { Defaults } from '$lib/internal/types';
-import { tick } from 'svelte';
-import { derived, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 
 export type CreateDialogArgs = {
 	preventScroll?: boolean;
@@ -92,35 +91,34 @@ export function createDialog(args: CreateDialogArgs = {}) {
 		action: (node: HTMLElement) => {
 			let unsub = noop;
 
-			effect([open, content, options], ([$open, $content, $options]) => {
-				tick().then(() => {
-					if (node.hidden) return;
-					console.log('setFocusTrap');
-					const { useFocusTrap } = createFocusTrap({
-						immediate: true,
-						escapeDeactivates: false,
-						allowOutsideClick: (e) => {
-							e.preventDefault();
-							if ($options.closeOnOutsideClick) {
-								open.set(false);
-							}
-
-							return false;
-						},
-						returnFocusOnDeactivate: false,
-					});
-					const ac = useFocusTrap(node);
-					if (ac && ac.destroy) {
-						const d = ac.destroy;
-
-						unsub = () => {
-							console.log('destroying focus trap');
-							d();
-						};
+			const { useFocusTrap, activate, deactivate } = createFocusTrap({
+				immediate: false,
+				escapeDeactivates: false,
+				allowOutsideClick: (e) => {
+					e.preventDefault();
+					const $options = get(options);
+					if ($options.closeOnOutsideClick) {
+						open.set(false);
 					}
-				});
 
-				return () => unsub();
+					return false;
+				},
+				returnFocusOnDeactivate: false,
+				fallbackFocus: node,
+			});
+			const ac = useFocusTrap(node);
+			if (ac && ac.destroy) {
+				unsub = ac.destroy;
+			} else {
+				unsub = deactivate;
+			}
+
+			effect([open], ([$open]) => {
+				if (node.hidden || !$open) {
+					deactivate();
+				} else {
+					activate();
+				}
 			});
 
 			return {
