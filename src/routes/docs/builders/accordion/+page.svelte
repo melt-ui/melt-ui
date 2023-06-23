@@ -14,10 +14,10 @@
 <Docs.Preview {...data.preview} fullwidth />
 
 <Docs.H2>Features</Docs.H2>
-<Docs.Ul>
-	<Docs.Li>Full keyboard navigation</Docs.Li>
-	<Docs.Li>Can expand one or multiple items</Docs.Li>
-	<Docs.Li>Can be controlled or uncontrolled</Docs.Li>
+<Docs.Ul type="icon">
+	<Docs.Li type="checked">Full keyboard navigation</Docs.Li>
+	<Docs.Li type="checked">Can expand one or multiple items</Docs.Li>
+	<Docs.Li type="checked">Can be controlled or uncontrolled</Docs.Li>
 </Docs.Ul>
 
 <Docs.H2>Anatomy</Docs.H2>

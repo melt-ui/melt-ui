@@ -13,7 +13,7 @@
 </script>
 
 <script lang="ts">
-	import { createSelect, type CreateSelectArgs, type SelectOptionArgs } from '$lib';
+	import { createSelect, type SelectOptionArgs } from '$lib';
 	import { cn } from '$routes/helpers';
 	import CodeBlock from './code-block.svelte';
 	import PreviewWrapper from './preview-wrapper.svelte';

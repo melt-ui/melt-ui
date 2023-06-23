@@ -21,7 +21,7 @@
 			>
 				{formatStr(section)}
 			</span>
-			<ul class="grid grid-flow-row auto-rows-max gap-0.5">
+			<ul class="grid grid-flow-row auto-rows-max">
 				{#each routes as route}
 					{@const href = `/docs/${section}/${route}`}
 					<li class="px-1">
