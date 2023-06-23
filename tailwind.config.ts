@@ -28,7 +28,6 @@ export default {
 					'900': '#793a15',
 					'950': '#411c09',
 				},
-				neutral: colors.zinc,
 			},
 			fontFamily: {
 				sans: [

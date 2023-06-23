@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
+	import H3 from '$routes/(components)/h3.svelte';
 	import { snippets } from './(snippets)';
 
 	export let data;
@@ -13,7 +14,7 @@
 
 <Docs.Preview {...data.preview} fullwidth />
 
-<Docs.H2>Features</Docs.H2>
+<Docs.H3>Features</Docs.H3>
 <Docs.Ul type="icon">
 	<Docs.Li type="checked">Full keyboard navigation</Docs.Li>
 	<Docs.Li type="checked">Can expand one or multiple items</Docs.Li>
