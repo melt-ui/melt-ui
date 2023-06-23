@@ -1,7 +1,7 @@
 import { onDestroy, tick } from 'svelte';
 import type { Action } from 'svelte/action';
 import { derived, type Readable } from 'svelte/store';
-import { addEventListener, isBrowser, generateId } from '.';
+import { addEventListener, generateId, isBrowser } from '.';
 
 export function getElementByMeltId(id: string) {
 	if (!isBrowser) return null;
@@ -20,6 +20,13 @@ type StoresValues<T> = T extends Readable<infer U>
 	: {
 			[K in keyof T]: T[K] extends Readable<infer U> ? U : never;
 	  };
+
+export function typedDerived<S extends Stores, T>(
+	stores: S,
+	fn: (values: StoresValues<S>) => T
+): Readable<ReturnType<typeof fn>> {
+	return derived(stores, fn);
+}
 
 /**
  * A utility function that creates a derived store that automatically

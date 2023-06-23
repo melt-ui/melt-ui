@@ -72,7 +72,7 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 
 			return {
 				'data-state': isSelected(itemValue, $value) ? 'open' : 'closed',
-				'data-disabled': disabled ? 'true' : undefined,
+				'data-disabled': disabled ? true : undefined,
 			};
 		};
 	});
@@ -86,17 +86,19 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 					'data-melt-part': 'trigger',
 					'aria-expanded': isSelected(itemValue, $value) ? true : false,
 					disabled: $options.disabled || disabled,
+					'data-disabled': disabled ? true : undefined,
+					'data-value': itemValue,
 					// TODO: aria-controls, aria-labelledby
 				};
 			};
 		}),
-		action: (node: HTMLElement, args: ItemArgs) => {
-			const { value: itemValue, disabled } = parseItemArgs(args);
-
+		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'click', () => {
 					const $options = get(options);
-					if (disabled || $options.disabled) return;
+					const disabled = node.dataset.disabled === 'true';
+					const itemValue = node.dataset.value;
+					if (disabled || !itemValue) return;
 
 					value.update(($value) => {
 						if ($options.type === 'single') {
@@ -157,7 +159,7 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 			const selected = isSelected(itemValue, $value);
 			return {
 				'data-state': selected ? 'open' : 'closed',
-				'data-disabled': $options.disabled ? 'true' : undefined,
+				'data-disabled': $options.disabled ? true : undefined,
 				hidden: selected ? undefined : true,
 			};
 		};

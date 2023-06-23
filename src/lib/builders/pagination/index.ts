@@ -82,15 +82,18 @@ export function createPagination(args: CreatePaginationArgs) {
 			return (pageItem: Page) => {
 				return {
 					'aria-label': `Page ${pageItem.value}`,
+					'data-value': pageItem.value,
 					'data-selected': pageItem.value === $page ? '' : undefined,
 					'data-melt-part': 'page-trigger',
 				};
 			};
 		}),
-		action: (node: HTMLElement, pageItem: Page) => {
+		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'click', () => {
-					page.set(pageItem.value);
+					const value = node.dataset.value;
+					if (!value || Number.isNaN(+value)) return;
+					page.set(Number(value));
 				}),
 				addEventListener(node, 'keydown', keydown)
 			);

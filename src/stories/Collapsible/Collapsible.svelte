@@ -9,7 +9,7 @@
 	let disabledProp: boolean;
 	export { openProp as open, disabledProp as disabled };
 
-	const { open, root, content, trigger, disabled, ta } = createCollapsible({
+	const { open, root, content, trigger, disabled } = createCollapsible({
 		open: openProp,
 		disabled: disabledProp,
 	});

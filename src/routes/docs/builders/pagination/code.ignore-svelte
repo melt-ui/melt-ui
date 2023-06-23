@@ -17,7 +17,7 @@
 			{#if page.type === 'ellipsis'}
 				<span>...</span>
 			{:else}
-				<button {...$pageTrigger(page)} use:pageTrigger.action={page}>{page.value}</button>
+				<button {...$pageTrigger(page)} use:pageTrigger.action>{page.value}</button>
 			{/if}
 		{/each}
 		<button {...$nextButton} use:nextButton.action><ChevronRight /></button>

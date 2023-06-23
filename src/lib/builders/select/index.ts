@@ -125,7 +125,7 @@ export function createSelect(args?: CreateSelectArgs) {
 			'aria-expanded': $open,
 			'aria-required': $options.required,
 			'data-state': $open ? 'open' : 'closed',
-			'data-disabled': $options.disabled ? '' : undefined,
+			'data-disabled': $options.disabled ? true : undefined,
 			disabled: $options.disabled,
 			id: ids.trigger,
 		};

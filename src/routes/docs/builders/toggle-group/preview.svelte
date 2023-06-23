@@ -14,13 +14,13 @@
 		class="flex items-center data-[orientation='vertical']:flex-col"
 		aria-label="Text alignment"
 	>
-		<button class="toggle-item" {...$item('left')} aria-label="Left aligned">
+		<button class="toggle-item" {...$item('left')} use:item.action aria-label="Left aligned">
 			<AlignLeft />
 		</button>
-		<button class="toggle-item" {...$item('center')} aria-label="Center aligned">
+		<button class="toggle-item" {...$item('center')} use:item.action aria-label="Center aligned">
 			<AlignCenter />
 		</button>
-		<button class="toggle-item" {...$item('right')} aria-label="Right aligned">
+		<button class="toggle-item" {...$item('right')} use:item.action aria-label="Right aligned">
 			<AlignRight />
 		</button>
 	</div>

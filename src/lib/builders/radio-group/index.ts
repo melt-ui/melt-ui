@@ -56,8 +56,9 @@ export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 
 				return {
 					disabled,
+					'data-value': itemValue,
 					'data-orientation': $options.orientation,
-					'data-disabled': disabled ? '' : undefined,
+					'data-disabled': disabled ? true : undefined,
 					'data-state': checked ? 'checked' : 'unchecked',
 					'aria-checked': checked,
 					type: 'button',
@@ -67,15 +68,12 @@ export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 				} as const;
 			};
 		}),
-		action: (node: HTMLElement, args: RadioGroupItemArgs) => {
-			const itemValue = typeof args === 'string' ? args : args.value;
-			const argDisabled = typeof args === 'string' ? false : !!args.disabled;
-
+		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'click', () => {
-					const $options = get(options);
-					const disabled = $options.disabled || (argDisabled as boolean);
-					if (disabled) return;
+					const disabled = node.dataset.disabled === 'true';
+					const itemValue = node.dataset.value;
+					if (disabled || itemValue === undefined) return;
 					value.set(itemValue);
 				}),
 				addEventListener(node, 'focus', (e) => {

@@ -19,7 +19,7 @@
 			<div class="flex items-center gap-3">
 				<button
 					{...$item(option)}
-					use:item.action={option}
+					use:item.action
 					class="grid h-6 w-6 cursor-default place-items-center rounded-full bg-white shadow-sm
 			hover:bg-magnum-100"
 					id={option}
