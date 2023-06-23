@@ -45,6 +45,11 @@
 
 	export let schema: APISchema;
 
+    function parseContent(content: string) {
+        // replace `$1` with <code>$1</code>
+		return content.replace(/`([^`]+)`/g, '<code>$1</code>');
+    }
+
 	$: empty =
 		!schema.args &&
 		!schema.props &&
@@ -52,10 +57,7 @@
 		!schema.dataAttributes &&
 		!schema.keyboardInteractions;
 
-	$: htmlDescription = (function parseDescription(description: string) {
-		// replace `$1` with <code>$1</code>
-		return description.replace(/`([^`]+)`/g, '<code>$1</code>');
-	})(schema.description);
+	$: htmlDescription = parseContent(schema.description)
 </script>
 
 <div class="mb-12">
@@ -170,7 +172,9 @@
 					</Table.Cell>
 					<Table.Cell>
 						<Balancer>
-							<div class="whitespace-normal leading-normal">{d.description}</div>
+							<P>
+								{@html parseContent(d.description)}
+							</P>
 						</Balancer>
 					</Table.Cell>
 				</svelte:fragment>

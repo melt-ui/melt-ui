@@ -15,6 +15,7 @@
 <Docs.Description>Displays rich content in a portal, triggered by a button.</Docs.Description>
 
 <Docs.Preview {...data.preview} />
+<Docs.Construction />
 
 <Docs.Features {features} />
 
@@ -107,5 +108,3 @@
 		],
 	}}
 />
-
-<Docs.Construction />
