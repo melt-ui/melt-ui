@@ -11,8 +11,7 @@
 </Docs.P>
 
 <Docs.Construction
-	>Melt UI is in its early stages. Expect breaking changes! And lots of new stuff coming in quickly
-	🔥</Docs.Construction
+	>Melt UI is in its early stages. Expect breaking changes! And lots of new features! 🔥</Docs.Construction
 >
 
 <Docs.H2>Features</Docs.H2>
