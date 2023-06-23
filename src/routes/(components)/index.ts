@@ -22,12 +22,16 @@ import Select from './select.svelte';
 import H4 from './h4.svelte';
 import H5 from './h5.svelte';
 import Ol from './ol.svelte';
+import Features from './sections/features.svelte';
+import Callout from './callout.svelte';
 
 export const Docs = {
 	API,
+	Callout,
 	CodeBlock,
 	Construction,
 	Description,
+	Features,
 	PreviewWrapper,
 	H1,
 	H2,

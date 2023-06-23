@@ -12,6 +12,8 @@
 	import { cn } from '$routes/helpers';
 	import { page } from '$app/stores';
 	import { writable } from 'svelte/store';
+	import TailwindIndicator from './(components)/tailwind-indicator.svelte';
+	import { dev } from '$app/environment';
 
 	$: isRoot = $page.url.pathname === '/';
 </script>
@@ -69,4 +71,7 @@
 	<div class="flex-1">
 		<slot />
 	</div>
+	{#if dev}
+		<TailwindIndicator />
+	{/if}
 </div>

@@ -3,6 +3,12 @@
 	import { snippets } from './(snippets)';
 
 	export let data;
+
+	const features = [
+		'Supports indeterminate state',
+		'Full keyboard navigation',
+		'Can be controlled or uncontrolled',
+	];
 </script>
 
 <Docs.H1>Checkbox</Docs.H1>
@@ -12,12 +18,7 @@
 
 <Docs.Preview {...data.preview} />
 
-<Docs.H2>Features</Docs.H2>
-<Docs.Ul>
-	<Docs.Li>Supports indeterminate state</Docs.Li>
-	<Docs.Li>Full keyboard navigation</Docs.Li>
-	<Docs.Li>Can be controlled or uncontrolled</Docs.Li>
-</Docs.Ul>
+<Docs.Features {features} />
 
 <Docs.H2>Anatomy</Docs.H2>
 <Docs.Ul>
@@ -52,19 +53,10 @@
 </Docs.P>
 <Docs.CodeBlock code={snippets.controlled} />
 
-<Docs.H2>Accessibility</Docs.H2>
-<Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/">WAI-ARIA pattern</Docs.A>
-
-<Docs.H3>Keyboard Interactions</Docs.H3>
-
-<Docs.P>
-	When the checkbox has focus, pressing the <Docs.Kbd>Space</Docs.Kbd> key changes the state of the checkbox.
-</Docs.P>
-
 <Docs.H2>API Reference</Docs.H2>
 <Docs.API
 	schema={{
-		title: 'createCheckbox Config',
+		title: 'createCheckbox',
 		description: 'Creates an checkbox component.',
 		args: [
 			{
@@ -89,6 +81,27 @@
 			{
 				label: 'value',
 				type: 'string',
+			},
+		],
+	}}
+/>
+
+<Docs.H2>Accessibility</Docs.H2>
+<Docs.P>
+	Adheres to the
+	<Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/accordion/"
+		>tri-state Checkbox WAI-ARIA design pattern</Docs.A
+	>
+</Docs.P>
+
+<Docs.API
+	schema={{
+		title: 'Keyboard Interactions',
+		description: '',
+		keyboardInteractions: [
+			{
+				key: 'Space',
+				description: 'Toggles the checkbox state.',
 			},
 		],
 	}}

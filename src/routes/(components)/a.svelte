@@ -6,7 +6,7 @@
 </script>
 
 <a
-	class="inline-flex items-center gap-1 underline hover:opacity-75"
+	class="inline-flex items-center gap-1 underline underline-offset-2 hover:opacity-75"
 	{href}
 	target={internal ? undefined : '_blank'}
 >

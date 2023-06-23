@@ -3,6 +3,12 @@
 	import { snippets } from './(snippets)';
 
 	export let data;
+
+	const features = [
+		'Full keyboard navigation',
+		'Can expand one or multiple items',
+		'Can be controlled or uncontrolled',
+	];
 </script>
 
 <Docs.H1>Accordion</Docs.H1>
@@ -13,12 +19,7 @@
 
 <Docs.Preview {...data.preview} fullwidth />
 
-<Docs.H3>Features</Docs.H3>
-<Docs.Ul type="icon">
-	<Docs.Li type="checked">Full keyboard navigation</Docs.Li>
-	<Docs.Li type="checked">Can expand one or multiple items</Docs.Li>
-	<Docs.Li type="checked">Can be controlled or uncontrolled</Docs.Li>
-</Docs.Ul>
+<Docs.Features {features} />
 
 <Docs.H2>Anatomy</Docs.H2>
 <Docs.Ul>
