@@ -6,7 +6,7 @@
 	let filteredHeadingsList: TableOfContents;
 
 	function getHeadingsWithHierarchy() {
-		const headings: HTMLHeadingElement[] = Array.from(document.querySelectorAll('h2, h3'));
+		const headings: HTMLHeadingElement[] = Array.from(document.querySelectorAll('[data-toc]'));
 		const hierarchy: TableOfContents = { items: [] };
 		let currentLevel: TableOfContentsItem | undefined = undefined;
 
