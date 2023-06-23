@@ -4,8 +4,9 @@
 </script>
 
 <Docs.H1>Getting Started</Docs.H1>
+<Docs.Description>A few steps to start using MeltUI in your projects</Docs.Description>
 
-<Docs.H2>Installing</Docs.H2>
+<Docs.H2>Installation</Docs.H2>
 <Docs.P>
 	First off, install Melt UI into your project by running the following command in your terminal:
 </Docs.P>

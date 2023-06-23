@@ -23,7 +23,7 @@
 <div
 	class={cn(
 		'code-block relative rounded-lg',
-		'max-h-[17rem] overflow-auto lg:max-h-[25rem]',
+		'max-h-[17rem] overflow-auto border border-neutral-300/30 lg:max-h-[25rem]',
 		inline ? 'inline-block overflow-hidden pr-12' : 'my-2'
 	)}
 >
@@ -43,7 +43,7 @@
 
 <style>
 	.code-block {
-		background: theme('colors.zinc.800/0.75');
+		background: theme('colors.neutral.900/0.9');
 	}
 
 	.code-block :global(.hljs) {

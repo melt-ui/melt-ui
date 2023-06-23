@@ -9,7 +9,7 @@
 <p
 	class={cn(
 		'leading-7 [&:not(:first-child)]:mt-4',
-		sidenote && 'text-base italic opacity-50',
+		sidenote && 'text-base italic opacity-60',
 		className
 	)}
 	{...$$restProps}
