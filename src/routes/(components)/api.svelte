@@ -41,6 +41,7 @@
 	import { Table } from './table';
 	import P from './p.svelte';
 	import H3 from './h3.svelte';
+	import Balancer from 'svelte-wrap-balancer';
 
 	export let schema: APISchema;
 
@@ -60,7 +61,7 @@
 <div class="mb-12">
 	<H3 class="mt-8 text-xl font-bold">{schema.title}</H3>
 
-	<P class="opacity-75">
+	<P>
 		{@html htmlDescription}
 	</P>
 
@@ -168,7 +169,9 @@
 						<Kbd>{d.key}</Kbd>
 					</Table.Cell>
 					<Table.Cell>
-						<div class="whitespace-normal leading-normal">{d.description}</div>
+						<Balancer>
+							<div class="whitespace-normal leading-normal">{d.description}</div>
+						</Balancer>
 					</Table.Cell>
 				</svelte:fragment>
 			</TableWrapper>

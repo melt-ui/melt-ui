@@ -2,6 +2,13 @@
 	import { Docs } from '$routes/(components)';
 
 	export let data;
+
+	const features = [
+		'Full keyboard navigation',
+		'Customize positioning of popover',
+		'Can be controlled or uncontrolled',
+		'Focus is fully managed',
+	];
 </script>
 
 <Docs.H1>Popover</Docs.H1>
@@ -9,13 +16,7 @@
 
 <Docs.Preview {...data.preview} />
 
-<Docs.H2>Features</Docs.H2>
-<Docs.Ul>
-	<Docs.Li>Full keyboard navigation.</Docs.Li>
-	<Docs.Li>Customize positioning of popover.</Docs.Li>
-	<Docs.Li>Can be controlled or uncontrolled.</Docs.Li>
-	<Docs.Li>Focused is managed and customizable (soon).</Docs.Li>
-</Docs.Ul>
+<Docs.Features {features} />
 
 <Docs.H2>Anatomy</Docs.H2>
 <Docs.Ul>
@@ -34,5 +35,77 @@
 	To create a popover, use the <Docs.Code>createPopover</Docs.Code> builder function. Follow the anatomy
 	or the example above to create your popover.
 </Docs.P>
+
+<Docs.H2>API Reference</Docs.H2>
+<Docs.API
+	schema={{
+		title: 'CreatePopover',
+		description: 'Configuration options for the `createPopover` function.',
+		args: [
+			{
+				label: 'checked',
+				type: 'boolean | "indeterminate"',
+				default: false,
+			},
+			{
+				label: 'disabled',
+				type: 'boolean',
+				default: false,
+			},
+			{
+				label: 'required',
+				type: 'boolean',
+				default: false,
+			},
+			{
+				label: 'name',
+				type: 'string',
+			},
+			{
+				label: 'value',
+				type: 'string',
+			},
+		],
+	}}
+/>
+
+<Docs.H2>Accessibility</Docs.H2>
+<Docs.P>
+	Adheres to the
+	<Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/accordion/"
+		>Accordion WAI-ARIA design pattern</Docs.A
+	>
+</Docs.P>
+
+<Docs.API
+	schema={{
+		title: 'Keyboard Interactions',
+		description: '',
+		keyboardInteractions: [
+			{
+				key: 'Space',
+				description: 'Toggles the popover.',
+			},
+			{
+				key: 'Enter',
+				description: 'Toggles the popover.',
+			},
+			{
+				key: 'Tab',
+				description:
+					'Moves focus to the next focusable element; all focusable elements in the popover are included in the page Tab sequence.',
+			},
+			{
+				key: 'Shift + Tab',
+				description:
+					'Moves focus to the previous focusable element; all focusable elements in the popover are included in the page Tab sequence.',
+			},
+			{
+				key: 'Esc',
+				description: 'Closes the popover and moves focus to the trigger element.',
+			},
+		],
+	}}
+/>
 
 <Docs.Construction />

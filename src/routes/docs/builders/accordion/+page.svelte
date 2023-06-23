@@ -99,41 +99,41 @@
 		keyboardInteractions: [
 			{
 				key: 'Space',
-				description: 'When focus is on a trigger of a collapsed section, expands the section.',
+				description: 'When a trigger of a collapsed section is focused, expands the section.',
 			},
 			{
 				key: 'Enter',
-				description: 'When focus is on a trigger of a collapsed section, expands the section.',
+				description: 'When a trigger of a collapsed section is focused, expands the section.',
 			},
 			{
 				key: 'Tab',
 				description:
-					'Moves focus to the next focusable element; all focusable elements in the accordion are included in the page Tab sequence.',
+					'Shifts focus to the next element in the tab sequence. All focusable elements in the accordion are included in the page Tab sequence.',
 			},
 			{
 				key: 'Shift + Tab',
 				description:
-					'Moves focus to the previous focusable element; all focusable elements in the accordion are included in the page Tab sequence.',
+					'Shifts focus to the previous element in the tab sequence. All focusable elements in the accordion are included in the page Tab sequence.',
 			},
 			{
 				key: 'ArrowDown',
 				description:
-					'If focus is on an accordion header, moves focus to the next accordion header. If focus is on the last accordion header, either does nothing or moves focus to the first accordion header.',
+					'If an accordion header currently has focus, shifts focus to the subsequent header. If the last header currently has focus, focus will either remain the same, or it will move to the first header.',
 			},
 			{
 				key: 'ArrowUp',
 				description:
-					'If focus is on an accordion header, moves focus to the previous accordion header. If focus is on the first accordion header, either does nothing or moves focus to the last accordion header.',
+					'When an accordion header is focused, shifts focus to the previous header. If the first header currently has focus, focus will either remain the same, or it will move to the final header.',
 			},
 			{
 				key: 'Home',
 				description:
-					'When focus is on an accordion header, moves focus to the first accordion header.',
+					'When an accordion header is focused, shifts focus to the first accordion header.',
 			},
 			{
 				key: 'End',
 				description:
-					'When focus is on an accordion header, moves focus to the last accordion header.',
+					'When an accordion header is focused, shifts focus to the last accordion header.',
 			},
 		],
 	}}

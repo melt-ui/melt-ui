@@ -2,6 +2,12 @@
 	import { Docs } from '$routes/(components)';
 
 	export let data;
+
+	const features = [
+		'Full keyboard navigation',
+		'Svelte transition support',
+		'Can be controlled or uncontrolled',
+	];
 </script>
 
 <Docs.H1>Collapsible</Docs.H1>
@@ -9,12 +15,7 @@
 
 <Docs.Preview {...data.preview} fullwidth />
 
-<Docs.H2>Features</Docs.H2>
-<Docs.Ul>
-	<Docs.Li>Full keyboard navigation</Docs.Li>
-	<Docs.Li>Svelte transition support</Docs.Li>
-	<Docs.Li>Can be controlled or uncontrolled</Docs.Li>
-</Docs.Ul>
+<Docs.Features {features} />
 
 <Docs.H2>Anatomy</Docs.H2>
 <Docs.Ul>
@@ -25,22 +26,6 @@
 	<Docs.Li>
 		<b>Content:</b> The content area that is revealed when the trigger is clicked
 	</Docs.Li>
-</Docs.Ul>
-
-<Docs.H2>Accessibility</Docs.H2>
-<Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/">WAI-ARIA pattern</Docs.A>
-
-<Docs.H3>Keyboard Interactions</Docs.H3>
-<Docs.P>When the trigger has focus</Docs.P>
-<Docs.Ul>
-	<Docs.Li
-		><Docs.Kbd>Enter</Docs.Kbd>: activates the trigger and toggles the visibility of the collapsible
-		content</Docs.Li
-	>
-	<Docs.Li
-		><Docs.Kbd>Space</Docs.Kbd>: activates the trigger and toggles the visibility of the collapsible
-		content</Docs.Li
-	>
 </Docs.Ul>
 
 <Docs.H2>API Reference</Docs.H2>
@@ -58,6 +43,31 @@
 				label: 'disabled',
 				type: 'boolean',
 				default: false,
+			},
+		],
+	}}
+/>
+
+<Docs.H2>Accessibility</Docs.H2>
+<Docs.P>
+	Adheres to the
+	<Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/"
+		>Disclosure WAI-ARIA design pattern</Docs.A
+	>
+</Docs.P>
+
+<Docs.API
+	schema={{
+		title: 'Keyboard Interactions',
+		description: '',
+		keyboardInteractions: [
+			{
+				key: 'Space',
+				description: 'Activates the trigger and toggles the visibility of the collapsible content',
+			},
+			{
+				key: 'Enter',
+				description: 'Activates the trigger and toggles the visibility of the collapsible content',
 			},
 		],
 	}}

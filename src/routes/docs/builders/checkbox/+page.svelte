@@ -89,7 +89,7 @@
 <Docs.H2>Accessibility</Docs.H2>
 <Docs.P>
 	Adheres to the
-	<Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/accordion/"
+	<Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/"
 		>tri-state Checkbox WAI-ARIA design pattern</Docs.A
 	>
 </Docs.P>
