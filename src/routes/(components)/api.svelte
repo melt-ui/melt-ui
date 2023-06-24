@@ -42,13 +42,12 @@
 	import { Table } from './table';
 	import P from './p.svelte';
 	import H3 from './h3.svelte';
-	import Balancer from 'svelte-wrap-balancer';
 
 	export let schema: APISchema;
 
-	function parseContent(content: string) {
+	function parseContent(content: string, codeClass = '') {
 		// replace `$1` with <code>$1</code>
-		return content.replace(/`([^`]+)`/g, '<code>$1</code>');
+		return content.replace(/`([^`]+)`/g, `<code class="${codeClass}">$1</code>`);
 	}
 
 	$: empty =
@@ -165,9 +164,9 @@
 						{#if Array.isArray(d.value)}
 							<code>{d.value.join(' | ').replaceAll('"', "'")}</code>
 						{:else}
-							<span>
-								{d.value.replaceAll('"', "'")}
-							</span>
+							<P>
+								{@html parseContent(d.value, 'neutral')}
+							</P>
 						{/if}
 					</Table.Cell>
 					<Table.Cell />
