@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
+	import { schemas } from './schemas.js';
 
 	export let data;
 
@@ -38,37 +39,7 @@
 </Docs.P>
 
 <Docs.H2>API Reference</Docs.H2>
-<Docs.API
-	schema={{
-		title: 'CreatePopover',
-		description: 'Configuration options for the `createPopover` function.',
-		args: [
-			{
-				label: 'checked',
-				type: 'boolean | "indeterminate"',
-				default: false,
-			},
-			{
-				label: 'disabled',
-				type: 'boolean',
-				default: false,
-			},
-			{
-				label: 'required',
-				type: 'boolean',
-				default: false,
-			},
-			{
-				label: 'name',
-				type: 'string',
-			},
-			{
-				label: 'value',
-				type: 'string',
-			},
-		],
-	}}
-/>
+<Docs.API schema={schemas.builder} />
 
 <Docs.H2>Accessibility</Docs.H2>
 <Docs.P>
@@ -78,33 +49,4 @@
 	>
 </Docs.P>
 
-<Docs.API
-	schema={{
-		title: 'Keyboard Interactions',
-		description: '',
-		keyboardInteractions: [
-			{
-				key: 'Space',
-				description: 'Toggles the popover.',
-			},
-			{
-				key: 'Enter',
-				description: 'Toggles the popover.',
-			},
-			{
-				key: 'Tab',
-				description:
-					'Moves focus to the next focusable element; all focusable elements in the popover are included in the page Tab sequence.',
-			},
-			{
-				key: 'Shift + Tab',
-				description:
-					'Moves focus to the previous focusable element; all focusable elements in the popover are included in the page Tab sequence.',
-			},
-			{
-				key: 'Esc',
-				description: 'Closes the popover and moves focus to the trigger element.',
-			},
-		],
-	}}
-/>
+<Docs.API schema={schemas.keyboard} />

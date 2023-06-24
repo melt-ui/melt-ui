@@ -84,7 +84,7 @@
 							<code>{d.type.join(' | ').replaceAll('"', "'")}</code>
 						{:else}
 							<code>
-								{d.type}
+								{d.type.replaceAll('"', "'")}
 							</code>
 						{/if}
 					</Table.Cell>
@@ -110,7 +110,7 @@
 							<code>{d.type.join(' | ').replaceAll('"', "'")}</code>
 						{:else}
 							<code>
-								{d.type}
+								{d.type.replaceAll('"', "'")}
 							</code>
 						{/if}
 						<code>{d.type}</code>
@@ -166,7 +166,7 @@
 							<code>{d.value.join(' | ').replaceAll('"', "'")}</code>
 						{:else}
 							<span>
-								{d.value}
+								{d.value.replaceAll('"', "'")}
 							</span>
 						{/if}
 					</Table.Cell>

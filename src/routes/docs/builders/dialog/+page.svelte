@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
+	import { schemas } from './schemas.js';
 
 	export let data;
 	const features = [
@@ -43,34 +44,7 @@
 </Docs.P>
 
 <Docs.H2>API Reference</Docs.H2>
-<Docs.API
-	schema={{
-		title: 'CreateDialogArgs',
-		description: 'The object you pass into createAccordion. Optional.',
-		args: [
-			{
-				label: 'role',
-				type: "'dialog' | 'alert-dialog'",
-				default: "'dialog'",
-			},
-			{
-				label: 'preventScroll',
-				type: 'boolean',
-				default: true,
-			},
-			{
-				label: 'closeOnEscape',
-				type: 'boolean',
-				default: true,
-			},
-			{
-				label: 'closeOnOutsideClick',
-				type: 'boolean',
-				default: true,
-			},
-		],
-	}}
-/>
+<Docs.API schema={schemas.builder} />
 
 <Docs.H2>Example Components</Docs.H2>
 <Docs.H3>Drawer</Docs.H3>
@@ -88,35 +62,7 @@
 	<Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/dialog/"
 		>Dialog WAI-ARIA design pattern</Docs.A
 	> & <Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/"
-    >Alert Dialog WAI-ARIA design pattern</Docs.A
->
+		>Alert Dialog WAI-ARIA design pattern</Docs.A
+	>
 </Docs.P>
-
-<Docs.API
-	schema={{
-		title: 'Keyboard Interactions',
-		description: '',
-		keyboardInteractions: [
-			{
-				key: 'Space',
-				description: 'Opens/closes the dialog.',
-			},
-			{
-				key: 'Enter',
-				description: 'Opens/closes the dialog.',
-			},
-			{
-				key: 'Tab',
-				description: 'Moves focus to the next focusable element within the dialog.',
-			},
-			{
-				key: 'Shift + Tab',
-				description: 'Moves focus to the previous focusable element within the dialog.',
-			},
-			{
-				key: 'Esc',
-				description: 'Closes the dialog and moves focus to the trigger element.',
-			},
-		],
-	}}
-/>
+<Docs.API schema={schemas.keyboard} />
