@@ -8,6 +8,7 @@
 	{#each $tabs as tab}
 		<button
 			{...$trigger(tab)}
+			use:trigger.action
 			class="rounded-md border border-transparent bg-neutral-800 px-3 py-1 text-neutral-500 opacity-75 transition
         hover:opacity-100 focus:!border-magnum-400 focus:!text-magnum-400
         data-[state=active]:border-magnum-700 data-[state=active]:text-magnum-600 data-[state=active]:opacity-100"

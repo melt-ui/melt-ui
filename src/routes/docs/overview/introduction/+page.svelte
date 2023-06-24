@@ -1,6 +1,5 @@
 <script>
 	import { Docs } from '$routes/(components)';
-	import H2 from '$routes/(components)/h2.svelte';
 
 	import { snippets } from './(snippets)';
 </script>

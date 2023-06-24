@@ -16,8 +16,8 @@
 				<a
 					href={item.url}
 					class={cn(
-						'hover:text-white inline-block no-underline transition-colors',
-						item.url === $page.url.hash ? 'text-white font-medium' : 'text-neutral-300'
+						'inline-block no-underline transition-colors hover:text-white',
+						item.url === $page.url.hash ? 'font-medium text-white' : 'text-neutral-300'
 					)}
 				>
 					{item.title}

@@ -11,7 +11,6 @@
 		let currentLevel: TableOfContentsItem | undefined = undefined;
 
 		headings.forEach((heading: HTMLHeadingElement) => {
-			console.log('headings:', headings);
 			const level = parseInt(heading.tagName.charAt(1));
 			if (!heading.id) {
 				let newId = heading.innerText
