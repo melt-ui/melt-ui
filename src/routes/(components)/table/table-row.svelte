@@ -5,6 +5,6 @@
 	export { className as class };
 </script>
 
-<tr class={cn('border-b border-b-neutral-600', className)} {...$$restProps}>
+<tr class={cn('w-full border-b border-b-neutral-600', className)} {...$$restProps}>
 	<slot />
 </tr>

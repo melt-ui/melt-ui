@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
+	import List from '$routes/(components)/api-reference/list.svelte';
 	import { snippets } from './(snippets)';
 	import { schemas } from './schemas';
 
@@ -77,3 +78,5 @@
 </Docs.P>
 
 <Docs.API schema={schemas.keyboard} />
+
+<List />

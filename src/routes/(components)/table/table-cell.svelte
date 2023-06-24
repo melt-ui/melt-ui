@@ -5,6 +5,6 @@
 	export { className as class };
 </script>
 
-<td class={cn('py-4 pl-4 pr-4', className)} {...$$restProps}>
+<td class={cn('py-4 pr-4', className)} {...$$restProps}>
 	<slot />
 </td>

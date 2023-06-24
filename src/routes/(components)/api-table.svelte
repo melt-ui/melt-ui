@@ -9,10 +9,12 @@
 </script>
 
 <Table.Wrapper>
-	<Table.Header>
+	<Table.Header class="table-header-group">
 		<Table.Row>
 			{#each head as h, i}
-				<Table.Head class={cn(i === 0 ? 'pl-0' : '')}>
+				<Table.Head
+					class={cn(i === 0 && 'w-[35%] pl-0', i === 1 && 'w-[45%]', i === 2 && 'w-[20%]')}
+				>
 					{h}
 				</Table.Head>
 			{/each}

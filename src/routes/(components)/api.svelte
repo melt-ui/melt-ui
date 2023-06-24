@@ -37,7 +37,7 @@
 
 <script lang="ts">
 	import Kbd from './kbd.svelte';
-	import TableWrapper from './table.svelte';
+	import TableWrapper from './api-table.svelte';
 	import { Table } from './table';
 	import P from './p.svelte';
 	import H3 from './h3.svelte';
@@ -75,10 +75,10 @@
 		{#if schema.args}
 			<TableWrapper head={['Arg', 'Type', 'Default']} data={schema.args}>
 				<svelte:fragment slot="row" let:datum={d}>
-					<Table.Cell class="pl-0 pr-4">
+					<Table.Cell class="pl-0">
 						<code class="colored">{d.label}{d.required ? '*' : ''}</code>
 					</Table.Cell>
-					<Table.Cell>
+					<Table.Cell class="">
 						{#if Array.isArray(d.type)}
 							<code>{d.type.join(' | ').replaceAll('"', "'")}</code>
 						{:else}
@@ -87,7 +87,7 @@
 							</code>
 						{/if}
 					</Table.Cell>
-					<Table.Cell>
+					<Table.Cell class="">
 						{#if d.default !== undefined}
 							<code>{d.default}</code>
 						{:else}
@@ -101,7 +101,7 @@
 		{#if schema.props}
 			<TableWrapper head={['Prop', 'Type', 'Default']} data={schema.props}>
 				<svelte:fragment slot="row" let:datum={d}>
-					<Table.Cell class="pl-0 pr-4">
+					<Table.Cell class="pl-0">
 						<code class="colored">{d.label}{d.required ? '*' : ''}</code>
 					</Table.Cell>
 					<Table.Cell>
@@ -133,7 +133,7 @@
 
 			<TableWrapper head={['Event', 'Payload']} data={schema.events}>
 				<svelte:fragment slot="row" let:datum={d}>
-					<Table.Cell class="pl-0 pr-4">
+					<Table.Cell class="pl-0">
 						<code class="colored">{d.label}</code>
 					</Table.Cell>
 					<Table.Cell>
@@ -155,9 +155,9 @@
 				<hr class="col-span-3 h-4 opacity-0" />
 			{/if}
 
-			<TableWrapper head={['Data Attribute', 'Values', ]} data={schema.dataAttributes}>
+			<TableWrapper head={['Data Attribute', 'Values']} data={schema.dataAttributes}>
 				<svelte:fragment slot="row" let:datum={d}>
-					<Table.Cell class="pl-0 pr-4">
+					<Table.Cell class="pl-0">
 						<code class="colored">{d.label}</code>
 					</Table.Cell>
 					<Table.Cell>
@@ -169,7 +169,7 @@
 							</span>
 						{/if}
 					</Table.Cell>
-					
+					<Table.Cell />
 				</svelte:fragment>
 			</TableWrapper>
 		{/if}
@@ -181,7 +181,7 @@
 
 			<TableWrapper head={['Key', 'Description']} data={schema.keyboardInteractions}>
 				<svelte:fragment slot="row" let:datum={d}>
-					<Table.Cell class="pl-0 pr-4">
+					<Table.Cell class="pl-0">
 						<Kbd>{d.key}</Kbd>
 					</Table.Cell>
 					<Table.Cell>
@@ -201,11 +201,6 @@
 	code {
 		background-color: theme('colors.zinc.800');
 		color: theme('colors.zinc.300');
-		padding-inline: 3.2px 4.8px;
-		padding-block: theme('spacing[0.5]');
-		border-radius: theme('borderRadius.sm');
-		font-family: theme('fontFamily.mono');
-
 		&.colored {
 			background-color: theme('colors.magnum.900/0.5');
 			color: theme('colors.magnum.300');

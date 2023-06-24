@@ -5,6 +5,6 @@
 	export { className as class };
 </script>
 
-<thead class={cn('border-b-neutral-600 [&_tr]:border-b', className)} {...$$restProps}>
+<thead class={cn('w-full border-b-neutral-600 [&_tr]:border-b', className)} {...$$restProps}>
 	<slot />
 </thead>
