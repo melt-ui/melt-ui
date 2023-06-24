@@ -1,0 +1,17 @@
+<script lang="ts">
+	import { createAvatar } from "@melt-ui/svelte";
+
+  const {root, image, fallback} = createAvatar(
+    {
+      src: "https://avatars.githubusercontent.com/u/1162160?v=4",
+      alt: "RH Avatar",
+    },
+    )
+
+    let fallbackValue = "RH"
+</script>
+
+  <div {...$root} class="rounded-full bg-neutral-800 w-24 h-24 flex justify-center items-center">
+    <img {...$image} alt={$image.alt} class="w-full h-full rounded-[inherit]" />
+    <span {...$fallback} class="text-black text-3xl font-medium">{fallbackValue}</span>
+  </div>
