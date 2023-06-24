@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { Docs } from '$routes/(components)';
-	import { createCheckbox } from '$lib';
+	import { createCheckbox } from '@melt-ui/svelte';
 	import Check from '~icons/lucide/check';
 	import Minus from '~icons/lucide/minus';
 

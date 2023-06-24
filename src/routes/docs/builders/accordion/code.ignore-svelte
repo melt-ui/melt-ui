@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Docs } from '$routes/(components)';
-	import { createAccordion } from '$lib/builders/accordion';
+	import { Docs } from '$lib/types';
+	import { createAccordion } from '@melt-ui/svelte';
 	import { slide } from 'svelte/transition';
 
 	const { content, item, trigger, isSelected, root } = createAccordion();

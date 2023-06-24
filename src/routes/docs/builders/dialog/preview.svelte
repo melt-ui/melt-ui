@@ -2,7 +2,6 @@
 	import { createDialog } from '$lib/builders/dialog';
 	import { Docs } from '$routes/(components)';
 	import { flyAndScale } from '$routes/helpers';
-	import { fade } from 'svelte/transition';
 	import X from '~icons/lucide/x';
 
 	const { trigger, portal, overlay, content, title, description, close, open } = createDialog();
@@ -19,7 +18,7 @@
 		>
 			Open Dialog
 		</button>
-		<div>
+		<div use:portal>
 			{#if $open}
 				<div {...$overlay} class="fixed inset-0 z-20 bg-black/50" />
 				<div

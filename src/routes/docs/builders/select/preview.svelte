@@ -13,16 +13,16 @@
 </script>
 
 <Docs.PreviewWrapper>
-	<button class="trigger" {...$trigger} aria-label="Food">
+	<button class="trigger" {...$trigger} use:trigger.action aria-label="Food">
 		{$label || 'Select an option'}
 		<ChevronDown />
 	</button>
 
-	<ul class="menu" {...$menu}>
+	<ul class="menu" {...$menu} use:menu.action>
 		{#each Object.entries(options) as [key, arr]}
 			<li class="label">{key}</li>
 			{#each arr as item}
-				<li class="option" {...$option({ value: item, label: item })}>
+				<li class="option" {...$option({ value: item, label: item })} use:option.action>
 					{#if $isSelected(item)}
 						<div class="check">
 							<Check />
