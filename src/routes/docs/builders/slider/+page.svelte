@@ -31,6 +31,8 @@
 
 <Docs.H2>API Reference</Docs.H2>
 <Docs.API schema={schemas.builder} />
+<Docs.API schema={schemas.slider} />
+<Docs.API schema={schemas.thumb} />
 
 <Docs.H2>Accessibility</Docs.H2>
 <Docs.P>

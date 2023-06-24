@@ -68,7 +68,31 @@ const keyboard: APISchema = {
 	],
 };
 
+const slider: APISchema = {
+	title: 'Slider',
+	description: 'The slider component.',
+	dataAttributes: [
+		{
+			label: 'data-orientation',
+			value: ['"horizontal"', '"vertical"'],
+		},
+	],
+};
+
+const thumb: APISchema = {
+	title: 'Thumb',
+	description: 'The slider thumb component.',
+	dataAttributes: [
+		{
+			label: 'data-melt-part',
+			value: '`thumb`',
+		},
+	],
+};
+
 export const schemas = {
 	builder,
 	keyboard,
+	slider,
+	thumb,
 };
