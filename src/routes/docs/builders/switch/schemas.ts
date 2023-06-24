@@ -30,6 +30,21 @@ const builder: APISchema = {
 	],
 };
 
+const root: APISchema = {
+	title: 'Root',
+	description: 'The switch component.',
+	dataAttributes: [
+		{
+			label: 'data-disabled',
+			value: 'Present if the switch is disabled.',
+		},
+		{
+			label: 'data-state',
+			value: ['"checked"', '"unchecked"'],
+		},
+	],
+};
+
 const keyboard: APISchema = {
 	title: 'Keyboard Interactions',
 	description: '',
@@ -48,4 +63,5 @@ const keyboard: APISchema = {
 export const schemas = {
 	builder,
 	keyboard,
+	root,
 };

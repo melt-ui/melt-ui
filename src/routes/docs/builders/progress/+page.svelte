@@ -27,6 +27,7 @@
 	Follow the anatomy or the example above to create your progress bar.
 </Docs.P>
 
+<Docs.H2>API Reference</Docs.H2>
 <Docs.API schema={schemas.builder} />
 <Docs.API schema={schemas.root} />
 

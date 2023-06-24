@@ -48,6 +48,7 @@
 <Docs.H2>API Reference</Docs.H2>
 
 <Docs.API schema={schemas.builder} />
+<Docs.API schema={schemas.root} />
 
 <Docs.H2>Accessibility</Docs.H2>
 <Docs.P>
