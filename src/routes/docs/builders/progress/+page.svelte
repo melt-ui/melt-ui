@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
+	import { schemas } from './schemas.js';
 	export let data;
 
 	const features = ['Assistive reading technology support for progress bar'];
@@ -24,6 +25,17 @@
 <Docs.P>
 	To create an progress bar component, use the <Docs.Code>createProgress</Docs.Code> builder function.
 	Follow the anatomy or the example above to create your progress bar.
+</Docs.P>
+
+<Docs.API schema={schemas.builder} />
+<Docs.API schema={schemas.root} />
+
+<Docs.H2>Accessibility</Docs.H2>
+<Docs.P>
+	Adheres to the
+	<Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/meter/"
+		>Meter WAI-ARIA design pattern</Docs.A
+	>
 </Docs.P>
 
 <Docs.Construction />
