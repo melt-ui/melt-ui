@@ -1,6 +1,13 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
+	import { schemas } from './schemas.js';
 	export let data;
+
+	const features = [
+		'Full keyboard navigation',
+		'Can be controlled or uncontrolled',
+		'Supports horizontal and vertical orientation',
+	];
 </script>
 
 <Docs.H1>Radio Group</Docs.H1>
@@ -10,5 +17,19 @@
 >
 
 <Docs.Preview {...data.preview} />
+<Docs.Features {features} />
+
+<Docs.H2>Anatomy</Docs.H2>
+<Docs.Ul>
+	<Docs.Li><b>Root / <code>root</code>:</b> The root container for the radio group</Docs.Li>
+	<Docs.Li>
+		<b>Item / <code>item</code>:</b> The individual radio button items
+	</Docs.Li>
+</Docs.Ul>
+
+<Docs.H2>API Reference</Docs.H2>
+<Docs.API schema={schemas.builder} />
+<Docs.API schema={schemas.root} />
+<Docs.API schema={schemas.item} />
 
 <Docs.Construction />
