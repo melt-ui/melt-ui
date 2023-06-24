@@ -1,11 +1,4 @@
-import {
-	effect,
-	elementDerived,
-	generateId,
-	isBrowser,
-	omit,
-	styleToString,
-} from '$lib/internal/helpers';
+import { effect, generateId, isBrowser, styleToString } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 
