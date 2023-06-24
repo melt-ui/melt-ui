@@ -10,7 +10,7 @@
 <Docs.PreviewWrapper>
   <form>
     <div class="flex flex-col items-start justify-center">
-      <label {...$root} for="email" class="text-black font-medium">
+      <label {...$root} for="email" class="font-medium">
         <span>Email
           <span {...$asterisk} class="text-red-900">*</span>
         </span>
