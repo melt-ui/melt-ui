@@ -23,10 +23,8 @@
 
 <Docs.H2>Anatomy</Docs.H2>
 <Docs.Ul>
-	<Docs.Li><b>Root / <code>root</code>:</b> The root container for the radio group</Docs.Li>
-	<Docs.Li>
-		<b>Item / <code>item</code>:</b> The individual radio button items
-	</Docs.Li>
+	<Docs.Li><b>Root:</b> The root container for the radio group</Docs.Li>
+	<Docs.Li><b>Item:</b> The individual radio button items</Docs.Li>
 </Docs.Ul>
 
 <Docs.H2>API Reference</Docs.H2>

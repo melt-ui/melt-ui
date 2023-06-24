@@ -26,20 +26,11 @@
 
 <Docs.H2>Anatomy</Docs.H2>
 <Docs.Ul>
-	<Docs.Li><b>Root / <code>root</code>:</b> The root container for the pagination component</Docs.Li
-	>
-	<Docs.Li>
-		<b>Previous Button / <code>prevButton</code>:</b> The button which navigates to the previous page
-	</Docs.Li>
-	<Docs.Li>
-		<b>Page Trigger / <code>pageTrigger</code>:</b> The button(s) which navigates to a specific page
-	</Docs.Li>
-	<Docs.Li>
-		<b>Next Button / <code>nextButton</code>:</b> The button which navigates to the next page
-	</Docs.Li>
-	<Docs.Li>
-		<b>Range / <code>range</code>:</b> The range of pages that are visible to the user
-	</Docs.Li>
+	<Docs.Li><b>Root:</b> The root container for the pagination component</Docs.Li>
+	<Docs.Li><b>Previous Button:</b> The button which navigates to the previous page</Docs.Li>
+	<Docs.Li><b>Page Trigger:</b> The button(s) which navigates to a specific page</Docs.Li>
+	<Docs.Li><b>Next Button:</b> The button which navigates to the next page</Docs.Li>
+	<Docs.Li><b>Range:</b> The range of pages that are visible to the user</Docs.Li>
 </Docs.Ul>
 <Docs.CodeBlock code={snippets.anatomy} />
 

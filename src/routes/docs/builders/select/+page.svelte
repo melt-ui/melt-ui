@@ -25,16 +25,10 @@
 
 <Docs.H2>Anatomy</Docs.H2>
 <Docs.Ul>
-	<Docs.Li
-		><b>Trigger / <code>trigger</code>:</b> The button that opens/closes the select menu</Docs.Li
-	>
-	<Docs.Li>
-		<b>Menu / <code>menu</code>:</b> The popover select menu
-	</Docs.Li>
-	<Docs.Li>
-		<b>Option / <code>option</code>:</b> The individual select options
-	</Docs.Li>
-	<Docs.Li><b>Arrow / <code>arrow</code>:</b> An optional arrow component</Docs.Li>
+	<Docs.Li><b>Trigger:</b> The button that opens/closes the select menu</Docs.Li>
+	<Docs.Li><b>Menu:</b> The popover select menu</Docs.Li>
+	<Docs.Li><b>Option:</b> The individual select options</Docs.Li>
+	<Docs.Li><b>Arrow:</b> An optional arrow component</Docs.Li>
 </Docs.Ul>
 
 <Docs.H2>API Reference</Docs.H2>

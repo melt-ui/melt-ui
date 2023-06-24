@@ -19,7 +19,7 @@
 
 <Docs.H2>Anatomy</Docs.H2>
 <Docs.Ul>
-	<Docs.Li><b>Progress / <code>progress</code>:</b> The progress component.</Docs.Li>
+	<Docs.Li><b>Progress:</b> The progress component.</Docs.Li>
 </Docs.Ul>
 
 <Docs.H2>Usage</Docs.H2>
