@@ -37,7 +37,8 @@
 
 <script lang="ts">
 	import Kbd from './kbd.svelte';
-	import TableWrapper from './api-table.svelte';
+	import APITable from './api-table.svelte';
+	import KBDTable from './kbd-table.svelte';
 	import { Table } from './table';
 	import P from './p.svelte';
 	import H3 from './h3.svelte';
@@ -73,7 +74,7 @@
 		</p>
 	{:else}
 		{#if schema.args}
-			<TableWrapper head={['Arg', 'Type', 'Default']} data={schema.args}>
+			<APITable head={['Arg', 'Type', 'Default']} data={schema.args}>
 				<svelte:fragment slot="row" let:datum={d}>
 					<Table.Cell class="pl-0">
 						<code class="colored">{d.label}{d.required ? '*' : ''}</code>
@@ -95,11 +96,11 @@
 						{/if}
 					</Table.Cell>
 				</svelte:fragment>
-			</TableWrapper>
+			</APITable>
 		{/if}
 
 		{#if schema.props}
-			<TableWrapper head={['Prop', 'Type', 'Default']} data={schema.props}>
+			<APITable head={['Prop', 'Type', 'Default']} data={schema.props}>
 				<svelte:fragment slot="row" let:datum={d}>
 					<Table.Cell class="pl-0">
 						<code class="colored">{d.label}{d.required ? '*' : ''}</code>
@@ -122,7 +123,7 @@
 						{/if}
 					</Table.Cell>
 				</svelte:fragment>
-			</TableWrapper>
+			</APITable>
 		{/if}
 
 		<!-- Events -->
@@ -131,7 +132,7 @@
 				<hr class="col-span-3 h-4 opacity-0" />
 			{/if}
 
-			<TableWrapper head={['Event', 'Payload']} data={schema.events}>
+			<APITable head={['Event', 'Payload']} data={schema.events}>
 				<svelte:fragment slot="row" let:datum={d}>
 					<Table.Cell class="pl-0">
 						<code class="colored">{d.label}</code>
@@ -146,7 +147,7 @@
 						{/if}
 					</Table.Cell>
 				</svelte:fragment>
-			</TableWrapper>
+			</APITable>
 		{/if}
 
 		<!-- Data Attributes -->
@@ -155,7 +156,7 @@
 				<hr class="col-span-3 h-4 opacity-0" />
 			{/if}
 
-			<TableWrapper head={['Data Attribute', 'Values']} data={schema.dataAttributes}>
+			<APITable head={['Data Attribute', 'Values']} data={schema.dataAttributes}>
 				<svelte:fragment slot="row" let:datum={d}>
 					<Table.Cell class="pl-0">
 						<code class="colored">{d.label}</code>
@@ -171,7 +172,7 @@
 					</Table.Cell>
 					<Table.Cell />
 				</svelte:fragment>
-			</TableWrapper>
+			</APITable>
 		{/if}
 
 		{#if schema.keyboardInteractions}
@@ -179,20 +180,18 @@
 				<hr class="col-span-3 h-4 opacity-0" />
 			{/if}
 
-			<TableWrapper head={['Key', 'Description']} data={schema.keyboardInteractions}>
+			<KBDTable head={['Key', 'Description']} data={schema.keyboardInteractions}>
 				<svelte:fragment slot="row" let:datum={d}>
 					<Table.Cell class="pl-0">
 						<Kbd>{d.key}</Kbd>
 					</Table.Cell>
 					<Table.Cell>
-						<Balancer>
-							<P>
-								{@html parseContent(d.description)}
-							</P>
-						</Balancer>
+						<P>
+							{@html parseContent(d.description)}
+						</P>
 					</Table.Cell>
 				</svelte:fragment>
-			</TableWrapper>
+			</KBDTable>
 		{/if}
 	{/if}
 </div>

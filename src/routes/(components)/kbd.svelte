@@ -21,6 +21,6 @@
 		border-bottom-color: theme('colors.neutral.600');
 		border-radius: theme('borderRadius.DEFAULT');
 		box-shadow: inset 0 -1px 0 theme('colors.neutral.300/0.5');
-		font-size: theme('fontSize.sm');
+		font-size: theme('fontSize.xs');
 	}
 </style>
