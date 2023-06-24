@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
 	import { snippets } from './(snippets)';
+	import { schemas } from './schemas';
 
 	export let data;
 	const features = ['Full keyboard navigation', 'Can be controlled or uncontrolled'];
@@ -46,35 +47,7 @@
 
 <Docs.H2>API Reference</Docs.H2>
 
-<Docs.API schema={{
-    title: 'CreateSwitchArgs',
-    description: 'The object you pass into createAccordion. Optional.',
-    args: [
-        {
-            label: 'checked',
-            type: "boolean",
-            default: "false",
-        },
-        {
-            label: 'disabled',
-            type: 'boolean',
-            default: "false",
-        },
-        {
-            label: 'required',
-            type: 'boolean',
-            default: "false"
-        },
-        {
-            label: 'name',
-            type: 'string',
-        },
-        {
-            label: 'value',
-            type: 'string',
-        }
-    ],
-}} />
+<Docs.API schema={schemas.builder} />
 
 <Docs.H2>Accessibility</Docs.H2>
 <Docs.P>
@@ -84,19 +57,4 @@
 	>
 </Docs.P>
 
-<Docs.API
-	schema={{
-		title: 'Keyboard Interactions',
-		description: '',
-		keyboardInteractions: [
-			{
-				key: 'Space',
-				description: 'When the switch has focus, toggles the switch.',
-			},
-			{
-				key: 'Enter',
-				description: 'When the switch has focus, toggles the switch.',
-			},
-		],
-	}}
-/>
+<Docs.API schema={schemas.keyboard} />
