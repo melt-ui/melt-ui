@@ -3,25 +3,20 @@
 	const { root, list, content, trigger } = createTabs({ value: 'tab1' });
 </script>
 
-<div
-	{...$root}
-	class="flex flex-col overflow-hidden rounded-md shadow-lg data-[orientation=vertical]:flex-row"
->
-	<div
-		{...list}
-		class="flex shrink-0 border-b border-magnum-100 bg-white
-		data-[orientation=vertical]:flex-col data-[orientation=vertical]:border-r"
-		aria-label="Manage your account"
-	>
-		<button {...$trigger('tab1')} class="trigger">Account</button>
-		<button {...$trigger('tab2')} class="trigger">Password</button>
-		<button {...$trigger({ value: 'tab3', disabled: true })} class="trigger">Disabled</button>
-		<button {...$trigger('tab4')} class="trigger">Settings</button>
+<div {...$root} class="root">
+	<div {...$list} class="list" aria-label="Manage your account">
+		<button {...$trigger('tab1')} use:trigger.action class="trigger">Account</button>
+		<button {...$trigger('tab2')} use:trigger.action class="trigger">Password</button>
+		<!-- You don't need to set disabled on the action when using a button element, since
+			$trigger will set the 'disabled' attribute on the button -->
+		<button
+			use:trigger.action
+			{...$trigger({ value: 'tab3', disabled: true })}
+			class="trigger opacity-50">Disabled</button
+		>
+		<button {...$trigger('tab4')} use:trigger.action class="trigger">Settings</button>
 	</div>
-	<div
-		{...$content('tab1')}
-		class="grow bg-white p-5 outline-none focus:ring focus:ring-magnum-400"
-	>
+	<div {...$content('tab1')} class="content">
 		<p class="description">Make changes to your account here. Click save when you're done.</p>
 		<fieldset>
 			<label for="name"> Name </label>
@@ -32,10 +27,7 @@
 			<button>Save changes</button>
 		</div>
 	</div>
-	<div
-		{...$content('tab2')}
-		class="grow bg-white p-5 outline-none focus:ring focus:ring-magnum-400"
-	>
+	<div {...$content('tab2')} class="content">
 		<p class="description">Change your password here. Click save when you're done.</p>
 		<fieldset>
 			<label for="new"> New password </label>
@@ -45,13 +37,8 @@
 			<button>Save changes</button>
 		</div>
 	</div>
-	<div
-		{...$content('tab4')}
-		class="grow bg-white p-5 outline-none focus:ring focus:ring-magnum-400"
-	>
-		<p class="mb-5 leading-normal text-magnum-950">
-			Change your settings here. Click save when you're done.
-		</p>
+	<div {...$content('tab4')} class="content">
+		<p class="description">Change your settings here. Click save when you're done.</p>
 
 		<fieldset>
 			<label for="new"> New email </label>
@@ -64,10 +51,21 @@
 </div>
 
 <style lang="postcss">
+	/* Tab Parts */
+	.root {
+		@apply flex flex-col overflow-hidden rounded-md shadow-lg data-[orientation=vertical]:flex-row;
+	}
+
+	.list {
+		@apply flex shrink-0 border-b border-magnum-100 bg-white data-[orientation=vertical]:flex-col
+			data-[orientation=vertical]:border-r;
+		overflow-x: auto;
+	}
+
 	.trigger {
 		@apply flex h-11 flex-1 cursor-default select-none items-center
       justify-center rounded-none bg-white px-5 leading-none text-magnum-900
-			outline-none focus:relative focus:ring focus:ring-magnum-400;
+			 focus:relative;
 	}
 
 	.trigger[data-orientation='vertical'] {
@@ -79,14 +77,21 @@
 	}
 
 	.trigger[data-state='active'][data-orientation='horizontal'] {
-		@apply shadow-[inset_0_-1px_0_0,0_1px_0_0] shadow-current focus:relative focus:ring focus:ring-magnum-400;
+		@apply shadow-[inset_0_-1px_0_0,0_1px_0_0] shadow-current focus:relative;
 	}
 
 	.trigger[data-state='active'][data-orientation='vertical'] {
 		@apply border-r-magnum-500;
 	}
 
+	.content {
+		@apply grow bg-white p-5;
+	}
+
 	/* Content Elements */
+	.description {
+		@apply mb-5 leading-normal text-magnum-950;
+	}
 
 	fieldset {
 		@apply mb-4 flex w-full flex-col justify-start;
@@ -97,7 +102,7 @@
 	}
 
 	input {
-		@apply h-8 shrink-0 grow rounded border px-2.5 leading-none text-magnum-900 outline-none focus:ring focus:ring-magnum-800;
+		@apply h-8 shrink-0 grow rounded border px-2.5 leading-none text-magnum-900  focus:ring focus:ring-magnum-800;
 	}
 
 	.actions {
@@ -105,6 +110,6 @@
 	}
 
 	button {
-		@apply inline-flex h-8 cursor-default items-center justify-center rounded bg-green-100 px-[15px] font-medium leading-none text-green-900 outline-none focus:ring focus:ring-magnum-400;
+		@apply inline-flex h-8 cursor-default items-center justify-center rounded bg-green-100 px-[15px] font-medium leading-none text-green-900;
 	}
 </style>

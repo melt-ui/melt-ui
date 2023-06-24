@@ -2,7 +2,7 @@
 	import { createSelect } from '@melt-ui/svelte';
 	import { Check, ChevronDown } from 'icons';
 
-	const { selectedText, trigger, menu, option, isSelected } = createSelect();
+	const { label, trigger, menu, option, isSelected } = createSelect();
 
 	const options = {
 		fruits: ['Apple', 'Banana', 'Pineapple'],
@@ -41,11 +41,11 @@
 	}
 	.option {
 		@apply relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800;
-		@apply outline-none focus:bg-magnum-100 focus:text-magnum-700;
+		@apply focus:bg-magnum-100 focus:text-magnum-700;
 	}
 	.trigger {
 		@apply flex h-10 w-[180px] items-center justify-between rounded-md bg-white px-3;
-		@apply py-2 text-magnum-700 outline-none hover:opacity-75 focus:ring focus:ring-magnum-400;
+		@apply py-2 text-magnum-700  hover:opacity-75;
 	}
 	.check {
 		@apply absolute left-2 top-1/2 text-magnum-500;

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createToggleGroup } from '@melt-ui/svelte';
 	import { AlignLeft, AlignCenter, AlignRight } from 'icons';
+
 	const { root, item } = createToggleGroup();
 </script>
 
@@ -41,7 +42,6 @@
 
 		&:focus {
 			z-index: 10;
-			@apply ring-2 ring-magnum-400;
 		}
 	}
 
