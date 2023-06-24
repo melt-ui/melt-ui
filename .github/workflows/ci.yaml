@@ -18,8 +18,6 @@ permissions:
 jobs:
   Lint:
     runs-on: ubuntu-latest
-    env:
-      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
     steps:
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2
@@ -30,8 +28,6 @@ jobs:
 
   Check:
     runs-on: ubuntu-latest
-    env:
-      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
     steps:
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2
@@ -49,12 +45,5 @@ jobs:
         with:
           version: 8.6.1
           run_install: true
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
       - run: pnpm run test
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+      

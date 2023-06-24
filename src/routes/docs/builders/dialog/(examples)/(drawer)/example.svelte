@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createDialog } from '$lib/builders/dialog';
-	import { fade, fly } from 'svelte/transition';
+	import { flyAndScale } from '$routes/helpers';
 	import X from '~icons/lucide/x';
 
 	const { trigger, portal, overlay, content, title, description, close, open } = createDialog();
@@ -8,59 +8,75 @@
 
 <div>
 	<button
-		{...$trigger()}
+		{...$trigger}
+		use:trigger.action
 		class="inline-flex items-center justify-center rounded-md bg-white px-4 py-2
-			font-medium leading-none text-magnum-700 shadow-lg hover:opacity-75
-			focus:outline-none focus:ring focus:ring-magnum-400"
+        font-medium leading-none text-magnum-700 shadow-lg hover:opacity-75
+        "
 	>
-		Open Drawer
+		Open Dialog
 	</button>
 	<div use:portal>
 		{#if $open}
+			<div {...$overlay} class="fixed inset-0 z-20 bg-black/50" />
 			<div
-				{...$overlay}
-				class="fixed inset-0 z-20 bg-black/50"
-				transition:fade|local={{ duration: 150 }}
-			/>
-			<div
+				class="fixed left-[50%] top-[50%] z-30 max-h-[85vh] w-[90vw] max-w-[450px]
+            translate-x-[-50%] translate-y-[-50%] rounded-md bg-white p-[25px]
+            shadow-lg"
+				transition:flyAndScale|local={{ duration: 150, y: 8, start: 0.96 }}
 				{...$content}
-				class="fixed left-0 top-0 z-50 h-screen w-full max-w-[350px] bg-white p-[25px] shadow-lg
-				focus:outline-none"
-				transition:fly|local={{ x: -350, duration: 300, opacity: 1 }}
+				use:content.action
 			>
+				<h2 {...title} class="m-0 text-lg font-medium text-black">Edit profile</h2>
+				<p {...description} class="mb-5 mt-[10px] leading-normal text-zinc-600">
+					Make changes to your profile here. Click save when you're done.
+				</p>
+
+				<fieldset class="mb-4 flex items-center gap-5">
+					<label class="w-[90px] text-right text-magnum-800" for="name"> Name </label>
+					<input
+						class="inline-flex h-8 w-full flex-1 items-center justify-center rounded-sm border
+                    border-solid px-3 leading-none text-magnum-800"
+						id="name"
+						value="Thomas G. Lopes"
+					/>
+				</fieldset>
+				<fieldset class="mb-4 flex items-center gap-5">
+					<label class="w-[90px] text-right text-magnum-800" for="username"> Username </label>
+					<input
+						class="inline-flex h-8 w-full flex-1 items-center justify-center rounded-sm border
+                    border-solid px-3 leading-none text-magnum-800"
+						id="username"
+						value="@thomasglopes"
+					/>
+				</fieldset>
+				<div class="mt-[25px] flex justify-end gap-4">
+					<button
+						{...close}
+						use:close.action
+						class="inline-flex h-[35px] items-center justify-center rounded-[4px] bg-zinc-100
+                px-4 font-medium leading-none text-zinc-600"
+					>
+						Cancel
+					</button>
+					<button
+						{...close}
+						use:close.action
+						class="inline-flex h-[35px] items-center justify-center rounded-[4px] bg-magnum-100
+                px-4 font-medium leading-none text-magnum-900"
+					>
+						Save changes
+					</button>
+				</div>
+
 				<button
-					{...$close()}
+					{...close}
+					use:close.action
 					class="absolute right-[10px] top-[10px] inline-flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-full
-				text-magnum-800 hover:bg-magnum-100 focus:shadow-magnum-400 focus:outline-none focus:ring-2 focus:ring-magnum-400"
+            text-magnum-800 hover:bg-magnum-100 focus:shadow-magnum-400"
 				>
 					<X />
 				</button>
-				<h2 {...title} class="mb-0 text-lg font-medium text-black">Notifications</h2>
-				<p {...description} class="mb-5 mt-[10px] leading-normal text-zinc-600">
-					Check out your latest updates.
-				</p>
-				<section>
-					<div class="rounded-md bg-gray-100/80 p-4 text-zinc-800 shadow">
-						<h3 class="mb-3 text-base font-semibold">New invitation</h3>
-						<p class="text-sm">
-							You have been invited to join the <strong>Designers</strong> team.
-						</p>
-						<div class="mt-[25px] flex justify-end gap-4">
-							<button
-								class="inline-flex h-[35px] items-center justify-center rounded-[4px] bg-zinc-100
-            px-4 font-medium leading-none text-zinc-600 focus:outline-none focus:ring-2 focus:ring-magnum-400"
-							>
-								Reject
-							</button>
-							<button
-								class="inline-flex h-[35px] items-center justify-center rounded-[4px] bg-magnum-100
-            px-4 font-medium leading-none text-magnum-900 focus:outline-none focus:ring-2 focus:ring-magnum-400"
-							>
-								Accept
-							</button>
-						</div>
-					</div>
-				</section>
 			</div>
 		{/if}
 	</div>

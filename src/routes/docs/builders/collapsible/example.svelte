@@ -12,9 +12,10 @@
 		<span class="text-sm leading-6 text-white"> @thomasglopes starred 3 repositories </span>
 		<button
 			{...$trigger}
+			use:trigger.action
 			class="relative h-6 w-6 place-items-center rounded-full bg-white text-sm text-magnum-700
-			shadow-lg hover:opacity-75
-			data-[disabled]:cursor-not-allowed data-[disabled]:opacity-75"
+        shadow-lg hover:opacity-75
+        data-[disabled]:cursor-not-allowed data-[disabled]:opacity-75"
 		>
 			<div class="abs-center">
 				{#if $open}

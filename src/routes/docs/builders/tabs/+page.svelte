@@ -16,7 +16,7 @@
 	A set of layered sections of content—known as tab panels—that are displayed one at a time.
 </Docs.Description>
 
-<Docs.Preview component={data.preview.component} code={data.preview.code} />
+<Docs.Preview {...data.preview} />
 <Docs.Construction />
 
 <Docs.Features {features} />

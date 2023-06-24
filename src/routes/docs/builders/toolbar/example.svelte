@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { createToolbar, createToolbarGroup } from '$lib';
 
-	import AlignCenter from '~icons/lucide/align-center';
-	import AlignLeft from '~icons/lucide/align-left';
-	import AlignRight from '~icons/lucide/align-right';
 	import Bold from '~icons/lucide/bold';
 	import Italic from '~icons/lucide/italic';
 	import Strikethrough from '~icons/lucide/strikethrough';
+	import AlignLeft from '~icons/lucide/align-left';
+	import AlignCenter from '~icons/lucide/align-center';
+	import AlignRight from '~icons/lucide/align-right';
 
 	const { root, options, button, link, separator } = createToolbar();
 	const { root: fontGroup, item: fontItem } = createToolbarGroup({
@@ -21,32 +21,32 @@
 	class="flex min-w-max items-center gap-4 rounded-md bg-white px-3 py-3 text-neutral-700 shadow-sm"
 >
 	<div class="group" {...$fontGroup}>
-		<button class="item" {...$fontItem('bold')}>
+		<button class="item" {...$fontItem('bold')} use:fontItem.action>
 			<Bold />
 		</button>
-		<button class="item" {...$fontItem('italic')}>
+		<button class="item" {...$fontItem('italic')} use:fontItem.action>
 			<Italic />
 		</button>
-		<button class="item" {...$fontItem('strikethrough')}>
+		<button class="item" {...$fontItem('strikethrough')} use:fontItem.action>
 			<Strikethrough />
 		</button>
 	</div>
 	<div class="separator" {...$separator} />
 	<div class="group" {...$alignGroup}>
-		<button class="item" {...$alignItem('left')}>
+		<button class="item" {...$alignItem('left')} use:alignItem.action>
 			<AlignLeft />
 		</button>
-		<button class="item" {...$alignItem('center')}>
+		<button class="item" {...$alignItem('center')} use:alignItem.action>
 			<AlignCenter />
 		</button>
-		<button class="item" {...$alignItem('right')}>
+		<button class="item" {...$alignItem('right')} use:alignItem.action>
 			<AlignRight />
 		</button>
 	</div>
 	<div class="separator" {...$separator} />
 	<!-- svelte-ignore a11y-invalid-attribute -->
-	<a href="#" class="link nowrap flex-shrink-0" {...$link()}> Edited 2 hours ago </a>
-	<button class="button" {...$button()}>Save</button>
+	<a href="#" class="link nowrap flex-shrink-0" {...link} use:link.action> Edited 2 hours ago </a>
+	<button class="button" {...button} use:button.action>Save</button>
 </div>
 
 <style lang="postcss">

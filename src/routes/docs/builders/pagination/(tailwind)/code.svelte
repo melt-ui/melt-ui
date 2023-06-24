@@ -12,15 +12,15 @@
 <nav class="flex flex-col items-center gap-4" aria-label="pagination" {...root}>
 	<p class="text-center">Showing items {$range.start} - {$range.end}</p>
 	<div class="flex items-center gap-2">
-		<button {...$prevButton}><ChevronLeft /></button>
+		<button {...$prevButton} use:prevButton.action><ChevronLeft /></button>
 		{#each $pages as page (page.key)}
 			{#if page.type === 'ellipsis'}
 				<span>...</span>
 			{:else}
-				<button {...$pageTrigger(page)}>{page.value}</button>
+				<button {...$pageTrigger(page)} use:pageTrigger.action>{page.value}</button>
 			{/if}
 		{/each}
-		<button {...$nextButton}><ChevronRight /></button>
+		<button {...$nextButton} use:nextButton.action><ChevronRight /></button>
 	</div>
 </nav>
 
@@ -55,6 +55,11 @@
 		&[data-selected] {
 			background-color: theme('colors.magnum.900');
 			color: theme('colors.white');
+		}
+
+		&:first-child,
+		&:last-child {
+			padding-inline: theme('spacing.2');
 		}
 	}
 </style>

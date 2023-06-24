@@ -2,7 +2,7 @@
 	import { createSlider } from '@melt-ui/svelte';
 
 	const { slider, range, thumb, value } = createSlider({
-		value: [30, 70],
+		value: [30],
 		max: 100,
 	});
 </script>
@@ -15,7 +15,8 @@
 	{#each { length: $value.length } as _}
 		<span
 			{...$thumb()}
-			class="block h-5 w-5 rounded-full bg-white focus:outline-none focus:ring-4 focus:ring-black/40"
+			use:thumb.action
+			class="block h-5 w-5 rounded-full bg-white focus:ring-4 focus:ring-black/40"
 		/>
 	{/each}
 </span>

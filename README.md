@@ -118,7 +118,7 @@ Looking for more? Check out these other projects too:
 - [Svelte Material UI](https://sveltematerialui.com/)
 - [SvelteStrap](https://github.com/bestguy/sveltestrap)
 - [Noir UI](https://github.com/khairulhaaziq/noir-ui)
+- [Zag](https://github.com/chakra-ui/zag)
 - [Grail UI](https://grail-ui.vercel.app/)
 
 This list is not exhaustive or sorted in any particular order. If you know of any other similar projects for Svelte, feel free to open a PR to add them here.
-These projects are not affiliated with Melt UI in any way.

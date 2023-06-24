@@ -2,17 +2,16 @@ import { createFocusTrap, usePortal } from '$lib/internal/actions';
 import {
 	addEventListener,
 	effect,
-	elementDerived,
-	elementMulti,
-	elementMultiDerived,
+	generateId,
+	hiddenAction,
 	isBrowser,
+	noop,
 	sleep,
 	styleToString,
-	uuid,
 } from '$lib/internal/helpers';
 import { removeScroll } from '$lib/internal/helpers/scroll';
 import type { Defaults } from '$lib/internal/types';
-import { writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 
 export type CreateDialogArgs = {
 	preventScroll?: boolean;
@@ -34,38 +33,36 @@ export function createDialog(args: CreateDialogArgs = {}) {
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	const ids = {
-		content: uuid(),
-		title: uuid(),
-		description: uuid(),
+		content: generateId(),
+		title: generateId(),
+		description: generateId(),
 	};
 
 	const open = writable(false);
 
-	const trigger = elementMultiDerived(open, ($open, { attach }) => {
-		return () => {
-			attach('click', (e) => {
+	const trigger = {
+		...derived(open, ($open) => {
+			return {
+				'aria-haspopup': 'dialog',
+				'aria-expanded': $open,
+				'aria-controls': ids.content,
+				type: 'button',
+			} as const;
+		}),
+		action: (node: HTMLElement) => {
+			const unsub = addEventListener(node, 'click', (e) => {
 				const el = e.currentTarget as HTMLElement;
 				open.set(true);
 				activeTrigger.set(el);
 			});
 
 			return {
-				'aria-haspopup': 'dialog',
-				'aria-expanded': $open,
-				'aria-controls': ids.content,
-			} as const;
-		};
-	});
+				destroy: unsub,
+			};
+		},
+	};
 
-	const overlay = elementDerived([open, options], ([$open, $options], { attach }) => {
-		if ($options.closeOnEscape) {
-			attach('keydown', (e) => {
-				if (e.key === 'Escape') {
-					open.set(false);
-				}
-			});
-		}
-
+	const overlay = derived([open], ([$open]) => {
 		return {
 			hidden: $open ? undefined : true,
 			tabindex: -1,
@@ -77,24 +74,7 @@ export function createDialog(args: CreateDialogArgs = {}) {
 		} as const;
 	});
 
-	const content = elementDerived([open, options], ([$open, $options], { addAction }) => {
-		if ($open) {
-			const { useFocusTrap } = createFocusTrap({
-				immediate: true,
-				escapeDeactivates: false,
-				allowOutsideClick: (e) => {
-					e.preventDefault();
-					if ($options.closeOnOutsideClick) {
-						open.set(false);
-					}
-
-					return false;
-				},
-				returnFocusOnDeactivate: false,
-			});
-			addAction(useFocusTrap);
-		}
-
+	const contentDerived = derived(open, ($open) => {
 		return {
 			id: ids.content,
 			role: 'dialog',
@@ -106,6 +86,47 @@ export function createDialog(args: CreateDialogArgs = {}) {
 		};
 	});
 
+	const content = {
+		...contentDerived,
+		action: (node: HTMLElement) => {
+			let unsub = noop;
+
+			const { useFocusTrap, activate, deactivate } = createFocusTrap({
+				immediate: false,
+				escapeDeactivates: false,
+				allowOutsideClick: (e) => {
+					e.preventDefault();
+					const $options = get(options);
+					if ($options.closeOnOutsideClick) {
+						open.set(false);
+					}
+
+					return false;
+				},
+				returnFocusOnDeactivate: false,
+				fallbackFocus: node,
+			});
+			const ac = useFocusTrap(node);
+			if (ac && ac.destroy) {
+				unsub = ac.destroy;
+			} else {
+				unsub = deactivate;
+			}
+
+			effect([open], ([$open]) => {
+				if (node.hidden || !$open) {
+					deactivate();
+				} else {
+					activate();
+				}
+			});
+
+			return {
+				destroy: unsub,
+			};
+		},
+	};
+
 	const title = {
 		id: ids.title,
 	};
@@ -114,15 +135,18 @@ export function createDialog(args: CreateDialogArgs = {}) {
 		id: ids.description,
 	};
 
-	const close = elementMulti(({ attach }) => {
-		return () => {
-			attach('click', () => {
+	const close = hiddenAction({
+		type: 'button',
+		action: (node: HTMLElement) => {
+			const unsub = addEventListener(node, 'click', () => {
 				open.set(false);
 			});
 
-			return {};
-		};
-	});
+			return {
+				destroy: unsub,
+			};
+		},
+	} as const);
 
 	effect([open, options], ([$open, $options]) => {
 		const unsubs: Array<() => void> = [];

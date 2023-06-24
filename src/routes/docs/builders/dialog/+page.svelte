@@ -54,7 +54,7 @@
 	sidebars, and more. As an example, here's a drawer component that slides in from the left.
 </Docs.Description>
 
-<Docs.Preview {...data.drawer} />
+<!-- <Docs.Preview {...data.drawer} /> -->
 
 <Docs.H2>Accessibility</Docs.H2>
 <Docs.P>

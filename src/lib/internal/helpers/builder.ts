@@ -1,7 +1,7 @@
 import { onDestroy, tick } from 'svelte';
 import type { Action } from 'svelte/action';
 import { derived, type Readable } from 'svelte/store';
-import { addEventListener, isBrowser, uuid } from '.';
+import { addEventListener, generateId, isBrowser } from '.';
 
 export function getElementByMeltId(id: string) {
 	if (!isBrowser) return null;
@@ -20,6 +20,13 @@ type StoresValues<T> = T extends Readable<infer U>
 	: {
 			[K in keyof T]: T[K] extends Readable<infer U> ? U : never;
 	  };
+
+export function typedDerived<S extends Stores, T>(
+	stores: S,
+	fn: (values: StoresValues<S>) => T
+): Readable<ReturnType<typeof fn>> {
+	return derived(stores, fn);
+}
 
 /**
  * A utility function that creates a derived store that automatically
@@ -135,7 +142,7 @@ const initElementHelpers = (setId: (id: string) => void) => {
 
 	// Create an `Attach` function that can be used to attach events to the elements
 	const createElInterface = () => {
-		const id = uuid();
+		const id = generateId();
 		ids.push(id);
 		setId(id);
 
@@ -299,3 +306,14 @@ export function elementMulti<
 >(fn: (helpers: Helpers) => T) {
 	return elementMultiDerived([], (_, helpers) => fn(helpers));
 }
+
+export const hiddenAction = <T extends Record<string, unknown>>(obj: T) => {
+	return new Proxy(obj, {
+		get(target, prop, receiver) {
+			return Reflect.get(target, prop, receiver);
+		},
+		ownKeys(target) {
+			return Reflect.ownKeys(target).filter((key) => key !== 'action');
+		},
+	});
+};

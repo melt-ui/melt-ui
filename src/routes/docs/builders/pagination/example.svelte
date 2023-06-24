@@ -1,26 +1,28 @@
 <script lang="ts">
 	import { createPagination } from '$lib/builders/pagination';
-	import { Docs } from '$routes/(components)';
 	import ChevronLeft from '~icons/lucide/chevron-left';
 	import ChevronRight from '~icons/lucide/chevron-right';
 
 	const { prevButton, nextButton, pages, pageTrigger, range, root } = createPagination({
-		count: 1000,
+		count: 100,
+		perPage: 10,
+		page: 1,
+		siblingCount: 1,
 	});
 </script>
 
 <nav class="flex flex-col items-center gap-4" aria-label="pagination" {...root}>
 	<p class="text-center">Showing items {$range.start} - {$range.end}</p>
 	<div class="flex items-center gap-2">
-		<button {...$prevButton}><ChevronLeft /></button>
+		<button {...$prevButton} use:prevButton.action><ChevronLeft /></button>
 		{#each $pages as page (page.key)}
 			{#if page.type === 'ellipsis'}
 				<span>...</span>
 			{:else}
-				<button {...$pageTrigger(page)}>{page.value}</button>
+				<button {...$pageTrigger(page)} use:pageTrigger.action>{page.value}</button>
 			{/if}
 		{/each}
-		<button {...$nextButton}><ChevronRight /></button>
+		<button {...$nextButton} use:nextButton.action><ChevronRight /></button>
 	</div>
 </nav>
 

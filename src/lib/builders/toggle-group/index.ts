@@ -1,7 +1,7 @@
-import { elementMultiDerived, kbd, omit } from '$lib/internal/helpers';
+import { addEventListener, executeCallbacks, kbd, noop, omit } from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
-import { derived, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 
 type Orientation = 'horizontal' | 'vertical';
 
@@ -64,88 +64,110 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 				disabled?: boolean;
 		  }
 		| string;
-	const item = elementMultiDerived([options, value], ([$options, $value], { attach }) => {
-		return (args: ToggleGroupItemArgs) => {
-			const itemValue = typeof args === 'string' ? args : args.value;
-			const argDisabled = typeof args === 'string' ? false : !!args.disabled;
-			const disabled = $options.disabled || argDisabled;
+	const item = {
+		...derived([options, value], ([$options, $value]) => {
+			return (args: ToggleGroupItemArgs) => {
+				const itemValue = typeof args === 'string' ? args : args.value;
+				const argDisabled = typeof args === 'string' ? false : !!args.disabled;
+				const disabled = $options.disabled || argDisabled;
 
-			attach('click', () => {
-				if (disabled) return;
-				value.update((v) => {
-					if (Array.isArray(v)) {
-						return v.includes(itemValue) ? v.filter((i) => i !== itemValue) : [...v, itemValue];
-					}
-					return v === itemValue ? null : itemValue;
-				});
-			});
+				const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
+				const anyPressed = Array.isArray($value) ? $value.length > 0 : $value !== null;
+				return {
+					disabled,
+					pressed,
+					'data-orientation': $options.orientation,
+					'data-disabled': disabled ? true : undefined,
+					'data-state': pressed ? 'on' : 'off',
+					'data-value': itemValue,
+					'aria-pressed': pressed,
+					type: 'button',
+					'data-melt-part': 'toggle-group-item',
+					role: $options.type === 'single' ? 'radio' : undefined,
+					tabindex: anyPressed ? (pressed ? 0 : -1) : 0,
+				} as const;
+			};
+		}),
+		action: (node: HTMLElement) => {
+			let unsub = noop;
 
-			attach('keydown', (e) => {
-				if (!$options.rovingFocus) return;
+			const getNodeProps = () => {
+				const itemValue = node.dataset.value;
+				const disabled = node.dataset.disabled === 'true';
 
-				const el = e.currentTarget as HTMLElement;
-				const root = el.closest('[data-melt-part="toggle-group"]') as HTMLElement;
+				return { value: itemValue, disabled };
+			};
 
-				const items = Array.from(
-					root.querySelectorAll('[data-melt-part="toggle-group-item"]')
-				) as Array<HTMLElement>;
-				const currentIndex = items.indexOf(el);
+			unsub = executeCallbacks(
+				addEventListener(node, 'click', () => {
+					const { value: itemValue, disabled } = getNodeProps();
+					if (itemValue === undefined || disabled) return;
 
-				const dir = getElemDirection(el);
-				const nextKey = {
-					horizontal: dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
-					vertical: kbd.ARROW_DOWN,
-				}[$options.orientation ?? 'horizontal'];
-
-				const prevKey = {
-					horizontal: dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
-					vertical: kbd.ARROW_UP,
-				}[$options.orientation ?? 'horizontal'];
-				if (e.key === nextKey) {
-					e.preventDefault();
-					const nextIndex = currentIndex + 1;
-					if (nextIndex >= items.length) {
-						if ($options.loop) {
-							items[0].focus();
+					value.update((v) => {
+						if (Array.isArray(v)) {
+							return v.includes(itemValue) ? v.filter((i) => i !== itemValue) : [...v, itemValue];
 						}
-					} else {
-						items[nextIndex].focus();
-					}
-				} else if (e.key === prevKey) {
-					e.preventDefault();
-					const prevIndex = currentIndex - 1;
-					if (prevIndex < 0) {
-						if ($options.loop) {
-							items[items.length - 1].focus();
-						}
-					} else {
-						items[prevIndex].focus();
-					}
-				} else if (e.key === kbd.HOME) {
-					e.preventDefault();
-					items[0].focus();
-				} else if (e.key === kbd.END) {
-					e.preventDefault();
-					items[items.length - 1].focus();
-				}
-			});
+						return v === itemValue ? null : itemValue;
+					});
+				}),
 
-			const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
-			const anyPressed = Array.isArray($value) ? $value.length > 0 : $value !== null;
+				addEventListener(node, 'keydown', (e) => {
+					const $options = get(options);
+					if (!$options.rovingFocus) return;
+
+					const el = e.currentTarget as HTMLElement;
+					const root = el.closest('[data-melt-part="toggle-group"]') as HTMLElement;
+
+					const items = Array.from(
+						root.querySelectorAll('[data-melt-part="toggle-group-item"]:not([data-disabled])')
+					) as Array<HTMLElement>;
+					const currentIndex = items.indexOf(el);
+
+					const dir = getElemDirection(el);
+					const nextKey = {
+						horizontal: dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
+						vertical: kbd.ARROW_DOWN,
+					}[$options.orientation ?? 'horizontal'];
+
+					const prevKey = {
+						horizontal: dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
+						vertical: kbd.ARROW_UP,
+					}[$options.orientation ?? 'horizontal'];
+					if (e.key === nextKey) {
+						e.preventDefault();
+						const nextIndex = currentIndex + 1;
+						if (nextIndex >= items.length) {
+							if ($options.loop) {
+								items[0].focus();
+							}
+						} else {
+							items[nextIndex].focus();
+						}
+					} else if (e.key === prevKey) {
+						e.preventDefault();
+						const prevIndex = currentIndex - 1;
+						if (prevIndex < 0) {
+							if ($options.loop) {
+								items[items.length - 1].focus();
+							}
+						} else {
+							items[prevIndex].focus();
+						}
+					} else if (e.key === kbd.HOME) {
+						e.preventDefault();
+						items[0].focus();
+					} else if (e.key === kbd.END) {
+						e.preventDefault();
+						items[items.length - 1].focus();
+					}
+				})
+			);
+
 			return {
-				disabled,
-				pressed,
-				'data-orientation': $options.orientation,
-				'data-disabled': disabled ? '' : undefined,
-				'data-state': pressed ? 'on' : 'off',
-				'aria-pressed': pressed,
-				type: 'button',
-				'data-melt-part': 'toggle-group-item',
-				role: $options.type === 'single' ? 'radio' : undefined,
-				tabindex: anyPressed ? (pressed ? 0 : -1) : 0,
-			} as const;
-		};
-	});
+				destroy: unsub,
+			};
+		},
+	};
 
 	const isPressed = derived(value, ($value) => {
 		return (itemValue: string) => {
