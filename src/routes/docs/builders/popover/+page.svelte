@@ -9,6 +9,7 @@
 		'Customize positioning of popover',
 		'Can be controlled or uncontrolled',
 		'Focus is fully managed',
+		'Supports an optional arrow component',
 	];
 </script>
 
@@ -22,14 +23,14 @@
 
 <Docs.H2>Anatomy</Docs.H2>
 <Docs.Ul>
-	<Docs.Li><b>Trigger:</b> The trigger for the popover</Docs.Li>
 	<Docs.Li
-		><b>Content:</b> The content area reviewed when the trigger is clicked.
-
-		<Docs.Ul>
-			<Docs.Li><b>Arrow:</b> An optional arrow component</Docs.Li>
-		</Docs.Ul>
-	</Docs.Li>
+		><b>Trigger / <code>trigger</code>:</b> The button(s) which open/close the popover.</Docs.Li
+	>
+	<Docs.Li
+		><b>Content / <code>content</code>:</b> The content area viewed when the trigger is clicked.</Docs.Li
+	>
+	<Docs.Li><b>Arrow / <code>arrow</code>:</b> An optional arrow component</Docs.Li>
+	<Docs.Li><b>Close / <code>close</code>:</b> A button which closes the popover</Docs.Li>
 </Docs.Ul>
 
 <Docs.H2>Usage</Docs.H2>
@@ -40,6 +41,8 @@
 
 <Docs.H2>API Reference</Docs.H2>
 <Docs.API schema={schemas.builder} />
+<Docs.API schema={schemas.trigger} />
+<Docs.API schema={schemas.arrow} />
 
 <Docs.H2>Accessibility</Docs.H2>
 <Docs.P>

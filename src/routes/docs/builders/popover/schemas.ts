@@ -1,12 +1,12 @@
 import type { APISchema } from '$routes/(components)';
 
 const builder: APISchema = {
-	title: 'CreatePopover',
-	description: 'Configuration options for the `createPopover` function.',
+	title: 'CreatePopoverArgs',
+	description: 'Configuration options for the `createPopover` builder.',
 	args: [
 		{
 			label: 'checked',
-			type: 'boolean | "indeterminate"',
+			type: ['boolean', '"indeterminate"'],
 			default: false,
 		},
 		{
@@ -26,6 +26,28 @@ const builder: APISchema = {
 		{
 			label: 'value',
 			type: 'string',
+		},
+	],
+};
+
+const trigger: APISchema = {
+	title: 'Trigger',
+	description: 'The button(s) which open/close the popover.',
+	dataAttributes: [
+		{
+			label: 'data-state',
+			value: ['"open"', '"closed"'],
+		},
+	],
+};
+
+const arrow: APISchema = {
+	title: 'Arrow',
+	description: 'The optional arrow element.',
+	dataAttributes: [
+		{
+			label: 'data-arrow',
+			value: ['true'],
 		},
 	],
 };
@@ -62,4 +84,6 @@ const keyboard: APISchema = {
 export const schemas = {
 	keyboard,
 	builder,
+	trigger,
+	arrow,
 };
