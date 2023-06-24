@@ -80,8 +80,40 @@ const item: APISchema = {
 	],
 };
 
+const keyboard = {
+	title: 'Keyboard Interactions',
+	description: '',
+	keyboardInteractions: [
+		{
+			key: 'Tab',
+			description: 'Moves focus to either the checked radio item or the first radio item.',
+		},
+		{
+			key: 'Space',
+			description: 'When focused on an unchecked item, checks it.',
+		},
+		{
+			key: 'ArrowDown',
+			description: 'Moves focus to & checks the next radio item',
+		},
+		{
+			key: 'ArrowRight',
+			description: 'Moves focus to & checks the next radio item',
+		},
+		{
+			key: 'ArrowUp',
+			description: 'Moves focus to & checks the previous radio item',
+		},
+		{
+			key: 'ArrowLeft',
+			description: 'Moves focus to & checks the previous radio item',
+		},
+	],
+};
+
 export const schemas = {
 	builder,
 	root,
 	item,
+	keyboard,
 };

@@ -32,4 +32,14 @@
 <Docs.API schema={schemas.root} />
 <Docs.API schema={schemas.item} />
 
+<Docs.H2>Accessibility</Docs.H2>
+<Docs.P>
+	Adheres to the
+	<Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/radio/"
+		>Radio Group WAI-ARIA design pattern</Docs.A
+	>
+</Docs.P>
+
+<Docs.API schema={schemas.keyboard} />
+
 <Docs.Construction />
