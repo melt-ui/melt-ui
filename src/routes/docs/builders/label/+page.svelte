@@ -18,7 +18,7 @@
   <Docs.Li>Can be used with any input element</Docs.Li>
   <Docs.Li>Support nested controls</Docs.Li>
   <Docs.Li>Can add an asterisk at the end if the field is required</Docs.Li>
-  <Docs.Li>Text selection is prevented when double clicking label.</Docs.Li>
+  <Docs.Li>Text selection is prevented when double clicking label</Docs.Li>
 </Docs.Ul>
 
 <Docs.H2>Anatomy</Docs.H2>
