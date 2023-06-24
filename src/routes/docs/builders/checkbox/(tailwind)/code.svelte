@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCheckbox } from '$lib';
+	import { createCheckbox } from '@melt-ui/svelte';
 	import { Check, Minus } from 'icons';
 
 	const { root, input, isChecked, isIndeterminate } = createCheckbox({

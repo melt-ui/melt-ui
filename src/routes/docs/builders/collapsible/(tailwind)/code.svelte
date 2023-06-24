@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { createCollapsible } from '@melt-ui/svelte';
 	import { slide } from 'svelte/transition';
-	import ChevronsUpDown from '~icons/lucide/chevrons-up-down';
-	import X from '~icons/lucide/x';
+	import { X, ChevronsUpDown } from 'icons';
 
 	const { open, root, content, trigger } = createCollapsible();
 </script>

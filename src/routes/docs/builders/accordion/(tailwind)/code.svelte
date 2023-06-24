@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createAccordion } from '$lib/builders/accordion';
+	import { createAccordion } from '@melt-ui/svelte';
 	import { slide } from 'svelte/transition';
 
 	const { content, item, trigger, isSelected, root } = createAccordion();
