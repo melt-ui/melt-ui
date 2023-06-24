@@ -1,6 +1,6 @@
 import type { APISchema } from '$routes/(components)';
 
-const builder = {
+const builder: APISchema = {
 	title: 'CreateCollapsibleArgs',
 	description: 'The object you pass into createCollapsible. Optional.',
 	args: [
@@ -17,7 +17,7 @@ const builder = {
 	],
 };
 
-const keyboard = {
+const keyboard: APISchema = {
 	title: 'Keyboard Interactions',
 	description: '',
 	keyboardInteractions: [
