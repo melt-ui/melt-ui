@@ -14,6 +14,7 @@
 <Docs.Description>A set of two-state buttons that can be toggled on or off.</Docs.Description>
 
 <Docs.Preview {...data.preview} />
+<Docs.Construction />
 
 <Docs.Features {features} />
 
@@ -36,6 +37,3 @@
 </Docs.P>
 
 <Docs.API schema={schemas.keyboard} />
-
-
-<Docs.Construction />

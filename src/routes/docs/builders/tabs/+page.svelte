@@ -17,6 +17,8 @@
 </Docs.Description>
 
 <Docs.Preview component={data.preview.component} code={data.preview.code} />
+<Docs.Construction />
+
 <Docs.Features {features} />
 
 <Docs.H2>Anatomy</Docs.H2>
@@ -48,5 +50,3 @@
 </Docs.P>
 
 <Docs.API schema={schemas.keyboard} />
-
-<Docs.Construction />

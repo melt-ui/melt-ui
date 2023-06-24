@@ -13,6 +13,7 @@
 </Docs.Description>
 
 <Docs.Preview {...data.preview} />
+<Docs.Construction />
 
 <Docs.Features {features} />
 
@@ -38,5 +39,3 @@
 		>Meter WAI-ARIA design pattern</Docs.A
 	>
 </Docs.P>
-
-<Docs.Construction />

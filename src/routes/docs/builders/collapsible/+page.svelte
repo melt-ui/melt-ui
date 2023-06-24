@@ -15,6 +15,7 @@
 <Docs.Description>An interactive component which expands/collapses a panel.</Docs.Description>
 
 <Docs.Preview {...data.preview} fullwidth />
+<Docs.Construction />
 
 <Docs.Features {features} />
 
@@ -41,5 +42,3 @@
 </Docs.P>
 
 <Docs.API schema={schemas.keyboard} />
-
-<Docs.Construction />

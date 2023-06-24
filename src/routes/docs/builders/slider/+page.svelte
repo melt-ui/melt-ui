@@ -20,6 +20,7 @@
 </Docs.Description>
 
 <Docs.Preview {...data.preview} />
+<Docs.Construction />
 
 <Docs.Features {features} />
 
@@ -43,5 +44,3 @@
 </Docs.P>
 
 <Docs.API schema={schemas.keyboard} />
-
-<Docs.Construction />
