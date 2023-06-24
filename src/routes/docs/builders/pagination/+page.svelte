@@ -44,8 +44,8 @@
 
 <Docs.H2>Usage</Docs.H2>
 <Docs.P>
-	To create a pagination component, use the <Docs.Code>createAccordion</Docs.Code> builder function.
-	Follow the anatomy or the example above to create your accordion.
+	To create a pagination component, use the <Docs.Code>createPagination</Docs.Code> builder function.
+	Follow the anatomy or the example above to create your pagination component.
 </Docs.P>
 
 <Docs.H2>API Reference</Docs.H2>
