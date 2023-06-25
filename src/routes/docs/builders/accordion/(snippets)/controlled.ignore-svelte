@@ -34,21 +34,21 @@
 
 <div {...root}>
 	<div {...$item('item-1')}>
-		<button {...$trigger('item-1')}>Is it accessible?</button>
+		<button {...$trigger('item-1')} use:trigger.action>Is it accessible?</button>
 		<div {...$content('item-1')}>
 			<div>Yes. It adheres to the WAI-ARIA design pattern.</div>
 		</div>
 	</div>
 
 	<div {...$item('item-2')}>
-		<button {...$trigger('item-2')}>Is it accessible?</button>
+		<button {...$trigger('item-2')} use:trigger.action>Is it accessible?</button>
 		<div {...$content('item-2')}>
 			<div>Yes. It adheres to the WAI-ARIA design pattern.</div>
 		</div>
 	</div>
 
 	<div {...$item('item-3')}>
-		<button {...$trigger('item-3')}>Is it accessible?</button>
+		<button {...$trigger('item-3')} use:trigger.action>Is it accessible?</button>
 		<div {...$content('item-3')}>
 			<div>Yes. It adheres to the WAI-ARIA design pattern.</div>
 		</div>

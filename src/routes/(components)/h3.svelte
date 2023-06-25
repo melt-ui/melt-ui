@@ -1,1 +1,10 @@
-<h3 class="mb-1 mt-8 text-2xl font-bold"><slot /></h3>
+<script lang="ts">
+	import { cn } from '$routes/helpers';
+
+	let className: string | undefined | null = undefined;
+	export { className as class };
+</script>
+
+<h3 class={cn('mt-8 scroll-m-20 text-xl font-semibold', className)} data-toc {...$$restProps}>
+	<slot />
+</h3>

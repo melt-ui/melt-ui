@@ -1,27 +1,6 @@
 import type { Arrayable } from '$lib/internal/types';
 
 /**
- * Handles and dispatches a custom event with the given name and detail.
- *
- * @template E - The type of the custom event to handle and dispatch
- * @template OriginalEvent - The type of the original event that triggered the custom event
- * @param name - The name of the custom event to handle and dispatch
- * @param handler - The function to call when the custom event is triggered
- * @param detail - An object containing the detail of the custom event
- * @param detail.originalEvent - The original event that triggered the custom event
- */
-export function handleAndDispatchCustomEvent<E extends CustomEvent, OriginalEvent extends Event>(
-	name: string,
-	handler: ((event: E) => void) | undefined,
-	detail: { originalEvent: OriginalEvent } & (E extends CustomEvent<infer D> ? D : never)
-) {
-	const target = detail.originalEvent.target;
-	const event = new CustomEvent(name, { cancelable: true, detail });
-	if (handler) target.addEventListener(name, handler as EventListener, { once: true });
-
-	target.dispatchEvent(event);
-}
-/**
  * A type alias for a general event listener function.
  *
  * @template E - The type of event to listen for
@@ -33,24 +12,24 @@ export type GeneralEventListener<E = Event> = (evt: E) => unknown;
 /**
  *  Overloaded function signatures for addEventListener
  */
-export function addEventListener<E extends keyof WindowEventMap>(
+export function addEventListener<E extends keyof HTMLElementEventMap>(
 	target: Window,
-	event: Arrayable<E>,
-	handler: (this: Window, ev: WindowEventMap[E]) => unknown,
+	event: E,
+	handler: (this: Window, ev: HTMLElementEventMap[E]) => unknown,
 	options?: boolean | AddEventListenerOptions
 ): VoidFunction;
 
-export function addEventListener<E extends keyof DocumentEventMap>(
+export function addEventListener<E extends keyof HTMLElementEventMap>(
 	target: Document,
-	event: Arrayable<E>,
-	handler: (this: Document, ev: DocumentEventMap[E]) => unknown,
+	event: E,
+	handler: (this: Document, ev: HTMLElementEventMap[E]) => unknown,
 	options?: boolean | AddEventListenerOptions
 ): VoidFunction;
 
-export function addEventListener<EventType = Event>(
+export function addEventListener<E extends keyof HTMLElementEventMap>(
 	target: EventTarget,
-	event: Arrayable<string>,
-	handler: GeneralEventListener<EventType>,
+	event: E,
+	handler: GeneralEventListener<HTMLElementEventMap[E]>,
 	options?: boolean | AddEventListenerOptions
 ): VoidFunction;
 

@@ -16,7 +16,9 @@ export function createFocusTrap(config: FocusTrapConfig = {}): FocusTrapReturn {
 	const isPaused = writable(false);
 
 	const activate = (opts?: ActivateOptions) => trap?.activate(opts);
-	const deactivate = (opts?: DeactivateOptions) => trap?.deactivate(opts);
+	const deactivate = (opts?: DeactivateOptions) => {
+		trap?.deactivate(opts);
+	};
 
 	const pause = () => {
 		if (trap) {

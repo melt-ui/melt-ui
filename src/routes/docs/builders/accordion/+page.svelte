@@ -1,8 +1,15 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
 	import { snippets } from './(snippets)';
-	import code from './code.ignore-svelte?raw';
-	import Preview from './preview.svelte';
+	import { schemas } from './schemas';
+
+	export let data;
+
+	const features = [
+		'Full keyboard navigation',
+		'Can expand one or multiple items',
+		'Can be controlled or uncontrolled',
+	];
 </script>
 
 <Docs.H1>Accordion</Docs.H1>
@@ -11,16 +18,9 @@
 	content.
 </Docs.Description>
 
-<Preview />
+<Docs.Preview {...data.preview} fullwidth />
 
-<Docs.CodeBlock {code} />
-
-<Docs.H2>Features</Docs.H2>
-<Docs.Ul>
-	<Docs.Li>Full keyboard navigation</Docs.Li>
-	<Docs.Li>Can expand one or multiple items</Docs.Li>
-	<Docs.Li>Can be controlled or uncontrolled</Docs.Li>
-</Docs.Ul>
+<Docs.Features {features} />
 
 <Docs.H2>Anatomy</Docs.H2>
 <Docs.Ul>
@@ -46,7 +46,7 @@
 <Docs.P>
 	To disable a single item, you can pass in an object instead of a string to the function.
 </Docs.P>
-<Docs.CodeBlock collapsible={false} code={snippets.disable} />
+<Docs.CodeBlock code={snippets.disable} />
 
 <Docs.H3>Opening multiple items at once</Docs.H3>
 <Docs.P>
@@ -61,77 +61,19 @@
 </Docs.P>
 <Docs.CodeBlock code={snippets.controlled} />
 
-<Docs.H2>Accessibility</Docs.H2>
-<Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/accordion/">WAI-ARIA pattern</Docs.A>
-
-<Docs.H3>Keyboard Interactions</Docs.H3>
-
-<Docs.Ul>
-	<Docs.Li>
-		<Docs.Kbd>Enter</Docs.Kbd> or <Docs.Kbd>Space</Docs.Kbd>:
-		<Docs.Ul>
-			<Docs.Li>
-				When focus is on the accordion header for a collapsed panel, expands the associated panel.
-				If the implementation allows only one panel to be expanded, and if another panel is
-				expanded, collapses that panel.
-			</Docs.Li>
-
-			<Docs.Li>
-				When focus is on the accordion header for an expanded panel, collapses the panel if the
-				implementation supports collapsing. Some implementations require one panel to be expanded at
-				all times and allow only one panel to be expanded; so, they do not support a collapse
-				function.
-			</Docs.Li>
-		</Docs.Ul>
-	</Docs.Li>
-	<Docs.Li>
-		<Docs.Kbd>Tab</Docs.Kbd>: Moves focus to the next focusable element; all focusable elements in
-		the accordion are included in the page Tab sequence.
-	</Docs.Li>
-	<Docs.Li>
-		<Docs.Kbd>Shift</Docs.Kbd> + <Docs.Kbd>Tab</Docs.Kbd>: Moves focus to the previous focusable
-		element; all focusable elements in the accordion are included in the page Tab sequence.
-	</Docs.Li>
-	<Docs.Li>
-		<Docs.Kbd>Down Arrow</Docs.Kbd>: If focus is on an accordion header, moves focus to the next
-		accordion header. If focus is on the last accordion header, either does nothing or moves focus
-		to the first accordion header.
-	</Docs.Li>
-	<Docs.Li>
-		<Docs.Kbd>Up Arrow</Docs.Kbd>: If focus is on an accordion header, moves focus to the previous
-		accordion header. If focus is on the first accordion header, either does nothing or moves focus
-		to the last accordion header.
-	</Docs.Li>
-	<Docs.Li>
-		<Docs.Kbd>Home</Docs.Kbd>: When focus is on an accordion header, moves focus to the first
-		accordion header.
-	</Docs.Li>
-	<Docs.Li>
-		<Docs.Kbd>End</Docs.Kbd>: When focus is on an accordion header, moves focus to the last
-		accordion header.
-	</Docs.Li>
-</Docs.Ul>
-
 <Docs.H2>API Reference</Docs.H2>
-<Docs.API
-	schema={{
-		title: 'CreateAccordionArgs',
-		description: 'The object you pass into createAccordion. Optional.',
-		args: [
-			{
-				label: 'type',
-				type: "'single' | 'multiple'",
-				default: "'single'",
-			},
-			{
-				label: 'disabled',
-				type: 'boolean',
-				default: false,
-			},
-			{
-				label: 'value',
-				type: 'string | string[] | undefined',
-			},
-		],
-	}}
-/>
+<Docs.API schema={schemas.builder} />
+<Docs.API schema={schemas.root} />
+<Docs.API schema={schemas.item} />
+<Docs.API schema={schemas.trigger} />
+<Docs.API schema={schemas.content} />
+
+<Docs.H2>Accessibility</Docs.H2>
+<Docs.P>
+	Adheres to the
+	<Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/accordion/"
+		>Accordion WAI-ARIA design pattern</Docs.A
+	>
+</Docs.P>
+
+<Docs.API schema={schemas.keyboard} />

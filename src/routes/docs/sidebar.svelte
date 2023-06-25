@@ -13,9 +13,7 @@
 	};
 </script>
 
-<ul
-	class="flex w-full flex-col gap-8 overflow-y-auto px-4 py-8 xl:sticky xl:top-16 xl:h-[calc(100vh-4rem)]"
->
+<ul class="flex w-full flex-col gap-4">
 	{#each Object.entries(sections) as [section, routes]}
 		<li>
 			<span
@@ -23,14 +21,14 @@
 			>
 				{formatStr(section)}
 			</span>
-			<ul>
+			<ul class="grid grid-flow-row auto-rows-max">
 				{#each routes as route}
 					{@const href = `/docs/${section}/${route}`}
-					<li>
+					<li class="px-1">
 						<a
 							{href}
 							class={cn(
-								'block whitespace-nowrap rounded-md border border-transparent px-3 py-2 capitalize',
+								'block whitespace-nowrap rounded-md border border-transparent px-3 py-2 font-medium capitalize',
 								'hover:bg-magnum-600/25',
 								'data-[active=true]:border-magnum-600 data-[active=true]:bg-magnum-600/25'
 							)}
