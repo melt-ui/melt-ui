@@ -3,9 +3,6 @@ import { usePopper } from '$lib/internal/actions/popper';
 import {
 	derivedWithUnsubscribe,
 	effect,
-	elementDerived,
-	elementMultiDerived,
-	getElementByMeltId,
 	isBrowser,
 	kbd,
 	sleep,
@@ -14,8 +11,13 @@ import {
 	isHTMLElement,
 	isElementDisabled,
 	debounce,
+	noop,
+	executeCallbacks,
+	addEventListener,
+	hiddenAction,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
+import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Writable } from 'svelte/store';
 
 type Direction = 'ltr' | 'rtl';
@@ -94,23 +96,50 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		trigger: generateId(),
 	};
 
-	const rootMenu = elementDerived(
-		[rootOpen, rootActiveTrigger, rootOptions],
-		([$rootOpen, $rootActiveTrigger, $rootOptions], { addAction, attach, getElement }) => {
-			if ($rootOpen && $rootActiveTrigger) {
-				getElement().then((element) => {
-					setMeltMenuAttribute(element);
-				});
-				addAction(usePopper, {
-					anchorElement: $rootActiveTrigger,
-					open: rootOpen,
-					options: {
-						floating: $rootOptions.positioning,
-						focusTrap: null,
-					},
-				});
+	const rootMenu = {
+		...derived([rootOpen], ([$rootOpen]) => {
+			return {
+				role: 'menu',
+				hidden: $rootOpen ? undefined : true,
+				style: styleToString({
+					display: $rootOpen ? undefined : 'none',
+				}),
+				id: rootIds.menu,
+				'aria-labelledby': rootIds.trigger,
+				'data-melt-part': 'menu-root',
+				'data-melt-menu': '',
+				'data-melt-id': rootIds.menu,
+				tabindex: -1,
+			} as const;
+		}),
+		action: (node: HTMLElement) => {
+			let unsubPopper = noop;
 
-				attach('keydown', (e) => {
+			const unsubDerived = effect(
+				[rootOpen, rootActiveTrigger, rootOptions],
+				([$rootOpen, $rootActiveTrigger, $rootOptions]) => {
+					unsubPopper();
+					if ($rootOpen && $rootActiveTrigger) {
+						tick().then(() => {
+							setMeltMenuAttribute(node);
+							const popper = usePopper(node, {
+								anchorElement: $rootActiveTrigger,
+								open: rootOpen,
+								options: {
+									floating: $rootOptions.positioning,
+								},
+							});
+
+							if (popper && popper.destroy) {
+								unsubPopper = popper.destroy;
+							}
+						});
+					}
+				}
+			);
+
+			const unsubEvents = executeCallbacks(
+				addEventListener(node, 'keydown', (e) => {
 					// submenu key events bubble through portals
 					// we only care about key events that happen inside this menu
 					const target = e.target;
@@ -127,7 +156,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 					// menus should not be navigated using tab so we prevent it
 					// reference: https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
-					if (e.key === 'Tab') {
+					if (e.key === kbd.TAB) {
 						e.preventDefault();
 						return;
 					}
@@ -139,93 +168,96 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						// typeahead logic
 						handleTypeaheadSearch(e.key, getMenuItems(menuElement));
 					}
-				});
-			}
-
+				})
+			);
 			return {
-				role: 'menu',
-				hidden: $rootOpen ? undefined : true,
-				style: styleToString({
-					display: $rootOpen ? undefined : 'none',
-				}),
-				id: rootIds.menu,
-				'aria-labelledby': rootIds.trigger,
-				'data-melt-part': 'menu-root',
-				'data-melt-menu': '',
-				tabindex: -1,
+				destroy() {
+					unsubDerived();
+					unsubEvents();
+					unsubPopper();
+				},
 			};
-		}
-	);
+		},
+	};
 
-	const rootTrigger = elementDerived([rootOpen], ([$rootOpen], { attach, getElement }) => {
-		getElement().then((element) => {
-			applyAttrsIfDisabled(element);
-		});
+	const rootTrigger = {
+		...derived([rootOpen], ([$rootOpen]) => {
+			return {
+				'aria-controls': rootIds.menu,
+				'aria-expanded': $rootOpen,
+				'data-state': $rootOpen ? 'open' : 'closed',
+				id: rootIds.trigger,
+				'data-melt-id': rootIds.trigger,
+				'data-melt-part': 'trigger-root',
+			} as const;
+		}),
+		action: (node: HTMLElement) => {
+			applyAttrsIfDisabled(node);
+			const unsub = executeCallbacks(
+				addEventListener(node, 'pointerdown', (e) => {
+					const $rootOpen = get(rootOpen);
+					const triggerElement = e.currentTarget;
+					if (!isHTMLElement(triggerElement)) return;
 
-		attach('pointerdown', (e) => {
-			const triggerElement = e.currentTarget;
-			if (!isHTMLElement(triggerElement)) return;
+					const triggerControls = triggerElement.getAttribute('aria-controls');
+					if (!triggerControls) return;
 
-			const triggerControls = triggerElement.getAttribute('aria-controls');
-			if (!triggerControls) return;
+					rootOpen.update((prev) => {
+						const isOpen = !prev;
+						if (isOpen) {
+							rootActiveTrigger.set(triggerElement);
+						} else {
+							rootActiveTrigger.set(null);
+						}
 
-			rootOpen.update((prev) => {
-				const isOpen = !prev;
-				if (isOpen) {
-					rootActiveTrigger.set(triggerElement);
-				} else {
-					rootActiveTrigger.set(null);
-				}
+						return isOpen;
+					});
+					if (!$rootOpen) e.preventDefault();
+				}),
+				addEventListener(node, 'keydown', (e) => {
+					const triggerElement = e.currentTarget;
+					if (!isHTMLElement(triggerElement)) return;
 
-				return isOpen;
-			});
-			if (!$rootOpen) e.preventDefault();
-		});
+					if (SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN) {
+						rootOpen.update((prev) => {
+							const isOpen = !prev;
+							if (isOpen) {
+								rootActiveTrigger.set(triggerElement);
+							} else {
+								rootActiveTrigger.set(null);
+							}
 
-		attach('keydown', (e) => {
-			const triggerElement = e.currentTarget;
-			if (!isHTMLElement(triggerElement)) return;
+							return isOpen;
+						});
 
-			if (SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN) {
-				rootOpen.update((prev) => {
-					const isOpen = !prev;
-					if (isOpen) {
-						rootActiveTrigger.set(triggerElement);
-					} else {
-						rootActiveTrigger.set(null);
+						const menuId = triggerElement.getAttribute('aria-controls');
+						if (!menuId) return;
+
+						const menu = document.getElementById(menuId);
+						if (!isHTMLElement(menu)) return;
+
+						const menuItems = getMenuItems(menu);
+						if (!menuItems.length) return;
+
+						const nextFocusedElement = menuItems[0];
+						if (!isHTMLElement(nextFocusedElement)) return;
+
+						handleRovingFocus(nextFocusedElement);
 					}
 
-					return isOpen;
-				});
+					e.preventDefault();
+				})
+			);
 
-				const menuId = triggerElement.getAttribute('aria-controls');
-				if (!menuId) return;
-
-				const menu = document.getElementById(menuId);
-				if (!isHTMLElement(menu)) return;
-
-				const menuItems = getMenuItems(menu);
-				if (!menuItems.length) return;
-
-				const nextFocusedElement = menuItems[0];
-				if (!isHTMLElement(nextFocusedElement)) return;
-
-				handleRovingFocus(nextFocusedElement);
-			}
-
-			e.preventDefault();
-		});
-
-		return {
-			'aria-controls': rootIds.menu,
-			'aria-expanded': $rootOpen,
-			'data-state': $rootOpen ? 'open' : 'closed',
-			id: rootIds.trigger,
-		};
-	});
+			return {
+				destroy: unsub,
+			};
+		},
+	};
 
 	const rootArrow = derived(rootOptions, ($rootOptions) => ({
 		'data-arrow': true,
+		'data-melt-part': 'arrow',
 		style: styleToString({
 			position: 'absolute',
 			width: `var(--arrow-size, ${$rootOptions.arrowSize}px)`,
@@ -233,92 +265,88 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		}),
 	}));
 
-	const item = elementMultiDerived([], (_, { attach, getElement }) => {
-		return () => {
-			getElement().then((element) => {
-				setMeltMenuAttribute(element);
-				applyAttrsIfDisabled(element);
-			});
+	const item = hiddenAction({
+		role: 'menuitem',
+		tabindex: -1,
+		'data-orientation': 'vertical',
+		'data-melt-part': 'item',
+		action: (node: HTMLElement) => {
+			setMeltMenuAttribute(node);
+			applyAttrsIfDisabled(node);
 
-			attach('pointerdown', (e) => {
-				const itemElement = e.currentTarget;
-				if (!isHTMLElement(itemElement)) return;
-				if (isElementDisabled(itemElement)) {
-					e.preventDefault();
-					return;
-				}
-			});
-
-			attach('click', (e) => {
-				const itemElement = e.currentTarget;
-				if (!isHTMLElement(itemElement)) return;
-				if (isElementDisabled(itemElement)) {
-					e.preventDefault();
-					return;
-				}
-
-				if (e.defaultPrevented) {
+			const unsub = executeCallbacks(
+				addEventListener(node, 'pointerdown', (e) => {
+					const itemElement = e.currentTarget;
 					if (!isHTMLElement(itemElement)) return;
+					if (isElementDisabled(itemElement)) {
+						e.preventDefault();
+						return;
+					}
+				}),
+				addEventListener(node, 'click', (e) => {
+					const itemElement = e.currentTarget;
+					if (!isHTMLElement(itemElement)) return;
+					if (isElementDisabled(itemElement)) {
+						e.preventDefault();
+						return;
+					}
 
-					handleRovingFocus(itemElement);
-					return;
-				}
-				itemElement.dispatchEvent(new CustomEvent('m-select', { bubbles: false }));
-				rootOpen.set(false);
-			});
+					if (e.defaultPrevented) {
+						if (!isHTMLElement(itemElement)) return;
 
-			attach('keydown', (e) => {
-				const isTypingAhead = typed.length > 0;
-				if (isTypingAhead && e.key === kbd.SPACE) return;
-				if (SELECTION_KEYS.includes(e.key)) {
+						handleRovingFocus(itemElement);
+						return;
+					}
+					itemElement.dispatchEvent(new CustomEvent('m-select', { bubbles: false }));
+					rootOpen.set(false);
+				}),
+				addEventListener(node, 'keydown', (e) => {
+					const isTypingAhead = typed.length > 0;
+					if (isTypingAhead && e.key === kbd.SPACE) return;
+					if (SELECTION_KEYS.includes(e.key)) {
+						const itemElement = e.currentTarget;
+						if (!isHTMLElement(itemElement)) return;
+
+						itemElement.click();
+						/**
+						 * We prevent default browser behaviour for selection keys as they should trigger
+						 * a selection only:
+						 * - prevents space from scrolling the page.
+						 * - if keydown causes focus to move, prevents keydown from firing on the new target.
+						 */
+						e.preventDefault();
+					}
+				}),
+				addEventListener(node, 'pointermove', (e) => {
 					const itemElement = e.currentTarget;
 					if (!isHTMLElement(itemElement)) return;
 
-					itemElement.click();
-					/**
-					 * We prevent default browser behaviour for selection keys as they should trigger
-					 * a selection only:
-					 * - prevents space from scrolling the page.
-					 * - if keydown causes focus to move, prevents keydown from firing on the new target.
-					 */
-					e.preventDefault();
-				}
-			});
+					if (isElementDisabled(itemElement)) {
+						onItemLeave(e);
+						return;
+					}
 
-			attach('pointermove', (e) => {
-				const itemElement = e.currentTarget;
-				if (!isHTMLElement(itemElement)) return;
-
-				if (isElementDisabled(itemElement)) {
-					onItemLeave(e);
-					return;
-				}
-
-				onMenuItemPointerMove(e);
-			});
-
-			attach('pointerleave', (e) => {
-				onMenuItemPointerLeave(e);
-			});
-
-			attach('focusin', (e) => {
-				const itemElement = e.currentTarget;
-				if (!isHTMLElement(itemElement)) return;
-				itemElement.setAttribute('data-highlighted', '');
-			});
-
-			attach('focusout', (e) => {
-				const itemElement = e.currentTarget;
-				if (!isHTMLElement(itemElement)) return;
-				itemElement.removeAttribute('data-highlighted');
-			});
+					onMenuItemPointerMove(e);
+				}),
+				addEventListener(node, 'pointerleave', (e) => {
+					onMenuItemPointerLeave(e);
+				}),
+				addEventListener(node, 'focusin', (e) => {
+					const itemElement = e.currentTarget;
+					if (!isHTMLElement(itemElement)) return;
+					itemElement.setAttribute('data-highlighted', '');
+				}),
+				addEventListener(node, 'focusout', (e) => {
+					const itemElement = e.currentTarget;
+					if (!isHTMLElement(itemElement)) return;
+					itemElement.removeAttribute('data-highlighted');
+				})
+			);
 
 			return {
-				role: 'menuitem',
-				tabindex: -1,
-				'data-orientation': 'vertical',
+				destroy: unsub,
 			};
-		};
+		},
 	});
 
 	/* -------------------------------------------------------------------------------------------------
@@ -347,113 +375,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			trigger: generateId(),
 		};
 
-		const subMenu = elementDerived(
-			[subOpen, subActiveTrigger, subOptions],
-			([$subOpen, $subActiveTrigger, $subOptions], { addAction, attach }) => {
-				if ($subOpen && $subActiveTrigger) {
-					const parentMenuEl = getParentMenu($subActiveTrigger);
-
-					addAction(usePopper, {
-						anchorElement: $subActiveTrigger,
-						open: subOpen,
-						options: {
-							floating: $subOptions.positioning,
-							clickOutside: null,
-							portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
-							focusTrap: null,
-						},
-					});
-				}
-
-				attach('keydown', (e) => {
-					if (e.key === kbd.ESCAPE) {
-						return;
-					}
-
-					// Submenu key events bubble through portals.
-					// We only want the keys in this menu.
-					const target = e.target;
-					if (!isHTMLElement(target)) return;
-
-					const menuElement = e.currentTarget;
-					if (!isHTMLElement(menuElement)) return;
-
-					const targetMeltMenuId = target.getAttribute('data-melt-menu-id');
-					if (!targetMeltMenuId) return;
-
-					const isKeyDownInside =
-						target.closest('[data-melt-menu]') === menuElement &&
-						targetMeltMenuId === menuElement.id;
-
-					if (!isKeyDownInside) return;
-
-					if (FIRST_LAST_KEYS.includes(e.key)) {
-						// prevent events from bubbling
-						e.stopImmediatePropagation();
-						handleMenuNavigation(e);
-						return;
-					}
-
-					const isCloseKey = SUB_CLOSE_KEYS['ltr'].includes(e.key);
-					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-					const isCharacterKey = e.key.length === 1;
-
-					// close the submenu if the user presses a close key
-					if (isCloseKey) {
-						e.preventDefault();
-						subOpen.update(() => {
-							if ($subActiveTrigger) {
-								handleRovingFocus($subActiveTrigger);
-							}
-							subActiveTrigger.set(null);
-							return false;
-						});
-						return;
-					}
-
-					// menus should not be navigated using tab so we prevent it
-					// reference: https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
-					if (e.key === 'Tab') {
-						e.preventDefault();
-						return;
-					}
-
-					if (!isModifierKey && isCharacterKey) {
-						// typeahead logic
-						handleTypeaheadSearch(e.key, getMenuItems(menuElement));
-					}
-				});
-
-				attach('pointermove', (e) => {
-					onMenuPointerMove(e);
-				});
-
-				attach('focusout', (e) => {
-					if (get(isUsingKeyboard)) {
-						const target = e.target;
-						if (!isHTMLElement(target)) return;
-
-						const submenuElement = document.getElementById(subIds.menu);
-						if (!isHTMLElement(submenuElement)) return;
-
-						if (!submenuElement?.contains(target) && target !== $subActiveTrigger) {
-							subOpen.set(false);
-							subActiveTrigger.set(null);
-						}
-					} else {
-						const menuElement = e.currentTarget;
-						if (!isHTMLElement(menuElement)) return;
-
-						const relatedTarget = e.relatedTarget;
-						if (!isHTMLElement(relatedTarget)) return;
-
-						if (!menuElement.contains(relatedTarget) && relatedTarget !== $subActiveTrigger) {
-							subOpen.set(false);
-							subActiveTrigger.set(null);
-						}
-					}
-				});
-
+		const subMenu = {
+			...derived([subOpen], ([$subOpen]) => {
 				return {
 					role: 'menu',
 					hidden: $subOpen ? undefined : true,
@@ -464,166 +387,143 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					'aria-labelledby': subIds.trigger,
 					'data-melt-part': 'menu-sub',
 					'data-melt-menu': '',
+					'data-melt-id': subIds.menu,
 					tabindex: -1,
-				};
-			}
-		);
+				} as const;
+			}),
+			action: (node: HTMLElement) => {
+				let unsubPopper = noop;
 
-		const subTrigger = elementDerived(
-			[subOpen, subOptions],
-			([$subOpen, $subOptions], { attach, getElement, addUnsubscriber }) => {
-				getElement().then((element) => {
-					setMeltMenuAttribute(element);
-					applyAttrsIfDisabled(element);
-				});
+				const unsubDerived = effect(
+					[subOpen, subActiveTrigger, subOptions],
+					([$subOpen, $subActiveTrigger, $subOptions]) => {
+						unsubPopper();
+						if ($subOpen && $subActiveTrigger) {
+							tick().then(() => {
+								const parentMenuEl = getParentMenu($subActiveTrigger);
 
-				addUnsubscriber(() => {
-					if (!isBrowser) return;
-					clearOpenTimer(subOpenTimer);
-					window.clearTimeout(get(pointerGraceTimer));
-					pointerGraceIntent.set(null);
-				});
+								const popper = usePopper(node, {
+									anchorElement: $subActiveTrigger,
+									open: subOpen,
+									options: {
+										floating: $subOptions.positioning,
+										portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
+										clickOutside: null,
+										focusTrap: null,
+									},
+								});
 
-				attach('click', (e) => {
-					const triggerElement = e.currentTarget;
-					if (!isHTMLElement(triggerElement)) return;
-					if (isElementDisabled(triggerElement) || e.defaultPrevented) return;
-
-					// Manually focus because iOS Safari doesn't always focus on click (e.g. buttons)
-					handleRovingFocus(triggerElement);
-					if (!get(subOpen)) {
-						subOpen.update((prev) => {
-							const isAlreadyOpen = prev;
-							if (!isAlreadyOpen) {
-								subActiveTrigger.set(triggerElement);
-								return !prev;
-							}
-							return prev;
-						});
+								if (popper && popper.destroy) {
+									unsubPopper = popper.destroy;
+								}
+							});
+						}
 					}
-				});
+				);
 
-				attach('keydown', (e) => {
-					const triggerElement = e.currentTarget;
-					if (!isHTMLElement(triggerElement)) return;
-					if (isElementDisabled(triggerElement)) return;
-					const isTypingAhead = typed.length > 0;
-					if (isTypingAhead && e.key === kbd.SPACE) return;
+				const unsubEvents = executeCallbacks(
+					addEventListener(node, 'keydown', (e) => {
+						if (e.key === kbd.ESCAPE) {
+							return;
+						}
 
-					if (SUB_OPEN_KEYS['ltr'].includes(e.key)) {
-						if (!$subOpen) {
-							triggerElement.click();
+						// Submenu key events bubble through portals.
+						// We only want the keys in this menu.
+						const target = e.target;
+						if (!isHTMLElement(target)) return;
+
+						const menuElement = e.currentTarget;
+						if (!isHTMLElement(menuElement)) return;
+
+						const targetMeltMenuId = target.getAttribute('data-melt-menu-id');
+						if (!targetMeltMenuId) return;
+
+						const isKeyDownInside =
+							target.closest('[data-melt-menu]') === menuElement &&
+							targetMeltMenuId === menuElement.id;
+
+						if (!isKeyDownInside) return;
+
+						if (FIRST_LAST_KEYS.includes(e.key)) {
+							// prevent events from bubbling
+							e.stopImmediatePropagation();
+							handleMenuNavigation(e);
+							return;
+						}
+
+						const isCloseKey = SUB_CLOSE_KEYS['ltr'].includes(e.key);
+						const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
+						const isCharacterKey = e.key.length === 1;
+
+						// close the submenu if the user presses a close key
+						if (isCloseKey) {
+							const $subActiveTrigger = get(subActiveTrigger);
+							e.preventDefault();
+							subOpen.update(() => {
+								if ($subActiveTrigger) {
+									handleRovingFocus($subActiveTrigger);
+								}
+								subActiveTrigger.set(null);
+								return false;
+							});
+							return;
+						}
+
+						// menus should not be navigated using tab so we prevent it
+						// reference: https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
+						if (e.key === kbd.TAB) {
 							e.preventDefault();
 							return;
 						}
 
-						const menuId = triggerElement.getAttribute('aria-controls');
-						if (!menuId) return;
+						if (!isModifierKey && isCharacterKey) {
+							// typeahead logic
+							handleTypeaheadSearch(e.key, getMenuItems(menuElement));
+						}
+					}),
+					addEventListener(node, 'pointermove', (e) => {
+						onMenuPointerMove(e);
+					}),
+					addEventListener(node, 'focusout', (e) => {
+						const $subActiveTrigger = get(subActiveTrigger);
+						if (get(isUsingKeyboard)) {
+							const target = e.target;
+							if (!isHTMLElement(target)) return;
 
-						const menuElement = document.getElementById(menuId);
-						if (!isHTMLElement(menuElement)) return;
+							const submenuElement = document.getElementById(subIds.menu);
+							if (!isHTMLElement(submenuElement)) return;
 
-						const firstItem = getMenuItems(menuElement)[0];
-						if (!isHTMLElement(firstItem)) return;
+							if (!submenuElement?.contains(target) && target !== $subActiveTrigger) {
+								subOpen.set(false);
+								subActiveTrigger.set(null);
+							}
+						} else {
+							const menuElement = e.currentTarget;
+							if (!isHTMLElement(menuElement)) return;
 
-						handleRovingFocus(firstItem);
-					}
-				});
+							const relatedTarget = e.relatedTarget;
+							if (!isHTMLElement(relatedTarget)) return;
 
-				attach('pointermove', (e) => {
-					if (!isMouse(e)) return;
-					onItemEnter(e);
+							if (!menuElement.contains(relatedTarget) && relatedTarget !== $subActiveTrigger) {
+								subOpen.set(false);
+								subActiveTrigger.set(null);
+							}
+						}
+					})
+				);
 
-					if (e.defaultPrevented) return;
+				return {
+					destroy() {
+						unsubDerived();
+						unsubPopper();
+						unsubEvents();
+					},
+				};
+			},
+		};
 
-					const triggerElement = e.currentTarget;
-					if (!isHTMLElement(triggerElement)) return;
-
-					handleRovingFocus(triggerElement);
-
-					const openTimer = get(subOpenTimer);
-					if (!$subOpen && !openTimer && !isElementDisabled(triggerElement)) {
-						subOpenTimer.set(
-							window.setTimeout(() => {
-								subOpen.update(() => {
-									subActiveTrigger.set(triggerElement);
-									return true;
-								});
-								clearOpenTimer(subOpenTimer);
-							}, 100)
-						);
-					}
-				});
-
-				attach('pointerleave', (e) => {
-					if (!isMouse(e)) return;
-					clearOpenTimer(subOpenTimer);
-
-					const submenuElement = document.getElementById(subIds.menu);
-					const contentRect = submenuElement?.getBoundingClientRect();
-
-					if (contentRect) {
-						const side = submenuElement?.dataset.side as Side;
-						const rightSide = side === 'right';
-						const bleed = rightSide ? -5 : +5;
-						const contentNearEdge = contentRect[rightSide ? 'left' : 'right'];
-						const contentFarEdge = contentRect[rightSide ? 'right' : 'left'];
-
-						pointerGraceIntent.set({
-							area: [
-								// Apply a bleed on clientX to ensure that our exit point is
-								// consistently within polygon bounds
-								{ x: e.clientX + bleed, y: e.clientY },
-								{ x: contentNearEdge, y: contentRect.top },
-								{ x: contentFarEdge, y: contentRect.top },
-								{ x: contentFarEdge, y: contentRect.bottom },
-								{ x: contentNearEdge, y: contentRect.bottom },
-							],
-							side,
-						});
-
-						window.clearTimeout(get(pointerGraceTimer));
-						pointerGraceTimer.set(
-							window.setTimeout(() => {
-								pointerGraceIntent.set(null);
-							}, 300)
-						);
-					} else {
-						onTriggerLeave(e);
-						if (e.defaultPrevented) return;
-
-						// There's 100ms where the user may leave an item before the submenu was opened.
-						pointerGraceIntent.set(null);
-					}
-				});
-
-				attach('focusout', (e) => {
-					const triggerElement = e.currentTarget;
-					if (!isHTMLElement(triggerElement)) return;
-
-					if (!isHTMLElement(triggerElement)) return;
-					triggerElement.removeAttribute('data-highlighted');
-
-					const relatedTarget = e.relatedTarget;
-					if (!isHTMLElement(relatedTarget)) return;
-
-					const menuId = triggerElement.getAttribute('aria-controls');
-					if (!menuId) return;
-
-					const menu = document.getElementById(menuId);
-
-					if (isHTMLElement(menu) && !menu.contains(relatedTarget)) {
-						subActiveTrigger.set(null);
-						subOpen.set(false);
-					}
-				});
-
-				attach('focusin', (e) => {
-					const triggerElement = e.currentTarget;
-					if (!isHTMLElement(triggerElement)) return;
-					triggerElement.setAttribute('data-highlighted', '');
-				});
-
+		const subTrigger = {
+			...derived([subOpen, subOptions], ([$subOpen, $subOptions]) => {
 				return {
 					role: 'menuitem',
 					id: subIds.trigger,
@@ -634,9 +534,164 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					'data-disabled': $subOptions.disabled ? '' : undefined,
 					'data-melt-part': 'menu-sub-trigger',
 					'aria-haspopop': 'menu',
+					'data-melt-id': subIds.trigger,
+				} as const;
+			}),
+			action: (node: HTMLElement) => {
+				setMeltMenuAttribute(node);
+				applyAttrsIfDisabled(node);
+
+				const unsubTimer = () => {
+					clearOpenTimer(subOpenTimer);
+					window.clearTimeout(get(pointerGraceTimer));
+					pointerGraceIntent.set(null);
 				};
-			}
-		);
+
+				const unsubEvents = executeCallbacks(
+					addEventListener(node, 'click', (e) => {
+						const triggerElement = e.currentTarget;
+						if (!isHTMLElement(triggerElement)) return;
+						if (isElementDisabled(triggerElement) || e.defaultPrevented) return;
+
+						// Manually focus because iOS Safari doesn't always focus on click (e.g. buttons)
+						handleRovingFocus(triggerElement);
+						if (!get(subOpen)) {
+							subOpen.update((prev) => {
+								const isAlreadyOpen = prev;
+								if (!isAlreadyOpen) {
+									subActiveTrigger.set(triggerElement);
+									return !prev;
+								}
+								return prev;
+							});
+						}
+					}),
+					addEventListener(node, 'keydown', (e) => {
+						const triggerElement = e.currentTarget;
+						if (!isHTMLElement(triggerElement)) return;
+						if (isElementDisabled(triggerElement)) return;
+						const isTypingAhead = typed.length > 0;
+						if (isTypingAhead && e.key === kbd.SPACE) return;
+
+						if (SUB_OPEN_KEYS['ltr'].includes(e.key)) {
+							if (!get(subOpen)) {
+								triggerElement.click();
+								e.preventDefault();
+								return;
+							}
+
+							const menuId = triggerElement.getAttribute('aria-controls');
+							if (!menuId) return;
+
+							const menuElement = document.getElementById(menuId);
+							if (!isHTMLElement(menuElement)) return;
+
+							const firstItem = getMenuItems(menuElement)[0];
+							if (!isHTMLElement(firstItem)) return;
+
+							handleRovingFocus(firstItem);
+						}
+					}),
+					addEventListener(node, 'pointermove', (e) => {
+						if (!isMouse(e)) return;
+						onItemEnter(e);
+
+						if (e.defaultPrevented) return;
+
+						const triggerElement = e.currentTarget;
+						if (!isHTMLElement(triggerElement)) return;
+
+						handleRovingFocus(triggerElement);
+
+						const openTimer = get(subOpenTimer);
+						if (!get(subOpen) && !openTimer && !isElementDisabled(triggerElement)) {
+							subOpenTimer.set(
+								window.setTimeout(() => {
+									subOpen.update(() => {
+										subActiveTrigger.set(triggerElement);
+										return true;
+									});
+									clearOpenTimer(subOpenTimer);
+								}, 100)
+							);
+						}
+					}),
+					addEventListener(node, 'pointerleave', (e) => {
+						if (!isMouse(e)) return;
+						clearOpenTimer(subOpenTimer);
+
+						const submenuElement = document.getElementById(subIds.menu);
+						const contentRect = submenuElement?.getBoundingClientRect();
+
+						if (contentRect) {
+							const side = submenuElement?.dataset.side as Side;
+							const rightSide = side === 'right';
+							const bleed = rightSide ? -5 : +5;
+							const contentNearEdge = contentRect[rightSide ? 'left' : 'right'];
+							const contentFarEdge = contentRect[rightSide ? 'right' : 'left'];
+
+							pointerGraceIntent.set({
+								area: [
+									// Apply a bleed on clientX to ensure that our exit point is
+									// consistently within polygon bounds
+									{ x: e.clientX + bleed, y: e.clientY },
+									{ x: contentNearEdge, y: contentRect.top },
+									{ x: contentFarEdge, y: contentRect.top },
+									{ x: contentFarEdge, y: contentRect.bottom },
+									{ x: contentNearEdge, y: contentRect.bottom },
+								],
+								side,
+							});
+
+							window.clearTimeout(get(pointerGraceTimer));
+							pointerGraceTimer.set(
+								window.setTimeout(() => {
+									pointerGraceIntent.set(null);
+								}, 300)
+							);
+						} else {
+							onTriggerLeave(e);
+							if (e.defaultPrevented) return;
+
+							// There's 100ms where the user may leave an item before the submenu was opened.
+							pointerGraceIntent.set(null);
+						}
+					}),
+					addEventListener(node, 'focusout', (e) => {
+						const triggerElement = e.currentTarget;
+						if (!isHTMLElement(triggerElement)) return;
+
+						if (!isHTMLElement(triggerElement)) return;
+						triggerElement.removeAttribute('data-highlighted');
+
+						const relatedTarget = e.relatedTarget;
+						if (!isHTMLElement(relatedTarget)) return;
+
+						const menuId = triggerElement.getAttribute('aria-controls');
+						if (!menuId) return;
+
+						const menu = document.getElementById(menuId);
+
+						if (isHTMLElement(menu) && !menu.contains(relatedTarget)) {
+							subActiveTrigger.set(null);
+							subOpen.set(false);
+						}
+					}),
+					addEventListener(node, 'focusin', (e) => {
+						const triggerElement = e.currentTarget;
+						if (!isHTMLElement(triggerElement)) return;
+						triggerElement.setAttribute('data-highlighted', '');
+					})
+				);
+
+				return {
+					destroy() {
+						unsubTimer();
+						unsubEvents();
+					},
+				};
+			},
+		};
 
 		const subArrow = derived(subOptions, ($subOptions) => ({
 			'data-arrow': true,
@@ -665,22 +720,23 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			}
 		});
 
-		effect([subOpen, subMenu, subActiveTrigger], ([$subOpen, $subMenu, $subActiveTrigger]) => {
+		effect([subOpen], ([$subOpen]) => {
 			if (!isBrowser) return;
-			const menuElement = getElementByMeltId($subMenu['data-melt-id']);
-			if (isHTMLElement(menuElement) && $subOpen && get(isUsingKeyboard)) {
-				// Selector to get menu items belonging to menu
-				const rootMenuItemSelector = `[role="menuitem"][data-melt-menu-id="${menuElement.id}"]`;
 
-				// Focus on first menu item
-				const firstOption = document.querySelector(rootMenuItemSelector);
+			sleep(1).then(() => {
+				const menuElement = document.getElementById(subIds.menu);
+				if (isHTMLElement(menuElement) && $subOpen && get(isUsingKeyboard)) {
+					// Selector to get menu items belonging to menu
+					const rootMenuItemSelector = `[role="menuitem"][data-melt-menu-id="${menuElement.id}"]`;
 
-				if (get(isUsingKeyboard)) {
-					isHTMLElement(firstOption) ? handleRovingFocus(firstOption) : undefined;
+					// Focus on first menu item
+					const firstOption = document.querySelector(rootMenuItemSelector);
+
+					if (get(isUsingKeyboard)) {
+						isHTMLElement(firstOption) ? handleRovingFocus(firstOption) : undefined;
+					}
 				}
-			} else if (!$subOpen && $subActiveTrigger && isBrowser) {
-				handleRovingFocus($subActiveTrigger);
-			}
+			});
 		});
 
 		return {
@@ -698,58 +754,52 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 	effect([rootOpen], ([$rootOpen]) => {
 		if (!isBrowser) return;
-		const rootMenuElement = document.getElementById(rootIds.menu);
-		if (rootMenuElement && $rootOpen) {
-			rootMenuElement.dispatchEvent(new CustomEvent('m-open'));
-		}
-		if (rootMenuElement && !$rootOpen) {
-			rootMenuElement.dispatchEvent(new CustomEvent('m-close'));
-		}
-	});
 
-	effect([rootOpen, rootActiveTrigger], ([$rootOpen, $rootActiveTrigger]) => {
-		if (!isBrowser) return;
-		const rootMenuElement = document.getElementById(rootIds.menu);
-		if (rootMenuElement && $rootOpen) {
-			handleRovingFocus(rootMenuElement);
-		}
-		if (!$rootOpen && $rootActiveTrigger) {
-			handleRovingFocus($rootActiveTrigger);
-		}
-	});
+		sleep(1).then(() => {
+			const menuElement = document.getElementById(rootIds.menu);
+			if (isHTMLElement(menuElement) && $rootOpen && get(isUsingKeyboard)) {
+				// Selector to get menu items belonging to menu
+				const rootMenuItemSelector = `[role="menuitem"][data-melt-menu-id="${menuElement.id}"]`;
 
-	effect([rootOpen, rootMenu, rootActiveTrigger], ([$rootOpen, $rootMenu, $rootActiveTrigger]) => {
-		if (!isBrowser) return;
+				// Focus on first menu item
+				const firstOption = document.querySelector(rootMenuItemSelector);
 
-		const menuElement = getElementByMeltId($rootMenu['data-melt-id']);
-
-		if (menuElement && $rootOpen) {
-			const handlePointer = () => isUsingKeyboard.set(false);
-			const handleKeyDown = () => {
-				isUsingKeyboard.set(true);
-				document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
-				document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
-			};
-			document.addEventListener('keydown', handleKeyDown, { capture: true });
-
-			const keydownListener = (e: KeyboardEvent) => {
-				if (e.key === kbd.ESCAPE) {
-					rootOpen.set(false);
-					return;
+				if (get(isUsingKeyboard)) {
+					isHTMLElement(firstOption) ? handleRovingFocus(firstOption) : undefined;
 				}
-			};
-			document.addEventListener('keydown', keydownListener);
+			} else {
+				// Focus on trigger
+				const triggerElement = document.getElementById(rootIds.trigger);
+				if (isHTMLElement(triggerElement)) {
+					handleRovingFocus(triggerElement);
+				}
+			}
+		});
+	});
 
-			return () => {
-				document.removeEventListener('keydown', handleKeyDown, { capture: true });
-				document.removeEventListener('pointerdown', handlePointer, { capture: true });
-				document.removeEventListener('pointermove', handlePointer, { capture: true });
-				document.removeEventListener('keydown', keydownListener);
-			};
-		} else if (!$rootOpen && $rootActiveTrigger && isBrowser) {
-			// Hacky way to prevent the keydown e from triggering on the trigger
-			handleRovingFocus($rootActiveTrigger);
-		}
+	onMount(() => {
+		const handlePointer = () => isUsingKeyboard.set(false);
+		const handleKeyDown = () => {
+			isUsingKeyboard.set(true);
+			document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
+			document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
+		};
+		document.addEventListener('keydown', handleKeyDown, { capture: true });
+
+		const keydownListener = (e: KeyboardEvent) => {
+			if (e.key === kbd.ESCAPE) {
+				rootOpen.set(false);
+				return;
+			}
+		};
+		document.addEventListener('keydown', keydownListener);
+
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown, { capture: true });
+			document.removeEventListener('pointerdown', handlePointer, { capture: true });
+			document.removeEventListener('pointermove', handlePointer, { capture: true });
+			document.removeEventListener('keydown', keydownListener);
+		};
 	});
 
 	/* -------------------------------------------------------------------------------------------------
@@ -1019,18 +1069,6 @@ declare global {
 			 * @param event The custom event.
 			 */
 			'on:m-select'?: (event: Event) => void;
-
-			/**
-			 * Event listener for when the menu is open.
-			 * @param event The custom event.
-			 */
-			'on:m-open'?: (event: Event) => void;
-
-			/**
-			 * Event listener for when the menu is closed.
-			 * @param event The custom event.
-			 */
-			'on:m-close'?: (event: Event) => void;
 		}
 	}
 }

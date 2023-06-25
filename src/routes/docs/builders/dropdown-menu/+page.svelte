@@ -1,7 +1,15 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
-	import code from './code.ignore-svelte?raw';
-	import Preview from './preview.svelte';
+	export let data;
+	const features = [
+		'Can be controlled or uncontrolled.',
+		'Supports submenus with configurable reading direction.',
+		'Customize menu positioning.',
+		'Optionally render a pointing arrow.',
+		'Fully managed focus.',
+		'Full keyboard navigation.',
+		'Typeahead support',
+	];
 </script>
 
 <Docs.H1>Dropdown Menu</Docs.H1>
@@ -9,21 +17,10 @@
 	Displays a menu to the user, which can consist of links or functions, triggered by a button.
 </Docs.Description>
 
-<Preview />
-
-<Docs.CodeBlock {code} />
+<Docs.Preview {...data.preview} />
 <Docs.Construction />
 
-<Docs.H2>Features</Docs.H2>
-<Docs.Ul>
-	<Docs.Li>Can be controlled or uncontrolled.</Docs.Li>
-	<Docs.Li>Supports submenus with configurable reading direction.</Docs.Li>
-	<Docs.Li>Customize menu positioning.</Docs.Li>
-	<Docs.Li>Optionally render a pointing arrow.</Docs.Li>
-	<Docs.Li>Fully managed focus.</Docs.Li>
-	<Docs.Li>Full keyboard navigation.</Docs.Li>
-	<Docs.Li>Typeahead support</Docs.Li>
-</Docs.Ul>
+<Docs.Features {features} />
 
 <Docs.H2>Anatomy</Docs.H2>
 <Docs.Ul>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
-	import { schemas } from './schemas.js';
+	import { schemas } from './schemas';
 
 	export let data;
 	const features = [
