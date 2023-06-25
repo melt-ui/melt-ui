@@ -31,7 +31,7 @@
 	export let fullwidth: $$Props['fullwidth'] = false;
 
 	let codingStyle = Object.keys(code)[0];
-	$: codingStyleObj = code[codingStyle as keyof typeof code];
+	$: codingStyleObj = code[codingStyle];
 	$: files = codingStyleObj !== null ? Object.keys(codingStyleObj) : [];
 
 	const { value } = createSelect({
