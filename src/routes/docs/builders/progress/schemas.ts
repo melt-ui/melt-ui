@@ -2,7 +2,7 @@ import type { APISchema } from '$routes/(components)';
 
 const builder: APISchema = {
 	title: 'CreateProgressArgs',
-	description: 'Configuration options for the `createProgress` builder.',
+	description: 'The configuration object passed to the `createProgress` builder function.',
 	args: [
 		{
 			label: 'value',

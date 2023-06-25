@@ -2,7 +2,7 @@ import type { APISchema } from '$routes/(components)';
 
 const builder: APISchema = {
 	title: 'CreateSliderArgs',
-	description: 'The object you pass into createSlider. Optional.',
+	description: 'The configuration object passed to the `createSlider` builder function.',
 	args: [
 		{
 			label: 'value',

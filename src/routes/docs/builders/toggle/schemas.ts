@@ -2,7 +2,7 @@ import type { APISchema } from '$routes/(components)';
 
 const builder: APISchema = {
 	title: 'CreateToggleArgs',
-	description: 'Configuration options for the `createTabs` builder.',
+	description: 'The configuration object passed to the `createToggle` builder function.',
 	args: [
 		{
 			label: 'disabled',

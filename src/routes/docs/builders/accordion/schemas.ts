@@ -2,7 +2,7 @@ import type { APISchema } from '$routes/(components)/api.svelte';
 
 const builder: APISchema = {
 	title: 'CreateAccordionArgs',
-	description: 'The object you pass into the createAccordion builer function.',
+	description: 'The configuration object passed to the `createAccordion` builder function.',
 	args: [
 		{
 			label: 'type',
@@ -61,7 +61,7 @@ const item: APISchema = {
 const trigger: APISchema = {
 	title: 'Trigger',
 	description:
-		'Toggles the collapsed state of its associated item. It should be nested inside of an `item`.',
+		'Toggles the collapsed state of an item. It should be nested inside of its associated `item`.',
 	args: [
 		{
 			label: 'type',

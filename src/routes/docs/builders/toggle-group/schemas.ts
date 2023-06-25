@@ -2,7 +2,7 @@ import type { APISchema } from '$routes/(components)';
 
 const builder: APISchema = {
 	title: 'CreateToggleGroupArgs',
-	description: 'Configuration options for the `createToggleGroup` builder.',
+	description: 'The configuration object passed to the `createToggleGroup` builder function.',
 	args: [
 		{
 			label: 'type',

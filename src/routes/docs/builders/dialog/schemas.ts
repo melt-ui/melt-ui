@@ -2,7 +2,7 @@ import type { APISchema } from '$routes/(components)';
 
 const builder: APISchema = {
 	title: 'CreateDialogArgs',
-	description: 'The object you pass into createAccordion. Optional.',
+	description: 'The configuration object passed to the `createDialog` builder function.',
 	args: [
 		{
 			label: 'role',
