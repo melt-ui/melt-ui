@@ -182,6 +182,7 @@ export function createSelect(args?: CreateSelectArgs) {
 	type OptionArgs = {
 		value: unknown;
 		label?: string;
+		disabled?: boolean;
 	};
 
 	const option = {
@@ -193,6 +194,7 @@ export function createSelect(args?: CreateSelectArgs) {
 					'data-selected': $value === args?.value ? '' : undefined,
 					'data-value': args.value,
 					'data-label': args.label ?? undefined,
+					'data-disabled': args.disabled ? '' : undefined,
 					tabindex: 0,
 				};
 			};
@@ -201,9 +203,12 @@ export function createSelect(args?: CreateSelectArgs) {
 			const getElArgs = () => {
 				const value = node.getAttribute('data-value');
 				const label = node.getAttribute('data-label');
+				const disabled = node.hasAttribute('data-disabled');
+
 				return {
 					value,
 					label: label ?? node.textContent ?? null,
+					disabled: !disabled,
 				};
 			};
 
