@@ -1,11 +1,14 @@
 <script lang="ts" context="module">
 	export type PreviewProps = {
-		// TODO: improve this type
 		component: any;
-		/** e.g. {tailwind: {index.svelte: ..., tailwind.config.ts: ...}, css: {index.svelte: ...}} */
 		code: {
-			[codingStyle: string]: {
-				[fileName: string]: string;
+			Tailwind: {
+				'index.svelte': string;
+				'tailwind.config.ts': string;
+			};
+			CSS: {
+				'index.svelte': string;
+				'globals.css': string;
 			} | null;
 		};
 		fullwidth?: boolean;
@@ -13,7 +16,7 @@
 </script>
 
 <script lang="ts">
-	import { createSelect, type SelectOptionArgs } from '$lib';
+	import { createSelect, type CreateSelectArgs } from '$lib';
 	import { cn } from '$routes/helpers';
 	import CodeBlock from './code-block.svelte';
 	import PreviewWrapper from './preview-wrapper.svelte';
@@ -28,7 +31,7 @@
 	export let fullwidth: $$Props['fullwidth'] = false;
 
 	let codingStyle = Object.keys(code)[0];
-	$: codingStyleObj = code[codingStyle];
+	$: codingStyleObj = code[codingStyle as keyof typeof code];
 	$: files = codingStyleObj !== null ? Object.keys(codingStyleObj) : [];
 
 	const { value } = createSelect({
@@ -45,8 +48,10 @@
 			value: key,
 			label: key,
 			disabled: value === null,
-		} satisfies SelectOptionArgs<string>;
+		} satisfies CreateSelectArgs;
 	});
+
+	$: console.log(files);
 </script>
 
 <div class="mt-4 flex flex-row items-center justify-between">

@@ -27,7 +27,7 @@
 	class="flex w-[140px] items-center justify-between rounded-md border border-magnum-700 bg-neutral-800 px-3 py-1 text-magnum-600
   outline-none transition-opacity hover:opacity-75 focus:!border-magnum-400 focus:!text-magnum-400"
 	{...$trigger}
-    use:trigger.action
+	use:trigger.action
 	aria-label="Select"
 >
 	{$label || 'Select an option'}

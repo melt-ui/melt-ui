@@ -20,10 +20,11 @@
 	const { root, content, list, trigger, value } = createTabs({
 		value: tabs[0],
 	});
+
 	$: value.set(tabs[0]);
 
 	const tabsStore = writable(tabs);
-	$: tabsStore.set(tabs);
+	$: tabsStore.update(() => tabs);
 
 	setTabsContext({ content, list, trigger, tabs: tabsStore });
 </script>

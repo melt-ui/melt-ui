@@ -1,5 +1,14 @@
-import { dialog } from './(examples)/(dialog)';
+import type { PreviewProps } from '$routes/(components)';
+import { Tailwind, CSS, Preview } from './(examples)/(preview)';
 
 export async function load() {
-	return { dialog };
+	return {
+		preview: {
+			component: Preview,
+			code: {
+				Tailwind,
+				CSS,
+			},
+		} satisfies PreviewProps,
+	};
 }

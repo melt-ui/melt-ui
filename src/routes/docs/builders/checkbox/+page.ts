@@ -1,15 +1,13 @@
 import type { PreviewProps } from '$routes/(components)';
-import { Tailwind } from './(tailwind)';
-
-import Example from './example.svelte';
+import { Tailwind, CSS, Preview } from './(examples)/(preview)';
 
 export async function load() {
 	return {
 		preview: {
-			component: Example,
+			component: Preview,
 			code: {
 				Tailwind,
-				CSS: null,
+				CSS,
 			},
 		} satisfies PreviewProps,
 	};
