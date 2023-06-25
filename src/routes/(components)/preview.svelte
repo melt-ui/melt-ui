@@ -50,8 +50,6 @@
 			disabled: value === null,
 		} satisfies CreateSelectArgs;
 	});
-
-	$: console.log(files);
 </script>
 
 <div class="mt-4 flex flex-row items-center justify-between">

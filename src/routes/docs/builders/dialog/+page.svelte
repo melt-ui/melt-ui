@@ -16,7 +16,7 @@
 	underneath inert.
 </Docs.Description>
 
-<Docs.Preview {...data.dialog} />
+<Docs.Preview {...data.preview} />
 <Docs.Construction />
 
 <Docs.Features {features} />
