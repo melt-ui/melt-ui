@@ -56,6 +56,11 @@ const option: APISchema = {
 			label: 'value',
 			type: 'unknown',
 		},
+		{
+			label: 'disabled',
+			type: 'boolean',
+			default: false,
+		},
 	],
 };
 
