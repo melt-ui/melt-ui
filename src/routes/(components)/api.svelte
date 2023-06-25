@@ -63,7 +63,7 @@
 <div class="mb-12">
 	<H3 class="mb-2 text-xl font-bold">{schema.title}</H3>
 
-	<P class="!mt-2 text-neutral-300/95">
+	<P class="text-neutral-300/95">
 		{@html htmlDescription}
 	</P>
 
