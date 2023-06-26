@@ -633,7 +633,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					'aria-expanded': $subOpen,
 					'data-state': $subOpen ? 'open' : 'closed',
 					'data-disabled': $subOptions.disabled ? '' : undefined,
-					'data-melt-part': 'menu-sub-trigger',
+					'data-melt-part': 'subtrigger',
 					'aria-haspopop': 'menu',
 					'data-melt-id': subIds.trigger,
 				} as const;
@@ -1120,7 +1120,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	 */
 	function getMenuItems(menuElement: HTMLElement) {
 		return Array.from(
-			menuElement.querySelectorAll(`[role="menuitem"][data-melt-menu-id="${menuElement.id}"]`)
+			menuElement.querySelectorAll(`[data-melt-menu-id="${menuElement.id}"]`)
 		) as HTMLElement[];
 	}
 
