@@ -1,5 +1,17 @@
 # @melt-ui/svelte
 
+## 0.13.0
+
+### Minor Changes
+
+- 86a9b3a: feat(select): allow disabling individual options
+- 09bb891: refactor: use action builders
+
+### Patch Changes
+
+- 4a5b1a1: fix(select): changing select value store now automatically changes select label store
+- 0b4fe38: feat(toggle): allow disabled state to be changed
+
 ## 0.12.0
 
 ### Minor Changes
