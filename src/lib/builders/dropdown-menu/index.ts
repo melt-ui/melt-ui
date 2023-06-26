@@ -1165,20 +1165,3 @@ function isPointerInGraceArea(e: PointerEvent, area?: Polygon) {
 	const cursorPos = { x: e.clientX, y: e.clientY };
 	return isPointInPolygon(cursorPos, area);
 }
-
-/**
- * Custom MeltUI Dropdown Events
- */
-
-declare global {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace svelteHTML {
-		interface HTMLAttributes<T> extends T {
-			/**
-			 * Event listener for when an item is selected.
-			 * @param event The custom event.
-			 */
-			'on:m-select'?: (event: Event) => void;
-		}
-	}
-}
