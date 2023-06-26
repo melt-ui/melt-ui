@@ -11,18 +11,12 @@ dependencies:
   '@floating-ui/dom':
     specifier: ^1.4.2
     version: 1.4.2
-  '@types/prettier':
-    specifier: ^2.7.3
-    version: 2.7.3
   focus-trap:
     specifier: ^7.4.3
     version: 7.4.3
   nanoid:
     specifier: ^4.0.2
     version: 4.0.2
-  svelte-wrap-balancer:
-    specifier: ^0.0.3
-    version: 0.0.3
 
 devDependencies:
   '@changesets/cli':
@@ -82,6 +76,9 @@ devDependencies:
   '@types/jest-axe':
     specifier: ^3.5.5
     version: 3.5.5
+  '@types/prettier':
+    specifier: ^2.7.3
+    version: 2.7.3
   '@types/testing-library__jest-dom':
     specifier: ^5.14.6
     version: 5.14.6
@@ -166,6 +163,9 @@ devDependencies:
   svelte-preprocess:
     specifier: ^5.0.4
     version: 5.0.4(@babel/core@7.22.1)(less@4.1.3)(postcss-load-config@4.0.1)(postcss@8.4.24)(svelte@4.0.0)(typescript@5.1.3)
+  svelte-wrap-balancer:
+    specifier: ^0.0.3
+    version: 0.0.3
   tailwind-merge:
     specifier: ^1.13.2
     version: 1.13.2
@@ -4843,7 +4843,7 @@ packages:
 
   /@types/prettier@2.7.3:
     resolution: {integrity: sha512-+68kP9yzs4LMp7VNh8gdzMSPZFL44MLGqiHWvttYJe+6qnuVr4Ek9wSBQoveqY/r+LwjCcU29kNVkidwim+kYA==}
-    dev: false
+    dev: true
 
   /@types/pretty-hrtime@1.0.1:
     resolution: {integrity: sha512-VjID5MJb1eGKthz2qUerWT8+R4b9N+CHvGCzg9fn4kWZgaF9AhdYikQio3R7wV8YY1NsQKPaCwKz1Yff+aHNUQ==}
@@ -10968,7 +10968,7 @@ packages:
 
   /svelte-wrap-balancer@0.0.3:
     resolution: {integrity: sha512-NlHMz+5hy2GiH+JqA1ECdMIG540nKa3ZfbsxBo/LxvP03rkvJ7W6+FeeP2YU38Z5LX8rqV/sSwreF3WPMPRjmw==}
-    dev: false
+    dev: true
 
   /svelte2tsx@0.6.11(svelte@4.0.0)(typescript@5.1.3):
     resolution: {integrity: sha512-rRW/3V/6mcejYWmSqcHpmILOSPsOhLgkbKbrTOz82s2n8TywmIsqj2jYPsiL6HeGoUM/atiTD0YKguW4b7ECog==}
