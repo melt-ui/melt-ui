@@ -10,21 +10,9 @@
 	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
 	const { subMenu: subMenuB, subTrigger: subTriggerB } = createSubMenu();
 
-	function onSelect() {
-		alert('You selected an item!');
-	}
+	const showBookmarks = writable(false);
+    const showFullURLs = writable(false);
 
-	function onOpen() {
-		// do something
-	}
-
-	function onClose() {
-		// do something
-	}
-
-	const checked = writable(false);
-
-	$: console.log($checked);
 </script>
 
 <button
@@ -40,14 +28,7 @@
 
 <div class="menu" {...$menu} use:menu.action>
 	<div class="item" {...item} use:item.action>New Tab</div>
-	<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked }}>
-		<div class="absolute left-0 w-[25px] inline-flex items-center justify-center">
-			{#if $checked}
-				<Check class="h-[15px] w-[15px]" />
-			{/if}
-		</div>
-        Show Bookmarks
-	</div>
+	
 	<div class="item" {...item} use:item.action aria-disabled="true">New Window</div>
 	<div class="item" {...$subTriggerA} use:subTriggerA.action>
 		More Tools
@@ -69,8 +50,22 @@
 		<div class="item" {...item} use:item.action>Keyboard Shortcuts</div>
 		<div class="item" {...item} use:item.action>Accessibility</div>
 	</div>
-	<div class="item" {...item} use:item.action>Show Bookmarks</div>
-	<div class="item" {...item} use:item.action>Show Full URLs</div>
+	<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked: showBookmarks }}>
+		<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
+			{#if $showBookmarks}
+				<Check class="h-[15px] w-[15px]" />
+			{/if}
+		</div>
+		Show Bookmarks
+	</div>
+	<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked: showFullURLs }}>
+		<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
+			{#if $showFullURLs}
+				<Check class="h-[15px] w-[15px]" />
+			{/if}
+		</div>
+		Show Full URLs
+	</div>
 	<div {...$arrow} />
 </div>
 
@@ -101,9 +96,5 @@
 	.check {
 		@apply absolute left-2 top-1/2 text-magnum-500;
 		translate: 0 calc(-50% + 1px);
-	}
-
-	.right-slot {
-		@apply ml-auto pl-5;
 	}
 </style>
