@@ -12,7 +12,13 @@ export function getElementByMeltId(id: string) {
 type Stores = Readable<any> | [Readable<any>, ...Array<Readable<any>>] | Array<Readable<any>>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ActionParameters<T extends Action<HTMLElement, any>> = T extends Action<HTMLElement, infer P, any> ? P : never;
+type ActionParameters<T extends Action<HTMLElement, any>> = T extends Action<
+	HTMLElement,
+	infer P,
+	any
+>
+	? P
+	: never;
 
 /** One or more values from `Readable` stores. */
 type StoresValues<T> = T extends Readable<infer U>
@@ -116,7 +122,10 @@ type AddUnsubscriber = (cb: (() => void) | Array<undefined | (() => void)>) => v
 
 type GetElement = () => Promise<HTMLElement | null>;
 
-type AddAction = <T extends Action<HTMLElement, any>>(action: T, parameters?: ActionParameters<T>) => void;
+type AddAction = <T extends Action<HTMLElement, any>>(
+	action: T,
+	parameters?: ActionParameters<T>
+) => void;
 
 type Helpers = {
 	attach: Attach;
