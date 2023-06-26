@@ -4,6 +4,6 @@
 </script>
 
 <div {...$root}>
-	<button {...$trigger}>{$open ? 'Close' : 'Open'}</button>
+	<button {...$trigger} use:trigger.action>{$open ? 'Close' : 'Open'}</button>
 	<div {...$content}>Obi-Wan says: Hello there!</div>
 </div>

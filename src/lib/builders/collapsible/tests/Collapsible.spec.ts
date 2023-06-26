@@ -1,4 +1,3 @@
-import { sleep } from '$lib/internal/helpers';
 import { render } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
@@ -6,7 +5,7 @@ import CollapsibleTest from './CollapsibleTest.svelte';
 
 describe('Collapsible', () => {
 	test('No accesibility violations', async () => {
-		const { component, container } = await render(CollapsibleTest);
+		const { container } = await render(CollapsibleTest);
 
 		expect(await axe(container)).toHaveNoViolations();
 	});
@@ -21,7 +20,6 @@ describe('Collapsible', () => {
 		await expect(getByTestId('content')).not.toBeVisible();
 		await trigger.click();
 		await expect(getByTestId('content')).toBeVisible();
-		await sleep(1);
 		await trigger.click();
 		await expect(getByTestId('content')).not.toBeVisible();
 	});

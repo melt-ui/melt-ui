@@ -1,7 +1,7 @@
 import { onDestroy, tick } from 'svelte';
 import type { Action } from 'svelte/action';
 import { derived, type Readable } from 'svelte/store';
-import { addEventListener, isBrowser, generateId } from '.';
+import { addEventListener, generateId, isBrowser } from '.';
 
 export function getElementByMeltId(id: string) {
 	if (!isBrowser) return null;
@@ -12,7 +12,14 @@ export function getElementByMeltId(id: string) {
 type Stores = Readable<any> | [Readable<any>, ...Array<Readable<any>>] | Array<Readable<any>>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ActionParameters<T extends Action> = T extends Action<HTMLElement, infer P, any> ? P : never;
+type ActionParameters<T extends Action<HTMLElement, any>> = T extends Action<
+	HTMLElement,
+	infer P,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	any
+>
+	? P
+	: never;
 
 /** One or more values from `Readable` stores. */
 type StoresValues<T> = T extends Readable<infer U>
@@ -20,6 +27,13 @@ type StoresValues<T> = T extends Readable<infer U>
 	: {
 			[K in keyof T]: T[K] extends Readable<infer U> ? U : never;
 	  };
+
+export function typedDerived<S extends Stores, T>(
+	stores: S,
+	fn: (values: StoresValues<S>) => T
+): Readable<ReturnType<typeof fn>> {
+	return derived(stores, fn);
+}
 
 /**
  * A utility function that creates a derived store that automatically
@@ -109,7 +123,11 @@ type AddUnsubscriber = (cb: (() => void) | Array<undefined | (() => void)>) => v
 
 type GetElement = () => Promise<HTMLElement | null>;
 
-type AddAction = <T extends Action>(action: T, parameters?: ActionParameters<T>) => void;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AddAction = <T extends Action<HTMLElement, any>>(
+	action: T,
+	parameters?: ActionParameters<T>
+) => void;
 
 type Helpers = {
 	attach: Attach;
@@ -299,3 +317,14 @@ export function elementMulti<
 >(fn: (helpers: Helpers) => T) {
 	return elementMultiDerived([], (_, helpers) => fn(helpers));
 }
+
+export const hiddenAction = <T extends Record<string, unknown>>(obj: T) => {
+	return new Proxy(obj, {
+		get(target, prop, receiver) {
+			return Reflect.get(target, prop, receiver);
+		},
+		ownKeys(target) {
+			return Reflect.ownKeys(target).filter((key) => key !== 'action');
+		},
+	});
+};

@@ -6,7 +6,7 @@
 </script>
 
 <div {...$root}>
-	<button {...$trigger}> Toggle </button>
+	<button {...$trigger} use:trigger.action> Toggle </button>
 
 	{#if $open}
 		<div class="content" {...$content} transition:slide|local>

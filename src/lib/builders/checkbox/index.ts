@@ -1,6 +1,6 @@
-import { elementDerived, kbd, styleToString } from '$lib/internal/helpers';
+import { addEventListener, executeCallbacks, kbd, styleToString } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 
 type CheckedState = boolean | 'indeterminate';
 
@@ -28,31 +28,40 @@ export function createCheckbox(args: CreateCheckboxArgs = {}) {
 	});
 	const checked = writable(argsWithDefaults.checked);
 
-	const root = elementDerived([checked, options], ([$checked, $options], { attach }) => {
-		attach('keydown', (event) => {
-			// According to WAI ARIA, Checkboxes don't activate on enter keypress
-			if (event.key === kbd.ENTER) event.preventDefault();
-		});
+	const root = {
+		...derived([checked, options], ([$checked, $options]) => {
+			return {
+				'data-disabled': $options.disabled,
+				'data-state':
+					$checked === 'indeterminate' ? 'indeterminate' : $checked ? 'checked' : 'unchecked',
+				type: 'button',
+				role: 'checkbox',
+				'aria-checked': $checked === 'indeterminate' ? 'mixed' : $checked,
+				'aria-required': $options.required,
+			} as const;
+		}),
+		action(node: HTMLElement) {
+			const unsub = executeCallbacks(
+				addEventListener(node, 'keydown', (event) => {
+					// According to WAI ARIA, Checkboxes don't activate on enter keypress
+					if (event.key === kbd.ENTER) event.preventDefault();
+				})
+			);
+			addEventListener(node, 'click', () => {
+				const $options = get(options);
+				if ($options.disabled) return;
 
-		attach('click', () => {
-			if ($options.disabled) return;
-
-			checked.update((value) => {
-				if (value === 'indeterminate') return true;
-				return !value;
+				checked.update((value) => {
+					if (value === 'indeterminate') return true;
+					return !value;
+				});
 			});
-		});
 
-		return {
-			'data-disabled': $options.disabled,
-			'data-state':
-				$checked === 'indeterminate' ? 'indeterminate' : $checked ? 'checked' : 'unchecked',
-			type: 'button',
-			role: 'checkbox',
-			'aria-checked': $checked === 'indeterminate' ? 'mixed' : $checked,
-			'aria-required': $options.required,
-		} as const;
-	});
+			return {
+				destroy: unsub,
+			};
+		},
+	};
 
 	const input = derived([checked, options], ([$checked, $options]) => {
 		return {

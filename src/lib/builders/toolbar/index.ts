@@ -1,6 +1,6 @@
-import { elementMultiDerived, kbd } from '$lib/internal/helpers';
+import { addEventListener, hiddenAction, kbd } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, writable } from 'svelte/store';
+import { derived, get, writable, type Readable } from 'svelte/store';
 
 type CreateToolbarArgs = {
 	loop?: boolean;
@@ -25,27 +25,30 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 		};
 	});
 
-	const button = elementMultiDerived(options, ($options, { attach }) => {
-		return () => {
-			attach('keydown', getKeydownHandler($options));
-			return {
-				role: 'button',
-				type: 'button',
-				'data-melt-part': 'toolbar-item',
-			} as const;
-		};
-	});
-
-	const link = elementMultiDerived(options, ($options, { attach }) => {
-		return () => {
-			attach('keydown', getKeydownHandler($options));
+	const button = hiddenAction({
+		role: 'button',
+		type: 'button',
+		'data-melt-part': 'toolbar-item',
+		action: (node: HTMLElement) => {
+			const unsub = addEventListener(node, 'keydown', getKeydownHandler(options));
 
 			return {
-				role: 'link',
-				'data-melt-part': 'toolbar-item',
-			} as const;
-		};
-	});
+				destroy: unsub,
+			};
+		},
+	} as const);
+
+	const link = hiddenAction({
+		role: 'link',
+		'data-melt-part': 'toolbar-item',
+		action: (node: HTMLElement) => {
+			const unsub = addEventListener(node, 'keydown', getKeydownHandler(options));
+
+			return {
+				destroy: unsub,
+			};
+		},
+	} as const);
 
 	const separator = derived(options, ($options) => {
 		return {
@@ -64,19 +67,23 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 	};
 }
 
-export const getKeydownHandler = (options: Pick<CreateToolbarArgs, 'orientation' | 'loop'>) => {
-	const dir = 'ltr' as 'ltr' | 'rtl';
-	const nextKey = {
-		horizontal: dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
-		vertical: kbd.ARROW_DOWN,
-	}[options.orientation ?? 'horizontal'];
+export { createToolbarGroup } from './group';
 
-	const prevKey = {
-		horizontal: dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
-		vertical: kbd.ARROW_UP,
-	}[options.orientation ?? 'horizontal'];
+export const getKeydownHandler =
+	(options: Readable<Pick<CreateToolbarArgs, 'orientation' | 'loop'>>) => (e: KeyboardEvent) => {
+		const $options = get(options);
 
-	return (e: KeyboardEvent) => {
+		const dir = 'ltr' as 'ltr' | 'rtl';
+		const nextKey = {
+			horizontal: dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
+			vertical: kbd.ARROW_DOWN,
+		}[$options.orientation ?? 'horizontal'];
+
+		const prevKey = {
+			horizontal: dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
+			vertical: kbd.ARROW_UP,
+		}[$options.orientation ?? 'horizontal'];
+
 		const el = e.currentTarget as HTMLElement;
 		const root = el.closest('[data-melt-part="toolbar"]') as HTMLElement;
 
@@ -89,7 +96,7 @@ export const getKeydownHandler = (options: Pick<CreateToolbarArgs, 'orientation'
 			e.preventDefault();
 			const nextIndex = currentIndex + 1;
 			if (nextIndex >= items.length) {
-				if (options.loop) {
+				if ($options.loop) {
 					items[0].focus();
 				}
 			} else {
@@ -99,7 +106,7 @@ export const getKeydownHandler = (options: Pick<CreateToolbarArgs, 'orientation'
 			e.preventDefault();
 			const prevIndex = currentIndex - 1;
 			if (prevIndex < 0) {
-				if (options.loop) {
+				if ($options.loop) {
 					items[items.length - 1].focus();
 				}
 			} else {
@@ -113,6 +120,3 @@ export const getKeydownHandler = (options: Pick<CreateToolbarArgs, 'orientation'
 			items[items.length - 1].focus();
 		}
 	};
-};
-
-export { createToolbarGroup } from './group';

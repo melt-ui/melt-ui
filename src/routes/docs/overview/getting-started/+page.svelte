@@ -4,57 +4,67 @@
 </script>
 
 <Docs.H1>Getting Started</Docs.H1>
+<Docs.Description>Just a few steps to start using MeltUI in your projects</Docs.Description>
 
-<Docs.H2>Installing</Docs.H2>
-<Docs.P>
-	First off, install Melt UI into your project by running the following command in your terminal:
+<Docs.H2>Installation</Docs.H2>
+<Docs.P class="mb-2">
+	Alright, let's get started! To install Melt UI into your project, simply run this command in your
+	terminal:
 </Docs.P>
 <Docs.Tabs tabs={['npm', 'yarn', 'pnpm']} let:tab>
 	{#if tab === 'npm'}
-		<Docs.CodeBlock inline code={'npm install @melt-ui/svelte'} collapsible={false} />
+		<Docs.CodeBlock code={'npm install @melt-ui/svelte'} />
 	{:else if tab === 'yarn'}
-		<Docs.CodeBlock inline code={'yarn add @melt-ui/svelte'} collapsible={false} />
+		<Docs.CodeBlock code={'yarn add @melt-ui/svelte'} />
 	{:else if tab === 'pnpm'}
-		<Docs.CodeBlock inline code={'pnpm install @melt-ui/svelte'} collapsible={false} />
+		<Docs.CodeBlock code={'pnpm install @melt-ui/svelte'} />
 	{/if}
 </Docs.Tabs>
-<Docs.P sidenote>P.S. These tabs were built using Melt! Try using them with Arrow keys.</Docs.P>
+<Docs.Callout>P.S. These tabs were built using Melt! Try using them with Arrow keys.</Docs.Callout>
 
 <Docs.H2>Usage</Docs.H2>
 <Docs.P>
 	Melt UI exposes a number of component builders. Say you want a Collapsible component:
 </Docs.P>
 
-<Docs.CodeBlock code={snippets.builder} collapsible={false} />
+<Docs.CodeBlock code={snippets.builder} />
 
 <Docs.P>
-	You'll see that createCollapsible exposes a number of stores. Be careful! That is not always the
-	case. Also, sometimes stores return functions, which may or may not expect an attribute. One such
-	example is the <Docs.A href="/docs/builders/accordion" internal>Accordion</Docs.A> builder.
+	You'll see that <Docs.Code>createCollapsible</Docs.Code>
+	exposes a number of stores.
+
+	<Docs.Callout type="danger">
+		Be careful! That is not always the case. Sometimes stores also return functions, which may or
+		may not expect an attribute. One such example is the <Docs.A
+			href="/docs/builders/accordion"
+			internal>Accordion</Docs.A
+		> builder.
+	</Docs.Callout>
 </Docs.P>
 
 <Docs.H3>Styling</Docs.H3>
 <Docs.P>
-	Melt UI can be styled using any styling solution of your choice. Be it scoped/global CSS, an
-	utility framework such as Tailwind, or even outside components (as long as you can pass in Melt's
-	props to it).
+	Melt UI leaves the styles up to you. Whether you prefer scoped or global CSS, a utility framework
+	like Tailwind, or third-party components (as long as you can pass in Melt's props), it's all good.
 </Docs.P>
-<Docs.CodeBlock code={snippets.extensible} collapsible={false} />
+<Docs.CodeBlock code={snippets.extensible} />
 
 <Docs.H3>Animating</Docs.H3>
 <Docs.P>
-	When you pass in props returned from a builder to an element, it will automatically change some
-	data and aria attributes. You can then use them for animation, if you wish.
+	By passing builder returned props to an element, certain data and aria attributes will
+	automatically be altered for you. These changes can then be utilized for animation purposes,
+	should you desire to do so.
 </Docs.P>
 
-<Docs.CodeBlock code={snippets.animation} collapsible={false} />
+<Docs.CodeBlock code={snippets.animation} />
 
-<Docs.P>
-	You can also use Svelte transitions if you wish. But beware, this may break some default behaviour
-	in certain components, such as focus management.
-</Docs.P>
+<Docs.Callout>
+	Svelte transitions can also be utilized. However, it is important to note that this may interfere
+	with default functionality in particular components, such as focus management, so proceed with
+	caution.
+</Docs.Callout>
 
-<Docs.CodeBlock code={snippets.svelteTransitions} collapsible={false} />
+<Docs.CodeBlock code={snippets.svelteTransitions} />
 
 <Docs.H2>Need help?</Docs.H2>
 <Docs.P>

@@ -1,4 +1,4 @@
-import { elementDerived } from '$lib/internal/helpers';
+import { addEventListener } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 
@@ -19,23 +19,30 @@ export function createCollapsible(args?: CreateCollapsibleArgs) {
 	const open = writable(options.open);
 	const root = derived(open, ($open) => ({
 		'data-state': $open ? 'open' : 'closed',
-		'data-disabled': options.disabled ? 'true' : 'undefined',
+		'data-disabled': options.disabled ? true : 'undefined',
 	}));
 
-	const trigger = elementDerived([open, disabled], ([$open, $disabled], { attach }) => {
-		if (!$disabled) {
-			attach('click', () => open.set(!$open));
-		}
+	const trigger = {
+		...derived([open, disabled], ([$open, $disabled]) => {
+			return {
+				'data-state': $open ? 'open' : 'closed',
+				'data-disabled': $disabled ? true : undefined,
+			};
+		}),
+		action: (node: HTMLElement) => {
+			const unsub = addEventListener(node, 'click', () => {
+				open.update(($open) => !$open);
+			});
 
-		return {
-			'data-state': $open ? 'open' : 'closed',
-			'data-disabled': $disabled ? 'true' : undefined,
-		};
-	});
+			return {
+				destroy: unsub,
+			};
+		},
+	};
 
 	const content = derived([open, disabled], ([$open, $disabled]) => ({
 		'data-state': $open ? 'open' : 'closed',
-		'data-disabled': $disabled ? 'true' : undefined,
+		'data-disabled': $disabled ? true : undefined,
 		hidden: $open ? undefined : true,
 	}));
 
