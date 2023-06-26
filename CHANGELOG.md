@@ -1,5 +1,12 @@
 # @melt-ui/svelte
 
+## 0.13.1
+
+### Patch Changes
+
+- 7a6e9b4: fix isSelected fn
+- 03d1cde: revert id change back to nanoid
+
 ## 0.13.0
 
 ### Minor Changes
