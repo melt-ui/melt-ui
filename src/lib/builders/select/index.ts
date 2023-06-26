@@ -270,7 +270,7 @@ export function createSelect(args?: CreateSelectArgs) {
 	});
 
 	const isSelected = derived([value], ([$value]) => {
-		return (value: string | number) => {
+		return (value: unknown) => {
 			return $value === value;
 		};
 	});

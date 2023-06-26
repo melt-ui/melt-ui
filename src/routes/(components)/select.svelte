@@ -23,6 +23,7 @@
 	$: localValue.set(value);
 </script>
 
+{$localValue}
 <button
 	class="flex w-[140px] items-center justify-between rounded-md border border-magnum-700 bg-neutral-800 px-3 py-1 text-magnum-600
   outline-none transition-opacity hover:opacity-75 focus:!border-magnum-400 focus:!text-magnum-400"
@@ -46,7 +47,7 @@
 			{...$option({ ...o })}
 			use:option.action
 		>
-			{#if typeof o.value === 'string' || (typeof o.value === 'number' && $isSelected(o.value))}
+			{#if $isSelected(o.value)}
 				<div class="check">
 					<Check />
 				</div>
