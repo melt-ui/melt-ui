@@ -29,17 +29,15 @@ export const createSeparator = (args: CreateSeparatorArgs = defaults) => {
 	const orientation = writable(withDefaults.orientation);
 	const decorative = writable(withDefaults.decorative);
 
-	const root = {
-		...derived([orientation, decorative], ([$orientation, $decorative]) => {
-			const ariaOrientation = $orientation === 'vertical' ? $orientation : undefined;
-			return {
-				role: $decorative ? 'none' : 'separator',
-				'aria-orientation': ariaOrientation,
-				'aria-hidden': $decorative,
-				'data-orientation': $orientation,
-			};
-		}),
-	};
+	const root = derived([orientation, decorative], ([$orientation, $decorative]) => {
+		const ariaOrientation = $orientation === 'vertical' ? $orientation : undefined;
+		return {
+			role: $decorative ? 'none' : 'separator',
+			'aria-orientation': ariaOrientation,
+			'aria-hidden': $decorative,
+			'data-orientation': $orientation,
+		};
+	});
 
 	return {
 		root,
