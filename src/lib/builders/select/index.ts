@@ -48,6 +48,12 @@ const defaults = {
 	},
 } satisfies Defaults<CreateSelectArgs>;
 
+export type OptionArgs = {
+	value: unknown;
+	label?: string;
+	disabled?: boolean;
+};
+
 export function createSelect(args?: CreateSelectArgs) {
 	const withDefaults = { ...defaults, ...args } as CreateSelectArgs;
 	const options = writable(omit(withDefaults, 'value', 'label'));
@@ -178,12 +184,6 @@ export function createSelect(args?: CreateSelectArgs) {
 			height: `var(--arrow-size, ${$options.arrowSize}px)`,
 		}),
 	}));
-
-	type OptionArgs = {
-		value: unknown;
-		label?: string;
-		disabled?: boolean;
-	};
 
 	const option = {
 		...derived(value, ($value) => {

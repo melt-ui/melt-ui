@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { createSelect, type SelectOptionArgs } from '$lib';
+	import { createSelect, type OptionArgs } from '$lib';
 	import ChevronDown from '~icons/lucide/chevron-down';
 	import Check from '~icons/lucide/check';
 
-	export let options: SelectOptionArgs<string>[] = [];
-	export let value: string = options[0].value;
+	export let options: OptionArgs[] = [];
+	export let value = options[0].value;
 
 	const {
 		label,
@@ -46,7 +46,7 @@
 			{...$option({ ...o })}
 			use:option.action
 		>
-			{#if $isSelected(o.value)}
+			{#if typeof o.value === 'string' || (typeof o.value === 'number' && $isSelected(o.value))}
 				<div class="check">
 					<Check />
 				</div>

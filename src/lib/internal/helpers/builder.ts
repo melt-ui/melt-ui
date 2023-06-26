@@ -15,6 +15,7 @@ type Stores = Readable<any> | [Readable<any>, ...Array<Readable<any>>] | Array<R
 type ActionParameters<T extends Action<HTMLElement, any>> = T extends Action<
 	HTMLElement,
 	infer P,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	any
 >
 	? P
@@ -122,6 +123,7 @@ type AddUnsubscriber = (cb: (() => void) | Array<undefined | (() => void)>) => v
 
 type GetElement = () => Promise<HTMLElement | null>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AddAction = <T extends Action<HTMLElement, any>>(
 	action: T,
 	parameters?: ActionParameters<T>
