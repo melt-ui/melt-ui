@@ -32,7 +32,7 @@
 	</div>
 
 	{#if $open}
-		<div {...$content} transition:slide|local>
+		<div {...$content} transition:slide>
 			<div class="flex flex-col gap-2">
 				<div class="rounded bg-white p-3 shadow-lg">
 					<span class="text-base leading-[25px] text-magnum-800">sveltejs/svelte</span>

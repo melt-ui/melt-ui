@@ -37,7 +37,7 @@
 				</button>
 			</h2>
 			{#if $isSelected(id)}
-				<div class="content" {...$content(id)} transition:slide|local>
+				<div class="content" {...$content(id)} transition:slide>
 					<div>{description}</div>
 				</div>
 			{/if}

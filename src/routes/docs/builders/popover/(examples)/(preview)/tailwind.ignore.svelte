@@ -18,7 +18,7 @@
 </button>
 
 {#if $open}
-	<div {...$content} use:content.action transition:fade|local={{ duration: 100 }} class="content">
+	<div {...$content} use:content.action transition:fade={{ duration: 100 }} class="content">
 		<div {...$arrow} />
 		<div class="flex flex-col gap-2.5">
 			<p>Dimensions</p>

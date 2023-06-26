@@ -37,11 +37,11 @@
 				>
 					<span>npm install <span class="whitespace-nowrap">@melt-ui/svelte</span></span>
 					{#if copied}
-						<div in:fly|local={{ y: -4 }}>
+						<div in:fly={{ y: -4 }}>
 							<Check class="inline-block h-5 w-5 text-magnum-500 transition" />
 						</div>
 					{:else}
-						<div in:fly|local={{ y: 4 }}>
+						<div in:fly={{ y: 4 }}>
 							<Copy class="inline-block h-5 w-5 transition" />
 						</div>
 					{/if}
