@@ -1,5 +1,11 @@
 import { createFocusTrap, useClickOutside, useFloating, usePortal } from '$lib/internal/actions';
-import { addEventListener, executeCallbacks, kbd, type Callback, noop } from '$lib/internal/helpers';
+import {
+	addEventListener,
+	executeCallbacks,
+	kbd,
+	type Callback,
+	noop,
+} from '$lib/internal/helpers';
 import type { Action } from 'svelte/action';
 import type { PopperArgs, PopperConfig } from './popper.types';
 

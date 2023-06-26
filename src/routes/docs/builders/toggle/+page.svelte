@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
 	import { schemas } from './schemas.js';
-  import { snippets } from './(snippets)';
+	import { snippets } from './(snippets)';
 
 	export let data;
 
@@ -32,14 +32,14 @@
 	To disable a the toggle,, set the <Docs.Code>disabled</Docs.Code> argument as
 	<Docs.Code>true</Docs.Code>.
 </Docs.P>
-<Docs.CodeBlock collapsible={false} code={snippets.disable} />
+<Docs.CodeBlock code={snippets.disable} />
 
 <Docs.H3>Controlled access</Docs.H3>
 <Docs.P>
 	To programmatically control the Toggle, you can directly set the <Docs.Code>pressed</Docs.Code> store.
 	you can also directly set the <Docs.Code>disabled</Docs.Code> store.
 </Docs.P>
-<Docs.CodeBlock collapsible={false} code={snippets.controlled} />
+<Docs.CodeBlock code={snippets.controlled} />
 
 <Docs.H2>API Reference</Docs.H2>
 <Docs.API schema={schemas.builder} />
