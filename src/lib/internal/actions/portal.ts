@@ -1,12 +1,12 @@
 import { tick } from 'svelte';
 import type { Action } from 'svelte/action';
 
-export type PortalConfig = string | HTMLElement;
+export type PortalConfig = string | HTMLElement | undefined;
 
 export const usePortal: Action<HTMLElement, PortalConfig> = (el, target = 'body') => {
 	let targetEl;
 
-	async function update(newTarget: HTMLElement | string) {
+	async function update(newTarget: HTMLElement | string | undefined) {
 		target = newTarget;
 		if (typeof target === 'string') {
 			targetEl = document.querySelector(target);
