@@ -21,3 +21,18 @@ body {
 		@apply !ring !ring-magnum-400;
 	}
 }
+
+code:not(pre > code) {
+	background-color: theme('colors.magnum.900/0.5');
+	color: theme('colors.magnum.300');
+	border-radius: theme('borderRadius.md');
+	font-family: theme('fontFamily.mono');
+	font-size: 0.75rem;
+	line-height: 1.75;
+	padding: 0.25rem 0.375rem;
+
+	&.neutral {
+		background-color: theme('colors.zinc.800');
+		color: theme('colors.zinc.300');
+	}
+}

@@ -1,6 +1,6 @@
 import {
-	derivedWithUnsubscribe,
-	elementMultiDerived,
+	addEventListener,
+	executeCallbacks,
 	getDirectionalKeys,
 	isBrowser,
 	kbd,
@@ -11,7 +11,7 @@ import {
 } from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
-import { derived, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 
 export type CreateTabsArgs = {
 	value?: string;
@@ -73,80 +73,99 @@ export function createTabs(args?: CreateTabsArgs) {
 		}
 	};
 
-	const trigger = elementMultiDerived([value, options], ([$value, $options], { attach }) => {
-		return (args: TriggerArgs) => {
-			const { value: tabValue, disabled } = parseTriggerArgs(args);
+	const trigger = {
+		...derived([value, options], ([$value, $options]) => {
+			return (args: TriggerArgs) => {
+				const { value: tabValue, disabled } = parseTriggerArgs(args);
 
-			if (!$value && !ssrValue && $options.autoSet) {
-				ssrValue = tabValue;
-				value.set(tabValue);
-			}
-
-			// Event handlers
-			attach('focus', () => {
-				if ($options.activateOnFocus) {
+				if (!$value && !ssrValue && $options.autoSet) {
+					ssrValue = tabValue;
 					value.set(tabValue);
 				}
-			});
 
-			attach('click', (e) => {
-				const el = e.currentTarget;
-				if (el && 'focus' in el) {
-					(el as HTMLElement).focus();
-				}
-			});
+				return {
+					role: 'tab',
+					'data-state': isBrowser
+						? $value === tabValue
+							? 'active'
+							: 'inactive'
+						: ssrValue === tabValue
+						? 'active'
+						: 'inactive',
+					tabindex: $value === tabValue ? 0 : -1,
+					'data-value': tabValue,
+					'data-orientation': $options.orientation,
+					'data-disabled': disabled ? true : undefined,
+					disabled,
+				};
+			};
+		}),
+		action: (node: HTMLElement) => {
+			const unsub = executeCallbacks(
+				addEventListener(node, 'focus', () => {
+					const $options = get(options);
+					const disabled = node.dataset.disabled === 'true';
+					const tabValue = node.dataset.value;
 
-			attach('keydown', (e) => {
-				const el = e.currentTarget as HTMLElement;
-				const rootEl = el.closest('[data-melt-part="tabs-root"]') as HTMLElement | null;
-				console.log(rootEl);
-				if (!rootEl) return;
+					if ($options.activateOnFocus && !disabled && tabValue !== undefined) {
+						value.set(tabValue);
+					}
+				}),
 
-				const triggers = Array.from(rootEl.querySelectorAll('[role="tab"]')) as HTMLElement[];
-				const enabledTriggers = triggers.filter((el) => !el.hasAttribute('data-disabled'));
-				const triggerIdx = Array.from(enabledTriggers ?? []).findIndex((el) => el === e.target);
+				addEventListener(node, 'click', (e) => {
+					const disabled = node.dataset.disabled === 'true';
 
-				const dir = getElemDirection(rootEl);
-				const { nextKey, prevKey } = getDirectionalKeys(dir, $options.orientation);
+					if (disabled) return;
+					const el = e.currentTarget;
+					if (el && 'focus' in el) {
+						(el as HTMLElement).focus();
+					}
+				}),
 
-				console.log(nextKey, prevKey);
-				if (e.key === nextKey) {
-					e.preventDefault();
-					next(enabledTriggers, triggerIdx, $options.loop)?.focus();
-				} else if (e.key === prevKey) {
-					e.preventDefault();
-					prev(enabledTriggers, triggerIdx, $options.loop)?.focus();
-				} else if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
-					e.preventDefault();
-					value.set(tabValue);
-				} else if (e.key === kbd.HOME) {
-					e.preventDefault();
-					enabledTriggers[0]?.focus();
-				} else if (e.key === kbd.END) {
-					e.preventDefault();
-					last(enabledTriggers)?.focus();
-				}
-			});
+				addEventListener(node, 'keydown', (e) => {
+					const tabValue = node.dataset.value;
+
+					const el = e.currentTarget as HTMLElement;
+					const rootEl = el.closest('[data-melt-part="tabs-root"]') as HTMLElement | null;
+
+					if (!rootEl || !tabValue) return;
+
+					const $options = get(options);
+
+					const triggers = Array.from(rootEl.querySelectorAll('[role="tab"]')) as HTMLElement[];
+					const enabledTriggers = triggers.filter((el) => !el.hasAttribute('data-disabled'));
+					const triggerIdx = Array.from(enabledTriggers ?? []).findIndex((el) => el === e.target);
+
+					const dir = getElemDirection(rootEl);
+					const { nextKey, prevKey } = getDirectionalKeys(dir, $options.orientation);
+
+					if (e.key === nextKey) {
+						e.preventDefault();
+						next(enabledTriggers, triggerIdx, $options.loop)?.focus();
+					} else if (e.key === prevKey) {
+						e.preventDefault();
+						prev(enabledTriggers, triggerIdx, $options.loop)?.focus();
+					} else if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
+						e.preventDefault();
+						value.set(tabValue);
+					} else if (e.key === kbd.HOME) {
+						e.preventDefault();
+						enabledTriggers[0]?.focus();
+					} else if (e.key === kbd.END) {
+						e.preventDefault();
+						last(enabledTriggers)?.focus();
+					}
+				})
+			);
 
 			return {
-				role: 'tab',
-				'data-state': isBrowser
-					? $value === tabValue
-						? 'active'
-						: 'inactive'
-					: ssrValue === tabValue
-					? 'active'
-					: 'inactive',
-				tabindex: $value === tabValue ? 0 : -1,
-				'data-orientation': $options.orientation,
-				'data-disabled': disabled ? '' : undefined,
-				disabled,
+				destroy: unsub,
 			};
-		};
-	});
+		},
+	};
 
 	// Content
-	const content = derivedWithUnsubscribe(value, ($value) => {
+	const content = derived(value, ($value) => {
 		return (tabValue: string) => {
 			return {
 				role: 'tabpanel',

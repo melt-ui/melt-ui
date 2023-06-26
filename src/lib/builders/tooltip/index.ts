@@ -1,14 +1,16 @@
 import {
-	elementDerived,
-	getElementByMeltId,
+	addEventListener,
+	executeCallbacks,
+	generateId,
+	noop,
 	omit,
 	styleToString,
-	generateId,
 } from '$lib/internal/helpers';
 
-import { usePopper, type FloatingConfig } from '$lib/internal/actions';
-import { derived, writable, type Readable } from 'svelte/store';
+import { useFloating, usePortal, type FloatingConfig } from '$lib/internal/actions';
 import type { Defaults } from '$lib/internal/types';
+import { tick } from 'svelte';
+import { derived, get, writable, type Readable } from 'svelte/store';
 
 export type CreateTooltipArgs = {
 	positioning?: FloatingConfig;
@@ -40,6 +42,7 @@ export function createTooltip(args?: CreateTooltipArgs) {
 
 	const ids = {
 		content: generateId(),
+		trigger: generateId(),
 	};
 
 	let timeout: number | null = null;
@@ -70,45 +73,39 @@ export function createTooltip(args?: CreateTooltipArgs) {
 		};
 	}) as Readable<() => void>;
 
-	const trigger = elementDerived(
-		[open, openTooltip, closeTooltip, options],
-		([$open, $openTooltip, $closeTooltip, $options], { attach }) => {
-			attach('mouseover', $openTooltip);
-			attach('mouseout', $closeTooltip);
-			attach('focus', () => open.set(true));
-			attach('blur', () => open.set(false));
-			if ($options.closeOnPointerDown) {
-				attach('pointerdown', () => open.set(false));
-			}
-
+	const trigger = {
+		...derived([open], ([$open]) => {
 			return {
 				role: 'button' as const,
 				'aria-haspopup': 'dialog' as const,
 				'aria-expanded': $open,
 				'data-state': $open ? 'open' : 'closed',
 				'aria-controls': ids.content,
+				id: ids.trigger,
 			};
-		}
-	);
+		}),
+		action: (node: HTMLElement) => {
+			const unsub = executeCallbacks(
+				addEventListener(node, 'mouseover', () => get(openTooltip)()),
+				addEventListener(node, 'mouseout', () => get(closeTooltip)()),
+				addEventListener(node, 'focus', () => open.set(true)),
+				addEventListener(node, 'blur', () => open.set(false)),
+				addEventListener(node, 'pointerdown', () => {
+					const $options = get(options);
+					if ($options.closeOnPointerDown) {
+						open.set(false);
+					}
+				})
+			);
 
-	const content = elementDerived(
-		[open, trigger, options, openTooltip, closeTooltip],
-		([$open, $trigger, $options, $openTooltip, $closeTooltip], { addAction, attach }) => {
-			const triggerEl = getElementByMeltId($trigger['data-melt-id']);
-			if ($open && triggerEl) {
-				addAction(usePopper, {
-					anchorElement: triggerEl,
-					open,
-					options: {
-						floating: $options.positioning,
-						focusTrap: null,
-					},
-				});
-			}
+			return {
+				destroy: unsub,
+			};
+		},
+	};
 
-			attach('mouseover', $openTooltip);
-			attach('mouseout', $closeTooltip);
-
+	const content = {
+		...derived([open], ([$open]) => {
 			return {
 				hidden: $open ? undefined : true,
 				tabindex: -1,
@@ -117,8 +114,42 @@ export function createTooltip(args?: CreateTooltipArgs) {
 				}),
 				id: ids.content,
 			};
-		}
-	);
+		}),
+		action: (node: HTMLElement) => {
+			let unsub = noop;
+
+			const portalReturn = usePortal(node);
+
+			let unsubFloating = noop;
+			const unsubOpen = open.subscribe(($open) => {
+				if ($open) {
+					tick().then(() => {
+						const triggerEl = document.getElementById(ids.trigger);
+						if (!triggerEl || node.hidden) return;
+						const $options = get(options);
+						const floatingReturn = useFloating(triggerEl, node, $options.positioning);
+						unsubFloating = floatingReturn.destroy;
+					});
+				} else {
+					unsubFloating();
+				}
+			});
+
+			unsub = executeCallbacks(
+				addEventListener(node, 'mouseover', () => get(openTooltip)()),
+				addEventListener(node, 'mouseout', () => get(closeTooltip)()),
+				portalReturn && portalReturn.destroy ? portalReturn.destroy : noop,
+				unsubOpen
+			);
+
+			return {
+				destroy() {
+					unsub();
+					unsubFloating();
+				},
+			};
+		},
+	};
 
 	const arrow = derived(options, ($options) => ({
 		'data-arrow': true,

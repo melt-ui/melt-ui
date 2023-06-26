@@ -1,6 +1,6 @@
-import { elementDerived, styleToString } from '$lib/internal/helpers';
+import { addEventListener, styleToString } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 
 export type CreateSwitchArgs = {
 	/** The controlled checked state of the switch. */
@@ -33,22 +33,31 @@ export function createSwitch(args: CreateSwitchArgs = {}) {
 	});
 	const checked = writable(argsWithDefaults.checked);
 
-	const root = elementDerived([checked, options], ([$checked, $options], { attach }) => {
-		attach('click', () => {
-			if ($options.disabled) return;
+	const root = {
+		...derived([checked, options], ([$checked, $options]) => {
+			return {
+				'data-disabled': $options.disabled,
+				disabled: $options.disabled,
+				'data-state': $checked ? 'checked' : 'unchecked',
+				type: 'button',
+				role: 'switch',
+				'aria-checked': $checked,
+				'aria-required': $options.required,
+			} as const;
+		}),
+		action(node: HTMLElement) {
+			const unsub = addEventListener(node, 'click', () => {
+				const $options = get(options);
+				if ($options.disabled) return;
 
-			checked.update((value) => !value);
-		});
+				checked.update((value) => !value);
+			});
 
-		return {
-			'data-disabled': $options.disabled,
-			'data-state': $checked ? 'checked' : 'unchecked',
-			type: 'button',
-			role: 'switch',
-			'aria-checked': $checked,
-			'aria-required': $options.required,
-		} as const;
-	});
+			return {
+				destroy: unsub,
+			};
+		},
+	};
 
 	const input = derived([checked, options], ([$checked, $options]) => {
 		return {

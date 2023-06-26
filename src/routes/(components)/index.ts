@@ -12,15 +12,26 @@ import Ul from './ul.svelte';
 import Li from './li.svelte';
 import A from './a.svelte';
 import Hr from './hr.svelte';
-import Tabs from './tabs.svelte';
+import { Tabs, TabsRoot, TabsList } from './tabs';
 import Kbd from './kbd.svelte';
 import Construction from './construction.svelte';
+import Preview from './preview.svelte';
+export type { PreviewProps } from './preview.svelte';
+import Switch from './switch.svelte';
+import Select from './select.svelte';
+import H4 from './h4.svelte';
+import H5 from './h5.svelte';
+import Ol from './ol.svelte';
+import Features from './sections/features.svelte';
+import Callout from './callout.svelte';
 
 export const Docs = {
 	API,
+	Callout,
 	CodeBlock,
 	Construction,
 	Description,
+	Features,
 	PreviewWrapper,
 	H1,
 	H2,
@@ -29,8 +40,16 @@ export const Docs = {
 	P,
 	Ul,
 	Li,
+	Ol,
+	H4,
+	H5,
 	A,
 	Hr,
 	Tabs,
+	TabsRoot,
+	TabsList,
 	Kbd,
+	Preview,
+	Switch,
+	Select,
 };

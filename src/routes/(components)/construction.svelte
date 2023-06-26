@@ -11,7 +11,7 @@
 	<p>
 		<span class="font-bold">In Construction:</span>
 		<slot>
-			This page is still in construction. Please check back later, or help us by contributing to
+			This page is still a WIP. Please check back later, or help us by contributing to
 			<A href="https://github.com/melt-ui/melt-ui">Melt UI</A>.
 		</slot>
 	</p>
