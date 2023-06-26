@@ -1,21 +1,21 @@
 import type { FloatingConfig } from '$lib/internal/actions';
 import { usePopper } from '$lib/internal/actions/popper';
 import {
+	addEventListener,
 	debounce,
 	effect,
-	elementDerived,
-	elementMultiDerived,
-	getElementByMeltId,
+	executeCallbacks,
+	generateId,
 	isBrowser,
 	kbd,
+	noop,
 	omit,
 	styleToString,
-	generateId,
 } from '$lib/internal/helpers';
 import { sleep } from '$lib/internal/helpers/sleep';
 import type { Defaults } from '$lib/internal/types';
-import { onMount } from 'svelte';
-import { derived, writable } from 'svelte/store';
+import { onMount, tick } from 'svelte';
+import { derived, get, writable } from 'svelte/store';
 
 /**
  * Features:
@@ -48,6 +48,12 @@ const defaults = {
 	},
 } satisfies Defaults<CreateSelectArgs>;
 
+export type OptionArgs = {
+	value: unknown;
+	label?: string;
+	disabled?: boolean;
+};
+
 export function createSelect(args?: CreateSelectArgs) {
 	const withDefaults = { ...defaults, ...args } as CreateSelectArgs;
 	const options = writable(omit(withDefaults, 'value', 'label'));
@@ -73,19 +79,8 @@ export function createSelect(args?: CreateSelectArgs) {
 		label.set(dataLabel ?? selectedEl.textContent ?? null);
 	});
 
-	const menu = elementDerived(
-		[open, activeTrigger, options],
-		([$open, $activeTrigger, $options], { addAction }) => {
-			if ($open && $activeTrigger) {
-				addAction(usePopper, {
-					anchorElement: $activeTrigger,
-					open,
-					options: {
-						floating: $options.positioning,
-					},
-				});
-			}
-
+	const menu = {
+		...derived([open], ([$open]) => {
 			return {
 				hidden: $open ? undefined : true,
 				style: styleToString({
@@ -94,42 +89,92 @@ export function createSelect(args?: CreateSelectArgs) {
 				id: ids.menu,
 				'aria-labelledby': ids.trigger,
 			};
-		}
-	);
+		}),
+		action: (node: HTMLElement) => {
+			let unsubPopper = noop;
 
-	const trigger = elementDerived([open, options], ([$open, $options], { attach }) => {
-		if (!$options.disabled) {
-			attach('click', (e) => {
-				e.stopPropagation();
-				const triggerEl = e.currentTarget as HTMLElement;
-				open.update((prev) => {
-					const isOpen = !prev;
-					if (isOpen) {
-						activeTrigger.set(triggerEl);
-					} else {
-						activeTrigger.set(null);
+			const unsubDerived = effect(
+				[open, activeTrigger, options],
+				([$open, $activeTrigger, $options]) => {
+					unsubPopper();
+					if ($open && $activeTrigger) {
+						tick().then(() => {
+							const popper = usePopper(node, {
+								anchorElement: $activeTrigger,
+								open,
+								options: {
+									floating: $options.positioning,
+								},
+							});
+
+							if (popper && popper.destroy) {
+								unsubPopper = popper.destroy;
+							}
+						});
 					}
+				}
+			);
 
-					return isOpen;
-				});
-			});
+			return {
+				destroy() {
+					unsubDerived();
+					unsubPopper();
+				},
+			};
+		},
+	};
 
-			attach('mousedown', (e) => {
-				e.preventDefault();
-			});
-		}
+	const trigger = {
+		...derived([open, options], ([$open, $options]) => {
+			return {
+				role: 'combobox',
+				'aria-controls': ids.menu,
+				'aria-expanded': $open,
+				'aria-required': $options.required,
+				'data-state': $open ? 'open' : 'closed',
+				'data-disabled': $options.disabled ? true : undefined,
+				disabled: $options.disabled,
+				id: ids.trigger,
+			};
+		}),
+		action: (node: HTMLElement) => {
+			const unsub = executeCallbacks(
+				addEventListener(node, 'click', (e) => {
+					const $options = get(options);
+					if ($options.disabled) return;
+					e.stopPropagation();
+					const triggerEl = e.currentTarget as HTMLElement;
+					open.update((prev) => {
+						const isOpen = !prev;
+						if (isOpen) {
+							activeTrigger.set(triggerEl);
+						} else {
+							activeTrigger.set(null);
+						}
 
-		return {
-			role: 'combobox',
-			'aria-controls': ids.menu,
-			'aria-expanded': $open,
-			'aria-required': $options.required,
-			'data-state': $open ? 'open' : 'closed',
-			'data-disabled': $options.disabled ? '' : undefined,
-			disabled: $options.disabled,
-			id: ids.trigger,
-		};
-	});
+						return isOpen;
+					});
+				}),
+
+				addEventListener(node, 'mousedown', (e) => {
+					e.preventDefault();
+				}),
+
+				addEventListener(node, 'keydown', (e) => {
+					const $options = get(options);
+					if ($options.disabled) return;
+					if ([kbd.ENTER, kbd.SPACE, kbd.ARROW_DOWN, kbd.ARROW_UP].includes(e.key)) {
+						e.preventDefault();
+						open.set(true);
+					}
+				})
+			);
+
+			return {
+				destroy: unsub,
+			};
+		},
+	};
 
 	const arrow = derived(options, ($options) => ({
 		'data-arrow': true,
@@ -140,59 +185,75 @@ export function createSelect(args?: CreateSelectArgs) {
 		}),
 	}));
 
-	type OptionArgs = {
-		value: unknown;
-		label?: string;
-	};
+	const option = {
+		...derived(value, ($value) => {
+			return (args: OptionArgs) => {
+				return {
+					role: 'option',
+					'aria-selected': $value === args?.value,
+					'data-selected': $value === args?.value ? '' : undefined,
+					'data-value': args.value,
+					'data-label': args.label ?? undefined,
+					'data-disabled': args.disabled ? '' : undefined,
+					tabindex: 0,
+				};
+			};
+		}),
+		action: (node: HTMLElement) => {
+			const getElArgs = () => {
+				const value = node.getAttribute('data-value');
+				const label = node.getAttribute('data-label');
+				const disabled = node.hasAttribute('data-disabled');
 
-	const option = elementMultiDerived([value], ([$value], { attach }) => {
-		return (args: OptionArgs) => {
-			attach('click', (e) => {
-				const el = e.currentTarget as HTMLElement | null;
-				value.set(args.value);
-				label.set(args?.label ?? el?.textContent ?? null);
-				open.set(false);
-			});
+				return {
+					value,
+					label: label ?? node.textContent ?? null,
+					disabled: !disabled,
+				};
+			};
 
-			attach('keydown', (e) => {
-				const el = e.currentTarget as HTMLElement | null;
-				if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
-					e.preventDefault();
+			const unsub = executeCallbacks(
+				addEventListener(node, 'click', () => {
+					const args = getElArgs();
 					value.set(args.value);
-					label.set(args?.label ?? el?.textContent ?? null);
+					label.set(args.label);
 					open.set(false);
-				}
-			});
+				}),
 
-			attach('mousemove', (e) => {
-				const el = e.currentTarget as HTMLElement;
-				el.focus();
-			});
+				addEventListener(node, 'keydown', (e) => {
+					if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
+						e.preventDefault();
+						const args = getElArgs();
+						value.set(args.value);
+						label.set(args.label);
+						open.set(false);
+					}
+				}),
 
-			attach('mouseout', (e) => {
-				const el = e.currentTarget as HTMLElement;
-				el.blur();
-			});
+				addEventListener(node, 'mousemove', () => {
+					node.focus();
+				}),
+
+				addEventListener(node, 'mouseout', () => {
+					node.blur();
+				})
+			);
 
 			return {
-				role: 'option',
-				'aria-selected': $value === args?.value,
-				'data-selected': $value === args?.value ? '' : undefined,
-				'data-label': args.label ?? undefined,
-				tabindex: 0,
+				destroy: unsub,
 			};
-		};
-	});
+		},
+	};
 
 	let typed: string[] = [];
 	const resetTyped = debounce(() => {
 		typed = [];
 	});
 
-	effect([open, menu, activeTrigger], ([$open, $menu, $activeTrigger]) => {
+	effect([open, activeTrigger, menu], ([$open, $activeTrigger]) => {
 		if (!isBrowser) return;
 
-		const menuEl = getElementByMeltId($menu['data-melt-id']);
+		const menuEl = document.getElementById(ids.menu);
 		if (menuEl && $open) {
 			// Focus on selected option or first option
 			const selectedOption = menuEl.querySelector('[data-selected]') as HTMLElement | undefined;
@@ -202,62 +263,6 @@ export function createSelect(args?: CreateSelectArgs) {
 			} else {
 				sleep(1).then(() => selectedOption.focus());
 			}
-
-			const keydownListener = (e: KeyboardEvent) => {
-				if (e.key === kbd.ESCAPE) {
-					open.set(false);
-					activeTrigger.set(null);
-					return;
-				}
-
-				const allOptions = Array.from(menuEl.querySelectorAll('[role="option"]')) as HTMLElement[];
-				const focusedOption = allOptions.find((el) => el === document.activeElement);
-				const focusedIndex = allOptions.indexOf(focusedOption as HTMLElement);
-
-				if (e.key === kbd.ARROW_DOWN) {
-					e.preventDefault();
-					const nextIndex = focusedIndex + 1 > allOptions.length - 1 ? 0 : focusedIndex + 1;
-					const nextOption = allOptions[nextIndex] as HTMLElement;
-					nextOption.focus();
-					return;
-				} else if (e.key === kbd.ARROW_UP) {
-					e.preventDefault();
-					const prevIndex = focusedIndex - 1 < 0 ? allOptions.length - 1 : focusedIndex - 1;
-					const prevOption = allOptions[prevIndex] as HTMLElement;
-					prevOption.focus();
-					return;
-				} else if (e.key === kbd.HOME) {
-					e.preventDefault();
-					const firstOption = allOptions[0] as HTMLElement;
-					firstOption.focus();
-					return;
-				} else if (e.key === kbd.END) {
-					e.preventDefault();
-					const lastOption = allOptions[allOptions.length - 1] as HTMLElement;
-					lastOption.focus();
-					return;
-				}
-
-				// Typeahead
-				const isAlphaNumericOrSpace = /^[a-z0-9 ]$/i.test(e.key);
-				if (isAlphaNumericOrSpace) {
-					typed.push(e.key.toLowerCase());
-					const typedString = typed.join('');
-					const matchingOption = allOptions.find((el) =>
-						el.innerText.toLowerCase().startsWith(typedString)
-					);
-					if (matchingOption) {
-						matchingOption.focus();
-					}
-
-					resetTyped();
-				}
-			};
-
-			document.addEventListener('keydown', keydownListener);
-			return () => {
-				document.removeEventListener('keydown', keydownListener);
-			};
 		} else if (!$open && $activeTrigger && isBrowser) {
 			// Hacky way to prevent the keydown event from triggering on the trigger
 			sleep(1).then(() => $activeTrigger.focus());
@@ -267,6 +272,68 @@ export function createSelect(args?: CreateSelectArgs) {
 	const isSelected = derived([value], ([$value]) => {
 		return (value: string | number) => {
 			return $value === value;
+		};
+	});
+
+	onMount(() => {
+		const keydownListener = (e: KeyboardEvent) => {
+			const menuEl = document.getElementById(ids.menu);
+			if (!menuEl || menuEl.hidden) return;
+
+			if (e.key === kbd.ESCAPE) {
+				open.set(false);
+				activeTrigger.set(null);
+				return;
+			}
+
+			const allOptions = Array.from(menuEl.querySelectorAll('[role="option"]')) as HTMLElement[];
+			const focusedOption = allOptions.find((el) => el === document.activeElement);
+			const focusedIndex = allOptions.indexOf(focusedOption as HTMLElement);
+
+			if (e.key === kbd.ARROW_DOWN) {
+				e.preventDefault();
+				const nextIndex = focusedIndex + 1 > allOptions.length - 1 ? 0 : focusedIndex + 1;
+				const nextOption = allOptions[nextIndex] as HTMLElement;
+				nextOption.focus();
+				return;
+			} else if (e.key === kbd.ARROW_UP) {
+				e.preventDefault();
+				const prevIndex = focusedIndex - 1 < 0 ? allOptions.length - 1 : focusedIndex - 1;
+				const prevOption = allOptions[prevIndex] as HTMLElement;
+				prevOption.focus();
+				return;
+			} else if (e.key === kbd.HOME) {
+				e.preventDefault();
+				const firstOption = allOptions[0] as HTMLElement;
+				firstOption.focus();
+				return;
+			} else if (e.key === kbd.END) {
+				e.preventDefault();
+				const lastOption = allOptions[allOptions.length - 1] as HTMLElement;
+				lastOption.focus();
+				return;
+			}
+
+			// Typeahead
+			const isAlphaNumericOrSpace = /^[a-z0-9 ]$/i.test(e.key);
+			if (isAlphaNumericOrSpace) {
+				typed.push(e.key.toLowerCase());
+				const typedString = typed.join('');
+				const matchingOption = allOptions.find((el) =>
+					el.innerText.toLowerCase().startsWith(typedString)
+				);
+				if (matchingOption) {
+					matchingOption.focus();
+				}
+
+				resetTyped();
+			}
+		};
+
+		document.addEventListener('keydown', keydownListener);
+
+		return () => {
+			document.removeEventListener('keydown', keydownListener);
 		};
 	});
 

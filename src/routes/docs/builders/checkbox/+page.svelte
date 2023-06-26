@@ -1,8 +1,15 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
+	import { schemas } from './schemas';
 	import { snippets } from './(snippets)';
-	import code from './code.ignore-svelte?raw';
-	import Preview from './preview.svelte';
+
+	export let data;
+
+	const features = [
+		'Supports indeterminate state',
+		'Full keyboard navigation',
+		'Can be controlled or uncontrolled',
+	];
 </script>
 
 <Docs.H1>Checkbox</Docs.H1>
@@ -10,16 +17,9 @@
 	>A control that allows the user to toggle between checked and not checked.</Docs.Description
 >
 
-<Preview />
+<Docs.Preview {...data.preview} />
 
-<Docs.CodeBlock {code} />
-
-<Docs.H2>Features</Docs.H2>
-<Docs.Ul>
-	<Docs.Li>Supports indeterminate state</Docs.Li>
-	<Docs.Li>Full keyboard navigation</Docs.Li>
-	<Docs.Li>Can be controlled or uncontrolled</Docs.Li>
-</Docs.Ul>
+<Docs.Features {features} />
 
 <Docs.H2>Anatomy</Docs.H2>
 <Docs.Ul>
@@ -38,60 +38,31 @@
 	To create an indeterminate checkbox, set the <Docs.Code>checked</Docs.Code> argument as
 	<Docs.Code>indeterminate</Docs.Code>.
 </Docs.P>
-<Docs.CodeBlock collapsible={false} code={snippets.indeterminate} />
+<Docs.CodeBlock code={snippets.indeterminate} />
 
 <Docs.H3>Disabling the checkbox</Docs.H3>
 <Docs.P>
 	To disable the checkbox, set the <Docs.Code>disabled</Docs.Code> argument as
 	<Docs.Code>true</Docs.Code>.
 </Docs.P>
-<Docs.CodeBlock collapsible={false} code={snippets.disable} />
+<Docs.CodeBlock code={snippets.disable} />
 
 <Docs.H3>Controlled access</Docs.H3>
 <Docs.P>
 	To programatically control the checkbox, you can directly set the <Docs.Code>checked</Docs.Code> store.
 	You can also update the <Docs.Code>options</Docs.Code> store with new arguments.
 </Docs.P>
-<Docs.CodeBlock collapsible={false} code={snippets.controlled} />
-
-<Docs.H2>Accessibility</Docs.H2>
-<Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/">WAI-ARIA pattern</Docs.A>
-
-<Docs.H3>Keyboard Interactions</Docs.H3>
-
-<Docs.P>
-	When the checkbox has focus, pressing the <Docs.Kbd>Space</Docs.Kbd> key changes the state of the checkbox.
-</Docs.P>
+<Docs.CodeBlock code={snippets.controlled} />
 
 <Docs.H2>API Reference</Docs.H2>
-<Docs.API
-	schema={{
-		title: 'createCheckbox Config',
-		description: 'Creates an checkbox component.',
-		args: [
-			{
-				label: 'checked',
-				type: 'boolean | "indeterminate"',
-				default: false,
-			},
-			{
-				label: 'disabled',
-				type: 'boolean',
-				default: false,
-			},
-			{
-				label: 'required',
-				type: 'boolean',
-				default: false,
-			},
-			{
-				label: 'name',
-				type: 'string',
-			},
-			{
-				label: 'value',
-				type: 'string',
-			},
-		],
-	}}
-/>
+<Docs.API schema={schemas.builder} />
+
+<Docs.H2>Accessibility</Docs.H2>
+<Docs.P>
+	Adheres to the
+	<Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/"
+		>tri-state Checkbox WAI-ARIA design pattern</Docs.A
+	>
+</Docs.P>
+
+<Docs.API schema={schemas.keyboard} />

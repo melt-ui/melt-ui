@@ -1,4 +1,4 @@
-import { elementMultiDerived, omit } from '$lib/internal/helpers';
+import { addEventListener, executeCallbacks, omit } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, writable } from 'svelte/store';
 import { createToolbar, getKeydownHandler } from '.';
@@ -61,25 +61,12 @@ export function createToolbarGroup(args: CreateToolbarGroupArgs) {
 				disabled?: boolean;
 		  }
 		| string;
-	const item = elementMultiDerived(
-		[options, value, toolbarOptions],
-		([$options, $value, $toolbarOptions], { attach }) => {
+	const item = {
+		...derived([options, value, toolbarOptions], ([$options, $value, $toolbarOptions]) => {
 			return (args: ToolbarGroupItemArgs) => {
 				const itemValue = typeof args === 'string' ? args : args.value;
 				const argDisabled = typeof args === 'string' ? false : !!args.disabled;
 				const disabled = $options.disabled || argDisabled;
-
-				attach('click', () => {
-					if (disabled) return;
-					value.update((v) => {
-						if (Array.isArray(v)) {
-							return v.includes(itemValue) ? v.filter((i) => i !== itemValue) : [...v, itemValue];
-						}
-						return v === itemValue ? null : itemValue;
-					});
-				});
-
-				attach('keydown', getKeydownHandler($toolbarOptions));
 
 				const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
 				const anyPressed = Array.isArray($value) ? $value.length > 0 : $value !== null;
@@ -87,7 +74,8 @@ export function createToolbarGroup(args: CreateToolbarGroupArgs) {
 					disabled,
 					pressed,
 					'data-orientation': $toolbarOptions.orientation,
-					'data-disabled': disabled ? '' : undefined,
+					'data-disabled': disabled ? true : undefined,
+					'data-value': itemValue,
 					'data-state': pressed ? 'on' : 'off',
 					'aria-pressed': pressed,
 					type: 'button',
@@ -96,8 +84,36 @@ export function createToolbarGroup(args: CreateToolbarGroupArgs) {
 					tabindex: anyPressed ? (pressed ? 0 : -1) : 0,
 				} as const;
 			};
-		}
-	);
+		}),
+		action: (node: HTMLElement) => {
+			const getNodeProps = () => {
+				const itemValue = node.dataset.value;
+				const disabled = node.dataset.disabled === 'true';
+
+				return { value: itemValue, disabled };
+			};
+
+			const unsub = executeCallbacks(
+				addEventListener(node, 'click', () => {
+					const { value: itemValue, disabled } = getNodeProps();
+					if (itemValue === undefined || disabled) return;
+
+					value.update((v) => {
+						if (Array.isArray(v)) {
+							return v.includes(itemValue) ? v.filter((i) => i !== itemValue) : [...v, itemValue];
+						}
+						return v === itemValue ? null : itemValue;
+					});
+				}),
+
+				addEventListener(node, 'keydown', getKeydownHandler(toolbarOptions))
+			);
+
+			return {
+				destroy: unsub,
+			};
+		},
+	};
 
 	const isPressed = derived(value, ($value) => {
 		return (itemValue: string) => {

@@ -55,5 +55,5 @@ export type FocusTrapReturn = {
 	/**
 	 * Action to attach to the element that you want to act as a focus trap.
 	 */
-	useFocusTrap: Action<HTMLElement>;
+	useFocusTrap: Action<HTMLElement, any>;
 };
