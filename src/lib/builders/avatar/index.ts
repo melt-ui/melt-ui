@@ -1,38 +1,38 @@
 import { effect, isBrowser, styleToString } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { writable, derived, get } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 
 export type ImageLoadingStatus = 'loading' | 'loaded' | 'error';
 
 export type CreateAvatarArgs = {
 	src: string;
+	delayMs?: number;
 };
 
 const defaults = {
 	src: '',
-} satisfies Defaults<CreateAvatarArgs>;
+} satisfies CreateAvatarArgs;
 
 export const createAvatar = (args: CreateAvatarArgs = defaults) => {
 	const withDefaults = { ...defaults, ...args };
+	const { delayMs } = withDefaults;
+
 	const src = writable(withDefaults.src);
 
 	const loadingStatus = writable<ImageLoadingStatus>('loading');
 
-	const root = derived([src], () => {
-		const rootStyles = styleToString({
-			overflow: 'hidden',
-		});
-		return {
-			style: rootStyles,
-		};
-	});
-
-	effect([src], () => {
+	effect([src], ([$src]) => {
 		if (isBrowser) {
 			const image = new Image();
-			image.src = get(src);
+			image.src = $src;
 			image.onload = () => {
-				loadingStatus.set('loaded');
+				if (delayMs !== undefined) {
+					const timerId = window.setTimeout(() => {
+						loadingStatus.set('loaded');
+					}, delayMs);
+					return () => window.clearTimeout(timerId);
+				} else {
+					loadingStatus.set('loaded');
+				}
 			};
 			image.onerror = () => {
 				loadingStatus.set('error');
@@ -60,7 +60,6 @@ export const createAvatar = (args: CreateAvatarArgs = defaults) => {
 	});
 
 	return {
-		root,
 		image,
 		fallback,
 	};
