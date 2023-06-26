@@ -349,6 +349,107 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		},
 	});
 
+	type CheckboxItemArgs = {
+		checked: Writable<boolean | 'indeterminate'>;
+	};
+
+	const checkboxItemDefaults = {
+		checked: writable(false),
+	};
+
+	const checkboxItem = hiddenAction({
+		role: 'menuitemcheckbox',
+		tabindex: -1,
+		'data-orientation': 'vertical',
+		'data-melt-part': 'item',
+		action: (node: HTMLElement, params: CheckboxItemArgs) => {
+			setMeltMenuAttribute(node);
+			applyAttrsIfDisabled(node);
+			const { checked } = { ...checkboxItemDefaults, ...params };
+			const $checked = get(checked) as boolean | 'indeterminate';
+			node.setAttribute('aria-checked', isIndeterminate($checked) ? 'mixed' : String($checked));
+			node.setAttribute('data-state', getCheckedState($checked));
+
+			const unsub = executeCallbacks(
+				addEventListener(node, 'pointerdown', (e) => {
+					const itemElement = e.currentTarget;
+					if (!isHTMLElement(itemElement)) return;
+					if (isElementDisabled(itemElement)) {
+						e.preventDefault();
+						return;
+					}
+				}),
+				addEventListener(node, 'click', (e) => {
+					const itemElement = e.currentTarget;
+					if (!isHTMLElement(itemElement)) return;
+					if (isElementDisabled(itemElement)) {
+						e.preventDefault();
+						return;
+					}
+
+					if (e.defaultPrevented) {
+						if (!isHTMLElement(itemElement)) return;
+
+						handleRovingFocus(itemElement);
+						return;
+					}
+					checked.update((prev) => {
+						if (isIndeterminate(prev)) return true;
+						return !prev;
+					});
+
+					itemElement.dispatchEvent(new CustomEvent('m-select', { bubbles: false }));
+					rootOpen.set(false);
+				}),
+				addEventListener(node, 'keydown', (e) => {
+					const isTypingAhead = typed.length > 0;
+					if (isTypingAhead && e.key === kbd.SPACE) return;
+					if (SELECTION_KEYS.includes(e.key)) {
+						const itemElement = e.currentTarget;
+						if (!isHTMLElement(itemElement)) return;
+
+						itemElement.click();
+						/**
+						 * We prevent default browser behaviour for selection keys as they should trigger
+						 * a selection only:
+						 * - prevents space from scrolling the page.
+						 * - if keydown causes focus to move, prevents keydown from firing on the new target.
+						 */
+						e.preventDefault();
+					}
+				}),
+				addEventListener(node, 'pointermove', (e) => {
+					const itemElement = e.currentTarget;
+					if (!isHTMLElement(itemElement)) return;
+
+					if (isElementDisabled(itemElement)) {
+						onItemLeave(e);
+						return;
+					}
+
+					onMenuItemPointerMove(e);
+				}),
+				addEventListener(node, 'pointerleave', (e) => {
+					onMenuItemPointerLeave(e);
+				}),
+				addEventListener(node, 'focusin', (e) => {
+					const itemElement = e.currentTarget;
+					if (!isHTMLElement(itemElement)) return;
+					itemElement.setAttribute('data-highlighted', '');
+				}),
+				addEventListener(node, 'focusout', (e) => {
+					const itemElement = e.currentTarget;
+					if (!isHTMLElement(itemElement)) return;
+					itemElement.removeAttribute('data-highlighted');
+				})
+			);
+
+			return {
+				destroy: unsub,
+			};
+		},
+	});
+
 	/* -------------------------------------------------------------------------------------------------
 	 * SUBMENU
 	 * -----------------------------------------------------------------------------------------------*/
@@ -872,6 +973,14 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	 * Helper Functions
 	 * -----------------------------------------------------------------------------------------------*/
 
+	function isIndeterminate(checked?: boolean | 'indeterminate'): checked is 'indeterminate' {
+		return checked === 'indeterminate';
+	}
+
+	function getCheckedState(checked: boolean | 'indeterminate') {
+		return isIndeterminate(checked) ? 'indeterminate' : checked ? 'checked' : 'unchecked';
+	}
+
 	function applyAttrsIfDisabled(element: HTMLElement | null) {
 		if (!isBrowser) return;
 		if (!isHTMLElement(element)) return;
@@ -1020,6 +1129,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		menu: rootMenu,
 		open: rootOpen,
 		item,
+		checkboxItem,
 		arrow: rootArrow,
 		options: rootOptions,
 		createSubMenu,
