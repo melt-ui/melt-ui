@@ -2,7 +2,7 @@ import type { APISchema } from '$routes/(components)';
 
 const builder: APISchema = {
 	title: 'CreateTooltipArgs',
-	description: 'Configuration options for the `createTooltip` builder.',
+	description: 'The configuration object passed to the `createTooltip` builder function.',
 	args: [
 		{
 			label: 'positioning',

@@ -43,7 +43,7 @@
 				<div
 					class="overflow-hidden bg-neutral-100 text-sm text-neutral-900"
 					{...$content(id)}
-					transition:slide|local
+					transition:slide
 				>
 					<div class="px-5 py-4">{description}</div>
 				</div>

@@ -3,10 +3,12 @@
 		component: any;
 		code: {
 			Tailwind: {
+				[key: string]: string;
 				'index.svelte': string;
 				'tailwind.config.ts': string;
 			};
 			CSS: {
+				[key: string]: string;
 				'index.svelte': string;
 				'globals.css': string;
 			} | null;
@@ -30,15 +32,22 @@
 	export let code: $$Props['code'];
 	export let fullwidth: $$Props['fullwidth'] = false;
 
-	let codingStyle = Object.keys(code)[0];
-	$: codingStyleObj = code[codingStyle];
+	let codingStyle = Object.keys(code)[0] ? ('Tailwind' as const) : ('CSS' as const);
+	let codingStyleObj: $$Props['code'][typeof codingStyle] | null = code[codingStyle];
+
+	$: {
+		codingStyleObj = code[codingStyle];
+	}
+
 	$: files = codingStyleObj !== null ? Object.keys(codingStyleObj) : [];
 
 	const { value } = createSelect({
 		value: codingStyle,
 	});
 	value.subscribe((v) => {
-		typeof v === 'string' && (codingStyle = v);
+		if (v === 'Tailwind' || v === 'CSS') {
+			codingStyle = v;
+		}
 	});
 
 	let viewCode = false;
@@ -76,7 +85,7 @@
 					<Select options={codeOptions} bind:value={codingStyle} />
 				</div>
 			</div>
-			{#if codingStyleObj}
+			{#if codingStyleObj && codingStyleObj[tab]}
 				<CodeBlock code={codingStyleObj[tab]} />
 			{/if}
 		</TabsRoot>

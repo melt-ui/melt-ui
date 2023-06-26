@@ -2,7 +2,7 @@ import type { APISchema } from '$routes/(components)';
 
 const builder: APISchema = {
 	title: 'CreateToolbarArgs',
-	description: 'Configuration options for the `createToolbar` builder.',
+	description: 'The configuration object passed to the `createToolbar` builder function.',
 	args: [
 		{
 			label: 'loop',

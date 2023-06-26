@@ -68,7 +68,7 @@
 			</div>
 		</div>
 	</header>
-	<div class="flex-1 py-2">
+	<div class="flex flex-1 flex-col py-2">
 		<slot />
 	</div>
 	{#if dev}

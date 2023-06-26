@@ -2,7 +2,7 @@ import type { APISchema } from '$routes/(components)';
 
 const builder: APISchema = {
 	title: 'CreateSwitchArgs',
-	description: 'The object you pass into createAccordion. Optional.',
+	description: 'The configuration object passed to the `createSwitch` builder function.',
 	args: [
 		{
 			label: 'checked',

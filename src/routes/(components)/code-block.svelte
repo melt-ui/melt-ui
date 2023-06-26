@@ -29,11 +29,11 @@
 >
 	<button class="absolute right-3 top-3 z-10" aria-label="copy" on:click={copyCode}>
 		{#if copied}
-			<div in:fly|local={{ y: -4 }}>
+			<div in:fly={{ y: -4 }}>
 				<Check class="text-magnum-500" />
 			</div>
 		{:else}
-			<div in:fly|local={{ y: 4 }}>
+			<div in:fly={{ y: 4 }}>
 				<Copy class="hover:text-magnum-500" />
 			</div>
 		{/if}

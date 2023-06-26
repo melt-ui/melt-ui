@@ -27,7 +27,7 @@
 	<div
 		{...$content}
 		use:content.action
-		transition:fade|local={{ duration: 100 }}
+		transition:fade={{ duration: 100 }}
 		class="z-10 rounded-md bg-white shadow-sm"
 	>
 		<div {...$arrow} />

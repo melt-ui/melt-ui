@@ -2,7 +2,7 @@ import type { APISchema } from '$routes/(components)';
 
 const builder: APISchema = {
 	title: 'CreateRadioGroupArgs',
-	description: 'Configuration options for the `createRadioGroup` builder.',
+	description: 'The configuration object passed to the `createRadioGroup` builder function.',
 	args: [
 		{
 			label: 'disabled',

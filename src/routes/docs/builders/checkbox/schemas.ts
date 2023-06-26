@@ -1,8 +1,8 @@
 import type { APISchema } from '$routes/(components)';
 
 const builder: APISchema = {
-	title: 'createCheckbox',
-	description: 'Creates an checkbox component.',
+	title: 'CreateCheckboxArgs',
+	description: 'The configuration object passed to the `createCheckbox` builder function.',
 	args: [
 		{
 			label: 'checked',

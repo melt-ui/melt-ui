@@ -2,7 +2,7 @@ import type { APISchema } from '$routes/(components)';
 
 const builder: APISchema = {
 	title: 'CreatePaginationArgs',
-	description: 'Configuration options for the pagination builder.',
+	description: 'The configuration object passed to the `createPagination` builder function.',
 	args: [
 		{
 			label: 'count',

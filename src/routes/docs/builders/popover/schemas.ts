@@ -2,7 +2,7 @@ import type { APISchema } from '$routes/(components)';
 
 const builder: APISchema = {
 	title: 'CreatePopoverArgs',
-	description: 'Configuration options for the `createPopover` builder.',
+	description: 'The configuration object passed to the `createPopover` builder function.',
 	args: [
 		{
 			label: 'checked',

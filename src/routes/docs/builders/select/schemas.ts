@@ -2,7 +2,7 @@ import type { APISchema } from '$routes/(components)';
 
 const builder: APISchema = {
 	title: 'CreateSelectArgs',
-	description: 'Configuration options for the `createSelect` builder.',
+	description: 'The configuration object passed to the `createSelect` builder function.',
 	args: [
 		{
 			label: 'required',

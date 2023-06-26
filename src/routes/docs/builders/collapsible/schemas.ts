@@ -2,7 +2,7 @@ import type { APISchema } from '$routes/(components)';
 
 const builder: APISchema = {
 	title: 'CreateCollapsibleArgs',
-	description: 'The object you pass into createCollapsible. Optional.',
+	description: 'The configuration object passed to the `createCollapsible` builder function.',
 	args: [
 		{
 			label: 'open',
