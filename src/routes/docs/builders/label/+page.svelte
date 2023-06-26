@@ -1,50 +1,34 @@
 <script lang="ts">
-  import { Docs } from '$routes/(components)';
-  import code from './code.ignore-svelte?raw';
-  import Preview from './preview.svelte';
+	import { Docs } from '$routes/(components)';
+	import { snippets } from './(snippets)';
+
+	export let data;
+
+	const features = [
+		'Supports nested controls',
+		'Disables text selection when double clicking the label',
+	];
 </script>
 
 <Docs.H1>Label</Docs.H1>
-<Docs.Description
-  >A control that add a label to an input element.</Docs.Description>
+<Docs.Description>A control that add a label to an input element.</Docs.Description>
 
-  <Preview />
+<Docs.Preview {...data.preview} />
 
-<Docs.CodeBlock {code} />
-
-<Docs.H2>Features</Docs.H2>
-<Docs.Ul>
-  <Docs.Li>Can be used with any input element</Docs.Li>
-  <Docs.Li>Support nested controls</Docs.Li>
-  <Docs.Li>Can add an asterisk at the end if the field is required</Docs.Li>
-  <Docs.Li>Text selection is prevented when double clicking label</Docs.Li>
-</Docs.Ul>
+<Docs.Features {features} />
 
 <Docs.H2>Anatomy</Docs.H2>
 <Docs.Ul>
-  <Docs.Li>
-    <b>Root:</b> The root container for the label
-  </Docs.Li>
-  <Docs.Li>
-    <b>Asterisk:</b> The asterisk element
-  </Docs.Li>
+	<Docs.Li>
+		<b>Root:</b> The root container for the label
+	</Docs.Li>
 </Docs.Ul>
 
 <Docs.H2>Usage</Docs.H2>
-<Docs.P>
-  To create a label, use the <Docs.Code>createLabel</Docs.Code> builder
-  function. Follow the anatomy or the example above to create your label.
+<Docs.P class="mt-4">
+	To create a label, use the <Docs.Code>createLabel</Docs.Code> builder function and apply the <Docs.Code
+		>root</Docs.Code
+	> action to the label element.
 </Docs.P>
 
-<Docs.H2>API Reference</Docs.H2>
-<Docs.API schema={{
-  title: 'CreateLabelArgs',
-  description: 'The arguments for the createLabel function. Optional',
-  args: [
-    {
-      label: 'isRequired',
-      type: 'boolean',
-      default: 'false',
-    },
-  ],
-}} />
+<Docs.CodeBlock code={snippets.usage} />

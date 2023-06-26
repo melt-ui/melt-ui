@@ -1,21 +1,19 @@
 <script lang="ts">
-  import { createLabel } from '..';
+	import { createLabel } from '..';
 
-  export let isRequired = false;
-  export let inputId = 'test'
+	export let inputId = 'test';
 
-  const { root, asterisk } = createLabel({
-    isRequired
-  });
+	const { root } = createLabel();
 </script>
 
 <form>
-  <div>
-    <label {...$root} for={inputId}>
-      <span>Test
-        <span {...$asterisk}>*</span>
-      </span>
-      <input type="text" id={inputId} />
-    </label>
-  </div>
+	<div>
+		<label use:root.action for={inputId}>
+			<span
+				>Test
+				<span>*</span>
+			</span>
+			<input type="text" id={inputId} />
+		</label>
+	</div>
 </form>

@@ -1,54 +1,21 @@
-import { effect, generateId, isBrowser, styleToString } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { derived, writable } from 'svelte/store';
+import { addEventListener, hiddenAction } from '$lib/internal/helpers';
 
-export type CreateLabelArgs = {
-	/**
-	 * Determines whether required form elements are marked with an asterisk.
-	 */
-	isRequired?: boolean;
-};
+export function createLabel() {
+	const root = hiddenAction({
+		action: (node: HTMLElement) => {
+			const mouseDown = addEventListener(node, 'mousedown', (e) => {
+				if (!e.defaultPrevented && e.detail > 1) {
+					e.preventDefault();
+				}
+			});
 
-const defaults = {
-	isRequired: false,
-} satisfies Defaults<CreateLabelArgs>;
-
-export function createLabel(args: CreateLabelArgs = defaults) {
-	const withDefaults = { ...defaults, ...args } as CreateLabelArgs;
-	const options = writable(withDefaults);
-
-	const root = derived(options, () => {
-		const id = generateId();
-		return {
-			id,
-		};
-	});
-
-	const asterisk = derived(options, ($options) => {
-		const style = styleToString({
-			display: $options.isRequired ? undefined : 'none',
-		});
-
-		return {
-			style,
-		};
-	});
-
-	effect([root], () => {
-		if (!isBrowser) return;
-		const mouseDown = (e: MouseEvent) => {
-			if (!e.defaultPrevented && e.detail > 1) {
-				e.preventDefault();
-			}
-		};
-		document.addEventListener('mousedown', mouseDown);
-		return () => {
-			document.removeEventListener('mousedown', mouseDown);
-		};
+			return {
+				destroy: mouseDown,
+			};
+		},
 	});
 
 	return {
 		root,
-		asterisk,
 	};
 }
