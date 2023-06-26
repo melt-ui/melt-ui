@@ -4,11 +4,11 @@
 
   export let orientation: Orientation = 'vertical';
 
-  const { separator: vertical } = createSeparator({
+  const { root: vertical } = createSeparator({
     orientation,
   });
 
-  const { separator: horizontalSeparator } = createSeparator({
+  const { root: horizontalSeparator } = createSeparator({
     orientation: 'horizontal',
     decorative: true,
   });
