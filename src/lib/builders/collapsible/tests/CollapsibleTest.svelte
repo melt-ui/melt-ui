@@ -9,6 +9,6 @@
 </script>
 
 <div {...$root}>
-	<button {...$trigger} data-testid="trigger">Trigger</button>
+	<button {...$trigger} use:trigger.action data-testid="trigger">Trigger</button>
 	<div {...$content} data-testid="content">Content</div>
 </div>

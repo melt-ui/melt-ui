@@ -1,12 +1,13 @@
 import {
+	addEventListener,
 	effect,
-	elementDerived,
-	elementMultiDerived,
+	generateId,
 	getElementByMeltId,
 	isBrowser,
 	kbd,
 	omit,
 	styleToString,
+	typedDerived,
 } from '$lib/internal/helpers';
 import { derived, get, writable } from 'svelte/store';
 
@@ -38,11 +39,16 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 	const currentThumbIndex = writable<number>(0);
 	const activeThumb = writable<{ thumb: HTMLElement; index: number } | null>(null);
 
-	const root = elementDerived(options, ($options) => {
+	const ids = {
+		root: generateId(),
+	};
+
+	const root = derived(options, ($options) => {
 		return {
 			disabled: $options.disabled,
 			'data-orientation': $options.orientation,
 			style: 'touch-action: none;',
+			'data-melt-id': ids.root,
 		};
 	});
 
@@ -90,10 +96,22 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		});
 	};
 
-	const thumb = elementMultiDerived(
-		[value, options, position],
-		([$value, $options, $position], { attach, index, getAllElements }) => {
+	const getAllThumbs = () => {
+		const root = getElementByMeltId(ids.root);
+		if (!root) return null;
+
+		const thumbs = Array.from(root.querySelectorAll('[data-melt-part="thumb"]')).filter(
+			Boolean
+		) as Array<HTMLElement>;
+		return thumbs;
+	};
+
+	const thumb = {
+		...typedDerived([value, options, position], ([$value, $options, $position]) => {
+			let index = -1;
+
 			return () => {
+				index++;
 				const { min: $min, max: $max, disabled: $disabled } = $options;
 
 				const currentThumb = get(currentThumbIndex);
@@ -101,80 +119,6 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 				if (currentThumb < $value.length) {
 					currentThumbIndex.update((prev) => prev + 1);
 				}
-
-				attach('keydown', (event) => {
-					if ($disabled) return;
-
-					const target = event.currentTarget as HTMLElement;
-					const thumbs = getAllElements();
-					if (!thumbs) return;
-
-					const index = thumbs.indexOf(target);
-					currentThumbIndex.set(index);
-
-					if (
-						![
-							kbd.ARROW_LEFT,
-							kbd.ARROW_RIGHT,
-							kbd.ARROW_UP,
-							kbd.ARROW_DOWN,
-							kbd.HOME,
-							kbd.END,
-						].includes(event.key)
-					) {
-						return;
-					}
-
-					event.preventDefault();
-
-					const step = $options.step;
-					const $value = get(value);
-
-					switch (event.key) {
-						case kbd.HOME: {
-							updatePosition($min, index);
-							break;
-						}
-						case kbd.END: {
-							updatePosition($max, index);
-							break;
-						}
-						case kbd.ARROW_LEFT: {
-							if ($value[index] > $min && $options.orientation === 'horizontal') {
-								const newValue = $value[index] - step;
-								updatePosition(newValue, index);
-							}
-							break;
-						}
-						case kbd.ARROW_RIGHT: {
-							if ($value[index] < $max && $options.orientation === 'horizontal') {
-								const newValue = $value[index] + step;
-								updatePosition(newValue, index);
-							}
-							break;
-						}
-						case kbd.ARROW_UP: {
-							if ($value[index] > $min && $options.orientation === 'vertical') {
-								const newValue = $value[index] - step;
-								updatePosition(newValue, index);
-							} else if ($value[index] < $max) {
-								const newValue = $value[index] + step;
-								updatePosition(newValue, index);
-							}
-							break;
-						}
-						case kbd.ARROW_DOWN: {
-							if ($value[index] < $max && $options.orientation === 'vertical') {
-								const newValue = $value[index] + step;
-								updatePosition(newValue, index);
-							} else if ($value[index] > $min) {
-								const newValue = $value[index] - step;
-								updatePosition(newValue, index);
-							}
-							break;
-						}
-					}
-				});
 
 				const thumbPosition = `${$position($value[index])}%`;
 				return {
@@ -191,12 +135,92 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 							: { top: thumbPosition, translate: '0 -50%`' }),
 					}),
 					tabindex: $disabled ? -1 : 0,
-				};
+				} as const;
 			};
-		}
-	);
+		}),
+		action: (node: HTMLElement) => {
+			const unsub = addEventListener(node, 'keydown', (event) => {
+				const $options = get(options);
+				const $min = $options.min;
+				const $max = $options.max;
+				if ($options.disabled) return;
 
-	const getAllThumbs = () => thumb.getAllElements().filter(Boolean) as HTMLElement[];
+				const target = event.currentTarget as HTMLElement;
+				const thumbs = getAllThumbs();
+				if (!thumbs?.length) return;
+
+				const index = thumbs.indexOf(target);
+				currentThumbIndex.set(index);
+
+				if (
+					![
+						kbd.ARROW_LEFT,
+						kbd.ARROW_RIGHT,
+						kbd.ARROW_UP,
+						kbd.ARROW_DOWN,
+						kbd.HOME,
+						kbd.END,
+					].includes(event.key)
+				) {
+					return;
+				}
+
+				event.preventDefault();
+
+				const step = $options.step;
+				const $value = get(value);
+
+				switch (event.key) {
+					case kbd.HOME: {
+						updatePosition($min, index);
+						break;
+					}
+					case kbd.END: {
+						updatePosition($max, index);
+						break;
+					}
+					case kbd.ARROW_LEFT: {
+						if ($value[index] > $min && $options.orientation === 'horizontal') {
+							const newValue = $value[index] - step;
+							updatePosition(newValue, index);
+						}
+						break;
+					}
+					case kbd.ARROW_RIGHT: {
+						if ($value[index] < $max && $options.orientation === 'horizontal') {
+							const newValue = $value[index] + step;
+							updatePosition(newValue, index);
+						}
+						break;
+					}
+					case kbd.ARROW_UP: {
+						if ($value[index] > $min && $options.orientation === 'vertical') {
+							const newValue = $value[index] - step;
+							updatePosition(newValue, index);
+						} else if ($value[index] < $max) {
+							const newValue = $value[index] + step;
+							updatePosition(newValue, index);
+						}
+						break;
+					}
+					case kbd.ARROW_DOWN: {
+						if ($value[index] < $max && $options.orientation === 'vertical') {
+							const newValue = $value[index] + step;
+							updatePosition(newValue, index);
+						} else if ($value[index] > $min) {
+							const newValue = $value[index] - step;
+							updatePosition(newValue, index);
+						}
+						break;
+					}
+				}
+			});
+
+			return {
+				destroy: unsub,
+			};
+		},
+	};
 
 	effect([root, options], ([$root, $options]) => {
 		const { min: $min, max: $max, disabled: $disabled } = $options;

@@ -20,10 +20,6 @@
 	<title>Melt UI</title>
 </svelte:head>
 
-{#each { length: 6 } as _, n}
-	<div class="cumulative-gradient" style:--n={n + 1} />
-{/each}
-
 <div class="relative grid grow place-items-center p-6">
 	<div class="grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-3">
 		<div class="col-span-full flex flex-col gap-4 py-24">
@@ -37,11 +33,11 @@
 				>
 					<span>npm install <span class="whitespace-nowrap">@melt-ui/svelte</span></span>
 					{#if copied}
-						<div in:fly|local={{ y: -4 }}>
+						<div in:fly={{ y: -4 }}>
 							<Check class="inline-block h-5 w-5 text-magnum-500 transition" />
 						</div>
 					{:else}
-						<div in:fly|local={{ y: 4 }}>
+						<div in:fly={{ y: 4 }}>
 							<Copy class="inline-block h-5 w-5 transition" />
 						</div>
 					{/if}

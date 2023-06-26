@@ -1,6 +1,6 @@
-import { elementDerived, elementMultiDerived, kbd, omit } from '$lib/internal/helpers';
+import { addEventListener, executeCallbacks, kbd, omit } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 import { getPageItems, type Page } from './helpers';
 
 export type CreatePaginationArgs = {
@@ -77,53 +77,77 @@ export function createPagination(args: CreatePaginationArgs) {
 		}
 	};
 
-	const pageTrigger = elementMultiDerived(page, ($page, { attach }) => {
-		return (pageItem: Page) => {
-			attach('click', () => {
-				page.set(pageItem.value);
-			});
-
-			attach('keydown', keydown);
+	const pageTrigger = {
+		...derived(page, ($page) => {
+			return (pageItem: Page) => {
+				return {
+					'aria-label': `Page ${pageItem.value}`,
+					'data-value': pageItem.value,
+					'data-selected': pageItem.value === $page ? '' : undefined,
+					'data-melt-part': 'page-trigger',
+				};
+			};
+		}),
+		action: (node: HTMLElement) => {
+			const unsub = executeCallbacks(
+				addEventListener(node, 'click', () => {
+					const value = node.dataset.value;
+					if (!value || Number.isNaN(+value)) return;
+					page.set(Number(value));
+				}),
+				addEventListener(node, 'keydown', keydown)
+			);
 
 			return {
-				'aria-label': `Page ${pageItem.value}`,
-				'data-selected': pageItem.value === $page ? '' : undefined,
-				'data-melt-part': 'page-trigger',
+				destroy: unsub,
 			};
-		};
-	});
+		},
+	};
 
-	const prevButton = elementDerived([page], ([$page], { attach }) => {
-		if ($page > 1) {
-			attach('click', () => {
-				page.set($page - 1);
-			});
-		}
+	const prevButton = {
+		...derived([page], ([$page]) => {
+			return {
+				'aria-label': 'Previous',
+				disabled: $page <= 1,
+				'data-melt-part': 'page-prev-button',
+			} as const;
+		}),
+		action: (node: HTMLElement) => {
+			const unsub = executeCallbacks(
+				addEventListener(node, 'click', () => {
+					page.update((p) => Math.max(p - 1, 1));
+				}),
+				addEventListener(node, 'keydown', keydown)
+			);
 
-		attach('keydown', keydown);
+			return {
+				destroy: unsub,
+			};
+		},
+	};
 
-		return {
-			'aria-label': 'Previous',
-			disabled: $page <= 1,
-			'data-melt-part': 'page-prev-button',
-		} as const;
-	});
+	const nextButton = {
+		...derived([page, totalPages], ([$page, $numPages]) => {
+			return {
+				'aria-label': 'Next',
+				disabled: $page >= $numPages,
+				'data-melt-part': 'page-next-button',
+			} as const;
+		}),
+		action: (node: HTMLElement) => {
+			const unsub = executeCallbacks(
+				addEventListener(node, 'click', () => {
+					const $totalPages = get(totalPages);
+					page.update((p) => Math.min(p + 1, $totalPages));
+				}),
+				addEventListener(node, 'keydown', keydown)
+			);
 
-	const nextButton = elementDerived([page, totalPages], ([$page, $numPages], { attach }) => {
-		if ($page < $numPages) {
-			attach('click', () => {
-				page.set($page + 1);
-			});
-		}
-
-		attach('keydown', keydown);
-
-		return {
-			'aria-label': 'Next',
-			disabled: $page >= $numPages,
-			'data-melt-part': 'page-next-button',
-		} as const;
-	});
+			return {
+				destroy: unsub,
+			};
+		},
+	};
 
 	return {
 		root,
