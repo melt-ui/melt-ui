@@ -98,6 +98,6 @@
 		Grail UI - <Docs.A href="https://grail-ui.com/">https://grail-ui.com</Docs.A>
 	</Docs.Li>
 	<Docs.Li>
-		Skeleton - <Docs.A href="https://grail-ui.com/">https://skeleton.dev</Docs.A>
+		Skeleton - <Docs.A href="https://skeleton.dev">https://skeleton.dev</Docs.A>
 	</Docs.Li>
 </Docs.Ul>
