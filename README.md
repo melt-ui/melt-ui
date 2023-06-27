@@ -72,7 +72,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Component name  | Status |
 | --------------- | ------ |
 | Accordion       | ✅     |
-| Avatar          |        |
+| Avatar          | ✅     |
 | Calendar        |        |
 | Checkbox        | ✅     |
 | Collapsible     | ✅     |
