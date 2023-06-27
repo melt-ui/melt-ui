@@ -35,15 +35,48 @@ const SUB_CLOSE_KEYS: Record<TextDirection, string[]> = {
 };
 
 export type CreateDropdownMenuArgs = {
+	/*
+	 * Options for positioning the popover menu.
+	 *
+	 * @default { placement: 'bottom' }
+	 */
 	positioning?: FloatingConfig;
+
+	/**
+	 * The size of the arrow in pixels.
+	 * @default 8
+	 */
 	arrowSize?: number;
-	disabled?: boolean;
-	name?: string;
+
+	/**
+	 * The direction of the text in the dropdown menu
+	 *
+	 * @default 'ltr'
+	 */
+	dir?: TextDirection;
 };
+
+export type CreateDropdownSubMenuArgs = CreateDropdownMenuArgs & {
+	disabled?: boolean;
+};
+
+export type CreateMenuRadioGroupArgs = {
+	value?: string;
+};
+
+export type CheckboxItemArgs = {
+	checked: Writable<boolean | 'indeterminate'>;
+};
+
+export type RadioItemArgs =
+	| {
+			value: string;
+			disabled?: boolean;
+	  }
+	| string;
 
 const defaults = {
 	arrowSize: 8,
-	disabled: false,
 	positioning: {
 		placement: 'bottom',
 	},
@@ -54,6 +87,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	const rootOptions = writable(withDefaults);
 
 	const rootOpen = writable(false);
+
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
 
 	const lastPointerX = writable(0);
@@ -355,10 +389,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		},
 	});
 
-	type CheckboxItemArgs = {
-		checked: Writable<boolean | 'indeterminate'>;
-	};
-
 	const checkboxItemDefaults = {
 		checked: writable(false),
 	};
@@ -454,17 +484,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			};
 		},
 	});
-
-	type CreateMenuRadioGroupArgs = {
-		value?: string;
-	};
-
-	type RadioItemArgs =
-		| {
-				value: string;
-				disabled?: boolean;
-		  }
-		| string;
 
 	const createMenuRadioGroup = (args: CreateMenuRadioGroupArgs = {}) => {
 		const value = writable(args.value ?? null);
@@ -605,14 +624,15 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 	const subMenuDefaults = {
 		...defaults,
+		disabled: false,
 		positioning: {
 			placement: 'right-start',
 			gutter: 8,
 		},
-	} satisfies Defaults<CreateDropdownMenuArgs>;
+	} satisfies Defaults<CreateDropdownSubMenuArgs>;
 
-	const createSubMenu = (args?: CreateDropdownMenuArgs) => {
-		const withDefaults = { ...subMenuDefaults, ...args } as CreateDropdownMenuArgs;
+	const createSubMenu = (args?: CreateDropdownSubMenuArgs) => {
+		const withDefaults = { ...subMenuDefaults, ...args } as CreateDropdownSubMenuArgs;
 		const subOptions = writable(withDefaults);
 
 		const subOpen = writable(false);
