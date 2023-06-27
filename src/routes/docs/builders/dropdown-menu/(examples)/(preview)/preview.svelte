@@ -5,14 +5,20 @@
 	import ChevronRight from '~icons/lucide/chevron-right';
 	import Check from '~icons/lucide/check';
 
-	const { trigger, menu, item, checkboxItem, arrow, createSubMenu } = createDropdownMenu();
+	const { trigger, menu, item, checkboxItem, arrow, createSubMenu, createMenuRadioGroup } =
+		createDropdownMenu();
 
 	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
 	const { subMenu: subMenuB, subTrigger: subTriggerB } = createSubMenu();
 
-	const showBookmarks = writable(false);
-    const showFullURLs = writable(false);
+	const { radioGroup, radioItem, isChecked } = createMenuRadioGroup({
+		value: 'Hunter Johnston',
+	});
 
+	const personsArr = ['Hunter Johnston', 'Thomas Glide'];
+
+	const showBookmarks = writable(false);
+	const showFullURLs = writable(false);
 </script>
 
 <button
@@ -28,7 +34,7 @@
 
 <div class="menu" {...$menu} use:menu.action>
 	<div class="item" {...item} use:item.action>New Tab</div>
-	
+
 	<div class="item" {...item} use:item.action aria-disabled="true">New Window</div>
 	<div class="item" {...$subTriggerA} use:subTriggerA.action>
 		More Tools
@@ -53,7 +59,7 @@
 	<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked: showBookmarks }}>
 		<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
 			{#if $showBookmarks}
-				<Check class="h-[15px] w-[15px]" />
+				<Check class="h-[13px] w-[13px]" />
 			{/if}
 		</div>
 		Show Bookmarks
@@ -61,10 +67,22 @@
 	<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked: showFullURLs }}>
 		<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
 			{#if $showFullURLs}
-				<Check class="h-[15px] w-[15px]" />
+				<Check class="h-[13px] w-[13px]" />
 			{/if}
 		</div>
 		Show Full URLs
+	</div>
+	<div {...radioGroup}>
+		{#each personsArr as person}
+			<div class="item" {...$radioItem(person)} use:radioItem.action>
+				<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
+					{#if $isChecked(person)}
+						<div class="h-[4.75px] w-[4.75px] rounded-full bg-magnum-900" />
+					{/if}
+				</div>
+				{person}
+			</div>
+		{/each}
 	</div>
 	<div {...$arrow} />
 </div>

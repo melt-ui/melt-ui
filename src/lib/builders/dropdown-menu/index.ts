@@ -20,6 +20,13 @@ import type { Defaults } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Writable } from 'svelte/store';
 
+/**
+ * Features/TODO:
+ * - [ ] Reading direction config
+ * - [ ] Orientation config
+ * - [ ] Event handler args
+ */
+
 type Direction = 'ltr' | 'rtl';
 
 const SELECTION_KEYS = [kbd.ENTER, kbd.SPACE];
@@ -219,6 +226,14 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					if (!isHTMLElement(triggerElement)) return;
 
 					if (SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN) {
+						if (e.key === kbd.ARROW_DOWN) {
+							/**
+							 * We don't want to scroll the page when the user presses the
+							 * down arrow when focused on the trigger, so we prevent that
+							 * default behavior.
+							 */
+							e.preventDefault();
+						}
 						rootOpen.update((prev) => {
 							const isOpen = !prev;
 							if (isOpen) {
@@ -297,7 +312,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						handleRovingFocus(itemElement);
 						return;
 					}
-					itemElement.dispatchEvent(new CustomEvent('m-select', { bubbles: false }));
 					rootOpen.set(false);
 				}),
 				addEventListener(node, 'keydown', (e) => {
@@ -398,7 +412,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						return !prev;
 					});
 
-					itemElement.dispatchEvent(new CustomEvent('m-select', { bubbles: false }));
 					rootOpen.set(false);
 				}),
 				addEventListener(node, 'keydown', (e) => {
@@ -449,6 +462,146 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			};
 		},
 	});
+
+	type CreateMenuRadioGroupArgs = {
+		value?: string;
+	};
+
+	type RadioItemArgs =
+		| {
+				value: string;
+				disabled?: boolean;
+		  }
+		| string;
+
+	const createMenuRadioGroup = (args: CreateMenuRadioGroupArgs = {}) => {
+		const value = writable(args.value ?? null);
+
+		const radioGroup = {
+			role: 'group',
+		};
+
+		const radioItem = {
+			...derived([value], ([$value]) => {
+				return (itemArgs: RadioItemArgs) => {
+					const itemValue = typeof itemArgs === 'string' ? itemArgs : itemArgs.value;
+					const disabled = typeof itemArgs === 'string' ? false : !!itemArgs.disabled;
+
+					const checked = $value === itemValue;
+
+					return {
+						disabled,
+						role: 'menuitemradio',
+						'data-state': checked ? 'checked' : 'unchecked',
+						'aria-checked': checked,
+						'data-disabled': disabled ? '' : undefined,
+						'data-value': itemValue,
+						'data-orientation': 'vertical',
+						tabindex: -1,
+						'data-melt-part': 'item',
+					};
+				};
+			}),
+			action: (node: HTMLElement) => {
+				setMeltMenuAttribute(node);
+
+				const unsub = executeCallbacks(
+					addEventListener(node, 'pointerdown', (e) => {
+						const itemElement = e.currentTarget;
+						if (!isHTMLElement(itemElement)) return;
+						const itemValue = node.dataset.value;
+						const disabled = node.dataset.disabled;
+
+						if (disabled || itemValue === undefined) {
+							e.preventDefault();
+							return;
+						}
+					}),
+					addEventListener(node, 'click', (e) => {
+						const itemElement = e.currentTarget;
+						if (!isHTMLElement(itemElement)) return;
+						const itemValue = node.dataset.value;
+						const disabled = node.dataset.disabled;
+
+						if (disabled || itemValue === undefined) {
+							e.preventDefault();
+							return;
+						}
+
+						if (e.defaultPrevented) {
+							if (!isHTMLElement(itemElement)) return;
+
+							handleRovingFocus(itemElement);
+							return;
+						}
+
+						value.set(itemValue);
+						rootOpen.set(false);
+					}),
+					addEventListener(node, 'keydown', (e) => {
+						const isTypingAhead = typed.length > 0;
+						if (isTypingAhead && e.key === kbd.SPACE) return;
+						if (SELECTION_KEYS.includes(e.key)) {
+							const itemElement = e.currentTarget;
+							if (!isHTMLElement(itemElement)) return;
+
+							itemElement.click();
+							/**
+							 * We prevent default browser behaviour for selection keys as they should trigger
+							 * a selection only:
+							 * - prevents space from scrolling the page.
+							 * - if keydown causes focus to move, prevents keydown from firing on the new target.
+							 */
+							e.preventDefault();
+						}
+					}),
+					addEventListener(node, 'pointermove', (e) => {
+						const itemElement = e.currentTarget;
+						if (!isHTMLElement(itemElement)) return;
+
+						const itemValue = node.dataset.value;
+						const disabled = node.dataset.disabled;
+
+						if (disabled || itemValue === undefined) {
+							onItemLeave(e);
+							return;
+						}
+						onMenuItemPointerMove(e);
+					}),
+					addEventListener(node, 'pointerleave', (e) => {
+						onMenuItemPointerLeave(e);
+					}),
+					addEventListener(node, 'focusin', (e) => {
+						const itemElement = e.currentTarget;
+						if (!isHTMLElement(itemElement)) return;
+						itemElement.setAttribute('data-highlighted', '');
+					}),
+					addEventListener(node, 'focusout', (e) => {
+						const itemElement = e.currentTarget;
+						if (!isHTMLElement(itemElement)) return;
+						itemElement.removeAttribute('data-highlighted');
+					})
+				);
+
+				return {
+					destroy: unsub,
+				};
+			},
+		};
+
+		const isChecked = derived(value, ($value) => {
+			return (itemValue: string) => {
+				return $value === itemValue;
+			};
+		});
+
+		return {
+			radioGroup,
+			radioItem,
+			isChecked,
+			value,
+		};
+	};
 
 	/* -------------------------------------------------------------------------------------------------
 	 * SUBMENU
@@ -1133,6 +1286,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		arrow: rootArrow,
 		options: rootOptions,
 		createSubMenu,
+		createMenuRadioGroup,
 	};
 }
 
