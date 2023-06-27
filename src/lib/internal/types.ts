@@ -29,3 +29,5 @@ export type Defaults<T> = {
 };
 
 export type TextDirection = 'ltr' | 'rtl';
+
+export type Orientation = 'horizontal' | 'vertical';

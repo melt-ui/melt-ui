@@ -81,7 +81,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Dialog          | ✅     |
 | Dropdown Menu   |        |
 | Hover Card      |        |
-| Label           |        |
+| Label           | ✅     |
 | Menubar         |        |
 | Navigation Menu |        |
 | Pagination      | ✅     |
@@ -91,7 +91,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Radio Group     | ✅     |
 | Scroll Area     |        |
 | Select          | ✅     |
-| Separator       |        |
+| Separator       | ✅     |
 | Slider          | ✅     |
 | Switch          | ✅     |
 | Tabs            | ✅     |
@@ -103,7 +103,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Tooltip         | ✅     |
 | ???             |        |
 
-**Progress:** 16/30+
+**Progress:** 18/30+
 
 ## Similar projects
 
