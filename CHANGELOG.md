@@ -1,5 +1,13 @@
 # @melt-ui/svelte
 
+## 0.14.0
+
+### Minor Changes
+
+- ae6ecfe: Feat: Avatar builder
+- 0dd1ab0: feat: Separator builder
+- 2a88d9d: Feat: Label builder
+
 ## 0.13.1
 
 ### Patch Changes
