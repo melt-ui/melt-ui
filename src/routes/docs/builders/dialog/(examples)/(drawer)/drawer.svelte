@@ -25,6 +25,7 @@
 			/>
 			<div
 				{...$content}
+				use:content.action
 				class="fixed left-0 top-0 z-50 h-screen w-full max-w-[350px] bg-white p-[25px] shadow-lg
 				focus:outline-none"
 				transition:fly={{ x: -350, duration: 300, opacity: 1 }}
