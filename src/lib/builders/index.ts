@@ -14,5 +14,6 @@ export * from './dialog';
 export * from './tooltip';
 export * from './pagination';
 export * from './toolbar';
+export * from './avatar';
 export * from './label';
 export * from './separator';
