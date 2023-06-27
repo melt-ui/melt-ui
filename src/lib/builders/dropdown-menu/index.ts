@@ -16,28 +16,20 @@ import {
 	addEventListener,
 	hiddenAction,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
+import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Writable } from 'svelte/store';
-
-/**
- * Features/TODO:
- * - [ ] Reading direction config
- * - [ ] Orientation config
- * - [ ] Event handler args
- */
-
-type Direction = 'ltr' | 'rtl';
+import { createSeparator } from '../separator';
 
 const SELECTION_KEYS = [kbd.ENTER, kbd.SPACE];
 const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
 const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
 const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
-const SUB_OPEN_KEYS: Record<Direction, string[]> = {
+const SUB_OPEN_KEYS: Record<TextDirection, string[]> = {
 	ltr: [...SELECTION_KEYS, kbd.ARROW_RIGHT],
 	rtl: [...SELECTION_KEYS, kbd.ARROW_LEFT],
 };
-const SUB_CLOSE_KEYS: Record<Direction, string[]> = {
+const SUB_CLOSE_KEYS: Record<TextDirection, string[]> = {
 	ltr: [kbd.ARROW_LEFT],
 	rtl: [kbd.ARROW_RIGHT],
 };
@@ -602,6 +594,10 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			value,
 		};
 	};
+
+	const { root: separator } = createSeparator({
+		orientation: 'horizontal',
+	});
 
 	/* -------------------------------------------------------------------------------------------------
 	 * SUBMENU
@@ -1287,6 +1283,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		options: rootOptions,
 		createSubMenu,
 		createMenuRadioGroup,
+		separator,
 	};
 }
 

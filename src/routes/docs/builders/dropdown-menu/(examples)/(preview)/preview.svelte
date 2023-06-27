@@ -5,11 +5,18 @@
 	import ChevronRight from '~icons/lucide/chevron-right';
 	import Check from '~icons/lucide/check';
 
-	const { trigger, menu, item, checkboxItem, arrow, createSubMenu, createMenuRadioGroup } =
-		createDropdownMenu();
+	const {
+		trigger,
+		menu,
+		item,
+		checkboxItem,
+		arrow,
+		separator,
+		createSubMenu,
+		createMenuRadioGroup,
+	} = createDropdownMenu();
 
 	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
-	const { subMenu: subMenuB, subTrigger: subTriggerB } = createSubMenu();
 
 	const { radioGroup, radioItem, isChecked } = createMenuRadioGroup({
 		value: 'Hunter Johnston',
@@ -33,29 +40,34 @@
 </button>
 
 <div class="menu" {...$menu} use:menu.action>
-	<div class="item" {...item} use:item.action>New Tab</div>
+	<div class="item" {...item} use:item.action>
+		New Tab
+		<div class="rightSlot">⌘+T</div>
+	</div>
 
-	<div class="item" {...item} use:item.action aria-disabled="true">New Window</div>
+	<div class="item" {...item} use:item.action>
+		New Window
+		<div class="rightSlot">⌘+N</div>
+	</div>
+
+	<div class="item" {...item} use:item.action aria-disabled="true">
+		New Private Window
+		<div class="rightSlot">⇧+⌘+N</div>
+	</div>
 	<div class="item" {...$subTriggerA} use:subTriggerA.action>
 		More Tools
-		<div class="ml-auto pl-4">
+		<div class="rightSlot">
 			<ChevronRight class="h-[15px] w-[15px]" />
 		</div>
 	</div>
 	<div class="menu subMenu" data-testid="hello" {...$subMenuA} use:subMenuA.action>
-		<div class="item" {...item} use:item.action>Save Page As..</div>
-		<div class="item" {...item} use:item.action>Create Shortcut..</div>
+		<div class="item" {...item} use:item.action>Save Page As...</div>
+		<div class="item" {...item} use:item.action>Create Shortcut...</div>
+		<div class="item" {...item} use:item.action>Name Window...</div>
+		<div {...separator} class="separator" />
+		<div class="item" {...item} use:item.action>Developer Tools</div>
 	</div>
-	<div class="item" {...$subTriggerB} use:subTriggerB.action>
-		Preferences
-		<div class="ml-auto pl-4">
-			<ChevronRight class="h-[15px] w-[15px]" />
-		</div>
-	</div>
-	<div class="menu subMenu" {...$subMenuB} use:subMenuB.action>
-		<div class="item" {...item} use:item.action>Keyboard Shortcuts</div>
-		<div class="item" {...item} use:item.action>Accessibility</div>
-	</div>
+	<div {...separator} class="separator" />
 	<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked: showBookmarks }}>
 		<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
 			{#if $showBookmarks}
@@ -63,6 +75,7 @@
 			{/if}
 		</div>
 		Show Bookmarks
+		<div class="rightSlot">⌘+B</div>
 	</div>
 	<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked: showFullURLs }}>
 		<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
@@ -72,6 +85,8 @@
 		</div>
 		Show Full URLs
 	</div>
+	<div {...separator} class="separator" />
+	<div class="pl-6 text-xs leading-6 text-neutral-600">People</div>
 	<div {...radioGroup}>
 		{#each personsArr as person}
 			<div class="item" {...$radioItem(person)} use:radioItem.action>
@@ -89,15 +104,15 @@
 
 <style lang="postcss">
 	.menu {
-		@apply z-10 flex max-h-[300px] w-52 flex-col shadow-lg shadow-neutral-900/30;
+		@apply z-10 flex max-h-[300px] min-w-[220px] flex-col shadow-lg shadow-neutral-900/30;
 		@apply rounded-md bg-white p-1 lg:max-h-none;
 		@apply ring-0 !important;
 	}
 	.subMenu {
-		@apply shadow-md shadow-neutral-900/30;
+		@apply min-w-[220px] shadow-md shadow-neutral-900/30;
 	}
 	.item {
-		@apply relative h-[25px] min-h-[25px] select-none rounded-md pl-6 pr-1;
+		@apply relative h-[25px] min-h-[25px] select-none rounded-sm pl-6 pr-1;
 		@apply z-20 text-magnum-900 outline-none;
 		@apply data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900;
 		@apply data-[disabled]:text-neutral-300;
@@ -114,5 +129,13 @@
 	.check {
 		@apply absolute left-2 top-1/2 text-magnum-500;
 		translate: 0 calc(-50% + 1px);
+	}
+
+	.separator {
+		@apply m-[5px] h-[1px] bg-magnum-200;
+	}
+
+	.rightSlot {
+		@apply ml-auto pl-5;
 	}
 </style>
