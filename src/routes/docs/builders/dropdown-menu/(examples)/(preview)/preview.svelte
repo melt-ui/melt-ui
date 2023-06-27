@@ -22,7 +22,7 @@
 		value: 'Hunter Johnston',
 	});
 
-	const personsArr = ['Hunter Johnston', 'Thomas Glide'];
+	const personsArr = ['Hunter Johnston', 'Thomas G. Lopes'];
 
 	const showBookmarks = writable(false);
 	const showFullURLs = writable(false);
