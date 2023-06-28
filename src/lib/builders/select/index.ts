@@ -6,7 +6,9 @@ import {
 	effect,
 	executeCallbacks,
 	generateId,
+	handleRovingFocus,
 	isBrowser,
+	isHTMLElement,
 	kbd,
 	noop,
 	omit,
@@ -17,6 +19,10 @@ import type { Defaults } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 
+const SELECTION_KEYS = [kbd.ENTER, kbd.SPACE];
+const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
+const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
+const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 /**
  * Features:
  * - [X] Click outside
@@ -63,6 +69,13 @@ export function createSelect(args?: CreateSelectArgs) {
 	const label = writable<string | number | null>(withDefaults.label ?? null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
+	/**
+	 * Keeps track of if the user is using the keyboard to navigate the menu.
+	 * This is used to determine how we handle focus on open behavior differently
+	 * than when the user is using the mouse.
+	 */
+	const isUsingKeyboard = writable(false);
+
 	const ids = {
 		menu: generateId(),
 		trigger: generateId(),
@@ -73,8 +86,9 @@ export function createSelect(args?: CreateSelectArgs) {
 		const menuEl = document.getElementById(ids.menu);
 		if (!menuEl) return;
 
-		const selectedEl = menuEl.querySelector('[data-selected]') as HTMLElement | undefined;
-		if (!selectedEl) return;
+		const selectedEl = menuEl.querySelector('[data-selected]');
+		if (!isHTMLElement(selectedEl)) return;
+
 		const dataLabel = selectedEl.getAttribute('data-label');
 		label.set(dataLabel ?? selectedEl.textContent ?? null);
 	});
@@ -115,10 +129,31 @@ export function createSelect(args?: CreateSelectArgs) {
 				}
 			);
 
+			const unsubEventListeners = executeCallbacks(
+				addEventListener(node, 'keydown', (e) => {
+					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
+					const isCharacterKey = e.key.length === 1;
+					/**
+					 * Select should not be navigated using tab so we prevent it
+					 */
+					if (e.key === kbd.TAB) {
+						e.preventDefault();
+					}
+					if (FIRST_LAST_KEYS.includes(e.key)) {
+						handleMenuNavigation(e);
+					}
+
+					if (!isModifierKey && isCharacterKey) {
+						handleTypeaheadSearch(e.key, getOptions(node));
+					}
+				})
+			);
+
 			return {
 				destroy() {
 					unsubDerived();
 					unsubPopper();
+					unsubEventListeners();
 				},
 			};
 		},
@@ -128,45 +163,90 @@ export function createSelect(args?: CreateSelectArgs) {
 		...derived([open, options], ([$open, $options]) => {
 			return {
 				role: 'combobox',
+				'aria-autocomplete': 'none',
 				'aria-controls': ids.menu,
 				'aria-expanded': $open,
 				'aria-required': $options.required,
 				'data-state': $open ? 'open' : 'closed',
 				'data-disabled': $options.disabled ? true : undefined,
+				'data-melt-part': 'trigger',
 				disabled: $options.disabled,
 				id: ids.trigger,
-			};
+			} as const;
 		}),
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', (e) => {
+				addEventListener(node, 'pointerdown', (e) => {
 					const $options = get(options);
-					if ($options.disabled) return;
-					e.stopPropagation();
-					const triggerEl = e.currentTarget as HTMLElement;
+					if ($options.disabled) {
+						e.preventDefault();
+						return;
+					}
+
+					const $open = get(open);
+					const triggerElement = e.currentTarget;
+					if (!isHTMLElement(triggerElement)) return;
+
 					open.update((prev) => {
 						const isOpen = !prev;
 						if (isOpen) {
-							activeTrigger.set(triggerEl);
+							activeTrigger.set(triggerElement);
 						} else {
 							activeTrigger.set(null);
 						}
 
 						return isOpen;
 					});
-				}),
-
-				addEventListener(node, 'mousedown', (e) => {
-					e.preventDefault();
+					if (!$open) e.preventDefault();
 				}),
 
 				addEventListener(node, 'keydown', (e) => {
-					const $options = get(options);
-					if ($options.disabled) return;
-					if ([kbd.ENTER, kbd.SPACE, kbd.ARROW_DOWN, kbd.ARROW_UP].includes(e.key)) {
-						e.preventDefault();
-						open.set(true);
+					const triggerElement = e.currentTarget;
+					if (!isHTMLElement(triggerElement)) return;
+
+					if (
+						SELECTION_KEYS.includes(e.key) ||
+						e.key === kbd.ARROW_DOWN ||
+						e.key === kbd.ARROW_UP
+					) {
+						if (e.key === kbd.ARROW_DOWN || e.key === kbd.ARROW_UP) {
+							/**
+							 * We don't want to scroll the page when the user presses the
+							 * down arrow when focused on the trigger, so we prevent that
+							 * default behavior.
+							 */
+							e.preventDefault();
+						}
+						open.update((prev) => {
+							const isOpen = !prev;
+							if (isOpen) {
+								activeTrigger.set(triggerElement);
+							} else {
+								activeTrigger.set(null);
+							}
+
+							return isOpen;
+						});
+
+						const menu = document.getElementById(ids.menu);
+						if (!isHTMLElement(menu)) return;
+
+						const selectedOption = menu.querySelector('[data-selected]');
+						if (isHTMLElement(selectedOption)) {
+							handleRovingFocus(selectedOption);
+							return;
+						}
+
+						const options = getOptions(menu);
+						if (!options.length) return;
+
+						const nextFocusedElement = options[0];
+						if (!isHTMLElement(nextFocusedElement)) return;
+
+						handleRovingFocus(nextFocusedElement);
 					}
+
+					e.preventDefault();
 				})
 			);
 
@@ -195,8 +275,8 @@ export function createSelect(args?: CreateSelectArgs) {
 					'data-value': args.value,
 					'data-label': args.label ?? undefined,
 					'data-disabled': args.disabled ? '' : undefined,
-					tabindex: 0,
-				};
+					tabindex: -1,
+				} as const;
 			};
 		}),
 		action: (node: HTMLElement) => {
@@ -208,13 +288,30 @@ export function createSelect(args?: CreateSelectArgs) {
 				return {
 					value,
 					label: label ?? node.textContent ?? null,
-					disabled: !disabled,
+					disabled: disabled ? true : false,
 				};
 			};
 
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', () => {
+				addEventListener(node, 'pointerdown', (e) => {
 					const args = getElArgs();
+					if (args.disabled) {
+						e.preventDefault();
+						return;
+					}
+				}),
+
+				addEventListener(node, 'click', (e) => {
+					const itemElement = e.currentTarget;
+					if (!isHTMLElement(itemElement)) return;
+
+					const args = getElArgs();
+					if (args.disabled) {
+						e.preventDefault();
+						return;
+					}
+					handleRovingFocus(itemElement);
+
 					value.set(args.value);
 					label.set(args.label);
 					open.set(false);
@@ -230,18 +327,43 @@ export function createSelect(args?: CreateSelectArgs) {
 					if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
 						e.preventDefault();
 						const args = getElArgs();
+						node.setAttribute('data-selected', '');
 						value.set(args.value);
 						label.set(args.label);
 						open.set(false);
 					}
 				}),
+				addEventListener(node, 'pointermove', (e) => {
+					const args = getElArgs();
+					if (args.disabled) {
+						e.preventDefault();
+						return;
+					}
 
-				addEventListener(node, 'mousemove', () => {
-					node.focus();
+					const itemElement = e.currentTarget;
+					if (!isHTMLElement(itemElement)) return;
+
+					if (args.disabled) {
+						const menuElement = document.getElementById(ids.menu);
+						if (!isHTMLElement(menuElement)) return;
+						handleRovingFocus(menuElement);
+					}
+
+					onMenuItemPointerMove(e);
 				}),
-
-				addEventListener(node, 'mouseout', () => {
-					node.blur();
+				addEventListener(node, 'pointerleave', (e) => {
+					if (!isMouse(e)) return;
+					onMenuItemLeave();
+				}),
+				addEventListener(node, 'focusin', (e) => {
+					const itemElement = e.currentTarget;
+					if (!isHTMLElement(itemElement)) return;
+					itemElement.setAttribute('data-highlighted', '');
+				}),
+				addEventListener(node, 'focusout', (e) => {
+					const itemElement = e.currentTarget;
+					if (!isHTMLElement(itemElement)) return;
+					itemElement.removeAttribute('data-highlighted');
 				})
 			);
 
@@ -251,27 +373,38 @@ export function createSelect(args?: CreateSelectArgs) {
 		},
 	};
 
-	const { typed, handleTypeaheadSearch } = createTypeaheadSearch({
-		onMatch: (element) => element.focus(),
-	});
+	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
 
-	effect([open, activeTrigger, menu], ([$open, $activeTrigger]) => {
+	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
 		if (!isBrowser) return;
 
-		const menuEl = document.getElementById(ids.menu);
-		if (menuEl && $open) {
-			// Focus on selected option or first option
-			const selectedOption = menuEl.querySelector('[data-selected]') as HTMLElement | undefined;
-			if (!selectedOption) {
-				const firstOption = menuEl.querySelector('[role="option"]') as HTMLElement | undefined;
-				sleep(1).then(() => firstOption?.focus());
-			} else {
-				sleep(1).then(() => selectedOption.focus());
-			}
-		} else if (!$open && $activeTrigger && isBrowser) {
-			// Hacky way to prevent the keydown event from triggering on the trigger
-			sleep(1).then(() => $activeTrigger.focus());
+		if (!$open && $activeTrigger) {
+			handleRovingFocus($activeTrigger);
 		}
+
+		sleep(1).then(() => {
+			const menuEl = document.getElementById(ids.menu);
+			if (menuEl && $open && get(isUsingKeyboard)) {
+				// Focus on selected option or first option
+				const selectedOption = menuEl.querySelector('[data-selected]');
+
+				if (!isHTMLElement(selectedOption)) {
+					const firstOption = menuEl.querySelector('[role="option"]');
+					if (!isHTMLElement(firstOption)) return;
+					handleRovingFocus(firstOption);
+				} else {
+					handleRovingFocus(selectedOption);
+				}
+			} else if ($activeTrigger) {
+				// Hacky way to prevent the keydown event from triggering on the trigger
+				handleRovingFocus($activeTrigger);
+			} else {
+				const triggerElement = document.getElementById(ids.trigger);
+				if (isHTMLElement(triggerElement)) {
+					handleRovingFocus(triggerElement);
+				}
+			}
+		});
 	});
 
 	const isSelected = derived([value], ([$value]) => {
@@ -281,57 +414,26 @@ export function createSelect(args?: CreateSelectArgs) {
 	});
 
 	onMount(() => {
-		const keydownListener = (e: KeyboardEvent) => {
-			const menuEl = document.getElementById(ids.menu);
-			if (!menuEl || menuEl.hidden) return;
+		const handlePointer = () => isUsingKeyboard.set(false);
+		const handleKeyDown = () => {
+			isUsingKeyboard.set(true);
+			document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
+			document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
+		};
+		document.addEventListener('keydown', handleKeyDown, { capture: true });
 
+		const keydownListener = (e: KeyboardEvent) => {
 			if (e.key === kbd.ESCAPE) {
 				open.set(false);
-				activeTrigger.set(null);
 				return;
-			}
-
-			const allOptions = Array.from(menuEl.querySelectorAll('[role="option"]')) as HTMLElement[];
-			const focusedOption = allOptions.find((el) => el === document.activeElement);
-			const focusedIndex = allOptions.indexOf(focusedOption as HTMLElement);
-
-			if (e.key === kbd.ARROW_DOWN) {
-				e.preventDefault();
-				const nextIndex = focusedIndex + 1 > allOptions.length - 1 ? 0 : focusedIndex + 1;
-				const nextOption = allOptions[nextIndex] as HTMLElement;
-				nextOption.focus();
-				return;
-			} else if (e.key === kbd.ARROW_UP) {
-				e.preventDefault();
-				const prevIndex = focusedIndex - 1 < 0 ? allOptions.length - 1 : focusedIndex - 1;
-				const prevOption = allOptions[prevIndex] as HTMLElement;
-				prevOption.focus();
-				return;
-			} else if (e.key === kbd.HOME) {
-				e.preventDefault();
-				const firstOption = allOptions[0] as HTMLElement;
-				firstOption.focus();
-				return;
-			} else if (e.key === kbd.END) {
-				e.preventDefault();
-				const lastOption = allOptions[allOptions.length - 1] as HTMLElement;
-				lastOption.focus();
-				return;
-			}
-
-			/**
-			 * Handle typeahead search
-			 */
-			const isCharacterKey = e.key.length === 1;
-			const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-			if (!isModifierKey && isCharacterKey) {
-				handleTypeaheadSearch(e.key, allOptions);
 			}
 		};
-
 		document.addEventListener('keydown', keydownListener);
 
 		return () => {
+			document.removeEventListener('keydown', handleKeyDown, { capture: true });
+			document.removeEventListener('pointerdown', handlePointer, { capture: true });
+			document.removeEventListener('pointermove', handlePointer, { capture: true });
 			document.removeEventListener('keydown', keydownListener);
 		};
 	});
@@ -355,6 +457,83 @@ export function createSelect(args?: CreateSelectArgs) {
 			}),
 		};
 	});
+
+	function getOptions(element: HTMLElement): HTMLElement[] {
+		return Array.from(element.querySelectorAll('[role="option"]'));
+	}
+
+	function isMouse(e: PointerEvent) {
+		return e.pointerType === 'mouse';
+	}
+
+	function onMenuItemPointerMove(e: PointerEvent) {
+		if (!isMouse(e)) return;
+		const currentTarget = e.currentTarget;
+		if (!isHTMLElement(currentTarget)) return;
+		handleRovingFocus(currentTarget);
+	}
+
+	function onMenuItemLeave() {
+		const menuElement = document.getElementById(ids.menu);
+		if (!isHTMLElement(menuElement)) return;
+		handleRovingFocus(menuElement);
+	}
+
+	/**
+	 * Keyboard event handler for menu navigation
+	 * @param e The keyboard event
+	 */
+	function handleMenuNavigation(e: KeyboardEvent) {
+		e.preventDefault();
+
+		// currently focused menu item
+		const currentFocusedItem = document.activeElement;
+		if (!isHTMLElement(currentFocusedItem)) return;
+
+		// menu element being navigated
+		const currentTarget = e.currentTarget;
+		if (!isHTMLElement(currentTarget)) return;
+
+		// menu items of the current menu
+		const menuItems = getOptions(currentTarget);
+		if (!menuItems.length) return;
+
+		const candidateNodes = menuItems.filter((item) => {
+			if (item.hasAttribute('data-disabled')) {
+				return false;
+			}
+			if (item.getAttribute('disabled') === 'true') {
+				return false;
+			}
+			return true;
+		});
+
+		// Index of the currently focused item in the candidate nodes array
+		const currentIndex = candidateNodes.indexOf(currentFocusedItem);
+
+		// Calculate the index of the next menu item
+		let nextIndex: number;
+		switch (e.key) {
+			case kbd.ARROW_DOWN:
+				nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : currentIndex;
+				break;
+			case kbd.ARROW_UP:
+				nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
+				break;
+			case kbd.HOME:
+				nextIndex = 0;
+				break;
+			case kbd.END:
+				nextIndex = candidateNodes.length - 1;
+				break;
+			default:
+				return;
+		}
+
+		const nextFocusedItem = candidateNodes[nextIndex];
+
+		handleRovingFocus(nextFocusedItem);
+	}
 
 	return {
 		trigger,

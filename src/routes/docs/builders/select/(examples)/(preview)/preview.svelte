@@ -37,16 +37,19 @@
 		@apply py-1 pl-4 pr-4 font-semibold capitalize text-neutral-800;
 	}
 	.menu {
-		@apply z-10 flex max-h-[360px] flex-col gap-2 overflow-y-auto;
+		@apply z-10 flex max-h-[360px] flex-col overflow-y-auto;
 		@apply rounded-md bg-white p-1;
+		@apply ring-0 !important;
 	}
 	.option {
 		@apply relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800;
-		@apply focus:bg-magnum-100 focus:text-magnum-700;
+		@apply focus:z-10 focus:text-magnum-700;
+		@apply data-[highlighted]:bg-magnum-50 data-[highlighted]:text-magnum-900;
+		@apply data-[selected]:bg-magnum-100 data-[selected]:text-magnum-900;
 	}
 	.trigger {
 		@apply flex h-10 w-[180px] items-center justify-between rounded-md bg-white px-3;
-		@apply py-2 text-magnum-700  hover:opacity-75;
+		@apply py-2 text-magnum-700 transition-opacity hover:opacity-90;
 	}
 	.check {
 		@apply absolute left-2 top-1/2 text-magnum-500;
