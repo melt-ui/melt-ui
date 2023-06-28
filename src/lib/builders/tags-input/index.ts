@@ -126,10 +126,11 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					const $selectedTag = get(selectedTag);
 
 					if ($selectedTag) {
-						// We manage everything now!!
-						e.preventDefault();
-
-						if (e.key === kbd.ARROW_LEFT) {
+						// Check if a character is entered into the input
+						if (e.key.length === 1) {
+							// A character is entered, set selectedTag to null
+							selectedTag.set(null);
+						} else if (e.key === kbd.ARROW_LEFT) {
 							e.preventDefault();
 							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
 
