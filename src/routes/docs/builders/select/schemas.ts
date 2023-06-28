@@ -26,6 +26,11 @@ const builder: APISchema = {
 			label: 'name',
 			type: 'string',
 		},
+		{
+			label: 'preventScroll',
+			type: 'boolean',
+			default: true,
+		},
 	],
 };
 

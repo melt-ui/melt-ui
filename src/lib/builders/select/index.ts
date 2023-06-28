@@ -12,6 +12,7 @@ import {
 	kbd,
 	noop,
 	omit,
+	removeScroll,
 	styleToString,
 } from '$lib/internal/helpers';
 import { sleep } from '$lib/internal/helpers/sleep';
@@ -43,6 +44,7 @@ export type CreateSelectArgs = {
 	value?: unknown;
 	label?: string;
 	name?: string;
+	preventScroll?: boolean;
 };
 
 const defaults = {
@@ -53,6 +55,7 @@ const defaults = {
 		placement: 'bottom',
 		sameWidth: true,
 	},
+	preventScroll: true,
 } satisfies Defaults<CreateSelectArgs>;
 
 export type OptionArgs = {
@@ -413,7 +416,13 @@ export function createSelect(args?: CreateSelectArgs) {
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
 
 	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
+		const unsubs: Array<() => void> = [];
+
 		if (!isBrowser) return;
+		const $options = get(options);
+		if ($open && $options.preventScroll) {
+			unsubs.push(removeScroll());
+		}
 
 		if (!$open && $activeTrigger) {
 			handleRovingFocus($activeTrigger);
@@ -446,6 +455,10 @@ export function createSelect(args?: CreateSelectArgs) {
 				handleRovingFocus(triggerElement);
 			}
 		});
+
+		return () => {
+			unsubs.forEach((unsub) => unsub());
+		};
 	});
 
 	const isSelected = derived([value], ([$value]) => {
