@@ -22,10 +22,10 @@
 		value: 'Hunter Johnston',
 	});
 
-	const personsArr = ['Hunter Johnston', 'Thomas G. Lopes'];
+	const personsArr = ['Hunter Johnston', 'Thomas G. Lopes', 'Adrian Gonz', 'Franck Poingt'];
 
-	const showBookmarks = writable(false);
-	const showFullURLs = writable(false);
+	const settingsSync = writable(true);
+	const hideMeltUI = writable(false);
 </script>
 
 <button
@@ -40,64 +40,57 @@
 </button>
 
 <div class="menu" {...$menu} use:menu.action>
-	<div class="item" {...item} use:item.action>
-		New Tab
-		<div class="rightSlot">⌘+T</div>
-	</div>
-
-	<div class="item" {...item} use:item.action>
-		New Window
-		<div class="rightSlot">⌘+N</div>
-	</div>
-
-	<div class="item" {...item} use:item.action aria-disabled="true">
-		New Private Window
-		<div class="rightSlot">⇧+⌘+N</div>
+	<div class="item" {...item} use:item.action>About Melt UI</div>
+	<div class="item" {...item} use:item.action>Check for Updates...</div>
+	<div class="separator" {...separator} />
+	<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked: settingsSync }}>
+		<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
+			{#if $settingsSync}
+				<Check class="h-[13px] w-[13px]" />
+			{/if}
+		</div>
+		Settings Sync is On
 	</div>
 	<div class="item" {...$subTriggerA} use:subTriggerA.action>
-		More Tools
+		Profiles
 		<div class="rightSlot">
 			<ChevronRight class="h-[15px] w-[15px]" />
 		</div>
 	</div>
-	<div class="menu subMenu" data-testid="hello" {...$subMenuA} use:subMenuA.action>
-		<div class="item" {...item} use:item.action>Save Page As...</div>
-		<div class="item" {...item} use:item.action>Create Shortcut...</div>
-		<div class="item" {...item} use:item.action>Name Window...</div>
-		<div {...separator} class="separator" />
-		<div class="item" {...item} use:item.action>Developer Tools</div>
-	</div>
-	<div {...separator} class="separator" />
-	<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked: showBookmarks }}>
-		<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
-			{#if $showBookmarks}
-				<Check class="h-[13px] w-[13px]" />
-			{/if}
-		</div>
-		Show Bookmarks
-		<div class="rightSlot">⌘+B</div>
-	</div>
-	<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked: showFullURLs }}>
-		<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
-			{#if $showFullURLs}
-				<Check class="h-[13px] w-[13px]" />
-			{/if}
-		</div>
-		Show Full URLs
-	</div>
-	<div {...separator} class="separator" />
-	<div class="pl-6 text-xs leading-6 text-neutral-600">People</div>
-	<div {...radioGroup}>
-		{#each personsArr as person}
-			<div class="item" {...$radioItem(person)} use:radioItem.action>
-				<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
-					{#if $isChecked(person)}
-						<div class="h-[4.75px] w-[4.75px] rounded-full bg-magnum-900" />
-					{/if}
+	<div class="menu subMenu" {...$subMenuA} use:subMenuA.action>
+		<div class="pl-6 text-xs leading-6 text-neutral-600">People</div>
+		<div {...radioGroup}>
+			{#each personsArr as person}
+				<div class="item" {...$radioItem(person)} use:radioItem.action>
+					<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
+						{#if $isChecked(person)}
+							<div class="h-[4.75px] w-[4.75px] rounded-full bg-magnum-900" />
+						{/if}
+					</div>
+					{person}
 				</div>
-				{person}
-			</div>
-		{/each}
+			{/each}
+		</div>
+	</div>
+	<div {...separator} class="separator" />
+
+	<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked: hideMeltUI }}>
+		<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
+			{#if $hideMeltUI}
+				<Check class="h-[13px] w-[13px]" />
+			{/if}
+		</div>
+		Hide Melt UI
+		<div class="rightSlot">⌘H</div>
+	</div>
+	<div class="item" {...item} use:item.action aria-disabled="true">
+		Show All Components
+		<div class="rightSlot">⇧⌘N</div>
+	</div>
+	<div {...separator} class="separator" />
+	<div class="item" {...item} use:item.action>
+		Quit Melt UI
+		<div class="rightSlot">⌘Q</div>
 	</div>
 	<div {...$arrow} />
 </div>
