@@ -10,11 +10,11 @@ import {
 	generateId,
 	isHTMLElement,
 	isElementDisabled,
-	debounce,
 	noop,
 	executeCallbacks,
 	addEventListener,
 	hiddenAction,
+	createTypeaheadSearch,
 } from '$lib/internal/helpers';
 import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
@@ -119,26 +119,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		}
 	);
 
-	/**
-	 *  Logic for typeahead search of the menu items.
-	 */
-	let typed: string[] = [];
-	const resetTyped = debounce(() => {
-		typed = [];
-	});
-
-	const handleTypeaheadSearch = (key: string, menuItems: HTMLElement[]) => {
-		typed.push(key.toLowerCase());
-		const typedString = typed.join('');
-		const matchingOption = menuItems.find((el) =>
-			el.innerText.toLowerCase().startsWith(typedString)
-		);
-		if (matchingOption) {
-			handleRovingFocus(matchingOption);
-		}
-
-		resetTyped();
-	};
+	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
 
 	const rootIds = {
 		menu: generateId(),
