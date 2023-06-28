@@ -35,6 +35,8 @@
 <Docs.API schema={schemas.builder} />
 <Docs.API schema={schemas.trigger} />
 <Docs.API schema={schemas.option} />
+<Docs.API schema={schemas.group} />
+<Docs.API schema={schemas.separator} />
 
 <Docs.H2>Accessibility</Docs.H2>
 <Docs.P>
