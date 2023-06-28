@@ -68,16 +68,16 @@ export type ItemArgs = {
 	onSelect?: (e: Event) => void;
 };
 
-export type CheckboxItemArgs = {
+export type CheckboxItemArgs = ItemArgs & {
 	checked: Writable<boolean | 'indeterminate'>;
 };
 
-export type RadioItemArgs =
-	| {
-			value: string;
-			disabled?: boolean;
-	  }
-	| string;
+export type RadioItemArgs = {
+	value: string;
+	disabled?: boolean;
+};
+
+export type RadioItemActionArgs = ItemArgs;
 
 const defaults = {
 	arrowSize: 8,
@@ -408,7 +408,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		action: (node: HTMLElement, params: CheckboxItemArgs) => {
 			setMeltMenuAttribute(node);
 			applyAttrsIfDisabled(node);
-			const { checked } = { ...checkboxItemDefaults, ...params };
+			const { checked, onSelect } = { ...checkboxItemDefaults, ...params };
 			const $checked = get(checked) as boolean | 'indeterminate';
 			node.setAttribute('aria-checked', isIndeterminate($checked) ? 'mixed' : String($checked));
 			node.setAttribute('data-state', getCheckedState($checked));
@@ -436,6 +436,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						handleRovingFocus(itemElement);
 						return;
 					}
+					onSelect?.(e);
+					if (e.defaultPrevented) return;
 					checked.update((prev) => {
 						if (isIndeterminate(prev)) return true;
 						return !prev;
@@ -499,12 +501,14 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			role: 'group',
 		};
 
+		const radioItemDefaults = {
+			disabled: false,
+		};
+
 		const radioItem = {
 			...derived([value], ([$value]) => {
 				return (itemArgs: RadioItemArgs) => {
-					const itemValue = typeof itemArgs === 'string' ? itemArgs : itemArgs.value;
-					const disabled = typeof itemArgs === 'string' ? false : !!itemArgs.disabled;
-
+					const { value: itemValue, disabled } = { ...radioItemDefaults, ...itemArgs };
 					const checked = $value === itemValue;
 
 					return {
@@ -520,8 +524,9 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					};
 				};
 			}),
-			action: (node: HTMLElement) => {
+			action: (node: HTMLElement, params: RadioItemActionArgs = {}) => {
 				setMeltMenuAttribute(node);
+				const { onSelect } = params;
 
 				const unsub = executeCallbacks(
 					addEventListener(node, 'pointerdown', (e) => {
@@ -552,6 +557,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 							handleRovingFocus(itemElement);
 							return;
 						}
+						onSelect?.(e);
+						if (e.defaultPrevented) return;
 
 						value.set(itemValue);
 						rootOpen.set(false);

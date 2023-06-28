@@ -61,7 +61,7 @@
 		<div class="pl-6 text-xs leading-6 text-neutral-600">People</div>
 		<div {...radioGroup}>
 			{#each personsArr as person}
-				<div class="item" {...$radioItem(person)} use:radioItem.action>
+				<div class="item" {...$radioItem({ value: person })} use:radioItem.action>
 					<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
 						{#if $isChecked(person)}
 							<div class="dot" />
