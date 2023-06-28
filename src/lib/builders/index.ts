@@ -2,6 +2,7 @@ export * from './accordion';
 export * from './avatar';
 export * from './checkbox';
 export * from './collapsible';
+export * from './combobox';
 export * from './dialog';
 export * from './dropdown-menu';
 export * from './label';

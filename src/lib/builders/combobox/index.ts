@@ -9,13 +9,13 @@ import { writable, type Readable, type Writable, derived, get } from 'svelte/sto
 import type { HTMLAttributes, HTMLInputAttributes, HTMLLabelAttributes } from 'svelte/elements';
 
 interface ComboboxProps<T> {
-	items: Writable<T[]>;
+	items: T[];
 	/** @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block */
 	scrollAlignment?: 'nearest' | 'center';
 	disabled?: boolean;
-	itemToString: (item: T) => string;
-	filterFunction: (value: string) => void;
-	selectItem?: (item: T) => void;
+	// itemToString: (item: T) => string;
+	// filterFunction: (value: string) => void;
+	// selectItem?: (item: T) => void;
 }
 
 interface Combobox<T> {
@@ -54,6 +54,21 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 	};
 
 	const menu = {
+		...derived(
+			[open, options],
+			([$open, $options]) =>
+				({
+					// 'aria-autocomplete': 'list',
+					// 'aria-controls': ids.menu,
+					// 'aria-expanded': $open,
+					// 'aria-labelledby': ids.label,
+					// autocomplete: 'off',
+					// id: ids.input,
+					// role: 'combobox',
+					// 'data-disabled': $options.disabled ? true : undefined,
+					// disabled: $options.disabled,
+				} as const)
+		),
 		action: (node: HTMLUListElement) => {
 			function setListValues() {
 				const listItems = node.querySelectorAll('[data-list-item]');
