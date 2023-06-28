@@ -89,16 +89,39 @@ const defaults = {
 export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	const withDefaults = { ...defaults, ...args } as CreateDropdownMenuArgs;
 	const rootOptions = writable(withDefaults);
-
 	const rootOpen = writable(false);
-
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
 
-	const lastPointerX = writable(0);
+	/**
+	 * Keeps track of if the user is using the keyboard to navigate the menu.
+	 * This is used to determine how we handle focus on open behavior differently
+	 * than when the user is using the mouse.
+	 */
 	const isUsingKeyboard = writable(false);
+
+	/**
+	 * Stores used to manage the grace area for submenus. This prevents us
+	 * from closing a submenu when the user is moving their mouse from the
+	 * trigger to the submenu.
+	 */
+	const lastPointerX = writable(0);
 	const pointerGraceIntent = writable<GraceIntent | null>(null);
 	const pointerDir = writable<Side>('right');
 
+	const pointerMovingToSubmenu = derivedWithUnsubscribe(
+		[pointerDir, pointerGraceIntent],
+		([$pointerDir, $pointerGraceIntent]) => {
+			return (e: PointerEvent) => {
+				const isMovingTowards = $pointerDir === $pointerGraceIntent?.side;
+
+				return isMovingTowards && isPointerInGraceArea(e, $pointerGraceIntent?.area);
+			};
+		}
+	);
+
+	/**
+	 *  Logic for typeahead search of the menu items.
+	 */
 	let typed: string[] = [];
 	const resetTyped = debounce(() => {
 		typed = [];
@@ -116,17 +139,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 		resetTyped();
 	};
-
-	const pointerMovingToSubmenu = derivedWithUnsubscribe(
-		[pointerDir, pointerGraceIntent],
-		([$pointerDir, $pointerGraceIntent]) => {
-			return (e: PointerEvent) => {
-				const isMovingTowards = $pointerDir === $pointerGraceIntent?.side;
-
-				return isMovingTowards && isPointerInGraceArea(e, $pointerGraceIntent?.area);
-			};
-		}
-	);
 
 	const rootIds = {
 		menu: generateId(),
@@ -178,32 +190,37 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 			const unsubEvents = executeCallbacks(
 				addEventListener(node, 'keydown', (e) => {
-					// submenu key events bubble through portals
-					// we only care about key events that happen inside this menu
 					const target = e.target;
 					if (!isHTMLElement(target)) return;
 
 					const menuElement = e.currentTarget;
 					if (!isHTMLElement(menuElement)) return;
 
+					/**
+					 * Submenu key events bubble through portals and
+					 * we only care about key events that happen inside this menu.
+					 */
 					const isKeyDownInside = target.closest('[data-melt-menu]') === menuElement;
 					if (!isKeyDownInside) return;
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						handleMenuNavigation(e);
 					}
 
-					// menus should not be navigated using tab so we prevent it
-					// reference: https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
+					/**
+					 * Menus should not be navigated using tab, so we prevent it.
+					 * @see https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
+					 */
 					if (e.key === kbd.TAB) {
 						e.preventDefault();
 						return;
 					}
 
+					/**
+					 * Check for typeahead search and handle it.
+					 */
 					const isCharacterKey = e.key.length === 1;
 					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-
 					if (!isModifierKey && isCharacterKey) {
-						// typeahead logic
 						handleTypeaheadSearch(e.key, getMenuItems(menuElement));
 					}
 				})
@@ -236,9 +253,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					const $rootOpen = get(rootOpen);
 					const triggerElement = e.currentTarget;
 					if (!isHTMLElement(triggerElement)) return;
-
-					const triggerControls = triggerElement.getAttribute('aria-controls');
-					if (!triggerControls) return;
 
 					rootOpen.update((prev) => {
 						const isOpen = !prev;
@@ -756,8 +770,10 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 							return;
 						}
 
-						// menus should not be navigated using tab so we prevent it
-						// reference: https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
+						/**
+						 * Menus should not be navigated using tab, so we prevent it.
+						 * @see https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
+						 */
 						if (e.key === kbd.TAB) {
 							e.preventDefault();
 							return;
@@ -1328,8 +1344,11 @@ type Polygon = Point[];
 type Side = 'left' | 'right';
 type GraceIntent = { area: Polygon; side: Side };
 
-// Determine if a point is inside of a polygon.
-// Based on https://github.com/substack/point-in-polygon
+/**
+ * Determine if a point is inside of a polygon.
+ *
+ * @see https://github.com/substack/point-in-polygon
+ */
 function isPointInPolygon(point: Point, polygon: Polygon) {
 	const { x, y } = point;
 	let inside = false;
