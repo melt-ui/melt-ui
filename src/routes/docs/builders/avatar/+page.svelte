@@ -12,7 +12,7 @@
 </script>
 
 <Docs.H1>Avatar</Docs.H1>
-<Docs.P>An image element with a fallback for representing the user.</Docs.P>
+<Docs.Description>An image element with a fallback for representing the user.</Docs.Description>
 
 <Docs.Preview {...data.preview} />
 
