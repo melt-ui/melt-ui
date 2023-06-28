@@ -1,5 +1,6 @@
 import {
 	addEventListener,
+	builder,
 	executeCallbacks,
 	getDirectionalKeys,
 	isBrowser,
@@ -11,7 +12,7 @@ import {
 } from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 
 export type CreateTabsArgs = {
 	value?: string;
@@ -41,20 +42,25 @@ export function createTabs(args?: CreateTabsArgs) {
 	});
 
 	// Root
-	const root = derived(options, ($options) => {
-		return {
-			'data-orientation': $options.orientation,
-			'data-melt-part': 'tabs-root',
-		};
+	const root = builder('tabs-root', {
+		stores: options,
+		returned: ($options) => {
+			return {
+				'data-orientation': $options.orientation,
+			};
+		},
 	});
 
 	// List
-	const list = derived(options, ($options) => {
-		return {
-			role: 'tablist',
-			'aria-orientation': $options.orientation,
-			'data-orientation': $options.orientation,
-		};
+	const list = builder('list', {
+		stores: options,
+		returned: ($options) => {
+			return {
+				role: 'tablist',
+				'aria-orientation': $options.orientation,
+				'data-orientation': $options.orientation,
+			};
+		},
 	});
 
 	// Trigger
@@ -73,8 +79,9 @@ export function createTabs(args?: CreateTabsArgs) {
 		}
 	};
 
-	const trigger = {
-		...derived([value, options], ([$value, $options]) => {
+	const trigger = builder('trigger', {
+		stores: [value, options],
+		returned: ([$value, $options]) => {
 			return (args: TriggerArgs) => {
 				const { value: tabValue, disabled } = parseTriggerArgs(args);
 
@@ -99,7 +106,7 @@ export function createTabs(args?: CreateTabsArgs) {
 					disabled,
 				};
 			};
-		}),
+		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'focus', () => {
@@ -162,25 +169,28 @@ export function createTabs(args?: CreateTabsArgs) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
 	// Content
-	const content = derived(value, ($value) => {
-		return (tabValue: string) => {
-			return {
-				role: 'tabpanel',
-				// TODO: improve
-				'aria-labelledby': tabValue,
-				hidden: isBrowser
-					? $value === tabValue
+	const content = builder('content', {
+		stores: value,
+		returned: ($value) => {
+			return (tabValue: string) => {
+				return {
+					role: 'tabpanel',
+					// TODO: improve
+					'aria-labelledby': tabValue,
+					hidden: isBrowser
+						? $value === tabValue
+							? undefined
+							: true
+						: ssrValue === tabValue
 						? undefined
-						: true
-					: ssrValue === tabValue
-					? undefined
-					: true,
-				tabindex: 0,
+						: true,
+					tabindex: 0,
+				};
 			};
-		};
+		},
 	});
 
 	return {
