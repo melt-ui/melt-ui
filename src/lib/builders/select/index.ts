@@ -18,6 +18,7 @@ import { sleep } from '$lib/internal/helpers/sleep';
 import type { Defaults } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
+import { createSeparator } from '../separator';
 
 const SELECTION_KEYS = [kbd.ENTER, kbd.SPACE];
 const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
@@ -131,6 +132,12 @@ export function createSelect(args?: CreateSelectArgs) {
 
 			const unsubEventListeners = executeCallbacks(
 				addEventListener(node, 'keydown', (e) => {
+					const menuElement = e.currentTarget;
+					if (!isHTMLElement(menuElement)) return;
+
+					const target = e.target;
+					if (!isHTMLElement(target)) return;
+
 					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
 					const isCharacterKey = e.key.length === 1;
 					/**
@@ -140,6 +147,14 @@ export function createSelect(args?: CreateSelectArgs) {
 						e.preventDefault();
 					}
 					if (FIRST_LAST_KEYS.includes(e.key)) {
+						e.preventDefault();
+						if (menuElement === target) {
+							const selectedOption = getSelectedOption(menuElement);
+							if (isHTMLElement(selectedOption)) {
+								handleRovingFocus(selectedOption);
+								return;
+							}
+						}
 						handleMenuNavigation(e);
 					}
 
@@ -256,6 +271,28 @@ export function createSelect(args?: CreateSelectArgs) {
 		},
 	};
 
+	const { root: separator } = createSeparator({
+		decorative: true,
+	});
+
+	const createGroup = () => {
+		const groupId = generateId();
+
+		const group = {
+			role: 'group',
+			'aria-labelledby': groupId,
+		};
+
+		const label = {
+			id: groupId,
+		};
+
+		return {
+			group,
+			label,
+		};
+	};
+
 	const arrow = derived(options, ($options) => ({
 		'data-arrow': true,
 		style: styleToString({
@@ -349,11 +386,11 @@ export function createSelect(args?: CreateSelectArgs) {
 						handleRovingFocus(menuElement);
 					}
 
-					onMenuItemPointerMove(e);
+					onOptionPointerMove(e);
 				}),
 				addEventListener(node, 'pointerleave', (e) => {
 					if (!isMouse(e)) return;
-					onMenuItemLeave();
+					onOptionLeave();
 				}),
 				addEventListener(node, 'focusin', (e) => {
 					const itemElement = e.currentTarget;
@@ -386,23 +423,27 @@ export function createSelect(args?: CreateSelectArgs) {
 			const menuEl = document.getElementById(ids.menu);
 			if (menuEl && $open && get(isUsingKeyboard)) {
 				// Focus on selected option or first option
-				const selectedOption = menuEl.querySelector('[data-selected]');
+				const selectedOption = getSelectedOption(menuEl);
 
 				if (!isHTMLElement(selectedOption)) {
-					const firstOption = menuEl.querySelector('[role="option"]');
+					const firstOption = getFirstOption(menuEl);
 					if (!isHTMLElement(firstOption)) return;
+
 					handleRovingFocus(firstOption);
 				} else {
 					handleRovingFocus(selectedOption);
 				}
+			} else if (menuEl && $open) {
+				// focus on the menu element
+				handleRovingFocus(menuEl);
 			} else if ($activeTrigger) {
 				// Hacky way to prevent the keydown event from triggering on the trigger
 				handleRovingFocus($activeTrigger);
 			} else {
 				const triggerElement = document.getElementById(ids.trigger);
-				if (isHTMLElement(triggerElement)) {
-					handleRovingFocus(triggerElement);
-				}
+				if (!isHTMLElement(triggerElement)) return;
+
+				handleRovingFocus(triggerElement);
 			}
 		});
 	});
@@ -466,14 +507,22 @@ export function createSelect(args?: CreateSelectArgs) {
 		return e.pointerType === 'mouse';
 	}
 
-	function onMenuItemPointerMove(e: PointerEvent) {
+	function getFirstOption(menuElement: HTMLElement) {
+		return menuElement.querySelector('[role="option"]');
+	}
+
+	function getSelectedOption(menuElement: HTMLElement) {
+		return menuElement.querySelector('[data-selected]');
+	}
+
+	function onOptionPointerMove(e: PointerEvent) {
 		if (!isMouse(e)) return;
 		const currentTarget = e.currentTarget;
 		if (!isHTMLElement(currentTarget)) return;
 		handleRovingFocus(currentTarget);
 	}
 
-	function onMenuItemLeave() {
+	function onOptionLeave() {
 		const menuElement = document.getElementById(ids.menu);
 		if (!isHTMLElement(menuElement)) return;
 		handleRovingFocus(menuElement);
@@ -495,14 +544,14 @@ export function createSelect(args?: CreateSelectArgs) {
 		if (!isHTMLElement(currentTarget)) return;
 
 		// menu items of the current menu
-		const menuItems = getOptions(currentTarget);
-		if (!menuItems.length) return;
+		const options = getOptions(currentTarget);
+		if (!options.length) return;
 
-		const candidateNodes = menuItems.filter((item) => {
-			if (item.hasAttribute('data-disabled')) {
+		const candidateNodes = options.filter((opt) => {
+			if (opt.hasAttribute('data-disabled')) {
 				return false;
 			}
-			if (item.getAttribute('disabled') === 'true') {
+			if (opt.getAttribute('disabled') === 'true') {
 				return false;
 			}
 			return true;
@@ -546,5 +595,7 @@ export function createSelect(args?: CreateSelectArgs) {
 		isSelected,
 		options,
 		input,
+		separator,
+		createGroup,
 	};
 }

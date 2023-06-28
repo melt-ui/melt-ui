@@ -15,7 +15,7 @@
 
 <Docs.H1>Select</Docs.H1>
 <Docs.Description>
-	Displays a list of options for the user to pick from—triggered by a button.
+	Presents a selection of choices to the user, activated by a button.
 </Docs.Description>
 
 <Docs.Preview {...data.preview} />
