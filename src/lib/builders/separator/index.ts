@@ -26,20 +26,20 @@ const defaults = {
 
 export const createSeparator = (args: CreateSeparatorArgs = defaults) => {
 	const withDefaults = { ...defaults, ...args };
-	const orientation = writable(withDefaults.orientation);
-	const decorative = writable(withDefaults.decorative);
+	const options = writable({ ...withDefaults });
 
-	const root = derived([orientation, decorative], ([$orientation, $decorative]) => {
-		const ariaOrientation = $orientation === 'vertical' ? $orientation : undefined;
+	const root = derived(options, ({ orientation, decorative }) => {
+		const ariaOrientation = orientation === 'vertical' ? orientation : undefined;
 		return {
-			role: $decorative ? 'none' : 'separator',
+			role: decorative ? 'none' : 'separator',
 			'aria-orientation': ariaOrientation,
-			'aria-hidden': $decorative,
-			'data-orientation': $orientation,
+			'aria-hidden': decorative,
+			'data-orientation': orientation,
 		};
 	});
 
 	return {
 		root,
+		options,
 	};
 };

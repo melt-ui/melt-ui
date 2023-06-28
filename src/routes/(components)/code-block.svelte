@@ -23,7 +23,7 @@
 <div
 	class={cn(
 		'code-block relative rounded-lg',
-		'max-h-[17rem] overflow-auto border border-neutral-300/30 lg:max-h-[25rem]',
+		'border border-neutral-300/30',
 		inline ? 'inline-block overflow-hidden pr-12' : 'my-2'
 	)}
 >
@@ -38,7 +38,14 @@
 			</div>
 		{/if}
 	</button>
-	<HighlightSvelte {code} class="text-sm" />
+	<div
+		class={cn(
+			'max-h-[17rem] lg:max-h-[25rem]',
+			inline ? 'inline-block overflow-hidden' : 'overflow-auto'
+		)}
+	>
+		<HighlightSvelte {code} class="text-sm" />
+	</div>
 </div>
 
 <style>
@@ -48,5 +55,6 @@
 
 	.code-block :global(.hljs) {
 		background: transparent !important;
+		overflow: unset !important;
 	}
 </style>
