@@ -64,6 +64,10 @@ export type CreateMenuRadioGroupArgs = {
 	value?: string;
 };
 
+export type ItemArgs = {
+	onSelect?: (e: Event) => void;
+};
+
 export type CheckboxItemArgs = {
 	checked: Writable<boolean | 'indeterminate'>;
 };
@@ -311,7 +315,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		tabindex: -1,
 		'data-orientation': 'vertical',
 		'data-melt-part': 'item',
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement, params: ItemArgs = {}) => {
+			const { onSelect } = params;
 			setMeltMenuAttribute(node);
 			applyAttrsIfDisabled(node);
 
@@ -338,6 +343,8 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						handleRovingFocus(itemElement);
 						return;
 					}
+					onSelect?.(e);
+					if (e.defaultPrevented) return;
 					rootOpen.set(false);
 				}),
 				addEventListener(node, 'keydown', (e) => {
@@ -1022,8 +1029,12 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	 * Root Effects
 	 * -----------------------------------------------------------------------------------------------*/
 
-	effect([rootOpen], ([$rootOpen]) => {
+	effect([rootOpen, rootActiveTrigger], ([$rootOpen, $rootActiveTrigger]) => {
 		if (!isBrowser) return;
+
+		if (!$rootOpen && $rootActiveTrigger) {
+			handleRovingFocus($rootActiveTrigger);
+		}
 
 		sleep(1).then(() => {
 			const menuElement = document.getElementById(rootIds.menu);
@@ -1034,11 +1045,11 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				// Focus on first menu item
 				const firstOption = document.querySelector(rootMenuItemSelector);
 
-				if (get(isUsingKeyboard)) {
-					isHTMLElement(firstOption) ? handleRovingFocus(firstOption) : undefined;
-				}
+				isHTMLElement(firstOption) ? handleRovingFocus(firstOption) : undefined;
+			} else if ($rootActiveTrigger) {
+				// Focus on active trigger trigger
+				handleRovingFocus($rootActiveTrigger);
 			} else {
-				// Focus on trigger
 				const triggerElement = document.getElementById(rootIds.trigger);
 				if (isHTMLElement(triggerElement)) {
 					handleRovingFocus(triggerElement);
