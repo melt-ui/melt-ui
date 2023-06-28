@@ -2,6 +2,7 @@
 	import { createCombobox } from '$lib';
 	import Check from '~icons/lucide/check';
 	import ChevronDown from '~icons/lucide/chevron-down';
+	import ChevronUp from '~icons/lucide/chevron-up';
 
 	interface Book {
 		author: string;
@@ -52,7 +53,7 @@
 <div>
 	<div class="container">
 		<label class="label">
-			Choose your favorite book:
+			<span class="label-description">Choose your favorite book:</span>
 
 			<div class="input-container">
 				<input
@@ -62,8 +63,14 @@
 					placeholder="Best book ever"
 					class="input"
 				/>
-				<!-- We must output these at HTML ASCII characters in order for them to render -->
-				{$open ? '⬆️' : '⬇️'}
+
+				<div class="input-icon">
+					{#if $open}
+						<ChevronUp />
+					{:else}
+						<ChevronDown />
+					{/if}
+				</div>
 			</div>
 		</label>
 	</div>
@@ -94,7 +101,10 @@
 
 <style lang="postcss">
 	.label {
-		@apply py-1 pl-4 pr-4 font-semibold capitalize text-neutral-800;
+		@apply text-neutral-800;
+	}
+	.label-description {
+		@apply block pb-1 font-semibold capitalize text-neutral-800;
 	}
 	.menu {
 		@apply z-10 flex max-h-[360px] flex-col gap-2 overflow-y-auto;
@@ -107,11 +117,13 @@
 		@apply bg-magnum-100 text-magnum-700;
 	}
 	.input-container {
-		@apply flex h-10 w-[360px] items-center justify-between rounded-md bg-white px-3;
-		@apply py-2 text-magnum-700;
+		@apply relative;
 	}
 	.input {
-		@apply h-full w-full appearance-none;
+		@apply flex h-10 w-[360px] items-center justify-between rounded-md bg-white px-3 pr-12;
+	}
+	.input-icon {
+		@apply absolute right-3 top-1/2 z-10 -translate-y-1/2;
 	}
 	.check {
 		@apply absolute left-2 top-1/2 text-magnum-500;
