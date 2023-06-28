@@ -129,27 +129,29 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 		},
 	};
 
-	// effect([open, options, highlightedItem], ([$open, $options]) => {
-	// 	if (!isBrowser) return;
+	effect([open, options, highlightedItem], ([$open, $options, $highlightedItem]) => {
+		if (!isBrowser) return;
 
-	// 	const menuEl = document.getElementById(ids.menu);
-	// 	if (menuEl && $open) {
-	// 		// Focus on selected option or first option
-	// 		const selectedOption = menuEl.querySelector('[data-highlighted=true]') as
-	// 			| HTMLElement
-	// 			| undefined;
+		const menuEl = document.getElementById(ids.menu);
+		if (menuEl && $open) {
+			// Focus on selected option or first option
+			const selectedOption = menuEl.querySelector(`[data-index="${$highlightedItem}"]`) as
+				| HTMLElement
+				| undefined;
 
-	// 		if (selectedOption) {
-	// 			sleep(10).then(() => selectedOption.scrollIntoView({ block: $options.scrollAlignment }));
-	// 		}
-	// 	}
-	// });
+			if (selectedOption) {
+				sleep(1).then(() => selectedOption.scrollIntoView({ block: $options.scrollAlignment }));
+			}
+		}
+	});
 
 	const option = {
 		...derived([highlightedItem], ([$highlightedItem]) => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			return (args: any) => {
 				return {
+					// @TODO set activedescendant on the input.
+					// "aria-activedescendant"
 					// 'aria-selected': $value === args?.value,
 					// 'data-selected': $value === args?.value ? '' : undefined,
 					'data-highlighted': $highlightedItem === args?.index,
@@ -181,9 +183,6 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 						highlightedItem.set(parseInt(index, 10));
 					}
 				}),
-				addEventListener(node, 'mouseout', () => {
-					highlightedItem.set(0);
-				}),
 				addEventListener(node, 'click', onClick)
 			);
 
@@ -196,8 +195,6 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 			[open, options],
 			([$open, $options]) =>
 				({
-					// @TODO set activedescendant on the input.
-					// "aria-activedescendant"
 					'aria-autocomplete': 'list',
 					'aria-controls': ids.menu,
 					'aria-expanded': $open,
@@ -211,6 +208,9 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 		),
 		action: (node: HTMLInputElement) => {
 			const unsub = executeCallbacks(
+				addEventListener(node, 'blur', () => {
+					highlightedItem.set(0);
+				}),
 				addEventListener(node, 'focus', (e) => {
 					// @TODO: abstract and use the input id instead? Thinking of this due to keyboard events also opening the box (although in testing, I haven't had any issues yet)
 					const triggerEl = e.currentTarget as HTMLElement;

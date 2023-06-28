@@ -101,7 +101,7 @@
 
 <style lang="postcss">
 	.label {
-		@apply text-neutral-800;
+		@apply cursor-pointer text-neutral-800;
 	}
 	.label-description {
 		@apply block pb-1 font-semibold capitalize text-neutral-800;
@@ -123,7 +123,7 @@
 		@apply flex h-10 w-[360px] items-center justify-between rounded-md bg-white px-3 pr-12;
 	}
 	.input-icon {
-		@apply absolute right-3 top-1/2 z-10 -translate-y-1/2;
+		@apply absolute right-1 top-1/2 z-10 -translate-y-1/2;
 	}
 	.check {
 		@apply absolute left-2 top-1/2 text-magnum-500;
