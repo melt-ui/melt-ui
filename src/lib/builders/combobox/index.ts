@@ -3,19 +3,28 @@ import {
 	generateId,
 	addEventListener,
 	kbd,
+	styleToString,
+	noop,
+	effect,
 } from '@melt-ui/svelte/internal/helpers';
 import type { Action } from 'svelte/action';
 import { writable, type Readable, type Writable, derived, get } from 'svelte/store';
 import type { HTMLAttributes, HTMLInputAttributes, HTMLLabelAttributes } from 'svelte/elements';
+import { tick } from 'svelte';
+import { usePopper, type FloatingConfig } from '@melt-ui/svelte/internal/actions';
+import type { Defaults } from '@melt-ui/svelte/internal/types';
+import { getNextIndex } from '@melt-ui/svelte/builders/combobox/utils';
 
 interface ComboboxProps<T> {
 	items: T[];
 	/** @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block */
 	scrollAlignment?: 'nearest' | 'center';
 	disabled?: boolean;
-	// itemToString: (item: T) => string;
-	// filterFunction: (value: string) => void;
-	// selectItem?: (item: T) => void;
+	value?: string;
+	filterFunction: (value: string) => void;
+	positioning?: FloatingConfig;
+	itemToString: (item: T) => string;
+	selectItem?: (item: T) => void;
 }
 
 interface Combobox<T> {
@@ -34,18 +43,23 @@ interface Combobox<T> {
 const defaults = {
 	disabled: false,
 	scrollAlignment: 'nearest',
+	value: '',
+	positioning: {
+		placement: 'bottom',
+		sameWidth: true,
+	},
 };
 
 export function createCombobox<T>(args: ComboboxProps<T>) {
 	const withDefaults = { ...defaults, ...args } as ComboboxProps<T>;
 	const options = writable(withDefaults);
-
-	const id = generateId();
 	const open = writable(false);
+	const value = writable(withDefaults.value ?? '');
+	const activeTrigger = writable<HTMLElement | null>(null);
 	const selectedItem = writable<T>(undefined);
-	const itemCount = writable(0);
-	const trapFocus = false;
-	const inputValue = writable('');
+	// const itemCount = writable(0);
+	// const trapFocus = false;
+	// const label = writable<string | number | null>(withDefaults.label ?? null);
 
 	const ids = {
 		input: generateId(),
@@ -53,39 +67,76 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 		label: generateId(),
 	};
 
+	function setSelectedItem(index: number, input: HTMLInputElement | null) {
+		const $options = get(options);
+		const string = $options.itemToString($options.items[index]);
+		selectedItem.set($options.items[index]);
+
+		// @TODO: think through if this should be a required argument (aka: internally handled or always externally managed (or both))
+		$options.selectItem && $options.selectItem($options.items[index]);
+		$options.filterFunction(string);
+
+		if (input) {
+			input.value = string;
+		}
+	}
+
 	const menu = {
-		...derived(
-			[open, options],
-			([$open, $options]) =>
-				({
-					// 'aria-autocomplete': 'list',
-					// 'aria-controls': ids.menu,
-					// 'aria-expanded': $open,
-					// 'aria-labelledby': ids.label,
-					// autocomplete: 'off',
-					// id: ids.input,
-					// role: 'combobox',
-					// 'data-disabled': $options.disabled ? true : undefined,
-					// disabled: $options.disabled,
-				} as const)
-		),
+		...derived([open], ([$open]) => {
+			return {
+				hidden: $open ? undefined : true,
+				style: styleToString({
+					display: $open ? undefined : 'none',
+				}),
+				id: ids.menu,
+				role: 'listbox',
+			};
+		}),
 		action: (node: HTMLUListElement) => {
-			function setListValues() {
-				const listItems = node.querySelectorAll('[data-list-item]');
+			// @TODO: reimplement
+			// function setListValues() {
+			// 	const listItems = node.querySelectorAll('[data-list-item]');
 
-				listItems.forEach((el, i) => {
-					// setAttribute(el, 'data-index', i);
-					// setAttribute(el, 'id', `${id}-descendent-${i}`);
-				});
+			// 	listItems.forEach((el, i) => {
+			// 		setAttribute(el, 'data-index', i);
+			// 		setAttribute(el, 'id', `${id}-descendent-${i}`);
+			// 	});
 
-				itemCount.set(listItems.length);
-			}
+			// 	itemCount.set(listItems.length);
+			// }
 
-			setListValues();
+			// setListValues();
 			// const unbind = emitter.on('update', setListValues);
 
+			let unsubPopper = noop;
+
+			const unsubDerived = effect(
+				[open, activeTrigger, options],
+				([$open, $activeTrigger, $options]) => {
+					unsubPopper();
+					if ($open && $activeTrigger) {
+						tick().then(() => {
+							const popper = usePopper(node, {
+								anchorElement: $activeTrigger,
+								open,
+								options: {
+									floating: $options.positioning,
+								},
+							});
+
+							if (popper && popper.destroy) {
+								unsubPopper = popper.destroy;
+							}
+						});
+					}
+				}
+			);
+
 			return {
-				// destroy: () => unbind(),
+				destroy: () => {
+					unsubDerived();
+					unsubPopper();
+				},
 			};
 		},
 	};
@@ -111,9 +162,9 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 				const { index } = node.dataset;
 				if (index) {
 					const parsedIndex = parseInt(index, 10);
-					// setSelectedItem(parsedIndex, document.getElementById(`${id}-input`) as HTMLInputElement);
-					document.getElementById(`${id}-input`)?.focus();
-					close();
+					setSelectedItem(parsedIndex, document.getElementById(ids.input) as HTMLInputElement);
+					document.getElementById(ids.input)?.focus();
+					open.set(false);
 				}
 			}
 
@@ -183,8 +234,16 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 			}
 
 			const unsub = executeCallbacks(
-				// addEventListener(node, 'blur', close),
-				// addEventListener(node, 'focus', open),
+				addEventListener(node, 'blur', () => {
+					activeTrigger.set(null);
+					open.set(false);
+				}),
+				addEventListener(node, 'focus', (e) => {
+					// @TODO: abstract and use the input id instead? Thinking of this due to keyboard events also opening the box (although in testing, I haven't had any issues yet)
+					const triggerEl = e.currentTarget as HTMLElement;
+					activeTrigger.set(triggerEl);
+					open.set(true);
+				}),
 				addEventListener(node, 'keydown', (e: KeyboardEvent) => {
 					const $open = get(open);
 					// Handle key events when the menu is closed.
@@ -202,18 +261,22 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 						// if (interactionKeys.has(e.key)) {
 						// 	return;
 						// }
+
 						// Don't open the menu on backspace if the input is blank.
 						if (e.key === kbd.BACKSPACE && node.value === '') {
 							return;
 						}
+
 						// Otherwise, open the input.
-						open();
+						open.set(true);
 					}
+
+					const $options = get(options);
 
 					// Handle key events when the menu is open.
 					switch (e.key) {
 						case kbd.ESCAPE: {
-							close();
+							open.set(false);
 							break;
 						}
 						case kbd.ENTER: {
@@ -224,7 +287,7 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 								setSelectedItem(parseInt(index, 10), e.target as HTMLInputElement);
 							}
 
-							close();
+							open.set(false);
 							break;
 						}
 						case kbd.HOME: {
@@ -232,7 +295,7 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 							break;
 						}
 						case kbd.END: {
-							const nextIndex = store$.itemCount - 1;
+							const nextIndex = $options.items.length - 1;
 							scrollToItem(nextIndex);
 							break;
 						}
@@ -240,7 +303,7 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 							const previousHightlightedIndex = removeHighlight();
 							const nextIndex = getNextIndex({
 								currentIndex: previousHightlightedIndex,
-								itemCount: store$.itemCount,
+								itemCount: $options.items.length,
 								moveAmount: -10,
 							});
 							scrollToItem(nextIndex);
@@ -250,7 +313,7 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 							const previousHightlightedIndex = removeHighlight();
 							const nextIndex = getNextIndex({
 								currentIndex: previousHightlightedIndex,
-								itemCount: store$.itemCount,
+								itemCount: $options.items.length,
 								moveAmount: 10,
 							});
 							scrollToItem(nextIndex);
@@ -264,7 +327,7 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 							const previousHightlightedIndex = removeHighlight();
 							const nextIndex = getNextIndex({
 								currentIndex: previousHightlightedIndex,
-								itemCount: store$.itemCount,
+								itemCount: $options.items.length,
 								moveAmount: 1,
 							});
 							scrollToItem(nextIndex);
@@ -278,7 +341,7 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 							const previousHightlightedIndex = removeHighlight();
 							const nextIndex = getNextIndex({
 								currentIndex: previousHightlightedIndex,
-								itemCount: store$.itemCount,
+								itemCount: $options.items.length,
 								moveAmount: -1,
 							});
 							scrollToItem(nextIndex);
@@ -287,10 +350,11 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 					}
 				}),
 				addEventListener(node, 'input', (e: Event) => {
+					const $options = get(options);
 					// @TODO: throttle this value
-					const value = (e.target as HTMLInputElement).value;
-					inputValue.set(value);
-					// filterFunction(value);
+					const elementValue = (e.target as HTMLInputElement).value;
+					value.set(elementValue);
+					$options.filterFunction(elementValue);
 					// emitter.emit('update');
 				})
 			);
@@ -306,5 +370,6 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 		open,
 		menu,
 		option,
+		value,
 	};
 }

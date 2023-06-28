@@ -8,7 +8,7 @@
 		title: string;
 	}
 
-	const items: Book[] = [
+	const books: Book[] = [
 		{ author: 'Harper Lee', title: 'To Kill a Mockingbird' },
 		{ author: 'Lev Tolstoy', title: 'War and Peace' },
 		{ author: 'Fyodor Dostoyevsy', title: 'The Idiot' },
@@ -21,7 +21,34 @@
 		{ author: 'Fyodor Dostoevsky', title: 'Crime and Punishment' },
 	];
 
-	const { open, input, menu, option } = createCombobox({ items });
+	let items = books;
+
+	function getBooksFilter(inputValue: string) {
+		const lowerCasedInputValue = inputValue.toLowerCase();
+
+		return function booksFilter(book: Book) {
+			return (
+				!inputValue ||
+				book.title.toLowerCase().includes(lowerCasedInputValue) ||
+				book.author.toLowerCase().includes(lowerCasedInputValue)
+			);
+		};
+	}
+
+	const { open, input, menu, option, value } = createCombobox({
+		items,
+		filterFunction(value) {
+			// the store is a super mutable snapshot of books
+			items = books.filter(getBooksFilter(value));
+		},
+		itemToString(item) {
+			return item ? item.title : '';
+		},
+	});
+
+	$: {
+		console.log({ items });
+	}
 </script>
 
 <div>
@@ -29,8 +56,14 @@
 		<label class="label">
 			Choose your favorite book:
 
-			<div class="input">
-				<input {...$input} use:input.action placeholder="Best book ever" class="input" />
+			<div class="input-container">
+				<input
+					{...$input}
+					value={$value}
+					use:input.action
+					placeholder="Best book ever"
+					class="input"
+				/>
 				<!-- We must output these at HTML ASCII characters in order for them to render -->
 				{$open ? '⬆️' : '⬇️'}
 			</div>
@@ -44,8 +77,8 @@
 	>
 		{#if $open}
 			{#each items as item, index (index)}
-				<!-- style:--font-weight={$selectedItem === item ? '700' : '400'}
-			style:--background-color={$highlightedIndex === index ? '#eee' : 'transparent'}
+				<!-- s
+			
 			{...getItemProps(index)} -->
 				<li use:option.action class="option">
 					<span>{item.title}</span>
@@ -68,9 +101,18 @@
 		@apply relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800;
 		@apply focus:bg-magnum-100 focus:text-magnum-700;
 	}
+	.option[data-highlighted-item] {
+		@apply bg-magnum-100;
+	}
+	.option[data-selected-item] {
+		@apply font-bold;
+	}
+	.input-container {
+		@apply flex h-10 w-[360px] items-center justify-between rounded-md bg-white px-3;
+		@apply py-2 text-magnum-700;
+	}
 	.input {
-		@apply flex h-10 w-[180px] items-center justify-between rounded-md bg-white px-3;
-		@apply py-2 text-magnum-700  hover:opacity-75;
+		@apply h-full w-full appearance-none;
 	}
 	.check {
 		@apply absolute left-2 top-1/2 text-magnum-500;
