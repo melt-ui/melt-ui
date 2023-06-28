@@ -8,7 +8,7 @@ import {
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
-import { deleteTagById, focusInput, type Tag, type TagArgs } from './helpers';
+import { deleteTagById, focusInput, getTagElements, type Tag, type TagArgs } from './helpers';
 
 export type CreateTagsInputArgs = {
 	// The default input placeholder
@@ -32,6 +32,13 @@ const defaults = {
 	unique: false,
 	// blur: 'nothing',
 } satisfies Defaults<CreateTagsInputArgs>;
+
+const dataMeltParts = {
+	root: 'tags-input',
+	input: 'tags-input-input',
+	tag: 'tags-input-tag',
+	deleteTrigger: 'tags-input-delete-trigger',
+};
 
 export function createTagsInput(args?: CreateTagsInputArgs) {
 	const withDefaults = { ...defaults, ...args } as CreateTagsInputArgs;
@@ -69,18 +76,29 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 				role: 'tagsinput',
 				'data-disabled': $options.disabled ? true : undefined,
 				'data-melt-id': ids.root,
-				'data-melt-part': 'tags-input',
+				'data-melt-part': dataMeltParts['root'],
 				disabled: $options.disabled,
 			} as const;
 		}),
 		// Action => use:root.action
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', () => {
-					// Focus on the input when the root is clicked
-					selectedTag.set(null);
-					const inputEl = getElementByMeltId(ids.input);
-					if (inputEl) inputEl.focus();
+				addEventListener(node, 'click', (e) => {
+					const delegatedTarget = (e.target as HTMLElement).closest(
+						'[data-melt-part=tags-input-tag]'
+					);
+
+					if (delegatedTarget) {
+						selectedTag.set({
+							id: delegatedTarget.getAttribute('data-tag-id') ?? '',
+							value: delegatedTarget.getAttribute('data-tag-value') ?? '',
+						});
+					} else {
+						// Focus on the input when the root is clicked
+						selectedTag.set(null);
+						const inputEl = getElementByMeltId(ids.input);
+						if (inputEl) inputEl.focus();
+					}
 				})
 			);
 			return {
@@ -95,7 +113,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		...derived(options, ($options) => {
 			return {
 				'data-melt-id': ids.input,
-				'data-melt-part': 'tags-input-input',
+				'data-melt-part': dataMeltParts['input'],
 				'data-disabled': $options.disabled,
 				disabled: $options.disabled,
 				placeholder: $options.placeholder,
@@ -105,48 +123,157 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		action: (node: HTMLInputElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'keydown', (e) => {
-					// on any keydown, clear selected tag
-					selectedTag.set(null);
+					const $selectedTag = get(selectedTag);
 
-					if (e.key === kbd.ENTER) {
+					if ($selectedTag) {
+						// We manage everything now!!
 						e.preventDefault();
-						const value = node.value;
-						if (!value) return;
 
-						// Do not add when tags are unique and this tag already exists
-						const $options = get(options);
-						const $tags = get(tags);
+						if (e.key === kbd.ARROW_LEFT) {
+							e.preventDefault();
+							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
 
-						if ($options.unique) {
-							const index = $tags.findIndex((tag) => tag.value === value);
-							if (index >= 0) {
-								// Select the tag
-								selectedTag.set($tags[index]);
-								return;
+							const selectedIndex = tagsEl.findIndex(
+								(element) => element.getAttribute('data-tag-id') === $selectedTag.id
+							);
+							const prevIndex = selectedIndex - 1;
+
+							if (prevIndex >= 0) {
+								selectedTag.set({
+									id: tagsEl[prevIndex].getAttribute('data-tag-id') ?? '',
+									value: tagsEl[prevIndex].getAttribute('data-tag-value') ?? '',
+								});
+							}
+						} else if (e.key === kbd.ARROW_RIGHT) {
+							e.preventDefault();
+
+							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
+							const selectedIndex = tagsEl.findIndex(
+								(element) => element.getAttribute('data-tag-id') === $selectedTag.id
+							);
+							const nextIndex = selectedIndex + 1;
+
+							if (nextIndex >= tagsEl.length) {
+								selectedTag.set(null);
+								focusInput(ids.input, 'start');
+							} else {
+								selectedTag.set({
+									id: tagsEl[nextIndex].getAttribute('data-tag-id') ?? '',
+									value: tagsEl[nextIndex].getAttribute('data-tag-value') ?? '',
+								});
+							}
+						} else if (e.key === kbd.HOME) {
+							e.preventDefault();
+							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
+							if (tagsEl.length > 0) {
+								selectedTag.set({
+									id: tagsEl[0].getAttribute('data-tag-id') ?? '',
+									value: tagsEl[0].getAttribute('data-tag-value') ?? '',
+								});
+							}
+						} else if (e.key === kbd.END) {
+							e.preventDefault();
+							selectedTag.set(null);
+							focusInput(ids.input, 'end');
+						} else if (e.key === kbd.DELETE) {
+							// Delete this tag and move to the next tag. If there is no next tag
+							// focus on input
+							e.preventDefault();
+
+							const prevSelectedId = $selectedTag.id;
+							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
+							const selectedIndex = tagsEl.findIndex(
+								(element) => element.getAttribute('data-tag-id') === $selectedTag.id
+							);
+							const nextIndex = selectedIndex + 1;
+
+							if (nextIndex >= tagsEl.length) {
+								selectedTag.set(null);
+								focusInput(ids.input, 'start');
+							} else {
+								selectedTag.set({
+									id: tagsEl[nextIndex].getAttribute('data-tag-id') ?? '',
+									value: tagsEl[nextIndex].getAttribute('data-tag-value') ?? '',
+								});
+							}
+
+							// Delete the previously selected tag
+							deleteTagById(prevSelectedId, tags);
+						} else if (e.key === kbd.BACKSPACE) {
+							// Delete this tag and move to the previous tag. If there is no previous,
+							// move to the next tag. If there is no next tag, focus on input
+							e.preventDefault();
+							const prevSelectedId = $selectedTag.id;
+
+							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
+							const selectedIndex = tagsEl.findIndex(
+								(element) => element.getAttribute('data-tag-id') === $selectedTag.id
+							);
+							const prevIndex = selectedIndex - 1;
+							const nextIndex = selectedIndex + 1;
+
+							if (prevIndex >= 0) {
+								selectedTag.set({
+									id: tagsEl[prevIndex].getAttribute('data-tag-id') ?? '',
+									value: tagsEl[prevIndex].getAttribute('data-tag-value') ?? '',
+								});
+							} else {
+								if (nextIndex >= tagsEl.length) {
+									selectedTag.set(null);
+									focusInput(ids.input, 'start');
+								} else {
+									selectedTag.set({
+										id: tagsEl[nextIndex].getAttribute('data-tag-id') ?? '',
+										value: tagsEl[nextIndex].getAttribute('data-tag-value') ?? '',
+									});
+								}
+							}
+
+							// Delete the previously selected tag
+							deleteTagById(prevSelectedId, tags);
+						}
+					} else {
+						// ENTER
+						if (e.key === kbd.ENTER) {
+							e.preventDefault();
+							const value = node.value;
+							if (!value) return;
+
+							const $options = get(options);
+							const $tags = get(tags);
+
+							// Ignore unique
+							if ($options.unique) {
+								const index = $tags.findIndex((tag) => tag.value === value);
+								if (index >= 0) {
+									// Select the tag
+									selectedTag.set($tags[index]);
+									return;
+								}
+							}
+
+							// Add tag
+							tags.update((currentTags) => [
+								...currentTags,
+								{ id: generateId(), value: node.value },
+							]);
+							node.value = '';
+						} else if (
+							node.selectionStart === 0 &&
+							(e.key === kbd.ARROW_LEFT || e.key === kbd.BACKSPACE)
+						) {
+							e.preventDefault();
+
+							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
+							const lastTag = tagsEl.at(-1) as HTMLElement;
+
+							if (lastTag) {
+								selectedTag.set({
+									id: lastTag.getAttribute('data-tag-id') ?? '',
+									value: lastTag.getAttribute('data-tag-value') ?? '',
+								});
 							}
 						}
-
-						// Add tag
-						tags.update((currentTags) => [...currentTags, { id: generateId(), value: node.value }]);
-						node.value = '';
-
-						return;
-					}
-
-					if (e.key === kbd.ARROW_LEFT || (e.key === kbd.BACKSPACE && node.selectionStart === 0)) {
-						// Move to the last tag (if there is one)
-						const el = e.currentTarget as HTMLElement;
-						const root = el.closest('[data-melt-part="tags-input"]') as HTMLElement;
-
-						const tags = Array.from(
-							root.querySelectorAll('[data-melt-part="tags-input-tag"]')
-						) as Array<HTMLElement>;
-
-						// Go to the first tag
-						e.preventDefault();
-						tags.at(-1)?.focus();
-
-						return;
 					}
 				})
 			);
@@ -166,145 +293,16 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 
 				return {
 					role: 'tag',
-					'data-melt-part': 'tags-input-tag',
+					'data-melt-part': dataMeltParts['tag'],
 					'aria-selected': selected,
 					'data-selected': selected ? '' : undefined,
 					'data-tag-value': tag.value,
 					'data-tag-id': tag.id,
 					'data-disabled': disabled ? '' : undefined,
-					tabindex: tag.disabled ? -1 : 0,
+					tabindex: -1,
 				};
 			};
 		}),
-		// Action => use:tag.action
-		action: (node: HTMLElement) => {
-			const getElArgs = () => {
-				const value = node.getAttribute('data-tag-value') ?? '';
-				const id = node.getAttribute('data-tag-id') ?? '';
-				const disabled = node.hasAttribute('data-disabled');
-
-				return {
-					value,
-					id,
-					disabled,
-				};
-			};
-
-			const unsub = executeCallbacks(
-				addEventListener(node, 'focus', (e) => {
-					// Simulate a click on focus
-					const el = e.currentTarget as HTMLElement;
-					el.click();
-				}),
-				addEventListener(node, 'click', (e) => {
-					e.stopPropagation();
-					const args = getElArgs();
-
-					// Do nothing when disabled
-					if (args.disabled) return;
-
-					const $selectedTag = get(selectedTag);
-					if ($selectedTag?.id !== args.id) selectedTag.set({ id: args.id, value: args.value });
-				}),
-				addEventListener(node, 'keydown', (e) => {
-					const $selectedTag = get(selectedTag);
-
-					const el = e.currentTarget as HTMLElement;
-					const rootEl = el.closest('[data-melt-part="tags-input"]') as HTMLElement;
-
-					const tagsEl = Array.from(
-						rootEl.querySelectorAll('[data-melt-part="tags-input-tag"]')
-					) as Array<HTMLElement>;
-
-					const currentIndex = tagsEl.indexOf(el);
-					const prevIndex = currentIndex - 1;
-					const nextIndex = currentIndex + 1;
-
-					if (e.key === kbd.ARROW_RIGHT) {
-						// Go to the next tag. If this is the last tag, focus on input
-						e.preventDefault();
-
-						if (nextIndex >= tagsEl.length) {
-							selectedTag.set(null);
-							focusInput(ids.input);
-						} else {
-							tagsEl[nextIndex].focus();
-						}
-					} else if (e.key === kbd.ARROW_LEFT) {
-						// Go to the previous tag
-						e.preventDefault();
-						if (prevIndex >= 0) tagsEl[prevIndex].focus();
-					} else if (e.key === kbd.HOME) {
-						// Go to the first tag
-						e.preventDefault();
-						tagsEl[0].focus();
-					} else if (e.key === kbd.END) {
-						// Focus on the input
-						e.preventDefault();
-						selectedTag.set(null);
-						focusInput(ids.input);
-					} else if ($selectedTag !== null && e.key === kbd.DELETE) {
-						// Delete this tag and move to the next tag. If there is no next tag
-						// focus on input
-						e.preventDefault();
-
-						if (nextIndex >= tagsEl.length) {
-							// Focus on the input when the root is clicked
-							selectedTag.set(null);
-							focusInput(ids.input);
-						} else {
-							// Set the next tag as selected
-							const value = tagsEl[nextIndex].getAttribute('data-tag-value') ?? '';
-							const id = tagsEl[nextIndex].getAttribute('data-tag-id') ?? '';
-							selectedTag.set({ id, value });
-						}
-
-						// Delete the current tag
-						const currentId = node.getAttribute('data-tag-id') ?? '';
-						deleteTagById(currentId, tags);
-					} else if ($selectedTag !== null && e.key === kbd.BACKSPACE) {
-						// Delete this tag and move to the previous tag. If there is no previous,
-						// move to the next tag. If there is no next tag, focus on input
-						e.preventDefault();
-
-						let previousEL: HTMLElement | null = null;
-
-						if (prevIndex >= 0) {
-							const value = tagsEl[prevIndex].getAttribute('data-tag-value') ?? '';
-							const id = tagsEl[prevIndex].getAttribute('data-tag-id') ?? '';
-							selectedTag.set({ id, value });
-
-							previousEL = rootEl.querySelector(`[data-tag-id="${id}"]`);
-						} else {
-							const nextIndex = currentIndex + 1;
-
-							if (nextIndex >= tagsEl.length) {
-								// Focus on the input when the root is clicked
-								selectedTag.set(null);
-								focusInput(ids.input);
-							} else {
-								// Set the next tag as selected
-								const value = tagsEl[nextIndex].getAttribute('data-tag-value') ?? '';
-								const id = tagsEl[nextIndex].getAttribute('data-tag-id') ?? '';
-								selectedTag.set({ id, value });
-							}
-						}
-
-						// Delete the current tag
-						const currentId = node.getAttribute('data-tag-id') ?? '';
-						deleteTagById(currentId, tags);
-
-						// Fix issue whereby when a tag is deleted the focus can sometimes
-						// 'shift'
-						if (previousEL) previousEL.focus();
-					}
-				})
-			);
-
-			return {
-				destroy: unsub,
-			};
-		},
 	};
 
 	// Attributes and an action to apply each delete trigger
@@ -317,7 +315,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 
 				return {
 					role: 'tag-delete-trigger',
-					'data-melt-part': 'tags-input-delete-trigger',
+					'data-melt-part': dataMeltParts['deleteTrigger'],
 					'aria-selected': selected,
 					'data-selected': selected ? '' : undefined,
 					'data-tag-value': tag.value,
