@@ -225,7 +225,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				'data-state': $rootOpen ? 'open' : 'closed',
 				id: rootIds.trigger,
 				'data-melt-id': rootIds.trigger,
-				'data-melt-part': 'trigger-root',
+				'data-melt-part': 'trigger',
 			} as const;
 		}),
 		action: (node: HTMLElement) => {
