@@ -6,6 +6,8 @@ import {
 	styleToString,
 	noop,
 	effect,
+	isBrowser,
+	sleep,
 } from '@melt-ui/svelte/internal/helpers';
 import type { Action } from 'svelte/action';
 import { writable, type Readable, type Writable, derived, get } from 'svelte/store';
@@ -13,7 +15,7 @@ import type { HTMLAttributes, HTMLInputAttributes, HTMLLabelAttributes } from 's
 import { onMount, tick } from 'svelte';
 import { usePopper, type FloatingConfig } from '@melt-ui/svelte/internal/actions';
 import type { Defaults } from '@melt-ui/svelte/internal/types';
-import { getNextIndex } from '@melt-ui/svelte/builders/combobox/utils';
+import { getNextIndex, setAttribute } from '@melt-ui/svelte/builders/combobox/utils';
 
 interface ComboboxProps<T> {
 	items: T[];
@@ -57,6 +59,7 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 	const value = writable(withDefaults.value ?? '');
 	const activeTrigger = writable<HTMLElement | null>(null);
 	const selectedItem = writable<T>(undefined);
+	const highlightedItem = writable<number>(0);
 	// const itemCount = writable(0);
 	// const trapFocus = false;
 	// const label = writable<string | number | null>(withDefaults.label ?? null);
@@ -93,21 +96,6 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 			};
 		}),
 		action: (node: HTMLUListElement) => {
-			// @TODO: reimplement
-			// function setListValues() {
-			// 	const listItems = node.querySelectorAll('[data-list-item]');
-
-			// 	listItems.forEach((el, i) => {
-			// 		setAttribute(el, 'data-index', i);
-			// 		setAttribute(el, 'id', `${id}-descendent-${i}`);
-			// 	});
-
-			// 	itemCount.set(listItems.length);
-			// }
-
-			// setListValues();
-			// const unbind = emitter.on('update', setListValues);
-
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
@@ -141,50 +129,61 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 		},
 	};
 
+	// effect([open, options, highlightedItem], ([$open, $options]) => {
+	// 	if (!isBrowser) return;
+
+	// 	const menuEl = document.getElementById(ids.menu);
+	// 	if (menuEl && $open) {
+	// 		// Focus on selected option or first option
+	// 		const selectedOption = menuEl.querySelector('[data-highlighted=true]') as
+	// 			| HTMLElement
+	// 			| undefined;
+
+	// 		if (selectedOption) {
+	// 			sleep(10).then(() => selectedOption.scrollIntoView({ block: $options.scrollAlignment }));
+	// 		}
+	// 	}
+	// });
+
 	const option = {
+		...derived([highlightedItem], ([$highlightedItem]) => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			return (args: any) => {
+				return {
+					// 'aria-selected': $value === args?.value,
+					// 'data-selected': $value === args?.value ? '' : undefined,
+					'data-highlighted': $highlightedItem === args?.index,
+					'data-disabled': args.disabled ? '' : undefined,
+					'data-list-item': 'data-list-item',
+					'data-index': args?.index,
+					role: 'option',
+					id: `${ids.input}-descendent-${args?.index}`,
+				};
+			};
+		}),
 		action: (node: HTMLLIElement) => {
-			// setAttribute(node, 'data-list-item');
-
-			// function highlightItem() {
-			// 	document.querySelector(`[data-highlighted]`)?.removeAttribute('data-highlighted');
-			// 	const { index } = node.dataset;
-
-			// 	if (index) {
-			// 		// setAttribute(node, 'data-highlighted');
-			// 	}
-			// }
-
-			// function unHighlightItem() {
-			// 	node.removeAttribute('data-highlighted');
-			// }
-
 			function onClick() {
 				const { index } = node.dataset;
+
 				if (index) {
 					const parsedIndex = parseInt(index, 10);
 					setSelectedItem(parsedIndex, document.getElementById(ids.input) as HTMLInputElement);
 					document.getElementById(ids.input)?.focus();
-					open.set(false);
 				}
-			}
 
-			function onMouseDown() {
-				// trapFocus = true;
-			}
-
-			function onMouseUp() {
-				// trapFocus = false;
+				open.set(false);
 			}
 
 			const unsub = executeCallbacks(
 				addEventListener(node, 'mousemove', () => {
-					node.focus();
+					const { index } = node.dataset;
+					if (index) {
+						highlightedItem.set(parseInt(index, 10));
+					}
 				}),
 				addEventListener(node, 'mouseout', () => {
-					node.blur();
+					highlightedItem.set(0);
 				}),
-				addEventListener(node, 'mousedown', onMouseDown),
-				addEventListener(document, 'mouseup', onMouseUp),
 				addEventListener(node, 'click', onClick)
 			);
 
@@ -209,37 +208,11 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 				} as const)
 		),
 		action: (node: HTMLInputElement) => {
-			function removeHighlight() {
-				const item = document.querySelector(`[data-highlighted]`) as HTMLElement;
-
-				if (item) {
-					item.removeAttribute('data-highlighted');
-					const { index } = item.dataset;
-
-					if (index) {
-						return parseInt(index, 10);
-					}
-				}
-				return -1;
-			}
-
 			// @TODO set activedescendant on the input.
 			// "aria-activedescendant":
 			// highlightedIndex > -1 ? `${id}-descendent-${highlightedIndex}` : "",
-			function scrollToItem(index: number) {
-				const $options = get(options);
-				const el = document.querySelector(`[data-index="${index}"]`);
-				if (el) {
-					// setAttribute(el, 'data-highlighted');
-					el.scrollIntoView({ block: $options.scrollAlignment });
-				}
-			}
 
 			const unsub = executeCallbacks(
-				addEventListener(node, 'blur', () => {
-					activeTrigger.set(null);
-					open.set(false);
-				}),
 				addEventListener(node, 'focus', (e) => {
 					// @TODO: abstract and use the input id instead? Thinking of this due to keyboard events also opening the box (although in testing, I haven't had any issues yet)
 					const triggerEl = e.currentTarget as HTMLElement;
@@ -282,57 +255,49 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 							break;
 						}
 						case kbd.ENTER: {
-							const { index } = (document.querySelector(`[data-highlighted]`) as HTMLElement)
-								.dataset;
-
-							if (index) {
-								setSelectedItem(parseInt(index, 10), e.target as HTMLInputElement);
-							}
-
+							const $highlightedIndex = get(highlightedItem);
+							setSelectedItem($highlightedIndex, e.target as HTMLInputElement);
 							open.set(false);
 							break;
 						}
 						case kbd.HOME: {
-							scrollToItem(0);
+							highlightedItem.set(0);
 							break;
 						}
 						case kbd.END: {
 							const nextIndex = $options.items.length - 1;
-							scrollToItem(nextIndex);
+							highlightedItem.set(nextIndex);
 							break;
 						}
 						case kbd.PAGE_UP: {
-							const previousHightlightedIndex = removeHighlight();
+							const $highlightedIndex = get(highlightedItem);
 							const nextIndex = getNextIndex({
-								currentIndex: previousHightlightedIndex,
+								currentIndex: $highlightedIndex,
 								itemCount: $options.items.length,
 								moveAmount: -10,
 							});
-							scrollToItem(nextIndex);
+							highlightedItem.set(nextIndex);
 							break;
 						}
 						case kbd.PAGE_DOWN: {
-							const previousHightlightedIndex = removeHighlight();
+							const $highlightedIndex = get(highlightedItem);
 							const nextIndex = getNextIndex({
-								currentIndex: previousHightlightedIndex,
+								currentIndex: $highlightedIndex,
 								itemCount: $options.items.length,
 								moveAmount: 10,
 							});
-							scrollToItem(nextIndex);
+							highlightedItem.set(nextIndex);
 							break;
 						}
 						case kbd.ARROW_DOWN: {
-							// figure out the currently highlighted item (if any)
-							// we also need to remove that highlight
-							// set the new hightlight based on the index
-
-							const previousHightlightedIndex = removeHighlight();
+							const $highlightedIndex = get(highlightedItem);
 							const nextIndex = getNextIndex({
-								currentIndex: previousHightlightedIndex,
+								currentIndex: $highlightedIndex,
 								itemCount: $options.items.length,
 								moveAmount: 1,
 							});
-							scrollToItem(nextIndex);
+
+							highlightedItem.set(nextIndex);
 							break;
 						}
 						case kbd.ARROW_UP: {
@@ -340,13 +305,13 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 								close();
 								return;
 							}
-							const previousHightlightedIndex = removeHighlight();
+							const $highlightedIndex = get(highlightedItem);
 							const nextIndex = getNextIndex({
-								currentIndex: previousHightlightedIndex,
+								currentIndex: $highlightedIndex,
 								itemCount: $options.items.length,
 								moveAmount: -1,
 							});
-							scrollToItem(nextIndex);
+							highlightedItem.set(nextIndex);
 							break;
 						}
 					}
@@ -357,7 +322,6 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 					const elementValue = (e.target as HTMLInputElement).value;
 					value.set(elementValue);
 					$options.filterFunction(elementValue);
-					// emitter.emit('update');
 				})
 			);
 
@@ -383,6 +347,8 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 	// 		const focusedOption = allOptions.find((el) => el === document.activeElement);
 	// 		const focusedIndex = allOptions.indexOf(focusedOption as HTMLElement);
 
+	// 		console.log({ focusedOption, focusedIndex });
+
 	// 		if (e.key === kbd.ARROW_DOWN) {
 	// 			e.preventDefault();
 	// 			const nextIndex = focusedIndex + 1 > allOptions.length - 1 ? 0 : focusedIndex + 1;
@@ -406,22 +372,10 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 	// 			lastOption.focus();
 	// 			return;
 	// 		}
-
-	// 		/**
-	// 		 * Handle typeahead search
-	// 		 */
-	// 		const isCharacterKey = e.key.length === 1;
-	// 		const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-	// 		if (!isModifierKey && isCharacterKey) {
-	// 			handleTypeaheadSearch(e.key, allOptions);
-	// 		}
 	// 	};
 
-	// 	document.addEventListener('keydown', keydownListener);
-
-	// 	return () => {
-	// 		document.removeEventListener('keydown', keydownListener);
-	// 	};
+	// 	const unsub = addEventListener(document, 'keydown', keydownListener);
+	// 	return unsub();
 	// });
 
 	return {
