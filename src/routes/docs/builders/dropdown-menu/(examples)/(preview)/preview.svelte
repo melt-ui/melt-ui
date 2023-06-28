@@ -46,7 +46,7 @@
 	<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked: settingsSync }}>
 		<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
 			{#if $settingsSync}
-				<Check class="h-[13px] w-[13px]" />
+				<Check class="icon" />
 			{/if}
 		</div>
 		Settings Sync is On
@@ -54,7 +54,7 @@
 	<div class="item" {...$subTriggerA} use:subTriggerA.action>
 		Profiles
 		<div class="rightSlot">
-			<ChevronRight class="h-[15px] w-[15px]" />
+			<ChevronRight class="icon" />
 		</div>
 	</div>
 	<div class="menu subMenu" {...$subMenuA} use:subMenuA.action>
@@ -64,7 +64,7 @@
 				<div class="item" {...$radioItem(person)} use:radioItem.action>
 					<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
 						{#if $isChecked(person)}
-							<div class="h-[4.75px] w-[4.75px] rounded-full bg-magnum-900" />
+							<div class="dot" />
 						{/if}
 					</div>
 					{person}
@@ -77,7 +77,7 @@
 	<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked: hideMeltUI }}>
 		<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
 			{#if $hideMeltUI}
-				<Check class="h-[13px] w-[13px]" />
+				<Check class="icon" />
 			{/if}
 		</div>
 		Hide Melt UI
@@ -124,11 +124,19 @@
 		translate: 0 calc(-50% + 1px);
 	}
 
+	.dot {
+		@apply h-[4.75px] w-[4.75px] rounded-full bg-magnum-900;
+	}
+
 	.separator {
 		@apply m-[5px] h-[1px] bg-magnum-200;
 	}
 
 	.rightSlot {
 		@apply ml-auto pl-5;
+	}
+
+	.icon {
+		@apply h-[13px] w-[13px];
 	}
 </style>
