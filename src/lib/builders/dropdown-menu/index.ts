@@ -15,6 +15,7 @@ import {
 	addEventListener,
 	hiddenAction,
 	createTypeaheadSearch,
+	handleRovingFocus,
 } from '$lib/internal/helpers';
 import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
@@ -344,21 +345,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					rootOpen.set(false);
 				}),
 				addEventListener(node, 'keydown', (e) => {
-					const isTypingAhead = typed.length > 0;
-					if (isTypingAhead && e.key === kbd.SPACE) return;
-					if (SELECTION_KEYS.includes(e.key)) {
-						const itemElement = e.currentTarget;
-						if (!isHTMLElement(itemElement)) return;
-
-						itemElement.click();
-						/**
-						 * We prevent default browser behaviour for selection keys as they should trigger
-						 * a selection only:
-						 * - prevents space from scrolling the page.
-						 * - if keydown causes focus to move, prevents keydown from firing on the new target.
-						 */
-						e.preventDefault();
-					}
+					onItemKeyDown(e);
 				}),
 				addEventListener(node, 'pointermove', (e) => {
 					const itemElement = e.currentTarget;
@@ -442,21 +429,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					rootOpen.set(false);
 				}),
 				addEventListener(node, 'keydown', (e) => {
-					const isTypingAhead = typed.length > 0;
-					if (isTypingAhead && e.key === kbd.SPACE) return;
-					if (SELECTION_KEYS.includes(e.key)) {
-						const itemElement = e.currentTarget;
-						if (!isHTMLElement(itemElement)) return;
-
-						itemElement.click();
-						/**
-						 * We prevent default browser behaviour for selection keys as they should trigger
-						 * a selection only:
-						 * - prevents space from scrolling the page.
-						 * - if keydown causes focus to move, prevents keydown from firing on the new target.
-						 */
-						e.preventDefault();
-					}
+					onItemKeyDown(e);
 				}),
 				addEventListener(node, 'pointermove', (e) => {
 					const itemElement = e.currentTarget;
@@ -561,21 +534,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						rootOpen.set(false);
 					}),
 					addEventListener(node, 'keydown', (e) => {
-						const isTypingAhead = typed.length > 0;
-						if (isTypingAhead && e.key === kbd.SPACE) return;
-						if (SELECTION_KEYS.includes(e.key)) {
-							const itemElement = e.currentTarget;
-							if (!isHTMLElement(itemElement)) return;
-
-							itemElement.click();
-							/**
-							 * We prevent default browser behaviour for selection keys as they should trigger
-							 * a selection only:
-							 * - prevents space from scrolling the page.
-							 * - if keydown causes focus to move, prevents keydown from firing on the new target.
-							 */
-							e.preventDefault();
-						}
+						onItemKeyDown(e);
 					}),
 					addEventListener(node, 'pointermove', (e) => {
 						const itemElement = e.currentTarget;
@@ -851,10 +810,11 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 						}
 					}),
 					addEventListener(node, 'keydown', (e) => {
+						const $typed = get(typed);
 						const triggerElement = e.currentTarget;
 						if (!isHTMLElement(triggerElement)) return;
 						if (isElementDisabled(triggerElement)) return;
-						const isTypingAhead = typed.length > 0;
+						const isTypingAhead = $typed.length > 0;
 						if (isTypingAhead && e.key === kbd.SPACE) return;
 
 						if (SUB_OPEN_KEYS['ltr'].includes(e.key)) {
@@ -1155,6 +1115,28 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	 * Helper Functions
 	 * -----------------------------------------------------------------------------------------------*/
 
+	function onItemKeyDown(e: KeyboardEvent) {
+		const $typed = get(typed);
+		const isTypingAhead = $typed.length > 0;
+		if (isTypingAhead && e.key === kbd.SPACE) {
+			e.preventDefault();
+			return;
+		}
+		if (SELECTION_KEYS.includes(e.key)) {
+			/**
+			 * We prevent default browser behaviour for selection keys as they should trigger
+			 * a selection only:
+			 * - prevents space from scrolling the page.
+			 * - if keydown causes focus to move, prevents keydown from firing on the new target.
+			 */
+			e.preventDefault();
+			const itemElement = e.currentTarget;
+			if (!isHTMLElement(itemElement)) return;
+
+			itemElement.click();
+		}
+	}
+
 	function isIndeterminate(checked?: boolean | 'indeterminate'): checked is 'indeterminate' {
 		return checked === 'indeterminate';
 	}
@@ -1170,27 +1152,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 			element.setAttribute('data-disabled', '');
 			element.setAttribute('aria-disabled', 'true');
 		}
-	}
-
-	/**
-	 * Manage roving focus between elements. Sets the current active element to
-	 * tabindex -1 and the next element to tabindex 0.
-	 *
-	 * @param nextElement The element to focus on
-	 */
-	function handleRovingFocus(nextElement: HTMLElement) {
-		if (!isBrowser) return;
-
-		const currentFocusedElement = document.activeElement;
-		if (!isHTMLElement(currentFocusedElement)) return;
-
-		// if we already have focus on the next element, do nothing
-		if (currentFocusedElement === nextElement) return;
-
-		currentFocusedElement.tabIndex = -1;
-
-		nextElement.tabIndex = 0;
-		sleep(1).then(() => nextElement.focus());
 	}
 
 	function isPointerMovingToSubmenu(e: PointerEvent) {

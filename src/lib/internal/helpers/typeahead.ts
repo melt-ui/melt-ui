@@ -1,3 +1,4 @@
+import { get, writable, type Writable } from 'svelte/store';
 import { debounce } from './debounce';
 import { handleRovingFocus } from './rovingFocus';
 
@@ -28,15 +29,20 @@ const defaults = {
 
 export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 	const withDefaults = { ...defaults, ...args };
-	let typed: string[] = [];
+	const typed: Writable<string[]> = writable([]);
 
 	const resetTyped = debounce(() => {
-		typed = [];
+		typed.update(() => []);
 	});
 
 	const handleTypeaheadSearch = (key: string, items: HTMLElement[]) => {
-		typed.push(key.toLowerCase());
-		const typedString = typed.join('');
+		const $typed = get(typed);
+		if (!Array.isArray($typed)) {
+			return;
+		}
+		$typed.push(key.toLowerCase());
+		typed.update(() => $typed);
+		const typedString = $typed.join('');
 		const matchingOption = items.find((item) =>
 			item.innerText.toLowerCase().startsWith(typedString)
 		);
