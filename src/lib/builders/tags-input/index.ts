@@ -133,7 +133,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 						return;
 					}
 
-					if (e.key === kbd.ARROW_LEFT && node.selectionStart === 0) {
+					if (e.key === kbd.ARROW_LEFT || (e.key === kbd.BACKSPACE && node.selectionStart === 0)) {
 						// Move to the last tag (if there is one)
 						const el = e.currentTarget as HTMLElement;
 						const root = el.closest('[data-melt-part="tags-input"]') as HTMLElement;
