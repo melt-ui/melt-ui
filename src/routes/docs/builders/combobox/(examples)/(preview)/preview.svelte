@@ -46,8 +46,6 @@
 			return item ? item.title : '';
 		},
 	});
-
-	$: console.log({ items });
 </script>
 
 <div>
@@ -77,13 +75,7 @@
 	<ul class="menu" {...$menu} use:menu.action>
 		{#if $open}
 			{#each items as item, index (index)}
-				<li
-					{...$option({
-						index,
-					})}
-					use:option.action
-					class="option"
-				>
+				<li {...$option({ index })} use:option.action class="option">
 					{#if $isSelected(item)}
 						<div class="check">
 							<Check />

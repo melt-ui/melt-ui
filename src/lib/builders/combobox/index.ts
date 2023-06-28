@@ -183,6 +183,9 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 						highlightedItem.set(parseInt(index, 10));
 					}
 				}),
+				addEventListener(node, 'mouseout', () => {
+					highlightedItem.set(0);
+				}),
 				addEventListener(node, 'click', onClick)
 			);
 
