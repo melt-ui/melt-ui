@@ -3,6 +3,7 @@ export * from './avatar';
 export * from './checkbox';
 export * from './collapsible';
 export * from './dialog';
+export * from './dropdown-menu';
 export * from './label';
 export * from './pagination';
 export * from './popover';

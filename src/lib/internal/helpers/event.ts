@@ -57,3 +57,5 @@ export function addEventListener(
 		events.forEach((_event) => target.removeEventListener(_event, handler, options));
 	};
 }
+
+export type EventHandler<T extends Event = Event> = (event: T) => void;
