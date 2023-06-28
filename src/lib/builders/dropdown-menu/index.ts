@@ -139,7 +139,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				'aria-labelledby': rootIds.trigger,
 				'data-melt-part': 'menu',
 				'data-melt-menu': '',
-				'data-melt-id': rootIds.menu,
 				'data-state': $rootOpen ? 'open' : 'closed',
 				tabindex: -1,
 			} as const;
@@ -224,7 +223,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				'aria-expanded': $rootOpen,
 				'data-state': $rootOpen ? 'open' : 'closed',
 				id: rootIds.trigger,
-				'data-melt-id': rootIds.trigger,
 				'data-melt-part': 'trigger',
 			} as const;
 		}),
@@ -627,7 +625,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					'aria-labelledby': subIds.trigger,
 					'data-melt-part': 'submenu',
 					'data-melt-menu': '',
-					'data-melt-id': subIds.menu,
 					'data-state': $subOpen ? 'open' : 'closed',
 					tabindex: -1,
 				} as const;
@@ -777,7 +774,6 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					'data-disabled': $subOptions.disabled ? '' : undefined,
 					'data-melt-part': 'subtrigger',
 					'aria-haspopop': 'menu',
-					'data-melt-id': subIds.trigger,
 				} as const;
 			}),
 			action: (node: HTMLElement) => {
