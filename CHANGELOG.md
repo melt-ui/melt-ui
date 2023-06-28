@@ -1,5 +1,12 @@
 # @melt-ui/svelte
 
+## 0.15.0
+
+### Minor Changes
+
+- 690ad4d: feat: tags input
+- 0aa94da: feat: Dropdown Menu
+
 ## 0.14.0
 
 ### Minor Changes
