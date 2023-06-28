@@ -143,7 +143,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				}),
 				id: rootIds.menu,
 				'aria-labelledby': rootIds.trigger,
-				'data-melt-part': 'menu-root',
+				'data-melt-part': 'menu',
 				'data-melt-menu': '',
 				'data-melt-id': rootIds.menu,
 				tabindex: -1,
@@ -662,7 +662,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					}),
 					id: subIds.menu,
 					'aria-labelledby': subIds.trigger,
-					'data-melt-part': 'menu-sub',
+					'data-melt-part': 'submenu',
 					'data-melt-menu': '',
 					'data-melt-id': subIds.menu,
 					tabindex: -1,
@@ -1004,13 +1004,10 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				const menuElement = document.getElementById(subIds.menu);
 				if (isHTMLElement(menuElement) && $subOpen && get(isUsingKeyboard)) {
 					// Selector to get menu items belonging to menu
-					const rootMenuItemSelector = `[role="menuitem"][data-melt-menu-id="${menuElement.id}"]`;
-
-					// Focus on first menu item
-					const firstOption = document.querySelector(rootMenuItemSelector);
+					const menuItems = getMenuItems(menuElement);
 
 					if (get(isUsingKeyboard)) {
-						isHTMLElement(firstOption) ? handleRovingFocus(firstOption) : undefined;
+						isHTMLElement(menuItems[0]) ? handleRovingFocus(menuItems[0]) : undefined;
 					}
 				}
 			});
@@ -1039,13 +1036,11 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 		sleep(1).then(() => {
 			const menuElement = document.getElementById(rootIds.menu);
 			if (isHTMLElement(menuElement) && $rootOpen && get(isUsingKeyboard)) {
-				// Selector to get menu items belonging to menu
-				const rootMenuItemSelector = `[role="menuitem"][data-melt-menu-id="${menuElement.id}"]`;
+				// Get menu items belonging to the root menu
+				const menuItems = getMenuItems(menuElement);
 
 				// Focus on first menu item
-				const firstOption = document.querySelector(rootMenuItemSelector);
-
-				isHTMLElement(firstOption) ? handleRovingFocus(firstOption) : undefined;
+				isHTMLElement(menuItems[0]) ? handleRovingFocus(menuItems[0]) : undefined;
 			} else if ($rootActiveTrigger) {
 				// Focus on active trigger trigger
 				handleRovingFocus($rootActiveTrigger);
@@ -1286,7 +1281,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	 */
 	function setMeltMenuAttribute(element: HTMLElement | null) {
 		if (!element) return;
-		const menuEl = element.closest('[data-melt-part="menu-root"], [data-melt-part="menu-sub"]');
+		const menuEl = element.closest('[data-melt-part="menu"], [data-melt-part="submenu"]');
 
 		if (!isHTMLElement(menuEl)) return;
 		element.setAttribute('data-melt-menu-id', menuEl.id);
