@@ -196,6 +196,8 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 			[open, options],
 			([$open, $options]) =>
 				({
+					// @TODO set activedescendant on the input.
+					// "aria-activedescendant"
 					'aria-autocomplete': 'list',
 					'aria-controls': ids.menu,
 					'aria-expanded': $open,
@@ -208,10 +210,6 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 				} as const)
 		),
 		action: (node: HTMLInputElement) => {
-			// @TODO set activedescendant on the input.
-			// "aria-activedescendant":
-			// highlightedIndex > -1 ? `${id}-descendent-${highlightedIndex}` : "",
-
 			const unsub = executeCallbacks(
 				addEventListener(node, 'focus', (e) => {
 					// @TODO: abstract and use the input id instead? Thinking of this due to keyboard events also opening the box (although in testing, I haven't had any issues yet)
@@ -229,13 +227,6 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 							node.value = '';
 							return;
 						}
-						/**
-						 * If the user presses one of the interaction keys, return
-						 * early so that the other key events aren't fired.
-						 */
-						// if (interactionKeys.has(e.key)) {
-						// 	return;
-						// }
 
 						// Don't open the menu on backspace if the input is blank.
 						if (e.key === kbd.BACKSPACE && node.value === '') {
@@ -331,6 +322,12 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 		},
 	};
 
+	const isSelected = derived([selectedItem], ([$selectedItem]) => {
+		return (item: unknown) => {
+			return $selectedItem === item;
+		};
+	});
+
 	// // Handles keyboard navigation between items.
 	// onMount(() => {
 	// 	const keydownListener = (e: KeyboardEvent) => {
@@ -384,5 +381,6 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 		menu,
 		option,
 		value,
+		isSelected,
 	};
 }

@@ -35,7 +35,7 @@
 		};
 	}
 
-	const { open, input, menu, option, value } = createCombobox({
+	const { open, input, menu, option, value, isSelected } = createCombobox({
 		items,
 		filterFunction(value) {
 			// the store is a super mutable snapshot of books
@@ -77,11 +77,11 @@
 					use:option.action
 					class="option"
 				>
-					<!-- {#if $isSelected(item)}
+					{#if $isSelected(item)}
 						<div class="check">
 							<Check />
 						</div>
-					{/if} -->
+					{/if}
 					<div>
 						<span>{item.title}</span>
 						<span class="item-author">{item.author}</span>
