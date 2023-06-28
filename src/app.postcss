@@ -36,3 +36,30 @@ code:not(pre > code) {
 		color: theme('colors.zinc.300');
 	}
 }
+
+/* Firefox */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: theme('colors.neutral.700') transparent;
+}
+
+/* Other browsers */
+*::-webkit-scrollbar {
+	width: 1rem;
+}
+
+*::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+	background: theme('colors.neutral.700');
+	background-clip: padding-box;
+	border-radius: 0.5rem;
+	border: 0.25rem solid transparent;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+	background: theme('colors.neutral.600');
+	background-clip: padding-box;
+}
