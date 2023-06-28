@@ -11,7 +11,7 @@
 	<div
 		{...$root}
 		use:root.action
-		class="flex w-[240px] flex-row flex-wrap gap-2.5 rounded-md bg-white px-3 py-2 text-magnum-700"
+		class="flex w-[340px] flex-row flex-wrap gap-2.5 rounded-md bg-white px-3 py-2 text-magnum-700"
 	>
 		{#each $tags as t, i}
 			<div {...$tag(t)} use:tag.action class="tag">
@@ -27,7 +27,7 @@
 			{...$input}
 			use:input.action
 			type="text"
-			class="shake min-w-[6rem] shrink grow basis-0 border-0 outline-none focus:!ring-0"
+			class="shake min-w-[4.5rem] shrink grow basis-0 border-0 outline-none focus:!ring-0"
 		/>
 	</div>
 </div>
