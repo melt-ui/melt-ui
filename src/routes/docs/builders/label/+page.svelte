@@ -11,7 +11,7 @@
 </script>
 
 <Docs.H1>Label</Docs.H1>
-<Docs.Description>A control that add a label to an input element.</Docs.Description>
+<Docs.Description>A control that adds a label to an input element.</Docs.Description>
 
 <Docs.Preview {...data.preview} />
 

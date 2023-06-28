@@ -79,7 +79,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | ComboBox        |        |
 | Context Menu    |        |
 | Dialog          | ✅     |
-| Dropdown Menu   |        |
+| Dropdown Menu   | ✅     |
 | Hover Card      |        |
 | Label           | ✅     |
 | Menubar         |        |
@@ -95,7 +95,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Slider          | ✅     |
 | Switch          | ✅     |
 | Tabs            | ✅     |
-| Tags Input      |        |
+| Tags Input      | ✅     |
 | Toast           |        |
 | Toggle          | ✅     |
 | Toggle Group    | ✅     |
@@ -103,7 +103,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Tooltip         | ✅     |
 | ???             |        |
 
-**Progress:** 19/30+
+**Progress:** 21/30+
 
 ## Similar projects
 

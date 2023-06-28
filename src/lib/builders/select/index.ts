@@ -2,7 +2,7 @@ import type { FloatingConfig } from '$lib/internal/actions';
 import { usePopper } from '$lib/internal/actions/popper';
 import {
 	addEventListener,
-	debounce,
+	createTypeaheadSearch,
 	effect,
 	executeCallbacks,
 	generateId,
@@ -221,6 +221,12 @@ export function createSelect(args?: CreateSelectArgs) {
 				}),
 
 				addEventListener(node, 'keydown', (e) => {
+					const $typed = get(typed);
+					const isTypingAhead = $typed.length > 0;
+					if (isTypingAhead && e.key === kbd.SPACE) {
+						e.preventDefault();
+						return;
+					}
 					if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
 						e.preventDefault();
 						const args = getElArgs();
@@ -245,9 +251,8 @@ export function createSelect(args?: CreateSelectArgs) {
 		},
 	};
 
-	let typed: string[] = [];
-	const resetTyped = debounce(() => {
-		typed = [];
+	const { typed, handleTypeaheadSearch } = createTypeaheadSearch({
+		onMatch: (element) => element.focus(),
 	});
 
 	effect([open, activeTrigger, menu], ([$open, $activeTrigger]) => {
@@ -314,19 +319,13 @@ export function createSelect(args?: CreateSelectArgs) {
 				return;
 			}
 
-			// Typeahead
-			const isAlphaNumericOrSpace = /^[a-z0-9 ]$/i.test(e.key);
-			if (isAlphaNumericOrSpace) {
-				typed.push(e.key.toLowerCase());
-				const typedString = typed.join('');
-				const matchingOption = allOptions.find((el) =>
-					el.innerText.toLowerCase().startsWith(typedString)
-				);
-				if (matchingOption) {
-					matchingOption.focus();
-				}
-
-				resetTyped();
+			/**
+			 * Handle typeahead search
+			 */
+			const isCharacterKey = e.key.length === 1;
+			const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
+			if (!isModifierKey && isCharacterKey) {
+				handleTypeaheadSearch(e.key, allOptions);
 			}
 		};
 
