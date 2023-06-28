@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
+	import { snippets } from './(snippets)';
 	import { schemas } from './schemas';
 	export let data;
 	const features = [
@@ -35,6 +36,51 @@
 	<Docs.Li><b>Sub Menu:</b> A menu which is nested inside another menu.</Docs.Li>
 	<Docs.Li><b>Separator:</b> A visual divider between menu items.</Docs.Li>
 </Docs.Ul>
+
+<Docs.H2>Usage</Docs.H2>
+<Docs.P class="mt-4"
+	>The first thing you need to do is create a dropdown menu using the <Docs.Code
+		>createDropdownMenu</Docs.Code
+	> function.</Docs.P
+>
+<Docs.CodeBlock code={snippets.usage} />
+
+<Docs.P class="mt-4"
+	>Then you can use the <Docs.Code>menu</Docs.Code>, <Docs.Code>item</Docs.Code>, and <Docs.Code
+		>trigger</Docs.Code
+	> to construct a dropdown menu. A high level example of how to structure the menu is shown below.
+</Docs.P>
+
+<Docs.CodeBlock code={snippets.usage2} />
+
+<Docs.P class="mt-4"
+	>The <Docs.Code>trigger</Docs.Code> sits outside of the <Docs.Code>menu</Docs.Code> and is used to
+	toggle the menu's open state. The <Docs.Code>item</Docs.Code> elements go inside the <Docs.Code
+		>menu</Docs.Code
+	> element. The <Docs.Code>arrow</Docs.Code> element is optional and can be used to render an arrow
+	which points to the trigger.
+</Docs.P>
+
+<Docs.P class="mt-4">
+	At this point, our menu doesn't really do much except open and close. To add functionality, we
+	could turn the `item` elements into links, or we could pass a custom <Docs.Code
+		>onSelect</Docs.Code
+	>
+	function to the <Docs.Code>item.action</Docs.Code>, which will be called when that item is
+	selected.
+</Docs.P>
+
+<Docs.CodeBlock code={snippets.usage3} />
+
+<Docs.P class="mt-4">
+	If you wanted to prevent the default behavior that occurs when you select an item, you can call
+	<Docs.Code>e.preventDefault()</Docs.Code>
+	in your
+	<Docs.Code>onSelect</Docs.Code>
+	function, which will prevent the default behavior from occurring.
+</Docs.P>
+
+<Docs.CodeBlock code={snippets.usage4} />
 
 <Docs.H2>API Reference</Docs.H2>
 <Docs.API schema={schemas.builder} />

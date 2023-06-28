@@ -1,0 +1,11 @@
+<div
+    {...item}
+    use:item.action={{
+        onSelect: (e) => {
+            e.preventDefault();
+            console.log('Item 2!')
+        }
+    }}
+>
+Item 2
+</div>
