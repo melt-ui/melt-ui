@@ -16,6 +16,7 @@ import {
 	hiddenAction,
 	createTypeaheadSearch,
 	handleRovingFocus,
+    removeScroll,
 } from '$lib/internal/helpers';
 import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
@@ -55,6 +56,13 @@ export type CreateDropdownMenuArgs = {
 	 * @default 'ltr'
 	 */
 	dir?: TextDirection;
+
+	/**
+	 * Whether or not to prevent scrolling when the menu is open.
+	 *
+	 * @default true
+	 */
+	preventScroll?: boolean;
 };
 
 export type CreateDropdownSubMenuArgs = CreateDropdownMenuArgs & {
@@ -85,6 +93,7 @@ const defaults = {
 	positioning: {
 		placement: 'bottom',
 	},
+    preventScroll: true,
 } satisfies Defaults<CreateDropdownMenuArgs>;
 
 export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
@@ -990,7 +999,13 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 	 * -----------------------------------------------------------------------------------------------*/
 
 	effect([rootOpen, rootActiveTrigger], ([$rootOpen, $rootActiveTrigger]) => {
+        const unsubs: Array<() => void> = [];
 		if (!isBrowser) return;
+        const $options = get(rootOptions);
+
+        if ($rootOpen && $options.preventScroll) {
+                unsubs.push(removeScroll())
+        }
 
 		if (!$rootOpen && $rootActiveTrigger) {
 			handleRovingFocus($rootActiveTrigger);
@@ -1014,6 +1029,9 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				}
 			}
 		});
+        return () => {
+            unsubs.forEach(unsub => unsub())
+        }
 	});
 
 	onMount(() => {
