@@ -44,7 +44,7 @@
 	<div class="item" {...item} use:item.action>Check for Updates...</div>
 	<div class="separator" {...separator} />
 	<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked: settingsSync }}>
-		<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
+		<div class="check">
 			{#if $settingsSync}
 				<Check class="icon" />
 			{/if}
@@ -58,11 +58,11 @@
 		</div>
 	</div>
 	<div class="menu subMenu" {...$subMenuA} use:subMenuA.action>
-		<div class="pl-6 text-xs leading-6 text-neutral-600">People</div>
+		<div class="text">People</div>
 		<div {...radioGroup}>
 			{#each personsArr as person}
 				<div class="item" {...$radioItem({ value: person })} use:radioItem.action>
-					<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
+					<div class="check">
 						{#if $isChecked(person)}
 							<div class="dot" />
 						{/if}
@@ -75,7 +75,7 @@
 	<div {...separator} class="separator" />
 
 	<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked: hideMeltUI }}>
-		<div class="absolute left-0 inline-flex w-[25px] items-center justify-center">
+		<div class="check">
 			{#if $hideMeltUI}
 				<Check class="icon" />
 			{/if}
@@ -138,5 +138,11 @@
 
 	.icon {
 		@apply h-[13px] w-[13px];
+	}
+	.check {
+		@apply absolute left-0 inline-flex w-[25px] items-center justify-center;
+	}
+	.text {
+		@apply pl-6 text-xs leading-6 text-neutral-600;
 	}
 </style>

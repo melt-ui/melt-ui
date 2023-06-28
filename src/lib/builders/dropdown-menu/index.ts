@@ -146,6 +146,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 				'data-melt-part': 'menu',
 				'data-melt-menu': '',
 				'data-melt-id': rootIds.menu,
+				'data-state': $rootOpen ? 'open' : 'closed',
 				tabindex: -1,
 			} as const;
 		}),
@@ -499,6 +500,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 
 		const radioGroup = {
 			role: 'group',
+			'data-melt-part': 'radio-group',
 		};
 
 		const radioItemDefaults = {
@@ -672,6 +674,7 @@ export function createDropdownMenu(args?: CreateDropdownMenuArgs) {
 					'data-melt-part': 'submenu',
 					'data-melt-menu': '',
 					'data-melt-id': subIds.menu,
+					'data-state': $subOpen ? 'open' : 'closed',
 					tabindex: -1,
 				} as const;
 			}),

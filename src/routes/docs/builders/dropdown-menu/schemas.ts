@@ -7,7 +7,7 @@ const builder: APISchema = {
 		{
 			label: 'positioning',
 			type: 'FloatingConfig',
-			default: "{ placement: 'bottom' }",
+			default: "placement: 'bottom'",
 		},
 		{
 			label: 'arrowSize',
@@ -23,7 +23,11 @@ const menu: APISchema = {
 	dataAttributes: [
 		{
 			label: '[data-melt-part]',
-			value: '"menu"',
+			value: ['"menu"'],
+		},
+		{
+			label: '[data-state]',
+			value: ['"open"', '"closed"'],
 		},
 		{
 			label: '[data-melt-menu]',
@@ -38,7 +42,7 @@ const trigger: APISchema = {
 	dataAttributes: [
 		{
 			label: '[data-melt-part]',
-			value: '"trigger"',
+			value: ['"trigger"'],
 		},
 		{
 			label: '[data-state]',
@@ -53,11 +57,11 @@ const arrow: APISchema = {
 	dataAttributes: [
 		{
 			label: '[data-arrow]',
-			value: 'true',
+			value: '`true`',
 		},
 		{
 			label: '[data-melt-part]',
-			value: '"arrow"',
+			value: ['"arrow"'],
 		},
 	],
 };
@@ -78,7 +82,7 @@ const item: APISchema = {
 		},
 		{
 			label: '[data-melt-part]',
-			value: "'item'",
+			value: ['"item"'],
 		},
 	],
 };
@@ -103,7 +107,7 @@ const checkboxItem: APISchema = {
 		},
 		{
 			label: '[data-melt-part]',
-			value: "'item'",
+			value: ['"item"'],
 		},
 	],
 };
@@ -125,7 +129,7 @@ const radioGroup: APISchema = {
 	dataAttributes: [
 		{
 			label: '[data-melt-part]',
-			value: '"radio-group"',
+			value: ['"radio-group"'],
 		},
 	],
 };
@@ -155,7 +159,73 @@ const radioItem: APISchema = {
 		},
 		{
 			label: '[data-melt-part]',
-			value: "'item'",
+			value: ['"item"'],
+		},
+	],
+};
+
+const separator: APISchema = {
+	title: 'Separator',
+	description: 'A horizontal line which separates menu items.',
+	dataAttributes: [
+		{
+			label: '[data-melt-part]',
+			value: ['"separator"'],
+		},
+	],
+};
+
+const submenuBuilder: APISchema = {
+	title: 'CreateDropdownSubMenuArgs',
+	description: 'The configuration object passed to the `createDropdownSubMenu` builder function.',
+	args: [
+		{
+			label: 'positioning',
+			type: 'FloatingConfig',
+			default: "placement: 'right'",
+		},
+		{
+			label: 'disabled',
+			type: 'boolean',
+			default: 'false',
+		},
+	],
+};
+
+const submenu: APISchema = {
+	title: 'Submenu',
+	description: 'A submenu element displayed when its trigger is selected.',
+	dataAttributes: [
+		{
+			label: '[data-melt-part]',
+			value: ['"submenu"'],
+		},
+		{
+			label: '[data-state]',
+			value: ['"open"', '"closed"'],
+		},
+		{
+			label: '[data-melt-menu]',
+			value: 'Present on the submenu element.',
+		},
+	],
+};
+
+const subTrigger: APISchema = {
+	title: 'Sub Trigger',
+	description: 'A button which opens its associated submenu.',
+	dataAttributes: [
+		{
+			label: '[data-melt-part]',
+			value: ['"subtrigger"'],
+		},
+		{
+			label: '[data-state]',
+			value: ['"open"', '"closed"'],
+		},
+		{
+			label: '[data-disabled]',
+			value: 'Present if the element is disabled',
 		},
 	],
 };
@@ -166,35 +236,36 @@ const keyboard: APISchema = {
 	keyboardInteractions: [
 		{
 			key: 'Space',
-			description: 'When the `trigger` of a collapsed section is focused, expands the section.',
+			description:
+				'When focused on the `trigger`, opens the dropdown and focuses the first item. When focused on an `item`, selects the item.',
 		},
 		{
 			key: 'Enter',
-			description: 'When the `trigger` of a collapsed section is focused, expands the section.',
-		},
-		{
-			key: 'Tab',
-			description: 'Moves focus to the next focusable element.',
-		},
-		{
-			key: 'Shift + Tab',
-			description: 'Moves focus to the previous focusable element',
+			description:
+				'When focused on the `trigger`, opens the dropdown and focuses the first item. When focused on an `item`, selects the item.',
 		},
 		{
 			key: 'ArrowDown',
-			description: 'Moves focus to the next `trigger` element.',
+			description:
+				'When focused on the `trigger`, opens the dropdown and focuses the first item. When focused on an `item`, shifts focus to the next item.',
 		},
 		{
 			key: 'ArrowUp',
-			description: 'Moves focus to the previous `trigger` element.',
+			description: 'When focused on an `item`, shifts focus to the next item..',
 		},
 		{
-			key: 'Home',
-			description: 'When focus is on a `trigger`, moves focus to the first `trigger`.',
+			key: 'ArrowRight',
+			description:
+				'When focused on a `subTrigger`, opens the `subMenu` and focuses the first item.',
 		},
 		{
-			key: 'End',
-			description: 'When focus is on a `trigger`, moves focus to the last `trigger`.',
+			key: 'ArrowLeft',
+			description:
+				"When focused on within a `subMenu`, closes the submenu and shifts focus to that submenu's `subTrigger`.",
+		},
+		{
+			key: 'Esc',
+			description: 'Closes the dropdown menu and focuses the `trigger`.',
 		},
 	],
 };
@@ -210,4 +281,8 @@ export const schemas = {
 	item,
 	trigger,
 	keyboard,
+	subTrigger,
+	submenu,
+	submenuBuilder,
+	separator,
 };
