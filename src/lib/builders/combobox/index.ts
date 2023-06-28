@@ -10,7 +10,7 @@ import {
 import type { Action } from 'svelte/action';
 import { writable, type Readable, type Writable, derived, get } from 'svelte/store';
 import type { HTMLAttributes, HTMLInputAttributes, HTMLLabelAttributes } from 'svelte/elements';
-import { tick } from 'svelte';
+import { onMount, tick } from 'svelte';
 import { usePopper, type FloatingConfig } from '@melt-ui/svelte/internal/actions';
 import type { Defaults } from '@melt-ui/svelte/internal/types';
 import { getNextIndex } from '@melt-ui/svelte/builders/combobox/utils';
@@ -145,18 +145,18 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 		action: (node: HTMLLIElement) => {
 			// setAttribute(node, 'data-list-item');
 
-			function highlightItem() {
-				document.querySelector(`[data-highlighted]`)?.removeAttribute('data-highlighted');
-				const { index } = node.dataset;
+			// function highlightItem() {
+			// 	document.querySelector(`[data-highlighted]`)?.removeAttribute('data-highlighted');
+			// 	const { index } = node.dataset;
 
-				if (index) {
-					// setAttribute(node, 'data-highlighted');
-				}
-			}
+			// 	if (index) {
+			// 		// setAttribute(node, 'data-highlighted');
+			// 	}
+			// }
 
-			function unHighlightItem() {
-				node.removeAttribute('data-highlighted');
-			}
+			// function unHighlightItem() {
+			// 	node.removeAttribute('data-highlighted');
+			// }
 
 			function onClick() {
 				const { index } = node.dataset;
@@ -177,16 +177,18 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 			}
 
 			const unsub = executeCallbacks(
-				addEventListener(node, 'mouseenter', highlightItem),
-				addEventListener(node, 'mouseleave', unHighlightItem),
+				addEventListener(node, 'mousemove', () => {
+					node.focus();
+				}),
+				addEventListener(node, 'mouseout', () => {
+					node.blur();
+				}),
 				addEventListener(node, 'mousedown', onMouseDown),
 				addEventListener(document, 'mouseup', onMouseUp),
 				addEventListener(node, 'click', onClick)
 			);
 
-			return {
-				destroy: unsub,
-			};
+			return { destroy: unsub };
 		},
 	};
 
@@ -364,6 +366,63 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 			};
 		},
 	};
+
+	// // Handles keyboard navigation between items.
+	// onMount(() => {
+	// 	const keydownListener = (e: KeyboardEvent) => {
+	// 		const menuEl = document.getElementById(ids.menu);
+	// 		if (!menuEl || menuEl.hidden) return;
+
+	// 		if (e.key === kbd.ESCAPE) {
+	// 			open.set(false);
+	// 			activeTrigger.set(null);
+	// 			return;
+	// 		}
+
+	// 		const allOptions = Array.from(menuEl.querySelectorAll('[role="option"]')) as HTMLElement[];
+	// 		const focusedOption = allOptions.find((el) => el === document.activeElement);
+	// 		const focusedIndex = allOptions.indexOf(focusedOption as HTMLElement);
+
+	// 		if (e.key === kbd.ARROW_DOWN) {
+	// 			e.preventDefault();
+	// 			const nextIndex = focusedIndex + 1 > allOptions.length - 1 ? 0 : focusedIndex + 1;
+	// 			const nextOption = allOptions[nextIndex] as HTMLElement;
+	// 			nextOption.focus();
+	// 			return;
+	// 		} else if (e.key === kbd.ARROW_UP) {
+	// 			e.preventDefault();
+	// 			const prevIndex = focusedIndex - 1 < 0 ? allOptions.length - 1 : focusedIndex - 1;
+	// 			const prevOption = allOptions[prevIndex] as HTMLElement;
+	// 			prevOption.focus();
+	// 			return;
+	// 		} else if (e.key === kbd.HOME) {
+	// 			e.preventDefault();
+	// 			const firstOption = allOptions[0] as HTMLElement;
+	// 			firstOption.focus();
+	// 			return;
+	// 		} else if (e.key === kbd.END) {
+	// 			e.preventDefault();
+	// 			const lastOption = allOptions[allOptions.length - 1] as HTMLElement;
+	// 			lastOption.focus();
+	// 			return;
+	// 		}
+
+	// 		/**
+	// 		 * Handle typeahead search
+	// 		 */
+	// 		const isCharacterKey = e.key.length === 1;
+	// 		const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
+	// 		if (!isModifierKey && isCharacterKey) {
+	// 			handleTypeaheadSearch(e.key, allOptions);
+	// 		}
+	// 	};
+
+	// 	document.addEventListener('keydown', keydownListener);
+
+	// 	return () => {
+	// 		document.removeEventListener('keydown', keydownListener);
+	// 	};
+	// });
 
 	return {
 		input,

@@ -69,17 +69,9 @@
 			</div>
 		</label>
 	</div>
-	<ul
-		style:--status={!($open && items.length) ? 'visible' : 'visible'}
-		class="menu"
-		{...$menu}
-		use:menu.action
-	>
+	<ul class="menu" {...$menu} use:menu.action>
 		{#if $open}
 			{#each items as item, index (index)}
-				<!-- s
-			
-			{...getItemProps(index)} -->
 				<li use:option.action class="option">
 					<span>{item.title}</span>
 					<span class="item-author">{item.author}</span>
@@ -100,12 +92,6 @@
 	.option {
 		@apply relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800;
 		@apply focus:bg-magnum-100 focus:text-magnum-700;
-	}
-	.option[data-highlighted-item] {
-		@apply bg-magnum-100;
-	}
-	.option[data-selected-item] {
-		@apply font-bold;
 	}
 	.input-container {
 		@apply flex h-10 w-[360px] items-center justify-between rounded-md bg-white px-3;
