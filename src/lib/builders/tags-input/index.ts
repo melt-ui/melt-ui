@@ -322,6 +322,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							node.value = '';
 						} else if (
 							node.selectionStart === 0 &&
+							node.selectionEnd === 0 &&
 							(e.key === kbd.ARROW_LEFT || e.key === kbd.BACKSPACE)
 						) {
 							e.preventDefault();
