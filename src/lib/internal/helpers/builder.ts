@@ -1,7 +1,7 @@
 import { onDestroy } from 'svelte';
-import { derived, type Readable, type Subscriber, type Unsubscriber } from 'svelte/store';
-import { isBrowser } from '.';
 import type { Action } from 'svelte/action';
+import { derived, type Readable, type Subscriber, type Unsubscriber } from 'svelte/store';
+import { isBrowser, noop } from '.';
 
 export function getElementByMeltId(id: string) {
 	if (!isBrowser) return null;
@@ -114,22 +114,36 @@ export function lightable<T>(value: T): Readable<T> {
 	return { subscribe };
 }
 
-type BuilderArgs<S extends Stores | undefined, A extends Action, R> = {
+type BuilderArgs<
+	S extends Stores | undefined,
+	A extends Action,
+	R extends S extends Stores
+		? (values: StoresValues<S>) => Record<string, any> | ((...args: any[]) => Record<string, any>)
+		: () => Record<string, any> | ((...args: any[]) => Record<string, any>)
+> = {
 	stores?: S;
 	action?: A;
-	returned: S extends Stores ? (values: StoresValues<S>) => R : () => R;
+	returned?: R;
 };
 
-export function builder<S extends Stores | undefined, A extends Action, R>(
-	name: string,
-	args: BuilderArgs<S, A, R>
-) {
-	const { stores, action, returned } = args;
+const isFunctionn = (fn: unknown): fn is (...args: unknown[]) => unknown =>
+	typeof fn === 'function';
+
+export function builder<
+	S extends Stores | undefined,
+	A extends Action,
+	R extends S extends Stores
+		? (values: StoresValues<S>) => Record<string, any> | ((...args: any[]) => Record<string, any>)
+		: () => Record<string, any> | ((...args: any[]) => Record<string, any>),
+	Name extends string
+>(name: Name, args?: BuilderArgs<S, A, R>) {
+	const { stores, action, returned } = args ?? {};
+
 	const derivedStore = (() => {
-		if (stores) {
+		if (stores && returned) {
 			return derived(stores, (values) => {
 				const result = returned(values);
-				if (typeof result === 'function') {
+				if (isFunctionn(result)) {
 					return (...args: Parameters<typeof result>) => {
 						return {
 							...result(...args),
@@ -143,10 +157,10 @@ export function builder<S extends Stores | undefined, A extends Action, R>(
 				};
 			});
 		} else {
-			const returnedFn = returned as () => R;
+			const returnedFn = returned as (() => R) | undefined;
 
-			const result = returnedFn();
-			if (typeof result === 'function') {
+			const result = returnedFn?.();
+			if (isFunctionn(result)) {
 				const resultFn = (...args: Parameters<typeof result>) => {
 					return {
 						...result(...args),
@@ -161,10 +175,10 @@ export function builder<S extends Stores | undefined, A extends Action, R>(
 				'data-melt-part': name,
 			});
 		}
-	})();
+	})() as Readable<ReturnType<R> & { 'data-melt-part': Name }>;
 
 	return {
 		...derivedStore,
-		action,
+		action: action ?? noop,
 	};
 }
