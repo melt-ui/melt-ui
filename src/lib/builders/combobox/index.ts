@@ -10,9 +10,9 @@ import {
 	sleep,
 } from '@melt-ui/svelte/internal/helpers';
 import type { Action } from 'svelte/action';
-import { writable, type Readable, type Writable, derived, get, readonly } from 'svelte/store';
+import { writable, type Readable, derived, get, readonly } from 'svelte/store';
 import type { HTMLAttributes, HTMLInputAttributes, HTMLLabelAttributes } from 'svelte/elements';
-import { onMount, tick } from 'svelte';
+import { tick } from 'svelte';
 import { usePopper, type FloatingConfig } from '@melt-ui/svelte/internal/actions';
 import type { Defaults } from '@melt-ui/svelte/internal/types';
 import { getNextIndex, setAttribute } from '@melt-ui/svelte/builders/combobox/utils';
@@ -60,10 +60,6 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 	const activeTrigger = writable<HTMLElement | null>(null);
 	const selectedItem = writable<T>(undefined);
 	const highlightedItem = writable<number>(0);
-	// const itemCount = writable(0);
-	// const trapFocus = false;
-	// const label = writable<string | number | null>(withDefaults.label ?? null);
-
 	const filteredItems = writable(args.items);
 
 	const ids = {
@@ -166,6 +162,7 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 						highlightedItem.set(parseInt(index, 10));
 					}
 				}),
+				// @TODO should be -1
 				addEventListener(node, 'mouseout', () => {
 					highlightedItem.set(0);
 				}),
@@ -313,9 +310,7 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 				})
 			);
 
-			return {
-				destroy: unsub,
-			};
+			return { destroy: unsub };
 		},
 	};
 
