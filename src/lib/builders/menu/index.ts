@@ -1044,6 +1044,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				}
 			}
 		});
+
+		return () => {
+			unsubs.forEach((unsub) => unsub());
+		};
 	});
 
 	onMount(() => {
