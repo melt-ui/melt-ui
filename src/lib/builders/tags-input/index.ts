@@ -111,15 +111,17 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'mousedown', (e) => {
-					e.preventDefault();
-
 					focusInput(ids.input);
 
 					// Set the selected tag
-					const delegatedTarget = (e.target as HTMLElement).closest(
+					const tagTargetEL = (e.target as HTMLElement).closest(
 						`[data-melt-part="${dataMeltParts['tag']}"]`
 					);
-					setSelectedTagFromElement(delegatedTarget, selectedTag);
+
+					if (tagTargetEL) {
+						e.preventDefault();
+						setSelectedTagFromElement(tagTargetEL, selectedTag);
+					}
 				}),
 				addEventListener(node, 'click', (e) => {
 					focusInput(ids.input);
