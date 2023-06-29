@@ -4,7 +4,7 @@ import type {
 	FocusTrapConfig,
 	PortalConfig,
 } from '$lib/internal/actions';
-import type { VirtualElement } from '@floating-ui/core'
+import type { VirtualElement } from '@floating-ui/core';
 import type { Writable } from 'svelte/store';
 
 export type PopperConfig = {
@@ -15,7 +15,7 @@ export type PopperConfig = {
 };
 
 export type PopperArgs = {
-	anchorElement: Element | VirtualElement
+	anchorElement: Element | VirtualElement;
 	open: Writable<boolean>;
 	options?: PopperConfig;
 };
