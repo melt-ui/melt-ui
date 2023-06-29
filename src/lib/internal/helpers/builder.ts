@@ -126,7 +126,7 @@ type BuilderArgs<
 	returned?: R;
 };
 
-const isFunctionn = (fn: unknown): fn is (...args: unknown[]) => unknown =>
+const isFunctionWithParams = (fn: unknown): fn is (...args: unknown[]) => Record<string, unknown> =>
 	typeof fn === 'function';
 
 export function builder<
@@ -143,7 +143,7 @@ export function builder<
 		if (stores && returned) {
 			return derived(stores, (values) => {
 				const result = returned(values);
-				if (isFunctionn(result)) {
+				if (isFunctionWithParams(result)) {
 					return (...args: Parameters<typeof result>) => {
 						return {
 							...result(...args),
@@ -160,7 +160,7 @@ export function builder<
 			const returnedFn = returned as (() => R) | undefined;
 
 			const result = returnedFn?.();
-			if (isFunctionn(result)) {
+			if (isFunctionWithParams(result)) {
 				const resultFn = (...args: Parameters<typeof result>) => {
 					return {
 						...result(...args),
