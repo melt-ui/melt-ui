@@ -9,9 +9,11 @@ import {
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import {
+	clearDataInvalid,
 	deleteTagById,
 	focusInput,
 	getTagElements,
+	setDataInvalid,
 	setSelectedTagFromElement,
 	type Tag,
 	type TagArgs,
@@ -69,6 +71,21 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 				: (withDefaults.tags as Tag[])
 			: [] // if undefined
 	);
+
+	// Returns true if a tag is unique and false if $options.unique is true and the tag
+	// already exists
+	const isTagUnique = (t: string) => {
+		const $options = get(options);
+		const $tags = get(tags);
+
+		if ($options.unique) {
+			const index = $tags.findIndex((tag) => tag.value === t);
+			return index === -1;
+		}
+
+		// Already return true when $options.unique === false
+		return true;
+	};
 
 	// Selected tag store. When `null`, no tag is selected
 	const selectedTag = writable<Tag | null>(withDefaults.selectedTag ?? null);
@@ -136,13 +153,13 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		action: (node: HTMLInputElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'focus', () => {
-					// Set data-focus attribute
+					// Set data-focus
 					const rootEl = getElementByMeltId(ids.root);
 					if (rootEl) rootEl.setAttribute('data-focus', '');
 					node.setAttribute('data-focus', '');
 				}),
 				addEventListener(node, 'blur', () => {
-					// Clear data-focus attribute
+					// Clear data-focus
 					const rootEl = getElementByMeltId(ids.root);
 					if (rootEl) rootEl.removeAttribute('data-focus');
 					node.removeAttribute('data-focus');
@@ -150,55 +167,51 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					// Clear selected tag
 					selectedTag.set(null);
 
-					const $options = get(options);
-
+					// Do nothing when input is empty
 					const value = node.value;
 					if (!value) return;
+
+					// Handle on:blur add tag || clear input
+					const $options = get(options);
 
 					if ($options.blur === 'clear') {
 						node.value = '';
 					} else if ($options.blur === 'add') {
-						const $tags = get(tags);
-
-						// Ignore unique
-						if ($options.unique) {
-							const index = $tags.findIndex((tag) => tag.value === value);
-							if (index >= 0) {
-								// Select the tag
-								selectedTag.set($tags[index]);
-								return;
-							}
+						if (isTagUnique(value)) {
+							// Add new tag
+							tags.update((currentTags) => [
+								...currentTags,
+								{ id: generateId(), value: node.value },
+							]);
+							node.value = '';
+						} else {
+							// Tag is not unique. Set data-invalid
+							setDataInvalid(ids.root, ids.input);
 						}
-
-						// Add tag
-						tags.update((currentTags) => [...currentTags, { id: generateId(), value: node.value }]);
-						node.value = '';
 					}
 				}),
 				addEventListener(node, 'paste', (e) => {
-					const $options = get(options);
-					if (!$options.addOnPaste) return;
-
-					e.preventDefault();
-
+					// Do nothing when there is nothing to paste
 					if (!e.clipboardData) return;
 					const pastedText = e.clipboardData.getData('text');
 					if (!pastedText) return;
 
-					const $tags = get(tags);
+					// Clear data-invalid
+					clearDataInvalid(ids.root, ids.input);
 
-					// Ignore unique
-					if ($options.unique) {
-						const index = $tags.findIndex((tag) => tag.value === pastedText);
-						if (index >= 0) {
-							// Select the tag
-							selectedTag.set($tags[index]);
-							return;
-						}
+					// Do nothing when not adding on paste
+					const $options = get(options);
+					if (!$options.addOnPaste) return;
+
+					if (isTagUnique(pastedText)) {
+						// Prevent default as we are going to add a new tag
+						e.preventDefault();
+						tags.update((currentTags) => [...currentTags, { id: generateId(), value: pastedText }]);
+						node.value = '';
+					} else {
+						// Tag is not unique. Set data-invalid
+						setDataInvalid(ids.root, ids.input);
 					}
-
-					// Add tag
-					tags.update((currentTags) => [...currentTags, { id: generateId(), value: pastedText }]);
 				}),
 				addEventListener(node, 'keydown', (e) => {
 					const $selectedTag = get(selectedTag);
@@ -206,6 +219,9 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					if ($selectedTag) {
 						// Check if a character is entered into the input
 						if (e.key.length === 1) {
+							// Clear data-invalid
+							clearDataInvalid(ids.root, ids.input);
+
 							// A character is entered, set selectedTag to null
 							selectedTag.set(null);
 						} else if (e.key === kbd.ARROW_LEFT) {
@@ -295,31 +311,23 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							deleteTagById(prevSelectedId, tags);
 						}
 					} else {
+						// Clear data-invalid
+						clearDataInvalid(ids.root, ids.input);
+
 						// ENTER
 						if (e.key === kbd.ENTER) {
 							e.preventDefault();
 							const value = node.value;
 							if (!value) return;
 
-							const $options = get(options);
-							const $tags = get(tags);
-
-							// Ignore unique
-							if ($options.unique) {
-								const index = $tags.findIndex((tag) => tag.value === value);
-								if (index >= 0) {
-									// Select the tag
-									selectedTag.set($tags[index]);
-									return;
-								}
+							if (isTagUnique(value)) {
+								// Prevent default as we are going to add a new tag
+								tags.update((currentTags) => [...currentTags, { id: generateId(), value: value }]);
+								node.value = '';
+							} else {
+								// Tag is not unique. Set data-invalid
+								setDataInvalid(ids.root, ids.input);
 							}
-
-							// Add tag
-							tags.update((currentTags) => [
-								...currentTags,
-								{ id: generateId(), value: node.value },
-							]);
-							node.value = '';
 						} else if (
 							node.selectionStart === 0 &&
 							node.selectionEnd === 0 &&

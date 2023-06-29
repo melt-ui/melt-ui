@@ -10,9 +10,9 @@
 		'Delete tags',
 		'Disable everything or disable specific tags',
 		'Keyboard navigation',
-		'Option to control on:blur -> Do nothing, add tag, clear input',
-		'Option to only allow unique tags',
-		'Option to enable adding tag on paste',
+		'On blur do nothing, add tag or clear input',
+		'Only allow unique tags',
+		'Allow adding a tag on paste',
 	];
 </script>
 

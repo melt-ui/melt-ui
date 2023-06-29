@@ -49,3 +49,18 @@ export function setSelectedTagFromElement(el: Element | null, selectedTag: Writa
 		selectedTag.set(null);
 	}
 }
+
+export function setDataInvalid(rootId: string, inputId: string) {
+	const rootEl = getElementByMeltId(rootId);
+	const inputEl = getElementByMeltId(inputId);
+
+	if (rootEl) rootEl.setAttribute('data-invalid', '');
+	if (inputEl) inputEl.setAttribute('data-invalid', '');
+}
+
+export function clearDataInvalid(rootId: string, inputId: string) {
+	const rootEl = getElementByMeltId(rootId);
+	const inputEl = getElementByMeltId(inputId);
+	if (rootEl) rootEl.removeAttribute('data-invalid');
+	if (inputEl) inputEl.removeAttribute('data-invalid');
+}

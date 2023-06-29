@@ -4,6 +4,9 @@
 
 	const { root, input, tags, tag, deleteTrigger } = createTagsInput({
 		tags: ['one', 'two'],
+		unique: true,
+		blur: 'add',
+		addOnPaste: true,
 	});
 </script>
 
@@ -18,12 +21,7 @@
 			</div>
 		{/each}
 
-		<input
-			{...$input}
-			use:input.action
-			type="text"
-			class="shake min-w-[4.5rem] shrink grow basis-0 border-0 outline-none focus:!ring-0"
-		/>
+		<input {...$input} use:input.action type="text" class="input" />
 	</div>
 </div>
 
@@ -45,5 +43,11 @@
 		@apply flex h-full items-center px-1;
 		@apply enabled:hover:bg-magnum-700;
 		@apply data-[selected]:hover:bg-teal-600;
+	}
+
+	.input {
+		@apply min-w-[4.5rem] shrink grow basis-0 border-0 outline-none focus:!ring-0;
+		@apply text-black;
+		@apply data-[invalid]:text-red-500;
 	}
 </style>

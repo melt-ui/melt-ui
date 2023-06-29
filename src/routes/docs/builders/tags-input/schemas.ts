@@ -57,6 +57,10 @@ const root: APISchema = {
 			label: 'data-disabled',
 			value: 'Present when the root is disabled',
 		},
+		{
+			label: 'data-invalid',
+			value: 'Present when the input data is invalid',
+		},
 	],
 };
 
@@ -75,6 +79,10 @@ const input: APISchema = {
 		{
 			label: 'data-focus',
 			value: 'Present when the input is in focus',
+		},
+		{
+			label: 'data-invalid',
+			value: 'Present when the input data is invalid',
 		},
 	],
 };
