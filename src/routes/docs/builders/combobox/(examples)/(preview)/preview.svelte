@@ -36,12 +36,18 @@
 		};
 	}
 
-	const { open, input, menu, option, value, isSelected } = createCombobox({
-		items,
-		filterFunction(value) {
-			// the store is a super mutable snapshot of books
-			items = books.filter(getBooksFilter(value));
+	const { open, input, menu, option, value, isSelected, filteredItems } = createCombobox({
+		filterFunction: (item, inputValue) => {
+			// Quick & Dirty string normalization function. Replace as needed.
+			const normalize = (str: string) => str.normalize('NFD').toLowerCase();
+			const normalizedInput = normalize(inputValue);
+			return (
+				!inputValue ||
+				normalize(item.title).includes(normalizedInput) ||
+				normalize(item.author).includes(normalizedInput)
+			);
 		},
+		items,
 		itemToString(item) {
 			return item ? item.title : '';
 		},
@@ -74,7 +80,7 @@
 	</div>
 	<ul class="menu" {...$menu} use:menu.action>
 		{#if $open}
-			{#each items as item, index (index)}
+			{#each $filteredItems as item, index (index)}
 				<li {...$option({ index })} use:option.action class="option">
 					{#if $isSelected(item)}
 						<div class="check">

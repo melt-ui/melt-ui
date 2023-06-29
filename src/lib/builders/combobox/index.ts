@@ -23,7 +23,7 @@ interface ComboboxProps<T> {
 	scrollAlignment?: 'nearest' | 'center';
 	disabled?: boolean;
 	value?: string;
-	filterFunction: (value: string) => void;
+	filterFunction: (item: T, value: string) => boolean;
 	positioning?: FloatingConfig;
 	itemToString: (item: T) => string;
 	selectItem?: (item: T) => void;
@@ -64,6 +64,8 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 	// const trapFocus = false;
 	// const label = writable<string | number | null>(withDefaults.label ?? null);
 
+	const filteredItems = writable(args.items);
+
 	const ids = {
 		input: generateId(),
 		menu: generateId(),
@@ -77,7 +79,6 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 
 		// @TODO: think through if this should be a required argument (aka: internally handled or always externally managed (or both))
 		$options.selectItem && $options.selectItem($options.items[index]);
-		$options.filterFunction(string);
 
 		if (input) {
 			input.value = string;
@@ -313,9 +314,11 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 				addEventListener(node, 'input', (e: Event) => {
 					const $options = get(options);
 					// @TODO: throttle this value
-					const elementValue = (e.target as HTMLInputElement).value;
-					value.set(elementValue);
-					$options.filterFunction(elementValue);
+					const inputValue = (e.target as HTMLInputElement).value;
+					value.set(inputValue);
+					filteredItems.update((items) => {
+						return items.filter((item) => $options.filterFunction(item, inputValue));
+					});
 				})
 			);
 
@@ -379,6 +382,7 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 	// });
 
 	return {
+		filteredItems,
 		input,
 		open,
 		menu,
