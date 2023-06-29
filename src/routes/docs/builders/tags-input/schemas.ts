@@ -24,7 +24,17 @@ const builder: APISchema = {
 			default: '[]',
 		},
 		{
+			label: 'blur',
+			type: 'nothing | add | clear',
+			default: 'nothing',
+		},
+		{
 			label: 'unique',
+			type: 'boolean',
+			default: false,
+		},
+		{
+			label: 'addOnPaste',
 			type: 'boolean',
 			default: false,
 		},

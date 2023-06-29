@@ -75,7 +75,13 @@
 			<Docs.Code>disabled</Docs.Code> - Global enable/disable <i>(default: false)</i>
 		</Docs.Li>
 		<Docs.Li>
+			<Docs.Code>blur</Docs.Code> - What to do on blur <i>(default: nothing)</i>
+		</Docs.Li>
+		<Docs.Li>
 			<Docs.Code>unique</Docs.Code> - Only allow unique tags <i>(default: false)</i>
+		</Docs.Li>
+		<Docs.Li>
+			<Docs.Code>addOnPaste</Docs.Code> - Add tag on paste <i>(default: false)</i>
 		</Docs.Li>
 	</Docs.Ul>
 </Docs.P>

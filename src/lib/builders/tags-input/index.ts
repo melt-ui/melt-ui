@@ -29,7 +29,9 @@ export type CreateTagsInputArgs = {
 	// Whether the tags should be unique
 	unique?: boolean;
 	// What to do on blur
-	// blur?: 'nothing' | 'add' | 'clear';
+	blur?: 'nothing' | 'add' | 'clear';
+	// What to do on paste
+	addOnPaste?: boolean;
 };
 
 const defaults = {
@@ -37,7 +39,8 @@ const defaults = {
 	disabled: false,
 	tags: [],
 	unique: false,
-	// blur: 'nothing',
+	blur: 'nothing',
+	addOnPaste: false,
 } satisfies Defaults<CreateTagsInputArgs>;
 
 const dataMeltParts = {
@@ -144,7 +147,58 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					if (rootEl) rootEl.removeAttribute('data-focus');
 					node.removeAttribute('data-focus');
 
+					// Clear selected tag
 					selectedTag.set(null);
+
+					const $options = get(options);
+
+					const value = node.value;
+					if (!value) return;
+
+					if ($options.blur === 'clear') {
+						node.value = '';
+					} else if ($options.blur === 'add') {
+						const $tags = get(tags);
+
+						// Ignore unique
+						if ($options.unique) {
+							const index = $tags.findIndex((tag) => tag.value === value);
+							if (index >= 0) {
+								// Select the tag
+								selectedTag.set($tags[index]);
+								return;
+							}
+						}
+
+						// Add tag
+						tags.update((currentTags) => [...currentTags, { id: generateId(), value: node.value }]);
+						node.value = '';
+					}
+				}),
+				addEventListener(node, 'paste', (e) => {
+					const $options = get(options);
+					if (!$options.addOnPaste) return;
+
+					e.preventDefault();
+
+					if (!e.clipboardData) return;
+					const pastedText = e.clipboardData.getData('text');
+					if (!pastedText) return;
+
+					const $tags = get(tags);
+
+					// Ignore unique
+					if ($options.unique) {
+						const index = $tags.findIndex((tag) => tag.value === pastedText);
+						if (index >= 0) {
+							// Select the tag
+							selectedTag.set($tags[index]);
+							return;
+						}
+					}
+
+					// Add tag
+					tags.update((currentTags) => [...currentTags, { id: generateId(), value: pastedText }]);
 				}),
 				addEventListener(node, 'keydown', (e) => {
 					const $selectedTag = get(selectedTag);
