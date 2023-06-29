@@ -1,6 +1,8 @@
 import { get, writable, type Writable } from 'svelte/store';
 import { debounce } from './debounce';
 import { handleRovingFocus } from './rovingFocus';
+import { isHTMLElement } from './is';
+import { wrapArray } from './array';
 
 export type TypeaheadArgs = {
 	/**
@@ -36,20 +38,43 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 	});
 
 	const handleTypeaheadSearch = (key: string, items: HTMLElement[]) => {
+		const currentItem = document.activeElement as HTMLElement | null;
 		const $typed = get(typed);
 		if (!Array.isArray($typed)) {
 			return;
 		}
 		$typed.push(key.toLowerCase());
 		typed.update(() => $typed);
-		const typedString = $typed.join('');
-		const matchingOption = items.find((item) =>
-			item.innerText.toLowerCase().startsWith(typedString)
+
+		const candidateItems = items.filter((item) => {
+			if (item.hasAttribute('disabled')) {
+				return false;
+			}
+			if (item.hasAttribute('data-disabled')) {
+				return false;
+			}
+			return true;
+		});
+
+		const isRepeated = $typed.length > 1 && $typed.every((char) => char === $typed[0]);
+		const normalizeSearch = isRepeated ? $typed[0] : $typed.join('');
+		const currentItemIndex = currentItem ? candidateItems.indexOf(currentItem) : -1;
+
+		let wrappedItems = wrapArray(candidateItems, Math.max(currentItemIndex, 0));
+
+		const excludeCurrentItem = normalizeSearch.length === 1;
+		if (excludeCurrentItem) {
+			wrappedItems = wrappedItems.filter((v) => v !== currentItem);
+		}
+
+		const nextItem = wrappedItems.find((item) =>
+			item.innerText.toLowerCase().startsWith(normalizeSearch.toLowerCase())
 		);
 
-		if (matchingOption) {
-			withDefaults.onMatch(matchingOption);
+		if (isHTMLElement(nextItem) && nextItem !== currentItem) {
+			withDefaults.onMatch(nextItem);
 		}
+
 		resetTyped();
 	};
 

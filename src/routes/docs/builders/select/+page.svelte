@@ -15,7 +15,7 @@
 
 <Docs.H1>Select</Docs.H1>
 <Docs.Description>
-	Displays a list of options for the user to pick from—triggered by a button.
+	Presents a selection of choices to the user, activated by a button.
 </Docs.Description>
 
 <Docs.Preview {...data.preview} />
@@ -35,6 +35,8 @@
 <Docs.API schema={schemas.builder} />
 <Docs.API schema={schemas.trigger} />
 <Docs.API schema={schemas.option} />
+<Docs.API schema={schemas.group} />
+<Docs.API schema={schemas.separator} />
 
 <Docs.H2>Accessibility</Docs.H2>
 <Docs.P>

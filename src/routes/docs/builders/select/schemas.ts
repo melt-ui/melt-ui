@@ -26,6 +26,16 @@ const builder: APISchema = {
 			label: 'name',
 			type: 'string',
 		},
+		{
+			label: 'preventScroll',
+			type: 'boolean',
+			default: true,
+		},
+		{
+			label: 'loop',
+			type: 'boolean',
+			default: false,
+		},
 	],
 };
 
@@ -75,6 +85,16 @@ const arrow: APISchema = {
 	],
 };
 
+const separator: APISchema = {
+	title: 'Separator',
+	description: 'An optional separator element',
+};
+
+const group: APISchema = {
+	title: 'createGroup',
+	description: 'An optional builder used to group options together.',
+};
+
 const keyboard: APISchema = {
 	title: 'Keyboard Interactions',
 	description: '',
@@ -111,5 +131,7 @@ export const schemas = {
 	trigger,
 	option,
 	arrow,
+	group,
+	separator,
 	keyboard,
 };

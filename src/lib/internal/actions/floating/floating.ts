@@ -14,6 +14,7 @@ import {
 } from '@floating-ui/dom';
 import type { FloatingConfig } from './floating.types';
 import { noop } from '$lib/internal/helpers';
+import type { VirtualElement } from '@floating-ui/core';
 
 const defaultConfig = {
 	strategy: 'absolute',
@@ -32,7 +33,7 @@ const ARROW_TRANSFORM = {
 };
 
 export function useFloating(
-	reference: HTMLElement | undefined,
+	reference: HTMLElement | VirtualElement | undefined,
 	floating: HTMLElement | undefined,
 	opts: FloatingConfig = {}
 ) {
