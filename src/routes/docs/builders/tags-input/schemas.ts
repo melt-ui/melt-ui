@@ -48,6 +48,10 @@ const builder: APISchema = {
 			type: 'string[]',
 			default: '[]',
 		},
+		{
+			label: 'validator',
+			type: '(v: string) => boolean',
+		},
 	],
 };
 

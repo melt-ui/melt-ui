@@ -38,6 +38,8 @@ export type CreateTagsInputArgs = {
 	allowedTags?: string[];
 	// Denied tags
 	deniedTags?: string[];
+	// A custom validator function. A response of true means the validator passed
+	validator?: (value: string) => boolean;
 };
 
 const defaults = {
@@ -80,12 +82,12 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 
 	// Returns true if a tag is unique and false if $options.unique is true and the tag
 	// already exists
-	const isTagUnique = (t: string) => {
+	const isTagUnique = (v: string) => {
 		const $options = get(options);
 		const $tags = get(tags);
 
 		if ($options.unique) {
-			const index = $tags.findIndex((tag) => tag.value === t);
+			const index = $tags.findIndex((tag) => tag.value === v);
 			return index === -1;
 		}
 
@@ -95,24 +97,33 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 
 	// Returns true if a tag is in $options.allowedTags. If $options.allowedTags is empty
 	// return true
-	const isTagAllowed = (t: string) => {
+	const isTagAllowed = (v: string) => {
 		const $options = get(options);
 
 		// When empty, it is allowed
 		if ($options.allowedTags?.length === 0) return true;
 
-		return $options.allowedTags?.includes(t);
+		return $options.allowedTags?.includes(v);
 	};
 
 	// Returns true if a tag is in $options.deniedTags. If $options.deniedTags is empty
 	// return false
-	const isTagDenied = (t: string) => {
+	const isTagDenied = (v: string) => {
 		const $options = get(options);
 
 		// When empty, it is not denied
 		if ($options.deniedTags?.length === 0) return false;
 
-		return $options.deniedTags?.includes(t);
+		return $options.deniedTags?.includes(v);
+	};
+
+	// Returns the result of $options.validator(). If undefined, return true
+	const validator = (v: string) => {
+		const $options = get(options);
+
+		if ($options.validator === undefined) return true;
+
+		return $options.validator(v);
 	};
 
 	// Selected tag store. When `null`, no tag is selected
@@ -233,7 +244,12 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					const $options = get(options);
 					if (!$options.addOnPaste) return;
 
-					if (isTagUnique(pastedText) && isTagAllowed(pastedText) && !isTagDenied(pastedText)) {
+					if (
+						isTagUnique(pastedText) &&
+						isTagAllowed(pastedText) &&
+						!isTagDenied(pastedText) &&
+						validator(pastedText)
+					) {
 						// Prevent default as we are going to add a new tag
 						e.preventDefault();
 						tags.update((currentTags) => [...currentTags, { id: generateId(), value: pastedText }]);
@@ -350,7 +366,12 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							const value = node.value;
 							if (!value) return;
 
-							if (isTagUnique(value) && isTagAllowed(value) && !isTagDenied(value)) {
+							if (
+								isTagUnique(value) &&
+								isTagAllowed(value) &&
+								!isTagDenied(value) &&
+								validator(value)
+							) {
 								// Prevent default as we are going to add a new tag
 								tags.update((currentTags) => [...currentTags, { id: generateId(), value: value }]);
 								node.value = '';

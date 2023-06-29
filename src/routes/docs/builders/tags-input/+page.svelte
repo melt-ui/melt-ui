@@ -14,6 +14,7 @@
 		'Only allow unique tags',
 		'Allow adding a tag on paste',
 		'Support for allowed/denied list',
+		'Allows a custom validator function',
 	];
 </script>
 
@@ -92,6 +93,12 @@
 		<Docs.Li>
 			<Docs.Code>deniedTags</Docs.Code> - String array of denied tags. Takes precedence over
 			<Docs.Code>allowedTags</Docs.Code>. <i>(default: [])</i>
+		</Docs.Li>
+		<Docs.Li>
+			<Docs.Code>validator</Docs.Code> - A custom validator function in the form of <Docs.Code
+				>(v: string) => boolean</Docs.Code
+			>. A response of <Docs.Code>true</Docs.Code> means the validator passed and the tag is added.
+			<i>(default: -)</i>
 		</Docs.Li>
 	</Docs.Ul>
 </Docs.P>
