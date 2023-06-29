@@ -22,24 +22,10 @@
 		{ author: 'Fyodor Dostoevsky', title: 'Crime and Punishment' },
 	];
 
-	let items = books;
-
-	function getBooksFilter(inputValue: string) {
-		const lowerCasedInputValue = inputValue.toLowerCase();
-
-		return function booksFilter(book: Book) {
-			return (
-				!inputValue ||
-				book.title.toLowerCase().includes(lowerCasedInputValue) ||
-				book.author.toLowerCase().includes(lowerCasedInputValue)
-			);
-		};
-	}
-
 	const { open, input, menu, option, value, isSelected, filteredItems } = createCombobox({
 		filterFunction: (item, inputValue) => {
-			// Quick & Dirty string normalization function. Replace as needed.
-			const normalize = (str: string) => str.normalize('NFD').toLowerCase();
+			// Quick & dirty string normalization function. Replace as needed.
+			const normalize = (str: string) => str.normalize().toLowerCase();
 			const normalizedInput = normalize(inputValue);
 			return (
 				!inputValue ||
@@ -47,7 +33,7 @@
 				normalize(item.author).includes(normalizedInput)
 			);
 		},
-		items,
+		items: books,
 		itemToString(item) {
 			return item ? item.title : '';
 		},
