@@ -88,16 +88,17 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 						'[data-melt-part=tags-input-tag]'
 					);
 
+					// Focus on the input when the root is clicked
+					selectedTag.set(null);
+					const inputEl = getElementByMeltId(ids.input);
+					if (inputEl) inputEl.focus();
+
+					// Set the selected tag
 					if (delegatedTarget) {
 						selectedTag.set({
 							id: delegatedTarget.getAttribute('data-tag-id') ?? '',
 							value: delegatedTarget.getAttribute('data-tag-value') ?? '',
 						});
-					} else {
-						// Focus on the input when the root is clicked
-						selectedTag.set(null);
-						const inputEl = getElementByMeltId(ids.input);
-						if (inputEl) inputEl.focus();
 					}
 				})
 			);
@@ -122,6 +123,9 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		// Action => use:input.action
 		action: (node: HTMLInputElement) => {
 			const unsub = executeCallbacks(
+				addEventListener(node, 'blur', () => {
+					selectedTag.set(null);
+				}),
 				addEventListener(node, 'keydown', (e) => {
 					const $selectedTag = get(selectedTag);
 
