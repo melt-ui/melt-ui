@@ -46,7 +46,7 @@ const SUB_CLOSE_KEYS: Record<TextDirection, string[]> = {
 };
 
 export type CreateContextMenuArgs = {
-	/*
+	/**
 	 * Options for positioning the popover menu.
 	 *
 	 * @default { placement: 'bottom' }
