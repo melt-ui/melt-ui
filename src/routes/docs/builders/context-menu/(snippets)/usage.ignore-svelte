@@ -1,0 +1,4 @@
+<script lang="ts">
+    import { createContextMenu } from "@melt-ui/svelte";
+    const { menu, item, trigger, arrow } = createContextMenu()
+</script>
