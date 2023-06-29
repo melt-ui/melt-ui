@@ -4,16 +4,8 @@
 	import ChevronRight from '~icons/lucide/chevron-right';
 	import Check from '~icons/lucide/check';
 
-	const {
-		trigger,
-		menu,
-		item,
-		checkboxItem,
-		arrow,
-		separator,
-		createSubMenu,
-		createMenuRadioGroup,
-	} = createContextMenu();
+	const { trigger, menu, item, checkboxItem, separator, createSubMenu, createMenuRadioGroup } =
+		createContextMenu();
 
 	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
 
@@ -84,7 +76,6 @@
 		Quit Melt UI
 		<div class="rightSlot">⌘Q</div>
 	</div>
-	<div {...$arrow} />
 </div>
 
 <style lang="postcss">

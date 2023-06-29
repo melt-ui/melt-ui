@@ -2,19 +2,13 @@
 	import { createContextMenu } from '@melt-ui/svelte';
 	import { writable } from 'svelte/store';
 	import { ChevronRight, Check } from 'icons';
-    const {
-		trigger,
-		menu,
-		item,
-		checkboxItem,
-		arrow,
-		separator,
-		createSubMenu,
-		createMenuRadioGroup,
-	} = createContextMenu();
+
+
+    const { trigger, menu, item, checkboxItem, separator, createSubMenu, createMenuRadioGroup } =
+		createContextMenu();
 
 	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
-
+    
 	const { radioGroup, radioItem, isChecked } = createMenuRadioGroup({
 		value: 'Hunter Johnston',
 	});
@@ -25,7 +19,7 @@
 	const hideMeltUI = writable(false);
 </script>
 
-<span class="trigger" {...$trigger} use:trigger.action>
+<span class="trigger" {...$trigger} use:trigger.action aria-label="Update dimensions">
 	Right click me.
 </span>
 
@@ -82,7 +76,6 @@
 		Quit Melt UI
 		<div class="rightSlot">⌘Q</div>
 	</div>
-	<div {...$arrow} />
 </div>
 
 <style lang="postcss">

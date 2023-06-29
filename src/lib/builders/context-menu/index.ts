@@ -40,7 +40,7 @@ export type ContextMenuRadioItemActionArgs = Menu['radioItemAction'];
 const defaults = {
 	arrowSize: 8,
 	positioning: {
-		placement: 'bottom',
+		placement: 'bottom-start',
 	},
 	preventScroll: true,
 } satisfies Defaults<ContextMenuArgs>;
