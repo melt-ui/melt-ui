@@ -14,6 +14,11 @@ const builder: APISchema = {
 			type: 'number',
 			default: 8,
 		},
+		{
+			label: 'preventScroll',
+			type: 'boolean',
+			default: true,
+		},
 	],
 };
 

@@ -11,10 +11,10 @@
 	<div
 		{...$root}
 		use:root.action
-		class="flex w-[340px] flex-row flex-wrap gap-2.5 rounded-md bg-white px-3 py-2 text-magnum-700"
+		class="flex w-[280px] flex-row flex-wrap gap-2.5 rounded-md bg-white px-3 py-2 text-magnum-700"
 	>
-		{#each $tags as t, i}
-			<div {...$tag(t)} use:tag.action class="tag">
+		{#each $tags as t}
+			<div {...$tag(t)} class="tag">
 				<span class="flex items-center border-r border-white/10 px-1.5">{t.value}</span>
 
 				<button {...$deleteTrigger(t)} use:deleteTrigger.action class="tag-delete">

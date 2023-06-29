@@ -26,3 +26,12 @@ export function prev<T>(array: T[], index: number, loop = true): T | undefined {
 export function last<T>(array: T[]): T | undefined {
 	return array[array.length - 1];
 }
+
+/**
+ * Wraps an array around itself at a given start index
+ * Example: `wrapArray(['a', 'b', 'c', 'd'], 2) === ['c', 'd', 'a', 'b']`
+ * Reference: https://github.com/radix-ui/primitives
+ */
+export function wrapArray<T>(array: T[], startIndex: number) {
+	return array.map((_, index) => array[(startIndex + index) % array.length]);
+}
