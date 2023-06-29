@@ -8,7 +8,14 @@ import {
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
-import { deleteTagById, focusInput, getTagElements, type Tag, type TagArgs } from './helpers';
+import {
+	deleteTagById,
+	focusInput,
+	getTagElements,
+	setSelectedTagFromElement,
+	type Tag,
+	type TagArgs,
+} from './helpers';
 
 export type CreateTagsInputArgs = {
 	// The default input placeholder
@@ -83,23 +90,25 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		// Action => use:root.action
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', (e) => {
-					const delegatedTarget = (e.target as HTMLElement).closest(
-						'[data-melt-part=tags-input-tag]'
-					);
+				addEventListener(node, 'mousedown', (e) => {
+					e.preventDefault();
 
-					// Focus on the input when the root is clicked
-					selectedTag.set(null);
-					const inputEl = getElementByMeltId(ids.input);
-					if (inputEl) inputEl.focus();
+					focusInput(ids.input);
 
 					// Set the selected tag
-					if (delegatedTarget) {
-						selectedTag.set({
-							id: delegatedTarget.getAttribute('data-tag-id') ?? '',
-							value: delegatedTarget.getAttribute('data-tag-value') ?? '',
-						});
-					}
+					const delegatedTarget = (e.target as HTMLElement).closest(
+						`[data-melt-part="${dataMeltParts['tag']}"]`
+					);
+					setSelectedTagFromElement(delegatedTarget, selectedTag);
+				}),
+				addEventListener(node, 'click', (e) => {
+					focusInput(ids.input);
+
+					// Set the selected tag
+					const delegatedTarget = (e.target as HTMLElement).closest(
+						`[data-melt-part="${dataMeltParts['tag']}"]`
+					);
+					setSelectedTagFromElement(delegatedTarget, selectedTag);
 				})
 			);
 			return {
@@ -115,7 +124,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 			return {
 				'data-melt-id': ids.input,
 				'data-melt-part': dataMeltParts['input'],
-				'data-disabled': $options.disabled,
+				'data-disabled': $options.disabled ? '' : undefined,
 				disabled: $options.disabled,
 				placeholder: $options.placeholder,
 			};
@@ -123,7 +132,18 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		// Action => use:input.action
 		action: (node: HTMLInputElement) => {
 			const unsub = executeCallbacks(
+				addEventListener(node, 'focus', () => {
+					// Set data-focus attribute
+					const rootEl = getElementByMeltId(ids.root);
+					if (rootEl) rootEl.setAttribute('data-focus', '');
+					node.setAttribute('data-focus', '');
+				}),
 				addEventListener(node, 'blur', () => {
+					// Clear data-focus attribute
+					const rootEl = getElementByMeltId(ids.root);
+					if (rootEl) rootEl.removeAttribute('data-focus');
+					node.removeAttribute('data-focus');
+
 					selectedTag.set(null);
 				}),
 				addEventListener(node, 'keydown', (e) => {
@@ -135,21 +155,20 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							// A character is entered, set selectedTag to null
 							selectedTag.set(null);
 						} else if (e.key === kbd.ARROW_LEFT) {
+							// Move to the previous tag
 							e.preventDefault();
-							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
 
+							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
 							const selectedIndex = tagsEl.findIndex(
 								(element) => element.getAttribute('data-tag-id') === $selectedTag.id
 							);
 							const prevIndex = selectedIndex - 1;
 
 							if (prevIndex >= 0) {
-								selectedTag.set({
-									id: tagsEl[prevIndex].getAttribute('data-tag-id') ?? '',
-									value: tagsEl[prevIndex].getAttribute('data-tag-value') ?? '',
-								});
+								setSelectedTagFromElement(tagsEl[prevIndex], selectedTag);
 							}
 						} else if (e.key === kbd.ARROW_RIGHT) {
+							// Move to the next element of tag or input
 							e.preventDefault();
 
 							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
@@ -162,27 +181,20 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 								selectedTag.set(null);
 								focusInput(ids.input, 'start');
 							} else {
-								selectedTag.set({
-									id: tagsEl[nextIndex].getAttribute('data-tag-id') ?? '',
-									value: tagsEl[nextIndex].getAttribute('data-tag-value') ?? '',
-								});
+								setSelectedTagFromElement(tagsEl[nextIndex], selectedTag);
 							}
 						} else if (e.key === kbd.HOME) {
+							// Jump to the first tag or do nothing
 							e.preventDefault();
 							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
-							if (tagsEl.length > 0) {
-								selectedTag.set({
-									id: tagsEl[0].getAttribute('data-tag-id') ?? '',
-									value: tagsEl[0].getAttribute('data-tag-value') ?? '',
-								});
-							}
+							if (tagsEl.length > 0) setSelectedTagFromElement(tagsEl[0], selectedTag);
 						} else if (e.key === kbd.END) {
+							// Jump to the input
 							e.preventDefault();
 							selectedTag.set(null);
-							focusInput(ids.input, 'end');
+							focusInput(ids.input);
 						} else if (e.key === kbd.DELETE) {
-							// Delete this tag and move to the next tag. If there is no next tag
-							// focus on input
+							// Delete this tag and move to the next element of tag or input
 							e.preventDefault();
 
 							const prevSelectedId = $selectedTag.id;
@@ -194,19 +206,16 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 
 							if (nextIndex >= tagsEl.length) {
 								selectedTag.set(null);
-								focusInput(ids.input, 'start');
+								focusInput(ids.input);
 							} else {
-								selectedTag.set({
-									id: tagsEl[nextIndex].getAttribute('data-tag-id') ?? '',
-									value: tagsEl[nextIndex].getAttribute('data-tag-value') ?? '',
-								});
+								setSelectedTagFromElement(tagsEl[nextIndex], selectedTag);
 							}
 
 							// Delete the previously selected tag
 							deleteTagById(prevSelectedId, tags);
 						} else if (e.key === kbd.BACKSPACE) {
-							// Delete this tag and move to the previous tag. If there is no previous,
-							// move to the next tag. If there is no next tag, focus on input
+							// Delete this tag and move to the previous tag. If this is the
+							// first tag, delete and move to the next element of tag or input
 							e.preventDefault();
 							const prevSelectedId = $selectedTag.id;
 
@@ -218,19 +227,13 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							const nextIndex = selectedIndex + 1;
 
 							if (prevIndex >= 0) {
-								selectedTag.set({
-									id: tagsEl[prevIndex].getAttribute('data-tag-id') ?? '',
-									value: tagsEl[prevIndex].getAttribute('data-tag-value') ?? '',
-								});
+								setSelectedTagFromElement(tagsEl[prevIndex], selectedTag);
 							} else {
 								if (nextIndex >= tagsEl.length) {
 									selectedTag.set(null);
 									focusInput(ids.input, 'start');
 								} else {
-									selectedTag.set({
-										id: tagsEl[nextIndex].getAttribute('data-tag-id') ?? '',
-										value: tagsEl[nextIndex].getAttribute('data-tag-value') ?? '',
-									});
+									setSelectedTagFromElement(tagsEl[nextIndex], selectedTag);
 								}
 							}
 
@@ -271,13 +274,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 
 							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
 							const lastTag = tagsEl.at(-1) as HTMLElement;
-
-							if (lastTag) {
-								selectedTag.set({
-									id: lastTag.getAttribute('data-tag-id') ?? '',
-									value: lastTag.getAttribute('data-tag-value') ?? '',
-								});
-							}
+							setSelectedTagFromElement(lastTag, selectedTag);
 						}
 					}
 				})
@@ -304,6 +301,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					'data-tag-value': tag.value,
 					'data-tag-id': tag.id,
 					'data-disabled': disabled ? '' : undefined,
+					disabled: disabled,
 					tabindex: -1,
 				};
 			};
@@ -326,7 +324,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					'data-tag-value': tag.value,
 					'data-tag-id': tag.id,
 					'data-disabled': disabled ? '' : undefined,
-					disabled: disabled ? true : undefined,
+					disabled: disabled,
 					tabindex: -1,
 				};
 			};

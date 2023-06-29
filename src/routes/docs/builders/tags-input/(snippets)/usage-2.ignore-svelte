@@ -1,0 +1,14 @@
+<script lang="ts">
+	import { createTagsInput } from '@melt-ui/svelte';
+	const { root, input, tags, tag, deleteTrigger } = createTagsInput();
+</script>
+
+<div {...$root} use:root.action>
+	{#each $tags as t}
+		<div {...$tag(t)}>
+			<span>{t.value} </span>
+			<button {...$deleteTrigger(t)} use:deleteTrigger.action>x</button>
+		</div>
+	{/each}
+	<input {...$input} use:input.action type="text" />
+</div>

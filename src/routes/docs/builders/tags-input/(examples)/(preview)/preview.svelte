@@ -7,16 +7,11 @@
 	});
 </script>
 
-<div class="flex flex-col items-start justify-center gap-2 overflow-hidden">
-	<div
-		{...$root}
-		use:root.action
-		class="flex w-[280px] flex-row flex-wrap gap-2.5 rounded-md bg-white px-3 py-2 text-magnum-700"
-	>
+<div class="flex flex-col items-start justify-center gap-2">
+	<div {...$root} use:root.action class="root">
 		{#each $tags as t}
 			<div {...$tag(t)} class="tag">
 				<span class="flex items-center border-r border-white/10 px-1.5">{t.value}</span>
-
 				<button {...$deleteTrigger(t)} use:deleteTrigger.action class="tag-delete">
 					<X class="h-3 w-3" />
 				</button>
@@ -33,6 +28,12 @@
 </div>
 
 <style lang="postcss">
+	.root {
+		@apply flex w-[280px] flex-row flex-wrap gap-2.5 rounded-md px-3 py-2;
+		@apply text-magnum-700 bg-white;
+		@apply data-[focus]:!outline data-[focus]:!outline-blue-400 data-[focus]:!outline-2;
+	}
+
 	.tag {
 		@apply flex items-center overflow-hidden rounded-md [word-break:break-word];
 		@apply bg-magnum-600 text-white;

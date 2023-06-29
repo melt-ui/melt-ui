@@ -33,21 +33,25 @@ const builder: APISchema = {
 
 const root: APISchema = {
 	title: 'Root',
-	description: 'The tags input component.',
+	description: 'The root component.',
 	dataAttributes: [
 		{
 			label: 'data-melt-part',
 			value: '`tags-input`',
 		},
 		{
+			label: 'data-focus',
+			value: 'Present when the root is in focus',
+		},
+		{
 			label: 'data-disabled',
-			value: 'Present if the item is disabled.',
+			value: 'Present when the root is disabled',
 		},
 	],
 };
 
 const input: APISchema = {
-	title: 'Root',
+	title: 'Input',
 	description: 'The input component',
 	dataAttributes: [
 		{
@@ -56,13 +60,17 @@ const input: APISchema = {
 		},
 		{
 			label: 'data-disabled',
-			value: 'Present if the item is disabled.',
+			value: 'Present when the input is disabled',
+		},
+		{
+			label: 'data-focus',
+			value: 'Present when the input is in focus',
 		},
 	],
 };
 
 const tag: APISchema = {
-	title: 'Item',
+	title: 'Tag',
 	description: 'The tag components.',
 	args: [
 		{
@@ -86,25 +94,25 @@ const tag: APISchema = {
 		},
 		{
 			label: 'data-tag-id',
-			value: 'Unique tag ID.',
+			value: 'Unique tag ID',
 		},
 		{
 			label: 'data-tag-value',
 			value: 'Tag value',
 		},
 		{
-			label: 'data-disabled',
-			value: 'Present if the tag is disabled.',
+			label: 'data-selected',
+			value: 'Present when the tag is selected',
 		},
 		{
-			label: 'data-selected',
-			value: 'Present if the tag is selected.',
+			label: 'data-disabled',
+			value: 'Present when the tag is disabled',
 		},
 	],
 };
 
 const deleteTrigger: APISchema = {
-	title: 'Item',
+	title: 'Delete Trigger',
 	description: 'The tag components.',
 	args: [
 		{
@@ -136,11 +144,11 @@ const deleteTrigger: APISchema = {
 		},
 		{
 			label: 'data-disabled',
-			value: 'Present if the tag is disabled.',
+			value: 'Present when the tag is disabled',
 		},
 		{
 			label: 'data-selected',
-			value: 'Present if the tag is selected.',
+			value: 'Present when the tag is selected',
 		},
 	],
 };
@@ -150,26 +158,29 @@ const keyboard = {
 	description: '',
 	keyboardInteractions: [
 		{
-			key: 'tab',
-			description: 'Moves focus between tags and the input.',
+			key: 'ArrowRight',
+			description: 'Move to the next element of `tag` or `input`',
+		},
+		{
+			key: 'ArrowLeft',
+			description: 'Move to the previous `tag`, if one exists',
+		},
+		{
+			key: 'Home',
+			description: 'Jump to the first `tag`, if one exists',
+		},
+		{
+			key: 'End',
+			description: 'Jump to the `input`',
 		},
 		{
 			key: 'Delete',
-			description: 'When focused on a tag, deletes it and moves focus to the right.',
+			description: 'Delete the selected `tag` and move to the next element of `tag` or `input`',
 		},
 		{
 			key: 'Backspace',
 			description:
-				'When focused on a tag, deletes it and moves focus to the left. If there are no tags to the left, either the next tags gets focus, or the input.',
-		},
-
-		{
-			key: 'ArrowRight',
-			description: 'Moves focus to the next tag or input.',
-		},
-		{
-			key: 'ArrowLeft',
-			description: 'Moves focus to the previous tag.',
+				'Delete the selected `tag` and move to the previous tag. If this is the first tag, delete and move to the next element of `tag` or `input`',
 		},
 	],
 };

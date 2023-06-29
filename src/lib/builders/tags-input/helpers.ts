@@ -12,12 +12,14 @@ export type TagArgs = {
 	disabled?: boolean;
 };
 
-export function focusInput(id: string, pos: 'start' | 'end') {
+export type inputPos = 'default' | 'start' | 'end';
+
+export function focusInput(id: string, pos: inputPos = 'default') {
 	const inputEl = getElementByMeltId(id) as HTMLInputElement;
 	if (inputEl) {
 		inputEl.focus();
 		if (pos === 'start') inputEl.setSelectionRange(0, 0);
-		else inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
+		else if (pos === 'end') inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
 	}
 }
 
@@ -35,4 +37,15 @@ export function deleteTagById(id: string, tags: Writable<Tag[]>) {
 		t.splice(index, 1);
 		return t;
 	});
+}
+
+export function setSelectedTagFromElement(el: Element | null, selectedTag: Writable<Tag | null>) {
+	if (el) {
+		selectedTag.set({
+			id: el.getAttribute('data-tag-id') ?? '',
+			value: el.getAttribute('data-tag-value') ?? '',
+		});
+	} else {
+		selectedTag.set(null);
+	}
 }
