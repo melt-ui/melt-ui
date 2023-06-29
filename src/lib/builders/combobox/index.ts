@@ -12,7 +12,7 @@ import {
 import type { Action } from 'svelte/action';
 import { writable, type Readable, derived, get, readonly } from 'svelte/store';
 import type { HTMLAttributes, HTMLInputAttributes, HTMLLabelAttributes } from 'svelte/elements';
-import { tick } from 'svelte';
+import { afterUpdate, tick } from 'svelte';
 import { usePopper, type FloatingConfig } from '@melt-ui/svelte/internal/actions';
 import type { Defaults } from '@melt-ui/svelte/internal/types';
 import { getNextIndex, setAttribute } from '@melt-ui/svelte/builders/combobox/utils';
@@ -50,10 +50,16 @@ const defaults = {
 		placement: 'bottom',
 		sameWidth: true,
 	},
-};
+} satisfies Defaults<ComboboxProps<unknown>>;
 
+// @TODO figure out how to on-the-fly update the list of items
+// @TODO arrow key nav with a filtered subset of items
+// @TODO figure out typing generics with `satisfies` and `Defaults`
+// @TODO figure out how our utils <> their utils
+// @TODO skipping over disabled list items
 export function createCombobox<T>(args: ComboboxProps<T>) {
 	const withDefaults = { ...defaults, ...args } as ComboboxProps<T>;
+	const originalItems = writable(withDefaults.items);
 	const options = writable(withDefaults);
 	const open = writable(false);
 	const value = writable(withDefaults.value ?? '');
@@ -61,6 +67,12 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 	const selectedItem = writable<T>(undefined);
 	const highlightedItem = writable<number>(0);
 	const filteredItems = writable(args.items);
+
+	originalItems.subscribe((items) => {
+		const $options = get(options);
+		// @TODO only run when opt.items changes? Maybe?
+		filteredItems.set(items.filter((item) => $options.filterFunction(item, get(value))));
+	});
 
 	const ids = {
 		input: generateId(),
@@ -111,8 +123,14 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 				}
 			);
 
+			// When the cursor is outside the menu, unhighlight items.
+			const unsub = addEventListener(node, 'mouseout', () => {
+				highlightedItem.set(-1);
+			});
+
 			return {
 				destroy: () => {
+					unsub();
 					unsubDerived();
 					unsubPopper();
 				},
@@ -161,10 +179,6 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 					if (index) {
 						highlightedItem.set(parseInt(index, 10));
 					}
-				}),
-				// @TODO should be -1
-				addEventListener(node, 'mouseout', () => {
-					highlightedItem.set(0);
 				}),
 				addEventListener(node, 'click', () => {
 					const { index } = node.dataset;
@@ -248,39 +262,39 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 							break;
 						}
 						case kbd.END: {
-							const nextIndex = $options.items.length - 1;
+							const nextIndex = get(filteredItems).length - 1;
 							highlightedItem.set(nextIndex);
 							break;
 						}
-						case kbd.PAGE_UP: {
-							const $highlightedIndex = get(highlightedItem);
-							const nextIndex = getNextIndex({
-								currentIndex: $highlightedIndex,
-								itemCount: $options.items.length,
-								moveAmount: -10,
-							});
-							highlightedItem.set(nextIndex);
-							break;
-						}
-						case kbd.PAGE_DOWN: {
-							const $highlightedIndex = get(highlightedItem);
-							const nextIndex = getNextIndex({
-								currentIndex: $highlightedIndex,
-								itemCount: $options.items.length,
-								moveAmount: 10,
-							});
-							highlightedItem.set(nextIndex);
-							break;
-						}
+						/** @FIXME */
+						// case kbd.PAGE_UP: {
+						// 	const $highlightedIndex = get(highlightedItem);
+						// 	const nextIndex = getNextIndex({
+						// 		currentIndex: $highlightedIndex,
+						// 		itemCount: $options.items.length,
+						// 		moveAmount: -10,
+						// 	});
+						// 	highlightedItem.set(nextIndex);
+						// 	break;
+						// }
+						// case kbd.PAGE_DOWN: {
+						// 	const $highlightedIndex = get(highlightedItem);
+						// 	const nextIndex = getNextIndex({
+						// 		currentIndex: $highlightedIndex,
+						// 		itemCount: $options.items.length,
+						// 		moveAmount: 10,
+						// 	});
+						// 	highlightedItem.set(nextIndex);
+						// 	break;
+						// }
 						case kbd.ARROW_DOWN: {
-							const $highlightedIndex = get(highlightedItem);
-							const nextIndex = getNextIndex({
-								currentIndex: $highlightedIndex,
-								itemCount: $options.items.length,
-								moveAmount: 1,
+							highlightedItem.update((item) => {
+								return getNextIndex({
+									currentIndex: item,
+									itemCount: get(filteredItems).length,
+									moveAmount: 1,
+								});
 							});
-
-							highlightedItem.set(nextIndex);
 							break;
 						}
 						case kbd.ARROW_UP: {
@@ -288,13 +302,13 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 								close();
 								return;
 							}
-							const $highlightedIndex = get(highlightedItem);
-							const nextIndex = getNextIndex({
-								currentIndex: $highlightedIndex,
-								itemCount: $options.items.length,
-								moveAmount: -1,
+							highlightedItem.update((item) => {
+								return getNextIndex({
+									currentIndex: item,
+									itemCount: get(filteredItems).length,
+									moveAmount: -1,
+								});
 							});
-							highlightedItem.set(nextIndex);
 							break;
 						}
 					}
@@ -315,7 +329,7 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 	};
 
 	const isSelected = derived([selectedItem], ([$selectedItem]) => {
-		return (item: unknown) => {
+		return (item: T) => {
 			return $selectedItem === item;
 		};
 	});
@@ -368,6 +382,7 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 	// });
 
 	return {
+		originalItems,
 		filteredItems: readonly(filteredItems),
 		input,
 		open,

@@ -9,7 +9,7 @@
 		title: string;
 	}
 
-	const books: Book[] = [
+	let books: Book[] = [
 		{ author: 'Harper Lee', title: 'To Kill a Mockingbird' },
 		{ author: 'Lev Tolstoy', title: 'War and Peace' },
 		{ author: 'Fyodor Dostoyevsy', title: 'The Idiot' },
@@ -22,29 +22,40 @@
 		{ author: 'Fyodor Dostoevsky', title: 'Crime and Punishment' },
 	];
 
-	const { open, input, menu, option, value, isSelected, filteredItems } = createCombobox({
-		filterFunction: (item, inputValue) => {
-			// Quick & dirty string normalization function. Replace as needed.
-			const normalize = (str: string) => str.normalize().toLowerCase();
-			const normalizedInput = normalize(inputValue);
-			return (
-				normalizedInput === '' ||
-				normalize(item.title).includes(normalizedInput) ||
-				normalize(item.author).includes(normalizedInput)
-			);
-		},
-		items: books,
-		itemToString(item) {
-			return item ? item.title : '';
-		},
-	});
+	// Approaches
+	// 1. `updateList` **
+	// 2. originalItems *
+	// 3. return original as the store (the filterfunction would need to be rerun) ***
+	const { open, input, menu, option, value, isSelected, updateList, filteredItems, originalItems } =
+		createCombobox({
+			filterFunction: (item, inputValue) => {
+				// Example string normalization function. Replace as needed.
+				const normalize = (str: string) => str.normalize().toLowerCase();
+				const normalizedInput = normalize(inputValue);
+				return (
+					normalizedInput === '' ||
+					normalize(item.title).includes(normalizedInput) ||
+					normalize(item.author).includes(normalizedInput)
+				);
+			},
+			items: books,
+			itemToString(item) {
+				return item ? item.title : '';
+			},
+		});
 </script>
 
 <div>
+	<button
+		on:click={() => {
+			originalItems.update((value) => {
+				return value.concat([{ author: 'Paula Deen', title: '50 shades of gravy' }]);
+			});
+		}}>Add</button
+	>
 	<div class="container">
 		<label class="label">
 			<span class="label-description">Choose your favorite book:</span>
-
 			<div class="input-container">
 				<input
 					{...$input}
@@ -53,7 +64,6 @@
 					placeholder="Best book ever"
 					class="input"
 				/>
-
 				<div class="input-icon">
 					{#if $open}
 						<ChevronUp />
@@ -79,6 +89,10 @@
 					</div>
 				</li>
 			{/each}
+			<!-- This doesn't work because getNextIndex is based on $filteredItems.length -->
+			<li {...$option({ index: $filteredItems.length + 1 })} use:option.action class="option">
+				Dangboi
+			</li>
 		{/if}
 	</ul>
 </div>
