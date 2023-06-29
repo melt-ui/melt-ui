@@ -10,7 +10,7 @@ import {
 	sleep,
 } from '@melt-ui/svelte/internal/helpers';
 import type { Action } from 'svelte/action';
-import { writable, type Readable, type Writable, derived, get } from 'svelte/store';
+import { writable, type Readable, type Writable, derived, get, readonly } from 'svelte/store';
 import type { HTMLAttributes, HTMLInputAttributes, HTMLLabelAttributes } from 'svelte/elements';
 import { onMount, tick } from 'svelte';
 import { usePopper, type FloatingConfig } from '@melt-ui/svelte/internal/actions';
@@ -72,14 +72,12 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 		label: generateId(),
 	};
 
+	// @TODO should there be a callback when an item is selected? Useful?
 	function setSelectedItem(index: number, input: HTMLInputElement | null) {
 		const $options = get(options);
-		const string = $options.itemToString($options.items[index]);
-		selectedItem.set($options.items[index]);
-
-		// @TODO: think through if this should be a required argument (aka: internally handled or always externally managed (or both))
-		$options.selectItem && $options.selectItem($options.items[index]);
-
+		const $filteredItems = get(filteredItems);
+		const string = $options.itemToString($filteredItems[index]);
+		selectedItem.set($filteredItems[index]);
 		if (input) {
 			input.value = string;
 		}
@@ -98,7 +96,6 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 		}),
 		action: (node: HTMLUListElement) => {
 			let unsubPopper = noop;
-
 			const unsubDerived = effect(
 				[open, activeTrigger, options],
 				([$open, $activeTrigger, $options]) => {
@@ -108,11 +105,8 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 							const popper = usePopper(node, {
 								anchorElement: $activeTrigger,
 								open,
-								options: {
-									floating: $options.positioning,
-								},
+								options: { floating: $options.positioning },
 							});
-
 							if (popper && popper.destroy) {
 								unsubPopper = popper.destroy;
 							}
@@ -165,18 +159,6 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 			};
 		}),
 		action: (node: HTMLLIElement) => {
-			function onClick() {
-				const { index } = node.dataset;
-
-				if (index) {
-					const parsedIndex = parseInt(index, 10);
-					setSelectedItem(parsedIndex, document.getElementById(ids.input) as HTMLInputElement);
-					document.getElementById(ids.input)?.focus();
-				}
-
-				open.set(false);
-			}
-
 			const unsub = executeCallbacks(
 				addEventListener(node, 'mousemove', () => {
 					const { index } = node.dataset;
@@ -187,7 +169,16 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 				addEventListener(node, 'mouseout', () => {
 					highlightedItem.set(0);
 				}),
-				addEventListener(node, 'click', onClick)
+				addEventListener(node, 'click', () => {
+					const { index } = node.dataset;
+					if (index) {
+						const parsedIndex = parseInt(index, 10);
+						setSelectedItem(parsedIndex, document.getElementById(ids.input) as HTMLInputElement);
+						document.getElementById(ids.input)?.focus();
+					}
+
+					open.set(false);
+				})
 			);
 
 			return { destroy: unsub };
@@ -316,9 +307,9 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 					// @TODO: throttle this value
 					const inputValue = (e.target as HTMLInputElement).value;
 					value.set(inputValue);
-					filteredItems.update((items) => {
-						return items.filter((item) => $options.filterFunction(item, inputValue));
-					});
+					filteredItems.set(
+						$options.items.filter((item) => $options.filterFunction(item, inputValue))
+					);
 				})
 			);
 
@@ -382,7 +373,7 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 	// });
 
 	return {
-		filteredItems,
+		filteredItems: readonly(filteredItems),
 		input,
 		open,
 		menu,

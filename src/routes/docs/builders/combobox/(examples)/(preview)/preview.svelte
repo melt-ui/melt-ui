@@ -28,7 +28,7 @@
 			const normalize = (str: string) => str.normalize().toLowerCase();
 			const normalizedInput = normalize(inputValue);
 			return (
-				!inputValue ||
+				normalizedInput === '' ||
 				normalize(item.title).includes(normalizedInput) ||
 				normalize(item.author).includes(normalizedInput)
 			);
