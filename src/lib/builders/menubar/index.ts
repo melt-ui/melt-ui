@@ -1,5 +1,5 @@
 import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, type Writable } from 'svelte/store';
 import {
 	SELECTION_KEYS,
 	applyAttrsIfDisabled,
@@ -21,6 +21,7 @@ import {
 	generateId,
 	isBrowser,
 	sleep,
+	hiddenAction,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions';
@@ -43,15 +44,17 @@ const defaults = {
 } satisfies Defaults<MenubarArgs>;
 
 export function createMenubar() {
-	const menubarActive = writable<string>('');
+	const activeMenu = writable<string>('');
 
-	const menubarId = generateId();
+	const menubarIds = {
+		menubar: generateId(),
+	};
 
-	const menubar = {
+	const menubar = hiddenAction({
 		role: 'menubar',
 		'data-melt-part': 'menubar',
 		'data-orientation': 'horizontal',
-		id: menubarId,
+		id: menubarIds.menubar,
 		action: (node: HTMLElement) => {
 			const menuTriggers = node.querySelectorAll(
 				"[role='menuitem'][data-melt-part='trigger']"
@@ -70,7 +73,7 @@ export function createMenubar() {
 				destroy: noop,
 			};
 		},
-	};
+	});
 
 	const createMenu = (args?: MenubarArgs) => {
 		const withDefaults = { ...defaults, ...args } as MenubarArgs;
@@ -82,7 +85,7 @@ export function createMenubar() {
 			rootOptions,
 			rootOpen,
 			rootActiveTrigger,
-            disableTriggerRefocus: true,
+			disableTriggerRefocus: true,
 		});
 
 		const menu = {
@@ -98,6 +101,7 @@ export function createMenubar() {
 					'data-melt-part': 'menu',
 					'data-melt-menu': '',
 					'data-state': $rootOpen ? 'open' : 'closed',
+					'data-melt-scope': menubarIds.menubar,
 					tabindex: -1,
 				} as const;
 			}),
@@ -143,6 +147,10 @@ export function createMenubar() {
 						if (!isKeyDownInside) return;
 						if (FIRST_LAST_KEYS.includes(e.key)) {
 							handleMenuNavigation(e);
+						}
+
+						if (e.key === kbd.ARROW_LEFT || e.key === kbd.ARROW_RIGHT) {
+							handleCrossMenuNavigation(e, activeMenu, menubarIds.menubar);
 						}
 
 						/**
@@ -201,10 +209,10 @@ export function createMenubar() {
 							const isOpen = !prev;
 							if (isOpen) {
 								rootActiveTrigger.set(triggerElement);
-								menubarActive.set(m.rootIds.menu);
+								activeMenu.set(m.rootIds.menu);
 							} else {
 								rootActiveTrigger.set(null);
-								menubarActive.set('');
+								activeMenu.set('');
 							}
 
 							return isOpen;
@@ -228,10 +236,10 @@ export function createMenubar() {
 								const isOpen = !prev;
 								if (isOpen) {
 									rootActiveTrigger.set(triggerElement);
-									menubarActive.set(m.rootIds.menu);
+									activeMenu.set(m.rootIds.menu);
 								} else {
 									rootActiveTrigger.set(null);
-									menubarActive.set('');
+									activeMenu.set('');
 								}
 
 								return isOpen;
@@ -258,11 +266,11 @@ export function createMenubar() {
 						const triggerElement = e.currentTarget;
 						if (!isHTMLElement(triggerElement)) return;
 
-						const $menubarActive = get(menubarActive);
+						const $activeMenu = get(activeMenu);
 						const $rootOpen = get(rootOpen);
-						if ($menubarActive && !$rootOpen) {
+						if ($activeMenu && !$rootOpen) {
 							rootOpen.set(true);
-							menubarActive.set(m.rootIds.menu);
+							activeMenu.set(m.rootIds.menu);
 							rootActiveTrigger.set(triggerElement);
 						}
 					})
@@ -274,16 +282,16 @@ export function createMenubar() {
 			},
 		};
 
-		effect([menubarActive], ([$menubarActive]) => {
-			if ($menubarActive !== m.rootIds.menu && get(rootOpen)) {
+		effect([activeMenu], ([$activeMenu]) => {
+			if ($activeMenu !== m.rootIds.menu && get(rootOpen)) {
 				rootOpen.set(false);
 				rootActiveTrigger.set(null);
 			}
-		});
 
-		effect([rootOpen], ([$rootOpen]) => {
-			if (!$rootOpen && get(menubarActive) === m.rootIds.menu) {
-				menubarActive.set('');
+			if ($activeMenu === m.rootIds.menu && !get(rootOpen)) {
+				const triggerElement = document.getElementById(m.rootIds.trigger);
+				rootActiveTrigger.set(triggerElement);
+				rootOpen.set(true);
 			}
 		});
 
@@ -302,7 +310,7 @@ export function createMenubar() {
 	onMount(() => {
 		if (!isBrowser) return;
 
-		const menubarElement = document.getElementById(menubarId);
+		const menubarElement = document.getElementById(menubar.id);
 		if (!isHTMLElement(menubarElement)) return;
 
 		const unsubEvents = executeCallbacks(
@@ -351,141 +359,193 @@ export function createMenubar() {
 		};
 	});
 
+	/**
+	 * Keyboard event handler for menu navigation
+	 * @param e The keyboard event
+	 */
+	function handleCrossMenuNavigation(
+		e: KeyboardEvent,
+		activeMenu: Writable<string>,
+		menubarId: string
+	) {
+		if (!isBrowser) return;
+		e.preventDefault();
+
+		// menu element being navigated
+		const currentTarget = e.currentTarget;
+		if (!isHTMLElement(currentTarget)) return;
+
+		const menubar = document.getElementById(menubarId);
+		if (!isHTMLElement(menubar)) return;
+
+		// menus scoped to the menubar
+		const childMenus = getChildMenus(menubarId) as HTMLElement[];
+		if (!childMenus.length) return;
+
+		// Index of the currently focused item in the candidate nodes array
+		const currentIndex = childMenus.indexOf(currentTarget);
+		// Calculate the index of the next menu item
+		let nextIndex: number;
+		switch (e.key) {
+			case kbd.ARROW_RIGHT:
+				nextIndex = currentIndex < childMenus.length - 1 ? currentIndex + 1 : 0;
+				break;
+			case kbd.ARROW_LEFT:
+				nextIndex = currentIndex > 0 ? currentIndex - 1 : childMenus.length - 1;
+				break;
+			default:
+				return;
+		}
+
+		const nextFocusedItem = childMenus[nextIndex];
+		activeMenu.set(nextFocusedItem.id);
+	}
+
+	function getFocusableElements(container: HTMLElement = document.body): HTMLElement[] {
+		const focusableElements = Array.from(
+			container.querySelectorAll<HTMLElement>(
+				'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])'
+			)
+		);
+
+		const focusableElementsWithoutTabindex = focusableElements.filter((element) => {
+			const tabindex = element.getAttribute('tabindex');
+			return tabindex !== '-1';
+		});
+
+		return focusableElementsWithoutTabindex;
+	}
+
+	function getChildMenus(menubarId: string): HTMLElement[] {
+		const childMenus = Array.from(
+			document.querySelectorAll<HTMLElement>(
+				`[data-melt-scope="${menubarId}"][data-melt-part="menu"]`
+			)
+		);
+		console.log(childMenus);
+		return childMenus;
+	}
+
+	function getMenuTriggers(element: HTMLElement) {
+		const menuElement = element.closest('[role="menubar"]');
+		if (!isHTMLElement(menuElement)) return [];
+		return Array.from(menuElement.querySelectorAll('[data-melt-part="trigger"]'));
+	}
+
+	/**
+	 * Keyboard event handler for menubar navigation.
+	 * @param e The keyboard event
+	 */
+	function handleMenubarNavigation(e: KeyboardEvent) {
+		e.preventDefault();
+
+		// currently focused menu item
+		const currentFocusedItem = document.activeElement;
+		if (!isHTMLElement(currentFocusedItem)) return;
+
+		// menu element being navigated
+		const currentTarget = e.currentTarget;
+		if (!isHTMLElement(currentTarget)) return;
+
+		// menu items of the current menu
+		const menuTriggers = getMenuTriggers(currentTarget);
+		if (!menuTriggers.length) return;
+
+		const candidateNodes = menuTriggers.filter((item) => {
+			if (item.hasAttribute('data-disabled')) {
+				return false;
+			}
+			if (item.getAttribute('disabled') === 'true') {
+				return false;
+			}
+			return true;
+		}) as HTMLElement[];
+
+		// Index of the currently focused item in the candidate nodes array
+		const currentIndex = candidateNodes.indexOf(currentFocusedItem);
+
+		// Calculate the index of the next menu item
+		let nextIndex: number;
+		switch (e.key) {
+			case kbd.ARROW_RIGHT:
+				nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : currentIndex;
+				break;
+			case kbd.ARROW_LEFT:
+				nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
+				break;
+			case kbd.HOME:
+				nextIndex = 0;
+				break;
+			case kbd.END:
+				nextIndex = candidateNodes.length - 1;
+				break;
+			default:
+				return;
+		}
+
+		const nextFocusedItem = candidateNodes[nextIndex];
+
+		handleRovingFocus(nextFocusedItem);
+	}
+
+	/**
+	 * Keyboard event handler for menu navigation
+	 * @param e The keyboard event
+	 */
+	function handleMenuNavigation(e: KeyboardEvent) {
+		e.preventDefault();
+
+		// currently focused menu item
+		const currentFocusedItem = document.activeElement;
+		if (!isHTMLElement(currentFocusedItem)) return;
+
+		// menu element being navigated
+		const currentTarget = e.currentTarget;
+		if (!isHTMLElement(currentTarget)) return;
+
+		// menu items of the current menu
+		const menuItems = getMenuItems(currentTarget);
+		if (!menuItems.length) return;
+
+		const candidateNodes = menuItems.filter((item) => {
+			if (item.hasAttribute('data-disabled')) {
+				return false;
+			}
+			if (item.getAttribute('disabled') === 'true') {
+				return false;
+			}
+			return true;
+		});
+
+		// Index of the currently focused item in the candidate nodes array
+		const currentIndex = candidateNodes.indexOf(currentFocusedItem);
+
+		// Calculate the index of the next menu item
+		let nextIndex: number;
+		switch (e.key) {
+			case kbd.ARROW_DOWN:
+				nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : currentIndex;
+				break;
+			case kbd.ARROW_UP:
+				nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
+				break;
+			case kbd.HOME:
+				nextIndex = 0;
+				break;
+			case kbd.END:
+				nextIndex = candidateNodes.length - 1;
+				break;
+			default:
+				return;
+		}
+
+		const nextFocusedItem = candidateNodes[nextIndex];
+
+		handleRovingFocus(nextFocusedItem);
+	}
+
 	return {
 		menubar,
 		createMenu,
 	};
-}
-
-function getMenuTriggers(element: HTMLElement) {
-	const menuElement = element.closest('[role="menubar"]');
-	if (!isHTMLElement(menuElement)) return [];
-	return Array.from(menuElement.querySelectorAll('[data-melt-part="trigger"]'));
-}
-
-/**
- * Keyboard event handler for menubar navigation.
- * @param e The keyboard event
- */
-export function handleMenubarNavigation(e: KeyboardEvent) {
-	e.preventDefault();
-
-	// currently focused menu item
-	const currentFocusedItem = document.activeElement;
-	if (!isHTMLElement(currentFocusedItem)) return;
-
-	// menu element being navigated
-	const currentTarget = e.currentTarget;
-	if (!isHTMLElement(currentTarget)) return;
-
-	// menu items of the current menu
-	const menuTriggers = getMenuTriggers(currentTarget);
-	if (!menuTriggers.length) return;
-
-	const candidateNodes = menuTriggers.filter((item) => {
-		if (item.hasAttribute('data-disabled')) {
-			return false;
-		}
-		if (item.getAttribute('disabled') === 'true') {
-			return false;
-		}
-		return true;
-	}) as HTMLElement[];
-
-	// Index of the currently focused item in the candidate nodes array
-	const currentIndex = candidateNodes.indexOf(currentFocusedItem);
-
-	// Calculate the index of the next menu item
-	let nextIndex: number;
-	switch (e.key) {
-		case kbd.ARROW_RIGHT:
-			nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : currentIndex;
-			break;
-		case kbd.ARROW_LEFT:
-			nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
-			break;
-		case kbd.HOME:
-			nextIndex = 0;
-			break;
-		case kbd.END:
-			nextIndex = candidateNodes.length - 1;
-			break;
-		default:
-			return;
-	}
-
-	const nextFocusedItem = candidateNodes[nextIndex];
-
-	handleRovingFocus(nextFocusedItem);
-}
-
-/**
- * Keyboard event handler for menu navigation
- * @param e The keyboard event
- */
-export function handleMenuNavigation(e: KeyboardEvent) {
-	e.preventDefault();
-
-	// currently focused menu item
-	const currentFocusedItem = document.activeElement;
-	if (!isHTMLElement(currentFocusedItem)) return;
-
-	// menu element being navigated
-	const currentTarget = e.currentTarget;
-	if (!isHTMLElement(currentTarget)) return;
-
-	// menu items of the current menu
-	const menuItems = getMenuItems(currentTarget);
-	if (!menuItems.length) return;
-
-	const candidateNodes = menuItems.filter((item) => {
-		if (item.hasAttribute('data-disabled')) {
-			return false;
-		}
-		if (item.getAttribute('disabled') === 'true') {
-			return false;
-		}
-		return true;
-	});
-
-	// Index of the currently focused item in the candidate nodes array
-	const currentIndex = candidateNodes.indexOf(currentFocusedItem);
-
-	// Calculate the index of the next menu item
-	let nextIndex: number;
-	switch (e.key) {
-		case kbd.ARROW_DOWN:
-			nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : currentIndex;
-			break;
-		case kbd.ARROW_UP:
-			nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
-			break;
-		case kbd.HOME:
-			nextIndex = 0;
-			break;
-		case kbd.END:
-			nextIndex = candidateNodes.length - 1;
-			break;
-		default:
-			return;
-	}
-
-	const nextFocusedItem = candidateNodes[nextIndex];
-
-	handleRovingFocus(nextFocusedItem);
-}
-
-function getFocusableElements(container: HTMLElement = document.body): HTMLElement[] {
-	const focusableElements = Array.from(
-		container.querySelectorAll<HTMLElement>(
-			'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])'
-		)
-	);
-
-	const focusableElementsWithoutTabindex = focusableElements.filter((element) => {
-		const tabindex = element.getAttribute('tabindex');
-		return tabindex !== '-1';
-	});
-
-	return focusableElementsWithoutTabindex;
 }
