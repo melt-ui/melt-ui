@@ -4,9 +4,6 @@
 
 	const { root, input, tags, tag, deleteTrigger } = createTagsInput({
 		tags: ['one', 'two'],
-		unique: true,
-		blur: 'add',
-		addOnPaste: true,
 	});
 </script>
 

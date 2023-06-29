@@ -38,6 +38,16 @@ const builder: APISchema = {
 			type: 'boolean',
 			default: false,
 		},
+		{
+			label: 'allowedTags',
+			type: 'string[]',
+			default: '[]',
+		},
+		{
+			label: 'deniedTags',
+			type: 'string[]',
+			default: '[]',
+		},
 	],
 };
 

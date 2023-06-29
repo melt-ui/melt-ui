@@ -13,6 +13,7 @@
 		'On blur do nothing, add tag or clear input',
 		'Only allow unique tags',
 		'Allow adding a tag on paste',
+		'Support for allowed/denied list',
 	];
 </script>
 
@@ -85,6 +86,13 @@
 		<Docs.Li>
 			<Docs.Code>addOnPaste</Docs.Code> - Add tag on paste <i>(default: false)</i>
 		</Docs.Li>
+		<Docs.Li>
+			<Docs.Code>allowedTags</Docs.Code> - String array of allowed tags <i>(default: [])</i>
+		</Docs.Li>
+		<Docs.Li>
+			<Docs.Code>deniedTags</Docs.Code> - String array of denied tags. Takes precedence over
+			<Docs.Code>allowedTags</Docs.Code>. <i>(default: [])</i>
+		</Docs.Li>
 	</Docs.Ul>
 </Docs.P>
 
@@ -133,6 +141,13 @@
 
 	<Docs.P class="mt-4">
 		<Docs.Code>data-focus</Docs.Code> is set when any element within <i>root</i> has focus.
+	</Docs.P>
+
+	<Docs.P class="mt-4">
+		<Docs.Code>data-invalid</Docs.Code> is set following the attempted add of a tag if the tag is deemed
+		invalid. This may be the case if, for example, <Docs.Code>$options.unique</Docs.Code> is enabled
+		and the tag has been previously added, or if
+		<Docs.Code>$options.allowedTags</Docs.Code> is defined and the tag does not appear in the list.
 	</Docs.P>
 
 	<Docs.P class="mt-4">
@@ -248,6 +263,13 @@
 
 	<Docs.P class="mt-4">
 		<Docs.Code>data-focus</Docs.Code> is set when this element has focus.
+	</Docs.P>
+
+	<Docs.P class="mt-4">
+		<Docs.Code>data-invalid</Docs.Code> is set following the attempted add of a tag if the tag is deemed
+		invalid. This may be the case if, for example, <Docs.Code>$options.unique</Docs.Code> is enabled
+		and the tag has been previously added, or if
+		<Docs.Code>$options.allowedTags</Docs.Code> is defined and the tag does not appear in the list.
 	</Docs.P>
 
 	<Docs.P class="mt-4">

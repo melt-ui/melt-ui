@@ -34,6 +34,10 @@ export type CreateTagsInputArgs = {
 	blur?: 'nothing' | 'add' | 'clear';
 	// What to do on paste
 	addOnPaste?: boolean;
+	// Allowed tags
+	allowedTags?: string[];
+	// Denied tags
+	deniedTags?: string[];
 };
 
 const defaults = {
@@ -43,6 +47,8 @@ const defaults = {
 	unique: false,
 	blur: 'nothing',
 	addOnPaste: false,
+	allowedTags: [],
+	deniedTags: [],
 } satisfies Defaults<CreateTagsInputArgs>;
 
 const dataMeltParts = {
@@ -85,6 +91,28 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 
 		// Already return true when $options.unique === false
 		return true;
+	};
+
+	// Returns true if a tag is in $options.allowedTags. If $options.allowedTags is empty
+	// return true
+	const isTagAllowed = (t: string) => {
+		const $options = get(options);
+
+		// When empty, it is allowed
+		if ($options.allowedTags?.length === 0) return true;
+
+		return $options.allowedTags?.includes(t);
+	};
+
+	// Returns true if a tag is in $options.deniedTags. If $options.deniedTags is empty
+	// return false
+	const isTagDenied = (t: string) => {
+		const $options = get(options);
+
+		// When empty, it is not denied
+		if ($options.deniedTags?.length === 0) return false;
+
+		return $options.deniedTags?.includes(t);
 	};
 
 	// Selected tag store. When `null`, no tag is selected
@@ -205,7 +233,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					const $options = get(options);
 					if (!$options.addOnPaste) return;
 
-					if (isTagUnique(pastedText)) {
+					if (isTagUnique(pastedText) && isTagAllowed(pastedText) && !isTagDenied(pastedText)) {
 						// Prevent default as we are going to add a new tag
 						e.preventDefault();
 						tags.update((currentTags) => [...currentTags, { id: generateId(), value: pastedText }]);
@@ -322,7 +350,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							const value = node.value;
 							if (!value) return;
 
-							if (isTagUnique(value)) {
+							if (isTagUnique(value) && isTagAllowed(value) && !isTagDenied(value)) {
 								// Prevent default as we are going to add a new tag
 								tags.update((currentTags) => [...currentTags, { id: generateId(), value: value }]);
 								node.value = '';
