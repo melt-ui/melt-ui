@@ -6,6 +6,7 @@ export * from './context-menu';
 export * from './dialog';
 export * from './dropdown-menu';
 export * from './label';
+export * from './menubar';
 export * from './pagination';
 export * from './popover';
 export * from './progress';
