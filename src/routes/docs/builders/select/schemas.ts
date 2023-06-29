@@ -31,6 +31,11 @@ const builder: APISchema = {
 			type: 'boolean',
 			default: true,
 		},
+		{
+			label: 'loop',
+			type: 'boolean',
+			default: false,
+		},
 	],
 };
 

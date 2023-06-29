@@ -25,16 +25,6 @@ const SELECTION_KEYS = [kbd.ENTER, kbd.SPACE];
 const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
 const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
 const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
-/**
- * Features:
- * - [X] Click outside
- * - [X] Keyboard navigation
- * - [X] Focus management
- * - [ ] Detect overflow
- * - [ ] Same width as trigger
- * - [ ] A11y
- * - [X] Floating UI
- **/
 
 export type CreateSelectArgs = {
 	positioning?: FloatingConfig;
@@ -45,6 +35,7 @@ export type CreateSelectArgs = {
 	label?: string;
 	name?: string;
 	preventScroll?: boolean;
+	loop?: boolean;
 };
 
 const defaults = {
@@ -56,6 +47,7 @@ const defaults = {
 		sameWidth: true,
 	},
 	preventScroll: true,
+	loop: false,
 } satisfies Defaults<CreateSelectArgs>;
 
 export type OptionArgs = {
@@ -557,10 +549,10 @@ export function createSelect(args?: CreateSelectArgs) {
 		if (!isHTMLElement(currentTarget)) return;
 
 		// menu items of the current menu
-		const options = getOptions(currentTarget);
-		if (!options.length) return;
+		const items = getOptions(currentTarget);
+		if (!items.length) return;
 
-		const candidateNodes = options.filter((opt) => {
+		const candidateNodes = items.filter((opt) => {
 			if (opt.hasAttribute('data-disabled')) {
 				return false;
 			}
@@ -575,12 +567,16 @@ export function createSelect(args?: CreateSelectArgs) {
 
 		// Calculate the index of the next menu item
 		let nextIndex: number;
+		const $options = get(options);
+		const loop = $options.loop;
+
 		switch (e.key) {
 			case kbd.ARROW_DOWN:
-				nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : currentIndex;
+				nextIndex =
+					currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : loop ? 0 : currentIndex;
 				break;
 			case kbd.ARROW_UP:
-				nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
+				nextIndex = currentIndex > 0 ? currentIndex - 1 : loop ? candidateNodes.length - 1 : 0;
 				break;
 			case kbd.HOME:
 				nextIndex = 0;
@@ -591,10 +587,7 @@ export function createSelect(args?: CreateSelectArgs) {
 			default:
 				return;
 		}
-
-		const nextFocusedItem = candidateNodes[nextIndex];
-
-		handleRovingFocus(nextFocusedItem);
+		handleRovingFocus(candidateNodes[nextIndex]);
 	}
 
 	return {
