@@ -5,6 +5,7 @@ import {
 	kbd,
 	type Callback,
 	noop,
+	isHTMLElement,
 } from '$lib/internal/helpers';
 import type { Action } from 'svelte/action';
 import type { PopperArgs, PopperConfig } from './popper.types';
@@ -57,7 +58,7 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 				handler: (e: PointerEvent) => {
 					if (e.defaultPrevented) return;
 
-					if (!anchorElement?.contains(e.target as Element)) {
+					if (isHTMLElement(anchorElement) && !anchorElement.contains(e.target as Element)) {
 						open.set(false);
 						anchorElement.focus();
 					}
