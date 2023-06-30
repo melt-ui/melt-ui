@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createTagsInput } from '$lib';
+	import { createTagsInput } from '@melt-ui/svelte';
 
 	const { root, input, tags, tag, deleteTrigger } = createTagsInput({
 		add: async (v: string) => {
