@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
-	import Deconstruction from './(sections)/Deconstruction.svelte';
+	import Deconstruction from './(sections)/Description.svelte';
 	import { Section } from './(sections)/index.js';
 	import { snippets } from './(snippets)/index.js';
 	import { schemas } from './schemas.js';
@@ -15,6 +15,7 @@
 		'On blur do nothing, add tag or clear input',
 		'Only allow unique tags',
 		'Allow adding a tag on paste',
+		'Set a maximum number of tags',
 		'Support for allowed list and denied list',
 		'Pass in a custom validator',
 	];
@@ -44,7 +45,7 @@
 </Docs.P>
 <Docs.CodeBlock code={snippets.usage2} />
 
-<Section.Deconstruction />
+<Section.Description />
 
 <Docs.H2>API Reference</Docs.H2>
 <Docs.API schema={schemas.builder} />

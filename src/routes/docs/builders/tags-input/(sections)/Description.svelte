@@ -2,7 +2,7 @@
 	import { Docs } from '$routes/(components)';
 </script>
 
-<Docs.H2>Builder Deconstruction</Docs.H2>
+<Docs.H2>Builder Description</Docs.H2>
 
 <Docs.P class="mt-4">
 	The following is an in-depth description of the return values from
@@ -53,6 +53,13 @@
 			<Docs.Code>addOnPaste</Docs.Code> - Add tag on paste
 			<Docs.Ul class="mt-1.5 mb-1.5">
 				<Docs.Li class="mt-0"><i>default:</i> false</Docs.Li>
+			</Docs.Ul>
+		</Docs.Li>
+		<Docs.Li>
+			<Docs.Code>maxTags</Docs.Code> - Maximum number of tags. <Docs.Code>undefined</Docs.Code> ||
+			<Docs.Code>&lt= 0</Docs.Code> means unlimited tags
+			<Docs.Ul class="mt-1.5 mb-1.5">
+				<Docs.Li class="mt-0"><i>default:</i> -</Docs.Li>
 			</Docs.Ul>
 		</Docs.Li>
 		<Docs.Li>

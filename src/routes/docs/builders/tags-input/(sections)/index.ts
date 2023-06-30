@@ -1,7 +1,7 @@
 import Anatomy from './Anatomy.svelte';
-import Deconstruction from './Deconstruction.svelte';
+import Description from './Description.svelte';
 
 export const Section = {
 	Anatomy,
-	Deconstruction,
+	Description,
 };

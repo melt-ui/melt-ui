@@ -34,7 +34,9 @@ export type CreateTagsInputArgs = {
 	blur?: 'nothing' | 'add' | 'clear';
 	// What to do on paste
 	addOnPaste?: boolean;
-	// Allowed tags
+	// Maximum number of tags
+	maxTags?: number;
+	// Allowed tags (undefined || 0 or lower === no max)
 	allowedTags?: string[];
 	// Denied tags
 	deniedTags?: string[];
@@ -126,6 +128,16 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		if ($options.validator === undefined) return true;
 
 		return $options.validator(v);
+	};
+
+	// Returns the result of $options.validator(). If undefined, return true
+	const isMaxTags = () => {
+		const $options = get(options);
+		const $tags = get(tags);
+
+		if ($options.maxTags === undefined || $options.maxTags <= 0) return false;
+
+		return $tags.length == $options.maxTags;
 	};
 
 	// Selected tag store. When `null`, no tag is selected
@@ -253,6 +265,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 						isTagUnique(pastedText) &&
 						isTagAllowed(pastedText) &&
 						!isTagDenied(pastedText) &&
+						!isMaxTags() &&
 						validator(pastedText)
 					) {
 						// Prevent default as we are going to add a new tag
@@ -377,6 +390,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 								isTagUnique(value) &&
 								isTagAllowed(value) &&
 								!isTagDenied(value) &&
+								!isMaxTags() &&
 								validator(value)
 							) {
 								// Prevent default as we are going to add a new tag

@@ -39,6 +39,10 @@ const builder: APISchema = {
 			default: false,
 		},
 		{
+			label: 'maxTags',
+			type: 'number',
+		},
+		{
 			label: 'allowedTags',
 			type: 'string[]',
 			default: '[]',
