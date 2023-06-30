@@ -307,6 +307,12 @@ export function createMenubar() {
 			}
 		});
 
+		effect([rootOpen], ([$rootOpen]) => {
+			if (!$rootOpen && get(activeMenu) === m.rootIds.menu) {
+				activeMenu.set('');
+			}
+		});
+
 		return {
 			menu,
 			trigger,
@@ -362,6 +368,11 @@ export function createMenubar() {
 					const nextIndex = currentIndex < focusableElements.length - 1 ? currentIndex + 1 : 0;
 					const nextElement = focusableElements[nextIndex];
 					nextElement.focus();
+				}
+			}),
+			addEventListener(document, 'keydown', (e) => {
+				if (e.key === kbd.ESCAPE) {
+					activeMenu.set('');
 				}
 			})
 		);
