@@ -90,6 +90,7 @@ export function createMenubar() {
 			rootOpen,
 			rootActiveTrigger,
 			disableTriggerRefocus: true,
+			disableFocusFirstItem: true,
 		});
 
 		const menu = {

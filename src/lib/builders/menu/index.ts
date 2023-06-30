@@ -110,6 +110,7 @@ export type MenuBuilderOptions = {
 	rootActiveTrigger: Writable<HTMLElement | null>;
 	rootOptions: Writable<CreateMenuArgs>;
 	disableTriggerRefocus?: boolean;
+	disableFocusFirstItem?: boolean;
 };
 
 export function createMenuBuilder(opts: MenuBuilderOptions) {
@@ -1029,6 +1030,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		sleep(1).then(() => {
 			const menuElement = document.getElementById(rootIds.menu);
 			if (isHTMLElement(menuElement) && $rootOpen && get(isUsingKeyboard)) {
+				if (opts.disableFocusFirstItem) {
+					handleRovingFocus(menuElement);
+					return;
+				}
 				// Get menu items belonging to the root menu
 				const menuItems = getMenuItems(menuElement);
 
