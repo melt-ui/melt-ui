@@ -91,6 +91,7 @@ export function createMenubar(args?: CreateMenubar) {
 		positioning: {
 			placement: 'bottom-start',
 		},
+		preventScroll: true,
 	} satisfies Defaults<CreateMenu>;
 
 	const createMenu = (args?: CreateMenu) => {

@@ -110,6 +110,7 @@ const defaults = {
 	positioning: {
 		placement: 'bottom',
 	},
+	preventScroll: true,
 } satisfies Defaults<CreateMenuArgs>;
 
 export type MenuBuilderOptions = {
