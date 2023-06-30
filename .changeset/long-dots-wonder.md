@@ -1,7 +1,5 @@
 ---
-"@melt-ui/svelte": minor
+"@melt-ui/svelte": patch
 ---
 
 [Toggle Group]: Fix tab behavior
-
-Breaking change: `action` property added to toggle group `root`
