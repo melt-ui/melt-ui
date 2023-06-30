@@ -50,17 +50,21 @@ export function setSelectedTagFromElement(el: Element | null, selectedTag: Writa
 	}
 }
 
-export function setDataInvalid(rootId: string, inputId: string) {
+export function setInvalid(rootId: string, inputId: string, inputStore: Writable<boolean>) {
 	const rootEl = getElementByMeltId(rootId);
 	const inputEl = getElementByMeltId(inputId);
 
 	if (rootEl) rootEl.setAttribute('data-invalid', '');
 	if (inputEl) inputEl.setAttribute('data-invalid', '');
+
+	inputStore.set(true);
 }
 
-export function clearDataInvalid(rootId: string, inputId: string) {
+export function clearInvalid(rootId: string, inputId: string, inputStore: Writable<boolean>) {
 	const rootEl = getElementByMeltId(rootId);
 	const inputEl = getElementByMeltId(inputId);
 	if (rootEl) rootEl.removeAttribute('data-invalid');
 	if (inputEl) inputEl.removeAttribute('data-invalid');
+
+	inputStore.set(false);
 }

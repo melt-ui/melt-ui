@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
+	import Kbd from '$routes/(components)/kbd.svelte';
 </script>
 
 <Docs.H2>Builder Description</Docs.H2>
@@ -37,7 +38,7 @@
 			</Docs.Ul>
 		</Docs.Li>
 		<Docs.Li>
-			<Docs.Code>blur</Docs.Code>: What to do on blur when the input component has a value
+			<Docs.Code>blur</Docs.Code>: What to do on blur (if the input component has a value)
 			<Docs.Ul class="mt-1.5 mb-1.5">
 				<Docs.Li class="mt-0"><i>default:</i> 'nothing'</Docs.Li>
 				<Docs.Li class="mt-0"><i>allowed:</i> 'nothing' || 'add' || 'clear'</Docs.Li>
@@ -118,6 +119,33 @@
 	<Docs.P class="mt-4">
 		A <Docs.Code>Tag</Docs.Code> consists of an <Docs.Code>id</Docs.Code> and
 		<Docs.Code>Value</Docs.Code>.
+	</Docs.P>
+</Docs.P>
+
+<Docs.H3>invalid</Docs.H3>
+<Docs.P class="mt-4">
+	<Docs.Code>invalid</Docs.Code> is a readable store. It's value will be <Docs.Code>true</Docs.Code>
+	when a tag to add is invalid. Monitoring this store will enable additional action, such as rendering
+	a tooltip.
+
+	<Docs.P class="mt-4">
+		This store is an addendum to the <Docs.Code>data-invalid</Docs.Code> attribute.
+	</Docs.P>
+
+	<Docs.P class="mt-4">
+		The validity of a tag is checked on <Docs.Kbd>Enter</Docs.Kbd>. An invalid stated is cleared
+		when the input changes.
+	</Docs.P>
+
+	<Docs.P class="mt-4">
+		The validity check include, but is not limited to, whether a tag is unique, if a tag exists in
+		the allowed listed, or denied listed, whether the maximum number of tags allowed has been
+		reached.
+	</Docs.P>
+
+	<Docs.P class="mt-4">
+		In addition, a custom <Docs.Code>validator</Docs.Code> function can be used, opening the door to
+		custom validation, for example a regex check.
 	</Docs.P>
 </Docs.P>
 

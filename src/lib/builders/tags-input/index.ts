@@ -1,5 +1,6 @@
 import {
 	addEventListener,
+	effect,
 	executeCallbacks,
 	generateId,
 	getElementByMeltId,
@@ -9,11 +10,11 @@ import {
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import {
-	clearDataInvalid,
+	setInvalid,
 	deleteTagById,
 	focusInput,
 	getTagElements,
-	setDataInvalid,
+	clearInvalid,
 	setSelectedTagFromElement,
 	type Tag,
 	type TagArgs,
@@ -68,7 +69,11 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 	// Options store
 	const options = writable(omit(withDefaults, 'tags', 'selectedTag'));
 
+	// A store representing the current input value. A readable version is exposed to the
+	// user
 	const inputValue = writable('');
+
+	const invalid = writable(false);
 
 	// Tags store of type Tag[]
 	//
@@ -84,65 +89,42 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 			: [] // if undefined
 	);
 
-	// Returns true if a tag is unique and false if $options.unique is true and the tag
-	// already exists
-	const isTagUnique = (v: string) => {
+	// Runs several validation checks. When a validation fails, it returns false
+	// immediately
+	const isInputValid = (v: string) => {
 		const $options = get(options);
 		const $tags = get(tags);
 
+		// Tag uniqueness
 		if ($options.unique) {
 			const index = $tags.findIndex((tag) => tag.value === v);
-			return index === -1;
+			if (index >= 0) return false;
 		}
 
-		// Already return true when $options.unique === false
+		// Allowed list is populated and this value is not in it
+		if (
+			$options.allowedTags &&
+			$options.allowedTags.length > 0 &&
+			!$options.allowedTags.includes(v)
+		)
+			return false;
+
+		// Deny list is populated and this value is in it
+		if ($options.deniedTags && $options.deniedTags.length > 0 && $options.deniedTags.includes(v))
+			return false;
+
+		// Validator is defined and returned false
+		if ($options.validator && !$options.validator(v)) return false;
+
+		if ($options.maxTags && $options.maxTags > 0 && $tags.length >= $options.maxTags) return false;
+
 		return true;
-	};
-
-	// Returns true if a tag is in $options.allowedTags. If $options.allowedTags is empty
-	// return true
-	const isTagAllowed = (v: string) => {
-		const $options = get(options);
-
-		// When empty, it is allowed
-		if ($options.allowedTags?.length === 0) return true;
-
-		return $options.allowedTags?.includes(v);
-	};
-
-	// Returns true if a tag is in $options.deniedTags. If $options.deniedTags is empty
-	// return false
-	const isTagDenied = (v: string) => {
-		const $options = get(options);
-
-		// When empty, it is not denied
-		if ($options.deniedTags?.length === 0) return false;
-
-		return $options.deniedTags?.includes(v);
-	};
-
-	// Returns the result of $options.validator(). If undefined, return true
-	const validator = (v: string) => {
-		const $options = get(options);
-
-		if ($options.validator === undefined) return true;
-
-		return $options.validator(v);
-	};
-
-	// Returns the result of $options.validator(). If undefined, return true
-	const isMaxTags = () => {
-		const $options = get(options);
-		const $tags = get(tags);
-
-		if ($options.maxTags === undefined || $options.maxTags <= 0) return false;
-
-		return $tags.length == $options.maxTags;
 	};
 
 	// Selected tag store. When `null`, no tag is selected
 	const selectedTag = writable<Tag | null>(withDefaults.selectedTag ?? null);
 
+	// UUID for specific containers
 	const ids = {
 		root: generateId(),
 		input: generateId(),
@@ -232,7 +214,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					if ($options.blur === 'clear') {
 						node.value = '';
 					} else if ($options.blur === 'add') {
-						if (isTagUnique(value)) {
+						if (isInputValid(value)) {
 							// Add new tag
 							tags.update((currentTags) => [
 								...currentTags,
@@ -240,8 +222,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							]);
 							node.value = '';
 						} else {
-							// Tag is not unique. Set data-invalid
-							setDataInvalid(ids.root, ids.input);
+							setInvalid(ids.root, ids.input, invalid);
 						}
 					}
 				}),
@@ -251,9 +232,6 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					const pastedText = e.clipboardData.getData('text');
 					if (!pastedText) return;
 
-					// Clear data-invalid
-					clearDataInvalid(ids.root, ids.input);
-
 					const $options = get(options);
 
 					if (!$options.addOnPaste) {
@@ -261,20 +239,13 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					}
 
 					// Update value with the pasted text
-					if (
-						isTagUnique(pastedText) &&
-						isTagAllowed(pastedText) &&
-						!isTagDenied(pastedText) &&
-						!isMaxTags() &&
-						validator(pastedText)
-					) {
+					if (isInputValid(pastedText)) {
 						// Prevent default as we are going to add a new tag
 						e.preventDefault();
 						tags.update((currentTags) => [...currentTags, { id: generateId(), value: pastedText }]);
 						node.value = '';
 					} else {
-						// Tag is not unique. Set data-invalid
-						setDataInvalid(ids.root, ids.input);
+						setInvalid(ids.root, ids.input, invalid);
 					}
 				}),
 				addEventListener(node, 'keydown', (e) => {
@@ -283,10 +254,6 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					if ($selectedTag) {
 						// Check if a character is entered into the input
 						if (e.key.length === 1) {
-							// Clear data-invalid
-							clearDataInvalid(ids.root, ids.input);
-
-							// A character is entered, set selectedTag to null
 							selectedTag.set(null);
 						} else if (e.key === kbd.ARROW_LEFT) {
 							// Move to the previous tag
@@ -375,32 +342,20 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							deleteTagById(prevSelectedId, tags);
 						}
 					} else {
-						if (e.key.length === 1) {
-							// Clear data-invalid
-							clearDataInvalid(ids.root, ids.input);
-						}
-
 						// ENTER
 						if (e.key === kbd.ENTER) {
 							e.preventDefault();
 							const value = node.value;
 							if (!value) return;
 
-							if (
-								isTagUnique(value) &&
-								isTagAllowed(value) &&
-								!isTagDenied(value) &&
-								!isMaxTags() &&
-								validator(value)
-							) {
+							if (isInputValid(value)) {
 								// Prevent default as we are going to add a new tag
 								tags.update((currentTags) => [...currentTags, { id: generateId(), value: value }]);
 
 								node.value = '';
 								inputValue.set('');
 							} else {
-								// Tag is not unique. Set data-invalid
-								setDataInvalid(ids.root, ids.input);
+								setInvalid(ids.root, ids.input, invalid);
 							}
 						} else if (
 							node.selectionStart === 0 &&
@@ -508,6 +463,11 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		return (tag: Tag) => $selectedTag?.id === tag.id;
 	});
 
+	// When the input valid changes, clear any potential invalid states
+	effect(inputValue, () => {
+		clearInvalid(ids.root, ids.input, invalid);
+	});
+
 	return {
 		root,
 		tag,
@@ -516,6 +476,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		options,
 		tags,
 		value: derived(inputValue, ($inputValue) => $inputValue),
+		invalid: derived(invalid, ($invalid) => $invalid),
 		selectedTag,
 		isSelected,
 	};
