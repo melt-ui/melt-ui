@@ -17,6 +17,8 @@ import {
 	createTypeaheadSearch,
 	handleRovingFocus,
 	removeScroll,
+	getNextFocusable,
+	getPreviousFocusable,
 } from '$lib/internal/helpers';
 import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
@@ -109,12 +111,25 @@ export type MenuBuilderOptions = {
 	rootOpen: Writable<boolean>;
 	rootActiveTrigger: Writable<HTMLElement | null>;
 	rootOptions: Writable<CreateMenuArgs>;
+	nextFocusable: Writable<HTMLElement | null>;
+	prevFocusable: Writable<HTMLElement | null>;
 };
 
 export function createMenuBuilder(opts: MenuBuilderOptions) {
 	const rootOptions = opts.rootOptions;
 	const rootOpen = opts.rootOpen;
 	const rootActiveTrigger = opts.rootActiveTrigger;
+	const nextFocusable = opts.nextFocusable;
+	const prevFocusable = opts.prevFocusable;
+
+	/**
+	 * Keeps track of the next/previous focusable element when the menu closes.
+	 * This is because we are portaling the menu to the body and we need
+	 * to be able to focus the next element in the DOM when the menu closes.
+	 *
+	 * Without keeping track of this, the focus would be reset to the top of
+	 * the page (or the first focusable element in the body).
+	 */
 
 	/**
 	 * Keeps track of if the user is using the keyboard to navigate the menu.
@@ -211,11 +226,14 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					}
 
 					/**
-					 * Menus should not be navigated using tab, so we prevent it.
+					 * Menus should not be navigated using tab
 					 * @see https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
 					 */
 					if (e.key === kbd.TAB) {
 						e.preventDefault();
+						rootActiveTrigger.set(null);
+						rootOpen.set(false);
+						handleTabNavigation(e, nextFocusable, prevFocusable);
 						return;
 					}
 
@@ -260,6 +278,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					rootOpen.update((prev) => {
 						const isOpen = !prev;
 						if (isOpen) {
+							nextFocusable.set(getNextFocusable(triggerElement));
+							prevFocusable.set(getPreviousFocusable(triggerElement));
 							rootActiveTrigger.set(triggerElement);
 						} else {
 							rootActiveTrigger.set(null);
@@ -285,6 +305,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						rootOpen.update((prev) => {
 							const isOpen = !prev;
 							if (isOpen) {
+								nextFocusable.set(getNextFocusable(triggerElement));
+								prevFocusable.set(getPreviousFocusable(triggerElement));
 								rootActiveTrigger.set(triggerElement);
 							} else {
 								rootActiveTrigger.set(null);
@@ -307,8 +329,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 						handleRovingFocus(nextFocusedElement);
 					}
-
-					e.preventDefault();
 				})
 			);
 
@@ -1037,11 +1057,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			} else if ($rootActiveTrigger) {
 				// Focus on active trigger trigger
 				handleRovingFocus($rootActiveTrigger);
-			} else {
-				const triggerElement = document.getElementById(rootIds.trigger);
-				if (isHTMLElement(triggerElement)) {
-					handleRovingFocus(triggerElement);
-				}
 			}
 		});
 
@@ -1201,6 +1216,28 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		rootIds,
 		handleTypeaheadSearch,
 	};
+}
+
+export function handleTabNavigation(
+	e: KeyboardEvent,
+	nextFocusable: Writable<HTMLElement | null>,
+	prevFocusable: Writable<HTMLElement | null>
+) {
+	if (e.shiftKey) {
+		const $prevFocusable = get(prevFocusable);
+		if ($prevFocusable) {
+			e.preventDefault();
+			$prevFocusable.focus();
+			prevFocusable.set(null);
+		}
+	} else {
+		const $nextFocusable = get(nextFocusable);
+		if ($nextFocusable) {
+			e.preventDefault();
+			$nextFocusable.focus();
+			nextFocusable.set(null);
+		}
+	}
 }
 
 /**
