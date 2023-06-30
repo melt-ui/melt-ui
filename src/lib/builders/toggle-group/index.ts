@@ -1,6 +1,7 @@
 import {
 	addEventListener,
 	executeCallbacks,
+	handleRovingFocus,
 	isHTMLElement,
 	kbd,
 	noop,
@@ -57,35 +58,13 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 		});
 	});
 
-	const root = {
-		...derived(options, ($options) => {
-			return {
-				role: 'group',
-				'data-orientation': $options.orientation,
-				'data-melt-toggle-group': '',
-			} as const;
-		}),
-		action: (node: HTMLElement) => {
-			const $value = get(value);
-			const anyPressed = Array.isArray($value) ? $value.length > 0 : $value !== null;
-			const items = node.querySelectorAll<HTMLElement>('[data-melt-toggle-group-item]');
-			items.forEach((item, idx) => {
-				if (!anyPressed) {
-					if (idx === 0) {
-						item.tabIndex = 0;
-						return;
-					} else {
-						item.tabIndex = -1;
-						return;
-					}
-				}
-				const itemValue = item.dataset.value;
-				const pressed =
-					Array.isArray($value) && itemValue ? $value.includes(itemValue) : $value === itemValue;
-				item.tabIndex = pressed ? 0 : -1;
-			});
-		},
-	};
+	const root = derived(options, ($options) => {
+		return {
+			role: 'group',
+			'data-orientation': $options.orientation,
+			'data-melt-toggle-group': '',
+		} as const;
+	});
 
 	type ToggleGroupItemArgs =
 		| {
@@ -111,7 +90,6 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 					type: 'button',
 					'data-melt-toggle-group-item': '',
 					role: $options.type === 'single' ? 'radio' : undefined,
-					tabindex: pressed ? 0 : -1,
 				} as const;
 			};
 		}),
@@ -124,6 +102,20 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 
 				return { value: itemValue, disabled };
 			};
+
+			const parentGroup = node.closest<HTMLElement>('[data-melt-toggle-group]');
+			if (!isHTMLElement(parentGroup)) return;
+
+			const items = Array.from(
+				parentGroup.querySelectorAll<HTMLElement>('[data-melt-toggle-group-item]')
+			);
+			const $value = get(value);
+			const anyPressed = Array.isArray($value) ? $value.length > 0 : $value !== null;
+			if (!anyPressed && items[0] === node) {
+				node.tabIndex = 0;
+			} else {
+				node.tabIndex = -1;
+			}
 
 			unsub = executeCallbacks(
 				addEventListener(node, 'click', () => {
@@ -170,27 +162,27 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 						const nextIndex = currentIndex + 1;
 						if (nextIndex >= items.length) {
 							if ($options.loop) {
-								items[0].focus();
+								handleRovingFocus(items[0]);
 							}
 						} else {
-							items[nextIndex].focus();
+							handleRovingFocus(items[nextIndex]);
 						}
 					} else if (e.key === prevKey) {
 						e.preventDefault();
 						const prevIndex = currentIndex - 1;
 						if (prevIndex < 0) {
 							if ($options.loop) {
-								items[items.length - 1].focus();
+								handleRovingFocus(items[items.length - 1]);
 							}
 						} else {
-							items[prevIndex].focus();
+							handleRovingFocus(items[prevIndex]);
 						}
 					} else if (e.key === kbd.HOME) {
 						e.preventDefault();
-						items[0].focus();
+						handleRovingFocus(items[0]);
 					} else if (e.key === kbd.END) {
 						e.preventDefault();
-						items[items.length - 1].focus();
+						handleRovingFocus(items[items.length - 1]);
 					}
 				})
 			);

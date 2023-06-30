@@ -9,7 +9,6 @@
 
 <div
 	{...$root}
-	use:root.action
 	class="flex items-center data-[orientation='vertical']:flex-col"
 	aria-label="Text alignment"
 >
