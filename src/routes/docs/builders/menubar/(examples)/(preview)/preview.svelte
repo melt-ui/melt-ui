@@ -41,9 +41,12 @@
 </script>
 
 <div class="flex rounded-md bg-white p-1 shadow-md" {...menubar} use:menubar.action>
+	<!------------>
+	<!--- FILE --->
+	<!------------>
 	<button
 		type="button"
-		class="flex items-center justify-between rounded-sm px-3 py-2 text-sm text-magnum-800"
+		class="trigger"
 		{...$trigger}
 		use:trigger.action
 		aria-label="Update dimensions"
@@ -90,11 +93,11 @@
 	</div>
 
 	<!------------>
-	<!-- EDIT -->
+	<!--- EDIT --->
 	<!------------>
 	<button
 		type="button"
-		class="flex items-center justify-between rounded-sm px-3 py-2 text-sm text-magnum-800"
+		class="trigger"
 		{...$triggerA}
 		use:triggerA.action
 		aria-label="Update dimensions"
@@ -138,11 +141,11 @@
 	</div>
 
 	<!------------>
-	<!-- VIEW -->
+	<!--- VIEW --->
 	<!------------>
 	<button
 		type="button"
-		class="flex items-center justify-between rounded-sm px-3 py-2 text-sm text-magnum-800"
+		class="trigger"
 		{...$triggerB}
 		use:triggerB.action
 		aria-label="Update dimensions"
@@ -191,11 +194,11 @@
 	</div>
 
 	<!------------>
-	<!-- HELP -->
+	<!--- HELP --->
 	<!------------>
 	<button
 		type="button"
-		class="flex items-center justify-between rounded-sm px-3 py-2 text-sm text-magnum-800"
+		class="trigger"
 		{...$triggerC}
 		use:triggerC.action
 		aria-label="Update dimensions"
@@ -254,10 +257,10 @@
 	}
 
 	.trigger {
-		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0 text-sm font-medium;
+		@apply inline-flex items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-medium leading-none;
 		@apply text-magnum-900 transition-colors hover:bg-white/90 data-[highlighted]:outline-none;
-		@apply data-[highlighted]:ring-magnum-400 data-[highlighted]:ring-offset-2 !important;
-		@apply focus:ring;
+		@apply overflow-visible data-[highlighted]:bg-magnum-200 data-[highlighted]:ring-magnum-400 !important;
+		@apply focus:z-30 focus:ring;
 	}
 	.check {
 		@apply absolute left-2 top-1/2 text-magnum-500;

@@ -53,7 +53,7 @@ const defaults = {
 export function createMenubar(args?: CreateMenubar) {
 	const withDefaults = { ...defaults, ...args } satisfies CreateMenubar;
 	const activeMenu = writable<string>('');
-	const menubarMenus = writable<HTMLElement[]>([]);
+	const scopedMenus = writable<HTMLElement[]>([]);
 
 	const rootIds = {
 		menubar: generateId(),
@@ -79,7 +79,7 @@ export function createMenubar(args?: CreateMenubar) {
 			}
 
 			const menus = Array.from(node.querySelectorAll('[data-melt-menubar-menu]')) as HTMLElement[];
-			menubarMenus.set(menus);
+			scopedMenus.set(menus);
 
 			return {
 				destroy: noop,
@@ -308,12 +308,16 @@ export function createMenubar(args?: CreateMenubar) {
 				const triggerElement = document.getElementById(m.rootIds.trigger);
 				if (!isHTMLElement(triggerElement)) return;
 				rootActiveTrigger.set(triggerElement);
+				triggerElement.setAttribute('data-highlighted', '');
 				rootOpen.set(true);
 				return;
 			}
 
 			if ($activeMenu !== m.rootIds.menu) {
 				if (get(rootOpen)) {
+					const triggerElement = document.getElementById(m.rootIds.trigger);
+					if (!isHTMLElement(triggerElement)) return;
+					triggerElement.removeAttribute('data-highlighted');
 					rootActiveTrigger.set(null);
 					rootOpen.set(false);
 				}
@@ -322,8 +326,14 @@ export function createMenubar(args?: CreateMenubar) {
 		});
 
 		effect([rootOpen], ([$rootOpen]) => {
+			const triggerElement = document.getElementById(m.rootIds.trigger);
 			if (!$rootOpen && get(activeMenu) === m.rootIds.menu) {
 				activeMenu.set('');
+				triggerElement?.removeAttribute('data-highlighted');
+				return;
+			}
+			if ($rootOpen) {
+				triggerElement?.setAttribute('data-highlighted', '');
 			}
 		});
 
@@ -424,7 +434,7 @@ export function createMenubar(args?: CreateMenubar) {
 		if (isPrevKey && isKeyDownInsideSubMenu) return;
 
 		// menus scoped to the menubar
-		const childMenus = get(menubarMenus);
+		const childMenus = get(scopedMenus);
 		if (!childMenus.length) return;
 		// Index of the currently focused item in the candidate nodes array
 		const currentIndex = childMenus.indexOf(currentTarget);
