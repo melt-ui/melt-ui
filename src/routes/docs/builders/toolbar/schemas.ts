@@ -105,8 +105,8 @@ const groupRoot: APISchema = {
 };
 
 const groupItem: APISchema = {
-	title: 'Group Root',
-	description: 'The root toolbar element for a toolbar group.',
+	title: 'Group Item',
+	description: 'A an item within a toolbar group.',
 	args: [
 		{
 			label: 'value',
