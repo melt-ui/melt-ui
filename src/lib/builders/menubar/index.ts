@@ -302,6 +302,7 @@ export function createMenubar(args?: CreateMenubar) {
 		};
 
 		effect([activeMenu], ([$activeMenu]) => {
+			if (!isBrowser) return;
 			if ($activeMenu === m.rootIds.menu) {
 				if (get(rootOpen)) return;
 
@@ -314,6 +315,7 @@ export function createMenubar(args?: CreateMenubar) {
 			}
 
 			if ($activeMenu !== m.rootIds.menu) {
+				if (!isBrowser) return;
 				if (get(rootOpen)) {
 					const triggerElement = document.getElementById(m.rootIds.trigger);
 					if (!isHTMLElement(triggerElement)) return;
@@ -326,6 +328,7 @@ export function createMenubar(args?: CreateMenubar) {
 		});
 
 		effect([rootOpen], ([$rootOpen]) => {
+			if (!isBrowser) return;
 			const triggerElement = document.getElementById(m.rootIds.trigger);
 			if (!$rootOpen && get(activeMenu) === m.rootIds.menu) {
 				activeMenu.set('');
