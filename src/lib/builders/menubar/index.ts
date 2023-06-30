@@ -55,7 +55,7 @@ export function createMenubar(args?: CreateMenubar) {
 	const activeMenu = writable<string>('');
 	const menubarMenus = writable<HTMLElement[]>([]);
 
-	const menubarIds = {
+	const rootIds = {
 		menubar: generateId(),
 	};
 
@@ -63,7 +63,7 @@ export function createMenubar(args?: CreateMenubar) {
 		role: 'menubar',
 		'data-melt-menubar': '',
 		'data-orientation': 'horizontal',
-		id: menubarIds.menubar,
+		id: rootIds.menubar,
 		action: (node: HTMLElement) => {
 			const menuTriggers = node.querySelectorAll(
 				'[data-melt-menubar-trigger]'
@@ -120,7 +120,7 @@ export function createMenubar(args?: CreateMenubar) {
 					'data-melt-menubar-menu': '',
 					'data-melt-menu': '',
 					'data-state': $rootOpen ? 'open' : 'closed',
-					'data-melt-scope': menubarIds.menubar,
+					'data-melt-scope': rootIds.menubar,
 					tabindex: -1,
 				} as const;
 			}),

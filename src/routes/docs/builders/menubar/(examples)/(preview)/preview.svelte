@@ -6,23 +6,13 @@
 
 	const { menubar, createMenu } = createMenubar();
 
-	const { trigger, menu, item, checkboxItem, separator, createSubmenu, createMenuRadioGroup } =
-		createMenu();
+	const { trigger, menu, item, separator, createSubmenu, createMenuRadioGroup } = createMenu();
 	const { subMenu, subTrigger } = createSubmenu();
 	const { radioGroup, radioItem, isChecked } = createMenuRadioGroup({
 		value: 'Nord',
 	});
 
-	const {
-		trigger: triggerA,
-		menu: menuA,
-		item: itemA,
-		checkboxItem: checkboxItemA,
-		separator: separatorA,
-		createSubmenu: createSubmenuA,
-		createMenuRadioGroup: createMenuRadioGroupA,
-	} = createMenu();
-	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubmenuA();
+	const { trigger: triggerA, menu: menuA, item: itemA, separator: separatorA } = createMenu();
 
 	const {
 		trigger: triggerB,
@@ -31,7 +21,6 @@
 		checkboxItem: checkboxItemB,
 		separator: separatorB,
 		createSubmenu: createSubmenuB,
-		createMenuRadioGroup: createMenuRadioGroupB,
 	} = createMenu();
 	const { subMenu: subMenuB, subTrigger: subTriggerB } = createSubmenuB();
 
@@ -41,15 +30,14 @@
 		item: itemC,
 		checkboxItem: checkboxItemC,
 		separator: separatorC,
-		createSubmenu: createSubmenuC,
-		createMenuRadioGroup: createMenuRadioGroupC,
 	} = createMenu();
-	const { subMenu: subMenuC, subTrigger: subTriggerC } = createSubmenuC();
 
 	const themesArr = ['Nord', 'GitHub Dark', 'Moonlight'];
 
-	const settingsSync = writable(true);
+	const tipsAndTricks = writable(true);
 	const hideMeltUI = writable(false);
+	const wordWrap = writable(true);
+	const stickyScroll = writable(false);
 </script>
 
 <div class="flex rounded-md bg-white p-1 shadow-md" {...menubar} use:menubar.action>
@@ -69,7 +57,7 @@
 			New File...
 			<div class="rightSlot">⌘T</div>
 		</div>
-		<div class="item" {...item} use:item.action>
+		<div class="item" {...item} use:item.action aria-disabled="true">
 			New Window...
 			<div class="rightSlot">⇧⌘T</div>
 		</div>
@@ -81,7 +69,6 @@
 			</div>
 		</div>
 		<div class="menu subMenu" {...$subMenu} use:subMenu.action>
-			<div class="text">Themes</div>
 			<div {...radioGroup}>
 				{#each themesArr as theme}
 					<div class="item" {...$radioItem({ value: theme })} use:radioItem.action>
@@ -94,21 +81,6 @@
 					</div>
 				{/each}
 			</div>
-		</div>
-		<div {...separator} class="separator" />
-
-		<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked: hideMeltUI }}>
-			<div class="check">
-				{#if $hideMeltUI}
-					<Check class="icon" />
-				{/if}
-			</div>
-			Hide Melt UI
-			<div class="rightSlot">⌘H</div>
-		</div>
-		<div class="item" {...item} use:item.action aria-disabled="true">
-			Show All Components
-			<div class="rightSlot">⇧⌘N</div>
 		</div>
 		<div {...separator} class="separator" />
 		<div class="item" {...item} use:item.action>
@@ -131,37 +103,37 @@
 	</button>
 
 	<div class="menu" {...$menuA} use:menuA.action>
-		<div class="item" {...itemA} use:itemA.action>About Melt UI</div>
-		<div class="item" {...itemA} use:itemA.action>Check for Updates...</div>
-		<div class="separator" {...separatorA} />
-		<div class="item" {...checkboxItemA} use:checkboxItemA.action={{ checked: settingsSync }}>
-			<div class="check">
-				{#if $settingsSync}
-					<Check class="icon" />
-				{/if}
-			</div>
-			Settings Sync is On
-		</div>
-
-		<div {...separatorA} class="separator" />
-
-		<div class="item" {...checkboxItemA} use:checkboxItemA.action={{ checked: hideMeltUI }}>
-			<div class="check">
-				{#if $hideMeltUI}
-					<Check class="icon" />
-				{/if}
-			</div>
-			Hide Melt UI
-			<div class="rightSlot">⌘H</div>
-		</div>
-		<div class="item" {...itemA} use:itemA.action aria-disabled="true">
-			Show All Components
-			<div class="rightSlot">⇧⌘N</div>
-		</div>
-		<div {...separatorA} class="separator" />
 		<div class="item" {...itemA} use:itemA.action>
-			Quit Melt UI
-			<div class="rightSlot">⌘Q</div>
+			Undo
+			<div class="rightSlot">⌘Z</div>
+		</div>
+		<div class="item" {...itemA} use:itemA.action>
+			Redo
+			<div class="rightSlot">⇧⌘Z</div>
+		</div>
+		<div class="separator" {...separatorA} />
+		<div class="item" {...itemA} use:itemA.action>
+			Cut
+			<div class="rightSlot">⌘X</div>
+		</div>
+		<div class="item" {...itemA} use:itemA.action>
+			Copy
+			<div class="rightSlot">⌘C</div>
+		</div>
+		<div class="item" {...itemA} use:itemA.action>
+			Paste
+			<div class="rightSlot">⌘V</div>
+		</div>
+
+		<div {...separatorA} class="separator" />
+
+		<div class="item" {...itemA} use:itemA.action>
+			Find
+			<div class="rightSlot">⌘F</div>
+		</div>
+		<div class="item" {...itemA} use:itemA.action>
+			Replace
+			<div class="rightSlot">⌥⌘F</div>
 		</div>
 	</div>
 
@@ -179,42 +151,47 @@
 	</button>
 
 	<div class="menu" {...$menuB} use:menuB.action>
-		<div class="item" {...itemB} use:itemB.action>About Melt UI</div>
-		<div class="item" {...itemB} use:itemB.action>Check for Updates...</div>
-		<div class="separator" {...separatorB} />
-		<div class="item" {...checkboxItemB} use:checkboxItemB.action={{ checked: settingsSync }}>
-			<div class="check">
-				{#if $settingsSync}
-					<Check class="icon" />
-				{/if}
-			</div>
-			Settings Sync is On
+		<div class="item" {...itemB} use:itemB.action>
+			Command Palette..
+			<div class="rightSlot">⇧⌘P</div>
 		</div>
+		<div class="item" {...itemB} use:itemB.action>Open View...</div>
+		<div class="separator" {...separatorB} />
+		<div class="item" {...$subTriggerB} use:subTriggerB.action>
+			Appearance
+			<div class="rightSlot">
+				<ChevronRight class="icon" />
+			</div>
+		</div>
+		<div class="menu subMenu" {...$subMenuB} use:subMenuB.action>
+			<div {...radioGroup}>
+				<div class="item" {...itemB} use:itemB.action>Full Screen</div>
+				<div class="item" {...itemB} use:itemB.action>Zen Mode</div>
+			</div>
+		</div>
+		<div class="separator" {...separatorB} />
 
-		<div {...separatorB} class="separator" />
-
-		<div class="item" {...checkboxItemB} use:checkboxItemB.action={{ checked: hideMeltUI }}>
+		<div class="item" {...checkboxItemB} use:checkboxItemB.action={{ checked: wordWrap }}>
 			<div class="check">
-				{#if $hideMeltUI}
+				{#if $wordWrap}
 					<Check class="icon" />
 				{/if}
 			</div>
-			Hide Melt UI
+			Word Wrap
 			<div class="rightSlot">⌘H</div>
 		</div>
-		<div class="item" {...itemB} use:itemB.action aria-disabled="true">
-			Show All Components
-			<div class="rightSlot">⇧⌘N</div>
-		</div>
-		<div {...separatorB} class="separator" />
-		<div class="item" {...itemB} use:itemB.action>
-			Quit Melt UI
-			<div class="rightSlot">⌘Q</div>
+		<div class="item" {...checkboxItemB} use:checkboxItemB.action={{ checked: stickyScroll }}>
+			<div class="check">
+				{#if $stickyScroll}
+					<Check class="icon" />
+				{/if}
+			</div>
+			Sticky Scroll
 		</div>
 	</div>
 
 	<!------------>
-	<!-- PROFILES -->
+	<!-- HELP -->
 	<!------------>
 	<button
 		type="button"
@@ -223,20 +200,20 @@
 		use:triggerC.action
 		aria-label="Update dimensions"
 	>
-		Profiles
+		Help
 	</button>
 
 	<div class="menu" {...$menuC} use:menuC.action>
 		<div class="item" {...itemC} use:itemC.action>About Melt UI</div>
 		<div class="item" {...itemC} use:itemC.action>Check for Updates...</div>
 		<div class="separator" {...separatorC} />
-		<div class="item" {...checkboxItemC} use:checkboxItemC.action={{ checked: settingsSync }}>
+		<div class="item" {...checkboxItemC} use:checkboxItemC.action={{ checked: tipsAndTricks }}>
 			<div class="check">
-				{#if $settingsSync}
+				{#if $tipsAndTricks}
 					<Check class="icon" />
 				{/if}
 			</div>
-			Settings Sync is On
+			Tips & Tricks
 		</div>
 
 		<div {...separatorC} class="separator" />
@@ -247,18 +224,14 @@
 					<Check class="icon" />
 				{/if}
 			</div>
-			Hide Melt UI
-			<div class="rightSlot">⌘H</div>
+			Documentation
 		</div>
 		<div class="item" {...itemC} use:itemC.action aria-disabled="true">
 			Show All Components
 			<div class="rightSlot">⇧⌘N</div>
 		</div>
 		<div {...separatorC} class="separator" />
-		<div class="item" {...itemC} use:itemC.action>
-			Quit Melt UI
-			<div class="rightSlot">⌘Q</div>
-		</div>
+		<div class="item" {...itemC} use:itemC.action>Report a bug...</div>
 	</div>
 </div>
 
