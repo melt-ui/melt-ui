@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
-	import Code from '$routes/(components)/code.svelte';
 	import { snippets } from '../(snippets)';
 </script>
 
@@ -55,3 +54,31 @@
 	tag to always be uppercase.
 </Docs.P>
 <Docs.CodeBlock code={snippets.usage3} />
+
+<Docs.H4>remove</Docs.H4>
+<Docs.P class="mt-4">
+	An asynchronous <Docs.Code>remove</Docs.Code> function may be passed into the builder. It is called
+	prior to removing the tag from the <Docs.Code>$tags</Docs.Code> store.
+</Docs.P>
+
+<Docs.P class="mt-4">
+	The function definition is <Docs.Code>(tag: Tag) =&gt Promise&ltboolean&gt</Docs.Code>, whereby <Docs.Code
+		>tag</Docs.Code
+	> is the tag to be removed from the
+	<Docs.Code>$tags</Docs.Code> store.
+</Docs.P>
+
+<Docs.Callout type="info" class="mt-4">
+	A <Docs.Code>Tag</Docs.Code> is an object that consists of an <Docs.Code>id</Docs.Code> and
+	<Docs.Code>value</Docs.Code>.
+</Docs.Callout>
+
+<Docs.P class="mt-4">
+	A <Docs.Code>remove</Docs.Code> function provides the ability do something before the tag is removed
+	from <Docs.Code>$tags</Docs.Code> store. For example, you could delete the tag from a backend DB.
+</Docs.P>
+
+<Docs.P class="mt-4">
+	The following example disallowed the tag with the value <Docs.Code>one</Docs.Code> to be deleted.
+</Docs.P>
+<Docs.CodeBlock code={snippets.usage4} />

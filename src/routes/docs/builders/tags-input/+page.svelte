@@ -17,6 +17,7 @@
 		'Support for allowed list and denied list',
 		'Pass in a custom validator',
 		'Pass in an add function to run before adding a tag',
+		'Pass in a remove function to run before removing a tag',
 	];
 </script>
 

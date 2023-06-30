@@ -87,12 +87,23 @@
 		</Docs.Li>
 		<Docs.Li>
 			<Docs.Code>add</Docs.Code> - An asynchronous function to be called after validation but before
-			adding the tag to the <Docs.Code>$tags</Docs.Code> store.
+			adding a tag to the <Docs.Code>$tags</Docs.Code> store.
 			<Docs.Ul class="mt-1.5 mb-1.5">
 				<Docs.Li class="mt-0"><i>default:</i> -</Docs.Li>
 				<Docs.Li class="mt-0">
 					<i>Definition:</i>
 					<Docs.Code>(tag: string) =&gt Promise&ltTag | string&gt</Docs.Code>
+				</Docs.Li>
+			</Docs.Ul>
+		</Docs.Li>
+		<Docs.Li>
+			<Docs.Code>remove</Docs.Code> - An asynchronous function to be called before removing a tag from
+			the <Docs.Code>$tags</Docs.Code> store.
+			<Docs.Ul class="mt-1.5 mb-1.5">
+				<Docs.Li class="mt-0"><i>default:</i> -</Docs.Li>
+				<Docs.Li class="mt-0">
+					<i>Definition:</i>
+					<Docs.Code>(tag: Tag) =&gt Promise&ltboolean&gt</Docs.Code>
 				</Docs.Li>
 			</Docs.Ul>
 		</Docs.Li>

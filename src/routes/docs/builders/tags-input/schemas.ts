@@ -60,6 +60,10 @@ const builder: APISchema = {
 			label: 'add',
 			type: '(tag: string) => Promise<Tag | string>',
 		},
+		{
+			label: 'remove',
+			type: '(tag: Tag) => Promise<boolean>',
+		},
 	],
 };
 

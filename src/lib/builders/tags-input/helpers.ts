@@ -1,5 +1,5 @@
 import { getElementByMeltId } from '@melt-ui/svelte/internal/helpers';
-import { get, type Writable } from 'svelte/store';
+import type { Writable } from 'svelte/store';
 
 export type Tag = {
 	id: string;
@@ -30,15 +30,6 @@ export function getTagElements(me: HTMLElement, rootAttribute: string, tagAttrib
 	) as Array<HTMLElement>;
 }
 
-export function deleteTagById(id: string, tags: Writable<Tag[]>) {
-	const $tags = get(tags);
-	const index = $tags.findIndex((tag) => tag.id === id);
-	tags.update((t) => {
-		t.splice(index, 1);
-		return t;
-	});
-}
-
 export function setSelectedTagFromElement(el: Element | null, selectedTag: Writable<Tag | null>) {
 	if (el) {
 		selectedTag.set({
@@ -50,7 +41,7 @@ export function setSelectedTagFromElement(el: Element | null, selectedTag: Writa
 	}
 }
 
-export function setInvalid(rootId: string, inputId: string, inputStore: Writable<boolean>) {
+export function setDataInvalid(rootId: string, inputId: string, inputStore: Writable<boolean>) {
 	const rootEl = getElementByMeltId(rootId);
 	const inputEl = getElementByMeltId(inputId);
 

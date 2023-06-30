@@ -4,10 +4,7 @@
 	const { root, input, tags, tag, deleteTrigger } = createTagsInput({
 		tags: ['one', 'two'],
 		remove: async (t: Tag) => {
-			if (t.value === 'one') {
-				return false;
-			}
-
+			if (t.value === 'one') return false;
 			return true;
 		},
 	});

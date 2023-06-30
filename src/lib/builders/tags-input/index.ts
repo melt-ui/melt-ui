@@ -10,8 +10,7 @@ import {
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import {
-	setInvalid,
-	deleteTagById,
+	setDataInvalid,
 	focusInput,
 	getTagElements,
 	clearInvalid,
@@ -46,8 +45,8 @@ export type CreateTagsInputArgs = {
 	// A custom async add function. It is called after validation but before the tag is added
 	// to the $tags store
 	add?: (tag: string) => Promise<Tag | string>;
-	// A custom async remove function. It is called after validation but before the tag is added
-	// to the $tags store
+	// A custom async remove function. It is called before the tag is removed from the the
+	// $tags store
 	remove?: (tag: Tag) => Promise<boolean>;
 };
 
@@ -148,7 +147,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					if (!t.id) t.id = generateId();
 				}
 			} catch {
-				setInvalid(ids.root, ids.input, invalid);
+				setDataInvalid(ids.root, ids.input, invalid);
 				return false;
 			}
 		} else {
@@ -158,6 +157,31 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		tags.update((currentTags) => [...currentTags, t]);
 		return true;
 	};
+
+	// Remove a tag from the $tags store. It calls the async $options.remove function if set.
+	// If this function returns false, the tag is not removed.
+	const removeTag = async (t: Tag) => {
+		const $options = get(options);
+
+		if ($options.remove) {
+			try {
+				if (!(await $options.remove(t))) return false;
+			} catch {
+				setDataInvalid(ids.root, ids.input, invalid);
+				return false;
+			}
+		}
+
+		const $tags = get(tags);
+		const index = $tags.findIndex((tag) => tag.id === t.id);
+		tags.update((t) => {
+			t.splice(index, 1);
+			return t;
+		});
+
+		return true;
+	};
+
 	// UUID for specific containers
 	const ids = {
 		root: generateId(),
@@ -254,7 +278,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 								inputValue.set('');
 							}
 						} else {
-							setInvalid(ids.root, ids.input, invalid);
+							setDataInvalid(ids.root, ids.input, invalid);
 						}
 					}
 				}),
@@ -281,7 +305,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							node.value = pastedText;
 						}
 					} else {
-						setInvalid(ids.root, ids.input, invalid);
+						setDataInvalid(ids.root, ids.input, invalid);
 					}
 				}),
 				addEventListener(node, 'keydown', async (e) => {
@@ -334,7 +358,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							// Delete this tag and move to the next element of tag or input
 							e.preventDefault();
 
-							const prevSelectedId = $selectedTag.id;
+							const prevSelected = $selectedTag;
 							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
 							const selectedIndex = tagsEl.findIndex(
 								(element) => element.getAttribute('data-tag-id') === $selectedTag.id
@@ -349,12 +373,14 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							}
 
 							// Delete the previously selected tag
-							deleteTagById(prevSelectedId, tags);
+							if (!(await removeTag(prevSelected))) {
+								selectedTag.set(prevSelected);
+							}
 						} else if (e.key === kbd.BACKSPACE) {
 							// Delete this tag and move to the previous tag. If this is the
 							// first tag, delete and move to the next element of tag or input
 							e.preventDefault();
-							const prevSelectedId = $selectedTag.id;
+							const prevSelected = $selectedTag;
 
 							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
 							const selectedIndex = tagsEl.findIndex(
@@ -375,7 +401,9 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							}
 
 							// Delete the previously selected tag
-							deleteTagById(prevSelectedId, tags);
+							if (!(await removeTag(prevSelected))) {
+								selectedTag.set(prevSelected);
+							}
 						}
 					} else {
 						// ENTER
@@ -390,7 +418,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 									inputValue.set('');
 								}
 							} else {
-								setInvalid(ids.root, ids.input, invalid);
+								setDataInvalid(ids.root, ids.input, invalid);
 							}
 						} else if (
 							node.selectionStart === 0 &&
@@ -462,10 +490,12 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		// Action => use:deleteTrigger.action
 		action: (node: HTMLElement) => {
 			const getElArgs = () => {
+				const value = node.getAttribute('data-tag-value') ?? '';
 				const id = node.getAttribute('data-tag-id') ?? '';
 				const disabled = node.hasAttribute('data-disabled');
 
 				return {
+					value,
 					id,
 					disabled,
 				};
@@ -479,7 +509,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 
 					if (args.disabled) return;
 
-					deleteTagById(args.id, tags);
+					removeTag({ id: args.id, value: args.value });
 
 					// Put focus back on the input
 					const inputEl = getElementByMeltId(ids.input);
