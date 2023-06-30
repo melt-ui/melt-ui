@@ -16,7 +16,7 @@
     </div>
 
     <button {...$triggerA} use:triggerA.action>Edit</button>
-    <div {...$menuA} use:menu.action>
+    <div {...$menuA} use:menuA.action>
         <div {...itemA} use:itemA.action>...</div>
         <div {...itemA} use:itemA.action>...</div>
         <div {...itemA} use:itemA.action>...</div>
