@@ -382,12 +382,26 @@ export function createMenubar() {
 		const currentTarget = e.currentTarget;
 		if (!isHTMLElement(currentTarget)) return;
 
+		const target = e.target;
+		if (!isHTMLElement(target)) return;
+
+		const targetIsSubTrigger = target.hasAttribute('data-melt-menu-subtrigger');
+		const isKeyDownInsideSubMenu = target.closest('[data-melt-menu]') !== currentTarget;
+
+		const prevMenuKey = kbd.ARROW_LEFT;
+		const isPrevKey = e.key === prevMenuKey;
+		const isNextKey = !isPrevKey;
+
+		// prevent navigation when opening a submenu
+		if (isNextKey && targetIsSubTrigger) return;
+		// prevent navigation when closing a submenu
+		if (isPrevKey && isKeyDownInsideSubMenu) return;
+
 		// menus scoped to the menubar
 		const childMenus = get(menubarMenus);
 		if (!childMenus.length) return;
 		// Index of the currently focused item in the candidate nodes array
 		const currentIndex = childMenus.indexOf(currentTarget);
-
 		// Calculate the index of the next menu item
 		let nextIndex: number;
 		switch (e.key) {
