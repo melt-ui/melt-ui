@@ -362,8 +362,10 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							deleteTagById(prevSelectedId, tags);
 						}
 					} else {
-						// Clear data-invalid
-						clearDataInvalid(ids.root, ids.input);
+						if (e.key.length === 1) {
+							// Clear data-invalid
+							clearDataInvalid(ids.root, ids.input);
+						}
 
 						// ENTER
 						if (e.key === kbd.ENTER) {
