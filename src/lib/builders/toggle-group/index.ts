@@ -1,4 +1,11 @@
-import { addEventListener, executeCallbacks, kbd, noop, omit } from '$lib/internal/helpers';
+import {
+	addEventListener,
+	executeCallbacks,
+	isHTMLElement,
+	kbd,
+	noop,
+	omit,
+} from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
@@ -50,13 +57,35 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 		});
 	});
 
-	const root = derived(options, ($options) => {
-		return {
-			role: 'group',
-			'data-orientation': $options.orientation,
-			'data-melt-part': 'toggle-group',
-		} as const;
-	});
+	const root = {
+		...derived(options, ($options) => {
+			return {
+				role: 'group',
+				'data-orientation': $options.orientation,
+				'data-melt-toggle-group': '',
+			} as const;
+		}),
+		action: (node: HTMLElement) => {
+			const $value = get(value);
+			const anyPressed = Array.isArray($value) ? $value.length > 0 : $value !== null;
+			const items = node.querySelectorAll<HTMLElement>('[data-melt-toggle-group-item]');
+			items.forEach((item, idx) => {
+				if (!anyPressed) {
+					if (idx === 0) {
+						item.tabIndex = 0;
+						return;
+					} else {
+						item.tabIndex = -1;
+						return;
+					}
+				}
+				const itemValue = item.dataset.value;
+				const pressed =
+					Array.isArray($value) && itemValue ? $value.includes(itemValue) : $value === itemValue;
+				item.tabIndex = pressed ? 0 : -1;
+			});
+		},
+	};
 
 	type ToggleGroupItemArgs =
 		| {
@@ -70,9 +99,7 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 				const itemValue = typeof args === 'string' ? args : args.value;
 				const argDisabled = typeof args === 'string' ? false : !!args.disabled;
 				const disabled = $options.disabled || argDisabled;
-
 				const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
-				const anyPressed = Array.isArray($value) ? $value.length > 0 : $value !== null;
 				return {
 					disabled,
 					pressed,
@@ -82,9 +109,9 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 					'data-value': itemValue,
 					'aria-pressed': pressed,
 					type: 'button',
-					'data-melt-part': 'toggle-group-item',
+					'data-melt-toggle-group-item': '',
 					role: $options.type === 'single' ? 'radio' : undefined,
-					tabindex: anyPressed ? (pressed ? 0 : -1) : 0,
+					tabindex: pressed ? 0 : -1,
 				} as const;
 			};
 		}),
@@ -115,12 +142,16 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 					const $options = get(options);
 					if (!$options.rovingFocus) return;
 
-					const el = e.currentTarget as HTMLElement;
-					const root = el.closest('[data-melt-part="toggle-group"]') as HTMLElement;
+					const el = e.currentTarget;
+					if (!isHTMLElement(el)) return;
+
+					const root = el.closest<HTMLElement>('[data-melt-toggle-group]');
+					if (!isHTMLElement(root)) return;
 
 					const items = Array.from(
-						root.querySelectorAll('[data-melt-part="toggle-group-item"]:not([data-disabled])')
-					) as Array<HTMLElement>;
+						root.querySelectorAll<HTMLElement>('[data-melt-toggle-group-item]:not([data-disabled])')
+					);
+
 					const currentIndex = items.indexOf(el);
 
 					const dir = getElemDirection(el);
@@ -133,6 +164,7 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 						horizontal: dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
 						vertical: kbd.ARROW_UP,
 					}[$options.orientation ?? 'horizontal'];
+
 					if (e.key === nextKey) {
 						e.preventDefault();
 						const nextIndex = currentIndex + 1;
