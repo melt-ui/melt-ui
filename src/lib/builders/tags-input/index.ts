@@ -66,6 +66,8 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 	// Options store
 	const options = writable(omit(withDefaults, 'tags', 'selectedTag'));
 
+	const inputValue = writable('');
+
 	// Tags store of type Tag[]
 	//
 	// `withDefaults.tags` can be
@@ -240,10 +242,13 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					// Clear data-invalid
 					clearDataInvalid(ids.root, ids.input);
 
-					// Do nothing when not adding on paste
 					const $options = get(options);
-					if (!$options.addOnPaste) return;
 
+					if (!$options.addOnPaste) {
+						return;
+					}
+
+					// Update value with the pasted text
 					if (
 						isTagUnique(pastedText) &&
 						isTagAllowed(pastedText) &&
@@ -374,7 +379,9 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							) {
 								// Prevent default as we are going to add a new tag
 								tags.update((currentTags) => [...currentTags, { id: generateId(), value: value }]);
+
 								node.value = '';
+								inputValue.set('');
 							} else {
 								// Tag is not unique. Set data-invalid
 								setDataInvalid(ids.root, ids.input);
@@ -391,6 +398,9 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							setSelectedTagFromElement(lastTag, selectedTag);
 						}
 					}
+				}),
+				addEventListener(node, 'input', (e) => {
+					inputValue.set((e.target as HTMLInputElement).value);
 				})
 			);
 			return {
@@ -484,12 +494,13 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 
 	return {
 		root,
-		input,
-		options,
-		selectedTag,
-		isSelected,
-		tags,
 		tag,
 		deleteTrigger,
+		input,
+		options,
+		tags,
+		value: derived(inputValue, ($inputValue) => $inputValue),
+		selectedTag,
+		isSelected,
 	};
 }

@@ -1,4 +1,5 @@
 <script lang="ts">
 	import { createTagsInput } from '@melt-ui/svelte';
-	const { root, input, tags, tag, deleteTrigger } = createTagsInput();
+	const { root, tag, deleteTrigger, input, options, tags, value, selectedTag, isSelected } =
+		createTagsInput();
 </script>
