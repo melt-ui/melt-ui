@@ -655,7 +655,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					id: subIds.menu,
 					'aria-labelledby': subIds.trigger,
 					'data-melt-menu-submenu': '',
-					'data-melt-menu': '',
 					'data-state': $subOpen ? 'open' : 'closed',
 					tabindex: -1,
 				} as const;
@@ -708,7 +707,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						if (!targetMeltMenuId) return;
 
 						const isKeyDownInside =
-							target.closest('[data-melt-menu]') === menuElement &&
+							target.closest('[data-melt-menu-submenu]') === menuElement &&
 							targetMeltMenuId === menuElement.id;
 
 						if (!isKeyDownInside) return;
