@@ -1,12 +1,15 @@
 <script lang="ts">
-    import { createDropdownMenu } from "@melt-ui/svelte";
-    const { menu, item, trigger, arrow } = createDropdownMenu()
+    import { createMenubar } from "@melt-ui/svelte";
+
+    const { menubar, createMenu } = createMenubar()
+    const { menu, item, trigger } = createMenu()
 </script>
 
-<button {...$trigger} use:trigger.action>Open Menu</button>
-<div {...$menu} use:menu.action>
-    <div {...item} use:item.action>...</div>
-    <div {...item} use:item.action>...</div>
-    <div {...item} use:item.action>...</div>
-    <div {...arrow} />
+<div {...menubar}>
+    <button {...$trigger} use:trigger.action>Open Menu</button>
+    <div {...$menu} use:menu.action>
+        <div {...item} use:item.action>...</div>
+        <div {...item} use:item.action>...</div>
+        <div {...item} use:item.action>...</div>
+    </div>
 </div>

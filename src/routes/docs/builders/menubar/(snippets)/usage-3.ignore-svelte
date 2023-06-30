@@ -1,3 +1,31 @@
-<a href="/1" {...item} use:item.action>Item 1</a>
-<div {...item} use:item.action={{ onSelect: (e) => console.log('Item 2!')}}>Item 2</div>
-<div {...item} use:item.action={{ onSelect: (e) => console.log('Item 3!')}}>Item 3</div>
+<script lang="ts">
+    import { createMenubar } from "@melt-ui/svelte";
+
+    const { menubar, createMenu } = createMenubar()
+    const { menu, item, trigger} = createMenu()
+    const { menu: menuA, item: itemA, trigger: triggerA } = createMenu()
+    const { menu: menuB, item: itemB, trigger: triggerB } = createMenu()
+</script>
+
+<div {...menubar}>
+    <button {...$trigger} use:trigger.action>Open Menu</button>
+    <div {...$menu} use:menu.action>
+        <div {...item} use:item.action>...</div>
+        <div {...item} use:item.action>...</div>
+        <div {...item} use:item.action>...</div>
+    </div>
+
+    <button {...$triggerA} use:triggerA.action>Open Menu</button>
+    <div {...$menuA} use:menu.action>
+        <div {...itemA} use:itemA.action>...</div>
+        <div {...itemA} use:itemA.action>...</div>
+        <div {...itemA} use:itemA.action>...</div>
+    </div>
+
+    <button {...$triggerB} use:triggerB.action>Open Menu</button>
+    <div {...$menuB} use:menuB.action>
+        <div {...itemB} use:itemB.action>...</div>
+        <div {...itemB} use:itemB.action>...</div>
+        <div {...itemB} use:itemB.action>...</div>
+    </div>
+</div>
