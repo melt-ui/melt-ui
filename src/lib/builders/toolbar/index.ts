@@ -1,10 +1,27 @@
-import { addEventListener, hiddenAction, kbd } from '$lib/internal/helpers';
+import { addEventListener, executeCallbacks, hiddenAction, kbd, omit } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable, type Readable } from 'svelte/store';
 
 type CreateToolbarArgs = {
 	loop?: boolean;
 	orientation?: 'horizontal' | 'vertical';
+};
+
+type SingleToolbarGroupRootArgs = {
+	type?: 'single';
+	value?: string | null;
+};
+
+type MultipleToolbarGroupRootProps = {
+	type: 'multiple';
+	value?: string[];
+};
+
+export type CreateToolbarGroupArgs = (
+	| SingleToolbarGroupRootArgs
+	| MultipleToolbarGroupRootProps
+) & {
+	disabled?: boolean;
 };
 
 const defaults = {
@@ -14,13 +31,13 @@ const defaults = {
 
 export function createToolbar(args: CreateToolbarArgs = {}) {
 	const withDefaults = { ...defaults, ...args };
-	const options = writable({ ...withDefaults });
+	const toolbarOptions = writable({ ...withDefaults });
 
-	const root = derived(options, ($options) => {
+	const root = derived(toolbarOptions, ($toolbarOptions) => {
 		return {
 			role: 'toolbar',
 			tabindex: 0,
-			'data-orientation': $options.orientation,
+			'data-orientation': $toolbarOptions.orientation,
 			'data-melt-part': 'toolbar',
 		};
 	});
@@ -30,7 +47,7 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 		type: 'button',
 		'data-melt-part': 'toolbar-item',
 		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'keydown', getKeydownHandler(options));
+			const unsub = addEventListener(node, 'keydown', getKeydownHandler(toolbarOptions));
 
 			return {
 				destroy: unsub,
@@ -42,7 +59,7 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 		role: 'link',
 		'data-melt-part': 'toolbar-item',
 		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'keydown', getKeydownHandler(options));
+			const unsub = addEventListener(node, 'keydown', getKeydownHandler(toolbarOptions));
 
 			return {
 				destroy: unsub,
@@ -50,24 +67,136 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 		},
 	} as const);
 
-	const separator = derived(options, ($options) => {
+	const separator = derived(toolbarOptions, ($toolbarOptions) => {
 		return {
 			role: 'separator',
-			'data-orientation': $options.orientation === 'horizontal' ? 'vertical' : 'horizontal',
-			'aria-orientation': $options.orientation === 'horizontal' ? 'vertical' : 'horizontal',
+			'data-orientation': $toolbarOptions.orientation === 'horizontal' ? 'vertical' : 'horizontal',
+			'aria-orientation': $toolbarOptions.orientation === 'horizontal' ? 'vertical' : 'horizontal',
 		} as const;
 	});
 
+	const groupDefaults = {
+		type: 'single',
+		disabled: false,
+		value: null,
+	} satisfies CreateToolbarGroupArgs;
+
+	function createToolbarGroup(args: CreateToolbarGroupArgs = {}) {
+		const groupWithDefaults = { ...groupDefaults, ...args };
+		const groupOptions = writable(omit(groupWithDefaults, 'value'));
+
+		const value = writable(groupWithDefaults.value);
+
+		groupOptions.subscribe((o) => {
+			value.update((v) => {
+				if (o.type === 'single' && Array.isArray(v)) {
+					return null;
+				}
+
+				if (o.type === 'multiple' && !Array.isArray(v)) {
+					return v === null ? [] : [v];
+				}
+
+				return v;
+			});
+		});
+
+		const root = derived(toolbarOptions, ($toolbarOptions) => {
+			return {
+				role: 'group',
+				'data-orientation': $toolbarOptions.orientation,
+			} as const;
+		});
+
+		type ToolbarGroupItemArgs =
+			| {
+					value: string;
+					disabled?: boolean;
+			  }
+			| string;
+		const item = {
+			...derived(
+				[groupOptions, value, toolbarOptions],
+				([$groupOptions, $value, $toolbarOptions]) => {
+					return (args: ToolbarGroupItemArgs) => {
+						const itemValue = typeof args === 'string' ? args : args.value;
+						const argDisabled = typeof args === 'string' ? false : !!args.disabled;
+						const disabled = $groupOptions.disabled || argDisabled;
+
+						const pressed = Array.isArray($value)
+							? $value.includes(itemValue)
+							: $value === itemValue;
+						const anyPressed = Array.isArray($value) ? $value.length > 0 : $value !== null;
+						return {
+							disabled,
+							pressed,
+							'data-orientation': $toolbarOptions.orientation,
+							'data-disabled': disabled ? true : undefined,
+							'data-value': itemValue,
+							'data-state': pressed ? 'on' : 'off',
+							'aria-pressed': pressed,
+							type: 'button',
+							role: $groupOptions.type === 'single' ? 'radio' : undefined,
+							'data-melt-part': 'toolbar-item',
+							tabindex: anyPressed ? (pressed ? 0 : -1) : 0,
+						} as const;
+					};
+				}
+			),
+			action: (node: HTMLElement) => {
+				const getNodeProps = () => {
+					const itemValue = node.dataset.value;
+					const disabled = node.dataset.disabled === 'true';
+
+					return { value: itemValue, disabled };
+				};
+
+				const unsub = executeCallbacks(
+					addEventListener(node, 'click', () => {
+						const { value: itemValue, disabled } = getNodeProps();
+						if (itemValue === undefined || disabled) return;
+
+						value.update((v) => {
+							if (Array.isArray(v)) {
+								return v.includes(itemValue) ? v.filter((i) => i !== itemValue) : [...v, itemValue];
+							}
+							return v === itemValue ? null : itemValue;
+						});
+					}),
+
+					addEventListener(node, 'keydown', getKeydownHandler(toolbarOptions))
+				);
+
+				return {
+					destroy: unsub,
+				};
+			},
+		};
+
+		const isPressed = derived(value, ($value) => {
+			return (itemValue: string) => {
+				return Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
+			};
+		});
+
+		return {
+			options: groupOptions,
+			value,
+			root,
+			item,
+			isPressed,
+		};
+	}
+
 	return {
 		root,
-		options,
+		options: toolbarOptions,
 		button,
 		link,
 		separator,
+		createToolbarGroup,
 	};
 }
-
-export { createToolbarGroup } from './group';
 
 export const getKeydownHandler =
 	(options: Readable<Pick<CreateToolbarArgs, 'orientation' | 'loop'>>) => (e: KeyboardEvent) => {
