@@ -33,18 +33,22 @@ export type CreateTagsInputArgs = {
 	unique?: boolean;
 	// What to do on blur
 	blur?: 'nothing' | 'add' | 'clear';
-	// What to do on paste
+	// Whether the tag should be added on paste
 	addOnPaste?: boolean;
-	// Maximum number of tags
+	// Maximum number of tags (undefined || 0 or lower === no max)
 	maxTags?: number;
-	// Allowed tags (undefined || 0 or lower === no max)
+	// Allowed tags
 	allowedTags?: string[];
 	// Denied tags
 	deniedTags?: string[];
 	// A custom validator function. A response of true means the validator passed
-	validator?: (value: string) => boolean;
-	// A custom async add function. It is called just before a Tag is added
-	add?: (value: string) => Promise<Tag | string>;
+	validator?: (tag: string) => boolean;
+	// A custom async add function. It is called after validation but before the tag is added
+	// to the $tags store
+	add?: (tag: string) => Promise<Tag | string>;
+	// A custom async remove function. It is called after validation but before the tag is added
+	// to the $tags store
+	remove?: (tag: Tag) => Promise<boolean>;
 };
 
 const defaults = {
