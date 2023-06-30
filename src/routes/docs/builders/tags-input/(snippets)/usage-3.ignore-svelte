@@ -2,23 +2,17 @@
 	import { createTagsInput } from '$lib';
 
 	const { root, input, tags, tag, deleteTrigger } = createTagsInput({
-		add: async (tag: string) => {
-			return new Promise(async (resolve, reject) => {
-				try {
-					const response = await fetch('https://www.uuidtools.com/api/generate/v1');
+		add: async (v: string) => {
+			const response = await fetch('https://www.uuidtools.com/api/generate/v1');
 
-					if (!response.ok) reject('HTTP error ' + response.status);
+			if (!response.ok) throw new Error('HTTP error ' + response.status);
 
-					const data = await response.json();
-					if (!Array.isArray(data) || data.length < 1) {
-						reject('Returned data is not an array or is empty.');
-					}
+			const data = await response.json();
+			if (!Array.isArray(data) || data.length < 1) {
+				throw new Error('Failed to get id');
+			}
 
-					resolve({ id: data[0], value: tag.toUpperCase() });
-				} catch (error) {
-					reject(error);
-				}
-			});
+			return { id: data[0], value: v.toUpperCase() };
 		},
 	});
 </script>
