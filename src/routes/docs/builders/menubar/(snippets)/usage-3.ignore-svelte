@@ -8,21 +8,21 @@
 </script>
 
 <div {...menubar}>
-    <button {...$trigger} use:trigger.action>Open Menu</button>
+    <button {...$trigger} use:trigger.action>File</button>
     <div {...$menu} use:menu.action>
         <div {...item} use:item.action>...</div>
         <div {...item} use:item.action>...</div>
         <div {...item} use:item.action>...</div>
     </div>
 
-    <button {...$triggerA} use:triggerA.action>Open Menu</button>
+    <button {...$triggerA} use:triggerA.action>Edit</button>
     <div {...$menuA} use:menu.action>
         <div {...itemA} use:itemA.action>...</div>
         <div {...itemA} use:itemA.action>...</div>
         <div {...itemA} use:itemA.action>...</div>
     </div>
 
-    <button {...$triggerB} use:triggerB.action>Open Menu</button>
+    <button {...$triggerB} use:triggerB.action>Help</button>
     <div {...$menuB} use:menuB.action>
         <div {...itemB} use:itemB.action>...</div>
         <div {...itemB} use:itemB.action>...</div>
