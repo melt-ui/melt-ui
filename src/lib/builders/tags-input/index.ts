@@ -43,6 +43,8 @@ export type CreateTagsInputArgs = {
 	deniedTags?: string[];
 	// A custom validator function. A response of true means the validator passed
 	validator?: (value: string) => boolean;
+	// A custom async add function. It is called just before a Tag is added
+	add?: (value: string) => Promise<Tag | string>;
 };
 
 const defaults = {
@@ -124,6 +126,34 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 	// Selected tag store. When `null`, no tag is selected
 	const selectedTag = writable<Tag | null>(withDefaults.selectedTag ?? null);
 
+	// Adds a tag to the $tags store. It calls  the async $options.add function if set. If this
+	// function returns a reject, the data is invalidated and not added to the $tags store
+	const addTag = async (v: string) => {
+		const $options = get(options);
+
+		let t: Tag;
+
+		if ($options.add) {
+			try {
+				const res = await $options.add(v);
+
+				if (typeof res === 'string') {
+					t = { id: generateId(), value: res };
+				} else {
+					t = res;
+					if (!t.id) t.id = generateId();
+				}
+			} catch {
+				setInvalid(ids.root, ids.input, invalid);
+				return false;
+			}
+		} else {
+			t = { id: generateId(), value: v };
+		}
+
+		tags.update((currentTags) => [...currentTags, t]);
+		return true;
+	};
 	// UUID for specific containers
 	const ids = {
 		root: generateId(),
@@ -195,7 +225,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					if (rootEl) rootEl.setAttribute('data-focus', '');
 					node.setAttribute('data-focus', '');
 				}),
-				addEventListener(node, 'blur', () => {
+				addEventListener(node, 'blur', async () => {
 					// Clear data-focus
 					const rootEl = getElementByMeltId(ids.root);
 					if (rootEl) rootEl.removeAttribute('data-focus');
@@ -215,18 +245,16 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 						node.value = '';
 					} else if ($options.blur === 'add') {
 						if (isInputValid(value)) {
-							// Add new tag
-							tags.update((currentTags) => [
-								...currentTags,
-								{ id: generateId(), value: node.value },
-							]);
-							node.value = '';
+							if (await addTag(value)) {
+								node.value = '';
+								inputValue.set('');
+							}
 						} else {
 							setInvalid(ids.root, ids.input, invalid);
 						}
 					}
 				}),
-				addEventListener(node, 'paste', (e) => {
+				addEventListener(node, 'paste', async (e) => {
 					// Do nothing when there is nothing to paste
 					if (!e.clipboardData) return;
 					const pastedText = e.clipboardData.getData('text');
@@ -242,13 +270,17 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					if (isInputValid(pastedText)) {
 						// Prevent default as we are going to add a new tag
 						e.preventDefault();
-						tags.update((currentTags) => [...currentTags, { id: generateId(), value: pastedText }]);
-						node.value = '';
+						if (await addTag(pastedText)) {
+							node.value = '';
+						} else {
+							// Adding tag failed
+							node.value = pastedText;
+						}
 					} else {
 						setInvalid(ids.root, ids.input, invalid);
 					}
 				}),
-				addEventListener(node, 'keydown', (e) => {
+				addEventListener(node, 'keydown', async (e) => {
 					const $selectedTag = get(selectedTag);
 
 					if ($selectedTag) {
@@ -349,11 +381,10 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							if (!value) return;
 
 							if (isInputValid(value)) {
-								// Prevent default as we are going to add a new tag
-								tags.update((currentTags) => [...currentTags, { id: generateId(), value: value }]);
-
-								node.value = '';
-								inputValue.set('');
+								if (await addTag(value)) {
+									node.value = '';
+									inputValue.set('');
+								}
 							} else {
 								setInvalid(ids.root, ids.input, invalid);
 							}

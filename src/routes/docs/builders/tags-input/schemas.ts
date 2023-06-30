@@ -54,7 +54,11 @@ const builder: APISchema = {
 		},
 		{
 			label: 'validator',
-			type: '(v: string) => boolean',
+			type: '(tag: string) => boolean',
+		},
+		{
+			label: 'add',
+			type: '(tag: string) => Promise<Tag | string>',
 		},
 	],
 };

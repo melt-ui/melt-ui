@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
-	import Kbd from '$routes/(components)/kbd.svelte';
 </script>
 
 <Docs.H2>Builder Description</Docs.H2>
@@ -81,8 +80,19 @@
 			<Docs.Ul class="mt-1.5 mb-1.5">
 				<Docs.Li class="mt-0"><i>default:</i> -</Docs.Li>
 				<Docs.Li class="mt-0">
-					<i>Example:</i>
-					<Docs.Code>(v: string) => &#123return v.length > 3;&#125</Docs.Code>
+					<i>Definition:</i>
+					<Docs.Code>(tag: string) =&gt boolean</Docs.Code>
+				</Docs.Li>
+			</Docs.Ul>
+		</Docs.Li>
+		<Docs.Li>
+			<Docs.Code>add</Docs.Code> - An asynchronous function to be called after validation but before
+			adding the tag to the <Docs.Code>$tags</Docs.Code> store.
+			<Docs.Ul class="mt-1.5 mb-1.5">
+				<Docs.Li class="mt-0"><i>default:</i> -</Docs.Li>
+				<Docs.Li class="mt-0">
+					<i>Definition:</i>
+					<Docs.Code>(tag: string) =&gt Promise&ltTag | string&gt</Docs.Code>
 				</Docs.Li>
 			</Docs.Ul>
 		</Docs.Li>

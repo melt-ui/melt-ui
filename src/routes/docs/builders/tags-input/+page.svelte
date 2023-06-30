@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
-	import Deconstruction from './(sections)/Description.svelte';
 	import { Section } from './(sections)/index.js';
-	import { snippets } from './(snippets)/index.js';
 	import { schemas } from './schemas.js';
 
 	export let data;
@@ -18,6 +16,7 @@
 		'Set a maximum number of tags',
 		'Support for allowed list and denied list',
 		'Pass in a custom validator',
+		'Pass in an add function to run before adding a tag',
 	];
 </script>
 
@@ -30,20 +29,7 @@
 
 <Section.Anatomy />
 
-<Docs.H2>Usage</Docs.H2>
-<Docs.P class="mt-4">
-	Use the <Docs.Code>createTagsInput</Docs.Code> builder function.
-	<Docs.Callout type="info">
-		See <Docs.Code>API Reference</Docs.Code> &#8250; <Docs.Code>CreateTagsInputArgs</Docs.Code> for available
-		arguments
-	</Docs.Callout>
-	<Docs.CodeBlock code={snippets.usage1} />
-</Docs.P>
-
-<Docs.P class="mt-4">
-	Use the return values to construct a <Docs.Code>tags-input</Docs.Code>.
-</Docs.P>
-<Docs.CodeBlock code={snippets.usage2} />
+<Section.Usage />
 
 <Section.Description />
 
