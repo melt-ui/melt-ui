@@ -26,7 +26,8 @@
 	// 1. `updateList` **
 	// 2. originalItems *
 	// 3. return original as the store (the filterfunction would need to be rerun) ***
-	const { open, input, menu, option, value, isSelected, updateList, filteredItems, originalItems } =
+
+	const { open, input, menu, option, value, isSelected, updateList, filteredItems } =
 		createCombobox({
 			filterFunction: (item, inputValue) => {
 				// Example string normalization function. Replace as needed.
@@ -48,8 +49,8 @@
 <div>
 	<button
 		on:click={() => {
-			originalItems.update((value) => {
-				return value.concat([{ author: 'Paula Deen', title: '50 shades of gravy' }]);
+			updateList((items) => {
+				return [...items, { author: 'Paula Deen', title: '50 Shades of Gravy' }];
 			});
 		}}>Add</button
 	>

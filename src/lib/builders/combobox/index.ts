@@ -8,6 +8,7 @@ import {
 	effect,
 	isBrowser,
 	sleep,
+	isHTMLElement,
 } from '@melt-ui/svelte/internal/helpers';
 import type { Action } from 'svelte/action';
 import { writable, type Readable, derived, get, readonly } from 'svelte/store';
@@ -26,7 +27,6 @@ interface ComboboxProps<T> {
 	filterFunction: (item: T, value: string) => boolean;
 	positioning?: FloatingConfig;
 	itemToString: (item: T) => string;
-	selectItem?: (item: T) => void;
 }
 
 interface Combobox<T> {
@@ -58,21 +58,18 @@ const defaults = {
 // @TODO figure out how our utils <> their utils
 // @TODO skipping over disabled list items
 export function createCombobox<T>(args: ComboboxProps<T>) {
-	const withDefaults = { ...defaults, ...args } as ComboboxProps<T>;
-	const originalItems = writable(withDefaults.items);
-	const options = writable(withDefaults);
+	const options = writable<ComboboxProps<T>>({ ...defaults, ...args });
 	const open = writable(false);
-	const value = writable(withDefaults.value ?? '');
 	const activeTrigger = writable<HTMLElement | null>(null);
+	/** @TODO Reconcile duplicate state between `value` and `selectedItem`. */
+	/** @TODO default initial state. */
+	const value = writable('');
 	const selectedItem = writable<T>(undefined);
-	const highlightedItem = writable<number>(0);
-	const filteredItems = writable(args.items);
 
-	originalItems.subscribe((items) => {
-		const $options = get(options);
-		// @TODO only run when opt.items changes? Maybe?
-		filteredItems.set(items.filter((item) => $options.filterFunction(item, get(value))));
-	});
+	const highlightedItem = writable<number>(0);
+	const items = writable(args.items);
+	/** A subset of `items` that match the `filterFunction` predicate. */
+	const filteredItems = writable(args.items);
 
 	const ids = {
 		input: generateId(),
@@ -80,15 +77,24 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 		label: generateId(),
 	};
 
-	// @TODO should there be a callback when an item is selected? Useful?
-	function setSelectedItem(index: number, input: HTMLInputElement | null) {
+	function updateList(updaterFunction: (currentItems: T[]) => T[]) {
+		const updatedItems = updaterFunction(get(items));
+		items.set(updatedItems);
+		filteredItems.set(updatedItems.filter((item) => get(options).filterFunction(item, get(value))));
+	}
+
+	/**
+	 *
+	 * @param index
+	 * @param input
+	 */
+	function setSelectedItem(index: number) {
 		const $options = get(options);
-		const $filteredItems = get(filteredItems);
-		const string = $options.itemToString($filteredItems[index]);
-		selectedItem.set($filteredItems[index]);
-		if (input) {
-			input.value = string;
-		}
+		const item = get(filteredItems)[index];
+		selectedItem.set(item);
+		const inputEl = document.getElementById(ids.input);
+		if (!(inputEl instanceof HTMLInputElement)) return;
+		inputEl.value = $options.itemToString(item);
 	}
 
 	const menu = {
@@ -382,13 +388,14 @@ export function createCombobox<T>(args: ComboboxProps<T>) {
 	// });
 
 	return {
-		originalItems,
 		filteredItems: readonly(filteredItems),
 		input,
-		open,
-		menu,
-		option,
-		value,
 		isSelected,
+		menu,
+		open,
+		option,
+		options,
+		updateList,
+		value,
 	};
 }
