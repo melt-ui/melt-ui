@@ -22,45 +22,32 @@
 		{ author: 'Fyodor Dostoevsky', title: 'Crime and Punishment' },
 	];
 
-	// Approaches
-	// 1. `updateList` **
-	// 2. originalItems *
-	// 3. return original as the store (the filterfunction would need to be rerun) ***
-
-	const { open, input, menu, option, value, isSelected, updateList, filteredItems } =
-		createCombobox({
-			filterFunction: (item, inputValue) => {
-				// Example string normalization function. Replace as needed.
-				const normalize = (str: string) => str.normalize().toLowerCase();
-				const normalizedInput = normalize(inputValue);
-				return (
-					normalizedInput === '' ||
-					normalize(item.title).includes(normalizedInput) ||
-					normalize(item.author).includes(normalizedInput)
-				);
-			},
-			items: books,
-			itemToString(item) {
-				return item ? item.title : '';
-			},
-		});
+	const { open, input, menu, option, inputValue, isSelected, filteredItems } = createCombobox({
+		filterFunction: (item, inputValue) => {
+			// Example string normalization function. Replace as needed.
+			const normalize = (str: string) => str.normalize().toLowerCase();
+			const normalizedInput = normalize(inputValue);
+			return (
+				normalizedInput === '' ||
+				normalize(item.title).includes(normalizedInput) ||
+				normalize(item.author).includes(normalizedInput)
+			);
+		},
+		items: books,
+		itemToString(item) {
+			return item ? item.title : '';
+		},
+	});
 </script>
 
 <div>
-	<button
-		on:click={() => {
-			updateList((items) => {
-				return [...items, { author: 'Paula Deen', title: '50 Shades of Gravy' }];
-			});
-		}}>Add</button
-	>
 	<div class="container">
 		<label class="label">
 			<span class="label-description">Choose your favorite book:</span>
 			<div class="input-container">
 				<input
 					{...$input}
-					value={$value}
+					value={inputValue}
 					use:input.action
 					placeholder="Best book ever"
 					class="input"
@@ -78,7 +65,7 @@
 	<ul class="menu" {...$menu} use:menu.action>
 		{#if $open}
 			{#each $filteredItems as item, index (index)}
-				<li {...$option({ index })} use:option.action class="option">
+				<li {...$option({ index, disabled: true })} use:option.action class="option">
 					{#if $isSelected(item)}
 						<div class="check">
 							<Check />
@@ -90,10 +77,6 @@
 					</div>
 				</li>
 			{/each}
-			<!-- This doesn't work because getNextIndex is based on $filteredItems.length -->
-			<li {...$option({ index: $filteredItems.length + 1 })} use:option.action class="option">
-				Dangboi
-			</li>
 		{/if}
 	</ul>
 </div>
