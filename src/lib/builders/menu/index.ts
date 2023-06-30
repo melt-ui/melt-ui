@@ -161,7 +161,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				}),
 				id: rootIds.menu,
 				'aria-labelledby': rootIds.trigger,
-				'data-melt-part': 'menu',
 				'data-melt-menu': '',
 				'data-state': $rootOpen ? 'open' : 'closed',
 				tabindex: -1,
@@ -247,7 +246,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				'aria-expanded': $rootOpen,
 				'data-state': $rootOpen ? 'open' : 'closed',
 				id: rootIds.trigger,
-				'data-melt-part': 'trigger',
+				'data-melt-menu-trigger': '',
 			} as const;
 		}),
 		action: (node: HTMLElement) => {
@@ -321,7 +320,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 	const rootArrow = derived(rootOptions, ($rootOptions) => ({
 		'data-arrow': true,
-		'data-melt-part': 'arrow',
+		'data-melt-menu-arrow': '',
 		style: styleToString({
 			position: 'absolute',
 			width: `var(--arrow-size, ${$rootOptions.arrowSize}px)`,
@@ -333,7 +332,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		role: 'menuitem',
 		tabindex: -1,
 		'data-orientation': 'vertical',
-		'data-melt-part': 'item',
+		'data-melt-menu-item': '',
 		action: (node: HTMLElement, params: ItemArgs = {}) => {
 			const { onSelect } = params;
 			setMeltMenuAttribute(node);
@@ -409,7 +408,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		role: 'menuitemcheckbox',
 		tabindex: -1,
 		'data-orientation': 'vertical',
-		'data-melt-part': 'item',
+		'data-melt-menu-item': '',
 		action: (node: HTMLElement, params: CheckboxItemArgs) => {
 			setMeltMenuAttribute(node);
 			applyAttrsIfDisabled(node);
@@ -490,7 +489,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 		const radioGroup = {
 			role: 'group',
-			'data-melt-part': 'radio-group',
+			'data-melt-menu-radio-group': '',
 		};
 
 		const radioItemDefaults = {
@@ -512,7 +511,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						'data-value': itemValue,
 						'data-orientation': 'vertical',
 						tabindex: -1,
-						'data-melt-part': 'item',
+						'data-melt-menu-item': '',
 					};
 				};
 			}),
@@ -647,7 +646,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					}),
 					id: subIds.menu,
 					'aria-labelledby': subIds.trigger,
-					'data-melt-part': 'submenu',
+					'data-melt-menu-submenu': '',
 					'data-melt-menu': '',
 					'data-state': $subOpen ? 'open' : 'closed',
 					tabindex: -1,
@@ -796,7 +795,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					'aria-expanded': $subOpen,
 					'data-state': $subOpen ? 'open' : 'closed',
 					'data-disabled': $subOptions.disabled ? '' : undefined,
-					'data-melt-part': 'subtrigger',
+					'data-melt-menu-subtrigger': '',
 					'aria-haspopop': 'menu',
 				} as const;
 			}),
@@ -1255,7 +1254,7 @@ function isMouse(e: PointerEvent) {
  */
 export function setMeltMenuAttribute(element: HTMLElement | null) {
 	if (!element) return;
-	const menuEl = element.closest('[data-melt-part="menu"], [data-melt-part="submenu"]');
+	const menuEl = element.closest('[data-melt-menu], [data-melt-menu-submenu]');
 
 	if (!isHTMLElement(menuEl)) return;
 	element.setAttribute('data-melt-menu-id', menuEl.id);

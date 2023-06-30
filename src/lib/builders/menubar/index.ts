@@ -45,6 +45,7 @@ const defaults = {
 
 export function createMenubar() {
 	const activeMenu = writable<string>('');
+	const menubarMenus = writable<HTMLElement[]>([]);
 
 	const menubarIds = {
 		menubar: generateId(),
@@ -52,12 +53,12 @@ export function createMenubar() {
 
 	const menubar = hiddenAction({
 		role: 'menubar',
-		'data-melt-part': 'menubar',
+		'data-melt-menubar': '',
 		'data-orientation': 'horizontal',
 		id: menubarIds.menubar,
 		action: (node: HTMLElement) => {
 			const menuTriggers = node.querySelectorAll(
-				"[role='menuitem'][data-melt-part='trigger']"
+				'[data-melt-menubar-trigger]'
 			) as unknown as HTMLElement[];
 			if (menuTriggers.length === 0) return;
 			for (let i = 0; i < menuTriggers.length; i++) {
@@ -68,6 +69,9 @@ export function createMenubar() {
 					menuTriggers[i].tabIndex = -1;
 				}
 			}
+
+			const menus = Array.from(node.querySelectorAll('[data-melt-menubar-menu]')) as HTMLElement[];
+			menubarMenus.set(menus);
 
 			return {
 				destroy: noop,
@@ -98,7 +102,7 @@ export function createMenubar() {
 					}),
 					id: m.rootIds.menu,
 					'aria-labelledby': m.rootIds.trigger,
-					'data-melt-part': 'menu',
+					'data-melt-menubar-menu': '',
 					'data-melt-menu': '',
 					'data-state': $rootOpen ? 'open' : 'closed',
 					'data-melt-scope': menubarIds.menubar,
@@ -150,7 +154,7 @@ export function createMenubar() {
 						}
 
 						if (e.key === kbd.ARROW_LEFT || e.key === kbd.ARROW_RIGHT) {
-							handleCrossMenuNavigation(e, activeMenu, menubarIds.menubar);
+							handleCrossMenuNavigation(e, activeMenu);
 						}
 
 						/**
@@ -189,7 +193,7 @@ export function createMenubar() {
 					'aria-expanded': $rootOpen,
 					'data-state': $rootOpen ? 'open' : 'closed',
 					id: m.rootIds.trigger,
-					'data-melt-part': 'trigger',
+					'data-melt-menubar-trigger': '',
 					'aria-haspopup': 'menu',
 					'data-orientation': 'horizontal',
 					role: 'menuitem',
@@ -283,15 +287,22 @@ export function createMenubar() {
 		};
 
 		effect([activeMenu], ([$activeMenu]) => {
-			if ($activeMenu !== m.rootIds.menu && get(rootOpen)) {
-				rootOpen.set(false);
-				rootActiveTrigger.set(null);
-			}
+			if ($activeMenu === m.rootIds.menu) {
+				if (get(rootOpen)) return;
 
-			if ($activeMenu === m.rootIds.menu && !get(rootOpen)) {
 				const triggerElement = document.getElementById(m.rootIds.trigger);
+				if (!isHTMLElement(triggerElement)) return;
 				rootActiveTrigger.set(triggerElement);
 				rootOpen.set(true);
+				return;
+			}
+
+			if ($activeMenu !== m.rootIds.menu) {
+				if (get(rootOpen)) {
+					rootActiveTrigger.set(null);
+					rootOpen.set(false);
+				}
+				return;
 			}
 		});
 
@@ -324,7 +335,7 @@ export function createMenubar() {
 				 * Submenu key events bubble through portals and
 				 * we only care about key events that happen inside this menu.
 				 */
-				const isTargetTrigger = target.getAttribute('data-melt-part') === 'trigger';
+				const isTargetTrigger = target.hasAttribute('data-melt-menubar-trigger');
 
 				if (!isTargetTrigger) return;
 
@@ -363,11 +374,7 @@ export function createMenubar() {
 	 * Keyboard event handler for menu navigation
 	 * @param e The keyboard event
 	 */
-	function handleCrossMenuNavigation(
-		e: KeyboardEvent,
-		activeMenu: Writable<string>,
-		menubarId: string
-	) {
+	function handleCrossMenuNavigation(e: KeyboardEvent, activeMenu: Writable<string>) {
 		if (!isBrowser) return;
 		e.preventDefault();
 
@@ -375,15 +382,12 @@ export function createMenubar() {
 		const currentTarget = e.currentTarget;
 		if (!isHTMLElement(currentTarget)) return;
 
-		const menubar = document.getElementById(menubarId);
-		if (!isHTMLElement(menubar)) return;
-
 		// menus scoped to the menubar
-		const childMenus = getChildMenus(menubarId) as HTMLElement[];
+		const childMenus = get(menubarMenus);
 		if (!childMenus.length) return;
-
 		// Index of the currently focused item in the candidate nodes array
 		const currentIndex = childMenus.indexOf(currentTarget);
+
 		// Calculate the index of the next menu item
 		let nextIndex: number;
 		switch (e.key) {
@@ -416,20 +420,10 @@ export function createMenubar() {
 		return focusableElementsWithoutTabindex;
 	}
 
-	function getChildMenus(menubarId: string): HTMLElement[] {
-		const childMenus = Array.from(
-			document.querySelectorAll<HTMLElement>(
-				`[data-melt-scope="${menubarId}"][data-melt-part="menu"]`
-			)
-		);
-		console.log(childMenus);
-		return childMenus;
-	}
-
 	function getMenuTriggers(element: HTMLElement) {
 		const menuElement = element.closest('[role="menubar"]');
 		if (!isHTMLElement(menuElement)) return [];
-		return Array.from(menuElement.querySelectorAll('[data-melt-part="trigger"]'));
+		return Array.from(menuElement.querySelectorAll('[data-melt-menubar-trigger]'));
 	}
 
 	/**
