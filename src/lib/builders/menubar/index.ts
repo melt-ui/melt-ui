@@ -8,6 +8,7 @@ import {
 	type Menu,
 	setMeltMenuAttribute,
 	FIRST_LAST_KEYS,
+	handleMenuNavigation,
 } from '../menu';
 import {
 	executeCallbacks,
@@ -26,24 +27,31 @@ import {
 import { onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions';
 
-export type MenubarArgs = Menu['builder'];
-export type MenubarSubArgs = Menu['submenu'];
-export type MenubarItemArgs = Menu['item'];
-export type MenubarCheckboxItemArgs = Menu['checkboxItem'];
-export type MenubarRadioGroup = Menu['radioGroup'];
-export type MenubarRadioItemArgs = Menu['radioItem'];
-export type MenubarRadioItemActionArgs = Menu['radioItemAction'];
+export type CreateMenubar = {
+	/**
+	 * Whether or not the menubar should loop when
+	 * navigating with the arrow keys.
+	 *
+	 * @default true
+	 */
+	loop?: boolean;
+};
+export type CreateMenu = Menu['builder'];
+export type CreateSubMenu = Menu['submenu'];
+export type MenuItem = Menu['item'];
+export type MenuCheckboxItem = Menu['checkboxItem'];
+export type CreateMenuRadioGroup = Menu['radioGroup'];
+export type MenuRadioItem = Menu['radioItem'];
+export type MenuRadioItemAction = Menu['radioItemAction'];
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
 
 const defaults = {
-	arrowSize: 8,
-	positioning: {
-		placement: 'bottom-start',
-	},
-} satisfies Defaults<MenubarArgs>;
+	loop: true,
+} satisfies Defaults<CreateMenubar>;
 
-export function createMenubar() {
+export function createMenubar(args?: CreateMenubar) {
+	const withDefaults = { ...defaults, ...args } satisfies CreateMenubar;
 	const activeMenu = writable<string>('');
 	const menubarMenus = writable<HTMLElement[]>([]);
 
@@ -79,8 +87,14 @@ export function createMenubar() {
 		},
 	});
 
-	const createMenu = (args?: MenubarArgs) => {
-		const withDefaults = { ...defaults, ...args } as MenubarArgs;
+	const menuDefaults = {
+		positioning: {
+			placement: 'bottom-start',
+		},
+	} satisfies Defaults<CreateMenu>;
+
+	const createMenu = (args?: CreateMenu) => {
+		const withDefaults = { ...menuDefaults, ...args } as CreateMenu;
 		const rootOptions = writable(withDefaults);
 		const rootOpen = writable(false);
 		const rootActiveTrigger = writable<HTMLElement | null>(null);
@@ -154,7 +168,7 @@ export function createMenubar() {
 							handleMenuNavigation(e);
 						}
 
-						if (e.key === kbd.ARROW_LEFT || e.key === kbd.ARROW_RIGHT) {
+						if (MENUBAR_NAV_KEYS.includes(e.key)) {
 							handleCrossMenuNavigation(e, activeMenu);
 						}
 
@@ -423,6 +437,12 @@ export function createMenubar() {
 			case kbd.ARROW_LEFT:
 				nextIndex = currentIndex > 0 ? currentIndex - 1 : childMenus.length - 1;
 				break;
+			case kbd.HOME:
+				nextIndex = 0;
+				break;
+			case kbd.END:
+				nextIndex = childMenus.length - 1;
+				break;
 			default:
 				return;
 		}
@@ -486,68 +506,14 @@ export function createMenubar() {
 
 		// Calculate the index of the next menu item
 		let nextIndex: number;
+		const loop = withDefaults.loop;
 		switch (e.key) {
 			case kbd.ARROW_RIGHT:
-				nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : currentIndex;
+				nextIndex =
+					currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : loop ? 0 : currentIndex;
 				break;
 			case kbd.ARROW_LEFT:
-				nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
-				break;
-			case kbd.HOME:
-				nextIndex = 0;
-				break;
-			case kbd.END:
-				nextIndex = candidateNodes.length - 1;
-				break;
-			default:
-				return;
-		}
-
-		const nextFocusedItem = candidateNodes[nextIndex];
-
-		handleRovingFocus(nextFocusedItem);
-	}
-
-	/**
-	 * Keyboard event handler for menu navigation
-	 * @param e The keyboard event
-	 */
-	function handleMenuNavigation(e: KeyboardEvent) {
-		e.preventDefault();
-
-		// currently focused menu item
-		const currentFocusedItem = document.activeElement;
-		if (!isHTMLElement(currentFocusedItem)) return;
-
-		// menu element being navigated
-		const currentTarget = e.currentTarget;
-		if (!isHTMLElement(currentTarget)) return;
-
-		// menu items of the current menu
-		const menuItems = getMenuItems(currentTarget);
-		if (!menuItems.length) return;
-
-		const candidateNodes = menuItems.filter((item) => {
-			if (item.hasAttribute('data-disabled')) {
-				return false;
-			}
-			if (item.getAttribute('disabled') === 'true') {
-				return false;
-			}
-			return true;
-		});
-
-		// Index of the currently focused item in the candidate nodes array
-		const currentIndex = candidateNodes.indexOf(currentFocusedItem);
-
-		// Calculate the index of the next menu item
-		let nextIndex: number;
-		switch (e.key) {
-			case kbd.ARROW_DOWN:
-				nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : currentIndex;
-				break;
-			case kbd.ARROW_UP:
-				nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
+				nextIndex = currentIndex > 0 ? currentIndex - 1 : loop ? candidateNodes.length - 1 : 0;
 				break;
 			case kbd.HOME:
 				nextIndex = 0;

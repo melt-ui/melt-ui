@@ -63,6 +63,13 @@ export type CreateMenuArgs = {
 	 * @default true
 	 */
 	preventScroll?: boolean;
+
+	/**
+	 * Whether or not to loop the menu navigation.
+	 *
+	 * @default false
+	 */
+	loop?: boolean;
 };
 
 export type CreateSubmenuArgs = CreateMenuArgs & {
