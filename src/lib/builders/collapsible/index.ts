@@ -1,4 +1,4 @@
-import { addEventListener, builder } from '$lib/internal/helpers';
+import { addEventListener, builder, createElHelpers } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { writable } from 'svelte/store';
 
@@ -12,7 +12,7 @@ const defaults = {
 	disabled: false,
 } satisfies Defaults<CreateCollapsibleArgs>;
 
-const name = (part?: string) => (part ? `collapsible-${part}` : 'collapsible');
+const { name } = createElHelpers('collapsible');
 
 export function createCollapsible(args?: CreateCollapsibleArgs) {
 	const options = { ...defaults, ...args };

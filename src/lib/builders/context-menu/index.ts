@@ -2,6 +2,7 @@ import { usePopper } from '$lib/internal/actions/popper';
 import {
 	addEventListener,
 	builder,
+	createElHelpers,
 	derivedWithUnsubscribe,
 	effect,
 	executeCallbacks,
@@ -49,7 +50,7 @@ const defaults = {
 	preventScroll: true,
 } satisfies Defaults<CreateContextMenu>;
 
-const name = (part?: string) => (part ? `context-menu-${part}` : 'context-menu');
+const { name } = createElHelpers('context-menu');
 
 export function createContextMenu(args?: CreateContextMenu) {
 	const withDefaults = { ...defaults, ...args } as CreateContextMenu;

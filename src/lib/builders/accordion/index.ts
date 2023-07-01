@@ -1,6 +1,7 @@
 import {
 	addEventListener,
 	builder,
+	createElHelpers,
 	executeCallbacks,
 	generateId,
 	getElementByMeltId,
@@ -23,7 +24,7 @@ type MultipleAccordionArgs = {
 	type: 'multiple';
 };
 
-const name = (part?: string) => (part ? `accordion-${part}` : 'accordion');
+const { name } = createElHelpers('accordion');
 
 export type CreateAccordionArgs = BaseAccordionArgs & (SingleAccordionArgs | MultipleAccordionArgs);
 

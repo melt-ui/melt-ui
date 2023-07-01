@@ -213,10 +213,14 @@ type BuilderStore<
 		: ReturnType<R> & { [K in `data-melt-${Name}`]: '' } & { action: A }
 >;
 
-export function createNameFn(prefix: string) {
-	const name = (part?: string) => (part ? `${prefix}-${part}` : prefix);
-	name.getSelector = (part?: string) => `[data-melt-${prefix}${part ? `-${part}` : ''}]`;
-	name.getEl = (part?: string) => document.querySelector(name.getSelector(part));
+export function createElHelpers<Part extends string = string>(prefix: string) {
+	const name = (part?: Part) => (part ? `${prefix}-${part}` : prefix);
+	const selector = (part?: Part) => `[data-melt-${prefix}${part ? `-${part}` : ''}]`;
+	const getEl = (part?: Part) => document.querySelector(selector(part));
 
-	return name;
+	return {
+		name,
+		selector,
+		getEl,
+	};
 }

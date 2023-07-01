@@ -3,7 +3,7 @@ import { usePopper } from '$lib/internal/actions/popper';
 import {
 	addEventListener,
 	builder,
-	createNameFn,
+	createElHelpers,
 	createTypeaheadSearch,
 	derivedWithUnsubscribe,
 	effect,
@@ -119,7 +119,17 @@ export type MenuBuilderOptions = {
 	prevFocusable: Writable<HTMLElement | null>;
 };
 
-const name = createNameFn('menu');
+const { name, selector } = createElHelpers<
+	| 'trigger'
+	| 'arrow'
+	| 'checkbox-item'
+	| 'item'
+	| 'radio-group'
+	| 'radio-item'
+	| 'submenu'
+	| 'subtrigger'
+	| 'subarrow'
+>('menu');
 
 export function createMenuBuilder(opts: MenuBuilderOptions) {
 	const rootOptions = opts.rootOptions;
@@ -223,7 +233,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					 * Submenu key events bubble through portals and
 					 * we only care about key events that happen inside this menu.
 					 */
-					const isKeyDownInside = target.closest(name.getSelector()) === menuElement;
+					const isKeyDownInside = target.closest(selector()) === menuElement;
 					if (!isKeyDownInside) return;
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						handleMenuNavigation(e);
@@ -728,8 +738,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						if (!targetMeltMenuId) return;
 
 						const isKeyDownInside =
-							target.closest(name.getSelector()) === menuElement &&
-							targetMeltMenuId === menuElement.id;
+							target.closest(selector()) === menuElement && targetMeltMenuId === menuElement.id;
 
 						if (!isKeyDownInside) return;
 
@@ -1311,7 +1320,7 @@ function isMouse(e: PointerEvent) {
  */
 export function setMeltMenuAttribute(element: HTMLElement | null) {
 	if (!element) return;
-	const menuEl = element.closest(`${name.getSelector()}, ${name.getSelector('submenu')}`);
+	const menuEl = element.closest(`${selector()}, ${selector('submenu')}`);
 
 	if (!isHTMLElement(menuEl)) return;
 	element.setAttribute('data-melt-menu-id', menuEl.id);
