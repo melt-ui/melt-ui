@@ -103,7 +103,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Tooltip         | ✅     |
 | ???             |        |
 
-**Progress:** 21/30+
+**Progress:** 22/30+
 
 ## Similar projects
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createToolbar, createToolbarGroup } from '$lib';
+	import { createToolbar } from '$lib';
 
 	import Bold from '~icons/lucide/bold';
 	import Italic from '~icons/lucide/italic';
@@ -8,12 +8,11 @@
 	import AlignCenter from '~icons/lucide/align-center';
 	import AlignRight from '~icons/lucide/align-right';
 
-	const { root, options, button, link, separator } = createToolbar();
+	const { root, button, link, separator, createToolbarGroup } = createToolbar();
 	const { root: fontGroup, item: fontItem } = createToolbarGroup({
-		toolbarOptions: options,
 		type: 'multiple',
 	});
-	const { root: alignGroup, item: alignItem } = createToolbarGroup({ toolbarOptions: options });
+	const { root: alignGroup, item: alignItem } = createToolbarGroup();
 </script>
 
 <div

@@ -32,11 +32,11 @@ const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
 const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
 const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 
-export type ContextMenuArgs = Menu['builder'];
-export type ContextMenuSubArgs = Menu['submenu'];
+export type CreateContextMenu = Menu['builder'];
+export type CreateContextMenuSub = Menu['submenu'];
 export type ContextMenuItemArgs = Menu['item'];
 export type ContextMenuCheckboxItemArgs = Menu['checkboxItem'];
-export type ContextMenuRadioGroup = Menu['radioGroup'];
+export type CreateContextMenuRadioGroup = Menu['radioGroup'];
 export type ContextMenuRadioItemArgs = Menu['radioItem'];
 export type ContextMenuRadioItemActionArgs = Menu['radioItemAction'];
 
@@ -46,10 +46,10 @@ const defaults = {
 		placement: 'bottom-start',
 	},
 	preventScroll: true,
-} satisfies Defaults<ContextMenuArgs>;
+} satisfies Defaults<CreateContextMenu>;
 
-export function createContextMenu(args?: ContextMenuArgs) {
-	const withDefaults = { ...defaults, ...args } as ContextMenuArgs;
+export function createContextMenu(args?: CreateContextMenu) {
+	const withDefaults = { ...defaults, ...args } as CreateContextMenu;
 	const rootOptions = writable(withDefaults);
 	const rootOpen = writable(false);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
@@ -71,6 +71,7 @@ export function createContextMenu(args?: ContextMenuArgs) {
 		rootOptions,
 		nextFocusable,
 		prevFocusable,
+		disableFocusFirstItem: true,
 		disableTriggerRefocus: true,
 	});
 
