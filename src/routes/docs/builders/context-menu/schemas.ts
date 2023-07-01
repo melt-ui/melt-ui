@@ -1,8 +1,8 @@
 import type { APISchema } from '$routes/(components)/api.svelte';
 
 const builder: APISchema = {
-	title: 'CreateDropdownMenuArgs',
-	description: 'The configuration object passed to the `createDropdownMenu` builder function.',
+	title: 'CreateContextMenuArgs',
+	description: 'The configuration object passed to the `createContextMenu` builder function.',
 	args: [
 		{
 			label: 'positioning',
@@ -43,7 +43,7 @@ const menu: APISchema = {
 
 const trigger: APISchema = {
 	title: 'Trigger',
-	description: 'The button which toggles the dropdown menu.',
+	description: 'The element which when right clicked inside, opens the context menu.',
 	dataAttributes: [
 		{
 			label: '[data-melt-part]',
