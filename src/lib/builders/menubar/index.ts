@@ -9,6 +9,7 @@ import {
 	setMeltMenuAttribute,
 	FIRST_LAST_KEYS,
 	handleMenuNavigation,
+	handleTabNavigation,
 } from '../menu';
 import {
 	executeCallbacks,
@@ -21,8 +22,9 @@ import {
 	noop,
 	generateId,
 	isBrowser,
-	sleep,
 	hiddenAction,
+	getNextFocusable,
+	getPreviousFocusable,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions';
@@ -54,6 +56,8 @@ export function createMenubar(args?: CreateMenubar) {
 	const withDefaults = { ...defaults, ...args } satisfies CreateMenubar;
 	const activeMenu = writable<string>('');
 	const scopedMenus = writable<HTMLElement[]>([]);
+	const nextFocusable = writable<HTMLElement | null>(null);
+	const prevFocusable = writable<HTMLElement | null>(null);
 
 	const rootIds = {
 		menubar: generateId(),
@@ -69,14 +73,7 @@ export function createMenubar(args?: CreateMenubar) {
 				'[data-melt-menubar-trigger]'
 			) as unknown as HTMLElement[];
 			if (menuTriggers.length === 0) return;
-			for (let i = 0; i < menuTriggers.length; i++) {
-				if (!isHTMLElement(menuTriggers[i])) return;
-				if (i === 0) {
-					menuTriggers[i].tabIndex = 0;
-				} else {
-					menuTriggers[i].tabIndex = -1;
-				}
-			}
+			menuTriggers[0].tabIndex = 0;
 
 			const menus = Array.from(node.querySelectorAll('[data-melt-menubar-menu]')) as HTMLElement[];
 			scopedMenus.set(menus);
@@ -106,6 +103,8 @@ export function createMenubar(args?: CreateMenubar) {
 			rootActiveTrigger,
 			disableTriggerRefocus: true,
 			disableFocusFirstItem: true,
+			nextFocusable,
+			prevFocusable,
 		});
 
 		const menu = {
@@ -179,7 +178,10 @@ export function createMenubar(args?: CreateMenubar) {
 						 */
 						if (e.key === kbd.TAB) {
 							e.preventDefault();
-							return;
+							rootActiveTrigger.set(null);
+							rootOpen.set(false);
+							console.log(get(nextFocusable));
+							handleTabNavigation(e, nextFocusable, prevFocusable);
 						}
 
 						/**
@@ -217,6 +219,20 @@ export function createMenubar(args?: CreateMenubar) {
 			}),
 			action: (node: HTMLElement) => {
 				applyAttrsIfDisabled(node);
+
+				const menubarElement = document.getElementById(rootIds.menubar);
+				if (!menubarElement) return;
+
+				const menubarTriggers = Array.from(
+					menubarElement.querySelectorAll<HTMLElement>('[data-melt-menubar-trigger]')
+				);
+				if (!menubarTriggers.length) return;
+				if (menubarTriggers[0] === node) {
+					node.tabIndex = 0;
+				} else {
+					node.tabIndex = -1;
+				}
+
 				const unsub = executeCallbacks(
 					addEventListener(node, 'pointerdown', (e) => {
 						if (e.button !== 0 || e.ctrlKey === true) return;
@@ -228,6 +244,8 @@ export function createMenubar(args?: CreateMenubar) {
 						rootOpen.update((prev) => {
 							const isOpen = !prev;
 							if (isOpen) {
+								nextFocusable.set(getNextFocusable(triggerElement));
+								prevFocusable.set(getPreviousFocusable(triggerElement));
 								rootActiveTrigger.set(triggerElement);
 								activeMenu.set(m.rootIds.menu);
 							} else {
@@ -255,6 +273,8 @@ export function createMenubar(args?: CreateMenubar) {
 							rootOpen.update((prev) => {
 								const isOpen = !prev;
 								if (isOpen) {
+									nextFocusable.set(getNextFocusable(triggerElement));
+									prevFocusable.set(getPreviousFocusable(triggerElement));
 									rootActiveTrigger.set(triggerElement);
 									activeMenu.set(m.rootIds.menu);
 								} else {
@@ -279,8 +299,6 @@ export function createMenubar(args?: CreateMenubar) {
 
 							handleRovingFocus(nextFocusedElement);
 						}
-
-						e.preventDefault();
 					}),
 					addEventListener(node, 'pointerenter', (e) => {
 						const triggerElement = e.currentTarget;
@@ -377,26 +395,6 @@ export function createMenubar(args?: CreateMenubar) {
 				if (MENUBAR_NAV_KEYS.includes(e.key)) {
 					handleMenubarNavigation(e);
 				}
-
-				if (e.shiftKey && e.key === kbd.TAB) {
-					e.preventDefault();
-					const focusableElements = getFocusableElements();
-					const currentIndex = focusableElements.indexOf(document.activeElement as HTMLElement);
-					const previousIndex = currentIndex > 0 ? currentIndex - 1 : focusableElements.length - 1;
-					const previousElement = focusableElements[previousIndex];
-					sleep(1).then(() => {
-						previousElement.focus();
-					});
-				}
-
-				if (e.key === kbd.TAB) {
-					e.preventDefault();
-					const focusableElements = getFocusableElements();
-					const currentIndex = focusableElements.indexOf(document.activeElement as HTMLElement);
-					const nextIndex = currentIndex < focusableElements.length - 1 ? currentIndex + 1 : 0;
-					const nextElement = focusableElements[nextIndex];
-					nextElement.focus();
-				}
 			}),
 			addEventListener(document, 'keydown', (e) => {
 				if (e.key === kbd.ESCAPE) {
@@ -463,21 +461,6 @@ export function createMenubar(args?: CreateMenubar) {
 
 		const nextFocusedItem = childMenus[nextIndex];
 		activeMenu.set(nextFocusedItem.id);
-	}
-
-	function getFocusableElements(container: HTMLElement = document.body): HTMLElement[] {
-		const focusableElements = Array.from(
-			container.querySelectorAll<HTMLElement>(
-				'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])'
-			)
-		);
-
-		const focusableElementsWithoutTabindex = focusableElements.filter((element) => {
-			const tabindex = element.getAttribute('tabindex');
-			return tabindex !== '-1';
-		});
-
-		return focusableElementsWithoutTabindex;
 	}
 
 	function getMenuTriggers(element: HTMLElement) {
