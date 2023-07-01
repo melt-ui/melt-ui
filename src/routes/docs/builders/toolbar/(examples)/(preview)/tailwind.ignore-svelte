@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { createToolbar, createToolbarGroup } from '@melt-ui/svelte';
+	import { createToolbar } from '@melt-ui/svelte';
 	import { Bold, Italic, Strikethrough, AlignLeft, AlignCenter, AlignRight } from 'icons';
 
-	const { root, options, button, link, separator } = createToolbar();
+	const { root, button, link, separator, createToolbarGroup } = createToolbar();
 	const { root: fontGroup, item: fontItem } = createToolbarGroup({
-		toolbarOptions: options,
 		type: 'multiple',
 	});
-	const { root: alignGroup, item: alignItem } = createToolbarGroup({ toolbarOptions: options });
+	const { root: alignGroup, item: alignItem } = createToolbarGroup();
 </script>
 
 <div

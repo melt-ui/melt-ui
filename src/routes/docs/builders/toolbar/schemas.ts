@@ -25,8 +25,8 @@ const root: APISchema = {
 			value: ["'horizontal'", "'vertical'"],
 		},
 		{
-			label: 'data-melt-part',
-			value: '`toolbar`',
+			label: 'data-melt-toolbar',
+			value: '',
 		},
 	],
 };
@@ -36,8 +36,8 @@ const button: APISchema = {
 	description: 'The toolbar button element.',
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`toolbar-item`',
+			label: 'data-melt-toolbar-item',
+			value: '',
 		},
 	],
 };
@@ -47,8 +47,8 @@ const link: APISchema = {
 	description: 'The toolbar link element.',
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`toolbar-item`',
+			label: 'data-melt-toolbar-item',
+			value: '',
 		},
 	],
 };
@@ -60,6 +60,10 @@ const separator: APISchema = {
 		{
 			label: 'data-orientation',
 			value: ["'horizontal'", "'vertical'"],
+		},
+		{
+			label: 'data-melt-toolbar-separator',
+			value: '',
 		},
 	],
 };
@@ -93,12 +97,16 @@ const groupRoot: APISchema = {
 			label: 'data-orientation',
 			value: ["'horizontal'", "'vertical'"],
 		},
+		{
+			label: 'data-melt-toolbar-group',
+			value: '',
+		},
 	],
 };
 
 const groupItem: APISchema = {
-	title: 'Group Root',
-	description: 'The root toolbar element for a toolbar group.',
+	title: 'Group Item',
+	description: 'A an item within a toolbar group.',
 	args: [
 		{
 			label: 'value',
@@ -116,8 +124,8 @@ const groupItem: APISchema = {
 			value: ["'horizontal'", "'vertical'"],
 		},
 		{
-			label: 'data-melt-part',
-			value: '`toolbar-item`',
+			label: 'data-melt-toolbar-item',
+			value: '',
 		},
 		{
 			label: 'data-disabled',
