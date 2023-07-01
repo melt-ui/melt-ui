@@ -1,24 +1,25 @@
 import type { FloatingConfig } from '$lib/internal/actions';
 import { usePopper } from '$lib/internal/actions/popper';
 import {
+	addEventListener,
+	builder,
+	createNameFn,
+	createTypeaheadSearch,
 	derivedWithUnsubscribe,
 	effect,
-	isBrowser,
-	kbd,
-	sleep,
-	styleToString,
-	generateId,
-	isHTMLElement,
-	isElementDisabled,
-	noop,
 	executeCallbacks,
-	addEventListener,
-	hiddenAction,
-	createTypeaheadSearch,
-	handleRovingFocus,
-	removeScroll,
+	generateId,
 	getNextFocusable,
 	getPreviousFocusable,
+	handleRovingFocus,
+	isBrowser,
+	isElementDisabled,
+	isHTMLElement,
+	kbd,
+	noop,
+	removeScroll,
+	sleep,
+	styleToString,
 } from '$lib/internal/helpers';
 import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
@@ -118,6 +119,8 @@ export type MenuBuilderOptions = {
 	prevFocusable: Writable<HTMLElement | null>;
 };
 
+const name = createNameFn('menu');
+
 export function createMenuBuilder(opts: MenuBuilderOptions) {
 	const rootOptions = opts.rootOptions;
 	const rootOpen = opts.rootOpen;
@@ -167,8 +170,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		trigger: generateId(),
 	};
 
-	const rootMenu = {
-		...derived([rootOpen], ([$rootOpen]) => {
+	const rootMenu = builder(name(), {
+		stores: [rootOpen],
+		returned: ([$rootOpen]) => {
 			return {
 				role: 'menu',
 				hidden: $rootOpen ? undefined : true,
@@ -177,12 +181,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				}),
 				id: rootIds.menu,
 				'aria-labelledby': rootIds.trigger,
-				'data-melt-part': 'menu',
-				'data-melt-menu': '',
 				'data-state': $rootOpen ? 'open' : 'closed',
 				tabindex: -1,
 			} as const;
-		}),
+		},
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
 
@@ -221,7 +223,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					 * Submenu key events bubble through portals and
 					 * we only care about key events that happen inside this menu.
 					 */
-					const isKeyDownInside = target.closest('[data-melt-menu]') === menuElement;
+					const isKeyDownInside = target.closest(name.getSelector()) === menuElement;
 					if (!isKeyDownInside) return;
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						handleMenuNavigation(e);
@@ -257,18 +259,18 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				},
 			};
 		},
-	};
+	});
 
-	const rootTrigger = {
-		...derived([rootOpen], ([$rootOpen]) => {
+	const rootTrigger = builder(name('trigger'), {
+		stores: [rootOpen],
+		returned: ([$rootOpen]) => {
 			return {
 				'aria-controls': rootIds.menu,
 				'aria-expanded': $rootOpen,
 				'data-state': $rootOpen ? 'open' : 'closed',
 				id: rootIds.trigger,
-				'data-melt-part': 'trigger',
 			} as const;
-		}),
+		},
 		action: (node: HTMLElement) => {
 			applyAttrsIfDisabled(node);
 			const unsub = executeCallbacks(
@@ -338,23 +340,26 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
-	const rootArrow = derived(rootOptions, ($rootOptions) => ({
-		'data-arrow': true,
-		'data-melt-part': 'arrow',
-		style: styleToString({
-			position: 'absolute',
-			width: `var(--arrow-size, ${$rootOptions.arrowSize}px)`,
-			height: `var(--arrow-size, ${$rootOptions.arrowSize}px)`,
+	const rootArrow = builder(name('arrow'), {
+		stores: rootOptions,
+		returned: ($rootOptions) => ({
+			'data-arrow': true,
+			style: styleToString({
+				position: 'absolute',
+				width: `var(--arrow-size, ${$rootOptions.arrowSize}px)`,
+				height: `var(--arrow-size, ${$rootOptions.arrowSize}px)`,
+			}),
 		}),
-	}));
+	});
 
-	const item = hiddenAction({
-		role: 'menuitem',
-		tabindex: -1,
-		'data-orientation': 'vertical',
-		'data-melt-part': 'item',
+	const item = builder(name('item'), {
+		returned: () => ({
+			role: 'menuitem',
+			tabindex: -1,
+			'data-orientation': 'vertical',
+		}),
 		action: (node: HTMLElement, params: ItemArgs = {}) => {
 			const { onSelect } = params;
 			setMeltMenuAttribute(node);
@@ -426,11 +431,12 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		checked: writable(false),
 	};
 
-	const checkboxItem = hiddenAction({
-		role: 'menuitemcheckbox',
-		tabindex: -1,
-		'data-orientation': 'vertical',
-		'data-melt-part': 'item',
+	const checkboxItem = builder(name('checkbox-item'), {
+		returned: () => ({
+			role: 'menuitemcheckbox',
+			tabindex: -1,
+			'data-orientation': 'vertical',
+		}),
 		action: (node: HTMLElement, params: CheckboxItemArgs) => {
 			setMeltMenuAttribute(node);
 			applyAttrsIfDisabled(node);
@@ -509,17 +515,19 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	const createMenuRadioGroup = (args: CreateRadioGroupArgs = {}) => {
 		const value = writable(args.value ?? null);
 
-		const radioGroup = {
-			role: 'group',
-			'data-melt-part': 'radio-group',
-		};
+		const radioGroup = builder(name('radio-group'), {
+			returned: () => ({
+				role: 'group',
+			}),
+		});
 
 		const radioItemDefaults = {
 			disabled: false,
 		};
 
-		const radioItem = {
-			...derived([value], ([$value]) => {
+		const radioItem = builder(name('radio-item'), {
+			stores: [value],
+			returned: ([$value]) => {
 				return (itemArgs: RadioItemArgs) => {
 					const { value: itemValue, disabled } = { ...radioItemDefaults, ...itemArgs };
 					const checked = $value === itemValue;
@@ -533,10 +541,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						'data-value': itemValue,
 						'data-orientation': 'vertical',
 						tabindex: -1,
-						'data-melt-part': 'item',
 					};
 				};
-			}),
+			},
 			action: (node: HTMLElement, params: RadioItemActionArgs = {}) => {
 				setMeltMenuAttribute(node);
 				const { onSelect } = params;
@@ -611,7 +618,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					destroy: unsub,
 				};
 			},
-		};
+		});
 
 		const isChecked = derived(value, ($value) => {
 			return (itemValue: string) => {
@@ -658,8 +665,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			trigger: generateId(),
 		};
 
-		const subMenu = {
-			...derived([subOpen], ([$subOpen]) => {
+		const subMenu = builder(name('submenu'), {
+			stores: [subOpen],
+			returned: ([$subOpen]) => {
 				return {
 					role: 'menu',
 					hidden: $subOpen ? undefined : true,
@@ -668,12 +676,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					}),
 					id: subIds.menu,
 					'aria-labelledby': subIds.trigger,
-					'data-melt-part': 'submenu',
-					'data-melt-menu': '',
 					'data-state': $subOpen ? 'open' : 'closed',
 					tabindex: -1,
 				} as const;
-			}),
+			},
 			action: (node: HTMLElement) => {
 				let unsubPopper = noop;
 
@@ -722,7 +728,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						if (!targetMeltMenuId) return;
 
 						const isKeyDownInside =
-							target.closest('[data-melt-menu]') === menuElement &&
+							target.closest(name.getSelector()) === menuElement &&
 							targetMeltMenuId === menuElement.id;
 
 						if (!isKeyDownInside) return;
@@ -805,10 +811,11 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					},
 				};
 			},
-		};
+		});
 
-		const subTrigger = {
-			...derived([subOpen, subOptions], ([$subOpen, $subOptions]) => {
+		const subTrigger = builder(name('subtrigger'), {
+			stores: [subOpen, subOptions],
+			returned: ([$subOpen, $subOptions]) => {
 				return {
 					role: 'menuitem',
 					id: subIds.trigger,
@@ -817,10 +824,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					'aria-expanded': $subOpen,
 					'data-state': $subOpen ? 'open' : 'closed',
 					'data-disabled': $subOptions.disabled ? '' : undefined,
-					'data-melt-part': 'subtrigger',
 					'aria-haspopop': 'menu',
 				} as const;
-			}),
+			},
 			action: (node: HTMLElement) => {
 				setMeltMenuAttribute(node);
 				applyAttrsIfDisabled(node);
@@ -976,16 +982,19 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					},
 				};
 			},
-		};
+		});
 
-		const subArrow = derived(subOptions, ($subOptions) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$subOptions.arrowSize}px)`,
-				height: `var(--arrow-size, ${$subOptions.arrowSize}px)`,
+		const subArrow = builder(name('subarrow'), {
+			stores: subOptions,
+			returned: ($subOptions) => ({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$subOptions.arrowSize}px)`,
+					height: `var(--arrow-size, ${$subOptions.arrowSize}px)`,
+				}),
 			}),
-		}));
+		});
 
 		/* -------------------------------------------------------------------------------------------------
 		 * Sub Menu Effects
@@ -1302,7 +1311,7 @@ function isMouse(e: PointerEvent) {
  */
 export function setMeltMenuAttribute(element: HTMLElement | null) {
 	if (!element) return;
-	const menuEl = element.closest('[data-melt-part="menu"], [data-melt-part="submenu"]');
+	const menuEl = element.closest(`${name.getSelector()}, ${name.getSelector('submenu')}`);
 
 	if (!isHTMLElement(menuEl)) return;
 	element.setAttribute('data-melt-menu-id', menuEl.id);

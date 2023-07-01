@@ -19,15 +19,15 @@
 	const hideMeltUI = writable(false);
 </script>
 
-<span class="trigger" {...$trigger} use:trigger.action aria-label="Update dimensions">
+<span class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
 	Right click me.
 </span>
 
-<div class="menu" {...$menu} use:menu.action>
-	<div class="item" {...item} use:item.action>About Melt UI</div>
-	<div class="item" {...item} use:item.action>Check for Updates...</div>
+<div class="menu" {...$menu} use:menu>
+	<div class="item" {...item} use:item>About Melt UI</div>
+	<div class="item" {...item} use:item>Check for Updates...</div>
 	<div class="separator" {...separator} />
-	<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked: settingsSync }}>
+	<div class="item" {...checkboxItem} use:checkboxItem={{ checked: settingsSync }}>
 		<div class="check">
 			{#if $settingsSync}
 				<Check class="icon" />
@@ -35,17 +35,17 @@
 		</div>
 		Settings Sync is On
 	</div>
-	<div class="item" {...$subTriggerA} use:subTriggerA.action>
+	<div class="item" {...$subTriggerA} use:subTriggerA>
 		Profiles
 		<div class="rightSlot">
 			<ChevronRight class="icon" />
 		</div>
 	</div>
-	<div class="menu subMenu" {...$subMenuA} use:subMenuA.action>
+	<div class="menu subMenu" {...$subMenuA} use:subMenuA>
 		<div class="text">People</div>
 		<div {...radioGroup}>
 			{#each personsArr as person}
-				<div class="item" {...$radioItem({ value: person })} use:radioItem.action>
+				<div class="item" {...$radioItem({ value: person })} use:radioItem>
 					<div class="check">
 						{#if $isChecked(person)}
 							<div class="dot" />
@@ -58,7 +58,7 @@
 	</div>
 	<div {...separator} class="separator" />
 
-	<div class="item" {...checkboxItem} use:checkboxItem.action={{ checked: hideMeltUI }}>
+	<div class="item" {...checkboxItem} use:checkboxItem={{ checked: hideMeltUI }}>
 		<div class="check">
 			{#if $hideMeltUI}
 				<Check class="icon" />
@@ -67,12 +67,12 @@
 		Hide Melt UI
 		<div class="rightSlot">⌘H</div>
 	</div>
-	<div class="item" {...item} use:item.action aria-disabled="true">
+	<div class="item" {...item} use:item aria-disabled="true">
 		Show All Components
 		<div class="rightSlot">⇧⌘N</div>
 	</div>
 	<div {...separator} class="separator" />
-	<div class="item" {...item} use:item.action>
+	<div class="item" {...item} use:item>
 		Quit Melt UI
 		<div class="rightSlot">⌘Q</div>
 	</div>

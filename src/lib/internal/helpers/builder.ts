@@ -120,7 +120,12 @@ type BuilderReturned<S extends Stores | undefined> = S extends Stores
 	: // eslint-disable-next-line @typescript-eslint/no-explicit-any
 	  () => Record<string, any> | ((...args: any[]) => Record<string, any>);
 
-type BuilderArgs<S extends Stores | undefined, A extends Action, R extends BuilderReturned<S>> = {
+type BuilderArgs<
+	S extends Stores | undefined,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<HTMLElement, any>,
+	R extends BuilderReturned<S>
+> = {
 	stores?: S;
 	action?: A;
 	returned?: R;
@@ -131,7 +136,8 @@ const isFunctionWithParams = (fn: unknown): fn is (...args: unknown[]) => Record
 
 export function builder<
 	S extends Stores | undefined,
-	A extends Action,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<HTMLElement, any>,
 	R extends BuilderReturned<S>,
 	Name extends string
 >(name: Name, args?: BuilderArgs<S, A, R>) {
@@ -181,14 +187,19 @@ export function builder<
 		}
 	})() as BuilderStore<S, A, R, Name>;
 
-	return {
-		...derivedStore,
-	};
+	const actionFn = (action ??
+		(() => {
+			/** noop */
+		})) as A & { subscribe: typeof derivedStore.subscribe };
+	actionFn.subscribe = derivedStore.subscribe;
+
+	return actionFn;
 }
 
 type BuilderStore<
 	S extends Stores | undefined,
-	A extends Action,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<HTMLElement, any>,
 	R extends BuilderReturned<S>,
 	Name extends string
 > = Readable<
@@ -201,3 +212,11 @@ type BuilderStore<
 		  ) => ReturnType<R> & { [K in `data-melt-${Name}`]: '' }) & { action: A }
 		: ReturnType<R> & { [K in `data-melt-${Name}`]: '' } & { action: A }
 >;
+
+export function createNameFn(prefix: string) {
+	const name = (part?: string) => (part ? `${prefix}-${part}` : prefix);
+	name.getSelector = (part?: string) => `[data-melt-${prefix}${part ? `-${part}` : ''}]`;
+	name.getEl = (part?: string) => document.querySelector(name.getSelector(part));
+
+	return name;
+}

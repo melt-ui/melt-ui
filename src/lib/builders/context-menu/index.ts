@@ -1,31 +1,32 @@
 import { usePopper } from '$lib/internal/actions/popper';
 import {
+	addEventListener,
+	builder,
 	derivedWithUnsubscribe,
 	effect,
-	kbd,
-	styleToString,
-	isHTMLElement,
-	noop,
 	executeCallbacks,
-	addEventListener,
 	getNextFocusable,
 	getPreviousFocusable,
+	isHTMLElement,
+	kbd,
+	noop,
+	styleToString,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { tick } from 'svelte';
-import { derived, get, writable, type Readable } from 'svelte/store';
 import type { VirtualElement } from '@floating-ui/core';
+import { tick } from 'svelte';
+import { get, writable, type Readable } from 'svelte/store';
 
 import {
+	applyAttrsIfDisabled,
 	clearTimerStore,
 	createMenuBuilder,
-	setMeltMenuAttribute,
-	type Point,
-	handleMenuNavigation,
 	getMenuItems,
-	applyAttrsIfDisabled,
-	type Menu,
+	handleMenuNavigation,
 	handleTabNavigation,
+	setMeltMenuAttribute,
+	type Menu,
+	type Point,
 } from '../menu';
 
 const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
@@ -47,6 +48,8 @@ const defaults = {
 	},
 	preventScroll: true,
 } satisfies Defaults<CreateContextMenu>;
+
+const name = (part?: string) => (part ? `context-menu-${part}` : 'context-menu');
 
 export function createContextMenu(args?: CreateContextMenu) {
 	const withDefaults = { ...defaults, ...args } as CreateContextMenu;
@@ -88,8 +91,9 @@ export function createContextMenu(args?: CreateContextMenu) {
 	});
 	const longPressTimer = writable(0);
 
-	const menu = {
-		...derived([rootOpen], ([$rootOpen]) => {
+	const menu = builder(name(), {
+		stores: rootOpen,
+		returned: ($rootOpen) => {
 			return {
 				role: 'menu',
 				hidden: $rootOpen ? undefined : true,
@@ -98,12 +102,10 @@ export function createContextMenu(args?: CreateContextMenu) {
 				}),
 				id: rootIds.menu,
 				'aria-labelledby': rootIds.trigger,
-				'data-melt-part': 'menu',
-				'data-melt-menu': '',
 				'data-state': $rootOpen ? 'open' : 'closed',
 				tabindex: -1,
 			} as const;
-		}),
+		},
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
 
@@ -196,21 +198,21 @@ export function createContextMenu(args?: CreateContextMenu) {
 				},
 			};
 		},
-	};
+	});
 
-	const trigger = {
-		...derived([rootOpen], ([$rootOpen]) => {
+	const trigger = builder(name('trigger'), {
+		stores: rootOpen,
+		returned: ($rootOpen) => {
 			return {
 				'aria-controls': rootIds.menu,
 				'aria-expanded': $rootOpen,
 				'data-state': $rootOpen ? 'open' : 'closed',
 				id: rootIds.trigger,
-				'data-melt-part': 'trigger',
 				style: styleToString({
 					WebkitTouchCallout: 'none',
 				}),
 			} as const;
-		}),
+		},
 		action: (node: HTMLElement) => {
 			applyAttrsIfDisabled(node);
 
@@ -271,7 +273,7 @@ export function createContextMenu(args?: CreateContextMenu) {
 				},
 			};
 		},
-	};
+	});
 
 	return {
 		trigger,

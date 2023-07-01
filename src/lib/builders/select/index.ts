@@ -6,6 +6,8 @@ import {
 	effect,
 	executeCallbacks,
 	generateId,
+	getNextFocusable,
+	getPreviousFocusable,
 	handleRovingFocus,
 	isBrowser,
 	isHTMLElement,
@@ -615,28 +617,6 @@ export function createSelect(args?: CreateSelectArgs) {
 				nextFocusable.set(null);
 			}
 		}
-	}
-
-	function getNextFocusable(element: HTMLElement): HTMLElement | null {
-		const focusableElements = Array.from(
-			document.querySelectorAll<HTMLElement>(
-				'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-			)
-		);
-		const currentIndex = focusableElements.indexOf(element);
-		const nextIndex = currentIndex + 1;
-		return nextIndex < focusableElements.length ? focusableElements[nextIndex] : null;
-	}
-
-	function getPreviousFocusable(element: HTMLElement): HTMLElement | null {
-		const focusableElements = Array.from(
-			document.querySelectorAll<HTMLElement>(
-				'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-			)
-		);
-		const currentIndex = focusableElements.indexOf(element);
-		const previousIndex = currentIndex - 1;
-		return previousIndex >= 0 ? focusableElements[previousIndex] : null;
 	}
 
 	return {

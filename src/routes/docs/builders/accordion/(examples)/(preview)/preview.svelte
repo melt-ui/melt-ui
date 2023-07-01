@@ -30,7 +30,7 @@
 				<button
 					id={i === 0 ? 'trigger' : undefined}
 					{...$trigger(id)}
-					use:$trigger.action
+					use:trigger
 					class="accordion-trigger"
 				>
 					{title}
