@@ -337,8 +337,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 						handleRovingFocus(nextFocusedElement);
 					}
-
-					e.preventDefault();
 				})
 			);
 
