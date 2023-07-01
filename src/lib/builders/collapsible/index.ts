@@ -1,6 +1,6 @@
-import { addEventListener } from '$lib/internal/helpers';
+import { addEventListener, builder } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 
 export type CreateCollapsibleArgs = {
 	open?: boolean;
@@ -12,22 +12,27 @@ const defaults = {
 	disabled: false,
 } satisfies Defaults<CreateCollapsibleArgs>;
 
+const name = (part?: string) => (part ? `collapsible-${part}` : 'collapsible');
+
 export function createCollapsible(args?: CreateCollapsibleArgs) {
 	const options = { ...defaults, ...args };
 	const disabled = writable(options.disabled);
 
 	const open = writable(options.open);
-	const root = derived(open, ($open) => ({
-		'data-state': $open ? 'open' : 'closed',
-		'data-disabled': options.disabled ? true : 'undefined',
-	}));
 
-	const trigger = {
-		...derived([open, disabled], ([$open, $disabled]) => {
-			return {
-				'data-state': $open ? 'open' : 'closed',
-				'data-disabled': $disabled ? true : undefined,
-			};
+	const root = builder(name(), {
+		stores: open,
+		returned: ($open) => ({
+			'data-state': $open ? 'open' : 'closed',
+			'data-disabled': options.disabled ? true : 'undefined',
+		}),
+	});
+
+	const trigger = builder(name('trigger'), {
+		stores: [open, disabled],
+		returned: ([$open, $disabled]) => ({
+			'data-state': $open ? 'open' : 'closed',
+			'data-disabled': $disabled ? true : undefined,
 		}),
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
@@ -38,13 +43,16 @@ export function createCollapsible(args?: CreateCollapsibleArgs) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
-	const content = derived([open, disabled], ([$open, $disabled]) => ({
-		'data-state': $open ? 'open' : 'closed',
-		'data-disabled': $disabled ? true : undefined,
-		hidden: $open ? undefined : true,
-	}));
+	const content = builder(name('content'), {
+		stores: [open, disabled],
+		returned: ([$open, $disabled]) => ({
+			'data-state': $open ? 'open' : 'closed',
+			'data-disabled': $disabled ? true : undefined,
+			hidden: $open ? undefined : true,
+		}),
+	});
 
 	return {
 		root,

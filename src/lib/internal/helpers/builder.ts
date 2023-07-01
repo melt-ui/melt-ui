@@ -114,13 +114,13 @@ export function lightable<T>(value: T): Readable<T> {
 	return { subscribe };
 }
 
-type BuilderArgs<
-	S extends Stores | undefined,
-	A extends Action,
-	R extends S extends Stores
-		? (values: StoresValues<S>) => Record<string, any> | ((...args: any[]) => Record<string, any>)
-		: () => Record<string, any> | ((...args: any[]) => Record<string, any>)
-> = {
+type BuilderReturned<S extends Stores | undefined> = S extends Stores
+	? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+	  (values: StoresValues<S>) => Record<string, any> | ((...args: any[]) => Record<string, any>)
+	: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+	  () => Record<string, any> | ((...args: any[]) => Record<string, any>);
+
+type BuilderArgs<S extends Stores | undefined, A extends Action, R extends BuilderReturned<S>> = {
 	stores?: S;
 	action?: A;
 	returned?: R;
@@ -132,9 +132,7 @@ const isFunctionWithParams = (fn: unknown): fn is (...args: unknown[]) => Record
 export function builder<
 	S extends Stores | undefined,
 	A extends Action,
-	R extends S extends Stores
-		? (values: StoresValues<S>) => Record<string, any> | ((...args: any[]) => Record<string, any>)
-		: () => Record<string, any> | ((...args: any[]) => Record<string, any>),
+	R extends BuilderReturned<S>,
 	Name extends string
 >(name: Name, args?: BuilderArgs<S, A, R>) {
 	const { stores, action, returned } = args ?? {};
@@ -144,21 +142,24 @@ export function builder<
 			return derived(stores, (values) => {
 				const result = returned(values);
 				if (isFunctionWithParams(result)) {
-					return (...args: Parameters<typeof result>) => {
+					const fn = (...args: Parameters<typeof result>) => {
 						return {
 							...result(...args),
 							[`data-melt-${name}`]: '',
 						};
 					};
+					fn.action = action ?? noop;
+					return fn;
 				}
-				return {
+
+				return hiddenAction({
 					...result,
 					[`data-melt-${name}`]: '',
-				};
+					action: action ?? noop,
+				});
 			});
 		} else {
 			const returnedFn = returned as (() => R) | undefined;
-
 			const result = returnedFn?.();
 			if (isFunctionWithParams(result)) {
 				const resultFn = (...args: Parameters<typeof result>) => {
@@ -167,35 +168,36 @@ export function builder<
 						[`data-melt-${name}`]: '',
 					};
 				};
+				resultFn.action = action ?? noop;
+
 				return lightable(resultFn);
 			}
 
 			return lightable({
 				...result,
 				[`data-melt-${name}`]: '',
+				action: action ?? noop,
 			});
 		}
-	})() as BuilderStore<S, R, Name>;
+	})() as BuilderStore<S, A, R, Name>;
 
 	return {
 		...derivedStore,
-		action: action ?? noop,
 	};
 }
 
 type BuilderStore<
 	S extends Stores | undefined,
-	R extends S extends Stores
-		? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-		  (values: StoresValues<S>) => Record<string, any> | ((...args: any[]) => Record<string, any>)
-		: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-		  () => Record<string, any> | ((...args: any[]) => Record<string, any>),
+	A extends Action,
+	R extends BuilderReturned<S>,
 	Name extends string
 > = Readable<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	ReturnType<R> extends (...args: any) => any
-		? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		  // @ts-ignore - This is a valid type, but TS doesn't like it for some reason. TODO: Figure out why
-		  (...args: Parameters<ReturnType<R>>) => ReturnType<R> & { [K in `data-melt-${Name}`]: '' }
-		: ReturnType<R> & { [K in `data-melt-${Name}`]: '' }
+		? ((
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore - This is a valid type, but TS doesn't like it for some reason. TODO: Figure out why
+				...args: Parameters<ReturnType<R>>
+		  ) => ReturnType<R> & { [K in `data-melt-${Name}`]: '' }) & { action: A }
+		: ReturnType<R> & { [K in `data-melt-${Name}`]: '' } & { action: A }
 >;

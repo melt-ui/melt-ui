@@ -1,5 +1,5 @@
-import { effect, isBrowser, styleToString } from '$lib/internal/helpers';
-import { writable, derived } from 'svelte/store';
+import { builder, effect, isBrowser, styleToString } from '$lib/internal/helpers';
+import { writable } from 'svelte/store';
 
 export type ImageLoadingStatus = 'loading' | 'loaded' | 'error';
 
@@ -40,23 +40,29 @@ export const createAvatar = (args: CreateAvatarArgs = defaults) => {
 		}
 	});
 
-	const image = derived([src, loadingStatus], ([$src, $loadingStatus]) => {
-		const imageStyles = styleToString({
-			display: $loadingStatus === 'loaded' ? 'block' : 'none',
-		});
-		return {
-			src: $src,
-			style: imageStyles,
-		};
+	const image = builder('avatar-image', {
+		stores: [src, loadingStatus],
+		returned: ([$src, $loadingStatus]) => {
+			const imageStyles = styleToString({
+				display: $loadingStatus === 'loaded' ? 'block' : 'none',
+			});
+			return {
+				src: $src,
+				style: imageStyles,
+			};
+		},
 	});
 
-	const fallback = derived([loadingStatus], ([$loadingStatus]) => {
-		const fallbackStyles = styleToString({
-			display: $loadingStatus === 'loaded' ? 'none' : 'block',
-		});
-		return {
-			style: fallbackStyles,
-		};
+	const fallback = builder('avatar-fallback', {
+		stores: [loadingStatus],
+		returned: ([$loadingStatus]) => {
+			const fallbackStyles = styleToString({
+				display: $loadingStatus === 'loaded' ? 'none' : 'block',
+			});
+			return {
+				style: fallbackStyles,
+			};
+		},
 	});
 
 	return {

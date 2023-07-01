@@ -23,7 +23,7 @@ type MultipleAccordionArgs = {
 	type: 'multiple';
 };
 
-const getPartName = (part?: string) => (part ? `accordion-${part}` : 'accordion');
+const name = (part?: string) => (part ? `accordion-${part}` : 'accordion');
 
 export type CreateAccordionArgs = BaseAccordionArgs & (SingleAccordionArgs | MultipleAccordionArgs);
 
@@ -54,12 +54,10 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		root: generateId(),
 	};
 
-	const root = builder(getPartName(), {
-		returned: () => {
-			return {
-				'data-melt-id': ids.root,
-			};
-		},
+	const root = builder(name(), {
+		returned: () => ({
+			'data-melt-id': ids.root,
+		}),
 	});
 
 	type ItemArgs =
@@ -77,7 +75,7 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		}
 	};
 
-	const item = builder(getPartName('item'), {
+	const item = builder(name('item'), {
 		stores: value,
 		returned: ($value) => {
 			return (args: ItemArgs) => {
@@ -91,7 +89,7 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		},
 	});
 
-	const trigger = builder(getPartName('trigger'), {
+	const trigger = builder(name('trigger'), {
 		stores: [value, options],
 		returned: ([$value, $options]) => {
 			return (args: ItemArgs) => {
@@ -137,9 +135,10 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 
 					const el = e.target as HTMLElement;
 					const rootEl = getElementByMeltId(ids.root);
-
 					if (!rootEl) return;
-					const items = Array.from(rootEl.querySelectorAll('[data-melt-trigger]')) as HTMLElement[];
+					const items = Array.from(
+						rootEl.querySelectorAll('[data-melt-accordion-trigger]')
+					) as HTMLElement[];
 
 					if (!items.length) return;
 					const elIdx = items.indexOf(el);
@@ -165,7 +164,7 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		},
 	});
 
-	const content = builder(getPartName('content'), {
+	const content = builder(name('content'), {
 		stores: [value, options],
 		returned: ([$value, $options]) => {
 			return (args: ItemArgs) => {
