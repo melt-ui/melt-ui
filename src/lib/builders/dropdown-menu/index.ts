@@ -41,6 +41,7 @@ export function createDropdownMenu(args?: CreateDropdownMenu) {
 		rootActiveTrigger,
 		nextFocusable,
 		prevFocusable,
+		disableTriggerRefocus: true,
 	});
 
 	return {
