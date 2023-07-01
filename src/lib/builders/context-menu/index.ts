@@ -71,6 +71,8 @@ export function createContextMenu(args?: CreateContextMenu) {
 		rootOptions,
 		nextFocusable,
 		prevFocusable,
+		disableFocusFirstItem: true,
+		disableTriggerRefocus: true,
 	});
 
 	const point = writable<Point>({ x: 0, y: 0 });
