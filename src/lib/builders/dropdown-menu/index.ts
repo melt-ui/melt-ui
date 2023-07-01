@@ -2,11 +2,11 @@ import type { Defaults } from '$lib/internal/types';
 import { writable } from 'svelte/store';
 import { createMenuBuilder, type Menu } from '../menu';
 
-export type DropdownMenuArgs = Menu['builder'];
-export type DropdownMenuSubArgs = Menu['submenu'];
+export type CreateDropdownMenu = Menu['builder'];
+export type CreateDropdownMenuSub = Menu['submenu'];
 export type DropdownMenuItemArgs = Menu['item'];
 export type DropdownMenuCheckboxItemArgs = Menu['checkboxItem'];
-export type DropdownMenuRadioGroup = Menu['radioGroup'];
+export type CreateDropdownMenuRadioGroup = Menu['radioGroup'];
 export type DropdownMenuRadioItemArgs = Menu['radioItem'];
 export type DropdownMenuRadioItemActionArgs = Menu['radioItemAction'];
 
@@ -15,13 +15,16 @@ const defaults = {
 	positioning: {
 		placement: 'bottom',
 	},
-} satisfies Defaults<DropdownMenuArgs>;
+	preventScroll: true,
+} satisfies Defaults<CreateDropdownMenu>;
 
-export function createDropdownMenu(args?: DropdownMenuArgs) {
-	const withDefaults = { ...defaults, ...args } as DropdownMenuArgs;
+export function createDropdownMenu(args?: CreateDropdownMenu) {
+	const withDefaults = { ...defaults, ...args } as CreateDropdownMenu;
 	const rootOptions = writable(withDefaults);
 	const rootOpen = writable(false);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
+	const nextFocusable = writable<HTMLElement | null>(null);
+	const prevFocusable = writable<HTMLElement | null>(null);
 
 	const {
 		trigger,
@@ -36,6 +39,9 @@ export function createDropdownMenu(args?: DropdownMenuArgs) {
 		rootOptions,
 		rootOpen,
 		rootActiveTrigger,
+		nextFocusable,
+		prevFocusable,
+		disableTriggerRefocus: true,
 	});
 
 	return {

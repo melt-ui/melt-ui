@@ -8,6 +8,8 @@ import {
 	noop,
 	executeCallbacks,
 	addEventListener,
+	getNextFocusable,
+	getPreviousFocusable,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
@@ -23,17 +25,18 @@ import {
 	getMenuItems,
 	applyAttrsIfDisabled,
 	type Menu,
+	handleTabNavigation,
 } from '../menu';
 
 const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
 const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
 const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 
-export type ContextMenuArgs = Menu['builder'];
-export type ContextMenuSubArgs = Menu['submenu'];
+export type CreateContextMenu = Menu['builder'];
+export type CreateContextMenuSub = Menu['submenu'];
 export type ContextMenuItemArgs = Menu['item'];
 export type ContextMenuCheckboxItemArgs = Menu['checkboxItem'];
-export type ContextMenuRadioGroup = Menu['radioGroup'];
+export type CreateContextMenuRadioGroup = Menu['radioGroup'];
 export type ContextMenuRadioItemArgs = Menu['radioItem'];
 export type ContextMenuRadioItemActionArgs = Menu['radioItemAction'];
 
@@ -43,13 +46,15 @@ const defaults = {
 		placement: 'bottom-start',
 	},
 	preventScroll: true,
-} satisfies Defaults<ContextMenuArgs>;
+} satisfies Defaults<CreateContextMenu>;
 
-export function createContextMenu(args?: ContextMenuArgs) {
-	const withDefaults = { ...defaults, ...args } as ContextMenuArgs;
+export function createContextMenu(args?: CreateContextMenu) {
+	const withDefaults = { ...defaults, ...args } as CreateContextMenu;
 	const rootOptions = writable(withDefaults);
 	const rootOpen = writable(false);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
+	const nextFocusable = writable<HTMLElement | null>(null);
+	const prevFocusable = writable<HTMLElement | null>(null);
 
 	const {
 		item,
@@ -64,6 +69,10 @@ export function createContextMenu(args?: ContextMenuArgs) {
 		rootOpen,
 		rootActiveTrigger,
 		rootOptions,
+		nextFocusable,
+		prevFocusable,
+		disableFocusFirstItem: true,
+		disableTriggerRefocus: true,
 	});
 
 	const point = writable<Point>({ x: 0, y: 0 });
@@ -163,6 +172,9 @@ export function createContextMenu(args?: ContextMenuArgs) {
 					 */
 					if (e.key === kbd.TAB) {
 						e.preventDefault();
+						rootActiveTrigger.set(null);
+						rootOpen.set(false);
+						handleTabNavigation(e, nextFocusable, prevFocusable);
 						return;
 					}
 
@@ -207,6 +219,8 @@ export function createContextMenu(args?: ContextMenuArgs) {
 					x: e.clientX,
 					y: e.clientY,
 				});
+				nextFocusable.set(getNextFocusable(node));
+				prevFocusable.set(getPreviousFocusable(node));
 				rootActiveTrigger.set(node);
 				rootOpen.set(true);
 			};

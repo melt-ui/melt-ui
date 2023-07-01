@@ -17,21 +17,23 @@ import {
 	createTypeaheadSearch,
 	handleRovingFocus,
 	removeScroll,
+	getNextFocusable,
+	getPreviousFocusable,
 } from '$lib/internal/helpers';
 import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Writable } from 'svelte/store';
 import { createSeparator } from '../separator';
 
-const SELECTION_KEYS = [kbd.ENTER, kbd.SPACE];
-const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
-const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
-const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
-const SUB_OPEN_KEYS: Record<TextDirection, string[]> = {
+export const SELECTION_KEYS = [kbd.ENTER, kbd.SPACE];
+export const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
+export const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
+export const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
+export const SUB_OPEN_KEYS: Record<TextDirection, string[]> = {
 	ltr: [...SELECTION_KEYS, kbd.ARROW_RIGHT],
 	rtl: [...SELECTION_KEYS, kbd.ARROW_LEFT],
 };
-const SUB_CLOSE_KEYS: Record<TextDirection, string[]> = {
+export const SUB_CLOSE_KEYS: Record<TextDirection, string[]> = {
 	ltr: [kbd.ARROW_LEFT],
 	rtl: [kbd.ARROW_RIGHT],
 };
@@ -103,18 +105,33 @@ const defaults = {
 	positioning: {
 		placement: 'bottom',
 	},
+	preventScroll: true,
 } satisfies Defaults<CreateMenuArgs>;
 
 export type MenuBuilderOptions = {
 	rootOpen: Writable<boolean>;
 	rootActiveTrigger: Writable<HTMLElement | null>;
 	rootOptions: Writable<CreateMenuArgs>;
+	disableTriggerRefocus?: boolean;
+	disableFocusFirstItem?: boolean;
+	nextFocusable: Writable<HTMLElement | null>;
+	prevFocusable: Writable<HTMLElement | null>;
 };
 
 export function createMenuBuilder(opts: MenuBuilderOptions) {
 	const rootOptions = opts.rootOptions;
 	const rootOpen = opts.rootOpen;
 	const rootActiveTrigger = opts.rootActiveTrigger;
+	/**
+	 * Keeps track of the next/previous focusable element when the menu closes.
+	 * This is because we are portaling the menu to the body and we need
+	 * to be able to focus the next element in the DOM when the menu closes.
+	 *
+	 * Without keeping track of this, the focus would be reset to the top of
+	 * the page (or the first focusable element in the body).
+	 */
+	const nextFocusable = opts.nextFocusable;
+	const prevFocusable = opts.prevFocusable;
 
 	/**
 	 * Keeps track of if the user is using the keyboard to navigate the menu.
@@ -211,11 +228,14 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					}
 
 					/**
-					 * Menus should not be navigated using tab, so we prevent it.
+					 * Menus should not be navigated using tab
 					 * @see https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
 					 */
 					if (e.key === kbd.TAB) {
 						e.preventDefault();
+						rootActiveTrigger.set(null);
+						rootOpen.set(false);
+						handleTabNavigation(e, nextFocusable, prevFocusable);
 						return;
 					}
 
@@ -260,6 +280,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					rootOpen.update((prev) => {
 						const isOpen = !prev;
 						if (isOpen) {
+							nextFocusable.set(getNextFocusable(triggerElement));
+							prevFocusable.set(getPreviousFocusable(triggerElement));
 							rootActiveTrigger.set(triggerElement);
 						} else {
 							rootActiveTrigger.set(null);
@@ -285,6 +307,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						rootOpen.update((prev) => {
 							const isOpen = !prev;
 							if (isOpen) {
+								nextFocusable.set(getNextFocusable(triggerElement));
+								prevFocusable.set(getPreviousFocusable(triggerElement));
 								rootActiveTrigger.set(triggerElement);
 							} else {
 								rootActiveTrigger.set(null);
@@ -307,8 +331,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 						handleRovingFocus(nextFocusedElement);
 					}
-
-					e.preventDefault();
 				})
 			);
 
@@ -1029,6 +1051,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		sleep(1).then(() => {
 			const menuElement = document.getElementById(rootIds.menu);
 			if (isHTMLElement(menuElement) && $rootOpen && get(isUsingKeyboard)) {
+				if (opts.disableFocusFirstItem) {
+					handleRovingFocus(menuElement);
+					return;
+				}
 				// Get menu items belonging to the root menu
 				const menuItems = getMenuItems(menuElement);
 
@@ -1038,6 +1064,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				// Focus on active trigger trigger
 				handleRovingFocus($rootActiveTrigger);
 			} else {
+				if (opts.disableTriggerRefocus) {
+					return;
+				}
 				const triggerElement = document.getElementById(rootIds.trigger);
 				if (isHTMLElement(triggerElement)) {
 					handleRovingFocus(triggerElement);
@@ -1201,6 +1230,28 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		rootIds,
 		handleTypeaheadSearch,
 	};
+}
+
+export function handleTabNavigation(
+	e: KeyboardEvent,
+	nextFocusable: Writable<HTMLElement | null>,
+	prevFocusable: Writable<HTMLElement | null>
+) {
+	if (e.shiftKey) {
+		const $prevFocusable = get(prevFocusable);
+		if ($prevFocusable) {
+			e.preventDefault();
+			$prevFocusable.focus();
+			prevFocusable.set(null);
+		}
+	} else {
+		const $nextFocusable = get(nextFocusable);
+		if ($nextFocusable) {
+			e.preventDefault();
+			$nextFocusable.focus();
+			nextFocusable.set(null);
+		}
+	}
 }
 
 /**
