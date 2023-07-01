@@ -180,7 +180,6 @@ export function createMenubar(args?: CreateMenubar) {
 							e.preventDefault();
 							rootActiveTrigger.set(null);
 							rootOpen.set(false);
-							console.log(get(nextFocusable));
 							handleTabNavigation(e, nextFocusable, prevFocusable);
 						}
 
