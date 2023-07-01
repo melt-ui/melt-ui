@@ -23,6 +23,8 @@ type MultipleAccordionArgs = {
 	type: 'multiple';
 };
 
+const getPartName = (part?: string) => (part ? `accordion-${part}` : 'accordion');
+
 export type CreateAccordionArgs = BaseAccordionArgs & (SingleAccordionArgs | MultipleAccordionArgs);
 
 const defaults = {
@@ -52,7 +54,7 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		root: generateId(),
 	};
 
-	const root = builder('root', {
+	const root = builder(getPartName(), {
 		returned: () => {
 			return {
 				'data-melt-id': ids.root,
@@ -75,7 +77,7 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		}
 	};
 
-	const item = builder('item', {
+	const item = builder(getPartName('item'), {
 		stores: value,
 		returned: ($value) => {
 			return (args: ItemArgs) => {
@@ -89,14 +91,13 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		},
 	});
 
-	const trigger = builder('trigger', {
+	const trigger = builder(getPartName('trigger'), {
 		stores: [value, options],
 		returned: ([$value, $options]) => {
 			return (args: ItemArgs) => {
 				const { value: itemValue, disabled } = parseItemArgs(args);
 
 				return {
-					'data-melt-part': 'trigger',
 					'aria-expanded': isSelected(itemValue, $value) ? true : false,
 					disabled: $options.disabled || disabled,
 					'data-disabled': disabled ? true : undefined,
@@ -138,9 +139,7 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 					const rootEl = getElementByMeltId(ids.root);
 
 					if (!rootEl) return;
-					const items = Array.from(
-						rootEl.querySelectorAll('[data-melt-part="trigger"]')
-					) as HTMLElement[];
+					const items = Array.from(rootEl.querySelectorAll('[data-melt-trigger]')) as HTMLElement[];
 
 					if (!items.length) return;
 					const elIdx = items.indexOf(el);
@@ -166,7 +165,7 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		},
 	});
 
-	const content = builder('content', {
+	const content = builder(getPartName('content'), {
 		stores: [value, options],
 		returned: ([$value, $options]) => {
 			return (args: ItemArgs) => {

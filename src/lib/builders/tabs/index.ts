@@ -133,7 +133,7 @@ export function createTabs(args?: CreateTabsArgs) {
 					const tabValue = node.dataset.value;
 
 					const el = e.currentTarget as HTMLElement;
-					const rootEl = el.closest('[data-melt-part="tabs-root"]') as HTMLElement | null;
+					const rootEl = el.closest('[data-melt-tabs-root]') as HTMLElement | null;
 
 					if (!rootEl || !tabValue) return;
 

@@ -147,13 +147,13 @@ export function builder<
 					return (...args: Parameters<typeof result>) => {
 						return {
 							...result(...args),
-							'data-melt-part': name,
+							[`data-melt-${name}`]: '',
 						};
 					};
 				}
 				return {
 					...result,
-					'data-melt-part': name,
+					[`data-melt-${name}`]: '',
 				};
 			});
 		} else {
@@ -164,7 +164,7 @@ export function builder<
 				const resultFn = (...args: Parameters<typeof result>) => {
 					return {
 						...result(...args),
-						'data-melt-part': name,
+						[`data-melt-${name}`]: '',
 					};
 				};
 				return lightable(resultFn);
@@ -172,13 +172,30 @@ export function builder<
 
 			return lightable({
 				...result,
-				'data-melt-part': name,
+				[`data-melt-${name}`]: '',
 			});
 		}
-	})() as Readable<ReturnType<R> & { 'data-melt-part': Name }>;
+	})() as BuilderStore<S, R, Name>;
 
 	return {
 		...derivedStore,
 		action: action ?? noop,
 	};
 }
+
+type BuilderStore<
+	S extends Stores | undefined,
+	R extends S extends Stores
+		? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+		  (values: StoresValues<S>) => Record<string, any> | ((...args: any[]) => Record<string, any>)
+		: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+		  () => Record<string, any> | ((...args: any[]) => Record<string, any>),
+	Name extends string
+> = Readable<
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	ReturnType<R> extends (...args: any) => any
+		? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		  // @ts-ignore - This is a valid type, but TS doesn't like it for some reason. TODO: Figure out why
+		  (...args: Parameters<ReturnType<R>>) => ReturnType<R> & { [K in `data-melt-${Name}`]: '' }
+		: ReturnType<R> & { [K in `data-melt-${Name}`]: '' }
+>;
