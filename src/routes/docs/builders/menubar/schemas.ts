@@ -2,7 +2,7 @@ import type { APISchema } from '$routes/(components)/api.svelte';
 import { schemas as menuSchemas } from '$routes/docs/builders/dropdown-menu/schemas';
 
 const builder: APISchema = {
-	title: 'CreateMenubarArgs',
+	title: 'CreateMenubar',
 	description: 'The configuration object passed to the `createMenubar` builder function.',
 	args: [
 		{
@@ -14,7 +14,7 @@ const builder: APISchema = {
 };
 
 const menuBuilder: APISchema = {
-	title: 'CreateMenuArgs',
+	title: 'CreateMenu',
 	description:
 		'The configuration object passed to the `createMenu` builder function returned from the `createMenubar` builder function.',
 	args: [
