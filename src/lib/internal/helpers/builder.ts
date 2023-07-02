@@ -120,6 +120,12 @@ type BuilderReturned<S extends Stores | undefined> = S extends Stores
 	: // eslint-disable-next-line @typescript-eslint/no-explicit-any
 	  () => Record<string, any> | ((...args: any[]) => Record<string, any>);
 
+const isFunctionWithParams = (
+	fn: unknown
+): fn is (...args: unknown[]) => Record<string, unknown> => {
+	return typeof fn === 'function';
+};
+
 type BuilderArgs<
 	S extends Stores | undefined,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -131,8 +137,22 @@ type BuilderArgs<
 	returned?: R;
 };
 
-const isFunctionWithParams = (fn: unknown): fn is (...args: unknown[]) => Record<string, unknown> =>
-	typeof fn === 'function';
+type BuilderStore<
+	S extends Stores | undefined,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<HTMLElement, any>,
+	R extends BuilderReturned<S>,
+	Name extends string
+> = Readable<
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	ReturnType<R> extends (...args: any) => any
+		? ((
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore - This is a valid type, but TS doesn't like it for some reason. TODO: Figure out why
+				...args: Parameters<ReturnType<R>>
+		  ) => ReturnType<R> & { [K in `data-melt-${Name}`]: '' }) & { action: A }
+		: ReturnType<R> & { [K in `data-melt-${Name}`]: '' } & { action: A }
+>;
 
 export function builder<
 	S extends Stores | undefined,
@@ -145,6 +165,7 @@ export function builder<
 
 	const derivedStore = (() => {
 		if (stores && returned) {
+			// If stores are provided, create a derived store from them
 			return derived(stores, (values) => {
 				const result = returned(values);
 				if (isFunctionWithParams(result)) {
@@ -165,8 +186,10 @@ export function builder<
 				});
 			});
 		} else {
+			// If stores are not provided, return a lightable store, for consistency
 			const returnedFn = returned as (() => R) | undefined;
 			const result = returnedFn?.();
+
 			if (isFunctionWithParams(result)) {
 				const resultFn = (...args: Parameters<typeof result>) => {
 					return {
@@ -179,11 +202,13 @@ export function builder<
 				return lightable(resultFn);
 			}
 
-			return lightable({
-				...result,
-				[`data-melt-${name}`]: '',
-				action: action ?? noop,
-			});
+			return lightable(
+				hiddenAction({
+					...result,
+					[`data-melt-${name}`]: '',
+					action: action ?? noop,
+				})
+			);
 		}
 	})() as BuilderStore<S, A, R, Name>;
 
@@ -195,23 +220,6 @@ export function builder<
 
 	return actionFn;
 }
-
-type BuilderStore<
-	S extends Stores | undefined,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	A extends Action<HTMLElement, any>,
-	R extends BuilderReturned<S>,
-	Name extends string
-> = Readable<
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	ReturnType<R> extends (...args: any) => any
-		? ((
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore - This is a valid type, but TS doesn't like it for some reason. TODO: Figure out why
-				...args: Parameters<ReturnType<R>>
-		  ) => ReturnType<R> & { [K in `data-melt-${Name}`]: '' }) & { action: A }
-		: ReturnType<R> & { [K in `data-melt-${Name}`]: '' } & { action: A }
->;
 
 export function createElHelpers<Part extends string = string>(prefix: string) {
 	const name = (part?: Part) => (part ? `${prefix}-${part}` : prefix);
