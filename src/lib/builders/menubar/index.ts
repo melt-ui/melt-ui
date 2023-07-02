@@ -120,7 +120,6 @@ export function createMenubar(args?: CreateMenubar) {
 		const menu = builder(name('menu'), {
 			stores: [rootOpen],
 			returned: ([$rootOpen]) => {
-				console.log();
 				return {
 					role: 'menu',
 					hidden: $rootOpen ? undefined : true,
@@ -175,7 +174,7 @@ export function createMenubar(args?: CreateMenubar) {
 						 * we only care about key events that happen inside this menu.
 						 */
 						const isKeyDownInside = target.closest('[data-melt-menu]') === menuElement;
-						console.log('isKeyDownInside', isKeyDownInside);
+						'isKeyDownInside', isKeyDownInside;
 						if (!isKeyDownInside) return;
 						if (FIRST_LAST_KEYS.includes(e.key)) {
 							handleMenuNavigation(e);

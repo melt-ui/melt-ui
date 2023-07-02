@@ -383,7 +383,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		}),
 		action: (node: HTMLElement, params: ItemArgs = {}) => {
 			const { onSelect } = params;
-			console.log('item', params);
+
 			setMeltMenuAttribute(node, selector);
 			applyAttrsIfDisabled(node);
 
@@ -1334,7 +1334,6 @@ function isMouse(e: PointerEvent) {
 export function setMeltMenuAttribute(element: HTMLElement | null, selector: Selector) {
 	if (!element) return;
 	const menuEl = element.closest(`${selector()}, ${selector('submenu')}`);
-	console.log('menueeeel', menuEl);
 
 	if (!isHTMLElement(menuEl)) return;
 	element.setAttribute('data-melt-menu-id', menuEl.id);
@@ -1349,17 +1348,17 @@ export function handleMenuNavigation(e: KeyboardEvent) {
 
 	// currently focused menu item
 	const currentFocusedItem = document.activeElement;
-	console.log(currentFocusedItem);
+	currentFocusedItem;
 	if (!isHTMLElement(currentFocusedItem)) return;
 
 	// menu element being navigated
 	const currentTarget = e.currentTarget;
-	console.log(currentTarget);
+	currentTarget;
 	if (!isHTMLElement(currentTarget)) return;
 
 	// menu items of the current menu
 	const menuItems = getMenuItems(currentTarget);
-	console.log(menuItems);
+	menuItems;
 	if (!menuItems.length) return;
 
 	const candidateNodes = menuItems.filter((item) => {
