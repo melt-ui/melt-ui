@@ -90,6 +90,7 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 					type: 'button',
 					'data-melt-toggle-group-item': '',
 					role: $options.type === 'single' ? 'radio' : undefined,
+					tabindex: pressed ? 0 : -1,
 				} as const;
 			};
 		}),
@@ -111,10 +112,9 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 			);
 			const $value = get(value);
 			const anyPressed = Array.isArray($value) ? $value.length > 0 : $value !== null;
+
 			if (!anyPressed && items[0] === node) {
 				node.tabIndex = 0;
-			} else {
-				node.tabIndex = -1;
 			}
 
 			unsub = executeCallbacks(
