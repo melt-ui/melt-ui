@@ -6,31 +6,27 @@
 	import P from './p.svelte';
 
 	export let schema: APISchema;
-	function parseDescription(content: string | string[] | undefined, filled = false) {
+	function parseDescription(content: string | string[] | undefined) {
 		if (content === undefined) {
 			return '-';
 		}
 
 		if (Array.isArray(content)) {
-			return `<code class="${!filled && 'not-filled'}"> ${content
-				.join(' | ')
-				.replaceAll('"', "'")}</code>`;
+			return `<code class="neutral"> ${content.join(' | ').replaceAll('"', "'")}</code>`;
 		}
 
 		// replace `$1` with <code>$1</code>
-		return content.replace(/`([^`]+)`/g, `<code class="${!filled && 'not-filled'}">$1</code>`);
+		return content.replace(/`([^`]+)`/g, `<code class="neutral">$1</code>`);
 	}
 
-	function parseCode(content: string | string[] | undefined, filled = false) {
+	function parseCode(content: string | string[] | undefined) {
 		if (content === undefined) {
 			return '-';
 		}
 		if (Array.isArray(content)) {
-			return `<code class="${!filled && 'not-filled'}"> ${content
-				.join(' | ')
-				.replaceAll('"', "'")}</code>`;
+			return `<code class="neutral">${content.join(' | ').replaceAll('"', "'")}</code>`;
 		} else {
-			return `<code class="${!filled && 'not-filled'}"> ${content.replaceAll('"', "'")}</code>`;
+			return `<code class="neutral"> ${content.replaceAll('"', "'")}</code>`;
 		}
 	}
 
@@ -46,18 +42,19 @@
 
 <div class="mb-10 flex flex-col gap-2">
 	<div class="px-4 sm:px-0">
-		<H3 class="mt-6">{schema.title}</H3>
+		<H3 class="mt-6">
+			<code class="text-lg">
+				{schema.title}
+			</code>
+		</H3>
 		<Description class="text-lg text-neutral-400">{@html htmlDescription}</Description>
 	</div>
 	<div class="flex flex-col gap-4">
 		{#if schema.args}
-			<div class="flex-col-gap-2 mb-2 flex">
-				<H4 class="mt-0">Arguments</H4>
-			</div>
 			{#each schema.args as arg}
 				<div class="mb-6 flex flex-col gap-4">
 					<div class="flex flex-col gap-2 px-4 sm:px-0">
-						<code class="w-fit text-xs font-medium">{arg.label}</code>
+						<code class="not-filled w-fit text-sm font-medium">{arg.label}</code>
 						<P class="text-neutral-400">
 							{@html parseDescription(arg.description ?? '')}
 						</P>
@@ -90,7 +87,7 @@
 					{#each schema.dataAttributes as attr}
 						<div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
 							<dt class="text-sm font-medium leading-6 text-white">
-								{@html parseCode(attr.label, true)}
+								{@html parseCode(attr.label)}
 							</dt>
 							<dd class="mt-1 text-sm leading-6 text-neutral-400 sm:col-span-2 sm:mt-0">
 								{@html parseDescription(attr.value)}
