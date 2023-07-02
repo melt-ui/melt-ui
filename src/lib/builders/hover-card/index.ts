@@ -18,22 +18,22 @@ import { usePortal, type FloatingConfig, usePopper } from '$lib/internal/actions
 
 export type CreateHoverCardArgs = {
 	defaultOpen?: boolean;
-	onOpenChange?: (open: boolean) => void;
 	openDelay?: number;
 	closeDelay?: number;
+	closeOnOutsideClick?: boolean;
 	positioning?: FloatingConfig;
 	arrowSize?: number;
 };
 
 const defaults = {
 	defaultOpen: false,
-	onOpenChange: noop,
 	openDelay: 700,
 	closeDelay: 300,
 	positioning: {
 		placement: 'bottom',
 	},
 	arrowSize: 8,
+	closeOnOutsideClick: true,
 } satisfies Defaults<CreateHoverCardArgs>;
 
 export function createHoverCard(args: CreateHoverCardArgs = {}) {
@@ -90,6 +90,7 @@ export function createHoverCard(args: CreateHoverCardArgs = {}) {
 				'aria-expanded': $open,
 				'data-state': $open ? 'open' : 'closed',
 				'aria-controls': ids.content,
+				'data-melt-hover-card-trigger': '',
 				id: ids.trigger,
 			};
 		}),
@@ -128,6 +129,7 @@ export function createHoverCard(args: CreateHoverCardArgs = {}) {
 					userSelect: 'text',
 					WebkitUserSelect: 'text',
 				}),
+				'data-melt-hover-card-content': '',
 				id: ids.content,
 			};
 		}),
@@ -156,6 +158,7 @@ export function createHoverCard(args: CreateHoverCardArgs = {}) {
 							options: {
 								floating: $options.positioning,
 								focusTrap: null,
+								clickOutside: !$options.closeOnOutsideClick ? null : undefined,
 							},
 						});
 						if (popper && popper.destroy) {
@@ -208,6 +211,7 @@ export function createHoverCard(args: CreateHoverCardArgs = {}) {
 	};
 
 	const arrow = derived(options, ($options) => ({
+		'data-melt-hover-card-arrow': '',
 		'data-arrow': true,
 		style: styleToString({
 			position: 'absolute',

@@ -1,0 +1,11 @@
+<script lang="ts">
+	import { createHoverCard } from '@melt-ui/svelte';
+    const { trigger, content, arrow } = createHoverCard()
+</script>
+
+<button {...$trigger} use:trigger.action>Hover Me</button>
+
+<div {...$content} use:content.action>
+    <div>I am content inside the hover card</div>
+    <div {...$arrow} />
+</div>

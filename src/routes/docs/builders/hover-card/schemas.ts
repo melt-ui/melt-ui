@@ -1,12 +1,18 @@
 import type { APISchema } from '$routes/(components)';
 
 const builder: APISchema = {
-	title: 'CreateTooltipArgs',
-	description: 'The configuration object passed to the `createTooltip` builder function.',
+	title: 'CreateHoverCardArgs',
+	description: 'The configuration object passed to the `createHoverCard` builder function.',
 	args: [
+		{
+			label: 'defaultOpen',
+			type: 'boolean',
+			default: false,
+		},
 		{
 			label: 'positioning',
 			type: 'FloatingConfig',
+			default: 'placement: "bottom"',
 		},
 		{
 			label: 'arrowSize',
@@ -19,64 +25,60 @@ const builder: APISchema = {
 			default: false,
 		},
 		{
-			label: 'closeOnPointerDown',
+			label: 'closeOnOutsideClick',
 			type: 'boolean',
 			default: true,
 		},
 		{
 			label: 'openDelay',
 			type: 'number',
-			default: 1000,
+			default: 700,
 		},
 		{
 			label: 'closeDelay',
 			type: 'number',
-			default: 500,
+			default: 300,
 		},
 	],
 };
 
 const trigger: APISchema = {
 	title: 'Trigger',
-	description: 'The tooltip trigger element.',
+	description: 'The hover card trigger element.',
 	dataAttributes: [
 		{
 			label: 'data-state',
 			value: ["'open'", "'closed'"],
+		},
+		{
+			label: 'data-melt-hover-card-trigger',
+			value: '',
+		},
+	],
+};
+
+const content: APISchema = {
+	title: 'Content',
+	description: 'The content displayed in the hovercard',
+	dataAttributes: [
+		{
+			label: 'data-melt-hover-card-content',
+			value: '',
 		},
 	],
 };
 
 const arrow: APISchema = {
 	title: 'Arrow',
-	description: 'The tooltip arrow element.',
+	description: 'The optional arrow element that points to the trigger.',
 	dataAttributes: [
 		{
 			label: 'data-arrow',
 			value: 'true',
 		},
-	],
-};
-
-const keyboard: APISchema = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
 		{
-			key: 'Tab',
-			description: 'Opens/closes the tooltip without delay.',
-		},
-		{
-			key: 'Space',
-			description: 'If open, closes the tooltip without delay.',
-		},
-		{
-			key: 'Enter',
-			description: 'If open, closes the tooltip without delay.',
-		},
-		{
-			key: 'Escape',
-			description: 'If open, closes the tooltip without delay.',
+			label: 'data-melt-hover-card-arrow',
+			value: '',
 		},
 	],
 };
@@ -85,5 +87,5 @@ export const schemas = {
 	builder,
 	trigger,
 	arrow,
-	keyboard,
+	content,
 };

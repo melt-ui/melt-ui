@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
-	import { schemas } from './schemas.js';
+	import { snippets } from './(snippets)/index';
+	import { schemas } from './schemas';
 
 	export let data;
 
 	const features = [
-		'Opens when the trigger is focused or hovered',
-		'Closes when the trigger is activated or with escape',
-		'Custom delay for opening and closing',
-		'Supports custom positioning',
+		'Controlled or uncontrolled',
+		'Ignored by screen readers',
+		'Custom open and close delay support',
+		'Positioning and alignment customization',
 	];
 </script>
 
@@ -24,10 +25,28 @@
 
 <Docs.H2>Anatomy</Docs.H2>
 <Docs.Ul>
-	<Docs.Li><b>Trigger:</b> The element that triggers the tooltip popover</Docs.Li>
-	<Docs.Li><b>Content:</b> The tooltip's content container</Docs.Li>
+	<Docs.Li><b>Trigger:</b> The element that opens the hovercard on hover.</Docs.Li>
+	<Docs.Li><b>Content:</b> The element containing the content for the hovercard.</Docs.Li>
 	<Docs.Li><b>Arrow:</b> An optional arrow component</Docs.Li>
 </Docs.Ul>
+
+<Docs.H2>Usage</Docs.H2>
+<Docs.P class="mt-4"
+	>Create a hovercard using the <Docs.Code>createHoverCard</Docs.Code> builder function.</Docs.P
+>
+<Docs.CodeBlock code={snippets.usage1} />
+
+<Docs.P class="mt-4">
+	Then you can use the <Docs.Code>trigger</Docs.Code>, <Docs.Code>content</Docs.Code>, and <Docs.Code
+		>arrow</Docs.Code
+	> to construct a hovercard. A high level example of how to structure the hovercard is shown below.
+</Docs.P>
+<Docs.CodeBlock code={snippets.usage2} />
+
+<Docs.P>
+	It's also possible to use Svelte Transitions, as demonstrated in the example at the top of this
+	page.
+</Docs.P>
 
 <Docs.H2>API Reference</Docs.H2>
 <Docs.API schema={schemas.builder} />
@@ -36,10 +55,6 @@
 
 <Docs.H2>Accessibility</Docs.H2>
 <Docs.P>
-	Adheres to the
-	<Docs.A href="https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/"
-		>Tooltip WAI-ARIA design pattern</Docs.A
-	>
+	The hover card is only intended to be used with a mouse or other pointing device and doesn't
+	respond to keyboard events.
 </Docs.P>
-
-<Docs.API schema={schemas.keyboard} />

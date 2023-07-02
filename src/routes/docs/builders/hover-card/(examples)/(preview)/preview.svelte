@@ -2,20 +2,16 @@
 	import { createHoverCard } from '$lib';
 	import { fade } from 'svelte/transition';
 
-	const { trigger, content, open, arrow } = createHoverCard({
-		openDelay: 500,
-		closeDelay: 250,
-	});
+	const { trigger, content, open, arrow } = createHoverCard();
 </script>
 
 <a
-	class="trigger flex items-center justify-center"
+	class="trigger"
 	href="https://github.com/melt-ui/melt-ui"
 	target="_blank"
 	rel="noreferrer"
 	{...$trigger}
 	use:trigger.action
-	aria-label="Melt UI Details"
 >
 	<img
 		src="/logo-mark.svg"
@@ -66,7 +62,8 @@
 
 <style lang="postcss">
 	.trigger {
-		@apply h-12 w-12 rounded-full bg-white p-0 text-sm font-medium;
+		@apply flex h-12 w-12 items-center justify-center;
+		@apply rounded-full bg-white p-0 text-sm font-medium;
 		@apply text-magnum-900 transition-colors hover:bg-white/90;
 		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
 	}
