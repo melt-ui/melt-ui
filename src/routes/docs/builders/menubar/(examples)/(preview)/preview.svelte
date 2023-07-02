@@ -40,41 +40,35 @@
 	const stickyScroll = writable(false);
 </script>
 
-<div class="flex rounded-md bg-white p-1 shadow-md" {...menubar} use:menubar.action>
+<div class="flex rounded-md bg-white p-1 shadow-md" {...$menubar} use:menubar>
 	<!------------>
 	<!--- FILE --->
 	<!------------>
-	<button
-		type="button"
-		class="trigger"
-		{...$trigger}
-		use:trigger.action
-		aria-label="Update dimensions"
-	>
+	<button type="button" class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
 		File
 	</button>
 
-	<div class="menu" {...$menu} use:menu.action>
-		<div class="item" {...item} use:item.action>New Text File</div>
-		<div class="item" {...item} use:item.action>
+	<div class="menu" {...$menu} use:menu>
+		<div class="item" {...$item} use:item>New Text File</div>
+		<div class="item" {...$item} use:item>
 			New File...
 			<div class="rightSlot">⌘T</div>
 		</div>
-		<div class="item" {...item} use:item.action aria-disabled="true">
+		<div class="item" {...$item} use:item aria-disabled="true">
 			New Window...
 			<div class="rightSlot">⇧⌘T</div>
 		</div>
-		<div class="separator" {...separator} />
-		<div class="item" {...$subTrigger} use:subTrigger.action>
+		<div class="separator" {...$separator} />
+		<div class="item" {...$subTrigger} use:subTrigger>
 			Select theme
 			<div class="rightSlot">
 				<ChevronRight class="icon" />
 			</div>
 		</div>
-		<div class="menu subMenu" {...$subMenu} use:subMenu.action>
-			<div {...radioGroup}>
+		<div class="menu subMenu" {...$subMenu} use:subMenu>
+			<div {...$radioGroup}>
 				{#each themesArr as theme}
-					<div class="item" {...$radioItem({ value: theme })} use:radioItem.action>
+					<div class="item" {...$radioItem({ value: theme })} use:radioItem>
 						<div class="check">
 							{#if $isChecked(theme)}
 								<div class="dot" />
@@ -85,8 +79,8 @@
 				{/each}
 			</div>
 		</div>
-		<div {...separator} class="separator" />
-		<div class="item" {...item} use:item.action>
+		<div {...$separator} class="separator" />
+		<div class="item" {...$item} use:item>
 			Quit Melt UI
 			<div class="rightSlot">⌘Q</div>
 		</div>
@@ -95,46 +89,40 @@
 	<!------------>
 	<!--- EDIT --->
 	<!------------>
-	<button
-		type="button"
-		class="trigger"
-		{...$triggerA}
-		use:triggerA.action
-		aria-label="Update dimensions"
-	>
+	<button type="button" class="trigger" {...$triggerA} use:triggerA aria-label="Update dimensions">
 		Edit
 	</button>
 
-	<div class="menu" {...$menuA} use:menuA.action>
-		<div class="item" {...itemA} use:itemA.action>
+	<div class="menu" {...$menuA} use:menuA>
+		<div class="item" {...$itemA} use:itemA>
 			Undo
 			<div class="rightSlot">⌘Z</div>
 		</div>
-		<div class="item" {...itemA} use:itemA.action>
+		<div class="item" {...$itemA} use:itemA>
 			Redo
 			<div class="rightSlot">⇧⌘Z</div>
 		</div>
-		<div class="separator" {...separatorA} />
-		<div class="item" {...itemA} use:itemA.action>
+		<div class="separator" {...$separatorA} />
+		<div class="item" {...$itemA} use:itemA>
 			Cut
 			<div class="rightSlot">⌘X</div>
 		</div>
-		<div class="item" {...itemA} use:itemA.action>
+		<div class="item" {...$itemA} use:itemA>
 			Copy
 			<div class="rightSlot">⌘C</div>
 		</div>
-		<div class="item" {...itemA} use:itemA.action>
+		<div class="item" {...$itemA} use:itemA>
 			Paste
 			<div class="rightSlot">⌘V</div>
 		</div>
 
-		<div {...separatorA} class="separator" />
+		<div {...$separatorA} class="separator" />
 
-		<div class="item" {...itemA} use:itemA.action>
+		<div class="item" {...$itemA} use:itemA>
 			Find
 			<div class="rightSlot">⌘F</div>
 		</div>
-		<div class="item" {...itemA} use:itemA.action>
+		<div class="item" {...$itemA} use:itemA>
 			Replace
 			<div class="rightSlot">⌥⌘F</div>
 		</div>
@@ -143,38 +131,32 @@
 	<!------------>
 	<!--- VIEW --->
 	<!------------>
-	<button
-		type="button"
-		class="trigger"
-		{...$triggerB}
-		use:triggerB.action
-		aria-label="Update dimensions"
-	>
+	<button type="button" class="trigger" {...$triggerB} use:triggerB aria-label="Update dimensions">
 		View
 	</button>
 
-	<div class="menu" {...$menuB} use:menuB.action>
-		<div class="item" {...itemB} use:itemB.action>
+	<div class="menu" {...$menuB} use:menuB>
+		<div class="item" {...$itemB} use:itemB>
 			Command Palette..
 			<div class="rightSlot">⇧⌘P</div>
 		</div>
-		<div class="item" {...itemB} use:itemB.action>Open View...</div>
-		<div class="separator" {...separatorB} />
-		<div class="item" {...$subTriggerB} use:subTriggerB.action>
+		<div class="item" {...$itemB} use:itemB>Open View...</div>
+		<div class="separator" {...$separatorB} />
+		<div class="item" {...$subTriggerB} use:subTriggerB>
 			Appearance
 			<div class="rightSlot">
 				<ChevronRight class="icon" />
 			</div>
 		</div>
-		<div class="menu subMenu" {...$subMenuB} use:subMenuB.action>
-			<div {...radioGroup}>
-				<div class="item" {...itemB} use:itemB.action>Full Screen</div>
-				<div class="item" {...itemB} use:itemB.action>Zen Mode</div>
+		<div class="menu subMenu" {...$subMenuB} use:subMenuB>
+			<div {...$radioGroup}>
+				<div class="item" {...$itemB} use:itemB>Full Screen</div>
+				<div class="item" {...$itemB} use:itemB>Zen Mode</div>
 			</div>
 		</div>
-		<div class="separator" {...separatorB} />
+		<div class="separator" {...$separatorB} />
 
-		<div class="item" {...checkboxItemB} use:checkboxItemB.action={{ checked: wordWrap }}>
+		<div class="item" {...$checkboxItemB} use:checkboxItemB={{ checked: wordWrap }}>
 			<div class="check">
 				{#if $wordWrap}
 					<Check class="icon" />
@@ -183,7 +165,7 @@
 			Word Wrap
 			<div class="rightSlot">⌘H</div>
 		</div>
-		<div class="item" {...checkboxItemB} use:checkboxItemB.action={{ checked: stickyScroll }}>
+		<div class="item" {...$checkboxItemB} use:checkboxItemB={{ checked: stickyScroll }}>
 			<div class="check">
 				{#if $stickyScroll}
 					<Check class="icon" />
@@ -196,21 +178,15 @@
 	<!------------>
 	<!--- HELP --->
 	<!------------>
-	<button
-		type="button"
-		class="trigger"
-		{...$triggerC}
-		use:triggerC.action
-		aria-label="Update dimensions"
-	>
+	<button type="button" class="trigger" {...$triggerC} use:triggerC aria-label="Update dimensions">
 		Help
 	</button>
 
-	<div class="menu" {...$menuC} use:menuC.action>
-		<div class="item" {...itemC} use:itemC.action>About Melt UI</div>
-		<div class="item" {...itemC} use:itemC.action>Check for Updates...</div>
-		<div class="separator" {...separatorC} />
-		<div class="item" {...checkboxItemC} use:checkboxItemC.action={{ checked: tipsAndTricks }}>
+	<div class="menu" {...$menuC} use:menuC>
+		<div class="item" {...$itemC} use:itemC>About Melt UI</div>
+		<div class="item" {...$itemC} use:itemC>Check for Updates...</div>
+		<div class="separator" {...$separatorC} />
+		<div class="item" {...$checkboxItemC} use:checkboxItemC={{ checked: tipsAndTricks }}>
 			<div class="check">
 				{#if $tipsAndTricks}
 					<Check class="icon" />
@@ -219,9 +195,9 @@
 			Tips & Tricks
 		</div>
 
-		<div {...separatorC} class="separator" />
+		<div {...$separatorC} class="separator" />
 
-		<div class="item" {...checkboxItemC} use:checkboxItemC.action={{ checked: hideMeltUI }}>
+		<div class="item" {...$checkboxItemC} use:checkboxItemC={{ checked: hideMeltUI }}>
 			<div class="check">
 				{#if $hideMeltUI}
 					<Check class="icon" />
@@ -229,12 +205,12 @@
 			</div>
 			Documentation
 		</div>
-		<div class="item" {...itemC} use:itemC.action aria-disabled="true">
+		<div class="item" {...$itemC} use:itemC aria-disabled="true">
 			Show All Components
 			<div class="rightSlot">⇧⌘N</div>
 		</div>
-		<div {...separatorC} class="separator" />
-		<div class="item" {...itemC} use:itemC.action>Report a bug...</div>
+		<div {...$separatorC} class="separator" />
+		<div class="item" {...$itemC} use:itemC>Report a bug...</div>
 	</div>
 </div>
 

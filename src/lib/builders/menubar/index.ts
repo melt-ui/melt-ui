@@ -10,6 +10,7 @@ import {
 	FIRST_LAST_KEYS,
 	handleMenuNavigation,
 	handleTabNavigation,
+	type MenuParts,
 } from '../menu';
 import {
 	executeCallbacks,
@@ -25,6 +26,8 @@ import {
 	hiddenAction,
 	getNextFocusable,
 	getPreviousFocusable,
+	builder,
+	createElHelpers,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions';
@@ -48,6 +51,8 @@ export type MenuRadioItemAction = Menu['radioItemAction'];
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
 
+const { name, selector } = createElHelpers<MenuParts | 'menu'>('menubar');
+
 const defaults = {
 	loop: true,
 } satisfies Defaults<CreateMenubar>;
@@ -63,11 +68,15 @@ export function createMenubar(args?: CreateMenubar) {
 		menubar: generateId(),
 	};
 
-	const menubar = hiddenAction({
-		role: 'menubar',
-		'data-melt-menubar': '',
-		'data-orientation': 'horizontal',
-		id: rootIds.menubar,
+	const menubar = builder(name(), {
+		returned() {
+			return {
+				role: 'menubar',
+				'data-melt-menubar': '',
+				'data-orientation': 'horizontal',
+				id: rootIds.menubar,
+			};
+		},
 		action: (node: HTMLElement) => {
 			const menuTriggers = node.querySelectorAll(
 				'[data-melt-menubar-trigger]'
@@ -105,10 +114,13 @@ export function createMenubar(args?: CreateMenubar) {
 			disableFocusFirstItem: true,
 			nextFocusable,
 			prevFocusable,
+			selector: 'menubar',
 		});
 
-		const menu = {
-			...derived([rootOpen], ([$rootOpen]) => {
+		const menu = builder(name('menu'), {
+			stores: [rootOpen],
+			returned: ([$rootOpen]) => {
+				console.log();
 				return {
 					role: 'menu',
 					hidden: $rootOpen ? undefined : true,
@@ -123,7 +135,7 @@ export function createMenubar(args?: CreateMenubar) {
 					'data-melt-scope': rootIds.menubar,
 					tabindex: -1,
 				} as const;
-			}),
+			},
 			action: (node: HTMLElement) => {
 				let unsubPopper = noop;
 
@@ -133,7 +145,7 @@ export function createMenubar(args?: CreateMenubar) {
 						unsubPopper();
 						if ($rootOpen && $rootActiveTrigger) {
 							tick().then(() => {
-								setMeltMenuAttribute(node);
+								setMeltMenuAttribute(node, selector);
 								const popper = usePopper(node, {
 									anchorElement: $rootActiveTrigger,
 									open: rootOpen,
@@ -163,6 +175,7 @@ export function createMenubar(args?: CreateMenubar) {
 						 * we only care about key events that happen inside this menu.
 						 */
 						const isKeyDownInside = target.closest('[data-melt-menu]') === menuElement;
+						console.log('isKeyDownInside', isKeyDownInside);
 						if (!isKeyDownInside) return;
 						if (FIRST_LAST_KEYS.includes(e.key)) {
 							handleMenuNavigation(e);
@@ -201,10 +214,11 @@ export function createMenubar(args?: CreateMenubar) {
 					},
 				};
 			},
-		};
+		});
 
-		const trigger = {
-			...derived([rootOpen], ([$rootOpen]) => {
+		const trigger = builder(name('trigger'), {
+			stores: [rootOpen],
+			returned: ([$rootOpen]) => {
 				return {
 					'aria-controls': m.rootIds.menu,
 					'aria-expanded': $rootOpen,
@@ -215,7 +229,7 @@ export function createMenubar(args?: CreateMenubar) {
 					'data-orientation': 'horizontal',
 					role: 'menuitem',
 				} as const;
-			}),
+			},
 			action: (node: HTMLElement) => {
 				applyAttrsIfDisabled(node);
 
@@ -317,7 +331,7 @@ export function createMenubar(args?: CreateMenubar) {
 					destroy: unsub,
 				};
 			},
-		};
+		});
 
 		effect([activeMenu], ([$activeMenu]) => {
 			if (!isBrowser) return;
@@ -373,7 +387,7 @@ export function createMenubar(args?: CreateMenubar) {
 	onMount(() => {
 		if (!isBrowser) return;
 
-		const menubarElement = document.getElementById(menubar.id);
+		const menubarElement = document.getElementById(rootIds.menubar);
 		if (!isHTMLElement(menubarElement)) return;
 
 		const unsubEvents = executeCallbacks(
