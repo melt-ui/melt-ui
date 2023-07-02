@@ -98,7 +98,6 @@ export function createContextMenu(args?: CreateContextMenu) {
 				}),
 				id: rootIds.menu,
 				'aria-labelledby': rootIds.trigger,
-				'data-melt-part': 'menu',
 				'data-melt-menu': '',
 				'data-state': $rootOpen ? 'open' : 'closed',
 				tabindex: -1,
@@ -205,7 +204,7 @@ export function createContextMenu(args?: CreateContextMenu) {
 				'aria-expanded': $rootOpen,
 				'data-state': $rootOpen ? 'open' : 'closed',
 				id: rootIds.trigger,
-				'data-melt-part': 'trigger',
+				'data-melt-menu-trigger': '',
 				style: styleToString({
 					WebkitTouchCallout: 'none',
 				}),
