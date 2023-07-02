@@ -149,14 +149,13 @@ export function createHoverCard(args: CreateHoverCardArgs = {}) {
 						const triggerEl = document.getElementById(ids.trigger);
 						if (!triggerEl || node.hidden) return;
 						const $options = get(options);
-						const triggerElement = document.getElementById(ids.trigger);
-						if (!isHTMLElement(triggerElement)) return;
 
 						const popper = usePopper(node, {
-							anchorElement: triggerElement,
+							anchorElement: triggerEl,
 							open,
 							options: {
 								floating: $options.positioning,
+								focusTrap: null,
 							},
 						});
 						if (popper && popper.destroy) {
@@ -193,6 +192,7 @@ export function createHoverCard(args: CreateHoverCardArgs = {}) {
 				addEventListener(node, 'focusout', (e) => {
 					e.preventDefault();
 				}),
+
 				portalReturn && portalReturn.destroy ? portalReturn.destroy : noop,
 				unsubOpen
 			);
