@@ -1,5 +1,16 @@
 # @melt-ui/svelte
 
+## 0.17.0
+
+### Minor Changes
+
+- 1266ef6: New Feature: Menubar
+- 100eb14: [New Builder] Hover Card
+
+### Patch Changes
+
+- d108259: fix(toggle-group): focus selected first
+
 ## 0.16.0
 
 ### Minor Changes

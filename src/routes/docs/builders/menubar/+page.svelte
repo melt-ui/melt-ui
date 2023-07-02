@@ -14,7 +14,7 @@
 	];
 </script>
 
-<Docs.H1>Dropdown Menu</Docs.H1>
+<Docs.H1>Menubar</Docs.H1>
 <Docs.Description>
 	Displays a menu to the user, which can consist of links or functions, triggered by a button.
 </Docs.Description>
@@ -38,52 +38,56 @@
 </Docs.Ul>
 
 <Docs.H2>Usage</Docs.H2>
-<Docs.P
-	>The first thing you need to do is create a dropdown menu using the <Docs.Code
-		>createDropdownMenu</Docs.Code
-	> function.</Docs.P
+<Docs.P class="mt-4"
+	>The first thing you'll need to do is create a menubar using the <Docs.Code
+		>createMenubar</Docs.Code
+	> builder function.</Docs.P
 >
 <Docs.CodeBlock code={snippets.usage} />
 
-<Docs.P
-	>Then you can use the <Docs.Code>menu</Docs.Code>, <Docs.Code>item</Docs.Code>, and <Docs.Code
-		>trigger</Docs.Code
-	> to construct a dropdown menu. A high level example of how to structure the menu is shown below.
+<Docs.P class="mt-4">
+	This function returns an object containing the <Docs.Code>menubar</Docs.Code> attributes object, and
+	a <Docs.Code>createMenu</Docs.Code> function. The <Docs.Code>createMenu</Docs.Code> function is used
+	the same way as the <Docs.Code>createDropdownMenu</Docs.Code> builder from the <Docs.A
+		href="/docs/builders/dropdown-menu">Dropdown Menu</Docs.A
+	> builder. The only difference is that using this function keeps the menu scoped to the menubar which
+	happens behind the scenes.
+</Docs.P>
+
+<Docs.P class="mt-4">
+	Now that we have a menubar and menu builder function, we can create a menu using the <Docs.Code
+		>createMenu</Docs.Code
+	> function and wrap it in a <Docs.Code>menubar</Docs.Code> element.
 </Docs.P>
 
 <Docs.CodeBlock code={snippets.usage2} />
 
-<Docs.P
-	>The <Docs.Code>trigger</Docs.Code> sits outside of the <Docs.Code>menu</Docs.Code> and is used to
-	toggle the menu's open state. The <Docs.Code>item</Docs.Code> elements go inside the <Docs.Code
-		>menu</Docs.Code
-	> element. The <Docs.Code>arrow</Docs.Code> element is optional and can be used to render an arrow
-	which points to the trigger.
+<Docs.P class="mt-4">
+	This isn't much of a "menubar" though, as typically a menubar consists of multiple menus, so let's
+	add a couple more.
 </Docs.P>
 
-<Docs.P>
-	At this point, our menu doesn't really do much except open and close. To add functionality, we
-	could turn the `item` elements into links, or we could pass a custom <Docs.Code
-		>onSelect</Docs.Code
-	>
-	function to the <Docs.Code>item.action</Docs.Code>, which will be called when that item is
-	selected.
+<Docs.P class="mt-4">
+	Since each <Docs.Code>menu</Docs.Code> needs to have it's own "scope", we'll need to call the <Docs.Code
+		>createMenu</Docs.Code
+	> function again for each menu we want to create. If you're doing this all in one file, it can get
+	a bit messy, so I'd recommend componentizing each menu. But for the sake of this example, we'll just
+	rename the returned variables to prevent any naming conflicts.
 </Docs.P>
 
 <Docs.CodeBlock code={snippets.usage3} />
 
 <Docs.P>
-	If you wanted to prevent the default behavior that occurs when you select an item, you can call
-	<Docs.Code>e.preventDefault()</Docs.Code>
-	in your
-	<Docs.Code>onSelect</Docs.Code>
-	function, which will prevent the default behavior from occurring.
+	Now we have a menubar with three menus, each with their own items and scopes. As mentioned
+	previously, the functionality of <Docs.Code>createMenu</Docs.Code> is the exact same as <Docs.Code
+		>createDropdownMenu</Docs.Code
+	>, so you can refer to the <Docs.A href="/docs/builders/dropdown-menu">Dropdown Menu</Docs.A> documentation
+	for more information on how to use it.
 </Docs.P>
-
-<Docs.CodeBlock code={snippets.usage4} />
 
 <Docs.H2>API Reference</Docs.H2>
 <Docs.API schema={schemas.builder} />
+<Docs.API schema={schemas.menuBuilder} />
 <Docs.API schema={schemas.menu} />
 <Docs.API schema={schemas.trigger} />
 <Docs.API schema={schemas.item} />

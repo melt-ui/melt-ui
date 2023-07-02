@@ -80,9 +80,9 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Context Menu    | ✅     |
 | Dialog          | ✅     |
 | Dropdown Menu   | ✅     |
-| Hover Card      |        |
+| Hover Card      | ✅     |
 | Label           | ✅     |
-| Menubar         |        |
+| Menubar         | ✅      |
 | Navigation Menu |        |
 | Pagination      | ✅     |
 | Pin Input       |        |
@@ -103,7 +103,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Tooltip         | ✅     |
 | ???             |        |
 
-**Progress:** 22/30+
+**Progress:** 24/30+
 
 ## Similar projects
 
