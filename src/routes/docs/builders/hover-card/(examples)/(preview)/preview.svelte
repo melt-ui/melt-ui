@@ -1,27 +1,29 @@
 <script lang="ts">
-	import { createTooltip } from '$lib';
+	import { createHoverCard } from '$lib';
 	import { fade } from 'svelte/transition';
-	import Plus from '~icons/lucide/plus';
 
-	const { trigger, content, open, arrow } = createTooltip({
-		positioning: {
-			placement: 'top',
-		},
+	const { trigger, content, open, arrow } = createHoverCard({
 		openDelay: 500,
 		closeDelay: 250,
 	});
 </script>
 
-<button
-	type="button"
-	class="trigger"
+<a
+	class="trigger flex items-center justify-center"
+	href="https://github.com/melt-ui/melt-ui"
+	target="_blank"
+	rel="noreferrer"
 	{...$trigger}
 	use:trigger.action
-	aria-label="Update dimensions"
+	aria-label="Melt UI Details"
 >
-	<Plus class="h-4 w-4" />
-	<span class="sr-only">Open Popover</span>
-</button>
+	<img
+		src="/logo-mark.svg"
+		alt="Melt UI Logo"
+		class="h-full w-full rounded-full bg-neutral-900 object-contain p-2"
+	/>
+	<span class="sr-only">Open Melt UI Details</span>
+</a>
 
 {#if $open}
 	<div
@@ -30,14 +32,41 @@
 		transition:fade={{ duration: 100 }}
 		class="z-10 rounded-md bg-white shadow-sm"
 	>
+		<div class="w-[300px] rounded-md bg-white p-5 shadow-sm">
+			<div class="flex flex-col gap-2">
+				<img
+					src="/logo-mark.svg"
+					alt="Melt UI Logo"
+					class="object-fit block h-14 w-14 rounded-full bg-neutral-900 p-2"
+				/>
+				<div class="flex flex-col gap-4">
+					<div>
+						<div class="font-bold text-neutral-900">Melt UI</div>
+						<div class="text-neutral-400">melt-ui/melt-ui</div>
+					</div>
+				</div>
+				<div class="m-0 text-neutral-700">
+					A set of accessible, unstyled component builders for Svelte & SvelteKit. Open source.
+				</div>
+				<div class="flex gap-4">
+					<div class="flex gap-1">
+						<div class="text-neutral-900">250</div>
+						<div class="text-neutral-400">Stars</div>
+					</div>
+					<div class="flex gap-1">
+						<div class="text-neutral-900">23</div>
+						<div class="text-neutral-400">Forks</div>
+					</div>
+				</div>
+			</div>
+		</div>
 		<div {...$arrow} />
-		<p class="px-4 py-1 text-magnum-700">Add to library</p>
 	</div>
 {/if}
 
 <style lang="postcss">
 	.trigger {
-		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0 text-sm font-medium;
+		@apply h-12 w-12 rounded-full bg-white p-0 text-sm font-medium;
 		@apply text-magnum-900 transition-colors hover:bg-white/90;
 		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
 	}
