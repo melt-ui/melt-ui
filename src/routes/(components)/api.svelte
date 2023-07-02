@@ -2,8 +2,9 @@
 	export type Props = Array<{
 		label: string;
 		type: string | string[];
-		default?: unknown;
+		default?: string;
 		required?: boolean;
+		description?: string;
 	}>;
 
 	export type Events = Array<{

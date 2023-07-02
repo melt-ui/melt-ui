@@ -24,9 +24,11 @@ import H5 from './h5.svelte';
 import Ol from './ol.svelte';
 import Features from './sections/features.svelte';
 import Callout from './callout.svelte';
+import APISection from './api-section.svelte';
 
 export const Docs = {
 	API,
+	APISection,
 	Callout,
 	CodeBlock,
 	Construction,

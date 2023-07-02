@@ -1,29 +1,32 @@
 import type { APISchema } from '$routes/(components)/api.svelte';
 
 const builder: APISchema = {
-	title: 'CreateDropdownMenuArgs',
-	description: 'The configuration object passed to the `createDropdownMenu` builder function.',
+	title: 'createDropdownMenu',
+	description: 'The builder function used to create a dropdown menu.',
 	args: [
 		{
 			label: 'positioning',
 			type: 'FloatingConfig',
-			default: "placement: 'bottom'",
+			default: "{ placement: 'bottom' }",
+			description: 'The positioning configuration for the floating menu.',
 		},
 		{
 			label: 'arrowSize',
 			type: 'number',
-			default: 8,
+			default: '8',
+			description: 'The size of the arrow which points to the trigger.',
 		},
 		{
 			label: 'preventScroll',
 			type: 'boolean',
-			default: true,
+			default: 'true',
+			description: 'Whether or not to prevent scrolling when the menu is open.',
 		},
 	],
 };
 
 const menu: APISchema = {
-	title: 'Menu',
+	title: 'menu',
 	description: 'The element which wraps the entire dropdown menu.',
 	dataAttributes: [
 		{
@@ -42,7 +45,7 @@ const menu: APISchema = {
 };
 
 const trigger: APISchema = {
-	title: 'Trigger',
+	title: 'trigger',
 	description: 'The button which toggles the dropdown menu.',
 	dataAttributes: [
 		{
@@ -57,7 +60,7 @@ const trigger: APISchema = {
 };
 
 const arrow: APISchema = {
-	title: 'Arrow',
+	title: 'arrow',
 	description: 'An optional arrow element which points to the trigger.',
 	dataAttributes: [
 		{
@@ -72,12 +75,13 @@ const arrow: APISchema = {
 };
 
 const item: APISchema = {
-	title: 'Item',
+	title: 'item',
 	description: 'A basic menu item.',
 	args: [
 		{
 			label: 'onSelect',
 			type: 'function',
+			description: 'A callback function which is called when the item is selected.',
 		},
 	],
 	dataAttributes: [
@@ -93,16 +97,18 @@ const item: APISchema = {
 };
 
 const checkboxItem: APISchema = {
-	title: 'Checkbox Item',
+	title: 'checkboxItem',
 	description: 'A checkbox menu item.',
 	args: [
 		{
 			label: 'checked',
 			type: 'Writable<boolean>',
+			description: 'A writable boolean which controls the checked state of the checkbox.',
 		},
 		{
 			label: 'onSelect',
 			type: 'function',
+			description: 'A callback function which is called when the item is selected.',
 		},
 	],
 	dataAttributes: [
@@ -117,19 +123,20 @@ const checkboxItem: APISchema = {
 	],
 };
 
-const radioGroupBuilder = {
-	title: 'CreateMenuRadioGroupArgs',
-	description: 'The configuration object passed to the `createMenuRadioGroup` builder function.',
+const radioGroupBuilder: APISchema = {
+	title: 'createMenuRadioGroup',
+	description: 'The builder function used to create a menu radio group.',
 	args: [
 		{
 			label: 'value',
 			type: 'string',
+			description: 'The value of the selected radio item. Set this to have a default selection.',
 		},
 	],
 };
 
 const radioGroup: APISchema = {
-	title: 'Menu Radio Group',
+	title: 'radioGroup',
 	description: 'A group of radio menu items.',
 	dataAttributes: [
 		{
@@ -140,21 +147,24 @@ const radioGroup: APISchema = {
 };
 
 const radioItem: APISchema = {
-	title: 'Radio Group Item',
+	title: 'radioItem',
 	description: 'A radiogroup menu item.',
 	args: [
 		{
 			label: 'value',
 			type: 'string',
+			description: 'The value of the radio item.',
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the item is disabled.',
 		},
 		{
 			label: 'onSelect',
 			type: 'function',
+			description: 'A callback function which is called when the item is selected.',
 		},
 	],
 	dataAttributes: [
@@ -170,7 +180,7 @@ const radioItem: APISchema = {
 };
 
 const separator: APISchema = {
-	title: 'Separator',
+	title: 'separator',
 	description: 'A horizontal line which separates menu items.',
 	dataAttributes: [
 		{
@@ -181,24 +191,26 @@ const separator: APISchema = {
 };
 
 const submenuBuilder: APISchema = {
-	title: 'CreateDropdownSubMenuArgs',
-	description: 'The configuration object passed to the `createDropdownSubMenu` builder function.',
+	title: 'createDropdownSubmenu',
+	description: 'The builder function used to create a dropdown submenu.',
 	args: [
 		{
 			label: 'positioning',
 			type: 'FloatingConfig',
 			default: "placement: 'right'",
+			description: 'The positioning configuration for the submenu.',
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the submenu is disabled.',
 		},
 	],
 };
 
 const submenu: APISchema = {
-	title: 'Submenu',
+	title: 'submenu',
 	description: 'A submenu element displayed when its trigger is selected.',
 	dataAttributes: [
 		{
@@ -217,7 +229,7 @@ const submenu: APISchema = {
 };
 
 const subTrigger: APISchema = {
-	title: 'Sub Trigger',
+	title: 'subTrigger',
 	description: 'A button which opens its associated submenu.',
 	dataAttributes: [
 		{

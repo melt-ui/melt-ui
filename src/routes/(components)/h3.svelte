@@ -6,7 +6,7 @@
 </script>
 
 <h3
-	class={cn('mb-1.5 mt-9 scroll-m-20 text-xl font-semibold', className)}
+	class={cn('mb-1.5 mt-9 scroll-m-20 text-xl font-bold leading-7', className)}
 	data-toc
 	{...$$restProps}
 >

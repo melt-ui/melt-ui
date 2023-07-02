@@ -83,9 +83,20 @@
 <Docs.CodeBlock code={snippets.usage4} />
 
 <Docs.H2>API Reference</Docs.H2>
-<Docs.API schema={schemas.builder} />
-<Docs.API schema={schemas.menu} />
-<Docs.API schema={schemas.trigger} />
+<Docs.APISection schema={schemas.builder} />
+<Docs.APISection schema={schemas.menu} />
+<Docs.APISection schema={schemas.trigger} />
+<Docs.APISection schema={schemas.item} />
+<Docs.APISection schema={schemas.checkboxItem} />
+<Docs.APISection schema={schemas.radioGroupBuilder} />
+<Docs.APISection schema={schemas.radioGroup} />
+<Docs.APISection schema={schemas.radioItem} />
+<Docs.APISection schema={schemas.submenuBuilder} />
+<Docs.APISection schema={schemas.submenu} />
+<Docs.APISection schema={schemas.subTrigger} />
+<Docs.APISection schema={schemas.separator} />
+
+<!-- <Docs.API schema={schemas.trigger} />
 <Docs.API schema={schemas.item} />
 <Docs.API schema={schemas.checkboxItem} />
 <Docs.API schema={schemas.radioGroupBuilder} />
@@ -94,7 +105,7 @@
 <Docs.API schema={schemas.submenuBuilder} />
 <Docs.API schema={schemas.submenu} />
 <Docs.API schema={schemas.subTrigger} />
-<Docs.API schema={schemas.separator} />
+<Docs.API schema={schemas.separator} /> -->
 
 <Docs.H2>Accessibility</Docs.H2>
 <Docs.P>

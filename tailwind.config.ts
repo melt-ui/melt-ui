@@ -47,6 +47,7 @@ export default {
 					'Segoe UI Symbol',
 				],
 				mono: [
+					'Cascadia Code',
 					'ui-monospace',
 					'SFMono-Regular',
 					'SF Mono',
