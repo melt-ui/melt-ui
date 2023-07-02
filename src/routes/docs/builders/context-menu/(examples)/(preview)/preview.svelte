@@ -24,10 +24,10 @@
 </span>
 
 <div class="menu" {...$menu} use:menu>
-	<div class="item" {...item} use:item>About Melt UI</div>
-	<div class="item" {...item} use:item>Check for Updates...</div>
-	<div class="separator" {...separator} />
-	<div class="item" {...checkboxItem} use:checkboxItem={{ checked: settingsSync }}>
+	<div class="item" {...$item} use:item>About Melt UI</div>
+	<div class="item" {...$item} use:item>Check for Updates...</div>
+	<div class="separator" {...$separator} />
+	<div class="item" {...$checkboxItem} use:checkboxItem={{ checked: settingsSync }}>
 		<div class="check">
 			{#if $settingsSync}
 				<Check class="icon" />
@@ -43,7 +43,7 @@
 	</div>
 	<div class="menu subMenu" {...$subMenuA} use:subMenuA>
 		<div class="text">People</div>
-		<div {...radioGroup}>
+		<div {...$radioGroup}>
 			{#each personsArr as person}
 				<div class="item" {...$radioItem({ value: person })} use:radioItem>
 					<div class="check">
@@ -56,9 +56,9 @@
 			{/each}
 		</div>
 	</div>
-	<div {...separator} class="separator" />
+	<div {...$separator} class="separator" />
 
-	<div class="item" {...checkboxItem} use:checkboxItem={{ checked: hideMeltUI }}>
+	<div class="item" {...$checkboxItem} use:checkboxItem={{ checked: hideMeltUI }}>
 		<div class="check">
 			{#if $hideMeltUI}
 				<Check class="icon" />
@@ -67,12 +67,12 @@
 		Hide Melt UI
 		<div class="rightSlot">⌘H</div>
 	</div>
-	<div class="item" {...item} use:item aria-disabled="true">
+	<div class="item" {...$item} use:item aria-disabled="true">
 		Show All Components
 		<div class="rightSlot">⇧⌘N</div>
 	</div>
-	<div {...separator} class="separator" />
-	<div class="item" {...item} use:item>
+	<div {...$separator} class="separator" />
+	<div class="item" {...$item} use:item>
 		Quit Melt UI
 		<div class="rightSlot">⌘Q</div>
 	</div>

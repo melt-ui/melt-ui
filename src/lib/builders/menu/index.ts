@@ -117,9 +117,10 @@ export type MenuBuilderOptions = {
 	disableFocusFirstItem?: boolean;
 	nextFocusable: Writable<HTMLElement | null>;
 	prevFocusable: Writable<HTMLElement | null>;
+	selector: string;
 };
 
-const { name, selector } = createElHelpers<
+export type MenuParts =
 	| 'trigger'
 	| 'arrow'
 	| 'checkbox-item'
@@ -128,10 +129,13 @@ const { name, selector } = createElHelpers<
 	| 'radio-item'
 	| 'submenu'
 	| 'subtrigger'
-	| 'subarrow'
->('menu');
+	| 'subarrow';
+
+export type Selector = (part?: MenuParts | undefined) => string;
 
 export function createMenuBuilder(opts: MenuBuilderOptions) {
+	const { name, selector } = createElHelpers<MenuParts>(opts.selector);
+
 	const rootOptions = opts.rootOptions;
 	const rootOpen = opts.rootOpen;
 	const rootActiveTrigger = opts.rootActiveTrigger;
@@ -204,7 +208,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					unsubPopper();
 					if ($rootOpen && $rootActiveTrigger) {
 						tick().then(() => {
-							setMeltMenuAttribute(node);
+							setMeltMenuAttribute(node, selector);
 							const popper = usePopper(node, {
 								anchorElement: $rootActiveTrigger,
 								open: rootOpen,
@@ -372,7 +376,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		}),
 		action: (node: HTMLElement, params: ItemArgs = {}) => {
 			const { onSelect } = params;
-			setMeltMenuAttribute(node);
+			setMeltMenuAttribute(node, selector);
 			applyAttrsIfDisabled(node);
 
 			const unsub = executeCallbacks(
@@ -448,10 +452,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			'data-orientation': 'vertical',
 		}),
 		action: (node: HTMLElement, params: CheckboxItemArgs) => {
-			setMeltMenuAttribute(node);
+			setMeltMenuAttribute(node, selector);
 			applyAttrsIfDisabled(node);
 			const { checked, onSelect } = { ...checkboxItemDefaults, ...params };
-			const $checked = get(checked) as boolean | 'indeterminate';
+			const $checked = get(checked);
 			node.setAttribute('aria-checked', isIndeterminate($checked) ? 'mixed' : String($checked));
 			node.setAttribute('data-state', getCheckedState($checked));
 
@@ -555,7 +559,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				};
 			},
 			action: (node: HTMLElement, params: RadioItemActionArgs = {}) => {
-				setMeltMenuAttribute(node);
+				setMeltMenuAttribute(node, selector);
 				const { onSelect } = params;
 
 				const unsub = executeCallbacks(
@@ -738,7 +742,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						if (!targetMeltMenuId) return;
 
 						const isKeyDownInside =
-							target.closest(selector()) === menuElement && targetMeltMenuId === menuElement.id;
+							target.closest('[role="menu"]') === menuElement &&
+							targetMeltMenuId === menuElement.id;
 
 						if (!isKeyDownInside) return;
 
@@ -837,7 +842,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				} as const;
 			},
 			action: (node: HTMLElement) => {
-				setMeltMenuAttribute(node);
+				setMeltMenuAttribute(node, selector);
 				applyAttrsIfDisabled(node);
 
 				const unsubTimer = () => {
@@ -1318,7 +1323,7 @@ function isMouse(e: PointerEvent) {
  * Set the `data-melt-menu-id` attribute on a menu item element.
  * @param element The menu item element
  */
-export function setMeltMenuAttribute(element: HTMLElement | null) {
+export function setMeltMenuAttribute(element: HTMLElement | null, selector: Selector) {
 	if (!element) return;
 	const menuEl = element.closest(`${selector()}, ${selector('submenu')}`);
 
