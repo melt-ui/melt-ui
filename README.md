@@ -80,10 +80,10 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Context Menu    | ✅     |
 | Dialog          | ✅     |
 | Dropdown Menu   | ✅     |
-| Dropzone				|        |
+| Dropzone        |        |
 | Hover Card      | ✅     |
 | Label           | ✅     |
-| Menubar         | ✅      |
+| Menubar         | ✅     |
 | Navigation Menu |        |
 | Pagination      | ✅     |
 | Pin Input       |        |

@@ -19,3 +19,6 @@ tsconfig.json
 
 CHANGELOG.md
 .changeset
+
+storybook-static/**/*
+
