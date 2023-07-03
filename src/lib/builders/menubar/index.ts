@@ -1,12 +1,11 @@
 import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable, type Writable } from 'svelte/store';
+import { get, writable, type Writable } from 'svelte/store';
 import {
 	SELECTION_KEYS,
 	applyAttrsIfDisabled,
 	getMenuItems,
 	createMenuBuilder,
 	type Menu,
-	setMeltMenuAttribute,
 	FIRST_LAST_KEYS,
 	handleMenuNavigation,
 	handleTabNavigation,
@@ -23,7 +22,6 @@ import {
 	noop,
 	generateId,
 	isBrowser,
-	hiddenAction,
 	getNextFocusable,
 	getPreviousFocusable,
 	builder,
@@ -51,7 +49,7 @@ export type MenuRadioItemAction = Menu['radioItemAction'];
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
 
-const { name, selector } = createElHelpers<MenuParts | 'menu'>('menubar');
+const { name } = createElHelpers<MenuParts | 'menu'>('menubar');
 
 const defaults = {
 	loop: true,
@@ -114,7 +112,7 @@ export function createMenubar(args?: CreateMenubar) {
 			disableFocusFirstItem: true,
 			nextFocusable,
 			prevFocusable,
-			selector: 'menubar',
+			selector: 'menubar-menu',
 		});
 
 		const menu = builder(name('menu'), {
@@ -128,8 +126,6 @@ export function createMenubar(args?: CreateMenubar) {
 					}),
 					id: m.rootIds.menu,
 					'aria-labelledby': m.rootIds.trigger,
-					'data-melt-menubar-menu': '',
-					'data-melt-menu': '',
 					'data-state': $rootOpen ? 'open' : 'closed',
 					'data-melt-scope': rootIds.menubar,
 					tabindex: -1,
@@ -144,7 +140,6 @@ export function createMenubar(args?: CreateMenubar) {
 						unsubPopper();
 						if ($rootOpen && $rootActiveTrigger) {
 							tick().then(() => {
-								setMeltMenuAttribute(node, selector);
 								const popper = usePopper(node, {
 									anchorElement: $rootActiveTrigger,
 									open: rootOpen,
@@ -173,8 +168,8 @@ export function createMenubar(args?: CreateMenubar) {
 						 * Submenu key events bubble through portals and
 						 * we only care about key events that happen inside this menu.
 						 */
-						const isKeyDownInside = target.closest('[data-melt-menu]') === menuElement;
-						'isKeyDownInside', isKeyDownInside;
+						const isKeyDownInside = target.closest('[data-melt-menubar-menu]') === menuElement;
+
 						if (!isKeyDownInside) return;
 						if (FIRST_LAST_KEYS.includes(e.key)) {
 							handleMenuNavigation(e);
@@ -223,7 +218,6 @@ export function createMenubar(args?: CreateMenubar) {
 					'aria-expanded': $rootOpen,
 					'data-state': $rootOpen ? 'open' : 'closed',
 					id: m.rootIds.trigger,
-					'data-melt-menubar-trigger': '',
 					'aria-haspopup': 'menu',
 					'data-orientation': 'horizontal',
 					role: 'menuitem',
@@ -435,8 +429,8 @@ export function createMenubar(args?: CreateMenubar) {
 		const target = e.target;
 		if (!isHTMLElement(target)) return;
 
-		const targetIsSubTrigger = target.hasAttribute('data-melt-menu-subtrigger');
-		const isKeyDownInsideSubMenu = target.closest('[data-melt-menu]') !== currentTarget;
+		const targetIsSubTrigger = target.hasAttribute('data-melt-menubar-menu-subtrigger');
+		const isKeyDownInsideSubMenu = target.closest('[role="menu"]') !== currentTarget;
 
 		const prevMenuKey = kbd.ARROW_LEFT;
 		const isPrevKey = e.key === prevMenuKey;

@@ -746,13 +746,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						const menuElement = e.currentTarget;
 						if (!isHTMLElement(menuElement)) return;
 
-						const targetMeltMenuId = target.getAttribute('data-melt-menu-id');
-						if (!targetMeltMenuId) return;
-
-						const isKeyDownInside =
-							target.closest('[role="menu"]') === menuElement &&
-							targetMeltMenuId === menuElement.id;
-
+						const isKeyDownInside = target.closest('[role="menu"]') === menuElement;
 						if (!isKeyDownInside) return;
 
 						if (FIRST_LAST_KEYS.includes(e.key)) {
