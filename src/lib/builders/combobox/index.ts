@@ -98,6 +98,8 @@ const defaults = {
  * - Menu should re-expand after item selection. (Select an item and press backspace)
  * - Option+up should close the menu
  * - Option+down should open the menu
+ * - Be able to disable the input via a `disabled` attribute on the input as well as the builder.
+ * - Cursor management on the chevron when disabled.
  *
  * POST-PR
  * - Setting initial value
@@ -129,6 +131,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 		label: generateId(),
 	};
 
+	/** Closes the menu. */
 	function close() {
 		open.set(false);
 		activeTrigger.set(null);
