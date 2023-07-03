@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { createDialog } from '@melt-ui/svelte';
+	import { createDialog } from '$lib/builders/dialog';
 	import { fade, fly } from 'svelte/transition';
-	import X from 'icons';
+	// Internal helpers
+	import X from '~icons/lucide/x';
 
 	const { trigger, portal, overlay, content, title, description, close, open } = createDialog();
 </script>
