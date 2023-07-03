@@ -133,6 +133,11 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 		label: generateId(),
 	};
 
+	function close() {
+		open.set(false);
+		activeTrigger.set(null);
+	}
+
 	/** Retrieves all option descendants of a given element. */
 	function getOptions(element: HTMLElement): HTMLElement[] {
 		return Array.from(element.querySelectorAll('[role="option"]'));
@@ -155,7 +160,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 			} as const;
 		}),
 		action: (node: HTMLInputElement) => {
-			const unsub = executeCallbacks(
+			const unsubscribe = executeCallbacks(
 				addEventListener(node, 'focus', (e) => {
 					// @TODO: abstract and use the input id instead? Thinking of this due to keyboard events also opening the box (although in testing, I haven't had any issues yet)
 					const triggerElement = e.currentTarget as HTMLElement;
@@ -187,16 +192,17 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 
 					// If the menu is open when the user hits `esc`, close it.
 					if (e.key === kbd.ESCAPE) {
-						open.set(false);
-						activeTrigger.set(null);
+						close();
 						return;
 					}
-					// 	case kbd.ENTER: {
-					// 		const $highlightedIndex = get(highlightedIndex);
-					// 		selectItem($highlightedIndex);
-					// 		open.set(false);
-					// 		break;
-					// 	}
+					// Pressing enter with a highlighted item selects it.
+					if (e.key === kbd.ENTER) {
+						const $highlightedItem = get(highlightedItem);
+						if ($highlightedItem) {
+							selectItem($highlightedItem);
+						}
+						close();
+					}
 
 					// if (e.key === kbd.TAB) {
 					// 	e.preventDefault();
@@ -264,7 +270,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 					filteredItems.set($items.filter((item) => $options.filterFunction(item, value)));
 				})
 			);
-			return { destroy: unsub };
+			return { destroy: unsubscribe };
 		},
 	};
 
@@ -272,11 +278,14 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	 * Selects an item in the list and updates the input value.
 	 * @param index array index of the item to select.
 	 */
-	function selectItem(index: number) {
+	function selectItem(item: HTMLElement) {
 		const $options = get(options);
-		const $item = get(filteredItems)[index];
-		selectedItem.set($item);
-		inputValue.set($options.itemToString($item));
+		if (item.dataset.index) {
+			const index = parseInt(item.dataset.index, 10);
+			const $item = get(filteredItems)[index];
+			inputValue.set($options.itemToString($item));
+			selectedItem.set($item);
+		}
 	}
 
 	/**
@@ -301,7 +310,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 		})),
 		action: (node: HTMLUListElement) => {
 			let unsubPopper = noop;
-			const unsubDerived = effect(
+			const unsubscribe = effect(
 				[open, activeTrigger, options],
 				([$open, $activeTrigger, $options]) => {
 					unsubPopper();
@@ -321,7 +330,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 			);
 			return {
 				destroy: () => {
-					unsubDerived();
+					unsubscribe();
 					unsubPopper();
 				},
 			};
@@ -368,26 +377,30 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 			role: 'option',
 		})),
 		action: (node: HTMLLIElement) => {
-			const unsub = executeCallbacks(
+			const unsubscribe = executeCallbacks(
+				// Handle highlighting items when the pointer moves over them.
 				addEventListener(node, 'pointermove', () => {
+					// Don't highlight disabled items.
 					if (isElementDisabled(node)) return;
+					// Skip highlighting if the item is already highlighted.
 					if (node === get(highlightedItem)) return;
 					highlightedItem.set(node);
 				}),
+				// Remove highlight when the pointer leaves the item.
 				addEventListener(node, 'pointerleave', () => {
 					highlightedItem.set(null);
 				}),
+				// Select an item by clicking on it.
 				addEventListener(node, 'click', () => {
-					const { index } = node.dataset;
-					if (index) {
-						const parsedIndex = parseInt(index, 10);
-						selectItem(parsedIndex);
-						document.getElementById(ids.input)?.focus();
-					}
-					open.set(false);
+					selectItem(node);
+					// Re-focus the input since focus is lost when clicking the item.
+					const inputElement = document.getElementById(ids.input);
+					if (!isHTMLElement(inputElement)) return;
+					inputElement.focus();
+					close();
 				})
 			);
-			return { destroy: unsub };
+			return { destroy: unsubscribe };
 		},
 	};
 
