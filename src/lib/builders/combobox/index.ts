@@ -94,7 +94,6 @@ const defaults = {
 
 /**
  * BUGS
- * - all items disabled—first is highlighted
  * - Tab navigation
  *
  * POST-PR
