@@ -22,6 +22,12 @@ export const kbd = {
 	TAB: 'Tab',
 };
 
+/** Key sets for navigation within lists, such as select, menu, and combobox. */
+export const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
+export const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
+export const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
+export const SELECTION_KEYS = [kbd.ENTER, kbd.SPACE];
+
 export const getNextKey = (
 	dir: 'ltr' | 'rtl' = 'ltr',
 	orientation: 'horizontal' | 'vertical' = 'horizontal'

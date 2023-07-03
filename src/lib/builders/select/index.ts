@@ -12,6 +12,8 @@ import {
 	isBrowser,
 	isHTMLElement,
 	kbd,
+	FIRST_LAST_KEYS,
+	SELECTION_KEYS,
 	noop,
 	omit,
 	removeScroll,
@@ -22,11 +24,6 @@ import type { Defaults } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import { createSeparator } from '../separator';
-
-const SELECTION_KEYS = [kbd.ENTER, kbd.SPACE];
-const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
-const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
-const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 
 export type CreateSelectArgs = {
 	positioning?: FloatingConfig;

@@ -1,5 +1,6 @@
 import { usePopper, type FloatingConfig } from '@melt-ui/svelte/internal/actions';
 import {
+	FIRST_LAST_KEYS,
 	addEventListener,
 	effect,
 	executeCallbacks,
@@ -7,6 +8,7 @@ import {
 	isBrowser,
 	isElementDisabled,
 	isHTMLElement,
+	isHTMLInputElement,
 	kbd,
 	next,
 	noop,
@@ -20,10 +22,6 @@ import { tick } from 'svelte';
 import type { Action } from 'svelte/action';
 import type { HTMLAttributes, HTMLInputAttributes, HTMLLiAttributes } from 'svelte/elements';
 import { derived, get, readonly, writable, type Readable, type Writable } from 'svelte/store';
-
-const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
-const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
-const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 
 interface CreateComboboxArgs<T> {
 	/** The list of items to display in the combobox. */
@@ -139,7 +137,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 		return Array.from(element.querySelectorAll('[role="option"]'));
 	}
 
-	/** Action and attributes for the text input element. */
+	/** Action and attributes for the text input. */
 	const input = {
 		...derived([open, options, highlightedItem], ([$open, $options, $highlightedItem]) => {
 			return {
@@ -157,22 +155,22 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 		}),
 		action: (node: HTMLInputElement) => {
 			const unsubscribe = executeCallbacks(
-				addEventListener(node, 'focus', (e) => {
-					// @TODO: abstract and use the input id instead? Thinking of this due to keyboard events also opening the box (although in testing, I haven't had any issues yet)
-					const triggerElement = e.currentTarget as HTMLElement;
+				// Open the menu portal when the input is focused.
+				addEventListener(node, 'focus', () => {
+					const triggerElement = document.getElementById(ids.input);
+					if (!isHTMLElement(triggerElement)) return;
 					activeTrigger.set(triggerElement);
 					open.set(true);
 				}),
+				// Handle all input key events including typing, meta, and navigation.
 				addEventListener(node, 'keydown', (e) => {
 					const $open = get(open);
-					// Handle key events when the menu is closed.
+					// When the menu is closed...
 					if (!$open) {
-						/**
-						 * When the user presses `esc` the input should lose focus.
-						 * If no item is selected the input should also be cleared.
-						 */
+						// When the user presses `esc` the input should lose focus.
 						if (e.key === kbd.ESCAPE) {
 							node.blur();
+							// If no item is selected the input should also be cleared.
 							if (!get(selectedItem)) {
 								inputValue.set('');
 							}
@@ -182,10 +180,9 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 						if (e.key === kbd.BACKSPACE && node.value === '') {
 							return;
 						}
-						// Otherwise, open the input.
+						// Otherwise, open the menu.
 						open.set(true);
 					}
-
 					// If the menu is open when the user hits `esc`, close it.
 					if (e.key === kbd.ESCAPE) {
 						close();
@@ -199,18 +196,15 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 						}
 						close();
 					}
-
 					// if (e.key === kbd.TAB) {
 					// 	e.preventDefault();
 					// 	activeTrigger.set(null);
 					// 	open.set(false);
 					// 	// handleTabNavigation(e);
 					// }
-
 					// Navigation events.
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						e.preventDefault();
-
 						// Get all the menu items.
 						const menuElement = document.getElementById(ids.menu);
 						if (!isHTMLElement(menuElement)) return;
@@ -252,16 +246,17 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 						 * Theoretically this shouldn't be possible but it's a good check anyway.
 						 */
 						if (typeof nextItem === 'undefined') return;
-
 						// Highlight the new item and scroll it into view.
 						highlightedItem.set(nextItem);
 						nextItem.scrollIntoView({ block: $options.scrollAlignment });
 					}
 				}),
+				// Listens to the input value and filters the items accordingly.
 				addEventListener(node, 'input', (e) => {
+					if (!isHTMLInputElement(e.target)) return;
 					const $options = get(options);
 					const $items = get(items);
-					const value = (e.target as HTMLInputElement).value;
+					const value = e.target.value;
 					inputValue.set(value);
 					filteredItems.set($items.filter((item) => $options.filterFunction(item, value)));
 				})
@@ -300,9 +295,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 			hidden: $open ? undefined : true,
 			id: ids.menu,
 			role: 'listbox',
-			style: styleToString({
-				display: $open ? undefined : 'none',
-			}),
+			style: styleToString({ display: $open ? undefined : 'none' }),
 		})),
 		action: (node: HTMLUListElement) => {
 			let unsubPopper = noop;
@@ -371,6 +364,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 			'data-index': args.index,
 			id: `${ids.input}-descendent-${args.index}`,
 			role: 'option',
+			style: styleToString({ cursor: args.disabled ? 'default' : 'pointer' }),
 		})),
 		action: (node: HTMLLIElement) => {
 			const unsubscribe = executeCallbacks(

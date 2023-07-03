@@ -65,7 +65,7 @@
 	<ul class="menu" {...$menu} use:menu.action>
 		{#if $open}
 			{#each $filteredItems as item, index (index)}
-				<li {...$option({ index, item, disabled: item.disabled })} use:option.action class="option">
+				<li {...$option({ index, item, disabled: true })} use:option.action class="option">
 					{#if $isSelected(item)}
 						<div class="check">
 							<Check />

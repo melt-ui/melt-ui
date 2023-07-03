@@ -10,6 +10,7 @@ import {
 	getPreviousFocusable,
 	isHTMLElement,
 	kbd,
+	FIRST_LAST_KEYS,
 	noop,
 	styleToString,
 } from '$lib/internal/helpers';
@@ -30,10 +31,6 @@ import {
 	type MenuParts,
 	setMeltMenuAttribute,
 } from '../menu';
-
-const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
-const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
-const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 
 export type CreateContextMenu = Menu['builder'];
 export type CreateContextMenuSub = Menu['submenu'];
