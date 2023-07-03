@@ -85,7 +85,6 @@ const defaults = {
 
 /**
  * BUGS
- * - don't clear the input on `esc` if a value is selected
  * - all items disabled—first is highlighted
  * - stop highlighting on mouseover disabled items
  *
@@ -108,14 +107,14 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	const open = writable(false);
 	const activeTrigger = writable<HTMLElement | null>(null);
 	const selectedItem = writable<T>(undefined);
+	// The current value of the input element.
 	const inputValue = writable('');
-
+	const numberOfItems = writable(-1);
 	// Array index of the currently highlighted list item.
 	const highlightedIndex = writable(0);
+	// All items in the list.
 	const items = writable(args.items);
-	/**
-	 * A subset of `items` that match the `filterFunction` predicate.
-	 */
+	// A subset of items that match the filterFunction predicate.
 	const filteredItems = writable(args.items);
 
 	const ids = {
@@ -158,10 +157,15 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 					const $open = get(open);
 					// Handle key events when the menu is closed.
 					if (!$open) {
-						// The user presses `esc`. The input should be cleared and lose focus.
+						/**
+						 * When the user presses `esc` the input should lose focus.
+						 * If no item is selected the input should also be cleared.
+						 */
 						if (e.key === kbd.ESCAPE) {
 							node.blur();
-							node.value = '';
+							if (!get(selectedItem)) {
+								inputValue.set('');
+							}
 							return;
 						}
 
@@ -322,7 +326,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 			};
 		},
 	};
-	const numberOfItems = writable(-1);
 
 	effect([open, options, highlightedIndex], ([$open, $options, $highlightedIndex]) => {
 		if (!isBrowser) return;
