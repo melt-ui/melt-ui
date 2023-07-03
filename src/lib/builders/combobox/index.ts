@@ -9,6 +9,7 @@ import {
 	kbd,
 	next,
 	noop,
+	omit,
 	prev,
 	sleep,
 	styleToString,
@@ -76,7 +77,7 @@ interface Combobox<T> {
 		action: Action<HTMLLIElement, void>;
 	};
 	/** Top-level configuration for the Combobox instance. */
-	options: Writable<CreateComboboxArgs<T>>;
+	options: Writable<Omit<CreateComboboxArgs<T>, 'items'>>;
 	/** Function to update the list of items in the combobox. */
 	updateItems: (updaterFunction: (currentItems: T[]) => T[]) => void;
 }
@@ -99,11 +100,6 @@ const defaults = {
  * - all items disabled—first is highlighted
  * - Tab navigation
  *
- * POLISH PASS
- * - Omit the `items` from the $options store
- * - Naming of variables, etc.
- * - Add item selection data attributes from `select`
- *
  * POST-PR
  * - Setting initial value
  * - "Fancy" options
@@ -114,7 +110,7 @@ const defaults = {
  *  - replace updateList with an option setter
  */
 export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
-	const options = writable<CreateComboboxArgs<T>>({ ...defaults, ...args });
+	const options = writable(omit({ ...defaults, ...args }, 'items'));
 	const open = writable(false);
 	const activeTrigger = writable<HTMLElement | null>(null);
 	const selectedItem = writable<T>(undefined);
@@ -216,13 +212,13 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 						e.preventDefault();
 
 						// Get all the menu items.
-						const menuEl = document.getElementById(ids.menu);
-						if (!isHTMLElement(menuEl)) return;
-						const items = getOptions(menuEl);
-						if (!items.length) return;
+						const menuElement = document.getElementById(ids.menu);
+						if (!isHTMLElement(menuElement)) return;
+						const itemElements = getOptions(menuElement);
+						if (!itemElements.length) return;
 
 						// Disabled items can't be highlighted. Skip them.
-						const candidateNodes = items.filter((opt) => !isDisabled(opt));
+						const candidateNodes = itemElements.filter((opt) => !isDisabled(opt));
 
 						// Get the index of the currently highlighted item.
 						const $currentItem = get(highlightedItem);
@@ -263,9 +259,10 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 				}),
 				addEventListener(node, 'input', (e) => {
 					const $options = get(options);
+					const $items = get(items);
 					const value = (e.target as HTMLInputElement).value;
 					inputValue.set(value);
-					filteredItems.set($options.items.filter((item) => $options.filterFunction(item, value)));
+					filteredItems.set($items.filter((item) => $options.filterFunction(item, value)));
 				})
 			);
 			return { destroy: unsub };
