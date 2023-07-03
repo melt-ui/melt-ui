@@ -1,3 +1,9 @@
+@font-face {
+	font-family: 'IBM Plex Mono';
+	src: url('/fonts/IBMPlexMono-Medium.ttf');
+	font-display: swap;
+}
+
 /* Write your global styles here, in PostCSS syntax */
 @tailwind base;
 @tailwind components;
@@ -66,4 +72,10 @@ code:not(pre > code) {
 
 *::-webkit-scrollbar-corner {
 	background: transparent;
+}
+
+@media (max-width: 640px) {
+	.container {
+		@apply px-4;
+	}
 }

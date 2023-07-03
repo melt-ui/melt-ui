@@ -2,7 +2,7 @@
 /// <reference types="@sveltejs/kit" />
 /// <reference types="unplugin-icons/types/svelte" />
 
-import type { TextDirection } from '$lib/internal/types';
+import type { TextDirection } from '@melt-ui/svelte/internal/types';
 
 // for information about these interfaces
 declare global {

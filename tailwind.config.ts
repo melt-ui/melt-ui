@@ -47,6 +47,7 @@ export default {
 					'Segoe UI Symbol',
 				],
 				mono: [
+					'IBM Plex Mono',
 					'ui-monospace',
 					'SFMono-Regular',
 					'SF Mono',

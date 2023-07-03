@@ -1,0 +1,63 @@
+.mdsvex code {
+	@apply relative rounded-md bg-magnum-900/50 px-[0.3rem] py-[0.2rem] font-mono text-sm  text-magnum-300;
+}
+
+[data-rehype-pretty-code-fragment] {
+	@apply relative;
+}
+
+[data-rehype-pretty-code-fragment] code {
+	@apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0;
+	counter-reset: line;
+	box-decoration-break: clone;
+}
+
+[data-rehype-pretty-code-fragment] [data-line] {
+	@apply inline-block w-full basis-4 px-4 py-0.5;
+}
+
+[data-rehype-pretty-code-fragment] [data-line-numbers] [data-line] {
+	@apply px-2;
+}
+
+[data-rehype-pretty-code-fragment] [data-line-numbers] > [data-line]::before {
+	@apply text-xs text-neutral-400/40;
+	counter-increment: line;
+	content: counter(line);
+	display: inline-block;
+	width: 1.8rem;
+	margin-right: 1.4rem;
+	text-align: right;
+}
+
+[data-metadata] .pre-copy-btn {
+	@apply top-16 !important;
+}
+
+[data-rehype-pretty-code-fragment] .line--highlighted {
+	@apply bg-neutral-800;
+}
+
+[data-rehype-pretty-code-fragment] .with--meta {
+	@apply top-16 !important;
+}
+
+[data-rehype-pretty-code-fragment] .line-highlighted span {
+	@apply relative;
+}
+
+[data-rehype-pretty-code-fragment] .word--highlighted {
+	@apply rounded-md border border-neutral-800 bg-neutral-800 p-1;
+}
+
+.dark [data-rehype-pretty-code-fragment] .word--highlighted {
+	@apply bg-neutral-900;
+}
+
+[data-rehype-pretty-code-title] {
+	@apply mt-2 px-4 pt-6 text-sm font-medium;
+}
+
+[data-rehype-pretty-code-title] + pre {
+	@apply mt-2;
+}
