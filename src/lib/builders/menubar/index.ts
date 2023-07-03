@@ -1,15 +1,15 @@
 import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable, type Writable } from 'svelte/store';
+import { get, writable, type Writable } from 'svelte/store';
 import {
 	SELECTION_KEYS,
 	applyAttrsIfDisabled,
 	getMenuItems,
 	createMenuBuilder,
 	type Menu,
-	setMeltMenuAttribute,
 	FIRST_LAST_KEYS,
 	handleMenuNavigation,
 	handleTabNavigation,
+	type MenuParts,
 } from '../menu';
 import {
 	executeCallbacks,
@@ -22,9 +22,10 @@ import {
 	noop,
 	generateId,
 	isBrowser,
-	hiddenAction,
 	getNextFocusable,
 	getPreviousFocusable,
+	builder,
+	createElHelpers,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions';
@@ -48,6 +49,8 @@ export type MenuRadioItemAction = Menu['radioItemAction'];
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
 
+const { name } = createElHelpers<MenuParts | 'menu'>('menubar');
+
 const defaults = {
 	loop: true,
 } satisfies Defaults<CreateMenubar>;
@@ -63,11 +66,15 @@ export function createMenubar(args?: CreateMenubar) {
 		menubar: generateId(),
 	};
 
-	const menubar = hiddenAction({
-		role: 'menubar',
-		'data-melt-menubar': '',
-		'data-orientation': 'horizontal',
-		id: rootIds.menubar,
+	const menubar = builder(name(), {
+		returned() {
+			return {
+				role: 'menubar',
+				'data-melt-menubar': '',
+				'data-orientation': 'horizontal',
+				id: rootIds.menubar,
+			};
+		},
 		action: (node: HTMLElement) => {
 			const menuTriggers = node.querySelectorAll(
 				'[data-melt-menubar-trigger]'
@@ -105,10 +112,12 @@ export function createMenubar(args?: CreateMenubar) {
 			disableFocusFirstItem: true,
 			nextFocusable,
 			prevFocusable,
+			selector: 'menubar-menu',
 		});
 
-		const menu = {
-			...derived([rootOpen], ([$rootOpen]) => {
+		const menu = builder(name('menu'), {
+			stores: [rootOpen],
+			returned: ([$rootOpen]) => {
 				return {
 					role: 'menu',
 					hidden: $rootOpen ? undefined : true,
@@ -117,13 +126,11 @@ export function createMenubar(args?: CreateMenubar) {
 					}),
 					id: m.rootIds.menu,
 					'aria-labelledby': m.rootIds.trigger,
-					'data-melt-menubar-menu': '',
-					'data-melt-menu': '',
 					'data-state': $rootOpen ? 'open' : 'closed',
 					'data-melt-scope': rootIds.menubar,
 					tabindex: -1,
 				} as const;
-			}),
+			},
 			action: (node: HTMLElement) => {
 				let unsubPopper = noop;
 
@@ -133,7 +140,6 @@ export function createMenubar(args?: CreateMenubar) {
 						unsubPopper();
 						if ($rootOpen && $rootActiveTrigger) {
 							tick().then(() => {
-								setMeltMenuAttribute(node);
 								const popper = usePopper(node, {
 									anchorElement: $rootActiveTrigger,
 									open: rootOpen,
@@ -162,7 +168,8 @@ export function createMenubar(args?: CreateMenubar) {
 						 * Submenu key events bubble through portals and
 						 * we only care about key events that happen inside this menu.
 						 */
-						const isKeyDownInside = target.closest('[data-melt-menu]') === menuElement;
+						const isKeyDownInside = target.closest('[data-melt-menubar-menu]') === menuElement;
+
 						if (!isKeyDownInside) return;
 						if (FIRST_LAST_KEYS.includes(e.key)) {
 							handleMenuNavigation(e);
@@ -201,21 +208,21 @@ export function createMenubar(args?: CreateMenubar) {
 					},
 				};
 			},
-		};
+		});
 
-		const trigger = {
-			...derived([rootOpen], ([$rootOpen]) => {
+		const trigger = builder(name('trigger'), {
+			stores: [rootOpen],
+			returned: ([$rootOpen]) => {
 				return {
 					'aria-controls': m.rootIds.menu,
 					'aria-expanded': $rootOpen,
 					'data-state': $rootOpen ? 'open' : 'closed',
 					id: m.rootIds.trigger,
-					'data-melt-menubar-trigger': '',
 					'aria-haspopup': 'menu',
 					'data-orientation': 'horizontal',
 					role: 'menuitem',
 				} as const;
-			}),
+			},
 			action: (node: HTMLElement) => {
 				applyAttrsIfDisabled(node);
 
@@ -317,7 +324,7 @@ export function createMenubar(args?: CreateMenubar) {
 					destroy: unsub,
 				};
 			},
-		};
+		});
 
 		effect([activeMenu], ([$activeMenu]) => {
 			if (!isBrowser) return;
@@ -373,7 +380,7 @@ export function createMenubar(args?: CreateMenubar) {
 	onMount(() => {
 		if (!isBrowser) return;
 
-		const menubarElement = document.getElementById(menubar.id);
+		const menubarElement = document.getElementById(rootIds.menubar);
 		if (!isHTMLElement(menubarElement)) return;
 
 		const unsubEvents = executeCallbacks(
@@ -422,8 +429,8 @@ export function createMenubar(args?: CreateMenubar) {
 		const target = e.target;
 		if (!isHTMLElement(target)) return;
 
-		const targetIsSubTrigger = target.hasAttribute('data-melt-menu-subtrigger');
-		const isKeyDownInsideSubMenu = target.closest('[data-melt-menu]') !== currentTarget;
+		const targetIsSubTrigger = target.hasAttribute('data-melt-menubar-menu-subtrigger');
+		const isKeyDownInsideSubMenu = target.closest('[role="menu"]') !== currentTarget;
 
 		const prevMenuKey = kbd.ARROW_LEFT;
 		const isPrevKey = e.key === prevMenuKey;

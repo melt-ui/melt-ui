@@ -1,31 +1,34 @@
 import { usePopper } from '$lib/internal/actions/popper';
 import {
+	addEventListener,
+	builder,
+	createElHelpers,
 	derivedWithUnsubscribe,
 	effect,
-	kbd,
-	styleToString,
-	isHTMLElement,
-	noop,
 	executeCallbacks,
-	addEventListener,
 	getNextFocusable,
 	getPreviousFocusable,
+	isHTMLElement,
+	kbd,
+	noop,
+	styleToString,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { tick } from 'svelte';
-import { derived, get, writable, type Readable } from 'svelte/store';
 import type { VirtualElement } from '@floating-ui/core';
+import { tick } from 'svelte';
+import { get, writable, type Readable } from 'svelte/store';
 
 import {
+	applyAttrsIfDisabled,
 	clearTimerStore,
 	createMenuBuilder,
-	setMeltMenuAttribute,
-	type Point,
-	handleMenuNavigation,
 	getMenuItems,
-	applyAttrsIfDisabled,
-	type Menu,
+	handleMenuNavigation,
 	handleTabNavigation,
+	type Menu,
+	type Point,
+	type MenuParts,
+	setMeltMenuAttribute,
 } from '../menu';
 
 const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
@@ -48,8 +51,10 @@ const defaults = {
 	preventScroll: true,
 } satisfies Defaults<CreateContextMenu>;
 
+const { name, selector } = createElHelpers<MenuParts>('context-menu');
+
 export function createContextMenu(args?: CreateContextMenu) {
-	const withDefaults = { ...defaults, ...args } as CreateContextMenu;
+	const withDefaults = { ...defaults, ...args } satisfies CreateContextMenu;
 	const rootOptions = writable(withDefaults);
 	const rootOpen = writable(false);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
@@ -73,6 +78,7 @@ export function createContextMenu(args?: CreateContextMenu) {
 		prevFocusable,
 		disableFocusFirstItem: true,
 		disableTriggerRefocus: true,
+		selector: 'context-menu',
 	});
 
 	const point = writable<Point>({ x: 0, y: 0 });
@@ -88,8 +94,9 @@ export function createContextMenu(args?: CreateContextMenu) {
 	});
 	const longPressTimer = writable(0);
 
-	const menu = {
-		...derived([rootOpen], ([$rootOpen]) => {
+	const menu = builder(name(), {
+		stores: rootOpen,
+		returned: ($rootOpen) => {
 			return {
 				role: 'menu',
 				hidden: $rootOpen ? undefined : true,
@@ -98,11 +105,10 @@ export function createContextMenu(args?: CreateContextMenu) {
 				}),
 				id: rootIds.menu,
 				'aria-labelledby': rootIds.trigger,
-				'data-melt-menu': '',
 				'data-state': $rootOpen ? 'open' : 'closed',
 				tabindex: -1,
 			} as const;
-		}),
+		},
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
 
@@ -112,7 +118,7 @@ export function createContextMenu(args?: CreateContextMenu) {
 					unsubPopper();
 					if ($rootOpen && $rootActiveTrigger) {
 						tick().then(() => {
-							setMeltMenuAttribute(node);
+							setMeltMenuAttribute(node, selector);
 							const $virtual = get(virtual);
 
 							const popper = usePopper(node, {
@@ -131,7 +137,7 @@ export function createContextMenu(args?: CreateContextMenu) {
 												return;
 											}
 
-											if (target.id !== rootIds.trigger && !target.closest('[data-melt-menu]')) {
+											if (target.id !== rootIds.trigger && !target.closest(selector())) {
 												rootOpen.set(false);
 											}
 										},
@@ -159,7 +165,7 @@ export function createContextMenu(args?: CreateContextMenu) {
 					 * Submenu key events bubble through portals and
 					 * we only care about key events that happen inside this menu.
 					 */
-					const isKeyDownInside = target.closest('[data-melt-menu]') === menuElement;
+					const isKeyDownInside = target.closest("[role='menu']") === menuElement;
 					if (!isKeyDownInside) return;
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						handleMenuNavigation(e);
@@ -195,21 +201,21 @@ export function createContextMenu(args?: CreateContextMenu) {
 				},
 			};
 		},
-	};
+	});
 
-	const trigger = {
-		...derived([rootOpen], ([$rootOpen]) => {
+	const trigger = builder(name('trigger'), {
+		stores: rootOpen,
+		returned: ($rootOpen) => {
 			return {
 				'aria-controls': rootIds.menu,
 				'aria-expanded': $rootOpen,
 				'data-state': $rootOpen ? 'open' : 'closed',
 				id: rootIds.trigger,
-				'data-melt-menu-trigger': '',
 				style: styleToString({
 					WebkitTouchCallout: 'none',
 				}),
 			} as const;
-		}),
+		},
 		action: (node: HTMLElement) => {
 			applyAttrsIfDisabled(node);
 
@@ -270,7 +276,7 @@ export function createContextMenu(args?: CreateContextMenu) {
 				},
 			};
 		},
-	};
+	});
 
 	return {
 		trigger,

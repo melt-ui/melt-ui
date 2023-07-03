@@ -42,6 +42,7 @@ export function createDropdownMenu(args?: CreateDropdownMenu) {
 		nextFocusable,
 		prevFocusable,
 		disableTriggerRefocus: true,
+		selector: 'dropdown-menu',
 	});
 
 	return {

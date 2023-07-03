@@ -1,4 +1,10 @@
-import { addEventListener, executeCallbacks, kbd, styleToString } from '$lib/internal/helpers';
+import {
+	addEventListener,
+	builder,
+	executeCallbacks,
+	kbd,
+	styleToString,
+} from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 
@@ -28,8 +34,9 @@ export function createCheckbox(args: CreateCheckboxArgs = {}) {
 	});
 	const checked = writable(argsWithDefaults.checked);
 
-	const root = {
-		...derived([checked, options], ([$checked, $options]) => {
+	const root = builder('checkbox', {
+		stores: [checked, options],
+		returned: ([$checked, $options]) => {
 			return {
 				'data-disabled': $options.disabled,
 				'data-state':
@@ -39,7 +46,7 @@ export function createCheckbox(args: CreateCheckboxArgs = {}) {
 				'aria-checked': $checked === 'indeterminate' ? 'mixed' : $checked,
 				'aria-required': $options.required,
 			} as const;
-		}),
+		},
 		action(node: HTMLElement) {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'keydown', (event) => {
@@ -61,27 +68,30 @@ export function createCheckbox(args: CreateCheckboxArgs = {}) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
-	const input = derived([checked, options], ([$checked, $options]) => {
-		return {
-			type: 'checkbox' as const,
-			'aria-hidden': true,
-			hidden: true,
-			tabindex: -1,
-			name: $options.name,
-			value: $options.value,
-			checked: $checked === 'indeterminate' ? false : $checked,
-			required: $options.required,
-			disabled: $options.disabled,
-			style: styleToString({
-				position: 'absolute',
-				opacity: 0,
-				'pointer-events': 'none',
-				margin: 0,
-				transform: 'translateX(-100%)',
-			}),
-		} as const;
+	const input = builder('checkbox-input', {
+		stores: [checked, options],
+		returned: ([$checked, $options]) => {
+			return {
+				type: 'checkbox' as const,
+				'aria-hidden': true,
+				hidden: true,
+				tabindex: -1,
+				name: $options.name,
+				value: $options.value,
+				checked: $checked === 'indeterminate' ? false : $checked,
+				required: $options.required,
+				disabled: $options.disabled,
+				style: styleToString({
+					position: 'absolute',
+					opacity: 0,
+					'pointer-events': 'none',
+					margin: 0,
+					transform: 'translateX(-100%)',
+				}),
+			} as const;
+		},
 	});
 
 	const isIndeterminate = derived(checked, ($checked) => $checked === 'indeterminate');

@@ -1,5 +1,7 @@
 import {
 	addEventListener,
+	builder,
+	createElHelpers,
 	executeCallbacks,
 	generateId,
 	getElementByMeltId,
@@ -21,6 +23,8 @@ type MultipleAccordionArgs = {
 	value?: string[];
 	type: 'multiple';
 };
+
+const { name } = createElHelpers('accordion');
 
 export type CreateAccordionArgs = BaseAccordionArgs & (SingleAccordionArgs | MultipleAccordionArgs);
 
@@ -47,9 +51,15 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		return (key: string) => isSelected(key, $value);
 	});
 
-	const root = {
-		'data-melt-id': generateId(),
+	const ids = {
+		root: generateId(),
 	};
+
+	const root = builder(name(), {
+		returned: () => ({
+			'data-melt-id': ids.root,
+		}),
+	});
 
 	type ItemArgs =
 		| {
@@ -66,24 +76,27 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		}
 	};
 
-	const item = derived(value, ($value) => {
-		return (args: ItemArgs) => {
-			const { value: itemValue, disabled } = parseItemArgs(args);
-
-			return {
-				'data-state': isSelected(itemValue, $value) ? 'open' : 'closed',
-				'data-disabled': disabled ? true : undefined,
-			};
-		};
-	});
-
-	const trigger = {
-		...derived([value, options], ([$value, $options]) => {
+	const item = builder(name('item'), {
+		stores: value,
+		returned: ($value) => {
 			return (args: ItemArgs) => {
 				const { value: itemValue, disabled } = parseItemArgs(args);
 
 				return {
-					'data-melt-part': 'trigger',
+					'data-state': isSelected(itemValue, $value) ? 'open' : 'closed',
+					'data-disabled': disabled ? true : undefined,
+				};
+			};
+		},
+	});
+
+	const trigger = builder(name('trigger'), {
+		stores: [value, options],
+		returned: ([$value, $options]) => {
+			return (args: ItemArgs) => {
+				const { value: itemValue, disabled } = parseItemArgs(args);
+
+				return {
 					'aria-expanded': isSelected(itemValue, $value) ? true : false,
 					disabled: $options.disabled || disabled,
 					'data-disabled': disabled ? true : undefined,
@@ -91,7 +104,7 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 					// TODO: aria-controls, aria-labelledby
 				};
 			};
-		}),
+		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'click', () => {
@@ -122,11 +135,10 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 					e.preventDefault();
 
 					const el = e.target as HTMLElement;
-					const rootEl = getElementByMeltId(root['data-melt-id']);
-
+					const rootEl = getElementByMeltId(ids.root);
 					if (!rootEl) return;
 					const items = Array.from(
-						rootEl.querySelectorAll('[data-melt-part="trigger"]')
+						rootEl.querySelectorAll('[data-melt-accordion-trigger]')
 					) as HTMLElement[];
 
 					if (!items.length) return;
@@ -151,18 +163,21 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
-	const content = derived([value, options], ([$value, $options]) => {
-		return (args: ItemArgs) => {
-			const { value: itemValue } = parseItemArgs(args);
-			const selected = isSelected(itemValue, $value);
-			return {
-				'data-state': selected ? 'open' : 'closed',
-				'data-disabled': $options.disabled ? true : undefined,
-				hidden: selected ? undefined : true,
+	const content = builder(name('content'), {
+		stores: [value, options],
+		returned: ([$value, $options]) => {
+			return (args: ItemArgs) => {
+				const { value: itemValue } = parseItemArgs(args);
+				const selected = isSelected(itemValue, $value);
+				return {
+					'data-state': selected ? 'open' : 'closed',
+					'data-disabled': $options.disabled ? true : undefined,
+					hidden: selected ? undefined : true,
+				};
 			};
-		};
+		},
 	});
 
 	return {
