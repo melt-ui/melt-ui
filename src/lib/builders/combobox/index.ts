@@ -137,55 +137,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 		return Array.from(element.querySelectorAll('[role="option"]'));
 	}
 
-	function handleMenuNavigation(e: KeyboardEvent) {
-		e.preventDefault();
-
-		// Get all the menu items.
-		const menuEl = document.getElementById(ids.menu);
-		if (!isHTMLElement(menuEl)) return;
-		const items = getOptions(menuEl);
-		if (!items.length) return;
-
-		// Disabled items can't be highlighted. Skip them.
-		const candidateNodes = items.filter((opt) => !isDisabled(opt));
-
-		// Get the index of the currently highlighted item.
-		const $currentItem = get(highlightedItem);
-		const currentIndex = $currentItem ? candidateNodes.indexOf($currentItem) : -1;
-
-		// Calculate the index of the next menu item to highlight.
-		const $options = get(options);
-		const loop = $options.loop;
-		let nextItem: HTMLElement | undefined;
-
-		switch (e.key) {
-			case kbd.ARROW_DOWN:
-				nextItem = next(candidateNodes, currentIndex, loop);
-				break;
-			case kbd.ARROW_UP:
-				nextItem = prev(candidateNodes, currentIndex, loop);
-				break;
-			case kbd.HOME:
-				nextItem = candidateNodes[0];
-				break;
-			case kbd.END:
-				nextItem = candidateNodes[candidateNodes.length - 1];
-				break;
-			default:
-				return;
-		}
-
-		/**
-		 * Bail if `next` or `prev` return `undefined`.
-		 * Theoretically this shouldn't be possible but it's a good check anyway.
-		 */
-		if (typeof nextItem === 'undefined') return;
-
-		// Highlight the new item and scroll it into view.
-		highlightedItem.set(nextItem);
-		nextItem.scrollIntoView({ block: $options.scrollAlignment });
-	}
-
 	/** Determines if an option is disabled.*/
 	function isDisabled(node: HTMLElement) {
 		return node.hasAttribute('data-disabled') || node.getAttribute('disabled') === 'true';
@@ -263,7 +214,51 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 					// Navigation events.
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						e.preventDefault();
-						handleMenuNavigation(e);
+
+						// Get all the menu items.
+						const menuEl = document.getElementById(ids.menu);
+						if (!isHTMLElement(menuEl)) return;
+						const items = getOptions(menuEl);
+						if (!items.length) return;
+
+						// Disabled items can't be highlighted. Skip them.
+						const candidateNodes = items.filter((opt) => !isDisabled(opt));
+
+						// Get the index of the currently highlighted item.
+						const $currentItem = get(highlightedItem);
+						const currentIndex = $currentItem ? candidateNodes.indexOf($currentItem) : -1;
+
+						// Calculate the index of the next menu item to highlight.
+						const $options = get(options);
+						const loop = $options.loop;
+						let nextItem: HTMLElement | undefined;
+
+						switch (e.key) {
+							case kbd.ARROW_DOWN:
+								nextItem = next(candidateNodes, currentIndex, loop);
+								break;
+							case kbd.ARROW_UP:
+								nextItem = prev(candidateNodes, currentIndex, loop);
+								break;
+							case kbd.HOME:
+								nextItem = candidateNodes[0];
+								break;
+							case kbd.END:
+								nextItem = candidateNodes[candidateNodes.length - 1];
+								break;
+							default:
+								return;
+						}
+
+						/**
+						 * Bail if `next` or `prev` return `undefined`.
+						 * Theoretically this shouldn't be possible but it's a good check anyway.
+						 */
+						if (typeof nextItem === 'undefined') return;
+
+						// Highlight the new item and scroll it into view.
+						highlightedItem.set(nextItem);
+						nextItem.scrollIntoView({ block: $options.scrollAlignment });
 					}
 				}),
 				addEventListener(node, 'input', (e) => {
