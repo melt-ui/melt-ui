@@ -95,6 +95,9 @@ const defaults = {
 /**
  * BUGS
  * - Tab navigation
+ * - Menu should re-expand after item selection. (Select an item and press backspace)
+ * - Option+up should close the menu
+ * - Option+down should open the menu
  *
  * POST-PR
  * - Setting initial value
