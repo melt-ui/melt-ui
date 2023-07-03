@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createHoverCard } from '$lib';
+	import { createHoverCard } from '@melt-ui/svelte';
 	import { fade } from 'svelte/transition';
 
 	const { trigger, content, open, arrow } = createHoverCard();
@@ -11,7 +11,7 @@
 	target="_blank"
 	rel="noreferrer"
 	{...$trigger}
-	use:trigger.action
+	use:trigger
 >
 	<img
 		src="/logo-mark.svg"
@@ -24,7 +24,7 @@
 {#if $open}
 	<div
 		{...$content}
-		use:content.action
+		use:content
 		transition:fade={{ duration: 100 }}
 		class="z-10 rounded-md bg-white shadow-sm"
 	>
