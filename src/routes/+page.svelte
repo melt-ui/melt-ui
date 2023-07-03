@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$docs/components/ui/Button.svelte';
 	import { fly } from 'svelte/transition';
 	import ArrowRight from '~icons/lucide/arrow-right';
 	import Check from '~icons/lucide/check';
@@ -42,14 +43,10 @@
 						</div>
 					{/if}
 				</button>
-				<a
-					href="/docs"
-					class="mt-4 flex items-center justify-between gap-4 rounded bg-magnum-600 px-4 py-3
-					font-sans font-semibold text-white transition hover:bg-magnum-700 active:translate-y-0.5 active:bg-magnum-700 sm:shrink"
-				>
+				<Button href="/docs" class="mt-4 gap-4 sm:shrink">
 					Read the docs
 					<ArrowRight class="inline-block h-5 w-5 text-white" />
-				</a>
+				</Button>
 			</div>
 		</div>
 	</div>

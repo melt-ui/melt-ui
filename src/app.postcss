@@ -46,7 +46,7 @@ code:not(pre > code) {
 /* Firefox */
 * {
 	scrollbar-width: thin;
-	scrollbar-color: theme('colors.neutral.700') transparent;
+	scrollbar-color: theme('colors.neutral.800') transparent;
 }
 
 /* Other browsers */
@@ -59,13 +59,44 @@ code:not(pre > code) {
 }
 
 *::-webkit-scrollbar-thumb {
-	background: theme('colors.neutral.700');
+	background: theme('colors.neutral.800');
 	background-clip: padding-box;
 	border-radius: 0.5rem;
 	border: 0.25rem solid transparent;
 }
 
 *::-webkit-scrollbar-thumb:hover {
+	background: theme('colors.neutral.600');
+	background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-corner {
+	background: transparent;
+}
+
+/* Firefox */
+body {
+	scrollbar-width: thin;
+	scrollbar-color: theme('colors.stone.800') transparent;
+}
+
+/* Other browsers */
+body::-webkit-scrollbar {
+	width: 1rem;
+}
+
+body::-webkit-scrollbar-track {
+	background: theme('colors.stone.900');
+}
+
+body::-webkit-scrollbar-thumb {
+	background: theme('colors.neutral.600');
+	background-clip: padding-box;
+	border-radius: 0.5rem;
+	border: 0.25rem solid transparent;
+}
+
+body::-webkit-scrollbar-thumb:hover {
 	background: theme('colors.neutral.600');
 	background-clip: padding-box;
 }
