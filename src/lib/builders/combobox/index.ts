@@ -5,6 +5,7 @@ import {
 	executeCallbacks,
 	generateId,
 	isBrowser,
+	isElementDisabled,
 	isHTMLElement,
 	kbd,
 	next,
@@ -48,7 +49,8 @@ interface CreateComboboxArgs<T> {
 	positioning?: FloatingConfig;
 }
 
-interface OptionArgs {
+interface OptionArgs<T> {
+	item: T;
 	/** Array index of the option. */
 	index: number;
 	/** Is the option disabled? */
@@ -73,7 +75,7 @@ interface Combobox<T> {
 	/** Is the menu currently open? */
 	open: Writable<boolean>;
 	/** Action & attributes to apply to each option in the list. */
-	option: Readable<(args: OptionArgs) => HTMLLiAttributes> & {
+	option: Readable<(args: OptionArgs<T>) => HTMLLiAttributes> & {
 		action: Action<HTMLLIElement, void>;
 	};
 	/** Top-level configuration for the Combobox instance. */
@@ -93,9 +95,6 @@ const defaults = {
 } satisfies Defaults<CreateComboboxArgs<unknown>>;
 
 /**
- * TODOS
- *  - Aria selection for options.
- *
  * BUGS
  * - all items disabled—first is highlighted
  * - Tab navigation
@@ -107,13 +106,12 @@ const defaults = {
  * - PAGE_UP / PAGE_DOWN
  *
  * THONKs
- *  - replace updateList with an option setter
+ * - replace updateList with an option setter
  */
 export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	const options = writable(omit({ ...defaults, ...args }, 'items'));
 	const open = writable(false);
 	const activeTrigger = writable<HTMLElement | null>(null);
-	const selectedItem = writable<T>(undefined);
 	// The currently highlighted list item
 	const highlightedItem = writable<HTMLElement | null>(null);
 	// The current value of the input element.
@@ -122,6 +120,8 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	const items = writable(args.items);
 	// A subset of items that match the filterFunction predicate.
 	const filteredItems = writable(args.items);
+	// The currently selected list item.
+	const selectedItem = writable<T>(undefined);
 
 	const ids = {
 		input: generateId(),
@@ -129,27 +129,21 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 		label: generateId(),
 	};
 
+	/** Retrieves all option descendants of a given element. */
 	function getOptions(element: HTMLElement): HTMLElement[] {
 		return Array.from(element.querySelectorAll('[role="option"]'));
 	}
 
-	/** Determines if an option is disabled.*/
-	function isDisabled(node: HTMLElement) {
-		return node.hasAttribute('data-disabled') || node.getAttribute('disabled') === 'true';
-	}
-
-	/**
-	 * Action and attributes for the text input element.
-	 */
+	/** Action and attributes for the text input element. */
 	const input = {
 		...derived([open, options, highlightedItem], ([$open, $options, $highlightedItem]) => {
 			return {
 				'aria-activedescendant': $highlightedItem?.id,
 				'aria-autocomplete': 'list',
 				'aria-controls': ids.menu,
+				'aria-disabled': $options.disabled ? true : undefined,
 				'aria-expanded': $open,
 				'aria-labelledby': ids.label,
-				'data-disabled': $options.disabled ? true : undefined,
 				autocomplete: 'off',
 				disabled: $options.disabled,
 				id: ids.input,
@@ -218,7 +212,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 						if (!itemElements.length) return;
 
 						// Disabled items can't be highlighted. Skip them.
-						const candidateNodes = itemElements.filter((opt) => !isDisabled(opt));
+						const candidateNodes = itemElements.filter((opt) => !isElementDisabled(opt));
 
 						// Get the index of the currently highlighted item.
 						const $currentItem = get(highlightedItem);
@@ -358,19 +352,17 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	});
 
 	const option = {
-		...derived([selectedItem], ([$selectedItem]) => (args: OptionArgs) => ({
-			// @FIXME
-			// 'aria-selected': $value === args?.value,
-			// 'data-selected': $value === args?.value ? '' : undefined,
-			'data-disabled': args.disabled ? true : undefined,
+		...derived([selectedItem], ([$selectedItem]) => (args: OptionArgs<T>) => ({
+			'aria-disabled': args.disabled ? true : undefined,
+			'aria-selected': args.item === $selectedItem,
 			'data-index': args.index,
-			role: 'option',
 			id: `${ids.input}-descendent-${args.index}`,
+			role: 'option',
 		})),
 		action: (node: HTMLLIElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'pointermove', () => {
-					if (isDisabled(node)) return;
+					if (isElementDisabled(node)) return;
 					if (node === get(highlightedItem)) return;
 					highlightedItem.set(node);
 				}),
