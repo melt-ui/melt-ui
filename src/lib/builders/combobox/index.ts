@@ -1,4 +1,3 @@
-import { getNextIndex } from '@melt-ui/svelte/builders/combobox/utils';
 import { usePopper, type FloatingConfig } from '@melt-ui/svelte/internal/actions';
 import {
 	addEventListener,
@@ -6,6 +5,7 @@ import {
 	executeCallbacks,
 	generateId,
 	isBrowser,
+	isHTMLElement,
 	kbd,
 	noop,
 	sleep,
@@ -16,6 +16,10 @@ import { tick } from 'svelte';
 import type { Action } from 'svelte/action';
 import type { HTMLAttributes, HTMLInputAttributes, HTMLLiAttributes } from 'svelte/elements';
 import { derived, get, readonly, writable, type Readable, type Writable } from 'svelte/store';
+
+const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
+const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
+const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 
 interface CreateComboboxArgs<T> {
 	/** The list of items to display in the combobox. */
@@ -36,8 +40,9 @@ interface CreateComboboxArgs<T> {
 	 * @returns whether the item should be visible.
 	 */
 	filterFunction: (item: T, value: string) => boolean;
-	positioning?: FloatingConfig;
 	itemToString: (item: T) => string;
+	loop?: boolean;
+	positioning?: FloatingConfig;
 }
 
 interface OptionArgs {
@@ -77,6 +82,7 @@ interface Combobox<T> {
 const defaults = {
 	disabled: false,
 	scrollAlignment: 'nearest',
+	loop: false,
 	positioning: {
 		placement: 'bottom',
 		sameWidth: true,
@@ -86,10 +92,10 @@ const defaults = {
 /**
  * BUGS
  * - all items disabled—first is highlighted
- * - stop highlighting on mouseover disabled items
+ * - Tab navigation
  *
  * POLISH PASS
- * - figure out how our utils <> their utils
+ * - figure out how our utils <> their utils (getNextItem)
  * - Omit the `items` from the $options store
  * - Naming of variables, etc.
  * - Add item selection data attributes from `select`
@@ -99,7 +105,7 @@ const defaults = {
  * - "Fancy" options
  * - Empty state
  *
- * THONK
+ * THONKs
  *  - replace updateList with an option setter
  */
 export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
@@ -109,7 +115,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	const selectedItem = writable<T>(undefined);
 	// The current value of the input element.
 	const inputValue = writable('');
-	const numberOfItems = writable(-1);
 	// Array index of the currently highlighted list item.
 	const highlightedIndex = writable(0);
 	// All items in the list.
@@ -117,36 +122,111 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	// A subset of items that match the filterFunction predicate.
 	const filteredItems = writable(args.items);
 
+	const highlightedItem = writable<HTMLElement | null>(null);
+
 	const ids = {
 		input: generateId(),
 		menu: generateId(),
 		label: generateId(),
 	};
 
+	function getOptions(element: HTMLElement): HTMLElement[] {
+		return Array.from(element.querySelectorAll('[role="option"]'));
+	}
+
+	function handleMenuNavigation(e: KeyboardEvent) {
+		e.preventDefault();
+
+		const menuEl = document.getElementById(ids.menu);
+		if (!isHTMLElement(menuEl)) return;
+
+		// Get all the menu items.
+		const items = getOptions(menuEl);
+		if (!items.length) return;
+
+		// Disabled items can't be selected. Skip them.
+		const candidateNodes = items.filter((opt) => !isDisabled(opt));
+
+		// Get the index of the currently selected item.
+		const $currentItem = get(highlightedItem);
+		const currentIndex = $currentItem ? candidateNodes.indexOf($currentItem) : -1;
+
+		// Calculate the index of the next menu item
+		let nextIndex: number;
+		const $options = get(options);
+		const loop = $options.loop;
+
+		/** @FIXME */
+		// case kbd.PAGE_UP: {
+		// 	const $highlightedIndex = get(highlightedIndex);
+		// 	const nextIndex = getNextIndex({
+		// 		currentIndex: $highlightedIndex,
+		// 		itemCount: $options.items.length,
+		// 		moveAmount: -10,
+		// 	});
+		// 	highlightedIndex.set(nextIndex);
+		// 	break;
+		// }
+		// case kbd.PAGE_DOWN: {
+		// 	const $highlightedIndex = get(highlightedIndex);
+		// 	const nextIndex = getNextIndex({
+		// 		currentIndex: $highlightedIndex,
+		// 		itemCount: $options.items.length,
+		// 		moveAmount: 10,
+		// 	});
+		// 	highlightedIndex.set(nextIndex);
+		// 	break;
+		// }
+
+		switch (e.key) {
+			case kbd.ARROW_DOWN:
+				nextIndex =
+					currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : loop ? 0 : currentIndex;
+				break;
+			case kbd.ARROW_UP:
+				nextIndex = currentIndex > 0 ? currentIndex - 1 : loop ? candidateNodes.length - 1 : 0;
+				break;
+			case kbd.HOME:
+				nextIndex = 0;
+				break;
+			case kbd.END:
+				nextIndex = candidateNodes.length - 1;
+				break;
+			default:
+				return;
+		}
+
+		// Highlight the new item and scroll it into view.
+		const nextItem = candidateNodes[nextIndex];
+		highlightedItem.set(nextItem);
+		nextItem.scrollIntoView({ block: $options.scrollAlignment });
+	}
+
+	/** Determines if an option is disabled.*/
+	function isDisabled(node: HTMLElement) {
+		return node.hasAttribute('data-disabled') || node.getAttribute('disabled') === 'true';
+	}
+
 	/**
 	 * Action and attributes for the text input element.
 	 */
 	const input = {
-		...derived(
-			[open, options],
-			([$open, $options]) =>
-				({
-					'aria-autocomplete': 'list',
-					'aria-controls': ids.menu,
-					'aria-expanded': $open,
-					'aria-labelledby': ids.label,
-					autocomplete: 'off',
-					'data-disabled': $options.disabled ? true : undefined,
-					disabled: $options.disabled,
-					id: ids.input,
-					role: 'combobox',
-				} as const)
-		),
+		...derived([open, options, highlightedItem], ([$open, $options, $highlightedItem]) => {
+			return {
+				'aria-activedescendant': $highlightedItem?.id,
+				'aria-autocomplete': 'list',
+				'aria-controls': ids.menu,
+				'aria-expanded': $open,
+				'aria-labelledby': ids.label,
+				'data-disabled': $options.disabled ? true : undefined,
+				autocomplete: 'off',
+				disabled: $options.disabled,
+				id: ids.input,
+				role: 'combobox',
+			} as const;
+		}),
 		action: (node: HTMLInputElement) => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'blur', () => {
-					highlightedIndex.set(-1);
-				}),
 				addEventListener(node, 'focus', (e) => {
 					// @TODO: abstract and use the input id instead? Thinking of this due to keyboard events also opening the box (although in testing, I haven't had any issues yet)
 					const triggerEl = e.currentTarget as HTMLElement;
@@ -168,83 +248,38 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 							}
 							return;
 						}
-
 						// Don't open the menu on backspace if the input is blank.
 						if (e.key === kbd.BACKSPACE && node.value === '') {
 							return;
 						}
-
 						// Otherwise, open the input.
 						open.set(true);
 					}
 
-					// Handle key events when the menu is open.
-					switch (e.key) {
-						case kbd.ESCAPE: {
-							open.set(false);
-							break;
-						}
-						case kbd.ENTER: {
-							const $highlightedIndex = get(highlightedIndex);
-							1;
-							setSelectedItem($highlightedIndex);
-							open.set(false);
-							break;
-						}
-						case kbd.HOME: {
-							highlightedIndex.set(0);
-							break;
-						}
-						case kbd.END: {
-							const nextIndex = get(numberOfItems) - 1;
-							highlightedIndex.set(nextIndex);
-							break;
-						}
-						/** @FIXME */
-						// case kbd.PAGE_UP: {
-						// 	const $highlightedIndex = get(highlightedIndex);
-						// 	const nextIndex = getNextIndex({
-						// 		currentIndex: $highlightedIndex,
-						// 		itemCount: $options.items.length,
-						// 		moveAmount: -10,
-						// 	});
-						// 	highlightedIndex.set(nextIndex);
-						// 	break;
-						// }
-						// case kbd.PAGE_DOWN: {
-						// 	const $highlightedIndex = get(highlightedIndex);
-						// 	const nextIndex = getNextIndex({
-						// 		currentIndex: $highlightedIndex,
-						// 		itemCount: $options.items.length,
-						// 		moveAmount: 10,
-						// 	});
-						// 	highlightedIndex.set(nextIndex);
-						// 	break;
-						// }
-						case kbd.ARROW_DOWN: {
-							highlightedIndex.update((item) => {
-								return getNextIndex({
-									currentIndex: item,
-									itemCount: get(numberOfItems) + 1,
-									moveAmount: 1,
-								});
-							});
-							break;
-						}
-						case kbd.ARROW_UP: {
-							if (e.altKey) {
-								close();
-								return;
-							}
-							highlightedIndex.update((item) => {
-								return getNextIndex({
-									currentIndex: item,
-									itemCount: get(numberOfItems) + 1,
-									moveAmount: -1,
-								});
-							});
-							break;
-						}
+					// If the menu is open when the user hits `esc`, close it.
+					if (e.key === kbd.ESCAPE) {
+						open.set(false);
+						activeTrigger.set(null);
+						return;
+					}
+					// 	case kbd.ENTER: {
+					// 		const $highlightedIndex = get(highlightedIndex);
+					// 		selectItem($highlightedIndex);
+					// 		open.set(false);
+					// 		break;
+					// 	}
+
+					// if (e.key === kbd.TAB) {
+					// 	e.preventDefault();
+					// 	activeTrigger.set(null);
+					// 	open.set(false);
+					// 	// handleTabNavigation(e);
+					// }
+
+					// Navigation events.
+					if (FIRST_LAST_KEYS.includes(e.key)) {
+						e.preventDefault();
+						handleMenuNavigation(e);
 					}
 				}),
 				addEventListener(node, 'input', (e) => {
@@ -254,7 +289,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 					filteredItems.set($options.items.filter((item) => $options.filterFunction(item, value)));
 				})
 			);
-
 			return { destroy: unsub };
 		},
 	};
@@ -263,7 +297,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	 * Selects an item in the list and updates the input value.
 	 * @param index array index of the item to select.
 	 */
-	function setSelectedItem(index: number) {
+	function selectItem(index: number) {
 		const $options = get(options);
 		const item = get(filteredItems)[index];
 		selectedItem.set(item);
@@ -300,7 +334,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 					if ($open && $activeTrigger) {
 						tick().then(() => {
 							const popper = usePopper(node, {
-								anchorElement: $activeTrigger, // $activeTrigger is our input element
+								anchorElement: $activeTrigger,
 								open,
 								options: { floating: $options.positioning },
 							});
@@ -312,14 +346,8 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 				}
 			);
 
-			// When the cursor is outside the menu, unhighlight items.
-			const unsub = addEventListener(node, 'mouseout', () => {
-				highlightedIndex.set(-1);
-			});
-
 			return {
 				destroy: () => {
-					unsub();
 					unsubDerived();
 					unsubPopper();
 				},
@@ -327,17 +355,28 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 		},
 	};
 
-	effect([open, options, highlightedIndex], ([$open, $options, $highlightedIndex]) => {
+	effect(highlightedItem, ($highlightedItem) => {
 		if (!isBrowser) return;
 
-		if (!$open) {
-			numberOfItems.set(-1);
-		}
+		const menuEl = document.getElementById(ids.menu);
+		if (!isHTMLElement(menuEl)) return;
+		menuEl.querySelectorAll('[role="option"]').forEach((node) => {
+			if (node === $highlightedItem) {
+				node.setAttribute('data-highlighted', '');
+			} else {
+				node.removeAttribute('data-highlighted');
+			}
+		});
+	});
+
+	effect([open, options], ([$open, $options]) => {
+		if (!isBrowser) return;
 
 		const menuEl = document.getElementById(ids.menu);
 		if (menuEl && $open) {
+			// @FIXME
 			// Focus on selected option or first option
-			const selectedOption = menuEl.querySelector(`[data-index="${$highlightedIndex}"]`);
+			const selectedOption = menuEl.querySelector('[data-highlighted]');
 			if (selectedOption) {
 				sleep(1).then(() => selectedOption.scrollIntoView({ block: $options.scrollAlignment }));
 			}
@@ -346,34 +385,28 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 
 	const option = {
 		...derived([highlightedIndex], ([$highlightedIndex]) => (args: OptionArgs) => ({
-			// @TODO set activedescendant on the input.
-			// "aria-activedescendant"
 			// 'aria-selected': $value === args?.value,
 			// 'data-selected': $value === args?.value ? '' : undefined,
-			'data-highlighted': $highlightedIndex === args?.index,
-			'data-disabled': args.disabled ? '' : undefined,
-			'data-list-item': 'data-list-item',
-			'data-index': args?.index, // non existent or -1
+			'data-disabled': args.disabled ? true : undefined,
+			'data-index': args.index,
 			role: 'option',
-			id: `${ids.input}-descendent-${args?.index}`,
+			id: `${ids.input}-descendent-${args.index}`,
 		})),
 		action: (node: HTMLLIElement) => {
-			// @FIXME
-			if (typeof node.dataset?.disabled === 'undefined') {
-				numberOfItems.update((value) => value + 1);
-			}
 			const unsub = executeCallbacks(
-				addEventListener(node, 'mousemove', () => {
-					const { index } = node.dataset;
-					if (index) {
-						highlightedIndex.set(parseInt(index, 10));
-					}
+				addEventListener(node, 'pointermove', () => {
+					if (isDisabled(node)) return;
+					if (node === get(highlightedItem)) return;
+					highlightedItem.set(node);
+				}),
+				addEventListener(node, 'pointerleave', () => {
+					highlightedItem.set(null);
 				}),
 				addEventListener(node, 'click', () => {
 					const { index } = node.dataset;
 					if (index) {
 						const parsedIndex = parseInt(index, 10);
-						setSelectedItem(parsedIndex);
+						selectItem(parsedIndex);
 						document.getElementById(ids.input)?.focus();
 					}
 					open.set(false);

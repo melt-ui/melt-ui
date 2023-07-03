@@ -7,19 +7,20 @@
 	interface Book {
 		author: string;
 		title: string;
+		disabled: boolean;
 	}
 
 	let books: Book[] = [
-		{ author: 'Harper Lee', title: 'To Kill a Mockingbird' },
-		{ author: 'Lev Tolstoy', title: 'War and Peace' },
-		{ author: 'Fyodor Dostoyevsy', title: 'The Idiot' },
-		{ author: 'Oscar Wilde', title: 'A Picture of Dorian Gray' },
-		{ author: 'George Orwell', title: '1984' },
-		{ author: 'Jane Austen', title: 'Pride and Prejudice' },
-		{ author: 'Marcus Aurelius', title: 'Meditations' },
-		{ author: 'Fyodor Dostoevsky', title: 'The Brothers Karamazov' },
-		{ author: 'Lev Tolstoy', title: 'Anna Karenina' },
-		{ author: 'Fyodor Dostoevsky', title: 'Crime and Punishment' },
+		{ author: 'Harper Lee', title: 'To Kill a Mockingbird', disabled: false },
+		{ author: 'Lev Tolstoy', title: 'War and Peace', disabled: false },
+		{ author: 'Fyodor Dostoyevsy', title: 'The Idiot', disabled: true },
+		{ author: 'Oscar Wilde', title: 'A Picture of Dorian Gray', disabled: false },
+		{ author: 'George Orwell', title: '1984', disabled: false },
+		{ author: 'Jane Austen', title: 'Pride and Prejudice', disabled: false },
+		{ author: 'Marcus Aurelius', title: 'Meditations', disabled: false },
+		{ author: 'Fyodor Dostoevsky', title: 'The Brothers Karamazov', disabled: false },
+		{ author: 'Lev Tolstoy', title: 'Anna Karenina', disabled: false },
+		{ author: 'Fyodor Dostoevsky', title: 'Crime and Punishment', disabled: false },
 	];
 
 	const { open, input, menu, option, inputValue, isSelected, filteredItems } = createCombobox({
@@ -39,6 +40,7 @@
 </script>
 
 <div>
+	<input type="text" />
 	<div class="container">
 		<label class="label">
 			<span class="label-description">Choose your favorite book:</span>
@@ -63,7 +65,7 @@
 	<ul class="menu" {...$menu} use:menu.action>
 		{#if $open}
 			{#each $filteredItems as item, index (index)}
-				<li {...$option({ index, disabled: true })} use:option.action class="option">
+				<li {...$option({ index, disabled: item.disabled })} use:option.action class="option">
 					{#if $isSelected(item)}
 						<div class="check">
 							<Check />
@@ -93,7 +95,7 @@
 	.option {
 		@apply relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800;
 	}
-	.option[data-highlighted='true'] {
+	.option[data-highlighted] {
 		@apply bg-magnum-100 text-magnum-700;
 	}
 	.input-container {
