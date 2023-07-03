@@ -7,7 +7,9 @@ import {
 	isBrowser,
 	isHTMLElement,
 	kbd,
+	next,
 	noop,
+	prev,
 	sleep,
 	styleToString,
 } from '@melt-ui/svelte/internal/helpers';
@@ -90,12 +92,14 @@ const defaults = {
 } satisfies Defaults<CreateComboboxArgs<unknown>>;
 
 /**
+ * TODOS
+ *  - Aria selection for options.
+ *
  * BUGS
  * - all items disabled—first is highlighted
  * - Tab navigation
  *
  * POLISH PASS
- * - figure out how our utils <> their utils (getNextItem)
  * - Omit the `items` from the $options store
  * - Naming of variables, etc.
  * - Add item selection data attributes from `select`
@@ -104,6 +108,7 @@ const defaults = {
  * - Setting initial value
  * - "Fancy" options
  * - Empty state
+ * - PAGE_UP / PAGE_DOWN
  *
  * THONKs
  *  - replace updateList with an option setter
@@ -113,16 +118,14 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	const open = writable(false);
 	const activeTrigger = writable<HTMLElement | null>(null);
 	const selectedItem = writable<T>(undefined);
+	// The currently highlighted list item
+	const highlightedItem = writable<HTMLElement | null>(null);
 	// The current value of the input element.
 	const inputValue = writable('');
-	// Array index of the currently highlighted list item.
-	const highlightedIndex = writable(0);
 	// All items in the list.
 	const items = writable(args.items);
 	// A subset of items that match the filterFunction predicate.
 	const filteredItems = writable(args.items);
-
-	const highlightedItem = writable<HTMLElement | null>(null);
 
 	const ids = {
 		input: generateId(),
@@ -137,67 +140,48 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	function handleMenuNavigation(e: KeyboardEvent) {
 		e.preventDefault();
 
+		// Get all the menu items.
 		const menuEl = document.getElementById(ids.menu);
 		if (!isHTMLElement(menuEl)) return;
-
-		// Get all the menu items.
 		const items = getOptions(menuEl);
 		if (!items.length) return;
 
-		// Disabled items can't be selected. Skip them.
+		// Disabled items can't be highlighted. Skip them.
 		const candidateNodes = items.filter((opt) => !isDisabled(opt));
 
-		// Get the index of the currently selected item.
+		// Get the index of the currently highlighted item.
 		const $currentItem = get(highlightedItem);
 		const currentIndex = $currentItem ? candidateNodes.indexOf($currentItem) : -1;
 
-		// Calculate the index of the next menu item
-		let nextIndex: number;
+		// Calculate the index of the next menu item to highlight.
 		const $options = get(options);
 		const loop = $options.loop;
-
-		/** @FIXME */
-		// case kbd.PAGE_UP: {
-		// 	const $highlightedIndex = get(highlightedIndex);
-		// 	const nextIndex = getNextIndex({
-		// 		currentIndex: $highlightedIndex,
-		// 		itemCount: $options.items.length,
-		// 		moveAmount: -10,
-		// 	});
-		// 	highlightedIndex.set(nextIndex);
-		// 	break;
-		// }
-		// case kbd.PAGE_DOWN: {
-		// 	const $highlightedIndex = get(highlightedIndex);
-		// 	const nextIndex = getNextIndex({
-		// 		currentIndex: $highlightedIndex,
-		// 		itemCount: $options.items.length,
-		// 		moveAmount: 10,
-		// 	});
-		// 	highlightedIndex.set(nextIndex);
-		// 	break;
-		// }
+		let nextItem: HTMLElement | undefined;
 
 		switch (e.key) {
 			case kbd.ARROW_DOWN:
-				nextIndex =
-					currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : loop ? 0 : currentIndex;
+				nextItem = next(candidateNodes, currentIndex, loop);
 				break;
 			case kbd.ARROW_UP:
-				nextIndex = currentIndex > 0 ? currentIndex - 1 : loop ? candidateNodes.length - 1 : 0;
+				nextItem = prev(candidateNodes, currentIndex, loop);
 				break;
 			case kbd.HOME:
-				nextIndex = 0;
+				nextItem = candidateNodes[0];
 				break;
 			case kbd.END:
-				nextIndex = candidateNodes.length - 1;
+				nextItem = candidateNodes[candidateNodes.length - 1];
 				break;
 			default:
 				return;
 		}
 
+		/**
+		 * Bail if `next` or `prev` return `undefined`.
+		 * Theoretically this shouldn't be possible but it's a good check anyway.
+		 */
+		if (typeof nextItem === 'undefined') return;
+
 		// Highlight the new item and scroll it into view.
-		const nextItem = candidateNodes[nextIndex];
 		highlightedItem.set(nextItem);
 		nextItem.scrollIntoView({ block: $options.scrollAlignment });
 	}
@@ -299,9 +283,9 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	 */
 	function selectItem(index: number) {
 		const $options = get(options);
-		const item = get(filteredItems)[index];
-		selectedItem.set(item);
-		inputValue.set($options.itemToString(item));
+		const $item = get(filteredItems)[index];
+		selectedItem.set($item);
+		inputValue.set($options.itemToString($item));
 	}
 
 	/**
@@ -329,7 +313,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 			const unsubDerived = effect(
 				[open, activeTrigger, options],
 				([$open, $activeTrigger, $options]) => {
-					// @TODO can we get rid of the noop execution?
 					unsubPopper();
 					if ($open && $activeTrigger) {
 						tick().then(() => {
@@ -345,7 +328,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 					}
 				}
 			);
-
 			return {
 				destroy: () => {
 					unsubDerived();
@@ -384,7 +366,8 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	});
 
 	const option = {
-		...derived([highlightedIndex], ([$highlightedIndex]) => (args: OptionArgs) => ({
+		...derived([selectedItem], ([$selectedItem]) => (args: OptionArgs) => ({
+			// @FIXME
 			// 'aria-selected': $value === args?.value,
 			// 'data-selected': $value === args?.value ? '' : undefined,
 			'data-disabled': args.disabled ? true : undefined,
