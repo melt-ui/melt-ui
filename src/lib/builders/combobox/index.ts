@@ -95,10 +95,6 @@ const defaults = {
 } satisfies Defaults<CreateComboboxArgs<unknown>>;
 
 /**
- * TODO
- * - Wire up `enter` to selectItem.
- * - Refactor `selectItem` to work on a node instead of an index for consistency.
- *
  * BUGS
  * - all items disabled—first is highlighted
  * - Tab navigation
