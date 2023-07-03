@@ -6,16 +6,16 @@
 
 <div {...$root} class="root">
 	<div {...$list} class="list" aria-label="Manage your account">
-		<button {...$trigger('tab1')} use:trigger.action class="trigger">Account</button>
-		<button {...$trigger('tab2')} use:trigger.action class="trigger">Password</button>
+		<button {...$trigger('tab1')} use:$trigger.action class="trigger">Account</button>
+		<button {...$trigger('tab2')} use:$trigger.action class="trigger">Password</button>
 		<!-- You don't need to set disabled on the action when using a button element, since
 			$trigger will set the 'disabled' attribute on the button -->
 		<button
-			use:trigger.action
+			use:$trigger.action
 			{...$trigger({ value: 'tab3', disabled: true })}
 			class="trigger opacity-50">Disabled</button
 		>
-		<button {...$trigger('tab4')} use:trigger.action class="trigger">Settings</button>
+		<button {...$trigger('tab4')} use:$trigger.action class="trigger">Settings</button>
 	</div>
 	<div {...$content('tab1')} class="content">
 		<p class="description">Make changes to your account here. Click save when you're done.</p>
@@ -65,7 +65,7 @@
 
 	.trigger {
 		@apply flex h-11 flex-1 cursor-default select-none items-center
-      justify-center rounded-none bg-white px-5 leading-none text-magnum-900
+      justify-center rounded-none bg-white px-4 leading-none text-magnum-900
 			 focus:relative;
 	}
 

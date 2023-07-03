@@ -1,39 +1,45 @@
 import { usePopper } from '$lib/internal/actions/popper';
 import {
+	addEventListener,
+	builder,
+	createElHelpers,
 	derivedWithUnsubscribe,
 	effect,
-	kbd,
-	styleToString,
-	isHTMLElement,
-	noop,
 	executeCallbacks,
-	addEventListener,
+	getNextFocusable,
+	getPreviousFocusable,
+	isHTMLElement,
+	kbd,
+	noop,
+	styleToString,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { tick } from 'svelte';
-import { derived, get, writable, type Readable } from 'svelte/store';
 import type { VirtualElement } from '@floating-ui/core';
+import { tick } from 'svelte';
+import { get, writable, type Readable } from 'svelte/store';
 
 import {
+	applyAttrsIfDisabled,
 	clearTimerStore,
 	createMenuBuilder,
-	setMeltMenuAttribute,
-	type Point,
-	handleMenuNavigation,
 	getMenuItems,
-	applyAttrsIfDisabled,
+	handleMenuNavigation,
+	handleTabNavigation,
 	type Menu,
+	type Point,
+	type MenuParts,
+	setMeltMenuAttribute,
 } from '../menu';
 
 const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
 const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
 const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 
-export type ContextMenuArgs = Menu['builder'];
-export type ContextMenuSubArgs = Menu['submenu'];
+export type CreateContextMenu = Menu['builder'];
+export type CreateContextMenuSub = Menu['submenu'];
 export type ContextMenuItemArgs = Menu['item'];
 export type ContextMenuCheckboxItemArgs = Menu['checkboxItem'];
-export type ContextMenuRadioGroup = Menu['radioGroup'];
+export type CreateContextMenuRadioGroup = Menu['radioGroup'];
 export type ContextMenuRadioItemArgs = Menu['radioItem'];
 export type ContextMenuRadioItemActionArgs = Menu['radioItemAction'];
 
@@ -43,13 +49,17 @@ const defaults = {
 		placement: 'bottom-start',
 	},
 	preventScroll: true,
-} satisfies Defaults<ContextMenuArgs>;
+} satisfies Defaults<CreateContextMenu>;
 
-export function createContextMenu(args?: ContextMenuArgs) {
-	const withDefaults = { ...defaults, ...args } as ContextMenuArgs;
+const { name, selector } = createElHelpers<MenuParts>('context-menu');
+
+export function createContextMenu(args?: CreateContextMenu) {
+	const withDefaults = { ...defaults, ...args } satisfies CreateContextMenu;
 	const rootOptions = writable(withDefaults);
 	const rootOpen = writable(false);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
+	const nextFocusable = writable<HTMLElement | null>(null);
+	const prevFocusable = writable<HTMLElement | null>(null);
 
 	const {
 		item,
@@ -64,6 +74,11 @@ export function createContextMenu(args?: ContextMenuArgs) {
 		rootOpen,
 		rootActiveTrigger,
 		rootOptions,
+		nextFocusable,
+		prevFocusable,
+		disableFocusFirstItem: true,
+		disableTriggerRefocus: true,
+		selector: 'context-menu',
 	});
 
 	const point = writable<Point>({ x: 0, y: 0 });
@@ -79,8 +94,9 @@ export function createContextMenu(args?: ContextMenuArgs) {
 	});
 	const longPressTimer = writable(0);
 
-	const menu = {
-		...derived([rootOpen], ([$rootOpen]) => {
+	const menu = builder(name(), {
+		stores: rootOpen,
+		returned: ($rootOpen) => {
 			return {
 				role: 'menu',
 				hidden: $rootOpen ? undefined : true,
@@ -89,12 +105,10 @@ export function createContextMenu(args?: ContextMenuArgs) {
 				}),
 				id: rootIds.menu,
 				'aria-labelledby': rootIds.trigger,
-				'data-melt-part': 'menu',
-				'data-melt-menu': '',
 				'data-state': $rootOpen ? 'open' : 'closed',
 				tabindex: -1,
 			} as const;
-		}),
+		},
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
 
@@ -104,7 +118,7 @@ export function createContextMenu(args?: ContextMenuArgs) {
 					unsubPopper();
 					if ($rootOpen && $rootActiveTrigger) {
 						tick().then(() => {
-							setMeltMenuAttribute(node);
+							setMeltMenuAttribute(node, selector);
 							const $virtual = get(virtual);
 
 							const popper = usePopper(node, {
@@ -123,7 +137,7 @@ export function createContextMenu(args?: ContextMenuArgs) {
 												return;
 											}
 
-											if (target.id !== rootIds.trigger && !target.closest('[data-melt-menu]')) {
+											if (target.id !== rootIds.trigger && !target.closest(selector())) {
 												rootOpen.set(false);
 											}
 										},
@@ -151,7 +165,7 @@ export function createContextMenu(args?: ContextMenuArgs) {
 					 * Submenu key events bubble through portals and
 					 * we only care about key events that happen inside this menu.
 					 */
-					const isKeyDownInside = target.closest('[data-melt-menu]') === menuElement;
+					const isKeyDownInside = target.closest("[role='menu']") === menuElement;
 					if (!isKeyDownInside) return;
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						handleMenuNavigation(e);
@@ -163,6 +177,9 @@ export function createContextMenu(args?: ContextMenuArgs) {
 					 */
 					if (e.key === kbd.TAB) {
 						e.preventDefault();
+						rootActiveTrigger.set(null);
+						rootOpen.set(false);
+						handleTabNavigation(e, nextFocusable, prevFocusable);
 						return;
 					}
 
@@ -184,21 +201,21 @@ export function createContextMenu(args?: ContextMenuArgs) {
 				},
 			};
 		},
-	};
+	});
 
-	const trigger = {
-		...derived([rootOpen], ([$rootOpen]) => {
+	const trigger = builder(name('trigger'), {
+		stores: rootOpen,
+		returned: ($rootOpen) => {
 			return {
 				'aria-controls': rootIds.menu,
 				'aria-expanded': $rootOpen,
 				'data-state': $rootOpen ? 'open' : 'closed',
 				id: rootIds.trigger,
-				'data-melt-part': 'trigger',
 				style: styleToString({
 					WebkitTouchCallout: 'none',
 				}),
 			} as const;
-		}),
+		},
 		action: (node: HTMLElement) => {
 			applyAttrsIfDisabled(node);
 
@@ -207,6 +224,8 @@ export function createContextMenu(args?: ContextMenuArgs) {
 					x: e.clientX,
 					y: e.clientY,
 				});
+				nextFocusable.set(getNextFocusable(node));
+				prevFocusable.set(getPreviousFocusable(node));
 				rootActiveTrigger.set(node);
 				rootOpen.set(true);
 			};
@@ -257,7 +276,7 @@ export function createContextMenu(args?: ContextMenuArgs) {
 				},
 			};
 		},
-	};
+	});
 
 	return {
 		trigger,

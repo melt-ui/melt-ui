@@ -61,9 +61,9 @@
 </script>
 
 <div class="mb-12">
-	<H3 class="mb-2 text-xl font-bold">{schema.title}</H3>
+	<H3 class="text-xl font-bold">{schema.title}</H3>
 
-	<P class="text-neutral-300/95">
+	<P class="mt-1.5 text-neutral-300/95">
 		{@html htmlDescription}
 	</P>
 
@@ -164,7 +164,7 @@
 						{#if Array.isArray(d.value)}
 							<code>{d.value.join(' | ').replaceAll('"', "'")}</code>
 						{:else}
-							<P>
+							<P class="mb-0">
 								{@html parseContent(d.value, 'neutral')}
 							</P>
 						{/if}
@@ -185,7 +185,7 @@
 						<Kbd>{d.key}</Kbd>
 					</Table.Cell>
 					<Table.Cell>
-						<P>
+						<P class="mb-0">
 							{@html parseContent(d.description)}
 						</P>
 					</Table.Cell>

@@ -6,6 +6,8 @@ import {
 	effect,
 	executeCallbacks,
 	generateId,
+	getNextFocusable,
+	getPreviousFocusable,
 	handleRovingFocus,
 	isBrowser,
 	isHTMLElement,
@@ -64,6 +66,17 @@ export function createSelect(args?: CreateSelectArgs) {
 	const value = writable<unknown>(withDefaults.value ?? null);
 	const label = writable<string | number | null>(withDefaults.label ?? null);
 	const activeTrigger = writable<HTMLElement | null>(null);
+
+	/**
+	 * Keeps track of the next/previous focusable element when the menu closes.
+	 * This is because we are portaling the menu to the body and we need
+	 * to be able to focus the next element in the DOM when the menu closes.
+	 *
+	 * Without keeping track of this, the focus would be reset to the top of
+	 * the page (or the first focusable element in the body).
+	 */
+	const nextFocusable = writable<HTMLElement | null>(null);
+	const prevFocusable = writable<HTMLElement | null>(null);
 
 	/**
 	 * Keeps track of if the user is using the keyboard to navigate the menu.
@@ -135,12 +148,14 @@ export function createSelect(args?: CreateSelectArgs) {
 
 					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
 					const isCharacterKey = e.key.length === 1;
-					/**
-					 * Select should not be navigated using tab so we prevent it
-					 */
+
 					if (e.key === kbd.TAB) {
 						e.preventDefault();
+						activeTrigger.set(null);
+						open.set(false);
+						handleTabNavigation(e);
 					}
+
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						e.preventDefault();
 						if (menuElement === target) {
@@ -182,6 +197,7 @@ export function createSelect(args?: CreateSelectArgs) {
 				'data-melt-part': 'trigger',
 				disabled: $options.disabled,
 				id: ids.trigger,
+				tabindex: 0,
 			} as const;
 		}),
 		action: (node: HTMLElement) => {
@@ -200,6 +216,8 @@ export function createSelect(args?: CreateSelectArgs) {
 					open.update((prev) => {
 						const isOpen = !prev;
 						if (isOpen) {
+							nextFocusable.set(getNextFocusable(triggerElement));
+							prevFocusable.set(getPreviousFocusable(triggerElement));
 							activeTrigger.set(triggerElement);
 						} else {
 							activeTrigger.set(null);
@@ -230,6 +248,9 @@ export function createSelect(args?: CreateSelectArgs) {
 						open.update((prev) => {
 							const isOpen = !prev;
 							if (isOpen) {
+								e.preventDefault();
+								nextFocusable.set(getNextFocusable(triggerElement));
+								prevFocusable.set(getPreviousFocusable(triggerElement));
 								activeTrigger.set(triggerElement);
 							} else {
 								activeTrigger.set(null);
@@ -255,8 +276,6 @@ export function createSelect(args?: CreateSelectArgs) {
 
 						handleRovingFocus(nextFocusedElement);
 					}
-
-					e.preventDefault();
 				})
 			);
 
@@ -416,10 +435,6 @@ export function createSelect(args?: CreateSelectArgs) {
 			unsubs.push(removeScroll());
 		}
 
-		if (!$open && $activeTrigger) {
-			handleRovingFocus($activeTrigger);
-		}
-
 		sleep(1).then(() => {
 			const menuEl = document.getElementById(ids.menu);
 			if (menuEl && $open && get(isUsingKeyboard)) {
@@ -429,7 +444,6 @@ export function createSelect(args?: CreateSelectArgs) {
 				if (!isHTMLElement(selectedOption)) {
 					const firstOption = getFirstOption(menuEl);
 					if (!isHTMLElement(firstOption)) return;
-
 					handleRovingFocus(firstOption);
 				} else {
 					handleRovingFocus(selectedOption);
@@ -440,11 +454,6 @@ export function createSelect(args?: CreateSelectArgs) {
 			} else if ($activeTrigger) {
 				// Hacky way to prevent the keydown event from triggering on the trigger
 				handleRovingFocus($activeTrigger);
-			} else {
-				const triggerElement = document.getElementById(ids.trigger);
-				if (!isHTMLElement(triggerElement)) return;
-
-				handleRovingFocus(triggerElement);
 			}
 		});
 
@@ -471,7 +480,9 @@ export function createSelect(args?: CreateSelectArgs) {
 		const keydownListener = (e: KeyboardEvent) => {
 			if (e.key === kbd.ESCAPE) {
 				open.set(false);
-				return;
+				const $activeTrigger = get(activeTrigger);
+				if (!$activeTrigger) return;
+				handleRovingFocus($activeTrigger);
 			}
 		};
 		document.addEventListener('keydown', keydownListener);
@@ -588,6 +599,24 @@ export function createSelect(args?: CreateSelectArgs) {
 				return;
 		}
 		handleRovingFocus(candidateNodes[nextIndex]);
+	}
+
+	function handleTabNavigation(e: KeyboardEvent) {
+		if (e.shiftKey) {
+			const $prevFocusable = get(prevFocusable);
+			if ($prevFocusable) {
+				e.preventDefault();
+				$prevFocusable.focus();
+				prevFocusable.set(null);
+			}
+		} else {
+			const $nextFocusable = get(nextFocusable);
+			if ($nextFocusable) {
+				e.preventDefault();
+				$nextFocusable.focus();
+				nextFocusable.set(null);
+			}
+		}
 	}
 
 	return {

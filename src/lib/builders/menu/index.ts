@@ -1,37 +1,40 @@
 import type { FloatingConfig } from '$lib/internal/actions';
 import { usePopper } from '$lib/internal/actions/popper';
 import {
+	addEventListener,
+	builder,
+	createElHelpers,
+	createTypeaheadSearch,
 	derivedWithUnsubscribe,
 	effect,
+	executeCallbacks,
+	generateId,
+	getNextFocusable,
+	getPreviousFocusable,
+	handleRovingFocus,
 	isBrowser,
+	isElementDisabled,
+	isHTMLElement,
 	kbd,
+	noop,
+	removeScroll,
 	sleep,
 	styleToString,
-	generateId,
-	isHTMLElement,
-	isElementDisabled,
-	noop,
-	executeCallbacks,
-	addEventListener,
-	hiddenAction,
-	createTypeaheadSearch,
-	handleRovingFocus,
-	removeScroll,
 } from '$lib/internal/helpers';
 import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Writable } from 'svelte/store';
 import { createSeparator } from '../separator';
 
-const SELECTION_KEYS = [kbd.ENTER, kbd.SPACE];
-const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
-const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
-const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
-const SUB_OPEN_KEYS: Record<TextDirection, string[]> = {
+export const SELECTION_KEYS = [kbd.ENTER, kbd.SPACE];
+export const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
+export const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
+export const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
+export const SUB_OPEN_KEYS: Record<TextDirection, string[]> = {
 	ltr: [...SELECTION_KEYS, kbd.ARROW_RIGHT],
 	rtl: [...SELECTION_KEYS, kbd.ARROW_LEFT],
 };
-const SUB_CLOSE_KEYS: Record<TextDirection, string[]> = {
+export const SUB_CLOSE_KEYS: Record<TextDirection, string[]> = {
 	ltr: [kbd.ARROW_LEFT],
 	rtl: [kbd.ARROW_RIGHT],
 };
@@ -63,6 +66,13 @@ export type CreateMenuArgs = {
 	 * @default true
 	 */
 	preventScroll?: boolean;
+
+	/**
+	 * Whether or not to loop the menu navigation.
+	 *
+	 * @default false
+	 */
+	loop?: boolean;
 };
 
 export type CreateSubmenuArgs = CreateMenuArgs & {
@@ -103,18 +113,49 @@ const defaults = {
 	positioning: {
 		placement: 'bottom',
 	},
+	preventScroll: true,
 } satisfies Defaults<CreateMenuArgs>;
 
 export type MenuBuilderOptions = {
 	rootOpen: Writable<boolean>;
 	rootActiveTrigger: Writable<HTMLElement | null>;
 	rootOptions: Writable<CreateMenuArgs>;
+	disableTriggerRefocus?: boolean;
+	disableFocusFirstItem?: boolean;
+	nextFocusable: Writable<HTMLElement | null>;
+	prevFocusable: Writable<HTMLElement | null>;
+	selector: string;
 };
 
+export type MenuParts =
+	| 'trigger'
+	| 'arrow'
+	| 'checkbox-item'
+	| 'item'
+	| 'radio-group'
+	| 'radio-item'
+	| 'submenu'
+	| 'subtrigger'
+	| 'subarrow';
+
+export type Selector = (part?: MenuParts | undefined) => string;
+
 export function createMenuBuilder(opts: MenuBuilderOptions) {
+	const { name, selector } = createElHelpers<MenuParts>(opts.selector);
+
 	const rootOptions = opts.rootOptions;
 	const rootOpen = opts.rootOpen;
 	const rootActiveTrigger = opts.rootActiveTrigger;
+	/**
+	 * Keeps track of the next/previous focusable element when the menu closes.
+	 * This is because we are portaling the menu to the body and we need
+	 * to be able to focus the next element in the DOM when the menu closes.
+	 *
+	 * Without keeping track of this, the focus would be reset to the top of
+	 * the page (or the first focusable element in the body).
+	 */
+	const nextFocusable = opts.nextFocusable;
+	const prevFocusable = opts.prevFocusable;
 
 	/**
 	 * Keeps track of if the user is using the keyboard to navigate the menu.
@@ -150,8 +191,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		trigger: generateId(),
 	};
 
-	const rootMenu = {
-		...derived([rootOpen], ([$rootOpen]) => {
+	const rootMenu = builder(name(), {
+		stores: [rootOpen],
+		returned: ([$rootOpen]) => {
 			return {
 				role: 'menu',
 				hidden: $rootOpen ? undefined : true,
@@ -160,12 +202,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				}),
 				id: rootIds.menu,
 				'aria-labelledby': rootIds.trigger,
-				'data-melt-part': 'menu',
-				'data-melt-menu': '',
 				'data-state': $rootOpen ? 'open' : 'closed',
 				tabindex: -1,
 			} as const;
-		}),
+		},
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
 
@@ -175,7 +215,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					unsubPopper();
 					if ($rootOpen && $rootActiveTrigger) {
 						tick().then(() => {
-							setMeltMenuAttribute(node);
+							setMeltMenuAttribute(node, selector);
 							const popper = usePopper(node, {
 								anchorElement: $rootActiveTrigger,
 								open: rootOpen,
@@ -204,18 +244,21 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					 * Submenu key events bubble through portals and
 					 * we only care about key events that happen inside this menu.
 					 */
-					const isKeyDownInside = target.closest('[data-melt-menu]') === menuElement;
+					const isKeyDownInside = target.closest(selector()) === menuElement;
 					if (!isKeyDownInside) return;
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						handleMenuNavigation(e);
 					}
 
 					/**
-					 * Menus should not be navigated using tab, so we prevent it.
+					 * Menus should not be navigated using tab
 					 * @see https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
 					 */
 					if (e.key === kbd.TAB) {
 						e.preventDefault();
+						rootActiveTrigger.set(null);
+						rootOpen.set(false);
+						handleTabNavigation(e, nextFocusable, prevFocusable);
 						return;
 					}
 
@@ -237,18 +280,18 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				},
 			};
 		},
-	};
+	});
 
-	const rootTrigger = {
-		...derived([rootOpen], ([$rootOpen]) => {
+	const rootTrigger = builder(name('trigger'), {
+		stores: [rootOpen],
+		returned: ([$rootOpen]) => {
 			return {
 				'aria-controls': rootIds.menu,
 				'aria-expanded': $rootOpen,
 				'data-state': $rootOpen ? 'open' : 'closed',
 				id: rootIds.trigger,
-				'data-melt-part': 'trigger',
 			} as const;
-		}),
+		},
 		action: (node: HTMLElement) => {
 			applyAttrsIfDisabled(node);
 			const unsub = executeCallbacks(
@@ -260,6 +303,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					rootOpen.update((prev) => {
 						const isOpen = !prev;
 						if (isOpen) {
+							nextFocusable.set(getNextFocusable(triggerElement));
+							prevFocusable.set(getPreviousFocusable(triggerElement));
 							rootActiveTrigger.set(triggerElement);
 						} else {
 							rootActiveTrigger.set(null);
@@ -285,6 +330,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						rootOpen.update((prev) => {
 							const isOpen = !prev;
 							if (isOpen) {
+								nextFocusable.set(getNextFocusable(triggerElement));
+								prevFocusable.set(getPreviousFocusable(triggerElement));
 								rootActiveTrigger.set(triggerElement);
 							} else {
 								rootActiveTrigger.set(null);
@@ -307,8 +354,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 						handleRovingFocus(nextFocusedElement);
 					}
-
-					e.preventDefault();
 				})
 			);
 
@@ -316,26 +361,30 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
-	const rootArrow = derived(rootOptions, ($rootOptions) => ({
-		'data-arrow': true,
-		'data-melt-part': 'arrow',
-		style: styleToString({
-			position: 'absolute',
-			width: `var(--arrow-size, ${$rootOptions.arrowSize}px)`,
-			height: `var(--arrow-size, ${$rootOptions.arrowSize}px)`,
+	const rootArrow = builder(name('arrow'), {
+		stores: rootOptions,
+		returned: ($rootOptions) => ({
+			'data-arrow': true,
+			style: styleToString({
+				position: 'absolute',
+				width: `var(--arrow-size, ${$rootOptions.arrowSize}px)`,
+				height: `var(--arrow-size, ${$rootOptions.arrowSize}px)`,
+			}),
 		}),
-	}));
+	});
 
-	const item = hiddenAction({
-		role: 'menuitem',
-		tabindex: -1,
-		'data-orientation': 'vertical',
-		'data-melt-part': 'item',
+	const item = builder(name('item'), {
+		returned: () => ({
+			role: 'menuitem',
+			tabindex: -1,
+			'data-orientation': 'vertical',
+		}),
 		action: (node: HTMLElement, params: ItemArgs = {}) => {
 			const { onSelect } = params;
-			setMeltMenuAttribute(node);
+
+			setMeltMenuAttribute(node, selector);
 			applyAttrsIfDisabled(node);
 
 			const unsub = executeCallbacks(
@@ -404,16 +453,17 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		checked: writable(false),
 	};
 
-	const checkboxItem = hiddenAction({
-		role: 'menuitemcheckbox',
-		tabindex: -1,
-		'data-orientation': 'vertical',
-		'data-melt-part': 'item',
+	const checkboxItem = builder(name('checkbox-item'), {
+		returned: () => ({
+			role: 'menuitemcheckbox',
+			tabindex: -1,
+			'data-orientation': 'vertical',
+		}),
 		action: (node: HTMLElement, params: CheckboxItemArgs) => {
-			setMeltMenuAttribute(node);
+			setMeltMenuAttribute(node, selector);
 			applyAttrsIfDisabled(node);
 			const { checked, onSelect } = { ...checkboxItemDefaults, ...params };
-			const $checked = get(checked) as boolean | 'indeterminate';
+			const $checked = get(checked);
 			node.setAttribute('aria-checked', isIndeterminate($checked) ? 'mixed' : String($checked));
 			node.setAttribute('data-state', getCheckedState($checked));
 
@@ -487,17 +537,19 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	const createMenuRadioGroup = (args: CreateRadioGroupArgs = {}) => {
 		const value = writable(args.value ?? null);
 
-		const radioGroup = {
-			role: 'group',
-			'data-melt-part': 'radio-group',
-		};
+		const radioGroup = builder(name('radio-group'), {
+			returned: () => ({
+				role: 'group',
+			}),
+		});
 
 		const radioItemDefaults = {
 			disabled: false,
 		};
 
-		const radioItem = {
-			...derived([value], ([$value]) => {
+		const radioItem = builder(name('radio-item'), {
+			stores: [value],
+			returned: ([$value]) => {
 				return (itemArgs: RadioItemArgs) => {
 					const { value: itemValue, disabled } = { ...radioItemDefaults, ...itemArgs };
 					const checked = $value === itemValue;
@@ -511,12 +563,11 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						'data-value': itemValue,
 						'data-orientation': 'vertical',
 						tabindex: -1,
-						'data-melt-part': 'item',
 					};
 				};
-			}),
+			},
 			action: (node: HTMLElement, params: RadioItemActionArgs = {}) => {
-				setMeltMenuAttribute(node);
+				setMeltMenuAttribute(node, selector);
 				const { onSelect } = params;
 
 				const unsub = executeCallbacks(
@@ -589,7 +640,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					destroy: unsub,
 				};
 			},
-		};
+		});
 
 		const isChecked = derived(value, ($value) => {
 			return (itemValue: string) => {
@@ -636,8 +687,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			trigger: generateId(),
 		};
 
-		const subMenu = {
-			...derived([subOpen], ([$subOpen]) => {
+		const subMenu = builder(name('submenu'), {
+			stores: [subOpen],
+			returned: ([$subOpen]) => {
 				return {
 					role: 'menu',
 					hidden: $subOpen ? undefined : true,
@@ -646,12 +698,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					}),
 					id: subIds.menu,
 					'aria-labelledby': subIds.trigger,
-					'data-melt-part': 'submenu',
-					'data-melt-menu': '',
 					'data-state': $subOpen ? 'open' : 'closed',
 					tabindex: -1,
 				} as const;
-			}),
+			},
 			action: (node: HTMLElement) => {
 				let unsubPopper = noop;
 
@@ -696,13 +746,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						const menuElement = e.currentTarget;
 						if (!isHTMLElement(menuElement)) return;
 
-						const targetMeltMenuId = target.getAttribute('data-melt-menu-id');
-						if (!targetMeltMenuId) return;
-
-						const isKeyDownInside =
-							target.closest('[data-melt-menu]') === menuElement &&
-							targetMeltMenuId === menuElement.id;
-
+						const isKeyDownInside = target.closest('[role="menu"]') === menuElement;
 						if (!isKeyDownInside) return;
 
 						if (FIRST_LAST_KEYS.includes(e.key)) {
@@ -783,10 +827,11 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					},
 				};
 			},
-		};
+		});
 
-		const subTrigger = {
-			...derived([subOpen, subOptions], ([$subOpen, $subOptions]) => {
+		const subTrigger = builder(name('subtrigger'), {
+			stores: [subOpen, subOptions],
+			returned: ([$subOpen, $subOptions]) => {
 				return {
 					role: 'menuitem',
 					id: subIds.trigger,
@@ -795,12 +840,11 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					'aria-expanded': $subOpen,
 					'data-state': $subOpen ? 'open' : 'closed',
 					'data-disabled': $subOptions.disabled ? '' : undefined,
-					'data-melt-part': 'subtrigger',
 					'aria-haspopop': 'menu',
 				} as const;
-			}),
+			},
 			action: (node: HTMLElement) => {
-				setMeltMenuAttribute(node);
+				setMeltMenuAttribute(node, selector);
 				applyAttrsIfDisabled(node);
 
 				const unsubTimer = () => {
@@ -954,16 +998,19 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					},
 				};
 			},
-		};
+		});
 
-		const subArrow = derived(subOptions, ($subOptions) => ({
-			'data-arrow': true,
-			style: styleToString({
-				position: 'absolute',
-				width: `var(--arrow-size, ${$subOptions.arrowSize}px)`,
-				height: `var(--arrow-size, ${$subOptions.arrowSize}px)`,
+		const subArrow = builder(name('subarrow'), {
+			stores: subOptions,
+			returned: ($subOptions) => ({
+				'data-arrow': true,
+				style: styleToString({
+					position: 'absolute',
+					width: `var(--arrow-size, ${$subOptions.arrowSize}px)`,
+					height: `var(--arrow-size, ${$subOptions.arrowSize}px)`,
+				}),
 			}),
-		}));
+		});
 
 		/* -------------------------------------------------------------------------------------------------
 		 * Sub Menu Effects
@@ -1029,6 +1076,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		sleep(1).then(() => {
 			const menuElement = document.getElementById(rootIds.menu);
 			if (isHTMLElement(menuElement) && $rootOpen && get(isUsingKeyboard)) {
+				if (opts.disableFocusFirstItem) {
+					handleRovingFocus(menuElement);
+					return;
+				}
 				// Get menu items belonging to the root menu
 				const menuItems = getMenuItems(menuElement);
 
@@ -1038,6 +1089,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				// Focus on active trigger trigger
 				handleRovingFocus($rootActiveTrigger);
 			} else {
+				if (opts.disableTriggerRefocus) {
+					return;
+				}
 				const triggerElement = document.getElementById(rootIds.trigger);
 				if (isHTMLElement(triggerElement)) {
 					handleRovingFocus(triggerElement);
@@ -1203,6 +1257,28 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	};
 }
 
+export function handleTabNavigation(
+	e: KeyboardEvent,
+	nextFocusable: Writable<HTMLElement | null>,
+	prevFocusable: Writable<HTMLElement | null>
+) {
+	if (e.shiftKey) {
+		const $prevFocusable = get(prevFocusable);
+		if ($prevFocusable) {
+			e.preventDefault();
+			$prevFocusable.focus();
+			prevFocusable.set(null);
+		}
+	} else {
+		const $nextFocusable = get(nextFocusable);
+		if ($nextFocusable) {
+			e.preventDefault();
+			$nextFocusable.focus();
+			nextFocusable.set(null);
+		}
+	}
+}
+
 /**
  * Get the menu items for a given menu element.
  * This only selects menu items that are direct children of the menu element,
@@ -1249,9 +1325,9 @@ function isMouse(e: PointerEvent) {
  * Set the `data-melt-menu-id` attribute on a menu item element.
  * @param element The menu item element
  */
-export function setMeltMenuAttribute(element: HTMLElement | null) {
+export function setMeltMenuAttribute(element: HTMLElement | null, selector: Selector) {
 	if (!element) return;
-	const menuEl = element.closest('[data-melt-part="menu"], [data-melt-part="submenu"]');
+	const menuEl = element.closest(`${selector()}, ${selector('submenu')}`);
 
 	if (!isHTMLElement(menuEl)) return;
 	element.setAttribute('data-melt-menu-id', menuEl.id);
@@ -1266,14 +1342,17 @@ export function handleMenuNavigation(e: KeyboardEvent) {
 
 	// currently focused menu item
 	const currentFocusedItem = document.activeElement;
+	currentFocusedItem;
 	if (!isHTMLElement(currentFocusedItem)) return;
 
 	// menu element being navigated
 	const currentTarget = e.currentTarget;
+	currentTarget;
 	if (!isHTMLElement(currentTarget)) return;
 
 	// menu items of the current menu
 	const menuItems = getMenuItems(currentTarget);
+	menuItems;
 	if (!menuItems.length) return;
 
 	const candidateNodes = menuItems.filter((item) => {

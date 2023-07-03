@@ -30,7 +30,7 @@
 		)}
 	>
 		<div class="py-6 pr-12 md:pr-6 lg:py-8">
-			<div class={cn('z-20 ')}>
+			<div class={cn('z-20 pb-24 md:pb-0')}>
 				<Sidebar />
 			</div>
 		</div>

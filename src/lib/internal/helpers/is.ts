@@ -16,3 +16,7 @@ export function isElementDisabled(element: HTMLElement): boolean {
 
 	return false;
 }
+
+export function isTouch(event: PointerEvent): boolean {
+	return event.pointerType === 'touch';
+}
