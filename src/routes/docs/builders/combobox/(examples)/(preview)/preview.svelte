@@ -34,9 +34,7 @@
 			);
 		},
 		items: books,
-		itemToString(item) {
-			return item ? item.title : '';
-		},
+		itemToString: (item) => item.title,
 	});
 </script>
 
@@ -47,10 +45,10 @@
 			<div class="input-container">
 				<input
 					{...$input}
-					value={inputValue}
-					use:input.action
-					placeholder="Best book ever"
 					class="input"
+					placeholder="Best book ever"
+					use:input.action
+					value={$inputValue}
 				/>
 				<div class="input-icon">
 					{#if $open}

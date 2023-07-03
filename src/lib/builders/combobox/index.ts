@@ -55,7 +55,7 @@ interface Combobox<T> {
 		action: Action<HTMLInputElement, void>;
 	};
 	/** Current input value. */
-	inputValue: string;
+	inputValue: Writable<string>;
 	/** Function to determine if a given item is selected. */
 	isSelected: Readable<(item: T) => boolean>;
 	/** Action & attributes to apply to the menu. */
@@ -110,7 +110,8 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	const selectedItem = writable<T>(undefined);
 	const inputValue = writable('');
 
-	const highlightedItem = writable(0);
+	// Array index of the currently highlighted list item.
+	const highlightedIndex = writable(0);
 	const items = writable(args.items);
 	/**
 	 * A subset of `items` that match the `filterFunction` predicate.
@@ -123,7 +124,9 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 		label: generateId(),
 	};
 
-	/** Action and attributes for the text input element. */
+	/**
+	 * Action and attributes for the text input element.
+	 */
 	const input = {
 		...derived(
 			[open, options],
@@ -143,7 +146,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 		action: (node: HTMLInputElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'blur', () => {
-					highlightedItem.set(-1);
+					highlightedIndex.set(-1);
 				}),
 				addEventListener(node, 'focus', (e) => {
 					// @TODO: abstract and use the input id instead? Thinking of this due to keyboard events also opening the box (although in testing, I haven't had any issues yet)
@@ -178,44 +181,44 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 							break;
 						}
 						case kbd.ENTER: {
-							const $highlightedIndex = get(highlightedItem);
+							const $highlightedIndex = get(highlightedIndex);
 							1;
 							setSelectedItem($highlightedIndex);
 							open.set(false);
 							break;
 						}
 						case kbd.HOME: {
-							highlightedItem.set(0);
+							highlightedIndex.set(0);
 							break;
 						}
 						case kbd.END: {
 							const nextIndex = get(numberOfItems) - 1;
-							highlightedItem.set(nextIndex);
+							highlightedIndex.set(nextIndex);
 							break;
 						}
 						/** @FIXME */
 						// case kbd.PAGE_UP: {
-						// 	const $highlightedIndex = get(highlightedItem);
+						// 	const $highlightedIndex = get(highlightedIndex);
 						// 	const nextIndex = getNextIndex({
 						// 		currentIndex: $highlightedIndex,
 						// 		itemCount: $options.items.length,
 						// 		moveAmount: -10,
 						// 	});
-						// 	highlightedItem.set(nextIndex);
+						// 	highlightedIndex.set(nextIndex);
 						// 	break;
 						// }
 						// case kbd.PAGE_DOWN: {
-						// 	const $highlightedIndex = get(highlightedItem);
+						// 	const $highlightedIndex = get(highlightedIndex);
 						// 	const nextIndex = getNextIndex({
 						// 		currentIndex: $highlightedIndex,
 						// 		itemCount: $options.items.length,
 						// 		moveAmount: 10,
 						// 	});
-						// 	highlightedItem.set(nextIndex);
+						// 	highlightedIndex.set(nextIndex);
 						// 	break;
 						// }
 						case kbd.ARROW_DOWN: {
-							highlightedItem.update((item) => {
+							highlightedIndex.update((item) => {
 								return getNextIndex({
 									currentIndex: item,
 									itemCount: get(numberOfItems) + 1,
@@ -229,7 +232,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 								close();
 								return;
 							}
-							highlightedItem.update((item) => {
+							highlightedIndex.update((item) => {
 								return getNextIndex({
 									currentIndex: item,
 									itemCount: get(numberOfItems) + 1,
@@ -253,17 +256,14 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	};
 
 	/**
-	 *
-	 * @param index
-	 * @param input
+	 * Selects an item in the list and updates the input value.
+	 * @param index array index of the item to select.
 	 */
 	function setSelectedItem(index: number) {
 		const $options = get(options);
 		const item = get(filteredItems)[index];
 		selectedItem.set(item);
-		const inputEl = document.getElementById(ids.input);
-		if (!(inputEl instanceof HTMLInputElement)) return;
-		inputEl.value = $options.itemToString(item);
+		inputValue.set($options.itemToString(item));
 	}
 
 	/**
@@ -274,6 +274,9 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 		return (item: T) => $selectedItem === item;
 	});
 
+	/**
+	 * Action and attributes for the menu element.
+	 */
 	const menu = {
 		...derived([open], ([$open]) => ({
 			hidden: $open ? undefined : true,
@@ -307,7 +310,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 
 			// When the cursor is outside the menu, unhighlight items.
 			const unsub = addEventListener(node, 'mouseout', () => {
-				highlightedItem.set(-1);
+				highlightedIndex.set(-1);
 			});
 
 			return {
@@ -321,7 +324,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	};
 	const numberOfItems = writable(-1);
 
-	effect([open, options, highlightedItem], ([$open, $options, $highlightedItem]) => {
+	effect([open, options, highlightedIndex], ([$open, $options, $highlightedIndex]) => {
 		if (!isBrowser) return;
 
 		if (!$open) {
@@ -331,7 +334,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 		const menuEl = document.getElementById(ids.menu);
 		if (menuEl && $open) {
 			// Focus on selected option or first option
-			const selectedOption = menuEl.querySelector(`[data-index="${$highlightedItem}"]`);
+			const selectedOption = menuEl.querySelector(`[data-index="${$highlightedIndex}"]`);
 			if (selectedOption) {
 				sleep(1).then(() => selectedOption.scrollIntoView({ block: $options.scrollAlignment }));
 			}
@@ -339,12 +342,12 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	});
 
 	const option = {
-		...derived([highlightedItem], ([$highlightedItem]) => (args: OptionArgs) => ({
+		...derived([highlightedIndex], ([$highlightedIndex]) => (args: OptionArgs) => ({
 			// @TODO set activedescendant on the input.
 			// "aria-activedescendant"
 			// 'aria-selected': $value === args?.value,
 			// 'data-selected': $value === args?.value ? '' : undefined,
-			'data-highlighted': $highlightedItem === args?.index,
+			'data-highlighted': $highlightedIndex === args?.index,
 			'data-disabled': args.disabled ? '' : undefined,
 			'data-list-item': 'data-list-item',
 			'data-index': args?.index, // non existent or -1
@@ -360,7 +363,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 				addEventListener(node, 'mousemove', () => {
 					const { index } = node.dataset;
 					if (index) {
-						highlightedItem.set(parseInt(index, 10));
+						highlightedIndex.set(parseInt(index, 10));
 					}
 				}),
 				addEventListener(node, 'click', () => {
@@ -404,7 +407,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	return {
 		filteredItems: readonly(filteredItems),
 		input,
-		inputValue: get(inputValue),
+		inputValue,
 		isSelected,
 		menu,
 		open,
