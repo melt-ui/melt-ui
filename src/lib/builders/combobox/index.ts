@@ -95,6 +95,10 @@ const defaults = {
 } satisfies Defaults<CreateComboboxArgs<unknown>>;
 
 /**
+ * TODO
+ * - Wire up `enter` to selectItem.
+ * - Refactor `selectItem` to work on a node instead of an index for consistency.
+ *
  * BUGS
  * - all items disabled—first is highlighted
  * - Tab navigation
@@ -154,8 +158,8 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'focus', (e) => {
 					// @TODO: abstract and use the input id instead? Thinking of this due to keyboard events also opening the box (although in testing, I haven't had any issues yet)
-					const triggerEl = e.currentTarget as HTMLElement;
-					activeTrigger.set(triggerEl);
+					const triggerElement = e.currentTarget as HTMLElement;
+					activeTrigger.set(triggerElement);
 					open.set(true);
 				}),
 				addEventListener(node, 'keydown', (e) => {
@@ -223,6 +227,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 						const loop = $options.loop;
 						let nextItem: HTMLElement | undefined;
 
+						/** @TODO support PAGE_UP/PAGE_DOWN navigation (+10,-10) */
 						switch (e.key) {
 							case kbd.ARROW_DOWN:
 								nextItem = next(candidateNodes, currentIndex, loop);
@@ -275,7 +280,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	}
 
 	/**
-	 * Function to determine if a given item is selected.
+	 * Determines if a given item is selected.
 	 * This is useful for displaying additional markup on the selected item.
 	 */
 	const isSelected = derived([selectedItem], ([$selectedItem]) => {
@@ -323,12 +328,15 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 		},
 	};
 
+	/**
+	 * Handles moving the `data-highlighted` attribute between items when
+	 * the user moves their pointer or navigates with their keyboard.
+	 */
 	effect(highlightedItem, ($highlightedItem) => {
 		if (!isBrowser) return;
-
-		const menuEl = document.getElementById(ids.menu);
-		if (!isHTMLElement(menuEl)) return;
-		menuEl.querySelectorAll('[role="option"]').forEach((node) => {
+		const menuElement = document.getElementById(ids.menu);
+		if (!isHTMLElement(menuElement)) return;
+		menuElement.querySelectorAll('[role="option"]').forEach((node) => {
 			if (node === $highlightedItem) {
 				node.setAttribute('data-highlighted', '');
 			} else {
@@ -340,11 +348,11 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	effect([open, options], ([$open, $options]) => {
 		if (!isBrowser) return;
 
-		const menuEl = document.getElementById(ids.menu);
-		if (menuEl && $open) {
+		const menuElement = document.getElementById(ids.menu);
+		if (menuElement && $open) {
 			// @FIXME
 			// Focus on selected option or first option
-			const selectedOption = menuEl.querySelector('[data-highlighted]');
+			const selectedOption = menuElement.querySelector('[data-highlighted]');
 			if (selectedOption) {
 				sleep(1).then(() => selectedOption.scrollIntoView({ block: $options.scrollAlignment }));
 			}
