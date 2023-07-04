@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { TOC } from '$docs/components';
+	import { TOC, Description } from '$docs/components';
 
 	import type { SvelteComponent } from 'svelte';
 	import type { PageData } from './$types';
-	import ChevronRight from '~icons/lucide/chevron-right';
 	import { cn } from '$docs/utils';
 	import { createSeparator } from '$lib';
-	import Description from '$docs/components/description.svelte';
 	import { page } from '$app/stores';
 
 	const { root: separator } = createSeparator();

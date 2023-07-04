@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getTabsContext } from '$docs/components/tabs/root.svelte';
-	import { Npm, Yarn, Pnpm } from '../icons';
+	import { Npm, Yarn, Pnpm } from '$docs/components/icons';
 
 	export let tab: string;
 
