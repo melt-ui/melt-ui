@@ -1,16 +1,6 @@
 import { getElementByMeltId } from '@melt-ui/svelte/internal/helpers';
 import type { Writable } from 'svelte/store';
-
-export type Tag = {
-	id: string;
-	value: string;
-};
-
-export type TagArgs = {
-	id: string;
-	value: string;
-	disabled?: boolean;
-};
+import type { Tag } from './types';
 
 export type inputPos = 'default' | 'start' | 'end';
 
