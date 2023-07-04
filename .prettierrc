@@ -1,27 +1,25 @@
 {
-    "useTabs": true,
-    "singleQuote": true,
-    "trailingComma": "es5",
-    "printWidth": 100,
-    "pluginSearchDirs": [
-        "."
-    ],
-    "overrides": [
-        {
-            "files": "*.svelte",
-            "options": {
-                "parser": "svelte"
-            }
-        },
-        {
-            "files": "*.md",
-            "options": {
-                "parser": "markdown",
-                "printWidth": 80,
-                "proseWrap": "always",
-                "tabWidth": 2,
-                "useTabs": false
-            }
-        }
-    ]
+	"useTabs": true,
+	"singleQuote": true,
+	"trailingComma": "es5",
+	"printWidth": 100,
+	"pluginSearchDirs": ["."],
+	"overrides": [
+		{
+			"files": "*.svelte",
+			"options": {
+				"parser": "svelte"
+			}
+		},
+		{
+			"files": "*.md",
+			"options": {
+				"parser": "markdown",
+				"printWidth": 80,
+				"proseWrap": "always",
+				"tabWidth": 2,
+				"useTabs": false
+			}
+		}
+	]
 }

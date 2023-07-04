@@ -1,37 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="preload" as="image" href="%sveltekit.assets%/logo.svg" />
+		<title>Melt UI</title>
+		<meta
+			name="description"
+			content="An open-source Svelte component library for building high-quality, accessible design systems and web apps."
+		/>
 
-<head>
-  <meta charset="utf-8" />
-  <link rel="icon" href="%sveltekit.assets%/favicon.png" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="preload" as="image" href="%sveltekit.assets%/logo.svg" />
-  <title>Melt UI</title>
-  <meta name="description"
-    content="An open-source Svelte component library for building high-quality, accessible design systems and web apps." />
+		<!-- Facebook Meta Tags -->
+		<meta property="og:url" content="https://www.melt-ui.com/" />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content="Melt UI" />
+		<meta
+			property="og:description"
+			content="An open-source Svelte component library for building high-quality, accessible design systems and web apps."
+		/>
+		<meta property="og:image" content="https://www.melt-ui.com/banner.png" />
 
-  <!-- Facebook Meta Tags -->
-  <meta property="og:url" content="https://www.melt-ui.com/" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Melt UI" />
-  <meta property="og:description"
-    content="An open-source Svelte component library for building high-quality, accessible design systems and web apps." />
-  <meta property="og:image" content="https://www.melt-ui.com/banner.png" />
+		<!-- Twitter Meta Tags -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta property="twitter:domain" content="melt-ui.com" />
+		<meta property="twitter:url" content="https://www.melt-ui.com/" />
+		<meta name="twitter:title" content="Melt UI" />
+		<meta
+			name="twitter:description"
+			content="An open-source Svelte component library for building high-quality, accessible design systems and web apps."
+		/>
+		<meta name="twitter:image" content="https://www.melt-ui.com/banner.png" />
 
-  <!-- Twitter Meta Tags -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta property="twitter:domain" content="melt-ui.com" />
-  <meta property="twitter:url" content="https://www.melt-ui.com/" />
-  <meta name="twitter:title" content="Melt UI" />
-  <meta name="twitter:description"
-    content="An open-source Svelte component library for building high-quality, accessible design systems and web apps." />
-  <meta name="twitter:image" content="https://www.melt-ui.com/banner.png" />
+		%sveltekit.head%
+	</head>
 
-  %sveltekit.head%
-</head>
-
-<body class="min-h-screen font-sans antialiased">
-  <div style="display: contents" class="flex min-h-screen flex-col">%sveltekit.body%</div>
-</body>
-
+	<body class="min-h-screen font-sans antialiased">
+		<div style="display: contents" class="flex min-h-screen flex-col">%sveltekit.body%</div>
+	</body>
 </html>
