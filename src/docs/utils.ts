@@ -1,6 +1,5 @@
 import { styleToString } from '$lib/internal/helpers';
 import { clsx, type ClassValue } from 'clsx';
-import { compile } from 'svelte/compiler';
 import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
 import { twMerge } from 'tailwind-merge';
@@ -185,18 +184,6 @@ export function createPreviewsObject(
 			} else {
 				returnedObj[groupKey] = { [fileKey]: content };
 			}
-		}
-	}
-
-	// Call createComponent for each top-level key and add the result to the associated object
-	for (const key in returnedObj) {
-		if (Object.prototype.hasOwnProperty.call(returnedObj, key)) {
-			const tailwindContent = returnedObj[key].tailwind;
-			const componentResult = compile(tailwindContent, {
-				generate: 'ssr',
-				css: 'external',
-			});
-			returnedObj[key].component = componentResult;
 		}
 	}
 

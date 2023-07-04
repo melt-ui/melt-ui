@@ -2,12 +2,12 @@
 	export type PreviewProps = {
 		component: any;
 		code: {
-			Tailwind: {
+			tailwind: {
 				[key: string]: string;
 				'index.svelte': string;
 				'tailwind.config.ts': string;
 			};
-			CSS: {
+			css: {
 				[key: string]: string;
 				'index.svelte': string;
 				'globals.css': string;
@@ -28,11 +28,12 @@
 
 	type $$Props = PreviewProps;
 
-	export let component: $$Props['component'];
 	export let code: $$Props['code'];
 	export let fullwidth: $$Props['fullwidth'] = false;
 
-	let codingStyle = Object.keys(code)[0] ? ('Tailwind' as const) : ('CSS' as const);
+	console.log(Object.keys(code)[1]);
+
+	let codingStyle = Object.keys(code)[1] ? ('tailwind' as const) : ('css' as const);
 	let codingStyleObj: $$Props['code'][typeof codingStyle] | null = code[codingStyle];
 
 	$: {
@@ -45,7 +46,7 @@
 		value: codingStyle,
 	});
 	value.subscribe((v) => {
-		if (v === 'Tailwind' || v === 'CSS') {
+		if (v === 'tailwind' || v === 'css') {
 			codingStyle = v;
 		}
 	});
@@ -91,7 +92,7 @@
 		</TabsRoot>
 	{:else}
 		<PreviewWrapper {fullwidth}>
-			<svelte:component this={component} />
+			<slot />
 		</PreviewWrapper>
 	{/if}
 </div>

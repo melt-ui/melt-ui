@@ -14,6 +14,7 @@
 	type Component = $$Generic<typeof SvelteComponent>;
 	$: component = data.component as unknown as Component;
 	$: doc = data.metadata;
+	$: previews = data.previews;
 </script>
 
 <main class="relative px-2 py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_240px]">
@@ -30,7 +31,7 @@
 		</div>
 		<div {...$separator} class="my-4 md:my-6" />
 		<div class="mdsvex" id="mdsvex">
-			<svelte:component this={component} />
+			<svelte:component this={component} {previews} />
 		</div>
 		<div {...$separator} class="my-4 md:my-6" />
 		<!-- <DocsPager /> -->
