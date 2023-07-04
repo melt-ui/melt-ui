@@ -15,7 +15,7 @@ and an overall delightful developer experience, Melt UI strives to be the
 de-facto headless UI library for Svelte.
 
 <Construction>
-    Melt UI is in its early stages. Expect breaking changes! And lots of new stuff coming in quickly 🚀
+    Melt UI is in its early stages. Expect breaking changes! And lots of new stuff! 🚀
 </Construction>
 
 ## Features
@@ -26,7 +26,7 @@ Unlike a traditional component library, Melt UI provides access to builders
 instead of components. Builders are just functions that generate a collection of
 properties that can be assigned to any element or component.
 
-```svelte title="Collapsible.svelte" {3} /{...$root}/#r /{...$content}/#c /{...$trigger}/#t /use:trigger.action/#t
+```svelte {3} /{...$root}/#hi /{...$content}/#hi /{...$trigger}/#hi /use:trigger.action/#hi
 <script>
   import { createCollapsible } from '@melt-ui/svelte';
   const { open, root, content, trigger } = createCollapsible();

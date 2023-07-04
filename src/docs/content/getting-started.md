@@ -94,7 +94,6 @@ components, as long as you can pass in Melt's props, it's all good.
 </div>
 </div>
 
-
 <style>
   .root {
     display: flex;
@@ -103,7 +102,7 @@ components, as long as you can pass in Melt's props, it's all good.
 </style>
 
 <!-- Button.svelte -->
-<script lang="ts">
+<script>
   import type { Action } from 'svelte/action';
   export let action: Action
 </script>
@@ -138,7 +137,6 @@ then be used for animation purposes, should you desire to do so.
     display: block !important; /* Ignore the hidden attribute */
     transition: opacity 200ms ease;
   }
-
   .content[data-state='closed'] {
     opacity: 0;
   }
