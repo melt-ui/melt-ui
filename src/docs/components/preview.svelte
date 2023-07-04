@@ -20,7 +20,7 @@
 <script lang="ts">
 	import { createSelect, type CreateSelectArgs } from '$lib';
 	import { cn } from '$routes/helpers';
-	import CodeBlock from './code-block.svelte';
+	import CodePreview from './code-preview.svelte';
 	import PreviewWrapper from './preview-wrapper.svelte';
 	import Select from './select.svelte';
 	import Switch from './switch.svelte';
@@ -85,7 +85,9 @@
 				</div>
 			</div>
 			{#if codingStyleObj && codingStyleObj[tab]}
-				<CodeBlock code={codingStyleObj[tab]} />
+				<CodePreview>
+					{@html codingStyleObj[tab]}
+				</CodePreview>
 			{/if}
 		</TabsRoot>
 	{:else}

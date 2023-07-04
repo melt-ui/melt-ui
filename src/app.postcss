@@ -111,3 +111,22 @@ body::-webkit-scrollbar-thumb:hover {
 		@apply px-4;
 	}
 }
+
+[data-shiki-code-fragment] {
+	@apply relative;
+
+	& pre {
+		@apply mb-4 mt-6 flex max-h-[650px] flex-col overflow-x-auto rounded-lg border border-neutral-500/50 bg-neutral-950/60 py-4 font-bold;
+	}
+
+	& code {
+		@apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0;
+		counter-reset: line;
+		box-decoration-break: clone;
+		font-size: 15px;
+	}
+
+	& .line {
+		@apply inline-block w-full basis-4 border-l-[3px] border-l-transparent px-5 py-1;
+	}
+}

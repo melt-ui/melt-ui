@@ -37,7 +37,7 @@ export const load: PageLoad = async (event) => {
 		}
 	}
 
-	const previews = createPreviewsObject(event.params.name, previewCodeMatches);
+	const previews = await createPreviewsObject(event.params.name, previewCodeMatches);
 
 	return {
 		component: doc.default,

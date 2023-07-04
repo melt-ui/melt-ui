@@ -58,7 +58,9 @@
         "@floating-ui/dom": "^1.4.2",
         "@sveltejs/adapter-vercel": "^3.0.1",
         "focus-trap": "^7.4.3",
+        "hast-util-from-html": "^1.0.2",
         "nanoid": "^4.0.2",
+        "shiki-es": "^0.14.0",
         "uninstall": "^0.0.0"
     },
     "devDependencies": {

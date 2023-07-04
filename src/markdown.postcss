@@ -1,4 +1,4 @@
-.mdsvex code {
+.mdsvex code:not(pre > code) {
 	@apply relative rounded-md bg-magnum-900/50 px-[0.3rem] py-[0.2rem] font-mono text-sm text-magnum-300;
 }
 
@@ -24,6 +24,10 @@
 [data-rehype-pretty-code-fragment] {
 	@apply relative;
 
+	& pre {
+		@apply mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border border-neutral-500/50 bg-neutral-950/60 py-4 font-bold;
+	}
+
 	& code {
 		@apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0;
 		counter-reset: line;
@@ -32,7 +36,7 @@
 	}
 
 	& [data-line] {
-		@apply inline-block w-full basis-4 border-l-[3px] border-l-transparent px-5 py-1;
+		@apply inline-block w-full basis-4 border-l-[3px] border-l-transparent px-5 py-0.5;
 	}
 
 	& [data-highlighted-line] {

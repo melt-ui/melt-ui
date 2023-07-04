@@ -13,7 +13,7 @@
 		{
 			id: 'item-2',
 			title: 'Is it unstyled?',
-			description: "Yes. It's unstyled by default, giving you freedom over the look and feel.",
+			description: "Yes. It's unstyled by default, giving you freedom over the look & feel.",
 		},
 		{
 			id: 'item-3',
@@ -27,14 +27,18 @@
 	{#each items as { id, title, description }, i}
 		<div
 			{...$item(id)}
-			class="mt-px overflow-hidden transition-colors first:mt-0 first:rounded-t last:rounded-b focus-within:relative focus-within:z-10 focus-within:ring focus-within:ring-magnum-400"
+			class="mt-px overflow-hidden transition-colors first:mt-0 first:rounded-t
+            last:rounded-b focus-within:relative focus-within:z-10
+            focus-within:ring focus-within:ring-magnum-400"
 		>
 			<h2 class="flex">
 				<button
 					id={i === 0 ? 'trigger' : undefined}
 					{...$trigger(id)}
 					use:trigger.action
-					class="flex h-12 flex-1 cursor-pointer items-center justify-between bg-white px-5 text-base font-medium leading-none text-magnum-700 shadow-[0_1px_0] transition-colors hover:bg-opacity-95"
+					class="flex h-12 flex-1 cursor-pointer items-center justify-between
+                bg-white px-5 text-base font-medium leading-none text-magnum-700
+                shadow-[0_1px_0] transition-colors hover:bg-opacity-95"
 				>
 					{title}
 				</button>
