@@ -68,12 +68,12 @@ const builder: APISchema = {
 };
 
 const root: APISchema = {
-	title: 'Root',
+	title: 'root',
 	description: 'The root component.',
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`tags-input`',
+			label: 'data-melt-tags-input',
+			value: '',
 		},
 		{
 			label: 'data-focus',
@@ -91,12 +91,12 @@ const root: APISchema = {
 };
 
 const input: APISchema = {
-	title: 'Input',
+	title: 'input',
 	description: 'The input component',
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`tags-input-input`',
+			label: 'data-melt-tags-input-input',
+			value: '',
 		},
 		{
 			label: 'data-disabled',
@@ -114,8 +114,8 @@ const input: APISchema = {
 };
 
 const tag: APISchema = {
-	title: 'Tag',
-	description: 'The tag components.',
+	title: 'tag',
+	description: 'The tag component.',
 	args: [
 		{
 			label: 'id',
@@ -133,12 +133,12 @@ const tag: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`tags-input-tag`',
+			label: 'data-melt-tags-input-tag',
+			value: '',
 		},
 		{
 			label: 'data-tag-id',
-			value: 'Unique tag ID',
+			value: 'Tag ID',
 		},
 		{
 			label: 'data-tag-value',
@@ -146,17 +146,17 @@ const tag: APISchema = {
 		},
 		{
 			label: 'data-selected',
-			value: 'Present when the tag is selected',
+			value: 'Present when selected',
 		},
 		{
 			label: 'data-disabled',
-			value: 'Present when the tag is disabled',
+			value: 'Present when disabled',
 		},
 	],
 };
 
 const deleteTrigger: APISchema = {
-	title: 'Delete Trigger',
+	title: 'deleteTrigger',
 	description: 'The tag components.',
 	args: [
 		{
@@ -175,8 +175,8 @@ const deleteTrigger: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`tags-input-delete-trigger`',
+			label: 'data-melt-tags-input-delete-trigger',
+			value: '',
 		},
 		{
 			label: 'data-tag-id',
@@ -187,12 +187,50 @@ const deleteTrigger: APISchema = {
 			value: 'Tag value',
 		},
 		{
-			label: 'data-disabled',
-			value: 'Present when the tag is disabled',
+			label: 'data-selected',
+			value: 'Present when selected',
 		},
 		{
-			label: 'data-selected',
-			value: 'Present when the tag is selected',
+			label: 'data-disabled',
+			value: 'Present when disabled',
+		},
+	],
+};
+
+const options: APISchema = {
+	title: 'options',
+	description: 'The `$options` store can be used to override initial values set during creation.',
+};
+
+const tags: APISchema = {
+	title: 'tags',
+	description:
+		'The `$tags` store holds an object array of type `Tag`. Each `Tag` consists of an id and value.',
+};
+
+const selected: APISchema = {
+	title: 'selected',
+	description: 'The `$selected` store holds the currently selected `Tag`, if there is one.',
+};
+
+const value: APISchema = {
+	title: 'value',
+	description: '`$value` is a readable store, which holds the input value.',
+};
+
+const invalid: APISchema = {
+	title: 'invalid',
+	description:
+		'`$invalid` is a readable store of type `boolean`. When `true`, the input valid is considered invalid.',
+};
+
+const isSelected: APISchema = {
+	title: 'isSelected',
+	description: '`$isSelected` is a helper function to determine if a specific `Tag` is selected.',
+	args: [
+		{
+			label: 'Tag',
+			type: '{id: string, value: string}',
 		},
 	],
 };
@@ -235,5 +273,11 @@ export const schemas = {
 	input,
 	tag,
 	deleteTrigger,
+	options,
+	tags,
+	selected,
+	value,
+	invalid,
+	isSelected,
 	keyboard,
 };

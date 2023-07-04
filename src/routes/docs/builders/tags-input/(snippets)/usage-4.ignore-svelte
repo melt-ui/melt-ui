@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { createTagsInput } from '@melt-ui/svelte';
+	import { createTagsInput, type Tag } from '@melt-ui/svelte';
 
-	const { root, input, tags, tag, deleteTrigger } = createTagsInput({
+	const { root, input, tag, deleteTrigger } = createTagsInput({
 		tags: ['one', 'two'],
 		remove: async (t: Tag) => {
 			if (t.value === 'one') return false;
