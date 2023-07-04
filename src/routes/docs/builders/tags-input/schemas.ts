@@ -43,12 +43,12 @@ const builder: APISchema = {
 			type: 'number',
 		},
 		{
-			label: 'allowedTags',
+			label: 'allowed',
 			type: 'string[]',
 			default: '[]',
 		},
 		{
-			label: 'deniedTags',
+			label: 'denied',
 			type: 'string[]',
 			default: '[]',
 		},

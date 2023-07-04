@@ -9,8 +9,8 @@ export type CreateTagsInputArgs = {
 	blur?: 'nothing' | 'add' | 'clear';
 	addOnPaste?: boolean;
 	maxTags?: number;
-	allowedTags?: string[];
-	deniedTags?: string[];
+	allowed?: string[];
+	denied?: string[];
 	validator?: (tag: string) => boolean;
 	add?: (tag: string) => Promise<Tag | string>;
 	remove?: (tag: Tag) => Promise<boolean>;

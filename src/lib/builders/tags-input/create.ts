@@ -21,8 +21,8 @@ const defaults = {
 	unique: false,
 	blur: 'nothing',
 	addOnPaste: false,
-	allowedTags: [],
-	deniedTags: [],
+	allowed: [],
+	denied: [],
 } satisfies Defaults<CreateTagsInputArgs>;
 
 type TagsInputParts = '' | 'input' | 'tag' | 'delete-trigger';
@@ -67,16 +67,11 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		}
 
 		// Allowed list is populated and this value is not in it
-		if (
-			$options.allowedTags &&
-			$options.allowedTags.length > 0 &&
-			!$options.allowedTags.includes(v)
-		)
+		if ($options.allowed && $options.allowed.length > 0 && !$options.allowed.includes(v))
 			return false;
 
 		// Deny list is populated and this value is in it
-		if ($options.deniedTags && $options.deniedTags.length > 0 && $options.deniedTags.includes(v))
-			return false;
+		if ($options.denied && $options.denied.length > 0 && $options.denied.includes(v)) return false;
 
 		// Validator is defined and returned false
 		if ($options.validator && !$options.validator(v)) return false;
