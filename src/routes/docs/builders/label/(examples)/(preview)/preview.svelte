@@ -6,7 +6,7 @@
 
 <form>
 	<div class="flex flex-col items-start justify-center">
-		<label use:root.action for="email" class="mb-0.5 font-medium">
+		<label use:root.action for="email" class="mb-0.5 font-medium" data-melt-part="root">
 			<span>Email</span>
 		</label>
 		<input

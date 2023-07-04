@@ -1,4 +1,12 @@
-import { addEventListener, executeCallbacks, kbd, noop, omit } from '$lib/internal/helpers';
+import {
+	addEventListener,
+	executeCallbacks,
+	handleRovingFocus,
+	isHTMLElement,
+	kbd,
+	noop,
+	omit,
+} from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
@@ -54,7 +62,7 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 		return {
 			role: 'group',
 			'data-orientation': $options.orientation,
-			'data-melt-part': 'toggle-group',
+			'data-melt-toggle-group': '',
 		} as const;
 	});
 
@@ -70,9 +78,7 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 				const itemValue = typeof args === 'string' ? args : args.value;
 				const argDisabled = typeof args === 'string' ? false : !!args.disabled;
 				const disabled = $options.disabled || argDisabled;
-
 				const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
-				const anyPressed = Array.isArray($value) ? $value.length > 0 : $value !== null;
 				return {
 					disabled,
 					pressed,
@@ -82,9 +88,9 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 					'data-value': itemValue,
 					'aria-pressed': pressed,
 					type: 'button',
-					'data-melt-part': 'toggle-group-item',
+					'data-melt-toggle-group-item': '',
 					role: $options.type === 'single' ? 'radio' : undefined,
-					tabindex: anyPressed ? (pressed ? 0 : -1) : 0,
+					tabindex: pressed ? 0 : -1,
 				} as const;
 			};
 		}),
@@ -97,6 +103,19 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 
 				return { value: itemValue, disabled };
 			};
+
+			const parentGroup = node.closest<HTMLElement>('[data-melt-toggle-group]');
+			if (!isHTMLElement(parentGroup)) return;
+
+			const items = Array.from(
+				parentGroup.querySelectorAll<HTMLElement>('[data-melt-toggle-group-item]')
+			);
+			const $value = get(value);
+			const anyPressed = Array.isArray($value) ? $value.length > 0 : $value !== null;
+
+			if (!anyPressed && items[0] === node) {
+				node.tabIndex = 0;
+			}
 
 			unsub = executeCallbacks(
 				addEventListener(node, 'click', () => {
@@ -115,12 +134,16 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 					const $options = get(options);
 					if (!$options.rovingFocus) return;
 
-					const el = e.currentTarget as HTMLElement;
-					const root = el.closest('[data-melt-part="toggle-group"]') as HTMLElement;
+					const el = e.currentTarget;
+					if (!isHTMLElement(el)) return;
+
+					const root = el.closest<HTMLElement>('[data-melt-toggle-group]');
+					if (!isHTMLElement(root)) return;
 
 					const items = Array.from(
-						root.querySelectorAll('[data-melt-part="toggle-group-item"]:not([data-disabled])')
-					) as Array<HTMLElement>;
+						root.querySelectorAll<HTMLElement>('[data-melt-toggle-group-item]:not([data-disabled])')
+					);
+
 					const currentIndex = items.indexOf(el);
 
 					const dir = getElemDirection(el);
@@ -133,32 +156,33 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 						horizontal: dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
 						vertical: kbd.ARROW_UP,
 					}[$options.orientation ?? 'horizontal'];
+
 					if (e.key === nextKey) {
 						e.preventDefault();
 						const nextIndex = currentIndex + 1;
 						if (nextIndex >= items.length) {
 							if ($options.loop) {
-								items[0].focus();
+								handleRovingFocus(items[0]);
 							}
 						} else {
-							items[nextIndex].focus();
+							handleRovingFocus(items[nextIndex]);
 						}
 					} else if (e.key === prevKey) {
 						e.preventDefault();
 						const prevIndex = currentIndex - 1;
 						if (prevIndex < 0) {
 							if ($options.loop) {
-								items[items.length - 1].focus();
+								handleRovingFocus(items[items.length - 1]);
 							}
 						} else {
-							items[prevIndex].focus();
+							handleRovingFocus(items[prevIndex]);
 						}
 					} else if (e.key === kbd.HOME) {
 						e.preventDefault();
-						items[0].focus();
+						handleRovingFocus(items[0]);
 					} else if (e.key === kbd.END) {
 						e.preventDefault();
-						items[items.length - 1].focus();
+						handleRovingFocus(items[items.length - 1]);
 					}
 				})
 			);

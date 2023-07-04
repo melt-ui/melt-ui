@@ -35,14 +35,15 @@
 </button>
 
 <ul
-	class="0 z-10 flex max-h-[360px] flex-col gap-2
-  overflow-y-auto rounded-md bg-neutral-800 p-1 shadow-md"
+	class="0 z-10 flex max-h-[360px] flex-col
+  overflow-y-auto rounded-md bg-neutral-800 p-1 shadow-md focus:!ring-0"
 	{...$menu}
 	use:menu.action
 >
 	{#each options as o}
 		<li
-			class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-500 outline-none focus:!text-magnum-400 data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[selected]:text-magnum-600 data-[disabled]:line-through"
+			class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-500 outline-none
+			focus:!text-magnum-400 data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[selected]:text-magnum-600 data-[disabled]:line-through"
 			{...$option({ ...o })}
 			use:option.action
 		>

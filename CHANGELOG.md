@@ -1,5 +1,61 @@
 # @melt-ui/svelte
 
+## 0.17.0
+
+### Minor Changes
+
+- 1266ef6: New Feature: Menubar
+- 100eb14: [New Builder] Hover Card
+
+### Patch Changes
+
+- d108259: fix(toggle-group): focus selected first
+
+## 0.16.0
+
+### Minor Changes
+
+- d031b34: fix/refactor [toolbar]
+
+  ### BREAKING CHANGE:
+
+  `createToolbarGroup` is no longer a separate import, it is returned from the `createToolbar` builder function. This is not only a cleaner approach, but also enables us to scope the context of the groups to a given toolbar.
+
+  ```diff
+  <script lang="ts">
+    import {
+      createToolbar,
+  -   createToolbarGroup
+  } from '@melt-ui/svelte';
+
+  	import { Bold, Italic, Strikethrough, AlignLeft, AlignCenter, AlignRight } from 'icons';
+
+  	const { root, options, button, link, separator } = createToolbar();
+  	const { root: fontGroup, item: fontItem } = createToolbarGroup({
+  -		toolbarOptions: options,
+  		type: 'multiple',
+  	});
+  	const { root: alignGroup, item: alignItem } = createToolbarGroup(
+  -  { toolbarOptions: options }
+    );
+  </script>
+  ```
+
+- b7c9930: feat: Context Menu
+- d01a759: Select improvements:
+  - Improved Typeahead support for repeated characters to cycle through elements with that same character.
+  - Shared typeahead with DropdownMenu & Select
+  - Added createGroup builder returned from createSelect to assist with creating accessible option groups.
+  - Updated preview/example
+  - Add loop option to loop through items
+
+### Patch Changes
+
+- fbb67de: Rework tags-input
+- 379e413: [Dropdown/Context Menus] Update tab & scroll behaviors
+- 45ac2b1: [Toggle Group]: Fix tab behavior
+- 18c36cb: fix[select]: tab navigation
+
 ## 0.15.0
 
 ### Minor Changes
