@@ -153,6 +153,13 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 		label: generateId(),
 	};
 
+	// Re-applies focus to the input element.
+	function focusInput() {
+		const inputElement = document.getElementById(ids.input);
+		if (!isHTMLElement(inputElement)) return;
+		inputElement.focus();
+	}
+
 	/** Closes the menu. */
 	function closeMenu() {
 		open.set(false);
@@ -404,6 +411,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 			'aria-disabled': args.disabled ? true : undefined,
 			'aria-selected': args.item === $selectedItem,
 			'data-index': args.index,
+			disabled: args.disabled,
 			id: `${ids.input}-descendent-${args.index}`,
 			role: 'option',
 			style: styleToString({ cursor: args.disabled ? 'default' : 'pointer' }),
@@ -424,11 +432,15 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 				}),
 				// Select an item by clicking on it.
 				addEventListener(node, 'click', () => {
+					// If the item is disabled, don't select it.
+					// Regardless, the input must be refocused since focus is lost when clicking the item.
+					if (isElementDisabled(node)) {
+						focusInput();
+						return;
+					}
+					// Otherwise, select the item and close the menu.
 					selectItem(node);
-					// Re-focus the input since focus is lost when clicking the item.
-					const inputElement = document.getElementById(ids.input);
-					if (!isHTMLElement(inputElement)) return;
-					inputElement.focus();
+					focusInput();
 					closeMenu();
 				})
 			);
