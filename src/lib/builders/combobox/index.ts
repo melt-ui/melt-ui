@@ -23,6 +23,29 @@ import type { Action } from 'svelte/action';
 import type { HTMLAttributes, HTMLInputAttributes, HTMLLiAttributes } from 'svelte/elements';
 import { derived, get, readonly, writable, type Readable, type Writable } from 'svelte/store';
 
+export const INTERACTION_KEYS = [
+	kbd.ARROW_LEFT,
+	kbd.ARROW_RIGHT,
+	kbd.SHIFT,
+	kbd.CAPS_LOCK,
+	kbd.CONTROL,
+	kbd.ALT,
+	kbd.META,
+	kbd.ENTER,
+	kbd.F1,
+	kbd.F2,
+	kbd.F3,
+	kbd.F4,
+	kbd.F5,
+	kbd.F6,
+	kbd.F7,
+	kbd.F8,
+	kbd.F9,
+	kbd.F10,
+	kbd.F11,
+	kbd.F12,
+];
+
 interface CreateComboboxArgs<T> {
 	/** The list of items to display in the combobox. */
 	items: T[];
@@ -95,11 +118,10 @@ const defaults = {
 /**
  * BUGS
  * - Tab navigation
- * - Menu should re-expand after item selection. (Select an item and press backspace)
- * - Option+up should close the menu
- * - Option+down should open the menu
  * - Be able to disable the input via a `disabled` attribute on the input as well as the builder.
  * - Cursor management on the chevron when disabled.
+ * - You can still select a disabled item by clicking it.
+ * - Escaping out of an empty input should deselect
  *
  * POST-PR
  * - Setting initial value
@@ -132,12 +154,12 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	};
 
 	/** Closes the menu. */
-	function closePanel() {
+	function closeMenu() {
 		open.set(false);
 		activeTrigger.set(null);
 	}
 
-	function openPanel() {
+	function openMenu() {
 		const triggerElement = document.getElementById(ids.input);
 		if (!isHTMLElement(triggerElement)) return;
 		activeTrigger.set(triggerElement);
@@ -169,10 +191,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 			const unsubscribe = executeCallbacks(
 				// Open the menu portal when the input is focused.
 				addEventListener(node, 'focus', () => {
-					const triggerElement = document.getElementById(ids.input);
-					if (!isHTMLElement(triggerElement)) return;
-					activeTrigger.set(triggerElement);
-					openPanel();
+					openMenu();
 				}),
 				// Handle all input key events including typing, meta, and navigation.
 				addEventListener(node, 'keydown', (e) => {
@@ -186,10 +205,15 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 						// When the user presses `esc` the input should lose focus.
 						if (e.key === kbd.ESCAPE) {
 							node.blur();
-							// If no item is selected the input should also be cleared.
+							// If no item is selected the input should be cleared and the filter reset.
 							if (!get(selectedItem)) {
 								inputValue.set('');
+								filteredItems.set(get(items));
 							}
+							return;
+						}
+						// Pressing one of the interaction keys shouldn't expand the menu.
+						if (INTERACTION_KEYS.includes(e.key)) {
 							return;
 						}
 						// Don't open the menu on backspace if the input is blank.
@@ -197,11 +221,12 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 							return;
 						}
 						// Otherwise, open the menu.
-						openPanel();
+						openMenu();
 					}
+
 					// If the menu is open when the user hits `esc`, close it.
 					if (e.key === kbd.ESCAPE) {
-						closePanel();
+						closeMenu();
 						return;
 					}
 					// Pressing enter with a highlighted item selects it.
@@ -210,10 +235,14 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 						if ($highlightedItem) {
 							selectItem($highlightedItem);
 						}
-						closePanel();
+						closeMenu();
 					}
 					if (e.key === kbd.TAB) {
-						closePanel();
+						closeMenu();
+					}
+					// Alt + Up should close the menu if it's open.
+					if (e.key === kbd.ARROW_UP && e.altKey) {
+						closeMenu();
 					}
 					// Navigation events.
 					if (FIRST_LAST_KEYS.includes(e.key)) {
@@ -400,7 +429,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 					const inputElement = document.getElementById(ids.input);
 					if (!isHTMLElement(inputElement)) return;
 					inputElement.focus();
-					closePanel();
+					closeMenu();
 				})
 			);
 			return { destroy: unsubscribe };
