@@ -3,7 +3,7 @@
 	import ArrowRight from '~icons/lucide/arrow-right';
 	import Check from '~icons/lucide/check';
 	import Copy from '~icons/lucide/copy';
-	import { Button } from '$docs/components/ui';
+	import { Button } from '$docs/components';
 
 	let copied = false;
 	let copytimeout: ReturnType<typeof setTimeout>;

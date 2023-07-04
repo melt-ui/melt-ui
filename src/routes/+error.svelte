@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '$docs/components/ui';
+	import { Button } from '$docs/components';
 </script>
 
 <main class="grid min-h-full w-full place-items-center px-6 py-24 sm:py-32 lg:px-8">
