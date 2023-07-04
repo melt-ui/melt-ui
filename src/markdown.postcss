@@ -7,24 +7,6 @@
 	flex-direction: column;
 }
 
-[data-rehype-pretty-code-fragment] {
-	@apply relative;
-}
-
-[data-rehype-pretty-code-fragment] code {
-	@apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0;
-	counter-reset: line;
-	box-decoration-break: clone;
-}
-
-[data-rehype-pretty-code-fragment] [data-line] {
-	@apply inline-block w-full basis-4 px-4 py-0.5;
-}
-
-[data-rehype-pretty-code-fragment] [data-line-numbers] [data-line] {
-	@apply px-2;
-}
-
 [data-rehype-pretty-code-fragment] [data-line-numbers] > [data-line]::before {
 	@apply text-xs text-neutral-400/40;
 	counter-increment: line;
@@ -35,36 +17,46 @@
 	text-align: right;
 }
 
-[data-metadata] .pre-copy-btn {
+[data-metadata] [data-code-copy] {
 	@apply top-16 !important;
 }
 
-[data-rehype-pretty-code-fragment] [data-highlighted-line] {
-	@apply bg-neutral-300/10;
-}
-
-[data-rehype-pretty-code-fragment] .with--meta {
-	@apply top-16 !important;
-}
-
-[data-rehype-pretty-code-fragment] [data-highlighted-line] span {
+[data-rehype-pretty-code-fragment] {
 	@apply relative;
+
+	& code {
+		@apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0;
+		counter-reset: line;
+		box-decoration-break: clone;
+	}
+
+	& [data-line] {
+		@apply inline-block w-full basis-4 border-l-[3px] border-l-transparent px-6 py-1;
+	}
+
+	& [data-highlighted-line] {
+		@apply border-l-magnum-300 bg-neutral-900/[0.9];
+	}
+
+	& [data-chars-id] {
+		@apply pb-0.5 shadow-none;
+	}
 }
 
-[data-rehype-pretty-code-fragment] [data-highlighted-chars] {
-	@apply relative rounded-md bg-green-500/10 p-0.5;
+[data-chars-id='melt'] {
+	@apply border-b border-b-magnum-500 font-bold !important;
 }
 
-[data-rehype-pretty-code-fragment] [data-highlighted-chars] span {
-	@apply relative rounded-md;
+[data-chars-id='r'] {
+	@apply border-b-magnum-600 font-bold !important;
 }
 
-[data-rehype-pretty-code-fragment] .word--highlighted {
-	@apply rounded-md border border-neutral-800 bg-neutral-800 p-1;
+[data-chars-id='t'] {
+	@apply border-b-magnum-600 font-bold !important;
 }
 
-.dark [data-rehype-pretty-code-fragment] .word--highlighted {
-	@apply bg-neutral-900;
+[data-chars-id='c'] {
+	@apply border-b-magnum-600 font-bold !important;
 }
 
 [data-rehype-pretty-code-title] {

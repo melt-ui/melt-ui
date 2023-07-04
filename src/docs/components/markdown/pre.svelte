@@ -29,7 +29,7 @@
 <pre
 	use:copyCodeToClipboard
 	class={cn(
-		'mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border border-magnum-500/50 bg-neutral-950/50 py-4',
+		'mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border border-neutral-500/50 bg-neutral-950/60 py-4',
 		className
 	)}
 	{...$$restProps}>

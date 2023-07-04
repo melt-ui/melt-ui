@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { TOC, Description } from '$docs/components';
+	import { TOC } from '$docs/components';
 
 	import type { SvelteComponent } from 'svelte';
 	import type { PageData } from './$types';
 	import ChevronRight from '~icons/lucide/chevron-right';
 	import { cn } from '$docs/utils';
 	import { createSeparator } from '$lib';
+	import Description from '$docs/components/description.svelte';
 	import { page } from '$app/stores';
 
 	const { root: separator } = createSeparator();
@@ -19,10 +20,10 @@
 
 <main class="relative px-2 py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_240px]">
 	<div class="mx-auto w-full min-w-0">
-		<div class="mb-4 flex items-center space-x-1 text-sm">
+		<div class="text-muted-foreground mb-4 flex items-center space-x-1 text-sm">
 			<div class="overflow-hidden text-ellipsis whitespace-nowrap">Docs</div>
 			<ChevronRight class="h-4 w-4" />
-			<div class="font-medium">{doc.title}</div>
+			<div class="text-foreground font-medium">{doc.title}</div>
 		</div>
 		<div class="space-y-2">
 			<h1 class={cn('scroll-m-20 text-4xl font-bold tracking-tight')}>

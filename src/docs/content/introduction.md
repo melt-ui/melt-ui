@@ -26,7 +26,7 @@ Unlike a traditional component library, Melt UI provides access to builders
 instead of components. Builders are just functions that generate a collection of
 properties that can be assigned to any element or component.
 
-```svelte title="Collapsible.svelte" {3} /{...$root}/ /{...$content}/ /{...$trigger}/ /use:trigger.action/
+```svelte title="Collapsible.svelte" {3} /{...$root}/#r /{...$content}/#c /{...$trigger}/#t /use:trigger.action/#t
 <script>
   import { createCollapsible } from '@melt-ui/svelte';
   const { open, root, content, trigger } = createCollapsible();
