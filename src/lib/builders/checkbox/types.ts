@@ -1,4 +1,4 @@
-import type { createCheckbox } from "./create";
+import type { createCheckbox } from './create';
 
 type CheckedState = boolean | 'indeterminate';
 
@@ -10,4 +10,4 @@ export type CreateCheckboxArgs = {
 	value?: string;
 };
 
-export type CreateCheckboxReturn = ReturnType<typeof createCheckbox>
+export type CreateCheckboxReturn = ReturnType<typeof createCheckbox>;
