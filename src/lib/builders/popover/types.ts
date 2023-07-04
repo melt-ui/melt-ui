@@ -1,4 +1,4 @@
-import type { FloatingConfig } from '@melt-ui/svelte/internal/actions';
+import type { FloatingConfig } from '$lib/internal/actions';
 import type { createPopover } from './create';
 
 export type CreatePopoverArgs = {

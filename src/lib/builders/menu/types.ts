@@ -1,5 +1,5 @@
-import type { FloatingConfig } from '@melt-ui/svelte/internal/actions';
-import type { TextDirection } from '@melt-ui/svelte/internal/types';
+import type { FloatingConfig } from '$lib/internal/actions';
+import type { TextDirection } from '$lib/internal/types';
 import type { Writable } from 'svelte/store';
 import type { createMenuBuilder } from './create';
 

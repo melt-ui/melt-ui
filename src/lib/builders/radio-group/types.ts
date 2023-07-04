@@ -1,6 +1,5 @@
+import type { Orientation } from '$lib/internal/types';
 import type { createRadioGroup } from './create';
-
-type Orientation = 'horizontal' | 'vertical';
 
 export type CreateRadioGroupArgs = {
 	disabled?: boolean;
