@@ -1,4 +1,5 @@
 import { tv } from 'tailwind-variants';
+export { default as Button } from './Button.svelte';
 
 export const buttonVariants = tv({
 	base: 'inline-flex items-center justify-center rounded font-semibold transition disabled:opacity-50 disabled:pointer-events-none active:translate-y-0.5',
@@ -20,4 +21,3 @@ export const buttonVariants = tv({
 		size: 'default',
 	},
 });
-export { default as Button } from './button.svelte';
