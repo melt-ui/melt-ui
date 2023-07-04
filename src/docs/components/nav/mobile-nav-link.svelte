@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { cn } from '$docs/utils';
 	import type { Writable } from 'svelte/store';
-	import { buttonVariants } from '$docs/components/ui/button.svelte';
+	import { buttonVariants } from '$docs/components/ui';
 
 	export let href: string;
 	export let open: Writable<boolean>;
