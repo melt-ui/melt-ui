@@ -21,7 +21,7 @@ type NavConfig = {
 export const navConfig: NavConfig = {
 	mainNav: [
 		{
-			title: 'Documentation',
+			title: 'Docs',
 			href: '/docs',
 		},
 		{

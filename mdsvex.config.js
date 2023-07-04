@@ -5,12 +5,11 @@ import remarkGfm from 'remark-gfm';
 import rehypePrettyCode from 'rehype-pretty-code';
 import { codeImport } from 'remark-code-import';
 import { toHtml } from 'hast-util-to-html';
-import { readFileSync } from 'fs';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 const prettyCodeOptions = {
-	theme: JSON.parse(readFileSync(resolve(__dirname, './other/themes/ayu-dark.json'), 'utf-8')),
+	theme: 'github-dark',
 	keepBackground: false,
 	onVisitLine(node) {
 		if (node.children.length === 0) {

@@ -8,3 +8,4 @@ export { default as SiteHeader } from './site-header.svelte';
 export { default as Description } from './description.svelte';
 export { default as Callout } from './callout.svelte';
 export { default as InstallTabs } from './install-tabs.svelte';
+export { default as TailwindIndicator } from './tailwind-indicator.svelte';

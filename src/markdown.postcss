@@ -1,5 +1,5 @@
 .mdsvex code {
-	@apply relative rounded-md bg-magnum-900/50 px-[0.3rem] py-[0.2rem] font-mono text-sm  text-magnum-300;
+	@apply relative rounded-md bg-magnum-900/50 px-[0.3rem] py-[0.2rem] font-mono text-sm text-magnum-300;
 }
 
 [data-theme='default'] {
@@ -28,14 +28,15 @@
 		@apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0;
 		counter-reset: line;
 		box-decoration-break: clone;
+		font-size: 15px;
 	}
 
 	& [data-line] {
-		@apply inline-block w-full basis-4 border-l-[3px] border-l-transparent px-6 py-1;
+		@apply inline-block w-full basis-4 border-l-[3px] border-l-transparent px-5 py-1;
 	}
 
 	& [data-highlighted-line] {
-		@apply border-l-magnum-300 bg-neutral-900/[0.9];
+		@apply border-l-magnum-300 bg-magnum-500/[0.1];
 	}
 
 	& [data-chars-id] {
