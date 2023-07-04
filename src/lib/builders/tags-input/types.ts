@@ -1,19 +1,29 @@
 import type { createTagsInput } from './create';
-import type { Tag } from './helpers';
 
 export type CreateTagsInputArgs = {
-	// The default input placeholder
 	placeholder?: string;
-	// When `true`, prevents the user from interacting with the input and tags
 	disabled?: boolean;
-	// The selected tag
-	selectedTag?: Tag;
-	// An array of pre-populated tags
+	selected?: Tag;
 	tags?: string[] | Tag[];
-	// Whether the tags should be unique
 	unique?: boolean;
-	// What to do on blur
-	// blur?: 'nothing' | 'add' | 'clear';
+	blur?: 'nothing' | 'add' | 'clear';
+	addOnPaste?: boolean;
+	maxTags?: number;
+	allowed?: string[];
+	denied?: string[];
+	add?: (tag: string) => Promise<Tag | string>;
+	remove?: (tag: Tag) => Promise<boolean>;
+};
+
+export type Tag = {
+	id: string;
+	value: string;
+};
+
+export type TagArgs = {
+	id: string;
+	value: string;
+	disabled?: boolean;
 };
 
 export type CreateTagsInputReturn = ReturnType<typeof createTagsInput>;

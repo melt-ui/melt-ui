@@ -1,38 +1,41 @@
 import { getElementByMeltId } from '$lib/internal/helpers';
-import { get, type Writable } from 'svelte/store';
+import type { Writable } from 'svelte/store';
+import type { Tag } from './types';
 
-export type Tag = {
-	id: string;
-	value: string;
-};
-
-export type TagArgs = {
-	id: string;
-	value: string;
-	disabled?: boolean;
-};
-
-export function focusInput(id: string, pos: 'start' | 'end') {
+export function focusInput(id: string, pos: 'default' | 'start' | 'end' = 'default') {
 	const inputEl = getElementByMeltId(id) as HTMLInputElement;
-	if (inputEl) {
-		inputEl.focus();
-		if (pos === 'start') inputEl.setSelectionRange(0, 0);
-		else inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
+	if (!inputEl) return;
+
+	inputEl.focus();
+	if (pos === 'start') inputEl.setSelectionRange(0, 0);
+	else if (pos === 'end') inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
+}
+
+export function setSelectedFromEl(el: Element | null, selected: Writable<Tag | null>) {
+	if (el) {
+		selected.set({
+			id: el.getAttribute('data-tag-id') ?? '',
+			value: el.getAttribute('data-tag-value') ?? '',
+		});
+	} else {
+		selected.set(null);
 	}
 }
 
-export function getTagElements(me: HTMLElement, rootAttribute: string, tagAttribute: string) {
-	const rootEl = me.closest(`[data-melt-part="${rootAttribute}"]`) as HTMLElement;
-	return Array.from(
-		rootEl.querySelectorAll(`[data-melt-part="${tagAttribute}"]`)
-	) as Array<HTMLElement>;
+export function setDataInvalid(
+	ids: { root: string; input: string },
+	inputStore: Writable<boolean>
+) {
+	getElementByMeltId(ids.root)?.setAttribute('data-invalid', '');
+	getElementByMeltId(ids.input)?.setAttribute('data-invalid', '');
+	inputStore.set(true);
 }
 
-export function deleteTagById(id: string, tags: Writable<Tag[]>) {
-	const $tags = get(tags);
-	const index = $tags.findIndex((tag) => tag.id === id);
-	tags.update((t) => {
-		t.splice(index, 1);
-		return t;
-	});
+export function clearDataInvalid(
+	ids: { root: string; input: string },
+	inputStore: Writable<boolean>
+) {
+	getElementByMeltId(ids.root)?.removeAttribute('data-invalid');
+	getElementByMeltId(ids.input)?.removeAttribute('data-invalid');
+	inputStore.set(false);
 }
