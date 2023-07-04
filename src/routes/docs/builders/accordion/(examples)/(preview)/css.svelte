@@ -27,12 +27,7 @@
 	{#each items as { id, title, description }, i}
 		<div {...$item(id)} class="item">
 			<h2>
-				<button
-					id={i === 0 ? 'trigger' : undefined}
-					{...$trigger(id)}
-					use:trigger.action
-					class="trigger"
-				>
+				<button id={i === 0 ? 'trigger' : undefined} {...$trigger(id)} use:trigger class="trigger">
 					{title}
 				</button>
 			</h2>

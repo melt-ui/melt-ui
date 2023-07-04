@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
+	import { preview } from './(examples)/(preview)';
 	import { snippets } from './(snippets)/index';
 	import { schemas } from './schemas';
-
-	export let data;
 
 	const features = [
 		'Controlled or uncontrolled',
@@ -18,7 +17,7 @@
 	Displays additional information or options when the cursor hovers over a particular element.
 </Docs.Description>
 
-<Docs.Preview {...data.preview} />
+<Docs.Preview {...preview} />
 <Docs.Construction />
 
 <Docs.Features {features} />
