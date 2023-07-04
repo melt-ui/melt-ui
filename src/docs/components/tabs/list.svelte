@@ -5,7 +5,7 @@
 	const { list, tabs } = getTabsContext();
 </script>
 
-<div class="flex items-center gap-2" {...list}>
+<div class="-mb-2 flex items-center gap-3" {...list}>
 	{#each $tabs as tab}
 		<Tab {tab} />
 	{/each}

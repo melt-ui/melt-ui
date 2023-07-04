@@ -29,13 +29,7 @@ export type Metadata = {
 export type FrontMatter = {
 	title: string;
 	description: string;
-	component: boolean;
-	source: string;
-	external?: {
-		project: string;
-		url: string;
-	};
-	radix?: string;
+	features: string[];
 };
 
 export type DocFile = {
