@@ -1,8 +1,8 @@
 import type { APISchema } from '$routes/(components)';
 
 const builder: APISchema = {
-	title: 'CreateSelectArgs',
-	description: 'The configuration object passed to the `createSelect` builder function.',
+	title: 'createCombobox args',
+	description: 'The configuration object passed to the `createCombobox` builder function.',
 	args: [
 		{
 			label: 'required',
@@ -15,24 +15,49 @@ const builder: APISchema = {
 			default: false,
 		},
 		{
-			label: 'label',
-			type: 'string',
+			label: 'items',
+			type: 'T[]',
 		},
 		{
-			label: 'value',
-			type: 'unknown',
+			label: 'filterFunction',
+			type: '(item: T, inputValue: string)',
 		},
 		{
-			label: 'name',
-			type: 'string',
+			label: 'itemToString',
+			type: '(item: T)',
 		},
 	],
 };
 
-const trigger: APISchema = {
-	title: 'Trigger',
-	description: 'The element which opens/closes the select.',
+const input: APISchema = {
+	title: 'Input',
+	description:
+		'The element that opens, closes, filters the list, and displays the selected value from the list.',
 	dataAttributes: [
+		{
+			label: 'aria-autocomplete',
+			value: '"list"',
+		},
+		{
+			label: 'aria-disabled',
+			value: ['true', 'false'],
+		},
+		{
+			label: 'aria-expanded',
+			value: ['true', 'false'],
+		},
+		{
+			label: 'autocomplete',
+			value: '"off"',
+		},
+		{
+			label: 'disabled',
+			value: 'Present if the `list` element is disabled.',
+		},
+		{
+			label: 'role',
+			value: '"combobox"',
+		},
 		{
 			label: 'data-state',
 			value: ['"open"', '"closed"'],
@@ -77,38 +102,40 @@ const arrow: APISchema = {
 
 const keyboard: APISchema = {
 	title: 'Keyboard Interactions',
-	description: '',
+	description:
+		'All of the following keyboard events first open the list if the list `input` is focused and the list is closed. The exception to this is `ESC`.',
 	keyboardInteractions: [
 		{
-			key: 'Space',
-			description:
-				'When focus is on the `trigger`, opens the select and focuses the selected option. When focus is on an `option`, selects the focused option.',
-		},
-		{
 			key: 'Enter',
-			description:
-				'When focus is on the `trigger`, opens the select and focuses the selected option. When focus is on an `option`, selects the focused option.',
+			description: 'selects the highlighted list item.',
 		},
 		{
 			key: 'ArrowDown',
-			description:
-				'When focus is on the `trigger`, opens the select. When focus is on an `option`, moves focus to the next option.',
+			description: 'Highlights the next list item.',
+		},
+		{
+			key: 'PageDown',
+			description: 'Highlights 10 list items down (or the end of the list).',
 		},
 		{
 			key: 'ArrowUp',
-			description:
-				'When focus is on the `trigger`, opens the select. When focus is on an `option`, moves focus to the previous option.',
+			description: 'Highlights the previous list item.',
+		},
+		{
+			key: 'PageUp',
+			description: 'Highlights 10 list items up (or the top of the list).',
 		},
 		{
 			key: 'Esc',
-			description: 'Closes the select and moves focus to the `trigger`.',
+			description:
+				"When focus is on the `input` and it's closed, removes focus. When the `input` is open, closes the list.",
 		},
 	],
 };
 
 export const schemas = {
 	builder,
-	trigger,
+	input,
 	option,
 	arrow,
 	keyboard,

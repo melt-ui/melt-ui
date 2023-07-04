@@ -132,7 +132,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 	};
 
 	/** Closes the menu. */
-	function close() {
+	function closePanel() {
 		open.set(false);
 		activeTrigger.set(null);
 	}
@@ -201,7 +201,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 					}
 					// If the menu is open when the user hits `esc`, close it.
 					if (e.key === kbd.ESCAPE) {
-						close();
+						closePanel();
 						return;
 					}
 					// Pressing enter with a highlighted item selects it.
@@ -210,10 +210,10 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 						if ($highlightedItem) {
 							selectItem($highlightedItem);
 						}
-						close();
+						closePanel();
 					}
 					if (e.key === kbd.TAB) {
-						close();
+						closePanel();
 					}
 					// Navigation events.
 					if (FIRST_LAST_KEYS.includes(e.key)) {
@@ -400,7 +400,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 					const inputElement = document.getElementById(ids.input);
 					if (!isHTMLElement(inputElement)) return;
 					inputElement.focus();
-					close();
+					closePanel();
 				})
 			);
 			return { destroy: unsubscribe };
