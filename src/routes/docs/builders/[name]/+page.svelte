@@ -18,7 +18,7 @@
 
 <main class="relative px-2 py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_240px]">
 	<div class="mx-auto w-full min-w-0">
-		<div class="mb-4 space-y-2 md:mb-6">
+		<div class="space-y-2">
 			<h1 class={cn('scroll-m-20 text-4xl font-bold tracking-tight')}>
 				{doc.title}
 			</h1>
@@ -28,6 +28,7 @@
 				</Description>
 			{/if}
 		</div>
+		<div {...$separator} class="my-4 md:my-6" />
 		<div class="mdsvex" id="mdsvex">
 			<svelte:component this={component} />
 		</div>

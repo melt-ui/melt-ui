@@ -39,6 +39,12 @@ export type DocFile = {
 
 export type DocResolver = () => Promise<DocFile>;
 
+export type PreviewFile = {
+	default: SvelteComponent;
+};
+
+export type PreviewResolver = () => Promise<PreviewFile>;
+
 export type TableOfContentsItem = {
 	title: string;
 	url: string;

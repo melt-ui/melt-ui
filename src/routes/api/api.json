@@ -1,0 +1,59 @@
+{
+    "accordion": {
+        "api": {
+            "createAccordion": {
+                "description": "The configuration object passed to the `createAccordion` builder function.",
+                "args": [
+                    {
+                        "label": "type",
+                        "type": [
+                            "'single'",
+                            "'multiple'"
+                        ],
+                        "default": "'single'",
+                        "description": "Whether or not multiple accordion items can be open at the same time."
+                    },
+                    {
+                        "label": "disabled",
+                        "type": "boolean",
+                        "default": false
+                    },
+                    {
+                        "label": "value",
+                        "type": [
+                            "string",
+                            "string[]",
+                            "undefined"
+                        ]
+                    }
+                ]
+            },
+            "accordion": {
+                "description": "Contains all the parts of an accordion",
+                "dataAttributes": [
+                    {
+                        "label": "[data-orientation]",
+                        "value": [
+                            "'vertical'",
+                            "'horizontal'"
+                        ]
+                    }
+                ]
+            },
+            "item": {
+                "description": "Contains all the parts of a collapsible section",
+                "dataAttributes": [
+                    {
+                        "label": "[data-state]",
+                        "value": [
+                            "'open'",
+                            "'disabled'",
+                            "'disabled-open'",
+                            "'disabled-closed'"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

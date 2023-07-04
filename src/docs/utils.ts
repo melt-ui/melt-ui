@@ -1,5 +1,6 @@
 import { styleToString } from '$lib/internal/helpers';
 import { clsx, type ClassValue } from 'clsx';
+import { compile } from 'svelte/compiler';
 import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
 import { twMerge } from 'tailwind-merge';
@@ -130,6 +131,74 @@ export function slugFromPath(path: string) {
 	return path.replace('/src/docs/content/', '').replace('.md', '');
 }
 
+export function previewPathMatcher(path: string, builder: string) {
+	const strippedPath = path.replace('/src/docs/previews/', '');
+	const builderPath = strippedPath.split('/')[0];
+	return builderPath === builder;
+}
+
+// type PreviewMatch = { path: string; codeString: string };
+
+// export function createPreviewObject(rawObj: PreviewMatch, builder: string) {
+// 	const { path, codeString } = rawObj;
+// 	const strippedPath = path.replace(`/src/docs/previews/${builder}`, '');
+// 	const previewName = strippedPath.split('/')[0];
+// 	const builderPath = strippedPath.split('/')[0];
+// 	const previewPath = strippedPath.replace(`${builderPath}/`, '');
+
+// 	return {
+// 		path: previewPath,
+// 		resolver,
+// 		builder,
+// 	};
+// }
+
 export const noopAction = () => {
 	// do nothing
 };
+
+interface ReturnedObj {
+	[key: string]: {
+		[key: string]: string;
+	};
+}
+
+export function createPreviewsObject(
+	component: string,
+	objArr: { path: string; content: string }[]
+): ReturnedObj {
+	const returnedObj: ReturnedObj = {};
+
+	// Iterate through the objects in the array
+	for (const obj of objArr) {
+		// Extract the part immediately before ".svelte" in the path
+		const regex = new RegExp(`${component}/(.+?)/(.+?)\\.svelte$`);
+		const match = regex.exec(obj.path);
+
+		if (match) {
+			const [_, groupKey, fileKey] = match; // Destructure the matched parts
+			const { content } = obj;
+
+			// Create the structure in the returnedObj
+			if (Object.prototype.hasOwnProperty.call(returnedObj, groupKey)) {
+				returnedObj[groupKey][fileKey] = content;
+			} else {
+				returnedObj[groupKey] = { [fileKey]: content };
+			}
+		}
+	}
+
+	// Call createComponent for each top-level key and add the result to the associated object
+	for (const key in returnedObj) {
+		if (Object.prototype.hasOwnProperty.call(returnedObj, key)) {
+			const tailwindContent = returnedObj[key].tailwind;
+			const componentResult = compile(tailwindContent, {
+				generate: 'ssr',
+				css: 'external',
+			});
+			returnedObj[key].component = componentResult;
+		}
+	}
+
+	return returnedObj;
+}
