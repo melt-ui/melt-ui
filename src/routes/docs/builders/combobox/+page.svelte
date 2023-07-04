@@ -6,9 +6,8 @@
 
 	const features = [
 		'Full keyboard navigation',
+		'Updatable data source',
 		'Can be controlled or uncontrolled',
-		'Typeahead support',
-		'Optional arrow component',
 		'Custom positioning',
 	];
 </script>
@@ -17,7 +16,6 @@
 <Docs.Description>A filterable list of items that supports selection</Docs.Description>
 
 <Docs.Preview {...data.preview} />
-<Docs.Construction />
 
 <Docs.Features {features} />
 

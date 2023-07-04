@@ -40,7 +40,6 @@
 </script>
 
 <div>
-	<input type="text" />
 	<div class="container">
 		<label class="label">
 			<span class="label-description">Choose your favorite book:</span>
