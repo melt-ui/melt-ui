@@ -11,7 +11,7 @@ import {
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
-import { clearDataInvalid, focusInput, setDataInvalid, setSelectedTagFromElement } from './helpers';
+import { clearDataInvalid, focusInput, setDataInvalid, setSelectedFromEl } from './helpers';
 import type { CreateTagsInputArgs, Tag, TagArgs } from './types';
 
 const defaults = {
@@ -32,7 +32,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 	const withDefaults = { ...defaults, ...args } as CreateTagsInputArgs;
 
 	// Options store
-	const options = writable(omit(withDefaults, 'tags', 'selectedTag'));
+	const options = writable(omit(withDefaults, 'tags', 'selected'));
 
 	// A store representing the current input value. A readable version is exposed to the
 	// user
@@ -87,7 +87,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 	};
 
 	// Selected tag store. When `null`, no tag is selected
-	const selectedTag = writable<Tag | null>(withDefaults.selectedTag ?? null);
+	const selected = writable<Tag | null>(withDefaults.selected ?? null);
 
 	// Adds a tag to the $tags store. It calls  the async $options.add function if set. If this
 	// function returns a reject, the data is invalidated and not added to the $tags store
@@ -164,13 +164,13 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					const targetEL = (e.target as HTMLElement).closest(selector('tag'));
 					if (targetEL) {
 						e.preventDefault();
-						setSelectedTagFromElement(targetEL, selectedTag);
+						setSelectedFromEl(targetEL, selected);
 					}
 				}),
 				addEventListener(node, 'click', (e) => {
 					focusInput(ids.input);
 					const targetEL = (e.target as HTMLElement).closest(selector('tag'));
-					setSelectedTagFromElement(targetEL, selectedTag);
+					setSelectedFromEl(targetEL, selected);
 				})
 			);
 			return {
@@ -229,7 +229,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					node.removeAttribute('data-focus');
 
 					// Clear selected tag
-					selectedTag.set(null);
+					selected.set(null);
 
 					// Do nothing when input is empty
 					const value = (node as HTMLInputElement).value;
@@ -276,83 +276,83 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					}
 				}),
 				addEventListener(node, 'keydown', async (e) => {
-					const $selectedTag = get(selectedTag);
+					const $selected = get(selected);
 
-					if ($selectedTag) {
+					if ($selected) {
 						// Check if a character is entered into the input
 						if (e.key.length === 1) {
-							selectedTag.set(null);
+							selected.set(null);
 						} else if (e.key === kbd.ARROW_LEFT) {
 							// Move to the previous tag
 							e.preventDefault();
 
-							const { tagsEl, prevIndex } = getTagsInfo($selectedTag.id);
+							const { tagsEl, prevIndex } = getTagsInfo($selected.id);
 
 							if (prevIndex >= 0) {
-								setSelectedTagFromElement(tagsEl[prevIndex], selectedTag);
+								setSelectedFromEl(tagsEl[prevIndex], selected);
 							}
 						} else if (e.key === kbd.ARROW_RIGHT) {
 							// Move to the next element of tag or input
 							e.preventDefault();
 
-							const { tagsEl, nextIndex } = getTagsInfo($selectedTag.id);
+							const { tagsEl, nextIndex } = getTagsInfo($selected.id);
 
 							if (nextIndex === -1 || nextIndex >= tagsEl.length) {
-								selectedTag.set(null);
+								selected.set(null);
 								focusInput(ids.input, 'start');
 							} else {
-								setSelectedTagFromElement(tagsEl[nextIndex], selectedTag);
+								setSelectedFromEl(tagsEl[nextIndex], selected);
 							}
 						} else if (e.key === kbd.HOME) {
 							// Jump to the first tag or do nothing
 							e.preventDefault();
-							const { tagsEl } = getTagsInfo($selectedTag.id);
-							if (tagsEl.length > 0) setSelectedTagFromElement(tagsEl[0], selectedTag);
+							const { tagsEl } = getTagsInfo($selected.id);
+							if (tagsEl.length > 0) setSelectedFromEl(tagsEl[0], selected);
 						} else if (e.key === kbd.END) {
 							// Jump to the input
 							e.preventDefault();
-							selectedTag.set(null);
+							selected.set(null);
 							focusInput(ids.input);
 						} else if (e.key === kbd.DELETE) {
 							// Delete this tag and move to the next element of tag or input
 							e.preventDefault();
 
-							const prevSelected = $selectedTag;
-							const { tagsEl, nextIndex } = getTagsInfo($selectedTag.id);
+							const prevSelected = $selected;
+							const { tagsEl, nextIndex } = getTagsInfo($selected.id);
 
 							if (nextIndex === -1 || nextIndex >= tagsEl.length) {
-								selectedTag.set(null);
+								selected.set(null);
 								focusInput(ids.input);
 							} else {
-								setSelectedTagFromElement(tagsEl[nextIndex], selectedTag);
+								setSelectedFromEl(tagsEl[nextIndex], selected);
 							}
 
 							// Delete the previously selected tag
 							if (!(await removeTag(prevSelected))) {
-								selectedTag.set(prevSelected);
+								selected.set(prevSelected);
 							}
 						} else if (e.key === kbd.BACKSPACE) {
 							// Delete this tag and move to the previous tag. If this is the
 							// first tag, delete and move to the next element of tag or input
 							e.preventDefault();
-							const prevSelected = $selectedTag;
+							const prevSelected = $selected;
 
-							const { tagsEl, nextIndex, prevIndex } = getTagsInfo($selectedTag.id);
+							const { tagsEl, nextIndex, prevIndex } = getTagsInfo($selected.id);
 
 							if (prevIndex >= 0) {
-								setSelectedTagFromElement(tagsEl[prevIndex], selectedTag);
+								setSelectedFromEl(tagsEl[prevIndex], selected);
 							} else {
 								if (nextIndex === -1 || nextIndex >= tagsEl.length) {
-									selectedTag.set(null);
+									selected.set(null);
 									focusInput(ids.input, 'start');
 								} else {
-									setSelectedTagFromElement(tagsEl[nextIndex], selectedTag);
+									setSelectedFromEl(tagsEl[nextIndex], selected);
 								}
 							}
 
 							// Delete the previously selected tag
 							if (!(await removeTag(prevSelected))) {
-								selectedTag.set(prevSelected);
+								selected.set(prevSelected);
 							}
 						}
 					} else {
@@ -378,7 +378,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							e.preventDefault();
 							const { tagsEl } = getTagsInfo('');
 							const lastTag = tagsEl.at(-1) as HTMLElement;
-							setSelectedTagFromElement(lastTag, selectedTag);
+							setSelectedFromEl(lastTag, selected);
 						}
 					}
 				}),
@@ -393,11 +393,11 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 	});
 
 	const tag = builder(name('tag'), {
-		stores: [selectedTag, options],
-		returned: ([$selectedTag, $options]) => {
+		stores: [selected, options],
+		returned: ([$selected, $options]) => {
 			return (tag: TagArgs) => {
 				const disabled = $options.disabled || tag.disabled;
-				const selected = disabled ? undefined : $selectedTag?.id === tag?.id;
+				const selected = disabled ? undefined : $selected?.id === tag?.id;
 
 				return {
 					'aria-selected': selected,
@@ -413,11 +413,11 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 	});
 
 	const deleteTrigger = builder(name('delete-trigger'), {
-		stores: [selectedTag, options],
-		returned: ([$selectedTag, $options]) => {
+		stores: [selected, options],
+		returned: ([$selected, $options]) => {
 			return (tag: TagArgs) => {
 				const disabled = $options.disabled || tag.disabled;
-				const selected = disabled ? undefined : $selectedTag?.id === tag?.id;
+				const selected = disabled ? undefined : $selected?.id === tag?.id;
 
 				return {
 					'aria-selected': selected,
@@ -466,8 +466,8 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 	});
 
 	// Used to determine if a tag is selected
-	const isSelected = derived(selectedTag, ($selectedTag) => {
-		return (tag: Tag) => $selectedTag?.id === tag.id;
+	const isSelected = derived(selected, ($selected) => {
+		return (tag: Tag) => $selected?.id === tag.id;
 	});
 
 	// When the input valid changes, clear any potential invalid states
@@ -484,7 +484,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		tags,
 		value: derived(inputValue, ($inputValue) => $inputValue),
 		invalid: derived(invalid, ($invalid) => $invalid),
-		selectedTag,
+		selected,
 		isSelected,
 	};
 }

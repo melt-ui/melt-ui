@@ -8,7 +8,7 @@
 <Docs.Ul>
 	<Docs.Li><b>options:</b> Current options</Docs.Li>
 	<Docs.Li><b>tags:</b> Array of added tags</Docs.Li>
-	<Docs.Li><b>selectedTag:</b> Selected tag, if there is one</Docs.Li>
+	<Docs.Li><b>selected:</b> Selected tag, if there is one</Docs.Li>
 	<Docs.Li><b>value:</b> Current value of the input container</Docs.Li>
 	<Docs.Li><b>invalid:</b> True when a tag to be added is invalid</Docs.Li>
 </Docs.Ul>

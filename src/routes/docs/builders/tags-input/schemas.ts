@@ -15,7 +15,7 @@ const builder: APISchema = {
 			default: false,
 		},
 		{
-			label: 'selectedTag',
+			label: 'selected',
 			type: '{id: string, value: string}',
 		},
 		{

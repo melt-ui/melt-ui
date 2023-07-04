@@ -11,14 +11,14 @@ export function focusInput(id: string, pos: 'default' | 'start' | 'end' = 'defau
 	else if (pos === 'end') inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
 }
 
-export function setSelectedTagFromElement(el: Element | null, selectedTag: Writable<Tag | null>) {
+export function setSelectedFromEl(el: Element | null, selected: Writable<Tag | null>) {
 	if (el) {
-		selectedTag.set({
+		selected.set({
 			id: el.getAttribute('data-tag-id') ?? '',
 			value: el.getAttribute('data-tag-value') ?? '',
 		});
 	} else {
-		selectedTag.set(null);
+		selected.set(null);
 	}
 }
 

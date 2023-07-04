@@ -26,58 +26,58 @@
 	<Docs.Ul>
 		<Docs.Li>
 			<Docs.Code>placeholder</Docs.Code>: The input component placeholder
-			<Docs.Ul class="mt-1.5 mb-1.5">
+			<Docs.Ul class="mb-1.5 mt-1.5">
 				<Docs.Li class="mt-0"><i>default:</i> 'Enter tags...'</Docs.Li>
 			</Docs.Ul>
 		</Docs.Li>
 		<Docs.Li>
 			<Docs.Code>disabled</Docs.Code>: Global enable/disable
-			<Docs.Ul class="mt-1.5 mb-1.5">
+			<Docs.Ul class="mb-1.5 mt-1.5">
 				<Docs.Li class="mt-0"><i>default:</i> false</Docs.Li>
 			</Docs.Ul>
 		</Docs.Li>
 		<Docs.Li>
 			<Docs.Code>blur</Docs.Code>: What to do on blur (if the input component has a value)
-			<Docs.Ul class="mt-1.5 mb-1.5">
+			<Docs.Ul class="mb-1.5 mt-1.5">
 				<Docs.Li class="mt-0"><i>default:</i> 'nothing'</Docs.Li>
 				<Docs.Li class="mt-0"><i>allowed:</i> 'nothing' || 'add' || 'clear'</Docs.Li>
 			</Docs.Ul>
 		</Docs.Li>
 		<Docs.Li>
 			<Docs.Code>unique</Docs.Code> - Only allow unique tags
-			<Docs.Ul class="mt-1.5 mb-1.5">
+			<Docs.Ul class="mb-1.5 mt-1.5">
 				<Docs.Li class="mt-0"><i>default:</i> false</Docs.Li>
 			</Docs.Ul>
 		</Docs.Li>
 		<Docs.Li>
 			<Docs.Code>addOnPaste</Docs.Code> - Add tag on paste
-			<Docs.Ul class="mt-1.5 mb-1.5">
+			<Docs.Ul class="mb-1.5 mt-1.5">
 				<Docs.Li class="mt-0"><i>default:</i> false</Docs.Li>
 			</Docs.Ul>
 		</Docs.Li>
 		<Docs.Li>
 			<Docs.Code>maxTags</Docs.Code> - Maximum number of tags. <Docs.Code>undefined</Docs.Code> ||
 			<Docs.Code>&lt= 0</Docs.Code> means unlimited tags
-			<Docs.Ul class="mt-1.5 mb-1.5">
+			<Docs.Ul class="mb-1.5 mt-1.5">
 				<Docs.Li class="mt-0"><i>default:</i> -</Docs.Li>
 			</Docs.Ul>
 		</Docs.Li>
 		<Docs.Li>
 			<Docs.Code>allowedTags</Docs.Code> - A string array of allowed tags
-			<Docs.Ul class="mt-1.5 mb-1.5">
+			<Docs.Ul class="mb-1.5 mt-1.5">
 				<Docs.Li class="mt-0"><i>default:</i> []</Docs.Li>
 			</Docs.Ul>
 		</Docs.Li>
 		<Docs.Li>
 			<Docs.Code>deniedTags</Docs.Code> - A string array of denied tags. Deny precedence over allow
-			<Docs.Ul class="mt-1.5 mb-1.5">
+			<Docs.Ul class="mb-1.5 mt-1.5">
 				<Docs.Li class="mt-0"><i>default:</i> []</Docs.Li>
 			</Docs.Ul>
 		</Docs.Li>
 		<Docs.Li>
 			<Docs.Code>validator</Docs.Code> - A custom validator function. A return of true means the validator
 			passed and the tag may be added
-			<Docs.Ul class="mt-1.5 mb-1.5">
+			<Docs.Ul class="mb-1.5 mt-1.5">
 				<Docs.Li class="mt-0"><i>default:</i> -</Docs.Li>
 				<Docs.Li class="mt-0">
 					<i>Definition:</i>
@@ -88,7 +88,7 @@
 		<Docs.Li>
 			<Docs.Code>add</Docs.Code> - An asynchronous function to be called after validation but before
 			adding a tag to the <Docs.Code>$tags</Docs.Code> store.
-			<Docs.Ul class="mt-1.5 mb-1.5">
+			<Docs.Ul class="mb-1.5 mt-1.5">
 				<Docs.Li class="mt-0"><i>default:</i> -</Docs.Li>
 				<Docs.Li class="mt-0">
 					<i>Definition:</i>
@@ -99,7 +99,7 @@
 		<Docs.Li>
 			<Docs.Code>remove</Docs.Code> - An asynchronous function to be called before removing a tag from
 			the <Docs.Code>$tags</Docs.Code> store.
-			<Docs.Ul class="mt-1.5 mb-1.5">
+			<Docs.Ul class="mb-1.5 mt-1.5">
 				<Docs.Li class="mt-0"><i>default:</i> -</Docs.Li>
 				<Docs.Li class="mt-0">
 					<i>Definition:</i>
@@ -131,9 +131,9 @@
 	<Docs.Code>value</Docs.Code> is a readable store which holds the current input value.
 </Docs.P>
 
-<Docs.H3>selectedTag</Docs.H3>
+<Docs.H3>selected</Docs.H3>
 <Docs.P class="mt-4">
-	<Docs.Code>selectedTag</Docs.Code> is a store which holds the selected
+	<Docs.Code>selected</Docs.Code> is a store which holds the selected
 	<Docs.Code>Tag</Docs.Code> if a one is selected. This store can be updated programmatically at any
 	point during the lifecycle of the component.
 
@@ -239,7 +239,7 @@
 
 	<Docs.P class="mt-4">
 		<Docs.Code>data-selected</Docs.Code> is set when the tag is selected. This is an alternative to
-		<Docs.Code>$selectedTag</Docs.Code>.
+		<Docs.Code>$selected</Docs.Code>.
 	</Docs.P>
 
 	<Docs.P class="mt-4">
@@ -282,7 +282,7 @@
 
 	<Docs.P class="mt-4">
 		<Docs.Code>data-selected</Docs.Code> is set when the tag is selected. his is an alternative to
-		<Docs.Code>$selectedTag</Docs.Code>.
+		<Docs.Code>$selected</Docs.Code>.
 	</Docs.P>
 
 	<Docs.P class="mt-4">

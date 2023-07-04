@@ -3,7 +3,7 @@ import type { createTagsInput } from './create';
 export type CreateTagsInputArgs = {
 	placeholder?: string;
 	disabled?: boolean;
-	selectedTag?: Tag;
+	selected?: Tag;
 	tags?: string[] | Tag[];
 	unique?: boolean;
 	blur?: 'nothing' | 'add' | 'clear';
