@@ -11,7 +11,6 @@ export type CreateTagsInputArgs = {
 	maxTags?: number;
 	allowed?: string[];
 	denied?: string[];
-	validator?: (tag: string) => boolean;
 	add?: (tag: string) => Promise<Tag | string>;
 	remove?: (tag: Tag) => Promise<boolean>;
 };

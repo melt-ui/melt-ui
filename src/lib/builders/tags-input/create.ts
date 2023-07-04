@@ -73,9 +73,6 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		// Deny list is populated and this value is in it
 		if ($options.denied && $options.denied.length > 0 && $options.denied.includes(v)) return false;
 
-		// Validator is defined and returned false
-		if ($options.validator && !$options.validator(v)) return false;
-
 		if ($options.maxTags && $options.maxTags > 0 && $tags.length >= $options.maxTags) return false;
 
 		return true;

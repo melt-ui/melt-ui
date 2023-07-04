@@ -53,10 +53,6 @@ const builder: APISchema = {
 			default: '[]',
 		},
 		{
-			label: 'validator',
-			type: '(tag: string) => boolean',
-		},
-		{
 			label: 'add',
 			type: '(tag: string) => Promise<Tag | string>',
 		},

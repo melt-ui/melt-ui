@@ -14,7 +14,6 @@
 		'Add a tag on paste',
 		'Set a maximum number of tags allowed',
 		'Support for allowed/denied lists',
-		'Pass in a custom validator',
 		'Provide add/remove function to call before adding/removing a tag',
 	];
 </script>
