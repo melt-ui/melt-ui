@@ -1,5 +1,7 @@
 import {
 	addEventListener,
+	builder,
+	createElHelpers,
 	effect,
 	executeCallbacks,
 	generateId,
@@ -9,13 +11,7 @@ import {
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
-import {
-	setDataInvalid,
-	focusInput,
-	getTagElements,
-	clearInvalid,
-	setSelectedTagFromElement,
-} from './helpers';
+import { clearDataInvalid, focusInput, setDataInvalid, setSelectedTagFromElement } from './helpers';
 import type { CreateTagsInputArgs, Tag, TagArgs } from './types';
 
 const defaults = {
@@ -29,12 +25,8 @@ const defaults = {
 	deniedTags: [],
 } satisfies Defaults<CreateTagsInputArgs>;
 
-const dataMeltParts = {
-	root: 'tags-input',
-	input: 'tags-input-input',
-	tag: 'tags-input-tag',
-	deleteTrigger: 'tags-input-delete-trigger',
-};
+type TagsInputParts = '' | 'input' | 'tag' | 'delete-trigger';
+const { name, selector } = createElHelpers<TagsInputParts>('tags-input');
 
 export function createTagsInput(args?: CreateTagsInputArgs) {
 	const withDefaults = { ...defaults, ...args } as CreateTagsInputArgs;
@@ -115,7 +107,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					if (!t.id) t.id = generateId();
 				}
 			} catch {
-				setDataInvalid(ids.root, ids.input, invalid);
+				setDataInvalid(ids, invalid);
 				return false;
 			}
 		} else {
@@ -135,7 +127,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 			try {
 				if (!(await $options.remove(t))) return false;
 			} catch {
-				setDataInvalid(ids.root, ids.input, invalid);
+				setDataInvalid(ids, invalid);
 				return false;
 			}
 		}
@@ -156,64 +148,73 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		input: generateId(),
 	};
 
-	// Attributes and an action to apply to the root element
-	const root = {
-		// Attributes => {...$root}
-		...derived(options, ($options) => {
+	const root = builder(name(''), {
+		stores: options,
+		returned: ($options) => {
 			return {
-				role: 'tagsinput',
 				'data-disabled': $options.disabled ? true : undefined,
 				'data-melt-id': ids.root,
-				'data-melt-part': dataMeltParts['root'],
 				disabled: $options.disabled,
 			} as const;
-		}),
-		// Action => use:root.action
+		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'mousedown', (e) => {
 					focusInput(ids.input);
-
-					// Set the selected tag
-					const tagTargetEL = (e.target as HTMLElement).closest(
-						`[data-melt-part="${dataMeltParts['tag']}"]`
-					);
-
-					if (tagTargetEL) {
+					const targetEL = (e.target as HTMLElement).closest(selector('tag'));
+					if (targetEL) {
 						e.preventDefault();
-						setSelectedTagFromElement(tagTargetEL, selectedTag);
+						setSelectedTagFromElement(targetEL, selectedTag);
 					}
 				}),
 				addEventListener(node, 'click', (e) => {
 					focusInput(ids.input);
-
-					// Set the selected tag
-					const delegatedTarget = (e.target as HTMLElement).closest(
-						`[data-melt-part="${dataMeltParts['tag']}"]`
-					);
-					setSelectedTagFromElement(delegatedTarget, selectedTag);
+					const targetEL = (e.target as HTMLElement).closest(selector('tag'));
+					setSelectedTagFromElement(targetEL, selectedTag);
 				})
 			);
 			return {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
-	// Attributes and an action to apply to the input
-	const input = {
-		// Attributes => {...$input}
-		...derived(options, ($options) => {
+	const input = builder(name('input'), {
+		stores: options,
+		returned: ($options) => {
 			return {
 				'data-melt-id': ids.input,
-				'data-melt-part': dataMeltParts['input'],
 				'data-disabled': $options.disabled ? '' : undefined,
 				disabled: $options.disabled,
 				placeholder: $options.placeholder,
 			};
-		}),
-		// Action => use:input.action
-		action: (node: HTMLInputElement) => {
+		},
+		action: (node: HTMLElement) => {
+			const getTagsInfo = (id: string) => {
+				const rootEl = getElementByMeltId(ids.root);
+
+				let tagsEl: Array<HTMLElement> = [];
+				let selectedIndex = -1;
+				let prevIndex = -1;
+				let nextIndex = -1;
+
+				if (rootEl) {
+					tagsEl = Array.from(rootEl.querySelectorAll(selector('tag'))) as Array<HTMLElement>;
+
+					selectedIndex = tagsEl.findIndex((element) => element.getAttribute('data-tag-id') === id);
+
+					prevIndex = selectedIndex - 1;
+					nextIndex = selectedIndex + 1;
+				}
+
+				return {
+					tagsEl,
+					selectedIndex,
+					prevIndex,
+					nextIndex,
+				};
+			};
+
 			const unsub = executeCallbacks(
 				addEventListener(node, 'focus', () => {
 					// Set data-focus
@@ -231,22 +232,20 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					selectedTag.set(null);
 
 					// Do nothing when input is empty
-					const value = node.value;
+					const value = (node as HTMLInputElement).value;
 					if (!value) return;
 
 					// Handle on:blur add tag || clear input
 					const $options = get(options);
 
 					if ($options.blur === 'clear') {
-						node.value = '';
+						(node as HTMLInputElement).value = '';
 					} else if ($options.blur === 'add') {
-						if (isInputValid(value)) {
-							if (await addTag(value)) {
-								node.value = '';
-								inputValue.set('');
-							}
+						if (isInputValid(value) && (await addTag(value))) {
+							(node as HTMLInputElement).value = '';
+							inputValue.set('');
 						} else {
-							setDataInvalid(ids.root, ids.input, invalid);
+							setDataInvalid(ids, invalid);
 						}
 					}
 				}),
@@ -267,13 +266,13 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 						// Prevent default as we are going to add a new tag
 						e.preventDefault();
 						if (await addTag(pastedText)) {
-							node.value = '';
+							(node as HTMLInputElement).value = '';
 						} else {
 							// Adding tag failed
-							node.value = pastedText;
+							(node as HTMLInputElement).value = pastedText;
 						}
 					} else {
-						setDataInvalid(ids.root, ids.input, invalid);
+						setDataInvalid(ids, invalid);
 					}
 				}),
 				addEventListener(node, 'keydown', async (e) => {
@@ -287,11 +286,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							// Move to the previous tag
 							e.preventDefault();
 
-							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
-							const selectedIndex = tagsEl.findIndex(
-								(element) => element.getAttribute('data-tag-id') === $selectedTag.id
-							);
-							const prevIndex = selectedIndex - 1;
+							const { tagsEl, prevIndex } = getTagsInfo($selectedTag.id);
 
 							if (prevIndex >= 0) {
 								setSelectedTagFromElement(tagsEl[prevIndex], selectedTag);
@@ -300,13 +295,9 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							// Move to the next element of tag or input
 							e.preventDefault();
 
-							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
-							const selectedIndex = tagsEl.findIndex(
-								(element) => element.getAttribute('data-tag-id') === $selectedTag.id
-							);
-							const nextIndex = selectedIndex + 1;
+							const { tagsEl, nextIndex } = getTagsInfo($selectedTag.id);
 
-							if (nextIndex >= tagsEl.length) {
+							if (nextIndex === -1 || nextIndex >= tagsEl.length) {
 								selectedTag.set(null);
 								focusInput(ids.input, 'start');
 							} else {
@@ -315,7 +306,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 						} else if (e.key === kbd.HOME) {
 							// Jump to the first tag or do nothing
 							e.preventDefault();
-							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
+							const { tagsEl } = getTagsInfo($selectedTag.id);
 							if (tagsEl.length > 0) setSelectedTagFromElement(tagsEl[0], selectedTag);
 						} else if (e.key === kbd.END) {
 							// Jump to the input
@@ -327,13 +318,9 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							e.preventDefault();
 
 							const prevSelected = $selectedTag;
-							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
-							const selectedIndex = tagsEl.findIndex(
-								(element) => element.getAttribute('data-tag-id') === $selectedTag.id
-							);
-							const nextIndex = selectedIndex + 1;
+							const { tagsEl, nextIndex } = getTagsInfo($selectedTag.id);
 
-							if (nextIndex >= tagsEl.length) {
+							if (nextIndex === -1 || nextIndex >= tagsEl.length) {
 								selectedTag.set(null);
 								focusInput(ids.input);
 							} else {
@@ -350,17 +337,12 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 							e.preventDefault();
 							const prevSelected = $selectedTag;
 
-							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
-							const selectedIndex = tagsEl.findIndex(
-								(element) => element.getAttribute('data-tag-id') === $selectedTag.id
-							);
-							const prevIndex = selectedIndex - 1;
-							const nextIndex = selectedIndex + 1;
+							const { tagsEl, nextIndex, prevIndex } = getTagsInfo($selectedTag.id);
 
 							if (prevIndex >= 0) {
 								setSelectedTagFromElement(tagsEl[prevIndex], selectedTag);
 							} else {
-								if (nextIndex >= tagsEl.length) {
+								if (nextIndex === -1 || nextIndex >= tagsEl.length) {
 									selectedTag.set(null);
 									focusInput(ids.input, 'start');
 								} else {
@@ -377,25 +359,24 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 						// ENTER
 						if (e.key === kbd.ENTER) {
 							e.preventDefault();
-							const value = node.value;
+							const value = (node as HTMLInputElement).value;
 							if (!value) return;
 
 							if (isInputValid(value)) {
 								if (await addTag(value)) {
-									node.value = '';
+									(node as HTMLInputElement).value = '';
 									inputValue.set('');
 								}
 							} else {
-								setDataInvalid(ids.root, ids.input, invalid);
+								setDataInvalid(ids, invalid);
 							}
 						} else if (
-							node.selectionStart === 0 &&
-							node.selectionEnd === 0 &&
+							(node as HTMLInputElement).selectionStart === 0 &&
+							(node as HTMLInputElement).selectionEnd === 0 &&
 							(e.key === kbd.ARROW_LEFT || e.key === kbd.BACKSPACE)
 						) {
 							e.preventDefault();
-
-							const tagsEl = getTagElements(node, dataMeltParts['root'], dataMeltParts['tag']);
+							const { tagsEl } = getTagsInfo('');
 							const lastTag = tagsEl.at(-1) as HTMLElement;
 							setSelectedTagFromElement(lastTag, selectedTag);
 						}
@@ -409,19 +390,16 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
-	// Attributes and an action to apply to each tag
-	const tag = {
-		// Attributes => {...$tag}
-		...derived([selectedTag, options], ([$selectedTag, $options]) => {
+	const tag = builder(name('tag'), {
+		stores: [selectedTag, options],
+		returned: ([$selectedTag, $options]) => {
 			return (tag: TagArgs) => {
 				const disabled = $options.disabled || tag.disabled;
 				const selected = disabled ? undefined : $selectedTag?.id === tag?.id;
 
 				return {
-					role: 'tag',
-					'data-melt-part': dataMeltParts['tag'],
 					'aria-selected': selected,
 					'data-selected': selected ? '' : undefined,
 					'data-tag-value': tag.value,
@@ -431,20 +409,17 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					tabindex: -1,
 				};
 			};
-		}),
-	};
+		},
+	});
 
-	// Attributes and an action to apply each delete trigger
-	const deleteTrigger = {
-		// Attributes => {...$deleteTrigger}
-		...derived([selectedTag, options], ([$selectedTag, $options]) => {
+	const deleteTrigger = builder(name('delete-trigger'), {
+		stores: [selectedTag, options],
+		returned: ([$selectedTag, $options]) => {
 			return (tag: TagArgs) => {
 				const disabled = $options.disabled || tag.disabled;
 				const selected = disabled ? undefined : $selectedTag?.id === tag?.id;
 
 				return {
-					role: 'tag-delete-trigger',
-					'data-melt-part': dataMeltParts['deleteTrigger'],
 					'aria-selected': selected,
 					'data-selected': selected ? '' : undefined,
 					'data-tag-value': tag.value,
@@ -454,8 +429,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					tabindex: -1,
 				};
 			};
-		}),
-		// Action => use:deleteTrigger.action
+		},
 		action: (node: HTMLElement) => {
 			const getElArgs = () => {
 				const value = node.getAttribute('data-tag-value') ?? '';
@@ -489,7 +463,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
 	// Used to determine if a tag is selected
 	const isSelected = derived(selectedTag, ($selectedTag) => {
@@ -498,7 +472,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 
 	// When the input valid changes, clear any potential invalid states
 	effect(inputValue, () => {
-		clearInvalid(ids.root, ids.input, invalid);
+		clearDataInvalid(ids, invalid);
 	});
 
 	return {

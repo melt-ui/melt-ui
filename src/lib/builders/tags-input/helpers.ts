@@ -2,22 +2,13 @@ import { getElementByMeltId } from '@melt-ui/svelte/internal/helpers';
 import type { Writable } from 'svelte/store';
 import type { Tag } from './types';
 
-export type inputPos = 'default' | 'start' | 'end';
-
-export function focusInput(id: string, pos: inputPos = 'default') {
+export function focusInput(id: string, pos: 'default' | 'start' | 'end' = 'default') {
 	const inputEl = getElementByMeltId(id) as HTMLInputElement;
-	if (inputEl) {
-		inputEl.focus();
-		if (pos === 'start') inputEl.setSelectionRange(0, 0);
-		else if (pos === 'end') inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
-	}
-}
+	if (!inputEl) return;
 
-export function getTagElements(me: HTMLElement, rootAttribute: string, tagAttribute: string) {
-	const rootEl = me.closest(`[data-melt-part="${rootAttribute}"]`) as HTMLElement;
-	return Array.from(
-		rootEl.querySelectorAll(`[data-melt-part="${tagAttribute}"]`)
-	) as Array<HTMLElement>;
+	inputEl.focus();
+	if (pos === 'start') inputEl.setSelectionRange(0, 0);
+	else if (pos === 'end') inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
 }
 
 export function setSelectedTagFromElement(el: Element | null, selectedTag: Writable<Tag | null>) {
@@ -31,21 +22,20 @@ export function setSelectedTagFromElement(el: Element | null, selectedTag: Writa
 	}
 }
 
-export function setDataInvalid(rootId: string, inputId: string, inputStore: Writable<boolean>) {
-	const rootEl = getElementByMeltId(rootId);
-	const inputEl = getElementByMeltId(inputId);
-
-	if (rootEl) rootEl.setAttribute('data-invalid', '');
-	if (inputEl) inputEl.setAttribute('data-invalid', '');
-
+export function setDataInvalid(
+	ids: { root: string; input: string },
+	inputStore: Writable<boolean>
+) {
+	getElementByMeltId(ids.root)?.setAttribute('data-invalid', '');
+	getElementByMeltId(ids.input)?.setAttribute('data-invalid', '');
 	inputStore.set(true);
 }
 
-export function clearInvalid(rootId: string, inputId: string, inputStore: Writable<boolean>) {
-	const rootEl = getElementByMeltId(rootId);
-	const inputEl = getElementByMeltId(inputId);
-	if (rootEl) rootEl.removeAttribute('data-invalid');
-	if (inputEl) inputEl.removeAttribute('data-invalid');
-
+export function clearDataInvalid(
+	ids: { root: string; input: string },
+	inputStore: Writable<boolean>
+) {
+	getElementByMeltId(ids.root)?.removeAttribute('data-invalid');
+	getElementByMeltId(ids.input)?.removeAttribute('data-invalid');
 	inputStore.set(false);
 }

@@ -8,25 +8,25 @@
 </script>
 
 <div class="flex flex-col items-start justify-center gap-2">
-	<div {...$root} use:root.action class="root">
+	<div {...$root} use:root class="root">
 		{#each $tags as t}
 			<div {...$tag(t)} class="tag">
 				<span class="flex items-center border-r border-white/10 px-1.5">{t.value}</span>
-				<button {...$deleteTrigger(t)} use:deleteTrigger.action class="tag-delete">
+				<button {...$deleteTrigger(t)} use:deleteTrigger class="tag-delete">
 					<X class="h-3 w-3" />
 				</button>
 			</div>
 		{/each}
 
-		<input {...$input} use:input.action type="text" class="input" />
+		<input {...$input} use:input type="text" class="input" />
 	</div>
 </div>
 
 <style lang="postcss">
 	.root {
 		@apply flex w-[280px] flex-row flex-wrap gap-2.5 rounded-md px-3 py-2;
-		@apply text-magnum-700 bg-white;
-		@apply data-[focus]:!outline data-[focus]:!outline-blue-400 data-[focus]:!outline-2;
+		@apply bg-white text-magnum-700;
+		@apply data-[focus]:!outline data-[focus]:!outline-2 data-[focus]:!outline-blue-400;
 	}
 
 	.tag {
