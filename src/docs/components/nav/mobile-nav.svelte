@@ -3,8 +3,7 @@
 	import { fade, fly } from 'svelte/transition';
 	import Menu from '~icons/lucide/menu';
 	import X from '~icons/lucide/x';
-	import { Button } from '$docs/components';
-	import MobileNavLink from './mobile-nav-link.svelte';
+	import { Button, MobileNavLink } from '$docs/components';
 	import { navConfig } from '$docs/config';
 
 	const { trigger, portal, overlay, content, close, open } = createDialog();
