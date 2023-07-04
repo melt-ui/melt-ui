@@ -411,7 +411,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 			'aria-disabled': args.disabled ? true : undefined,
 			'aria-selected': args.item === $selectedItem,
 			'data-index': args.index,
-			disabled: args.disabled,
+			disabled: args.disabled ? true : undefined,
 			id: `${ids.input}-descendent-${args.index}`,
 			role: 'option',
 			style: styleToString({ cursor: args.disabled ? 'default' : 'pointer' }),
