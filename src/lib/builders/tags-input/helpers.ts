@@ -1,6 +1,6 @@
-import { getElementByMeltId } from '@melt-ui/svelte/internal/helpers';
-import type { Writable } from 'svelte/store';
-import type { Tag } from './types';
+import { getElementByMeltId } from '$lib/internal/helpers';
+import { type Writable } from 'svelte/store';
+import { Tag } from './types';
 
 export function focusInput(id: string, pos: 'default' | 'start' | 'end' = 'default') {
 	const inputEl = getElementByMeltId(id) as HTMLInputElement;
