@@ -137,6 +137,13 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 		activeTrigger.set(null);
 	}
 
+	function openPanel() {
+		const triggerElement = document.getElementById(ids.input);
+		if (!isHTMLElement(triggerElement)) return;
+		activeTrigger.set(triggerElement);
+		open.set(true);
+	}
+
 	/** Retrieves all option descendants of a given element. */
 	function getOptions(element: HTMLElement): HTMLElement[] {
 		return Array.from(element.querySelectorAll('[role="option"]'));
@@ -165,13 +172,17 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 					const triggerElement = document.getElementById(ids.input);
 					if (!isHTMLElement(triggerElement)) return;
 					activeTrigger.set(triggerElement);
-					open.set(true);
+					openPanel();
 				}),
 				// Handle all input key events including typing, meta, and navigation.
 				addEventListener(node, 'keydown', (e) => {
 					const $open = get(open);
 					// When the menu is closed...
 					if (!$open) {
+						if (e.altKey || e.metaKey || e.ctrlKey) {
+							return;
+						}
+
 						// When the user presses `esc` the input should lose focus.
 						if (e.key === kbd.ESCAPE) {
 							node.blur();
@@ -186,7 +197,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 							return;
 						}
 						// Otherwise, open the menu.
-						open.set(true);
+						openPanel();
 					}
 					// If the menu is open when the user hits `esc`, close it.
 					if (e.key === kbd.ESCAPE) {
@@ -201,12 +212,9 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 						}
 						close();
 					}
-					// if (e.key === kbd.TAB) {
-					// 	e.preventDefault();
-					// 	activeTrigger.set(null);
-					// 	open.set(false);
-					// 	// handleTabNavigation(e);
-					// }
+					if (e.key === kbd.TAB) {
+						close();
+					}
 					// Navigation events.
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						e.preventDefault();
@@ -313,7 +321,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): Combobox<T> {
 							const popper = usePopper(node, {
 								anchorElement: $activeTrigger,
 								open,
-								options: { floating: $options.positioning },
+								options: { floating: $options.positioning, focusTrap: null },
 							});
 							if (popper && popper.destroy) {
 								unsubPopper = popper.destroy;
