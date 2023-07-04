@@ -28,11 +28,14 @@
 
 <pre
 	use:copyCodeToClipboard
-	class={cn('mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border py-4', className)}
+	class={cn(
+		'mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border border-magnum-500/50 bg-neutral-950/50 py-4',
+		className
+	)}
 	{...$$restProps}>
-<slot />
+    <slot />
 </pre>
-<button class="absolute right-3 top-3 z-10" aria-label="copy" on:click={copyCode}>
+<button class="absolute right-3 top-3 z-10" aria-label="copy" on:click={copyCode} data-code-copy>
 	{#if copied}
 		<div in:fly={{ y: -4 }}>
 			<Check class="text-magnum-500" />

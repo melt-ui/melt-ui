@@ -26,8 +26,8 @@ devDependencies:
     specifier: ^2.26.1
     version: 2.26.1
   '@huntabyte/mdsvex':
-    specifier: ^0.15.4
-    version: 0.15.4(svelte@4.0.0)
+    specifier: ^0.16.5
+    version: 0.16.5(svelte@4.0.0)
   '@iconify-json/lucide':
     specifier: ^1.1.104
     version: 1.1.104
@@ -157,6 +157,9 @@ devDependencies:
   rehype-pretty-code:
     specifier: ^0.10.0
     version: 0.10.0(shiki@0.14.3)
+  remark-code-import:
+    specifier: ^1.2.0
+    version: 1.2.0
   remark-gfm:
     specifier: ^3.0.1
     version: 3.0.1
@@ -3094,8 +3097,8 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
 
-  /@huntabyte/mdsvex@0.15.4(svelte@4.0.0):
-    resolution: {integrity: sha512-oVwiLuQdYq8dX+lExfGZDsjyP5OOZdLVN7MJN8PX5zt9KOnpBKmpPOiMS5Ud6LhXGiISn3LYyOyOBzkKktiJJg==}
+  /@huntabyte/mdsvex@0.16.5(svelte@4.0.0):
+    resolution: {integrity: sha512-DnK/xrIKfowch7zN12LsdnAer1NNVeGhIZb9GDzoyct0i4OC7yejly6G3Py27a5f4WNopnxKjZBUEbNl/yMCag==}
     peerDependencies:
       svelte: '>=3 <5'
     dependencies:
@@ -10793,6 +10796,15 @@ packages:
       shiki: 0.14.3
     dev: true
 
+  /remark-code-import@1.2.0:
+    resolution: {integrity: sha512-fgwLruqlZbVOIhCJFjY+JDwPZhA4/eK3InJzN8Ox8UDdtudpG212JwtRj6la+lAzJU7JmSEyewZSukVZdknt3Q==}
+    engines: {node: '>= 12'}
+    dependencies:
+      strip-indent: 4.0.0
+      to-gatsby-remark-plugin: 0.1.0
+      unist-util-visit: 4.1.2
+    dev: true
+
   /remark-external-links@8.0.0:
     resolution: {integrity: sha512-5vPSX0kHoSsqtdftSHhIYofVINC8qmp0nctkeU9YoJwV3YfiBRiI6cbFRJ0oI/1F9xS+bopXG0m2KS8VFscuKA==}
     dependencies:
@@ -11412,6 +11424,13 @@ packages:
       min-indent: 1.0.1
     dev: true
 
+  /strip-indent@4.0.0:
+    resolution: {integrity: sha512-mnVSV2l+Zv6BLpSD/8V87CW/y9EmmbYzGCIavsnsI6/nwn26DwffM/yztm30Z/I2DY9wdS3vXVCMnHDgZaVNoA==}
+    engines: {node: '>=12'}
+    dependencies:
+      min-indent: 1.0.1
+    dev: true
+
   /strip-json-comments@3.1.1:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
@@ -11892,11 +11911,24 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
+  /to-gatsby-remark-plugin@0.1.0:
+    resolution: {integrity: sha512-blmhJ/gIrytWnWLgPSRCkhCPeki6UBK2daa3k9mGahN7GjwHu8KrS7F70MvwlsG7IE794JLgwAdCbi4hU4faFQ==}
+    dependencies:
+      to-vfile: 6.1.0
+    dev: true
+
   /to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
     dependencies:
       is-number: 7.0.0
+    dev: true
+
+  /to-vfile@6.1.0:
+    resolution: {integrity: sha512-BxX8EkCxOAZe+D/ToHdDsJcVI4HqQfmw0tCkp31zf3dNP/XWIAjU4CmeuSwsSoOzOTqHPOL0KUzyZqJplkD0Qw==}
+    dependencies:
+      is-buffer: 2.0.5
+      vfile: 4.2.1
     dev: true
 
   /toidentifier@1.0.1:
@@ -12374,6 +12406,15 @@ packages:
     dependencies:
       '@types/unist': 2.0.6
       unist-util-stringify-position: 3.0.3
+    dev: true
+
+  /vfile@4.2.1:
+    resolution: {integrity: sha512-O6AE4OskCG5S1emQ/4gl8zK586RqA3srz3nfK/Viy0UPToBc5Trp9BVFb1u0CjsKrAWwnpr4ifM/KBXPWwJbCA==}
+    dependencies:
+      '@types/unist': 2.0.6
+      is-buffer: 2.0.5
+      unist-util-stringify-position: 2.0.3
+      vfile-message: 2.0.4
     dev: true
 
   /vfile@5.3.7:

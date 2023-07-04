@@ -1,6 +1,5 @@
 export { default as a } from './a.svelte';
 export { default as blockquote } from './blockquote.svelte';
-export { default as code } from './code.svelte';
 export { default as h1 } from './h1.svelte';
 export { default as h2 } from './h2.svelte';
 export { default as h3 } from './h3.svelte';

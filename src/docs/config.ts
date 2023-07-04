@@ -21,7 +21,7 @@ type NavConfig = {
 export const navConfig: NavConfig = {
 	mainNav: [
 		{
-			title: 'Docs',
+			title: 'Documentation',
 			href: '/docs',
 		},
 		{
@@ -29,5 +29,131 @@ export const navConfig: NavConfig = {
 			href: '/docs/builders',
 		},
 	],
-	sidebarNav: [],
+	sidebarNav: [
+		{
+			title: 'Overview',
+			items: [
+				{
+					title: 'Introduction',
+					href: '/docs',
+					items: [],
+				},
+				{
+					title: 'Getting Started',
+					href: '/docs/getting-started',
+					items: [],
+				},
+			],
+		},
+		{
+			title: 'Builders',
+			items: [
+				{
+					title: 'Accordion',
+					href: '/docs/builders/accordion',
+					items: [],
+				},
+				{
+					title: 'Avatar',
+					href: '/docs/builders/avatar',
+					items: [],
+				},
+				{
+					title: 'Checkbox',
+					href: '/docs/builders/checkbox',
+					items: [],
+				},
+				{
+					title: 'Context Menu',
+					href: '/docs/builders/context-menu',
+					items: [],
+				},
+				{
+					title: 'Dialog',
+					href: '/docs/builders/dialog',
+					items: [],
+				},
+				{
+					title: 'Dropdown Menu',
+					href: '/docs/builders/dropdown-menu',
+					items: [],
+				},
+				{
+					title: 'Hover Card',
+					href: '/docs/builders/hover-card',
+					items: [],
+				},
+				{
+					title: 'Label',
+					href: '/docs/builders/label',
+					items: [],
+				},
+				{
+					title: 'Menubar',
+					href: '/docs/builders/menubar',
+					items: [],
+				},
+				{
+					title: 'Pagination',
+					href: '/docs/builders/pagination',
+					items: [],
+				},
+				{
+					title: 'Popover',
+					href: '/docs/builders/popover',
+					items: [],
+				},
+				{
+					title: 'Progress',
+					href: '/docs/builders/progress',
+					items: [],
+				},
+				{
+					title: 'Radio Group',
+					href: '/docs/builders/radio-group',
+					items: [],
+				},
+				{
+					title: 'Select',
+					href: '/docs/builders/select',
+					items: [],
+				},
+				{
+					title: 'Switch',
+					href: '/docs/builders/switch',
+					items: [],
+				},
+				{
+					title: 'Tabs',
+					href: '/docs/builders/tabs',
+					items: [],
+				},
+				{
+					title: 'Tags Input',
+					href: '/docs/builders/tags-input',
+					items: [],
+				},
+				{
+					title: 'Toggle',
+					href: '/docs/builders/toggle',
+					items: [],
+				},
+				{
+					title: 'Toggle Group',
+					href: '/docs/builders/toggle-group',
+					items: [],
+				},
+				{
+					title: 'Toolbar',
+					href: '/docs/builders/toolbar',
+					items: [],
+				},
+				{
+					title: 'Tooltip',
+					href: '/docs/builders/tooltip',
+					items: [],
+				},
+			],
+		},
+	],
 };

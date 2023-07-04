@@ -6,13 +6,14 @@
 		variants: {
 			variant: {
 				default: 'bg-magnum-600 text-white hover:bg-magnum-700/90 ',
-				ghost: 'hover:bg-magnum-600/20 hover:text-white ',
+				ghost:
+					'hover:bg-magnum-600/25 data-[active=true]:border-magnum-600 data-[active=true]:bg-magnum-600/25 hover:text-white border-transparent border',
 				link: 'underline-offset-4 hover:underline text-primary',
 				outline: 'border border-magnum-600/60 hover:bg-magnum-600/20 hover:text-white',
 			},
 			size: {
-				default: 'px-5 h-11 py-3',
-				sm: 'h-9 px-3 rounded',
+				default: 'px-5 h-11 py-3 rounded-md',
+				sm: 'h-9 px-3',
 			},
 		},
 		defaultVariants: {
@@ -25,7 +26,8 @@
 <script lang="ts">
 	import type { VariantProps } from 'tailwind-variants';
 	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
-	import { cn } from '$docs/utils';
+	import { cn, noopAction } from '$docs/utils';
+	import type { Action } from 'svelte/action';
 
 	let className: string | undefined | null = undefined;
 	export { className as class };
@@ -33,11 +35,13 @@
 	export let type: HTMLButtonAttributes['type'] = undefined;
 	export let variant: VariantProps<typeof buttonVariants>['variant'] = 'default';
 	export let size: VariantProps<typeof buttonVariants>['size'] = 'default';
+	export let action: Action<HTMLElement> = noopAction;
 
 	type Props = {
 		class?: string | null;
 		variant?: VariantProps<typeof buttonVariants>['variant'];
 		size?: VariantProps<typeof buttonVariants>['size'];
+		action?: Action<HTMLElement> | (() => void);
 	};
 
 	interface AnchorElement extends Props, HTMLAnchorAttributes {
@@ -67,6 +71,7 @@
 	on:keyup
 	on:mouseenter
 	on:mouseleave
+	use:action
 >
 	<slot />
 </svelte:element>

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Button from '$docs/components/ui/Button.svelte';
 	import { fly } from 'svelte/transition';
 	import ArrowRight from '~icons/lucide/arrow-right';
 	import Check from '~icons/lucide/check';
 	import Copy from '~icons/lucide/copy';
+	import { Button } from '$docs/components/ui';
 
 	let copied = false;
 	let copytimeout: ReturnType<typeof setTimeout>;

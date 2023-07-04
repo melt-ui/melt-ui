@@ -1,4 +1,4 @@
-import { styleToString } from '@melt-ui/svelte/internal/helpers';
+import { styleToString } from '$lib/internal/helpers';
 import { clsx, type ClassValue } from 'clsx';
 import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
@@ -129,3 +129,7 @@ export const formatStr = (s: string) => {
 export function slugFromPath(path: string) {
 	return path.replace('/src/docs/content/', '').replace('.md', '');
 }
+
+export const noopAction = () => {
+	// do nothing
+};
