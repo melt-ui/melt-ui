@@ -1,4 +1,4 @@
-import { getElementByMeltId } from '@melt-ui/svelte/internal/helpers';
+import { getElementByMeltId } from '$lib/internal/helpers';
 import { get, type Writable } from 'svelte/store';
 
 export type Tag = {
