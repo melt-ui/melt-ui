@@ -3,6 +3,8 @@ import { clsx, type ClassValue } from 'clsx';
 import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
 import { twMerge } from 'tailwind-merge';
+import rawGlobalCSS from '../../other/globals?raw';
+import rawTailwindConfig from '../../tailwind.config.ts?raw';
 
 /**
  * Appends strings of classes. If non-truthy values are passed, they are ignored.
@@ -136,29 +138,15 @@ export function previewPathMatcher(path: string, builder: string) {
 	return builderPath === builder;
 }
 
-// type PreviewMatch = { path: string; codeString: string };
-
-// export function createPreviewObject(rawObj: PreviewMatch, builder: string) {
-// 	const { path, codeString } = rawObj;
-// 	const strippedPath = path.replace(`/src/docs/previews/${builder}`, '');
-// 	const previewName = strippedPath.split('/')[0];
-// 	const builderPath = strippedPath.split('/')[0];
-// 	const previewPath = strippedPath.replace(`${builderPath}/`, '');
-
-// 	return {
-// 		path: previewPath,
-// 		resolver,
-// 		builder,
-// 	};
-// }
-
 export const noopAction = () => {
 	// do nothing
 };
 
 interface ReturnedObj {
 	[key: string]: {
-		[key: string]: string;
+		[key: string]: {
+			[key: string]: string;
+		};
 	};
 }
 
@@ -170,19 +158,39 @@ export function createPreviewsObject(
 
 	// Iterate through the objects in the array
 	for (const obj of objArr) {
-		// Extract the part immediately before ".svelte" in the path
+		// Extract the parts from the path
 		const regex = new RegExp(`${component}/(.+?)/(.+?)\\.svelte$`);
 		const match = regex.exec(obj.path);
 
 		if (match) {
-			const [_, groupKey, fileKey] = match; // Destructure the matched parts
+			const [, groupKey, fileKey] = match; // Destructure the matched parts
 			const { content } = obj;
 
 			// Create the structure in the returnedObj
-			if (Object.prototype.hasOwnProperty.call(returnedObj, groupKey)) {
-				returnedObj[groupKey][fileKey] = content;
-			} else {
-				returnedObj[groupKey] = { [fileKey]: content };
+			if (!returnedObj[groupKey]) {
+				returnedObj[groupKey] = {};
+			}
+			if (!returnedObj[groupKey][fileKey]) {
+				returnedObj[groupKey][fileKey] = {};
+			}
+			returnedObj[groupKey][fileKey]['index.svelte'] = content;
+		}
+	}
+
+	// Manually add values for 'tailwind.config.ts' and 'globals.css'
+	for (const groupKey in returnedObj) {
+		if (Object.prototype.hasOwnProperty.call(returnedObj, groupKey)) {
+			const fileKeys = Object.keys(returnedObj[groupKey]);
+			for (const fileKey of fileKeys) {
+				if (!Object.prototype.hasOwnProperty.call(returnedObj[groupKey], fileKey)) {
+					returnedObj[groupKey][fileKey] = {};
+				}
+
+				if (fileKey === 'tailwind') {
+					returnedObj[groupKey][fileKey]['tailwind.config.ts'] = rawTailwindConfig;
+				} else if (fileKey === 'css') {
+					returnedObj[groupKey][fileKey]['globals.css'] = rawGlobalCSS;
+				}
 			}
 		}
 	}

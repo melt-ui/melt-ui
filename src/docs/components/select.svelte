@@ -30,12 +30,18 @@
 	use:trigger.action
 	aria-label="Select"
 >
-	{$label || 'Select an option'}
+	{#if $label === 'css'}
+		CSS
+	{:else if $label === 'tailwind'}
+		Tailwind
+	{:else}
+		Select an option
+	{/if}
 	<ChevronDown />
 </button>
 
 <ul
-	class="0 z-10 flex max-h-[360px] flex-col gap-2
+	class="0 z-10 flex max-h-[360px] flex-col
   overflow-y-auto rounded-md bg-neutral-800 p-1 shadow-md"
 	{...$menu}
 	use:menu.action
@@ -51,7 +57,12 @@
 					<Check />
 				</div>
 			{/if}
-			{o.label}
+
+			{#if o.label === 'css'}
+				CSS
+			{:else if o.label === 'tailwind'}
+				Tailwind
+			{/if}
 		</li>
 	{/each}
 </ul>

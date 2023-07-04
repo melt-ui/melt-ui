@@ -27,17 +27,17 @@ export const load: PageLoad = async (event) => {
 		eager: true,
 	});
 
-	const previewMatches: { path: string; content: string }[] = [];
+	const previewCodeMatches: { path: string; content: string }[] = [];
 
 	for (const [path, resolver] of Object.entries(previewsCode)) {
 		const isMatch = previewPathMatcher(path, event.params.name);
 		if (isMatch) {
 			const prev = { path, content: resolver };
-			previewMatches.push(prev);
+			previewCodeMatches.push(prev);
 		}
 	}
 
-	const previews = createPreviewsObject(event.params.name, previewMatches);
+	const previews = createPreviewsObject(event.params.name, previewCodeMatches);
 
 	return {
 		component: doc.default,

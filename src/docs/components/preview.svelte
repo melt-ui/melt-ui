@@ -31,9 +31,7 @@
 	export let code: $$Props['code'];
 	export let fullwidth: $$Props['fullwidth'] = false;
 
-	console.log(Object.keys(code)[1]);
-
-	let codingStyle = Object.keys(code)[1] ? ('tailwind' as const) : ('css' as const);
+	let codingStyle = Object.keys(code)[0] ? ('tailwind' as const) : ('css' as const);
 	let codingStyleObj: $$Props['code'][typeof codingStyle] | null = code[codingStyle];
 
 	$: {
