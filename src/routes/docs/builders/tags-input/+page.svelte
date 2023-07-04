@@ -27,10 +27,10 @@
 
 <Docs.H2>Anatomy</Docs.H2>
 <Docs.Ul>
-	<Docs.Li><b>root:</b> The root container for the tags input</Docs.Li>
-	<Docs.Li><b>tag:</b> A tag element</Docs.Li>
-	<Docs.Li><b>deleteTrigger:</b> A button element which deletes a tag</Docs.Li>
-	<Docs.Li><b>input:</b> The input textbox for adding new Tags</Docs.Li>
+	<Docs.Li><b>Root:</b> The root container for the tags input</Docs.Li>
+	<Docs.Li><b>Tag:</b> A tag element</Docs.Li>
+	<Docs.Li><b>Delete Trigger:</b> A button element which deletes a tag</Docs.Li>
+	<Docs.Li><b>Input:</b> The input textbox for adding new Tags</Docs.Li>
 </Docs.Ul>
 
 <Docs.H2>Usage</Docs.H2>
@@ -48,7 +48,7 @@
 </Docs.P>
 <Docs.CodeBlock code={snippets.usage2} />
 
-<Docs.H4>add</Docs.H4>
+<Docs.H4>Add</Docs.H4>
 <Docs.P>
 	<Docs.P>
 		An asynchronous <Docs.Code>add</Docs.Code> function may be passed into the builder. It is called
@@ -87,7 +87,7 @@
 	<Docs.CodeBlock code={snippets.usage3} />
 </Docs.P>
 
-<Docs.H4>remove</Docs.H4>
+<Docs.H4>Remove</Docs.H4>
 <Docs.P>
 	<Docs.P>
 		An asynchronous <Docs.Code>remove</Docs.Code> function may be passed into the builder. It is called

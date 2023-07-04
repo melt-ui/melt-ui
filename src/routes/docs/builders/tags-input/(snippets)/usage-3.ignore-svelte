@@ -1,14 +1,18 @@
 <script lang="ts">
-	import { createTagsInput, type Tag } from '@melt-ui/svelte';
+	import { createTagsInput } from '@melt-ui/svelte';
 
 	const { root, input, tag, deleteTrigger } = createTagsInput({
-		tags: ['one', 'two'],
-		remove: async (t: Tag) => {
-			if (t.value === 'one') {
-				return false;
+		add: async (v: string) => {
+			const response = await fetch('https://www.uuidtools.com/api/generate/v1');
+
+			if (!response.ok) throw new Error('HTTP error ' + response.status);
+
+			const data = await response.json();
+			if (!Array.isArray(data) || data.length < 1) {
+				throw new Error('Failed to get id');
 			}
 
-			return true;
+			return { id: data[0], value: v.toUpperCase() };
 		},
 	});
 </script>
