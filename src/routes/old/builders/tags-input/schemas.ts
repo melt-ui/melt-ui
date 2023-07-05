@@ -15,7 +15,7 @@ const builder: APISchema = {
 			default: false,
 		},
 		{
-			label: 'selectedTag',
+			label: 'selected',
 			type: '{id: string, value: string}',
 		},
 		{
@@ -24,46 +24,94 @@ const builder: APISchema = {
 			default: '[]',
 		},
 		{
+			label: 'blur',
+			type: 'nothing | add | clear',
+			default: 'nothing',
+		},
+		{
 			label: 'unique',
 			type: 'boolean',
 			default: false,
+		},
+		{
+			label: 'addOnPaste',
+			type: 'boolean',
+			default: false,
+		},
+		{
+			label: 'maxTags',
+			type: 'number',
+		},
+		{
+			label: 'allowed',
+			type: 'string[]',
+			default: '[]',
+		},
+		{
+			label: 'denied',
+			type: 'string[]',
+			default: '[]',
+		},
+		{
+			label: 'add',
+			type: '(tag: string) => Promise<Tag | string>',
+		},
+		{
+			label: 'remove',
+			type: '(tag: Tag) => Promise<boolean>',
 		},
 	],
 };
 
 const root: APISchema = {
-	title: 'Root',
-	description: 'The tags input component.',
+	title: 'root',
+	description: 'The root component.',
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`tags-input`',
+			label: 'data-melt-tags-input',
+			value: '',
+		},
+		{
+			label: 'data-focus',
+			value: 'Present when the root is in focus',
 		},
 		{
 			label: 'data-disabled',
-			value: 'Present if the item is disabled.',
+			value: 'Present when the root is disabled',
+		},
+		{
+			label: 'data-invalid',
+			value: 'Present when the input data is invalid',
 		},
 	],
 };
 
 const input: APISchema = {
-	title: 'Root',
+	title: 'input',
 	description: 'The input component',
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`tags-input-input`',
+			label: 'data-melt-tags-input-input',
+			value: '',
 		},
 		{
 			label: 'data-disabled',
-			value: 'Present if the item is disabled.',
+			value: 'Present when the input is disabled',
+		},
+		{
+			label: 'data-focus',
+			value: 'Present when the input is in focus',
+		},
+		{
+			label: 'data-invalid',
+			value: 'Present when the input data is invalid',
 		},
 	],
 };
 
 const tag: APISchema = {
-	title: 'Item',
-	description: 'The tag components.',
+	title: 'tag',
+	description: 'The tag component.',
 	args: [
 		{
 			label: 'id',
@@ -81,30 +129,30 @@ const tag: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`tags-input-tag`',
+			label: 'data-melt-tags-input-tag',
+			value: '',
 		},
 		{
 			label: 'data-tag-id',
-			value: 'Unique tag ID.',
+			value: 'Tag ID',
 		},
 		{
 			label: 'data-tag-value',
 			value: 'Tag value',
 		},
 		{
-			label: 'data-disabled',
-			value: 'Present if the tag is disabled.',
+			label: 'data-selected',
+			value: 'Present when selected',
 		},
 		{
-			label: 'data-selected',
-			value: 'Present if the tag is selected.',
+			label: 'data-disabled',
+			value: 'Present when disabled',
 		},
 	],
 };
 
 const deleteTrigger: APISchema = {
-	title: 'Item',
+	title: 'deleteTrigger',
 	description: 'The tag components.',
 	args: [
 		{
@@ -123,8 +171,8 @@ const deleteTrigger: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`tags-input-delete-trigger`',
+			label: 'data-melt-tags-input-delete-trigger',
+			value: '',
 		},
 		{
 			label: 'data-tag-id',
@@ -135,12 +183,50 @@ const deleteTrigger: APISchema = {
 			value: 'Tag value',
 		},
 		{
-			label: 'data-disabled',
-			value: 'Present if the tag is disabled.',
+			label: 'data-selected',
+			value: 'Present when selected',
 		},
 		{
-			label: 'data-selected',
-			value: 'Present if the tag is selected.',
+			label: 'data-disabled',
+			value: 'Present when disabled',
+		},
+	],
+};
+
+const options: APISchema = {
+	title: 'options',
+	description: 'The `$options` store can be used to override initial values set during creation.',
+};
+
+const tags: APISchema = {
+	title: 'tags',
+	description:
+		'The `$tags` store holds an object array of type `Tag`. Each `Tag` consists of an id and value.',
+};
+
+const selected: APISchema = {
+	title: 'selected',
+	description: 'The `$selected` store holds the currently selected `Tag`, if there is one.',
+};
+
+const value: APISchema = {
+	title: 'value',
+	description: '`$value` is a readable store, which holds the input value.',
+};
+
+const invalid: APISchema = {
+	title: 'invalid',
+	description:
+		'`$invalid` is a readable store of type `boolean`. When `true`, the input valid is considered invalid.',
+};
+
+const isSelected: APISchema = {
+	title: 'isSelected',
+	description: '`$isSelected` is a helper function to determine if a specific `Tag` is selected.',
+	args: [
+		{
+			label: 'Tag',
+			type: '{id: string, value: string}',
 		},
 	],
 };
@@ -150,26 +236,29 @@ const keyboard = {
 	description: '',
 	keyboardInteractions: [
 		{
-			key: 'tab',
-			description: 'Moves focus between tags and the input.',
+			key: 'ArrowRight',
+			description: 'Move to the next element of `tag` or `input`',
+		},
+		{
+			key: 'ArrowLeft',
+			description: 'Move to the previous `tag`, if one exists',
+		},
+		{
+			key: 'Home',
+			description: 'Jump to the first `tag`, if one exists',
+		},
+		{
+			key: 'End',
+			description: 'Jump to the `input`',
 		},
 		{
 			key: 'Delete',
-			description: 'When focused on a tag, deletes it and moves focus to the right.',
+			description: 'Delete the selected `tag` and move to the next element of `tag` or `input`',
 		},
 		{
 			key: 'Backspace',
 			description:
-				'When focused on a tag, deletes it and moves focus to the left. If there are no tags to the left, either the next tags gets focus, or the input.',
-		},
-
-		{
-			key: 'ArrowRight',
-			description: 'Moves focus to the next tag or input.',
-		},
-		{
-			key: 'ArrowLeft',
-			description: 'Moves focus to the previous tag.',
+				'Delete the selected `tag` and move to the previous tag. If this is the first tag, delete and move to the next element of `tag` or `input`',
 		},
 	],
 };
@@ -180,5 +269,11 @@ export const schemas = {
 	input,
 	tag,
 	deleteTrigger,
+	options,
+	tags,
+	selected,
+	value,
+	invalid,
+	isSelected,
 	keyboard,
 };

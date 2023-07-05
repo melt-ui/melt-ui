@@ -25,7 +25,7 @@
 </Docs.Ul>
 
 <Docs.H2>Usage</Docs.H2>
-<Docs.P class="mt-4">
+<Docs.P>
 	To create a label, use the <Docs.Code>createLabel</Docs.Code> builder function and apply the <Docs.Code
 		>root</Docs.Code
 	> action to the label element.

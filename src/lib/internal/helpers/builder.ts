@@ -1,7 +1,7 @@
-import { onDestroy, tick } from 'svelte';
+import { onDestroy } from 'svelte';
 import type { Action } from 'svelte/action';
-import { derived, type Readable } from 'svelte/store';
-import { addEventListener, generateId, isBrowser } from '.';
+import { derived, type Readable, type Subscriber, type Unsubscriber } from 'svelte/store';
+import { isBrowser, noop } from '.';
 
 export function getElementByMeltId(id: string) {
 	if (!isBrowser) return null;
@@ -10,16 +10,6 @@ export function getElementByMeltId(id: string) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Stores = Readable<any> | [Readable<any>, ...Array<Readable<any>>] | Array<Readable<any>>;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ActionParameters<T extends Action<HTMLElement, any>> = T extends Action<
-	HTMLElement,
-	infer P,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	any
->
-	? P
-	: never;
 
 /** One or more values from `Readable` stores. */
 type StoresValues<T> = T extends Readable<infer U>
@@ -103,221 +93,6 @@ export function effect<S extends Stores>(
 	return unsub;
 }
 
-/**
- * A type that represents a function that can be used to attach events to an HTML element.
- * The function is also augmented with a `getElement` function that returns a promise that
- * resolves to the element.
- *
- * @template T - The type of the event to attach
- * @param type - The type of the event to attach
- * @param listener - The function to call when the event is triggered
- * @param options - An optional object that specifies options for the event listener
- */
-export type Attach = <T extends keyof HTMLElementEventMap>(
-	type: T,
-	listener: (ev: HTMLElementEventMap[T]) => void,
-	options?: boolean | AddEventListenerOptions
-) => void;
-
-type AddUnsubscriber = (cb: (() => void) | Array<undefined | (() => void)>) => void;
-
-type GetElement = () => Promise<HTMLElement | null>;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AddAction = <T extends Action<HTMLElement, any>>(
-	action: T,
-	parameters?: ActionParameters<T>
-) => void;
-
-type Helpers = {
-	attach: Attach;
-	addUnsubscriber: AddUnsubscriber;
-	getElement: GetElement;
-	addAction: AddAction;
-};
-
-type MultiHelpers = Helpers & {
-	index: number;
-	getAllElements: () => Array<HTMLElement | null>;
-};
-
-const initElementHelpers = (setId: (id: string) => void) => {
-	let unsubscribers: (() => void)[] = [];
-	const unsubscribe = () => {
-		unsubscribers.forEach((fn) => fn());
-		unsubscribers = [];
-	};
-
-	let index = 0;
-	let ids: string[] = [];
-
-	// Create an `Attach` function that can be used to attach events to the elements
-	const createElInterface = () => {
-		const id = generateId();
-		ids.push(id);
-		setId(id);
-
-		addUnsubscriber(() => {
-			ids = ids.filter((i) => i !== id);
-			index--;
-		});
-
-		// Function that attaches an event listener to an element
-		const attach: Attach = async (event, listener, options) => {
-			if (!isBrowser) return;
-			const element = await getElement();
-			if (!element) return;
-			unsubscribers.push(addEventListener(element, event, listener, options));
-		};
-
-		// A function that returns the element associated with the current `id`
-		const getElement: Helpers['getElement'] = async () => {
-			if (!isBrowser) return null;
-
-			return await tick().then(() => getElementByMeltId(id));
-		};
-
-		const addAction: AddAction = async (action, parameters) => {
-			const element = await getElement();
-			if (!element) return;
-
-			const ac = action(element, parameters);
-			if (ac) {
-				unsubscribers.push(function actionUnsub() {
-					ac.destroy?.();
-				});
-			}
-		};
-
-		onDestroy(unsubscribe);
-
-		return { attach, getElement, addAction, index: index++ };
-	};
-
-	const addUnsubscriber: AddUnsubscriber = (cb) => {
-		if (Array.isArray(cb)) {
-			unsubscribers.push(...(cb.filter((a) => a !== undefined) as (() => void)[]));
-		} else {
-			unsubscribers.push(cb);
-		}
-	};
-
-	const getAllElements = () => {
-		return ids.map((id) => getElementByMeltId(id));
-	};
-
-	return {
-		unsubscribe,
-		createElInterface,
-		addUnsubscriber,
-		getAllElements,
-	};
-};
-
-type ReturnWithObj<T extends () => void, Obj> = ReturnType<T> extends void
-	? Obj
-	: ReturnType<T> & Obj;
-
-/**
- * Creates a derived store that contains attributes for an element.
- * Exposes an `attach` function to attach events to the element.
- *
- * @template S - The type of the stores object
- * @template T - The type of the attributes object
- * @param stores - The stores object to derive from
- * @param fn - The function to derive the attributes from
- * @returns A derived store that contains the attributes for an element
- */
-export function elementDerived<S extends Stores, T extends Record<string, unknown>>(
-	stores: S,
-	fn: (values: StoresValues<S>, helpers: Helpers) => T
-) {
-	let id: string;
-	const { addUnsubscriber, createElInterface, unsubscribe } = initElementHelpers(
-		(newId) => (id = newId)
-	);
-	const { attach, getElement, addAction } = createElInterface();
-
-	return derived(stores, ($storeValues) => {
-		unsubscribe();
-		return {
-			...fn($storeValues, { attach, getElement, addUnsubscriber, addAction }),
-			'data-melt-id': id,
-		};
-	});
-}
-
-/**
- * A utility function that creates a element component from a function that
- * returns an object of attributes for each element.
- *
- * @template T - The type of the function that returns the attributes object
- * @param fn - The function that returns the attributes object
- * @returns An object that contains the attributes for each element
- */
-export function element<T extends Record<string, unknown>>(fn: (helpers: Helpers) => T) {
-	return elementDerived([], (_, helpers) => fn(helpers));
-}
-
-/**
- * Creates a derived store that contains a function that can be called on multiple elements.
- * The function returned by the derived store takes a variable number of arguments and
- * returns an object that includes a `data-melt-id` attribute. The `data-melt-id` attribute is
- * a unique identifier that is used to attach events to the elements.
- *
- * @template S - The type of the stores object
- * @template T - The type of the function that will be called on multiple elements
- * @param stores - The stores object to derive from
- * @param fn - The function to call on multiple elements
- * @returns A derived store that contains the function to call on multiple elements
- */
-export function elementMultiDerived<
-	S extends Stores,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	T extends (...args: any[]) => Record<string, unknown> | void
->(stores: S, fn: (values: StoresValues<S>, helpers: MultiHelpers) => T) {
-	let id: string;
-	const { addUnsubscriber, createElInterface, unsubscribe, getAllElements } = initElementHelpers(
-		(newId) => (id = newId)
-	);
-
-	return {
-		...(derived(stores, ($storeValues) => {
-			// Unsubscribe from all events
-			unsubscribe();
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			return (...args: any[]) => {
-				const { attach, getElement, addAction, index } = createElInterface();
-				const returned = fn($storeValues, {
-					attach,
-					getElement,
-					addUnsubscriber,
-					addAction,
-					index,
-					getAllElements,
-				});
-				return { ...returned(...args), 'data-melt-id': id };
-			};
-		}) as Readable<(...args: Parameters<T>) => ReturnWithObj<T, { 'data-melt-id': string }>>),
-		getAllElements,
-	};
-}
-
-/**
- * A utility function that creates a multi-element component from a function that
- * returns another function, that in turn returns an object of attributes for each element.
- *
- * @template T - The type of the function that returns the attributes object
- * @param fn - The function that returns the attributes object
- * @returns A function that can be used to render the multi-element component
- */
-export function elementMulti<
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	T extends (...args: any[]) => Record<string, unknown> | void
->(fn: (helpers: Helpers) => T) {
-	return elementMultiDerived([], (_, helpers) => fn(helpers));
-}
-
 export const hiddenAction = <T extends Record<string, unknown>>(obj: T) => {
 	return new Proxy(obj, {
 		get(target, prop, receiver) {
@@ -328,3 +103,132 @@ export const hiddenAction = <T extends Record<string, unknown>>(obj: T) => {
 		},
 	});
 };
+
+export function lightable<T>(value: T): Readable<T> {
+	function subscribe(run: Subscriber<T>): Unsubscriber {
+		run(value);
+		return () => {
+			// don't need to unsub from anything
+		};
+	}
+	return { subscribe };
+}
+
+type BuilderReturned<S extends Stores | undefined> = S extends Stores
+	? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+	  (values: StoresValues<S>) => Record<string, any> | ((...args: any[]) => Record<string, any>)
+	: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+	  () => Record<string, any> | ((...args: any[]) => Record<string, any>);
+
+const isFunctionWithParams = (
+	fn: unknown
+): fn is (...args: unknown[]) => Record<string, unknown> => {
+	return typeof fn === 'function';
+};
+
+type BuilderArgs<
+	S extends Stores | undefined,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<any, any>,
+	R extends BuilderReturned<S>
+> = {
+	stores?: S;
+	action?: A;
+	returned?: R;
+};
+
+type BuilderStore<
+	S extends Stores | undefined,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<any, any>,
+	R extends BuilderReturned<S>,
+	Name extends string
+> = Readable<
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	ReturnType<R> extends (...args: any) => any
+		? ((
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore - This is a valid type, but TS doesn't like it for some reason. TODO: Figure out why
+				...args: Parameters<ReturnType<R>>
+		  ) => ReturnType<R> & { [K in `data-melt-${Name}`]: '' }) & { action: A }
+		: ReturnType<R> & { [K in `data-melt-${Name}`]: '' } & { action: A }
+>;
+
+export function builder<
+	S extends Stores | undefined,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<any, any>,
+	R extends BuilderReturned<S>,
+	Name extends string
+>(name: Name, args?: BuilderArgs<S, A, R>) {
+	const { stores, action, returned } = args ?? {};
+
+	const derivedStore = (() => {
+		if (stores && returned) {
+			// If stores are provided, create a derived store from them
+			return derived(stores, (values) => {
+				const result = returned(values);
+				if (isFunctionWithParams(result)) {
+					const fn = (...args: Parameters<typeof result>) => {
+						return {
+							...result(...args),
+							[`data-melt-${name}`]: '',
+						};
+					};
+					fn.action = action ?? noop;
+					return fn;
+				}
+
+				return hiddenAction({
+					...result,
+					[`data-melt-${name}`]: '',
+					action: action ?? noop,
+				});
+			});
+		} else {
+			// If stores are not provided, return a lightable store, for consistency
+			const returnedFn = returned as (() => R) | undefined;
+			const result = returnedFn?.();
+
+			if (isFunctionWithParams(result)) {
+				const resultFn = (...args: Parameters<typeof result>) => {
+					return {
+						...result(...args),
+						[`data-melt-${name}`]: '',
+					};
+				};
+				resultFn.action = action ?? noop;
+
+				return lightable(resultFn);
+			}
+
+			return lightable(
+				hiddenAction({
+					...result,
+					[`data-melt-${name}`]: '',
+					action: action ?? noop,
+				})
+			);
+		}
+	})() as BuilderStore<S, A, R, Name>;
+
+	const actionFn = (action ??
+		(() => {
+			/** noop */
+		})) as A & { subscribe: typeof derivedStore.subscribe };
+	actionFn.subscribe = derivedStore.subscribe;
+
+	return actionFn;
+}
+
+export function createElHelpers<Part extends string = string>(prefix: string) {
+	const name = (part?: Part) => (part ? `${prefix}-${part}` : prefix);
+	const selector = (part?: Part) => `[data-melt-${prefix}${part ? `-${part}` : ''}]`;
+	const getEl = (part?: Part) => document.querySelector(selector(part));
+
+	return {
+		name,
+		selector,
+		getEl,
+	};
+}

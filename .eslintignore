@@ -20,3 +20,5 @@ CHANGELOG.md
 
 src/routes/docs/builders/**/(css)/*
 src/routes/docs/builders/**/(tailwind)/*
+
+storybook-static/**/*

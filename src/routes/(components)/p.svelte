@@ -7,7 +7,7 @@
 </script>
 
 <p
-	class={cn('leading-7 ', sidenote && 'text-base italic [&:not(code)]:opacity-60', className)}
+	class={cn('my-5 leading-7', sidenote && 'text-base italic [&:not(code)]:opacity-60', className)}
 	{...$$restProps}
 >
 	<slot />

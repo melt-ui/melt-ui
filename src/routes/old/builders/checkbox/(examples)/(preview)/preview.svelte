@@ -12,7 +12,7 @@
 	<div class="flex items-center justify-center">
 		<button
 			{...$root}
-			use:root.action
+			use:$root.action
 			class="flex h-6 w-6 appearance-none items-center
             justify-center rounded-sm bg-white text-magnum-600 shadow-lg
             hover:opacity-75"

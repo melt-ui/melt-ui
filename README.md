@@ -88,9 +88,10 @@ in touch with us, and we'd love to have you there.
 | Context Menu    | ✅     |
 | Dialog          | ✅     |
 | Dropdown Menu   | ✅     |
-| Hover Card      |        |
+| Dropzone        |        |
+| Hover Card      | ✅     |
 | Label           | ✅     |
-| Menubar         |        |
+| Menubar         | ✅     |
 | Navigation Menu |        |
 | Pagination      | ✅     |
 | Pin Input       |        |
@@ -101,6 +102,7 @@ in touch with us, and we'd love to have you there.
 | Select          | ✅     |
 | Separator       | ✅     |
 | Slider          | ✅     |
+| Spin Button     |        |
 | Switch          | ✅     |
 | Tabs            | ✅     |
 | Tags Input      | ✅     |
@@ -109,9 +111,10 @@ in touch with us, and we'd love to have you there.
 | Toggle Group    | ✅     |
 | Toolbar         | ✅     |
 | Tooltip         | ✅     |
+| Tree View       |        |
 | ???             |        |
 
-**Progress:** 22/30+
+**Progress:** 24/30+
 
 ## Similar projects
 
