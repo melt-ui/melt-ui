@@ -401,7 +401,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		returned: ([$selected, $editing, $options]) => {
 			return (tag: TagArgs) => {
 				const disabled = $options.disabled || tag.disabled;
-				const editable = $options.editable && tag.editable;
+				const editable = $options.editable && tag.editable !== false;
 				const selected = disabled ? undefined : $selected?.id === tag?.id;
 				const editing = editable ? $editing?.id === tag?.id : undefined;
 
@@ -486,7 +486,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		returned: ([$selected, $editing, $options]) => {
 			return (tag: TagArgs) => {
 				const disabled = $options.disabled || tag.disabled;
-				const editable = $options.editable && tag.editable;
+				const editable = $options.editable && tag.editable !== false;
 				const selected = disabled ? undefined : $selected?.id === tag?.id;
 				const editing = editable ? $editing?.id === tag?.id : undefined;
 
