@@ -1,7 +1,14 @@
 import { error, redirect } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
+import type { EntryGenerator, PageLoad } from './$types';
 import type { DocResolver } from '$docs/types';
 import { slugFromPath } from '$docs/utils';
+import { navConfig } from '$docs/config';
+
+export const entries = (() => {
+	return navConfig.sidebarNav[0].items.map((item) => {
+		return { slug: item.title.toLowerCase() };
+	});
+}) satisfies EntryGenerator;
 
 export const load: PageLoad = async (event) => {
 	if (event.params.slug === 'builders') {

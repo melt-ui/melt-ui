@@ -1,7 +1,13 @@
 import { error } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
+import type { EntryGenerator, PageLoad } from './$types';
 import { getDocData, getMainPreviewComponent, getPreviewSnippets } from '$docs/utils';
-import { data, isBuilderName } from '$docs/data/builders';
+import { builderList, data, isBuilderName } from '$docs/data/builders';
+
+export const entries = (() => {
+	return builderList.map((item) => {
+		return { name: item.toLowerCase() };
+	});
+}) satisfies EntryGenerator;
 
 export const prerender = true;
 
