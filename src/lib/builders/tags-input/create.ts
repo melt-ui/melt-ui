@@ -77,9 +77,10 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 	const isInputValid = (v: string) => {
 		const $options = get(options);
 		const $tags = get(tags);
+		const $editing = get(editing);
 
 		// Tag uniqueness
-		if ($options.unique) {
+		if ($options.unique && $editing?.value !== v) {
 			const index = $tags.findIndex((tag) => tag.value === v);
 			if (index >= 0) return false;
 		}
