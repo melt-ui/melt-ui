@@ -63,13 +63,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 		label: generateId(),
 	};
 
-	/** Re-applies focus to the input element. */
-	function focusInput() {
-		const inputElement = document.getElementById(ids.input);
-		if (!isHTMLElement(inputElement)) return;
-		inputElement.focus();
-	}
-
 	/** Closes the menu. */
 	function closeMenu() {
 		open.set(false);
@@ -329,16 +322,14 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 					if (node === get(highlightedItem)) return;
 					highlightedItem.set(node);
 				}),
-				// Select an item by clicking on it.
 				addEventListener(node, 'mousedown', (e) => {
-					// If the item is disabled, `preventDefault` to prevent the input from losing focus.
+					// If the item is disabled, `preventDefault` to stop the input losing focus.
 					if (isElementDisabled(node)) {
 						e.preventDefault();
 						return;
 					}
 					// Otherwise, select the item and close the menu.
 					selectItem(node);
-					focusInput();
 					closeMenu();
 				})
 			);
