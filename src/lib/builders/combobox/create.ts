@@ -82,6 +82,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 		if (!isHTMLElement(triggerElement)) return;
 		activeTrigger.set(triggerElement);
 		open.set(true);
+		// Wait a tick for the menu to open then highlight the selected item.
 		tick().then(() => {
 			const menuElement = document.getElementById(ids.menu);
 			if (!isHTMLElement(menuElement)) return;
@@ -111,44 +112,52 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 				addEventListener(node, 'focus', () => {
 					openMenu();
 				}),
+				// When the input loses focus, reset the input value.
+				addEventListener(node, 'blur', () => {
+					const $options = get(options);
+					const $selectedItem = get(selectedItem);
+					// If no item is selected the input should be cleared and the filter reset.
+					if (!$selectedItem) {
+						inputValue.set('');
+						filteredItems.set(get(items));
+					} else {
+						// If an item is selected, the input should be updated to reflect it.
+						inputValue.set($options.itemToString($selectedItem));
+					}
+				}),
 				// Handle all input key events including typing, meta, and navigation.
 				addEventListener(node, 'keydown', (e) => {
 					const $open = get(open);
 					const $options = get(options);
-
-					// When the menu is closed...
+					/**
+					 * When the menu is closed...
+					 */
 					if (!$open) {
-						// When the user presses `esc` the input should lose focus.
+						// Pressing `esc` should blur the input.
 						if (e.key === kbd.ESCAPE) {
-							const $selectedItem = get(selectedItem);
 							node.blur();
-							// If no item is selected the input should be cleared and the filter reset.
-							if (!$selectedItem) {
-								inputValue.set('');
-								filteredItems.set(get(items));
-							} else {
-								// If an item is selected, the input should be updated to reflect it.
-								inputValue.set($options.itemToString($selectedItem));
-							}
 							return;
 						}
-						// Pressing one of the interaction keys shouldn't expand the menu.
+						// Pressing one of the interaction keys shouldn't open the menu.
 						if (INTERACTION_KEYS.includes(e.key)) {
 							return;
 						}
-						// Don't open the menu on backspace if the input is blank.
+						// Pressing backspace when the input is blank shouldn't open the menu.
 						if (e.key === kbd.BACKSPACE && node.value === '') {
 							return;
 						}
-						// Otherwise, open the menu.
+						// All other events should open the menu.
 						openMenu();
 					}
-					// If the menu is open when the user hits `esc`, close it.
+					/**
+					 * When the menu is open...
+					 */
+					// Pressing `esc` should close the menu.
 					if (e.key === kbd.ESCAPE) {
 						closeMenu();
 						return;
 					}
-					// Pressing enter with a highlighted item selects it.
+					// Pressing enter with a highlighted item should select it.
 					if (e.key === kbd.ENTER) {
 						const $highlightedItem = get(highlightedItem);
 						if ($highlightedItem) {
@@ -156,11 +165,11 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 						}
 						closeMenu();
 					}
-					// Alt + Up should close the menu if it's open.
+					// Pressing Alt + Up should close the menu.
 					if (e.key === kbd.ARROW_UP && e.altKey) {
 						closeMenu();
 					}
-					// Navigation events.
+					// Navigation (up, down, etc.) should change the highlighted item.
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						e.preventDefault();
 						// Get all the menu items.
@@ -168,18 +177,14 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 						if (!isHTMLElement(menuElement)) return;
 						const itemElements = getOptions(menuElement);
 						if (!itemElements.length) return;
-
 						// Disabled items can't be highlighted. Skip them.
 						const candidateNodes = itemElements.filter((opt) => !isElementDisabled(opt));
-
 						// Get the index of the currently highlighted item.
 						const $currentItem = get(highlightedItem);
 						const currentIndex = $currentItem ? candidateNodes.indexOf($currentItem) : -1;
-
 						// Calculate the index of the next menu item to highlight.
 						const loop = $options.loop;
 						let nextItem: HTMLElement | undefined;
-
 						switch (e.key) {
 							case kbd.ARROW_DOWN:
 								nextItem = next(candidateNodes, currentIndex, loop);
@@ -196,7 +201,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 							default:
 								return;
 						}
-
 						/**
 						 * Bail if `next` or `prev` return `undefined`.
 						 * Theoretically this shouldn't be possible but it's a good check anyway.
@@ -326,14 +330,10 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 					highlightedItem.set(node);
 				}),
 				// Select an item by clicking on it.
-				addEventListener(node, 'click', () => {
-					/**
-					 * If the item is disabled, don't select it.
-					 * The input must be refocused since focus is lost when the item is clicked.
-					 * @HACK this approach can definitely be improved.
-					 */
+				addEventListener(node, 'mousedown', (e) => {
+					// If the item is disabled, `preventDefault` to prevent the input from losing focus.
 					if (isElementDisabled(node)) {
-						focusInput();
+						e.preventDefault();
 						return;
 					}
 					// Otherwise, select the item and close the menu.
