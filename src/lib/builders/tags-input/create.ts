@@ -353,7 +353,16 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 						} else if (e.key === kbd.ENTER) {
 							// Start editing this selected tag
 							e.preventDefault();
+
+							// Do nothing when there is no edit container
+							const editEl = document.querySelector(
+								selector('edit') + `[data-tag-id="${$selected.id}"]`
+							);
+							if (!editEl) return;
+
 							editing.set({ id: $selected.id, value: $selected.value });
+
+							editEl.textContent = $selected.value;
 
 							// Let it become visible then select all
 							await tick();
@@ -463,16 +472,23 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 				addEventListener(node, 'dblclick', async () => {
 					if (!isBrowser) return;
 
-					// Do nothing when it is not editable or the edit container does not exist
+					// Do nothing when it is not editable
 					if (!node.hasAttribute('data-editable')) return;
-					if (!document.querySelector(selector('edit') + `[data-tag-id="${getElArgs().id}"]`))
-						return;
+
+					// Do nothing when there is no edit container
+					const editEl = document.querySelector(
+						selector('edit') + `[data-tag-id="${getElArgs().id}"]`
+					);
+					if (!editEl) return;
 
 					// Start editing this tag
+					const value = node.getAttribute('data-tag-value') ?? '';
 					editing.set({
 						id: node.getAttribute('data-tag-id') ?? '',
-						value: node.getAttribute('data-tag-value') ?? '',
+						value,
 					});
+
+					editEl.textContent = value;
 
 					// Let it become visible then select all text
 					await tick();

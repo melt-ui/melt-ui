@@ -35,9 +35,7 @@
 				{...$edit(t)}
 				use:edit
 				class="flex items-center overflow-hidden rounded-md px-1.5 [word-break:break-word] data-[invalid-edit]:focus:!ring-red-500"
-			>
-				{t.value}
-			</div>
+			/>
 		{/each}
 
 		<input
