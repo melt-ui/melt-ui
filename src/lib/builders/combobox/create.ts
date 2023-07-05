@@ -37,6 +37,8 @@ const defaults = {
  *
  * @TODO support providing an initial selected item
  * @TODO support PAGE_UP/PAGE_DOWN navigation (+10,-10)
+ * @TODO expose a nice mechanism for clearing the input.
+ * @TODO would it be useful to have a callback for when an item is selected?
  */
 export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxReturn<T> {
 	const options = writable(omit({ ...defaults, ...args }, 'items'));
@@ -376,6 +378,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 		open,
 		item,
 		options,
+		selectedItem,
 		updateItems,
 	};
 }

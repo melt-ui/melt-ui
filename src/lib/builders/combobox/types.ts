@@ -54,6 +54,8 @@ export type CreateComboboxReturn<T> = {
 	open: Writable<boolean>;
 	/** Top-level configuration for the Combobox instance. */
 	options: Writable<Omit<CreateComboboxArgs<T>, 'items'>>;
+	/** The currently selected item. */
+	selectedItem: Writable<T | undefined>;
 	/** Function to update the items in the combobox. */
 	updateItems: (updaterFunction: (currentItems: T[]) => T[]) => void;
 };
