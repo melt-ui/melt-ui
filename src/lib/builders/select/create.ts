@@ -6,6 +6,7 @@ import {
 	executeCallbacks,
 	generateId,
 	getNextFocusable,
+	getOptions,
 	getPreviousFocusable,
 	handleRovingFocus,
 	isBrowser,
@@ -493,10 +494,6 @@ export function createSelect(args?: CreateSelectArgs) {
 			}),
 		};
 	});
-
-	function getOptions(element: HTMLElement): HTMLElement[] {
-		return Array.from(element.querySelectorAll('[role="option"]'));
-	}
 
 	function isMouse(e: PointerEvent) {
 		return e.pointerType === 'mouse';

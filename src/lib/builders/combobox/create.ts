@@ -5,6 +5,7 @@ import {
 	executeCallbacks,
 	FIRST_LAST_KEYS,
 	generateId,
+	getOptions,
 	isBrowser,
 	isElementDisabled,
 	isHTMLElement,
@@ -59,10 +60,11 @@ const defaults = {
  * POST-PR
  * - Setting initial value
  * - "Fancy" options
- * - PAGE_UP / PAGE_DOWN
  *
  * THONKs
  * - replace updateList with an option setter
+ * @TODO support providing an initial selected item
+ * @TODO support PAGE_UP/PAGE_DOWN navigation (+10,-10)
  */
 export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxReturn<T> {
 	const options = writable(omit({ ...defaults, ...args }, 'items'));
@@ -111,11 +113,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 			if (!isHTMLElement(selectedItem)) return;
 			highlightedItem.set(selectedItem);
 		});
-	}
-
-	/** Retrieves all option descendants of a given element. */
-	function getOptions(element: HTMLElement): HTMLElement[] {
-		return Array.from(element.querySelectorAll('[role="option"]'));
 	}
 
 	/** Action and attributes for the text input. */
@@ -207,7 +204,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 						const loop = $options.loop;
 						let nextItem: HTMLElement | undefined;
 
-						/** @TODO support PAGE_UP/PAGE_DOWN navigation (+10,-10) */
 						switch (e.key) {
 							case kbd.ARROW_DOWN:
 								nextItem = next(candidateNodes, currentIndex, loop);
@@ -325,7 +321,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 		if (!isBrowser) return;
 		const menuElement = document.getElementById(ids.menu);
 		if (!isHTMLElement(menuElement)) return;
-		menuElement.querySelectorAll('[role="option"]').forEach((node) => {
+		getOptions(menuElement).forEach((node) => {
 			if (node === $highlightedItem) {
 				node.setAttribute('data-highlighted', '');
 			} else {

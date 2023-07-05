@@ -117,18 +117,18 @@ const keyboard: APISchema = {
 			key: 'ArrowDown',
 			description: 'Highlights the next list item.',
 		},
-		{
-			key: 'PageDown',
-			description: 'Highlights 10 list items down (or the end of the list).',
-		},
+		// {
+		// 	key: 'PageDown',
+		// 	description: 'Highlights 10 list items down (or the end of the list).',
+		// },
 		{
 			key: 'ArrowUp',
 			description: 'Highlights the previous list item.',
 		},
-		{
-			key: 'PageUp',
-			description: 'Highlights 10 list items up (or the top of the list).',
-		},
+		// {
+		// 	key: 'PageUp',
+		// 	description: 'Highlights 10 list items up (or the top of the list).',
+		// },
 		{
 			key: 'Home',
 			description: 'Highlights the first list item',
