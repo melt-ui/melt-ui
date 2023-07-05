@@ -316,10 +316,14 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 			const unsubscribe = executeCallbacks(
 				// Handle highlighting items when the pointer moves over them.
 				addEventListener(node, 'pointermove', () => {
-					// Don't highlight disabled items.
-					if (isElementDisabled(node)) return;
 					// Skip highlighting if the item is already highlighted.
 					if (node === get(highlightedItem)) return;
+					// If the item is disabled, clear the highlight.
+					if (isElementDisabled(node)) {
+						highlightedItem.set(null);
+						return;
+					}
+					// Otherwise, proceed.
 					highlightedItem.set(node);
 				}),
 				addEventListener(node, 'mousedown', (e) => {
