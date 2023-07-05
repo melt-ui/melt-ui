@@ -10,6 +10,7 @@ import {
 	isHTMLElement,
 	isHTMLInputElement,
 	kbd,
+	last,
 	next,
 	noop,
 	omit,
@@ -211,7 +212,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 								nextItem = candidateNodes[0];
 								break;
 							case kbd.END:
-								nextItem = candidateNodes[candidateNodes.length - 1];
+								nextItem = last(candidateNodes);
 								break;
 							default:
 								return;
