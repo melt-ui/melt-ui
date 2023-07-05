@@ -1,0 +1,1 @@
+const t=()=>typeof window<"u";function i(){const o=navigator.userAgentData;return(o==null?void 0:o.platform)??navigator.platform}const a=o=>t()&&o.test(i()),s=o=>t()&&o.test(navigator.vendor),c=()=>t()&&!!navigator.maxTouchPoints,e=()=>a(/^Mac/)&&!c(),r=()=>n()&&s(/apple/i),n=()=>a(/mac|iphone|ipad|ipod/i),p=()=>n()&&!e();export{p as a,r as i};

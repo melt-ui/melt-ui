@@ -1,0 +1,1 @@
+import{r as e}from"../chunks/index.5e2a9a64.js";const o=()=>{throw e(302,"/docs/builders/Accordion")},t=Object.freeze(Object.defineProperty({__proto__:null,load:o},Symbol.toStringTag,{value:"Module"}));export{t as universal};

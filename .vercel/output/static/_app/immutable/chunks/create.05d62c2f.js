@@ -1,0 +1,1 @@
+import{h as e}from"./callbacks.6723c42c.js";import{a as n}from"./index.a1398546.js";function i(){return{root:e({action:t=>({destroy:n(t,"mousedown",o=>{!o.defaultPrevented&&o.detail>1&&o.preventDefault()})})})}}export{i as c};

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Docs } from '$routes/(components)';
-	import { snippets } from './(snippets)';
 	import { schemas } from './schemas';
 
 	export let data;
@@ -40,13 +39,11 @@
 		See <Docs.Code>API Reference</Docs.Code> &#8250; <Docs.Code>CreateTagsInputArgs</Docs.Code> for available
 		arguments
 	</Docs.Callout>
-	<Docs.CodeBlock code={snippets.usage1} />
 </Docs.P>
 
 <Docs.P>
 	Use the return values to construct a <Docs.Code>tags-input</Docs.Code>.
 </Docs.P>
-<Docs.CodeBlock code={snippets.usage2} />
 
 <Docs.H4>Add</Docs.H4>
 <Docs.P>
@@ -84,7 +81,6 @@
 		The following example sets the id via a third-party API call and forces the tag to always be
 		uppercase.
 	</Docs.P>
-	<Docs.CodeBlock code={snippets.usage3} />
 </Docs.P>
 
 <Docs.H4>Remove</Docs.H4>
@@ -117,7 +113,6 @@
 	<Docs.P>
 		The following example disallowed the tag with the value <Docs.Code>one</Docs.Code> to be deleted.
 	</Docs.P>
-	<Docs.CodeBlock code={snippets.usage4} />
 </Docs.P>
 
 <Docs.H2>API Reference</Docs.H2>

@@ -1,0 +1,1 @@
+import{d as c,w as n}from"./index.cb808db3.js";const l={max:100},m=(i=l)=>{const e={...l,...i},r=n(e.value??null),o=n(e.max),s=c([r,o],([a,t])=>({value:a,max:t,role:"meter","aria-valuemin":0,"aria-valuemax":t,"aria-valuenow":a,"data-value":a,"data-state":a===null?"indeterminate":a===t?"complete":"loading","data-max":t}));return{value:r,max:o,root:s,progress:s}};export{m as c};
