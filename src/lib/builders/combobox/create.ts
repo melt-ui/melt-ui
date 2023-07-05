@@ -105,18 +105,20 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 				addEventListener(node, 'focus', () => {
 					openMenu();
 				}),
-				// When the input loses focus, reset the input value.
+				// When the input loses focus, reset the input value and filter.
 				addEventListener(node, 'blur', () => {
 					const $options = get(options);
 					const $selectedItem = get(selectedItem);
 					// If no item is selected the input should be cleared and the filter reset.
 					if (!$selectedItem) {
 						inputValue.set('');
-						filteredItems.set(get(items));
 					} else {
 						// If an item is selected, the input should be updated to reflect it.
-						inputValue.set($options.itemToString($selectedItem));
+						const value = $options.itemToString($selectedItem);
+						inputValue.set(value);
 					}
+					// Reset the filtered items to the full list.
+					filteredItems.set(get(items));
 				}),
 				// Handle all input key events including typing, meta, and navigation.
 				addEventListener(node, 'keydown', (e) => {
