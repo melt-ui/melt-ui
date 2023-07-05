@@ -10,6 +10,7 @@ export * from './hover-card';
 export * from './label';
 export * from './menubar';
 export * from './pagination';
+export * from './pin-input';
 export * from './popover';
 export * from './progress';
 export * from './radio-group';

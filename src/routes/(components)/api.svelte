@@ -164,7 +164,7 @@
 						{#if Array.isArray(d.value)}
 							<code>{d.value.join(' | ').replaceAll('"', "'")}</code>
 						{:else}
-							<P class="mb-0">
+							<P class="my-0">
 								{@html parseContent(d.value, 'neutral')}
 							</P>
 						{/if}
@@ -185,7 +185,7 @@
 						<Kbd>{d.key}</Kbd>
 					</Table.Cell>
 					<Table.Cell>
-						<P class="mb-0">
+						<P class="my-0">
 							{@html parseContent(d.description)}
 						</P>
 					</Table.Cell>

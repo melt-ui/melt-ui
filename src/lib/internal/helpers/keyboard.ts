@@ -35,6 +35,7 @@ export const kbd = {
 	SHIFT: 'Shift',
 	SPACE: ' ',
 	TAB: 'Tab',
+	CTRL: 'Control',
 };
 
 /** Key sets for navigation within lists, such as select, menu, and combobox. */
