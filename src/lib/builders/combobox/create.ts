@@ -39,6 +39,7 @@ const defaults = {
  * @TODO support PAGE_UP/PAGE_DOWN navigation (+10,-10)
  * @TODO expose a nice mechanism for clearing the input.
  * @TODO would it be useful to have a callback for when an item is selected?
+ * @TODO multi-select using `tags-input` builder?
  */
 export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxReturn<T> {
 	const options = writable(omit({ ...defaults, ...args }, 'items'));
