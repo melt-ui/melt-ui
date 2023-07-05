@@ -5,16 +5,30 @@ const builder: APISchema = {
 	description: 'The configuration object passed to the `createCombobox` builder function.',
 	args: [
 		{
-			label: 'items',
-			type: 'T[]',
-		},
-		{
 			label: 'filterFunction',
 			type: '(item: T, inputValue: string)',
 		},
 		{
+			label: 'items',
+			type: 'T[]',
+		},
+		{
 			label: 'itemToString',
 			type: '(item: T)',
+		},
+		{
+			label: 'loop',
+			type: 'boolean',
+			default: false,
+		},
+		{
+			label: 'scrollAlignment',
+			type: '"nearest" | "center"',
+			default: '"nearest"',
+		},
+		{
+			label: 'positioning',
+			type: 'FloatingConfig',
 		},
 	],
 };
@@ -60,8 +74,8 @@ const input: APISchema = {
 };
 
 const option: APISchema = {
-	title: 'Option',
-	description: 'The option elements',
+	title: 'Item',
+	description: 'The menu item element',
 	args: [
 		{
 			label: 'label',
