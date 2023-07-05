@@ -5,16 +5,6 @@ const builder: APISchema = {
 	description: 'The configuration object passed to the `createCombobox` builder function.',
 	args: [
 		{
-			label: 'required',
-			type: 'boolean',
-			default: false,
-		},
-		{
-			label: 'disabled',
-			type: 'boolean',
-			default: false,
-		},
-		{
 			label: 'items',
 			type: 'T[]',
 		},
@@ -124,6 +114,14 @@ const keyboard: APISchema = {
 		{
 			key: 'PageUp',
 			description: 'Highlights 10 list items up (or the top of the list).',
+		},
+		{
+			key: 'Home',
+			description: 'Highlights the first list item',
+		},
+		{
+			key: 'End',
+			description: 'Highlights the last list item',
 		},
 		{
 			key: 'Esc',

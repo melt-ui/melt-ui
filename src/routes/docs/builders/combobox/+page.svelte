@@ -25,7 +25,7 @@
 		><b>Input:</b> The input that opens, closes, filters the list, and displays the selected value from
 		the list</Docs.Li
 	>
-	<Docs.Li><b>List:</b> The popover select list</Docs.Li>
+	<Docs.Li><b>Menu:</b> The popover menu</Docs.Li>
 	<Docs.Li><b>Item:</b> The individual list item</Docs.Li>
 </Docs.Ul>
 

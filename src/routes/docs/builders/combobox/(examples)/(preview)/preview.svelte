@@ -68,7 +68,7 @@
 					<li
 						{...$item({ index, item: book, disabled: book.disabled })}
 						use:item.action
-						class="option"
+						class="book"
 					>
 						{#if $isSelected(book)}
 							<div class="check">
@@ -82,7 +82,7 @@
 					</li>
 				{/each}
 			{:else}
-				<li class="option">No results found</li>
+				<li class="book">No results found</li>
 			{/if}
 		{/if}
 	</ul>
@@ -99,11 +99,15 @@
 		@apply z-10 flex max-h-[360px] flex-col gap-2 overflow-y-auto;
 		@apply rounded-md bg-white p-1;
 	}
-	.option {
+	.book {
 		@apply relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800;
 	}
-	.option[data-highlighted] {
+	.book[data-highlighted] {
 		@apply bg-magnum-100 text-magnum-700;
+	}
+
+	.book-author {
+		@apply block text-sm opacity-70;
 	}
 	.input-container {
 		@apply relative;

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createCombobox } from '@melt-ui/svelte';
+
 	import Check from '~icons/lucide/check';
 	import ChevronDown from '~icons/lucide/chevron-down';
 	import ChevronUp from '~icons/lucide/chevron-up';
@@ -23,7 +24,7 @@
 		{ author: 'Fyodor Dostoevsky', title: 'Crime and Punishment', disabled: false },
 	];
 
-	const { open, input, menu, option, inputValue, isSelected, filteredItems } = createCombobox({
+	const { open, input, menu, item, inputValue, isSelected, filteredItems } = createCombobox({
 		filterFunction: (item, inputValue) => {
 			// Example string normalization function. Replace as needed.
 			const normalize = (str: string) => str.normalize().toLowerCase();
@@ -63,19 +64,27 @@
 	</div>
 	<ul class="menu" {...$menu} use:menu.action>
 		{#if $open}
-			{#each $filteredItems as item, index (index)}
-				<li {...$option({ index, item, disabled: item.disabled })} use:option.action class="option">
-					{#if $isSelected(item)}
-						<div class="check">
-							<Check />
+			{#if $filteredItems.length !== 0}
+				{#each $filteredItems as book, index (index)}
+					<li
+						{...$item({ index, item: book, disabled: book.disabled })}
+						use:item.action
+						class="book"
+					>
+						{#if $isSelected(book)}
+							<div class="check">
+								<Check />
+							</div>
+						{/if}
+						<div>
+							<span>{book.title}</span>
+							<span class="book-author">{book.author}</span>
 						</div>
-					{/if}
-					<div>
-						<span>{item.title}</span>
-						<span class="item-author">{item.author}</span>
-					</div>
-				</li>
-			{/each}
+					</li>
+				{/each}
+			{:else}
+				<li class="book">No results found</li>
+			{/if}
 		{/if}
 	</ul>
 </div>
@@ -91,11 +100,15 @@
 		@apply z-10 flex max-h-[360px] flex-col gap-2 overflow-y-auto;
 		@apply rounded-md bg-white p-1;
 	}
-	.option {
+	.book {
 		@apply relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800;
 	}
-	.option[data-highlighted] {
+	.book[data-highlighted] {
 		@apply bg-magnum-100 text-magnum-700;
+	}
+
+	.book-author {
+		@apply block text-sm opacity-70;
 	}
 	.input-container {
 		@apply relative;
