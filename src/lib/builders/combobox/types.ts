@@ -1,4 +1,3 @@
-import type { FloatingConfig } from '@melt-ui/svelte/internal/actions';
 import type { Action } from 'svelte/action';
 import type { HTMLAttributes, HTMLInputAttributes, HTMLLiAttributes } from 'svelte/elements';
 import type { Readable, Writable } from 'svelte/store';
@@ -22,7 +21,6 @@ export type CreateComboboxArgs<T> = {
 	filterFunction: (item: T, value: string) => boolean;
 	itemToString: (item: T) => string;
 	loop?: boolean;
-	positioning?: FloatingConfig;
 };
 
 export type ComboboxItemArgs<T> = {

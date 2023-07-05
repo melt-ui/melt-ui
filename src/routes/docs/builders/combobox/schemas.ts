@@ -26,10 +26,6 @@ const builder: APISchema = {
 			type: '"nearest" | "center"',
 			default: '"nearest"',
 		},
-		{
-			label: 'positioning',
-			type: 'FloatingConfig',
-		},
 	],
 };
 

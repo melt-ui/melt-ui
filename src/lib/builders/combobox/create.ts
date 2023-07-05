@@ -30,10 +30,6 @@ export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd
 const defaults = {
 	scrollAlignment: 'nearest',
 	loop: false,
-	positioning: {
-		placement: 'bottom',
-		sameWidth: true,
-	},
 } satisfies Defaults<CreateComboboxArgs<unknown>>;
 
 /**
@@ -258,14 +254,14 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 			let unsubPopper = noop;
 			const unsubscribe = executeCallbacks(
 				//  Bind the popper portal to the input element.
-				effect([open, activeTrigger, options], ([$open, $activeTrigger, $options]) => {
+				effect([open, activeTrigger], ([$open, $activeTrigger]) => {
 					unsubPopper();
 					if ($open && $activeTrigger) {
 						tick().then(() => {
 							const popper = usePopper(node, {
 								anchorElement: $activeTrigger,
 								open,
-								options: { floating: $options.positioning, focusTrap: null },
+								options: { floating: { placement: 'bottom', sameWidth: true }, focusTrap: null },
 							});
 							if (popper && popper.destroy) {
 								unsubPopper = popper.destroy;
