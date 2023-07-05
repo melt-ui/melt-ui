@@ -144,10 +144,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 					const $open = get(open);
 					// When the menu is closed...
 					if (!$open) {
-						if (e.altKey || e.metaKey || e.ctrlKey) {
-							return;
-						}
-
 						// When the user presses `esc` the input should lose focus.
 						if (e.key === kbd.ESCAPE) {
 							node.blur();
@@ -181,9 +177,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 						if ($highlightedItem) {
 							selectItem($highlightedItem);
 						}
-						closeMenu();
-					}
-					if (e.key === kbd.TAB) {
 						closeMenu();
 					}
 					// Alt + Up should close the menu if it's open.
