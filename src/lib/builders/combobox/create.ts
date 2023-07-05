@@ -46,7 +46,6 @@ export const INTERACTION_KEYS = [
 ];
 
 const defaults = {
-	disabled: false,
 	scrollAlignment: 'nearest',
 	loop: false,
 	positioning: {
@@ -56,15 +55,9 @@ const defaults = {
 } satisfies Defaults<CreateComboboxArgs<unknown>>;
 
 /**
- * BUGS
- * - Be able to disable the input via a `disabled` attribute on the input as well as the builder.
- * - Cursor management on the chevron when disabled.
- * - Portal shouldn't show if there aren't items.
- *
  * POST-PR
  * - Setting initial value
  * - "Fancy" options
- * - Empty state
  * - PAGE_UP / PAGE_DOWN
  *
  * THONKs
@@ -119,16 +112,14 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 
 	/** Action and attributes for the text input. */
 	const input = {
-		...derived([open, options, highlightedItem], ([$open, $options, $highlightedItem]) => {
+		...derived([open, highlightedItem], ([$open, $highlightedItem]) => {
 			return {
 				'aria-activedescendant': $highlightedItem?.id,
 				'aria-autocomplete': 'list',
 				'aria-controls': ids.menu,
-				'aria-disabled': $options.disabled ? true : undefined,
 				'aria-expanded': $open,
 				'aria-labelledby': ids.label,
 				autocomplete: 'off',
-				disabled: $options.disabled,
 				id: ids.input,
 				role: 'combobox',
 			} as const;
@@ -347,7 +338,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 			'aria-disabled': args.disabled ? true : undefined,
 			'aria-selected': args.item === $selectedItem,
 			'data-index': args.index,
-			disabled: args.disabled ? true : undefined,
 			id: `${ids.input}-descendent-${args.index}`,
 			role: 'option',
 			style: styleToString({ cursor: args.disabled ? 'default' : 'pointer' }),

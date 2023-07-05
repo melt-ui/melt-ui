@@ -11,8 +11,6 @@ export type CreateComboboxArgs<T> = {
 	 * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block
 	 */
 	scrollAlignment?: 'nearest' | 'center';
-	/** Is the combobox disabled? */
-	disabled?: boolean;
 	/**
 	 * Predicate function to filter the visible items. When the user types,
 	 * the filterFunction will be run on each item along with the current

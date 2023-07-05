@@ -63,19 +63,27 @@
 	</div>
 	<ul class="menu" {...$menu} use:menu.action>
 		{#if $open}
-			{#each $filteredItems as item, index (index)}
-				<li {...$option({ index, item, disabled: item.disabled })} use:option.action class="option">
-					{#if $isSelected(item)}
-						<div class="check">
-							<Check />
+			{#if $filteredItems.length !== 0}
+				{#each $filteredItems as item, index (index)}
+					<li
+						{...$option({ index, item, disabled: item.disabled })}
+						use:option.action
+						class="option"
+					>
+						{#if $isSelected(item)}
+							<div class="check">
+								<Check />
+							</div>
+						{/if}
+						<div>
+							<span>{item.title}</span>
+							<span class="item-author">{item.author}</span>
 						</div>
-					{/if}
-					<div>
-						<span>{item.title}</span>
-						<span class="item-author">{item.author}</span>
-					</div>
-				</li>
-			{/each}
+					</li>
+				{/each}
+			{:else}
+				<li class="option">No results found</li>
+			{/if}
 		{/if}
 	</ul>
 </div>
