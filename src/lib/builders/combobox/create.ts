@@ -113,9 +113,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 					if (!$selectedItem) {
 						inputValue.set('');
 					} else {
-						// If an item is selected, the input should be updated to reflect it.
-						const value = $options.itemToString($selectedItem);
-						inputValue.set(value);
+						inputValue.set($options.itemToString($selectedItem));
 					}
 					// Reset the filtered items to the full list.
 					filteredItems.set(get(items));
