@@ -21,7 +21,7 @@ import {
 import type { Defaults } from '@melt-ui/svelte/internal/types';
 import { tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
-import type { CreateComboboxArgs, CreateComboboxReturn, ComboboxOptionArgs } from './types';
+import type { ComboboxItemArgs, CreateComboboxArgs, CreateComboboxReturn } from './types';
 
 export const INTERACTION_KEYS = [
 	kbd.ARROW_LEFT,
@@ -68,15 +68,15 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 	const options = writable(omit({ ...defaults, ...args }, 'items'));
 	const open = writable(false);
 	const activeTrigger = writable<HTMLElement | null>(null);
-	// The currently highlighted list item
+	// The currently highlighted menu item.
 	const highlightedItem = writable<HTMLElement | null>(null);
 	// The current value of the input element.
 	const inputValue = writable('');
-	// All items in the list.
+	// All items in the menu.
 	const items = writable(args.items);
 	// A subset of items that match the filterFunction predicate.
 	const filteredItems = writable(args.items);
-	// The currently selected list item.
+	// The currently selected menu item.
 	const selectedItem = writable<T>(undefined);
 
 	const ids = {
@@ -243,7 +243,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 	};
 
 	/**
-	 * Selects an item in the list and updates the input value.
+	 * Selects an item from the menu and updates the input value.
 	 * @param index array index of the item to select.
 	 */
 	function selectItem(item: HTMLElement) {
@@ -334,8 +334,8 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 		}
 	});
 
-	const option = {
-		...derived([selectedItem], ([$selectedItem]) => (args: ComboboxOptionArgs<T>) => ({
+	const item = {
+		...derived([selectedItem], ([$selectedItem]) => (args: ComboboxItemArgs<T>) => ({
 			'aria-disabled': args.disabled ? true : undefined,
 			'aria-selected': args.item === $selectedItem,
 			'data-index': args.index,
@@ -379,8 +379,8 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 	};
 
 	/**
-	 * Function to update the list of items in the combobox. It provides the
-	 * current items as an argument and expects an updated list in return.
+	 * Function to update the items in the combobox. It provides the current
+	 * items as an argument and expects an updated list in return.
 	 *
 	 * The updated list is set in both `items` and `filteredItems` stores so
 	 * that the filterFunction predicate is applied to any added items. Eg:
@@ -409,7 +409,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 		isSelected,
 		menu,
 		open,
-		option,
+		item,
 		options,
 		updateItems,
 	};

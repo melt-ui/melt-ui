@@ -23,7 +23,7 @@
 		{ author: 'Fyodor Dostoevsky', title: 'Crime and Punishment', disabled: false },
 	];
 
-	const { open, input, menu, option, inputValue, isSelected, filteredItems } = createCombobox({
+	const { open, input, menu, item, inputValue, isSelected, filteredItems } = createCombobox({
 		filterFunction: (item, inputValue) => {
 			// Example string normalization function. Replace as needed.
 			const normalize = (str: string) => str.normalize().toLowerCase();
@@ -64,20 +64,20 @@
 	<ul class="menu" {...$menu} use:menu.action>
 		{#if $open}
 			{#if $filteredItems.length !== 0}
-				{#each $filteredItems as item, index (index)}
+				{#each $filteredItems as book, index (index)}
 					<li
-						{...$option({ index, item, disabled: item.disabled })}
-						use:option.action
+						{...$item({ index, item: book, disabled: book.disabled })}
+						use:item.action
 						class="option"
 					>
-						{#if $isSelected(item)}
+						{#if $isSelected(book)}
 							<div class="check">
 								<Check />
 							</div>
 						{/if}
 						<div>
-							<span>{item.title}</span>
-							<span class="item-author">{item.author}</span>
+							<span>{book.title}</span>
+							<span class="book-author">{book.author}</span>
 						</div>
 					</li>
 				{/each}

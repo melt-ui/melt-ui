@@ -25,11 +25,11 @@ export type CreateComboboxArgs<T> = {
 	positioning?: FloatingConfig;
 };
 
-export type ComboboxOptionArgs<T> = {
+export type ComboboxItemArgs<T> = {
 	item: T;
-	/** Array index of the option. */
+	/** Array index of the item. */
 	index: number;
-	/** Is the option disabled? */
+	/** Is the item disabled? */
 	disabled?: boolean;
 };
 
@@ -44,18 +44,18 @@ export type CreateComboboxReturn<T> = {
 	inputValue: Writable<string>;
 	/** Function to determine if a given item is selected. */
 	isSelected: Readable<(item: T) => boolean>;
+	/** Action & attributes to apply to each item in the menu. */
+	item: Readable<(args: ComboboxItemArgs<T>) => HTMLLiAttributes> & {
+		action: Action<HTMLLIElement, void>;
+	};
 	/** Action & attributes to apply to the menu. */
 	menu: Readable<HTMLAttributes<HTMLUListElement>> & {
 		action: Action<HTMLUListElement, void>;
 	};
 	/** Is the menu currently open? */
 	open: Writable<boolean>;
-	/** Action & attributes to apply to each option in the list. */
-	option: Readable<(args: ComboboxOptionArgs<T>) => HTMLLiAttributes> & {
-		action: Action<HTMLLIElement, void>;
-	};
 	/** Top-level configuration for the Combobox instance. */
 	options: Writable<Omit<CreateComboboxArgs<T>, 'items'>>;
-	/** Function to update the list of items in the combobox. */
+	/** Function to update the items in the combobox. */
 	updateItems: (updaterFunction: (currentItems: T[]) => T[]) => void;
 };
