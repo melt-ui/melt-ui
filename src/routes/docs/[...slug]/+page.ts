@@ -1,4 +1,4 @@
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { EntryGenerator, PageLoad } from './$types';
 import type { DocResolver } from '$docs/types';
 import { slugFromPath } from '$docs/utils';
@@ -10,12 +10,9 @@ export const entries = (() => {
 	});
 }) satisfies EntryGenerator;
 
-export const load: PageLoad = async (event) => {
-	if (event.params.slug === 'builders') {
-		// TODO: redirect to the first builder page
-		throw redirect(302, '/');
-	}
+export const prerender = true;
 
+export const load: PageLoad = async (event) => {
 	const modules = import.meta.glob('/src/docs/content/**/*.md');
 
 	let match: { path?: string; resolver?: DocResolver } = {};
