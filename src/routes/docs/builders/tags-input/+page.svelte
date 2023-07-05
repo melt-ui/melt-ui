@@ -172,4 +172,6 @@
 <Docs.API schema={schemas.inputValue} />
 <Docs.API schema={schemas.inputInvalid} />
 <Docs.API schema={schemas.isSelected} />
+
+<Docs.H2>Accessibility</Docs.H2>
 <Docs.API schema={schemas.keyboard} />

@@ -4,7 +4,7 @@
  *
  * @category Array
  */
-export function next<T>(array: T[], index: number, loop = true): T | undefined {
+export function next<T>(array: T[], index: number, loop = true): T {
 	if (index === array.length - 1) {
 		return loop ? array[0] : array[index];
 	}
@@ -16,14 +16,14 @@ export function next<T>(array: T[], index: number, loop = true): T | undefined {
  * If the index is not found, returns undefined.
  * @category Array
  */
-export function prev<T>(array: T[], index: number, loop = true): T | undefined {
+export function prev<T>(array: T[], index: number, loop = true): T {
 	if (index === 0) {
 		return loop ? array[array.length - 1] : array[index];
 	}
 	return array[index - 1];
 }
 
-export function last<T>(array: T[]): T | undefined {
+export function last<T>(array: T[]): T {
 	return array[array.length - 1];
 }
 

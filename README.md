@@ -94,6 +94,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Select          | ✅     |
 | Separator       | ✅     |
 | Slider          | ✅     |
+| Spin Button     |        |
 | Switch          | ✅     |
 | Tabs            | ✅     |
 | Tags Input      | ✅     |
@@ -102,6 +103,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Toggle Group    | ✅     |
 | Toolbar         | ✅     |
 | Tooltip         | ✅     |
+| Tree View       |        |
 | ???             |        |
 
 **Progress:** 24/30+
