@@ -17,7 +17,7 @@ export function next<T>(array: T[], index: number, loop = true): T {
  * @category Array
  */
 export function prev<T>(array: T[], index: number, loop = true): T {
-	if (index === 0) {
+	if (index <= 0) {
 		return loop ? array[array.length - 1] : array[index];
 	}
 	return array[index - 1];

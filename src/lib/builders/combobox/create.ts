@@ -104,6 +104,13 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 		if (!isHTMLElement(triggerElement)) return;
 		activeTrigger.set(triggerElement);
 		open.set(true);
+		tick().then(() => {
+			const menuElement = document.getElementById(ids.menu);
+			if (!isHTMLElement(menuElement)) return;
+			const selectedItem = menuElement.querySelector('[aria-selected=true]');
+			if (!isHTMLElement(selectedItem)) return;
+			highlightedItem.set(selectedItem);
+		});
 	}
 
 	/** Retrieves all option descendants of a given element. */
@@ -276,6 +283,12 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 		})),
 		action: (node: HTMLUListElement) => {
 			let unsubPopper = noop;
+			const unsubscribeCallbacks = executeCallbacks(
+				// Remove highlight when the pointer leaves the item.
+				addEventListener(node, 'pointerleave', () => {
+					highlightedItem.set(null);
+				})
+			);
 			const unsubscribe = effect(
 				[open, activeTrigger, options],
 				([$open, $activeTrigger, $options]) => {
@@ -297,6 +310,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 			return {
 				destroy: () => {
 					unsubscribe();
+					unsubscribeCallbacks();
 					unsubPopper();
 				},
 			};
@@ -307,7 +321,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 	 * Handles moving the `data-highlighted` attribute between items when
 	 * the user moves their pointer or navigates with their keyboard.
 	 */
-	effect(highlightedItem, ($highlightedItem) => {
+	effect([highlightedItem, options], ([$highlightedItem, $options]) => {
 		if (!isBrowser) return;
 		const menuElement = document.getElementById(ids.menu);
 		if (!isHTMLElement(menuElement)) return;
@@ -318,21 +332,20 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 				node.removeAttribute('data-highlighted');
 			}
 		});
-	});
-
-	effect([open, options], ([$open, $options]) => {
-		if (!isBrowser) return;
-
-		const menuElement = document.getElementById(ids.menu);
-		if (menuElement && $open) {
-			// @FIXME
-			// Focus on selected option or first option
-			const selectedOption = menuElement.querySelector('[data-highlighted]');
-			if (selectedOption) {
-				sleep(1).then(() => selectedOption.scrollIntoView({ block: $options.scrollAlignment }));
-			}
+		if ($highlightedItem) {
+			sleep(1).then(() => $highlightedItem.scrollIntoView({ block: $options.scrollAlignment }));
 		}
 	});
+
+	// effect([open, highlightedItem, options], ([$open, $highlightedItem, $options]) => {
+	// 	if (!isBrowser) return;
+
+	// 	const menuElement = document.getElementById(ids.menu);
+	// 	if (menuElement && $open) {
+	// 		if ($highlightedItem) {
+	// 		}
+	// 	}
+	// });
 
 	const item = {
 		...derived([selectedItem], ([$selectedItem]) => (args: ComboboxItemArgs<T>) => ({
@@ -352,10 +365,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 					// Skip highlighting if the item is already highlighted.
 					if (node === get(highlightedItem)) return;
 					highlightedItem.set(node);
-				}),
-				// Remove highlight when the pointer leaves the item.
-				addEventListener(node, 'pointerleave', () => {
-					highlightedItem.set(null);
 				}),
 				// Select an item by clicking on it.
 				addEventListener(node, 'click', () => {
