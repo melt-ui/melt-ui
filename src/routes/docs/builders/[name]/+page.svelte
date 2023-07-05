@@ -11,8 +11,8 @@
 	export let data: PageData;
 	// eslint-disable-next-line no-undef, @typescript-eslint/no-explicit-any
 	type Component = $$Generic<typeof SvelteComponent>;
-	$: component = data.component as unknown as Component;
-	$: doc = data.metadata;
+	$: component = data.doc.default as unknown as Component;
+	$: doc = data.doc.metadata;
 	$: snippets = data.snippets;
 	$: mainPreview = data.mainPreview as unknown as Component;
 	$: builderData = data.builderData;

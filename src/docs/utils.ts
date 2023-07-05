@@ -6,6 +6,9 @@ import { twMerge } from 'tailwind-merge';
 import rawTailwindConfig from '../../tailwind.config.ts?raw';
 import rawGlobalCSS from '$docs/previews/other/globals?raw';
 import { highlightCode } from '$docs/highlighter';
+import type { DocResolver, PreviewResolver } from './types';
+import { error } from '@sveltejs/kit';
+import { isBuilderName } from './data/builders';
 
 /**
  * Appends strings of classes. If non-truthy values are passed, they are ignored.
@@ -210,4 +213,67 @@ export function isMainPreviewComponent(builder: string, path: string): boolean {
 	const regexPattern = `${builder}/main/tailwind\\.svelte$`;
 	const regex = new RegExp(regexPattern);
 	return regex.test(path);
+}
+
+export async function getDocData(slug: string) {
+	const modules = import.meta.glob('/src/docs/content/builders/**/*.md');
+
+	let match: { path?: string; resolver?: DocResolver } = {};
+
+	for (const [path, resolver] of Object.entries(modules)) {
+		const strippedPath = slugFromPath(path).split('/')[1];
+		if (strippedPath === slug) {
+			match = { path, resolver: resolver as unknown as DocResolver };
+			break;
+		}
+	}
+
+	const doc = await match?.resolver?.();
+
+	if (!doc || !doc.metadata) {
+		throw error(404);
+	}
+	return doc;
+}
+
+export async function getPreviewSnippets(slug: string) {
+	const previewsCode = import.meta.glob(`/src/docs/previews/**/*.svelte`, {
+		as: 'raw',
+		eager: true,
+	});
+
+	const previewCodeMatches: { path: string; content: string }[] = [];
+
+	for (const [path, resolver] of Object.entries(previewsCode)) {
+		const isMatch = previewPathMatcher(path, slug);
+		if (isMatch) {
+			const prev = { path, content: resolver };
+			previewCodeMatches.push(prev);
+		}
+	}
+	const snippets = await createPreviewsObject(slug, previewCodeMatches);
+
+	return snippets;
+}
+
+export async function getMainPreviewComponent(slug: string) {
+	const previewComponents = import.meta.glob('/src/docs/previews/**/*.svelte');
+	let mainPreviewObj: { path?: string; resolver?: PreviewResolver } = {};
+	for (const [path, resolver] of Object.entries(previewComponents)) {
+		if (isMainPreviewComponent(slug, path)) {
+			mainPreviewObj = { path, resolver: resolver as unknown as PreviewResolver };
+			break;
+		}
+	}
+
+	const mainPreview = await mainPreviewObj.resolver?.();
+	if (!mainPreview) {
+		throw error(500);
+	}
+
+	if (!isBuilderName(slug)) {
+		throw error(500);
+	}
+
+	return mainPreview.default;
 }
