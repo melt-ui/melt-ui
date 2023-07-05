@@ -1,9 +1,9 @@
 import { usePopper } from '@melt-ui/svelte/internal/actions';
 import {
-	FIRST_LAST_KEYS,
 	addEventListener,
 	effect,
 	executeCallbacks,
+	FIRST_LAST_KEYS,
 	generateId,
 	isBrowser,
 	isElementDisabled,
@@ -59,7 +59,6 @@ const defaults = {
  * BUGS
  * - Be able to disable the input via a `disabled` attribute on the input as well as the builder.
  * - Cursor management on the chevron when disabled.
- * - Escaping out of an empty input should deselect
  * - Portal shouldn't show if there aren't items.
  *
  * POST-PR
@@ -92,7 +91,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 		label: generateId(),
 	};
 
-	// Re-applies focus to the input element.
+	/** Re-applies focus to the input element. */
 	function focusInput() {
 		const inputElement = document.getElementById(ids.input);
 		if (!isHTMLElement(inputElement)) return;
@@ -105,6 +104,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 		activeTrigger.set(null);
 	}
 
+	/** Opens the menu. */
 	function openMenu() {
 		const triggerElement = document.getElementById(ids.input);
 		if (!isHTMLElement(triggerElement)) return;
@@ -142,15 +142,21 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 				// Handle all input key events including typing, meta, and navigation.
 				addEventListener(node, 'keydown', (e) => {
 					const $open = get(open);
+					const $options = get(options);
+
 					// When the menu is closed...
 					if (!$open) {
 						// When the user presses `esc` the input should lose focus.
 						if (e.key === kbd.ESCAPE) {
+							const $selectedItem = get(selectedItem);
 							node.blur();
 							// If no item is selected the input should be cleared and the filter reset.
-							if (!get(selectedItem)) {
+							if (!$selectedItem) {
 								inputValue.set('');
 								filteredItems.set(get(items));
+							} else {
+								// If an item is selected, the input should be updated to reflect it.
+								inputValue.set($options.itemToString($selectedItem));
 							}
 							return;
 						}
@@ -165,7 +171,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 						// Otherwise, open the menu.
 						openMenu();
 					}
-
 					// If the menu is open when the user hits `esc`, close it.
 					if (e.key === kbd.ESCAPE) {
 						closeMenu();
@@ -200,7 +205,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 						const currentIndex = $currentItem ? candidateNodes.indexOf($currentItem) : -1;
 
 						// Calculate the index of the next menu item to highlight.
-						const $options = get(options);
 						const loop = $options.loop;
 						let nextItem: HTMLElement | undefined;
 
@@ -364,8 +368,11 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 				}),
 				// Select an item by clicking on it.
 				addEventListener(node, 'click', () => {
-					// If the item is disabled, don't select it.
-					// Regardless, the input must be refocused since focus is lost when clicking the item.
+					/**
+					 * If the item is disabled, don't select it.
+					 * The input must be refocused since focus is lost when the item is clicked.
+					 * @HACK this approach can definitely be improved.
+					 */
 					if (isElementDisabled(node)) {
 						focusInput();
 						return;
