@@ -129,7 +129,7 @@ const isFunctionWithParams = (
 type BuilderArgs<
 	S extends Stores | undefined,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	A extends Action<HTMLElement, any>,
+	A extends Action<any, any>,
 	R extends BuilderReturned<S>
 > = {
 	stores?: S;
@@ -140,7 +140,7 @@ type BuilderArgs<
 type BuilderStore<
 	S extends Stores | undefined,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	A extends Action<HTMLElement, any>,
+	A extends Action<any, any>,
 	R extends BuilderReturned<S>,
 	Name extends string
 > = Readable<
@@ -157,7 +157,7 @@ type BuilderStore<
 export function builder<
 	S extends Stores | undefined,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	A extends Action<HTMLElement, any>,
+	A extends Action<any, any>,
 	R extends BuilderReturned<S>,
 	Name extends string
 >(name: Name, args?: BuilderArgs<S, A, R>) {
