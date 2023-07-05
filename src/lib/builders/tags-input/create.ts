@@ -201,7 +201,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 				placeholder: $options.placeholder,
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLInputElement) => {
 			const getTagsInfo = (id: string) => {
 				const rootEl = getElementByMeltId(ids.root);
 
@@ -244,17 +244,17 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					selected.set(null);
 
 					// Do nothing when input is empty
-					const value = (node as HTMLInputElement).value;
+					const value = node.value;
 					if (!value) return;
 
 					// Handle clear or add (if set)
 					const $options = get(options);
 
 					if ($options.blur === 'clear') {
-						(node as HTMLInputElement).value = '';
+						node.value = '';
 					} else if ($options.blur === 'add') {
 						if (isInputValid(value) && (await addTag(value))) {
-							(node as HTMLInputElement).value = '';
+							node.value = '';
 							inputValue.set('');
 						} else {
 							inputInvalid.set(true);
@@ -272,7 +272,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 
 					// Update value with the pasted text or set invalid
 					if (isInputValid(pastedText) && (await addTag(pastedText))) {
-						(node as HTMLInputElement).value = '';
+						node.value = '';
 					} else {
 						inputInvalid.set(true);
 					}
@@ -363,18 +363,18 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 						if (e.key === kbd.ENTER) {
 							// Add a new tag (if valid)
 							e.preventDefault();
-							const value = (node as HTMLInputElement).value;
+							const value = node.value;
 							if (!value) return;
 
 							if (isInputValid(value) && (await addTag(value))) {
-								(node as HTMLInputElement).value = '';
+								node.value = '';
 								inputValue.set('');
 							} else {
 								inputInvalid.set(true);
 							}
 						} else if (
-							(node as HTMLInputElement).selectionStart === 0 &&
-							(node as HTMLInputElement).selectionEnd === 0 &&
+							node.selectionStart === 0 &&
+							node.selectionEnd === 0 &&
 							(e.key === kbd.ARROW_LEFT || e.key === kbd.BACKSPACE)
 						) {
 							// At the start of the input. Move the the last tag (if there is one)
@@ -385,8 +385,8 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 						}
 					}
 				}),
-				addEventListener(node, 'input', (e) => {
-					inputValue.set((e.target as HTMLInputElement).value);
+				addEventListener(node, 'input', () => {
+					inputValue.set(node.value);
 				})
 			);
 
@@ -428,7 +428,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 				};
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLDivElement) => {
 			const getElArgs = () => {
 				const id = node.getAttribute('data-tag-id') ?? '';
 
@@ -554,7 +554,7 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 				};
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLDivElement) => {
 			const getElArgs = () => {
 				const id = node.getAttribute('data-tag-id') ?? '';
 				const value = node.getAttribute('data-tag-value') ?? '';
