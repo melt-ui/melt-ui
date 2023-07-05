@@ -83,6 +83,10 @@ const root: APISchema = {
 			label: 'data-invalid',
 			value: 'Present when the input data is invalid',
 		},
+		{
+			label: 'data-invalid-edit',
+			value: 'Present when the edit input data is invalid',
+		},
 	],
 };
 
@@ -111,7 +115,7 @@ const input: APISchema = {
 
 const tag: APISchema = {
 	title: 'tag',
-	description: 'The tag component.',
+	description: 'A tag component. Requires a `TagArgs` object',
 	args: [
 		{
 			label: 'id',
@@ -134,11 +138,11 @@ const tag: APISchema = {
 		},
 		{
 			label: 'data-tag-id',
-			value: 'Tag ID',
+			value: 'Unique ID',
 		},
 		{
 			label: 'data-tag-value',
-			value: 'Tag value',
+			value: 'value',
 		},
 		{
 			label: 'data-selected',
@@ -148,12 +152,16 @@ const tag: APISchema = {
 			label: 'data-disabled',
 			value: 'Present when disabled',
 		},
+		{
+			label: 'data-editing',
+			value: 'Present when this tag is being edited',
+		},
 	],
 };
 
 const deleteTrigger: APISchema = {
 	title: 'deleteTrigger',
-	description: 'The tag components.',
+	description: 'A delete trigger component. Requires a `TagArgs` object',
 	args: [
 		{
 			label: 'id',
@@ -176,11 +184,11 @@ const deleteTrigger: APISchema = {
 		},
 		{
 			label: 'data-tag-id',
-			value: 'Unique tag ID.',
+			value: 'Unique ID.',
 		},
 		{
 			label: 'data-tag-value',
-			value: 'Tag value',
+			value: 'value',
 		},
 		{
 			label: 'data-selected',
@@ -189,6 +197,43 @@ const deleteTrigger: APISchema = {
 		{
 			label: 'data-disabled',
 			value: 'Present when disabled',
+		},
+		{
+			label: 'data-editing',
+			value: 'Present when this tag is being edited',
+		},
+	],
+};
+
+const edit: APISchema = {
+	title: 'edit',
+	description: 'An edit component. Requires a `Tag` object',
+	args: [
+		{
+			label: 'id',
+			type: 'string',
+		},
+		{
+			label: 'value',
+			type: 'string',
+		},
+	],
+	dataAttributes: [
+		{
+			label: 'data-melt-tags-input-edit',
+			value: '',
+		},
+		{
+			label: 'data-tag-id',
+			value: 'Unique ID.',
+		},
+		{
+			label: 'data-tag-value',
+			value: 'value',
+		},
+		{
+			label: 'data-editing',
+			value: 'Present when this tag is being edited',
 		},
 	],
 };
@@ -209,15 +254,15 @@ const selected: APISchema = {
 	description: 'The `$selected` store holds the currently selected `Tag`, if there is one.',
 };
 
-const value: APISchema = {
-	title: 'value',
-	description: '`$value` is a readable store, which holds the input value.',
+const inputValue: APISchema = {
+	title: 'inputValue',
+	description: '`$inputValue` is a readable store, which holds the input value.',
 };
 
-const invalid: APISchema = {
-	title: 'invalid',
+const inputInvalid: APISchema = {
+	title: 'inputInvalid',
 	description:
-		'`$invalid` is a readable store of type `boolean`. When `true`, the input valid is considered invalid.',
+		'`$inputInvalid` is a readable store of type `boolean`. When `true`, the input valid is considered invalid.',
 };
 
 const isSelected: APISchema = {
@@ -260,6 +305,14 @@ const keyboard = {
 			description:
 				'Delete the selected `tag` and move to the previous tag. If this is the first tag, delete and move to the next element of `tag` or `input`',
 		},
+		{
+			key: 'Enter',
+			description: 'Start editing the selected `tag`',
+		},
+		{
+			key: 'Esc',
+			description: 'Stop editing the current `tag`',
+		},
 	],
 };
 
@@ -269,11 +322,12 @@ export const schemas = {
 	input,
 	tag,
 	deleteTrigger,
+	edit,
 	options,
 	tags,
 	selected,
-	value,
-	invalid,
+	inputValue,
+	inputInvalid,
 	isSelected,
 	keyboard,
 };

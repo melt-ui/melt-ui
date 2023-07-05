@@ -2,15 +2,16 @@
 	import { createTagsInput } from '@melt-ui/svelte';
 
 	// This is a subset of return values
-	const { root, input, tags, tag, deleteTrigger } = createTagsInput();
+	const { root, input, tags, tag, deleteTrigger, edit } = createTagsInput();
 </script>
 
-<div {...$root} use:root.action>
+<div {...$root}>
 	{#each $tags as t}
-		<div {...$tag(t)}>
-			<span>{t.value} </span>
-			<button {...$deleteTrigger(t)} use:deleteTrigger.action>x</button>
+		<div {...$tag(t)} use:tag>
+			<span>{t.value}</span>
+			<button {...$deleteTrigger(t)} use:deleteTrigger>x</button>
 		</div>
+		<div {...$edit(t)} use:edit>{t.value}</div>
 	{/each}
-	<input {...$input} use:input.action type="text" />
+	<input {...$input} use:input type="text" />
 </div>

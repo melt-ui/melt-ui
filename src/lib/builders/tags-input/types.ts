@@ -13,6 +13,7 @@ export type CreateTagsInputArgs = {
 	denied?: string[];
 	add?: (tag: string) => Promise<Tag | string>;
 	remove?: (tag: Tag) => Promise<boolean>;
+	update?: (tag: Tag) => Promise<Tag>;
 };
 
 export type Tag = {

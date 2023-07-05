@@ -2,20 +2,21 @@
 	import { createTagsInput } from '$lib';
 	import X from '~icons/lucide/x';
 
-	const { root, input, tags, tag, deleteTrigger } = createTagsInput({
+	const { root, input, tags, tag, deleteTrigger, edit } = createTagsInput({
 		tags: ['one', 'two'],
 	});
 </script>
 
 <div class="flex flex-col items-start justify-center gap-2">
-	<div {...$root} use:root class="root">
+	<div {...$root} class="root">
 		{#each $tags as t}
-			<div {...$tag(t)} class="tag">
+			<div {...$tag(t)} use:tag class="tag">
 				<span class="flex items-center border-r border-white/10 px-1.5">{t.value}</span>
 				<button {...$deleteTrigger(t)} use:deleteTrigger class="tag-delete">
 					<X class="h-3 w-3" />
 				</button>
 			</div>
+			<div {...$edit(t)} use:edit class="edit">{t.value}</div>
 		{/each}
 
 		<input {...$input} use:input type="text" class="input" />
@@ -40,6 +41,11 @@
 		@apply flex h-full items-center px-1;
 		@apply enabled:hover:bg-magnum-700;
 		@apply data-[selected]:hover:bg-teal-600;
+	}
+
+	.edit {
+		@apply flex items-center overflow-hidden rounded-md px-1.5 [word-break:break-word];
+		@apply data-[invalid-edit]:focus:!ring-red-500;
 	}
 
 	.input {
