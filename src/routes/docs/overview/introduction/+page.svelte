@@ -89,15 +89,15 @@
 <Docs.P>Some of the project's we've been inspired by in no particular order:</Docs.P>
 <Docs.Ul>
 	<Docs.Li>
-		Zag - <Docs.A href="https://zagjs.com/">https://zagjs.com</Docs.A>
-	</Docs.Li>
-	<Docs.Li>
-		Radix UI - <Docs.A href="https://radix-ui.com/">https://radix-ui.com</Docs.A>
-	</Docs.Li>
-	<Docs.Li>
-		Grail UI - <Docs.A href="https://grail-ui.com/">https://grail-ui.com</Docs.A>
+		Radix UI - <Docs.A href="https://radix-ui.com/">Radix UI</Docs.A>
 	</Docs.Li>
 	<Docs.Li>
 		Skeleton - <Docs.A href="https://skeleton.dev">https://skeleton.dev</Docs.A>
+	</Docs.Li>
+	<Docs.Li>
+		Zag - <Docs.A href="https://zagjs.com/">https://zagjs.com</Docs.A>
+	</Docs.Li>
+	<Docs.Li>
+		Grail UI - <Docs.A href="https://grail-ui.vercel.app/">https://grail-ui.vercel.app</Docs.A>
 	</Docs.Li>
 </Docs.Ul>
