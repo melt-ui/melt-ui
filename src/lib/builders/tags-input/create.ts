@@ -461,7 +461,12 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					editing.set(null);
 				}),
 				addEventListener(node, 'dblclick', async () => {
+					if (!isBrowser) return;
+
+					// Do nothing when it is not editable or the edit container does not exist
 					if (!node.hasAttribute('data-editable')) return;
+					if (!document.querySelector(selector('edit') + `[data-tag-id="${getElArgs().id}"]`))
+						return;
 
 					// Start editing this tag
 					editing.set({
