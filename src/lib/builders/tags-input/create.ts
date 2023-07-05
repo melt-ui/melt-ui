@@ -20,6 +20,7 @@ import { tick } from 'svelte';
 const defaults = {
 	placeholder: 'Enter tags...',
 	disabled: false,
+	editable: true,
 	tags: [],
 	unique: false,
 	blur: 'nothing',
@@ -400,8 +401,9 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		returned: ([$selected, $editing, $options]) => {
 			return (tag: TagArgs) => {
 				const disabled = $options.disabled || tag.disabled;
+				const editable = $options.editable && tag.editable;
 				const selected = disabled ? undefined : $selected?.id === tag?.id;
-				const editing = $editing?.id === tag?.id;
+				const editing = editable ? $editing?.id === tag?.id : undefined;
 
 				return {
 					'aria-hidden': editing,
@@ -409,10 +411,11 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					'data-tag-id': tag.id,
 					'data-tag-value': tag.value,
 					'data-selected': selected ? '' : undefined,
+					'data-editable': editable ? '' : undefined,
 					'data-editing': editing ? '' : undefined,
 					'data-disabled': disabled ? '' : undefined,
 					disabled: disabled,
-					hidden: editing ? true : undefined,
+					hidden: editing,
 					tabindex: -1,
 					style: editing
 						? styleToString({
@@ -457,7 +460,9 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					setSelectedFromEl(node, selected);
 					editing.set(null);
 				}),
-				addEventListener(node, 'dblclick', async (e) => {
+				addEventListener(node, 'dblclick', async () => {
+					if (!node.hasAttribute('data-editable')) return;
+
 					// Start editing this tag
 					editing.set({
 						id: node.getAttribute('data-tag-id') ?? '',
@@ -481,8 +486,9 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 		returned: ([$selected, $editing, $options]) => {
 			return (tag: TagArgs) => {
 				const disabled = $options.disabled || tag.disabled;
+				const editable = $options.editable && tag.editable;
 				const selected = disabled ? undefined : $selected?.id === tag?.id;
-				const editing = $editing?.id === tag?.id;
+				const editing = editable ? $editing?.id === tag?.id : undefined;
 
 				return {
 					'aria-selected': selected,
@@ -520,15 +526,15 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 
 	const edit = builder(name('edit'), {
 		stores: [editing, options],
-		returned: ([$editing]) => {
+		returned: ([$editing, $options]) => {
 			return (tag: Tag) => {
-				const editing = $editing?.id === tag.id;
+				const editable = $options.editable;
+				const editing = editable ? $editing?.id === tag.id : undefined;
 
 				return {
 					'aria-hidden': !editing,
 					'data-tag-id': tag.id,
 					'data-tag-value': tag.value,
-					'data-editing': editing ? '' : undefined,
 					hidden: !editing ? true : undefined,
 					contenteditable: editing,
 					tabindex: -1,
@@ -556,6 +562,8 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 
 			const unsub = executeCallbacks(
 				addEventListener(node, 'blur', () => {
+					if (node.hasAttribute('hidden')) return;
+
 					// Stop editing, reset the value to the original and clear an invalid state
 					editing.set(null);
 					(node as HTMLElement).textContent = getElArgs().value;
@@ -563,6 +571,8 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					node.removeAttribute('data-invalid-edit');
 				}),
 				addEventListener(node, 'keydown', async (e) => {
+					if (node.hasAttribute('hidden')) return;
+
 					if (e.key === kbd.ENTER) {
 						// Capture the edit value, validate and then update
 						e.preventDefault();
@@ -592,6 +602,8 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 					}
 				}),
 				addEventListener(node, 'input', () => {
+					if (node.hasAttribute('hidden')) return;
+
 					// Update the edit value store
 					editValue.set(node.textContent || '');
 				})

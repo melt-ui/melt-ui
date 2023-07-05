@@ -15,6 +15,11 @@ const builder: APISchema = {
 			default: false,
 		},
 		{
+			label: 'editable',
+			type: 'boolean',
+			default: true,
+		},
+		{
 			label: 'selected',
 			type: '{id: string, value: string}',
 		},
@@ -130,6 +135,11 @@ const tag: APISchema = {
 			type: 'boolean',
 			default: false,
 		},
+		{
+			label: 'editable',
+			type: 'boolean',
+			default: true,
+		},
 	],
 	dataAttributes: [
 		{
@@ -151,6 +161,10 @@ const tag: APISchema = {
 		{
 			label: 'data-disabled',
 			value: 'Present when disabled',
+		},
+		{
+			label: 'data-editable',
+			value: 'Present when this tag is editable',
 		},
 		{
 			label: 'data-editing',
@@ -175,6 +189,11 @@ const deleteTrigger: APISchema = {
 			label: 'disabled',
 			type: 'boolean',
 			default: false,
+		},
+		{
+			label: 'editable',
+			type: 'boolean',
+			default: true,
 		},
 	],
 	dataAttributes: [
@@ -230,10 +249,6 @@ const edit: APISchema = {
 		{
 			label: 'data-tag-value',
 			value: 'value',
-		},
-		{
-			label: 'data-editing',
-			value: 'Present when this tag is being edited',
 		},
 	],
 };
