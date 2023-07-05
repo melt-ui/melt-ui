@@ -5,8 +5,8 @@
 
 	const features = [
 		'Fully managed focus',
-		'Can be controlled or uncontrolled',
-		'Esc closes the component automaticlaly',
+		'Supports pasting from clipboard',
+		'Keyboard navigation',
 	];
 </script>
 
@@ -17,4 +17,5 @@
 <Docs.Construction />
 <Docs.Features {features} />
 
+<Docs.H2>Accessibility</Docs.H2>
 <Docs.API schema={schemas.keyboard} />

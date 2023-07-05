@@ -14,12 +14,6 @@ import { tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import type { CreatePinInputArgs } from './types';
 
-// TODO:
-// - [X] Fix placeholder bug
-// - [ ] Disabled state
-// - [ ] Helpers
-// - [ ] Password input
-
 const { name, selector } = createElHelpers<'input' | 'hidden-input'>('pin-input');
 
 const getInputs = (node: HTMLElement) => {
@@ -34,6 +28,8 @@ const getInputs = (node: HTMLElement) => {
 
 const defaults = {
 	placeholder: '○',
+	disabled: false,
+	type: 'text',
 } satisfies Defaults<CreatePinInputArgs>;
 
 export function createPinInput(args?: CreatePinInputArgs) {
@@ -58,6 +54,8 @@ export function createPinInput(args?: CreatePinInputArgs) {
 			return {
 				'data-complete': $value.length && $value.every((v) => v.length > 0) ? '' : undefined,
 				placeholder: $options.placeholder,
+				disabled: $options.disabled,
+				type: $options.type,
 			};
 		},
 		action: (node: HTMLInputElement) => {
@@ -82,6 +80,12 @@ export function createPinInput(args?: CreatePinInputArgs) {
 							tick().then(() => (node.placeholder = ''));
 							value.set(inputs.map((input) => input.value.slice(-1) ?? undefined));
 						}
+					}
+
+					if (e.key === 'Delete') {
+						e.preventDefault();
+						node.value = '';
+						tick().then(() => (node.placeholder = ''));
 					}
 
 					if (e.key === 'ArrowLeft') {
@@ -194,6 +198,13 @@ export function createPinInput(args?: CreatePinInputArgs) {
 		}),
 	});
 
+	const clear = () => {
+		value.update((v) => {
+			v.forEach((_, i) => (v[i] = ''));
+			return v;
+		});
+	};
+
 	return {
 		root,
 		input,
@@ -201,5 +212,6 @@ export function createPinInput(args?: CreatePinInputArgs) {
 		value,
 		valueStr,
 		options,
+		clear,
 	};
 }

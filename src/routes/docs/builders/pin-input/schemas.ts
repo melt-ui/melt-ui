@@ -1,60 +1,37 @@
 import type { APISchema } from '$routes/(components)';
-
-const builder: APISchema = {
-	title: 'CreateDialogArgs',
-	description: 'The configuration object passed to the `createDialog` builder function.',
-	args: [
-		{
-			label: 'role',
-			type: "'dialog' | 'alert-dialog'",
-			default: "'dialog'",
-		},
-		{
-			label: 'preventScroll',
-			type: 'boolean',
-			default: true,
-		},
-		{
-			label: 'closeOnEscape',
-			type: 'boolean',
-			default: true,
-		},
-		{
-			label: 'closeOnOutsideClick',
-			type: 'boolean',
-			default: true,
-		},
-	],
-};
+import { isMac, kbd } from '@melt-ui/svelte/internal/helpers';
 
 const keyboard: APISchema = {
 	title: 'Keyboard Interactions',
 	description: '',
 	keyboardInteractions: [
 		{
-			key: 'Space',
-			description: 'Opens/closes the dialog.',
+			key: kbd.ARROW_LEFT,
+			description: 'Moves to the previous input.',
 		},
 		{
-			key: 'Enter',
-			description: 'Opens/closes the dialog.',
+			key: kbd.ARROW_RIGHT,
+			description: 'Moves to the next input.',
 		},
 		{
-			key: 'Tab',
-			description: 'Moves focus to the next focusable element within the dialog.',
+			key: kbd.BACKSPACE,
+			description:
+				'Deletes the value of the current input. If the input is empty, moves to the previous input.',
 		},
 		{
-			key: 'Shift + Tab',
-			description: 'Moves focus to the previous focusable element within the dialog.',
+			key: kbd.DELETE,
+			description: 'Deletes the value of the current input.',
 		},
 		{
-			key: 'Esc',
-			description: 'Closes the dialog and moves focus to the trigger element.',
+			key: `${isMac() ? '⌘' : kbd.CTRL} + V`,
+			description:
+				'Pastes the contents of the clipboard into the pin input.\
+			If the number of characters in the clipboard equals exceeds the number of inputs, the contents are pasted from the first input.\
+			Otherwise, the contents are pasted from the current input onwards.',
 		},
 	],
 };
 
 export const schemas = {
-	builder,
 	keyboard,
 };

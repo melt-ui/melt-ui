@@ -20,6 +20,7 @@ export const kbd = {
 	SHIFT: 'Shift',
 	SPACE: ' ',
 	TAB: 'Tab',
+	CTRL: 'Control',
 };
 
 export const getNextKey = (
