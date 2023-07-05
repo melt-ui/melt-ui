@@ -3,6 +3,8 @@ import type { PageLoad } from './$types';
 import { getDocData, getMainPreviewComponent, getPreviewSnippets } from '$docs/utils';
 import { data, isBuilderName } from '$docs/data/builders';
 
+export const prerender = true;
+
 export const load: PageLoad = async (event) => {
 	if (!isBuilderName(event.params.name)) {
 		throw error(404);
