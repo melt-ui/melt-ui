@@ -124,6 +124,11 @@ export const navConfig: NavConfig = {
 					items: [],
 				},
 				{
+					title: 'Separator',
+					href: '/docs/builders/separator',
+					items: [],
+				},
+				{
 					title: 'Slider',
 					href: '/docs/builders/slider',
 					items: [],

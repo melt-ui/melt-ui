@@ -35,7 +35,7 @@
 				<button
 					id={i === 0 ? 'trigger' : undefined}
 					{...$trigger(id)}
-					use:trigger.action
+					use:trigger
 					class="flex h-12 flex-1 cursor-pointer items-center justify-between
             bg-white px-5 text-base font-medium leading-none text-magnum-700
             shadow-[0_1px_0] transition-colors hover:bg-opacity-95"

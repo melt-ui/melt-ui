@@ -11,7 +11,7 @@
 
 <button
 	{...$trigger}
-	use:trigger.action
+	use:trigger
 	class="ml-6 text-neutral-400 transition-colors hover:text-neutral-50 md:hidden"
 >
 	<Menu class="h-6 w-6" />
@@ -26,7 +26,7 @@
 		/>
 		<div
 			{...$content}
-			use:content.action
+			use:content
 			class="menu fixed left-0 top-0 z-50 h-screen w-5/6 bg-neutral-900 p-[25px]
 				 shadow-lg focus:outline-none"
 			transition:fly={{ x: -768, duration: 300, opacity: 1 }}
@@ -69,8 +69,8 @@
 				class="absolute right-4 top-4 px-2"
 				size="sm"
 				variant="ghost"
-				{...close}
-				action={close.action}
+				{...$close}
+				action={close}
 			>
 				<X class="h-4 w-4" />
 			</Button>
