@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { cn } from '$routes/helpers';
-
-	export let fullwidth = false;
 </script>
 
 <div class="comp-preview h-[20rem] overflow-x-auto lg:h-[28rem] lg:overflow-x-hidden">
-	<div class={cn('mx-auto max-w-md px-4', fullwidth && 'w-full max-w-none')}>
+	<div class={cn('mx-auto w-full px-4')}>
 		<slot />
 	</div>
 </div>

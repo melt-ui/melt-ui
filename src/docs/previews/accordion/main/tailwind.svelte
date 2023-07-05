@@ -28,8 +28,8 @@
 		<div
 			{...$item(id)}
 			class="mt-px overflow-hidden transition-colors first:mt-0 first:rounded-t
-            last:rounded-b focus-within:relative focus-within:z-10
-            focus-within:ring focus-within:ring-magnum-400"
+        last:rounded-b focus-within:relative focus-within:z-10
+        focus-within:ring focus-within:ring-magnum-400"
 		>
 			<h2 class="flex">
 				<button
@@ -37,8 +37,8 @@
 					{...$trigger(id)}
 					use:trigger.action
 					class="flex h-12 flex-1 cursor-pointer items-center justify-between
-                bg-white px-5 text-base font-medium leading-none text-magnum-700
-                shadow-[0_1px_0] transition-colors hover:bg-opacity-95"
+            bg-white px-5 text-base font-medium leading-none text-magnum-700
+            shadow-[0_1px_0] transition-colors hover:bg-opacity-95"
 				>
 					{title}
 				</button>

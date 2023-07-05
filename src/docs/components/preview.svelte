@@ -23,7 +23,6 @@
 	type $$Props = PreviewProps;
 
 	export let code: $$Props['code'];
-	export let fullwidth: $$Props['fullwidth'] = false;
 
 	let codingStyle = Object.keys(code)[0] ? ('tailwind' as const) : ('css' as const);
 	let codingStyleObj: $$Props['code'][typeof codingStyle] | null = code[codingStyle];
@@ -81,7 +80,9 @@
 				</div>
 
 				<div class="ml-auto hidden lg:block">
-					<Select options={codeOptions} bind:value={codingStyle} />
+					{#if codeOptions.length > 1}
+						<Select options={codeOptions} bind:value={codingStyle} />
+					{/if}
 				</div>
 			</div>
 			{#if isFileName(tab)}
@@ -93,7 +94,7 @@
 			{/if}
 		</TabsRoot>
 	{:else}
-		<PreviewWrapper {fullwidth}>
+		<PreviewWrapper>
 			<slot />
 		</PreviewWrapper>
 	{/if}
