@@ -28,8 +28,3 @@ export function getTabbableNodes(container: HTMLElement) {
 	while (walker.nextNode()) nodes.push(walker.currentNode as HTMLElement);
 	return nodes;
 }
-
-/** Retrieves all option descendants of a given element. */
-export function getOptions(el: HTMLElement): HTMLElement[] {
-	return Array.from(el.querySelectorAll('[role="option"]'));
-}

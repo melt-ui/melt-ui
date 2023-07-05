@@ -1,3 +1,4 @@
+import { getOptions } from '$lib/internal/helpers/list';
 import { usePopper } from '@melt-ui/svelte/internal/actions';
 import {
 	addEventListener,
@@ -5,7 +6,6 @@ import {
 	executeCallbacks,
 	FIRST_LAST_KEYS,
 	generateId,
-	getOptions,
 	isBrowser,
 	isElementDisabled,
 	isHTMLElement,
@@ -332,16 +332,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 			sleep(1).then(() => $highlightedItem.scrollIntoView({ block: $options.scrollAlignment }));
 		}
 	});
-
-	// effect([open, highlightedItem, options], ([$open, $highlightedItem, $options]) => {
-	// 	if (!isBrowser) return;
-
-	// 	const menuElement = document.getElementById(ids.menu);
-	// 	if (menuElement && $open) {
-	// 		if ($highlightedItem) {
-	// 		}
-	// 	}
-	// });
 
 	const item = {
 		...derived([selectedItem], ([$selectedItem]) => (args: ComboboxItemArgs<T>) => ({

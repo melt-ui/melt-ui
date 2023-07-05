@@ -1,24 +1,24 @@
 import { usePopper } from '$lib/internal/actions/popper';
 import {
+	FIRST_LAST_KEYS,
+	SELECTION_KEYS,
 	addEventListener,
 	createTypeaheadSearch,
 	effect,
 	executeCallbacks,
 	generateId,
 	getNextFocusable,
-	getOptions,
 	getPreviousFocusable,
 	handleRovingFocus,
 	isBrowser,
 	isHTMLElement,
 	kbd,
-	SELECTION_KEYS,
-	FIRST_LAST_KEYS,
 	noop,
 	omit,
 	removeScroll,
 	styleToString,
 } from '$lib/internal/helpers';
+import { getFirstOption, getOptions } from '$lib/internal/helpers/list';
 import { sleep } from '$lib/internal/helpers/sleep';
 import type { Defaults } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
@@ -497,10 +497,6 @@ export function createSelect(args?: CreateSelectArgs) {
 
 	function isMouse(e: PointerEvent) {
 		return e.pointerType === 'mouse';
-	}
-
-	function getFirstOption(menuElement: HTMLElement) {
-		return menuElement.querySelector('[role="option"]');
 	}
 
 	function getSelectedOption(menuElement: HTMLElement) {
