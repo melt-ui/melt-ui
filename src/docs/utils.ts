@@ -3,11 +3,9 @@ import { clsx, type ClassValue } from 'clsx';
 import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
 import { twMerge } from 'tailwind-merge';
-import rawGlobalCSS from '../../other/globals?raw';
 import rawTailwindConfig from '../../tailwind.config.ts?raw';
-import { getHighlighter, renderToHtml } from 'shiki-es';
-import { highlighterStore } from '$docs/stores';
-import { get } from 'svelte/store';
+import rawGlobalCSS from '$docs/previews/other/globals?raw';
+import { highlightCode } from '$docs/highlighter';
 
 /**
  * Appends strings of classes. If non-truthy values are passed, they are ignored.
@@ -22,14 +20,6 @@ export function cn(...inputs: ClassValue[]): string {
  */
 export function sortedEntries<T>(obj: Record<string, T>): [string, T][] {
 	return Object.entries(obj).sort(([a], [b]) => a.localeCompare(b));
-}
-
-export async function getShikiHighlighter() {
-	const shikiHighlighter = await getHighlighter({
-		theme: 'github-dark',
-		langs: ['svelte', 'typescript', 'css', 'javascript', 'json', 'bash'],
-	});
-	return shikiHighlighter;
 }
 
 export type Tree = {
@@ -153,52 +143,12 @@ export const noopAction = () => {
 	// do nothing
 };
 
-function tabsToSpaces(code: string) {
-	return code.replace(/\t/g, '  ');
-}
-
-async function getStoredHighlighter() {
-	const currHighlighter = get(highlighterStore);
-	if (currHighlighter) {
-		return currHighlighter;
-	}
-	const shikiHighlighter = await getShikiHighlighter();
-	highlighterStore.set(shikiHighlighter);
-	return shikiHighlighter;
-}
-
-export async function highlightCode(code: string, lang: string) {
-	const highlighter = await getStoredHighlighter();
-
-	const tokens = highlighter.codeToThemedTokens(tabsToSpaces(code), lang);
-
-	const html = renderToHtml(tokens, {
-		elements: {
-			pre({ children }) {
-				return `<pre data-language="${lang}" data-theme="default">${children}</pre>`;
-			},
-			code({ children }) {
-				return `<code data-language="${lang}" data-theme="default">${children}</code>`;
-			},
-			line({ children }) {
-				if (!children) {
-					return `<span data-line>${' '}</span>`;
-				}
-				return `<span data-line>${children}</span>`;
-			},
-			token({ style, children }) {
-				return `<span style="${style}">${children}</span>`;
-			},
-		},
-	});
-
-	return html;
-}
-
 interface ReturnedObj {
 	[key: string]: {
 		[key: string]: {
-			[key: string]: string;
+			'index.svelte'?: string;
+			'globals.css'?: string;
+			'tailwind.config.ts'?: string;
 		};
 	};
 }
@@ -254,4 +204,10 @@ export async function createPreviewsObject(
 	}
 
 	return returnedObj;
+}
+
+export function isMainPreviewComponent(builder: string, path: string): boolean {
+	const regexPattern = `${builder}/main/tailwind\\.svelte$`;
+	const regex = new RegExp(regexPattern);
+	return regex.test(path);
 }

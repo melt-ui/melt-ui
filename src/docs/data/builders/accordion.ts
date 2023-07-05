@@ -1,7 +1,7 @@
 import type { APISchema } from '$routes/(components)/api.svelte';
 
 const builder: APISchema = {
-	title: 'CreateAccordionArgs',
+	title: 'createAccordion',
 	description: 'The configuration object passed to the `createAccordion` builder function.',
 	args: [
 		{
@@ -22,7 +22,7 @@ const builder: APISchema = {
 };
 
 const root: APISchema = {
-	title: 'Root',
+	title: 'root',
 	description: 'Contains all the parts of an accordion.',
 	dataAttributes: [
 		{
@@ -33,7 +33,7 @@ const root: APISchema = {
 };
 
 const item: APISchema = {
-	title: 'Item',
+	title: 'item',
 	description: 'Contains all the parts of a collapsible section.',
 	args: [
 		{
@@ -59,7 +59,7 @@ const item: APISchema = {
 };
 
 const trigger: APISchema = {
-	title: 'Trigger',
+	title: 'trigger',
 	description:
 		'Toggles the collapsed state of an item. It should be nested inside of its associated `item`.',
 	args: [
@@ -95,7 +95,7 @@ const trigger: APISchema = {
 };
 
 const content: APISchema = {
-	title: 'Content',
+	title: 'content',
 	description: 'Contains the collapsible content for an accordion item.',
 	args: [
 		{
@@ -159,7 +159,7 @@ const keyboard: APISchema = {
 	],
 };
 
-export const schemas = {
+const schemas = {
 	builder,
 	content,
 	root,
@@ -168,8 +168,13 @@ export const schemas = {
 	keyboard,
 };
 
-export const features = [
+const features = [
 	'Full keyboard navigation',
 	'Can expand one or multiple items',
 	'Can be controlled or uncontrolled',
 ];
+
+export const accordionData = {
+	schemas,
+	features,
+};

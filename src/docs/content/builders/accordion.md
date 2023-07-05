@@ -12,10 +12,5 @@ features: |
 <script>
     import MainPreview from '$docs/previews/accordion/main/tailwind.svelte';
     import Preview from '$docs/components/preview.svelte';
-
-    export let previews
+    export let snippets
 </script>
-
-<Preview code={previews.main} fullwidth>
-    <MainPreview />
-</Preview>

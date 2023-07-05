@@ -1,17 +1,11 @@
 <script lang="ts" context="module">
 	export type PreviewProps = {
-		component: any;
 		code: {
-			tailwind: {
-				[key: string]: string;
-				'index.svelte': string;
-				'tailwind.config.ts': string;
+			[key: string]: {
+				'index.svelte'?: string;
+				'tailwind.config.ts'?: string;
+				'globals.css'?: string;
 			};
-			css: {
-				[key: string]: string;
-				'index.svelte': string;
-				'globals.css': string;
-			} | null;
 		};
 		fullwidth?: boolean;
 	};
@@ -20,7 +14,7 @@
 <script lang="ts">
 	import { createSelect, type CreateSelectArgs } from '$lib';
 	import { cn } from '$routes/helpers';
-	import CodePreview from './code-preview.svelte';
+	import CodeBlock from './code-block.svelte';
 	import PreviewWrapper from './preview-wrapper.svelte';
 	import Select from './select.svelte';
 	import Switch from './switch.svelte';
@@ -58,6 +52,12 @@
 			disabled: value === null,
 		} satisfies CreateSelectArgs;
 	});
+
+	const fileList = ['index.svelte', 'tailwind.config.ts', 'globals.css'] as const;
+
+	export function isFileName(key: string): key is (typeof fileList)[number] {
+		return fileList.includes(key as (typeof fileList)[number]);
+	}
 </script>
 
 <div class="mt-4 flex flex-row items-center justify-between">
@@ -84,10 +84,12 @@
 					<Select options={codeOptions} bind:value={codingStyle} />
 				</div>
 			</div>
-			{#if codingStyleObj && codingStyleObj[tab]}
-				<CodePreview>
-					{@html codingStyleObj[tab]}
-				</CodePreview>
+			{#if isFileName(tab)}
+				{#if codingStyleObj && codingStyleObj[tab]}
+					<CodeBlock>
+						{@html codingStyleObj[tab]}
+					</CodeBlock>
+				{/if}
 			{/if}
 		</TabsRoot>
 	{:else}

@@ -1,7 +1,13 @@
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
-import type { DocResolver } from '$docs/types';
-import { createPreviewsObject, previewPathMatcher, slugFromPath } from '$docs/utils';
+import type { DocResolver, PreviewResolver } from '$docs/types';
+import {
+	createPreviewsObject,
+	isMainPreviewComponent,
+	previewPathMatcher,
+	slugFromPath,
+} from '$docs/utils';
+import { data, isBuilderName } from '$docs/data/builders';
 
 export const load: PageLoad = async (event) => {
 	const modules = import.meta.glob('/src/docs/content/builders/**/*.md');
@@ -36,13 +42,32 @@ export const load: PageLoad = async (event) => {
 			previewCodeMatches.push(prev);
 		}
 	}
+	const snippets = await createPreviewsObject(event.params.name, previewCodeMatches);
 
-	const previews = await createPreviewsObject(event.params.name, previewCodeMatches);
+	const previewComponents = import.meta.glob('/src/docs/previews/**/*.svelte');
+	let mainPreviewObj: { path?: string; resolver?: PreviewResolver } = {};
+	for (const [path, resolver] of Object.entries(previewComponents)) {
+		if (isMainPreviewComponent(event.params.name, path)) {
+			mainPreviewObj = { path, resolver: resolver as unknown as PreviewResolver };
+			break;
+		}
+	}
+
+	const mainPreview = await mainPreviewObj.resolver?.();
+	if (!mainPreview) {
+		throw error(500);
+	}
+
+	if (!isBuilderName(event.params.name)) {
+		throw error(500);
+	}
 
 	return {
 		component: doc.default,
 		metadata: doc.metadata,
 		title: doc.metadata.title,
-		previews,
+		mainPreview: mainPreview.default,
+		snippets,
+		builderData: data[event.params.name],
 	};
 };

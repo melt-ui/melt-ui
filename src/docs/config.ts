@@ -64,6 +64,11 @@ export const navConfig: NavConfig = {
 					items: [],
 				},
 				{
+					title: 'Collapsible',
+					href: '/docs/builders/collapsible',
+					items: [],
+				},
+				{
 					title: 'Context Menu',
 					href: '/docs/builders/context-menu',
 					items: [],
@@ -116,6 +121,11 @@ export const navConfig: NavConfig = {
 				{
 					title: 'Select',
 					href: '/docs/builders/select',
+					items: [],
+				},
+				{
+					title: 'Slider',
+					href: '/docs/builders/slider',
 					items: [],
 				},
 				{

@@ -10,3 +10,6 @@ export { default as Description } from './description.svelte';
 export { default as Callout } from './callout.svelte';
 export { default as InstallTabs } from './install-tabs.svelte';
 export { default as TailwindIndicator } from './tailwind-indicator.svelte';
+export { default as Preview } from './preview.svelte';
+export { default as CodeBlock } from './code-block.svelte';
+export { default as Features } from './features.svelte';

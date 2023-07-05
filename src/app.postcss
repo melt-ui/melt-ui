@@ -1,7 +1,29 @@
 @font-face {
-	font-family: 'Jetbrains Mono';
+	font-family: 'IBM Plex Mono';
+	src: url('/fonts/IBMPlexMono-Regular.ttf');
+	font-display: swap;
+	font-weight: regular;
+}
+
+@font-face {
+	font-family: 'IBM Plex Mono';
 	src: url('/fonts/IBMPlexMono-Medium.ttf');
 	font-display: swap;
+	font-weight: 500;
+}
+
+@font-face {
+	font-family: 'IBM Plex Mono';
+	src: url('/fonts/IBMPlexMono-SemiBold.ttf');
+	font-display: swap;
+	font-weight: 600;
+}
+
+@font-face {
+	font-family: 'IBM Plex Mono';
+	src: url('/fonts/IBMPlexMono-Bold.ttf');
+	font-display: swap;
+	font-weight: 700;
 }
 
 /* Write your global styles here, in PostCSS syntax */
@@ -109,24 +131,5 @@ body::-webkit-scrollbar-thumb:hover {
 @media (max-width: 640px) {
 	.container {
 		@apply px-4;
-	}
-}
-
-[data-shiki-code-fragment] {
-	@apply relative;
-
-	& pre {
-		@apply mb-4 mt-6 flex max-h-[650px] flex-col overflow-x-auto rounded-lg border border-neutral-500/50 bg-neutral-950/60 py-4 font-bold;
-	}
-
-	& code {
-		@apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0;
-		counter-reset: line;
-		box-decoration-break: clone;
-		font-size: 15px;
-	}
-
-	& .line {
-		@apply inline-block w-full basis-4 border-l-[3px] border-l-transparent px-5 py-1;
 	}
 }

@@ -1,7 +1,6 @@
 import adapter from '@sveltejs/adapter-vercel';
 import { vitePreprocess } from '@sveltejs/kit/vite';
 import { mdsvex } from '@huntabyte/mdsvex';
-import preprocess from 'svelte-preprocess';
 import { mdsvexOptions } from './mdsvex.config.js';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -9,13 +8,7 @@ const config = {
 	extensions: ['.svelte', '.md'],
 	// Consult https://kit.svelte.dev/docs/integrations#preprocessors
 	// for more information about preprocessors
-	preprocess: [
-		vitePreprocess(),
-		preprocess({
-			postcss: true,
-		}),
-		mdsvex(mdsvexOptions),
-	],
+	preprocess: [mdsvex(mdsvexOptions), vitePreprocess()],
 
 	kit: {
 		// adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.

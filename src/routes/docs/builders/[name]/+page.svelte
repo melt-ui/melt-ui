@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { TOC, Description } from '$docs/components';
+	import { TOC, Description, Preview, Features } from '$docs/components';
 
 	import type { SvelteComponent } from 'svelte';
 	import type { PageData } from './$types';
@@ -14,7 +14,9 @@
 	type Component = $$Generic<typeof SvelteComponent>;
 	$: component = data.component as unknown as Component;
 	$: doc = data.metadata;
-	$: previews = data.previews;
+	$: snippets = data.snippets;
+	$: mainPreview = data.mainPreview as unknown as Component;
+	$: builderData = data.builderData;
 </script>
 
 <main class="relative px-2 py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_240px]">
@@ -31,7 +33,12 @@
 		</div>
 		<div {...$separator} class="my-4 md:my-6" />
 		<div class="mdsvex" id="mdsvex">
-			<svelte:component this={component} {previews} />
+			<Preview code={snippets.main} fullwidth>
+				<svelte:component this={mainPreview} />
+			</Preview>
+			<Features features={builderData.features} />
+
+			<svelte:component this={component} {snippets} />
 		</div>
 		<div {...$separator} class="my-4 md:my-6" />
 		<!-- <DocsPager /> -->
