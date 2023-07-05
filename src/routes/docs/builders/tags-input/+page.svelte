@@ -9,6 +9,7 @@
 		'Type in the input and press enter to add tags',
 		'Keyboard navigation',
 		'Delete tags',
+		'Edit tags',
 		'Disable everything or disable specific tags',
 		'Only allow unique tags',
 		'Add a tag on paste',
@@ -28,9 +29,10 @@
 <Docs.H2>Anatomy</Docs.H2>
 <Docs.Ul>
 	<Docs.Li><b>Root:</b> The root container for the tags input</Docs.Li>
-	<Docs.Li><b>Tag:</b> A tag element</Docs.Li>
-	<Docs.Li><b>Delete Trigger:</b> A button element which deletes a tag</Docs.Li>
-	<Docs.Li><b>Input:</b> The input textbox for adding new Tags</Docs.Li>
+	<Docs.Li><b>Tag:</b> The tag container for an individual tag</Docs.Li>
+	<Docs.Li><b>Delete Trigger:</b> The button container, to delete an individual tag</Docs.Li>
+	<Docs.Li><b>Edit:</b> An edit container, to edit an individual tag</Docs.Li>
+	<Docs.Li><b>Input:</b> The input textbox for adding new tags</Docs.Li>
 </Docs.Ul>
 
 <Docs.H2>Usage</Docs.H2>
@@ -56,7 +58,7 @@
 	</Docs.P>
 
 	<Docs.P>
-		It grants you the ability to validate the input value, set a custom id, for example from a
+		It provides you the ability to validate the input value, set a custom id, for example from a
 		backend or 3rd-party API, or update the value to always be uppercase, lowercase, etc.
 	</Docs.P>
 
@@ -84,7 +86,43 @@
 		The following example sets the id via a third-party API call and forces the tag to always be
 		uppercase.
 	</Docs.P>
+
 	<Docs.CodeBlock code={snippets.usage3} />
+</Docs.P>
+
+<Docs.H4>Update</Docs.H4>
+<Docs.P>
+	<Docs.P>
+		An asynchronous <Docs.Code>update</Docs.Code> function may be passed into the builder. It is called
+		prior to updating a tag in <Docs.Code>$tags</Docs.Code> store, following an edit.
+	</Docs.P>
+
+	<Docs.P>
+		It provides the ability do something before a tag is updated, such as updating the value in a
+		backend database, setting a new id, or simply manipulating the value to be added.
+	</Docs.P>
+
+	<Docs.P>
+		The function definition is <Docs.Code>(tag: Tag) =&gt Promise&ltTag&gt</Docs.Code>.
+	</Docs.P>
+
+	<Docs.Callout type="info">
+		A <Docs.Code>Tag</Docs.Code> is an object that consists of an <Docs.Code>id</Docs.Code> and
+		<Docs.Code>value</Docs.Code>.
+	</Docs.Callout>
+
+	<Docs.P>
+		<Docs.Code>tag.value</Docs.Code> will be the new (edited) value, while
+		<Docs.Code>tag.id</Docs.Code> will be the existing id.
+	</Docs.P>
+
+	<Docs.P>
+		On <Docs.Code>reject</Docs.Code> or <Docs.Code>error</Docs.Code> the tag is not updated.
+	</Docs.P>
+
+	<Docs.P>The following example uses the existing id and sets the value to uppercase</Docs.P>
+
+	<Docs.CodeBlock code={snippets.usage4} />
 </Docs.P>
 
 <Docs.H4>Remove</Docs.H4>
@@ -95,8 +133,8 @@
 	</Docs.P>
 
 	<Docs.P>
-		It grants the ability do something before the tag is removed from <Docs.Code>$tags</Docs.Code> store,
-		such as deleting the tag from a backend database.
+		It provides the ability do something before the tag is removed from <Docs.Code>$tags</Docs.Code>
+		store, such as deleting the tag from a backend database.
 	</Docs.P>
 
 	<Docs.P>
@@ -115,9 +153,10 @@
 	</Docs.P>
 
 	<Docs.P>
-		The following example disallowed the tag with the value <Docs.Code>one</Docs.Code> to be deleted.
+		The following example disallows a tag with the value <Docs.Code>one</Docs.Code> to be deleted.
 	</Docs.P>
-	<Docs.CodeBlock code={snippets.usage4} />
+
+	<Docs.CodeBlock code={snippets.usage5} />
 </Docs.P>
 
 <Docs.H2>API Reference</Docs.H2>
@@ -126,11 +165,12 @@
 <Docs.API schema={schemas.input} />
 <Docs.API schema={schemas.tag} />
 <Docs.API schema={schemas.deleteTrigger} />
+<Docs.API schema={schemas.edit} />
 <Docs.API schema={schemas.options} />
 <Docs.API schema={schemas.tags} />
 <Docs.API schema={schemas.selected} />
-<Docs.API schema={schemas.value} />
-<Docs.API schema={schemas.invalid} />
+<Docs.API schema={schemas.inputValue} />
+<Docs.API schema={schemas.inputInvalid} />
 <Docs.API schema={schemas.isSelected} />
 
 <Docs.H2>Accessibility</Docs.H2>
