@@ -24,28 +24,8 @@ import { tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
 import type { ComboboxItemArgs, CreateComboboxArgs, CreateComboboxReturn } from './types';
 
-export const INTERACTION_KEYS = [
-	kbd.ARROW_LEFT,
-	kbd.ARROW_RIGHT,
-	kbd.SHIFT,
-	kbd.CAPS_LOCK,
-	kbd.CONTROL,
-	kbd.ALT,
-	kbd.META,
-	kbd.ENTER,
-	kbd.F1,
-	kbd.F2,
-	kbd.F3,
-	kbd.F4,
-	kbd.F5,
-	kbd.F6,
-	kbd.F7,
-	kbd.F8,
-	kbd.F9,
-	kbd.F10,
-	kbd.F11,
-	kbd.F12,
-];
+// prettier-ignore
+export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
 
 const defaults = {
 	scrollAlignment: 'nearest',
@@ -57,18 +37,15 @@ const defaults = {
 } satisfies Defaults<CreateComboboxArgs<unknown>>;
 
 /**
- * POST-PR
- * - Setting initial value
- * - "Fancy" options
+ * Creates an ARIA-1.2-compliant combobox.
  *
- * THONKs
- * - replace updateList with an option setter
  * @TODO support providing an initial selected item
  * @TODO support PAGE_UP/PAGE_DOWN navigation (+10,-10)
  */
 export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxReturn<T> {
 	const options = writable(omit({ ...defaults, ...args }, 'items'));
 	const open = writable(false);
+	// Trigger element for the popper portal. This will be our input element.
 	const activeTrigger = writable<HTMLElement | null>(null);
 	// The currently highlighted menu item.
 	const highlightedItem = writable<HTMLElement | null>(null);
@@ -279,15 +256,9 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 		})),
 		action: (node: HTMLUListElement) => {
 			let unsubPopper = noop;
-			const unsubscribeCallbacks = executeCallbacks(
-				// Remove highlight when the pointer leaves the item.
-				addEventListener(node, 'pointerleave', () => {
-					highlightedItem.set(null);
-				})
-			);
-			const unsubscribe = effect(
-				[open, activeTrigger, options],
-				([$open, $activeTrigger, $options]) => {
+			const unsubscribe = executeCallbacks(
+				//  Bind the popper portal to the input element.
+				effect([open, activeTrigger, options], ([$open, $activeTrigger, $options]) => {
 					unsubPopper();
 					if ($open && $activeTrigger) {
 						tick().then(() => {
@@ -301,12 +272,15 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 							}
 						});
 					}
-				}
+				}),
+				// Remove highlight when the pointer leaves the menu.
+				addEventListener(node, 'pointerleave', () => {
+					highlightedItem.set(null);
+				})
 			);
 			return {
 				destroy: () => {
 					unsubscribe();
-					unsubscribeCallbacks();
 					unsubPopper();
 				},
 			};
