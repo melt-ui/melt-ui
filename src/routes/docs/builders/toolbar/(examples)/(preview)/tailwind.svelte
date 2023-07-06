@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createToolbar } from '@melt-ui/svelte';
+	import { createToolbar, melt } from '@melt-ui/svelte';
 	import Bold from '~icons/lucide/bold';
 	import Italic from '~icons/lucide/italic';
 	import Strikethrough from '~icons/lucide/strikethrough';
@@ -15,36 +15,36 @@
 </script>
 
 <div
-	{...$root}
+	use:melt={$root}
 	class="flex min-w-max items-center gap-4 rounded-md bg-white px-3 py-3 text-neutral-700 shadow-sm"
 >
-	<div class="group" {...$fontGroup}>
-		<button class="item" {...$fontItem('bold')} use:fontItem>
+	<div class="group" use:melt={$fontGroup}>
+		<button class="item" use:melt={$fontItem('bold')}>
 			<Bold />
 		</button>
-		<button class="item" {...$fontItem('italic')} use:fontItem>
+		<button class="item" use:melt={$fontItem('italic')}>
 			<Italic />
 		</button>
-		<button class="item" {...$fontItem('strikethrough')} use:fontItem>
+		<button class="item" use:melt={$fontItem('strikethrough')}>
 			<Strikethrough />
 		</button>
 	</div>
-	<div class="separator" {...$separator} />
-	<div class="group" {...$alignGroup}>
-		<button class="item" {...$alignItem('left')} use:alignItem>
+	<div class="separator" use:melt={$separator} />
+	<div class="group" use:melt={$alignGroup}>
+		<button class="item" use:melt={$alignItem('left')}>
 			<AlignLeft />
 		</button>
-		<button class="item" {...$alignItem('center')} use:alignItem>
+		<button class="item" use:melt={$alignItem('center')}>
 			<AlignCenter />
 		</button>
-		<button class="item" {...$alignItem('right')} use:alignItem>
+		<button class="item" use:melt={$alignItem('right')}>
 			<AlignRight />
 		</button>
 	</div>
-	<div class="separator" {...$separator} />
+	<div class="separator" use:melt={$separator} />
 	<!-- svelte-ignore a11y-invalid-attribute -->
-	<a href="#" class="link nowrap flex-shrink-0" {...$link} use:link> Edited 2 hours ago </a>
-	<button class="button" {...$button} use:button>Save</button>
+	<a href="#" class="link nowrap flex-shrink-0" use:melt={$link}> Edited 2 hours ago </a>
+	<button class="button" use:melt={$button}>Save</button>
 </div>
 
 <style lang="postcss">

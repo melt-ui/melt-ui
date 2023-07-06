@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createTooltip } from '@melt-ui/svelte';
+	import { createTooltip, melt } from '@melt-ui/svelte';
 	import { fade } from 'svelte/transition';
 	import Plus from '~icons/lucide/plus';
 
@@ -12,15 +12,14 @@
 	});
 </script>
 
-<button type="button" class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
+<button type="button" class="trigger" use:melt={$trigger} aria-label="Update dimensions">
 	<Plus class="h-4 w-4" />
 	<span class="sr-only">Open Popover</span>
 </button>
 
 {#if $open}
 	<div
-		{...$content}
-		use:content
+		use:melt={$content}
 		transition:fade={{ duration: 100 }}
 		class="z-10 rounded-md bg-white shadow-sm"
 	>
