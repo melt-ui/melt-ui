@@ -18,7 +18,9 @@ CHANGELOG.md
 *.ignore-ts
 *.ignore-svelte
 
-src/routes/docs/builders/**/(css)/*
-src/routes/docs/builders/**/(tailwind)/*
+
 
 storybook-static/**/*
+
+*.ignore-svelte
+*.ignore-ts

@@ -4,7 +4,7 @@ import Preview from './tailwind.svelte';
 import tw from './tailwind.svelte?raw';
 import TwConfig from '$routes/(configs)/tailwind.config.ts?raw';
 
-import css from './css.svelte?raw';
+import css from './css.ignore-svelte?raw';
 import GlobalReset from '$routes/(configs)/globals?raw';
 
 const Tailwind: PreviewProps['code']['Tailwind'] = {

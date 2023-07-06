@@ -22,7 +22,7 @@
 	</div>
 </form>
 
-<style>
+<style lang="postcss">
 	.checkbox-wrapper {
 		display: flex;
 		background-color: #ffffff;
