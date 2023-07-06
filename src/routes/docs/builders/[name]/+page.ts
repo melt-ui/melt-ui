@@ -1,15 +1,7 @@
 import { error } from '@sveltejs/kit';
-import type { EntryGenerator, PageLoad } from './$types';
+import type { PageLoad } from './$types';
 import { getDocData, getMainPreviewComponent, getPreviewSnippets } from '$docs/utils';
-import { builderList, data, isBuilderName } from '$docs/data/builders';
-
-export const entries = (() => {
-	return builderList.map((item) => {
-		return { name: item.toLowerCase() };
-	});
-}) satisfies EntryGenerator;
-
-export const prerender = true;
+import { data, isBuilderName } from '$docs/data/builders';
 
 export const load: PageLoad = async (event) => {
 	if (!isBuilderName(event.params.name)) {

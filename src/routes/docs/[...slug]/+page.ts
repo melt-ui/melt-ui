@@ -1,16 +1,7 @@
 import { error } from '@sveltejs/kit';
-import type { EntryGenerator, PageLoad } from './$types';
+import type { PageLoad } from './$types';
 import type { DocResolver } from '$docs/types';
 import { slugFromPath } from '$docs/utils';
-import { navConfig } from '$docs/config';
-
-export const entries = (() => {
-	return navConfig.sidebarNav[0].items.map((item) => {
-		return { slug: item.title.toLowerCase().replaceAll(' ', '-') };
-	});
-}) satisfies EntryGenerator;
-
-export const prerender = true;
 
 export const load: PageLoad = async (event) => {
 	const modules = import.meta.glob('/src/docs/content/**/*.md');
