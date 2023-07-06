@@ -1,7 +1,9 @@
 import { getOptions } from '$lib/internal/helpers/list';
-import { usePopper } from '@melt-ui/svelte/internal/actions';
+import { usePopper } from '$lib/internal/actions';
 import {
 	addEventListener,
+	builder,
+	createElHelpers,
 	effect,
 	executeCallbacks,
 	FIRST_LAST_KEYS,
@@ -19,11 +21,12 @@ import {
 	removeScroll,
 	sleep,
 	styleToString,
-} from '@melt-ui/svelte/internal/helpers';
-import type { Defaults } from '@melt-ui/svelte/internal/types';
+} from '$lib/internal/helpers';
+
 import { tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
 import type { ComboboxItemArgs, CreateComboboxArgs, CreateComboboxReturn } from './types';
+import type { Defaults } from '$lib/internal/types';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
@@ -32,6 +35,8 @@ const defaults = {
 	scrollAlignment: 'nearest',
 	loop: false,
 } satisfies Defaults<CreateComboboxArgs<unknown>>;
+
+const { name } = createElHelpers('combobox');
 
 /**
  * Creates an ARIA-1.2-compliant combobox.
@@ -87,8 +92,9 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 	}
 
 	/** Action and attributes for the text input. */
-	const input = {
-		...derived([open, highlightedItem], ([$open, $highlightedItem]) => {
+	const input = builder(name('input'), {
+		stores: [open, highlightedItem],
+		returned: ([$open, $highlightedItem]) => {
 			return {
 				'aria-activedescendant': $highlightedItem?.id,
 				'aria-autocomplete': 'list',
@@ -99,7 +105,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 				id: ids.input,
 				role: 'combobox',
 			} as const;
-		}),
+		},
 		action: (node: HTMLInputElement) => {
 			const unsubscribe = executeCallbacks(
 				// Open the menu portal when the input is focused.
@@ -217,7 +223,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 			);
 			return { destroy: unsubscribe };
 		},
-	};
+	});
 
 	/**
 	 * Selects an item from the menu and updates the input value.
@@ -246,17 +252,15 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 	/**
 	 * Action and attributes for the menu element.
 	 */
-	const menu = {
-		...derived(
-			[open],
-			([$open]) =>
-				({
-					hidden: $open ? undefined : true,
-					id: ids.menu,
-					role: 'listbox',
-					style: styleToString({ display: $open ? undefined : 'none' }),
-				} as const)
-		),
+	const menu = builder(name('menu'), {
+		stores: [open],
+		returned: ([$open]) =>
+			({
+				hidden: $open ? undefined : true,
+				id: ids.menu,
+				role: 'listbox',
+				style: styleToString({ display: $open ? undefined : 'none' }),
+			} as const),
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
 			let unsubScroll = noop;
@@ -292,7 +296,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 				},
 			};
 		},
-	};
+	});
 
 	/**
 	 * Handles moving the `data-highlighted` attribute between items when
@@ -314,16 +318,20 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 		}
 	});
 
-	const item = {
-		...derived([selectedItem], ([$selectedItem]) => (args: ComboboxItemArgs<T>) => ({
-			'data-disabled': args.disabled ? '' : undefined,
-			'aria-disabled': args.disabled ? true : undefined,
-			'aria-selected': args.item === $selectedItem,
-			'data-index': args.index,
-			id: `${ids.input}-descendent-${args.index}`,
-			role: 'option',
-			style: styleToString({ cursor: args.disabled ? 'default' : 'pointer' }),
-		})),
+	const item = builder(name('item'), {
+		stores: [selectedItem],
+		returned:
+			([$selectedItem]) =>
+			(args: ComboboxItemArgs<T>) =>
+				({
+					'data-disabled': args.disabled ? '' : undefined,
+					'aria-disabled': args.disabled ? true : undefined,
+					'aria-selected': args.item === $selectedItem,
+					'data-index': args.index,
+					id: `${ids.input}-descendent-${args.index}`,
+					role: 'option',
+					style: styleToString({ cursor: args.disabled ? 'default' : 'pointer' }),
+				} as const),
 		action: (node: HTMLElement) => {
 			const unsubscribe = executeCallbacks(
 				// Handle highlighting items when the pointer moves over them.
@@ -351,7 +359,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 			);
 			return { destroy: unsubscribe };
 		},
-	};
+	});
 
 	/**
 	 * Function to update the items in the combobox. It provides the current
@@ -380,11 +388,11 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 	return {
 		filteredItems: readonly(filteredItems),
 		input,
+		menu,
+		item,
 		inputValue,
 		isSelected,
-		menu,
 		open,
-		item,
 		options,
 		selectedItem,
 		updateItems,

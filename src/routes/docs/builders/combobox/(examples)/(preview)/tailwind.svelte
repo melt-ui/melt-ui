@@ -46,7 +46,7 @@
 			{...$input}
 			class="flex h-10 items-center justify-between rounded-md bg-white px-3 pr-12 text-magnum-700"
 			placeholder="Best book ever"
-			use:input.action
+			use:input
 			value={$inputValue}
 		/>
 		<div class="absolute right-1 top-1/2 z-10 -translate-y-1/2 text-magnum-700">
@@ -59,14 +59,14 @@
 	</div>
 </label>
 
-<div class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-md" {...$menu} use:menu.action>
+<div class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-md" {...$menu} use:menu>
 	<ul class="flex max-h-full flex-col gap-2 overflow-y-auto bg-white px-2 py-2">
 		{#if $open}
 			{#if $filteredItems.length !== 0}
 				{#each $filteredItems as book, index (index)}
 					<li
 						{...$item({ index, item: book, disabled: book.disabled })}
-						use:item.action
+						use:item
 						class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800
 						data-[highlighted]:bg-magnum-100 data-[highlighted]:text-magnum-700 data-[disabled]:opacity-50"
 					>

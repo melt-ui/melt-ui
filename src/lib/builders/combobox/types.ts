@@ -1,5 +1,5 @@
 import type { Action } from 'svelte/action';
-import type { HTMLAttributes, HTMLInputAttributes, HTMLLiAttributes } from 'svelte/elements';
+import type { HTMLAttributes, HTMLInputAttributes } from 'svelte/elements';
 import type { Readable, Writable } from 'svelte/store';
 
 export type CreateComboboxArgs<T> = {
@@ -35,21 +35,16 @@ export type CreateComboboxReturn<T> = {
 	/** List items to display that match the current filter. */
 	filteredItems: Readable<T[]>;
 	/** Action & attributes to apply to the input element. */
-	input: Readable<HTMLInputAttributes> & {
-		action: Action<HTMLInputElement, void>;
-	};
+	input: Readable<HTMLInputAttributes> & Action<HTMLInputElement, void>;
 	/** Current input value. */
 	inputValue: Writable<string>;
 	/** Function to determine if a given item is selected. */
 	isSelected: Readable<(item: T) => boolean>;
 	/** Action & attributes to apply to each item in the menu. */
-	item: Readable<(args: ComboboxItemArgs<T>) => HTMLAttributes<HTMLElement>> & {
-		action: Action<HTMLElement, void>;
-	};
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: improve this type
+	item: Readable<(args: ComboboxItemArgs<T>) => any> & Action<HTMLElement, void>;
 	/** Action & attributes to apply to the menu. */
-	menu: Readable<HTMLAttributes<HTMLElement>> & {
-		action: Action<HTMLElement, void>;
-	};
+	menu: Readable<HTMLAttributes<HTMLElement>> & Action<HTMLElement, void>;
 	/** Is the menu currently open? */
 	open: Writable<boolean>;
 	/** Top-level configuration for the Combobox instance. */
