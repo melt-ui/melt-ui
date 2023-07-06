@@ -242,3 +242,23 @@ export function createElHelpers<Part extends string = string>(prefix: string) {
 		getEl,
 	};
 }
+
+export function melt<
+	Builder,
+	S extends Stores,
+	A extends Action<any, any>,
+	R extends BuilderCallback<S>,
+	Name extends string
+>(
+	node: HTMLElement,
+	params: Builder extends BuilderReturn<S, A, R, Name>
+		? '[MELTUI] ERROR: ADD THE `$` TO YOUR BUILDER. ex: use:melt={$builder}'
+		: Builder extends Spread<A>
+		? Builder
+		: '[MELTUI] ERROR: NOT A VALID BUILDER'
+) {
+	node;
+	params;
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Spread<A> = Record<string, any> & { action: A };
