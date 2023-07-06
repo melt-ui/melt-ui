@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.18.1
+
+### Patch Changes
+
+- 068b84a: add action to function builders return
+
 ## 0.18.0
 
 ### Minor Changes
