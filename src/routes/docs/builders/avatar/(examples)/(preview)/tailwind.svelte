@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createAvatar } from '@melt-ui/svelte';
+	import { createAvatar, melt } from '@melt-ui/svelte';
 
 	const { image, fallback } = createAvatar({
 		src: 'https://avatars.githubusercontent.com/u/1162160?v=4',
@@ -19,17 +19,17 @@
 
 <div class="flex items-center gap-6">
 	<div class="flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100">
-		<img {...$image} alt="Avatar" class="h-full w-full rounded-[inherit]" />
-		<span {...$fallback} class="text-3xl font-medium text-magnum-700">RH</span>
+		<img use:melt={$image} alt="Avatar" class="h-full w-full rounded-[inherit]" />
+		<span use:melt={$fallback} class="text-3xl font-medium text-magnum-700">RH</span>
 	</div>
 
 	<div class="flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100">
-		<img {...$imageA} alt="Avatar" class="h-full w-full rounded-[inherit]" />
-		<span {...$fallbackA} class="text-3xl font-medium text-magnum-700">SH</span>
+		<img use:melt={$imageA} alt="Avatar" class="h-full w-full rounded-[inherit]" />
+		<span use:melt={$fallbackA} class="text-3xl font-medium text-magnum-700">SH</span>
 	</div>
 
 	<div class="flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100">
-		<img {...$imageB} alt="Avatar" class="h-full w-full rounded-[inherit]" />
-		<span {...$fallbackB} class="text-3xl font-medium text-magnum-700">UI</span>
+		<img use:melt={$imageB} alt="Avatar" class="h-full w-full rounded-[inherit]" />
+		<span use:melt={$fallbackB} class="text-3xl font-medium text-magnum-700">UI</span>
 	</div>
 </div>
