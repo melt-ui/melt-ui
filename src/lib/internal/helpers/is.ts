@@ -6,6 +6,10 @@ export function isHTMLElement(element: unknown): element is HTMLElement {
 	return element instanceof HTMLElement;
 }
 
+export function isHTMLInputElement(element: unknown): element is HTMLInputElement {
+	return element instanceof HTMLInputElement;
+}
+
 export function isElementDisabled(element: HTMLElement): boolean {
 	const ariaDisabled = element.getAttribute('aria-disabled');
 	const disabled = element.getAttribute('disabled');

@@ -1,5 +1,7 @@
 import { usePopper } from '$lib/internal/actions/popper';
 import {
+	FIRST_LAST_KEYS,
+	SELECTION_KEYS,
 	addEventListener,
 	createTypeaheadSearch,
 	effect,
@@ -16,17 +18,13 @@ import {
 	removeScroll,
 	styleToString,
 } from '$lib/internal/helpers';
+import { getFirstOption, getOptions } from '$lib/internal/helpers/list';
 import { sleep } from '$lib/internal/helpers/sleep';
 import type { Defaults } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import { createSeparator } from '../separator';
 import type { CreateSelectArgs, OptionArgs } from './types';
-
-const SELECTION_KEYS = [kbd.ENTER, kbd.SPACE];
-const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
-const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
-const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 
 const defaults = {
 	arrowSize: 8,
@@ -497,16 +495,8 @@ export function createSelect(args?: CreateSelectArgs) {
 		};
 	});
 
-	function getOptions(element: HTMLElement): HTMLElement[] {
-		return Array.from(element.querySelectorAll('[role="option"]'));
-	}
-
 	function isMouse(e: PointerEvent) {
 		return e.pointerType === 'mouse';
-	}
-
-	function getFirstOption(menuElement: HTMLElement) {
-		return menuElement.querySelector('[role="option"]');
 	}
 
 	function getSelectedOption(menuElement: HTMLElement) {

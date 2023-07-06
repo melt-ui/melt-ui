@@ -1,11 +1,9 @@
 import type { Defaults } from '$lib/internal/types';
 import { get, writable, type Writable } from 'svelte/store';
 import {
-	SELECTION_KEYS,
 	applyAttrsIfDisabled,
 	getMenuItems,
 	createMenuBuilder,
-	FIRST_LAST_KEYS,
 	handleMenuNavigation,
 	handleTabNavigation,
 	type MenuParts,
@@ -15,6 +13,8 @@ import {
 	isHTMLElement,
 	addEventListener,
 	kbd,
+	SELECTION_KEYS,
+	FIRST_LAST_KEYS,
 	handleRovingFocus,
 	effect,
 	styleToString,
