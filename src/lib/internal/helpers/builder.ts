@@ -150,7 +150,7 @@ type BuilderStore<
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore - This is a valid type, but TS doesn't like it for some reason. TODO: Figure out why
 				...args: Parameters<ReturnType<R>>
-		  ) => ReturnType<R> & { [K in `data-melt-${Name}`]: '' }) & { action: A }
+		  ) => ReturnType<R> & { [K in `data-melt-${Name}`]: '' } & { action: A }) & { action: A }
 		: ReturnType<R> & { [K in `data-melt-${Name}`]: '' } & { action: A }
 >;
 
@@ -170,10 +170,11 @@ export function builder<
 				const result = returned(values);
 				if (isFunctionWithParams(result)) {
 					const fn = (...args: Parameters<typeof result>) => {
-						return {
+						return hiddenAction({
 							...result(...args),
 							[`data-melt-${name}`]: '',
-						};
+							action: action ?? noop,
+						});
 					};
 					fn.action = action ?? noop;
 					return fn;
@@ -192,10 +193,11 @@ export function builder<
 
 			if (isFunctionWithParams(result)) {
 				const resultFn = (...args: Parameters<typeof result>) => {
-					return {
+					return hiddenAction({
 						...result(...args),
 						[`data-melt-${name}`]: '',
-					};
+						action: action ?? noop,
+					});
 				};
 				resultFn.action = action ?? noop;
 
