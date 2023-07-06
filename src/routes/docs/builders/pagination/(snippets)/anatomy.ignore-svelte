@@ -1,14 +1,14 @@
 <nav {...root}>
     <p>Showing items {$range.start} - {$range.end}</p>
     <div>
-        <button {...$prevButton}>Prev</button>
+        <button use:melt={$prevButton}>Prev</button>
         {#each $pages as page (page.key)}
             {#if page.type === 'ellipsis'}
                 <span>...</span>
             {:else}
-                <button {...$pageTrigger(page)}>{page.value}</button>
+                <button use:melt={$pageTrigger(page)}>{page.value}</button>
             {/if}            
         {/each}
-        <button {...$nextButton}>Next</button>
+        <button use:melt={$nextButton}>Next</button>
     </div>
 </nav>
