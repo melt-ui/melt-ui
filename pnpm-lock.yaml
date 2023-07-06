@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -28,6 +28,9 @@ devDependencies:
   '@iconify-json/simple-icons':
     specifier: ^1.1.57
     version: 1.1.57
+  '@melt-ui/pp':
+    specifier: ^0.0.1
+    version: 0.0.1(svelte@4.0.0)
   '@storybook/addon-essentials':
     specifier: ^7.0.23
     version: 7.0.23(react-dom@18.2.0)(react@18.2.0)
@@ -3251,6 +3254,14 @@ packages:
       '@types/mdx': 2.0.5
       '@types/react': 18.2.7
       react: 18.2.0
+    dev: true
+
+  /@melt-ui/pp@0.0.1(svelte@4.0.0):
+    resolution: {integrity: sha512-fkRr2sV5V1Bng9FARk1LnBcw7PKMoApsZ2qys7MJlo3MrIvdmvScwORRdzuYvM/eYwGefUKkfJ2GXd/0cHYhIQ==}
+    peerDependencies:
+      svelte: ^3.55.0 || ^4.0.0
+    dependencies:
+      svelte: 4.0.0
     dev: true
 
   /@ndelangen/get-tarball@3.0.9:
