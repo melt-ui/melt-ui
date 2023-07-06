@@ -1,24 +1,19 @@
 <script lang="ts">
 	import { createPopover } from '@melt-ui/svelte';
 	import { fade } from 'svelte/transition';
-	import { Settings2, X } from 'icons';
+	import Settings2 from '~icons/lucide/settings2';
+	import X from '~icons/lucide/x';
 
 	const { trigger, content, open, arrow, close } = createPopover();
 </script>
 
-<button
-	type="button"
-	class="trigger"
-	{...$trigger}
-	use:trigger.action
-	aria-label="Update dimensions"
->
+<button type="button" class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
 	<Settings2 class="h-4 w-4" />
 	<span class="sr-only">Open Popover</span>
 </button>
 
 {#if $open}
-	<div {...$content} use:content.action transition:fade={{ duration: 100 }} class="content">
+	<div {...$content} use:content transition:fade={{ duration: 100 }} class="content">
 		<div {...$arrow} />
 		<div class="flex flex-col gap-2.5">
 			<p>Dimensions</p>

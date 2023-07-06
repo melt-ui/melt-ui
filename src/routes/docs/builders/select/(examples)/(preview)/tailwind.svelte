@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createSelect } from '@melt-ui/svelte';
-	import { Check, ChevronDown } from 'icons';
+	import Check from '~icons/lucide/check';
+	import ChevronDown from '~icons/lucide/chevron-down';
 
 	const { label, trigger, menu, option, isSelected, createGroup } = createSelect();
 
@@ -10,18 +11,18 @@
 	};
 </script>
 
-<button class="trigger" {...$trigger} use:trigger.action aria-label="Food">
+<button class="trigger" {...$trigger} use:trigger aria-label="Food">
 	{$label || 'Select an option'}
 	<ChevronDown />
 </button>
 
-<div class="menu" {...$menu} use:menu.action>
+<div class="menu" {...$menu} use:menu>
 	{#each Object.entries(options) as [key, arr]}
 		{@const { group, label } = createGroup()}
 		<div {...group}>
 			<div class="label" {...label}>{key}</div>
 			{#each arr as item}
-				<div class="option" {...$option({ value: item, label: item })} use:option.action>
+				<div class="option" {...$option({ value: item, label: item })} use:option>
 					{#if $isSelected(item)}
 						<div class="check">
 							<Check />

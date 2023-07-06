@@ -16,7 +16,6 @@ import { get, writable } from 'svelte/store';
 import type { CreateDialogArgs } from './types';
 
 type DialogParts = 'trigger' | 'overlay' | 'content' | 'title' | 'description' | 'close';
-
 const { name } = createElHelpers<DialogParts>('dialog');
 
 const defaults = {

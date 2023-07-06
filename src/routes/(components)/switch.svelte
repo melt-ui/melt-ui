@@ -16,7 +16,7 @@
 	<label class="font-semibold text-white" for="code"> View code </label>
 	<button
 		{...$root}
-		use:root.action
+		use:root
 		class="relative h-6 w-11 cursor-default rounded-full bg-magnum-900 outline-none
  data-[state=checked]:bg-magnum-700"
 		id="code"

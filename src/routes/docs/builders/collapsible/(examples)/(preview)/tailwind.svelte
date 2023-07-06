@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { createCollapsible } from '@melt-ui/svelte';
 	import { slide } from 'svelte/transition';
-	import { ChevronsUpDown, X } from 'icons';
+	import ChevronsUpDown from '~icons/lucide/ChevronsUpDown';
+	import X from '~icons/lucide/x';
 
 	const { open, root, content, trigger } = createCollapsible();
 </script>
@@ -11,7 +12,7 @@
 		<span class="text-sm leading-6 text-white"> @thomasglopes starred 3 repositories </span>
 		<button
 			{...$trigger}
-			use:trigger.action
+			use:trigger
 			class="relative h-6 w-6 place-items-center rounded-full bg-white text-sm text-magnum-700
         shadow-lg hover:opacity-75
         data-[disabled]:cursor-not-allowed data-[disabled]:opacity-75"

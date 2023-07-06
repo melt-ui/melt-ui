@@ -1,11 +1,20 @@
 <script lang="ts">
-	import { createContextMenu } from '$lib';
+	import { createDropdownMenu } from '@melt-ui/svelte';
 	import { writable } from 'svelte/store';
+	import AlignJustify from '~icons/lucide/align-justify';
 	import ChevronRight from '~icons/lucide/chevron-right';
 	import Check from '~icons/lucide/check';
 
-	const { trigger, menu, item, checkboxItem, separator, createSubMenu, createMenuRadioGroup } =
-		createContextMenu();
+	const {
+		trigger,
+		menu,
+		item,
+		checkboxItem,
+		arrow,
+		separator,
+		createSubMenu,
+		createMenuRadioGroup,
+	} = createDropdownMenu();
 
 	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
 
@@ -19,9 +28,10 @@
 	const hideMeltUI = writable(false);
 </script>
 
-<span class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
-	Right click me.
-</span>
+<button type="button" class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
+	<AlignJustify class="h-4 w-4" />
+	<span class="sr-only">Open Popover</span>
+</button>
 
 <div class="menu" {...$menu} use:menu>
 	<div class="item" {...$item} use:item>About Melt UI</div>
@@ -76,6 +86,7 @@
 		Quit Melt UI
 		<div class="rightSlot">⌘Q</div>
 	</div>
+	<div {...$arrow} />
 </div>
 
 <style lang="postcss">
@@ -97,8 +108,10 @@
 	}
 
 	.trigger {
-		@apply block rounded-md border-2 border-dashed border-neutral-50;
-		@apply w-[300px] py-12 text-center;
+		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0 text-sm font-medium;
+		@apply text-magnum-900 transition-colors hover:bg-white/90 data-[highlighted]:outline-none;
+		@apply data-[highlighted]:ring-magnum-400 data-[highlighted]:ring-offset-2 !important;
+		@apply focus:ring;
 	}
 	.check {
 		@apply absolute left-2 top-1/2 text-magnum-500;

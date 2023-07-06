@@ -5,8 +5,8 @@
 </script>
 
 <form>
-	<div class="flex flex-col gap-0.5">
-		<label use:root.action for="email" class="font-medium">
+	<div class="flex flex-col items-start justify-center">
+		<label use:root.action for="email" class="mb-0.5 font-medium" data-melt-part="root">
 			<span>Email</span>
 		</label>
 		<input

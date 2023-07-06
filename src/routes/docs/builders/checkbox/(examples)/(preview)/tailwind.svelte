@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createCheckbox } from '@melt-ui/svelte';
-	import { Check, Minus } from 'icons';
+	import Check from '~icons/lucide/check';
+	import Minus from '~icons/lucide/minus';
 
 	const { root, input, isChecked, isIndeterminate } = createCheckbox({
 		checked: 'indeterminate',
@@ -11,7 +12,7 @@
 	<div class="flex items-center justify-center">
 		<button
 			{...$root}
-			use:root.action
+			use:root
 			class="flex h-6 w-6 appearance-none items-center justify-center rounded-sm bg-white text-magnum-600 shadow-lg hover:opacity-75"
 			id="checkbox"
 		>

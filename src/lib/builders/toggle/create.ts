@@ -1,13 +1,14 @@
-import { addEventListener } from '$lib/internal/helpers';
-import { derived, get, writable } from 'svelte/store';
+import { addEventListener, builder } from '$lib/internal/helpers';
+import { get, writable } from 'svelte/store';
 import type { CreateToggleArgs } from './types';
 
 export function createToggle(args: CreateToggleArgs = {}) {
 	const pressed = writable(args.pressed ?? false);
 	const disabled = writable(args.disabled ?? false);
 
-	const toggle = {
-		...derived([pressed, disabled], ([$pressed, $disabled]) => {
+	const toggle = builder('toggle', {
+		stores: [pressed, disabled],
+		returned: ([$pressed, $disabled]) => {
 			return {
 				'data-disabled': $disabled ? true : undefined,
 				disabled: $disabled,
@@ -15,7 +16,7 @@ export function createToggle(args: CreateToggleArgs = {}) {
 				'aria-pressed': $pressed,
 				type: 'button',
 			} as const;
-		}),
+		},
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
 				const $disabled = get(disabled);
@@ -27,7 +28,7 @@ export function createToggle(args: CreateToggleArgs = {}) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
 	return {
 		toggle,

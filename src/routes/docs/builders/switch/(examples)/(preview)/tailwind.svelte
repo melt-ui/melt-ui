@@ -9,7 +9,7 @@
 		<label class="pr-4 leading-none text-white" for="airplane-mode"> Airplane mode </label>
 		<button
 			{...$root}
-			use:root.action
+			use:root
 			class="relative h-6 w-11 cursor-default rounded-full bg-magnum-800 transition-colors data-[state=checked]:bg-magnum-950"
 			id="airplane-mode"
 		>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createRadioGroup } from '$lib';
+	import { createRadioGroup } from '@melt-ui/svelte';
 
 	const { root, item, isChecked } = createRadioGroup({
 		value: 'default',
@@ -17,7 +17,7 @@
 		<div class="flex items-center gap-3">
 			<button
 				{...$item(option)}
-				use:item.action
+				use:item
 				class="grid h-6 w-6 cursor-default place-items-center rounded-full bg-white shadow-sm
 			hover:bg-magnum-100"
 				id={option}

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createCheckbox } from '@melt-ui/svelte';
-	import { Check, Minus } from 'icons';
+	import Check from '~icons/lucide/check';
+	import Minus from '~icons/lucide/minus';
 
 	const { root, input, isChecked, isIndeterminate } = createCheckbox({
 		checked: 'indeterminate',
@@ -9,7 +10,7 @@
 
 <form>
 	<div class="checkbox-wrapper">
-		<button {...$root} use:root.action class="root" id="checkbox">
+		<button {...$root} use:root class="root" id="checkbox">
 			{#if $isIndeterminate}
 				<Minus />
 			{:else if $isChecked}
