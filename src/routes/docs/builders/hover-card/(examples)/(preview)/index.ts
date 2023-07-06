@@ -1,5 +1,6 @@
-import type { PreviewProps } from '$routes/(components)';
 import Preview from './tailwind.svelte';
+import type { PreviewProps } from '$routes/(components)';
+
 import tw from './tailwind.svelte?raw';
 import TwConfig from '$routes/(configs)/tailwind.config.ts?raw';
 

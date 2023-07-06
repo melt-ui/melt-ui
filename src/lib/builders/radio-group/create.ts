@@ -1,4 +1,11 @@
-import { addEventListener, executeCallbacks, getDirectionalKeys, kbd } from '$lib/internal/helpers';
+import {
+	addEventListener,
+	builder,
+	createElHelpers,
+	executeCallbacks,
+	getDirectionalKeys,
+	kbd,
+} from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
@@ -11,6 +18,9 @@ const defaults = {
 	required: false,
 } satisfies Defaults<CreateRadioGroupArgs>;
 
+type RadioGroupParts = 'item';
+const { name, selector } = createElHelpers<RadioGroupParts>('radio-group');
+
 export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 	const withDefaults = { ...defaults, ...args };
 	const options = writable({
@@ -21,13 +31,15 @@ export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 	});
 	const value = writable(withDefaults.value ?? null);
 
-	const root = derived(options, ($options) => {
-		return {
-			role: 'radiogroup',
-			'aria-required': $options.required,
-			'data-orientation': $options.orientation,
-			'data-melt-part': 'radio-group',
-		} as const;
+	const root = builder(name(), {
+		stores: options,
+		returned: ($options) => {
+			return {
+				role: 'radiogroup',
+				'aria-required': $options.required,
+				'data-orientation': $options.orientation,
+			} as const;
+		},
 	});
 
 	type RadioGroupItemArgs =
@@ -36,8 +48,9 @@ export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 				disabled?: boolean;
 		  }
 		| string;
-	const item = {
-		...derived([options, value], ([$options, $value]) => {
+	const item = builder(name('item'), {
+		stores: [options, value],
+		returned: ([$options, $value]) => {
 			return (args: RadioGroupItemArgs) => {
 				const itemValue = typeof args === 'string' ? args : args.value;
 				const argDisabled = typeof args === 'string' ? false : !!args.disabled;
@@ -54,11 +67,10 @@ export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 					'aria-checked': checked,
 					type: 'button',
 					role: 'radio',
-					'data-melt-part': 'radio-group-item',
 					tabindex: $value === null ? 0 : checked ? 0 : -1,
 				} as const;
 			};
-		}),
+		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'click', () => {
@@ -74,11 +86,9 @@ export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 				addEventListener(node, 'keydown', (e) => {
 					const $options = get(options);
 					const el = e.currentTarget as HTMLElement;
-					const root = el.closest('[data-melt-part="radio-group"]') as HTMLElement;
+					const root = el.closest(selector()) as HTMLElement;
 
-					const items = Array.from(
-						root.querySelectorAll('[data-melt-part="radio-group-item"]')
-					) as Array<HTMLElement>;
+					const items = Array.from(root.querySelectorAll(selector('item'))) as Array<HTMLElement>;
 					const currentIndex = items.indexOf(el);
 
 					const dir = getElemDirection(root);
@@ -118,7 +128,7 @@ export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
 	const itemInput = derived([options, value], ([$options, $value]) => {
 		return (args: RadioGroupItemArgs) => {

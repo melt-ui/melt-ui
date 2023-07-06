@@ -19,7 +19,8 @@ import { tick } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
 import type { CreateHoverCardArgs } from './types';
 
-const { name } = createElHelpers('hover-card');
+type HoverCardParts = 'trigger' | 'content' | 'arrow';
+const { name } = createElHelpers<HoverCardParts>('hover-card');
 
 const defaults = {
 	defaultOpen: false,
@@ -87,7 +88,6 @@ export function createHoverCard(args: CreateHoverCardArgs = {}) {
 				'aria-expanded': $open,
 				'data-state': $open ? 'open' : 'closed',
 				'aria-controls': ids.content,
-				'data-melt-hover-card-trigger': '',
 				id: ids.trigger,
 			};
 		},
@@ -127,7 +127,6 @@ export function createHoverCard(args: CreateHoverCardArgs = {}) {
 					userSelect: 'text',
 					WebkitUserSelect: 'text',
 				}),
-				'data-melt-hover-card-content': '',
 				id: ids.content,
 			};
 		},
@@ -211,7 +210,6 @@ export function createHoverCard(args: CreateHoverCardArgs = {}) {
 	const arrow = builder(name('arrow'), {
 		stores: options,
 		returned: ($options) => ({
-			'data-melt-hover-card-arrow': '',
 			'data-arrow': true,
 			style: styleToString({
 				position: 'absolute',

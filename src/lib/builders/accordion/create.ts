@@ -11,7 +11,8 @@ import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateAccordionArgs } from './types';
 
-const { name } = createElHelpers('accordion');
+type AccordionParts = 'trigger' | 'item' | 'content';
+const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
 const defaults = {
 	type: 'single',
@@ -122,9 +123,7 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 					const el = e.target as HTMLElement;
 					const rootEl = getElementByMeltId(ids.root);
 					if (!rootEl) return;
-					const items = Array.from(
-						rootEl.querySelectorAll('[data-melt-accordion-trigger]')
-					) as HTMLElement[];
+					const items = Array.from(rootEl.querySelectorAll(selector('trigger'))) as HTMLElement[];
 
 					if (!items.length) return;
 					const elIdx = items.indexOf(el);

@@ -1,5 +1,7 @@
 import {
 	addEventListener,
+	builder,
+	createElHelpers,
 	executeCallbacks,
 	handleRovingFocus,
 	isHTMLElement,
@@ -21,6 +23,9 @@ const defaults = {
 	value: null,
 } satisfies Defaults<CreateToggleGroupArgs>;
 
+type ToggleGroupParts = 'item';
+const { name, selector } = createElHelpers<ToggleGroupParts>('toggle-group');
+
 export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 	const withDefaults = { ...defaults, ...args };
 	const options = writable(omit(withDefaults, 'value'));
@@ -40,12 +45,14 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 		});
 	});
 
-	const root = derived(options, ($options) => {
-		return {
-			role: 'group',
-			'data-orientation': $options.orientation,
-			'data-melt-toggle-group': '',
-		} as const;
+	const root = builder(name(), {
+		stores: options,
+		returned: ($options) => {
+			return {
+				role: 'group',
+				'data-orientation': $options.orientation,
+			} as const;
+		},
 	});
 
 	type ToggleGroupItemArgs =
@@ -54,8 +61,9 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 				disabled?: boolean;
 		  }
 		| string;
-	const item = {
-		...derived([options, value], ([$options, $value]) => {
+	const item = builder(name('item'), {
+		stores: [options, value],
+		returned: ([$options, $value]) => {
 			return (args: ToggleGroupItemArgs) => {
 				const itemValue = typeof args === 'string' ? args : args.value;
 				const argDisabled = typeof args === 'string' ? false : !!args.disabled;
@@ -70,12 +78,11 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 					'data-value': itemValue,
 					'aria-pressed': pressed,
 					type: 'button',
-					'data-melt-toggle-group-item': '',
 					role: $options.type === 'single' ? 'radio' : undefined,
 					tabindex: pressed ? 0 : -1,
 				} as const;
 			};
-		}),
+		},
 		action: (node: HTMLElement) => {
 			let unsub = noop;
 
@@ -86,12 +93,10 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 				return { value: itemValue, disabled };
 			};
 
-			const parentGroup = node.closest<HTMLElement>('[data-melt-toggle-group]');
+			const parentGroup = node.closest<HTMLElement>(selector());
 			if (!isHTMLElement(parentGroup)) return;
 
-			const items = Array.from(
-				parentGroup.querySelectorAll<HTMLElement>('[data-melt-toggle-group-item]')
-			);
+			const items = Array.from(parentGroup.querySelectorAll<HTMLElement>(selector('item')));
 			const $value = get(value);
 			const anyPressed = Array.isArray($value) ? $value.length > 0 : $value !== null;
 
@@ -119,11 +124,11 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 					const el = e.currentTarget;
 					if (!isHTMLElement(el)) return;
 
-					const root = el.closest<HTMLElement>('[data-melt-toggle-group]');
+					const root = el.closest<HTMLElement>(selector());
 					if (!isHTMLElement(root)) return;
 
 					const items = Array.from(
-						root.querySelectorAll<HTMLElement>('[data-melt-toggle-group-item]:not([data-disabled])')
+						root.querySelectorAll<HTMLElement>(selector('item') + ':not([data-disabled])')
 					);
 
 					const currentIndex = items.indexOf(el);
@@ -173,7 +178,7 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
 	const isPressed = derived(value, ($value) => {
 		return (itemValue: string) => {

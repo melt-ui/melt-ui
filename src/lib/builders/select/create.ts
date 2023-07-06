@@ -1,6 +1,8 @@
 import { usePopper } from '$lib/internal/actions/popper';
 import {
 	addEventListener,
+	builder,
+	createElHelpers,
 	createTypeaheadSearch,
 	effect,
 	executeCallbacks,
@@ -39,6 +41,9 @@ const defaults = {
 	preventScroll: true,
 	loop: false,
 } satisfies Defaults<CreateSelectArgs>;
+
+type SelectParts = 'menu' | 'trigger' | 'option';
+const { name } = createElHelpers<SelectParts>('select');
 
 export function createSelect(args?: CreateSelectArgs) {
 	const withDefaults = { ...defaults, ...args } as CreateSelectArgs;
@@ -84,8 +89,9 @@ export function createSelect(args?: CreateSelectArgs) {
 		label.set(dataLabel ?? selectedEl.textContent ?? null);
 	});
 
-	const menu = {
-		...derived([open], ([$open]) => {
+	const menu = builder(name('menu'), {
+		stores: open,
+		returned: ($open) => {
 			return {
 				hidden: $open ? undefined : true,
 				style: styleToString({
@@ -94,7 +100,7 @@ export function createSelect(args?: CreateSelectArgs) {
 				id: ids.menu,
 				'aria-labelledby': ids.trigger,
 			};
-		}),
+		},
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
 
@@ -164,10 +170,12 @@ export function createSelect(args?: CreateSelectArgs) {
 				},
 			};
 		},
-	};
+	});
 
-	const trigger = {
-		...derived([open, options], ([$open, $options]) => {
+	const trigger = builder(name('trigger'), {
+		stores: [open, options],
+
+		returned: ([$open, $options]) => {
 			return {
 				role: 'combobox',
 				'aria-autocomplete': 'none',
@@ -176,12 +184,11 @@ export function createSelect(args?: CreateSelectArgs) {
 				'aria-required': $options.required,
 				'data-state': $open ? 'open' : 'closed',
 				'data-disabled': $options.disabled ? true : undefined,
-				'data-melt-part': 'trigger',
 				disabled: $options.disabled,
 				id: ids.trigger,
 				tabindex: 0,
 			} as const;
-		}),
+		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'pointerdown', (e) => {
@@ -265,7 +272,7 @@ export function createSelect(args?: CreateSelectArgs) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
 	const { root: separator } = createSeparator({
 		decorative: true,
@@ -298,8 +305,9 @@ export function createSelect(args?: CreateSelectArgs) {
 		}),
 	}));
 
-	const option = {
-		...derived(value, ($value) => {
+	const option = builder(name('option'), {
+		stores: value,
+		returned: ($value) => {
 			return (args: OptionArgs) => {
 				return {
 					role: 'option',
@@ -311,7 +319,7 @@ export function createSelect(args?: CreateSelectArgs) {
 					tabindex: -1,
 				} as const;
 			};
-		}),
+		},
 		action: (node: HTMLElement) => {
 			const getElArgs = () => {
 				const value = node.getAttribute('data-value');
@@ -404,7 +412,7 @@ export function createSelect(args?: CreateSelectArgs) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
 

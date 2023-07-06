@@ -1,4 +1,4 @@
-import { addEventListener, styleToString } from '$lib/internal/helpers';
+import { addEventListener, builder, createElHelpers, styleToString } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateSwitchArgs } from './types';
@@ -11,6 +11,8 @@ const defaults = {
 	value: '',
 } satisfies Defaults<CreateSwitchArgs>;
 
+const { name } = createElHelpers('switch');
+
 export function createSwitch(args: CreateSwitchArgs = {}) {
 	const argsWithDefaults = { ...defaults, ...args };
 	const options = writable({
@@ -21,8 +23,9 @@ export function createSwitch(args: CreateSwitchArgs = {}) {
 	});
 	const checked = writable(argsWithDefaults.checked);
 
-	const root = {
-		...derived([checked, options], ([$checked, $options]) => {
+	const root = builder(name(), {
+		stores: [checked, options],
+		returned: ([$checked, $options]) => {
 			return {
 				'data-disabled': $options.disabled,
 				disabled: $options.disabled,
@@ -32,7 +35,7 @@ export function createSwitch(args: CreateSwitchArgs = {}) {
 				'aria-checked': $checked,
 				'aria-required': $options.required,
 			} as const;
-		}),
+		},
 		action(node: HTMLElement) {
 			const unsub = addEventListener(node, 'click', () => {
 				const $options = get(options);
@@ -45,7 +48,7 @@ export function createSwitch(args: CreateSwitchArgs = {}) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
 	const input = derived([checked, options], ([$checked, $options]) => {
 		return {

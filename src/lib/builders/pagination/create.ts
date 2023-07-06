@@ -1,4 +1,11 @@
-import { addEventListener, executeCallbacks, kbd, omit } from '$lib/internal/helpers';
+import {
+	addEventListener,
+	builder,
+	createElHelpers,
+	executeCallbacks,
+	kbd,
+	omit,
+} from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import { getPageItems, type Page } from './helpers';
@@ -9,6 +16,9 @@ const defaults = {
 	siblingCount: 1,
 	page: 1,
 } satisfies Defaults<CreatePaginationArgs>;
+
+type PaginationParts = 'page' | 'prev' | 'next';
+const { name, selector } = createElHelpers<PaginationParts>('pagination');
 
 export function createPagination(args: CreatePaginationArgs) {
 	const withDefaults = { ...defaults, ...args };
@@ -37,15 +47,9 @@ export function createPagination(args: CreatePaginationArgs) {
 		const thisEl = e.target as HTMLElement;
 		const rootEl = thisEl.closest('[data-scope="pagination"]') as HTMLElement | null;
 		if (!rootEl) return;
-		const triggers = Array.from(
-			rootEl.querySelectorAll('[data-melt-part="page-trigger"]')
-		) as Array<HTMLElement>;
-		const prevButton = rootEl.querySelector(
-			'[data-melt-part="page-prev-button"]'
-		) as HTMLElement | null;
-		const nextButton = rootEl.querySelector(
-			'[data-melt-part="page-next-button"]'
-		) as HTMLElement | null;
+		const triggers = Array.from(rootEl.querySelectorAll(selector('page'))) as Array<HTMLElement>;
+		const prevButton = rootEl.querySelector(selector('prev')) as HTMLElement | null;
+		const nextButton = rootEl.querySelector(selector('next')) as HTMLElement | null;
 
 		const elements = [...triggers];
 		if (prevButton) elements.unshift(prevButton);
@@ -67,17 +71,17 @@ export function createPagination(args: CreatePaginationArgs) {
 		}
 	};
 
-	const pageTrigger = {
-		...derived(page, ($page) => {
+	const pageTrigger = builder(name('page'), {
+		stores: page,
+		returned: ($page) => {
 			return (pageItem: Page) => {
 				return {
 					'aria-label': `Page ${pageItem.value}`,
 					'data-value': pageItem.value,
 					'data-selected': pageItem.value === $page ? '' : undefined,
-					'data-melt-part': 'page-trigger',
 				};
 			};
-		}),
+		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'click', () => {
@@ -92,16 +96,16 @@ export function createPagination(args: CreatePaginationArgs) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
-	const prevButton = {
-		...derived([page], ([$page]) => {
+	const prevButton = builder(name('prev'), {
+		stores: page,
+		returned: ($page) => {
 			return {
 				'aria-label': 'Previous',
 				disabled: $page <= 1,
-				'data-melt-part': 'page-prev-button',
 			} as const;
-		}),
+		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'click', () => {
@@ -114,16 +118,16 @@ export function createPagination(args: CreatePaginationArgs) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
-	const nextButton = {
-		...derived([page, totalPages], ([$page, $numPages]) => {
+	const nextButton = builder(name('next'), {
+		stores: [page, totalPages],
+		returned: ([$page, $totalPages]) => {
 			return {
 				'aria-label': 'Next',
-				disabled: $page >= $numPages,
-				'data-melt-part': 'page-next-button',
+				disabled: $page >= $totalPages,
 			} as const;
-		}),
+		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'click', () => {
@@ -137,7 +141,7 @@ export function createPagination(args: CreatePaginationArgs) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
 	return {
 		root,
