@@ -16,6 +16,7 @@ import {
 	noop,
 	omit,
 	prev,
+	removeScroll,
 	sleep,
 	styleToString,
 } from '@melt-ui/svelte/internal/helpers';
@@ -229,6 +230,8 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 			const $item = get(filteredItems)[index];
 			inputValue.set($options.itemToString($item));
 			selectedItem.set($item);
+			// Reset the filtered items to the full list.
+			filteredItems.set(get(items));
 		}
 	}
 
@@ -244,19 +247,26 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 	 * Action and attributes for the menu element.
 	 */
 	const menu = {
-		...derived([open], ([$open]) => ({
-			hidden: $open ? undefined : true,
-			id: ids.menu,
-			role: 'listbox',
-			style: styleToString({ display: $open ? undefined : 'none' }),
-		})),
-		action: (node: HTMLUListElement) => {
+		...derived(
+			[open],
+			([$open]) =>
+				({
+					hidden: $open ? undefined : true,
+					id: ids.menu,
+					role: 'listbox',
+					style: styleToString({ display: $open ? undefined : 'none' }),
+				} as const)
+		),
+		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
+			let unsubScroll = noop;
 			const unsubscribe = executeCallbacks(
 				//  Bind the popper portal to the input element.
 				effect([open, activeTrigger], ([$open, $activeTrigger]) => {
 					unsubPopper();
+					unsubScroll();
 					if ($open && $activeTrigger) {
+						unsubScroll = removeScroll();
 						tick().then(() => {
 							const popper = usePopper(node, {
 								anchorElement: $activeTrigger,
@@ -278,6 +288,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 				destroy: () => {
 					unsubscribe();
 					unsubPopper();
+					unsubScroll();
 				},
 			};
 		},
@@ -305,6 +316,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 
 	const item = {
 		...derived([selectedItem], ([$selectedItem]) => (args: ComboboxItemArgs<T>) => ({
+			'data-disabled': args.disabled ? '' : undefined,
 			'aria-disabled': args.disabled ? true : undefined,
 			'aria-selected': args.item === $selectedItem,
 			'data-index': args.index,
@@ -312,7 +324,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 			role: 'option',
 			style: styleToString({ cursor: args.disabled ? 'default' : 'pointer' }),
 		})),
-		action: (node: HTMLLIElement) => {
+		action: (node: HTMLElement) => {
 			const unsubscribe = executeCallbacks(
 				// Handle highlighting items when the pointer moves over them.
 				addEventListener(node, 'pointermove', () => {

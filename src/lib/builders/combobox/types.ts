@@ -43,12 +43,12 @@ export type CreateComboboxReturn<T> = {
 	/** Function to determine if a given item is selected. */
 	isSelected: Readable<(item: T) => boolean>;
 	/** Action & attributes to apply to each item in the menu. */
-	item: Readable<(args: ComboboxItemArgs<T>) => HTMLLiAttributes> & {
-		action: Action<HTMLLIElement, void>;
+	item: Readable<(args: ComboboxItemArgs<T>) => HTMLAttributes<HTMLElement>> & {
+		action: Action<HTMLElement, void>;
 	};
 	/** Action & attributes to apply to the menu. */
-	menu: Readable<HTMLAttributes<HTMLUListElement>> & {
-		action: Action<HTMLUListElement, void>;
+	menu: Readable<HTMLAttributes<HTMLElement>> & {
+		action: Action<HTMLElement, void>;
 	};
 	/** Is the menu currently open? */
 	open: Writable<boolean>;
