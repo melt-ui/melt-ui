@@ -6,7 +6,7 @@
 	const features = [
 		'Fully managed focus',
 		'Can be controlled or uncontrolled',
-		'Esc closes the component automaticlaly',
+		'Esc closes the component automatically',
 	];
 </script>
 
