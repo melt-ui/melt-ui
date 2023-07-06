@@ -3,12 +3,12 @@
 
 	export let inputId = 'test';
 
-	const { root } = createLabel();
+	const label = createLabel();
 </script>
 
 <form>
 	<div>
-		<label use:root.action for={inputId}>
+		<label use:label for={inputId}>
 			<span
 				>Test
 				<span>*</span>

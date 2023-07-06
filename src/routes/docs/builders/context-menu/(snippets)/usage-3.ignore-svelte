@@ -1,3 +1,3 @@
-<a href="/1" {...item} use:item.action>Item 1</a>
-<div {...item} use:item.action={{ onSelect: (e) => console.log('Item 2!')}}>Item 2</div>
-<div {...item} use:item.action={{ onSelect: (e) => console.log('Item 3!')}}>Item 3</div>
+<a href="/1" {...$item} use:item>Item 1</a>
+<div {...$item} use:item={{ onSelect: (e) => console.log('Item 2!') }}>Item 2</div>
+<div {...$item} use:item={{ onSelect: (e) => console.log('Item 3!') }}>Item 3</div>

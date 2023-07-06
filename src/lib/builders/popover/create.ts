@@ -4,7 +4,6 @@ import {
 	createElHelpers,
 	effect,
 	generateId,
-	hiddenAction,
 	isBrowser,
 	noop,
 	sleep,
@@ -25,7 +24,7 @@ const defaults = {
 	open: false,
 } satisfies Defaults<CreatePopoverArgs>;
 
-type PopoverParts = 'trigger' | 'content' | 'arrow';
+type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
 const { name } = createElHelpers<PopoverParts>('popover');
 
 export function createPopover(args?: CreatePopoverArgs) {
@@ -125,8 +124,11 @@ export function createPopover(args?: CreatePopoverArgs) {
 		}),
 	}));
 
-	const close = hiddenAction({
-		type: 'button',
+	const close = builder(name('close'), {
+		returned: () =>
+			({
+				type: 'button',
+			} as const),
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
 				open.set(false);
@@ -136,7 +138,7 @@ export function createPopover(args?: CreatePopoverArgs) {
 				destroy: unsub,
 			};
 		},
-	} as const);
+	});
 
 	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
 		if (!isBrowser) return;

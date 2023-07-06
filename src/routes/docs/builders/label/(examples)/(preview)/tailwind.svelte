@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { createLabel } from '@melt-ui/svelte';
 
-	const { root } = createLabel();
+	const label = createLabel();
 </script>
 
 <form>
 	<div class="flex flex-col items-start justify-center">
-		<label use:root.action for="email" class="mb-0.5 font-medium" data-melt-part="root">
+		<label use:label for="email" class="mb-0.5 font-medium" data-melt-part="root">
 			<span>Email</span>
 		</label>
 		<input

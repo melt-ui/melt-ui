@@ -19,32 +19,32 @@
 	class="flex min-w-max items-center gap-4 rounded-md bg-white px-3 py-3 text-neutral-700 shadow-sm"
 >
 	<div class="group" {...$fontGroup}>
-		<button class="item" {...$fontItem('bold')} use:fontItem.action>
+		<button class="item" {...$fontItem('bold')} use:fontItem>
 			<Bold />
 		</button>
-		<button class="item" {...$fontItem('italic')} use:fontItem.action>
+		<button class="item" {...$fontItem('italic')} use:fontItem>
 			<Italic />
 		</button>
-		<button class="item" {...$fontItem('strikethrough')} use:fontItem.action>
+		<button class="item" {...$fontItem('strikethrough')} use:fontItem>
 			<Strikethrough />
 		</button>
 	</div>
 	<div class="separator" {...$separator} />
 	<div class="group" {...$alignGroup}>
-		<button class="item" {...$alignItem('left')} use:alignItem.action>
+		<button class="item" {...$alignItem('left')} use:alignItem>
 			<AlignLeft />
 		</button>
-		<button class="item" {...$alignItem('center')} use:alignItem.action>
+		<button class="item" {...$alignItem('center')} use:alignItem>
 			<AlignCenter />
 		</button>
-		<button class="item" {...$alignItem('right')} use:alignItem.action>
+		<button class="item" {...$alignItem('right')} use:alignItem>
 			<AlignRight />
 		</button>
 	</div>
 	<div class="separator" {...$separator} />
 	<!-- svelte-ignore a11y-invalid-attribute -->
-	<a href="#" class="link nowrap flex-shrink-0" {...link} use:link.action> Edited 2 hours ago </a>
-	<button class="button" {...button} use:button.action>Save</button>
+	<a href="#" class="link nowrap flex-shrink-0" {...$link} use:link> Edited 2 hours ago </a>
+	<button class="button" {...$button} use:button>Save</button>
 </div>
 
 <style lang="postcss">

@@ -34,7 +34,7 @@
 				<input id="maxHeight" class="input" />
 			</fieldset>
 		</div>
-		<button class="close" {...close} use:close.action>
+		<button class="close" {...$close} use:close>
 			<X class="h-4 w-4 " />
 		</button>
 	</div>
