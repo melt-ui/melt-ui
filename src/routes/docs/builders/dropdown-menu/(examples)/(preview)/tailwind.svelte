@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDropdownMenu } from '@melt-ui/svelte';
+	import { createDropdownMenu, melt } from '@melt-ui/svelte';
 	import { writable } from 'svelte/store';
 	import AlignJustify from '~icons/lucide/align-justify';
 	import ChevronRight from '~icons/lucide/chevron-right';
@@ -28,15 +28,15 @@
 	const hideMeltUI = writable(false);
 </script>
 
-<button type="button" class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
+<button type="button" class="trigger" use:melt={$trigger} aria-label="Update dimensions">
 	<AlignJustify class="h-4 w-4" />
 	<span class="sr-only">Open Popover</span>
 </button>
 
-<div class="menu" {...$menu} use:menu>
-	<div class="item" {...$item} use:item>About Melt UI</div>
-	<div class="item" {...$item} use:item>Check for Updates...</div>
-	<div class="separator" {...$separator} />
+<div class="menu" use:melt={$menu}>
+	<div class="item" use:melt={$item}>About Melt UI</div>
+	<div class="item" use:melt={$item}>Check for Updates...</div>
+	<div class="separator" use:melt={$separator} />
 	<div class="item" {...$checkboxItem} use:checkboxItem={{ checked: settingsSync }}>
 		<div class="check">
 			{#if $settingsSync}
@@ -45,17 +45,17 @@
 		</div>
 		Settings Sync is On
 	</div>
-	<div class="item" {...$subTriggerA} use:subTriggerA>
+	<div class="item" use:melt={$subTriggerA}>
 		Profiles
 		<div class="rightSlot">
 			<ChevronRight class="icon" />
 		</div>
 	</div>
-	<div class="menu subMenu" {...$subMenuA} use:subMenuA>
+	<div class="menu subMenu" use:melt={$subMenuA}>
 		<div class="text">People</div>
-		<div {...$radioGroup}>
+		<div use:melt={$radioGroup}>
 			{#each personsArr as person}
-				<div class="item" {...$radioItem({ value: person })} use:radioItem>
+				<div class="item" use:melt={$radioItem({ value: person })}>
 					<div class="check">
 						{#if $isChecked(person)}
 							<div class="dot" />
@@ -66,7 +66,7 @@
 			{/each}
 		</div>
 	</div>
-	<div {...$separator} class="separator" />
+	<div use:melt={$separator} class="separator" />
 
 	<div class="item" {...$checkboxItem} use:checkboxItem={{ checked: hideMeltUI }}>
 		<div class="check">
@@ -77,16 +77,16 @@
 		Hide Melt UI
 		<div class="rightSlot">⌘H</div>
 	</div>
-	<div class="item" {...$item} use:item aria-disabled="true">
+	<div class="item" use:melt={$item} aria-disabled="true">
 		Show All Components
 		<div class="rightSlot">⇧⌘N</div>
 	</div>
-	<div {...$separator} class="separator" />
-	<div class="item" {...$item} use:item>
+	<div use:melt={$separator} class="separator" />
+	<div class="item" use:melt={$item}>
 		Quit Melt UI
 		<div class="rightSlot">⌘Q</div>
 	</div>
-	<div {...$arrow} />
+	<div use:melt={$arrow} />
 </div>
 
 <style lang="postcss">

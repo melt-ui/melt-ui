@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createMenubar } from '@melt-ui/svelte';
+	import { createMenubar, melt } from '@melt-ui/svelte';
 
 	const { menubar, createMenu } = createMenubar();
 	const { menu, item, trigger } = createMenu();
@@ -8,24 +8,24 @@
 </script>
 
 <div {...menubar}>
-	<button {...$trigger} use:trigger>File</button>
-	<div {...$menu} use:menu>
-		<div {...$item} use:item>...</div>
-		<div {...$item} use:item>...</div>
-		<div {...$item} use:item>...</div>
+	<button use:melt={$trigger}>File</button>
+	<div use:melt={$menu}>
+		<div use:melt={$item}>...</div>
+		<div use:melt={$item}>...</div>
+		<div use:melt={$item}>...</div>
 	</div>
 
-	<button {...$triggerA} use:triggerA>Edit</button>
-	<div {...$menuA} use:menuA>
-		<div {...$itemA} use:itemA>...</div>
-		<div {...$itemA} use:itemA>...</div>
-		<div {...$itemA} use:itemA>...</div>
+	<button use:melt={$triggerA}>Edit</button>
+	<div use:melt={$menuA}>
+		<div use:melt={$itemA}>...</div>
+		<div use:melt={$itemA}>...</div>
+		<div use:melt={$itemA}>...</div>
 	</div>
 
-	<button {...$triggerB} use:triggerB>Help</button>
-	<div {...$menuB} use:menuB>
-		<div {...$itemB} use:itemB>...</div>
-		<div {...$itemB} use:itemB>...</div>
-		<div {...$itemB} use:itemB>...</div>
+	<button use:melt={$triggerB}>Help</button>
+	<div use:melt={$menuB}>
+		<div use:melt={$itemB}>...</div>
+		<div use:melt={$itemB}>...</div>
+		<div use:melt={$itemB}>...</div>
 	</div>
 </div>

@@ -1,4 +1,4 @@
 <script lang="ts">
-    import { createMenubar } from "@melt-ui/svelte";
+    import { createMenubar, melt } from "@melt-ui/svelte";
     const { menubar, createMenu } = createMenubar()
 </script>
