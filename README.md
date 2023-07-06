@@ -76,7 +76,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Calendar        |        |
 | Checkbox        | ✅     |
 | Collapsible     | ✅     |
-| ComboBox        |        |
+| ComboBox        | ✅     |
 | Context Menu    | ✅     |
 | Dialog          | ✅     |
 | Dropdown Menu   | ✅     |
@@ -86,7 +86,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Menubar         | ✅     |
 | Navigation Menu |        |
 | Pagination      | ✅     |
-| Pin Input       |        |
+| Pin Input       | ✅     |
 | Popover         | ✅     |
 | Progress        | ✅     |
 | Radio Group     | ✅     |
@@ -106,7 +106,7 @@ Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get i
 | Tree View       |        |
 | ???             |        |
 
-**Progress:** 24/30+
+**Progress:** 26/30+
 
 ## Similar projects
 
