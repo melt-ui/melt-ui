@@ -20,7 +20,9 @@
 	import Switch from './switch.svelte';
 	import { TabsList, TabsRoot } from './tabs';
 
-	type $$Props = PreviewProps;
+	type $$Props = PreviewProps & {
+		viewCode: boolean;
+	};
 
 	export let code: $$Props['code'];
 
@@ -42,7 +44,7 @@
 		}
 	});
 
-	let viewCode = false;
+	export let viewCode = false;
 
 	$: codeOptions = Object.entries(code).map(([key, value]) => {
 		return {

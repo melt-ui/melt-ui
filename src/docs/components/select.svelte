@@ -2,7 +2,6 @@
 	import { createSelect, type OptionArgs } from '$lib';
 	import ChevronDown from '~icons/lucide/chevron-down';
 	import Check from '~icons/lucide/check';
-
 	export let options: OptionArgs[] = [];
 	export let value = options[0].value;
 
