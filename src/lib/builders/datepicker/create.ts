@@ -1,10 +1,16 @@
 import {
+	SELECTION_KEYS,
 	addEventListener,
 	builder,
 	createElHelpers,
 	effect,
 	generateId,
+	getNextFocusable,
+	getPreviousFocusable,
+	handleRovingFocus,
 	isBrowser,
+	isHTMLElement,
+	kbd,
 	noop,
 	sleep,
 	styleToString,
@@ -27,9 +33,10 @@ import {
 
 import { usePopper } from '$lib/internal/actions';
 import type { Defaults } from '$lib/internal/types';
-import { tick } from 'svelte';
+import { onMount, tick } from 'svelte';
 import { derived, get, readable, writable } from 'svelte/store';
 import type { CreateDatePickerArgs, DateArgs } from './types';
+import { getOptions } from '@melt-ui/svelte/internal/helpers/list';
 
 const defaults = {
 	closeOnEscape: true,
@@ -78,6 +85,9 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 	const lastMonthDates = writable<Date[]>([]);
 	const nextMonthDates = writable<Date[]>([]);
 	const activeDate = writable<Date | null>(new Date());
+	const nextFocusable = writable<HTMLElement | null>(null);
+	const prevFocusable = writable<HTMLElement | null>(null);
+
 	const nextMonth = builder(name('nextMonth'), {
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
@@ -195,10 +205,30 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 				}
 			);
 
+			const unsubKb = addEventListener(node, 'keydown', (e) => {
+				const triggerElement = e.currentTarget;
+				if (!isHTMLElement(triggerElement)) return;
+				console.log(e.key);
+
+				if ([kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.ARROW_LEFT, kbd.ARROW_RIGHT].includes(e.key)) {
+					e.preventDefault();
+					if (e.key === kbd.ARROW_RIGHT) {
+						focusElement(1);
+					} else if (e.key === kbd.ARROW_LEFT) {
+						focusElement(-1);
+					} else if (e.key === kbd.ARROW_UP) {
+						focusElement(-7);
+					} else if (e.key === kbd.ARROW_DOWN) {
+						focusElement(7);
+					}
+				}
+			});
+
 			return {
 				destroy() {
 					unsubDerived();
 					unsubPopper();
+					unsubKb();
 				},
 			};
 		},
@@ -262,15 +292,17 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 	const date = builder(name('date'), {
 		stores: value,
 		returned: ($value) => {
+			const { earliest, latest } = options;
 			return (args: DateArgs) => {
+				console.log(args.value);
 				return {
 					role: 'option',
-					'aria-selected': $value === args?.value,
+					'aria-selected': isSameDay($value, new Date(args.value)) ? true : undefined,
 					'data-selected': $value === args?.value ? '' : undefined,
 					'data-value': args.value,
 					'data-label': args.label ?? undefined,
 					'data-disabled': args.disabled ? '' : undefined,
-					tabindex: -1,
+					tabindex: args.disabled ? -1 : 1,
 				} as const;
 			};
 		},
@@ -296,6 +328,25 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 				destroy: unsub,
 			};
 		},
+	});
+
+	function focusElement(add: number) {
+		let node = document.activeElement as HTMLElement;
+		console.log(node);
+		if (!node || node.hasAttribute('[data-melt-calendar-date]')) return;
+		const allDates = Array.from(
+			document.querySelectorAll<HTMLElement>(`[data-melt-calendar-date]:not([disabled])`)
+		);
+		let index = allDates.indexOf(node);
+		let nextIndex = index + add;
+		let nextDate = allDates[nextIndex];
+		if (nextDate) {
+			nextDate.focus();
+		}
+	}
+
+	onMount(() => {
+		// TODO: add keyboard navigation
 	});
 
 	effect([open, activeTrigger, activeDate], ([$open, $activeTrigger, $activeDate]) => {

@@ -38,20 +38,20 @@
 		<div {...$arrow} />
 		<div class="flex flex-col gap-2.5 text-magnum-800">
 			<div class="text-magnum-800">{dateFormatter.format($activeDate || new Date())}</div>
-			<div class="flex items-center justify-between border-y border-magnum-700 py-1">
+			<div class="buttons-wrapper">
 				<div class="flex items-center space-x-2">
-					<button {...$prevYear} use:prevYear>
+					<button {...$prevYear} use:prevYear class="button">
 						<ChevronsLeft />
 					</button>
-					<button {...$prevMonth} use:prevMonth>
+					<button {...$prevMonth} use:prevMonth class="button">
 						<ChevronLeft />
 					</button>
 				</div>
 				<div class="flex items-center space-x-2">
-					<button {...$nextMonth} use:nextMonth>
+					<button {...$nextMonth} use:nextMonth class="button">
 						<ChevronRight />
 					</button>
-					<button {...$nextYear} use:nextYear>
+					<button {...$nextYear} use:nextYear class="button">
 						<ChevronsRight />
 					</button>
 				</div>
@@ -61,7 +61,7 @@
 					<button
 						use:date
 						{...$date({ label: d.toDateString(), value: d, disabled: true })}
-						class="flex h-6 w-6 items-center justify-center rounded border-magnum-700 data-[disabled]:opacity-40"
+						class="date"
 					>
 						<span class="">{d.getDate()}</span>
 					</button>
@@ -70,7 +70,7 @@
 					<button
 						use:date
 						{...$date({ label: d.toDateString(), value: d, disabled: false })}
-						class="flex h-6 w-6 items-center justify-center rounded border-magnum-700"
+						class="date"
 					>
 						<span class="">{d.getDate()}</span>
 					</button>
@@ -79,7 +79,7 @@
 					<button
 						use:date
 						{...$date({ label: d.toDateString(), value: d, disabled: true })}
-						class="flex h-6 w-6 items-center justify-center rounded border-magnum-700 data-[disabled]:opacity-40"
+						class="date"
 					>
 						<span class="">{d.getDate()}</span>
 					</button>
@@ -127,13 +127,25 @@
 	}
 
 	.button {
-		@apply flex h-7 w-7 items-center justify-center rounded-full;
+		@apply flex h-6 w-6 items-center justify-center rounded-full;
 		@apply text-magnum-900 transition-colors hover:bg-magnum-500/10;
-		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
+		@apply focus-visible:ring-1 focus-visible:ring-magnum-400;
 		@apply bg-white p-0 text-sm font-medium;
 	}
 
 	.content {
 		@apply z-10 w-60 rounded-[4px] bg-white p-5 shadow-sm;
+	}
+
+	.buttons-wrapper {
+		@apply flex items-center justify-between border-y border-magnum-700 py-1;
+	}
+
+	.date {
+		@apply flex h-6 w-6 items-center justify-center rounded hover:bg-magnum-100 data-[selected]:bg-magnum-200 data-[disabled]:opacity-40;
+	}
+
+	.date span {
+		@apply text-sm text-magnum-800;
 	}
 </style>
