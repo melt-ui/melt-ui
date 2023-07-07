@@ -233,11 +233,13 @@ export type BuilderReturn<
 
 export function createElHelpers<Part extends string = string>(prefix: string) {
 	const name = (part?: Part) => (part ? `${prefix}-${part}` : prefix);
+	const attribute = (part?: Part) => `data-melt-${prefix}${part ? `-${part}` : ''}`;
 	const selector = (part?: Part) => `[data-melt-${prefix}${part ? `-${part}` : ''}]`;
 	const getEl = (part?: Part) => document.querySelector(selector(part));
 
 	return {
 		name,
+		attribute,
 		selector,
 		getEl,
 	};

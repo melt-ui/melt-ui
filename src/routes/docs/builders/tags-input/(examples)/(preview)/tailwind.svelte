@@ -11,6 +11,7 @@
 <div class="flex flex-col items-start justify-center gap-2">
 	<div
 		{...$root}
+		use:root
 		class="flex min-w-[280px] flex-row flex-wrap gap-2.5 rounded-md bg-white px-3 py-2 text-magnum-700
 		focus-within:ring focus-within:ring-magnum-400"
 	>

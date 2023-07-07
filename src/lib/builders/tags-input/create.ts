@@ -30,7 +30,7 @@ const defaults = {
 } satisfies Defaults<CreateTagsInputArgs>;
 
 type TagsInputParts = '' | 'tag' | 'delete-trigger' | 'edit' | 'input';
-const { name, selector } = createElHelpers<TagsInputParts>('tags-input');
+const { name, attribute, selector } = createElHelpers<TagsInputParts>('tags-input');
 
 export function createTagsInput(args?: CreateTagsInputArgs) {
 	const withDefaults = { ...defaults, ...args } as CreateTagsInputArgs;
@@ -189,6 +189,21 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 				'data-disabled': $options.disabled ? true : undefined,
 				disabled: $options.disabled,
 			} as const;
+		},
+		action: (node: HTMLElement) => {
+			const unsub = executeCallbacks(
+				addEventListener(node, 'mousedown', (e) => {
+					// Focus on input when root is the target
+					if ((e.target as HTMLElement).hasAttribute(attribute())) {
+						e.preventDefault();
+						focusInput(ids.input);
+					}
+				})
+			);
+
+			return {
+				destroy: unsub,
+			};
 		},
 	});
 
