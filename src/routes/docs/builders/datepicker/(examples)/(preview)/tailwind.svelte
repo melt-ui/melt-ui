@@ -79,7 +79,7 @@
 					<button
 						use:date
 						{...$date({ label: d.toDateString(), value: d, disabled: true })}
-						class="flex h-6 w-6 items-center justify-center rounded border-magnum-700"
+						class="flex h-6 w-6 items-center justify-center rounded border-magnum-700 data-[disabled]:opacity-40"
 					>
 						<span class="">{d.getDate()}</span>
 					</button>
