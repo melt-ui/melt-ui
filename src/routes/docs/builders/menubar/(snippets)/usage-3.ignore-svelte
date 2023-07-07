@@ -7,7 +7,7 @@
 	const { menu: menuB, item: itemB, trigger: triggerB } = createMenu();
 </script>
 
-<div {...menubar}>
+<div melt={$menubar}>
 	<button melt={$trigger}>File</button>
 	<div melt={$menu}>
 		<div melt={$item}>...</div>
