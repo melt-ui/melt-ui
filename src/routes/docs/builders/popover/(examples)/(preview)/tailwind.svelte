@@ -7,13 +7,13 @@
 	const { trigger, content, open, arrow, close } = createPopover();
 </script>
 
-<button type="button" class="trigger" use:melt={$trigger} aria-label="Update dimensions">
+<button type="button" class="trigger" melt={$trigger} aria-label="Update dimensions">
 	<Settings2 class="h-4 w-4" />
 	<span class="sr-only">Open Popover</span>
 </button>
 
 {#if $open}
-	<div use:melt={$content} transition:fade={{ duration: 100 }} class="content">
+	<div melt={$content} transition:fade={{ duration: 100 }} class="content">
 		<div {...$arrow} />
 		<div class="flex flex-col gap-2.5">
 			<p>Dimensions</p>
@@ -34,7 +34,7 @@
 				<input id="maxHeight" class="input" />
 			</fieldset>
 		</div>
-		<button class="close" use:melt={$close}>
+		<button class="close" melt={$close}>
 			<X class="h-4 w-4 " />
 		</button>
 	</div>

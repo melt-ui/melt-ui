@@ -23,16 +23,16 @@
 	];
 </script>
 
-<div class="root" use:melt={$root}>
+<div class="root" melt={$root}>
 	{#each items as { id, title, description }, i}
-		<div use:melt={$item(id)} class="item">
+		<div melt={$item(id)} class="item">
 			<h2>
-				<button id={i === 0 ? 'trigger' : undefined} use:melt={$trigger(id)} class="trigger">
+				<button id={i === 0 ? 'trigger' : undefined} melt={$trigger(id)} class="trigger">
 					{title}
 				</button>
 			</h2>
 			{#if $isSelected(id)}
-				<div class="content" use:melt={$content(id)} transition:slide>
+				<div class="content" melt={$content(id)} transition:slide>
 					<div>{description}</div>
 				</div>
 			{/if}

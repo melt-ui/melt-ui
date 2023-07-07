@@ -3,10 +3,10 @@
 	const { menu, item, trigger, arrow } = createDropdownMenu();
 </script>
 
-<button use:melt={$trigger}>Open Menu</button>
-<div use:melt={$menu}>
-	<div use:melt={$item}>...</div>
-	<div use:melt={$item}>...</div>
-	<div use:melt={$item}>...</div>
-	<div use:melt={$arrow}/>
+<button melt={$trigger}>Open Menu</button>
+<div melt={$menu}>
+	<div melt={$item}>...</div>
+	<div melt={$item}>...</div>
+	<div melt={$item}>...</div>
+	<div melt={$arrow}/>
 </div>

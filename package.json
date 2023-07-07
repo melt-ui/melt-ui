@@ -63,7 +63,7 @@
 		"@changesets/cli": "^2.26.1",
 		"@iconify-json/lucide": "^1.1.104",
 		"@iconify-json/simple-icons": "^1.1.57",
-		"@melt-ui/pp": "^0.0.1",
+		"@melt-ui/pp": "^0.0.2",
 		"@storybook/addon-essentials": "^7.0.23",
 		"@storybook/addon-interactions": "^7.0.23",
 		"@storybook/addon-links": "^7.0.23",

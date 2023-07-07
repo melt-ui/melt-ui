@@ -12,14 +12,14 @@
 	});
 </script>
 
-<button type="button" class="trigger" use:melt={$trigger} aria-label="Update dimensions">
+<button type="button" class="trigger" melt={$trigger} aria-label="Update dimensions">
 	<Plus class="h-4 w-4" />
 	<span class="sr-only">Open Popover</span>
 </button>
 
 {#if $open}
 	<div
-		use:melt={$content}
+		melt={$content}
 		transition:fade={{ duration: 100 }}
 		class="z-10 rounded-md bg-white shadow-sm"
 	>

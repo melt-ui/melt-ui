@@ -10,13 +10,13 @@
 
 <form>
 	<div class="checkbox-wrapper">
-		<button use:melt={$root} class="root" id="checkbox">
+		<button melt={$root} class="root" id="checkbox">
 			{#if $isIndeterminate}
 				<Minus />
 			{:else if $isChecked}
 				<Check />
 			{/if}
-			<input use:melt={$input} />
+			<input melt={$input} />
 		</button>
 		<label for="checkbox" class="label"> Accept terms and conditions. </label>
 	</div>

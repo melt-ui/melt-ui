@@ -29,8 +29,8 @@ devDependencies:
     specifier: ^1.1.57
     version: 1.1.57
   '@melt-ui/pp':
-    specifier: ^0.0.1
-    version: 0.0.1(svelte@4.0.0)
+    specifier: ^0.0.2
+    version: 0.0.2(svelte@4.0.0)
   '@storybook/addon-essentials':
     specifier: ^7.0.23
     version: 7.0.23(react-dom@18.2.0)(react@18.2.0)
@@ -3256,8 +3256,8 @@ packages:
       react: 18.2.0
     dev: true
 
-  /@melt-ui/pp@0.0.1(svelte@4.0.0):
-    resolution: {integrity: sha512-fkRr2sV5V1Bng9FARk1LnBcw7PKMoApsZ2qys7MJlo3MrIvdmvScwORRdzuYvM/eYwGefUKkfJ2GXd/0cHYhIQ==}
+  /@melt-ui/pp@0.0.2(svelte@4.0.0):
+    resolution: {integrity: sha512-OBxsoe3SI9YEWGgQVnxuaIpCt/ag5KhE47b+ttTycazldfXlB9Yfbs6+6kYvIkZ8SMS74ZXu0zIVs3iZVxxMmQ==}
     peerDependencies:
       svelte: ^3.55.0 || ^4.0.0
     dependencies:

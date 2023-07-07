@@ -17,12 +17,12 @@
 
 <h2>Melt UI</h2>
 <p>Flavors for everyone</p>
-<div use:melt={$horizontalSeparator} class="separator separator--horizontal" />
+<div melt={$horizontalSeparator} class="separator separator--horizontal" />
 <div class="ice-creams">
 	{#each icecreams as icecream, i}
 		<p>{icecream}</p>
 		{#if i !== icecreams.length - 1}
-			<div use:melt={$vertical} class="separator separator--vertical" />
+			<div melt={$vertical} class="separator separator--vertical" />
 		{/if}
 	{/each}
 </div>

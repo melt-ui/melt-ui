@@ -13,15 +13,15 @@
 <nav class="flex flex-col items-center gap-4" aria-label="pagination" {...root}>
 	<p class="text-center">Showing items {$range.start} - {$range.end}</p>
 	<div class="flex items-center gap-2">
-		<button use:melt={$prevButton}><ChevronLeft /></button>
+		<button melt={$prevButton}><ChevronLeft /></button>
 		{#each $pages as page (page.key)}
 			{#if page.type === 'ellipsis'}
 				<span>...</span>
 			{:else}
-				<button use:melt={$pageTrigger(page)}>{page.value}</button>
+				<button melt={$pageTrigger(page)}>{page.value}</button>
 			{/if}
 		{/each}
-		<button use:melt={$nextButton}><ChevronRight /></button>
+		<button melt={$nextButton}><ChevronRight /></button>
 	</div>
 </nav>
 

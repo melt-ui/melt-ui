@@ -40,35 +40,35 @@
 	const stickyScroll = writable(false);
 </script>
 
-<div class="flex rounded-md bg-white p-1 shadow-md" use:melt={$menubar}>
+<div class="flex rounded-md bg-white p-1 shadow-md" melt={$menubar}>
 	<!------------>
 	<!--- FILE --->
 	<!------------>
-	<button type="button" class="trigger" use:melt={$trigger} aria-label="Update dimensions">
+	<button type="button" class="trigger" melt={$trigger} aria-label="Update dimensions">
 		File
 	</button>
 
-	<div class="menu" use:melt={$menu}>
-		<div class="item" use:melt={$item}>New Text File</div>
-		<div class="item" use:melt={$item}>
+	<div class="menu" melt={$menu}>
+		<div class="item" melt={$item}>New Text File</div>
+		<div class="item" melt={$item}>
 			New File...
 			<div class="rightSlot">⌘T</div>
 		</div>
-		<div class="item" use:melt={$item} aria-disabled="true">
+		<div class="item" melt={$item} aria-disabled="true">
 			New Window...
 			<div class="rightSlot">⇧⌘T</div>
 		</div>
-		<div class="separator" use:melt={$separator} />
-		<div class="item" use:melt={$subTrigger}>
+		<div class="separator" melt={$separator} />
+		<div class="item" melt={$subTrigger}>
 			Select theme
 			<div class="rightSlot">
 				<ChevronRight class="icon" />
 			</div>
 		</div>
-		<div class="menu subMenu" use:melt={$subMenu}>
-			<div use:melt={$radioGroup}>
+		<div class="menu subMenu" melt={$subMenu}>
+			<div melt={$radioGroup}>
 				{#each themesArr as theme}
-					<div class="item" use:melt={$radioItem({ value: theme })}>
+					<div class="item" melt={$radioItem({ value: theme })}>
 						<div class="check">
 							{#if $isChecked(theme)}
 								<div class="dot" />
@@ -79,8 +79,8 @@
 				{/each}
 			</div>
 		</div>
-		<div use:melt={$separator} class="separator" />
-		<div class="item" use:melt={$item}>
+		<div melt={$separator} class="separator" />
+		<div class="item" melt={$item}>
 			Quit Melt UI
 			<div class="rightSlot">⌘Q</div>
 		</div>
@@ -89,40 +89,40 @@
 	<!------------>
 	<!--- EDIT --->
 	<!------------>
-	<button type="button" class="trigger" use:melt={$triggerA} aria-label="Update dimensions">
+	<button type="button" class="trigger" melt={$triggerA} aria-label="Update dimensions">
 		Edit
 	</button>
 
-	<div class="menu" use:melt={$menuA}>
-		<div class="item" use:melt={$itemA}>
+	<div class="menu" melt={$menuA}>
+		<div class="item" melt={$itemA}>
 			Undo
 			<div class="rightSlot">⌘Z</div>
 		</div>
-		<div class="item" use:melt={$itemA}>
+		<div class="item" melt={$itemA}>
 			Redo
 			<div class="rightSlot">⇧⌘Z</div>
 		</div>
-		<div class="separator" use:melt={$separatorA} />
-		<div class="item" use:melt={$itemA}>
+		<div class="separator" melt={$separatorA} />
+		<div class="item" melt={$itemA}>
 			Cut
 			<div class="rightSlot">⌘X</div>
 		</div>
-		<div class="item" use:melt={$itemA}>
+		<div class="item" melt={$itemA}>
 			Copy
 			<div class="rightSlot">⌘C</div>
 		</div>
-		<div class="item" use:melt={$itemA}>
+		<div class="item" melt={$itemA}>
 			Paste
 			<div class="rightSlot">⌘V</div>
 		</div>
 
-		<div use:melt={$separatorA} class="separator" />
+		<div melt={$separatorA} class="separator" />
 
-		<div class="item" use:melt={$itemA}>
+		<div class="item" melt={$itemA}>
 			Find
 			<div class="rightSlot">⌘F</div>
 		</div>
-		<div class="item" use:melt={$itemA}>
+		<div class="item" melt={$itemA}>
 			Replace
 			<div class="rightSlot">⌥⌘F</div>
 		</div>
@@ -131,30 +131,30 @@
 	<!------------>
 	<!--- VIEW --->
 	<!------------>
-	<button type="button" class="trigger" use:melt={$triggerB} aria-label="Update dimensions">
+	<button type="button" class="trigger" melt={$triggerB} aria-label="Update dimensions">
 		View
 	</button>
 
-	<div class="menu" use:melt={$menuB}>
-		<div class="item" use:melt={$itemB}>
+	<div class="menu" melt={$menuB}>
+		<div class="item" melt={$itemB}>
 			Command Palette..
 			<div class="rightSlot">⇧⌘P</div>
 		</div>
-		<div class="item" use:melt={$itemB}>Open View...</div>
-		<div class="separator" use:melt={$separatorB} />
-		<div class="item" use:melt={$subTriggerB}>
+		<div class="item" melt={$itemB}>Open View...</div>
+		<div class="separator" melt={$separatorB} />
+		<div class="item" melt={$subTriggerB}>
 			Appearance
 			<div class="rightSlot">
 				<ChevronRight class="icon" />
 			</div>
 		</div>
-		<div class="menu subMenu" use:melt={$subMenuB}>
-			<div use:melt={$radioGroup}>
-				<div class="item" use:melt={$itemB}>Full Screen</div>
-				<div class="item" use:melt={$itemB}>Zen Mode</div>
+		<div class="menu subMenu" melt={$subMenuB}>
+			<div melt={$radioGroup}>
+				<div class="item" melt={$itemB}>Full Screen</div>
+				<div class="item" melt={$itemB}>Zen Mode</div>
 			</div>
 		</div>
-		<div class="separator" use:melt={$separatorB} />
+		<div class="separator" melt={$separatorB} />
 
 		<div class="item" {...$checkboxItemB} use:checkboxItemB={{ checked: wordWrap }}>
 			<div class="check">
@@ -178,14 +178,14 @@
 	<!------------>
 	<!--- HELP --->
 	<!------------>
-	<button type="button" class="trigger" use:melt={$triggerC} aria-label="Update dimensions">
+	<button type="button" class="trigger" melt={$triggerC} aria-label="Update dimensions">
 		Help
 	</button>
 
-	<div class="menu" use:melt={$menuC}>
-		<div class="item" use:melt={$itemC}>About Melt UI</div>
-		<div class="item" use:melt={$itemC}>Check for Updates...</div>
-		<div class="separator" use:melt={$separatorC} />
+	<div class="menu" melt={$menuC}>
+		<div class="item" melt={$itemC}>About Melt UI</div>
+		<div class="item" melt={$itemC}>Check for Updates...</div>
+		<div class="separator" melt={$separatorC} />
 		<div class="item" {...$checkboxItemC} use:checkboxItemC={{ checked: tipsAndTricks }}>
 			<div class="check">
 				{#if $tipsAndTricks}
@@ -195,7 +195,7 @@
 			Tips & Tricks
 		</div>
 
-		<div use:melt={$separatorC} class="separator" />
+		<div melt={$separatorC} class="separator" />
 
 		<div class="item" {...$checkboxItemC} use:checkboxItemC={{ checked: hideMeltUI }}>
 			<div class="check">
@@ -205,12 +205,12 @@
 			</div>
 			Documentation
 		</div>
-		<div class="item" use:melt={$itemC} aria-disabled="true">
+		<div class="item" melt={$itemC} aria-disabled="true">
 			Show All Components
 			<div class="rightSlot">⇧⌘N</div>
 		</div>
-		<div use:melt={$separatorC} class="separator" />
-		<div class="item" use:melt={$itemC}>Report a bug...</div>
+		<div melt={$separatorC} class="separator" />
+		<div class="item" melt={$itemC}>Report a bug...</div>
 	</div>
 </div>
 

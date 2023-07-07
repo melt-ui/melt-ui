@@ -5,13 +5,13 @@
 	const { root, input, tags, tag, deleteTrigger, edit } = createTagsInput();
 </script>
 
-<div use:melt={$root}>
+<div melt={$root}>
 	{#each $tags as t}
-		<div use:melt={$tag(t)}>
+		<div melt={$tag(t)}>
 			<span>{t.value}</span>
-			<button use:melt={$deleteTrigger(t)}>x</button>
+			<button melt={$deleteTrigger(t)}>x</button>
 		</div>
-		<div use:melt={$edit(t)}>{t.value}</div>
+		<div melt={$edit(t)}>{t.value}</div>
 	{/each}
-	<input use:melt={$input} type="text" />
+	<input melt={$input} type="text" />
 </div>

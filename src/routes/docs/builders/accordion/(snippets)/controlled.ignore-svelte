@@ -32,24 +32,24 @@
 
 <p>Value: {value} Value Store: {$valueStore}</p>
 
-<div use:melt={$root}>
-	<div use:melt={$item('item-1')}>
-		<button use:melt={$trigger('item-1')}>Is it accessible?</button>
-		<div use:melt={$content('item-1')}>
+<div melt={$root}>
+	<div melt={$item('item-1')}>
+		<button melt={$trigger('item-1')}>Is it accessible?</button>
+		<div melt={$content('item-1')}>
 			<div>Yes. It adheres to the WAI-ARIA design pattern.</div>
 		</div>
 	</div>
 
-	<div use:melt={$item('item-2')}>
-		<button use:melt={$trigger('item-2')}>Is it accessible?</button>
-		<div use:melt={$content('item-2')}>
+	<div melt={$item('item-2')}>
+		<button melt={$trigger('item-2')}>Is it accessible?</button>
+		<div melt={$content('item-2')}>
 			<div>Yes. It adheres to the WAI-ARIA design pattern.</div>
 		</div>
 	</div>
 
-	<div use:melt={$item('item-3')}>
-		<button use:melt={$trigger('item-3')}>Is it accessible?</button>
-		<div use:melt={$content('item-3')}>
+	<div melt={$item('item-3')}>
+		<button melt={$trigger('item-3')}>Is it accessible?</button>
+		<div melt={$content('item-3')}>
 			<div>Yes. It adheres to the WAI-ARIA design pattern.</div>
 		</div>
 	</div>

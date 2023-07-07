@@ -8,17 +8,17 @@
 </script>
 
 <div
-	use:melt={$root}
+	melt={$root}
 	class="flex items-center data-[orientation='vertical']:flex-col"
 	aria-label="Text alignment"
 >
-	<button class="toggle-item" use:melt={$item('left')} aria-label="Left aligned">
+	<button class="toggle-item" melt={$item('left')} aria-label="Left aligned">
 		<AlignLeft />
 	</button>
-	<button class="toggle-item" use:melt={$item('center')} aria-label="Center aligned">
+	<button class="toggle-item" melt={$item('center')} aria-label="Center aligned">
 		<AlignCenter />
 	</button>
-	<button class="toggle-item" use:melt={$item('right')} aria-label="Right aligned">
+	<button class="toggle-item" melt={$item('right')} aria-label="Right aligned">
 		<AlignRight />
 	</button>
 </div>

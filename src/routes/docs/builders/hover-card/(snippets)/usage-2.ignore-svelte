@@ -3,9 +3,9 @@
 	const { trigger, content, arrow } = createHoverCard();
 </script>
 
-<button use:melt={$trigger}>Hover Me</button>
+<button melt={$trigger}>Hover Me</button>
 
-<div use:melt={$content}>
+<div melt={$content}>
 	<div>I am content inside the hover card</div>
-	<div use:melt={$arrow} />
+	<div melt={$arrow} />
 </div>

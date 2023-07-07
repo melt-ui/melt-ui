@@ -3,18 +3,18 @@
 	const { root, list, content, trigger } = createTabs({ value: 'tab1' });
 </script>
 
-<div use:melt={$root} class="root">
-	<div use:melt={$list} class="list" aria-label="Manage your account">
-		<button use:melt={$trigger('tab1')} class="trigger">Account</button>
-		<button use:melt={$trigger('tab2')} class="trigger">Password</button>
+<div melt={$root} class="root">
+	<div melt={$list} class="list" aria-label="Manage your account">
+		<button melt={$trigger('tab1')} class="trigger">Account</button>
+		<button melt={$trigger('tab2')} class="trigger">Password</button>
 		<!-- You don't need to set disabled on the action when using a button element, since
 			$trigger will set the 'disabled' attribute on the button -->
-		<button use:melt={$trigger({ value: 'tab3', disabled: true })} class="trigger opacity-50"
+		<button melt={$trigger({ value: 'tab3', disabled: true })} class="trigger opacity-50"
 			>Disabled</button
 		>
-		<button use:melt={$trigger('tab4')} class="trigger">Settings</button>
+		<button melt={$trigger('tab4')} class="trigger">Settings</button>
 	</div>
-	<div use:melt={$content('tab1')} class="content">
+	<div melt={$content('tab1')} class="content">
 		<p class="description">Make changes to your account here. Click save when you're done.</p>
 		<fieldset>
 			<label for="name"> Name </label>
@@ -25,7 +25,7 @@
 			<button>Save changes</button>
 		</div>
 	</div>
-	<div use:melt={$content('tab2')} class="content">
+	<div melt={$content('tab2')} class="content">
 		<p class="description">Change your password here. Click save when you're done.</p>
 		<fieldset>
 			<label for="new"> New password </label>
@@ -35,7 +35,7 @@
 			<button>Save changes</button>
 		</div>
 	</div>
-	<div use:melt={$content('tab4')} class="content">
+	<div melt={$content('tab4')} class="content">
 		<p class="description">Change your settings here. Click save when you're done.</p>
 
 		<fieldset>
