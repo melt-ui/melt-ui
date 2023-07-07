@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createTooltip, melt } from '@melt-ui/svelte';
+	import { createTooltip } from '@melt-ui/svelte';
 	import { fade } from 'svelte/transition';
 	import Plus from '~icons/lucide/plus';
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createContextMenu, melt } from '@melt-ui/svelte';
+	import { createContextMenu } from '@melt-ui/svelte';
 	import { writable } from 'svelte/store';
 	import ChevronRight from '~icons/lucide/chevron-right';
 	import Check from '~icons/lucide/check';

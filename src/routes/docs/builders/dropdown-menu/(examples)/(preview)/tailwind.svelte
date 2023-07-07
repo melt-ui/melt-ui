@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDropdownMenu, melt } from '@melt-ui/svelte';
+	import { createDropdownMenu } from '@melt-ui/svelte';
 	import { writable } from 'svelte/store';
 	import AlignJustify from '~icons/lucide/align-justify';
 	import ChevronRight from '~icons/lucide/chevron-right';

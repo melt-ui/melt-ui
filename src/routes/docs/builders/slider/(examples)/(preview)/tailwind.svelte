@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createSlider, melt } from '@melt-ui/svelte';
+	import { createSlider } from '@melt-ui/svelte';
 
 	const { slider, range, thumb, value } = createSlider({
 		value: [30],

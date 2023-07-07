@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createContextMenu, melt } from '@melt-ui/svelte';
+	import { createContextMenu} from '@melt-ui/svelte';
 	const { menu, item, trigger, arrow } = createContextMenu();
 </script>
 

@@ -1,4 +1,4 @@
 <script lang="ts">
-    import { createDropdownMenu, melt } from "@melt-ui/svelte";
+    import { createDropdownMenu} from "@melt-ui/svelte";
     const { menu, item, trigger, arrow } = createDropdownMenu()
 </script>

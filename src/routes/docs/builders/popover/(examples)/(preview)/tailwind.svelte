@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createPopover, melt } from '@melt-ui/svelte';
+	import { createPopover } from '@melt-ui/svelte';
 	import { fade } from 'svelte/transition';
 	import Settings2 from '~icons/lucide/settings2';
 	import X from '~icons/lucide/x';

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createPagination, melt } from '@melt-ui/svelte';
+	import { createPagination } from '@melt-ui/svelte';
 	import ChevronLeft from '~icons/lucide/ChevronLeft';
 	import ChevronRight from '~icons/lucide/ChevronRight';
 	const { prevButton, nextButton, pages, pageTrigger, range, root } = createPagination({

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createProgress, melt } from '@melt-ui/svelte';
+	import { createProgress } from '@melt-ui/svelte';
 
 	const { progress, value, max } = createProgress({
 		value: 30,

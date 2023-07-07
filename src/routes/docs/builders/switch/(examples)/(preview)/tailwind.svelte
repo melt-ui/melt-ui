@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createSwitch, melt } from '@melt-ui/svelte';
+	import { createSwitch } from '@melt-ui/svelte';
 
 	const { root, input, isChecked } = createSwitch();
 </script>

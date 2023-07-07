@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createToggleGroup, melt } from '@melt-ui/svelte';
+	import { createToggleGroup } from '@melt-ui/svelte';
 	import AlignCenter from '~icons/lucide/align-center';
 	import AlignLeft from '~icons/lucide/align-left';
 	import AlignRight from '~icons/lucide/align-right';

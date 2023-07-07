@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createTabs, melt } from '@melt-ui/svelte';
+	import { createTabs } from '@melt-ui/svelte';
 	const { root, list, content, trigger } = createTabs({ value: 'tab1' });
 </script>
 

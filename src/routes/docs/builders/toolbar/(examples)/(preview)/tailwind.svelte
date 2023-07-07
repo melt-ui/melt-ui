@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createToolbar, melt } from '@melt-ui/svelte';
+	import { createToolbar } from '@melt-ui/svelte';
 	import Bold from '~icons/lucide/bold';
 	import Italic from '~icons/lucide/italic';
 	import Strikethrough from '~icons/lucide/strikethrough';

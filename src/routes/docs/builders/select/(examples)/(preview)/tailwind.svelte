@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createSelect, melt } from '@melt-ui/svelte';
+	import { createSelect } from '@melt-ui/svelte';
 	import Check from '~icons/lucide/check';
 	import ChevronDown from '~icons/lucide/chevron-down';
 

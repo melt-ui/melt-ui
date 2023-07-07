@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createRadioGroup, melt } from '@melt-ui/svelte';
+	import { createRadioGroup } from '@melt-ui/svelte';
 
 	const { root, item, isChecked } = createRadioGroup({
 		value: 'default',

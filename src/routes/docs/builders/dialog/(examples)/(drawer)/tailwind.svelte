@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDialog, melt } from '@melt-ui/svelte';
+	import { createDialog } from '@melt-ui/svelte';
 	import { fade, fly } from 'svelte/transition';
 	// Internal helpers
 	import X from '~icons/lucide/x';

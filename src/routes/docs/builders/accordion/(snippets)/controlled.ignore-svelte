@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createAccordion, melt } from '@melt-ui/svelte';
+	import { createAccordion} from '@melt-ui/svelte';
 
 	let value: string | string[] | undefined = 'item-1';
 	let disabled = false;
