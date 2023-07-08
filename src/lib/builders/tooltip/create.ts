@@ -1,5 +1,7 @@
 import {
 	addEventListener,
+	builder,
+	createElHelpers,
 	executeCallbacks,
 	generateId,
 	noop,
@@ -23,6 +25,9 @@ const defaults = {
 	openDelay: 1000,
 	closeDelay: 500,
 } satisfies Defaults<CreateTooltipArgs>;
+
+type TooltipParts = 'trigger' | 'content';
+const { name } = createElHelpers<TooltipParts>('tooltip');
 
 // TODO: Add grace area to prevent tooltip from closing when moving from trigger to tooltip
 
@@ -65,8 +70,9 @@ export function createTooltip(args?: CreateTooltipArgs) {
 		};
 	}) as Readable<() => void>;
 
-	const trigger = {
-		...derived([open], ([$open]) => {
+	const trigger = builder(name('trigger'), {
+		stores: open,
+		returned: ($open) => {
 			return {
 				role: 'button' as const,
 				'aria-haspopup': 'dialog' as const,
@@ -75,7 +81,7 @@ export function createTooltip(args?: CreateTooltipArgs) {
 				'aria-controls': ids.content,
 				id: ids.trigger,
 			};
-		}),
+		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'mouseover', () => get(openTooltip)()),
@@ -94,10 +100,11 @@ export function createTooltip(args?: CreateTooltipArgs) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
-	const content = {
-		...derived([open], ([$open]) => {
+	const content = builder(name('content'), {
+		stores: open,
+		returned: ($open) => {
 			return {
 				hidden: $open ? undefined : true,
 				tabindex: -1,
@@ -106,7 +113,7 @@ export function createTooltip(args?: CreateTooltipArgs) {
 				}),
 				id: ids.content,
 			};
-		}),
+		},
 		action: (node: HTMLElement) => {
 			let unsub = noop;
 
@@ -141,7 +148,7 @@ export function createTooltip(args?: CreateTooltipArgs) {
 				},
 			};
 		},
-	};
+	});
 
 	const arrow = derived(options, ($options) => ({
 		'data-arrow': true,

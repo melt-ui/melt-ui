@@ -10,6 +10,7 @@ import {
 	getPreviousFocusable,
 	isHTMLElement,
 	kbd,
+	FIRST_LAST_KEYS,
 	noop,
 	styleToString,
 } from '$lib/internal/helpers';
@@ -17,7 +18,6 @@ import type { Defaults } from '$lib/internal/types';
 import type { VirtualElement } from '@floating-ui/core';
 import { tick } from 'svelte';
 import { get, writable, type Readable } from 'svelte/store';
-
 import {
 	applyAttrsIfDisabled,
 	clearTimerStore,
@@ -30,10 +30,6 @@ import {
 	setMeltMenuAttribute,
 } from '../menu';
 import type { CreateContextMenu } from './types';
-
-const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
-const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
-const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 
 const defaults = {
 	arrowSize: 8,

@@ -22,3 +22,5 @@ CHANGELOG.md
 
 storybook-static/**/*
 
+*.ignore-svelte
+*.ignore-ts

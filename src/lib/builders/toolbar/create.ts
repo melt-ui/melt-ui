@@ -1,8 +1,9 @@
 import {
 	addEventListener,
+	builder,
+	createElHelpers,
 	executeCallbacks,
 	handleRovingFocus,
-	hiddenAction,
 	isHTMLElement,
 	kbd,
 	omit,
@@ -16,22 +17,29 @@ const defaults = {
 	orientation: 'horizontal',
 } satisfies Defaults<CreateToolbarArgs>;
 
+const { name, selector } = createElHelpers('toolbar');
+
 export function createToolbar(args: CreateToolbarArgs = {}) {
 	const withDefaults = { ...defaults, ...args };
 	const toolbarOptions = writable({ ...withDefaults });
 
-	const root = derived(toolbarOptions, ($toolbarOptions) => {
-		return {
-			role: 'toolbar',
-			'data-orientation': $toolbarOptions.orientation,
-			'data-melt-toolbar': '',
-		};
+	const root = builder(name(), {
+		stores: toolbarOptions,
+		returned: ($toolbarOptions) => {
+			return {
+				role: 'toolbar',
+				'data-orientation': $toolbarOptions.orientation,
+			};
+		},
 	});
 
-	const button = hiddenAction({
-		role: 'button',
-		type: 'button',
-		'data-melt-toolbar-item': '',
+	const button = builder(name('button'), {
+		returned: () =>
+			({
+				role: 'button',
+				type: 'button',
+				tabIndex: -1,
+			} as const),
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'keydown', getKeydownHandler(toolbarOptions));
 
@@ -39,12 +47,15 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 				destroy: unsub,
 			};
 		},
-		tabIndex: -1,
-	} as const);
+	});
 
-	const link = hiddenAction({
-		role: 'link',
-		'data-melt-toolbar-item': '',
+	const link = builder(name('link'), {
+		returned: () =>
+			({
+				role: 'link',
+				'data-melt-toolbar-item': '',
+				tabIndex: -1,
+			} as const),
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'keydown', getKeydownHandler(toolbarOptions));
 
@@ -52,16 +63,19 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 				destroy: unsub,
 			};
 		},
-		tabIndex: -1,
-	} as const);
+	});
 
-	const separator = derived(toolbarOptions, ($toolbarOptions) => {
-		return {
-			role: 'separator',
-			'data-orientation': $toolbarOptions.orientation === 'horizontal' ? 'vertical' : 'horizontal',
-			'aria-orientation': $toolbarOptions.orientation === 'horizontal' ? 'vertical' : 'horizontal',
-			'data-melt-toolbar-separator': '',
-		} as const;
+	const separator = builder(name('separator'), {
+		stores: toolbarOptions,
+		returned: ($toolbarOptions) => {
+			return {
+				role: 'separator',
+				'data-orientation':
+					$toolbarOptions.orientation === 'horizontal' ? 'vertical' : 'horizontal',
+				'aria-orientation':
+					$toolbarOptions.orientation === 'horizontal' ? 'vertical' : 'horizontal',
+			} as const;
+		},
 	});
 
 	const groupDefaults = {
@@ -90,12 +104,16 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 			});
 		});
 
-		const root = derived(toolbarOptions, ($toolbarOptions) => {
-			return {
-				role: 'group',
-				'data-orientation': $toolbarOptions.orientation,
-				'data-melt-toolbar-group': '',
-			} as const;
+		const { name } = createElHelpers('toolbar-group');
+
+		const root = builder(name(), {
+			stores: toolbarOptions,
+			returned: ($toolbarOptions) => {
+				return {
+					role: 'group',
+					'data-orientation': $toolbarOptions.orientation,
+				} as const;
+			},
 		});
 
 		type ToolbarGroupItemArgs =
@@ -104,34 +122,30 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 					disabled?: boolean;
 			  }
 			| string;
-		const item = {
-			...derived(
-				[groupOptions, value, toolbarOptions],
-				([$groupOptions, $value, $toolbarOptions]) => {
-					return (args: ToolbarGroupItemArgs) => {
-						const itemValue = typeof args === 'string' ? args : args.value;
-						const argDisabled = typeof args === 'string' ? false : !!args.disabled;
-						const disabled = $groupOptions.disabled || argDisabled;
+		const item = builder(name('item'), {
+			stores: [groupOptions, value, toolbarOptions],
+			returned: ([$groupOptions, $value, $toolbarOptions]) => {
+				return (args: ToolbarGroupItemArgs) => {
+					const itemValue = typeof args === 'string' ? args : args.value;
+					const argDisabled = typeof args === 'string' ? false : !!args.disabled;
+					const disabled = $groupOptions.disabled || argDisabled;
 
-						const pressed = Array.isArray($value)
-							? $value.includes(itemValue)
-							: $value === itemValue;
+					const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
 
-						return {
-							disabled,
-							pressed,
-							'data-orientation': $toolbarOptions.orientation,
-							'data-disabled': disabled ? true : undefined,
-							'data-value': itemValue,
-							'data-state': pressed ? 'on' : 'off',
-							'aria-pressed': pressed,
-							type: 'button',
-							role: $groupOptions.type === 'single' ? 'radio' : undefined,
-							'data-melt-toolbar-item': '',
-						} as const;
-					};
-				}
-			),
+					return {
+						disabled,
+						pressed,
+						'data-orientation': $toolbarOptions.orientation,
+						'data-disabled': disabled ? true : undefined,
+						'data-value': itemValue,
+						'data-state': pressed ? 'on' : 'off',
+						'aria-pressed': pressed,
+						type: 'button',
+						role: $groupOptions.type === 'single' ? 'radio' : undefined,
+						'data-melt-toolbar-item': '',
+					} as const;
+				};
+			},
 			action: (node: HTMLElement) => {
 				const getNodeProps = () => {
 					const itemValue = node.dataset.value;
@@ -171,7 +185,7 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 					destroy: unsub,
 				};
 			},
-		};
+		});
 
 		const isPressed = derived(value, ($value) => {
 			return (itemValue: string) => {
@@ -199,7 +213,9 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 }
 
 function getToolbarItems(element: HTMLElement) {
-	return Array.from(element.querySelectorAll<HTMLElement>('[data-melt-toolbar-item]'));
+	return Array.from(
+		element.querySelectorAll<HTMLElement>(`${selector('item')}, ${selector('button')}`)
+	);
 }
 
 const getKeydownHandler =
@@ -222,7 +238,9 @@ const getKeydownHandler =
 		const root = el.closest<HTMLElement>('[data-melt-toolbar]');
 		if (!isHTMLElement(root)) return;
 
-		const items = Array.from(root.querySelectorAll<HTMLElement>('[data-melt-toolbar-item]'));
+		const items = Array.from(
+			root.querySelectorAll<HTMLElement>(`${selector('item')}, ${selector('button')}`)
+		);
 
 		const currentIndex = items.indexOf(el);
 

@@ -1,5 +1,6 @@
+import { builder } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import type { CreateSeparatorArgs } from './types';
 
 const defaults = {
@@ -11,14 +12,17 @@ export const createSeparator = (args: CreateSeparatorArgs = defaults) => {
 	const withDefaults = { ...defaults, ...args };
 	const options = writable({ ...withDefaults });
 
-	const root = derived(options, ({ orientation, decorative }) => {
-		const ariaOrientation = orientation === 'vertical' ? orientation : undefined;
-		return {
-			role: decorative ? 'none' : 'separator',
-			'aria-orientation': ariaOrientation,
-			'aria-hidden': decorative,
-			'data-orientation': orientation,
-		};
+	const root = builder('separator', {
+		stores: options,
+		returned: ({ orientation, decorative }) => {
+			const ariaOrientation = orientation === 'vertical' ? orientation : undefined;
+			return {
+				role: decorative ? 'none' : 'separator',
+				'aria-orientation': ariaOrientation,
+				'aria-hidden': decorative,
+				'data-orientation': orientation,
+			};
+		},
 	});
 
 	return {

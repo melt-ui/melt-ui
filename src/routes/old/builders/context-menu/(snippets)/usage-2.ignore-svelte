@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { createContextMenu } from "@melt-ui/svelte";
-    const { menu, item, trigger, arrow } = createContextMenu()
+	import { createContextMenu } from '@melt-ui/svelte';
+	const { menu, item, trigger, arrow } = createContextMenu();
 </script>
 
-<span {...$trigger} use:trigger.action>Right click here.</span>
-<div {...$menu} use:menu.action>
-    <div {...item} use:item.action>...</div>
-    <div {...item} use:item.action>...</div>
-    <div {...item} use:item.action>...</div>
-    <div {...arrow} />
+<span {...$trigger} use:trigger>Right click here.</span>
+<div {...$menu} use:menu>
+	<div {...$item} use:item>...</div>
+	<div {...$item} use:item>...</div>
+	<div {...$item} use:item>...</div>
+	<div {...$arrow} />
 </div>

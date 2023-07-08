@@ -1,0 +1,31 @@
+<script lang="ts">
+	import { createMenubar } from '@melt-ui/svelte';
+
+	const { menubar, createMenu } = createMenubar();
+	const { menu, item, trigger } = createMenu();
+	const { menu: menuA, item: itemA, trigger: triggerA } = createMenu();
+	const { menu: menuB, item: itemB, trigger: triggerB } = createMenu();
+</script>
+
+<div {...menubar}>
+	<button {...$trigger} use:trigger>File</button>
+	<div {...$menu} use:menu>
+		<div {...$item} use:item>...</div>
+		<div {...$item} use:item>...</div>
+		<div {...$item} use:item>...</div>
+	</div>
+
+	<button {...$triggerA} use:triggerA>Edit</button>
+	<div {...$menuA} use:menuA>
+		<div {...$itemA} use:itemA>...</div>
+		<div {...$itemA} use:itemA>...</div>
+		<div {...$itemA} use:itemA>...</div>
+	</div>
+
+	<button {...$triggerB} use:triggerB>Help</button>
+	<div {...$menuB} use:menuB>
+		<div {...$itemB} use:itemB>...</div>
+		<div {...$itemB} use:itemB>...</div>
+		<div {...$itemB} use:itemB>...</div>
+	</div>
+</div>

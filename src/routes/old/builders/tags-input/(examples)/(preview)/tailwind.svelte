@@ -2,8 +2,9 @@
 	import { createTagsInput } from '@melt-ui/svelte';
 	import X from '~icons/lucide/x';
 
-	const { root, input, tags, tag, deleteTrigger } = createTagsInput({
+	const { root, input, tags, tag, deleteTrigger, edit } = createTagsInput({
 		tags: ['Svelte', 'Typescript'],
+		unique: true,
 	});
 </script>
 
@@ -17,6 +18,7 @@
 		{#each $tags as t}
 			<div
 				{...$tag(t)}
+				use:tag
 				class="flex items-center overflow-hidden rounded-md bg-magnum-200 text-magnum-900 [word-break:break-word]
 			data-[disabled]:bg-magnum-300 data-[selected]:bg-magnum-400 data-[disabled]:hover:cursor-default
 				data-[disabled]:focus:!outline-none data-[disabled]:focus:!ring-0"
@@ -30,6 +32,11 @@
 					<X class="h-3 w-3" />
 				</button>
 			</div>
+			<div
+				{...$edit(t)}
+				use:edit
+				class="flex items-center overflow-hidden rounded-md px-1.5 [word-break:break-word] data-[invalid-edit]:focus:!ring-red-500"
+			/>
 		{/each}
 
 		<input

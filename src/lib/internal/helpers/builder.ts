@@ -114,7 +114,7 @@ export function lightable<T>(value: T): Readable<T> {
 	return { subscribe };
 }
 
-type BuilderReturned<S extends Stores | undefined> = S extends Stores
+type BuilderCallback<S extends Stores | undefined> = S extends Stores
 	? // eslint-disable-next-line @typescript-eslint/no-explicit-any
 	  (values: StoresValues<S>) => Record<string, any> | ((...args: any[]) => Record<string, any>)
 	: // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -130,7 +130,7 @@ type BuilderArgs<
 	S extends Stores | undefined,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,
-	R extends BuilderReturned<S>
+	R extends BuilderCallback<S>
 > = {
 	stores?: S;
 	action?: A;
@@ -141,7 +141,7 @@ type BuilderStore<
 	S extends Stores | undefined,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,
-	R extends BuilderReturned<S>,
+	R extends BuilderCallback<S>,
 	Name extends string
 > = Readable<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -150,7 +150,7 @@ type BuilderStore<
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore - This is a valid type, but TS doesn't like it for some reason. TODO: Figure out why
 				...args: Parameters<ReturnType<R>>
-		  ) => ReturnType<R> & { [K in `data-melt-${Name}`]: '' }) & { action: A }
+		  ) => ReturnType<R> & { [K in `data-melt-${Name}`]: '' } & { action: A }) & { action: A }
 		: ReturnType<R> & { [K in `data-melt-${Name}`]: '' } & { action: A }
 >;
 
@@ -158,9 +158,9 @@ export function builder<
 	S extends Stores | undefined,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,
-	R extends BuilderReturned<S>,
+	R extends BuilderCallback<S>,
 	Name extends string
->(name: Name, args?: BuilderArgs<S, A, R>) {
+>(name: Name, args?: BuilderArgs<S, A, R>): BuilderReturn<S, A, R, Name> {
 	const { stores, action, returned } = args ?? {};
 
 	const derivedStore = (() => {
@@ -170,10 +170,11 @@ export function builder<
 				const result = returned(values);
 				if (isFunctionWithParams(result)) {
 					const fn = (...args: Parameters<typeof result>) => {
-						return {
+						return hiddenAction({
 							...result(...args),
 							[`data-melt-${name}`]: '',
-						};
+							action: action ?? noop,
+						});
 					};
 					fn.action = action ?? noop;
 					return fn;
@@ -192,10 +193,11 @@ export function builder<
 
 			if (isFunctionWithParams(result)) {
 				const resultFn = (...args: Parameters<typeof result>) => {
-					return {
+					return hiddenAction({
 						...result(...args),
 						[`data-melt-${name}`]: '',
-					};
+						action: action ?? noop,
+					});
 				};
 				resultFn.action = action ?? noop;
 
@@ -221,13 +223,23 @@ export function builder<
 	return actionFn;
 }
 
+export type BuilderReturn<
+	S extends Stores | undefined,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<any, any>,
+	R extends BuilderCallback<S>,
+	Name extends string
+> = BuilderStore<S, A, R, Name> & A;
+
 export function createElHelpers<Part extends string = string>(prefix: string) {
 	const name = (part?: Part) => (part ? `${prefix}-${part}` : prefix);
+	const attribute = (part?: Part) => `data-melt-${prefix}${part ? `-${part}` : ''}`;
 	const selector = (part?: Part) => `[data-melt-${prefix}${part ? `-${part}` : ''}]`;
 	const getEl = (part?: Part) => document.querySelector(selector(part));
 
 	return {
 		name,
+		attribute,
 		selector,
 		getEl,
 	};

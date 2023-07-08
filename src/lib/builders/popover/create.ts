@@ -1,8 +1,9 @@
 import {
 	addEventListener,
+	builder,
+	createElHelpers,
 	effect,
 	generateId,
-	hiddenAction,
 	isBrowser,
 	noop,
 	sleep,
@@ -23,6 +24,9 @@ const defaults = {
 	open: false,
 } satisfies Defaults<CreatePopoverArgs>;
 
+type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
+const { name } = createElHelpers<PopoverParts>('popover');
+
 export function createPopover(args?: CreatePopoverArgs) {
 	const options = { ...defaults, ...args } as CreatePopoverArgs;
 	const positioning = readable(options.positioning);
@@ -35,8 +39,9 @@ export function createPopover(args?: CreatePopoverArgs) {
 		content: generateId(),
 	};
 
-	const content = {
-		...derived([open], ([$open]) => {
+	const content = builder(name('content'), {
+		stores: open,
+		returned: ($open) => {
 			return {
 				hidden: $open ? undefined : true,
 				tabindex: -1,
@@ -45,7 +50,7 @@ export function createPopover(args?: CreatePopoverArgs) {
 				}),
 				id: ids.content,
 			};
-		}),
+		},
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
 
@@ -78,10 +83,11 @@ export function createPopover(args?: CreatePopoverArgs) {
 				},
 			};
 		},
-	};
+	});
 
-	const trigger = {
-		...derived([open], ([$open]) => {
+	const trigger = builder(name('trigger'), {
+		stores: open,
+		returned: ($open) => {
 			return {
 				role: 'button',
 				'aria-haspopup': 'dialog',
@@ -89,7 +95,7 @@ export function createPopover(args?: CreatePopoverArgs) {
 				'data-state': $open ? 'open' : 'closed',
 				'aria-controls': ids.content,
 			} as const;
-		}),
+		},
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
 				open.update((prev) => {
@@ -107,7 +113,7 @@ export function createPopover(args?: CreatePopoverArgs) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
 	const arrow = derived(arrowSize, ($arrowSize) => ({
 		'data-arrow': true,
@@ -118,8 +124,11 @@ export function createPopover(args?: CreatePopoverArgs) {
 		}),
 	}));
 
-	const close = hiddenAction({
-		type: 'button',
+	const close = builder(name('close'), {
+		returned: () =>
+			({
+				type: 'button',
+			} as const),
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
 				open.set(false);
@@ -129,7 +138,7 @@ export function createPopover(args?: CreatePopoverArgs) {
 				destroy: unsub,
 			};
 		},
-	} as const);
+	});
 
 	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
 		if (!isBrowser) return;

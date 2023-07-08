@@ -24,7 +24,7 @@
 
 <Docs.H2>Usage</Docs.H2>
 <Docs.P>
-	To create an progress bar component, use the <Docs.Code>createProgress</Docs.Code> builder function.
+	To create a progress bar component, use the <Docs.Code>createProgress</Docs.Code> builder function.
 	Follow the anatomy or the example above to create your progress bar.
 </Docs.P>
 

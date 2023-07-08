@@ -1,6 +1,7 @@
 import {
 	addEventListener,
 	builder,
+	createElHelpers,
 	executeCallbacks,
 	getDirectionalKeys,
 	isBrowser,
@@ -22,6 +23,9 @@ const defaults = {
 	autoSet: true,
 } satisfies Defaults<CreateTabsArgs>;
 
+type TabsParts = 'list' | 'trigger' | 'content';
+const { name, selector } = createElHelpers<TabsParts>('tabs');
+
 export function createTabs(args?: CreateTabsArgs) {
 	const withDefaults = { ...defaults, ...args };
 	const options = writable(omit(withDefaults, 'value'));
@@ -33,7 +37,7 @@ export function createTabs(args?: CreateTabsArgs) {
 	});
 
 	// Root
-	const root = builder('tabs-root', {
+	const root = builder(name(), {
 		stores: options,
 		returned: ($options) => {
 			return {
@@ -43,7 +47,7 @@ export function createTabs(args?: CreateTabsArgs) {
 	});
 
 	// List
-	const list = builder('list', {
+	const list = builder(name('list'), {
 		stores: options,
 		returned: ($options) => {
 			return {
@@ -70,7 +74,7 @@ export function createTabs(args?: CreateTabsArgs) {
 		}
 	};
 
-	const trigger = builder('trigger', {
+	const trigger = builder(name('trigger'), {
 		stores: [value, options],
 		returned: ([$value, $options]) => {
 			return (args: TriggerArgs) => {
@@ -124,7 +128,7 @@ export function createTabs(args?: CreateTabsArgs) {
 					const tabValue = node.dataset.value;
 
 					const el = e.currentTarget as HTMLElement;
-					const rootEl = el.closest('[data-melt-tabs-root]') as HTMLElement | null;
+					const rootEl = el.closest(selector()) as HTMLElement | null;
 
 					if (!rootEl || !tabValue) return;
 
@@ -163,7 +167,7 @@ export function createTabs(args?: CreateTabsArgs) {
 	});
 
 	// Content
-	const content = builder('content', {
+	const content = builder(name('content'), {
 		stores: value,
 		returned: ($value) => {
 			return (tabValue: string) => {

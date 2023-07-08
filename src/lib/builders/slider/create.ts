@@ -1,5 +1,7 @@
 import {
 	addEventListener,
+	builder,
+	createElHelpers,
 	effect,
 	generateId,
 	getElementByMeltId,
@@ -7,7 +9,6 @@ import {
 	kbd,
 	omit,
 	styleToString,
-	typedDerived,
 } from '$lib/internal/helpers';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateSliderArgs } from './types';
@@ -20,6 +21,8 @@ const defaults = {
 	orientation: 'horizontal',
 	disabled: false,
 } satisfies CreateSliderArgs;
+
+const { name } = createElHelpers('slider');
 
 export const createSlider = (args: CreateSliderArgs = defaults) => {
 	const withDefaults = { ...defaults, ...args };
@@ -35,13 +38,16 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		root: generateId(),
 	};
 
-	const root = derived(options, ($options) => {
-		return {
-			disabled: $options.disabled,
-			'data-orientation': $options.orientation,
-			style: 'touch-action: none;',
-			'data-melt-id': ids.root,
-		};
+	const root = builder(name(), {
+		stores: options,
+		returned: ($options) => {
+			return {
+				disabled: $options.disabled,
+				'data-orientation': $options.orientation,
+				style: 'touch-action: none;',
+				'data-melt-id': ids.root,
+			};
+		},
 	});
 
 	const position = derived(options, ($options) => {
@@ -52,21 +58,24 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		};
 	});
 
-	const range = derived([value, options, position], ([$value, $options, $position]) => {
-		const minimum = $value.length > 1 ? $position(Math.min(...$value) ?? 0) : 0;
-		const maximum = 100 - $position(Math.max(...$value) ?? 0);
+	const range = builder(name('range'), {
+		stores: [value, options, position],
+		returned: ([$value, $options, $position]) => {
+			const minimum = $value.length > 1 ? $position(Math.min(...$value) ?? 0) : 0;
+			const maximum = 100 - $position(Math.max(...$value) ?? 0);
 
-		const orientationStyles =
-			$options.orientation === 'horizontal'
-				? { left: `${minimum}%`, right: `${maximum}%` }
-				: { top: `${minimum}%`, bottom: `${maximum}%` };
+			const orientationStyles =
+				$options.orientation === 'horizontal'
+					? { left: `${minimum}%`, right: `${maximum}%` }
+					: { top: `${minimum}%`, bottom: `${maximum}%` };
 
-		return {
-			style: styleToString({
-				position: 'absolute',
-				...orientationStyles,
-			}),
-		};
+			return {
+				style: styleToString({
+					position: 'absolute',
+					...orientationStyles,
+				}),
+			};
+		},
 	});
 
 	const updatePosition = (val: number, index: number) => {
@@ -98,8 +107,9 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		return thumbs;
 	};
 
-	const thumb = {
-		...typedDerived([value, options, position], ([$value, $options, $position]) => {
+	const thumb = builder(name('thumb'), {
+		stores: [value, options, position],
+		returned: ([$value, $options, $position]) => {
 			let index = -1;
 
 			return () => {
@@ -129,7 +139,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 					tabindex: $disabled ? -1 : 0,
 				} as const;
 			};
-		}),
+		},
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'keydown', (event) => {
 				const $options = get(options);
@@ -212,7 +222,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
 	effect([root, options], ([$root, $options]) => {
 		const { min: $min, max: $max, disabled: $disabled } = $options;

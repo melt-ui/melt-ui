@@ -1,5 +1,27 @@
 # @melt-ui/svelte
 
+## 0.18.1
+
+### Patch Changes
+
+- 068b84a: add action to function builders return
+
+## 0.18.0
+
+### Minor Changes
+
+- 2fda798: feat: pin-input builder
+- dbadcbe: export return types for all builders
+- 439ab89: Add Combobox builder
+- f54f4a5: label as const
+- d11eaab: tags input: edit support
+
+### Patch Changes
+
+- 973672e: export builder types
+- ec1abfe: Use builder wrapper
+- 973672e: export data-melt-[part] on builders
+
 ## 0.17.0
 
 ### Minor Changes

@@ -1,6 +1,10 @@
 import { usePopper } from '$lib/internal/actions/popper';
 import {
+	FIRST_LAST_KEYS,
+	SELECTION_KEYS,
 	addEventListener,
+	builder,
+	createElHelpers,
 	createTypeaheadSearch,
 	effect,
 	executeCallbacks,
@@ -16,17 +20,13 @@ import {
 	removeScroll,
 	styleToString,
 } from '$lib/internal/helpers';
+import { getFirstOption, getOptions } from '$lib/internal/helpers/list';
 import { sleep } from '$lib/internal/helpers/sleep';
 import type { Defaults } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import { createSeparator } from '../separator';
 import type { CreateSelectArgs, OptionArgs } from './types';
-
-const SELECTION_KEYS = [kbd.ENTER, kbd.SPACE];
-const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
-const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
-const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
 
 const defaults = {
 	arrowSize: 8,
@@ -39,6 +39,9 @@ const defaults = {
 	preventScroll: true,
 	loop: false,
 } satisfies Defaults<CreateSelectArgs>;
+
+type SelectParts = 'menu' | 'trigger' | 'option';
+const { name } = createElHelpers<SelectParts>('select');
 
 export function createSelect(args?: CreateSelectArgs) {
 	const withDefaults = { ...defaults, ...args } as CreateSelectArgs;
@@ -84,8 +87,9 @@ export function createSelect(args?: CreateSelectArgs) {
 		label.set(dataLabel ?? selectedEl.textContent ?? null);
 	});
 
-	const menu = {
-		...derived([open], ([$open]) => {
+	const menu = builder(name('menu'), {
+		stores: open,
+		returned: ($open) => {
 			return {
 				hidden: $open ? undefined : true,
 				style: styleToString({
@@ -94,7 +98,7 @@ export function createSelect(args?: CreateSelectArgs) {
 				id: ids.menu,
 				'aria-labelledby': ids.trigger,
 			};
-		}),
+		},
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
 
@@ -164,10 +168,12 @@ export function createSelect(args?: CreateSelectArgs) {
 				},
 			};
 		},
-	};
+	});
 
-	const trigger = {
-		...derived([open, options], ([$open, $options]) => {
+	const trigger = builder(name('trigger'), {
+		stores: [open, options],
+
+		returned: ([$open, $options]) => {
 			return {
 				role: 'combobox',
 				'aria-autocomplete': 'none',
@@ -176,12 +182,11 @@ export function createSelect(args?: CreateSelectArgs) {
 				'aria-required': $options.required,
 				'data-state': $open ? 'open' : 'closed',
 				'data-disabled': $options.disabled ? true : undefined,
-				'data-melt-part': 'trigger',
 				disabled: $options.disabled,
 				id: ids.trigger,
 				tabindex: 0,
 			} as const;
-		}),
+		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'pointerdown', (e) => {
@@ -265,7 +270,7 @@ export function createSelect(args?: CreateSelectArgs) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
 	const { root: separator } = createSeparator({
 		decorative: true,
@@ -298,8 +303,9 @@ export function createSelect(args?: CreateSelectArgs) {
 		}),
 	}));
 
-	const option = {
-		...derived(value, ($value) => {
+	const option = builder(name('option'), {
+		stores: value,
+		returned: ($value) => {
 			return (args: OptionArgs) => {
 				return {
 					role: 'option',
@@ -311,7 +317,7 @@ export function createSelect(args?: CreateSelectArgs) {
 					tabindex: -1,
 				} as const;
 			};
-		}),
+		},
 		action: (node: HTMLElement) => {
 			const getElArgs = () => {
 				const value = node.getAttribute('data-value');
@@ -404,7 +410,7 @@ export function createSelect(args?: CreateSelectArgs) {
 				destroy: unsub,
 			};
 		},
-	};
+	});
 
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
 
@@ -497,16 +503,8 @@ export function createSelect(args?: CreateSelectArgs) {
 		};
 	});
 
-	function getOptions(element: HTMLElement): HTMLElement[] {
-		return Array.from(element.querySelectorAll('[role="option"]'));
-	}
-
 	function isMouse(e: PointerEvent) {
 		return e.pointerType === 'mouse';
-	}
-
-	function getFirstOption(menuElement: HTMLElement) {
-		return menuElement.querySelector('[role="option"]');
 	}
 
 	function getSelectedOption(menuElement: HTMLElement) {

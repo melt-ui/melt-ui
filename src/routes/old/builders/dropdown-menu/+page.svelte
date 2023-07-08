@@ -66,8 +66,7 @@
 	could turn the `item` elements into links, or we could pass a custom <Docs.Code
 		>onSelect</Docs.Code
 	>
-	function to the <Docs.Code>item.action</Docs.Code>, which will be called when that item is
-	selected.
+	function to the <Docs.Code>item</Docs.Code> action, which will be called when that item is selected.
 </Docs.P>
 
 <Docs.CodeBlock code={snippets.usage3} />

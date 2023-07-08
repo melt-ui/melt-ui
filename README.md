@@ -84,7 +84,7 @@ in touch with us, and we'd love to have you there.
 | Calendar        |        |
 | Checkbox        | ✅     |
 | Collapsible     | ✅     |
-| ComboBox        |        |
+| ComboBox        | ✅     |
 | Context Menu    | ✅     |
 | Dialog          | ✅     |
 | Dropdown Menu   | ✅     |
@@ -94,7 +94,7 @@ in touch with us, and we'd love to have you there.
 | Menubar         | ✅     |
 | Navigation Menu |        |
 | Pagination      | ✅     |
-| Pin Input       |        |
+| Pin Input       | ✅     |
 | Popover         | ✅     |
 | Progress        | ✅     |
 | Radio Group     | ✅     |
@@ -114,7 +114,7 @@ in touch with us, and we'd love to have you there.
 | Tree View       |        |
 | ???             |        |
 
-**Progress:** 24/30+
+**Progress:** 26/30+
 
 ## Similar projects
 

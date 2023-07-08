@@ -3,6 +3,7 @@ import type { createTagsInput } from './create';
 export type CreateTagsInputArgs = {
 	placeholder?: string;
 	disabled?: boolean;
+	editable?: boolean;
 	selected?: Tag;
 	tags?: string[] | Tag[];
 	unique?: boolean;
@@ -13,6 +14,7 @@ export type CreateTagsInputArgs = {
 	denied?: string[];
 	add?: (tag: string) => Promise<Tag | string>;
 	remove?: (tag: Tag) => Promise<boolean>;
+	update?: (tag: Tag) => Promise<Tag>;
 };
 
 export type Tag = {
@@ -24,6 +26,7 @@ export type TagArgs = {
 	id: string;
 	value: string;
 	disabled?: boolean;
+	editable?: boolean;
 };
 
 export type CreateTagsInputReturn = ReturnType<typeof createTagsInput>;

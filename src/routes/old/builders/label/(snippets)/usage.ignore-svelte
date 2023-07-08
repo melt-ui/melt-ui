@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { createLabel } from "@melt-ui/svelte";
+	import { createLabel } from '@melt-ui/svelte';
 
-    const { root } = createLabel()
+	const label = createLabel();
 </script>
 
-<label for="name" use:root.action>Name</label>
+<label for="name" use:label>Name</label>
 <input type="text" id="name" />

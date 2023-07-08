@@ -22,20 +22,18 @@ export function setSelectedFromEl(el: Element | null, selected: Writable<Tag | n
 	}
 }
 
-export function setDataInvalid(
-	ids: { root: string; input: string },
-	inputStore: Writable<boolean>
-) {
-	getElementByMeltId(ids.root)?.setAttribute('data-invalid', '');
-	getElementByMeltId(ids.input)?.setAttribute('data-invalid', '');
-	inputStore.set(true);
-}
+export function highlightText(query: string) {
+	const el = document.querySelector(query) as HTMLElement;
 
-export function clearDataInvalid(
-	ids: { root: string; input: string },
-	inputStore: Writable<boolean>
-) {
-	getElementByMeltId(ids.root)?.removeAttribute('data-invalid');
-	getElementByMeltId(ids.input)?.removeAttribute('data-invalid');
-	inputStore.set(false);
+	if (el) {
+		el.focus();
+		const range = document.createRange();
+		range.selectNodeContents(el);
+
+		const selection = window.getSelection();
+		if (selection) {
+			selection.removeAllRanges();
+			selection.addRange(range);
+		}
+	}
 }

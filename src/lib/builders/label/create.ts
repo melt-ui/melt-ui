@@ -1,7 +1,7 @@
-import { addEventListener, hiddenAction } from '$lib/internal/helpers';
+import { addEventListener, builder } from '$lib/internal/helpers';
 
 export function createLabel() {
-	const root = hiddenAction({
+	const root = builder('label', {
 		action: (node: HTMLElement) => {
 			const mouseDown = addEventListener(node, 'mousedown', (e) => {
 				if (!e.defaultPrevented && e.detail > 1) {
@@ -15,7 +15,5 @@ export function createLabel() {
 		},
 	});
 
-	return {
-		root,
-	};
+	return root;
 }

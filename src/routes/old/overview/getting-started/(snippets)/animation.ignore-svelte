@@ -5,7 +5,7 @@
 </script>
 
 <div {...$root}>
-	<button {...$trigger} use:trigger.action> Toggle </button>
+	<button {...$trigger} use:trigger> Toggle </button>
 
 	<div class="content" {...$content}>
 		<p>sveltejs/svelte</p>

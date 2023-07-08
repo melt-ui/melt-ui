@@ -7,7 +7,7 @@
 <!-- Using Svelte Scoped Styles -->
 <div class="root" {...$root}>
 	<!-- Using an external component -->
-	<Button on:click={() => console.log('clicked')} {...$trigger} action={trigger.action}>
+	<Button on:click={() => console.log('clicked')} {...$trigger} action={trigger}>
 		{$open ? 'Close' : 'Open'}
 	</Button>
 	<!-- Using an utility class library, such as Tailwind -->

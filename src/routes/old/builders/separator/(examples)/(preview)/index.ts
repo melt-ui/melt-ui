@@ -1,10 +1,12 @@
 import type { PreviewProps } from '$routes/(components)';
-import tw from './tailwind.ignore-svelte?raw';
-import css from './css.ignore-svelte?raw';
+import Preview from './tailwind.svelte';
+
+import tw from './tailwind.svelte?raw';
 import TwConfig from '$routes/(configs)/tailwind.config.ts?raw';
+
+import css from './css.ignore-svelte?raw';
 import GlobalReset from '$routes/(configs)/globals?raw';
 
-import Preview from './preview.svelte';
 const Tailwind: PreviewProps['code']['Tailwind'] = {
 	'index.svelte': tw,
 	'tailwind.config.ts': TwConfig,

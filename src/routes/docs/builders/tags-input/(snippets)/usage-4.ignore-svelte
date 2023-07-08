@@ -1,0 +1,9 @@
+<script lang="ts">
+	import { createTagsInput, type Tag } from '@melt-ui/svelte';
+
+	const { root, input, tag, deleteTrigger, edit } = createTagsInput({
+		update: async (tag: Tag) => {
+			return { id: tag.id, value: tag.value.toUpperCase() };
+		},
+	});
+</script>
