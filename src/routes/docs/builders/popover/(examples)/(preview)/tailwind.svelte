@@ -14,7 +14,7 @@
 
 {#if $open}
 	<div melt={$content} transition:fade={{ duration: 100 }} class="content">
-		<div {...$arrow} />
+		<div melt={$arrow} />
 		<div class="flex flex-col gap-2.5">
 			<p>Dimensions</p>
 			<fieldset>

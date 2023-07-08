@@ -16,7 +16,7 @@
 				class="block h-5 w-5 translate-x-0.5 rounded-full bg-white transition-transform will-change-transform
                 {$isChecked && 'translate-x-[22px]'}"
 			/>
-			<input {...$input} />
+			<input melt={$input} />
 		</button>
 	</div>
 </form>

@@ -18,8 +18,8 @@
 
 <div class="menu" melt={$menu}>
 	{#each Object.entries(options) as [key, arr]}
-		<div {...$group(key)}>
-			<div class="label" {...$groupLabel(key)}>{key}</div>
+		<div melt={$group(key)}>
+			<div class="label" melt={$groupLabel(key)}>{key}</div>
 			{#each arr as item}
 				<div class="option" melt={$option({ value: item, label: item })}>
 					{#if $isSelected(item)}

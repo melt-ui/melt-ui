@@ -23,7 +23,7 @@
 		transition:fade={{ duration: 100 }}
 		class="z-10 rounded-md bg-white shadow-sm"
 	>
-		<div {...$arrow} />
+		<div melt={$arrow} />
 		<p class="px-4 py-1 text-magnum-700">Add to library</p>
 	</div>
 {/if}
