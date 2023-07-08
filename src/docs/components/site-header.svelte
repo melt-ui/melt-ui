@@ -3,9 +3,7 @@
 	import { navConfig, siteConfig } from '$docs/config';
 </script>
 
-<header
-	class="sticky top-0 z-40 w-full border-b border-b-neutral-100/[0.06] bg-neutral-900 px-2 pt-2"
->
+<header class="sticky top-0 z-40 w-full bg-neutral-900 px-2 pt-2">
 	<div class="container flex h-14 items-center rounded-md bg-neutral-800">
 		<div class="flex">
 			<a href="/" class="mr-6 flex items-center">
