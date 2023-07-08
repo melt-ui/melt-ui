@@ -16,11 +16,8 @@
 	"exclude": [
 		"*.ignore-ts",
 		"*.ignore-svelte",
-<<<<<<< HEAD
 		"src/routes/old/builders/**/(css)/*",
 		"src/routes/old/builders/**/(tailwind)/*"
-=======
->>>>>>> develop
 	]
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	//
