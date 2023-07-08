@@ -13,7 +13,7 @@ import {
 import { usePopper } from '$lib/internal/actions';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
-import { derived, readable, writable } from 'svelte/store';
+import { readable, writable } from 'svelte/store';
 import type { CreatePopoverArgs } from './types';
 
 const defaults = {
@@ -115,14 +115,17 @@ export function createPopover(args?: CreatePopoverArgs) {
 		},
 	});
 
-	const arrow = derived(arrowSize, ($arrowSize) => ({
-		'data-arrow': true,
-		style: styleToString({
-			position: 'absolute',
-			width: `var(--arrow-size, ${$arrowSize}px)`,
-			height: `var(--arrow-size, ${$arrowSize}px)`,
+	const arrow = builder(name('arrow'), {
+		stores: arrowSize,
+		returned: ($arrowSize) => ({
+			'data-arrow': true,
+			style: styleToString({
+				position: 'absolute',
+				width: `var(--arrow-size, ${$arrowSize}px)`,
+				height: `var(--arrow-size, ${$arrowSize}px)`,
+			}),
 		}),
-	}));
+	});
 
 	const close = builder(name('close'), {
 		returned: () =>

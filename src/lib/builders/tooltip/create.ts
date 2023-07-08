@@ -26,7 +26,7 @@ const defaults = {
 	closeDelay: 500,
 } satisfies Defaults<CreateTooltipArgs>;
 
-type TooltipParts = 'trigger' | 'content';
+type TooltipParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<TooltipParts>('tooltip');
 
 // TODO: Add grace area to prevent tooltip from closing when moving from trigger to tooltip
@@ -150,14 +150,17 @@ export function createTooltip(args?: CreateTooltipArgs) {
 		},
 	});
 
-	const arrow = derived(options, ($options) => ({
-		'data-arrow': true,
-		style: styleToString({
-			position: 'absolute',
-			width: `var(--arrow-size, ${$options.arrowSize}px)`,
-			height: `var(--arrow-size, ${$options.arrowSize}px)`,
+	const arrow = builder(name('arrow'), {
+		stores: options,
+		returned: ($options) => ({
+			'data-arrow': true,
+			style: styleToString({
+				position: 'absolute',
+				width: `var(--arrow-size, ${$options.arrowSize}px)`,
+				height: `var(--arrow-size, ${$options.arrowSize}px)`,
+			}),
 		}),
-	}));
+	});
 
 	return { trigger, open, content, arrow, options };
 }

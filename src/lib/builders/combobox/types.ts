@@ -1,6 +1,4 @@
-import type { Action } from 'svelte/action';
-import type { HTMLAttributes, HTMLInputAttributes } from 'svelte/elements';
-import type { Readable, Writable } from 'svelte/store';
+import type { createCombobox } from './create';
 
 export type CreateComboboxArgs<T> = {
 	/** The list of items to display in the combobox. */
@@ -31,26 +29,31 @@ export type ComboboxItemArgs<T> = {
 	disabled?: boolean;
 };
 
-export type CreateComboboxReturn<T> = {
-	/** List items to display that match the current filter. */
-	filteredItems: Readable<T[]>;
-	/** Action & attributes to apply to the input element. */
-	input: Readable<HTMLInputAttributes> & Action<HTMLInputElement, void>;
-	/** Current input value. */
-	inputValue: Writable<string>;
-	/** Function to determine if a given item is selected. */
-	isSelected: Readable<(item: T) => boolean>;
-	/** Action & attributes to apply to each item in the menu. */
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: improve this type
-	item: Readable<(args: ComboboxItemArgs<T>) => any> & Action<HTMLElement, void>;
-	/** Action & attributes to apply to the menu. */
-	menu: Readable<HTMLAttributes<HTMLElement>> & Action<HTMLElement, void>;
-	/** Is the menu currently open? */
-	open: Writable<boolean>;
-	/** Top-level configuration for the Combobox instance. */
-	options: Writable<Omit<CreateComboboxArgs<T>, 'items'>>;
-	/** The currently selected item. */
-	selectedItem: Writable<T | undefined>;
-	/** Function to update the items in the combobox. */
-	updateItems: (updaterFunction: (currentItems: T[]) => T[]) => void;
-};
+// export type CreateComboboxReturn<T> = {
+// 	/** List items to display that match the current filter. */
+// 	filteredItems: Readable<T[]>;
+// 	/** Action & attributes to apply to the input element. */
+// 	input: Readable<HTMLInputAttributes & Action<HTMLInputElement, void>> &
+// 		Action<HTMLInputElement, void>;
+// 	/** Current input value. */
+// 	inputValue: Writable<string>;
+// 	/** Function to determine if a given item is selected. */
+// 	isSelected: Readable<(item: T) => boolean>;
+// 	/** Action & attributes to apply to each item in the menu. */
+// 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: improve this type
+// 	item: Readable<(args: ComboboxItemArgs<T>) => any> & Action<HTMLElement, void>;
+// 	/** Action & attributes to apply to the menu. */
+// 	menu: Readable<HTMLAttributes<HTMLElement & Action<HTMLInputElement, void>>> &
+// 		Action<HTMLElement, void>;
+// 	/** Is the menu currently open? */
+// 	open: Writable<boolean>;
+// 	/** Top-level configuration for the Combobox instance. */
+// 	options: Writable<Omit<CreateComboboxArgs<T>, 'items'>>;
+// 	/** The currently selected item. */
+// 	selectedItem: Writable<T | undefined>;
+// 	/** Function to update the items in the combobox. */
+// 	updateItems: (updaterFunction: (currentItems: T[]) => T[]) => void;
+// };
+
+// TODO: improve type
+export type CreateComboboxReturn = ReturnType<typeof createCombobox>;
