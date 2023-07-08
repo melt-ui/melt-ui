@@ -696,6 +696,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						 */
 						if (e.key === kbd.TAB) {
 							e.preventDefault();
+							rootActiveTrigger.set(null);
+							rootOpen.set(false);
+							handleTabNavigation(e, nextFocusable, prevFocusable);
 							return;
 						}
 
