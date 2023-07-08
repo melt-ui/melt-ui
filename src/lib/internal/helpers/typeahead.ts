@@ -47,7 +47,10 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 		typed.update(() => $typed);
 
 		const candidateItems = items.filter((item) => {
-			if (item.hasAttribute('disabled')) {
+			if (
+				item.getAttribute('disabled') === 'true' ||
+				item.getAttribute('aria-disabled') === 'true'
+			) {
 				return false;
 			}
 			if (item.hasAttribute('data-disabled')) {
@@ -61,7 +64,6 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 		const currentItemIndex = currentItem ? candidateItems.indexOf(currentItem) : -1;
 
 		let wrappedItems = wrapArray(candidateItems, Math.max(currentItemIndex, 0));
-
 		const excludeCurrentItem = normalizeSearch.length === 1;
 		if (excludeCurrentItem) {
 			wrappedItems = wrappedItems.filter((v) => v !== currentItem);

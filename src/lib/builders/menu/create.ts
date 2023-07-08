@@ -160,7 +160,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					 * Submenu key events bubble through portals and
 					 * we only care about key events that happen inside this menu.
 					 */
-					const isKeyDownInside = target.closest(selector()) === menuElement;
+					const isKeyDownInside = target.closest('[role="menu"]') === menuElement;
+
 					if (!isKeyDownInside) return;
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						handleMenuNavigation(e);
@@ -1202,9 +1203,10 @@ export function handleTabNavigation(
  * @param element The menu item element
  */
 export function getMenuItems(menuElement: HTMLElement) {
-	return Array.from(
+	const menuItems = Array.from(
 		menuElement.querySelectorAll(`[data-melt-menu-id="${menuElement.id}"]`)
 	) as HTMLElement[];
+	return menuItems;
 }
 
 export function applyAttrsIfDisabled(element: HTMLElement | null) {
