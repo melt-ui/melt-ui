@@ -40,7 +40,7 @@ const defaults = {
 	loop: false,
 } satisfies Defaults<CreateSelectArgs>;
 
-type SelectParts = 'menu' | 'trigger' | 'option';
+type SelectParts = 'menu' | 'trigger' | 'option' | 'group' | 'group-label';
 const { name } = createElHelpers<SelectParts>('select');
 
 export function createSelect(args?: CreateSelectArgs) {
@@ -276,23 +276,22 @@ export function createSelect(args?: CreateSelectArgs) {
 		decorative: true,
 	});
 
-	const createGroup = () => {
-		const groupId = generateId();
+	const group = builder(name('group'), {
+		returned: () => {
+			return (groupId: string) => ({
+				role: 'group',
+				'aria-labelledby': groupId,
+			});
+		},
+	});
 
-		const group = {
-			role: 'group',
-			'aria-labelledby': groupId,
-		};
-
-		const label = {
-			id: groupId,
-		};
-
-		return {
-			group,
-			label,
-		};
-	};
+	const groupLabel = builder(name('group-label'), {
+		returned: () => {
+			return (groupId: string) => ({
+				id: groupId,
+			});
+		},
+	});
 
 	const arrow = derived(options, ($options) => ({
 		'data-arrow': true,
@@ -611,6 +610,7 @@ export function createSelect(args?: CreateSelectArgs) {
 		options,
 		input,
 		separator,
-		createGroup,
+		group,
+		groupLabel,
 	};
 }

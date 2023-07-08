@@ -35,9 +35,11 @@ export function createPagination(args: CreatePaginationArgs) {
 		return { start, end };
 	});
 
-	const root = {
-		'data-scope': 'pagination',
-	};
+	const root = builder(name(), {
+		returned: () => ({
+			'data-scope': 'pagination',
+		}),
+	});
 
 	const pages = derived([page, totalPages, options], ([$page, $totalPages, { siblingCount }]) => {
 		return getPageItems({ page: $page, totalPages: $totalPages, siblingCount });

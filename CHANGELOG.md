@@ -1,5 +1,12 @@
 # @melt-ui/svelte
 
+## 0.18.2
+
+### Patch Changes
+
+- 4170fc5: Fix tag-input focus
+- 0c7008c: fix incomplete builders
+
 ## 0.18.1
 
 ### Patch Changes
