@@ -10,7 +10,7 @@
 	});
 </script>
 
-<nav class="flex flex-col items-center gap-4" aria-label="pagination" {...root}>
+<nav class="flex flex-col items-center gap-4" aria-label="pagination" {...$root}>
 	<p class="text-center">Showing items {$range.start} - {$range.end}</p>
 	<div class="flex items-center gap-2">
 		<button {...$prevButton} use:prevButton><ChevronLeft /></button>

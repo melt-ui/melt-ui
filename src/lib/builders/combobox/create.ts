@@ -1,4 +1,3 @@
-import { getOptions } from '$lib/internal/helpers/list';
 import { usePopper } from '$lib/internal/actions';
 import {
 	addEventListener,
@@ -22,11 +21,12 @@ import {
 	sleep,
 	styleToString,
 } from '$lib/internal/helpers';
+import { getOptions } from '$lib/internal/helpers/list';
 
+import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
-import type { ComboboxItemArgs, CreateComboboxArgs, CreateComboboxReturn } from './types';
-import type { Defaults } from '$lib/internal/types';
+import type { ComboboxItemArgs, CreateComboboxArgs } from './types';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
@@ -47,7 +47,7 @@ const { name } = createElHelpers('combobox');
  * @TODO would it be useful to have a callback for when an item is selected?
  * @TODO multi-select using `tags-input` builder?
  */
-export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxReturn<T> {
+export function createCombobox<T>(args: CreateComboboxArgs<T>) {
 	const options = writable(omit({ ...defaults, ...args }, 'items'));
 	const open = writable(false);
 	// Trigger element for the popper portal. This will be our input element.

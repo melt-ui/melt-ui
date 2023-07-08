@@ -50,25 +50,28 @@ export function createSwitch(args: CreateSwitchArgs = {}) {
 		},
 	});
 
-	const input = derived([checked, options], ([$checked, $options]) => {
-		return {
-			type: 'checkbox' as const,
-			'aria-hidden': true,
-			hidden: true,
-			tabindex: -1,
-			name: $options.name,
-			value: $options.value,
-			checked: $checked,
-			required: $options.required,
-			disabled: $options.disabled,
-			style: styleToString({
-				position: 'absolute',
-				opacity: 0,
-				'pointer-events': 'none',
-				margin: 0,
-				transform: 'translateX(-100%)',
-			}),
-		} as const;
+	const input = builder(name('input'), {
+		stores: [checked, options],
+		returned: ([$checked, $options]) => {
+			return {
+				type: 'checkbox' as const,
+				'aria-hidden': true,
+				hidden: true,
+				tabindex: -1,
+				name: $options.name,
+				value: $options.value,
+				checked: $checked,
+				required: $options.required,
+				disabled: $options.disabled,
+				style: styleToString({
+					position: 'absolute',
+					opacity: 0,
+					'pointer-events': 'none',
+					margin: 0,
+					transform: 'translateX(-100%)',
+				}),
+			} as const;
+		},
 	});
 
 	const isChecked = derived(checked, ($checked) => $checked === true);
