@@ -2,7 +2,7 @@
 	import { createSelect, type OptionArgs } from '$lib';
 	import ChevronDown from '~icons/lucide/chevron-down';
 	import Check from '~icons/lucide/check';
-	import { afterNavigate } from '$app/navigation';
+	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	export let options: OptionArgs[] = [];
 	export let value = options[0].value;
 
@@ -21,6 +21,10 @@
 		typeof v === 'string' && (value = v);
 	});
 	$: localValue.set(value);
+
+    beforeNavigate(() => {
+        localValue.set('tailwind')
+    })
 </script>
 
 <button
