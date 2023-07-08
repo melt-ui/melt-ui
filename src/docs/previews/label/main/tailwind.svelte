@@ -4,7 +4,7 @@
 	const root = createLabel();
 </script>
 
-<form class="flex w-full items-center justify-center">
+<form>
 	<div class="flex flex-col items-start justify-center">
 		<label use:root for="email" class="mb-0.5 font-medium" data-melt-part="root">
 			<span>Email</span>

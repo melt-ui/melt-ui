@@ -4,7 +4,7 @@
 	const { root, input, isChecked } = createSwitch();
 </script>
 
-<form class="flex w-full items-center justify-center">
+<form>
 	<div class="flex items-center">
 		<label class="pr-4 leading-none text-white" for="airplane-mode"> Airplane mode </label>
 		<button

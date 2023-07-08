@@ -28,67 +28,65 @@
 	const hideMeltUI = writable(false);
 </script>
 
-<div class="flex w-full items-center justify-center">
-	<button type="button" class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
-		<AlignJustify class="h-4 w-4" />
-		<span class="sr-only">Open Popover</span>
-	</button>
+<button type="button" class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
+	<AlignJustify class="h-4 w-4" />
+	<span class="sr-only">Open Popover</span>
+</button>
 
-	<div class="menu" {...$menu} use:menu>
-		<div class="item" {...$item} use:item>About Melt UI</div>
-		<div class="item" {...$item} use:item>Check for Updates...</div>
-		<div class="separator" {...$separator} />
-		<div class="item" {...$checkboxItem} use:checkboxItem={{ checked: settingsSync }}>
-			<div class="check">
-				{#if $settingsSync}
-					<Check class="icon" />
-				{/if}
-			</div>
-			Settings Sync is On
+<div class="menu" {...$menu} use:menu>
+	<div class="item" {...$item} use:item>About Melt UI</div>
+	<div class="item" {...$item} use:item>Check for Updates...</div>
+	<div class="separator" {...$separator} />
+	<div class="item" {...$checkboxItem} use:checkboxItem={{ checked: settingsSync }}>
+		<div class="check">
+			{#if $settingsSync}
+				<Check class="icon" />
+			{/if}
 		</div>
-		<div class="item" {...$subTriggerA} use:subTriggerA>
-			Profiles
-			<div class="rightSlot">
-				<ChevronRight class="icon" />
-			</div>
-		</div>
-		<div class="menu subMenu" {...$subMenuA} use:subMenuA>
-			<div class="text">People</div>
-			<div {...$radioGroup}>
-				{#each personsArr as person}
-					<div class="item" {...$radioItem({ value: person })} use:radioItem>
-						<div class="check">
-							{#if $isChecked(person)}
-								<div class="dot" />
-							{/if}
-						</div>
-						{person}
-					</div>
-				{/each}
-			</div>
-		</div>
-		<div {...$separator} class="separator" />
-
-		<div class="item" {...$checkboxItem} use:checkboxItem={{ checked: hideMeltUI }}>
-			<div class="check">
-				{#if $hideMeltUI}
-					<Check class="icon" />
-				{/if}
-			</div>
-			Hide Melt UI
-			<div class="rightSlot">⌘H</div>
-		</div>
-		<div class="item" {...$item} use:item aria-disabled="true">
-			Show All Components
-			<div class="rightSlot">⇧⌘N</div>
-		</div>
-		<div {...$separator} class="separator" />
-		<div class="item" {...$item} use:item>
-			Quit Melt UI
-			<div class="rightSlot">⌘Q</div>
-		</div>
-		<div {...$arrow} />
+		Settings Sync is On
 	</div>
+	<div class="item" {...$subTriggerA} use:subTriggerA>
+		Profiles
+		<div class="rightSlot">
+			<ChevronRight class="icon" />
+		</div>
+	</div>
+	<div class="menu subMenu" {...$subMenuA} use:subMenuA>
+		<div class="text">People</div>
+		<div {...$radioGroup}>
+			{#each personsArr as person}
+				<div class="item" {...$radioItem({ value: person })} use:radioItem>
+					<div class="check">
+						{#if $isChecked(person)}
+							<div class="dot" />
+						{/if}
+					</div>
+					{person}
+				</div>
+			{/each}
+		</div>
+	</div>
+	<div {...$separator} class="separator" />
+
+	<div class="item" {...$checkboxItem} use:checkboxItem={{ checked: hideMeltUI }}>
+		<div class="check">
+			{#if $hideMeltUI}
+				<Check class="icon" />
+			{/if}
+		</div>
+		Hide Melt UI
+		<div class="rightSlot">⌘H</div>
+	</div>
+	<div class="item" {...$item} use:item aria-disabled="true">
+		Show All Components
+		<div class="rightSlot">⇧⌘N</div>
+	</div>
+	<div {...$separator} class="separator" />
+	<div class="item" {...$item} use:item>
+		Quit Melt UI
+		<div class="rightSlot">⌘Q</div>
+	</div>
+	<div {...$arrow} />
 </div>
 
 <style lang="postcss">

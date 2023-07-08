@@ -7,40 +7,38 @@
 	const { trigger, content, open, arrow, close } = createPopover();
 </script>
 
-<div class="flex items-center justify-center">
-	<button type="button" class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
-		<Settings2 class="h-4 w-4" />
-		<span class="sr-only">Open Popover</span>
-	</button>
+<button type="button" class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
+	<Settings2 class="h-4 w-4" />
+	<span class="sr-only">Open Popover</span>
+</button>
 
-	{#if $open}
-		<div {...$content} use:content transition:fade={{ duration: 100 }} class="content">
-			<div {...$arrow} />
-			<div class="flex flex-col gap-2.5">
-				<p>Dimensions</p>
-				<fieldset>
-					<label for="width"> Width </label>
-					<input id="width" value="100%" class="input" />
-				</fieldset>
-				<fieldset>
-					<label for="maxWidth"> Max. width </label>
-					<input id="maxWidth" value="300px" class="input" />
-				</fieldset>
-				<fieldset>
-					<label for="height"> Height </label>
-					<input id="height" value="25px" class="input" />
-				</fieldset>
-				<fieldset>
-					<label for="maxHeight"> Max. height </label>
-					<input id="maxHeight" class="input" />
-				</fieldset>
-			</div>
-			<button class="close" {...close} use:close>
-				<X class="h-4 w-4 " />
-			</button>
+{#if $open}
+	<div {...$content} use:content transition:fade={{ duration: 100 }} class="content">
+		<div {...$arrow} />
+		<div class="flex flex-col gap-2.5">
+			<p>Dimensions</p>
+			<fieldset>
+				<label for="width"> Width </label>
+				<input id="width" value="100%" class="input" />
+			</fieldset>
+			<fieldset>
+				<label for="maxWidth"> Max. width </label>
+				<input id="maxWidth" value="300px" class="input" />
+			</fieldset>
+			<fieldset>
+				<label for="height"> Height </label>
+				<input id="height" value="25px" class="input" />
+			</fieldset>
+			<fieldset>
+				<label for="maxHeight"> Max. height </label>
+				<input id="maxHeight" class="input" />
+			</fieldset>
 		</div>
-	{/if}
-</div>
+		<button class="close" {...close} use:close>
+			<X class="h-4 w-4 " />
+		</button>
+	</div>
+{/if}
 
 <style lang="postcss">
 	fieldset {

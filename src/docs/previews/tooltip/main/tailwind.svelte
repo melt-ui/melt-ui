@@ -12,24 +12,22 @@
 	});
 </script>
 
-<div class="flex w-full items-center justify-center">
-	<button type="button" class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
-		<Plus class="h-4 w-4" />
-		<span class="sr-only">Open Popover</span>
-	</button>
+<button type="button" class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
+	<Plus class="h-4 w-4" />
+	<span class="sr-only">Open Popover</span>
+</button>
 
-	{#if $open}
-		<div
-			{...$content}
-			use:content
-			transition:fade={{ duration: 100 }}
-			class="z-10 rounded-md bg-white shadow-sm"
-		>
-			<div {...$arrow} />
-			<p class="px-4 py-1 text-magnum-700">Add to library</p>
-		</div>
-	{/if}
-</div>
+{#if $open}
+	<div
+		{...$content}
+		use:content
+		transition:fade={{ duration: 100 }}
+		class="z-10 rounded-md bg-white shadow-sm"
+	>
+		<div {...$arrow} />
+		<p class="px-4 py-1 text-magnum-700">Add to library</p>
+	</div>
+{/if}
 
 <style lang="postcss">
 	.trigger {

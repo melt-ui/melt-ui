@@ -4,51 +4,47 @@
 	const { root, list, content, trigger } = createTabs({ value: 'tab1' });
 </script>
 
-<div class="flex items-center justify-center">
-	<div {...$root} class="root">
-		<div {...$list} class="list" aria-label="Manage your account">
-			<button {...$trigger('tab1')} use:trigger class="trigger">Account</button>
-			<button {...$trigger('tab2')} use:trigger class="trigger">Password</button>
-			<!-- You don't need to set disabled on the action when using a button element, since
+<div {...$root} class="root">
+	<div {...$list} class="list" aria-label="Manage your account">
+		<button {...$trigger('tab1')} use:trigger class="trigger">Account</button>
+		<button {...$trigger('tab2')} use:trigger class="trigger">Password</button>
+		<!-- You don't need to set disabled on the action when using a button element, since
                 $trigger will set the 'disabled' attribute on the button -->
-			<button
-				use:trigger
-				{...$trigger({ value: 'tab3', disabled: true })}
-				class="trigger opacity-50">Disabled</button
-			>
-			<button {...$trigger('tab4')} use:trigger class="trigger">Settings</button>
-		</div>
-		<div {...$content('tab1')} class="content">
-			<p class="description">Make changes to your account here. Click save when you're done.</p>
-			<fieldset>
-				<label for="name"> Name </label>
-				<input id="name" value="Thomas G. Lopes" />
-			</fieldset>
+		<button use:trigger {...$trigger({ value: 'tab3', disabled: true })} class="trigger opacity-50"
+			>Disabled</button
+		>
+		<button {...$trigger('tab4')} use:trigger class="trigger">Settings</button>
+	</div>
+	<div {...$content('tab1')} class="content">
+		<p class="description">Make changes to your account here. Click save when you're done.</p>
+		<fieldset>
+			<label for="name"> Name </label>
+			<input id="name" value="Thomas G. Lopes" />
+		</fieldset>
 
-			<div class="actions">
-				<button>Save changes</button>
-			</div>
+		<div class="actions">
+			<button>Save changes</button>
 		</div>
-		<div {...$content('tab2')} class="content">
-			<p class="description">Change your password here. Click save when you're done.</p>
-			<fieldset>
-				<label for="new"> New password </label>
-				<input id="new" type="password" />
-			</fieldset>
-			<div class="actions">
-				<button>Save changes</button>
-			</div>
+	</div>
+	<div {...$content('tab2')} class="content">
+		<p class="description">Change your password here. Click save when you're done.</p>
+		<fieldset>
+			<label for="new"> New password </label>
+			<input id="new" type="password" />
+		</fieldset>
+		<div class="actions">
+			<button>Save changes</button>
 		</div>
-		<div {...$content('tab4')} class="content">
-			<p class="description">Change your settings here. Click save when you're done.</p>
+	</div>
+	<div {...$content('tab4')} class="content">
+		<p class="description">Change your settings here. Click save when you're done.</p>
 
-			<fieldset>
-				<label for="new"> New email </label>
-				<input id="new" type="password" />
-			</fieldset>
-			<div class="actions">
-				<button>Save changes</button>
-			</div>
+		<fieldset>
+			<label for="new"> New email </label>
+			<input id="new" type="password" />
+		</fieldset>
+		<div class="actions">
+			<button>Save changes</button>
 		</div>
 	</div>
 </div>

@@ -7,22 +7,20 @@
 	const { root, item } = createToggleGroup();
 </script>
 
-<div class="flex w-full items-center justify-center">
-	<div
-		{...$root}
-		class="flex items-center data-[orientation='vertical']:flex-col"
-		aria-label="Text alignment"
-	>
-		<button class="toggle-item" {...$item('left')} use:item aria-label="Left aligned">
-			<AlignLeft />
-		</button>
-		<button class="toggle-item" {...$item('center')} use:item aria-label="Center aligned">
-			<AlignCenter />
-		</button>
-		<button class="toggle-item" {...$item('right')} use:item aria-label="Right aligned">
-			<AlignRight />
-		</button>
-	</div>
+<div
+	{...$root}
+	class="flex items-center data-[orientation='vertical']:flex-col"
+	aria-label="Text alignment"
+>
+	<button class="toggle-item" {...$item('left')} use:item aria-label="Left aligned">
+		<AlignLeft />
+	</button>
+	<button class="toggle-item" {...$item('center')} use:item aria-label="Center aligned">
+		<AlignCenter />
+	</button>
+	<button class="toggle-item" {...$item('right')} use:item aria-label="Right aligned">
+		<AlignRight />
+	</button>
 </div>
 
 <style lang="postcss">

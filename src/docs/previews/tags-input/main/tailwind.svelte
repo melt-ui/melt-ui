@@ -7,29 +7,27 @@
 	});
 </script>
 
-<div class="flex flex-col items-center justify-center gap-2 overflow-hidden">
-	<div
-		{...$root}
-		use:root
-		class="flex w-[280px] flex-row flex-wrap gap-2.5 rounded-md bg-white px-3 py-2 text-magnum-700"
-	>
-		{#each $tags as t}
-			<div {...$tag(t)} class="tag">
-				<span class="flex items-center border-r border-white/10 px-1.5">{t.value}</span>
+<div
+	{...$root}
+	use:root
+	class="flex w-[280px] flex-row flex-wrap gap-2.5 rounded-md bg-white px-3 py-2 text-magnum-700"
+>
+	{#each $tags as t}
+		<div {...$tag(t)} class="tag">
+			<span class="flex items-center border-r border-white/10 px-1.5">{t.value}</span>
 
-				<button {...$deleteTrigger(t)} use:deleteTrigger class="tag-delete">
-					<X class="h-3 w-3" />
-				</button>
-			</div>
-		{/each}
+			<button {...$deleteTrigger(t)} use:deleteTrigger class="tag-delete">
+				<X class="h-3 w-3" />
+			</button>
+		</div>
+	{/each}
 
-		<input
-			{...$input}
-			use:input
-			type="text"
-			class="shake min-w-[4.5rem] shrink grow basis-0 border-0 outline-none focus:!ring-0"
-		/>
-	</div>
+	<input
+		{...$input}
+		use:input
+		type="text"
+		class="shake min-w-[4.5rem] shrink grow basis-0 border-0 outline-none focus:!ring-0"
+	/>
 </div>
 
 <style lang="postcss">

@@ -3,7 +3,7 @@
 </script>
 
 <div class="comp-preview h-[20rem] overflow-x-auto lg:h-[28rem] lg:overflow-x-hidden">
-	<div class={cn('mx-auto w-full px-4')}>
+	<div class={cn('mx-auto flex w-full justify-center px-4')}>
 		<slot />
 	</div>
 </div>

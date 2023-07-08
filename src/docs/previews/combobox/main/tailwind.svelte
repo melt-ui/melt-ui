@@ -68,7 +68,7 @@
 						{...$item({ index, item: book, disabled: book.disabled })}
 						use:item
 						class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800
-						data-[highlighted]:bg-magnum-100 data-[highlighted]:text-magnum-700 data-[disabled]:opacity-50"
+        data-[highlighted]:bg-magnum-100 data-[highlighted]:text-magnum-700 data-[disabled]:opacity-50"
 					>
 						{#if $isSelected(book)}
 							<div class="check">
@@ -84,7 +84,7 @@
 			{:else}
 				<li
 					class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800
-					data-[highlighted]:bg-magnum-100 data-[highlighted]:text-magnum-700"
+    data-[highlighted]:bg-magnum-100 data-[highlighted]:text-magnum-700"
 				>
 					No results found
 				</li>
