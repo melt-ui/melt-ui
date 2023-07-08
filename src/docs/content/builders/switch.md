@@ -1,7 +1,6 @@
 ---
 title: Switch
-description:
-  A control that allows the user to toggle between checked and not checked.
+description: A control that allows the user to toggle between checked and not checked.
 ---
 
 ## Anatomy
@@ -11,8 +10,8 @@ description:
 
 ## Usage
 
-To create a switch, use the `createSwitch` builder function. You can then
-reference the anatomy or example above to create your switch.
+To create a switch, use the `createSwitch` builder function. You can then reference the
+anatomy or example above to create your switch.
 
 ### Disabling the switch
 
@@ -32,8 +31,8 @@ To disable the switch, set the `disabled` argument as `true`.
 
 ## Controlled access
 
-To programatically control the switch, you can directly set the `checked` store.
-You can also update the `options` store with new arguments.
+To programatically control the switch, you can directly set the `checked` store. You can
+also update the `options` store with new arguments.
 
 ```svelte {12,14}
 <script lang="ts">

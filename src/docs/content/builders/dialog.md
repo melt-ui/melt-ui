@@ -1,8 +1,8 @@
 ---
 title: Dialog
 description:
-  A window overlaid on either the primary window or another dialog window,
-  rendering the content underneath inert.
+  A window overlaid on either the primary window or another dialog window, rendering the
+  content underneath inert.
 ---
 
 ## Anatomy
@@ -16,5 +16,5 @@ description:
 
 ## Usage
 
-To create a dialog, use the `createDialog` builder function. You can then
-reference the anatomy or example above to create your dialog.
+To create a dialog, use the `createDialog` builder function. You can then reference the
+anatomy or example above to create your dialog.

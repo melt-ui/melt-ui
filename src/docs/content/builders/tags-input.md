@@ -66,12 +66,11 @@ Use the return values to construct a tags-input.
 
 ### Adding a tag
 
-An asynchronous `add` function may be passed into the builder. It is called
-prior to adding the tag to the `$tags` store.
+An asynchronous `add` function may be passed into the builder. It is called prior to
+adding the tag to the `$tags` store.
 
-It provides you the ability to validate the input value, set a custom id, for
-example from a backend or 3rd-party API, or update the value to always be
-uppercase, lowercase, etc.
+It provides you the ability to validate the input value, set a custom id, for example from
+a backend or 3rd-party API, or update the value to always be uppercase, lowercase, etc.
 
 The function definition is:
 
@@ -85,13 +84,13 @@ whereby `tag` is the input value.
 A <code>tag</code> is an object that consists of an <code>id</code> and <code>value</code>
 </Callout>
 
-On `resolve`, if a `string` is returned, an id will be internally generated. The
-same happens when a `Tag` without an id is returned.
+On `resolve`, if a `string` is returned, an id will be internally generated. The same
+happens when a `Tag` without an id is returned.
 
 On `reject` or `error`, the input is invalidated and not added to the store.
 
-The following example sets the id via a third-party API call and forces the tag
-to always be uppercase.
+The following example sets the id via a third-party API call and forces the tag to always
+be uppercase.
 
 ```svelte
 <script lang="ts">
@@ -116,12 +115,11 @@ to always be uppercase.
 
 ### Updating a tag
 
-An asynchronous update function may be passed into the builder. It is called
-prior to updating a tag in $tags store, following an edit.
+An asynchronous update function may be passed into the builder. It is called prior to
+updating a tag in $tags store, following an edit.
 
-It provides the ability do something before a tag is updated, such as updating
-the value in a backend database, setting a new id, or simply manipulating the
-value to be added.
+It provides the ability do something before a tag is updated, such as updating the value
+in a backend database, setting a new id, or simply manipulating the value to be added.
 
 The function definition is:
 
@@ -133,8 +131,7 @@ fn: (tag: Tag) => Promise<Tag>.
 A <code>tag</code> is an object that consists of an <code>id</code> and <code>value</code>
 </Callout>
 
-`tag.value` will be the new (edited) value, while `tag.id` will be the existing
-id.
+`tag.value` will be the new (edited) value, while `tag.id` will be the existing id.
 
 On `reject` or `error` the tag is not updated.
 
@@ -154,11 +151,11 @@ The following example uses the existing id and sets the value to uppercase
 
 ### Removing a tag
 
-An asynchronous remove function may be passed into the builder. It is called
-prior to removing the tag from the $tags store.
+An asynchronous remove function may be passed into the builder. It is called prior to
+removing the tag from the $tags store.
 
-It provides the ability do something before the tag is removed from $tags store,
-such as deleting the tag from a backend database.
+It provides the ability do something before the tag is removed from $tags store, such as
+deleting the tag from a backend database.
 
 The function definition is:
 

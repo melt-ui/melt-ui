@@ -1,8 +1,8 @@
 ---
 title: Accordion
 description:
-  An interactive component that enables the organization and navigation of
-  content by allowing users to expand and collapse sections.
+  An interactive component that enables the organization and navigation of content by
+  allowing users to expand and collapse sections.
 ---
 
 ## Anatomy
@@ -14,18 +14,15 @@ description:
 
 ## Usage
 
-To create an accordion, use the `createAccordion` builder function. Follow the
-anatomy or the example at the top of this page to create your accordion.
+To create an accordion, use the `createAccordion` builder function. Follow the anatomy or
+the example at the top of this page to create your accordion.
 
 ### Disabling a single item
 
-To disable a single item, you can pass in an object instead of a string to the
-function.
+To disable a single item, you can pass in an object instead of a string to the function.
 
 ```svelte /{ value: 'item-3', disabled: true }/#hi
-<div class="accordion-item" {...$item({ value: 'item-3', disabled: true })}>
-  Item 3
-</div>
+<div class="accordion-item" {...$item({ value: 'item-3', disabled: true })}>Item 3</div>
 ```
 
 ### Opening multiple items at once
@@ -42,8 +39,8 @@ Pass in the `type` argument to `createAccordion` with a value of `'multiple'`.
 
 ### Controlled access
 
-To programatically control the Accordion, you can directly set the `value`
-store. You can also update the `options` store with new arguments.
+To programatically control the Accordion, you can directly set the `value` store. You can
+also update the `options` store with new arguments.
 
 ```svelte
 <script lang="ts">
@@ -73,7 +70,8 @@ store. You can also update the `options` store with new arguments.
   on:click={() => {
     const randPick = Math.floor(Math.random() * 3) + 1
     value = `item-${randPick}`
-  }}>
+  }}
+>
   Trigger randomly
 </button>
 

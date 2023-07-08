@@ -1,7 +1,6 @@
 ---
 title: Pagination
-description:
-  An interface that allows navigating between pages that contain split entries.
+description: An interface that allows navigating between pages that contain split entries.
 ---
 
 ## Anatomy
@@ -14,19 +13,18 @@ description:
 
 ## Usage
 
-To create a pagination component, use the `createPagination` builder function.
-Follow the anatomy or the example above to create your pagination component.
+To create a pagination component, use the `createPagination` builder function. Follow the
+anatomy or the example above to create your pagination component.
 
 ```svelte
 <script lang="ts">
   import { createPagination } from '@melt-ui/svelte'
-  const { prevButton, nextButton, pages, pageTrigger, range, root } =
-    createPagination({
-      count: 100,
-      perPage: 10,
-      page: 1,
-      siblingCount: 1
-    })
+  const { prevButton, nextButton, pages, pageTrigger, range, root } = createPagination({
+    count: 100,
+    perPage: 10,
+    page: 1,
+    siblingCount: 1
+  })
 </script>
 
 <nav {...root}>

@@ -1,8 +1,8 @@
 ---
 title: Hover Card
 description:
-  Displays additional information or options when the cursor hovers over a
-  particular element.
+  Displays additional information or options when the cursor hovers over a particular
+  element.
 ---
 
 ## Anatomy
@@ -22,8 +22,8 @@ Create a hovercard using the `createHoverCard` builder function.
 </script>
 ```
 
-Then you can use the `trigger`, `content`, and `arrow` to construct a hovercard.
-A high level example of how to structure the hovercard is shown below.
+Then you can use the `trigger`, `content`, and `arrow` to construct a hovercard. A high
+level example of how to structure the hovercard is shown below.
 
 ```svelte
 <script lang="ts">
@@ -39,5 +39,5 @@ A high level example of how to structure the hovercard is shown below.
 </div>
 ```
 
-It's also possible to use Svelte Transitions, as demonstrated in the example at
-the top of this page.
+It's also possible to use Svelte Transitions, as demonstrated in the example at the top of
+this page.
