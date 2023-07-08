@@ -29,7 +29,7 @@ devDependencies:
     specifier: ^2.26.1
     version: 2.26.1
   '@huntabyte/mdsvex':
-    specifier: ^0.16.5
+    specifier: 0.16.5
     version: 0.16.5(svelte@4.0.0)
   '@iconify-json/lucide':
     specifier: ^1.1.104
