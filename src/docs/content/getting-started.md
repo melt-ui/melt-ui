@@ -51,8 +51,8 @@ component:
 
 ```svelte
 <script>
-  import { createCollapsible } from '@melt-ui/svelte';
-  const { open, root, content, trigger } = createCollapsible();
+  import { createCollapsible } from '@melt-ui/svelte'
+  const { open, root, content, trigger } = createCollapsible()
 </script>
 
 <div {...$root}>
@@ -85,7 +85,7 @@ components, as long as you can pass in Melt's props, it's all good.
 <!-- Using Svelte Scoped Styles -->
 <div class="root" {...$root}>
 <!-- Using an external component -->
-<Button on:click={() => console.log('clicked')} {...$trigger} action={trigger.action}>
+<Button on:click={() => console.log('clicked')} {...$trigger} action={trigger}>
   {$open ? 'Close' : 'Open'}
 </Button>
 <!-- Using an utility class library, such as Tailwind -->
@@ -120,12 +120,12 @@ then be used for animation purposes, should you desire to do so.
 
 ```svelte
 <script>
-  import { createCollapsible } from '@melt-ui/svelte';
-  const { root, content, trigger } = createCollapsible();
+  import { createCollapsible } from '@melt-ui/svelte'
+  const { root, content, trigger } = createCollapsible()
 </script>
 
 <div {...$root}>
-  <button {...$trigger} use:trigger.action> Toggle </button>
+  <button {...$trigger} use:trigger> Toggle </button>
   <div class="content" {...$content}>
     <p>sveltejs/svelte</p>
     <p>sveltejs/kit</p>
