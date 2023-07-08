@@ -1,5 +1,13 @@
 # @melt-ui/svelte
 
+## 0.18.3
+
+### Patch Changes
+
+- 9f78da5: [Menus]: Close Menus on Tab press within submenus
+- deb46a9: fix(collapsible): disabled state
+- 5c80008: [Menus] Fix submenu typeahead logic
+
 ## 0.18.2
 
 ### Patch Changes
