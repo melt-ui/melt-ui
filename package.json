@@ -63,7 +63,7 @@
     },
     "devDependencies": {
         "@changesets/cli": "^2.26.1",
-        "@huntabyte/mdsvex": "^0.16.5",
+        "@huntabyte/mdsvex": "0.16.5",
         "@iconify-json/lucide": "^1.1.104",
         "@iconify-json/simple-icons": "^1.1.57",
         "@storybook/addon-essentials": "^7.0.23",
@@ -90,6 +90,7 @@
         "@vitest/coverage-c8": "^0.32.2",
         "autoprefixer": "^10.4.14",
         "clsx": "^1.2.1",
+        "escape-html": "^1.0.3",
         "eslint": "^8.43.0",
         "eslint-config-prettier": "^8.8.0",
         "eslint-plugin-storybook": "^0.6.12",

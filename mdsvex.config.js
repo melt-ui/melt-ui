@@ -5,6 +5,8 @@ import remarkGfm from 'remark-gfm';
 import rehypePrettyCode from 'rehype-pretty-code';
 import { codeImport } from 'remark-code-import';
 import { toHtml } from 'hast-util-to-html';
+import { escapeSvelte } from '@huntabyte/mdsvex';
+import escape from 'escape-html';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -32,7 +34,7 @@ export const mdsvexOptions = {
 		quotes: false,
 		ellipses: false,
 		backticks: false,
-		dashes: 'oldschool',
+		dashes: false,
 	},
 	remarkPlugins: [remarkGfm, codeImport],
 	rehypePlugins: [
@@ -104,8 +106,9 @@ function rehypeRenderCode() {
 					allowDangerousCharacters: true,
 					allowDangerousHtml: true,
 				});
+
 				codeEl.type = 'raw';
-				codeEl.value = `{@html \`${toHtmlString}\`}`;
+				codeEl.value = `{@html \`${escapeSvelte(toHtmlString)}\`}`;
 			}
 		});
 	};
