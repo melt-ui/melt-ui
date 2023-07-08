@@ -15,15 +15,15 @@
 	<nav class="flex flex-col items-center gap-4" aria-label="pagination" {...root}>
 		<p class="text-center">Showing items {$range.start} - {$range.end}</p>
 		<div class="flex items-center gap-2">
-			<button {...$prevButton} use:prevButton.action><ChevronLeft /></button>
+			<button {...$prevButton} use:prevButton><ChevronLeft /></button>
 			{#each $pages as page (page.key)}
 				{#if page.type === 'ellipsis'}
 					<span>...</span>
 				{:else}
-					<button {...$pageTrigger(page)} use:pageTrigger.action>{page.value}</button>
+					<button {...$pageTrigger(page)} use:pageTrigger>{page.value}</button>
 				{/if}
 			{/each}
-			<button {...$nextButton} use:nextButton.action><ChevronRight /></button>
+			<button {...$nextButton} use:nextButton><ChevronRight /></button>
 		</div>
 	</nav>
 </div>

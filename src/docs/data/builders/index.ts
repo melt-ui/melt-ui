@@ -3,6 +3,7 @@ import { accordionData } from './accordion';
 import { avatarData } from './avatar';
 import { checkboxData } from './checkbox';
 import { collapsibleData } from './collapsible';
+import { comboboxData } from './combobox';
 import { contextMenuData } from './context-menu';
 import { dialogData } from './dialog';
 import { dropdownMenuData } from './dropdown-menu';
@@ -10,6 +11,7 @@ import { hoverCardData } from './hover-card';
 import { labelData } from './label';
 import { menubarData } from './menubar';
 import { paginationData } from './pagination';
+import { pinInputData } from './pin-input';
 import { popoverData } from './popover';
 import { progressData } from './progress';
 import { radioGroupData } from './radio-group';
@@ -29,6 +31,7 @@ export const builderList = [
 	'avatar',
 	'checkbox',
 	'collapsible',
+	'combobox',
 	'context-menu',
 	'dialog',
 	'dropdown-menu',
@@ -36,6 +39,7 @@ export const builderList = [
 	'label',
 	'menubar',
 	'pagination',
+	'pin-input',
 	'popover',
 	'progress',
 	'radio-group',
@@ -67,6 +71,7 @@ export const data: Builders = {
 	avatar: avatarData,
 	checkbox: checkboxData,
 	collapsible: collapsibleData,
+	combobox: comboboxData,
 	'context-menu': contextMenuData,
 	dialog: dialogData,
 	'dropdown-menu': dropdownMenuData,
@@ -74,6 +79,7 @@ export const data: Builders = {
 	label: labelData,
 	menubar: menubarData,
 	pagination: paginationData,
+	'pin-input': pinInputData,
 	popover: popoverData,
 	progress: progressData,
 	'radio-group': radioGroupData,

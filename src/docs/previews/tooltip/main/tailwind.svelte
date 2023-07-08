@@ -13,13 +13,7 @@
 </script>
 
 <div class="flex w-full items-center justify-center">
-	<button
-		type="button"
-		class="trigger"
-		{...$trigger}
-		use:trigger.action
-		aria-label="Update dimensions"
-	>
+	<button type="button" class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
 		<Plus class="h-4 w-4" />
 		<span class="sr-only">Open Popover</span>
 	</button>
@@ -27,7 +21,7 @@
 	{#if $open}
 		<div
 			{...$content}
-			use:content.action
+			use:content
 			transition:fade={{ duration: 100 }}
 			class="z-10 rounded-md bg-white shadow-sm"
 		>
