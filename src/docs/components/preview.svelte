@@ -5,18 +5,19 @@
 				'index.svelte'?: string;
 				'tailwind.config.ts'?: string;
 				'globals.css'?: string;
-			};
+			} | null;
 		};
 		fullwidth?: boolean;
 	};
 </script>
 
 <script lang="ts">
+	import { page } from '$app/stores';
 	import { createSelect, type CreateSelectArgs } from '$lib';
 	import { cn } from '$routes/helpers';
 	import CodeBlock from './code-block.svelte';
 	import PreviewWrapper from './preview-wrapper.svelte';
-	import Select from './select.svelte';
+	import { PreviewStyleSelect } from '$docs/components';
 	import Switch from './switch.svelte';
 	import { TabsList, TabsRoot } from './tabs';
 
@@ -26,11 +27,24 @@
 
 	export let code: $$Props['code'];
 
-	let codingStyle = Object.keys(code)[0] ? ('tailwind' as const) : ('css' as const);
-	let codingStyleObj: $$Props['code'][typeof codingStyle] | null = code[codingStyle];
+	function handleMissingCode(code: $$Props['code']) {
+		if (!Object.prototype.hasOwnProperty.call(code, 'tailwind')) {
+			code['tailwind'] = null;
+		}
+		if (!Object.prototype.hasOwnProperty.call(code, 'css')) {
+			code['css'] = null;
+		}
+		return code;
+	}
+
+	let codingStyle = Object.keys(handleMissingCode(code))[0]
+		? ('tailwind' as const)
+		: ('css' as const);
+	let codingStyleObj: $$Props['code'][typeof codingStyle] | null =
+		handleMissingCode(code)[codingStyle];
 
 	$: {
-		codingStyleObj = code[codingStyle];
+		codingStyleObj = handleMissingCode(code)[codingStyle];
 	}
 
 	$: files = codingStyleObj !== null ? Object.keys(codingStyleObj) : [];
@@ -44,9 +58,9 @@
 		}
 	});
 
-	export let viewCode = false;
+	let viewCode = false;
 
-	$: codeOptions = Object.entries(code).map(([key, value]) => {
+	$: codeOptions = Object.entries(handleMissingCode(code)).map(([key, value]) => {
 		return {
 			value: key,
 			label: key,
@@ -63,9 +77,9 @@
 
 <div class="mt-4 flex flex-row items-center justify-between">
 	<div class="flex h-10 items-center lg:hidden">
-		{#if viewCode}
-			<Select options={codeOptions} bind:value={codingStyle} />
-		{/if}
+		{#key $page.url.pathname}
+			<PreviewStyleSelect options={codeOptions} bind:value={codingStyle} />
+		{/key}
 	</div>
 
 	<div class="ml-auto">
@@ -83,7 +97,9 @@
 
 				<div class="ml-auto hidden lg:block">
 					{#if codeOptions.length > 1}
-						<Select options={codeOptions} bind:value={codingStyle} />
+						{#key $page.url.pathname}
+							<PreviewStyleSelect options={codeOptions} bind:value={codingStyle} />
+						{/key}
 					{/if}
 				</div>
 			</div>

@@ -1,14 +1,23 @@
 <script lang="ts">
+	import { beforeNavigate } from '$app/navigation';
 	import { createSwitch } from '$lib';
 
 	export let checked = false;
 
-	const { root, isChecked } = createSwitch({
+	const {
+		root,
+		isChecked,
+		checked: checkedStore,
+	} = createSwitch({
 		checked,
 	});
 
 	isChecked.subscribe((value) => {
 		checked = value;
+	});
+
+	beforeNavigate(() => {
+		checkedStore.set(false);
 	});
 </script>
 

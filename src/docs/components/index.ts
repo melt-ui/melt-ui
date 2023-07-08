@@ -13,3 +13,4 @@ export { default as TailwindIndicator } from './tailwind-indicator.svelte';
 export { default as Preview } from './preview.svelte';
 export { default as CodeBlock } from './code-block.svelte';
 export { default as Features } from './features.svelte';
+export { default as PreviewStyleSelect } from './preview-style-select.svelte';
