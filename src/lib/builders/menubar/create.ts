@@ -151,7 +151,7 @@ export function createMenubar(args?: CreateMenubar) {
 						 * Submenu key events bubble through portals and
 						 * we only care about key events that happen inside this menu.
 						 */
-						const isKeyDownInside = target.closest('[data-melt-menubar-menu]') === menuElement;
+						const isKeyDownInside = target.closest('[role="menu"]') === menuElement;
 
 						if (!isKeyDownInside) return;
 						if (FIRST_LAST_KEYS.includes(e.key)) {
