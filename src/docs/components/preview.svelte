@@ -76,11 +76,13 @@
 </script>
 
 <div class="mt-4 flex flex-row items-center justify-between">
-	<div class="flex h-10 items-center lg:hidden">
-		{#key $page.url.pathname}
-			<PreviewStyleSelect options={codeOptions} bind:value={codingStyle} />
-		{/key}
-	</div>
+	{#if viewCode}
+		<div class="flex h-10 items-center md:hidden">
+			{#key $page.url.pathname}
+				<PreviewStyleSelect options={codeOptions} bind:value={codingStyle} />
+			{/key}
+		</div>
+	{/if}
 
 	<div class="ml-auto">
 		<Switch bind:checked={viewCode} />
@@ -90,12 +92,12 @@
 <div class="relative mt-2 rounded-md">
 	{#if viewCode}
 		<TabsRoot tabs={files} let:tab>
-			<div class="flex h-10 flex-col-reverse gap-4 lg:flex-row lg:items-center">
+			<div class="flex h-10 flex-col-reverse gap-4 md:flex-row md:items-center">
 				<div class={cn(files.length === 1 && 'lg:hidden')}>
 					<TabsList />
 				</div>
 
-				<div class="ml-auto hidden lg:block">
+				<div class="ml-auto hidden md:block">
 					{#if codeOptions.length > 1}
 						{#key $page.url.pathname}
 							<PreviewStyleSelect options={codeOptions} bind:value={codingStyle} />

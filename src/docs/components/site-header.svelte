@@ -4,9 +4,9 @@
 </script>
 
 <header
-	class="supports-backdrop-blur:bg-white/95 sticky top-0 z-40 w-full border-b border-b-neutral-100/[0.06] bg-neutral-800/80 shadow-sm backdrop-blur"
+	class="sticky top-0 z-40 w-full border-b border-b-neutral-100/[0.06] bg-neutral-900 px-2 pt-2"
 >
-	<div class="container flex h-14 items-center">
+	<div class="container flex h-14 items-center rounded-md bg-neutral-800">
 		<div class="flex">
 			<a href="/" class="mr-6 flex items-center">
 				<img src="/logo.svg" alt="Melt UI Logo" class="h-9 w-auto" />
