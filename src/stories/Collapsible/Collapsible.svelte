@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { createCollapsible } from '$lib/builders/collapsible';
-	import X from '~icons/lucide/x';
-	import ChevronsUpDown from '~icons/lucide/chevrons-up-down';
+	import PreviewWrapper from '$routes/(components)/preview-wrapper.svelte';
 	import { slide } from 'svelte/transition';
-	import { Docs } from '$routes/(components)';
 
 	let openProp: boolean;
 	let disabledProp: boolean;
@@ -18,23 +16,18 @@
 	$: $disabled = disabledProp;
 </script>
 
-<Docs.PreviewWrapper>
-	<div {...$root} class="w-full">
+<PreviewWrapper>
+	<div {...$root} class="w-screen max-w-md">
 		<div class="flex items-center justify-between">
 			<span class="text-sm leading-6 text-white"> @thomasglopes starred 3 repositories </span>
 			<button
 				{...$trigger}
-				class="relative h-6 w-6 place-items-center rounded-full bg-white text-sm text-magnum-700
+				use:trigger
+				class="rounded-sm bg-white px-2 py-1 text-sm text-magnum-700
 			shadow-lg hover:opacity-75
 			data-[disabled]:cursor-not-allowed data-[disabled]:opacity-75"
 			>
-				<div class="abs-center">
-					{#if $open}
-						<X />
-					{:else}
-						<ChevronsUpDown />
-					{/if}
-				</div>
+				toggle
 			</button>
 		</div>
 
@@ -55,7 +48,7 @@
 			</div>
 		{/if}
 	</div>
-</Docs.PreviewWrapper>
+</PreviewWrapper>
 
 <style>
 	.abs-center {
