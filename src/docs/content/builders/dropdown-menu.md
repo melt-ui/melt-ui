@@ -58,7 +58,7 @@ At this point, our menu doesn't really do much except open and close. To add fun
 turn the `item` elements into links, or we could pass a custom `onSelect` function to the item
 action, which will be called when that item is selected.
 
-```svelte
+```svelte /onSelect: (e) => console.log('Item 2!')/#hi /onSelect: (e) => console.log('Item 3!')/#hi
 <a href="/1" {...$item} use:item>Item 1</a>
 <div {...$item} use:item={{ onSelect: (e) => console.log('Item 2!') }}>Item 2</div>
 <div {...$item} use:item={{ onSelect: (e) => console.log('Item 3!') }}>Item 3</div>
@@ -68,7 +68,7 @@ If you wanted to prevent the default behavior that occurs when you select an ite
 `e.preventDefault()` in your `onSelect` function, which will prevent the default behavior from
 occurring.
 
-```svelte
+```svelte {5}
 <div
   {...$item}
   use:item={{
