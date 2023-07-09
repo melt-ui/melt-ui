@@ -4,47 +4,13 @@ description: It only takes a few lines of code to get started building component
 ---
 
 <script>
-    import { Callout, InstallTabs } from '$docs/components';
+    import { Callout } from '$docs/components';
 </script>
 
-## Installation
+## Quickstart
 
-Install Melt UI with your package manager of choice.
-
-<InstallTabs>
-<span slot="npm">
-
-```bash /@melt-ui/#melt /svelte/#melt
-npm install @melt-ui/svelte
-```
-
-</span>
-
-<span slot="yarn">
-
-```bash /@melt-ui/#melt /svelte/#melt
-yarn add @melt-ui/svelte
-```
-
-</span>
-
-<span slot="pnpm">
-
-```bash /@melt-ui/#melt /svelte/#melt
-pnpm install @melt-ui/svelte
-```
-
-</span>
-
-</InstallTabs>
-
-<Callout>
-P.S. These tabs were built using Melt! Try using them with the arrow keys.
-</Callout>
-
-## Usage
-
-Melt UI exposes a number of component builders. Let's say you want a Collapsible component:
+Melt UI exposes a number of component builders. The following code snippet demonstrates a simple
+collapsible component using Melt UI's [Collapsible](/docs/builders/collapsible) builder.
 
 ```svelte
 <script>
@@ -53,7 +19,7 @@ Melt UI exposes a number of component builders. Let's say you want a Collapsible
 </script>
 
 <div {...$root}>
-  <button {...$trigger} use:trigger.action>{$open ? 'Close' : 'Open'}</button>
+  <button {...$trigger} use:trigger>{$open ? 'Close' : 'Open'}</button>
   <div {...$content}>Obi-Wan says: Hello there!</div>
 </div>
 ```
