@@ -114,13 +114,14 @@ export function createTabs(args?: CreateTabsArgs) {
 					}
 				}),
 
-				addEventListener(node, 'click', (e) => {
+				addEventListener(node, 'click', () => {
 					const disabled = node.dataset.disabled === 'true';
-
 					if (disabled) return;
-					const el = e.currentTarget;
-					if (el && 'focus' in el) {
-						(el as HTMLElement).focus();
+
+					const tabValue = node.dataset.value;
+					node.focus();
+					if (tabValue !== undefined) {
+						value.set(tabValue);
 					}
 				}),
 

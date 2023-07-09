@@ -207,12 +207,13 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				'aria-expanded': $rootOpen,
 				'data-state': $rootOpen ? 'open' : 'closed',
 				id: rootIds.trigger,
+				tabindex: 0,
 			} as const;
 		},
 		action: (node: HTMLElement) => {
 			applyAttrsIfDisabled(node);
 			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', (e) => {
+				addEventListener(node, 'click', (e) => {
 					const $rootOpen = get(rootOpen);
 					const triggerElement = e.currentTarget;
 					if (!isHTMLElement(triggerElement)) return;
@@ -888,7 +889,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						const triggerElement = e.currentTarget;
 						if (!isHTMLElement(triggerElement)) return;
 
-						if (!isHTMLElement(triggerElement)) return;
 						triggerElement.removeAttribute('data-highlighted');
 
 						const relatedTarget = e.relatedTarget;
@@ -903,6 +903,12 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							subActiveTrigger.set(null);
 							subOpen.set(false);
 						}
+					}),
+					addEventListener(node, 'blur', (e) => {
+						const triggerElement = e.currentTarget;
+						if (!isHTMLElement(triggerElement)) return;
+
+						triggerElement.removeAttribute('data-highlighted');
 					}),
 					addEventListener(node, 'focusin', (e) => {
 						const triggerElement = e.currentTarget;
@@ -962,6 +968,16 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					if (get(isUsingKeyboard)) {
 						isHTMLElement(menuItems[0]) ? handleRovingFocus(menuItems[0]) : undefined;
 					}
+				}
+				if (isHTMLElement(menuElement) && !$subOpen) {
+					const menuItems = getMenuItems(menuElement);
+					menuItems.forEach((item) => {
+						item.removeAttribute('data-highlighted');
+					});
+					const subTriggerEl = document.getElementById(subIds.trigger);
+					if (!isHTMLElement(subTriggerEl)) return;
+					if (document.activeElement === subTriggerEl) return;
+					subTriggerEl.removeAttribute('data-highlighted');
 				}
 			});
 		});

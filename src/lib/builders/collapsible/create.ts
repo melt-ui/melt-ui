@@ -20,18 +20,22 @@ export function createCollapsible(args?: CreateCollapsibleArgs) {
 		stores: open,
 		returned: ($open) => ({
 			'data-state': $open ? 'open' : 'closed',
-			'data-disabled': options.disabled ? true : 'undefined',
+			'data-disabled': options.disabled ? '' : 'undefined',
 		}),
 	});
 
 	const trigger = builder(name('trigger'), {
 		stores: [open, disabled],
-		returned: ([$open, $disabled]) => ({
-			'data-state': $open ? 'open' : 'closed',
-			'data-disabled': $disabled ? true : undefined,
-		}),
+		returned: ([$open, $disabled]) =>
+			({
+				'data-state': $open ? 'open' : 'closed',
+				'data-disabled': $disabled ? '' : undefined,
+				disabled: $disabled,
+			} as const),
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
+				const disabled = node.dataset.disabled !== undefined;
+				if (disabled) return;
 				open.update(($open) => !$open);
 			});
 
@@ -45,7 +49,7 @@ export function createCollapsible(args?: CreateCollapsibleArgs) {
 		stores: [open, disabled],
 		returned: ([$open, $disabled]) => ({
 			'data-state': $open ? 'open' : 'closed',
-			'data-disabled': $disabled ? true : undefined,
+			'data-disabled': $disabled ? '' : undefined,
 			hidden: $open ? undefined : true,
 		}),
 	});
