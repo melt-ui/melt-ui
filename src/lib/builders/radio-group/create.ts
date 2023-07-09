@@ -73,7 +73,13 @@ export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', () => {
+				addEventListener(node, 'pointerdown', (e) => {
+					const isLeftClick = e.button === 0;
+					if (!isLeftClick) {
+						e.preventDefault();
+						return;
+					}
+
 					const disabled = node.dataset.disabled === 'true';
 					const itemValue = node.dataset.value;
 					if (disabled || itemValue === undefined) return;
