@@ -33,10 +33,10 @@ export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd
 
 const defaults = {
 	scrollAlignment: 'nearest',
-	loop: false,
+	loop: true,
 } satisfies Defaults<CreateComboboxArgs<unknown>>;
 
-const { name } = createElHelpers('combobox');
+const { name, selector } = createElHelpers('combobox');
 
 /**
  * Creates an ARIA-1.2-compliant combobox.
@@ -91,6 +91,70 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>) {
 		});
 	}
 
+	/** Resets the combobox inputValue and filteredItems back to the selectedItem */
+	function reset() {
+		const $options = get(options);
+		const $selectedItem = get(selectedItem);
+
+		// If no item is selected the input should be cleared and the filter reset.
+		if (!$selectedItem) {
+			inputValue.set('');
+		} else {
+			inputValue.set($options.itemToString($selectedItem));
+		}
+		// Reset the filtered items to the full list.
+		filteredItems.set(get(items));
+	}
+
+	/**
+	 * Selects an item from the menu and updates the input value.
+	 * @param index array index of the item to select.
+	 */
+	function selectItem(item: HTMLElement) {
+		const $options = get(options);
+		if (item.dataset.index) {
+			const index = parseInt(item.dataset.index, 10);
+			const $item = get(filteredItems)[index];
+			inputValue.set($options.itemToString($item));
+
+			selectedItem.set($item);
+			// Reset the filtered items to the full list.
+			filteredItems.set(get(items));
+		}
+	}
+
+	/**
+	 * Determines if a given item is selected.
+	 * This is useful for displaying additional markup on the selected item.
+	 */
+	const isSelected = derived([selectedItem], ([$selectedItem]) => {
+		return (item: T) => $selectedItem === item;
+	});
+
+	/**
+	 * Function to update the items in the combobox. It provides the current
+	 * items as an argument and expects an updated list in return.
+	 *
+	 * The updated list is set in both `items` and `filteredItems` stores so
+	 * that the filterFunction predicate is applied to any added items. Eg:
+	 * ```ts
+	 * function addNewBook(book: Book) {
+	 *   updateItems((books) => [...books, book]);
+	 * };
+	 * ```
+	 */
+	function updateItems(updaterFunction: (currentItems: T[]) => T[]): void {
+		const $currentItems = get(items);
+		const $inputValue = get(inputValue);
+		const $options = get(options);
+		// Retrieve the updated list of items from the user-provided function.
+		const updatedItems = updaterFunction($currentItems);
+		// Update the store containing all items.
+		items.set(updatedItems);
+		// Run the filter function on the updated list and store the result.
+		filteredItems.set(updatedItems.filter((item) => $options.filterFunction(item, $inputValue)));
+	}
+
 	/** Action and attributes for the text input. */
 	const input = builder(name('input'), {
 		stores: [open, highlightedItem],
@@ -108,22 +172,12 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>) {
 		},
 		action: (node: HTMLInputElement) => {
 			const unsubscribe = executeCallbacks(
-				// Open the menu portal when the input is focused.
-				addEventListener(node, 'focus', () => {
+				addEventListener(node, 'click', () => {
 					openMenu();
 				}),
 				// When the input loses focus, reset the input value and filter.
 				addEventListener(node, 'blur', () => {
-					const $options = get(options);
-					const $selectedItem = get(selectedItem);
-					// If no item is selected the input should be cleared and the filter reset.
-					if (!$selectedItem) {
-						inputValue.set('');
-					} else {
-						inputValue.set($options.itemToString($selectedItem));
-					}
-					// Reset the filtered items to the full list.
-					filteredItems.set(get(items));
+					reset();
 				}),
 				// Handle all input key events including typing, meta, and navigation.
 				addEventListener(node, 'keydown', (e) => {
@@ -148,6 +202,25 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>) {
 						}
 						// All other events should open the menu.
 						openMenu();
+
+						tick().then(() => {
+							const $selectedItem = get(selectedItem);
+							if ($selectedItem) return;
+
+							const menuEl = document.getElementById(ids.menu);
+							if (!isHTMLElement(menuEl)) return;
+
+							const enabledItems = Array.from(
+								menuEl.querySelectorAll(`${selector('item')}:not([data-disabled])`)
+							) as HTMLElement[];
+							if (!enabledItems.length) return;
+
+							if (e.key === kbd.ARROW_DOWN) {
+								highlightedItem.set(enabledItems[0]);
+							} else if (e.key === kbd.ARROW_UP) {
+								highlightedItem.set(last(enabledItems));
+							}
+						});
 					}
 					/**
 					 * When the menu is open...
@@ -155,6 +228,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>) {
 					// Pressing `esc` should close the menu.
 					if (e.key === kbd.ESCAPE) {
 						closeMenu();
+						reset();
 						return;
 					}
 					// Pressing enter with a highlighted item should select it.
@@ -226,30 +300,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>) {
 	});
 
 	/**
-	 * Selects an item from the menu and updates the input value.
-	 * @param index array index of the item to select.
-	 */
-	function selectItem(item: HTMLElement) {
-		const $options = get(options);
-		if (item.dataset.index) {
-			const index = parseInt(item.dataset.index, 10);
-			const $item = get(filteredItems)[index];
-			inputValue.set($options.itemToString($item));
-			selectedItem.set($item);
-			// Reset the filtered items to the full list.
-			filteredItems.set(get(items));
-		}
-	}
-
-	/**
-	 * Determines if a given item is selected.
-	 * This is useful for displaying additional markup on the selected item.
-	 */
-	const isSelected = derived([selectedItem], ([$selectedItem]) => {
-		return (item: T) => $selectedItem === item;
-	});
-
-	/**
 	 * Action and attributes for the menu element.
 	 */
 	const menu = builder(name('menu'), {
@@ -298,26 +348,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>) {
 		},
 	});
 
-	/**
-	 * Handles moving the `data-highlighted` attribute between items when
-	 * the user moves their pointer or navigates with their keyboard.
-	 */
-	effect([highlightedItem, options], ([$highlightedItem, $options]) => {
-		if (!isBrowser) return;
-		const menuElement = document.getElementById(ids.menu);
-		if (!isHTMLElement(menuElement)) return;
-		getOptions(menuElement).forEach((node) => {
-			if (node === $highlightedItem) {
-				node.setAttribute('data-highlighted', '');
-			} else {
-				node.removeAttribute('data-highlighted');
-			}
-		});
-		if ($highlightedItem) {
-			sleep(1).then(() => $highlightedItem.scrollIntoView({ block: $options.scrollAlignment }));
-		}
-	});
-
 	const item = builder(name('item'), {
 		stores: [selectedItem],
 		returned:
@@ -346,7 +376,8 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>) {
 					// Otherwise, proceed.
 					highlightedItem.set(node);
 				}),
-				addEventListener(node, 'mousedown', (e) => {
+				addEventListener(node, 'click', (e) => {
+					e.stopPropagation();
 					// If the item is disabled, `preventDefault` to stop the input losing focus.
 					if (isElementDisabled(node)) {
 						e.preventDefault();
@@ -362,28 +393,24 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>) {
 	});
 
 	/**
-	 * Function to update the items in the combobox. It provides the current
-	 * items as an argument and expects an updated list in return.
-	 *
-	 * The updated list is set in both `items` and `filteredItems` stores so
-	 * that the filterFunction predicate is applied to any added items. Eg:
-	 * ```ts
-	 * function addNewBook(book: Book) {
-	 *   updateItems((books) => [...books, book]);
-	 * };
-	 * ```
+	 * Handles moving the `data-highlighted` attribute between items when
+	 * the user moves their pointer or navigates with their keyboard.
 	 */
-	function updateItems(updaterFunction: (currentItems: T[]) => T[]): void {
-		const $currentItems = get(items);
-		const $inputValue = get(inputValue);
-		const $options = get(options);
-		// Retrieve the updated list of items from the user-provided function.
-		const updatedItems = updaterFunction($currentItems);
-		// Update the store containing all items.
-		items.set(updatedItems);
-		// Run the filter function on the updated list and store the result.
-		filteredItems.set(updatedItems.filter((item) => $options.filterFunction(item, $inputValue)));
-	}
+	effect([highlightedItem, options], ([$highlightedItem, $options]) => {
+		if (!isBrowser) return;
+		const menuElement = document.getElementById(ids.menu);
+		if (!isHTMLElement(menuElement)) return;
+		getOptions(menuElement).forEach((node) => {
+			if (node === $highlightedItem) {
+				node.setAttribute('data-highlighted', '');
+			} else {
+				node.removeAttribute('data-highlighted');
+			}
+		});
+		if ($highlightedItem) {
+			sleep(1).then(() => $highlightedItem.scrollIntoView({ block: $options.scrollAlignment }));
+		}
+	});
 
 	return {
 		filteredItems: readonly(filteredItems),

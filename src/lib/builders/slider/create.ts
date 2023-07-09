@@ -44,7 +44,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 			return {
 				disabled: $options.disabled,
 				'data-orientation': $options.orientation,
-				style: 'touch-action: none;',
+				style: $options.disabled ? undefined : 'touch-action: none;',
 				'data-melt-id': ids.root,
 			};
 		},
