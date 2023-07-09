@@ -1,7 +1,7 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreatePaginationArgs',
+	title: 'createPagination',
 	description: 'The configuration object passed to the `createPagination` builder function.',
 	props: [
 		{
@@ -62,9 +62,13 @@ const keyboard: KeyboardSchema = [
 ];
 
 const root: APISchema = {
-	title: 'Root',
+	title: 'root',
 	description: 'The root element of the pagination component.',
 	dataAttributes: [
+		{
+			label: 'data-melt-pagination',
+			value: 'Present on the root element.',
+		},
 		{
 			label: 'data-scope',
 			value: '`pagination`',
@@ -73,12 +77,12 @@ const root: APISchema = {
 };
 
 const pageTrigger: APISchema = {
-	title: 'Page Trigger',
+	title: 'pageTrigger',
 	description: 'A button that triggers a page change.',
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`page-trigger`',
+			label: 'data-melt-pagination-page-trigger',
+			value: 'Present on the pageTrigger element',
 		},
 		{
 			label: 'data-selected',
@@ -88,23 +92,23 @@ const pageTrigger: APISchema = {
 };
 
 const prevButton: APISchema = {
-	title: 'Previous Button',
+	title: 'prevButton',
 	description: 'A button that moves to the previous page.',
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`page-prev-button`',
+			label: 'data-melt-pagination-prev-button',
+			value: 'Present on the prevButton element',
 		},
 	],
 };
 
 const nextButton: APISchema = {
-	title: 'Next Button',
+	title: 'nextButton',
 	description: 'A button that moves to the next page.',
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`page-next-button`',
+			label: 'data-melt-pagination-next-button',
+			value: 'Present on the nextButton element',
 		},
 	],
 };

@@ -1,7 +1,7 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreatePopoverArgs',
+	title: 'createPopover',
 	description: 'The configuration object passed to the `createPopover` builder function.',
 	props: [
 		{
@@ -31,23 +31,31 @@ const builder: APISchema = {
 };
 
 const trigger: APISchema = {
-	title: 'Trigger',
+	title: 'trigger',
 	description: 'The button(s) which open/close the popover.',
 	dataAttributes: [
 		{
+			label: 'data-melt-popover-trigger',
+			value: 'Present on the trigger element(s)',
+		},
+		{
 			label: 'data-state',
-			value: ['"open"', '"closed"'],
+			value: "`'open' | 'closed'`",
 		},
 	],
 };
 
 const arrow: APISchema = {
-	title: 'Arrow',
+	title: 'arrow',
 	description: 'The optional arrow element.',
 	dataAttributes: [
 		{
+			label: 'data-melt-popover-arrow',
+			value: 'Present on the arrow element',
+		},
+		{
 			label: 'data-arrow',
-			value: ['true'],
+			value: '`"true"`',
 		},
 	],
 };

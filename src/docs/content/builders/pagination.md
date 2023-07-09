@@ -3,6 +3,11 @@ title: Pagination
 description: An interface that allows navigating between pages that contain split entries.
 ---
 
+<script>
+    import { APITable, KbdTable } from '$docs/components'
+    export let data
+</script>
+
 ## Anatomy
 
 - **Root**: The root container for the pagination component
@@ -42,3 +47,18 @@ anatomy or the example above to create your pagination component.
   </div>
 </nav>
 ```
+
+## API Reference
+
+<APITable data={data.builder} />
+<APITable data={data.root} />
+<APITable data={data.pageTrigger} />
+<APITable data={data.prevButton} />
+<APITable data={data.nextButton} />
+
+## Accessibility
+
+Adheres to the
+[a11y Accessible Pagination guidelines](https://www.a11ymatters.com/pattern/pagination/)
+
+<KbdTable data={data.keyboard} />
