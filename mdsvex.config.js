@@ -6,7 +6,6 @@ import rehypePrettyCode from 'rehype-pretty-code';
 import { codeImport } from 'remark-code-import';
 import { toHtml } from 'hast-util-to-html';
 import { escapeSvelte } from '@huntabyte/mdsvex';
-import escape from 'escape-html';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 

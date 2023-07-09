@@ -18,7 +18,7 @@ export function focus(element: unknown) {
 export function getTabbableNodes(container: HTMLElement) {
 	const nodes: HTMLElement[] = [];
 	const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
-		acceptNode: (node: any) => {
+		acceptNode: (node: HTMLElement) => {
 			// `.tabIndex` is not the same as the `tabindex` attribute. It works on the
 			// runtime's understanding of tabbability, so this automatically accounts
 			// for any kind of element that could be tabbed to.

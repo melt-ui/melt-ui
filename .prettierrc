@@ -19,9 +19,9 @@
 				"proseWrap": "always",
 				"tabWidth": 2,
 				"useTabs": false,
-				"svelteBracketNewLine": false,
 				"semi": false,
-				"trailingComma": "none"
+				"trailingComma": "none",
+				"bracketSameLine": true
 			}
 		}
 	]

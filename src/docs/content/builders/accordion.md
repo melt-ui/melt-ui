@@ -75,8 +75,7 @@ update the `options` store with new arguments.
   on:click={() => {
     const randPick = Math.floor(Math.random() * 3) + 1
     value = `item-${randPick}`
-  }}
->
+  }}>
   Trigger randomly
 </button>
 

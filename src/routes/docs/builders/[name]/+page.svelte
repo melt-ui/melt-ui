@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { builder } from '@melt-ui/svelte/internal/helpers';
-
 	import { TOC, Description, Preview, Features } from '$docs/components';
 	import type { SvelteComponent } from 'svelte';
 	import type { PageData } from './$types';

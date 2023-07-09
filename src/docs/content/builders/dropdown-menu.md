@@ -75,8 +75,7 @@ occurring.
     onSelect: (e) => {
       e.preventDefault()
     }
-  }}
->
+  }}>
   Item 2
 </div>
 ```
