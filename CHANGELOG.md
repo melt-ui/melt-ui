@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.19.0
+
+### Minor Changes
+
+- 476abfc: feat(dialog): support nested dialogs
+
 ## 0.18.4
 
 ### Patch Changes
