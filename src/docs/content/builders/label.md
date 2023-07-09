@@ -9,8 +9,8 @@ description: A control that adds a label to an input element.
 
 ## Usage
 
-To create a label, use the `createLabel` builder function and apply the root action to the
-label element.
+To create a label, use the `createLabel` builder function and apply the root action to the label
+element.
 
 ```svelte
 <script lang="ts">

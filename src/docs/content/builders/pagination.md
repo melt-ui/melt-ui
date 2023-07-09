@@ -18,8 +18,8 @@ description: An interface that allows navigating between pages that contain spli
 
 ## Usage
 
-To create a pagination component, use the `createPagination` builder function. Follow the
-anatomy or the example above to create your pagination component.
+To create a pagination component, use the `createPagination` builder function. Follow the anatomy or
+the example above to create your pagination component.
 
 ```svelte
 <script lang="ts">

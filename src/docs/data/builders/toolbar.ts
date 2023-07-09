@@ -1,7 +1,7 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreateToolbarArgs',
+	title: 'createToolbar',
 	description: 'The configuration object passed to the `createToolbar` builder function.',
 	props: [
 		{
@@ -16,60 +16,60 @@ const builder: APISchema = {
 	],
 };
 
-const root: APISchema = {
-	title: 'Root',
+const toolbar: APISchema = {
+	title: 'toolbar',
 	description: 'The root toolbar element.',
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: ["'horizontal'", "'vertical'"],
+			value: "`'horizontal' | 'vertical'`",
 		},
 		{
 			label: 'data-melt-toolbar',
-			value: '',
+			value: 'Present on the toolbar element.',
 		},
 	],
 };
 
 const button: APISchema = {
-	title: 'Button',
+	title: 'button',
 	description: 'The toolbar button element.',
 	dataAttributes: [
 		{
-			label: 'data-melt-toolbar-item',
-			value: '',
+			label: 'data-melt-toolbar-button',
+			value: 'Present on the toolbar button element.',
 		},
 	],
 };
 
 const link: APISchema = {
-	title: 'Link',
+	title: 'link',
 	description: 'The toolbar link element.',
 	dataAttributes: [
 		{
-			label: 'data-melt-toolbar-item',
-			value: '',
+			label: 'data-melt-toolbar-link',
+			value: 'Present on the toolbar link element.',
 		},
 	],
 };
 
 const separator: APISchema = {
-	title: 'Separator',
+	title: 'separator',
 	description: 'The toolbar separator element.',
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: ["'horizontal'", "'vertical'"],
+			value: "`'horizontal' | 'vertical'`",
 		},
 		{
 			label: 'data-melt-toolbar-separator',
-			value: '',
+			value: 'Present on the toolbar separator element',
 		},
 	],
 };
 
 const groupBuilder: APISchema = {
-	title: 'CreateToolbarGroupArgs',
+	title: 'createToolbarGroup',
 	description: 'Configuration options for the `createToolbarGroup` builder.',
 	props: [
 		{
@@ -89,13 +89,13 @@ const groupBuilder: APISchema = {
 	],
 };
 
-const groupRoot: APISchema = {
-	title: 'Group Root',
+const group: APISchema = {
+	title: 'group',
 	description: 'The root toolbar element for a toolbar group.',
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: ["'horizontal'", "'vertical'"],
+			value: "`'horizontal' | 'vertical'`",
 		},
 		{
 			label: 'data-melt-toolbar-group',
@@ -105,7 +105,7 @@ const groupRoot: APISchema = {
 };
 
 const groupItem: APISchema = {
-	title: 'Group Item',
+	title: 'groupItem',
 	description: 'A an item within a toolbar group.',
 	props: [
 		{
@@ -121,7 +121,7 @@ const groupItem: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: ["'horizontal'", "'vertical'"],
+			value: "`'horizontal' | 'vertical'`",
 		},
 		{
 			label: 'data-melt-toolbar-item',
@@ -133,7 +133,7 @@ const groupItem: APISchema = {
 		},
 		{
 			label: 'data-state',
-			value: ["'on'", "'off'"],
+			value: "`'on' | 'off'`",
 		},
 	],
 };
@@ -179,12 +179,12 @@ const keyboard: KeyboardSchema = [
 
 const schemas = {
 	builder,
-	root,
+	toolbar,
 	button,
 	link,
 	separator,
 	groupBuilder,
-	groupRoot,
+	group,
 	groupItem,
 	keyboard,
 };

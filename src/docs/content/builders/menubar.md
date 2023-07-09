@@ -1,8 +1,7 @@
 ---
 title: Menubar
 description:
-  Displays a menu to the user, which can consist of links or functions, triggered by a
-  button.
+  Displays a menu to the user, which can consist of links or functions, triggered by a button.
 ---
 
 <script>
@@ -24,8 +23,7 @@ description:
 
 ## Usage
 
-The first thing you'll need to do is create a menubar using the `createMenubar` builder
-function.
+The first thing you'll need to do is create a menubar using the `createMenubar` builder function.
 
 ```svelte {4}
 <script lang="ts">
@@ -35,13 +33,13 @@ function.
 </script>
 ```
 
-This function returns an object containing the `menubar` attributes object, and a
-`createMenu` function. The `createMenu` function is used the same way as the
-`createDropdownMenu` builder from the Dropdown Menu builder. The only difference is that
-using this function keeps the menu scoped to the menubar which happens behind the scenes.
+This function returns an object containing the `menubar` attributes object, and a `createMenu`
+function. The `createMenu` function is used the same way as the `createDropdownMenu` builder from
+the Dropdown Menu builder. The only difference is that using this function keeps the menu scoped to
+the menubar which happens behind the scenes.
 
-Now that we have a menubar and menu builder function, we can create a menu using the
-`createMenu` function and wrap it in a `menubar` element.
+Now that we have a menubar and menu builder function, we can create a menu using the `createMenu`
+function and wrap it in a `menubar` element.
 
 ```svelte {5}
 <script lang="ts">
@@ -61,13 +59,13 @@ Now that we have a menubar and menu builder function, we can create a menu using
 </div>
 ```
 
-This isn't much of a "menubar" though, as typically a menubar consists of multiple menus,
-so let's add a couple more.
+This isn't much of a "menubar" though, as typically a menubar consists of multiple menus, so let's
+add a couple more.
 
-Since each `menu` needs to have it's own "scope", we'll need to call the `createMenu`
-function again for each menu we want to create. If you're doing this all in one file, it
-can get a bit messy, so I'd recommend componentizing each menu. But for the sake of this
-example, we'll just rename the returned variables to prevent any naming conflicts.
+Since each `menu` needs to have it's own "scope", we'll need to call the `createMenu` function again
+for each menu we want to create. If you're doing this all in one file, it can get a bit messy, so
+I'd recommend componentizing each menu. But for the sake of this example, we'll just rename the
+returned variables to prevent any naming conflicts.
 
 ```svelte {6-7}
 <script lang="ts">
@@ -104,9 +102,9 @@ example, we'll just rename the returned variables to prevent any naming conflict
 ```
 
 Now we have a menubar with three menus, each with their own items and scopes. As mentioned
-previously, the functionality of createMenu is the exact same as createDropdownMenu, so
-you can refer to the [Dropdown Menu](/docs/builders/dropdown-menu) documentation for more
-information on how to use it.
+previously, the functionality of createMenu is the exact same as createDropdownMenu, so you can
+refer to the [Dropdown Menu](/docs/builders/dropdown-menu) documentation for more information on how
+to use it.
 
 ## API Reference
 
@@ -125,8 +123,7 @@ information on how to use it.
 
 ## Accessibility
 
-Adheres to the
-[Menu WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/) &
+Adheres to the [Menu WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/) &
 [Menu Button WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/)
 
 <KbdTable data={data.keyboard} />

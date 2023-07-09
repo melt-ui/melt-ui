@@ -1,7 +1,7 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreateSelectArgs',
+	title: 'createSelect',
 	description: 'The configuration object passed to the `createSelect` builder function.',
 	props: [
 		{
@@ -40,22 +40,26 @@ const builder: APISchema = {
 };
 
 const trigger: APISchema = {
-	title: 'Trigger',
+	title: 'trigger',
 	description: 'The element which opens/closes the select.',
 	dataAttributes: [
 		{
 			label: 'data-state',
-			value: ['"open"', '"closed"'],
+			value: "`'open' | 'closed'`",
 		},
 		{
 			label: 'data-disabled',
 			value: 'Present if the `select` element is disabled.',
 		},
+		{
+			label: 'data-melt-select-trigger',
+			value: 'Present on the trigger element.',
+		},
 	],
 };
 
 const option: APISchema = {
-	title: 'Option',
+	title: 'option',
 	description: 'The option elements',
 	props: [
 		{
@@ -75,24 +79,43 @@ const option: APISchema = {
 };
 
 const arrow: APISchema = {
-	title: 'Arrow',
+	title: 'arrow',
 	description: 'The optional arrow element',
 	dataAttributes: [
 		{
 			label: 'data-arrow',
-			value: ['"true"'],
+			value: "`'true'`",
 		},
 	],
 };
 
 const separator: APISchema = {
-	title: 'Separator',
+	title: 'separator',
 	description: 'An optional separator element',
 };
 
 const group: APISchema = {
-	title: 'createGroup',
-	description: 'An optional builder used to group options together.',
+	title: 'group',
+	description: 'A function which takes in a unique key to group options together.',
+	props: [
+		{
+			label: 'key',
+			type: 'string',
+			description: 'A unique key for the group.',
+		},
+	],
+};
+
+const groupLabel: APISchema = {
+	title: 'groupLabel',
+	description: 'A function which takes in a unique key to group options together.',
+	props: [
+		{
+			label: 'key',
+			type: 'string',
+			description: 'A unique key for the group.',
+		},
+	],
 };
 
 const keyboard: KeyboardSchema = [
@@ -128,9 +151,11 @@ const schemas = {
 	option,
 	arrow,
 	group,
+	groupLabel,
 	separator,
 	keyboard,
 };
+
 const features = [
 	'Full keyboard navigation',
 	'Can be controlled or uncontrolled',

@@ -1,7 +1,7 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreateRadioGroupArgs',
+	title: 'createRadioGroup',
 	description: 'The configuration object passed to the `createRadioGroup` builder function.',
 	props: [
 		{
@@ -32,22 +32,22 @@ const builder: APISchema = {
 };
 
 const root: APISchema = {
-	title: 'Root',
+	title: 'root',
 	description: 'The radio group component.',
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: ['"horizontal"', '"vertical"'],
+			value: "`'horizontal' | 'vertical'`",
 		},
 		{
-			label: 'data-melt-part',
-			value: '`radio-group`',
+			label: 'data-melt-radio-group',
+			value: 'Present on the root element.',
 		},
 	],
 };
 
 const item: APISchema = {
-	title: 'Item',
+	title: 'item',
 	description: 'The radio group item components.',
 	props: [
 		{
@@ -67,15 +67,15 @@ const item: APISchema = {
 		},
 		{
 			label: 'data-state',
-			value: ['"checked"', '"unchecked"'],
+			value: "`'checked' | 'unchecked'`",
 		},
 		{
 			label: 'data-orientation',
-			value: ['"horizontal"', '"vertical"'],
+			value: "`'horizontal' | 'vertical'`",
 		},
 		{
-			label: 'data-melt-part',
-			value: '`radio-group-item`',
+			label: 'data-melt-radio-group-item',
+			value: 'Present on the item elements.',
 		},
 	],
 };

@@ -1,7 +1,7 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreateToggleGroupArgs',
+	title: 'createToggleGroup',
 	description: 'The configuration object passed to the `createToggleGroup` builder function.',
 	props: [
 		{
@@ -16,7 +16,7 @@ const builder: APISchema = {
 		},
 		{
 			label: 'value',
-			type: ["'string'", 'string[]', 'null'],
+			type: ['string', 'string[]', 'null'],
 			default: 'null',
 		},
 		{
@@ -37,23 +37,23 @@ const builder: APISchema = {
 	],
 };
 
-const root: APISchema = {
-	title: 'Root',
+const toggleGroup: APISchema = {
+	title: 'toggleGroup',
 	description: 'The root toggle group element.',
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: ["'horizontal'", "'vertical'"],
+			value: "`'horizontal' | 'vertical'`",
 		},
 		{
-			label: 'data-melt-part',
-			value: '`toggle-group`',
+			label: 'data-melt-toggle-group',
+			value: 'Present on the toggle group element',
 		},
 	],
 };
 
 const item: APISchema = {
-	title: 'Item',
+	title: 'item',
 	description: 'The toggle group item element.',
 	props: [
 		{
@@ -69,15 +69,15 @@ const item: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: ["'horizontal'", "'vertical'"],
+			value: "`'horizontal' | 'vertical'`",
 		},
 		{
-			label: 'data-melt-part',
-			value: '`toggle-group-item`',
+			label: 'data-melt-toggle-group-item',
+			value: 'Present on the toggle group item element',
 		},
 		{
 			label: 'data-state',
-			value: ["'on'", "'off'"],
+			value: "`'on' | 'off'`",
 		},
 	],
 };
@@ -123,7 +123,7 @@ const keyboard: KeyboardSchema = [
 
 const schemas = {
 	builder,
-	root,
+	toggleGroup,
 	item,
 	keyboard,
 };

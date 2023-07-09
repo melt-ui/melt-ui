@@ -15,8 +15,8 @@ description: A control that allows the user to toggle between checked and not ch
 
 ## Usage
 
-To create a checkbox, use the `createCheckbox` builder function. Follow the anatomy or the
-example above to create your checkbox.
+To create a checkbox, use the `createCheckbox` builder function. Follow the anatomy or the example
+above to create your checkbox.
 
 ### Indeterminate state
 
@@ -52,8 +52,8 @@ To disable the checkbox, set the `disabled` argument as `true`.
 
 ### Controlled access
 
-To programatically control the checkbox, you can directly set the `checked` store. You can
-also update the `options` store with new arguments.
+To programatically control the checkbox, you can directly set the `checked` store. You can also
+update the `options` store with new arguments.
 
 ```svelte {12,14}
 <script lang="ts">

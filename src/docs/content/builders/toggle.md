@@ -3,14 +3,19 @@ title: Toggle
 description: A two-state button that can be either on or off.
 ---
 
+<script>
+    import { APITable, KbdTable } from '$docs/components'
+    export let data
+</script>
+
 ## Anatomy
 
 - **Toggle**: The toggle component
 
 ## Usage
 
-To create a toggle, use the `createToggle` builder function. Follow the anatomy or the
-example above to create your toggle.
+To create a toggle, use the `createToggle` builder function. Follow the anatomy or the example above
+to create your toggle.
 
 ### Disabling the toggle
 
@@ -32,8 +37,8 @@ To disable a the toggle, set the `disabled` argument to `true`.
 
 ### Controlled access
 
-To programmatically control the Toggle, you can directly set the `pressed` store. you can
-also directly set the `disabled` store.
+To programmatically control the Toggle, you can directly set the `pressed` store. you can also
+directly set the `disabled` store.
 
 ```svelte {4-5,8-9,12-13,15-16}
 <script lang="ts">
@@ -54,3 +59,14 @@ also directly set the `disabled` store.
   disabledStore.subscribe((v) => (disabled = v))
 </script>
 ```
+
+## API Reference
+
+<APITable data={data.builder} />
+<APITable data={data.toggle} />
+
+## Accessibility
+
+Adheres to the [Button WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/button/)
+
+<KbdTable data={data.keyboard} />

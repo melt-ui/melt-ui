@@ -1,7 +1,7 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreateToggleArgs',
+	title: 'createToggle',
 	description: 'The configuration object passed to the `createToggle` builder function.',
 	props: [
 		{
@@ -18,7 +18,7 @@ const builder: APISchema = {
 };
 
 const toggle: APISchema = {
-	title: 'Toggle',
+	title: 'toggle',
 	description: 'The toggle component.',
 	dataAttributes: [
 		{
@@ -27,7 +27,11 @@ const toggle: APISchema = {
 		},
 		{
 			label: 'data-state',
-			value: ["'on'", "'off'"],
+			value: "`'on' | 'off'`",
+		},
+		{
+			label: 'data-melt-toggle',
+			value: 'Present on the toggle element.',
 		},
 	],
 };

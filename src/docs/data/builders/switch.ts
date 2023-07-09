@@ -1,7 +1,7 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreateSwitchArgs',
+	title: 'createSwitch',
 	description: 'The configuration object passed to the `createSwitch` builder function.',
 	props: [
 		{
@@ -31,8 +31,8 @@ const builder: APISchema = {
 };
 
 const root: APISchema = {
-	title: 'Root',
-	description: 'The switch component.',
+	title: 'switch',
+	description: 'The switch element.',
 	dataAttributes: [
 		{
 			label: 'data-disabled',
@@ -40,7 +40,11 @@ const root: APISchema = {
 		},
 		{
 			label: 'data-state',
-			value: ['"checked"', '"unchecked"'],
+			value: "`'checked' | 'unchecked'`",
+		},
+		{
+			label: 'data-melt-switch',
+			value: 'Present on the switch element.',
 		},
 	],
 };
@@ -59,7 +63,7 @@ const keyboard: KeyboardSchema = [
 const schemas = {
 	builder,
 	keyboard,
-	root,
+	switch: root,
 };
 const features = ['Full keyboard navigation', 'Can be controlled or uncontrolled'];
 

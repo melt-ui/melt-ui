@@ -1,7 +1,7 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'createCombobox args',
+	title: 'createCombobox',
 	description: 'The configuration object passed to the `createCombobox` builder function.',
 	props: [
 		{
@@ -30,7 +30,7 @@ const builder: APISchema = {
 };
 
 const input: APISchema = {
-	title: 'Input',
+	title: 'input',
 	description:
 		'The element that opens, closes, filters the list, and displays the selected value from the list.',
 	dataAttributes: [
@@ -66,11 +66,15 @@ const input: APISchema = {
 			label: 'data-disabled',
 			value: 'Present if the `select` element is disabled.',
 		},
+		{
+			label: 'data-melt-combobox-input',
+			value: 'Present on the input element.',
+		},
 	],
 };
 
-const option: APISchema = {
-	title: 'Item',
+const item: APISchema = {
+	title: 'item',
 	description: 'The menu item element',
 	props: [
 		{
@@ -87,6 +91,12 @@ const option: APISchema = {
 			default: 'false',
 		},
 	],
+	dataAttributes: [
+		{
+			label: 'data-melt-combobox-item',
+			value: 'Present on the item elements.',
+		},
+	],
 };
 
 const arrow: APISchema = {
@@ -96,6 +106,10 @@ const arrow: APISchema = {
 		{
 			label: 'data-arrow',
 			value: '`"true"`',
+		},
+		{
+			label: 'data-melt-combobox-arrow',
+			value: 'Present on the arrow element.',
 		},
 	],
 };
@@ -139,7 +153,7 @@ const keyboard: KeyboardSchema = [
 const schemas = {
 	builder,
 	input,
-	option,
+	item,
 	arrow,
 	keyboard,
 };

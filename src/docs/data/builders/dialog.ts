@@ -1,7 +1,7 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreateDialogArgs',
+	title: 'createDialog',
 	description: 'The configuration object passed to the `createDialog` builder function.',
 	props: [
 		{

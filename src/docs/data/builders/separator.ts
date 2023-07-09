@@ -1,7 +1,7 @@
 import type { APISchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreateSeparatorArgs',
+	title: 'createSeparator',
 	description: 'The configuration object passed to the `createSeparator` builder function.',
 	props: [
 		{

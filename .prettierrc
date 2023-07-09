@@ -15,7 +15,7 @@
 			"files": "*.md",
 			"options": {
 				"parser": "markdown",
-				"printWidth": 90,
+				"printWidth": 100,
 				"proseWrap": "always",
 				"tabWidth": 2,
 				"useTabs": false,

@@ -1,7 +1,7 @@
 import type { APISchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreateHoverCardArgs',
+	title: 'createHoverCard',
 	description: 'The configuration object passed to the `createHoverCard` builder function.',
 	props: [
 		{
@@ -43,7 +43,7 @@ const builder: APISchema = {
 };
 
 const trigger: APISchema = {
-	title: 'Trigger',
+	title: 'trigger',
 	description: 'The hover card trigger element.',
 	dataAttributes: [
 		{
@@ -58,7 +58,7 @@ const trigger: APISchema = {
 };
 
 const content: APISchema = {
-	title: 'Content',
+	title: 'content',
 	description: 'The content displayed in the hovercard',
 	dataAttributes: [
 		{
@@ -69,7 +69,7 @@ const content: APISchema = {
 };
 
 const arrow: APISchema = {
-	title: 'Arrow',
+	title: 'arrow',
 	description: 'The optional arrow element that points to the trigger.',
 	dataAttributes: [
 		{

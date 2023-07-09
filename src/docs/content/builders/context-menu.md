@@ -1,8 +1,7 @@
 ---
 title: Context Menu
 description:
-  Displays a menu at the pointer's position when the trigger is right-clicked or
-  long-pressed.
+  Displays a menu at the pointer's position when the trigger is right-clicked or long-pressed.
 ---
 
 <script>
@@ -24,8 +23,7 @@ description:
 
 ## Usage
 
-The first thing you need to do is create a dropdown menu using the `createDropdownMenu`
-function.
+The first thing you need to do is create a dropdown menu using the `createDropdownMenu` function.
 
 ```svelte {3}
 <script lang="ts">
@@ -34,8 +32,8 @@ function.
 </script>
 ```
 
-Then you can use the `menu`, `item`, and `trigger` to construct a dropdown menu. A high
-level example of how to structure the menu is shown below.
+Then you can use the `menu`, `item`, and `trigger` to construct a dropdown menu. A high level
+example of how to structure the menu is shown below.
 
 ```svelte
 <script lang="ts">
@@ -52,13 +50,13 @@ level example of how to structure the menu is shown below.
 </div>
 ```
 
-The `trigger` sits outside of the `menu` and is used to toggle the menu's open state. The
-`item` elements go inside the `menu` element. The `arrow` element is optional and can be
-used to render an arrow which points to the trigger.
+The `trigger` sits outside of the `menu` and is used to toggle the menu's open state. The `item`
+elements go inside the `menu` element. The `arrow` element is optional and can be used to render an
+arrow which points to the trigger.
 
-At this point, our menu doesn't really do much except open and close. To add
-functionality, we could turn the `item` elements into links, or we could pass a custom
-`onSelect` function to the item action, which will be called when that item is selected.
+At this point, our menu doesn't really do much except open and close. To add functionality, we could
+turn the `item` elements into links, or we could pass a custom `onSelect` function to the item
+action, which will be called when that item is selected.
 
 ```svelte
 <a href="/1" {...$item} use:item>Item 1</a>
@@ -66,9 +64,9 @@ functionality, we could turn the `item` elements into links, or we could pass a 
 <div {...$item} use:item={{ onSelect: (e) => console.log('Item 3!') }}>Item 3</div>
 ```
 
-If you wanted to prevent the default behavior that occurs when you select an item, you can
-call `e.preventDefault()` in your `onSelect` function, which will prevent the default
-behavior from occurring.
+If you wanted to prevent the default behavior that occurs when you select an item, you can call
+`e.preventDefault()` in your `onSelect` function, which will prevent the default behavior from
+occurring.
 
 ```svelte
 <div
@@ -77,7 +75,8 @@ behavior from occurring.
     onSelect: (e) => {
       e.preventDefault()
     }
-  }}>
+  }}
+>
   Item 2
 </div>
 ```
@@ -100,7 +99,6 @@ behavior from occurring.
 
 ## Accessibility
 
-Adheres to the
-[Menu WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/)
+Adheres to the [Menu WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/)
 
 <KbdTable data={data.keyboard} />

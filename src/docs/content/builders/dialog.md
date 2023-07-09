@@ -1,8 +1,8 @@
 ---
 title: Dialog
 description:
-  A window overlaid on either the primary window or another dialog window, rendering the
-  content underneath inert.
+  A window overlaid on either the primary window or another dialog window, rendering the content
+  underneath inert.
 ---
 
 <script>
@@ -21,8 +21,8 @@ description:
 
 ## Usage
 
-To create a dialog, use the `createDialog` builder function. You can then reference the
-anatomy or example above to create your dialog.
+To create a dialog, use the `createDialog` builder function. You can then reference the anatomy or
+example above to create your dialog.
 
 ## API Reference
 
@@ -30,8 +30,7 @@ anatomy or example above to create your dialog.
 
 ## Accessibility
 
-Adheres to the
-[Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog/) &
+Adheres to the [Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog/) &
 [Alert Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/)
 
 <KbdTable data={data.keyboard} />

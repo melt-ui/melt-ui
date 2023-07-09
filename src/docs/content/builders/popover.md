@@ -17,8 +17,8 @@ description: Displays rich content in a portal, triggered by a button.
 
 ## Usage
 
-To create a popover, use the `createPopover` builder function. Follow the anatomy or the
-example above to create your popover.
+To create a popover, use the `createPopover` builder function. Follow the anatomy or the example
+above to create your popover.
 
 ## API Reference
 

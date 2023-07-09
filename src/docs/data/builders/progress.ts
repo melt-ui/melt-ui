@@ -1,7 +1,7 @@
 import type { APISchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreateProgressArgs',
+	title: 'createProgress',
 	description: 'The configuration object passed to the `createProgress` builder function.',
 	props: [
 		{
@@ -17,7 +17,7 @@ const builder: APISchema = {
 };
 
 const root: APISchema = {
-	title: 'Progress',
+	title: 'progress',
 	description: 'The progress component.',
 	dataAttributes: [
 		{
@@ -26,11 +26,15 @@ const root: APISchema = {
 		},
 		{
 			label: 'data-state',
-			value: ['"indeterminate"', '"complete"', '"loading"'],
+			value: "`'indeterminate' | 'complete' | 'loading'`",
 		},
 		{
 			label: 'data-max',
 			value: 'The maximum value of the progress bar.',
+		},
+		{
+			label: 'data-melt-progress',
+			value: 'Present on the progress element.',
 		},
 	],
 };

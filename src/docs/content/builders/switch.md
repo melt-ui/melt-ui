@@ -3,6 +3,11 @@ title: Switch
 description: A control that allows the user to toggle between checked and not checked.
 ---
 
+<script>
+    import { APITable, KbdTable } from '$docs/components'
+    export let data;
+</script>
+
 ## Anatomy
 
 - **Root**: The root container for the accordion
@@ -10,8 +15,8 @@ description: A control that allows the user to toggle between checked and not ch
 
 ## Usage
 
-To create a switch, use the `createSwitch` builder function. You can then reference the
-anatomy or example above to create your switch.
+To create a switch, use the `createSwitch` builder function. You can then reference the anatomy or
+example above to create your switch.
 
 ### Disabling the switch
 
@@ -31,8 +36,8 @@ To disable the switch, set the `disabled` argument as `true`.
 
 ## Controlled access
 
-To programatically control the switch, you can directly set the `checked` store. You can
-also update the `options` store with new arguments.
+To programatically control the switch, you can directly set the `checked` store. You can also update
+the `options` store with new arguments.
 
 ```svelte {12,14}
 <script lang="ts">
@@ -51,3 +56,14 @@ also update the `options` store with new arguments.
   $: options.update((o) => ({ ...o, disabled }))
 </script>
 ```
+
+## API Reference
+
+<APITable data={data.builder} />
+<APITable data={data.switch} />
+
+## Accessibility
+
+Adheres to the [Switch WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/switch/)
+
+<KbdTable data={data.keyboard} />

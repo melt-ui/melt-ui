@@ -1,7 +1,7 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreateSliderArgs',
+	title: 'createSlider',
 	description: 'The configuration object passed to the `createSlider` builder function.',
 	props: [
 		{
@@ -65,23 +65,27 @@ const keyboard: KeyboardSchema = [
 ];
 
 const slider: APISchema = {
-	title: 'Slider',
+	title: 'slider',
 	description: 'The slider component.',
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: ['"horizontal"', '"vertical"'],
+			value: "`'horizontal' | 'vertical'`",
+		},
+		{
+			label: 'data-melt-slider',
+			value: 'Present on the slider element.',
 		},
 	],
 };
 
 const thumb: APISchema = {
-	title: 'Thumb',
+	title: 'thumb',
 	description: 'The slider thumb component.',
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`thumb`',
+			label: 'data-melt-slider-thumb',
+			value: 'Present on the thumb element.',
 		},
 	],
 };

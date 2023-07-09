@@ -1,7 +1,7 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreateTagsInputArgs',
+	title: 'createTags',
 	description: 'The configuration object passed to the `createTagsInput` builder function.',
 	props: [
 		{
@@ -31,13 +31,13 @@ const builder: APISchema = {
 	],
 };
 
-const root: APISchema = {
-	title: 'Root',
+const tagsInput: APISchema = {
+	title: 'tagsInput',
 	description: 'The tags input component.',
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`tags-input`',
+			label: 'data-melt-tags-input',
+			value: 'Present on the tags input element.',
 		},
 		{
 			label: 'data-disabled',
@@ -47,12 +47,12 @@ const root: APISchema = {
 };
 
 const input: APISchema = {
-	title: 'Root',
+	title: 'input',
 	description: 'The input component',
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`tags-input-input`',
+			label: 'data-melt-tags-input-input',
+			value: 'Present on the input element.',
 		},
 		{
 			label: 'data-disabled',
@@ -62,7 +62,7 @@ const input: APISchema = {
 };
 
 const tag: APISchema = {
-	title: 'Item',
+	title: 'item',
 	description: 'The tag components.',
 	props: [
 		{
@@ -81,8 +81,8 @@ const tag: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`tags-input-tag`',
+			label: 'data-melt-tags-input-tag',
+			value: 'Present on the tag elements.',
 		},
 		{
 			label: 'data-tag-id',
@@ -104,8 +104,8 @@ const tag: APISchema = {
 };
 
 const deleteTrigger: APISchema = {
-	title: 'Item',
-	description: 'The tag components.',
+	title: 'deleteTrigger',
+	description: 'The button component used to delete a tag.',
 	props: [
 		{
 			label: 'id',
@@ -123,8 +123,8 @@ const deleteTrigger: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: 'data-melt-part',
-			value: '`tags-input-delete-trigger`',
+			label: 'data-melt-tags-input-delete-trigger',
+			value: 'Present on the delete trigger elements.',
 		},
 		{
 			label: 'data-tag-id',
@@ -172,7 +172,7 @@ const keyboard: KeyboardSchema = [
 
 const schemas = {
 	builder,
-	root,
+	tagsInput,
 	input,
 	tag,
 	deleteTrigger,

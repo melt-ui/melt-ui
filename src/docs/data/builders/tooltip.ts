@@ -1,7 +1,7 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreateTooltipArgs',
+	title: 'createTooltip',
 	description: 'The configuration object passed to the `createTooltip` builder function.',
 	props: [
 		{
@@ -37,23 +37,31 @@ const builder: APISchema = {
 };
 
 const trigger: APISchema = {
-	title: 'Trigger',
+	title: 'trigger',
 	description: 'The tooltip trigger element.',
 	dataAttributes: [
 		{
 			label: 'data-state',
-			value: ["'open'", "'closed'"],
+			value: "`'open' | 'closed'`",
+		},
+		{
+			label: 'data-melt-tooltip-trigger',
+			value: 'Present on the trigger element',
 		},
 	],
 };
 
 const arrow: APISchema = {
-	title: 'Arrow',
+	title: 'arrow',
 	description: 'The tooltip arrow element.',
 	dataAttributes: [
 		{
 			label: 'data-arrow',
-			value: 'true',
+			value: "`'true'`",
+		},
+		{
+			label: 'data-melt-tooltip-arrow',
+			value: 'Present on the arrow element',
 		},
 	],
 };

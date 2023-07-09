@@ -1,7 +1,7 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreateTabsArgs',
+	title: 'createTabs',
 	description: 'The configuration object passed to the `createTabs` builder function.',
 	props: [
 		{
@@ -36,33 +36,37 @@ const builder: APISchema = {
 };
 
 const root: APISchema = {
-	title: 'Root',
+	title: 'tabs',
 	description: 'The tabs component.',
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: ['"horizontal"', '"vertical"'],
+			value: "`'horizontal' | 'vertical'`",
 		},
 		{
-			label: 'data-melt-part',
-			value: '`tabs-root`',
+			label: 'data-melt-tabs',
+			value: 'Present on the tabs element',
 		},
 	],
 };
 
 const list: APISchema = {
-	title: 'List',
+	title: 'list',
 	description: 'The tabs list component.',
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: ['"horizontal"', '"vertical"'],
+			value: "`'horizontal' | 'vertical'`",
+		},
+		{
+			label: 'data-melt-tabs-list',
+			value: 'Present on the tabs list element',
 		},
 	],
 };
 
 const trigger: APISchema = {
-	title: 'Trigger',
+	title: 'trigger',
 	description: 'The element which opens a given tab.',
 	props: [
 		{
@@ -78,15 +82,19 @@ const trigger: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-state',
-			value: ['"active"', '"inactive"'],
+			value: "`'active' | 'inactive'`",
 		},
 		{
 			label: 'data-orientation',
-			value: ['"horizontal"', '"vertical"'],
+			value: "`'horizontal' | 'vertical'`",
 		},
 		{
 			label: 'data-disabled',
 			value: 'Present if disabled',
+		},
+		{
+			label: 'data-melt-tabs-trigger',
+			value: 'Present on the trigger element',
 		},
 	],
 };
@@ -119,17 +127,19 @@ const keyboard: KeyboardSchema = [
 	},
 	{
 		key: 'Home',
-		behavior: 'Moves focus to the first trigger depending & activates the corresponding content.',
+		behavior:
+			'Moves focus to the first trigger depending on `orientation` & activates the corresponding content.',
 	},
 	{
 		key: 'End',
-		behavior: 'Moves focus to the last trigger depending & activates the corresponding content.',
+		behavior:
+			'Moves focus to the last trigger depending on `orientation` & activates the corresponding content.',
 	},
 ];
 
 const schemas = {
 	builder,
-	root,
+	tabs: root,
 	list,
 	trigger,
 	keyboard,

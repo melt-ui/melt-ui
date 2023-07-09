@@ -120,7 +120,7 @@ const content: APISchema = {
 		},
 		{
 			label: 'data-disabled',
-			value: '`true | undefined`',
+			value: '`"true" | undefined`',
 		},
 	],
 };
