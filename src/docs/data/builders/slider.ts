@@ -1,9 +1,9 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'CreateSliderArgs',
 	description: 'The configuration object passed to the `createSlider` builder function.',
-	args: [
+	props: [
 		{
 			label: 'value',
 			type: 'number[]',
@@ -12,17 +12,17 @@ const builder: APISchema = {
 		{
 			label: 'min',
 			type: 'number',
-			default: 0,
+			default: '0',
 		},
 		{
 			label: 'max',
 			type: 'number',
-			default: 100,
+			default: '100',
 		},
 		{
 			label: 'step',
 			type: 'number',
-			default: 1,
+			default: '1',
 		},
 		{
 			label: 'orientation',
@@ -32,41 +32,37 @@ const builder: APISchema = {
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 };
 
-const keyboard: APISchema = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
-		{
-			key: 'ArrowRight',
-			description: 'Increments/decrements by the `step` value depending on `orientation`.',
-		},
-		{
-			key: 'ArrowLeft',
-			description: 'Increments/decrements by the `step` value depending on `orientation`.',
-		},
-		{
-			key: 'ArrowUp',
-			description: 'Increases the value by the `step` amount.',
-		},
-		{
-			key: 'ArrowDown',
-			description: 'Decreases the value by the `step` amount.',
-		},
-		{
-			key: 'Home',
-			description: 'Sets the value to its minimum',
-		},
-		{
-			key: 'End',
-			description: 'Sets the value to its maximum',
-		},
-	],
-};
+const keyboard: KeyboardSchema = [
+	{
+		key: 'ArrowRight',
+		behavior: 'Increments/decrements by the `step` value depending on `orientation`.',
+	},
+	{
+		key: 'ArrowLeft',
+		behavior: 'Increments/decrements by the `step` value depending on `orientation`.',
+	},
+	{
+		key: 'ArrowUp',
+		behavior: 'Increases the value by the `step` amount.',
+	},
+	{
+		key: 'ArrowDown',
+		behavior: 'Decreases the value by the `step` amount.',
+	},
+	{
+		key: 'Home',
+		behavior: 'Sets the value to its minimum',
+	},
+	{
+		key: 'End',
+		behavior: 'Sets the value to its maximum',
+	},
+];
 
 const slider: APISchema = {
 	title: 'Slider',

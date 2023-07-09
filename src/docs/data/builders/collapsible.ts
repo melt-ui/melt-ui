@@ -1,9 +1,9 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'CreateCollapsibleArgs',
 	description: 'The configuration object passed to the `createCollapsible` builder function.',
-	args: [
+	props: [
 		{
 			label: 'open',
 			type: 'boolean',
@@ -12,25 +12,21 @@ const builder: APISchema = {
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 };
 
-const keyboard: APISchema = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
-		{
-			key: 'Space',
-			description: 'Activates the trigger and toggles the visibility of the collapsible content',
-		},
-		{
-			key: 'Enter',
-			description: 'Activates the trigger and toggles the visibility of the collapsible content',
-		},
-	],
-};
+const keyboard: KeyboardSchema = [
+	{
+		key: 'Space',
+		behavior: 'Activates the trigger and toggles the visibility of the collapsible content',
+	},
+	{
+		key: 'Enter',
+		behavior: 'Activates the trigger and toggles the visibility of the collapsible content',
+	},
+];
 
 const schemas = {
 	builder,

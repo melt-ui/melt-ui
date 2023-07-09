@@ -1,9 +1,9 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'CreateDialogArgs',
 	description: 'The configuration object passed to the `createDialog` builder function.',
-	args: [
+	props: [
 		{
 			label: 'role',
 			type: "'dialog' | 'alert-dialog'",
@@ -12,47 +12,43 @@ const builder: APISchema = {
 		{
 			label: 'preventScroll',
 			type: 'boolean',
-			default: true,
+			default: 'true',
 		},
 		{
 			label: 'closeOnEscape',
 			type: 'boolean',
-			default: true,
+			default: 'true',
 		},
 		{
 			label: 'closeOnOutsideClick',
 			type: 'boolean',
-			default: true,
+			default: 'true',
 		},
 	],
 };
 
-const keyboard: APISchema = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
-		{
-			key: 'Space',
-			description: 'Opens/closes the dialog.',
-		},
-		{
-			key: 'Enter',
-			description: 'Opens/closes the dialog.',
-		},
-		{
-			key: 'Tab',
-			description: 'Moves focus to the next focusable element within the dialog.',
-		},
-		{
-			key: 'Shift + Tab',
-			description: 'Moves focus to the previous focusable element within the dialog.',
-		},
-		{
-			key: 'Esc',
-			description: 'Closes the dialog and moves focus to the trigger element.',
-		},
-	],
-};
+const keyboard: KeyboardSchema = [
+	{
+		key: 'Space',
+		behavior: 'Opens/closes the dialog.',
+	},
+	{
+		key: 'Enter',
+		behavior: 'Opens/closes the dialog.',
+	},
+	{
+		key: 'Tab',
+		behavior: 'Moves focus to the next focusable element within the dialog.',
+	},
+	{
+		key: 'Shift + Tab',
+		behavior: 'Moves focus to the previous focusable element within the dialog.',
+	},
+	{
+		key: 'Esc',
+		behavior: 'Closes the dialog and moves focus to the trigger element.',
+	},
+];
 
 const schemas = {
 	builder,

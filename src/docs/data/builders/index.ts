@@ -1,4 +1,4 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 import { accordionData } from './accordion';
 import { avatarData } from './avatar';
 import { checkboxData } from './checkbox';
@@ -60,7 +60,7 @@ export function isBuilderName(key: string): key is (typeof builderList)[number] 
 }
 
 export type BuilderData = {
-	schemas?: Record<string, APISchema>;
+	schemas?: Record<string, APISchema | KeyboardSchema>;
 	features: string[];
 };
 

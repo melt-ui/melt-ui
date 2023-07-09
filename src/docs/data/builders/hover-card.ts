@@ -1,43 +1,43 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'CreateHoverCardArgs',
 	description: 'The configuration object passed to the `createHoverCard` builder function.',
-	args: [
+	props: [
 		{
 			label: 'defaultOpen',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 		{
 			label: 'positioning',
 			type: 'FloatingConfig',
-			default: 'placement: "bottom"',
+			default: '{ placement: "bottom" }',
 		},
 		{
 			label: 'arrowSize',
 			type: 'number',
-			default: 8,
+			default: '8',
 		},
 		{
 			label: 'open',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 		{
 			label: 'closeOnOutsideClick',
 			type: 'boolean',
-			default: true,
+			default: 'true',
 		},
 		{
 			label: 'openDelay',
 			type: 'number',
-			default: 700,
+			default: '700',
 		},
 		{
 			label: 'closeDelay',
 			type: 'number',
-			default: 300,
+			default: '300',
 		},
 	],
 };

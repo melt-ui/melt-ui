@@ -1,23 +1,23 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'CreateRadioGroupArgs',
 	description: 'The configuration object passed to the `createRadioGroup` builder function.',
-	args: [
+	props: [
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 		{
 			label: 'loop',
 			type: 'boolean',
-			default: true,
+			default: 'true',
 		},
 		{
 			label: 'required',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 		{
 			label: 'orientation',
@@ -49,7 +49,7 @@ const root: APISchema = {
 const item: APISchema = {
 	title: 'Item',
 	description: 'The radio group item components.',
-	args: [
+	props: [
 		{
 			label: 'value',
 			type: 'string',
@@ -57,7 +57,7 @@ const item: APISchema = {
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 	dataAttributes: [
@@ -80,36 +80,32 @@ const item: APISchema = {
 	],
 };
 
-const keyboard = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
-		{
-			key: 'Tab',
-			description: 'Moves focus to either the checked radio item or the first radio item.',
-		},
-		{
-			key: 'Space',
-			description: 'When focused on an unchecked item, checks it.',
-		},
-		{
-			key: 'ArrowDown',
-			description: 'Moves focus to & checks the next radio item',
-		},
-		{
-			key: 'ArrowRight',
-			description: 'Moves focus to & checks the next radio item',
-		},
-		{
-			key: 'ArrowUp',
-			description: 'Moves focus to & checks the previous radio item',
-		},
-		{
-			key: 'ArrowLeft',
-			description: 'Moves focus to & checks the previous radio item',
-		},
-	],
-};
+const keyboard: KeyboardSchema = [
+	{
+		key: 'Tab',
+		behavior: 'Moves focus to either the checked radio item or the first radio item.',
+	},
+	{
+		key: 'Space',
+		behavior: 'When focused on an unchecked item, checks it.',
+	},
+	{
+		key: 'ArrowDown',
+		behavior: 'Moves focus to & checks the next radio item',
+	},
+	{
+		key: 'ArrowRight',
+		behavior: 'Moves focus to & checks the next radio item',
+	},
+	{
+		key: 'ArrowUp',
+		behavior: 'Moves focus to & checks the previous radio item',
+	},
+	{
+		key: 'ArrowLeft',
+		behavior: 'Moves focus to & checks the previous radio item',
+	},
+];
 
 const schemas = {
 	builder,

@@ -1,9 +1,9 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'CreateProgressArgs',
 	description: 'The configuration object passed to the `createProgress` builder function.',
-	args: [
+	props: [
 		{
 			label: 'value',
 			type: 'number',
@@ -11,7 +11,7 @@ const builder: APISchema = {
 		{
 			label: 'max',
 			type: 'number',
-			default: 100,
+			default: '100',
 		},
 	],
 };

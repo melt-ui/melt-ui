@@ -1,4 +1,4 @@
-import type { APISchema } from '$routes/(components)/api.svelte';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 import { dropdownMenuData } from './dropdown-menu';
 
 const menuSchemas = dropdownMenuData.schemas;
@@ -6,7 +6,7 @@ const menuSchemas = dropdownMenuData.schemas;
 const builder: APISchema = {
 	title: 'CreateMenubar',
 	description: 'The configuration object passed to the `createMenubar` builder function.',
-	args: [
+	props: [
 		{
 			label: 'loop',
 			type: 'boolean',
@@ -19,7 +19,7 @@ const menuBuilder: APISchema = {
 	title: 'CreateMenu',
 	description:
 		'The configuration object passed to the `createMenu` builder function returned from the `createMenubar` builder function.',
-	args: [
+	props: [
 		{
 			label: 'positioning',
 			type: 'FloatingConfig',
@@ -28,60 +28,56 @@ const menuBuilder: APISchema = {
 		{
 			label: 'arrowSize',
 			type: 'number',
-			default: 8,
+			default: '8',
 		},
 		{
 			label: 'preventScroll',
 			type: 'boolean',
-			default: true,
+			default: 'true',
 		},
 		{
 			label: 'loop',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 };
 
-const keyboard: APISchema = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
-		{
-			key: 'Space',
-			description:
-				'When focused on the `trigger`, opens the associated menu. When focused on an `item`, selects the item.',
-		},
-		{
-			key: 'Enter',
-			description:
-				'When focused on the `trigger`, opens the associated menu. When focused on an `item`, selects the item.',
-		},
-		{
-			key: 'ArrowDown',
-			description:
-				'When focused on a `trigger`, opens the associated menu. When focused on an `item`, shifts focus to the next item.',
-		},
-		{
-			key: 'ArrowUp',
-			description: 'When focused on an `item`, shifts focus to the next item..',
-		},
-		{
-			key: 'ArrowRight',
-			description:
-				'When focused on a `subTrigger`, opens the `subMenu` and focuses the first item. When focus is within the menu, opens the next menu in the menubar',
-		},
-		{
-			key: 'ArrowLeft',
-			description:
-				"When focused on within a `subMenu`, closes the submenu and shifts focus to that submenu's `subTrigger`. When focus is within the menu, opens the previous menu in the menubar",
-		},
-		{
-			key: 'Esc',
-			description: "Closes the open menu and focuses that menu's `trigger`.",
-		},
-	],
-};
+const keyboard: KeyboardSchema = [
+	{
+		key: 'Space',
+		behavior:
+			'When focused on the `trigger`, opens the associated menu. When focused on an `item`, selects the item.',
+	},
+	{
+		key: 'Enter',
+		behavior:
+			'When focused on the `trigger`, opens the associated menu. When focused on an `item`, selects the item.',
+	},
+	{
+		key: 'ArrowDown',
+		behavior:
+			'When focused on a `trigger`, opens the associated menu. When focused on an `item`, shifts focus to the next item.',
+	},
+	{
+		key: 'ArrowUp',
+		behavior: 'When focused on an `item`, shifts focus to the next item..',
+	},
+	{
+		key: 'ArrowRight',
+		behavior:
+			'When focused on a `subTrigger`, opens the `subMenu` and focuses the first item. When focus is within the menu, opens the next menu in the menubar',
+	},
+	{
+		key: 'ArrowLeft',
+		behavior:
+			"When focused on within a `subMenu`, closes the submenu and shifts focus to that submenu's `subTrigger`. When focus is within the menu, opens the previous menu in the menubar",
+	},
+	{
+		key: 'Esc',
+		behavior: "Closes the open menu and focuses that menu's `trigger`.",
+	},
+];
 
 const schemas = {
 	builder,

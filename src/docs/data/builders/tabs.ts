@@ -1,9 +1,9 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'CreateTabsArgs',
 	description: 'The configuration object passed to the `createTabs` builder function.',
-	args: [
+	props: [
 		{
 			label: 'value',
 			type: 'string',
@@ -15,12 +15,12 @@ const builder: APISchema = {
 		{
 			label: 'activateOnFocus',
 			type: 'boolean',
-			default: true,
+			default: 'true',
 		},
 		{
 			label: 'loop',
 			type: 'boolean',
-			default: true,
+			default: 'true',
 		},
 		{
 			label: 'orientation',
@@ -30,7 +30,7 @@ const builder: APISchema = {
 		{
 			label: 'autoSet',
 			type: 'boolean',
-			default: true,
+			default: 'true',
 		},
 	],
 };
@@ -64,7 +64,7 @@ const list: APISchema = {
 const trigger: APISchema = {
 	title: 'Trigger',
 	description: 'The element which opens a given tab.',
-	args: [
+	props: [
 		{
 			label: 'value',
 			type: 'string',
@@ -72,7 +72,7 @@ const trigger: APISchema = {
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 	dataAttributes: [
@@ -91,47 +91,41 @@ const trigger: APISchema = {
 	],
 };
 
-const keyboard: APISchema = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
-		{
-			key: 'Tab',
-			description:
-				'When focus moves onto the tabs, focuses the active trigger. When a trigger is focused, moves focus to the active content.',
-		},
-		{
-			key: 'ArrowDown',
-			description:
-				'Moves focus to the next trigger depending on `orientation` & activates the corresponding content.',
-		},
-		{
-			key: 'ArrowRight',
-			description:
-				'Moves focus to the next trigger depending on `orientation` & activates the corresponding content.',
-		},
-		{
-			key: 'ArrowUp',
-			description:
-				'Moves focus to the preview trigger depending on `orientation` & activates the corresponding content.',
-		},
-		{
-			key: 'ArrowLeft',
-			description:
-				'Moves focus to the preview trigger depending on `orientation` & activates the corresponding content.',
-		},
-		{
-			key: 'Home',
-			description:
-				'Moves focus to the first trigger depending & activates the corresponding content.',
-		},
-		{
-			key: 'End',
-			description:
-				'Moves focus to the last trigger depending & activates the corresponding content.',
-		},
-	],
-};
+const keyboard: KeyboardSchema = [
+	{
+		key: 'Tab',
+		behavior:
+			'When focus moves onto the tabs, focuses the active trigger. When a trigger is focused, moves focus to the active content.',
+	},
+	{
+		key: 'ArrowDown',
+		behavior:
+			'Moves focus to the next trigger depending on `orientation` & activates the corresponding content.',
+	},
+	{
+		key: 'ArrowRight',
+		behavior:
+			'Moves focus to the next trigger depending on `orientation` & activates the corresponding content.',
+	},
+	{
+		key: 'ArrowUp',
+		behavior:
+			'Moves focus to the preview trigger depending on `orientation` & activates the corresponding content.',
+	},
+	{
+		key: 'ArrowLeft',
+		behavior:
+			'Moves focus to the preview trigger depending on `orientation` & activates the corresponding content.',
+	},
+	{
+		key: 'Home',
+		behavior: 'Moves focus to the first trigger depending & activates the corresponding content.',
+	},
+	{
+		key: 'End',
+		behavior: 'Moves focus to the last trigger depending & activates the corresponding content.',
+	},
+];
 
 const schemas = {
 	builder,

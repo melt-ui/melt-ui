@@ -277,3 +277,12 @@ export async function getMainPreviewComponent(slug: string) {
 
 	return mainPreview.default;
 }
+
+export function transformAPIString(text: string | string[], defaultCodeColor = false) {
+	if (Array.isArray(text)) {
+		text = text.join(' | ');
+	}
+	text = text.replaceAll('"', "'");
+	const regex = /`(.+?)`/g;
+	return text.replace(regex, `<code class="${defaultCodeColor ? '' : 'neutral'}">$1</code>`);
+}

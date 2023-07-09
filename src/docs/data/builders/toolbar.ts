@@ -1,13 +1,13 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'CreateToolbarArgs',
 	description: 'The configuration object passed to the `createToolbar` builder function.',
-	args: [
+	props: [
 		{
 			label: 'loop',
 			type: 'boolean',
-			default: true,
+			default: 'true',
 		},
 		{
 			label: 'orientation',
@@ -71,7 +71,7 @@ const separator: APISchema = {
 const groupBuilder: APISchema = {
 	title: 'CreateToolbarGroupArgs',
 	description: 'Configuration options for the `createToolbarGroup` builder.',
-	args: [
+	props: [
 		{
 			label: 'type',
 			type: ["'single'", "'multiple'"],
@@ -84,7 +84,7 @@ const groupBuilder: APISchema = {
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 };
@@ -107,7 +107,7 @@ const groupRoot: APISchema = {
 const groupItem: APISchema = {
 	title: 'Group Item',
 	description: 'A an item within a toolbar group.',
-	args: [
+	props: [
 		{
 			label: 'value',
 			type: 'string',
@@ -115,7 +115,7 @@ const groupItem: APISchema = {
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 	dataAttributes: [
@@ -138,48 +138,44 @@ const groupItem: APISchema = {
 	],
 };
 
-const keyboard: APISchema = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
-		{
-			key: 'Tab',
-			description: 'Moves focus to the first item in the group.',
-		},
-		{
-			key: 'Space',
-			description: 'Toggles the state of the focused item.',
-		},
-		{
-			key: 'Enter',
-			description: 'Toggles the state of the focused item.',
-		},
-		{
-			key: 'ArrowDown',
-			description: 'Moves focus to the next item depeding on `orientation`.',
-		},
-		{
-			key: 'ArrowRight',
-			description: 'Moves focus to the next item depeding on `orientation`.',
-		},
-		{
-			key: 'ArrowDown',
-			description: 'Moves focus to the previous item depeding on `orientation`.',
-		},
-		{
-			key: 'ArrowLeft',
-			description: 'Moves focus to the previous item depeding on `orientation`.',
-		},
-		{
-			key: 'Home',
-			description: 'Moves focus to the first item.',
-		},
-		{
-			key: 'End',
-			description: 'Moves focus to the last item.',
-		},
-	],
-};
+const keyboard: KeyboardSchema = [
+	{
+		key: 'Tab',
+		behavior: 'Moves focus to the first item in the group.',
+	},
+	{
+		key: 'Space',
+		behavior: 'Toggles the state of the focused item.',
+	},
+	{
+		key: 'Enter',
+		behavior: 'Toggles the state of the focused item.',
+	},
+	{
+		key: 'ArrowDown',
+		behavior: 'Moves focus to the next item depeding on `orientation`.',
+	},
+	{
+		key: 'ArrowRight',
+		behavior: 'Moves focus to the next item depeding on `orientation`.',
+	},
+	{
+		key: 'ArrowDown',
+		behavior: 'Moves focus to the previous item depeding on `orientation`.',
+	},
+	{
+		key: 'ArrowLeft',
+		behavior: 'Moves focus to the previous item depeding on `orientation`.',
+	},
+	{
+		key: 'Home',
+		behavior: 'Moves focus to the first item.',
+	},
+	{
+		key: 'End',
+		behavior: 'Moves focus to the last item.',
+	},
+];
 
 const schemas = {
 	builder,

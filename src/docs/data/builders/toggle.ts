@@ -1,18 +1,18 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'CreateToggleArgs',
 	description: 'The configuration object passed to the `createToggle` builder function.',
-	args: [
+	props: [
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 		{
 			label: 'pressed',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 };
@@ -32,20 +32,16 @@ const toggle: APISchema = {
 	],
 };
 
-const keyboard: APISchema = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
-		{
-			key: 'Space',
-			description: 'Activates/deactivates the toggle.',
-		},
-		{
-			key: 'Enter',
-			description: 'Activates/deactivates the toggle.',
-		},
-	],
-};
+const keyboard: KeyboardSchema = [
+	{
+		key: 'Space',
+		behavior: 'Activates/deactivates the toggle.',
+	},
+	{
+		key: 'Enter',
+		behavior: 'Activates/deactivates the toggle.',
+	},
+];
 
 const schemas = {
 	builder,

@@ -1,18 +1,18 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'CreateSelectArgs',
 	description: 'The configuration object passed to the `createSelect` builder function.',
-	args: [
+	props: [
 		{
 			label: 'required',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 		{
 			label: 'label',
@@ -29,12 +29,12 @@ const builder: APISchema = {
 		{
 			label: 'preventScroll',
 			type: 'boolean',
-			default: true,
+			default: 'true',
 		},
 		{
 			label: 'loop',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 };
@@ -57,7 +57,7 @@ const trigger: APISchema = {
 const option: APISchema = {
 	title: 'Option',
 	description: 'The option elements',
-	args: [
+	props: [
 		{
 			label: 'label',
 			type: 'string',
@@ -69,7 +69,7 @@ const option: APISchema = {
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 };
@@ -95,36 +95,32 @@ const group: APISchema = {
 	description: 'An optional builder used to group options together.',
 };
 
-const keyboard: APISchema = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
-		{
-			key: 'Space',
-			description:
-				'When focus is on the `trigger`, opens the select and focuses the selected option. When focus is on an `option`, selects the focused option.',
-		},
-		{
-			key: 'Enter',
-			description:
-				'When focus is on the `trigger`, opens the select and focuses the selected option. When focus is on an `option`, selects the focused option.',
-		},
-		{
-			key: 'ArrowDown',
-			description:
-				'When focus is on the `trigger`, opens the select. When focus is on an `option`, moves focus to the next option.',
-		},
-		{
-			key: 'ArrowUp',
-			description:
-				'When focus is on the `trigger`, opens the select. When focus is on an `option`, moves focus to the previous option.',
-		},
-		{
-			key: 'Esc',
-			description: 'Closes the select and moves focus to the `trigger`.',
-		},
-	],
-};
+const keyboard: KeyboardSchema = [
+	{
+		key: 'Space',
+		behavior:
+			'When focus is on the `trigger`, opens the select and focuses the selected option. When focus is on an `option`, selects the focused option.',
+	},
+	{
+		key: 'Enter',
+		behavior:
+			'When focus is on the `trigger`, opens the select and focuses the selected option. When focus is on an `option`, selects the focused option.',
+	},
+	{
+		key: 'ArrowDown',
+		behavior:
+			'When focus is on the `trigger`, opens the select. When focus is on an `option`, moves focus to the next option.',
+	},
+	{
+		key: 'ArrowUp',
+		behavior:
+			'When focus is on the `trigger`, opens the select. When focus is on an `option`, moves focus to the previous option.',
+	},
+	{
+		key: 'Esc',
+		behavior: 'Closes the select and moves focus to the `trigger`.',
+	},
+];
 
 const schemas = {
 	builder,

@@ -1,9 +1,9 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'CreateSwitchArgs',
 	description: 'The configuration object passed to the `createSwitch` builder function.',
-	args: [
+	props: [
 		{
 			label: 'checked',
 			type: 'boolean',
@@ -45,20 +45,16 @@ const root: APISchema = {
 	],
 };
 
-const keyboard: APISchema = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
-		{
-			key: 'Space',
-			description: 'When the switch has focus, toggles the switch.',
-		},
-		{
-			key: 'Enter',
-			description: 'When the switch has focus, toggles the switch.',
-		},
-	],
-};
+const keyboard: KeyboardSchema = [
+	{
+		key: 'Space',
+		behavior: 'When the switch has focus, toggles the switch.',
+	},
+	{
+		key: 'Enter',
+		behavior: 'When the switch has focus, toggles the switch.',
+	},
+];
 
 const schemas = {
 	builder,

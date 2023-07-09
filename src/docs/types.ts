@@ -70,3 +70,33 @@ export type SidebarNavItem = NavItem & {
 export type NavItemWithChildren = NavItem & {
 	items: NavItemWithChildren[];
 };
+
+export type Props = Array<{
+	label: string;
+	type: string | string[];
+	default?: string;
+	required?: boolean;
+	description?: string;
+}>;
+
+export type Events = Array<{
+	label: string;
+	payload?: unknown;
+}>;
+
+export type DataAttributes = Array<{
+	label: string;
+	value: string | string[];
+}>;
+
+export type APISchema = {
+	title: string;
+	description: string;
+	props?: Props;
+	dataAttributes?: DataAttributes;
+};
+
+export type KeyboardSchema = Array<{
+	key: string;
+	behavior: string;
+}>;

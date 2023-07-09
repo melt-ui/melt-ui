@@ -1,23 +1,23 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createCheckbox',
 	description: 'The configuration object passed to the `createCheckbox` builder function.',
-	args: [
+	props: [
 		{
 			label: 'checked',
 			type: 'boolean | "indeterminate"',
-			default: false,
+			default: 'false',
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 		{
 			label: 'required',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 		{
 			label: 'name',
@@ -30,16 +30,12 @@ const builder: APISchema = {
 	],
 };
 
-const keyboard = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
-		{
-			key: 'Space',
-			description: 'Toggles the checkbox state.',
-		},
-	],
-};
+const keyboard: KeyboardSchema = [
+	{
+		key: 'Space',
+		behavior: 'Toggles the checkbox state.',
+	},
+];
 
 const schemas = {
 	builder,

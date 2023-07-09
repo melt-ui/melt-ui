@@ -1,9 +1,9 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'CreateSeparatorArgs',
 	description: 'The configuration object passed to the `createSeparator` builder function.',
-	args: [
+	props: [
 		{
 			label: 'orientation',
 			type: ["'horizontal'", "'vertical'"],
@@ -12,7 +12,7 @@ const builder: APISchema = {
 		{
 			label: 'decorative',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 };

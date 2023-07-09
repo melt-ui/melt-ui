@@ -1,9 +1,9 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'CreateTagsInputArgs',
 	description: 'The configuration object passed to the `createTagsInput` builder function.',
-	args: [
+	props: [
 		{
 			label: 'placeholder',
 			type: 'string',
@@ -12,7 +12,7 @@ const builder: APISchema = {
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 		{
 			label: 'selectedTag',
@@ -26,7 +26,7 @@ const builder: APISchema = {
 		{
 			label: 'unique',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 };
@@ -64,7 +64,7 @@ const input: APISchema = {
 const tag: APISchema = {
 	title: 'Item',
 	description: 'The tag components.',
-	args: [
+	props: [
 		{
 			label: 'id',
 			type: 'string',
@@ -76,7 +76,7 @@ const tag: APISchema = {
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 	dataAttributes: [
@@ -106,7 +106,7 @@ const tag: APISchema = {
 const deleteTrigger: APISchema = {
 	title: 'Item',
 	description: 'The tag components.',
-	args: [
+	props: [
 		{
 			label: 'id',
 			type: 'string',
@@ -118,7 +118,7 @@ const deleteTrigger: APISchema = {
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 	dataAttributes: [
@@ -145,34 +145,30 @@ const deleteTrigger: APISchema = {
 	],
 };
 
-const keyboard = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
-		{
-			key: 'tab',
-			description: 'Moves focus between tags and the input.',
-		},
-		{
-			key: 'Delete',
-			description: 'When focused on a tag, deletes it and moves focus to the right.',
-		},
-		{
-			key: 'Backspace',
-			description:
-				'When focused on a tag, deletes it and moves focus to the left. If there are no tags to the left, either the next tags gets focus, or the input.',
-		},
+const keyboard: KeyboardSchema = [
+	{
+		key: 'tab',
+		behavior: 'Moves focus between tags and the input.',
+	},
+	{
+		key: 'Delete',
+		behavior: 'When focused on a tag, deletes it and moves focus to the right.',
+	},
+	{
+		key: 'Backspace',
+		behavior:
+			'When focused on a tag, deletes it and moves focus to the left. If there are no tags to the left, either the next tags gets focus, or the input.',
+	},
 
-		{
-			key: 'ArrowRight',
-			description: 'Moves focus to the next tag or input.',
-		},
-		{
-			key: 'ArrowLeft',
-			description: 'Moves focus to the previous tag.',
-		},
-	],
-};
+	{
+		key: 'ArrowRight',
+		behavior: 'Moves focus to the next tag or input.',
+	},
+	{
+		key: 'ArrowLeft',
+		behavior: 'Moves focus to the previous tag.',
+	},
+];
 
 const schemas = {
 	builder,

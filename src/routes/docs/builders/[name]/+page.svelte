@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { builder } from '@melt-ui/svelte/internal/helpers';
+
 	import { TOC, Description, Preview, Features } from '$docs/components';
 	import type { SvelteComponent } from 'svelte';
 	import type { PageData } from './$types';
@@ -38,7 +40,7 @@
 			</Preview>
 			<Features features={builderData.features} />
 
-			<svelte:component this={component} {snippets} />
+			<svelte:component this={component} {snippets} data={builderData.schemas} />
 		</div>
 		<div {...$separator} class="my-4 md:my-6" />
 		<!-- <DocsPager /> -->

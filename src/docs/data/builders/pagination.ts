@@ -1,9 +1,9 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'CreatePaginationArgs',
 	description: 'The configuration object passed to the `createPagination` builder function.',
-	args: [
+	props: [
 		{
 			label: 'count',
 			type: 'number',
@@ -11,59 +11,55 @@ const builder: APISchema = {
 		{
 			label: 'perPage',
 			type: 'number',
-			default: 1,
+			default: '1',
 		},
 		{
 			label: 'siblingCount',
 			type: 'number',
-			default: 1,
+			default: '1',
 		},
 		{
 			label: 'page',
 			type: 'number',
-			default: 1,
+			default: '1',
 		},
 	],
 };
 
-const keyboard: APISchema = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
-		{
-			key: 'Space',
-			description: 'When focused on a `pageTrigger` or `nextButton`, moves to that page.',
-		},
-		{
-			key: 'Enter',
-			description: 'When focused on a `pageTrigger` or `nextButton`, moves to that page.',
-		},
-		{
-			key: 'Tab',
-			description: 'Moves focus to the next focusable element.',
-		},
-		{
-			key: 'Shift + Tab',
-			description: 'Moves focus to the previous focusable element',
-		},
-		{
-			key: 'ArrowRight',
-			description: 'Moves focus to the next focusable `pageTrigger` or `nextButton`.',
-		},
-		{
-			key: 'ArrowLeft',
-			description: 'Moves focus to the previous focusable `pageTrigger` or `prevButton`',
-		},
-		{
-			key: 'Home',
-			description: 'Moves focus to the first focusable `pageTrigger` or `prevButton`.',
-		},
-		{
-			key: 'End',
-			description: 'Moves focus to the first focusable `pageTrigger` or `prevButton`.',
-		},
-	],
-};
+const keyboard: KeyboardSchema = [
+	{
+		key: 'Space',
+		behavior: 'When focused on a `pageTrigger` or `nextButton`, moves to that page.',
+	},
+	{
+		key: 'Enter',
+		behavior: 'When focused on a `pageTrigger` or `nextButton`, moves to that page.',
+	},
+	{
+		key: 'Tab',
+		behavior: 'Moves focus to the next focusable element.',
+	},
+	{
+		key: 'Shift + Tab',
+		behavior: 'Moves focus to the previous focusable element',
+	},
+	{
+		key: 'ArrowRight',
+		behavior: 'Moves focus to the next focusable `pageTrigger` or `nextButton`.',
+	},
+	{
+		key: 'ArrowLeft',
+		behavior: 'Moves focus to the previous focusable `pageTrigger` or `prevButton`',
+	},
+	{
+		key: 'Home',
+		behavior: 'Moves focus to the first focusable `pageTrigger` or `prevButton`.',
+	},
+	{
+		key: 'End',
+		behavior: 'Moves focus to the first focusable `pageTrigger` or `prevButton`.',
+	},
+];
 
 const root: APISchema = {
 	title: 'Root',

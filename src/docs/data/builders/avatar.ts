@@ -1,9 +1,9 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createAvatar',
 	description: 'The configuration object passed to the `createAvatar` builder function.',
-	args: [
+	props: [
 		{
 			label: 'src',
 			type: 'string',

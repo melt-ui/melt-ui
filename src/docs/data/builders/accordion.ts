@@ -1,22 +1,27 @@
-import type { APISchema } from '$routes/(components)/api.svelte';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createAccordion',
 	description: 'The configuration object passed to the `createAccordion` builder function.',
-	args: [
+	props: [
 		{
 			label: 'type',
 			type: ["'single'", "'multiple'"],
 			default: "'single'",
+			description:
+				'The type of accordion to create. A `"single"` accordion only allows one item to be open at a time. A `"multiple"` accordion allows multiple items to be open at a time.',
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
+			description: 'Whether or not the accordion is disabled.',
 		},
 		{
 			label: 'value',
 			type: ['string', 'string[]', 'undefined'],
+			description:
+				'The value of the currently open item. You can also pass an array of values to open multiple items at once if the accordion is of type `multiple`.',
 		},
 	],
 };
@@ -35,7 +40,7 @@ const root: APISchema = {
 const item: APISchema = {
 	title: 'item',
 	description: 'Contains all the parts of a collapsible section.',
-	args: [
+	props: [
 		{
 			label: 'value',
 			type: 'string',
@@ -43,7 +48,7 @@ const item: APISchema = {
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 	dataAttributes: [
@@ -62,7 +67,7 @@ const trigger: APISchema = {
 	title: 'trigger',
 	description:
 		'Toggles the collapsed state of an item. It should be nested inside of its associated `item`.',
-	args: [
+	props: [
 		{
 			label: 'type',
 			type: ['"single"', '"multiple"'],
@@ -71,7 +76,7 @@ const trigger: APISchema = {
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 		{
 			label: 'value',
@@ -97,7 +102,7 @@ const trigger: APISchema = {
 const content: APISchema = {
 	title: 'content',
 	description: 'Contains the collapsible content for an accordion item.',
-	args: [
+	props: [
 		{
 			label: 'value',
 			type: 'string',
@@ -105,7 +110,7 @@ const content: APISchema = {
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 	dataAttributes: [
@@ -120,44 +125,40 @@ const content: APISchema = {
 	],
 };
 
-const keyboard: APISchema = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
-		{
-			key: 'Space',
-			description: 'When the `trigger` of a collapsed section is focused, expands the section.',
-		},
-		{
-			key: 'Enter',
-			description: 'When the `trigger` of a collapsed section is focused, expands the section.',
-		},
-		{
-			key: 'Tab',
-			description: 'Moves focus to the next focusable element.',
-		},
-		{
-			key: 'Shift + Tab',
-			description: 'Moves focus to the previous focusable element',
-		},
-		{
-			key: 'ArrowDown',
-			description: 'Moves focus to the next `trigger` element.',
-		},
-		{
-			key: 'ArrowUp',
-			description: 'Moves focus to the previous `trigger` element.',
-		},
-		{
-			key: 'Home',
-			description: 'When focus is on a `trigger`, moves focus to the first `trigger`.',
-		},
-		{
-			key: 'End',
-			description: 'When focus is on a `trigger`, moves focus to the last `trigger`.',
-		},
-	],
-};
+const keyboard: KeyboardSchema = [
+	{
+		key: 'Space',
+		behavior: 'When the `trigger` of a collapsed section is focused, expands the section.',
+	},
+	{
+		key: 'Enter',
+		behavior: 'When the `trigger` of a collapsed section is focused, expands the section.',
+	},
+	{
+		key: 'Tab',
+		behavior: 'Moves focus to the next focusable element.',
+	},
+	{
+		key: 'Shift + Tab',
+		behavior: 'Moves focus to the previous focusable element',
+	},
+	{
+		key: 'ArrowDown',
+		behavior: 'Moves focus to the next `trigger` element.',
+	},
+	{
+		key: 'ArrowUp',
+		behavior: 'Moves focus to the previous `trigger` element.',
+	},
+	{
+		key: 'Home',
+		behavior: 'When focus is on a `trigger`, moves focus to the first `trigger`.',
+	},
+	{
+		key: 'End',
+		behavior: 'When focus is on a `trigger`, moves focus to the last `trigger`.',
+	},
+];
 
 const schemas = {
 	builder,

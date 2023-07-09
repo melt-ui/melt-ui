@@ -1,9 +1,9 @@
-import type { APISchema } from '$routes/(components)/api.svelte';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'CreateContextMenuArgs',
 	description: 'The configuration object passed to the `createContextMenu` builder function.',
-	args: [
+	props: [
 		{
 			label: 'positioning',
 			type: 'FloatingConfig',
@@ -12,12 +12,12 @@ const builder: APISchema = {
 		{
 			label: 'arrowSize',
 			type: 'number',
-			default: 8,
+			default: '8',
 		},
 		{
 			label: 'preventScroll',
 			type: 'boolean',
-			default: true,
+			default: 'true',
 		},
 	],
 };
@@ -74,7 +74,7 @@ const arrow: APISchema = {
 const item: APISchema = {
 	title: 'Item',
 	description: 'A basic menu item.',
-	args: [
+	props: [
 		{
 			label: 'onSelect',
 			type: 'function',
@@ -95,7 +95,7 @@ const item: APISchema = {
 const checkboxItem: APISchema = {
 	title: 'Checkbox Item',
 	description: 'A checkbox menu item.',
-	args: [
+	props: [
 		{
 			label: 'checked',
 			type: 'Writable<boolean>',
@@ -142,7 +142,7 @@ const radioGroup: APISchema = {
 const radioItem: APISchema = {
 	title: 'Radio Group Item',
 	description: 'A radiogroup menu item.',
-	args: [
+	props: [
 		{
 			label: 'value',
 			type: 'string',
@@ -183,11 +183,11 @@ const separator: APISchema = {
 const submenuBuilder: APISchema = {
 	title: 'CreateDropdownSubMenuArgs',
 	description: 'The configuration object passed to the `createDropdownSubMenu` builder function.',
-	args: [
+	props: [
 		{
 			label: 'positioning',
 			type: 'FloatingConfig',
-			default: "placement: 'right'",
+			default: "{ placement: 'right' }",
 		},
 		{
 			label: 'disabled',
@@ -235,45 +235,40 @@ const subTrigger: APISchema = {
 	],
 };
 
-const keyboard: APISchema = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
-		{
-			key: 'Space',
-			description:
-				'When focused on the `trigger`, opens the dropdown and focuses the first item. When focused on an `item`, selects the item.',
-		},
-		{
-			key: 'Enter',
-			description:
-				'When focused on the `trigger`, opens the dropdown and focuses the first item. When focused on an `item`, selects the item.',
-		},
-		{
-			key: 'ArrowDown',
-			description:
-				'When focused on the `trigger`, opens the dropdown and focuses the first item. When focused on an `item`, shifts focus to the next item.',
-		},
-		{
-			key: 'ArrowUp',
-			description: 'When focused on an `item`, shifts focus to the next item..',
-		},
-		{
-			key: 'ArrowRight',
-			description:
-				'When focused on a `subTrigger`, opens the `subMenu` and focuses the first item.',
-		},
-		{
-			key: 'ArrowLeft',
-			description:
-				"When focused on within a `subMenu`, closes the submenu and shifts focus to that submenu's `subTrigger`.",
-		},
-		{
-			key: 'Esc',
-			description: 'Closes the dropdown menu and focuses the `trigger`.',
-		},
-	],
-};
+const keyboard: KeyboardSchema = [
+	{
+		key: 'Space',
+		behavior:
+			'When focused on the `trigger`, opens the dropdown and focuses the first item. When focused on an `item`, selects the item.',
+	},
+	{
+		key: 'Enter',
+		behavior:
+			'When focused on the `trigger`, opens the dropdown and focuses the first item. When focused on an `item`, selects the item.',
+	},
+	{
+		key: 'ArrowDown',
+		behavior:
+			'When focused on the `trigger`, opens the dropdown and focuses the first item. When focused on an `item`, shifts focus to the next item.',
+	},
+	{
+		key: 'ArrowUp',
+		behavior: 'When focused on an `item`, shifts focus to the next item..',
+	},
+	{
+		key: 'ArrowRight',
+		behavior: 'When focused on a `subTrigger`, opens the `subMenu` and focuses the first item.',
+	},
+	{
+		key: 'ArrowLeft',
+		behavior:
+			"When focused on within a `subMenu`, closes the submenu and shifts focus to that submenu's `subTrigger`.",
+	},
+	{
+		key: 'Esc',
+		behavior: 'Closes the dropdown menu and focuses the `trigger`.',
+	},
+];
 
 const schemas = {
 	builder,

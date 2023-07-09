@@ -5,6 +5,11 @@ description:
   allowing users to expand and collapse sections.
 ---
 
+<script>
+    import { APITable, KbdTable } from '$docs/components'
+    export let data
+</script>
+
 ## Anatomy
 
 - **Root**: The root container for the accordion
@@ -70,8 +75,7 @@ also update the `options` store with new arguments.
   on:click={() => {
     const randPick = Math.floor(Math.random() * 3) + 1
     value = `item-${randPick}`
-  }}
->
+  }}>
   Trigger randomly
 </button>
 
@@ -100,3 +104,7 @@ also update the `options` store with new arguments.
   </div>
 </div>
 ```
+
+## API Reference
+
+<APITable data={data.builder} />

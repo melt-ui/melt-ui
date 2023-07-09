@@ -1,9 +1,9 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createCombobox args',
 	description: 'The configuration object passed to the `createCombobox` builder function.',
-	args: [
+	props: [
 		{
 			label: 'filterFunction',
 			type: '(item: T, inputValue: string)',
@@ -19,11 +19,11 @@ const builder: APISchema = {
 		{
 			label: 'loop',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 		{
 			label: 'scrollAlignment',
-			type: '"nearest" | "center"',
+			type: ['"nearest"', '"center"'],
 			default: '"nearest"',
 		},
 	],
@@ -72,7 +72,7 @@ const input: APISchema = {
 const option: APISchema = {
 	title: 'Item',
 	description: 'The menu item element',
-	args: [
+	props: [
 		{
 			label: 'label',
 			type: 'string',
@@ -84,7 +84,7 @@ const option: APISchema = {
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 };
@@ -100,46 +100,41 @@ const arrow: APISchema = {
 	],
 };
 
-const keyboard: APISchema = {
-	title: 'Keyboard Interactions',
-	description:
-		'All of the following keyboard events first open the list if the list `input` is focused and the list is closed. The exception to this is `ESC`.',
-	keyboardInteractions: [
-		{
-			key: 'Enter',
-			description: 'selects the highlighted list item.',
-		},
-		{
-			key: 'ArrowDown',
-			description: 'Highlights the next list item.',
-		},
-		// {
-		// 	key: 'PageDown',
-		// 	description: 'Highlights 10 list items down (or the end of the list).',
-		// },
-		{
-			key: 'ArrowUp',
-			description: 'Highlights the previous list item.',
-		},
-		// {
-		// 	key: 'PageUp',
-		// 	description: 'Highlights 10 list items up (or the top of the list).',
-		// },
-		{
-			key: 'Home',
-			description: 'Highlights the first list item',
-		},
-		{
-			key: 'End',
-			description: 'Highlights the last list item',
-		},
-		{
-			key: 'Esc',
-			description:
-				"When focus is on the `input` and it's closed, removes focus. When the `input` is open, closes the list.",
-		},
-	],
-};
+const keyboard: KeyboardSchema = [
+	{
+		key: 'Enter',
+		behavior: 'selects the highlighted list item.',
+	},
+	{
+		key: 'ArrowDown',
+		behavior: 'Highlights the next list item.',
+	},
+	// {
+	// 	key: 'PageDown',
+	// 	behavior: 'Highlights 10 list items down (or the end of the list).',
+	// },
+	{
+		key: 'ArrowUp',
+		behavior: 'Highlights the previous list item.',
+	},
+	// {
+	// 	key: 'PageUp',
+	// 	behavior: 'Highlights 10 list items up (or the top of the list).',
+	// },
+	{
+		key: 'Home',
+		behavior: 'Highlights the first list item',
+	},
+	{
+		key: 'End',
+		behavior: 'Highlights the last list item',
+	},
+	{
+		key: 'Esc',
+		behavior:
+			"When focus is on the `input` and it's closed, removes focus. When the `input` is open, closes the list.",
+	},
+];
 
 const schemas = {
 	builder,

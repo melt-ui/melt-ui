@@ -1,9 +1,9 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'CreateToggleGroupArgs',
 	description: 'The configuration object passed to the `createToggleGroup` builder function.',
-	args: [
+	props: [
 		{
 			label: 'type',
 			type: ["'single'", "'multiple'"],
@@ -12,7 +12,7 @@ const builder: APISchema = {
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 		{
 			label: 'value',
@@ -22,7 +22,7 @@ const builder: APISchema = {
 		{
 			label: 'rovingFocus',
 			type: 'boolean',
-			default: true,
+			default: 'true',
 		},
 		{
 			label: 'orientation',
@@ -32,7 +32,7 @@ const builder: APISchema = {
 		{
 			label: 'loop',
 			type: 'boolean',
-			default: true,
+			default: 'true',
 		},
 	],
 };
@@ -55,7 +55,7 @@ const root: APISchema = {
 const item: APISchema = {
 	title: 'Item',
 	description: 'The toggle group item element.',
-	args: [
+	props: [
 		{
 			label: 'value',
 			type: 'string',
@@ -63,7 +63,7 @@ const item: APISchema = {
 		{
 			label: 'disabled',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 	],
 	dataAttributes: [
@@ -82,48 +82,44 @@ const item: APISchema = {
 	],
 };
 
-const keyboard: APISchema = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
-		{
-			key: 'Tab',
-			description: 'Moves focus to either the pressed item or the first item in the group.',
-		},
-		{
-			key: 'Space',
-			description: 'Activates/deactivates the item.',
-		},
-		{
-			key: 'Enter',
-			description: 'Activates/deactivates the item.',
-		},
-		{
-			key: 'ArrowDown',
-			description: 'Moves focus to the next item in the group.',
-		},
-		{
-			key: 'ArrowRight',
-			description: 'Moves focus to the next item in the group.',
-		},
-		{
-			key: 'ArrowUp',
-			description: 'Moves focus to the previous item in the group.',
-		},
-		{
-			key: 'ArrowLeft',
-			description: 'Moves focus to the previous item in the group.',
-		},
-		{
-			key: 'Home',
-			description: 'Moves focus to the first item in the group.',
-		},
-		{
-			key: 'End',
-			description: 'Moves focus to the last item in the group.',
-		},
-	],
-};
+const keyboard: KeyboardSchema = [
+	{
+		key: 'Tab',
+		behavior: 'Moves focus to either the pressed item or the first item in the group.',
+	},
+	{
+		key: 'Space',
+		behavior: 'Activates/deactivates the item.',
+	},
+	{
+		key: 'Enter',
+		behavior: 'Activates/deactivates the item.',
+	},
+	{
+		key: 'ArrowDown',
+		behavior: 'Moves focus to the next item in the group.',
+	},
+	{
+		key: 'ArrowRight',
+		behavior: 'Moves focus to the next item in the group.',
+	},
+	{
+		key: 'ArrowUp',
+		behavior: 'Moves focus to the previous item in the group.',
+	},
+	{
+		key: 'ArrowLeft',
+		behavior: 'Moves focus to the previous item in the group.',
+	},
+	{
+		key: 'Home',
+		behavior: 'Moves focus to the first item in the group.',
+	},
+	{
+		key: 'End',
+		behavior: 'Moves focus to the last item in the group.',
+	},
+];
 
 const schemas = {
 	builder,
