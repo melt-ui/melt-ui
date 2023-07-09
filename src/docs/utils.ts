@@ -3,8 +3,8 @@ import { clsx, type ClassValue } from 'clsx';
 import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
 import { twMerge } from 'tailwind-merge';
-import rawTailwindConfig from '../../tailwind.config.ts?raw';
-import rawGlobalCSS from '$docs/previews/other/globals?raw';
+import rawTailwindConfig from '../../other/tailwindconfig.html?raw';
+import rawGlobalCSS from '../../other/globalcss.html?raw';
 import { highlightCode } from '$docs/highlighter';
 import type { DocResolver, PreviewResolver } from './types';
 import { error } from '@sveltejs/kit';
@@ -195,12 +195,9 @@ export async function createPreviewsObject(
 				}
 
 				if (fileKey === 'tailwind') {
-					const highlightedCode = await highlightCode(rawTailwindConfig, 'typescript');
-					returnedObj[groupKey][fileKey]['tailwind.config.ts'] =
-						highlightedCode ?? rawTailwindConfig;
+					returnedObj[groupKey][fileKey]['tailwind.config.ts'] = rawTailwindConfig;
 				} else if (fileKey === 'css') {
-					const highlightedCode = await highlightCode(rawGlobalCSS, 'css');
-					returnedObj[groupKey][fileKey]['globals.css'] = highlightedCode ?? rawGlobalCSS;
+					returnedObj[groupKey][fileKey]['globals.css'] = rawGlobalCSS;
 				}
 			}
 		}

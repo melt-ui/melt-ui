@@ -1,0 +1,92 @@
+<div data-rehype-pretty-code-fragment="">
+  <pre data-language="typescript" data-theme="default" class="!mt-2"><code data-language="typescript" data-theme="default"><span data-line=""><span style="color: #F97583">import</span><span style="color: #E1E4E8"> </span><span style="color: #F97583">type</span><span style="color: #E1E4E8"> { Config } </span><span style="color: #F97583">from</span><span style="color: #E1E4E8"> </span><span style="color: #9ECBFF">'tailwindcss'</span><span style="color: #E1E4E8">;</span></span>
+  <span data-line=""><span style="color: #F97583">import</span><span style="color: #E1E4E8"> plugin </span><span style="color: #F97583">from</span><span style="color: #E1E4E8"> </span><span style="color: #9ECBFF">'tailwindcss/plugin'</span><span style="color: #E1E4E8">;</span></span>
+  <span data-line=""><span style="color: #F97583">import</span><span style="color: #E1E4E8"> typography </span><span style="color: #F97583">from</span><span style="color: #E1E4E8"> </span><span style="color: #9ECBFF">'@tailwindcss/typography'</span><span style="color: #E1E4E8">;</span></span>
+  <span data-line=""> </span>
+  <span data-line=""><span style="color: #F97583">export</span><span style="color: #E1E4E8"> </span><span style="color: #F97583">default</span><span style="color: #E1E4E8"> {</span></span>
+  <span data-line=""><span style="color: #E1E4E8">  content: [</span><span style="color: #9ECBFF">'./src/**/*.{html,js,svelte,ts}'</span><span style="color: #E1E4E8">],</span></span>
+  <span data-line=""> </span>
+  <span data-line=""><span style="color: #E1E4E8">  theme: {</span></span>
+  <span data-line=""><span style="color: #E1E4E8">    container: {</span></span>
+  <span data-line=""><span style="color: #E1E4E8">      center: </span><span style="color: #79B8FF">true</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">      padding: </span><span style="color: #9ECBFF">'2rem'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">      screens: {</span></span>
+  <span data-line=""><span style="color: #E1E4E8">        </span><span style="color: #9ECBFF">'2xl'</span><span style="color: #E1E4E8">: </span><span style="color: #9ECBFF">'1440px'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">      },</span></span>
+  <span data-line=""><span style="color: #E1E4E8">    },</span></span>
+  <span data-line=""><span style="color: #E1E4E8">    extend: {</span></span>
+  <span data-line=""><span style="color: #E1E4E8">      colors: {</span></span>
+  <span data-line=""><span style="color: #E1E4E8">        magnum: {</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'50'</span><span style="color: #E1E4E8">: </span><span style="color: #9ECBFF">'#fff9ed'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'100'</span><span style="color: #E1E4E8">: </span><span style="color: #9ECBFF">'#fef2d6'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'200'</span><span style="color: #E1E4E8">: </span><span style="color: #9ECBFF">'#fce0ac'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'300'</span><span style="color: #E1E4E8">: </span><span style="color: #9ECBFF">'#f9c978'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'400'</span><span style="color: #E1E4E8">: </span><span style="color: #9ECBFF">'#f7b155'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'500'</span><span style="color: #E1E4E8">: </span><span style="color: #9ECBFF">'#f38d1c'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'600'</span><span style="color: #E1E4E8">: </span><span style="color: #9ECBFF">'#e47312'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'700'</span><span style="color: #E1E4E8">: </span><span style="color: #9ECBFF">'#bd5711'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'800'</span><span style="color: #E1E4E8">: </span><span style="color: #9ECBFF">'#964516'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'900'</span><span style="color: #E1E4E8">: </span><span style="color: #9ECBFF">'#793a15'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'950'</span><span style="color: #E1E4E8">: </span><span style="color: #9ECBFF">'#411c09'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">        },</span></span>
+  <span data-line=""><span style="color: #E1E4E8">      },</span></span>
+  <span data-line=""><span style="color: #E1E4E8">      fontFamily: {</span></span>
+  <span data-line=""><span style="color: #E1E4E8">        sans: [</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'-apple-system'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'BlinkMacSystemFont'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'Segoe UI'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'Roboto'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'Oxygen'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'Ubuntu'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'Cantarell'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'Fira Sans'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'Droid Sans'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'Helvetica Neue'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'Arial'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'sans-serif'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'Apple Color Emoji'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'Segoe UI Emoji'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'Segoe UI Symbol'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">        ],</span></span>
+  <span data-line=""><span style="color: #E1E4E8">        mono: [</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'ui-monospace'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'SFMono-Regular'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'SF Mono'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'Menlo'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'Consolas'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'Liberation Mono'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #9ECBFF">'monospace'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">        ],</span></span>
+  <span data-line=""><span style="color: #E1E4E8">      },</span></span>
+  <span data-line=""><span style="color: #E1E4E8">      </span><span style="color: #B392F0">typography</span><span style="color: #E1E4E8">: (</span><span style="color: #FFAB70">theme</span><span style="color: #E1E4E8">) </span><span style="color: #F97583">=&gt;</span><span style="color: #E1E4E8"> ({</span></span>
+  <span data-line=""><span style="color: #E1E4E8">        DEFAULT: {</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          css: {</span></span>
+  <span data-line=""><span style="color: #E1E4E8">            code: {</span></span>
+  <span data-line=""><span style="color: #E1E4E8">              position: </span><span style="color: #9ECBFF">'relative'</span><span style="color: #E1E4E8">,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">              borderRadius: </span><span style="color: #B392F0">theme</span><span style="color: #E1E4E8">(</span><span style="color: #9ECBFF">'borderRadius.md'</span><span style="color: #E1E4E8">),</span></span>
+  <span data-line=""><span style="color: #E1E4E8">            },</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          },</span></span>
+  <span data-line=""><span style="color: #E1E4E8">        },</span></span>
+  <span data-line=""><span style="color: #E1E4E8">      }),</span></span>
+  <span data-line=""><span style="color: #E1E4E8">    },</span></span>
+  <span data-line=""><span style="color: #E1E4E8">  },</span></span>
+  <span data-line=""> </span>
+  <span data-line=""><span style="color: #E1E4E8">  plugins: [</span></span>
+  <span data-line=""><span style="color: #E1E4E8">    typography,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">    </span><span style="color: #B392F0">plugin</span><span style="color: #E1E4E8">(</span><span style="color: #F97583">function</span><span style="color: #E1E4E8"> ({ </span><span style="color: #FFAB70">addVariant</span><span style="color: #E1E4E8">, </span><span style="color: #FFAB70">matchUtilities</span><span style="color: #E1E4E8">, </span><span style="color: #FFAB70">theme</span><span style="color: #E1E4E8"> }) {</span></span>
+  <span data-line=""><span style="color: #E1E4E8">      </span><span style="color: #B392F0">addVariant</span><span style="color: #E1E4E8">(</span><span style="color: #9ECBFF">'hocus'</span><span style="color: #E1E4E8">, [</span><span style="color: #9ECBFF">'&amp;:hover'</span><span style="color: #E1E4E8">, </span><span style="color: #9ECBFF">'&amp;:focus'</span><span style="color: #E1E4E8">]);</span></span>
+  <span data-line=""><span style="color: #E1E4E8">      </span><span style="color: #6A737D">// Square utility</span></span>
+  <span data-line=""><span style="color: #E1E4E8">      </span><span style="color: #B392F0">matchUtilities</span><span style="color: #E1E4E8">(</span></span>
+  <span data-line=""><span style="color: #E1E4E8">        {</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          </span><span style="color: #B392F0">square</span><span style="color: #E1E4E8">: (</span><span style="color: #FFAB70">value</span><span style="color: #E1E4E8">) </span><span style="color: #F97583">=&gt;</span><span style="color: #E1E4E8"> ({</span></span>
+  <span data-line=""><span style="color: #E1E4E8">            width: value,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">            height: value,</span></span>
+  <span data-line=""><span style="color: #E1E4E8">          }),</span></span>
+  <span data-line=""><span style="color: #E1E4E8">        },</span></span>
+  <span data-line=""><span style="color: #E1E4E8">        { values: </span><span style="color: #B392F0">theme</span><span style="color: #E1E4E8">(</span><span style="color: #9ECBFF">'spacing'</span><span style="color: #E1E4E8">) }</span></span>
+  <span data-line=""><span style="color: #E1E4E8">      );</span></span>
+  <span data-line=""><span style="color: #E1E4E8">    }),</span></span>
+  <span data-line=""><span style="color: #E1E4E8">  ],</span></span>
+  <span data-line=""><span style="color: #E1E4E8">} </span><span style="color: #F97583">satisfies</span><span style="color: #E1E4E8"> </span><span style="color: #B392F0">Config</span><span style="color: #E1E4E8">;</span></span>
+  <span data-line=""> </span></code></pre>
+</div>

@@ -35,7 +35,7 @@
 				<img src="/logo.svg" alt="Melt UI" class="h-9" />
 			</MobileNavLink>
 
-			<div class="my-4 h-[calc(100vh-8rem)] overflow-auto overflow-x-visible px-4 py-2 pb-10">
+			<div class="my-4 h-[calc(100vh-8rem)] overflow-auto overflow-x-visible py-2 pb-10 pr-4">
 				<div class="flex flex-col">
 					{#each navConfig.mainNav as navItem, index (navItem + index.toString())}
 						{#if navItem.href}
