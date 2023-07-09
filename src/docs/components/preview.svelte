@@ -7,7 +7,6 @@
 				'globals.css'?: string;
 			} | null;
 		};
-		fullwidth?: boolean;
 	};
 </script>
 

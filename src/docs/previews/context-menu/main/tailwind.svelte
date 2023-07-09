@@ -4,8 +4,15 @@
 	import ChevronRight from '~icons/lucide/chevron-right';
 	import Check from '~icons/lucide/check';
 
-	const { trigger, menu, item, checkboxItem, separator, createSubMenu, createMenuRadioGroup } =
-		createContextMenu();
+	const {
+		trigger,
+		menu,
+		item,
+		checkboxItem,
+		separator,
+		createSubMenu,
+		createMenuRadioGroup,
+	} = createContextMenu();
 
 	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
 
@@ -13,7 +20,12 @@
 		value: 'Hunter Johnston',
 	});
 
-	const personsArr = ['Hunter Johnston', 'Thomas G. Lopes', 'Adrian Gonz', 'Franck Poingt'];
+	const personsArr = [
+		'Hunter Johnston',
+		'Thomas G. Lopes',
+		'Adrian Gonz',
+		'Franck Poingt',
+	];
 
 	const settingsSync = writable(true);
 	const hideMeltUI = writable(false);
@@ -27,7 +39,11 @@
 	<div class="item" {...$item} use:item>About Melt UI</div>
 	<div class="item" {...$item} use:item>Check for Updates...</div>
 	<div class="separator" {...$separator} />
-	<div class="item" {...$checkboxItem} use:checkboxItem={{ checked: settingsSync }}>
+	<div
+		class="item"
+		{...$checkboxItem}
+		use:checkboxItem={{ checked: settingsSync }}
+	>
 		<div class="check">
 			{#if $settingsSync}
 				<Check class="icon" />
@@ -58,7 +74,11 @@
 	</div>
 	<div {...$separator} class="separator" />
 
-	<div class="item" {...$checkboxItem} use:checkboxItem={{ checked: hideMeltUI }}>
+	<div
+		class="item"
+		{...$checkboxItem}
+		use:checkboxItem={{ checked: hideMeltUI }}
+	>
 		<div class="check">
 			{#if $hideMeltUI}
 				<Check class="icon" />

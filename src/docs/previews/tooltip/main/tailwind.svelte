@@ -12,7 +12,13 @@
 	});
 </script>
 
-<button type="button" class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
+<button
+	type="button"
+	class="trigger"
+	{...$trigger}
+	use:trigger
+	aria-label="Update dimensions"
+>
 	<Plus class="h-4 w-4" />
 	<span class="sr-only">Open Popover</span>
 </button>
@@ -31,8 +37,9 @@
 
 <style lang="postcss">
 	.trigger {
-		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0 text-sm font-medium;
+		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white;
 		@apply text-magnum-900 transition-colors hover:bg-white/90;
 		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
+		@apply p-0 text-sm font-medium;
 	}
 </style>

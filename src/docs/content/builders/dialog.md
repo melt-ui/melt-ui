@@ -6,8 +6,10 @@ description:
 ---
 
 <script>
-    import { APITable, KbdTable } from '$docs/components'
+    import { APITable, KbdTable, Preview } from '$docs/components'
     export let data
+    export let snippets
+    export let previews
 </script>
 
 ## Anatomy
@@ -23,6 +25,18 @@ description:
 
 To create a dialog, use the `createDialog` builder function. You can then reference the anatomy or
 example above to create your dialog.
+
+## Example Components
+
+### Drawer
+
+An overlay window that can be used to display a variety of content including dialogs, drawers,
+sidebars, and more. As an example, here's a drawer component that slides in from the left side of
+the screen.
+
+<Preview code={snippets.drawer}>
+    <svelte:component this={previews.drawer} />
+</Preview>
 
 ## API Reference
 

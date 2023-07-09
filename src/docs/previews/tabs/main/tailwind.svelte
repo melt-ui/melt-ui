@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { createTabs } from '@melt-ui/svelte';
 
-	const { root, list, content, trigger } = createTabs({ value: 'tab1' });
+	const { root, list, content, trigger } = createTabs({
+		value: 'tab1',
+	});
 </script>
 
 <div {...$root} class="root">
@@ -10,13 +12,20 @@
 		<button {...$trigger('tab2')} use:trigger class="trigger">Password</button>
 		<!-- You don't need to set disabled on the action when using a button element, since
                 $trigger will set the 'disabled' attribute on the button -->
-		<button use:trigger {...$trigger({ value: 'tab3', disabled: true })} class="trigger opacity-50"
-			>Disabled</button
+		<button
+			use:trigger
+			{...$trigger({
+				value: 'tab3',
+				disabled: true,
+			})}
+			class="trigger opacity-50">Disabled</button
 		>
 		<button {...$trigger('tab4')} use:trigger class="trigger">Settings</button>
 	</div>
 	<div {...$content('tab1')} class="content">
-		<p class="description">Make changes to your account here. Click save when you're done.</p>
+		<p class="description">
+			Make changes to your account here. Click save when you're done.
+		</p>
 		<fieldset>
 			<label for="name"> Name </label>
 			<input id="name" value="Thomas G. Lopes" />
@@ -27,7 +36,9 @@
 		</div>
 	</div>
 	<div {...$content('tab2')} class="content">
-		<p class="description">Change your password here. Click save when you're done.</p>
+		<p class="description">
+			Change your password here. Click save when you're done.
+		</p>
 		<fieldset>
 			<label for="new"> New password </label>
 			<input id="new" type="password" />
@@ -37,7 +48,9 @@
 		</div>
 	</div>
 	<div {...$content('tab4')} class="content">
-		<p class="description">Change your settings here. Click save when you're done.</p>
+		<p class="description">
+			Change your settings here. Click save when you're done.
+		</p>
 
 		<fieldset>
 			<label for="new"> New email </label>
@@ -52,23 +65,24 @@
 <style lang="postcss">
 	/* Tab Parts */
 	.root {
-		@apply flex flex-col overflow-hidden rounded-md shadow-lg data-[orientation=vertical]:flex-row;
+		@apply flex flex-col overflow-hidden rounded-md shadow-lg;
+		@apply data-[orientation=vertical]:flex-row;
 	}
 
 	.list {
-		@apply flex shrink-0 border-b border-magnum-100 bg-white data-[orientation=vertical]:flex-col
-			data-[orientation=vertical]:border-r;
-		overflow-x: auto;
+		@apply flex shrink-0 overflow-x-auto border-b border-magnum-100 bg-white;
+		@apply data-[orientation=vertical]:flex-col data-[orientation=vertical]:border-r;
 	}
 
 	.trigger {
-		@apply flex h-11 flex-1 cursor-default select-none items-center
-      justify-center rounded-none bg-white px-4 leading-none text-magnum-900
-			 focus:relative;
+		@apply flex h-11 flex-1 cursor-default select-none items-center;
+		@apply justify-center rounded-none bg-white px-4 leading-none;
+		@apply text-magnum-900 focus:relative;
 	}
 
 	.trigger[data-orientation='vertical'] {
-		@apply w-full flex-grow-0 rounded-none border-b border-r-2 border-transparent border-b-magnum-100 py-4  last:border-b-0;
+		@apply w-full flex-grow-0 rounded-none border-b border-r-2;
+		@apply border-transparent border-b-magnum-100 py-4 last:border-b-0;
 	}
 
 	.trigger[data-state='active'] {
@@ -101,7 +115,8 @@
 	}
 
 	input {
-		@apply h-8 shrink-0 grow rounded border px-2.5 leading-none text-magnum-900  focus:ring focus:ring-magnum-800;
+		@apply h-8 shrink-0 grow rounded border px-2.5 leading-none text-magnum-900;
+		@apply focus:ring focus:ring-magnum-800;
 	}
 
 	.actions {
@@ -109,6 +124,7 @@
 	}
 
 	button {
-		@apply inline-flex h-8 cursor-default items-center justify-center rounded bg-green-100 px-[15px] font-medium leading-none text-green-900;
+		@apply inline-flex h-8 cursor-default items-center justify-center rounded;
+		@apply bg-green-100 px-[15px] font-medium leading-none text-green-900;
 	}
 </style>

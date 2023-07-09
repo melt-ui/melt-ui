@@ -22,13 +22,24 @@
 		value: 'Hunter Johnston',
 	});
 
-	const personsArr = ['Hunter Johnston', 'Thomas G. Lopes', 'Adrian Gonz', 'Franck Poingt'];
+	const personsArr = [
+		'Hunter Johnston',
+		'Thomas G. Lopes',
+		'Adrian Gonz',
+		'Franck Poingt',
+	];
 
 	const settingsSync = writable(true);
 	const hideMeltUI = writable(false);
 </script>
 
-<button type="button" class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
+<button
+	type="button"
+	class="trigger"
+	{...$trigger}
+	use:trigger
+	aria-label="Update dimensions"
+>
 	<AlignJustify class="h-4 w-4" />
 	<span class="sr-only">Open Popover</span>
 </button>
@@ -37,7 +48,11 @@
 	<div class="item" {...$item} use:item>About Melt UI</div>
 	<div class="item" {...$item} use:item>Check for Updates...</div>
 	<div class="separator" {...$separator} />
-	<div class="item" {...$checkboxItem} use:checkboxItem={{ checked: settingsSync }}>
+	<div
+		class="item"
+		{...$checkboxItem}
+		use:checkboxItem={{ checked: settingsSync }}
+	>
 		<div class="check">
 			{#if $settingsSync}
 				<Check class="icon" />
@@ -68,7 +83,11 @@
 	</div>
 	<div {...$separator} class="separator" />
 
-	<div class="item" {...$checkboxItem} use:checkboxItem={{ checked: hideMeltUI }}>
+	<div
+		class="item"
+		{...$checkboxItem}
+		use:checkboxItem={{ checked: hideMeltUI }}
+	>
 		<div class="check">
 			{#if $hideMeltUI}
 				<Check class="icon" />
@@ -91,8 +110,8 @@
 
 <style lang="postcss">
 	.menu {
-		@apply z-10 flex max-h-[300px] min-w-[220px] flex-col shadow-lg shadow-neutral-900/30;
-		@apply rounded-md bg-white p-1 lg:max-h-none;
+		@apply z-10 flex max-h-[300px] min-w-[220px] flex-col shadow-lg;
+		@apply rounded-md bg-white p-1 shadow-neutral-900/30 lg:max-h-none;
 		@apply ring-0 !important;
 	}
 	.subMenu {
@@ -107,10 +126,10 @@
 		@apply ring-0 !important;
 	}
 	.trigger {
-		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0 text-sm font-medium;
-		@apply text-magnum-900 transition-colors hover:bg-white/90 data-[highlighted]:outline-none;
+		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white;
+		@apply text-magnum-900 transition-colors hover:bg-white/90;
 		@apply data-[highlighted]:ring-magnum-400 data-[highlighted]:ring-offset-2 !important;
-		@apply focus:ring;
+		@apply p-0 text-sm font-medium focus:ring data-[highlighted]:outline-none;
 	}
 	.check {
 		@apply absolute left-2 top-1/2 text-magnum-500;

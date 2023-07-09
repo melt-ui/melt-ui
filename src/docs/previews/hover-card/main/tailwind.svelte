@@ -42,7 +42,8 @@
 					</div>
 				</div>
 				<div class="m-0 text-neutral-700">
-					A set of accessible, unstyled component builders for Svelte & SvelteKit. Open source.
+					A set of accessible, unstyled component builders for Svelte &
+					SvelteKit. Open source.
 				</div>
 				<div class="flex gap-4">
 					<div class="flex gap-1">

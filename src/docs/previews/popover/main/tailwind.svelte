@@ -7,13 +7,24 @@
 	const { trigger, content, open, arrow, close } = createPopover();
 </script>
 
-<button type="button" class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
+<button
+	type="button"
+	class="trigger"
+	{...$trigger}
+	use:trigger
+	aria-label="Update dimensions"
+>
 	<Settings2 class="h-4 w-4" />
 	<span class="sr-only">Open Popover</span>
 </button>
 
 {#if $open}
-	<div {...$content} use:content transition:fade={{ duration: 100 }} class="content">
+	<div
+		{...$content}
+		use:content
+		transition:fade={{ duration: 100 }}
+		class="content"
+	>
 		<div {...$arrow} />
 		<div class="flex flex-col gap-2.5">
 			<p>Dimensions</p>
@@ -62,8 +73,8 @@
 	}
 
 	.trigger {
-		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0 text-sm font-medium;
-		@apply text-magnum-900 transition-colors hover:bg-white/90;
+		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0;
+		@apply text-sm font-medium text-magnum-900 transition-colors hover:bg-white/90;
 		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
 	}
 

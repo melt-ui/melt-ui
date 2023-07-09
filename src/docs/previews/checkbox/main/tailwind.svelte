@@ -13,9 +13,8 @@
 		<button
 			{...$root}
 			use:root
-			class="flex h-6 w-6 appearance-none items-center
-            justify-center rounded-sm bg-white text-magnum-600 shadow-lg
-            hover:opacity-75"
+			class="flex h-6 w-6 appearance-none items-center justify-center
+            rounded-sm bg-white text-magnum-600 shadow-lg hover:opacity-75"
 			id="checkbox"
 		>
 			{#if $isIndeterminate}

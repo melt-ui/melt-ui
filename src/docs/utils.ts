@@ -6,9 +6,10 @@ import { twMerge } from 'tailwind-merge';
 import rawTailwindConfig from '../../other/tailwindconfig.html?raw';
 import rawGlobalCSS from '../../other/globalcss.html?raw';
 import { highlightCode } from '$docs/highlighter';
-import type { DocResolver, PreviewResolver } from './types';
+import type { DocResolver, PreviewFile, PreviewResolver } from './types';
 import { error } from '@sveltejs/kit';
 import { isBuilderName } from './data/builders';
+import type { SvelteComponent } from 'svelte';
 
 /**
  * Appends strings of classes. If non-truthy values are passed, they are ignored.
@@ -233,14 +234,13 @@ export async function getDocData(slug: string) {
 	return doc;
 }
 
-export async function getPreviewSnippets(slug: string) {
+export async function getAllPreviewSnippets(slug: string) {
 	const previewsCode = import.meta.glob(`/src/docs/previews/**/*.svelte`, {
 		as: 'raw',
 		eager: true,
 	});
 
 	const previewCodeMatches: { path: string; content: string }[] = [];
-
 	for (const [path, resolver] of Object.entries(previewsCode)) {
 		const isMatch = previewPathMatcher(path, slug);
 		if (isMatch) {
@@ -248,9 +248,44 @@ export async function getPreviewSnippets(slug: string) {
 			previewCodeMatches.push(prev);
 		}
 	}
-	const snippets = await createPreviewsObject(slug, previewCodeMatches);
+	const previews = await createPreviewsObject(slug, previewCodeMatches);
 
-	return snippets;
+	return previews;
+}
+
+export async function getAllPreviewComponents(slug: string) {
+	const previewComponents = import.meta.glob('/src/docs/previews/**/*.svelte');
+	const previewCodeMatches: { [key: string]: SvelteComponent } = {};
+
+	for (const [path, resolver] of Object.entries(previewComponents)) {
+		const isMatch = previewPathMatcher(path, slug);
+		if (!isMatch) continue;
+		const previewName = path.replaceAll(`/src/docs/previews/${slug}/`, '').split('/')[0];
+
+		const previewComp = (await resolver?.()) as PreviewFile;
+		if (!previewComp) continue;
+		previewCodeMatches[previewName] = previewComp.default;
+	}
+
+	return previewCodeMatches;
+}
+
+export async function getPreviewComponent(name: string) {
+	const previewComponents = import.meta.glob('/src/docs/previews/**/*.svelte');
+	let mainPreviewObj: { path?: string; resolver?: PreviewResolver } = {};
+	for (const [path, resolver] of Object.entries(previewComponents)) {
+		if (isMainPreviewComponent(name, path)) {
+			mainPreviewObj = { path, resolver: resolver as unknown as PreviewResolver };
+			break;
+		}
+	}
+
+	const mainPreview = await mainPreviewObj.resolver?.();
+	if (!mainPreview) {
+		throw error(500);
+	}
+
+	return mainPreview.default;
 }
 
 export async function getMainPreviewComponent(slug: string) {

@@ -17,6 +17,7 @@
 	$: mainPreview = data.mainPreview as unknown as Component;
 	$: builderData = data.builderData;
 	$: viewCode = false;
+	$: previews = data.previews;
 </script>
 
 <main class="relative px-2 py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_240px]">
@@ -33,12 +34,12 @@
 		</div>
 		<div {...$separator} class="my-4 md:my-6" />
 		<div class="mdsvex" id="mdsvex">
-			<Preview code={snippets.main} fullwidth {viewCode}>
+			<Preview code={snippets.main} {viewCode}>
 				<svelte:component this={mainPreview} />
 			</Preview>
 			<Features features={builderData.features} />
 
-			<svelte:component this={component} {snippets} data={builderData.schemas} />
+			<svelte:component this={component} {snippets} data={builderData.schemas} {previews} />
 		</div>
 		<div {...$separator} class="my-4 md:my-6" />
 		<!-- <DocsPager /> -->

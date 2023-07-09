@@ -13,12 +13,14 @@
 		{
 			id: 'item-2',
 			title: 'Is it unstyled?',
-			description: "Yes. It's unstyled by default, giving you freedom over the look and feel.",
+			description:
+				"Yes. It's unstyled by default, giving you freedom over the look and feel.",
 		},
 		{
 			id: 'item-3',
 			title: 'Can it be animated?',
-			description: 'Yes! You can use the transition prop to configure the animation.',
+			description:
+				'Yes! You can use the transition prop to configure the animation.',
 		},
 	];
 </script>
@@ -27,7 +29,12 @@
 	{#each items as { id, title, description }, i}
 		<div {...$item(id)} class="item">
 			<h2>
-				<button id={i === 0 ? 'trigger' : undefined} {...$trigger(id)} use:trigger class="trigger">
+				<button
+					id={i === 0 ? 'trigger' : undefined}
+					{...$trigger(id)}
+					use:trigger
+					class="trigger"
+				>
 					{title}
 				</button>
 			</h2>
@@ -47,11 +54,12 @@
 		width: 100%;
 		max-width: var(--tw-width-md);
 		border-radius: var(--tw-border-radius-md);
-		--tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+		--tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+			0 4px 6px -4px rgb(0 0 0 / 0.1);
 		--tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color),
 			0 4px 6px -4px var(--tw-shadow-color);
-		box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
-			var(--tw-shadow);
+		box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+			var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 	}
 
 	.item {
@@ -59,9 +67,10 @@
 		overflow: hidden;
 		transition-property: color, background-color, border-color, fill, stroke,
 			-webkit-text-decoration-color;
-		transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-		transition-property: color, background-color, border-color, text-decoration-color, fill, stroke,
-			-webkit-text-decoration-color;
+		transition-property: color, background-color, border-color,
+			text-decoration-color, fill, stroke;
+		transition-property: color, background-color, border-color,
+			text-decoration-color, fill, stroke, -webkit-text-decoration-color;
 		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 		transition-duration: 150ms;
 	}
@@ -80,11 +89,12 @@
 	.item:focus-within {
 		position: relative;
 		z-index: 10;
-		--tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width)
-			var(--tw-ring-offset-color);
-		--tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width))
-			var(--tw-ring-color);
-		box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+		--tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0
+			var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+		--tw-ring-shadow: var(--tw-ring-inset) 0 0 0
+			calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+		box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+			var(--tw-shadow, 0 0 #0000);
 		--tw-ring-opacity: 1;
 		--tw-ring-color: rgb(var(--tw-color-magnum-400) / var(--tw-ring-opacity));
 	}
@@ -112,13 +122,14 @@
 		color: rgb(var(--tw-color-magnum-700) / var(--tw-text-opacity));
 		--tw-shadow: 0 1px 0;
 		--tw-shadow-colored: 0 1px 0 var(--tw-shadow-color);
-		box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
-			var(--tw-shadow);
+		box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+			var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 		transition-property: color, background-color, border-color, fill, stroke,
 			-webkit-text-decoration-color;
-		transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-		transition-property: color, background-color, border-color, text-decoration-color, fill, stroke,
-			-webkit-text-decoration-color;
+		transition-property: color, background-color, border-color,
+			text-decoration-color, fill, stroke;
+		transition-property: color, background-color, border-color,
+			text-decoration-color, fill, stroke, -webkit-text-decoration-color;
 		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 		transition-duration: 150ms;
 	}

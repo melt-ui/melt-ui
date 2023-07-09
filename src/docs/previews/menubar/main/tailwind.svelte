@@ -6,13 +6,25 @@
 
 	const { menubar, createMenu } = createMenubar();
 
-	const { trigger, menu, item, separator, createSubmenu, createMenuRadioGroup } = createMenu();
+	const {
+		trigger,
+		menu,
+		item,
+		separator,
+		createSubmenu,
+		createMenuRadioGroup,
+	} = createMenu();
 	const { subMenu, subTrigger } = createSubmenu();
 	const { radioGroup, radioItem, isChecked } = createMenuRadioGroup({
 		value: 'Nord',
 	});
 
-	const { trigger: triggerA, menu: menuA, item: itemA, separator: separatorA } = createMenu();
+	const {
+		trigger: triggerA,
+		menu: menuA,
+		item: itemA,
+		separator: separatorA,
+	} = createMenu();
 
 	const {
 		trigger: triggerB,
@@ -44,7 +56,13 @@
 	<!------------>
 	<!--- FILE --->
 	<!------------>
-	<button type="button" class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
+	<button
+		type="button"
+		class="trigger"
+		{...$trigger}
+		use:trigger
+		aria-label="Update dimensions"
+	>
 		File
 	</button>
 
@@ -89,7 +107,13 @@
 	<!------------>
 	<!--- EDIT --->
 	<!------------>
-	<button type="button" class="trigger" {...$triggerA} use:triggerA aria-label="Update dimensions">
+	<button
+		type="button"
+		class="trigger"
+		{...$triggerA}
+		use:triggerA
+		aria-label="Update dimensions"
+	>
 		Edit
 	</button>
 
@@ -131,7 +155,13 @@
 	<!------------>
 	<!--- VIEW --->
 	<!------------>
-	<button type="button" class="trigger" {...$triggerB} use:triggerB aria-label="Update dimensions">
+	<button
+		type="button"
+		class="trigger"
+		{...$triggerB}
+		use:triggerB
+		aria-label="Update dimensions"
+	>
 		View
 	</button>
 
@@ -156,7 +186,11 @@
 		</div>
 		<div class="separator" {...$separatorB} />
 
-		<div class="item" {...$checkboxItemB} use:checkboxItemB={{ checked: wordWrap }}>
+		<div
+			class="item"
+			{...$checkboxItemB}
+			use:checkboxItemB={{ checked: wordWrap }}
+		>
 			<div class="check">
 				{#if $wordWrap}
 					<Check class="icon" />
@@ -165,7 +199,13 @@
 			Word Wrap
 			<div class="rightSlot">⌘H</div>
 		</div>
-		<div class="item" {...$checkboxItemB} use:checkboxItemB={{ checked: stickyScroll }}>
+		<div
+			class="item"
+			{...$checkboxItemB}
+			use:checkboxItemB={{
+				checked: stickyScroll,
+			}}
+		>
 			<div class="check">
 				{#if $stickyScroll}
 					<Check class="icon" />
@@ -178,7 +218,13 @@
 	<!------------>
 	<!--- HELP --->
 	<!------------>
-	<button type="button" class="trigger" {...$triggerC} use:triggerC aria-label="Update dimensions">
+	<button
+		type="button"
+		class="trigger"
+		{...$triggerC}
+		use:triggerC
+		aria-label="Update dimensions"
+	>
 		Help
 	</button>
 
@@ -186,7 +232,13 @@
 		<div class="item" {...$itemC} use:itemC>About Melt UI</div>
 		<div class="item" {...$itemC} use:itemC>Check for Updates...</div>
 		<div class="separator" {...$separatorC} />
-		<div class="item" {...$checkboxItemC} use:checkboxItemC={{ checked: tipsAndTricks }}>
+		<div
+			class="item"
+			{...$checkboxItemC}
+			use:checkboxItemC={{
+				checked: tipsAndTricks,
+			}}
+		>
 			<div class="check">
 				{#if $tipsAndTricks}
 					<Check class="icon" />
@@ -197,7 +249,11 @@
 
 		<div {...$separatorC} class="separator" />
 
-		<div class="item" {...$checkboxItemC} use:checkboxItemC={{ checked: hideMeltUI }}>
+		<div
+			class="item"
+			{...$checkboxItemC}
+			use:checkboxItemC={{ checked: hideMeltUI }}
+		>
 			<div class="check">
 				{#if $hideMeltUI}
 					<Check class="icon" />
@@ -233,10 +289,10 @@
 	}
 
 	.trigger {
-		@apply inline-flex items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-medium leading-none;
+		@apply inline-flex items-center justify-center rounded-md bg-white px-3 py-2;
 		@apply text-magnum-900 transition-colors hover:bg-white/90 data-[highlighted]:outline-none;
 		@apply overflow-visible data-[highlighted]:bg-magnum-200 data-[highlighted]:ring-magnum-400 !important;
-		@apply focus:z-30 focus:ring;
+		@apply text-sm font-medium leading-none focus:z-30 focus:ring;
 	}
 	.check {
 		@apply absolute left-2 top-1/2 text-magnum-500;

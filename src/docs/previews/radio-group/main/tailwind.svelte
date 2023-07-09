@@ -18,8 +18,8 @@
 			<button
 				{...$item(option)}
 				use:item
-				class="grid h-6 w-6 cursor-default place-items-center rounded-full bg-white shadow-sm
-        hover:bg-magnum-100"
+				class="grid h-6 w-6 cursor-default place-items-center rounded-full
+                bg-white shadow-sm hover:bg-magnum-100"
 				id={option}
 				aria-labelledby="{option}-label"
 			>
@@ -27,7 +27,11 @@
 					<div class="h-3 w-3 rounded-full bg-magnum-500" />
 				{/if}
 			</button>
-			<label class="capitalize leading-none text-white" for={option} id="{option}-label">
+			<label
+				class="capitalize leading-none text-white"
+				for={option}
+				id="{option}-label"
+			>
 				{option}
 			</label>
 		</div>

@@ -3,7 +3,8 @@
 	import Check from '~icons/lucide/check';
 	import ChevronDown from '~icons/lucide/chevron-down';
 
-	const { label, trigger, menu, option, isSelected, group, groupLabel } = createSelect();
+	const { label, trigger, menu, option, isSelected, group, groupLabel } =
+		createSelect();
 
 	const options = {
 		sweet: ['Caramel', 'Chocolate', 'Strawberry', 'Cookies & Cream'],
@@ -19,9 +20,18 @@
 <div class="menu" {...$menu} use:menu>
 	{#each Object.entries(options) as [key, arr]}
 		<div {...$group(key)}>
-			<div class="label" {...$groupLabel(key)}>{key}</div>
+			<div class="label" {...$groupLabel(key)}>
+				{key}
+			</div>
 			{#each arr as item}
-				<div class="option" {...$option({ value: item, label: item })} use:option>
+				<div
+					class="option"
+					{...$option({
+						value: item,
+						label: item,
+					})}
+					use:option
+				>
 					{#if $isSelected(item)}
 						<div class="check">
 							<Check />
