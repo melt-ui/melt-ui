@@ -10,11 +10,11 @@ description:
 - **Trigger**: The button which toggles the menu's open state.
 - **Menu**: The root container for the popover menu
 - **Item**: A menuitem which can be a link or a function.
-- **Checkbox** Item: A menu item which can be checked or unchecked.
-- **Radio** Group: A group of radio items.
-- **Radio** Item: A menu item which can be selected from a group of items.
-- **ub** Trigger: A button which toggles the submenu's open state.
-- **Sub** Menu: A menu which is nested inside another menu.
+- **Checkbox Item**: A menu item which can be checked or unchecked.
+- **Radio Group**: A group of radio items.
+- **Radio Item**: A menu item which can be selected from a group of items.
+- **Sub Trigger**: A button which toggles the submenu's open state.
+- **Sub Menu**: A menu which is nested inside another menu.
 - **Separator**: A visual divider between menu items.
 
 ## Usage
