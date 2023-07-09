@@ -1,9 +1,9 @@
-import type { APISchema } from '$routes/(components)';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'CreateTooltipArgs',
 	description: 'The configuration object passed to the `createTooltip` builder function.',
-	args: [
+	props: [
 		{
 			label: 'positioning',
 			type: 'FloatingConfig',
@@ -11,27 +11,27 @@ const builder: APISchema = {
 		{
 			label: 'arrowSize',
 			type: 'number',
-			default: 8,
+			default: '8',
 		},
 		{
 			label: 'open',
 			type: 'boolean',
-			default: false,
+			default: 'false',
 		},
 		{
 			label: 'closeOnPointerDown',
 			type: 'boolean',
-			default: true,
+			default: 'true',
 		},
 		{
 			label: 'openDelay',
 			type: 'number',
-			default: 1000,
+			default: '1000',
 		},
 		{
 			label: 'closeDelay',
 			type: 'number',
-			default: 500,
+			default: '500',
 		},
 	],
 };
@@ -58,28 +58,24 @@ const arrow: APISchema = {
 	],
 };
 
-const keyboard: APISchema = {
-	title: 'Keyboard Interactions',
-	description: '',
-	keyboardInteractions: [
-		{
-			key: 'Tab',
-			description: 'Opens/closes the tooltip without delay.',
-		},
-		{
-			key: 'Space',
-			description: 'If open, closes the tooltip without delay.',
-		},
-		{
-			key: 'Enter',
-			description: 'If open, closes the tooltip without delay.',
-		},
-		{
-			key: 'Escape',
-			description: 'If open, closes the tooltip without delay.',
-		},
-	],
-};
+const keyboard: KeyboardSchema = [
+	{
+		key: 'Tab',
+		behavior: 'Opens/closes the tooltip without delay.',
+	},
+	{
+		key: 'Space',
+		behavior: 'If open, closes the tooltip without delay.',
+	},
+	{
+		key: 'Enter',
+		behavior: 'If open, closes the tooltip without delay.',
+	},
+	{
+		key: 'Escape',
+		behavior: 'If open, closes the tooltip without delay.',
+	},
+];
 
 const schemas = {
 	builder,
