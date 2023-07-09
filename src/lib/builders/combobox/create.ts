@@ -175,10 +175,6 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>) {
 				addEventListener(node, 'click', () => {
 					openMenu();
 				}),
-				// When the input loses focus, reset the input value and filter.
-				addEventListener(node, 'blur', () => {
-					reset();
-				}),
 				// Handle all input key events including typing, meta, and navigation.
 				addEventListener(node, 'keydown', (e) => {
 					const $open = get(open);
@@ -325,7 +321,16 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>) {
 							const popper = usePopper(node, {
 								anchorElement: $activeTrigger,
 								open,
-								options: { floating: { placement: 'bottom', sameWidth: true }, focusTrap: null },
+								options: {
+									floating: { placement: 'bottom', sameWidth: true },
+									focusTrap: null,
+									clickOutside: {
+										handler: () => {
+											reset();
+											closeMenu();
+										},
+									},
+								},
 							});
 							if (popper && popper.destroy) {
 								unsubPopper = popper.destroy;
