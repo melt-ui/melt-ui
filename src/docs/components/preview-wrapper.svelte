@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$routes/helpers';
+	import { cn } from '$docs/utils';
 </script>
 
 <div class="comp-preview h-[20rem] overflow-x-auto lg:h-[28rem] lg:overflow-x-hidden">

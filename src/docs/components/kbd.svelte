@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$routes/helpers';
+	import { cn } from '$docs/utils';
 
 	let className: string | undefined | null = undefined;
 	export { className as class };

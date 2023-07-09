@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { cn } from '$routes/helpers';
+	import { cn } from '$docs/utils';
 	import type { TableOfContents } from '.';
 
 	export let tree: TableOfContents = {

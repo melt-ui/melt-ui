@@ -14,7 +14,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { createSelect, type CreateSelectArgs } from '$lib';
-	import { cn } from '$routes/helpers';
+	import { cn } from '$docs/utils';
 	import CodeBlock from './code-block.svelte';
 	import PreviewWrapper from './preview-wrapper.svelte';
 	import { PreviewStyleSelect } from '$docs/components';
