@@ -108,3 +108,12 @@ also update the `options` store with new arguments.
 ## API Reference
 
 <APITable data={data.builder} />
+<APITable data={data.root} />
+<APITable data={data.item} />
+<APITable data={data.trigger} />
+<APITable data={data.content} />
+
+## Accessibility
+
+Adheres to the
+[Accordion WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/)
