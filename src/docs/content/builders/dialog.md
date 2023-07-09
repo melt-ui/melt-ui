@@ -5,6 +5,11 @@ description:
   content underneath inert.
 ---
 
+<script>
+    import { APITable, KbdTable } from '$docs/components'
+    export let data
+</script>
+
 ## Anatomy
 
 - **Trigger**: The button(s) that open the dialog
@@ -18,3 +23,15 @@ description:
 
 To create a dialog, use the `createDialog` builder function. You can then reference the
 anatomy or example above to create your dialog.
+
+## API Reference
+
+<APITable data={data.builder} />
+
+## Accessibility
+
+Adheres to the
+[Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog/) &
+[Alert Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/)
+
+<KbdTable data={data.keyboard} />

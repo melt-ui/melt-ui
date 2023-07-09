@@ -86,7 +86,7 @@ export type Events = Array<{
 
 export type DataAttributes = Array<{
 	label: string;
-	value: string | string[];
+	value: string;
 }>;
 
 export type APISchema = {

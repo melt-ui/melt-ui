@@ -4,7 +4,7 @@ import { dropdownMenuData } from './dropdown-menu';
 const menuSchemas = dropdownMenuData.schemas;
 
 const builder: APISchema = {
-	title: 'CreateMenubar',
+	title: 'createMenubar',
 	description: 'The configuration object passed to the `createMenubar` builder function.',
 	props: [
 		{
@@ -16,7 +16,7 @@ const builder: APISchema = {
 };
 
 const menuBuilder: APISchema = {
-	title: 'CreateMenu',
+	title: 'createMenu',
 	description:
 		'The configuration object passed to the `createMenu` builder function returned from the `createMenubar` builder function.',
 	props: [

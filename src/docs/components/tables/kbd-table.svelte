@@ -22,7 +22,7 @@
 									<Kbd>{key}</Kbd>
 								</td>
 								<td class="py-3 align-baseline text-sm">
-									<p>{transformAPIString(behavior)}</p>
+									<p>{@html transformAPIString(behavior, true)}</p>
 								</td>
 							</tr>
 						{/each}

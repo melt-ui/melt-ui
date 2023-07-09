@@ -6,7 +6,7 @@ const builder: APISchema = {
 	props: [
 		{
 			label: 'role',
-			type: "'dialog' | 'alert-dialog'",
+			type: ["'dialog'", "'alertdialog'"],
 			default: "'dialog'",
 		},
 		{

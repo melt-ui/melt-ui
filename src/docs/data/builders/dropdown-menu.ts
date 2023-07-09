@@ -23,56 +23,52 @@ const builder: APISchema = {
 };
 
 const menu: APISchema = {
-	title: 'Menu',
+	title: 'menu',
 	description: 'The element which wraps the entire dropdown menu.',
 	dataAttributes: [
 		{
-			label: '[data-melt-part]',
-			value: ['"menu"'],
+			label: 'data-melt-dropdown-menu',
+			value: 'Present on the menu element',
 		},
 		{
-			label: '[data-state]',
-			value: ['"open"', '"closed"'],
-		},
-		{
-			label: '[data-melt-menu]',
-			value: 'Present on the menu element.',
+			label: 'data-state',
+			value: "`'open' | 'closed'`",
 		},
 	],
 };
 
 const trigger: APISchema = {
-	title: 'Trigger',
+	title: 'trigger',
 	description: 'The button which toggles the dropdown menu.',
 	dataAttributes: [
 		{
-			label: '[data-melt-part]',
-			value: ['"trigger"'],
+			label: 'data-melt-dropdown-menu-trigger',
+			value: 'Present on the trigger element',
 		},
 		{
-			label: '[data-state]',
-			value: ['"open"', '"closed"'],
+			label: 'data-state',
+			value: "`'open' | 'closed'`",
 		},
 	],
 };
 
 const arrow: APISchema = {
-	title: 'Arrow',
+	title: 'arrow',
 	description: 'An optional arrow element which points to the trigger.',
 	dataAttributes: [
 		{
-			label: '[data-arrow]',
-			value: '`true`',
+			label: 'data-arrow',
+			value: '`"true"`',
 		},
 		{
-			label: '[data-melt-part]',
-			value: ['"arrow"'],
+			label: 'data-melt-dropdown-menu-arrow',
+			value: 'Present on the arrow element',
 		},
 	],
 };
 
 const item: APISchema = {
-	title: 'Item',
+	title: 'item',
 	description: 'A basic menu item.',
 	props: [
 		{
@@ -82,18 +78,18 @@ const item: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: '[data-orientation]',
-			value: ['"vertical"', '"horizontal"'],
+			label: 'data-orientation',
+			value: "`'vertical' | 'horizontal'`",
 		},
 		{
-			label: '[data-melt-part]',
-			value: ['"item"'],
+			label: 'data-melt-dropdown-menu-item',
+			value: 'Present on the item element',
 		},
 	],
 };
 
 const checkboxItem: APISchema = {
-	title: 'Checkbox Item',
+	title: 'checkboxItem',
 	description: 'A checkbox menu item.',
 	props: [
 		{
@@ -107,18 +103,18 @@ const checkboxItem: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: '[data-orientation]',
-			value: ['"vertical"', '"horizontal"'],
+			label: 'data-orientation',
+			value: "`'vertical' | 'horizontal'`",
 		},
 		{
-			label: '[data-melt-part]',
-			value: ['"item"'],
+			label: 'data-melt-dropdown-menu-checkbox-item',
+			value: 'Present on the checkbox item element',
 		},
 	],
 };
 
 const radioGroupBuilder = {
-	title: 'CreateMenuRadioGroupArgs',
+	title: 'createMenuRadioGroup',
 	description: 'The configuration object passed to the `createMenuRadioGroup` builder function.',
 	args: [
 		{
@@ -129,18 +125,18 @@ const radioGroupBuilder = {
 };
 
 const radioGroup: APISchema = {
-	title: 'Menu Radio Group',
+	title: 'radioGroup',
 	description: 'A group of radio menu items.',
 	dataAttributes: [
 		{
-			label: '[data-melt-part]',
-			value: ['"radio-group"'],
+			label: 'data-melt-dropdown-menu-radio-group',
+			value: 'Present on the radio group element',
 		},
 	],
 };
 
 const radioItem: APISchema = {
-	title: 'Radio Group Item',
+	title: 'radioItem',
 	description: 'A radiogroup menu item.',
 	props: [
 		{
@@ -159,29 +155,29 @@ const radioItem: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: '[data-orientation]',
-			value: ['"vertical"', '"horizontal"'],
+			label: 'data-orientation',
+			value: "`'vertical' | 'horizontal'`",
 		},
 		{
-			label: '[data-melt-part]',
-			value: ['"item"'],
+			label: 'data-melt-dropdown-menu-radio-item',
+			value: 'Present on the radio item element',
 		},
 	],
 };
 
 const separator: APISchema = {
-	title: 'Separator',
+	title: 'separator',
 	description: 'A horizontal line which separates menu items.',
 	dataAttributes: [
 		{
-			label: '[data-melt-part]',
-			value: ['"separator"'],
+			label: 'data-melt-dropdown-menu-separator',
+			value: 'Present on the separator element',
 		},
 	],
 };
 
 const submenuBuilder: APISchema = {
-	title: 'CreateDropdownSubMenuArgs',
+	title: 'createSubmenu',
 	description: 'The configuration object passed to the `createDropdownSubMenu` builder function.',
 	props: [
 		{
@@ -198,38 +194,34 @@ const submenuBuilder: APISchema = {
 };
 
 const submenu: APISchema = {
-	title: 'Submenu',
+	title: 'submenu',
 	description: 'A submenu element displayed when its trigger is selected.',
 	dataAttributes: [
 		{
-			label: '[data-melt-part]',
-			value: ['"submenu"'],
-		},
-		{
-			label: '[data-state]',
-			value: ['"open"', '"closed"'],
-		},
-		{
-			label: '[data-melt-menu]',
+			label: 'data-melt-dropdown-menu-submenu',
 			value: 'Present on the submenu element.',
+		},
+		{
+			label: 'data-state',
+			value: "`'open' | 'closed'`",
 		},
 	],
 };
 
 const subTrigger: APISchema = {
-	title: 'Sub Trigger',
+	title: 'subTrigger',
 	description: 'A button which opens its associated submenu.',
 	dataAttributes: [
 		{
-			label: '[data-melt-part]',
-			value: ['"subtrigger"'],
+			label: 'data-melt-dropdown-menu-subtrigger',
+			value: 'Present on the subtrigger element',
 		},
 		{
-			label: '[data-state]',
-			value: ['"open"', '"closed"'],
+			label: 'data-state',
+			value: "`'open' | 'closed'`",
 		},
 		{
-			label: '[data-disabled]',
+			label: 'data-disabled',
 			value: 'Present if the element is disabled',
 		},
 	],

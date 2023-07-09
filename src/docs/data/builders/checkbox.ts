@@ -6,7 +6,7 @@ const builder: APISchema = {
 	props: [
 		{
 			label: 'checked',
-			type: 'boolean | "indeterminate"',
+			type: ['boolean', '"indeterminate"'],
 			default: 'false',
 		},
 		{

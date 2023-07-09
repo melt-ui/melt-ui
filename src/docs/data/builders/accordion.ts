@@ -31,8 +31,8 @@ const root: APISchema = {
 	description: 'Contains all the parts of an accordion.',
 	dataAttributes: [
 		{
-			label: '[data-orientation]',
-			value: ['"vertical"', '"horizontal"'],
+			label: 'data-orientation',
+			value: "`'vertical' | 'horizontal'`",
 		},
 	],
 };
@@ -53,12 +53,12 @@ const item: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: '[data-state]',
-			value: ['"open"', '"closed"'],
+			label: 'data-state',
+			value: "`'open' | 'closed'`",
 		},
 		{
-			label: '[data-disabled]',
-			value: ['true', 'undefined'],
+			label: 'data-disabled',
+			value: '`true | undefined`',
 		},
 	],
 };
@@ -85,15 +85,15 @@ const trigger: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: '[data-melt-part]',
-			value: ['trigger'],
+			label: 'data-melt-accordion-trigger',
+			value: 'Present on all accordion triggers.',
 		},
 		{
-			label: '[data-disabled]',
-			value: ['true', 'undefined'],
+			label: 'data-disabled',
+			value: '`true | undefined`',
 		},
 		{
-			label: '[data-value]',
+			label: 'data-value',
 			value: 'The value of the associated item.',
 		},
 	],
@@ -115,12 +115,12 @@ const content: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: '[data-state]',
-			value: ['"open"', '"closed"'],
+			label: 'data-state',
+			value: "`'open' | 'closed'`",
 		},
 		{
-			label: '[data-disabled]',
-			value: ['true', 'undefined'],
+			label: 'data-disabled',
+			value: '`true | undefined`',
 		},
 	],
 };

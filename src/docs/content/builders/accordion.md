@@ -117,3 +117,5 @@ also update the `options` store with new arguments.
 
 Adheres to the
 [Accordion WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/)
+
+<KbdTable data={data.keyboard} />

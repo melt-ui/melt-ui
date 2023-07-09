@@ -5,6 +5,11 @@ description:
   element.
 ---
 
+<script>
+    import { APITable, KbdTable } from '$docs/components'
+    export let data
+</script>
+
 ## Anatomy
 
 - **Trigger**: The element that opens the hovercard on hover.
@@ -41,3 +46,15 @@ level example of how to structure the hovercard is shown below.
 
 It's also possible to use Svelte Transitions, as demonstrated in the example at the top of
 this page.
+
+## API Reference
+
+<APITable data={data.builder} />
+<APITable data={data.trigger} />
+<APITable data={data.content} />
+<APITable data={data.arrow} />
+
+## Accessibility
+
+The hover card is only intended to be used with a mouse or other pointing device and
+doesn't respond to keyboard events.

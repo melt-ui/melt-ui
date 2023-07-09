@@ -5,6 +5,11 @@ description:
   button.
 ---
 
+<script>
+    import { APITable, KbdTable } from '$docs/components'
+    export let data;
+</script>
+
 ## Anatomy
 
 - **Trigger**: The button which toggles the menu's open state.
@@ -102,3 +107,26 @@ Now we have a menubar with three menus, each with their own items and scopes. As
 previously, the functionality of createMenu is the exact same as createDropdownMenu, so
 you can refer to the [Dropdown Menu](/docs/builders/dropdown-menu) documentation for more
 information on how to use it.
+
+## API Reference
+
+<APITable data={data.builder} />
+<APITable data={data.menu} />
+<APITable data={data.trigger} />
+<APITable data={data.item} />
+<APITable data={data.checkboxItem} />
+<APITable data={data.radioGroupBuilder} />
+<APITable data={data.radioGroup} />
+<APITable data={data.radioItem} />
+<APITable data={data.arrow} />
+<APITable data={data.submenuBuilder} />
+<APITable data={data.submenu} />
+<APITable data={data.subTrigger} />
+
+## Accessibility
+
+Adheres to the
+[Menu WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/) &
+[Menu Button WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/)
+
+<KbdTable data={data.keyboard} />

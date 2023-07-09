@@ -36,19 +36,19 @@ const input: APISchema = {
 	dataAttributes: [
 		{
 			label: 'aria-autocomplete',
-			value: '"list"',
+			value: '`"list"`',
 		},
 		{
 			label: 'aria-disabled',
-			value: ['true', 'false'],
+			value: "`'true' | 'false'`",
 		},
 		{
 			label: 'aria-expanded',
-			value: ['true', 'false'],
+			value: "`'true' | 'false'`",
 		},
 		{
 			label: 'autocomplete',
-			value: '"off"',
+			value: '`"off"`',
 		},
 		{
 			label: 'disabled',
@@ -56,11 +56,11 @@ const input: APISchema = {
 		},
 		{
 			label: 'role',
-			value: '"combobox"',
+			value: '`"combobox"`',
 		},
 		{
 			label: 'data-state',
-			value: ['"open"', '"closed"'],
+			value: '`"open" | "closed"`',
 		},
 		{
 			label: 'data-disabled',
@@ -95,7 +95,7 @@ const arrow: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-arrow',
-			value: ['"true"'],
+			value: '`"true"`',
 		},
 	],
 };

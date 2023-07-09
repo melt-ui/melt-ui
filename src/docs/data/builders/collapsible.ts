@@ -1,7 +1,7 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreateCollapsibleArgs',
+	title: 'createCollapsible',
 	description: 'The configuration object passed to the `createCollapsible` builder function.',
 	props: [
 		{

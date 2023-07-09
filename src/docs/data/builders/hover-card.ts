@@ -12,7 +12,7 @@ const builder: APISchema = {
 		{
 			label: 'positioning',
 			type: 'FloatingConfig',
-			default: '{ placement: "bottom" }',
+			default: 'placement: "bottom"',
 		},
 		{
 			label: 'arrowSize',
@@ -48,11 +48,11 @@ const trigger: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-state',
-			value: ["'open'", "'closed'"],
+			value: "`'open' | 'closed'`",
 		},
 		{
 			label: 'data-melt-hover-card-trigger',
-			value: '',
+			value: 'Present on the trigger element',
 		},
 	],
 };
@@ -63,7 +63,7 @@ const content: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-melt-hover-card-content',
-			value: '',
+			value: 'Present on the content element',
 		},
 	],
 };
@@ -74,11 +74,11 @@ const arrow: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-arrow',
-			value: 'true',
+			value: '`"true"`',
 		},
 		{
 			label: 'data-melt-hover-card-arrow',
-			value: '',
+			value: 'Present on the arrow element',
 		},
 	],
 };

@@ -1,13 +1,13 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
-	title: 'CreateContextMenuArgs',
+	title: 'createContextMenu',
 	description: 'The configuration object passed to the `createContextMenu` builder function.',
 	props: [
 		{
 			label: 'positioning',
 			type: 'FloatingConfig',
-			default: "placement: 'bottom'",
+			default: "placement: 'right'",
 		},
 		{
 			label: 'arrowSize',
@@ -23,77 +23,73 @@ const builder: APISchema = {
 };
 
 const menu: APISchema = {
-	title: 'Menu',
+	title: 'menu',
 	description: 'The element which wraps the entire dropdown menu.',
 	dataAttributes: [
 		{
-			label: '[data-melt-part]',
-			value: ['"menu"'],
+			label: 'data-state',
+			value: '`"open" | "closed"`',
 		},
 		{
-			label: '[data-state]',
-			value: ['"open"', '"closed"'],
-		},
-		{
-			label: '[data-melt-menu]',
+			label: 'data-melt-context-menu',
 			value: 'Present on the menu element.',
 		},
 	],
 };
 
 const trigger: APISchema = {
-	title: 'Trigger',
+	title: 'trigger',
 	description: 'The element which when right clicked inside, opens the context menu.',
 	dataAttributes: [
 		{
-			label: '[data-melt-part]',
-			value: ['"trigger"'],
+			label: 'data-melt-context-menu-trigger',
+			value: 'Present on the trigger element',
 		},
 		{
-			label: '[data-state]',
-			value: ['"open"', '"closed"'],
+			label: 'data-state',
+			value: "`'open' | 'closed'`",
 		},
 	],
 };
 
 const arrow: APISchema = {
-	title: 'Arrow',
+	title: 'arrow',
 	description: 'An optional arrow element which points to the trigger.',
 	dataAttributes: [
 		{
-			label: '[data-arrow]',
-			value: '`true`',
+			label: 'data-arrow',
+			value: '`"true"`',
 		},
 		{
-			label: '[data-melt-part]',
-			value: ['"arrow"'],
+			label: 'data-melt-context-menu-arrow',
+			value: 'Present on the arrow element',
 		},
 	],
 };
 
 const item: APISchema = {
-	title: 'Item',
+	title: 'item',
 	description: 'A basic menu item.',
 	props: [
 		{
 			label: 'onSelect',
-			type: 'function',
+			type: '(event: Event) => void',
 		},
 	],
 	dataAttributes: [
 		{
-			label: '[data-orientation]',
-			value: ['"vertical"', '"horizontal"'],
+			label: 'data-orientation',
+			value: '`"vertical" | "horizontal"`',
 		},
 		{
-			label: '[data-melt-part]',
-			value: ['"item"'],
+			label: 'data-context-menu-item',
+			value: 'Present on the item element',
 		},
 	],
 };
 
 const checkboxItem: APISchema = {
-	title: 'Checkbox Item',
+	title: 'checkboxItem',
 	description: 'A checkbox menu item.',
 	props: [
 		{
@@ -107,20 +103,20 @@ const checkboxItem: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: '[data-orientation]',
-			value: ['"vertical"', '"horizontal"'],
+			label: 'data-orientation',
+			value: '`"vertical" | "horizontal"`',
 		},
 		{
-			label: '[data-melt-part]',
-			value: ['"item"'],
+			label: 'data-melt-context-menu-checkbox-item',
+			value: 'Present on the checkbox item elements',
 		},
 	],
 };
 
-const radioGroupBuilder = {
-	title: 'CreateMenuRadioGroupArgs',
+const radioGroupBuilder: APISchema = {
+	title: 'createMenuRadioGroup',
 	description: 'The configuration object passed to the `createMenuRadioGroup` builder function.',
-	args: [
+	props: [
 		{
 			label: 'value',
 			type: 'string',
@@ -129,18 +125,18 @@ const radioGroupBuilder = {
 };
 
 const radioGroup: APISchema = {
-	title: 'Menu Radio Group',
+	title: 'radioGroup',
 	description: 'A group of radio menu items.',
 	dataAttributes: [
 		{
-			label: '[data-melt-part]',
-			value: ['"radio-group"'],
+			label: 'data-melt-context-menu-radio-group',
+			value: 'Present on the radio group element',
 		},
 	],
 };
 
 const radioItem: APISchema = {
-	title: 'Radio Group Item',
+	title: 'radioItem',
 	description: 'A radiogroup menu item.',
 	props: [
 		{
@@ -154,40 +150,40 @@ const radioItem: APISchema = {
 		},
 		{
 			label: 'onSelect',
-			type: 'function',
+			type: '(event: Event) => void',
 		},
 	],
 	dataAttributes: [
 		{
-			label: '[data-orientation]',
-			value: ['"vertical"', '"horizontal"'],
+			label: 'data-orientation',
+			value: '`"vertical" | "horizontal"`',
 		},
 		{
-			label: '[data-melt-part]',
-			value: ['"item"'],
+			label: 'data-melt-context-menu-radio-item',
+			value: 'Present on the radio item elements',
 		},
 	],
 };
 
 const separator: APISchema = {
-	title: 'Separator',
+	title: 'separator',
 	description: 'A horizontal line which separates menu items.',
 	dataAttributes: [
 		{
-			label: '[data-melt-part]',
-			value: ['"separator"'],
+			label: 'data-melt-context-menu-separator',
+			value: 'Present on the separator element',
 		},
 	],
 };
 
 const submenuBuilder: APISchema = {
-	title: 'CreateDropdownSubMenuArgs',
+	title: 'createSubMenu',
 	description: 'The configuration object passed to the `createDropdownSubMenu` builder function.',
 	props: [
 		{
 			label: 'positioning',
 			type: 'FloatingConfig',
-			default: "{ placement: 'right' }",
+			default: "placement: 'right'",
 		},
 		{
 			label: 'disabled',
@@ -198,39 +194,35 @@ const submenuBuilder: APISchema = {
 };
 
 const submenu: APISchema = {
-	title: 'Submenu',
+	title: 'submenu',
 	description: 'A submenu element displayed when its trigger is selected.',
 	dataAttributes: [
 		{
-			label: '[data-melt-part]',
-			value: ['"submenu"'],
+			label: 'data-melt-context-menu-submenu',
+			value: 'Present on the submenu element',
 		},
 		{
-			label: '[data-state]',
-			value: ['"open"', '"closed"'],
-		},
-		{
-			label: '[data-melt-menu]',
-			value: 'Present on the submenu element.',
+			label: 'data-state',
+			value: '`"open" | "closed"`',
 		},
 	],
 };
 
 const subTrigger: APISchema = {
-	title: 'Sub Trigger',
+	title: 'subTrigger',
 	description: 'A button which opens its associated submenu.',
 	dataAttributes: [
 		{
-			label: '[data-melt-part]',
-			value: ['"subtrigger"'],
+			label: 'data-melt-context-menu-subtrigger',
+			value: 'Present on the subtrigger element',
 		},
 		{
-			label: '[data-state]',
-			value: ['"open"', '"closed"'],
+			label: 'data-state',
+			value: '`"open" | "closed"`',
 		},
 		{
-			label: '[data-disabled]',
-			value: 'Present if the element is disabled',
+			label: 'data-disabled',
+			value: 'Present if the trigger is disabled',
 		},
 	],
 };

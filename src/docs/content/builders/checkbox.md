@@ -3,6 +3,11 @@ title: Checkbox
 description: A control that allows the user to toggle between checked and not checked.
 ---
 
+<script>
+    import { APITable, KbdTable } from '$docs/components'
+    export let data
+</script>
+
 ## Anatomy
 
 - **Root**: The root container for the checkbox
@@ -67,3 +72,14 @@ also update the `options` store with new arguments.
   $: options.update((o) => ({ ...o, disabled }))
 </script>
 ```
+
+## API Reference
+
+<APITable data={data.builder} />
+
+## Accessibility
+
+Adheres to the
+[tri-state Checkbox WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/)
+
+<KbdTable data={data.keyboard} />

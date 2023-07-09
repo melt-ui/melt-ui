@@ -12,6 +12,8 @@ const builder: APISchema = {
 		{
 			label: 'delayMs',
 			type: 'number',
+			description: 'The number of milliseconds to wait before rendering the fallback image.',
+			default: 'undefined',
 		},
 	],
 };
