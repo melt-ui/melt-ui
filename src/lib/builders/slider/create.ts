@@ -266,6 +266,8 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		};
 
 		const pointerDown = (e: PointerEvent) => {
+			if (e.button !== 0) return;
+
 			const sliderEl = getElementByMeltId($root['data-melt-id']) as HTMLElement;
 			const closestThumb = getClosestThumb(e);
 			if (!closestThumb || !sliderEl) return;
