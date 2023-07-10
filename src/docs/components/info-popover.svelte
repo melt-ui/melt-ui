@@ -4,14 +4,14 @@
 	import { fade } from 'svelte/transition';
 	import Info from '~icons/lucide/info';
 
-	const { trigger, content, open, arrow, close } = createPopover();
+	const { trigger, content, open, arrow } = createPopover();
 
 	export let iconClasses = '';
 </script>
 
 <button {...$trigger} use:trigger aria-label="More info">
 	<Info class={cn('h-4 w-4 text-white', iconClasses)} />
-	<span class="sr-only">Open tooltip</span>
+	<span class="sr-only">Open popover</span>
 </button>
 {#if $open}
 	<div

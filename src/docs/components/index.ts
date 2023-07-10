@@ -18,6 +18,5 @@ export { default as Features } from './sections/features.svelte';
 export { default as PreviewStyleSelect } from './preview-style-select.svelte';
 export { default as Kbd } from './kbd.svelte';
 export { default as PreviewWrapper } from './preview-wrapper.svelte';
-export { default as InfoTooltip } from './info-tooltip.svelte';
 export { default as APISectionHeading } from './api-section-heading.svelte';
 export { default as InfoPopover } from './info-popover.svelte';

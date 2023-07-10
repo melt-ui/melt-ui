@@ -46,8 +46,8 @@ export const navConfig: NavConfig = {
 					items: [],
 				},
 				{
-					title: 'Getting Started',
-					href: '/docs/getting-started',
+					title: 'Usage',
+					href: '/docs/usage',
 					items: [],
 				},
 			],

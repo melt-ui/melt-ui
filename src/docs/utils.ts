@@ -1,4 +1,4 @@
-import { styleToString } from '$lib/internal/helpers';
+import { isBrowser, styleToString } from '$lib/internal/helpers';
 import { clsx, type ClassValue } from 'clsx';
 import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
@@ -10,6 +10,7 @@ import type { DocResolver, PreviewFile, PreviewResolver } from './types';
 import { error } from '@sveltejs/kit';
 import { isBuilderName } from './data/builders';
 import type { SvelteComponent } from 'svelte';
+import { get, writable } from 'svelte/store';
 
 /**
  * Appends strings of classes. If non-truthy values are passed, they are ignored.
@@ -344,4 +345,30 @@ export function createHeadingId(text: string) {
 		.replaceAll(/[^a-zA-Z0-9 ]/g, '')
 		.replaceAll(' ', '-')
 		.toLowerCase();
+}
+
+export function createCopyCodeButton() {
+	const codeString = writable('');
+	const copied = writable(false);
+	let copyTimeout = 0;
+
+	function copyCode() {
+		if (!isBrowser) return;
+		navigator.clipboard.writeText(get(codeString));
+		copied.set(true);
+		clearTimeout(copyTimeout);
+		copyTimeout = window.setTimeout(() => {
+			copied.set(false);
+		}, 2500);
+	}
+
+	function setCodeString(node: HTMLElement) {
+		codeString.set(node.innerText.trim() ?? '');
+	}
+
+	return {
+		copied: copied,
+		copyCode: copyCode,
+		setCodeString: setCodeString,
+	};
 }

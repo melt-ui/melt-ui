@@ -1,5 +1,5 @@
 ---
-title: Getting Started
+title: Usage
 description: It only takes a few lines of code to get started building components with Melt UI.
 ---
 

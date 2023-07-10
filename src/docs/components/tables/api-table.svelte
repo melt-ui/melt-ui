@@ -13,18 +13,12 @@
 
 <div class="relative overflow-x-visible rounded-md border border-neutral-600/80 px-3 pt-16">
 	<APISectionHeading description={transformAPIString(data.description, true)} title={data.title} />
-	<!-- 
-	<H3 class="mt-4 text-magnum-400">{data.title}</H3>
-	<P>{@html transformAPIString(data.description, true)}</P> -->
-
 	{#if data.props}
 		<PropsTable data={data.props} />
 	{/if}
-
 	{#if data.returnedProps}
 		<ReturnedPropsTable data={data.returnedProps} />
 	{/if}
-
 	{#if data.dataAttributes}
 		<DataAttrTable data={data.dataAttributes} />
 	{/if}

@@ -27,15 +27,15 @@
 		<div
 			{...$content}
 			use:content
-			class="menu fixed left-0 top-0 z-50 h-screen w-5/6 bg-neutral-900 p-[25px]
+			class="menu fixed bottom-0 z-50 h-2/3 w-full bg-neutral-900 p-[25px]
 				 shadow-lg focus:outline-none"
-			transition:fly={{ x: -768, duration: 300, opacity: 1 }}
+			transition:fly={{ y: 768, duration: 300, opacity: 1 }}
 		>
 			<MobileNavLink href="/" {open}>
 				<img src="/logo.svg" alt="Melt UI" class="h-9" />
 			</MobileNavLink>
 
-			<div class="my-4 h-[calc(100vh-8rem)] overflow-auto overflow-x-visible py-2 pb-10 pr-4">
+			<div class="mb-4 mt-1 h-full overflow-auto overflow-x-visible py-2 pb-10 pr-4">
 				<div class="flex flex-col">
 					{#each navConfig.mainNav as navItem, index (navItem + index.toString())}
 						{#if navItem.href}

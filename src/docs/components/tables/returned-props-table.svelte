@@ -16,7 +16,7 @@
 	</APITableHeading>
 
 	<div class="mb-6 mt-4">
-		<div class="-mx-4 overflow-x-auto sm:mx-0">
+		<div class="overflow-x-auto sm:mx-0">
 			<div class="inline-block min-w-full">
 				<table class="w-full min-w-[540px] text-left sm:min-w-full">
 					<tbody class="divide-y divide-neutral-700">
@@ -29,7 +29,7 @@
 						</tr>
 						{#each data as returnedProp}
 							<tr>
-								<td class="overflow-visible py-3 pl-4 align-baseline sm:pl-0">
+								<td class=" py-3 pl-4 align-baseline sm:pl-0">
 									{#if returnedProp.link}
 										<a
 											href={returnedProp.link}
