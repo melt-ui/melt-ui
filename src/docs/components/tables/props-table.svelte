@@ -19,7 +19,7 @@
 		</svelte:fragment>
 	</APITableHeading>
 
-	<div class="mb-6 mt-2">
+	<div class="mb-4 mt-2">
 		<div class="overflow-x-auto sm:mx-0">
 			<div class="inline-block min-w-full">
 				<table class="w-full min-w-[540px] text-left sm:min-w-full">
