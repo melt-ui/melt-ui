@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { createCollapsible } from '$lib/builders/collapsible';
-	import PreviewWrapper from '$routes/(components)/preview-wrapper.svelte';
 	import { slide } from 'svelte/transition';
+	import PreviewWrapper from '$routes/(components)/preview-wrapper.svelte';
+	import X from '~icons/lucide/x';
+	import ChevronsUpDown from '~icons/lucide/chevrons-up-down';
 
 	let openProp: boolean;
 	let disabledProp: boolean;
@@ -17,17 +19,22 @@
 </script>
 
 <PreviewWrapper>
-	<div {...$root} class="w-screen max-w-md">
+	<div melt={$root} class="mx-auto w-screen max-w-md">
 		<div class="flex items-center justify-between">
 			<span class="text-sm leading-6 text-white"> @thomasglopes starred 3 repositories </span>
 			<button
-				{...$trigger}
-				use:trigger
-				class="rounded-sm bg-white px-2 py-1 text-sm text-magnum-700
-			shadow-lg hover:opacity-75
-			data-[disabled]:cursor-not-allowed data-[disabled]:opacity-75"
+				melt={$trigger}
+				class="relative h-6 w-6 place-items-center rounded-full bg-white text-sm text-magnum-700
+				shadow-lg hover:opacity-75
+				data-[disabled]:cursor-not-allowed data-[disabled]:opacity-75"
 			>
-				toggle
+				<div class="abs-center">
+					{#if $open}
+						<X />
+					{:else}
+						<ChevronsUpDown />
+					{/if}
+				</div>
 			</button>
 		</div>
 
@@ -36,7 +43,7 @@
 		</div>
 
 		{#if $open}
-			<div {...$content} transition:slide>
+			<div melt={$content} transition:slide>
 				<div class="flex flex-col gap-2">
 					<div class="rounded bg-white p-3 shadow-lg">
 						<span class="text-base leading-[25px] text-magnum-800">sveltejs/svelte</span>
