@@ -15,7 +15,7 @@ description: Displays a horizontal or vertical line to separate content.
 ## API Reference
 
 <APITable data={data.builder} />
-<APITable data={data.separator} />
+<APITable data={data.root} />
 
 ## Accessibility
 
