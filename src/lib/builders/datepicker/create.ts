@@ -38,7 +38,7 @@ import { onMount, tick } from 'svelte';
 import { derived, get, readable, writable, type Writable } from 'svelte/store';
 import type { CreateDatePickerArgs, CreateDatePickerOptions, DateArgs } from './types';
 
-const defaults = {
+const defaults: CreateDatePickerOptions = {
 	closeOnEscape: true,
 	closeOnOutsideClick: true,
 	disabled: false,
@@ -46,7 +46,7 @@ const defaults = {
 	latest: null,
 	preventScroll: true,
 	type: 'single',
-	value: new Date(),
+	value: [new Date()],
 	autoSelect: true,
 	open: false,
 	arrowSize: 6,
@@ -54,13 +54,8 @@ const defaults = {
 	positioning: {
 		placement: 'bottom',
 	},
-
-	// temporary until I figure out types
-	date: new Date(),
-	startDate: new Date(),
-	endDate: new Date(),
-	dateList: [new Date()],
-} satisfies Defaults<CreateDatePickerOptions>;
+	activeDate: new Date(),
+};
 
 type CalendarParts =
 	| 'trigger'
@@ -80,15 +75,21 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 	const arrowSize = readable(get(options).arrowSize);
 	const open = writable(get(options).open);
 	const activeTrigger = writable<HTMLElement | null>(null);
-	const value = writable<CreateDatePickerOptions['date']>(get(options).date);
-	const list = writable<CreateDatePickerOptions['dateList']>(get(options).dateList);
-	const startDate = writable<CreateDatePickerOptions['startDate']>(get(options).startDate);
-	const endDate = writable<CreateDatePickerOptions['endDate']>(get(options).endDate);
+	const value = writable<CreateDatePickerOptions['value']>(get(options).value);
 	const dates = writable<Date[]>([]);
 	const lastMonthDates = writable<Date[]>([]);
 	const nextMonthDates = writable<Date[]>([]);
-	const activeDate = writable<CreateDatePickerArgs['value']>(new Date());
 	const selectEnd = writable<boolean>(false);
+	const activeDate = writable<Date>(get(options).activeDate);
+
+	if (get(options).type === 'range') {
+		value.update((prev) => {
+			if (prev.length < 2) {
+				prev.push(prev[0]);
+			}
+			return prev;
+		});
+	}
 
 	const ids = {
 		content: generateId(),
@@ -169,7 +170,7 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 				},
 			};
 		},
-		stores: [dates, activeDate],
+		stores: [activeDate],
 		returned: (dates) => {
 			return {};
 		},
@@ -210,7 +211,6 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 			const unsubKb = addEventListener(node, 'keydown', (e) => {
 				const triggerElement = e.currentTarget;
 				if (!isHTMLElement(triggerElement)) return;
-				console.log(e.key);
 
 				if ([kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.ARROW_LEFT, kbd.ARROW_RIGHT].includes(e.key)) {
 					e.preventDefault();
@@ -292,24 +292,32 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 	});
 
 	const date = builder(name('date'), {
-		stores: [value, startDate, endDate, list],
-		returned: ([$value, $startDate, $endDate, $list]) => {
+		stores: [value, options],
+		returned: ([$value, $options]) => {
 			const { earliest, latest } = get(options);
 			return (args: DateArgs) => {
+				// console.table({
+				// 	date: new Date(args.value || ''),
+				// 	value: $value,
+				// 	type: get(options).type,
+				// });
 				const selected = getSelectedFromValue({
 					date: new Date(args.value || ''),
-					end: $endDate,
-					start: $startDate,
-					list: $list,
 					value: $value,
 					type: get(options).type,
 				});
 				return {
-					role: 'option',
+					role: 'date',
 					'aria-selected': selected ? true : undefined,
 					'data-selected': selected ? true : undefined,
-					'data-start': isSameDay(new Date(args.value), get(startDate)) ? '' : undefined,
-					'data-end': isSameDay(new Date(args.value), get(endDate)) ? '' : undefined,
+					'data-start':
+						$options.type === 'range' && isSameDay(new Date(args.value), $value[0])
+							? ''
+							: undefined,
+					'data-end':
+						$options.type === 'range' && isSameDay(new Date(args.value), $value[1])
+							? ''
+							: undefined,
 					'data-value': args.value,
 					'data-label': args.label ?? undefined,
 					'data-disabled': args.disabled ? '' : undefined,
@@ -332,36 +340,42 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 			const unsub = addEventListener(node, 'click', () => {
 				const args = getElArgs();
 				if (args.disabled) return;
+				const date = new Date(args.value || '');
 				switch (get(options).type) {
 					case 'single':
-						activeDate.set(new Date(args.value || ''));
-						if (get(options).autoSelect) {
-							value.set(new Date(args.value || ''));
-							if (get(options).autoClose) {
-								open.set(false);
-							}
+						value.set([date]);
+						if (get(options).autoClose) {
+							open.set(false);
 						}
 						break;
 					case 'range':
-						if (get(selectEnd)) {
-							startDate.set(new Date(args.value || ''));
-						} else {
-							endDate.set(new Date(args.value || ''));
-						}
+						value.update((prev) => {
+							if (get(selectEnd)) {
+								prev[0] = date;
+							} else {
+								prev[1] = date;
+							}
+							return prev;
+						});
 						selectEnd.set(!get(selectEnd));
-
+						break;
 					case 'multiple':
-						if (get(list).some((d) => isSameDay(d, new Date(args.value || '')))) {
-							list.update((prev) => prev.filter((d) => !isSameDay(d, new Date(args.value || ''))));
-						} else {
-							list.update((prev) => [...prev, new Date(args.value || '')]);
-						}
+						value.update((prev) => {
+							if (prev.some((d) => isSameDay(d, date))) {
+								prev = prev.filter((d) => !isSameDay(d, date));
+							} else {
+								prev = [...prev, date];
+							}
+
+							console.log(prev);
+							return prev;
+						});
 						break;
 
 					default:
+						value.set([new Date(args.value || '')]);
 						break;
 				}
-				value.set(new Date(args.value || ''));
 			});
 
 			return {
@@ -395,7 +409,6 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 
 	function focusElement(add: number) {
 		let node = document.activeElement as HTMLElement;
-		console.log(node);
 		if (!node || node.hasAttribute('[data-melt-calendar-date]')) return;
 		const allDates = Array.from(
 			document.querySelectorAll<HTMLElement>(`[data-melt-calendar-date]:not([data-disabled])`)
@@ -440,6 +453,19 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 			lastMonthDates.set(lastMonthDays);
 			dates.set(datesArray);
 			nextMonthDates.set(nextMonthDays);
+		}
+	});
+
+	effect([options], ([$options]) => {
+		if (!isBrowser) return;
+
+		if ($options.type === 'range') {
+			value.update((prev) => {
+				if (prev.length < 2) {
+					prev.push(prev[0]);
+				}
+				return prev;
+			});
 		}
 	});
 

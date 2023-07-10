@@ -32,14 +32,14 @@
 </script>
 
 <button type="button" class="trigger" {...$trigger} use:trigger aria-label="Update dimensions">
-	<span class="">{dateFormatter.format($value)}</span>
+	<span class="">{dateFormatter.format($value[0])}</span>
 </button>
 
 {#if $open}
 	<div {...$content} use:content transition:fade={{ duration: 100 }} class="content">
 		<div {...$arrow} />
 		<div class="flex flex-col gap-2.5 text-magnum-800">
-			<div class="text-magnum-800">{dateFormatter.format($value || new Date())}</div>
+			<div class="text-magnum-800">{dateFormatter.format($value[0] || new Date())}</div>
 			<div class="buttons-wrapper">
 				<div class="flex items-center space-x-2">
 					<button {...$prevYear} use:prevYear class="button">

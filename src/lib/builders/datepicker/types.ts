@@ -1,7 +1,7 @@
 import type { FloatingConfig } from '@melt-ui/svelte/internal/actions';
 import type { createDatePicker } from './create';
 
-export interface _CreateDatePickerArgsBase {
+export interface CreateDatePickerOptions {
 	preventScroll: boolean;
 	closeOnEscape: boolean;
 	closeOnOutsideClick: boolean;
@@ -13,32 +13,11 @@ export interface _CreateDatePickerArgsBase {
 	autoSelect: boolean;
 	disabled: boolean;
 	autoClose: boolean;
-	date: Date;
-	startDate: Date;
-	endDate: Date;
-	dateList: Date[];
-}
-
-export interface _SingleArgs {
-	type: 'single';
-	value: Date;
-}
-
-export interface _RangeArgs {
-	type: 'range';
-	value: {
-		start: Date;
-		end: Date;
-	};
-}
-
-export interface _MultipleArgs {
-	type: 'multiple';
 	value: Date[];
+	type: 'single' | 'range' | 'multiple';
+	activeDate: Date;
 }
 
-export type CreateDatePickerOptions = _CreateDatePickerArgsBase &
-	(_SingleArgs | _RangeArgs | _MultipleArgs);
 export type CreateDatePickerArgs = Partial<CreateDatePickerOptions>;
 
 export interface DateArgs {
