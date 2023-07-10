@@ -1,8 +1,9 @@
+import { ATTRS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createCollapsible',
-	description: 'The configuration object passed to the `createCollapsible` builder function.',
+	description: 'The builder function used to create a collapsible component',
 	props: [
 		{
 			label: 'open',
@@ -17,19 +18,59 @@ const builder: APISchema = {
 	],
 };
 
+const root: APISchema = {
+	title: 'root',
+	description: 'The root collapsible element.',
+	dataAttributes: [
+		{
+			label: 'data-state',
+			value: ATTRS.OPEN_CLOSED,
+		},
+		{
+			label: 'data-disabled',
+			value: ATTRS.DISABLED(),
+		},
+		{
+			label: 'data-melt-collapsible',
+			value: ATTRS.MELT('collapsible root'),
+		},
+	],
+};
+
+const content: APISchema = {
+	title: 'content',
+	description: 'The collapsible content element.',
+	dataAttributes: [
+		{
+			label: 'data-melt-collapsible-content',
+			value: ATTRS.MELT('collapsible content'),
+		},
+		{
+			label: 'data-state',
+			value: ATTRS.OPEN_CLOSED,
+		},
+		{
+			label: 'data-disabled',
+			value: ATTRS.DISABLED(),
+		},
+	],
+};
+
 const keyboard: KeyboardSchema = [
 	{
-		key: 'Space',
+		key: KBD.SPACE,
 		behavior: 'Activates the trigger and toggles the visibility of the collapsible content',
 	},
 	{
-		key: 'Enter',
+		key: KBD.ENTER,
 		behavior: 'Activates the trigger and toggles the visibility of the collapsible content',
 	},
 ];
 
 const schemas = {
 	builder,
+	root,
+	content,
 	keyboard,
 };
 

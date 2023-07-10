@@ -1,43 +1,45 @@
+import { ATTRS, DESCRIPTIONS } from '$docs/constants';
 import type { APISchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createHoverCard',
-	description: 'The configuration object passed to the `createHoverCard` builder function.',
+	description: 'The builder function used to create a hover card component.',
 	props: [
 		{
 			label: 'defaultOpen',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether the hover card is open by default.',
 		},
 		{
 			label: 'positioning',
 			type: 'FloatingConfig',
 			default: 'placement: "bottom"',
+			description: DESCRIPTIONS.FLOATING_CONFIG,
 		},
 		{
 			label: 'arrowSize',
 			type: 'number',
 			default: '8',
-		},
-		{
-			label: 'open',
-			type: 'boolean',
-			default: 'false',
+			description: DESCRIPTIONS.ARROW_SIZE,
 		},
 		{
 			label: 'closeOnOutsideClick',
 			type: 'boolean',
 			default: 'true',
+			description: DESCRIPTIONS.CLOSE_ON_CLICK_OUTSIDE('hover card'),
 		},
 		{
 			label: 'openDelay',
 			type: 'number',
 			default: '700',
+			description: 'The delay in milliseconds before the hover card opens.',
 		},
 		{
 			label: 'closeDelay',
 			type: 'number',
 			default: '300',
+			description: 'The delay in milliseconds before the hover card closes.',
 		},
 	],
 };
@@ -48,11 +50,11 @@ const trigger: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-state',
-			value: "`'open' | 'closed'`",
+			value: ATTRS.OPEN_CLOSED,
 		},
 		{
 			label: 'data-melt-hover-card-trigger',
-			value: 'Present on the trigger element',
+			value: ATTRS.MELT('trigger'),
 		},
 	],
 };
@@ -62,8 +64,12 @@ const content: APISchema = {
 	description: 'The content displayed in the hovercard',
 	dataAttributes: [
 		{
+			label: 'data-state',
+			value: ATTRS.OPEN_CLOSED,
+		},
+		{
 			label: 'data-melt-hover-card-content',
-			value: 'Present on the content element',
+			value: ATTRS.MELT('content'),
 		},
 	],
 };
@@ -74,11 +80,11 @@ const arrow: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-arrow',
-			value: '`"true"`',
+			value: ATTRS.TRUE,
 		},
 		{
 			label: 'data-melt-hover-card-arrow',
-			value: 'Present on the arrow element',
+			value: ATTRS.MELT('arrow'),
 		},
 	],
 };

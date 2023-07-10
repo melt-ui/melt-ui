@@ -60,7 +60,8 @@ the `options` store with new arguments.
 ## API Reference
 
 <APITable data={data.builder} />
-<APITable data={data.switch} />
+<APITable data={data.root} />
+<APITable data={data.input} />
 
 ## Accessibility
 

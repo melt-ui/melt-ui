@@ -1,32 +1,38 @@
+import { ATTRS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createRadioGroup',
-	description: 'The configuration object passed to the `createRadioGroup` builder function.',
+	description: 'The builder function used to create a radio group component.',
 	props: [
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the radio group is disabled.',
 		},
 		{
 			label: 'loop',
 			type: 'boolean',
 			default: 'true',
+			description: 'Whether or not the radio group should loop when navigating with the keyboard.',
 		},
 		{
 			label: 'required',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the radio group is required.',
 		},
 		{
 			label: 'orientation',
 			type: ['"horizontal"', '"vertical"'],
 			default: '"vertical"',
+			description: 'The orientation of the radio group.',
 		},
 		{
 			label: 'value',
 			type: 'string',
+			description: 'The value of the checked radio item.',
 		},
 	],
 };
@@ -37,11 +43,11 @@ const root: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: "`'horizontal' | 'vertical'`",
+			value: ATTRS.ORIENTATION,
 		},
 		{
 			label: 'data-melt-radio-group',
-			value: 'Present on the root element.',
+			value: ATTRS.MELT('radio group'),
 		},
 	],
 };
@@ -53,56 +59,82 @@ const item: APISchema = {
 		{
 			label: 'value',
 			type: 'string',
+			description: 'The value of the radio item.',
+			required: true,
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the radio item is disabled.',
 		},
 	],
 	dataAttributes: [
 		{
 			label: 'data-disabled',
-			value: 'Present if the item is disabled.',
+			value: ATTRS.DISABLED('item'),
+		},
+		{
+			label: 'data-value',
+			value: 'The value of the radio item.',
 		},
 		{
 			label: 'data-state',
-			value: "`'checked' | 'unchecked'`",
+			value: ATTRS.CHECKBOX_STATE,
 		},
 		{
 			label: 'data-orientation',
-			value: "`'horizontal' | 'vertical'`",
+			value: ATTRS.ORIENTATION,
 		},
 		{
 			label: 'data-melt-radio-group-item',
-			value: 'Present on the item elements.',
+			value: ATTRS.MELT('radio group item'),
+		},
+	],
+};
+
+const itemInput: APISchema = {
+	title: 'itemInput',
+	description: 'The hidden input element used for form submission.',
+	props: [
+		{
+			label: 'value',
+			type: 'string',
+			description: 'The value of the radio item.',
+			required: true,
+		},
+		{
+			label: 'disabled',
+			type: 'boolean',
+			default: 'false',
+			description: 'Whether or not the radio item is disabled.',
 		},
 	],
 };
 
 const keyboard: KeyboardSchema = [
 	{
-		key: 'Tab',
+		key: KBD.TAB,
 		behavior: 'Moves focus to either the checked radio item or the first radio item.',
 	},
 	{
-		key: 'Space',
+		key: KBD.SPACE,
 		behavior: 'When focused on an unchecked item, checks it.',
 	},
 	{
-		key: 'ArrowDown',
+		key: KBD.ARROW_DOWN,
 		behavior: 'Moves focus to & checks the next radio item',
 	},
 	{
-		key: 'ArrowRight',
+		key: KBD.ARROW_RIGHT,
 		behavior: 'Moves focus to & checks the next radio item',
 	},
 	{
-		key: 'ArrowUp',
+		key: KBD.ARROW_UP,
 		behavior: 'Moves focus to & checks the previous radio item',
 	},
 	{
-		key: 'ArrowLeft',
+		key: KBD.ARROW_LEFT,
 		behavior: 'Moves focus to & checks the previous radio item',
 	},
 ];
@@ -111,6 +143,7 @@ const schemas = {
 	builder,
 	root,
 	item,
+	itemInput,
 	keyboard,
 };
 

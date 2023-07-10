@@ -191,10 +191,11 @@ The following example disallows a tag with the value `one` to be deleted.
 ### API Reference
 
 <APITable data={data.builder} />
-<APITable data={data.tagsInput} />
+<APITable data={data.root} />
 <APITable data={data.input} />
 <APITable data={data.tag} />
 <APITable data={data.deleteTrigger} />
+<APITable data={data.edit} />
 
 ### Accessibility
 

@@ -20,6 +20,7 @@ description:
 <APITable data={data.builder} />
 <APITable data={data.root} />
 <APITable data={data.item} />
+<APITable data={data.itemInput} />
 
 ## Accessibility
 

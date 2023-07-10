@@ -16,8 +16,9 @@ to create your slider.
 ## API Reference
 
 <APITable data={data.builder} />
-<APITable data={data.slider} />
+<APITable data={data.root} />
 <APITable data={data.thumb} />
+<APITable data={data.root} />
 
 ## Accessibility
 

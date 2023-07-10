@@ -3,6 +3,12 @@ title: Label
 description: A control that adds a label to an input element.
 ---
 
+<script>
+    import { APITable } from "$docs/components"
+    
+    export let data
+</script>
+
 ## Anatomy
 
 - **Root**: The root container for the label
@@ -22,3 +28,8 @@ element.
 <label for="name" use:label>Name</label>
 <input type="text" id="name" />
 ```
+
+## API Reference
+
+<APITable data={data.builder} />
+<APITable data={data.root} />

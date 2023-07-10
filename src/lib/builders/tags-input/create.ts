@@ -18,7 +18,7 @@ import type { CreateTagsInputArgs, Tag, TagArgs } from './types';
 import { tick } from 'svelte';
 
 const defaults = {
-	placeholder: 'Enter tags...',
+	placeholder: '',
 	disabled: false,
 	editable: true,
 	tags: [],

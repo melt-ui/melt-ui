@@ -1,80 +1,98 @@
+import { ATTRS, KBD, TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createSlider',
-	description: 'The configuration object passed to the `createSlider` builder function.',
+	description: 'The builder function used to create a slider component.',
 	props: [
 		{
 			label: 'value',
 			type: 'number[]',
 			default: '[]',
+			description: 'The value of the slider.',
 		},
 		{
 			label: 'min',
 			type: 'number',
 			default: '0',
+			description: 'The minimum value of the slider.',
 		},
 		{
 			label: 'max',
 			type: 'number',
 			default: '100',
+			description: 'The maximum value of the slider.',
 		},
 		{
 			label: 'step',
 			type: 'number',
 			default: '1',
+			description: 'The amount to increment/decrement the value by when using the keyboard.',
 		},
 		{
 			label: 'orientation',
-			type: "'horizontal' | 'vertical'",
+			type: TYPES.ORIENTATION,
 			default: "'horizontal'",
+			description: 'The orientation of the slider.',
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the slider is disabled.',
 		},
 	],
 };
 
 const keyboard: KeyboardSchema = [
 	{
-		key: 'ArrowRight',
+		key: KBD.ARROW_RIGHT,
 		behavior: 'Increments/decrements by the `step` value depending on `orientation`.',
 	},
 	{
-		key: 'ArrowLeft',
+		key: KBD.ARROW_LEFT,
 		behavior: 'Increments/decrements by the `step` value depending on `orientation`.',
 	},
 	{
-		key: 'ArrowUp',
+		key: KBD.ARROW_UP,
 		behavior: 'Increases the value by the `step` amount.',
 	},
 	{
-		key: 'ArrowDown',
+		key: KBD.ARROW_DOWN,
 		behavior: 'Decreases the value by the `step` amount.',
 	},
 	{
-		key: 'Home',
+		key: KBD.HOME,
 		behavior: 'Sets the value to its minimum',
 	},
 	{
-		key: 'End',
+		key: KBD.END,
 		behavior: 'Sets the value to its maximum',
 	},
 ];
 
-const slider: APISchema = {
-	title: 'slider',
+const root: APISchema = {
+	title: 'root',
 	description: 'The slider component.',
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: "`'horizontal' | 'vertical'`",
+			value: ATTRS.ORIENTATION,
 		},
 		{
 			label: 'data-melt-slider',
-			value: 'Present on the slider element.',
+			value: ATTRS.MELT('slider'),
+		},
+	],
+};
+
+const range: APISchema = {
+	title: 'range',
+	description: 'The slider range component.',
+	dataAttributes: [
+		{
+			label: 'data-melt-slider-range',
+			value: ATTRS.MELT('slider range'),
 		},
 	],
 };
@@ -85,7 +103,7 @@ const thumb: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-melt-slider-thumb',
-			value: 'Present on the thumb element.',
+			value: ATTRS.MELT('slider thumb'),
 		},
 	],
 };
@@ -93,8 +111,9 @@ const thumb: APISchema = {
 const schemas = {
 	builder,
 	keyboard,
-	slider,
+	root,
 	thumb,
+	range,
 };
 
 const features = [

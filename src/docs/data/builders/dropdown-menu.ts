@@ -1,23 +1,27 @@
+import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createDropdownMenu',
-	description: 'The configuration object passed to the `createDropdownMenu` builder function.',
+	description: 'The builder function used to create a dropdown menu component.',
 	props: [
 		{
 			label: 'positioning',
 			type: 'FloatingConfig',
 			default: "placement: 'bottom'",
+			description: DESCRIPTIONS.FLOATING_CONFIG,
 		},
 		{
 			label: 'arrowSize',
 			type: 'number',
 			default: '8',
+			description: DESCRIPTIONS.ARROW_SIZE,
 		},
 		{
 			label: 'preventScroll',
 			type: 'boolean',
 			default: 'true',
+			description: DESCRIPTIONS.PREVENT_SCROLL('dropdown menu'),
 		},
 	],
 };
@@ -27,12 +31,12 @@ const menu: APISchema = {
 	description: 'The element which wraps the entire dropdown menu.',
 	dataAttributes: [
 		{
-			label: 'data-melt-dropdown-menu',
-			value: 'Present on the menu element',
+			label: 'data-state',
+			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-state',
-			value: "`'open' | 'closed'`",
+			label: 'data-melt-dropdown-menu',
+			value: ATTRS.MELT('menu'),
 		},
 	],
 };
@@ -43,11 +47,11 @@ const trigger: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-melt-dropdown-menu-trigger',
-			value: 'Present on the trigger element',
+			value: ATTRS.MELT('trigger'),
 		},
 		{
 			label: 'data-state',
-			value: "`'open' | 'closed'`",
+			value: ATTRS.OPEN_CLOSED,
 		},
 	],
 };
@@ -58,11 +62,11 @@ const arrow: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-arrow',
-			value: '`"true"`',
+			value: ATTRS.TRUE,
 		},
 		{
 			label: 'data-melt-dropdown-menu-arrow',
-			value: 'Present on the arrow element',
+			value: ATTRS.MELT('arrow'),
 		},
 	],
 };
@@ -73,17 +77,19 @@ const item: APISchema = {
 	props: [
 		{
 			label: 'onSelect',
-			type: 'function',
+			type: [TYPES.EVENT_HANDLER, 'undefined'],
+			default: 'undefined',
+			description: DESCRIPTIONS.ON_SELECT,
 		},
 	],
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: "`'vertical' | 'horizontal'`",
+			value: ATTRS.ORIENTATION,
 		},
 		{
 			label: 'data-melt-dropdown-menu-item',
-			value: 'Present on the item element',
+			value: ATTRS.MELT('item'),
 		},
 	],
 };
@@ -95,20 +101,24 @@ const checkboxItem: APISchema = {
 		{
 			label: 'checked',
 			type: 'Writable<boolean>',
+			default: 'Writable<false>',
+			description: 'A writable boolean which determines whether or not the checkbox is checked.',
 		},
 		{
 			label: 'onSelect',
-			type: 'function',
+			type: [TYPES.EVENT_HANDLER, 'undefined'],
+			default: 'undefined',
+			description: DESCRIPTIONS.ON_SELECT,
 		},
 	],
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: "`'vertical' | 'horizontal'`",
+			value: ATTRS.ORIENTATION,
 		},
 		{
 			label: 'data-melt-dropdown-menu-checkbox-item',
-			value: 'Present on the checkbox item element',
+			value: ATTRS.MELT('checkbox item'),
 		},
 	],
 };
@@ -130,7 +140,7 @@ const radioGroup: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-melt-dropdown-menu-radio-group',
-			value: 'Present on the radio group element',
+			value: ATTRS.MELT('radio group'),
 		},
 	],
 };
@@ -142,25 +152,29 @@ const radioItem: APISchema = {
 		{
 			label: 'value',
 			type: 'string',
+			description: 'The value of the radio item.',
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the radio item is disabled.',
 		},
 		{
 			label: 'onSelect',
-			type: 'function',
+			type: [TYPES.EVENT_HANDLER, 'undefined'],
+			default: 'undefined',
+			description: DESCRIPTIONS.ON_SELECT,
 		},
 	],
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: "`'vertical' | 'horizontal'`",
+			value: ATTRS.ORIENTATION,
 		},
 		{
 			label: 'data-melt-dropdown-menu-radio-item',
-			value: 'Present on the radio item element',
+			value: ATTRS.MELT('radio item'),
 		},
 	],
 };
@@ -171,24 +185,26 @@ const separator: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-melt-dropdown-menu-separator',
-			value: 'Present on the separator element',
+			value: ATTRS.MELT('separator'),
 		},
 	],
 };
 
 const submenuBuilder: APISchema = {
 	title: 'createSubmenu',
-	description: 'The configuration object passed to the `createDropdownSubMenu` builder function.',
+	description: 'The builder function used to create submenu components.',
 	props: [
 		{
 			label: 'positioning',
 			type: 'FloatingConfig',
 			default: "placement: 'right'",
+			description: DESCRIPTIONS.FLOATING_CONFIG,
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the submenu is disabled.',
 		},
 	],
 };
@@ -198,12 +214,12 @@ const submenu: APISchema = {
 	description: 'A submenu element displayed when its trigger is selected.',
 	dataAttributes: [
 		{
-			label: 'data-melt-dropdown-menu-submenu',
-			value: 'Present on the submenu element.',
+			label: 'data-state',
+			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-state',
-			value: "`'open' | 'closed'`",
+			label: 'data-melt-dropdown-menu-submenu',
+			value: ATTRS.MELT('submenu'),
 		},
 	],
 };
@@ -214,50 +230,50 @@ const subTrigger: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-melt-dropdown-menu-subtrigger',
-			value: 'Present on the subtrigger element',
+			value: ATTRS.MELT('subtrigger'),
 		},
 		{
 			label: 'data-state',
-			value: "`'open' | 'closed'`",
+			value: ATTRS.OPEN_CLOSED,
 		},
 		{
 			label: 'data-disabled',
-			value: 'Present if the element is disabled',
+			value: ATTRS.DISABLED('subtrigger'),
 		},
 	],
 };
 
 const keyboard: KeyboardSchema = [
 	{
-		key: 'Space',
+		key: KBD.SPACE,
 		behavior:
 			'When focused on the `trigger`, opens the dropdown and focuses the first item. When focused on an `item`, selects the item.',
 	},
 	{
-		key: 'Enter',
+		key: KBD.ENTER,
 		behavior:
 			'When focused on the `trigger`, opens the dropdown and focuses the first item. When focused on an `item`, selects the item.',
 	},
 	{
-		key: 'ArrowDown',
+		key: KBD.ARROW_DOWN,
 		behavior:
 			'When focused on the `trigger`, opens the dropdown and focuses the first item. When focused on an `item`, shifts focus to the next item.',
 	},
 	{
-		key: 'ArrowUp',
+		key: KBD.ARROW_UP,
 		behavior: 'When focused on an `item`, shifts focus to the next item..',
 	},
 	{
-		key: 'ArrowRight',
+		key: KBD.ARROW_RIGHT,
 		behavior: 'When focused on a `subTrigger`, opens the `subMenu` and focuses the first item.',
 	},
 	{
-		key: 'ArrowLeft',
+		key: KBD.ARROW_LEFT,
 		behavior:
 			"When focused on within a `subMenu`, closes the submenu and shifts focus to that submenu's `subTrigger`.",
 	},
 	{
-		key: 'Esc',
+		key: KBD.ESCAPE,
 		behavior: 'Closes the dropdown menu and focuses the `trigger`.',
 	},
 ];

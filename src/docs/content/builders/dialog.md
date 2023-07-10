@@ -41,6 +41,12 @@ the screen.
 ## API Reference
 
 <APITable data={data.builder} />
+<APITable data={data.trigger} />
+<APITable data={data.overlay} />
+<APITable data={data.content} />
+<APITable data={data.title} />
+<APITable data={data.description} />
+<APITable data={data.close} />
 
 ## Accessibility
 

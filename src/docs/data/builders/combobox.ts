@@ -1,30 +1,38 @@
+import { ATTRS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createCombobox',
-	description: 'The configuration object passed to the `createCombobox` builder function.',
+	description: 'The builder function used to create a combobox component.',
 	props: [
 		{
 			label: 'filterFunction',
 			type: '(item: T, inputValue: string)',
+			description:
+				'A function that returns `true` if the item should be included in the filtered list.',
 		},
 		{
 			label: 'items',
 			type: 'T[]',
+			description: 'The list of items to display in the combobox list.',
 		},
 		{
 			label: 'itemToString',
 			type: '(item: T)',
+			description: 'A function that returns a string representation of the item.',
 		},
 		{
 			label: 'loop',
 			type: 'boolean',
 			default: 'false',
+			description:
+				'Whether or not the combobox should loop through the list when the end or beginning is reached.',
 		},
 		{
 			label: 'scrollAlignment',
 			type: ['"nearest"', '"center"'],
 			default: '"nearest"',
+			description: 'The alignment of the highlighted item when scrolling.',
 		},
 	],
 };
@@ -35,40 +43,16 @@ const input: APISchema = {
 		'The element that opens, closes, filters the list, and displays the selected value from the list.',
 	dataAttributes: [
 		{
-			label: 'aria-autocomplete',
-			value: '`"list"`',
-		},
-		{
-			label: 'aria-disabled',
-			value: "`'true' | 'false'`",
-		},
-		{
-			label: 'aria-expanded',
-			value: "`'true' | 'false'`",
-		},
-		{
-			label: 'autocomplete',
-			value: '`"off"`',
-		},
-		{
-			label: 'disabled',
-			value: 'Present if the `list` element is disabled.',
-		},
-		{
-			label: 'role',
-			value: '`"combobox"`',
-		},
-		{
 			label: 'data-state',
-			value: '`"open" | "closed"`',
+			value: ATTRS.OPEN_CLOSED,
 		},
 		{
 			label: 'data-disabled',
-			value: 'Present if the `select` element is disabled.',
+			value: ATTRS.DISABLED('`select`'),
 		},
 		{
 			label: 'data-melt-combobox-input',
-			value: 'Present on the input element.',
+			value: ATTRS.MELT('input'),
 		},
 	],
 };
@@ -80,47 +64,62 @@ const item: APISchema = {
 		{
 			label: 'label',
 			type: 'string',
+			description: 'The label of the `item`.',
 		},
 		{
 			label: 'value',
 			type: 'unknown',
+			description: 'The value of the `item`.',
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the `item` is disabled.',
 		},
 	],
 	dataAttributes: [
 		{
 			label: 'data-melt-combobox-item',
-			value: 'Present on the item elements.',
+			value: ATTRS.MELT('item'),
+		},
+		{
+			label: 'data-disabled',
+			value: ATTRS.DISABLED('`item`'),
+		},
+		{
+			label: 'data-index',
+			value: 'The index of the item in the list.',
+		},
+		{
+			label: 'data-highlighted',
+			value: ATTRS.HIGHLIGHTED(),
 		},
 	],
 };
 
 const arrow: APISchema = {
-	title: 'Arrow',
-	description: 'The optional arrow element',
+	title: 'arrow',
+	description: 'An optional arrow element',
 	dataAttributes: [
 		{
 			label: 'data-arrow',
-			value: '`"true"`',
+			value: ATTRS.TRUE,
 		},
 		{
 			label: 'data-melt-combobox-arrow',
-			value: 'Present on the arrow element.',
+			value: ATTRS.MELT('arrow'),
 		},
 	],
 };
 
 const keyboard: KeyboardSchema = [
 	{
-		key: 'Enter',
+		key: KBD.ENTER,
 		behavior: 'selects the highlighted list item.',
 	},
 	{
-		key: 'ArrowDown',
+		key: KBD.ARROW_DOWN,
 		behavior: 'Highlights the next list item.',
 	},
 	// {
@@ -128,7 +127,7 @@ const keyboard: KeyboardSchema = [
 	// 	behavior: 'Highlights 10 list items down (or the end of the list).',
 	// },
 	{
-		key: 'ArrowUp',
+		key: KBD.ARROW_UP,
 		behavior: 'Highlights the previous list item.',
 	},
 	// {
@@ -136,15 +135,15 @@ const keyboard: KeyboardSchema = [
 	// 	behavior: 'Highlights 10 list items up (or the top of the list).',
 	// },
 	{
-		key: 'Home',
+		key: KBD.HOME,
 		behavior: 'Highlights the first list item',
 	},
 	{
-		key: 'End',
+		key: KBD.END,
 		behavior: 'Highlights the last list item',
 	},
 	{
-		key: 'Esc',
+		key: KBD.ESCAPE,
 		behavior:
 			"When focus is on the `input` and it's closed, removes focus. When the `input` is open, closes the list.",
 	},

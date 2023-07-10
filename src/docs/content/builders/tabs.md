@@ -19,9 +19,10 @@ description:
 ## API Reference
 
 <APITable data={data.builder} />
-<APITable data={data.tabs} />
+<APITable data={data.root} />
 <APITable data={data.list} />
 <APITable data={data.trigger} />
+<APITable data={data.content} />
 
 ## Accessibility
 

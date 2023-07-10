@@ -17,3 +17,5 @@ description: An image element with a fallback for representing the user.
 ## API Reference
 
 <APITable data={data.builder} />
+<APITable data={data.image} />
+<APITable data={data.fallback} />

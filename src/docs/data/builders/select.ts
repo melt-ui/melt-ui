@@ -1,40 +1,48 @@
+import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createSelect',
-	description: 'The configuration object passed to the `createSelect` builder function.',
+	description: 'The builder function used to create a select component.',
 	props: [
 		{
 			label: 'required',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the select is required.',
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the select is disabled.',
 		},
 		{
 			label: 'label',
 			type: 'string',
+			description: 'The label of the select.',
 		},
 		{
 			label: 'value',
 			type: 'unknown',
+			description: 'The value of the select.',
 		},
 		{
 			label: 'name',
 			type: 'string',
+			description: 'The name of the select.',
 		},
 		{
 			label: 'preventScroll',
 			type: 'boolean',
 			default: 'true',
+			description: DESCRIPTIONS.PREVENT_SCROLL('select'),
 		},
 		{
 			label: 'loop',
 			type: 'boolean',
 			default: 'false',
+			description: DESCRIPTIONS.LOOP,
 		},
 	],
 };
@@ -45,15 +53,15 @@ const trigger: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-state',
-			value: "`'open' | 'closed'`",
+			value: ATTRS.OPEN_CLOSED,
 		},
 		{
 			label: 'data-disabled',
-			value: 'Present if the `select` element is disabled.',
+			value: ATTRS.DISABLED('select'),
 		},
 		{
 			label: 'data-melt-select-trigger',
-			value: 'Present on the trigger element.',
+			value: ATTRS.MELT('trigger'),
 		},
 	],
 };
@@ -65,15 +73,18 @@ const option: APISchema = {
 		{
 			label: 'label',
 			type: 'string',
+			description: 'The label of the option.',
 		},
 		{
 			label: 'value',
 			type: 'unknown',
+			description: 'The value of the option.',
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the option is disabled.',
 		},
 	],
 };
@@ -84,7 +95,11 @@ const arrow: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-arrow',
-			value: "`'true'`",
+			value: ATTRS.TRUE,
+		},
+		{
+			label: 'data-melt-select-arrow',
+			value: ATTRS.MELT('arrow'),
 		},
 	],
 };
@@ -92,6 +107,12 @@ const arrow: APISchema = {
 const separator: APISchema = {
 	title: 'separator',
 	description: 'An optional separator element',
+	dataAttributes: [
+		{
+			label: 'data-melt-select-separator',
+			value: ATTRS.MELT('separator'),
+		},
+	],
 };
 
 const group: APISchema = {
@@ -102,6 +123,12 @@ const group: APISchema = {
 			label: 'key',
 			type: 'string',
 			description: 'A unique key for the group.',
+		},
+	],
+	dataAttributes: [
+		{
+			label: 'data-melt-select-group',
+			value: ATTRS.MELT('group'),
 		},
 	],
 };
@@ -116,31 +143,37 @@ const groupLabel: APISchema = {
 			description: 'A unique key for the group.',
 		},
 	],
+	dataAttributes: [
+		{
+			label: 'data-melt-select-group-label',
+			value: ATTRS.MELT('group-label'),
+		},
+	],
 };
 
 const keyboard: KeyboardSchema = [
 	{
-		key: 'Space',
+		key: KBD.SPACE,
 		behavior:
 			'When focus is on the `trigger`, opens the select and focuses the selected option. When focus is on an `option`, selects the focused option.',
 	},
 	{
-		key: 'Enter',
+		key: KBD.ENTER,
 		behavior:
 			'When focus is on the `trigger`, opens the select and focuses the selected option. When focus is on an `option`, selects the focused option.',
 	},
 	{
-		key: 'ArrowDown',
+		key: KBD.ARROW_DOWN,
 		behavior:
 			'When focus is on the `trigger`, opens the select. When focus is on an `option`, moves focus to the next option.',
 	},
 	{
-		key: 'ArrowUp',
+		key: KBD.ARROW_UP,
 		behavior:
 			'When focus is on the `trigger`, opens the select. When focus is on an `option`, moves focus to the previous option.',
 	},
 	{
-		key: 'Esc',
+		key: KBD.ESCAPE,
 		behavior: 'Closes the select and moves focus to the `trigger`.',
 	},
 ];

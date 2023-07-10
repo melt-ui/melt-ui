@@ -1,17 +1,20 @@
+import { ATTRS } from '$docs/constants';
 import type { APISchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createProgress',
-	description: 'The configuration object passed to the `createProgress` builder function.',
+	description: 'The builder function used to create a progress bar component.',
 	props: [
 		{
 			label: 'value',
 			type: 'number',
+			description: 'The current value of the progress bar.',
 		},
 		{
 			label: 'max',
 			type: 'number',
 			default: '100',
+			description: 'The maximum value of the progress bar.',
 		},
 	],
 };
@@ -34,7 +37,7 @@ const root: APISchema = {
 		},
 		{
 			label: 'data-melt-progress',
-			value: 'Present on the progress element.',
+			value: ATTRS.MELT('root'),
 		},
 	],
 };

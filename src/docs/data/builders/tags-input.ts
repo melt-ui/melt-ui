@@ -1,62 +1,87 @@
+import { ATTRS } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createTags',
-	description: 'The configuration object passed to the `createTagsInput` builder function.',
+	description: 'The builder function used to create a tags input component.',
 	props: [
 		{
 			label: 'placeholder',
 			type: 'string',
-			default: 'Enter tags...',
+			description: 'The placeholder text for the input element.',
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the tags input is disabled.',
 		},
 		{
 			label: 'selectedTag',
 			type: '{id: string, value: string}',
+			description: 'The selected tag.',
 		},
 		{
 			label: 'tags',
-			type: 'string[] | {id: string, value: string}[]',
+			type: ['string[]', '{id: string, value: string}[]'],
 			default: '[]',
+			description: 'The tag items.',
 		},
 		{
 			label: 'unique',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the tags input should only allow unique tags.',
 		},
 	],
 };
 
-const tagsInput: APISchema = {
-	title: 'tagsInput',
-	description: 'The tags input component.',
+const root: APISchema = {
+	title: 'root',
+	description: 'The root tags input component.',
 	dataAttributes: [
 		{
-			label: 'data-melt-tags-input',
-			value: 'Present on the tags input element.',
+			label: 'data-disabled',
+			value: ATTRS.DISABLED('tags input'),
 		},
 		{
-			label: 'data-disabled',
-			value: 'Present if the item is disabled.',
+			label: 'data-focus',
+			value: 'Present if the tags input is focused.',
+		},
+		{
+			label: 'data-invalid',
+			value: 'Present if the tags input is invalid.',
+		},
+		{
+			label: 'data-invalid-edit',
+			value: 'Present if the tags input is invalid while editing a tag.',
+		},
+		{
+			label: 'data-melt-tags-input',
+			value: ATTRS.MELT('tags input'),
 		},
 	],
 };
 
 const input: APISchema = {
 	title: 'input',
-	description: 'The input component',
+	description: 'The hidden input element used for form submission.',
 	dataAttributes: [
 		{
-			label: 'data-melt-tags-input-input',
-			value: 'Present on the input element.',
+			label: 'data-disabled',
+			value: ATTRS.DISABLED('input'),
 		},
 		{
-			label: 'data-disabled',
-			value: 'Present if the item is disabled.',
+			label: 'data-focus',
+			value: 'Present if the input is focused.',
+		},
+		{
+			label: 'data-invalid',
+			value: 'Present if the input is invalid.',
+		},
+		{
+			label: 'data-melt-tags-input-input',
+			value: ATTRS.MELT('input'),
 		},
 	],
 };
@@ -68,37 +93,44 @@ const tag: APISchema = {
 		{
 			label: 'id',
 			type: 'string',
+			description: 'A unique ID for the tag',
 		},
 		{
 			label: 'value',
 			type: 'string',
+			description: "The tag's value",
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the tag is disabled.',
 		},
 	],
 	dataAttributes: [
 		{
-			label: 'data-melt-tags-input-tag',
-			value: 'Present on the tag elements.',
-		},
-		{
 			label: 'data-tag-id',
-			value: 'Unique tag ID.',
+			value: 'The unique ID of the tag',
 		},
 		{
 			label: 'data-tag-value',
-			value: 'Tag value',
+			value: 'The value of the tag',
 		},
 		{
 			label: 'data-disabled',
-			value: 'Present if the tag is disabled.',
+			value: ATTRS.DISABLED('tag'),
+		},
+		{
+			label: 'data-editing',
+			value: 'Present if the tag is being edited.',
 		},
 		{
 			label: 'data-selected',
-			value: 'Present if the tag is selected.',
+			value: ATTRS.SELECTED('tag'),
+		},
+		{
+			label: 'data-melt-tags-input-tag',
+			value: ATTRS.MELT('tag'),
 		},
 	],
 };
@@ -110,37 +142,75 @@ const deleteTrigger: APISchema = {
 		{
 			label: 'id',
 			type: 'string',
+			description: 'The tag ID the delete trigger will delete.',
 		},
 		{
 			label: 'value',
 			type: 'string',
+			description: 'The tag value the delete trigger will delete.',
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the delete trigger is disabled.',
 		},
 	],
 	dataAttributes: [
 		{
-			label: 'data-melt-tags-input-delete-trigger',
-			value: 'Present on the delete trigger elements.',
-		},
-		{
 			label: 'data-tag-id',
-			value: 'Unique tag ID.',
+			value: 'The unique ID of the tag associated with the delete trigger',
 		},
 		{
 			label: 'data-tag-value',
-			value: 'Tag value',
+			value: 'The value of the tag associated with the delete trigger.',
 		},
 		{
 			label: 'data-disabled',
-			value: 'Present if the tag is disabled.',
+			value: ATTRS.DISABLED('delete trigger'),
 		},
 		{
 			label: 'data-selected',
-			value: 'Present if the tag is selected.',
+			value: ATTRS.SELECTED('delete trigger'),
+		},
+		{
+			label: 'data-editing',
+			value: 'Present if the tag is being edited.',
+		},
+		{
+			label: 'data-melt-tags-input-delete-trigger',
+			value: ATTRS.MELT('delete trigger'),
+		},
+	],
+};
+
+const edit: APISchema = {
+	title: 'edit',
+	description: 'The button component used to edit a tag.',
+	props: [
+		{
+			label: 'id',
+			type: 'string',
+			description: 'The tag ID the edit trigger will edit.',
+		},
+		{
+			label: 'value',
+			type: 'string',
+			description: 'The tag value the edit trigger will edit.',
+		},
+	],
+	dataAttributes: [
+		{
+			label: 'data-tag-id',
+			value: 'The unique ID of the tag associated with the edit component',
+		},
+		{
+			label: 'data-tag-value',
+			value: 'The value of the tag associated with the edit component.',
+		},
+		{
+			label: 'data-melt-tags-input-edit',
+			value: ATTRS.MELT('edit'),
 		},
 	],
 };
@@ -172,10 +242,11 @@ const keyboard: KeyboardSchema = [
 
 const schemas = {
 	builder,
-	tagsInput,
+	root,
 	input,
 	tag,
 	deleteTrigger,
+	edit,
 	keyboard,
 };
 

@@ -1,31 +1,27 @@
+import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createPopover',
-	description: 'The configuration object passed to the `createPopover` builder function.',
+	description: 'The builder function used to create a popover component.',
 	props: [
 		{
-			label: 'checked',
-			type: ['boolean', '"indeterminate"'],
-			default: 'false',
+			label: 'positioning',
+			type: 'FloatingConfig',
+			default: 'position: "bottom"',
+			description: DESCRIPTIONS.FLOATING_CONFIG,
 		},
 		{
-			label: 'disabled',
+			label: 'arrowSize',
+			type: 'number',
+			default: '8',
+			description: DESCRIPTIONS.ARROW_SIZE,
+		},
+		{
+			label: 'open',
 			type: 'boolean',
 			default: 'false',
-		},
-		{
-			label: 'required',
-			type: 'boolean',
-			default: 'false',
-		},
-		{
-			label: 'name',
-			type: 'string',
-		},
-		{
-			label: 'value',
-			type: 'string',
+			description: 'Whether the popover is open by default or not.',
 		},
 	],
 };
@@ -35,12 +31,12 @@ const trigger: APISchema = {
 	description: 'The button(s) which open/close the popover.',
 	dataAttributes: [
 		{
-			label: 'data-melt-popover-trigger',
-			value: 'Present on the trigger element(s)',
+			label: 'data-state',
+			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-state',
-			value: "`'open' | 'closed'`",
+			label: 'data-melt-popover-trigger',
+			value: ATTRS.MELT('trigger'),
 		},
 	],
 };
@@ -50,46 +46,58 @@ const arrow: APISchema = {
 	description: 'The optional arrow element.',
 	dataAttributes: [
 		{
-			label: 'data-melt-popover-arrow',
-			value: 'Present on the arrow element',
+			label: 'data-arrow',
+			value: ATTRS.TRUE,
 		},
 		{
-			label: 'data-arrow',
-			value: '`"true"`',
+			label: 'data-melt-popover-arrow',
+			value: ATTRS.MELT('arrow'),
+		},
+	],
+};
+
+const close: APISchema = {
+	title: 'close',
+	description: 'The button(s) which close the popover.',
+	dataAttributes: [
+		{
+			label: 'data-melt-popover-close',
+			value: ATTRS.MELT('close'),
 		},
 	],
 };
 
 const keyboard: KeyboardSchema = [
 	{
-		key: 'Space',
+		key: KBD.SPACE,
 		behavior: 'Toggles the popover.',
 	},
 	{
-		key: 'Enter',
+		key: KBD.ENTER,
 		behavior: 'Toggles the popover.',
 	},
 	{
-		key: 'Tab',
+		key: KBD.TAB,
 		behavior:
 			'Moves focus to the next focusable element; all focusable elements in the popover are included in the page Tab sequence.',
 	},
 	{
-		key: 'Shift + Tab',
+		key: KBD.SHIFT_TAB,
 		behavior:
 			'Moves focus to the previous focusable element; all focusable elements in the popover are included in the page Tab sequence.',
 	},
 	{
-		key: 'Esc',
+		key: KBD.ESCAPE,
 		behavior: 'Closes the popover and moves focus to the trigger element.',
 	},
 ];
 
 const schemas = {
-	keyboard,
 	builder,
 	trigger,
 	arrow,
+	close,
+	keyboard,
 };
 
 const features = [

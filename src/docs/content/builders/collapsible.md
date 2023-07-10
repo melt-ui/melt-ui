@@ -17,6 +17,8 @@ description: An interactive component which expands/collapses a panel.
 ## API Reference
 
 <APITable data={data.builder} />
+<APITable data={data.root} />
+<APITable data={data.content} />
 
 ## Accessibility
 

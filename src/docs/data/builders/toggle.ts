@@ -1,18 +1,21 @@
+import { ATTRS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createToggle',
-	description: 'The configuration object passed to the `createToggle` builder function.',
+	description: 'The builder function used to create a toggle component.',
 	props: [
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the toggle is disabled.',
 		},
 		{
 			label: 'pressed',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the toggle is pressed.',
 		},
 	],
 };
@@ -23,27 +26,27 @@ const toggle: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-disabled',
-			value: 'Present if the toggle is disabled.',
+			value: ATTRS.DISABLED('toggle'),
 		},
 		{
 			label: 'data-state',
-			value: "`'on' | 'off'`",
+			value: ATTRS.ON_OFF,
 		},
 		{
 			label: 'data-melt-toggle',
-			value: 'Present on the toggle element.',
+			value: ATTRS.MELT('toggle'),
 		},
 	],
 };
 
 const keyboard: KeyboardSchema = [
 	{
-		key: 'Space',
-		behavior: 'Activates/deactivates the toggle.',
+		key: KBD.SPACE,
+		behavior: 'Activates/deactivates the `toggle`.',
 	},
 	{
-		key: 'Enter',
-		behavior: 'Activates/deactivates the toggle.',
+		key: KBD.ENTER,
+		behavior: 'Activates/deactivates the `toggle`.',
 	},
 ];
 

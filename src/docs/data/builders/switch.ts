@@ -1,31 +1,37 @@
+import { ATTRS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createSwitch',
-	description: 'The configuration object passed to the `createSwitch` builder function.',
+	description: 'The builder function used to create a switch component.',
 	props: [
 		{
 			label: 'checked',
 			type: 'boolean',
 			default: 'false',
+			description: 'The initial checked state of the switch.',
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the switch is disabled.',
 		},
 		{
 			label: 'required',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the switch is required.',
 		},
 		{
 			label: 'name',
 			type: 'string',
+			description: 'The name of the hidden input element used for form submission..',
 		},
 		{
 			label: 'value',
 			type: 'string',
+			description: 'The value of the hidden input element used for form submission.',
 		},
 	],
 };
@@ -36,26 +42,37 @@ const root: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-disabled',
-			value: 'Present if the switch is disabled.',
+			value: ATTRS.DISABLED('switch'),
 		},
 		{
 			label: 'data-state',
-			value: "`'checked' | 'unchecked'`",
+			value: ATTRS.CHECKED_UNCHECKED,
 		},
 		{
 			label: 'data-melt-switch',
-			value: 'Present on the switch element.',
+			value: ATTRS.MELT('switch'),
+		},
+	],
+};
+
+const input: APISchema = {
+	title: 'input',
+	description: 'The hidden input element used for form submission.',
+	dataAttributes: [
+		{
+			label: 'data-melt-switch-input',
+			value: ATTRS.MELT('input'),
 		},
 	],
 };
 
 const keyboard: KeyboardSchema = [
 	{
-		key: 'Space',
+		key: KBD.SPACE,
 		behavior: 'When the switch has focus, toggles the switch.',
 	},
 	{
-		key: 'Enter',
+		key: KBD.ENTER,
 		behavior: 'When the switch has focus, toggles the switch.',
 	},
 ];
@@ -63,7 +80,8 @@ const keyboard: KeyboardSchema = [
 const schemas = {
 	builder,
 	keyboard,
-	switch: root,
+	root,
+	input,
 };
 const features = ['Full keyboard navigation', 'Can be controlled or uncontrolled'];
 

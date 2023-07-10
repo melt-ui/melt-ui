@@ -1,8 +1,9 @@
+import { ATTRS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createAccordion',
-	description: 'The configuration object passed to the `createAccordion` builder function.',
+	description: 'The builder function used to create an accordion component.',
 	props: [
 		{
 			label: 'type',
@@ -32,7 +33,11 @@ const root: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: "`'vertical' | 'horizontal'`",
+			value: ATTRS.ORIENTATION,
+		},
+		{
+			label: 'data-melt-accordion',
+			value: ATTRS.MELT('accordion root'),
 		},
 	],
 };
@@ -54,11 +59,15 @@ const item: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-state',
-			value: "`'open' | 'closed'`",
+			value: ATTRS.OPEN_CLOSED,
 		},
 		{
 			label: 'data-disabled',
-			value: '`true | undefined`',
+			value: ATTRS.DISABLED('item'),
+		},
+		{
+			label: 'data-melt-accordion-item',
+			value: ATTRS.MELT('accordion item'),
 		},
 	],
 };
@@ -69,28 +78,25 @@ const trigger: APISchema = {
 		'Toggles the collapsed state of an item. It should be nested inside of its associated `item`.',
 	props: [
 		{
-			label: 'type',
-			type: ['"single"', '"multiple"'],
-			default: "'single'",
-		},
-		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the trigger is disabled.',
 		},
 		{
 			label: 'value',
 			type: ['string', 'string[]', 'undefined'],
+			description: 'The value of the associated accordion item.',
 		},
 	],
 	dataAttributes: [
 		{
 			label: 'data-melt-accordion-trigger',
-			value: 'Present on all accordion triggers.',
+			value: ATTRS.MELT('accordion trigger'),
 		},
 		{
 			label: 'data-disabled',
-			value: '`true | undefined`',
+			value: ATTRS.DISABLED('trigger'),
 		},
 		{
 			label: 'data-value',
@@ -106,56 +112,62 @@ const content: APISchema = {
 		{
 			label: 'value',
 			type: 'string',
+			description: 'The value of associated accordion item.',
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the content is disabled.',
 		},
 	],
 	dataAttributes: [
 		{
 			label: 'data-state',
-			value: "`'open' | 'closed'`",
+			value: ATTRS.OPEN_CLOSED,
 		},
 		{
 			label: 'data-disabled',
-			value: '`"true" | undefined`',
+			value: ATTRS.DISABLED('content'),
+		},
+		{
+			label: 'data-melt-accordion-content',
+			value: ATTRS.MELT('accordion content'),
 		},
 	],
 };
 
 const keyboard: KeyboardSchema = [
 	{
-		key: 'Space',
+		key: KBD.SPACE,
 		behavior: 'When the `trigger` of a collapsed section is focused, expands the section.',
 	},
 	{
-		key: 'Enter',
+		key: KBD.ENTER,
 		behavior: 'When the `trigger` of a collapsed section is focused, expands the section.',
 	},
 	{
-		key: 'Tab',
+		key: KBD.TAB,
 		behavior: 'Moves focus to the next focusable element.',
 	},
 	{
-		key: 'Shift + Tab',
+		key: KBD.SHIFT_TAB,
 		behavior: 'Moves focus to the previous focusable element',
 	},
 	{
-		key: 'ArrowDown',
+		key: KBD.ARROW_DOWN,
 		behavior: 'Moves focus to the next `trigger` element.',
 	},
 	{
-		key: 'ArrowUp',
+		key: KBD.ARROW_UP,
 		behavior: 'Moves focus to the previous `trigger` element.',
 	},
 	{
-		key: 'Home',
+		key: KBD.HOME,
 		behavior: 'When focus is on a `trigger`, moves focus to the first `trigger`.',
 	},
 	{
-		key: 'End',
+		key: KBD.END,
 		behavior: 'When focus is on a `trigger`, moves focus to the last `trigger`.',
 	},
 ];

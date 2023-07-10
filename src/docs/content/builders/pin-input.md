@@ -4,9 +4,16 @@ description: A sequence of one-character alphanumeric inputs.
 ---
 
 <script>
-    import { KbdTable } from '$docs/components'
+    import { APITable, KbdTable } from '$docs/components'
     export let data
 </script>
+
+## API Reference
+
+<APITable data={data.builder} />
+<APITable data={data.root} />
+<APITable data={data.input} />
+<APITable data={data.hiddenInput} />
 
 ## Accessibility
 
