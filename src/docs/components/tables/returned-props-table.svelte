@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { APISchema } from '$docs/types';
 	import { transformAPIString } from '$docs/utils';
-	import { APITableHeading } from '$docs/components';
+	import { APITableHeading, InfoPopover } from '$docs/components';
 
 	export let data: APISchema['returnedProps'];
 </script>
@@ -21,36 +21,35 @@
 				<table class="w-full min-w-[540px] text-left sm:min-w-full">
 					<tbody class="divide-y divide-neutral-700">
 						<tr class="w-1/4 text-neutral-300">
-							<td class="w-[20%] whitespace-nowrap py-2 pl-4 text-sm font-medium sm:pl-0">
+							<td class="w-[25%] whitespace-nowrap py-2 pl-4 text-sm font-medium sm:pl-0">
 								Returned Prop
 							</td>
-							<td class="w-[35%] whitespace-nowrap py-2 text-sm font-medium">Type</td>
-							<td class="w-[45%] whitespace-nowrap py-2 text-sm font-medium">Description</td>
+							<td class="w-[75%] whitespace-nowrap py-2 text-sm font-medium">Description</td>
 						</tr>
 						{#each data as returnedProp}
 							<tr>
-								<td class=" py-3 pl-4 align-baseline sm:pl-0">
-									{#if returnedProp.link}
-										<a
-											href={returnedProp.link}
-											class="overflow-x-visible text-magnum-300 underline underline-offset-4 transition-all hover:underline-offset-[6px]"
-										>
-											<code>
-												{returnedProp.name}
-											</code>
-										</a>
-									{:else}
-										<code>{returnedProp.name}</code>
-									{/if}
-								</td>
-								<td class="py-3 align-baseline text-sm">
-									<div class="my-0 space-x-5 whitespace-nowrap">
+								<td class="py-3 pl-4 pr-2 align-baseline sm:pl-0">
+									<div class="mdsvex flex items-center gap-1.5">
+										<div>
+											{#if returnedProp.link}
+												<a
+													href={returnedProp.link}
+													class="overflow-x-visible text-magnum-300 underline underline-offset-4 transition-all hover:underline-offset-[6px]"
+												>
+													<code>
+														{returnedProp.name}
+													</code>
+												</a>
+											{:else}
+												<code>{returnedProp.name}</code>
+											{/if}
+										</div>
 										{#if returnedProp.type}
-											<code class="neutral">
-												{transformAPIString(returnedProp.type)}
-											</code>
-										{:else}
-											-
+											<InfoPopover iconClasses="text-neutral-200">
+												<code class="neutral">
+													{transformAPIString(returnedProp.type)}
+												</code>
+											</InfoPopover>
 										{/if}
 									</div>
 								</td>

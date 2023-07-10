@@ -1,3 +1,5 @@
+import rawFloatingConfig from '$docs/data/long-types/floating-config?raw';
+
 export const DESCRIPTIONS = {
 	FLOATING_CONFIG:
 		'A configuration object which determines how the floating element is positioned relative to the trigger.',
@@ -33,6 +35,12 @@ export const TYPES = {
 	EVENT_HANDLER: '(e: Event) => void',
 	FLOATING_CONFIG: 'FloatingConfig',
 	ORIENTATION: ["'horizontal'", "'vertical'"],
+};
+
+export const LONG_TYPES = {
+	FLOATING_CONFIG: {
+		rawCode: rawFloatingConfig,
+	},
 };
 
 export const KBD = {

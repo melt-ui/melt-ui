@@ -7,6 +7,7 @@
 	const { trigger, content, open, arrow } = createPopover();
 
 	export let iconClasses = '';
+	export let contentClasses = '';
 </script>
 
 <button {...$trigger} use:trigger aria-label="More info">
@@ -18,7 +19,10 @@
 		{...$content}
 		use:content
 		transition:fade={{ duration: 100 }}
-		class="z-30 w-full max-w-[265px] rounded-md bg-zinc-800 px-4 py-3 shadow-sm shadow-neutral-800"
+		class={cn(
+			'mdsvex z-30 max-w-[300px] rounded-md bg-zinc-800 px-4 py-3 shadow-sm shadow-neutral-800',
+			contentClasses
+		)}
 	>
 		<div {...$arrow} />
 		<p class="text-sm leading-5 text-white">
@@ -26,3 +30,9 @@
 		</p>
 	</div>
 {/if}
+
+<style lang="postcss">
+	div {
+		@apply focus:ring-0 !important;
+	}
+</style>

@@ -71,12 +71,18 @@ export type NavItemWithChildren = NavItem & {
 	items: NavItemWithChildren[];
 };
 
+export type LongType = {
+	rawCode: string;
+	highlightedCode?: string;
+};
+
 export type Props = Array<{
 	name: string;
 	type: string | string[];
 	default?: string;
 	required?: boolean;
 	description?: string;
+	longType?: LongType;
 }>;
 
 export type Events = Array<{

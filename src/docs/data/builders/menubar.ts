@@ -1,4 +1,4 @@
-import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, LONG_TYPES, TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 import type { BuilderData } from '.';
 
@@ -24,6 +24,7 @@ const menuBuilder: APISchema = {
 			type: 'FloatingConfig',
 			default: "placement: 'bottom'",
 			description: DESCRIPTIONS.FLOATING_CONFIG,
+			longType: LONG_TYPES.FLOATING_CONFIG,
 		},
 		{
 			name: 'arrowSize',
@@ -268,6 +269,7 @@ const submenuBuilder: APISchema = {
 			type: 'FloatingConfig',
 			default: "placement: 'right'",
 			description: DESCRIPTIONS.FLOATING_CONFIG,
+			longType: LONG_TYPES.FLOATING_CONFIG,
 		},
 		{
 			name: 'disabled',

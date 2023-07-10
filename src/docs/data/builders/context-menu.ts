@@ -1,6 +1,7 @@
 import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 import type { BuilderData } from '.';
+import rawFloatingConfig from '$docs/data/long-types/floating-config?raw';
 
 const builder: APISchema = {
 	title: 'createContextMenu',
@@ -8,9 +9,12 @@ const builder: APISchema = {
 	props: [
 		{
 			name: 'positioning',
-			type: 'FloatingConfig',
 			default: "placement: 'right'",
 			description: DESCRIPTIONS.FLOATING_CONFIG,
+			type: 'FloatingConfig',
+			longType: {
+				rawCode: rawFloatingConfig,
+			},
 		},
 		{
 			name: 'arrowSize',

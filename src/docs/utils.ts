@@ -8,7 +8,7 @@ import rawGlobalCSS from '../../other/globalcss.html?raw';
 import { highlightCode } from '$docs/highlighter';
 import type { DocResolver, PreviewFile, PreviewResolver } from './types';
 import { error } from '@sveltejs/kit';
-import { isBuilderName } from './data/builders';
+import { isBuilderName, data, type Builder } from './data/builders';
 import type { SvelteComponent } from 'svelte';
 import { get, writable } from 'svelte/store';
 
@@ -371,4 +371,27 @@ export function createCopyCodeButton() {
 		copyCode: copyCode,
 		setCodeString: setCodeString,
 	};
+}
+
+export async function getBuilderData(slug: Builder) {
+	const builderData = data[slug];
+	const schemas = builderData['schemas'];
+	if (!schemas) return builderData;
+
+	for (const key of schemas) {
+		if (Object.prototype.hasOwnProperty.call(key, 'props')) {
+			const props = key['props'];
+			if (!props) continue;
+			for (const prop of props) {
+				if (!prop['longType']) continue;
+				const longType = prop['longType'];
+				const highlightedCode = await highlightCode(longType.rawCode, 'typescript', {
+					pre: '!mt-0 !mb-0',
+				});
+				prop['longType']['highlightedCode'] = highlightedCode;
+			}
+		}
+	}
+	builderData.schemas = schemas;
+	return builderData;
 }

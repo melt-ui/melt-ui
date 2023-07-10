@@ -5,8 +5,9 @@ import {
 	getMainPreviewComponent,
 	getAllPreviewSnippets,
 	getAllPreviewComponents,
+	getBuilderData,
 } from '$docs/utils';
-import { builderList, data, isBuilderName } from '$docs/data/builders';
+import { builderList, isBuilderName } from '$docs/data/builders';
 
 export const entries = (() => {
 	return builderList.map((item) => {
@@ -26,6 +27,6 @@ export const load: PageLoad = async (event) => {
 		mainPreview: getMainPreviewComponent(event.params.name),
 		snippets: getAllPreviewSnippets(event.params.name),
 		previews: getAllPreviewComponents(event.params.name),
-		builderData: data[event.params.name],
+		builderData: getBuilderData(event.params.name),
 	};
 };

@@ -2,6 +2,7 @@
 	import type { APISchema } from '$docs/types';
 	import { transformAPIString } from '$docs/utils';
 	import { APITableHeading } from '$docs/components';
+	import TypeDialog from '../type-dialog.svelte';
 	function replaceDoubleQuotes(str: string) {
 		return str.replace(/"/g, "'");
 	}
@@ -51,9 +52,16 @@
 								</td>
 								<td class="py-3 align-baseline text-sm">
 									<div class="my-0 space-x-5 whitespace-nowrap">
-										<code class="neutral">
-											{transformAPIString(prop.type)}
-										</code>
+										{#if prop.longType}
+											<TypeDialog
+												code={prop.longType.highlightedCode}
+												name={transformAPIString(prop.type)}
+											/>
+										{:else if prop.type}
+											<code class="neutral">
+												{transformAPIString(prop.type)}
+											</code>
+										{/if}
 									</div>
 									{#if prop.description}
 										<div class="my-2 leading-7">

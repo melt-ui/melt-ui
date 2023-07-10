@@ -1,4 +1,4 @@
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, LONG_TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 import type { BuilderData } from '.';
 
@@ -11,6 +11,7 @@ const builder: APISchema = {
 			type: 'FloatingConfig',
 			default: 'position: "bottom"',
 			description: DESCRIPTIONS.FLOATING_CONFIG,
+			longType: LONG_TYPES.FLOATING_CONFIG,
 		},
 		{
 			name: 'arrowSize',

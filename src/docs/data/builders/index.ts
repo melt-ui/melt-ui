@@ -55,6 +55,8 @@ export const builderList = [
 	'tooltip',
 ] as const;
 
+export type Builder = (typeof builderList)[number];
+
 export function isBuilderName(key: string): key is (typeof builderList)[number] {
 	return builderList.includes(key as (typeof builderList)[number]);
 }
