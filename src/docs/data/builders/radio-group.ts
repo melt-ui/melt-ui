@@ -6,31 +6,31 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('radio group'),
 	props: [
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the radio group is disabled.',
 		},
 		{
-			label: 'loop',
+			name: 'loop',
 			type: 'boolean',
 			default: 'true',
 			description: 'Whether or not the radio group should loop when navigating with the keyboard.',
 		},
 		{
-			label: 'required',
+			name: 'required',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the radio group is required.',
 		},
 		{
-			label: 'orientation',
+			name: 'orientation',
 			type: ['"horizontal"', '"vertical"'],
 			default: '"vertical"',
 			description: 'The orientation of the radio group.',
 		},
 		{
-			label: 'value',
+			name: 'value',
 			type: 'string',
 			description: 'The value of the checked radio item.',
 		},
@@ -42,11 +42,11 @@ const root: APISchema = {
 	description: 'The radio group component.',
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-melt-radio-group',
+			name: 'data-melt-radio-group',
 			value: ATTRS.MELT('radio group'),
 		},
 	],
@@ -57,13 +57,13 @@ const item: APISchema = {
 	description: 'The radio group item components.',
 	props: [
 		{
-			label: 'value',
+			name: 'value',
 			type: 'string',
 			description: 'The value of the radio item.',
 			required: true,
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the radio item is disabled.',
@@ -71,23 +71,23 @@ const item: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: 'data-disabled',
+			name: 'data-disabled',
 			value: ATTRS.DISABLED('item'),
 		},
 		{
-			label: 'data-value',
+			name: 'data-value',
 			value: 'The value of the radio item.',
 		},
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.CHECKBOX_STATE,
 		},
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-melt-radio-group-item',
+			name: 'data-melt-radio-group-item',
 			value: ATTRS.MELT('radio group item'),
 		},
 	],
@@ -98,13 +98,13 @@ const itemInput: APISchema = {
 	description: 'The hidden input element used for form submission.',
 	props: [
 		{
-			label: 'value',
+			name: 'value',
 			type: 'string',
 			description: 'The value of the radio item.',
 			required: true,
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the radio item is disabled.',

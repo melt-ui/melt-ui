@@ -10,7 +10,7 @@ description: Displays a horizontal or vertical line to separate content.
 
 ## Anatomy
 
-- **Root**: The root container for the separator
+- **Root**: The separator element
 
 ## API Reference
 

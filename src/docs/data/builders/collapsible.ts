@@ -6,12 +6,12 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('collapsible'),
 	props: [
 		{
-			label: 'open',
+			name: 'open',
 			type: 'boolean',
 			default: 'false',
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 		},
@@ -23,15 +23,15 @@ const root: APISchema = {
 	description: 'The root collapsible element.',
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-disabled',
+			name: 'data-disabled',
 			value: ATTRS.DISABLED(),
 		},
 		{
-			label: 'data-melt-collapsible',
+			name: 'data-melt-collapsible',
 			value: ATTRS.MELT('collapsible root'),
 		},
 	],
@@ -42,15 +42,15 @@ const content: APISchema = {
 	description: 'The collapsible content element.',
 	dataAttributes: [
 		{
-			label: 'data-melt-collapsible-content',
+			name: 'data-melt-collapsible-content',
 			value: ATTRS.MELT('collapsible content'),
 		},
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-disabled',
+			name: 'data-disabled',
 			value: ATTRS.DISABLED(),
 		},
 	],

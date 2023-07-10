@@ -7,29 +7,29 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('pin input'),
 	props: [
 		{
-			label: 'placeholder',
+			name: 'placeholder',
 			type: 'string',
 			default: '○',
 			description: 'The placeholder character to use for empty pin-inputs.',
 		},
 		{
-			label: 'value',
+			name: 'value',
 			type: 'string[]',
 			description: 'The value of the pin-input.',
 		},
 		{
-			label: 'name',
+			name: 'name',
 			type: 'string',
 			description: 'The name of the pin-input.',
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the pin-input is disabled.',
 		},
 		{
-			label: 'type',
+			name: 'type',
 			type: 'string',
 			default: 'text',
 			description: 'The type of the pin-input.',
@@ -42,11 +42,11 @@ const root: APISchema = {
 	description: 'The root pin-input element.',
 	dataAttributes: [
 		{
-			label: 'data-complete',
+			name: 'data-complete',
 			value: 'Present if the pin-input is complete.',
 		},
 		{
-			label: 'data-melt-pin-input',
+			name: 'data-melt-pin-input',
 			value: ATTRS.MELT('pin-input'),
 		},
 	],
@@ -57,11 +57,11 @@ const input: APISchema = {
 	description: 'The pin-input input element.',
 	dataAttributes: [
 		{
-			label: 'data-complete',
+			name: 'data-complete',
 			value: 'Present if the pin-input is complete.',
 		},
 		{
-			label: 'data-melt-pin-input-input',
+			name: 'data-melt-pin-input-input',
 			value: ATTRS.MELT('input'),
 		},
 	],
@@ -72,7 +72,7 @@ const hiddenInput: APISchema = {
 	description: 'The hidden input element that stores the pin-input value for form submission.',
 	dataAttributes: [
 		{
-			label: 'data-melt-pin-input-hidden-input',
+			name: 'data-melt-pin-input-hidden-input',
 			value: ATTRS.MELT('hiddenInput'),
 		},
 	],

@@ -72,7 +72,7 @@ export type NavItemWithChildren = NavItem & {
 };
 
 export type Props = Array<{
-	label: string;
+	name: string;
 	type: string | string[];
 	default?: string;
 	required?: boolean;
@@ -85,8 +85,14 @@ export type Events = Array<{
 }>;
 
 export type DataAttributes = Array<{
-	label: string;
+	name: string;
 	value: string;
+}>;
+
+export type ReturnedProps = Array<{
+	name: string;
+	type: string;
+	description: string;
 }>;
 
 export type APISchema = {
@@ -94,6 +100,7 @@ export type APISchema = {
 	description: string;
 	props?: Props;
 	dataAttributes?: DataAttributes;
+	returnedProps?: ReturnedProps;
 };
 
 export type KeyboardSchema = Array<{

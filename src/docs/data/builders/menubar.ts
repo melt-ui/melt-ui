@@ -9,7 +9,7 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('menubar'),
 	props: [
 		{
-			label: 'loop',
+			name: 'loop',
 			type: 'boolean',
 			default: 'true',
 			description: DESCRIPTIONS.LOOP,
@@ -22,25 +22,25 @@ const menuBuilder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('menubar menu'),
 	props: [
 		{
-			label: 'positioning',
+			name: 'positioning',
 			type: 'FloatingConfig',
 			default: "placement: 'bottom'",
 			description: DESCRIPTIONS.FLOATING_CONFIG,
 		},
 		{
-			label: 'arrowSize',
+			name: 'arrowSize',
 			type: 'number',
 			default: '8',
 			description: DESCRIPTIONS.ARROW_SIZE,
 		},
 		{
-			label: 'preventScroll',
+			name: 'preventScroll',
 			type: 'boolean',
 			default: 'true',
 			description: DESCRIPTIONS.PREVENT_SCROLL('menu'),
 		},
 		{
-			label: 'loop',
+			name: 'loop',
 			type: 'boolean',
 			default: 'false',
 			description: DESCRIPTIONS.LOOP,
@@ -52,7 +52,7 @@ const item: APISchema = {
 	description: 'A basic menu item.',
 	props: [
 		{
-			label: 'onSelect',
+			name: 'onSelect',
 			type: [TYPES.EVENT_HANDLER, 'undefined'],
 			default: 'undefined',
 			description: DESCRIPTIONS.ON_SELECT,
@@ -60,11 +60,11 @@ const item: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-melt-menubar-menu-item',
+			name: 'data-melt-menubar-menu-item',
 			value: ATTRS.MELT('item'),
 		},
 	],
@@ -75,13 +75,13 @@ const checkboxItem: APISchema = {
 	description: 'A checkbox menu item.',
 	props: [
 		{
-			label: 'checked',
+			name: 'checked',
 			type: 'Writable<boolean>',
 			default: 'Writable<false>',
 			description: 'A writable boolean which determines whether or not the checkbox is checked.',
 		},
 		{
-			label: 'onSelect',
+			name: 'onSelect',
 			type: [TYPES.EVENT_HANDLER, 'undefined'],
 			default: 'undefined',
 			description: DESCRIPTIONS.ON_SELECT,
@@ -89,11 +89,11 @@ const checkboxItem: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-melt-menubar-menu-checkbox-item',
+			name: 'data-melt-menubar-menu-checkbox-item',
 			value: ATTRS.MELT('checkbox item'),
 		},
 	],
@@ -104,7 +104,7 @@ const radioGroup: APISchema = {
 	description: 'A group of radio menu items.',
 	dataAttributes: [
 		{
-			label: 'data-melt-menubar-menu-radio-group',
+			name: 'data-melt-menubar-menu-radio-group',
 			value: ATTRS.MELT('radio group'),
 		},
 	],
@@ -115,18 +115,18 @@ const radioItem: APISchema = {
 	description: 'A radiogroup menu item.',
 	props: [
 		{
-			label: 'value',
+			name: 'value',
 			type: 'string',
 			description: 'The value of the radio item.',
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the radio item is disabled.',
 		},
 		{
-			label: 'onSelect',
+			name: 'onSelect',
 			type: [TYPES.EVENT_HANDLER, 'undefined'],
 			default: 'undefined',
 			description: DESCRIPTIONS.ON_SELECT,
@@ -134,11 +134,11 @@ const radioItem: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-melt-menubar-menu-radio-item',
+			name: 'data-melt-menubar-menu-radio-item',
 			value: ATTRS.MELT('radio item'),
 		},
 	],
@@ -149,11 +149,11 @@ const menu: APISchema = {
 	description: 'The menu element.',
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-melt-menubar-menu',
+			name: 'data-melt-menubar-menu',
 			value: ATTRS.MELT('menu'),
 		},
 	],
@@ -164,11 +164,11 @@ const arrow: APISchema = {
 	description: 'An optional arrow element which points to the trigger.',
 	dataAttributes: [
 		{
-			label: 'data-arrow',
+			name: 'data-arrow',
 			value: ATTRS.TRUE,
 		},
 		{
-			label: 'data-melt-menubar-menu-arrow',
+			name: 'data-melt-menubar-menu-arrow',
 			value: ATTRS.MELT('arrow'),
 		},
 	],
@@ -179,11 +179,11 @@ const trigger: APISchema = {
 	description: 'The element which opens the menu.',
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-melt-menubar-menu-trigger',
+			name: 'data-melt-menubar-menu-trigger',
 			value: ATTRS.MELT('trigger'),
 		},
 	],
@@ -194,7 +194,7 @@ const separator: APISchema = {
 	description: 'A horizontal line which separates menu items.',
 	dataAttributes: [
 		{
-			label: 'data-melt-menubar-menu-separator',
+			name: 'data-melt-menubar-menu-separator',
 			value: ATTRS.MELT('separator'),
 		},
 	],
@@ -205,11 +205,11 @@ const submenu: APISchema = {
 	description: 'A submenu element displayed when its trigger is selected.',
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-melt-menubar-menu-submenu',
+			name: 'data-melt-menubar-menu-submenu',
 			value: ATTRS.MELT('submenu'),
 		},
 	],
@@ -220,15 +220,15 @@ const subTrigger: APISchema = {
 	description: 'A menuitem which opens its associated submenu.',
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-disabled',
+			name: 'data-disabled',
 			value: ATTRS.DISABLED('subtrigger'),
 		},
 		{
-			label: 'data-melt-menubar-menu-subtrigger',
+			name: 'data-melt-menubar-menu-subtrigger',
 			value: ATTRS.MELT('subtrigger'),
 		},
 	],

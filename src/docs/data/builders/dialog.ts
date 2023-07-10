@@ -6,25 +6,25 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('dialog'),
 	props: [
 		{
-			label: 'role',
+			name: 'role',
 			type: ["'dialog'", "'alertdialog'"],
 			default: "'dialog'",
 			description: 'The `role` attribute of the dialog element.',
 		},
 		{
-			label: 'preventScroll',
+			name: 'preventScroll',
 			type: 'boolean',
 			default: 'true',
 			description: DESCRIPTIONS.PREVENT_SCROLL('dialog'),
 		},
 		{
-			label: 'closeOnEscape',
+			name: 'closeOnEscape',
 			type: 'boolean',
 			default: 'true',
 			description: DESCRIPTIONS.CLOSE_ON_ESCAPE('dialog'),
 		},
 		{
-			label: 'closeOnOutsideClick',
+			name: 'closeOnOutsideClick',
 			type: 'boolean',
 			default: 'true',
 			description: DESCRIPTIONS.CLOSE_ON_CLICK_OUTSIDE('dialog'),
@@ -37,7 +37,7 @@ const trigger: APISchema = {
 	description: 'The element which triggers the dialog to open when clicked or pressed.',
 	dataAttributes: [
 		{
-			label: 'data-melt-dialog-trigger',
+			name: 'data-melt-dialog-trigger',
 			value: ATTRS.MELT('trigger'),
 		},
 	],
@@ -48,11 +48,11 @@ const overlay: APISchema = {
 	description: 'The overlay element which covers the page when the dialog is open.',
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-melt-dialog-overlay',
+			name: 'data-melt-dialog-overlay',
 			value: ATTRS.MELT('overlay'),
 		},
 	],
@@ -63,11 +63,11 @@ const content: APISchema = {
 	description: 'The element displayed within the dialog when it is open.',
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-melt-dialog-content',
+			name: 'data-melt-dialog-content',
 			value: ATTRS.MELT('content'),
 		},
 	],
@@ -78,7 +78,7 @@ const title: APISchema = {
 	description: 'The title of the dialog. Used for accessibility purposes.',
 	dataAttributes: [
 		{
-			label: 'data-melt-dialog-title',
+			name: 'data-melt-dialog-title',
 			value: ATTRS.MELT('title'),
 		},
 	],
@@ -89,7 +89,7 @@ const description: APISchema = {
 	description: 'The description of the dialog. Used for accessibility purposes.',
 	dataAttributes: [
 		{
-			label: 'data-melt-dialog-description',
+			name: 'data-melt-dialog-description',
 			value: ATTRS.MELT('description'),
 		},
 	],
@@ -100,7 +100,7 @@ const close: APISchema = {
 	description: 'The element which closes the dialog when clicked or pressed.',
 	dataAttributes: [
 		{
-			label: 'data-melt-dialog-close',
+			name: 'data-melt-dialog-close',
 			value: ATTRS.MELT('close'),
 		},
 	],

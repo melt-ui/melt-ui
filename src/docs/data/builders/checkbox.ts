@@ -6,31 +6,31 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('checkbox'),
 	props: [
 		{
-			label: 'checked',
+			name: 'checked',
 			type: ['boolean', '"indeterminate"'],
 			default: 'false',
 			description:
 				'The initial checked state of the checkbox. `"indeterminate"` is used to indicate that the checkbox is in an indeterminate state.',
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the checkbox is disabled.',
 		},
 		{
-			label: 'required',
+			name: 'required',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the checkbox is required.',
 		},
 		{
-			label: 'name',
+			name: 'name',
 			type: 'string',
 			description: 'The name of the checkbox.',
 		},
 		{
-			label: 'value',
+			name: 'value',
 			type: 'string',
 			description: 'The value of the checkbox.',
 		},
@@ -42,15 +42,15 @@ const root: APISchema = {
 	description: 'The checkbox element.',
 	dataAttributes: [
 		{
-			label: 'data-disabled',
+			name: 'data-disabled',
 			value: ATTRS.DISABLED(),
 		},
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.CHECKBOX_STATE,
 		},
 		{
-			label: 'data-melt-checkbox',
+			name: 'data-melt-checkbox',
 			value: ATTRS.MELT('checkbox'),
 		},
 	],
@@ -61,7 +61,7 @@ const input: APISchema = {
 	description: 'The native input element.',
 	dataAttributes: [
 		{
-			label: 'data-melt-checkbox-input',
+			name: 'data-melt-checkbox-input',
 			value: ATTRS.MELT('checkbox input'),
 		},
 	],

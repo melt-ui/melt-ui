@@ -6,37 +6,37 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('slider'),
 	props: [
 		{
-			label: 'value',
+			name: 'value',
 			type: 'number[]',
 			default: '[]',
 			description: 'The value of the slider.',
 		},
 		{
-			label: 'min',
+			name: 'min',
 			type: 'number',
 			default: '0',
 			description: 'The minimum value of the slider.',
 		},
 		{
-			label: 'max',
+			name: 'max',
 			type: 'number',
 			default: '100',
 			description: 'The maximum value of the slider.',
 		},
 		{
-			label: 'step',
+			name: 'step',
 			type: 'number',
 			default: '1',
 			description: 'The amount to increment/decrement the value by when using the keyboard.',
 		},
 		{
-			label: 'orientation',
+			name: 'orientation',
 			type: TYPES.ORIENTATION,
 			default: "'horizontal'",
 			description: 'The orientation of the slider.',
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the slider is disabled.',
@@ -76,11 +76,11 @@ const root: APISchema = {
 	description: 'The slider component.',
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-melt-slider',
+			name: 'data-melt-slider',
 			value: ATTRS.MELT('slider'),
 		},
 	],
@@ -91,7 +91,7 @@ const range: APISchema = {
 	description: 'The slider range component.',
 	dataAttributes: [
 		{
-			label: 'data-melt-slider-range',
+			name: 'data-melt-slider-range',
 			value: ATTRS.MELT('slider range'),
 		},
 	],
@@ -102,7 +102,7 @@ const thumb: APISchema = {
 	description: 'The slider thumb component.',
 	dataAttributes: [
 		{
-			label: 'data-melt-slider-thumb',
+			name: 'data-melt-slider-thumb',
 			value: ATTRS.MELT('slider thumb'),
 		},
 	],

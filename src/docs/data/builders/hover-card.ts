@@ -6,37 +6,37 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('hover card'),
 	props: [
 		{
-			label: 'defaultOpen',
+			name: 'defaultOpen',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether the hover card is open by default.',
 		},
 		{
-			label: 'positioning',
+			name: 'positioning',
 			type: 'FloatingConfig',
 			default: 'placement: "bottom"',
 			description: DESCRIPTIONS.FLOATING_CONFIG,
 		},
 		{
-			label: 'arrowSize',
+			name: 'arrowSize',
 			type: 'number',
 			default: '8',
 			description: DESCRIPTIONS.ARROW_SIZE,
 		},
 		{
-			label: 'closeOnOutsideClick',
+			name: 'closeOnOutsideClick',
 			type: 'boolean',
 			default: 'true',
 			description: DESCRIPTIONS.CLOSE_ON_CLICK_OUTSIDE('hover card'),
 		},
 		{
-			label: 'openDelay',
+			name: 'openDelay',
 			type: 'number',
 			default: '700',
 			description: 'The delay in milliseconds before the hover card opens.',
 		},
 		{
-			label: 'closeDelay',
+			name: 'closeDelay',
 			type: 'number',
 			default: '300',
 			description: 'The delay in milliseconds before the hover card closes.',
@@ -49,11 +49,11 @@ const trigger: APISchema = {
 	description: 'The hover card trigger element.',
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-melt-hover-card-trigger',
+			name: 'data-melt-hover-card-trigger',
 			value: ATTRS.MELT('trigger'),
 		},
 	],
@@ -64,11 +64,11 @@ const content: APISchema = {
 	description: 'The content displayed in the hovercard',
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-melt-hover-card-content',
+			name: 'data-melt-hover-card-content',
 			value: ATTRS.MELT('content'),
 		},
 	],
@@ -79,11 +79,11 @@ const arrow: APISchema = {
 	description: 'The optional arrow element that points to the trigger.',
 	dataAttributes: [
 		{
-			label: 'data-arrow',
+			name: 'data-arrow',
 			value: ATTRS.TRUE,
 		},
 		{
-			label: 'data-melt-hover-card-arrow',
+			name: 'data-melt-hover-card-arrow',
 			value: ATTRS.MELT('arrow'),
 		},
 	],

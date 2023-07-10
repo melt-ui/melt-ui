@@ -6,19 +6,19 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('context menu'),
 	props: [
 		{
-			label: 'positioning',
+			name: 'positioning',
 			type: 'FloatingConfig',
 			default: "placement: 'right'",
 			description: DESCRIPTIONS.FLOATING_CONFIG,
 		},
 		{
-			label: 'arrowSize',
+			name: 'arrowSize',
 			type: 'number',
 			default: '8',
 			description: DESCRIPTIONS.ARROW_SIZE,
 		},
 		{
-			label: 'preventScroll',
+			name: 'preventScroll',
 			type: 'boolean',
 			default: 'true',
 			description: DESCRIPTIONS.PREVENT_SCROLL('context menu'),
@@ -31,11 +31,11 @@ const menu: APISchema = {
 	description: 'The element which wraps the entire dropdown menu.',
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-melt-context-menu',
+			name: 'data-melt-context-menu',
 			value: ATTRS.MELT('context-menu'),
 		},
 	],
@@ -46,11 +46,11 @@ const trigger: APISchema = {
 	description: 'The element which when right clicked inside, opens the context menu.',
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-melt-context-menu-trigger',
+			name: 'data-melt-context-menu-trigger',
 			value: ATTRS.MELT('trigger'),
 		},
 	],
@@ -61,11 +61,11 @@ const arrow: APISchema = {
 	description: 'An optional arrow element which points to the trigger.',
 	dataAttributes: [
 		{
-			label: 'data-arrow',
+			name: 'data-arrow',
 			value: ATTRS.TRUE,
 		},
 		{
-			label: 'data-melt-context-menu-arrow',
+			name: 'data-melt-context-menu-arrow',
 			value: ATTRS.MELT('arrow'),
 		},
 	],
@@ -76,22 +76,22 @@ const item: APISchema = {
 	description: 'A basic menu item.',
 	props: [
 		{
-			label: 'onSelect',
+			name: 'onSelect',
 			type: TYPES.EVENT_HANDLER,
 			description: DESCRIPTIONS.ON_SELECT,
 		},
 	],
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-context-menu-item',
+			name: 'data-context-menu-item',
 			value: ATTRS.MELT('item'),
 		},
 		{
-			label: 'data-highlighted',
+			name: 'data-highlighted',
 			value: ATTRS.HIGHLIGHTED('item'),
 		},
 	],
@@ -102,27 +102,27 @@ const checkboxItem: APISchema = {
 	description: 'A checkbox menu item.',
 	props: [
 		{
-			label: 'checked',
+			name: 'checked',
 			type: 'Writable<boolean>',
 			description: 'A writable store which controls the checked state of the checkbox item.',
 		},
 		{
-			label: 'onSelect',
+			name: 'onSelect',
 			type: TYPES.EVENT_HANDLER,
 			description: DESCRIPTIONS.ON_SELECT,
 		},
 	],
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-melt-context-menu-checkbox-item',
+			name: 'data-melt-context-menu-checkbox-item',
 			value: ATTRS.MELT('checkbox item'),
 		},
 		{
-			label: 'data-highlighted',
+			name: 'data-highlighted',
 			value: ATTRS.HIGHLIGHTED('checkbox item'),
 		},
 	],
@@ -133,7 +133,7 @@ const radioGroupBuilder: APISchema = {
 	description: 'The configuration object passed to the `createMenuRadioGroup` builder function.',
 	props: [
 		{
-			label: 'value',
+			name: 'value',
 			type: 'string',
 			description: 'The value of the selected radio item.',
 		},
@@ -145,7 +145,7 @@ const radioGroup: APISchema = {
 	description: 'A group of radio menu items.',
 	dataAttributes: [
 		{
-			label: 'data-melt-context-menu-radio-group',
+			name: 'data-melt-context-menu-radio-group',
 			value: ATTRS.MELT('radio group'),
 		},
 	],
@@ -156,34 +156,34 @@ const radioItem: APISchema = {
 	description: 'A radiogroup menu item.',
 	props: [
 		{
-			label: 'value',
+			name: 'value',
 			type: 'string',
 			description: 'The value of the radio item.',
 			required: true,
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether the radio item is disabled.',
 		},
 		{
-			label: 'onSelect',
+			name: 'onSelect',
 			type: TYPES.EVENT_HANDLER,
 			description: DESCRIPTIONS.ON_SELECT,
 		},
 	],
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-melt-context-menu-radio-item',
+			name: 'data-melt-context-menu-radio-item',
 			value: ATTRS.MELT('radio item'),
 		},
 		{
-			label: 'data-highlighted',
+			name: 'data-highlighted',
 			value: ATTRS.HIGHLIGHTED('radio item'),
 		},
 	],
@@ -194,7 +194,7 @@ const separator: APISchema = {
 	description: 'A horizontal line which separates menu items.',
 	dataAttributes: [
 		{
-			label: 'data-melt-context-menu-separator',
+			name: 'data-melt-context-menu-separator',
 			value: ATTRS.MELT('separator'),
 		},
 	],
@@ -205,13 +205,13 @@ const submenuBuilder: APISchema = {
 	description: 'The configuration object passed to the `createDropdownSubMenu` builder function.',
 	props: [
 		{
-			label: 'positioning',
+			name: 'positioning',
 			type: 'FloatingConfig',
 			default: "placement: 'right'",
 			description: DESCRIPTIONS.FLOATING_CONFIG,
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether the submenu is disabled.',
@@ -224,11 +224,11 @@ const submenu: APISchema = {
 	description: 'A submenu element displayed when its trigger is selected.',
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-melt-context-menu-submenu',
+			name: 'data-melt-context-menu-submenu',
 			value: ATTRS.MELT('submenu'),
 		},
 	],
@@ -239,19 +239,19 @@ const subTrigger: APISchema = {
 	description: 'A button which opens its associated submenu.',
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-disabled',
+			name: 'data-disabled',
 			value: ATTRS.DISABLED('subtrigger'),
 		},
 		{
-			label: 'data-melt-context-menu-subtrigger',
+			name: 'data-melt-context-menu-subtrigger',
 			value: ATTRS.MELT('subtrigger'),
 		},
 		{
-			label: 'data-highlighted',
+			name: 'data-highlighted',
 			value: ATTRS.HIGHLIGHTED('subtrigger'),
 		},
 	],

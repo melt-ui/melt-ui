@@ -6,12 +6,12 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('progress bar'),
 	props: [
 		{
-			label: 'value',
+			name: 'value',
 			type: 'number',
 			description: 'The current value of the progress bar.',
 		},
 		{
-			label: 'max',
+			name: 'max',
 			type: 'number',
 			default: '100',
 			description: 'The maximum value of the progress bar.',
@@ -24,19 +24,19 @@ const root: APISchema = {
 	description: 'The progress component.',
 	dataAttributes: [
 		{
-			label: 'data-value',
+			name: 'data-value',
 			value: 'The current value of the progress bar.',
 		},
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: "`'indeterminate' | 'complete' | 'loading'`",
 		},
 		{
-			label: 'data-max',
+			name: 'data-max',
 			value: 'The maximum value of the progress bar.',
 		},
 		{
-			label: 'data-melt-progress',
+			name: 'data-melt-progress',
 			value: ATTRS.MELT('root'),
 		},
 	],

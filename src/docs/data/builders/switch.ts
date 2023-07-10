@@ -6,30 +6,30 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('switch'),
 	props: [
 		{
-			label: 'checked',
+			name: 'checked',
 			type: 'boolean',
 			default: 'false',
 			description: 'The initial checked state of the switch.',
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the switch is disabled.',
 		},
 		{
-			label: 'required',
+			name: 'required',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the switch is required.',
 		},
 		{
-			label: 'name',
+			name: 'name',
 			type: 'string',
 			description: 'The name of the hidden input element used for form submission..',
 		},
 		{
-			label: 'value',
+			name: 'value',
 			type: 'string',
 			description: 'The value of the hidden input element used for form submission.',
 		},
@@ -41,15 +41,15 @@ const root: APISchema = {
 	description: 'The switch element.',
 	dataAttributes: [
 		{
-			label: 'data-disabled',
+			name: 'data-disabled',
 			value: ATTRS.DISABLED('switch'),
 		},
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.CHECKED_UNCHECKED,
 		},
 		{
-			label: 'data-melt-switch',
+			name: 'data-melt-switch',
 			value: ATTRS.MELT('switch'),
 		},
 	],
@@ -60,7 +60,7 @@ const input: APISchema = {
 	description: 'The hidden input element used for form submission.',
 	dataAttributes: [
 		{
-			label: 'data-melt-switch-input',
+			name: 'data-melt-switch-input',
 			value: ATTRS.MELT('input'),
 		},
 	],

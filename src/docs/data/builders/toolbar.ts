@@ -6,13 +6,13 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('toolbar'),
 	props: [
 		{
-			label: 'loop',
+			name: 'loop',
 			type: 'boolean',
 			default: 'true',
 			description: DESCRIPTIONS.LOOP,
 		},
 		{
-			label: 'orientation',
+			name: 'orientation',
 			type: TYPES.ORIENTATION,
 			default: '"horizontal"',
 			description: 'The orientation of the toolbar.',
@@ -25,11 +25,11 @@ const root: APISchema = {
 	description: 'The root toolbar element.',
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-melt-toolbar',
+			name: 'data-melt-toolbar',
 			value: ATTRS.MELT('toolbar'),
 		},
 	],
@@ -40,7 +40,7 @@ const button: APISchema = {
 	description: 'The toolbar button element.',
 	dataAttributes: [
 		{
-			label: 'data-melt-toolbar-button',
+			name: 'data-melt-toolbar-button',
 			value: ATTRS.MELT('toolbar button'),
 		},
 	],
@@ -51,7 +51,7 @@ const link: APISchema = {
 	description: 'The toolbar link element.',
 	dataAttributes: [
 		{
-			label: 'data-melt-toolbar-link',
+			name: 'data-melt-toolbar-link',
 			value: ATTRS.MELT('toolbar link'),
 		},
 	],
@@ -62,11 +62,11 @@ const separator: APISchema = {
 	description: 'The toolbar separator element.',
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-melt-toolbar-separator',
+			name: 'data-melt-toolbar-separator',
 			value: ATTRS.MELT('toolbar separator'),
 		},
 	],
@@ -77,19 +77,19 @@ const groupBuilder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('toolbar group'),
 	props: [
 		{
-			label: 'type',
+			name: 'type',
 			type: ["'single'", "'multiple'"],
 			default: "'single'",
 			description:
 				'The type of toolbar group. A `single` group can only have one item selected at a time. A `multiple` group can have multiple items selected at a time.',
 		},
 		{
-			label: 'value',
+			name: 'value',
 			type: ['string', 'string[]', 'null'],
 			description: 'The value of the selected item(s).',
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the toolbar group is disabled.',
@@ -102,11 +102,11 @@ const group: APISchema = {
 	description: 'The root toolbar element for a toolbar group.',
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-melt-toolbar-group',
+			name: 'data-melt-toolbar-group',
 			value: ATTRS.MELT('toolbar group'),
 		},
 	],
@@ -117,12 +117,12 @@ const groupItem: APISchema = {
 	description: 'A an item within a toolbar group.',
 	props: [
 		{
-			label: 'value',
+			name: 'value',
 			type: 'string',
 			description: 'The value of the item.',
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the item is disabled.',
@@ -130,19 +130,19 @@ const groupItem: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-melt-toolbar-item',
+			name: 'data-melt-toolbar-item',
 			value: ATTRS.MELT('toolbar item'),
 		},
 		{
-			label: 'data-disabled',
+			name: 'data-disabled',
 			value: ATTRS.DISABLED('item'),
 		},
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.ON_OFF,
 		},
 	],

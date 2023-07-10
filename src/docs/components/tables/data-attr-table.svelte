@@ -17,10 +17,10 @@
 							</td>
 							<td class="w-[50%] whitespace-nowrap py-2 text-sm font-medium">Value</td>
 						</tr>
-						{#each data as { label, value }}
+						{#each data as { name, value }}
 							<tr>
 								<td class="py-3 pl-4 align-baseline sm:pl-0">
-									<code>{`[${label}]`}</code>
+									<code>{`[${name}]`}</code>
 								</td>
 								<td class="py-3 align-baseline text-sm">
 									<p>{@html transformAPIString(value)}</p>

@@ -6,13 +6,13 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('toggle'),
 	props: [
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the toggle is disabled.',
 		},
 		{
-			label: 'pressed',
+			name: 'pressed',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the toggle is pressed.',
@@ -25,15 +25,15 @@ const root: APISchema = {
 	description: 'The root toggle component.',
 	dataAttributes: [
 		{
-			label: 'data-disabled',
+			name: 'data-disabled',
 			value: ATTRS.DISABLED('toggle'),
 		},
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.ON_OFF,
 		},
 		{
-			label: 'data-melt-toggle',
+			name: 'data-melt-toggle',
 			value: ATTRS.MELT('toggle'),
 		},
 	],

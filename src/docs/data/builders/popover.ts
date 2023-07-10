@@ -6,19 +6,19 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('popover'),
 	props: [
 		{
-			label: 'positioning',
+			name: 'positioning',
 			type: 'FloatingConfig',
 			default: 'position: "bottom"',
 			description: DESCRIPTIONS.FLOATING_CONFIG,
 		},
 		{
-			label: 'arrowSize',
+			name: 'arrowSize',
 			type: 'number',
 			default: '8',
 			description: DESCRIPTIONS.ARROW_SIZE,
 		},
 		{
-			label: 'open',
+			name: 'open',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether the popover is open by default or not.',
@@ -31,11 +31,11 @@ const trigger: APISchema = {
 	description: 'The button(s) which open/close the popover.',
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-melt-popover-trigger',
+			name: 'data-melt-popover-trigger',
 			value: ATTRS.MELT('trigger'),
 		},
 	],
@@ -46,11 +46,11 @@ const arrow: APISchema = {
 	description: 'The optional arrow element.',
 	dataAttributes: [
 		{
-			label: 'data-arrow',
+			name: 'data-arrow',
 			value: ATTRS.TRUE,
 		},
 		{
-			label: 'data-melt-popover-arrow',
+			name: 'data-melt-popover-arrow',
 			value: ATTRS.MELT('arrow'),
 		},
 	],
@@ -61,7 +61,7 @@ const close: APISchema = {
 	description: 'The button(s) which close the popover.',
 	dataAttributes: [
 		{
-			label: 'data-melt-popover-close',
+			name: 'data-melt-popover-close',
 			value: ATTRS.MELT('close'),
 		},
 	],

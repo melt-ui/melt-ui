@@ -6,30 +6,30 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('combobox'),
 	props: [
 		{
-			label: 'filterFunction',
+			name: 'filterFunction',
 			type: '(item: T, inputValue: string)',
 			description:
 				'A function that returns `true` if the item should be included in the filtered list.',
 		},
 		{
-			label: 'items',
+			name: 'items',
 			type: 'T[]',
 			description: 'The list of items to display in the combobox list.',
 		},
 		{
-			label: 'itemToString',
+			name: 'itemToString',
 			type: '(item: T)',
 			description: 'A function that returns a string representation of the item.',
 		},
 		{
-			label: 'loop',
+			name: 'loop',
 			type: 'boolean',
 			default: 'false',
 			description:
 				'Whether or not the combobox should loop through the list when the end or beginning is reached.',
 		},
 		{
-			label: 'scrollAlignment',
+			name: 'scrollAlignment',
 			type: ['"nearest"', '"center"'],
 			default: '"nearest"',
 			description: 'The alignment of the highlighted item when scrolling.',
@@ -43,15 +43,15 @@ const input: APISchema = {
 		'The element that opens, closes, filters the list, and displays the selected value from the list.',
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-disabled',
+			name: 'data-disabled',
 			value: ATTRS.DISABLED('`select`'),
 		},
 		{
-			label: 'data-melt-combobox-input',
+			name: 'data-melt-combobox-input',
 			value: ATTRS.MELT('input'),
 		},
 	],
@@ -62,17 +62,17 @@ const item: APISchema = {
 	description: 'The menu item element',
 	props: [
 		{
-			label: 'label',
+			name: 'label',
 			type: 'string',
 			description: 'The label of the `item`.',
 		},
 		{
-			label: 'value',
+			name: 'value',
 			type: 'unknown',
 			description: 'The value of the `item`.',
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the `item` is disabled.',
@@ -80,19 +80,19 @@ const item: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: 'data-melt-combobox-item',
+			name: 'data-melt-combobox-item',
 			value: ATTRS.MELT('item'),
 		},
 		{
-			label: 'data-disabled',
+			name: 'data-disabled',
 			value: ATTRS.DISABLED('`item`'),
 		},
 		{
-			label: 'data-index',
+			name: 'data-index',
 			value: 'The index of the item in the list.',
 		},
 		{
-			label: 'data-highlighted',
+			name: 'data-highlighted',
 			value: ATTRS.HIGHLIGHTED(),
 		},
 	],
@@ -103,11 +103,11 @@ const arrow: APISchema = {
 	description: 'An optional arrow element',
 	dataAttributes: [
 		{
-			label: 'data-arrow',
+			name: 'data-arrow',
 			value: ATTRS.TRUE,
 		},
 		{
-			label: 'data-melt-combobox-arrow',
+			name: 'data-melt-combobox-arrow',
 			value: ATTRS.MELT('arrow'),
 		},
 	],

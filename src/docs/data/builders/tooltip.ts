@@ -6,37 +6,37 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('tooltip'),
 	props: [
 		{
-			label: 'positioning',
+			name: 'positioning',
 			type: 'FloatingConfig',
 			default: "position: 'top'",
 			description: DESCRIPTIONS.FLOATING_CONFIG,
 		},
 		{
-			label: 'arrowSize',
+			name: 'arrowSize',
 			type: 'number',
 			default: '8',
 			description: DESCRIPTIONS.ARROW_SIZE,
 		},
 		{
-			label: 'open',
+			name: 'open',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether the tooltip is open or not.',
 		},
 		{
-			label: 'closeOnPointerDown',
+			name: 'closeOnPointerDown',
 			type: 'boolean',
 			default: 'true',
 			description: 'Whether the tooltip closes when the pointer is down.',
 		},
 		{
-			label: 'openDelay',
+			name: 'openDelay',
 			type: 'number',
 			default: '1000',
 			description: 'The delay in milliseconds before the tooltip opens after a pointer over event.',
 		},
 		{
-			label: 'closeDelay',
+			name: 'closeDelay',
 			type: 'number',
 			default: '500',
 			description:
@@ -50,11 +50,11 @@ const trigger: APISchema = {
 	description: 'The tooltip trigger element.',
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-melt-tooltip-trigger',
+			name: 'data-melt-tooltip-trigger',
 			value: ATTRS.MELT('tooltip trigger'),
 		},
 	],
@@ -65,7 +65,7 @@ const content: APISchema = {
 	description: 'The tooltip content element.',
 	dataAttributes: [
 		{
-			label: 'data-melt-tooltip-content',
+			name: 'data-melt-tooltip-content',
 			value: ATTRS.MELT('tooltip content'),
 		},
 	],
@@ -76,11 +76,11 @@ const arrow: APISchema = {
 	description: 'The tooltip arrow element.',
 	dataAttributes: [
 		{
-			label: 'data-arrow',
+			name: 'data-arrow',
 			value: ATTRS.TRUE,
 		},
 		{
-			label: 'data-melt-tooltip-arrow',
+			name: 'data-melt-tooltip-arrow',
 			value: ATTRS.MELT('tooltip arrow'),
 		},
 	],

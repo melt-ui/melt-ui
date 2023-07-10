@@ -6,13 +6,13 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('avatar'),
 	props: [
 		{
-			label: 'src',
+			name: 'src',
 			type: 'string',
 			default: '""',
 			description: 'The URL of the image to render.',
 		},
 		{
-			label: 'delayMs',
+			name: 'delayMs',
 			type: 'number',
 			default: 'undefined',
 			description: 'The number of milliseconds to wait before rendering the fallback image.',
@@ -25,7 +25,7 @@ const image: APISchema = {
 	description: 'The image element that is rendered when the `src` prop is provided.',
 	dataAttributes: [
 		{
-			label: 'data-melt-avatar-image',
+			name: 'data-melt-avatar-image',
 			value: ATTRS.MELT('avatar image'),
 		},
 	],
@@ -37,7 +37,7 @@ const fallback: APISchema = {
 		'The fallback element that is rendered before the image loads or if it fails to load.',
 	dataAttributes: [
 		{
-			label: 'data-melt-avatar-fallback',
+			name: 'data-melt-avatar-fallback',
 			value: ATTRS.MELT('avatar fallback'),
 		},
 	],

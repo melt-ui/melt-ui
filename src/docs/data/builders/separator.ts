@@ -6,13 +6,13 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('separator'),
 	props: [
 		{
-			label: 'orientation',
+			name: 'orientation',
 			type: TYPES.ORIENTATION,
 			default: "'horizontal'",
 			description: 'The orientation of the separator.',
 		},
 		{
-			label: 'decorative',
+			name: 'decorative',
 			type: 'boolean',
 			default: 'false',
 			description:
@@ -26,11 +26,11 @@ const root: APISchema = {
 	description: 'The separator element.',
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-melt-separator',
+			name: 'data-melt-separator',
 			value: ATTRS.MELT('separator'),
 		},
 	],

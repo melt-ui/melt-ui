@@ -6,39 +6,39 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('toggle group'),
 	props: [
 		{
-			label: 'type',
+			name: 'type',
 			type: ["'single'", "'multiple'"],
 			default: "'single'",
 			description:
 				'The type of toggle group. `single` allows a single item to be selected. `multiple` allows multiple items to be selected.',
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the toggle group is disabled.',
 		},
 		{
-			label: 'value',
+			name: 'value',
 			type: ['string', 'string[]', 'null'],
 			default: 'null',
 			description:
 				'The value of the currently selected item. You can also pass an array of values to select multiple items if the toggle group is of type `multiple`.',
 		},
 		{
-			label: 'rovingFocus',
+			name: 'rovingFocus',
 			type: 'boolean',
 			default: 'true',
 			description: 'Whether or not the toggle group should use roving focus.',
 		},
 		{
-			label: 'orientation',
+			name: 'orientation',
 			type: TYPES.ORIENTATION,
 			default: "'horizontal'",
 			description: 'The orientation of the toggle group.',
 		},
 		{
-			label: 'loop',
+			name: 'loop',
 			type: 'boolean',
 			default: 'true',
 			description: DESCRIPTIONS.LOOP,
@@ -51,11 +51,11 @@ const root: APISchema = {
 	description: 'The root toggle group element.',
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-melt-toggle-group',
+			name: 'data-melt-toggle-group',
 			value: ATTRS.MELT('toggle group'),
 		},
 	],
@@ -66,13 +66,13 @@ const item: APISchema = {
 	description: 'The toggle group item element.',
 	props: [
 		{
-			label: 'value',
+			name: 'value',
 			type: 'string',
 			description: 'The value of the item.',
 			required: true,
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the item is disabled.',
@@ -80,23 +80,23 @@ const item: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-value',
+			name: 'data-value',
 			value: 'The value of the toggle item.',
 		},
 		{
-			label: 'data-disabled',
+			name: 'data-disabled',
 			value: ATTRS.DISABLED('item'),
 		},
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.ON_OFF,
 		},
 		{
-			label: 'data-melt-toggle-group-item',
+			name: 'data-melt-toggle-group-item',
 			value: ATTRS.MELT('toggle group item'),
 		},
 	],

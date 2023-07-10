@@ -6,20 +6,20 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('accordion'),
 	props: [
 		{
-			label: 'type',
+			name: 'type',
 			type: ["'single'", "'multiple'"],
 			default: "'single'",
 			description:
 				'The type of accordion to create. A `"single"` accordion only allows one item to be open at a time. A `"multiple"` accordion allows multiple items to be open at a time.',
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the accordion is disabled.',
 		},
 		{
-			label: 'value',
+			name: 'value',
 			type: ['string', 'string[]', 'undefined'],
 			description:
 				'The value of the currently open item. You can also pass an array of values to open multiple items at once if the accordion is of type `multiple`.',
@@ -32,11 +32,11 @@ const root: APISchema = {
 	description: 'Contains all the parts of an accordion.',
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-melt-accordion',
+			name: 'data-melt-accordion',
 			value: ATTRS.MELT('accordion root'),
 		},
 	],
@@ -47,26 +47,26 @@ const item: APISchema = {
 	description: 'Contains all the parts of a collapsible section.',
 	props: [
 		{
-			label: 'value',
+			name: 'value',
 			type: 'string',
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 		},
 	],
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-disabled',
+			name: 'data-disabled',
 			value: ATTRS.DISABLED('item'),
 		},
 		{
-			label: 'data-melt-accordion-item',
+			name: 'data-melt-accordion-item',
 			value: ATTRS.MELT('accordion item'),
 		},
 	],
@@ -78,28 +78,28 @@ const trigger: APISchema = {
 		'Toggles the collapsed state of an item. It should be nested inside of its associated `item`.',
 	props: [
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the trigger is disabled.',
 		},
 		{
-			label: 'value',
+			name: 'value',
 			type: ['string', 'string[]', 'undefined'],
 			description: 'The value of the associated accordion item.',
 		},
 	],
 	dataAttributes: [
 		{
-			label: 'data-melt-accordion-trigger',
+			name: 'data-melt-accordion-trigger',
 			value: ATTRS.MELT('accordion trigger'),
 		},
 		{
-			label: 'data-disabled',
+			name: 'data-disabled',
 			value: ATTRS.DISABLED('trigger'),
 		},
 		{
-			label: 'data-value',
+			name: 'data-value',
 			value: 'The value of the associated item.',
 		},
 	],
@@ -110,12 +110,12 @@ const content: APISchema = {
 	description: 'Contains the collapsible content for an accordion item.',
 	props: [
 		{
-			label: 'value',
+			name: 'value',
 			type: 'string',
 			description: 'The value of associated accordion item.',
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the content is disabled.',
@@ -123,15 +123,15 @@ const content: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-disabled',
+			name: 'data-disabled',
 			value: ATTRS.DISABLED('content'),
 		},
 		{
-			label: 'data-melt-accordion-content',
+			name: 'data-melt-accordion-content',
 			value: ATTRS.MELT('accordion content'),
 		},
 	],

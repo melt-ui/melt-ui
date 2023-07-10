@@ -6,24 +6,24 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('pagination'),
 	props: [
 		{
-			label: 'count',
+			name: 'count',
 			type: 'number',
 			description: 'The total number of items.',
 		},
 		{
-			label: 'perPage',
+			name: 'perPage',
 			type: 'number',
 			default: '1',
 			description: 'The number of items per page.',
 		},
 		{
-			label: 'siblingCount',
+			name: 'siblingCount',
 			type: 'number',
 			default: '1',
 			description: 'The number of page triggers to show on either side of the current page.',
 		},
 		{
-			label: 'page',
+			name: 'page',
 			type: 'number',
 			default: '1',
 			description: 'The current page number.',
@@ -36,11 +36,11 @@ const root: APISchema = {
 	description: 'The root element of the pagination component.',
 	dataAttributes: [
 		{
-			label: 'data-scope',
+			name: 'data-scope',
 			value: '`pagination`',
 		},
 		{
-			label: 'data-melt-pagination',
+			name: 'data-melt-pagination',
 			value: ATTRS.MELT('pagination'),
 		},
 	],
@@ -51,11 +51,11 @@ const pageTrigger: APISchema = {
 	description: 'A button that triggers a page change.',
 	dataAttributes: [
 		{
-			label: 'data-selected',
+			name: 'data-selected',
 			value: 'Present when the page is selected.',
 		},
 		{
-			label: 'data-melt-pagination-page-trigger',
+			name: 'data-melt-pagination-page-trigger',
 			value: ATTRS.MELT('pageTrigger'),
 		},
 	],
@@ -66,7 +66,7 @@ const prevButton: APISchema = {
 	description: 'A button that moves to the previous page.',
 	dataAttributes: [
 		{
-			label: 'data-melt-pagination-prev-button',
+			name: 'data-melt-pagination-prev-button',
 			value: ATTRS.MELT('prevButton'),
 		},
 	],
@@ -77,7 +77,7 @@ const nextButton: APISchema = {
 	description: 'A button that moves to the next page.',
 	dataAttributes: [
 		{
-			label: 'data-melt-pagination-next-button',
+			name: 'data-melt-pagination-next-button',
 			value: ATTRS.MELT('nextButton'),
 		},
 	],

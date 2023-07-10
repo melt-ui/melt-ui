@@ -6,40 +6,40 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('select'),
 	props: [
 		{
-			label: 'required',
+			name: 'required',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the select is required.',
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the select is disabled.',
 		},
 		{
-			label: 'label',
+			name: 'label',
 			type: 'string',
 			description: 'The label of the select.',
 		},
 		{
-			label: 'value',
+			name: 'value',
 			type: 'unknown',
 			description: 'The value of the select.',
 		},
 		{
-			label: 'name',
+			name: 'name',
 			type: 'string',
 			description: 'The name of the select.',
 		},
 		{
-			label: 'preventScroll',
+			name: 'preventScroll',
 			type: 'boolean',
 			default: 'true',
 			description: DESCRIPTIONS.PREVENT_SCROLL('select'),
 		},
 		{
-			label: 'loop',
+			name: 'loop',
 			type: 'boolean',
 			default: 'false',
 			description: DESCRIPTIONS.LOOP,
@@ -52,15 +52,15 @@ const trigger: APISchema = {
 	description: 'The element which opens/closes the select.',
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			label: 'data-disabled',
+			name: 'data-disabled',
 			value: ATTRS.DISABLED('select'),
 		},
 		{
-			label: 'data-melt-select-trigger',
+			name: 'data-melt-select-trigger',
 			value: ATTRS.MELT('trigger'),
 		},
 	],
@@ -71,17 +71,17 @@ const option: APISchema = {
 	description: 'The option elements',
 	props: [
 		{
-			label: 'label',
+			name: 'label',
 			type: 'string',
 			description: 'The label of the option.',
 		},
 		{
-			label: 'value',
+			name: 'value',
 			type: 'unknown',
 			description: 'The value of the option.',
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the option is disabled.',
@@ -94,11 +94,11 @@ const arrow: APISchema = {
 	description: 'The optional arrow element',
 	dataAttributes: [
 		{
-			label: 'data-arrow',
+			name: 'data-arrow',
 			value: ATTRS.TRUE,
 		},
 		{
-			label: 'data-melt-select-arrow',
+			name: 'data-melt-select-arrow',
 			value: ATTRS.MELT('arrow'),
 		},
 	],
@@ -109,7 +109,7 @@ const separator: APISchema = {
 	description: 'An optional separator element',
 	dataAttributes: [
 		{
-			label: 'data-melt-select-separator',
+			name: 'data-melt-select-separator',
 			value: ATTRS.MELT('separator'),
 		},
 	],
@@ -120,14 +120,14 @@ const group: APISchema = {
 	description: 'A function which takes in a unique key to group options together.',
 	props: [
 		{
-			label: 'key',
+			name: 'key',
 			type: 'string',
 			description: 'A unique key for the group.',
 		},
 	],
 	dataAttributes: [
 		{
-			label: 'data-melt-select-group',
+			name: 'data-melt-select-group',
 			value: ATTRS.MELT('group'),
 		},
 	],
@@ -138,14 +138,14 @@ const groupLabel: APISchema = {
 	description: 'A function which takes in a unique key to group options together.',
 	props: [
 		{
-			label: 'key',
+			name: 'key',
 			type: 'string',
 			description: 'A unique key for the group.',
 		},
 	],
 	dataAttributes: [
 		{
-			label: 'data-melt-select-group-label',
+			name: 'data-melt-select-group-label',
 			value: ATTRS.MELT('group-label'),
 		},
 	],

@@ -11,7 +11,7 @@ const root: APISchema = {
 	description: 'The label element',
 	dataAttributes: [
 		{
-			label: 'data-melt-label',
+			name: 'data-melt-label',
 			value: ATTRS.MELT('label'),
 		},
 	],

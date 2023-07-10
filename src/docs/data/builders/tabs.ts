@@ -6,35 +6,35 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('tabs'),
 	props: [
 		{
-			label: 'value',
+			name: 'value',
 			type: 'string',
 			description: 'The initial value of the tabs.',
 		},
 		{
-			label: 'onChange',
+			name: 'onChange',
 			type: '(value: string) => void',
 			description: 'A callback function that is called when the tabs value changes.',
 		},
 		{
-			label: 'activateOnFocus',
+			name: 'activateOnFocus',
 			type: 'boolean',
 			default: 'true',
 			description: 'Whether or not to activate the tab when it is focused.',
 		},
 		{
-			label: 'loop',
+			name: 'loop',
 			type: 'boolean',
 			default: 'true',
 			description: 'Whether or not to loop the tabs when navigating with the keyboard.',
 		},
 		{
-			label: 'orientation',
+			name: 'orientation',
 			type: TYPES.ORIENTATION,
 			default: '"horizontal"',
 			description: 'The orientation of the tabs.',
 		},
 		{
-			label: 'autoSet',
+			name: 'autoSet',
 			type: 'boolean',
 			default: 'true',
 			description: 'Whether or not to automatically set the tabs value when a trigger is clicked.',
@@ -47,11 +47,11 @@ const root: APISchema = {
 	description: 'The tabs component.',
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-melt-tabs',
+			name: 'data-melt-tabs',
 			value: ATTRS.MELT('tabs'),
 		},
 	],
@@ -62,11 +62,11 @@ const list: APISchema = {
 	description: 'The tabs list component.',
 	dataAttributes: [
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-melt-tabs-list',
+			name: 'data-melt-tabs-list',
 			value: ATTRS.MELT('tab list'),
 		},
 	],
@@ -77,13 +77,13 @@ const trigger: APISchema = {
 	description: 'The element which opens a given tab.',
 	props: [
 		{
-			label: 'value',
+			name: 'value',
 			type: 'string',
 			description: 'The value of the tab that this trigger opens.',
 			required: true,
 		},
 		{
-			label: 'disabled',
+			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the trigger is disabled.',
@@ -91,23 +91,23 @@ const trigger: APISchema = {
 	],
 	dataAttributes: [
 		{
-			label: 'data-state',
+			name: 'data-state',
 			value: ATTRS.ACTIVE_INACTIVE,
 		},
 		{
-			label: 'data-orientation',
+			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
 		},
 		{
-			label: 'data-disabled',
+			name: 'data-disabled',
 			value: ATTRS.DISABLED(),
 		},
 		{
-			label: 'data-value',
+			name: 'data-value',
 			value: 'The value of the tab that this trigger opens.',
 		},
 		{
-			label: 'data-melt-tabs-trigger',
+			name: 'data-melt-tabs-trigger',
 			value: ATTRS.MELT('tab trigger'),
 		},
 	],
@@ -118,7 +118,7 @@ const content: APISchema = {
 	description: 'The element that is opened when a given trigger is clicked.',
 	dataAttributes: [
 		{
-			label: 'data-melt-tabs-content',
+			name: 'data-melt-tabs-content',
 			value: ATTRS.MELT('tab content'),
 		},
 	],

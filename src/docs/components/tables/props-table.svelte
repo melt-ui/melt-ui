@@ -25,7 +25,7 @@
 						{#each data as prop}
 							<tr>
 								<td class="py-3 pl-4 align-baseline sm:pl-0">
-									<code>{prop.label}</code>
+									<code>{prop.name}</code>
 								</td>
 								<td class="py-3 align-baseline text-sm">
 									<span>
