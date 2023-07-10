@@ -65,7 +65,7 @@ const builder: APISchema = {
 };
 
 const root: APISchema = {
-	title: 'switch',
+	title: 'root',
 	description: 'The switch element.',
 	dataAttributes: [
 		{

@@ -64,17 +64,17 @@ const builder: APISchema = {
 		{
 			name: 'pageTrigger',
 			description: 'The builder store used to create the pagination page trigger.',
-			link: '#pageTrigger',
+			link: '#pagetrigger',
 		},
 		{
 			name: 'prevButton',
 			description: 'The builder store used to create the pagination previous button.',
-			link: '#prevButton',
+			link: '#prevbutton',
 		},
 		{
 			name: 'nextButton',
 			description: 'The builder store used to create the pagination next button.',
-			link: '#nextButton',
+			link: '#nextbutton',
 		},
 	],
 };

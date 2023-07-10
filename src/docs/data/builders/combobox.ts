@@ -91,6 +91,17 @@ const builder: APISchema = {
 	],
 };
 
+const menu: APISchema = {
+	title: 'menu',
+	description: 'The combobox menu element',
+	dataAttributes: [
+		{
+			name: 'data-melt-combobox-menu',
+			value: ATTRS.MELT('menu'),
+		},
+	],
+};
+
 const input: APISchema = {
 	title: 'input',
 	description:
@@ -203,7 +214,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, input, item, arrow];
+const schemas = [builder, menu, input, item, arrow];
 
 const features = [
 	'Full keyboard navigation',

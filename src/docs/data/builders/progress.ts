@@ -38,8 +38,8 @@ const builder: APISchema = {
 };
 
 const root: APISchema = {
-	title: 'progress',
-	description: 'The progress component.',
+	title: 'root',
+	description: 'The root progress component.',
 	dataAttributes: [
 		{
 			name: 'data-value',

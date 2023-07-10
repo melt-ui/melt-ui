@@ -338,3 +338,10 @@ export async function getDoc(slug: string) {
 	}
 	return doc;
 }
+
+export function createHeadingId(text: string) {
+	return text
+		.replaceAll(/[^a-zA-Z0-9 ]/g, '')
+		.replaceAll(' ', '-')
+		.toLowerCase();
+}

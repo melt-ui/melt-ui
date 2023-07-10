@@ -68,6 +68,11 @@ const builder: APISchema = {
 			description: 'A writable store that can be used to update the select value.',
 		},
 		{
+			name: 'label',
+			type: 'Writable<string | number | null>',
+			description: 'A writable store that can be used to update the select label.',
+		},
+		{
 			name: 'trigger',
 			description: 'The builder store used to create the select trigger.',
 			link: '#trigger',
@@ -87,11 +92,7 @@ const builder: APISchema = {
 			description: 'The builder store used to create the select input.',
 			link: '#input',
 		},
-		{
-			name: 'label',
-			description: 'The builder store used to create the select label.',
-			link: '#label',
-		},
+
 		{
 			name: 'separator',
 			description: 'The builder store used to create the select separator.',
@@ -134,6 +135,17 @@ const trigger: APISchema = {
 	],
 };
 
+const menu: APISchema = {
+	title: 'menu',
+	description: 'The menu element',
+	dataAttributes: [
+		{
+			name: 'data-melt-select-menu',
+			value: ATTRS.MELT('menu'),
+		},
+	],
+};
+
 const option: APISchema = {
 	title: 'option',
 	description: 'The option elements',
@@ -154,6 +166,17 @@ const option: APISchema = {
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the option is disabled.',
+		},
+	],
+};
+
+const input: APISchema = {
+	title: 'input',
+	description: 'The input element',
+	dataAttributes: [
+		{
+			name: 'data-melt-select-input',
+			value: ATTRS.MELT('input'),
 		},
 	],
 };
@@ -247,7 +270,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, trigger, option, group, groupLabel, separator, arrow];
+const schemas = [builder, trigger, menu, option, group, groupLabel, input, separator, arrow];
 
 const features = [
 	'Full keyboard navigation',

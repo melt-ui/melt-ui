@@ -69,6 +69,17 @@ const trigger: APISchema = {
 	],
 };
 
+const content: APISchema = {
+	title: 'content',
+	description: 'The popover content.',
+	dataAttributes: [
+		{
+			name: 'data-melt-popover-content',
+			value: ATTRS.MELT('content'),
+		},
+	],
+};
+
 const arrow: APISchema = {
 	title: 'arrow',
 	description: 'The optional arrow element.',
@@ -120,7 +131,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, trigger, close, arrow];
+const schemas = [builder, trigger, content, close, arrow];
 
 const features = [
 	'Full keyboard navigation',

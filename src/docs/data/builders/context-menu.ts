@@ -49,7 +49,7 @@ const builder: APISchema = {
 		{
 			name: 'checkboxItem',
 			description: 'The builder store used to create a checkbox menu item.',
-			link: '#checkboxItem',
+			link: '#checkboxitem',
 		},
 		{
 			name: 'separator',

@@ -14,7 +14,7 @@ export const entries = (() => {
 	});
 }) satisfies EntryGenerator;
 
-export const prerender = true;
+export const prerender = 'auto';
 
 export const load: PageLoad = async (event) => {
 	if (!isBuilderName(event.params.name)) {

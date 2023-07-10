@@ -84,7 +84,7 @@ const builder: APISchema = {
 		{
 			name: 'deleteTrigger',
 			description: 'The builder store used to create the tags input delete trigger.',
-			link: '#delete-trigger',
+			link: '#deletetrigger',
 		},
 		{
 			name: 'edit',
@@ -145,7 +145,7 @@ const input: APISchema = {
 };
 
 const tag: APISchema = {
-	title: 'item',
+	title: 'tag',
 	description: 'The tag components.',
 	props: [
 		{
