@@ -79,6 +79,7 @@ const option: APISchema = {
 			name: 'value',
 			type: 'unknown',
 			description: 'The value of the option.',
+			required: true,
 		},
 		{
 			name: 'disabled',

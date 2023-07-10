@@ -94,11 +94,13 @@ const tag: APISchema = {
 			name: 'id',
 			type: 'string',
 			description: 'A unique ID for the tag',
+			required: true,
 		},
 		{
 			name: 'value',
 			type: 'string',
 			description: "The tag's value",
+			required: true,
 		},
 		{
 			name: 'disabled',
@@ -143,11 +145,13 @@ const deleteTrigger: APISchema = {
 			name: 'id',
 			type: 'string',
 			description: 'The tag ID the delete trigger will delete.',
+			required: true,
 		},
 		{
 			name: 'value',
 			type: 'string',
 			description: 'The tag value the delete trigger will delete.',
+			required: true,
 		},
 		{
 			name: 'disabled',
@@ -192,11 +196,13 @@ const edit: APISchema = {
 			name: 'id',
 			type: 'string',
 			description: 'The tag ID the edit trigger will edit.',
+			required: true,
 		},
 		{
 			name: 'value',
 			type: 'string',
 			description: 'The tag value the edit trigger will edit.',
+			required: true,
 		},
 	],
 	dataAttributes: [

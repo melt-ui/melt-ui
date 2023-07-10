@@ -6,6 +6,13 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('accordion'),
 	props: [
 		{
+			name: 'value',
+			type: ['string', 'string[]', 'undefined'],
+			description:
+				'The value of the currently open item. You can also pass an array of values to open multiple items at once if the accordion is of type `multiple`.',
+			required: true,
+		},
+		{
 			name: 'type',
 			type: ["'single'", "'multiple'"],
 			default: "'single'",
@@ -17,12 +24,6 @@ const builder: APISchema = {
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the accordion is disabled.',
-		},
-		{
-			name: 'value',
-			type: ['string', 'string[]', 'undefined'],
-			description:
-				'The value of the currently open item. You can also pass an array of values to open multiple items at once if the accordion is of type `multiple`.',
 		},
 	],
 };

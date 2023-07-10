@@ -120,6 +120,7 @@ const groupItem: APISchema = {
 			name: 'value',
 			type: 'string',
 			description: 'The value of the item.',
+			required: true,
 		},
 		{
 			name: 'disabled',

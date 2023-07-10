@@ -26,6 +26,9 @@
 							<tr>
 								<td class="py-3 pl-4 align-baseline sm:pl-0">
 									<code>{prop.name}</code>
+									{#if prop.required}
+										<span class="text-rose-400">*</span>
+									{/if}
 								</td>
 								<td class="py-3 align-baseline text-sm">
 									<span>
