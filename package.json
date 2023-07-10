@@ -109,6 +109,7 @@
 		"svelte-highlight": "^7.3.0",
 		"svelte-htm": "^1.2.0",
 		"svelte-preprocess": "^5.0.4",
+		"svelte-sequential-preprocessor": "^2.0.1",
 		"svelte-wrap-balancer": "^0.0.3",
 		"tailwind-merge": "^1.13.2",
 		"tailwind-variants": "^0.1.8",

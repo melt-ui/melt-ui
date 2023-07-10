@@ -4,7 +4,7 @@ import { describe } from 'vitest';
 import CollapsibleTest from './CollapsibleTest.svelte';
 
 describe('Collapsible', () => {
-	test('No accesibility violations', async () => {
+	test('No accessibility violations', async () => {
 		const { container } = await render(CollapsibleTest);
 
 		expect(await axe(container)).toHaveNoViolations();
