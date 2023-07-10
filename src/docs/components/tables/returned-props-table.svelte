@@ -8,10 +8,12 @@
 
 {#if data}
 	<APITableHeading>
-		Returned Props
+		Returns
 		<svelte:fragment slot="info">
-			Builder functions return props that can be used to render the elements needed for the
-			component, as well as a few other props that can be used to manage the state of the component.
+			Builder functions return an object which enables the creation of the essential elements for a
+			component. Along with the elements, this object may also include additional properties such as
+			stores to manage the component's state or helper functions that simplify interaction with the
+			component.
 		</svelte:fragment>
 	</APITableHeading>
 
@@ -46,7 +48,7 @@
 										</div>
 										{#if returnedProp.type}
 											<InfoPopover iconClasses="text-neutral-200">
-												<code class="neutral">
+												<code class="inline-code neutral">
 													{transformAPIString(returnedProp.type)}
 												</code>
 											</InfoPopover>
