@@ -48,7 +48,7 @@ Pass in the `type` argument to `createAccordion` with a value of `'multiple'`.
 To programatically control the Accordion, you can directly set the `value` store. You can also
 update the `options` store with new arguments.
 
-```svelte
+```svelte {4,15,19,21}
 <script lang="ts">
   import { createAccordion } from '@melt-ui/svelte'
 
