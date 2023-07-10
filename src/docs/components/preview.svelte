@@ -39,6 +39,7 @@
 	let codingStyle = Object.keys(handleMissingCode(code))[0]
 		? ('tailwind' as const)
 		: ('css' as const);
+
 	let codingStyleObj: $$Props['code'][typeof codingStyle] | null =
 		handleMissingCode(code)[codingStyle];
 
@@ -48,14 +49,16 @@
 
 	$: files = codingStyleObj !== null ? Object.keys(codingStyleObj) : [];
 
-	const { value } = createSelect({
+	const { value: localValue } = createSelect({
 		value: codingStyle,
 	});
-	value.subscribe((v) => {
+
+	localValue.subscribe((v) => {
 		if (v === 'tailwind' || v === 'css') {
 			codingStyle = v;
 		}
 	});
+	$: localValue.set(codingStyle);
 
 	let viewCode = false;
 
