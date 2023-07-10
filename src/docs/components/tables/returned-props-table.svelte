@@ -2,16 +2,20 @@
 	import type { APISchema } from '$docs/types';
 	import { transformAPIString } from '$docs/utils';
 	import { h4 as H4, p as P } from '$docs/components/markdown';
+	import { APITableHeading } from '$docs/components';
 
 	export let data: APISchema['returnedProps'];
 </script>
 
 {#if data}
-	<H4 class="mb-2">Returned Props</H4>
-	<P class="text-sm"
-		>Builder functions return a props that can be used to render the elements needed for the
-		component, as well as a few other props that can be used to manage the state of the component.
-	</P>
+	<APITableHeading>
+		Returned Props
+		<svelte:fragment slot="info">
+			Builder functions return a props that can be used to render the elements needed for the
+			component, as well as a few other props that can be used to manage the state of the component.
+		</svelte:fragment>
+	</APITableHeading>
+
 	<div class="mb-6 mt-4">
 		<div class="-mx-4 overflow-x-auto sm:mx-0">
 			<div class="inline-block min-w-full">

@@ -2,6 +2,7 @@
 	import type { APISchema } from '$docs/types';
 	import { transformAPIString } from '$docs/utils';
 	import { h4 as H4, p as P } from '$docs/components/markdown';
+	import { InfoTooltip, APITableHeading } from '$docs/components';
 	function replaceDoubleQuotes(str: string) {
 		return str.replace(/"/g, "'");
 	}
@@ -10,13 +11,15 @@
 </script>
 
 {#if data}
-	<H4 class="mb-2">Props</H4>
-	<P class="text-sm"
-		>Props are passed as an object to the function and are used to configure the behavior of the
-		builder function or element.</P
-	>
+	<APITableHeading>
+		Props
+		<svelte:fragment slot="info">
+			Props are passed as an object to the function and are used to configure the behavior of the
+			builder function or element.
+		</svelte:fragment>
+	</APITableHeading>
 
-	<div class="mb-10 mt-4">
+	<div class="mb-10 mt-2">
 		<div class="-mx-4 overflow-x-auto sm:mx-0">
 			<div class="inline-block min-w-full">
 				<table class="w-full min-w-[540px] border-b border-neutral-700 text-left sm:min-w-full">
