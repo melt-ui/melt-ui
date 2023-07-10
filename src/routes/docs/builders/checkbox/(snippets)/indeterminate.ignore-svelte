@@ -1,9 +1,0 @@
-<script lang="ts">
-	import { createCheckbox } from '@melt-ui/svelte';
-
-	const { root, input, isChecked, isIndeterminate, checked } = createCheckbox({
-		checked: 'indeterminate',
-	});
-	// or
-	checked.set('indeterminate');
-</script>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createDialog } from '@melt-ui/svelte';
 	/** Internal helpers */
-	import PreviewWrapper from '$routes/(components)/preview-wrapper.svelte';
+	import { PreviewWrapper } from '$docs/components';
 	import BaseDialog from './BaseDialog.svelte';
 
 	const dialog = createDialog();
@@ -13,8 +13,7 @@
 		{...$trigger}
 		use:trigger
 		class="inline-flex items-center justify-center rounded-md bg-white px-4 py-2
-		font-medium leading-none text-magnum-700 shadow-lg hover:opacity-75
-		"
+		font-medium leading-none text-magnum-700 shadow-lg hover:opacity-75"
 	>
 		Open Dialog
 	</button>
