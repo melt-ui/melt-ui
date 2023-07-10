@@ -1,32 +1,36 @@
+import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createToolbar',
-	description: 'The configuration object passed to the `createToolbar` builder function.',
+	description: DESCRIPTIONS.BUILDER('toolbar'),
 	props: [
 		{
 			label: 'loop',
 			type: 'boolean',
 			default: 'true',
+			description: DESCRIPTIONS.LOOP,
 		},
 		{
 			label: 'orientation',
-			type: ["'horizontal'", "'vertical'"],
+			type: TYPES.ORIENTATION,
+			default: '"horizontal"',
+			description: 'The orientation of the toolbar.',
 		},
 	],
 };
 
-const toolbar: APISchema = {
-	title: 'toolbar',
+const root: APISchema = {
+	title: 'root',
 	description: 'The root toolbar element.',
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: "`'horizontal' | 'vertical'`",
+			value: ATTRS.ORIENTATION,
 		},
 		{
 			label: 'data-melt-toolbar',
-			value: 'Present on the toolbar element.',
+			value: ATTRS.MELT('toolbar'),
 		},
 	],
 };
@@ -37,7 +41,7 @@ const button: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-melt-toolbar-button',
-			value: 'Present on the toolbar button element.',
+			value: ATTRS.MELT('toolbar button'),
 		},
 	],
 };
@@ -48,7 +52,7 @@ const link: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-melt-toolbar-link',
-			value: 'Present on the toolbar link element.',
+			value: ATTRS.MELT('toolbar link'),
 		},
 	],
 };
@@ -59,32 +63,36 @@ const separator: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: "`'horizontal' | 'vertical'`",
+			value: ATTRS.ORIENTATION,
 		},
 		{
 			label: 'data-melt-toolbar-separator',
-			value: 'Present on the toolbar separator element',
+			value: ATTRS.MELT('toolbar separator'),
 		},
 	],
 };
 
 const groupBuilder: APISchema = {
 	title: 'createToolbarGroup',
-	description: 'Configuration options for the `createToolbarGroup` builder.',
+	description: DESCRIPTIONS.BUILDER('toolbar group'),
 	props: [
 		{
 			label: 'type',
 			type: ["'single'", "'multiple'"],
 			default: "'single'",
+			description:
+				'The type of toolbar group. A `single` group can only have one item selected at a time. A `multiple` group can have multiple items selected at a time.',
 		},
 		{
 			label: 'value',
 			type: ['string', 'string[]', 'null'],
+			description: 'The value of the selected item(s).',
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the toolbar group is disabled.',
 		},
 	],
 };
@@ -95,11 +103,11 @@ const group: APISchema = {
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: "`'horizontal' | 'vertical'`",
+			value: ATTRS.ORIENTATION,
 		},
 		{
 			label: 'data-melt-toolbar-group',
-			value: '',
+			value: ATTRS.MELT('toolbar group'),
 		},
 	],
 };
@@ -111,75 +119,77 @@ const groupItem: APISchema = {
 		{
 			label: 'value',
 			type: 'string',
+			description: 'The value of the item.',
 		},
 		{
 			label: 'disabled',
 			type: 'boolean',
 			default: 'false',
+			description: 'Whether or not the item is disabled.',
 		},
 	],
 	dataAttributes: [
 		{
 			label: 'data-orientation',
-			value: "`'horizontal' | 'vertical'`",
+			value: ATTRS.ORIENTATION,
 		},
 		{
 			label: 'data-melt-toolbar-item',
-			value: '',
+			value: ATTRS.MELT('toolbar item'),
 		},
 		{
 			label: 'data-disabled',
-			value: 'Present if the item is disabled.',
+			value: ATTRS.DISABLED('item'),
 		},
 		{
 			label: 'data-state',
-			value: "`'on' | 'off'`",
+			value: ATTRS.ON_OFF,
 		},
 	],
 };
 
 const keyboard: KeyboardSchema = [
 	{
-		key: 'Tab',
+		key: KBD.TAB,
 		behavior: 'Moves focus to the first item in the group.',
 	},
 	{
-		key: 'Space',
+		key: KBD.SPACE,
 		behavior: 'Toggles the state of the focused item.',
 	},
 	{
-		key: 'Enter',
+		key: KBD.ENTER,
 		behavior: 'Toggles the state of the focused item.',
 	},
 	{
-		key: 'ArrowDown',
-		behavior: 'Moves focus to the next item depeding on `orientation`.',
+		key: KBD.ARROW_DOWN,
+		behavior: 'Moves focus to the next item depending on `orientation`.',
 	},
 	{
-		key: 'ArrowRight',
-		behavior: 'Moves focus to the next item depeding on `orientation`.',
+		key: KBD.ARROW_RIGHT,
+		behavior: 'Moves focus to the next item depending on `orientation`.',
 	},
 	{
-		key: 'ArrowDown',
-		behavior: 'Moves focus to the previous item depeding on `orientation`.',
+		key: KBD.ARROW_UP,
+		behavior: 'Moves focus to the previous item depending on `orientation`.',
 	},
 	{
-		key: 'ArrowLeft',
-		behavior: 'Moves focus to the previous item depeding on `orientation`.',
+		key: KBD.ARROW_LEFT,
+		behavior: 'Moves focus to the previous item depending on `orientation`.',
 	},
 	{
-		key: 'Home',
+		key: KBD.HOME,
 		behavior: 'Moves focus to the first item.',
 	},
 	{
-		key: 'End',
+		key: KBD.END,
 		behavior: 'Moves focus to the last item.',
 	},
 ];
 
 const schemas = {
 	builder,
-	toolbar,
+	root,
 	button,
 	link,
 	separator,

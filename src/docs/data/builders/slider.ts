@@ -1,9 +1,9 @@
-import { ATTRS, KBD, TYPES } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createSlider',
-	description: 'The builder function used to create a slider component.',
+	description: DESCRIPTIONS.BUILDER('slider'),
 	props: [
 		{
 			label: 'value',

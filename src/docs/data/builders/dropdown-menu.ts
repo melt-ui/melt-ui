@@ -3,7 +3,7 @@ import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createDropdownMenu',
-	description: 'The builder function used to create a dropdown menu component.',
+	description: DESCRIPTIONS.BUILDER('dropdown menu'),
 	props: [
 		{
 			label: 'positioning',

@@ -1,9 +1,9 @@
-import { ATTRS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createCheckbox',
-	description: 'The builder function used to create a checkbox component.',
+	description: DESCRIPTIONS.BUILDER('checkbox'),
 	props: [
 		{
 			label: 'checked',

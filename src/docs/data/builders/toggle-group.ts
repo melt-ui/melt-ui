@@ -3,7 +3,7 @@ import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createToggleGroup',
-	description: 'The builder function used to create a toggle group component.',
+	description: DESCRIPTIONS.BUILDER('toggle group'),
 	props: [
 		{
 			label: 'type',

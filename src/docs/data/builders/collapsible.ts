@@ -1,9 +1,9 @@
-import { ATTRS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createCollapsible',
-	description: 'The builder function used to create a collapsible component',
+	description: DESCRIPTIONS.BUILDER('collapsible'),
 	props: [
 		{
 			label: 'open',

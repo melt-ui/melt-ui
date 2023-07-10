@@ -16,7 +16,7 @@ description: A set of two-state buttons that can be toggled on or off.
 ## API Reference
 
 <APITable data={data.builder} />
-<APITable data={data.toggleGroup} />
+<APITable data={data.root} />
 <APITable data={data.item} />
 
 ## Accessibility

@@ -3,7 +3,7 @@ import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createContextMenu',
-	description: 'The builder function used to create a context menu component.',
+	description: DESCRIPTIONS.BUILDER('context menu'),
 	props: [
 		{
 			label: 'positioning',

@@ -20,6 +20,7 @@ description:
 
 <APITable data={data.builder} />
 <APITable data={data.trigger} />
+<APITable data={data.content} />
 <APITable data={data.arrow} />
 
 ## Accessibility

@@ -3,7 +3,7 @@ import type { APISchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createHoverCard',
-	description: 'The builder function used to create a hover card component.',
+	description: DESCRIPTIONS.BUILDER('hover card'),
 	props: [
 		{
 			label: 'defaultOpen',

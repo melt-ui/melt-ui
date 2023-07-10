@@ -12,7 +12,7 @@ description:
 ## API Reference
 
 <APITable data={data.builder} />
-<APITable data={data.toolbar} />
+<APITable data={data.root} />
 <APITable data={data.button} />
 <APITable data={data.link} />
 <APITable data={data.separator} />

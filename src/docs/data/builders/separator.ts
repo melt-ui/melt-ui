@@ -1,9 +1,9 @@
-import { ATTRS, TYPES } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, TYPES } from '$docs/constants';
 import type { APISchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createSeparator',
-	description: 'The builder function used to create a separator component.',
+	description: DESCRIPTIONS.BUILDER('separator'),
 	props: [
 		{
 			label: 'orientation',

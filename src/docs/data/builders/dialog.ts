@@ -3,7 +3,7 @@ import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createDialog',
-	description: 'The builder function used to create a dialog component.',
+	description: DESCRIPTIONS.BUILDER('dialog'),
 	props: [
 		{
 			label: 'role',

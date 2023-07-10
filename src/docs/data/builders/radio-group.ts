@@ -1,9 +1,9 @@
-import { ATTRS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createRadioGroup',
-	description: 'The builder function used to create a radio group component.',
+	description: DESCRIPTIONS.BUILDER('radio group'),
 	props: [
 		{
 			label: 'disabled',

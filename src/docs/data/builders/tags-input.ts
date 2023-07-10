@@ -1,9 +1,9 @@
-import { ATTRS } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createTags',
-	description: 'The builder function used to create a tags input component.',
+	description: DESCRIPTIONS.BUILDER('tags input'),
 	props: [
 		{
 			label: 'placeholder',

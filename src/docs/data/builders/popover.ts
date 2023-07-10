@@ -3,7 +3,7 @@ import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createPopover',
-	description: 'The builder function used to create a popover component.',
+	description: DESCRIPTIONS.BUILDER('popover'),
 	props: [
 		{
 			label: 'positioning',

@@ -1,10 +1,10 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 import { isMac } from '@melt-ui/svelte/internal/helpers';
-import { ATTRS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 
 const builder: APISchema = {
 	title: 'createPinInput',
-	description: 'The builder function used to create a pin-input component.',
+	description: DESCRIPTIONS.BUILDER('pin input'),
 	props: [
 		{
 			label: 'placeholder',

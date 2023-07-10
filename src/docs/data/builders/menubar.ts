@@ -6,7 +6,7 @@ const menuSchemas = dropdownMenuData.schemas;
 
 const builder: APISchema = {
 	title: 'createMenubar',
-	description: 'The builder function used to create a menubar component.',
+	description: DESCRIPTIONS.BUILDER('menubar'),
 	props: [
 		{
 			label: 'loop',
@@ -19,7 +19,7 @@ const builder: APISchema = {
 
 const menuBuilder: APISchema = {
 	title: 'createMenu',
-	description: 'The builder function used to create individual menus that are part of a menubar.',
+	description: DESCRIPTIONS.BUILDER('menubar menu'),
 	props: [
 		{
 			label: 'positioning',

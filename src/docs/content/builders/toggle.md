@@ -63,7 +63,7 @@ directly set the `disabled` store.
 ## API Reference
 
 <APITable data={data.builder} />
-<APITable data={data.toggle} />
+<APITable data={data.root} />
 
 ## Accessibility
 

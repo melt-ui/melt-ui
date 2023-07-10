@@ -1,9 +1,9 @@
-import { ATTRS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createCombobox',
-	description: 'The builder function used to create a combobox component.',
+	description: DESCRIPTIONS.BUILDER('combobox'),
 	props: [
 		{
 			label: 'filterFunction',

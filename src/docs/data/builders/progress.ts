@@ -1,9 +1,9 @@
-import { ATTRS } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS } from '$docs/constants';
 import type { APISchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createProgress',
-	description: 'The builder function used to create a progress bar component.',
+	description: DESCRIPTIONS.BUILDER('progress bar'),
 	props: [
 		{
 			label: 'value',

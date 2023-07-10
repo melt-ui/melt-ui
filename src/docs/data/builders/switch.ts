@@ -1,9 +1,9 @@
-import { ATTRS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createSwitch',
-	description: 'The builder function used to create a switch component.',
+	description: DESCRIPTIONS.BUILDER('switch'),
 	props: [
 		{
 			label: 'checked',

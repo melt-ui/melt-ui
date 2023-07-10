@@ -1,9 +1,9 @@
-import { ATTRS } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS } from '$docs/constants';
 import type { APISchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createAvatar',
-	description: 'The builder function used to create an avatar component.',
+	description: DESCRIPTIONS.BUILDER('avatar'),
 	props: [
 		{
 			label: 'src',

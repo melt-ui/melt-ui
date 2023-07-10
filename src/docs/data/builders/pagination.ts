@@ -1,9 +1,9 @@
-import { ATTRS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createPagination',
-	description: 'The builder function used to create a pagination component.',
+	description: DESCRIPTIONS.BUILDER('pagination'),
 	props: [
 		{
 			label: 'count',

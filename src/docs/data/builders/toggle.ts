@@ -1,9 +1,9 @@
-import { ATTRS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createToggle',
-	description: 'The builder function used to create a toggle component.',
+	description: DESCRIPTIONS.BUILDER('toggle'),
 	props: [
 		{
 			label: 'disabled',
@@ -20,9 +20,9 @@ const builder: APISchema = {
 	],
 };
 
-const toggle: APISchema = {
-	title: 'toggle',
-	description: 'The toggle component.',
+const root: APISchema = {
+	title: 'root',
+	description: 'The root toggle component.',
 	dataAttributes: [
 		{
 			label: 'data-disabled',
@@ -52,7 +52,7 @@ const keyboard: KeyboardSchema = [
 
 const schemas = {
 	builder,
-	toggle,
+	root,
 	keyboard,
 };
 

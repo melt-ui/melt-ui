@@ -1,9 +1,9 @@
-import { ATTRS, KBD, TYPES } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createTabs',
-	description: 'The builder function used to create a tabs component.',
+	description: DESCRIPTIONS.BUILDER('tabs'),
 	props: [
 		{
 			label: 'value',

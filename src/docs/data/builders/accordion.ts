@@ -1,9 +1,9 @@
-import { ATTRS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 
 const builder: APISchema = {
 	title: 'createAccordion',
-	description: 'The builder function used to create an accordion component.',
+	description: DESCRIPTIONS.BUILDER('accordion'),
 	props: [
 		{
 			label: 'type',
