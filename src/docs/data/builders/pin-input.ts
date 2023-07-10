@@ -36,6 +36,43 @@ const builder: APISchema = {
 			description: 'The type of the pin-input.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'options',
+			type: 'Writable<CreatePinInputProps>',
+			description: 'A writable store that contains the props used to create the pin-input.',
+		},
+		{
+			name: 'clear',
+			type: '() => void',
+			description: 'A function that clears the pin-input.',
+		},
+		{
+			name: 'value',
+			type: 'Writable<string[]>',
+			description: 'A writable store that controls the value of the pin-input.',
+		},
+		{
+			name: 'valueStr',
+			type: 'Readable<string>',
+			description: 'A derived store that returns the value of the pin-input as a string.',
+		},
+		{
+			name: 'root',
+			description: 'The builder store used to create the pin-input root.',
+			link: '#root',
+		},
+		{
+			name: 'input',
+			description: 'The builder store used to create the pin-input input.',
+			link: '#input',
+		},
+		{
+			name: 'hiddenInput',
+			description: 'The builder store used to create the pin-input hidden input.',
+			link: '#hiddeninput',
+		},
+	],
 };
 
 const root: APISchema = {

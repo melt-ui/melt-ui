@@ -599,18 +599,18 @@ export function createSelect(args?: CreateSelectArgs) {
 	}
 
 	return {
+		options,
+		open,
+		isSelected,
+		value,
 		trigger,
 		menu,
-		open,
 		option,
-		value,
-		label,
-		arrow,
-		isSelected,
-		options,
 		input,
+		label,
 		separator,
 		group,
 		groupLabel,
+		arrow,
 	};
 }

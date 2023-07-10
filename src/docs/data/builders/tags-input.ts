@@ -35,6 +35,63 @@ const builder: APISchema = {
 			description: 'Whether or not the tags input should only allow unique tags.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'options',
+			type: 'Writable<CreateTagsInputProps>',
+			description: 'A writable store that contains the props used to create the tags input.',
+		},
+		{
+			name: 'tags',
+			type: 'Writable<Tag[]>',
+			description: 'A writable store that controls the tags.',
+		},
+		{
+			name: 'selected',
+			type: 'Writable<Tag | null>',
+			description: 'A writable store that controls the selected tag.',
+		},
+		{
+			name: 'isSelected',
+			type: 'Readable<(tag: Tag) => boolean>',
+			description: 'A derived store that returns a function that checks if a tag is selected.',
+		},
+		{
+			name: 'inputValue',
+			type: 'Readable<string>',
+			description: 'A derived store that returns the value of the input element.',
+		},
+		{
+			name: 'inputInvalid',
+			type: 'Readable<boolean>',
+			description: 'A derived store that returns whether or not the input element is invalid.',
+		},
+		{
+			name: 'root',
+			description: 'The builder store used to create the tags input root.',
+			link: '#root',
+		},
+		{
+			name: 'input',
+			description: 'The builder store used to create the tags input input.',
+			link: '#input',
+		},
+		{
+			name: 'tag',
+			description: 'The builder store used to create the tags input tag.',
+			link: '#tag',
+		},
+		{
+			name: 'deleteTrigger',
+			description: 'The builder store used to create the tags input delete trigger.',
+			link: '#delete-trigger',
+		},
+		{
+			name: 'edit',
+			description: 'The builder store used to create the tags input edit.',
+			link: '#edit',
+		},
+	],
 };
 
 const root: APISchema = {

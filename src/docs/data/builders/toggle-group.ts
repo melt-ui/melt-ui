@@ -45,6 +45,34 @@ const builder: APISchema = {
 			description: DESCRIPTIONS.LOOP,
 		},
 	],
+	returnedProps: [
+		{
+			name: 'options',
+			type: 'Writable<CreateToggleGroupProps>',
+			description: 'A writable store with the options used to create the toggle group.',
+		},
+		{
+			name: 'value',
+			type: 'Writable<string | string[] | null>',
+			description: 'A writable store with the value of the currently selected item.',
+		},
+		{
+			name: 'isPressed',
+			type: 'Readable<(itemValue: string) => boolean>',
+			description:
+				'A derived store that takes an item value and returns whether or not the item is pressed.',
+		},
+		{
+			name: 'root',
+			description: 'The builder store used to create the toggle group root.',
+			link: '#root',
+		},
+		{
+			name: 'item',
+			description: 'The builder store used to create toggle group items.',
+			link: '#item',
+		},
+	],
 };
 
 const root: APISchema = {

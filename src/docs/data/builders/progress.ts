@@ -18,6 +18,23 @@ const builder: APISchema = {
 			description: 'The maximum value of the progress bar.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'value',
+			type: 'Writable<number | null>',
+			description: 'A writable store that controls the current value of the progress bar.',
+		},
+		{
+			name: 'max',
+			type: 'Writable<number>',
+			description: 'A writable store that controls the maximum value of the progress bar.',
+		},
+		{
+			name: 'root',
+			description: 'The builder store used to create the progress bar root.',
+			link: '#root',
+		},
+	],
 };
 
 const root: APISchema = {

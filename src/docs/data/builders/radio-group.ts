@@ -36,6 +36,33 @@ const builder: APISchema = {
 			description: 'The value of the checked radio item.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'options',
+			type: 'Writable<CreateRadioGroupProps>',
+			description: 'A writable store that can be used to update the radio group props.',
+		},
+		{
+			name: 'value',
+			type: 'Writable<string | null>',
+			description: 'A writable store that can be used to update the radio group value.',
+		},
+		{
+			name: 'root',
+			description: 'The builder store used to create the radio group root.',
+			link: '#root',
+		},
+		{
+			name: 'item',
+			description: 'The builder store used to create the radio group item.',
+			link: '#item',
+		},
+		{
+			name: 'itemInput',
+			description: 'The builder store used to create the radio group item input.',
+			link: '#iteminput',
+		},
+	],
 };
 
 const root: APISchema = {

@@ -44,6 +44,33 @@ const builder: APISchema = {
 				'The delay in milliseconds before the tooltip closes after a pointer leave event.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'options',
+			type: 'Writable<CreateTooltipProps>',
+			description: 'A writable store that controls the options of the tooltip.',
+		},
+		{
+			name: 'open',
+			type: 'Writable<boolean>',
+			description: 'A writable store that controls the open state of the tooltip.',
+		},
+		{
+			name: 'trigger',
+			description: 'The builder store used to create the tooltip trigger.',
+			link: '#trigger',
+		},
+		{
+			name: 'content',
+			description: 'The builder store used to create the tooltip content.',
+			link: '#content',
+		},
+		{
+			name: 'arrow',
+			description: 'The builder store used to create the tooltip arrow.',
+			link: '#arrow',
+		},
+	],
 };
 
 const trigger: APISchema = {

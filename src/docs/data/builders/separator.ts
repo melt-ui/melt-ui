@@ -20,6 +20,18 @@ const builder: APISchema = {
 				'Whether or not the separator is for purely decorative purposes. This will determine if the separator is in the accessibility tree or not.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'options',
+			type: 'Writable<CreateSeparatorProps>',
+			description: 'A writable store that can be used to update the separator props.',
+		},
+		{
+			name: 'root',
+			description: 'The builder store used to create the separator root.',
+			link: '#root',
+		},
+	],
 };
 
 const root: APISchema = {

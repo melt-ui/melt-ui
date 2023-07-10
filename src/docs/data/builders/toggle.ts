@@ -19,6 +19,23 @@ const builder: APISchema = {
 			description: 'Whether or not the toggle is pressed.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'pressed',
+			type: 'Writable<boolean>',
+			description: 'A writable store that controls the pressed state of the toggle.',
+		},
+		{
+			name: 'disabled',
+			type: 'Writable<boolean>',
+			description: 'A writable store that controls whether or not the toggle is disabled.',
+		},
+		{
+			name: 'root',
+			description: 'The builder store used to create the toggle root.',
+			link: '#root',
+		},
+	],
 };
 
 const root: APISchema = {

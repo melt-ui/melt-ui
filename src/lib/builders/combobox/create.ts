@@ -419,14 +419,14 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>) {
 
 	return {
 		filteredItems: readonly(filteredItems),
-		input,
-		menu,
-		item,
+		updateItems,
 		inputValue,
 		isSelected,
-		open,
-		options,
 		selectedItem,
-		updateItems,
+		options,
+		open,
+		menu,
+		input,
+		item,
 	};
 }

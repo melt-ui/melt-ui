@@ -31,6 +31,53 @@ const builder: APISchema = {
 			description: DESCRIPTIONS.CLOSE_ON_CLICK_OUTSIDE('dialog'),
 		},
 	],
+	returnedProps: [
+		{
+			name: 'open',
+			type: 'Writable<boolean>',
+			description: 'A writable store that controls the open state of the dialog.',
+		},
+		{
+			name: 'options',
+			type: 'Writable<CreateDialogProps>',
+			description: 'A writable store that controls the options of the dialog.',
+		},
+		{
+			name: 'portal',
+			type: 'Action<HTMLElement, PortalConfig>',
+			description: 'The portal action for the dialog.',
+		},
+		{
+			name: 'trigger',
+			description: 'The builder store used to create the dialog trigger.',
+			link: '#trigger',
+		},
+		{
+			name: 'overlay',
+			description: 'The builder store used to create the dialog overlay.',
+			link: '#overlay',
+		},
+		{
+			name: 'content',
+			description: 'The builder store used to create the dialog content.',
+			link: '#content',
+		},
+		{
+			name: 'close',
+			description: 'The builder store used to create the dialog close button.',
+			link: '#close',
+		},
+		{
+			name: 'title',
+			description: 'The builder store used to create the dialog title.',
+			link: '#title',
+		},
+		{
+			name: 'description',
+			description: 'The builder store used to create the dialog description.',
+			link: '#description',
+		},
+	],
 };
 
 const trigger: APISchema = {

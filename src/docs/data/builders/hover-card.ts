@@ -43,6 +43,33 @@ const builder: APISchema = {
 			description: 'The delay in milliseconds before the hover card closes.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'open',
+			type: 'Writable<boolean>',
+			description: 'A writable store that controls the open state of the hover card.',
+		},
+		{
+			name: 'options',
+			type: 'Writable<CreateHoverCardProps>',
+			description: 'A writable store that controls the options of the hover card.',
+		},
+		{
+			name: 'trigger',
+			description: 'The builder store used to create the hover card trigger.',
+			link: '#trigger',
+		},
+		{
+			name: 'content',
+			description: 'The builder store used to create the hover card content.',
+			link: '#content',
+		},
+		{
+			name: 'arrow',
+			description: 'The builder store used to create the hover card arrow.',
+			link: '#arrow',
+		},
+	],
 };
 
 const trigger: APISchema = {

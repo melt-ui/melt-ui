@@ -43,6 +43,33 @@ const builder: APISchema = {
 			description: 'Whether or not the slider is disabled.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'options',
+			type: 'Writable<CreateSliderProps>',
+			description: 'A writable store that can be used to update the slider props.',
+		},
+		{
+			name: 'value',
+			type: 'Writable<number[]>',
+			description: 'A writable store that can be used to update the slider value.',
+		},
+		{
+			name: 'root',
+			description: 'The builder store used to create the root slider element.',
+			link: '#root',
+		},
+		{
+			name: 'range',
+			description: 'The builder store used to create the slider range element.',
+			link: '#range',
+		},
+		{
+			name: 'thumb',
+			description: 'The builder store used to create the slider thumb element.',
+			link: '#thumb',
+		},
+	],
 };
 
 const root: APISchema = {

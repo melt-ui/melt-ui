@@ -19,6 +19,38 @@ const builder: APISchema = {
 			description: 'The orientation of the toolbar.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'options',
+			type: 'Writable<CreateToolbarProps>',
+			description: 'A writable store that can be used to update the toolbar props.',
+		},
+		{
+			name: 'createToolbarGroup',
+			description: 'A builder function that creates a toolbar group.',
+			link: '#createtoolbargroup',
+		},
+		{
+			name: 'root',
+			description: 'The builder store used to create the toolbar root.',
+			link: '#root',
+		},
+		{
+			name: 'button',
+			description: 'The builder store used to create the toolbar button.',
+			link: '#button',
+		},
+		{
+			name: 'link',
+			description: 'The builder store used to create the toolbar link.',
+			link: '#link',
+		},
+		{
+			name: 'separator',
+			description: 'The builder store used to create the toolbar separator.',
+			link: '#separator',
+		},
+	],
 };
 
 const root: APISchema = {
@@ -94,6 +126,34 @@ const groupBuilder: APISchema = {
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the toolbar group is disabled.',
+		},
+	],
+	returnedProps: [
+		{
+			name: 'options',
+			type: 'Writable<CreateToolbarGroupProps>',
+			description: 'A writable store that can be used to update the toolbar group props.',
+		},
+		{
+			name: 'value',
+			type: 'Writable<string | string[] | null>',
+			description: 'A writable store that can be used to update the toolbar group value.',
+		},
+		{
+			name: 'isPressed',
+			type: 'Readable<(itemValue: string) => boolean>',
+			description:
+				'A derived store that returns a function that can be used to check if an item is pressed.',
+		},
+		{
+			name: 'root',
+			description: 'The builder store used to create the toolbar group root.',
+			link: '#group',
+		},
+		{
+			name: 'item',
+			description: 'The builder store used to create the toolbar group item.',
+			link: '#groupitem',
 		},
 	],
 };

@@ -11,7 +11,7 @@ export const DESCRIPTIONS = {
 		`Whether or not to close the ${name} when the escape key is pressed.`,
 	CLOSE_ON_CLICK_OUTSIDE: (name = 'element') =>
 		`Whether or not to close the ${name} when the user clicks outside of it.`,
-	BUILDER: (name: string) => `The builder function used to create a ${name} component.`,
+	BUILDER: (name: string) => `The builder function used to create the ${name} component.`,
 };
 
 export const ATTRS = {

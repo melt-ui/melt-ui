@@ -17,6 +17,33 @@ const builder: APISchema = {
 			default: 'false',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'open',
+			type: 'Writable<boolean>',
+			description: 'A writable store that controls the open state of the collapsible.',
+		},
+		{
+			name: 'disabled',
+			type: 'Writable<boolean>',
+			description: 'A writable store that controls whether or not the collapsible is disabled.',
+		},
+		{
+			name: 'root',
+			description: 'The builder store used to create the collapsible root.',
+			link: '#root',
+		},
+		{
+			name: 'content',
+			description: 'The builder store used to create the collapsible content.',
+			link: '#content',
+		},
+		{
+			name: 'trigger',
+			description: 'The builder store used to create the collapsible trigger.',
+			link: '#trigger',
+		},
+	],
 };
 
 const root: APISchema = {
@@ -34,6 +61,25 @@ const root: APISchema = {
 		{
 			name: 'data-melt-collapsible',
 			value: ATTRS.MELT('collapsible root'),
+		},
+	],
+};
+
+const trigger: APISchema = {
+	title: 'trigger',
+	description: 'The collapsible trigger element.',
+	dataAttributes: [
+		{
+			name: 'data-state',
+			value: ATTRS.OPEN_CLOSED,
+		},
+		{
+			name: 'data-disabled',
+			value: ATTRS.DISABLED('trigger'),
+		},
+		{
+			name: 'data-melt-collapsible-trigger',
+			value: ATTRS.MELT('collapsible trigger'),
 		},
 	],
 };
@@ -68,7 +114,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, root, content];
+const schemas = [builder, root, trigger, content];
 
 const features = [
 	'Full keyboard navigation',

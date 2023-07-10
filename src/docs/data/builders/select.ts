@@ -46,6 +46,73 @@ const builder: APISchema = {
 			description: DESCRIPTIONS.LOOP,
 		},
 	],
+	returnedProps: [
+		{
+			name: 'options',
+			type: 'Writable<CreateSelectProps>',
+			description: 'A writable store that can be used to update the select props.',
+		},
+		{
+			name: 'open',
+			type: 'Writable<boolean>',
+			description: 'A writable store that can be used to update the select open state.',
+		},
+		{
+			name: 'isSelected',
+			type: 'Readable<(value: unknown) => boolean>',
+			description: 'A derived store that returns whether or not the given value is selected.',
+		},
+		{
+			name: 'value',
+			type: 'Writable<unknown>',
+			description: 'A writable store that can be used to update the select value.',
+		},
+		{
+			name: 'trigger',
+			description: 'The builder store used to create the select trigger.',
+			link: '#trigger',
+		},
+		{
+			name: 'menu',
+			description: 'The builder store used to create the select menu.',
+			link: '#menu',
+		},
+		{
+			name: 'option',
+			description: 'The builder store used to create the select options.',
+			link: '#option',
+		},
+		{
+			name: 'input',
+			description: 'The builder store used to create the select input.',
+			link: '#input',
+		},
+		{
+			name: 'label',
+			description: 'The builder store used to create the select label.',
+			link: '#label',
+		},
+		{
+			name: 'separator',
+			description: 'The builder store used to create the select separator.',
+			link: '#separator',
+		},
+		{
+			name: 'group',
+			description: 'The builder store used to create the select group.',
+			link: '#group',
+		},
+		{
+			name: 'groupLabel',
+			description: 'The builder store used to create the select group label.',
+			link: '#grouplabel',
+		},
+		{
+			name: 'arrow',
+			description: 'The builder store used to create the select arrow.',
+			link: '#arrow',
+		},
+	],
 };
 
 const trigger: APISchema = {

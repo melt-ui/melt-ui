@@ -25,6 +25,43 @@ const builder: APISchema = {
 			description: DESCRIPTIONS.PREVENT_SCROLL('context menu'),
 		},
 	],
+	returnedProps: [
+		{
+			name: 'open',
+			type: 'Writable<boolean>',
+			description: 'A writable store that controls the open state of the context menu.',
+		},
+		{
+			name: 'options',
+			type: 'Writable<CreateContextMenuProps>',
+			description: 'A writable store that controls the options of the context menu.',
+		},
+		{
+			name: 'menu',
+			description: 'The builder store used to create the context menu.',
+			link: '#menu',
+		},
+		{
+			name: 'trigger',
+			description: 'The builder store used to create the context menu trigger.',
+			link: '#trigger',
+		},
+		{
+			name: 'checkboxItem',
+			description: 'The builder store used to create a checkbox menu item.',
+			link: '#checkboxItem',
+		},
+		{
+			name: 'separator',
+			description: 'The builder store used to create a separator menu item.',
+			link: '#separator',
+		},
+		{
+			name: 'arrow',
+			description: 'The builder store used to create the context menu arrow.',
+			link: '#arrow',
+		},
+	],
 };
 
 const menu: APISchema = {
@@ -139,6 +176,29 @@ const radioGroupBuilder: APISchema = {
 			description: 'The value of the selected radio item.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'value',
+			type: 'Writable<string | null>',
+			description: 'A writable store which controls the value of the selected radio item.',
+		},
+		{
+			name: 'isChecked',
+			type: 'Readable<(itemValue: string) => boolean>',
+			description:
+				'A derived store which returns a function that checks if a radio item is selected.',
+		},
+		{
+			name: 'radioGroup',
+			description: 'The builder store used to create the radio group.',
+			link: '#radiogroup',
+		},
+		{
+			name: 'radioItem',
+			description: 'The builder store used to create a radio menu item.',
+			link: '#radioitem',
+		},
+	],
 };
 
 const radioGroup: APISchema = {
@@ -175,6 +235,18 @@ const radioItem: APISchema = {
 		},
 	],
 	dataAttributes: [
+		{
+			name: 'data-checked',
+			value: ATTRS.CHECKED_UNCHECKED,
+		},
+		{
+			name: 'data-disabled',
+			value: ATTRS.DISABLED('radio item'),
+		},
+		{
+			name: 'data-value',
+			value: 'The value of the radio item.',
+		},
 		{
 			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
@@ -216,6 +288,33 @@ const submenuBuilder: APISchema = {
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether the submenu is disabled.',
+		},
+	],
+	returnedProps: [
+		{
+			name: 'subOpen',
+			type: 'Writable<boolean>',
+			description: 'A writable store that controls the open state of the submenu.',
+		},
+		{
+			name: 'options',
+			type: 'Writable<CreateContextSubmenuProps>',
+			description: 'A writable store that controls the options of the submenu.',
+		},
+		{
+			name: 'subMenu',
+			description: 'The store used to create the submenu.',
+			link: '#menu',
+		},
+		{
+			name: 'subTrigger',
+			description: 'The builder store used to create the submenu trigger.',
+			link: '#trigger',
+		},
+		{
+			name: 'arrow',
+			description: 'The builder store used to create the submenumenu arrow.',
+			link: '#arrow',
 		},
 	],
 };

@@ -324,11 +324,11 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 	});
 
 	return {
+		options,
+		value,
 		root,
 		slider: root,
 		range,
 		thumb,
-		value,
-		options,
 	};
 };

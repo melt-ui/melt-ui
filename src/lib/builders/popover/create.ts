@@ -153,5 +153,5 @@ export function createPopover(args?: CreatePopoverArgs) {
 		}
 	});
 
-	return { trigger, open, content, arrow, close };
+	return { trigger, open, content, arrow, close, options };
 }

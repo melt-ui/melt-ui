@@ -30,6 +30,53 @@ const builder: APISchema = {
 			description: 'The current page number.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'options',
+			type: 'Writable<CreatePaginationProps>',
+			description: 'A writable store that controls the pagination options.',
+		},
+		{
+			name: 'page',
+			type: 'Writable<number>',
+			description: 'A writable store that controls the current page.',
+		},
+		{
+			name: 'pages',
+			type: 'Readable<PageItem[]>',
+			description: 'A readable store that contains the page items.',
+		},
+		{
+			name: 'range',
+			type: 'Readable<{start: number; end: number}>',
+			description: 'A readable store that contains the start and end page numbers.',
+		},
+		{
+			name: 'totalPages',
+			type: 'Readable<number>',
+			description: 'A readable store that contains the total number of pages.',
+		},
+		{
+			name: 'root',
+			description: 'The builder store used to create the pagination root.',
+			link: '#root',
+		},
+		{
+			name: 'pageTrigger',
+			description: 'The builder store used to create the pagination page trigger.',
+			link: '#pageTrigger',
+		},
+		{
+			name: 'prevButton',
+			description: 'The builder store used to create the pagination previous button.',
+			link: '#prevButton',
+		},
+		{
+			name: 'nextButton',
+			description: 'The builder store used to create the pagination next button.',
+			link: '#nextButton',
+		},
+	],
 };
 
 const root: APISchema = {

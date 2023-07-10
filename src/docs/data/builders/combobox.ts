@@ -36,6 +36,59 @@ const builder: APISchema = {
 			description: 'The alignment of the highlighted item when scrolling.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'filteredItems',
+			type: 'Readable<T[]>',
+			description: 'A derived store that returns the filtered list of items.',
+		},
+		{
+			name: 'updateItems',
+			type: 'UpdaterFunction: (items: T[]) => T[]',
+			description: 'A function that updates the list of items.',
+		},
+		{
+			name: 'inputValue',
+			type: 'Writable<string>',
+			description: 'A writable store that controls the value of the input.',
+		},
+		{
+			name: 'isSelected',
+			type: 'Readable<(item: T) => boolean>',
+			description:
+				'A derived store that returns a function that returns whether or not the item is selected.',
+		},
+		{
+			name: 'selectedItem',
+			type: 'Writable<T>',
+			description: 'A writable store that controls the selected item.',
+		},
+		{
+			name: 'options',
+			type: 'Writable<CreateComboboxProps>',
+			description: 'A writable store with the options used to create the combobox.',
+		},
+		{
+			name: 'open',
+			type: 'Writable<boolean>',
+			description: 'A writable store that controls whether or not the combobox is open.',
+		},
+		{
+			name: 'menu',
+			description: 'The builder store used to create the collapsible menu.',
+			link: '#menu',
+		},
+		{
+			name: 'input',
+			description: 'The builder store used to create the collapsible input.',
+			link: '#input',
+		},
+		{
+			name: 'item',
+			description: 'The builder store used to create the menu item.',
+			link: '#item',
+		},
+	],
 };
 
 const input: APISchema = {

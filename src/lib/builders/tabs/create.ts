@@ -197,10 +197,10 @@ export function createTabs(args?: CreateTabsArgs) {
 
 	return {
 		value,
+		options,
 		root: root,
 		list: list,
 		trigger: trigger,
 		content: content,
-		options,
 	};
 }

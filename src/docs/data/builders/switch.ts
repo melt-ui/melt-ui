@@ -35,6 +35,33 @@ const builder: APISchema = {
 			description: 'The value of the hidden input element used for form submission.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'options',
+			type: 'Writable<CreateSwitchProps>',
+			description: 'A writable store that can be used to update the switch props.',
+		},
+		{
+			name: 'checked',
+			type: 'Writable<boolean>',
+			description: 'A writable store that can be used to update the switch checked state.',
+		},
+		{
+			name: 'isChecked',
+			type: 'Readable<boolean>',
+			description: 'A derived store that returns whether or not the switch is checked.',
+		},
+		{
+			name: 'root',
+			description: 'The builder store used to create the switch root.',
+			link: '#root',
+		},
+		{
+			name: 'input',
+			description: 'The builder store used to create the switch input.',
+			link: '#input',
+		},
+	],
 };
 
 const root: APISchema = {

@@ -19,6 +19,18 @@ const builder: APISchema = {
 			description: 'The number of milliseconds to wait before rendering the fallback image.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'image',
+			description: 'The builder store used to create the image element.',
+			link: '#image',
+		},
+		{
+			name: 'fallback',
+			description: 'The builder store used to create the fallback element.',
+			link: '#fallback',
+		},
+	],
 };
 
 const image: APISchema = {

@@ -567,10 +567,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		});
 
 		return {
+			value,
+			isChecked,
 			radioGroup,
 			radioItem,
-			isChecked,
-			value,
 		};
 	};
 

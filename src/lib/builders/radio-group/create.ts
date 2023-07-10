@@ -162,9 +162,9 @@ export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 	return {
 		options,
 		value,
+		isChecked,
 		root,
 		item,
 		itemInput,
-		isChecked,
 	};
 }

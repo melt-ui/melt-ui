@@ -25,6 +25,33 @@ const builder: APISchema = {
 			description: 'Whether the popover is open by default or not.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'open',
+			type: 'Writable<boolean>',
+			description: 'A writable store that controls the open state of the popover.',
+		},
+		{
+			name: 'trigger',
+			description: 'The builder store used to create the popover trigger.',
+			link: '#trigger',
+		},
+		{
+			name: 'content',
+			description: 'The builder store used to create the popover content.',
+			link: '#content',
+		},
+		{
+			name: 'close',
+			description: 'The builder store used to create the popover close button.',
+			link: '#close',
+		},
+		{
+			name: 'arrow',
+			description: 'The builder store used to create the popover arrow.',
+			link: '#arrow',
+		},
+	],
 };
 
 const trigger: APISchema = {

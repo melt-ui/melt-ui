@@ -11,7 +11,7 @@
 	<APITableHeading>
 		Returned Props
 		<svelte:fragment slot="info">
-			Builder functions return a props that can be used to render the elements needed for the
+			Builder functions return props that can be used to render the elements needed for the
 			component, as well as a few other props that can be used to manage the state of the component.
 		</svelte:fragment>
 	</APITableHeading>
@@ -30,11 +30,11 @@
 						</tr>
 						{#each data as returnedProp}
 							<tr>
-								<td class="py-3 pl-4 align-baseline sm:pl-0">
+								<td class="overflow-visible py-3 pl-4 align-baseline sm:pl-0">
 									{#if returnedProp.link}
 										<a
 											href={returnedProp.link}
-											class="text-magnum-300 underline underline-offset-4 transition-all hover:underline-offset-[6px]"
+											class="overflow-x-visible text-magnum-300 underline underline-offset-4 transition-all hover:underline-offset-[6px]"
 										>
 											<code>
 												{returnedProp.name}

@@ -41,11 +41,43 @@ const builder: APISchema = {
 			description: 'Whether or not to automatically set the tabs value when a trigger is clicked.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'options',
+			type: 'Writable<CreateTabsProps>',
+			description: 'A writable store that can be used to update the tabs props.',
+		},
+		{
+			name: 'value',
+			type: 'Writable<string>',
+			description: 'A writable store that can be used to update the current tab value.',
+		},
+		{
+			name: 'root',
+			description: 'The builder store used to create the root tabs element.',
+			link: '#root',
+		},
+		{
+			name: 'list',
+			description: 'The builder store used to create the tabs list element.',
+			link: '#list',
+		},
+		{
+			name: 'trigger',
+			description: 'The builder store used to create a tabs trigger element.',
+			link: '#trigger',
+		},
+		{
+			name: 'content',
+			description: 'The builder store used to create a tabs content element.',
+			link: '#content',
+		},
+	],
 };
 
 const root: APISchema = {
-	title: 'tabs',
-	description: 'The tabs component.',
+	title: 'root',
+	description: 'The root tabs component.',
 	dataAttributes: [
 		{
 			name: 'data-orientation',

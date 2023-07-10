@@ -36,6 +36,29 @@ const builder: APISchema = {
 			description: 'The value of the checkbox.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'isChecked',
+			type: 'Readable<boolean>',
+			description: 'A derived store that returns whether or not the checkbox is checked.',
+		},
+		{
+			name: 'isIndeterminate',
+			type: 'Readable<boolean>',
+			description:
+				'A derived store that returns whether or not the checkbox is in an indeterminate state.',
+		},
+		{
+			name: 'root',
+			description: 'The builder store used to create the checkbox root.',
+			link: '#root',
+		},
+		{
+			name: 'input',
+			description: 'The builder store used to create the checkbox input.',
+			link: '#input',
+		},
+	],
 };
 
 const root: APISchema = {

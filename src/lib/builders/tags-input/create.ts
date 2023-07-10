@@ -686,16 +686,16 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 	});
 
 	return {
+		inputValue: derived(inputValue, ($inputValue) => $inputValue),
+		inputInvalid: derived(inputInvalid, ($inputInvalid) => $inputInvalid),
+		selected,
+		isSelected,
+		options,
+		tags,
 		root,
 		input,
 		tag,
 		deleteTrigger,
 		edit,
-		options,
-		tags,
-		selected,
-		inputValue: derived(inputValue, ($inputValue) => $inputValue),
-		inputInvalid: derived(inputInvalid, ($inputInvalid) => $inputInvalid),
-		isSelected,
 	};
 }
