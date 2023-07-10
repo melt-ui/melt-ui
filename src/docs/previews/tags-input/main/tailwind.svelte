@@ -23,7 +23,9 @@
 			data-[disabled]:bg-magnum-300 data-[selected]:bg-magnum-400 data-[disabled]:hover:cursor-default
 				data-[disabled]:focus:!outline-none data-[disabled]:focus:!ring-0"
 			>
-				<span class="flex items-center border-r border-white/10 px-1.5">{t.value}</span>
+				<span class="flex items-center border-r border-white/10 px-1.5"
+					>{t.value}</span
+				>
 				<button
 					{...$deleteTrigger(t)}
 					use:deleteTrigger
