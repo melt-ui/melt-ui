@@ -29,14 +29,14 @@ import {
 	getLastSunday,
 	getNextSaturday,
 	getDaysBetween,
+	getSelectedFromValue,
 } from './utils';
 
 import { usePopper } from '$lib/internal/actions';
 import type { Defaults } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
-import { derived, get, readable, writable } from 'svelte/store';
-import type { CreateDatePickerArgs, DateArgs } from './types';
-import { getOptions } from '@melt-ui/svelte/internal/helpers/list';
+import { derived, get, readable, writable, type Writable } from 'svelte/store';
+import type { CreateDatePickerArgs, CreateDatePickerOptions, DateArgs } from './types';
 
 const defaults = {
 	closeOnEscape: true,
@@ -45,14 +45,22 @@ const defaults = {
 	earliest: null,
 	latest: null,
 	preventScroll: true,
-	type: 'date',
+	type: 'single',
 	value: new Date(),
+	autoSelect: true,
 	open: false,
 	arrowSize: 6,
+	autoClose: false,
 	positioning: {
 		placement: 'bottom',
 	},
-} satisfies Defaults<CreateDatePickerArgs>;
+
+	// temporary until I figure out types
+	date: new Date(),
+	startDate: new Date(),
+	endDate: new Date(),
+	dateList: [new Date()],
+} satisfies Defaults<CreateDatePickerOptions>;
 
 type CalendarParts =
 	| 'trigger'
@@ -68,25 +76,24 @@ type CalendarParts =
 const { name } = createElHelpers<CalendarParts>('calendar');
 
 export function createDatePicker(args?: CreateDatePickerArgs) {
-	const options = { ...defaults, ...args } as CreateDatePickerArgs;
-	const positioning = readable(options.positioning);
-	const arrowSize = readable(options.arrowSize);
-	const open = writable(options.open);
-
+	const options = writable<CreateDatePickerOptions>({ ...defaults, ...args });
+	const arrowSize = readable(get(options).arrowSize);
+	const open = writable(get(options).open);
 	const activeTrigger = writable<HTMLElement | null>(null);
-
-	const value = writable(options.value);
-
-	const ids = {
-		content: generateId(),
-	};
-
+	const value = writable<CreateDatePickerOptions['date']>(get(options).date);
+	const list = writable<CreateDatePickerOptions['dateList']>(get(options).dateList);
+	const startDate = writable<CreateDatePickerOptions['startDate']>(get(options).startDate);
+	const endDate = writable<CreateDatePickerOptions['endDate']>(get(options).endDate);
 	const dates = writable<Date[]>([]);
 	const lastMonthDates = writable<Date[]>([]);
 	const nextMonthDates = writable<Date[]>([]);
-	const activeDate = writable<Date | null>(new Date());
-	const nextFocusable = writable<HTMLElement | null>(null);
-	const prevFocusable = writable<HTMLElement | null>(null);
+	const activeDate = writable<CreateDatePickerArgs['value']>(new Date());
+	const selectEnd = writable<boolean>(false);
+
+	const ids = {
+		content: generateId(),
+		input: generateId(),
+	};
 
 	const nextMonth = builder(name('nextMonth'), {
 		action: (node: HTMLElement) => {
@@ -102,7 +109,7 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 				},
 			};
 		},
-		stores: [dates, activeDate],
+		stores: [activeDate],
 		returned: (dates) => {
 			return {};
 		},
@@ -183,27 +190,22 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
 
-			const unsubDerived = effect(
-				[open, activeTrigger, positioning],
-				([$open, $activeTrigger, $positioning]) => {
-					unsubPopper();
-					if ($open && $activeTrigger) {
-						tick().then(() => {
-							const popper = usePopper(node, {
-								anchorElement: $activeTrigger,
-								open,
-								options: {
-									floating: $positioning,
-								},
-							});
-
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
+			const unsubDerived = effect([open, activeTrigger], ([$open, $activeTrigger]) => {
+				unsubPopper();
+				if ($open && $activeTrigger) {
+					tick().then(() => {
+						const popper = usePopper(node, {
+							anchorElement: $activeTrigger,
+							open,
+							options: {},
 						});
-					}
+
+						if (popper && popper.destroy) {
+							unsubPopper = popper.destroy;
+						}
+					});
 				}
-			);
+			});
 
 			const unsubKb = addEventListener(node, 'keydown', (e) => {
 				const triggerElement = e.currentTarget;
@@ -290,15 +292,24 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 	});
 
 	const date = builder(name('date'), {
-		stores: value,
-		returned: ($value) => {
-			const { earliest, latest } = options;
+		stores: [value, startDate, endDate, list],
+		returned: ([$value, $startDate, $endDate, $list]) => {
+			const { earliest, latest } = get(options);
 			return (args: DateArgs) => {
-				console.log(args.value);
+				const selected = getSelectedFromValue({
+					date: new Date(args.value || ''),
+					end: $endDate,
+					start: $startDate,
+					list: $list,
+					value: $value,
+					type: get(options).type,
+				});
 				return {
 					role: 'option',
-					'aria-selected': isSameDay($value, new Date(args.value)) ? true : undefined,
-					'data-selected': $value === args?.value ? '' : undefined,
+					'aria-selected': selected ? true : undefined,
+					'data-selected': selected ? true : undefined,
+					'data-start': isSameDay(new Date(args.value), get(startDate)) ? '' : undefined,
+					'data-end': isSameDay(new Date(args.value), get(endDate)) ? '' : undefined,
 					'data-value': args.value,
 					'data-label': args.label ?? undefined,
 					'data-disabled': args.disabled ? '' : undefined,
@@ -320,8 +331,60 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 			};
 			const unsub = addEventListener(node, 'click', () => {
 				const args = getElArgs();
-				console.log(args);
+				if (args.disabled) return;
+				switch (get(options).type) {
+					case 'single':
+						activeDate.set(new Date(args.value || ''));
+						if (get(options).autoSelect) {
+							value.set(new Date(args.value || ''));
+							if (get(options).autoClose) {
+								open.set(false);
+							}
+						}
+						break;
+					case 'range':
+						if (get(selectEnd)) {
+							startDate.set(new Date(args.value || ''));
+						} else {
+							endDate.set(new Date(args.value || ''));
+						}
+						selectEnd.set(!get(selectEnd));
+
+					case 'multiple':
+						if (get(list).some((d) => isSameDay(d, new Date(args.value || '')))) {
+							list.update((prev) => prev.filter((d) => !isSameDay(d, new Date(args.value || ''))));
+						} else {
+							list.update((prev) => [...prev, new Date(args.value || '')]);
+						}
+						break;
+
+					default:
+						break;
+				}
 				value.set(new Date(args.value || ''));
+			});
+
+			return {
+				destroy: unsub,
+			};
+		},
+	});
+
+	const confirm = builder(name('confirm'), {
+		stores: activeDate,
+		returned: ($activeDate) => {
+			return {
+				type: 'button',
+				'data-confirm': true,
+				'data-value': $activeDate,
+			} as const;
+		},
+		action: (node: HTMLElement) => {
+			const unsub = addEventListener(node, 'click', () => {
+				// value.set(get(activeDate) || get(value));
+				if (get(options).autoClose) {
+					open.set(false);
+				}
 			});
 
 			return {
@@ -335,7 +398,7 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 		console.log(node);
 		if (!node || node.hasAttribute('[data-melt-calendar-date]')) return;
 		const allDates = Array.from(
-			document.querySelectorAll<HTMLElement>(`[data-melt-calendar-date]:not([disabled])`)
+			document.querySelectorAll<HTMLElement>(`[data-melt-calendar-date]:not([data-disabled])`)
 		);
 		let index = allDates.indexOf(node);
 		let nextIndex = index + add;
@@ -396,5 +459,6 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 		date,
 		lastMonthDates,
 		nextMonthDates,
+		confirm,
 	};
 }

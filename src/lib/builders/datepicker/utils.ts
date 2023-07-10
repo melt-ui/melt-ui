@@ -1,3 +1,5 @@
+import type { CreateDatePickerArgs, CreateDatePickerOptions } from './types';
+
 export function isBefore(date1: Date, date2: Date) {
 	const d1 = date1.setHours(0, 0, 0, 0);
 	const d2 = date2.setHours(0, 0, 0, 0);
@@ -75,3 +77,60 @@ export function getDaysBetween(start: Date, end: Date) {
 	}
 	return days;
 }
+
+export function addMonths(date: Date, months: number) {
+	const d = new Date(date);
+	d.setMonth(d.getMonth() + months);
+	return d;
+}
+
+export function subMonths(date: Date, months: number) {
+	const d = new Date(date);
+	d.setMonth(d.getMonth() - months);
+	return d;
+}
+
+export function addYears(date: Date, years: number) {
+	const d = new Date(date);
+	d.setFullYear(d.getFullYear() + years);
+	return d;
+}
+
+export function subYears(date: Date, years: number) {
+	const d = new Date(date);
+	d.setFullYear(d.getFullYear() - years);
+	return d;
+}
+
+interface GetSelectedFromValuesArgs {
+	date: Date;
+	list: Date[];
+	type: CreateDatePickerOptions['type'];
+	start: Date;
+	end: Date;
+	value: Date;
+}
+
+export const getSelectedFromValue: (props: GetSelectedFromValuesArgs) => boolean = ({
+	date,
+	end,
+	list,
+	start,
+	type,
+	value,
+}) => {
+	switch (type) {
+		case 'single':
+			return isSameDay(value, date);
+			break;
+		case 'range':
+			return isSameDay(start, date) || isSameDay(end, date) || isBetween(date, start, end);
+			break;
+		case 'multiple':
+			return list.some((d) => isSameDay(d, date));
+			break;
+		default:
+			return false;
+			break;
+	}
+};
