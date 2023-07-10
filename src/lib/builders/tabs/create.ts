@@ -114,7 +114,13 @@ export function createTabs(args?: CreateTabsArgs) {
 					}
 				}),
 
-				addEventListener(node, 'click', () => {
+				addEventListener(node, 'pointerdown', (e) => {
+					const isLeftClick = e.button === 0;
+					if (!isLeftClick) {
+						e.preventDefault();
+						return;
+					}
+
 					const disabled = node.dataset.disabled === 'true';
 					if (disabled) return;
 
