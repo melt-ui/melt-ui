@@ -8,8 +8,6 @@
 
 	export let name = '';
 	export let code = '';
-
-	$: console.log(name);
 </script>
 
 <button
