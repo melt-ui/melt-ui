@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createDialog } from '@melt-ui/svelte';
 	/** Internal helpers */
-	import PreviewWrapper from '$routes/(components)/preview-wrapper.svelte';
+	import { PreviewWrapper } from '$docs/components';
 	import BaseDialog from './BaseDialog.svelte';
 
 	const dialog = createDialog();

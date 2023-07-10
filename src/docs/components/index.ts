@@ -16,3 +16,4 @@ export { default as CodeBlock } from './code-block.svelte';
 export { default as Features } from './features.svelte';
 export { default as PreviewStyleSelect } from './preview-style-select.svelte';
 export { default as Kbd } from './kbd.svelte';
+export { default as PreviewWrapper } from './preview-wrapper.svelte';

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createCollapsible } from '$lib/builders/collapsible';
-	import PreviewWrapper from '$docs/components/preview-wrapper.svelte';
+	import { PreviewWrapper } from '$docs/components';
 	import { slide } from 'svelte/transition';
 
 	let openProp: boolean;
