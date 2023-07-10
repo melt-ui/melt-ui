@@ -11,7 +11,7 @@
 	export let data: APISchema;
 </script>
 
-<div class="relative overflow-x-visible rounded-md border border-neutral-600/80 px-3 pt-8">
+<div class="relative overflow-x-visible rounded-md border border-neutral-600/80 px-3 pt-16">
 	<APISectionHeading description={transformAPIString(data.description, true)} title={data.title} />
 	<!-- 
 	<H3 class="mt-4 text-magnum-400">{data.title}</H3>

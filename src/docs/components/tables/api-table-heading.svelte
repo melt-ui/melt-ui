@@ -3,7 +3,7 @@
 	import { InfoTooltip } from '$docs/components';
 </script>
 
-<div class="mt-8 flex items-center gap-1.5">
+<div class="mt-2 flex items-center gap-1.5">
 	<H4 class="mt-0">
 		<slot />
 	</H4>
