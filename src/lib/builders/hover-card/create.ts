@@ -128,7 +128,7 @@ export function createHoverCard(args: CreateHoverCardArgs = {}) {
 					WebkitUserSelect: 'text',
 				}),
 				id: ids.content,
-                'data-state': $open ? 'open' : 'closed',
+				'data-state': $open ? 'open' : 'closed',
 			};
 		},
 		action: (node: HTMLElement) => {
