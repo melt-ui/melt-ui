@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS } from '$docs/constants';
 import type { APISchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createLabel',
@@ -17,10 +18,7 @@ const root: APISchema = {
 	],
 };
 
-const schemas = {
-	builder,
-	root,
-};
+const schemas = [builder, root];
 
 const features = [
 	'Supports nested controls',
@@ -28,7 +26,7 @@ const features = [
 	'Can be used multiple times from a single instance of the builder',
 ];
 
-export const labelData = {
+export const labelData: BuilderData = {
 	schemas,
 	features,
 };

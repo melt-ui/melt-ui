@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createToggle',
@@ -50,15 +51,12 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = {
-	builder,
-	root,
-	keyboard,
-};
+const schemas = [builder, root];
 
 const features = ['Full keyboard navigation', 'Can be controlled or uncontrolled'];
 
-export const toggleData = {
+export const toggleData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

@@ -4,8 +4,9 @@ description: Render tags inside an input, followed by an actual text input.
 ---
 
 <script>
-    import { APITable, Callout, KbdTable } from '$docs/components'
-    export let data
+    import { APIReference, Callout, KbdTable } from '$docs/components'
+    export let schemas
+    export let keyboard
 </script>
 
 ## Anatomy
@@ -190,13 +191,8 @@ The following example disallows a tag with the value `one` to be deleted.
 
 ### API Reference
 
-<APITable data={data.builder} />
-<APITable data={data.root} />
-<APITable data={data.input} />
-<APITable data={data.tag} />
-<APITable data={data.deleteTrigger} />
-<APITable data={data.edit} />
+<APIReference {schemas} />
 
 ### Accessibility
 
-<KbdTable data={data.keyboard} />
+<KbdTable {keyboard} />

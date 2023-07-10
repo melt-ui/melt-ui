@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createPagination',
@@ -118,14 +119,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = {
-	builder,
-	keyboard,
-	root,
-	pageTrigger,
-	prevButton,
-	nextButton,
-};
+const schemas = [builder, root, pageTrigger, prevButton, nextButton];
 
 const features = [
 	'Full keyboard navigation support',
@@ -135,7 +129,8 @@ const features = [
 	'Supports a custom number of sibling pages',
 ];
 
-export const paginationData = {
+export const paginationData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

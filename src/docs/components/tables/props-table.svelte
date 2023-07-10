@@ -1,8 +1,7 @@
 <script lang="ts">
 	import type { APISchema } from '$docs/types';
 	import { transformAPIString } from '$docs/utils';
-	import { h4 as H4, p as P } from '$docs/components/markdown';
-	import { InfoTooltip, APITableHeading } from '$docs/components';
+	import { APITableHeading } from '$docs/components';
 	function replaceDoubleQuotes(str: string) {
 		return str.replace(/"/g, "'");
 	}

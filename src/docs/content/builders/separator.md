@@ -4,8 +4,8 @@ description: Displays a horizontal or vertical line to separate content.
 ---
 
 <script>
-    import { APITable } from '$docs/components'
-    export let data
+    import { APIReference } from '$docs/components'
+    export let schemas
 </script>
 
 ## Anatomy
@@ -14,8 +14,7 @@ description: Displays a horizontal or vertical line to separate content.
 
 ## API Reference
 
-<APITable data={data.builder} />
-<APITable data={data.root} />
+<APIReference {schemas} />
 
 ## Accessibility
 

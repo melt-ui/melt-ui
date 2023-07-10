@@ -4,8 +4,9 @@ description: Displays rich content in a portal, triggered by a button.
 ---
 
 <script>
-    import { APITable, KbdTable } from '$docs/components' 
-    export let data
+    import { APIReference, KbdTable } from '$docs/components' 
+    export let schemas
+    export let keyboard
 </script>
 
 ## Anatomy
@@ -22,13 +23,11 @@ above to create your popover.
 
 ## API Reference
 
-<APITable data={data.builder} />
-<APITable data={data.trigger} />
-<APITable data={data.arrow} />
+<APIReference {schemas} />
 
 ## Accessibility
 
 Adheres to the
 [Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialogmodal)
 
-<KbdTable data={data.keyboard} />
+<KbdTable {keyboard} />

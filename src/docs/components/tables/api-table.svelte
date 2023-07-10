@@ -1,8 +1,12 @@
 <script lang="ts">
 	import type { APISchema } from '$docs/types';
-	import { h3 as H3, p as P } from '$docs/components/markdown';
 	import { transformAPIString } from '$docs/utils';
-	import { DataAttrTable, PropsTable, ReturnedPropsTable, APISectionHeading } from '.';
+	import {
+		APISectionHeading,
+		DataAttrTable,
+		PropsTable,
+		ReturnedPropsTable,
+	} from '$docs/components';
 
 	export let data: APISchema;
 </script>

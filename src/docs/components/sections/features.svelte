@@ -1,6 +1,6 @@
 <script lang="ts">
 	import CheckCircle from '~icons/lucide/check-circle';
-	import { h2 as H2 } from './markdown';
+	import { h2 as H2 } from '$docs/components/markdown';
 	export let features: string[];
 </script>
 

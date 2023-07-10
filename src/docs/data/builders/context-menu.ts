@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createContextMenu',
@@ -292,22 +293,21 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = {
+const schemas = [
 	builder,
+	trigger,
+	menu,
+	item,
+	checkboxItem,
+	radioGroupBuilder,
 	radioGroup,
 	radioItem,
-	radioGroupBuilder,
-	checkboxItem,
-	menu,
-	arrow,
-	item,
-	trigger,
-	keyboard,
+	submenuBuilder,
 	subTrigger,
 	submenu,
-	submenuBuilder,
 	separator,
-};
+	arrow,
+];
 
 const features = [
 	'Can be controlled or uncontrolled.',
@@ -319,7 +319,8 @@ const features = [
 	'Typeahead support',
 ];
 
-export const contextMenuData = {
+export const contextMenuData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

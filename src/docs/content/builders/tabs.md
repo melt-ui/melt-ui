@@ -5,8 +5,9 @@ description:
 ---
 
 <script>
-    import { APITable, KbdTable } from '$docs/components'
-    export let data
+    import { APIReference, KbdTable } from '$docs/components'
+    export let schemas
+    export let keyboard
 </script>
 
 ## Anatomy
@@ -18,14 +19,10 @@ description:
 
 ## API Reference
 
-<APITable data={data.builder} />
-<APITable data={data.root} />
-<APITable data={data.list} />
-<APITable data={data.trigger} />
-<APITable data={data.content} />
+<APIReference {schemas} />
 
 ## Accessibility
 
 Adheres to the [Tabs WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabpanel/)
 
-<KbdTable data={data.keyboard} />
+<KbdTable {keyboard} />

@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createTags',
@@ -246,15 +247,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = {
-	builder,
-	root,
-	input,
-	tag,
-	deleteTrigger,
-	edit,
-	keyboard,
-};
+const schemas = [builder, root, tag, deleteTrigger, edit, input];
 
 const features = [
 	'Type in the input and press enter to add tags',
@@ -264,7 +257,8 @@ const features = [
 	'Keyboard navigation',
 ];
 
-export const tagsInputData = {
+export const tagsInputData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

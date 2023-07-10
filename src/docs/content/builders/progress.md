@@ -6,8 +6,8 @@ description:
 ---
 
 <script>
-    import { APITable } from '$docs/components'
-    export let data
+    import { APIReference } from '$docs/components'
+    export let schemas
 </script>
 
 ## Anatomy
@@ -21,5 +21,4 @@ the example above to create your progress bar.
 
 ## API Reference
 
-<APITable data={data.builder} />
-<APITable data={data.root} />
+<APIReference {schemas} />

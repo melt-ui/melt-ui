@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS, TYPES } from '$docs/constants';
 import type { APISchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createSeparator',
@@ -36,17 +37,14 @@ const root: APISchema = {
 	],
 };
 
-const schemas = {
-	builder,
-	root,
-};
+const schemas = [builder, root];
 
 const features = [
 	'Supports horizontal and vertical orientation',
 	'Supports decorative and non-decorative separators',
 ];
 
-export const separatorData = {
+export const separatorData: BuilderData = {
 	schemas,
 	features,
 };

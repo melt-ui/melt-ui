@@ -1,8 +1,6 @@
 import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
-import { dropdownMenuData } from './dropdown-menu';
-
-const menuSchemas = dropdownMenuData.schemas;
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createMenubar',
@@ -47,6 +45,35 @@ const menuBuilder: APISchema = {
 		},
 	],
 };
+const menu: APISchema = {
+	title: 'menu',
+	description: 'The menu element.',
+	dataAttributes: [
+		{
+			name: 'data-state',
+			value: ATTRS.OPEN_CLOSED,
+		},
+		{
+			name: 'data-melt-menubar-menu',
+			value: ATTRS.MELT('menu'),
+		},
+	],
+};
+const trigger: APISchema = {
+	title: 'trigger',
+	description: 'The element which opens the menu.',
+	dataAttributes: [
+		{
+			name: 'data-state',
+			value: ATTRS.OPEN_CLOSED,
+		},
+		{
+			name: 'data-melt-menubar-menu-trigger',
+			value: ATTRS.MELT('trigger'),
+		},
+	],
+};
+
 const item: APISchema = {
 	title: 'item',
 	description: 'A basic menu item.',
@@ -99,6 +126,18 @@ const checkboxItem: APISchema = {
 	],
 };
 
+const radioGroupBuilder: APISchema = {
+	title: 'createMenuRadioGroup',
+	description: 'The builder function used to create radio group components',
+	props: [
+		{
+			name: 'value',
+			type: 'string',
+			description: 'The value of the selected radio item.',
+		},
+	],
+};
+
 const radioGroup: APISchema = {
 	title: 'radioGroup',
 	description: 'A group of radio menu items.',
@@ -144,17 +183,21 @@ const radioItem: APISchema = {
 	],
 };
 
-const menu: APISchema = {
-	title: 'menu',
-	description: 'The menu element.',
-	dataAttributes: [
+const submenuBuilder: APISchema = {
+	title: 'createSubmenu',
+	description: 'The builder function used to create submenu components.',
+	props: [
 		{
-			name: 'data-state',
-			value: ATTRS.OPEN_CLOSED,
+			name: 'positioning',
+			type: 'FloatingConfig',
+			default: "placement: 'right'",
+			description: DESCRIPTIONS.FLOATING_CONFIG,
 		},
 		{
-			name: 'data-melt-menubar-menu',
-			value: ATTRS.MELT('menu'),
+			name: 'disabled',
+			type: 'boolean',
+			default: 'false',
+			description: 'Whether or not the submenu is disabled.',
 		},
 	],
 };
@@ -170,21 +213,6 @@ const arrow: APISchema = {
 		{
 			name: 'data-melt-menubar-menu-arrow',
 			value: ATTRS.MELT('arrow'),
-		},
-	],
-};
-
-const trigger: APISchema = {
-	title: 'trigger',
-	description: 'The element which opens the menu.',
-	dataAttributes: [
-		{
-			name: 'data-state',
-			value: ATTRS.OPEN_CLOSED,
-		},
-		{
-			name: 'data-melt-menubar-menu-trigger',
-			value: ATTRS.MELT('trigger'),
 		},
 	],
 };
@@ -233,6 +261,7 @@ const subTrigger: APISchema = {
 		},
 	],
 };
+
 const keyboard: KeyboardSchema = [
 	{
 		key: KBD.SPACE,
@@ -269,23 +298,23 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = {
+const schemas = [
 	builder,
 	menuBuilder,
+	trigger,
+	menu,
 	item,
 	checkboxItem,
+	radioGroupBuilder,
 	radioGroup,
 	radioItem,
-	menu,
-	arrow,
-	trigger,
-	separator,
-	submenu,
+	submenuBuilder,
 	subTrigger,
-	radioGroupBuilder: menuSchemas.radioGroupBuilder,
-	submenuBuilder: menuSchemas.submenuBuilder,
-	keyboard,
-};
+	submenu,
+	separator,
+	arrow,
+];
+
 const features = [
 	'Can be controlled or uncontrolled.',
 	'Supports submenus with configurable reading direction.',
@@ -296,7 +325,8 @@ const features = [
 	'Typeahead support',
 ];
 
-export const menubarData = {
+export const menubarData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

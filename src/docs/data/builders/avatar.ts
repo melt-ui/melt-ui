@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS } from '$docs/constants';
 import type { APISchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createAvatar',
@@ -43,11 +44,7 @@ const fallback: APISchema = {
 	],
 };
 
-const schemas = {
-	builder,
-	image,
-	fallback,
-};
+const schemas = [builder, image, fallback];
 
 const features = [
 	'Automatic & manual control over image rendering',
@@ -55,7 +52,7 @@ const features = [
 	'Optionally delay fallback rendering to avoid flashes',
 ];
 
-export const avatarData = {
+export const avatarData: BuilderData = {
 	schemas,
 	features,
 };

@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createRadioGroup',
@@ -139,13 +140,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = {
-	builder,
-	root,
-	item,
-	itemInput,
-	keyboard,
-};
+const schemas = [builder, root, item, itemInput];
 
 const features = [
 	'Full keyboard navigation',
@@ -153,7 +148,8 @@ const features = [
 	'Supports horizontal and vertical orientation',
 ];
 
-export const radioGroupData = {
+export const radioGroupData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

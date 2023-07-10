@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createDialog',
@@ -129,23 +130,15 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = {
-	builder,
-	trigger,
-	overlay,
-	content,
-	title,
-	description,
-	close,
-	keyboard,
-};
+const schemas = [builder, trigger, overlay, content, close, title, description];
 const features = [
 	'Fully managed focus',
 	'Can be controlled or uncontrolled',
 	'Esc closes the component automaticlaly',
 ];
 
-export const dialogData = {
+export const dialogData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

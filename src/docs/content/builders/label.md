@@ -4,9 +4,8 @@ description: A control that adds a label to an input element.
 ---
 
 <script>
-    import { APITable } from "$docs/components"
-    
-    export let data
+    import { APIReference } from "$docs/components"
+    export let schemas
 </script>
 
 ## Anatomy
@@ -31,5 +30,4 @@ element.
 
 ## API Reference
 
-<APITable data={data.builder} />
-<APITable data={data.root} />
+<APIReference {schemas} />

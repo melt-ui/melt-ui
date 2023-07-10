@@ -4,8 +4,9 @@ description: An input where the user selects a value from within a given range
 ---
 
 <script>
-    import { APITable, KbdTable } from '$docs/components'
-    export let data;
+    import { APIReference, KbdTable } from '$docs/components'
+    export let schemas
+    export let keyboard
 </script>
 
 ## Usage
@@ -15,13 +16,10 @@ to create your slider.
 
 ## API Reference
 
-<APITable data={data.builder} />
-<APITable data={data.root} />
-<APITable data={data.thumb} />
-<APITable data={data.root} />
+<APIReference {schemas} />
 
 ## Accessibility
 
 Adheres to the [Slider WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/slider/)
 
-<KbdTable data={data.keyboard} />
+<KbdTable {keyboard} />

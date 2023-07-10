@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createCombobox',
@@ -149,13 +150,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = {
-	builder,
-	input,
-	item,
-	arrow,
-	keyboard,
-};
+const schemas = [builder, input, item, arrow];
 
 const features = [
 	'Full keyboard navigation',
@@ -164,7 +159,8 @@ const features = [
 	'Custom positioning',
 ];
 
-export const comboboxData = {
+export const comboboxData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

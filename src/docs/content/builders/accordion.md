@@ -6,8 +6,9 @@ description:
 ---
 
 <script>
-    import { APITable, KbdTable, APIWrapper } from '$docs/components'
-    export let data
+    import { KbdTable, APIReference, APIWrapper, APITable } from '$docs/components'
+    export let schemas
+    export let keyboard
 </script>
 
 ## Anatomy
@@ -107,17 +108,11 @@ update the `options` store with new arguments.
 
 ## API Reference
 
-<APIWrapper>
-    <APITable data={data.builder} />
-    <APITable data={data.root} />
-    <APITable data={data.item} />
-    <APITable data={data.trigger} />
-    <APITable data={data.content} />
-</APIWrapper>
+<APIReference {schemas} />
 
 ## Accessibility
 
 Adheres to the
 [Accordion WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/)
 
-<KbdTable data={data.keyboard} />
+<KbdTable {keyboard} />

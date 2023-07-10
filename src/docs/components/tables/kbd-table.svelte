@@ -3,10 +3,10 @@
 	import { Kbd } from '$docs/components';
 	import { transformAPIString } from '$docs/utils';
 
-	export let data: KeyboardSchema;
+	export let keyboard: KeyboardSchema;
 </script>
 
-{#if data && data.length}
+{#if keyboard && keyboard.length}
 	<div class="mb-12 mt-4">
 		<div class="-mx-4 overflow-x-auto sm:mx-0">
 			<div class="inline-block min-w-full">
@@ -16,7 +16,7 @@
 							<td class="w-1/6 whitespace-nowrap py-2 pl-4 text-sm font-medium sm:pl-0"> Key </td>
 							<td class="w-5/6 whitespace-nowrap py-2 text-sm font-medium">Behavior</td>
 						</tr>
-						{#each data as { key, behavior }}
+						{#each keyboard as { key, behavior }}
 							<tr>
 								<td class="py-3 pl-4 align-baseline sm:pl-0">
 									<Kbd>{key}</Kbd>

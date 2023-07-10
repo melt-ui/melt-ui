@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS } from '$docs/constants';
 import type { APISchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createProgress',
@@ -42,14 +43,11 @@ const root: APISchema = {
 	],
 };
 
-const schemas = {
-	builder,
-	root,
-};
+const schemas = [builder, root];
 
 const features = ['Assistive reading technology support for progress bar'];
 
-export const progressData = {
+export const progressData: BuilderData = {
 	schemas,
 	features,
 };

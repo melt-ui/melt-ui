@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createAccordion',
@@ -206,22 +207,16 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = {
-	builder,
-	content,
-	root,
-	item,
-	trigger,
-	keyboard,
-};
+const schemas: BuilderData['schemas'] = [builder, root, trigger, item, content];
 
-const features = [
+const features: BuilderData['features'] = [
 	'Full keyboard navigation',
 	'Can expand one or multiple items',
 	'Can be controlled or uncontrolled',
 ];
 
-export const accordionData = {
+export const accordionData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

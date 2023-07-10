@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createToolbar',
@@ -188,17 +189,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = {
-	builder,
-	root,
-	button,
-	link,
-	separator,
-	groupBuilder,
-	group,
-	groupItem,
-	keyboard,
-};
+const schemas = [builder, root, button, link, separator, groupBuilder, group, groupItem];
 
 const features = [
 	'Full keyboard navigation',
@@ -206,7 +197,8 @@ const features = [
 	'Horizontal or vertical orientation',
 ];
 
-export const toolbarData = {
+export const toolbarData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

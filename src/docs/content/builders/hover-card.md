@@ -5,8 +5,8 @@ description:
 ---
 
 <script>
-    import { APITable, KbdTable } from '$docs/components'
-    export let data
+    import { KbdTable, APIReference } from '$docs/components'
+    export let schemas
 </script>
 
 ## Anatomy
@@ -48,10 +48,7 @@ page.
 
 ## API Reference
 
-<APITable data={data.builder} />
-<APITable data={data.trigger} />
-<APITable data={data.content} />
-<APITable data={data.arrow} />
+<APIReference {schemas} />
 
 ## Accessibility
 

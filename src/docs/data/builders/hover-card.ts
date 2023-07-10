@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS } from '$docs/constants';
 import type { APISchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createHoverCard',
@@ -89,12 +90,7 @@ const arrow: APISchema = {
 	],
 };
 
-const schemas = {
-	builder,
-	trigger,
-	arrow,
-	content,
-};
+const schemas = [builder, trigger, content, arrow];
 
 const features = [
 	'Controlled or uncontrolled',
@@ -103,7 +99,7 @@ const features = [
 	'Positioning and alignment customization',
 ];
 
-export const hoverCardData = {
+export const hoverCardData: BuilderData = {
 	schemas,
 	features,
 };

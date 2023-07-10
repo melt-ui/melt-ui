@@ -60,8 +60,9 @@ export function isBuilderName(key: string): key is (typeof builderList)[number] 
 }
 
 export type BuilderData = {
-	schemas?: Record<string, APISchema | KeyboardSchema>;
+	schemas?: APISchema[];
 	features: string[];
+	keyboard?: KeyboardSchema;
 };
 
 export type Builders = Record<(typeof builderList)[number], BuilderData>;

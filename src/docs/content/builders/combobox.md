@@ -4,8 +4,9 @@ description: A filterable list of items that supports selection.
 ---
 
 <script>
-    import { APITable, KbdTable } from '$docs/components'
-    export let data
+    import { APIReference, KbdTable } from '$docs/components'
+    export let schemas
+    export let keyboard
 </script>
 
 ## Anatomy
@@ -17,13 +18,11 @@ description: A filterable list of items that supports selection.
 
 ## API Reference
 
-<APITable data={data.builder} />
-<APITable data={data.item} />
-<APITable data={data.input} />
-<APITable data={data.arrow} />
+<APIReference {schemas} />
 
 ## Accessibility
 
 Adheres to the
 [Autocomplete/Combobox WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)
-<KbdTable data={data.keyboard} />
+
+<KbdTable {keyboard} />

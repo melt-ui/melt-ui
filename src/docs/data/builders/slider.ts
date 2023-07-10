@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createSlider',
@@ -44,33 +45,6 @@ const builder: APISchema = {
 	],
 };
 
-const keyboard: KeyboardSchema = [
-	{
-		key: KBD.ARROW_RIGHT,
-		behavior: 'Increments/decrements by the `step` value depending on `orientation`.',
-	},
-	{
-		key: KBD.ARROW_LEFT,
-		behavior: 'Increments/decrements by the `step` value depending on `orientation`.',
-	},
-	{
-		key: KBD.ARROW_UP,
-		behavior: 'Increases the value by the `step` amount.',
-	},
-	{
-		key: KBD.ARROW_DOWN,
-		behavior: 'Decreases the value by the `step` amount.',
-	},
-	{
-		key: KBD.HOME,
-		behavior: 'Sets the value to its minimum',
-	},
-	{
-		key: KBD.END,
-		behavior: 'Sets the value to its maximum',
-	},
-];
-
 const root: APISchema = {
 	title: 'root',
 	description: 'The slider component.',
@@ -108,13 +82,7 @@ const thumb: APISchema = {
 	],
 };
 
-const schemas = {
-	builder,
-	keyboard,
-	root,
-	thumb,
-	range,
-};
+const schemas = [builder, root, thumb, range];
 
 const features = [
 	'Supports multiple thumbs',
@@ -125,7 +93,35 @@ const features = [
 	'Can be vertical or horizontal',
 ];
 
-export const sliderData = {
+const keyboard: KeyboardSchema = [
+	{
+		key: KBD.ARROW_RIGHT,
+		behavior: 'Increments/decrements by the `step` value depending on `orientation`.',
+	},
+	{
+		key: KBD.ARROW_LEFT,
+		behavior: 'Increments/decrements by the `step` value depending on `orientation`.',
+	},
+	{
+		key: KBD.ARROW_UP,
+		behavior: 'Increases the value by the `step` amount.',
+	},
+	{
+		key: KBD.ARROW_DOWN,
+		behavior: 'Decreases the value by the `step` amount.',
+	},
+	{
+		key: KBD.HOME,
+		behavior: 'Sets the value to its minimum',
+	},
+	{
+		key: KBD.END,
+		behavior: 'Sets the value to its maximum',
+	},
+];
+
+export const sliderData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

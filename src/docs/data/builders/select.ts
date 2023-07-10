@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createSelect',
@@ -179,16 +180,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = {
-	builder,
-	trigger,
-	option,
-	arrow,
-	group,
-	groupLabel,
-	separator,
-	keyboard,
-};
+const schemas = [builder, trigger, option, group, groupLabel, separator, arrow];
 
 const features = [
 	'Full keyboard navigation',
@@ -198,7 +190,8 @@ const features = [
 	'Custom positioning',
 ];
 
-export const selectData = {
+export const selectData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

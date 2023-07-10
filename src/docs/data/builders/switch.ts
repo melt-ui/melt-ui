@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createSwitch',
@@ -77,15 +78,11 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = {
-	builder,
-	keyboard,
-	root,
-	input,
-};
+const schemas = [builder, root, input];
 const features = ['Full keyboard navigation', 'Can be controlled or uncontrolled'];
 
-export const switchData = {
+export const switchData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

@@ -4,8 +4,8 @@ description: An image element with a fallback for representing the user.
 ---
 
 <script>
-    import { APITable, KbdTable } from '$docs/components'
-    export let data
+    import { APIReference } from '$docs/components'
+    export let schemas
 </script>
 
 ## Anatomy
@@ -16,6 +16,4 @@ description: An image element with a fallback for representing the user.
 
 ## API Reference
 
-<APITable data={data.builder} />
-<APITable data={data.image} />
-<APITable data={data.fallback} />
+<APIReference {schemas} />

@@ -15,9 +15,11 @@
 	$: doc = data.doc.metadata;
 	$: snippets = data.snippets;
 	$: mainPreview = data.mainPreview as unknown as Component;
-	$: builderData = data.builderData;
 	$: viewCode = false;
 	$: previews = data.previews;
+	$: features = data.builderData.features;
+	$: keyboard = data.builderData.keyboard;
+	$: schemas = data.builderData.schemas;
 </script>
 
 <main class="relative px-2 py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_240px]">
@@ -37,9 +39,9 @@
 			<Preview code={snippets.main} {viewCode}>
 				<svelte:component this={mainPreview} />
 			</Preview>
-			<Features features={builderData.features} />
+			<Features {features} />
 
-			<svelte:component this={component} {snippets} data={builderData.schemas} {previews} />
+			<svelte:component this={component} {snippets} {schemas} {previews} {keyboard} />
 		</div>
 		<div {...$separator} class="my-4 md:my-6" />
 		<!-- <DocsPager /> -->

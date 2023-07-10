@@ -5,23 +5,17 @@ description:
 ---
 
 <script>
-    import { APITable, KbdTable } from '$docs/components'
-    export let data
+    import { APIReference, KbdTable } from '$docs/components'
+    export let schemas
+    export let keyboard
 </script>
 
 ## API Reference
 
-<APITable data={data.builder} />
-<APITable data={data.root} />
-<APITable data={data.button} />
-<APITable data={data.link} />
-<APITable data={data.separator} />
-<APITable data={data.groupBuilder} />
-<APITable data={data.group} />
-<APITable data={data.groupItem} />
+<APIReference {schemas} />
 
 ## Accessibility
 
 Adheres to the [Toolbar WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/)
 
-<KbdTable data={data.keyboard} />
+<KbdTable {keyboard} />

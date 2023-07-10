@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createTabs',
@@ -162,21 +163,15 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = {
-	builder,
-	root,
-	list,
-	trigger,
-	content,
-	keyboard,
-};
+const schemas = [builder, root, list, trigger, content];
 const features = [
 	'Full keyboard navigation',
 	'Can be controlled or uncontrolled',
 	'Supports horizontal and vertical orientation',
 ];
 
-export const tabsData = {
+export const tabsData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

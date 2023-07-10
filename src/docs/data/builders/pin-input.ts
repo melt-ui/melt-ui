@@ -1,6 +1,7 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
 import { isMac } from '@melt-ui/svelte/internal/helpers';
 import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createPinInput',
@@ -105,17 +106,12 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = {
-	builder,
-	root,
-	input,
-	hiddenInput,
-	keyboard,
-};
+const schemas = [builder, root, input, hiddenInput];
 
 const features = ['Fully managed focus', 'Supports pasting from clipboard', 'Keyboard navigation'];
 
-export const pinInputData = {
+export const pinInputData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

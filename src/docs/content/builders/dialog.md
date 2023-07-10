@@ -6,8 +6,9 @@ description:
 ---
 
 <script>
-    import { APITable, KbdTable, Preview } from '$docs/components'
-    export let data
+    import { APIReference, KbdTable, Preview } from '$docs/components'
+    export let schemas
+    export let keyboard
     export let snippets
     export let previews
 </script>
@@ -40,17 +41,11 @@ the screen.
 
 ## API Reference
 
-<APITable data={data.builder} />
-<APITable data={data.trigger} />
-<APITable data={data.overlay} />
-<APITable data={data.content} />
-<APITable data={data.title} />
-<APITable data={data.description} />
-<APITable data={data.close} />
+<APIReference {schemas} />
 
 ## Accessibility
 
 Adheres to the [Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog/) &
 [Alert Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/)
 
-<KbdTable data={data.keyboard} />
+<KbdTable {keyboard} />

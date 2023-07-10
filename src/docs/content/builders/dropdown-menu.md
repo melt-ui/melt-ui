@@ -5,8 +5,9 @@ description:
 ---
 
 <script>
-    import { APITable, KbdTable } from '$docs/components'
-    export let data;
+    import { KbdTable, APIReference } from '$docs/components'
+    export let schemas
+    export let keyboard
 </script>
 
 ## Anatomy
@@ -82,22 +83,11 @@ occurring.
 
 ## API Reference
 
-<APITable data={data.builder} />
-<APITable data={data.menu} />
-<APITable data={data.trigger} />
-<APITable data={data.item} />
-<APITable data={data.checkboxItem} />
-<APITable data={data.radioGroupBuilder} />
-<APITable data={data.radioGroup} />
-<APITable data={data.radioItem} />
-<APITable data={data.arrow} />
-<APITable data={data.submenuBuilder} />
-<APITable data={data.submenu} />
-<APITable data={data.subTrigger} />
+<APIReference {schemas} />
 
 ## Accessibility
 
 Adheres to the [Menu WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/) &
 [Menu Button WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/)
 
-<KbdTable data={data.keyboard} />
+<KbdTable {keyboard} />

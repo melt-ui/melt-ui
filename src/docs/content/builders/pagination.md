@@ -4,8 +4,9 @@ description: An interface that allows navigating between pages that contain spli
 ---
 
 <script>
-    import { APITable, KbdTable } from '$docs/components'
-    export let data
+    import { APIReference, KbdTable } from '$docs/components'
+    export let schemas
+    export let keyboard
 </script>
 
 ## Anatomy
@@ -50,15 +51,11 @@ the example above to create your pagination component.
 
 ## API Reference
 
-<APITable data={data.builder} />
-<APITable data={data.root} />
-<APITable data={data.pageTrigger} />
-<APITable data={data.prevButton} />
-<APITable data={data.nextButton} />
+<APIReference {schemas} />
 
 ## Accessibility
 
 Adheres to the
 [a11y Accessible Pagination guidelines](https://www.a11ymatters.com/pattern/pagination/)
 
-<KbdTable data={data.keyboard} />
+<KbdTable {keyboard} />

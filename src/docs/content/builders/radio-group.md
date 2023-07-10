@@ -6,8 +6,9 @@ description:
 ---
 
 <script>
-    import { APITable, KbdTable } from '$docs/components'
-    export let data
+    import { APIReference, KbdTable } from '$docs/components'
+    export let schemas
+    export let keyboard
 </script>
 
 ## Anatomy
@@ -17,14 +18,11 @@ description:
 
 ## API Reference
 
-<APITable data={data.builder} />
-<APITable data={data.root} />
-<APITable data={data.item} />
-<APITable data={data.itemInput} />
+<APIReference {schemas} />
 
 ## Accessibility
 
 Adheres to the
 [Radio Group WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/)
 
-<KbdTable data={data.keyboard} />
+<KbdTable {keyboard} />

@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createPopover',
@@ -92,13 +93,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = {
-	builder,
-	trigger,
-	arrow,
-	close,
-	keyboard,
-};
+const schemas = [builder, trigger, close, arrow];
 
 const features = [
 	'Full keyboard navigation',
@@ -108,7 +103,8 @@ const features = [
 	'Supports an optional arrow component',
 ];
 
-export const popoverData = {
+export const popoverData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

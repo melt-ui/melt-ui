@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createTooltip',
@@ -105,22 +106,17 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = {
-	builder,
-	trigger,
-	arrow,
-	content,
-	keyboard,
-};
+const schemas = [builder, trigger, content, arrow];
 
-const features = [
+const features: BuilderData['features'] = [
 	'Opens when the trigger is focused or hovered',
 	'Closes when the trigger is activated or with escape',
 	'Custom delay for opening and closing',
 	'Supports custom positioning',
 ];
 
-export const tooltipData = {
+export const tooltipData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

@@ -1,5 +1,6 @@
 import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import type { BuilderData } from '.';
 
 const builder: APISchema = {
 	title: 'createCheckbox',
@@ -74,12 +75,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = {
-	builder,
-	root,
-	input,
-	keyboard,
-};
+const schemas = [builder, root, input];
 
 const features = [
 	'Supports indeterminate state',
@@ -87,7 +83,8 @@ const features = [
 	'Can be controlled or uncontrolled',
 ];
 
-export const checkboxData = {
+export const checkboxData: BuilderData = {
 	schemas,
 	features,
+	keyboard,
 };

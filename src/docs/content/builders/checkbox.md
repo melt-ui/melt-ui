@@ -4,8 +4,9 @@ description: A control that allows the user to toggle between checked and not ch
 ---
 
 <script>
-    import { APITable, KbdTable } from '$docs/components'
-    export let data
+    import { APIReference, KbdTable } from '$docs/components'
+    export let schemas
+    export let keyboard
 </script>
 
 ## Anatomy
@@ -75,13 +76,11 @@ update the `options` store with new arguments.
 
 ## API Reference
 
-<APITable data={data.builder} />
-<APITable data={data.root} />
-<APITable data={data.input} />
+<APIReference {schemas} />
 
 ## Accessibility
 
 Adheres to the
 [tri-state Checkbox WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/)
 
-<KbdTable data={data.keyboard} />
+<KbdTable {keyboard} />
