@@ -1,12 +1,18 @@
 <script lang="ts">
 	import type { APISchema } from '$docs/types';
 	import { transformAPIString } from '$docs/utils';
+	import { h4 as H4, p as P } from '$docs/components/markdown';
 
 	export let data: APISchema['dataAttributes'];
 </script>
 
 {#if data}
-	<div class="mb-12 mt-4">
+	<H4 class="mb-2">Data Attributes</H4>
+	<P class="text-sm"
+		>Data attributes are set on each element which can be used for styling or however else you want
+		to use them. They are prefixed with <code class="neutral">data-</code>.
+	</P>
+	<div class="mb-6 mt-4">
 		<div class="-mx-4 overflow-x-auto sm:mx-0">
 			<div class="inline-block min-w-full">
 				<table class="w-full min-w-[540px] border-b border-neutral-700 text-left sm:min-w-full">

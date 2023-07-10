@@ -26,6 +26,39 @@ const builder: APISchema = {
 			description: 'Whether or not the accordion is disabled.',
 		},
 	],
+	returnedProps: [
+		{
+			name: 'isSelected',
+			type: 'Readable<(key: string) => boolean>',
+			description:
+				'A derived store that takes a key and returns whether or not the item is selected.',
+		},
+		{
+			name: 'options',
+			type: 'Writable<CreateAccordionProps>',
+			description: 'A writable store with the options used to create the accordion.',
+		},
+		{
+			name: 'root',
+			description: 'The builder store used to create the accordion root.',
+			link: '#root',
+		},
+		{
+			name: 'item',
+			description: 'The builder store used to create accordion items.',
+			link: '#item',
+		},
+		{
+			name: 'trigger',
+			description: 'The builder store used to create accordion triggers.',
+			link: '#trigger',
+		},
+		{
+			name: 'content',
+			description: 'The builder store used to create accordion content.',
+			link: '#content',
+		},
+	],
 };
 
 const root: APISchema = {

@@ -17,6 +17,7 @@
 					.replaceAll(/[^a-zA-Z0-9 ]/g, '')
 					.replaceAll(' ', '-')
 					.toLowerCase();
+				console.log(heading);
 				heading.id = `${newId}`;
 			}
 

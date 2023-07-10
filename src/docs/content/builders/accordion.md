@@ -6,7 +6,7 @@ description:
 ---
 
 <script>
-    import { APITable, KbdTable } from '$docs/components'
+    import { APITable, KbdTable, APIWrapper } from '$docs/components'
     export let data
 </script>
 
@@ -107,11 +107,13 @@ update the `options` store with new arguments.
 
 ## API Reference
 
-<APITable data={data.builder} />
-<APITable data={data.root} />
-<APITable data={data.item} />
-<APITable data={data.trigger} />
-<APITable data={data.content} />
+<APIWrapper>
+    <APITable data={data.builder} />
+    <APITable data={data.root} />
+    <APITable data={data.item} />
+    <APITable data={data.trigger} />
+    <APITable data={data.content} />
+</APIWrapper>
 
 ## Accessibility
 

@@ -30,7 +30,7 @@
 		<div {...$item(id)} class="item">
 			<h2>
 				<button
-					id={i === 0 ? 'trigger' : undefined}
+					id={i === 0 ? 'accordion-trigger' : undefined}
 					{...$trigger(id)}
 					use:trigger
 					class="trigger"

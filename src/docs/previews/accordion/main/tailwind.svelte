@@ -35,7 +35,7 @@
 		>
 			<h2 class="flex">
 				<button
-					id={i === 0 ? 'trigger' : undefined}
+					id={i === 0 ? 'accordion-trigger' : undefined}
 					{...$trigger(id)}
 					use:trigger
 					class="flex h-12 flex-1 cursor-pointer items-center justify-between bg-white

@@ -6,8 +6,8 @@
 </script>
 
 <h3
-	class={cn('mb-2 mt-11 scroll-m-20 text-xl font-semibold tracking-tight', className)}
-	data-toc
+	class={cn('mb-2 mt-11 scroll-m-20 text-xl font-bold tracking-tight', className)}
+	data-toc=""
 	{...$$restProps}
 >
 	<slot />

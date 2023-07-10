@@ -91,8 +91,9 @@ export type DataAttributes = Array<{
 
 export type ReturnedProps = Array<{
 	name: string;
-	type: string;
-	description: string;
+	type?: string;
+	description?: string;
+	link?: string;
 }>;
 
 export type APISchema = {

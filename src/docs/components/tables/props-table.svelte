@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { APISchema } from '$docs/types';
 	import { transformAPIString } from '$docs/utils';
-
+	import { h4 as H4, p as P } from '$docs/components/markdown';
 	function replaceDoubleQuotes(str: string) {
 		return str.replace(/"/g, "'");
 	}
@@ -10,7 +10,13 @@
 </script>
 
 {#if data}
-	<div class="mb-12 mt-4">
+	<H4 class="mb-2">Props</H4>
+	<P class="text-sm"
+		>Props are passed as an object to the function and are used to configure the behavior of the
+		builder function or element.</P
+	>
+
+	<div class="mb-10 mt-4">
 		<div class="-mx-4 overflow-x-auto sm:mx-0">
 			<div class="inline-block min-w-full">
 				<table class="w-full min-w-[540px] border-b border-neutral-700 text-left sm:min-w-full">
