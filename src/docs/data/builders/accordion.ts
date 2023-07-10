@@ -11,7 +11,6 @@ const builder: APISchema = {
 			type: ['string', 'string[]', 'undefined'],
 			description:
 				'The value of the currently open item. You can also pass an array of values to open multiple items at once if the accordion is of type `multiple`.',
-			required: true,
 		},
 		{
 			name: 'type',
