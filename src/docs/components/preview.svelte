@@ -12,13 +12,14 @@
 
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { createSelect, type CreateSelectArgs } from '$lib';
+	import type { CreateSelectArgs } from '$lib';
 	import { cn } from '$docs/utils';
 	import CodeBlock from './code-block.svelte';
 	import PreviewWrapper from './preview-wrapper.svelte';
 	import { PreviewStyleSelect } from '$docs/components';
 	import Switch from './switch.svelte';
 	import { TabsList, TabsRoot } from './tabs';
+	import { writable } from 'svelte/store';
 
 	type $$Props = PreviewProps & {
 		viewCode: boolean;
@@ -36,29 +37,16 @@
 		return code;
 	}
 
-	let codingStyle = Object.keys(handleMissingCode(code))[0]
-		? ('tailwind' as const)
-		: ('css' as const);
+	const codingStyle = writable<'tailwind' | 'css'>('tailwind');
 
-	let codingStyleObj: $$Props['code'][typeof codingStyle] | null =
-		handleMissingCode(code)[codingStyle];
+	let codingStyleObj: $$Props['code'][typeof $codingStyle] | null =
+		handleMissingCode(code)[$codingStyle];
 
 	$: {
-		codingStyleObj = handleMissingCode(code)[codingStyle];
+		codingStyleObj = handleMissingCode(code)[$codingStyle];
 	}
 
 	$: files = codingStyleObj !== null ? Object.keys(codingStyleObj) : [];
-
-	const { value: localValue } = createSelect({
-		value: codingStyle,
-	});
-
-	localValue.subscribe((v) => {
-		if (v === 'tailwind' || v === 'css') {
-			codingStyle = v;
-		}
-	});
-	$: localValue.set(codingStyle);
 
 	let viewCode = false;
 
@@ -81,7 +69,7 @@
 	{#if viewCode}
 		<div class="flex h-10 items-center md:hidden">
 			{#key $page.url.pathname}
-				<PreviewStyleSelect options={codeOptions} bind:value={codingStyle} />
+				<PreviewStyleSelect options={codeOptions} {codingStyle} />
 			{/key}
 		</div>
 	{/if}
@@ -102,7 +90,7 @@
 				<div class="ml-auto hidden md:block">
 					{#if codeOptions.length > 1}
 						{#key $page.url.pathname}
-							<PreviewStyleSelect options={codeOptions} bind:value={codingStyle} />
+							<PreviewStyleSelect options={codeOptions} {codingStyle} />
 						{/key}
 					{/if}
 				</div>

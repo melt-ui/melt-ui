@@ -3,24 +3,28 @@
 	import ChevronDown from '~icons/lucide/chevron-down';
 	import Check from '~icons/lucide/check';
 	import { beforeNavigate } from '$app/navigation';
+	import type { Writable } from 'svelte/store';
+
 	export let options: OptionArgs[] = [];
-	export let value = options[0].value;
+	export let codingStyle: Writable<'tailwind' | 'css'>;
 
 	const {
+		value: localValue,
 		label,
 		trigger,
 		menu,
 		option,
 		isSelected,
-		value: localValue,
 	} = createSelect({
-		value,
+		value: $codingStyle,
 	});
 
 	localValue.subscribe((v) => {
-		typeof v === 'string' && (value = v);
+		if (v === 'tailwind' || v === 'css') {
+			codingStyle.set(v);
+		}
 	});
-	$: localValue.set(value);
+	$: localValue.set($codingStyle);
 
 	beforeNavigate(() => {
 		localValue.set('tailwind');
@@ -34,13 +38,7 @@
 	use:trigger
 	aria-label="Select"
 >
-	{#if $label === 'css'}
-		CSS
-	{:else if $label === 'tailwind'}
-		Tailwind
-	{:else}
-		Select an option
-	{/if}
+	{$label === 'tailwind' ? 'Tailwind' : 'CSS'}
 	<ChevronDown />
 </button>
 
