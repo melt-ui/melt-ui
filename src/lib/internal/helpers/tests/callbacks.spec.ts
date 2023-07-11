@@ -1,8 +1,8 @@
+import { describe, it, vi } from 'vitest';
 import { executeCallbacks } from '../callbacks';
-import { describe, test, vi } from 'vitest';
 
 describe('executeCallbacks', () => {
-	test('grouping callbacks and executing together', () => {
+	it('groups callbacks and executes them together', () => {
 		const functionMock = vi.fn();
 		const callbackMock = vi.fn();
 		/**

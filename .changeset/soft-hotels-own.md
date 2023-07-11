@@ -8,4 +8,5 @@
   - `$lib/internal/helpers/callbacks`
   - `$lib/internal/helpers/dom`
   - `$lib/internal/helpers/list`
+  - `$lib/internal/helpers/object`
   - `$lib/internal/helpers/keyboard`
