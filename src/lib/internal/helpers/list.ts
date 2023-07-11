@@ -4,6 +4,6 @@ export function getOptions(el: HTMLElement): HTMLElement[] {
 }
 
 /** Retrieves the first option descendant of a given element. */
-export function getFirstOption(el: HTMLElement) {
+export function getFirstOption(el: HTMLElement): HTMLElement | null {
 	return el.querySelector('[role="option"]');
 }
