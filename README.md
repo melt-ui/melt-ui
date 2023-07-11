@@ -34,13 +34,13 @@ Import the builders to your code and start using them:
 
 ```html
 <script>
-	import { createCollapsible } from '@melt-ui/svelte';
-	const { open, root, content, trigger } = createCollapsible();
+  import { createCollapsible } from '@melt-ui/svelte'
+  const { open, root, content, trigger } = createCollapsible()
 </script>
 
 <div {...$root}>
-	<button {...$trigger}>{$open ? 'Close' : 'Open'}</button>
-	<div {...$content}>Obi-Wan says: Hello there!</div>
+  <button {...$trigger}>{$open ? 'Close' : 'Open'}</button>
+  <div {...$content}>Obi-Wan says: Hello there!</div>
 </div>
 ```
 
@@ -48,9 +48,13 @@ Import the builders to your code and start using them:
 
 **Contributions are welcome and encouraged!**
 
-Melt UI is under active development. Currently planned features can be found in the [roadmap](#roadmap), or in the [issues tab](https://github.com/melt-ui/melt-ui/issues), alongside bug reports.
+Melt UI is under active development. Currently planned features can be found in the
+[roadmap](#roadmap), or in the [issues tab](https://github.com/melt-ui/melt-ui/issues), alongside
+bug reports.
 
-We work on this project on a volunteer basis in our free time. If you notice something that hasn't been implemented yet or could be improved, do consider contributing to the project. The goal is to enhance the experience of building with Svelte and improve the ecosystem for everyone.
+We work on this project on a volunteer basis in our free time. If you notice something that hasn't
+been implemented yet or could be improved, do consider contributing to the project. The goal is to
+enhance the experience of building with Svelte and improve the ecosystem for everyone.
 
 Check out our [Contributing guide](./CONTRIBUTING.md) to learn more.
 
@@ -58,7 +62,8 @@ Check out our [Contributing guide](./CONTRIBUTING.md) to learn more.
 
 Got any questions? Want to talk to the maintainers?
 
-Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get in touch with us, and we'd love to have you there.
+Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get in touch with us, and
+we'd love to have you there.
 
 <a href="https://discord.gg/2QDjZkYunf" alt="Melt UI Discord community">
 <picture>
@@ -124,4 +129,5 @@ Looking for more? Check out these other projects too:
 - [Zag](https://github.com/chakra-ui/zag)
 - [Grail UI](https://grail-ui.vercel.app/)
 
-This list is not exhaustive or sorted in any particular order. If you know of any other similar projects for Svelte, feel free to open a PR to add them here.
+This list is not exhaustive or sorted in any particular order. If you know of any other similar
+projects for Svelte, feel free to open a PR to add them here.

@@ -213,7 +213,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		action: (node: HTMLElement) => {
 			applyAttrsIfDisabled(node);
 			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', (e) => {
+				addEventListener(node, 'click', (e) => {
 					const $rootOpen = get(rootOpen);
 					const triggerElement = e.currentTarget;
 					if (!isHTMLElement(triggerElement)) return;
@@ -567,10 +567,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		});
 
 		return {
+			value,
+			isChecked,
 			radioGroup,
 			radioItem,
-			isChecked,
-			value,
 		};
 	};
 

@@ -114,13 +114,20 @@ export function createTabs(args?: CreateTabsArgs) {
 					}
 				}),
 
-				addEventListener(node, 'click', (e) => {
-					const disabled = node.dataset.disabled === 'true';
+				addEventListener(node, 'pointerdown', (e) => {
+					const isLeftClick = e.button === 0;
+					if (!isLeftClick) {
+						e.preventDefault();
+						return;
+					}
 
+					const disabled = node.dataset.disabled === 'true';
 					if (disabled) return;
-					const el = e.currentTarget;
-					if (el && 'focus' in el) {
-						(el as HTMLElement).focus();
+
+					const tabValue = node.dataset.value;
+					node.focus();
+					if (tabValue !== undefined) {
+						value.set(tabValue);
 					}
 				}),
 
@@ -190,10 +197,10 @@ export function createTabs(args?: CreateTabsArgs) {
 
 	return {
 		value,
+		options,
 		root: root,
 		list: list,
 		trigger: trigger,
 		content: content,
-		options,
 	};
 }

@@ -22,25 +22,10 @@ body {
 	}
 }
 
-code:not(pre > code) {
-	background-color: theme('colors.magnum.900/0.5');
-	color: theme('colors.magnum.300');
-	border-radius: theme('borderRadius.md');
-	font-family: theme('fontFamily.mono');
-	font-size: 0.75rem;
-	line-height: 1.75;
-	padding: 0.25rem 0.375rem;
-
-	&.neutral {
-		background-color: theme('colors.zinc.800');
-		color: theme('colors.zinc.300');
-	}
-}
-
 /* Firefox */
 * {
 	scrollbar-width: thin;
-	scrollbar-color: theme('colors.neutral.700') transparent;
+	scrollbar-color: theme('colors.neutral.800') transparent;
 }
 
 /* Other browsers */
@@ -53,7 +38,7 @@ code:not(pre > code) {
 }
 
 *::-webkit-scrollbar-thumb {
-	background: theme('colors.neutral.700');
+	background: theme('colors.neutral.800');
 	background-clip: padding-box;
 	border-radius: 0.5rem;
 	border: 0.25rem solid transparent;
@@ -66,4 +51,49 @@ code:not(pre > code) {
 
 *::-webkit-scrollbar-corner {
 	background: transparent;
+}
+
+/* Firefox */
+body {
+	scrollbar-width: thin;
+	scrollbar-color: theme('colors.stone.800') transparent;
+}
+
+/* Other browsers */
+body::-webkit-scrollbar {
+	width: 1rem;
+}
+
+body::-webkit-scrollbar-track {
+	background: theme('colors.stone.900');
+}
+
+body::-webkit-scrollbar-thumb {
+	background: theme('colors.neutral.600');
+	background-clip: padding-box;
+	border-radius: 0.5rem;
+	border: 0.25rem solid transparent;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+	background: theme('colors.neutral.600');
+	background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-corner {
+	background: transparent;
+}
+
+.inline-code {
+	@apply relative rounded-md bg-magnum-900/50 px-[0.25rem] py-[0.15rem] font-mono text-[0.75rem] text-xs font-semibold leading-7 text-magnum-300;
+}
+
+.inline-code.neutral {
+	@apply bg-neutral-800 text-neutral-100;
+}
+
+@media (max-width: 640px) {
+	.container {
+		@apply px-4;
+	}
 }

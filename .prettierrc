@@ -4,5 +4,25 @@
 	"trailingComma": "es5",
 	"printWidth": 100,
 	"pluginSearchDirs": ["."],
-	"overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }]
+	"overrides": [
+		{
+			"files": "*.svelte",
+			"options": {
+				"parser": "svelte"
+			}
+		},
+		{
+			"files": "*.md",
+			"options": {
+				"parser": "markdown",
+				"printWidth": 100,
+				"proseWrap": "always",
+				"tabWidth": 2,
+				"useTabs": false,
+				"semi": false,
+				"trailingComma": "none",
+				"bracketSameLine": true
+			}
+		}
+	]
 }

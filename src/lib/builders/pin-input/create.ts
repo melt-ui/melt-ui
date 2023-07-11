@@ -206,12 +206,12 @@ export function createPinInput(args?: CreatePinInputArgs) {
 	};
 
 	return {
+		options,
+		clear,
+		value,
+		valueStr,
 		root,
 		input,
 		hiddenInput,
-		value,
-		valueStr,
-		options,
-		clear,
 	};
 }

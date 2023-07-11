@@ -17,7 +17,7 @@ CHANGELOG.md
 
 *.ignore-ts
 *.ignore-svelte
-
+src/docs/data/long-types/**/*
 
 
 storybook-static/**/*

@@ -6,6 +6,7 @@ import {
 	effect,
 	generateId,
 	isBrowser,
+	last,
 	noop,
 	sleep,
 	styleToString,
@@ -25,6 +26,8 @@ const defaults = {
 	role: 'dialog',
 } satisfies Defaults<CreateDialogArgs>;
 
+const openDialogIds = writable<string[]>([]);
+
 export function createDialog(args: CreateDialogArgs = {}) {
 	const withDefaults = { ...defaults, ...args };
 	const options = writable({ ...withDefaults });
@@ -37,6 +40,17 @@ export function createDialog(args: CreateDialogArgs = {}) {
 	};
 
 	const open = writable(false);
+
+	effect([open], ([$open]) => {
+		// Prevent double clicks from closing multiple dialogs
+		sleep(100).then(() => {
+			if ($open) {
+				openDialogIds.update((prev) => [...prev, ids.content]);
+			} else {
+				openDialogIds.update((prev) => prev.filter((id) => id !== ids.content));
+			}
+		});
+	});
 
 	const trigger = builder(name('trigger'), {
 		stores: open,
@@ -98,13 +112,19 @@ export function createDialog(args: CreateDialogArgs = {}) {
 				escapeDeactivates: false,
 				allowOutsideClick: (e) => {
 					e.preventDefault();
+					e.stopImmediatePropagation();
+
 					const $options = get(options);
-					if ($options.closeOnOutsideClick) {
+					const $openDialogIds = get(openDialogIds);
+					const isLast = last($openDialogIds) === ids.content;
+
+					if ($options.closeOnOutsideClick && isLast) {
 						open.set(false);
 					}
 
 					return false;
 				},
+
 				returnFocusOnDeactivate: false,
 				fallbackFocus: node,
 			});
@@ -157,9 +177,12 @@ export function createDialog(args: CreateDialogArgs = {}) {
 		},
 	});
 
-	effect([open, options], ([$open, $options]) => {
+	effect([open, options, openDialogIds], ([$open, $options, $openDialogIds]) => {
 		const unsubs: Array<() => void> = [];
-		if ($options.closeOnEscape && $open) {
+
+		const isLast = last($openDialogIds) === ids.content;
+
+		if ($options.closeOnEscape && $open && isLast) {
 			unsubs.push(
 				addEventListener(document, 'keydown', (e) => {
 					if (e.key === 'Escape') {

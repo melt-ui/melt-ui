@@ -18,7 +18,7 @@ import type { CreateTagsInputArgs, Tag, TagArgs } from './types';
 import { tick } from 'svelte';
 
 const defaults = {
-	placeholder: 'Enter tags...',
+	placeholder: '',
 	disabled: false,
 	editable: true,
 	tags: [],
@@ -686,16 +686,16 @@ export function createTagsInput(args?: CreateTagsInputArgs) {
 	});
 
 	return {
+		inputValue: derived(inputValue, ($inputValue) => $inputValue),
+		inputInvalid: derived(inputInvalid, ($inputInvalid) => $inputInvalid),
+		selected,
+		isSelected,
+		options,
+		tags,
 		root,
 		input,
 		tag,
 		deleteTrigger,
 		edit,
-		options,
-		tags,
-		selected,
-		inputValue: derived(inputValue, ($inputValue) => $inputValue),
-		inputInvalid: derived(inputInvalid, ($inputInvalid) => $inputInvalid),
-		isSelected,
 	};
 }

@@ -1,5 +1,23 @@
 # @melt-ui/svelte
 
+## 0.19.0
+
+### Minor Changes
+
+- 476abfc: feat(dialog): support nested dialogs
+
+## 0.18.4
+
+### Patch Changes
+
+- 9a28950: fix(combobox): input blur strange behaviour
+- 7accc8b: fix(slider): disabled slider no longer prevents scroll
+- 7accc8b: refactor(combobox): improve combobox reset behaviour
+- 1966f82: fix(slider): only left-click triggers slider
+- 8f98478: [Dropdown Menu] Fix dropdown trigger tabindex issue
+- bc8a6da: fix collapsible disabled attribute
+- 8df24e5: refactor: disable middle & right clicks on Tabs and Radio Group
+
 ## 0.18.3
 
 ### Patch Changes
