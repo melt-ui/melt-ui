@@ -55,5 +55,7 @@ export type FocusTrapReturn = {
 	/**
 	 * Action to attach to the element that you want to act as a focus trap.
 	 */
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	useFocusTrap: Action<HTMLElement, any>;
 };

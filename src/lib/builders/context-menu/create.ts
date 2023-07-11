@@ -267,16 +267,16 @@ export function createContextMenu(args?: CreateContextMenu) {
 	});
 
 	return {
-		trigger,
-		menu,
 		open: rootOpen,
+		options: rootOptions,
+		menu,
+		trigger,
 		item,
 		checkboxItem,
 		arrow,
-		options: rootOptions,
+		separator,
 		createSubMenu,
 		createMenuRadioGroup,
-		separator,
 	};
 }
 

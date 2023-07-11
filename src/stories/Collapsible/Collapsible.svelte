@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createCollapsible } from '$lib/builders/collapsible';
+	import { PreviewWrapper } from '$docs/components';
 	import { slide } from 'svelte/transition';
-	import PreviewWrapper from '$routes/(components)/preview-wrapper.svelte';
 	import X from '~icons/lucide/x';
 	import ChevronsUpDown from '~icons/lucide/chevrons-up-down';
 

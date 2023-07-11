@@ -1,0 +1,29 @@
+{
+	"useTabs": true,
+	"singleQuote": true,
+	"trailingComma": "all",
+	"printWidth": 80,
+	"pluginSearchDirs": ["."],
+	"overrides": [
+		{
+			"files": "*.svelte",
+			"options": {
+				"parser": "svelte",
+				"printWidth": 80
+			}
+		},
+		{
+			"files": "*.md",
+			"options": {
+				"parser": "markdown",
+				"printWidth": 80,
+				"proseWrap": "always",
+				"tabWidth": 2,
+				"useTabs": false,
+				"semi": false,
+				"trailingComma": "none",
+				"bracketSameLine": true
+			}
+		}
+	]
+}

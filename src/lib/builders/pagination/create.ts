@@ -146,14 +146,14 @@ export function createPagination(args: CreatePaginationArgs) {
 	});
 
 	return {
-		root,
 		options,
 		page,
 		pages,
+		range,
+		totalPages,
+		root,
 		pageTrigger,
 		prevButton,
 		nextButton,
-		totalPages,
-		range,
 	};
 }

@@ -1,4 +1,0 @@
-<script lang="ts">
-	import { createHoverCard} from '@melt-ui/svelte';
-    const { trigger, content, open, arrow } = createHoverCard()
-</script>

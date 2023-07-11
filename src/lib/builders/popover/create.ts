@@ -43,6 +43,7 @@ export function createPopover(args?: CreatePopoverArgs) {
 		stores: open,
 		returned: ($open) => {
 			return {
+				'data-state': $open ? 'open' : 'closed',
 				hidden: $open ? undefined : true,
 				tabindex: -1,
 				style: styleToString({
@@ -152,5 +153,5 @@ export function createPopover(args?: CreatePopoverArgs) {
 		}
 	});
 
-	return { trigger, open, content, arrow, close };
+	return { trigger, open, content, arrow, close, options };
 }

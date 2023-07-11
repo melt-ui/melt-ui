@@ -44,7 +44,7 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 			return {
 				disabled: $options.disabled,
 				'data-orientation': $options.orientation,
-				style: 'touch-action: none;',
+				style: $options.disabled ? undefined : 'touch-action: none;',
 				'data-melt-id': ids.root,
 			};
 		},
@@ -266,6 +266,8 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 		};
 
 		const pointerDown = (e: PointerEvent) => {
+			if (e.button !== 0) return;
+
 			const sliderEl = getElementByMeltId($root['data-melt-id']) as HTMLElement;
 			const closestThumb = getClosestThumb(e);
 			if (!closestThumb || !sliderEl) return;
@@ -322,11 +324,11 @@ export const createSlider = (args: CreateSliderArgs = defaults) => {
 	});
 
 	return {
+		options,
+		value,
 		root,
 		slider: root,
 		range,
 		thumb,
-		value,
-		options,
 	};
 };

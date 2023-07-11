@@ -26,11 +26,12 @@ export function createCollapsible(args?: CreateCollapsibleArgs) {
 
 	const trigger = builder(name('trigger'), {
 		stores: [open, disabled],
-		returned: ([$open, $disabled]) => ({
-			'data-state': $open ? 'open' : 'closed',
-			'data-disabled': $disabled ? '' : undefined,
-			disabled: $disabled ? '' : undefined,
-		}),
+		returned: ([$open, $disabled]) =>
+			({
+				'data-state': $open ? 'open' : 'closed',
+				'data-disabled': $disabled ? '' : undefined,
+				disabled: $disabled,
+			} as const),
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
 				const disabled = node.dataset.disabled !== undefined;

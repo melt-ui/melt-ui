@@ -189,7 +189,7 @@ export function createSelect(args?: CreateSelectArgs) {
 		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', (e) => {
+				addEventListener(node, 'click', (e) => {
 					const $options = get(options);
 					if ($options.disabled) {
 						e.preventDefault();
@@ -599,18 +599,18 @@ export function createSelect(args?: CreateSelectArgs) {
 	}
 
 	return {
+		options,
+		open,
+		isSelected,
+		value,
 		trigger,
 		menu,
-		open,
 		option,
-		value,
-		label,
-		arrow,
-		isSelected,
-		options,
 		input,
+		label,
 		separator,
 		group,
 		groupLabel,
+		arrow,
 	};
 }
