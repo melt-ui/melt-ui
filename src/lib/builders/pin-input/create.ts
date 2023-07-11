@@ -12,7 +12,7 @@ import {
 import type { Defaults } from '@melt-ui/svelte/internal/types';
 import { tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
-import type { CreatePinInputArgs } from './types';
+import type { CreatePinInputProps } from './types';
 
 const { name, selector } = createElHelpers<'input' | 'hidden-input'>('pin-input');
 
@@ -30,13 +30,13 @@ const defaults = {
 	placeholder: '○',
 	disabled: false,
 	type: 'text',
-} satisfies Defaults<CreatePinInputArgs>;
+} satisfies Defaults<CreatePinInputProps>;
 
-export function createPinInput(args?: CreatePinInputArgs) {
-	const withDefaults = { ...defaults, ...args };
+export function createPinInput(props?: CreatePinInputProps) {
+	const withDefaults = { ...defaults, ...props };
 	const options = writable(omit(withDefaults, 'value'));
 
-	const value = writable((args?.value ?? []) as string[]);
+	const value = writable((props?.value ?? []) as string[]);
 	const valueStr = derived(value, (v) => v.join(''));
 
 	const root = builder(name(), {

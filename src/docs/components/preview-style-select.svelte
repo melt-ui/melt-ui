@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { createSelect, type OptionArgs } from '$lib';
+	import { createSelect, type SelectOptionProps } from '$lib';
 	import ChevronDown from '~icons/lucide/chevron-down';
 	import Check from '~icons/lucide/check';
 	import { beforeNavigate } from '$app/navigation';
 	import type { Writable } from 'svelte/store';
 
-	export let options: OptionArgs[] = [];
+	export let options: SelectOptionProps[] = [];
 	export let codingStyle: Writable<'tailwind' | 'css'>;
 
 	const {

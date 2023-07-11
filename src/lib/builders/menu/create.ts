@@ -27,15 +27,15 @@ import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Writable } from 'svelte/store';
 import { createSeparator } from '../separator';
 import type {
-	CheckboxItemArgs,
-	CreateMenuArgs,
-	CreateRadioGroupArgs,
-	CreateSubmenuArgs,
-	ItemArgs,
+	CheckboxItemProps,
+	CreateMenuProps,
+	CreateRadioGroupProps,
+	CreateSubmenuProps,
+	ItemProps,
 	MenuBuilderOptions,
 	MenuParts,
-	RadioItemActionArgs,
-	RadioItemArgs,
+	RadioItemActionProps,
+	RadioItemProps,
 	Selector,
 } from './types';
 
@@ -54,7 +54,7 @@ const defaults = {
 		placement: 'bottom',
 	},
 	preventScroll: true,
-} satisfies Defaults<CreateMenuArgs>;
+} satisfies Defaults<CreateMenuProps>;
 
 export function createMenuBuilder(opts: MenuBuilderOptions) {
 	const { name, selector } = createElHelpers<MenuParts>(opts.selector);
@@ -299,7 +299,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			tabindex: -1,
 			'data-orientation': 'vertical',
 		}),
-		action: (node: HTMLElement, params: ItemArgs = {}) => {
+		action: (node: HTMLElement, params: ItemProps = {}) => {
 			const { onSelect } = params;
 
 			setMeltMenuAttribute(node, selector);
@@ -377,7 +377,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			tabindex: -1,
 			'data-orientation': 'vertical',
 		}),
-		action: (node: HTMLElement, params: CheckboxItemArgs) => {
+		action: (node: HTMLElement, params: CheckboxItemProps) => {
 			setMeltMenuAttribute(node, selector);
 			applyAttrsIfDisabled(node);
 			const { checked, onSelect } = { ...checkboxItemDefaults, ...params };
@@ -452,7 +452,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		},
 	});
 
-	const createMenuRadioGroup = (args: CreateRadioGroupArgs = {}) => {
+	const createMenuRadioGroup = (args: CreateRadioGroupProps = {}) => {
 		const value = writable(args.value ?? null);
 
 		const radioGroup = builder(name('radio-group'), {
@@ -468,8 +468,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		const radioItem = builder(name('radio-item'), {
 			stores: [value],
 			returned: ([$value]) => {
-				return (itemArgs: RadioItemArgs) => {
-					const { value: itemValue, disabled } = { ...radioItemDefaults, ...itemArgs };
+				return (itemProps: RadioItemProps) => {
+					const { value: itemValue, disabled } = { ...radioItemDefaults, ...itemProps };
 					const checked = $value === itemValue;
 
 					return {
@@ -484,7 +484,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					};
 				};
 			},
-			action: (node: HTMLElement, params: RadioItemActionArgs = {}) => {
+			action: (node: HTMLElement, params: RadioItemActionProps = {}) => {
 				setMeltMenuAttribute(node, selector);
 				const { onSelect } = params;
 
@@ -589,10 +589,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			placement: 'right-start',
 			gutter: 8,
 		},
-	} satisfies Defaults<CreateSubmenuArgs>;
+	} satisfies Defaults<CreateSubmenuProps>;
 
-	const createSubMenu = (args?: CreateSubmenuArgs) => {
-		const withDefaults = { ...subMenuDefaults, ...args } as CreateSubmenuArgs;
+	const createSubMenu = (args?: CreateSubmenuProps) => {
+		const withDefaults = { ...subMenuDefaults, ...args } as CreateSubmenuProps;
 		const subOptions = writable(withDefaults);
 
 		const subOpen = writable(false);

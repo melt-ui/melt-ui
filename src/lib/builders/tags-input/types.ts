@@ -1,32 +1,38 @@
 import type { createTagsInput } from './create';
 
-export type CreateTagsInputArgs = {
+export type CreateTagsInputProps = {
 	placeholder?: string;
 	disabled?: boolean;
 	editable?: boolean;
 	selected?: Tag;
 	tags?: string[] | Tag[];
 	unique?: boolean;
-	blur?: 'nothing' | 'add' | 'clear';
+	blur?: Blur;
 	addOnPaste?: boolean;
 	maxTags?: number;
 	allowed?: string[];
 	denied?: string[];
-	add?: (tag: string) => Promise<Tag | string>;
-	remove?: (tag: Tag) => Promise<boolean>;
-	update?: (tag: Tag) => Promise<Tag>;
+	add?: AddTag;
+	remove?: RemoveTag;
+	update?: UpdateTag;
 };
+
+export type Blur = 'nothing' | 'add' | 'clear';
 
 export type Tag = {
 	id: string;
 	value: string;
 };
 
-export type TagArgs = {
+export type TagProps = {
 	id: string;
 	value: string;
 	disabled?: boolean;
 	editable?: boolean;
 };
+
+export type UpdateTag = (tag: Tag) => Promise<Tag>;
+export type RemoveTag = (tag: Tag) => Promise<boolean>;
+export type AddTag = (tag: string) => Promise<Tag | string>;
 
 export type CreateTagsInputReturn = ReturnType<typeof createTagsInput>;

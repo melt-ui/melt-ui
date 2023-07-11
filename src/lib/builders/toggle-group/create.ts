@@ -12,7 +12,7 @@ import {
 import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
-import type { CreateToggleGroupArgs } from './types';
+import type { CreateToggleGroupProps, ToggleGroupItemProps } from './types';
 
 const defaults = {
 	type: 'single',
@@ -21,13 +21,13 @@ const defaults = {
 	rovingFocus: true,
 	disabled: false,
 	value: null,
-} satisfies Defaults<CreateToggleGroupArgs>;
+} satisfies Defaults<CreateToggleGroupProps>;
 
 type ToggleGroupParts = 'item';
 const { name, selector } = createElHelpers<ToggleGroupParts>('toggle-group');
 
-export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
-	const withDefaults = { ...defaults, ...args };
+export function createToggleGroup(props: CreateToggleGroupProps = {}) {
+	const withDefaults = { ...defaults, ...props };
 	const options = writable(omit(withDefaults, 'value'));
 	const value = writable(withDefaults.value);
 
@@ -55,18 +55,12 @@ export function createToggleGroup(args: CreateToggleGroupArgs = {}) {
 		},
 	});
 
-	type ToggleGroupItemArgs =
-		| {
-				value: string;
-				disabled?: boolean;
-		  }
-		| string;
 	const item = builder(name('item'), {
 		stores: [options, value],
 		returned: ([$options, $value]) => {
-			return (args: ToggleGroupItemArgs) => {
-				const itemValue = typeof args === 'string' ? args : args.value;
-				const argDisabled = typeof args === 'string' ? false : !!args.disabled;
+			return (props: ToggleGroupItemProps) => {
+				const itemValue = typeof props === 'string' ? props : props.value;
+				const argDisabled = typeof props === 'string' ? false : !!props.disabled;
 				const disabled = $options.disabled || argDisabled;
 				const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
 				return {

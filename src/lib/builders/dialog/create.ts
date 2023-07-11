@@ -14,7 +14,7 @@ import {
 import { removeScroll } from '$lib/internal/helpers/scroll';
 import type { Defaults } from '$lib/internal/types';
 import { get, writable } from 'svelte/store';
-import type { CreateDialogArgs } from './types';
+import type { CreateDialogProps } from './types';
 
 type DialogParts = 'trigger' | 'overlay' | 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<DialogParts>('dialog');
@@ -24,12 +24,12 @@ const defaults = {
 	closeOnEscape: true,
 	closeOnOutsideClick: true,
 	role: 'dialog',
-} satisfies Defaults<CreateDialogArgs>;
+} satisfies Defaults<CreateDialogProps>;
 
 const openDialogIds = writable<string[]>([]);
 
-export function createDialog(args: CreateDialogArgs = {}) {
-	const withDefaults = { ...defaults, ...args };
+export function createDialog(props: CreateDialogProps = {}) {
+	const withDefaults = { ...defaults, ...props };
 	const options = writable({ ...withDefaults });
 	const activeTrigger = writable<HTMLElement | null>(null);
 

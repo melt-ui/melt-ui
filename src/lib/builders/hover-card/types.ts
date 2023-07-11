@@ -1,7 +1,7 @@
 import type { FloatingConfig } from '$lib/internal/actions';
 import type { createHoverCard } from './create';
 
-export type CreateHoverCardArgs = {
+export type CreateHoverCardProps = {
 	defaultOpen?: boolean;
 	openDelay?: number;
 	closeDelay?: number;

@@ -1,6 +1,6 @@
 import type { createTabs } from './create';
 
-export type CreateTabsArgs = {
+export type CreateTabsProps = {
 	value?: string;
 	onChange?: (value: string) => void;
 	orientation?: 'horizontal' | 'vertical';
@@ -9,5 +9,14 @@ export type CreateTabsArgs = {
 	/** In case no value is set on initialization, sets the value to the first tab */
 	autoSet?: boolean;
 };
+
+export type TabsTriggerProps =
+	| {
+			value: string;
+			disabled?: boolean;
+	  }
+	| string;
+
+export type TabsContentProps = 'string';
 
 export type CreateTabsReturn = ReturnType<typeof createTabs>;

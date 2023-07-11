@@ -1,11 +1,11 @@
 import type { createToolbar } from './create';
 
-export type CreateToolbarArgs = {
+export type CreateToolbarProps = {
 	loop?: boolean;
 	orientation?: 'horizontal' | 'vertical';
 };
 
-type SingleToolbarGroupRootArgs = {
+type SingleToolbarGroupRootProps = {
 	type?: 'single';
 	value?: string | null;
 };
@@ -15,11 +15,17 @@ type MultipleToolbarGroupRootProps = {
 	value?: string[];
 };
 
-export type CreateToolbarGroupArgs = (
-	| SingleToolbarGroupRootArgs
+export type CreateToolbarGroupProps = (
+	| SingleToolbarGroupRootProps
 	| MultipleToolbarGroupRootProps
 ) & {
 	disabled?: boolean;
 };
 
+export type ToolbarGroupItemProps =
+	| {
+			value: string;
+			disabled?: boolean;
+	  }
+	| string;
 export type CreateToolbarReturn = ReturnType<typeof createToolbar>;

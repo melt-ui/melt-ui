@@ -10,17 +10,17 @@ import {
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable, type Readable } from 'svelte/store';
-import type { CreateToolbarArgs, CreateToolbarGroupArgs } from './types';
+import type { CreateToolbarProps, CreateToolbarGroupProps, ToolbarGroupItemProps } from './types';
 
 const defaults = {
 	loop: true,
 	orientation: 'horizontal',
-} satisfies Defaults<CreateToolbarArgs>;
+} satisfies Defaults<CreateToolbarProps>;
 
 const { name, selector } = createElHelpers('toolbar');
 
-export function createToolbar(args: CreateToolbarArgs = {}) {
-	const withDefaults = { ...defaults, ...args };
+export function createToolbar(props: CreateToolbarProps = {}) {
+	const withDefaults = { ...defaults, ...props };
 	const toolbarOptions = writable({ ...withDefaults });
 
 	const root = builder(name(), {
@@ -82,10 +82,10 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 		type: 'single',
 		disabled: false,
 		value: null,
-	} satisfies CreateToolbarGroupArgs;
+	} satisfies CreateToolbarGroupProps;
 
-	function createToolbarGroup(args: CreateToolbarGroupArgs = {}) {
-		const groupWithDefaults = { ...groupDefaults, ...args };
+	function createToolbarGroup(props: CreateToolbarGroupProps = {}) {
+		const groupWithDefaults = { ...groupDefaults, ...props };
 		const groupOptions = writable(omit(groupWithDefaults, 'value'));
 
 		const value = writable(groupWithDefaults.value);
@@ -116,18 +116,12 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 			},
 		});
 
-		type ToolbarGroupItemArgs =
-			| {
-					value: string;
-					disabled?: boolean;
-			  }
-			| string;
 		const item = builder(name('item'), {
 			stores: [groupOptions, value, toolbarOptions],
 			returned: ([$groupOptions, $value, $toolbarOptions]) => {
-				return (args: ToolbarGroupItemArgs) => {
-					const itemValue = typeof args === 'string' ? args : args.value;
-					const argDisabled = typeof args === 'string' ? false : !!args.disabled;
+				return (props: ToolbarGroupItemProps) => {
+					const itemValue = typeof props === 'string' ? props : props.value;
+					const argDisabled = typeof props === 'string' ? false : !!props.disabled;
 					const disabled = $groupOptions.disabled || argDisabled;
 
 					const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
@@ -219,7 +213,7 @@ function getToolbarItems(element: HTMLElement) {
 }
 
 const getKeydownHandler =
-	(options: Readable<Pick<CreateToolbarArgs, 'orientation' | 'loop'>>) => (e: KeyboardEvent) => {
+	(options: Readable<Pick<CreateToolbarProps, 'orientation' | 'loop'>>) => (e: KeyboardEvent) => {
 		const $options = get(options);
 
 		const dir = 'ltr' as 'ltr' | 'rtl';

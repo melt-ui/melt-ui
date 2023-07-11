@@ -1,15 +1,15 @@
 import { builder } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { writable } from 'svelte/store';
-import type { CreateSeparatorArgs } from './types';
+import type { CreateSeparatorProps } from './types';
 
 const defaults = {
 	orientation: 'horizontal',
 	decorative: false,
-} satisfies Defaults<CreateSeparatorArgs>;
+} satisfies Defaults<CreateSeparatorProps>;
 
-export const createSeparator = (args: CreateSeparatorArgs = defaults) => {
-	const withDefaults = { ...defaults, ...args };
+export const createSeparator = (props: CreateSeparatorProps = defaults) => {
+	const withDefaults = { ...defaults, ...props };
 	const options = writable({ ...withDefaults });
 
 	const root = builder('separator', {

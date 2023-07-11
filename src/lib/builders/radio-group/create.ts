@@ -9,20 +9,20 @@ import {
 import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
-import type { CreateRadioGroupArgs } from './types';
+import type { CreateRadioGroupProps, RadioGroupItemProps } from './types';
 
 const defaults = {
 	orientation: 'vertical',
 	loop: true,
 	disabled: false,
 	required: false,
-} satisfies Defaults<CreateRadioGroupArgs>;
+} satisfies Defaults<CreateRadioGroupProps>;
 
 type RadioGroupParts = 'item';
 const { name, selector } = createElHelpers<RadioGroupParts>('radio-group');
 
-export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
-	const withDefaults = { ...defaults, ...args };
+export function createRadioGroup(props: CreateRadioGroupProps = {}) {
+	const withDefaults = { ...defaults, ...props };
 	const options = writable({
 		disabled: withDefaults.disabled,
 		required: withDefaults.required,
@@ -42,18 +42,12 @@ export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 		},
 	});
 
-	type RadioGroupItemArgs =
-		| {
-				value: string;
-				disabled?: boolean;
-		  }
-		| string;
 	const item = builder(name('item'), {
 		stores: [options, value],
 		returned: ([$options, $value]) => {
-			return (args: RadioGroupItemArgs) => {
-				const itemValue = typeof args === 'string' ? args : args.value;
-				const argDisabled = typeof args === 'string' ? false : !!args.disabled;
+			return (props: RadioGroupItemProps) => {
+				const itemValue = typeof props === 'string' ? props : props.value;
+				const argDisabled = typeof props === 'string' ? false : !!props.disabled;
 				const disabled = $options.disabled || (argDisabled as boolean);
 
 				const checked = $value === itemValue;
@@ -137,9 +131,9 @@ export function createRadioGroup(args: CreateRadioGroupArgs = {}) {
 	});
 
 	const itemInput = derived([options, value], ([$options, $value]) => {
-		return (args: RadioGroupItemArgs) => {
-			const itemValue = typeof args === 'string' ? args : args.value;
-			const argDisabled = typeof args === 'string' ? false : !!args.disabled;
+		return (props: RadioGroupItemProps) => {
+			const itemValue = typeof props === 'string' ? props : props.value;
+			const argDisabled = typeof props === 'string' ? false : !!props.disabled;
 			const disabled = $options.disabled || argDisabled;
 
 			return {
