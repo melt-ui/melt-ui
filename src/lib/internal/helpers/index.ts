@@ -3,7 +3,6 @@ export * from './builder';
 export * from './dom';
 export * from './event';
 export * from './is';
-export * from './numbers';
 export * from './object';
 export * from './sleep';
 export * from './store';
