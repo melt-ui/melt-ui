@@ -11,7 +11,7 @@ import {
 	styleToString,
 } from '$lib/internal/helpers';
 import { derived, get, writable } from 'svelte/store';
-import type { CreateSliderArgs } from './types';
+import type { CreateSliderProps } from './types';
 
 const defaults = {
 	value: [],
@@ -20,12 +20,12 @@ const defaults = {
 	step: 1,
 	orientation: 'horizontal',
 	disabled: false,
-} satisfies CreateSliderArgs;
+} satisfies CreateSliderProps;
 
 const { name } = createElHelpers('slider');
 
-export const createSlider = (args: CreateSliderArgs = defaults) => {
-	const withDefaults = { ...defaults, ...args };
+export const createSlider = (props: CreateSliderProps = defaults) => {
+	const withDefaults = { ...defaults, ...props };
 	const options = writable(omit(withDefaults, 'value'));
 
 	const value = writable(withDefaults.value);

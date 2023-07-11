@@ -28,7 +28,7 @@ import {
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions';
-import type { CreateMenu, CreateMenubar } from './types';
+import type { CreateMenubarMenuProps, CreateMenubarProps } from './types';
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
 
@@ -36,10 +36,10 @@ const { name } = createElHelpers<MenuParts | 'menu'>('menubar');
 
 const defaults = {
 	loop: true,
-} satisfies Defaults<CreateMenubar>;
+} satisfies Defaults<CreateMenubarProps>;
 
-export function createMenubar(args?: CreateMenubar) {
-	const withDefaults = { ...defaults, ...args } satisfies CreateMenubar;
+export function createMenubar(props?: CreateMenubarProps) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateMenubarProps;
 	const activeMenu = writable<string>('');
 	const scopedMenus = writable<HTMLElement[]>([]);
 	const nextFocusable = writable<HTMLElement | null>(null);
@@ -79,10 +79,10 @@ export function createMenubar(args?: CreateMenubar) {
 			placement: 'bottom-start',
 		},
 		preventScroll: true,
-	} satisfies Defaults<CreateMenu>;
+	} satisfies Defaults<CreateMenubarMenuProps>;
 
-	const createMenu = (args?: CreateMenu) => {
-		const withDefaults = { ...menuDefaults, ...args } as CreateMenu;
+	const createMenu = (props?: CreateMenubarMenuProps) => {
+		const withDefaults = { ...menuDefaults, ...props } as CreateMenubarMenuProps;
 		const rootOptions = writable(withDefaults);
 		const rootOpen = writable(false);
 		const rootActiveTrigger = writable<HTMLElement | null>(null);

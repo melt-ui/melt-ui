@@ -14,7 +14,7 @@ import { usePopper } from '$lib/internal/actions';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
 import { readable, writable } from 'svelte/store';
-import type { CreatePopoverArgs } from './types';
+import type { CreatePopoverProps } from './types';
 
 const defaults = {
 	positioning: {
@@ -22,13 +22,13 @@ const defaults = {
 	},
 	arrowSize: 8,
 	open: false,
-} satisfies Defaults<CreatePopoverArgs>;
+} satisfies Defaults<CreatePopoverProps>;
 
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
 const { name } = createElHelpers<PopoverParts>('popover');
 
-export function createPopover(args?: CreatePopoverArgs) {
-	const options = { ...defaults, ...args } as CreatePopoverArgs;
+export function createPopover(props?: CreatePopoverProps) {
+	const options = { ...defaults, ...props } as CreatePopoverProps;
 	const positioning = readable(options.positioning);
 	const arrowSize = readable(options.arrowSize);
 	const open = writable(options.open);

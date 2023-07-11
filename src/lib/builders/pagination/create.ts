@@ -8,20 +8,20 @@ import {
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
-import { getPageItems, type Page } from './helpers';
-import type { CreatePaginationArgs } from './types';
+import { getPageItems } from './helpers';
+import type { CreatePaginationProps, Page } from './types';
 
 const defaults = {
 	perPage: 1,
 	siblingCount: 1,
 	page: 1,
-} satisfies Defaults<CreatePaginationArgs>;
+} satisfies Defaults<CreatePaginationProps>;
 
 type PaginationParts = 'page' | 'prev' | 'next';
 const { name, selector } = createElHelpers<PaginationParts>('pagination');
 
-export function createPagination(args: CreatePaginationArgs) {
-	const withDefaults = { ...defaults, ...args };
+export function createPagination(props: CreatePaginationProps) {
+	const withDefaults = { ...defaults, ...props };
 	const options = writable(omit(withDefaults, 'page'));
 	const page = writable(withDefaults.page);
 

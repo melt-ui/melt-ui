@@ -15,7 +15,7 @@ export type ValueOf<T> = T[keyof T];
 
 export type Arrayable<T> = T | T[];
 
-export type CreatePaginationArgs = {
+export type CreatePaginationProps = {
 	count: number;
 	perPage?: number;
 };

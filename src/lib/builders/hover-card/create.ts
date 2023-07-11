@@ -17,7 +17,7 @@ import {
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
-import type { CreateHoverCardArgs } from './types';
+import type { CreateHoverCardProps } from './types';
 
 type HoverCardParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<HoverCardParts>('hover-card');
@@ -31,12 +31,12 @@ const defaults = {
 	},
 	arrowSize: 8,
 	closeOnOutsideClick: true,
-} satisfies Defaults<CreateHoverCardArgs>;
+} satisfies Defaults<CreateHoverCardProps>;
 
-export function createHoverCard(args: CreateHoverCardArgs = {}) {
-	const argsWithDefaults = { ...defaults, ...args } satisfies CreateHoverCardArgs;
-	const options = writable(argsWithDefaults);
-	const open = writable(argsWithDefaults.defaultOpen);
+export function createHoverCard(props: CreateHoverCardProps = {}) {
+	const propsWithDefaults = { ...defaults, ...props } satisfies CreateHoverCardProps;
+	const options = writable(propsWithDefaults);
+	const open = writable(propsWithDefaults.defaultOpen);
 	const hasSelection = writable(false);
 	const isPointerDownOnContent = writable(false);
 	const containSelection = writable(false);

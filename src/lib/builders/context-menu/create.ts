@@ -29,7 +29,7 @@ import {
 	type MenuParts,
 	setMeltMenuAttribute,
 } from '../menu';
-import type { CreateContextMenu } from './types';
+import type { CreateContextMenuProps } from './types';
 
 const defaults = {
 	arrowSize: 8,
@@ -37,12 +37,12 @@ const defaults = {
 		placement: 'bottom-start',
 	},
 	preventScroll: true,
-} satisfies Defaults<CreateContextMenu>;
+} satisfies Defaults<CreateContextMenuProps>;
 
 const { name, selector } = createElHelpers<MenuParts>('context-menu');
 
-export function createContextMenu(args?: CreateContextMenu) {
-	const withDefaults = { ...defaults, ...args } satisfies CreateContextMenu;
+export function createContextMenu(props?: CreateContextMenuProps) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;
 	const rootOptions = writable(withDefaults);
 	const rootOpen = writable(false);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);

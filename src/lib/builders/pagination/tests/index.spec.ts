@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { getPageItems, type GetPageItemsArgs, type PageItem } from '../helpers';
+import { getPageItems } from '../helpers';
+import type { GetPageItemsArgs, PageItem } from '../types';
 
 const testCases: Array<[GetPageItemsArgs, string]> = [
 	[{ totalPages: 100 }, '1,2,3,4,...,100'],

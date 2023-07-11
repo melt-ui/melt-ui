@@ -1,6 +1,6 @@
 import type { createProgress } from './create';
 
-export type CreateProgressArgs = {
+export type CreateProgressProps = {
 	value?: number;
 	max?: number;
 };

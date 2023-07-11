@@ -7,23 +7,23 @@ import {
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
-import type { CreateCheckboxArgs } from './types';
+import type { CreateCheckboxProps } from './types';
 
 const defaults = {
 	checked: false,
 	disabled: false,
 	required: false,
-} satisfies Defaults<CreateCheckboxArgs>;
+} satisfies Defaults<CreateCheckboxProps>;
 
-export function createCheckbox(args: CreateCheckboxArgs = {}) {
-	const argsWithDefaults = { ...defaults, ...args };
+export function createCheckbox(props: CreateCheckboxProps = {}) {
+	const propsWithDefaults = { ...defaults, ...props };
 	const options = writable({
-		disabled: argsWithDefaults.disabled,
-		required: argsWithDefaults.required,
-		name: argsWithDefaults.name,
-		value: argsWithDefaults.value,
+		disabled: propsWithDefaults.disabled,
+		required: propsWithDefaults.required,
+		name: propsWithDefaults.name,
+		value: propsWithDefaults.value,
 	});
-	const checked = writable(argsWithDefaults.checked);
+	const checked = writable(propsWithDefaults.checked);
 
 	const root = builder('checkbox', {
 		stores: [checked, options],

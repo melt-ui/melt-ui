@@ -1,7 +1,7 @@
 import type { Defaults } from '$lib/internal/types';
 import { writable } from 'svelte/store';
 import { createMenuBuilder } from '../menu';
-import type { CreateDropdownMenu } from './types';
+import type { CreateDropdownMenuProps } from './types';
 
 const defaults = {
 	arrowSize: 8,
@@ -9,10 +9,10 @@ const defaults = {
 		placement: 'bottom',
 	},
 	preventScroll: true,
-} satisfies Defaults<CreateDropdownMenu>;
+} satisfies Defaults<CreateDropdownMenuProps>;
 
-export function createDropdownMenu(args?: CreateDropdownMenu) {
-	const withDefaults = { ...defaults, ...args } as CreateDropdownMenu;
+export function createDropdownMenu(props?: CreateDropdownMenuProps) {
+	const withDefaults = { ...defaults, ...props } as CreateDropdownMenuProps;
 	const rootOptions = writable(withDefaults);
 	const rootOpen = writable(false);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
