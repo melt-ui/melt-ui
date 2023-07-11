@@ -48,6 +48,6 @@ describe('wrapArray', () => {
 		{ array: ['a', 'b', 'c', 'd'], startIndex: 2, expected: ['c', 'd', 'a', 'b'] },
 		{ array: ['a', 'b', 'c', 'd'], startIndex: 4, expected: ['a', 'b', 'c', 'd'] },
 	])('wrapArray($array, $startIndex) -> $expected', ({ array, startIndex, expected }) => {
-		expect(wrapArray(array, startIndex)).toEqual(expected);
+		expect(wrapArray(array, startIndex)).toStrictEqual(expected);
 	});
 });
