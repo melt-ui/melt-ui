@@ -41,5 +41,11 @@ const config: StorybookConfig = {
 		name: '@storybook/sveltekit',
 		options: {},
 	},
+	docs: {
+		autodocs: 'tag',
+	},
+	viteFinal(config) {
+		return workaroundSvelteDocgenPluginConflictWithUnpluginIcons(config);
+	},
 };
 export default config;

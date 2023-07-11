@@ -1,7 +1,7 @@
 import type { Orientation } from '$lib/internal/types';
 import type { createSeparator } from './create';
 
-export type CreateSeparatorArgs = {
+export type CreateSeparatorProps = {
 	/*
 	 * The orientation of the separator.
 	 *

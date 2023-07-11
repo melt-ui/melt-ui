@@ -1,7 +1,7 @@
 import type { FloatingConfig } from '$lib/internal/actions';
 import type { createSelect } from './create';
 
-export type CreateSelectArgs = {
+export type CreateSelectProps = {
 	positioning?: FloatingConfig;
 	arrowSize?: number;
 	required?: boolean;
@@ -13,7 +13,7 @@ export type CreateSelectArgs = {
 	loop?: boolean;
 };
 
-export type OptionArgs = {
+export type SelectOptionProps = {
 	value: unknown;
 	label?: string;
 	disabled?: boolean;

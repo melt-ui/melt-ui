@@ -1,6 +1,6 @@
 import type { createToggle } from './create';
 
-export type CreateToggleArgs = {
+export type CreateToggleProps = {
 	disabled?: boolean;
 	pressed?: boolean;
 };

@@ -26,7 +26,7 @@ import type { Defaults } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import { createSeparator } from '../separator';
-import type { CreateSelectArgs, OptionArgs } from './types';
+import type { CreateSelectProps, SelectOptionProps } from './types';
 
 const defaults = {
 	arrowSize: 8,
@@ -38,13 +38,13 @@ const defaults = {
 	},
 	preventScroll: true,
 	loop: false,
-} satisfies Defaults<CreateSelectArgs>;
+} satisfies Defaults<CreateSelectProps>;
 
 type SelectParts = 'menu' | 'trigger' | 'option' | 'group' | 'group-label';
 const { name } = createElHelpers<SelectParts>('select');
 
-export function createSelect(args?: CreateSelectArgs) {
-	const withDefaults = { ...defaults, ...args } as CreateSelectArgs;
+export function createSelect(props?: CreateSelectProps) {
+	const withDefaults = { ...defaults, ...props } as CreateSelectProps;
 	const options = writable(omit(withDefaults, 'value', 'label'));
 
 	const open = writable(false);
@@ -305,20 +305,20 @@ export function createSelect(args?: CreateSelectArgs) {
 	const option = builder(name('option'), {
 		stores: value,
 		returned: ($value) => {
-			return (args: OptionArgs) => {
+			return (props: SelectOptionProps) => {
 				return {
 					role: 'option',
-					'aria-selected': $value === args?.value,
-					'data-selected': $value === args?.value ? '' : undefined,
-					'data-value': args.value,
-					'data-label': args.label ?? undefined,
-					'data-disabled': args.disabled ? '' : undefined,
+					'aria-selected': $value === props?.value,
+					'data-selected': $value === props?.value ? '' : undefined,
+					'data-value': props.value,
+					'data-label': props.label ?? undefined,
+					'data-disabled': props.disabled ? '' : undefined,
 					tabindex: -1,
 				} as const;
 			};
 		},
 		action: (node: HTMLElement) => {
-			const getElArgs = () => {
+			const getElprops = () => {
 				const value = node.getAttribute('data-value');
 				const label = node.getAttribute('data-label');
 				const disabled = node.hasAttribute('data-disabled');
@@ -332,8 +332,8 @@ export function createSelect(args?: CreateSelectArgs) {
 
 			const unsub = executeCallbacks(
 				addEventListener(node, 'pointerdown', (e) => {
-					const args = getElArgs();
-					if (args.disabled) {
+					const props = getElprops();
+					if (props.disabled) {
 						e.preventDefault();
 						return;
 					}
@@ -343,15 +343,15 @@ export function createSelect(args?: CreateSelectArgs) {
 					const itemElement = e.currentTarget;
 					if (!isHTMLElement(itemElement)) return;
 
-					const args = getElArgs();
-					if (args.disabled) {
+					const props = getElprops();
+					if (props.disabled) {
 						e.preventDefault();
 						return;
 					}
 					handleRovingFocus(itemElement);
 
-					value.set(args.value);
-					label.set(args.label);
+					value.set(props.value);
+					label.set(props.label);
 					open.set(false);
 				}),
 
@@ -364,16 +364,16 @@ export function createSelect(args?: CreateSelectArgs) {
 					}
 					if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
 						e.preventDefault();
-						const args = getElArgs();
+						const props = getElprops();
 						node.setAttribute('data-selected', '');
-						value.set(args.value);
-						label.set(args.label);
+						value.set(props.value);
+						label.set(props.label);
 						open.set(false);
 					}
 				}),
 				addEventListener(node, 'pointermove', (e) => {
-					const args = getElArgs();
-					if (args.disabled) {
+					const props = getElprops();
+					if (props.disabled) {
 						e.preventDefault();
 						return;
 					}
@@ -381,7 +381,7 @@ export function createSelect(args?: CreateSelectArgs) {
 					const itemElement = e.currentTarget;
 					if (!isHTMLElement(itemElement)) return;
 
-					if (args.disabled) {
+					if (props.disabled) {
 						const menuElement = document.getElementById(ids.menu);
 						if (!isHTMLElement(menuElement)) return;
 						handleRovingFocus(menuElement);

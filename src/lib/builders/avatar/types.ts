@@ -2,7 +2,7 @@ import type { createAvatar } from './create';
 
 export type ImageLoadingStatus = 'loading' | 'loaded' | 'error';
 
-export type CreateAvatarArgs = {
+export type CreateAvatarProps = {
 	src: string;
 	delayMs?: number;
 };

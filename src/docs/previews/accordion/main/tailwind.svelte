@@ -25,11 +25,11 @@
 	];
 </script>
 
-<div class="mx-auto w-full max-w-md rounded-md shadow-lg" {...root}>
+<div class="mx-auto w-full max-w-md rounded-md shadow-lg" {...$root}>
 	{#each items as { id, title, description }, i}
 		<div
 			{...$item(id)}
-			class="mt-px overflow-hidden transition-colors first:mt-0 first:rounded-t
+			class="overflow-hidden transition-colors first:rounded-t
             last:rounded-b focus-within:relative focus-within:z-10 focus-within:ring
             focus-within:ring-magnum-400"
 		>
@@ -38,9 +38,10 @@
 					id={i === 0 ? 'accordion-trigger' : undefined}
 					{...$trigger(id)}
 					use:trigger
-					class="flex h-12 flex-1 cursor-pointer items-center justify-between bg-white
-                    px-5 text-base font-medium leading-none text-magnum-700 shadow-[0_1px_0]
-                    transition-colors hover:bg-opacity-95"
+					class="flex h-12 flex-1 cursor-pointer items-center text-magnum-700 justify-between bg-white
+                 px-5 text-base font-medium leading-none
+                 transition-colors hover:bg-opacity-95 focus:!ring-0 border-b border-b-magnum-700
+								 {i === items.length - 1 ? 'border-b-0' : ''}"
 				>
 					{title}
 				</button>

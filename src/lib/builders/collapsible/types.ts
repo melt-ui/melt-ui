@@ -1,6 +1,6 @@
 import type { createCollapsible } from './create';
 
-export type CreateCollapsibleArgs = {
+export type CreateCollapsibleProps = {
 	open?: boolean;
 	disabled?: boolean;
 };

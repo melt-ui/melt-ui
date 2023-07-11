@@ -1,6 +1,6 @@
 import type { createDialog } from './create';
 
-export type CreateDialogArgs = {
+export type CreateDialogProps = {
 	preventScroll?: boolean;
 	closeOnEscape?: boolean;
 	closeOnOutsideClick?: boolean;

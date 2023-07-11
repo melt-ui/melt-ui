@@ -1,13 +1,13 @@
 import { builder, effect, isBrowser, styleToString } from '$lib/internal/helpers';
 import { writable } from 'svelte/store';
-import type { CreateAvatarArgs, ImageLoadingStatus } from './types';
+import type { CreateAvatarProps, ImageLoadingStatus } from './types';
 
 const defaults = {
 	src: '',
-} satisfies CreateAvatarArgs;
+} satisfies CreateAvatarProps;
 
-export const createAvatar = (args: CreateAvatarArgs = defaults) => {
-	const withDefaults = { ...defaults, ...args };
+export const createAvatar = (props: CreateAvatarProps = defaults) => {
+	const withDefaults = { ...defaults, ...props };
 	const { delayMs } = withDefaults;
 
 	const src = writable(withDefaults.src);

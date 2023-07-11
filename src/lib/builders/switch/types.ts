@@ -1,6 +1,6 @@
 import type { createSwitch } from './create';
 
-export type CreateSwitchArgs = {
+export type CreateSwitchProps = {
 	/** The controlled checked state of the switch. */
 	checked?: boolean;
 	/** When `true`, prevents the user from interacting with the switch. */

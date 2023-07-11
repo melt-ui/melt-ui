@@ -9,17 +9,17 @@ import {
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
-import type { CreateAccordionArgs } from './types';
+import type { AccordionItemProps, CreateAccordionProps } from './types';
 
 type AccordionParts = 'trigger' | 'item' | 'content';
 const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
 const defaults = {
 	type: 'single',
-} satisfies Defaults<CreateAccordionArgs>;
+} satisfies Defaults<CreateAccordionProps>;
 
-export const createAccordion = (args?: CreateAccordionArgs) => {
-	const withDefaults = { ...defaults, ...args } as CreateAccordionArgs;
+export const createAccordion = (props?: CreateAccordionProps) => {
+	const withDefaults = { ...defaults, ...props } as CreateAccordionProps;
 	const options = writable({
 		disabled: withDefaults.disabled,
 		type: withDefaults.type,
@@ -47,26 +47,19 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 		}),
 	});
 
-	type ItemArgs =
-		| {
-				value: string;
-				disabled?: boolean;
-		  }
-		| string;
-
-	const parseItemArgs = (args: ItemArgs) => {
-		if (typeof args === 'string') {
-			return { value: args };
+	const parseItemProps = (props: AccordionItemProps) => {
+		if (typeof props === 'string') {
+			return { value: props };
 		} else {
-			return args;
+			return props;
 		}
 	};
 
 	const item = builder(name('item'), {
 		stores: value,
 		returned: ($value) => {
-			return (args: ItemArgs) => {
-				const { value: itemValue, disabled } = parseItemArgs(args);
+			return (props: AccordionItemProps) => {
+				const { value: itemValue, disabled } = parseItemProps(props);
 
 				return {
 					'data-state': isSelected(itemValue, $value) ? 'open' : 'closed',
@@ -79,8 +72,8 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 	const trigger = builder(name('trigger'), {
 		stores: [value, options],
 		returned: ([$value, $options]) => {
-			return (args: ItemArgs) => {
-				const { value: itemValue, disabled } = parseItemArgs(args);
+			return (props: AccordionItemProps) => {
+				const { value: itemValue, disabled } = parseItemProps(props);
 
 				return {
 					'aria-expanded': isSelected(itemValue, $value) ? true : false,
@@ -152,8 +145,8 @@ export const createAccordion = (args?: CreateAccordionArgs) => {
 	const content = builder(name('content'), {
 		stores: [value, options],
 		returned: ([$value, $options]) => {
-			return (args: ItemArgs) => {
-				const { value: itemValue } = parseItemArgs(args);
+			return (props: AccordionItemProps) => {
+				const { value: itemValue } = parseItemProps(props);
 				const selected = isSelected(itemValue, $value);
 				return {
 					'data-state': selected ? 'open' : 'closed',

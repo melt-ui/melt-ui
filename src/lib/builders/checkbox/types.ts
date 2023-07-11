@@ -2,7 +2,7 @@ import type { createCheckbox } from './create';
 
 type CheckedState = boolean | 'indeterminate';
 
-export type CreateCheckboxArgs = {
+export type CreateCheckboxProps = {
 	checked?: CheckedState;
 	disabled?: boolean;
 	required?: boolean;

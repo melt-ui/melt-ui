@@ -26,7 +26,7 @@ import { getOptions } from '$lib/internal/helpers/list';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
-import type { ComboboxItemArgs, CreateComboboxArgs } from './types';
+import type { ComboboxItemProps, CreateComboboxProps } from './types';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
@@ -34,7 +34,7 @@ export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd
 const defaults = {
 	scrollAlignment: 'nearest',
 	loop: true,
-} satisfies Defaults<CreateComboboxArgs<unknown>>;
+} satisfies Defaults<CreateComboboxProps<unknown>>;
 
 const { name, selector } = createElHelpers('combobox');
 
@@ -47,8 +47,8 @@ const { name, selector } = createElHelpers('combobox');
  * @TODO would it be useful to have a callback for when an item is selected?
  * @TODO multi-select using `tags-input` builder?
  */
-export function createCombobox<T>(args: CreateComboboxArgs<T>) {
-	const options = writable(omit({ ...defaults, ...args }, 'items'));
+export function createCombobox<T>(props: CreateComboboxProps<T>) {
+	const options = writable(omit({ ...defaults, ...props }, 'items'));
 	const open = writable(false);
 	// Trigger element for the popper portal. This will be our input element.
 	const activeTrigger = writable<HTMLElement | null>(null);
@@ -57,9 +57,9 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>) {
 	// The current value of the input element.
 	const inputValue = writable('');
 	// All items in the menu.
-	const items = writable(args.items);
+	const items = writable(props.items);
 	// A subset of items that match the filterFunction predicate.
-	const filteredItems = writable(args.items);
+	const filteredItems = writable(props.items);
 	// The currently selected menu item.
 	const selectedItem = writable<T>(undefined);
 
@@ -357,15 +357,15 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>) {
 		stores: [selectedItem],
 		returned:
 			([$selectedItem]) =>
-			(args: ComboboxItemArgs<T>) =>
+			(props: ComboboxItemProps<T>) =>
 				({
-					'data-disabled': args.disabled ? '' : undefined,
-					'aria-disabled': args.disabled ? true : undefined,
-					'aria-selected': args.item === $selectedItem,
-					'data-index': args.index,
-					id: `${ids.input}-descendent-${args.index}`,
+					'data-disabled': props.disabled ? '' : undefined,
+					'aria-disabled': props.disabled ? true : undefined,
+					'aria-selected': props.item === $selectedItem,
+					'data-index': props.index,
+					id: `${ids.input}-descendent-${props.index}`,
 					role: 'option',
-					style: styleToString({ cursor: args.disabled ? 'default' : 'pointer' }),
+					style: styleToString({ cursor: props.disabled ? 'default' : 'pointer' }),
 				} as const),
 		action: (node: HTMLElement) => {
 			const unsubscribe = executeCallbacks(

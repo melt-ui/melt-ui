@@ -1,6 +1,6 @@
 import type { createSlider } from './create';
 
-export type CreateSliderArgs = {
+export type CreateSliderProps = {
 	value: number[];
 	min?: number;
 	max?: number;

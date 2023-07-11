@@ -1,7 +1,7 @@
 import type { FloatingConfig } from '$lib/internal/actions';
 import type { createPopover } from './create';
 
-export type CreatePopoverArgs = {
+export type CreatePopoverProps = {
 	positioning?: FloatingConfig;
 	arrowSize?: number;
 	open?: boolean;
