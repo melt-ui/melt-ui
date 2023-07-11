@@ -84,5 +84,5 @@ Some of the project's we've been inspired by in no particular order:
 
 - Zag - [https://zagjs.com](https://zagjs.com)
 - Radix UI - [https://radix-ui.com](https://radix-ui.com)
-- Grail UI - [https://grail-ui.com](https://grail-ui.com)
+- Grail UI - [https://grail-ui.vercel.app](https://grail-ui.vercel.app)
 - Skeleton - [https://skeleton.dev](https://skeleton.dev)
