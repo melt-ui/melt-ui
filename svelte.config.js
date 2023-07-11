@@ -5,7 +5,6 @@ import { mdsvex } from '@huntabyte/mdsvex';
 import { mdsvexOptions } from './mdsvex.config.js';
 import sequence from 'svelte-sequential-preprocessor';
 
-
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	extensions: ['.svelte', '.md'],
