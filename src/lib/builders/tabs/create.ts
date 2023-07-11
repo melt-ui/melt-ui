@@ -14,7 +14,7 @@ import {
 import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
 import { get, writable } from 'svelte/store';
-import type { CreateTabsProps, TabsContentProps, TabsTriggerProps } from './types';
+import type { CreateTabsProps, TabsTriggerProps } from './types';
 
 const defaults = {
 	orientation: 'horizontal',
@@ -169,7 +169,7 @@ export function createTabs(props?: CreateTabsProps) {
 	const content = builder(name('content'), {
 		stores: value,
 		returned: ($value) => {
-			return (tabValue: TabsContentProps) => {
+			return (tabValue: string) => {
 				return {
 					role: 'tabpanel',
 					// TODO: improve

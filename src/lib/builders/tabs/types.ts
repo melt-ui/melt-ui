@@ -17,6 +17,4 @@ export type TabsTriggerProps =
 	  }
 	| string;
 
-export type TabsContentProps = 'string';
-
 export type CreateTabsReturn = ReturnType<typeof createTabs>;
