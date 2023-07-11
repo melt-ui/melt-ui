@@ -1,7 +1,7 @@
 import type { FloatingConfig } from '$lib/internal/actions';
 import type { createPopover } from './create';
 
-type ChangeFn<T> = (args: { prev: T; next: T }) => boolean;
+export type ChangeFn<T> = (args: { prev: T; next: T }) => T;
 
 export type CreatePopoverArgs = {
 	positioning?: FloatingConfig;

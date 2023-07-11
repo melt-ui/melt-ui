@@ -4,8 +4,15 @@
 	import Settings2 from '~icons/lucide/settings2';
 	import X from '~icons/lucide/x';
 
-	const { trigger, content, open, arrow, close } = createPopover();
+	const { trigger, content, open, arrow, close } = createPopover({
+		onOpenChange: ({ prev, next }) => {
+			console.log('open', prev, next);
+			return true;
+		},
+	});
 </script>
+
+{$open}
 
 <button
 	type="button"

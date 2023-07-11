@@ -13,8 +13,8 @@ import {
 import { usePopper } from '$lib/internal/actions';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
-import { readable, writable } from 'svelte/store';
-import type { CreatePopoverArgs } from './types';
+import { readable, writable, type Updater } from 'svelte/store';
+import type { ChangeFn, CreatePopoverArgs } from './types';
 
 const defaults = {
 	positioning: {
@@ -27,11 +27,38 @@ const defaults = {
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
 const { name } = createElHelpers<PopoverParts>('popover');
 
+const overridable = <T>(initialValue: T, onChange?: ChangeFn<T>) => {
+	const store = writable(initialValue);
+
+	const update = (updater: Updater<T>, sideEffect?: (newValue: T) => void) => {
+		store.update((prev) => {
+			const next = updater(prev);
+			let res: T = next;
+			if (onChange) {
+				res = onChange({ prev, next });
+			}
+
+			sideEffect?.(res);
+			return res;
+		});
+	};
+
+	const set: typeof store.set = (next) => {
+		update(() => next);
+	};
+
+	return {
+		...store,
+		update,
+		set,
+	};
+};
+
 export function createPopover(args?: CreatePopoverArgs) {
-	const options = { ...defaults, ...args } as CreatePopoverArgs;
+	const options = { ...defaults, ...args };
 	const positioning = readable(options.positioning);
 	const arrowSize = readable(options.arrowSize);
-	const open = writable(options.open);
+	const open = overridable(options.open, args?.onOpenChange);
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
@@ -99,15 +126,16 @@ export function createPopover(args?: CreatePopoverArgs) {
 		},
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
-				open.update((prev) => {
-					const isOpen = !prev;
-					if (isOpen) {
-						activeTrigger.set(node);
-					} else {
-						activeTrigger.set(null);
+				open.update(
+					(prev) => !prev,
+					(isOpen) => {
+						if (isOpen) {
+							activeTrigger.set(node);
+						} else {
+							activeTrigger.set(null);
+						}
 					}
-					return isOpen;
-				});
+				);
 			});
 
 			return {
