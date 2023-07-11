@@ -1,6 +1,6 @@
 import { isHTMLElement } from './is';
 
-export function focus(element: unknown) {
+export function focus(element: unknown): void {
 	if (isHTMLElement(element)) {
 		element.focus();
 	} else if (typeof element === 'string') {
@@ -15,7 +15,7 @@ export function focus(element: unknown) {
  * Returns a list of nodes that can be in the tab sequence.
  * @see: https://developer.mozilla.org/en-US/docs/Web/API/TreeWalker
  */
-export function getTabbableNodes(container: HTMLElement) {
+export function getTabbableNodes(container: HTMLElement): HTMLElement[] {
 	const nodes: HTMLElement[] = [];
 	const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
 		acceptNode: (node: HTMLElement) => {

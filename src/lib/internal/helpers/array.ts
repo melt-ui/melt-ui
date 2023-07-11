@@ -35,6 +35,6 @@ export function last<T>(array: T[]): T {
  * Example: `wrapArray(['a', 'b', 'c', 'd'], 2) === ['c', 'd', 'a', 'b']`
  * Reference: https://github.com/radix-ui/primitives
  */
-export function wrapArray<T>(array: T[], startIndex: number) {
+export function wrapArray<T>(array: T[], startIndex: number): T[] {
 	return array.map((_, index) => array[(startIndex + index) % array.length]);
 }
