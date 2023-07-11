@@ -34,7 +34,7 @@
 				</Description>
 			{/if}
 		</div>
-		<div {...$separator} class="my-4 md:my-6" />
+		<div melt={$separator} class="my-4 md:my-6" />
 		<div class="mdsvex" id="mdsvex">
 			<Preview code={snippets.main} {viewCode}>
 				<svelte:component this={mainPreview} />
@@ -43,7 +43,7 @@
 
 			<svelte:component this={component} {snippets} {schemas} {previews} {keyboard} />
 		</div>
-		<div {...$separator} class="my-4 md:my-6" />
+		<div melt={$separator} class="my-4 md:my-6" />
 		<!-- <DocsPager /> -->
 	</div>
 	<div class="hidden text-sm xl:block">

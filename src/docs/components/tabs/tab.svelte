@@ -8,8 +8,7 @@
 </script>
 
 <button
-	{...$trigger(tab)}
-	use:trigger
+	melt={$trigger(tab)}
 	class="rounded-md border border-transparent bg-neutral-800 px-3 py-2 text-neutral-400 transition
         hover:opacity-100 focus:!border-magnum-400 focus:!text-magnum-400
         data-[state=active]:border-magnum-700 data-[state=active]:py-2 data-[state=active]:text-magnum-600 data-[state=active]:opacity-100"
