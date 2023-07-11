@@ -6,14 +6,16 @@ import {
 	generateId,
 	isBrowser,
 	noop,
+	omit,
 	sleep,
 	styleToString,
 } from '$lib/internal/helpers';
 
 import { usePopper } from '$lib/internal/actions';
 import type { Defaults } from '$lib/internal/types';
+import { overridable } from '$lib/internal/helpers';
 import { tick } from 'svelte';
-import { readable, writable } from 'svelte/store';
+import { get, readable, writable } from 'svelte/store';
 import type { CreatePopoverProps } from './types';
 
 const defaults = {
@@ -21,17 +23,21 @@ const defaults = {
 		placement: 'bottom',
 	},
 	arrowSize: 8,
-	open: false,
+	defaultOpen: false,
 } satisfies Defaults<CreatePopoverProps>;
 
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
 const { name } = createElHelpers<PopoverParts>('popover');
 
-export function createPopover(props?: CreatePopoverProps) {
-	const options = { ...defaults, ...props } as CreatePopoverProps;
-	const positioning = readable(options.positioning);
-	const arrowSize = readable(options.arrowSize);
-	const open = writable(options.open);
+export function createPopover(args?: CreatePopoverProps) {
+	const withDefaults = { ...defaults, ...args };
+	const options = writable(omit(withDefaults, 'open', 'onOpenChange', 'defaultOpen'));
+
+	const positioning = readable(withDefaults.positioning);
+	const arrowSize = readable(withDefaults.arrowSize);
+
+	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
+	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
@@ -44,7 +50,7 @@ export function createPopover(props?: CreatePopoverProps) {
 		returned: ($open) => {
 			return {
 				'data-state': $open ? 'open' : 'closed',
-				hidden: $open ? undefined : true,
+				hidden: $open && isBrowser ? undefined : true,
 				tabindex: -1,
 				style: styleToString({
 					display: $open ? undefined : 'none',
@@ -98,16 +104,23 @@ export function createPopover(props?: CreatePopoverProps) {
 			} as const;
 		},
 		action: (node: HTMLElement) => {
+			const $activeTrigger = get(activeTrigger);
+
+			if (withDefaults.defaultOpen && $activeTrigger === null) {
+				activeTrigger.set(node);
+			}
+
 			const unsub = addEventListener(node, 'click', () => {
-				open.update((prev) => {
-					const isOpen = !prev;
-					if (isOpen) {
-						activeTrigger.set(node);
-					} else {
-						activeTrigger.set(null);
+				open.update(
+					(prev) => !prev,
+					(isOpen) => {
+						if (isOpen) {
+							activeTrigger.set(node);
+						} else {
+							activeTrigger.set(null);
+						}
 					}
-					return isOpen;
-				});
+				);
 			});
 
 			return {
