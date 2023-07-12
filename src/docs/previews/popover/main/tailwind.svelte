@@ -4,9 +4,7 @@
 	import Settings2 from '~icons/lucide/settings2';
 	import X from '~icons/lucide/x';
 
-	const { trigger, content, open, arrow, close } = createPopover({
-		disableFocusTrap: true,
-	});
+	const { trigger, content, open, arrow, close } = createPopover();
 </script>
 
 <button
