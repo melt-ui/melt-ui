@@ -120,6 +120,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				'aria-labelledby': rootIds.trigger,
 				'data-state': $rootOpen ? 'open' : 'closed',
 				tabindex: -1,
+				'data-side': 'right',
 			} as const;
 		},
 		action: (node: HTMLElement) => {
@@ -213,7 +214,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		action: (node: HTMLElement) => {
 			applyAttrsIfDisabled(node);
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', (e) => {
+				addEventListener(node, 'pointerdown', (e) => {
+					if (!isLeftClick(e)) return;
+
 					const $rootOpen = get(rootOpen);
 					const triggerElement = e.currentTarget;
 					if (!isHTMLElement(triggerElement)) return;
@@ -307,6 +310,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 			const unsub = executeCallbacks(
 				addEventListener(node, 'pointerdown', (e) => {
+					if (!isLeftClick(e)) return;
+
 					const itemElement = e.currentTarget;
 					if (!isHTMLElement(itemElement)) return;
 					if (isElementDisabled(itemElement)) {
@@ -387,6 +392,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 			const unsub = executeCallbacks(
 				addEventListener(node, 'pointerdown', (e) => {
+					if (!isLeftClick(e)) return;
 					const itemElement = e.currentTarget;
 					if (!isHTMLElement(itemElement)) return;
 					if (isElementDisabled(itemElement)) {
@@ -452,8 +458,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		},
 	});
 
-	const createMenuRadioGroup = (args: CreateRadioGroupProps = {}) => {
-		const value = writable(args.value ?? null);
+	const createMenuRadioGroup = (props: CreateRadioGroupProps = {}) => {
+		const value = writable(props.value ?? null);
 
 		const radioGroup = builder(name('radio-group'), {
 			returned: () => ({
@@ -490,6 +496,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 				const unsub = executeCallbacks(
 					addEventListener(node, 'pointerdown', (e) => {
+						if (!isLeftClick(e)) return;
 						const itemElement = e.currentTarget;
 						if (!isHTMLElement(itemElement)) return;
 						const itemValue = node.dataset.value;
@@ -591,8 +598,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		},
 	} satisfies Defaults<CreateSubmenuProps>;
 
-	const createSubMenu = (args?: CreateSubmenuProps) => {
-		const withDefaults = { ...subMenuDefaults, ...args } as CreateSubmenuProps;
+	const createSubMenu = (props?: CreateSubmenuProps) => {
+		const withDefaults = { ...subMenuDefaults, ...props } as CreateSubmenuProps;
 		const subOptions = writable(withDefaults);
 
 		const subOpen = writable(false);
@@ -618,6 +625,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					'aria-labelledby': subIds.trigger,
 					'data-state': $subOpen ? 'open' : 'closed',
 					tabindex: -1,
+					'data-side': 'right',
 				} as const;
 			},
 			action: (node: HTMLElement) => {
@@ -830,6 +838,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						if (!isHTMLElement(triggerElement)) return;
 
 						handleRovingFocus(triggerElement);
+						triggerElement.setAttribute('data-highlighted', '');
 
 						const openTimer = get(subOpenTimer);
 						if (!get(subOpen) && !openTimer && !isElementDisabled(triggerElement)) {
@@ -961,7 +970,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 			sleep(1).then(() => {
 				const menuElement = document.getElementById(subIds.menu);
-				if (isHTMLElement(menuElement) && $subOpen && get(isUsingKeyboard)) {
+				if (menuElement && $subOpen && get(isUsingKeyboard)) {
 					// Selector to get menu items belonging to menu
 					const menuItems = getMenuItems(menuElement);
 
@@ -969,11 +978,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						isHTMLElement(menuItems[0]) ? handleRovingFocus(menuItems[0]) : undefined;
 					}
 				}
-				if (isHTMLElement(menuElement) && !$subOpen) {
-					const menuItems = getMenuItems(menuElement);
-					menuItems.forEach((item) => {
-						item.removeAttribute('data-highlighted');
-					});
+				if (menuElement && !$subOpen) {
+					removeHighlightFromMenuItems(menuElement);
 					const subTriggerEl = document.getElementById(subIds.trigger);
 					if (!isHTMLElement(subTriggerEl)) return;
 					if (document.activeElement === subTriggerEl) return;
@@ -1003,6 +1009,13 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 		if ($rootOpen && $rootOptions.preventScroll) {
 			unsubs.push(removeScroll());
+		}
+
+		if (!$rootOpen) {
+			const menuElement = document.getElementById(rootIds.menu);
+			if (menuElement) {
+				removeHighlightFromMenuItems(menuElement);
+			}
 		}
 
 		if (!$rootOpen && $rootActiveTrigger) {
@@ -1215,6 +1228,17 @@ export function handleTabNavigation(
 	}
 }
 
+function removeHighlightFromMenuItems(menuElement: HTMLElement) {
+	const menuItems = Array.from(
+		menuElement.querySelectorAll<HTMLElement>(
+			'[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]'
+		)
+	);
+	menuItems.forEach((menuItem) => {
+		menuItem.removeAttribute('data-highlighted');
+	});
+}
+
 /**
  * Get the menu items for a given menu element.
  * This only selects menu items that are direct children of the menu element,
@@ -1256,6 +1280,14 @@ export function clearTimerStore(timerStore: Writable<number | null>) {
  */
 function isMouse(e: PointerEvent) {
 	return e.pointerType === 'mouse';
+}
+
+/**
+ * Check if the event is a left click
+ * @param e The pointer event
+ */
+function isLeftClick(e: PointerEvent) {
+	return e.button === 0 && !e.ctrlKey;
 }
 
 /**
@@ -1343,7 +1375,7 @@ function isPointerInGraceArea(e: PointerEvent, area?: Polygon) {
 /**
  * Determine if a point is inside of a polygon.
  *
- * @see https://github.com/substack/point-in-polygon
+ * @see https://npmjs.com/package/point-in-polygon
  */
 function isPointInPolygon(point: Point, polygon: Polygon) {
 	const { x, y } = point;
