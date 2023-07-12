@@ -18,9 +18,9 @@ collapsible component using Melt UI's [Collapsible](/docs/builders/collapsible) 
   const { open, root, content, trigger } = createCollapsible()
 </script>
 
-<div {...$root}>
-  <button {...$trigger} use:trigger>{$open ? 'Close' : 'Open'}</button>
-  <div {...$content}>Obi-Wan says: Hello there!</div>
+<div melt={$root}>
+  <button melt={$trigger}>{$open ? 'Close' : 'Open'}</button>
+  <div melt={$content}>Obi-Wan says: Hello there!</div>
 </div>
 ```
 
@@ -44,13 +44,13 @@ Melt's props, it's all good.
 </script>
 
 <!-- Using Svelte Scoped Styles -->
-<div class="root" {...$root}>
+<div class="root" melt={$root}>
 <!-- Using an external component -->
 <Button on:click={() => console.log('clicked')} {...$trigger} action={trigger}>
   {$open ? 'Close' : 'Open'}
 </Button>
 <!-- Using an utility class library, such as Tailwind -->
-<div class="rounded-md p-4 text-orange-500 shadow-sm" {...$content}>
+<div class="rounded-md p-4 text-orange-500 shadow-sm" melt={$content}>
   Obi-Wan says: Hello there!
 </div>
 </div>
@@ -85,9 +85,9 @@ purposes, should you desire to do so.
   const { root, content, trigger } = createCollapsible()
 </script>
 
-<div {...$root}>
-  <button {...$trigger} use:trigger> Toggle </button>
-  <div class="content" {...$content}>
+<div melt={$root}>
+  <button melt={$trigger}> Toggle </button>
+  <div class="content" melt={$content}>
     <p>sveltejs/svelte</p>
     <p>sveltejs/kit</p>
   </div>

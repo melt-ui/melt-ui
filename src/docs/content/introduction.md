@@ -31,9 +31,9 @@ element or component.
   const { open, root, content, trigger } = createCollapsible()
 </script>
 
-<div {...$root}>
-  <button {...$trigger} use:trigger>{$open ? 'Close' : 'Open'}</button>
-  <div {...$content}>Obi-Wan says: Hello there!</div>
+<div melt={$root}>
+  <button melt={$trigger}>{$open ? 'Close' : 'Open'}</button>
+  <div melt={$content}>Obi-Wan says: Hello there!</div>
 </div>
 ```
 
