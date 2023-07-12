@@ -18,7 +18,9 @@
 		"release": "changeset publish",
 		"create:cmp": "node ./scripts/create-component.js",
 		"storybook": "storybook dev -p 6006 --no-open",
-		"build-storybook": "storybook build -s static"
+		"build-storybook": "storybook build -s static",
+		"pw": "pnpm exec playwright test",
+		"pw:ui": "pnpm exec playwright test --ui"
 	},
 	"exports": {
 		".": {
@@ -65,6 +67,7 @@
 		"@huntabyte/mdsvex": "0.16.5",
 		"@iconify-json/lucide": "^1.1.104",
 		"@iconify-json/simple-icons": "^1.1.57",
+		"@playwright/test": "^1.36.0",
 		"@storybook/addon-essentials": "^7.0.23",
 		"@storybook/addon-interactions": "^7.0.23",
 		"@storybook/addon-links": "^7.0.23",
