@@ -16,24 +16,28 @@ In the most simplest form, the preprocessor will take the following code:
 
 ```svelte
 <script>
-  import { createBuilder } from '@melt-ui/svelte'
-
-  const { builder } = createBuilder()
+  import { createCollapsible } from '@melt-ui/svelte'
+  const { open, root, content, trigger } = createCollapsible()
 </script>
 
-<div melt={$builder} />
+<div melt={$root}>
+  <button melt={$trigger}>{$open ? 'Close' : 'Open'}</button>
+  <div melt={$content}>Obi-Wan says: Hello there!</div>
+</div>
 ```
 
 and transform it into this:
 
 ```svelte
 <script>
-  import { createBuilder } from '@melt-ui/svelte'
-
-  const { builder } = createBuilder()
+  import { createCollapsible } from '@melt-ui/svelte'
+  const { open, root, content, trigger } = createCollapsible()
 </script>
 
-<div {...$builder} use:$builder.action />
+<div {...$root} use:$root.action>
+  <button {...$trigger} use:$trigger.action>{$open ? 'Close' : 'Open'}</button>
+  <div {...$content} use:$content.action>Obi-Wan says: Hello there!</div>
+</div>
 ```
 
 It can handle more complex scenarios, such as a builder that is a call expression with dependencies:
@@ -41,7 +45,6 @@ It can handle more complex scenarios, such as a builder that is a call expressio
 ```svelte
 <script>
   import { createBuilder } from '@melt-ui/svelte'
-
   const { builder } = createBuilder()
 </script>
 
