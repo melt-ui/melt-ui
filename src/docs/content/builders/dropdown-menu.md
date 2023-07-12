@@ -42,12 +42,12 @@ example of how to structure the menu is shown below.
   const { menu, item, trigger, arrow } = createDropdownMenu()
 </script>
 
-<button {...$trigger} use:trigger>Click me</button>
-<div {...$menu} use:menu>
+<button melt={$trigger}>Click me</button>
+<div melt={$menu}>
   <div {...$item} use:item>...</div>
   <div {...$item} use:item>...</div>
   <div {...$item} use:item>...</div>
-  <div {...$arrow} />
+  <div melt={$arrow} />
 </div>
 ```
 
