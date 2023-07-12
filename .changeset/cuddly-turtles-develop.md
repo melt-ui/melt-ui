@@ -2,5 +2,5 @@
 '@melt-ui/svelte': minor
 ---
 
-[Select] Support PageUp and PageDown keyboard navigation.
-[Combobox] Support PageUp and PageDown keyboard navigation.
+[Select] Support <kbd>Page Up</kbd> and <kbd>Page Down</kbd> keyboard navigation.
+[Combobox] Support <kbd>Page Up</kbd> and <kbd>Page Down</kbd> keyboard navigation.
