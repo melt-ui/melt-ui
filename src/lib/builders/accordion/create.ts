@@ -16,16 +16,19 @@ const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
 const defaults = {
 	type: 'single',
+	defaultValue: '',
 } satisfies Defaults<CreateAccordionProps>;
 
-export const createAccordion = (props?: CreateAccordionProps) => {
+export const createAccordion = (props: CreateAccordionProps = {}) => {
 	const withDefaults = { ...defaults, ...props } as CreateAccordionProps;
 	const options = writable({
 		disabled: withDefaults.disabled,
 		type: withDefaults.type,
 	});
 
-	const value = writable<string | string[] | undefined>(withDefaults.value);
+	const { value: controlledValue, onValueChange } = withDefaults;
+
+	const value = controlledValue ?? writable(withDefaults.defaultValue);
 
 	const isSelected = (key: string, v: string | string[] | undefined) => {
 		if (v === undefined) return false;
@@ -91,6 +94,12 @@ export const createAccordion = (props?: CreateAccordionProps) => {
 					const disabled = node.dataset.disabled === 'true';
 					const itemValue = node.dataset.value;
 					if (disabled || !itemValue) return;
+
+					if (onValueChange) {
+						const prev = get(value);
+						const next = itemValue;
+						onValueChange({ prev: get(value), next: itemValue });
+					}
 
 					value.update(($value) => {
 						if ($options.type === 'single') {
