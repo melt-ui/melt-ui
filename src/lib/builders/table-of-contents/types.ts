@@ -29,3 +29,14 @@ export type ElementHeadingLU = {
 export type HeadingParentsLU = {
     [key: number]: number[] | null;
 }
+
+export type TableOfContentsItem = {
+	title: string;
+	index: number;
+    id: string;
+	items?: TableOfContentsItem[];
+};
+
+export type TableOfContents = {
+	items: TableOfContentsItem[];
+};

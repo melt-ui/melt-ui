@@ -1,29 +1,28 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import { cn } from '$docs/utils';
-	import type { TableOfContents } from '.';
+	import type { TableOfContentsItem } from '@melt-ui/svelte';
 
-	export let tree: TableOfContents = {
-		items: [],
-	};
+	export let tree: TableOfContentsItem[] = [];
+	export let activeHeadingIdxs: number[];
 	export let level = 1;
 </script>
 
 <ul class={cn('m-0 list-none', { 'pl-4': level !== 1 })}>
-	{#if tree.items && tree.items.length}
-		{#each tree.items as item, i (i)}
+	{#if tree && tree.length}
+		{#each tree as item, i (i)}
+			{@const active = activeHeadingIdxs.includes(item.index)}
 			<li class={cn('mt-0 pt-2')}>
 				<a
-					href={item.url}
+					href="#{item.id}"
 					class={cn(
 						'inline-block no-underline transition-colors hover:text-white',
-						item.url === $page.url.hash ? 'font-medium text-white' : 'text-neutral-300'
+						active ? 'font-medium text-white' : 'text-neutral-300'
 					)}
 				>
 					{item.title}
 				</a>
 				{#if item.items && item.items.length}
-					<svelte:self tree={item} level={level + 1} />
+					<svelte:self tree={item.items} level={level + 1} {activeHeadingIdxs} />
 				{/if}
 			</li>
 		{/each}

@@ -1,10 +1,10 @@
-import { builder, createElHelpers, generateId, isBrowser } from "$lib/internal/helpers";
+// import { builder, createElHelpers, generateId, isBrowser } from "$lib/internal/helpers";
 import type { Defaults } from "$lib/internal/types";
 
 import { onMount } from "svelte";
-import { derived, get, writable, type Writable } from "svelte/store";
+import { get, writable, type Writable } from "svelte/store";
 
-import type { Heading, CreateTableOfContentsArgs, ElementHeadingLU, HeadingParentsLU } from "./types";
+import type { Heading, CreateTableOfContentsArgs, ElementHeadingLU, HeadingParentsLU, TableOfContentsItem } from "./types";
 
 const defaults = {
     exclude: ['h1'],
@@ -13,7 +13,8 @@ const defaults = {
     tocType: 'lowest',
 } satisfies Defaults<CreateTableOfContentsArgs>;
 
-const { name } = createElHelpers('table-of-contents');
+// Do we need this?
+// const { name } = createElHelpers('table-of-contents');
 
 // https://www.w3.org/TR/WCAG20-TECHS/G64.html
 // https://stackoverflow.com/questions/49820013/javascript-scrollintoview-smooth-scroll-and-offset?answertab=scoredesc#tab-top
@@ -42,26 +43,38 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
     const headingParentsLU: HeadingParentsLU = {};
     /** List of the active parent indexes. */
     const activeParentIdxs: Writable<number[]> = writable([]);
-    // let activeParentIdxs: number[] = [];
     /** List of the indexes of the visible elements. */
     const visibleElementIdxs: Writable<number[]> = writable([]);
-    // let visibleElementIdxs: number[] = [];
     
     let observer: IntersectionObserver | null = null;
     const observer_threshold = 0.25;
 
     // Stores
-    const headings: Writable<HTMLElement[]> = writable([]);
+    // const headings: Writable<HTMLElement[]> = writable([]);
     const activeHeadingIdxs: Writable<number[]> = writable([]);
+    const headingsTree: Writable<TableOfContentsItem[]> = writable([]);
 
-    // TODO: use the builder() function
-    const { subscribe } = derived([headings, activeHeadingIdxs], ($state) => ({ 
-        headings: $state[0].map((h, i) => (
-            { 
-                heading: h.innerHTML, 
-                active: $state[1].includes(i) 
-            }))
-        }));
+    /**
+     * Create a tree view of our headings so that the hierarchy is represented.
+     * @param arr An array of heading elements.
+     * @param startIndex The parent elements original index in the array.
+     * @returns 
+     */
+    function createTree(arr: Element[], startIndex = 0): TableOfContentsItem[] {
+        const tree: TableOfContentsItem[] = [];
+        let i = 0;
+        while (i < arr.length) {
+            const node: TableOfContentsItem = { title: arr[i].innerHTML, index: startIndex + i, id: arr[i].id, items: [] };
+            let j = i + 1;
+            while (j < arr.length && parseInt(arr[j].tagName.charAt(1)) > parseInt(arr[i].tagName.charAt(1))) {
+                j++;
+            }
+            node.items = createTree(arr.slice(i + 1, j), startIndex + i + 1);
+            tree.push(node);
+            i = j;
+        }
+        return tree;
+    }
 
     function generateInitialLists(): void {
         const includedHeadings = possibleHeadings.filter((h) => !exclude.includes(h));
@@ -93,8 +106,6 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
         // We don't care about elements before our first header element, so we can remove those as well.
         elementsList.splice(0, elementsList.indexOf(headingsList[0]));
-
-        headings.set(<HTMLElement[]>headingsList);
     }
 
     function findParentIdxs(): void {
@@ -154,21 +165,11 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
                     activeParentIdxs.set((tocType === 'highest-parents' || tocType === 'lowest-parents') && headingParentsLU[toc_idx]
                             ? [...get(activeParentIdxs), ...(<number[]>headingParentsLU[toc_idx])]
                             : []);
-                    // activeParentIdxs =
-                    //     (tocType === 'highest-parents' || tocType === 'lowest-parents') && headingParentsLU[toc_idx]
-                    //         ? [...activeParentIdxs, ...(<number[]>headingParentsLU[toc_idx])]
-                    //         : [];
-
-                    console.log('active parent idxs:', get(activeParentIdxs));
-                    console.log('visible element idxs:', get(visibleElementIdxs));
-                    console.log('element header lookup:', elementHeadingLU);
-                    console.log('elements list:', elementsList);
                 }
             } else {
                 // Remove the observed element from the visibleElementIdxs list if the intersection ratio is below the threshold.
                 tempVisibleElementIdxs = tempVisibleElementIdxs.filter((item) => item !== el_idx);
                 visibleElementIdxs.set(tempVisibleElementIdxs);
-                // visibleElementIdxs = visibleElementIdxs.filter((item) => item !== el_idx);
 
                 // Remove all parents of obsIndex from the activeParentIdxs list.
                 if ((tocType === 'highest-parents' || tocType === 'lowest-parents') && headingParentsLU[toc_idx]) {
@@ -177,28 +178,25 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
                         const index = tempActiveParentIdxs.indexOf(parent);
                         tempActiveParentIdxs.splice(index, 1);
                         activeParentIdxs.set(tempActiveParentIdxs);
-                        // const index = activeParentIdxs.indexOf(parent);
-                        // activeParentIdxs.splice(index, 1);
                     });
                 }
             }
         }
 
         const allActiveHeaderIdxs = Array.from(new Set(get(visibleElementIdxs).map((idx) => elementHeadingLU[idx])));
-        // const allActiveHeaderIdxs = Array.from(new Set(get(visibleElementIdxs).map((idx) => elementHeadingLU[idx])));
 
-        console.log('ALL active heading idxs:', allActiveHeaderIdxs);
+        let activeHeaderIdxs: number[];
 
-        let activeHeaderIdxs: number[] = [];
-
-        if (tocType === 'highest') {
+        if (allActiveHeaderIdxs.length === 0) {
+            activeHeaderIdxs = [];
+        } else if (tocType === 'highest') {
             activeHeaderIdxs = [Math.min(...allActiveHeaderIdxs)];
         } else if (tocType === 'lowest') {
             activeHeaderIdxs = [Math.max(...allActiveHeaderIdxs)];
         } else if (tocType === 'all-active') {
             activeHeaderIdxs = allActiveHeaderIdxs;
         } else {
-            const activeHeaderIdx = tocType === 'highest-parents' ? Math.min(...allActiveHeaderIdxs) : Math.min(...allActiveHeaderIdxs);
+            const activeHeaderIdx = tocType === 'highest-parents' ? Math.min(...allActiveHeaderIdxs) : Math.max(...allActiveHeaderIdxs);
 
             if (headingParentsLU[activeHeaderIdx]) {
                 activeHeaderIdxs = [...<[]>headingParentsLU[activeHeaderIdx], activeHeaderIdx];
@@ -206,30 +204,9 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
                 activeHeaderIdxs = [activeHeaderIdx];
             }
         }
-        
-        // else if (tocType === 'highest-parents') {
-        //     const activeHeaderIdx = Math.min(...allActiveHeaderIdxs);
-
-        //     if (headingParentsLU[activeHeaderIdx]) {
-        //         activeHeaderIdxs = [...<[]>headingParentsLU[activeHeaderIdx], activeHeaderIdx];
-        //     } else {
-        //         activeHeaderIdxs = [activeHeaderIdx];
-        //     }
-        // } else if (tocType === 'lowest-parents') {
-        //     const activeHeaderIdx = Math.max(...allActiveHeaderIdxs);
-
-        //     if (headingParentsLU[activeHeaderIdx]) {
-        //         activeHeaderIdxs = [...<[]>headingParentsLU[activeHeaderIdx], activeHeaderIdx];
-        //     } else {
-        //         activeHeaderIdxs = [activeHeaderIdx];
-        //     }
-        // }
 
         // Set store to active indexes.
         activeHeadingIdxs.set(activeHeaderIdxs);
-
-        console.log('active heading idxs:', get(activeHeadingIdxs));
-        // console.log('active heading idxs:', activeHeaderIdxs);
     }
 
     onMount(() => {
@@ -237,6 +214,8 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
         generateInitialLists();
         findParentIdxs();
         createElementHeadingLU();
+
+        headingsTree.set(createTree(headingsList));
 
         // Create observer and observe all elements.
         observer = new IntersectionObserver(handleElementObservation, { root: null, threshold: observer_threshold });
@@ -248,6 +227,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
     });
 
     return {
-        subscribe
+        activeHeadingIdxs,
+        headingsTree
     }
 }
