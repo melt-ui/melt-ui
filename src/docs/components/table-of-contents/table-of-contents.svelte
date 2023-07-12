@@ -3,6 +3,14 @@
 	import Tree from './tree.svelte';
 	import type { TableOfContents, TableOfContentsItem } from '.';
 
+	import { createTableOfContents } from '@melt-ui/svelte';
+
+	const test_toc = createTableOfContents({
+		selector: '#mdsvex',
+		exclude: ['h1', 'h4', 'h5', 'h6'],
+		tocType: 'lowest-parents',
+	});
+
 	let filteredHeadingsList: TableOfContents;
 
 	function getHeadingsWithHierarchy() {
@@ -41,7 +49,19 @@
 	onMount(() => {
 		getHeadingsWithHierarchy();
 	});
+
+	$: if ($test_toc.headings) console.log($test_toc.headings);
 </script>
+
+<div>
+	{#each $test_toc.headings as { heading, active }}
+		<div style={active ? 'color: orange' : ''}>
+			<!-- {active ? 'active: ' : ''} {heading.innerText} -->
+			{active ? 'active: ' : ''}
+			{heading}
+		</div>
+	{/each}
+</div>
 
 <div class="space-y-2">
 	<p class="font-medium">On This Page</p>

@@ -1,64 +1,83 @@
-import { createElHelpers } from "@melt-ui/svelte/internal/helpers";
+import { builder, createElHelpers, generateId, isBrowser } from "$lib/internal/helpers";
 import type { Defaults } from "$lib/internal/types";
 
-import { derived, writable, type Writable } from "svelte/store";
+import { onMount } from "svelte";
+import { derived, get, writable, type Writable } from "svelte/store";
 
-import type { Heading, CreateTableOfContentsArgs, ElementHeadingLU, HeadingParentsLU, TOCType, ToC } from "./types";
+import type { Heading, CreateTableOfContentsArgs, ElementHeadingLU, HeadingParentsLU } from "./types";
 
 const defaults = {
     exclude: ['h1'],
+    scrollOffset: 0,
+    scrollBehaviour: 'smooth',
+    tocType: 'lowest',
 } satisfies Defaults<CreateTableOfContentsArgs>;
 
 const { name } = createElHelpers('table-of-contents');
 
-export function scroll_to_element(headingElem: HTMLElement): void {
+// https://www.w3.org/TR/WCAG20-TECHS/G64.html
+// https://stackoverflow.com/questions/49820013/javascript-scrollintoview-smooth-scroll-and-offset?answertab=scoredesc#tab-top
+
+/** TODO: add scroll to element into an action for the individual nav items. */
+export function scrollToElement(headingElem: HTMLElement): void {
     const elemTarget: Element | null = document.querySelector(`#${headingElem.id}`);
     elemTarget?.scrollIntoView({ behavior: 'smooth' });
 }
 
  /**
-  * @param { CreateTableOfContentsArgs } args Provide the arguments for the table of contents builder.
+  * @param args Provide the arguments for the table of contents builder.
   * @returns { ToC }
  */
-export function createTableOfContents(args: CreateTableOfContentsArgs = {}) {
-
+export function createTableOfContents(args: CreateTableOfContentsArgs) {
     const argsWithDefaults = { ...defaults, ...args };
+    const { selector, exclude, tocType } = argsWithDefaults;
 
     // Variables
-    const possibleHeadings: Heading[] = ['h2', 'h3', 'h4', 'h5', 'h6'];
+    const possibleHeadings: Heading[] = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
     let headingsList: Element[] = [];
     let elementsList: Element[] = [];
     /** Lookup to see which heading an element belongs to. */
-    let elementHeadingLU: ElementHeadingLU = {};
+    const elementHeadingLU: ElementHeadingLU = {};
     /** Lookup to see which parent headings a heading has. */
-    let headingParentsLU: HeadingParentsLU = {};
+    const headingParentsLU: HeadingParentsLU = {};
     /** List of the active parent indexes. */
-    let active_parents_idxs: number[] = [];
+    const activeParentIdxs: Writable<number[]> = writable([]);
+    // let activeParentIdxs: number[] = [];
     /** List of the indexes of the visible elements. */
-    let visible_el_idxs: number[] = [];
+    const visibleElementIdxs: Writable<number[]> = writable([]);
+    // let visibleElementIdxs: number[] = [];
     
     let observer: IntersectionObserver | null = null;
     const observer_threshold = 0.25;
 
     // Stores
-    // let active_heading: Writable<number> = writable(0);
-    let headings: Writable<HTMLElement[]> = writable([]);
-    let activeHeadingIdxs: Writable<number[]> = writable([]);
+    const headings: Writable<HTMLElement[]> = writable([]);
+    const activeHeadingIdxs: Writable<number[]> = writable([]);
 
-    const { subscribe } = derived([headings, activeHeadingIdxs], ($state) => ({ headings: $state[0].map((h, i) => ({ heading: h, active: $state[1].includes(i), ...headingIndentationStyles[<Heading>h.tagName.toLowerCase()] })) }));
+    // TODO: use the builder() function
+    const { subscribe } = derived([headings, activeHeadingIdxs], ($state) => ({ 
+        headings: $state[0].map((h, i) => (
+            { 
+                heading: h.innerHTML, 
+                active: $state[1].includes(i) 
+            }))
+        }));
 
-    function generate_initial_lists(): void {
-        const allowed_headings = possibleHeadings.filter((h) => !excludeHeadings.includes(h));
+    function generateInitialLists(): void {
+        const includedHeadings = possibleHeadings.filter((h) => !exclude.includes(h));
 
-        const el_target = document.querySelector(target);
-        // const el_target = node;
-        const target_headers: NodeListOf<Element> | undefined = el_target?.querySelectorAll(allowed_headings.join(', '));
+        const elementTarget = document.querySelector(selector);
+        const targetHeaders: NodeListOf<HTMLHeadingElement> | undefined = elementTarget?.querySelectorAll(includedHeadings.join(', '));
 
         // Create a unique ID for each heading which doesn't have one.
-        target_headers?.forEach((el: Element, i: number) => {
+        targetHeaders?.forEach((el: HTMLHeadingElement, i: number) => {
             if (!el.id) {
-                const unique_id = Math.random().toString(16).slice(2);
-                el.id = `heading-${i}-${unique_id}`;
+                // const uniqueID = generateId();
+                const uniqueID = el.innerText
+                    .replaceAll(/[^a-zA-Z0-9 ]/g, '')
+                    .replaceAll(' ', '-')
+                    .toLowerCase();
+                el.id = `heading-${i}-${uniqueID}`;
             }
 
             headingsList.push(el);
@@ -66,11 +85,11 @@ export function createTableOfContents(args: CreateTableOfContentsArgs = {}) {
 
         headingsList = [...headingsList];
 
-        // Get all elements in our el_target and convert it from an HTMLCollection to an array.
-        elementsList = [].slice.call(el_target?.getElementsByTagName('*'));
+        // Get all elements in our elementTarget and convert it from an HTMLCollection to an array.
+        elementsList = [].slice.call(elementTarget?.getElementsByTagName('*'));
 
         // Filter the array, so that only the allowed headings and elements with no children are in the list to avoid problems with elements that wrap around others.
-        elementsList = elementsList.filter((el) => (<string[]>allowed_headings).includes(el.nodeName.toLowerCase()) || el.children.length === 0);
+        elementsList = elementsList.filter((el) => (<string[]>includedHeadings).includes(el.nodeName.toLowerCase()) || el.children.length === 0);
 
         // We don't care about elements before our first header element, so we can remove those as well.
         elementsList.splice(0, elementsList.indexOf(headingsList[0]));
@@ -78,7 +97,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs = {}) {
         headings.set(<HTMLElement[]>headingsList);
     }
 
-    function find_parent_idxs(): void {
+    function findParentIdxs(): void {
         /** Get all parents for each heading element, by checking
          *  which previous headings in the list have a lower H value,
          *  so H1 < H2 < H3 < ...
@@ -100,7 +119,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs = {}) {
         });
     }
 
-    function create_element_heading_lu() {
+    function createElementHeadingLU() {
         headingsList.forEach((h: Element, i: number) => {
             // Find all elements between the current heading and the next one and assign them the current heading.
             const startIndex = elementsList.indexOf(headingsList[i]);
@@ -115,88 +134,120 @@ export function createTableOfContents(args: CreateTableOfContentsArgs = {}) {
         });
     }
 
-    function handle_el_interaction(entries: IntersectionObserverEntry[]) {
+    function handleElementObservation(entries: IntersectionObserverEntry[]) {
         // Iterate through all elements that crossed the observer_threshold.
         for (let i = 0; i < entries.length; i++) {
             // Get the index of the observed element in our elementsList, as well as the ToC heading it belongs to.
             const el_idx = elementsList.indexOf(<HTMLElement>entries[i].target);
             const toc_idx = elementHeadingLU[el_idx];
 
+            let tempVisibleElementIdxs = get(visibleElementIdxs);
+
             if (entries[i].intersectionRatio >= observer_threshold) {
-                // Only add the observed element to the visible_el_idxs list if it isn't added yet.
-                if (visible_el_idxs.indexOf(el_idx) === -1) {
-                    visible_el_idxs = [...visible_el_idxs, el_idx];
+                // Only add the observed element to the visibleElementIdxs list if it isn't added yet.
+
+                if (tempVisibleElementIdxs.indexOf(el_idx) === -1) {
+                    tempVisibleElementIdxs = [...tempVisibleElementIdxs, el_idx];
+                    visibleElementIdxs.set(tempVisibleElementIdxs);
 
                     // Only add active parents if parent headings should be highlighted.
-                    active_parents_idxs =
-                        (tocType === 'highest-parents' || tocType === 'lowest-parents') && headingParentsLU[toc_idx]
-                            ? [...active_parents_idxs, ...(<number[]>headingParentsLU[toc_idx])]
-                            : [];
+                    activeParentIdxs.set((tocType === 'highest-parents' || tocType === 'lowest-parents') && headingParentsLU[toc_idx]
+                            ? [...get(activeParentIdxs), ...(<number[]>headingParentsLU[toc_idx])]
+                            : []);
+                    // activeParentIdxs =
+                    //     (tocType === 'highest-parents' || tocType === 'lowest-parents') && headingParentsLU[toc_idx]
+                    //         ? [...activeParentIdxs, ...(<number[]>headingParentsLU[toc_idx])]
+                    //         : [];
+
+                    console.log('active parent idxs:', get(activeParentIdxs));
+                    console.log('visible element idxs:', get(visibleElementIdxs));
+                    console.log('element header lookup:', elementHeadingLU);
+                    console.log('elements list:', elementsList);
                 }
             } else {
-                // Remove the observed element from the visible_el_idxs list if the intersection ratio is below the threshold.
-                visible_el_idxs = visible_el_idxs.filter((item) => item !== el_idx);
+                // Remove the observed element from the visibleElementIdxs list if the intersection ratio is below the threshold.
+                tempVisibleElementIdxs = tempVisibleElementIdxs.filter((item) => item !== el_idx);
+                visibleElementIdxs.set(tempVisibleElementIdxs);
+                // visibleElementIdxs = visibleElementIdxs.filter((item) => item !== el_idx);
 
-                // Remove all parents of obsIndex from the active_parents_idxs list.
+                // Remove all parents of obsIndex from the activeParentIdxs list.
                 if ((tocType === 'highest-parents' || tocType === 'lowest-parents') && headingParentsLU[toc_idx]) {
                     headingParentsLU[toc_idx]?.forEach((parent: number) => {
-                        const index = active_parents_idxs.indexOf(parent);
-                        active_parents_idxs.splice(index, 1);
+                        const tempActiveParentIdxs = get(activeParentIdxs);
+                        const index = tempActiveParentIdxs.indexOf(parent);
+                        tempActiveParentIdxs.splice(index, 1);
+                        activeParentIdxs.set(tempActiveParentIdxs);
+                        // const index = activeParentIdxs.indexOf(parent);
+                        // activeParentIdxs.splice(index, 1);
                     });
                 }
             }
         }
 
-        const all_active_h_idxs = Array.from(new Set(visible_el_idxs.map((idx) => elementHeadingLU[idx])));
+        const allActiveHeaderIdxs = Array.from(new Set(get(visibleElementIdxs).map((idx) => elementHeadingLU[idx])));
+        // const allActiveHeaderIdxs = Array.from(new Set(get(visibleElementIdxs).map((idx) => elementHeadingLU[idx])));
 
-        let active_h_idxs: number[] = [];
+        console.log('ALL active heading idxs:', allActiveHeaderIdxs);
+
+        let activeHeaderIdxs: number[] = [];
 
         if (tocType === 'highest') {
-            active_h_idxs = [Math.min(...all_active_h_idxs)];
+            activeHeaderIdxs = [Math.min(...allActiveHeaderIdxs)];
         } else if (tocType === 'lowest') {
-            active_h_idxs = [Math.max(...all_active_h_idxs)];
+            activeHeaderIdxs = [Math.max(...allActiveHeaderIdxs)];
         } else if (tocType === 'all-active') {
-            active_h_idxs = all_active_h_idxs;
-        } else if (tocType === 'highest-parents') {
-            const active_h_idx = Math.min(...all_active_h_idxs);
+            activeHeaderIdxs = allActiveHeaderIdxs;
+        } else {
+            const activeHeaderIdx = tocType === 'highest-parents' ? Math.min(...allActiveHeaderIdxs) : Math.min(...allActiveHeaderIdxs);
 
-            if (headingParentsLU[active_h_idx]) {
-                active_h_idxs = [...<[]>headingParentsLU[active_h_idx], active_h_idx];
+            if (headingParentsLU[activeHeaderIdx]) {
+                activeHeaderIdxs = [...<[]>headingParentsLU[activeHeaderIdx], activeHeaderIdx];
             } else {
-                active_h_idxs = [active_h_idx];
-            }
-        } else if (tocType === 'lowest-parents') {
-            const active_h_idx = Math.max(...all_active_h_idxs);
-
-            if (headingParentsLU[active_h_idx]) {
-                active_h_idxs = [...<[]>headingParentsLU[active_h_idx], active_h_idx];
-            } else {
-                active_h_idxs = [active_h_idx];
+                activeHeaderIdxs = [activeHeaderIdx];
             }
         }
+        
+        // else if (tocType === 'highest-parents') {
+        //     const activeHeaderIdx = Math.min(...allActiveHeaderIdxs);
+
+        //     if (headingParentsLU[activeHeaderIdx]) {
+        //         activeHeaderIdxs = [...<[]>headingParentsLU[activeHeaderIdx], activeHeaderIdx];
+        //     } else {
+        //         activeHeaderIdxs = [activeHeaderIdx];
+        //     }
+        // } else if (tocType === 'lowest-parents') {
+        //     const activeHeaderIdx = Math.max(...allActiveHeaderIdxs);
+
+        //     if (headingParentsLU[activeHeaderIdx]) {
+        //         activeHeaderIdxs = [...<[]>headingParentsLU[activeHeaderIdx], activeHeaderIdx];
+        //     } else {
+        //         activeHeaderIdxs = [activeHeaderIdx];
+        //     }
+        // }
 
         // Set store to active indexes.
-        activeHeadingIdxs.set(active_h_idxs);
+        activeHeadingIdxs.set(activeHeaderIdxs);
+
+        console.log('active heading idxs:', get(activeHeadingIdxs));
+        // console.log('active heading idxs:', activeHeaderIdxs);
     }
 
-    function init() {
-        generate_initial_lists();
-        find_parent_idxs();
-        create_element_heading_lu();
+    onMount(() => {
+        // Init
+        generateInitialLists();
+        findParentIdxs();
+        createElementHeadingLU();
 
         // Create observer and observe all elements.
-        observer = new IntersectionObserver(handle_el_interaction, { root: null, threshold: observer_threshold });
+        observer = new IntersectionObserver(handleElementObservation, { root: null, threshold: observer_threshold });
         elementsList.forEach((el) => observer?.observe(el));
-    }
 
-    init();
-
-    function destroy(): void {
-        observer?.disconnect();
-    }
+        return () => {
+            observer?.disconnect();
+        };
+    });
 
     return {
-        subscribe,
-        destroy
+        subscribe
     }
 }
