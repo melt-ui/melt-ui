@@ -6,6 +6,7 @@ import {
 	generateId,
 	getElementByMeltId,
 	kbd,
+	overridable,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
@@ -21,14 +22,13 @@ const defaults = {
 
 export const createAccordion = (props: CreateAccordionProps = {}) => {
 	const withDefaults = { ...defaults, ...props } as CreateAccordionProps;
-	const options = writable({
+	const options = writable<CreateAccordionProps>({
 		disabled: withDefaults.disabled,
 		type: withDefaults.type,
 	});
 
-	const { value: controlledValue, onValueChange } = withDefaults;
-
-	const value = controlledValue ?? writable(withDefaults.defaultValue);
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	const isSelected = (key: string, v: string | string[] | undefined) => {
 		if (v === undefined) return false;
@@ -95,18 +95,13 @@ export const createAccordion = (props: CreateAccordionProps = {}) => {
 					const itemValue = node.dataset.value;
 					if (disabled || !itemValue) return;
 
-					if (onValueChange) {
-						const prev = get(value);
-						const next = itemValue;
-						onValueChange({ prev: get(value), next: itemValue });
-					}
-
-					value.update(($value) => {
+					value.update((prev) => {
 						if ($options.type === 'single') {
-							return $value === itemValue ? undefined : itemValue;
+							return prev === itemValue ? '' : itemValue;
 						} else {
-							const arrValue = $value as string[] | undefined;
-							if (arrValue === undefined) {
+							const arrValue = prev as string[] | '';
+
+							if (arrValue === '') {
 								return [itemValue];
 							} else {
 								return arrValue.includes(itemValue)

@@ -14,7 +14,6 @@ type SingleAccordionProps = {
 	 * the default behavior.
 	 */
 	value?: Writable<string>;
-
 	/**
 	 * The value of the item that should be open by default. This should only be used
 	 * when the accordion is uncontrolled.
@@ -31,7 +30,7 @@ type SingleAccordionProps = {
 	 * The callback function called when the value changes. This should only be used when the
 	 * accordion is controlled and you want to override the default behavior.
 	 */
-	onValueChange?: ChangeFn<string>;
+	onValueChange?: ChangeFn<string[]>;
 };
 
 type MultipleAccordionProps = {
@@ -41,7 +40,7 @@ type MultipleAccordionProps = {
 	 * additional control, you can provide an `onValueChange` callback to override
 	 * the default behavior.
 	 */
-	value?: Writable<string>;
+	value?: Writable<string[]>;
 
 	/**
 	 * The value(s) of the item(s) that should be open by default. This should only be used
