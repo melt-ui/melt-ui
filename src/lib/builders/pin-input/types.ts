@@ -1,6 +1,6 @@
 import type { createPinInput } from './create';
 
-export type CreatePinInputArgs = {
+export type CreatePinInputProps = {
 	placeholder?: string;
 	value?: string[];
 	name?: string;

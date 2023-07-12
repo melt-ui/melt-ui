@@ -1,7 +1,7 @@
 import type { FloatingConfig } from '$lib/internal/actions';
 import type { createTooltip } from './create';
 
-export type CreateTooltipArgs = {
+export type CreateTooltipProps = {
 	positioning?: FloatingConfig;
 	arrowSize?: number;
 	open?: boolean;

@@ -82,6 +82,7 @@ we'd love to have you there.
 | Checkbox        | ✅     |
 | Collapsible     | ✅     |
 | ComboBox        | ✅     |
+| Command Menu    |        |
 | Context Menu    | ✅     |
 | Dialog          | ✅     |
 | Dropdown Menu   | ✅     |
@@ -111,7 +112,7 @@ we'd love to have you there.
 | Tree View       |        |
 | ???             |        |
 
-**Progress:** 26/30+
+**Progress:** 26/???
 
 ## Similar projects
 

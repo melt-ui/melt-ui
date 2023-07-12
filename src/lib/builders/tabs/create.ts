@@ -14,20 +14,20 @@ import {
 import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
 import { get, writable } from 'svelte/store';
-import type { CreateTabsArgs } from './types';
+import type { CreateTabsProps, TabsTriggerProps } from './types';
 
 const defaults = {
 	orientation: 'horizontal',
 	activateOnFocus: true,
 	loop: true,
 	autoSet: true,
-} satisfies Defaults<CreateTabsArgs>;
+} satisfies Defaults<CreateTabsProps>;
 
 type TabsParts = 'list' | 'trigger' | 'content';
 const { name, selector } = createElHelpers<TabsParts>('tabs');
 
-export function createTabs(args?: CreateTabsArgs) {
-	const withDefaults = { ...defaults, ...args };
+export function createTabs(props?: CreateTabsProps) {
+	const withDefaults = { ...defaults, ...props };
 	const options = writable(omit(withDefaults, 'value'));
 
 	const value = writable(withDefaults.value);
@@ -58,27 +58,19 @@ export function createTabs(args?: CreateTabsArgs) {
 		},
 	});
 
-	// Trigger
-	type TriggerArgs =
-		| {
-				value: string;
-				disabled?: boolean;
-		  }
-		| string;
-
-	const parseTriggerArgs = (args: TriggerArgs) => {
-		if (typeof args === 'string') {
-			return { value: args };
+	const parseTriggerProps = (props: TabsTriggerProps) => {
+		if (typeof props === 'string') {
+			return { value: props };
 		} else {
-			return args;
+			return props;
 		}
 	};
 
 	const trigger = builder(name('trigger'), {
 		stores: [value, options],
 		returned: ([$value, $options]) => {
-			return (args: TriggerArgs) => {
-				const { value: tabValue, disabled } = parseTriggerArgs(args);
+			return (props: TabsTriggerProps) => {
+				const { value: tabValue, disabled } = parseTriggerProps(props);
 
 				if (!$value && !ssrValue && $options.autoSet) {
 					ssrValue = tabValue;

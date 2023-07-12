@@ -20,10 +20,24 @@ const builder: APISchema = {
 			description: DESCRIPTIONS.ARROW_SIZE,
 		},
 		{
-			name: 'open',
+			name: 'defaultOpen',
 			type: 'boolean',
 			default: 'false',
-			description: 'Whether the popover is open by default or not.',
+			description: 'The initial state of open. Should only be used if the popover is uncontrolled',
+		},
+		{
+			name: 'open',
+			type: 'Writable<boolean>',
+			default: 'undefined',
+			description:
+				'A store that controls the open state. Use when you want to directly control the popover.',
+		},
+		{
+			name: 'onOpenChange',
+			type: 'ChangeFn<boolean>',
+			default: 'undefined',
+			description:
+				'Optional function that runs whenever `open` should change. The returned value will be used to update `open`.',
 		},
 	],
 	returnedProps: [

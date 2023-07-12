@@ -3,7 +3,7 @@ import type { TextDirection } from '$lib/internal/types';
 import type { Writable } from 'svelte/store';
 import type { createMenuBuilder } from './create';
 
-export type CreateMenuArgs = {
+export type CreateMenuProps = {
 	/**
 	 * Options for positioning the popover menu.
 	 *
@@ -39,43 +39,43 @@ export type CreateMenuArgs = {
 	loop?: boolean;
 };
 
-export type CreateSubmenuArgs = CreateMenuArgs & {
+export type CreateSubmenuProps = CreateMenuProps & {
 	disabled?: boolean;
 };
 
-export type CreateRadioGroupArgs = {
+export type CreateRadioGroupProps = {
 	value?: string;
 };
 
-export type ItemArgs = {
+export type ItemProps = {
 	onSelect?: (e: Event) => void;
 };
 
-export type CheckboxItemArgs = ItemArgs & {
+export type CheckboxItemProps = ItemProps & {
 	checked: Writable<boolean | 'indeterminate'>;
 };
 
-export type RadioItemArgs = {
+export type RadioItemProps = {
 	value: string;
 	disabled?: boolean;
 };
 
-export type RadioItemActionArgs = ItemArgs;
+export type RadioItemActionProps = ItemProps;
 
 export type Menu = {
-	builder: CreateMenuArgs;
-	submenu: CreateSubmenuArgs;
-	radioGroup: CreateRadioGroupArgs;
-	item: ItemArgs;
-	checkboxItem: CheckboxItemArgs;
-	radioItem: RadioItemArgs;
-	radioItemAction: RadioItemActionArgs;
+	builder: CreateMenuProps;
+	submenu: CreateSubmenuProps;
+	radioGroup: CreateRadioGroupProps;
+	item: ItemProps;
+	checkboxItem: CheckboxItemProps;
+	radioItem: RadioItemProps;
+	radioItemAction: RadioItemActionProps;
 };
 
 export type MenuBuilderOptions = {
 	rootOpen: Writable<boolean>;
 	rootActiveTrigger: Writable<HTMLElement | null>;
-	rootOptions: Writable<CreateMenuArgs>;
+	rootOptions: Writable<CreateMenuProps>;
 	disableTriggerRefocus?: boolean;
 	disableFocusFirstItem?: boolean;
 	nextFocusable: Writable<HTMLElement | null>;

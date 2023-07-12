@@ -1,16 +1,16 @@
 import type { Defaults } from '$lib/internal/types';
 import { builder, createElHelpers } from '@melt-ui/svelte/internal/helpers';
 import { writable } from 'svelte/store';
-import type { CreateProgressArgs } from './types';
+import type { CreateProgressProps } from './types';
 
 const defaults = {
 	max: 100,
-} satisfies Defaults<CreateProgressArgs>;
+} satisfies Defaults<CreateProgressProps>;
 
 const { name } = createElHelpers('progress');
 
-export const createProgress = (args: CreateProgressArgs = defaults) => {
-	const withDefaults = { ...defaults, ...args };
+export const createProgress = (props: CreateProgressProps = defaults) => {
+	const withDefaults = { ...defaults, ...props };
 	const value = writable(withDefaults.value ?? null);
 	const max = writable(withDefaults.max);
 

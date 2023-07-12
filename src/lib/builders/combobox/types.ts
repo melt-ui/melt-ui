@@ -1,6 +1,6 @@
 import type { createCombobox } from './create';
 
-export type CreateComboboxArgs<T> = {
+export type CreateComboboxProps<T> = {
 	/** The list of items to display in the combobox. */
 	items: T[];
 	/**
@@ -21,7 +21,7 @@ export type CreateComboboxArgs<T> = {
 	loop?: boolean;
 };
 
-export type ComboboxItemArgs<T> = {
+export type ComboboxItemProps<T> = {
 	item: T;
 	/** Array index of the item. */
 	index: number;

@@ -5,6 +5,7 @@ export * from './event';
 export * from './is';
 export * from './numbers';
 export * from './object';
+export * from './overridable';
 export * from './sleep';
 export * from './store';
 export * from './style';

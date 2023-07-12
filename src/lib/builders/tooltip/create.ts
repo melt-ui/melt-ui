@@ -13,7 +13,7 @@ import { useFloating, usePortal } from '$lib/internal/actions';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
-import type { CreateTooltipArgs } from './types';
+import type { CreateTooltipProps } from './types';
 
 const defaults = {
 	positioning: {
@@ -24,15 +24,15 @@ const defaults = {
 	closeOnPointerDown: true,
 	openDelay: 1000,
 	closeDelay: 500,
-} satisfies Defaults<CreateTooltipArgs>;
+} satisfies Defaults<CreateTooltipProps>;
 
 type TooltipParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<TooltipParts>('tooltip');
 
 // TODO: Add grace area to prevent tooltip from closing when moving from trigger to tooltip
 
-export function createTooltip(args?: CreateTooltipArgs) {
-	const withDefaults = { ...defaults, ...args } as CreateTooltipArgs;
+export function createTooltip(props?: CreateTooltipProps) {
+	const withDefaults = { ...defaults, ...props } as CreateTooltipProps;
 	const options = writable(omit(withDefaults, 'open'));
 
 	const open = writable(withDefaults.open);
