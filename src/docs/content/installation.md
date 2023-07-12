@@ -41,3 +41,52 @@ pnpm install @melt-ui/svelte
 <Callout>
 P.S. These tabs were built using Melt! Try using them with the arrow keys.
 </Callout>
+
+## Preprocessor Installation
+
+Install our preprocessor, [@melt-ui/pp](https://github.com/melt-ui/preprocessor), along with
+[svelte-sequential-preprocessor](https://www.npmjs.com/package/svelte-sequential-preprocessor).
+
+<InstallTabs>
+<span slot="npm">
+
+```bash
+npm install -D @melt-ui/pp svelte-sequential-preprocessor
+```
+
+</span>
+
+<span slot="yarn">
+
+```bash
+yarn add -D @melt-ui/pp svelte-sequential-preprocessor
+```
+
+</span>
+
+<span slot="pnpm">
+
+```bash
+pnpm install -D @melt-ui/pp svelte-sequential-preprocessor
+```
+
+</span>
+
+</InstallTabs>
+
+Next, import both packages and them to your `preprocess` array in `svelte.config.js`.
+
+```js
+// svelte.config.js
+
+import { preprocessMeltUI } from '@melt-ui/pp'
+import sequence from 'svelte-sequential-preprocessor'
+
+const config = {
+  // ... other svelte config options
+  preprocess: sequence([
+    // ... other preprocessors
+    preprocessMeltUI() // add to the end!
+  ])
+}
+```
