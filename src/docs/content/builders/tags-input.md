@@ -54,15 +54,15 @@ Use the return values to construct a tags-input.
   const { root, input, tags, tag, deleteTrigger, edit } = createTagsInput()
 </script>
 
-<div {...$root}>
+<div melt={$root}>
   {#each $tags as t}
-    <div {...$tag(t)} use:tag>
+    <div melt={$tag(t)}>
       <span>{t.value}</span>
-      <button {...$deleteTrigger(t)} use:deleteTrigger>x</button>
+      <button melt={$deleteTrigger(t)}>x</button>
     </div>
-    <div {...$edit(t)} use:edit>{t.value}</div>
+    <div melt={$edit(t)}>{t.value}</div>
   {/each}
-  <input {...$input} use:input type="text" />
+  <input melt={$input} type="text" />
 </div>
 ```
 

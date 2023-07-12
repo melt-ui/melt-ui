@@ -16,10 +16,10 @@
 
 <div>
 	<h2>Separator</h2>
-	<div {...$horizontalSeparator} data-testid="horizontal" />
+	<div melt={$horizontalSeparator} data-testid="horizontal" />
 	<div>
 		<p>Part 1</p>
-		<div {...$vertical} data-testid="vertical" />
+		<div melt={$vertical} data-testid="vertical" />
 		<p>Part 2</p>
 	</div>
 </div>

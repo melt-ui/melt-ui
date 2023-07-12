@@ -9,17 +9,16 @@
 </script>
 
 <div
-	{...$root}
+	melt={$root}
 	class="flex flex-col gap-3 data-[orientation=horizontal]:flex-row"
 	aria-label="View density"
 >
 	{#each optionsArr as option}
 		<div class="flex items-center gap-3">
 			<button
-				{...$item(option)}
-				use:item
-				class="grid h-6 w-6 cursor-default place-items-center rounded-full
-                bg-white shadow-sm hover:bg-magnum-100"
+				melt={$item(option)}
+				class="grid h-6 w-6 cursor-default place-items-center rounded-full bg-white shadow-sm
+			hover:bg-magnum-100"
 				id={option}
 				aria-labelledby="{option}-label"
 			>

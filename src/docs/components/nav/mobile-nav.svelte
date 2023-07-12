@@ -10,8 +10,7 @@
 </script>
 
 <button
-	{...$trigger}
-	use:trigger
+	melt={$trigger}
 	class="ml-6 text-neutral-400 transition-colors hover:text-neutral-50 md:hidden"
 >
 	<Menu class="h-6 w-6" />
@@ -20,13 +19,12 @@
 <div use:portal>
 	{#if $open}
 		<div
-			{...$overlay}
+			melt={$overlay}
 			class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
 			transition:fade={{ duration: 150 }}
 		/>
 		<div
-			{...$content}
-			use:content
+			melt={$content}
 			class="menu fixed bottom-0 z-50 h-2/3 w-full bg-neutral-900 p-[25px]
 				 shadow-lg focus:outline-none"
 			transition:fly={{ y: 768, duration: 300, opacity: 1 }}

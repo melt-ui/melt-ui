@@ -10,8 +10,7 @@
 <button
 	type="button"
 	class="trigger"
-	{...$trigger}
-	use:trigger
+	melt={$trigger}
 	aria-label="Update dimensions"
 >
 	<Settings2 class="h-4 w-4" />
@@ -19,13 +18,8 @@
 </button>
 
 {#if $open}
-	<div
-		{...$content}
-		use:content
-		transition:fade={{ duration: 100 }}
-		class="content"
-	>
-		<div {...$arrow} />
+	<div melt={$content} transition:fade={{ duration: 100 }} class="content">
+		<div melt={$arrow} />
 		<div class="flex flex-col gap-2.5">
 			<p>Dimensions</p>
 			<fieldset>
@@ -45,7 +39,7 @@
 				<input id="maxHeight" class="input" />
 			</fieldset>
 		</div>
-		<button class="close" {...close} use:close>
+		<button class="close" melt={$close}>
 			<X class="h-4 w-4 " />
 		</button>
 	</div>

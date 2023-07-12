@@ -31,7 +31,7 @@
 		<div class="mdsvex" id="mdsvex">
 			<svelte:component this={component} />
 		</div>
-		<div {...$separator} class="my-4 md:my-6" />
+		<div melt={$separator} class="my-4 md:my-6" />
 		<!-- <DocsPager /> -->
 	</div>
 	<div class="hidden text-sm xl:block">
