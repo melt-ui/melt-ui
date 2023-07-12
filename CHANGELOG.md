@@ -1,5 +1,13 @@
 # @melt-ui/svelte
 
+## 0.19.1
+
+### Patch Changes
+
+- 1386ff64: feat: popover controlled usage
+- ad43dedd: [Menus] fix: dropdown submenu not closing
+- 8be65692: [Refactor] Args -> Props
+
 ## 0.19.0
 
 ### Minor Changes
