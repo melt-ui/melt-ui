@@ -16,6 +16,7 @@ export type CreatePopoverProps = {
 	 * When present, will control state changes instead of the default behaviour
 	 * */
 	onOpenChange?: ChangeFn<boolean>;
+	disableFocusTrap?: boolean;
 };
 
 export type CreatePopoverReturn = ReturnType<typeof createPopover>;

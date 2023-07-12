@@ -62,8 +62,8 @@ export function createPopover(args?: CreatePopoverProps) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[open, activeTrigger, positioning],
-				([$open, $activeTrigger, $positioning]) => {
+				[open, activeTrigger, positioning, options],
+				([$open, $activeTrigger, $positioning, $options]) => {
 					unsubPopper();
 					if ($open && $activeTrigger) {
 						tick().then(() => {
@@ -72,6 +72,7 @@ export function createPopover(args?: CreatePopoverProps) {
 								open,
 								options: {
 									floating: $positioning,
+									focusTrap: $options.disableFocusTrap ? null : undefined,
 								},
 							});
 
