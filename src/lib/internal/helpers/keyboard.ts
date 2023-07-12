@@ -51,7 +51,7 @@ export const getNextKey = (
 	return {
 		horizontal: dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
 		vertical: kbd.ARROW_DOWN,
-	}[orientation ?? 'horizontal'];
+	}[orientation];
 };
 
 export const getPrevKey = (
@@ -61,7 +61,7 @@ export const getPrevKey = (
 	return {
 		horizontal: dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
 		vertical: kbd.ARROW_UP,
-	}[orientation ?? 'horizontal'];
+	}[orientation];
 };
 
 export const getDirectionalKeys = (
