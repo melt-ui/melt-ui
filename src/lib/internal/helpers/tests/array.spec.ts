@@ -1,5 +1,41 @@
 import { describe, expect, test } from 'vitest';
-import { last, next, prev, wrapArray } from '../array';
+import { back, forward, last, next, prev, wrapArray } from '../array';
+
+describe('back', () => {
+	test.each([
+		// No elements.
+		{ array: [], index: 0, increment: 1, loop: true, expected: undefined },
+		// Happy path: finding the next element.
+		{ array: ['a', 'b', 'c', 'd'], index: 3, increment: 2, loop: false, expected: 'b' },
+		// With looping disabled, the last element should be returned.
+		{ array: ['a', 'b', 'c', 'd'], index: 2, increment: 5, loop: false, expected: 'a' },
+		// With looping enabled, the first element should be returned.
+		{ array: ['a', 'b', 'c', 'd'], index: 0, increment: 5, loop: true, expected: 'd' },
+	])(
+		'back($array, $index, $increment, $loop) -> $expected',
+		({ array, index, increment, loop, expected }) => {
+			expect(back(array, index, increment, loop)).toBe(expected);
+		}
+	);
+});
+
+describe('forward', () => {
+	test.each([
+		// No elements.
+		{ array: [], index: 0, increment: 1, loop: true, expected: undefined },
+		// Happy path: finding the next element.
+		{ array: ['a', 'b', 'c', 'd'], index: 0, increment: 2, loop: false, expected: 'c' },
+		// With looping disabled, the last element should be returned.
+		{ array: ['a', 'b', 'c', 'd'], index: 0, increment: 5, loop: false, expected: 'd' },
+		// With looping enabled, the first element should be returned.
+		{ array: ['a', 'b', 'c', 'd'], index: 0, increment: 5, loop: true, expected: 'a' },
+	])(
+		'forward($array, $index, $increment, $loop) -> $expected',
+		({ array, index, increment, loop, expected }) => {
+			expect(forward(array, index, increment, loop)).toBe(expected);
+		}
+	);
+});
 
 describe('last', () => {
 	test.each([
@@ -15,7 +51,7 @@ describe('next', () => {
 		// Out of bounds.
 		{ array: [], index: 0, loop: true, expected: undefined },
 		{ array: ['a', 'b', 'c'], index: 4, loop: true, expected: undefined },
-		// Happy path: finding the next item.
+		// Happy path: finding the next element.
 		{ array: ['a', 'b', 'c'], index: 0, loop: false, expected: 'b' },
 		// Looping behavior.
 		{ array: ['a', 'b', 'c'], index: 2, loop: false, expected: 'c' },
@@ -30,10 +66,11 @@ describe('prev', () => {
 		// Out of bounds.
 		{ array: [], index: 0, loop: true, expected: undefined },
 		{ array: ['a', 'b', 'c'], index: 4, loop: true, expected: undefined },
-		// Happy path: finding the previous item.
+		// Returning the previous element.
 		{ array: ['a', 'b', 'c'], index: 1, loop: false, expected: 'a' },
-		// Looping behavior.
+		// With looping disabled, the first element should be returned.
 		{ array: ['a', 'b', 'c'], index: 0, loop: false, expected: 'a' },
+		// With looping enabled, the last element should be returned.
 		{ array: ['a', 'b', 'c'], index: 0, loop: true, expected: 'c' },
 		{ array: ['a', 'b', 'c'], index: -1, loop: true, expected: 'c' },
 	])('prev($array, $index, $loop) -> $expected', ({ array, index, loop, expected }) => {
