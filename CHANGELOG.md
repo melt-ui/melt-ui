@@ -1,5 +1,18 @@
 # @melt-ui/svelte
 
+## 0.21.0
+
+### Minor Changes
+
+- 053ea4d5: [Select] Support <kbd>Page Up</kbd> and <kbd>Page Down</kbd> keyboard navigation.
+  [Combobox] Support <kbd>Page Up</kbd> and <kbd>Page Down</kbd> keyboard navigation.
+
+### Patch Changes
+
+- 94861927: [Menus]
+  - Fix lag between submenus and menubar menus
+  - Fix the non-chromium browser issue where `data-highlight` would persist after the menu closes and reopens.
+
 ## 0.20.0
 
 ### Minor Changes
