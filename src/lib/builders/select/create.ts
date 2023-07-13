@@ -3,20 +3,26 @@ import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,
 	addEventListener,
+	back,
 	builder,
 	createElHelpers,
 	createTypeaheadSearch,
 	effect,
 	executeCallbacks,
+	forward,
 	generateId,
 	getNextFocusable,
 	getPreviousFocusable,
 	handleRovingFocus,
 	isBrowser,
+	isElementDisabled,
 	isHTMLElement,
 	kbd,
+	last,
+	next,
 	noop,
 	omit,
+	prev,
 	removeScroll,
 	styleToString,
 } from '$lib/internal/helpers';
@@ -541,43 +547,37 @@ export function createSelect(props?: CreateSelectProps) {
 		// menu items of the current menu
 		const items = getOptions(currentTarget);
 		if (!items.length) return;
-
-		const candidateNodes = items.filter((opt) => {
-			if (opt.hasAttribute('data-disabled')) {
-				return false;
-			}
-			if (opt.getAttribute('disabled') === 'true') {
-				return false;
-			}
-			return true;
-		});
-
-		// Index of the currently focused item in the candidate nodes array
+		// Disabled items can't be highlighted. Skip them.
+		const candidateNodes = items.filter((opt) => !isElementDisabled(opt));
+		// Get the index of the currently highlighted item.
 		const currentIndex = candidateNodes.indexOf(currentFocusedItem);
-
-		// Calculate the index of the next menu item
-		let nextIndex: number;
+		// Find the next menu item to highlight.
+		let nextItem: HTMLElement;
 		const $options = get(options);
 		const loop = $options.loop;
-
 		switch (e.key) {
 			case kbd.ARROW_DOWN:
-				nextIndex =
-					currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : loop ? 0 : currentIndex;
+				nextItem = next(candidateNodes, currentIndex, loop);
+				break;
+			case kbd.PAGE_DOWN:
+				nextItem = forward(candidateNodes, currentIndex, 10, loop);
 				break;
 			case kbd.ARROW_UP:
-				nextIndex = currentIndex > 0 ? currentIndex - 1 : loop ? candidateNodes.length - 1 : 0;
+				nextItem = prev(candidateNodes, currentIndex, loop);
+				break;
+			case kbd.PAGE_UP:
+				nextItem = back(candidateNodes, currentIndex, 10, loop);
 				break;
 			case kbd.HOME:
-				nextIndex = 0;
+				nextItem = candidateNodes[0];
 				break;
 			case kbd.END:
-				nextIndex = candidateNodes.length - 1;
+				nextItem = last(candidateNodes);
 				break;
 			default:
 				return;
 		}
-		handleRovingFocus(candidateNodes[nextIndex]);
+		handleRovingFocus(nextItem);
 	}
 
 	function handleTabNavigation(e: KeyboardEvent) {

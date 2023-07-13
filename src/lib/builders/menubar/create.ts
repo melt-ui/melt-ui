@@ -7,6 +7,8 @@ import {
 	handleMenuNavigation,
 	handleTabNavigation,
 	type MenuParts,
+	addHighlight,
+	removeHighlight,
 } from '../menu';
 import {
 	executeCallbacks,
@@ -151,7 +153,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 						 * Submenu key events bubble through portals and
 						 * we only care about key events that happen inside this menu.
 						 */
-						const isKeyDownInside = target.closest('[role="menu"]') === menuElement;
+						const isKeyDownInside = target.closest('[data-melt-menubar-menu]') === menuElement;
 
 						if (!isKeyDownInside) return;
 						if (FIRST_LAST_KEYS.includes(e.key)) {
@@ -317,7 +319,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				const triggerElement = document.getElementById(m.rootIds.trigger);
 				if (!isHTMLElement(triggerElement)) return;
 				rootActiveTrigger.set(triggerElement);
-				triggerElement.setAttribute('data-highlighted', '');
+				addHighlight(triggerElement);
 				rootOpen.set(true);
 				return;
 			}
@@ -327,7 +329,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				if (get(rootOpen)) {
 					const triggerElement = document.getElementById(m.rootIds.trigger);
 					if (!isHTMLElement(triggerElement)) return;
-					triggerElement.removeAttribute('data-highlighted');
+					removeHighlight(triggerElement);
 					rootActiveTrigger.set(null);
 					rootOpen.set(false);
 				}
@@ -340,11 +342,15 @@ export function createMenubar(props?: CreateMenubarProps) {
 			const triggerElement = document.getElementById(m.rootIds.trigger);
 			if (!$rootOpen && get(activeMenu) === m.rootIds.menu) {
 				activeMenu.set('');
-				triggerElement?.removeAttribute('data-highlighted');
+				if (triggerElement) {
+					removeHighlight(triggerElement);
+				}
 				return;
 			}
 			if ($rootOpen) {
-				triggerElement?.setAttribute('data-highlighted', '');
+				if (triggerElement) {
+					addHighlight(triggerElement);
+				}
 			}
 		});
 

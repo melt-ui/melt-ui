@@ -1,6 +1,6 @@
 {
 	"name": "@melt-ui/svelte",
-	"version": "0.19.1",
+	"version": "0.21.0",
 	"license": "MIT",
 	"scripts": {
 		"dev": "vite dev",
@@ -18,7 +18,9 @@
 		"release": "changeset publish",
 		"create:cmp": "node ./scripts/create-component.js",
 		"storybook": "storybook dev -p 6006 --no-open",
-		"build-storybook": "storybook build -s static"
+		"build-storybook": "storybook build -s static",
+		"pw": "pnpm exec playwright test",
+		"pw:ui": "pnpm exec playwright test --ui"
 	},
 	"exports": {
 		".": {
@@ -66,6 +68,7 @@
 		"@iconify-json/lucide": "^1.1.104",
 		"@iconify-json/simple-icons": "^1.1.57",
 		"@melt-ui/pp": "^0.0.2",
+		"@playwright/test": "^1.36.0",
 		"@storybook/addon-essentials": "^7.0.23",
 		"@storybook/addon-interactions": "^7.0.23",
 		"@storybook/addon-links": "^7.0.23",
