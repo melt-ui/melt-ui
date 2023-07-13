@@ -3,20 +3,20 @@
 	"singleQuote": true,
 	"trailingComma": "all",
 	"printWidth": 80,
+	"plugins": ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"],
 	"pluginSearchDirs": ["."],
 	"overrides": [
 		{
 			"files": "*.svelte",
 			"options": {
-				"parser": "svelte",
-				"printWidth": 80
+				"parser": "svelte"
 			}
 		},
 		{
 			"files": "*.md",
 			"options": {
 				"parser": "markdown",
-				"printWidth": 80,
+				"printWidth": 100,
 				"proseWrap": "always",
 				"tabWidth": 2,
 				"useTabs": false,

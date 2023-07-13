@@ -35,12 +35,11 @@
 		>
 			<h2 class="flex">
 				<button
-					id={i === 0 ? 'accordion-trigger' : undefined}
 					{...$trigger(id)}
 					use:trigger
-					class="flex h-12 flex-1 cursor-pointer items-center text-magnum-700 justify-between bg-white
-                 px-5 text-base font-medium leading-none
-                 transition-colors hover:bg-opacity-95 focus:!ring-0 border-b border-b-magnum-700
+					class="flex h-12 flex-1 cursor-pointer items-center justify-between border-b
+                  border-b-magnum-700 bg-white px-5
+                 text-base font-medium leading-none text-magnum-700 transition-colors hover:bg-opacity-95 focus:!ring-0
 								 {i === items.length - 1 ? 'border-b-0' : ''}"
 				>
 					{title}
