@@ -47,7 +47,7 @@
 		<!-- <DocsPager /> -->
 	</div>
 	<div class="hidden text-sm xl:block">
-		<div class="sticky top-16 -mt-10 h-[calc(100vh-3.5rem)] overflow-visible pt-6">
+		<div class="fixed top-16 h-[calc(100vh-4rem)] overflow-visible pt-6">
 			{#key $page.url.pathname}
 				<TOC />
 			{/key}

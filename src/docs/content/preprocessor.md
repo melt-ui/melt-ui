@@ -1,18 +1,18 @@
 ---
 title: Preprocessor
-description: Simplifying builders with the PP.
+description: Simplifying the syntax of Melt UI using a custom preprocessor.
 ---
 
 ## What it does
 
-We provide a custom preprocessor (our PP™) that aims to enhance the DX of Melt just a bit further.
-It introduces a new HTML attribute, `melt`, that accepts our builders as values. This helps trim
-down on the boilerplate just enough to keep the markup nice and tidy. The PP will then transform our
+We provide a custom preprocessor that aims to enhance the DX of Melt UI just a bit further. It
+introduces a new HTML attribute, `melt`, that accepts our builders as values. This helps trim down
+on the boilerplate just enough to keep the markup nice and tidy. The PP will then transform our
 special attribute into the proper Svelte syntax.
 
 ## How it works
 
-In the most simplest form, the preprocessor will take the following code:
+In the most simplest form, the PP will take the following code:
 
 ```svelte
 <script>
@@ -75,3 +75,8 @@ For example, the `checkboxItem` builder from `createDropdownMenu` expects the fo
 As of now, there's no _good_ way to simplify this without degrading the experience of the library
 for users that choose to _not_ use the PP. So for now, we'll just have to stick with the above
 syntax for these cases, which are rather infrequent.
+
+## Installation
+
+For installation instructions, please see the
+[installation](/docs/installation#preprocessor-installation) page.

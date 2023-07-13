@@ -44,6 +44,9 @@ P.S. These tabs were built using Melt! Try using them with the arrow keys.
 
 ## Preprocessor Installation
 
+Melt UI also provides a custom preprocessor that aims to enhance the DX of Melt UI. You can read
+more about it [here](/docs/preprocessor).
+
 Install our preprocessor, [@melt-ui/pp](https://github.com/melt-ui/preprocessor), along with
 [svelte-sequential-preprocessor](https://www.npmjs.com/package/svelte-sequential-preprocessor).
 
