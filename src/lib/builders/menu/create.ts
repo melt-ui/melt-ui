@@ -89,6 +89,11 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	const pointerGraceIntent = writable<GraceIntent | null>(null);
 	const pointerDir = writable<Side>('right');
 
+	/**
+	 * Track currently focused item in the menu.
+	 */
+	const currentFocusedItem = writable<HTMLElement | null>(null);
+
 	const pointerMovingToSubmenu = derivedWithUnsubscribe(
 		[pointerDir, pointerGraceIntent],
 		([$pointerDir, $pointerGraceIntent]) => {
@@ -120,7 +125,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				'aria-labelledby': rootIds.trigger,
 				'data-state': $rootOpen ? 'open' : 'closed',
 				tabindex: -1,
-				'data-side': 'right',
 			} as const;
 		},
 		action: (node: HTMLElement) => {
@@ -215,8 +219,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			applyAttrsIfDisabled(node);
 			const unsub = executeCallbacks(
 				addEventListener(node, 'pointerdown', (e) => {
-					if (!isLeftClick(e)) return;
-
 					const $rootOpen = get(rootOpen);
 					const triggerElement = e.currentTarget;
 					if (!isHTMLElement(triggerElement)) return;
@@ -297,11 +299,13 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	});
 
 	const item = builder(name('item'), {
-		returned: () => ({
-			role: 'menuitem',
-			tabindex: -1,
-			'data-orientation': 'vertical',
-		}),
+		returned: () => {
+			return {
+				role: 'menuitem',
+				tabindex: -1,
+				'data-orientation': 'vertical',
+			};
+		},
 		action: (node: HTMLElement, params: ItemProps = {}) => {
 			const { onSelect } = params;
 
@@ -310,8 +314,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 			const unsub = executeCallbacks(
 				addEventListener(node, 'pointerdown', (e) => {
-					if (!isLeftClick(e)) return;
-
 					const itemElement = e.currentTarget;
 					if (!isHTMLElement(itemElement)) return;
 					if (isElementDisabled(itemElement)) {
@@ -341,28 +343,16 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					onItemKeyDown(e);
 				}),
 				addEventListener(node, 'pointermove', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-
-					if (isElementDisabled(itemElement)) {
-						onItemLeave(e);
-						return;
-					}
-
 					onMenuItemPointerMove(e);
 				}),
 				addEventListener(node, 'pointerleave', (e) => {
 					onMenuItemPointerLeave(e);
 				}),
 				addEventListener(node, 'focusin', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-					itemElement.setAttribute('data-highlighted', '');
+					onItemFocusIn(e);
 				}),
 				addEventListener(node, 'focusout', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-					itemElement.removeAttribute('data-highlighted');
+					onItemFocusOut(e);
 				})
 			);
 
@@ -392,7 +382,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 			const unsub = executeCallbacks(
 				addEventListener(node, 'pointerdown', (e) => {
-					if (!isLeftClick(e)) return;
 					const itemElement = e.currentTarget;
 					if (!isHTMLElement(itemElement)) return;
 					if (isElementDisabled(itemElement)) {
@@ -441,14 +430,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					onMenuItemPointerLeave(e);
 				}),
 				addEventListener(node, 'focusin', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-					itemElement.setAttribute('data-highlighted', '');
+					onItemFocusIn(e);
 				}),
 				addEventListener(node, 'focusout', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-					itemElement.removeAttribute('data-highlighted');
+					onItemFocusOut(e);
 				})
 			);
 
@@ -458,8 +443,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		},
 	});
 
-	const createMenuRadioGroup = (props: CreateRadioGroupProps = {}) => {
-		const value = writable(props.value ?? null);
+	const createMenuRadioGroup = (args: CreateRadioGroupProps = {}) => {
+		const value = writable(args.value ?? null);
 
 		const radioGroup = builder(name('radio-group'), {
 			returned: () => ({
@@ -496,7 +481,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 				const unsub = executeCallbacks(
 					addEventListener(node, 'pointerdown', (e) => {
-						if (!isLeftClick(e)) return;
 						const itemElement = e.currentTarget;
 						if (!isHTMLElement(itemElement)) return;
 						const itemValue = node.dataset.value;
@@ -550,14 +534,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						onMenuItemPointerLeave(e);
 					}),
 					addEventListener(node, 'focusin', (e) => {
-						const itemElement = e.currentTarget;
-						if (!isHTMLElement(itemElement)) return;
-						itemElement.setAttribute('data-highlighted', '');
+						onItemFocusIn(e);
 					}),
 					addEventListener(node, 'focusout', (e) => {
-						const itemElement = e.currentTarget;
-						if (!isHTMLElement(itemElement)) return;
-						itemElement.removeAttribute('data-highlighted');
+						onItemFocusOut(e);
 					})
 				);
 
@@ -574,10 +554,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		});
 
 		return {
-			value,
-			isChecked,
 			radioGroup,
 			radioItem,
+			isChecked,
+			value,
 		};
 	};
 
@@ -598,8 +578,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		},
 	} satisfies Defaults<CreateSubmenuProps>;
 
-	const createSubMenu = (props?: CreateSubmenuProps) => {
-		const withDefaults = { ...subMenuDefaults, ...props } as CreateSubmenuProps;
+	const createSubMenu = (args?: CreateSubmenuProps) => {
+		const withDefaults = { ...subMenuDefaults, ...args } as CreateSubmenuProps;
 		const subOptions = writable(withDefaults);
 
 		const subOpen = writable(false);
@@ -625,7 +605,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					'aria-labelledby': subIds.trigger,
 					'data-state': $subOpen ? 'open' : 'closed',
 					tabindex: -1,
-					'data-side': 'right',
 				} as const;
 			},
 			action: (node: HTMLElement) => {
@@ -838,7 +817,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						if (!isHTMLElement(triggerElement)) return;
 
 						handleRovingFocus(triggerElement);
-						triggerElement.setAttribute('data-highlighted', '');
 
 						const openTimer = get(subOpenTimer);
 						if (!get(subOpen) && !openTimer && !isElementDisabled(triggerElement)) {
@@ -898,7 +876,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						const triggerElement = e.currentTarget;
 						if (!isHTMLElement(triggerElement)) return;
 
-						triggerElement.removeAttribute('data-highlighted');
+						if (!isHTMLElement(triggerElement)) return;
+						removeHighlight(triggerElement);
 
 						const relatedTarget = e.relatedTarget;
 						if (!isHTMLElement(relatedTarget)) return;
@@ -913,16 +892,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							subOpen.set(false);
 						}
 					}),
-					addEventListener(node, 'blur', (e) => {
-						const triggerElement = e.currentTarget;
-						if (!isHTMLElement(triggerElement)) return;
-
-						triggerElement.removeAttribute('data-highlighted');
-					}),
 					addEventListener(node, 'focusin', (e) => {
-						const triggerElement = e.currentTarget;
-						if (!isHTMLElement(triggerElement)) return;
-						triggerElement.setAttribute('data-highlighted', '');
+						onItemFocusIn(e);
 					})
 				);
 
@@ -970,20 +941,32 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 			sleep(1).then(() => {
 				const menuElement = document.getElementById(subIds.menu);
-				if (menuElement && $subOpen && get(isUsingKeyboard)) {
+				if (!isHTMLElement(menuElement)) return;
+
+				if ($subOpen && get(isUsingKeyboard)) {
 					// Selector to get menu items belonging to menu
 					const menuItems = getMenuItems(menuElement);
 
-					if (get(isUsingKeyboard)) {
-						isHTMLElement(menuItems[0]) ? handleRovingFocus(menuItems[0]) : undefined;
+					isHTMLElement(menuItems[0]) ? handleRovingFocus(menuItems[0]) : undefined;
+				}
+
+				if (!$subOpen) {
+					const focusedItem = get(currentFocusedItem);
+					if (focusedItem && menuElement.contains(focusedItem)) {
+						removeHighlight(focusedItem);
 					}
 				}
 				if (menuElement && !$subOpen) {
-					removeHighlightFromMenuItems(menuElement);
 					const subTriggerEl = document.getElementById(subIds.trigger);
 					if (!isHTMLElement(subTriggerEl)) return;
 					if (document.activeElement === subTriggerEl) return;
-					subTriggerEl.removeAttribute('data-highlighted');
+					removeHighlight(subTriggerEl);
+				}
+				if (menuElement && !$subOpen) {
+					const subTriggerEl = document.getElementById(subIds.trigger);
+					if (!isHTMLElement(subTriggerEl)) return;
+					if (document.activeElement === subTriggerEl) return;
+					removeHighlight(subTriggerEl);
 				}
 			});
 		});
@@ -1001,6 +984,12 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	 * Root Effects
 	 * -----------------------------------------------------------------------------------------------*/
 
+	effect([rootOpen, currentFocusedItem], ([$rootOpen, $currentFocusedItem]) => {
+		if (!$rootOpen && $currentFocusedItem) {
+			removeHighlight($currentFocusedItem);
+		}
+	});
+
 	effect([rootOpen, rootActiveTrigger], ([$rootOpen, $rootActiveTrigger]) => {
 		if (!isBrowser) return;
 
@@ -1009,13 +998,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 		if ($rootOpen && $rootOptions.preventScroll) {
 			unsubs.push(removeScroll());
-		}
-
-		if (!$rootOpen) {
-			const menuElement = document.getElementById(rootIds.menu);
-			if (menuElement) {
-				removeHighlightFromMenuItems(menuElement);
-			}
 		}
 
 		if (!$rootOpen && $rootActiveTrigger) {
@@ -1081,6 +1063,30 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	/* -------------------------------------------------------------------------------------------------
 	 * Pointer Event Effects
 	 * -----------------------------------------------------------------------------------------------*/
+
+	function onItemFocusIn(e: FocusEvent) {
+		const itemElement = e.currentTarget;
+		if (!isHTMLElement(itemElement)) return;
+		addHighlight(itemElement);
+
+		/**
+		 * Accomodates for Firefox focus event behavior, which differs
+		 * from other browsers. We're setting the current focused item
+		 * so when we close the menu, we can remove the data-highlighted
+		 * attribute from the item, since a blur nor focusout event will be fired
+		 * when the menu is closed via `clickOutside` or the ESC key.
+		 */
+		currentFocusedItem.set(itemElement);
+	}
+
+	/**
+	 * Each of the menu items share the same focusout event handler.
+	 */
+	function onItemFocusOut(e: FocusEvent) {
+		const itemElement = e.currentTarget;
+		if (!isHTMLElement(itemElement)) return;
+		removeHighlight(itemElement);
+	}
 
 	function onItemEnter(e: PointerEvent) {
 		if (isPointerMovingToSubmenu(e)) {
@@ -1228,15 +1234,12 @@ export function handleTabNavigation(
 	}
 }
 
-function removeHighlightFromMenuItems(menuElement: HTMLElement) {
-	const menuItems = Array.from(
-		menuElement.querySelectorAll<HTMLElement>(
-			'[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]'
-		)
-	);
-	menuItems.forEach((menuItem) => {
-		menuItem.removeAttribute('data-highlighted');
-	});
+export function addHighlight(element: HTMLElement) {
+	element.setAttribute('data-highlighted', '');
+}
+
+export function removeHighlight(element: HTMLElement) {
+	element.removeAttribute('data-highlighted');
 }
 
 /**
@@ -1280,14 +1283,6 @@ export function clearTimerStore(timerStore: Writable<number | null>) {
  */
 function isMouse(e: PointerEvent) {
 	return e.pointerType === 'mouse';
-}
-
-/**
- * Check if the event is a left click
- * @param e The pointer event
- */
-function isLeftClick(e: PointerEvent) {
-	return e.button === 0 && !e.ctrlKey;
 }
 
 /**
@@ -1375,7 +1370,7 @@ function isPointerInGraceArea(e: PointerEvent, area?: Polygon) {
 /**
  * Determine if a point is inside of a polygon.
  *
- * @see https://npmjs.com/package/point-in-polygon
+ * @see https://github.com/substack/point-in-polygon
  */
 function isPointInPolygon(point: Point, polygon: Polygon) {
 	const { x, y } = point;
