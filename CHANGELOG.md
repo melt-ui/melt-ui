@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.20.0
+
+### Minor Changes
+
+- 87612adb: feat: allow focus trap disabling popover
+
 ## 0.19.1
 
 ### Patch Changes

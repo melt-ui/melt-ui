@@ -27,3 +27,6 @@ storybook-static/**/*
 
 *.ignore-svelte
 *.ignore-ts
+
+playwright.config.ts
+playwright-report

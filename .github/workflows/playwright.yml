@@ -1,20 +1,19 @@
 name: Playwright Tests
 on:
   push:
-    branches: [ main, develop ]
+    # branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop ]
+    # branches: [ main, develop ]
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: pnpm/action-setup@v2
       with:
-        node-version: 18
-    - name: Install dependencies
-      run: pnpm install
+        version: 8.6.1
+        run_install: true
     - name: Install Playwright Browsers
       run: pnpm exec playwright install --with-deps
     - name: Run Playwright tests

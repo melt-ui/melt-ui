@@ -10,7 +10,8 @@ const builder: APISchema = {
 			name: 'value',
 			type: 'number[]',
 			default: '[]',
-			description: 'The value of the slider.',
+			description:
+				'The value of the slider. Pass in multiple values for multiple thumbs, creating a range slider.',
 		},
 		{
 			name: 'min',
