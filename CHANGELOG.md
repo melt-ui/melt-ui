@@ -1,5 +1,12 @@
 # @melt-ui/svelte
 
+## 0.22.2
+
+### Patch Changes
+
+- 151fcc35: [Multiple] Fix radio focus & other left click issues
+- b731d118: fix: builders not exposing actions
+
 ## 0.22.1
 
 ### Patch Changes
