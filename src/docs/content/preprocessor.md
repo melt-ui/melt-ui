@@ -63,9 +63,9 @@ For example, the `checkboxItem` builder from `createDropdownMenu` expects the fo
 
 ```svelte
 <script>
-  import { createBuilder } from '@melt-ui/svelte'
+  import { createDropdownMenu } from '@melt-ui/svelte'
 
-  const { checkboxItem } = createBuilder()
+  const { checkboxItem } = createDropdownMenu()
 </script>
 
 <!-- Note that the action requires arguments here 👇 -->

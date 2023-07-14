@@ -77,7 +77,7 @@ pnpm install -D @melt-ui/pp svelte-sequential-preprocessor
 
 </InstallTabs>
 
-Next, import both packages and them to your `preprocess` array in `svelte.config.js`.
+Next, import both packages and add them to your `preprocess` array in `svelte.config.js`.
 
 ```js
 // svelte.config.js
