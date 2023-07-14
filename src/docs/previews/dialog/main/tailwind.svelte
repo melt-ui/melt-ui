@@ -19,9 +19,9 @@
 	{#if $open}
 		<div melt={$overlay} class="fixed inset-0 z-40 bg-black/50" />
 		<div
-			class="fixed left-[50%] z-50 max-h-[85vh] w-[90vw] max-w-[450px]
-            translate-x-[-50%] translate-y-[-50%] rounded-md bg-white p-[25px]
-            shadow-lg top-[50%]"
+			class="fixed left-[50%] top-[50%] z-50 max-h-[85vh] w-[90vw]
+            max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white
+            p-[25px] shadow-lg"
 			transition:flyAndScale={{
 				duration: 150,
 				y: 8,

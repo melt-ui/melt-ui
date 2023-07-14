@@ -30,3 +30,4 @@ storybook-static/**/*
 
 playwright.config.ts
 playwright-report
+.vercel

@@ -1,10 +1,9 @@
 <script lang="ts">
-	import Check from '~icons/lucide/check';
-	import Copy from '~icons/lucide/copy';
-	import { fly } from 'svelte/transition';
 	import { cn, createCopyCodeButton } from '$docs/utils';
 	import { usingPreprocessor } from '$routes/store';
-	import { browser } from '$app/environment';
+	import { fly } from 'svelte/transition';
+	import Check from '~icons/lucide/check';
+	import Copy from '~icons/lucide/copy';
 
 	let className: string | undefined | null = undefined;
 	export { className as class };

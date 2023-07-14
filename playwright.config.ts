@@ -74,6 +74,6 @@ export default defineConfig({
 	  command: process.env.CI ? 'pnpm run build && pnpm run preview' : 'pnpm run dev',
 	  url: process.env.CI ? 'http://localhost:4173/' : 'http://localhost:5173/',
 	  reuseExistingServer: !process.env.CI,
-		timeout: 30 * 1000,
+		timeout: 120 * 1000,
 	},
 });

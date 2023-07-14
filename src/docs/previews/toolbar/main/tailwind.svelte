@@ -43,7 +43,11 @@
 		</button>
 	</div>
 	<div class="separator" melt={$separator} />
-	<a href="#" class="link nowrap flex-shrink-0" melt={$link}>
+	<a
+		href="https://www.melt-ui.com/"
+		class="link nowrap flex-shrink-0"
+		melt={$link}
+	>
 		Edited 2 hours ago
 	</a>
 	<button class="button" melt={$button}>Save</button>
