@@ -6,7 +6,9 @@ declare global {
 	namespace svelteHTML {
 		interface HTMLAttributes {
 			/**
-			 * TODO: Document me later
+			 * A special attribute for Melt UI's preprocessor `@melt-ui/pp`.
+			 *
+			 * @see https://www.melt-ui.com/docs/preprocessor
 			 *
 			 * @example
 			 * ```svelte

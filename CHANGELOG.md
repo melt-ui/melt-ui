@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.22.1
+
+### Patch Changes
+
+- 00043ed4: Fixed the `melt` attribute's documentation
+
 ## 0.22.0
 
 ### Minor Changes
