@@ -18,7 +18,7 @@ const defaults = {
 	required: false,
 } satisfies Defaults<CreateRadioGroupProps>;
 
-type RadioGroupParts = 'item';
+type RadioGroupParts = 'item' | 'item-input';
 const { name, selector } = createElHelpers<RadioGroupParts>('radio-group');
 
 export function createRadioGroup(props: CreateRadioGroupProps = {}) {
@@ -130,21 +130,24 @@ export function createRadioGroup(props: CreateRadioGroupProps = {}) {
 		},
 	});
 
-	const itemInput = derived([options, value], ([$options, $value]) => {
-		return (props: RadioGroupItemProps) => {
-			const itemValue = typeof props === 'string' ? props : props.value;
-			const argDisabled = typeof props === 'string' ? false : !!props.disabled;
-			const disabled = $options.disabled || argDisabled;
+	const itemInput = builder(name('item-input'), {
+		stores: [options, value],
+		returned: ([$options, $value]) => {
+			return (props: RadioGroupItemProps) => {
+				const itemValue = typeof props === 'string' ? props : props.value;
+				const argDisabled = typeof props === 'string' ? false : !!props.disabled;
+				const disabled = $options.disabled || argDisabled;
 
-			return {
-				type: 'hidden',
-				'aria-hidden': true,
-				tabindex: -1,
-				value: itemValue,
-				checked: $value === itemValue,
-				disabled,
+				return {
+					type: 'hidden',
+					'aria-hidden': true,
+					tabindex: -1,
+					value: itemValue,
+					checked: $value === itemValue,
+					disabled,
+				};
 			};
-		};
+		},
 	});
 
 	const isChecked = derived(value, ($value) => {

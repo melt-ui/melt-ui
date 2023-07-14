@@ -46,7 +46,7 @@ const defaults = {
 	loop: false,
 } satisfies Defaults<CreateSelectProps>;
 
-type SelectParts = 'menu' | 'trigger' | 'option' | 'group' | 'group-label';
+type SelectParts = 'menu' | 'trigger' | 'option' | 'group' | 'group-label' | 'arrow' | 'input';
 const { name } = createElHelpers<SelectParts>('select');
 
 export function createSelect(props?: CreateSelectProps) {
@@ -299,14 +299,17 @@ export function createSelect(props?: CreateSelectProps) {
 		},
 	});
 
-	const arrow = derived(options, ($options) => ({
-		'data-arrow': true,
-		style: styleToString({
-			position: 'absolute',
-			width: `var(--arrow-size, ${$options.arrowSize}px)`,
-			height: `var(--arrow-size, ${$options.arrowSize}px)`,
+	const arrow = builder(name('arrow'), {
+		stores: options,
+		returned: ($options) => ({
+			'data-arrow': true,
+			style: styleToString({
+				position: 'absolute',
+				width: `var(--arrow-size, ${$options.arrowSize}px)`,
+				height: `var(--arrow-size, ${$options.arrowSize}px)`,
+			}),
 		}),
-	}));
+	});
 
 	const option = builder(name('option'), {
 		stores: value,
@@ -488,24 +491,27 @@ export function createSelect(props?: CreateSelectProps) {
 		};
 	});
 
-	const input = derived([value, options], ([$value, $options]) => {
-		return {
-			type: 'hidden',
-			name: $options.name,
-			value: $value,
-			'aria-hidden': true,
-			hidden: true,
-			tabIndex: -1,
-			required: $options.required,
-			disabled: $options.disabled,
-			style: styleToString({
-				position: 'absolute',
-				opacity: 0,
-				'pointer-events': 'none',
-				margin: 0,
-				transform: 'translateX(-100%)',
-			}),
-		};
+	const input = builder(name('input'), {
+		stores: [value, options],
+		returned: ([$value, $options]) => {
+			return {
+				type: 'hidden',
+				name: $options.name,
+				value: $value,
+				'aria-hidden': true,
+				hidden: true,
+				tabIndex: -1,
+				required: $options.required,
+				disabled: $options.disabled,
+				style: styleToString({
+					position: 'absolute',
+					opacity: 0,
+					'pointer-events': 'none',
+					margin: 0,
+					transform: 'translateX(-100%)',
+				}),
+			};
+		},
 	});
 
 	function isMouse(e: PointerEvent) {
