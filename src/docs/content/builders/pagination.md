@@ -33,7 +33,7 @@ the example above to create your pagination component.
   })
 </script>
 
-<nav melt={root}>
+<nav melt={$root}>
   <p>Showing items {$range.start} - {$range.end}</p>
   <div>
     <button melt={$prevButton}>Prev</button>

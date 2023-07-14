@@ -78,5 +78,4 @@ syntax for these cases, which are rather infrequent.
 
 ## Installation
 
-For installation instructions, please see the
-[installation](/docs/installation#preprocessor-installation) page.
+For installation instructions, please see the [installation](/docs/installation) page.
