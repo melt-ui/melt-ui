@@ -11,35 +11,45 @@
 
 	const { copied, copyCode, setCodeString } = createCopyCodeButton();
 
-	let isPPBlock = false;
+	let isPPBlock: boolean | undefined = undefined;
 	const setIsPPBlock = (node: HTMLElement) => {
 		isPPBlock = node.dataset.nonPp === undefined;
 	};
 
-	$: show = (isPPBlock && $usingPreprocessor) || (!isPPBlock && !$usingPreprocessor);
+	$: show =
+		isPPBlock === undefined ||
+		(isPPBlock && $usingPreprocessor) ||
+		(!isPPBlock && !$usingPreprocessor);
 </script>
 
-{#if !browser || show}
+{#if show}
 	<pre
 		use:setCodeString
 		use:setIsPPBlock
 		class={cn(
 			'mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border border-neutral-500/50 bg-neutral-950/60 py-4 font-bold',
-
+			isPPBlock === undefined && 'data-[non-pp]:hidden',
 			className
 		)}
 		{...$$restProps}>
     <slot />
-</pre>
-	<button class="absolute right-3 top-3 z-10" aria-label="copy" on:click={copyCode} data-code-copy>
-		{#if $copied}
-			<div in:fly={{ y: -4 }}>
-				<Check class="text-magnum-500" />
-			</div>
-		{:else}
-			<div in:fly={{ y: 4 }}>
-				<Copy class="hover:text-magnum-500" />
-			</div>
-		{/if}
-	</button>
+	</pre>
+	{#if isPPBlock !== undefined}
+		<button
+			class="absolute right-3 top-3 z-10"
+			aria-label="copy"
+			on:click={copyCode}
+			data-code-copy
+		>
+			{#if $copied}
+				<div in:fly={{ y: -4 }}>
+					<Check class="text-magnum-500" />
+				</div>
+			{:else}
+				<div in:fly={{ y: 4 }}>
+					<Copy class="hover:text-magnum-500" />
+				</div>
+			{/if}
+		</button>
+	{/if}
 {/if}

@@ -13,7 +13,7 @@
 			<SidebarNav />
 		</div>
 		<div class="flex w-full justify-center rounded-lg bg-neutral-800 px-4 py-2">
-			<Switch id="preprocessor" bind:checked={$usingPreprocessor}>Preprocessor</Switch>
+			<Switch id="preprocessor" bind:checked={$usingPreprocessor} keepState>Preprocessor</Switch>
 		</div>
 	</aside>
 	<div class="mx-auto w-full min-w-0">

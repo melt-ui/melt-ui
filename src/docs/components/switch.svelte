@@ -4,6 +4,7 @@
 
 	export let checked = false;
 	export let id: string;
+	export let keepState = false;
 
 	const {
 		root,
@@ -18,6 +19,7 @@
 	});
 
 	beforeNavigate(() => {
+		if (keepState) return;
 		checkedStore.set(false);
 	});
 </script>
