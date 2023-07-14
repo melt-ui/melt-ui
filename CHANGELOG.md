@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.22.0
+
+### Minor Changes
+
+- 434cc977: feat: Adds the PP
+
 ## 0.21.0
 
 ### Minor Changes
