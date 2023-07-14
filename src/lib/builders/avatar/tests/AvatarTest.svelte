@@ -9,6 +9,6 @@
 </script>
 
 <div class="flex h-24 w-24 items-center justify-center rounded-full bg-neutral-100">
-	<img {...$image} alt="Avatar" class="h-full w-full rounded-[inherit]" data-testid="image" />
-	<span {...$fallback} class="text-3xl font-medium text-black" data-testid="fallback">RH</span>
+	<img melt={$image} alt="Avatar" class="h-full w-full rounded-[inherit]" data-testid="image" />
+	<span melt={$fallback} class="text-3xl font-medium text-black" data-testid="fallback">RH</span>
 </div>

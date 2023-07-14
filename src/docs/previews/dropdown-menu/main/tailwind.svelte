@@ -36,18 +36,17 @@
 <button
 	type="button"
 	class="trigger"
-	{...$trigger}
-	use:trigger
+	melt={$trigger}
 	aria-label="Update dimensions"
 >
 	<AlignJustify class="h-4 w-4" />
 	<span class="sr-only">Open Popover</span>
 </button>
 
-<div class="menu" {...$menu} use:menu>
-	<div class="item" {...$item} use:item>About Melt UI</div>
-	<div class="item" {...$item} use:item>Check for Updates...</div>
-	<div class="separator" {...$separator} />
+<div class="menu" melt={$menu}>
+	<div class="item" melt={$item}>About Melt UI</div>
+	<div class="item" melt={$item}>Check for Updates...</div>
+	<div class="separator" melt={$separator} />
 	<div
 		class="item"
 		{...$checkboxItem}
@@ -60,17 +59,17 @@
 		</div>
 		Settings Sync is On
 	</div>
-	<div class="item" {...$subTriggerA} use:subTriggerA>
+	<div class="item" melt={$subTriggerA}>
 		Profiles
 		<div class="rightSlot">
 			<ChevronRight class="icon" />
 		</div>
 	</div>
-	<div class="menu subMenu" {...$subMenuA} use:subMenuA>
+	<div class="menu subMenu" melt={$subMenuA}>
 		<div class="text">People</div>
-		<div {...$radioGroup}>
+		<div melt={$radioGroup}>
 			{#each personsArr as person}
-				<div class="item" {...$radioItem({ value: person })} use:radioItem>
+				<div class="item" melt={$radioItem({ value: person })}>
 					<div class="check">
 						{#if $isChecked(person)}
 							<div class="dot" />
@@ -81,7 +80,7 @@
 			{/each}
 		</div>
 	</div>
-	<div {...$separator} class="separator" />
+	<div melt={$separator} class="separator" />
 
 	<div
 		class="item"
@@ -96,16 +95,16 @@
 		Hide Melt UI
 		<div class="rightSlot">⌘H</div>
 	</div>
-	<div class="item" {...$item} use:item aria-disabled="true">
+	<div class="item" melt={$item} aria-disabled="true">
 		Show All Components
 		<div class="rightSlot">⇧⌘N</div>
 	</div>
-	<div {...$separator} class="separator" />
-	<div class="item" {...$item} use:item>
+	<div melt={$separator} class="separator" />
+	<div class="item" melt={$item}>
 		Quit Melt UI
 		<div class="rightSlot">⌘Q</div>
 	</div>
-	<div {...$arrow} />
+	<div melt={$arrow} />
 </div>
 
 <style lang="postcss">

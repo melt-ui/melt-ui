@@ -46,6 +46,11 @@ export const navConfig: NavConfig = {
 					items: [],
 				},
 				{
+					title: 'Preprocessor',
+					href: '/docs/preprocessor',
+					items: [],
+				},
+				{
 					title: 'Usage',
 					href: '/docs/usage',
 					items: [],

@@ -50,9 +50,9 @@ function and wrap it in a `menubar` element.
   const { menu, item, trigger } = createMenu()
 </script>
 
-<div {...menubar}>
-  <button {...$trigger} use:trigger>Open Menu</button>
-  <div {...$menu} use:menu>
+<div melt={$menubar}>
+  <button melt={$trigger}>Open Menu</button>
+  <div melt={$menu}>
     <div {...$item} use:item>...</div>
     <div {...$item} use:item>...</div>
     <div {...$item} use:item>...</div>
@@ -78,23 +78,23 @@ returned variables to prevent any naming conflicts.
   const { menu: menuB, item: itemB, trigger: triggerB } = createMenu()
 </script>
 
-<div {...menubar}>
-  <button {...$trigger} use:trigger>File</button>
-  <div {...$menu} use:menu>
+<div melt={$menubar}>
+  <button melt={$trigger}>File</button>
+  <div melt={$menu}>
     <div {...$item} use:item>...</div>
     <div {...$item} use:item>...</div>
     <div {...$item} use:item>...</div>
   </div>
 
-  <button {...$triggerA} use:triggerA>Edit</button>
-  <div {...$menuA} use:menuA>
+  <button melt={$triggerA}>Edit</button>
+  <div melt={$menuA}>
     <div {...$itemA} use:itemA>...</div>
     <div {...$itemA} use:itemA>...</div>
     <div {...$itemA} use:itemA>...</div>
   </div>
 
-  <button {...$triggerB} use:triggerB>Help</button>
-  <div {...$menuB} use:menuB>
+  <button melt={$triggerB}>Help</button>
+  <div melt={$menuB}>
     <div {...$itemB} use:itemB>...</div>
     <div {...$itemB} use:itemB>...</div>
     <div {...$itemB} use:itemB>...</div>

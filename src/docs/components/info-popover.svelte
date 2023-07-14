@@ -10,21 +10,20 @@
 	export let contentClasses = '';
 </script>
 
-<button {...$trigger} use:trigger aria-label="More info">
+<button melt={$trigger} aria-label="More info">
 	<Info class={cn('h-4 w-4 text-white', iconClasses)} />
 	<span class="sr-only">Open popover</span>
 </button>
 {#if $open}
 	<div
-		{...$content}
-		use:content
+		melt={$content}
 		transition:fade={{ duration: 100 }}
 		class={cn(
 			'mdsvex z-30 max-w-[300px] rounded-md bg-zinc-800 px-4 py-3 shadow-sm shadow-neutral-800',
 			contentClasses
 		)}
 	>
-		<div {...$arrow} />
+		<div melt={$arrow} />
 		<p class="text-sm leading-5 text-white">
 			<slot />
 		</p>

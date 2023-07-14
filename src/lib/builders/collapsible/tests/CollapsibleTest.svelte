@@ -8,7 +8,7 @@
 	});
 </script>
 
-<div {...$root}>
-	<button {...$trigger} use:trigger data-testid="trigger">Trigger</button>
-	<div {...$content} data-testid="content">Content</div>
+<div melt={$root}>
+	<button melt={$trigger} data-testid="trigger">Trigger</button>
+	<div melt={$content} data-testid="content">Content</div>
 </div>

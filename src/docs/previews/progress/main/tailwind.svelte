@@ -14,7 +14,7 @@
 </script>
 
 <div
-	{...$progress}
+	melt={$progress}
 	class="relative h-6 w-[300px] overflow-hidden rounded-[99999px] bg-black/40"
 >
 	<div

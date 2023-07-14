@@ -25,15 +25,15 @@ Unlike a traditional component library, Melt UI provides access to builders inst
 Builders are just functions that generate a collection of properties that can be assigned to any
 element or component.
 
-```svelte {3} /{...$root}/#hi /{...$content}/#hi /{...$trigger}/#hi /use:trigger.action/#hi
+```svelte {3} /$root/#hi /$content/#hi /$trigger/#hi
 <script>
   import { createCollapsible } from '@melt-ui/svelte'
   const { open, root, content, trigger } = createCollapsible()
 </script>
 
-<div {...$root}>
-  <button {...$trigger} use:trigger>{$open ? 'Close' : 'Open'}</button>
-  <div {...$content}>Obi-Wan says: Hello there!</div>
+<div melt={$root}>
+  <button melt={$trigger}>{$open ? 'Close' : 'Open'}</button>
+  <div melt={$content}>Obi-Wan says: Hello there!</div>
 </div>
 ```
 

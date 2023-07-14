@@ -42,12 +42,12 @@ example of how to structure the menu is shown below.
   const { menu, item, trigger, arrow } = createContextMenu()
 </script>
 
-<span {...$trigger} use:trigger>Right click here.</span>
-<div {...$menu} use:menu>
+<span melt={$trigger}>Right click here.</span>
+<div melt={$menu}>
   <div {...$item} use:item>...</div>
   <div {...$item} use:item>...</div>
   <div {...$item} use:item>...</div>
-  <div {...$arrow} />
+  <div melt={$arrow} />
 </div>
 ```
 

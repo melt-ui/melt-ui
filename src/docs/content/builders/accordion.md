@@ -28,7 +28,7 @@ example at the top of this page to create your accordion.
 To disable a single item, you can pass in an object instead of a string to the function.
 
 ```svelte /{ value: 'item-3', disabled: true }/#hi
-<div class="accordion-item" {...$item({ value: 'item-3', disabled: true })}>Item 3</div>
+<div class="accordion-item" melt={$item({ value: 'item-3', disabled: true })}>Item 3</div>
 ```
 
 ### Opening multiple items at once
@@ -82,24 +82,24 @@ update the `options` store with new arguments.
 
 <p>Value: {value} Value Store: {$valueStore}</p>
 
-<div {...root}>
-  <div {...$item('item-1')}>
-    <button {...$trigger('item-1')} use:trigger>Is it accessible?</button>
-    <div {...$content('item-1')}>
+<div melt={$root}>
+  <div melt={$item('item-1')}>
+    <button melt={$trigger('item-1')}>Is it accessible?</button>
+    <div melt={$content('item-1')}>
       <div>Yes. It adheres to the WAI-ARIA design pattern.</div>
     </div>
   </div>
 
-  <div {...$item('item-2')}>
-    <button {...$trigger('item-2')} use:trigger>Is it accessible?</button>
-    <div {...$content('item-2')}>
+  <div melt={$item('item-2')}>
+    <button melt={$trigger('item-2')}>Is it accessible?</button>
+    <div melt={$content('item-2')}>
       <div>Yes. It adheres to the WAI-ARIA design pattern.</div>
     </div>
   </div>
 
-  <div {...$item('item-3')}>
-    <button {...$trigger('item-3')} use:trigger>Is it accessible?</button>
-    <div {...$content('item-3')}>
+  <div melt={$item('item-3')}>
+    <button melt={$trigger('item-3')}>Is it accessible?</button>
+    <div melt={$content('item-3')}>
       <div>Yes. It adheres to the WAI-ARIA design pattern.</div>
     </div>
   </div>
