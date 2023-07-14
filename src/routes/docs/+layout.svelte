@@ -7,7 +7,7 @@
 <div class="container flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6">
 	<aside
 		class="fixed top-16 z-30 -ml-2 hidden h-[calc(100vh-4rem)] w-full shrink-0
-		flex-col md:sticky md:flex pb-2"
+		flex-col pb-2 md:sticky md:flex"
 	>
 		<div class="overflow-y-auto py-6 pr-6 lg:py-8">
 			<SidebarNav />
