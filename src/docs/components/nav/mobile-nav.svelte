@@ -35,7 +35,7 @@
 				<MobileNavLink href="/" {open}>
 					<img src="/logo.svg" alt="Melt UI" class="h-9" />
 				</MobileNavLink>
-				<Button class="px-2" size="sm" variant="ghost" {...$close} action={close}>
+				<Button class="px-2" size="sm" variant="faded" {...$close} action={close}>
 					<X class="h-4 w-4" />
 				</Button>
 			</div>
