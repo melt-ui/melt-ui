@@ -7,8 +7,6 @@ import {
 	handleMenuNavigation,
 	handleTabNavigation,
 	type MenuParts,
-	addHighlight,
-	removeHighlight,
 } from '../menu';
 import {
 	executeCallbacks,
@@ -27,6 +25,7 @@ import {
 	getPreviousFocusable,
 	builder,
 	createElHelpers,
+	isLeftClick,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions';
@@ -153,7 +152,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 						 * Submenu key events bubble through portals and
 						 * we only care about key events that happen inside this menu.
 						 */
-						const isKeyDownInside = target.closest('[data-melt-menubar-menu]') === menuElement;
+						const isKeyDownInside = target.closest('[role="menu"]') === menuElement;
 
 						if (!isKeyDownInside) return;
 						if (FIRST_LAST_KEYS.includes(e.key)) {
@@ -226,7 +225,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 				const unsub = executeCallbacks(
 					addEventListener(node, 'pointerdown', (e) => {
-						if (e.button !== 0 || e.ctrlKey === true) return;
+						if (!isLeftClick(e)) return;
 
 						const $rootOpen = get(rootOpen);
 						const triggerElement = e.currentTarget;
@@ -319,7 +318,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				const triggerElement = document.getElementById(m.rootIds.trigger);
 				if (!isHTMLElement(triggerElement)) return;
 				rootActiveTrigger.set(triggerElement);
-				addHighlight(triggerElement);
+				triggerElement.setAttribute('data-highlighted', '');
 				rootOpen.set(true);
 				return;
 			}
@@ -329,7 +328,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				if (get(rootOpen)) {
 					const triggerElement = document.getElementById(m.rootIds.trigger);
 					if (!isHTMLElement(triggerElement)) return;
-					removeHighlight(triggerElement);
+					triggerElement.removeAttribute('data-highlighted');
 					rootActiveTrigger.set(null);
 					rootOpen.set(false);
 				}
@@ -342,15 +341,11 @@ export function createMenubar(props?: CreateMenubarProps) {
 			const triggerElement = document.getElementById(m.rootIds.trigger);
 			if (!$rootOpen && get(activeMenu) === m.rootIds.menu) {
 				activeMenu.set('');
-				if (triggerElement) {
-					removeHighlight(triggerElement);
-				}
+				triggerElement?.removeAttribute('data-highlighted');
 				return;
 			}
 			if ($rootOpen) {
-				if (triggerElement) {
-					addHighlight(triggerElement);
-				}
+				triggerElement?.setAttribute('data-highlighted', '');
 			}
 		});
 
