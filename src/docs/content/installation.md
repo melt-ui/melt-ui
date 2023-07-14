@@ -70,7 +70,7 @@ yarn add -D @melt-ui/pp svelte-sequential-preprocessor
 <span slot="pnpm">
 
 ```bash
-pnpm install -D @melt-ui/pp svelte-sequential-preprocessor
+pnpm add -D @melt-ui/pp svelte-sequential-preprocessor
 ```
 
 </span>
