@@ -52,7 +52,9 @@ export function processMeltAttributes(input) {
 	let output = input;
 	let meltAttribute = extractMeltAttribute(output);
 
-	while (meltAttribute !== null) {
+	let tries = 0;
+	while (meltAttribute !== null && tries < 100000) {
+		tries++;
 		const oldMelt = `melt={$${
 			meltAttribute.args !== null
 				? `${meltAttribute.builder}(${meltAttribute.args})`
@@ -67,6 +69,7 @@ export function processMeltAttributes(input) {
 		output = output.replace(oldMelt, newMelt);
 		meltAttribute = extractMeltAttribute(output);
 	}
+	if (tries >= 100000) throw new Error('Too many tries');
 
 	return output;
 }
