@@ -31,7 +31,7 @@ yarn add @melt-ui/svelte
 <span slot="pnpm">
 
 ```bash /@melt-ui/#melt /svelte/#melt
-pnpm install @melt-ui/svelte
+pnpm add @melt-ui/svelte
 ```
 
 </span>
