@@ -7,6 +7,7 @@ import { codeImport } from 'remark-code-import';
 import { toHtml } from 'hast-util-to-html';
 import { escapeSvelte } from '@huntabyte/mdsvex';
 import rehypeRewrite from 'rehype-rewrite';
+import { processMeltAttributes } from './src/docs/pp.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -30,7 +31,7 @@ const removePPFromText = (node) => {
 	if (node?.children?.length) {
 		for (const child of node.children) {
 			if (child.type === 'text') {
-				child.value = child.value.replace(/melt=\{\$(.+?)\}/g, '{...$$$1} use:$1');
+				child.value = processMeltAttributes(child.value);
 			}
 			if (child.children?.length) {
 				removePPFromText(child);

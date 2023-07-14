@@ -11,6 +11,7 @@ import { error } from '@sveltejs/kit';
 import { isBuilderName, data, type Builder } from './data/builders';
 import type { SvelteComponent } from 'svelte';
 import { get, writable } from 'svelte/store';
+import { processMeltAttributes } from './pp';
 
 /**
  * Appends strings of classes. If non-truthy values are passed, they are ignored.
@@ -148,10 +149,13 @@ export const noopAction = () => {
 	// do nothing
 };
 
-interface ReturnedObj {
+interface PreviewObj {
 	[key: string]: {
 		[key: string]: {
-			'index.svelte'?: string;
+			'index.svelte'?: {
+				pp: string;
+				base: string;
+			};
 			'globals.css'?: string;
 			'tailwind.config.ts'?: string;
 		};
@@ -161,8 +165,8 @@ interface ReturnedObj {
 export async function createPreviewsObject(
 	component: string,
 	objArr: { path: string; content: string }[]
-): Promise<ReturnedObj> {
-	const returnedObj: ReturnedObj = {};
+): Promise<PreviewObj> {
+	const returnedObj: PreviewObj = {};
 
 	// Iterate through the objects in the array
 	for (const obj of objArr) {
@@ -183,7 +187,12 @@ export async function createPreviewsObject(
 			}
 
 			const highlightedCode = await highlightCode(content, 'svelte');
-			returnedObj[groupKey][fileKey]['index.svelte'] = highlightedCode ?? content;
+			const processedCode = await highlightCode(processMeltAttributes(content), 'svelte');
+
+			returnedObj[groupKey][fileKey]['index.svelte'] = {
+				pp: highlightedCode ?? content,
+				base: processedCode ?? content,
+			};
 		}
 	}
 
