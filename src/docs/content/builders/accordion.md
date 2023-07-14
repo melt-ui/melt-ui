@@ -6,9 +6,11 @@ description:
 ---
 
 <script>
-    import { KbdTable, APIReference, APIWrapper, APITable } from '$docs/components'
+    import { KbdTable, APIReference, Preview } from '$docs/components'
     export let schemas
     export let keyboard
+    export let snippets
+    export let previews
 </script>
 
 ## Anatomy
@@ -105,6 +107,14 @@ update the `options` store with new arguments.
   </div>
 </div>
 ```
+
+## Examples
+
+### Controlled Accordion
+
+<Preview code={snippets.controlled}>
+    <svelte:component this={previews.controlled} />
+</Preview>
 
 ## API Reference
 
