@@ -2,7 +2,7 @@
 	import { beforeNavigate } from '$app/navigation';
 	import { createSwitch } from '$lib';
 
-	export let checked = false;
+	export let checked: boolean | undefined = false;
 	export let id: string;
 	export let keepState = false;
 

@@ -10,6 +10,7 @@ import {
 	next,
 	omit,
 	prev,
+	isLeftClick,
 } from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
@@ -107,8 +108,7 @@ export function createTabs(props?: CreateTabsProps) {
 				}),
 
 				addEventListener(node, 'pointerdown', (e) => {
-					const isLeftClick = e.button === 0;
-					if (!isLeftClick) {
+					if (!isLeftClick(e)) {
 						e.preventDefault();
 						return;
 					}

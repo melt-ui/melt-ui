@@ -13,6 +13,7 @@ import {
 	FIRST_LAST_KEYS,
 	noop,
 	styleToString,
+	isLeftClick,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import type { VirtualElement } from '@floating-ui/core';
@@ -120,7 +121,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 											const target = e.target;
 											if (!isHTMLElement(target)) return;
 
-											if (target.id === rootIds.trigger && e.button === 0) {
+											if (target.id === rootIds.trigger && isLeftClick(e)) {
 												rootOpen.set(false);
 												return;
 											}

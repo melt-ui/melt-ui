@@ -21,6 +21,7 @@ import {
 	removeScroll,
 	sleep,
 	styleToString,
+	isLeftClick,
 } from '$lib/internal/helpers';
 import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
@@ -219,6 +220,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			applyAttrsIfDisabled(node);
 			const unsub = executeCallbacks(
 				addEventListener(node, 'pointerdown', (e) => {
+					if (!isLeftClick(e)) return;
+
 					const $rootOpen = get(rootOpen);
 					const triggerElement = e.currentTarget;
 					if (!isHTMLElement(triggerElement)) return;
