@@ -27,21 +27,27 @@
 		/>
 		<div
 			melt={$content}
-			class="menu fixed bottom-0 z-50 h-2/3 w-full bg-neutral-900 p-[25px]
+			class="menu fixed bottom-0 z-50 h-2/3 w-full bg-neutral-900 px-2 py-6
 				 shadow-lg focus:outline-none"
 			transition:fly={{ y: 768, duration: 300, opacity: 1 }}
 		>
-			<MobileNavLink href="/" {open}>
-				<img src="/logo.svg" alt="Melt UI" class="h-9" />
-			</MobileNavLink>
+			<div class="flex items-center justify-between">
+				<MobileNavLink href="/" {open}>
+					<img src="/logo.svg" alt="Melt UI" class="h-9" />
+				</MobileNavLink>
+				<Button class="px-2" size="sm" variant="ghost" {...$close} action={close}>
+					<X class="h-4 w-4" />
+				</Button>
+			</div>
+
+			<div class="mt-2 flex justify-center rounded-lg bg-neutral-800 px-4 py-2">
+				<Switch id="preprocessor" bind:checked={$usingPreprocessor} keepState>
+					<a href="/docs/preprocessor" class="underline"> Preprocessor </a>
+				</Switch>
+			</div>
 
 			<div class="mb-4 mt-1 h-full overflow-auto overflow-x-visible py-2 pb-10 pr-4">
 				<div class="flex flex-col">
-					<div class="flex justify-center rounded-lg bg-neutral-800 px-4 py-2">
-						<Switch id="preprocessor" bind:checked={$usingPreprocessor} keepState>
-							<a href="/docs/preprocessor" class="underline"> Preprocessor </a>
-						</Switch>
-					</div>
 					{#each navConfig.mainNav as navItem, index (navItem + index.toString())}
 						{#if navItem.href}
 							<MobileNavLink href={navItem.href} {open}>
@@ -70,22 +76,13 @@
 					{/each}
 				</div>
 			</div>
-
-			<Button
-				class="absolute right-4 top-4 px-2"
-				size="sm"
-				variant="ghost"
-				{...$close}
-				action={close}
-			>
-				<X class="h-4 w-4" />
-			</Button>
 		</div>
 	{/if}
 </div>
 
 <style lang="postcss">
-	.menu {
-		@apply ring-0 !important;
+	.menu,
+	.menu :global(*) {
+		@apply !ring-0;
 	}
 </style>
