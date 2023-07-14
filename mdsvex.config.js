@@ -6,6 +6,7 @@ import rehypePrettyCode from 'rehype-pretty-code';
 import { codeImport } from 'remark-code-import';
 import { toHtml } from 'hast-util-to-html';
 import { escapeSvelte } from '@huntabyte/mdsvex';
+import rehypeRewrite from 'rehype-rewrite';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -25,6 +26,44 @@ const prettyCodeOptions = {
 	},
 };
 
+const removePPFromText = (node) => {
+	if (node?.children?.length) {
+		for (const child of node.children) {
+			if (child.type === 'text') {
+				child.value = child.value.replace(/melt=\{\$(.+?)\}/g, '{...$$$1} use:$1');
+			}
+			if (child.children?.length) {
+				removePPFromText(child);
+			}
+		}
+	}
+};
+
+const rehypeRewriteOptions = {
+	rewrite: (node, index, parent) => {
+		if (
+			node?.type === 'element' &&
+			node?.tagName === 'Components.pre' &&
+			!node.properties['data-non-pp']
+		) {
+			const clonedNode = JSON.parse(JSON.stringify(node));
+			const nonPPNode = {
+				...clonedNode,
+				properties: { ...clonedNode.properties, 'data-non-pp': true },
+			};
+
+			removePPFromText(nonPPNode);
+
+			parent.children = [
+				...parent.children.slice(0, index),
+				node,
+				nonPPNode,
+				...parent.children.slice(index + 1),
+			];
+		}
+	},
+};
+
 /** @type {import('mdsvex').MdsvexOptions} */
 export const mdsvexOptions = {
 	extensions: ['.md'],
@@ -37,6 +76,7 @@ export const mdsvexOptions = {
 	},
 	remarkPlugins: [remarkGfm, codeImport],
 	rehypePlugins: [
+		[rehypeRewrite, rehypeRewriteOptions],
 		rehypeComponentPreToPre,
 		[rehypePrettyCode, prettyCodeOptions],
 		rehypeHandleMetadata,
@@ -92,22 +132,35 @@ function rehypeHandleMetadata() {
 
 function rehypeRenderCode() {
 	return async (tree) => {
+		let counter = 0;
 		visit(tree, (node) => {
 			if (
 				node?.type === 'element' &&
 				(node?.tagName === 'Components.pre' || node?.tagName === 'pre')
 			) {
-				const [codeEl] = node.children;
+				counter++;
+
+				const isNonPP = counter % 2 === 0;
+				if (isNonPP) {
+					node.properties = {
+						...node.properties,
+						'data-non-pp': '',
+					};
+				}
+
+				/** @type HTMLElement */
+				const codeEl = node.children[0];
 				if (codeEl.tagName !== 'code') {
 					return;
 				}
-				const toHtmlString = toHtml(codeEl, {
+
+				const meltString = toHtml(codeEl, {
 					allowDangerousCharacters: true,
 					allowDangerousHtml: true,
 				});
 
 				codeEl.type = 'raw';
-				codeEl.value = `{@html \`${escapeSvelte(toHtmlString)}\`}`;
+				codeEl.value = `{@html \`${escapeSvelte(meltString)}\`}`;
 			}
 		});
 	};

@@ -75,7 +75,7 @@
 	{/if}
 
 	<div class="ml-auto">
-		<Switch bind:checked={viewCode} />
+		<Switch bind:checked={viewCode} id="code">View code</Switch>
 	</div>
 </div>
 
