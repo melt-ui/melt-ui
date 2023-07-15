@@ -5,7 +5,7 @@
 	export let rel: string | undefined = undefined;
 	export let target: string | undefined = undefined;
 
-	$: internal = href.startsWith('/');
+	$: internal = href.startsWith('/') || href.startsWith('#');
 </script>
 
 <a
