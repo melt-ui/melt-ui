@@ -40,3 +40,7 @@ export type TableOfContentsItem = {
 export type TableOfContents = {
 	items: TableOfContentsItem[];
 };
+
+export type NavItemProps = {
+	id: string;
+};

@@ -1,10 +1,10 @@
-// import { builder, createElHelpers, generateId, isBrowser } from "$lib/internal/helpers";
+import { addEventListener, builder, createElHelpers, executeCallbacks, generateId, isBrowser } from "$lib/internal/helpers";
 import type { Defaults } from "$lib/internal/types";
 
 import { onMount } from "svelte";
 import { get, writable, type Writable } from "svelte/store";
 
-import type { Heading, CreateTableOfContentsArgs, ElementHeadingLU, HeadingParentsLU, TableOfContentsItem } from "./types";
+import type { Heading, CreateTableOfContentsArgs, ElementHeadingLU, HeadingParentsLU, TableOfContentsItem, NavItemProps } from "./types";
 
 const defaults = {
     exclude: ['h1'],
@@ -20,10 +20,14 @@ const defaults = {
 // https://stackoverflow.com/questions/49820013/javascript-scrollintoview-smooth-scroll-and-offset?answertab=scoredesc#tab-top
 
 /** TODO: add scroll to element into an action for the individual nav items. */
-export function scrollToElement(headingElem: HTMLElement): void {
-    const elemTarget: Element | null = document.querySelector(`#${headingElem.id}`);
+export function scrollToElement(selector: string): void {
+    const elemTarget: Element | null = document.querySelector(selector);
     elemTarget?.scrollIntoView({ behavior: 'smooth' });
 }
+// export function scrollToElement(headingElem: HTMLElement): void {
+//     const elemTarget: Element | null = document.querySelector(`#${headingElem.id}`);
+//     elemTarget?.scrollIntoView({ behavior: 'smooth' });
+// }
 
  /**
   * @param args Provide the arguments for the table of contents builder.
@@ -57,7 +61,6 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
      * Create a tree view of our headings so that the hierarchy is represented.
      * @param arr An array of heading elements.
      * @param startIndex The parent elements original index in the array.
-     * @returns 
      */
     function createTree(arr: Element[], startIndex = 0): TableOfContentsItem[] {
         const tree: TableOfContentsItem[] = [];
@@ -208,6 +211,29 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
         activeHeadingIdxs.set(activeHeaderIdxs);
     }
 
+    const item = builder('', {
+        returned: () => {
+            return {
+                role: 'link',
+                tabindex: 0
+            }
+        },
+        action: (node: HTMLElement, params: NavItemProps) => {
+            const { id } = params;
+
+            const unsub = executeCallbacks(
+                addEventListener(node, 'click', (e) => {
+                    e.preventDefault();
+                    scrollToElement(`#${id}`);
+                }),
+            );
+
+            return {
+                destroy: unsub
+            };
+        }
+    });
+
     onMount(() => {
         // Init
         generateInitialLists();
@@ -227,6 +253,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
     return {
         activeHeadingIdxs,
-        headingsTree
+        headingsTree,
+        navItem: item
     }
 }

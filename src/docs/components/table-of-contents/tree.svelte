@@ -4,6 +4,7 @@
 
 	export let tree: TableOfContentsItem[] = [];
 	export let activeHeadingIdxs: number[];
+	export let navItem;
 	export let level = 1;
 </script>
 
@@ -15,12 +16,22 @@
 				<a
 					href="#{item.id}"
 					class={cn(
-						'inline-block no-underline transition-colors hover:text-white',
-						active ? 'font-medium text-white' : 'text-neutral-300'
+						'inline-block no-underline transition-colors hover:text-magnum-600',
+						active ? 'text-magnum-500' : 'text-neutral-300'
 					)}
 				>
 					{item.title}
 				</a>
+				<!-- <div
+					{...$navItem}
+					use:navItem={{ id: item.id }}
+					class={cn(
+						'inline-block no-underline transition-colors hover:text-magnum-600',
+						active ? 'text-magnum-500' : 'text-neutral-300'
+					)}
+				>
+					{item.title}
+				</div> -->
 				{#if item.items && item.items.length}
 					<svelte:self tree={item.items} level={level + 1} {activeHeadingIdxs} />
 				{/if}
