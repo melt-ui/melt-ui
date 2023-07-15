@@ -170,7 +170,6 @@ export const createAccordion = (props?: CreateAccordionProps) => {
 				if (!parentTrigger) return;
 
 				node.id = contentId;
-				node.setAttribute('aria-labelledby', triggerId || '');
 				parentTrigger.setAttribute('aria-controls', contentId);
 				parentTrigger.id = triggerId;
 			});
