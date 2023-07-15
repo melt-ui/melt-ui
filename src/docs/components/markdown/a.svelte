@@ -2,10 +2,11 @@
 	import External from '~icons/lucide/external-link';
 
 	export let href: string;
-	export let rel: string | undefined = undefined;
-	export let target: string | undefined = undefined;
 
 	$: internal = href.startsWith('/');
+
+	$: rel = !internal ? 'noopener noreferrer' : undefined;
+	$: target = !internal ? '_blank' : undefined;
 </script>
 
 <a

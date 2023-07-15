@@ -6,9 +6,11 @@ description:
 ---
 
 <script>
-    import { KbdTable, APIReference, APIWrapper, APITable } from '$docs/components'
+    import { KbdTable, APIReference, Preview, Callout } from '$docs/components'
     export let schemas
     export let keyboard
+    export let snippets
+    export let previews
 </script>
 
 ## Anatomy
@@ -23,6 +25,10 @@ description:
 To create an accordion, use the `createAccordion` builder function. Follow the anatomy or the
 example at the top of this page to create your accordion.
 
+<Callout type="warning">
+To ensure the accordion you create is accessible, wrap the trigger in an element with the <code>role="heading"</code> attribute, and set the <code>aria-level</code> attribute to the appropriate heading level. Alternatively, you can wrap the trigger in a heading element, as we have done in the preview above.
+</Callout>
+
 ### Disabling a single item
 
 To disable a single item, you can pass in an object instead of a string to the function.
@@ -30,6 +36,10 @@ To disable a single item, you can pass in an object instead of a string to the f
 ```svelte /{ value: 'item-3', disabled: true }/#hi
 <div class="accordion-item" melt={$item({ value: 'item-3', disabled: true })}>Item 3</div>
 ```
+
+<Preview code={snippets.disabled}>
+    <svelte:component this={previews.disabled} />
+</Preview>
 
 ### Opening multiple items at once
 
@@ -42,6 +52,10 @@ Pass in the `type` argument to `createAccordion` with a value of `'multiple'`.
   })
 </script>
 ```
+
+<Preview code={snippets.multiple}>
+    <svelte:component this={previews.multiple} />
+</Preview>
 
 ### Controlled access
 
