@@ -10,10 +10,8 @@
 			Airplane mode
 		</label>
 		<button
-			{...$root}
-			use:root
-			class="relative h-6 w-11 cursor-default rounded-full bg-magnum-800
-            transition-colors data-[state=checked]:bg-magnum-950"
+			melt={$root}
+			class="relative h-6 w-11 cursor-default rounded-full bg-magnum-800 transition-colors data-[state=checked]:bg-magnum-950"
 			id="airplane-mode"
 		>
 			<span
@@ -21,7 +19,7 @@
                 transition-transform will-change-transform
                 {$isChecked && 'translate-x-[22px]'}"
 			/>
-			<input {...$input} />
+			<input melt={$input} />
 		</button>
 	</div>
 </form>

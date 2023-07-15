@@ -39,6 +39,12 @@ const builder: APISchema = {
 			description:
 				'Optional function that runs whenever `open` should change. The returned value will be used to update `open`.',
 		},
+		{
+			name: 'disableFocusTrap',
+			type: 'boolean',
+			default: 'false',
+			description: 'Whether to disable the focus trap.',
+		},
 	],
 	returnedProps: [
 		{

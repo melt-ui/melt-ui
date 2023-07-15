@@ -16,39 +16,41 @@
 </script>
 
 <div
-	{...$root}
-	class="flex w-full items-center gap-4 rounded-md bg-white
-	px-3 py-3 text-neutral-700 shadow-sm"
+	melt={$root}
+	class="flex min-w-max items-center gap-4 rounded-md bg-white px-3 py-3 text-neutral-700 shadow-sm"
 >
-	<div class="group" {...$fontGroup}>
-		<button class="item" {...$fontItem('bold')} use:fontItem>
+	<div class="group" melt={$fontGroup}>
+		<button class="item" melt={$fontItem('bold')}>
 			<Bold />
 		</button>
-		<button class="item" {...$fontItem('italic')} use:fontItem>
+		<button class="item" melt={$fontItem('italic')}>
 			<Italic />
 		</button>
-		<button class="item" {...$fontItem('strikethrough')} use:fontItem>
+		<button class="item" melt={$fontItem('strikethrough')}>
 			<Strikethrough />
 		</button>
 	</div>
-	<div class="separator" {...$separator} />
-	<div class="group" {...$alignGroup}>
-		<button class="item" {...$alignItem('left')} use:alignItem>
+	<div class="separator" melt={$separator} />
+	<div class="group" melt={$alignGroup}>
+		<button class="item" melt={$alignItem('left')}>
 			<AlignLeft />
 		</button>
-		<button class="item" {...$alignItem('center')} use:alignItem>
+		<button class="item" melt={$alignItem('center')}>
 			<AlignCenter />
 		</button>
-		<button class="item" {...$alignItem('right')} use:alignItem>
+		<button class="item" melt={$alignItem('right')}>
 			<AlignRight />
 		</button>
 	</div>
-	<div class="separator" {...$separator} />
-	<!-- svelte-ignore a11y-invalid-attribute -->
-	<a href="#" class="link nowrap flex-shrink-0" {...link} use:link>
+	<div class="separator" melt={$separator} />
+	<a
+		href="https://www.melt-ui.com/"
+		class="link nowrap flex-shrink-0"
+		melt={$link}
+	>
 		Edited 2 hours ago
 	</a>
-	<button class="button" {...button} use:button>Save</button>
+	<button class="button" melt={$button}>Save</button>
 </div>
 
 <style lang="postcss">

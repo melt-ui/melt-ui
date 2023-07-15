@@ -10,8 +10,7 @@
 	href="https://github.com/melt-ui/melt-ui"
 	target="_blank"
 	rel="noreferrer"
-	{...$trigger}
-	use:trigger
+	melt={$trigger}
 >
 	<img
 		src="/logo-mark.svg"
@@ -23,8 +22,7 @@
 
 {#if $open}
 	<div
-		{...$content}
-		use:content
+		melt={$content}
 		transition:fade={{ duration: 100 }}
 		class="z-10 rounded-md bg-white shadow-sm"
 	>
@@ -57,7 +55,7 @@
 				</div>
 			</div>
 		</div>
-		<div {...$arrow} />
+		<div melt={$arrow} />
 	</div>
 {/if}
 

@@ -1,11 +1,20 @@
 <script lang="ts" context="module">
+	type CodeEntry = {
+		'index.svelte'?: {
+			pp: string;
+			base: string;
+		};
+		'tailwind.config.ts'?: string;
+		'globals.css'?: string;
+	};
+
+	type ProcessedCodeEntry = Omit<CodeEntry, 'index.svelte'> & {
+		'index.svelte'?: string;
+	};
+
 	export type PreviewProps = {
 		code: {
-			[key: string]: {
-				'index.svelte'?: string;
-				'tailwind.config.ts'?: string;
-				'globals.css'?: string;
-			} | null;
+			[codingStyle: string]: CodeEntry | null;
 		};
 	};
 </script>
@@ -20,6 +29,7 @@
 	import Switch from './switch.svelte';
 	import { TabsList, TabsRoot } from './tabs';
 	import { writable } from 'svelte/store';
+	import { usingPreprocessor } from '$routes/store';
 
 	type $$Props = PreviewProps & {
 		viewCode: boolean;
@@ -27,30 +37,57 @@
 
 	export let code: $$Props['code'];
 
-	function handleMissingCode(code: $$Props['code']) {
+	function normalizeCode(code: $$Props['code']) {
 		if (!Object.prototype.hasOwnProperty.call(code, 'tailwind')) {
 			code['tailwind'] = null;
 		}
 		if (!Object.prototype.hasOwnProperty.call(code, 'css')) {
 			code['css'] = null;
 		}
+
 		return code;
+	}
+
+	type ProcessCodeArgs = {
+		code: $$Props['code'];
+		codingStyle: string;
+		usePP?: boolean;
+	};
+	function processCode({ code, codingStyle, usePP }: ProcessCodeArgs): ProcessedCodeEntry {
+		code = normalizeCode(code);
+
+		const svelteFileObj = code[codingStyle]?.['index.svelte'];
+
+		const processedCode: ProcessedCodeEntry = {
+			...code[codingStyle],
+			['index.svelte']:
+				svelteFileObj !== undefined ? (usePP ? svelteFileObj.pp : svelteFileObj.base) : undefined,
+		};
+
+		return processedCode;
 	}
 
 	const codingStyle = writable<'tailwind' | 'css'>('tailwind');
 
-	let codingStyleObj: $$Props['code'][typeof $codingStyle] | null =
-		handleMissingCode(code)[$codingStyle];
+	let codingStyleObj: ProcessedCodeEntry | null = processCode({
+		code,
+		codingStyle: $codingStyle,
+		usePP: $usingPreprocessor,
+	});
 
 	$: {
-		codingStyleObj = handleMissingCode(code)[$codingStyle];
+		codingStyleObj = processCode({
+			code,
+			codingStyle: $codingStyle,
+			usePP: $usingPreprocessor,
+		});
 	}
 
 	$: files = codingStyleObj !== null ? Object.keys(codingStyleObj) : [];
 
 	let viewCode = false;
 
-	$: codeOptions = Object.entries(handleMissingCode(code)).map(([key, value]) => {
+	$: codeOptions = Object.entries(normalizeCode(code)).map(([key, value]) => {
 		return {
 			value: key,
 			label: key,
@@ -75,7 +112,7 @@
 	{/if}
 
 	<div class="ml-auto">
-		<Switch bind:checked={viewCode} />
+		<Switch bind:checked={viewCode} id="code">View code</Switch>
 	</div>
 </div>
 

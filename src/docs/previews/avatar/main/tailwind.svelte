@@ -21,21 +21,26 @@
 	<div
 		class="flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100"
 	>
-		<img {...$image} alt="Avatar" class="h-full w-full rounded-[inherit]" />
-		<span {...$fallback} class="text-3xl font-medium text-magnum-700">RH</span>
+		<img melt={$image} alt="Avatar" class="h-full w-full rounded-[inherit]" />
+		<span melt={$fallback} class="text-3xl font-medium text-magnum-700">RH</span
+		>
 	</div>
 
 	<div
 		class="flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100"
 	>
-		<img {...$imageA} alt="Avatar" class="h-full w-full rounded-[inherit]" />
-		<span {...$fallbackA} class="text-3xl font-medium text-magnum-700">SH</span>
+		<img melt={$imageA} alt="Avatar" class="h-full w-full rounded-[inherit]" />
+		<span melt={$fallbackA} class="text-3xl font-medium text-magnum-700"
+			>SH</span
+		>
 	</div>
 
 	<div
 		class="flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100"
 	>
-		<img {...$imageB} alt="Avatar" class="h-full w-full rounded-[inherit]" />
-		<span {...$fallbackB} class="text-3xl font-medium text-magnum-700">UI</span>
+		<img melt={$imageB} alt="Avatar" class="h-full w-full rounded-[inherit]" />
+		<span melt={$fallbackB} class="text-3xl font-medium text-magnum-700"
+			>UI</span
+		>
 	</div>
 </div>

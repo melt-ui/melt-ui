@@ -25,6 +25,7 @@ import {
 	getPreviousFocusable,
 	builder,
 	createElHelpers,
+	isLeftClick,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions';
@@ -224,7 +225,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 				const unsub = executeCallbacks(
 					addEventListener(node, 'pointerdown', (e) => {
-						if (e.button !== 0 || e.ctrlKey === true) return;
+						if (!isLeftClick(e)) return;
 
 						const $rootOpen = get(rootOpen);
 						const triggerElement = e.currentTarget;

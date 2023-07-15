@@ -4,6 +4,7 @@ import {
 	createElHelpers,
 	executeCallbacks,
 	getDirectionalKeys,
+	isLeftClick,
 	kbd,
 } from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
@@ -18,7 +19,7 @@ const defaults = {
 	required: false,
 } satisfies Defaults<CreateRadioGroupProps>;
 
-type RadioGroupParts = 'item';
+type RadioGroupParts = 'item' | 'item-input';
 const { name, selector } = createElHelpers<RadioGroupParts>('radio-group');
 
 export function createRadioGroup(props: CreateRadioGroupProps = {}) {
@@ -68,8 +69,7 @@ export function createRadioGroup(props: CreateRadioGroupProps = {}) {
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'pointerdown', (e) => {
-					const isLeftClick = e.button === 0;
-					if (!isLeftClick) {
+					if (!isLeftClick(e)) {
 						e.preventDefault();
 						return;
 					}
@@ -79,9 +79,11 @@ export function createRadioGroup(props: CreateRadioGroupProps = {}) {
 					if (disabled || itemValue === undefined) return;
 					value.set(itemValue);
 				}),
-				addEventListener(node, 'focus', (e) => {
-					const el = e.currentTarget as HTMLElement;
-					el.click();
+				addEventListener(node, 'focus', () => {
+					const disabled = node.dataset.disabled === 'true';
+					const itemValue = node.dataset.value;
+					if (disabled || itemValue === undefined) return;
+					value.set(itemValue);
 				}),
 				addEventListener(node, 'keydown', (e) => {
 					const $options = get(options);
@@ -130,21 +132,24 @@ export function createRadioGroup(props: CreateRadioGroupProps = {}) {
 		},
 	});
 
-	const itemInput = derived([options, value], ([$options, $value]) => {
-		return (props: RadioGroupItemProps) => {
-			const itemValue = typeof props === 'string' ? props : props.value;
-			const argDisabled = typeof props === 'string' ? false : !!props.disabled;
-			const disabled = $options.disabled || argDisabled;
+	const itemInput = builder(name('item-input'), {
+		stores: [options, value],
+		returned: ([$options, $value]) => {
+			return (props: RadioGroupItemProps) => {
+				const itemValue = typeof props === 'string' ? props : props.value;
+				const argDisabled = typeof props === 'string' ? false : !!props.disabled;
+				const disabled = $options.disabled || argDisabled;
 
-			return {
-				type: 'hidden',
-				'aria-hidden': true,
-				tabindex: -1,
-				value: itemValue,
-				checked: $value === itemValue,
-				disabled,
+				return {
+					type: 'hidden',
+					'aria-hidden': true,
+					tabindex: -1,
+					value: itemValue,
+					checked: $value === itemValue,
+					disabled,
+				};
 			};
-		};
+		},
 	});
 
 	const isChecked = derived(value, ($value) => {

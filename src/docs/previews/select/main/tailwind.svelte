@@ -12,26 +12,17 @@
 	};
 </script>
 
-<button class="trigger" {...$trigger} use:trigger aria-label="Food">
+<button class="trigger" melt={$trigger} aria-label="Food">
 	{$label || 'Select an option'}
 	<ChevronDown />
 </button>
 
-<div class="menu" {...$menu} use:menu>
+<div class="menu" melt={$menu}>
 	{#each Object.entries(options) as [key, arr]}
-		<div {...$group(key)}>
-			<div class="label" {...$groupLabel(key)}>
-				{key}
-			</div>
+		<div melt={$group(key)}>
+			<div class="label" melt={$groupLabel(key)}>{key}</div>
 			{#each arr as item}
-				<div
-					class="option"
-					{...$option({
-						value: item,
-						label: item,
-					})}
-					use:option
-				>
+				<div class="option" melt={$option({ value: item, label: item })}>
 					{#if $isSelected(item)}
 						<div class="check">
 							<Check />

@@ -1,11 +1,13 @@
 import { usePopper } from '$lib/internal/actions';
 import {
 	addEventListener,
+	back,
 	builder,
 	createElHelpers,
 	effect,
 	executeCallbacks,
 	FIRST_LAST_KEYS,
+	forward,
 	generateId,
 	isBrowser,
 	isElementDisabled,
@@ -22,7 +24,6 @@ import {
 	styleToString,
 } from '$lib/internal/helpers';
 import { getOptions } from '$lib/internal/helpers/list';
-
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
@@ -42,7 +43,6 @@ const { name, selector } = createElHelpers('combobox');
  * Creates an ARIA-1.2-compliant combobox.
  *
  * @TODO support providing an initial selected item
- * @TODO support PAGE_UP/PAGE_DOWN navigation (+10,-10)
  * @TODO expose a nice mechanism for clearing the input.
  * @TODO would it be useful to have a callback for when an item is selected?
  * @TODO multi-select using `tags-input` builder?
@@ -252,15 +252,21 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 						// Get the index of the currently highlighted item.
 						const $currentItem = get(highlightedItem);
 						const currentIndex = $currentItem ? candidateNodes.indexOf($currentItem) : -1;
-						// Calculate the index of the next menu item to highlight.
+						// Find the next menu item to highlight.
 						const loop = $options.loop;
-						let nextItem: HTMLElement | undefined;
+						let nextItem: HTMLElement;
 						switch (e.key) {
 							case kbd.ARROW_DOWN:
 								nextItem = next(candidateNodes, currentIndex, loop);
 								break;
+							case kbd.PAGE_DOWN:
+								nextItem = forward(candidateNodes, currentIndex, 10, loop);
+								break;
 							case kbd.ARROW_UP:
 								nextItem = prev(candidateNodes, currentIndex, loop);
+								break;
+							case kbd.PAGE_UP:
+								nextItem = back(candidateNodes, currentIndex, 10, loop);
 								break;
 							case kbd.HOME:
 								nextItem = candidateNodes[0];
@@ -271,11 +277,6 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 							default:
 								return;
 						}
-						/**
-						 * Bail if `next` or `prev` return `undefined`.
-						 * Theoretically this shouldn't be possible but it's a good check anyway.
-						 */
-						if (typeof nextItem === 'undefined') return;
 						// Highlight the new item and scroll it into view.
 						highlightedItem.set(nextItem);
 						nextItem.scrollIntoView({ block: $options.scrollAlignment });

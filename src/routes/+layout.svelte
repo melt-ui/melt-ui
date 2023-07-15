@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.postcss';
 	import { dev } from '$app/environment';
-	import { SiteHeader, TailwindIndicator } from '$docs/components';
+	import { JsIndicator, SiteHeader, TailwindIndicator } from '$docs/components';
 </script>
 
 <div class="relative flex min-h-screen flex-col" id="page">
@@ -15,7 +15,8 @@
 	<header class="sticky bottom-0 z-40 w-full bg-neutral-900 px-2 pb-3 md:hidden">
 		<SiteHeader />
 	</header>
-	{#if dev}
+	{#if dev || process.env.CI}
 		<TailwindIndicator />
+		<JsIndicator />
 	{/if}
 </div>

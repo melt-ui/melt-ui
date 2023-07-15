@@ -35,11 +35,11 @@ example of how to structure the hovercard is shown below.
   const { trigger, content, arrow } = createHoverCard()
 </script>
 
-<button {...$trigger} use:trigger>Hover Me</button>
+<button melt={$trigger}>Hover Me</button>
 
-<div {...$content} use:content>
+<div melt={$content}>
   <div>I am content inside the hover card</div>
-  <div {...$arrow} />
+  <div melt={$arrow} />
 </div>
 ```
 

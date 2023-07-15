@@ -15,8 +15,7 @@
 <button
 	type="button"
 	class="trigger"
-	{...$trigger}
-	use:trigger
+	melt={$trigger}
 	aria-label="Update dimensions"
 >
 	<Plus class="h-4 w-4" />
@@ -25,12 +24,11 @@
 
 {#if $open}
 	<div
-		{...$content}
-		use:content
+		melt={$content}
 		transition:fade={{ duration: 100 }}
 		class="z-10 rounded-md bg-white shadow-sm"
 	>
-		<div {...$arrow} />
+		<div melt={$arrow} />
 		<p class="px-4 py-1 text-magnum-700">Add to library</p>
 	</div>
 {/if}

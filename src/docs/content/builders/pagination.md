@@ -33,18 +33,18 @@ the example above to create your pagination component.
   })
 </script>
 
-<nav {...root}>
+<nav melt={$root}>
   <p>Showing items {$range.start} - {$range.end}</p>
   <div>
-    <button {...$prevButton}>Prev</button>
+    <button melt={$prevButton}>Prev</button>
     {#each $pages as page (page.key)}
       {#if page.type === 'ellipsis'}
         <span>...</span>
       {:else}
-        <button {...$pageTrigger(page)}>{page.value}</button>
+        <button melt={$pageTrigger(page)}>{page.value}</button>
       {/if}
     {/each}
-    <button {...$nextButton}>Next</button>
+    <button melt={$nextButton}>Next</button>
   </div>
 </nav>
 ```

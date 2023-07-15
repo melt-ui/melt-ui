@@ -3,20 +3,26 @@ import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,
 	addEventListener,
+	back,
 	builder,
 	createElHelpers,
 	createTypeaheadSearch,
 	effect,
 	executeCallbacks,
+	forward,
 	generateId,
 	getNextFocusable,
 	getPreviousFocusable,
 	handleRovingFocus,
 	isBrowser,
+	isElementDisabled,
 	isHTMLElement,
 	kbd,
+	last,
+	next,
 	noop,
 	omit,
+	prev,
 	removeScroll,
 	styleToString,
 } from '$lib/internal/helpers';
@@ -40,7 +46,7 @@ const defaults = {
 	loop: false,
 } satisfies Defaults<CreateSelectProps>;
 
-type SelectParts = 'menu' | 'trigger' | 'option' | 'group' | 'group-label';
+type SelectParts = 'menu' | 'trigger' | 'option' | 'group' | 'group-label' | 'arrow' | 'input';
 const { name } = createElHelpers<SelectParts>('select');
 
 export function createSelect(props?: CreateSelectProps) {
@@ -293,14 +299,17 @@ export function createSelect(props?: CreateSelectProps) {
 		},
 	});
 
-	const arrow = derived(options, ($options) => ({
-		'data-arrow': true,
-		style: styleToString({
-			position: 'absolute',
-			width: `var(--arrow-size, ${$options.arrowSize}px)`,
-			height: `var(--arrow-size, ${$options.arrowSize}px)`,
+	const arrow = builder(name('arrow'), {
+		stores: options,
+		returned: ($options) => ({
+			'data-arrow': true,
+			style: styleToString({
+				position: 'absolute',
+				width: `var(--arrow-size, ${$options.arrowSize}px)`,
+				height: `var(--arrow-size, ${$options.arrowSize}px)`,
+			}),
 		}),
-	}));
+	});
 
 	const option = builder(name('option'), {
 		stores: value,
@@ -482,24 +491,27 @@ export function createSelect(props?: CreateSelectProps) {
 		};
 	});
 
-	const input = derived([value, options], ([$value, $options]) => {
-		return {
-			type: 'hidden',
-			name: $options.name,
-			value: $value,
-			'aria-hidden': true,
-			hidden: true,
-			tabIndex: -1,
-			required: $options.required,
-			disabled: $options.disabled,
-			style: styleToString({
-				position: 'absolute',
-				opacity: 0,
-				'pointer-events': 'none',
-				margin: 0,
-				transform: 'translateX(-100%)',
-			}),
-		};
+	const input = builder(name('input'), {
+		stores: [value, options],
+		returned: ([$value, $options]) => {
+			return {
+				type: 'hidden',
+				name: $options.name,
+				value: $value,
+				'aria-hidden': true,
+				hidden: true,
+				tabIndex: -1,
+				required: $options.required,
+				disabled: $options.disabled,
+				style: styleToString({
+					position: 'absolute',
+					opacity: 0,
+					'pointer-events': 'none',
+					margin: 0,
+					transform: 'translateX(-100%)',
+				}),
+			};
+		},
 	});
 
 	function isMouse(e: PointerEvent) {
@@ -541,43 +553,37 @@ export function createSelect(props?: CreateSelectProps) {
 		// menu items of the current menu
 		const items = getOptions(currentTarget);
 		if (!items.length) return;
-
-		const candidateNodes = items.filter((opt) => {
-			if (opt.hasAttribute('data-disabled')) {
-				return false;
-			}
-			if (opt.getAttribute('disabled') === 'true') {
-				return false;
-			}
-			return true;
-		});
-
-		// Index of the currently focused item in the candidate nodes array
+		// Disabled items can't be highlighted. Skip them.
+		const candidateNodes = items.filter((opt) => !isElementDisabled(opt));
+		// Get the index of the currently highlighted item.
 		const currentIndex = candidateNodes.indexOf(currentFocusedItem);
-
-		// Calculate the index of the next menu item
-		let nextIndex: number;
+		// Find the next menu item to highlight.
+		let nextItem: HTMLElement;
 		const $options = get(options);
 		const loop = $options.loop;
-
 		switch (e.key) {
 			case kbd.ARROW_DOWN:
-				nextIndex =
-					currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : loop ? 0 : currentIndex;
+				nextItem = next(candidateNodes, currentIndex, loop);
+				break;
+			case kbd.PAGE_DOWN:
+				nextItem = forward(candidateNodes, currentIndex, 10, loop);
 				break;
 			case kbd.ARROW_UP:
-				nextIndex = currentIndex > 0 ? currentIndex - 1 : loop ? candidateNodes.length - 1 : 0;
+				nextItem = prev(candidateNodes, currentIndex, loop);
+				break;
+			case kbd.PAGE_UP:
+				nextItem = back(candidateNodes, currentIndex, 10, loop);
 				break;
 			case kbd.HOME:
-				nextIndex = 0;
+				nextItem = candidateNodes[0];
 				break;
 			case kbd.END:
-				nextIndex = candidateNodes.length - 1;
+				nextItem = last(candidateNodes);
 				break;
 			default:
 				return;
 		}
-		handleRovingFocus(candidateNodes[nextIndex]);
+		handleRovingFocus(nextItem);
 	}
 
 	function handleTabNavigation(e: KeyboardEvent) {

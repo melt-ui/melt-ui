@@ -21,6 +21,7 @@ import {
 	removeScroll,
 	sleep,
 	styleToString,
+	isLeftClick,
 } from '$lib/internal/helpers';
 import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
@@ -88,6 +89,11 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	const lastPointerX = writable(0);
 	const pointerGraceIntent = writable<GraceIntent | null>(null);
 	const pointerDir = writable<Side>('right');
+
+	/**
+	 * Track currently focused item in the menu.
+	 */
+	const currentFocusedItem = writable<HTMLElement | null>(null);
 
 	const pointerMovingToSubmenu = derivedWithUnsubscribe(
 		[pointerDir, pointerGraceIntent],
@@ -213,7 +219,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		action: (node: HTMLElement) => {
 			applyAttrsIfDisabled(node);
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', (e) => {
+				addEventListener(node, 'pointerdown', (e) => {
+					if (!isLeftClick(e)) return;
+
 					const $rootOpen = get(rootOpen);
 					const triggerElement = e.currentTarget;
 					if (!isHTMLElement(triggerElement)) return;
@@ -294,11 +302,13 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	});
 
 	const item = builder(name('item'), {
-		returned: () => ({
-			role: 'menuitem',
-			tabindex: -1,
-			'data-orientation': 'vertical',
-		}),
+		returned: () => {
+			return {
+				role: 'menuitem',
+				tabindex: -1,
+				'data-orientation': 'vertical',
+			};
+		},
 		action: (node: HTMLElement, params: ItemProps = {}) => {
 			const { onSelect } = params;
 
@@ -336,28 +346,16 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					onItemKeyDown(e);
 				}),
 				addEventListener(node, 'pointermove', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-
-					if (isElementDisabled(itemElement)) {
-						onItemLeave(e);
-						return;
-					}
-
 					onMenuItemPointerMove(e);
 				}),
 				addEventListener(node, 'pointerleave', (e) => {
 					onMenuItemPointerLeave(e);
 				}),
 				addEventListener(node, 'focusin', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-					itemElement.setAttribute('data-highlighted', '');
+					onItemFocusIn(e);
 				}),
 				addEventListener(node, 'focusout', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-					itemElement.removeAttribute('data-highlighted');
+					onItemFocusOut(e);
 				})
 			);
 
@@ -435,14 +433,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					onMenuItemPointerLeave(e);
 				}),
 				addEventListener(node, 'focusin', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-					itemElement.setAttribute('data-highlighted', '');
+					onItemFocusIn(e);
 				}),
 				addEventListener(node, 'focusout', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-					itemElement.removeAttribute('data-highlighted');
+					onItemFocusOut(e);
 				})
 			);
 
@@ -543,14 +537,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						onMenuItemPointerLeave(e);
 					}),
 					addEventListener(node, 'focusin', (e) => {
-						const itemElement = e.currentTarget;
-						if (!isHTMLElement(itemElement)) return;
-						itemElement.setAttribute('data-highlighted', '');
+						onItemFocusIn(e);
 					}),
 					addEventListener(node, 'focusout', (e) => {
-						const itemElement = e.currentTarget;
-						if (!isHTMLElement(itemElement)) return;
-						itemElement.removeAttribute('data-highlighted');
+						onItemFocusOut(e);
 					})
 				);
 
@@ -567,10 +557,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		});
 
 		return {
-			value,
-			isChecked,
 			radioGroup,
 			radioItem,
+			isChecked,
+			value,
 		};
 	};
 
@@ -889,7 +879,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						const triggerElement = e.currentTarget;
 						if (!isHTMLElement(triggerElement)) return;
 
-						triggerElement.removeAttribute('data-highlighted');
+						if (!isHTMLElement(triggerElement)) return;
+						removeHighlight(triggerElement);
 
 						const relatedTarget = e.relatedTarget;
 						if (!isHTMLElement(relatedTarget)) return;
@@ -904,16 +895,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							subOpen.set(false);
 						}
 					}),
-					addEventListener(node, 'blur', (e) => {
-						const triggerElement = e.currentTarget;
-						if (!isHTMLElement(triggerElement)) return;
-
-						triggerElement.removeAttribute('data-highlighted');
-					}),
 					addEventListener(node, 'focusin', (e) => {
-						const triggerElement = e.currentTarget;
-						if (!isHTMLElement(triggerElement)) return;
-						triggerElement.setAttribute('data-highlighted', '');
+						onItemFocusIn(e);
 					})
 				);
 
@@ -961,23 +944,32 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 			sleep(1).then(() => {
 				const menuElement = document.getElementById(subIds.menu);
-				if (isHTMLElement(menuElement) && $subOpen && get(isUsingKeyboard)) {
+				if (!isHTMLElement(menuElement)) return;
+
+				if ($subOpen && get(isUsingKeyboard)) {
 					// Selector to get menu items belonging to menu
 					const menuItems = getMenuItems(menuElement);
 
-					if (get(isUsingKeyboard)) {
-						isHTMLElement(menuItems[0]) ? handleRovingFocus(menuItems[0]) : undefined;
+					isHTMLElement(menuItems[0]) ? handleRovingFocus(menuItems[0]) : undefined;
+				}
+
+				if (!$subOpen) {
+					const focusedItem = get(currentFocusedItem);
+					if (focusedItem && menuElement.contains(focusedItem)) {
+						removeHighlight(focusedItem);
 					}
 				}
-				if (isHTMLElement(menuElement) && !$subOpen) {
-					const menuItems = getMenuItems(menuElement);
-					menuItems.forEach((item) => {
-						item.removeAttribute('data-highlighted');
-					});
+				if (menuElement && !$subOpen) {
 					const subTriggerEl = document.getElementById(subIds.trigger);
 					if (!isHTMLElement(subTriggerEl)) return;
 					if (document.activeElement === subTriggerEl) return;
-					subTriggerEl.removeAttribute('data-highlighted');
+					removeHighlight(subTriggerEl);
+				}
+				if (menuElement && !$subOpen) {
+					const subTriggerEl = document.getElementById(subIds.trigger);
+					if (!isHTMLElement(subTriggerEl)) return;
+					if (document.activeElement === subTriggerEl) return;
+					removeHighlight(subTriggerEl);
 				}
 			});
 		});
@@ -994,6 +986,12 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	/* -------------------------------------------------------------------------------------------------
 	 * Root Effects
 	 * -----------------------------------------------------------------------------------------------*/
+
+	effect([rootOpen, currentFocusedItem], ([$rootOpen, $currentFocusedItem]) => {
+		if (!$rootOpen && $currentFocusedItem) {
+			removeHighlight($currentFocusedItem);
+		}
+	});
 
 	effect([rootOpen, rootActiveTrigger], ([$rootOpen, $rootActiveTrigger]) => {
 		if (!isBrowser) return;
@@ -1068,6 +1066,30 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	/* -------------------------------------------------------------------------------------------------
 	 * Pointer Event Effects
 	 * -----------------------------------------------------------------------------------------------*/
+
+	function onItemFocusIn(e: FocusEvent) {
+		const itemElement = e.currentTarget;
+		if (!isHTMLElement(itemElement)) return;
+		addHighlight(itemElement);
+
+		/**
+		 * Accomodates for Firefox focus event behavior, which differs
+		 * from other browsers. We're setting the current focused item
+		 * so when we close the menu, we can remove the data-highlighted
+		 * attribute from the item, since a blur nor focusout event will be fired
+		 * when the menu is closed via `clickOutside` or the ESC key.
+		 */
+		currentFocusedItem.set(itemElement);
+	}
+
+	/**
+	 * Each of the menu items share the same focusout event handler.
+	 */
+	function onItemFocusOut(e: FocusEvent) {
+		const itemElement = e.currentTarget;
+		if (!isHTMLElement(itemElement)) return;
+		removeHighlight(itemElement);
+	}
 
 	function onItemEnter(e: PointerEvent) {
 		if (isPointerMovingToSubmenu(e)) {
@@ -1213,6 +1235,14 @@ export function handleTabNavigation(
 			nextFocusable.set(null);
 		}
 	}
+}
+
+export function addHighlight(element: HTMLElement) {
+	element.setAttribute('data-highlighted', '');
+}
+
+export function removeHighlight(element: HTMLElement) {
+	element.removeAttribute('data-highlighted');
 }
 
 /**

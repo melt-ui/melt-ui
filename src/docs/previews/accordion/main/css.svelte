@@ -25,21 +25,20 @@
 	];
 </script>
 
-<div class="root" {...root}>
+<div class="root" melt={$root}>
 	{#each items as { id, title, description }, i}
-		<div {...$item(id)} class="item">
+		<div melt={$item(id)} class="item">
 			<h2>
 				<button
 					id={i === 0 ? 'accordion-trigger' : undefined}
-					{...$trigger(id)}
-					use:trigger
+					melt={$trigger(id)}
 					class="trigger"
 				>
 					{title}
 				</button>
 			</h2>
 			{#if $isSelected(id)}
-				<div class="content" {...$content(id)} transition:slide>
+				<div class="content" melt={$content(id)} transition:slide>
 					<div>{description}</div>
 				</div>
 			{/if}

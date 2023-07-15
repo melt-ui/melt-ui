@@ -52,41 +52,40 @@
 	const stickyScroll = writable(false);
 </script>
 
-<div class="flex rounded-md bg-white p-1 shadow-md" {...$menubar} use:menubar>
+<div class="flex rounded-md bg-white p-1 shadow-md" melt={$menubar}>
 	<!------------>
 	<!--- FILE --->
 	<!------------>
 	<button
 		type="button"
 		class="trigger"
-		{...$trigger}
-		use:trigger
+		melt={$trigger}
 		aria-label="Update dimensions"
 	>
 		File
 	</button>
 
-	<div class="menu" {...$menu} use:menu>
-		<div class="item" {...$item} use:item>New Text File</div>
-		<div class="item" {...$item} use:item>
+	<div class="menu" melt={$menu}>
+		<div class="item" melt={$item}>New Text File</div>
+		<div class="item" melt={$item}>
 			New File...
 			<div class="rightSlot">⌘T</div>
 		</div>
-		<div class="item" {...$item} use:item aria-disabled="true">
+		<div class="item" melt={$item} aria-disabled="true">
 			New Window...
 			<div class="rightSlot">⇧⌘T</div>
 		</div>
-		<div class="separator" {...$separator} />
-		<div class="item" {...$subTrigger} use:subTrigger>
+		<div class="separator" melt={$separator} />
+		<div class="item" melt={$subTrigger}>
 			Select theme
 			<div class="rightSlot">
 				<ChevronRight class="icon" />
 			</div>
 		</div>
-		<div class="menu subMenu" {...$subMenu} use:subMenu>
-			<div {...$radioGroup}>
+		<div class="menu subMenu" melt={$subMenu}>
+			<div melt={$radioGroup}>
 				{#each themesArr as theme}
-					<div class="item" {...$radioItem({ value: theme })} use:radioItem>
+					<div class="item" melt={$radioItem({ value: theme })}>
 						<div class="check">
 							{#if $isChecked(theme)}
 								<div class="dot" />
@@ -97,8 +96,8 @@
 				{/each}
 			</div>
 		</div>
-		<div {...$separator} class="separator" />
-		<div class="item" {...$item} use:item>
+		<div melt={$separator} class="separator" />
+		<div class="item" melt={$item}>
 			Quit Melt UI
 			<div class="rightSlot">⌘Q</div>
 		</div>
@@ -110,43 +109,42 @@
 	<button
 		type="button"
 		class="trigger"
-		{...$triggerA}
-		use:triggerA
+		melt={$triggerA}
 		aria-label="Update dimensions"
 	>
 		Edit
 	</button>
 
-	<div class="menu" {...$menuA} use:menuA>
-		<div class="item" {...$itemA} use:itemA>
+	<div class="menu" melt={$menuA}>
+		<div class="item" melt={$itemA}>
 			Undo
 			<div class="rightSlot">⌘Z</div>
 		</div>
-		<div class="item" {...$itemA} use:itemA>
+		<div class="item" melt={$itemA}>
 			Redo
 			<div class="rightSlot">⇧⌘Z</div>
 		</div>
-		<div class="separator" {...$separatorA} />
-		<div class="item" {...$itemA} use:itemA>
+		<div class="separator" melt={$separatorA} />
+		<div class="item" melt={$itemA}>
 			Cut
 			<div class="rightSlot">⌘X</div>
 		</div>
-		<div class="item" {...$itemA} use:itemA>
+		<div class="item" melt={$itemA}>
 			Copy
 			<div class="rightSlot">⌘C</div>
 		</div>
-		<div class="item" {...$itemA} use:itemA>
+		<div class="item" melt={$itemA}>
 			Paste
 			<div class="rightSlot">⌘V</div>
 		</div>
 
-		<div {...$separatorA} class="separator" />
+		<div melt={$separatorA} class="separator" />
 
-		<div class="item" {...$itemA} use:itemA>
+		<div class="item" melt={$itemA}>
 			Find
 			<div class="rightSlot">⌘F</div>
 		</div>
-		<div class="item" {...$itemA} use:itemA>
+		<div class="item" melt={$itemA}>
 			Replace
 			<div class="rightSlot">⌥⌘F</div>
 		</div>
@@ -158,33 +156,32 @@
 	<button
 		type="button"
 		class="trigger"
-		{...$triggerB}
-		use:triggerB
+		melt={$triggerB}
 		aria-label="Update dimensions"
 	>
 		View
 	</button>
 
-	<div class="menu" {...$menuB} use:menuB>
-		<div class="item" {...$itemB} use:itemB>
+	<div class="menu" melt={$menuB}>
+		<div class="item" melt={$itemB}>
 			Command Palette..
 			<div class="rightSlot">⇧⌘P</div>
 		</div>
-		<div class="item" {...$itemB} use:itemB>Open View...</div>
-		<div class="separator" {...$separatorB} />
-		<div class="item" {...$subTriggerB} use:subTriggerB>
+		<div class="item" melt={$itemB}>Open View...</div>
+		<div class="separator" melt={$separatorB} />
+		<div class="item" melt={$subTriggerB}>
 			Appearance
 			<div class="rightSlot">
 				<ChevronRight class="icon" />
 			</div>
 		</div>
-		<div class="menu subMenu" {...$subMenuB} use:subMenuB>
-			<div {...$radioGroup}>
-				<div class="item" {...$itemB} use:itemB>Full Screen</div>
-				<div class="item" {...$itemB} use:itemB>Zen Mode</div>
+		<div class="menu subMenu" melt={$subMenuB}>
+			<div melt={$radioGroup}>
+				<div class="item" melt={$itemB}>Full Screen</div>
+				<div class="item" melt={$itemB}>Zen Mode</div>
 			</div>
 		</div>
-		<div class="separator" {...$separatorB} />
+		<div class="separator" melt={$separatorB} />
 
 		<div
 			class="item"
@@ -221,17 +218,16 @@
 	<button
 		type="button"
 		class="trigger"
-		{...$triggerC}
-		use:triggerC
+		melt={$triggerC}
 		aria-label="Update dimensions"
 	>
 		Help
 	</button>
 
-	<div class="menu" {...$menuC} use:menuC>
-		<div class="item" {...$itemC} use:itemC>About Melt UI</div>
-		<div class="item" {...$itemC} use:itemC>Check for Updates...</div>
-		<div class="separator" {...$separatorC} />
+	<div class="menu" melt={$menuC}>
+		<div class="item" melt={$itemC}>About Melt UI</div>
+		<div class="item" melt={$itemC}>Check for Updates...</div>
+		<div class="separator" melt={$separatorC} />
 		<div
 			class="item"
 			{...$checkboxItemC}
@@ -247,7 +243,7 @@
 			Tips & Tricks
 		</div>
 
-		<div {...$separatorC} class="separator" />
+		<div melt={$separatorC} class="separator" />
 
 		<div
 			class="item"
@@ -261,12 +257,12 @@
 			</div>
 			Documentation
 		</div>
-		<div class="item" {...$itemC} use:itemC aria-disabled="true">
+		<div class="item" melt={$itemC} aria-disabled="true">
 			Show All Components
 			<div class="rightSlot">⇧⌘N</div>
 		</div>
-		<div {...$separatorC} class="separator" />
-		<div class="item" {...$itemC} use:itemC>Report a bug...</div>
+		<div melt={$separatorC} class="separator" />
+		<div class="item" melt={$itemC}>Report a bug...</div>
 	</div>
 </div>
 
@@ -285,14 +281,14 @@
 		@apply data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900;
 		@apply data-[disabled]:text-neutral-300;
 		@apply flex items-center text-sm leading-none;
-		@apply ring-0 !important;
+		@apply cursor-default ring-0 !important;
 	}
 
 	.trigger {
 		@apply inline-flex items-center justify-center rounded-md bg-white px-3 py-2;
 		@apply text-magnum-900 transition-colors hover:bg-white/90 data-[highlighted]:outline-none;
 		@apply overflow-visible data-[highlighted]:bg-magnum-200 data-[highlighted]:ring-magnum-400 !important;
-		@apply text-sm font-medium leading-none focus:z-30 focus:ring;
+		@apply !cursor-default text-sm font-medium leading-none focus:z-30 focus:ring;
 	}
 	.check {
 		@apply absolute left-2 top-1/2 text-magnum-500;

@@ -4,9 +4,8 @@
 
 import type { ActivateOptions, DeactivateOptions, FocusTrap } from 'focus-trap';
 import type { FocusTrapConfig, FocusTrapReturn } from './focusTrap.types';
-import { writable } from 'svelte/store';
+import { writable, readonly } from 'svelte/store';
 import { createFocusTrap as _createFocusTrap } from 'focus-trap';
-import { toReadable } from '$lib/internal/helpers';
 
 export function createFocusTrap(config: FocusTrapConfig = {}): FocusTrapReturn {
 	let trap: undefined | FocusTrap;
@@ -61,8 +60,8 @@ export function createFocusTrap(config: FocusTrapConfig = {}): FocusTrapReturn {
 
 	return {
 		useFocusTrap,
-		hasFocus: toReadable(hasFocus),
-		isPaused: toReadable(isPaused),
+		hasFocus: readonly(hasFocus),
+		isPaused: readonly(isPaused),
 		activate,
 		deactivate,
 		pause,
