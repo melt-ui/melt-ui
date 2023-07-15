@@ -125,16 +125,16 @@ const trigger: APISchema = {
 	],
 	dataAttributes: [
 		{
-			name: 'data-melt-accordion-trigger',
-			value: ATTRS.MELT('accordion trigger'),
-		},
-		{
 			name: 'data-disabled',
 			value: ATTRS.DISABLED('trigger'),
 		},
 		{
 			name: 'data-value',
 			value: 'The value of the associated item.',
+		},
+		{
+			name: 'data-melt-accordion-trigger',
+			value: ATTRS.MELT('accordion trigger'),
 		},
 	],
 };
@@ -163,6 +163,10 @@ const content: APISchema = {
 		{
 			name: 'data-disabled',
 			value: ATTRS.DISABLED('content'),
+		},
+		{
+			name: 'data-value',
+			value: 'The value of the associated item',
 		},
 		{
 			name: 'data-melt-accordion-content',
