@@ -3,7 +3,7 @@
 
 	import { createTableOfContents } from '@melt-ui/svelte';
 
-	const { activeHeadingIdxs, headingsTree, item } = createTableOfContents({
+	const { activeHeadingIdxs, headingsTree, navItem } = createTableOfContents({
 		selector: '#mdsvex',
 		exclude: ['h1', 'h4', 'h5', 'h6'],
 		tocType: 'lowest-parents',
@@ -13,6 +13,6 @@
 <div class="space-y-2">
 	<p class="font-medium">On This Page</p>
 	<nav>
-		<Tree tree={$headingsTree} activeHeadingIdxs={$activeHeadingIdxs} {item} />
+		<Tree tree={$headingsTree} activeHeadingIdxs={$activeHeadingIdxs} {navItem} />
 	</nav>
 </div>

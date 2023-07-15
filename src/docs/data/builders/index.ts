@@ -19,6 +19,7 @@ import { selectData } from './select';
 import { separatorData } from './separator';
 import { sliderData } from './slider';
 import { switchData } from './switch';
+import { tableOfContentsData } from './table-of-contents';
 import { tabsData } from './tabs';
 import { tagsInputData } from './tags-input';
 import { toggleData } from './toggle';
@@ -47,6 +48,7 @@ export const builderList = [
 	'separator',
 	'slider',
 	'switch',
+	'table-of-contents',
 	'tabs',
 	'tags-input',
 	'toggle',
@@ -90,6 +92,7 @@ export const data: Builders = {
 	separator: separatorData,
 	slider: sliderData,
 	switch: switchData,
+	'table-of-contents': tableOfContentsData,
 	tabs: tabsData,
 	'tags-input': tagsInputData,
 	'toggle-group': toggleGroupData,
