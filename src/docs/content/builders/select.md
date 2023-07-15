@@ -4,10 +4,16 @@ description: Presents a selection of choices to the user, activated by a button.
 ---
 
 <script>
-    import { APIReference, KbdTable } from '$docs/components'
+    import { APIReference, KbdTable, Preview } from '$docs/components'
     export let schemas
     export let keyboard
+    export let previews
+    export let snippets
 </script>
+
+<Preview code={snippets.multiple}>
+    <svelte:component this={previews.multiple} />
+</Preview>
 
 ## Anatomy
 
