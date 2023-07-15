@@ -9,10 +9,10 @@ export type TOCType = 'lowest' | 'highest' | 'all-active' | 'lowest-parents' | '
 /**
  * Arguments to be passed to the Table of Contents builder.
  * 
- * @typeParam exclude - A list of headings that should be excluded in the table.
- * @typeParam scrollOffset - The pixel offset that should be added when scrolling to a heading.
- * @typeParam scrollBehaviour - Describes whether the scroll behaviour should be smooth or not.
- * @typeParam tocType - Describes which headings should be considered active.
+ * @param exclude - A list of headings that should be excluded in the table.
+ * @param scrollOffset - The pixel offset that should be added when scrolling to a heading.
+ * @param scrollBehaviour - Describes whether the scroll behaviour should be smooth or not.
+ * @param tocType - Describes which headings should be considered active.
  */
 export type CreateTableOfContentsArgs = {
     selector: string,

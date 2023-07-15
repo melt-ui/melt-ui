@@ -27,7 +27,6 @@ export function scrollToElement(headingElem: HTMLElement): void {
 
  /**
   * @param args Provide the arguments for the table of contents builder.
-  * @returns { ToC }
  */
 export function createTableOfContents(args: CreateTableOfContentsArgs) {
     const argsWithDefaults = { ...defaults, ...args };
