@@ -9,9 +9,10 @@ import {
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
-import type { AccordionItemProps, CreateAccordionProps } from './types';
+import type { AccordionHeadingProps, AccordionItemProps, CreateAccordionProps } from './types';
+import { tick } from 'svelte';
 
-type AccordionParts = 'trigger' | 'item' | 'content';
+type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
 const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
 const defaults = {
@@ -55,6 +56,14 @@ export const createAccordion = (props?: CreateAccordionProps) => {
 		}
 	};
 
+	const parseHeadingProps = (props: AccordionHeadingProps) => {
+		if (typeof props === 'number') {
+			return { level: props };
+		} else {
+			return props;
+		}
+	};
+
 	const item = builder(name('item'), {
 		stores: value,
 		returned: ($value) => {
@@ -74,13 +83,14 @@ export const createAccordion = (props?: CreateAccordionProps) => {
 		returned: ([$value, $options]) => {
 			return (props: AccordionItemProps) => {
 				const { value: itemValue, disabled } = parseItemProps(props);
-
+				// generate the content ID here so that we can grab it in the content
+				// builder action to ensure the values match.
 				return {
-					'aria-expanded': isSelected(itemValue, $value) ? true : false,
 					disabled: $options.disabled || disabled,
+					'aria-expanded': isSelected(itemValue, $value) ? true : false,
+					'aria-disabled': disabled ? true : false,
 					'data-disabled': disabled ? true : undefined,
 					'data-value': itemValue,
-					// TODO: aria-controls, aria-labelledby
 				};
 			};
 		},
@@ -116,22 +126,23 @@ export const createAccordion = (props?: CreateAccordionProps) => {
 					const el = e.target as HTMLElement;
 					const rootEl = getElementByMeltId(ids.root);
 					if (!rootEl) return;
-					const items = Array.from(rootEl.querySelectorAll(selector('trigger'))) as HTMLElement[];
+					const items = Array.from(rootEl.querySelectorAll<HTMLElement>(selector('trigger')));
+					const candidateItems = items.filter((item) => item.dataset.disabled !== 'true');
 
-					if (!items.length) return;
-					const elIdx = items.indexOf(el);
+					if (!candidateItems.length) return;
+					const elIdx = candidateItems.indexOf(el);
 
 					if (e.key === kbd.ARROW_DOWN) {
-						items[(elIdx + 1) % items.length].focus();
+						candidateItems[(elIdx + 1) % candidateItems.length].focus();
 					}
 					if (e.key === kbd.ARROW_UP) {
-						items[(elIdx - 1 + items.length) % items.length].focus();
+						candidateItems[(elIdx - 1 + candidateItems.length) % candidateItems.length].focus();
 					}
 					if (e.key === kbd.HOME) {
-						items[0].focus();
+						candidateItems[0].focus();
 					}
 					if (e.key === kbd.END) {
-						items[items.length - 1].focus();
+						candidateItems[candidateItems.length - 1].focus();
 					}
 				})
 			);
@@ -151,7 +162,36 @@ export const createAccordion = (props?: CreateAccordionProps) => {
 				return {
 					'data-state': selected ? 'open' : 'closed',
 					'data-disabled': $options.disabled ? true : undefined,
+					'data-value': itemValue,
 					hidden: selected ? undefined : true,
+				};
+			};
+		},
+		action: (node: HTMLElement) => {
+			tick().then(() => {
+				const contentId = generateId();
+				const triggerId = generateId();
+
+				const parentTrigger = document.querySelector<HTMLElement>(
+					`${selector('trigger')}, [data-value="${node.dataset.value}"]`
+				);
+				if (!parentTrigger) return;
+
+				node.id = contentId;
+				parentTrigger.setAttribute('aria-controls', contentId);
+				parentTrigger.id = triggerId;
+			});
+		},
+	});
+
+	const heading = builder(name('heading'), {
+		returned: () => {
+			return (props: AccordionHeadingProps) => {
+				const { level } = parseHeadingProps(props);
+				return {
+					role: 'heading',
+					'aria-level': level,
+					'data-heading-level': level,
 				};
 			};
 		},
@@ -165,5 +205,6 @@ export const createAccordion = (props?: CreateAccordionProps) => {
 		content,
 		isSelected: isSelectedStore,
 		options,
+		heading,
 	};
 };

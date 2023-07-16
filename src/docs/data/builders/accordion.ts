@@ -58,6 +58,11 @@ const builder: APISchema = {
 			description: 'The builder store used to create accordion content.',
 			link: '#content',
 		},
+		{
+			name: 'heading',
+			description: 'The builder store used to create accordion headings.',
+			link: '#heading',
+		},
 	],
 };
 
@@ -125,16 +130,16 @@ const trigger: APISchema = {
 	],
 	dataAttributes: [
 		{
-			name: 'data-melt-accordion-trigger',
-			value: ATTRS.MELT('accordion trigger'),
-		},
-		{
 			name: 'data-disabled',
 			value: ATTRS.DISABLED('trigger'),
 		},
 		{
 			name: 'data-value',
 			value: 'The value of the associated item.',
+		},
+		{
+			name: 'data-melt-accordion-trigger',
+			value: ATTRS.MELT('accordion trigger'),
 		},
 	],
 };
@@ -165,8 +170,35 @@ const content: APISchema = {
 			value: ATTRS.DISABLED('content'),
 		},
 		{
+			name: 'data-value',
+			value: 'The value of the associated item',
+		},
+		{
 			name: 'data-melt-accordion-content',
 			value: ATTRS.MELT('accordion content'),
+		},
+	],
+};
+
+const heading: APISchema = {
+	title: 'heading',
+	description:
+		'The heading for an accordion item. It should be nested inside of its associated `item`.',
+	props: [
+		{
+			name: 'level',
+			type: ['1', '2', '3', '4', '5', '6'],
+			description: 'The heading level to use for the element.',
+		},
+	],
+	dataAttributes: [
+		{
+			name: 'data-heading-level',
+			value: 'The heading level applied to the element.',
+		},
+		{
+			name: 'data-melt-accordion-heading',
+			value: ATTRS.MELT('accordion heading'),
 		},
 	],
 };
@@ -206,7 +238,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas: BuilderData['schemas'] = [builder, root, trigger, item, content];
+const schemas: BuilderData['schemas'] = [builder, root, trigger, item, content, heading];
 
 const features: BuilderData['features'] = [
 	'Full keyboard navigation',
