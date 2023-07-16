@@ -19,6 +19,9 @@ const config = {
 		adapter: adapter({
 			runtime: 'edge',
 		}),
+		prerender: {
+			crawl: false,
+		},
 		alias: {
 			$routes: 'src/routes',
 			'$routes/*': 'src/routes/*',

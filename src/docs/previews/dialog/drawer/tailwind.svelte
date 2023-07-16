@@ -14,7 +14,7 @@
     leading-none text-magnum-700 shadow-lg hover:opacity-75 focus:outline-none focus:ring
     focus:ring-magnum-400"
 >
-	Open Drawer
+	View Notifications
 </button>
 <div use:portal>
 	{#if $open}
