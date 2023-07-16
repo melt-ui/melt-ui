@@ -6,7 +6,7 @@
 	// value should be a `Writable<unknown[]>` type but it's not working yet
 	const { label, trigger, menu, option, isSelected, group, groupLabel, value } =
 		createSelect({
-			type: 'multiple',
+			type: 'single',
 		});
 
 	const options = {

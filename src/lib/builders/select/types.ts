@@ -13,31 +13,32 @@ type BaseSelectProps = {
 	loop?: boolean;
 };
 
-type MultipleSelectProps =
+type MultipleSelectProps<T> =
 	| {
 			type: 'multiple';
-			value?: Writable<unknown[]>;
+			value?: Writable<T[]>;
 			defaultValue?: never;
 	  }
 	| {
 			type: 'multiple';
 			value?: never;
-			defaultValue?: unknown[];
+			defaultValue?: T[];
 	  };
 
-type SingleSelectProps =
+type SingleSelectProps<T> =
 	| {
 			type: 'single';
-			value?: Writable<unknown>;
+			value?: Writable<T>;
 			defaultValue?: never;
 	  }
 	| {
 			type: 'single';
 			value?: never;
-			defaultValue?: unknown;
+			defaultValue?: T;
 	  };
 
-export type CreateSelectProps = BaseSelectProps & (MultipleSelectProps | SingleSelectProps);
+export type CreateSelectProps<T> = BaseSelectProps &
+	(MultipleSelectProps<T> | SingleSelectProps<T>);
 
 export type SelectOptionProps = {
 	value: unknown;

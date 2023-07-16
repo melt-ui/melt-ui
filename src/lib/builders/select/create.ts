@@ -47,13 +47,13 @@ const defaults = {
 	loop: false,
 	type: 'single',
 	defaultValue: '',
-} satisfies CreateSelectProps;
+} as CreateSelectProps<unknown>;
 
 type SelectParts = 'menu' | 'trigger' | 'option' | 'group' | 'group-label' | 'arrow' | 'input';
 const { name } = createElHelpers<SelectParts>('select');
 
-export function createSelect(props?: CreateSelectProps) {
-	const withDefaults = { ...defaults, ...props } as CreateSelectProps;
+export function createSelect<T>(props?: CreateSelectProps<T>) {
+	const withDefaults = { ...defaults, ...props } as CreateSelectProps<T>;
 
 	const open = writable(false);
 	const label = writable<string | number | null>(withDefaults.label ?? null);
@@ -83,14 +83,16 @@ export function createSelect(props?: CreateSelectProps) {
 	};
 
 	if (withDefaults.type === 'single') {
-		let options: Writable<Omit<CreateSelectProps, 'label' | 'value' | 'defaultValue'>>;
+		let options: Writable<Omit<CreateSelectProps<unknown>, 'label' | 'value' | 'defaultValue'>>;
 		if (withDefaults.value) {
 			options = writable(omit(withDefaults, 'label', 'value'));
 		} else {
 			options = writable(omit(withDefaults, 'label', 'defaultValue'));
 		}
 
-		const value = withDefaults.value ? withDefaults.value : writable(withDefaults.defaultValue);
+		const value = withDefaults.value
+			? withDefaults.value
+			: writable<unknown>(withDefaults.defaultValue);
 
 		onMount(() => {
 			if (!isBrowser) return;
@@ -370,8 +372,14 @@ export function createSelect(props?: CreateSelectProps) {
 						}
 						handleRovingFocus(itemElement);
 
-						value.set(props.value);
-						label.set(props.label);
+						if (props.value) {
+							value.set(props.value);
+						}
+
+						if (props.label) {
+							label.set(props.label);
+						}
+
 						open.set(false);
 					}),
 
@@ -386,8 +394,12 @@ export function createSelect(props?: CreateSelectProps) {
 							e.preventDefault();
 							const props = getElprops();
 							node.setAttribute('data-selected', '');
-							value.set(props.value);
-							label.set(props.label);
+							if (props.value) {
+								value.set(props.value);
+							}
+							if (props.label) {
+								label.set(props.label);
+							}
 							open.set(false);
 						}
 					}),
@@ -541,7 +553,7 @@ export function createSelect(props?: CreateSelectProps) {
 			arrow,
 		};
 	} else {
-		let options: Writable<Omit<CreateSelectProps, 'label' | 'value' | 'defaultValue'>>;
+		let options: Writable<Omit<CreateSelectProps<unknown[]>, 'label' | 'value' | 'defaultValue'>>;
 		if (withDefaults.value) {
 			options = writable(omit(withDefaults, 'label', 'value'));
 		} else {
@@ -549,8 +561,10 @@ export function createSelect(props?: CreateSelectProps) {
 		}
 
 		const value = withDefaults.value
-			? withDefaults.value
-			: writable(withDefaults.defaultValue ?? []);
+			? (withDefaults.value as Writable<unknown[]>)
+			: writable<unknown[]>(
+					Array.isArray(withDefaults.defaultValue) ? withDefaults.defaultValue : []
+			  );
 
 		const currentlySelectedLabels = writable<string[]>([]);
 
