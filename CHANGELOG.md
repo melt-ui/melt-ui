@@ -1,5 +1,20 @@
 # @melt-ui/svelte
 
+## 0.23.0
+
+### Minor Changes
+
+- 893535af: [Accordion]
+  - Add missing aria attributes
+  - Add `heading` builder to apply aria attributes to non-heading elements used as headings
+
+### Patch Changes
+
+- c987225b: [Combobox]
+  - Fix a bug where tabbing from would open it
+  - Close the menu when tab/shift+tab is pressed
+- de855112: Fix: Type issue with `melt` attribute on certain elements
+
 ## 0.22.2
 
 ### Patch Changes
