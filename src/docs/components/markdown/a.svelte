@@ -3,7 +3,7 @@
 
 	export let href: string;
 
-	$: internal = href.startsWith('/');
+	$: internal = href.startsWith('/') || href.startsWith('#');
 
 	$: rel = !internal ? 'noopener noreferrer' : undefined;
 	$: target = !internal ? '_blank' : undefined;

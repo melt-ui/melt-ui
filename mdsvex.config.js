@@ -155,14 +155,20 @@ function rehypeRenderCode() {
 					return;
 				}
 
-				const meltString = toHtml(codeEl, {
-					allowDangerousCharacters: true,
-					allowDangerousHtml: true,
-				});
+				const meltString = tabsToSpaces(
+					toHtml(codeEl, {
+						allowDangerousCharacters: true,
+						allowDangerousHtml: true,
+					})
+				);
 
 				codeEl.type = 'raw';
 				codeEl.value = `{@html \`${escapeSvelte(meltString)}\`}`;
 			}
 		});
 	};
+}
+
+function tabsToSpaces(code) {
+	return code.replaceAll('    ', '  ');
 }
