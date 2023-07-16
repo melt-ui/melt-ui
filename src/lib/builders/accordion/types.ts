@@ -24,4 +24,10 @@ export type AccordionItemProps =
 	  }
 	| string;
 
+export type AccordionHeadingProps =
+	| {
+			level: 1 | 2 | 3 | 4 | 5 | 6;
+	  }
+	| number;
+
 export type CreateAccordionReturn = ReturnType<typeof createAccordion>;

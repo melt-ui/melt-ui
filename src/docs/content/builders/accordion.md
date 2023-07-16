@@ -25,9 +25,38 @@ description:
 To create an accordion, use the `createAccordion` builder function. Follow the anatomy or the
 example at the top of this page to create your accordion.
 
-<Callout type="warning">
-To ensure the accordion you create is accessible, wrap the trigger in an element with the <code>role="heading"</code> attribute, and set the <code>aria-level</code> attribute to the appropriate heading level. Alternatively, you can wrap the trigger in a heading element, as we have done in the preview above.
-</Callout>
+
+### Ensuring items are accessible
+
+The easy way to ensure your accordion items are accessible is to wrap each trigger element in a
+heading element, like so:
+
+```svelte
+<h2>
+  <button melt={$trigger(id)}>
+    {title}
+  </button>
+</h2>
+```
+
+However, there may be times when you can't use or don't want to use a heading element. In those
+cases, use the `heading` builder to apply the necessary aria attributes to the element. The argument
+passed to the `heading` builder is the heading level you wish to use. In the example below,
+we set the heading level to 4.
+
+```svelte /heading/#hi
+<script lang="ts">
+  const { content, item, trigger, isSelected, root, heading } = createAccordion()
+</script>
+```
+
+```svelte {1}
+<span melt={$heading(4)}>
+    <button melt={$trigger(id)}>
+        {title}
+    </button>
+<span>
+```
 
 ### Disabling a single item
 
@@ -50,7 +79,7 @@ Pass in the `type` argument to `createAccordion` with a value of `'multiple'`.
   const { content, item, trigger, isSelected, root } = createAccordion({
     type: 'multiple'
   })
-</script>
+</>
 ```
 
 <Preview code={snippets.multiple}>

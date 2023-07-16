@@ -58,6 +58,11 @@ const builder: APISchema = {
 			description: 'The builder store used to create accordion content.',
 			link: '#content',
 		},
+		{
+			name: 'heading',
+			description: 'The builder store used to create accordion headings.',
+			link: '#heading',
+		},
 	],
 };
 
@@ -175,6 +180,29 @@ const content: APISchema = {
 	],
 };
 
+const heading: APISchema = {
+	title: 'heading',
+	description:
+		'The heading for an accordion item. It should be nested inside of its associated `item`.',
+	props: [
+		{
+			name: 'level',
+			type: ['1', '2', '3', '4', '5', '6'],
+			description: 'The heading level to use for the element.',
+		},
+	],
+	dataAttributes: [
+		{
+			name: 'data-heading-level',
+			value: 'The heading level applied to the element.',
+		},
+		{
+			name: 'data-melt-accordion-heading',
+			value: ATTRS.MELT('accordion heading'),
+		},
+	],
+};
+
 const keyboard: KeyboardSchema = [
 	{
 		key: KBD.SPACE,
@@ -210,7 +238,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas: BuilderData['schemas'] = [builder, root, trigger, item, content];
+const schemas: BuilderData['schemas'] = [builder, root, trigger, item, content, heading];
 
 const features: BuilderData['features'] = [
 	'Full keyboard navigation',

@@ -19,8 +19,6 @@
 	export let type: VariantProps<typeof calloutVariants>['type'] = 'default';
 </script>
 
-<div class={cn(calloutVariants({ type, className }))}>
-	<p>
-		<slot />
-	</p>
+<div class={cn(calloutVariants({ type, className }))} data-callout>
+	<slot />
 </div>

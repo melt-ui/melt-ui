@@ -9,10 +9,10 @@ import {
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
-import type { AccordionItemProps, CreateAccordionProps } from './types';
+import type { AccordionHeadingProps, AccordionItemProps, CreateAccordionProps } from './types';
 import { tick } from 'svelte';
 
-type AccordionParts = 'trigger' | 'item' | 'content';
+type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
 const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
 const defaults = {
@@ -51,6 +51,14 @@ export const createAccordion = (props?: CreateAccordionProps) => {
 	const parseItemProps = (props: AccordionItemProps) => {
 		if (typeof props === 'string') {
 			return { value: props };
+		} else {
+			return props;
+		}
+	};
+
+	const parseHeadingProps = (props: AccordionHeadingProps) => {
+		if (typeof props === 'number') {
+			return { level: props };
 		} else {
 			return props;
 		}
@@ -176,6 +184,19 @@ export const createAccordion = (props?: CreateAccordionProps) => {
 		},
 	});
 
+	const heading = builder(name('heading'), {
+		returned: () => {
+			return (props: AccordionHeadingProps) => {
+				const { level } = parseHeadingProps(props);
+				return {
+					role: 'heading',
+					'aria-level': level,
+					'data-heading-level': level,
+				};
+			};
+		},
+	});
+
 	return {
 		root,
 		value,
@@ -184,5 +205,6 @@ export const createAccordion = (props?: CreateAccordionProps) => {
 		content,
 		isSelected: isSelectedStore,
 		options,
+		heading,
 	};
 };
