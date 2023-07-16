@@ -18,6 +18,7 @@ const { name } = createElHelpers<ToastParts>('toast');
 const defaults = {
 	defaultOpen: false,
 	closeDelay: 5000,
+	type: 'foreground',
 } satisfies Defaults<CreateToastProps>;
 
 export function createToast(props: CreateToastProps = {}) {
@@ -84,13 +85,14 @@ export function createToast(props: CreateToastProps = {}) {
 	});
 
 	const content = builder(name('content'), {
-		stores: open,
-		returned: ($open) => {
+		stores: [open, options],
+		returned: ([$open, $options]) => {
 			return {
 				id: ids.content,
 				role: 'alert',
 				'aria-describedby': ids.description,
 				'aria-labelledby': ids.title,
+				'aria-live': $options.type === 'foreground' ? 'assertive' : 'polite',
 				'data-state': $open ? 'open' : 'closed',
 				style: styleToString({
 					display: $open ? undefined : 'none',

@@ -18,6 +18,12 @@ const builder: APISchema = {
 			default: '5000',
 			description: 'The delay in milliseconds before the toast closes.',
 		},
+		{
+			name: 'type',
+			type: ["'foreground'", "'background'"],
+			default: "'foreground'",
+			description: 'The sensitivity of the toast for accessibility purposes.',
+		},
 	],
 	returnedProps: [
 		{
