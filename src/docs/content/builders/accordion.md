@@ -6,7 +6,7 @@ description:
 ---
 
 <script>
-    import { KbdTable, APIReference, Preview, Callout } from '$docs/components'
+    import { KbdTable, APIReference, Preview } from '$docs/components'
     export let schemas
     export let keyboard
     export let snippets
@@ -25,7 +25,6 @@ description:
 To create an accordion, use the `createAccordion` builder function. Follow the anatomy or the
 example at the top of this page to create your accordion.
 
-
 ### Ensuring items are accessible
 
 The easy way to ensure your accordion items are accessible is to wrap each trigger element in a
@@ -41,8 +40,8 @@ heading element, like so:
 
 However, there may be times when you can't use or don't want to use a heading element. In those
 cases, use the `heading` builder to apply the necessary aria attributes to the element. The argument
-passed to the `heading` builder is the heading level you wish to use. In the example below,
-we set the heading level to 4.
+passed to the `heading` builder is the heading level you wish to use. In the example below, we set
+the heading level to 4.
 
 ```svelte /heading/#hi
 <script lang="ts">
