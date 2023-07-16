@@ -20,6 +20,7 @@ export * from './slider';
 export * from './switch';
 export * from './tabs';
 export * from './tags-input';
+export * from './toast';
 export * from './toggle';
 export * from './toggle-group';
 export * from './toolbar';
