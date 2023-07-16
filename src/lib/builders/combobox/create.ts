@@ -192,10 +192,17 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 						if (INTERACTION_KEYS.includes(e.key)) {
 							return;
 						}
+
+						// Tab should not open the menu.
+						if (e.key === kbd.TAB) {
+							return;
+						}
+
 						// Pressing backspace when the input is blank shouldn't open the menu.
 						if (e.key === kbd.BACKSPACE && node.value === '') {
 							return;
 						}
+
 						// All other events should open the menu.
 						openMenu();
 
@@ -222,7 +229,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 					 * When the menu is open...
 					 */
 					// Pressing `esc` should close the menu.
-					if (e.key === kbd.ESCAPE) {
+					if (e.key === kbd.ESCAPE || e.key === kbd.TAB) {
 						closeMenu();
 						reset();
 						return;
