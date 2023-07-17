@@ -160,7 +160,7 @@ export function builder<
 	A extends Action<any, any>,
 	R extends BuilderCallback<S>,
 	Name extends string
->(name: Name, args?: BuilderArgs<S, A, R>): BuilderReturn<S, A, R, Name> {
+>(name: Name, args?: BuilderArgs<S, A, R>): ExplicitBuilderReturn<S, A, R, Name> {
 	const { stores, action, returned } = args ?? {};
 
 	const derivedStore = (() => {
@@ -223,7 +223,7 @@ export function builder<
 	return actionFn;
 }
 
-export type BuilderReturn<
+export type ExplicitBuilderReturn<
 	S extends Stores | undefined,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	A extends Action<any, any>,

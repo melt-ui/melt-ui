@@ -1,21 +1,12 @@
 import type { createAccordion } from './create';
 
-type BaseAccordionProps = {
+export type AccordionType = 'single' | 'multiple';
+
+export type CreateAccordionProps<T extends AccordionType = 'single'> = {
+	value?: T extends 'single' ? string : string[];
+	type?: T;
 	disabled?: boolean;
 };
-
-type SingleAccordionProps = {
-	value?: string;
-	type?: 'single';
-};
-
-type MultipleAccordionProps = {
-	value?: string[];
-	type: 'multiple';
-};
-
-export type CreateAccordionProps = BaseAccordionProps &
-	(SingleAccordionProps | MultipleAccordionProps);
 
 export type AccordionItemProps =
 	| {
