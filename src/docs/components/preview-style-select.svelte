@@ -9,15 +9,10 @@
 	export let codingStyle: Writable<'tailwind' | 'css'>;
 
 	const {
-		value: localValue,
-		label,
-		trigger,
-		menu,
-		option,
-		isSelected,
-	} = createSelect({
-		value: $codingStyle,
-	});
+		elements: { trigger, menu, option },
+		states: { value: localValue, label },
+		helpers: { isSelected },
+	} = createSelect({ value: $codingStyle });
 
 	localValue.subscribe((v) => {
 		if (v === 'tailwind' || v === 'css') {

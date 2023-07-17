@@ -6,7 +6,9 @@
 	import { createSeparator } from '$lib';
 	import { page } from '$app/stores';
 
-	const { root: separator } = createSeparator();
+	const {
+		elements: { root: separator },
+	} = createSeparator();
 
 	export let data: PageData;
 

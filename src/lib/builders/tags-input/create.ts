@@ -8,7 +8,6 @@ import {
 	getElementByMeltId,
 	isBrowser,
 	kbd,
-	omit,
 	styleToString,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
