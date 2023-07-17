@@ -2,7 +2,10 @@
 	import { createHoverCard } from '@melt-ui/svelte';
 	import { fade } from 'svelte/transition';
 
-	const { trigger, content, open, arrow } = createHoverCard();
+	const {
+		elements: { trigger, content, arrow },
+		states: { open },
+	} = createHoverCard();
 </script>
 
 <a

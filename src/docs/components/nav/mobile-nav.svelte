@@ -8,7 +8,11 @@
 	import Switch from '../switch.svelte';
 	import { usingPreprocessor } from '$routes/store';
 
-	const { trigger, portal, overlay, content, close, open } = createDialog();
+	const {
+		elements: { trigger, overlay, content, close },
+		actions: { portal },
+		states: { open },
+	} = createDialog();
 </script>
 
 <button

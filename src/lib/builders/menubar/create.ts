@@ -1,4 +1,4 @@
-import type { Defaults } from '$lib/internal/types';
+import type { Defaults, TextDirection } from '$lib/internal/types';
 import { get, writable, type Writable } from 'svelte/store';
 import {
 	applyAttrsIfDisabled,
@@ -7,6 +7,8 @@ import {
 	handleMenuNavigation,
 	handleTabNavigation,
 	type MenuParts,
+	removeHighlight,
+	addHighlight,
 } from '../menu';
 import {
 	executeCallbacks,
@@ -46,6 +48,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 	const nextFocusable = writable<HTMLElement | null>(null);
 	const prevFocusable = writable<HTMLElement | null>(null);
 
+	const loop = writable<boolean>(withDefaults.loop);
+
 	const rootIds = {
 		menubar: generateId(),
 	};
@@ -60,13 +64,13 @@ export function createMenubar(props?: CreateMenubarProps) {
 			};
 		},
 		action: (node: HTMLElement) => {
-			const menuTriggers = node.querySelectorAll(
-				'[data-melt-menubar-trigger]'
-			) as unknown as HTMLElement[];
+			const menuTriggers = Array.from(
+				node.querySelectorAll<HTMLElement>('[data-melt-menubar-trigger]')
+			);
 			if (menuTriggers.length === 0) return;
 			menuTriggers[0].tabIndex = 0;
 
-			const menus = Array.from(node.querySelectorAll('[data-melt-menubar-menu]')) as HTMLElement[];
+			const menus = Array.from(node.querySelectorAll<HTMLElement>('[data-melt-menubar-menu]'));
 			scopedMenus.set(menus);
 
 			return {
@@ -83,10 +87,24 @@ export function createMenubar(props?: CreateMenubarProps) {
 	} satisfies Defaults<CreateMenubarMenuProps>;
 
 	const createMenu = (props?: CreateMenubarMenuProps) => {
-		const withDefaults = { ...menuDefaults, ...props } as CreateMenubarMenuProps;
-		const rootOptions = writable(withDefaults);
+		const withDefaults = { ...menuDefaults, ...props } satisfies CreateMenubarMenuProps;
 		const rootOpen = writable(false);
 		const rootActiveTrigger = writable<HTMLElement | null>(null);
+
+		// options
+		const positioning = writable<FloatingConfig>(withDefaults.positioning);
+		const preventScroll = writable<boolean>(withDefaults.preventScroll);
+		const arrowSize = writable<number>(withDefaults.arrowSize);
+		const dir = writable<TextDirection>(withDefaults.dir);
+		const loop = writable<boolean>(withDefaults.loop);
+
+		const rootOptions = {
+			positioning,
+			preventScroll,
+			arrowSize,
+			dir,
+			loop,
+		};
 
 		const m = createMenuBuilder({
 			rootOptions,
@@ -119,8 +137,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
-					[rootOpen, rootActiveTrigger, rootOptions],
-					([$rootOpen, $rootActiveTrigger, $rootOptions]) => {
+					[rootOpen, rootActiveTrigger, positioning],
+					([$rootOpen, $rootActiveTrigger, $positioning]) => {
 						unsubPopper();
 						if ($rootOpen && $rootActiveTrigger) {
 							tick().then(() => {
@@ -128,7 +146,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 									anchorElement: $rootActiveTrigger,
 									open: rootOpen,
 									options: {
-										floating: $rootOptions.positioning,
+										floating: $positioning,
 									},
 								});
 
@@ -318,7 +336,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				const triggerElement = document.getElementById(m.rootIds.trigger);
 				if (!isHTMLElement(triggerElement)) return;
 				rootActiveTrigger.set(triggerElement);
-				triggerElement.setAttribute('data-highlighted', '');
+				addHighlight(triggerElement);
 				rootOpen.set(true);
 				return;
 			}
@@ -328,7 +346,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				if (get(rootOpen)) {
 					const triggerElement = document.getElementById(m.rootIds.trigger);
 					if (!isHTMLElement(triggerElement)) return;
-					triggerElement.removeAttribute('data-highlighted');
+					removeHighlight(triggerElement);
 					rootActiveTrigger.set(null);
 					rootOpen.set(false);
 				}
@@ -341,23 +359,31 @@ export function createMenubar(props?: CreateMenubarProps) {
 			const triggerElement = document.getElementById(m.rootIds.trigger);
 			if (!$rootOpen && get(activeMenu) === m.rootIds.menu) {
 				activeMenu.set('');
-				triggerElement?.removeAttribute('data-highlighted');
+				if (triggerElement) {
+					removeHighlight(triggerElement);
+				}
 				return;
 			}
 			if ($rootOpen) {
-				triggerElement?.setAttribute('data-highlighted', '');
+				if (triggerElement) {
+					addHighlight(triggerElement);
+				}
 			}
 		});
 
 		return {
-			menu,
-			trigger,
-			item: m.item,
-			checkboxItem: m.checkboxItem,
-			arrow: m.arrow,
-			createSubmenu: m.createSubMenu,
-			createMenuRadioGroup: m.createMenuRadioGroup,
-			separator: m.separator,
+			elements: {
+				menu,
+				trigger,
+				item: m.item,
+				checkboxItem: m.checkboxItem,
+				arrow: m.arrow,
+				separator: m.separator,
+			},
+			builders: {
+				createSubmenu: m.createSubMenu,
+				createMenuRadioGroup: m.createMenuRadioGroup,
+			},
 		};
 	};
 
@@ -493,14 +519,14 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		// Calculate the index of the next menu item
 		let nextIndex: number;
-		const loop = withDefaults.loop;
+		const $loop = get(loop);
 		switch (e.key) {
 			case kbd.ARROW_RIGHT:
 				nextIndex =
-					currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : loop ? 0 : currentIndex;
+					currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : $loop ? 0 : currentIndex;
 				break;
 			case kbd.ARROW_LEFT:
-				nextIndex = currentIndex > 0 ? currentIndex - 1 : loop ? candidateNodes.length - 1 : 0;
+				nextIndex = currentIndex > 0 ? currentIndex - 1 : $loop ? candidateNodes.length - 1 : 0;
 				break;
 			case kbd.HOME:
 				nextIndex = 0;
@@ -518,7 +544,14 @@ export function createMenubar(props?: CreateMenubarProps) {
 	}
 
 	return {
-		menubar,
-		createMenu,
+		elements: {
+			menubar,
+		},
+		builders: {
+			createMenu,
+		},
+		options: {
+			loop,
+		},
 	};
 }

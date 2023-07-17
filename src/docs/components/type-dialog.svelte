@@ -4,7 +4,11 @@
 	import X from '~icons/lucide/x';
 	import { CodeBlock } from '$docs/components';
 
-	const { trigger, portal, overlay, content, title, close, open } = createDialog({});
+	const {
+		elements: { trigger, overlay, content, title, close },
+		actions: { portal },
+		states: { open },
+	} = createDialog();
 
 	export let name = '';
 	export let code = '';
