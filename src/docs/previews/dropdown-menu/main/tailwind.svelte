@@ -117,7 +117,7 @@
 		@apply min-w-[220px] shadow-md shadow-neutral-900/30;
 	}
 	.item {
-		@apply relative h-[25px] min-h-[25px] select-none rounded-sm pl-6 pr-1;
+		@apply relative h-6 min-h-[24px] select-none rounded-sm pl-6 pr-1;
 		@apply z-20 text-magnum-900 outline-none;
 		@apply data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900;
 		@apply data-[disabled]:text-neutral-300;
@@ -151,7 +151,7 @@
 		@apply h-[13px] w-[13px];
 	}
 	.check {
-		@apply absolute left-0 inline-flex w-[25px] items-center justify-center;
+		@apply absolute left-0 inline-flex w-6 items-center justify-center;
 	}
 	.text {
 		@apply pl-6 text-xs leading-6 text-neutral-600;
