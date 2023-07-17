@@ -8,9 +8,14 @@ import {
 	kbd,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
-import type { AccordionHeadingProps, AccordionItemProps, CreateAccordionProps } from './types';
 import { tick } from 'svelte';
+import { derived, writable, type Writable } from 'svelte/store';
+import type {
+	AccordionHeadingProps,
+	AccordionItemProps,
+	AccordionType,
+	CreateAccordionProps,
+} from './types';
 
 type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
 const { name, selector } = createElHelpers<AccordionParts>('accordion');
@@ -19,11 +24,12 @@ const defaults = {
 	type: 'single',
 } satisfies Defaults<CreateAccordionProps>;
 
-export const createAccordion = (props?: CreateAccordionProps) => {
-	const withDefaults = { ...defaults, ...props } as CreateAccordionProps;
+export const createAccordion = <T extends AccordionType = 'single'>(
+	props?: CreateAccordionProps<T>
+) => {
+	const withDefaults = { ...defaults, ...props } as CreateAccordionProps<T>;
 	const options = writable({
 		disabled: withDefaults.disabled,
-		type: withDefaults.type,
 	});
 
 	const value = writable<string | string[] | undefined>(withDefaults.value);
@@ -97,13 +103,12 @@ export const createAccordion = (props?: CreateAccordionProps) => {
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'click', () => {
-					const $options = get(options);
 					const disabled = node.dataset.disabled === 'true';
 					const itemValue = node.dataset.value;
 					if (disabled || !itemValue) return;
 
 					value.update(($value) => {
-						if ($options.type === 'single') {
+						if (withDefaults.type === 'single') {
 							return $value === itemValue ? undefined : itemValue;
 						} else {
 							const arrValue = $value as string[] | undefined;
@@ -199,7 +204,8 @@ export const createAccordion = (props?: CreateAccordionProps) => {
 
 	return {
 		root,
-		value,
+		/** Initial value of accordion */
+		value: value as Writable<CreateAccordionProps<T>['value']>,
 		item,
 		trigger,
 		content,

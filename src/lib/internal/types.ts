@@ -31,3 +31,6 @@ export type Defaults<T> = {
 export type TextDirection = 'ltr' | 'rtl';
 
 export type Orientation = 'horizontal' | 'vertical';
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type Prettify<T> = { [K in keyof T]: T[K] } & {};
