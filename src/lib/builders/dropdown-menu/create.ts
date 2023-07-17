@@ -39,15 +39,21 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 	});
 
 	return {
-		trigger,
-		menu,
-		open: rootOpen,
-		item,
-		checkboxItem,
-		arrow,
+		elements: {
+			trigger,
+			menu,
+			item,
+			checkboxItem,
+			arrow,
+			separator,
+		},
+		states: {
+			open: rootOpen,
+		},
 		options: rootOptions,
-		createSubMenu,
-		createMenuRadioGroup,
-		separator,
+		builders: {
+			createSubMenu,
+			createMenuRadioGroup,
+		},
 	};
 }

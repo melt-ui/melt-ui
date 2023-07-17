@@ -4,17 +4,18 @@ import type { CreateAvatarProps, ImageLoadingStatus } from './types';
 
 const defaults = {
 	src: '',
+	delayMs: 0,
 } satisfies CreateAvatarProps;
 
-export const createAvatar = (props: CreateAvatarProps = defaults) => {
-	const withDefaults = { ...defaults, ...props };
-	const { delayMs } = withDefaults;
+export const createAvatar = (props?: CreateAvatarProps) => {
+	const withDefaults = { ...defaults, ...props } satisfies CreateAvatarProps;
 
+	const delayMs = writable(withDefaults.delayMs);
 	const src = writable(withDefaults.src);
 
 	const loadingStatus = writable<ImageLoadingStatus>('loading');
 
-	effect([src], ([$src]) => {
+	effect([src, delayMs], ([$src, $delayMs]) => {
 		if (isBrowser) {
 			const image = new Image();
 			image.src = $src;
@@ -22,7 +23,7 @@ export const createAvatar = (props: CreateAvatarProps = defaults) => {
 				if (delayMs !== undefined) {
 					const timerId = window.setTimeout(() => {
 						loadingStatus.set('loaded');
-					}, delayMs);
+					}, $delayMs);
 					return () => window.clearTimeout(timerId);
 				} else {
 					loadingStatus.set('loaded');
@@ -60,7 +61,13 @@ export const createAvatar = (props: CreateAvatarProps = defaults) => {
 	});
 
 	return {
-		image,
-		fallback,
+		elements: {
+			image,
+			fallback,
+		},
+		options: {
+			delayMs,
+			src,
+		},
 	};
 };

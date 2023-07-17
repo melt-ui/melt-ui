@@ -557,10 +557,16 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		});
 
 		return {
-			radioGroup,
-			radioItem,
-			isChecked,
-			value,
+			elements: {
+				radioGroup,
+				radioItem,
+			},
+			states: {
+				value,
+			},
+			helpers: {
+				isChecked,
+			},
 		};
 	};
 
@@ -975,11 +981,15 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		});
 
 		return {
-			subTrigger,
-			subMenu,
-			subOpen,
-			subArrow,
-			subOptions,
+			elements: {
+				subTrigger,
+				subMenu,
+				subArrow,
+			},
+			states: {
+				subOpen,
+			},
+			options: subOptions,
 		};
 	};
 

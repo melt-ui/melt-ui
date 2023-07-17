@@ -268,16 +268,22 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	});
 
 	return {
-		open: rootOpen,
+		elements: {
+			menu,
+			trigger,
+			item,
+			checkboxItem,
+			arrow,
+			separator,
+		},
+		states: {
+			open: rootOpen,
+		},
 		options: rootOptions,
-		menu,
-		trigger,
-		item,
-		checkboxItem,
-		arrow,
-		separator,
-		createSubMenu,
-		createMenuRadioGroup,
+		builders: {
+			createSubMenu,
+			createMenuRadioGroup,
+		},
 	};
 }
 
