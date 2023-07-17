@@ -4,10 +4,12 @@
 	import { flyAndScale } from '$docs/utils';
 	import X from '~icons/lucide/x';
 
-	const { trigger, portal, overlay, content, title, description, close, open } =
-		createDialog({
-			role: 'alertdialog',
-		});
+	const { elements, actions, states } = createDialog({
+		role: 'alertdialog',
+	});
+	const { trigger, overlay, content, title, description, close } = elements;
+	const { open } = states;
+	const { portal } = actions;
 </script>
 
 <button

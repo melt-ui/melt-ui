@@ -29,8 +29,13 @@ const defaults = {
 const openDialogIds = writable<string[]>([]);
 
 export function createDialog(props: CreateDialogProps = {}) {
-	const withDefaults = { ...defaults, ...props };
-	const options = writable({ ...withDefaults });
+	const withDefaults = { ...defaults, ...props } satisfies CreateDialogProps;
+
+	const preventScroll = writable<boolean>(withDefaults.preventScroll);
+	const closeOnEscape = writable<boolean>(withDefaults.closeOnEscape);
+	const closeOnOutsideClick = writable<boolean>(withDefaults.closeOnOutsideClick);
+	const role = writable<'dialog' | 'alertdialog'>(withDefaults.role);
+
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	const ids = {
@@ -114,11 +119,11 @@ export function createDialog(props: CreateDialogProps = {}) {
 					e.preventDefault();
 					e.stopImmediatePropagation();
 
-					const $options = get(options);
+					const $closeOnOutsideClick = get(closeOnOutsideClick);
 					const $openDialogIds = get(openDialogIds);
 					const isLast = last($openDialogIds) === ids.content;
 
-					if ($options.closeOnOutsideClick && isLast) {
+					if ($closeOnOutsideClick && isLast) {
 						open.set(false);
 					}
 
@@ -177,27 +182,30 @@ export function createDialog(props: CreateDialogProps = {}) {
 		},
 	});
 
-	effect([open, options, openDialogIds], ([$open, $options, $openDialogIds]) => {
-		const unsubs: Array<() => void> = [];
+	effect(
+		[open, openDialogIds, closeOnEscape, preventScroll],
+		([$open, $openDialogIds, $closeOnEscape, $preventScroll]) => {
+			const unsubs: Array<() => void> = [];
 
-		const isLast = last($openDialogIds) === ids.content;
+			const isLast = last($openDialogIds) === ids.content;
 
-		if ($options.closeOnEscape && $open && isLast) {
-			unsubs.push(
-				addEventListener(document, 'keydown', (e) => {
-					if (e.key === 'Escape') {
-						open.set(false);
-					}
-				})
-			);
+			if ($closeOnEscape && $open && isLast) {
+				unsubs.push(
+					addEventListener(document, 'keydown', (e) => {
+						if (e.key === 'Escape') {
+							open.set(false);
+						}
+					})
+				);
+			}
+
+			if ($preventScroll && $open) unsubs.push(removeScroll());
+
+			return () => {
+				unsubs.forEach((unsub) => unsub());
+			};
 		}
-
-		if ($options.preventScroll && $open) unsubs.push(removeScroll());
-
-		return () => {
-			unsubs.forEach((unsub) => unsub());
-		};
-	});
+	);
 
 	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
 		if (!isBrowser) return;
@@ -209,14 +217,19 @@ export function createDialog(props: CreateDialogProps = {}) {
 	});
 
 	return {
-		options,
-		open,
-		trigger,
-		overlay,
-		portal: usePortal,
-		content,
-		title,
-		description,
-		close,
+		elements: {
+			content,
+			trigger,
+			title,
+			description,
+			overlay,
+			close,
+		},
+		states: {
+			open,
+		},
+		actions: {
+			portal: usePortal,
+		},
 	};
 }

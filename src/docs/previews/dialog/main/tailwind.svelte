@@ -4,8 +4,10 @@
 	import { flyAndScale } from '$docs/utils';
 	import X from '~icons/lucide/x';
 
-	const { trigger, portal, overlay, content, title, description, close, open } =
-		createDialog();
+	const { elements, actions, states } = createDialog();
+	const { trigger, overlay, content, title, description, close } = elements;
+	const { open } = states;
+	const { portal } = actions;
 </script>
 
 <button

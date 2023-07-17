@@ -44,7 +44,21 @@ const { name, selector } = createElHelpers<MenuParts>('context-menu');
 
 export function createContextMenu(props?: CreateContextMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;
-	const rootOptions = writable(withDefaults);
+
+	const positioning = writable<FloatingConfig>(withDefaults.positioning);
+	const preventScroll = writable<boolean>(withDefaults.preventScroll);
+	const arrowSize = writable<number>(withDefaults.arrowSize);
+	const loop = writable<boolean>(withDefaults.loop);
+	const dir = writable(withDefaults.dir);
+
+	const rootOptions = {
+		positioning,
+		preventScroll,
+		arrowSize,
+		loop,
+		dir,
+	};
+
 	const rootOpen = writable(false);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
 	const nextFocusable = writable<HTMLElement | null>(null);
@@ -102,8 +116,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[rootOpen, rootActiveTrigger, rootOptions],
-				([$rootOpen, $rootActiveTrigger, $rootOptions]) => {
+				[rootOpen, rootActiveTrigger, positioning],
+				([$rootOpen, $rootActiveTrigger, $positioning]) => {
 					unsubPopper();
 					if ($rootOpen && $rootActiveTrigger) {
 						tick().then(() => {
@@ -114,7 +128,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 								anchorElement: $virtual,
 								open: rootOpen,
 								options: {
-									floating: $rootOptions.positioning,
+									floating: $positioning,
 									clickOutside: {
 										handler: (e: PointerEvent) => {
 											if (e.defaultPrevented) return;
@@ -268,16 +282,21 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	});
 
 	return {
-		open: rootOpen,
-		options: rootOptions,
-		menu,
-		trigger,
-		item,
-		checkboxItem,
-		arrow,
-		separator,
-		createSubMenu,
-		createMenuRadioGroup,
+		elements: {
+			menu,
+			trigger,
+			item,
+			checkboxItem,
+			arrow,
+			separator,
+		},
+		states: {
+			open: rootOpen,
+		},
+		builders: {
+			createSubMenu,
+			createMenuRadioGroup,
+		},
 	};
 }
 

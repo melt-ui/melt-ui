@@ -17,7 +17,6 @@ import {
 	last,
 	next,
 	noop,
-	omit,
 	prev,
 	removeScroll,
 	sleep,

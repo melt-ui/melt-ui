@@ -4,19 +4,18 @@
 	import ChevronRight from '~icons/lucide/chevron-right';
 	import Check from '~icons/lucide/check';
 
+	const { elements, builders } = createContextMenu();
+	const { trigger, menu, item, checkboxItem, separator } = elements;
+	const { createSubMenu, createMenuRadioGroup } = builders;
+
 	const {
-		trigger,
-		menu,
-		item,
-		checkboxItem,
-		separator,
-		createSubMenu,
-		createMenuRadioGroup,
-	} = createContextMenu();
+		elements: { subMenu: subMenuA, subTrigger: subTriggerA },
+	} = createSubMenu();
 
-	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
-
-	const { radioGroup, radioItem, isChecked } = createMenuRadioGroup({
+	const {
+		elements: { radioGroup, radioItem },
+		helpers: { isChecked },
+	} = createMenuRadioGroup({
 		value: 'Hunter Johnston',
 	});
 
