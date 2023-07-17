@@ -2,43 +2,43 @@ import type { FloatingConfig } from '$lib/internal/actions';
 import type { Writable } from 'svelte/store';
 import type { createSelect } from './create';
 
-type BaseSelectProps = {
+type MultipleSelectProps<O> =
+	| {
+			type: 'multiple';
+			value?: Writable<O[]>;
+			defaultValue?: never;
+	  }
+	| {
+			type: 'multiple';
+			value?: never;
+			defaultValue?: O[];
+	  };
+
+type SingleSelectProps<O> =
+	| {
+			value?: Writable<O>;
+			defaultValue?: never;
+	  }
+	| {
+			value?: never;
+			defaultValue?: O;
+	  };
+
+type SelectType = 'single' | 'multiple';
+
+export type CreateSelectProps<Type extends SelectType = 'single', O = unknown> = {
+	type?: Type;
 	positioning?: FloatingConfig;
 	arrowSize?: number;
 	required?: boolean;
 	disabled?: boolean;
+	value?: unknown;
 	label?: string;
 	name?: string;
 	preventScroll?: boolean;
 	loop?: boolean;
-};
+} & (Type extends 'single' ? SingleSelectProps<O> : MultipleSelectProps<O>);
 
-type MultipleSelectProps<T> =
-	| {
-			type: 'multiple';
-			value?: Writable<T[]>;
-			defaultValue?: never;
-	  }
-	| {
-			type: 'multiple';
-			value?: never;
-			defaultValue?: T[];
-	  };
-
-type SingleSelectProps<T> =
-	| {
-			type: 'single';
-			value?: Writable<T>;
-			defaultValue?: never;
-	  }
-	| {
-			type: 'single';
-			value?: never;
-			defaultValue?: T;
-	  };
-
-export type CreateSelectProps<T> = BaseSelectProps &
-	(MultipleSelectProps<T> | SingleSelectProps<T>);
 
 export type SelectOptionProps = {
 	value: unknown;
