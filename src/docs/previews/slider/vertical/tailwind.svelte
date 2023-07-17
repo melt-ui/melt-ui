@@ -10,7 +10,7 @@
 
 <span
 	melt={$slider}
-	class="relative flex flex-col h-[200px] w-[3px] items-center"
+	class="relative flex h-[200px] w-[3px] flex-col items-center"
 >
 	<span class="block h-[200px] w-full bg-black/40">
 		<span melt={$range} class="w-full bg-white" />
