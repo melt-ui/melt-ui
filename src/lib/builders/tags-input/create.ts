@@ -33,7 +33,7 @@ type TagsInputParts = '' | 'tag' | 'delete-trigger' | 'edit' | 'input';
 const { name, attribute, selector } = createElHelpers<TagsInputParts>('tags-input');
 
 export function createTagsInput(props?: CreateTagsInputProps) {
-	const withDefaults = { ...defaults, ...props } as CreateTagsInputProps;
+	const withDefaults = { ...defaults, ...props } satisfies CreateTagsInputProps;
 
 	// UUID for specific containers
 	const ids = {
@@ -41,8 +41,34 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		input: generateId(),
 	};
 
-	// Options store
-	const options = writable(omit(withDefaults, 'tags', 'selected'));
+	// options
+	const placeholder = writable(withDefaults.placeholder);
+	const disabled = writable(withDefaults.disabled);
+	const editable = writable(withDefaults.editable);
+	const unique = writable(withDefaults.unique);
+	const blur = writable(withDefaults.blur);
+	const addOnPaste = writable(withDefaults.addOnPaste);
+	const allowed = writable(withDefaults.allowed);
+	const denied = writable(withDefaults.denied);
+	const add = writable(withDefaults.add);
+	const remove = writable(withDefaults.remove);
+	const update = writable(withDefaults.update);
+	const maxTags = writable(withDefaults.maxTags);
+
+	const options = {
+		placeholder,
+		disabled,
+		editable,
+		unique,
+		blur,
+		addOnPaste,
+		allowed,
+		denied,
+		add,
+		remove,
+		update,
+		maxTags,
+	};
 
 	// A store representing the current input value. A readable version is exposed to the
 	// user
@@ -75,37 +101,37 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 	// Run validation checks and if a validation fails return false immediately
 	const isInputValid = (v: string) => {
-		const $options = get(options);
 		const $tags = get(tags);
 		const $editing = get(editing);
-
+		const $allowed = get(allowed);
+		const $denied = get(denied);
+		const $maxTags = get(maxTags);
 		// Tag uniqueness
-		if ($options.unique && $editing?.value !== v) {
+		if (get(unique) && $editing?.value !== v) {
 			const index = $tags.findIndex((tag) => tag.value === v);
 			if (index >= 0) return false;
 		}
 
 		// Allowed list is populated and this value is not in it
-		if ($options.allowed && $options.allowed.length > 0 && !$options.allowed.includes(v))
-			return false;
+		if ($allowed && $allowed.length > 0 && !$allowed.includes(v)) return false;
 
 		// Deny list is populated and this value is in it
-		if ($options.denied && $options.denied.length > 0 && $options.denied.includes(v)) return false;
+		if ($denied && $denied.length > 0 && $denied.includes(v)) return false;
 
-		if ($options.maxTags && $options.maxTags > 0 && $tags.length >= $options.maxTags) return false;
+		if ($maxTags && $maxTags > 0 && $tags.length >= $maxTags) return false;
 
 		return true;
 	};
 
 	// Add a tag to the $tags store. Calls `$options.add()` if set
 	const addTag = async (v: string) => {
-		const $options = get(options);
+		const $add = get(add);
 
 		let workingTag = { id: '', value: v };
 
-		if ($options.add) {
+		if ($add) {
 			try {
-				const res = await $options.add(v);
+				const res = await $add(v);
 
 				if (typeof res === 'string') workingTag.value = res;
 				else workingTag = res;
@@ -124,16 +150,16 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 	// Update a tag in the $tags store. Calls `$options.update()` if set
 	const updateTag = async (tag: Tag, select = false) => {
-		const $options = get(options);
+		const $update = get(update);
 
 		// Store the id, incase it changes during the update
 		const oldId = tag.id;
 
 		let workingTag = tag;
 
-		if ($options.update) {
+		if ($update) {
 			try {
-				const res = await $options.update(workingTag);
+				const res = await $update(workingTag);
 				workingTag = res;
 
 				// If the id was wiped, give it a new one
@@ -161,11 +187,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 	// Remove a tag from the $tags store. Calls `$options.remove()` if set
 	const removeTag = async (t: Tag) => {
-		const $options = get(options);
+		const $remove = get(remove);
 
-		if ($options.remove) {
+		if ($remove) {
 			try {
-				if (!(await $options.remove(t))) return false;
+				if (!(await $remove(t))) return false;
 			} catch {
 				return false;
 			}
@@ -182,12 +208,12 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	};
 
 	const root = builder(name(''), {
-		stores: options,
-		returned: ($options) => {
+		stores: disabled,
+		returned: ($disabled) => {
 			return {
 				'data-melt-id': ids.root,
-				'data-disabled': $options.disabled ? true : undefined,
-				disabled: $options.disabled,
+				'data-disabled': $disabled ? true : undefined,
+				disabled: $disabled,
 			} as const;
 		},
 		action: (node: HTMLElement) => {
@@ -208,13 +234,13 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	});
 
 	const input = builder(name('input'), {
-		stores: options,
-		returned: ($options) => {
+		stores: [disabled, placeholder],
+		returned: ([$disabled, $placeholder]) => {
 			return {
 				'data-melt-id': ids.input,
-				'data-disabled': $options.disabled ? '' : undefined,
-				disabled: $options.disabled,
-				placeholder: $options.placeholder,
+				'data-disabled': $disabled ? '' : undefined,
+				disabled: $disabled,
+				placeholder: $placeholder,
 			};
 		},
 		action: (node: HTMLInputElement) => {
@@ -264,11 +290,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					if (!value) return;
 
 					// Handle clear or add (if set)
-					const $options = get(options);
+					const $blur = get(blur);
 
-					if ($options.blur === 'clear') {
+					if ($blur === 'clear') {
 						node.value = '';
-					} else if ($options.blur === 'add') {
+					} else if ($blur === 'add') {
 						if (isInputValid(value) && (await addTag(value))) {
 							node.value = '';
 							inputValue.set('');
@@ -284,7 +310,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					if (!pastedText) return;
 
 					// Do nothing when addOnPaste is false
-					if (!get(options).addOnPaste) return;
+					if (!get(addOnPaste)) return;
 
 					// Update value with the pasted text or set invalid
 					if (isInputValid(pastedText) && (await addTag(pastedText))) {
@@ -422,11 +448,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	});
 
 	const tag = builder(name('tag'), {
-		stores: [selected, editing, options],
-		returned: ([$selected, $editing, $options]) => {
+		stores: [selected, editing, disabled, editable],
+		returned: ([$selected, $editing, $disabled, $editable]) => {
 			return (tag: TagProps) => {
-				const disabled = $options.disabled || tag.disabled;
-				const editable = $options.editable && tag.editable !== false;
+				const disabled = $disabled || tag.disabled;
+				const editable = $editable && tag.editable !== false;
 				const selected = disabled ? undefined : $selected?.id === tag?.id;
 				const editing = editable ? $editing?.id === tag?.id : undefined;
 
@@ -519,11 +545,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	});
 
 	const deleteTrigger = builder(name('delete-trigger'), {
-		stores: [selected, editing, options],
-		returned: ([$selected, $editing, $options]) => {
+		stores: [selected, editing, disabled, editable],
+		returned: ([$selected, $editing, $disabled, $editable]) => {
 			return (tag: TagProps) => {
-				const disabled = $options.disabled || tag.disabled;
-				const editable = $options.editable && tag.editable !== false;
+				const disabled = $disabled || tag.disabled;
+				const editable = $editable && tag.editable !== false;
 				const selected = disabled ? undefined : $selected?.id === tag?.id;
 				const editing = editable ? $editing?.id === tag?.id : undefined;
 
@@ -562,10 +588,10 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	});
 
 	const edit = builder(name('edit'), {
-		stores: [editing, options],
-		returned: ([$editing, $options]) => {
+		stores: [editing, editable],
+		returned: ([$editing, $editable]) => {
 			return (tag: Tag) => {
-				const editable = $options.editable;
+				const editable = $editable;
 				const editing = editable ? $editing?.id === tag.id : undefined;
 
 				return {
@@ -686,16 +712,22 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	});
 
 	return {
-		inputValue: derived(inputValue, ($inputValue) => $inputValue),
-		inputInvalid: derived(inputInvalid, ($inputInvalid) => $inputInvalid),
-		selected,
-		isSelected,
+		elements: {
+			root,
+			input,
+			deleteTrigger,
+			edit,
+			tag,
+		},
+		states: {
+			tags,
+			inputValue,
+			inputInvalid,
+			selected,
+		},
+		helpers: {
+			isSelected,
+		},
 		options,
-		tags,
-		root,
-		input,
-		tag,
-		deleteTrigger,
-		edit,
 	};
 }

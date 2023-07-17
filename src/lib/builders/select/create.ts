@@ -291,7 +291,9 @@ export function createSelect(props?: CreateSelectProps) {
 		},
 	});
 
-	const { root: separator } = createSeparator({
+	const {
+		elements: { root: separator },
+	} = createSeparator({
 		decorative: true,
 	});
 

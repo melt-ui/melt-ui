@@ -3,11 +3,15 @@
 
 	export let orientation: CreateSeparatorProps['orientation'] = 'vertical';
 
-	const { root: vertical } = createSeparator({
+	const {
+		elements: { root: vertical },
+	} = createSeparator({
 		orientation,
 	});
 
-	const { root: horizontalSeparator } = createSeparator({
+	const {
+		elements: { root: horizontal },
+	} = createSeparator({
 		orientation: 'horizontal',
 		decorative: true,
 	});
@@ -18,7 +22,7 @@
 <div>
 	<h2 class="font-bold">Melt UI</h2>
 	<p>Flavors for everyone</p>
-	<div melt={$horizontalSeparator} class="my-3.5 h-[1px] w-full bg-white" />
+	<div melt={$horizontal} class="my-3.5 h-[1px] w-full bg-white" />
 	<div class="flex items-center space-x-3.5">
 		{#each icecreams as icecream, i}
 			<p>{icecream}</p>

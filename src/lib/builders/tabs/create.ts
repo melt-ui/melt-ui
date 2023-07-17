@@ -8,7 +8,6 @@ import {
 	kbd,
 	last,
 	next,
-	omit,
 	prev,
 	isLeftClick,
 } from '$lib/internal/helpers';
@@ -28,33 +27,46 @@ type TabsParts = 'list' | 'trigger' | 'content';
 const { name, selector } = createElHelpers<TabsParts>('tabs');
 
 export function createTabs(props?: CreateTabsProps) {
-	const withDefaults = { ...defaults, ...props };
-	const options = writable(omit(withDefaults, 'value'));
+	const withDefaults = { ...defaults, ...props } satisfies CreateTabsProps;
 
+	const orientation = writable(withDefaults.orientation);
+	const activateOnFocus = writable(withDefaults.activateOnFocus);
+	const loop = writable(withDefaults.loop);
+	const autoSet = writable(withDefaults.autoSet);
+	const onChange = writable(withDefaults.onChange);
+
+	const options = {
+		orientation,
+		activateOnFocus,
+		loop,
+		autoSet,
+		onChange,
+	};
 	const value = writable(withDefaults.value);
+
 	let ssrValue = withDefaults.value;
 	value.subscribe((value) => {
-		withDefaults.onChange?.(value);
+		get(onChange)?.(value);
 	});
 
 	// Root
 	const root = builder(name(), {
-		stores: options,
-		returned: ($options) => {
+		stores: orientation,
+		returned: ($orientation) => {
 			return {
-				'data-orientation': $options.orientation,
+				'data-orientation': $orientation,
 			};
 		},
 	});
 
 	// List
 	const list = builder(name('list'), {
-		stores: options,
-		returned: ($options) => {
+		stores: orientation,
+		returned: ($orientation) => {
 			return {
 				role: 'tablist',
-				'aria-orientation': $options.orientation,
-				'data-orientation': $options.orientation,
+				'aria-orientation': $orientation,
+				'data-orientation': $orientation,
 			};
 		},
 	});
@@ -68,12 +80,12 @@ export function createTabs(props?: CreateTabsProps) {
 	};
 
 	const trigger = builder(name('trigger'), {
-		stores: [value, options],
-		returned: ([$value, $options]) => {
+		stores: [value, autoSet, orientation],
+		returned: ([$value, $autoSet, $orientation]) => {
 			return (props: TabsTriggerProps) => {
 				const { value: tabValue, disabled } = parseTriggerProps(props);
 
-				if (!$value && !ssrValue && $options.autoSet) {
+				if (!$value && !ssrValue && $autoSet) {
 					ssrValue = tabValue;
 					value.set(tabValue);
 				}
@@ -89,7 +101,7 @@ export function createTabs(props?: CreateTabsProps) {
 						: 'inactive',
 					tabindex: $value === tabValue ? 0 : -1,
 					'data-value': tabValue,
-					'data-orientation': $options.orientation,
+					'data-orientation': $orientation,
 					'data-disabled': disabled ? true : undefined,
 					disabled,
 				};
@@ -98,11 +110,10 @@ export function createTabs(props?: CreateTabsProps) {
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'focus', () => {
-					const $options = get(options);
 					const disabled = node.dataset.disabled === 'true';
 					const tabValue = node.dataset.value;
 
-					if ($options.activateOnFocus && !disabled && tabValue !== undefined) {
+					if (get(activateOnFocus) && !disabled && tabValue !== undefined) {
 						value.set(tabValue);
 					}
 				}),
@@ -131,21 +142,21 @@ export function createTabs(props?: CreateTabsProps) {
 
 					if (!rootEl || !tabValue) return;
 
-					const $options = get(options);
+					const $loop = get(loop);
 
 					const triggers = Array.from(rootEl.querySelectorAll('[role="tab"]')) as HTMLElement[];
 					const enabledTriggers = triggers.filter((el) => !el.hasAttribute('data-disabled'));
 					const triggerIdx = Array.from(enabledTriggers ?? []).findIndex((el) => el === e.target);
 
 					const dir = getElemDirection(rootEl);
-					const { nextKey, prevKey } = getDirectionalKeys(dir, $options.orientation);
+					const { nextKey, prevKey } = getDirectionalKeys(dir, get(orientation));
 
 					if (e.key === nextKey) {
 						e.preventDefault();
-						next(enabledTriggers, triggerIdx, $options.loop)?.focus();
+						next(enabledTriggers, triggerIdx, $loop)?.focus();
 					} else if (e.key === prevKey) {
 						e.preventDefault();
-						prev(enabledTriggers, triggerIdx, $options.loop)?.focus();
+						prev(enabledTriggers, triggerIdx, $loop)?.focus();
 					} else if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
 						e.preventDefault();
 						value.set(tabValue);
@@ -188,11 +199,15 @@ export function createTabs(props?: CreateTabsProps) {
 	});
 
 	return {
-		value,
+		elements: {
+			root,
+			list,
+			trigger,
+			content,
+		},
+		states: {
+			value,
+		},
 		options,
-		root: root,
-		list: list,
-		trigger: trigger,
-		content: content,
 	};
 }

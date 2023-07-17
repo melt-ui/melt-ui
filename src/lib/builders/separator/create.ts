@@ -8,25 +8,32 @@ const defaults = {
 	decorative: false,
 } satisfies Defaults<CreateSeparatorProps>;
 
-export const createSeparator = (props: CreateSeparatorProps = defaults) => {
-	const withDefaults = { ...defaults, ...props };
-	const options = writable({ ...withDefaults });
+export const createSeparator = (props?: CreateSeparatorProps) => {
+	const withDefaults = { ...defaults, ...props } satisfies CreateSeparatorProps;
+	const orientation = writable(withDefaults.orientation);
+	const decorative = writable(withDefaults.decorative);
+	const options = {
+		orientation,
+		decorative,
+	};
 
 	const root = builder('separator', {
-		stores: options,
-		returned: ({ orientation, decorative }) => {
-			const ariaOrientation = orientation === 'vertical' ? orientation : undefined;
+		stores: [orientation, decorative],
+		returned: ([$orientation, $decorative]) => {
+			const ariaOrientation = $orientation === 'vertical' ? $orientation : undefined;
 			return {
-				role: decorative ? 'none' : 'separator',
+				role: $decorative ? 'none' : 'separator',
 				'aria-orientation': ariaOrientation,
-				'aria-hidden': decorative,
-				'data-orientation': orientation,
+				'aria-hidden': $decorative,
+				'data-orientation': $orientation,
 			};
 		},
 	});
 
 	return {
-		root,
+		elements: {
+			root,
+		},
 		options,
 	};
 };

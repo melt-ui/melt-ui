@@ -7,9 +7,9 @@
 	export let keepState = false;
 
 	const {
-		root,
-		isChecked,
-		checked: checkedStore,
+		elements: { root },
+		helpers: { isChecked },
+		states: { checked: checkedStore },
 	} = createSwitch({
 		checked,
 	});

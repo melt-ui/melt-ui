@@ -13,33 +13,39 @@ const defaults = {
 
 const { name } = createElHelpers('switch');
 
-export function createSwitch(props: CreateSwitchProps = {}) {
-	const propsWithDefaults = { ...defaults, ...props };
-	const options = writable({
-		disabled: propsWithDefaults.disabled,
-		required: propsWithDefaults.required,
-		name: propsWithDefaults.name,
-		value: propsWithDefaults.value,
-	});
+export function createSwitch(props?: CreateSwitchProps) {
+	const propsWithDefaults = { ...defaults, ...props } satisfies CreateSwitchProps;
+
+	const disabled = writable(propsWithDefaults.disabled);
+	const required = writable(propsWithDefaults.required);
+	const nameStore = writable(propsWithDefaults.name);
+	const value = writable(propsWithDefaults.value);
+
+	const options = {
+		disabled,
+		required,
+		name: nameStore,
+		value,
+	};
+
 	const checked = writable(propsWithDefaults.checked);
 
 	const root = builder(name(), {
-		stores: [checked, options],
-		returned: ([$checked, $options]) => {
+		stores: [checked, disabled, required],
+		returned: ([$checked, $disabled, $required]) => {
 			return {
-				'data-disabled': $options.disabled,
-				disabled: $options.disabled,
+				'data-disabled': $disabled,
+				disabled: $disabled,
 				'data-state': $checked ? 'checked' : 'unchecked',
 				type: 'button',
 				role: 'switch',
 				'aria-checked': $checked,
-				'aria-required': $options.required,
+				'aria-required': $required,
 			} as const;
 		},
 		action(node: HTMLElement) {
 			const unsub = addEventListener(node, 'click', () => {
-				const $options = get(options);
-				if ($options.disabled) return;
+				if (get(disabled)) return;
 
 				checked.update((value) => !value);
 			});
@@ -51,18 +57,18 @@ export function createSwitch(props: CreateSwitchProps = {}) {
 	});
 
 	const input = builder(name('input'), {
-		stores: [checked, options],
-		returned: ([$checked, $options]) => {
+		stores: [checked, nameStore, required, disabled, value],
+		returned: ([$checked, $name, $required, $disabled, $value]) => {
 			return {
 				type: 'checkbox' as const,
 				'aria-hidden': true,
 				hidden: true,
 				tabindex: -1,
-				name: $options.name,
-				value: $options.value,
+				name: $name,
+				value: $value,
 				checked: $checked,
-				required: $options.required,
-				disabled: $options.disabled,
+				required: $required,
+				disabled: $disabled,
 				style: styleToString({
 					position: 'absolute',
 					opacity: 0,
@@ -77,10 +83,16 @@ export function createSwitch(props: CreateSwitchProps = {}) {
 	const isChecked = derived(checked, ($checked) => $checked === true);
 
 	return {
-		root,
-		input,
-		checked,
-		isChecked,
+		elements: {
+			root,
+			input,
+		},
+		states: {
+			checked,
+		},
+		helpers: {
+			isChecked,
+		},
 		options,
 	};
 }
