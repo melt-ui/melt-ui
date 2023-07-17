@@ -204,7 +204,9 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 						break;
 					}
 					case kbd.ARROW_UP: {
-						if ($value[index] > $min && $options.orientation === 'vertical') {
+						if (event.metaKey) {
+							updatePosition($max, index);
+						} else if ($value[index] > $min && $options.orientation === 'vertical') {
 							const newValue = $value[index] - step;
 							updatePosition(newValue, index);
 						} else if ($value[index] < $max) {
@@ -214,7 +216,9 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 						break;
 					}
 					case kbd.ARROW_DOWN: {
-						if ($value[index] < $max && $options.orientation === 'vertical') {
+						if (event.metaKey) {
+							updatePosition($min, index);
+						} else if ($value[index] < $max && $options.orientation === 'vertical') {
 							const newValue = $value[index] + step;
 							updatePosition(newValue, index);
 						} else if ($value[index] > $min) {
