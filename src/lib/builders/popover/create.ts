@@ -6,7 +6,6 @@ import {
 	generateId,
 	isBrowser,
 	noop,
-	omit,
 	sleep,
 	styleToString,
 } from '$lib/internal/helpers';
@@ -15,7 +14,7 @@ import { usePopper } from '$lib/internal/actions';
 import type { Defaults } from '$lib/internal/types';
 import { overridable } from '$lib/internal/helpers';
 import { tick } from 'svelte';
-import { get, readable, writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import type { CreatePopoverProps } from './types';
 
 const defaults = {
@@ -30,11 +29,18 @@ type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
 const { name } = createElHelpers<PopoverParts>('popover');
 
 export function createPopover(args?: CreatePopoverProps) {
-	const withDefaults = { ...defaults, ...args };
-	const options = writable(omit(withDefaults, 'open', 'onOpenChange', 'defaultOpen'));
+	const withDefaults = { ...defaults, ...args } satisfies CreatePopoverProps;
 
-	const positioning = readable(withDefaults.positioning);
-	const arrowSize = readable(withDefaults.arrowSize);
+	// options
+	const positioning = writable(withDefaults.positioning);
+	const arrowSize = writable(withDefaults.arrowSize);
+	const disableFocusTrap = writable(withDefaults.disableFocusTrap);
+
+	const options = {
+		positioning,
+		arrowSize,
+		disableFocusTrap,
+	};
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
@@ -62,8 +68,8 @@ export function createPopover(args?: CreatePopoverProps) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[open, activeTrigger, positioning, options],
-				([$open, $activeTrigger, $positioning, $options]) => {
+				[open, activeTrigger, positioning, disableFocusTrap],
+				([$open, $activeTrigger, $positioning, $disableFocusTrap]) => {
 					unsubPopper();
 					if ($open && $activeTrigger) {
 						tick().then(() => {
@@ -72,7 +78,7 @@ export function createPopover(args?: CreatePopoverProps) {
 								open,
 								options: {
 									floating: $positioning,
-									focusTrap: $options.disableFocusTrap ? null : undefined,
+									focusTrap: $disableFocusTrap ? null : undefined,
 								},
 							});
 
@@ -166,6 +172,16 @@ export function createPopover(args?: CreatePopoverProps) {
 			sleep(1).then(() => $activeTrigger.focus());
 		}
 	});
-
-	return { trigger, open, content, arrow, close, options };
+	return {
+		elements: {
+			trigger,
+			content,
+			arrow,
+			close,
+		},
+		states: {
+			open,
+		},
+		options,
+	};
 }

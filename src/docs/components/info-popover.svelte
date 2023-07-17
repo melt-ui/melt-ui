@@ -4,7 +4,10 @@
 	import { fade } from 'svelte/transition';
 	import Info from '~icons/lucide/info';
 
-	const { trigger, content, open, arrow } = createPopover();
+	const {
+		elements: { trigger, content, arrow },
+		states: { open },
+	} = createPopover();
 
 	export let iconClasses = '';
 	export let contentClasses = '';

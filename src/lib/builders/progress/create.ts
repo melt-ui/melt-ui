@@ -9,8 +9,9 @@ const defaults = {
 
 const { name } = createElHelpers('progress');
 
-export const createProgress = (props: CreateProgressProps = defaults) => {
-	const withDefaults = { ...defaults, ...props };
+export const createProgress = (props?: CreateProgressProps) => {
+	const withDefaults = { ...defaults, ...props } satisfies CreateProgressProps;
+
 	const value = writable(withDefaults.value ?? null);
 	const max = writable(withDefaults.max);
 
@@ -32,9 +33,12 @@ export const createProgress = (props: CreateProgressProps = defaults) => {
 	});
 
 	return {
-		value,
-		max,
-		root,
-		progress: root,
+		elements: {
+			root,
+		},
+		states: {
+			max,
+			value,
+		},
 	};
 };

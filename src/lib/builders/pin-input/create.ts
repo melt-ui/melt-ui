@@ -33,10 +33,22 @@ const defaults = {
 } satisfies Defaults<CreatePinInputProps>;
 
 export function createPinInput(props?: CreatePinInputProps) {
-	const withDefaults = { ...defaults, ...props };
-	const options = writable(omit(withDefaults, 'value'));
+	const withDefaults = { ...defaults, ...props } satisfies CreatePinInputProps;
 
-	const value = writable((props?.value ?? []) as string[]);
+	// options
+	const placeholder = writable(withDefaults.placeholder);
+	const disabled = writable(withDefaults.disabled);
+	const type = writable(withDefaults.type);
+	const nameStore = writable(withDefaults.name);
+
+	const options = {
+		placeholder,
+		disabled,
+		type,
+		name: nameStore,
+	};
+
+	const value = writable((props?.value ?? []) satisfies string[]);
 	const valueStr = derived(value, (v) => v.join(''));
 
 	const root = builder(name(), {
@@ -49,13 +61,13 @@ export function createPinInput(props?: CreatePinInputProps) {
 	});
 
 	const input = builder(name('input'), {
-		stores: [value, options],
-		returned: ([$value, $options]) => {
+		stores: [value, placeholder, disabled, type],
+		returned: ([$value, $placeholder, $disabled, $type]) => {
 			return {
 				'data-complete': $value.length && $value.every((v) => v.length > 0) ? '' : undefined,
-				placeholder: $options.placeholder,
-				disabled: $options.disabled,
-				type: $options.type,
+				placeholder: $placeholder,
+				disabled: $disabled,
+				type: $type,
 			};
 		},
 		action: (node: HTMLInputElement) => {
@@ -173,8 +185,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 					});
 				}),
 				addEventListener(node, 'blur', () => {
-					const $options = get(options);
-					node.placeholder = $options.placeholder;
+					node.placeholder = get(placeholder);
 				})
 			);
 
@@ -187,10 +198,10 @@ export function createPinInput(props?: CreatePinInputProps) {
 	});
 
 	const hiddenInput = builder(name('hidden-input'), {
-		stores: [value, options],
-		returned: ([$value, $options]) => ({
+		stores: [value, nameStore],
+		returned: ([$value, $nameStore]) => ({
 			value: $value,
-			name: $options.name,
+			name: $nameStore,
 			hidden: true,
 			style: styleToString({
 				display: 'none',
@@ -206,12 +217,18 @@ export function createPinInput(props?: CreatePinInputProps) {
 	};
 
 	return {
+		elements: {
+			root,
+			input,
+			hiddenInput,
+		},
+		states: {
+			value,
+			valueStr,
+		},
+		helpers: {
+			clear,
+		},
 		options,
-		clear,
-		value,
-		valueStr,
-		root,
-		input,
-		hiddenInput,
 	};
 }

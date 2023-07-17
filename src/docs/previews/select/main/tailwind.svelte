@@ -3,8 +3,11 @@
 	import Check from '~icons/lucide/check';
 	import ChevronDown from '~icons/lucide/chevron-down';
 
-	const { label, trigger, menu, option, isSelected, group, groupLabel } =
-		createSelect();
+	const {
+		elements: { trigger, menu, option, group, groupLabel },
+		states: { label },
+		helpers: { isSelected },
+	} = createSelect();
 
 	const options = {
 		sweet: ['Caramel', 'Chocolate', 'Strawberry', 'Cookies & Cream'],

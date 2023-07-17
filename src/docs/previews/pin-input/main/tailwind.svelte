@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { createPinInput } from '@melt-ui/svelte';
 
-	const { root, input } = createPinInput();
+	const {
+		elements: { root, input },
+	} = createPinInput();
 </script>
 
 <div melt={$root} class="flex items-center gap-2">

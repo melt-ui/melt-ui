@@ -22,41 +22,48 @@ const defaults = {
 type RadioGroupParts = 'item' | 'item-input';
 const { name, selector } = createElHelpers<RadioGroupParts>('radio-group');
 
-export function createRadioGroup(props: CreateRadioGroupProps = {}) {
-	const withDefaults = { ...defaults, ...props };
-	const options = writable({
-		disabled: withDefaults.disabled,
-		required: withDefaults.required,
-		loop: withDefaults.loop,
-		orientation: withDefaults.orientation,
-	});
+export function createRadioGroup(props?: CreateRadioGroupProps) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateRadioGroupProps;
+
+	// options
+	const disabled = writable(withDefaults.disabled);
+	const required = writable(withDefaults.required);
+	const loop = writable(withDefaults.loop);
+	const orientation = writable(withDefaults.orientation);
+	const options = {
+		disabled,
+		required,
+		loop,
+		orientation,
+	};
+
 	const value = writable(withDefaults.value ?? null);
 
 	const root = builder(name(), {
-		stores: options,
-		returned: ($options) => {
+		stores: [required, orientation],
+		returned: ([$required, $orientation]) => {
 			return {
 				role: 'radiogroup',
-				'aria-required': $options.required,
-				'data-orientation': $options.orientation,
+				'aria-required': $required,
+				'data-orientation': $orientation,
 			} as const;
 		},
 	});
 
 	const item = builder(name('item'), {
-		stores: [options, value],
-		returned: ([$options, $value]) => {
+		stores: [value, orientation, disabled],
+		returned: ([$value, $orientation, $disabled]) => {
 			return (props: RadioGroupItemProps) => {
 				const itemValue = typeof props === 'string' ? props : props.value;
 				const argDisabled = typeof props === 'string' ? false : !!props.disabled;
-				const disabled = $options.disabled || (argDisabled as boolean);
+				const disabled = $disabled || (argDisabled as boolean);
 
 				const checked = $value === itemValue;
 
 				return {
 					disabled,
 					'data-value': itemValue,
-					'data-orientation': $options.orientation,
+					'data-orientation': $orientation,
 					'data-disabled': disabled ? true : undefined,
 					'data-state': checked ? 'checked' : 'unchecked',
 					'aria-checked': checked,
@@ -86,7 +93,6 @@ export function createRadioGroup(props: CreateRadioGroupProps = {}) {
 					value.set(itemValue);
 				}),
 				addEventListener(node, 'keydown', (e) => {
-					const $options = get(options);
 					const el = e.currentTarget as HTMLElement;
 					const root = el.closest(selector()) as HTMLElement;
 
@@ -94,13 +100,14 @@ export function createRadioGroup(props: CreateRadioGroupProps = {}) {
 					const currentIndex = items.indexOf(el);
 
 					const dir = getElemDirection(root);
-					const { nextKey, prevKey } = getDirectionalKeys(dir, $options.orientation);
+					const { nextKey, prevKey } = getDirectionalKeys(dir, get(orientation));
+					const $loop = get(loop);
 
 					if (e.key === nextKey) {
 						e.preventDefault();
 						const nextIndex = currentIndex + 1;
 						if (nextIndex >= items.length) {
-							if ($options.loop) {
+							if ($loop) {
 								items[0].focus();
 							}
 						} else {
@@ -110,7 +117,7 @@ export function createRadioGroup(props: CreateRadioGroupProps = {}) {
 						e.preventDefault();
 						const prevIndex = currentIndex - 1;
 						if (prevIndex < 0) {
-							if ($options.loop) {
+							if ($loop) {
 								items[items.length - 1].focus();
 							}
 						} else {
@@ -133,12 +140,12 @@ export function createRadioGroup(props: CreateRadioGroupProps = {}) {
 	});
 
 	const itemInput = builder(name('item-input'), {
-		stores: [options, value],
-		returned: ([$options, $value]) => {
+		stores: [disabled, value],
+		returned: ([$disabled, $value]) => {
 			return (props: RadioGroupItemProps) => {
 				const itemValue = typeof props === 'string' ? props : props.value;
 				const argDisabled = typeof props === 'string' ? false : !!props.disabled;
-				const disabled = $options.disabled || argDisabled;
+				const disabled = $disabled || argDisabled;
 
 				return {
 					type: 'hidden',
@@ -159,11 +166,17 @@ export function createRadioGroup(props: CreateRadioGroupProps = {}) {
 	});
 
 	return {
+		elements: {
+			root,
+			item,
+			itemInput,
+		},
+		states: {
+			value,
+		},
+		helpers: {
+			isChecked,
+		},
 		options,
-		value,
-		isChecked,
-		root,
-		item,
-		itemInput,
 	};
 }

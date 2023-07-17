@@ -21,7 +21,6 @@ import {
 	last,
 	next,
 	noop,
-	omit,
 	prev,
 	removeScroll,
 	styleToString,
@@ -50,8 +49,24 @@ type SelectParts = 'menu' | 'trigger' | 'option' | 'group' | 'group-label' | 'ar
 const { name } = createElHelpers<SelectParts>('select');
 
 export function createSelect(props?: CreateSelectProps) {
-	const withDefaults = { ...defaults, ...props } as CreateSelectProps;
-	const options = writable(omit(withDefaults, 'value', 'label'));
+	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps;
+
+	const positioning = writable<FloatingConfig>(withDefaults.positioning);
+	const arrowSize = writable(withDefaults.arrowSize);
+	const required = writable(withDefaults.required);
+	const disabled = writable(withDefaults.disabled);
+	const loop = writable(withDefaults.loop);
+	const preventScroll = writable(withDefaults.preventScroll);
+	const nameStore = writable(withDefaults.name);
+
+	const options = {
+		positioning,
+		arrowSize,
+		required,
+		disabled,
+		loop,
+		preventScroll,
+	};
 
 	const open = writable(false);
 	const value = writable<unknown>(withDefaults.value ?? null);
@@ -109,8 +124,8 @@ export function createSelect(props?: CreateSelectProps) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[open, activeTrigger, options],
-				([$open, $activeTrigger, $options]) => {
+				[open, activeTrigger, positioning],
+				([$open, $activeTrigger, $positioning]) => {
 					unsubPopper();
 					if ($open && $activeTrigger) {
 						tick().then(() => {
@@ -118,7 +133,7 @@ export function createSelect(props?: CreateSelectProps) {
 								anchorElement: $activeTrigger,
 								open,
 								options: {
-									floating: $options.positioning,
+									floating: $positioning,
 								},
 							});
 
@@ -177,18 +192,17 @@ export function createSelect(props?: CreateSelectProps) {
 	});
 
 	const trigger = builder(name('trigger'), {
-		stores: [open, options],
-
-		returned: ([$open, $options]) => {
+		stores: [open, disabled, required],
+		returned: ([$open, $disabled, $required]) => {
 			return {
 				role: 'combobox',
 				'aria-autocomplete': 'none',
 				'aria-controls': ids.menu,
 				'aria-expanded': $open,
-				'aria-required': $options.required,
+				'aria-required': $required,
 				'data-state': $open ? 'open' : 'closed',
-				'data-disabled': $options.disabled ? true : undefined,
-				disabled: $options.disabled,
+				'data-disabled': $disabled ? true : undefined,
+				disabled: $disabled,
 				id: ids.trigger,
 				tabindex: 0,
 			} as const;
@@ -196,8 +210,7 @@ export function createSelect(props?: CreateSelectProps) {
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'click', (e) => {
-					const $options = get(options);
-					if ($options.disabled) {
+					if (get(disabled)) {
 						e.preventDefault();
 						return;
 					}
@@ -300,13 +313,13 @@ export function createSelect(props?: CreateSelectProps) {
 	});
 
 	const arrow = builder(name('arrow'), {
-		stores: options,
-		returned: ($options) => ({
+		stores: arrowSize,
+		returned: ($arrowSize) => ({
 			'data-arrow': true,
 			style: styleToString({
 				position: 'absolute',
-				width: `var(--arrow-size, ${$options.arrowSize}px)`,
-				height: `var(--arrow-size, ${$options.arrowSize}px)`,
+				width: `var(--arrow-size, ${$arrowSize}px)`,
+				height: `var(--arrow-size, ${$arrowSize}px)`,
 			}),
 		}),
 	});
@@ -426,8 +439,7 @@ export function createSelect(props?: CreateSelectProps) {
 		const unsubs: Array<() => void> = [];
 
 		if (!isBrowser) return;
-		const $options = get(options);
-		if ($open && $options.preventScroll) {
+		if ($open && get(preventScroll)) {
 			unsubs.push(removeScroll());
 		}
 
@@ -492,17 +504,17 @@ export function createSelect(props?: CreateSelectProps) {
 	});
 
 	const input = builder(name('input'), {
-		stores: [value, options],
-		returned: ([$value, $options]) => {
+		stores: [value, required, disabled, nameStore],
+		returned: ([$value, $required, $disabled, $nameStore]) => {
 			return {
 				type: 'hidden',
-				name: $options.name,
+				name: $nameStore,
 				value: $value,
 				'aria-hidden': true,
 				hidden: true,
 				tabIndex: -1,
-				required: $options.required,
-				disabled: $options.disabled,
+				required: $required,
+				disabled: $disabled,
 				style: styleToString({
 					position: 'absolute',
 					opacity: 0,
@@ -559,20 +571,19 @@ export function createSelect(props?: CreateSelectProps) {
 		const currentIndex = candidateNodes.indexOf(currentFocusedItem);
 		// Find the next menu item to highlight.
 		let nextItem: HTMLElement;
-		const $options = get(options);
-		const loop = $options.loop;
+		const $loop = get(loop);
 		switch (e.key) {
 			case kbd.ARROW_DOWN:
-				nextItem = next(candidateNodes, currentIndex, loop);
+				nextItem = next(candidateNodes, currentIndex, $loop);
 				break;
 			case kbd.PAGE_DOWN:
-				nextItem = forward(candidateNodes, currentIndex, 10, loop);
+				nextItem = forward(candidateNodes, currentIndex, 10, $loop);
 				break;
 			case kbd.ARROW_UP:
-				nextItem = prev(candidateNodes, currentIndex, loop);
+				nextItem = prev(candidateNodes, currentIndex, $loop);
 				break;
 			case kbd.PAGE_UP:
-				nextItem = back(candidateNodes, currentIndex, 10, loop);
+				nextItem = back(candidateNodes, currentIndex, 10, $loop);
 				break;
 			case kbd.HOME:
 				nextItem = candidateNodes[0];
@@ -605,18 +616,24 @@ export function createSelect(props?: CreateSelectProps) {
 	}
 
 	return {
+		elements: {
+			menu,
+			trigger,
+			option,
+			input,
+			group,
+			groupLabel,
+			arrow,
+			separator,
+		},
+		states: {
+			open,
+			value,
+			label,
+		},
+		helpers: {
+			isSelected,
+		},
 		options,
-		open,
-		isSelected,
-		value,
-		trigger,
-		menu,
-		option,
-		input,
-		label,
-		separator,
-		group,
-		groupLabel,
-		arrow,
 	};
 }
