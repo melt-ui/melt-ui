@@ -1,24 +1,18 @@
 <script lang="ts">
 	import { createAvatar } from '@melt-ui/svelte';
 
-	const {
-		elements: { image, fallback },
-	} = createAvatar({
+	const { image, fallback } = createAvatar({
 		src: 'https://avatars.githubusercontent.com/u/1162160?v=4',
 	});
 
 	// With an exaggerated fallback delay
-	const {
-		elements: { image: imageA, fallback: fallbackA },
-	} = createAvatar({
+	const { image: imageA, fallback: fallbackA } = createAvatar({
 		src: 'https://avatars.githubusercontent.com/u/5968653?v=4',
 		delayMs: 650,
 	});
 
 	// A blank source to demonstrate the fallback
-	const {
-		elements: { image: imageB, fallback: fallbackB },
-	} = createAvatar({
+	const { image: imageB, fallback: fallbackB } = createAvatar({
 		src: '',
 	});
 </script>

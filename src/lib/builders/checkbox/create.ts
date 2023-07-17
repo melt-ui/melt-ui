@@ -15,26 +15,27 @@ const defaults = {
 	required: false,
 } satisfies Defaults<CreateCheckboxProps>;
 
-export function createCheckbox(props?: CreateCheckboxProps) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateCheckboxProps;
-
-	const checked = writable(withDefaults.checked);
-	const disabled = writable(withDefaults.disabled);
-	const required = writable(withDefaults.required);
-	const name = writable(withDefaults.name);
-	const value = writable(withDefaults.value);
+export function createCheckbox(props: CreateCheckboxProps = {}) {
+	const propsWithDefaults = { ...defaults, ...props };
+	const options = writable({
+		disabled: propsWithDefaults.disabled,
+		required: propsWithDefaults.required,
+		name: propsWithDefaults.name,
+		value: propsWithDefaults.value,
+	});
+	const checked = writable(propsWithDefaults.checked);
 
 	const root = builder('checkbox', {
-		stores: [checked, disabled, required],
-		returned: ([$checked, $disabled, $required]) => {
+		stores: [checked, options],
+		returned: ([$checked, $options]) => {
 			return {
-				'data-disabled': $disabled,
+				'data-disabled': $options.disabled,
 				'data-state':
 					$checked === 'indeterminate' ? 'indeterminate' : $checked ? 'checked' : 'unchecked',
 				type: 'button',
 				role: 'checkbox',
 				'aria-checked': $checked === 'indeterminate' ? 'mixed' : $checked,
-				'aria-required': $required,
+				'aria-required': $options.required,
 			} as const;
 		},
 		action(node: HTMLElement) {
@@ -45,8 +46,8 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 				})
 			);
 			addEventListener(node, 'click', () => {
-				const $disabled = get(disabled);
-				if ($disabled) return;
+				const $options = get(options);
+				if ($options.disabled) return;
 
 				checked.update((value) => {
 					if (value === 'indeterminate') return true;
@@ -61,18 +62,18 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 	});
 
 	const input = builder('checkbox-input', {
-		stores: [checked, name, value, required, disabled],
-		returned: ([$checked, $name, $value, $required, $disabled]) => {
+		stores: [checked, options],
+		returned: ([$checked, $options]) => {
 			return {
 				type: 'checkbox' as const,
 				'aria-hidden': true,
 				hidden: true,
 				tabindex: -1,
-				name: $name,
-				value: $value,
+				name: $options.name,
+				value: $options.value,
 				checked: $checked === 'indeterminate' ? false : $checked,
-				required: $required,
-				disabled: $disabled,
+				required: $options.required,
+				disabled: $options.disabled,
 				style: styleToString({
 					position: 'absolute',
 					opacity: 0,
@@ -88,20 +89,11 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 	const isChecked = derived(checked, ($checked) => $checked === true);
 
 	return {
-		elements: {
-			root,
-			input,
-		},
-		states: {
-			checked,
-			name,
-			value,
-			required,
-			disabled,
-		},
-		helpers: {
-			isIndeterminate,
-			isChecked,
-		},
+		root,
+		input,
+		checked,
+		isIndeterminate,
+		isChecked,
+		options,
 	};
 }

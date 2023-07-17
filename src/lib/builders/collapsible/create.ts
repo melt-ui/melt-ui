@@ -11,16 +11,16 @@ const defaults = {
 const { name } = createElHelpers('collapsible');
 
 export function createCollapsible(props?: CreateCollapsibleProps) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateCollapsibleProps;
+	const options = { ...defaults, ...props };
+	const disabled = writable(options.disabled);
 
-	const disabled = writable(withDefaults.disabled);
-	const open = writable(withDefaults.open);
+	const open = writable(options.open);
 
 	const root = builder(name(), {
 		stores: open,
 		returned: ($open) => ({
 			'data-state': $open ? 'open' : 'closed',
-			'data-disabled': withDefaults.disabled ? '' : 'undefined',
+			'data-disabled': options.disabled ? '' : 'undefined',
 		}),
 	});
 
@@ -55,14 +55,10 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 	});
 
 	return {
-		elements: {
-			root,
-			trigger,
-			content,
-		},
-		states: {
-			open,
-			disabled,
-		},
+		root,
+		trigger,
+		content,
+		open,
+		disabled,
 	};
 }
