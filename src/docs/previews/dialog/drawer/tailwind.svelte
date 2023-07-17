@@ -25,7 +25,7 @@
 		/>
 		<div
 			melt={$content}
-			class="fixed left-0 top-0 z-50 h-screen w-full max-w-[350px] bg-white p-[25px]
+			class="fixed left-0 top-0 z-50 h-screen w-full max-w-[350px] bg-white p-6
             shadow-lg focus:outline-none"
 			transition:fly={{
 				x: -350,
@@ -35,7 +35,7 @@
 		>
 			<button
 				melt={$close}
-				class="absolute right-[10px] top-[10px] inline-flex h-[25px] w-[25px]
+				class="absolute right-[10px] top-[10px] inline-flex h-6 w-6
                 appearance-none items-center justify-center rounded-full text-magnum-800
                 hover:bg-magnum-100 focus:shadow-magnum-400 focus:outline-none focus:ring-2
                 focus:ring-magnum-400"
@@ -45,10 +45,7 @@
 			<h2 melt={$title} class="mb-0 text-lg font-medium text-black">
 				Notifications
 			</h2>
-			<p
-				melt={$description}
-				class="mb-5 mt-[10px] leading-normal text-zinc-600"
-			>
+			<p melt={$description} class="mb-5 mt-2 leading-normal text-zinc-600">
 				Check out your latest updates.
 			</p>
 			<section>
@@ -57,9 +54,9 @@
 					<p class="text-sm">
 						You have been invited to join the <strong>Designers</strong> team.
 					</p>
-					<div class="mt-[25px] flex justify-end gap-4">
+					<div class="mt-6 flex justify-end gap-4">
 						<button
-							class="inline-flex h-[35px] items-center justify-center
+							class="inline-flex h-8 items-center justify-center
                             rounded-[4px] bg-zinc-100 px-4 font-medium leading-none
                             text-zinc-600 focus:outline-none focus:ring-2
                             focus:ring-magnum-400"
@@ -67,7 +64,7 @@
 							Reject
 						</button>
 						<button
-							class="inline-flex h-[35px] items-center justify-center
+							class="inline-flex h-8 items-center justify-center
                             rounded-[4px] bg-magnum-100 px-4 font-medium leading-none
                             text-magnum-900 focus:outline-none focus:ring-2
                             focus:ring-magnum-400"
