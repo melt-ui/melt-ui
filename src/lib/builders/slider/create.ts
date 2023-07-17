@@ -67,7 +67,7 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 			const orientationStyles =
 				$options.orientation === 'horizontal'
 					? { left: `${minimum}%`, right: `${maximum}%` }
-					: { top: `${minimum}%`, bottom: `${maximum}%` };
+					: { top: `${maximum}%`, bottom: `${minimum}%` };
 
 			return {
 				style: styleToString({
@@ -134,7 +134,7 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 						position: 'absolute',
 						...($options.orientation === 'horizontal'
 							? { left: thumbPosition, translate: '-50% 0' }
-							: { top: thumbPosition, translate: '0 -50%`' }),
+							: { bottom: thumbPosition, translate: '0 50%' }),
 					}),
 					tabindex: $disabled ? -1 : 0,
 				} as const;
@@ -182,14 +182,22 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 						break;
 					}
 					case kbd.ARROW_LEFT: {
-						if ($value[index] > $min && $options.orientation === 'horizontal') {
+						if ($options.orientation !== 'horizontal') break;
+
+						if (event.metaKey) {
+							updatePosition($min, index);
+						} else if ($value[index] > $min) {
 							const newValue = $value[index] - step;
 							updatePosition(newValue, index);
 						}
 						break;
 					}
 					case kbd.ARROW_RIGHT: {
-						if ($value[index] < $max && $options.orientation === 'horizontal') {
+						if ($options.orientation !== 'horizontal') break;
+
+						if (event.metaKey) {
+							updatePosition($max, index);
+						} else if ($value[index] < $max) {
 							const newValue = $value[index] + step;
 							updatePosition(newValue, index);
 						}
@@ -231,10 +239,10 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 		const applyPosition = (
 			clientXY: number,
 			activeThumbIdx: number,
-			leftOrTop: number,
-			rightOrBottom: number
+			leftOrBottom: number,
+			rightOrTop: number
 		) => {
-			const percent = (clientXY - leftOrTop) / (rightOrBottom - leftOrTop);
+			const percent = (clientXY - leftOrBottom) / (rightOrTop - leftOrBottom);
 			const val = Math.round(percent * ($max - $min) + $min);
 
 			if (val < $min || val > $max) return;
@@ -284,7 +292,7 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 				applyPosition(e.clientX, closestThumb.index, left, right);
 			} else {
 				const { top, bottom } = sliderEl.getBoundingClientRect();
-				applyPosition(e.clientY, closestThumb.index, top, bottom);
+				applyPosition(e.clientY, closestThumb.index, bottom, top);
 			}
 		};
 
@@ -306,7 +314,7 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 				applyPosition(e.clientX, closestThumb.index, left, right);
 			} else {
 				const { top, bottom } = sliderEl.getBoundingClientRect();
-				applyPosition(e.clientY, closestThumb.index, top, bottom);
+				applyPosition(e.clientY, closestThumb.index, bottom, top);
 			}
 		};
 
