@@ -4,7 +4,11 @@
 	import { flyAndScale } from '$routes/helpers';
 
 	export let dialog: CreateDialogReturn;
-	const { portal, overlay, content, title, description, close, open } = dialog;
+	const {
+		elements: { overlay, content, title, description, close },
+		states: { open },
+		actions: { portal },
+	} = dialog;
 </script>
 
 <div>

@@ -18,8 +18,10 @@ const defaultConfig = {
 } satisfies PopperConfig;
 
 export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) => {
-	const { anchorElement, open, options } = args ?? {};
-	if (!(open && anchorElement && options)) return { destroy: noop };
+	const { anchorElement, open, options } = args as PopperArgs;
+	if (!anchorElement || !open || !options) {
+		return { destroy: noop };
+	}
 
 	const opts = { ...defaultConfig, ...options } as PopperConfig;
 

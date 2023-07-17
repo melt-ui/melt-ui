@@ -5,7 +5,10 @@
 	export let disabled: CreateAccordionProps['disabled'];
 	export let items: { id: string; triggerId: string; title: string; description: string }[] = [];
 
-	const { content, item, trigger, isSelected, root } = createAccordion({ type, disabled });
+	const {
+		elements: { root, content, item, trigger },
+		helpers: { isSelected },
+	} = createAccordion({ type, disabled });
 </script>
 
 <div melt={$root}>

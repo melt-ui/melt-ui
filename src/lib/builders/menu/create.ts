@@ -579,7 +579,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		};
 	};
 
-	const { root: separator } = createSeparator({
+	const {
+		elements: { root: separator },
+	} = createSeparator({
 		orientation: 'horizontal',
 	});
 
