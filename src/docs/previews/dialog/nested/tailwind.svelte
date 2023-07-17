@@ -81,7 +81,7 @@
 		<div melt={$overlayNested} class="fixed inset-0 z-40 bg-black/75" />
 		<div
 			class="fixed left-[50%] top-[50%] z-50 max-h-[85vh] w-[90vw]
-            max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white
+            max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white
             p-6 shadow-2xl"
 			transition:flyAndScale={{
 				duration: 150,
