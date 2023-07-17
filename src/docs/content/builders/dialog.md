@@ -20,7 +20,7 @@ At a high level, the anatomy of a dialog looks like this:
 ```svelte
 <script lang="ts">
     import { createDialog } from '@melt-ui/svelte'
-    const { trigger, portal, overlay, content, title, description, close } = createDialog()
+    const { trigger, portal, overlay, content, title, description, close, open } = createDialog()
 </script>
 
 <button melt={$trigger}>
@@ -41,6 +41,7 @@ At a high level, the anatomy of a dialog looks like this:
             Close Dialog
         </button>
     </div>
+    {/if}
 </div>
 ```
 
