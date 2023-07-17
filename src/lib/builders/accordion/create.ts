@@ -108,7 +108,7 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 					if (disabled || !itemValue) return;
 
 					value.update(($value) => {
-						if (typeof $value === 'string') {
+						if (withDefaults.type === 'single') {
 							return $value === itemValue ? undefined : itemValue;
 						} else {
 							const arrValue = $value as string[] | undefined;
