@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createToggle } from '@melt-ui/svelte';
-	import Italic from '~icons/lucide/italic';
+	import { Italic } from 'lucide-svelte';
 
 	const {
 		elements: { root },

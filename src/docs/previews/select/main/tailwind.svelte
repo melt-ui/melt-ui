@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { createSelect } from '@melt-ui/svelte';
-	import Check from '~icons/lucide/check';
-	import ChevronDown from '~icons/lucide/chevron-down';
+	import { Check, ChevronDown } from 'lucide-svelte';
 
 	const {
 		elements: { trigger, menu, option, group, groupLabel },

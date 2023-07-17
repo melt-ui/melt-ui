@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { createPagination } from '@melt-ui/svelte';
-	import ChevronLeft from '~icons/lucide/chevron-left';
-	import ChevronRight from '~icons/lucide/chevron-right';
+	import { ChevronLeft, ChevronRight } from 'lucide-svelte';
 
 	const {
 		elements: { root, pageTrigger, prevButton, nextButton },

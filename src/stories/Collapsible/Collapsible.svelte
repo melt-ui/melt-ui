@@ -2,14 +2,18 @@
 	import { createCollapsible } from '$lib/builders/collapsible';
 	import { PreviewWrapper } from '$docs/components';
 	import { slide } from 'svelte/transition';
-	import X from '~icons/lucide/x';
-	import ChevronsUpDown from '~icons/lucide/chevrons-up-down';
+	import { X } from 'lucide-svelte';
+	import { ChevronsUpDown } from 'lucide-svelte';
 
 	let openProp: boolean;
 	let disabledProp: boolean;
 	export { openProp as open, disabledProp as disabled };
 
-	const { open, root, content, trigger, disabled } = createCollapsible({
+	const {
+		elements: { root, content, trigger },
+		states: { open },
+		options: { disabled },
+	} = createCollapsible({
 		open: openProp,
 		disabled: disabledProp,
 	});

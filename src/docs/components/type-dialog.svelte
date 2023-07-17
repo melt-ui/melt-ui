@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createDialog } from '$lib/builders';
 	import { flyAndScale } from '$docs/utils';
-	import X from '~icons/lucide/x';
+	import { X } from 'lucide-svelte';
 	import { CodeBlock } from '$docs/components';
 
 	const {

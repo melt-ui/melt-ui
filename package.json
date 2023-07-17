@@ -104,6 +104,7 @@
 		"highlight.js": "^11.8.0",
 		"jest-axe": "^7.0.1",
 		"jsdom": "^22.1.0",
+		"lucide-svelte": "^0.260.0",
 		"postcss": "^8.4.24",
 		"postcss-load-config": "^4.0.1",
 		"prettier": "2.8.7",

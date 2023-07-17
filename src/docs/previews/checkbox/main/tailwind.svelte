@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { createCheckbox } from '$lib';
-	import Check from '~icons/lucide/check';
-	import Minus from '~icons/lucide/minus';
+	import { Check, Minus } from 'lucide-svelte';
 
 	const {
 		elements: { root, input },

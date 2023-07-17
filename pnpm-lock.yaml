@@ -142,6 +142,9 @@ devDependencies:
   jsdom:
     specifier: ^22.1.0
     version: 22.1.0
+  lucide-svelte:
+    specifier: ^0.260.0
+    version: 0.260.0(svelte@4.0.0)
   postcss:
     specifier: ^8.4.24
     version: 8.4.24
@@ -9168,6 +9171,14 @@ packages:
   /lru-cache@7.18.3:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
+    dev: true
+
+  /lucide-svelte@0.260.0(svelte@4.0.0):
+    resolution: {integrity: sha512-fvR/42lZdIaW9RCVIouIMO9LgxwBcE4M770Hpl1ITL2At5YamgQ8J/652mTBXnX7qfiTCND/mSVnnXGESypaEw==}
+    peerDependencies:
+      svelte: '>=3 <5'
+    dependencies:
+      svelte: 4.0.0
     dev: true
 
   /lz-string@1.5.0:

@@ -2,8 +2,7 @@
 	import { cn, createCopyCodeButton } from '$docs/utils';
 	import { usingPreprocessor } from '$routes/store';
 	import { fly } from 'svelte/transition';
-	import Check from '~icons/lucide/check';
-	import Copy from '~icons/lucide/copy';
+	import { Check, Copy } from 'lucide-svelte';
 
 	let className: string | undefined | null = undefined;
 	export { className as class };

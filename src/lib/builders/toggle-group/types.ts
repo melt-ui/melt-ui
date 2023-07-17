@@ -1,17 +1,11 @@
 import type { Orientation } from '$lib/internal/types';
 import type { createToggleGroup } from './create';
 
-type SingleToggleGroupRootProps = {
-	type?: 'single';
-	value?: string | null;
-};
+export type ToggleGroupType = 'single' | 'multiple';
 
-type MultipleToggleGroupRootProps = {
-	type: 'multiple';
-	value?: string[];
-};
-
-export type CreateToggleGroupProps = (SingleToggleGroupRootProps | MultipleToggleGroupRootProps) & {
+export type CreateToggleGroupProps<T extends ToggleGroupType = 'single'> = {
+	value?: T extends 'single' ? string : string[];
+	type?: T;
 	disabled?: boolean;
 	rovingFocus?: boolean;
 	loop?: boolean;

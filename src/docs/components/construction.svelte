@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Construction from '~icons/lucide/construction';
+	import { Construction } from 'lucide-svelte';
 	import { a as A } from '$docs/components';
 </script>
 

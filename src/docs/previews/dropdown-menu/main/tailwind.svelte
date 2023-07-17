@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { createDropdownMenu } from '$lib';
 	import { writable } from 'svelte/store';
-	import AlignJustify from '~icons/lucide/align-justify';
-	import ChevronRight from '~icons/lucide/chevron-right';
-	import Check from '~icons/lucide/check';
+	import { AlignJustify, ChevronRight, Check } from 'lucide-svelte';
 
 	const { elements, builders } = createDropdownMenu();
 

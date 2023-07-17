@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createTooltip } from '@melt-ui/svelte';
 	import { fade } from 'svelte/transition';
-	import Plus from '~icons/lucide/plus';
+	import { Plus } from 'lucide-svelte';
 
 	const { trigger, content, open, arrow } = createTooltip({
 		positioning: {

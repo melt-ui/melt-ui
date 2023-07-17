@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { createSelect, type SelectOptionProps } from '$lib';
-	import ChevronDown from '~icons/lucide/chevron-down';
-	import Check from '~icons/lucide/check';
+	import { ChevronDown, Check } from 'lucide-svelte';
 	import { beforeNavigate } from '$app/navigation';
 	import type { Writable } from 'svelte/store';
 

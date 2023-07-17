@@ -2,7 +2,7 @@
 	import { createDialog } from '@melt-ui/svelte';
 	/** Internal helpers */
 	import { flyAndScale } from '$docs/utils';
-	import X from '~icons/lucide/x';
+	import { X } from 'lucide-svelte';
 
 	const { elements, actions, states } = createDialog();
 	const { trigger, overlay, content, title, description, close } = elements;

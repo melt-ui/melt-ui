@@ -1,24 +1,16 @@
+import type { Orientation } from '$lib/internal/types';
 import type { createToolbar } from './create';
+
+export type ToolbarGroupType = 'single' | 'multiple';
 
 export type CreateToolbarProps = {
 	loop?: boolean;
-	orientation?: 'horizontal' | 'vertical';
+	orientation?: Orientation;
 };
 
-type SingleToolbarGroupRootProps = {
-	type?: 'single';
-	value?: string | null;
-};
-
-type MultipleToolbarGroupRootProps = {
-	type: 'multiple';
-	value?: string[];
-};
-
-export type CreateToolbarGroupProps = (
-	| SingleToolbarGroupRootProps
-	| MultipleToolbarGroupRootProps
-) & {
+export type CreateToolbarGroupProps<T extends ToolbarGroupType = 'single'> = {
+	value?: T extends 'single' ? string : string[];
+	type?: T;
 	disabled?: boolean;
 };
 

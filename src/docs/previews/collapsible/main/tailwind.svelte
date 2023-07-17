@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { createCollapsible } from '$lib/builders/collapsible';
 	import { slide } from 'svelte/transition';
-	import ChevronsUpDown from '~icons/lucide/chevrons-up-down';
-	import X from '~icons/lucide/x';
+	import { ChevronsUpDown, X } from 'lucide-svelte';
 
 	const {
 		elements: { root, content, trigger },
