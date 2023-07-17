@@ -16,10 +16,14 @@ export type CreateComboboxProps<T> = {
 	 * @param value the current input value.
 	 * @returns whether the item should be visible.
 	 */
-	filterFunction: (item: T, value: string) => boolean;
-	itemToString: (item: T) => string;
+	filterFunction: ComboboxFilterFunction<T>;
+	itemToString: ComboboxItemToString<T>;
 	loop?: boolean;
 };
+
+export type ComboboxFilterFunction<T> = (item: T, value: string) => boolean;
+
+export type ComboboxItemToString<T> = (item: T) => string;
 
 export type ComboboxItemProps<T> = {
 	item: T;

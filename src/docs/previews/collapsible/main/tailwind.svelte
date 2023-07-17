@@ -4,7 +4,10 @@
 	import ChevronsUpDown from '~icons/lucide/chevrons-up-down';
 	import X from '~icons/lucide/x';
 
-	const { open, root, content, trigger } = createCollapsible();
+	const {
+		elements: { root, content, trigger },
+		states: { open },
+	} = createCollapsible();
 </script>
 
 <div melt={$root} class="mx-auto w-full max-w-md">
