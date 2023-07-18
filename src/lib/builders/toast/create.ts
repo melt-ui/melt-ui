@@ -24,7 +24,8 @@ const defaults = {
 export function createToast(props: CreateToastProps = {}) {
 	const propsWithDefaults = { ...defaults, ...props } satisfies CreateToastProps;
 	const options = writable(propsWithDefaults);
-	const open = writable(propsWithDefaults.defaultOpen);
+	const open = writable<string[]>([]);
+	const toasts = writable<any>([]);
 
 	const ids = {
 		trigger: generateId(),
@@ -35,72 +36,65 @@ export function createToast(props: CreateToastProps = {}) {
 
 	let timeout: number | null = null;
 
+	const isOpen = (id: string, open: string[]) => {
+		if (open === undefined) return false;
+		return open.includes(id);
+	};
+
+	const isOpenStore = derived(open, ($open) => {
+		return (id: string) => isOpen(id, $open);
+	});
+
 	const handleOpen = derived(options, () => {
-		return () => {
+		return (id: string): void => {
 			if (timeout) {
 				window.clearTimeout(timeout);
 				timeout = null;
 			}
-
-			open.set(true);
+			open.update((current) => [...current, id]);
 		};
-	}) as Readable<() => void>;
+	}) as Readable<(id: string) => void>;
 
 	const handleClose = derived(options, ($options) => {
-		return () => {
+		return (id: string): void => {
 			if (timeout) {
 				window.clearTimeout(timeout);
 				timeout = null;
 			}
 			timeout = window.setTimeout(() => {
-				open.set(false);
+				open.update((current) => current.filter((x) => x !== id));
 			}, $options.closeDelay);
 		};
-	}) as Readable<() => void>;
+	}) as Readable<(id: string) => void>;
 
-	const trigger = builder(name('trigger'), {
-		stores: open,
-		returned: ($open) => {
-			return {
-				role: 'button' as const,
-				'aria-haspopup': 'alert' as const,
-				'aria-expanded': $open,
-				'data-state': $open ? 'open' : 'closed',
-				'aria-controls': ids.content,
-				id: ids.trigger,
-			};
-		},
-		action: (node: HTMLElement) => {
-			const unsub = executeCallbacks(
-				addEventListener(node, 'click', () => {
-					open.set(true);
-					get(handleClose)();
-				})
-			);
-
-			return {
-				destroy: unsub,
-			};
-		},
-	});
+	const addToast = (toast: any) => {
+		const id = generateId();
+		toasts.update((currentToasts) => [...currentToasts, { id, ...toast }]);
+		open.update((currentOpen) => [...currentOpen, id]);
+		get(handleClose)(id);
+	};
 
 	const content = builder(name('content'), {
 		stores: [open, options],
 		returned: ([$open, $options]) => {
-			return {
-				id: ids.content,
-				role: 'alert',
-				'aria-describedby': ids.description,
-				'aria-labelledby': ids.title,
-				'aria-live': $options.type === 'foreground' ? 'assertive' : 'polite',
-				'data-state': $open ? 'open' : 'closed',
-				style: styleToString({
-					display: $open ? undefined : 'none',
-					'user-select': 'none',
-					'-webkit-user-select': 'none',
-				}),
-				tabindex: -1,
-				hidden: $open ? undefined : true,
+			return (id) => {
+				const open = isOpen(id, $open);
+				return {
+					id,
+					role: 'alert',
+					'aria-describedby': ids.description,
+					'aria-labelledby': ids.title,
+					'aria-live': $options.type === 'foreground' ? 'assertive' : 'polite',
+					'data-state': open ? 'open' : 'closed',
+					'data-id': id,
+					style: styleToString({
+						display: open ? undefined : 'none',
+						'user-select': 'none',
+						'-webkit-user-select': 'none',
+					}),
+					tabindex: -1,
+					hidden: open ? undefined : true,
+				};
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -115,11 +109,11 @@ export function createToast(props: CreateToastProps = {}) {
 			unsub = executeCallbacks(
 				addEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
-					get(handleOpen)();
+					get(handleOpen)(node.dataset.id as string);
 				}),
 				addEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
-					get(handleClose)();
+					get(handleClose)(node.dataset.id as string);
 				}),
 				addEventListener(node, 'focusout', (e) => {
 					e.preventDefault();
@@ -148,13 +142,15 @@ export function createToast(props: CreateToastProps = {}) {
 	});
 
 	const close = builder(name('close'), {
-		returned: () =>
-			({
+		returned: () => {
+			return (id: string) => ({
 				type: 'button',
-			} as const),
+				'data-id': id,
+			});
+		},
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
-				open.set(false);
+				open.update((current) => current.filter((x) => x !== (node.dataset.id as string)));
 			});
 
 			return {
@@ -164,8 +160,9 @@ export function createToast(props: CreateToastProps = {}) {
 	});
 
 	return {
-		trigger,
-		open,
+		toasts,
+		addToast,
+		isOpen: isOpenStore,
 		content,
 		title,
 		description,
