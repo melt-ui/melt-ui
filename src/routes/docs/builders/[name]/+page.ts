@@ -37,10 +37,11 @@ export const load: PageLoad = async ({ params, fetch }) => {
 
 	// return {
 	// 	doc: getDocData(params.name),
-	// 	mainPreview: getMainPreviewComponent(event.params.name),
-	// 	snippets: getAllPreviewSnippets(event.params.name),
-	// 	previews: getAllPreviewComponents(event.params.name),
-	// 	builderData: getBuilderData(event.params.name),
+	// 	mainPreview: getMainPreviewComponent(params.name),
+	// 	snippets: getAllPreviewSnippets({slug: params.name, fetcher: fetch}),
+	// 	previews: getAllPreviewComponents(params.name),
+	// 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// 	builderData: getBuilderData({slug: params.name as any, fetcher: fetch}),
 	// };
 };
 

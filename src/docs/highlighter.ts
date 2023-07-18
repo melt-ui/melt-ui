@@ -3,7 +3,7 @@ import { highlighterStore } from './stores';
 import { getHighlighter, renderToHtml } from 'shiki-es';
 
 export async function getShikiHighlighter(fetcher?: typeof fetch) {
-	if (fetcher) {
+	if (fetcher && typeof window !== 'undefined') {
 		window.fetch = fetcher;
 	}
 
