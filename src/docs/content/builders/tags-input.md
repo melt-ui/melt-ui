@@ -189,10 +189,10 @@ The following example disallows a tag with the value `one` to be deleted.
 </script>
 ```
 
-### API Reference
+## API Reference
 
 <APIReference {schemas} />
 
-### Accessibility
+## Accessibility
 
 <KbdTable {keyboard} />

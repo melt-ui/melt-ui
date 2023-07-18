@@ -1,13 +1,7 @@
-import { error } from '@sveltejs/kit';
-import type { EntryGenerator, PageLoad } from './$types';
-import {
-	getDocData,
-	getMainPreviewComponent,
-	getAllPreviewSnippets,
-	getAllPreviewComponents,
-	getBuilderData,
-} from '$docs/utils';
 import { builderList, isBuilderName } from '$docs/data/builders';
+import { getAllPreviewComponents, getDocData, getMainPreviewComponent } from '$docs/utils';
+import { error } from '@sveltejs/kit';
+import type { EntryGenerator } from './$types';
 
 export const entries = (() => {
 	return builderList.map((item) => {
@@ -15,18 +9,15 @@ export const entries = (() => {
 	});
 }) satisfies EntryGenerator;
 
-export const prerender = 'auto';
-
-export const load: PageLoad = async (event) => {
-	if (!isBuilderName(event.params.name)) {
+export const load = async ({ params, data }) => {
+	if (!isBuilderName(params.name)) {
 		throw error(404);
 	}
 
 	return {
-		doc: getDocData(event.params.name),
-		mainPreview: getMainPreviewComponent(event.params.name),
-		snippets: getAllPreviewSnippets(event.params.name),
-		previews: getAllPreviewComponents(event.params.name),
-		builderData: getBuilderData(event.params.name),
+		...data,
+		mainPreview: getMainPreviewComponent(params.name),
+		doc: getDocData(params.name),
+		previews: getAllPreviewComponents(params.name),
 	};
 };

@@ -1,4 +1,5 @@
 import adapter from '@sveltejs/adapter-vercel';
+// import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/kit/vite';
 import { preprocessMeltUI } from '@melt-ui/pp';
 import { mdsvex } from '@huntabyte/mdsvex';
@@ -19,6 +20,9 @@ const config = {
 		adapter: adapter({
 			runtime: 'edge',
 		}),
+		prerender: {
+			handleMissingId: 'ignore',
+		},
 		alias: {
 			$routes: 'src/routes',
 			'$routes/*': 'src/routes/*',

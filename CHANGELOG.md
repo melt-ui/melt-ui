@@ -1,5 +1,36 @@
 # @melt-ui/svelte
 
+## 0.23.2
+
+### Patch Changes
+
+- 3c7725c3: [Tabs] Force focus on click for buttons in safari
+
+## 0.23.1
+
+### Patch Changes
+
+- 55815f04: Slider: invert vertical direction
+- 7639d712: Tooltip: prevent focus on mousedown
+- b7cfbf13: Select: add a11y roles
+- f1e7c64c: Slider: metaKeys to jump to values
+- 7d7b18e8: refactor: improved accordion types
+
+## 0.23.0
+
+### Minor Changes
+
+- 893535af: [Accordion]
+  - Add missing aria attributes
+  - Add `heading` builder to apply aria attributes to non-heading elements used as headings
+
+### Patch Changes
+
+- c987225b: [Combobox]
+  - Fix a bug where tabbing from would open it
+  - Close the menu when tab/shift+tab is pressed
+- de855112: Fix: Type issue with `melt` attribute on certain elements
+
 ## 0.22.2
 
 ### Patch Changes

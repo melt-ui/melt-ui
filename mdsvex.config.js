@@ -8,6 +8,8 @@ import { toHtml } from 'hast-util-to-html';
 import { escapeSvelte } from '@huntabyte/mdsvex';
 import rehypeRewrite from 'rehype-rewrite';
 import { processMeltAttributes } from './src/docs/pp.js';
+import { getHighlighter } from 'shiki-es';
+import { BUNDLED_LANGUAGES } from 'shiki-es';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -24,6 +26,14 @@ const prettyCodeOptions = {
 	},
 	onVisitHighlightedWord(node) {
 		node.properties.className = ['word--highlighted'];
+	},
+	getHighlighter: (options) => {
+		return getHighlighter({
+			...options,
+			langs: BUNDLED_LANGUAGES.filter(({ id }) => {
+				return ['svelte', 'typescript', 'css', 'javascript', 'json', 'bash'].includes(id);
+			}),
+		});
 	},
 };
 
@@ -155,14 +165,20 @@ function rehypeRenderCode() {
 					return;
 				}
 
-				const meltString = toHtml(codeEl, {
-					allowDangerousCharacters: true,
-					allowDangerousHtml: true,
-				});
+				const meltString = tabsToSpaces(
+					toHtml(codeEl, {
+						allowDangerousCharacters: true,
+						allowDangerousHtml: true,
+					})
+				);
 
 				codeEl.type = 'raw';
 				codeEl.value = `{@html \`${escapeSvelte(meltString)}\`}`;
 			}
 		});
 	};
+}
+
+function tabsToSpaces(code) {
+	return code.replaceAll('    ', '  ');
 }
