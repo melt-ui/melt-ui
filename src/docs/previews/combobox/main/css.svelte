@@ -125,7 +125,7 @@
 	</ul>
 </div>
 
-<style lang="postcss">
+<style>
 	label {
 		cursor: pointer;
 	}

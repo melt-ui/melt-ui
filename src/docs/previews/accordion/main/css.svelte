@@ -42,7 +42,7 @@
 	{/each}
 </div>
 
-<style lang="postcss">
+<style>
 	.root {
 		margin-left: auto;
 		margin-right: auto;

@@ -22,7 +22,7 @@
 	</div>
 </form>
 
-<style lang="postcss">
+<style>
 	div {
 		display: flex;
 		align-items: center;
