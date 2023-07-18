@@ -2,6 +2,7 @@ import type { Defaults } from '$lib/internal/types';
 import { writable } from 'svelte/store';
 import { createMenuBuilder } from '../menu';
 import type { CreateDropdownMenuProps } from './types';
+import { toWritableStores } from '@melt-ui/svelte/internal/helpers';
 
 const defaults = {
 	arrowSize: 8,
@@ -9,24 +10,14 @@ const defaults = {
 		placement: 'bottom',
 	},
 	preventScroll: true,
+	loop: false,
+	dir: 'ltr',
 } satisfies Defaults<CreateDropdownMenuProps>;
 
 export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateDropdownMenuProps;
 
-	const positioning = writable<FloatingConfig>(withDefaults.positioning);
-	const preventScroll = writable<boolean>(withDefaults.preventScroll);
-	const arrowSize = writable<number>(withDefaults.arrowSize);
-	const loop = writable<boolean>(withDefaults.loop);
-	const dir = writable(withDefaults.dir);
-
-	const rootOptions = {
-		positioning,
-		preventScroll,
-		arrowSize,
-		loop,
-		dir,
-	};
+	const rootOptions = toWritableStores(withDefaults);
 
 	const rootOpen = writable(false);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);

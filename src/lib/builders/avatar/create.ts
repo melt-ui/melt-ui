@@ -1,4 +1,4 @@
-import { builder, effect, isBrowser, styleToString } from '$lib/internal/helpers';
+import { builder, effect, isBrowser, styleToString, toWritableStores } from '$lib/internal/helpers';
 import { writable } from 'svelte/store';
 import type { CreateAvatarProps, ImageLoadingStatus } from './types';
 
@@ -10,8 +10,9 @@ const defaults = {
 export const createAvatar = (props?: CreateAvatarProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateAvatarProps;
 
-	const src = writable(withDefaults.src);
-	const delayMs = writable(withDefaults.delayMs);
+	const options = toWritableStores(withDefaults);
+	const { src, delayMs } = options;
+
 	const loadingStatus = writable<ImageLoadingStatus>('loading');
 
 	effect([src, delayMs], ([$src, $delayMs]) => {
@@ -67,9 +68,6 @@ export const createAvatar = (props?: CreateAvatarProps) => {
 		states: {
 			loadingStatus,
 		},
-		options: {
-			src,
-			delayMs,
-		},
+		options,
 	};
 };

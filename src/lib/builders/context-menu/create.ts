@@ -14,6 +14,7 @@ import {
 	noop,
 	styleToString,
 	isLeftClick,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import type { VirtualElement } from '@floating-ui/core';
@@ -38,6 +39,8 @@ const defaults = {
 		placement: 'bottom-start',
 	},
 	preventScroll: true,
+	loop: false,
+	dir: 'ltr',
 } satisfies Defaults<CreateContextMenuProps>;
 
 const { name, selector } = createElHelpers<MenuParts>('context-menu');
@@ -45,19 +48,8 @@ const { name, selector } = createElHelpers<MenuParts>('context-menu');
 export function createContextMenu(props?: CreateContextMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;
 
-	const positioning = writable<FloatingConfig>(withDefaults.positioning);
-	const preventScroll = writable<boolean>(withDefaults.preventScroll);
-	const arrowSize = writable<number>(withDefaults.arrowSize);
-	const loop = writable<boolean>(withDefaults.loop);
-	const dir = writable(withDefaults.dir);
-
-	const rootOptions = {
-		positioning,
-		preventScroll,
-		arrowSize,
-		loop,
-		dir,
-	};
+	const rootOptions = toWritableStores(withDefaults);
+	const { positioning } = rootOptions;
 
 	const rootOpen = writable(false);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
@@ -297,6 +289,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			createSubMenu,
 			createMenuRadioGroup,
 		},
+		options: rootOptions,
 	};
 }
 

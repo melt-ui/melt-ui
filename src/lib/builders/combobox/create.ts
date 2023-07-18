@@ -21,12 +21,14 @@ import {
 	removeScroll,
 	sleep,
 	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import { getOptions } from '$lib/internal/helpers/list';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
 import type { ComboboxItemProps, CreateComboboxProps } from './types';
+import { omit } from '../../internal/helpers/object';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
@@ -64,17 +66,8 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	const selectedItem = writable<T>(undefined);
 
 	// options
-	const scrollAlignment = writable(withDefaults.scrollAlignment);
-	const loop = writable(withDefaults.loop);
-	const filterFunction = writable(withDefaults.filterFunction);
-	const itemToString = writable(withDefaults.itemToString);
-
-	const options = {
-		scrollAlignment,
-		loop,
-		filterFunction,
-		itemToString,
-	};
+	const options = toWritableStores(omit(withDefaults, 'items'));
+	const { scrollAlignment, loop, filterFunction, itemToString } = options;
 
 	const ids = {
 		input: generateId(),

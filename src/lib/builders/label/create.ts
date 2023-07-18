@@ -15,5 +15,9 @@ export function createLabel() {
 		},
 	});
 
-	return root;
+	return {
+		elements: {
+			root,
+		},
+	};
 }

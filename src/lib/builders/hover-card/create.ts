@@ -13,6 +13,7 @@ import {
 	noop,
 	sleep,
 	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
@@ -34,26 +35,16 @@ const defaults = {
 } satisfies Defaults<CreateHoverCardProps>;
 
 export function createHoverCard(props: CreateHoverCardProps = {}) {
-	const propsWithDefaults = { ...defaults, ...props } satisfies CreateHoverCardProps;
-	const open = writable(propsWithDefaults.defaultOpen);
+	const withDefaults = { ...defaults, ...props } satisfies CreateHoverCardProps;
+	const open = writable(withDefaults.defaultOpen);
 	const hasSelection = writable(false);
 	const isPointerDownOnContent = writable(false);
 	const containSelection = writable(false);
 
 	// options
-	const openDelay = writable(propsWithDefaults.openDelay);
-	const closeDelay = writable(propsWithDefaults.closeDelay);
-	const positioning = writable<FloatingConfig>(propsWithDefaults.positioning);
-	const arrowSize = writable<number>(propsWithDefaults.arrowSize);
-	const closeOnOutsideClick = writable<boolean>(propsWithDefaults.closeOnOutsideClick);
+	const options = toWritableStores(withDefaults);
 
-	const options = {
-		openDelay,
-		closeDelay,
-		positioning,
-		arrowSize,
-		closeOnOutsideClick,
-	};
+	const { openDelay, closeDelay, positioning, arrowSize, closeOnOutsideClick } = options;
 
 	const ids = {
 		content: generateId(),

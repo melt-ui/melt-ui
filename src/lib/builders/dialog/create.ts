@@ -10,6 +10,7 @@ import {
 	noop,
 	sleep,
 	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import { removeScroll } from '$lib/internal/helpers/scroll';
 import type { Defaults } from '$lib/internal/types';
@@ -31,10 +32,8 @@ const openDialogIds = writable<string[]>([]);
 export function createDialog(props: CreateDialogProps = {}) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateDialogProps;
 
-	const preventScroll = writable<boolean>(withDefaults.preventScroll);
-	const closeOnEscape = writable<boolean>(withDefaults.closeOnEscape);
-	const closeOnOutsideClick = writable<boolean>(withDefaults.closeOnOutsideClick);
-	const role = writable<'dialog' | 'alertdialog'>(withDefaults.role);
+	const options = toWritableStores(withDefaults);
+	const { preventScroll, closeOnEscape, closeOnOutsideClick, role } = options;
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
@@ -96,11 +95,11 @@ export function createDialog(props: CreateDialogProps = {}) {
 	});
 
 	const content = builder(name('content'), {
-		stores: open,
-		returned: ($open) => {
+		stores: [open, role],
+		returned: ([$open, $role]) => {
 			return {
 				id: ids.content,
-				role: 'dialog',
+				role: $role,
 				'aria-describedby': ids.description,
 				'aria-labelledby': ids.title,
 				'data-state': $open ? 'open' : 'closed',
@@ -231,5 +230,6 @@ export function createDialog(props: CreateDialogProps = {}) {
 		actions: {
 			portal: usePortal,
 		},
+		options,
 	};
 }

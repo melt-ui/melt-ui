@@ -4,24 +4,26 @@ import {
 	executeCallbacks,
 	kbd,
 	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateCheckboxProps } from './types';
+import { omit } from '../../internal/helpers/object';
 
 const defaults = {
 	checked: false,
 	disabled: false,
 	required: false,
+	name: undefined,
+	value: undefined,
 } satisfies Defaults<CreateCheckboxProps>;
 
 export function createCheckbox(props?: CreateCheckboxProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateCheckboxProps;
 
-	// Options
-	const disabled = writable<boolean>(withDefaults.disabled);
-	const required = writable<boolean>(withDefaults.required);
-	const name = writable<string | undefined>(withDefaults.name);
+	const options = toWritableStores(omit(withDefaults, 'value', 'checked'));
+	const { disabled, name, required } = options;
 
 	// States
 	const value = writable<string | undefined>(withDefaults.value);
@@ -102,10 +104,6 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 			isIndeterminate,
 			isChecked,
 		},
-		options: {
-			disabled,
-			name,
-			required,
-		},
+		options,
 	};
 }

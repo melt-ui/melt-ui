@@ -77,9 +77,9 @@ export type MenuBuilderOptions = {
 	rootActiveTrigger: Writable<HTMLElement | null>;
 	rootOptions: {
 		positioning: Writable<FloatingConfig>;
-		arrowSize: Writable<number>;
-		preventScroll: Writable<boolean>;
-		loop: Writable<boolean>;
+		arrowSize: Writable<number | undefined>;
+		preventScroll: Writable<boolean | undefined>;
+		loop: Writable<boolean | undefined>;
 		dir: Writable<TextDirection>;
 	};
 	disableTriggerRefocus?: boolean;

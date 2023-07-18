@@ -6,6 +6,8 @@ import {
 	generateId,
 	getElementByMeltId,
 	kbd,
+	omit,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
@@ -22,19 +24,19 @@ const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
 const defaults = {
 	type: 'single',
+	value: undefined,
+	disabled: undefined,
 } satisfies Defaults<CreateAccordionProps>;
 
 export const createAccordion = <T extends AccordionType = 'single'>(
 	props?: CreateAccordionProps<T>
 ) => {
-	const withDefaults = { ...defaults, ...props } as CreateAccordionProps<T>;
+	const withDefaults = { ...defaults, ...props };
 
-	const type = writable(withDefaults.type);
-	const disabled = writable(withDefaults.disabled ?? false);
-	const options = {
-		type,
-		disabled,
-	};
+	const options = toWritableStores(omit(withDefaults, 'value'));
+
+	const { disabled } = options;
+
 	const value = writable<string | string[] | undefined>(withDefaults.value);
 
 	const isSelected = (key: string, v: string | string[] | undefined) => {

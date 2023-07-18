@@ -13,5 +13,6 @@ export * from './callbacks';
 export * from './debounce';
 export * from './platform';
 export * from './scroll';
+export * from './store';
 export * from './rovingFocus';
 export * from './typeahead';
