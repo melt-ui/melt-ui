@@ -16,7 +16,7 @@ export const entries = (() => {
 	});
 }) satisfies EntryGenerator;
 
-export const load = async ({ params, fetch, data }) => {
+export const load = async ({ params, fetch }) => {
 	if (!isBuilderName(params.name)) {
 		throw error(404);
 	}
@@ -26,15 +26,13 @@ export const load = async ({ params, fetch, data }) => {
 	await getStoredHighlighter(fetch);
 
 	const promises = {
-		mainPreview: () => getMainPreviewComponent(params.name),
-		doc: () => getDocData(params.name),
-		previews: () => getAllPreviewComponents(params.name),
+		snippets: () => getAllPreviewSnippets({ slug: params.name, fetcher: fetch }),
+		builderData: () => getBuilderData({ slug: params.name, fetcher: fetch }),
 	};
 
 	const stuff = await timedPromiseAll(promises);
 	return {
 		...stuff,
-		...data,
 	};
 
 	// return {
