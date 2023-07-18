@@ -15,11 +15,7 @@
 	{#each items as { id, triggerId, title, description }, i}
 		<div melt={$item(id)} data-testid={id}>
 			<h2 class="flex">
-				<button
-					data-testid={triggerId}
-					id={i === 0 ? 'accordion-trigger' : undefined}
-					melt={$trigger(id)}
-				>
+				<button data-testid={triggerId} melt={$trigger(id)}>
 					{title}
 				</button>
 			</h2>

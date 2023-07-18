@@ -28,6 +28,15 @@ slider with two thumbs:
     <svelte:component this={previews.range} />
 </Preview>
 
+### Vertical slider
+
+By setting the `orientation` prop to `vertical`, you can create a vertical slider. Here's an
+example:
+
+<Preview code={snippets.vertical}>
+    <svelte:component this={previews.vertical} />
+</Preview>
+
 ## API Reference
 
 <APIReference {schemas} />

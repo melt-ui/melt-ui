@@ -84,6 +84,7 @@ export function createTabs(props?: CreateTabsProps) {
 				}
 
 				return {
+					type: 'button',
 					role: 'tab',
 					'data-state': isBrowser
 						? $value === tabValue
@@ -102,6 +103,9 @@ export function createTabs(props?: CreateTabsProps) {
 		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
+				addEventListener(node, 'click', () => {
+					node.focus();
+				}),
 				addEventListener(node, 'focus', () => {
 					const disabled = node.dataset.disabled === 'true';
 					const tabValue = node.dataset.value;
@@ -146,19 +150,19 @@ export function createTabs(props?: CreateTabsProps) {
 
 					if (e.key === nextKey) {
 						e.preventDefault();
-						next(enabledTriggers, triggerIdx, $loop)?.focus();
+						next(enabledTriggers, triggerIdx, $loop).focus();
 					} else if (e.key === prevKey) {
 						e.preventDefault();
-						prev(enabledTriggers, triggerIdx, $loop)?.focus();
+						prev(enabledTriggers, triggerIdx, $loop).focus();
 					} else if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
 						e.preventDefault();
 						value.set(tabValue);
 					} else if (e.key === kbd.HOME) {
 						e.preventDefault();
-						enabledTriggers[0]?.focus();
+						enabledTriggers[0].focus();
 					} else if (e.key === kbd.END) {
 						e.preventDefault();
-						last(enabledTriggers)?.focus();
+						last(enabledTriggers).focus();
 					}
 				})
 			);

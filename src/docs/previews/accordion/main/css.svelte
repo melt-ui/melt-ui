@@ -32,11 +32,7 @@
 	{#each items as { id, title, description }, i}
 		<div melt={$item(id)} class="item">
 			<h2>
-				<button
-					id={i === 0 ? 'accordion-trigger' : undefined}
-					melt={$trigger(id)}
-					class="trigger"
-				>
+				<button melt={$trigger(id)} class="trigger">
 					{title}
 				</button>
 			</h2>
@@ -49,7 +45,7 @@
 	{/each}
 </div>
 
-<style lang="postcss">
+<style>
 	.root {
 		margin-left: auto;
 		margin-right: auto;

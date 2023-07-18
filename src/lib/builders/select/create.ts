@@ -115,6 +115,7 @@ export function createSelect(props?: CreateSelectProps) {
 				}),
 				id: ids.menu,
 				'aria-labelledby': ids.trigger,
+				role: 'listbox',
 			};
 		},
 		action: (node: HTMLElement) => {

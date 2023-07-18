@@ -25,7 +25,7 @@
 		<div
 			class="fixed left-[50%] top-[50%] z-50 max-h-[85vh] w-[90vw]
             max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white
-            p-[25px] shadow-lg"
+            p-6 shadow-lg"
 			transition:flyAndScale={{
 				duration: 150,
 				y: 8,
@@ -36,25 +36,22 @@
 			<h2 melt={$title} class="m-0 text-lg font-medium text-black">
 				Are you sure you want to delete this?
 			</h2>
-			<p
-				melt={$description}
-				class="mb-5 mt-[10px] leading-normal text-zinc-600"
-			>
+			<p melt={$description} class="mb-5 mt-2 leading-normal text-zinc-600">
 				This action cannot be undone. This will permanently delete the item and
 				remove it from our servers.
 			</p>
 
-			<div class="mt-[25px] flex justify-end gap-4">
+			<div class="mt-6 flex justify-end gap-4">
 				<button
 					melt={$close}
-					class="inline-flex h-[35px] items-center justify-center rounded-[4px]
+					class="inline-flex h-8 items-center justify-center rounded-[4px]
                     bg-zinc-100 px-4 font-medium leading-none text-zinc-600"
 				>
 					Cancel
 				</button>
 				<button
 					melt={$close}
-					class="inline-flex h-[35px] items-center justify-center rounded-[4px]
+					class="inline-flex h-8 items-center justify-center rounded-[4px]
                     bg-magnum-100 px-4 font-medium leading-none text-magnum-900"
 				>
 					Continue
@@ -63,7 +60,8 @@
 
 			<button
 				melt={$close}
-				class="absolute right-[10px] top-[10px] inline-flex h-[25px] w-[25px]
+				aria-label="Close"
+				class="absolute right-[10px] top-[10px] inline-flex h-6 w-6
                 appearance-none items-center justify-center rounded-full text-magnum-800
                 hover:bg-magnum-100 focus:shadow-magnum-400"
 			>

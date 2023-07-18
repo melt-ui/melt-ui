@@ -27,21 +27,21 @@
 
 	<BaseDialog {dialog} let:title let:description let:close>
 		<h2 melt={title} class="m-0 text-lg font-medium text-black">First Dialog</h2>
-		<p melt={description} class="mb-5 mt-[10px] leading-normal text-zinc-600">
+		<p melt={description} class="mb-5 mt-2 leading-normal text-zinc-600">
 			Open the second dialog from here.
 		</p>
 
 		<div class="flex items-center justify-end gap-4">
 			<button
 				melt={close}
-				class="inline-flex h-[35px] items-center justify-center rounded-[4px] bg-neutral-100
+				class="inline-flex h-8 items-center justify-center rounded-[4px] bg-neutral-100
       px-4 font-medium leading-none text-neutral-900"
 			>
 				Close
 			</button>
 			<button
 				melt={$secondTrigger}
-				class="inline-flex h-[35px] items-center justify-center rounded-[4px] bg-magnum-100
+				class="inline-flex h-8 items-center justify-center rounded-[4px] bg-magnum-100
     px-4 font-medium leading-none text-magnum-900"
 			>
 				Open nested
@@ -51,12 +51,12 @@
 
 	<BaseDialog dialog={secondDialog} let:title let:description let:close>
 		<h2 melt={title} class="m-0 text-lg font-medium text-black">Second Dialog</h2>
-		<p melt={description} class="mb-5 mt-[10px] leading-normal text-zinc-600">Cool!</p>
+		<p melt={description} class="mb-5 mt-2 leading-normal text-zinc-600">Cool!</p>
 
 		<div class="flex items-center justify-end gap-4">
 			<button
 				melt={close}
-				class="inline-flex h-[35px] items-center justify-center rounded-[4px] bg-neutral-100
+				class="inline-flex h-8 items-center justify-center rounded-[4px] bg-neutral-100
       px-4 font-medium leading-none text-neutral-900"
 			>
 				Close

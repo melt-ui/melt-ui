@@ -21,7 +21,7 @@
 
 	<BaseDialog {dialog}>
 		<h2 melt={$title} class="m-0 text-lg font-medium text-black">Edit profile</h2>
-		<p melt={$description} class="mb-5 mt-[10px] leading-normal text-zinc-600">
+		<p melt={$description} class="mb-5 mt-2 leading-normal text-zinc-600">
 			Make changes to your profile here. Click save when you're done.
 		</p>
 
@@ -43,17 +43,17 @@
 				value="@thomasglopes"
 			/>
 		</fieldset>
-		<div class="mt-[25px] flex justify-end gap-4">
+		<div class="mt-6 flex justify-end gap-4">
 			<button
 				melt={$close}
-				class="inline-flex h-[35px] items-center justify-center rounded-[4px] bg-zinc-100
+				class="inline-flex h-8 items-center justify-center rounded-[4px] bg-zinc-100
 					px-4 font-medium leading-none text-zinc-600"
 			>
 				Cancel
 			</button>
 			<button
 				melt={$close}
-				class="inline-flex h-[35px] items-center justify-center rounded-[4px] bg-magnum-100
+				class="inline-flex h-8 items-center justify-center rounded-[4px] bg-magnum-100
 					px-4 font-medium leading-none text-magnum-900"
 			>
 				Save changes

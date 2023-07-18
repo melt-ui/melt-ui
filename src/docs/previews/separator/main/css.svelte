@@ -31,7 +31,7 @@
 	{/each}
 </div>
 
-<style lang="postcss">
+<style>
 	h2 {
 		font-weight: var(--tw-font-weight-bold);
 	}

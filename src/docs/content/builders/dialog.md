@@ -19,28 +19,21 @@ At a high level, the anatomy of a dialog looks like this:
 
 ```svelte
 <script lang="ts">
-    import { createDialog } from '@melt-ui/svelte'
-    const { trigger, portal, overlay, content, title, description, close } = createDialog()
+  import { createDialog } from '@melt-ui/svelte'
+  const { trigger, portal, overlay, content, title, description, close, open } = createDialog()
 </script>
 
-<button melt={$trigger}>
-    Open Dialog
-</button>
+<button melt={$trigger}> Open Dialog </button>
 
 <div use:portal>
-    {#if $open}
+  {#if $open}
     <div melt={$overlay} />
     <div melt={$content}>
-        <h2 melt={$title}>
-            Dialog Title
-        </h2>
-        <p melt={$description}>
-            Dialog description
-        </p>
-        <button melt={$close}>
-            Close Dialog
-        </button>
+      <h2 melt={$title}>Dialog Title</h2>
+      <p melt={$description}>Dialog description</p>
+      <button melt={$close}> Close Dialog </button>
     </div>
+  {/if}
 </div>
 ```
 
@@ -128,6 +121,14 @@ pop-up that asks the user to confirm a decision.
 
 <Preview code={snippets.alert}>
     <svelte:component this={previews.alert} />
+</Preview>
+
+### Nested Dialogs
+
+Dialogs can be nested. For example, here's a dialog that opens another dialog.
+
+<Preview code={snippets.nested}>
+    <svelte:component this={previews.nested} />
 </Preview>
 
 ## API Reference

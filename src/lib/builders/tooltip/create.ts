@@ -91,7 +91,8 @@ export function createTooltip(props?: CreateTooltipProps) {
 				addEventListener(node, 'mouseout', () => get(closeTooltip)()),
 				addEventListener(node, 'focus', () => open.set(true)),
 				addEventListener(node, 'blur', () => open.set(false)),
-				addEventListener(node, 'pointerdown', () => {
+				addEventListener(node, 'mousedown', (e) => {
+					e.preventDefault();
 					if (get(closeOnPointerDown)) {
 						open.set(false);
 					}

@@ -1,8 +1,12 @@
 import { get } from 'svelte/store';
 import { highlighterStore } from './stores';
-import { getHighlighter, renderToHtml } from 'shiki-es';
+import { getHighlighter, renderToHtml, type IThemedToken } from 'shiki-es';
 
-export async function getShikiHighlighter() {
+async function getShikiHighlighter(fetcher?: typeof fetch) {
+	if (fetcher && typeof window !== 'undefined') {
+		window.fetch = fetcher;
+	}
+
 	const shikiHighlighter = await getHighlighter({
 		theme: 'github-dark',
 		langs: ['svelte', 'typescript', 'css', 'javascript', 'json', 'bash'],
@@ -10,12 +14,12 @@ export async function getShikiHighlighter() {
 	return shikiHighlighter;
 }
 
-async function getStoredHighlighter() {
+export async function getStoredHighlighter(fetcher?: typeof fetch) {
 	const currHighlighter = get(highlighterStore);
 	if (currHighlighter) {
 		return currHighlighter;
 	}
-	const shikiHighlighter = await getShikiHighlighter();
+	const shikiHighlighter = await getShikiHighlighter(fetcher);
 	highlighterStore.set(shikiHighlighter);
 	return shikiHighlighter;
 }
@@ -26,10 +30,23 @@ type HighlightClasses = {
 	line?: string;
 };
 
-export async function highlightCode(code: string, lang: string, classes: HighlightClasses = {}) {
-	const highlighter = await getStoredHighlighter();
+type HighlightCodeArgs = {
+	code: string;
+	lang: string;
+	classes?: HighlightClasses;
+	fetcher?: typeof fetch;
+};
 
-	const tokens = highlighter.codeToThemedTokens(tabsToSpaces(code), lang);
+const themedTokensCache = new Map<string, IThemedToken[][]>();
+
+export async function highlightCode({ code, lang, classes = {}, fetcher }: HighlightCodeArgs) {
+	let tokens = themedTokensCache.get(code);
+
+	if (!tokens) {
+		const highlighter = await getStoredHighlighter(fetcher);
+		tokens = highlighter.codeToThemedTokens(tabsToSpaces(code), lang);
+		themedTokensCache.set(code, tokens);
+	}
 
 	const html = renderToHtml(tokens, {
 		elements: {

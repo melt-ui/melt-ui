@@ -41,9 +41,9 @@
 						</div>
 					{/if}
 				</button>
-				<Button href="/docs" class="mt-4 gap-4 sm:shrink">
+				<Button href="/docs" class="mt-4 gap-2 sm:shrink">
 					Read the docs
-					<ArrowRight class="inline-block h-5 w-5 text-white" />
+					<ArrowRight class="inline-block h-5 w-5 " />
 				</Button>
 			</div>
 		</div>

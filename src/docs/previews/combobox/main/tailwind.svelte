@@ -102,11 +102,15 @@
 	</div>
 </label>
 
-<div
+<ul
 	class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-md"
 	melt={$menu}
 >
-	<ul class="flex max-h-full flex-col gap-2 overflow-y-auto bg-white px-2 py-2">
+	<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+	<div
+		class="flex max-h-full flex-col gap-2 overflow-y-auto bg-white px-2 py-2"
+		tabindex="0"
+	>
 		{#if $open}
 			{#if $filteredItems.length !== 0}
 				{#each $filteredItems as book, index (index)}
@@ -141,8 +145,8 @@
 				</li>
 			{/if}
 		{/if}
-	</ul>
-</div>
+	</div>
+</ul>
 
 <style lang="postcss">
 	.check {

@@ -43,17 +43,17 @@
 		</div>
 
 		<div class="my-2 rounded bg-white p-3 shadow-lg">
-			<span class="text-base leading-[25px] text-magnum-800">melt-ui/melt-ui</span>
+			<span class="text-base leading-6 text-magnum-800">melt-ui/melt-ui</span>
 		</div>
 
 		{#if $open}
 			<div melt={$content} transition:slide>
 				<div class="flex flex-col gap-2">
 					<div class="rounded bg-white p-3 shadow-lg">
-						<span class="text-base leading-[25px] text-magnum-800">sveltejs/svelte</span>
+						<span class="text-base leading-6 text-magnum-800">sveltejs/svelte</span>
 					</div>
 					<div class="rounded bg-white p-3 shadow-lg">
-						<span class="text-base leading-[25px] text-magnum-800">sveltejs/kit</span>
+						<span class="text-base leading-6 text-magnum-800">sveltejs/kit</span>
 					</div>
 				</div>
 			</div>

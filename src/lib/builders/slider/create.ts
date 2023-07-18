@@ -70,7 +70,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 			const orientationStyles =
 				$orientation === 'horizontal'
 					? { left: `${minimum}%`, right: `${maximum}%` }
-					: { top: `${minimum}%`, bottom: `${maximum}%` };
+					: { top: `${maximum}%`, bottom: `${minimum}%` };
 
 			return {
 				style: styleToString({
@@ -136,7 +136,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 						position: 'absolute',
 						...($orientation === 'horizontal'
 							? { left: thumbPosition, translate: '-50% 0' }
-							: { top: thumbPosition, translate: '0 -50%`' }),
+							: { bottom: thumbPosition, translate: '0 50%' }),
 					}),
 					tabindex: $disabled ? -1 : 0,
 				} as const;
@@ -184,21 +184,31 @@ export const createSlider = (props?: CreateSliderProps) => {
 						break;
 					}
 					case kbd.ARROW_LEFT: {
-						if ($value[index] > $min && $orientation === 'horizontal') {
-							const newValue = $value[index] - $step;
+						if ($orientation !== 'horizontal') break;
+
+						if (event.metaKey) {
+							updatePosition($min, index);
+						} else if ($value[index] > $min) {
+							const newValue = $value[index] - step;
 							updatePosition(newValue, index);
 						}
 						break;
 					}
 					case kbd.ARROW_RIGHT: {
-						if ($value[index] < $max && $orientation === 'horizontal') {
+						if ($orientation !== 'horizontal') break;
+
+						if (event.metaKey) {
+							updatePosition($max, index);
+						} else if ($value[index] < $max) {
 							const newValue = $value[index] + $step;
 							updatePosition(newValue, index);
 						}
 						break;
 					}
 					case kbd.ARROW_UP: {
-						if ($value[index] > $min && $orientation === 'vertical') {
+						if (event.metaKey) {
+							updatePosition($max, index);
+						} else if ($value[index] > $min && $orientation === 'vertical') {
 							const newValue = $value[index] - $step;
 							updatePosition(newValue, index);
 						} else if ($value[index] < $max) {
@@ -208,7 +218,9 @@ export const createSlider = (props?: CreateSliderProps) => {
 						break;
 					}
 					case kbd.ARROW_DOWN: {
-						if ($value[index] < $max && $orientation === 'vertical') {
+						if (event.metaKey) {
+							updatePosition($min, index);
+						} else if ($value[index] < $max && $orientation === 'vertical') {
 							const newValue = $value[index] + $step;
 							updatePosition(newValue, index);
 						} else if ($value[index] > $min) {
@@ -234,10 +246,10 @@ export const createSlider = (props?: CreateSliderProps) => {
 			const applyPosition = (
 				clientXY: number,
 				activeThumbIdx: number,
-				leftOrTop: number,
-				rightOrBottom: number
+				leftOrBottom: number,
+				rightOrTop: number
 			) => {
-				const percent = (clientXY - leftOrTop) / (rightOrBottom - leftOrTop);
+				const percent = (clientXY - leftOrBottom) / (rightOrTop - leftOrBottom);
 				const val = Math.round(percent * ($max - $min) + $min);
 
 				if (val < $min || val > $max) return;
@@ -287,7 +299,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 					applyPosition(e.clientX, closestThumb.index, left, right);
 				} else {
 					const { top, bottom } = sliderEl.getBoundingClientRect();
-					applyPosition(e.clientY, closestThumb.index, top, bottom);
+					applyPosition(e.clientY, closestThumb.index, bottom, top);
 				}
 			};
 
