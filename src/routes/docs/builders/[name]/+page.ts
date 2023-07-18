@@ -25,7 +25,7 @@ export const load: PageLoad = async ({ params, fetch }) => {
 	console.log(`\nLoading ${params.name}...`);
 
 	// Init the highlighter
-	await getStoredHighlighter();
+	await getStoredHighlighter(fetch);
 
 	const promises = {
 		doc: () => getDocData(params.name),
