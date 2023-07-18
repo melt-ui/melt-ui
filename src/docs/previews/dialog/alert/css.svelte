@@ -137,7 +137,7 @@
 		margin-top: 1.5rem;
 	}
 
-	.act ions button {
+	.actions button {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
