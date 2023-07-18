@@ -1,44 +1,30 @@
-import { addEventListener, builder, createElHelpers, executeCallbacks, generateId, isBrowser } from "$lib/internal/helpers";
+import { addEventListener, builder, createElHelpers, executeCallbacks } from "$lib/internal/helpers";
 import type { Defaults } from "$lib/internal/types";
 
 import { onMount } from "svelte";
 import { get, writable, type Writable } from "svelte/store";
 
-import type { Heading, CreateTableOfContentsArgs, ElementHeadingLU, HeadingParentsLU, TableOfContentsItem, NavItemProps } from "./types";
+import type { Heading, CreateTableOfContentsArgs, ElementHeadingLU, HeadingParentsLU, TableOfContentsItem } from "./types";
 
 const defaults = {
     exclude: ['h1'],
     scrollOffset: 0,
     scrollBehaviour: 'smooth',
-    tocType: 'lowest',
+    activeType: 'lowest',
 } satisfies Defaults<CreateTableOfContentsArgs>;
-
-// Do we need this?
-// const { name } = createElHelpers('table-of-contents');
-
-// https://www.w3.org/TR/WCAG20-TECHS/G64.html
-// https://stackoverflow.com/questions/49820013/javascript-scrollintoview-smooth-scroll-and-offset?answertab=scoredesc#tab-top
-
-/** TODO: add scroll to element into an action for the individual nav items. */
-export function scrollToElement(selector: string): void {
-    const elemTarget: Element | null = document.querySelector(selector);
-    elemTarget?.scrollIntoView({ behavior: 'smooth' });
-}
-// export function scrollToElement(headingElem: HTMLElement): void {
-//     const elemTarget: Element | null = document.querySelector(`#${headingElem.id}`);
-//     elemTarget?.scrollIntoView({ behavior: 'smooth' });
-// }
 
  /**
   * @param args Provide the arguments for the table of contents builder.
  */
 export function createTableOfContents(args: CreateTableOfContentsArgs) {
     const argsWithDefaults = { ...defaults, ...args };
-    const { selector, exclude, tocType } = argsWithDefaults;
+    const { selector, exclude, activeType, scrollBehaviour, scrollOffset } = argsWithDefaults;
+
+    const { name } = createElHelpers('table-of-contents');
 
     // Variables
     const possibleHeadings: Heading[] = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-    let headingsList: Element[] = [];
+    let headingsList: HTMLHeadingElement[] = [];
     let elementsList: Element[] = [];
     /** Lookup to see which heading an element belongs to. */
     const elementHeadingLU: ElementHeadingLU = {};
@@ -53,7 +39,6 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
     const observer_threshold = 0.25;
 
     // Stores
-    // const headings: Writable<HTMLElement[]> = writable([]);
     const activeHeadingIdxs: Writable<number[]> = writable([]);
     const headingsTree: Writable<TableOfContentsItem[]> = writable([]);
 
@@ -62,19 +47,30 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
      * @param arr An array of heading elements.
      * @param startIndex The parent elements original index in the array.
      */
-    function createTree(arr: Element[], startIndex = 0): TableOfContentsItem[] {
+    function createTree(arr: HTMLHeadingElement[], startIndex = 0): TableOfContentsItem[] {
         const tree: TableOfContentsItem[] = [];
+
         let i = 0;
         while (i < arr.length) {
-            const node: TableOfContentsItem = { title: arr[i].innerHTML, index: startIndex + i, id: arr[i].id, items: [] };
+            const node: TableOfContentsItem = { 
+                title: arr[i].innerText, 
+                index: startIndex + i, 
+                id: arr[i].id, 
+                children: [] 
+            };
+
             let j = i + 1;
+
             while (j < arr.length && parseInt(arr[j].tagName.charAt(1)) > parseInt(arr[i].tagName.charAt(1))) {
                 j++;
             }
-            node.items = createTree(arr.slice(i + 1, j), startIndex + i + 1);
+
+            // Recursive call.
+            node.children = createTree(arr.slice(i + 1, j), startIndex + i + 1);
             tree.push(node);
             i = j;
         }
+
         return tree;
     }
 
@@ -87,12 +83,12 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
         // Create a unique ID for each heading which doesn't have one.
         targetHeaders?.forEach((el: HTMLHeadingElement, i: number) => {
             if (!el.id) {
-                // const uniqueID = generateId();
                 const uniqueID = el.innerText
                     .replaceAll(/[^a-zA-Z0-9 ]/g, '')
                     .replaceAll(' ', '-')
                     .toLowerCase();
-                el.id = `heading-${i}-${uniqueID}`;
+                // el.id = `heading-${i}-${uniqueID}`;
+                el.id = `${uniqueID}`;
             }
 
             headingsList.push(el);
@@ -164,7 +160,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
                     visibleElementIdxs.set(tempVisibleElementIdxs);
 
                     // Only add active parents if parent headings should be highlighted.
-                    activeParentIdxs.set((tocType === 'highest-parents' || tocType === 'lowest-parents') && headingParentsLU[toc_idx]
+                    activeParentIdxs.set((activeType === 'highest-parents' || activeType === 'lowest-parents') && headingParentsLU[toc_idx]
                             ? [...get(activeParentIdxs), ...(<number[]>headingParentsLU[toc_idx])]
                             : []);
                 }
@@ -174,7 +170,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
                 visibleElementIdxs.set(tempVisibleElementIdxs);
 
                 // Remove all parents of obsIndex from the activeParentIdxs list.
-                if ((tocType === 'highest-parents' || tocType === 'lowest-parents') && headingParentsLU[toc_idx]) {
+                if ((activeType === 'highest-parents' || activeType === 'lowest-parents') && headingParentsLU[toc_idx]) {
                     headingParentsLU[toc_idx]?.forEach((parent: number) => {
                         const tempActiveParentIdxs = get(activeParentIdxs);
                         const index = tempActiveParentIdxs.indexOf(parent);
@@ -191,14 +187,14 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
         if (allActiveHeaderIdxs.length === 0) {
             activeHeaderIdxs = [];
-        } else if (tocType === 'highest') {
+        } else if (activeType === 'highest') {
             activeHeaderIdxs = [Math.min(...allActiveHeaderIdxs)];
-        } else if (tocType === 'lowest') {
+        } else if (activeType === 'lowest') {
             activeHeaderIdxs = [Math.max(...allActiveHeaderIdxs)];
-        } else if (tocType === 'all-active') {
+        } else if (activeType === 'all') {
             activeHeaderIdxs = allActiveHeaderIdxs;
         } else {
-            const activeHeaderIdx = tocType === 'highest-parents' ? Math.min(...allActiveHeaderIdxs) : Math.max(...allActiveHeaderIdxs);
+            const activeHeaderIdx = activeType === 'highest-parents' ? Math.min(...allActiveHeaderIdxs) : Math.max(...allActiveHeaderIdxs);
 
             if (headingParentsLU[activeHeaderIdx]) {
                 activeHeaderIdxs = [...<[]>headingParentsLU[activeHeaderIdx], activeHeaderIdx];
@@ -211,20 +207,42 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
         activeHeadingIdxs.set(activeHeaderIdxs);
     }
 
-    const item = builder('', {
+    /**
+     * Scrolls to the element specified by the selector.
+     * The offset and scroll behaviour are determined by the 
+     * builder arguments.
+     * 
+     * Source: https://stackoverflow.com/questions/49820013/javascript-scrollintoview-smooth-scroll-and-offset?answertab=scoredesc#tab-top
+     * 
+     * @param selector The id of the element.
+     */
+    function scrollToTargetAdjusted(selector: string): void {
+        const element = document.getElementById(selector);
+    
+        if (element) {
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.scrollY - scrollOffset;
+          
+            window.scrollTo({
+                 top: offsetPosition,
+                 behavior: scrollBehaviour
+            });
+        }
+    }
+
+    const item = builder(name('item'), {
         returned: () => {
-            return {
-                role: 'link',
-                tabindex: 0
-            }
+            return (id: string) => ({
+                'data-id': id
+            });
         },
-        action: (node: HTMLElement, params: NavItemProps) => {
-            const { id } = params;
+        action: (node: HTMLAnchorElement) => {
+            const id = node.getAttribute('data-id');
 
             const unsub = executeCallbacks(
                 addEventListener(node, 'click', (e) => {
                     e.preventDefault();
-                    scrollToElement(`#${id}`);
+                    scrollToTargetAdjusted(`${id}`);
                 }),
             );
 
@@ -242,9 +260,11 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
         headingsTree.set(createTree(headingsList));
 
-        // Create observer and observe all elements.
-        observer = new IntersectionObserver(handleElementObservation, { root: null, threshold: observer_threshold });
-        elementsList.forEach((el) => observer?.observe(el));
+        if (activeType !== 'none') {
+            // Create observer and observe all elements.
+            observer = new IntersectionObserver(handleElementObservation, { root: null, threshold: observer_threshold });
+            elementsList.forEach((el) => observer?.observe(el));
+        } 
 
         return () => {
             observer?.disconnect();
@@ -254,6 +274,6 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
     return {
         activeHeadingIdxs,
         headingsTree,
-        navItem: item
+        item
     }
 }

@@ -33,18 +33,16 @@
             last:rounded-b focus-within:relative focus-within:z-10 focus-within:ring
             focus-within:ring-magnum-400"
 		>
-			<h2 class="flex">
-				<button
-					id={i === 0 ? 'accordion-trigger' : undefined}
-					melt={$trigger(id)}
-					class="flex h-12 flex-1 cursor-pointer items-center justify-between border-b border-b-magnum-700
-                 bg-white px-5 text-base font-medium
-                 leading-none text-magnum-700 transition-colors hover:bg-opacity-95 focus:!ring-0
-								 {i === items.length - 1 ? 'border-b-0' : ''}"
-				>
-					{title}
-				</button>
-			</h2>
+			<button
+				id={i === 0 ? 'accordion-trigger' : undefined}
+				melt={$trigger(id)}
+				class="w-full h-12 cursor-pointer items-center text-left border-b border-b-magnum-700
+				bg-white px-5 text-base font-medium
+				leading-none text-magnum-700 transition-colors hover:bg-opacity-95 focus:!ring-0
+								{i === items.length - 1 ? 'border-b-0' : ''}"
+			>
+				{title}
+			</button>
 			{#if $isSelected(id)}
 				<div
 					class="overflow-hidden bg-neutral-100 text-sm text-neutral-900"

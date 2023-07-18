@@ -5,11 +5,21 @@ description:
 ---
 
 <script>
-    import { APIReference } from '$docs/components'
+    import { APIReference, KbdTable } from '$docs/components'
     export let schemas
+    export let keyboard
 </script>
 
+## Anatomy
+
+- **Item**: The anchor item for each content.
 
 ## API Reference
 
 <APIReference {schemas} />
+
+## Accessibility
+
+Adheres to the
+
+<KbdTable {keyboard} />

@@ -1,25 +1,29 @@
+import type { createTableOfContents } from './create';
 
 export type Heading = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 
+export type ScrollBehaviour = 'smooth' | 'instant';
+
 /**
- * The ToC type describes which headings should be considered active.
+ * This type describes which headings should be considered active.
  */
-export type TOCType = 'lowest' | 'highest' | 'all-active' | 'lowest-parents' | 'highest-parents';
+export type ActiveType = 'none' | 'lowest' | 'highest' | 'all' | 'lowest-parents' | 'highest-parents';
 
 /**
  * Arguments to be passed to the Table of Contents builder.
  * 
+ * @param selector - The id of the container in which the content of the page is.
  * @param exclude - A list of headings that should be excluded in the table.
  * @param scrollOffset - The pixel offset that should be added when scrolling to a heading.
  * @param scrollBehaviour - Describes whether the scroll behaviour should be smooth or not.
- * @param tocType - Describes which headings should be considered active.
+ * @param activeType - Describes which headings should be considered active.
  */
 export type CreateTableOfContentsArgs = {
     selector: string,
     exclude?: Heading[];
     scrollOffset?: number;
-    scrollBehaviour?: 'smooth' | 'jump';
-    tocType?: TOCType;
+    scrollBehaviour?: ScrollBehaviour;
+    activeType?: ActiveType;
 };
 
 export type ElementHeadingLU = {
@@ -34,13 +38,7 @@ export type TableOfContentsItem = {
 	title: string;
 	index: number;
     id: string;
-	items?: TableOfContentsItem[];
+	children?: TableOfContentsItem[];
 };
 
-export type TableOfContents = {
-	items: TableOfContentsItem[];
-};
-
-export type NavItemProps = {
-	id: string;
-};
+export type CreateTableOfContentsReturn = ReturnType<typeof createTableOfContents>;

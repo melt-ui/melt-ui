@@ -1,5 +1,5 @@
-import { DESCRIPTIONS } from '$docs/constants';
-import type { APISchema } from '$docs/types';
+import { DESCRIPTIONS, KBD } from '$docs/constants';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 import type { BuilderData } from '.';
 
 const builder: APISchema = {
@@ -16,14 +16,26 @@ const builder: APISchema = {
 			name: 'exclude',
 			type: 'Heading[]',
 			default: `['h1']`,
-			description: 'A list of headings that should be excluded from the ToC.',
+			description: "A list of headings that should be excluded from the ToC. Possible values: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'.",
 		},
 		{
-			name: 'tocType',
-			type: 'TOCType',
+			name: 'activeType',
+			type: 'ActiveType',
 			default: 'lowest',
-			description: 'Describes which header should be considered active.',
+			description: "Describes which header should be considered active. 'none' means that no intersection observers are added and no headings are considered active. 'all' means that all headings with visible content are considered active. 'lowest' means that the heading of the lowest visible content is considered active. 'highest' means the opposite. 'lowest-parents' means that parents of the heading with the lowest visible content are also considered active, and the same goes for 'highest-parents'.",
 		},
+		{
+			name: 'scrollOffset',
+			type: 'number',
+			default: '0',
+			description: 'The number of pixels to add to the top of the element when scrolling. Can be used if you have a fixed header which might block the scrolled-to element.'
+		},
+		{
+			name: 'scrollBehaviour',
+			type: 'ScrollBehaviour',
+			default: 'smooth',
+			description: "Defines if the scroll behaviour should be 'smooth' or 'instant'."
+		}
 	],
 	returnedProps: [
 		{
@@ -36,16 +48,48 @@ const builder: APISchema = {
 			type: 'Writable<TableOfContentsItem[]>',
 			description: 'A writable store that lists all the headings within the specified container.',
 		},
+		{
+			name: 'item',
+			description: 'The builder store used to create a table of contents item.',
+			link: '#item'
+		}
 	],
 };
 
-const schemas = [builder];
+const item: APISchema = {
+	title: 'item',
+	description: 'A table of contents item.',
+	dataAttributes: [
+		{
+			name: 'data-id',
+			value: 'The id of the heading element the item links to.',
+		},
+	],
+};
+
+const schemas = [builder, item];
 
 const features = [
 	'Customize which headers should be excluded',
+	'Choose between smooth or instant scroll behaviour',
+	'Add a scroll offset if needed'
 ];
+
+
+const keyboard: KeyboardSchema = [
+	{
+		key: KBD.ENTER,
+		behavior: 'Scrolls to the focused heading.',
+	},
+	{
+		key: KBD.TAB,
+		behavior: 'Moves focus to the next focusable element.',
+	},
+];
+
 
 export const tableOfContentsData: BuilderData = {
 	schemas,
 	features,
+	keyboard
 };
