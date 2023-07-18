@@ -31,10 +31,17 @@ export const load: PageLoad = async (event) => {
 	};
 
 	const stuff = await timedPromiseAll(promises);
-
 	return {
 		...stuff,
 	};
+
+	// return {
+	// 	doc: getDocData(event.params.name),
+	// 	mainPreview: getMainPreviewComponent(event.params.name),
+	// 	snippets: getAllPreviewSnippets(event.params.name),
+	// 	previews: getAllPreviewComponents(event.params.name),
+	// 	builderData: getBuilderData(event.params.name),
+	// };
 };
 
 // Given an object of promises, return a promise that resolves to an object of resolved values.

@@ -162,7 +162,7 @@ interface PreviewObj {
 	};
 }
 
-export async function createPreviewsObject(
+async function createPreviewsObject(
 	component: string,
 	objArr: { path: string; content: string }[]
 ): Promise<PreviewObj> {
@@ -398,10 +398,10 @@ export async function getBuilderData(slug: Builder) {
 	const schemas = builderData['schemas'];
 	if (!schemas) return builderData;
 
-	for (const key of schemas) {
+	const promises = schemas.map(async (key) => {
 		if (Object.prototype.hasOwnProperty.call(key, 'props')) {
 			const props = key['props'];
-			if (!props) continue;
+			if (!props) return;
 			for (const prop of props) {
 				if (!prop['longType']) continue;
 				const longType = prop['longType'];
@@ -411,7 +411,9 @@ export async function getBuilderData(slug: Builder) {
 				prop['longType']['highlightedCode'] = highlightedCode;
 			}
 		}
-	}
+	});
+	await Promise.all(promises);
+
 	builderData.schemas = schemas;
 	return builderData;
 }
