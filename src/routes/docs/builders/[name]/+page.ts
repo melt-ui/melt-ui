@@ -8,6 +8,7 @@ import {
 	getBuilderData,
 } from '$docs/utils';
 import { builderList, isBuilderName } from '$docs/data/builders';
+import { getStoredHighlighter } from '$docs/highlighter';
 
 export const entries = (() => {
 	return builderList.map((item) => {
@@ -22,6 +23,10 @@ export const load: PageLoad = async ({ params, fetch }) => {
 		throw error(404);
 	}
 	console.log(`\nLoading ${params.name}...`);
+
+	// Init the highlighter
+	await getStoredHighlighter();
+
 	const promises = {
 		doc: () => getDocData(params.name),
 		mainPreview: () => getMainPreviewComponent(params.name),

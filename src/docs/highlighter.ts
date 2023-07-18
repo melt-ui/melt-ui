@@ -2,10 +2,11 @@ import { get } from 'svelte/store';
 import { highlighterStore } from './stores';
 import { getHighlighter, renderToHtml } from 'shiki-es';
 
-export async function getShikiHighlighter(fetcher?: typeof fetch) {
+async function getShikiHighlighter(fetcher?: typeof fetch) {
 	if (fetcher && typeof window !== 'undefined') {
 		window.fetch = fetcher;
 	}
+	console.log('getting shiki highlighter from scratch');
 
 	const shikiHighlighter = await getHighlighter({
 		theme: 'github-dark',
@@ -14,7 +15,7 @@ export async function getShikiHighlighter(fetcher?: typeof fetch) {
 	return shikiHighlighter;
 }
 
-async function getStoredHighlighter(fetcher?: typeof fetch) {
+export async function getStoredHighlighter(fetcher?: typeof fetch) {
 	const currHighlighter = get(highlighterStore);
 	if (currHighlighter) {
 		return currHighlighter;

@@ -1,8 +1,9 @@
 <script lang="ts">
-	import type { VariantProps } from 'tailwind-variants';
-	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
-	import { cn, noopAction } from '$docs/utils';
+	import { cn } from '$docs/utils';
+	import { noop } from '@melt-ui/svelte/internal/helpers';
 	import type { Action } from 'svelte/action';
+	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
+	import type { VariantProps } from 'tailwind-variants';
 	import { buttonVariants } from '.';
 
 	let className: string | undefined | null = undefined;
@@ -11,7 +12,7 @@
 	export let type: HTMLButtonAttributes['type'] = undefined;
 	export let variant: VariantProps<typeof buttonVariants>['variant'] = 'default';
 	export let size: VariantProps<typeof buttonVariants>['size'] = 'default';
-	export let action: Action<HTMLElement> = noopAction;
+	export let action: Action<HTMLElement> = noop;
 
 	type Props = {
 		class?: string | null;
