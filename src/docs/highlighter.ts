@@ -40,11 +40,10 @@ type HighlightCodeArgs = {
 const themedTokensCache = new Map<string, IThemedToken[][]>();
 
 export async function highlightCode({ code, lang, classes = {}, fetcher }: HighlightCodeArgs) {
-	const highlighter = await getStoredHighlighter(fetcher);
-
 	let tokens = themedTokensCache.get(code);
 
 	if (!tokens) {
+		const highlighter = await getStoredHighlighter(fetcher);
 		tokens = highlighter.codeToThemedTokens(tabsToSpaces(code), lang);
 		themedTokensCache.set(code, tokens);
 	}
