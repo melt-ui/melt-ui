@@ -1,12 +1,11 @@
 import { get } from 'svelte/store';
 import { highlighterStore } from './stores';
-import { getHighlighter, renderToHtml } from 'shiki-es';
+import { getHighlighter, renderToHtml, type IThemedToken } from 'shiki-es';
 
 async function getShikiHighlighter(fetcher?: typeof fetch) {
 	if (fetcher && typeof window !== 'undefined') {
 		window.fetch = fetcher;
 	}
-	console.log('getting shiki highlighter from scratch');
 
 	const shikiHighlighter = await getHighlighter({
 		theme: 'github-dark',
@@ -38,10 +37,17 @@ type HighlightCodeArgs = {
 	fetcher?: typeof fetch;
 };
 
+const themedTokensCache = new Map<string, IThemedToken[][]>();
+
 export async function highlightCode({ code, lang, classes = {}, fetcher }: HighlightCodeArgs) {
 	const highlighter = await getStoredHighlighter(fetcher);
 
-	const tokens = highlighter.codeToThemedTokens(tabsToSpaces(code), lang);
+	let tokens = themedTokensCache.get(code);
+
+	if (!tokens) {
+		tokens = highlighter.codeToThemedTokens(tabsToSpaces(code), lang);
+		themedTokensCache.set(code, tokens);
+	}
 
 	const html = renderToHtml(tokens, {
 		elements: {

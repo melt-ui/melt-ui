@@ -1,14 +1,7 @@
-import { error } from '@sveltejs/kit';
-import type { EntryGenerator, PageLoad } from './$types';
-import {
-	getDocData,
-	getMainPreviewComponent,
-	getAllPreviewSnippets,
-	getAllPreviewComponents,
-	getBuilderData,
-} from '$docs/utils';
 import { builderList, isBuilderName } from '$docs/data/builders';
-import { getStoredHighlighter } from '$docs/highlighter';
+import { getAllPreviewComponents, getDocData, getMainPreviewComponent } from '$docs/utils';
+import { error } from '@sveltejs/kit';
+import type { EntryGenerator } from './$types';
 
 export const entries = (() => {
 	return builderList.map((item) => {
@@ -16,48 +9,15 @@ export const entries = (() => {
 	});
 }) satisfies EntryGenerator;
 
-export const load = async ({ params, fetch, data }) => {
+export const load = async ({ params, data }) => {
 	if (!isBuilderName(params.name)) {
 		throw error(404);
 	}
-	console.log(`\nLoading ${params.name}...`);
 
-	// Init the highlighter
-	await getStoredHighlighter(fetch);
-
-	const promises = {
-		mainPreview: () => getMainPreviewComponent(params.name),
-		doc: () => getDocData(params.name),
-		previews: () => getAllPreviewComponents(params.name),
-	};
-
-	const stuff = await timedPromiseAll(promises);
 	return {
-		...stuff,
 		...data,
+		mainPreview: getMainPreviewComponent(params.name),
+		doc: getDocData(params.name),
+		previews: getAllPreviewComponents(params.name),
 	};
-
-	// return {
-	// 	doc: getDocData(params.name),
-	// 	mainPreview: getMainPreviewComponent(params.name),
-	// 	snippets: getAllPreviewSnippets({slug: params.name, fetcher: fetch}),
-	// 	previews: getAllPreviewComponents(params.name),
-	// 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	// 	builderData: getBuilderData({slug: params.name as any, fetcher: fetch}),
-	// };
-};
-
-// Given an object of promises, return a promise that resolves to an object of resolved values.
-// Time each promise and log the results.
-const timedPromiseAll = async (promises: Record<string, () => Promise<any>>) => {
-	const start = performance.now();
-	const wrappedPromises = Object.entries(promises).map(([key, promise]) => {
-		return promise().then((value) => {
-			console.log(`${key}: ${performance.now() - start}ms`);
-			return [key, value];
-		});
-	});
-	const res = Object.fromEntries(await Promise.all(wrappedPromises));
-
-	return res;
 };
