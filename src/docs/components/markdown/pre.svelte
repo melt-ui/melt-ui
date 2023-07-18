@@ -52,3 +52,10 @@
 		</button>
 	{/if}
 {/if}
+
+<style>
+	/* Override theme colors for WCAG concerns */
+	pre :global([style*='color: #6A737D']) {
+		color: #727e8b !important;
+	}
+</style>
