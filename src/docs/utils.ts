@@ -162,10 +162,16 @@ interface PreviewObj {
 	};
 }
 
-async function createPreviewsObject(
-	component: string,
-	objArr: { path: string; content: string }[]
-): Promise<PreviewObj> {
+type CreatePreviewsObjectArgs = {
+	component: string;
+	objArr: { path: string; content: string }[];
+	fetcher?: typeof fetch;
+};
+async function createPreviewsObject({
+	component,
+	objArr,
+	fetcher,
+}: CreatePreviewsObjectArgs): Promise<PreviewObj> {
 	const returnedObj: PreviewObj = {};
 
 	// Create an array of promises, iterating through the objects in the array
@@ -187,8 +193,8 @@ async function createPreviewsObject(
 			}
 
 			const [highlightedCode, processedCode] = await Promise.all([
-				highlightCode(content, 'svelte'),
-				highlightCode(processMeltAttributes(content), 'svelte'),
+				highlightCode({ code: content, lang: 'svelte', fetcher }),
+				highlightCode({ code: processMeltAttributes(content), lang: 'svelte', fetcher }),
 			]);
 
 			returnedObj[groupKey][fileKey]['index.svelte'] = {
@@ -249,7 +255,12 @@ export async function getDocData(slug: string) {
 	return doc;
 }
 
-export async function getAllPreviewSnippets(slug: string) {
+type GetAllPreviewSnippetsArgs = {
+	slug: string;
+	fetcher?: typeof fetch;
+};
+
+export async function getAllPreviewSnippets({ slug, fetcher }: GetAllPreviewSnippetsArgs) {
 	const previewsCode = import.meta.glob(`/src/docs/previews/**/*.svelte`, {
 		as: 'raw',
 		eager: true,
@@ -263,7 +274,11 @@ export async function getAllPreviewSnippets(slug: string) {
 			previewCodeMatches.push(prev);
 		}
 	}
-	const previews = await createPreviewsObject(slug, previewCodeMatches);
+	const previews = await createPreviewsObject({
+		component: slug,
+		objArr: previewCodeMatches,
+		fetcher,
+	});
 
 	return previews;
 }
@@ -393,7 +408,12 @@ export function createCopyCodeButton() {
 	};
 }
 
-export async function getBuilderData(slug: Builder) {
+type GetBuilderDataArgs = {
+	slug: Builder;
+	fetcher?: typeof fetch;
+};
+
+export async function getBuilderData({ slug, fetcher }: GetBuilderDataArgs) {
 	const builderData = data[slug];
 	const schemas = builderData['schemas'];
 	if (!schemas) return builderData;
@@ -405,8 +425,13 @@ export async function getBuilderData(slug: Builder) {
 			for (const prop of props) {
 				if (!prop['longType']) continue;
 				const longType = prop['longType'];
-				const highlightedCode = await highlightCode(longType.rawCode, 'typescript', {
-					pre: '!mt-0 !mb-0',
+				const highlightedCode = await highlightCode({
+					code: longType.rawCode,
+					lang: 'typescript',
+					classes: {
+						pre: '!mt-0 !mb-0',
+					},
+					fetcher,
 				});
 				prop['longType']['highlightedCode'] = highlightedCode;
 			}

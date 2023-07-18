@@ -2,7 +2,11 @@ import { get } from 'svelte/store';
 import { highlighterStore } from './stores';
 import { getHighlighter, renderToHtml } from 'shiki-es';
 
-export async function getShikiHighlighter() {
+export async function getShikiHighlighter(fetcher?: typeof fetch) {
+	if (fetcher) {
+		window.fetch = fetcher;
+	}
+
 	const shikiHighlighter = await getHighlighter({
 		theme: 'github-dark',
 		langs: ['svelte', 'typescript', 'css', 'javascript', 'json', 'bash'],
@@ -10,12 +14,12 @@ export async function getShikiHighlighter() {
 	return shikiHighlighter;
 }
 
-async function getStoredHighlighter() {
+async function getStoredHighlighter(fetcher?: typeof fetch) {
 	const currHighlighter = get(highlighterStore);
 	if (currHighlighter) {
 		return currHighlighter;
 	}
-	const shikiHighlighter = await getShikiHighlighter();
+	const shikiHighlighter = await getShikiHighlighter(fetcher);
 	highlighterStore.set(shikiHighlighter);
 	return shikiHighlighter;
 }
@@ -26,8 +30,15 @@ type HighlightClasses = {
 	line?: string;
 };
 
-export async function highlightCode(code: string, lang: string, classes: HighlightClasses = {}) {
-	const highlighter = await getStoredHighlighter();
+type HighlightCodeArgs = {
+	code: string;
+	lang: string;
+	classes?: HighlightClasses;
+	fetcher?: typeof fetch;
+};
+
+export async function highlightCode({ code, lang, classes = {}, fetcher }: HighlightCodeArgs) {
+	const highlighter = await getStoredHighlighter(fetcher);
 
 	const tokens = highlighter.codeToThemedTokens(tabsToSpaces(code), lang);
 

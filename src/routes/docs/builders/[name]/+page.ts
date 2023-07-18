@@ -17,17 +17,17 @@ export const entries = (() => {
 
 export const prerender = 'auto';
 
-export const load: PageLoad = async (event) => {
-	if (!isBuilderName(event.params.name)) {
+export const load: PageLoad = async ({ params, fetch }) => {
+	if (!isBuilderName(params.name)) {
 		throw error(404);
 	}
-	console.log(`\nLoading ${event.params.name}...`);
+	console.log(`\nLoading ${params.name}...`);
 	const promises = {
-		doc: () => getDocData(event.params.name),
-		mainPreview: () => getMainPreviewComponent(event.params.name),
-		snippets: () => getAllPreviewSnippets(event.params.name),
-		previews: () => getAllPreviewComponents(event.params.name),
-		builderData: () => getBuilderData(event.params.name),
+		doc: () => getDocData(params.name),
+		mainPreview: () => getMainPreviewComponent(params.name),
+		snippets: () => getAllPreviewSnippets({ slug: params.name, fetcher: fetch }),
+		previews: () => getAllPreviewComponents(params.name),
+		builderData: () => getBuilderData({ slug: params.name, fetcher: fetch }),
 	};
 
 	const stuff = await timedPromiseAll(promises);
@@ -36,7 +36,7 @@ export const load: PageLoad = async (event) => {
 	};
 
 	// return {
-	// 	doc: getDocData(event.params.name),
+	// 	doc: getDocData(params.name),
 	// 	mainPreview: getMainPreviewComponent(event.params.name),
 	// 	snippets: getAllPreviewSnippets(event.params.name),
 	// 	previews: getAllPreviewComponents(event.params.name),
