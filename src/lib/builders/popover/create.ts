@@ -8,6 +8,7 @@ import {
 	noop,
 	sleep,
 	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
 
 import { usePopper } from '$lib/internal/actions';
@@ -16,6 +17,7 @@ import { overridable } from '$lib/internal/helpers';
 import { tick } from 'svelte';
 import { get, writable } from 'svelte/store';
 import type { CreatePopoverProps } from './types';
+import { omit } from '../../internal/helpers/object';
 
 const defaults = {
 	positioning: {
@@ -23,6 +25,8 @@ const defaults = {
 	},
 	arrowSize: 8,
 	defaultOpen: false,
+	disableFocusTrap: false,
+	onOpenChange: undefined,
 } satisfies Defaults<CreatePopoverProps>;
 
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
@@ -32,15 +36,8 @@ export function createPopover(args?: CreatePopoverProps) {
 	const withDefaults = { ...defaults, ...args } satisfies CreatePopoverProps;
 
 	// options
-	const positioning = writable(withDefaults.positioning);
-	const arrowSize = writable(withDefaults.arrowSize);
-	const disableFocusTrap = writable(withDefaults.disableFocusTrap);
-
-	const options = {
-		positioning,
-		arrowSize,
-		disableFocusTrap,
-	};
+	const options = toWritableStores(omit(withDefaults, 'open'));
+	const { positioning, arrowSize, disableFocusTrap } = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);

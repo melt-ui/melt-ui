@@ -1,4 +1,11 @@
-import { addEventListener, builder, createElHelpers, styleToString } from '$lib/internal/helpers';
+import {
+	addEventListener,
+	builder,
+	createElHelpers,
+	omit,
+	styleToString,
+	toWritableStores,
+} from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateSwitchProps } from './types';
@@ -16,17 +23,8 @@ const { name } = createElHelpers('switch');
 export function createSwitch(props?: CreateSwitchProps) {
 	const propsWithDefaults = { ...defaults, ...props } satisfies CreateSwitchProps;
 
-	const disabled = writable(propsWithDefaults.disabled);
-	const required = writable(propsWithDefaults.required);
-	const nameStore = writable(propsWithDefaults.name);
-	const value = writable(propsWithDefaults.value);
-
-	const options = {
-		disabled,
-		required,
-		name: nameStore,
-		value,
-	};
+	const options = toWritableStores(omit(propsWithDefaults, 'checked'));
+	const { disabled, required, name: nameStore, value } = options;
 
 	const checked = writable(propsWithDefaults.checked);
 

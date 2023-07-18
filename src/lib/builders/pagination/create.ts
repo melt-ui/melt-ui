@@ -5,6 +5,7 @@ import {
 	executeCallbacks,
 	kbd,
 	omit,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
@@ -25,15 +26,8 @@ export function createPagination(props: CreatePaginationProps) {
 	const page = writable(withDefaults.page);
 
 	// options
-	const perPage = writable(withDefaults.perPage);
-	const siblingCount = writable(withDefaults.siblingCount);
-	const count = writable(withDefaults.count);
-
-	const options = {
-		perPage,
-		siblingCount,
-		count,
-	};
+	const options = toWritableStores(omit(withDefaults, 'page'));
+	const { perPage, siblingCount, count } = options;
 
 	const totalPages = derived([count, perPage], ([$count, $perPage]) => {
 		return Math.ceil($count / $perPage);

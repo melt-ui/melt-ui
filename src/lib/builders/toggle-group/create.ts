@@ -7,6 +7,8 @@ import {
 	isHTMLElement,
 	kbd,
 	noop,
+	omit,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
@@ -28,21 +30,10 @@ const { name, selector } = createElHelpers<ToggleGroupParts>('toggle-group');
 export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 	props?: CreateToggleGroupProps<T>
 ) => {
-	const withDefaults = { ...defaults, ...props } as CreateToggleGroupProps<T>;
+	const withDefaults = { ...defaults, ...props };
 
-	const type = writable(withDefaults.type);
-	const orientation = writable(withDefaults.orientation);
-	const loop = writable(withDefaults.loop);
-	const rovingFocus = writable(withDefaults.rovingFocus);
-	const disabled = writable(withDefaults.disabled);
-
-	const options = {
-		type,
-		orientation,
-		loop,
-		rovingFocus,
-		disabled,
-	};
+	const options = toWritableStores(omit(withDefaults, 'value'));
+	const { type, orientation, loop, rovingFocus, disabled } = options;
 
 	const value = writable<string | string[] | undefined>(withDefaults.value);
 

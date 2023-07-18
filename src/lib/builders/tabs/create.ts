@@ -10,17 +10,20 @@ import {
 	next,
 	prev,
 	isLeftClick,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
 import { get, writable } from 'svelte/store';
 import type { CreateTabsProps, TabsTriggerProps } from './types';
+import { omit } from '../../internal/helpers/object';
 
 const defaults = {
 	orientation: 'horizontal',
 	activateOnFocus: true,
 	loop: true,
 	autoSet: true,
+	onChange: undefined,
 } satisfies Defaults<CreateTabsProps>;
 
 type TabsParts = 'list' | 'trigger' | 'content';
@@ -29,19 +32,9 @@ const { name, selector } = createElHelpers<TabsParts>('tabs');
 export function createTabs(props?: CreateTabsProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateTabsProps;
 
-	const orientation = writable(withDefaults.orientation);
-	const activateOnFocus = writable(withDefaults.activateOnFocus);
-	const loop = writable(withDefaults.loop);
-	const autoSet = writable(withDefaults.autoSet);
-	const onChange = writable(withDefaults.onChange);
+	const options = toWritableStores(omit(withDefaults, 'value'));
+	const { orientation, activateOnFocus, loop, autoSet, onChange } = options;
 
-	const options = {
-		orientation,
-		activateOnFocus,
-		loop,
-		autoSet,
-		onChange,
-	};
 	const value = writable(withDefaults.value);
 
 	let ssrValue = withDefaults.value;

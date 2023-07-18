@@ -21,9 +21,11 @@ import {
 	last,
 	next,
 	noop,
+	omit,
 	prev,
 	removeScroll,
 	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import { getFirstOption, getOptions } from '$lib/internal/helpers/list';
 import { sleep } from '$lib/internal/helpers/sleep';
@@ -43,6 +45,7 @@ const defaults = {
 	},
 	preventScroll: true,
 	loop: false,
+	name: undefined,
 } satisfies Defaults<CreateSelectProps>;
 
 type SelectParts = 'menu' | 'trigger' | 'option' | 'group' | 'group-label' | 'arrow' | 'input';
@@ -51,22 +54,16 @@ const { name } = createElHelpers<SelectParts>('select');
 export function createSelect(props?: CreateSelectProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps;
 
-	const positioning = writable<FloatingConfig>(withDefaults.positioning);
-	const arrowSize = writable(withDefaults.arrowSize);
-	const required = writable(withDefaults.required);
-	const disabled = writable(withDefaults.disabled);
-	const loop = writable(withDefaults.loop);
-	const preventScroll = writable(withDefaults.preventScroll);
-	const nameStore = writable(withDefaults.name);
-
-	const options = {
+	const options = toWritableStores(omit(withDefaults, 'value', 'label'));
+	const {
 		positioning,
 		arrowSize,
 		required,
 		disabled,
 		loop,
 		preventScroll,
-	};
+		name: nameStore,
+	} = options;
 
 	const open = writable(false);
 	const value = writable<unknown>(withDefaults.value ?? null);

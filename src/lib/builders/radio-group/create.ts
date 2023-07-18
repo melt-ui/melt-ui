@@ -6,6 +6,8 @@ import {
 	getDirectionalKeys,
 	isLeftClick,
 	kbd,
+	omit,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
@@ -26,16 +28,8 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateRadioGroupProps;
 
 	// options
-	const disabled = writable(withDefaults.disabled);
-	const required = writable(withDefaults.required);
-	const loop = writable(withDefaults.loop);
-	const orientation = writable(withDefaults.orientation);
-	const options = {
-		disabled,
-		required,
-		loop,
-		orientation,
-	};
+	const options = toWritableStores(omit(withDefaults, 'value'));
+	const { disabled, required, loop, orientation } = options;
 
 	const value = writable(withDefaults.value ?? null);
 

@@ -9,6 +9,7 @@ import {
 	kbd,
 	omit,
 	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateSliderProps } from './types';
@@ -27,19 +28,8 @@ const { name } = createElHelpers('slider');
 export const createSlider = (props?: CreateSliderProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSliderProps;
 
-	const min = writable(withDefaults.min);
-	const max = writable(withDefaults.max);
-	const step = writable(withDefaults.step);
-	const orientation = writable(withDefaults.orientation);
-	const disabled = writable(withDefaults.disabled);
-
-	const options = {
-		min,
-		max,
-		step,
-		orientation,
-		disabled,
-	};
+	const options = toWritableStores(omit(withDefaults, 'value'));
+	const { min, max, step, orientation, disabled } = options;
 
 	const value = writable(withDefaults.value);
 

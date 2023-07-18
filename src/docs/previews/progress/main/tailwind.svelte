@@ -3,7 +3,8 @@
 
 	const {
 		elements: { root },
-		states: { value, max },
+		states: { value },
+		options: { max },
 	} = createProgress({
 		value: 30,
 		max: 100,

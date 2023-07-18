@@ -6,6 +6,7 @@ import {
 	handleRovingFocus,
 	isHTMLElement,
 	kbd,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
@@ -26,13 +27,8 @@ const { name, selector } = createElHelpers('toolbar');
 export const createToolbar = (props?: CreateToolbarProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateToolbarProps;
 
-	const loop = writable(withDefaults.loop);
-	const orientation = writable(withDefaults.orientation);
-
-	const options = {
-		loop,
-		orientation,
-	};
+	const options = toWritableStores(withDefaults);
+	const { loop, orientation } = options;
 
 	const root = builder(name(), {
 		stores: orientation,

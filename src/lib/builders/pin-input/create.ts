@@ -8,6 +8,7 @@ import {
 	omit,
 	prev,
 	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '@melt-ui/svelte/internal/types';
 import { tick } from 'svelte';
@@ -30,23 +31,14 @@ const defaults = {
 	placeholder: '○',
 	disabled: false,
 	type: 'text',
+	name: undefined,
 } satisfies Defaults<CreatePinInputProps>;
 
 export function createPinInput(props?: CreatePinInputProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreatePinInputProps;
 
-	// options
-	const placeholder = writable(withDefaults.placeholder);
-	const disabled = writable(withDefaults.disabled);
-	const type = writable(withDefaults.type);
-	const nameStore = writable(withDefaults.name);
-
-	const options = {
-		placeholder,
-		disabled,
-		type,
-		name: nameStore,
-	};
+	const options = toWritableStores(omit(withDefaults, 'value'));
+	const { placeholder, disabled, type, name: nameStore } = options;
 
 	const value = writable((props?.value ?? []) satisfies string[]);
 	const valueStr = derived(value, (v) => v.join(''));

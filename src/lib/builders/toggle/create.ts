@@ -1,4 +1,4 @@
-import { addEventListener, builder } from '$lib/internal/helpers';
+import { addEventListener, builder, omit, toWritableStores } from '$lib/internal/helpers';
 import { get, writable } from 'svelte/store';
 import type { CreateToggleProps } from './types';
 
@@ -9,9 +9,10 @@ const defaults = {
 export function createToggle(props?: CreateToggleProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateToggleProps;
 
-	const pressed = writable(withDefaults.pressed ?? false);
+	const options = toWritableStores(omit(withDefaults, 'pressed'));
+	const { disabled } = options;
 
-	const disabled = writable(withDefaults.disabled ?? false);
+	const pressed = writable(withDefaults.pressed ?? false);
 
 	const root = builder('toggle', {
 		stores: [pressed, disabled],
@@ -41,11 +42,9 @@ export function createToggle(props?: CreateToggleProps) {
 		elements: {
 			root,
 		},
-		options: {
-			disabled,
-		},
 		states: {
 			pressed,
 		},
+		options,
 	};
 }

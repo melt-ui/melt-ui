@@ -8,7 +8,9 @@ import {
 	getElementByMeltId,
 	isBrowser,
 	kbd,
+	omit,
 	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
@@ -24,8 +26,12 @@ const defaults = {
 	unique: false,
 	blur: 'nothing',
 	addOnPaste: false,
+	maxTags: undefined,
 	allowed: [],
 	denied: [],
+	add: undefined,
+	remove: undefined,
+	update: undefined,
 } satisfies Defaults<CreateTagsInputProps>;
 
 type TagsInputParts = '' | 'tag' | 'delete-trigger' | 'edit' | 'input';
@@ -40,21 +46,8 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		input: generateId(),
 	};
 
-	// options
-	const placeholder = writable(withDefaults.placeholder);
-	const disabled = writable(withDefaults.disabled);
-	const editable = writable(withDefaults.editable);
-	const unique = writable(withDefaults.unique);
-	const blur = writable(withDefaults.blur);
-	const addOnPaste = writable(withDefaults.addOnPaste);
-	const allowed = writable(withDefaults.allowed);
-	const denied = writable(withDefaults.denied);
-	const add = writable(withDefaults.add);
-	const remove = writable(withDefaults.remove);
-	const update = writable(withDefaults.update);
-	const maxTags = writable(withDefaults.maxTags);
-
-	const options = {
+	const options = toWritableStores(omit(withDefaults, 'tags'));
+	const {
 		placeholder,
 		disabled,
 		editable,
@@ -67,7 +60,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		remove,
 		update,
 		maxTags,
-	};
+	} = options;
 
 	// A store representing the current input value. A readable version is exposed to the
 	// user

@@ -28,6 +28,7 @@ import {
 	builder,
 	createElHelpers,
 	isLeftClick,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions';
@@ -43,12 +44,13 @@ const defaults = {
 
 export function createMenubar(props?: CreateMenubarProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateMenubarProps;
+
+	const options = toWritableStores(withDefaults);
+	const { loop } = options;
 	const activeMenu = writable<string>('');
 	const scopedMenus = writable<HTMLElement[]>([]);
 	const nextFocusable = writable<HTMLElement | null>(null);
 	const prevFocusable = writable<HTMLElement | null>(null);
-
-	const loop = writable<boolean>(withDefaults.loop);
 
 	const rootIds = {
 		menubar: generateId(),
@@ -550,8 +552,6 @@ export function createMenubar(props?: CreateMenubarProps) {
 		builders: {
 			createMenu,
 		},
-		options: {
-			loop,
-		},
+		options,
 	};
 }

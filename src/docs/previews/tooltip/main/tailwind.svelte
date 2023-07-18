@@ -3,7 +3,10 @@
 	import { fade } from 'svelte/transition';
 	import { Plus } from 'lucide-svelte';
 
-	const { trigger, content, open, arrow } = createTooltip({
+	const {
+		elements: { trigger, content, arrow },
+		states: { open },
+	} = createTooltip({
 		positioning: {
 			placement: 'top',
 		},

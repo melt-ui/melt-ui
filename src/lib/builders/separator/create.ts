@@ -1,6 +1,5 @@
-import { builder } from '$lib/internal/helpers';
+import { builder, toWritableStores } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { writable } from 'svelte/store';
 import type { CreateSeparatorProps } from './types';
 
 const defaults = {
@@ -10,12 +9,8 @@ const defaults = {
 
 export const createSeparator = (props?: CreateSeparatorProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSeparatorProps;
-	const orientation = writable(withDefaults.orientation);
-	const decorative = writable(withDefaults.decorative);
-	const options = {
-		orientation,
-		decorative,
-	};
+	const options = toWritableStores(withDefaults);
+	const { orientation, decorative } = options;
 
 	const root = builder('separator', {
 		stores: [orientation, decorative],
