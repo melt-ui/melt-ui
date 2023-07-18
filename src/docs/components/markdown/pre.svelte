@@ -22,6 +22,7 @@
 </script>
 
 {#if show}
+	<!-- svelte-ignore a11y-no-noninteractive-tabindex -- This is needed to be acessible -->
 	<pre
 		use:setCodeString
 		use:setIsPPBlock
@@ -30,6 +31,7 @@
 			isPPBlock === undefined && 'data-[non-pp]:hidden',
 			className
 		)}
+		tabindex="0"
 		{...$$restProps}>
     <slot />
 	</pre>

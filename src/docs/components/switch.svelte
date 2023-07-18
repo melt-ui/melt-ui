@@ -4,7 +4,7 @@
 	import { generateId } from '$lib/internal/helpers';
 
 	export let checked: boolean | undefined = false;
-	export let id: string;
+	export let id: string = generateId();
 	export let keepState = false;
 
 	const {
