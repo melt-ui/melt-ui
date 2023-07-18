@@ -12,7 +12,7 @@ export type ActiveType = 'none' | 'lowest' | 'highest' | 'all' | 'lowest-parents
 /**
  * Arguments to be passed to the Table of Contents builder.
  * 
- * @param selector - The id of the container in which the content of the page is.
+ * @typeParam selector - The id of the container in which the content of the page is.
  * @param exclude - A list of headings that should be excluded in the table.
  * @param scrollOffset - The pixel offset that should be added when scrolling to a heading.
  * @param scrollBehaviour - Describes whether the scroll behaviour should be smooth or not.
