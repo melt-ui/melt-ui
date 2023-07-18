@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.23.2
+
+### Patch Changes
+
+- 3c7725c3: [Tabs] Force focus on click for buttons in safari
+
 ## 0.23.1
 
 ### Patch Changes
