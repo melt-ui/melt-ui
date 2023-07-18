@@ -1,7 +1,6 @@
 ---
 title: Hover Card
-description:
-  Displays additional information or options when the cursor hovers over a particular element.
+description: Enable sighted users to preview content behind a link.
 ---
 
 <script>
