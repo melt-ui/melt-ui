@@ -48,7 +48,9 @@
 >
 	{#each options as o}
 		<li
-			class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-500 outline-none focus:!text-magnum-400 data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[selected]:text-magnum-600 data-[disabled]:line-through"
+			class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-400 outline-none focus:!text-magnum-400
+			data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[selected]:text-magnum-600
+			data-[disabled]:line-through"
 			melt={$option({ ...o })}
 		>
 			{#if $isSelected(o.value)}
