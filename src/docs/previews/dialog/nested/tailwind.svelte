@@ -6,6 +6,17 @@
 
 	const { trigger, portal, overlay, content, title, description, close, open } =
 		createDialog();
+
+	const {
+		trigger: triggerNested,
+		portal: portalNested,
+		overlay: overlayNested,
+		content: contentNested,
+		title: titleNested,
+		description: descriptionNested,
+		close: closeNested,
+		open: openNested,
+	} = createDialog();
 </script>
 
 <button
@@ -30,34 +41,12 @@
 			melt={$content}
 		>
 			<h2 melt={$title} class="m-0 text-lg font-medium text-black">
-				Edit profile
+				First dialog
 			</h2>
 			<p melt={$description} class="mb-5 mt-2 leading-normal text-zinc-600">
-				Make changes to your profile here. Click save when you're done.
+				This is the first dialog. It contains a trigger to open a second dialog.
 			</p>
 
-			<fieldset class="mb-4 flex items-center gap-5">
-				<label class="w-[90px] text-right text-magnum-800" for="name">
-					Name
-				</label>
-				<input
-					class="inline-flex h-8 w-full flex-1 items-center justify-center
-                    rounded-sm border border-solid px-3 leading-none text-magnum-800"
-					id="name"
-					value="Thomas G. Lopes"
-				/>
-			</fieldset>
-			<fieldset class="mb-4 flex items-center gap-5">
-				<label class="w-[90px] text-right text-magnum-800" for="username">
-					Username
-				</label>
-				<input
-					class="inline-flex h-8 w-full flex-1 items-center justify-center
-                    rounded-sm border border-solid px-3 leading-none text-magnum-800"
-					id="username"
-					value="@thomasglopes"
-				/>
-			</fieldset>
 			<div class="mt-6 flex justify-end gap-4">
 				<button
 					melt={$close}
@@ -67,17 +56,62 @@
 					Cancel
 				</button>
 				<button
-					melt={$close}
+					melt={$triggerNested}
 					class="inline-flex h-8 items-center justify-center rounded-[4px]
                     bg-magnum-100 px-4 font-medium leading-none text-magnum-900"
 				>
-					Save changes
+					Open second
 				</button>
 			</div>
 
 			<button
 				melt={$close}
-				aria-label="close"
+				class="absolute right-[10px] top-[10px] inline-flex h-6 w-6
+                appearance-none items-center justify-center rounded-full text-magnum-800
+                hover:bg-magnum-100 focus:shadow-magnum-400"
+			>
+				<X />
+			</button>
+		</div>
+	{/if}
+</div>
+
+<div use:portalNested>
+	{#if $openNested}
+		<div melt={$overlayNested} class="fixed inset-0 z-40 bg-black/75" />
+		<div
+			class="fixed left-[50%] top-[50%] z-50 max-h-[85vh] w-[90vw]
+            max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white
+            p-6 shadow-2xl"
+			transition:flyAndScale={{
+				duration: 150,
+				y: 8,
+				start: 0.96,
+			}}
+			melt={$contentNested}
+		>
+			<h2 melt={$titleNested} class="m-0 text-lg font-medium text-black">
+				Second dialog
+			</h2>
+			<p
+				melt={$descriptionNested}
+				class="mb-5 mt-2 leading-normal text-zinc-600"
+			>
+				This is the second dialog.
+			</p>
+
+			<div class="mt-6 flex justify-end gap-4">
+				<button
+					melt={$closeNested}
+					class="inline-flex h-8 items-center justify-center rounded-[4px]
+                    bg-zinc-100 px-4 font-medium leading-none text-zinc-600"
+				>
+					Close
+				</button>
+			</div>
+
+			<button
+				melt={$closeNested}
 				class="absolute right-[10px] top-[10px] inline-flex h-6 w-6
                 appearance-none items-center justify-center rounded-full text-magnum-800
                 hover:bg-magnum-100 focus:shadow-magnum-400"

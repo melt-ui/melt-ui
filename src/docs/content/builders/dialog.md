@@ -130,6 +130,14 @@ pop-up that asks the user to confirm a decision.
     <svelte:component this={previews.alert} />
 </Preview>
 
+### Nested Dialogs
+
+Dialogs can be nested. For example, here's a dialog that opens another dialog.
+
+<Preview code={snippets.nested}>
+    <svelte:component this={previews.nested} />
+</Preview>
+
 ## API Reference
 
 <APIReference {schemas} />
