@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { createLabel } from '@melt-ui/svelte';
 
-	const root = createLabel();
+	const {
+		elements: { root },
+	} = createLabel();
 </script>
 
 <form>
