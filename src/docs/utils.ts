@@ -168,8 +168,8 @@ export async function createPreviewsObject(
 ): Promise<PreviewObj> {
 	const returnedObj: PreviewObj = {};
 
-	// Iterate through the objects in the array
-	for (const obj of objArr) {
+	// Create an array of promises, iterating through the objects in the array
+	const promises = objArr.map(async (obj) => {
 		// Extract the parts from the path
 		const regex = new RegExp(`${component}/(.+?)/(.+?)\\.svelte$`);
 		const match = regex.exec(obj.path);
@@ -186,15 +186,20 @@ export async function createPreviewsObject(
 				returnedObj[groupKey][fileKey] = {};
 			}
 
-			const highlightedCode = await highlightCode(content, 'svelte');
-			const processedCode = await highlightCode(processMeltAttributes(content), 'svelte');
+			const [highlightedCode, processedCode] = await Promise.all([
+				highlightCode(content, 'svelte'),
+				highlightCode(processMeltAttributes(content), 'svelte'),
+			]);
 
 			returnedObj[groupKey][fileKey]['index.svelte'] = {
 				pp: highlightedCode ?? content,
 				base: processedCode ?? content,
 			};
 		}
-	}
+	});
+
+	// Wait for all the promises to resolve
+	await Promise.all(promises);
 
 	// Manually add values for 'tailwind.config.ts' and 'globals.css'
 	for (const groupKey in returnedObj) {
@@ -263,19 +268,25 @@ export async function getAllPreviewSnippets(slug: string) {
 	return previews;
 }
 
+const getPreviewName = (path: string, slug: string) => {
+	return path.replaceAll(`/src/docs/previews/${slug}/`, '').split('/')[0];
+};
+
 export async function getAllPreviewComponents(slug: string) {
-	const previewComponents = import.meta.glob('/src/docs/previews/**/*.svelte');
+	const previewComponents = import.meta.glob('/src/docs/previews/**/tailwind.svelte');
+
 	const previewCodeMatches: { [key: string]: SvelteComponent } = {};
 
-	for (const [path, resolver] of Object.entries(previewComponents)) {
+	const promises = Object.entries(previewComponents).map(async ([path, resolver]) => {
 		const isMatch = previewPathMatcher(path, slug);
-		if (!isMatch) continue;
-		const previewName = path.replaceAll(`/src/docs/previews/${slug}/`, '').split('/')[0];
+		if (!isMatch) return;
+		const previewName = getPreviewName(path, slug);
 
 		const previewComp = (await resolver?.()) as PreviewFile;
-		if (!previewComp) continue;
+		if (!previewComp) return;
 		previewCodeMatches[previewName] = previewComp.default;
-	}
+	});
+	await Promise.all(promises);
 
 	return previewCodeMatches;
 }
@@ -299,6 +310,10 @@ export async function getPreviewComponent(name: string) {
 }
 
 export async function getMainPreviewComponent(slug: string) {
+	if (!isBuilderName(slug)) {
+		throw error(500);
+	}
+
 	const previewComponents = import.meta.glob('/src/docs/previews/**/*.svelte');
 	let mainPreviewObj: { path?: string; resolver?: PreviewResolver } = {};
 	for (const [path, resolver] of Object.entries(previewComponents)) {
@@ -310,10 +325,6 @@ export async function getMainPreviewComponent(slug: string) {
 
 	const mainPreview = await mainPreviewObj.resolver?.();
 	if (!mainPreview) {
-		throw error(500);
-	}
-
-	if (!isBuilderName(slug)) {
 		throw error(500);
 	}
 
