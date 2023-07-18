@@ -189,7 +189,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if (event.metaKey) {
 							updatePosition($min, index);
 						} else if ($value[index] > $min) {
-							const newValue = $value[index] - step;
+							const newValue = $value[index] - $step;
 							updatePosition(newValue, index);
 						}
 						break;
