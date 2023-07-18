@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createMenubar } from '@melt-ui/svelte';
 	import { writable } from 'svelte/store';
-    import { ChevronRight, Check } from 'lucide-svelte'
+	import { ChevronRight, Check } from 'lucide-svelte';
 
 	const {
 		elements: { menubar },
