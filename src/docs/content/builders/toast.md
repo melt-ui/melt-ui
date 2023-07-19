@@ -1,7 +1,6 @@
 ---
 title: Toast
-description:
-  A succinct message that is displayed temporarily.
+description: A succinct message that is displayed temporarily.
 ---
 
 <script>
@@ -12,7 +11,6 @@ description:
 
 ## Anatomy
 
-- **Trigger**: The button(s) that open the toast
 - **Content**: Container for the content within the toast
 - **Title**: The title of the toast
 - **Description**: The description which supports the title

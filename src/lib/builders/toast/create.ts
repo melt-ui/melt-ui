@@ -7,20 +7,19 @@ import {
 	generateId,
 	isTouch,
 	noop,
-	styleToString,
 } from '../../internal/helpers';
 import type { AddToastProps, Toast } from './types';
 
 type ToastParts = 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<ToastParts>('toast');
 
-export function createToast<T = {}>() {
-	const toasts = writable(new Map<string, Toast<T>>());
-	let timeouts = new Map<string, number>();
+export function createToasts<T = object>(defaults?: Omit<AddToastProps<T>, 'data'>) {
+	const toastsMap = writable(new Map<string, Toast<T>>());
+	const timeouts = new Map<string, number>();
 
-	const setOpen = (id: string, value: boolean) => {
-		toasts.update((currentMap) => {
-			currentMap.get(id)!.open = value;
+	const closeToast = (id: string) => {
+		toastsMap.update((currentMap) => {
+			currentMap.delete(id);
 			return new Map(currentMap);
 		});
 	};
@@ -30,29 +29,31 @@ export function createToast<T = {}>() {
 			window.clearTimeout(timeouts.get(id));
 			timeouts.delete(id);
 		}
-		setOpen(id, true);
 	};
 
-	const handleClose = derived(toasts, ($toasts) => {
+	const handleClose = derived(toastsMap, ($toasts) => {
 		return (id: string): void => {
 			if (timeouts.has(id)) {
 				window.clearTimeout(timeouts.get(id));
 				timeouts.delete(id);
 			}
+
+			const toast = $toasts.get(id);
+			if (!toast) return;
 			timeouts.set(
 				id,
 				window.setTimeout(() => {
-					setOpen(id, false);
-				}, $toasts.get(id)!.closeDelay)
+					closeToast(id);
+				}, toast.closeDelay)
 			);
 		};
 	}) as Readable<(id: string) => void>;
 
 	const addToast = (props: AddToastProps<T>) => {
 		const propsWithDefaults = {
-			open: true,
 			closeDelay: 5000,
 			type: 'foreground',
+			...defaults,
 			...props,
 		} satisfies AddToastProps<T>;
 
@@ -64,7 +65,7 @@ export function createToast<T = {}>() {
 
 		const toast = { id: ids.content, ids, ...propsWithDefaults };
 
-		toasts.update((currentMap) => {
+		toastsMap.update((currentMap) => {
 			currentMap.set(ids.content, toast);
 			return new Map(currentMap);
 		});
@@ -74,24 +75,20 @@ export function createToast<T = {}>() {
 	};
 
 	const content = builder(name('content'), {
-		stores: toasts,
+		stores: toastsMap,
 		returned: ($toasts) => {
 			return (id: string) => {
-				const { open, ...toast } = $toasts.get(id)!;
+				const t = $toasts.get(id);
+				if (!t) return null;
+				const { ...toast } = t;
+
 				return {
 					id,
 					role: 'alert',
 					'aria-describedby': toast.ids.description,
 					'aria-labelledby': toast.ids.title,
 					'aria-live': toast.type === 'foreground' ? 'assertive' : 'polite',
-					'data-state': open ? 'open' : 'closed',
-					style: styleToString({
-						display: open ? undefined : 'none',
-						'user-select': 'none',
-						'-webkit-user-select': 'none',
-					}),
 					tabindex: -1,
-					hidden: open ? undefined : true,
 				};
 			};
 		},
@@ -129,10 +126,11 @@ export function createToast<T = {}>() {
 	});
 
 	const title = builder(name('title'), {
-		stores: toasts,
+		stores: toastsMap,
 		returned: ($toasts) => {
 			return (id: string) => {
-				const toast = $toasts.get(id)!;
+				const toast = $toasts.get(id);
+				if (!toast) return null;
 				return {
 					id: toast.ids.title,
 				};
@@ -141,10 +139,12 @@ export function createToast<T = {}>() {
 	});
 
 	const description = builder(name('description'), {
-		stores: toasts,
+		stores: toastsMap,
 		returned: ($toasts) => {
 			return (id: string) => {
-				const toast = $toasts.get(id)!;
+				const toast = $toasts.get(id);
+				if (!toast) return null;
+
 				return {
 					id: toast.ids.description,
 				};
@@ -161,13 +161,18 @@ export function createToast<T = {}>() {
 		},
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
-				setOpen(node.dataset.id as string, false);
+				if (!node.dataset.id) return;
+				closeToast(node.dataset.id);
 			});
 
 			return {
 				destroy: unsub,
 			};
 		},
+	});
+
+	const toasts = derived(toastsMap, ($toastsMap) => {
+		return Array.from($toastsMap.values());
 	});
 
 	return {

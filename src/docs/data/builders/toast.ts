@@ -7,12 +7,6 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('toast'),
 	props: [
 		{
-			name: 'defaultOpen',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether the toast is open by default.',
-		},
-		{
 			name: 'closeDelay',
 			type: 'number',
 			default: '5000',
@@ -27,14 +21,14 @@ const builder: APISchema = {
 	],
 	returnedProps: [
 		{
-			name: 'trigger',
-			description: 'The builder store used to create the toast trigger.',
-			link: '#trigger',
+			name: 'toasts',
+			type: 'Writable<Toast<ToastData<T>[]>',
+			description: 'A writable store that contains the open toasts.',
 		},
 		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls the open state of the toast.',
+			name: 'addToast',
+			type: '(props: AddToastProps<T>) => void',
+			description: 'A helper function to add a toast to the toasts store.',
 		},
 		{
 			name: 'content',
@@ -55,22 +49,6 @@ const builder: APISchema = {
 			name: 'close',
 			description: 'The builder store used to create the toast close button.',
 			link: '#close',
-		},
-		{
-			name: 'options',
-			type: 'Writable<CreateToastProps>',
-			description: 'A writable store that controls the options of the toast.',
-		},
-	],
-};
-
-const trigger: APISchema = {
-	title: 'trigger',
-	description: 'The element which triggers the toast to open when clicked or pressed.',
-	dataAttributes: [
-		{
-			name: 'data-melt-toast-trigger',
-			value: ATTRS.MELT('trigger'),
 		},
 	],
 };
@@ -126,7 +104,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, trigger, content, title, description, close];
+const schemas = [builder, content, title, description, close];
 const features = ['Automatically closes', 'Resets closing on hover'];
 
 export const toastData: BuilderData = {
