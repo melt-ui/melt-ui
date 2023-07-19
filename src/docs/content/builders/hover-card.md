@@ -4,9 +4,16 @@ description: Enable sighted users to preview content behind a link.
 ---
 
 <script>
-    import { KbdTable, APIReference } from '$docs/components'
+    import { KbdTable, APIReference, Callout } from '$docs/components'
     export let schemas
 </script>
+
+<Callout type="warning">
+
+⚠️ The Hover Card is only intended to be used with a mouse or other pointing device and doesn't
+respond to keyboard or touch events. On touch devices, the link will be followed immediately.
+
+</Callout>
 
 ## Anatomy
 
