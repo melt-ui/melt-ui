@@ -1,4 +1,3 @@
-import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable, type Readable } from 'svelte/store';
 import {
 	addEventListener,
@@ -10,81 +9,81 @@ import {
 	noop,
 	styleToString,
 } from '../../internal/helpers';
-import type { CreateToastProps } from './types';
+import type { AddToastProps, Toast } from './types';
 
-type ToastParts = 'trigger' | 'content' | 'title' | 'description' | 'close';
+type ToastParts = 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<ToastParts>('toast');
 
-const defaults = {
-	defaultOpen: false,
-	closeDelay: 5000,
-	type: 'foreground',
-} satisfies Defaults<CreateToastProps>;
-
-export function createToast(props: CreateToastProps = {}) {
-	const propsWithDefaults = { ...defaults, ...props } satisfies CreateToastProps;
-	const options = writable(propsWithDefaults);
-	const open = writable<string[]>([]);
-	const toasts = writable<any>([]);
-
-	const ids = {
-		trigger: generateId(),
-		content: generateId(),
-		title: generateId(),
-		description: generateId(),
-	};
-
+export function createToast<T = {}>() {
+	const toasts = writable(new Map<string, Toast<T>>());
 	let timeouts = new Map<string, number>();
 
-	const isOpen = (id: string, open: string[]) => {
-		if (open === undefined) return false;
-		return open.includes(id);
+	const setOpen = (id: string, value: boolean) => {
+		toasts.update((currentMap) => {
+			currentMap.get(id)!.open = value;
+			return new Map(currentMap);
+		});
 	};
 
-	const isOpenStore = derived(open, ($open) => {
-		return (id: string) => isOpen(id, $open);
-	});
+	const handleOpen = (id: string): void => {
+		if (timeouts.has(id)) {
+			window.clearTimeout(timeouts.get(id));
+			timeouts.delete(id);
+		}
+		setOpen(id, true);
+	};
 
-	const handleOpen = derived(options, () => {
+	const handleClose = derived(toasts, ($toasts) => {
 		return (id: string): void => {
 			if (timeouts.has(id)) {
 				window.clearTimeout(timeouts.get(id));
 				timeouts.delete(id);
 			}
-			open.update((current) => [...current, id]);
+			timeouts.set(
+				id,
+				window.setTimeout(() => {
+					setOpen(id, false);
+				}, $toasts.get(id)!.closeDelay)
+			);
 		};
 	}) as Readable<(id: string) => void>;
 
-	const handleClose = derived(options, ($options) => {
-		return (id: string): void => {
-			if (timeouts.has(id)) {
-				window.clearTimeout(timeouts.get(id));
-				timeouts.delete(id);
-			}
-			timeouts.set(id, window.setTimeout(() => {
-				open.update((current) => current.filter((x) => x !== id));
-			}, $options.closeDelay));
-		};
-	}) as Readable<(id: string) => void>;
+	const addToast = (props: AddToastProps<T>) => {
+		const propsWithDefaults = {
+			open: true,
+			closeDelay: 5000,
+			type: 'foreground',
+			...props,
+		} satisfies AddToastProps<T>;
 
-	const addToast = (toast: any) => {
-		const id = generateId();
-		toasts.update((currentToasts) => [...currentToasts, { id, ...toast }]);
-		open.update((currentOpen) => [...currentOpen, id]);
-		get(handleClose)(id);
+		const ids = {
+			content: generateId(),
+			title: generateId(),
+			description: generateId(),
+		};
+
+		const toast = { id: ids.content, ids, ...propsWithDefaults };
+
+		toasts.update((currentMap) => {
+			currentMap.set(ids.content, toast);
+			return new Map(currentMap);
+		});
+
+		get(handleClose)(ids.content);
+		return toast;
 	};
 
 	const content = builder(name('content'), {
-		stores: [open, options],
-		returned: ([$open, $options]) => {
-			return (id) => {
-				const open = isOpen(id, $open);
+		stores: toasts,
+		returned: ($toasts) => {
+			return (id: string) => {
+				const { open, ...toast } = $toasts.get(id)!;
 				return {
 					id,
 					role: 'alert',
-					'aria-describedby': ids.description,
-					'aria-labelledby': ids.title,
-					'aria-live': $options.type === 'foreground' ? 'assertive' : 'polite',
+					'aria-describedby': toast.ids.description,
+					'aria-labelledby': toast.ids.title,
+					'aria-live': toast.type === 'foreground' ? 'assertive' : 'polite',
 					'data-state': open ? 'open' : 'closed',
 					style: styleToString({
 						display: open ? undefined : 'none',
@@ -109,11 +108,11 @@ export function createToast(props: CreateToastProps = {}) {
 			unsub = executeCallbacks(
 				addEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
-					get(handleOpen)(node.id as string);
+					handleOpen(node.id);
 				}),
 				addEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
-					get(handleClose)(node.id as string);
+					get(handleClose)(node.id);
 				}),
 				addEventListener(node, 'focusout', (e) => {
 					e.preventDefault();
@@ -130,27 +129,39 @@ export function createToast(props: CreateToastProps = {}) {
 	});
 
 	const title = builder(name('title'), {
-		returned: () => ({
-			id: ids.title,
-		}),
+		stores: toasts,
+		returned: ($toasts) => {
+			return (id: string) => {
+				const toast = $toasts.get(id)!;
+				return {
+					id: toast.ids.title,
+				};
+			};
+		},
 	});
 
 	const description = builder(name('description'), {
-		returned: () => ({
-			id: ids.description,
-		}),
+		stores: toasts,
+		returned: ($toasts) => {
+			return (id: string) => {
+				const toast = $toasts.get(id)!;
+				return {
+					id: toast.ids.description,
+				};
+			};
+		},
 	});
 
 	const close = builder(name('close'), {
 		returned: () => {
 			return (id: string) => ({
-				id,
 				type: 'button',
+				'data-id': id,
 			});
 		},
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
-				open.update((current) => current.filter((x) => x !== (node.id as string)));
+				setOpen(node.dataset.id as string, false);
 			});
 
 			return {
@@ -162,11 +173,9 @@ export function createToast(props: CreateToastProps = {}) {
 	return {
 		toasts,
 		addToast,
-		isOpen: isOpenStore,
 		content,
 		title,
 		description,
 		close,
-		options,
 	};
 }
