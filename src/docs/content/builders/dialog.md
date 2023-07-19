@@ -19,28 +19,21 @@ At a high level, the anatomy of a dialog looks like this:
 
 ```svelte
 <script lang="ts">
-    import { createDialog } from '@melt-ui/svelte'
-    const { trigger, portal, overlay, content, title, description, close } = createDialog()
+  import { createDialog } from '@melt-ui/svelte'
+  const { trigger, portal, overlay, content, title, description, close, open } = createDialog()
 </script>
 
-<button melt={$trigger}>
-    Open Dialog
-</button>
+<button melt={$trigger}> Open Dialog </button>
 
 <div use:portal>
-    {#if $open}
+  {#if $open}
     <div melt={$overlay} />
     <div melt={$content}>
-        <h2 melt={$title}>
-            Dialog Title
-        </h2>
-        <p melt={$description}>
-            Dialog description
-        </p>
-        <button melt={$close}>
-            Close Dialog
-        </button>
+      <h2 melt={$title}>Dialog Title</h2>
+      <p melt={$description}>Dialog description</p>
+      <button melt={$close}> Close Dialog </button>
     </div>
+  {/if}
 </div>
 ```
 

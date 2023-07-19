@@ -80,17 +80,11 @@
 		});
 </script>
 
-<label class="cursor-pointer">
-	<span class="block pb-1 capitalize">Choose your favorite book:</span>
-	<div class="relative">
-		<input
-			melt={$input}
-			class="flex h-10 items-center justify-between rounded-md bg-white
-            px-3 pr-12 text-magnum-700"
-			placeholder="Best book ever"
-			value={$inputValue}
-		/>
-		<div class="absolute right-1 top-1/2 z-10 -translate-y-1/2 text-magnum-700">
+<label>
+	<span>Choose your favorite book:</span>
+	<div>
+		<input melt={$input} placeholder="Best book ever" value={$inputValue} />
+		<div class="chevron-wrapper">
 			{#if $open}
 				<ChevronUp />
 			{:else}
@@ -100,15 +94,8 @@
 	</div>
 </label>
 
-<ul
-	class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-md"
-	melt={$menu}
->
-	<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-	<div
-		class="flex max-h-full flex-col gap-2 overflow-y-auto bg-white px-2 py-2"
-		tabindex="0"
-	>
+<div class="menu-container" melt={$menu}>
+	<ul class="menu">
 		{#if $open}
 			{#if $filteredItems.length !== 0}
 				{#each $filteredItems as book, index (index)}
@@ -118,9 +105,7 @@
 							item: book,
 							disabled: book.disabled,
 						})}
-						class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800
-                        data-[highlighted]:bg-magnum-100 data-[highlighted]:text-magnum-700
-                        data-[disabled]:opacity-50"
+						class="item"
 					>
 						{#if $isSelected(book)}
 							<div class="check">
@@ -129,26 +114,126 @@
 						{/if}
 						<div>
 							<span>{book.title}</span>
-							<span class="block text-sm opacity-70">{book.author}</span>
+							<span class="author">{book.author}</span>
 						</div>
 					</li>
 				{/each}
 			{:else}
-				<li
-					class="relative cursor-pointer rounded-md py-1 pl-8 pr-4
-                    text-neutral-800 data-[highlighted]:bg-magnum-100
-                    data-[highlighted]:text-magnum-700"
-				>
-					No results found
-				</li>
+				<li class="item">No results found</li>
 			{/if}
 		{/if}
-	</div>
-</ul>
+	</ul>
+</div>
 
-<style lang="postcss">
+<style>
+	label {
+		cursor: pointer;
+	}
+
+	label > span {
+		display: block;
+		padding-bottom: 0.25rem;
+		text-transform: capitalize;
+	}
+
+	label > div {
+		position: relative;
+	}
+
+	label input {
+		display: flex;
+		height: 2.5rem;
+		align-items: center;
+		justify-content: space-between;
+		border-radius: 0.375rem;
+
+		--tw-bg-opacity: 1;
+		background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+
+		padding-left: 0.75rem;
+		padding-right: 3rem;
+
+		--tw-text-opacity: 1;
+		color: rgb(189 87 17 / var(--tw-text-opacity));
+	}
+
+	.chevron-wrapper {
+		position: absolute;
+		right: 0.25rem;
+		top: 50%;
+		z-index: 10;
+
+		--tw-translate-y: -50%;
+		transform: translate(var(--tw-translate-y));
+
+		--tw-text-opacity: 1;
+		color: rgb(189 87 17 / var(--tw-text-opacity));
+	}
+
+	.menu-container {
+		display: flex;
+		flex-direction: column;
+
+		z-index: 10;
+		max-height: 300px;
+
+		overflow: hidden;
+
+		border-radius: 0.375rem;
+	}
+
+	.menu {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+
+		max-height: 100%;
+
+		overflow-y: auto;
+
+		--tw-bg-opacity: 1;
+		background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+
+		padding: 0.5rem;
+	}
+
+	.item {
+		position: relative;
+		cursor: pointer;
+		border-radius: 0.375rem;
+
+		padding: 0.25rem 2rem 0.25rem 1rem;
+
+		--tw-text-opacity: 1;
+		color: rgb(38 38 38 / var(--tw-text-opacity));
+	}
+
+	.item[data-highlighted] {
+		--tw-bg-opacity: 1;
+		background-color: rgb(254 242 214 / var(--tw-bg-opacity));
+
+		--tw-text-opacity: 1;
+		color: rgb(189 87 17 / var(--tw-text-opacity));
+	}
+
+	.item[data-disabled] {
+		opacity: 0.5;
+	}
+
+	.item .author {
+		display: block;
+
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+
+		opacity: 0.7;
+	}
+
 	.check {
-		@apply absolute left-2 top-1/2 text-magnum-500;
+		position: absolute;
+		left: 0.5rem;
+		top: 50%;
+		color: #bd5711;
 		translate: 0 calc(-50% + 1px);
 	}
 </style>

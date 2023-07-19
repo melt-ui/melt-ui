@@ -34,7 +34,7 @@
 	</div>
 </div>
 
-<style lang="postcss">
+<style>
 	.root {
 		display: flex;
 		width: 100%;

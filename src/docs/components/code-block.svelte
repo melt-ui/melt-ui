@@ -7,9 +7,16 @@
 	const { copied, setCodeString, copyCode } = createCopyCodeButton();
 
 	export let copyBtnClasses = '';
+
+	const preTabIndex = (node: HTMLElement) => {
+		const pre = node.querySelector('pre');
+		if (pre) {
+			pre.tabIndex = 0;
+		}
+	};
 </script>
 
-<div use:setCodeString {...$$restProps} data-rehype-pretty-code-fragment>
+<div use:setCodeString {...$$restProps} data-rehype-pretty-code-fragment use:preTabIndex>
 	<slot />
 </div>
 <button
