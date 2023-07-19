@@ -412,8 +412,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						if (isIndeterminate(prev)) return true;
 						return !prev;
 					});
-
-					rootOpen.set(false);
 				}),
 				addEventListener(node, 'keydown', (e) => {
 					onItemKeyDown(e);
@@ -515,7 +513,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						if (e.defaultPrevented) return;
 
 						value.set(itemValue);
-						rootOpen.set(false);
 					}),
 					addEventListener(node, 'keydown', (e) => {
 						onItemKeyDown(e);
