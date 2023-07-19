@@ -35,10 +35,10 @@ export type Orientation = 'horizontal' | 'vertical';
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type Prettify<T> = { [K in keyof T]: T[K] } & {};
 
-type StoreValues<T> = T extends { subscribe(cb: (value: infer V) => void): void } ? V : never;
+export type StoreValue<T> = T extends { subscribe(cb: (value: infer V) => void): void } ? V : never;
 
-type StoreValuesObj<T> = {
-	[P in keyof T]: StoreValues<T[P]>;
+export type StoreValueObj<T> = {
+	[P in keyof T]: StoreValue<T[P]>;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
