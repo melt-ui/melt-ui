@@ -6,6 +6,7 @@ import {
 	effect,
 	generateId,
 	isBrowser,
+	isLeftClick,
 	last,
 	noop,
 	sleep,
@@ -118,6 +119,10 @@ export function createDialog(props: CreateDialogProps = {}) {
 					e.preventDefault();
 					e.stopImmediatePropagation();
 
+					if (e instanceof MouseEvent && !isLeftClick(e)) {
+						return false;
+					}
+
 					const $closeOnOutsideClick = get(closeOnOutsideClick);
 					const $openDialogIds = get(openDialogIds);
 					const isLast = last($openDialogIds) === ids.content;
@@ -128,7 +133,6 @@ export function createDialog(props: CreateDialogProps = {}) {
 
 					return false;
 				},
-
 				returnFocusOnDeactivate: false,
 				fallbackFocus: node,
 			});
