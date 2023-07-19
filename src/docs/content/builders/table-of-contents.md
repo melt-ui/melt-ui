@@ -20,6 +20,4 @@ description:
 
 ## Accessibility
 
-Adheres to the
-
 <KbdTable {keyboard} />
