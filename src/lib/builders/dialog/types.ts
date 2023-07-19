@@ -1,10 +1,4 @@
-import type {
-	BuilderActions,
-	BuilderElements,
-	BuilderOptions,
-	BuilderReturn,
-	BuilderStates,
-} from '$lib/internal/types';
+import type { BuilderReturn } from '$lib/internal/types';
 import type { createDialog } from './create';
 
 export type CreateDialogProps = {
@@ -15,7 +9,7 @@ export type CreateDialogProps = {
 };
 
 export type Dialog = BuilderReturn<typeof createDialog>;
-export type DialogElements = BuilderElements<Dialog>;
-export type DialogOptions = BuilderOptions<Dialog>;
-export type DialogStates = BuilderStates<Dialog>;
-export type DialogActions = BuilderActions<Dialog>;
+export type DialogElements = Dialog['elements'];
+export type DialogOptions = Dialog['options'];
+export type DialogStates = Dialog['states'];
+export type DialogActions = Dialog['actions'];

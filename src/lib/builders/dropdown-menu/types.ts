@@ -1,10 +1,4 @@
-import type {
-	BuilderBuilders,
-	BuilderElements,
-	BuilderOptions,
-	BuilderReturn,
-	BuilderStates,
-} from '$lib/internal/types';
+import type { BuilderReturn } from '$lib/internal/types';
 import type { Menu } from '../menu';
 import type { createDropdownMenu } from './create';
 
@@ -17,7 +11,7 @@ export type DropdownMenuRadioItemProps = Menu['radioItem'];
 export type DropdownMenuRadioItemActionProps = Menu['radioItemAction'];
 
 export type DropdownMenu = BuilderReturn<typeof createDropdownMenu>;
-export type DropdownMenuElements = BuilderElements<DropdownMenu>;
-export type DropdownMenuOptions = BuilderOptions<DropdownMenu>;
-export type DropdownMenuStates = BuilderStates<DropdownMenu>;
-export type DropdownMenuBuilders = BuilderBuilders<DropdownMenu>;
+export type DropdownMenuElements = DropdownMenu['elements'];
+export type DropdownMenuOptions = DropdownMenu['options'];
+export type DropdownMenuStates = DropdownMenu['states'];
+export type DropdownMenuBuilders = DropdownMenu['builders'];

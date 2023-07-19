@@ -1,10 +1,4 @@
-import type {
-	BuilderElements,
-	BuilderHelpers,
-	BuilderOptions,
-	BuilderReturn,
-	BuilderStates,
-} from '$lib/internal/types';
+import type { BuilderReturn } from '$lib/internal/types';
 import type { createAccordion } from './create';
 
 export type AccordionType = 'single' | 'multiple';
@@ -29,7 +23,7 @@ export type AccordionHeadingProps =
 	| number;
 
 export type Accordion = BuilderReturn<typeof createAccordion>;
-export type AccordionElements = BuilderElements<Accordion>;
-export type AccordionOptions = BuilderOptions<Accordion>;
-export type AccordionStates = BuilderStates<Accordion>;
-export type AccordionHelpers = BuilderHelpers<Accordion>;
+export type AccordionElements = Accordion['elements'];
+export type AccordionOptions = Accordion['options'];
+export type AccordionStates = Accordion['states'];
+export type AccordionHelpers = Accordion['helpers'];

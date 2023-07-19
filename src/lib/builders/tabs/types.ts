@@ -1,9 +1,4 @@
-import type {
-	BuilderElements,
-	BuilderOptions,
-	BuilderReturn,
-	BuilderStates,
-} from '$lib/internal/types';
+import type { BuilderReturn } from '$lib/internal/types';
 import type { createTabs } from './create';
 
 export type CreateTabsProps = {
@@ -24,6 +19,6 @@ export type TabsTriggerProps =
 	| string;
 
 export type Tabs = BuilderReturn<typeof createTabs>;
-export type TabsElements = BuilderElements<Tabs>;
-export type TabsOptions = BuilderOptions<Tabs>;
-export type TabsStates = BuilderStates<Tabs>;
+export type TabsElements = Tabs['elements'];
+export type TabsOptions = Tabs['options'];
+export type TabsStates = Tabs['states'];

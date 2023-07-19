@@ -1,9 +1,4 @@
-import type {
-	BuilderElements,
-	BuilderOptions,
-	BuilderReturn,
-	BuilderStates,
-} from '$lib/internal/types';
+import type { BuilderReturn } from '$lib/internal/types';
 import type { createPagination } from './create';
 
 export type CreatePaginationProps = {
@@ -38,6 +33,6 @@ export type GetPageItemsArgs = {
 };
 
 export type Pagination = BuilderReturn<typeof createPagination>;
-export type PaginationElements = BuilderElements<Pagination>;
-export type PaginationOptions = BuilderOptions<Pagination>;
-export type PaginationStates = BuilderStates<Pagination>;
+export type PaginationElements = Pagination['elements'];
+export type PaginationOptions = Pagination['options'];
+export type PaginationStates = Pagination['states'];

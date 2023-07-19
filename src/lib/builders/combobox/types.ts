@@ -1,10 +1,4 @@
-import type {
-	BuilderElements,
-	BuilderHelpers,
-	BuilderOptions,
-	BuilderReturn,
-	BuilderStates,
-} from '$lib/internal/types';
+import type { BuilderReturn } from '$lib/internal/types';
 import type { createCombobox } from './create';
 
 export type CreateComboboxProps<T> = {
@@ -41,7 +35,7 @@ export type ComboboxItemProps<T> = {
 };
 
 export type Combobox = BuilderReturn<typeof createCombobox>;
-export type ComboboxElements = BuilderElements<Combobox>;
-export type ComboboxOptions = BuilderOptions<Combobox>;
-export type ComboboxStates = BuilderStates<Combobox>;
-export type ComboboxHelpers = BuilderHelpers<Combobox>;
+export type ComboboxElements = Combobox['elements'];
+export type ComboboxOptions = Combobox['options'];
+export type ComboboxStates = Combobox['states'];
+export type ComboboxHelpers = Combobox['helpers'];

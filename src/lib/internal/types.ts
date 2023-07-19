@@ -43,14 +43,5 @@ type StoreValuesObj<T> = {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type BuilderReturn<T extends (...args: any) => any> = {
-	[P in keyof ReturnType<T>]: P extends 'elements'
-		? StoreValuesObj<ReturnType<T>[P]>
-		: ReturnType<T>[P];
+	[P in keyof ReturnType<T>]: ReturnType<T>[P];
 };
-
-export type BuilderElements<T extends { elements: unknown }> = T['elements'];
-export type BuilderActions<T extends { actions: unknown }> = T['actions'];
-export type BuilderStates<T extends { states: unknown }> = T['states'];
-export type BuilderHelpers<T extends { helpers: unknown }> = T['helpers'];
-export type BuilderBuilders<T extends { builders: unknown }> = T['builders'];
-export type BuilderOptions<T extends { options: unknown }> = T['options'];

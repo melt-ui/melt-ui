@@ -1,10 +1,5 @@
 import type { createCollapsible } from './create';
-import type {
-	BuilderElements,
-	BuilderOptions,
-	BuilderReturn,
-	BuilderStates,
-} from '$lib/internal/types';
+import type { BuilderReturn } from '$lib/internal/types';
 
 export type CreateCollapsibleProps = {
 	open?: boolean;
@@ -12,6 +7,6 @@ export type CreateCollapsibleProps = {
 };
 
 export type Collapsible = BuilderReturn<typeof createCollapsible>;
-export type CollapsibleElements = BuilderElements<Collapsible>;
-export type CollapsibleOptions = BuilderOptions<Collapsible>;
-export type CollapsibleStates = BuilderStates<Collapsible>;
+export type CollapsibleElements = Collapsible['elements'];
+export type CollapsibleOptions = Collapsible['options'];
+export type CollapsibleStates = Collapsible['states'];

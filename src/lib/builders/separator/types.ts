@@ -1,9 +1,4 @@
-import type {
-	BuilderElements,
-	BuilderOptions,
-	BuilderReturn,
-	Orientation,
-} from '$lib/internal/types';
+import type { BuilderReturn, Orientation } from '$lib/internal/types';
 import type { createSeparator } from './create';
 
 export type CreateSeparatorProps = {
@@ -25,5 +20,5 @@ export type CreateSeparatorProps = {
 };
 
 export type Separator = BuilderReturn<typeof createSeparator>;
-export type SeparatorElements = BuilderElements<Separator>;
-export type SeparatorOptions = BuilderOptions<Separator>;
+export type SeparatorElements = Separator['elements'];
+export type SeparatorOptions = Separator['options'];

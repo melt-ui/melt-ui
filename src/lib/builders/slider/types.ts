@@ -1,9 +1,4 @@
-import type {
-	BuilderElements,
-	BuilderOptions,
-	BuilderReturn,
-	BuilderStates,
-} from '$lib/internal/types';
+import type { BuilderReturn } from '$lib/internal/types';
 import type { createSlider } from './create';
 
 export type CreateSliderProps = {
@@ -16,6 +11,6 @@ export type CreateSliderProps = {
 };
 
 export type Slider = BuilderReturn<typeof createSlider>;
-export type SliderElements = BuilderElements<Slider>;
-export type SliderOptions = BuilderOptions<Slider>;
-export type SliderStates = BuilderStates<Slider>;
+export type SliderElements = Slider['elements'];
+export type SliderOptions = Slider['options'];
+export type SliderStates = Slider['states'];
