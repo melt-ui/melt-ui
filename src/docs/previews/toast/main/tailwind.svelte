@@ -42,13 +42,13 @@
 	Show toast
 </button>
 
-<div class="fixed bottom-0 right-0 m-4 z-50 flex flex-col gap-2">
+<div class="fixed bottom-0 right-0 m-4 z-50 flex flex-col items-end gap-2">
 	{#each $toasts.values() as { id, open, data }}
 		{#if open}
 			<div
 				melt={$content(id)}
-				in:slide={{ duration: 100 }}
-				out:slide={{ duration: 200, axis: 'x' }}
+				in:slide|global={{ duration: 100 }}
+				out:slide|global={{ duration: 200, axis: 'x' }}
 				class={clsx('rounded-md bg-white shadow-md', data.color)}
 			>
 				<div class="w-[380px] flex items-center justify-between rounded-md p-5">
