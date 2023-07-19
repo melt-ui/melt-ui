@@ -1,4 +1,10 @@
-import type { BuilderReturn } from '$lib/internal/types';
+import type {
+	BuilderElements,
+	BuilderHelpers,
+	BuilderOptions,
+	BuilderReturn,
+	BuilderStates,
+} from '$lib/internal/types';
 import type { createSwitch } from './create';
 
 export type CreateSwitchProps = {
@@ -15,7 +21,7 @@ export type CreateSwitchProps = {
 };
 
 export type Switch = BuilderReturn<typeof createSwitch>;
-export type SwitchElements = Switch['elements'];
-export type SwitchOptions = Switch['options'];
-export type SwitchBuilders = Switch['states'];
-export type SwitchHelpers = Switch['helpers'];
+export type SwitchElements = BuilderElements<Switch>;
+export type SwitchOptions = BuilderOptions<Switch>;
+export type SwitchStates = BuilderStates<Switch>;
+export type SwitchHelpers = BuilderHelpers<Switch>;

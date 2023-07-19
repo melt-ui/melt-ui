@@ -1,5 +1,11 @@
 import type { createCheckbox } from './create';
-import type { BuilderReturn } from '$lib/internal/types';
+import type {
+	BuilderElements,
+	BuilderHelpers,
+	BuilderOptions,
+	BuilderReturn,
+	BuilderStates,
+} from '$lib/internal/types';
 
 type CheckedState = boolean | 'indeterminate';
 
@@ -12,7 +18,8 @@ export type CreateCheckboxProps = {
 };
 
 export type Checkbox = BuilderReturn<typeof createCheckbox>;
-export type CheckboxElements = Checkbox['elements'];
-export type CheckboxOptions = Checkbox['options'];
-export type CheckboxStates = Checkbox['states'];
-export type CheckboxHelpers = Checkbox['helpers'];
+
+export type CheckboxElements = BuilderElements<Checkbox>;
+export type CheckboxOptions = BuilderOptions<Checkbox>;
+export type CheckboxStates = BuilderStates<Checkbox>;
+export type CheckboxHelpers = BuilderHelpers<Checkbox>;

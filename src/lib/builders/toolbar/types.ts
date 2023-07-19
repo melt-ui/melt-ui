@@ -1,4 +1,10 @@
-import type { BuilderReturn, Orientation } from '$lib/internal/types';
+import type {
+	BuilderBuilders,
+	BuilderElements,
+	BuilderOptions,
+	BuilderReturn,
+	Orientation,
+} from '$lib/internal/types';
 import type { createToolbar } from './create';
 
 export type ToolbarGroupType = 'single' | 'multiple';
@@ -22,6 +28,6 @@ export type ToolbarGroupItemProps =
 	| string;
 
 export type Toolbar = BuilderReturn<typeof createToolbar>;
-export type ToolbarElements = Toolbar['elements'];
-export type ToolbarOptions = Toolbar['options'];
-export type ToolbarStates = Toolbar['builders'];
+export type ToolbarElements = BuilderElements<Toolbar>;
+export type ToolbarOptions = BuilderOptions<Toolbar>;
+export type ToolbarBuilders = BuilderBuilders<Toolbar>;
