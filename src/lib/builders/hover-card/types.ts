@@ -1,4 +1,5 @@
 import type { FloatingConfig } from '$lib/internal/actions';
+import type { BuilderReturn } from '$lib/internal/types';
 import type { createHoverCard } from './create';
 
 export type CreateHoverCardProps = {
@@ -10,4 +11,7 @@ export type CreateHoverCardProps = {
 	arrowSize?: number;
 };
 
-export type CreateHoverCardReturn = ReturnType<typeof createHoverCard>;
+export type HoverCard = BuilderReturn<typeof createHoverCard>;
+export type HoverCardElements = HoverCard['elements'];
+export type HoverCardOptions = HoverCard['options'];
+export type HoverCardBuilders = HoverCard['states'];

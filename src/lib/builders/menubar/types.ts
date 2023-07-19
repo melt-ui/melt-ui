@@ -1,3 +1,4 @@
+import type { BuilderReturn } from '$lib/internal/types';
 import type { Menu } from '../menu';
 import type { createMenubar } from './create';
 
@@ -18,4 +19,7 @@ export type CreateMenuRadioGroupProps = Menu['radioGroup'];
 export type MenubarRadioItemProps = Menu['radioItem'];
 export type MenubarRadioItemActionProps = Menu['radioItemAction'];
 
-export type CreateMenubarReturn = ReturnType<typeof createMenubar>;
+export type Menubar = BuilderReturn<typeof createMenubar>;
+export type MenubarElements = Menubar['elements'];
+export type MenubarOptions = Menubar['options'];
+export type MenubarStates = Menubar['builders'];

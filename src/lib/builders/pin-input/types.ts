@@ -1,3 +1,4 @@
+import type { BuilderReturn } from '$lib/internal/types';
 import type { createPinInput } from './create';
 
 export type CreatePinInputProps = {
@@ -8,4 +9,8 @@ export type CreatePinInputProps = {
 	type?: string;
 };
 
-export type CreatePinInputReturn = ReturnType<typeof createPinInput>;
+export type PinInput = BuilderReturn<typeof createPinInput>;
+export type PinInputElements = PinInput['elements'];
+export type PinInputOptions = PinInput['options'];
+export type PinInputBuilders = PinInput['states'];
+export type PinInputHelpers = PinInput['helpers'];
