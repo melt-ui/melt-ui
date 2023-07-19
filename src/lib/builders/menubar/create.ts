@@ -1,4 +1,4 @@
-import type { Defaults, TextDirection } from '$lib/internal/types';
+import type { Defaults } from '$lib/internal/types';
 import { get, writable, type Writable } from 'svelte/store';
 import {
 	applyAttrsIfDisabled,
@@ -86,6 +86,9 @@ export function createMenubar(props?: CreateMenubarProps) {
 			placement: 'bottom-start',
 		},
 		preventScroll: true,
+		arrowSize: 8,
+		dir: 'ltr',
+		loop: false,
 	} satisfies Defaults<CreateMenubarMenuProps>;
 
 	const createMenu = (props?: CreateMenubarMenuProps) => {
@@ -94,22 +97,11 @@ export function createMenubar(props?: CreateMenubarProps) {
 		const rootActiveTrigger = writable<HTMLElement | null>(null);
 
 		// options
-		const positioning = writable<FloatingConfig>(withDefaults.positioning);
-		const preventScroll = writable<boolean>(withDefaults.preventScroll);
-		const arrowSize = writable<number>(withDefaults.arrowSize);
-		const dir = writable<TextDirection>(withDefaults.dir);
-		const loop = writable<boolean>(withDefaults.loop);
-
-		const rootOptions = {
-			positioning,
-			preventScroll,
-			arrowSize,
-			dir,
-			loop,
-		};
+		const options = toWritableStores(withDefaults);
+		const { positioning } = options;
 
 		const m = createMenuBuilder({
-			rootOptions,
+			rootOptions: options,
 			rootOpen,
 			rootActiveTrigger,
 			disableTriggerRefocus: true,
@@ -383,9 +375,13 @@ export function createMenubar(props?: CreateMenubarProps) {
 				separator: m.separator,
 			},
 			builders: {
-				createSubmenu: m.createSubMenu,
+				createSubmenu: m.createSubmenu,
 				createMenuRadioGroup: m.createMenuRadioGroup,
 			},
+			states: {
+				open: rootOpen,
+			},
+			options,
 		};
 	};
 

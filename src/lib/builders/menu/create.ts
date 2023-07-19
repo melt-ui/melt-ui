@@ -598,7 +598,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		},
 	} satisfies Defaults<CreateSubmenuProps>;
 
-	const createSubMenu = (args?: CreateSubmenuProps) => {
+	const createSubmenu = (args?: CreateSubmenuProps) => {
 		const withDefaults = { ...subMenuDefaults, ...args } satisfies CreateSubmenuProps;
 
 		const subOpen = writable(false);
@@ -1245,7 +1245,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		checkboxItem,
 		arrow: rootArrow,
 		options: rootOptions,
-		createSubMenu,
+		createSubmenu,
 		createMenuRadioGroup,
 		separator,
 		rootIds,
