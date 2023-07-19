@@ -49,7 +49,7 @@
 				melt={$content(id)}
 				in:slide|global={{ duration: 100 }}
 				out:slide|global={{ duration: 200, axis: 'x' }}
-				class={clsx('rounded-md bg-white shadow-md', data.color)}
+				class={clsx('rounded-md shadow-md', data.color)}
 			>
 				<div class="w-[380px] flex items-center justify-between rounded-md p-5">
 					<div>
