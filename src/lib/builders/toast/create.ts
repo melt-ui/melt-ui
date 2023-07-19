@@ -34,7 +34,7 @@ export function createToast(props: CreateToastProps = {}) {
 		description: generateId(),
 	};
 
-	let timeout: number | null = null;
+	let timeouts = new Map<string, number>();
 
 	const isOpen = (id: string, open: string[]) => {
 		if (open === undefined) return false;
@@ -47,9 +47,9 @@ export function createToast(props: CreateToastProps = {}) {
 
 	const handleOpen = derived(options, () => {
 		return (id: string): void => {
-			if (timeout) {
-				window.clearTimeout(timeout);
-				timeout = null;
+			if (timeouts.has(id)) {
+				window.clearTimeout(timeouts.get(id));
+				timeouts.delete(id);
 			}
 			open.update((current) => [...current, id]);
 		};
@@ -57,13 +57,13 @@ export function createToast(props: CreateToastProps = {}) {
 
 	const handleClose = derived(options, ($options) => {
 		return (id: string): void => {
-			if (timeout) {
-				window.clearTimeout(timeout);
-				timeout = null;
+			if (timeouts.has(id)) {
+				window.clearTimeout(timeouts.get(id));
+				timeouts.delete(id);
 			}
-			timeout = window.setTimeout(() => {
+			timeouts.set(id, window.setTimeout(() => {
 				open.update((current) => current.filter((x) => x !== id));
-			}, $options.closeDelay);
+			}, $options.closeDelay));
 		};
 	}) as Readable<(id: string) => void>;
 
@@ -86,7 +86,6 @@ export function createToast(props: CreateToastProps = {}) {
 					'aria-labelledby': ids.title,
 					'aria-live': $options.type === 'foreground' ? 'assertive' : 'polite',
 					'data-state': open ? 'open' : 'closed',
-					'data-id': id,
 					style: styleToString({
 						display: open ? undefined : 'none',
 						'user-select': 'none',
@@ -101,19 +100,20 @@ export function createToast(props: CreateToastProps = {}) {
 			let unsub = noop;
 
 			const unsubTimers = () => {
-				if (timeout) {
-					window.clearTimeout(timeout);
+				if (timeouts.has(node.id)) {
+					window.clearTimeout(timeouts.get(node.id));
+					timeouts.delete(node.id);
 				}
 			};
 
 			unsub = executeCallbacks(
 				addEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
-					get(handleOpen)(node.dataset.id as string);
+					get(handleOpen)(node.id as string);
 				}),
 				addEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
-					get(handleClose)(node.dataset.id as string);
+					get(handleClose)(node.id as string);
 				}),
 				addEventListener(node, 'focusout', (e) => {
 					e.preventDefault();
@@ -144,13 +144,13 @@ export function createToast(props: CreateToastProps = {}) {
 	const close = builder(name('close'), {
 		returned: () => {
 			return (id: string) => ({
+				id,
 				type: 'button',
-				'data-id': id,
 			});
 		},
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
-				open.update((current) => current.filter((x) => x !== (node.dataset.id as string)));
+				open.update((current) => current.filter((x) => x !== (node.id as string)));
 			});
 
 			return {

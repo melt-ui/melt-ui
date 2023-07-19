@@ -3,7 +3,7 @@
 	import { slide } from 'svelte/transition';
 
 	const { toasts, addToast, isOpen, content, title, description, close } =
-		createToast();
+		createToast({closeDelay: 10000});
 
 	let eventDate = oneWeekAway();
 
