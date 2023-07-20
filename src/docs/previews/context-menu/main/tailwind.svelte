@@ -3,13 +3,14 @@
 	import { writable } from 'svelte/store';
 	import { ChevronRight, Check } from 'lucide-svelte';
 
-	const { elements, builders } = createContextMenu();
-	const { trigger, menu, item, checkboxItem, separator } = elements;
-	const { createSubMenu, createMenuRadioGroup } = builders;
+	const {
+		elements: { trigger, menu, item, checkboxItem, separator },
+		builders: { createSubmenu, createMenuRadioGroup },
+	} = createContextMenu();
 
 	const {
 		elements: { subMenu: subMenuA, subTrigger: subTriggerA },
-	} = createSubMenu();
+	} = createSubmenu();
 
 	const {
 		elements: { radioGroup, radioItem },

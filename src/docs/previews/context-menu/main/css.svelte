@@ -6,12 +6,12 @@
 
 	const {
 		elements: { trigger, menu, item, checkboxItem, separator },
-		builders: { createSubMenu, createMenuRadioGroup },
+		builders: { createSubmenu, createMenuRadioGroup },
 	} = createContextMenu();
 
 	const {
 		elements: { subMenu: subMenuA, subTrigger: subTriggerA },
-	} = createSubMenu();
+	} = createSubmenu();
 
 	const {
 		elements: { radioGroup, radioItem },

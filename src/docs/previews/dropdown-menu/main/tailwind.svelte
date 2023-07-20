@@ -4,13 +4,13 @@
 	import { AlignJustify, ChevronRight, Check } from 'lucide-svelte';
 
 	const {
-		elements: { trigger, menu, item, checkboxItem, arrow, separator },
-		builders: { createMenuRadioGroup, createSubMenu },
+		elements: { trigger, menu, item, checkboxItem, separator, arrow },
+		builders: { createSubmenu, createMenuRadioGroup },
 	} = createDropdownMenu();
 
 	const {
 		elements: { subMenu: subMenuA, subTrigger: subTriggerA },
-	} = createSubMenu();
+	} = createSubmenu();
 
 	const {
 		elements: { radioGroup, radioItem },

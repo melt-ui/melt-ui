@@ -63,7 +63,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		item,
 		checkboxItem,
 		arrow,
-		createSubMenu,
+		createSubmenu,
 		createMenuRadioGroup,
 		rootIds,
 		separator,
@@ -289,7 +289,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			open: rootOpen,
 		},
 		builders: {
-			createSubMenu,
+			createSubmenu,
 			createMenuRadioGroup,
 		},
 		options: rootOptions,

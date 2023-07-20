@@ -33,7 +33,7 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 		item,
 		checkboxItem,
 		arrow,
-		createSubMenu,
+		createSubmenu,
 		createMenuRadioGroup,
 		separator,
 	} = createMenuBuilder({
@@ -59,7 +59,7 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 			open: rootOpen,
 		},
 		builders: {
-			createSubMenu,
+			createSubmenu,
 			createMenuRadioGroup,
 		},
 		options: rootOptions,
