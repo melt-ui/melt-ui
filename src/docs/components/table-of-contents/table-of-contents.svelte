@@ -14,7 +14,9 @@
 		scrollOffset: 80,
 		scrollBehaviour: 'smooth',
 		headingFilterFn: (heading) =>
-			heading.parentElement !== null && heading.parentElement.id !== 'toc-builder-preview',
+			heading.parentElement !== null &&
+			heading.parentElement.id !== 'toc-builder-preview' &&
+			!heading.parentElement.hasAttribute('data-melt-accordion-item'),
 	});
 </script>
 
