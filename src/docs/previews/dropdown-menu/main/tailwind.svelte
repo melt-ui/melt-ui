@@ -47,7 +47,7 @@
 	<div
 		class="item"
 		{...$checkboxItem}
-		use:$checkboxItem.action={{ checked: settingsSync }}
+		use:checkboxItem={{ checked: settingsSync }}
 	>
 		<div class="check">
 			{#if $settingsSync}
@@ -82,8 +82,8 @@
 	<div
 		class="item"
 		{...$checkboxItem}
-		use:$checkboxItem.action={{ checked: hideMeltUI }}
-        >
+		use:checkboxItem={{ checked: hideMeltUI }}
+	>
 		<div class="check">
 			{#if $hideMeltUI}
 				<Check class="icon" />

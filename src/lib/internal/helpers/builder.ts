@@ -2,7 +2,6 @@ import { onDestroy } from 'svelte';
 import type { Action } from 'svelte/action';
 import { derived, type Readable, type Subscriber, type Unsubscriber } from 'svelte/store';
 import { isBrowser, noop } from '.';
-import type { Expand } from '../types';
 
 export function getElementByMeltId(id: string) {
 	if (!isBrowser) return null;
@@ -213,12 +212,12 @@ export function builder<
 				})
 			);
 		}
-	})() as Expand<BuilderStore<S, A, R, Name>>;
+	})() as BuilderStore<S, A, R, Name>;
 
 	const actionFn = (action ??
 		(() => {
 			/** noop */
-		})) as Expand<A & { subscribe: typeof derivedStore.subscribe }>;
+		})) as A & { subscribe: typeof derivedStore.subscribe };
 	actionFn.subscribe = derivedStore.subscribe;
 
 	return actionFn;
@@ -230,7 +229,7 @@ export type ExplicitBuilderReturn<
 	A extends Action<any, any>,
 	R extends BuilderCallback<S>,
 	Name extends string
-> = Expand<BuilderStore<S, A, R, Name> & A>;
+> = BuilderStore<S, A, R, Name> & A;
 
 export function createElHelpers<Part extends string = string>(prefix: string) {
 	const name = (part?: Part) => (part ? `${prefix}-${part}` : prefix);
