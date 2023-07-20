@@ -193,6 +193,9 @@ devDependencies:
   svelte:
     specifier: ^4.0.0
     version: 4.0.0
+  svelte-action-balancer:
+    specifier: ^1.0.4
+    version: 1.0.4
   svelte-check:
     specifier: ^3.4.4
     version: 3.4.4(@babel/core@7.22.1)(less@4.1.3)(postcss-load-config@4.0.1)(postcss@8.4.24)(svelte@4.0.0)
@@ -208,9 +211,6 @@ devDependencies:
   svelte-sequential-preprocessor:
     specifier: ^2.0.1
     version: 2.0.1
-  svelte-wrap-balancer:
-    specifier: ^0.0.3
-    version: 0.0.3
   tailwind-merge:
     specifier: ^1.13.2
     version: 1.13.2
@@ -11743,6 +11743,10 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
+  /svelte-action-balancer@1.0.4:
+    resolution: {integrity: sha512-QEJ/UJ576/wt+Sr3Uhswg/6k1s98034QZQBbO3WuNeyPYKa+9w2z/W5SFlusdAi8H7IF+s8BaMptEsUZINfxbw==}
+    dev: true
+
   /svelte-check@3.4.4(@babel/core@7.22.1)(less@4.1.3)(postcss-load-config@4.0.1)(postcss@8.4.24)(svelte@4.0.0):
     resolution: {integrity: sha512-Uys9+R65cj8TmP8f5UpS7B2xKpNLYNxEWJsA5ZoKcWq/uwvABFF7xS6iPQGLoa7hxz0DS6xU60YFpmq06E4JxA==}
     hasBin: true
@@ -11885,10 +11889,6 @@ packages:
     dependencies:
       svelte: 4.0.5
       tslib: 2.6.0
-    dev: true
-
-  /svelte-wrap-balancer@0.0.3:
-    resolution: {integrity: sha512-NlHMz+5hy2GiH+JqA1ECdMIG540nKa3ZfbsxBo/LxvP03rkvJ7W6+FeeP2YU38Z5LX8rqV/sSwreF3WPMPRjmw==}
     dev: true
 
   /svelte2tsx@0.6.11(svelte@4.0.0)(typescript@5.1.3):

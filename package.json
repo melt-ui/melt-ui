@@ -1,6 +1,6 @@
 {
 	"name": "@melt-ui/svelte",
-	"version": "0.23.2",
+	"version": "0.24.0",
 	"license": "MIT",
 	"scripts": {
 		"dev": "vite dev",
@@ -63,6 +63,7 @@
 		"nanoid": "^4.0.2"
 	},
 	"devDependencies": {
+		"svelte-action-balancer": "^1.0.4",
 		"@changesets/cli": "^2.26.1",
 		"@huntabyte/mdsvex": "0.16.5",
 		"@iconify-json/lucide": "^1.1.104",
@@ -126,7 +127,6 @@
 		"svelte-htm": "^1.2.0",
 		"svelte-preprocess": "^5.0.4",
 		"svelte-sequential-preprocessor": "^2.0.1",
-		"svelte-wrap-balancer": "^0.0.3",
 		"tailwind-merge": "^1.13.2",
 		"tailwind-variants": "^0.1.8",
 		"tailwindcss": "^3.3.2",
