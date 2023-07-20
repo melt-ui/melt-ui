@@ -34,7 +34,17 @@ const builder: APISchema = {
 			name: 'scrollBehaviour',
 			type: 'ScrollBehaviour',
 			default: 'smooth',
-			description: "Defines if the scroll behaviour should be 'smooth' or 'instant'."
+			description: "Defines whether the scroll behaviour should be 'smooth' or 'instant'."
+		},
+		{
+			name: 'headingFilterFn',
+			type: 'HeadingFilterFn',
+			description: "Allows you to pass a filter function to filter the headings that are returned in the 'headingsTree' store. The filter function gets an HTMLHeadingElement passed to it."
+		},
+		{
+			name: 'scrollFn',
+			type: 'ScrollFn',
+			description: 'Allows you to overwrite the default scroll function with your own custom one. The scroll function gets the heading id passed to it.'
 		}
 	],
 	returnedProps: [
@@ -72,7 +82,9 @@ const schemas = [builder, item];
 const features = [
 	'Customize which headers should be excluded',
 	'Choose between smooth or instant scroll behaviour',
-	'Add a scroll offset if needed'
+	'Add a scroll offset if needed',
+	'Define a filter function to control which headings are allowed',
+	'Overwrite the default scroll function with your own'
 ];
 
 

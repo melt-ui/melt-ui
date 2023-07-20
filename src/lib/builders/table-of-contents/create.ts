@@ -19,6 +19,8 @@ const defaults = {
   * @param args.exclude A list of headings that should be excluded in the table.
   * @param args.scrollOffset The offset that should be added when scrolling to a heading.
   * @param args.scrollBehaviour Describes whether the scroll behaviour should be 'smooth' or 'instant'.
+  * @param args.headingFilterFn Allows you to pass a filter function to filter the headings that are returned in the 'headingsTree' store.
+  * @param args.scrollFn Overwrite the default scroll function with your own.
   * @param args.activeType Describes which header should be considered active:
   *     - 'none': no intersection observers are added and no headings are considered active
   *     - 'all': all headings with visible content are considered active 
@@ -29,7 +31,7 @@ const defaults = {
  */
 export function createTableOfContents(args: CreateTableOfContentsArgs) {
     const argsWithDefaults = { ...defaults, ...args };
-    const { selector, exclude, activeType, scrollBehaviour, scrollOffset } = argsWithDefaults;
+    const { selector, exclude, activeType, scrollBehaviour, scrollOffset, headingFilterFn, scrollFn } = argsWithDefaults;
 
     const { name } = createElHelpers('table-of-contents');
 
@@ -106,6 +108,10 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
         });
 
         headingsList = [...headingsList];
+
+        if (headingFilterFn) {
+            headingsList = headingsList.filter((heading) => headingFilterFn(heading));
+        }
 
         // Get all elements in our elementTarget and convert it from an HTMLCollection to an array.
         elementsList = [].slice.call(elementTarget?.getElementsByTagName('*'));
@@ -253,7 +259,12 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
             const unsub = executeCallbacks(
                 addEventListener(node, 'click', (e) => {
                     e.preventDefault();
-                    scrollToTargetAdjusted(`${id}`);
+
+                    if (scrollFn) {
+                        scrollFn(`${id}`);
+                    } else {
+                        scrollToTargetAdjusted(`${id}`);
+                    }
                 }),
             );
 

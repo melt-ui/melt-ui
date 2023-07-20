@@ -9,6 +9,10 @@ export type ScrollBehaviour = 'smooth' | 'instant';
  */
 export type ActiveType = 'none' | 'lowest' | 'highest' | 'all' | 'lowest-parents' | 'highest-parents';
 
+export type HeadingFilterFn = (heading: HTMLHeadingElement) => boolean;
+
+export type ScrollFn = (id: string) => void;
+
 /**
  * Arguments to be passed to the Table of Contents builder.
  * 
@@ -24,6 +28,8 @@ export type CreateTableOfContentsArgs = {
     scrollOffset?: number;
     scrollBehaviour?: ScrollBehaviour;
     activeType?: ActiveType;
+    headingFilterFn?: HeadingFilterFn;
+    scrollFn?: ScrollFn;
 };
 
 export type ElementHeadingLU = {
