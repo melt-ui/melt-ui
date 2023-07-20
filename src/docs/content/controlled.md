@@ -1,6 +1,6 @@
 ---
 title: Controlled
-description: MeltUI components are uncontrolled by default, but offer the ability to be controlled.
+description: Melt UI components are uncontrolled by default, but offer the ability to be controlled.
 ---
 
 <script>
@@ -22,7 +22,7 @@ Controlled means that the user (you) can create and manage the state and stores.
 
 All components are uncontrolled by default, and in most cases, this is more than enough. However,
 our goal is to provide as much flexibility as possible, so we offer a few ways to give you more
-control over the state & behavior of the components.
+control over the state and behavior of the components.
 
 ## Controlled Usage
 
@@ -32,17 +32,15 @@ are available.
 
 ### Bring Your Own Store (BYOS)
 
-Without you having to do anything, we create an `open` store within the Dialog builder, which
-updates when a trigger or close element is clicked/key-downed. We do return this store for you to
-use, but let's say you wanted to define your own `open` store in another file and share it with
-other components in your app that might need to track or update the open state of the dialog.
+By default, we provide an `open` store from the `Dialog` builder that will have its state updated
+whenever a `trigger` or `close` element is clicked/key-downed.
 
-You could accomplish this using context or some other hacky solution, but things may become
-complicated quickly. Instead, we provide a way to pass your own `open` store to the builder.
+If you wanted to define your own `open` store so that its state could be shared and updated by other
+parts of your app, then we offer a way for you to supply your own.
 
 It's as simple as passing your own `open` store to the `createDialog` builder.
 
-```svelte {4,10}
+```svelte
 <script lang="ts">
 	import { createDialog } from '@melt-ui/svelte'
 
@@ -57,15 +55,9 @@ It's as simple as passing your own `open` store to the `createDialog` builder.
 </script>
 ```
 
-Behind the scenes, we're using the custom `open` store you passed in instead of creating our own
-within the builder. So your store will be updated as the open store normally would, but you can also
-update it outside the builder.
-
-### Custom Change Functions
-
-In addition to passing your own stores, you can also pass your own custom change/updater functions
-to handle the state updates manually. These can be used regardless of whether you use a custom
-store.
+Behind the scenes, we're using the custom `open` store you passed in instead of creating our own.
+Your store will be updated as the `open` store normally would, but you'll be able to freely modify
+its state outside of the builder.
 
 A "change function" is called when the value of a `state` store would normally change. It receives
 an object with `prev` and `next` properties, whose values are the previous and next values of the
@@ -102,5 +94,4 @@ store from being set to `true` based on some arbitrary condition.
 </script>
 ```
 
-Of course this is a contrived example, but at this point you should be able to imagine how you could
-use this to do some pretty cool things.
+Of course, this is a contrived example, but it nicely demonstrates the power of this feature.
