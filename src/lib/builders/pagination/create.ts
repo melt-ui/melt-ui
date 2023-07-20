@@ -3,6 +3,7 @@ import {
 	builder,
 	createElHelpers,
 	executeCallbacks,
+	isHTMLElement,
 	kbd,
 	omit,
 	toWritableStores,
@@ -50,12 +51,13 @@ export function createPagination(props: CreatePaginationProps) {
 	});
 
 	const keydown = (e: KeyboardEvent) => {
-		const thisEl = e.target as HTMLElement;
-		const rootEl = thisEl.closest('[data-scope="pagination"]') as HTMLElement | null;
+		const thisEl = e.target;
+		if (!isHTMLElement(thisEl)) return;
+		const rootEl = thisEl.closest<HTMLElement>('[data-scope="pagination"]');
 		if (!rootEl) return;
-		const triggers = Array.from(rootEl.querySelectorAll(selector('page'))) as Array<HTMLElement>;
-		const prevButton = rootEl.querySelector(selector('prev')) as HTMLElement | null;
-		const nextButton = rootEl.querySelector(selector('next')) as HTMLElement | null;
+		const triggers = Array.from(rootEl.querySelectorAll<HTMLElement>(selector('page')));
+		const prevButton = rootEl.querySelector<HTMLElement>(selector('prev'));
+		const nextButton = rootEl.querySelector<HTMLElement>(selector('next'));
 
 		const elements = [...triggers];
 		if (prevButton) elements.unshift(prevButton);

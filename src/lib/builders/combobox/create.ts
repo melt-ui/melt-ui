@@ -219,8 +219,8 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 							if (!isHTMLElement(menuEl)) return;
 
 							const enabledItems = Array.from(
-								menuEl.querySelectorAll(`${selector('item')}:not([data-disabled])`)
-							) as HTMLElement[];
+								menuEl.querySelectorAll<HTMLElement>(`${selector('item')}:not([data-disabled])`)
+							);
 							if (!enabledItems.length) return;
 
 							if (e.key === kbd.ARROW_DOWN) {

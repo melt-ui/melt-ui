@@ -6,6 +6,7 @@ import {
 	effect,
 	generateId,
 	isBrowser,
+	isHTMLElement,
 	isLeftClick,
 	last,
 	noop,
@@ -69,7 +70,8 @@ export function createDialog(props: CreateDialogProps = {}) {
 		},
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', (e) => {
-				const el = e.currentTarget as HTMLElement;
+				const el = e.currentTarget;
+				if (!isHTMLElement(el)) return;
 				open.set(true);
 				activeTrigger.set(el);
 			});

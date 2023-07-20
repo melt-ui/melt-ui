@@ -484,7 +484,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 	function getMenuTriggers(element: HTMLElement) {
 		const menuElement = element.closest('[role="menubar"]');
 		if (!isHTMLElement(menuElement)) return [];
-		return Array.from(menuElement.querySelectorAll('[data-melt-menubar-trigger]'));
+		return Array.from(menuElement.querySelectorAll<HTMLElement>('[data-melt-menubar-trigger]'));
 	}
 
 	/**
@@ -514,7 +514,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				return false;
 			}
 			return true;
-		}) as HTMLElement[];
+		});
 
 		// Index of the currently focused item in the candidate nodes array
 		const currentIndex = candidateNodes.indexOf(currentFocusedItem);

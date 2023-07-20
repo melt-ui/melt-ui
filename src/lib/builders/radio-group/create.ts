@@ -4,6 +4,7 @@ import {
 	createElHelpers,
 	executeCallbacks,
 	getDirectionalKeys,
+	isHTMLElement,
 	isLeftClick,
 	kbd,
 	omit,
@@ -87,10 +88,12 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 					value.set(itemValue);
 				}),
 				addEventListener(node, 'keydown', (e) => {
-					const el = e.currentTarget as HTMLElement;
-					const root = el.closest(selector()) as HTMLElement;
+					const el = e.currentTarget;
+					if (!isHTMLElement(el)) return;
+					const root = el.closest<HTMLElement>(selector());
+					if (!root) return;
 
-					const items = Array.from(root.querySelectorAll(selector('item'))) as Array<HTMLElement>;
+					const items = Array.from(root.querySelectorAll<HTMLElement>(selector('item')));
 					const currentIndex = items.indexOf(el);
 
 					const dir = getElemDirection(root);

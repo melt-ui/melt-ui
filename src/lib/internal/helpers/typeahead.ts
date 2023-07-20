@@ -38,7 +38,9 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 	});
 
 	const handleTypeaheadSearch = (key: string, items: HTMLElement[]) => {
-		const currentItem = document.activeElement as HTMLElement | null;
+		const currentItem = document.activeElement;
+		if (!isHTMLElement(currentItem)) return;
+
 		const $typed = get(typed);
 		if (!Array.isArray($typed)) {
 			return;

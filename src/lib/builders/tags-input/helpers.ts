@@ -23,7 +23,7 @@ export function setSelectedFromEl(el: Element | null, selected: Writable<Tag | n
 }
 
 export function highlightText(query: string) {
-	const el = document.querySelector(query) as HTMLElement;
+	const el = document.querySelector<HTMLElement>(query);
 
 	if (el) {
 		el.focus();

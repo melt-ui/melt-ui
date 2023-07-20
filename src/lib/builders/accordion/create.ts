@@ -5,6 +5,7 @@ import {
 	executeCallbacks,
 	generateId,
 	getElementByMeltId,
+	isHTMLElement,
 	kbd,
 	omit,
 	toWritableStores,
@@ -133,7 +134,8 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 					}
 					e.preventDefault();
 
-					const el = e.target as HTMLElement;
+					const el = e.target;
+					if (!isHTMLElement(el)) return;
 					const rootEl = getElementByMeltId(ids.root);
 					if (!rootEl) return;
 					const items = Array.from(rootEl.querySelectorAll<HTMLElement>(selector('trigger')));

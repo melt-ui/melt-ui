@@ -2,10 +2,11 @@ import { onDestroy } from 'svelte';
 import type { Action } from 'svelte/action';
 import { derived, type Readable, type Subscriber, type Unsubscriber } from 'svelte/store';
 import { isBrowser, noop } from '.';
+import type { Expand } from '../types';
 
 export function getElementByMeltId(id: string) {
 	if (!isBrowser) return null;
-	return document.querySelector(`[data-melt-id="${id}"]`) as HTMLElement | null;
+	return document.querySelector<HTMLElement>(`[data-melt-id="${id}"]`);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -212,12 +213,12 @@ export function builder<
 				})
 			);
 		}
-	})() as BuilderStore<S, A, R, Name>;
+	})() as Expand<BuilderStore<S, A, R, Name>>;
 
 	const actionFn = (action ??
 		(() => {
 			/** noop */
-		})) as A & { subscribe: typeof derivedStore.subscribe };
+		})) as Expand<A & { subscribe: typeof derivedStore.subscribe }>;
 	actionFn.subscribe = derivedStore.subscribe;
 
 	return actionFn;
@@ -229,7 +230,7 @@ export type ExplicitBuilderReturn<
 	A extends Action<any, any>,
 	R extends BuilderCallback<S>,
 	Name extends string
-> = BuilderStore<S, A, R, Name> & A;
+> = Expand<BuilderStore<S, A, R, Name> & A>;
 
 export function createElHelpers<Part extends string = string>(prefix: string) {
 	const name = (part?: Part) => (part ? `${prefix}-${part}` : prefix);

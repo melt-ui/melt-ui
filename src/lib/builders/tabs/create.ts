@@ -11,6 +11,7 @@ import {
 	prev,
 	isLeftClick,
 	toWritableStores,
+	isHTMLElement,
 } from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
@@ -134,14 +135,16 @@ export function createTabs(props?: CreateTabsProps) {
 				addEventListener(node, 'keydown', (e) => {
 					const tabValue = node.dataset.value;
 
-					const el = e.currentTarget as HTMLElement;
-					const rootEl = el.closest(selector()) as HTMLElement | null;
+					const el = e.currentTarget;
+					if (!isHTMLElement(el)) return;
+
+					const rootEl = el.closest<HTMLElement>(selector());
 
 					if (!rootEl || !tabValue) return;
 
 					const $loop = get(loop);
 
-					const triggers = Array.from(rootEl.querySelectorAll('[role="tab"]')) as HTMLElement[];
+					const triggers = Array.from(rootEl.querySelectorAll<HTMLElement>('[role="tab"]'));
 					const enabledTriggers = triggers.filter((el) => !el.hasAttribute('data-disabled'));
 					const triggerIdx = Array.from(enabledTriggers ?? []).findIndex((el) => el === e.target);
 

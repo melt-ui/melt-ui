@@ -1291,8 +1291,8 @@ export function removeHighlight(element: HTMLElement) {
  */
 export function getMenuItems(menuElement: HTMLElement) {
 	const menuItems = Array.from(
-		menuElement.querySelectorAll(`[data-melt-menu-id="${menuElement.id}"]`)
-	) as HTMLElement[];
+		menuElement.querySelectorAll<HTMLElement>(`[data-melt-menu-id="${menuElement.id}"]`)
+	);
 	return menuItems;
 }
 

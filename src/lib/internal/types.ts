@@ -1,3 +1,5 @@
+import type { Writable } from 'svelte/store';
+
 // Check if type are equal or just extends
 export type IfEquals<T, U, Y = unknown, N = never> = (<G>() => G extends T ? 1 : 2) extends <
 	G
@@ -34,6 +36,18 @@ export type Orientation = 'horizontal' | 'vertical';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type Prettify<T> = { [K in keyof T]: T[K] } & {};
+
+export type Expand<T> = T extends object
+	? T extends infer O
+		? { [K in keyof O]: O[K] }
+		: never
+	: T;
+
+export type ExpandDeep<T> = T extends object
+	? T extends infer O
+		? { [K in keyof O]: ExpandDeep<O[K]> }
+		: never
+	: T;
 
 export type StoreValue<T> = T extends { subscribe(cb: (value: infer V) => void): void } ? V : never;
 
