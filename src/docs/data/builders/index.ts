@@ -25,6 +25,7 @@ import { toggleData } from './toggle';
 import { toggleGroupData } from './toggle-group';
 import { toolbarData } from './toolbar';
 import { tooltipData } from './tooltip';
+import { treeData } from './tree';
 
 export const builderList = [
 	'accordion',
@@ -53,6 +54,7 @@ export const builderList = [
 	'toggle-group',
 	'toolbar',
 	'tooltip',
+	'tree'
 ] as const;
 
 export type Builder = (typeof builderList)[number];
@@ -96,4 +98,5 @@ export const data: Builders = {
 	toggle: toggleData,
 	toolbar: toolbarData,
 	tooltip: tooltipData,
+	tree: treeData
 };
