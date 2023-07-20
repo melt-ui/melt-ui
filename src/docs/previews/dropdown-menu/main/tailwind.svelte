@@ -3,10 +3,10 @@
 	import { writable } from 'svelte/store';
 	import { AlignJustify, ChevronRight, Check } from 'lucide-svelte';
 
-	const { elements, builders } = createDropdownMenu();
-
-	const { trigger, menu, item, checkboxItem, arrow, separator } = elements;
-	const { createSubMenu, createMenuRadioGroup } = builders;
+	const {
+		elements: { trigger, menu, item, checkboxItem, arrow, separator },
+		builders: { createMenuRadioGroup, createSubMenu },
+	} = createDropdownMenu();
 
 	const {
 		elements: { subMenu: subMenuA, subTrigger: subTriggerA },

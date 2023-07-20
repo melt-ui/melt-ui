@@ -55,6 +55,11 @@ export const navConfig: NavConfig = {
 					href: '/docs/usage',
 					items: [],
 				},
+				{
+					title: 'Controlled',
+					href: '/docs/controlled',
+					items: [],
+				},
 			],
 		},
 		{

@@ -8,6 +8,7 @@ import {
 	isHTMLElement,
 	kbd,
 	omit,
+	overridable,
 	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
@@ -33,12 +34,12 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 	props?: CreateAccordionProps<T>
 ) => {
 	const withDefaults = { ...defaults, ...props };
-
 	const options = toWritableStores(omit(withDefaults, 'value'));
-
 	const { disabled } = options;
 
-	const value = writable<string | string[] | undefined>(withDefaults.value);
+	const valueWritable =
+		withDefaults.value ?? writable<string | string[] | undefined>(withDefaults.value);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	const isSelected = (key: string, v: string | string[] | undefined) => {
 		if (v === undefined) return false;
