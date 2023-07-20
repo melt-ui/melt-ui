@@ -3,6 +3,7 @@ import {
 	builder,
 	createElHelpers,
 	omit,
+	overridable,
 	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
@@ -10,7 +11,7 @@ import { writable } from 'svelte/store';
 import type { CreateCollapsibleProps } from './types';
 
 const defaults = {
-	open: false,
+	defaultOpen: false,
 	disabled: false,
 } satisfies Defaults<CreateCollapsibleProps>;
 
@@ -22,7 +23,8 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 	const options = toWritableStores(omit(withDefaults, 'open'));
 	const { disabled } = options;
 
-	const open = writable(withDefaults.open);
+	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
+	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
 	const root = builder(name(), {
 		stores: [open, disabled],

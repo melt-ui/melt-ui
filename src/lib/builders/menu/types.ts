@@ -1,5 +1,6 @@
 import type { FloatingConfig } from '$lib/internal/actions';
 import type { TextDirection } from '$lib/internal/types';
+import type { ChangeFn } from '$lib/internal/helpers';
 import type { Writable } from 'svelte/store';
 import type { createMenuBuilder } from './create';
 
@@ -37,6 +38,21 @@ export type CreateMenuProps = {
 	 * @default false
 	 */
 	loop?: boolean;
+
+	/**
+	 * Whether the menu is open by default or not.
+	 */
+	defaultOpen?: boolean;
+
+	/**
+	 * A controlled open state for the menu.
+	 */
+	open?: Writable<boolean>;
+
+	/**
+	 * A callback for when the open state changes.
+	 */
+	onOpenChange?: ChangeFn<boolean>;
 };
 
 export type CreateSubmenuProps = CreateMenuProps & {

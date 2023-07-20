@@ -10,6 +10,7 @@ import {
 	isLeftClick,
 	last,
 	noop,
+	overridable,
 	sleep,
 	styleToString,
 	toWritableStores,
@@ -27,6 +28,7 @@ const defaults = {
 	closeOnEscape: true,
 	closeOnOutsideClick: true,
 	role: 'dialog',
+	defaultOpen: false,
 } satisfies Defaults<CreateDialogProps>;
 
 const openDialogIds = writable<string[]>([]);
@@ -45,7 +47,8 @@ export function createDialog(props: CreateDialogProps = {}) {
 		description: generateId(),
 	};
 
-	const open = writable(false);
+	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
+	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
 	effect([open], ([$open]) => {
 		// Prevent double clicks from closing multiple dialogs

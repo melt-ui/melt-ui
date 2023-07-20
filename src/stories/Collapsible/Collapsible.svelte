@@ -14,7 +14,7 @@
 		states: { open },
 		options: { disabled },
 	} = createCollapsible({
-		open: openProp,
+		defaultOpen: openProp,
 		disabled: disabledProp,
 	});
 

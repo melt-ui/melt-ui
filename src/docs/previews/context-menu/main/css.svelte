@@ -5,18 +5,18 @@
 	import Check from '~icons/lucide/check';
 
 	const {
-		trigger,
-		menu,
-		item,
-		checkboxItem,
-		separator,
-		createSubMenu,
-		createMenuRadioGroup,
+		elements: { trigger, menu, item, checkboxItem, separator },
+		builders: { createSubMenu, createMenuRadioGroup },
 	} = createContextMenu();
 
-	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
+	const {
+		elements: { subMenu: subMenuA, subTrigger: subTriggerA },
+	} = createSubMenu();
 
-	const { radioGroup, radioItem, isChecked } = createMenuRadioGroup({
+	const {
+		elements: { radioGroup, radioItem },
+		helpers: { isChecked },
+	} = createMenuRadioGroup({
 		value: 'Hunter Johnston',
 	});
 
@@ -42,7 +42,7 @@
 	<div
 		class="item"
 		{...$checkboxItem}
-		use:checkboxItem={{ checked: settingsSync }}
+		use:$checkboxItem.action={{ checked: settingsSync }}
 	>
 		<div class="check">
 			{#if $settingsSync}
@@ -77,7 +77,7 @@
 	<div
 		class="item"
 		{...$checkboxItem}
-		use:checkboxItem={{ checked: hideMeltUI }}
+		use:$checkboxItem.action={{ checked: hideMeltUI }}
 	>
 		<div class="check">
 			{#if $hideMeltUI}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CreateDialogReturn } from '@melt-ui/svelte';
+	import type { Dialog } from '@melt-ui/svelte';
 	import { styleToString } from '@melt-ui/svelte/internal/helpers';
 	import { cubicOut } from 'svelte/easing';
 	import type { TransitionConfig } from 'svelte/transition';
@@ -39,7 +39,7 @@
 		};
 	};
 
-	export let dialog: CreateDialogReturn;
+	export let dialog: Dialog;
 	const {
 		elements: { overlay, content, title, description, close },
 		states: { open },

@@ -1,5 +1,7 @@
 import type { BuilderReturn } from '$lib/internal/types';
+import type { Writable } from 'svelte/store';
 import type { createPagination } from './create';
+import type { ChangeFn } from '$lib/internal/helpers';
 
 export type CreatePaginationProps = {
 	/** Number of total items */
@@ -9,7 +11,10 @@ export type CreatePaginationProps = {
 	/** Number of visible items before and after the current page */
 	siblingCount?: number;
 	/** Current page */
-	page?: number;
+	defaultPage?: number;
+
+	page?: Writable<number>;
+	onPageChange?: ChangeFn<number>;
 };
 
 export type Page = {

@@ -5,7 +5,7 @@
 		elements: { root, item },
 		helpers: { isChecked },
 	} = createRadioGroup({
-		value: 'default',
+		defaultValue: 'default',
 	});
 
 	const optionsArr = ['default', 'comfortable', 'compact'];

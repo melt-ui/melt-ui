@@ -15,6 +15,7 @@ import {
 	styleToString,
 	isLeftClick,
 	toWritableStores,
+	overridable,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import type { VirtualElement } from '@floating-ui/core';
@@ -41,6 +42,7 @@ const defaults = {
 	preventScroll: true,
 	loop: false,
 	dir: 'ltr',
+	defaultOpen: false,
 } satisfies Defaults<CreateContextMenuProps>;
 
 const { name, selector } = createElHelpers<MenuParts>('context-menu');
@@ -51,7 +53,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const rootOptions = toWritableStores(withDefaults);
 	const { positioning } = rootOptions;
 
-	const rootOpen = writable(false);
+	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
+	const rootOpen = overridable(openWritable, withDefaults?.onOpenChange);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
 	const nextFocusable = writable<HTMLElement | null>(null);
 	const prevFocusable = writable<HTMLElement | null>(null);

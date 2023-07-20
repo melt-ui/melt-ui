@@ -4,7 +4,7 @@
 	const {
 		elements: { root, range, thumb },
 	} = createSlider({
-		value: [30],
+		defaultValue: [30],
 		max: 100,
 	});
 </script>

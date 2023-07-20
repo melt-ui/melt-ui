@@ -69,7 +69,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		preventScroll,
 		loop,
 	};
-
 	const rootOpen = opts.rootOpen;
 	const rootActiveTrigger = opts.rootActiveTrigger;
 	/**

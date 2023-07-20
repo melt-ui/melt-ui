@@ -1,11 +1,15 @@
 import type { BuilderReturn, Orientation } from '$lib/internal/types';
+import type { Writable } from 'svelte/store';
 import type { createRadioGroup } from './create';
+import type { ChangeFn } from '$lib/internal/helpers';
 
 export type CreateRadioGroupProps = {
 	disabled?: boolean;
 	loop?: boolean;
 	orientation?: Orientation;
-	value?: string;
+	defaultValue?: string;
+	value?: Writable<string>;
+	onValueChange?: ChangeFn<string>;
 	required?: boolean;
 };
 

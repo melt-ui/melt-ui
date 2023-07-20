@@ -92,7 +92,7 @@
 			value: key,
 			label: key,
 			disabled: value === null,
-		} satisfies CreateSelectProps;
+		};
 	});
 
 	const fileList = ['index.svelte', 'tailwind.config.ts', 'globals.css'] as const;

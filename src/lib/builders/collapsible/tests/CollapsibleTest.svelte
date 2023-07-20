@@ -6,7 +6,7 @@
 	const {
 		elements: { root, trigger, content },
 	} = createCollapsible({
-		open,
+		defaultOpen: open,
 	});
 </script>
 

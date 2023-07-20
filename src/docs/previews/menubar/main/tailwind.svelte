@@ -200,7 +200,7 @@
 		<div
 			class="item"
 			{...$checkboxItemB}
-			use:checkboxItemB={{ checked: wordWrap }}
+			use:$checkboxItemB.action={{ checked: wordWrap }}
 		>
 			<div class="check">
 				{#if $wordWrap}
@@ -213,7 +213,7 @@
 		<div
 			class="item"
 			{...$checkboxItemB}
-			use:checkboxItemB={{
+			use:$checkboxItemB.action={{
 				checked: stickyScroll,
 			}}
 		>
@@ -245,7 +245,7 @@
 		<div
 			class="item"
 			{...$checkboxItemC}
-			use:checkboxItemC={{
+			use:$checkboxItemC.action={{
 				checked: tipsAndTricks,
 			}}
 		>
@@ -262,7 +262,7 @@
 		<div
 			class="item"
 			{...$checkboxItemC}
-			use:checkboxItemC={{ checked: hideMeltUI }}
+			use:$checkboxItemC.action={{ checked: hideMeltUI }}
 		>
 			<div class="check">
 				{#if $hideMeltUI}
