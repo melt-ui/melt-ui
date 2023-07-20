@@ -10,8 +10,11 @@
 		color: string;
 	};
 
-	const { toasts, addToast, content, title, description, close } =
-		createToasts<ToastData>({});
+	const {
+		elements: { content, title, description, close },
+		helpers: { addToast },
+		states: { toasts },
+	} = createToasts<ToastData>();
 
 	const toastData: ToastData[] = [
 		{

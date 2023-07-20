@@ -2,9 +2,12 @@ import type { createToasts } from './create';
 
 export type EmptyType = Record<never, never>;
 
-export type AddToastProps<T = object> = {
+export type CreateToastProps = {
 	closeDelay?: number;
 	type?: 'foreground' | 'background';
+};
+
+export type AddToastProps<T = object> = CreateToastProps & {
 	data: T;
 };
 

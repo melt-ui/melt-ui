@@ -7,13 +7,24 @@ import {
 	generateId,
 	isTouch,
 	noop,
-} from '../../internal/helpers';
-import type { AddToastProps, Toast } from './types';
+	toWritableStores,
+} from '$lib/internal/helpers';
+import type { AddToastProps, CreateToastProps, Toast } from './types';
 
 type ToastParts = 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<ToastParts>('toast');
 
-export function createToasts<T = object>(defaults?: Omit<AddToastProps<T>, 'data'>) {
+const defaults = {
+	closeDelay: 5000,
+	type: 'foreground',
+} satisfies CreateToastProps;
+
+export function createToasts<T = object>(props?: CreateToastProps) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateToastProps;
+
+	const options = toWritableStores(withDefaults);
+	const { closeDelay, type } = options;
+
 	const toastsMap = writable(new Map<string, Toast<T>>());
 	const timeouts = new Map<string, number>();
 
@@ -51,9 +62,8 @@ export function createToasts<T = object>(defaults?: Omit<AddToastProps<T>, 'data
 
 	const addToast = (props: AddToastProps<T>) => {
 		const propsWithDefaults = {
-			closeDelay: 5000,
-			type: 'foreground',
-			...defaults,
+			closeDelay: get(closeDelay),
+			type: get(type),
 			...props,
 		} satisfies AddToastProps<T>;
 
@@ -176,11 +186,18 @@ export function createToasts<T = object>(defaults?: Omit<AddToastProps<T>, 'data
 	});
 
 	return {
-		toasts,
-		addToast,
-		content,
-		title,
-		description,
-		close,
+		elements: {
+			content,
+			title,
+			description,
+			close,
+		},
+		states: {
+			toasts,
+		},
+		helpers: {
+			addToast,
+		},
+		options,
 	};
 }

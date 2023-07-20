@@ -4,10 +4,11 @@
 	import { flyAndScale } from '$docs/utils';
 	import { X } from 'lucide-svelte';
 
-	const { elements, actions, states } = createDialog();
-	const { trigger, overlay, content, title, description, close } = elements;
-	const { open } = states;
-	const { portal } = actions;
+	const {
+		elements: { trigger, overlay, content, title, description, close },
+		actions: { portal },
+		states: { open },
+	} = createDialog();
 </script>
 
 <button
