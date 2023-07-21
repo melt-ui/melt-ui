@@ -60,11 +60,11 @@ Your store will be updated as the `open` store normally would, but you'll be abl
 its state outside of the builder.
 
 A "change function" is called when the value of a `state` store would normally change. It receives
-an object with `prev` and `next` properties, whose values are the previous and next values of the
+an object with `curr` and `next` properties, whose values are the current and next values of the
 store.
 
 The `next` value is what the store would have been set to by default if the change function wasn't
-used. The `prev` value is the current value of the store.
+used. The `curr` value is the current value of the store.
 
 Whatever is returned from the change function will be used as the new value of the store.
 
@@ -77,9 +77,9 @@ store from being set to `true` based on some arbitrary condition.
 
 	const someCondition = false
 
-	const handleOpen: CreateDialogProps['onOpenChange'] = ({ prev, next }) => {
+	const handleOpen: CreateDialogProps['onOpenChange'] = ({ curr, next }) => {
 		if (!someCondition) {
-			return prev
+			return curr
 		}
 
 		return next

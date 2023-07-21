@@ -1,7 +1,7 @@
 import type { BuilderReturn } from '$lib/internal/types';
 import type { Writable } from 'svelte/store';
 import type { createAccordion } from './create';
-import type { ChangeFn } from '@melt-ui/svelte/internal/helpers';
+import type { ChangeFn } from '$lib/internal/helpers';
 
 export type AccordionType = 'single' | 'multiple';
 
