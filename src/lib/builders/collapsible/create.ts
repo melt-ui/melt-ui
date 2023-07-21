@@ -5,10 +5,13 @@ import {
 	omit,
 	overridable,
 	toWritableStores,
+	withMelt,
+	type MeltEventHandler,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { writable } from 'svelte/store';
 import type { CreateCollapsibleProps } from './types';
+import type { ActionReturn } from 'svelte/action';
 
 const defaults = {
 	defaultOpen: false,
@@ -34,6 +37,9 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 		}),
 	});
 
+	type TriggerEvents = {
+		'on:m-click': MeltEventHandler<MouseEvent>;
+	};
 	const trigger = builder(name('trigger'), {
 		stores: [open, disabled],
 		returned: ([$open, $disabled]) =>
@@ -42,12 +48,16 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 				'data-disabled': $disabled ? '' : undefined,
 				disabled: $disabled,
 			} as const),
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', () => {
-				const disabled = node.dataset.disabled !== undefined;
-				if (disabled) return;
-				open.update(($open) => !$open);
-			});
+		action: (node: HTMLElement): ActionReturn<unknown, TriggerEvents> => {
+			const unsub = addEventListener(
+				node,
+				'click',
+				withMelt(() => {
+					const disabled = node.dataset.disabled !== undefined;
+					if (disabled) return;
+					open.update(($open) => !$open);
+				})
+			);
 
 			return {
 				destroy: unsub,

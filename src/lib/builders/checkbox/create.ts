@@ -6,6 +6,7 @@ import {
 	styleToString,
 	toWritableStores,
 	type MeltEventHandler,
+	withMelt,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
@@ -51,18 +52,26 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 		},
 		action(node: HTMLElement): ActionReturn<unknown, RootEvents> {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'keydown', (event) => {
-					// According to WAI ARIA, Checkboxes don't activate on enter keypress
-					if (event.key === kbd.ENTER) event.preventDefault();
-				}),
-				addEventListener(node, 'click', () => {
-					if (get(disabled)) return;
+				addEventListener(
+					node,
+					'keydown',
+					withMelt((event) => {
+						// According to WAI ARIA, Checkboxes don't activate on enter keypress
+						if (event.key === kbd.ENTER) event.preventDefault();
+					})
+				),
+				addEventListener(
+					node,
+					'click',
+					withMelt(() => {
+						if (get(disabled)) return;
 
-					checked.update((prev) => {
-						if (prev === 'indeterminate') return true;
-						return !prev;
-					});
-				})
+						checked.update((prev) => {
+							if (prev === 'indeterminate') return true;
+							return !prev;
+						});
+					})
+				)
 			);
 
 			return {

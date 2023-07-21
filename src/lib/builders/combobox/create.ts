@@ -23,6 +23,8 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
+	withMelt,
+	type MeltEventHandler,
 } from '$lib/internal/helpers';
 import { getOptions } from '$lib/internal/helpers/list';
 import type { Defaults } from '$lib/internal/types';
@@ -30,6 +32,7 @@ import { tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
 import type { ComboboxItemProps, CreateComboboxProps } from './types';
 import { omit } from '../../internal/helpers/object';
+import type { ActionReturn } from 'svelte/action';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
@@ -168,6 +171,12 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		filteredItems.set(updatedItems.filter((item) => $filterFunction(item, $inputValue)));
 	}
 
+	type InputEvents = {
+		'on:m-click'?: MeltEventHandler<MouseEvent>;
+		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
+		'on:m-input'?: MeltEventHandler<InputEvent>;
+	};
+
 	/** Action and attributes for the text input. */
 	const input = builder(name('input'), {
 		stores: [open, highlightedItem],
@@ -183,138 +192,154 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 				role: 'combobox',
 			} as const;
 		},
-		action: (node: HTMLInputElement) => {
+		action: (node: HTMLInputElement): ActionReturn<unknown, InputEvents> => {
 			const unsubscribe = executeCallbacks(
-				addEventListener(node, 'click', () => {
-					openMenu();
-				}),
-				// Handle all input key events including typing, meta, and navigation.
-				addEventListener(node, 'keydown', (e) => {
-					const $open = get(open);
-					/**
-					 * When the menu is closed...
-					 */
-					if (!$open) {
-						// Pressing `esc` should blur the input.
-						if (e.key === kbd.ESCAPE) {
-							node.blur();
-							return;
-						}
-						// Pressing one of the interaction keys shouldn't open the menu.
-						if (INTERACTION_KEYS.includes(e.key)) {
-							return;
-						}
-
-						// Tab should not open the menu.
-						if (e.key === kbd.TAB) {
-							return;
-						}
-
-						// Pressing backspace when the input is blank shouldn't open the menu.
-						if (e.key === kbd.BACKSPACE && node.value === '') {
-							return;
-						}
-
-						// All other events should open the menu.
+				addEventListener(
+					node,
+					'click',
+					withMelt(() => {
 						openMenu();
-
-						tick().then(() => {
-							const $selectedItem = get(selectedItem);
-							if ($selectedItem) return;
-
-							const menuEl = document.getElementById(ids.menu);
-							if (!isHTMLElement(menuEl)) return;
-
-							const enabledItems = Array.from(
-								menuEl.querySelectorAll<HTMLElement>(`${selector('item')}:not([data-disabled])`)
-							);
-							if (!enabledItems.length) return;
-
-							if (e.key === kbd.ARROW_DOWN) {
-								highlightedItem.set(enabledItems[0]);
-							} else if (e.key === kbd.ARROW_UP) {
-								highlightedItem.set(last(enabledItems));
-							}
-						});
-					}
-					/**
-					 * When the menu is open...
-					 */
-					// Pressing `esc` should close the menu.
-					if (e.key === kbd.ESCAPE || e.key === kbd.TAB) {
-						closeMenu();
-						reset();
-						return;
-					}
-					// Pressing enter with a highlighted item should select it.
-					if (e.key === kbd.ENTER) {
-						const $highlightedItem = get(highlightedItem);
-						if ($highlightedItem) {
-							selectItem($highlightedItem);
-						}
-						closeMenu();
-					}
-					// Pressing Alt + Up should close the menu.
-					if (e.key === kbd.ARROW_UP && e.altKey) {
-						closeMenu();
-					}
-					// Navigation (up, down, etc.) should change the highlighted item.
-					if (FIRST_LAST_KEYS.includes(e.key)) {
-						e.preventDefault();
-						// Get all the menu items.
-						const menuElement = document.getElementById(ids.menu);
-						if (!isHTMLElement(menuElement)) return;
-						const itemElements = getOptions(menuElement);
-						if (!itemElements.length) return;
-						// Disabled items can't be highlighted. Skip them.
-						const candidateNodes = itemElements.filter((opt) => !isElementDisabled(opt));
-						// Get the index of the currently highlighted item.
-						const $currentItem = get(highlightedItem);
-						const currentIndex = $currentItem ? candidateNodes.indexOf($currentItem) : -1;
-						// Find the next menu item to highlight.
-						const $loop = get(loop);
-						const $scrollAlignment = get(scrollAlignment);
-						let nextItem: HTMLElement;
-						switch (e.key) {
-							case kbd.ARROW_DOWN:
-								nextItem = next(candidateNodes, currentIndex, $loop);
-								break;
-							case kbd.PAGE_DOWN:
-								nextItem = forward(candidateNodes, currentIndex, 10, $loop);
-								break;
-							case kbd.ARROW_UP:
-								nextItem = prev(candidateNodes, currentIndex, $loop);
-								break;
-							case kbd.PAGE_UP:
-								nextItem = back(candidateNodes, currentIndex, 10, $loop);
-								break;
-							case kbd.HOME:
-								nextItem = candidateNodes[0];
-								break;
-							case kbd.END:
-								nextItem = last(candidateNodes);
-								break;
-							default:
+					})
+				),
+				// Handle all input key events including typing, meta, and navigation.
+				addEventListener(
+					node,
+					'keydown',
+					withMelt((e) => {
+						const $open = get(open);
+						/**
+						 * When the menu is closed...
+						 */
+						if (!$open) {
+							// Pressing `esc` should blur the input.
+							if (e.key === kbd.ESCAPE) {
+								node.blur();
 								return;
+							}
+							// Pressing one of the interaction keys shouldn't open the menu.
+							if (INTERACTION_KEYS.includes(e.key)) {
+								return;
+							}
+
+							// Tab should not open the menu.
+							if (e.key === kbd.TAB) {
+								return;
+							}
+
+							// Pressing backspace when the input is blank shouldn't open the menu.
+							if (e.key === kbd.BACKSPACE && node.value === '') {
+								return;
+							}
+
+							// All other events should open the menu.
+							openMenu();
+
+							tick().then(() => {
+								const $selectedItem = get(selectedItem);
+								if ($selectedItem) return;
+
+								const menuEl = document.getElementById(ids.menu);
+								if (!isHTMLElement(menuEl)) return;
+
+								const enabledItems = Array.from(
+									menuEl.querySelectorAll<HTMLElement>(`${selector('item')}:not([data-disabled])`)
+								);
+								if (!enabledItems.length) return;
+
+								if (e.key === kbd.ARROW_DOWN) {
+									highlightedItem.set(enabledItems[0]);
+								} else if (e.key === kbd.ARROW_UP) {
+									highlightedItem.set(last(enabledItems));
+								}
+							});
 						}
-						// Highlight the new item and scroll it into view.
-						highlightedItem.set(nextItem);
-						nextItem.scrollIntoView({ block: $scrollAlignment });
-					}
-				}),
+						/**
+						 * When the menu is open...
+						 */
+						// Pressing `esc` should close the menu.
+						if (e.key === kbd.ESCAPE || e.key === kbd.TAB) {
+							closeMenu();
+							reset();
+							return;
+						}
+						// Pressing enter with a highlighted item should select it.
+						if (e.key === kbd.ENTER) {
+							const $highlightedItem = get(highlightedItem);
+							if ($highlightedItem) {
+								selectItem($highlightedItem);
+							}
+							closeMenu();
+						}
+						// Pressing Alt + Up should close the menu.
+						if (e.key === kbd.ARROW_UP && e.altKey) {
+							closeMenu();
+						}
+						// Navigation (up, down, etc.) should change the highlighted item.
+						if (FIRST_LAST_KEYS.includes(e.key)) {
+							e.preventDefault();
+							// Get all the menu items.
+							const menuElement = document.getElementById(ids.menu);
+							if (!isHTMLElement(menuElement)) return;
+							const itemElements = getOptions(menuElement);
+							if (!itemElements.length) return;
+							// Disabled items can't be highlighted. Skip them.
+							const candidateNodes = itemElements.filter((opt) => !isElementDisabled(opt));
+							// Get the index of the currently highlighted item.
+							const $currentItem = get(highlightedItem);
+							const currentIndex = $currentItem ? candidateNodes.indexOf($currentItem) : -1;
+							// Find the next menu item to highlight.
+							const $loop = get(loop);
+							const $scrollAlignment = get(scrollAlignment);
+							let nextItem: HTMLElement;
+							switch (e.key) {
+								case kbd.ARROW_DOWN:
+									nextItem = next(candidateNodes, currentIndex, $loop);
+									break;
+								case kbd.PAGE_DOWN:
+									nextItem = forward(candidateNodes, currentIndex, 10, $loop);
+									break;
+								case kbd.ARROW_UP:
+									nextItem = prev(candidateNodes, currentIndex, $loop);
+									break;
+								case kbd.PAGE_UP:
+									nextItem = back(candidateNodes, currentIndex, 10, $loop);
+									break;
+								case kbd.HOME:
+									nextItem = candidateNodes[0];
+									break;
+								case kbd.END:
+									nextItem = last(candidateNodes);
+									break;
+								default:
+									return;
+							}
+							// Highlight the new item and scroll it into view.
+							highlightedItem.set(nextItem);
+							nextItem.scrollIntoView({ block: $scrollAlignment });
+						}
+					})
+				),
 				// Listens to the input value and filters the items accordingly.
-				addEventListener(node, 'input', (e) => {
-					if (!isHTMLInputElement(e.target)) return;
-					const $filterFunction = get(filterFunction);
-					const $items = get(items);
-					const value = e.target.value;
-					inputValue.set(value);
-					filteredItems.set($items.filter((item) => $filterFunction(item, value)));
-				})
+				addEventListener(
+					node,
+					'input',
+					withMelt((e) => {
+						if (!isHTMLInputElement(e.target)) return;
+						const $filterFunction = get(filterFunction);
+						const $items = get(items);
+						const value = e.target.value;
+						inputValue.set(value);
+						filteredItems.set($items.filter((item) => $filterFunction(item, value)));
+					})
+				)
 			);
 			return { destroy: unsubscribe };
 		},
 	});
+
+	type MenuEvents = {
+		'on:pointerleave': MeltEventHandler<PointerEvent>;
+	};
 
 	/**
 	 * Action and attributes for the menu element.
@@ -328,7 +353,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 				role: 'listbox',
 				style: styleToString({ display: $open ? undefined : 'none' }),
 			} as const),
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): ActionReturn<unknown, MenuEvents> => {
 			let unsubPopper = noop;
 			let unsubScroll = noop;
 			const unsubscribe = executeCallbacks(
@@ -360,9 +385,13 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 					}
 				}),
 				// Remove highlight when the pointer leaves the menu.
-				addEventListener(node, 'pointerleave', () => {
-					highlightedItem.set(null);
-				})
+				addEventListener(
+					node,
+					'pointerleave',
+					withMelt(() => {
+						highlightedItem.set(null);
+					})
+				)
 			);
 			return {
 				destroy: () => {
@@ -373,6 +402,11 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 			};
 		},
 	});
+
+	type ItemEvents = {
+		'on:pointermove': MeltEventHandler<PointerEvent>;
+		'on:click': MeltEventHandler<MouseEvent>;
+	};
 
 	const item = builder(name('item'), {
 		stores: [selectedItem],
@@ -388,31 +422,39 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 					role: 'option',
 					style: styleToString({ cursor: props.disabled ? 'default' : 'pointer' }),
 				} as const),
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): ActionReturn<unknown, ItemEvents> => {
 			const unsubscribe = executeCallbacks(
 				// Handle highlighting items when the pointer moves over them.
-				addEventListener(node, 'pointermove', () => {
-					// Skip highlighting if the item is already highlighted.
-					if (node === get(highlightedItem)) return;
-					// If the item is disabled, clear the highlight.
-					if (isElementDisabled(node)) {
-						highlightedItem.set(null);
-						return;
-					}
-					// Otherwise, proceed.
-					highlightedItem.set(node);
-				}),
-				addEventListener(node, 'click', (e) => {
-					e.stopPropagation();
-					// If the item is disabled, `preventDefault` to stop the input losing focus.
-					if (isElementDisabled(node)) {
-						e.preventDefault();
-						return;
-					}
-					// Otherwise, select the item and close the menu.
-					selectItem(node);
-					closeMenu();
-				})
+				addEventListener(
+					node,
+					'pointermove',
+					withMelt(() => {
+						// Skip highlighting if the item is already highlighted.
+						if (node === get(highlightedItem)) return;
+						// If the item is disabled, clear the highlight.
+						if (isElementDisabled(node)) {
+							highlightedItem.set(null);
+							return;
+						}
+						// Otherwise, proceed.
+						highlightedItem.set(node);
+					})
+				),
+				addEventListener(
+					node,
+					'click',
+					withMelt((e) => {
+						e.stopPropagation();
+						// If the item is disabled, `preventDefault` to stop the input losing focus.
+						if (isElementDisabled(node)) {
+							e.preventDefault();
+							return;
+						}
+						// Otherwise, select the item and close the menu.
+						selectItem(node);
+						closeMenu();
+					})
+				)
 			);
 			return { destroy: unsubscribe };
 		},
