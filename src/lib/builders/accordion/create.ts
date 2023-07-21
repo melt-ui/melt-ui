@@ -94,7 +94,7 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 		},
 	});
 
-	type TriggerAttributes = {
+	type TriggerEvents = {
 		'on:m-click'?: MeltEventHandler<MouseEvent>;
 		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
 	};
@@ -115,7 +115,7 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 				};
 			};
 		},
-		action: (node: HTMLElement): ActionReturn<unknown, TriggerAttributes> => {
+		action: (node: HTMLElement): ActionReturn<unknown, TriggerEvents> => {
 			const unsub = executeCallbacks(
 				addEventListener(
 					node,

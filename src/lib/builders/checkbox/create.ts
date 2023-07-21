@@ -5,12 +5,14 @@ import {
 	kbd,
 	styleToString,
 	toWritableStores,
+	type MeltEventHandler,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateCheckboxProps } from './types';
 import { omit } from '../../internal/helpers/object';
 import { overridable } from '../../internal/helpers/overridable';
+import type { ActionReturn } from 'svelte/action';
 
 const defaults = {
 	disabled: false,
@@ -30,6 +32,10 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 	const checkedWritable = withDefaults.checked ?? writable(withDefaults.defaultChecked);
 	const checked = overridable(checkedWritable, withDefaults?.onCheckedChange);
 
+	type RootEvents = {
+		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
+		'on:m-click'?: MeltEventHandler<MouseEvent>;
+	};
 	const root = builder('checkbox', {
 		stores: [checked, disabled, required],
 		returned: ([$checked, $disabled, $required]) => {
@@ -43,21 +49,21 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 				'aria-required': $required,
 			} as const;
 		},
-		action(node: HTMLElement) {
+		action(node: HTMLElement): ActionReturn<unknown, RootEvents> {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'keydown', (event) => {
 					// According to WAI ARIA, Checkboxes don't activate on enter keypress
 					if (event.key === kbd.ENTER) event.preventDefault();
+				}),
+				addEventListener(node, 'click', () => {
+					if (get(disabled)) return;
+
+					checked.update((prev) => {
+						if (prev === 'indeterminate') return true;
+						return !prev;
+					});
 				})
 			);
-			addEventListener(node, 'click', () => {
-				if (get(disabled)) return;
-
-				checked.update((prev) => {
-					if (prev === 'indeterminate') return true;
-					return !prev;
-				});
-			});
 
 			return {
 				destroy: unsub,
