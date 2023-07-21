@@ -18,10 +18,3 @@ export type Avatar = BuilderReturn<typeof createAvatar>;
 export type AvatarElements = Avatar['elements'];
 export type AvatarOptions = Avatar['options'];
 export type AvatarStates = Avatar['states'];
-
-/**
- * An (optional) function that is called when the loading status changes.
- * It receives an object with the previous and next loading status, the value returned
- * from this function will be set as the new loading status.
- */
-export type AvatarOnLoadingStatusChange = ChangeFn<ImageLoadingStatus>;
