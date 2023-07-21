@@ -17,6 +17,7 @@ import {
 	last,
 	next,
 	noop,
+	overridable,
 	prev,
 	removeScroll,
 	sleep,
@@ -36,6 +37,7 @@ export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd
 const defaults = {
 	scrollAlignment: 'nearest',
 	loop: true,
+	defaultOpen: false,
 } satisfies Defaults<CreateComboboxProps<unknown>>;
 
 const { name, selector } = createElHelpers('combobox');
@@ -51,7 +53,9 @@ const { name, selector } = createElHelpers('combobox');
 export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateComboboxProps<T>;
 
-	const open = writable(false);
+	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
+
+	const open = overridable(openWritable, withDefaults?.onOpenChange);
 	// Trigger element for the popper portal. This will be our input element.
 	const activeTrigger = writable<HTMLElement | null>(null);
 	// The currently highlighted menu item.
@@ -219,8 +223,8 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 							if (!isHTMLElement(menuEl)) return;
 
 							const enabledItems = Array.from(
-								menuEl.querySelectorAll(`${selector('item')}:not([data-disabled])`)
-							) as HTMLElement[];
+								menuEl.querySelectorAll<HTMLElement>(`${selector('item')}:not([data-disabled])`)
+							);
 							if (!enabledItems.length) return;
 
 							if (e.key === kbd.ARROW_DOWN) {

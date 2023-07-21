@@ -6,9 +6,11 @@ import {
 	effect,
 	generateId,
 	isBrowser,
+	isHTMLElement,
 	isLeftClick,
 	last,
 	noop,
+	overridable,
 	sleep,
 	styleToString,
 	toWritableStores,
@@ -26,6 +28,7 @@ const defaults = {
 	closeOnEscape: true,
 	closeOnOutsideClick: true,
 	role: 'dialog',
+	defaultOpen: false,
 } satisfies Defaults<CreateDialogProps>;
 
 const openDialogIds = writable<string[]>([]);
@@ -44,7 +47,8 @@ export function createDialog(props: CreateDialogProps = {}) {
 		description: generateId(),
 	};
 
-	const open = writable(false);
+	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
+	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
 	effect([open], ([$open]) => {
 		// Prevent double clicks from closing multiple dialogs
@@ -69,7 +73,8 @@ export function createDialog(props: CreateDialogProps = {}) {
 		},
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', (e) => {
-				const el = e.currentTarget as HTMLElement;
+				const el = e.currentTarget;
+				if (!isHTMLElement(el)) return;
 				open.set(true);
 				activeTrigger.set(el);
 			});

@@ -27,7 +27,7 @@ To specify that the popover should be open by default, set the `defaultOpen` pro
 
 ```ts {2}
 const { trigger, content, open, arrow, close } = createPopover({
-  defaultOpen: true
+	defaultOpen: true
 })
 ```
 
@@ -61,7 +61,7 @@ If you don't pass an `open` prop, the builder will create a store for you, and r
 const open = writable(false)
 
 const { trigger, content, arrow, close } = createPopover({
-  open
+	open
 })
 ```
 

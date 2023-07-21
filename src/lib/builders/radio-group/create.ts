@@ -4,9 +4,11 @@ import {
 	createElHelpers,
 	executeCallbacks,
 	getDirectionalKeys,
+	isHTMLElement,
 	isLeftClick,
 	kbd,
 	omit,
+	overridable,
 	toWritableStores,
 } from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
@@ -19,6 +21,7 @@ const defaults = {
 	loop: true,
 	disabled: false,
 	required: false,
+	defaultValue: undefined,
 } satisfies Defaults<CreateRadioGroupProps>;
 
 type RadioGroupParts = 'item' | 'item-input';
@@ -31,7 +34,8 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 	const options = toWritableStores(omit(withDefaults, 'value'));
 	const { disabled, required, loop, orientation } = options;
 
-	const value = writable(withDefaults.value ?? null);
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	const root = builder(name(), {
 		stores: [required, orientation],
@@ -87,10 +91,12 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 					value.set(itemValue);
 				}),
 				addEventListener(node, 'keydown', (e) => {
-					const el = e.currentTarget as HTMLElement;
-					const root = el.closest(selector()) as HTMLElement;
+					const el = e.currentTarget;
+					if (!isHTMLElement(el)) return;
+					const root = el.closest<HTMLElement>(selector());
+					if (!root) return;
 
-					const items = Array.from(root.querySelectorAll(selector('item'))) as Array<HTMLElement>;
+					const items = Array.from(root.querySelectorAll<HTMLElement>(selector('item')));
 					const currentIndex = items.indexOf(el);
 
 					const dir = getElemDirection(root);

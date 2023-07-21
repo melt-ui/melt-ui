@@ -3,8 +3,10 @@ import {
 	builder,
 	createElHelpers,
 	executeCallbacks,
+	isHTMLElement,
 	kbd,
 	omit,
+	overridable,
 	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
@@ -15,7 +17,7 @@ import type { CreatePaginationProps, Page } from './types';
 const defaults = {
 	perPage: 1,
 	siblingCount: 1,
-	page: 1,
+	defaultPage: 1,
 } satisfies Defaults<CreatePaginationProps>;
 
 type PaginationParts = 'page' | 'prev' | 'next';
@@ -23,7 +25,8 @@ const { name, selector } = createElHelpers<PaginationParts>('pagination');
 
 export function createPagination(props: CreatePaginationProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreatePaginationProps;
-	const page = writable(withDefaults.page);
+	const pageWritable = withDefaults.page ?? writable(withDefaults.defaultPage);
+	const page = overridable(pageWritable, withDefaults?.onPageChange);
 
 	// options
 	const options = toWritableStores(omit(withDefaults, 'page'));
@@ -50,12 +53,13 @@ export function createPagination(props: CreatePaginationProps) {
 	});
 
 	const keydown = (e: KeyboardEvent) => {
-		const thisEl = e.target as HTMLElement;
-		const rootEl = thisEl.closest('[data-scope="pagination"]') as HTMLElement | null;
+		const thisEl = e.target;
+		if (!isHTMLElement(thisEl)) return;
+		const rootEl = thisEl.closest<HTMLElement>('[data-scope="pagination"]');
 		if (!rootEl) return;
-		const triggers = Array.from(rootEl.querySelectorAll(selector('page'))) as Array<HTMLElement>;
-		const prevButton = rootEl.querySelector(selector('prev')) as HTMLElement | null;
-		const nextButton = rootEl.querySelector(selector('next')) as HTMLElement | null;
+		const triggers = Array.from(rootEl.querySelectorAll<HTMLElement>(selector('page')));
+		const prevButton = rootEl.querySelector<HTMLElement>(selector('prev'));
+		const nextButton = rootEl.querySelector<HTMLElement>(selector('next'));
 
 		const elements = [...triggers];
 		if (prevButton) elements.unshift(prevButton);

@@ -5,7 +5,7 @@ import { isBrowser, noop } from '.';
 
 export function getElementByMeltId(id: string) {
 	if (!isBrowser) return null;
-	return document.querySelector(`[data-melt-id="${id}"]`) as HTMLElement | null;
+	return document.querySelector<HTMLElement>(`[data-melt-id="${id}"]`);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

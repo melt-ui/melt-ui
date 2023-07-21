@@ -11,6 +11,7 @@ import {
 	isHTMLElement,
 	isTouch,
 	noop,
+	overridable,
 	sleep,
 	styleToString,
 	toWritableStores,
@@ -36,7 +37,9 @@ const defaults = {
 
 export function createHoverCard(props: CreateHoverCardProps = {}) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateHoverCardProps;
-	const open = writable(withDefaults.defaultOpen);
+
+	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
+	const open = overridable(openWritable, withDefaults?.onOpenChange);
 	const hasSelection = writable(false);
 	const isPointerDownOnContent = writable(false);
 	const containSelection = writable(false);

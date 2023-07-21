@@ -6,8 +6,8 @@
 
 	const {
 		elements: { trigger, overlay, content, title, description, close },
-		actions: { portal },
 		states: { open },
+		actions: { portal },
 	} = createDialog();
 </script>
 

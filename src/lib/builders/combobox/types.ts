@@ -1,4 +1,6 @@
 import type { BuilderReturn } from '$lib/internal/types';
+import type { ChangeFn } from '$lib/internal/helpers';
+import type { Writable } from 'svelte/store';
 import type { createCombobox } from './create';
 
 export type CreateComboboxProps<T> = {
@@ -20,6 +22,9 @@ export type CreateComboboxProps<T> = {
 	filterFunction: ComboboxFilterFunction<T>;
 	itemToString: ComboboxItemToString<T>;
 	loop?: boolean;
+	defaultOpen?: boolean;
+	open?: Writable<boolean>;
+	onOpenChange?: ChangeFn<boolean>;
 };
 
 export type ComboboxFilterFunction<T> = (item: T, value: string) => boolean;

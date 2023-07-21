@@ -19,9 +19,9 @@ element.
 
 ```svelte
 <script lang="ts">
-  import { createLabel } from '@melt-ui/svelte'
+	import { createLabel } from '@melt-ui/svelte'
 
-  const label = createLabel()
+	const label = createLabel()
 </script>
 
 <label for="name" use:label>Name</label>

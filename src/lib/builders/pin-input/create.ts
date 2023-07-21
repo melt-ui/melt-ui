@@ -6,6 +6,7 @@ import {
 	last,
 	next,
 	omit,
+	overridable,
 	prev,
 	styleToString,
 	toWritableStores,
@@ -32,6 +33,7 @@ const defaults = {
 	disabled: false,
 	type: 'text',
 	name: undefined,
+	defaultValue: [],
 } satisfies Defaults<CreatePinInputProps>;
 
 export function createPinInput(props?: CreatePinInputProps) {
@@ -40,7 +42,8 @@ export function createPinInput(props?: CreatePinInputProps) {
 	const options = toWritableStores(omit(withDefaults, 'value'));
 	const { placeholder, disabled, type, name: nameStore } = options;
 
-	const value = writable((props?.value ?? []) satisfies string[]);
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
 	const valueStr = derived(value, (v) => v.join(''));
 
 	const root = builder(name(), {

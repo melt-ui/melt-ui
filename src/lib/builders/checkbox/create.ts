@@ -10,24 +10,25 @@ import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateCheckboxProps } from './types';
 import { omit } from '../../internal/helpers/object';
+import { overridable } from '../../internal/helpers/overridable';
 
 const defaults = {
-	checked: false,
 	disabled: false,
 	required: false,
 	name: undefined,
 	value: undefined,
+	defaultChecked: false,
 } satisfies Defaults<CreateCheckboxProps>;
 
 export function createCheckbox(props?: CreateCheckboxProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateCheckboxProps;
 
-	const options = toWritableStores(omit(withDefaults, 'value', 'checked'));
-	const { disabled, name, required } = options;
+	const options = toWritableStores(omit(withDefaults, 'checked'));
+	const { disabled, name, required, value } = options;
 
 	// States
-	const value = writable<string | undefined>(withDefaults.value);
-	const checked = writable(withDefaults.checked);
+	const checkedWritable = withDefaults.checked ?? writable(withDefaults.defaultChecked);
+	const checked = overridable(checkedWritable, withDefaults?.onCheckedChange);
 
 	const root = builder('checkbox', {
 		stores: [checked, disabled, required],
@@ -98,7 +99,6 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 		},
 		states: {
 			checked,
-			value,
 		},
 		helpers: {
 			isIndeterminate,

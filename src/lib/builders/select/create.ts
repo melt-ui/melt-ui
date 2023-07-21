@@ -22,6 +22,7 @@ import {
 	next,
 	noop,
 	omit,
+	overridable,
 	prev,
 	removeScroll,
 	styleToString,
@@ -46,6 +47,8 @@ const defaults = {
 	preventScroll: true,
 	loop: false,
 	name: undefined,
+	defaultOpen: false,
+	defaultValue: undefined,
 } satisfies Defaults<CreateSelectProps>;
 
 type SelectParts = 'menu' | 'trigger' | 'option' | 'group' | 'group-label' | 'arrow' | 'input';
@@ -65,8 +68,12 @@ export function createSelect(props?: CreateSelectProps) {
 		name: nameStore,
 	} = options;
 
-	const open = writable(false);
-	const value = writable<unknown>(withDefaults.value ?? null);
+	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
+	const open = overridable(openWritable, withDefaults?.onOpenChange);
+
+	const valueWritable = withDefaults.value ?? writable<unknown>(withDefaults.defaultValue);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
+
 	const label = writable<string | number | null>(withDefaults.label ?? null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 

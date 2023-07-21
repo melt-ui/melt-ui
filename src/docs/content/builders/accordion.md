@@ -32,9 +32,9 @@ heading element, like so:
 
 ```svelte
 <h2>
-  <button melt={$trigger(id)}>
-    {title}
-  </button>
+	<button melt={$trigger(id)}>
+		{title}
+	</button>
 </h2>
 ```
 
@@ -45,7 +45,7 @@ the heading level to 4.
 
 ```svelte /heading/#hi
 <script lang="ts">
-  const { content, item, trigger, isSelected, root, heading } = createAccordion()
+	const { content, item, trigger, isSelected, root, heading } = createAccordion()
 </script>
 ```
 
@@ -92,59 +92,59 @@ update the `options` store with new arguments.
 
 ```svelte {4,15,19,21}
 <script lang="ts">
-  import { createAccordion } from '@melt-ui/svelte'
+	import { createAccordion } from '@melt-ui/svelte'
 
-  let value: string | string[] | undefined = 'item-1'
-  let disabled = false
+	let value: string | string[] | undefined = 'item-1'
+	let disabled = false
 
-  const {
-    content,
-    item,
-    trigger,
-    root,
-    value: valueStore,
-    options
-  } = createAccordion({
-    value,
-    disabled
-  })
+	const {
+		content,
+		item,
+		trigger,
+		root,
+		value: valueStore,
+		options
+	} = createAccordion({
+		value,
+		disabled
+	})
 
-  $: valueStore.set(value)
-  valueStore.subscribe((v) => (value = v))
-  $: options.update((o) => ({ ...o, disabled }))
+	$: valueStore.set(value)
+	valueStore.subscribe((v) => (value = v))
+	$: options.update((o) => ({ ...o, disabled }))
 </script>
 
 <button
-  on:click={() => {
-    const randPick = Math.floor(Math.random() * 3) + 1
-    value = `item-${randPick}`
-  }}>
-  Trigger randomly
+	on:click={() => {
+		const randPick = Math.floor(Math.random() * 3) + 1
+		value = `item-${randPick}`
+	}}>
+	Trigger randomly
 </button>
 
 <p>Value: {value} Value Store: {$valueStore}</p>
 
 <div melt={$root}>
-  <div melt={$item('item-1')}>
-    <button melt={$trigger('item-1')}>Is it accessible?</button>
-    <div melt={$content('item-1')}>
-      <div>Yes. It adheres to the WAI-ARIA design pattern.</div>
-    </div>
-  </div>
+	<div melt={$item('item-1')}>
+		<button melt={$trigger('item-1')}>Is it accessible?</button>
+		<div melt={$content('item-1')}>
+			<div>Yes. It adheres to the WAI-ARIA design pattern.</div>
+		</div>
+	</div>
 
-  <div melt={$item('item-2')}>
-    <button melt={$trigger('item-2')}>Is it accessible?</button>
-    <div melt={$content('item-2')}>
-      <div>Yes. It adheres to the WAI-ARIA design pattern.</div>
-    </div>
-  </div>
+	<div melt={$item('item-2')}>
+		<button melt={$trigger('item-2')}>Is it accessible?</button>
+		<div melt={$content('item-2')}>
+			<div>Yes. It adheres to the WAI-ARIA design pattern.</div>
+		</div>
+	</div>
 
-  <div melt={$item('item-3')}>
-    <button melt={$trigger('item-3')}>Is it accessible?</button>
-    <div melt={$content('item-3')}>
-      <div>Yes. It adheres to the WAI-ARIA design pattern.</div>
-    </div>
-  </div>
+	<div melt={$item('item-3')}>
+		<button melt={$trigger('item-3')}>Is it accessible?</button>
+		<div melt={$content('item-3')}>
+			<div>Yes. It adheres to the WAI-ARIA design pattern.</div>
+		</div>
+	</div>
 </div>
 ```
 

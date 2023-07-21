@@ -12,7 +12,7 @@
 		helpers: { isChecked },
 		states: { checked: checkedStore },
 	} = createSwitch({
-		checked,
+		defaultChecked: checked,
 	});
 
 	isChecked.subscribe((value) => {

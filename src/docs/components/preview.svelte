@@ -21,7 +21,6 @@
 
 <script lang="ts">
 	import { page } from '$app/stores';
-	import type { CreateSelectProps } from '$lib';
 	import { cn } from '$docs/utils';
 	import CodeBlock from './code-block.svelte';
 	import PreviewWrapper from './preview-wrapper.svelte';
@@ -92,7 +91,7 @@
 			value: key,
 			label: key,
 			disabled: value === null,
-		} satisfies CreateSelectProps;
+		};
 	});
 
 	const fileList = ['index.svelte', 'tailwind.config.ts', 'globals.css'] as const;

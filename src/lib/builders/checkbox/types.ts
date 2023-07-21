@@ -1,14 +1,16 @@
 import type { createCheckbox } from './create';
 import type { BuilderReturn } from '$lib/internal/types';
-
-type CheckedState = boolean | 'indeterminate';
+import type { Writable } from 'svelte/store';
+import type { ChangeFn } from '$lib/internal/helpers';
 
 export type CreateCheckboxProps = {
-	checked?: CheckedState;
 	disabled?: boolean;
 	required?: boolean;
 	name?: string;
 	value?: string;
+	checked?: Writable<boolean | 'indeterminate'>;
+	defaultChecked?: boolean | 'indeterminate';
+	onCheckedChange?: ChangeFn<boolean | 'indeterminate'>;
 };
 
 export type Checkbox = BuilderReturn<typeof createCheckbox>;

@@ -6,9 +6,11 @@
 
 	const {
 		elements: { trigger, overlay, content, title, description, close },
-		actions: { portal },
 		states: { open },
-	} = createDialog();
+		actions: { portal },
+	} = createDialog({
+		role: 'alertdialog',
+	});
 </script>
 
 <button melt={$trigger} class="trigger"> Delete Item </button>

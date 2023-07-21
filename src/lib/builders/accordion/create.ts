@@ -5,8 +5,10 @@ import {
 	executeCallbacks,
 	generateId,
 	getElementByMeltId,
+	isHTMLElement,
 	kbd,
 	omit,
+	overridable,
 	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
@@ -32,12 +34,12 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 	props?: CreateAccordionProps<T>
 ) => {
 	const withDefaults = { ...defaults, ...props };
-
 	const options = toWritableStores(omit(withDefaults, 'value'));
-
 	const { disabled } = options;
 
-	const value = writable<string | string[] | undefined>(withDefaults.value);
+	const valueWritable =
+		withDefaults.value ?? writable<string | string[] | undefined>(withDefaults.value);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	const isSelected = (key: string, v: string | string[] | undefined) => {
 		if (v === undefined) return false;
@@ -133,7 +135,8 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 					}
 					e.preventDefault();
 
-					const el = e.target as HTMLElement;
+					const el = e.target;
+					if (!isHTMLElement(el)) return;
 					const rootEl = getElementByMeltId(ids.root);
 					if (!rootEl) return;
 					const items = Array.from(rootEl.querySelectorAll<HTMLElement>(selector('trigger')));

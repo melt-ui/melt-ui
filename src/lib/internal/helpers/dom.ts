@@ -4,8 +4,8 @@ export function focus(element: unknown): void {
 	if (isHTMLElement(element)) {
 		element.focus();
 	} else if (typeof element === 'string') {
-		const el = document.querySelector(element);
-		if (isHTMLElement(el)) {
+		const el = document.querySelector<HTMLElement>(element);
+		if (el) {
 			el.focus();
 		}
 	}
@@ -25,6 +25,10 @@ export function getTabbableNodes(container: HTMLElement): HTMLElement[] {
 			return node.tabIndex >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
 		},
 	});
-	while (walker.nextNode()) nodes.push(walker.currentNode as HTMLElement);
+	while (walker.nextNode()) {
+		if (isHTMLElement(walker.currentNode)) {
+			nodes.push(walker.currentNode);
+		}
+	}
 	return nodes;
 }

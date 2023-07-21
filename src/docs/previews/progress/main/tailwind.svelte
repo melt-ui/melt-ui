@@ -6,7 +6,7 @@
 		states: { value },
 		options: { max },
 	} = createProgress({
-		value: 30,
+		defaultValue: 30,
 		max: 100,
 	});
 

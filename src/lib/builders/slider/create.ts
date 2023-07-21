@@ -6,8 +6,10 @@ import {
 	generateId,
 	getElementByMeltId,
 	isBrowser,
+	isHTMLElement,
 	kbd,
 	omit,
+	overridable,
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers';
@@ -15,7 +17,7 @@ import { derived, get, writable } from 'svelte/store';
 import type { CreateSliderProps } from './types';
 
 const defaults = {
-	value: [],
+	defaultValue: [],
 	min: 0,
 	max: 100,
 	step: 1,
@@ -31,7 +33,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const options = toWritableStores(omit(withDefaults, 'value'));
 	const { min, max, step, orientation, disabled } = options;
 
-	const value = writable(withDefaults.value);
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	const isActive = writable(false);
 	const currentThumbIndex = writable<number>(0);
@@ -148,7 +151,9 @@ export const createSlider = (props?: CreateSliderProps) => {
 				const $max = get(max);
 				if (get(disabled)) return;
 
-				const target = event.currentTarget as HTMLElement;
+				const target = event.currentTarget;
+				if (!isHTMLElement(target)) return;
+
 				const thumbs = getAllThumbs();
 				if (!thumbs?.length) return;
 
@@ -283,11 +288,14 @@ export const createSlider = (props?: CreateSliderProps) => {
 			const pointerDown = (e: PointerEvent) => {
 				if (e.button !== 0) return;
 
-				const sliderEl = getElementByMeltId($root['data-melt-id']) as HTMLElement;
+				const sliderEl = getElementByMeltId($root['data-melt-id']);
 				const closestThumb = getClosestThumb(e);
 				if (!closestThumb || !sliderEl) return;
 
-				if (!sliderEl.contains(e.target as HTMLElement)) return;
+				const target = e.target;
+				if (!isHTMLElement(target)) return;
+
+				if (!sliderEl.contains(target)) return;
 				e.preventDefault();
 
 				activeThumb.set(closestThumb);
@@ -310,7 +318,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 			const pointerMove = (e: PointerEvent) => {
 				if (!get(isActive)) return;
 
-				const sliderEl = getElementByMeltId($root['data-melt-id']) as HTMLElement;
+				const sliderEl = getElementByMeltId($root['data-melt-id']);
 				const closestThumb = get(activeThumb);
 				if (!sliderEl || !closestThumb) return;
 

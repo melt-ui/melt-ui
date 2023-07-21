@@ -11,13 +11,8 @@
 		elements: { trigger, menu, option },
 		states: { value: localValue, label },
 		helpers: { isSelected },
-	} = createSelect({ value: $codingStyle });
+	} = createSelect({ value: codingStyle });
 
-	localValue.subscribe((v) => {
-		if (v === 'tailwind' || v === 'css') {
-			codingStyle.set(v);
-		}
-	});
 	$: localValue.set($codingStyle);
 
 	beforeNavigate(() => {
