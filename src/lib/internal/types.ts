@@ -60,5 +60,3 @@ export type StoreValueObj<T> = {
 export type BuilderReturn<T extends (...args: any) => any> = {
 	[P in keyof ReturnType<T>]: ReturnType<T>[P];
 };
-
-export type MeltEvent<E extends Event> = CustomEvent<{ cancel: () => void; originalEvent: E }>;
