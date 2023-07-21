@@ -1,5 +1,12 @@
 # @melt-ui/svelte
 
+## 0.24.1
+
+### Patch Changes
+
+- 0f100296: [Checkbox] Unsub checkbox click event
+- afa02ae9: use nanonid/non-secure to support more environments
+
 ## 0.24.0
 
 ### Minor Changes
