@@ -1,5 +1,31 @@
 # @melt-ui/svelte
 
+## 0.24.0
+
+### Minor Changes
+
+- ef32b32a: [New Builder] Toast
+
+### Patch Changes
+
+- f25ed135: [Dialog]: Dialog no longer closes on right-click
+
+## 0.23.2
+
+### Patch Changes
+
+- 3c7725c3: [Tabs] Force focus on click for buttons in safari
+
+## 0.23.1
+
+### Patch Changes
+
+- 55815f04: Slider: invert vertical direction
+- 7639d712: Tooltip: prevent focus on mousedown
+- b7cfbf13: Select: add a11y roles
+- f1e7c64c: Slider: metaKeys to jump to values
+- 7d7b18e8: refactor: improved accordion types
+
 ## 0.23.0
 
 ### Minor Changes

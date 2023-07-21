@@ -37,7 +37,6 @@
 		>
 			<h2 class="flex">
 				<button
-					id={i === 0 ? 'accordion-trigger' : undefined}
 					melt={$trigger(id)}
 					class="flex h-12 flex-1 cursor-pointer items-center justify-between border-b border-b-magnum-700
                  bg-white px-5 text-base font-medium
