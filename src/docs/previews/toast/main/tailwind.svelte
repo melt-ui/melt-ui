@@ -20,17 +20,17 @@
 		{
 			title: 'Success',
 			description: 'Congratulations! It worked!',
-			color: 'border-green-500',
+			color: 'bg-green-500',
 		},
 		{
 			title: 'Warning',
 			description: 'Please check again.',
-			color: 'border-orange-500',
+			color: 'bg-orange-500',
 		},
 		{
 			title: 'Error',
 			description: 'Something did not work!',
-			color: 'border-red-500',
+			color: 'bg-red-500',
 		},
 	];
 
@@ -54,15 +54,13 @@
 			animate:flip={{ duration: 500 }}
 			in:fly={{ duration: 150, x: '100%' }}
 			out:fly={{ duration: 150, x: '100%' }}
-			class={cn(
-				'rounded-l-lg border-r-2 bg-neutral-800  text-white shadow-md',
-				data.color,
-			)}
+			class="rounded-lg bg-neutral-800 text-white shadow-md"
 		>
 			<div class="rounded- flex w-[380px] items-center justify-between p-5">
 				<div>
-					<h3 melt={$title(id)} class="font-semibold">
+					<h3 melt={$title(id)} class="flex items-center gap-2 font-semibold">
 						{data.title}
+						<span class="rounded-full square-1.5 {data.color}" />
 					</h3>
 					<div melt={$description(id)}>
 						{data.description}
