@@ -10,6 +10,7 @@ import { dropdownMenuData } from './dropdown-menu';
 import { hoverCardData } from './hover-card';
 import { labelData } from './label';
 import { menubarData } from './menubar';
+import { navigationMenuData } from './navigation-menu';
 import { paginationData } from './pagination';
 import { pinInputData } from './pin-input';
 import { popoverData } from './popover';
@@ -39,6 +40,7 @@ export const builderList = [
 	'hover-card',
 	'label',
 	'menubar',
+	'navigation-menu',
 	'pagination',
 	'pin-input',
 	'popover',
@@ -83,6 +85,7 @@ export const data: Builders = {
 	'hover-card': hoverCardData,
 	label: labelData,
 	menubar: menubarData,
+	'navigation-menu': navigationMenuData,
 	pagination: paginationData,
 	'pin-input': pinInputData,
 	popover: popoverData,

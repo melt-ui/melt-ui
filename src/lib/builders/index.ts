@@ -9,6 +9,7 @@ export * from './dropdown-menu';
 export * from './hover-card';
 export * from './label';
 export * from './menubar';
+export * from './navigation-menu';
 export * from './pagination';
 export * from './pin-input';
 export * from './popover';
