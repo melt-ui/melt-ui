@@ -27,8 +27,8 @@ Create a hovercard using the `createHoverCard` builder function.
 
 ```svelte {3}
 <script lang="ts">
-  import { createHoverCard } from '@melt-ui/svelte'
-  const { trigger, content, open, arrow } = createHoverCard()
+	import { createHoverCard } from '@melt-ui/svelte'
+	const { trigger, content, open, arrow } = createHoverCard()
 </script>
 ```
 
@@ -37,15 +37,15 @@ example of how to structure the hovercard is shown below.
 
 ```svelte
 <script lang="ts">
-  import { createHoverCard } from '@melt-ui/svelte'
-  const { trigger, content, arrow } = createHoverCard()
+	import { createHoverCard } from '@melt-ui/svelte'
+	const { trigger, content, arrow } = createHoverCard()
 </script>
 
 <button melt={$trigger}>Hover Me</button>
 
 <div melt={$content}>
-  <div>I am content inside the hover card</div>
-  <div melt={$arrow} />
+	<div>I am content inside the hover card</div>
+	<div melt={$arrow} />
 </div>
 ```
 

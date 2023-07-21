@@ -16,13 +16,13 @@ In the most simplest form, the PP will take the following code:
 
 ```svelte
 <script>
-  import { createCollapsible } from '@melt-ui/svelte'
-  const { open, root, content, trigger } = createCollapsible()
+	import { createCollapsible } from '@melt-ui/svelte'
+	const { open, root, content, trigger } = createCollapsible()
 </script>
 
 <div melt={$root}>
-  <button melt={$trigger}>{$open ? 'Close' : 'Open'}</button>
-  <div melt={$content}>Obi-Wan says: Hello there!</div>
+	<button melt={$trigger}>{$open ? 'Close' : 'Open'}</button>
+	<div melt={$content}>Obi-Wan says: Hello there!</div>
 </div>
 ```
 
@@ -30,13 +30,13 @@ and transform it into this:
 
 ```svelte
 <script>
-  import { createCollapsible } from '@melt-ui/svelte'
-  const { open, root, content, trigger } = createCollapsible()
+	import { createCollapsible } from '@melt-ui/svelte'
+	const { open, root, content, trigger } = createCollapsible()
 </script>
 
 <div {...$root} use:$root.action>
-  <button {...$trigger} use:$trigger.action>{$open ? 'Close' : 'Open'}</button>
-  <div {...$content} use:$content.action>Obi-Wan says: Hello there!</div>
+	<button {...$trigger} use:$trigger.action>{$open ? 'Close' : 'Open'}</button>
+	<div {...$content} use:$content.action>Obi-Wan says: Hello there!</div>
 </div>
 ```
 
@@ -44,13 +44,13 @@ It can handle more complex scenarios, such as a builder that is a call expressio
 
 ```svelte
 <script>
-  import { createBuilder } from '@melt-ui/svelte'
-  const { builder } = createBuilder()
+	import { createBuilder } from '@melt-ui/svelte'
+	const { builder } = createBuilder()
 </script>
 
 {#each Array(100) as _, i}
-  <!-- Just a normal call expression -->
-  <div melt={$builder({ arg: i })} />
+	<!-- Just a normal call expression -->
+	<div melt={$builder({ arg: i })} />
 {/each}
 ```
 
@@ -63,9 +63,9 @@ For example, the `checkboxItem` builder from `createDropdownMenu` expects the fo
 
 ```svelte
 <script>
-  import { createDropdownMenu } from '@melt-ui/svelte'
+	import { createDropdownMenu } from '@melt-ui/svelte'
 
-  const { checkboxItem } = createDropdownMenu()
+	const { checkboxItem } = createDropdownMenu()
 </script>
 
 <!-- Note that the action requires arguments here 👇 -->

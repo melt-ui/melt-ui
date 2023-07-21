@@ -28,9 +28,9 @@ The first thing you'll need to do is create a menubar using the `createMenubar` 
 
 ```svelte {4}
 <script lang="ts">
-  import { createMenubar } from '@melt-ui/svelte'
+	import { createMenubar } from '@melt-ui/svelte'
 
-  const { menubar, createMenu } = createMenubar()
+	const { menubar, createMenu } = createMenubar()
 </script>
 ```
 
@@ -44,19 +44,19 @@ function and wrap it in a `menubar` element.
 
 ```svelte {5}
 <script lang="ts">
-  import { createMenubar } from '@melt-ui/svelte'
+	import { createMenubar } from '@melt-ui/svelte'
 
-  const { menubar, createMenu } = createMenubar()
-  const { menu, item, trigger } = createMenu()
+	const { menubar, createMenu } = createMenubar()
+	const { menu, item, trigger } = createMenu()
 </script>
 
 <div melt={$menubar}>
-  <button melt={$trigger}>Open Menu</button>
-  <div melt={$menu}>
-    <div {...$item} use:item>...</div>
-    <div {...$item} use:item>...</div>
-    <div {...$item} use:item>...</div>
-  </div>
+	<button melt={$trigger}>Open Menu</button>
+	<div melt={$menu}>
+		<div {...$item} use:item>...</div>
+		<div {...$item} use:item>...</div>
+		<div {...$item} use:item>...</div>
+	</div>
 </div>
 ```
 
@@ -70,35 +70,35 @@ returned variables to prevent any naming conflicts.
 
 ```svelte {6-7}
 <script lang="ts">
-  import { createMenubar } from '@melt-ui/svelte'
+	import { createMenubar } from '@melt-ui/svelte'
 
-  const { menubar, createMenu } = createMenubar()
-  const { menu, item, trigger } = createMenu()
-  const { menu: menuA, item: itemA, trigger: triggerA } = createMenu()
-  const { menu: menuB, item: itemB, trigger: triggerB } = createMenu()
+	const { menubar, createMenu } = createMenubar()
+	const { menu, item, trigger } = createMenu()
+	const { menu: menuA, item: itemA, trigger: triggerA } = createMenu()
+	const { menu: menuB, item: itemB, trigger: triggerB } = createMenu()
 </script>
 
 <div melt={$menubar}>
-  <button melt={$trigger}>File</button>
-  <div melt={$menu}>
-    <div {...$item} use:item>...</div>
-    <div {...$item} use:item>...</div>
-    <div {...$item} use:item>...</div>
-  </div>
+	<button melt={$trigger}>File</button>
+	<div melt={$menu}>
+		<div {...$item} use:item>...</div>
+		<div {...$item} use:item>...</div>
+		<div {...$item} use:item>...</div>
+	</div>
 
-  <button melt={$triggerA}>Edit</button>
-  <div melt={$menuA}>
-    <div {...$itemA} use:itemA>...</div>
-    <div {...$itemA} use:itemA>...</div>
-    <div {...$itemA} use:itemA>...</div>
-  </div>
+	<button melt={$triggerA}>Edit</button>
+	<div melt={$menuA}>
+		<div {...$itemA} use:itemA>...</div>
+		<div {...$itemA} use:itemA>...</div>
+		<div {...$itemA} use:itemA>...</div>
+	</div>
 
-  <button melt={$triggerB}>Help</button>
-  <div melt={$menuB}>
-    <div {...$itemB} use:itemB>...</div>
-    <div {...$itemB} use:itemB>...</div>
-    <div {...$itemB} use:itemB>...</div>
-  </div>
+	<button melt={$triggerB}>Help</button>
+	<div melt={$menuB}>
+		<div {...$itemB} use:itemB>...</div>
+		<div {...$itemB} use:itemB>...</div>
+		<div {...$itemB} use:itemB>...</div>
+	</div>
 </div>
 ```
 

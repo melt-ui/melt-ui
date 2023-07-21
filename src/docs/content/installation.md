@@ -86,10 +86,10 @@ import { preprocessMeltUI } from '@melt-ui/pp'
 import sequence from 'svelte-sequential-preprocessor'
 
 const config = {
-  // ... other svelte config options
-  preprocess: sequence([
-    // ... other preprocessors
-    preprocessMeltUI() // add to the end!
-  ])
+	// ... other svelte config options
+	preprocess: sequence([
+		// ... other preprocessors
+		preprocessMeltUI() // add to the end!
+	])
 }
 ```
