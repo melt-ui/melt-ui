@@ -11,6 +11,7 @@ import {
 	omit,
 	overridable,
 	toWritableStores,
+	type MeltEventHandler,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
@@ -93,8 +94,9 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 		},
 	});
 
-	type TriggerActionAttributes = {
-		'on:m-click'?: (e: CustomEvent<{ cancel: () => void }>) => void;
+	type TriggerAttributes = {
+		'on:m-click'?: MeltEventHandler<MouseEvent>;
+		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
 	};
 
 	const trigger = builder(name('trigger'), {
@@ -113,7 +115,7 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 				};
 			};
 		},
-		action: (node: HTMLElement): ActionReturn<unknown, TriggerActionAttributes> => {
+		action: (node: HTMLElement): ActionReturn<unknown, TriggerAttributes> => {
 			const unsub = executeCallbacks(
 				addEventListener(
 					node,
@@ -124,48 +126,56 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 						if (disabled || !itemValue) return;
 
 						value.update(($value) => {
-							if (Array.isArray($value)) {
-								return $value.includes(itemValue)
-									? $value.filter((v) => v !== itemValue)
-									: [...$value, itemValue];
-							}
-
 							if ($value === undefined) {
 								return withDefaults.type === 'single' ? itemValue : [itemValue];
 							}
+
+							if (Array.isArray($value)) {
+								if ($value.includes(itemValue)) {
+									return $value.filter((v) => v !== itemValue);
+								}
+
+								$value.push(itemValue);
+								return $value;
+							}
+
 							return $value === itemValue ? undefined : itemValue;
 						});
 					})
 				),
-				addEventListener(node, 'keydown', (e) => {
-					if (![kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.HOME, kbd.END].includes(e.key)) {
-						return;
-					}
-					e.preventDefault();
+				addEventListener(
+					node,
+					'keydown',
+					withMelt((e) => {
+						if (![kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.HOME, kbd.END].includes(e.key)) {
+							return;
+						}
+						e.preventDefault();
 
-					const el = e.target;
-					if (!isHTMLElement(el)) return;
-					const rootEl = getElementByMeltId(ids.root);
-					if (!rootEl) return;
-					const items = Array.from(rootEl.querySelectorAll<HTMLElement>(selector('trigger')));
-					const candidateItems = items.filter((item) => item.dataset.disabled !== 'true');
+						const el = e.target;
+						if (!isHTMLElement(el)) return;
+						const rootEl = getElementByMeltId(ids.root);
+						if (!rootEl) return;
+						const items = Array.from(rootEl.querySelectorAll<HTMLElement>(selector('trigger')));
+						const candidateItems = items.filter((item) => item.dataset.disabled !== 'true');
 
-					if (!candidateItems.length) return;
-					const elIdx = candidateItems.indexOf(el);
+						if (!candidateItems.length) return;
+						const elIdx = candidateItems.indexOf(el);
 
-					if (e.key === kbd.ARROW_DOWN) {
-						candidateItems[(elIdx + 1) % candidateItems.length].focus();
-					}
-					if (e.key === kbd.ARROW_UP) {
-						candidateItems[(elIdx - 1 + candidateItems.length) % candidateItems.length].focus();
-					}
-					if (e.key === kbd.HOME) {
-						candidateItems[0].focus();
-					}
-					if (e.key === kbd.END) {
-						candidateItems[candidateItems.length - 1].focus();
-					}
-				})
+						if (e.key === kbd.ARROW_DOWN) {
+							candidateItems[(elIdx + 1) % candidateItems.length].focus();
+						}
+						if (e.key === kbd.ARROW_UP) {
+							candidateItems[(elIdx - 1 + candidateItems.length) % candidateItems.length].focus();
+						}
+						if (e.key === kbd.HOME) {
+							candidateItems[0].focus();
+						}
+						if (e.key === kbd.END) {
+							candidateItems[candidateItems.length - 1].focus();
+						}
+					})
+				)
 			);
 
 			return {

@@ -137,7 +137,10 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			workingTag.id = generateId();
 		}
 
-		tags.update((current) => [...current, workingTag]);
+		tags.update((current) => {
+			current.push(workingTag);
+			return current;
+		});
 		return true;
 	};
 

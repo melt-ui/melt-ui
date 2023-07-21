@@ -61,23 +61,22 @@ export function createPagination(props: CreatePaginationProps) {
 		const prevButton = rootEl.querySelector<HTMLElement>(selector('prev'));
 		const nextButton = rootEl.querySelector<HTMLElement>(selector('next'));
 
-		const elements = [...triggers];
-		if (prevButton) elements.unshift(prevButton);
-		if (nextButton) elements.push(nextButton);
-		const index = Array.from(elements).indexOf(thisEl);
+		if (prevButton) triggers.unshift(prevButton);
+		if (nextButton) triggers.push(nextButton);
+		const index = triggers.indexOf(thisEl);
 
 		if (e.key === kbd.ARROW_LEFT && index !== 0) {
 			e.preventDefault();
-			elements[index - 1].focus();
-		} else if (e.key === kbd.ARROW_RIGHT && index !== elements.length - 1) {
+			triggers[index - 1].focus();
+		} else if (e.key === kbd.ARROW_RIGHT && index !== triggers.length - 1) {
 			e.preventDefault();
-			elements[index + 1].focus();
+			triggers[index + 1].focus();
 		} else if (e.key === kbd.HOME) {
 			e.preventDefault();
-			elements[0].focus();
+			triggers[0].focus();
 		} else if (e.key === kbd.END) {
 			e.preventDefault();
-			elements[elements.length - 1].focus();
+			triggers[triggers.length - 1].focus();
 		}
 	};
 

@@ -149,7 +149,10 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	 * that the filterFunction predicate is applied to any added items. Eg:
 	 * ```ts
 	 * function addNewBook(book: Book) {
-	 *   updateItems((books) => [...books, book]);
+	 *   updateItems((books) => {
+	 *     books.push(book);
+	 *     return books
+	 * });
 	 * };
 	 * ```
 	 */

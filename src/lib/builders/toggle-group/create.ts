@@ -96,18 +96,20 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 					if (itemValue === undefined || disabled) return;
 
 					value.update(($value) => {
-						if (withDefaults.type === 'single') {
-							return $value === itemValue ? undefined : itemValue;
-						} else {
-							const arrValue = $value as string[] | undefined;
-							if (arrValue === undefined) {
-								return [itemValue];
-							} else {
-								return arrValue.includes(itemValue)
-									? arrValue.filter((v) => v !== itemValue)
-									: [...arrValue, itemValue];
-							}
+						if ($value === undefined) {
+							return withDefaults.type === 'single' ? itemValue : [itemValue];
 						}
+
+						if (Array.isArray($value)) {
+							if ($value.includes(itemValue)) {
+								return $value.filter((v) => v !== itemValue);
+							}
+
+							$value.push(itemValue);
+							return $value;
+						}
+
+						return $value === itemValue ? undefined : itemValue;
 					});
 				}),
 
