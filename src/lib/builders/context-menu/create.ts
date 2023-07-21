@@ -1,6 +1,5 @@
 import { usePopper } from '$lib/internal/actions/popper';
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	derivedWithUnsubscribe,
@@ -16,8 +15,8 @@ import {
 	isLeftClick,
 	toWritableStores,
 	overridable,
-	withMelt,
 	type MeltEventHandler,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import type { VirtualElement } from '@floating-ui/core';
@@ -159,48 +158,44 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			);
 
 			const unsubEvents = executeCallbacks(
-				addEventListener(
-					node,
-					'keydown',
-					withMelt((e) => {
-						const target = e.target;
-						if (!isHTMLElement(target)) return;
+				addMeltEventListener(node, 'keydown', (e) => {
+					const target = e.target;
+					if (!isHTMLElement(target)) return;
 
-						const menuElement = e.currentTarget;
-						if (!isHTMLElement(menuElement)) return;
+					const menuElement = e.currentTarget;
+					if (!isHTMLElement(menuElement)) return;
 
-						/**
-						 * Submenu key events bubble through portals and
-						 * we only care about key events that happen inside this menu.
-						 */
-						const isKeyDownInside = target.closest("[role='menu']") === menuElement;
-						if (!isKeyDownInside) return;
-						if (FIRST_LAST_KEYS.includes(e.key)) {
-							handleMenuNavigation(e);
-						}
+					/**
+					 * Submenu key events bubble through portals and
+					 * we only care about key events that happen inside this menu.
+					 */
+					const isKeyDownInside = target.closest("[role='menu']") === menuElement;
+					if (!isKeyDownInside) return;
+					if (FIRST_LAST_KEYS.includes(e.key)) {
+						handleMenuNavigation(e);
+					}
 
-						/**
-						 * Menus should not be navigated using tab, so we prevent it.
-						 * @see https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
-						 */
-						if (e.key === kbd.TAB) {
-							e.preventDefault();
-							rootActiveTrigger.set(null);
-							rootOpen.set(false);
-							handleTabNavigation(e, nextFocusable, prevFocusable);
-							return;
-						}
+					/**
+					 * Menus should not be navigated using tab, so we prevent it.
+					 * @see https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
+					 */
+					if (e.key === kbd.TAB) {
+						e.preventDefault();
+						rootActiveTrigger.set(null);
+						rootOpen.set(false);
+						handleTabNavigation(e, nextFocusable, prevFocusable);
+						return;
+					}
 
-						/**
-						 * Check for typeahead search and handle it.
-						 */
-						const isCharacterKey = e.key.length === 1;
-						const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-						if (!isModifierKey && isCharacterKey) {
-							handleTypeaheadSearch(e.key, getMenuItems(menuElement));
-						}
-					})
-				)
+					/**
+					 * Check for typeahead search and handle it.
+					 */
+					const isCharacterKey = e.key.length === 1;
+					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
+					if (!isModifierKey && isCharacterKey) {
+						handleTypeaheadSearch(e.key, getMenuItems(menuElement));
+					}
+				})
 			);
 			return {
 				destroy() {
@@ -212,6 +207,13 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		},
 	});
 
+	type TriggerEvents = {
+		'on:m-contextmenu'?: MeltEventHandler<MouseEvent>;
+		'on:m-pointerdown'?: MeltEventHandler<PointerEvent>;
+		'on:m-pointermove'?: MeltEventHandler<PointerEvent>;
+		'on:m-pointercancel'?: MeltEventHandler<PointerEvent>;
+		'on:m-pointerup'?: MeltEventHandler<PointerEvent>;
+	};
 	const trigger = builder(name('trigger'), {
 		stores: rootOpen,
 		returned: ($rootOpen) => {
@@ -225,7 +227,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				}),
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): ActionReturn<unknown, TriggerEvents> => {
 			applyAttrsIfDisabled(node);
 
 			const handleOpen = (e: MouseEvent | PointerEvent) => {
@@ -244,7 +246,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			};
 
 			const unsub = executeCallbacks(
-				addEventListener(node, 'contextmenu', (e) => {
+				addMeltEventListener(node, 'contextmenu', (e) => {
 					/**
 					 * Clear the long press because some platforms already
 					 * fire a contextmenu event on long press.
@@ -253,7 +255,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					handleOpen(e);
 					e.preventDefault();
 				}),
-				addEventListener(node, 'pointerdown', (e) => {
+				addMeltEventListener(node, 'pointerdown', (e) => {
 					if (!isTouchOrPen(e)) return;
 
 					// Clear the long press in case there's multiple touchpoints
@@ -261,17 +263,17 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 
 					longPressTimer.set(window.setTimeout(() => handleOpen(e), 700));
 				}),
-				addEventListener(node, 'pointermove', (e) => {
+				addMeltEventListener(node, 'pointermove', (e) => {
 					if (!isTouchOrPen(e)) return;
 
 					clearTimerStore(longPressTimer);
 				}),
-				addEventListener(node, 'pointercancel', (e) => {
+				addMeltEventListener(node, 'pointercancel', (e) => {
 					if (!isTouchOrPen(e)) return;
 
 					clearTimerStore(longPressTimer);
 				}),
-				addEventListener(node, 'pointerup', (e) => {
+				addMeltEventListener(node, 'pointerup', (e) => {
 					if (!isTouchOrPen(e)) return;
 
 					clearTimerStore(longPressTimer);

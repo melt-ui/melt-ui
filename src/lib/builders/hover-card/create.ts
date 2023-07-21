@@ -1,6 +1,5 @@
 import { usePopper, usePortal } from '$lib/internal/actions';
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	effect,
@@ -16,7 +15,7 @@ import {
 	styleToString,
 	toWritableStores,
 	type MeltEventHandler,
-	withMelt,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
@@ -112,41 +111,21 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 		},
 		action: (node: HTMLElement): ActionReturn<unknown, TriggerEvents> => {
 			const unsub = executeCallbacks(
-				addEventListener(
-					node,
-					'pointerenter',
-					withMelt((e) => {
-						if (isTouch(e)) return;
-						get(handleOpen)();
-					})
-				),
-				addEventListener(
-					node,
-					'pointerleave',
-					withMelt((e) => {
-						if (isTouch(e)) return;
-						get(handleClose)();
-					})
-				),
-				addEventListener(
-					node,
-					'focus',
-					withMelt(() => get(handleOpen)())
-				),
+				addMeltEventListener(node, 'pointerenter', (e) => {
+					if (isTouch(e)) return;
+					get(handleOpen)();
+				}),
+				addMeltEventListener(node, 'pointerleave', (e) => {
+					if (isTouch(e)) return;
+					get(handleClose)();
+				}),
+				addMeltEventListener(node, 'focus', () => get(handleOpen)()),
 
-				addEventListener(
-					node,
-					'blur',
-					withMelt(() => get(handleClose)())
-				),
-				addEventListener(
-					node,
-					'touchstart',
-					withMelt((e) => {
-						// prevent focus on touch devices
-						e.preventDefault();
-					})
-				)
+				addMeltEventListener(node, 'blur', () => get(handleClose)()),
+				addMeltEventListener(node, 'touchstart', (e) => {
+					// prevent focus on touch devices
+					e.preventDefault();
+				})
 			);
 
 			return {
@@ -216,46 +195,30 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 			});
 
 			unsub = executeCallbacks(
-				addEventListener(
-					node,
-					'pointerdown',
-					withMelt((e) => {
-						const currentTarget = e.currentTarget;
-						if (!isHTMLElement(currentTarget)) return;
-						const target = e.target;
-						if (!isHTMLElement(target)) return;
+				addMeltEventListener(node, 'pointerdown', (e) => {
+					const currentTarget = e.currentTarget;
+					if (!isHTMLElement(currentTarget)) return;
+					const target = e.target;
+					if (!isHTMLElement(target)) return;
 
-						if (currentTarget.contains(target)) {
-							containSelection.set(true);
-						}
+					if (currentTarget.contains(target)) {
+						containSelection.set(true);
+					}
 
-						hasSelection.set(false);
-						isPointerDownOnContent.set(true);
-					})
-				),
-				addEventListener(
-					node,
-					'pointerenter',
-					withMelt((e) => {
-						if (isTouch(e)) return;
-						get(handleOpen)();
-					})
-				),
-				addEventListener(
-					node,
-					'pointerleave',
-					withMelt((e) => {
-						if (isTouch(e)) return;
-						get(handleClose)();
-					})
-				),
-				addEventListener(
-					node,
-					'focusout',
-					withMelt((e) => {
-						e.preventDefault();
-					})
-				),
+					hasSelection.set(false);
+					isPointerDownOnContent.set(true);
+				}),
+				addMeltEventListener(node, 'pointerenter', (e) => {
+					if (isTouch(e)) return;
+					get(handleOpen)();
+				}),
+				addMeltEventListener(node, 'pointerleave', (e) => {
+					if (isTouch(e)) return;
+					get(handleClose)();
+				}),
+				addMeltEventListener(node, 'focusout', (e) => {
+					e.preventDefault();
+				}),
 
 				portalReturn && portalReturn.destroy ? portalReturn.destroy : noop,
 				unsubOpen

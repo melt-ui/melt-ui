@@ -1,5 +1,4 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -7,11 +6,11 @@ import {
 	getElementByMeltId,
 	isHTMLElement,
 	kbd,
-	withMelt,
 	omit,
 	overridable,
 	toWritableStores,
 	type MeltEventHandler,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
@@ -117,65 +116,57 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 		},
 		action: (node: HTMLElement): ActionReturn<unknown, TriggerEvents> => {
 			const unsub = executeCallbacks(
-				addEventListener(
-					node,
-					'click',
-					withMelt(() => {
-						const disabled = node.dataset.disabled === 'true';
-						const itemValue = node.dataset.value;
-						if (disabled || !itemValue) return;
+				addMeltEventListener(node, 'click', () => {
+					const disabled = node.dataset.disabled === 'true';
+					const itemValue = node.dataset.value;
+					if (disabled || !itemValue) return;
 
-						value.update(($value) => {
-							if ($value === undefined) {
-								return withDefaults.type === 'single' ? itemValue : [itemValue];
+					value.update(($value) => {
+						if ($value === undefined) {
+							return withDefaults.type === 'single' ? itemValue : [itemValue];
+						}
+
+						if (Array.isArray($value)) {
+							if ($value.includes(itemValue)) {
+								return $value.filter((v) => v !== itemValue);
 							}
 
-							if (Array.isArray($value)) {
-								if ($value.includes(itemValue)) {
-									return $value.filter((v) => v !== itemValue);
-								}
-
-								$value.push(itemValue);
-								return $value;
-							}
-
-							return $value === itemValue ? undefined : itemValue;
-						});
-					})
-				),
-				addEventListener(
-					node,
-					'keydown',
-					withMelt((e) => {
-						if (![kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.HOME, kbd.END].includes(e.key)) {
-							return;
+							$value.push(itemValue);
+							return $value;
 						}
-						e.preventDefault();
 
-						const el = e.target;
-						if (!isHTMLElement(el)) return;
-						const rootEl = getElementByMeltId(ids.root);
-						if (!rootEl) return;
-						const items = Array.from(rootEl.querySelectorAll<HTMLElement>(selector('trigger')));
-						const candidateItems = items.filter((item) => item.dataset.disabled !== 'true');
+						return $value === itemValue ? undefined : itemValue;
+					});
+				}),
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (![kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.HOME, kbd.END].includes(e.key)) {
+						return;
+					}
+					e.preventDefault();
 
-						if (!candidateItems.length) return;
-						const elIdx = candidateItems.indexOf(el);
+					const el = e.target;
+					if (!isHTMLElement(el)) return;
+					const rootEl = getElementByMeltId(ids.root);
+					if (!rootEl) return;
+					const items = Array.from(rootEl.querySelectorAll<HTMLElement>(selector('trigger')));
+					const candidateItems = items.filter((item) => item.dataset.disabled !== 'true');
 
-						if (e.key === kbd.ARROW_DOWN) {
-							candidateItems[(elIdx + 1) % candidateItems.length].focus();
-						}
-						if (e.key === kbd.ARROW_UP) {
-							candidateItems[(elIdx - 1 + candidateItems.length) % candidateItems.length].focus();
-						}
-						if (e.key === kbd.HOME) {
-							candidateItems[0].focus();
-						}
-						if (e.key === kbd.END) {
-							candidateItems[candidateItems.length - 1].focus();
-						}
-					})
-				)
+					if (!candidateItems.length) return;
+					const elIdx = candidateItems.indexOf(el);
+
+					if (e.key === kbd.ARROW_DOWN) {
+						candidateItems[(elIdx + 1) % candidateItems.length].focus();
+					}
+					if (e.key === kbd.ARROW_UP) {
+						candidateItems[(elIdx - 1 + candidateItems.length) % candidateItems.length].focus();
+					}
+					if (e.key === kbd.HOME) {
+						candidateItems[0].focus();
+					}
+					if (e.key === kbd.END) {
+						candidateItems[candidateItems.length - 1].focus();
+					}
+				})
 			);
 
 			return {

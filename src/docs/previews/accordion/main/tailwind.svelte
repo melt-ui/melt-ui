@@ -37,7 +37,7 @@
             focus-within:ring-magnum-400"
 		>
 			<h2 class="flex">
-				<!-- Option 1 -->
+				<!-- TODO: Remove before merge (just for testing events) -->
 				<button
 					on:m-click={(e) => console.log(e)}
 					use:trigger

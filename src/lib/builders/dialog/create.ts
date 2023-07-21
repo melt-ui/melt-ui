@@ -15,7 +15,7 @@ import {
 	styleToString,
 	toWritableStores,
 	type MeltEventHandler,
-	withMelt,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
 import { removeScroll } from '$lib/internal/helpers/scroll';
 import type { Defaults } from '$lib/internal/types';
@@ -78,16 +78,12 @@ export function createDialog(props: CreateDialogProps = {}) {
 			} as const;
 		},
 		action: (node: HTMLElement): ActionReturn<unknown, TriggerEvents> => {
-			const unsub = addEventListener(
-				node,
-				'click',
-				withMelt((e) => {
-					const el = e.currentTarget;
-					if (!isHTMLElement(el)) return;
-					open.set(true);
-					activeTrigger.set(el);
-				})
-			);
+			const unsub = addMeltEventListener(node, 'click', (e) => {
+				const el = e.currentTarget;
+				if (!isHTMLElement(el)) return;
+				open.set(true);
+				activeTrigger.set(el);
+			});
 
 			return {
 				destroy: unsub,
@@ -194,13 +190,9 @@ export function createDialog(props: CreateDialogProps = {}) {
 				type: 'button',
 			} as const),
 		action: (node: HTMLElement): ActionReturn<unknown, CloseEvents> => {
-			const unsub = addEventListener(
-				node,
-				'click',
-				withMelt(() => {
-					open.set(false);
-				})
-			);
+			const unsub = addMeltEventListener(node, 'click', () => {
+				open.set(false);
+			});
 
 			return {
 				destroy: unsub,

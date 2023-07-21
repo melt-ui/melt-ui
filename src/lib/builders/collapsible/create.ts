@@ -1,11 +1,10 @@
 import {
-	addEventListener,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	omit,
 	overridable,
 	toWritableStores,
-	withMelt,
 	type MeltEventHandler,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
@@ -49,15 +48,11 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 				disabled: $disabled,
 			} as const),
 		action: (node: HTMLElement): ActionReturn<unknown, TriggerEvents> => {
-			const unsub = addEventListener(
-				node,
-				'click',
-				withMelt(() => {
-					const disabled = node.dataset.disabled !== undefined;
-					if (disabled) return;
-					open.update(($open) => !$open);
-				})
-			);
+			const unsub = addMeltEventListener(node, 'click', () => {
+				const disabled = node.dataset.disabled !== undefined;
+				if (disabled) return;
+				open.update(($open) => !$open);
+			});
 
 			return {
 				destroy: unsub,

@@ -1,4 +1,5 @@
 import type { Arrayable } from '$lib/internal/types';
+import { noop } from './callbacks';
 import { isHTMLElement } from './is';
 
 /**
@@ -33,7 +34,6 @@ export function addEventListener<E extends keyof HTMLElementEventMap>(
 	handler: GeneralEventListener<HTMLElementEventMap[E]>,
 	options?: boolean | AddEventListenerOptions
 ): VoidFunction;
-
 /**
  * Adds an event listener to the specified target element(s) for the given event(s), and returns a function to remove it.
  * @param target The target element(s) to add the event listener to.
@@ -59,6 +59,51 @@ export function addEventListener(
 	};
 }
 
+/**
+ *  Overloaded function signatures for addEventListener
+ */
+export function addMeltEventListener<E extends keyof HTMLElementEventMap>(
+	target: Window,
+	event: E,
+	handler: (this: Window, ev: HTMLElementEventMap[E]) => unknown,
+	options?: boolean | AddEventListenerOptions
+): VoidFunction;
+
+export function addMeltEventListener<E extends keyof HTMLElementEventMap>(
+	target: Document,
+	event: E,
+	handler: (this: Document, ev: HTMLElementEventMap[E]) => unknown,
+	options?: boolean | AddEventListenerOptions
+): VoidFunction;
+
+export function addMeltEventListener<E extends keyof HTMLElementEventMap>(
+	target: EventTarget,
+	event: E,
+	handler: GeneralEventListener<HTMLElementEventMap[E]>,
+	options?: boolean | AddEventListenerOptions
+): VoidFunction;
+
+export function addMeltEventListener(
+	target: Window | Document | EventTarget,
+	event: Arrayable<string>,
+	handler: EventListenerOrEventListenerObject,
+	options?: boolean | AddEventListenerOptions
+) {
+	const events = Array.isArray(event) ? [...event] : [event];
+
+	if (typeof handler === 'function') {
+		const handlerWithMelt = withMelt((_event) => handler(_event));
+		// Add the event listener to each specified event for the target element(s).
+		events.forEach((_event) => target.addEventListener(_event, handlerWithMelt, options));
+
+		// Return a function that removes the event listener from the target element(s).
+		return () => {
+			events.forEach((_event) => target.removeEventListener(_event, handlerWithMelt, options));
+		};
+	}
+	return () => noop();
+}
+
 export type EventHandler<T extends Event = Event> = (event: T) => void;
 
 type MeltEvent<E extends Event> = CustomEvent<{ cancel: () => void; originalEvent: E }>;
@@ -66,7 +111,9 @@ export type MeltEventHandler<E extends Event> = EventHandler<
 	Expand<Omit<MeltEvent<E>, 'initCustomEvent'>>
 >;
 
-export function dispatchMeltEvent(originalEvent: Event) {
+export function dispatchMeltEvent<E extends keyof HTMLElementEventMap>(
+	originalEvent: HTMLElementEventMap[E]
+) {
 	const node = originalEvent.currentTarget;
 	if (!isHTMLElement(node)) return;
 
@@ -85,8 +132,10 @@ export function dispatchMeltEvent(originalEvent: Event) {
 	node.dispatchEvent(customMeltEvent);
 }
 
-export function withMelt<E extends Event>(handler: EventHandler<E>) {
-	return (event: E) => {
+export function withMelt<E extends keyof HTMLElementEventMap>(
+	handler: (event: HTMLElementEventMap[E]) => void
+) {
+	return (event: HTMLElementEventMap[E]) => {
 		dispatchMeltEvent(event);
 		if (event.defaultPrevented) return;
 		return handler(event);
