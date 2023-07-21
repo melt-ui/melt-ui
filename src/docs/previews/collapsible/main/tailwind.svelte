@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { createCollapsible } from '$lib/builders/collapsible';
 	import { slide } from 'svelte/transition';
-	import ChevronsUpDown from '~icons/lucide/chevrons-up-down';
-	import X from '~icons/lucide/x';
+	import { ChevronsUpDown, X } from 'lucide-svelte';
 
-	const { open, root, content, trigger } = createCollapsible();
+	const {
+		elements: { root, content, trigger },
+		states: { open },
+	} = createCollapsible();
 </script>
 
 <div melt={$root} class="mx-auto w-full max-w-md">

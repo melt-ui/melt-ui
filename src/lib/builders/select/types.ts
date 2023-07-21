@@ -1,4 +1,5 @@
 import type { FloatingConfig } from '$lib/internal/actions';
+import type { BuilderReturn } from '$lib/internal/types';
 import type { createSelect } from './create';
 
 export type CreateSelectProps = {
@@ -19,4 +20,8 @@ export type SelectOptionProps = {
 	disabled?: boolean;
 };
 
-export type CreateSelectReturn = ReturnType<typeof createSelect>;
+export type Select = BuilderReturn<typeof createSelect>;
+export type SelectElements = Select['elements'];
+export type SelectOptions = Select['options'];
+export type SelectStates = Select['states'];
+export type SelectHelpers = Select['helpers'];

@@ -5,10 +5,14 @@
 	import BaseDialog from './BaseDialog.svelte';
 
 	const dialog = createDialog();
-	const { trigger } = dialog;
+	const {
+		elements: { trigger },
+	} = dialog;
 
 	const secondDialog = createDialog();
-	const { trigger: secondTrigger } = secondDialog;
+	const {
+		elements: { trigger: secondTrigger },
+	} = secondDialog;
 </script>
 
 <PreviewWrapper>

@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { createPagination } from '@melt-ui/svelte';
-	import ChevronLeft from '~icons/lucide/chevron-left';
-	import ChevronRight from '~icons/lucide/chevron-right';
+	import { ChevronLeft, ChevronRight } from 'lucide-svelte';
 
-	const { prevButton, nextButton, pages, pageTrigger, range, root } =
-		createPagination({
-			count: 100,
-			perPage: 10,
-			page: 1,
-			siblingCount: 1,
-		});
+	const {
+		elements: { root, pageTrigger, prevButton, nextButton },
+		states: { pages, range },
+	} = createPagination({
+		count: 100,
+		perPage: 10,
+		page: 1,
+		siblingCount: 1,
+	});
 </script>
 
 <nav

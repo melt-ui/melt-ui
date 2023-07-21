@@ -60,7 +60,16 @@ const defaults = {
 export function createMenuBuilder(opts: MenuBuilderOptions) {
 	const { name, selector } = createElHelpers<MenuParts>(opts.selector);
 
-	const rootOptions = opts.rootOptions;
+	const { preventScroll, loop, arrowSize, dir, positioning } = opts.rootOptions;
+
+	const rootOptions = {
+		positioning,
+		arrowSize,
+		dir,
+		preventScroll,
+		loop,
+	};
+
 	const rootOpen = opts.rootOpen;
 	const rootActiveTrigger = opts.rootActiveTrigger;
 	/**
@@ -132,8 +141,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[rootOpen, rootActiveTrigger, rootOptions],
-				([$rootOpen, $rootActiveTrigger, $rootOptions]) => {
+				[rootOpen, rootActiveTrigger, positioning],
+				([$rootOpen, $rootActiveTrigger, $positioning]) => {
 					unsubPopper();
 					if ($rootOpen && $rootActiveTrigger) {
 						tick().then(() => {
@@ -142,7 +151,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 								anchorElement: $rootActiveTrigger,
 								open: rootOpen,
 								options: {
-									floating: $rootOptions.positioning,
+									floating: $positioning,
 								},
 							});
 
@@ -290,13 +299,13 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	});
 
 	const rootArrow = builder(name('arrow'), {
-		stores: rootOptions,
-		returned: ($rootOptions) => ({
+		stores: arrowSize,
+		returned: ($arrowSize) => ({
 			'data-arrow': true,
 			style: styleToString({
 				position: 'absolute',
-				width: `var(--arrow-size, ${$rootOptions.arrowSize}px)`,
-				height: `var(--arrow-size, ${$rootOptions.arrowSize}px)`,
+				width: `var(--arrow-size, ${$arrowSize}px)`,
+				height: `var(--arrow-size, ${$arrowSize}px)`,
 			}),
 		}),
 	});
@@ -557,14 +566,22 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		});
 
 		return {
-			radioGroup,
-			radioItem,
-			isChecked,
-			value,
+			elements: {
+				radioGroup,
+				radioItem,
+			},
+			states: {
+				value,
+			},
+			helpers: {
+				isChecked,
+			},
 		};
 	};
 
-	const { root: separator } = createSeparator({
+	const {
+		elements: { root: separator },
+	} = createSeparator({
 		orientation: 'horizontal',
 	});
 
@@ -581,11 +598,28 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		},
 	} satisfies Defaults<CreateSubmenuProps>;
 
-	const createSubMenu = (args?: CreateSubmenuProps) => {
-		const withDefaults = { ...subMenuDefaults, ...args } as CreateSubmenuProps;
-		const subOptions = writable(withDefaults);
+	const createSubmenu = (args?: CreateSubmenuProps) => {
+		const withDefaults = { ...subMenuDefaults, ...args } satisfies CreateSubmenuProps;
 
 		const subOpen = writable(false);
+
+		// options
+		const positioning = writable<FloatingConfig>(withDefaults.positioning);
+		const arrowSize = writable<number>(withDefaults.arrowSize);
+		const dir = writable(withDefaults.dir);
+		const disabled = writable<boolean>(withDefaults.disabled);
+		const preventScroll = writable<boolean>(withDefaults.preventScroll);
+		const loop = writable<boolean>(withDefaults.loop);
+
+		const subOptions = {
+			positioning,
+			arrowSize,
+			dir,
+			disabled,
+			preventScroll,
+			loop,
+		};
+
 		const subActiveTrigger = writable<HTMLElement | null>(null);
 		const subOpenTimer = writable<number | null>(null);
 		const pointerGraceTimer = writable(0);
@@ -614,8 +648,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
-					[subOpen, subActiveTrigger, subOptions],
-					([$subOpen, $subActiveTrigger, $subOptions]) => {
+					[subOpen, subActiveTrigger, positioning],
+					([$subOpen, $subActiveTrigger, $positioning]) => {
 						unsubPopper();
 						if ($subOpen && $subActiveTrigger) {
 							tick().then(() => {
@@ -625,7 +659,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 									anchorElement: $subActiveTrigger,
 									open: subOpen,
 									options: {
-										floating: $subOptions.positioning,
+										floating: $positioning,
 										portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
 										clickOutside: null,
 										focusTrap: null,
@@ -741,8 +775,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		});
 
 		const subTrigger = builder(name('subtrigger'), {
-			stores: [subOpen, subOptions],
-			returned: ([$subOpen, $subOptions]) => {
+			stores: [subOpen, disabled],
+			returned: ([$subOpen, $disabled]) => {
 				return {
 					role: 'menuitem',
 					id: subIds.trigger,
@@ -750,7 +784,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					'aria-controls': subIds.menu,
 					'aria-expanded': $subOpen,
 					'data-state': $subOpen ? 'open' : 'closed',
-					'data-disabled': $subOptions.disabled ? '' : undefined,
+					'data-disabled': $disabled ? '' : undefined,
 					'aria-haspopop': 'menu',
 				} as const;
 			},
@@ -910,13 +944,13 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		});
 
 		const subArrow = builder(name('subarrow'), {
-			stores: subOptions,
-			returned: ($subOptions) => ({
+			stores: arrowSize,
+			returned: ($arrowSize) => ({
 				'data-arrow': true,
 				style: styleToString({
 					position: 'absolute',
-					width: `var(--arrow-size, ${$subOptions.arrowSize}px)`,
-					height: `var(--arrow-size, ${$subOptions.arrowSize}px)`,
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
 				}),
 			}),
 		});
@@ -975,11 +1009,15 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		});
 
 		return {
-			subTrigger,
-			subMenu,
-			subOpen,
-			subArrow,
-			subOptions,
+			elements: {
+				subTrigger,
+				subMenu,
+				subArrow,
+			},
+			states: {
+				subOpen,
+			},
+			options: subOptions,
 		};
 	};
 
@@ -997,9 +1035,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		if (!isBrowser) return;
 
 		const unsubs: Array<() => void> = [];
-		const $rootOptions = get(rootOptions);
+		const $preventScroll = get(preventScroll);
 
-		if ($rootOpen && $rootOptions.preventScroll) {
+		if ($rootOpen && $preventScroll) {
 			unsubs.push(removeScroll());
 		}
 
@@ -1207,7 +1245,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		checkboxItem,
 		arrow: rootArrow,
 		options: rootOptions,
-		createSubMenu,
+		createSubmenu,
 		createMenuRadioGroup,
 		separator,
 		rootIds,

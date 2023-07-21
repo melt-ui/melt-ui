@@ -5,6 +5,7 @@ import {
 	executeCallbacks,
 	kbd,
 	omit,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
@@ -21,17 +22,20 @@ type PaginationParts = 'page' | 'prev' | 'next';
 const { name, selector } = createElHelpers<PaginationParts>('pagination');
 
 export function createPagination(props: CreatePaginationProps) {
-	const withDefaults = { ...defaults, ...props };
-	const options = writable(omit(withDefaults, 'page'));
+	const withDefaults = { ...defaults, ...props } satisfies CreatePaginationProps;
 	const page = writable(withDefaults.page);
 
-	const totalPages = derived([options], ([$options]) => {
-		return Math.ceil($options.count / $options.perPage);
+	// options
+	const options = toWritableStores(omit(withDefaults, 'page'));
+	const { perPage, siblingCount, count } = options;
+
+	const totalPages = derived([count, perPage], ([$count, $perPage]) => {
+		return Math.ceil($count / $perPage);
 	});
 
-	const range = derived([page, options], ([$page, $options]) => {
-		const start = ($page - 1) * $options.perPage;
-		const end = Math.min(start + $options.perPage, $options.count);
+	const range = derived([page, perPage, count], ([$page, $perPage, $count]) => {
+		const start = ($page - 1) * $perPage;
+		const end = Math.min(start + $perPage, $count);
 		return { start, end };
 	});
 
@@ -41,8 +45,8 @@ export function createPagination(props: CreatePaginationProps) {
 		}),
 	});
 
-	const pages = derived([page, totalPages, options], ([$page, $totalPages, { siblingCount }]) => {
-		return getPageItems({ page: $page, totalPages: $totalPages, siblingCount });
+	const pages = derived([page, totalPages, siblingCount], ([$page, $totalPages, $siblingCount]) => {
+		return getPageItems({ page: $page, totalPages: $totalPages, siblingCount: $siblingCount });
 	});
 
 	const keydown = (e: KeyboardEvent) => {
@@ -146,14 +150,18 @@ export function createPagination(props: CreatePaginationProps) {
 	});
 
 	return {
+		elements: {
+			root,
+			pageTrigger,
+			prevButton,
+			nextButton,
+		},
+		states: {
+			range,
+			page,
+			pages,
+			totalPages,
+		},
 		options,
-		page,
-		pages,
-		range,
-		totalPages,
-		root,
-		pageTrigger,
-		prevButton,
-		nextButton,
 	};
 }

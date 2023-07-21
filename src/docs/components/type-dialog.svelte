@@ -1,10 +1,14 @@
 <script lang="ts">
 	import { createDialog } from '$lib/builders';
 	import { flyAndScale } from '$docs/utils';
-	import X from '~icons/lucide/x';
+	import { X } from 'lucide-svelte';
 	import { CodeBlock } from '$docs/components';
 
-	const { trigger, portal, overlay, content, title, close, open } = createDialog({});
+	const {
+		elements: { trigger, overlay, content, title, close },
+		actions: { portal },
+		states: { open },
+	} = createDialog();
 
 	export let name = '';
 	export let code = '';

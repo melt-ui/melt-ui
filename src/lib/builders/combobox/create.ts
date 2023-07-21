@@ -17,17 +17,18 @@ import {
 	last,
 	next,
 	noop,
-	omit,
 	prev,
 	removeScroll,
 	sleep,
 	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import { getOptions } from '$lib/internal/helpers/list';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
 import type { ComboboxItemProps, CreateComboboxProps } from './types';
+import { omit } from '../../internal/helpers/object';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
@@ -48,7 +49,8 @@ const { name, selector } = createElHelpers('combobox');
  * @TODO multi-select using `tags-input` builder?
  */
 export function createCombobox<T>(props: CreateComboboxProps<T>) {
-	const options = writable(omit({ ...defaults, ...props }, 'items'));
+	const withDefaults = { ...defaults, ...props } satisfies CreateComboboxProps<T>;
+
 	const open = writable(false);
 	// Trigger element for the popper portal. This will be our input element.
 	const activeTrigger = writable<HTMLElement | null>(null);
@@ -57,11 +59,15 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	// The current value of the input element.
 	const inputValue = writable('');
 	// All items in the menu.
-	const items = writable(props.items);
+	const items = writable(withDefaults.items);
 	// A subset of items that match the filterFunction predicate.
-	const filteredItems = writable(props.items);
+	const filteredItems = writable(withDefaults.items);
 	// The currently selected menu item.
 	const selectedItem = writable<T>(undefined);
+
+	// options
+	const options = toWritableStores(omit(withDefaults, 'items'));
+	const { scrollAlignment, loop, filterFunction, itemToString } = options;
 
 	const ids = {
 		input: generateId(),
@@ -93,14 +99,14 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 
 	/** Resets the combobox inputValue and filteredItems back to the selectedItem */
 	function reset() {
-		const $options = get(options);
+		const $itemToString = get(itemToString);
 		const $selectedItem = get(selectedItem);
 
 		// If no item is selected the input should be cleared and the filter reset.
 		if (!$selectedItem) {
 			inputValue.set('');
 		} else {
-			inputValue.set($options.itemToString($selectedItem));
+			inputValue.set($itemToString($selectedItem));
 		}
 		// Reset the filtered items to the full list.
 		filteredItems.set(get(items));
@@ -111,11 +117,11 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	 * @param index array index of the item to select.
 	 */
 	function selectItem(item: HTMLElement) {
-		const $options = get(options);
+		const $itemToString = get(itemToString);
 		if (item.dataset.index) {
 			const index = parseInt(item.dataset.index, 10);
 			const $item = get(filteredItems)[index];
-			inputValue.set($options.itemToString($item));
+			inputValue.set($itemToString($item));
 
 			selectedItem.set($item);
 			// Reset the filtered items to the full list.
@@ -146,13 +152,13 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	function updateItems(updaterFunction: (currentItems: T[]) => T[]): void {
 		const $currentItems = get(items);
 		const $inputValue = get(inputValue);
-		const $options = get(options);
+		const $filterFunction = get(filterFunction);
 		// Retrieve the updated list of items from the user-provided function.
 		const updatedItems = updaterFunction($currentItems);
 		// Update the store containing all items.
 		items.set(updatedItems);
 		// Run the filter function on the updated list and store the result.
-		filteredItems.set(updatedItems.filter((item) => $options.filterFunction(item, $inputValue)));
+		filteredItems.set(updatedItems.filter((item) => $filterFunction(item, $inputValue)));
 	}
 
 	/** Action and attributes for the text input. */
@@ -178,7 +184,6 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 				// Handle all input key events including typing, meta, and navigation.
 				addEventListener(node, 'keydown', (e) => {
 					const $open = get(open);
-					const $options = get(options);
 					/**
 					 * When the menu is closed...
 					 */
@@ -260,20 +265,21 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 						const $currentItem = get(highlightedItem);
 						const currentIndex = $currentItem ? candidateNodes.indexOf($currentItem) : -1;
 						// Find the next menu item to highlight.
-						const loop = $options.loop;
+						const $loop = get(loop);
+						const $scrollAlignment = get(scrollAlignment);
 						let nextItem: HTMLElement;
 						switch (e.key) {
 							case kbd.ARROW_DOWN:
-								nextItem = next(candidateNodes, currentIndex, loop);
+								nextItem = next(candidateNodes, currentIndex, $loop);
 								break;
 							case kbd.PAGE_DOWN:
-								nextItem = forward(candidateNodes, currentIndex, 10, loop);
+								nextItem = forward(candidateNodes, currentIndex, 10, $loop);
 								break;
 							case kbd.ARROW_UP:
-								nextItem = prev(candidateNodes, currentIndex, loop);
+								nextItem = prev(candidateNodes, currentIndex, $loop);
 								break;
 							case kbd.PAGE_UP:
-								nextItem = back(candidateNodes, currentIndex, 10, loop);
+								nextItem = back(candidateNodes, currentIndex, 10, $loop);
 								break;
 							case kbd.HOME:
 								nextItem = candidateNodes[0];
@@ -286,17 +292,17 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 						}
 						// Highlight the new item and scroll it into view.
 						highlightedItem.set(nextItem);
-						nextItem.scrollIntoView({ block: $options.scrollAlignment });
+						nextItem.scrollIntoView({ block: $scrollAlignment });
 					}
 				}),
 				// Listens to the input value and filters the items accordingly.
 				addEventListener(node, 'input', (e) => {
 					if (!isHTMLInputElement(e.target)) return;
-					const $options = get(options);
+					const $filterFunction = get(filterFunction);
 					const $items = get(items);
 					const value = e.target.value;
 					inputValue.set(value);
-					filteredItems.set($items.filter((item) => $options.filterFunction(item, value)));
+					filteredItems.set($items.filter((item) => $filterFunction(item, value)));
 				})
 			);
 			return { destroy: unsubscribe };
@@ -409,7 +415,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	 * Handles moving the `data-highlighted` attribute between items when
 	 * the user moves their pointer or navigates with their keyboard.
 	 */
-	effect([highlightedItem, options], ([$highlightedItem, $options]) => {
+	effect([highlightedItem, scrollAlignment], ([$highlightedItem, $scrollAlignment]) => {
 		if (!isBrowser) return;
 		const menuElement = document.getElementById(ids.menu);
 		if (!isHTMLElement(menuElement)) return;
@@ -421,20 +427,26 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 			}
 		});
 		if ($highlightedItem) {
-			sleep(1).then(() => $highlightedItem.scrollIntoView({ block: $options.scrollAlignment }));
+			sleep(1).then(() => $highlightedItem.scrollIntoView({ block: $scrollAlignment }));
 		}
 	});
 
 	return {
-		filteredItems: readonly(filteredItems),
-		updateItems,
-		inputValue,
-		isSelected,
-		selectedItem,
+		elements: {
+			input,
+			item,
+			menu,
+		},
+		states: {
+			open,
+			inputValue,
+			filteredItems: readonly(filteredItems),
+			selectedItem,
+		},
+		helpers: {
+			updateItems,
+			isSelected,
+		},
 		options,
-		open,
-		menu,
-		input,
-		item,
 	};
 }

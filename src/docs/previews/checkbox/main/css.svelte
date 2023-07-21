@@ -3,7 +3,10 @@
 	import Check from '~icons/lucide/check';
 	import Minus from '~icons/lucide/minus';
 
-	const { root, input, isChecked, isIndeterminate } = createCheckbox({
+	const {
+		elements: { root, input },
+		helpers: { isChecked, isIndeterminate },
+	} = createCheckbox({
 		checked: 'indeterminate',
 	});
 </script>

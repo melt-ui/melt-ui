@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import ArrowRight from '~icons/lucide/arrow-right';
-	import Check from '~icons/lucide/check';
-	import Copy from '~icons/lucide/copy';
+	import { ArrowRight, Check, Copy } from 'lucide-svelte';
 	import { Button } from '$docs/components';
 
 	let copied = false;

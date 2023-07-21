@@ -2,10 +2,13 @@
 	import { createDialog } from '$lib/builders/dialog';
 	import { fade, fly } from 'svelte/transition';
 	// Internal helpers
-	import X from '~icons/lucide/x';
+	import { X } from 'lucide-svelte';
 
-	const { trigger, portal, overlay, content, title, description, close, open } =
-		createDialog();
+	const {
+		elements: { trigger, overlay, content, title, description, close },
+		actions: { portal },
+		states: { open },
+	} = createDialog();
 </script>
 
 <button

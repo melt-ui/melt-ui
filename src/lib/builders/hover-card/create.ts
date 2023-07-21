@@ -13,6 +13,7 @@ import {
 	noop,
 	sleep,
 	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
@@ -34,12 +35,16 @@ const defaults = {
 } satisfies Defaults<CreateHoverCardProps>;
 
 export function createHoverCard(props: CreateHoverCardProps = {}) {
-	const propsWithDefaults = { ...defaults, ...props } satisfies CreateHoverCardProps;
-	const options = writable(propsWithDefaults);
-	const open = writable(propsWithDefaults.defaultOpen);
+	const withDefaults = { ...defaults, ...props } satisfies CreateHoverCardProps;
+	const open = writable(withDefaults.defaultOpen);
 	const hasSelection = writable(false);
 	const isPointerDownOnContent = writable(false);
 	const containSelection = writable(false);
+
+	// options
+	const options = toWritableStores(withDefaults);
+
+	const { openDelay, closeDelay, positioning, arrowSize, closeOnOutsideClick } = options;
 
 	const ids = {
 		content: generateId(),
@@ -49,7 +54,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 	let timeout: number | null = null;
 	let originalBodyUserSelect: string;
 
-	const handleOpen = derived(options, ($options) => {
+	const handleOpen = derived(openDelay, ($openDelay) => {
 		return () => {
 			if (timeout) {
 				window.clearTimeout(timeout);
@@ -58,13 +63,13 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 
 			timeout = window.setTimeout(() => {
 				open.set(true);
-			}, $options.openDelay);
+			}, $openDelay);
 		};
 	}) as Readable<() => void>;
 
 	const handleClose = derived(
-		[options, isPointerDownOnContent, hasSelection],
-		([$options, $isPointerDownOnContent, $hasSelection]) => {
+		[closeDelay, isPointerDownOnContent, hasSelection],
+		([$closeDelay, $isPointerDownOnContent, $hasSelection]) => {
 			return () => {
 				if (timeout) {
 					window.clearTimeout(timeout);
@@ -73,7 +78,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 				if (!$isPointerDownOnContent && !$hasSelection) {
 					timeout = window.setTimeout(() => {
 						open.set(false);
-					}, $options.closeDelay);
+					}, $closeDelay);
 				}
 			};
 		}
@@ -148,15 +153,16 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 					tick().then(() => {
 						const triggerEl = document.getElementById(ids.trigger);
 						if (!triggerEl || node.hidden) return;
-						const $options = get(options);
+						const $positioning = get(positioning);
+						const $closeOnOutsideClick = get(closeOnOutsideClick);
 
 						const popper = usePopper(node, {
 							anchorElement: triggerEl,
 							open,
 							options: {
-								floating: $options.positioning,
+								floating: $positioning,
 								focusTrap: null,
-								clickOutside: !$options.closeOnOutsideClick ? null : undefined,
+								clickOutside: !$closeOnOutsideClick ? null : undefined,
 							},
 						});
 						if (popper && popper.destroy) {
@@ -209,13 +215,13 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 	});
 
 	const arrow = builder(name('arrow'), {
-		stores: options,
-		returned: ($options) => ({
+		stores: arrowSize,
+		returned: ($arrowSize) => ({
 			'data-arrow': true,
 			style: styleToString({
 				position: 'absolute',
-				width: `var(--arrow-size, ${$options.arrowSize}px)`,
-				height: `var(--arrow-size, ${$options.arrowSize}px)`,
+				width: `var(--arrow-size, ${$arrowSize}px)`,
+				height: `var(--arrow-size, ${$arrowSize}px)`,
 			}),
 		}),
 	});
@@ -274,5 +280,15 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 		}
 	});
 
-	return { trigger, open, content, arrow, options };
+	return {
+		elements: {
+			trigger,
+			content,
+			arrow,
+		},
+		states: {
+			open,
+		},
+		options,
+	};
 }

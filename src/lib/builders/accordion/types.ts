@@ -1,3 +1,4 @@
+import type { BuilderReturn } from '$lib/internal/types';
 import type { createAccordion } from './create';
 
 export type AccordionType = 'single' | 'multiple';
@@ -21,4 +22,8 @@ export type AccordionHeadingProps =
 	  }
 	| number;
 
-export type CreateAccordionReturn = ReturnType<typeof createAccordion>;
+export type Accordion = BuilderReturn<typeof createAccordion>;
+export type AccordionElements = Accordion['elements'];
+export type AccordionOptions = Accordion['options'];
+export type AccordionStates = Accordion['states'];
+export type AccordionHelpers = Accordion['helpers'];

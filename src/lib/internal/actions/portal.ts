@@ -1,10 +1,17 @@
 import { tick } from 'svelte';
 import type { Action } from 'svelte/action';
+import { isHTMLElement, noop } from '../helpers';
 
 export type PortalConfig = string | HTMLElement | undefined;
 
 export const usePortal: Action<HTMLElement, PortalConfig> = (el, target = 'body') => {
 	let targetEl;
+
+	if (!isHTMLElement(target) || typeof target !== 'string') {
+		return {
+			destroy: noop,
+		};
+	}
 
 	async function update(newTarget: HTMLElement | string | undefined) {
 		target = newTarget;

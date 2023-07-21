@@ -1,6 +1,5 @@
 <script lang="ts">
-	import Check from '~icons/lucide/check';
-	import Copy from '~icons/lucide/copy';
+	import { Check, Copy } from 'lucide-svelte';
 	import { fly } from 'svelte/transition';
 	import { cn, createCopyCodeButton } from '$docs/utils';
 

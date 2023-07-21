@@ -2,7 +2,10 @@
 	import { createAccordion } from '@melt-ui/svelte';
 	import { slide } from 'svelte/transition';
 
-	const { content, item, trigger, isSelected, root } = createAccordion();
+	const {
+		elements: { content, item, trigger, root },
+		helpers: { isSelected },
+	} = createAccordion();
 
 	const items = [
 		{

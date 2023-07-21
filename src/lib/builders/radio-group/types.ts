@@ -1,4 +1,4 @@
-import type { Orientation } from '$lib/internal/types';
+import type { BuilderReturn, Orientation } from '$lib/internal/types';
 import type { createRadioGroup } from './create';
 
 export type CreateRadioGroupProps = {
@@ -16,4 +16,8 @@ export type RadioGroupItemProps =
 	  }
 	| string;
 
-export type CreateRadioGroupReturn = ReturnType<typeof createRadioGroup>;
+export type RadioGroup = BuilderReturn<typeof createRadioGroup>;
+export type RadioGroupElements = RadioGroup['elements'];
+export type RadioGroupOptions = RadioGroup['options'];
+export type RadioGroupStates = RadioGroup['states'];
+export type RadioGroupHelpers = RadioGroup['helpers'];

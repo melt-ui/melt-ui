@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { createSelect } from '@melt-ui/svelte';
-	import Check from '~icons/lucide/check';
-	import ChevronDown from '~icons/lucide/chevron-down';
+	import { Check, ChevronDown } from 'lucide-svelte';
 
-	const { label, trigger, menu, option, isSelected, group, groupLabel } =
-		createSelect();
+	const {
+		elements: { trigger, menu, option, group, groupLabel },
+		states: { label },
+		helpers: { isSelected },
+	} = createSelect();
 
 	const options = {
 		sweet: ['Caramel', 'Chocolate', 'Strawberry', 'Cookies & Cream'],

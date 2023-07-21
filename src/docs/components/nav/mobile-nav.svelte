@@ -1,14 +1,17 @@
 <script lang="ts">
 	import { createDialog } from '@melt-ui/svelte';
 	import { fade, fly } from 'svelte/transition';
-	import Menu from '~icons/lucide/menu';
-	import X from '~icons/lucide/x';
+	import { Menu, X } from 'lucide-svelte';
 	import { Button, MobileNavLink } from '$docs/components';
 	import { navConfig } from '$docs/config';
 	import Switch from '../switch.svelte';
 	import { usingPreprocessor } from '$routes/store';
 
-	const { trigger, portal, overlay, content, close, open } = createDialog();
+	const {
+		elements: { trigger, overlay, content, close },
+		actions: { portal },
+		states: { open },
+	} = createDialog();
 </script>
 
 <button

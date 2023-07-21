@@ -6,11 +6,16 @@ import {
 	handleRovingFocus,
 	isHTMLElement,
 	kbd,
-	omit,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable, type Readable } from 'svelte/store';
-import type { CreateToolbarProps, CreateToolbarGroupProps, ToolbarGroupItemProps } from './types';
+import { derived, get, writable } from 'svelte/store';
+import type {
+	CreateToolbarGroupProps,
+	CreateToolbarProps,
+	ToolbarGroupItemProps,
+	ToolbarGroupType,
+} from './types';
 
 const defaults = {
 	loop: true,
@@ -19,16 +24,18 @@ const defaults = {
 
 const { name, selector } = createElHelpers('toolbar');
 
-export function createToolbar(props: CreateToolbarProps = {}) {
-	const withDefaults = { ...defaults, ...props };
-	const toolbarOptions = writable({ ...withDefaults });
+export const createToolbar = (props?: CreateToolbarProps) => {
+	const withDefaults = { ...defaults, ...props } satisfies CreateToolbarProps;
+
+	const options = toWritableStores(withDefaults);
+	const { loop, orientation } = options;
 
 	const root = builder(name(), {
-		stores: toolbarOptions,
-		returned: ($toolbarOptions) => {
+		stores: orientation,
+		returned: ($orientation) => {
 			return {
 				role: 'toolbar',
-				'data-orientation': $toolbarOptions.orientation,
+				'data-orientation': $orientation,
 			};
 		},
 	});
@@ -41,7 +48,7 @@ export function createToolbar(props: CreateToolbarProps = {}) {
 				tabIndex: -1,
 			} as const),
 		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'keydown', getKeydownHandler(toolbarOptions));
+			const unsub = addEventListener(node, 'keydown', handleKeyDown);
 
 			return {
 				destroy: unsub,
@@ -57,7 +64,7 @@ export function createToolbar(props: CreateToolbarProps = {}) {
 				tabIndex: -1,
 			} as const),
 		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'keydown', getKeydownHandler(toolbarOptions));
+			const unsub = addEventListener(node, 'keydown', handleKeyDown);
 
 			return {
 				destroy: unsub,
@@ -66,14 +73,12 @@ export function createToolbar(props: CreateToolbarProps = {}) {
 	});
 
 	const separator = builder(name('separator'), {
-		stores: toolbarOptions,
-		returned: ($toolbarOptions) => {
+		stores: orientation,
+		returned: ($orientation) => {
 			return {
 				role: 'separator',
-				'data-orientation':
-					$toolbarOptions.orientation === 'horizontal' ? 'vertical' : 'horizontal',
-				'aria-orientation':
-					$toolbarOptions.orientation === 'horizontal' ? 'vertical' : 'horizontal',
+				'data-orientation': $orientation === 'horizontal' ? 'vertical' : 'horizontal',
+				'aria-orientation': $orientation === 'horizontal' ? 'vertical' : 'horizontal',
 			} as const;
 		},
 	});
@@ -81,61 +86,53 @@ export function createToolbar(props: CreateToolbarProps = {}) {
 	const groupDefaults = {
 		type: 'single',
 		disabled: false,
-		value: null,
 	} satisfies CreateToolbarGroupProps;
 
-	function createToolbarGroup(props: CreateToolbarGroupProps = {}) {
-		const groupWithDefaults = { ...groupDefaults, ...props };
-		const groupOptions = writable(omit(groupWithDefaults, 'value'));
+	const createToolbarGroup = <T extends ToolbarGroupType = 'single'>(
+		props?: CreateToolbarGroupProps<T>
+	) => {
+		const groupWithDefaults = { ...groupDefaults, ...props } as CreateToolbarGroupProps<T>;
+		const type = writable(groupWithDefaults.type);
+		const disabled = writable(groupWithDefaults.disabled);
 
-		const value = writable(groupWithDefaults.value);
+		const options = {
+			disabled,
+		};
 
-		groupOptions.subscribe((o) => {
-			value.update((v) => {
-				if (o.type === 'single' && Array.isArray(v)) {
-					return null;
-				}
-
-				if (o.type === 'multiple' && !Array.isArray(v)) {
-					return v === null ? [] : [v];
-				}
-
-				return v;
-			});
-		});
+		const value = writable<string | string[] | undefined>(groupWithDefaults.value);
 
 		const { name } = createElHelpers('toolbar-group');
 
 		const root = builder(name(), {
-			stores: toolbarOptions,
-			returned: ($toolbarOptions) => {
+			stores: orientation,
+			returned: ($orientation) => {
 				return {
 					role: 'group',
-					'data-orientation': $toolbarOptions.orientation,
+					'data-orientation': $orientation,
 				} as const;
 			},
 		});
 
 		const item = builder(name('item'), {
-			stores: [groupOptions, value, toolbarOptions],
-			returned: ([$groupOptions, $value, $toolbarOptions]) => {
+			stores: [disabled, type, value, orientation],
+			returned: ([$disabled, $type, $value, $orientation]) => {
 				return (props: ToolbarGroupItemProps) => {
 					const itemValue = typeof props === 'string' ? props : props.value;
 					const argDisabled = typeof props === 'string' ? false : !!props.disabled;
-					const disabled = $groupOptions.disabled || argDisabled;
+					const disabled = $disabled || argDisabled;
 
 					const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
 
 					return {
 						disabled,
 						pressed,
-						'data-orientation': $toolbarOptions.orientation,
+						'data-orientation': $orientation,
 						'data-disabled': disabled ? true : undefined,
 						'data-value': itemValue,
 						'data-state': pressed ? 'on' : 'off',
 						'aria-pressed': pressed,
 						type: 'button',
-						role: $groupOptions.type === 'single' ? 'radio' : undefined,
+						role: $type === 'single' ? 'radio' : undefined,
 						'data-melt-toolbar-item': '',
 					} as const;
 				};
@@ -164,15 +161,23 @@ export function createToolbar(props: CreateToolbarProps = {}) {
 						const { value: itemValue, disabled } = getNodeProps();
 						if (itemValue === undefined || disabled) return;
 
-						value.update((v) => {
-							if (Array.isArray(v)) {
-								return v.includes(itemValue) ? v.filter((i) => i !== itemValue) : [...v, itemValue];
+						value.update(($value) => {
+							if (groupWithDefaults.type === 'single') {
+								return $value === itemValue ? undefined : itemValue;
+							} else {
+								const arrValue = $value as string[] | undefined;
+								if (arrValue === undefined) {
+									return [itemValue];
+								} else {
+									return arrValue.includes(itemValue)
+										? arrValue.filter((v) => v !== itemValue)
+										: [...arrValue, itemValue];
+								}
 							}
-							return v === itemValue ? null : itemValue;
 						});
 					}),
 
-					addEventListener(node, 'keydown', getKeydownHandler(toolbarOptions))
+					addEventListener(node, 'keydown', handleKeyDown)
 				);
 
 				return {
@@ -188,44 +193,34 @@ export function createToolbar(props: CreateToolbarProps = {}) {
 		});
 
 		return {
-			options: groupOptions,
-			value,
-			root,
-			item,
-			isPressed,
+			elements: {
+				root,
+				item,
+			},
+			states: {
+				value,
+			},
+			helpers: {
+				isPressed,
+			},
+			options,
 		};
-	}
-
-	return {
-		root,
-		options: toolbarOptions,
-		button,
-		link,
-		separator,
-		createToolbarGroup,
 	};
-}
 
-function getToolbarItems(element: HTMLElement) {
-	return Array.from(
-		element.querySelectorAll<HTMLElement>(`${selector('item')}, ${selector('button')}`)
-	);
-}
-
-const getKeydownHandler =
-	(options: Readable<Pick<CreateToolbarProps, 'orientation' | 'loop'>>) => (e: KeyboardEvent) => {
-		const $options = get(options);
+	function handleKeyDown(e: KeyboardEvent) {
+		const $orientation = get(orientation);
+		const $loop = get(loop);
 
 		const dir = 'ltr' as 'ltr' | 'rtl';
 		const nextKey = {
 			horizontal: dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
 			vertical: kbd.ARROW_DOWN,
-		}[$options.orientation ?? 'horizontal'];
+		}[$orientation ?? 'horizontal'];
 
 		const prevKey = {
 			horizontal: dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
 			vertical: kbd.ARROW_UP,
-		}[$options.orientation ?? 'horizontal'];
+		}[$orientation ?? 'horizontal'];
 
 		const el = e.currentTarget;
 		if (!isHTMLElement(el)) return;
@@ -242,7 +237,7 @@ const getKeydownHandler =
 			e.preventDefault();
 			const nextIndex = currentIndex + 1;
 			if (nextIndex >= items.length) {
-				if ($options.loop) {
+				if ($loop) {
 					handleRovingFocus(items[0]);
 				}
 			} else {
@@ -252,7 +247,7 @@ const getKeydownHandler =
 			e.preventDefault();
 			const prevIndex = currentIndex - 1;
 			if (prevIndex < 0) {
-				if ($options.loop) {
+				if ($loop) {
 					handleRovingFocus(items[items.length - 1]);
 				}
 			} else {
@@ -265,4 +260,24 @@ const getKeydownHandler =
 			e.preventDefault();
 			handleRovingFocus(items[items.length - 1]);
 		}
+	}
+
+	return {
+		elements: {
+			root,
+			button,
+			separator,
+			link,
+		},
+		builders: {
+			createToolbarGroup,
+		},
+		options,
 	};
+};
+
+function getToolbarItems(element: HTMLElement) {
+	return Array.from(
+		element.querySelectorAll<HTMLElement>(`${selector('item')}, ${selector('button')}`)
+	);
+}

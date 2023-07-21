@@ -1,22 +1,21 @@
 <script lang="ts">
 	import { createContextMenu } from '$lib';
 	import { writable } from 'svelte/store';
-	import ChevronRight from '~icons/lucide/chevron-right';
-	import Check from '~icons/lucide/check';
+	import { ChevronRight, Check } from 'lucide-svelte';
 
 	const {
-		trigger,
-		menu,
-		item,
-		checkboxItem,
-		separator,
-		createSubMenu,
-		createMenuRadioGroup,
+		elements: { trigger, menu, item, checkboxItem, separator },
+		builders: { createSubmenu, createMenuRadioGroup },
 	} = createContextMenu();
 
-	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
+	const {
+		elements: { subMenu: subMenuA, subTrigger: subTriggerA },
+	} = createSubmenu();
 
-	const { radioGroup, radioItem, isChecked } = createMenuRadioGroup({
+	const {
+		elements: { radioGroup, radioItem },
+		helpers: { isChecked },
+	} = createMenuRadioGroup({
 		value: 'Hunter Johnston',
 	});
 

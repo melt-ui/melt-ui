@@ -2,6 +2,7 @@ import type { FloatingConfig } from '$lib/internal/actions';
 import type { ChangeFn } from '$lib/internal/helpers';
 import type { Writable } from 'svelte/store';
 import type { createPopover } from './create';
+import type { BuilderReturn } from '$lib/internal/types';
 
 export type CreatePopoverProps = {
 	positioning?: FloatingConfig;
@@ -19,4 +20,7 @@ export type CreatePopoverProps = {
 	disableFocusTrap?: boolean;
 };
 
-export type CreatePopoverReturn = ReturnType<typeof createPopover>;
+export type Popover = BuilderReturn<typeof createPopover>;
+export type PopoverElements = Popover['elements'];
+export type PopoverOptions = Popover['options'];
+export type PopoverStates = Popover['states'];

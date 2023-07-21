@@ -1,5 +1,8 @@
 <script lang="ts" context="module">
-	type TabsContext = Pick<ReturnType<typeof createTabs>, 'content' | 'list' | 'trigger'> & {
+	type CreateTabs = ReturnType<typeof createTabs>;
+	type Elements = CreateTabs['elements'];
+
+	type TabsContext = Pick<Elements, 'content' | 'list' | 'trigger'> & {
 		tabs: Writable<string[]>;
 	};
 
@@ -17,7 +20,10 @@
 
 	export let tabs: string[] = [];
 
-	const { root, content, list, trigger, value } = createTabs({
+	const {
+		elements: { root, content, list, trigger },
+		states: { value },
+	} = createTabs({
 		value: tabs[0],
 	});
 

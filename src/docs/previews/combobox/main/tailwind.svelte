@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { createCombobox } from '@melt-ui/svelte';
-	import Check from '~icons/lucide/check';
-	import ChevronDown from '~icons/lucide/chevron-down';
-	import ChevronUp from '~icons/lucide/chevron-up';
+	import { createCombobox, type ComboboxFilterFunction } from '@melt-ui/svelte';
+	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
 
 	interface Book {
 		author: string;
@@ -63,21 +61,25 @@
 		},
 	];
 
-	const { open, input, menu, item, inputValue, isSelected, filteredItems } =
-		createCombobox({
-			filterFunction: (item, inputValue) => {
-				// Example string normalization function. Replace as needed.
-				const normalize = (str: string) => str.normalize().toLowerCase();
-				const normalizedInput = normalize(inputValue);
-				return (
-					normalizedInput === '' ||
-					normalize(item.title).includes(normalizedInput) ||
-					normalize(item.author).includes(normalizedInput)
-				);
-			},
-			items: books,
-			itemToString: (item) => item.title,
-		});
+	const filterFunction: ComboboxFilterFunction<Book> = (item, inputValue) => {
+		// Example string normalization function. Replace as needed.
+		const normalize = (str: string) => str.normalize().toLowerCase();
+		const normalizedInput = normalize(inputValue);
+		return (
+			normalizedInput === '' ||
+			normalize(item.title).includes(normalizedInput) ||
+			normalize(item.author).includes(normalizedInput)
+		);
+	};
+
+	const { elements, states, helpers } = createCombobox({
+		filterFunction,
+		items: books,
+		itemToString: (item) => item.title,
+	});
+	const { menu, input, item } = elements;
+	const { open, inputValue, filteredItems } = states;
+	const { isSelected } = helpers;
 </script>
 
 <label class="cursor-pointer">

@@ -1,18 +1,28 @@
 <script lang="ts">
 	import { createToolbar } from '@melt-ui/svelte';
 
-	import Bold from '~icons/lucide/bold';
-	import Italic from '~icons/lucide/italic';
-	import Strikethrough from '~icons/lucide/strikethrough';
-	import AlignLeft from '~icons/lucide/align-left';
-	import AlignCenter from '~icons/lucide/align-center';
-	import AlignRight from '~icons/lucide/align-right';
+	// Icons
+	import {
+		Bold,
+		Italic,
+		Strikethrough,
+		AlignLeft,
+		AlignCenter,
+		AlignRight,
+	} from 'lucide-svelte';
 
-	const { root, button, link, separator, createToolbarGroup } = createToolbar();
-	const { root: fontGroup, item: fontItem } = createToolbarGroup({
+	const {
+		elements: { root, button, link, separator },
+		builders: { createToolbarGroup },
+	} = createToolbar();
+	const {
+		elements: { root: fontGroup, item: fontItem },
+	} = createToolbarGroup({
 		type: 'multiple',
 	});
-	const { root: alignGroup, item: alignItem } = createToolbarGroup();
+	const {
+		elements: { root: alignGroup, item: alignItem },
+	} = createToolbarGroup();
 </script>
 
 <div
@@ -43,11 +53,7 @@
 		</button>
 	</div>
 	<div class="separator" melt={$separator} />
-	<a
-		href="https://www.melt-ui.com/"
-		class="link nowrap flex-shrink-0"
-		melt={$link}
-	>
+	<a href="/" class="link nowrap flex-shrink-0" melt={$link}>
 		Edited 2 hours ago
 	</a>
 	<button class="button" melt={$button}>Save</button>

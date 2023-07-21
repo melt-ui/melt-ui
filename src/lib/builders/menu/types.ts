@@ -75,7 +75,13 @@ export type Menu = {
 export type MenuBuilderOptions = {
 	rootOpen: Writable<boolean>;
 	rootActiveTrigger: Writable<HTMLElement | null>;
-	rootOptions: Writable<CreateMenuProps>;
+	rootOptions: {
+		positioning: Writable<FloatingConfig>;
+		arrowSize: Writable<number | undefined>;
+		preventScroll: Writable<boolean | undefined>;
+		loop: Writable<boolean | undefined>;
+		dir: Writable<TextDirection>;
+	};
 	disableTriggerRefocus?: boolean;
 	disableFocusFirstItem?: boolean;
 	nextFocusable: Writable<HTMLElement | null>;

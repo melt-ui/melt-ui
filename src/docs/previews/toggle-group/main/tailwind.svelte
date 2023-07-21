@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { createToggleGroup } from '@melt-ui/svelte';
-	import AlignCenter from '~icons/lucide/align-center';
-	import AlignLeft from '~icons/lucide/align-left';
-	import AlignRight from '~icons/lucide/align-right';
+	import { AlignCenter, AlignLeft, AlignRight } from 'lucide-svelte';
 
-	const { root, item } = createToggleGroup();
+	const {
+		elements: { root, item },
+	} = createToggleGroup();
 </script>
 
 <div

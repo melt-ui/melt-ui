@@ -3,7 +3,9 @@
 
 	export let open = false;
 
-	const { root, trigger, content } = createCollapsible({
+	const {
+		elements: { root, trigger, content },
+	} = createCollapsible({
 		open,
 	});
 </script>

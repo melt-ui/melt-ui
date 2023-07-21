@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { createPopover } from '@melt-ui/svelte';
 	import { fade } from 'svelte/transition';
-	import Settings2 from '~icons/lucide/settings2';
-	import X from '~icons/lucide/x';
+	import { Settings2, X } from 'lucide-svelte';
 
-	const { trigger, content, open, arrow, close } = createPopover();
+	const {
+		elements: { trigger, content, arrow, close },
+		states: { open },
+	} = createPopover();
 </script>
 
 <button

@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { createSlider } from '@melt-ui/svelte';
 
-	const { slider, range, thumb } = createSlider({
+	const {
+		elements: { root, range, thumb },
+	} = createSlider({
 		value: [30],
 		max: 100,
 	});
 </script>
 
-<span melt={$slider} class="relative flex h-[20px] w-[200px] items-center">
+<span melt={$root} class="relative flex h-[20px] w-[200px] items-center">
 	<span class="block h-[3px] w-full bg-black/40">
 		<span melt={$range} class="h-[3px] bg-white" />
 	</span>

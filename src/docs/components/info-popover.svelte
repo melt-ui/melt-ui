@@ -2,9 +2,12 @@
 	import { cn } from '$docs/utils';
 	import { createPopover } from '@melt-ui/svelte';
 	import { fade } from 'svelte/transition';
-	import Info from '~icons/lucide/info';
+	import { Info } from 'lucide-svelte';
 
-	const { trigger, content, open, arrow } = createPopover();
+	const {
+		elements: { trigger, content, arrow },
+		states: { open },
+	} = createPopover();
 
 	export let iconClasses = '';
 	export let contentClasses = '';

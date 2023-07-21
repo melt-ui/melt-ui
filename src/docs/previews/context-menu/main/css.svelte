@@ -5,18 +5,18 @@
 	import Check from '~icons/lucide/check';
 
 	const {
-		trigger,
-		menu,
-		item,
-		checkboxItem,
-		separator,
-		createSubMenu,
-		createMenuRadioGroup,
+		elements: { trigger, menu, item, checkboxItem, separator },
+		builders: { createSubmenu, createMenuRadioGroup },
 	} = createContextMenu();
 
-	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
+	const {
+		elements: { subMenu: subMenuA, subTrigger: subTriggerA },
+	} = createSubmenu();
 
-	const { radioGroup, radioItem, isChecked } = createMenuRadioGroup({
+	const {
+		elements: { radioGroup, radioItem },
+		helpers: { isChecked },
+	} = createMenuRadioGroup({
 		value: 'Hunter Johnston',
 	});
 

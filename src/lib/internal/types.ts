@@ -34,3 +34,14 @@ export type Orientation = 'horizontal' | 'vertical';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type Prettify<T> = { [K in keyof T]: T[K] } & {};
+
+export type StoreValue<T> = T extends { subscribe(cb: (value: infer V) => void): void } ? V : never;
+
+export type StoreValueObj<T> = {
+	[P in keyof T]: StoreValue<T[P]>;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type BuilderReturn<T extends (...args: any) => any> = {
+	[P in keyof ReturnType<T>]: ReturnType<T>[P];
+};

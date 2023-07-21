@@ -9,6 +9,7 @@ import {
 	kbd,
 	omit,
 	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateSliderProps } from './types';
@@ -24,9 +25,11 @@ const defaults = {
 
 const { name } = createElHelpers('slider');
 
-export const createSlider = (props: CreateSliderProps = defaults) => {
-	const withDefaults = { ...defaults, ...props };
-	const options = writable(omit(withDefaults, 'value'));
+export const createSlider = (props?: CreateSliderProps) => {
+	const withDefaults = { ...defaults, ...props } satisfies CreateSliderProps;
+
+	const options = toWritableStores(omit(withDefaults, 'value'));
+	const { min, max, step, orientation, disabled } = options;
 
 	const value = writable(withDefaults.value);
 
@@ -39,33 +42,33 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 	};
 
 	const root = builder(name(), {
-		stores: options,
-		returned: ($options) => {
+		stores: [disabled, orientation],
+		returned: ([$disabled, $orientation]) => {
 			return {
-				disabled: $options.disabled,
-				'data-orientation': $options.orientation,
-				style: $options.disabled ? undefined : 'touch-action: none;',
+				disabled: $disabled,
+				'data-orientation': $orientation,
+				style: $disabled ? undefined : 'touch-action: none;',
 				'data-melt-id': ids.root,
 			};
 		},
 	});
 
-	const position = derived(options, ($options) => {
+	const position = derived([min, max], ([$min, $max]) => {
 		return (val: number) => {
-			const pos = ((val - $options.min) / ($options.max - $options.min)) * 100;
+			const pos = ((val - $min) / ($max - $min)) * 100;
 
 			return Math.abs(pos);
 		};
 	});
 
 	const range = builder(name('range'), {
-		stores: [value, options, position],
-		returned: ([$value, $options, $position]) => {
+		stores: [value, orientation, position],
+		returned: ([$value, $orientation, $position]) => {
 			const minimum = $value.length > 1 ? $position(Math.min(...$value) ?? 0) : 0;
 			const maximum = 100 - $position(Math.max(...$value) ?? 0);
 
 			const orientationStyles =
-				$options.orientation === 'horizontal'
+				$orientation === 'horizontal'
 					? { left: `${minimum}%`, right: `${maximum}%` }
 					: { top: `${maximum}%`, bottom: `${minimum}%` };
 
@@ -108,13 +111,12 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 	};
 
 	const thumb = builder(name('thumb'), {
-		stores: [value, options, position],
-		returned: ([$value, $options, $position]) => {
+		stores: [value, position, min, max, disabled, orientation],
+		returned: ([$value, $position, $min, $max, $disabled, $orientation]) => {
 			let index = -1;
 
 			return () => {
 				index++;
-				const { min: $min, max: $max, disabled: $disabled } = $options;
 
 				const currentThumb = get(currentThumbIndex);
 
@@ -132,7 +134,7 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 					'data-melt-part': 'thumb',
 					style: styleToString({
 						position: 'absolute',
-						...($options.orientation === 'horizontal'
+						...($orientation === 'horizontal'
 							? { left: thumbPosition, translate: '-50% 0' }
 							: { bottom: thumbPosition, translate: '0 50%' }),
 					}),
@@ -142,10 +144,9 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 		},
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'keydown', (event) => {
-				const $options = get(options);
-				const $min = $options.min;
-				const $max = $options.max;
-				if ($options.disabled) return;
+				const $min = get(min);
+				const $max = get(max);
+				if (get(disabled)) return;
 
 				const target = event.currentTarget as HTMLElement;
 				const thumbs = getAllThumbs();
@@ -169,8 +170,9 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 
 				event.preventDefault();
 
-				const step = $options.step;
+				const $step = get(step);
 				const $value = get(value);
+				const $orientation = get(orientation);
 
 				switch (event.key) {
 					case kbd.HOME: {
@@ -182,23 +184,23 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 						break;
 					}
 					case kbd.ARROW_LEFT: {
-						if ($options.orientation !== 'horizontal') break;
+						if ($orientation !== 'horizontal') break;
 
 						if (event.metaKey) {
 							updatePosition($min, index);
 						} else if ($value[index] > $min) {
-							const newValue = $value[index] - step;
+							const newValue = $value[index] - $step;
 							updatePosition(newValue, index);
 						}
 						break;
 					}
 					case kbd.ARROW_RIGHT: {
-						if ($options.orientation !== 'horizontal') break;
+						if ($orientation !== 'horizontal') break;
 
 						if (event.metaKey) {
 							updatePosition($max, index);
 						} else if ($value[index] < $max) {
-							const newValue = $value[index] + step;
+							const newValue = $value[index] + $step;
 							updatePosition(newValue, index);
 						}
 						break;
@@ -206,11 +208,11 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 					case kbd.ARROW_UP: {
 						if (event.metaKey) {
 							updatePosition($max, index);
-						} else if ($value[index] > $min && $options.orientation === 'vertical') {
-							const newValue = $value[index] - step;
+						} else if ($value[index] > $min && $orientation === 'vertical') {
+							const newValue = $value[index] - $step;
 							updatePosition(newValue, index);
 						} else if ($value[index] < $max) {
-							const newValue = $value[index] + step;
+							const newValue = $value[index] + $step;
 							updatePosition(newValue, index);
 						}
 						break;
@@ -218,11 +220,11 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 					case kbd.ARROW_DOWN: {
 						if (event.metaKey) {
 							updatePosition($min, index);
-						} else if ($value[index] < $max && $options.orientation === 'vertical') {
-							const newValue = $value[index] + step;
+						} else if ($value[index] < $max && $orientation === 'vertical') {
+							const newValue = $value[index] + $step;
 							updatePosition(newValue, index);
 						} else if ($value[index] > $min) {
-							const newValue = $value[index] - step;
+							const newValue = $value[index] - $step;
 							updatePosition(newValue, index);
 						}
 						break;
@@ -236,111 +238,116 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 		},
 	});
 
-	effect([root, options], ([$root, $options]) => {
-		const { min: $min, max: $max, disabled: $disabled } = $options;
-		if (!isBrowser || $disabled) return;
+	effect(
+		[root, min, max, disabled, orientation, step],
+		([$root, $min, $max, $disabled, $orientation, $step]) => {
+			if (!isBrowser || $disabled) return;
 
-		const applyPosition = (
-			clientXY: number,
-			activeThumbIdx: number,
-			leftOrBottom: number,
-			rightOrTop: number
-		) => {
-			const percent = (clientXY - leftOrBottom) / (rightOrTop - leftOrBottom);
-			const val = Math.round(percent * ($max - $min) + $min);
+			const applyPosition = (
+				clientXY: number,
+				activeThumbIdx: number,
+				leftOrBottom: number,
+				rightOrTop: number
+			) => {
+				const percent = (clientXY - leftOrBottom) / (rightOrTop - leftOrBottom);
+				const val = Math.round(percent * ($max - $min) + $min);
 
-			if (val < $min || val > $max) return;
-			const step = $options.step;
-			const newValue = Math.round(val / step) * step;
+				if (val < $min || val > $max) return;
+				const step = $step;
+				const newValue = Math.round(val / step) * step;
 
-			updatePosition(newValue, activeThumbIdx);
-		};
+				updatePosition(newValue, activeThumbIdx);
+			};
 
-		const getClosestThumb = (e: PointerEvent) => {
-			const thumbs = getAllThumbs();
-			if (!thumbs) return;
-			thumbs.forEach((thumb) => thumb?.blur());
+			const getClosestThumb = (e: PointerEvent) => {
+				const thumbs = getAllThumbs();
+				if (!thumbs) return;
+				thumbs.forEach((thumb) => thumb?.blur());
 
-			const distances = thumbs.map((thumb) => {
-				if ($options.orientation === 'horizontal') {
-					const { left, right } = thumb.getBoundingClientRect();
-					return Math.abs(e.clientX - (left + right) / 2);
+				const distances = thumbs.map((thumb) => {
+					if ($orientation === 'horizontal') {
+						const { left, right } = thumb.getBoundingClientRect();
+						return Math.abs(e.clientX - (left + right) / 2);
+					} else {
+						const { top, bottom } = thumb.getBoundingClientRect();
+						return Math.abs(e.clientY - (top + bottom) / 2);
+					}
+				});
+
+				const thumb = thumbs[distances.indexOf(Math.min(...distances))];
+				const index = thumbs.indexOf(thumb);
+
+				return { thumb, index };
+			};
+
+			const pointerDown = (e: PointerEvent) => {
+				if (e.button !== 0) return;
+
+				const sliderEl = getElementByMeltId($root['data-melt-id']) as HTMLElement;
+				const closestThumb = getClosestThumb(e);
+				if (!closestThumb || !sliderEl) return;
+
+				if (!sliderEl.contains(e.target as HTMLElement)) return;
+				e.preventDefault();
+
+				activeThumb.set(closestThumb);
+				closestThumb.thumb.focus();
+				isActive.set(true);
+
+				if ($orientation === 'horizontal') {
+					const { left, right } = sliderEl.getBoundingClientRect();
+					applyPosition(e.clientX, closestThumb.index, left, right);
 				} else {
-					const { top, bottom } = thumb.getBoundingClientRect();
-					return Math.abs(e.clientY - (top + bottom) / 2);
+					const { top, bottom } = sliderEl.getBoundingClientRect();
+					applyPosition(e.clientY, closestThumb.index, bottom, top);
 				}
-			});
+			};
 
-			const thumb = thumbs[distances.indexOf(Math.min(...distances))];
-			const index = thumbs.indexOf(thumb);
+			const pointerUp = () => {
+				isActive.set(false);
+			};
 
-			return { thumb, index };
-		};
+			const pointerMove = (e: PointerEvent) => {
+				if (!get(isActive)) return;
 
-		const pointerDown = (e: PointerEvent) => {
-			if (e.button !== 0) return;
+				const sliderEl = getElementByMeltId($root['data-melt-id']) as HTMLElement;
+				const closestThumb = get(activeThumb);
+				if (!sliderEl || !closestThumb) return;
 
-			const sliderEl = getElementByMeltId($root['data-melt-id']) as HTMLElement;
-			const closestThumb = getClosestThumb(e);
-			if (!closestThumb || !sliderEl) return;
+				closestThumb.thumb.focus();
 
-			if (!sliderEl.contains(e.target as HTMLElement)) return;
-			e.preventDefault();
+				if ($orientation === 'horizontal') {
+					const { left, right } = sliderEl.getBoundingClientRect();
+					applyPosition(e.clientX, closestThumb.index, left, right);
+				} else {
+					const { top, bottom } = sliderEl.getBoundingClientRect();
+					applyPosition(e.clientY, closestThumb.index, top, bottom);
+				}
+			};
 
-			activeThumb.set(closestThumb);
-			closestThumb.thumb.focus();
-			isActive.set(true);
+			document.addEventListener('pointerdown', pointerDown);
+			document.addEventListener('pointerup', pointerUp);
+			document.addEventListener('pointerleave', pointerUp);
+			document.addEventListener('pointermove', pointerMove);
 
-			if ($options.orientation === 'horizontal') {
-				const { left, right } = sliderEl.getBoundingClientRect();
-				applyPosition(e.clientX, closestThumb.index, left, right);
-			} else {
-				const { top, bottom } = sliderEl.getBoundingClientRect();
-				applyPosition(e.clientY, closestThumb.index, bottom, top);
-			}
-		};
-
-		const pointerUp = () => {
-			isActive.set(false);
-		};
-
-		const pointerMove = (e: PointerEvent) => {
-			if (!get(isActive)) return;
-
-			const sliderEl = getElementByMeltId($root['data-melt-id']) as HTMLElement;
-			const closestThumb = get(activeThumb);
-			if (!sliderEl || !closestThumb) return;
-
-			closestThumb.thumb.focus();
-
-			if ($options.orientation === 'horizontal') {
-				const { left, right } = sliderEl.getBoundingClientRect();
-				applyPosition(e.clientX, closestThumb.index, left, right);
-			} else {
-				const { top, bottom } = sliderEl.getBoundingClientRect();
-				applyPosition(e.clientY, closestThumb.index, bottom, top);
-			}
-		};
-
-		document.addEventListener('pointerdown', pointerDown);
-		document.addEventListener('pointerup', pointerUp);
-		document.addEventListener('pointerleave', pointerUp);
-		document.addEventListener('pointermove', pointerMove);
-
-		return () => {
-			document.removeEventListener('pointerdown', pointerDown);
-			document.removeEventListener('pointerup', pointerUp);
-			document.removeEventListener('pointerleave', pointerUp);
-			document.removeEventListener('pointermove', pointerMove);
-		};
-	});
+			return () => {
+				document.removeEventListener('pointerdown', pointerDown);
+				document.removeEventListener('pointerup', pointerUp);
+				document.removeEventListener('pointerleave', pointerUp);
+				document.removeEventListener('pointermove', pointerMove);
+			};
+		}
+	);
 
 	return {
+		elements: {
+			root,
+			thumb,
+			range,
+		},
+		states: {
+			value,
+		},
 		options,
-		value,
-		root,
-		slider: root,
-		range,
-		thumb,
 	};
 };

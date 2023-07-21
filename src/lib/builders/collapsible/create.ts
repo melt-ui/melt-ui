@@ -1,4 +1,10 @@
-import { addEventListener, builder, createElHelpers } from '$lib/internal/helpers';
+import {
+	addEventListener,
+	builder,
+	createElHelpers,
+	omit,
+	toWritableStores,
+} from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { writable } from 'svelte/store';
 import type { CreateCollapsibleProps } from './types';
@@ -11,16 +17,18 @@ const defaults = {
 const { name } = createElHelpers('collapsible');
 
 export function createCollapsible(props?: CreateCollapsibleProps) {
-	const options = { ...defaults, ...props };
-	const disabled = writable(options.disabled);
+	const withDefaults = { ...defaults, ...props } satisfies CreateCollapsibleProps;
 
-	const open = writable(options.open);
+	const options = toWritableStores(omit(withDefaults, 'open'));
+	const { disabled } = options;
+
+	const open = writable(withDefaults.open);
 
 	const root = builder(name(), {
-		stores: open,
-		returned: ($open) => ({
+		stores: [open, disabled],
+		returned: ([$open, $disabled]) => ({
 			'data-state': $open ? 'open' : 'closed',
-			'data-disabled': options.disabled ? '' : 'undefined',
+			'data-disabled': $disabled ? '' : 'undefined',
 		}),
 	});
 
@@ -55,10 +63,14 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 	});
 
 	return {
-		root,
-		trigger,
-		content,
-		open,
-		disabled,
+		elements: {
+			root,
+			trigger,
+			content,
+		},
+		states: {
+			open,
+		},
+		options,
 	};
 }

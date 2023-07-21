@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { createSwitch } from '@melt-ui/svelte';
 
-	const { root, input, isChecked } = createSwitch();
+	const {
+		elements: { root, input },
+		helpers: { isChecked },
+	} = createSwitch();
 </script>
 
 <form>

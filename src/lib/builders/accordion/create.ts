@@ -6,6 +6,8 @@ import {
 	generateId,
 	getElementByMeltId,
 	kbd,
+	omit,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
@@ -22,15 +24,18 @@ const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
 const defaults = {
 	type: 'single',
+	value: undefined,
+	disabled: undefined,
 } satisfies Defaults<CreateAccordionProps>;
 
 export const createAccordion = <T extends AccordionType = 'single'>(
 	props?: CreateAccordionProps<T>
 ) => {
-	const withDefaults = { ...defaults, ...props } as CreateAccordionProps<T>;
-	const options = writable({
-		disabled: withDefaults.disabled,
-	});
+	const withDefaults = { ...defaults, ...props };
+
+	const options = toWritableStores(omit(withDefaults, 'value'));
+
+	const { disabled } = options;
 
 	const value = writable<string | string[] | undefined>(withDefaults.value);
 
@@ -85,14 +90,14 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 	});
 
 	const trigger = builder(name('trigger'), {
-		stores: [value, options],
-		returned: ([$value, $options]) => {
+		stores: [value, disabled],
+		returned: ([$value, $disabled]) => {
 			return (props: AccordionItemProps) => {
 				const { value: itemValue, disabled } = parseItemProps(props);
 				// generate the content ID here so that we can grab it in the content
 				// builder action to ensure the values match.
 				return {
-					disabled: $options.disabled || disabled,
+					disabled: $disabled || disabled,
 					'aria-expanded': isSelected(itemValue, $value) ? true : false,
 					'aria-disabled': disabled ? true : false,
 					'data-disabled': disabled ? true : undefined,
@@ -159,14 +164,14 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 	});
 
 	const content = builder(name('content'), {
-		stores: [value, options],
-		returned: ([$value, $options]) => {
+		stores: [value, disabled],
+		returned: ([$value, $disabled]) => {
 			return (props: AccordionItemProps) => {
 				const { value: itemValue } = parseItemProps(props);
 				const selected = isSelected(itemValue, $value);
 				return {
 					'data-state': selected ? 'open' : 'closed',
-					'data-disabled': $options.disabled ? true : undefined,
+					'data-disabled': $disabled ? true : undefined,
 					'data-value': itemValue,
 					hidden: selected ? undefined : true,
 				};
@@ -203,14 +208,19 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 	});
 
 	return {
-		root,
-		/** Initial value of accordion */
-		value: value as Writable<CreateAccordionProps<T>['value']>,
-		item,
-		trigger,
-		content,
-		isSelected: isSelectedStore,
+		elements: {
+			root,
+			item,
+			trigger,
+			content,
+			heading,
+		},
+		states: {
+			value: value as Writable<CreateAccordionProps<T>['value']>,
+		},
+		helpers: {
+			isSelected: isSelectedStore,
+		},
 		options,
-		heading,
 	};
 };

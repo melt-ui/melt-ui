@@ -5,7 +5,9 @@
 	import BaseDialog from './BaseDialog.svelte';
 
 	const dialog = createDialog();
-	const { trigger, title, description, close } = dialog;
+	const {
+		elements: { trigger, title, description, close },
+	} = dialog;
 </script>
 
 <PreviewWrapper>

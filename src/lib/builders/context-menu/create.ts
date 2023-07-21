@@ -14,6 +14,7 @@ import {
 	noop,
 	styleToString,
 	isLeftClick,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import type { VirtualElement } from '@floating-ui/core';
@@ -38,13 +39,18 @@ const defaults = {
 		placement: 'bottom-start',
 	},
 	preventScroll: true,
+	loop: false,
+	dir: 'ltr',
 } satisfies Defaults<CreateContextMenuProps>;
 
 const { name, selector } = createElHelpers<MenuParts>('context-menu');
 
 export function createContextMenu(props?: CreateContextMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;
-	const rootOptions = writable(withDefaults);
+
+	const rootOptions = toWritableStores(withDefaults);
+	const { positioning } = rootOptions;
+
 	const rootOpen = writable(false);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
 	const nextFocusable = writable<HTMLElement | null>(null);
@@ -54,7 +60,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		item,
 		checkboxItem,
 		arrow,
-		createSubMenu,
+		createSubmenu,
 		createMenuRadioGroup,
 		rootIds,
 		separator,
@@ -102,8 +108,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[rootOpen, rootActiveTrigger, rootOptions],
-				([$rootOpen, $rootActiveTrigger, $rootOptions]) => {
+				[rootOpen, rootActiveTrigger, positioning],
+				([$rootOpen, $rootActiveTrigger, $positioning]) => {
 					unsubPopper();
 					if ($rootOpen && $rootActiveTrigger) {
 						tick().then(() => {
@@ -114,7 +120,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 								anchorElement: $virtual,
 								open: rootOpen,
 								options: {
-									floating: $rootOptions.positioning,
+									floating: $positioning,
 									clickOutside: {
 										handler: (e: PointerEvent) => {
 											if (e.defaultPrevented) return;
@@ -268,16 +274,22 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	});
 
 	return {
-		open: rootOpen,
+		elements: {
+			menu,
+			trigger,
+			item,
+			checkboxItem,
+			arrow,
+			separator,
+		},
+		states: {
+			open: rootOpen,
+		},
+		builders: {
+			createSubmenu,
+			createMenuRadioGroup,
+		},
 		options: rootOptions,
-		menu,
-		trigger,
-		item,
-		checkboxItem,
-		arrow,
-		separator,
-		createSubMenu,
-		createMenuRadioGroup,
 	};
 }
 

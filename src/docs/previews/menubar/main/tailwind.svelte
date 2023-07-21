@@ -1,47 +1,61 @@
 <script lang="ts">
 	import { createMenubar } from '@melt-ui/svelte';
 	import { writable } from 'svelte/store';
-	import ChevronRight from '~icons/lucide/chevron-right';
-	import Check from '~icons/lucide/check';
-
-	const { menubar, createMenu } = createMenubar();
+	import { ChevronRight, Check } from 'lucide-svelte';
 
 	const {
-		trigger,
-		menu,
-		item,
-		separator,
-		createSubmenu,
-		createMenuRadioGroup,
+		elements: { menubar },
+		builders: { createMenu },
+	} = createMenubar();
+
+	const {
+		elements: { trigger, menu, item, separator },
+		builders: { createSubmenu, createMenuRadioGroup },
 	} = createMenu();
-	const { subMenu, subTrigger } = createSubmenu();
-	const { radioGroup, radioItem, isChecked } = createMenuRadioGroup({
+
+	const {
+		elements: { subMenu, subTrigger },
+	} = createSubmenu();
+
+	const {
+		elements: { radioGroup, radioItem },
+		helpers: { isChecked },
+	} = createMenuRadioGroup({
 		value: 'Nord',
 	});
 
 	const {
-		trigger: triggerA,
-		menu: menuA,
-		item: itemA,
-		separator: separatorA,
+		elements: {
+			trigger: triggerA,
+			menu: menuA,
+			item: itemA,
+			separator: separatorA,
+		},
 	} = createMenu();
 
 	const {
-		trigger: triggerB,
-		menu: menuB,
-		item: itemB,
-		checkboxItem: checkboxItemB,
-		separator: separatorB,
-		createSubmenu: createSubmenuB,
+		elements: {
+			trigger: triggerB,
+			menu: menuB,
+			item: itemB,
+			checkboxItem: checkboxItemB,
+			separator: separatorB,
+		},
+		builders: { createSubmenu: createSubmenuB },
 	} = createMenu();
-	const { subMenu: subMenuB, subTrigger: subTriggerB } = createSubmenuB();
 
 	const {
-		trigger: triggerC,
-		menu: menuC,
-		item: itemC,
-		checkboxItem: checkboxItemC,
-		separator: separatorC,
+		elements: { subMenu: subMenuB, subTrigger: subTriggerB },
+	} = createSubmenuB();
+
+	const {
+		elements: {
+			trigger: triggerC,
+			menu: menuC,
+			item: itemC,
+			checkboxItem: checkboxItemC,
+			separator: separatorC,
+		},
 	} = createMenu();
 
 	const themesArr = ['Nord', 'GitHub Dark', 'Moonlight'];

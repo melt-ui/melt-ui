@@ -3,7 +3,9 @@
 
 	export let src = 'https://avatars.githubusercontent.com/u/1162160?v=4';
 
-	const { image, fallback } = createAvatar({
+	const {
+		elements: { image, fallback },
+	} = createAvatar({
 		src,
 	});
 </script>

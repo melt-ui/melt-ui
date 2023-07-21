@@ -7,6 +7,7 @@ import {
 	noop,
 	omit,
 	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
 
 import { useFloating, usePortal } from '$lib/internal/actions';
@@ -32,8 +33,10 @@ const { name } = createElHelpers<TooltipParts>('tooltip');
 // TODO: Add grace area to prevent tooltip from closing when moving from trigger to tooltip
 
 export function createTooltip(props?: CreateTooltipProps) {
-	const withDefaults = { ...defaults, ...props } as CreateTooltipProps;
-	const options = writable(omit(withDefaults, 'open'));
+	const withDefaults = { ...defaults, ...props } satisfies CreateTooltipProps;
+
+	const options = toWritableStores(omit(withDefaults, 'open'));
+	const { positioning, arrowSize, closeOnPointerDown, openDelay, closeDelay } = options;
 
 	const open = writable(withDefaults.open);
 
@@ -44,7 +47,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 	let timeout: number | null = null;
 
-	const openTooltip = derived(options, ($options) => {
+	const openTooltip = derived(openDelay, ($openDelay) => {
 		return () => {
 			if (timeout) {
 				window.clearTimeout(timeout);
@@ -53,11 +56,11 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 			timeout = window.setTimeout(() => {
 				open.set(true);
-			}, $options.openDelay);
+			}, $openDelay);
 		};
 	}) as Readable<() => void>;
 
-	const closeTooltip = derived(options, ($options) => {
+	const closeTooltip = derived(closeDelay, ($closeDelay) => {
 		return () => {
 			if (timeout) {
 				window.clearTimeout(timeout);
@@ -66,7 +69,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 			timeout = window.setTimeout(() => {
 				open.set(false);
-			}, $options.closeDelay);
+			}, $closeDelay);
 		};
 	}) as Readable<() => void>;
 
@@ -90,9 +93,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				addEventListener(node, 'blur', () => open.set(false)),
 				addEventListener(node, 'mousedown', (e) => {
 					e.preventDefault();
-
-					const $options = get(options);
-					if ($options.closeOnPointerDown) {
+					if (get(closeOnPointerDown)) {
 						open.set(false);
 					}
 				})
@@ -127,8 +128,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 					tick().then(() => {
 						const triggerEl = document.getElementById(ids.trigger);
 						if (!triggerEl || node.hidden) return;
-						const $options = get(options);
-						const floatingReturn = useFloating(triggerEl, node, $options.positioning);
+						const floatingReturn = useFloating(triggerEl, node, get(positioning));
 						unsubFloating = floatingReturn.destroy;
 					});
 				} else {
@@ -153,16 +153,24 @@ export function createTooltip(props?: CreateTooltipProps) {
 	});
 
 	const arrow = builder(name('arrow'), {
-		stores: options,
-		returned: ($options) => ({
+		stores: arrowSize,
+		returned: ($arrowSize) => ({
 			'data-arrow': true,
 			style: styleToString({
 				position: 'absolute',
-				width: `var(--arrow-size, ${$options.arrowSize}px)`,
-				height: `var(--arrow-size, ${$options.arrowSize}px)`,
+				width: `var(--arrow-size, ${$arrowSize}px)`,
+				height: `var(--arrow-size, ${$arrowSize}px)`,
 			}),
 		}),
 	});
 
-	return { trigger, open, content, arrow, options };
+	return {
+		elements: {
+			trigger,
+			content,
+			arrow,
+		},
+		states: { open },
+		options,
+	};
 }

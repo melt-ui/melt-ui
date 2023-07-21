@@ -1,24 +1,21 @@
 <script lang="ts">
 	import { createDropdownMenu } from '$lib';
 	import { writable } from 'svelte/store';
-	import AlignJustify from '~icons/lucide/align-justify';
-	import ChevronRight from '~icons/lucide/chevron-right';
-	import Check from '~icons/lucide/check';
+	import { AlignJustify, ChevronRight, Check } from 'lucide-svelte';
 
 	const {
-		trigger,
-		menu,
-		item,
-		checkboxItem,
-		arrow,
-		separator,
-		createSubMenu,
-		createMenuRadioGroup,
+		elements: { trigger, menu, item, checkboxItem, separator, arrow },
+		builders: { createSubmenu, createMenuRadioGroup },
 	} = createDropdownMenu();
 
-	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
+	const {
+		elements: { subMenu: subMenuA, subTrigger: subTriggerA },
+	} = createSubmenu();
 
-	const { radioGroup, radioItem, isChecked } = createMenuRadioGroup({
+	const {
+		elements: { radioGroup, radioItem },
+		helpers: { isChecked },
+	} = createMenuRadioGroup({
 		value: 'Hunter Johnston',
 	});
 

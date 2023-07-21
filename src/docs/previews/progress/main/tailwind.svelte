@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { createProgress } from '@melt-ui/svelte';
 
-	const { progress, value, max } = createProgress({
+	const {
+		elements: { root },
+		states: { value },
+		options: { max },
+	} = createProgress({
 		value: 30,
 		max: 100,
 	});
@@ -14,7 +18,7 @@
 </script>
 
 <div
-	melt={$progress}
+	melt={$root}
 	class="relative h-6 w-[300px] overflow-hidden rounded-[99999px] bg-black/40"
 >
 	<div

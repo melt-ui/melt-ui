@@ -4,18 +4,23 @@
 	import { flyAndScale } from '$docs/utils';
 	import X from '~icons/lucide/x';
 
-	const { trigger, portal, overlay, content, title, description, close, open } =
-		createDialog();
+	const {
+		elements: { trigger, overlay, content, title, description, close },
+		actions: { portal },
+		states: { open },
+	} = createDialog();
 
 	const {
-		trigger: triggerNested,
-		portal: portalNested,
-		overlay: overlayNested,
-		content: contentNested,
-		title: titleNested,
-		description: descriptionNested,
-		close: closeNested,
-		open: openNested,
+		elements: {
+			trigger: triggerNested,
+			overlay: overlayNested,
+			content: contentNested,
+			title: titleNested,
+			description: descriptionNested,
+			close: closeNested,
+		},
+		actions: { portal: portalNested },
+		states: { open: openNested },
 	} = createDialog();
 </script>
 

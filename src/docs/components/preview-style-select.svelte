@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { createSelect, type SelectOptionProps } from '$lib';
-	import ChevronDown from '~icons/lucide/chevron-down';
-	import Check from '~icons/lucide/check';
+	import { ChevronDown, Check } from 'lucide-svelte';
 	import { beforeNavigate } from '$app/navigation';
 	import type { Writable } from 'svelte/store';
 
@@ -9,15 +8,10 @@
 	export let codingStyle: Writable<'tailwind' | 'css'>;
 
 	const {
-		value: localValue,
-		label,
-		trigger,
-		menu,
-		option,
-		isSelected,
-	} = createSelect({
-		value: $codingStyle,
-	});
+		elements: { trigger, menu, option },
+		states: { value: localValue, label },
+		helpers: { isSelected },
+	} = createSelect({ value: $codingStyle });
 
 	localValue.subscribe((v) => {
 		if (v === 'tailwind' || v === 'css') {
