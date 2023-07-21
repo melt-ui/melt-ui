@@ -4,10 +4,9 @@ export function focus(element: unknown): void {
 	if (isHTMLElement(element)) {
 		element.focus();
 	} else if (typeof element === 'string') {
-		const el = document.querySelector(element);
-		if (isHTMLElement(el)) {
-			el.focus();
-		}
+		const el = document.querySelector<HTMLElement>(element);
+		if (!el) return;
+		el.focus();
 	}
 }
 
@@ -26,8 +25,7 @@ export function getTabbableNodes(container: HTMLElement): HTMLElement[] {
 		},
 	});
 	while (walker.nextNode()) {
-		if (!isHTMLElement(walker.currentNode)) continue;
-		nodes.push(walker.currentNode);
+		nodes.push(walker.currentNode as HTMLElement);
 	}
 	return nodes;
 }
