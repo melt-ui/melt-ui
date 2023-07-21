@@ -45,11 +45,11 @@
 				</div>
 				<div class="flex gap-4">
 					<div class="flex gap-1">
-						<div class="text-neutral-900">250</div>
+						<div class="text-neutral-900">618</div>
 						<div class="text-neutral-400">Stars</div>
 					</div>
 					<div class="flex gap-1">
-						<div class="text-neutral-900">23</div>
+						<div class="text-neutral-900">37</div>
 						<div class="text-neutral-400">Forks</div>
 					</div>
 				</div>
