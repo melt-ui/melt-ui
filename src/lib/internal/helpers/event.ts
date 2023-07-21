@@ -1,4 +1,4 @@
-import type { Arrayable, MeltEvent } from '$lib/internal/types';
+import type { Arrayable } from '$lib/internal/types';
 import { isHTMLElement } from './is';
 
 /**
@@ -60,6 +60,11 @@ export function addEventListener(
 }
 
 export type EventHandler<T extends Event = Event> = (event: T) => void;
+
+type MeltEvent<E extends Event> = CustomEvent<{ cancel: () => void; originalEvent: E }>;
+export type MeltEventHandler<E extends Event> = EventHandler<
+	Expand<Omit<MeltEvent<E>, 'initCustomEvent'>>
+>;
 
 export function dispatchMeltEvent(originalEvent: Event) {
 	const node = originalEvent.currentTarget;
