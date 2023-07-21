@@ -14,11 +14,14 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
+	type MeltEventHandler,
+	withMelt,
 } from '$lib/internal/helpers';
 import { removeScroll } from '$lib/internal/helpers/scroll';
 import type { Defaults } from '$lib/internal/types';
 import { get, writable } from 'svelte/store';
 import type { CreateDialogProps } from './types';
+import type { ActionReturn } from 'svelte/action';
 
 type DialogParts = 'trigger' | 'overlay' | 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<DialogParts>('dialog');
@@ -61,6 +64,9 @@ export function createDialog(props: CreateDialogProps = {}) {
 		});
 	});
 
+	type TriggerEvents = {
+		'on:m-click': MeltEventHandler<MouseEvent>;
+	};
 	const trigger = builder(name('trigger'), {
 		stores: open,
 		returned: ($open) => {
@@ -71,13 +77,17 @@ export function createDialog(props: CreateDialogProps = {}) {
 				type: 'button',
 			} as const;
 		},
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', (e) => {
-				const el = e.currentTarget;
-				if (!isHTMLElement(el)) return;
-				open.set(true);
-				activeTrigger.set(el);
-			});
+		action: (node: HTMLElement): ActionReturn<unknown, TriggerEvents> => {
+			const unsub = addEventListener(
+				node,
+				'click',
+				withMelt((e) => {
+					const el = e.currentTarget;
+					if (!isHTMLElement(el)) return;
+					open.set(true);
+					activeTrigger.set(el);
+				})
+			);
 
 			return {
 				destroy: unsub,
@@ -174,15 +184,23 @@ export function createDialog(props: CreateDialogProps = {}) {
 		}),
 	});
 
+	type CloseEvents = {
+		'on:m-click': MeltEventHandler<MouseEvent>;
+	};
+
 	const close = builder(name('close'), {
 		returned: () =>
 			({
 				type: 'button',
 			} as const),
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', () => {
-				open.set(false);
-			});
+		action: (node: HTMLElement): ActionReturn<unknown, CloseEvents> => {
+			const unsub = addEventListener(
+				node,
+				'click',
+				withMelt(() => {
+					open.set(false);
+				})
+			);
 
 			return {
 				destroy: unsub,

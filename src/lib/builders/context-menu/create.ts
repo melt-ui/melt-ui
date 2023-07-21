@@ -16,6 +16,8 @@ import {
 	isLeftClick,
 	toWritableStores,
 	overridable,
+	withMelt,
+	type MeltEventHandler,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import type { VirtualElement } from '@floating-ui/core';
@@ -33,6 +35,7 @@ import {
 	setMeltMenuAttribute,
 } from '../menu';
 import type { CreateContextMenuProps } from './types';
+import type { ActionReturn } from 'svelte/action';
 
 const defaults = {
 	arrowSize: 8,
@@ -92,6 +95,10 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	});
 	const longPressTimer = writable(0);
 
+	type MenuEvents = {
+		'on:keydown': MeltEventHandler<KeyboardEvent>;
+	};
+
 	const menu = builder(name(), {
 		stores: rootOpen,
 		returned: ($rootOpen) => {
@@ -107,7 +114,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				tabindex: -1,
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): ActionReturn<unknown, MenuEvents> => {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
@@ -152,44 +159,48 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			);
 
 			const unsubEvents = executeCallbacks(
-				addEventListener(node, 'keydown', (e) => {
-					const target = e.target;
-					if (!isHTMLElement(target)) return;
+				addEventListener(
+					node,
+					'keydown',
+					withMelt((e) => {
+						const target = e.target;
+						if (!isHTMLElement(target)) return;
 
-					const menuElement = e.currentTarget;
-					if (!isHTMLElement(menuElement)) return;
+						const menuElement = e.currentTarget;
+						if (!isHTMLElement(menuElement)) return;
 
-					/**
-					 * Submenu key events bubble through portals and
-					 * we only care about key events that happen inside this menu.
-					 */
-					const isKeyDownInside = target.closest("[role='menu']") === menuElement;
-					if (!isKeyDownInside) return;
-					if (FIRST_LAST_KEYS.includes(e.key)) {
-						handleMenuNavigation(e);
-					}
+						/**
+						 * Submenu key events bubble through portals and
+						 * we only care about key events that happen inside this menu.
+						 */
+						const isKeyDownInside = target.closest("[role='menu']") === menuElement;
+						if (!isKeyDownInside) return;
+						if (FIRST_LAST_KEYS.includes(e.key)) {
+							handleMenuNavigation(e);
+						}
 
-					/**
-					 * Menus should not be navigated using tab, so we prevent it.
-					 * @see https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
-					 */
-					if (e.key === kbd.TAB) {
-						e.preventDefault();
-						rootActiveTrigger.set(null);
-						rootOpen.set(false);
-						handleTabNavigation(e, nextFocusable, prevFocusable);
-						return;
-					}
+						/**
+						 * Menus should not be navigated using tab, so we prevent it.
+						 * @see https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
+						 */
+						if (e.key === kbd.TAB) {
+							e.preventDefault();
+							rootActiveTrigger.set(null);
+							rootOpen.set(false);
+							handleTabNavigation(e, nextFocusable, prevFocusable);
+							return;
+						}
 
-					/**
-					 * Check for typeahead search and handle it.
-					 */
-					const isCharacterKey = e.key.length === 1;
-					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-					if (!isModifierKey && isCharacterKey) {
-						handleTypeaheadSearch(e.key, getMenuItems(menuElement));
-					}
-				})
+						/**
+						 * Check for typeahead search and handle it.
+						 */
+						const isCharacterKey = e.key.length === 1;
+						const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
+						if (!isModifierKey && isCharacterKey) {
+							handleTypeaheadSearch(e.key, getMenuItems(menuElement));
+						}
+					})
+				)
 			);
 			return {
 				destroy() {
