@@ -2,6 +2,7 @@ export * from './array';
 export * from './builder';
 export * from './dom';
 export * from './event';
+export * from './highlight';
 export * from './is';
 export * from './object';
 export * from './overridable';

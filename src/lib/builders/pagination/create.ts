@@ -3,6 +3,7 @@ import {
 	builder,
 	createElHelpers,
 	executeCallbacks,
+	isHTMLElement,
 	kbd,
 	omit,
 } from '$lib/internal/helpers';
@@ -46,30 +47,44 @@ export function createPagination(props: CreatePaginationProps) {
 	});
 
 	const keydown = (e: KeyboardEvent) => {
-		const thisEl = e.target as HTMLElement;
-		const rootEl = thisEl.closest('[data-scope="pagination"]') as HTMLElement | null;
-		if (!rootEl) return;
-		const triggers = Array.from(rootEl.querySelectorAll(selector('page'))) as Array<HTMLElement>;
-		const prevButton = rootEl.querySelector(selector('prev')) as HTMLElement | null;
-		const nextButton = rootEl.querySelector(selector('next')) as HTMLElement | null;
+		const thisEl = e.target;
+		if (!isHTMLElement(thisEl)) return;
 
-		const elements = [...triggers];
-		if (prevButton) elements.unshift(prevButton);
-		if (nextButton) elements.push(nextButton);
-		const index = Array.from(elements).indexOf(thisEl);
+		const rootEl = thisEl.closest('[data-scope="pagination"]');
+		if (!isHTMLElement(rootEl)) return;
+
+		const triggers = Array.from(rootEl.querySelectorAll(selector('page')));
+		const prevButton = rootEl.querySelector(selector('prev'));
+		const nextButton = rootEl.querySelector(selector('next'));
+
+		if (isHTMLElement(prevButton)) {
+			triggers.unshift(prevButton);
+		}
+		if (isHTMLElement(nextButton)) {
+			triggers.push(nextButton);
+		}
+		const index = triggers.indexOf(thisEl);
 
 		if (e.key === kbd.ARROW_LEFT && index !== 0) {
 			e.preventDefault();
-			elements[index - 1].focus();
-		} else if (e.key === kbd.ARROW_RIGHT && index !== elements.length - 1) {
+			const item = triggers[index - 1];
+			if (!isHTMLElement(item)) return;
+			item.focus();
+		} else if (e.key === kbd.ARROW_RIGHT && index !== triggers.length - 1) {
 			e.preventDefault();
-			elements[index + 1].focus();
+			const item = triggers[index + 1];
+			if (!isHTMLElement(item)) return;
+			item.focus();
 		} else if (e.key === kbd.HOME) {
 			e.preventDefault();
-			elements[0].focus();
+			const item = triggers[0];
+			if (!isHTMLElement(item)) return;
+			item.focus();
 		} else if (e.key === kbd.END) {
 			e.preventDefault();
-			elements[elements.length - 1].focus();
+			const item = triggers[triggers.length - 1];
+			if (!isHTMLElement(item)) return;
+			item.focus();
 		}
 	};
 

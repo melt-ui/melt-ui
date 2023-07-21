@@ -37,8 +37,9 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 		typed.update(() => []);
 	});
 
-	const handleTypeaheadSearch = (key: string, items: HTMLElement[]) => {
-		const currentItem = document.activeElement as HTMLElement | null;
+	const handleTypeaheadSearch = (key: string, items: Element[]) => {
+		const currentItem = document.activeElement;
+		if (!isHTMLElement(currentItem)) return;
 		const $typed = get(typed);
 		if (!Array.isArray($typed)) {
 			return;
@@ -46,8 +47,9 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 		$typed.push(key.toLowerCase());
 		typed.update(() => $typed);
 
-		const candidateItems = items.filter((item) => {
+		const candidateItems = items.filter((item): item is HTMLElement => {
 			if (
+				!isHTMLElement(item) ||
 				item.getAttribute('disabled') === 'true' ||
 				item.getAttribute('aria-disabled') === 'true'
 			) {

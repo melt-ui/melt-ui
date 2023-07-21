@@ -3,6 +3,7 @@ import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,
 	addEventListener,
+	addHighlight,
 	back,
 	builder,
 	createElHelpers,
@@ -23,6 +24,7 @@ import {
 	noop,
 	omit,
 	prev,
+	removeHighlight,
 	removeScroll,
 	styleToString,
 } from '$lib/internal/helpers';
@@ -406,12 +408,12 @@ export function createSelect(props?: CreateSelectProps) {
 				addEventListener(node, 'focusin', (e) => {
 					const itemElement = e.currentTarget;
 					if (!isHTMLElement(itemElement)) return;
-					itemElement.setAttribute('data-highlighted', '');
+					addHighlight(itemElement);
 				}),
 				addEventListener(node, 'focusout', (e) => {
 					const itemElement = e.currentTarget;
 					if (!isHTMLElement(itemElement)) return;
-					itemElement.removeAttribute('data-highlighted');
+					removeHighlight(itemElement);
 				})
 			);
 

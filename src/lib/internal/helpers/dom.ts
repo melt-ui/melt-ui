@@ -25,6 +25,9 @@ export function getTabbableNodes(container: HTMLElement): HTMLElement[] {
 			return node.tabIndex >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
 		},
 	});
-	while (walker.nextNode()) nodes.push(walker.currentNode as HTMLElement);
+	while (walker.nextNode()) {
+		if (!isHTMLElement(walker.currentNode)) continue;
+		nodes.push(walker.currentNode);
+	}
 	return nodes;
 }

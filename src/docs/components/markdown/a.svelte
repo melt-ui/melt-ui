@@ -2,6 +2,7 @@
 	import External from '~icons/lucide/external-link';
 
 	export let href: string;
+	export let rel: string | undefined;
 
 	$: internal = href.startsWith('/') || href.startsWith('#');
 

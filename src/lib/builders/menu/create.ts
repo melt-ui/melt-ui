@@ -22,6 +22,8 @@ import {
 	sleep,
 	styleToString,
 	isLeftClick,
+	addHighlight,
+	removeHighlight,
 } from '$lib/internal/helpers';
 import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
@@ -1237,14 +1239,6 @@ export function handleTabNavigation(
 	}
 }
 
-export function addHighlight(element: HTMLElement) {
-	element.setAttribute('data-highlighted', '');
-}
-
-export function removeHighlight(element: HTMLElement) {
-	element.removeAttribute('data-highlighted');
-}
-
 /**
  * Get the menu items for a given menu element.
  * This only selects menu items that are direct children of the menu element,
@@ -1252,10 +1246,7 @@ export function removeHighlight(element: HTMLElement) {
  * @param element The menu item element
  */
 export function getMenuItems(menuElement: HTMLElement) {
-	const menuItems = Array.from(
-		menuElement.querySelectorAll(`[data-melt-menu-id="${menuElement.id}"]`)
-	) as HTMLElement[];
-	return menuItems;
+	return Array.from(menuElement.querySelectorAll(`[data-melt-menu-id="${menuElement.id}"]`));
 }
 
 export function applyAttrsIfDisabled(element: HTMLElement | null) {
@@ -1355,6 +1346,7 @@ export function handleMenuNavigation(e: KeyboardEvent) {
 	}
 
 	const nextFocusedItem = candidateNodes[nextIndex];
+	if (!isHTMLElement(nextFocusedItem)) return;
 
 	handleRovingFocus(nextFocusedItem);
 }

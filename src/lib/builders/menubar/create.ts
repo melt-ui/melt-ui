@@ -26,6 +26,8 @@ import {
 	builder,
 	createElHelpers,
 	isLeftClick,
+	addHighlight,
+	removeHighlight,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions';
@@ -42,7 +44,7 @@ const defaults = {
 export function createMenubar(props?: CreateMenubarProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateMenubarProps;
 	const activeMenu = writable<string>('');
-	const scopedMenus = writable<HTMLElement[]>([]);
+	const scopedMenus = writable<Element[]>([]);
 	const nextFocusable = writable<HTMLElement | null>(null);
 	const prevFocusable = writable<HTMLElement | null>(null);
 
@@ -60,13 +62,12 @@ export function createMenubar(props?: CreateMenubarProps) {
 			};
 		},
 		action: (node: HTMLElement) => {
-			const menuTriggers = node.querySelectorAll(
-				'[data-melt-menubar-trigger]'
-			) as unknown as HTMLElement[];
-			if (menuTriggers.length === 0) return;
+			const menuTriggers = Array.from(node.querySelectorAll('[data-melt-menubar-trigger]'));
+			if (!menuTriggers.length || !isHTMLElement(menuTriggers[0])) return;
 			menuTriggers[0].tabIndex = 0;
 
-			const menus = Array.from(node.querySelectorAll('[data-melt-menubar-menu]')) as HTMLElement[];
+			const menus = Array.from(node.querySelectorAll('[data-melt-menubar-menu]'));
+
 			scopedMenus.set(menus);
 
 			return {
@@ -143,10 +144,9 @@ export function createMenubar(props?: CreateMenubarProps) {
 				const unsubEvents = executeCallbacks(
 					addEventListener(node, 'keydown', (e) => {
 						const target = e.target;
-						if (!isHTMLElement(target)) return;
-
 						const menuElement = e.currentTarget;
-						if (!isHTMLElement(menuElement)) return;
+
+						if (!isHTMLElement(menuElement) || !isHTMLElement(target)) return;
 
 						/**
 						 * Submenu key events bubble through portals and
@@ -214,7 +214,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				if (!menubarElement) return;
 
 				const menubarTriggers = Array.from(
-					menubarElement.querySelectorAll<HTMLElement>('[data-melt-menubar-trigger]')
+					menubarElement.querySelectorAll('[data-melt-menubar-trigger]')
 				);
 				if (!menubarTriggers.length) return;
 				if (menubarTriggers[0] === node) {
@@ -318,7 +318,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				const triggerElement = document.getElementById(m.rootIds.trigger);
 				if (!isHTMLElement(triggerElement)) return;
 				rootActiveTrigger.set(triggerElement);
-				triggerElement.setAttribute('data-highlighted', '');
+				addHighlight(triggerElement);
 				rootOpen.set(true);
 				return;
 			}
@@ -328,7 +328,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				if (get(rootOpen)) {
 					const triggerElement = document.getElementById(m.rootIds.trigger);
 					if (!isHTMLElement(triggerElement)) return;
-					triggerElement.removeAttribute('data-highlighted');
+					removeHighlight(triggerElement);
 					rootActiveTrigger.set(null);
 					rootOpen.set(false);
 				}
@@ -341,11 +341,13 @@ export function createMenubar(props?: CreateMenubarProps) {
 			const triggerElement = document.getElementById(m.rootIds.trigger);
 			if (!$rootOpen && get(activeMenu) === m.rootIds.menu) {
 				activeMenu.set('');
-				triggerElement?.removeAttribute('data-highlighted');
+				if (!triggerElement) return;
+				removeHighlight(triggerElement);
 				return;
 			}
 			if ($rootOpen) {
-				triggerElement?.setAttribute('data-highlighted', '');
+				if (!triggerElement) return;
+				addHighlight(triggerElement);
 			}
 		});
 
@@ -408,10 +410,9 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		// menu element being navigated
 		const currentTarget = e.currentTarget;
-		if (!isHTMLElement(currentTarget)) return;
-
 		const target = e.target;
-		if (!isHTMLElement(target)) return;
+
+		if (!isHTMLElement(target) || !isHTMLElement(currentTarget)) return;
 
 		const targetIsSubTrigger = target.hasAttribute('data-melt-menubar-menu-subtrigger');
 		const isKeyDownInsideSubMenu = target.closest('[role="menu"]') !== currentTarget;
@@ -486,7 +487,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				return false;
 			}
 			return true;
-		}) as HTMLElement[];
+		});
 
 		// Index of the currently focused item in the candidate nodes array
 		const currentIndex = candidateNodes.indexOf(currentFocusedItem);
@@ -513,6 +514,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		}
 
 		const nextFocusedItem = candidateNodes[nextIndex];
+		if (!isHTMLElement(nextFocusedItem)) return;
 
 		handleRovingFocus(nextFocusedItem);
 	}

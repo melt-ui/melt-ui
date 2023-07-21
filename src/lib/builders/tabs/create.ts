@@ -11,6 +11,7 @@ import {
 	omit,
 	prev,
 	isLeftClick,
+	isHTMLElement,
 } from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
@@ -130,35 +131,44 @@ export function createTabs(props?: CreateTabsProps) {
 				addEventListener(node, 'keydown', (e) => {
 					const tabValue = node.dataset.value;
 
-					const el = e.currentTarget as HTMLElement;
-					const rootEl = el.closest(selector()) as HTMLElement | null;
+					const el = e.currentTarget;
+					if (!isHTMLElement(el)) return;
+					const rootEl = el.closest(selector());
 
-					if (!rootEl || !tabValue) return;
+					if (!isHTMLElement(rootEl) || !tabValue) return;
 
 					const $options = get(options);
 
-					const triggers = Array.from(rootEl.querySelectorAll('[role="tab"]')) as HTMLElement[];
+					const triggers = Array.from(rootEl.querySelectorAll('[role="tab"]'));
 					const enabledTriggers = triggers.filter((el) => !el.hasAttribute('data-disabled'));
-					const triggerIdx = Array.from(enabledTriggers ?? []).findIndex((el) => el === e.target);
+					const triggerIdx = enabledTriggers.findIndex((el) => el === e.target);
 
 					const dir = getElemDirection(rootEl);
 					const { nextKey, prevKey } = getDirectionalKeys(dir, $options.orientation);
 
 					if (e.key === nextKey) {
 						e.preventDefault();
-						next(enabledTriggers, triggerIdx, $options.loop).focus();
+						const nextEl = next(enabledTriggers, triggerIdx, $options.loop);
+						if (!isHTMLElement(nextEl)) return;
+						nextEl.focus();
 					} else if (e.key === prevKey) {
 						e.preventDefault();
-						prev(enabledTriggers, triggerIdx, $options.loop).focus();
+						const prevEl = prev(enabledTriggers, triggerIdx, $options.loop);
+						if (!isHTMLElement(prevEl)) return;
+						prevEl.focus();
 					} else if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
 						e.preventDefault();
 						value.set(tabValue);
 					} else if (e.key === kbd.HOME) {
 						e.preventDefault();
-						enabledTriggers[0].focus();
+						const firstTrigger = enabledTriggers[0];
+						if (!isHTMLElement(firstTrigger)) return;
+						firstTrigger.focus();
 					} else if (e.key === kbd.END) {
 						e.preventDefault();
-						last(enabledTriggers).focus();
+						const lastTrigger = last(enabledTriggers);
+						if (!isHTMLElement(lastTrigger)) return;
+						lastTrigger.focus();
 					}
 				})
 			);
