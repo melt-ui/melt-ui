@@ -4,7 +4,7 @@ import type { Action, ActionReturn } from 'svelte/action';
 declare global {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace svelteHTML {
-		interface HTMLAttributes {
+		interface HTMLAttributes<T> extends T {
 			/**
 			 * A special attribute for Melt UI's preprocessor `@melt-ui/pp`.
 			 *
@@ -44,5 +44,5 @@ export function melt<
 	Attributes extends GetActionAttributes<Builder>
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 >(node: Element, params: Builder): ActionReturn<Builder, Attributes> {
-	return {};
+	return params.action(node) as ActionReturn<Builder, Attributes>;
 }

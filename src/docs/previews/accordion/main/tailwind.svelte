@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createAccordion } from '@melt-ui/svelte';
+	import { createAccordion, melt } from '@melt-ui/svelte';
 	import { slide } from 'svelte/transition';
 
 	const {
@@ -37,8 +37,11 @@
             focus-within:ring-magnum-400"
 		>
 			<h2 class="flex">
+				<!-- Option 1 -->
 				<button
-					melt={$trigger(id)}
+					on:m-click={(e) => console.log(e)}
+					use:trigger
+					{...$trigger(id)}
 					class="flex h-12 flex-1 cursor-pointer items-center justify-between border-b border-b-magnum-700
                  bg-white px-5 text-base font-medium
                  leading-none text-magnum-700 transition-colors hover:bg-opacity-95 focus:!ring-0

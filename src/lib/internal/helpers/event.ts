@@ -1,4 +1,5 @@
-import type { Arrayable } from '$lib/internal/types';
+import type { Arrayable, MeltEvent } from '$lib/internal/types';
+import { isHTMLElement } from './is';
 
 /**
  * A type alias for a general event listener function.
@@ -59,3 +60,30 @@ export function addEventListener(
 }
 
 export type EventHandler<T extends Event = Event> = (event: T) => void;
+
+export function dispatchMeltEvent(originalEvent: Event) {
+	const node = originalEvent.currentTarget;
+	if (!isHTMLElement(node)) return;
+
+	const customMeltEvent: MeltEvent<typeof originalEvent> = new CustomEvent(
+		`m-${originalEvent.type}`,
+		{
+			detail: {
+				cancel: () => {
+					originalEvent.preventDefault();
+				},
+				originalEvent,
+			},
+		}
+	);
+
+	node.dispatchEvent(customMeltEvent);
+}
+
+export function withMelt<E extends Event>(handler: EventHandler<E>) {
+	return (event: E) => {
+		dispatchMeltEvent(event);
+		if (event.defaultPrevented) return;
+		return handler(event);
+	};
+}

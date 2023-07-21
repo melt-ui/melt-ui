@@ -7,6 +7,7 @@ import {
 	getElementByMeltId,
 	isHTMLElement,
 	kbd,
+	withMelt,
 	omit,
 	overridable,
 	toWritableStores,
@@ -20,6 +21,7 @@ import type {
 	AccordionType,
 	CreateAccordionProps,
 } from './types';
+import type { ActionReturn } from 'svelte/action';
 
 type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
 const { name, selector } = createElHelpers<AccordionParts>('accordion');
@@ -91,6 +93,10 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 		},
 	});
 
+	type TriggerActionAttributes = {
+		'on:m-click'?: (e: CustomEvent<{ cancel: () => void }>) => void;
+	};
+
 	const trigger = builder(name('trigger'), {
 		stores: [value, disabled],
 		returned: ([$value, $disabled]) => {
@@ -107,28 +113,30 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 				};
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): ActionReturn<unknown, TriggerActionAttributes> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', () => {
-					const disabled = node.dataset.disabled === 'true';
-					const itemValue = node.dataset.value;
-					if (disabled || !itemValue) return;
+				addEventListener(
+					node,
+					'click',
+					withMelt(() => {
+						const disabled = node.dataset.disabled === 'true';
+						const itemValue = node.dataset.value;
+						if (disabled || !itemValue) return;
 
-					value.update(($value) => {
-						if (withDefaults.type === 'single') {
-							return $value === itemValue ? undefined : itemValue;
-						} else {
-							const arrValue = $value as string[] | undefined;
-							if (arrValue === undefined) {
-								return [itemValue];
-							} else {
-								return arrValue.includes(itemValue)
-									? arrValue.filter((v) => v !== itemValue)
-									: [...arrValue, itemValue];
+						value.update(($value) => {
+							if (Array.isArray($value)) {
+								return $value.includes(itemValue)
+									? $value.filter((v) => v !== itemValue)
+									: [...$value, itemValue];
 							}
-						}
-					});
-				}),
+
+							if ($value === undefined) {
+								return withDefaults.type === 'single' ? itemValue : [itemValue];
+							}
+							return $value === itemValue ? undefined : itemValue;
+						});
+					})
+				),
 				addEventListener(node, 'keydown', (e) => {
 					if (![kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.HOME, kbd.END].includes(e.key)) {
 						return;
