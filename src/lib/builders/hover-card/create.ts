@@ -90,11 +90,11 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 	) as Readable<() => void>;
 
 	type TriggerEvents = {
-		'on:m-pointerenter': MeltEventHandler<PointerEvent>;
-		'on:m-pointerleave': MeltEventHandler<PointerEvent>;
-		'on:m-focus': MeltEventHandler<FocusEvent>;
-		'on:m-blur': MeltEventHandler<FocusEvent>;
-		'on:m-touchstart': MeltEventHandler<TouchEvent>;
+		'on:m-pointerenter'?: MeltEventHandler<PointerEvent>;
+		'on:m-pointerleave'?: MeltEventHandler<PointerEvent>;
+		'on:m-focus'?: MeltEventHandler<FocusEvent>;
+		'on:m-blur'?: MeltEventHandler<FocusEvent>;
+		'on:m-touchstart'?: MeltEventHandler<TouchEvent>;
 	};
 
 	const trigger = builder(name('trigger'), {
@@ -135,10 +135,10 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 	});
 
 	type ContentEvents = {
-		'on:m-pointerdown': MeltEventHandler<PointerEvent>;
-		'on:m-pointerenter': MeltEventHandler<PointerEvent>;
-		'on:m-pointerleave': MeltEventHandler<PointerEvent>;
-		'on:m-focusout': MeltEventHandler<FocusEvent>;
+		'on:m-pointerdown'?: MeltEventHandler<PointerEvent>;
+		'on:m-pointerenter'?: MeltEventHandler<PointerEvent>;
+		'on:m-pointerleave'?: MeltEventHandler<PointerEvent>;
+		'on:m-focusout'?: MeltEventHandler<FocusEvent>;
 	};
 
 	const content = builder(name('content'), {

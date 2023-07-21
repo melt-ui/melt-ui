@@ -65,7 +65,7 @@ export function createDialog(props: CreateDialogProps = {}) {
 	});
 
 	type TriggerEvents = {
-		'on:m-click': MeltEventHandler<MouseEvent>;
+		'on:m-click'?: MeltEventHandler<MouseEvent>;
 	};
 	const trigger = builder(name('trigger'), {
 		stores: open,

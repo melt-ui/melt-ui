@@ -3,7 +3,7 @@ import type { ActionReturn } from 'svelte/action';
 
 export function createLabel() {
 	type RootEvents = {
-		'on:m-mousedown': MeltEventHandler<MouseEvent>;
+		'on:m-mousedown'?: MeltEventHandler<MouseEvent>;
 	};
 	const root = builder('label', {
 		action: (node: HTMLElement): ActionReturn<unknown, RootEvents> => {

@@ -95,7 +95,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const longPressTimer = writable(0);
 
 	type MenuEvents = {
-		'on:keydown': MeltEventHandler<KeyboardEvent>;
+		'on:keydown'?: MeltEventHandler<KeyboardEvent>;
 	};
 
 	const menu = builder(name(), {

@@ -325,7 +325,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	});
 
 	type MenuEvents = {
-		'on:pointerleave': MeltEventHandler<PointerEvent>;
+		'on:pointerleave'?: MeltEventHandler<PointerEvent>;
 	};
 
 	/**
@@ -387,8 +387,8 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	});
 
 	type ItemEvents = {
-		'on:pointermove': MeltEventHandler<PointerEvent>;
-		'on:click': MeltEventHandler<MouseEvent>;
+		'on:pointermove'?: MeltEventHandler<PointerEvent>;
+		'on:click'?: MeltEventHandler<MouseEvent>;
 	};
 
 	const item = builder(name('item'), {

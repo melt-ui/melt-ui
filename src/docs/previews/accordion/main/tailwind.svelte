@@ -31,7 +31,7 @@
 <div class="mx-auto w-full max-w-md rounded-md shadow-lg" {...$root}>
 	{#each items as { id, title, description }, i}
 		<div
-			melt={$item(id)}
+			{...$item(id)}
 			class="overflow-hidden transition-colors first:rounded-t
             last:rounded-b focus-within:relative focus-within:z-10 focus-within:ring
             focus-within:ring-magnum-400"
@@ -39,6 +39,7 @@
 			<h2 class="flex">
 				<!-- TODO: Remove before merge (just for testing events) -->
 				<button
+					on:m-keydown={(e) => console.log(e)}
 					on:m-click={(e) => console.log(e)}
 					use:trigger
 					{...$trigger(id)}
@@ -53,7 +54,8 @@
 			{#if $isSelected(id)}
 				<div
 					class="overflow-hidden bg-neutral-100 text-sm text-neutral-900"
-					melt={$content(id)}
+					use:content
+					{...$content(id)}
 					transition:slide
 				>
 					<div class="px-5 py-4">
