@@ -29,12 +29,14 @@
 	});
 </script>
 
-<div class="relative mx-8 w-full">
-	<!-- Contents -->
-	<div id="toc-builder-preview">
+<div class="flex h-[18rem] flex-col gap-1 md:relative">
+	<div
+		id="toc-builder-preview"
+		class="h-1/2 space-y-4 overflow-y-auto rounded-lg bg-neutral-900 px-1 py-2 md:h-60 md:w-1/2 lg:w-2/3"
+	>
 		<h2>First Heading</h2>
 		<p>This is the first heading.</p>
-		<h3>Sub-Heading Example</h3>
+		<h3>Sub-Heading</h3>
 		<p>This is a sub-heading H3 example.</p>
 		<h4>This H4 is excluded</h4>
 		<p>
@@ -72,25 +74,27 @@
 		</p>
 	</div>
 
-	<!-- Table of Contents -->
-	<div class="absolute right-0 top-0 overflow-visible">
-		<div class="space-y-2 rounded-lg bg-neutral-900 px-4 py-2">
-			<p class="font-medium">On This Page</p>
-			<nav>
-				<Tree
-					tree={$headingsTree}
-					activeHeadingIdxs={$activeHeadingIdxs}
-					{item}
-				/>
-			</nav>
-		</div>
+	<!-- <div class="absolute right-0 top-0 overflow-visible"> -->
+	<!-- <div class="h-1/2"> -->
+	<div
+		class="space-y-1 overflow-y-scroll rounded-lg bg-neutral-900 p-2 md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2"
+	>
+		<p class="font-medium">On This Page</p>
+		<nav>
+			<Tree
+				tree={$headingsTree}
+				activeHeadingIdxs={$activeHeadingIdxs}
+				{item}
+			/>
+		</nav>
 	</div>
+	<!-- </div> -->
 </div>
 
 <style>
-	#toc-builder-preview {
+	/* #toc-builder-preview {
 		@apply h-60 w-1/2 space-y-4 overflow-y-scroll rounded-lg bg-neutral-900 px-4 py-2;
-	}
+	} */
 
 	#toc-builder-preview > h2 {
 		@apply text-xl font-bold;
@@ -102,5 +106,9 @@
 
 	#toc-builder-preview > h4 {
 		@apply text-lg font-semibold;
+	}
+
+	#toc-builder-preview > p {
+		@apply text-justify;
 	}
 </style>

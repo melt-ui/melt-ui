@@ -10,7 +10,7 @@
 	const { activeHeadingIdxs, headingsTree, item } = createTableOfContents({
 		selector: '#mdsvex',
 		exclude: ['h1', 'h4', 'h5', 'h6'],
-		activeType: 'lowest-parents',
+		activeType: 'highest',
 		scrollOffset: 80,
 		scrollBehaviour: 'smooth',
 		headingFilterFn: (heading) =>
