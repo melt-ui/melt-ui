@@ -47,7 +47,7 @@ export function addEventListener(
 	handler: EventListenerOrEventListenerObject,
 	options?: boolean | AddEventListenerOptions
 ) {
-	const events = Array.isArray(event) ? [...event] : [event];
+	const events = Array.isArray(event) ? event : [event];
 
 	// Add the event listener to each specified event for the target element(s).
 	events.forEach((_event) => target.addEventListener(_event, handler, options));

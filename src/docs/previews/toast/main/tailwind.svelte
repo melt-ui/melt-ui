@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { createToasts } from '@melt-ui/svelte';
-	import { cn } from '$docs/utils';
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
 

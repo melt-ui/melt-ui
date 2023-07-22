@@ -6,6 +6,7 @@ import {
 	effect,
 	generateId,
 	isBrowser,
+	isHTMLElement,
 	isLeftClick,
 	last,
 	noop,
@@ -46,7 +47,10 @@ export function createDialog(props: CreateDialogProps = {}) {
 		// Prevent double clicks from closing multiple dialogs
 		sleep(100).then(() => {
 			if ($open) {
-				openDialogIds.update((prev) => [...prev, ids.content]);
+				openDialogIds.update((prev) => {
+					prev.push(ids.content);
+					return prev;
+				});
 			} else {
 				openDialogIds.update((prev) => prev.filter((id) => id !== ids.content));
 			}
@@ -65,7 +69,8 @@ export function createDialog(props: CreateDialogProps = {}) {
 		},
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', (e) => {
-				const el = e.currentTarget as HTMLElement;
+				const el = e.currentTarget;
+				if (!isHTMLElement(el)) return;
 				open.set(true);
 				activeTrigger.set(el);
 			});
