@@ -7,6 +7,7 @@ import {
 	derivedWithUnsubscribe,
 	effect,
 	executeCallbacks,
+	FIRST_LAST_KEYS,
 	generateId,
 	getNextFocusable,
 	getPreviousFocusable,
@@ -15,13 +16,11 @@ import {
 	isElementDisabled,
 	isHTMLElement,
 	kbd,
-	SELECTION_KEYS,
-	FIRST_LAST_KEYS,
 	noop,
 	removeScroll,
+	SELECTION_KEYS,
 	sleep,
 	styleToString,
-	isLeftClick,
 } from '$lib/internal/helpers';
 import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
@@ -219,9 +218,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		action: (node: HTMLElement) => {
 			applyAttrsIfDisabled(node);
 			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', (e) => {
-					if (!isLeftClick(e)) return;
-
+				addEventListener(node, 'click', (e) => {
 					const $rootOpen = get(rootOpen);
 					const triggerElement = e.currentTarget;
 					if (!isHTMLElement(triggerElement)) return;
