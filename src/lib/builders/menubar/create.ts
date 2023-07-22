@@ -172,11 +172,6 @@ export function createMenubar(props?: CreateMenubarProps) {
 							e.preventDefault();
 							rootActiveTrigger.set(null);
 							rootOpen.set(false);
-							const triggerEl = document.getElementById(m.rootIds.trigger);
-							if (triggerEl) {
-								handleRovingFocus(triggerEl);
-							}
-
 							handleTabNavigation(e, nextFocusable, prevFocusable);
 						}
 
@@ -235,20 +230,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
 
-						rootOpen.update((prev) => {
-							const isOpen = !prev;
-							if (isOpen) {
-								nextFocusable.set(getNextFocusable(triggerEl));
-								prevFocusable.set(getPreviousFocusable(triggerEl));
-								rootActiveTrigger.set(triggerEl);
-								activeMenu.set(m.rootIds.menu);
-							} else {
-								rootActiveTrigger.set(null);
-								activeMenu.set('');
-							}
-
-							return isOpen;
-						});
+						handleOpen(triggerEl);
 						if (!$rootOpen) e.preventDefault();
 					}),
 					addEventListener(node, 'keydown', (e) => {
@@ -257,20 +239,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 						if (SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN) {
 							e.preventDefault();
-							rootOpen.update((prev) => {
-								const isOpen = !prev;
-								if (isOpen) {
-									nextFocusable.set(getNextFocusable(triggerEl));
-									prevFocusable.set(getPreviousFocusable(triggerEl));
-									rootActiveTrigger.set(triggerEl);
-									activeMenu.set(m.rootIds.menu);
-								} else {
-									rootActiveTrigger.set(null);
-									activeMenu.set('');
-								}
-
-								return isOpen;
-							});
+							handleOpen(triggerEl);
 
 							const menuId = triggerEl.getAttribute('aria-controls');
 							if (!menuId) return;
@@ -343,6 +312,23 @@ export function createMenubar(props?: CreateMenubarProps) {
 				addHighlight(triggerEl);
 			}
 		});
+
+		function handleOpen(triggerEl: HTMLElement) {
+			rootOpen.update((prev) => {
+				const isOpen = !prev;
+				if (isOpen) {
+					nextFocusable.set(getNextFocusable(triggerEl));
+					prevFocusable.set(getPreviousFocusable(triggerEl));
+					rootActiveTrigger.set(triggerEl);
+					activeMenu.set(m.rootIds.menu);
+				} else {
+					rootActiveTrigger.set(null);
+					activeMenu.set('');
+				}
+
+				return isOpen;
+			});
+		}
 
 		return {
 			menu,
