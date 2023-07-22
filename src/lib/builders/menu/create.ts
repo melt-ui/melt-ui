@@ -7,6 +7,7 @@ import {
 	derivedWithUnsubscribe,
 	effect,
 	executeCallbacks,
+	FIRST_LAST_KEYS,
 	generateId,
 	getNextFocusable,
 	getPreviousFocusable,
@@ -15,13 +16,11 @@ import {
 	isElementDisabled,
 	isHTMLElement,
 	kbd,
-	SELECTION_KEYS,
-	FIRST_LAST_KEYS,
 	noop,
 	removeScroll,
+	SELECTION_KEYS,
 	sleep,
 	styleToString,
-	isLeftClick,
 	addHighlight,
 	removeHighlight,
 } from '$lib/internal/helpers';
@@ -219,9 +218,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		action: (node: HTMLElement) => {
 			applyAttrsIfDisabled(node);
 			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', (e) => {
-					if (!isLeftClick(e)) return;
-
+				addEventListener(node, 'click', (e) => {
 					const $rootOpen = get(rootOpen);
 					const triggerEl = e.currentTarget;
 					if (!isHTMLElement(triggerEl)) return;
@@ -245,14 +242,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					if (!isHTMLElement(triggerEl)) return;
 
 					if (SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN) {
-						if (e.key === kbd.ARROW_DOWN) {
-							/**
-							 * We don't want to scroll the page when the user presses the
-							 * down arrow when focused on the trigger, so we prevent that
-							 * default behavior.
-							 */
-							e.preventDefault();
-						}
+						e.preventDefault();
 						rootOpen.update((prev) => {
 							const isOpen = !prev;
 							if (isOpen) {

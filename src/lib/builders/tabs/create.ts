@@ -10,7 +10,6 @@ import {
 	next,
 	omit,
 	prev,
-	isLeftClick,
 	isHTMLElement,
 } from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
@@ -112,11 +111,8 @@ export function createTabs(props?: CreateTabsProps) {
 					}
 				}),
 
-				addEventListener(node, 'pointerdown', (e) => {
-					if (!isLeftClick(e)) {
-						e.preventDefault();
-						return;
-					}
+				addEventListener(node, 'click', (e) => {
+					e.preventDefault();
 
 					const disabled = node.dataset.disabled === 'true';
 					if (disabled) return;

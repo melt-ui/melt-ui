@@ -1,36 +1,35 @@
+import { usePopper } from '$lib/internal/actions';
+import {
+	addEventListener,
+	addHighlight,
+	builder,
+	createElHelpers,
+	effect,
+	executeCallbacks,
+	FIRST_LAST_KEYS,
+	generateId,
+	getNextFocusable,
+	getPreviousFocusable,
+	handleRovingFocus,
+	isBrowser,
+	isHTMLElement,
+	kbd,
+	noop,
+	removeHighlight,
+	SELECTION_KEYS,
+	styleToString,
+} from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
+import { onMount, tick } from 'svelte';
 import { get, writable, type Writable } from 'svelte/store';
 import {
 	applyAttrsIfDisabled,
-	getMenuItems,
 	createMenuBuilder,
+	getMenuItems,
 	handleMenuNavigation,
 	handleTabNavigation,
 	type MenuParts,
 } from '../menu';
-import {
-	executeCallbacks,
-	isHTMLElement,
-	addEventListener,
-	kbd,
-	SELECTION_KEYS,
-	FIRST_LAST_KEYS,
-	handleRovingFocus,
-	effect,
-	styleToString,
-	noop,
-	generateId,
-	isBrowser,
-	getNextFocusable,
-	getPreviousFocusable,
-	builder,
-	createElHelpers,
-	isLeftClick,
-	addHighlight,
-	removeHighlight,
-} from '$lib/internal/helpers';
-import { onMount, tick } from 'svelte';
-import { usePopper } from '$lib/internal/actions';
 import type { CreateMenubarMenuProps, CreateMenubarProps } from './types';
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
@@ -150,6 +149,10 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 						if (!isHTMLElement(menuEl) || !isHTMLElement(target)) return;
 
+						if (MENUBAR_NAV_KEYS.includes(e.key)) {
+							handleCrossMenuNavigation(e, activeMenu);
+						}
+
 						/**
 						 * Submenu key events bubble through portals and
 						 * we only care about key events that happen inside this menu.
@@ -161,10 +164,6 @@ export function createMenubar(props?: CreateMenubarProps) {
 							handleMenuNavigation(e);
 						}
 
-						if (MENUBAR_NAV_KEYS.includes(e.key)) {
-							handleCrossMenuNavigation(e, activeMenu);
-						}
-
 						/**
 						 * Menus should not be navigated using tab, so we prevent it.
 						 * @see https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_general_within
@@ -173,6 +172,11 @@ export function createMenubar(props?: CreateMenubarProps) {
 							e.preventDefault();
 							rootActiveTrigger.set(null);
 							rootOpen.set(false);
+							const triggerEl = document.getElementById(m.rootIds.trigger);
+							if (triggerEl) {
+								handleRovingFocus(triggerEl);
+							}
+
 							handleTabNavigation(e, nextFocusable, prevFocusable);
 						}
 
@@ -226,9 +230,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				}
 
 				const unsub = executeCallbacks(
-					addEventListener(node, 'pointerdown', (e) => {
-						if (!isLeftClick(e)) return;
-
+					addEventListener(node, 'click', (e) => {
 						const $rootOpen = get(rootOpen);
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
@@ -254,14 +256,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 						if (!isHTMLElement(triggerEl)) return;
 
 						if (SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN) {
-							if (e.key === kbd.ARROW_DOWN) {
-								/**
-								 * We don't want to scroll the page when the user presses the
-								 * down arrow when focused on the trigger, so we prevent that
-								 * default behavior.
-								 */
-								e.preventDefault();
-							}
+							e.preventDefault();
 							rootOpen.update((prev) => {
 								const isOpen = !prev;
 								if (isOpen) {
