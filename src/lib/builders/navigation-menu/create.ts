@@ -13,7 +13,7 @@ import {
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers';
-import { get, writable, type Writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 import type { CreateNavigationMenuProps } from './types';
 import { onDestroy } from 'svelte';
 import { useClickOutside, useFocusOutside } from '@melt-ui/svelte/internal/actions';
@@ -56,6 +56,7 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 
 	const rootIds = {
 		root: generateId(),
+		viewport: generateId(),
 	};
 
 	onDestroy(() => {
@@ -74,6 +75,55 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 				'data-orientation': $orientation,
 				'data-direction': $direction,
 				dir: $direction,
+			};
+		},
+	});
+
+	const size = writable<{ width: number; height: number } | null>(null);
+	const content = writable<HTMLElement | null>(null);
+	const viewportWidth = derived(size, ($size) => ($size ? $size.width + 'px' : undefined));
+	const viewportHeight = derived(size, ($size) => ($size ? $size.height + 'px' : undefined));
+
+	const open = derived(activeItem, ($activeItem) => {
+		return $activeItem !== '';
+	});
+
+	function handleSizeChange() {
+		const $content = get(content);
+		if (!$content) return;
+		size.set({ width: $content.offsetWidth, height: $content.offsetHeight });
+	}
+
+	const viewport = builder(name('viewport'), {
+		stores: [open, orientation, viewportWidth, viewportHeight],
+		returned: ([$open, $orientation, $viewportWidth, $viewportHeight]) => {
+			return {
+				id: rootIds.viewport,
+				'data-state': getOpenState($open),
+				'data-orientation': $orientation,
+				style: styleToString({
+					pointerEvents: !$open ? 'none' : undefined,
+					['--melt-nav-menu-viewport-width']: $viewportWidth,
+					['--melt-nav-menu-viewport-height']: $viewportHeight,
+				}),
+			};
+		},
+		action: (node: HTMLElement) => {
+			const { destroy: unsubResizeObserver } = useResizeObserver(node, handleSizeChange);
+
+			const unsub = executeCallbacks(
+				addEventListener(node, 'pointerenter', () => onContentEnter()),
+				addEventListener(node, 'pointerleave', (e) => {
+					if (!isMouse(e)) return;
+					onContentLeave();
+				})
+			);
+
+			return {
+				destroy() {
+					unsubResizeObserver();
+					unsub();
+				},
 			};
 		},
 	});
@@ -329,6 +379,9 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 			const contentEl = document.getElementById(ids.content);
 			if (!isHTMLElement(contentEl)) return;
 			const candidates = getTabbableNodes(contentEl);
+			if (candidates.length) {
+				restoreContentTabOrder.set(removeFromTabOrder(candidates));
+			}
 		}
 
 		return {
@@ -362,40 +415,6 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 		return document.getElementById(rootIds.root);
 	}
 
-	function getMotionAttribute(
-		itemId: string,
-		prevMotionAttribute: Writable<MotionAttribute | null>
-	) {
-		const navMenu = document.getElementById(rootIds.root);
-		if (!isHTMLElement(navMenu)) return;
-		const items = getItems(navMenu);
-		const values = items.map((item) => item.id);
-		if (get(direction) === 'rtl') values.reverse();
-		const $activeItem = get(activeItem);
-		const index = values.indexOf($activeItem);
-		const prevIndex = values.indexOf(get(previousItem));
-		const isSelected = itemId === $activeItem;
-		const wasSelected = prevIndex === values.indexOf(itemId);
-
-		// We only want to update selected and the last selected content
-		// this avoids animations being interrupted outside of that range
-		if (!isSelected && !wasSelected) return get(prevMotionAttribute);
-
-		const attribute = (() => {
-			if (index !== prevIndex) {
-				if (isSelected && prevIndex !== -1) {
-					return index > prevIndex ? 'from-end' : 'from-start';
-				}
-				if (wasSelected && index !== -1) {
-					return index > prevIndex ? 'to-start' : 'to-end';
-				}
-			}
-			return null;
-		})();
-
-		prevMotionAttribute.set(attribute);
-	}
-
 	function onTriggerEnter(listId: string) {
 		window.clearTimeout(get(openTimer));
 		if (get(isOpenDelayed)) {
@@ -425,10 +444,6 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 			}
 			return listId;
 		});
-	}
-
-	function onItemDismiss() {
-		activeItem.set('');
 	}
 
 	function handleOpen(listId: string) {
@@ -463,6 +478,7 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 	return {
 		elements: {
 			root,
+			viewport,
 		},
 		builders: {
 			createMenuItem,
@@ -501,5 +517,22 @@ function removeFromTabOrder(candidates: HTMLElement[]) {
 				candidate.setAttribute('tabindex', prevTabIndex);
 			}
 		});
+	};
+}
+
+function useResizeObserver(node: HTMLElement, onResize: () => void) {
+	const handleResize = onResize;
+	let rAF = 0;
+
+	const resizeObserver = new ResizeObserver(() => {
+		cancelAnimationFrame(rAF);
+		rAF = window.requestAnimationFrame(handleResize);
+	});
+	resizeObserver.observe(node);
+	return {
+		destroy() {
+			window.cancelAnimationFrame(rAF);
+			resizeObserver.unobserve(node);
+		},
 	};
 }
