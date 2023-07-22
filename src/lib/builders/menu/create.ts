@@ -223,18 +223,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					const triggerEl = e.currentTarget;
 					if (!isHTMLElement(triggerEl)) return;
 
-					rootOpen.update((prev) => {
-						const isOpen = !prev;
-						if (isOpen) {
-							nextFocusable.set(getNextFocusable(triggerEl));
-							prevFocusable.set(getPreviousFocusable(triggerEl));
-							rootActiveTrigger.set(triggerEl);
-						} else {
-							rootActiveTrigger.set(null);
-						}
-
-						return isOpen;
-					});
+					handleOpen(triggerEl);
 					if (!$rootOpen) e.preventDefault();
 				}),
 				addEventListener(node, 'keydown', (e) => {
@@ -243,18 +232,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 					if (SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN) {
 						e.preventDefault();
-						rootOpen.update((prev) => {
-							const isOpen = !prev;
-							if (isOpen) {
-								nextFocusable.set(getNextFocusable(triggerEl));
-								prevFocusable.set(getPreviousFocusable(triggerEl));
-								rootActiveTrigger.set(triggerEl);
-							} else {
-								rootActiveTrigger.set(null);
-							}
-
-							return isOpen;
-						});
+						handleOpen(triggerEl);
 
 						const menuId = triggerEl.getAttribute('aria-controls');
 						if (!menuId) return;
@@ -1030,6 +1008,21 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			document.removeEventListener('keydown', keydownListener);
 		};
 	});
+
+	function handleOpen(triggerEl: HTMLElement) {
+		rootOpen.update((prev) => {
+			const isOpen = !prev;
+			if (isOpen) {
+				nextFocusable.set(getNextFocusable(triggerEl));
+				prevFocusable.set(getPreviousFocusable(triggerEl));
+				rootActiveTrigger.set(triggerEl);
+			} else {
+				rootActiveTrigger.set(null);
+			}
+
+			return isOpen;
+		});
+	}
 
 	/* -------------------------------------------------------------------------------------------------
 	 * Pointer Event Effects
