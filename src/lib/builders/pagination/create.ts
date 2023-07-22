@@ -53,7 +53,9 @@ export function createPagination(props: CreatePaginationProps) {
 		const rootEl = thisEl.closest('[data-scope="pagination"]');
 		if (!isHTMLElement(rootEl)) return;
 
-		const triggers = Array.from(rootEl.querySelectorAll(selector('page')));
+		const triggers = Array.from(rootEl.querySelectorAll(selector('page'))).filter(
+			(el): el is HTMLElement => isHTMLElement(el)
+		);
 		const prevButton = rootEl.querySelector(selector('prev'));
 		const nextButton = rootEl.querySelector(selector('next'));
 
@@ -67,24 +69,16 @@ export function createPagination(props: CreatePaginationProps) {
 
 		if (e.key === kbd.ARROW_LEFT && index !== 0) {
 			e.preventDefault();
-			const item = triggers[index - 1];
-			if (!isHTMLElement(item)) return;
-			item.focus();
+			triggers[index - 1].focus();
 		} else if (e.key === kbd.ARROW_RIGHT && index !== triggers.length - 1) {
 			e.preventDefault();
-			const item = triggers[index + 1];
-			if (!isHTMLElement(item)) return;
-			item.focus();
+			triggers[index + 1].focus();
 		} else if (e.key === kbd.HOME) {
 			e.preventDefault();
-			const item = triggers[0];
-			if (!isHTMLElement(item)) return;
-			item.focus();
+			triggers[0].focus();
 		} else if (e.key === kbd.END) {
 			e.preventDefault();
-			const item = triggers[triggers.length - 1];
-			if (!isHTMLElement(item)) return;
-			item.focus();
+			triggers[triggers.length - 1].focus();
 		}
 	};
 

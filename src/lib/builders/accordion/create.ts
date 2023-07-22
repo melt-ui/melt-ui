@@ -131,17 +131,13 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 					e.preventDefault();
 
 					const el = e.target;
-					if (!isHTMLElement(el)) return;
-
 					const rootEl = getElementByMeltId(ids.root);
-					if (!isHTMLElement(rootEl)) return;
+					if (!rootEl || !isHTMLElement(el)) return;
 
 					const items = Array.from(rootEl.querySelectorAll(selector('trigger')));
 					const candidateItems = items.filter((item): item is HTMLElement => {
-						if (isHTMLElement(item)) {
-							return item.dataset.disabled !== 'true';
-						}
-						return false;
+						if (!isHTMLElement(item)) return false;
+						return item.dataset.disabled !== 'true';
 					});
 
 					if (!candidateItems.length) return;

@@ -127,7 +127,7 @@ export function createToggleGroup(props: CreateToggleGroupProps = {}) {
 
 					const items = Array.from(
 						root.querySelectorAll(selector('item') + ':not([data-disabled])')
-					);
+					).filter((item): item is HTMLElement => isHTMLElement(item));
 
 					const currentIndex = items.indexOf(el);
 
@@ -145,42 +145,25 @@ export function createToggleGroup(props: CreateToggleGroupProps = {}) {
 					if (e.key === nextKey) {
 						e.preventDefault();
 						const nextIndex = currentIndex + 1;
-						if (nextIndex >= items.length) {
-							if ($options.loop) {
-								const nextItem = items[0];
-								if (!isHTMLElement(nextItem)) return;
-
-								handleRovingFocus(nextItem);
-							}
+						if (nextIndex >= items.length && $options.loop) {
+							handleRovingFocus(items[0]);
 						} else {
-							const nextItem = items[nextIndex];
-							if (!isHTMLElement(nextItem)) return;
-							handleRovingFocus(nextItem);
+							handleRovingFocus(items[nextIndex]);
 						}
 					} else if (e.key === prevKey) {
 						e.preventDefault();
 						const prevIndex = currentIndex - 1;
-						if (prevIndex < 0) {
-							if ($options.loop) {
-								const prevItem = items[items.length - 1];
-								if (!isHTMLElement(prevItem)) return;
-								handleRovingFocus(prevItem);
-							}
+						if (prevIndex < 0 && $options.loop) {
+							handleRovingFocus(items[items.length - 1]);
 						} else {
-							const prevItem = items[prevIndex];
-							if (!isHTMLElement(prevItem)) return;
-							handleRovingFocus(prevItem);
+							handleRovingFocus(items[prevIndex]);
 						}
 					} else if (e.key === kbd.HOME) {
 						e.preventDefault();
-						const firstItem = items[0];
-						if (!isHTMLElement(firstItem)) return;
-						handleRovingFocus(firstItem);
+						handleRovingFocus(items[0]);
 					} else if (e.key === kbd.END) {
 						e.preventDefault();
-						const lastItem = items[items.length - 1];
-						if (!isHTMLElement(lastItem)) return;
-						handleRovingFocus(lastItem);
+						handleRovingFocus(items[items.length - 1]);
 					}
 				})
 			);

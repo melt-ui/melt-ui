@@ -20,7 +20,9 @@ const { name, selector } = createElHelpers<'input' | 'hidden-input'>('pin-input'
 
 const getInputs = (node: HTMLInputElement) => {
 	const rootEl = node.closest(selector());
-	if (!isHTMLElement(rootEl)) return { inputs: null, el: node, elIndex: -1 };
+	if (!isHTMLElement(rootEl)) {
+		return { inputs: null, el: node, elIndex: -1 };
+	}
 	const inputs = Array.from(rootEl.querySelectorAll(selector('input'))).filter(
 		(input): input is HTMLInputElement => isHTMLInputElement(input)
 	);

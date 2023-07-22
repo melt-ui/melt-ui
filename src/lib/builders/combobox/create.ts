@@ -217,16 +217,13 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 
 							const enabledItems = Array.from(
 								menuEl.querySelectorAll(`${selector('item')}:not([data-disabled])`)
-							);
+							).filter((item): item is HTMLElement => isHTMLElement(item));
 							if (!enabledItems.length) return;
 
 							if (e.key === kbd.ARROW_DOWN) {
-								if (!isHTMLElement(enabledItems[0])) return;
 								highlightedItem.set(enabledItems[0]);
 							} else if (e.key === kbd.ARROW_UP) {
-								const lastItem = last(enabledItems);
-								if (!isHTMLElement(lastItem)) return;
-								highlightedItem.set(lastItem);
+								highlightedItem.set(last(enabledItems));
 							}
 						});
 					}

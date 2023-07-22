@@ -211,7 +211,9 @@ export function createToolbar(props: CreateToolbarProps = {}) {
 }
 
 function getToolbarItems(element: HTMLElement) {
-	return Array.from(element.querySelectorAll(`${selector('item')}, ${selector('button')}`));
+	return Array.from(element.querySelectorAll(`${selector('item')}, ${selector('button')}`)).filter(
+		(el): el is HTMLElement => isHTMLElement(el)
+	);
 }
 
 const getKeydownHandler =
@@ -234,47 +236,33 @@ const getKeydownHandler =
 		const root = el.closest('[data-melt-toolbar]');
 		if (!isHTMLElement(root)) return;
 
-		const items = Array.from(root.querySelectorAll(`${selector('item')}, ${selector('button')}`));
+		const items = Array.from(
+			root.querySelectorAll(`${selector('item')}, ${selector('button')}`)
+		).filter((el): el is HTMLElement => isHTMLElement(el));
 
 		const currentIndex = items.indexOf(el);
 
 		if (e.key === nextKey) {
 			e.preventDefault();
 			const nextIndex = currentIndex + 1;
-			if (nextIndex >= items.length) {
-				if ($options.loop) {
-					const item = items[0];
-					if (!isHTMLElement(item)) return;
-					handleRovingFocus(item);
-				}
+			if (nextIndex >= items.length && $options.loop) {
+				handleRovingFocus(items[0]);
 			} else {
-				const item = items[nextIndex];
-				if (!isHTMLElement(item)) return;
-				handleRovingFocus(item);
+				handleRovingFocus(items[nextIndex]);
 			}
 		} else if (e.key === prevKey) {
 			e.preventDefault();
 			const prevIndex = currentIndex - 1;
-			if (prevIndex < 0) {
-				if ($options.loop) {
-					const item = items[items.length - 1];
-					if (!isHTMLElement(item)) return;
-					handleRovingFocus(item);
-				}
+			if (prevIndex < 0 && $options.loop) {
+				handleRovingFocus(items[items.length - 1]);
 			} else {
-				const item = items[prevIndex];
-				if (!isHTMLElement(item)) return;
-				handleRovingFocus(item);
+				handleRovingFocus(items[prevIndex]);
 			}
 		} else if (e.key === kbd.HOME) {
 			e.preventDefault();
-			const item = items[0];
-			if (!isHTMLElement(item)) return;
-			handleRovingFocus(item);
+			handleRovingFocus(items[0]);
 		} else if (e.key === kbd.END) {
 			e.preventDefault();
-			const item = items[items.length - 1];
-			if (!isHTMLElement(item)) return;
-			handleRovingFocus(item);
+			handleRovingFocus(items[items.length - 1]);
 		}
 	};

@@ -260,7 +260,7 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 		const getClosestThumb = (e: PointerEvent) => {
 			const thumbs = getAllThumbs();
 			if (!thumbs) return;
-			thumbs.forEach((thumb) => thumb?.blur());
+			thumbs.forEach((thumb) => thumb.blur());
 
 			const distances = thumbs.map((thumb) => {
 				if ($options.orientation === 'horizontal') {
@@ -286,8 +286,7 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 			if (!closestThumb || !sliderEl) return;
 
 			const target = e.target;
-			if (!isHTMLElement(target)) return;
-			if (!sliderEl.contains(target)) return;
+			if (!isHTMLElement(target) || !sliderEl.contains(target)) return;
 			e.preventDefault();
 
 			activeThumb.set(closestThumb);
@@ -312,7 +311,7 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 
 			const sliderEl = getElementByMeltId($root['data-melt-id']);
 			const closestThumb = get(activeThumb);
-			if (!isHTMLElement(sliderEl) || !closestThumb) return;
+			if (!sliderEl || !closestThumb) return;
 
 			closestThumb.thumb.focus();
 
