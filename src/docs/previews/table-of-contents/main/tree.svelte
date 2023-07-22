@@ -1,5 +1,8 @@
 <script lang="ts">
-	import type { TableOfContentsItem, CreateTableOfContentsReturn } from '@melt-ui/svelte';
+	import type {
+		TableOfContentsItem,
+		CreateTableOfContentsReturn,
+	} from '@melt-ui/svelte';
 
 	export let tree: TableOfContentsItem[] = [];
 	export let activeHeadingIdxs: number[];
@@ -23,7 +26,12 @@
 					{heading.title}
 				</a>
 				{#if heading.children && heading.children.length}
-					<svelte:self tree={heading.children} level={level + 1} {activeHeadingIdxs} {item} />
+					<svelte:self
+						tree={heading.children}
+						level={level + 1}
+						{activeHeadingIdxs}
+						{item}
+					/>
 				{/if}
 			</li>
 		{/each}

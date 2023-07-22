@@ -18,6 +18,7 @@ export * from './select';
 export * from './separator';
 export * from './slider';
 export * from './switch';
+export * from './table-of-contents';
 export * from './tabs';
 export * from './tags-input';
 export * from './toast';
@@ -25,3 +26,4 @@ export * from './toggle';
 export * from './toggle-group';
 export * from './toolbar';
 export * from './tooltip';
+
