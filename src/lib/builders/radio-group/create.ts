@@ -4,6 +4,7 @@ import {
 	createElHelpers,
 	executeCallbacks,
 	getDirectionalKeys,
+	isHTMLElement,
 	kbd,
 } from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
