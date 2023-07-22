@@ -1,34 +1,33 @@
+import { usePopper } from '$lib/internal/actions';
+import {
+	addEventListener,
+	builder,
+	createElHelpers,
+	effect,
+	executeCallbacks,
+	FIRST_LAST_KEYS,
+	generateId,
+	getNextFocusable,
+	getPreviousFocusable,
+	handleRovingFocus,
+	isBrowser,
+	isHTMLElement,
+	kbd,
+	noop,
+	SELECTION_KEYS,
+	styleToString,
+} from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
+import { onMount, tick } from 'svelte';
 import { get, writable, type Writable } from 'svelte/store';
 import {
 	applyAttrsIfDisabled,
-	getMenuItems,
 	createMenuBuilder,
+	getMenuItems,
 	handleMenuNavigation,
 	handleTabNavigation,
 	type MenuParts,
 } from '../menu';
-import {
-	executeCallbacks,
-	isHTMLElement,
-	addEventListener,
-	kbd,
-	SELECTION_KEYS,
-	FIRST_LAST_KEYS,
-	handleRovingFocus,
-	effect,
-	styleToString,
-	noop,
-	generateId,
-	isBrowser,
-	getNextFocusable,
-	getPreviousFocusable,
-	builder,
-	createElHelpers,
-	isLeftClick,
-} from '$lib/internal/helpers';
-import { onMount, tick } from 'svelte';
-import { usePopper } from '$lib/internal/actions';
 import type { CreateMenubarMenuProps, CreateMenubarProps } from './types';
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
@@ -224,9 +223,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				}
 
 				const unsub = executeCallbacks(
-					addEventListener(node, 'pointerdown', (e) => {
-						if (!isLeftClick(e)) return;
-
+					addEventListener(node, 'click', (e) => {
 						const $rootOpen = get(rootOpen);
 						const triggerElement = e.currentTarget;
 						if (!isHTMLElement(triggerElement)) return;

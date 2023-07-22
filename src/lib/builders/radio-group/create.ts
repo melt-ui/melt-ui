@@ -4,7 +4,6 @@ import {
 	createElHelpers,
 	executeCallbacks,
 	getDirectionalKeys,
-	isLeftClick,
 	kbd,
 } from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
@@ -68,11 +67,8 @@ export function createRadioGroup(props: CreateRadioGroupProps = {}) {
 		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', (e) => {
-					if (!isLeftClick(e)) {
-						e.preventDefault();
-						return;
-					}
+				addEventListener(node, 'click', (e) => {
+					e.preventDefault();
 
 					const disabled = node.dataset.disabled === 'true';
 					const itemValue = node.dataset.value;
