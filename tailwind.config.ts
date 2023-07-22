@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss';
 import plugin from 'tailwindcss/plugin';
 import typography from '@tailwindcss/typography';
+import animate from 'tailwindcss-animate';
 
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
@@ -85,5 +86,6 @@ export default {
 				{ values: theme('spacing') }
 			);
 		}),
+		animate,
 	],
 } satisfies Config;
