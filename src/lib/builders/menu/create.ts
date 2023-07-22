@@ -1031,6 +1031,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	function onItemFocusIn(e: FocusEvent) {
 		const itemEl = e.currentTarget;
 		if (!isHTMLElement(itemEl)) return;
+		const $currentFocusedItem = get(currentFocusedItem);
+		if ($currentFocusedItem) {
+			removeHighlight($currentFocusedItem);
+		}
 		addHighlight(itemEl);
 
 		/**
