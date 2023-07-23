@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.25.1
+
+### Patch Changes
+
+- fix: avatar fallback overriding styles
+
 ## 0.25.0
 
 ### Minor Changes
