@@ -1,6 +1,6 @@
 import { styleToString } from '@melt-ui/svelte/internal/helpers';
 import { cubicOut } from 'svelte/easing';
-import { type TransitionConfig, slide, fade } from 'svelte/transition';
+import type { TransitionConfig } from 'svelte/transition';
 
 const scaleConversion = (valueA: number, scaleA: [number, number], scaleB: [number, number]) => {
 	const [minA, maxA] = scaleA;
@@ -35,17 +35,4 @@ export const flyAndScale = (node: HTMLElement, options: FlyAndScaleOptions): Tra
 		},
 		easing: cubicOut,
 	};
-};
-
-type NavigationTransitionOptions = {
-	y: number;
-};
-
-export const navigationTransition = (
-	node: HTMLElement,
-	options: NavigationTransitionOptions
-): TransitionConfig => {
-	const motionAttr = node.dataset.motion;
-
-	return {};
 };
