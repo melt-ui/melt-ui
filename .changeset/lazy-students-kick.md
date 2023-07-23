@@ -2,4 +2,5 @@
 "@melt-ui/svelte": minor
 ---
 
-feat: controlled props
+New Feature: Controlled Props
+- Controlled props give you more control over the state & behavior of the builder components.
