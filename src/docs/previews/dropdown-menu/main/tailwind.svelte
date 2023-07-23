@@ -14,6 +14,7 @@
 		separator,
 		createSubMenu,
 		createMenuRadioGroup,
+		open,
 	} = createDropdownMenu();
 
 	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();

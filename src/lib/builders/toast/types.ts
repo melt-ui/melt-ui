@@ -1,4 +1,4 @@
-import type { createToasts } from './create';
+import type { createToaster } from './create';
 
 export type EmptyType = Record<never, never>;
 
@@ -20,4 +20,4 @@ export type Toast<T = object> = {
 	data: T;
 };
 
-export type CreateToastReturn = ReturnType<typeof createToasts>;
+export type CreateToasterReturn = ReturnType<typeof createToaster>;

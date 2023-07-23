@@ -9,11 +9,12 @@ import {
 	noop,
 } from '../../internal/helpers';
 import type { AddToastProps, Toast } from './types';
+import { usePortal } from '@melt-ui/svelte/internal/actions';
 
 type ToastParts = 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<ToastParts>('toast');
 
-export function createToasts<T = object>(defaults?: Omit<AddToastProps<T>, 'data'>) {
+export function createToaster<T = object>(defaults?: Omit<AddToastProps<T>, 'data'>) {
 	const toastsMap = writable(new Map<string, Toast<T>>());
 	const timeouts = new Map<string, number>();
 
@@ -182,5 +183,6 @@ export function createToasts<T = object>(defaults?: Omit<AddToastProps<T>, 'data
 		title,
 		description,
 		close,
+		portal: usePortal,
 	};
 }
