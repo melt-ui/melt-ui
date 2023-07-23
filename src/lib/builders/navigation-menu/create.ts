@@ -15,8 +15,8 @@ import {
 } from '$lib/internal/helpers';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateNavigationMenuProps } from './types';
-import { onDestroy } from 'svelte';
-import { useClickOutside, useFocusOutside } from '@melt-ui/svelte/internal/actions';
+import { onDestroy, tick } from 'svelte';
+import { useClickOutside, useFocusOutside, usePortal } from '$lib/internal/actions';
 
 const defaults = {
 	delayMs: 200,
@@ -95,8 +95,8 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 	}
 
 	const viewport = builder(name('viewport'), {
-		stores: [open, orientation, viewportWidth, viewportHeight],
-		returned: ([$open, $orientation, $viewportWidth, $viewportHeight]) => {
+		stores: [open, orientation, viewportHeight, viewportWidth],
+		returned: ([$open, $orientation, $viewportHeight, $viewportWidth]) => {
 			return {
 				id: rootIds.viewport,
 				'data-state': getOpenState($open),
@@ -105,11 +105,24 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 					pointerEvents: !$open ? 'none' : undefined,
 					['--melt-nav-menu-viewport-width']: $viewportWidth,
 					['--melt-nav-menu-viewport-height']: $viewportHeight,
+					display: $open ? undefined : 'none',
 				}),
 			};
 		},
 		action: (node: HTMLElement) => {
-			const { destroy: unsubResizeObserver } = useResizeObserver(node, handleSizeChange);
+			let unsubResize = noop;
+
+			const unsubDerived = effect([content], ([$content]) => {
+				unsubResize();
+				if (!$content) return;
+				tick().then(() => {
+					const resize = useResizeObserver($content, handleSizeChange);
+
+					if (resize && resize.destroy) {
+						unsubResize = resize.destroy;
+					}
+				});
+			});
 
 			const unsub = executeCallbacks(
 				addEventListener(node, 'pointerenter', () => onContentEnter()),
@@ -121,15 +134,15 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 
 			return {
 				destroy() {
-					unsubResizeObserver();
 					unsub();
+					unsubDerived();
+					unsubResize();
 				},
 			};
 		},
 	});
 
 	function createMenuItem() {
-		const open = writable<boolean>(false);
 		const hasPointerMoveOpened = writable<boolean>(false);
 		const wasClickClose = writable<boolean>(false);
 		const wasEscapeClose = writable<boolean>(false);
@@ -142,6 +155,8 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 			trigger: generateId(),
 			content: generateId(),
 		};
+
+		const open = derived(activeItem, ($activeItem) => $activeItem === ids.item);
 
 		const motionAttribute = writable<MotionAttribute | null>(
 			(() => {
@@ -219,7 +234,7 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 					const { disabled } = { ...defaultTriggerProps, ...props };
 					return {
 						id: ids.trigger,
-						disabled,
+						disabled: disabled,
 						'data-disabled': disabled ? '' : undefined,
 						'data-state': getOpenState($open),
 						'aria-expaned': $open,
@@ -245,7 +260,7 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 						) {
 							return;
 						}
-						onTriggerEnter(ids.item);
+						onTriggerEnter(ids.item, ids.content);
 						hasPointerMoveOpened.set(true);
 					}),
 					addEventListener(node, 'pointerleave', (e) => {
@@ -255,7 +270,7 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 						hasPointerMoveOpened.set(false);
 					}),
 					addEventListener(node, 'click', () => {
-						onItemSelect(ids.item);
+						onItemSelect(ids.item, ids.content);
 						wasClickClose.set(get(open));
 					}),
 					addEventListener(node, 'keydown', (e) => {
@@ -295,13 +310,15 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 			action: (node: HTMLElement) => {
 				const rootNavMenu = getRootNavMenu();
 				if (!rootNavMenu) return;
+				const viewportEl = document.getElementById(rootIds.viewport);
+
+				const portalReturn = usePortal(node, viewportEl ? viewportEl : `#${rootIds.viewport}`);
 
 				const { destroy: unsubClickOutside } = useClickOutside(node, {
 					handler: (e) => {
 						const target = e.target;
 						if (!isHTMLElement(target)) return;
 						const isTrigger = target.id === ids.trigger;
-						// TODO: ADD VIEWPORT THING & Root Menu Check
 						if (isTrigger) {
 							e.preventDefault();
 						}
@@ -353,7 +370,8 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 						if (focusFirst(nextCandidates)) {
 							e.preventDefault();
 						}
-					})
+					}),
+					portalReturn && portalReturn.destroy ? portalReturn.destroy : noop
 				);
 				return {
 					destroy() {
@@ -391,6 +409,10 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 				content,
 				link,
 			},
+			states: {
+				open,
+				motion: motionAttribute,
+			},
 		};
 	}
 
@@ -415,12 +437,12 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 		return document.getElementById(rootIds.root);
 	}
 
-	function onTriggerEnter(listId: string) {
+	function onTriggerEnter(listId: string, contentId: string) {
 		window.clearTimeout(get(openTimer));
 		if (get(isOpenDelayed)) {
-			handleDelayedOpen(listId);
+			handleDelayedOpen(listId, contentId);
 		} else {
-			handleOpen(listId);
+			handleOpen(listId, contentId);
 		}
 	}
 
@@ -437,18 +459,23 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 		startCloseTimer();
 	}
 
-	function onItemSelect(listId: string) {
+	function onItemSelect(listId: string, contentId: string) {
 		activeItem.update((prev) => {
 			if (prev === listId) {
 				return '';
 			}
 			return listId;
 		});
+		content.set(document.getElementById(contentId));
 	}
 
-	function handleOpen(listId: string) {
+	function handleOpen(listId: string, contentId: string) {
 		window.clearTimeout(get(closeTimer));
 		activeItem.set(listId);
+		const contentEl = document.getElementById(contentId);
+		if (contentEl) {
+			content.set(contentEl);
+		}
 	}
 
 	function startCloseTimer() {
@@ -456,7 +483,7 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 		closeTimer.set(window.setTimeout(() => activeItem.set(''), 150));
 	}
 
-	function handleDelayedOpen(listId: string) {
+	function handleDelayedOpen(listId: string, contentId: string) {
 		const isOpenList = get(activeItem) === listId;
 		if (isOpenList) {
 			// if the list is already open, i.e. we're transitioning from
@@ -467,6 +494,10 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 				window.setTimeout(() => {
 					window.clearTimeout(get(closeTimer));
 					activeItem.set(listId);
+					const contentEl = document.getElementById(contentId);
+					if (contentEl) {
+						content.set(contentEl);
+					}
 				}, get(delayMs))
 			);
 		}
@@ -482,6 +513,9 @@ export function createNavigationMenu(props?: CreateNavigationMenuProps) {
 		},
 		builders: {
 			createMenuItem,
+		},
+		states: {
+			open,
 		},
 		options,
 	};
