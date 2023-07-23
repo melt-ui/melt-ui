@@ -2,19 +2,17 @@
 	import Logo from '$docs/components/icons/logo.svelte';
 	import { createNavigationMenu } from '@melt-ui/svelte';
 	import { ChevronDown } from 'lucide-svelte';
-	import { flip } from 'svelte/animate';
-	import { quintOut } from 'svelte/easing';
-	import { scale, fly } from 'svelte/transition';
+	import { quadInOut } from 'svelte/easing';
+	import { fly } from 'svelte/transition';
 
 	const {
 		elements: { root, viewport },
 		builders: { createMenuItem },
-		states: { open: rootOpen },
 	} = createNavigationMenu();
 
 	const {
 		elements: { content, item, link, trigger },
-		states: { open, motion },
+		states: { open },
 	} = createMenuItem();
 
 	const {
@@ -24,7 +22,7 @@
 			trigger: triggerA,
 			link: linkA,
 		},
-		states: { open: openA, motion: motionA },
+		states: { open: openA },
 	} = createMenuItem();
 
 	const {
@@ -67,9 +65,6 @@
 				'A set of tabbed panels, each associated with a header element, where only one panel is visible at a time.',
 		},
 	];
-
-	$: console.log($open);
-	$: console.log($openA);
 </script>
 
 <nav
@@ -97,13 +92,12 @@
 				<div
 					{...$content}
 					use:content
-					class="left-0 top-0 w-full data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 md:absolute md:w-auto"
+					class="left-0 top-0 w-full md:absolute md:w-auto"
 				>
 					{#if $open}
 						<ul
-							class="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]"
-							in:fly={{ duration: 300, x: '13rem' }}
-							out:fly={{ duration: 300, x: '-13rem' }}
+							class="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]"
+							transition:fly={{ duration: 300, x: '-200px', easing: quadInOut }}
 						>
 							<li class="row-span-3">
 								<a
@@ -134,7 +128,7 @@
 										Introduction
 									</div>
 									<p class="line-clamp-2 text-sm leading-snug text-neutral-700">
-										Get familiar with our builder APIs.
+										Get familiar with our headless component builder APIs.
 									</p>
 								</a>
 							</li>
@@ -186,13 +180,12 @@
 				<div
 					{...$contentA}
 					use:contentA
-					class="left-0 top-0 w-full data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 md:absolute md:w-auto"
+					class="left-0 top-0 w-full md:absolute md:w-auto"
 				>
 					{#if $openA}
 						<ul
 							class="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]"
-							in:fly={{ duration: 300, x: '-13rem' }}
-							out:fly={{ duration: 300, x: '13rem' }}
+							transition:fly={{ duration: 300, x: '200px', easing: quadInOut }}
 						>
 							{#each builders as builder}
 								<li>
@@ -231,7 +224,7 @@
 		<div
 			{...$viewport}
 			use:viewport
-			class="origin-top-center relative mt-1.5 h-[var(--melt-nav-menu-viewport-height)] w-full overflow-hidden rounded-md border bg-white text-magnum-700 shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90 md:w-[var(--melt-nav-menu-viewport-width)]"
+			class="origin-top-center relative mt-1.5 h-[var(--melt-nav-menu-viewport-height)] w-full overflow-hidden rounded-md border bg-white text-magnum-700 shadow-lg transition-height-width duration-200 delay-0 ease-in-out md:w-[var(--melt-nav-menu-viewport-width)]"
 		/>
 	</div>
 </nav>

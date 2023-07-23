@@ -220,9 +220,6 @@ devDependencies:
   tailwindcss:
     specifier: ^3.3.2
     version: 3.3.2
-  tailwindcss-animate:
-    specifier: ^1.0.6
-    version: 1.0.6(tailwindcss@3.3.2)
   tslib:
     specifier: ^2.5.3
     version: 2.5.3
@@ -11982,14 +11979,6 @@ packages:
       tailwindcss: '*'
     dependencies:
       tailwind-merge: 1.13.2
-      tailwindcss: 3.3.2
-    dev: true
-
-  /tailwindcss-animate@1.0.6(tailwindcss@3.3.2):
-    resolution: {integrity: sha512-4WigSGMvbl3gCCact62ZvOngA+PRqhAn7si3TQ3/ZuPuQZcIEtVap+ENSXbzWhpojKB8CpvnIsrwBu8/RnHtuw==}
-    peerDependencies:
-      tailwindcss: '>=3.0.0 || insiders'
-    dependencies:
       tailwindcss: 3.3.2
     dev: true
 

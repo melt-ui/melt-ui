@@ -1,7 +1,6 @@
 import type { Config } from 'tailwindcss';
 import plugin from 'tailwindcss/plugin';
 import typography from '@tailwindcss/typography';
-import animate from 'tailwindcss-animate';
 
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
@@ -58,6 +57,9 @@ export default {
 					'monospace',
 				],
 			},
+			transitionProperty: {
+				'height-width': 'height, width',
+			},
 			typography: (theme) => ({
 				DEFAULT: {
 					css: {
@@ -86,6 +88,5 @@ export default {
 				{ values: theme('spacing') }
 			);
 		}),
-		animate,
 	],
 } satisfies Config;
