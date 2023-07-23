@@ -17,6 +17,7 @@ import { removeScroll } from '$lib/internal/helpers/scroll';
 import type { Defaults } from '$lib/internal/types';
 import { get, writable } from 'svelte/store';
 import type { CreateDialogProps } from './types';
+import { tick } from 'svelte';
 
 type DialogParts = 'trigger' | 'overlay' | 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<DialogParts>('dialog');
@@ -145,11 +146,13 @@ export function createDialog(props: CreateDialogProps = {}) {
 			}
 
 			effect([open], ([$open]) => {
-				if (node.hidden || !$open) {
-					deactivate();
-				} else {
-					activate();
-				}
+				tick().then(() => {
+					if (!$open) {
+						deactivate();
+					} else {
+						activate();
+					}
+				});
 			});
 
 			return {
