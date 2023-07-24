@@ -22,6 +22,7 @@ import {
 	sleep,
 	styleToString,
 	isLeftClick,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
@@ -62,7 +63,7 @@ const defaults = {
 export function createMenuBuilder(opts: MenuBuilderOptions) {
 	const { name, selector } = createElHelpers<MenuParts>(opts.selector);
 
-	const { preventScroll, loop, arrowSize, dir, positioning, closeOnEscape, closeOnOutsideClick } =
+	const { preventScroll, arrowSize, positioning, closeOnEscape, closeOnOutsideClick } =
 		opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
@@ -600,21 +601,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		const subOpen = writable(false);
 
 		// options
-		const positioning = writable<FloatingConfig>(withDefaults.positioning);
-		const arrowSize = writable<number>(withDefaults.arrowSize);
-		const dir = writable(withDefaults.dir);
-		const disabled = writable<boolean>(withDefaults.disabled);
-		const preventScroll = writable<boolean>(withDefaults.preventScroll);
-		const loop = writable<boolean>(withDefaults.loop);
+		const options = toWritableStores(withDefaults);
 
-		const subOptions = {
-			positioning,
-			arrowSize,
-			dir,
-			disabled,
-			preventScroll,
-			loop,
-		};
+		const { positioning, arrowSize, disabled } = options;
 
 		const subActiveTrigger = writable<HTMLElement | null>(null);
 		const subOpenTimer = writable<number | null>(null);
@@ -1013,7 +1002,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			states: {
 				subOpen,
 			},
-			options: subOptions,
+			options,
 		};
 	};
 
