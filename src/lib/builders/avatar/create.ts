@@ -57,7 +57,7 @@ export const createAvatar = (props: CreateAvatarProps = defaults) => {
 								display: 'none',
 						  })
 						: undefined,
-				hidden: $loadingStatus === 'loaded' ? undefined : true,
+				hidden: $loadingStatus === 'loaded' ? true : undefined,
 			};
 		},
 	});
