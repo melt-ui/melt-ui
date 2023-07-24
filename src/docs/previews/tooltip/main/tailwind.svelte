@@ -10,7 +10,6 @@
 		openDelay: 500,
 		closeDelay: 250,
 	});
-	$: console.log($open);
 </script>
 
 <button
