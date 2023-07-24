@@ -26,7 +26,7 @@ import {
 } from '$lib/internal/helpers';
 import { getOptions } from '$lib/internal/helpers/list';
 import type { Defaults } from '$lib/internal/types';
-import { tick } from 'svelte';
+import { onMount, tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
 import type { ComboboxItemProps, CreateComboboxProps } from './types';
 import { omit } from '../../internal/helpers/object';
@@ -38,6 +38,7 @@ const defaults = {
 	scrollAlignment: 'nearest',
 	loop: true,
 	defaultOpen: false,
+	closeOnOutsideClick: true,
 } satisfies Defaults<CreateComboboxProps<unknown>>;
 
 const { name, selector } = createElHelpers('combobox');
@@ -53,8 +54,9 @@ const { name, selector } = createElHelpers('combobox');
 export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateComboboxProps<T>;
 
+	// Either the provided open store or a store with the default open value
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
-
+	// The overridable open store which is the source of truth for the open state.
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
 	// Trigger element for the popper portal. This will be our input element.
 	const activeTrigger = writable<HTMLElement | null>(null);
@@ -71,7 +73,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 
 	// options
 	const options = toWritableStores(omit(withDefaults, 'items'));
-	const { scrollAlignment, loop, filterFunction, itemToString } = options;
+	const { scrollAlignment, loop, filterFunction, itemToString, closeOnOutsideClick } = options;
 
 	const ids = {
 		input: generateId(),
@@ -81,23 +83,13 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 
 	/** Closes the menu. */
 	function closeMenu() {
-		open.set(false);
-		activeTrigger.set(null);
-	}
-
-	/** Opens the menu. */
-	function openMenu() {
-		const triggerElement = document.getElementById(ids.input);
-		if (!isHTMLElement(triggerElement)) return;
-		activeTrigger.set(triggerElement);
-		open.set(true);
-		// Wait a tick for the menu to open then highlight the selected item.
-		tick().then(() => {
-			const menuElement = document.getElementById(ids.menu);
-			if (!isHTMLElement(menuElement)) return;
-			const selectedItem = menuElement.querySelector('[aria-selected=true]');
-			if (!isHTMLElement(selectedItem)) return;
-			highlightedItem.set(selectedItem);
+		open.update((curr) => {
+			if (curr) {
+				activeTrigger.set(null);
+				return false;
+			}
+			activeTrigger.set(null);
+			return curr;
 		});
 	}
 
@@ -131,6 +123,42 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 			// Reset the filtered items to the full list.
 			filteredItems.set(get(items));
 		}
+	}
+
+	/**
+	 * Opens the menu, sets the active trigger, and highlights
+	 * the selected item (if one exists). It also optionally accepts the current
+	 * open state to prevent unnecessary updates if we know the menu is already open.
+	 */
+	function handleMenuOpen(currentOpenState = false) {
+		/**
+		 * We're checking the open state here because the menu may have
+		 * been programatically opened by the user using a controlled store.
+		 * In that case we don't want to update the open state, but we do
+		 * want to update the active trigger and highlighted item as normal.
+		 */
+		if (!currentOpenState) {
+			open.set(true);
+		}
+
+		if (get(activeTrigger)) {
+			return;
+		}
+
+		const triggerEl = document.getElementById(ids.input);
+		if (!triggerEl) return;
+
+		// The active trigger is used to anchor the menu to the input element.
+		activeTrigger.set(triggerEl);
+
+		// Wait a tick for the menu to open then highlight the selected item.
+		tick().then(() => {
+			const menuElement = document.getElementById(ids.menu);
+			if (!isHTMLElement(menuElement)) return;
+			const selectedItem = menuElement.querySelector('[aria-selected=true]');
+			if (!isHTMLElement(selectedItem)) return;
+			highlightedItem.set(selectedItem);
+		});
 	}
 
 	/**
@@ -183,7 +211,11 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		action: (node: HTMLInputElement) => {
 			const unsubscribe = executeCallbacks(
 				addEventListener(node, 'click', () => {
-					openMenu();
+					const $open = get(open);
+					if ($open) {
+						return;
+					}
+					handleMenuOpen($open);
 				}),
 				// Handle all input key events including typing, meta, and navigation.
 				addEventListener(node, 'keydown', (e) => {
@@ -213,7 +245,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 						}
 
 						// All other events should open the menu.
-						openMenu();
+						handleMenuOpen();
 
 						tick().then(() => {
 							const $selectedItem = get(selectedItem);
@@ -313,49 +345,62 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		},
 	});
 
+	const fullyOpen = derived(
+		[open, activeTrigger],
+		([$open, $activeTrigger]) => $open && $activeTrigger
+	);
+
 	/**
 	 * Action and attributes for the menu element.
 	 */
 	const menu = builder(name('menu'), {
-		stores: [open],
-		returned: ([$open]) =>
+		stores: [fullyOpen],
+		returned: ([$fullyOpen]) =>
 			({
-				hidden: $open ? undefined : true,
+				hidden: $fullyOpen ? undefined : true,
 				id: ids.menu,
 				role: 'listbox',
-				style: styleToString({ display: $open ? undefined : 'none' }),
+				style: styleToString({ display: $fullyOpen ? undefined : 'none' }),
 			} as const),
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
 			let unsubScroll = noop;
 			const unsubscribe = executeCallbacks(
 				//  Bind the popper portal to the input element.
-				effect([open, activeTrigger], ([$open, $activeTrigger]) => {
-					unsubPopper();
-					unsubScroll();
-					if ($open && $activeTrigger) {
-						unsubScroll = removeScroll();
-						tick().then(() => {
-							const popper = usePopper(node, {
-								anchorElement: $activeTrigger,
-								open,
-								options: {
-									floating: { placement: 'bottom', sameWidth: true },
-									focusTrap: null,
-									clickOutside: {
-										handler: () => {
-											reset();
-											closeMenu();
-										},
+				effect(
+					[open, activeTrigger, closeOnOutsideClick],
+					([$open, $activeTrigger, $closeOnOutsideClick]) => {
+						unsubPopper();
+						unsubScroll();
+						if ($open && $activeTrigger) {
+							unsubScroll = removeScroll();
+
+							tick().then(() => {
+								const popper = usePopper(node, {
+									anchorElement: $activeTrigger,
+									open,
+									options: {
+										floating: { placement: 'bottom', sameWidth: true },
+										focusTrap: null,
+										clickOutside: $closeOnOutsideClick
+											? {
+													handler: (e) => {
+														const target = e.target;
+														if (target === $activeTrigger) return;
+														reset();
+														closeMenu();
+													},
+											  }
+											: null,
 									},
-								},
+								});
+								if (popper && popper.destroy) {
+									unsubPopper = popper.destroy;
+								}
 							});
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
-						});
+						}
 					}
-				}),
+				),
 				// Remove highlight when the pointer leaves the menu.
 				addEventListener(node, 'pointerleave', () => {
 					highlightedItem.set(null);
@@ -413,6 +458,41 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 			);
 			return { destroy: unsubscribe };
 		},
+	});
+
+	onMount(() => {
+		/**
+		 * This covers the controlled case where the user sets the `open` store to
+		 * `true` without clicking the trigger. We need to set the active trigger here
+		 * to ensure the menu is anchored to the correct element.
+		 */
+		const triggerEl = document.getElementById(ids.input);
+		if (triggerEl && get(open) && !get(activeTrigger)) {
+			activeTrigger.set(triggerEl);
+		}
+
+		// TODO: add escape key handler for closing the menu and resetting the active trigger
+	});
+
+	effect([open], ([$open]) => {
+		if (!isBrowser) return;
+
+		/**
+		 * In the controlled case where the user programatically sets the
+		 * `open` store to `false`. We need to reset the active trigger.
+		 */
+		if (!$open) {
+			activeTrigger.set(null);
+			return;
+		}
+
+		/**
+		 * In the controlled case where the component is already mounted and the open store is
+		 * set to `true`, we need to set the active trigger to the input element.
+		 */
+		if ($open && !get(activeTrigger)) {
+			handleMenuOpen($open);
+		}
 	});
 
 	/**

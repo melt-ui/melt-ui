@@ -193,6 +193,7 @@ export function createDialog(props: CreateDialogProps = {}) {
 	effect(
 		[open, openDialogIds, closeOnEscape, preventScroll],
 		([$open, $openDialogIds, $closeOnEscape, $preventScroll]) => {
+			if (!isBrowser) return;
 			const unsubs: Array<() => void> = [];
 
 			const isLast = last($openDialogIds) === ids.content;

@@ -21,10 +21,50 @@ export type CreateComboboxProps<T> = {
 	 */
 	filterFunction: ComboboxFilterFunction<T>;
 	itemToString: ComboboxItemToString<T>;
+
+	/**
+	 * Whether or not the combobox should loop through the list when
+	 * the end or beginning is reached.
+	 *
+	 * @default true
+	 */
 	loop?: boolean;
+
+	/**
+	 * Whether or not the combobox should be open by default
+	 * when the component is rendered.
+	 *
+	 * This should only be used when you are not passing a controlled `open` store.
+	 *
+	 * @default false
+	 */
 	defaultOpen?: boolean;
+
+	/**
+	 * An optional controlled store that manages the open state of the combobox.
+	 */
 	open?: Writable<boolean>;
+
+	/**
+	 * Change function that is called when the combobox's `open` state changes.
+	 */
 	onOpenChange?: ChangeFn<boolean>;
+
+	/**
+	 * Whether or not to close the combobox menu when the user clicks
+	 * outside of the combobox.
+	 *
+	 * @default true
+	 */
+	closeOnOutsideClick?: boolean;
+
+	/**
+	 * Whether or not to prevent scrolling the page when the
+	 * combobox menu is open.
+	 *
+	 * @default true
+	 */
+	preventScroll?: boolean;
 };
 
 export type ComboboxFilterFunction<T> = (item: T, value: string) => boolean;

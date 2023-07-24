@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createCombobox, type ComboboxFilterFunction } from '@melt-ui/svelte';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
+	import { writable } from 'svelte/store';
 
 	interface Book {
 		author: string;
@@ -72,6 +73,8 @@
 		);
 	};
 
+	const customOpen = writable(false);
+
 	const {
 		elements: { menu, input, item },
 		states: { open, inputValue, filteredItems },
@@ -80,8 +83,20 @@
 		filterFunction,
 		items: books,
 		itemToString: (item) => item.title,
+		open: customOpen,
+		closeOnOutsideClick: false,
 	});
 </script>
+
+{#if $customOpen}
+	<button class="mr-2 px-3.5 py-2.5" on:click={() => customOpen.set(false)}>
+		Close combobox
+	</button>
+{:else}
+	<button class="mr-2 px-3.5 py-2.5" on:click={() => customOpen.set(true)}>
+		Open combobox
+	</button>
+{/if}
 
 <label class="cursor-pointer">
 	<span class="block pb-1 capitalize">Choose your favorite book:</span>
