@@ -22,6 +22,8 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
+	addHighlight,
+	removeHighlight,
 } from '$lib/internal/helpers';
 import { getOptions } from '$lib/internal/helpers/list';
 import type { Defaults } from '$lib/internal/types';
@@ -220,7 +222,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 
 							const enabledItems = Array.from(
 								menuEl.querySelectorAll(`${selector('item')}:not([data-disabled])`)
-							) as HTMLElement[];
+							).filter((item): item is HTMLElement => isHTMLElement(item));
 							if (!enabledItems.length) return;
 
 							if (e.key === kbd.ARROW_DOWN) {
@@ -421,9 +423,9 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		if (!isHTMLElement(menuElement)) return;
 		getOptions(menuElement).forEach((node) => {
 			if (node === $highlightedItem) {
-				node.setAttribute('data-highlighted', '');
+				addHighlight(node);
 			} else {
-				node.removeAttribute('data-highlighted');
+				removeHighlight(node);
 			}
 		});
 		if ($highlightedItem) {

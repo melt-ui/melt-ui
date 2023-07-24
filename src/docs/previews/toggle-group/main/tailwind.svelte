@@ -4,7 +4,9 @@
 
 	const {
 		elements: { root, item },
-	} = createToggleGroup();
+	} = createToggleGroup({
+		type: 'multiple',
+	});
 </script>
 
 <div

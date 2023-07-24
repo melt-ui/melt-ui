@@ -3,6 +3,7 @@ import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,
 	addEventListener,
+	addHighlight,
 	back,
 	builder,
 	createElHelpers,
@@ -23,6 +24,7 @@ import {
 	noop,
 	omit,
 	prev,
+	removeHighlight,
 	removeScroll,
 	styleToString,
 	toWritableStores,
@@ -145,11 +147,9 @@ export function createSelect(props?: CreateSelectProps) {
 
 			const unsubEventListeners = executeCallbacks(
 				addEventListener(node, 'keydown', (e) => {
-					const menuElement = e.currentTarget;
-					if (!isHTMLElement(menuElement)) return;
-
+					const menuEl = e.currentTarget;
 					const target = e.target;
-					if (!isHTMLElement(target)) return;
+					if (!isHTMLElement(menuEl) || !isHTMLElement(target)) return;
 
 					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
 					const isCharacterKey = e.key.length === 1;
@@ -163,9 +163,9 @@ export function createSelect(props?: CreateSelectProps) {
 
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						e.preventDefault();
-						if (menuElement === target) {
-							const selectedOption = getSelectedOption(menuElement);
-							if (isHTMLElement(selectedOption)) {
+						if (menuEl === target) {
+							const selectedOption = getSelectedOption(menuEl);
+							if (selectedOption) {
 								handleRovingFocus(selectedOption);
 								return;
 							}
@@ -214,15 +214,15 @@ export function createSelect(props?: CreateSelectProps) {
 					}
 
 					const $open = get(open);
-					const triggerElement = e.currentTarget;
-					if (!isHTMLElement(triggerElement)) return;
+					const triggerEl = e.currentTarget;
+					if (!isHTMLElement(triggerEl)) return;
 
 					open.update((prev) => {
 						const isOpen = !prev;
 						if (isOpen) {
-							nextFocusable.set(getNextFocusable(triggerElement));
-							prevFocusable.set(getPreviousFocusable(triggerElement));
-							activeTrigger.set(triggerElement);
+							nextFocusable.set(getNextFocusable(triggerEl));
+							prevFocusable.set(getPreviousFocusable(triggerEl));
+							activeTrigger.set(triggerEl);
 						} else {
 							activeTrigger.set(null);
 						}
@@ -233,8 +233,8 @@ export function createSelect(props?: CreateSelectProps) {
 				}),
 
 				addEventListener(node, 'keydown', (e) => {
-					const triggerElement = e.currentTarget;
-					if (!isHTMLElement(triggerElement)) return;
+					const triggerEl = e.currentTarget;
+					if (!isHTMLElement(triggerEl)) return;
 
 					if (
 						SELECTION_KEYS.includes(e.key) ||
@@ -253,9 +253,9 @@ export function createSelect(props?: CreateSelectProps) {
 							const isOpen = !prev;
 							if (isOpen) {
 								e.preventDefault();
-								nextFocusable.set(getNextFocusable(triggerElement));
-								prevFocusable.set(getPreviousFocusable(triggerElement));
-								activeTrigger.set(triggerElement);
+								nextFocusable.set(getNextFocusable(triggerEl));
+								prevFocusable.set(getPreviousFocusable(triggerEl));
+								activeTrigger.set(triggerEl);
 							} else {
 								activeTrigger.set(null);
 							}
@@ -264,7 +264,7 @@ export function createSelect(props?: CreateSelectProps) {
 						});
 
 						const menu = document.getElementById(ids.menu);
-						if (!isHTMLElement(menu)) return;
+						if (!menu) return;
 
 						const selectedOption = menu.querySelector('[data-selected]');
 						if (isHTMLElement(selectedOption)) {
@@ -275,10 +275,7 @@ export function createSelect(props?: CreateSelectProps) {
 						const options = getOptions(menu);
 						if (!options.length) return;
 
-						const nextFocusedElement = options[0];
-						if (!isHTMLElement(nextFocusedElement)) return;
-
-						handleRovingFocus(nextFocusedElement);
+						handleRovingFocus(options[0]);
 					}
 				})
 			);
@@ -400,12 +397,12 @@ export function createSelect(props?: CreateSelectProps) {
 						return;
 					}
 
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
+					const itemEl = e.currentTarget;
+					if (!isHTMLElement(itemEl)) return;
 
 					if (props.disabled) {
 						const menuElement = document.getElementById(ids.menu);
-						if (!isHTMLElement(menuElement)) return;
+						if (!menuElement) return;
 						handleRovingFocus(menuElement);
 					}
 
@@ -416,14 +413,14 @@ export function createSelect(props?: CreateSelectProps) {
 					onOptionLeave();
 				}),
 				addEventListener(node, 'focusin', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-					itemElement.setAttribute('data-highlighted', '');
+					const itemEl = e.currentTarget;
+					if (!isHTMLElement(itemEl)) return;
+					addHighlight(itemEl);
 				}),
 				addEventListener(node, 'focusout', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-					itemElement.removeAttribute('data-highlighted');
+					const itemEl = e.currentTarget;
+					if (!isHTMLElement(itemEl)) return;
+					removeHighlight(itemEl);
 				})
 			);
 
@@ -449,9 +446,9 @@ export function createSelect(props?: CreateSelectProps) {
 				// Focus on selected option or first option
 				const selectedOption = getSelectedOption(menuEl);
 
-				if (!isHTMLElement(selectedOption)) {
+				if (!selectedOption) {
 					const firstOption = getFirstOption(menuEl);
-					if (!isHTMLElement(firstOption)) return;
+					if (!firstOption) return;
 					handleRovingFocus(firstOption);
 				} else {
 					handleRovingFocus(selectedOption);
@@ -531,7 +528,8 @@ export function createSelect(props?: CreateSelectProps) {
 	}
 
 	function getSelectedOption(menuElement: HTMLElement) {
-		return menuElement.querySelector('[data-selected]');
+		const selectedOption = menuElement.querySelector('[data-selected]');
+		return isHTMLElement(selectedOption) ? selectedOption : null;
 	}
 
 	function onOptionPointerMove(e: PointerEvent) {
@@ -556,11 +554,10 @@ export function createSelect(props?: CreateSelectProps) {
 
 		// currently focused menu item
 		const currentFocusedItem = document.activeElement;
-		if (!isHTMLElement(currentFocusedItem)) return;
 
 		// menu element being navigated
 		const currentTarget = e.currentTarget;
-		if (!isHTMLElement(currentTarget)) return;
+		if (!isHTMLElement(currentFocusedItem) || !isHTMLElement(currentTarget)) return;
 
 		// menu items of the current menu
 		const items = getOptions(currentTarget);

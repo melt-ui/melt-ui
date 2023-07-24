@@ -7,7 +7,7 @@ export type PortalConfig = string | HTMLElement | undefined;
 export const usePortal: Action<HTMLElement, PortalConfig> = (el, target = 'body') => {
 	let targetEl;
 
-	if (!isHTMLElement(target) || typeof target !== 'string') {
+	if (!isHTMLElement(target) && typeof target !== 'string') {
 		return {
 			destroy: noop,
 		};

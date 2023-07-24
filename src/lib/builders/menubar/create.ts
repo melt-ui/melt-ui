@@ -2,13 +2,11 @@ import type { Defaults } from '$lib/internal/types';
 import { get, writable, type Writable } from 'svelte/store';
 import {
 	applyAttrsIfDisabled,
-	getMenuItems,
 	createMenuBuilder,
+	getMenuItems,
 	handleMenuNavigation,
 	handleTabNavigation,
 	type MenuParts,
-	removeHighlight,
-	addHighlight,
 } from '../menu';
 import {
 	executeCallbacks,
@@ -27,8 +25,9 @@ import {
 	getPreviousFocusable,
 	builder,
 	createElHelpers,
-	isLeftClick,
 	toWritableStores,
+	removeHighlight,
+	addHighlight,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions';
@@ -66,13 +65,14 @@ export function createMenubar(props?: CreateMenubarProps) {
 			};
 		},
 		action: (node: HTMLElement) => {
-			const menuTriggers = Array.from(
-				node.querySelectorAll<HTMLElement>('[data-melt-menubar-trigger]')
-			);
-			if (menuTriggers.length === 0) return;
+			const menuTriggers = Array.from(node.querySelectorAll('[data-melt-menubar-trigger]'));
+			if (!menuTriggers.length || !isHTMLElement(menuTriggers[0])) return;
 			menuTriggers[0].tabIndex = 0;
 
-			const menus = Array.from(node.querySelectorAll<HTMLElement>('[data-melt-menubar-menu]'));
+			const menus = Array.from(node.querySelectorAll('[data-melt-menubar-menu]')).filter(
+				(el): el is HTMLElement => isHTMLElement(el)
+			);
+
 			scopedMenus.set(menus);
 
 			return {
@@ -155,24 +155,23 @@ export function createMenubar(props?: CreateMenubarProps) {
 				const unsubEvents = executeCallbacks(
 					addEventListener(node, 'keydown', (e) => {
 						const target = e.target;
-						if (!isHTMLElement(target)) return;
+						const menuEl = e.currentTarget;
 
-						const menuElement = e.currentTarget;
-						if (!isHTMLElement(menuElement)) return;
+						if (!isHTMLElement(menuEl) || !isHTMLElement(target)) return;
+
+						if (MENUBAR_NAV_KEYS.includes(e.key)) {
+							handleCrossMenuNavigation(e, activeMenu);
+						}
 
 						/**
 						 * Submenu key events bubble through portals and
 						 * we only care about key events that happen inside this menu.
 						 */
-						const isKeyDownInside = target.closest('[role="menu"]') === menuElement;
+						const isKeyDownInside = target.closest('[role="menu"]') === menuEl;
 
 						if (!isKeyDownInside) return;
 						if (FIRST_LAST_KEYS.includes(e.key)) {
 							handleMenuNavigation(e);
-						}
-
-						if (MENUBAR_NAV_KEYS.includes(e.key)) {
-							handleCrossMenuNavigation(e, activeMenu);
 						}
 
 						/**
@@ -192,7 +191,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 						const isCharacterKey = e.key.length === 1;
 						const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
 						if (!isModifierKey && isCharacterKey) {
-							m.handleTypeaheadSearch(e.key, getMenuItems(menuElement));
+							m.handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 						}
 					})
 				);
@@ -222,11 +221,11 @@ export function createMenubar(props?: CreateMenubarProps) {
 			action: (node: HTMLElement) => {
 				applyAttrsIfDisabled(node);
 
-				const menubarElement = document.getElementById(rootIds.menubar);
-				if (!menubarElement) return;
+				const menubarEl = document.getElementById(rootIds.menubar);
+				if (!menubarEl) return;
 
 				const menubarTriggers = Array.from(
-					menubarElement.querySelectorAll<HTMLElement>('[data-melt-menubar-trigger]')
+					menubarEl.querySelectorAll('[data-melt-menubar-trigger]')
 				);
 				if (!menubarTriggers.length) return;
 				if (menubarTriggers[0] === node) {
@@ -236,82 +235,44 @@ export function createMenubar(props?: CreateMenubarProps) {
 				}
 
 				const unsub = executeCallbacks(
-					addEventListener(node, 'pointerdown', (e) => {
-						if (!isLeftClick(e)) return;
-
+					addEventListener(node, 'click', (e) => {
 						const $rootOpen = get(rootOpen);
-						const triggerElement = e.currentTarget;
-						if (!isHTMLElement(triggerElement)) return;
+						const triggerEl = e.currentTarget;
+						if (!isHTMLElement(triggerEl)) return;
 
-						rootOpen.update((prev) => {
-							const isOpen = !prev;
-							if (isOpen) {
-								nextFocusable.set(getNextFocusable(triggerElement));
-								prevFocusable.set(getPreviousFocusable(triggerElement));
-								rootActiveTrigger.set(triggerElement);
-								activeMenu.set(m.rootIds.menu);
-							} else {
-								rootActiveTrigger.set(null);
-								activeMenu.set('');
-							}
-
-							return isOpen;
-						});
+						handleOpen(triggerEl);
 						if (!$rootOpen) e.preventDefault();
 					}),
 					addEventListener(node, 'keydown', (e) => {
-						const triggerElement = e.currentTarget;
-						if (!isHTMLElement(triggerElement)) return;
+						const triggerEl = e.currentTarget;
+						if (!isHTMLElement(triggerEl)) return;
 
 						if (SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN) {
-							if (e.key === kbd.ARROW_DOWN) {
-								/**
-								 * We don't want to scroll the page when the user presses the
-								 * down arrow when focused on the trigger, so we prevent that
-								 * default behavior.
-								 */
-								e.preventDefault();
-							}
-							rootOpen.update((prev) => {
-								const isOpen = !prev;
-								if (isOpen) {
-									nextFocusable.set(getNextFocusable(triggerElement));
-									prevFocusable.set(getPreviousFocusable(triggerElement));
-									rootActiveTrigger.set(triggerElement);
-									activeMenu.set(m.rootIds.menu);
-								} else {
-									rootActiveTrigger.set(null);
-									activeMenu.set('');
-								}
+							e.preventDefault();
+							handleOpen(triggerEl);
 
-								return isOpen;
-							});
-
-							const menuId = triggerElement.getAttribute('aria-controls');
+							const menuId = triggerEl.getAttribute('aria-controls');
 							if (!menuId) return;
 
 							const menu = document.getElementById(menuId);
-							if (!isHTMLElement(menu)) return;
+							if (!menu) return;
 
 							const menuItems = getMenuItems(menu);
 							if (!menuItems.length) return;
 
-							const nextFocusedElement = menuItems[0];
-							if (!isHTMLElement(nextFocusedElement)) return;
-
-							handleRovingFocus(nextFocusedElement);
+							handleRovingFocus(menuItems[0]);
 						}
 					}),
 					addEventListener(node, 'pointerenter', (e) => {
-						const triggerElement = e.currentTarget;
-						if (!isHTMLElement(triggerElement)) return;
+						const triggerEl = e.currentTarget;
+						if (!isHTMLElement(triggerEl)) return;
 
 						const $activeMenu = get(activeMenu);
 						const $rootOpen = get(rootOpen);
 						if ($activeMenu && !$rootOpen) {
 							rootOpen.set(true);
 							activeMenu.set(m.rootIds.menu);
-							rootActiveTrigger.set(triggerElement);
+							rootActiveTrigger.set(triggerEl);
 						}
 					})
 				);
@@ -327,10 +288,10 @@ export function createMenubar(props?: CreateMenubarProps) {
 			if ($activeMenu === m.rootIds.menu) {
 				if (get(rootOpen)) return;
 
-				const triggerElement = document.getElementById(m.rootIds.trigger);
-				if (!isHTMLElement(triggerElement)) return;
-				rootActiveTrigger.set(triggerElement);
-				addHighlight(triggerElement);
+				const triggerEl = document.getElementById(m.rootIds.trigger);
+				if (!triggerEl) return;
+				rootActiveTrigger.set(triggerEl);
+				addHighlight(triggerEl);
 				rootOpen.set(true);
 				return;
 			}
@@ -338,9 +299,9 @@ export function createMenubar(props?: CreateMenubarProps) {
 			if ($activeMenu !== m.rootIds.menu) {
 				if (!isBrowser) return;
 				if (get(rootOpen)) {
-					const triggerElement = document.getElementById(m.rootIds.trigger);
-					if (!isHTMLElement(triggerElement)) return;
-					removeHighlight(triggerElement);
+					const triggerEl = document.getElementById(m.rootIds.trigger);
+					if (!triggerEl) return;
+					removeHighlight(triggerEl);
 					rootActiveTrigger.set(null);
 					rootOpen.set(false);
 				}
@@ -350,20 +311,34 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		effect([rootOpen], ([$rootOpen]) => {
 			if (!isBrowser) return;
-			const triggerElement = document.getElementById(m.rootIds.trigger);
+			const triggerEl = document.getElementById(m.rootIds.trigger);
+			if (!triggerEl) return;
 			if (!$rootOpen && get(activeMenu) === m.rootIds.menu) {
 				activeMenu.set('');
-				if (triggerElement) {
-					removeHighlight(triggerElement);
-				}
+				removeHighlight(triggerEl);
 				return;
 			}
 			if ($rootOpen) {
-				if (triggerElement) {
-					addHighlight(triggerElement);
-				}
+				addHighlight(triggerEl);
 			}
 		});
+
+		function handleOpen(triggerEl: HTMLElement) {
+			rootOpen.update((prev) => {
+				const isOpen = !prev;
+				if (isOpen) {
+					nextFocusable.set(getNextFocusable(triggerEl));
+					prevFocusable.set(getPreviousFocusable(triggerEl));
+					rootActiveTrigger.set(triggerEl);
+					activeMenu.set(m.rootIds.menu);
+				} else {
+					rootActiveTrigger.set(null);
+					activeMenu.set('');
+				}
+
+				return isOpen;
+			});
+		}
 
 		return {
 			elements: {
@@ -388,22 +363,19 @@ export function createMenubar(props?: CreateMenubarProps) {
 	onMount(() => {
 		if (!isBrowser) return;
 
-		const menubarElement = document.getElementById(rootIds.menubar);
-		if (!isHTMLElement(menubarElement)) return;
+		const menubarEl = document.getElementById(rootIds.menubar);
+		if (!menubarEl) return;
 
 		const unsubEvents = executeCallbacks(
-			addEventListener(menubarElement, 'keydown', (e) => {
+			addEventListener(menubarEl, 'keydown', (e) => {
 				const target = e.target;
-				if (!isHTMLElement(target)) return;
-
-				const menuElement = e.currentTarget;
-				if (!isHTMLElement(menuElement)) return;
+				const menuEl = e.currentTarget;
+				if (!isHTMLElement(menuEl) || !isHTMLElement(target)) return;
 				/**
 				 * Submenu key events bubble through portals and
 				 * we only care about key events that happen inside this menu.
 				 */
 				const isTargetTrigger = target.hasAttribute('data-melt-menubar-trigger');
-
 				if (!isTargetTrigger) return;
 
 				if (MENUBAR_NAV_KEYS.includes(e.key)) {
@@ -432,10 +404,9 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		// menu element being navigated
 		const currentTarget = e.currentTarget;
-		if (!isHTMLElement(currentTarget)) return;
-
 		const target = e.target;
-		if (!isHTMLElement(target)) return;
+
+		if (!isHTMLElement(target) || !isHTMLElement(currentTarget)) return;
 
 		const targetIsSubTrigger = target.hasAttribute('data-melt-menubar-menu-subtrigger');
 		const isKeyDownInsideSubMenu = target.closest('[role="menu"]') !== currentTarget;
@@ -477,10 +448,12 @@ export function createMenubar(props?: CreateMenubarProps) {
 		activeMenu.set(nextFocusedItem.id);
 	}
 
-	function getMenuTriggers(element: HTMLElement) {
-		const menuElement = element.closest('[role="menubar"]');
-		if (!isHTMLElement(menuElement)) return [];
-		return Array.from(menuElement.querySelectorAll('[data-melt-menubar-trigger]'));
+	function getMenuTriggers(el: HTMLElement) {
+		const menuEl = el.closest('[role="menubar"]');
+		if (!isHTMLElement(menuEl)) return [];
+		return Array.from(menuEl.querySelectorAll('[data-melt-menubar-trigger]')).filter(
+			(el): el is HTMLElement => isHTMLElement(el)
+		);
 	}
 
 	/**
@@ -492,11 +465,9 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		// currently focused menu item
 		const currentFocusedItem = document.activeElement;
-		if (!isHTMLElement(currentFocusedItem)) return;
-
 		// menu element being navigated
 		const currentTarget = e.currentTarget;
-		if (!isHTMLElement(currentTarget)) return;
+		if (!isHTMLElement(currentTarget) || !isHTMLElement(currentFocusedItem)) return;
 
 		// menu items of the current menu
 		const menuTriggers = getMenuTriggers(currentTarget);
@@ -510,7 +481,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				return false;
 			}
 			return true;
-		}) as HTMLElement[];
+		});
 
 		// Index of the currently focused item in the candidate nodes array
 		const currentIndex = candidateNodes.indexOf(currentFocusedItem);
@@ -536,9 +507,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				return;
 		}
 
-		const nextFocusedItem = candidateNodes[nextIndex];
-
-		handleRovingFocus(nextFocusedItem);
+		handleRovingFocus(candidateNodes[nextIndex]);
 	}
 
 	return {

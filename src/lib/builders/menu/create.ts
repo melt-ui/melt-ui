@@ -7,6 +7,7 @@ import {
 	derivedWithUnsubscribe,
 	effect,
 	executeCallbacks,
+	FIRST_LAST_KEYS,
 	generateId,
 	getNextFocusable,
 	getPreviousFocusable,
@@ -15,13 +16,13 @@ import {
 	isElementDisabled,
 	isHTMLElement,
 	kbd,
-	SELECTION_KEYS,
-	FIRST_LAST_KEYS,
 	noop,
 	removeScroll,
+	SELECTION_KEYS,
 	sleep,
 	styleToString,
-	isLeftClick,
+	addHighlight,
+	removeHighlight,
 } from '$lib/internal/helpers';
 import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
@@ -166,16 +167,14 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			const unsubEvents = executeCallbacks(
 				addEventListener(node, 'keydown', (e) => {
 					const target = e.target;
-					if (!isHTMLElement(target)) return;
-
-					const menuElement = e.currentTarget;
-					if (!isHTMLElement(menuElement)) return;
+					const menuEl = e.currentTarget;
+					if (!isHTMLElement(target) || !isHTMLElement(menuEl)) return;
 
 					/**
 					 * Submenu key events bubble through portals and
 					 * we only care about key events that happen inside this menu.
 					 */
-					const isKeyDownInside = target.closest('[role="menu"]') === menuElement;
+					const isKeyDownInside = target.closest('[role="menu"]') === menuEl;
 
 					if (!isKeyDownInside) return;
 					if (FIRST_LAST_KEYS.includes(e.key)) {
@@ -200,7 +199,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					const isCharacterKey = e.key.length === 1;
 					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
 					if (!isModifierKey && isCharacterKey) {
-						handleTypeaheadSearch(e.key, getMenuItems(menuElement));
+						handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 					}
 				})
 			);
@@ -228,54 +227,23 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		action: (node: HTMLElement) => {
 			applyAttrsIfDisabled(node);
 			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', (e) => {
-					if (!isLeftClick(e)) return;
-
+				addEventListener(node, 'click', (e) => {
 					const $rootOpen = get(rootOpen);
-					const triggerElement = e.currentTarget;
-					if (!isHTMLElement(triggerElement)) return;
+					const triggerEl = e.currentTarget;
+					if (!isHTMLElement(triggerEl)) return;
 
-					rootOpen.update((prev) => {
-						const isOpen = !prev;
-						if (isOpen) {
-							nextFocusable.set(getNextFocusable(triggerElement));
-							prevFocusable.set(getPreviousFocusable(triggerElement));
-							rootActiveTrigger.set(triggerElement);
-						} else {
-							rootActiveTrigger.set(null);
-						}
-
-						return isOpen;
-					});
+					handleOpen(triggerEl);
 					if (!$rootOpen) e.preventDefault();
 				}),
 				addEventListener(node, 'keydown', (e) => {
-					const triggerElement = e.currentTarget;
-					if (!isHTMLElement(triggerElement)) return;
+					const triggerEl = e.currentTarget;
+					if (!isHTMLElement(triggerEl)) return;
 
 					if (SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN) {
-						if (e.key === kbd.ARROW_DOWN) {
-							/**
-							 * We don't want to scroll the page when the user presses the
-							 * down arrow when focused on the trigger, so we prevent that
-							 * default behavior.
-							 */
-							e.preventDefault();
-						}
-						rootOpen.update((prev) => {
-							const isOpen = !prev;
-							if (isOpen) {
-								nextFocusable.set(getNextFocusable(triggerElement));
-								prevFocusable.set(getPreviousFocusable(triggerElement));
-								rootActiveTrigger.set(triggerElement);
-							} else {
-								rootActiveTrigger.set(null);
-							}
+						e.preventDefault();
+						handleOpen(triggerEl);
 
-							return isOpen;
-						});
-
-						const menuId = triggerElement.getAttribute('aria-controls');
+						const menuId = triggerEl.getAttribute('aria-controls');
 						if (!menuId) return;
 
 						const menu = document.getElementById(menuId);
@@ -284,10 +252,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						const menuItems = getMenuItems(menu);
 						if (!menuItems.length) return;
 
-						const nextFocusedElement = menuItems[0];
-						if (!isHTMLElement(nextFocusedElement)) return;
-
-						handleRovingFocus(nextFocusedElement);
+						handleRovingFocus(menuItems[0]);
 					}
 				})
 			);
@@ -326,25 +291,23 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 			const unsub = executeCallbacks(
 				addEventListener(node, 'pointerdown', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-					if (isElementDisabled(itemElement)) {
+					const itemEl = e.currentTarget;
+					if (!isHTMLElement(itemEl)) return;
+					if (isElementDisabled(itemEl)) {
 						e.preventDefault();
 						return;
 					}
 				}),
 				addEventListener(node, 'click', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-					if (isElementDisabled(itemElement)) {
+					const itemEl = e.currentTarget;
+					if (!isHTMLElement(itemEl)) return;
+					if (isElementDisabled(itemEl)) {
 						e.preventDefault();
 						return;
 					}
 
 					if (e.defaultPrevented) {
-						if (!isHTMLElement(itemElement)) return;
-
-						handleRovingFocus(itemElement);
+						handleRovingFocus(itemEl);
 						return;
 					}
 					onSelect?.(e);
@@ -394,25 +357,23 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 			const unsub = executeCallbacks(
 				addEventListener(node, 'pointerdown', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-					if (isElementDisabled(itemElement)) {
+					const itemEl = e.currentTarget;
+					if (!isHTMLElement(itemEl)) return;
+					if (isElementDisabled(itemEl)) {
 						e.preventDefault();
 						return;
 					}
 				}),
 				addEventListener(node, 'click', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-					if (isElementDisabled(itemElement)) {
+					const itemEl = e.currentTarget;
+					if (!isHTMLElement(itemEl)) return;
+					if (isElementDisabled(itemEl)) {
 						e.preventDefault();
 						return;
 					}
 
 					if (e.defaultPrevented) {
-						if (!isHTMLElement(itemElement)) return;
-
-						handleRovingFocus(itemElement);
+						handleRovingFocus(itemEl);
 						return;
 					}
 					onSelect?.(e);
@@ -428,15 +389,15 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					onItemKeyDown(e);
 				}),
 				addEventListener(node, 'pointermove', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
+					const itemEl = e.currentTarget;
+					if (!isHTMLElement(itemEl)) return;
 
-					if (isElementDisabled(itemElement)) {
+					if (isElementDisabled(itemEl)) {
 						onItemLeave(e);
 						return;
 					}
 
-					onMenuItemPointerMove(e);
+					onMenuItemPointerMove(e, itemEl);
 				}),
 				addEventListener(node, 'pointerleave', (e) => {
 					onMenuItemPointerLeave(e);
@@ -493,8 +454,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 				const unsub = executeCallbacks(
 					addEventListener(node, 'pointerdown', (e) => {
-						const itemElement = e.currentTarget;
-						if (!isHTMLElement(itemElement)) return;
+						const itemEl = e.currentTarget;
+						if (!isHTMLElement(itemEl)) return;
 						const itemValue = node.dataset.value;
 						const disabled = node.dataset.disabled;
 
@@ -504,8 +465,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						}
 					}),
 					addEventListener(node, 'click', (e) => {
-						const itemElement = e.currentTarget;
-						if (!isHTMLElement(itemElement)) return;
+						const itemEl = e.currentTarget;
+						if (!isHTMLElement(itemEl)) return;
 						const itemValue = node.dataset.value;
 						const disabled = node.dataset.disabled;
 
@@ -515,9 +476,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						}
 
 						if (e.defaultPrevented) {
-							if (!isHTMLElement(itemElement)) return;
+							if (!isHTMLElement(itemEl)) return;
 
-							handleRovingFocus(itemElement);
+							handleRovingFocus(itemEl);
 							return;
 						}
 						onSelect?.(e);
@@ -530,8 +491,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						onItemKeyDown(e);
 					}),
 					addEventListener(node, 'pointermove', (e) => {
-						const itemElement = e.currentTarget;
-						if (!isHTMLElement(itemElement)) return;
+						const itemEl = e.currentTarget;
+						if (!isHTMLElement(itemEl)) return;
 
 						const itemValue = node.dataset.value;
 						const disabled = node.dataset.disabled;
@@ -540,7 +501,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							onItemLeave(e);
 							return;
 						}
-						onMenuItemPointerMove(e);
+						onMenuItemPointerMove(e, itemEl);
 					}),
 					addEventListener(node, 'pointerleave', (e) => {
 						onMenuItemPointerLeave(e);
@@ -683,12 +644,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						// Submenu key events bubble through portals.
 						// We only want the keys in this menu.
 						const target = e.target;
-						if (!isHTMLElement(target)) return;
+						const menuEl = e.currentTarget;
+						if (!isHTMLElement(target) || !isHTMLElement(menuEl)) return;
 
-						const menuElement = e.currentTarget;
-						if (!isHTMLElement(menuElement)) return;
-
-						const isKeyDownInside = target.closest('[role="menu"]') === menuElement;
+						const isKeyDownInside = target.closest('[role="menu"]') === menuEl;
 						if (!isKeyDownInside) return;
 
 						if (FIRST_LAST_KEYS.includes(e.key)) {
@@ -730,7 +689,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 						if (!isModifierKey && isCharacterKey) {
 							// typeahead logic
-							handleTypeaheadSearch(e.key, getMenuItems(menuElement));
+							handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 						}
 					}),
 					addEventListener(node, 'pointermove', (e) => {
@@ -740,23 +699,19 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						const $subActiveTrigger = get(subActiveTrigger);
 						if (get(isUsingKeyboard)) {
 							const target = e.target;
-							if (!isHTMLElement(target)) return;
+							const submenuEl = document.getElementById(subIds.menu);
+							if (!isHTMLElement(submenuEl) || !isHTMLElement(target)) return;
 
-							const submenuElement = document.getElementById(subIds.menu);
-							if (!isHTMLElement(submenuElement)) return;
-
-							if (!submenuElement?.contains(target) && target !== $subActiveTrigger) {
+							if (!submenuEl.contains(target) && target !== $subActiveTrigger) {
 								subOpen.set(false);
 								subActiveTrigger.set(null);
 							}
 						} else {
-							const menuElement = e.currentTarget;
-							if (!isHTMLElement(menuElement)) return;
-
+							const menuEl = e.currentTarget;
 							const relatedTarget = e.relatedTarget;
-							if (!isHTMLElement(relatedTarget)) return;
+							if (!isHTMLElement(relatedTarget) || !isHTMLElement(menuEl)) return;
 
-							if (!menuElement.contains(relatedTarget) && relatedTarget !== $subActiveTrigger) {
+							if (!menuEl.contains(relatedTarget) && relatedTarget !== $subActiveTrigger) {
 								subOpen.set(false);
 								subActiveTrigger.set(null);
 							}
@@ -800,17 +755,18 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 				const unsubEvents = executeCallbacks(
 					addEventListener(node, 'click', (e) => {
-						const triggerElement = e.currentTarget;
-						if (!isHTMLElement(triggerElement)) return;
-						if (isElementDisabled(triggerElement) || e.defaultPrevented) return;
+						if (e.defaultPrevented) return;
+
+						const triggerEl = e.currentTarget;
+						if (!isHTMLElement(triggerEl) || isElementDisabled(triggerEl)) return;
 
 						// Manually focus because iOS Safari doesn't always focus on click (e.g. buttons)
-						handleRovingFocus(triggerElement);
+						handleRovingFocus(triggerEl);
 						if (!get(subOpen)) {
 							subOpen.update((prev) => {
 								const isAlreadyOpen = prev;
 								if (!isAlreadyOpen) {
-									subActiveTrigger.set(triggerElement);
+									subActiveTrigger.set(triggerEl);
 									return !prev;
 								}
 								return prev;
@@ -819,27 +775,25 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					}),
 					addEventListener(node, 'keydown', (e) => {
 						const $typed = get(typed);
-						const triggerElement = e.currentTarget;
-						if (!isHTMLElement(triggerElement)) return;
-						if (isElementDisabled(triggerElement)) return;
+						const triggerEl = e.currentTarget;
+						if (!isHTMLElement(triggerEl) || isElementDisabled(triggerEl)) return;
 						const isTypingAhead = $typed.length > 0;
 						if (isTypingAhead && e.key === kbd.SPACE) return;
 
 						if (SUB_OPEN_KEYS['ltr'].includes(e.key)) {
 							if (!get(subOpen)) {
-								triggerElement.click();
+								triggerEl.click();
 								e.preventDefault();
 								return;
 							}
 
-							const menuId = triggerElement.getAttribute('aria-controls');
+							const menuId = triggerEl.getAttribute('aria-controls');
 							if (!menuId) return;
 
-							const menuElement = document.getElementById(menuId);
-							if (!isHTMLElement(menuElement)) return;
+							const menuEl = document.getElementById(menuId);
+							if (!isHTMLElement(menuEl)) return;
 
-							const firstItem = getMenuItems(menuElement)[0];
-							if (!isHTMLElement(firstItem)) return;
+							const firstItem = getMenuItems(menuEl)[0];
 
 							handleRovingFocus(firstItem);
 						}
@@ -850,17 +804,17 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 						if (e.defaultPrevented) return;
 
-						const triggerElement = e.currentTarget;
-						if (!isHTMLElement(triggerElement)) return;
+						const triggerEl = e.currentTarget;
+						if (!isHTMLElement(triggerEl)) return;
 
-						handleRovingFocus(triggerElement);
+						handleRovingFocus(triggerEl);
 
 						const openTimer = get(subOpenTimer);
-						if (!get(subOpen) && !openTimer && !isElementDisabled(triggerElement)) {
+						if (!get(subOpen) && !openTimer && !isElementDisabled(triggerEl)) {
 							subOpenTimer.set(
 								window.setTimeout(() => {
 									subOpen.update(() => {
-										subActiveTrigger.set(triggerElement);
+										subActiveTrigger.set(triggerEl);
 										return true;
 									});
 									clearTimerStore(subOpenTimer);
@@ -872,11 +826,11 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						if (!isMouse(e)) return;
 						clearTimerStore(subOpenTimer);
 
-						const submenuElement = document.getElementById(subIds.menu);
-						const contentRect = submenuElement?.getBoundingClientRect();
+						const submenuEl = document.getElementById(subIds.menu);
+						const contentRect = submenuEl?.getBoundingClientRect();
 
 						if (contentRect) {
-							const side = submenuElement?.dataset.side as Side;
+							const side = submenuEl?.dataset.side as Side;
 							const rightSide = side === 'right';
 							const bleed = rightSide ? -5 : +5;
 							const contentNearEdge = contentRect[rightSide ? 'left' : 'right'];
@@ -910,21 +864,20 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						}
 					}),
 					addEventListener(node, 'focusout', (e) => {
-						const triggerElement = e.currentTarget;
-						if (!isHTMLElement(triggerElement)) return;
+						const triggerEl = e.currentTarget;
+						if (!isHTMLElement(triggerEl)) return;
 
-						if (!isHTMLElement(triggerElement)) return;
-						removeHighlight(triggerElement);
+						removeHighlight(triggerEl);
 
 						const relatedTarget = e.relatedTarget;
 						if (!isHTMLElement(relatedTarget)) return;
 
-						const menuId = triggerElement.getAttribute('aria-controls');
+						const menuId = triggerEl.getAttribute('aria-controls');
 						if (!menuId) return;
 
 						const menu = document.getElementById(menuId);
 
-						if (isHTMLElement(menu) && !menu.contains(relatedTarget)) {
+						if (menu && !menu.contains(relatedTarget)) {
 							subActiveTrigger.set(null);
 							subOpen.set(false);
 						}
@@ -977,32 +930,25 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			if (!isBrowser) return;
 
 			sleep(1).then(() => {
-				const menuElement = document.getElementById(subIds.menu);
-				if (!isHTMLElement(menuElement)) return;
+				const menuEl = document.getElementById(subIds.menu);
+				if (!menuEl) return;
 
 				if ($subOpen && get(isUsingKeyboard)) {
 					// Selector to get menu items belonging to menu
-					const menuItems = getMenuItems(menuElement);
-
-					isHTMLElement(menuItems[0]) ? handleRovingFocus(menuItems[0]) : undefined;
+					const menuItems = getMenuItems(menuEl);
+					if (!menuItems.length) return;
+					handleRovingFocus(menuItems[0]);
 				}
 
 				if (!$subOpen) {
 					const focusedItem = get(currentFocusedItem);
-					if (focusedItem && menuElement.contains(focusedItem)) {
+					if (focusedItem && menuEl.contains(focusedItem)) {
 						removeHighlight(focusedItem);
 					}
 				}
-				if (menuElement && !$subOpen) {
+				if (menuEl && !$subOpen) {
 					const subTriggerEl = document.getElementById(subIds.trigger);
-					if (!isHTMLElement(subTriggerEl)) return;
-					if (document.activeElement === subTriggerEl) return;
-					removeHighlight(subTriggerEl);
-				}
-				if (menuElement && !$subOpen) {
-					const subTriggerEl = document.getElementById(subIds.trigger);
-					if (!isHTMLElement(subTriggerEl)) return;
-					if (document.activeElement === subTriggerEl) return;
+					if (!subTriggerEl || document.activeElement === subTriggerEl) return;
 					removeHighlight(subTriggerEl);
 				}
 			});
@@ -1046,17 +992,18 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		}
 
 		sleep(1).then(() => {
-			const menuElement = document.getElementById(rootIds.menu);
-			if (isHTMLElement(menuElement) && $rootOpen && get(isUsingKeyboard)) {
+			const menuEl = document.getElementById(rootIds.menu);
+			if (menuEl && $rootOpen && get(isUsingKeyboard)) {
 				if (opts.disableFocusFirstItem) {
-					handleRovingFocus(menuElement);
+					handleRovingFocus(menuEl);
 					return;
 				}
 				// Get menu items belonging to the root menu
-				const menuItems = getMenuItems(menuElement);
+				const menuItems = getMenuItems(menuEl);
+				if (!menuItems.length) return;
 
 				// Focus on first menu item
-				isHTMLElement(menuItems[0]) ? handleRovingFocus(menuItems[0]) : undefined;
+				handleRovingFocus(menuItems[0]);
 			} else if ($rootActiveTrigger) {
 				// Focus on active trigger trigger
 				handleRovingFocus($rootActiveTrigger);
@@ -1064,10 +1011,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				if (opts.disableTriggerRefocus) {
 					return;
 				}
-				const triggerElement = document.getElementById(rootIds.trigger);
-				if (isHTMLElement(triggerElement)) {
-					handleRovingFocus(triggerElement);
-				}
+				const triggerEl = document.getElementById(rootIds.trigger);
+				if (!triggerEl) return;
+				handleRovingFocus(triggerEl);
 			}
 		});
 
@@ -1101,14 +1047,33 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		};
 	});
 
+	function handleOpen(triggerEl: HTMLElement) {
+		rootOpen.update((prev) => {
+			const isOpen = !prev;
+			if (isOpen) {
+				nextFocusable.set(getNextFocusable(triggerEl));
+				prevFocusable.set(getPreviousFocusable(triggerEl));
+				rootActiveTrigger.set(triggerEl);
+			} else {
+				rootActiveTrigger.set(null);
+			}
+
+			return isOpen;
+		});
+	}
+
 	/* -------------------------------------------------------------------------------------------------
 	 * Pointer Event Effects
 	 * -----------------------------------------------------------------------------------------------*/
 
 	function onItemFocusIn(e: FocusEvent) {
-		const itemElement = e.currentTarget;
-		if (!isHTMLElement(itemElement)) return;
-		addHighlight(itemElement);
+		const itemEl = e.currentTarget;
+		if (!isHTMLElement(itemEl)) return;
+		const $currentFocusedItem = get(currentFocusedItem);
+		if ($currentFocusedItem) {
+			removeHighlight($currentFocusedItem);
+		}
+		addHighlight(itemEl);
 
 		/**
 		 * Accomodates for Firefox focus event behavior, which differs
@@ -1117,16 +1082,16 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		 * attribute from the item, since a blur nor focusout event will be fired
 		 * when the menu is closed via `clickOutside` or the ESC key.
 		 */
-		currentFocusedItem.set(itemElement);
+		currentFocusedItem.set(itemEl);
 	}
 
 	/**
 	 * Each of the menu items share the same focusout event handler.
 	 */
 	function onItemFocusOut(e: FocusEvent) {
-		const itemElement = e.currentTarget;
-		if (!isHTMLElement(itemElement)) return;
-		removeHighlight(itemElement);
+		const itemEl = e.currentTarget;
+		if (!isHTMLElement(itemEl)) return;
+		removeHighlight(itemEl);
 	}
 
 	function onItemEnter(e: PointerEvent) {
@@ -1142,10 +1107,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		const target = e.target;
 		if (!isHTMLElement(target)) return;
 
-		const parentMenuElement = getParentMenu(target);
-		if (!isHTMLElement(parentMenuElement)) return;
+		const parentMenuEl = getParentMenu(target);
+		if (!parentMenuEl) return;
 
-		handleRovingFocus(parentMenuElement);
+		handleRovingFocus(parentMenuEl);
 	}
 
 	function onTriggerLeave(e: PointerEvent) {
@@ -1158,10 +1123,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		if (!isMouse(e)) return;
 
 		const target = e.target;
-		if (!isHTMLElement(target)) return;
-
 		const currentTarget = e.currentTarget;
-		if (!isHTMLElement(currentTarget)) return;
+		if (!isHTMLElement(currentTarget) || !isHTMLElement(target)) return;
 
 		const $lastPointerX = get(lastPointerX);
 		const pointerXHasChanged = $lastPointerX !== e.clientX;
@@ -1175,15 +1138,22 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		}
 	}
 
-	function onMenuItemPointerMove(e: PointerEvent) {
+	function onMenuItemPointerMove(e: PointerEvent, currTarget: HTMLElement | null = null) {
 		if (!isMouse(e)) return;
 		onItemEnter(e);
-		if (!e.defaultPrevented) {
-			const currentTarget = e.currentTarget;
-			if (!isHTMLElement(currentTarget)) return;
-			// focus on the current menu item
-			handleRovingFocus(currentTarget);
+		if (e.defaultPrevented) return;
+
+		// if we've already checked the current target, we don't need to again
+		if (currTarget) {
+			handleRovingFocus(currTarget);
+			return;
 		}
+
+		// otherwise we will
+		const currentTarget = e.currentTarget;
+		if (!isHTMLElement(currentTarget)) return;
+		// focus on the current menu item
+		handleRovingFocus(currentTarget);
 	}
 
 	function onMenuItemPointerLeave(e: PointerEvent) {
@@ -1210,10 +1180,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			 * - if keydown causes focus to move, prevents keydown from firing on the new target.
 			 */
 			e.preventDefault();
-			const itemElement = e.currentTarget;
-			if (!isHTMLElement(itemElement)) return;
+			const itemEl = e.currentTarget;
+			if (!isHTMLElement(itemEl)) return;
 
-			itemElement.click();
+			itemEl.click();
 		}
 	}
 
@@ -1233,8 +1203,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	 * Get the parent menu element for a menu item.
 	 * @param element The menu item element
 	 */
-	function getParentMenu(element: HTMLElement) {
-		return element.closest('[role="menu"]');
+	function getParentMenu(element: HTMLElement): HTMLElement | null {
+		const parentMenuEl = element.closest('[role="menu"]');
+		if (!isHTMLElement(parentMenuEl)) return null;
+		return parentMenuEl;
 	}
 
 	return {
@@ -1275,14 +1247,6 @@ export function handleTabNavigation(
 	}
 }
 
-export function addHighlight(element: HTMLElement) {
-	element.setAttribute('data-highlighted', '');
-}
-
-export function removeHighlight(element: HTMLElement) {
-	element.removeAttribute('data-highlighted');
-}
-
 /**
  * Get the menu items for a given menu element.
  * This only selects menu items that are direct children of the menu element,
@@ -1290,19 +1254,16 @@ export function removeHighlight(element: HTMLElement) {
  * @param element The menu item element
  */
 export function getMenuItems(menuElement: HTMLElement) {
-	const menuItems = Array.from(
-		menuElement.querySelectorAll(`[data-melt-menu-id="${menuElement.id}"]`)
-	) as HTMLElement[];
-	return menuItems;
+	return Array.from(menuElement.querySelectorAll(`[data-melt-menu-id="${menuElement.id}"]`)).filter(
+		(item): item is HTMLElement => isHTMLElement(item)
+	);
 }
 
 export function applyAttrsIfDisabled(element: HTMLElement | null) {
-	if (!isBrowser) return;
-	if (!isHTMLElement(element)) return;
-	if (isElementDisabled(element)) {
-		element.setAttribute('data-disabled', '');
-		element.setAttribute('aria-disabled', 'true');
-	}
+	if (!element || !isElementDisabled(element)) return;
+
+	element.setAttribute('data-disabled', '');
+	element.setAttribute('aria-disabled', 'true');
 }
 
 /**
@@ -1347,24 +1308,18 @@ export function handleMenuNavigation(e: KeyboardEvent) {
 
 	// currently focused menu item
 	const currentFocusedItem = document.activeElement;
-	currentFocusedItem;
-	if (!isHTMLElement(currentFocusedItem)) return;
 
 	// menu element being navigated
 	const currentTarget = e.currentTarget;
-	currentTarget;
-	if (!isHTMLElement(currentTarget)) return;
+
+	if (!isHTMLElement(currentFocusedItem) || !isHTMLElement(currentTarget)) return;
 
 	// menu items of the current menu
 	const menuItems = getMenuItems(currentTarget);
-	menuItems;
 	if (!menuItems.length) return;
 
 	const candidateNodes = menuItems.filter((item) => {
-		if (item.hasAttribute('data-disabled')) {
-			return false;
-		}
-		if (item.getAttribute('disabled') === 'true') {
+		if (item.hasAttribute('data-disabled') || item.getAttribute('disabled') === 'true') {
 			return false;
 		}
 		return true;
@@ -1392,9 +1347,7 @@ export function handleMenuNavigation(e: KeyboardEvent) {
 			return;
 	}
 
-	const nextFocusedItem = candidateNodes[nextIndex];
-
-	handleRovingFocus(nextFocusedItem);
+	handleRovingFocus(candidateNodes[nextIndex]);
 }
 
 export type Point = { x: number; y: number };

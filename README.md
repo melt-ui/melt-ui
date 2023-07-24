@@ -104,7 +104,7 @@ we'd love to have you there.
 | Switch          | ✅     |
 | Tabs            | ✅     |
 | Tags Input      | ✅     |
-| Toast           |        |
+| Toast           | ✅     |
 | Toggle          | ✅     |
 | Toggle Group    | ✅     |
 | Toolbar         | ✅     |
