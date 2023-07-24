@@ -59,6 +59,14 @@ export type CreateComboboxProps<T> = {
 	closeOnOutsideClick?: boolean;
 
 	/**
+	 * Whether or not to close the combobox menu when the user presses
+	 * the escape key.
+	 *
+	 * @default true
+	 */
+	closeOnEscape?: boolean;
+
+	/**
 	 * Whether or not to prevent scrolling the page when the
 	 * combobox menu is open.
 	 *

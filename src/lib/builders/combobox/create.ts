@@ -30,6 +30,7 @@ import { onMount, tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
 import type { ComboboxItemProps, CreateComboboxProps } from './types';
 import { omit } from '../../internal/helpers/object';
+import { addHighlight, removeHighlight } from '../menu';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
@@ -39,6 +40,8 @@ const defaults = {
 	loop: true,
 	defaultOpen: false,
 	closeOnOutsideClick: true,
+	preventScroll: true,
+	closeOnEscape: true,
 } satisfies Defaults<CreateComboboxProps<unknown>>;
 
 const { name, selector } = createElHelpers('combobox');
@@ -73,25 +76,20 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 
 	// options
 	const options = toWritableStores(omit(withDefaults, 'items'));
-	const { scrollAlignment, loop, filterFunction, itemToString, closeOnOutsideClick } = options;
+	const {
+		scrollAlignment,
+		loop,
+		filterFunction,
+		itemToString,
+		closeOnOutsideClick,
+		closeOnEscape,
+	} = options;
 
 	const ids = {
 		input: generateId(),
 		menu: generateId(),
 		label: generateId(),
 	};
-
-	/** Closes the menu. */
-	function closeMenu() {
-		open.update((curr) => {
-			if (curr) {
-				activeTrigger.set(null);
-				return false;
-			}
-			activeTrigger.set(null);
-			return curr;
-		});
-	}
 
 	/** Resets the combobox inputValue and filteredItems back to the selectedItem */
 	function reset() {
@@ -130,7 +128,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	 * the selected item (if one exists). It also optionally accepts the current
 	 * open state to prevent unnecessary updates if we know the menu is already open.
 	 */
-	function handleMenuOpen(currentOpenState = false) {
+	function openMenu(currentOpenState = false) {
 		/**
 		 * We're checking the open state here because the menu may have
 		 * been programatically opened by the user using a controlled store.
@@ -159,6 +157,12 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 			if (!isHTMLElement(selectedItem)) return;
 			highlightedItem.set(selectedItem);
 		});
+	}
+
+	/** Closes the menu & clears the active trigger */
+	function closeMenu() {
+		open.set(false);
+		activeTrigger.set(null);
 	}
 
 	/**
@@ -215,7 +219,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 					if ($open) {
 						return;
 					}
-					handleMenuOpen($open);
+					openMenu($open);
 				}),
 				// Handle all input key events including typing, meta, and navigation.
 				addEventListener(node, 'keydown', (e) => {
@@ -226,6 +230,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 					if (!$open) {
 						// Pressing `esc` should blur the input.
 						if (e.key === kbd.ESCAPE) {
+							e.stopPropagation();
 							node.blur();
 							return;
 						}
@@ -245,7 +250,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 						}
 
 						// All other events should open the menu.
-						handleMenuOpen();
+						openMenu();
 
 						tick().then(() => {
 							const $selectedItem = get(selectedItem);
@@ -270,7 +275,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 					 * When the menu is open...
 					 */
 					// Pressing `esc` should close the menu.
-					if (e.key === kbd.ESCAPE || e.key === kbd.TAB) {
+					if (e.key === kbd.TAB) {
 						closeMenu();
 						reset();
 						return;
@@ -308,11 +313,11 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 							case kbd.ARROW_DOWN:
 								nextItem = next(candidateNodes, currentIndex, $loop);
 								break;
-							case kbd.PAGE_DOWN:
-								nextItem = forward(candidateNodes, currentIndex, 10, $loop);
-								break;
 							case kbd.ARROW_UP:
 								nextItem = prev(candidateNodes, currentIndex, $loop);
+								break;
+							case kbd.PAGE_DOWN:
+								nextItem = forward(candidateNodes, currentIndex, 10, $loop);
 								break;
 							case kbd.PAGE_UP:
 								nextItem = back(candidateNodes, currentIndex, 10, $loop);
@@ -471,6 +476,19 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 			activeTrigger.set(triggerEl);
 		}
 
+		const handleEscapeKeydown = (e: KeyboardEvent) => {
+			if (e.key === kbd.ESCAPE && get(closeOnEscape)) {
+				closeMenu();
+				reset();
+			}
+		};
+
+		document.addEventListener('keydown', handleEscapeKeydown);
+
+		return () => {
+			document.removeEventListener('keydown', handleEscapeKeydown);
+		};
+
 		// TODO: add escape key handler for closing the menu and resetting the active trigger
 	});
 
@@ -491,7 +509,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		 * set to `true`, we need to set the active trigger to the input element.
 		 */
 		if ($open && !get(activeTrigger)) {
-			handleMenuOpen($open);
+			openMenu($open);
 		}
 	});
 
@@ -505,9 +523,9 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		if (!isHTMLElement(menuElement)) return;
 		getOptions(menuElement).forEach((node) => {
 			if (node === $highlightedItem) {
-				node.setAttribute('data-highlighted', '');
+				addHighlight(node);
 			} else {
-				node.removeAttribute('data-highlighted');
+				removeHighlight(node);
 			}
 		});
 		if ($highlightedItem) {
