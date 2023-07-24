@@ -19,6 +19,7 @@ import { removeScroll } from '$lib/internal/helpers/scroll';
 import type { Defaults } from '$lib/internal/types';
 import { get, writable } from 'svelte/store';
 import type { CreateDialogProps } from './types';
+import { tick } from 'svelte';
 
 type DialogParts = 'trigger' | 'overlay' | 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<DialogParts>('dialog');
@@ -33,7 +34,7 @@ const defaults = {
 
 const openDialogIds = writable<string[]>([]);
 
-export function createDialog(props: CreateDialogProps = {}) {
+export function createDialog(props?: CreateDialogProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateDialogProps;
 
 	const options = toWritableStores(withDefaults);
@@ -54,7 +55,10 @@ export function createDialog(props: CreateDialogProps = {}) {
 		// Prevent double clicks from closing multiple dialogs
 		sleep(100).then(() => {
 			if ($open) {
-				openDialogIds.update((prev) => [...prev, ids.content]);
+				openDialogIds.update((prev) => {
+					prev.push(ids.content);
+					return prev;
+				});
 			} else {
 				openDialogIds.update((prev) => prev.filter((id) => id !== ids.content));
 			}
@@ -101,11 +105,11 @@ export function createDialog(props: CreateDialogProps = {}) {
 	});
 
 	const content = builder(name('content'), {
-		stores: [open, role],
-		returned: ([$open, $role]) => {
+		stores: [open],
+		returned: ([$open]) => {
 			return {
 				id: ids.content,
-				role: $role,
+				role: get(role),
 				'aria-describedby': ids.description,
 				'aria-labelledby': ids.title,
 				'data-state': $open ? 'open' : 'closed',
@@ -149,11 +153,13 @@ export function createDialog(props: CreateDialogProps = {}) {
 			}
 
 			effect([open], ([$open]) => {
-				if (node.hidden || !$open) {
-					deactivate();
-				} else {
-					activate();
-				}
+				tick().then(() => {
+					if (!$open) {
+						deactivate();
+					} else {
+						activate();
+					}
+				});
 			});
 
 			return {

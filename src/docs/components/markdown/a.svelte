@@ -2,6 +2,7 @@
 	import { ExternalLink } from 'lucide-svelte';
 
 	export let href: string;
+	export let rel: string | undefined = undefined;
 
 	$: internal = href.startsWith('/') || href.startsWith('#');
 

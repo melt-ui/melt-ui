@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { createToasts } from '@melt-ui/svelte';
+	import { createToaster } from '@melt-ui/svelte';
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
+	import X from '~icons/lucide/x';
 
 	type ToastData = {
 		title: string;
@@ -13,7 +14,8 @@
 		elements: { content, title, description, close },
 		helpers: { addToast },
 		states: { toasts },
-	} = createToasts<ToastData>();
+		actions: { portal },
+	} = createToaster<ToastData>();
 
 	const toastData: ToastData[] = [
 		{
@@ -46,7 +48,10 @@
 	Show toast
 </button>
 
-<div class="fixed bottom-0 right-0 z-50 m-4 flex flex-col items-end gap-2">
+<div
+	class="fixed bottom-0 right-0 z-50 m-4 flex flex-col items-end gap-2"
+	use:portal
+>
 	{#each $toasts as { id, data } (id)}
 		<div
 			melt={$content(id)}
@@ -55,7 +60,9 @@
 			out:fly={{ duration: 150, x: '100%' }}
 			class="rounded-lg bg-neutral-800 text-white shadow-md"
 		>
-			<div class="rounded- flex w-[380px] items-center justify-between p-5">
+			<div
+				class="relative flex w-[24rem] max-w-[calc(100vw-2rem)] items-center justify-between gap-4 p-5"
+			>
 				<div>
 					<h3 melt={$title(id)} class="flex items-center gap-2 font-semibold">
 						{data.title}
@@ -67,10 +74,10 @@
 				</div>
 				<button
 					melt={$close(id)}
-					class="inline-flex h-[35px] items-center justify-center rounded-md
-					bg-white px-4 font-medium leading-none text-magnum-900 hover:opacity-75"
+					class="absolute right-4 top-4 grid place-items-center rounded-full text-magnum-500 square-6
+					hover:bg-magnum-900/50"
 				>
-					Dismiss
+					<X />
 				</button>
 			</div>
 		</div>

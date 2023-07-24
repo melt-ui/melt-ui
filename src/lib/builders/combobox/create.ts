@@ -23,6 +23,8 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
+	addHighlight,
+	removeHighlight,
 } from '$lib/internal/helpers';
 import { getOptions } from '$lib/internal/helpers/list';
 import type { Defaults } from '$lib/internal/types';
@@ -30,7 +32,6 @@ import { onMount, tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
 import type { ComboboxItemProps, CreateComboboxProps } from './types';
 import { omit } from '../../internal/helpers/object';
-import { addHighlight, removeHighlight } from '../menu';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
@@ -261,8 +262,8 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 							if (!isHTMLElement(menuEl)) return;
 
 							const enabledItems = Array.from(
-								menuEl.querySelectorAll<HTMLElement>(`${selector('item')}:not([data-disabled])`)
-							);
+								menuEl.querySelectorAll(`${selector('item')}:not([data-disabled])`)
+							).filter((item): item is HTMLElement => isHTMLElement(item));
 							if (!enabledItems.length) return;
 
 							if (e.key === kbd.ARROW_DOWN) {

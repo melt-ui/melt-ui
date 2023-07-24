@@ -91,15 +91,18 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 	const createToolbarGroup = <T extends ToolbarGroupType = 'single'>(
 		props?: CreateToolbarGroupProps<T>
 	) => {
-		const groupWithDefaults = { ...groupDefaults, ...props } as CreateToolbarGroupProps<T>;
-		const type = writable(groupWithDefaults.type);
-		const disabled = writable(groupWithDefaults.disabled);
+		const groupWithDefaults = { ...groupDefaults, ...props };
 
-		const options = {
-			disabled,
-		};
+		const options = toWritableStores(groupWithDefaults);
+		const { type, disabled } = options;
 
-		const value = writable<string | string[] | undefined>(groupWithDefaults.value);
+		const defaultValue = groupWithDefaults.value
+			? groupWithDefaults.value
+			: groupWithDefaults.type === 'single'
+			? undefined
+			: [];
+
+		const value = writable<string | string[] | undefined>(defaultValue);
 
 		const { name } = createElHelpers('toolbar-group');
 
@@ -122,7 +125,6 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 					const disabled = $disabled || argDisabled;
 
 					const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
-
 					return {
 						disabled,
 						pressed,
@@ -145,8 +147,8 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 					return { value: itemValue, disabled };
 				};
 
-				const parentToolbar = node.closest<HTMLElement>('[data-melt-toolbar]');
-				if (!parentToolbar) return;
+				const parentToolbar = node.closest('[data-melt-toolbar]');
+				if (!isHTMLElement(parentToolbar)) return;
 
 				const items = getToolbarItems(parentToolbar);
 
@@ -162,18 +164,14 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 						if (itemValue === undefined || disabled) return;
 
 						value.update(($value) => {
-							if (groupWithDefaults.type === 'single') {
-								return $value === itemValue ? undefined : itemValue;
-							} else {
-								const arrValue = $value as string[] | undefined;
-								if (arrValue === undefined) {
-									return [itemValue];
-								} else {
-									return arrValue.includes(itemValue)
-										? arrValue.filter((v) => v !== itemValue)
-										: [...arrValue, itemValue];
+							if (Array.isArray($value)) {
+								if ($value.includes(itemValue)) {
+									return $value.filter((i) => i !== itemValue);
 								}
+								$value.push(itemValue);
+								return $value;
 							}
+							return $value === itemValue ? undefined : itemValue;
 						});
 					}),
 
@@ -207,6 +205,12 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 		};
 	};
 
+	function getToolbarItems(element: HTMLElement) {
+		return Array.from(
+			element.querySelectorAll(`${selector('item')}, ${selector('button')}`)
+		).filter((el): el is HTMLElement => isHTMLElement(el));
+	}
+
 	function handleKeyDown(e: KeyboardEvent) {
 		const $orientation = get(orientation);
 		const $loop = get(loop);
@@ -224,32 +228,28 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 
 		const el = e.currentTarget;
 		if (!isHTMLElement(el)) return;
-		const root = el.closest<HTMLElement>('[data-melt-toolbar]');
+		const root = el.closest('[data-melt-toolbar]');
 		if (!isHTMLElement(root)) return;
 
 		const items = Array.from(
-			root.querySelectorAll<HTMLElement>(`${selector('item')}, ${selector('button')}`)
-		);
+			root.querySelectorAll(`${selector('item')}, ${selector('button')}`)
+		).filter((el): el is HTMLElement => isHTMLElement(el));
 
 		const currentIndex = items.indexOf(el);
 
 		if (e.key === nextKey) {
 			e.preventDefault();
 			const nextIndex = currentIndex + 1;
-			if (nextIndex >= items.length) {
-				if ($loop) {
-					handleRovingFocus(items[0]);
-				}
+			if (nextIndex >= items.length && $loop) {
+				handleRovingFocus(items[0]);
 			} else {
 				handleRovingFocus(items[nextIndex]);
 			}
 		} else if (e.key === prevKey) {
 			e.preventDefault();
 			const prevIndex = currentIndex - 1;
-			if (prevIndex < 0) {
-				if ($loop) {
-					handleRovingFocus(items[items.length - 1]);
-				}
+			if (prevIndex < 0 && $loop) {
+				handleRovingFocus(items[items.length - 1]);
 			} else {
 				handleRovingFocus(items[prevIndex]);
 			}
@@ -275,9 +275,3 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 		options,
 	};
 };
-
-function getToolbarItems(element: HTMLElement) {
-	return Array.from(
-		element.querySelectorAll<HTMLElement>(`${selector('item')}, ${selector('button')}`)
-	);
-}

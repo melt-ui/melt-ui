@@ -137,7 +137,10 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			workingTag.id = generateId();
 		}
 
-		tags.update((current) => [...current, workingTag]);
+		tags.update((current) => {
+			current.push(workingTag);
+			return current;
+		});
 		return true;
 	};
 
@@ -242,13 +245,13 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			const getTagsInfo = (id: string) => {
 				const rootEl = getElementByMeltId(ids.root);
 
-				let tagsEl: Array<HTMLElement> = [];
+				let tagsEl: Array<Element> = [];
 				let selectedIndex = -1;
 				let prevIndex = -1;
 				let nextIndex = -1;
 
 				if (rootEl) {
-					tagsEl = Array.from(rootEl.querySelectorAll(selector('tag'))) as Array<HTMLElement>;
+					tagsEl = Array.from(rootEl.querySelectorAll(selector('tag')));
 
 					selectedIndex = tagsEl.findIndex((element) => element.getAttribute('data-tag-id') === id);
 
@@ -701,7 +704,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 		const invalidEl = Array.from(
 			document.querySelectorAll(selector('edit') + '[data-invalid-edit]')
-		) as Array<HTMLElement>;
+		);
 		invalidEl.forEach((e) => {
 			e.removeAttribute('data-invalid-edit');
 		});

@@ -14,8 +14,6 @@
 	} = createDialog({
 		open: customOpen,
 	});
-
-	$: console.log($customOpen);
 </script>
 
 <button melt={$trigger} class="trigger"> Open Dialog </button>

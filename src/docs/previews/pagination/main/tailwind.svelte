@@ -22,44 +22,29 @@
 		Showing items {$range.start} - {$range.end}
 	</p>
 	<div class="flex items-center gap-2">
-		<button melt={$prevButton}><ChevronLeft /></button>
+		<button
+			class="grid h-8 items-center rounded-sm bg-white px-3 text-sm text-magnum-700 shadow-sm
+			hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-50 data-[selected]:bg-magnum-900
+			data-[selected]:text-white"
+			melt={$prevButton}><ChevronLeft /></button
+		>
 		{#each $pages as page (page.key)}
 			{#if page.type === 'ellipsis'}
 				<span>...</span>
 			{:else}
-				<button melt={$pageTrigger(page)}>{page.value}</button>
+				<button
+					class="grid h-8 items-center rounded-sm bg-white px-3 text-sm text-magnum-700 shadow-sm
+					hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-50 data-[selected]:bg-magnum-900
+				data-[selected]:text-white"
+					melt={$pageTrigger(page)}>{page.value}</button
+				>
 			{/if}
 		{/each}
-		<button melt={$nextButton}><ChevronRight /></button>
+		<button
+			class="grid h-8 items-center rounded-sm bg-white px-3 text-sm text-magnum-700 shadow-sm
+			hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-50 data-[selected]:bg-magnum-900
+		data-[selected]:text-white"
+			melt={$nextButton}><ChevronRight /></button
+		>
 	</div>
 </nav>
-
-<style lang="postcss">
-	button {
-		display: grid;
-		place-items: center;
-		border-radius: theme('borderRadius.sm');
-		background-color: theme('colors.white');
-		color: theme('colors.magnum.700');
-		box-shadow: theme('boxShadow.sm');
-
-		font-size: theme('fontSize.sm');
-
-		padding-inline: theme('spacing.3');
-		height: theme('spacing.8');
-
-		&:hover {
-			opacity: 0.75;
-		}
-
-		&:disabled {
-			cursor: not-allowed;
-			opacity: 0.5;
-		}
-
-		&[data-selected] {
-			background-color: theme('colors.magnum.900');
-			color: theme('colors.white');
-		}
-	}
-</style>

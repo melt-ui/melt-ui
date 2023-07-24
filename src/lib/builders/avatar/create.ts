@@ -61,11 +61,14 @@ export const createAvatar = (props?: CreateAvatarProps) => {
 	const fallback = builder('avatar-fallback', {
 		stores: [loadingStatus],
 		returned: ([$loadingStatus]) => {
-			const fallbackStyles = styleToString({
-				display: $loadingStatus === 'loaded' ? 'none' : 'block',
-			});
 			return {
-				style: fallbackStyles,
+				style:
+					$loadingStatus === 'loaded'
+						? styleToString({
+								display: 'none',
+						  })
+						: undefined,
+				hidden: $loadingStatus === 'loaded' ? undefined : true,
 			};
 		},
 	});

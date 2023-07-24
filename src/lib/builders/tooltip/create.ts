@@ -4,6 +4,7 @@ import {
 	createElHelpers,
 	executeCallbacks,
 	generateId,
+	isTouch,
 	noop,
 	omit,
 	styleToString,
@@ -91,7 +92,11 @@ export function createTooltip(props?: CreateTooltipProps) {
 				addEventListener(node, 'mouseout', () => get(closeTooltip)()),
 				addEventListener(node, 'focus', () => open.set(true)),
 				addEventListener(node, 'blur', () => open.set(false)),
-				addEventListener(node, 'mousedown', (e) => {
+				addEventListener(node, 'pointerdown', (e) => {
+					if (isTouch(e)) {
+						return;
+					}
+
 					e.preventDefault();
 					if (get(closeOnPointerDown)) {
 						open.set(false);

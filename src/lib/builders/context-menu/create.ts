@@ -161,16 +161,14 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			const unsubEvents = executeCallbacks(
 				addEventListener(node, 'keydown', (e) => {
 					const target = e.target;
-					if (!isHTMLElement(target)) return;
-
-					const menuElement = e.currentTarget;
-					if (!isHTMLElement(menuElement)) return;
+					const menuEl = e.currentTarget;
+					if (!isHTMLElement(target) || !isHTMLElement(menuEl)) return;
 
 					/**
 					 * Submenu key events bubble through portals and
 					 * we only care about key events that happen inside this menu.
 					 */
-					const isKeyDownInside = target.closest("[role='menu']") === menuElement;
+					const isKeyDownInside = target.closest("[role='menu']") === menuEl;
 					if (!isKeyDownInside) return;
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						handleMenuNavigation(e);
@@ -194,7 +192,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					const isCharacterKey = e.key.length === 1;
 					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
 					if (!isModifierKey && isCharacterKey) {
-						handleTypeaheadSearch(e.key, getMenuItems(menuElement));
+						handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 					}
 				})
 			);

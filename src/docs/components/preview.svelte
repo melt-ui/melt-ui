@@ -84,7 +84,7 @@
 
 	$: files = codingStyleObj !== null ? Object.keys(codingStyleObj) : [];
 
-	let viewCode = false;
+	export let viewCode = false;
 
 	$: codeOptions = Object.entries(normalizeCode(code)).map(([key, value]) => {
 		return {

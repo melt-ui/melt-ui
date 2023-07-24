@@ -1,5 +1,23 @@
 # @melt-ui/svelte
 
+## 0.25.1
+
+### Patch Changes
+
+- fix: avatar fallback overriding styles
+
+## 0.25.0
+
+### Minor Changes
+
+- 2d1936b0: feat: tooltip touch support
+
+### Patch Changes
+
+- 902cb5dc: refactor: Internal type-safety & performance changes
+- 6f620f0a: fix: clicks misfiring
+- 9c81f47e: refactor: rename createToasts to createToaster
+
 ## 0.24.1
 
 ### Patch Changes

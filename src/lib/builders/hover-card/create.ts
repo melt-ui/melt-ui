@@ -180,9 +180,8 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 			unsub = executeCallbacks(
 				addEventListener(node, 'pointerdown', (e) => {
 					const currentTarget = e.currentTarget;
-					if (!isHTMLElement(currentTarget)) return;
 					const target = e.target;
-					if (!isHTMLElement(target)) return;
+					if (!isHTMLElement(currentTarget) || !isHTMLElement(target)) return;
 
 					if (currentTarget.contains(target)) {
 						containSelection.set(true);
@@ -234,7 +233,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 		if ($containSelection) {
 			const body = document.body;
 			const contentElement = document.getElementById(ids.content);
-			if (!isHTMLElement(contentElement)) return;
+			if (!contentElement) return;
 			// prefix for safari
 			originalBodyUserSelect = body.style.userSelect || body.style.webkitUserSelect;
 			const originalContentUserSelect =
@@ -271,7 +270,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 			document.addEventListener('pointerup', handlePointerUp);
 
 			const contentElement = document.getElementById(ids.content);
-			if (!isHTMLElement(contentElement)) return;
+			if (!contentElement) return;
 			const tabbables = getTabbableNodes(contentElement);
 			tabbables.forEach((tabbable) => tabbable.setAttribute('tabindex', '-1'));
 

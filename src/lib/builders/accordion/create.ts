@@ -115,18 +115,19 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 					if (disabled || !itemValue) return;
 
 					value.update(($value) => {
-						if (withDefaults.type === 'single') {
-							return $value === itemValue ? undefined : itemValue;
-						} else {
-							const arrValue = $value as string[] | undefined;
-							if (arrValue === undefined) {
-								return [itemValue];
-							} else {
-								return arrValue.includes(itemValue)
-									? arrValue.filter((v) => v !== itemValue)
-									: [...arrValue, itemValue];
-							}
+						if ($value === undefined) {
+							return withDefaults.type === 'single' ? itemValue : [itemValue];
 						}
+
+						if (Array.isArray($value)) {
+							if ($value.includes(itemValue)) {
+								return $value.filter((v) => v !== itemValue);
+							}
+							$value.push(itemValue);
+							return $value;
+						}
+
+						return $value === itemValue ? undefined : itemValue;
 					});
 				}),
 				addEventListener(node, 'keydown', (e) => {
@@ -136,11 +137,14 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 					e.preventDefault();
 
 					const el = e.target;
-					if (!isHTMLElement(el)) return;
 					const rootEl = getElementByMeltId(ids.root);
-					if (!rootEl) return;
-					const items = Array.from(rootEl.querySelectorAll<HTMLElement>(selector('trigger')));
-					const candidateItems = items.filter((item) => item.dataset.disabled !== 'true');
+					if (!rootEl || !isHTMLElement(el)) return;
+
+					const items = Array.from(rootEl.querySelectorAll(selector('trigger')));
+					const candidateItems = items.filter((item): item is HTMLElement => {
+						if (!isHTMLElement(item)) return false;
+						return item.dataset.disabled !== 'true';
+					});
 
 					if (!candidateItems.length) return;
 					const elIdx = candidateItems.indexOf(el);
@@ -185,10 +189,10 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 				const contentId = generateId();
 				const triggerId = generateId();
 
-				const parentTrigger = document.querySelector<HTMLElement>(
+				const parentTrigger = document.querySelector(
 					`${selector('trigger')}, [data-value="${node.dataset.value}"]`
 				);
-				if (!parentTrigger) return;
+				if (!isHTMLElement(parentTrigger)) return;
 
 				node.id = contentId;
 				parentTrigger.setAttribute('aria-controls', contentId);

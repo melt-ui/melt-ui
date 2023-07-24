@@ -30,8 +30,8 @@
 		/>
 		<div
 			melt={$content}
-			class="menu fixed bottom-0 z-50 h-2/3 w-full bg-neutral-900 px-2 py-6
-				 shadow-lg focus:outline-none"
+			class="menu safe-area fixed bottom-0 z-50 h-2/3 w-full bg-neutral-900 px-2
+				 pt-6 shadow-lg focus:outline-none"
 			transition:fly={{ y: 768, duration: 300, opacity: 1 }}
 		>
 			<div class="flex items-center justify-between">
@@ -49,7 +49,7 @@
 				</Switch>
 			</div>
 
-			<div class="mb-4 mt-1 h-full overflow-auto overflow-x-visible py-2 pb-10 pr-4">
+			<div class="mb-4 mt-1 h-full overflow-auto overflow-x-visible py-2 pr-4">
 				<div class="flex flex-col">
 					{#each navConfig.mainNav as navItem, index (navItem + index.toString())}
 						{#if navItem.href}
@@ -87,5 +87,9 @@
 	.menu,
 	.menu :global(*) {
 		@apply !ring-0;
+	}
+
+	.safe-area {
+		padding-bottom: calc(6.5rem + env(safe-area-inset-bottom));
 	}
 </style>

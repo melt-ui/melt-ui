@@ -107,10 +107,9 @@ export const createSlider = (props?: CreateSliderProps) => {
 		const root = getElementByMeltId(ids.root);
 		if (!root) return null;
 
-		const thumbs = Array.from(root.querySelectorAll('[data-melt-part="thumb"]')).filter(
-			Boolean
-		) as Array<HTMLElement>;
-		return thumbs;
+		return Array.from(root.querySelectorAll('[data-melt-part="thumb"]')).filter(
+			(thumb): thumb is HTMLElement => isHTMLElement(thumb)
+		);
 	};
 
 	const thumb = builder(name('thumb'), {
@@ -153,7 +152,6 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 				const target = event.currentTarget;
 				if (!isHTMLElement(target)) return;
-
 				const thumbs = getAllThumbs();
 				if (!thumbs?.length) return;
 
@@ -267,7 +265,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 			const getClosestThumb = (e: PointerEvent) => {
 				const thumbs = getAllThumbs();
 				if (!thumbs) return;
-				thumbs.forEach((thumb) => thumb?.blur());
+				thumbs.forEach((thumb) => thumb.blur());
 
 				const distances = thumbs.map((thumb) => {
 					if ($orientation === 'horizontal') {
@@ -293,9 +291,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 				if (!closestThumb || !sliderEl) return;
 
 				const target = e.target;
-				if (!isHTMLElement(target)) return;
-
-				if (!sliderEl.contains(target)) return;
+				if (!isHTMLElement(target) || !sliderEl.contains(target)) return;
 				e.preventDefault();
 
 				activeThumb.set(closestThumb);
