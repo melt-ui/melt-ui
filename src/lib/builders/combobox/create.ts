@@ -83,6 +83,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		itemToString,
 		closeOnOutsideClick,
 		closeOnEscape,
+		preventScroll,
 	} = options;
 
 	const ids = {
@@ -373,12 +374,14 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 			const unsubscribe = executeCallbacks(
 				//  Bind the popper portal to the input element.
 				effect(
-					[open, activeTrigger, closeOnOutsideClick],
-					([$open, $activeTrigger, $closeOnOutsideClick]) => {
+					[open, activeTrigger, closeOnOutsideClick, preventScroll],
+					([$open, $activeTrigger, $closeOnOutsideClick, $preventScroll]) => {
 						unsubPopper();
 						unsubScroll();
 						if ($open && $activeTrigger) {
-							unsubScroll = removeScroll();
+							if ($preventScroll) {
+								unsubScroll = removeScroll();
+							}
 
 							tick().then(() => {
 								const popper = usePopper(node, {
@@ -488,8 +491,6 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		return () => {
 			document.removeEventListener('keydown', handleEscapeKeydown);
 		};
-
-		// TODO: add escape key handler for closing the menu and resetting the active trigger
 	});
 
 	effect([open], ([$open]) => {

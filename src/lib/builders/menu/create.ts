@@ -1034,9 +1034,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		if (!isBrowser) return;
 
 		const unsubs: Array<() => void> = [];
-		const $preventScroll = get(preventScroll);
 
-		if ($rootOpen && $preventScroll) {
+		if ($rootOpen && get(preventScroll)) {
 			unsubs.push(removeScroll());
 		}
 

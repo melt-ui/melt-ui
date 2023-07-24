@@ -85,8 +85,12 @@
 		itemToString: (item) => item.title,
 		open: customOpen,
 		closeOnOutsideClick: false,
+		preventScroll: false,
 	});
 </script>
+
+<!-- This is a temporary controlled example while building -->
+<!-- and will be replaced with a better one before merge. -->
 
 {#if $customOpen}
 	<button class="mr-2 px-3.5 py-2.5" on:click={() => customOpen.set(false)}>
