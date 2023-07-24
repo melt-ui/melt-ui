@@ -18,7 +18,7 @@ import {
 import { usePopper } from '$lib/internal/actions';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
-import { get, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 import type { CreatePopoverProps } from './types';
 
 const defaults = {
@@ -60,22 +60,28 @@ export function createPopover(args?: CreatePopoverProps) {
 		trigger: generateId(),
 	};
 
+	const show = derived([open, activeTrigger], ([$open, $activeTrigger]) => {
+		return $open && $activeTrigger !== null;
+	});
+
 	const content = builder(name('content'), {
-		stores: [open, activeTrigger],
-		returned: ([$open, $activeTrigger]) => {
-			const fullyOpen = $open && $activeTrigger !== null;
+		stores: [show],
+		returned: ([$show]) => {
 			return {
-				'data-state': fullyOpen ? 'open' : 'closed',
-				hidden: fullyOpen && isBrowser ? undefined : true,
+				hidden: $show && isBrowser ? undefined : true,
 				tabindex: -1,
 				style: styleToString({
-					display: fullyOpen ? undefined : 'none',
+					display: $show ? undefined : 'none',
 				}),
 				id: ids.content,
+				'data-state': $show ? 'open' : 'closed',
+				'data-portal': '',
 			};
 		},
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
+
+			const portalParent = getPortalParent(node);
 
 			const unsubDerived = effect(
 				[open, activeTrigger, positioning, disableFocusTrap, closeOnEscape, closeOnOutsideClick],
@@ -96,8 +102,9 @@ export function createPopover(args?: CreatePopoverProps) {
 							options: {
 								floating: $positioning,
 								focusTrap: $disableFocusTrap ? null : undefined,
-								closeOnEscape: $closeOnEscape ? true : false,
 								clickOutside: $closeOnOutsideClick ? undefined : null,
+								portal: portalParent,
+								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
 						});
 
@@ -224,4 +231,10 @@ export function createPopover(args?: CreatePopoverProps) {
 		},
 		options,
 	};
+}
+
+function getPortalParent(node: HTMLElement) {
+	const portalParent = node.closest('[data-portal]');
+	if (!isHTMLElement(portalParent)) return 'body';
+	return portalParent;
 }

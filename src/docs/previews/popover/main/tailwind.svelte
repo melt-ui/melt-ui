@@ -25,20 +25,20 @@
 		<div class="flex flex-col gap-2.5">
 			<p>Dimensions</p>
 			<fieldset>
-				<label for="width"> Width </label>
-				<input id="width" value="100%" class="input" />
+				<label for="width">Width</label>
+				<input type="number" id="width" class="input" placeholder="Width" />
 			</fieldset>
 			<fieldset>
-				<label for="maxWidth"> Max. width </label>
-				<input id="maxWidth" value="300px" class="input" />
+				<label for="height">Height</label>
+				<input type="number" id="height" class="input" placeholder="Height" />
 			</fieldset>
 			<fieldset>
-				<label for="height"> Height </label>
-				<input id="height" value="25px" class="input" />
+				<label for="depth">Depth</label>
+				<input type="number" id="depth" class="input" placeholder="Depth" />
 			</fieldset>
 			<fieldset>
-				<label for="maxHeight"> Max. height </label>
-				<input id="maxHeight" class="input" />
+				<label for="weight">Weight</label>
+				<input type="number" id="weight" class="input" placeholder="Weight" />
 			</fieldset>
 		</div>
 		<button class="close" melt={$close}>

@@ -3,6 +3,7 @@ import type {
 	FloatingConfig,
 	FocusTrapConfig,
 	PortalConfig,
+	EscapeKeydownConfig,
 } from '$lib/internal/actions';
 import type { VirtualElement } from '@floating-ui/core';
 import type { Writable } from 'svelte/store';
@@ -12,7 +13,7 @@ export type PopperConfig = {
 	focusTrap?: FocusTrapConfig | null;
 	clickOutside?: ClickOutsideConfig | null;
 	portal?: PortalConfig | null;
-	closeOnEscape?: boolean;
+	escapeKeydown?: EscapeKeydownConfig | null;
 };
 
 export type PopperArgs = {
