@@ -1,4 +1,4 @@
-import { usePopper } from '$lib/internal/actions/popper';
+import { usePopper } from '$lib/internal/actions';
 import {
 	addEventListener,
 	builder,
@@ -122,7 +122,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	const rootMenu = builder(name(), {
 		stores: [rootOpen, rootActiveTrigger],
 		returned: ([$rootOpen, $rootActiveTrigger]) => {
-			const fullyOpen = $rootOpen && $rootActiveTrigger;
+			const fullyOpen = $rootOpen && $rootActiveTrigger !== null;
 			return {
 				role: 'menu',
 				hidden: fullyOpen ? undefined : true,

@@ -35,6 +35,7 @@ export const usePortal: Action<HTMLElement, PortalConfig> = (el, target = 'body'
 		}
 		targetEl.appendChild(el);
 		el.hidden = false;
+		el.dataset.portal = '';
 	}
 
 	function destroy() {

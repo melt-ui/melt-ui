@@ -12,7 +12,7 @@ import {
 	computePosition,
 	autoUpdate,
 } from '@floating-ui/dom';
-import type { FloatingConfig } from './floating.types';
+import type { FloatingConfig } from './types';
 import { isHTMLElement, noop } from '$lib/internal/helpers';
 import type { VirtualElement } from '@floating-ui/core';
 

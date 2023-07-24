@@ -12,6 +12,7 @@ export type PopperConfig = {
 	focusTrap?: FocusTrapConfig | null;
 	clickOutside?: ClickOutsideConfig | null;
 	portal?: PortalConfig | null;
+	closeOnEscape?: boolean;
 };
 
 export type PopperArgs = {

@@ -8,12 +8,13 @@ import {
 	isHTMLElement,
 } from '$lib/internal/helpers';
 import type { Action } from 'svelte/action';
-import type { PopperArgs, PopperConfig } from './popper.types';
+import type { PopperArgs, PopperConfig } from './types';
 
 const defaultConfig = {
 	floating: {},
 	focusTrap: {},
 	clickOutside: {},
+	closeOnEscape: true,
 	portal: 'body',
 } satisfies PopperConfig;
 
@@ -36,7 +37,7 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 
 	callbacks.push(useFloating(anchorElement, popperElement, opts.floating).destroy);
 
-	if (options.focusTrap !== null) {
+	if (opts.focusTrap !== null) {
 		const { useFocusTrap } = createFocusTrap({
 			immediate: true,
 			escapeDeactivates: false,
@@ -53,7 +54,7 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 		}
 	}
 
-	if (options.clickOutside !== null) {
+	if (opts.clickOutside !== null) {
 		callbacks.push(
 			useClickOutside(popperElement, {
 				enabled: open,
@@ -70,19 +71,21 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 		);
 	}
 
-	callbacks.push(
-		addEventListener(popperElement, 'keydown', (e) => {
-			if (e.defaultPrevented) return;
-			const event = e as KeyboardEvent;
+	if (opts.closeOnEscape) {
+		callbacks.push(
+			addEventListener(popperElement, 'keydown', (e) => {
+				if (e.defaultPrevented) return;
+				const event = e as KeyboardEvent;
 
-			switch (event.key) {
-				case kbd.ESCAPE:
-					open.set(false);
-					break;
-				default:
-			}
-		})
-	);
+				switch (event.key) {
+					case kbd.ESCAPE:
+						open.set(false);
+						break;
+					default:
+				}
+			})
+		);
+	}
 
 	const unsubscribe = executeCallbacks(...callbacks);
 

@@ -1,4 +1,4 @@
-import { usePopper } from '$lib/internal/actions/popper';
+import { usePopper } from '$lib/internal/actions';
 import {
 	addEventListener,
 	builder,

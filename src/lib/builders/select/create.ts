@@ -1,4 +1,4 @@
-import { usePopper } from '$lib/internal/actions/popper';
+import { usePopper } from '$lib/internal/actions';
 import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,

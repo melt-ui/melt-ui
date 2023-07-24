@@ -372,8 +372,8 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 			const unsubscribe = executeCallbacks(
 				//  Bind the popper portal to the input element.
 				effect(
-					[open, activeTrigger, closeOnOutsideClick, preventScroll],
-					([$open, $activeTrigger, $closeOnOutsideClick, $preventScroll]) => {
+					[open, activeTrigger, closeOnOutsideClick, preventScroll, closeOnEscape],
+					([$open, $activeTrigger, $closeOnOutsideClick, $preventScroll, $closeOnEscape]) => {
 						unsubPopper();
 						unsubScroll();
 						if ($open && $activeTrigger) {
@@ -398,6 +398,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 													},
 											  }
 											: null,
+										closeOnEscape: $closeOnEscape,
 									},
 								});
 								if (popper && popper.destroy) {

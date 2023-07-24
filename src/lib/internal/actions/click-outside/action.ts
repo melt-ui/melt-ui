@@ -6,7 +6,7 @@ import { readable } from 'svelte/store';
 import { addEventListener } from '$lib/internal/helpers/event';
 import { get } from 'svelte/store';
 import { isFunction } from '$lib/internal/helpers/is';
-import type { ClickOutsideConfig } from './clickOutside.types';
+import type { ClickOutsideConfig } from './types';
 
 /**
  * Creates a readable store that tracks the latest PointerEvent that occurred on the document.

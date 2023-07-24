@@ -1,2 +1,2 @@
-export * from './clickOutside';
-export * from './clickOutside.types';
+export * from './action';
+export * from './types';

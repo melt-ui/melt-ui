@@ -6,18 +6,20 @@ import {
 	generateId,
 	isBrowser,
 	noop,
+	removeScroll,
 	sleep,
 	styleToString,
 	toWritableStores,
+	omit,
+	overridable,
+	isHTMLElement,
 } from '$lib/internal/helpers';
 
 import { usePopper } from '$lib/internal/actions';
 import type { Defaults } from '$lib/internal/types';
-import { overridable } from '$lib/internal/helpers';
 import { tick } from 'svelte';
 import { get, writable } from 'svelte/store';
 import type { CreatePopoverProps } from './types';
-import { omit } from '../../internal/helpers/object';
 
 const defaults = {
 	positioning: {
@@ -26,7 +28,10 @@ const defaults = {
 	arrowSize: 8,
 	defaultOpen: false,
 	disableFocusTrap: false,
+	closeOnEscape: true,
+	preventScroll: false,
 	onOpenChange: undefined,
+	closeOnOutsideClick: true,
 } satisfies Defaults<CreatePopoverProps>;
 
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
@@ -35,9 +40,15 @@ const { name } = createElHelpers<PopoverParts>('popover');
 export function createPopover(args?: CreatePopoverProps) {
 	const withDefaults = { ...defaults, ...args } satisfies CreatePopoverProps;
 
-	// options
 	const options = toWritableStores(omit(withDefaults, 'open'));
-	const { positioning, arrowSize, disableFocusTrap } = options;
+	const {
+		positioning,
+		arrowSize,
+		disableFocusTrap,
+		preventScroll,
+		closeOnEscape,
+		closeOnOutsideClick,
+	} = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
@@ -46,17 +57,19 @@ export function createPopover(args?: CreatePopoverProps) {
 
 	const ids = {
 		content: generateId(),
+		trigger: generateId(),
 	};
 
 	const content = builder(name('content'), {
-		stores: open,
-		returned: ($open) => {
+		stores: [open, activeTrigger],
+		returned: ([$open, $activeTrigger]) => {
+			const fullyOpen = $open && $activeTrigger !== null;
 			return {
-				'data-state': $open ? 'open' : 'closed',
-				hidden: $open && isBrowser ? undefined : true,
+				'data-state': fullyOpen ? 'open' : 'closed',
+				hidden: fullyOpen && isBrowser ? undefined : true,
 				tabindex: -1,
 				style: styleToString({
-					display: $open ? undefined : 'none',
+					display: fullyOpen ? undefined : 'none',
 				}),
 				id: ids.content,
 			};
@@ -65,25 +78,33 @@ export function createPopover(args?: CreatePopoverProps) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[open, activeTrigger, positioning, disableFocusTrap],
-				([$open, $activeTrigger, $positioning, $disableFocusTrap]) => {
+				[open, activeTrigger, positioning, disableFocusTrap, closeOnEscape, closeOnOutsideClick],
+				([
+					$open,
+					$activeTrigger,
+					$positioning,
+					$disableFocusTrap,
+					$closeOnEscape,
+					$closeOnOutsideClick,
+				]) => {
 					unsubPopper();
-					if ($open && $activeTrigger) {
-						tick().then(() => {
-							const popper = usePopper(node, {
-								anchorElement: $activeTrigger,
-								open,
-								options: {
-									floating: $positioning,
-									focusTrap: $disableFocusTrap ? null : undefined,
-								},
-							});
-
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
+					if (!($open && $activeTrigger)) return;
+					tick().then(() => {
+						const popper = usePopper(node, {
+							anchorElement: $activeTrigger,
+							open,
+							options: {
+								floating: $positioning,
+								focusTrap: $disableFocusTrap ? null : undefined,
+								closeOnEscape: $closeOnEscape ? true : false,
+								clickOutside: $closeOnOutsideClick ? undefined : null,
+							},
 						});
-					}
+
+						if (popper && popper.destroy) {
+							unsubPopper = popper.destroy;
+						}
+					});
 				}
 			);
 
@@ -105,6 +126,7 @@ export function createPopover(args?: CreatePopoverProps) {
 				'aria-expanded': $open,
 				'data-state': $open ? 'open' : 'closed',
 				'aria-controls': ids.content,
+				id: ids.trigger,
 			} as const;
 		},
 		action: (node: HTMLElement) => {
@@ -161,13 +183,34 @@ export function createPopover(args?: CreatePopoverProps) {
 		},
 	});
 
-	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
+	effect([open], ([$open]) => {
 		if (!isBrowser) return;
 
-		if (!$open && $activeTrigger && isBrowser) {
+		const unsubs: Array<() => void> = [];
+		const $activeTrigger = get(activeTrigger);
+
+		if ($open) {
+			if (!$activeTrigger) {
+				tick().then(() => {
+					const triggerEl = document.getElementById(ids.trigger);
+					if (!isHTMLElement(triggerEl)) return;
+					activeTrigger.set(triggerEl);
+				});
+			}
+
+			if (get(preventScroll)) {
+				unsubs.push(removeScroll());
+			}
+		}
+
+		if (!$open && $activeTrigger) {
 			// Prevent the keydown event from triggering on the trigger
 			sleep(1).then(() => $activeTrigger.focus());
 		}
+
+		return () => {
+			unsubs.forEach((unsub) => unsub());
+		};
 	});
 	return {
 		elements: {
