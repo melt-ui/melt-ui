@@ -398,7 +398,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 													},
 											  }
 											: null,
-										closeOnEscape: $closeOnEscape,
+										escapeKeydown: $closeOnEscape ? undefined : null,
 									},
 								});
 								if (popper && popper.destroy) {
