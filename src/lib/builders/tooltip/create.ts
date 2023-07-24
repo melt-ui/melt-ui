@@ -2,17 +2,20 @@ import {
 	addEventListener,
 	builder,
 	createElHelpers,
+	effect,
 	executeCallbacks,
 	generateId,
+	makeHullFromElements,
 	noop,
 	omit,
+	pointInPolygon,
 	styleToString,
 } from '$lib/internal/helpers';
 
 import { useFloating, usePortal } from '$lib/internal/actions';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
-import { derived, get, writable, type Readable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import type { CreateTooltipProps } from './types';
 
 const defaults = {
@@ -21,7 +24,7 @@ const defaults = {
 	},
 	arrowSize: 8,
 	open: false,
-	closeOnPointerDown: true,
+	closeOnPointerDown: false,
 	openDelay: 1000,
 	closeDelay: 0,
 } satisfies Defaults<CreateTooltipProps>;
@@ -42,17 +45,20 @@ export function createTooltip(props?: CreateTooltipProps) {
 		trigger: generateId(),
 	};
 
-	let timeout: number | null = null;
+	let openTimeout: number | null = null;
+	let closeTimeout: number | null = null;
+	let clickedTrigger = false;
 
 	const openTooltip = () => {
 		const $options = get(options);
 
-		if (timeout) {
-			window.clearTimeout(timeout);
-			timeout = null;
+		if (openTimeout) {
+			window.clearTimeout(openTimeout);
+			openTimeout = null;
 		}
 
-		timeout = window.setTimeout(() => {
+		if (clickedTrigger) return;
+		openTimeout = window.setTimeout(() => {
 			open.set(true);
 		}, $options.openDelay);
 	};
@@ -60,13 +66,14 @@ export function createTooltip(props?: CreateTooltipProps) {
 	const closeTooltip = () => {
 		const $options = get(options);
 
-		if (timeout) {
-			window.clearTimeout(timeout);
-			timeout = null;
+		if (closeTimeout) {
+			window.clearTimeout(closeTimeout);
+			closeTimeout = null;
 		}
 
-		timeout = window.setTimeout(() => {
+		closeTimeout = window.setTimeout(() => {
 			open.set(false);
+			clickedTrigger = false;
 		}, $options.closeDelay);
 	};
 
@@ -74,16 +81,44 @@ export function createTooltip(props?: CreateTooltipProps) {
 		returned: () => {
 			return {
 				'aria-describedby': ids.content,
+				id: ids.trigger,
 			};
 		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
+				addEventListener(node, 'pointerdown', () => {
+					const $options = get(options);
+					if ($options.closeOnPointerDown) {
+						open.set(false);
+						clickedTrigger = true;
+					}
+				}),
 				addEventListener(node, 'mouseover', openTooltip),
-				addEventListener(node, 'mouseout', closeTooltip),
+				addEventListener(node, 'mouseleave', () => {
+					if (openTimeout) {
+						window.clearTimeout(openTimeout);
+						openTimeout = null;
+					}
+					clickedTrigger = false;
+				}),
 				addEventListener(node, 'focus', openTooltip),
 				addEventListener(node, 'blur', closeTooltip),
 				addEventListener(node, 'keydown', (e) => {
-					if (e.key === 'Escape') closeTooltip();
+					if (e.key === 'Escape') {
+						if (openTimeout) {
+							window.clearTimeout(openTimeout);
+
+							openTimeout = null;
+						}
+
+						if (closeTimeout) {
+							window.clearTimeout(closeTimeout);
+							closeTimeout = null;
+						}
+
+						clickedTrigger = false;
+						open.set(false);
+					}
 				})
 			);
 
@@ -128,7 +163,6 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 			unsub = executeCallbacks(
 				addEventListener(node, 'mouseover', openTooltip),
-				addEventListener(node, 'mouseout', closeTooltip),
 				portalReturn && portalReturn.destroy ? portalReturn.destroy : noop,
 				unsubOpen
 			);
@@ -152,6 +186,40 @@ export function createTooltip(props?: CreateTooltipProps) {
 				height: `var(--arrow-size, ${$options.arrowSize}px)`,
 			}),
 		}),
+	});
+
+	effect(open, ($open) => {
+		if ($open) {
+			return executeCallbacks(
+				addEventListener(document, 'mousemove', (e) => {
+					const triggerEl = document.getElementById(ids.trigger);
+					if (!triggerEl || document.activeElement === triggerEl) return;
+
+					const contentEl = document.getElementById(ids.content);
+					if (!contentEl) return;
+
+					const polygon = makeHullFromElements([triggerEl, contentEl]);
+
+					const isMouseInTooltipArea = pointInPolygon(
+						{
+							x: e.clientX,
+							y: e.clientY,
+						},
+						polygon
+					);
+
+					if (isMouseInTooltipArea) {
+						closeTimeout = null;
+						return;
+					}
+
+					closeTooltip();
+				}),
+				addEventListener(document, 'mouseleave', () => {
+					closeTooltip();
+				})
+			);
+		}
 	});
 
 	return { trigger, open, content, arrow, options };
