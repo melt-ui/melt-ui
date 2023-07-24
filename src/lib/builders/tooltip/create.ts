@@ -23,7 +23,7 @@ const defaults = {
 	open: false,
 	closeOnPointerDown: true,
 	openDelay: 1000,
-	closeDelay: 500,
+	closeDelay: 0,
 } satisfies Defaults<CreateTooltipProps>;
 
 type TooltipParts = 'trigger' | 'content' | 'arrow';
@@ -44,31 +44,31 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 	let timeout: number | null = null;
 
-	const openTooltip = derived(options, ($options) => {
-		return () => {
-			if (timeout) {
-				window.clearTimeout(timeout);
-				timeout = null;
-			}
+	const openTooltip = () => {
+		const $options = get(options);
 
-			timeout = window.setTimeout(() => {
-				open.set(true);
-			}, $options.openDelay);
-		};
-	}) as Readable<() => void>;
+		if (timeout) {
+			window.clearTimeout(timeout);
+			timeout = null;
+		}
 
-	const closeTooltip = derived(options, ($options) => {
-		return () => {
-			if (timeout) {
-				window.clearTimeout(timeout);
-				timeout = null;
-			}
+		timeout = window.setTimeout(() => {
+			open.set(true);
+		}, $options.openDelay);
+	};
 
-			timeout = window.setTimeout(() => {
-				open.set(false);
-			}, $options.closeDelay);
-		};
-	}) as Readable<() => void>;
+	const closeTooltip = () => {
+		const $options = get(options);
+
+		if (timeout) {
+			window.clearTimeout(timeout);
+			timeout = null;
+		}
+
+		timeout = window.setTimeout(() => {
+			open.set(false);
+		}, $options.closeDelay);
+	};
 
 	const trigger = builder(name('trigger'), {
 		returned: () => {
@@ -78,10 +78,13 @@ export function createTooltip(props?: CreateTooltipProps) {
 		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'mouseover', () => get(openTooltip)()),
-				addEventListener(node, 'mouseout', () => get(closeTooltip)()),
-				addEventListener(node, 'focus', () => open.set(true)),
-				addEventListener(node, 'blur', () => open.set(false))
+				addEventListener(node, 'mouseover', openTooltip),
+				addEventListener(node, 'mouseout', closeTooltip),
+				addEventListener(node, 'focus', openTooltip),
+				addEventListener(node, 'blur', closeTooltip),
+				addEventListener(node, 'keydown', (e) => {
+					if (e.key === 'Escape') closeTooltip();
+				})
 			);
 
 			return {
@@ -124,8 +127,8 @@ export function createTooltip(props?: CreateTooltipProps) {
 			});
 
 			unsub = executeCallbacks(
-				addEventListener(node, 'mouseover', () => get(openTooltip)()),
-				addEventListener(node, 'mouseout', () => get(closeTooltip)()),
+				addEventListener(node, 'mouseover', openTooltip),
+				addEventListener(node, 'mouseout', closeTooltip),
 				portalReturn && portalReturn.destroy ? portalReturn.destroy : noop,
 				unsubOpen
 			);
