@@ -4,7 +4,6 @@ import {
 	createElHelpers,
 	executeCallbacks,
 	generateId,
-	isTouch,
 	noop,
 	omit,
 	styleToString,
@@ -72,15 +71,9 @@ export function createTooltip(props?: CreateTooltipProps) {
 	}) as Readable<() => void>;
 
 	const trigger = builder(name('trigger'), {
-		stores: open,
-		returned: ($open) => {
+		returned: () => {
 			return {
-				role: 'button' as const,
-				'aria-haspopup': 'dialog' as const,
-				'aria-expanded': $open,
-				'data-state': $open ? 'open' : 'closed',
-				'aria-controls': ids.content,
-				id: ids.trigger,
+				'aria-describedby': ids.content,
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -88,19 +81,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				addEventListener(node, 'mouseover', () => get(openTooltip)()),
 				addEventListener(node, 'mouseout', () => get(closeTooltip)()),
 				addEventListener(node, 'focus', () => open.set(true)),
-				addEventListener(node, 'blur', () => open.set(false)),
-				addEventListener(node, 'pointerdown', (e) => {
-					if (isTouch(e)) {
-						return;
-					}
-
-					e.preventDefault();
-
-					const $options = get(options);
-					if ($options.closeOnPointerDown) {
-						open.set(false);
-					}
-				})
+				addEventListener(node, 'blur', () => open.set(false))
 			);
 
 			return {
@@ -113,6 +94,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 		stores: open,
 		returned: ($open) => {
 			return {
+				role: 'tooltip',
 				hidden: $open ? undefined : true,
 				tabindex: -1,
 				style: styleToString({
@@ -130,7 +112,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 			const unsubOpen = open.subscribe(($open) => {
 				if ($open) {
 					tick().then(() => {
-						const triggerEl = document.getElementById(ids.trigger);
+						const triggerEl = document.querySelector(`[aria-describedby="${ids.content}"]`);
 						if (!triggerEl || node.hidden) return;
 						const $options = get(options);
 						const floatingReturn = useFloating(triggerEl, node, $options.positioning);
