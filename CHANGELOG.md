@@ -1,5 +1,20 @@
 # @melt-ui/svelte
 
+## 0.26.0
+
+### Minor Changes
+
+- 7a8c0f05: Tooltip: Change default options; Add trigger/content gap handling; Behaviour changes
+
+### Patch Changes
+
+- d055b2a5: [Tooltip] Fix a11y attributes & behavior
+- c5945220: [Avatar] Fixes bug where the fallback is hidden
+- a71ac941: fix: dialog focus-trap
+- 2f803ea8: [Combobox]
+  - Fix Open/Close Flickering
+  - Returns a `label` element builder
+
 ## 0.25.1
 
 ### Patch Changes
