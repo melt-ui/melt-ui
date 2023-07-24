@@ -5,9 +5,11 @@ description:
 ---
 
 <script>
-    import { APIReference, KbdTable } from '$docs/components'
+    import { APIReference, KbdTable, Preview } from '$docs/components'
     export let schemas
     export let keyboard
+    export let previews
+    export let snippets
 </script>
 
 ## Anatomy
@@ -80,6 +82,18 @@ occurring.
 	Item 2
 </div>
 ```
+
+## Example Components
+
+### Controlled
+
+You can control the open state of the menu as we have in this example. Obviously this is not an
+ideal example for a context menu, which are typically triggered by a right click, but it does
+demonstrate how you could control it if you wanted to.
+
+<Preview code={snippets.controlled}>
+    <svelte:component this={previews.controlled} />
+</Preview>
 
 ## API Reference
 

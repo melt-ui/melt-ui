@@ -13,6 +13,8 @@ const defaults = {
 	loop: false,
 	dir: 'ltr',
 	defaultOpen: false,
+	closeOnEscape: true,
+	closeOnOutsideClick: true,
 } satisfies Defaults<CreateDropdownMenuProps>;
 
 export function createDropdownMenu(props?: CreateDropdownMenuProps) {

@@ -1,16 +1,18 @@
 <script lang="ts">
-	import { createDropdownMenu } from '$lib';
+	import { createContextMenu } from '$lib';
 	import { writable } from 'svelte/store';
-	import { AlignJustify, ChevronRight, Check } from 'lucide-svelte';
+	import { ChevronRight, Check } from 'lucide-svelte';
 
-    const customOpen = writable(true)
+	const customOpen = writable(true);
 
 	const {
-		elements: { trigger, menu, item, checkboxItem, separator, arrow },
+		elements: { trigger, menu, item, checkboxItem, separator },
 		builders: { createSubmenu, createMenuRadioGroup },
-	} = createDropdownMenu({
-        open: customOpen
-    });
+	} = createContextMenu({
+		open: customOpen,
+		preventScroll: false,
+		closeOnOutsideClick: false,
+	});
 
 	const {
 		elements: { subMenu: subMenuA, subTrigger: subTriggerA },
@@ -34,15 +36,9 @@
 	const hideMeltUI = writable(false);
 </script>
 
-<button
-	type="button"
-	class="trigger"
-	melt={$trigger}
-	aria-label="Update dimensions"
->
-	<AlignJustify class="h-4 w-4" />
-	<span class="sr-only">Open Popover</span>
-</button>
+<span class="trigger" melt={$trigger} aria-label="Update dimensions">
+	Right click me.
+</span>
 
 <div class="menu" melt={$menu}>
 	<div class="item" melt={$item}>About Melt UI</div>
@@ -105,13 +101,12 @@
 		Quit Melt UI
 		<div class="rightSlot">⌘Q</div>
 	</div>
-	<div melt={$arrow} />
 </div>
 
 <style lang="postcss">
 	.menu {
-		@apply z-10 flex max-h-[300px] min-w-[220px] flex-col shadow-lg;
-		@apply rounded-md bg-white p-1 shadow-neutral-900/30 lg:max-h-none;
+		@apply z-10 flex max-h-[300px] min-w-[220px] flex-col shadow-lg shadow-neutral-900/30;
+		@apply rounded-md bg-white p-1 lg:max-h-none;
 		@apply ring-0 !important;
 	}
 	.subMenu {
@@ -125,11 +120,10 @@
 		@apply flex items-center text-sm leading-none;
 		@apply ring-0 !important;
 	}
+
 	.trigger {
-		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white;
-		@apply text-magnum-900 transition-colors hover:bg-white/90;
-		@apply data-[highlighted]:ring-magnum-400 data-[highlighted]:ring-offset-2 !important;
-		@apply p-0 text-sm font-medium focus:ring data-[highlighted]:outline-none;
+		@apply block rounded-md border-2 border-dashed border-neutral-50;
+		@apply w-[300px] py-12 text-center;
 	}
 	.check {
 		@apply absolute left-2 top-1/2 text-magnum-500;

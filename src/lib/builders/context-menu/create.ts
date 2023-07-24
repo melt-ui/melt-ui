@@ -43,6 +43,8 @@ const defaults = {
 	loop: false,
 	dir: 'ltr',
 	defaultOpen: false,
+	closeOnEscape: true,
+	closeOnOutsideClick: true,
 } satisfies Defaults<CreateContextMenuProps>;
 
 const { name, selector } = createElHelpers<MenuParts>('context-menu');
@@ -51,7 +53,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;
 
 	const rootOptions = toWritableStores(withDefaults);
-	const { positioning } = rootOptions;
+	const { positioning, closeOnOutsideClick } = rootOptions;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const rootOpen = overridable(openWritable, withDefaults?.onOpenChange);
@@ -79,8 +81,10 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		selector: 'context-menu',
 	});
 
-	const point = writable<Point>({ x: 0, y: 0 });
-	const virtual: Readable<VirtualElement> = derivedWithUnsubscribe([point], ([$point]) => {
+	const point = writable<Point | null>(null);
+	const virtual: Readable<VirtualElement | null> = derivedWithUnsubscribe([point], ([$point]) => {
+		if ($point === null) return null;
+
 		return {
 			getBoundingClientRect: () =>
 				DOMRect.fromRect({
@@ -92,18 +96,36 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	});
 	const longPressTimer = writable(0);
 
+	function handleClickOutside(e: PointerEvent) {
+		if (e.defaultPrevented) return;
+		if (e.defaultPrevented) return;
+		const target = e.target;
+		if (!isHTMLElement(target)) return;
+
+		if (target.id === rootIds.trigger && isLeftClick(e)) {
+			rootOpen.set(false);
+			return;
+		}
+
+		if (target.id !== rootIds.trigger && !target.closest(selector())) {
+			rootOpen.set(false);
+		}
+	}
+
 	const menu = builder(name(), {
-		stores: rootOpen,
-		returned: ($rootOpen) => {
+		stores: [rootOpen, rootActiveTrigger],
+		returned: ([$rootOpen, $rootActiveTrigger]) => {
+			// We only want to render the menu when it's open and has an active trigger.
+			const ready = $rootOpen && $rootActiveTrigger;
 			return {
 				role: 'menu',
-				hidden: $rootOpen ? undefined : true,
+				hidden: ready ? undefined : true,
 				style: styleToString({
-					display: $rootOpen ? undefined : 'none',
+					display: ready ? undefined : 'none',
 				}),
 				id: rootIds.menu,
 				'aria-labelledby': rootIds.trigger,
-				'data-state': $rootOpen ? 'open' : 'closed',
+				'data-state': ready ? 'open' : 'closed',
 				tabindex: -1,
 			} as const;
 		},
@@ -111,43 +133,28 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[rootOpen, rootActiveTrigger, positioning],
-				([$rootOpen, $rootActiveTrigger, $positioning]) => {
+				[rootOpen, rootActiveTrigger, positioning, closeOnOutsideClick],
+				([$rootOpen, $rootActiveTrigger, $positioning, $closeOnOutsideClick]) => {
 					unsubPopper();
-					if ($rootOpen && $rootActiveTrigger) {
-						tick().then(() => {
-							setMeltMenuAttribute(node, selector);
-							const $virtual = get(virtual);
-
-							const popper = usePopper(node, {
-								anchorElement: $virtual,
-								open: rootOpen,
-								options: {
-									floating: $positioning,
-									clickOutside: {
-										handler: (e: PointerEvent) => {
-											if (e.defaultPrevented) return;
-											const target = e.target;
-											if (!isHTMLElement(target)) return;
-
-											if (target.id === rootIds.trigger && isLeftClick(e)) {
-												rootOpen.set(false);
-												return;
-											}
-
-											if (target.id !== rootIds.trigger && !target.closest(selector())) {
-												rootOpen.set(false);
-											}
-										},
-									},
-								},
-							});
-
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
+					if (!($rootOpen && $rootActiveTrigger)) return;
+					tick().then(() => {
+						setMeltMenuAttribute(node, selector);
+						const $virtual = get(virtual);
+						const popper = usePopper(node, {
+							anchorElement: $virtual ? $virtual : $rootActiveTrigger,
+							open: rootOpen,
+							options: {
+								floating: $positioning,
+								clickOutside: $closeOnOutsideClick
+									? {
+											handler: handleClickOutside,
+									  }
+									: null,
+							},
 						});
-					}
+						if (!popper || !popper.destroy) return;
+						unsubPopper = popper.destroy;
+					});
 				}
 			);
 

@@ -55,20 +55,16 @@ const defaults = {
 		placement: 'bottom',
 	},
 	preventScroll: true,
+	closeOnEscape: true,
+	loop: false,
 } satisfies Defaults<CreateMenuProps>;
 
 export function createMenuBuilder(opts: MenuBuilderOptions) {
 	const { name, selector } = createElHelpers<MenuParts>(opts.selector);
 
-	const { preventScroll, loop, arrowSize, dir, positioning } = opts.rootOptions;
+	const { preventScroll, loop, arrowSize, dir, positioning, closeOnEscape, closeOnOutsideClick } =
+		opts.rootOptions;
 
-	const rootOptions = {
-		positioning,
-		arrowSize,
-		dir,
-		preventScroll,
-		loop,
-	};
 	const rootOpen = opts.rootOpen;
 	const rootActiveTrigger = opts.rootActiveTrigger;
 	/**
@@ -122,17 +118,18 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	};
 
 	const rootMenu = builder(name(), {
-		stores: [rootOpen],
-		returned: ([$rootOpen]) => {
+		stores: [rootOpen, rootActiveTrigger],
+		returned: ([$rootOpen, $rootActiveTrigger]) => {
+			const fullyOpen = $rootOpen && $rootActiveTrigger;
 			return {
 				role: 'menu',
-				hidden: $rootOpen ? undefined : true,
+				hidden: fullyOpen ? undefined : true,
 				style: styleToString({
-					display: $rootOpen ? undefined : 'none',
+					display: fullyOpen ? undefined : 'none',
 				}),
 				id: rootIds.menu,
 				'aria-labelledby': rootIds.trigger,
-				'data-state': $rootOpen ? 'open' : 'closed',
+				'data-state': fullyOpen ? 'open' : 'closed',
 				tabindex: -1,
 			} as const;
 		},
@@ -140,25 +137,25 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[rootOpen, rootActiveTrigger, positioning],
-				([$rootOpen, $rootActiveTrigger, $positioning]) => {
+				[rootOpen, rootActiveTrigger, positioning, closeOnOutsideClick],
+				([$rootOpen, $rootActiveTrigger, $positioning, $closeOnOutsideClick]) => {
 					unsubPopper();
-					if ($rootOpen && $rootActiveTrigger) {
-						tick().then(() => {
-							setMeltMenuAttribute(node, selector);
-							const popper = usePopper(node, {
-								anchorElement: $rootActiveTrigger,
-								open: rootOpen,
-								options: {
-									floating: $positioning,
-								},
-							});
-
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
+					if (!($rootOpen && $rootActiveTrigger)) return;
+					tick().then(() => {
+						setMeltMenuAttribute(node, selector);
+						const popper = usePopper(node, {
+							anchorElement: $rootActiveTrigger,
+							open: rootOpen,
+							options: {
+								floating: $positioning,
+								clickOutside: $closeOnOutsideClick ? undefined : null,
+							},
 						});
-					}
+
+						if (popper && popper.destroy) {
+							unsubPopper = popper.destroy;
+						}
+					});
 				}
 			);
 
@@ -252,42 +249,42 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					const triggerElement = e.currentTarget;
 					if (!isHTMLElement(triggerElement)) return;
 
-					if (SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN) {
-						if (e.key === kbd.ARROW_DOWN) {
-							/**
-							 * We don't want to scroll the page when the user presses the
-							 * down arrow when focused on the trigger, so we prevent that
-							 * default behavior.
-							 */
-							e.preventDefault();
-						}
-						rootOpen.update((prev) => {
-							const isOpen = !prev;
-							if (isOpen) {
-								nextFocusable.set(getNextFocusable(triggerElement));
-								prevFocusable.set(getPreviousFocusable(triggerElement));
-								rootActiveTrigger.set(triggerElement);
-							} else {
-								rootActiveTrigger.set(null);
-							}
+					if (!(SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN)) return;
 
-							return isOpen;
-						});
-
-						const menuId = triggerElement.getAttribute('aria-controls');
-						if (!menuId) return;
-
-						const menu = document.getElementById(menuId);
-						if (!isHTMLElement(menu)) return;
-
-						const menuItems = getMenuItems(menu);
-						if (!menuItems.length) return;
-
-						const nextFocusedElement = menuItems[0];
-						if (!isHTMLElement(nextFocusedElement)) return;
-
-						handleRovingFocus(nextFocusedElement);
+					if (e.key === kbd.ARROW_DOWN) {
+						/**
+						 * We don't want to scroll the page when the user presses the
+						 * down arrow when focused on the trigger, so we prevent that
+						 * default behavior.
+						 */
+						e.preventDefault();
 					}
+					rootOpen.update((prev) => {
+						const isOpen = !prev;
+						if (isOpen) {
+							nextFocusable.set(getNextFocusable(triggerElement));
+							prevFocusable.set(getPreviousFocusable(triggerElement));
+							rootActiveTrigger.set(triggerElement);
+						} else {
+							rootActiveTrigger.set(null);
+						}
+
+						return isOpen;
+					});
+
+					const menuId = triggerElement.getAttribute('aria-controls');
+					if (!menuId) return;
+
+					const menu = document.getElementById(menuId);
+					if (!isHTMLElement(menu)) return;
+
+					const menuItems = getMenuItems(menu);
+					if (!menuItems.length) return;
+
+					const nextFocusedElement = menuItems[0];
+					if (!isHTMLElement(nextFocusedElement)) return;
+
+					handleRovingFocus(nextFocusedElement);
 				})
 			);
 
@@ -1020,6 +1017,41 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		};
 	};
 
+	onMount(() => {
+		/**
+		 * We need to set the active trigger on mount to cover the
+		 * case where the user sets the `open` store to `true` without
+		 * clicking on the trigger.
+		 */
+		const triggerEl = document.getElementById(rootIds.trigger);
+		if (isHTMLElement(triggerEl) && get(rootOpen)) {
+			rootActiveTrigger.set(triggerEl);
+		}
+
+		const handlePointer = () => isUsingKeyboard.set(false);
+		const handleKeyDown = () => {
+			isUsingKeyboard.set(true);
+			document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
+			document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
+		};
+		document.addEventListener('keydown', handleKeyDown, { capture: true });
+
+		const keydownListener = (e: KeyboardEvent) => {
+			if (e.key === kbd.ESCAPE && get(closeOnEscape)) {
+				rootOpen.set(false);
+				return;
+			}
+		};
+		document.addEventListener('keydown', keydownListener);
+
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown, { capture: true });
+			document.removeEventListener('pointerdown', handlePointer, { capture: true });
+			document.removeEventListener('pointermove', handlePointer, { capture: true });
+			document.removeEventListener('keydown', keydownListener);
+		};
+	});
+
 	/* -------------------------------------------------------------------------------------------------
 	 * Root Effects
 	 * -----------------------------------------------------------------------------------------------*/
@@ -1071,31 +1103,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 		return () => {
 			unsubs.forEach((unsub) => unsub());
-		};
-	});
-
-	onMount(() => {
-		const handlePointer = () => isUsingKeyboard.set(false);
-		const handleKeyDown = () => {
-			isUsingKeyboard.set(true);
-			document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
-			document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
-		};
-		document.addEventListener('keydown', handleKeyDown, { capture: true });
-
-		const keydownListener = (e: KeyboardEvent) => {
-			if (e.key === kbd.ESCAPE) {
-				rootOpen.set(false);
-				return;
-			}
-		};
-		document.addEventListener('keydown', keydownListener);
-
-		return () => {
-			document.removeEventListener('keydown', handleKeyDown, { capture: true });
-			document.removeEventListener('pointerdown', handlePointer, { capture: true });
-			document.removeEventListener('pointermove', handlePointer, { capture: true });
-			document.removeEventListener('keydown', keydownListener);
 		};
 	});
 
@@ -1242,7 +1249,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		item,
 		checkboxItem,
 		arrow: rootArrow,
-		options: rootOptions,
+		options: opts.rootOptions,
 		createSubmenu,
 		createMenuRadioGroup,
 		separator,

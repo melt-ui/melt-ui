@@ -8,7 +8,7 @@ export type CreateMenuProps = {
 	/**
 	 * Options for positioning the popover menu.
 	 *
-	 * @default { placement: 'bottom' }
+	 * @default  placement: 'bottom'
 	 */
 	positioning?: FloatingConfig;
 
@@ -33,6 +33,20 @@ export type CreateMenuProps = {
 	preventScroll?: boolean;
 
 	/**
+	 * Whether or not to close the menu when the escape key is pressed.
+	 *
+	 * @default true
+	 */
+	closeOnEscape?: boolean;
+
+	/**
+	 * Whether or not to close the menu when a click occurs outside of it.
+	 *
+	 * @default true
+	 */
+	closeOnOutsideClick?: boolean;
+
+	/**
 	 * Whether or not to loop the menu navigation.
 	 *
 	 * @default false
@@ -41,6 +55,8 @@ export type CreateMenuProps = {
 
 	/**
 	 * Whether the menu is open by default or not.
+	 *
+	 * @default false
 	 */
 	defaultOpen?: boolean;
 
@@ -97,6 +113,8 @@ export type MenuBuilderOptions = {
 		preventScroll: Writable<boolean | undefined>;
 		loop: Writable<boolean | undefined>;
 		dir: Writable<TextDirection>;
+		closeOnEscape: Writable<boolean>;
+		closeOnOutsideClick: Writable<boolean>;
 	};
 	disableTriggerRefocus?: boolean;
 	disableFocusFirstItem?: boolean;

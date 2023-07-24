@@ -351,23 +351,20 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		},
 	});
 
-	const fullyOpen = derived(
-		[open, activeTrigger],
-		([$open, $activeTrigger]) => $open && $activeTrigger
-	);
-
 	/**
 	 * Action and attributes for the menu element.
 	 */
 	const menu = builder(name('menu'), {
-		stores: [fullyOpen],
-		returned: ([$fullyOpen]) =>
-			({
-				hidden: $fullyOpen ? undefined : true,
+		stores: [open, activeTrigger],
+		returned: ([$open, $activeTrigger]) => {
+			const fullyOpen = $open && $activeTrigger;
+			return {
+				hidden: fullyOpen ? undefined : true,
 				id: ids.menu,
 				role: 'listbox',
-				style: styleToString({ display: $fullyOpen ? undefined : 'none' }),
-			} as const),
+				style: styleToString({ display: fullyOpen ? undefined : 'none' }),
+			} as const;
+		},
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
 			let unsubScroll = noop;
