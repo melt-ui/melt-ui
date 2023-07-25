@@ -7,6 +7,7 @@ import {
 	generateId,
 	getElementByMeltId,
 	isBrowser,
+	isHTMLElement,
 	kbd,
 	omit,
 	styleToString,
@@ -118,7 +119,10 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			workingTag.id = generateId();
 		}
 
-		tags.update((current) => [...current, workingTag]);
+		tags.update((current) => {
+			current.push(workingTag);
+			return current;
+		});
 		return true;
 	};
 
@@ -194,7 +198,9 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'mousedown', (e) => {
 					// Focus on input when root is the target
-					if ((e.target as HTMLElement).hasAttribute(attribute())) {
+					const target = e.target;
+					if (!isHTMLElement(target)) return;
+					if (target.hasAttribute(attribute())) {
 						e.preventDefault();
 						focusInput(ids.input);
 					}
@@ -221,13 +227,13 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			const getTagsInfo = (id: string) => {
 				const rootEl = getElementByMeltId(ids.root);
 
-				let tagsEl: Array<HTMLElement> = [];
+				let tagsEl: Array<Element> = [];
 				let selectedIndex = -1;
 				let prevIndex = -1;
 				let nextIndex = -1;
 
 				if (rootEl) {
-					tagsEl = Array.from(rootEl.querySelectorAll(selector('tag'))) as Array<HTMLElement>;
+					tagsEl = Array.from(rootEl.querySelectorAll(selector('tag')));
 
 					selectedIndex = tagsEl.findIndex((element) => element.getAttribute('data-tag-id') === id);
 
@@ -405,8 +411,10 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 							// At the start of the input. Move the the last tag (if there is one)
 							e.preventDefault();
 							const { tagsEl } = getTagsInfo('');
-							const lastTag = tagsEl.at(-1) as HTMLElement;
-							setSelectedFromEl(lastTag, selected);
+							const lastTag = tagsEl.at(-1);
+							if (lastTag) {
+								setSelectedFromEl(lastTag, selected);
+							}
 						}
 					}
 				}),
@@ -603,7 +611,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 					// Stop editing, reset the value to the original and clear an invalid state
 					editing.set(null);
-					(node as HTMLElement).textContent = getElProps().value;
+					node.textContent = getElProps().value;
 					getElementByMeltId(ids.root)?.removeAttribute('data-invalid-edit');
 					node.removeAttribute('data-invalid-edit');
 				}),
@@ -621,7 +629,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 						const t = { id: getElProps().id, value };
 
 						if (isInputValid(value) && (await updateTag(t, true))) {
-							(node as HTMLElement).textContent = t.value;
+							node.textContent = t.value;
 							editValue.set('');
 							focusInput(ids.input);
 						} else {
@@ -632,7 +640,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 						// Reset the value, clear the edit value store, set this tag as
 						// selected and focus on input
 						e.preventDefault();
-						(node as HTMLElement).textContent = getElProps().value;
+						node.textContent = getElProps().value;
 						editValue.set('');
 						setSelectedFromEl(node, selected);
 						focusInput(ids.input);
@@ -679,7 +687,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 		const invalidEl = Array.from(
 			document.querySelectorAll(selector('edit') + '[data-invalid-edit]')
-		) as Array<HTMLElement>;
+		);
 		invalidEl.forEach((e) => {
 			e.removeAttribute('data-invalid-edit');
 		});

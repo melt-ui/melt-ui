@@ -21,6 +21,7 @@ import { sliderData } from './slider';
 import { switchData } from './switch';
 import { tabsData } from './tabs';
 import { tagsInputData } from './tags-input';
+import { toastData } from './toast';
 import { toggleData } from './toggle';
 import { toggleGroupData } from './toggle-group';
 import { toolbarData } from './toolbar';
@@ -50,6 +51,7 @@ export const builderList = [
 	'switch',
 	'tabs',
 	'tags-input',
+	'toast',
 	'toggle',
 	'toggle-group',
 	'toolbar',
@@ -94,6 +96,7 @@ export const data: Builders = {
 	switch: switchData,
 	tabs: tabsData,
 	'tags-input': tagsInputData,
+	toast: toastData,
 	'toggle-group': toggleGroupData,
 	toggle: toggleData,
 	toolbar: toolbarData,

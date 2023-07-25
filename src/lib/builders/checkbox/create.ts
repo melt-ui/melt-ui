@@ -43,17 +43,17 @@ export function createCheckbox(props: CreateCheckboxProps = {}) {
 				addEventListener(node, 'keydown', (event) => {
 					// According to WAI ARIA, Checkboxes don't activate on enter keypress
 					if (event.key === kbd.ENTER) event.preventDefault();
+				}),
+				addEventListener(node, 'click', () => {
+					const $options = get(options);
+					if ($options.disabled) return;
+
+					checked.update((value) => {
+						if (value === 'indeterminate') return true;
+						return !value;
+					});
 				})
 			);
-			addEventListener(node, 'click', () => {
-				const $options = get(options);
-				if ($options.disabled) return;
-
-				checked.update((value) => {
-					if (value === 'indeterminate') return true;
-					return !value;
-				});
-			});
 
 			return {
 				destroy: unsub,

@@ -1,5 +1,55 @@
 # @melt-ui/svelte
 
+## 0.26.0
+
+### Minor Changes
+
+- 7a8c0f05: Tooltip: Change default options; Add trigger/content gap handling; Behaviour changes
+
+### Patch Changes
+
+- d055b2a5: [Tooltip] Fix a11y attributes & behavior
+- c5945220: [Avatar] Fixes bug where the fallback is hidden
+- a71ac941: fix: dialog focus-trap
+- 2f803ea8: [Combobox]
+  - Fix Open/Close Flickering
+  - Returns a `label` element builder
+
+## 0.25.1
+
+### Patch Changes
+
+- fix: avatar fallback overriding styles
+
+## 0.25.0
+
+### Minor Changes
+
+- 2d1936b0: feat: tooltip touch support
+
+### Patch Changes
+
+- 902cb5dc: refactor: Internal type-safety & performance changes
+- 6f620f0a: fix: clicks misfiring
+- 9c81f47e: refactor: rename createToasts to createToaster
+
+## 0.24.1
+
+### Patch Changes
+
+- 0f100296: [Checkbox] Unsub checkbox click event
+- afa02ae9: use nanonid/non-secure to support more environments
+
+## 0.24.0
+
+### Minor Changes
+
+- ef32b32a: [New Builder] Toast
+
+### Patch Changes
+
+- f25ed135: [Dialog]: Dialog no longer closes on right-click
+
 ## 0.23.2
 
 ### Patch Changes

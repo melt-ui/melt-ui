@@ -22,12 +22,15 @@ import {
 	removeScroll,
 	sleep,
 	styleToString,
+	addHighlight,
+	removeHighlight,
 } from '$lib/internal/helpers';
 import { getOptions } from '$lib/internal/helpers/list';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
 import type { ComboboxItemProps, CreateComboboxProps } from './types';
+import { createLabel } from '../label';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
@@ -215,7 +218,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 
 							const enabledItems = Array.from(
 								menuEl.querySelectorAll(`${selector('item')}:not([data-disabled])`)
-							) as HTMLElement[];
+							).filter((item): item is HTMLElement => isHTMLElement(item));
 							if (!enabledItems.length) return;
 
 							if (e.key === kbd.ARROW_DOWN) {
@@ -333,7 +336,16 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 									floating: { placement: 'bottom', sameWidth: true },
 									focusTrap: null,
 									clickOutside: {
-										handler: () => {
+										handler: (e) => {
+											const target = e.target;
+											if (isHTMLElement(target)) {
+												const closestLabel = target.closest(selector('label'));
+												const isTrigger = target === $activeTrigger;
+												const isLabel = target.id === ids.label;
+												if (closestLabel || isTrigger || isLabel) {
+													return;
+												}
+											}
 											reset();
 											closeMenu();
 										},
@@ -359,6 +371,19 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 				},
 			};
 		},
+	});
+
+	// Use our existing label builder to create a label for the combobox input.
+	const labelBuilder = createLabel();
+	const { action: labelAction } = get(labelBuilder);
+
+	const label = builder(name('label'), {
+		returned: () => {
+			return {
+				id: ids.label,
+			};
+		},
+		action: labelAction,
 	});
 
 	const item = builder(name('item'), {
@@ -415,9 +440,9 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		if (!isHTMLElement(menuElement)) return;
 		getOptions(menuElement).forEach((node) => {
 			if (node === $highlightedItem) {
-				node.setAttribute('data-highlighted', '');
+				addHighlight(node);
 			} else {
-				node.removeAttribute('data-highlighted');
+				removeHighlight(node);
 			}
 		});
 		if ($highlightedItem) {
@@ -436,5 +461,6 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		menu,
 		input,
 		item,
+		label,
 	};
 }

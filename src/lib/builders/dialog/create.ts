@@ -6,6 +6,8 @@ import {
 	effect,
 	generateId,
 	isBrowser,
+	isHTMLElement,
+	isLeftClick,
 	last,
 	noop,
 	sleep,
@@ -15,6 +17,7 @@ import { removeScroll } from '$lib/internal/helpers/scroll';
 import type { Defaults } from '$lib/internal/types';
 import { get, writable } from 'svelte/store';
 import type { CreateDialogProps } from './types';
+import { tick } from 'svelte';
 
 type DialogParts = 'trigger' | 'overlay' | 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<DialogParts>('dialog');
@@ -45,7 +48,10 @@ export function createDialog(props: CreateDialogProps = {}) {
 		// Prevent double clicks from closing multiple dialogs
 		sleep(100).then(() => {
 			if ($open) {
-				openDialogIds.update((prev) => [...prev, ids.content]);
+				openDialogIds.update((prev) => {
+					prev.push(ids.content);
+					return prev;
+				});
 			} else {
 				openDialogIds.update((prev) => prev.filter((id) => id !== ids.content));
 			}
@@ -64,7 +70,8 @@ export function createDialog(props: CreateDialogProps = {}) {
 		},
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', (e) => {
-				const el = e.currentTarget as HTMLElement;
+				const el = e.currentTarget;
+				if (!isHTMLElement(el)) return;
 				open.set(true);
 				activeTrigger.set(el);
 			});
@@ -114,6 +121,10 @@ export function createDialog(props: CreateDialogProps = {}) {
 					e.preventDefault();
 					e.stopImmediatePropagation();
 
+					if (e instanceof MouseEvent && !isLeftClick(e)) {
+						return false;
+					}
+
 					const $options = get(options);
 					const $openDialogIds = get(openDialogIds);
 					const isLast = last($openDialogIds) === ids.content;
@@ -124,7 +135,6 @@ export function createDialog(props: CreateDialogProps = {}) {
 
 					return false;
 				},
-
 				returnFocusOnDeactivate: false,
 				fallbackFocus: node,
 			});
@@ -136,11 +146,13 @@ export function createDialog(props: CreateDialogProps = {}) {
 			}
 
 			effect([open], ([$open]) => {
-				if (node.hidden || !$open) {
-					deactivate();
-				} else {
-					activate();
-				}
+				tick().then(() => {
+					if (!$open) {
+						deactivate();
+					} else {
+						activate();
+					}
+				});
 			});
 
 			return {

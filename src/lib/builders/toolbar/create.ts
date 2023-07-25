@@ -148,8 +148,8 @@ export function createToolbar(props: CreateToolbarProps = {}) {
 					return { value: itemValue, disabled };
 				};
 
-				const parentToolbar = node.closest<HTMLElement>('[data-melt-toolbar]');
-				if (!parentToolbar) return;
+				const parentToolbar = node.closest('[data-melt-toolbar]');
+				if (!isHTMLElement(parentToolbar)) return;
 
 				const items = getToolbarItems(parentToolbar);
 
@@ -164,11 +164,15 @@ export function createToolbar(props: CreateToolbarProps = {}) {
 						const { value: itemValue, disabled } = getNodeProps();
 						if (itemValue === undefined || disabled) return;
 
-						value.update((v) => {
-							if (Array.isArray(v)) {
-								return v.includes(itemValue) ? v.filter((i) => i !== itemValue) : [...v, itemValue];
+						value.update(($value) => {
+							if (Array.isArray($value)) {
+								if ($value.includes(itemValue)) {
+									return $value.filter((i) => i !== itemValue);
+								}
+								$value.push(itemValue);
+								return $value;
 							}
-							return v === itemValue ? null : itemValue;
+							return $value === itemValue ? null : itemValue;
 						});
 					}),
 
@@ -207,8 +211,8 @@ export function createToolbar(props: CreateToolbarProps = {}) {
 }
 
 function getToolbarItems(element: HTMLElement) {
-	return Array.from(
-		element.querySelectorAll<HTMLElement>(`${selector('item')}, ${selector('button')}`)
+	return Array.from(element.querySelectorAll(`${selector('item')}, ${selector('button')}`)).filter(
+		(el): el is HTMLElement => isHTMLElement(el)
 	);
 }
 
@@ -229,32 +233,28 @@ const getKeydownHandler =
 
 		const el = e.currentTarget;
 		if (!isHTMLElement(el)) return;
-		const root = el.closest<HTMLElement>('[data-melt-toolbar]');
+		const root = el.closest('[data-melt-toolbar]');
 		if (!isHTMLElement(root)) return;
 
 		const items = Array.from(
-			root.querySelectorAll<HTMLElement>(`${selector('item')}, ${selector('button')}`)
-		);
+			root.querySelectorAll(`${selector('item')}, ${selector('button')}`)
+		).filter((el): el is HTMLElement => isHTMLElement(el));
 
 		const currentIndex = items.indexOf(el);
 
 		if (e.key === nextKey) {
 			e.preventDefault();
 			const nextIndex = currentIndex + 1;
-			if (nextIndex >= items.length) {
-				if ($options.loop) {
-					handleRovingFocus(items[0]);
-				}
+			if (nextIndex >= items.length && $options.loop) {
+				handleRovingFocus(items[0]);
 			} else {
 				handleRovingFocus(items[nextIndex]);
 			}
 		} else if (e.key === prevKey) {
 			e.preventDefault();
 			const prevIndex = currentIndex - 1;
-			if (prevIndex < 0) {
-				if ($options.loop) {
-					handleRovingFocus(items[items.length - 1]);
-				}
+			if (prevIndex < 0 && $options.loop) {
+				handleRovingFocus(items[items.length - 1]);
 			} else {
 				handleRovingFocus(items[prevIndex]);
 			}

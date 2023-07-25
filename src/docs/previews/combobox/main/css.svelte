@@ -63,24 +63,32 @@
 		},
 	];
 
-	const { open, input, menu, item, inputValue, isSelected, filteredItems } =
-		createCombobox({
-			filterFunction: (item, inputValue) => {
-				// Example string normalization function. Replace as needed.
-				const normalize = (str: string) => str.normalize().toLowerCase();
-				const normalizedInput = normalize(inputValue);
-				return (
-					normalizedInput === '' ||
-					normalize(item.title).includes(normalizedInput) ||
-					normalize(item.author).includes(normalizedInput)
-				);
-			},
-			items: books,
-			itemToString: (item) => item.title,
-		});
+	const {
+		open,
+		input,
+		menu,
+		item,
+		inputValue,
+		isSelected,
+		filteredItems,
+		label,
+	} = createCombobox({
+		filterFunction: (item, inputValue) => {
+			// Example string normalization function. Replace as needed.
+			const normalize = (str: string) => str.normalize().toLowerCase();
+			const normalizedInput = normalize(inputValue);
+			return (
+				normalizedInput === '' ||
+				normalize(item.title).includes(normalizedInput) ||
+				normalize(item.author).includes(normalizedInput)
+			);
+		},
+		items: books,
+		itemToString: (item) => item.title,
+	});
 </script>
 
-<label>
+<label melt={$label}>
 	<span>Choose your favorite book:</span>
 	<div>
 		<input melt={$input} placeholder="Best book ever" value={$inputValue} />

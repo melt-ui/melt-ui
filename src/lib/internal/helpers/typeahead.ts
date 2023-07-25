@@ -38,7 +38,8 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 	});
 
 	const handleTypeaheadSearch = (key: string, items: HTMLElement[]) => {
-		const currentItem = document.activeElement as HTMLElement | null;
+		const currentItem = document.activeElement;
+		if (!isHTMLElement(currentItem)) return;
 		const $typed = get(typed);
 		if (!Array.isArray($typed)) {
 			return;
@@ -49,11 +50,9 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 		const candidateItems = items.filter((item) => {
 			if (
 				item.getAttribute('disabled') === 'true' ||
-				item.getAttribute('aria-disabled') === 'true'
+				item.getAttribute('aria-disabled') === 'true' ||
+				item.hasAttribute('data-disabled')
 			) {
-				return false;
-			}
-			if (item.hasAttribute('data-disabled')) {
 				return false;
 			}
 			return true;

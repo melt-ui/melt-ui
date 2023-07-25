@@ -15,6 +15,7 @@ description: A filterable list of items that supports selection.
   the list
 - **Menu**: The popover menu
 - **Item**: The individual list item
+- **Label**: The label for the input
 
 ## API Reference
 

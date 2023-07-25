@@ -25,6 +25,6 @@ export function isTouch(event: PointerEvent): boolean {
 	return event.pointerType === 'touch';
 }
 
-export function isLeftClick(event: PointerEvent): boolean {
+export function isLeftClick(event: PointerEvent | MouseEvent): boolean {
 	return event.button === 0 && event.ctrlKey === false && event.metaKey === false;
 }

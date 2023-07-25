@@ -2,17 +2,20 @@ import {
 	addEventListener,
 	builder,
 	createElHelpers,
+	effect,
 	executeCallbacks,
 	generateId,
+	makeHullFromElements,
 	noop,
 	omit,
+	pointInPolygon,
 	styleToString,
 } from '$lib/internal/helpers';
 
 import { useFloating, usePortal } from '$lib/internal/actions';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
-import { derived, get, writable, type Readable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import type { CreateTooltipProps } from './types';
 
 const defaults = {
@@ -21,9 +24,9 @@ const defaults = {
 	},
 	arrowSize: 8,
 	open: false,
-	closeOnPointerDown: true,
+	closeOnPointerDown: false,
 	openDelay: 1000,
-	closeDelay: 500,
+	closeDelay: 0,
 } satisfies Defaults<CreateTooltipProps>;
 
 type TooltipParts = 'trigger' | 'content' | 'arrow';
@@ -42,57 +45,78 @@ export function createTooltip(props?: CreateTooltipProps) {
 		trigger: generateId(),
 	};
 
-	let timeout: number | null = null;
+	let openTimeout: number | null = null;
+	let closeTimeout: number | null = null;
+	let clickedTrigger = false;
 
-	const openTooltip = derived(options, ($options) => {
-		return () => {
-			if (timeout) {
-				window.clearTimeout(timeout);
-				timeout = null;
-			}
+	const openTooltip = () => {
+		const $options = get(options);
 
-			timeout = window.setTimeout(() => {
-				open.set(true);
-			}, $options.openDelay);
-		};
-	}) as Readable<() => void>;
+		if (openTimeout) {
+			window.clearTimeout(openTimeout);
+			openTimeout = null;
+		}
 
-	const closeTooltip = derived(options, ($options) => {
-		return () => {
-			if (timeout) {
-				window.clearTimeout(timeout);
-				timeout = null;
-			}
+		if (clickedTrigger) return;
+		openTimeout = window.setTimeout(() => {
+			open.set(true);
+		}, $options.openDelay);
+	};
 
-			timeout = window.setTimeout(() => {
-				open.set(false);
-			}, $options.closeDelay);
-		};
-	}) as Readable<() => void>;
+	const closeTooltip = () => {
+		const $options = get(options);
+
+		if (closeTimeout) {
+			window.clearTimeout(closeTimeout);
+			closeTimeout = null;
+		}
+
+		closeTimeout = window.setTimeout(() => {
+			open.set(false);
+			clickedTrigger = false;
+		}, $options.closeDelay);
+	};
 
 	const trigger = builder(name('trigger'), {
-		stores: open,
-		returned: ($open) => {
+		returned: () => {
 			return {
-				role: 'button' as const,
-				'aria-haspopup': 'dialog' as const,
-				'aria-expanded': $open,
-				'data-state': $open ? 'open' : 'closed',
-				'aria-controls': ids.content,
+				'aria-describedby': ids.content,
 				id: ids.trigger,
 			};
 		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'mouseover', () => get(openTooltip)()),
-				addEventListener(node, 'mouseout', () => get(closeTooltip)()),
-				addEventListener(node, 'focus', () => open.set(true)),
-				addEventListener(node, 'blur', () => open.set(false)),
-				addEventListener(node, 'mousedown', (e) => {
-					e.preventDefault();
-
+				addEventListener(node, 'pointerdown', () => {
 					const $options = get(options);
 					if ($options.closeOnPointerDown) {
+						open.set(false);
+						clickedTrigger = true;
+					}
+				}),
+				addEventListener(node, 'mouseover', openTooltip),
+				addEventListener(node, 'mouseleave', () => {
+					if (openTimeout) {
+						window.clearTimeout(openTimeout);
+						openTimeout = null;
+					}
+					clickedTrigger = false;
+				}),
+				addEventListener(node, 'focus', openTooltip),
+				addEventListener(node, 'blur', closeTooltip),
+				addEventListener(node, 'keydown', (e) => {
+					if (e.key === 'Escape') {
+						if (openTimeout) {
+							window.clearTimeout(openTimeout);
+
+							openTimeout = null;
+						}
+
+						if (closeTimeout) {
+							window.clearTimeout(closeTimeout);
+							closeTimeout = null;
+						}
+
+						clickedTrigger = false;
 						open.set(false);
 					}
 				})
@@ -108,6 +132,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 		stores: open,
 		returned: ($open) => {
 			return {
+				role: 'tooltip',
 				hidden: $open ? undefined : true,
 				tabindex: -1,
 				style: styleToString({
@@ -125,7 +150,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 			const unsubOpen = open.subscribe(($open) => {
 				if ($open) {
 					tick().then(() => {
-						const triggerEl = document.getElementById(ids.trigger);
+						const triggerEl = document.querySelector(`[aria-describedby="${ids.content}"]`);
 						if (!triggerEl || node.hidden) return;
 						const $options = get(options);
 						const floatingReturn = useFloating(triggerEl, node, $options.positioning);
@@ -137,8 +162,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 			});
 
 			unsub = executeCallbacks(
-				addEventListener(node, 'mouseover', () => get(openTooltip)()),
-				addEventListener(node, 'mouseout', () => get(closeTooltip)()),
+				addEventListener(node, 'mouseover', openTooltip),
 				portalReturn && portalReturn.destroy ? portalReturn.destroy : noop,
 				unsubOpen
 			);
@@ -162,6 +186,40 @@ export function createTooltip(props?: CreateTooltipProps) {
 				height: `var(--arrow-size, ${$options.arrowSize}px)`,
 			}),
 		}),
+	});
+
+	effect(open, ($open) => {
+		if ($open) {
+			return executeCallbacks(
+				addEventListener(document, 'mousemove', (e) => {
+					const triggerEl = document.getElementById(ids.trigger);
+					if (!triggerEl || document.activeElement === triggerEl) return;
+
+					const contentEl = document.getElementById(ids.content);
+					if (!contentEl) return;
+
+					const polygon = makeHullFromElements([triggerEl, contentEl]);
+
+					const isMouseInTooltipArea = pointInPolygon(
+						{
+							x: e.clientX,
+							y: e.clientY,
+						},
+						polygon
+					);
+
+					if (isMouseInTooltipArea) {
+						closeTimeout = null;
+						return;
+					}
+
+					closeTooltip();
+				}),
+				addEventListener(document, 'mouseleave', () => {
+					closeTooltip();
+				})
+			);
+		}
 	});
 
 	return { trigger, open, content, arrow, options };

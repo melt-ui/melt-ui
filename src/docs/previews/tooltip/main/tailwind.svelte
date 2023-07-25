@@ -8,7 +8,6 @@
 			placement: 'top',
 		},
 		openDelay: 500,
-		closeDelay: 250,
 	});
 </script>
 

@@ -4,7 +4,7 @@ import {
 	createElHelpers,
 	executeCallbacks,
 	getDirectionalKeys,
-	isLeftClick,
+	isHTMLElement,
 	kbd,
 } from '$lib/internal/helpers';
 import { getElemDirection } from '$lib/internal/helpers/locale';
@@ -68,11 +68,8 @@ export function createRadioGroup(props: CreateRadioGroupProps = {}) {
 		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', (e) => {
-					if (!isLeftClick(e)) {
-						e.preventDefault();
-						return;
-					}
+				addEventListener(node, 'click', (e) => {
+					e.preventDefault();
 
 					const disabled = node.dataset.disabled === 'true';
 					const itemValue = node.dataset.value;
@@ -87,10 +84,15 @@ export function createRadioGroup(props: CreateRadioGroupProps = {}) {
 				}),
 				addEventListener(node, 'keydown', (e) => {
 					const $options = get(options);
-					const el = e.currentTarget as HTMLElement;
-					const root = el.closest(selector()) as HTMLElement;
+					const el = e.currentTarget;
+					if (!isHTMLElement(el)) return;
 
-					const items = Array.from(root.querySelectorAll(selector('item'))) as Array<HTMLElement>;
+					const root = el.closest(selector());
+					if (!isHTMLElement(root)) return;
+
+					const items = Array.from(root.querySelectorAll(selector('item'))).filter(
+						(el): el is HTMLElement => isHTMLElement(el)
+					);
 					const currentIndex = items.indexOf(el);
 
 					const dir = getElemDirection(root);
@@ -99,20 +101,16 @@ export function createRadioGroup(props: CreateRadioGroupProps = {}) {
 					if (e.key === nextKey) {
 						e.preventDefault();
 						const nextIndex = currentIndex + 1;
-						if (nextIndex >= items.length) {
-							if ($options.loop) {
-								items[0].focus();
-							}
+						if (nextIndex >= items.length && $options.loop) {
+							items[0].focus();
 						} else {
 							items[nextIndex].focus();
 						}
 					} else if (e.key === prevKey) {
 						e.preventDefault();
 						const prevIndex = currentIndex - 1;
-						if (prevIndex < 0) {
-							if ($options.loop) {
-								items[items.length - 1].focus();
-							}
+						if (prevIndex < 0 && $options.loop) {
+							items[items.length - 1].focus();
 						} else {
 							items[prevIndex].focus();
 						}
