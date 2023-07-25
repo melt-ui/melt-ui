@@ -5,8 +5,9 @@ import { isHTMLElement } from './is';
  * This is used to handle nested portals/overlays/dialogs/popovers.
  */
 export function getPortalParent(node: HTMLElement) {
-	const portalParent = node.closest('[data-portal]');
-	node.dataset.portal = '';
-	if (!isHTMLElement(portalParent)) return 'body';
-	return portalParent;
+	let parent = node.parentElement;
+	while (isHTMLElement(parent) && parent.getAttribute('data-portal') === null) {
+		parent = parent.parentElement;
+	}
+	return parent || document.body;
 }

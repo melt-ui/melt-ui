@@ -1,6 +1,6 @@
 import { tick } from 'svelte';
 import type { Action } from 'svelte/action';
-import { isHTMLElement, noop } from '../helpers';
+import { isHTMLElement, noop } from '$lib/internal/helpers';
 
 export type PortalConfig = string | HTMLElement | undefined;
 
@@ -33,9 +33,9 @@ export const usePortal: Action<HTMLElement, PortalConfig> = (el, target = 'body'
 				}. Allowed types: string (CSS selector) or HTMLElement.`
 			);
 		}
+		el.dataset.portal = '';
 		targetEl.appendChild(el);
 		el.hidden = false;
-		el.dataset.portal = '';
 	}
 
 	function destroy() {

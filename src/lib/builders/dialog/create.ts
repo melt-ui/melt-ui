@@ -15,8 +15,8 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
+	removeScroll,
 } from '$lib/internal/helpers';
-import { removeScroll } from '$lib/internal/helpers/scroll';
 import type { Defaults } from '$lib/internal/types';
 import { get, writable } from 'svelte/store';
 import type { CreateDialogProps } from './types';
@@ -31,6 +31,7 @@ const defaults = {
 	closeOnOutsideClick: true,
 	role: 'dialog',
 	defaultOpen: false,
+	portal: true,
 } satisfies Defaults<CreateDialogProps>;
 
 const openDialogIds = writable<string[]>([]);
@@ -39,7 +40,7 @@ export function createDialog(props?: CreateDialogProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateDialogProps;
 
 	const options = toWritableStores(withDefaults);
-	const { preventScroll, closeOnEscape, closeOnOutsideClick, role } = options;
+	const { preventScroll, closeOnEscape, closeOnOutsideClick, role, portal } = options;
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
@@ -133,6 +134,32 @@ export function createDialog(props?: CreateDialogProps) {
 				'data-state': $open ? 'open' : 'closed',
 			} as const;
 		},
+		action: (node: HTMLElement) => {
+			let unsubPortal = noop;
+			let unsubEscapeKeydown = noop;
+
+			const portal = usePortal(node);
+			if (portal && portal.destroy) {
+				unsubPortal = portal.destroy;
+			}
+			if (get(closeOnEscape)) {
+				const escapeKeydown = useEscapeKeydown(node, {
+					handler: () => {
+						open.set(false);
+					},
+				});
+				if (escapeKeydown && escapeKeydown.destroy) {
+					unsubEscapeKeydown = escapeKeydown.destroy;
+				}
+			}
+
+			return {
+				destroy() {
+					unsubPortal();
+					unsubEscapeKeydown();
+				},
+			};
+		},
 	});
 
 	const content = builder(name('content'), {
@@ -146,11 +173,15 @@ export function createDialog(props?: CreateDialogProps) {
 				'data-state': $open ? 'open' : 'closed',
 				tabindex: -1,
 				hidden: $open ? undefined : true,
+				'data-portal': get(portal) ? '' : undefined,
 			};
 		},
 
 		action: (node: HTMLElement) => {
+			const portalParent = getPortalParent(node);
 			let unsub = noop;
+			let unsubPortal = noop;
+			let unsubEscapeKeydown = noop;
 
 			const { useFocusTrap, activate, deactivate } = createFocusTrap({
 				immediate: false,
@@ -176,6 +207,21 @@ export function createDialog(props?: CreateDialogProps) {
 				returnFocusOnDeactivate: false,
 				fallbackFocus: node,
 			});
+
+			const portal = usePortal(node, portalParent);
+			if (portal && portal.destroy) {
+				unsubPortal = portal.destroy;
+			}
+			if (get(closeOnEscape)) {
+				const escapeKeydown = useEscapeKeydown(node, {
+					handler: () => {
+						open.set(false);
+					},
+				});
+				if (escapeKeydown && escapeKeydown.destroy) {
+					unsubEscapeKeydown = escapeKeydown.destroy;
+				}
+			}
 			const ac = useFocusTrap(node);
 			if (ac && ac.destroy) {
 				unsub = ac.destroy;
@@ -194,7 +240,11 @@ export function createDialog(props?: CreateDialogProps) {
 			});
 
 			return {
-				destroy: unsub,
+				destroy() {
+					unsub();
+					unsubPortal();
+					unsubEscapeKeydown();
+				},
 			};
 		},
 	});

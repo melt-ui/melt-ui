@@ -73,6 +73,13 @@ export type CreateComboboxProps<T> = {
 	 * @default true
 	 */
 	preventScroll?: boolean;
+
+	/**
+	 * Whether the combobox menu should be rendered in a portal.
+	 *
+	 * @default true
+	 */
+	portal?: boolean;
 };
 
 export type ComboboxFilterFunction<T> = (item: T, value: string) => boolean;

@@ -11,6 +11,7 @@ export type CreateDialogProps = {
 	defaultOpen?: boolean;
 	open?: Writable<boolean>;
 	onOpenChange?: ChangeFn<boolean>;
+	portal?: boolean;
 };
 
 export type Dialog = BuilderReturn<typeof createDialog>;

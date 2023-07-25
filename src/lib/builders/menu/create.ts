@@ -26,10 +26,11 @@ import {
 	toWritableStores,
 	getPortalParent,
 } from '$lib/internal/helpers';
+import { createSeparator } from '$lib/builders';
 import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Writable } from 'svelte/store';
-import { createSeparator } from '../separator';
+
 import type {
 	CheckboxItemProps,
 	CreateMenuProps,
@@ -157,7 +158,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							options: {
 								floating: $positioning,
 								clickOutside: $closeOnOutsideClick ? undefined : null,
-								portal: $portal ? portalParent : null,
+								portal: $portal ? (portalParent === document.body ? null : portalParent) : null,
 							},
 						});
 

@@ -81,6 +81,7 @@ export const useEscapeKeydown = (node: HTMLElement, config: EscapeKeydownConfig 
 			options = { ...options, ...params };
 		},
 		destroy() {
+			node.removeAttribute('data-escapee');
 			unsubscribe();
 		},
 	};

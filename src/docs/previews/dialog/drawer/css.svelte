@@ -2,7 +2,7 @@
 	import { createDialog } from '$lib/builders/dialog';
 	import { fade, fly } from 'svelte/transition';
 	// Internal helpers
-	import X from '~icons/lucide/x';
+	import { X } from 'lucide-svelte';
 
 	const {
 		elements: { trigger, overlay, content, title, description, close },

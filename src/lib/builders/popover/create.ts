@@ -68,8 +68,8 @@ export function createPopover(args?: CreatePopoverProps) {
 	});
 
 	const content = builder(name('content'), {
-		stores: [show],
-		returned: ([$show]) => {
+		stores: [show, portal],
+		returned: ([$show, $portal]) => {
 			return {
 				hidden: $show && isBrowser ? undefined : true,
 				tabindex: -1,
@@ -78,6 +78,7 @@ export function createPopover(args?: CreatePopoverProps) {
 				}),
 				id: ids.content,
 				'data-state': $show ? 'open' : 'closed',
+				'data-portal': $portal ? '' : '',
 			};
 		},
 		action: (node: HTMLElement) => {

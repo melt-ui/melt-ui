@@ -30,13 +30,14 @@ import {
 	removeScroll,
 	styleToString,
 	toWritableStores,
+	getFirstOption,
+	getOptions,
+	sleep,
 } from '$lib/internal/helpers';
-import { getFirstOption, getOptions } from '$lib/internal/helpers/list';
-import { sleep } from '$lib/internal/helpers/sleep';
 import type { Defaults } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
-import { createSeparator } from '../separator';
+import { createSeparator } from '$lib/builders';
 import type { CreateSelectProps, SelectOptionProps } from './types';
 
 const defaults = {
@@ -52,6 +53,7 @@ const defaults = {
 	name: undefined,
 	defaultOpen: false,
 	defaultValue: undefined,
+	portal: true,
 } satisfies Defaults<CreateSelectProps>;
 
 type SelectParts = 'menu' | 'trigger' | 'option' | 'group' | 'group-label' | 'arrow' | 'input';
@@ -69,6 +71,7 @@ export function createSelect(props?: CreateSelectProps) {
 		loop,
 		preventScroll,
 		name: nameStore,
+		portal,
 	} = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
@@ -138,8 +141,8 @@ export function createSelect(props?: CreateSelectProps) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[open, activeTrigger, positioning],
-				([$open, $activeTrigger, $positioning]) => {
+				[open, activeTrigger, positioning, portal],
+				([$open, $activeTrigger, $positioning, $portal]) => {
 					unsubPopper();
 					if ($open && $activeTrigger) {
 						tick().then(() => {
@@ -148,7 +151,7 @@ export function createSelect(props?: CreateSelectProps) {
 								open,
 								options: {
 									floating: $positioning,
-									portal: parentPortal,
+									portal: $portal ? (parentPortal !== document.body ? null : undefined) : null,
 								},
 							});
 

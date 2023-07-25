@@ -4,6 +4,8 @@ export * from './dom';
 export * from './event';
 export * from './highlight';
 export * from './is';
+export * from './list';
+export * from './locale';
 export * from './object';
 export * from './overridable';
 export * from './sleep';

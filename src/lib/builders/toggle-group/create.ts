@@ -9,8 +9,8 @@ import {
 	noop,
 	omit,
 	toWritableStores,
+	getElemDirection,
 } from '$lib/internal/helpers';
-import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateToggleGroupProps, ToggleGroupItemProps, ToggleGroupType } from './types';

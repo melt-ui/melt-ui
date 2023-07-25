@@ -5,10 +5,10 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
+	omit,
 } from '$lib/internal/helpers';
 import { writable } from 'svelte/store';
 import type { CreateAvatarProps } from './types';
-import { omit } from '../../internal/helpers/object';
 
 const defaults = {
 	src: '',

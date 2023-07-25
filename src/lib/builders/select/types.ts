@@ -19,6 +19,7 @@ export type CreateSelectProps = {
 	name?: string;
 	preventScroll?: boolean;
 	loop?: boolean;
+	portal?: boolean;
 };
 
 export type SelectOptionProps = {
