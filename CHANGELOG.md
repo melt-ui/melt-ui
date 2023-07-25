@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.26.2
+
+### Patch Changes
+
+- 75ba9c3b: fix: tooltip pointerover now only works with mouse inputs
+
 ## 0.26.1
 
 ### Patch Changes
