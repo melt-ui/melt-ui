@@ -28,12 +28,12 @@ Adheres to the
 
 <Callout type="warning">
 
-Tooltips are only opened on hover/focus and not on press, as the tooltip content is used to describe
-the element that would be activated by the press, such as an trashcan icon button which would delete
-something. If the button is pressed, an action should be taken, which in that case it is too late to
-display a tooltip.
+Tooltips are only activated on hover or on focus, and not on press. Since the tooltip is generally
+used to describe an action, its usefulness would be limited in case it appeared on press, seeing as
+the action would have already been performed. This behaviour is also predicted by the WAI-ARIA
+tooltip role design pattern.
 
-Chances are if you have a need to display the tooltip on press, using a tooltip isn't
+Chances are if you have a need to display content on press, using a tooltip isn't
 accessible/appropriate, and should instead consider using a [Popover](/docs/builders/popover).
 
 </Callout>

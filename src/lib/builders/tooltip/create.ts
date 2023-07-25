@@ -24,15 +24,13 @@ const defaults = {
 	},
 	arrowSize: 8,
 	open: false,
-	closeOnPointerDown: false,
+	closeOnPointerDown: true,
 	openDelay: 1000,
 	closeDelay: 0,
 } satisfies Defaults<CreateTooltipProps>;
 
 type TooltipParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<TooltipParts>('tooltip');
-
-// TODO: Add grace area to prevent tooltip from closing when moving from trigger to tooltip
 
 export function createTooltip(props?: CreateTooltipProps) {
 	const withDefaults = { ...defaults, ...props } as CreateTooltipProps;
@@ -57,13 +55,12 @@ export function createTooltip(props?: CreateTooltipProps) {
 			openTimeout = null;
 		}
 
-		if (clickedTrigger) return;
 		openTimeout = window.setTimeout(() => {
 			open.set(true);
 		}, $options.openDelay);
 	};
 
-	const closeTooltip = () => {
+	const closeTooltip = (isBlur?: boolean) => {
 		const $options = get(options);
 
 		if (closeTimeout) {
@@ -73,7 +70,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 		closeTimeout = window.setTimeout(() => {
 			open.set(false);
-			clickedTrigger = false;
+			if (isBlur) clickedTrigger = false;
 		}, $options.closeDelay);
 	};
 
@@ -88,9 +85,12 @@ export function createTooltip(props?: CreateTooltipProps) {
 			const unsub = executeCallbacks(
 				addEventListener(node, 'pointerdown', () => {
 					const $options = get(options);
-					if ($options.closeOnPointerDown) {
-						open.set(false);
-						clickedTrigger = true;
+					if (!$options.closeOnPointerDown) return;
+					open.set(false);
+					clickedTrigger = true;
+					if (openTimeout) {
+						window.clearTimeout(openTimeout);
+						openTimeout = null;
 					}
 				}),
 				addEventListener(node, 'mouseover', openTooltip),
@@ -99,15 +99,16 @@ export function createTooltip(props?: CreateTooltipProps) {
 						window.clearTimeout(openTimeout);
 						openTimeout = null;
 					}
-					clickedTrigger = false;
 				}),
-				addEventListener(node, 'focus', openTooltip),
-				addEventListener(node, 'blur', closeTooltip),
+				addEventListener(node, 'focus', () => {
+					if (clickedTrigger) return;
+					openTooltip();
+				}),
+				addEventListener(node, 'blur', () => closeTooltip(true)),
 				addEventListener(node, 'keydown', (e) => {
 					if (e.key === 'Escape') {
 						if (openTimeout) {
 							window.clearTimeout(openTimeout);
-
 							openTimeout = null;
 						}
 
@@ -116,7 +117,6 @@ export function createTooltip(props?: CreateTooltipProps) {
 							closeTimeout = null;
 						}
 
-						clickedTrigger = false;
 						open.set(false);
 					}
 				})
@@ -193,7 +193,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 			return executeCallbacks(
 				addEventListener(document, 'mousemove', (e) => {
 					const triggerEl = document.getElementById(ids.trigger);
-					if (!triggerEl || document.activeElement === triggerEl) return;
+					if (!triggerEl || (document.activeElement === triggerEl && !clickedTrigger)) return;
 
 					const contentEl = document.getElementById(ids.content);
 					if (!contentEl) return;
