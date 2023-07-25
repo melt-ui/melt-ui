@@ -44,7 +44,6 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 	const isPointerDownOnContent = writable(false);
 	const containSelection = writable(false);
 
-	// options
 	const options = toWritableStores(withDefaults);
 
 	const { openDelay, closeDelay, positioning, arrowSize, closeOnOutsideClick } = options;
@@ -152,29 +151,27 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 
 			let unsubPopper = noop;
 			const unsubOpen = open.subscribe(($open) => {
-				if ($open) {
-					tick().then(() => {
-						const triggerEl = document.getElementById(ids.trigger);
-						if (!triggerEl || node.hidden) return;
-						const $positioning = get(positioning);
-						const $closeOnOutsideClick = get(closeOnOutsideClick);
+				unsubPopper();
+				if (!$open) return;
+				tick().then(() => {
+					const triggerEl = document.getElementById(ids.trigger);
+					if (!triggerEl || node.hidden) return;
+					const $positioning = get(positioning);
+					const $closeOnOutsideClick = get(closeOnOutsideClick);
 
-						const popper = usePopper(node, {
-							anchorElement: triggerEl,
-							open,
-							options: {
-								floating: $positioning,
-								focusTrap: null,
-								clickOutside: !$closeOnOutsideClick ? null : undefined,
-							},
-						});
-						if (popper && popper.destroy) {
-							unsubPopper = popper.destroy;
-						}
+					const popper = usePopper(node, {
+						anchorElement: triggerEl,
+						open,
+						options: {
+							floating: $positioning,
+							focusTrap: null,
+							clickOutside: $closeOnOutsideClick ? undefined : null,
+						},
 					});
-				} else {
-					unsubPopper();
-				}
+					if (popper && popper.destroy) {
+						unsubPopper = popper.destroy;
+					}
+				});
 			});
 
 			unsub = executeCallbacks(
@@ -229,57 +226,54 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 	});
 
 	effect([containSelection], ([$containSelection]) => {
-		if (!isBrowser) return;
-		if ($containSelection) {
-			const body = document.body;
-			const contentElement = document.getElementById(ids.content);
-			if (!contentElement) return;
-			// prefix for safari
-			originalBodyUserSelect = body.style.userSelect || body.style.webkitUserSelect;
-			const originalContentUserSelect =
-				contentElement.style.userSelect || contentElement.style.webkitUserSelect;
-			body.style.userSelect = 'none';
-			body.style.webkitUserSelect = 'none';
+		if (!isBrowser || !$containSelection) return;
+		const body = document.body;
+		const contentElement = document.getElementById(ids.content);
+		if (!contentElement) return;
+		// prefix for safari
+		originalBodyUserSelect = body.style.userSelect || body.style.webkitUserSelect;
+		const originalContentUserSelect =
+			contentElement.style.userSelect || contentElement.style.webkitUserSelect;
+		body.style.userSelect = 'none';
+		body.style.webkitUserSelect = 'none';
 
-			contentElement.style.userSelect = 'text';
-			contentElement.style.webkitUserSelect = 'text';
-			return () => {
-				body.style.userSelect = originalBodyUserSelect;
-				body.style.webkitUserSelect = originalBodyUserSelect;
-				contentElement.style.userSelect = originalContentUserSelect;
-				contentElement.style.webkitUserSelect = originalContentUserSelect;
-			};
-		}
+		contentElement.style.userSelect = 'text';
+		contentElement.style.webkitUserSelect = 'text';
+		return () => {
+			body.style.userSelect = originalBodyUserSelect;
+			body.style.webkitUserSelect = originalBodyUserSelect;
+			contentElement.style.userSelect = originalContentUserSelect;
+			contentElement.style.webkitUserSelect = originalContentUserSelect;
+		};
 	});
 
 	effect([open], ([$open]) => {
-		if (!isBrowser) return;
-		if ($open) {
-			const handlePointerUp = () => {
-				containSelection.set(false);
-				isPointerDownOnContent.set(false);
+		if (!isBrowser || !$open) return;
 
-				sleep(1).then(() => {
-					const isSelection = document.getSelection()?.toString() !== '';
-					if (isSelection) {
-						hasSelection.set(true);
-					}
-				});
-			};
+		const handlePointerUp = () => {
+			containSelection.set(false);
+			isPointerDownOnContent.set(false);
 
-			document.addEventListener('pointerup', handlePointerUp);
+			sleep(1).then(() => {
+				const isSelection = document.getSelection()?.toString() !== '';
+				if (isSelection) {
+					hasSelection.set(true);
+				}
+			});
+		};
 
-			const contentElement = document.getElementById(ids.content);
-			if (!contentElement) return;
-			const tabbables = getTabbableNodes(contentElement);
-			tabbables.forEach((tabbable) => tabbable.setAttribute('tabindex', '-1'));
+		document.addEventListener('pointerup', handlePointerUp);
 
-			return () => {
-				document.removeEventListener('pointerup', handlePointerUp);
-				hasSelection.set(false);
-				isPointerDownOnContent.set(false);
-			};
-		}
+		const contentElement = document.getElementById(ids.content);
+		if (!contentElement) return;
+		const tabbables = getTabbableNodes(contentElement);
+		tabbables.forEach((tabbable) => tabbable.setAttribute('tabindex', '-1'));
+
+		return () => {
+			document.removeEventListener('pointerup', handlePointerUp);
+			hasSelection.set(false);
+			isPointerDownOnContent.set(false);
+		};
 	});
 
 	return {

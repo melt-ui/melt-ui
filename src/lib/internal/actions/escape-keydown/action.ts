@@ -1,7 +1,3 @@
-// Modified from Grail UI v0.9.6 (2023-06-10)
-// Source: https://github.com/grail-ui/grail-ui
-// https://github.com/grail-ui/grail-ui/tree/master/packages/grail-ui/src/clickOutside/clickOutside.ts
-
 import { readable } from 'svelte/store';
 import { addEventListener } from '$lib/internal/helpers/event';
 import { get } from 'svelte/store';
@@ -10,16 +6,16 @@ import type { EscapeKeydownConfig } from './types';
 import { kbd } from '../../helpers';
 
 /**
- * Creates a readable store that tracks the latest PointerEvent that occurred on the document.
+ * Creates a readable store that tracks the latest Escape Keydown that occurred on the document.
  *
- * @returns A function to unsubscribe from the event listener and stop tracking pointer events.
+ * @returns A function to unsubscribe from the event listener and stop tracking keydown events.
  */
 const documentEscapeKeyStore = readable<KeyboardEvent | undefined>(
 	undefined,
 	(set): (() => void) => {
 		/**
-		 * Event handler for pointerdown events on the document.
-		 * Updates the store's value with the latest PointerEvent and then resets it to undefined.
+		 * Event handler for keydown events on the document.
+		 * Updates the store's value with the latest Escape Keydown event and then resets it to undefined.
 		 */
 		function keydown(event: KeyboardEvent | undefined) {
 			if (event && event.key === kbd.ESCAPE) {
@@ -30,21 +26,22 @@ const documentEscapeKeyStore = readable<KeyboardEvent | undefined>(
 			set(undefined);
 		}
 
-		// Adds a pointerdown event listener to the document, calling the clicked function when triggered.
+		// Adds a keydown event listener to the document, calling the keydown function when triggered.
 		const unsubscribe = addEventListener(document, 'keydown', keydown, {
 			passive: false,
 			capture: true,
 		});
 
-		// Returns a function to unsubscribe from the event listener and stop tracking pointer events.
+		// Returns a function to unsubscribe from the event listener and stop tracking keydown events.
 		return unsubscribe;
 	}
 );
 
 export const useEscapeKeydown = (node: HTMLElement, config: EscapeKeydownConfig = {}) => {
+	node.dataset.escapee = '';
 	let options = { enabled: true, ...config };
 
-	// Returns true if the click outside handler is enabled
+	// Returns true if the escape keydown handler is enabled
 	function isEnabled(): boolean {
 		return typeof options.enabled === 'boolean' ? options.enabled : get(options.enabled);
 	}
@@ -54,7 +51,7 @@ export const useEscapeKeydown = (node: HTMLElement, config: EscapeKeydownConfig 
 		if (!e || !isEnabled()) return;
 		const target = e.target;
 
-		if (!isHTMLElement(target) || target.closest('[data-portal]') !== node) {
+		if (!isHTMLElement(target) || target.closest('[data-escapee]') !== node) {
 			return;
 		}
 

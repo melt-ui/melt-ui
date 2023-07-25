@@ -1,10 +1,11 @@
-import { createFocusTrap, usePortal } from '$lib/internal/actions';
+import { createFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions';
 import {
 	addEventListener,
 	builder,
 	createElHelpers,
 	effect,
 	generateId,
+	getPortalParent,
 	isBrowser,
 	isHTMLElement,
 	isLeftClick,
@@ -63,6 +64,44 @@ export function createDialog(props?: CreateDialogProps) {
 				openDialogIds.update((prev) => prev.filter((id) => id !== ids.content));
 			}
 		});
+	});
+
+	const dialog = builder(name(), {
+		action: (node: HTMLElement) => {
+			const portalParent = getPortalParent(node);
+			let unsubPortal = noop;
+			let unsubEscapeKeydown = noop;
+
+			const unsub = effect(
+				[open, activeTrigger, closeOnEscape],
+				([$open, $activeTrigger, $closeOnEscape]) => {
+					if (!($open && $activeTrigger)) return;
+					tick().then(() => {
+						const portal = usePortal(node, portalParent);
+						if (portal && portal.destroy) {
+							unsubPortal = portal.destroy;
+						}
+						if (!$closeOnEscape) return;
+						const escapeKeydown = useEscapeKeydown(node, {
+							handler: () => {
+								open.set(false);
+							},
+						});
+						if (escapeKeydown && escapeKeydown.destroy) {
+							unsubEscapeKeydown = escapeKeydown.destroy;
+						}
+					});
+				}
+			);
+
+			return {
+				destroy() {
+					unsub();
+					unsubPortal();
+					unsubEscapeKeydown();
+				},
+			};
+		},
 	});
 
 	const trigger = builder(name('trigger'), {
@@ -196,31 +235,16 @@ export function createDialog(props?: CreateDialogProps) {
 		},
 	});
 
-	effect(
-		[open, openDialogIds, closeOnEscape, preventScroll],
-		([$open, $openDialogIds, $closeOnEscape, $preventScroll]) => {
-			if (!isBrowser) return;
-			const unsubs: Array<() => void> = [];
+	effect([open, preventScroll], ([$open, $preventScroll]) => {
+		if (!isBrowser) return;
+		const unsubs: Array<() => void> = [];
 
-			const isLast = last($openDialogIds) === ids.content;
+		if ($preventScroll && $open) unsubs.push(removeScroll());
 
-			if ($closeOnEscape && $open && isLast) {
-				unsubs.push(
-					addEventListener(document, 'keydown', (e) => {
-						if (e.key === 'Escape') {
-							open.set(false);
-						}
-					})
-				);
-			}
-
-			if ($preventScroll && $open) unsubs.push(removeScroll());
-
-			return () => {
-				unsubs.forEach((unsub) => unsub());
-			};
-		}
-	);
+		return () => {
+			unsubs.forEach((unsub) => unsub());
+		};
+	});
 
 	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
 		if (!isBrowser) return;
@@ -239,6 +263,7 @@ export function createDialog(props?: CreateDialogProps) {
 			description,
 			overlay,
 			close,
+			dialog,
 		},
 		states: {
 			open,

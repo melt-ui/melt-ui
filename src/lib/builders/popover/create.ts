@@ -13,6 +13,7 @@ import {
 	omit,
 	overridable,
 	isHTMLElement,
+	getPortalParent,
 } from '$lib/internal/helpers';
 
 import { usePopper } from '$lib/internal/actions';
@@ -32,6 +33,7 @@ const defaults = {
 	preventScroll: false,
 	onOpenChange: undefined,
 	closeOnOutsideClick: true,
+	portal: true,
 } satisfies Defaults<CreatePopoverProps>;
 
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
@@ -48,6 +50,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		preventScroll,
 		closeOnEscape,
 		closeOnOutsideClick,
+		portal,
 	} = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
@@ -75,16 +78,27 @@ export function createPopover(args?: CreatePopoverProps) {
 				}),
 				id: ids.content,
 				'data-state': $show ? 'open' : 'closed',
-				'data-portal': '',
 			};
 		},
 		action: (node: HTMLElement) => {
+			/**
+			 * We need to get the parent portal before the menu is opened,
+			 * otherwise the parent will have been moved to the body, and
+			 * will no longer be an ancestor of this node.
+			 */
+			const portalParent = getPortalParent(node);
 			let unsubPopper = noop;
 
-			const portalParent = getPortalParent(node);
-
 			const unsubDerived = effect(
-				[open, activeTrigger, positioning, disableFocusTrap, closeOnEscape, closeOnOutsideClick],
+				[
+					open,
+					activeTrigger,
+					positioning,
+					disableFocusTrap,
+					closeOnEscape,
+					closeOnOutsideClick,
+					portal,
+				],
 				([
 					$open,
 					$activeTrigger,
@@ -92,6 +106,7 @@ export function createPopover(args?: CreatePopoverProps) {
 					$disableFocusTrap,
 					$closeOnEscape,
 					$closeOnOutsideClick,
+					$portal,
 				]) => {
 					unsubPopper();
 					if (!($open && $activeTrigger)) return;
@@ -103,8 +118,8 @@ export function createPopover(args?: CreatePopoverProps) {
 								floating: $positioning,
 								focusTrap: $disableFocusTrap ? null : undefined,
 								clickOutside: $closeOnOutsideClick ? undefined : null,
-								portal: portalParent,
 								escapeKeydown: $closeOnEscape ? undefined : null,
+								portal: $portal ? portalParent : null,
 							},
 						});
 
@@ -231,10 +246,4 @@ export function createPopover(args?: CreatePopoverProps) {
 		},
 		options,
 	};
-}
-
-function getPortalParent(node: HTMLElement) {
-	const portalParent = node.closest('[data-portal]');
-	if (!isHTMLElement(portalParent)) return 'body';
-	return portalParent;
 }

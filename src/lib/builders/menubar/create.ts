@@ -28,6 +28,7 @@ import {
 	toWritableStores,
 	removeHighlight,
 	addHighlight,
+	getPortalParent,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions';
@@ -91,6 +92,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		loop: false,
 		closeOnEscape: true,
 		closeOnOutsideClick: true,
+		portal: true,
 	} satisfies Defaults<CreateMenubarMenuProps>;
 
 	const createMenu = (props?: CreateMenubarMenuProps) => {
@@ -130,27 +132,35 @@ export function createMenubar(props?: CreateMenubarProps) {
 				} as const;
 			},
 			action: (node: HTMLElement) => {
+				/**
+				 * We need to get the parent portal before the menu is opened,
+				 * otherwise the parent will have been moved to the body, and
+				 * will no longer be an ancestor of this node.
+				 */
+				const portalParent = getPortalParent(node);
+
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
 					[rootOpen, rootActiveTrigger, positioning],
 					([$rootOpen, $rootActiveTrigger, $positioning]) => {
 						unsubPopper();
-						if ($rootOpen && $rootActiveTrigger) {
-							tick().then(() => {
-								const popper = usePopper(node, {
-									anchorElement: $rootActiveTrigger,
-									open: rootOpen,
-									options: {
-										floating: $positioning,
-									},
-								});
+						if (!($rootOpen && $rootActiveTrigger)) return;
 
-								if (popper && popper.destroy) {
-									unsubPopper = popper.destroy;
-								}
+						tick().then(() => {
+							const popper = usePopper(node, {
+								anchorElement: $rootActiveTrigger,
+								open: rootOpen,
+								options: {
+									floating: $positioning,
+									portal: portalParent,
+								},
 							});
-						}
+
+							if (popper && popper.destroy) {
+								unsubPopper = popper.destroy;
+							}
+						});
 					}
 				);
 

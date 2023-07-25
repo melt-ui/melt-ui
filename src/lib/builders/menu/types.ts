@@ -40,6 +40,15 @@ export type CreateMenuProps = {
 	closeOnEscape?: boolean;
 
 	/**
+	 * Whether the element should be portaled to the body or not.
+	 * If an element's parent is being portaled to the body, any child elements will
+	 * automatically be portaled into that element.
+	 *
+	 * @default true
+	 */
+	portal?: boolean;
+
+	/**
 	 * Whether or not to close the menu when a click occurs outside of it.
 	 *
 	 * @default true
@@ -115,6 +124,7 @@ export type MenuBuilderOptions = {
 		dir: Writable<TextDirection>;
 		closeOnEscape: Writable<boolean>;
 		closeOnOutsideClick: Writable<boolean>;
+		portal: Writable<boolean>;
 	};
 	disableTriggerRefocus?: boolean;
 	disableFocusFirstItem?: boolean;

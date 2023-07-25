@@ -10,11 +10,12 @@ const defaults = {
 		placement: 'bottom',
 	},
 	preventScroll: true,
+	closeOnEscape: true,
+	closeOnOutsideClick: true,
+	portal: true,
 	loop: false,
 	dir: 'ltr',
 	defaultOpen: false,
-	closeOnEscape: true,
-	closeOnOutsideClick: true,
 } satisfies Defaults<CreateDropdownMenuProps>;
 
 export function createDropdownMenu(props?: CreateDropdownMenuProps) {

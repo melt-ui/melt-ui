@@ -5,8 +5,7 @@
 	import X from '~icons/lucide/x';
 
 	const {
-		elements: { trigger, overlay, content, title, description, close },
-		actions: { portal },
+		elements: { trigger, overlay, content, title, description, close, dialog },
 		states: { open },
 	} = createDialog();
 
@@ -18,8 +17,8 @@
 			title: titleNested,
 			description: descriptionNested,
 			close: closeNested,
+			dialog: dialogNested,
 		},
-		actions: { portal: portalNested },
 		states: { open: openNested },
 	} = createDialog();
 </script>
@@ -31,7 +30,7 @@
 >
 	Open Dialog
 </button>
-<div use:portal>
+<div use:dialog>
 	{#if $open}
 		<div melt={$overlay} class="fixed inset-0 z-40 bg-black/50" />
 		<div
@@ -68,55 +67,53 @@
 					Open second
 				</button>
 			</div>
+			<div use:dialogNested>
+				{#if $openNested}
+					<div melt={$overlayNested} class="fixed inset-0 z-40 bg-black/75" />
+					<div
+						class="fixed left-[50%] top-[50%] z-50 max-h-[85vh] w-[90vw]
+                        max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white
+                        p-6 shadow-2xl"
+						transition:flyAndScale={{
+							duration: 150,
+							y: 8,
+							start: 0.96,
+						}}
+						melt={$contentNested}
+					>
+						<h2 melt={$titleNested} class="m-0 text-lg font-medium text-black">
+							Second dialog
+						</h2>
+						<p
+							melt={$descriptionNested}
+							class="mb-5 mt-2 leading-normal text-zinc-600"
+						>
+							This is the second dialog.
+						</p>
 
+						<div class="mt-6 flex justify-end gap-4">
+							<button
+								melt={$closeNested}
+								class="inline-flex h-8 items-center justify-center rounded-[4px]
+                                bg-zinc-100 px-4 font-medium leading-none text-zinc-600"
+							>
+								Close
+							</button>
+						</div>
+
+						<button
+							melt={$closeNested}
+							class="absolute right-[10px] top-[10px] inline-flex h-6 w-6
+                            appearance-none items-center justify-center rounded-full text-magnum-800
+                            hover:bg-magnum-100 focus:shadow-magnum-400"
+						>
+							<X />
+						</button>
+					</div>
+				{/if}
+			</div>
 			<button
 				melt={$close}
-				class="absolute right-[10px] top-[10px] inline-flex h-6 w-6
-                appearance-none items-center justify-center rounded-full text-magnum-800
-                hover:bg-magnum-100 focus:shadow-magnum-400"
-			>
-				<X />
-			</button>
-		</div>
-	{/if}
-</div>
-
-<div use:portalNested>
-	{#if $openNested}
-		<div melt={$overlayNested} class="fixed inset-0 z-40 bg-black/75" />
-		<div
-			class="fixed left-[50%] top-[50%] z-50 max-h-[85vh] w-[90vw]
-            max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white
-            p-6 shadow-2xl"
-			transition:flyAndScale={{
-				duration: 150,
-				y: 8,
-				start: 0.96,
-			}}
-			melt={$contentNested}
-		>
-			<h2 melt={$titleNested} class="m-0 text-lg font-medium text-black">
-				Second dialog
-			</h2>
-			<p
-				melt={$descriptionNested}
-				class="mb-5 mt-2 leading-normal text-zinc-600"
-			>
-				This is the second dialog.
-			</p>
-
-			<div class="mt-6 flex justify-end gap-4">
-				<button
-					melt={$closeNested}
-					class="inline-flex h-8 items-center justify-center rounded-[4px]
-                    bg-zinc-100 px-4 font-medium leading-none text-zinc-600"
-				>
-					Close
-				</button>
-			</div>
-
-			<button
-				melt={$closeNested}
 				class="absolute right-[10px] top-[10px] inline-flex h-6 w-6
                 appearance-none items-center justify-center rounded-full text-magnum-800
                 hover:bg-magnum-100 focus:shadow-magnum-400"

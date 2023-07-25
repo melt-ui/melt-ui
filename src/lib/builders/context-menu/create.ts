@@ -40,11 +40,12 @@ const defaults = {
 		placement: 'bottom-start',
 	},
 	preventScroll: true,
+	closeOnEscape: true,
+	closeOnOutsideClick: true,
+	portal: true,
 	loop: false,
 	dir: 'ltr',
 	defaultOpen: false,
-	closeOnEscape: true,
-	closeOnOutsideClick: true,
 } satisfies Defaults<CreateContextMenuProps>;
 
 const { name, selector } = createElHelpers<MenuParts>('context-menu');

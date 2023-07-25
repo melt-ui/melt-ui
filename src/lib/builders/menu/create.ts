@@ -24,6 +24,7 @@ import {
 	addHighlight,
 	removeHighlight,
 	toWritableStores,
+	getPortalParent,
 } from '$lib/internal/helpers';
 import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
@@ -58,13 +59,17 @@ const defaults = {
 	},
 	preventScroll: true,
 	closeOnEscape: true,
+	closeOnOutsideClick: true,
+	portal: true,
 	loop: false,
+	dir: 'ltr',
+	defaultOpen: false,
 } satisfies Defaults<CreateMenuProps>;
 
 export function createMenuBuilder(opts: MenuBuilderOptions) {
 	const { name, selector } = createElHelpers<MenuParts>(opts.selector);
 
-	const { preventScroll, arrowSize, positioning, closeOnEscape, closeOnOutsideClick } =
+	const { preventScroll, arrowSize, positioning, closeOnEscape, closeOnOutsideClick, portal } =
 		opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
@@ -136,11 +141,12 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			} as const;
 		},
 		action: (node: HTMLElement) => {
+			const portalParent = getPortalParent(node);
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[rootOpen, rootActiveTrigger, positioning, closeOnOutsideClick],
-				([$rootOpen, $rootActiveTrigger, $positioning, $closeOnOutsideClick]) => {
+				[rootOpen, rootActiveTrigger, positioning, closeOnOutsideClick, portal],
+				([$rootOpen, $rootActiveTrigger, $positioning, $closeOnOutsideClick, $portal]) => {
 					unsubPopper();
 					if (!($rootOpen && $rootActiveTrigger)) return;
 					tick().then(() => {
@@ -151,6 +157,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							options: {
 								floating: $positioning,
 								clickOutside: $closeOnOutsideClick ? undefined : null,
+								portal: $portal ? portalParent : null,
 							},
 						});
 
@@ -595,26 +602,25 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					[subOpen, subActiveTrigger, positioning],
 					([$subOpen, $subActiveTrigger, $positioning]) => {
 						unsubPopper();
-						if ($subOpen && $subActiveTrigger) {
-							tick().then(() => {
-								const parentMenuEl = getParentMenu($subActiveTrigger);
+						if (!($subOpen && $subActiveTrigger)) return;
+						tick().then(() => {
+							const parentMenuEl = getParentMenu($subActiveTrigger);
 
-								const popper = usePopper(node, {
-									anchorElement: $subActiveTrigger,
-									open: subOpen,
-									options: {
-										floating: $positioning,
-										portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
-										clickOutside: null,
-										focusTrap: null,
-									},
-								});
-
-								if (popper && popper.destroy) {
-									unsubPopper = popper.destroy;
-								}
+							const popper = usePopper(node, {
+								anchorElement: $subActiveTrigger,
+								open: subOpen,
+								options: {
+									floating: $positioning,
+									portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
+									clickOutside: null,
+									focusTrap: null,
+								},
 							});
-						}
+
+							if (popper && popper.destroy) {
+								unsubPopper = popper.destroy;
+							}
+						});
 					}
 				);
 
@@ -903,10 +909,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		});
 
 		effect([pointerGraceIntent], ([$pointerGraceIntent]) => {
-			if (!isBrowser) return;
-			if (!$pointerGraceIntent) {
-				window.clearTimeout(get(pointerGraceTimer));
-			}
+			if (!isBrowser || $pointerGraceIntent) return;
+			window.clearTimeout(get(pointerGraceTimer));
 		});
 
 		effect([subOpen], ([$subOpen]) => {

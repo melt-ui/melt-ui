@@ -17,3 +17,4 @@ export * from './scroll';
 export * from './store';
 export * from './rovingFocus';
 export * from './typeahead';
+export * from './elements';

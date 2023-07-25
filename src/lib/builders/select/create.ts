@@ -13,6 +13,7 @@ import {
 	forward,
 	generateId,
 	getNextFocusable,
+	getPortalParent,
 	getPreviousFocusable,
 	handleRovingFocus,
 	isBrowser,
@@ -128,6 +129,12 @@ export function createSelect(props?: CreateSelectProps) {
 			};
 		},
 		action: (node: HTMLElement) => {
+			/**
+			 * We need to get the parent portal before the menu is opened,
+			 * otherwise the parent will have been moved to the body, and
+			 * will no longer be an ancestor of this node.
+			 */
+			const parentPortal = getPortalParent(node);
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
@@ -141,6 +148,7 @@ export function createSelect(props?: CreateSelectProps) {
 								open,
 								options: {
 									floating: $positioning,
+									portal: parentPortal,
 								},
 							});
 
