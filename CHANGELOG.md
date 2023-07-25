@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.26.3
+
+### Patch Changes
+
+- 714d8e18: fix: tooltip behaviour
+
 ## 0.26.2
 
 ### Patch Changes
