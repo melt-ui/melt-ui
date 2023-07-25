@@ -78,3 +78,5 @@ vi.mock('$app/stores', (): typeof stores => {
 		updated,
 	};
 });
+
+global.ResizeObserver = require('resize-observer-polyfill');

@@ -64,7 +64,6 @@
 		"nanoid": "^4.0.2"
 	},
 	"devDependencies": {
-		"svelte-action-balancer": "^1.0.4",
 		"@changesets/cli": "^2.26.1",
 		"@huntabyte/mdsvex": "0.16.5",
 		"@iconify-json/lucide": "^1.1.104",
@@ -119,10 +118,12 @@
 		"rehype-rewrite": "^3.0.6",
 		"remark-code-import": "^1.2.0",
 		"remark-gfm": "^3.0.1",
+		"resize-observer-polyfill": "^1.5.1",
 		"shiki": "^0.14.3",
 		"shiki-es": "^0.14.0",
 		"storybook": "^7.0.23",
 		"svelte": "^4.0.0",
+		"svelte-action-balancer": "^1.0.4",
 		"svelte-check": "^3.4.4",
 		"svelte-highlight": "^7.3.0",
 		"svelte-htm": "^1.2.0",

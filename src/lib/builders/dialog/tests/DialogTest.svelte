@@ -3,21 +3,18 @@
 
 	const {
 		elements: { trigger, overlay, content, title, description, close },
-		actions: { portal, dialog },
 	} = createDialog();
 </script>
 
 <main>
 	<button melt={$trigger} data-testid="trigger">Open</button>
-	<div use:dialog data-testid="portal">
-		<div melt={$overlay} data-testid="overlay" />
-		<div melt={$content} data-testid="content">
-			<h2 melt={$title}>Title</h2>
-			<p melt={$description}>Description</p>
+	<div melt={$overlay} data-testid="overlay" />
+	<div melt={$content} data-testid="content">
+		<h2 melt={$title}>Title</h2>
+		<p melt={$description}>Description</p>
 
-			<button melt={$close} data-testid="closer">Close</button>
-			<button melt={$close} data-testid="last">Close</button>
-		</div>
+		<button melt={$close} data-testid="closer">Close</button>
+		<button melt={$close} data-testid="last">Close</button>
 	</div>
 </main>
 

@@ -21,6 +21,7 @@ describe('Dialog', () => {
 
 		await expect(content).not.toBeVisible();
 		await userEvent.click(trigger);
+		await sleep(1000);
 		await expect(content).toBeVisible();
 	});
 
@@ -57,7 +58,7 @@ describe('Dialog', () => {
 	});
 
 	// TODO: Fix this test. It's failing even though it works in the browser.
-	test.skip('Closes when overlay is clicked', async () => {
+	test('Closes when overlay is clicked', async () => {
 		const { getByTestId } = await render(DialogTest);
 
 		const user = userEvent.setup();
@@ -69,17 +70,33 @@ describe('Dialog', () => {
 		await expect(content).not.toBeVisible();
 		await user.click(trigger);
 		await expect(content).toBeVisible();
+		await sleep(100);
 		await user.click(overlay);
-		await sleep(1000);
+		await sleep(100);
 		await expect(content).not.toBeVisible();
 	});
 
-	test('Portal attaches dialog to body', async () => {
+	test('Content Portal attaches dialog to body', async () => {
 		const { getByTestId } = await render(DialogTest);
 
-		const portal = getByTestId('portal');
+		const user = userEvent.setup();
+		const trigger = getByTestId('trigger');
+		await user.click(trigger);
 
-		await expect(portal.parentElement).toEqual(document.body);
+		const content = getByTestId('content');
+
+		await expect(content.parentElement).toEqual(document.body);
+	});
+
+	test('Overlay Portal attaches dialog to body', async () => {
+		const { getByTestId } = await render(DialogTest);
+		const user = userEvent.setup();
+		const trigger = getByTestId('trigger');
+		await user.click(trigger);
+
+		const overlay = getByTestId('overlay');
+
+		await expect(overlay.parentElement).toEqual(document.body);
 	});
 
 	test('Focuses first focusable item upon opening', async () => {

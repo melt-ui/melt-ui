@@ -173,6 +173,9 @@ export function createDialog(props?: CreateDialogProps) {
 				'data-state': $open ? 'open' : 'closed',
 				tabindex: -1,
 				hidden: $open ? undefined : true,
+				style: styleToString({
+					display: $open ? undefined : 'none',
+				}),
 				'data-portal': get(portal) ? '' : undefined,
 			};
 		},
