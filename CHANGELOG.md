@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.26.1
+
+### Patch Changes
+
+- 61123724: tooltip: change defaults; improve behaviour consistency
+
 ## 0.26.0
 
 ### Minor Changes
