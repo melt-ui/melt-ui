@@ -3,13 +3,13 @@
 
 	const {
 		elements: { trigger, overlay, content, title, description, close },
-		actions: { portal },
+		actions: { portal, dialog },
 	} = createDialog();
 </script>
 
 <main>
 	<button melt={$trigger} data-testid="trigger">Open</button>
-	<div use:portal data-testid="portal">
+	<div use:dialog data-testid="portal">
 		<div melt={$overlay} data-testid="overlay" />
 		<div melt={$content} data-testid="content">
 			<h2 melt={$title}>Title</h2>

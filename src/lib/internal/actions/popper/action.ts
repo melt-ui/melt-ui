@@ -19,7 +19,7 @@ const defaultConfig = {
 
 export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) => {
 	popperElement.dataset.escapee = '';
-	const { anchorElement, open, options } = args satisfies PopperArgs;
+	const { anchorElement, open, options } = args as PopperArgs;
 	if (!anchorElement || !open || !options) {
 		return { destroy: noop };
 	}

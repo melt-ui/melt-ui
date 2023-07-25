@@ -269,7 +269,8 @@ export function createDialog(props?: CreateDialogProps) {
 			open,
 		},
 		actions: {
-			portal: usePortal,
+			portal: dialog,
+			dialog,
 		},
 		options,
 	};
