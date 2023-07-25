@@ -11,14 +11,8 @@
 	});
 </script>
 
-<button
-	type="button"
-	class="trigger"
-	melt={$trigger}
-	aria-label="Update dimensions"
->
-	<Plus class="h-4 w-4" />
-	<span class="sr-only">Open Popover</span>
+<button type="button" class="trigger" melt={$trigger} aria-label="Add">
+	<Plus class="h-4 w-4" aria-label="plus" />
 </button>
 
 {#if $open}
@@ -28,7 +22,7 @@
 		class="z-10 rounded-md bg-white shadow-sm"
 	>
 		<div melt={$arrow} />
-		<p class="px-4 py-1 text-magnum-700">Add to library</p>
+		<p class="px-4 py-1 text-magnum-700">Add item to library</p>
 	</div>
 {/if}
 

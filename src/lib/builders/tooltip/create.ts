@@ -93,8 +93,11 @@ export function createTooltip(props?: CreateTooltipProps) {
 						openTimeout = null;
 					}
 				}),
-				addEventListener(node, 'mouseover', openTooltip),
-				addEventListener(node, 'mouseleave', () => {
+				addEventListener(node, 'pointerover', (e) => {
+					if (e.pointerType === 'touch') return;
+					openTooltip();
+				}),
+				addEventListener(node, 'pointerleave', () => {
 					if (openTimeout) {
 						window.clearTimeout(openTimeout);
 						openTimeout = null;
@@ -213,9 +216,6 @@ export function createTooltip(props?: CreateTooltipProps) {
 						return;
 					}
 
-					closeTooltip();
-				}),
-				addEventListener(document, 'mouseleave', () => {
 					closeTooltip();
 				})
 			);
