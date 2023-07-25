@@ -72,31 +72,23 @@ export function createDialog(props?: CreateDialogProps) {
 			let unsubPortal = noop;
 			let unsubEscapeKeydown = noop;
 
-			const unsub = effect(
-				[open, activeTrigger, closeOnEscape],
-				([$open, $activeTrigger, $closeOnEscape]) => {
-					if (!($open && $activeTrigger)) return;
-					tick().then(() => {
-						const portal = usePortal(node, portalParent);
-						if (portal && portal.destroy) {
-							unsubPortal = portal.destroy;
-						}
-						if (!$closeOnEscape) return;
-						const escapeKeydown = useEscapeKeydown(node, {
-							handler: () => {
-								open.set(false);
-							},
-						});
-						if (escapeKeydown && escapeKeydown.destroy) {
-							unsubEscapeKeydown = escapeKeydown.destroy;
-						}
-					});
+			const portal = usePortal(node, portalParent);
+			if (portal && portal.destroy) {
+				unsubPortal = portal.destroy;
+			}
+			if (get(closeOnEscape)) {
+				const escapeKeydown = useEscapeKeydown(node, {
+					handler: () => {
+						open.set(false);
+					},
+				});
+				if (escapeKeydown && escapeKeydown.destroy) {
+					unsubEscapeKeydown = escapeKeydown.destroy;
 				}
-			);
+			}
 
 			return {
 				destroy() {
-					unsub();
 					unsubPortal();
 					unsubEscapeKeydown();
 				},
@@ -263,7 +255,6 @@ export function createDialog(props?: CreateDialogProps) {
 			description,
 			overlay,
 			close,
-			dialog,
 		},
 		states: {
 			open,

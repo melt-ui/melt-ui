@@ -77,9 +77,6 @@ describe('Dialog', () => {
 	test('Portal attaches dialog to body', async () => {
 		const { getByTestId } = await render(DialogTest);
 
-		const user = userEvent.setup();
-		const trigger = getByTestId('trigger');
-		await user.click(trigger);
 		const portal = getByTestId('portal');
 
 		await expect(portal.parentElement).toEqual(document.body);

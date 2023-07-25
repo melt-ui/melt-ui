@@ -5,8 +5,9 @@
 	import X from '~icons/lucide/x';
 
 	const {
-		elements: { trigger, overlay, content, title, description, close, dialog },
+		elements: { trigger, overlay, content, title, description, close },
 		states: { open },
+        actions: { portal }
 	} = createDialog();
 
 	const {
@@ -17,9 +18,9 @@
 			title: titleNested,
 			description: descriptionNested,
 			close: closeNested,
-			dialog: dialogNested,
 		},
 		states: { open: openNested },
+        actions: { portal: portalNested}
 	} = createDialog();
 </script>
 
@@ -30,7 +31,7 @@
 >
 	Open Dialog
 </button>
-<div use:dialog>
+<div use:portal>
 	{#if $open}
 		<div melt={$overlay} class="fixed inset-0 z-40 bg-black/50" />
 		<div
@@ -67,7 +68,7 @@
 					Open second
 				</button>
 			</div>
-			<div use:dialogNested>
+			<div use:portalNested>
 				{#if $openNested}
 					<div melt={$overlayNested} class="fixed inset-0 z-40 bg-black/75" />
 					<div
