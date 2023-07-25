@@ -9,7 +9,7 @@ import {
 	omit,
 	overridable,
 	toWritableStores,
-    getElemDirection
+	getElemDirection,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
