@@ -43,19 +43,19 @@ export function createTooltip(props?: CreateTooltipProps) {
 		trigger: generateId(),
 	};
 
-	let openTimeout: number | null = null;
-	let closeTimeout: number | null = null;
+	let timeout: number | null = null;
+
 	let clickedTrigger = false;
 
 	const openTooltip = () => {
 		const $options = get(options);
 
-		if (openTimeout) {
-			window.clearTimeout(openTimeout);
-			openTimeout = null;
+		if (timeout) {
+			window.clearTimeout(timeout);
+			timeout = null;
 		}
 
-		openTimeout = window.setTimeout(() => {
+		timeout = window.setTimeout(() => {
 			open.set(true);
 		}, $options.openDelay);
 	};
@@ -63,12 +63,14 @@ export function createTooltip(props?: CreateTooltipProps) {
 	const closeTooltip = (isBlur?: boolean) => {
 		const $options = get(options);
 
-		if (closeTimeout) {
-			window.clearTimeout(closeTimeout);
-			closeTimeout = null;
+		if (timeout) {
+			window.clearTimeout(timeout);
+			timeout = null;
 		}
 
-		closeTimeout = window.setTimeout(() => {
+		if (isBlur && isMouseInTooltipArea) return;
+
+		timeout = window.setTimeout(() => {
 			open.set(false);
 			if (isBlur) clickedTrigger = false;
 		}, $options.closeDelay);
@@ -88,19 +90,20 @@ export function createTooltip(props?: CreateTooltipProps) {
 					if (!$options.closeOnPointerDown) return;
 					open.set(false);
 					clickedTrigger = true;
-					if (openTimeout) {
-						window.clearTimeout(openTimeout);
-						openTimeout = null;
+					if (timeout) {
+						window.clearTimeout(timeout);
+						timeout = null;
 					}
 				}),
-				addEventListener(node, 'pointerover', (e) => {
+				addEventListener(node, 'pointerenter', (e) => {
 					if (e.pointerType === 'touch') return;
 					openTooltip();
 				}),
-				addEventListener(node, 'pointerleave', () => {
-					if (openTimeout) {
-						window.clearTimeout(openTimeout);
-						openTimeout = null;
+				addEventListener(node, 'pointerleave', (e) => {
+					if (e.pointerType === 'touch') return;
+					if (timeout) {
+						window.clearTimeout(timeout);
+						timeout = null;
 					}
 				}),
 				addEventListener(node, 'focus', () => {
@@ -110,14 +113,9 @@ export function createTooltip(props?: CreateTooltipProps) {
 				addEventListener(node, 'blur', () => closeTooltip(true)),
 				addEventListener(node, 'keydown', (e) => {
 					if (e.key === 'Escape') {
-						if (openTimeout) {
-							window.clearTimeout(openTimeout);
-							openTimeout = null;
-						}
-
-						if (closeTimeout) {
-							window.clearTimeout(closeTimeout);
-							closeTimeout = null;
+						if (timeout) {
+							window.clearTimeout(timeout);
+							timeout = null;
 						}
 
 						open.set(false);
@@ -165,7 +163,8 @@ export function createTooltip(props?: CreateTooltipProps) {
 			});
 
 			unsub = executeCallbacks(
-				addEventListener(node, 'mouseover', openTooltip),
+				addEventListener(node, 'pointerenter', openTooltip),
+				addEventListener(node, 'pointerdown', openTooltip),
 				portalReturn && portalReturn.destroy ? portalReturn.destroy : noop,
 				unsubOpen
 			);
@@ -191,19 +190,21 @@ export function createTooltip(props?: CreateTooltipProps) {
 		}),
 	});
 
+	let isMouseInTooltipArea = false;
+
 	effect(open, ($open) => {
 		if ($open) {
 			return executeCallbacks(
 				addEventListener(document, 'mousemove', (e) => {
 					const triggerEl = document.getElementById(ids.trigger);
-					if (!triggerEl || (document.activeElement === triggerEl && !clickedTrigger)) return;
+					if (!triggerEl) return;
 
 					const contentEl = document.getElementById(ids.content);
 					if (!contentEl) return;
 
 					const polygon = makeHullFromElements([triggerEl, contentEl]);
 
-					const isMouseInTooltipArea = pointInPolygon(
+					isMouseInTooltipArea = pointInPolygon(
 						{
 							x: e.clientX,
 							y: e.clientY,
@@ -211,12 +212,11 @@ export function createTooltip(props?: CreateTooltipProps) {
 						polygon
 					);
 
-					if (isMouseInTooltipArea) {
-						closeTimeout = null;
-						return;
+					if (isMouseInTooltipArea || (document.activeElement === triggerEl && !clickedTrigger)) {
+						openTooltip();
+					} else {
+						closeTooltip();
 					}
-
-					closeTooltip();
 				})
 			);
 		}

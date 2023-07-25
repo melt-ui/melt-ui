@@ -8,6 +8,7 @@
 			placement: 'top',
 		},
 		openDelay: 500,
+		closeOnPointerDown: false,
 	});
 </script>
 
