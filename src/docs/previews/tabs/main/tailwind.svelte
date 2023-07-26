@@ -6,124 +6,147 @@
 	});
 </script>
 
-<div melt={$root} class="root">
-	<div melt={$list} class="list" aria-label="Manage your account">
+<div
+	melt={$root}
+	class="flex max-w-[25rem] flex-col overflow-hidden rounded-md shadow-lg
+	data-[orientation=vertical]:flex-row"
+>
+	<div
+		melt={$list}
+		class="flex shrink-0 overflow-x-auto border-b border-magnum-100 bg-white
+		data-[orientation=vertical]:flex-col data-[orientation=vertical]:border-r"
+		aria-label="Manage your account"
+	>
 		<button melt={$trigger('tab1')} class="trigger">Account</button>
 		<button melt={$trigger('tab2')} class="trigger">Password</button>
-		<!-- You don't need to set disabled on the action when using a button element, since
-                $trigger will set the 'disabled' attribute on the button -->
-		<button
-			melt={$trigger({
-				value: 'tab3',
-				disabled: true,
-			})}
-			class="trigger opacity-50">Disabled</button
-		>
-		<button melt={$trigger('tab4')} class="trigger">Settings</button>
+		<button melt={$trigger('tab3')} class="trigger">Settings</button>
 	</div>
-	<div melt={$content('tab1')} class="content">
-		<p class="description">
+	<div melt={$content('tab1')} class="grow bg-white p-5">
+		<p class="mb-5 leading-normal text-magnum-950">
 			Make changes to your account here. Click save when you're done.
 		</p>
-		<fieldset>
-			<label for="name"> Name </label>
+		<fieldset class="mb-4 flex w-full flex-col justify-start">
+			<label
+				class="mb-2.5 block text-sm leading-none text-magnum-950"
+				for="name"
+			>
+				Name
+			</label>
 			<input id="name" value="Thomas G. Lopes" />
 		</fieldset>
 
-		<div class="actions">
-			<button>Save changes</button>
+		<div class="mt-5 flex justify-end">
+			<button class="save">Save changes</button>
 		</div>
 	</div>
-	<div melt={$content('tab2')} class="content">
-		<p class="description">
+	<div melt={$content('tab2')} class="grow bg-white p-5">
+		<p class="mb-5 leading-normal text-magnum-950">
 			Change your password here. Click save when you're done.
 		</p>
-		<fieldset>
-			<label for="new"> New password </label>
+		<fieldset class="mb-4 flex w-full flex-col justify-start">
+			<label
+				class="mb-2.5 block text-sm leading-none text-magnum-950"
+				for="new"
+			>
+				New password
+			</label>
 			<input id="new" type="password" />
 		</fieldset>
-		<div class="actions">
-			<button>Save changes</button>
+		<div class="mt-5 flex justify-end">
+			<button class="save">Save changes</button>
 		</div>
 	</div>
-	<div melt={$content('tab4')} class="content">
-		<p class="description">
+	<div melt={$content('tab3')} class="grow bg-white p-5">
+		<p class="mb-5 leading-normal text-magnum-950">
 			Change your settings here. Click save when you're done.
 		</p>
 
-		<fieldset>
-			<label for="new"> New email </label>
+		<fieldset class="mb-4 flex w-full flex-col justify-start">
+			<label
+				class="mb-2.5 block text-sm leading-none text-magnum-950"
+				for="new"
+			>
+				New email
+			</label>
 			<input id="new" type="password" />
 		</fieldset>
-		<div class="actions">
-			<button>Save changes</button>
+		<div class="mt-5 flex justify-end">
+			<button class="save">Save changes</button>
 		</div>
 	</div>
 </div>
 
 <style lang="postcss">
-	/* Tab Parts */
-	.root {
-		@apply flex flex-col overflow-hidden rounded-md shadow-lg;
-		@apply data-[orientation=vertical]:flex-row;
-	}
-
-	.list {
-		@apply flex shrink-0 overflow-x-auto border-b border-magnum-100 bg-white;
-		@apply data-[orientation=vertical]:flex-col data-[orientation=vertical]:border-r;
-	}
-
 	.trigger {
-		@apply flex h-11 flex-1 cursor-default select-none items-center;
-		@apply justify-center rounded-none bg-white px-4 leading-none;
-		@apply text-magnum-900 focus:relative;
-	}
+		display: flex;
+		height: theme(spacing.11);
+		flex: 1;
+		cursor: default;
+		user-select: none;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0;
+		background-color: theme(colors.white);
+		padding-inline: theme(spacing.2);
+		line-height: 1;
+		color: theme(colors.magnum.900);
 
-	.trigger[data-orientation='vertical'] {
-		@apply w-full flex-grow-0 rounded-none border-b border-r-2;
-		@apply border-transparent border-b-magnum-100 py-4 last:border-b-0;
-	}
+		&:focus {
+			position: relative;
+		}
 
-	.trigger[data-state='active'] {
-		@apply text-magnum-700 focus:relative;
-	}
+		&[data-orientation='vertical'] {
+			@apply w-full flex-grow-0 rounded-none border-b border-r-2;
+			@apply border-transparent border-b-magnum-100 py-4 last:border-b-0;
+		}
 
-	.trigger[data-state='active'][data-orientation='horizontal'] {
-		@apply shadow-[inset_0_-1px_0_0,0_1px_0_0] shadow-current focus:relative;
-	}
+		&[data-state='active'] {
+			@apply text-magnum-700 focus:relative;
+		}
 
-	.trigger[data-state='active'][data-orientation='vertical'] {
-		@apply border-r-magnum-500;
-	}
+		&[data-state='active'][data-orientation='horizontal'] {
+			@apply shadow-[inset_0_-1px_0_0,0_1px_0_0] shadow-current focus:relative;
+		}
 
-	.content {
-		@apply grow bg-white p-5;
-	}
-
-	/* Content Elements */
-	.description {
-		@apply mb-5 leading-normal text-magnum-950;
-	}
-
-	fieldset {
-		@apply mb-4 flex w-full flex-col justify-start;
-	}
-
-	label {
-		@apply mb-2.5 block text-sm leading-none text-magnum-950;
+		&[data-state='active'][data-orientation='vertical'] {
+			@apply border-r-magnum-500;
+		}
 	}
 
 	input {
-		@apply h-8 shrink-0 grow rounded border px-2.5 leading-none text-magnum-900;
-		@apply focus:ring focus:ring-magnum-800;
+		height: theme(spacing.8);
+		flex-shrink: 0;
+		flex-grow: 1;
+		border-radius: theme(borderRadius.md);
+		border: 1px solid theme(colors.neutral.200);
+		padding-inline: theme(spacing[2.5]);
+		line-height: 1;
+		color: theme(colors.magnum.900);
+
+		&:focus {
+			border-color: theme(colors.magnum.400);
+		}
 	}
 
-	.actions {
-		@apply mt-5 flex justify-end;
-	}
+	.save {
+		display: inline-flex;
+		height: theme(spacing.8);
+		cursor: default;
+		align-items: center;
+		justify-content: center;
+		border-radius: theme(borderRadius.md);
+		background-color: theme(colors.green.100);
+		padding-inline: theme(spacing.4);
+		line-height: 1;
+		font-weight: theme(fontWeight.semibold);
+		color: theme(colors.green.900);
 
-	button {
-		@apply inline-flex h-8 cursor-default items-center justify-center rounded;
-		@apply bg-green-100 px-[15px] font-medium leading-none text-green-900;
+		&:hover {
+			background-color: theme(colors.green.200);
+		}
+
+		&:focus {
+			@apply !ring-green-600;
+		}
 	}
 </style>
