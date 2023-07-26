@@ -17,17 +17,18 @@ import type { TreeParts, TreeViewOptions } from './types';
 import { onMount } from 'svelte';
 
 export function createTreeViewBuilder(opts: TreeViewOptions) {
-    const { id } = opts;
+    // const { id } = opts;
 
     const { name } = createElHelpers<TreeParts>('tree-view');
 
     /**
      * Track currently focused item in the tree.
      */
-    const currentFocusedItem = writable<HTMLElement | null>(null);
+    const currentFocusedItem = writable<HTMLLIElement | null>(null);
 
     let rootEl: HTMLElement | null;
-    let items: Element[];
+    let items: HTMLLIElement[];
+    let currentFocusedItemIdx = 0;
 
     const rootIds = {
 		tree: generateId(),
@@ -50,13 +51,18 @@ export function createTreeViewBuilder(opts: TreeViewOptions) {
         })
     });
 
-    const isSelected = (id: string) => get(currentFocusedItem)?.id === id;
+    // const isSelected = (id: string) => get(currentFocusedItem)?.id === id;
+
+    function updateFocusElement(newIndex: number) {
+        items[currentFocusedItemIdx].setAttribute('tabindex', '-1');
+        items[newIndex].setAttribute('tabindex', '0');
+        items[newIndex].focus();
+        currentFocusedItem.set(items[newIndex]);
+        currentFocusedItemIdx = newIndex;
+    }
 
     const item = builder(name('item'), {
-        stores: [currentFocusedItem],
-        returned: ([$currentFocusedItem]) => {
-            const itemId = generateId();
-
+        returned: () => {
             return (value: string) => {
                 /**
                  * TODO: only one item should have tabindex 0, 
@@ -86,7 +92,6 @@ export function createTreeViewBuilder(opts: TreeViewOptions) {
                     }
 
                     const el = e.target;
-                    const currentFocus = get(currentFocusedItem);
 
                     if (!rootEl || !isHTMLElement(el) || el.role !== 'treeitem' || !items.length) return;
 
@@ -94,28 +99,20 @@ export function createTreeViewBuilder(opts: TreeViewOptions) {
                     e.stopPropagation();
                     e.preventDefault();
                     
-                    if (key === kbd.ARROW_DOWN && currentFocus !== items[items.length - 1]) {
-                        const nextFocusable = getNextFocusable(<HTMLElement>el);
-                        nextFocusable?.focus();
-                        currentFocusedItem.set(nextFocusable);
+                    if (key === kbd.ARROW_DOWN && currentFocusedItemIdx !== items.length - 1) {
+                        updateFocusElement(currentFocusedItemIdx + 1);
                     } 
                     
-                    else if (key === kbd.ARROW_UP && currentFocus !== items[0]) {
-                        const previousFocusable = getPreviousFocusable(<HTMLElement>el);
-                        previousFocusable?.focus();
-                        currentFocusedItem.set(previousFocusable);
+                    else if (key === kbd.ARROW_UP && currentFocusedItemIdx !== 0) {
+                        updateFocusElement(currentFocusedItemIdx - 1);
                     } 
                     
-                    else if (key === kbd.HOME) { 
-                        const firstItem = items[0];
-                        currentFocusedItem.set(<HTMLElement>firstItem);
-                        (<HTMLElement>firstItem).focus();
+                    else if (key === kbd.HOME && currentFocusedItemIdx !== 0) {
+                        updateFocusElement(0);
                     } 
                     
-                    else if (key === kbd.END) {
-                        const lastItem = items[items.length - 1];
-                        currentFocusedItem.set(<HTMLElement>lastItem);
-                        (<HTMLElement>lastItem).focus();
+                    else if (key === kbd.END && currentFocusedItemIdx != items.length - 1) {
+                        updateFocusElement(items.length - 1);
                     }
 
                     else if (isLetter) {
@@ -125,19 +122,14 @@ export function createTreeViewBuilder(opts: TreeViewOptions) {
                          * if it does exist. If it does not exist, we check
                          * previous values.
                          */ 
-
                         const values = items.map((item) => ({ value: item.getAttribute('data-value'), id: item.getAttribute('data-id') }));
-
-                        const currentId = get(currentFocusedItem)?.getAttribute('data-id');
-
-                        const currentIdx = values.findIndex((item) => item.id === currentId);
 
                         let nextFocusIdx = -1;
 
                         // Check elements after currently focused one.
-                        let foundNextFocusable = values.slice(currentIdx + 1).some((item, i) => {
+                        let foundNextFocusable = values.slice(currentFocusedItemIdx + 1).some((item, i) => {
                             if (item.value?.toLowerCase().at(0) === key) {
-                                nextFocusIdx = currentIdx + 1 + i;
+                                nextFocusIdx = currentFocusedItemIdx + 1 + i;
                                 return true;
                             }
 
@@ -149,7 +141,7 @@ export function createTreeViewBuilder(opts: TreeViewOptions) {
                              * Check elements before currently focused one,
                              * if no index has been found yet.
                              * */ 
-                            foundNextFocusable = values.slice(0, currentIdx).some((item, i) => {
+                            foundNextFocusable = values.slice(0, currentFocusedItemIdx).some((item, i) => {
                                 if (item.value?.toLowerCase().at(0) === key) {
                                     nextFocusIdx = i;
                                     return true;
@@ -160,12 +152,7 @@ export function createTreeViewBuilder(opts: TreeViewOptions) {
                         }
 
                         if (foundNextFocusable && values[nextFocusIdx].id) {
-                            const nextFocusable = document.querySelectorAll(`[data-id="${values[nextFocusIdx].id}"]`);
-
-                            if (nextFocusable.length === 0) return;
-
-                            (<HTMLElement>nextFocusable[0])?.focus();
-                            currentFocusedItem.set(<HTMLElement>nextFocusable[0]);
+                            updateFocusElement(nextFocusIdx);
                         } 
                     }
                 })
@@ -189,7 +176,7 @@ export function createTreeViewBuilder(opts: TreeViewOptions) {
         rootEl = getElementByMeltId(rootIds.tree);
 
         if (!rootEl) return;
-        items = Array.from(rootEl.querySelectorAll('[role="treeitem"]'));
+        items = Array.from(rootEl.querySelectorAll('li[role="treeitem"]'));
 
         if (items.length === 0) return;
 
@@ -200,7 +187,7 @@ export function createTreeViewBuilder(opts: TreeViewOptions) {
         });
 
         // Set the first item to be the current focus one.
-        currentFocusedItem.set(<HTMLElement>items[0]);
+        currentFocusedItem.set(items[0]);
         items[0].setAttribute('tabindex', '0');
     });
 
