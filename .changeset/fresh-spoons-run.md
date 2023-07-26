@@ -1,5 +1,5 @@
 ---
-'@melt-ui/svelte': minor
+'@melt-ui/svelte': patch
 ---
 
-Select: fix value controlled usage not setting label
+Select: fix value controlled usage not setting valueLabel
