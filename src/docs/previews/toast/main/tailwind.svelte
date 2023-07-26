@@ -54,7 +54,7 @@
 			animate:flip={{ duration: 500 }}
 			in:fly={{ duration: 150, x: '100%' }}
 			out:fly={{ duration: 150, x: '100%' }}
-			class="rounded-lg bg-neutral-800 text-white shadow-md"
+			class="rounded-lg bg-neutral-700 text-white shadow-md"
 		>
 			<div
 				class="relative flex w-[24rem] max-w-[calc(100vw-2rem)] items-center justify-between gap-4 p-5"
