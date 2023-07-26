@@ -10,7 +10,7 @@
 
 	const {
 		value: localValue,
-		label,
+		valueLabel,
 		trigger,
 		menu,
 		option,
@@ -37,7 +37,7 @@
 	melt={$trigger}
 	aria-label="Select"
 >
-	{$label === 'tailwind' ? 'Tailwind' : 'CSS'}
+	{$valueLabel === 'tailwind' ? 'Tailwind' : 'CSS'}
 	<ChevronDown />
 </button>
 
