@@ -1,5 +1,17 @@
 # @melt-ui/svelte
 
+## 0.27.0
+
+### Minor Changes
+
+- 1afcc4b2: Select: add label el store
+
+### Patch Changes
+
+- 60067d43: Select: fix value controlled usage not setting valueLabel
+- 548258cd: Select: rename label to valueLabel
+- f94c61ec: Combobox: include for attribute in label
+
 ## 0.26.3
 
 ### Patch Changes
