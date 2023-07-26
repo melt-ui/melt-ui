@@ -3,11 +3,6 @@
 	/** Internal helpers */
 	import { flyAndScale } from '$docs/utils';
 	import { X } from 'lucide-svelte';
-	import Combobox from '../../combobox/main/tailwind.svelte';
-	import DropdownMenu from '../../dropdown-menu/main/tailwind.svelte';
-	import Popover from '../../popover/main/tailwind.svelte';
-	import NestedPopover from '../../popover/nested/tailwind.svelte';
-	import Select from '../../select/main/tailwind.svelte';
 
 	const {
 		elements: { trigger, overlay, content, title, description, close },
@@ -80,12 +75,6 @@
 				Save changes
 			</button>
 		</div>
-		<Combobox />
-		<DropdownMenu />
-		<Popover />
-		<NestedPopover />
-		<Select />
-
 		<button
 			melt={$close}
 			aria-label="close"

@@ -57,7 +57,6 @@ describe('Dialog', () => {
 		await expect(content).not.toBeVisible();
 	});
 
-	// TODO: Fix this test. It's failing even though it works in the browser.
 	test('Closes when overlay is clicked', async () => {
 		const { getByTestId } = await render(DialogTest);
 

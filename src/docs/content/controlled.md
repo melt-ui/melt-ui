@@ -10,13 +10,13 @@ description: Melt UI components are uncontrolled by default, but offer the abili
 <Callout type="warning">
 
 Controlled components are an optional advanced feature and should only be used when necessary. If
-you're unsure if you _need_ to use controlled components, you probably don't.
+you're unsure if you you should be be using the components in a controlled way, you likely don't.
 
 </Callout>
 
 ## Controlled vs. Uncontrolled
 
-There are various definitions for controlled/uncontrolled components, but in the context of MeltUI,
+There are various definitions for controlled/uncontrolled components, but in the context of Melt UI,
 uncontrolled means that the state and stores of a component are created and managed by us.
 Controlled means that the user (you) can create and manage the state and stores.
 
@@ -49,8 +49,7 @@ It's as simple as passing your own `open` store to the `createDialog` builder.
 	const customOpen = writable(false)
 
 	const {
-		elements: { trigger, overlay, content, title, description, close },
-		actions: { portal }
+		elements: { trigger, overlay, content, title, description, close }
 	} = createDialog({
 		open: customOpen
 	})
@@ -58,8 +57,16 @@ It's as simple as passing your own `open` store to the `createDialog` builder.
 ```
 
 Behind the scenes, we're using the custom `open` store you passed in instead of creating our own.
-Your store will be updated as the `open` store normally would, but you'll be able to freely modify
-its state outside of the builder.
+Which means your store will be updated as the default `open` store normally would, but you'll be
+able to create it and share it with other parts of your app before initializing the Dialog.
+
+<Callout type="warning">
+
+We can't guarantee that everything will work as expected if you choose to modify certain state
+stores outside of the builder, so use this feature with caution. These controls are provided to
+cover those edge cases where you want to do something that the library won't support out of the box.
+
+</Callout>
 
 ## Change Functions
 
@@ -89,8 +96,7 @@ store from being set to `true` based on some arbitrary condition.
 	}
 
 	const {
-		elements: { trigger, overlay, content, title, description, close },
-		actions: { portal }
+		elements: { trigger, overlay, content, title, description, close }
 	} = createDialog({
 		onOpenChange: handleOpen
 	})

@@ -67,36 +67,6 @@ export function createDialog(props?: CreateDialogProps) {
 		});
 	});
 
-	const dialog = builder(name(), {
-		action: (node: HTMLElement) => {
-			const portalParent = getPortalParent(node);
-			let unsubPortal = noop;
-			let unsubEscapeKeydown = noop;
-
-			const portal = usePortal(node, portalParent);
-			if (portal && portal.destroy) {
-				unsubPortal = portal.destroy;
-			}
-			if (get(closeOnEscape)) {
-				const escapeKeydown = useEscapeKeydown(node, {
-					handler: () => {
-						open.set(false);
-					},
-				});
-				if (escapeKeydown && escapeKeydown.destroy) {
-					unsubEscapeKeydown = escapeKeydown.destroy;
-				}
-			}
-
-			return {
-				destroy() {
-					unsubPortal();
-					unsubEscapeKeydown();
-				},
-			};
-		},
-	});
-
 	const trigger = builder(name('trigger'), {
 		stores: open,
 		returned: ($open) => {
@@ -311,10 +281,6 @@ export function createDialog(props?: CreateDialogProps) {
 		},
 		states: {
 			open,
-		},
-		actions: {
-			portal: dialog,
-			dialog,
 		},
 		options,
 	};

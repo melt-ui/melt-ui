@@ -16,6 +16,7 @@ import {
 	isLeftClick,
 	toWritableStores,
 	overridable,
+	getPortalParent,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import type { VirtualElement } from '@floating-ui/core';
@@ -54,7 +55,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;
 
 	const rootOptions = toWritableStores(withDefaults);
-	const { positioning, closeOnOutsideClick } = rootOptions;
+	const { positioning, closeOnOutsideClick, portal } = rootOptions;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const rootOpen = overridable(openWritable, withDefaults?.onOpenChange);
@@ -131,11 +132,12 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			} as const;
 		},
 		action: (node: HTMLElement) => {
+			const portalParent = getPortalParent(node);
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[rootOpen, rootActiveTrigger, positioning, closeOnOutsideClick],
-				([$rootOpen, $rootActiveTrigger, $positioning, $closeOnOutsideClick]) => {
+				[rootOpen, rootActiveTrigger, positioning, closeOnOutsideClick, portal],
+				([$rootOpen, $rootActiveTrigger, $positioning, $closeOnOutsideClick, $portal]) => {
 					unsubPopper();
 					if (!($rootOpen && $rootActiveTrigger)) return;
 					tick().then(() => {
@@ -151,6 +153,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 											handler: handleClickOutside,
 									  }
 									: null,
+								portal: $portal ? (portalParent === document.body ? null : portalParent) : null,
 							},
 						});
 						if (!popper || !popper.destroy) return;

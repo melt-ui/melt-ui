@@ -11,7 +11,6 @@ import {
 	overridable,
 	toWritableStores,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
 import { derived, writable, type Writable } from 'svelte/store';
 import type {
@@ -26,9 +25,9 @@ const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
 const defaults = {
 	type: 'single',
-	value: undefined,
+	defaultValue: undefined,
 	disabled: undefined,
-} satisfies Defaults<CreateAccordionProps>;
+} satisfies CreateAccordionProps;
 
 export const createAccordion = <T extends AccordionType = 'single'>(
 	props?: CreateAccordionProps<T>
