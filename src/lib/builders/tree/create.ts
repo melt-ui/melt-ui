@@ -35,13 +35,13 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     /**
      * Track currently focused item in the tree.
      */
-    const currentFocusedItem = writable<HTMLLIElement | null>(null);
-    const currentSelectedItem = writable<HTMLLIElement | null>(null);
+    const currentFocusedItem: Writable<HTMLLIElement | null> = writable(null);
+    const currentSelectedItem: Writable<HTMLLIElement | null> = writable(null);
 
     let rootEl: HTMLElement | null;
     let items: HTMLLIElement[];
     let currentFocusedItemIdx = 0;
-    let itemChildren: Writable<ItemDescription[]>;
+    const itemChildren: Writable<ItemDescription[]> = writable([]);
 
     const rootIds = {
 		tree: generateId(),
@@ -80,16 +80,16 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
 
     const item = builder(name('item'), {
         returned: () => {
-            return (opts: { value: string, hasChildren?: boolean, expand?: boolean} ) => {
+            return (opts: { value: string, id: string, hasChildren?: boolean, expand?: boolean} ) => {
                 // Have some default options that can be passed to the create()
-                const { value } = opts;
+                const { value, id } = opts;
 
                 return {
                     role: 'treeitem',
                     // 'aria-expanded': '',
                     // 'aria-selected': isSelected(id),
                     // tabindex: $currentFocusedItem?.getAttribute('data-id') === itemId ? 0 : -1,
-                    // 'data-id': itemId,
+                    'data-id': id,
                     'data-value': value
                 };
             };
@@ -235,7 +235,7 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
 
         // Add ids for each element.
         items.forEach((item) => {
-            item.setAttribute('data-id', generateId());
+            // item.setAttribute('data-id', generateId());
             item.setAttribute(ATTRS.TABINDEX, '-1');
         });
 

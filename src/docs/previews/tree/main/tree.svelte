@@ -30,7 +30,11 @@
 </script>
 
 {#each treeItems as { title, icon, children }, i (i)}
-	<li {...$item({ value: title })} use:item class={level !== 1 ? 'pl-4' : ''}>
+	<li
+		{...$item({ value: title, id: `${i}` })}
+		use:item
+		class={level !== 1 ? 'pl-4' : ''}
+	>
 		<div class="flex items-center gap-1 p-1">
 			<svelte:component this={icons[icon]} class="h-4 w-4" />
 			<span>{title}</span>
@@ -44,6 +48,10 @@
 {/each}
 
 <style>
+	/* Remove docs' focus box-shadow styling. */
+	li:focus {
+		box-shadow: none !important;
+	}
 	li:focus > div {
 		@apply bg-magnum-500/40;
 	}
