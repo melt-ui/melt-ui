@@ -45,6 +45,7 @@ const defaults = {
 	preventScroll: true,
 	closeOnEscape: true,
 	portal: true,
+	forceVisible: false,
 } satisfies Defaults<CreateComboboxProps<unknown>>;
 
 const { name, selector } = createElHelpers('combobox');
@@ -88,6 +89,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		closeOnEscape,
 		preventScroll,
 		portal,
+		forceVisible,
 	} = options;
 
 	const ids = {
@@ -125,9 +127,9 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 			selectedItem.set($item);
 			// Reset the filtered items to the full list.
 			filteredItems.set(get(items));
-			const $activeTrigger = get(activeTrigger);
-			if ($activeTrigger) {
-				$activeTrigger.focus();
+			const activeTrigger = document.getElementById(ids.input);
+			if (activeTrigger) {
+				activeTrigger.focus();
 			}
 		}
 	}
@@ -146,10 +148,6 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		 */
 		if (!currentOpenState) {
 			open.set(true);
-		}
-
-		if (get(activeTrigger)) {
-			return;
 		}
 
 		const triggerEl = document.getElementById(ids.input);
@@ -252,7 +250,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 						}
 
 						// All other events should open the menu.
-						openMenu();
+						openMenu($open);
 
 						tick().then(() => {
 							const $selectedItem = get(selectedItem);
@@ -352,17 +350,19 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 			let unsubEscapeKeydown = noop;
 
 			effect(open, ($open) => {
-				unsubEscapeKeydown();
 				if ($open) {
-					const escape = useEscapeKeydown(node, {
-						handler: () => {
-							closeMenu();
-							reset();
-						},
+					tick().then(() => {
+						const escape = useEscapeKeydown(node, {
+							handler: () => {
+								closeMenu();
+							},
+						});
+						if (escape && escape.destroy) {
+							unsubEscapeKeydown = escape.destroy;
+						}
 					});
-					if (escape && escape.destroy) {
-						unsubEscapeKeydown = escape.destroy;
-					}
+				} else {
+					unsubEscapeKeydown();
 				}
 			});
 
@@ -375,19 +375,42 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		},
 	});
 
+	onMount(() => {
+		activeTrigger.set(document.getElementById(ids.input));
+	});
+
+	/**
+	 * To properly anchor the popper to the input/trigger, we need to ensure both
+	 * the open state is true and the activeTrigger is not null. This helper store's
+	 * value is true when both of these conditions are met and keeps the code tidy.
+	 */
+	const isOpen = derived(
+		[open, activeTrigger],
+		([$open, $activeTrigger]) => $open && $activeTrigger !== null
+	);
+
+	/**
+	 * A helper introduced along with `forceMount` to cleanup handling
+	 * the visibility of the content. If `open` or `forceMount` is true, then the
+	 * content should be visible, otherwise it should be hidden along with the display
+	 * property set to none.
+	 */
+	const isVisible = derived(
+		[isOpen, forceVisible],
+		([$isOpen, $forceVisible]) => $isOpen || $forceVisible
+	);
+
 	/**
 	 * Action and attributes for the menu element.
 	 */
 	const menu = builder(name('menu'), {
-		stores: [open, activeTrigger],
-		returned: ([$open, $activeTrigger]) => {
-			const fullyOpen = $open && $activeTrigger;
+		stores: [isVisible],
+		returned: ([$isVisible]) => {
 			return {
-				hidden: fullyOpen ? undefined : true,
+				hidden: $isVisible ? undefined : true,
 				id: ids.menu,
 				role: 'listbox',
-				style: styleToString({ display: fullyOpen ? undefined : 'none' }),
-				'data-portal': get(portal) ? '' : undefined,
+				style: styleToString({ display: $isVisible ? undefined : 'none' }),
 			} as const;
 		},
 		action: (node: HTMLElement) => {
@@ -398,18 +421,19 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 			const unsubscribe = executeCallbacks(
 				//  Bind the popper portal to the input element.
 				effect(
-					[open, activeTrigger, preventScroll, closeOnEscape, portal],
-					([$open, $activeTrigger, $preventScroll, $closeOnEscape, $portal]) => {
+					[isVisible, preventScroll, closeOnEscape, portal],
+					([$isVisible, $preventScroll, $closeOnEscape, $portal]) => {
 						unsubPopper();
 						unsubScroll();
-						if (!($open && $activeTrigger)) return;
+						const activeTrigger = document.getElementById(ids.input);
+						if (!($isVisible && activeTrigger)) return;
 						if ($preventScroll) {
 							unsubScroll = removeScroll();
 						}
 
 						tick().then(() => {
 							const popper = usePopper(node, {
-								anchorElement: $activeTrigger,
+								anchorElement: activeTrigger,
 								open,
 								options: {
 									floating: { placement: 'bottom', sameWidth: true },
@@ -418,9 +442,9 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 										? {
 												handler: (e) => {
 													const target = e.target;
-													if (target === $activeTrigger) return;
-													reset();
+													if (target === activeTrigger) return;
 													closeMenu();
+													reset();
 												},
 										  }
 										: null,
@@ -428,7 +452,6 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 										? {
 												handler: () => {
 													closeMenu();
-													reset();
 												},
 										  }
 										: null,
@@ -485,7 +508,6 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 					highlightedItem.set(node);
 				}),
 				addEventListener(node, 'click', (e) => {
-					e.stopPropagation();
 					// If the item is disabled, `preventDefault` to stop the input losing focus.
 					if (isElementDisabled(node)) {
 						e.preventDefault();
@@ -498,39 +520,6 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 			);
 			return { destroy: unsubscribe };
 		},
-	});
-
-	onMount(() => {
-		/**
-		 * This covers the controlled case where the user sets the `open` store to
-		 * `true` without clicking the trigger. We need to set the active trigger here
-		 * to ensure the menu is anchored to the correct element.
-		 */
-		const triggerEl = document.getElementById(ids.input);
-		if (triggerEl && get(open) && !get(activeTrigger)) {
-			activeTrigger.set(triggerEl);
-		}
-	});
-
-	effect([open], ([$open]) => {
-		if (!isBrowser) return;
-
-		/**
-		 * In the controlled case where the user programatically sets the
-		 * `open` store to `false`. We need to reset the active trigger.
-		 */
-		if (!$open) {
-			activeTrigger.set(null);
-			return;
-		}
-
-		/**
-		 * In the controlled case where the component is already mounted and the open store is
-		 * set to `true`, we need to set the active trigger to the input element.
-		 */
-		if ($open && !get(activeTrigger)) {
-			openMenu($open);
-		}
 	});
 
 	/**

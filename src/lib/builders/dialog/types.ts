@@ -18,4 +18,3 @@ export type Dialog = BuilderReturn<typeof createDialog>;
 export type DialogElements = Dialog['elements'];
 export type DialogOptions = Dialog['options'];
 export type DialogStates = Dialog['states'];
-export type DialogActions = Dialog['actions'];

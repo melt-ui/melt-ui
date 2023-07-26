@@ -6,11 +6,13 @@ import type { createCombobox } from './create';
 export type CreateComboboxProps<T> = {
 	/** The list of items to display in the combobox. */
 	items: T[];
+
 	/**
 	 * Determines behavior when scrolling items into view.
 	 * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block
 	 */
 	scrollAlignment?: 'nearest' | 'center';
+
 	/**
 	 * Predicate function to filter the visible items. When the user types,
 	 * the filterFunction will be run on each item along with the current
@@ -80,6 +82,16 @@ export type CreateComboboxProps<T> = {
 	 * @default true
 	 */
 	portal?: boolean;
+
+	/**
+	 * Whether the menu content should be displayed even if it is not open.
+	 * This is useful for animating the content in and out using transitions.
+	 *
+	 * @see https://melt-ui.com/docs/transitions
+	 *
+	 * @default false
+	 */
+	forceVisible?: boolean;
 };
 
 export type ComboboxFilterFunction<T> = (item: T, value: string) => boolean;

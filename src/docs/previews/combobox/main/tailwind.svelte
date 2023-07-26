@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createCombobox, type ComboboxFilterFunction } from '@melt-ui/svelte';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
+	import { fade, slide } from 'svelte/transition';
 
 	interface Book {
 		author: string;
@@ -80,6 +81,7 @@
 		filterFunction,
 		items: books,
 		itemToString: (item) => item.title,
+		forceVisible: true,
 	});
 </script>
 
@@ -102,17 +104,17 @@
 		</div>
 	</div>
 </label>
-
-<ul
-	class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-md"
-	melt={$menu}
->
-	<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-	<div
-		class="flex max-h-full flex-col gap-2 overflow-y-auto bg-white px-2 py-2"
-		tabindex="0"
+{#if $open}
+	<ul
+		class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-md"
+		melt={$menu}
+		transition:slide={{ duration: 150 }}
 	>
-		{#if $open}
+		<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+		<div
+			class="flex max-h-full flex-col gap-2 overflow-y-auto bg-white px-2 py-2"
+			tabindex="0"
+		>
 			{#if $filteredItems.length !== 0}
 				{#each $filteredItems as book, index (index)}
 					<li
@@ -145,9 +147,9 @@
 					No results found
 				</li>
 			{/if}
-		{/if}
-	</div>
-</ul>
+		</div>
+	</ul>
+{/if}
 
 <style lang="postcss">
 	.check {

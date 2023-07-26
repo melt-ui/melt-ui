@@ -18,7 +18,11 @@ description: A filterable list of items that supports selection.
 - **Menu**: The popover menu
 - **Item**: The individual list item
 
+## Usage
+
 ## Example Components
+
+### Svelte Transitions
 
 ### Controlled (BYOS)
 

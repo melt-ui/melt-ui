@@ -78,6 +78,16 @@ export type CreateMenuProps = {
 	 * A callback for when the open state changes.
 	 */
 	onOpenChange?: ChangeFn<boolean>;
+
+	/**
+	 * Whether the menu should keep be visible even when it's not open.
+	 * This is useful for animating the menu in and out using transitions.
+	 *
+	 * @see https://melt-ui.com/docs/transitions
+	 *
+	 * @default false
+	 */
+	forceVisible?: boolean;
 };
 
 export type CreateSubmenuProps = CreateMenuProps & {
