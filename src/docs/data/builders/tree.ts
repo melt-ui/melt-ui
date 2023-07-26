@@ -28,6 +28,14 @@ const builder: APISchema = {
 
 const keyboard: KeyboardSchema = [
 	{
+		key: KBD.ENTER,
+		behavior: 'Selects the node.'
+	},
+	{
+		key: KBD.SPACE,
+		behavior: 'Selects the node.'
+	},
+	{
 		key: KBD.ARROW_DOWN,
 		behavior: 'Moves focus to the next node that is focusable without opening or closing a node. If focus is on the last node, does nothing.',
 	},
@@ -41,7 +49,7 @@ const keyboard: KeyboardSchema = [
 	},
 	{
 		key: KBD.END,
-		behavior: '	Moves focus to the last node that can be focused without expanding any nodes that are closed.'
+		behavior: 'Moves focus to the last node that can be focused without expanding any nodes that are closed.'
 	},
 	{
 		key: KBD.LETTER,

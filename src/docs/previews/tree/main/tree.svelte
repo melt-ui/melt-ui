@@ -1,8 +1,9 @@
 <script context="module" lang="ts">
 	import Svelte from '~icons/simple-icons/svelte';
 	import Folder from '~icons/lucide/folder';
+	import JS from '~icons/simple-icons/javascript';
 
-	type Icon = 'svelte' | 'folder';
+	type Icon = 'svelte' | 'folder' | 'js';
 
 	export type TreeItem = {
 		title: string;
@@ -13,6 +14,7 @@
 	export const icons = {
 		svelte: Svelte,
 		folder: Folder,
+		js: JS,
 	};
 </script>
 
@@ -28,9 +30,9 @@
 </script>
 
 {#each treeItems as { title, icon, children }, i (i)}
-	<li {...$item(title)} use:item class={level !== 1 ? 'pl-4 pt-2' : ''}>
-		<div class="flex items-center gap-1">
-			<svelte:component this={icons[icon]} />
+	<li {...$item({ value: title })} use:item class={level !== 1 ? 'pl-4' : ''}>
+		<div class="flex items-center gap-1 p-1">
+			<svelte:component this={icons[icon]} class="h-4 w-4" />
 			<span>{title}</span>
 		</div>
 		{#if children}
@@ -40,3 +42,9 @@
 		{/if}
 	</li>
 {/each}
+
+<style>
+	li:focus > div {
+		@apply bg-magnum-500/40;
+	}
+</style>

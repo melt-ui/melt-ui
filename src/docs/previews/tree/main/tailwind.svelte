@@ -7,8 +7,8 @@
 	import Tree from './tree.svelte';
 	import type { TreeItem } from './tree.svelte';
 
-	const { tree, label, item, group, currentFocusedItem } =
-		createTreeViewBuilder({ id: '' });
+	const { tree, label, item, group, currentFocusedItem, currentSelectedItem } =
+		createTreeViewBuilder({ collapse: false });
 
 	setContext('tree-item', item);
 	setContext('tree-group', group);
@@ -31,6 +31,10 @@
 							icon: 'svelte',
 						},
 					],
+				},
+				{
+					title: 'index.js',
+					icon: 'js',
 				},
 			],
 		},
@@ -57,11 +61,21 @@
 	];
 </script>
 
-<div class="flex flex-col gap-2">
-	<div class="block">
-		{$currentFocusedItem?.getAttribute('data-value')}
+<div class="flex h-[390px] flex-col gap-1 rounded-lg bg-neutral-900 px-8 py-1">
+	<div class="w-64">
+		<span>Focused value:</span>
+		<span class="text-magnum-500">
+			{$currentFocusedItem?.getAttribute('data-value')}
+		</span>
 	</div>
-	<h3 {...$label} class="text-lg font-semibold">Project Structure</h3>
+	<div class="w-64">
+		<span>Selected value:</span>
+		<span class="text-magnum-500">
+			{$currentSelectedItem?.getAttribute('data-value')}
+		</span>
+	</div>
+	<hr />
+	<h3 {...$label} class="text-lg font-bold">Project Structure</h3>
 
 	<ul {...$tree}>
 		<Tree {treeItems} />

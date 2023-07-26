@@ -1,4 +1,5 @@
-import { get, writable } from 'svelte/store';
+import { get, writable, type Writable } from 'svelte/store';
+import type { Defaults } from "$lib/internal/types";
 import {
     addEventListener,
     builder,
@@ -7,17 +8,27 @@ import {
     executeCallbacks,
     generateId,
     getElementByMeltId,
-    getNextFocusable,
-    getPreviousFocusable,
     isHTMLElement,
     kbd
 } from '$lib/internal/helpers';
 
-import type { TreeParts, TreeViewOptions } from './types';
+import type { CreateTreeViewArgs, ItemDescription, TreeParts } from './types';
 import { onMount } from 'svelte';
 
-export function createTreeViewBuilder(opts: TreeViewOptions) {
-    // const { id } = opts;
+
+const defaults = {
+    collapse: false,
+} satisfies Defaults<CreateTreeViewArgs>;
+
+const ATTRS = {
+    TABINDEX: 'tabindex',
+    EXPANDED: 'aria-expanded',
+    LABELLEDBY: 'aria-labelledby',
+}
+
+export function createTreeViewBuilder(args: CreateTreeViewArgs) {
+    const argsWithDefaults = { ...defaults, ...args };
+    const { collapse } = argsWithDefaults;
 
     const { name } = createElHelpers<TreeParts>('tree-view');
 
@@ -25,10 +36,12 @@ export function createTreeViewBuilder(opts: TreeViewOptions) {
      * Track currently focused item in the tree.
      */
     const currentFocusedItem = writable<HTMLLIElement | null>(null);
+    const currentSelectedItem = writable<HTMLLIElement | null>(null);
 
     let rootEl: HTMLElement | null;
     let items: HTMLLIElement[];
     let currentFocusedItemIdx = 0;
+    let itemChildren: Writable<ItemDescription[]>;
 
     const rootIds = {
 		tree: generateId(),
@@ -54,16 +67,23 @@ export function createTreeViewBuilder(opts: TreeViewOptions) {
     // const isSelected = (id: string) => get(currentFocusedItem)?.id === id;
 
     function updateFocusElement(newIndex: number) {
-        items[currentFocusedItemIdx].setAttribute('tabindex', '-1');
-        items[newIndex].setAttribute('tabindex', '0');
+        items[currentFocusedItemIdx].setAttribute(ATTRS.TABINDEX, '-1');
+        items[newIndex].setAttribute(ATTRS.TABINDEX, '0');
         items[newIndex].focus();
         currentFocusedItem.set(items[newIndex]);
         currentFocusedItemIdx = newIndex;
     }
 
+    function updateSelectedElement(newIndex: number) {
+        currentSelectedItem.set(items[newIndex]);
+    }
+
     const item = builder(name('item'), {
         returned: () => {
-            return (value: string) => {
+            return (opts: { value: string, hasChildren?: boolean, expand?: boolean} ) => {
+                // Have some default options that can be passed to the create()
+                const { value } = opts;
+
                 return {
                     role: 'treeitem',
                     // 'aria-expanded': '',
@@ -93,8 +113,12 @@ export function createTreeViewBuilder(opts: TreeViewOptions) {
                     // Prevent other tree events from also firing the event.
                     e.stopPropagation();
                     e.preventDefault();
+
+                    if (key === kbd.ENTER || key === kbd.SPACE) {
+                        updateSelectedElement(currentFocusedItemIdx);
+                    }
                     
-                    if (key === kbd.ARROW_DOWN && currentFocusedItemIdx !== items.length - 1) {
+                    else if (key === kbd.ARROW_DOWN && currentFocusedItemIdx !== items.length - 1) {
                         updateFocusElement(currentFocusedItemIdx + 1);
                     } 
                     
@@ -150,6 +174,19 @@ export function createTreeViewBuilder(opts: TreeViewOptions) {
                             updateFocusElement(nextFocusIdx);
                         } 
                     }
+                }),
+                addEventListener(node, 'click', async (e) => {
+                    e.stopPropagation();
+                    const el = e.currentTarget;
+
+                    if (!rootEl || !isHTMLElement(el) || el.role !== 'treeitem' || !items.length) return;
+
+                    const idx = items.findIndex((item) => item === el);
+
+                    if (idx === -1) return;
+
+                    updateSelectedElement(idx);
+                    updateFocusElement(idx);
                 })
             );
 
@@ -167,6 +204,27 @@ export function createTreeViewBuilder(opts: TreeViewOptions) {
         })
     });
 
+    function getChildrenOfItems(): ItemDescription[] {
+        return items.map((item) => {
+            const groups = Array.from(item.querySelectorAll('ul[role="group"]'));
+
+            const hasChildren = groups.length > 0;
+            const childrenIdxs: number[] = [];
+
+            if (hasChildren) {
+                const children = <HTMLLIElement[]>Array.from(groups[0].querySelectorAll(':scope > li[role="treeitem"]'));
+
+                children.forEach((child) => childrenIdxs.push(items.indexOf(child)))
+            }
+
+            return {
+                collapsed: collapse,
+                hasChildren,
+                childrenIdxs
+            }
+        });
+    }
+
     onMount(() => {
         rootEl = getElementByMeltId(rootIds.tree);
 
@@ -178,12 +236,23 @@ export function createTreeViewBuilder(opts: TreeViewOptions) {
         // Add ids for each element.
         items.forEach((item) => {
             item.setAttribute('data-id', generateId());
-            item.setAttribute('tabindex', '-1');
+            item.setAttribute(ATTRS.TABINDEX, '-1');
         });
 
-        // Set the first item to be the current focus one.
+        /**
+         * Set the first item to be the current focused one,
+         * and make it tabbable.
+         */
         currentFocusedItem.set(items[0]);
-        items[0].setAttribute('tabindex', '0');
+        items[0].setAttribute(ATTRS.TABINDEX, '0');
+
+        // Get the children idxs of each item.
+        itemChildren.set(getChildrenOfItems());
+
+        // Add aria-expanded role for items with children.
+        get(itemChildren).forEach((item, i) => {
+            if (item.hasChildren) items[i].setAttribute(ATTRS.EXPANDED, `${!collapse}`);
+        });
     });
 
     return {
@@ -192,6 +261,7 @@ export function createTreeViewBuilder(opts: TreeViewOptions) {
         item,
         rootIds,
         group,
-        currentFocusedItem
+        currentFocusedItem,
+        currentSelectedItem
     }
 }
