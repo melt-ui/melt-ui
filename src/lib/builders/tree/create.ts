@@ -64,11 +64,6 @@ export function createTreeViewBuilder(opts: TreeViewOptions) {
     const item = builder(name('item'), {
         returned: () => {
             return (value: string) => {
-                /**
-                 * TODO: only one item should have tabindex 0, 
-                 * all others should have -1.
-                 */
-
                 return {
                     role: 'treeitem',
                     // 'aria-expanded': '',

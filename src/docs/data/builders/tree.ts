@@ -6,81 +6,57 @@ const builder: APISchema = {
 	title: 'createTooltip',
 	description: DESCRIPTIONS.BUILDER('tooltip'),
 	props: [
-		{
-			name: 'positioning',
-			type: 'FloatingConfig',
-			default: "position: 'top'",
-			description: DESCRIPTIONS.FLOATING_CONFIG,
-			longType: LONG_TYPES.FLOATING_CONFIG,
-		},
-		{
-			name: 'arrowSize',
-			type: 'number',
-			default: '8',
-			description: DESCRIPTIONS.ARROW_SIZE,
-		},
-		{
-			name: 'open',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether the tooltip is open or not.',
-		},
-		{
-			name: 'closeOnPointerDown',
-			type: 'boolean',
-			default: 'true',
-			description: 'Whether the tooltip closes when the pointer is down.',
-		},
-		{
-			name: 'openDelay',
-			type: 'number',
-			default: '1000',
-			description: 'The delay in milliseconds before the tooltip opens after a pointer over event.',
-		},
-		{
-			name: 'closeDelay',
-			type: 'number',
-			default: '500',
-			description:
-				'The delay in milliseconds before the tooltip closes after a pointer leave event.',
-		},
 	],
 	returnedProps: [
 		{
-			name: 'options',
-			type: 'Writable<CreateTooltipProps>',
-			description: 'A writable store that controls the options of the tooltip.',
+			name: 'tree',
+			description: 'The builder store used to create the tree.',
+			link: '#tree',
 		},
 		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls the open state of the tooltip.',
+			name: 'label',
+			description: 'The builder store used to create the label.',
+			link: '#label',
 		},
 		{
-			name: 'trigger',
-			description: 'The builder store used to create the tooltip trigger.',
-			link: '#trigger',
-		},
-		{
-			name: 'content',
-			description: 'The builder store used to create the tooltip content.',
-			link: '#content',
-		},
-		{
-			name: 'arrow',
-			description: 'The builder store used to create the tooltip arrow.',
-			link: '#arrow',
+			name: 'item',
+			description: 'The builder store used to create a tree item.',
+			link: '#item',
 		},
 	],
 };
 
+const keyboard: KeyboardSchema = [
+	{
+		key: KBD.ARROW_DOWN,
+		behavior: 'Moves focus to the next node that is focusable without opening or closing a node. If focus is on the last node, does nothing.',
+	},
+	{
+		key: KBD.ARROW_UP,
+		behavior: 'Moves focus to the previous node that is focusable without opening or closing a node. If focus is on the first node, does nothing.',
+	},
+	{
+		key: KBD.HOME,
+		behavior: 'Moves focus to first node without opening or closing a node.'
+	},
+	{
+		key: KBD.END,
+		behavior: '	Moves focus to the last node that can be focused without expanding any nodes that are closed.'
+	},
+	{
+		key: KBD.LETTER,
+		behavior: 'Focus moves to the next node with a name that starts with the typed character. Search wraps to first node if a matching name is not found among the nodes that follow the focused node. Search ignores nodes that are descendants of closed nodes.'
+	}
+];
+
 const schemas = [builder];
 
 const features: BuilderData['features'] = [
-	'',
+	'Full keyboard functionality',
 ];
 
 export const treeData: BuilderData = {
 	schemas,
 	features,
+	keyboard
 };
