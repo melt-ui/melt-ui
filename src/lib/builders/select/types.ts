@@ -7,7 +7,7 @@ export type CreateSelectProps = {
 	required?: boolean;
 	disabled?: boolean;
 	value?: unknown;
-	label?: string;
+	valueLabel?: string;
 	name?: string;
 	preventScroll?: boolean;
 	loop?: boolean;

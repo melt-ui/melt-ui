@@ -64,11 +64,11 @@ const { name, selector } = createElHelpers<SelectParts>('select');
 
 export function createSelect(props?: CreateSelectProps) {
 	const withDefaults = { ...defaults, ...props } as CreateSelectProps;
-	const options = writable(omit(withDefaults, 'value', 'label'));
+	const options = writable(omit(withDefaults, 'value', 'valueLabel'));
 
 	const open = writable(false);
 	const value = writable<unknown>(withDefaults.value ?? null);
-	const valueLabel = writable<string | number | null>(withDefaults.label ?? null);
+	const valueLabel = writable<string | number | null>(withDefaults.valueLabel ?? null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	/**
