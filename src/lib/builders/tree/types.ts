@@ -6,6 +6,7 @@ export type TreeViewOptions = {
 
 export type TreeParts =
 	| 'trigger'
+	| 'label'
 	| 'item'
 	| 'group';
 
