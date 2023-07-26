@@ -381,6 +381,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		returned: () => {
 			return {
 				id: ids.label,
+				for: ids.input,
 			};
 		},
 		action: labelAction,

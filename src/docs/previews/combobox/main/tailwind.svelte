@@ -88,13 +88,17 @@
 	});
 </script>
 
-<label class="cursor-pointer" melt={$label}>
-	<span class="block pb-1 capitalize">Choose your favorite book:</span>
+<div class="flex flex-col gap-1">
+	<!-- svelte-ignore a11y-label-has-associated-control - $label contains the 'for' attribute -->
+	<label melt={$label}>
+		<span class="block capitalize">Choose your favorite book:</span>
+	</label>
+
 	<div class="relative">
 		<input
 			melt={$input}
 			class="flex h-10 items-center justify-between rounded-md bg-white
-            px-3 pr-12 text-magnum-700"
+					px-3 pr-12 text-magnum-700"
 			placeholder="Best book ever"
 			value={$inputValue}
 		/>
@@ -106,7 +110,7 @@
 			{/if}
 		</div>
 	</div>
-</label>
+</div>
 
 <ul
 	class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-md"
