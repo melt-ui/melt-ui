@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { createSelect, type SelectOptionProps } from '$lib';
-	import ChevronDown from '~icons/lucide/chevron-down';
-	import Check from '~icons/lucide/check';
-	import { beforeNavigate } from '$app/navigation';
 	import type { Writable } from 'svelte/store';
+	import Check from '~icons/lucide/check';
+	import ChevronDown from '~icons/lucide/chevron-down';
 
 	export let options: SelectOptionProps[] = [];
 	export let codingStyle: Writable<'tailwind' | 'css'>;
@@ -25,10 +24,6 @@
 		}
 	});
 	$: localValue.set($codingStyle);
-
-	beforeNavigate(() => {
-		localValue.set('tailwind');
-	});
 </script>
 
 <button

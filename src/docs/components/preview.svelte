@@ -25,6 +25,7 @@
 	import { cn } from '$docs/utils';
 	import type { SelectOptionProps } from '$lib';
 	import { usingPreprocessor } from '$routes/store';
+	import { isBrowser } from '@melt-ui/svelte/internal/helpers';
 	import { writable } from 'svelte/store';
 	import CodeBlock from './code-block.svelte';
 	import PreviewWrapper from './preview-wrapper.svelte';
@@ -67,7 +68,45 @@
 		return processedCode;
 	}
 
-	const codingStyle = writable<'tailwind' | 'css'>('tailwind');
+	type CodingStyle = 'tailwind' | 'css';
+	function isCodingStyle(value: unknown): value is CodingStyle {
+		return typeof value === 'string' && ['tailwind', 'css'].includes(value);
+	}
+
+	const codingStyle = (function initCodingStyle() {
+		const defaultWritable = writable<CodingStyle>('tailwind' in code ? 'tailwind' : 'css');
+		if (!isBrowser) return defaultWritable;
+		const preferredStyle = localStorage.getItem('melt-coding-style') as CodingStyle | null;
+		if (isCodingStyle(preferredStyle)) {
+			return writable<CodingStyle>(preferredStyle);
+		}
+		return writable<CodingStyle>('tailwind' in code ? 'tailwind' : 'css');
+	})();
+
+	codingStyle.subscribe((value) => {
+		if (!isBrowser) return;
+		localStorage.setItem('melt-coding-style', value);
+	});
+
+	const resetCodingStyle = () => {
+		const styles = Object.keys(code);
+		const preferredStyle = localStorage.getItem('melt-coding-style') as CodingStyle | null;
+
+		if (isCodingStyle(preferredStyle) && styles.includes(preferredStyle)) {
+			codingStyle.set(preferredStyle);
+		} else {
+			codingStyle.set(styles[0] as CodingStyle);
+			// Keep the coding style in local storage up to date
+			if (isCodingStyle(preferredStyle)) {
+				localStorage.setItem('melt-coding-style', preferredStyle);
+			}
+		}
+	};
+
+	$: {
+		code;
+		resetCodingStyle();
+	}
 
 	let codingStyleObj: ProcessedCodeEntry | null = processCode({
 		code,
