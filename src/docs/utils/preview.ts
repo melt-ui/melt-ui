@@ -280,7 +280,6 @@ export function createCopyCodeButton() {
 	}
 
 	function setCodeString(node: HTMLElement) {
-		console.log(node.innerText);
 		codeString.set(node.innerText.trim() ?? '');
 	}
 
