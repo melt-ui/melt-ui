@@ -91,8 +91,12 @@ export function createSelect(props?: CreateSelectProps) {
 		closeOnOutsideClick,
 	} = options;
 
-	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
+	let mounted = false;
+
+	const openWritable = withDefaults.open ?? writable(true);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
+	// Open so we can register the optionsList items before mounted = true
+	open.set(true);
 
 	const valueWritable = withDefaults.value ?? writable<unknown>(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
@@ -125,11 +129,20 @@ export function createSelect(props?: CreateSelectProps) {
 	};
 
 	onMount(() => {
+		// Run after all initial effects
+		tick().then(() => {
+			mounted = true;
+		});
+
+		open.set(withDefaults.defaultOpen);
+
 		if (!isBrowser) return;
 		const menuEl = document.getElementById(ids.menu);
+
 		if (!menuEl) return;
 
 		const triggerEl = document.getElementById(ids.trigger);
+
 		if (!triggerEl) return;
 		activeTrigger.set(triggerEl);
 
@@ -138,8 +151,6 @@ export function createSelect(props?: CreateSelectProps) {
 
 		const dataLabel = selectedEl.getAttribute('data-label');
 		valueLabel.set(dataLabel ?? selectedEl.textContent ?? null);
-
-		optionsList = [];
 	});
 
 	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
@@ -434,7 +445,7 @@ export function createSelect(props?: CreateSelectProps) {
 		};
 	};
 
-	let optionsList: OptionProps[] = [];
+	const optionsList: OptionProps[] = [];
 
 	const option = builder(name('option'), {
 		stores: value,
@@ -546,6 +557,7 @@ export function createSelect(props?: CreateSelectProps) {
 			unsubs.push(removeScroll());
 		}
 
+		const constantMounted = mounted;
 		sleep(1).then(() => {
 			const menuEl = document.getElementById(ids.menu);
 			if (menuEl && $open && get(isUsingKeyboard)) {
@@ -562,7 +574,8 @@ export function createSelect(props?: CreateSelectProps) {
 			} else if (menuEl && $open) {
 				// focus on the menu element
 				handleRovingFocus(menuEl);
-			} else if ($activeTrigger) {
+			} else if ($activeTrigger && constantMounted) {
+				console.log('constantMounted', constantMounted);
 				// Hacky way to prevent the keydown event from triggering on the trigger
 				handleRovingFocus($activeTrigger);
 			}
