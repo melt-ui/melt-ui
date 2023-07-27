@@ -1,4 +1,3 @@
-import type { Defaults } from '$lib/internal/types';
 import { writable } from 'svelte/store';
 import { createMenuBuilder } from '../menu';
 import type { CreateDropdownMenuProps } from './types';
@@ -16,7 +15,8 @@ const defaults = {
 	loop: false,
 	dir: 'ltr',
 	defaultOpen: false,
-} satisfies Defaults<CreateDropdownMenuProps>;
+	forceVisible: false,
+} satisfies CreateDropdownMenuProps;
 
 export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateDropdownMenuProps;

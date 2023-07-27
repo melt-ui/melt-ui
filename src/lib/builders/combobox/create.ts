@@ -385,32 +385,21 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	 * value is true when both of these conditions are met and keeps the code tidy.
 	 */
 	const isOpen = derived(
-		[open, activeTrigger],
-		([$open, $activeTrigger]) => $open && $activeTrigger !== null
-	);
-
-	/**
-	 * A helper introduced along with `forceMount` to cleanup handling
-	 * the visibility of the content. If `open` or `forceMount` is true, then the
-	 * content should be visible, otherwise it should be hidden along with the display
-	 * property set to none.
-	 */
-	const isVisible = derived(
-		[isOpen, forceVisible],
-		([$isOpen, $forceVisible]) => $isOpen || $forceVisible
+		[open, activeTrigger, forceVisible],
+		([$open, $activeTrigger, $forceVisible]) => ($open || $forceVisible) && $activeTrigger !== null
 	);
 
 	/**
 	 * Action and attributes for the menu element.
 	 */
 	const menu = builder(name('menu'), {
-		stores: [isVisible],
-		returned: ([$isVisible]) => {
+		stores: [isOpen],
+		returned: ([$isOpen]) => {
 			return {
-				hidden: $isVisible ? undefined : true,
+				hidden: $isOpen ? undefined : true,
 				id: ids.menu,
 				role: 'listbox',
-				style: styleToString({ display: $isVisible ? undefined : 'none' }),
+				style: styleToString({ display: $isOpen ? undefined : 'none' }),
 			} as const;
 		},
 		action: (node: HTMLElement) => {
@@ -421,19 +410,19 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 			const unsubscribe = executeCallbacks(
 				//  Bind the popper portal to the input element.
 				effect(
-					[isVisible, preventScroll, closeOnEscape, portal],
-					([$isVisible, $preventScroll, $closeOnEscape, $portal]) => {
+					[isOpen, preventScroll, closeOnEscape, portal],
+					([$isOpen, $preventScroll, $closeOnEscape, $portal]) => {
 						unsubPopper();
 						unsubScroll();
-						const activeTrigger = document.getElementById(ids.input);
-						if (!($isVisible && activeTrigger)) return;
+						const $activeTrigger = get(activeTrigger);
+						if (!($isOpen && $activeTrigger)) return;
 						if ($preventScroll) {
 							unsubScroll = removeScroll();
 						}
 
 						tick().then(() => {
 							const popper = usePopper(node, {
-								anchorElement: activeTrigger,
+								anchorElement: $activeTrigger,
 								open,
 								options: {
 									floating: { placement: 'bottom', sameWidth: true },
@@ -442,7 +431,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 										? {
 												handler: (e) => {
 													const target = e.target;
-													if (target === activeTrigger) return;
+													if (target === $activeTrigger) return;
 													closeMenu();
 													reset();
 												},

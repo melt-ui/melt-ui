@@ -7,7 +7,6 @@
 	const {
 		elements: { trigger, overlay, content, title, description, close },
 		states: { open },
-		actions: { portal },
 	} = createDialog();
 
 	const {
@@ -20,7 +19,6 @@
 			close: closeNested,
 		},
 		states: { open: openNested },
-		actions: { portal: portalNested },
 	} = createDialog();
 </script>
 

@@ -1,4 +1,3 @@
-import type { Defaults } from '$lib/internal/types';
 import { get, writable, type Writable } from 'svelte/store';
 import {
 	applyAttrsIfDisabled,
@@ -40,7 +39,7 @@ const { name } = createElHelpers<MenuParts | 'menu'>('menubar');
 
 const defaults = {
 	loop: true,
-} satisfies Defaults<CreateMenubarProps>;
+} satisfies CreateMenubarProps;
 
 export function createMenubar(props?: CreateMenubarProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateMenubarProps;
@@ -93,7 +92,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 		closeOnEscape: true,
 		closeOnOutsideClick: true,
 		portal: true,
-	} satisfies Defaults<CreateMenubarMenuProps>;
+		forceVisible: false,
+	} satisfies CreateMenubarMenuProps;
 
 	const createMenu = (props?: CreateMenubarMenuProps) => {
 		const withDefaults = { ...menuDefaults, ...props } satisfies CreateMenubarMenuProps;

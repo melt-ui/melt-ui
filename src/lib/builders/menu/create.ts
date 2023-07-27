@@ -70,8 +70,15 @@ const defaults = {
 export function createMenuBuilder(opts: MenuBuilderOptions) {
 	const { name, selector } = createElHelpers<MenuParts>(opts.selector);
 
-	const { preventScroll, arrowSize, positioning, closeOnEscape, closeOnOutsideClick, portal } =
-		opts.rootOptions;
+	const {
+		preventScroll,
+		arrowSize,
+		positioning,
+		closeOnEscape,
+		closeOnOutsideClick,
+		portal,
+		forceVisible,
+	} = opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
 	const rootActiveTrigger = opts.rootActiveTrigger;
@@ -125,19 +132,24 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		trigger: generateId(),
 	};
 
+	const isVisible = derived(
+		[rootOpen, rootActiveTrigger, forceVisible],
+		([$rootOpen, $rootActiveTrigger, $forceVisible]) =>
+			($rootOpen || $forceVisible) && $rootActiveTrigger !== null
+	);
+
 	const rootMenu = builder(name(), {
-		stores: [rootOpen, rootActiveTrigger],
-		returned: ([$rootOpen, $rootActiveTrigger]) => {
-			const fullyOpen = $rootOpen && $rootActiveTrigger !== null;
+		stores: [isVisible],
+		returned: ([$isVisible]) => {
 			return {
 				role: 'menu',
-				hidden: fullyOpen ? undefined : true,
+				hidden: $isVisible ? undefined : true,
 				style: styleToString({
-					display: fullyOpen ? undefined : 'none',
+					display: $isVisible ? undefined : 'none',
 				}),
 				id: rootIds.menu,
 				'aria-labelledby': rootIds.trigger,
-				'data-state': fullyOpen ? 'open' : 'closed',
+				'data-state': $isVisible ? 'open' : 'closed',
 				tabindex: -1,
 			} as const;
 		},
@@ -146,14 +158,16 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[rootOpen, rootActiveTrigger, positioning, closeOnOutsideClick, portal],
-				([$rootOpen, $rootActiveTrigger, $positioning, $closeOnOutsideClick, $portal]) => {
+				[isVisible, positioning, closeOnOutsideClick, portal],
+				([$isVisible, $positioning, $closeOnOutsideClick, $portal]) => {
 					unsubPopper();
-					if (!($rootOpen && $rootActiveTrigger)) return;
+					if (!$isVisible) return;
+					const activeTrigger = get(rootActiveTrigger);
+					if (!activeTrigger) return;
 					tick().then(() => {
 						setMeltMenuAttribute(node, selector);
 						const popper = usePopper(node, {
-							anchorElement: $rootActiveTrigger,
+							anchorElement: activeTrigger,
 							open: rootOpen,
 							options: {
 								floating: $positioning,
@@ -192,7 +206,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					 */
 					if (e.key === kbd.TAB) {
 						e.preventDefault();
-						rootActiveTrigger.set(null);
 						rootOpen.set(false);
 						handleTabNavigation(e, nextFocusable, prevFocusable);
 						return;
@@ -386,7 +399,13 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						return !prev;
 					});
 
-					rootOpen.set(false);
+					// We're waiting for a tick to let the checked store update
+					// before closing the menu. If we don't, and the user was to hit
+					// spacebar or enter twice really fast, the menu would close and
+					// reopen without the checked state being updated.
+					tick().then(() => {
+						rootOpen.set(false);
+					});
 				}),
 				addEventListener(node, 'keydown', (e) => {
 					onItemKeyDown(e);
@@ -488,7 +507,14 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						if (e.defaultPrevented) return;
 
 						value.set(itemValue);
-						rootOpen.set(false);
+
+						// We're waiting for a tick to let the checked store update
+						// before closing the menu. If we don't, and the user was to hit
+						// spacebar or enter twice really fast, the menu would close and
+						// reopen without the checked state being updated.
+						tick().then(() => {
+							rootOpen.set(false);
+						});
 					}),
 					addEventListener(node, 'keydown', (e) => {
 						onItemKeyDown(e);
@@ -560,6 +586,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			placement: 'right-start',
 			gutter: 8,
 		},
+		forceVisible: false,
 	} satisfies Defaults<CreateSubmenuProps>;
 
 	const createSubmenu = (args?: CreateSubmenuProps) => {
@@ -570,7 +597,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		// options
 		const options = toWritableStores(withDefaults);
 
-		const { positioning, arrowSize, disabled } = options;
+		const { positioning, arrowSize, disabled, forceVisible } = options;
 
 		const subActiveTrigger = writable<HTMLElement | null>(null);
 		const subOpenTimer = writable<number | null>(null);
@@ -581,18 +608,35 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			trigger: generateId(),
 		};
 
+		onMount(() => {
+			/**
+			 * Set active trigger on mount to handle controlled/forceVisible
+			 * state.
+			 */
+			const subTrigger = document.getElementById(subIds.trigger);
+			if (subTrigger) {
+				subActiveTrigger.set(subTrigger);
+			}
+		});
+
+		const subIsVisible = derived(
+			[subOpen, forceVisible, subActiveTrigger],
+			([$subOpen, $forceVisible, $subActiveTrigger]) =>
+				($subOpen || $forceVisible) && $subActiveTrigger !== null
+		);
+
 		const subMenu = builder(name('submenu'), {
-			stores: [subOpen],
-			returned: ([$subOpen]) => {
+			stores: [subIsVisible],
+			returned: ([$subIsVisible]) => {
 				return {
 					role: 'menu',
-					hidden: $subOpen ? undefined : true,
+					hidden: $subIsVisible ? undefined : true,
 					style: styleToString({
-						display: $subOpen ? undefined : 'none',
+						display: $subIsVisible ? undefined : 'none',
 					}),
 					id: subIds.menu,
 					'aria-labelledby': subIds.trigger,
-					'data-state': $subOpen ? 'open' : 'closed',
+					'data-state': $subIsVisible ? 'open' : 'closed',
 					tabindex: -1,
 				} as const;
 			},
@@ -600,15 +644,17 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
-					[subOpen, subActiveTrigger, positioning],
-					([$subOpen, $subActiveTrigger, $positioning]) => {
+					[subIsVisible, positioning],
+					([$subIsVisible, $positioning]) => {
 						unsubPopper();
-						if (!($subOpen && $subActiveTrigger)) return;
+						if (!$subIsVisible) return;
+						const activeTrigger = get(subActiveTrigger);
+						if (!activeTrigger) return;
 						tick().then(() => {
-							const parentMenuEl = getParentMenu($subActiveTrigger);
+							const parentMenuEl = getParentMenu(activeTrigger);
 
 							const popper = usePopper(node, {
-								anchorElement: $subActiveTrigger,
+								anchorElement: activeTrigger,
 								open: subOpen,
 								options: {
 									floating: $positioning,
@@ -659,7 +705,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 								if ($subActiveTrigger) {
 									handleRovingFocus($subActiveTrigger);
 								}
-								subActiveTrigger.set(null);
 								return false;
 							});
 							return;
@@ -671,7 +716,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						 */
 						if (e.key === kbd.TAB) {
 							e.preventDefault();
-							rootActiveTrigger.set(null);
 							rootOpen.set(false);
 							handleTabNavigation(e, nextFocusable, prevFocusable);
 							return;
@@ -694,7 +738,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 							if (!submenuEl.contains(target) && target !== $subActiveTrigger) {
 								subOpen.set(false);
-								subActiveTrigger.set(null);
 							}
 						} else {
 							const menuEl = e.currentTarget;
@@ -703,7 +746,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 							if (!menuEl.contains(relatedTarget) && relatedTarget !== $subActiveTrigger) {
 								subOpen.set(false);
-								subActiveTrigger.set(null);
 							}
 						}
 					})
@@ -868,7 +910,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						const menu = document.getElementById(menuId);
 
 						if (menu && !menu.contains(relatedTarget)) {
-							subActiveTrigger.set(null);
 							subOpen.set(false);
 						}
 					}),
@@ -1076,8 +1117,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				nextFocusable.set(getNextFocusable(triggerEl));
 				prevFocusable.set(getPreviousFocusable(triggerEl));
 				rootActiveTrigger.set(triggerEl);
-			} else {
-				rootActiveTrigger.set(null);
 			}
 
 			return isOpen;

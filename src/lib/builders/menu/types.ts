@@ -80,8 +80,8 @@ export type CreateMenuProps = {
 	onOpenChange?: ChangeFn<boolean>;
 
 	/**
-	 * Whether the menu should keep be visible even when it's not open.
-	 * This is useful for animating the menu in and out using transitions.
+	 * Whether the menu content should be displayed even if it is not open.
+	 * This is useful for animating the content in and out using transitions.
 	 *
 	 * @see https://melt-ui.com/docs/transitions
 	 *
@@ -135,6 +135,7 @@ export type MenuBuilderOptions = {
 		closeOnEscape: Writable<boolean>;
 		closeOnOutsideClick: Writable<boolean>;
 		portal: Writable<boolean>;
+		forceVisible: Writable<boolean>;
 	};
 	disableTriggerRefocus?: boolean;
 	disableFocusFirstItem?: boolean;

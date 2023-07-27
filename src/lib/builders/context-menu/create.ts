@@ -18,7 +18,6 @@ import {
 	overridable,
 	getPortalParent,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
 import type { VirtualElement } from '@floating-ui/core';
 import { tick } from 'svelte';
 import { get, writable, type Readable } from 'svelte/store';
@@ -47,7 +46,8 @@ const defaults = {
 	loop: false,
 	dir: 'ltr',
 	defaultOpen: false,
-} satisfies Defaults<CreateContextMenuProps>;
+	forceVisible: false,
+} satisfies CreateContextMenuProps;
 
 const { name, selector } = createElHelpers<MenuParts>('context-menu');
 
