@@ -172,11 +172,13 @@
 					{/if}
 				</div>
 			</div>
-			{#if isFileName(tab) && codingStyleObj && codingStyleObj[tab]}
-				<CodeBlock>
-					{@html codingStyleObj[tab]}
-				</CodeBlock>
-			{/if}
+			{#key $codingStyle}
+				{#if isFileName(tab) && codingStyleObj && codingStyleObj[tab]}
+					<CodeBlock>
+						{@html codingStyleObj[tab]}
+					</CodeBlock>
+				{/if}
+			{/key}
 		</TabsRoot>
 	{:else}
 		<PreviewWrapper>
