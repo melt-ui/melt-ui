@@ -1,4 +1,4 @@
-import { usePopper, usePortal } from '$lib/internal/actions';
+import { usePopper } from '$lib/internal/actions';
 import {
 	addEventListener,
 	builder,
@@ -6,6 +6,7 @@ import {
 	effect,
 	executeCallbacks,
 	generateId,
+	getPortalParent,
 	getTabbableNodes,
 	isBrowser,
 	isHTMLElement,
@@ -16,8 +17,7 @@ import {
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { tick } from 'svelte';
+import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
 import type { CreateHoverCardProps } from './types';
 
@@ -33,7 +33,9 @@ const defaults = {
 	},
 	arrowSize: 8,
 	closeOnOutsideClick: true,
-} satisfies Defaults<CreateHoverCardProps>;
+	forceVisible: false,
+	portal: true,
+} satisfies CreateHoverCardProps;
 
 export function createHoverCard(props: CreateHoverCardProps = {}) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateHoverCardProps;
@@ -43,10 +45,19 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 	const hasSelection = writable(false);
 	const isPointerDownOnContent = writable(false);
 	const containSelection = writable(false);
+	const activeTrigger = writable<HTMLElement | null>(null);
 
 	const options = toWritableStores(withDefaults);
 
-	const { openDelay, closeDelay, positioning, arrowSize, closeOnOutsideClick } = options;
+	const {
+		openDelay,
+		closeDelay,
+		positioning,
+		arrowSize,
+		closeOnOutsideClick,
+		forceVisible,
+		portal,
+	} = options;
 
 	const ids = {
 		content: generateId(),
@@ -123,22 +134,28 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 		},
 	});
 
+	const isVisible = derived(
+		[open, forceVisible, activeTrigger],
+		([$open, $forceVisible, $activeTrigger]) => ($open || $forceVisible) && $activeTrigger !== null
+	);
+
 	const content = builder(name('content'), {
-		stores: [open],
-		returned: ([$open]) => {
+		stores: [isVisible],
+		returned: ([$isVisible]) => {
 			return {
-				hidden: $open ? undefined : true,
+				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
 				style: styleToString({
-					display: $open ? undefined : 'none',
+					display: $isVisible ? undefined : 'none',
 					userSelect: 'text',
 					WebkitUserSelect: 'text',
 				}),
 				id: ids.content,
-				'data-state': $open ? 'open' : 'closed',
+				'data-state': $isVisible ? 'open' : 'closed',
 			};
 		},
 		action: (node: HTMLElement) => {
+			const portalParent = getPortalParent(node);
 			let unsub = noop;
 
 			const unsubTimers = () => {
@@ -147,32 +164,33 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 				}
 			};
 
-			const portalReturn = usePortal(node);
-
 			let unsubPopper = noop;
-			const unsubOpen = open.subscribe(($open) => {
-				unsubPopper();
-				if (!$open) return;
-				tick().then(() => {
-					const triggerEl = document.getElementById(ids.trigger);
-					if (!triggerEl || node.hidden) return;
-					const $positioning = get(positioning);
-					const $closeOnOutsideClick = get(closeOnOutsideClick);
 
-					const popper = usePopper(node, {
-						anchorElement: triggerEl,
-						open,
-						options: {
-							floating: $positioning,
-							focusTrap: null,
-							clickOutside: $closeOnOutsideClick ? undefined : null,
-						},
+			const unsubDerived = effect(
+				[isVisible, positioning, closeOnOutsideClick, portal],
+				([$isVisible, $positioning, $closeOnOutsideClick, $portal]) => {
+					unsubPopper();
+					if (!$isVisible) return;
+					const $activeTrigger = get(activeTrigger);
+					if (!$activeTrigger) return;
+					tick().then(() => {
+						const popper = usePopper(node, {
+							anchorElement: $activeTrigger,
+							open: open,
+							options: {
+								floating: $positioning,
+								clickOutside: $closeOnOutsideClick ? undefined : null,
+								portal: $portal ? (portalParent === document.body ? null : portalParent) : null,
+								focusTrap: null,
+							},
+						});
+
+						if (popper && popper.destroy) {
+							unsubPopper = popper.destroy;
+						}
 					});
-					if (popper && popper.destroy) {
-						unsubPopper = popper.destroy;
-					}
-				});
-			});
+				}
+			);
 
 			unsub = executeCallbacks(
 				addEventListener(node, 'pointerdown', (e) => {
@@ -197,10 +215,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 				}),
 				addEventListener(node, 'focusout', (e) => {
 					e.preventDefault();
-				}),
-
-				portalReturn && portalReturn.destroy ? portalReturn.destroy : noop,
-				unsubOpen
+				})
 			);
 
 			return {
@@ -208,6 +223,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 					unsub();
 					unsubPopper();
 					unsubTimers();
+					unsubDerived();
 				},
 			};
 		},
@@ -245,6 +261,12 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 			contentElement.style.userSelect = originalContentUserSelect;
 			contentElement.style.webkitUserSelect = originalContentUserSelect;
 		};
+	});
+
+	onMount(() => {
+		const triggerEl = document.getElementById(ids.trigger);
+		if (!triggerEl) return;
+		activeTrigger.set(triggerEl);
 	});
 
 	effect([open], ([$open]) => {

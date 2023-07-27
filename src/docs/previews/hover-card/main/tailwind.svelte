@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { createHoverCard } from '@melt-ui/svelte';
-	import { fade } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 
 	const {
 		elements: { trigger, content, arrow },
 		states: { open },
-	} = createHoverCard();
+	} = createHoverCard({
+		forceVisible: true,
+	});
 </script>
 
 <a
@@ -26,7 +28,7 @@
 {#if $open}
 	<div
 		melt={$content}
-		transition:fade={{ duration: 100 }}
+		transition:fly={{ y: -5, duration: 100 }}
 		class="z-10 rounded-md bg-white shadow-sm"
 	>
 		<div class="w-[300px] rounded-md bg-white p-5 shadow-sm">
