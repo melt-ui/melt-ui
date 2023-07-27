@@ -108,8 +108,8 @@
 					Quit Melt UI
 					<div class="rightSlot">⌘Q</div>
 				</div>
-				<div melt={$arrow} data-testid="arrow" />
 			{/if}
+			<div melt={$arrow} data-testid="arrow" />
 		</div>
 	{/if}
 </main>

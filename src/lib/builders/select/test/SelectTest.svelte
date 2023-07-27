@@ -27,7 +27,7 @@
 				{#each arr as item, i}
 					<div
 						class="option"
-						melt={$option({ value: item, label: item })}
+						melt={$option({ value: item, label: item, disabled: i === 2 })}
 						data-testid="{key}-option-{i}"
 					>
 						{#if $isSelected(item)}
