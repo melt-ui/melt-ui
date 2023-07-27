@@ -250,11 +250,16 @@ export const createSlider = (props: CreateSliderProps = defaults) => {
 			const percent = (clientXY - leftOrBottom) / (rightOrTop - leftOrBottom);
 			const val = Math.round(percent * ($max - $min) + $min);
 
-			if (val < $min || val > $max) return;
-			const step = $options.step;
-			const newValue = Math.round(val / step) * step;
+			if (val < $min) {
+				updatePosition($min, activeThumbIdx);
+			} else if (val > $max) {
+				updatePosition($max, activeThumbIdx);
+			} else {
+				const step = $options.step;
+				const newValue = Math.round(val / step) * step;
 
-			updatePosition(newValue, activeThumbIdx);
+				updatePosition(newValue, activeThumbIdx);
+			}
 		};
 
 		const getClosestThumb = (e: PointerEvent) => {
