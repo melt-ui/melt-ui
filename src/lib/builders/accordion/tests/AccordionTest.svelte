@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { createAccordion, type CreateAccordionProps } from '@melt-ui/svelte';
 
-	export let type: CreateAccordionProps['type'] = 'single';
-	export let disabled: CreateAccordionProps['disabled'];
+	export let type: 'single' | 'multiple' = 'single';
+	export let disabled: CreateAccordionProps['disabled'] = undefined;
 	export let items: { id: string; triggerId: string; title: string; description: string }[] = [];
 
 	const {

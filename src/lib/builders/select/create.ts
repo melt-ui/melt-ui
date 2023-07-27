@@ -246,6 +246,7 @@ export function createSelect(props?: CreateSelectProps) {
 			return {
 				role: 'combobox',
 				'aria-autocomplete': 'none',
+				'aria-haspopup': 'listbox',
 				'aria-controls': ids.menu,
 				'aria-expanded': $open,
 				'aria-required': $required,
