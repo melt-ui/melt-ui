@@ -89,6 +89,7 @@
 	});
 
 	const resetCodingStyle = () => {
+		if (!isBrowser) return;
 		const styles = Object.keys(code);
 		const preferredStyle = localStorage.getItem('melt-coding-style') as CodingStyle | null;
 
@@ -171,12 +172,10 @@
 					{/if}
 				</div>
 			</div>
-			{#if isFileName(tab)}
-				{#if codingStyleObj && codingStyleObj[tab]}
-					<CodeBlock>
-						{@html codingStyleObj[tab]}
-					</CodeBlock>
-				{/if}
+			{#if isFileName(tab) && codingStyleObj && codingStyleObj[tab]}
+				<CodeBlock>
+					{@html codingStyleObj[tab]}
+				</CodeBlock>
 			{/if}
 		</TabsRoot>
 	{:else}
