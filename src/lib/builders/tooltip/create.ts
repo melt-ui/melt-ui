@@ -31,8 +31,6 @@ const defaults = {
 type TooltipParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<TooltipParts>('tooltip');
 
-// TODO: Add grace area to prevent tooltip from closing when moving from trigger to tooltip
-
 export function createTooltip(props?: CreateTooltipProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateTooltipProps;
 
