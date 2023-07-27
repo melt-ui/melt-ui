@@ -207,7 +207,6 @@ export function createSelect(props?: CreateSelectProps) {
 
 					if (e.key === kbd.TAB) {
 						e.preventDefault();
-						activeTrigger.set(null);
 						open.set(false);
 						handleTabNavigation(e);
 					}
@@ -275,10 +274,7 @@ export function createSelect(props?: CreateSelectProps) {
 							nextFocusable.set(getNextFocusable(triggerEl));
 							prevFocusable.set(getPreviousFocusable(triggerEl));
 							activeTrigger.set(triggerEl);
-						} else {
-							activeTrigger.set(null);
 						}
-
 						return isOpen;
 					});
 					if (!$open) e.preventDefault();
@@ -308,8 +304,6 @@ export function createSelect(props?: CreateSelectProps) {
 								nextFocusable.set(getNextFocusable(triggerEl));
 								prevFocusable.set(getPreviousFocusable(triggerEl));
 								activeTrigger.set(triggerEl);
-							} else {
-								activeTrigger.set(null);
 							}
 
 							return isOpen;

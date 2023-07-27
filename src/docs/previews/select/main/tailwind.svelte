@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { createSelect } from '@melt-ui/svelte';
 	import { Check, ChevronDown } from 'lucide-svelte';
+	import { fly } from 'svelte/transition';
 
 	const {
 		elements: { trigger, menu, option, group, groupLabel },
-		states: { label },
+		states: { label, open },
 		helpers: { isSelected },
-	} = createSelect();
+	} = createSelect({
+		forceVisible: true,
+	});
 
 	const options = {
 		sweet: ['Caramel', 'Chocolate', 'Strawberry', 'Cookies & Cream'],
@@ -18,24 +21,25 @@
 	{$label || 'Select an option'}
 	<ChevronDown />
 </button>
-
-<div class="menu" melt={$menu}>
-	{#each Object.entries(options) as [key, arr]}
-		<div melt={$group(key)}>
-			<div class="label" melt={$groupLabel(key)}>{key}</div>
-			{#each arr as item}
-				<div class="option" melt={$option({ value: item, label: item })}>
-					{#if $isSelected(item)}
-						<div class="check">
-							<Check />
-						</div>
-					{/if}
-					{item}
-				</div>
-			{/each}
-		</div>
-	{/each}
-</div>
+{#if $open}
+	<div class="menu" melt={$menu} transition:fly={{ duration: 100, y: -5 }}>
+		{#each Object.entries(options) as [key, arr]}
+			<div melt={$group(key)}>
+				<div class="label" melt={$groupLabel(key)}>{key}</div>
+				{#each arr as item}
+					<div class="option" melt={$option({ value: item, label: item })}>
+						{#if $isSelected(item)}
+							<div class="check">
+								<Check />
+							</div>
+						{/if}
+						{item}
+					</div>
+				{/each}
+			</div>
+		{/each}
+	</div>
+{/if}
 
 <style lang="postcss">
 	.label {
