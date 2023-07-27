@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.27.1
+
+### Patch Changes
+
+- 467a8ff3: Select: fix bug where quick sliding would not set the values to min/max
+
 ## 0.27.0
 
 ### Minor Changes
