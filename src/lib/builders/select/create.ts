@@ -36,6 +36,8 @@ import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import { createSeparator } from '../separator';
 import type { CreateSelectProps, SelectOptionProps } from './types';
+import { usePortal } from '@melt-ui/svelte/internal/actions';
+import { createLabel } from '../label';
 
 const defaults = {
 	arrowSize: 8,
@@ -50,13 +52,23 @@ const defaults = {
 	name: undefined,
 } satisfies Defaults<CreateSelectProps>;
 
-type SelectParts = 'menu' | 'trigger' | 'option' | 'group' | 'group-label' | 'arrow' | 'input';
-const { name } = createElHelpers<SelectParts>('select');
+type SelectParts =
+	| 'menu'
+	| 'trigger'
+	| 'option'
+	| 'group'
+	| 'group-label'
+	| 'arrow'
+	| 'input'
+	| 'label';
+
+const { name, selector } = createElHelpers<SelectParts>('select');
 
 export function createSelect(props?: CreateSelectProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps;
 
-	const options = toWritableStores(omit(withDefaults, 'value', 'label'));
+	const options = toWritableStores(omit(withDefaults, 'value', 'valueLabel'));
+
 	const {
 		positioning,
 		arrowSize,
@@ -69,7 +81,7 @@ export function createSelect(props?: CreateSelectProps) {
 
 	const open = writable(false);
 	const value = writable<unknown>(withDefaults.value ?? null);
-	const label = writable<string | number | null>(withDefaults.label ?? null);
+	const valueLabel = writable<string | number | null>(withDefaults.valueLabel ?? null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	/**
@@ -93,6 +105,7 @@ export function createSelect(props?: CreateSelectProps) {
 	const ids = {
 		menu: generateId(),
 		trigger: generateId(),
+		label: generateId(),
 	};
 
 	onMount(() => {
@@ -104,7 +117,7 @@ export function createSelect(props?: CreateSelectProps) {
 		if (!isHTMLElement(selectedEl)) return;
 
 		const dataLabel = selectedEl.getAttribute('data-label');
-		label.set(dataLabel ?? selectedEl.textContent ?? null);
+		valueLabel.set(dataLabel ?? selectedEl.textContent ?? null);
 	});
 
 	const menu = builder(name('menu'), {
@@ -179,10 +192,13 @@ export function createSelect(props?: CreateSelectProps) {
 				})
 			);
 
+			const unsubPortal = usePortal(node, 'body')?.destroy;
+
 			return {
 				destroy() {
 					unsubDerived();
 					unsubPopper();
+					unsubPortal?.();
 					unsubEventListeners();
 				},
 			};
@@ -200,6 +216,7 @@ export function createSelect(props?: CreateSelectProps) {
 				'aria-required': $required,
 				'data-state': $open ? 'open' : 'closed',
 				'data-disabled': $disabled ? true : undefined,
+				'aria-labelledby': ids.label,
 				disabled: $disabled,
 				id: ids.trigger,
 				tabindex: 0,
@@ -286,6 +303,37 @@ export function createSelect(props?: CreateSelectProps) {
 		},
 	});
 
+	// Use our existing label builder to create a label for the select trigger.
+	const {
+		elements: { root: labelBuilder },
+	} = createLabel();
+	const { action: labelAction } = get(labelBuilder);
+
+	const label = builder(name('label'), {
+		returned: () => {
+			return {
+				id: ids.label,
+				for: ids.trigger,
+			};
+		},
+		action: (node) => {
+			const destroy = executeCallbacks(
+				labelAction(node)?.destroy,
+				addEventListener(node, 'click', (e) => {
+					e.preventDefault();
+					const triggerEl = document.getElementById(ids.trigger);
+					if (!isHTMLElement(triggerEl)) return;
+
+					triggerEl.focus();
+				})
+			);
+
+			return {
+				destroy,
+			};
+		},
+	});
+
 	const {
 		elements: { root: separator },
 	} = createSeparator({
@@ -321,6 +369,18 @@ export function createSelect(props?: CreateSelectProps) {
 		}),
 	});
 
+	const getOptionProps = (el: HTMLElement) => {
+		const value = el.getAttribute('data-value');
+		const label = el.getAttribute('data-label');
+		const disabled = el.hasAttribute('data-disabled');
+
+		return {
+			value,
+			label: label ?? el.textContent ?? null,
+			disabled: disabled ? true : false,
+		};
+	};
+
 	const option = builder(name('option'), {
 		stores: value,
 		returned: ($value) => {
@@ -337,32 +397,12 @@ export function createSelect(props?: CreateSelectProps) {
 			};
 		},
 		action: (node: HTMLElement) => {
-			const getElprops = () => {
-				const value = node.getAttribute('data-value');
-				const label = node.getAttribute('data-label');
-				const disabled = node.hasAttribute('data-disabled');
-
-				return {
-					value,
-					label: label ?? node.textContent ?? null,
-					disabled: disabled ? true : false,
-				};
-			};
-
 			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', (e) => {
-					const props = getElprops();
-					if (props.disabled) {
-						e.preventDefault();
-						return;
-					}
-				}),
-
 				addEventListener(node, 'click', (e) => {
 					const itemElement = e.currentTarget;
 					if (!isHTMLElement(itemElement)) return;
 
-					const props = getElprops();
+					const props = getOptionProps(node);
 					if (props.disabled) {
 						e.preventDefault();
 						return;
@@ -370,7 +410,6 @@ export function createSelect(props?: CreateSelectProps) {
 					handleRovingFocus(itemElement);
 
 					value.set(props.value);
-					label.set(props.label);
 					open.set(false);
 				}),
 
@@ -383,15 +422,14 @@ export function createSelect(props?: CreateSelectProps) {
 					}
 					if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
 						e.preventDefault();
-						const props = getElprops();
+						const props = getOptionProps(node);
 						node.setAttribute('data-selected', '');
 						value.set(props.value);
-						label.set(props.label);
 						open.set(false);
 					}
 				}),
 				addEventListener(node, 'pointermove', (e) => {
-					const props = getElprops();
+					const props = getOptionProps(node);
 					if (props.disabled) {
 						e.preventDefault();
 						return;
@@ -428,6 +466,18 @@ export function createSelect(props?: CreateSelectProps) {
 				destroy: unsub,
 			};
 		},
+	});
+
+	effect(value, ($value) => {
+		if (!isBrowser) return;
+		const menuEl = document.getElementById(ids.menu);
+		if (!menuEl) return;
+
+		const optionEl = menuEl.querySelector(`${selector('option')}[data-value="${$value}"]`);
+		if (!isHTMLElement(optionEl)) return;
+
+		const props = getOptionProps(optionEl);
+		valueLabel.set(props.label ?? null);
 	});
 
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
@@ -622,11 +672,12 @@ export function createSelect(props?: CreateSelectProps) {
 			groupLabel,
 			arrow,
 			separator,
+			label,
 		},
 		states: {
 			open,
 			value,
-			label,
+			valueLabel,
 		},
 		helpers: {
 			isSelected,

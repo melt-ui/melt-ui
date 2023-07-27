@@ -64,7 +64,7 @@
 	];
 
 	const {
-		elements: { input, menu, item },
+		elements: { input, menu, item, label },
 		states: { open, inputValue, filteredItems },
 		helpers: { isSelected },
 	} = createCombobox({
@@ -83,7 +83,7 @@
 	});
 </script>
 
-<label>
+<label melt={$label}>
 	<span>Choose your favorite book:</span>
 	<div>
 		<input melt={$input} placeholder="Best book ever" value={$inputValue} />

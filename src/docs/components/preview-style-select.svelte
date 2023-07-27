@@ -9,7 +9,7 @@
 
 	const {
 		elements: { trigger, menu, option },
-		states: { value: localValue, label },
+		states: { value: localValue, valueLabel },
 		helpers: { isSelected },
 	} = createSelect({ value: $codingStyle });
 
@@ -31,7 +31,7 @@
 	melt={$trigger}
 	aria-label="Select"
 >
-	{$label === 'tailwind' ? 'Tailwind' : 'CSS'}
+	{$valueLabel === 'tailwind' ? 'Tailwind' : 'CSS'}
 	<ChevronDown />
 </button>
 
