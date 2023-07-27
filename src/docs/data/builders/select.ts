@@ -19,14 +19,14 @@ const builder: APISchema = {
 			description: 'Whether or not the select is disabled.',
 		},
 		{
-			name: 'label',
+			name: 'valueLabel',
 			type: 'string',
-			description: 'The label of the select.',
+			description: 'The initial value label of the select.',
 		},
 		{
 			name: 'value',
 			type: 'unknown',
-			description: 'The value of the select.',
+			description: 'The initial value of the select.',
 		},
 		{
 			name: 'name',
@@ -65,12 +65,12 @@ const builder: APISchema = {
 		{
 			name: 'value',
 			type: 'Writable<unknown>',
-			description: 'A writable store that can be used to update the select value.',
+			description: 'A writable store that can be used to get or update or the select value.',
 		},
 		{
-			name: 'label',
+			name: 'valueLabel',
 			type: 'Writable<string | number | null>',
-			description: 'A writable store that can be used to update the select label.',
+			description: 'A writable store that can be used to get or update the select label.',
 		},
 		{
 			name: 'trigger',
@@ -91,6 +91,11 @@ const builder: APISchema = {
 			name: 'input',
 			description: 'The builder store used to create the select input.',
 			link: '#input',
+		},
+		{
+			name: 'label',
+			description: 'The builder store used to create the select label.',
+			link: '#label',
 		},
 
 		{
@@ -172,11 +177,22 @@ const option: APISchema = {
 
 const input: APISchema = {
 	title: 'input',
-	description: 'The input element',
+	description: 'The hidden input element. Used for form submission.',
 	dataAttributes: [
 		{
 			name: 'data-melt-select-input',
 			value: ATTRS.MELT('input'),
+		},
+	],
+};
+
+const label: APISchema = {
+	title: 'label',
+	description: 'The label element',
+	dataAttributes: [
+		{
+			name: 'data-melt-select-label',
+			value: ATTRS.MELT('label'),
 		},
 	],
 };
@@ -270,7 +286,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, trigger, menu, option, group, groupLabel, input, separator, arrow];
+const schemas = [builder, trigger, label, menu, option, group, groupLabel, input, separator, arrow];
 
 const features = [
 	'Full keyboard navigation',

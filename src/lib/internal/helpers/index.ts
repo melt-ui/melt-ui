@@ -15,6 +15,7 @@ export * from './keyboard';
 export * from './callbacks';
 export * from './debounce';
 export * from './platform';
+export * from './polygon';
 export * from './scroll';
 export * from './store';
 export * from './rovingFocus';

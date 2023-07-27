@@ -3,8 +3,8 @@
 	import { Check, ChevronDown } from 'lucide-svelte';
 
 	const {
-		elements: { trigger, menu, option, group, groupLabel },
-		states: { label },
+		elements: { trigger, menu, option, group, groupLabel, label },
+		states: { valueLabel },
 		helpers: { isSelected },
 	} = createSelect();
 
@@ -16,7 +16,7 @@
 
 <main>
 	<button class="trigger" melt={$trigger} aria-label="Food" data-testid="trigger">
-		{$label || 'Select an option'}
+		{$valueLabel || 'Select an option'}
 		<ChevronDown />
 	</button>
 

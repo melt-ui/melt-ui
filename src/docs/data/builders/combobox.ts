@@ -88,6 +88,11 @@ const builder: APISchema = {
 			description: 'The builder store used to create the menu item.',
 			link: '#item',
 		},
+		{
+			name: 'label',
+			description: 'The builder store used to create the label for the combobox.',
+			link: '#label',
+		},
 	],
 };
 
@@ -163,6 +168,17 @@ const item: APISchema = {
 	],
 };
 
+const label: APISchema = {
+	title: 'label',
+	description: 'The label element for the combobox',
+	dataAttributes: [
+		{
+			name: 'data-melt-combobox-label',
+			value: ATTRS.MELT('combobox label'),
+		},
+	],
+};
+
 const arrow: APISchema = {
 	title: 'arrow',
 	description: 'An optional arrow element',
@@ -214,7 +230,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, menu, input, item, arrow];
+const schemas = [builder, menu, input, item, label, arrow];
 
 const features = [
 	'Full keyboard navigation',

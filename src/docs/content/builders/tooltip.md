@@ -6,7 +6,7 @@ description:
 ---
 
 <script>
-    import { APIReference, KbdTable } from '$docs/components'
+    import { APIReference, KbdTable, Callout } from '$docs/components'
     export let schemas
     export let keyboard
 </script>
@@ -23,6 +23,19 @@ description:
 
 ## Accessibility
 
-Adheres to the [Tooltip WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/)
+Adheres to the
+[WAI-ARIA tooltip role design pattern](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/tooltip_role)
+
+<Callout type="warning">
+
+Tooltips are only activated on hover or on focus, and not on press. Since the tooltip is generally
+used to describe an action, its usefulness would be limited in case it appeared on press, seeing as
+the action would have already been performed. This behaviour is also predicted by the WAI-ARIA
+tooltip role design pattern.
+
+Chances are if you have a need to display content on press, using a tooltip isn't
+accessible/appropriate, and should instead consider using a [Popover](/docs/builders/popover).
+
+</Callout>
 
 <KbdTable {keyboard} />

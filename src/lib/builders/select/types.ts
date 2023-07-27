@@ -78,7 +78,7 @@ export type CreateSelectProps = {
 	 *
 	 * @default undefined
 	 */
-	label?: string;
+	valueLabel?: string;
 
 	/**
 	 * The name for the select input.

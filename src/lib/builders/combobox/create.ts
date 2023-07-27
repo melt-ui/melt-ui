@@ -33,6 +33,7 @@ import {
 import { onMount, tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
 import type { ComboboxItemProps, CreateComboboxProps } from './types';
+import { createLabel } from '../label';
 import type { Defaults } from '$lib/internal/types';
 
 // prettier-ignore
@@ -482,6 +483,22 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		},
 	});
 
+	// Use our existing label builder to create a label for the combobox input.
+	const {
+		elements: { root: labelBuilder },
+	} = createLabel();
+	const { action: labelAction } = get(labelBuilder);
+
+	const label = builder(name('label'), {
+		returned: () => {
+			return {
+				id: ids.label,
+				for: ids.input,
+			};
+		},
+		action: labelAction,
+	});
+
 	const item = builder(name('item'), {
 		stores: [selectedItem],
 		returned:
@@ -550,6 +567,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 			input,
 			item,
 			menu,
+			label,
 		},
 		states: {
 			open,
