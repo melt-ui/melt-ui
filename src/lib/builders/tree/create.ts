@@ -225,7 +225,11 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                     }
 
                     else if (key === kbd.ARROW_LEFT) {
-                        updateFocusElement(currentFocusedItemIdx - 1);
+                        const parentIdx = itemChildren.findIndex((item) => item.childrenIdxs.includes(currentFocusedItemIdx));
+
+                        if (parentIdx === -1) return;
+
+                        updateFocusElement(parentIdx);
                     }
 
                     else if (key === kbd.ARROW_RIGHT && elementHasChildren(<HTMLLIElement>el) && elementIsExpanded(<HTMLLIElement>el)) {
