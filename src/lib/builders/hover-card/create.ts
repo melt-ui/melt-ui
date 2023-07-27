@@ -34,7 +34,7 @@ const defaults = {
 	arrowSize: 8,
 	closeOnOutsideClick: true,
 	forceVisible: false,
-	portal: true,
+	portal: 'body',
 } satisfies CreateHoverCardProps;
 
 export function createHoverCard(props: CreateHoverCardProps = {}) {

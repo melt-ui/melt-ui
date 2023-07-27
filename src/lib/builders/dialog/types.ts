@@ -11,7 +11,12 @@ export type CreateDialogProps = {
 	defaultOpen?: boolean;
 	open?: Writable<boolean>;
 	onOpenChange?: ChangeFn<boolean>;
-	portal?: boolean;
+	/**
+	 * If not undefined, the dialog content will be rendered within the provided element or selector.
+	 *
+	 * @default 'body'
+	 */
+	portal?: HTMLElement | string;
 };
 
 export type Dialog = BuilderReturn<typeof createDialog>;

@@ -54,11 +54,11 @@ export type CreatePopoverProps = {
 	 */
 	preventScroll?: boolean;
 	/**
-	 * Whether or not to portal the popover content to the body.
+	 * If not undefined, the popover will be rendered within the provided element or selector.
 	 *
-	 * @default true
+	 * @default 'body'
 	 */
-	portal?: boolean;
+	portal?: HTMLElement | string;
 };
 
 export type Popover = BuilderReturn<typeof createPopover>;

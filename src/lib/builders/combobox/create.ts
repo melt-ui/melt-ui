@@ -28,23 +28,28 @@ import {
 	omit,
 	getOptions,
 	getPortalParent,
+	derivedVisible,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
 import type { ComboboxItemProps, CreateComboboxProps } from './types';
+import type { Defaults } from '$lib/internal/types';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
 
 const defaults = {
+	positioning: {
+		placement: 'bottom',
+		sameWidth: true,
+	},
 	scrollAlignment: 'nearest',
 	loop: true,
 	defaultOpen: false,
 	closeOnOutsideClick: true,
 	preventScroll: true,
 	closeOnEscape: true,
-	portal: true,
+	portal: 'body',
 	forceVisible: false,
 } satisfies Defaults<CreateComboboxProps<unknown>>;
 
@@ -90,6 +95,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		preventScroll,
 		portal,
 		forceVisible,
+		positioning,
 	} = options;
 
 	const ids = {
@@ -384,38 +390,46 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	 * the open state is true and the activeTrigger is not null. This helper store's
 	 * value is true when both of these conditions are met and keeps the code tidy.
 	 */
-	const isOpen = derived(
-		[open, activeTrigger, forceVisible],
-		([$open, $activeTrigger, $forceVisible]) => ($open || $forceVisible) && $activeTrigger !== null
-	);
+	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
 
 	/**
 	 * Action and attributes for the menu element.
 	 */
 	const menu = builder(name('menu'), {
-		stores: [isOpen],
-		returned: ([$isOpen]) => {
+		stores: [isVisible],
+		returned: ([$isVisible]) => {
 			return {
-				hidden: $isOpen ? undefined : true,
+				hidden: $isVisible ? undefined : true,
 				id: ids.menu,
 				role: 'listbox',
-				style: styleToString({ display: $isOpen ? undefined : 'none' }),
+				style: styleToString({ display: $isVisible ? undefined : 'none' }),
 			} as const;
 		},
 		action: (node: HTMLElement) => {
+			/**
+			 * We need to get the parent portal before the menu is opened,
+			 * otherwise the parent will have been moved to the body, and
+			 * will no longer be an ancestor of this node.
+			 */
 			const portalParent = getPortalParent(node);
-			const $closeOnOutsideClick = get(closeOnOutsideClick);
 			let unsubPopper = noop;
 			let unsubScroll = noop;
 			const unsubscribe = executeCallbacks(
 				//  Bind the popper portal to the input element.
 				effect(
-					[isOpen, preventScroll, closeOnEscape, portal],
-					([$isOpen, $preventScroll, $closeOnEscape, $portal]) => {
+					[isVisible, preventScroll, closeOnEscape, portal, closeOnOutsideClick, positioning],
+					([
+						$isVisible,
+						$preventScroll,
+						$closeOnEscape,
+						$portal,
+						$closeOnOutsideClick,
+						$positioning,
+					]) => {
 						unsubPopper();
 						unsubScroll();
 						const $activeTrigger = get(activeTrigger);
-						if (!($isOpen && $activeTrigger)) return;
+						if (!($isVisible && $activeTrigger)) return;
 						if ($preventScroll) {
 							unsubScroll = removeScroll();
 						}
@@ -425,7 +439,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 								anchorElement: $activeTrigger,
 								open,
 								options: {
-									floating: { placement: 'bottom', sameWidth: true },
+									floating: $positioning,
 									focusTrap: null,
 									clickOutside: $closeOnOutsideClick
 										? {

@@ -33,8 +33,8 @@ import {
 	getFirstOption,
 	getOptions,
 	sleep,
+	derivedVisible,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import { createSeparator } from '$lib/builders';
@@ -53,8 +53,11 @@ const defaults = {
 	name: undefined,
 	defaultOpen: false,
 	defaultValue: undefined,
-	portal: true,
-} satisfies Defaults<CreateSelectProps>;
+	portal: 'body',
+	forceVisible: false,
+	closeOnEscape: true,
+	closeOnOutsideClick: true,
+} satisfies CreateSelectProps;
 
 type SelectParts = 'menu' | 'trigger' | 'option' | 'group' | 'group-label' | 'arrow' | 'input';
 const { name } = createElHelpers<SelectParts>('select');
@@ -72,6 +75,9 @@ export function createSelect(props?: CreateSelectProps) {
 		preventScroll,
 		name: nameStore,
 		portal,
+		forceVisible,
+		closeOnEscape,
+		closeOnOutsideClick,
 	} = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
@@ -111,6 +117,10 @@ export function createSelect(props?: CreateSelectProps) {
 		const menuEl = document.getElementById(ids.menu);
 		if (!menuEl) return;
 
+		const triggerEl = document.getElementById(ids.trigger);
+		if (!triggerEl) return;
+		activeTrigger.set(triggerEl);
+
 		const selectedEl = menuEl.querySelector('[data-selected]');
 		if (!isHTMLElement(selectedEl)) return;
 
@@ -118,13 +128,15 @@ export function createSelect(props?: CreateSelectProps) {
 		label.set(dataLabel ?? selectedEl.textContent ?? null);
 	});
 
+	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
+
 	const menu = builder(name('menu'), {
-		stores: open,
-		returned: ($open) => {
+		stores: isVisible,
+		returned: ($isVisible) => {
 			return {
-				hidden: $open ? undefined : true,
+				hidden: $isVisible ? undefined : true,
 				style: styleToString({
-					display: $open ? undefined : 'none',
+					display: $isVisible ? undefined : 'none',
 				}),
 				id: ids.menu,
 				'aria-labelledby': ids.trigger,
@@ -139,27 +151,48 @@ export function createSelect(props?: CreateSelectProps) {
 			 */
 			const parentPortal = getPortalParent(node);
 			let unsubPopper = noop;
+			let unsubScroll = noop;
 
 			const unsubDerived = effect(
-				[open, activeTrigger, positioning, portal],
-				([$open, $activeTrigger, $positioning, $portal]) => {
+				[isVisible, preventScroll, positioning, portal, closeOnEscape, closeOnOutsideClick],
+				([
+					$isVisible,
+					$preventScroll,
+					$positioning,
+					$portal,
+					$closeOnEscape,
+					$closeOnOutsideClick,
+				]) => {
 					unsubPopper();
-					if ($open && $activeTrigger) {
-						tick().then(() => {
-							const popper = usePopper(node, {
-								anchorElement: $activeTrigger,
-								open,
-								options: {
-									floating: $positioning,
-									portal: $portal ? (parentPortal !== document.body ? null : undefined) : null,
-								},
-							});
-
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
-						});
+					unsubScroll();
+					const $activeTrigger = get(activeTrigger);
+					if (!($isVisible && $activeTrigger)) return;
+					if ($preventScroll) {
+						unsubScroll = removeScroll();
 					}
+
+					tick().then(() => {
+						const popper = usePopper(node, {
+							anchorElement: $activeTrigger,
+							open,
+							options: {
+								floating: $positioning,
+								clickOutside: $closeOnOutsideClick ? undefined : null,
+								escapeKeydown: $closeOnEscape
+									? {
+											handler: () => {
+												open.set(false);
+											},
+									  }
+									: null,
+								portal: $portal ? (parentPortal !== document.body ? null : undefined) : null,
+							},
+						});
+
+						if (popper && popper.destroy) {
+							unsubPopper = popper.destroy;
+						}
+					});
 				}
 			);
 

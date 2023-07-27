@@ -73,13 +73,11 @@ export type CreateHoverCardProps = {
 	forceVisible?: boolean;
 
 	/**
-	 * Whether the element should be portaled to the body or not.
-	 * If an element's parent is being portaled to the body, any child elements will
-	 * automatically be portaled into that element.
+	 * If not undefined, the popover will be rendered within the provided element or selector.
 	 *
-	 * @default true
+	 * @default 'body'
 	 */
-	portal?: boolean;
+	portal?: HTMLElement | string;
 };
 
 export type HoverCard = BuilderReturn<typeof createHoverCard>;

@@ -40,13 +40,11 @@ export type CreateMenuProps = {
 	closeOnEscape?: boolean;
 
 	/**
-	 * Whether the element should be portaled to the body or not.
-	 * If an element's parent is being portaled to the body, any child elements will
-	 * automatically be portaled into that element.
+	 * If not `undefined`, the menu will be rendered within the provided element or selector.
 	 *
-	 * @default true
+	 * @default 'body'
 	 */
-	portal?: boolean;
+	portal?: HTMLElement | string;
 
 	/**
 	 * Whether or not to close the menu when a click occurs outside of it.
@@ -64,6 +62,8 @@ export type CreateMenuProps = {
 
 	/**
 	 * Whether the menu is open by default or not.
+	 *
+	 * This option is ignore if you also pass an `open` store prop.
 	 *
 	 * @default false
 	 */
@@ -137,7 +137,7 @@ export type MenuBuilderOptions = {
 		dir: Writable<TextDirection>;
 		closeOnEscape: Writable<boolean>;
 		closeOnOutsideClick: Writable<boolean>;
-		portal: Writable<boolean>;
+		portal: Writable<string | HTMLElement | undefined>;
 		forceVisible: Writable<boolean>;
 	};
 	disableTriggerRefocus?: boolean;

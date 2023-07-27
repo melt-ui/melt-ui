@@ -91,7 +91,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		loop: false,
 		closeOnEscape: true,
 		closeOnOutsideClick: true,
-		portal: true,
+		portal: 'body',
 		forceVisible: false,
 	} satisfies CreateMenubarMenuProps;
 

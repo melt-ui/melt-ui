@@ -25,6 +25,7 @@ import {
 	removeHighlight,
 	toWritableStores,
 	getPortalParent,
+	derivedVisible,
 } from '$lib/internal/helpers';
 import { createSeparator } from '$lib/builders';
 import type { Defaults, TextDirection } from '$lib/internal/types';
@@ -61,7 +62,7 @@ const defaults = {
 	preventScroll: true,
 	closeOnEscape: true,
 	closeOnOutsideClick: true,
-	portal: true,
+	portal: 'body',
 	loop: false,
 	dir: 'ltr',
 	defaultOpen: false,
@@ -132,11 +133,11 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		trigger: generateId(),
 	};
 
-	const isVisible = derived(
-		[rootOpen, rootActiveTrigger, forceVisible],
-		([$rootOpen, $rootActiveTrigger, $forceVisible]) =>
-			($rootOpen || $forceVisible) && $rootActiveTrigger !== null
-	);
+	const isVisible = derivedVisible({
+		open: rootOpen,
+		forceVisible,
+		activeTrigger: rootActiveTrigger,
+	});
 
 	const rootMenu = builder(name(), {
 		stores: [isVisible],
@@ -619,11 +620,11 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			}
 		});
 
-		const subIsVisible = derived(
-			[subOpen, forceVisible, subActiveTrigger],
-			([$subOpen, $forceVisible, $subActiveTrigger]) =>
-				($subOpen || $forceVisible) && $subActiveTrigger !== null
-		);
+		const subIsVisible = derivedVisible({
+			open: subOpen,
+			forceVisible,
+			activeTrigger: subActiveTrigger,
+		});
 
 		const subMenu = builder(name('submenu'), {
 			stores: [subIsVisible],

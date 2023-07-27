@@ -4,6 +4,13 @@ import type { Writable } from 'svelte/store';
 import type { createCombobox } from './create';
 
 export type CreateComboboxProps<T> = {
+	/**
+	 * Options for positioning the popover menu.
+	 *
+	 * @default  placement: 'bottom'
+	 */
+	positioning?: FloatingConfig;
+
 	/** The list of items to display in the combobox. */
 	items: T[];
 
@@ -77,11 +84,11 @@ export type CreateComboboxProps<T> = {
 	preventScroll?: boolean;
 
 	/**
-	 * Whether the combobox menu should be rendered in a portal.
+	 * If not undefined, the combobox menu will be rendered within the provided element or selector.
 	 *
-	 * @default true
+	 * @default 'body'
 	 */
-	portal?: boolean;
+	portal?: HTMLElement | string;
 
 	/**
 	 * Whether the menu content should be displayed even if it is not open.

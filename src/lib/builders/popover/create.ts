@@ -33,7 +33,7 @@ const defaults = {
 	preventScroll: false,
 	onOpenChange: undefined,
 	closeOnOutsideClick: true,
-	portal: true,
+	portal: 'body',
 } satisfies Defaults<CreatePopoverProps>;
 
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';

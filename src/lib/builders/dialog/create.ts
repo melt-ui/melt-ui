@@ -31,7 +31,7 @@ const defaults = {
 	closeOnOutsideClick: true,
 	role: 'dialog',
 	defaultOpen: false,
-	portal: true,
+	portal: 'body',
 } satisfies Defaults<CreateDialogProps>;
 
 const openDialogIds = writable<string[]>([]);
