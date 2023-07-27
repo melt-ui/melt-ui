@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createDropdownMenu } from '$lib';
 	import { writable } from 'svelte/store';
-	import { AlignJustify, ChevronRight, Check } from 'lucide-svelte';
+	import { AlignJustify, ChevronRight } from 'lucide-svelte';
 
 	const {
 		elements: { trigger, menu, item, checkboxItem, separator, arrow },
@@ -100,7 +100,7 @@
 			Quit Melt UI
 			<div class="rightSlot">⌘Q</div>
 		</div>
-		<div melt={$arrow} />
+		<div melt={$arrow} data-testid="arrow" />
 	</div>
 </main>
 

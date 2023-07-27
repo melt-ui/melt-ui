@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createCombobox, type ComboboxFilterFunction } from '@melt-ui/svelte';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
-	import { fade, slide } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 
 	interface Book {
 		author: string;

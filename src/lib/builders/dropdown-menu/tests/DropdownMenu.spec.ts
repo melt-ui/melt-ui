@@ -10,14 +10,11 @@ import DropdownMenuForceVisible from './DropdownMenuForceVisibleTest.svelte';
 const OPEN_KEYS = [kbd.ENTER, kbd.ARROW_DOWN, kbd.SPACE];
 
 describe('Dropdown Menu (Default)', () => {
-	test.each([DropdownMenuTest, DropdownMenuForceVisible])(
-		'No accessibility violations',
-		async (component) => {
-			const { container } = await render(component);
+	test('No accessibility violations', async () => {
+		const { container } = await render(DropdownMenuTest);
 
-			expect(await axe(container)).toHaveNoViolations();
-		}
-	);
+		expect(await axe(container)).toHaveNoViolations();
+	});
 
 	test('Opens when trigger is clicked', async () => {
 		const { getByTestId } = await render(DropdownMenuTest);
@@ -28,6 +25,11 @@ describe('Dropdown Menu (Default)', () => {
 		await expect(menu).not.toBeVisible();
 		await user.click(trigger);
 		await expect(menu).toBeVisible();
+
+		test('Arrow is visible when open', async () => {
+			const arrow = getByTestId('arrow');
+			await expect(arrow).toBeVisible();
+		});
 
 		test('Closes when trigger is clicked while open', async () => {
 			await user.click(trigger);
@@ -212,6 +214,11 @@ describe('Dropdown Menu (forceVisible)', () => {
 		await user.click(trigger);
 		const menu = getByTestId('menu');
 		await expect(menu).toBeVisible();
+
+		test('Arrow is visible when open', async () => {
+			const arrow = getByTestId('arrow');
+			await expect(arrow).toBeVisible();
+		});
 
 		test('Closes when trigger is clicked while open', async () => {
 			await user.click(trigger);

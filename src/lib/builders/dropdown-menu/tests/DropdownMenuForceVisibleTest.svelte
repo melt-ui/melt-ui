@@ -1,23 +1,23 @@
 <script lang="ts">
 	import { createDropdownMenu } from '$lib';
 	import { writable } from 'svelte/store';
-	import { AlignJustify, ChevronRight, Check } from 'lucide-svelte';
+	import { AlignJustify, ChevronRight } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 
 	const {
 		elements: { trigger, menu, item, checkboxItem, separator, arrow },
 		builders: { createSubmenu, createMenuRadioGroup },
-        states: { open }
+		states: { open },
 	} = createDropdownMenu({
-        forceVisible: true,
-    });
+		forceVisible: true,
+	});
 
 	const {
 		elements: { subMenu: subMenuA, subTrigger: subTriggerA },
-        states: { subOpen }
+		states: { subOpen },
 	} = createSubmenu({
-        forceVisible: true
-    });
+		forceVisible: true,
+	});
 
 	const {
 		elements: { radioGroup, radioItem },
@@ -43,75 +43,75 @@
 		<AlignJustify class="h-4 w-4" />
 		<span class="sr-only">Open Popover</span>
 	</button>
-    {#if $open}
-	<div class="menu" melt={$menu} data-testid="menu" transition:slide>
-		<div class="item" melt={$item} data-testid="item1">Item 1</div>
-		<div class="item" melt={$item} data-testid="item2" aria-disabled="true">Item 2</div>
-		<div class="separator" melt={$separator} />
-		<div
-			data-testid="checkboxItem1"
-			class="item"
-			{...$checkboxItem}
-			use:checkboxItem={{ checked: settingsSync }}
-		>
-			<div class="check">
-				{#if $settingsSync}
-					<span data-testid="check1"> Check 1 </span>
-				{/if}
+	{#if $open}
+		<div class="menu" melt={$menu} data-testid="menu" transition:slide>
+			<div class="item" melt={$item} data-testid="item1">Item 1</div>
+			<div class="item" melt={$item} data-testid="item2" aria-disabled="true">Item 2</div>
+			<div class="separator" melt={$separator} />
+			<div
+				data-testid="checkboxItem1"
+				class="item"
+				{...$checkboxItem}
+				use:checkboxItem={{ checked: settingsSync }}
+			>
+				<div class="check">
+					{#if $settingsSync}
+						<span data-testid="check1"> Check 1 </span>
+					{/if}
+				</div>
+				Item 3
 			</div>
-			Item 3
-		</div>
-		<div
-			data-testid="checkboxItem2"
-			class="item"
-			{...$checkboxItem}
-			use:checkboxItem={{ checked: hideMeltUI }}
-		>
-			<div class="check">
-				{#if $hideMeltUI}
-					<span data-testid="check2"> Check 2 </span>
-				{/if}
+			<div
+				data-testid="checkboxItem2"
+				class="item"
+				{...$checkboxItem}
+				use:checkboxItem={{ checked: hideMeltUI }}
+			>
+				<div class="check">
+					{#if $hideMeltUI}
+						<span data-testid="check2"> Check 2 </span>
+					{/if}
+				</div>
+				Item 4
+				<div class="rightSlot">⌘H</div>
 			</div>
-			Item 4
-			<div class="rightSlot">⌘H</div>
-		</div>
-		<div class="item" melt={$subTriggerA} data-testid="subtrigger">
-			Item 5
-			<div class="rightSlot">
-				<ChevronRight class="icon" />
+			<div class="item" melt={$subTriggerA} data-testid="subtrigger">
+				Item 5
+				<div class="rightSlot">
+					<ChevronRight class="icon" />
+				</div>
 			</div>
-		</div>
-        {#if $subOpen}
-		<div class="menu subMenu" melt={$subMenuA} data-testid="submenu" transition:slide>
-			<div class="text">People</div>
-			<div melt={$radioGroup}>
-				{#each personsArr as person, i}
-					<div class="item" melt={$radioItem({ value: person })} data-testid={`subitem${i}`}>
-						<div class="check">
-							{#if $isChecked(person)}
-								<div class="dot" />
-							{/if}
-						</div>
-						{person}
+			{#if $subOpen}
+				<div class="menu subMenu" melt={$subMenuA} data-testid="submenu" transition:slide>
+					<div class="text">People</div>
+					<div melt={$radioGroup}>
+						{#each personsArr as person, i}
+							<div class="item" melt={$radioItem({ value: person })} data-testid={`subitem${i}`}>
+								<div class="check">
+									{#if $isChecked(person)}
+										<div class="dot" />
+									{/if}
+								</div>
+								{person}
+							</div>
+						{/each}
 					</div>
-				{/each}
-			</div>
-		</div>
-		<div melt={$separator} class="separator" />
+				</div>
+				<div melt={$separator} class="separator" />
 
-		<div class="item" melt={$item} aria-disabled="true">
-			Show All Components
-			<div class="rightSlot">⇧⌘N</div>
+				<div class="item" melt={$item} aria-disabled="true">
+					Show All Components
+					<div class="rightSlot">⇧⌘N</div>
+				</div>
+				<div melt={$separator} class="separator" />
+				<div class="item" melt={$item}>
+					Quit Melt UI
+					<div class="rightSlot">⌘Q</div>
+				</div>
+				<div melt={$arrow} data-testid="arrow" />
+			{/if}
 		</div>
-		<div melt={$separator} class="separator" />
-		<div class="item" melt={$item}>
-			Quit Melt UI
-			<div class="rightSlot">⌘Q</div>
-		</div>
-		<div melt={$arrow} />
-        {/if}
-	</div>
-    {/if}
+	{/if}
 </main>
 
 <style lang="postcss">
