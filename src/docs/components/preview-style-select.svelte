@@ -38,7 +38,7 @@
 
 <ul
 	class="0 z-10 flex max-h-[360px] flex-col
-  overflow-y-auto rounded-md bg-neutral-800 p-1 shadow-md"
+  overflow-y-auto rounded-md bg-neutral-800 p-1 shadow-md focus:!ring-0"
 	melt={$menu}
 >
 	{#each options as o}
