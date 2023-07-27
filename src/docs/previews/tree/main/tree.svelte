@@ -69,7 +69,7 @@
 		</div>
 		{#if children && !childrenAreHidden}
 			<!-- TODO: transition still causes problems... -->
-			<ul {...$group({ id: itemId })} transition:slide>
+			<ul {...$group({ id: itemId })} use:group transition:slide>
 				<svelte:self treeItems={children} level={level + 1} />
 			</ul>
 		{/if}

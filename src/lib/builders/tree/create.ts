@@ -193,8 +193,8 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                     }
 
                     const el = e.target;
-
-                    if (!rootEl || !isHTMLElement(el) || el.role !== 'treeitem' || !items.length) return;
+                    
+                    if (!rootEl || !isHTMLElement(el) || el.getAttribute('role') !== 'treeitem' || items.length === 0) return;
 
                     // Prevent other tree events from also firing the event.
                     e.stopPropagation();
@@ -285,7 +285,7 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                     e.stopPropagation();
                     const el = e.currentTarget;
 
-                    if (!rootEl || !isHTMLElement(el) || el.role !== 'treeitem' || !items.length) return;
+                    if (!rootEl || !isHTMLElement(el) || el.getAttribute('role') !== 'treeitem' || !items.length) return;
 
                     const idx = items.findIndex((item) => item === el);
 
@@ -313,7 +313,21 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                 'data-group-id': opts.id,
                 hidden: $itemWithHiddenChildren.includes(opts.id) ? true : undefined,
             });
-        }        
+        },
+        action: (node: HTMLUListElement) => {
+            const unsubEvents = executeCallbacks(
+                // addEventListener(node, 'introstart', async (e) => {
+                addEventListener(node, 'click', async (e) => {
+                    // console.log('introstart');
+                })
+            );
+
+            return {
+                destroy() {
+                    unsubEvents();
+                }
+            }
+        }
     });
 
     function getChildrenOfItems(): ItemDescription[] {
