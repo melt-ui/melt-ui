@@ -44,6 +44,14 @@ const keyboard: KeyboardSchema = [
 		behavior: 'Moves focus to the previous node that is focusable without opening or closing a node. If focus is on the first node, does nothing.',
 	},
 	{
+		key: KBD.ARROW_RIGHT,
+		behavior: 'When focus is on a closed node, opens the node; focus does not move. When focus is on a open node, moves focus to the first child node. When focus is on an end node, does nothing.',
+	},
+	{
+		key: KBD.ARROW_LEFT,
+		behavior: 'When focus is on an open node, closes the node. When focus is on a child node that is also either an end node or a closed node, moves focus to its parent node. When focus is on a root node that is also either an end node or a closed node, does nothing.',
+	},
+	{
 		key: KBD.HOME,
 		behavior: 'Moves focus to first node without opening or closing a node.'
 	},

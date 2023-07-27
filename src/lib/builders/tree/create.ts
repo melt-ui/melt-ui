@@ -4,7 +4,6 @@ import {
     addEventListener,
     builder,
     createElHelpers,
-    effect,
     executeCallbacks,
     generateId,
     getElementByMeltId,
@@ -13,7 +12,7 @@ import {
 } from '$lib/internal/helpers';
 
 import type { CreateTreeViewArgs, ItemDescription, TreeParts } from './types';
-import { onMount } from 'svelte';
+import { onMount, tick } from 'svelte';
 
 
 const defaults = {
@@ -24,6 +23,7 @@ const ATTRS = {
     TABINDEX: 'tabindex',
     EXPANDED: 'aria-expanded',
     LABELLEDBY: 'aria-labelledby',
+    DATAID: 'data-id'
 }
 
 export function createTreeViewBuilder(args: CreateTreeViewArgs) {
@@ -37,11 +37,13 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
      */
     const currentFocusedItem: Writable<HTMLLIElement | null> = writable(null);
     const currentSelectedItem: Writable<HTMLLIElement | null> = writable(null);
+    const itemsWithHiddenChildren: Writable<string[]> = writable([]);
 
     let rootEl: HTMLElement | null;
     let items: HTMLLIElement[];
     let currentFocusedItemIdx = 0;
-    const itemChildren: Writable<ItemDescription[]> = writable([]);
+    // const itemChildren: Writable<ItemDescription[]> = writable([]);
+    let itemChildren: ItemDescription[] = [];
 
     const rootIds = {
 		tree: generateId(),
@@ -74,23 +76,107 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
         currentFocusedItemIdx = newIndex;
     }
 
-    function updateSelectedElement(newIndex: number) {
-        currentSelectedItem.set(items[newIndex]);
+    function updateSelectedElement(el: HTMLLIElement) {
+        currentSelectedItem.set(el);
+    }
+
+    async function updateItemList(el: HTMLLIElement) {
+        await tick();
+
+        rootEl = getElementByMeltId(rootIds.tree);
+        if (!rootEl) return;
+
+        items = Array.from(rootEl.querySelectorAll('li[role="treeitem"]'));
+        items = items.filter((item) => !(
+            item.parentNode && 
+            (<HTMLElement>item.parentNode).closest('li[role="treeitem"]') && 
+            (<HTMLElement>item.parentNode).closest('li[role="treeitem"]')?.getAttribute('aria-expanded') === 'false'))
+        itemChildren = getChildrenOfItems();
+
+        currentFocusedItemIdx = items.findIndex((item) => item === el);
+
+        // console.log('items:', items);
+        // console.log('current idx:', currentFocusedItemIdx);
+    }
+
+    function showChildrenElements(el: HTMLLIElement) {
+        const hasChildren = el.hasAttribute(ATTRS.EXPANDED);        
+        const expanded = el.getAttribute(ATTRS.EXPANDED);
+        const dataId = el.getAttribute(ATTRS.DATAID);
+
+        if (!hasChildren || expanded === null || dataId === null) return;
+
+        const hidden = get(itemsWithHiddenChildren);
+
+        if (expanded === 'false') {
+            itemsWithHiddenChildren.set(hidden.filter((item) => item !== dataId))
+            el.setAttribute(ATTRS.EXPANDED, 'true');
+
+            updateItemList(el);
+        } 
+    }
+
+    function hideChildrenElements(el: HTMLLIElement) {
+        const hasChildren = el.hasAttribute(ATTRS.EXPANDED);        
+        const expanded = el.getAttribute(ATTRS.EXPANDED);
+        const dataId = el.getAttribute(ATTRS.DATAID);
+
+        if (!hasChildren || expanded === null || dataId === null) return;
+
+        const hidden = get(itemsWithHiddenChildren);
+
+        if (expanded === 'true') {
+            itemsWithHiddenChildren.set([...hidden, dataId]);
+            el.setAttribute(ATTRS.EXPANDED, 'false');
+
+            updateItemList(el);
+        }        
+    }
+
+    function elementHasChildren(el: HTMLLIElement) {
+        return el.hasAttribute(ATTRS.EXPANDED);
+    }
+
+    function elementIsExpanded(el: HTMLLIElement) {
+        return el.getAttribute(ATTRS.EXPANDED) === 'true';
+    }
+
+    async function handleHiddenElements(el: HTMLLIElement) {      
+        const expanded = el.getAttribute(ATTRS.EXPANDED);
+        const dataId = el.getAttribute(ATTRS.DATAID);
+
+        if (!elementHasChildren(el) || expanded === null || dataId === null) return;
+
+        const hidden = get(itemsWithHiddenChildren);
+
+        if (expanded === 'false') {
+            itemsWithHiddenChildren.set(hidden.filter((item) => item !== dataId))
+            el.setAttribute(ATTRS.EXPANDED, 'true');
+        } else {
+            itemsWithHiddenChildren.set([...hidden, dataId]);
+            el.setAttribute(ATTRS.EXPANDED, 'false');
+        }
+
+        await updateItemList(el);
     }
 
     const item = builder(name('item'), {
-        returned: () => {
-            return (opts: { value: string, id: string, hasChildren?: boolean, expand?: boolean} ) => {
+        stores: [itemsWithHiddenChildren],
+        returned: ([$itemWithHiddenChildren]) => {
+            return (opts: { value: string, id: string, hasChildren: boolean} ) => {
                 // Have some default options that can be passed to the create()
-                const { value, id } = opts;
+                const { value, id, hasChildren } = opts;
+
+                const expanded = hasChildren ? { 'aria-expanded': !$itemWithHiddenChildren.includes(id) } : {};
 
                 return {
                     role: 'treeitem',
-                    // 'aria-expanded': '',
+                    // 'aria-expanded': $itemWithHiddenChildren.includes(id) ? false : true,
                     // 'aria-selected': isSelected(id),
                     // tabindex: $currentFocusedItem?.getAttribute('data-id') === itemId ? 0 : -1,
                     'data-id': id,
-                    'data-value': value
+                    'data-value': value,
+                    ...expanded
                 };
             };
         },
@@ -115,7 +201,7 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                     e.preventDefault();
 
                     if (key === kbd.ENTER || key === kbd.SPACE) {
-                        updateSelectedElement(currentFocusedItemIdx);
+                        updateSelectedElement(items[currentFocusedItemIdx]);
                     }
                     
                     else if (key === kbd.ARROW_DOWN && currentFocusedItemIdx !== items.length - 1) {
@@ -132,6 +218,22 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                     
                     else if (key === kbd.END && currentFocusedItemIdx != items.length - 1) {
                         updateFocusElement(items.length - 1);
+                    } 
+                    
+                    else if (key === kbd.ARROW_LEFT && elementHasChildren(<HTMLLIElement>el) && elementIsExpanded(<HTMLLIElement>el)) {
+                        hideChildrenElements(<HTMLLIElement>el);
+                    }
+
+                    else if (key === kbd.ARROW_LEFT) {
+                        updateFocusElement(currentFocusedItemIdx - 1);
+                    }
+
+                    else if (key === kbd.ARROW_RIGHT && elementHasChildren(<HTMLLIElement>el) && elementIsExpanded(<HTMLLIElement>el)) {
+                        updateFocusElement(currentFocusedItemIdx + 1);
+                    }
+                    
+                    else if (key === kbd.ARROW_RIGHT && elementHasChildren(<HTMLLIElement>el) && !elementIsExpanded(<HTMLLIElement>el)) {
+                        showChildrenElements(<HTMLLIElement>el);
                     }
 
                     else if (isLetter) {
@@ -184,9 +286,10 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                     const idx = items.findIndex((item) => item === el);
 
                     if (idx === -1) return;
-
-                    updateSelectedElement(idx);
+                    
                     updateFocusElement(idx);
+                    updateSelectedElement(<HTMLLIElement>el);
+                    await handleHiddenElements(<HTMLLIElement>el);
                 })
             );
 
@@ -199,9 +302,14 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     });
 
     const group = builder(name('group'), {
-        returned: () => ({
-            role: 'group',
-        })
+        stores: [itemsWithHiddenChildren],
+        returned: ([$itemWithHiddenChildren]) => {
+            return (opts: { id: string }) => ({
+                role: 'group',
+                'data-group-id': opts.id,
+                hidden: $itemWithHiddenChildren.includes(opts.id) ? true : undefined,
+            });
+        }        
     });
 
     function getChildrenOfItems(): ItemDescription[] {
@@ -247,10 +355,14 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
         items[0].setAttribute(ATTRS.TABINDEX, '0');
 
         // Get the children idxs of each item.
-        itemChildren.set(getChildrenOfItems());
+        // itemChildren.set(getChildrenOfItems());
+        itemChildren = getChildrenOfItems();
 
         // Add aria-expanded role for items with children.
-        get(itemChildren).forEach((item, i) => {
+        // get(itemChildren).forEach((item, i) => {
+        //     if (item.hasChildren) items[i].setAttribute(ATTRS.EXPANDED, `${!collapse}`);
+        // });
+        itemChildren.forEach((item, i) => {
             if (item.hasChildren) items[i].setAttribute(ATTRS.EXPANDED, `${!collapse}`);
         });
     });
@@ -262,6 +374,7 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
         rootIds,
         group,
         currentFocusedItem,
-        currentSelectedItem
+        currentSelectedItem,
+        itemsWithHiddenChildren
     }
 }

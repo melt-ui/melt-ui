@@ -6,53 +6,72 @@
 
 	import Tree from './tree.svelte';
 	import type { TreeItem } from './tree.svelte';
+	import { generateId } from '@melt-ui/svelte/internal/helpers';
 
-	const { tree, label, item, group, currentFocusedItem, currentSelectedItem } =
-		createTreeViewBuilder({ collapse: false });
+	const {
+		tree,
+		label,
+		item,
+		group,
+		currentFocusedItem,
+		currentSelectedItem,
+		itemsWithHiddenChildren,
+	} = createTreeViewBuilder({ collapse: false });
 
 	setContext('tree-item', item);
 	setContext('tree-group', group);
+	setContext('hidden-children', itemsWithHiddenChildren);
+	setContext('selected', currentSelectedItem);
 
 	const treeItems: TreeItem[] = [
 		{
 			title: 'lib',
 			icon: 'folder',
+			id: generateId(),
 			children: [
 				{
 					title: 'tree',
 					icon: 'folder',
+					id: generateId(),
 					children: [
 						{
 							title: 'Tree.svelte',
 							icon: 'svelte',
+							id: generateId(),
 						},
 						{
 							title: 'TreeView.svelte',
 							icon: 'svelte',
+							id: generateId(),
 						},
 					],
 				},
 				{
 					title: 'index.js',
 					icon: 'js',
+					id: generateId(),
 				},
 			],
 		},
 		{
 			title: 'src',
 			icon: 'folder',
+			id: generateId(),
 			children: [
 				{
 					title: 'routes',
 					icon: 'folder',
+					id: generateId(),
 					children: [
 						{
 							title: '+layout.svelte',
 							icon: 'svelte',
+							id: generateId(),
 						},
 						{
 							title: '+page.svelte',
 							icon: 'svelte',
+							id: generateId(),
 						},
 					],
 				},
