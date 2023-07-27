@@ -5,7 +5,7 @@
 
 	const {
 		elements: { trigger, menu, option, group, groupLabel, label },
-		states: { valueLabel, open },
+		states: { valueLabel, open, value },
 		helpers: { isSelected },
 	} = createSelect({
 		forceVisible: true,
@@ -15,9 +15,14 @@
 		sweet: ['Caramel', 'Chocolate', 'Strawberry', 'Cookies & Cream'],
 		savory: ['Basil', 'Bacon', 'Rosemary', 'Balsamic Fig'],
 	};
+
+	function changeValue() {
+		value.set('Bacon');
+	}
 </script>
 
 <div class="flex flex-col gap-1">
+	<button on:click={() => changeValue()}>Change Value</button>
 	<!-- svelte-ignore a11y-label-has-associated-control - $label contains the 'for' attribute -->
 	<label class="block" melt={$label}>Favorite Flavor</label>
 	<button

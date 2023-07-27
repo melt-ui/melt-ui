@@ -75,7 +75,7 @@ const { name, selector } = createElHelpers<SelectParts>('select');
 export function createSelect(props?: CreateSelectProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps;
 
-	const options = toWritableStores(omit(withDefaults, 'value', 'valueLabel'));
+	const options = toWritableStores(omit(withDefaults, 'value', 'defaultValueLabel'));
 
 	const {
 		positioning,
@@ -97,7 +97,7 @@ export function createSelect(props?: CreateSelectProps) {
 	const valueWritable = withDefaults.value ?? writable<unknown>(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
-	const valueLabel = writable<string | number | null>(withDefaults.valueLabel ?? null);
+	const valueLabel = writable<string | number | null>(withDefaults.defaultValueLabel ?? null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	/**
@@ -138,6 +138,8 @@ export function createSelect(props?: CreateSelectProps) {
 
 		const dataLabel = selectedEl.getAttribute('data-label');
 		valueLabel.set(dataLabel ?? selectedEl.textContent ?? null);
+
+		optionsList = [];
 	});
 
 	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
@@ -414,6 +416,12 @@ export function createSelect(props?: CreateSelectProps) {
 		}),
 	});
 
+	type OptionProps = {
+		value: unknown;
+		label: string | null;
+		disabled: boolean;
+	};
+
 	const getOptionProps = (el: HTMLElement) => {
 		const value = el.getAttribute('data-value');
 		const label = el.getAttribute('data-label');
@@ -426,10 +434,18 @@ export function createSelect(props?: CreateSelectProps) {
 		};
 	};
 
+	let optionsList: OptionProps[] = [];
+
 	const option = builder(name('option'), {
 		stores: value,
 		returned: ($value) => {
 			return (props: SelectOptionProps) => {
+				const optProps: OptionProps = {
+					value: props.value,
+					label: props.label ?? null,
+					disabled: props.disabled ?? false,
+				};
+				optionsList.push(optProps);
 				return {
 					role: 'option',
 					'aria-selected': $value === props?.value,
@@ -515,14 +531,9 @@ export function createSelect(props?: CreateSelectProps) {
 
 	effect(value, ($value) => {
 		if (!isBrowser) return;
-		const menuEl = document.getElementById(ids.menu);
-		if (!menuEl) return;
+		const newLabel = optionsList.find((opt) => opt.value === $value)?.label;
 
-		const optionEl = menuEl.querySelector(`${selector('option')}[data-value="${$value}"]`);
-		if (!isHTMLElement(optionEl)) return;
-
-		const props = getOptionProps(optionEl);
-		valueLabel.set(props.label ?? null);
+		valueLabel.set(newLabel ?? null);
 	});
 
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
