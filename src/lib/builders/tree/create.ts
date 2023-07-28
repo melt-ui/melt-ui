@@ -37,6 +37,7 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
      */
     const currentFocusedItem: Writable<HTMLLIElement | null> = writable(null);
     const currentSelectedItem: Writable<HTMLLIElement | null> = writable(null);
+    const selectedId: Writable<string | null> = writable(null);
     const itemsWithHiddenChildren: Writable<string[]> = writable([]);
 
     let rootEl: HTMLElement | null;
@@ -66,43 +67,76 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
         })
     });
 
-    // const isSelected = (id: string) => get(currentFocusedItem)?.id === id;
-
     function updateFocusElement(newIndex: number) {
+        /**
+         * Items should not be navigatable with tabs,
+         * so we always update the tabindex so that only the currently
+         * focused element has a focusable tabindex.
+         */
         items[currentFocusedItemIdx].setAttribute(ATTRS.TABINDEX, '-1');
         items[newIndex].setAttribute(ATTRS.TABINDEX, '0');
-        items[newIndex].focus();
         currentFocusedItem.set(items[newIndex]);
         currentFocusedItemIdx = newIndex;
+        items[newIndex].focus();
     }
 
     function updateSelectedElement(el: HTMLLIElement) {
         currentSelectedItem.set(el);
+
+        const id = el.getAttribute(ATTRS.DATAID);
+        if (!id) return;
+
+        selectedId.set(id);
     }
 
+    /**
+     * After trees get expanded or collapsed, we need to 
+     * update our list of items to properly reflect those changes.
+     */
     async function updateItemList(el: HTMLLIElement) {
         await tick();
 
         rootEl = getElementByMeltId(rootIds.tree);
         if (!rootEl) return;
 
+        // Select all 'treeitem' li elements within our root element.
         items = Array.from(rootEl.querySelectorAll('li[role="treeitem"]'));
+
+        /**
+         * Filter out all elements that have parents that are not expanded.
+         * I think we might need this in case tick() doesn't work with animations.
+         */
         items = items.filter((item) => !(
             item.parentNode && 
             (<HTMLElement>item.parentNode).closest('li[role="treeitem"]') && 
             (<HTMLElement>item.parentNode).closest('li[role="treeitem"]')?.getAttribute('aria-expanded') === 'false'))
         itemChildren = getChildrenOfItems();
 
+        // Update the current focus index.
         currentFocusedItemIdx = items.findIndex((item) => item === el);
 
-        // console.log('items:', items);
-        // console.log('current idx:', currentFocusedItemIdx);
+        // Add tabindex to newly added elements. (not doing this caused flickering)
+        items.forEach((item) => {
+            if (!item.hasAttribute(ATTRS.TABINDEX)) {
+                item.setAttribute(ATTRS.TABINDEX, '-1');
+            }
+        });
     }
 
-    function showChildrenElements(el: HTMLLIElement) {
+    function getElementAttributes(el: HTMLLIElement) {
         const hasChildren = el.hasAttribute(ATTRS.EXPANDED);        
         const expanded = el.getAttribute(ATTRS.EXPANDED);
         const dataId = el.getAttribute(ATTRS.DATAID);
+
+        return {
+            hasChildren,
+            expanded,
+            dataId
+        }
+    }
+
+    function showChildrenElements(el: HTMLLIElement) {
+        const { hasChildren, expanded, dataId } = getElementAttributes(el);
 
         if (!hasChildren || expanded === null || dataId === null) return;
 
@@ -117,9 +151,7 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     }
 
     function hideChildrenElements(el: HTMLLIElement) {
-        const hasChildren = el.hasAttribute(ATTRS.EXPANDED);        
-        const expanded = el.getAttribute(ATTRS.EXPANDED);
-        const dataId = el.getAttribute(ATTRS.DATAID);
+        const { hasChildren, expanded, dataId } = getElementAttributes(el);
 
         if (!hasChildren || expanded === null || dataId === null) return;
 
@@ -142,17 +174,18 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     }
 
     async function handleHiddenElements(el: HTMLLIElement) {      
-        const expanded = el.getAttribute(ATTRS.EXPANDED);
-        const dataId = el.getAttribute(ATTRS.DATAID);
+        const { hasChildren, expanded, dataId } = getElementAttributes(el);
 
-        if (!elementHasChildren(el) || expanded === null || dataId === null) return;
+        if (!hasChildren || expanded === null || dataId === null) return;
 
         const hidden = get(itemsWithHiddenChildren);
 
         if (expanded === 'false') {
+            // Remove id from hidden items.
             itemsWithHiddenChildren.set(hidden.filter((item) => item !== dataId))
             el.setAttribute(ATTRS.EXPANDED, 'true');
         } else {
+            // Add id to hidden items.
             itemsWithHiddenChildren.set([...hidden, dataId]);
             el.setAttribute(ATTRS.EXPANDED, 'false');
         }
@@ -161,8 +194,8 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     }
 
     const item = builder(name('item'), {
-        stores: [itemsWithHiddenChildren],
-        returned: ([$itemWithHiddenChildren]) => {
+        stores: [itemsWithHiddenChildren, selectedId],
+        returned: ([$itemWithHiddenChildren, $selectedId]) => {
             return (opts: { value: string, id: string, hasChildren: boolean} ) => {
                 // Have some default options that can be passed to the create()
                 const { value, id, hasChildren } = opts;
@@ -171,9 +204,7 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
 
                 return {
                     role: 'treeitem',
-                    // 'aria-expanded': $itemWithHiddenChildren.includes(id) ? false : true,
-                    // 'aria-selected': isSelected(id),
-                    // tabindex: $currentFocusedItem?.getAttribute('data-id') === itemId ? 0 : -1,
+                    'aria-selected': id === $selectedId,
                     'data-id': id,
                     'data-value': value,
                     ...expanded
@@ -282,18 +313,25 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                     }
                 }),
                 addEventListener(node, 'click', async (e) => {
-                    e.stopPropagation();
                     const el = e.currentTarget;
-
+                    
                     if (!rootEl || !isHTMLElement(el) || el.getAttribute('role') !== 'treeitem' || !items.length) return;
+                    
+                    e.stopPropagation();
 
                     const idx = items.findIndex((item) => item === el);
 
                     if (idx === -1) return;
                     
-                    updateFocusElement(idx);
-                    updateSelectedElement(<HTMLLIElement>el);
                     await handleHiddenElements(<HTMLLIElement>el);
+
+                    // console.log('before click |', 'focused idx:', currentFocusedItemIdx, '| idx:', idx, '| el:', el);
+                    
+                    updateSelectedElement(<HTMLLIElement>el);
+                    updateFocusElement(idx);
+
+                    // console.log('after click |', 'focused idx:', currentFocusedItemIdx, '| idx:', idx, '| el:', el);
+                    // console.log('----------------------------');
                 })
             );
 
@@ -306,28 +344,29 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     });
 
     const group = builder(name('group'), {
-        stores: [itemsWithHiddenChildren],
-        returned: ([$itemWithHiddenChildren]) => {
+        // stores: [itemsWithHiddenChildren],
+        // returned: ([$itemWithHiddenChildren]) => {
+        returned: () => {
             return (opts: { id: string }) => ({
                 role: 'group',
                 'data-group-id': opts.id,
-                hidden: $itemWithHiddenChildren.includes(opts.id) ? true : undefined,
+                // hidden: $itemWithHiddenChildren.includes(opts.id) ? true : undefined,
             });
         },
-        action: (node: HTMLUListElement) => {
-            const unsubEvents = executeCallbacks(
-                // addEventListener(node, 'introstart', async (e) => {
-                addEventListener(node, 'click', async (e) => {
-                    // console.log('introstart');
-                })
-            );
+        // action: (node: HTMLUListElement) => {
+        //     const unsubEvents = executeCallbacks(
+        //         // addEventListener(node, 'introstart', async (e) => {
+        //         addEventListener(node, 'click', async (e) => {
+        //             // console.log('introstart');
+        //         })
+        //     );
 
-            return {
-                destroy() {
-                    unsubEvents();
-                }
-            }
-        }
+        //     return {
+        //         destroy() {
+        //             unsubEvents();
+        //         }
+        //     }
+        // }
     });
 
     function getChildrenOfItems(): ItemDescription[] {
