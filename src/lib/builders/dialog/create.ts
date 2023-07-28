@@ -16,11 +16,12 @@ import {
 	styleToString,
 	toWritableStores,
 	removeScroll,
+	derivedVisible,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { get, writable } from 'svelte/store';
 import type { CreateDialogProps } from './types';
-import { tick } from 'svelte';
+import { onMount, tick } from 'svelte';
 
 type DialogParts = 'trigger' | 'overlay' | 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<DialogParts>('dialog');
@@ -32,6 +33,7 @@ const defaults = {
 	role: 'dialog',
 	defaultOpen: false,
 	portal: 'body',
+	forceVisible: false,
 } satisfies Defaults<CreateDialogProps>;
 
 const openDialogIds = writable<string[]>([]);
@@ -40,7 +42,7 @@ export function createDialog(props?: CreateDialogProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateDialogProps;
 
 	const options = toWritableStores(withDefaults);
-	const { preventScroll, closeOnEscape, closeOnOutsideClick, role, portal } = options;
+	const { preventScroll, closeOnEscape, closeOnOutsideClick, role, portal, forceVisible } = options;
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
@@ -48,15 +50,31 @@ export function createDialog(props?: CreateDialogProps) {
 		content: generateId(),
 		title: generateId(),
 		description: generateId(),
+		trigger: generateId(),
 	};
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
+	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
 
-	effect([open], ([$open]) => {
+	function handleClose() {
+		open.set(false);
+		const triggerEl = document.getElementById(ids.trigger);
+		if (triggerEl) {
+			tick().then(() => {
+				triggerEl.focus();
+			});
+		}
+	}
+
+	onMount(() => {
+		activeTrigger.set(document.getElementById(ids.trigger));
+	});
+
+	effect([isVisible], ([$isVisible]) => {
 		// Prevent double clicks from closing multiple dialogs
 		sleep(100).then(() => {
-			if ($open) {
+			if ($isVisible) {
 				openDialogIds.update((prev) => {
 					prev.push(ids.content);
 					return prev;
@@ -71,6 +89,7 @@ export function createDialog(props?: CreateDialogProps) {
 		stores: open,
 		returned: ($open) => {
 			return {
+				id: ids.trigger,
 				'aria-haspopup': 'dialog',
 				'aria-expanded': $open,
 				'aria-controls': ids.content,
@@ -82,7 +101,6 @@ export function createDialog(props?: CreateDialogProps) {
 				const el = e.currentTarget;
 				if (!isHTMLElement(el)) return;
 				open.set(true);
-				activeTrigger.set(el);
 			});
 
 			return {
@@ -92,16 +110,16 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const overlay = builder(name('overlay'), {
-		stores: [open],
-		returned: ([$open]) => {
+		stores: [isVisible],
+		returned: ([$isVisible]) => {
 			return {
-				hidden: $open ? undefined : true,
+				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
 				style: styleToString({
-					display: $open ? undefined : 'none',
+					display: $isVisible ? undefined : 'none',
 				}),
 				'aria-hidden': true,
-				'data-state': $open ? 'open' : 'closed',
+				'data-state': $isVisible ? 'open' : 'closed',
 			} as const;
 		},
 		action: (node: HTMLElement) => {
@@ -115,7 +133,7 @@ export function createDialog(props?: CreateDialogProps) {
 			if (get(closeOnEscape)) {
 				const escapeKeydown = useEscapeKeydown(node, {
 					handler: () => {
-						open.set(false);
+						handleClose();
 					},
 				});
 				if (escapeKeydown && escapeKeydown.destroy) {
@@ -133,78 +151,88 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const content = builder(name('content'), {
-		stores: [open],
-		returned: ([$open]) => {
+		stores: [isVisible, portal],
+		returned: ([$isVisible, $portal]) => {
 			return {
 				id: ids.content,
 				role: get(role),
 				'aria-describedby': ids.description,
 				'aria-labelledby': ids.title,
-				'data-state': $open ? 'open' : 'closed',
+				'data-state': $isVisible ? 'open' : 'closed',
 				tabindex: -1,
-				hidden: $open ? undefined : true,
+				hidden: $isVisible ? undefined : true,
 				style: styleToString({
-					display: $open ? undefined : 'none',
+					display: $isVisible ? undefined : 'none',
 				}),
-				'data-portal': get(portal) ? '' : undefined,
+				'data-portal': $portal ? '' : undefined,
 			};
 		},
 
 		action: (node: HTMLElement) => {
 			const portalParent = getPortalParent(node);
-			let unsub = noop;
-			let unsubPortal = noop;
-			let unsubEscapeKeydown = noop;
+			let activate = noop;
+			let deactivate = noop;
 
-			const { useFocusTrap, activate, deactivate } = createFocusTrap({
-				immediate: false,
-				escapeDeactivates: false,
-				allowOutsideClick: (e) => {
-					e.preventDefault();
-					e.stopImmediatePropagation();
+			const unsubFocusTrap = effect([closeOnOutsideClick], ([$closeOnOutsideClick]) => {
+				const focusTrap = createFocusTrap({
+					immediate: false,
+					escapeDeactivates: false,
+					allowOutsideClick: (e) => {
+						e.preventDefault();
+						e.stopImmediatePropagation();
 
-					if (e instanceof MouseEvent && !isLeftClick(e)) {
+						if (e instanceof MouseEvent && !isLeftClick(e)) {
+							return false;
+						}
+
+						const $openDialogIds = get(openDialogIds);
+						const isLast = last($openDialogIds) === ids.content;
+
+						if ($closeOnOutsideClick && isLast) {
+							handleClose();
+						}
+
 						return false;
-					}
-
-					const $closeOnOutsideClick = get(closeOnOutsideClick);
-					const $openDialogIds = get(openDialogIds);
-					const isLast = last($openDialogIds) === ids.content;
-
-					if ($closeOnOutsideClick && isLast) {
-						open.set(false);
-					}
-
-					return false;
-				},
-				returnFocusOnDeactivate: false,
-				fallbackFocus: node,
+					},
+					returnFocusOnDeactivate: false,
+					fallbackFocus: node,
+				});
+				activate = focusTrap.activate;
+				deactivate = focusTrap.deactivate;
+				const ac = focusTrap.useFocusTrap(node);
+				if (ac && ac.destroy) {
+					return ac.destroy;
+				} else {
+					return focusTrap.deactivate;
+				}
 			});
 
-			const portal = usePortal(node, portalParent);
-			if (portal && portal.destroy) {
-				unsubPortal = portal.destroy;
-			}
-			if (get(closeOnEscape)) {
+			const unsubPortal = effect([portal], ([$portal]) => {
+				const portalAction = usePortal(node, portalParent);
+				if (portalAction && portalAction.destroy) {
+					return portalAction.destroy;
+				} else {
+					return noop;
+				}
+			});
+
+			const unsubEscapeKeydown = effect([closeOnEscape], ([$closeOnEscape]) => {
+				if (!$closeOnEscape) return noop;
+
 				const escapeKeydown = useEscapeKeydown(node, {
 					handler: () => {
-						open.set(false);
+						handleClose();
 					},
 				});
 				if (escapeKeydown && escapeKeydown.destroy) {
-					unsubEscapeKeydown = escapeKeydown.destroy;
+					return escapeKeydown.destroy;
 				}
-			}
-			const ac = useFocusTrap(node);
-			if (ac && ac.destroy) {
-				unsub = ac.destroy;
-			} else {
-				unsub = deactivate;
-			}
+				return noop;
+			});
 
-			effect([open], ([$open]) => {
+			effect([isVisible], ([$isVisible]) => {
 				tick().then(() => {
-					if (!$open) {
+					if (!$isVisible) {
 						deactivate();
 					} else {
 						activate();
@@ -214,9 +242,9 @@ export function createDialog(props?: CreateDialogProps) {
 
 			return {
 				destroy() {
-					unsub();
 					unsubPortal();
 					unsubEscapeKeydown();
+					unsubFocusTrap();
 				},
 			};
 		},
@@ -241,7 +269,7 @@ export function createDialog(props?: CreateDialogProps) {
 			} as const),
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
-				open.set(false);
+				handleClose();
 			});
 
 			return {
@@ -259,15 +287,6 @@ export function createDialog(props?: CreateDialogProps) {
 		return () => {
 			unsubs.forEach((unsub) => unsub());
 		};
-	});
-
-	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
-		if (!isBrowser) return;
-
-		if (!$open && $activeTrigger && isBrowser) {
-			// Prevent the keydown event from triggering on the trigger
-			sleep(1).then(() => $activeTrigger.focus());
-		}
 	});
 
 	return {

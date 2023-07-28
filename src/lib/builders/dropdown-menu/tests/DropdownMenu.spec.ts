@@ -1,6 +1,6 @@
 import { render, act } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
-import { describe } from 'vitest';
+import { describe, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { sleep } from '$lib/internal/helpers';
 import { kbd } from '$lib/internal/helpers';
@@ -188,6 +188,16 @@ describe('Dropdown Menu (Default)', () => {
 });
 
 describe('Dropdown Menu (forceVisible)', () => {
+	beforeEach(() => {
+		vi.stubGlobal('requestAnimationFrame', (fn: FrameRequestCallback) => {
+			return window.setTimeout(() => fn(Date.now()), 16);
+		});
+	});
+
+	afterEach(() => {
+		vi.unstubAllGlobals();
+	});
+
 	test('No accessibility violations', async () => {
 		const { container } = await render(DropdownMenuForceVisible);
 

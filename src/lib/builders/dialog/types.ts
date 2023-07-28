@@ -17,6 +17,8 @@ export type CreateDialogProps = {
 	 * @default 'body'
 	 */
 	portal?: HTMLElement | string;
+
+	forceVisible?: boolean;
 };
 
 export type Dialog = BuilderReturn<typeof createDialog>;
