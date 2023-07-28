@@ -11,6 +11,7 @@ export type CreateAccordionProps<T extends AccordionType = 'single'> = {
 	onValueChange?: ChangeFn<string | string[] | undefined>;
 	type?: T;
 	disabled?: boolean;
+	forceVisible?: boolean;
 };
 
 export type AccordionItemProps =

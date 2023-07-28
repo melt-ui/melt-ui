@@ -23,8 +23,6 @@ description: A filterable list of items that supports selection.
 
 ## Example Components
 
-### Svelte Transitions
-
 ### Controlled (BYOS)
 
 <Preview code={snippets.controlled}>

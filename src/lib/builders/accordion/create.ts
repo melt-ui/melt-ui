@@ -9,6 +9,7 @@ import {
 	kbd,
 	omit,
 	overridable,
+	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers';
 import { tick } from 'svelte';
@@ -25,8 +26,8 @@ const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
 const defaults = {
 	type: 'single',
-	defaultValue: undefined,
-	disabled: undefined,
+	disabled: false,
+	forceVisible: false,
 } satisfies CreateAccordionProps;
 
 export const createAccordion = <T extends AccordionType = 'single'>(
@@ -34,7 +35,7 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 ) => {
 	const withDefaults = { ...defaults, ...props };
 	const options = toWritableStores(omit(withDefaults, 'value'));
-	const { disabled } = options;
+	const { disabled, forceVisible } = options;
 
 	const valueWritable =
 		withDefaults.value ?? writable<string | string[] | undefined>(withDefaults.value);
@@ -170,16 +171,19 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 	});
 
 	const content = builder(name('content'), {
-		stores: [value, disabled],
-		returned: ([$value, $disabled]) => {
+		stores: [value, disabled, forceVisible],
+		returned: ([$value, $disabled, $forceVisible]) => {
 			return (props: AccordionItemProps) => {
 				const { value: itemValue } = parseItemProps(props);
-				const selected = isSelected(itemValue, $value);
+				const isVisible = isSelected(itemValue, $value) || $forceVisible;
 				return {
-					'data-state': selected ? 'open' : 'closed',
+					'data-state': isVisible ? 'open' : 'closed',
 					'data-disabled': $disabled ? true : undefined,
 					'data-value': itemValue,
-					hidden: selected ? undefined : true,
+					hidden: isVisible ? undefined : true,
+					style: styleToString({
+						display: isVisible ? undefined : 'none',
+					}),
 				};
 			};
 		},

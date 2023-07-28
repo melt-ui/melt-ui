@@ -100,7 +100,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 
 	function handleClickOutside(e: PointerEvent) {
 		if (e.defaultPrevented) return;
-		if (e.defaultPrevented) return;
+
 		const target = e.target;
 		if (!isHTMLElement(target)) return;
 

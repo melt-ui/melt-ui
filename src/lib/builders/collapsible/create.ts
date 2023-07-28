@@ -56,12 +56,6 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 		},
 	});
 
-	/**
-	 * This is a helper introduced along with `forceVisible` to cleanup handling
-	 * the visibility of the content. If `open` or `forceVisible` is true, then the
-	 * content should be visible, otherwise it should be hidden along with the display
-	 * property set to none.
-	 */
 	const isVisible = derived(
 		[open, forceVisible],
 		([$open, $forceVisible]) => $open || $forceVisible

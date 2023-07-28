@@ -19,7 +19,7 @@ description: An interactive component which expands/collapses a panel.
 
 ## Example Components
 
-### Controlled (BYOS)
+### Bring Your Own Store
 
 <Preview code={snippets.controlled}>
     <svelte:component this={previews.controlled} />

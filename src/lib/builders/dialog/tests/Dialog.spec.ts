@@ -21,7 +21,6 @@ describe('Dialog', () => {
 
 		await expect(content).not.toBeVisible();
 		await userEvent.click(trigger);
-		await sleep(1000);
 		await expect(content).toBeVisible();
 	});
 
@@ -52,7 +51,6 @@ describe('Dialog', () => {
 		await expect(content).not.toBeVisible();
 		await user.click(trigger);
 		await expect(content).toBeVisible();
-		await sleep(100);
 		await user.keyboard(`{${kbd.ESCAPE}}`);
 		await expect(content).not.toBeVisible();
 	});

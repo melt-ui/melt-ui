@@ -15,14 +15,9 @@
 		sweet: ['Caramel', 'Chocolate', 'Strawberry', 'Cookies & Cream'],
 		savory: ['Basil', 'Bacon', 'Rosemary', 'Balsamic Fig'],
 	};
-
-	function changeValue() {
-		value.set('Bacon');
-	}
 </script>
 
 <div class="flex flex-col gap-1">
-	<button on:click={() => changeValue()}>Change Value</button>
 	<!-- svelte-ignore a11y-label-has-associated-control - $label contains the 'for' attribute -->
 	<label class="block" melt={$label}>Favorite Flavor</label>
 	<button

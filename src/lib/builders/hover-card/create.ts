@@ -3,6 +3,7 @@ import {
 	addEventListener,
 	builder,
 	createElHelpers,
+	derivedVisible,
 	effect,
 	executeCallbacks,
 	generateId,
@@ -134,10 +135,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 		},
 	});
 
-	const isVisible = derived(
-		[open, forceVisible, activeTrigger],
-		([$open, $forceVisible, $activeTrigger]) => ($open || $forceVisible) && $activeTrigger !== null
-	);
+	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
 
 	const content = builder(name('content'), {
 		stores: [isVisible],

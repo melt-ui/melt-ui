@@ -575,7 +575,6 @@ export function createSelect(props?: CreateSelectProps) {
 				// focus on the menu element
 				handleRovingFocus(menuEl);
 			} else if ($activeTrigger && constantMounted) {
-				console.log('constantMounted', constantMounted);
 				// Hacky way to prevent the keydown event from triggering on the trigger
 				handleRovingFocus($activeTrigger);
 			}
