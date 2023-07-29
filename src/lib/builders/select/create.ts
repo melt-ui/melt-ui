@@ -129,14 +129,13 @@ export function createSelect(props?: CreateSelectProps) {
 					unsubPopper();
 					if ($open && $activeTrigger) {
 						tick().then(() => {
+							const $options = get(options);
 							const popper = usePopper(node, {
 								anchorElement: $activeTrigger,
 								open,
 								options: {
 									floating: $options.positioning,
-									// We want portal to always be true for the menu.
-									// So we do it outside popper instead.
-									portal: null,
+									portal: $options.portal,
 								},
 							});
 

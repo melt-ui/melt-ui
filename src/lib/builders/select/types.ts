@@ -1,4 +1,4 @@
-import type { FloatingConfig } from '$lib/internal/actions';
+import type { FloatingConfig, PortalConfig } from '$lib/internal/actions';
 import type { createSelect } from './create';
 
 export type CreateSelectProps = {
@@ -11,6 +11,13 @@ export type CreateSelectProps = {
 	name?: string;
 	preventScroll?: boolean;
 	loop?: boolean;
+
+	/**
+	 * The container element that the selection would portal to.
+	 *
+	 * @default null
+	 */
+	portal?: PortalConfig | null;
 };
 
 export type SelectOptionProps = {
