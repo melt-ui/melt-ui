@@ -9,8 +9,9 @@ import {
 	noop,
 	omit,
 	toWritableStores,
+	getElemDirection,
+	overridable,
 } from '$lib/internal/helpers';
-import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateToggleGroupProps, ToggleGroupItemProps, ToggleGroupType } from './types';
@@ -21,7 +22,7 @@ const defaults = {
 	loop: true,
 	rovingFocus: true,
 	disabled: false,
-	value: '',
+	defaultValue: '',
 } satisfies Defaults<CreateToggleGroupProps>;
 
 type ToggleGroupParts = 'item';
@@ -35,7 +36,14 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 	const options = toWritableStores(omit(withDefaults, 'value'));
 	const { type, orientation, loop, rovingFocus, disabled } = options;
 
-	const value = writable<string | string[] | undefined>(withDefaults.value);
+	const defaultValue = withDefaults.defaultValue
+		? withDefaults.defaultValue
+		: withDefaults.type === 'single'
+		? 'undefined'
+		: [];
+
+	const valueWritable = withDefaults.value ?? writable(defaultValue);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	const root = builder(name(), {
 		stores: orientation,
@@ -79,10 +87,10 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 				return { value: itemValue, disabled };
 			};
 
-			const parentGroup = node.closest<HTMLElement>(selector());
+			const parentGroup = node.closest(selector());
 			if (!isHTMLElement(parentGroup)) return;
 
-			const items = Array.from(parentGroup.querySelectorAll<HTMLElement>(selector('item')));
+			const items = Array.from(parentGroup.querySelectorAll(selector('item')));
 			const $value = get(value);
 			const anyPressed = Array.isArray($value) ? $value.length > 0 : $value !== null;
 
@@ -96,19 +104,13 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 					if (itemValue === undefined || disabled) return;
 
 					value.update(($value) => {
-						if ($value === undefined) {
-							return withDefaults.type === 'single' ? itemValue : [itemValue];
-						}
-
 						if (Array.isArray($value)) {
 							if ($value.includes(itemValue)) {
-								return $value.filter((v) => v !== itemValue);
+								return $value.filter((i) => i !== itemValue);
 							}
-
 							$value.push(itemValue);
 							return $value;
 						}
-
 						return $value === itemValue ? undefined : itemValue;
 					});
 				}),
@@ -119,12 +121,12 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 					const el = e.currentTarget;
 					if (!isHTMLElement(el)) return;
 
-					const root = el.closest<HTMLElement>(selector());
+					const root = el.closest(selector());
 					if (!isHTMLElement(root)) return;
 
 					const items = Array.from(
-						root.querySelectorAll<HTMLElement>(selector('item') + ':not([data-disabled])')
-					);
+						root.querySelectorAll(selector('item') + ':not([data-disabled])')
+					).filter((item): item is HTMLElement => isHTMLElement(item));
 
 					const currentIndex = items.indexOf(el);
 
@@ -145,20 +147,16 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 					if (e.key === nextKey) {
 						e.preventDefault();
 						const nextIndex = currentIndex + 1;
-						if (nextIndex >= items.length) {
-							if ($loop) {
-								handleRovingFocus(items[0]);
-							}
+						if (nextIndex >= items.length && $loop) {
+							handleRovingFocus(items[0]);
 						} else {
 							handleRovingFocus(items[nextIndex]);
 						}
 					} else if (e.key === prevKey) {
 						e.preventDefault();
 						const prevIndex = currentIndex - 1;
-						if (prevIndex < 0) {
-							if ($loop) {
-								handleRovingFocus(items[items.length - 1]);
-							}
+						if (prevIndex < 0 && $loop) {
+							handleRovingFocus(items[items.length - 1]);
 						} else {
 							handleRovingFocus(items[prevIndex]);
 						}

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createCombobox, type ComboboxFilterFunction } from '@melt-ui/svelte';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
+	import { slide } from 'svelte/transition';
 
 	interface Book {
 		author: string;
@@ -72,23 +73,29 @@
 		);
 	};
 
-	const { elements, states, helpers } = createCombobox({
+	const {
+		elements: { menu, input, item, label },
+		states: { open, inputValue, filteredItems },
+		helpers: { isSelected },
+	} = createCombobox({
 		filterFunction,
 		items: books,
 		itemToString: (item) => item.title,
+		forceVisible: true,
 	});
-	const { menu, input, item } = elements;
-	const { open, inputValue, filteredItems } = states;
-	const { isSelected } = helpers;
 </script>
 
-<label class="cursor-pointer">
-	<span class="block pb-1 capitalize">Choose your favorite book:</span>
+<div class="flex flex-col gap-1">
+	<!-- svelte-ignore a11y-label-has-associated-control - $label contains the 'for' attribute -->
+	<label melt={$label}>
+		<span class="block capitalize">Choose your favorite book:</span>
+	</label>
+
 	<div class="relative">
 		<input
 			melt={$input}
 			class="flex h-10 items-center justify-between rounded-md bg-white
-            px-3 pr-12 text-magnum-700"
+					px-3 pr-12 text-magnum-700"
 			placeholder="Best book ever"
 			value={$inputValue}
 		/>
@@ -100,18 +107,18 @@
 			{/if}
 		</div>
 	</div>
-</label>
-
-<ul
-	class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-md"
-	melt={$menu}
->
-	<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-	<div
-		class="flex max-h-full flex-col gap-2 overflow-y-auto bg-white px-2 py-2"
-		tabindex="0"
+</div>
+{#if $open}
+	<ul
+		class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-md"
+		melt={$menu}
+		transition:slide={{ duration: 150 }}
 	>
-		{#if $open}
+		<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+		<div
+			class="flex max-h-full flex-col gap-2 overflow-y-auto bg-white px-2 py-2"
+			tabindex="0"
+		>
 			{#if $filteredItems.length !== 0}
 				{#each $filteredItems as book, index (index)}
 					<li
@@ -144,9 +151,9 @@
 					No results found
 				</li>
 			{/if}
-		{/if}
-	</div>
-</ul>
+		</div>
+	</ul>
+{/if}
 
 <style lang="postcss">
 	.check {

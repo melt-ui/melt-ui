@@ -12,8 +12,8 @@ import {
 	computePosition,
 	autoUpdate,
 } from '@floating-ui/dom';
-import type { FloatingConfig } from './floating.types';
-import { noop } from '$lib/internal/helpers';
+import type { FloatingConfig } from './types';
+import { isHTMLElement, noop } from '$lib/internal/helpers';
 import type { VirtualElement } from '@floating-ui/core';
 
 const defaultConfig = {
@@ -44,7 +44,7 @@ export function useFloating(
 
 	const options = { ...defaultConfig, ...opts };
 
-	const arrowEl = floating.querySelector<HTMLElement>('[data-arrow=true]');
+	const arrowEl = floating.querySelector('[data-arrow=true]');
 	const middleware: Middleware[] = [];
 
 	if (options.flip) {
@@ -56,7 +56,7 @@ export function useFloating(
 		);
 	}
 
-	const arrowOffset = arrowEl ? arrowEl.offsetHeight / 2 : 0;
+	const arrowOffset = isHTMLElement(arrowEl) ? arrowEl.offsetHeight / 2 : 0;
 	if (options.gutter || options.offset) {
 		const data = options.gutter ? { mainAxis: options.gutter } : options.offset;
 		if (data?.mainAxis != null) {
@@ -115,7 +115,7 @@ export function useFloating(
 				left: `${x}px`,
 			});
 
-			if (arrowEl && data.middlewareData.arrow) {
+			if (isHTMLElement(arrowEl) && data.middlewareData.arrow) {
 				const { x, y } = data.middlewareData.arrow;
 
 				const dir = data.placement.split('-')[0] as 'top' | 'bottom' | 'left' | 'right';

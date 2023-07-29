@@ -1,5 +1,75 @@
 # @melt-ui/svelte
 
+## 0.27.0
+
+### Minor Changes
+
+- 1afcc4b2: Select: add label el store
+
+### Patch Changes
+
+- 60067d43: Select: fix value controlled usage not setting valueLabel
+- 548258cd: Select: rename label to valueLabel
+- f94c61ec: Combobox: include for attribute in label
+
+## 0.26.3
+
+### Patch Changes
+
+- 714d8e18: fix: tooltip behaviour
+
+## 0.26.2
+
+### Patch Changes
+
+- 75ba9c3b: fix: tooltip pointerover now only works with mouse inputs
+
+## 0.26.1
+
+### Patch Changes
+
+- 61123724: tooltip: change defaults; improve behaviour consistency
+
+## 0.26.0
+
+### Minor Changes
+
+- 7a8c0f05: Tooltip: Change default options; Add trigger/content gap handling; Behaviour changes
+
+### Patch Changes
+
+- d055b2a5: [Tooltip] Fix a11y attributes & behavior
+- c5945220: [Avatar] Fixes bug where the fallback is hidden
+- a71ac941: fix: dialog focus-trap
+- 2f803ea8: [Combobox]
+  - Fix Open/Close Flickering
+  - Returns a `label` element builder
+
+## 0.25.1
+
+### Patch Changes
+
+- fix: avatar fallback overriding styles
+
+## 0.25.0
+
+### Minor Changes
+
+- 2d1936b0: feat: tooltip touch support
+
+### Patch Changes
+
+- 902cb5dc: refactor: Internal type-safety & performance changes
+- 6f620f0a: fix: clicks misfiring
+- 9c81f47e: refactor: rename createToasts to createToaster
+
+## 0.24.1
+
+### Patch Changes
+
+- 0f100296: [Checkbox] Unsub checkbox click event
+- afa02ae9: use nanonid/non-secure to support more environments
+
 ## 0.24.0
 
 ### Minor Changes

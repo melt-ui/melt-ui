@@ -3,6 +3,8 @@ import {
 	builder,
 	createElHelpers,
 	executeCallbacks,
+	isHTMLElement,
+	isHTMLInputElement,
 	last,
 	next,
 	omit,
@@ -18,12 +20,16 @@ import type { CreatePinInputProps } from './types';
 
 const { name, selector } = createElHelpers<'input' | 'hidden-input'>('pin-input');
 
-const getInputs = (node: HTMLElement) => {
+const getInputs = (node: HTMLInputElement) => {
 	const rootEl = node.closest(selector());
-	if (!rootEl) return { inputs: null, el: node as HTMLInputElement, elIndex: -1 };
-	const inputs = Array.from(rootEl.querySelectorAll(selector('input'))) as HTMLInputElement[];
+	if (!isHTMLElement(rootEl)) {
+		return { inputs: null, el: node, elIndex: -1 };
+	}
+	const inputs = Array.from(rootEl.querySelectorAll(selector('input'))).filter(
+		(input): input is HTMLInputElement => isHTMLInputElement(input)
+	);
 	return {
-		elIndex: inputs.indexOf(node as HTMLInputElement),
+		elIndex: inputs.indexOf(node),
 		inputs,
 	};
 };
@@ -33,7 +39,7 @@ const defaults = {
 	disabled: false,
 	type: 'text',
 	name: undefined,
-    defaultValue: [],
+	defaultValue: [],
 } satisfies Defaults<CreatePinInputProps>;
 
 export function createPinInput(props?: CreatePinInputProps) {
@@ -42,8 +48,8 @@ export function createPinInput(props?: CreatePinInputProps) {
 	const options = toWritableStores(omit(withDefaults, 'value'));
 	const { placeholder, disabled, type, name: nameStore } = options;
 
-    const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-	const value = overridable(valueWritable, withDefaults?.onValueChange) 
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
 	const valueStr = derived(value, (v) => v.join(''));
 
 	const root = builder(name(), {

@@ -5,19 +5,83 @@ import type { createPopover } from './create';
 import type { BuilderReturn } from '$lib/internal/types';
 
 export type CreatePopoverProps = {
+	/**
+	 * The positioning configuration for the floating element.
+	 */
 	positioning?: FloatingConfig;
+
+	/**
+	 * The size of the optional arrow in pixels.
+	 */
 	arrowSize?: number;
-	/** The initial state of open. Should only be used if the popover is uncontrolled */
+
+	/**
+	 * The initial state of the `open` store.
+	 * Should only be used if the popover is uncontrolled.
+	 */
 	defaultOpen?: boolean;
-	/** A store that controls the open state. Use when you want to directly control
-	 * the popover.
+
+	/**
+	 * A store that controls the open state.
+	 * Use when you want to directly control the popover.
+	 *
+	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
 	open?: Writable<boolean>;
-	/** Optional function that runs whenever open should change.
-	 * When present, will control state changes instead of the default behaviour
-	 * */
+
+	/**
+	 * Optional function that runs whenever open should change.
+	 * When present, will control state changes instead of the
+	 * default behaviour.
+	 *
+	 * @see https://melt-ui.com/docs/controlled#change-functions
+	 */
 	onOpenChange?: ChangeFn<boolean>;
+
+	/**
+	 * Whether or not to disable the focus trap when the popover is open.
+	 *
+	 * @default false
+	 */
 	disableFocusTrap?: boolean;
+
+	/**
+	 * Whether or not to close the popover when the escape key is pressed.
+	 *
+	 * @default true
+	 */
+	closeOnEscape?: boolean;
+
+	/**
+	 * Whether or not to close the popover when the escape key is pressed.
+	 *
+	 * @default true
+	 */
+	closeOnOutsideClick?: boolean;
+
+	/**
+	 * Whether or not to prevent scrolling when the popover is open.
+	 *
+	 * @default false
+	 */
+	preventScroll?: boolean;
+
+	/**
+	 * If not undefined, the popover will be rendered within the provided element or selector.
+	 *
+	 * @default 'body'
+	 */
+	portal?: HTMLElement | string;
+
+	/**
+	 * Whether the menu content should be displayed even if it is not open.
+	 * This is useful for animating the content in and out using transitions.
+	 *
+	 * @see https://melt-ui.com/docs/transitions
+	 *
+	 * @default false
+	 */
+	forceVisible?: boolean;
 };
 
 export type Popover = BuilderReturn<typeof createPopover>;

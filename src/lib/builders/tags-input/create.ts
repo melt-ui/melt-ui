@@ -10,6 +10,7 @@ import {
 	isHTMLElement,
 	kbd,
 	omit,
+	overridable,
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers';
@@ -23,7 +24,7 @@ const defaults = {
 	placeholder: '',
 	disabled: false,
 	editable: true,
-	tags: [],
+	defaultTags: [],
 	unique: false,
 	blur: 'nothing',
 	addOnPaste: false,
@@ -79,13 +80,17 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	//   - undefined => set empty []
 	//   - string[]  => generate Tag[] from string[]
 	//   - Tag[]     => set Tag[]
-	const tags = writable<Tag[]>(
-		withDefaults.tags && withDefaults.tags.length > 0
-			? typeof withDefaults.tags[0] === 'string'
-				? (withDefaults.tags as string[]).map((tag) => ({ id: generateId(), value: tag }))
-				: (withDefaults.tags as Tag[])
-			: [] // if undefined
-	);
+
+	const tagsWritable =
+		withDefaults.tags ??
+		writable<Tag[]>(
+			withDefaults.defaultTags && withDefaults.defaultTags.length > 0
+				? typeof withDefaults.defaultTags[0] === 'string'
+					? (withDefaults.defaultTags as string[]).map((tag) => ({ id: generateId(), value: tag }))
+					: (withDefaults.defaultTags as Tag[])
+				: [] // if undefined)
+		);
+	const tags = overridable<Tag[]>(tagsWritable, withDefaults?.onTagsChange);
 
 	// Selected tag store. When `null`, no tag is selected
 	const selected = writable<Tag | null>(withDefaults.selected ?? null);
@@ -245,13 +250,13 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			const getTagsInfo = (id: string) => {
 				const rootEl = getElementByMeltId(ids.root);
 
-				let tagsEl: Array<HTMLElement> = [];
+				let tagsEl: Array<Element> = [];
 				let selectedIndex = -1;
 				let prevIndex = -1;
 				let nextIndex = -1;
 
 				if (rootEl) {
-					tagsEl = Array.from(rootEl.querySelectorAll(selector('tag'))) as Array<HTMLElement>;
+					tagsEl = Array.from(rootEl.querySelectorAll(selector('tag')));
 
 					selectedIndex = tagsEl.findIndex((element) => element.getAttribute('data-tag-id') === id);
 
@@ -704,7 +709,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 		const invalidEl = Array.from(
 			document.querySelectorAll(selector('edit') + '[data-invalid-edit]')
-		) as Array<HTMLElement>;
+		);
 		invalidEl.forEach((e) => {
 			e.removeAttribute('data-invalid-edit');
 		});

@@ -4,14 +4,14 @@ import {
 	kbd,
 	styleToString,
 	toWritableStores,
+	overridable,
+	omit,
 	type MeltEventHandler,
 	addMeltEventListener,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateCheckboxProps } from './types';
-import { omit } from '../../internal/helpers/object';
-import { overridable } from '../../internal/helpers/overridable';
 import type { ActionReturn } from 'svelte/action';
 
 const defaults = {
@@ -58,9 +58,9 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 				addMeltEventListener(node, 'click', () => {
 					if (get(disabled)) return;
 
-					checked.update((prev) => {
-						if (prev === 'indeterminate') return true;
-						return !prev;
+					checked.update((value) => {
+						if (value === 'indeterminate') return true;
+						return !value;
 					});
 				})
 			);

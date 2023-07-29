@@ -1,12 +1,16 @@
 import type { BuilderReturn } from '$lib/internal/types';
+import type { Writable } from 'svelte/store';
 import type { createTagsInput } from './create';
+import type { ChangeFn } from '$lib/internal/helpers';
 
 export type CreateTagsInputProps = {
 	placeholder?: string;
 	disabled?: boolean;
 	editable?: boolean;
 	selected?: Tag;
-	tags?: string[] | Tag[];
+	defaultTags?: string[] | Tag[];
+	tags?: Writable<Tag[]>;
+	onTagsChange?: ChangeFn<Tag[]>;
 	unique?: boolean;
 	blur?: Blur;
 	addOnPaste?: boolean;

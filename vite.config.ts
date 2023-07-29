@@ -22,5 +22,9 @@ export default defineConfig({
 		coverage: {
 			exclude: ['setupTest.ts'],
 		},
+		alias: [{ find: /^svelte$/, replacement: 'svelte/internal' }],
+		deps: {
+			inline: ['clsx'],
+		},
 	},
 });

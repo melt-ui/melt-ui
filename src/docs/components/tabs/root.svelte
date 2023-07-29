@@ -24,7 +24,7 @@
 		elements: { root, content, list, trigger },
 		states: { value },
 	} = createTabs({
-		value: tabs[0],
+		defaultValue: tabs[0],
 	});
 
 	$: value.set(tabs[0]);

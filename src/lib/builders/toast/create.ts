@@ -1,4 +1,4 @@
-import { derived, get, writable, type Readable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 import {
 	addEventListener,
 	builder,
@@ -9,7 +9,8 @@ import {
 	noop,
 	toWritableStores,
 } from '$lib/internal/helpers';
-import type { AddToastProps, CreateToastProps, Toast } from './types';
+import type { AddToastProps, CreateToasterProps, Toast } from './types';
+import { usePortal } from '$lib/internal/actions';
 
 type ToastParts = 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<ToastParts>('toast');
@@ -17,10 +18,10 @@ const { name } = createElHelpers<ToastParts>('toast');
 const defaults = {
 	closeDelay: 5000,
 	type: 'foreground',
-} satisfies CreateToastProps;
+} satisfies CreateToasterProps;
 
-export function createToasts<T = object>(props?: CreateToastProps) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateToastProps;
+export function createToaster<T = object>(props?: CreateToasterProps) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateToasterProps;
 
 	const options = toWritableStores(withDefaults);
 	const { closeDelay, type } = options;
@@ -58,7 +59,7 @@ export function createToasts<T = object>(props?: CreateToastProps) {
 				}, toast.closeDelay)
 			);
 		};
-	}) as Readable<(id: string) => void>;
+	});
 
 	const addToast = (props: AddToastProps<T>) => {
 		const propsWithDefaults = {
@@ -197,6 +198,9 @@ export function createToasts<T = object>(props?: CreateToastProps) {
 		},
 		helpers: {
 			addToast,
+		},
+		actions: {
+			portal: usePortal,
 		},
 		options,
 	};

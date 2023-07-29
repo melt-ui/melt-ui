@@ -5,10 +5,10 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
+	omit,
 } from '$lib/internal/helpers';
 import { writable } from 'svelte/store';
 import type { CreateAvatarProps } from './types';
-import { omit } from '../../internal/helpers/object';
 
 const defaults = {
 	src: '',
@@ -61,11 +61,14 @@ export const createAvatar = (props?: CreateAvatarProps) => {
 	const fallback = builder('avatar-fallback', {
 		stores: [loadingStatus],
 		returned: ([$loadingStatus]) => {
-			const fallbackStyles = styleToString({
-				display: $loadingStatus === 'loaded' ? 'none' : 'block',
-			});
 			return {
-				style: fallbackStyles,
+				style:
+					$loadingStatus === 'loaded'
+						? styleToString({
+								display: 'none',
+						  })
+						: undefined,
+				hidden: $loadingStatus === 'loaded' ? true : undefined,
 			};
 		},
 	});

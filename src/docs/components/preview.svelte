@@ -21,15 +21,15 @@
 
 <script lang="ts">
 	import { page } from '$app/stores';
-	import type { CreateSelectProps } from '$lib';
+	import { PreviewStyleSelect } from '$docs/components';
 	import { cn } from '$docs/utils';
+	import type { SelectOptionProps } from '$lib';
+	import { usingPreprocessor } from '$routes/store';
+	import { writable } from 'svelte/store';
 	import CodeBlock from './code-block.svelte';
 	import PreviewWrapper from './preview-wrapper.svelte';
-	import { PreviewStyleSelect } from '$docs/components';
 	import Switch from './switch.svelte';
 	import { TabsList, TabsRoot } from './tabs';
-	import { writable } from 'svelte/store';
-	import { usingPreprocessor } from '$routes/store';
 
 	type $$Props = PreviewProps & {
 		viewCode: boolean;
@@ -85,14 +85,14 @@
 
 	$: files = codingStyleObj !== null ? Object.keys(codingStyleObj) : [];
 
-	let viewCode = false;
+	export let viewCode = false;
 
 	$: codeOptions = Object.entries(normalizeCode(code)).map(([key, value]) => {
 		return {
 			value: key,
 			label: key,
 			disabled: value === null,
-		};
+		} satisfies SelectOptionProps;
 	});
 
 	const fileList = ['index.svelte', 'tailwind.config.ts', 'globals.css'] as const;

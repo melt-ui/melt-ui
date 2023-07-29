@@ -1,13 +1,19 @@
 ---
 title: Hover Card
-description:
-  Displays additional information or options when the cursor hovers over a particular element.
+description: Enable sighted users to preview content behind a link.
 ---
 
 <script>
-    import { KbdTable, APIReference } from '$docs/components'
+    import { KbdTable, APIReference, Callout } from '$docs/components'
     export let schemas
 </script>
+
+<Callout type="warning">
+
+⚠️ The Hover Card is only intended to be used with a mouse or other pointing device and doesn't
+respond to keyboard or touch events. On touch devices, the link will be followed immediately.
+
+</Callout>
 
 ## Anatomy
 
@@ -21,8 +27,8 @@ Create a hovercard using the `createHoverCard` builder function.
 
 ```svelte {3}
 <script lang="ts">
-  import { createHoverCard } from '@melt-ui/svelte'
-  const { trigger, content, open, arrow } = createHoverCard()
+	import { createHoverCard } from '@melt-ui/svelte'
+	const { trigger, content, open, arrow } = createHoverCard()
 </script>
 ```
 
@@ -31,15 +37,15 @@ example of how to structure the hovercard is shown below.
 
 ```svelte
 <script lang="ts">
-  import { createHoverCard } from '@melt-ui/svelte'
-  const { trigger, content, arrow } = createHoverCard()
+	import { createHoverCard } from '@melt-ui/svelte'
+	const { trigger, content, arrow } = createHoverCard()
 </script>
 
 <button melt={$trigger}>Hover Me</button>
 
 <div melt={$content}>
-  <div>I am content inside the hover card</div>
-  <div melt={$arrow} />
+	<div>I am content inside the hover card</div>
+	<div melt={$arrow} />
 </div>
 ```
 

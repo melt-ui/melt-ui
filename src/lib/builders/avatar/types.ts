@@ -8,9 +8,30 @@ const imageLoadingStatus = ['loading', 'loaded', 'error'] as const;
 export type ImageLoadingStatus = (typeof imageLoadingStatus)[number];
 
 export type CreateAvatarProps = {
+	/**
+	 * The source of the image to display.
+	 */
 	src: string;
+
+	/**
+	 * The amount of time in milliseconds to wait before displaying the image.
+	 *
+	 * @default 0
+	 */
 	delayMs?: number;
+
+	/**
+	 * The controlled loading status store for the avatar.
+	 *
+	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
+	 */
 	loadingStatus?: Writable<ImageLoadingStatus>;
+
+	/**
+	 * A callback invoked when the loading status store of the avatar changes.
+	 *
+	 * @see https://melt-ui.com/docs/controlled#change-functions
+	 */
 	onLoadingStatusChange?: ChangeFn<ImageLoadingStatus>;
 };
 
@@ -18,10 +39,3 @@ export type Avatar = BuilderReturn<typeof createAvatar>;
 export type AvatarElements = Avatar['elements'];
 export type AvatarOptions = Avatar['options'];
 export type AvatarStates = Avatar['states'];
-
-/**
- * An (optional) function that is called when the loading status changes.
- * It receives an object with the previous and next loading status, the value returned
- * from this function will be set as the new loading status.
- */
-export type AvatarOnLoadingStatusChange = ChangeFn<ImageLoadingStatus>;

@@ -6,7 +6,7 @@
 		elements: { root, input, tag, deleteTrigger, edit },
 		states: { tags },
 	} = createTagsInput({
-		tags: ['Svelte', 'Typescript'],
+		defaultTags: ['Svelte', 'Typescript'],
 		unique: true,
 	});
 </script>
@@ -43,6 +43,7 @@
 		<input
 			melt={$input}
 			type="text"
+			placeholder="Enter tags..."
 			class="min-w-[4.5rem] shrink grow basis-0 border-0 text-black outline-none focus:!ring-0 data-[invalid]:text-red-500"
 		/>
 	</div>

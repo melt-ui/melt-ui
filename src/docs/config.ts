@@ -56,6 +56,11 @@ export const navConfig: NavConfig = {
 					items: [],
 				},
 				{
+					title: 'Transitions',
+					href: '/docs/transitions',
+					items: [],
+				},
+				{
 					title: 'Controlled',
 					href: '/docs/controlled',
 					items: [],

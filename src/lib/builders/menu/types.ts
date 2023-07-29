@@ -8,7 +8,7 @@ export type CreateMenuProps = {
 	/**
 	 * Options for positioning the popover menu.
 	 *
-	 * @default { placement: 'bottom' }
+	 * @default  placement: 'bottom'
 	 */
 	positioning?: FloatingConfig;
 
@@ -33,6 +33,27 @@ export type CreateMenuProps = {
 	preventScroll?: boolean;
 
 	/**
+	 * Whether or not to close the menu when the escape key is pressed.
+	 *
+	 * @default true
+	 */
+	closeOnEscape?: boolean;
+
+	/**
+	 * If not `undefined`, the menu will be rendered within the provided element or selector.
+	 *
+	 * @default 'body'
+	 */
+	portal?: HTMLElement | string;
+
+	/**
+	 * Whether or not to close the menu when a click occurs outside of it.
+	 *
+	 * @default true
+	 */
+	closeOnOutsideClick?: boolean;
+
+	/**
 	 * Whether or not to loop the menu navigation.
 	 *
 	 * @default false
@@ -41,18 +62,37 @@ export type CreateMenuProps = {
 
 	/**
 	 * Whether the menu is open by default or not.
+	 *
+	 * This option is ignore if you also pass an `open` store prop.
+	 *
+	 * @default false
 	 */
 	defaultOpen?: boolean;
 
 	/**
-	 * A controlled open state for the menu.
+	 * A controlled open state store for the menu. If provided, the
+	 * value of this store will override the `defaultOpen` prop.
+	 *
+	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
 	open?: Writable<boolean>;
 
 	/**
 	 * A callback for when the open state changes.
+	 *
+	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
 	onOpenChange?: ChangeFn<boolean>;
+
+	/**
+	 * Whether the menu content should be displayed even if it is not open.
+	 * This is useful for animating the content in and out using transitions.
+	 *
+	 * @see https://melt-ui.com/docs/transitions
+	 *
+	 * @default false
+	 */
+	forceVisible?: boolean;
 };
 
 export type CreateSubmenuProps = CreateMenuProps & {
@@ -97,6 +137,10 @@ export type MenuBuilderOptions = {
 		preventScroll: Writable<boolean | undefined>;
 		loop: Writable<boolean | undefined>;
 		dir: Writable<TextDirection>;
+		closeOnEscape: Writable<boolean>;
+		closeOnOutsideClick: Writable<boolean>;
+		portal: Writable<string | HTMLElement | undefined>;
+		forceVisible: Writable<boolean>;
 	};
 	disableTriggerRefocus?: boolean;
 	disableFocusFirstItem?: boolean;

@@ -5,7 +5,7 @@ description:
 ---
 
 <script>
-    import { APIReference, KbdTable } from '$docs/components'
+    import { APIReference, KbdTable, Preview } from '$docs/components'
     export let schemas
     export let keyboard
 </script>
@@ -28,8 +28,8 @@ The first thing you need to do is create a dropdown menu using the `createDropdo
 
 ```svelte {3}
 <script lang="ts">
-  import { createContextMenu } from '@melt-ui/svelte'
-  const { menu, item, trigger, arrow } = createContextMenu()
+	import { createContextMenu } from '@melt-ui/svelte'
+	const { menu, item, trigger, arrow } = createContextMenu()
 </script>
 ```
 
@@ -38,16 +38,16 @@ example of how to structure the menu is shown below.
 
 ```svelte
 <script lang="ts">
-  import { createContextMenu } from '@melt-ui/svelte'
-  const { menu, item, trigger, arrow } = createContextMenu()
+	import { createContextMenu } from '@melt-ui/svelte'
+	const { menu, item, trigger, arrow } = createContextMenu()
 </script>
 
 <span melt={$trigger}>Right click here.</span>
 <div melt={$menu}>
-  <div {...$item} use:item>...</div>
-  <div {...$item} use:item>...</div>
-  <div {...$item} use:item>...</div>
-  <div melt={$arrow} />
+	<div {...$item} use:item>...</div>
+	<div {...$item} use:item>...</div>
+	<div {...$item} use:item>...</div>
+	<div melt={$arrow} />
 </div>
 ```
 
@@ -71,13 +71,13 @@ occurring.
 
 ```svelte
 <div
-  {...$item}
-  use:item={{
-    onSelect: (e) => {
-      e.preventDefault()
-    }
-  }}>
-  Item 2
+	{...$item}
+	use:item={{
+		onSelect: (e) => {
+			e.preventDefault()
+		}
+	}}>
+	Item 2
 </div>
 ```
 

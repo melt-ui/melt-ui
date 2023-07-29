@@ -55,14 +55,22 @@ export function createPagination(props: CreatePaginationProps) {
 	const keydown = (e: KeyboardEvent) => {
 		const thisEl = e.target;
 		if (!isHTMLElement(thisEl)) return;
-		const rootEl = thisEl.closest<HTMLElement>('[data-scope="pagination"]');
-		if (!rootEl) return;
-		const triggers = Array.from(rootEl.querySelectorAll<HTMLElement>(selector('page')));
-		const prevButton = rootEl.querySelector<HTMLElement>(selector('prev'));
-		const nextButton = rootEl.querySelector<HTMLElement>(selector('next'));
 
-		if (prevButton) triggers.unshift(prevButton);
-		if (nextButton) triggers.push(nextButton);
+		const rootEl = thisEl.closest('[data-scope="pagination"]');
+		if (!isHTMLElement(rootEl)) return;
+
+		const triggers = Array.from(rootEl.querySelectorAll(selector('page'))).filter(
+			(el): el is HTMLElement => isHTMLElement(el)
+		);
+		const prevButton = rootEl.querySelector(selector('prev'));
+		const nextButton = rootEl.querySelector(selector('next'));
+
+		if (isHTMLElement(prevButton)) {
+			triggers.unshift(prevButton);
+		}
+		if (isHTMLElement(nextButton)) {
+			triggers.push(nextButton);
+		}
 		const index = triggers.indexOf(thisEl);
 
 		if (e.key === kbd.ARROW_LEFT && index !== 0) {

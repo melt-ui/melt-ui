@@ -3,7 +3,7 @@ import type { APISchema, KeyboardSchema } from '$docs/types';
 import type { BuilderData } from '.';
 
 const builder: APISchema = {
-	title: 'createToast',
+	title: 'createToaster',
 	description: DESCRIPTIONS.BUILDER('toast'),
 	props: [
 		{
