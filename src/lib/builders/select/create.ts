@@ -70,7 +70,7 @@ type SelectParts =
 	| 'input'
 	| 'label';
 
-const { name, selector } = createElHelpers<SelectParts>('select');
+const { name } = createElHelpers<SelectParts>('select');
 
 export function createSelect(props?: CreateSelectProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps;

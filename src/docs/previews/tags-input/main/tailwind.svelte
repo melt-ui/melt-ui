@@ -6,7 +6,7 @@
 		elements: { root, input, tag, deleteTrigger, edit },
 		states: { tags },
 	} = createTagsInput({
-		tags: ['Svelte', 'Typescript'],
+		defaultTags: ['Svelte', 'Typescript'],
 		unique: true,
 	});
 </script>
