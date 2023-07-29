@@ -16,7 +16,7 @@ expect.extend(matchers);
 expect.extend(toHaveNoViolations as never);
 
 configure({
-	asyncUtilTimeout: 2000,
+	asyncUtilTimeout: 1500,
 });
 
 // Mock SvelteKit runtime module $app/environment
