@@ -107,6 +107,9 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 				addEventListener(node, 'touchstart', (e) => {
 					// prevent focus on touch devices
 					e.preventDefault();
+                    const currentTarget = e.currentTarget
+                    if (!isHTMLElement(currentTarget)) return
+                    currentTarget.click()
 				})
 			);
 
