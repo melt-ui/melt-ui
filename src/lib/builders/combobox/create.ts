@@ -321,7 +321,6 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
 			let unsubScroll = noop;
-			const $options = get(options);
 			const unsubscribe = executeCallbacks(
 				//  Bind the popper portal to the input element.
 				effect([open, activeTrigger], ([$open, $activeTrigger]) => {
@@ -330,6 +329,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 					if ($open && $activeTrigger) {
 						unsubScroll = removeScroll();
 						tick().then(() => {
+							const $options = get(options);
 							const popper = usePopper(node, {
 								anchorElement: $activeTrigger,
 								open,
