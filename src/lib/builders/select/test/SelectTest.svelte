@@ -3,7 +3,7 @@
 	import { Check, ChevronDown } from 'lucide-svelte';
 
 	const {
-		elements: { trigger, menu, option, group, groupLabel, label },
+		elements: { trigger, menu, option, group, groupLabel },
 		states: { valueLabel },
 		helpers: { isSelected },
 	} = createSelect();

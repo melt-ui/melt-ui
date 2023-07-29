@@ -5,7 +5,7 @@
 
 	const {
 		elements: { trigger, menu, option, group, groupLabel, label },
-		states: { valueLabel, open, value },
+		states: { valueLabel, open },
 		helpers: { isSelected },
 	} = createSelect({
 		forceVisible: true,

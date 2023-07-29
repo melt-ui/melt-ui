@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, act, fireEvent, waitFor } from '@testing-library/svelte';
+import { render, act, fireEvent } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
 import userEvent from '@testing-library/user-event';
@@ -17,7 +17,7 @@ describe('Select (Default)', () => {
 	});
 
 	test('Opens/Closes when trigger is clicked', async () => {
-		const { getByTestId, getByText } = await render(SelectTest);
+		const { getByTestId } = await render(SelectTest);
 		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
 		const user = userEvent.setup();

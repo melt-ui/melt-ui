@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
 
-import { waitFor, waitForElementToBeRemoved, screen, render } from '@testing-library/svelte';
+import { render } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
-import { describe, vi } from 'vitest';
+import { describe } from 'vitest';
 import DialogTest from './DialogTest.svelte';
 import userEvent from '@testing-library/user-event';
 import { sleep } from '$lib/internal/helpers';

@@ -1014,7 +1014,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			rootActiveTrigger.set(triggerEl);
 		}
 
-		let unsubs: Array<() => void> = [];
+		const unsubs: Array<() => void> = [];
 
 		const handlePointer = () => isUsingKeyboard.set(false);
 

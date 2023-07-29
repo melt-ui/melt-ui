@@ -7,7 +7,6 @@ import {
 	isBrowser,
 	noop,
 	removeScroll,
-	sleep,
 	styleToString,
 	toWritableStores,
 	omit,
@@ -20,7 +19,7 @@ import {
 import { usePopper } from '$lib/internal/actions';
 import type { Defaults } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
-import { derived, get, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import type { CreatePopoverProps } from './types';
 
 const defaults = {
