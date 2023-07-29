@@ -1,5 +1,12 @@
 # @melt-ui/svelte
 
+## 0.27.2
+
+### Patch Changes
+
+- 6f521b22: [Hover Card]
+  - Fix bug where the link/button is unclickable on mobile
+
 ## 0.27.1
 
 ### Patch Changes
