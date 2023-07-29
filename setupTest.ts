@@ -8,11 +8,16 @@ import * as environment from '$app/environment';
 import * as navigation from '$app/navigation';
 import * as stores from '$app/stores';
 import { toHaveNoViolations } from 'jest-axe';
+import { configure } from '@testing-library/dom';
 
 // Add custom jest matchers
 expect.extend(matchers);
 
 expect.extend(toHaveNoViolations as never);
+
+configure({
+	asyncUtilTimeout: 2000,
+});
 
 // Mock SvelteKit runtime module $app/environment
 vi.mock('$app/environment', (): typeof environment => ({

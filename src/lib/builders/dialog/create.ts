@@ -71,10 +71,10 @@ export function createDialog(props?: CreateDialogProps) {
 		activeTrigger.set(document.getElementById(ids.trigger));
 	});
 
-	effect([isVisible], ([$isVisible]) => {
+	effect([open], ([$open]) => {
 		// Prevent double clicks from closing multiple dialogs
 		sleep(100).then(() => {
-			if ($isVisible) {
+			if ($open) {
 				openDialogIds.update((prev) => {
 					prev.push(ids.content);
 					return prev;
@@ -101,6 +101,7 @@ export function createDialog(props?: CreateDialogProps) {
 				const el = e.currentTarget;
 				if (!isHTMLElement(el)) return;
 				open.set(true);
+				activeTrigger.set(node);
 			});
 
 			return {

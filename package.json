@@ -101,6 +101,7 @@
 		"eslint-plugin-storybook": "^0.6.12",
 		"eslint-plugin-svelte3": "^4.0.0",
 		"glob": "^9.3.2",
+		"happy-dom": "^10.5.2",
 		"hast-util-to-html": "^8.0.4",
 		"highlight.js": "^11.8.0",
 		"jest-axe": "^8.0.0",

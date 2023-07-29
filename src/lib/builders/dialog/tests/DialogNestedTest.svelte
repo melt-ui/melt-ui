@@ -6,6 +6,17 @@
 		elements: { trigger, overlay, content, title, description, close },
 		states: { open },
 	} = createDialog({});
+	const {
+		elements: {
+			trigger: triggerA,
+			overlay: overlayA,
+			content: contentA,
+			title: titleA,
+			description: descriptionA,
+			close: closeA,
+		},
+		states: { open: openA },
+	} = createDialog({});
 </script>
 
 <main>
@@ -17,7 +28,17 @@
 			<p melt={$description}>Description</p>
 
 			<button melt={$close} data-testid="closer">Close</button>
-			<button melt={$close} data-testid="last">Close2</button>
+			<button melt={$triggerA} data-testid="triggerA">Close2</button>
+			{#if $openA}
+				<div melt={$overlayA} data-testid="overlayA" />
+				<div melt={$contentA} data-testid="contentA" transition:fade>
+					<h2 melt={$titleA}>Title</h2>
+					<p melt={$descriptionA}>Description</p>
+
+					<button melt={$closeA} data-testid="closerA">Close</button>
+					<button melt={$closeA} data-testid="lastA">Close2</button>
+				</div>
+			{/if}
 		</div>
 	{/if}
 </main>
