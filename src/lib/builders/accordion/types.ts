@@ -6,12 +6,49 @@ import type { ChangeFn } from '$lib/internal/helpers';
 export type AccordionType = 'single' | 'multiple';
 
 export type CreateAccordionProps<T extends AccordionType = 'single'> = {
-	defaultValue?: T extends 'single' ? string : string[];
-	value?: Writable<string | string[] | undefined>;
-	onValueChange?: ChangeFn<string | string[] | undefined>;
+	/**
+	 * The type of accordion.
+	 *
+	 * @default 'single'
+	 */
 	type?: T;
+
+	/**
+	 * When `true`, prevents the user from interacting with the accordion.
+	 *
+	 * @default false
+	 */
 	disabled?: boolean;
+
+	/**
+	 * Whether the accordion content should be displayed even if it is not open.
+	 * This is useful for animating the content in and out using transitions.
+	 *
+	 * @see https://melt-ui.com/docs/transitions
+	 *
+	 * @default false
+	 */
 	forceVisible?: boolean;
+
+	/**
+	 * The uncontrolled default value of the accordion.
+	 */
+	defaultValue?: T extends 'single' ? string : string[];
+
+	/**
+	 * The controlled value store for the accordion.
+	 * If provided, this will override the value passed to `defaultValue`.
+	 *
+	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
+	 */
+	value?: Writable<string | string[] | undefined>;
+
+	/**
+	 * A callback called when the value of the `value` store should be changed.
+	 *
+	 * @see https://melt-ui.com/docs/controlled#change-functions
+	 */
+	onValueChange?: ChangeFn<string | string[] | undefined>;
 };
 
 export type AccordionItemProps =

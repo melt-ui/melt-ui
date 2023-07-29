@@ -186,7 +186,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 							options: {
 								floating: $positioning,
 								clickOutside: $closeOnOutsideClick ? undefined : null,
-								portal: $portal ? (portalParent === document.body ? null : portalParent) : null,
+								portal: $portal ? (portalParent === $portal ? portalParent : $portal) : null,
 								focusTrap: null,
 								escapeKeydown: $closeOnEscape ? undefined : null,
 							},

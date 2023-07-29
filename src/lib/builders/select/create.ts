@@ -156,8 +156,8 @@ export function createSelect(props?: CreateSelectProps) {
 	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
 
 	const menu = builder(name('menu'), {
-		stores: isVisible,
-		returned: ($isVisible) => {
+		stores: [isVisible, portal],
+		returned: ([$isVisible, $portal]) => {
 			return {
 				hidden: $isVisible ? undefined : true,
 				style: styleToString({
@@ -166,6 +166,7 @@ export function createSelect(props?: CreateSelectProps) {
 				id: ids.menu,
 				'aria-labelledby': ids.trigger,
 				role: 'listbox',
+				'data-portal': $portal ? '' : undefined,
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -174,7 +175,7 @@ export function createSelect(props?: CreateSelectProps) {
 			 * otherwise the parent will have been moved to the body, and
 			 * will no longer be an ancestor of this node.
 			 */
-			const parentPortal = getPortalParent(node);
+			const portalParent = getPortalParent(node);
 			let unsubPopper = noop;
 			let unsubScroll = noop;
 
@@ -210,7 +211,7 @@ export function createSelect(props?: CreateSelectProps) {
 											},
 									  }
 									: null,
-								portal: $portal ? (parentPortal !== document.body ? null : undefined) : null,
+								portal: $portal ? (portalParent === $portal ? portalParent : $portal) : null,
 							},
 						});
 

@@ -4,7 +4,7 @@
 	const {
 		elements: { root, list, content, trigger },
 	} = createTabs({
-		value: 'tab1',
+		defaultValue: 'tab1',
 	});
 </script>
 

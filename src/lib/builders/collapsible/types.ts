@@ -20,8 +20,7 @@ export type CreateCollapsibleProps = {
 	forceVisible?: boolean;
 
 	/**
-	 * Whether the collapsible is open by default. This should only be used when
-	 * you aren't passing an `open` store to this function, as it will override this value.
+	 * Whether the collapsible is open by default.
 	 *
 	 * @default false
 	 */
@@ -29,6 +28,9 @@ export type CreateCollapsibleProps = {
 
 	/**
 	 * Optionally pass a writable store to control the open state of the collapsible.
+	 * If provided, this will override the value of the `defaultOpen` prop.
+	 *
+	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
 	open?: Writable<boolean>;
 

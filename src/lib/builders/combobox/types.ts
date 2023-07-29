@@ -56,6 +56,8 @@ export type CreateComboboxProps<T> = {
 
 	/**
 	 * Change function that is called when the combobox's `open` state changes.
+	 *
+	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
 	onOpenChange?: ChangeFn<boolean>;
 

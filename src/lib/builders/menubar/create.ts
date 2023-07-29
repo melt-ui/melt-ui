@@ -28,6 +28,7 @@ import {
 	removeHighlight,
 	addHighlight,
 	getPortalParent,
+	derivedVisible,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions';
@@ -93,6 +94,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		closeOnOutsideClick: true,
 		portal: 'body',
 		forceVisible: false,
+		defaultOpen: false,
 	} satisfies CreateMenubarMenuProps;
 
 	const createMenu = (props?: CreateMenubarMenuProps) => {
@@ -102,7 +104,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		// options
 		const options = toWritableStores(withDefaults);
-		const { positioning } = options;
+		const { positioning, portal, forceVisible } = options;
 
 		const m = createMenuBuilder({
 			rootOptions: options,
@@ -115,19 +117,26 @@ export function createMenubar(props?: CreateMenubarProps) {
 			selector: 'menubar-menu',
 		});
 
+		const isVisible = derivedVisible({
+			open: rootOpen,
+			forceVisible,
+			activeTrigger: rootActiveTrigger,
+		});
+
 		const menu = builder(name('menu'), {
-			stores: [rootOpen],
-			returned: ([$rootOpen]) => {
+			stores: [isVisible, portal],
+			returned: ([$isVisible, $portal]) => {
 				return {
 					role: 'menu',
-					hidden: $rootOpen ? undefined : true,
+					hidden: $isVisible ? undefined : true,
 					style: styleToString({
-						display: $rootOpen ? undefined : 'none',
+						display: $isVisible ? undefined : 'none',
 					}),
 					id: m.rootIds.menu,
 					'aria-labelledby': m.rootIds.trigger,
-					'data-state': $rootOpen ? 'open' : 'closed',
+					'data-state': $isVisible ? 'open' : 'closed',
 					'data-melt-scope': rootIds.menubar,
+					'data-portal': $portal ? '' : undefined,
 					tabindex: -1,
 				} as const;
 			},
@@ -142,8 +151,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
-					[rootOpen, rootActiveTrigger, positioning],
-					([$rootOpen, $rootActiveTrigger, $positioning]) => {
+					[rootOpen, rootActiveTrigger, positioning, portal],
+					([$rootOpen, $rootActiveTrigger, $positioning, $portal]) => {
 						unsubPopper();
 						if (!($rootOpen && $rootActiveTrigger)) return;
 
@@ -153,7 +162,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 								open: rootOpen,
 								options: {
 									floating: $positioning,
-									portal: portalParent,
+									portal: $portal ? (portalParent === $portal ? portalParent : $portal) : null,
 								},
 							});
 
@@ -351,6 +360,14 @@ export function createMenubar(props?: CreateMenubarProps) {
 				return isOpen;
 			});
 		}
+
+		onMount(() => {
+			if (!isBrowser) return;
+			const triggerEl = document.getElementById(m.rootIds.trigger);
+			if (isHTMLElement(triggerEl) && get(rootOpen)) {
+				rootActiveTrigger.set(triggerEl);
+			}
+		});
 
 		return {
 			elements: {

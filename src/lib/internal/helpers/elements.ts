@@ -9,5 +9,5 @@ export function getPortalParent(node: HTMLElement) {
 	while (isHTMLElement(parent) && parent.getAttribute('data-portal') === null) {
 		parent = parent.parentElement;
 	}
-	return parent || document.body;
+	return parent || 'body';
 }

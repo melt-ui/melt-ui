@@ -24,13 +24,17 @@ export type CreatePopoverProps = {
 	/**
 	 * A store that controls the open state.
 	 * Use when you want to directly control the popover.
+	 *
+	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
 	open?: Writable<boolean>;
 
 	/**
 	 * Optional function that runs whenever open should change.
-	 * When present, will control state changes instead of the default behaviour
+	 * When present, will control state changes instead of the
+	 * default behaviour.
 	 *
+	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
 	onOpenChange?: ChangeFn<boolean>;
 

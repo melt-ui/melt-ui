@@ -149,7 +149,7 @@ export function createPopover(args?: CreatePopoverProps) {
 											},
 									  }
 									: null,
-								portal: $portal ? portalParent : null,
+								portal: $portal ? (portalParent === $portal ? portalParent : $portal) : null,
 							},
 						});
 
