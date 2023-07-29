@@ -6,6 +6,7 @@ import {
 	handleRovingFocus,
 	isHTMLElement,
 	kbd,
+	overridable,
 	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
@@ -96,13 +97,15 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 		const options = toWritableStores(groupWithDefaults);
 		const { type, disabled } = options;
 
-		const defaultValue = groupWithDefaults.value
-			? groupWithDefaults.value
+		const defaultValue = groupWithDefaults.defaultValue
+			? groupWithDefaults.defaultValue
 			: groupWithDefaults.type === 'single'
 			? undefined
 			: [];
 
-		const value = writable<string | string[] | undefined>(defaultValue);
+		const valueWritable =
+			groupWithDefaults.value ?? writable<string | string[] | undefined>(defaultValue);
+		const value = overridable(valueWritable, groupWithDefaults?.onValueChange);
 
 		const { name } = createElHelpers('toolbar-group');
 
