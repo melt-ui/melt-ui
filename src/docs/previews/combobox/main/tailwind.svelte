@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { createCombobox } from '@melt-ui/svelte';
+	import { createCombobox, type ComboboxFilterFunction } from '@melt-ui/svelte';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
+	import { slide } from 'svelte/transition';
 
 	interface Book {
 		author: string;
@@ -61,23 +62,26 @@
 		},
 	];
 
+	const filterFunction: ComboboxFilterFunction<Book> = (item, inputValue) => {
+		// Example string normalization function. Replace as needed.
+		const normalize = (str: string) => str.normalize().toLowerCase();
+		const normalizedInput = normalize(inputValue);
+		return (
+			normalizedInput === '' ||
+			normalize(item.title).includes(normalizedInput) ||
+			normalize(item.author).includes(normalizedInput)
+		);
+	};
+
 	const {
-		elements: { input, menu, item, label },
+		elements: { menu, input, item, label },
 		states: { open, inputValue, filteredItems },
 		helpers: { isSelected },
 	} = createCombobox({
-		filterFunction: (item, inputValue) => {
-			// Example string normalization function. Replace as needed.
-			const normalize = (str: string) => str.normalize().toLowerCase();
-			const normalizedInput = normalize(inputValue);
-			return (
-				normalizedInput === '' ||
-				normalize(item.title).includes(normalizedInput) ||
-				normalize(item.author).includes(normalizedInput)
-			);
-		},
+		filterFunction,
 		items: books,
 		itemToString: (item) => item.title,
+		forceVisible: true,
 	});
 </script>
 
@@ -104,17 +108,17 @@
 		</div>
 	</div>
 </div>
-
-<ul
-	class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-md"
-	melt={$menu}
->
-	<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-	<div
-		class="flex max-h-full flex-col gap-2 overflow-y-auto bg-white px-2 py-2"
-		tabindex="0"
+{#if $open}
+	<ul
+		class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-md"
+		melt={$menu}
+		transition:slide={{ duration: 150 }}
 	>
-		{#if $open}
+		<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+		<div
+			class="flex max-h-full flex-col gap-2 overflow-y-auto bg-white px-2 py-2"
+			tabindex="0"
+		>
 			{#if $filteredItems.length !== 0}
 				{#each $filteredItems as book, index (index)}
 					<li
@@ -147,9 +151,9 @@
 					No results found
 				</li>
 			{/if}
-		{/if}
-	</div>
-</ul>
+		</div>
+	</ul>
+{/if}
 
 <style lang="postcss">
 	.check {

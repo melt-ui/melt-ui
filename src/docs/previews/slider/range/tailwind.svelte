@@ -5,7 +5,7 @@
 		elements: { root, range, thumb },
 		states: { value },
 	} = createSlider({
-		value: [20, 80],
+		defaultValue: [20, 80],
 		max: 100,
 	});
 </script>

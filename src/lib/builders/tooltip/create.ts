@@ -8,6 +8,7 @@ import {
 	makeHullFromElements,
 	noop,
 	omit,
+	overridable,
 	pointInPolygon,
 	styleToString,
 	toWritableStores,
@@ -16,7 +17,7 @@ import {
 import { useFloating, usePortal } from '$lib/internal/actions';
 import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
-import { get, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 import type { CreateTooltipProps } from './types';
 
 const defaults = {
@@ -24,10 +25,11 @@ const defaults = {
 		placement: 'bottom',
 	},
 	arrowSize: 8,
-	open: false,
+	defaultOpen: false,
 	closeOnPointerDown: true,
 	openDelay: 1000,
 	closeDelay: 0,
+	forceVisible: false,
 } satisfies Defaults<CreateTooltipProps>;
 
 type TooltipParts = 'trigger' | 'content' | 'arrow';
@@ -37,9 +39,11 @@ export function createTooltip(props?: CreateTooltipProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateTooltipProps;
 
 	const options = toWritableStores(omit(withDefaults, 'open'));
-	const { positioning, arrowSize, closeOnPointerDown, openDelay, closeDelay } = options;
+	const { positioning, arrowSize, closeOnPointerDown, openDelay, closeDelay, forceVisible } =
+		options;
 
-	const open = writable(withDefaults.open);
+	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
+	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
 	const ids = {
 		content: generateId(),
@@ -128,15 +132,20 @@ export function createTooltip(props?: CreateTooltipProps) {
 		},
 	});
 
+	const isVisible = derived(
+		[open, forceVisible],
+		([$open, $forceVisible]) => $open || $forceVisible
+	);
+
 	const content = builder(name('content'), {
-		stores: open,
-		returned: ($open) => {
+		stores: isVisible,
+		returned: ($isVisible) => {
 			return {
 				role: 'tooltip',
-				hidden: $open ? undefined : true,
+				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
 				style: styleToString({
-					display: $open ? undefined : 'none',
+					display: $isVisible ? undefined : 'none',
 				}),
 				id: ids.content,
 			};

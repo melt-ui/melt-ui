@@ -14,13 +14,13 @@ collapsible component using Melt UI's [Collapsible](/docs/builders/collapsible) 
 
 ```svelte
 <script>
-  import { createCollapsible } from '@melt-ui/svelte'
-  const { open, root, content, trigger } = createCollapsible()
+	import { createCollapsible } from '@melt-ui/svelte'
+	const { open, root, content, trigger } = createCollapsible()
 </script>
 
 <div melt={$root}>
-  <button melt={$trigger}>{$open ? 'Close' : 'Open'}</button>
-  <div melt={$content}>Obi-Wan says: Hello there!</div>
+	<button melt={$trigger}>{$open ? 'Close' : 'Open'}</button>
+	<div melt={$content}>Obi-Wan says: Hello there!</div>
 </div>
 ```
 
@@ -81,26 +81,26 @@ purposes, should you desire to do so.
 
 ```svelte
 <script>
-  import { createCollapsible } from '@melt-ui/svelte'
-  const { root, content, trigger } = createCollapsible()
+	import { createCollapsible } from '@melt-ui/svelte'
+	const { root, content, trigger } = createCollapsible()
 </script>
 
 <div melt={$root}>
-  <button melt={$trigger}> Toggle </button>
-  <div class="content" melt={$content}>
-    <p>sveltejs/svelte</p>
-    <p>sveltejs/kit</p>
-  </div>
+	<button melt={$trigger}> Toggle </button>
+	<div class="content" melt={$content}>
+		<p>sveltejs/svelte</p>
+		<p>sveltejs/kit</p>
+	</div>
 </div>
 
 <style>
-  .content {
-    display: block !important; /* Ignore the hidden attribute */
-    transition: opacity 200ms ease;
-  }
-  .content[data-state='closed'] {
-    opacity: 0;
-  }
+	.content {
+		display: block !important; /* Ignore the hidden attribute */
+		transition: opacity 200ms ease;
+	}
+	.content[data-state='closed'] {
+		opacity: 0;
+	}
 </style>
 ```
 

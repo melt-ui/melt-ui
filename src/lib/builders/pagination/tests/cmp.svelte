@@ -8,7 +8,7 @@
 	} = createPagination({
 		count: 100,
 		perPage: 10,
-		page: 1,
+		defaultPage: 1,
 		siblingCount: 1,
 	});
 </script>

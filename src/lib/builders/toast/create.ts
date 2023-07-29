@@ -10,7 +10,7 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers';
 import type { AddToastProps, CreateToasterProps, Toast } from './types';
-import { usePortal } from '@melt-ui/svelte/internal/actions';
+import { usePortal } from '$lib/internal/actions';
 
 type ToastParts = 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<ToastParts>('toast');

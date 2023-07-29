@@ -2,7 +2,7 @@
 	import { createToaster } from '@melt-ui/svelte';
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
-	import X from '~icons/lucide/x';
+	import { X } from 'lucide-svelte';
 
 	type ToastData = {
 		title: string;

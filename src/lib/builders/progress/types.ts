@@ -1,8 +1,12 @@
 import type { BuilderReturn } from '$lib/internal/types';
+import type { Writable } from 'svelte/store';
 import type { createProgress } from './create';
+import type { ChangeFn } from '$lib/internal/helpers';
 
 export type CreateProgressProps = {
-	value?: number;
+	defaultValue?: number;
+	value?: Writable<number>;
+	onValueChange?: ChangeFn<number>;
 	max?: number;
 };
 

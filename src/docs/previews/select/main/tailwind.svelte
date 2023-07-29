@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { createSelect } from '@melt-ui/svelte';
 	import { Check, ChevronDown } from 'lucide-svelte';
+	import { fly } from 'svelte/transition';
 
 	const {
 		elements: { trigger, menu, option, group, groupLabel, label },
-		states: { valueLabel },
+		states: { valueLabel, open },
 		helpers: { isSelected },
-	} = createSelect();
+	} = createSelect({
+		forceVisible: true,
+	});
 
 	const options = {
 		sweet: ['Caramel', 'Chocolate', 'Strawberry', 'Cookies & Cream'],
@@ -26,40 +29,42 @@
 		{$valueLabel || 'Select a flavor'}
 		<ChevronDown />
 	</button>
-
-	<div
-		class="z-10 flex max-h-[360px] flex-col
+	{#if $open}
+		<div
+			class="z-10 flex max-h-[360px] flex-col
 		overflow-y-auto rounded-md bg-white
 		p-1 focus:!ring-0"
-		melt={$menu}
-	>
-		{#each Object.entries(options) as [key, arr]}
-			<div melt={$group(key)}>
-				<div
-					class="py-1 pl-4 pr-4 font-semibold capitalize text-neutral-800"
-					melt={$groupLabel(key)}
-				>
-					{key}
-				</div>
-				{#each arr as item}
+			melt={$menu}
+			transition:fly={{ duration: 100, y: -5 }}
+		>
+			{#each Object.entries(options) as [key, arr]}
+				<div melt={$group(key)}>
 					<div
-						class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800
+						class="py-1 pl-4 pr-4 font-semibold capitalize text-neutral-800"
+						melt={$groupLabel(key)}
+					>
+						{key}
+					</div>
+					{#each arr as item}
+						<div
+							class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800
 						focus:z-10 focus:text-magnum-700
 					data-[highlighted]:bg-magnum-50 data-[selected]:bg-magnum-100
 					data-[highlighted]:text-magnum-900 data-[selected]:text-magnum-900"
-						melt={$option({ value: item, label: item })}
-					>
-						{#if $isSelected(item)}
-							<div class="check">
-								<Check />
-							</div>
-						{/if}
-						{item}
-					</div>
-				{/each}
-			</div>
-		{/each}
-	</div>
+							melt={$option({ value: item, label: item })}
+						>
+							{#if $isSelected(item)}
+								<div class="check">
+									<Check />
+								</div>
+							{/if}
+							{item}
+						</div>
+					{/each}
+				</div>
+			{/each}
+		</div>
+	{/if}
 </div>
 
 <style lang="postcss">

@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { createCheckbox, type CreateCheckboxProps } from '..';
 
-	export let checked: CreateCheckboxProps['checked'] = 'indeterminate';
+	export let defaultChecked: CreateCheckboxProps['defaultChecked'] = 'indeterminate';
 
 	const {
 		elements: { root },
 		helpers: { isChecked },
 	} = createCheckbox({
-		checked,
+		defaultChecked,
 	});
 </script>
 

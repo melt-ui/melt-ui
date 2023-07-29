@@ -1,19 +1,29 @@
-import { builder, effect, isBrowser, styleToString, toWritableStores } from '$lib/internal/helpers';
+import {
+	builder,
+	effect,
+	isBrowser,
+	overridable,
+	styleToString,
+	toWritableStores,
+	omit,
+} from '$lib/internal/helpers';
 import { writable } from 'svelte/store';
-import type { CreateAvatarProps, ImageLoadingStatus } from './types';
+import type { CreateAvatarProps } from './types';
 
 const defaults = {
 	src: '',
 	delayMs: 0,
+	onLoadingStatusChange: undefined,
 } satisfies CreateAvatarProps;
 
 export const createAvatar = (props?: CreateAvatarProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateAvatarProps;
 
-	const options = toWritableStores(withDefaults);
+	const options = toWritableStores(omit(withDefaults, 'loadingStatus', 'onLoadingStatusChange'));
 	const { src, delayMs } = options;
 
-	const loadingStatus = writable<ImageLoadingStatus>('loading');
+	const loadingStatusWritable = withDefaults.loadingStatus ?? writable('loading');
+	const loadingStatus = overridable(loadingStatusWritable, withDefaults?.onLoadingStatusChange);
 
 	effect([src, delayMs], ([$src, $delayMs]) => {
 		if (isBrowser) {

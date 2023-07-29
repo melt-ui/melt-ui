@@ -1,4 +1,4 @@
-import { usePopper } from '$lib/internal/actions/popper';
+import { usePopper } from '$lib/internal/actions';
 import {
 	addEventListener,
 	builder,
@@ -23,11 +23,15 @@ import {
 	styleToString,
 	addHighlight,
 	removeHighlight,
+	toWritableStores,
+	getPortalParent,
+	derivedVisible,
 } from '$lib/internal/helpers';
+import { createSeparator } from '$lib/builders';
 import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Writable } from 'svelte/store';
-import { createSeparator } from '../separator';
+
 import type {
 	CheckboxItemProps,
 	CreateMenuProps,
@@ -56,20 +60,26 @@ const defaults = {
 		placement: 'bottom',
 	},
 	preventScroll: true,
+	closeOnEscape: true,
+	closeOnOutsideClick: true,
+	portal: 'body',
+	loop: false,
+	dir: 'ltr',
+	defaultOpen: false,
 } satisfies Defaults<CreateMenuProps>;
 
 export function createMenuBuilder(opts: MenuBuilderOptions) {
 	const { name, selector } = createElHelpers<MenuParts>(opts.selector);
 
-	const { preventScroll, loop, arrowSize, dir, positioning } = opts.rootOptions;
-
-	const rootOptions = {
-		positioning,
-		arrowSize,
-		dir,
+	const {
 		preventScroll,
-		loop,
-	};
+		arrowSize,
+		positioning,
+		closeOnEscape,
+		closeOnOutsideClick,
+		portal,
+		forceVisible,
+	} = opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
 	const rootActiveTrigger = opts.rootActiveTrigger;
@@ -123,44 +133,60 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		trigger: generateId(),
 	};
 
+	const isVisible = derivedVisible({
+		open: rootOpen,
+		forceVisible,
+		activeTrigger: rootActiveTrigger,
+	});
+
 	const rootMenu = builder(name(), {
-		stores: [rootOpen],
-		returned: ([$rootOpen]) => {
+		stores: [isVisible],
+		returned: ([$isVisible]) => {
 			return {
 				role: 'menu',
-				hidden: $rootOpen ? undefined : true,
+				hidden: $isVisible ? undefined : true,
 				style: styleToString({
-					display: $rootOpen ? undefined : 'none',
+					display: $isVisible ? undefined : 'none',
 				}),
 				id: rootIds.menu,
 				'aria-labelledby': rootIds.trigger,
-				'data-state': $rootOpen ? 'open' : 'closed',
+				'data-state': $isVisible ? 'open' : 'closed',
 				tabindex: -1,
 			} as const;
 		},
 		action: (node: HTMLElement) => {
+			const portalParent = getPortalParent(node);
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[rootOpen, rootActiveTrigger, positioning],
-				([$rootOpen, $rootActiveTrigger, $positioning]) => {
+				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal, closeOnEscape],
+				([
+					$isVisible,
+					$rootActiveTrigger,
+					$positioning,
+					$closeOnOutsideClick,
+					$portal,
+					$closeOnEscape,
+				]) => {
 					unsubPopper();
-					if ($rootOpen && $rootActiveTrigger) {
-						tick().then(() => {
-							setMeltMenuAttribute(node, selector);
-							const popper = usePopper(node, {
-								anchorElement: $rootActiveTrigger,
-								open: rootOpen,
-								options: {
-									floating: $positioning,
-								},
-							});
-
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
+					if (!$isVisible || !$rootActiveTrigger) return;
+					tick().then(() => {
+						setMeltMenuAttribute(node, selector);
+						const popper = usePopper(node, {
+							anchorElement: $rootActiveTrigger,
+							open: rootOpen,
+							options: {
+								floating: $positioning,
+								clickOutside: $closeOnOutsideClick ? undefined : null,
+								portal: $portal ? (portalParent === document.body ? null : portalParent) : null,
+								escapeKeydown: $closeOnEscape ? undefined : null,
+							},
 						});
-					}
+
+						if (popper && popper.destroy) {
+							unsubPopper = popper.destroy;
+						}
+					});
 				}
 			);
 
@@ -187,7 +213,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					 */
 					if (e.key === kbd.TAB) {
 						e.preventDefault();
-						rootActiveTrigger.set(null);
 						rootOpen.set(false);
 						handleTabNavigation(e, nextFocusable, prevFocusable);
 						return;
@@ -238,22 +263,20 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				addEventListener(node, 'keydown', (e) => {
 					const triggerEl = e.currentTarget;
 					if (!isHTMLElement(triggerEl)) return;
+					if (!(SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN)) return;
+					e.preventDefault();
+					handleOpen(triggerEl);
 
-					if (SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN) {
-						e.preventDefault();
-						handleOpen(triggerEl);
+					const menuId = triggerEl.getAttribute('aria-controls');
+					if (!menuId) return;
 
-						const menuId = triggerEl.getAttribute('aria-controls');
-						if (!menuId) return;
+					const menu = document.getElementById(menuId);
+					if (!menu) return;
 
-						const menu = document.getElementById(menuId);
-						if (!isHTMLElement(menu)) return;
+					const menuItems = getMenuItems(menu);
+					if (!menuItems.length) return;
 
-						const menuItems = getMenuItems(menu);
-						if (!menuItems.length) return;
-
-						handleRovingFocus(menuItems[0]);
-					}
+					handleRovingFocus(menuItems[0]);
 				})
 			);
 
@@ -383,7 +406,13 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						return !prev;
 					});
 
-					rootOpen.set(false);
+					// We're waiting for a tick to let the checked store update
+					// before closing the menu. If we don't, and the user was to hit
+					// spacebar or enter twice really fast, the menu would close and
+					// reopen without the checked state being updated.
+					tick().then(() => {
+						rootOpen.set(false);
+					});
 				}),
 				addEventListener(node, 'keydown', (e) => {
 					onItemKeyDown(e);
@@ -485,7 +514,14 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						if (e.defaultPrevented) return;
 
 						value.set(itemValue);
-						rootOpen.set(false);
+
+						// We're waiting for a tick to let the checked store update
+						// before closing the menu. If we don't, and the user was to hit
+						// spacebar or enter twice really fast, the menu would close and
+						// reopen without the checked state being updated.
+						tick().then(() => {
+							rootOpen.set(false);
+						});
 					}),
 					addEventListener(node, 'keydown', (e) => {
 						onItemKeyDown(e);
@@ -557,6 +593,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			placement: 'right-start',
 			gutter: 8,
 		},
+		forceVisible: false,
 	} satisfies Defaults<CreateSubmenuProps>;
 
 	const createSubmenu = (args?: CreateSubmenuProps) => {
@@ -565,21 +602,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		const subOpen = writable(false);
 
 		// options
-		const positioning = writable<FloatingConfig>(withDefaults.positioning);
-		const arrowSize = writable<number>(withDefaults.arrowSize);
-		const dir = writable(withDefaults.dir);
-		const disabled = writable<boolean>(withDefaults.disabled);
-		const preventScroll = writable<boolean>(withDefaults.preventScroll);
-		const loop = writable<boolean>(withDefaults.loop);
+		const options = toWritableStores(withDefaults);
 
-		const subOptions = {
-			positioning,
-			arrowSize,
-			dir,
-			disabled,
-			preventScroll,
-			loop,
-		};
+		const { positioning, arrowSize, disabled, forceVisible } = options;
 
 		const subActiveTrigger = writable<HTMLElement | null>(null);
 		const subOpenTimer = writable<number | null>(null);
@@ -590,18 +615,35 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			trigger: generateId(),
 		};
 
+		onMount(() => {
+			/**
+			 * Set active trigger on mount to handle controlled/forceVisible
+			 * state.
+			 */
+			const subTrigger = document.getElementById(subIds.trigger);
+			if (subTrigger) {
+				subActiveTrigger.set(subTrigger);
+			}
+		});
+
+		const subIsVisible = derivedVisible({
+			open: subOpen,
+			forceVisible,
+			activeTrigger: subActiveTrigger,
+		});
+
 		const subMenu = builder(name('submenu'), {
-			stores: [subOpen],
-			returned: ([$subOpen]) => {
+			stores: [subIsVisible],
+			returned: ([$subIsVisible]) => {
 				return {
 					role: 'menu',
-					hidden: $subOpen ? undefined : true,
+					hidden: $subIsVisible ? undefined : true,
 					style: styleToString({
-						display: $subOpen ? undefined : 'none',
+						display: $subIsVisible ? undefined : 'none',
 					}),
 					id: subIds.menu,
 					'aria-labelledby': subIds.trigger,
-					'data-state': $subOpen ? 'open' : 'closed',
+					'data-state': $subIsVisible ? 'open' : 'closed',
 					tabindex: -1,
 				} as const;
 			},
@@ -609,29 +651,30 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
-					[subOpen, subActiveTrigger, positioning],
-					([$subOpen, $subActiveTrigger, $positioning]) => {
+					[subIsVisible, positioning],
+					([$subIsVisible, $positioning]) => {
 						unsubPopper();
-						if ($subOpen && $subActiveTrigger) {
-							tick().then(() => {
-								const parentMenuEl = getParentMenu($subActiveTrigger);
+						if (!$subIsVisible) return;
+						const activeTrigger = get(subActiveTrigger);
+						if (!activeTrigger) return;
+						tick().then(() => {
+							const parentMenuEl = getParentMenu(activeTrigger);
 
-								const popper = usePopper(node, {
-									anchorElement: $subActiveTrigger,
-									open: subOpen,
-									options: {
-										floating: $positioning,
-										portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
-										clickOutside: null,
-										focusTrap: null,
-									},
-								});
-
-								if (popper && popper.destroy) {
-									unsubPopper = popper.destroy;
-								}
+							const popper = usePopper(node, {
+								anchorElement: activeTrigger,
+								open: subOpen,
+								options: {
+									floating: $positioning,
+									portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
+									clickOutside: null,
+									focusTrap: null,
+								},
 							});
-						}
+
+							if (popper && popper.destroy) {
+								unsubPopper = popper.destroy;
+							}
+						});
 					}
 				);
 
@@ -669,7 +712,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 								if ($subActiveTrigger) {
 									handleRovingFocus($subActiveTrigger);
 								}
-								subActiveTrigger.set(null);
 								return false;
 							});
 							return;
@@ -681,7 +723,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						 */
 						if (e.key === kbd.TAB) {
 							e.preventDefault();
-							rootActiveTrigger.set(null);
 							rootOpen.set(false);
 							handleTabNavigation(e, nextFocusable, prevFocusable);
 							return;
@@ -704,7 +745,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 							if (!submenuEl.contains(target) && target !== $subActiveTrigger) {
 								subOpen.set(false);
-								subActiveTrigger.set(null);
 							}
 						} else {
 							const menuEl = e.currentTarget;
@@ -713,7 +753,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 							if (!menuEl.contains(relatedTarget) && relatedTarget !== $subActiveTrigger) {
 								subOpen.set(false);
-								subActiveTrigger.set(null);
 							}
 						}
 					})
@@ -878,7 +917,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						const menu = document.getElementById(menuId);
 
 						if (menu && !menu.contains(relatedTarget)) {
-							subActiveTrigger.set(null);
 							subOpen.set(false);
 						}
 					}),
@@ -920,10 +958,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		});
 
 		effect([pointerGraceIntent], ([$pointerGraceIntent]) => {
-			if (!isBrowser) return;
-			if (!$pointerGraceIntent) {
-				window.clearTimeout(get(pointerGraceTimer));
-			}
+			if (!isBrowser || $pointerGraceIntent) return;
+			window.clearTimeout(get(pointerGraceTimer));
 		});
 
 		effect([subOpen], ([$subOpen]) => {
@@ -963,9 +999,48 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			states: {
 				subOpen,
 			},
-			options: subOptions,
+			options,
 		};
 	};
+
+	onMount(() => {
+		/**
+		 * We need to set the active trigger on mount to cover the
+		 * case where the user sets the `open` store to `true` without
+		 * clicking on the trigger.
+		 */
+		const triggerEl = document.getElementById(rootIds.trigger);
+		if (isHTMLElement(triggerEl) && get(rootOpen)) {
+			rootActiveTrigger.set(triggerEl);
+		}
+
+		const unsubs: Array<() => void> = [];
+
+		const handlePointer = () => isUsingKeyboard.set(false);
+
+		const handleKeyDown = () => {
+			isUsingKeyboard.set(true);
+			unsubs.push(
+				executeCallbacks(
+					addEventListener(document, 'pointerdown', handlePointer, { capture: true, once: true }),
+					addEventListener(document, 'pointermove', handlePointer, { capture: true, once: true })
+				)
+			);
+		};
+
+		const keydownListener = (e: KeyboardEvent) => {
+			if (e.key === kbd.ESCAPE && get(closeOnEscape)) {
+				rootOpen.set(false);
+				return;
+			}
+		};
+		unsubs.push(addEventListener(document, 'keydown', handleKeyDown, { capture: true }));
+		unsubs.push(addEventListener(document, 'keydown', keydownListener));
+
+		return () => {
+			unsubs.forEach((unsub) => unsub());
+		};
+	});
 
 	/* -------------------------------------------------------------------------------------------------
 	 * Root Effects
@@ -981,9 +1056,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		if (!isBrowser) return;
 
 		const unsubs: Array<() => void> = [];
-		const $preventScroll = get(preventScroll);
 
-		if ($rootOpen && $preventScroll) {
+		if ($rootOpen && get(preventScroll)) {
 			unsubs.push(removeScroll());
 		}
 
@@ -1054,8 +1128,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				nextFocusable.set(getNextFocusable(triggerEl));
 				prevFocusable.set(getPreviousFocusable(triggerEl));
 				rootActiveTrigger.set(triggerEl);
-			} else {
-				rootActiveTrigger.set(null);
 			}
 
 			return isOpen;
@@ -1216,7 +1288,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		item,
 		checkboxItem,
 		arrow: rootArrow,
-		options: rootOptions,
+		options: opts.rootOptions,
 		createSubmenu,
 		createMenuRadioGroup,
 		separator,

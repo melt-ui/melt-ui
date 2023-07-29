@@ -3,6 +3,7 @@ import {
 	builder,
 	createElHelpers,
 	omit,
+	overridable,
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers';
@@ -11,7 +12,7 @@ import { derived, get, writable } from 'svelte/store';
 import type { CreateSwitchProps } from './types';
 
 const defaults = {
-	checked: false,
+	defaultChecked: false,
 	disabled: false,
 	required: false,
 	name: '',
@@ -26,7 +27,8 @@ export function createSwitch(props?: CreateSwitchProps) {
 	const options = toWritableStores(omit(propsWithDefaults, 'checked'));
 	const { disabled, required, name: nameStore, value } = options;
 
-	const checked = writable(propsWithDefaults.checked);
+	const checkedWritable = propsWithDefaults.checked ?? writable(propsWithDefaults.defaultChecked);
+	const checked = overridable(checkedWritable, propsWithDefaults?.onCheckedChange);
 
 	const root = builder(name(), {
 		stores: [checked, disabled, required],

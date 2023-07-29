@@ -1,4 +1,4 @@
-import { usePopper } from '$lib/internal/actions/popper';
+import { usePopper } from '$lib/internal/actions';
 import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,
@@ -13,6 +13,7 @@ import {
 	forward,
 	generateId,
 	getNextFocusable,
+	getPortalParent,
 	getPreviousFocusable,
 	handleRovingFocus,
 	isBrowser,
@@ -23,18 +24,20 @@ import {
 	next,
 	noop,
 	omit,
+	overridable,
 	prev,
 	removeHighlight,
 	removeScroll,
 	styleToString,
 	toWritableStores,
+	getFirstOption,
+	getOptions,
+	sleep,
+	derivedVisible,
 } from '$lib/internal/helpers';
-import { getFirstOption, getOptions } from '$lib/internal/helpers/list';
-import { sleep } from '$lib/internal/helpers/sleep';
-import type { Defaults } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
-import { createSeparator } from '../separator';
+import { createSeparator } from '$lib/builders';
 import type { CreateSelectProps, SelectOptionProps } from './types';
 import { usePortal } from '@melt-ui/svelte/internal/actions';
 import { createLabel } from '../label';
@@ -50,7 +53,12 @@ const defaults = {
 	preventScroll: true,
 	loop: false,
 	name: undefined,
-} satisfies Defaults<CreateSelectProps>;
+	defaultOpen: false,
+	forceVisible: false,
+	portal: 'body',
+	closeOnEscape: true,
+	closeOnOutsideClick: true,
+} satisfies CreateSelectProps;
 
 type SelectParts =
 	| 'menu'
@@ -62,12 +70,12 @@ type SelectParts =
 	| 'input'
 	| 'label';
 
-const { name, selector } = createElHelpers<SelectParts>('select');
+const { name } = createElHelpers<SelectParts>('select');
 
 export function createSelect(props?: CreateSelectProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps;
 
-	const options = toWritableStores(omit(withDefaults, 'value', 'valueLabel'));
+	const options = toWritableStores(omit(withDefaults, 'value', 'defaultValueLabel'));
 
 	const {
 		positioning,
@@ -77,11 +85,23 @@ export function createSelect(props?: CreateSelectProps) {
 		loop,
 		preventScroll,
 		name: nameStore,
+		portal,
+		forceVisible,
+		closeOnEscape,
+		closeOnOutsideClick,
 	} = options;
 
-	const open = writable(false);
-	const value = writable<unknown>(withDefaults.value ?? null);
-	const valueLabel = writable<string | number | null>(withDefaults.valueLabel ?? null);
+	let mounted = false;
+
+	const openWritable = withDefaults.open ?? writable(true);
+	const open = overridable(openWritable, withDefaults?.onOpenChange);
+	// Open so we can register the optionsList items before mounted = true
+	open.set(true);
+
+	const valueWritable = withDefaults.value ?? writable<unknown>(withDefaults.defaultValue);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
+
+	const valueLabel = writable<string | number | null>(withDefaults.defaultValueLabel ?? null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	/**
@@ -109,9 +129,22 @@ export function createSelect(props?: CreateSelectProps) {
 	};
 
 	onMount(() => {
+		// Run after all initial effects
+		tick().then(() => {
+			mounted = true;
+		});
+
+		open.set(withDefaults.defaultOpen);
+
 		if (!isBrowser) return;
 		const menuEl = document.getElementById(ids.menu);
+
 		if (!menuEl) return;
+
+		const triggerEl = document.getElementById(ids.trigger);
+
+		if (!triggerEl) return;
+		activeTrigger.set(triggerEl);
 
 		const selectedEl = menuEl.querySelector('[data-selected]');
 		if (!isHTMLElement(selectedEl)) return;
@@ -120,13 +153,15 @@ export function createSelect(props?: CreateSelectProps) {
 		valueLabel.set(dataLabel ?? selectedEl.textContent ?? null);
 	});
 
+	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
+
 	const menu = builder(name('menu'), {
-		stores: open,
-		returned: ($open) => {
+		stores: isVisible,
+		returned: ($isVisible) => {
 			return {
-				hidden: $open ? undefined : true,
+				hidden: $isVisible ? undefined : true,
 				style: styleToString({
-					display: $open ? undefined : 'none',
+					display: $isVisible ? undefined : 'none',
 				}),
 				id: ids.menu,
 				'aria-labelledby': ids.trigger,
@@ -134,27 +169,55 @@ export function createSelect(props?: CreateSelectProps) {
 			};
 		},
 		action: (node: HTMLElement) => {
+			/**
+			 * We need to get the parent portal before the menu is opened,
+			 * otherwise the parent will have been moved to the body, and
+			 * will no longer be an ancestor of this node.
+			 */
+			const parentPortal = getPortalParent(node);
 			let unsubPopper = noop;
+			let unsubScroll = noop;
 
 			const unsubDerived = effect(
-				[open, activeTrigger, positioning],
-				([$open, $activeTrigger, $positioning]) => {
+				[isVisible, preventScroll, positioning, portal, closeOnEscape, closeOnOutsideClick],
+				([
+					$isVisible,
+					$preventScroll,
+					$positioning,
+					$portal,
+					$closeOnEscape,
+					$closeOnOutsideClick,
+				]) => {
 					unsubPopper();
-					if ($open && $activeTrigger) {
-						tick().then(() => {
-							const popper = usePopper(node, {
-								anchorElement: $activeTrigger,
-								open,
-								options: {
-									floating: $positioning,
-								},
-							});
-
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
-						});
+					unsubScroll();
+					const $activeTrigger = get(activeTrigger);
+					if (!($isVisible && $activeTrigger)) return;
+					if ($preventScroll) {
+						unsubScroll = removeScroll();
 					}
+
+					tick().then(() => {
+						const popper = usePopper(node, {
+							anchorElement: $activeTrigger,
+							open,
+							options: {
+								floating: $positioning,
+								clickOutside: $closeOnOutsideClick ? undefined : null,
+								escapeKeydown: $closeOnEscape
+									? {
+											handler: () => {
+												open.set(false);
+											},
+									  }
+									: null,
+								portal: $portal ? (parentPortal !== document.body ? null : undefined) : null,
+							},
+						});
+
+						if (popper && popper.destroy) {
+							unsubPopper = popper.destroy;
+						}
+					});
 				}
 			);
 
@@ -169,7 +232,6 @@ export function createSelect(props?: CreateSelectProps) {
 
 					if (e.key === kbd.TAB) {
 						e.preventDefault();
-						activeTrigger.set(null);
 						open.set(false);
 						handleTabNavigation(e);
 					}
@@ -211,6 +273,7 @@ export function createSelect(props?: CreateSelectProps) {
 			return {
 				role: 'combobox',
 				'aria-autocomplete': 'none',
+				'aria-haspopup': 'listbox',
 				'aria-controls': ids.menu,
 				'aria-expanded': $open,
 				'aria-required': $required,
@@ -240,10 +303,7 @@ export function createSelect(props?: CreateSelectProps) {
 							nextFocusable.set(getNextFocusable(triggerEl));
 							prevFocusable.set(getPreviousFocusable(triggerEl));
 							activeTrigger.set(triggerEl);
-						} else {
-							activeTrigger.set(null);
 						}
-
 						return isOpen;
 					});
 					if (!$open) e.preventDefault();
@@ -273,8 +333,6 @@ export function createSelect(props?: CreateSelectProps) {
 								nextFocusable.set(getNextFocusable(triggerEl));
 								prevFocusable.set(getPreviousFocusable(triggerEl));
 								activeTrigger.set(triggerEl);
-							} else {
-								activeTrigger.set(null);
 							}
 
 							return isOpen;
@@ -369,6 +427,12 @@ export function createSelect(props?: CreateSelectProps) {
 		}),
 	});
 
+	type OptionProps = {
+		value: unknown;
+		label: string | null;
+		disabled: boolean;
+	};
+
 	const getOptionProps = (el: HTMLElement) => {
 		const value = el.getAttribute('data-value');
 		const label = el.getAttribute('data-label');
@@ -381,10 +445,18 @@ export function createSelect(props?: CreateSelectProps) {
 		};
 	};
 
+	const optionsList: OptionProps[] = [];
+
 	const option = builder(name('option'), {
 		stores: value,
 		returned: ($value) => {
 			return (props: SelectOptionProps) => {
+				const optProps: OptionProps = {
+					value: props.value,
+					label: props.label ?? null,
+					disabled: props.disabled ?? false,
+				};
+				optionsList.push(optProps);
 				return {
 					role: 'option',
 					'aria-selected': $value === props?.value,
@@ -470,14 +542,9 @@ export function createSelect(props?: CreateSelectProps) {
 
 	effect(value, ($value) => {
 		if (!isBrowser) return;
-		const menuEl = document.getElementById(ids.menu);
-		if (!menuEl) return;
+		const newLabel = optionsList.find((opt) => opt.value === $value)?.label;
 
-		const optionEl = menuEl.querySelector(`${selector('option')}[data-value="${$value}"]`);
-		if (!isHTMLElement(optionEl)) return;
-
-		const props = getOptionProps(optionEl);
-		valueLabel.set(props.label ?? null);
+		valueLabel.set(newLabel ?? null);
 	});
 
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
@@ -490,6 +557,7 @@ export function createSelect(props?: CreateSelectProps) {
 			unsubs.push(removeScroll());
 		}
 
+		const constantMounted = mounted;
 		sleep(1).then(() => {
 			const menuEl = document.getElementById(ids.menu);
 			if (menuEl && $open && get(isUsingKeyboard)) {
@@ -506,7 +574,7 @@ export function createSelect(props?: CreateSelectProps) {
 			} else if (menuEl && $open) {
 				// focus on the menu element
 				handleRovingFocus(menuEl);
-			} else if ($activeTrigger) {
+			} else if ($activeTrigger && constantMounted) {
 				// Hacky way to prevent the keydown event from triggering on the trigger
 				handleRovingFocus($activeTrigger);
 			}

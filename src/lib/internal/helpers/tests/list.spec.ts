@@ -2,13 +2,18 @@ import { render } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
 import { getFirstOption, getOptions } from '../list';
 import List from './ListTest.svelte';
+import ListDisabled from './ListDisabledTest.svelte';
 
 describe('getFirstOption', () => {
 	it('returns the first option', () => {
 		const { getByRole, getByText } = render(List);
 		const [list, firstOption] = [getByRole('list'), getByText('Caramel')];
-		// Assert that the first option is returned.
 		expect(getFirstOption(list)).toBe(firstOption);
+	});
+	it('returns the second option if the first is disabled', () => {
+		const { getByRole, getByText } = render(ListDisabled);
+		const [list, secondOption] = [getByRole('list'), getByText('Chocolate')];
+		expect(getFirstOption(list)).toBe(secondOption);
 	});
 	it('returns null if there are no options', () => {
 		const { getByRole } = render(List);
@@ -32,5 +37,10 @@ describe('getOptions', () => {
 		const list = getByRole('menu');
 		// Assert that an empty array is returned since there are no options.
 		expect(getOptions(list)).toStrictEqual([]);
+	});
+	it('doesnt return disabled options', () => {
+		const { getByRole, getAllByRole } = render(ListDisabled);
+		const [list, options] = [getByRole('list'), getAllByRole('option')];
+		expect(getOptions(list)).toStrictEqual(options.slice(1));
 	});
 });

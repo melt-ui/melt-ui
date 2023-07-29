@@ -3,16 +3,18 @@ import {
 	builder,
 	createElHelpers,
 	omit,
+	overridable,
 	toWritableStores,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import type { CreateCollapsibleProps } from './types';
+import { styleToString } from '../../internal/helpers/style';
 
 const defaults = {
-	open: false,
+	defaultOpen: false,
 	disabled: false,
-} satisfies Defaults<CreateCollapsibleProps>;
+	forceVisible: false,
+} satisfies CreateCollapsibleProps;
 
 const { name } = createElHelpers('collapsible');
 
@@ -20,9 +22,10 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateCollapsibleProps;
 
 	const options = toWritableStores(omit(withDefaults, 'open'));
-	const { disabled } = options;
+	const { disabled, forceVisible } = options;
 
-	const open = writable(withDefaults.open);
+	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
+	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
 	const root = builder(name(), {
 		stores: [open, disabled],
@@ -53,12 +56,20 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 		},
 	});
 
+	const isVisible = derived(
+		[open, forceVisible],
+		([$open, $forceVisible]) => $open || $forceVisible
+	);
+
 	const content = builder(name('content'), {
-		stores: [open, disabled],
-		returned: ([$open, $disabled]) => ({
-			'data-state': $open ? 'open' : 'closed',
+		stores: [isVisible, disabled],
+		returned: ([$isVisible, $disabled]) => ({
+			'data-state': $isVisible ? 'open' : 'closed',
 			'data-disabled': $disabled ? '' : undefined,
-			hidden: $open ? undefined : true,
+			hidden: $isVisible ? undefined : true,
+			style: styleToString({
+				display: $isVisible ? undefined : 'none',
+			}),
 		}),
 	});
 

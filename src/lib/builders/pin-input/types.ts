@@ -1,9 +1,13 @@
+import type { ChangeFn } from '$lib/internal/helpers';
 import type { BuilderReturn } from '$lib/internal/types';
+import type { Writable } from 'svelte/store';
 import type { createPinInput } from './create';
 
 export type CreatePinInputProps = {
 	placeholder?: string;
-	value?: string[];
+	defaultValue?: string[];
+	value?: Writable<string[]>;
+	onValueChange?: ChangeFn<string[]>;
 	name?: string;
 	disabled?: boolean;
 	type?: string;

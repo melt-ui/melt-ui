@@ -8,9 +8,10 @@ import {
 	isHTMLElement,
 	kbd,
 	omit,
+	overridable,
+	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
 import { derived, writable, type Writable } from 'svelte/store';
 import type {
@@ -25,20 +26,20 @@ const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
 const defaults = {
 	type: 'single',
-	value: undefined,
-	disabled: undefined,
-} satisfies Defaults<CreateAccordionProps>;
+	disabled: false,
+	forceVisible: false,
+} satisfies CreateAccordionProps;
 
 export const createAccordion = <T extends AccordionType = 'single'>(
 	props?: CreateAccordionProps<T>
 ) => {
 	const withDefaults = { ...defaults, ...props };
-
 	const options = toWritableStores(omit(withDefaults, 'value'));
+	const { disabled, forceVisible } = options;
 
-	const { disabled } = options;
-
-	const value = writable<string | string[] | undefined>(withDefaults.value);
+	const valueWritable =
+		withDefaults.value ?? writable<string | string[] | undefined>(withDefaults.value);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	const isSelected = (key: string, v: string | string[] | undefined) => {
 		if (v === undefined) return false;
@@ -170,16 +171,19 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 	});
 
 	const content = builder(name('content'), {
-		stores: [value, disabled],
-		returned: ([$value, $disabled]) => {
+		stores: [value, disabled, forceVisible],
+		returned: ([$value, $disabled, $forceVisible]) => {
 			return (props: AccordionItemProps) => {
 				const { value: itemValue } = parseItemProps(props);
-				const selected = isSelected(itemValue, $value);
+				const isVisible = isSelected(itemValue, $value) || $forceVisible;
 				return {
-					'data-state': selected ? 'open' : 'closed',
+					'data-state': isVisible ? 'open' : 'closed',
 					'data-disabled': $disabled ? true : undefined,
 					'data-value': itemValue,
-					hidden: selected ? undefined : true,
+					hidden: isVisible ? undefined : true,
+					style: styleToString({
+						display: isVisible ? undefined : 'none',
+					}),
 				};
 			};
 		},

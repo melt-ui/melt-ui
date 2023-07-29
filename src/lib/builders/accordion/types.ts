@@ -1,12 +1,17 @@
 import type { BuilderReturn } from '$lib/internal/types';
+import type { Writable } from 'svelte/store';
 import type { createAccordion } from './create';
+import type { ChangeFn } from '$lib/internal/helpers';
 
 export type AccordionType = 'single' | 'multiple';
 
 export type CreateAccordionProps<T extends AccordionType = 'single'> = {
-	value?: T extends 'single' ? string : string[];
+	defaultValue?: T extends 'single' ? string : string[];
+	value?: Writable<string | string[] | undefined>;
+	onValueChange?: ChangeFn<string | string[] | undefined>;
 	type?: T;
 	disabled?: boolean;
+	forceVisible?: boolean;
 };
 
 export type AccordionItemProps =

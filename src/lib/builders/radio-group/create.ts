@@ -7,9 +7,10 @@ import {
 	isHTMLElement,
 	kbd,
 	omit,
+	overridable,
 	toWritableStores,
+	getElemDirection,
 } from '$lib/internal/helpers';
-import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateRadioGroupProps, RadioGroupItemProps } from './types';
@@ -19,6 +20,7 @@ const defaults = {
 	loop: true,
 	disabled: false,
 	required: false,
+	defaultValue: undefined,
 } satisfies Defaults<CreateRadioGroupProps>;
 
 type RadioGroupParts = 'item' | 'item-input';
@@ -31,7 +33,8 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 	const options = toWritableStores(omit(withDefaults, 'value'));
 	const { disabled, required, loop, orientation } = options;
 
-	const value = writable(withDefaults.value ?? null);
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	const root = builder(name(), {
 		stores: [required, orientation],

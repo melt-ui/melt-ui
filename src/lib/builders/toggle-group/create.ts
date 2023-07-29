@@ -9,8 +9,9 @@ import {
 	noop,
 	omit,
 	toWritableStores,
+	getElemDirection,
+	overridable,
 } from '$lib/internal/helpers';
-import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateToggleGroupProps, ToggleGroupItemProps, ToggleGroupType } from './types';
@@ -21,7 +22,7 @@ const defaults = {
 	loop: true,
 	rovingFocus: true,
 	disabled: false,
-	value: '',
+	defaultValue: '',
 } satisfies Defaults<CreateToggleGroupProps>;
 
 type ToggleGroupParts = 'item';
@@ -35,13 +36,14 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 	const options = toWritableStores(omit(withDefaults, 'value'));
 	const { type, orientation, loop, rovingFocus, disabled } = options;
 
-	const defaultValue = withDefaults.value
-		? withDefaults.value
+	const defaultValue = withDefaults.defaultValue
+		? withDefaults.defaultValue
 		: withDefaults.type === 'single'
 		? 'undefined'
 		: [];
 
-	const value = writable<string | string[] | undefined>(defaultValue);
+	const valueWritable = withDefaults.value ?? writable(defaultValue);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	const root = builder(name(), {
 		stores: orientation,

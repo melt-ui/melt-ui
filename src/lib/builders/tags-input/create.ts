@@ -10,6 +10,7 @@ import {
 	isHTMLElement,
 	kbd,
 	omit,
+	overridable,
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers';
@@ -23,7 +24,7 @@ const defaults = {
 	placeholder: '',
 	disabled: false,
 	editable: true,
-	tags: [],
+	defaultTags: [],
 	unique: false,
 	blur: 'nothing',
 	addOnPaste: false,
@@ -79,13 +80,17 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	//   - undefined => set empty []
 	//   - string[]  => generate Tag[] from string[]
 	//   - Tag[]     => set Tag[]
-	const tags = writable<Tag[]>(
-		withDefaults.tags && withDefaults.tags.length > 0
-			? typeof withDefaults.tags[0] === 'string'
-				? (withDefaults.tags as string[]).map((tag) => ({ id: generateId(), value: tag }))
-				: (withDefaults.tags as Tag[])
-			: [] // if undefined
-	);
+
+	const tagsWritable =
+		withDefaults.tags ??
+		writable<Tag[]>(
+			withDefaults.defaultTags && withDefaults.defaultTags.length > 0
+				? typeof withDefaults.defaultTags[0] === 'string'
+					? (withDefaults.defaultTags as string[]).map((tag) => ({ id: generateId(), value: tag }))
+					: (withDefaults.defaultTags as Tag[])
+				: [] // if undefined)
+		);
+	const tags = overridable<Tag[]>(tagsWritable, withDefaults?.onTagsChange);
 
 	// Selected tag store. When `null`, no tag is selected
 	const selected = writable<Tag | null>(withDefaults.selected ?? null);
@@ -430,9 +435,8 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 							e.preventDefault();
 							const { tagsEl } = getTagsInfo('');
 							const lastTag = tagsEl.at(-1);
-							if (lastTag) {
-								setSelectedFromEl(lastTag, selected);
-							}
+							if (!lastTag) return;
+							setSelectedFromEl(lastTag, selected);
 						}
 					}
 				}),

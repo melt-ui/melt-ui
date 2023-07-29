@@ -8,11 +8,16 @@ import * as environment from '$app/environment';
 import * as navigation from '$app/navigation';
 import * as stores from '$app/stores';
 import { toHaveNoViolations } from 'jest-axe';
+import { configure } from '@testing-library/dom';
 
 // Add custom jest matchers
 expect.extend(matchers);
 
 expect.extend(toHaveNoViolations as never);
+
+configure({
+	asyncUtilTimeout: 1500,
+});
 
 // Mock SvelteKit runtime module $app/environment
 vi.mock('$app/environment', (): typeof environment => ({
@@ -78,3 +83,5 @@ vi.mock('$app/stores', (): typeof stores => {
 		updated,
 	};
 });
+
+global.ResizeObserver = require('resize-observer-polyfill');

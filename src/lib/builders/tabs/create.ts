@@ -9,14 +9,14 @@ import {
 	last,
 	next,
 	prev,
-	isHTMLElement,
 	toWritableStores,
+	isHTMLElement,
+	omit,
+	getElemDirection,
 } from '$lib/internal/helpers';
-import { getElemDirection } from '$lib/internal/helpers/locale';
 import type { Defaults } from '$lib/internal/types';
 import { get, writable } from 'svelte/store';
 import type { CreateTabsProps, TabsTriggerProps } from './types';
-import { omit } from '../../internal/helpers/object';
 
 const defaults = {
 	orientation: 'horizontal',

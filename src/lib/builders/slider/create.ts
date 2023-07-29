@@ -9,6 +9,7 @@ import {
 	isHTMLElement,
 	kbd,
 	omit,
+	overridable,
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers';
@@ -16,7 +17,7 @@ import { derived, get, writable } from 'svelte/store';
 import type { CreateSliderProps } from './types';
 
 const defaults = {
-	value: [],
+	defaultValue: [],
 	min: 0,
 	max: 100,
 	step: 1,
@@ -32,7 +33,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const options = toWritableStores(omit(withDefaults, 'value'));
 	const { min, max, step, orientation, disabled } = options;
 
-	const value = writable(withDefaults.value);
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	const isActive = writable(false);
 	const currentThumbIndex = writable<number>(0);

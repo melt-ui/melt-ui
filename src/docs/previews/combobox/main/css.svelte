@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { createCombobox } from '@melt-ui/svelte';
-	import Check from '~icons/lucide/check';
-	import ChevronDown from '~icons/lucide/chevron-down';
-	import ChevronUp from '~icons/lucide/chevron-up';
+	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
 
 	interface Book {
 		author: string;

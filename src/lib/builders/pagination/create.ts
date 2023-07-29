@@ -6,6 +6,7 @@ import {
 	isHTMLElement,
 	kbd,
 	omit,
+	overridable,
 	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
@@ -16,7 +17,7 @@ import type { CreatePaginationProps, Page } from './types';
 const defaults = {
 	perPage: 1,
 	siblingCount: 1,
-	page: 1,
+	defaultPage: 1,
 } satisfies Defaults<CreatePaginationProps>;
 
 type PaginationParts = 'page' | 'prev' | 'next';
@@ -24,7 +25,8 @@ const { name, selector } = createElHelpers<PaginationParts>('pagination');
 
 export function createPagination(props: CreatePaginationProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreatePaginationProps;
-	const page = writable(withDefaults.page);
+	const pageWritable = withDefaults.page ?? writable(withDefaults.defaultPage);
+	const page = overridable(pageWritable, withDefaults?.onPageChange);
 
 	// options
 	const options = toWritableStores(omit(withDefaults, 'page'));

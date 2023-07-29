@@ -1,5 +1,7 @@
 import type { BuilderReturn, Orientation } from '$lib/internal/types';
+import type { Writable } from 'svelte/store';
 import type { createToolbar } from './create';
+import type { ChangeFn } from '@melt-ui/svelte/internal/helpers';
 
 export type ToolbarGroupType = 'single' | 'multiple';
 
@@ -9,7 +11,9 @@ export type CreateToolbarProps = {
 };
 
 export type CreateToolbarGroupProps<T extends ToolbarGroupType = 'single'> = {
-	value?: T extends 'single' ? string : string[];
+	defaultValue?: T extends 'single' ? string : string[];
+	value?: Writable<string | string[] | undefined>;
+	onValueChange?: ChangeFn<string | string[] | undefined>;
 	type?: T;
 	disabled?: boolean;
 };
