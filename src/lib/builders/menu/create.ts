@@ -144,6 +144,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 								open: rootOpen,
 								options: {
 									floating: $rootOptions.positioning,
+									portal: $rootOptions.portal,
 								},
 							});
 

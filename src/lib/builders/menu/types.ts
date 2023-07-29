@@ -1,4 +1,4 @@
-import type { FloatingConfig } from '$lib/internal/actions';
+import type { FloatingConfig, PortalConfig } from '$lib/internal/actions';
 import type { TextDirection } from '$lib/internal/types';
 import type { Writable } from 'svelte/store';
 import type { createMenuBuilder } from './create';
@@ -37,6 +37,13 @@ export type CreateMenuProps = {
 	 * @default false
 	 */
 	loop?: boolean;
+
+	/**
+	 * The container element that the menu would portal to.
+	 *
+	 * @default null
+	 */
+	portal?: PortalConfig | null;
 };
 
 export type CreateSubmenuProps = CreateMenuProps & {
