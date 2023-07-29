@@ -4,7 +4,7 @@ import type { Action, ActionReturn } from 'svelte/action';
 declare global {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace svelteHTML {
-		interface HTMLAttributes<T> extends T {
+		interface HTMLAttributes<T> extends HTMLAttributes<T> {
 			/**
 			 * A special attribute for Melt UI's preprocessor `@melt-ui/pp`.
 			 *
