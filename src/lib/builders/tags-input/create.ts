@@ -1,5 +1,4 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	effect,
@@ -13,12 +12,15 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
+	type MeltEventHandler,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import { focusInput, highlightText, setSelectedFromEl } from './helpers';
 import type { CreateTagsInputProps, Tag, TagProps } from './types';
 import { tick } from 'svelte';
+import type { ActionReturn } from 'svelte/action';
 
 const defaults = {
 	placeholder: '',
@@ -208,6 +210,10 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		return true;
 	};
 
+	type RootEvents = {
+		'on:m-mousedown'?: MeltEventHandler<MouseEvent>;
+	};
+
 	const root = builder(name(''), {
 		stores: disabled,
 		returned: ($disabled) => {
@@ -217,9 +223,9 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				disabled: $disabled,
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): ActionReturn<unknown, RootEvents> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'mousedown', (e) => {
+				addMeltEventListener(node, 'mousedown', (e) => {
 					// Focus on input when root is the target
 					const target = e.target;
 					if (!isHTMLElement(target)) return;
@@ -236,6 +242,14 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		},
 	});
 
+	type InputEvents = {
+		'on:m-focus'?: MeltEventHandler<FocusEvent>;
+		'on:m-blur'?: MeltEventHandler<FocusEvent>;
+		'on:m-paste'?: MeltEventHandler<ClipboardEvent>;
+		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
+		'on:m-input'?: MeltEventHandler<Event>;
+	};
+
 	const input = builder(name('input'), {
 		stores: [disabled, placeholder],
 		returned: ([$disabled, $placeholder]) => {
@@ -246,7 +260,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				placeholder: $placeholder,
 			};
 		},
-		action: (node: HTMLInputElement) => {
+		action: (node: HTMLInputElement): ActionReturn<unknown, InputEvents> => {
 			const getTagsInfo = (id: string) => {
 				const rootEl = getElementByMeltId(ids.root);
 
@@ -273,13 +287,13 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			};
 
 			const unsub = executeCallbacks(
-				addEventListener(node, 'focus', () => {
+				addMeltEventListener(node, 'focus', () => {
 					// Set data-focus on root and input
 					const rootEl = getElementByMeltId(ids.root);
 					if (rootEl) rootEl.setAttribute('data-focus', '');
 					node.setAttribute('data-focus', '');
 				}),
-				addEventListener(node, 'blur', async () => {
+				addMeltEventListener(node, 'blur', async () => {
 					// Clear data-focus from root and input
 					const rootEl = getElementByMeltId(ids.root);
 					if (rootEl) rootEl.removeAttribute('data-focus');
@@ -306,7 +320,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 						}
 					}
 				}),
-				addEventListener(node, 'paste', async (e) => {
+				addMeltEventListener(node, 'paste', async (e) => {
 					// Do nothing when there is nothing to paste
 					if (!e.clipboardData) return;
 					const pastedText = e.clipboardData.getData('text');
@@ -322,7 +336,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 						inputInvalid.set(true);
 					}
 				}),
-				addEventListener(node, 'keydown', async (e) => {
+				addMeltEventListener(node, 'keydown', async (e) => {
 					const $selected = get(selected);
 
 					if ($selected) {
@@ -440,7 +454,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 						}
 					}
 				}),
-				addEventListener(node, 'input', () => {
+				addMeltEventListener(node, 'input', () => {
 					inputValue.set(node.value);
 				})
 			);
@@ -450,6 +464,12 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			};
 		},
 	});
+
+	type TagEvents = {
+		'on:m-mousedown'?: MeltEventHandler<MouseEvent>;
+		'on:m-click'?: MeltEventHandler<MouseEvent>;
+		'on:m-dblclick'?: MeltEventHandler<MouseEvent>;
+	};
 
 	const tag = builder(name('tag'), {
 		stores: [selected, editing, disabled, editable],
@@ -483,7 +503,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				};
 			};
 		},
-		action: (node: HTMLDivElement) => {
+		action: (node: HTMLDivElement): ActionReturn<unknown, TagEvents> => {
 			const getElProps = () => {
 				const id = node.getAttribute('data-tag-id') ?? '';
 
@@ -493,7 +513,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			};
 
 			const unsub = executeCallbacks(
-				addEventListener(node, 'mousedown', (e) => {
+				addMeltEventListener(node, 'mousedown', (e) => {
 					// Do nothing when editing any tag
 					const $editing = get(editing);
 					if ($editing && $editing.id !== getElProps().id) return;
@@ -504,7 +524,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					setSelectedFromEl(node, selected);
 					editing.set(null);
 				}),
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
 					// Do nothing when editing any tag
 					const $editing = get(editing);
 					if ($editing && $editing.id === getElProps().id) return;
@@ -515,7 +535,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					setSelectedFromEl(node, selected);
 					editing.set(null);
 				}),
-				addEventListener(node, 'dblclick', async () => {
+				addMeltEventListener(node, 'dblclick', async () => {
 					if (!isBrowser) return;
 
 					// Do nothing when it is not editable
@@ -548,6 +568,10 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		},
 	});
 
+	type DeleteTriggerEvents = {
+		'on:m-click'?: MeltEventHandler<MouseEvent>;
+	};
+
 	const deleteTrigger = builder(name('delete-trigger'), {
 		stores: [selected, editing, disabled, editable],
 		returned: ([$selected, $editing, $disabled, $editable]) => {
@@ -569,9 +593,9 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				};
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): ActionReturn<unknown, DeleteTriggerEvents> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
 					// Do nothing when disabled
 					e.stopPropagation();
 					if (node.hasAttribute('data-disabled')) return;
@@ -590,6 +614,12 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			};
 		},
 	});
+
+	type EditEvents = {
+		'on:m-blur'?: MeltEventHandler<FocusEvent>;
+		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
+		'on:m-input'?: MeltEventHandler<Event>;
+	};
 
 	const edit = builder(name('edit'), {
 		stores: [editing, editable],
@@ -616,7 +646,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				};
 			};
 		},
-		action: (node: HTMLDivElement) => {
+		action: (node: HTMLDivElement): ActionReturn<unknown, EditEvents> => {
 			const getElProps = () => {
 				const id = node.getAttribute('data-tag-id') ?? '';
 				const value = node.getAttribute('data-tag-value') ?? '';
@@ -628,7 +658,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			};
 
 			const unsub = executeCallbacks(
-				addEventListener(node, 'blur', () => {
+				addMeltEventListener(node, 'blur', () => {
 					if (node.hasAttribute('hidden')) return;
 
 					// Stop editing, reset the value to the original and clear an invalid state
@@ -637,7 +667,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					getElementByMeltId(ids.root)?.removeAttribute('data-invalid-edit');
 					node.removeAttribute('data-invalid-edit');
 				}),
-				addEventListener(node, 'keydown', async (e) => {
+				addMeltEventListener(node, 'keydown', async (e) => {
 					if (node.hasAttribute('hidden')) return;
 
 					if (e.key === kbd.ENTER) {
@@ -668,7 +698,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 						focusInput(ids.input);
 					}
 				}),
-				addEventListener(node, 'input', () => {
+				addMeltEventListener(node, 'input', () => {
 					if (node.hasAttribute('hidden')) return;
 
 					// Update the edit value store

@@ -1,6 +1,5 @@
 import { derived, get, writable } from 'svelte/store';
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -8,9 +7,12 @@ import {
 	isTouch,
 	noop,
 	toWritableStores,
+	type MeltEventHandler,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
 import type { AddToastProps, CreateToasterProps, Toast } from './types';
 import { usePortal } from '$lib/internal/actions';
+import type { ActionReturn } from 'svelte/action';
 
 type ToastParts = 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<ToastParts>('toast');
@@ -85,6 +87,12 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 		return toast;
 	};
 
+	type ContentEvents = {
+		'on:m-pointerenter'?: MeltEventHandler<PointerEvent>;
+		'on:m-pointerleave'?: MeltEventHandler<PointerEvent>;
+		'on:m-focusout'?: MeltEventHandler<FocusEvent>;
+	};
+
 	const content = builder(name('content'), {
 		stores: toastsMap,
 		returned: ($toasts) => {
@@ -103,7 +111,7 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 				};
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): ActionReturn<unknown, ContentEvents> => {
 			let unsub = noop;
 
 			const unsubTimers = () => {
@@ -114,15 +122,15 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 			};
 
 			unsub = executeCallbacks(
-				addEventListener(node, 'pointerenter', (e) => {
+				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
 					handleOpen(node.id);
 				}),
-				addEventListener(node, 'pointerleave', (e) => {
+				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
 					get(handleClose)(node.id);
 				}),
-				addEventListener(node, 'focusout', (e) => {
+				addMeltEventListener(node, 'focusout', (e) => {
 					e.preventDefault();
 				})
 			);
@@ -163,6 +171,10 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 		},
 	});
 
+	type CloseEvents = {
+		'on:m-click'?: MeltEventHandler<MouseEvent>;
+	};
+
 	const close = builder(name('close'), {
 		returned: () => {
 			return (id: string) => ({
@@ -170,8 +182,8 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 				'data-id': id,
 			});
 		},
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', () => {
+		action: (node: HTMLElement): ActionReturn<unknown, CloseEvents> => {
+			const unsub = addMeltEventListener(node, 'click', () => {
 				if (!node.dataset.id) return;
 				closeToast(node.dataset.id);
 			});

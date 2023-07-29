@@ -1,6 +1,13 @@
-import { addEventListener, builder, omit, toWritableStores } from '$lib/internal/helpers';
+import {
+	builder,
+	omit,
+	toWritableStores,
+	type MeltEventHandler,
+	addMeltEventListener,
+} from '$lib/internal/helpers';
 import { get, writable } from 'svelte/store';
 import type { CreateToggleProps } from './types';
+import type { ActionReturn } from 'svelte/action';
 
 const defaults = {
 	pressed: false,
@@ -14,6 +21,10 @@ export function createToggle(props?: CreateToggleProps) {
 
 	const pressed = writable(withDefaults.pressed ?? false);
 
+	type RootEvents = {
+		'on:m-click'?: MeltEventHandler<MouseEvent>;
+	};
+
 	const root = builder('toggle', {
 		stores: [pressed, disabled],
 		returned: ([$pressed, $disabled]) => {
@@ -25,8 +36,8 @@ export function createToggle(props?: CreateToggleProps) {
 				type: 'button',
 			} as const;
 		},
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', () => {
+		action: (node: HTMLElement): ActionReturn<unknown, RootEvents> => {
+			const unsub = addMeltEventListener(node, 'click', () => {
 				const $disabled = get(disabled);
 				if ($disabled) return;
 				pressed.update((v) => !v);

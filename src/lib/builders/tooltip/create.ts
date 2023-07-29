@@ -17,12 +17,15 @@ import {
 	styleToString,
 	toWritableStores,
 	isTouch,
+	type MeltEventHandler,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
 
 import { useFloating, usePortal } from '$lib/internal/actions';
 import { onMount, tick } from 'svelte';
 import { get, writable } from 'svelte/store';
 import type { CreateTooltipProps } from './types';
+import type { ActionReturn } from 'svelte/action';
 
 const defaults = {
 	positioning: {
@@ -100,15 +103,24 @@ export function createTooltip(props?: CreateTooltipProps) {
 		}, get(closeDelay));
 	}
 
+	type TriggerEvents = {
+		'on:m-pointerdown'?: MeltEventHandler<PointerEvent>;
+		'on:m-pointerenter'?: MeltEventHandler<PointerEvent>;
+		'on:m-pointerleave'?: MeltEventHandler<PointerEvent>;
+		'on:m-focus'?: MeltEventHandler<FocusEvent>;
+		'on:m-blur'?: MeltEventHandler<FocusEvent>;
+		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
+	};
+
 	const trigger = builder(name('trigger'), {
 		returned: () => {
 			return {
 				'aria-describedby': ids.content,
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): ActionReturn<unknown, TriggerEvents> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', () => {
+				addMeltEventListener(node, 'pointerdown', () => {
 					const $closeOnPointerDown = get(closeOnPointerDown);
 					if (!$closeOnPointerDown) return;
 					open.set(false);
@@ -118,23 +130,23 @@ export function createTooltip(props?: CreateTooltipProps) {
 						timeout = null;
 					}
 				}),
-				addEventListener(node, 'pointerenter', (e) => {
+				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
 					openTooltip();
 				}),
-				addEventListener(node, 'pointerleave', (e) => {
+				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
 					if (timeout) {
 						window.clearTimeout(timeout);
 						timeout = null;
 					}
 				}),
-				addEventListener(node, 'focus', () => {
+				addMeltEventListener(node, 'focus', () => {
 					if (clickedTrigger) return;
 					openTooltip();
 				}),
-				addEventListener(node, 'blur', () => closeTooltip(true)),
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'blur', () => closeTooltip(true)),
+				addMeltEventListener(node, 'keydown', (e) => {
 					if (get(closeOnEscape) && e.key === kbd.ESCAPE) {
 						if (timeout) {
 							window.clearTimeout(timeout);
@@ -154,6 +166,11 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 	const isVisible = derivedVisible({ open, activeTrigger, forceVisible });
 
+	type ContentEvents = {
+		'on:m-pointerenter'?: MeltEventHandler<PointerEvent>;
+		'on:m-pointerdown'?: MeltEventHandler<PointerEvent>;
+	};
+
 	const content = builder(name('content'), {
 		stores: [isVisible, portal],
 		returned: ([$isVisible, $portal]) => {
@@ -168,7 +185,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				'data-portal': $portal ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): ActionReturn<unknown, ContentEvents> => {
 			const portalParent = getPortalParent(node);
 
 			let unsubFloating = noop;
@@ -198,8 +215,8 @@ export function createTooltip(props?: CreateTooltipProps) {
 			);
 
 			const unsubEvents = executeCallbacks(
-				addEventListener(node, 'pointerenter', openTooltip),
-				addEventListener(node, 'pointerdown', openTooltip)
+				addMeltEventListener(node, 'pointerenter', openTooltip),
+				addMeltEventListener(node, 'pointerdown', openTooltip)
 			);
 
 			return {

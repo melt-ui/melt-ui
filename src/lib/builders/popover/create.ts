@@ -1,5 +1,4 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	effect,
@@ -14,6 +13,8 @@ import {
 	isHTMLElement,
 	getPortalParent,
 	derivedVisible,
+	type MeltEventHandler,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
 
 import { usePopper } from '$lib/internal/actions';
@@ -21,6 +22,7 @@ import type { Defaults } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { writable } from 'svelte/store';
 import type { CreatePopoverProps } from './types';
+import type { ActionReturn } from 'svelte/action';
 
 const defaults = {
 	positioning: {
@@ -169,6 +171,10 @@ export function createPopover(args?: CreatePopoverProps) {
 		},
 	});
 
+	type TriggerEvents = {
+		'on:m-click': MeltEventHandler<MouseEvent>;
+	};
+
 	const trigger = builder(name('trigger'), {
 		stores: open,
 		returned: ($open) => {
@@ -181,8 +187,8 @@ export function createPopover(args?: CreatePopoverProps) {
 				id: ids.trigger,
 			} as const;
 		},
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', () => {
+		action: (node: HTMLElement): ActionReturn<unknown, TriggerEvents> => {
+			const unsub = addMeltEventListener(node, 'click', () => {
 				open.update((prev) => {
 					if (prev) {
 						return false;
@@ -210,13 +216,17 @@ export function createPopover(args?: CreatePopoverProps) {
 		}),
 	});
 
+	type CloseEvents = {
+		'on:m-click'?: MeltEventHandler<MouseEvent>;
+	};
+
 	const close = builder(name('close'), {
 		returned: () =>
 			({
 				type: 'button',
 			} as const),
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', () => {
+		action: (node: HTMLElement): ActionReturn<unknown, CloseEvents> => {
+			const unsub = addMeltEventListener(node, 'click', () => {
 				handleClose();
 			});
 

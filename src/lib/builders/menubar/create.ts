@@ -29,10 +29,13 @@ import {
 	addHighlight,
 	getPortalParent,
 	derivedVisible,
+	type MeltEventHandler,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions';
 import type { CreateMenubarMenuProps, CreateMenubarProps } from './types';
+import type { ActionReturn } from 'svelte/action';
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
 
@@ -40,13 +43,14 @@ const { name } = createElHelpers<MenuParts | 'menu'>('menubar');
 
 const defaults = {
 	loop: true,
+	closeOnEscape: true,
 } satisfies CreateMenubarProps;
 
 export function createMenubar(props?: CreateMenubarProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateMenubarProps;
 
 	const options = toWritableStores(withDefaults);
-	const { loop } = options;
+	const { loop, closeOnEscape } = options;
 	const activeMenu = writable<string>('');
 	const scopedMenus = writable<HTMLElement[]>([]);
 	const nextFocusable = writable<HTMLElement | null>(null);
@@ -54,6 +58,10 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 	const rootIds = {
 		menubar: generateId(),
+	};
+
+	type MenubarEvents = {
+		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
 	};
 
 	const menubar = builder(name(), {
@@ -65,9 +73,9 @@ export function createMenubar(props?: CreateMenubarProps) {
 				id: rootIds.menubar,
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): ActionReturn<unknown, MenubarEvents> => {
 			const menuTriggers = Array.from(node.querySelectorAll('[data-melt-menubar-trigger]'));
-			if (!menuTriggers.length || !isHTMLElement(menuTriggers[0])) return;
+			if (!menuTriggers.length || !isHTMLElement(menuTriggers[0])) return {};
 			menuTriggers[0].tabIndex = 0;
 
 			const menus = Array.from(node.querySelectorAll('[data-melt-menubar-menu]')).filter(
@@ -123,6 +131,10 @@ export function createMenubar(props?: CreateMenubarProps) {
 			activeTrigger: rootActiveTrigger,
 		});
 
+		type RootMenuEvents = {
+			'on:keydown'?: MeltEventHandler<KeyboardEvent>;
+		};
+
 		const menu = builder(name('menu'), {
 			stores: [isVisible, portal],
 			returned: ([$isVisible, $portal]) => {
@@ -140,7 +152,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 					tabindex: -1,
 				} as const;
 			},
-			action: (node: HTMLElement) => {
+			action: (node: HTMLElement): ActionReturn<unknown, RootMenuEvents> => {
 				/**
 				 * We need to get the parent portal before the menu is opened,
 				 * otherwise the parent will have been moved to the body, and
@@ -174,7 +186,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				);
 
 				const unsubEvents = executeCallbacks(
-					addEventListener(node, 'keydown', (e) => {
+					addMeltEventListener(node, 'keydown', (e) => {
 						const target = e.target;
 						const menuEl = e.currentTarget;
 
@@ -226,6 +238,12 @@ export function createMenubar(props?: CreateMenubarProps) {
 			},
 		});
 
+		type RootTriggerEvents = {
+			'on:m-click'?: MeltEventHandler<MouseEvent>;
+			'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
+			'on:m-pointerenter'?: MeltEventHandler<PointerEvent>;
+		};
+
 		const trigger = builder(name('trigger'), {
 			stores: [rootOpen],
 			returned: ([$rootOpen]) => {
@@ -239,16 +257,16 @@ export function createMenubar(props?: CreateMenubarProps) {
 					role: 'menuitem',
 				} as const;
 			},
-			action: (node: HTMLElement) => {
+			action: (node: HTMLElement): ActionReturn<unknown, RootTriggerEvents> => {
 				applyAttrsIfDisabled(node);
 
 				const menubarEl = document.getElementById(rootIds.menubar);
-				if (!menubarEl) return;
+				if (!menubarEl) return {};
 
 				const menubarTriggers = Array.from(
 					menubarEl.querySelectorAll('[data-melt-menubar-trigger]')
 				);
-				if (!menubarTriggers.length) return;
+				if (!menubarTriggers.length) return {};
 				if (menubarTriggers[0] === node) {
 					node.tabIndex = 0;
 				} else {
@@ -256,7 +274,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				}
 
 				const unsub = executeCallbacks(
-					addEventListener(node, 'click', (e) => {
+					addMeltEventListener(node, 'click', (e) => {
 						const $rootOpen = get(rootOpen);
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
@@ -264,7 +282,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 						handleOpen(triggerEl);
 						if (!$rootOpen) e.preventDefault();
 					}),
-					addEventListener(node, 'keydown', (e) => {
+					addMeltEventListener(node, 'keydown', (e) => {
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
 
@@ -284,7 +302,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 							handleRovingFocus(menuItems[0]);
 						}
 					}),
-					addEventListener(node, 'pointerenter', (e) => {
+					addMeltEventListener(node, 'pointerenter', (e) => {
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
 
@@ -396,7 +414,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		if (!menubarEl) return;
 
 		const unsubEvents = executeCallbacks(
-			addEventListener(menubarEl, 'keydown', (e) => {
+			addMeltEventListener(menubarEl, 'keydown', (e) => {
 				const target = e.target;
 				const menuEl = e.currentTarget;
 				if (!isHTMLElement(menuEl) || !isHTMLElement(target)) return;
@@ -412,7 +430,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				}
 			}),
 			addEventListener(document, 'keydown', (e) => {
-				if (e.key === kbd.ESCAPE) {
+				if (get(closeOnEscape) && e.key === kbd.ESCAPE) {
 					activeMenu.set('');
 				}
 			})

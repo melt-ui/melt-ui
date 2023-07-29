@@ -49,7 +49,7 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 				'aria-required': $required,
 			} as const;
 		},
-		action(node: HTMLElement): ActionReturn<unknown, RootEvents> {
+		action: (node: HTMLElement): ActionReturn<unknown, RootEvents> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'keydown', (e) => {
 					// According to WAI ARIA, Checkboxes don't activate on enter keypress

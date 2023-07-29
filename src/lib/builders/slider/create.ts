@@ -12,9 +12,13 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
+	type MeltEventHandler,
+	addMeltEventListener,
+	executeCallbacks,
 } from '$lib/internal/helpers';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateSliderProps } from './types';
+import type { ActionReturn } from 'svelte/action';
 
 const defaults = {
 	defaultValue: [],
@@ -112,6 +116,10 @@ export const createSlider = (props?: CreateSliderProps) => {
 		);
 	};
 
+	type ThumbEvents = {
+		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
+	};
+
 	const thumb = builder(name('thumb'), {
 		stores: [value, position, min, max, disabled, orientation],
 		returned: ([$value, $position, $min, $max, $disabled, $orientation]) => {
@@ -144,8 +152,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 				} as const;
 			};
 		},
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'keydown', (event) => {
+		action: (node: HTMLElement): ActionReturn<unknown, ThumbEvents> => {
+			const unsub = addMeltEventListener(node, 'keydown', (event) => {
 				const $min = get(min);
 				const $max = get(max);
 				if (get(disabled)) return;
@@ -329,16 +337,15 @@ export const createSlider = (props?: CreateSliderProps) => {
 				}
 			};
 
-			document.addEventListener('pointerdown', pointerDown);
-			document.addEventListener('pointerup', pointerUp);
-			document.addEventListener('pointerleave', pointerUp);
-			document.addEventListener('pointermove', pointerMove);
+			const unsub = executeCallbacks(
+				addEventListener(document, 'pointerdown', pointerDown),
+				addEventListener(document, 'pointerup', pointerUp),
+				addEventListener(document, 'pointerleave', pointerUp),
+				addEventListener(document, 'pointermove', pointerMove)
+			);
 
 			return () => {
-				document.removeEventListener('pointerdown', pointerDown);
-				document.removeEventListener('pointerup', pointerUp);
-				document.removeEventListener('pointerleave', pointerUp);
-				document.removeEventListener('pointermove', pointerMove);
+				unsub();
 			};
 		}
 	);

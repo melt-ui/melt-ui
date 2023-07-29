@@ -1,5 +1,4 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -11,10 +10,13 @@ import {
 	toWritableStores,
 	getElemDirection,
 	overridable,
+	type MeltEventHandler,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateToggleGroupProps, ToggleGroupItemProps, ToggleGroupType } from './types';
+import type { ActionReturn } from 'svelte/action';
 
 const defaults = {
 	type: 'single',
@@ -55,6 +57,11 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 		},
 	});
 
+	type ItemEvents = {
+		'on:m-click'?: MeltEventHandler<MouseEvent>;
+		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
+	};
+
 	const item = builder(name('item'), {
 		stores: [value, disabled, orientation, type],
 		returned: ([$value, $disabled, $orientation, $type]) => {
@@ -77,7 +84,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 				} as const;
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): ActionReturn<unknown, ItemEvents> => {
 			let unsub = noop;
 
 			const getNodeProps = () => {
@@ -88,7 +95,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 			};
 
 			const parentGroup = node.closest(selector());
-			if (!isHTMLElement(parentGroup)) return;
+			if (!isHTMLElement(parentGroup)) return {};
 
 			const items = Array.from(parentGroup.querySelectorAll(selector('item')));
 			const $value = get(value);
@@ -99,7 +106,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 			}
 
 			unsub = executeCallbacks(
-				addEventListener(node, 'click', () => {
+				addMeltEventListener(node, 'click', () => {
 					const { value: itemValue, disabled } = getNodeProps();
 					if (itemValue === undefined || disabled) return;
 
@@ -115,7 +122,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 					});
 				}),
 
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					if (!get(rovingFocus)) return;
 
 					const el = e.currentTarget;

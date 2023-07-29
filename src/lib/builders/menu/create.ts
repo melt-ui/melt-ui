@@ -661,7 +661,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 		type SubmenuEvents = {
 			'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
-			'on:pointermove'?: MeltEventHandler<PointerEvent>;
+			'on:m-pointermove'?: MeltEventHandler<PointerEvent>;
 			'on:m-focusout'?: MeltEventHandler<FocusEvent>;
 		};
 
@@ -1161,13 +1161,18 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	});
 
 	onMount(() => {
+		const unsubs: Array<() => void> = [];
+
 		const handlePointer = () => isUsingKeyboard.set(false);
 		const handleKeyDown = () => {
 			isUsingKeyboard.set(true);
-			document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
-			document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
+			unsubs.push(
+				executeCallbacks(
+					addEventListener(document, 'pointerdown', handlePointer, { capture: true, once: true }),
+					addEventListener(document, 'pointermove', handlePointer, { capture: true, once: true })
+				)
+			);
 		};
-		document.addEventListener('keydown', handleKeyDown, { capture: true });
 
 		const keydownListener = (e: KeyboardEvent) => {
 			if (e.key === kbd.ESCAPE) {
@@ -1175,13 +1180,11 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				return;
 			}
 		};
-		document.addEventListener('keydown', keydownListener);
+		unsubs.push(addEventListener(document, 'keydown', handleKeyDown, { capture: true }));
+		unsubs.push(addEventListener(document, 'keydown', keydownListener));
 
 		return () => {
-			document.removeEventListener('keydown', handleKeyDown, { capture: true });
-			document.removeEventListener('pointerdown', handlePointer, { capture: true });
-			document.removeEventListener('pointermove', handlePointer, { capture: true });
-			document.removeEventListener('keydown', keydownListener);
+			unsubs.forEach((unsub) => unsub());
 		};
 	});
 

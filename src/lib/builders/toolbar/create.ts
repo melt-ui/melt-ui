@@ -1,5 +1,4 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -8,6 +7,8 @@ import {
 	kbd,
 	overridable,
 	toWritableStores,
+	type MeltEventHandler,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
@@ -17,6 +18,7 @@ import type {
 	ToolbarGroupItemProps,
 	ToolbarGroupType,
 } from './types';
+import type { ActionReturn } from 'svelte/action';
 
 const defaults = {
 	loop: true,
@@ -41,6 +43,9 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 		},
 	});
 
+	type ButtonEvents = {
+		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
+	};
 	const button = builder(name('button'), {
 		returned: () =>
 			({
@@ -48,14 +53,18 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 				type: 'button',
 				tabIndex: -1,
 			} as const),
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'keydown', handleKeyDown);
+		action: (node: HTMLElement): ActionReturn<unknown, ButtonEvents> => {
+			const unsub = addMeltEventListener(node, 'keydown', handleKeyDown);
 
 			return {
 				destroy: unsub,
 			};
 		},
 	});
+
+	type LinkEvents = {
+		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
+	};
 
 	const link = builder(name('link'), {
 		returned: () =>
@@ -64,8 +73,8 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 				'data-melt-toolbar-item': '',
 				tabIndex: -1,
 			} as const),
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'keydown', handleKeyDown);
+		action: (node: HTMLElement): ActionReturn<unknown, LinkEvents> => {
+			const unsub = addMeltEventListener(node, 'keydown', handleKeyDown);
 
 			return {
 				destroy: unsub,
@@ -119,6 +128,11 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 			},
 		});
 
+		type ItemEvents = {
+			'on:m-click'?: MeltEventHandler<MouseEvent>;
+			'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
+		};
+
 		const item = builder(name('item'), {
 			stores: [disabled, type, value, orientation],
 			returned: ([$disabled, $type, $value, $orientation]) => {
@@ -142,7 +156,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 					} as const;
 				};
 			},
-			action: (node: HTMLElement) => {
+			action: (node: HTMLElement): ActionReturn<unknown, ItemEvents> => {
 				const getNodeProps = () => {
 					const itemValue = node.dataset.value;
 					const disabled = node.dataset.disabled === 'true';
@@ -151,7 +165,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 				};
 
 				const parentToolbar = node.closest('[data-melt-toolbar]');
-				if (!isHTMLElement(parentToolbar)) return;
+				if (!isHTMLElement(parentToolbar)) return {};
 
 				const items = getToolbarItems(parentToolbar);
 
@@ -162,7 +176,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 				}
 
 				const unsub = executeCallbacks(
-					addEventListener(node, 'click', () => {
+					addMeltEventListener(node, 'click', () => {
 						const { value: itemValue, disabled } = getNodeProps();
 						if (itemValue === undefined || disabled) return;
 
@@ -178,7 +192,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 						});
 					}),
 
-					addEventListener(node, 'keydown', handleKeyDown)
+					addMeltEventListener(node, 'keydown', handleKeyDown)
 				);
 
 				return {
