@@ -2,9 +2,13 @@ import {
 	addEventListener,
 	builder,
 	createElHelpers,
+	derivedVisible,
 	effect,
 	executeCallbacks,
 	generateId,
+	getPortalParent,
+	isBrowser,
+	kbd,
 	makeHullFromElements,
 	noop,
 	omit,
@@ -12,12 +16,12 @@ import {
 	pointInPolygon,
 	styleToString,
 	toWritableStores,
+	isTouch,
 } from '$lib/internal/helpers';
 
 import { useFloating, usePortal } from '$lib/internal/actions';
-import type { Defaults } from '$lib/internal/types';
-import { tick } from 'svelte';
-import { derived, get, writable } from 'svelte/store';
+import { onMount, tick } from 'svelte';
+import { get, writable } from 'svelte/store';
 import type { CreateTooltipProps } from './types';
 
 const defaults = {
@@ -30,7 +34,9 @@ const defaults = {
 	openDelay: 1000,
 	closeDelay: 0,
 	forceVisible: false,
-} satisfies Defaults<CreateTooltipProps>;
+	portal: 'body',
+	closeOnEscape: true,
+} satisfies CreateTooltipProps;
 
 type TooltipParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<TooltipParts>('tooltip');
@@ -39,11 +45,21 @@ export function createTooltip(props?: CreateTooltipProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateTooltipProps;
 
 	const options = toWritableStores(omit(withDefaults, 'open'));
-	const { positioning, arrowSize, closeOnPointerDown, openDelay, closeDelay, forceVisible } =
-		options;
+	const {
+		positioning,
+		arrowSize,
+		closeOnPointerDown,
+		openDelay,
+		closeDelay,
+		forceVisible,
+		portal,
+		closeOnEscape,
+	} = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
+
+	const activeTrigger = writable<HTMLElement | null>(null);
 
 	const ids = {
 		content: generateId(),
@@ -54,7 +70,12 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 	let clickedTrigger = false;
 
-	const openTooltip = () => {
+	onMount(() => {
+		if (!isBrowser) return;
+		activeTrigger.set(document.querySelector(`[aria-describedby="${ids.content}"]`));
+	});
+
+	function openTooltip() {
 		if (timeout) {
 			window.clearTimeout(timeout);
 			timeout = null;
@@ -63,9 +84,9 @@ export function createTooltip(props?: CreateTooltipProps) {
 		timeout = window.setTimeout(() => {
 			open.set(true);
 		}, get(openDelay));
-	};
+	}
 
-	const closeTooltip = (isBlur?: boolean) => {
+	function closeTooltip(isBlur?: boolean) {
 		if (timeout) {
 			window.clearTimeout(timeout);
 			timeout = null;
@@ -77,13 +98,12 @@ export function createTooltip(props?: CreateTooltipProps) {
 			open.set(false);
 			if (isBlur) clickedTrigger = false;
 		}, get(closeDelay));
-	};
+	}
 
 	const trigger = builder(name('trigger'), {
 		returned: () => {
 			return {
 				'aria-describedby': ids.content,
-				id: ids.trigger,
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -99,11 +119,11 @@ export function createTooltip(props?: CreateTooltipProps) {
 					}
 				}),
 				addEventListener(node, 'pointerenter', (e) => {
-					if (e.pointerType === 'touch') return;
+					if (isTouch(e)) return;
 					openTooltip();
 				}),
 				addEventListener(node, 'pointerleave', (e) => {
-					if (e.pointerType === 'touch') return;
+					if (isTouch(e)) return;
 					if (timeout) {
 						window.clearTimeout(timeout);
 						timeout = null;
@@ -115,7 +135,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				}),
 				addEventListener(node, 'blur', () => closeTooltip(true)),
 				addEventListener(node, 'keydown', (e) => {
-					if (e.key === 'Escape') {
+					if (get(closeOnEscape) && e.key === kbd.ESCAPE) {
 						if (timeout) {
 							window.clearTimeout(timeout);
 							timeout = null;
@@ -132,14 +152,11 @@ export function createTooltip(props?: CreateTooltipProps) {
 		},
 	});
 
-	const isVisible = derived(
-		[open, forceVisible],
-		([$open, $forceVisible]) => $open || $forceVisible
-	);
+	const isVisible = derivedVisible({ open, activeTrigger, forceVisible });
 
 	const content = builder(name('content'), {
-		stores: isVisible,
-		returned: ($isVisible) => {
+		stores: [isVisible, portal],
+		returned: ([$isVisible, $portal]) => {
 			return {
 				role: 'tooltip',
 				hidden: $isVisible ? undefined : true,
@@ -148,38 +165,49 @@ export function createTooltip(props?: CreateTooltipProps) {
 					display: $isVisible ? undefined : 'none',
 				}),
 				id: ids.content,
+				'data-portal': $portal ? '' : undefined,
 			};
 		},
 		action: (node: HTMLElement) => {
-			let unsub = noop;
-
-			const portalReturn = usePortal(node);
+			const portalParent = getPortalParent(node);
 
 			let unsubFloating = noop;
-			const unsubOpen = open.subscribe(($open) => {
-				if ($open) {
-					tick().then(() => {
-						const triggerEl = document.querySelector(`[aria-describedby="${ids.content}"]`);
-						if (!triggerEl || node.hidden) return;
-						const floatingReturn = useFloating(triggerEl, node, get(positioning));
-						unsubFloating = floatingReturn.destroy;
-					});
-				} else {
-					unsubFloating();
-				}
-			});
+			let unsubPortal = noop;
 
-			unsub = executeCallbacks(
+			const unsubDerived = effect(
+				[isVisible, activeTrigger, positioning, portal],
+				([$isVisible, $activeTrigger, $positioning, $portal]) => {
+					if (!$isVisible || !$activeTrigger) {
+						unsubPortal();
+						unsubFloating();
+						return;
+					}
+					tick().then(() => {
+						const floatingReturn = useFloating($activeTrigger, node, $positioning);
+						unsubFloating = floatingReturn.destroy;
+						if (!$portal) {
+							unsubPortal();
+							return;
+						}
+						const portalReturn = usePortal(node, portalParent === $portal ? portalParent : $portal);
+						if (portalReturn && portalReturn.destroy) {
+							unsubPortal = portalReturn.destroy;
+						}
+					});
+				}
+			);
+
+			const unsubEvents = executeCallbacks(
 				addEventListener(node, 'pointerenter', openTooltip),
-				addEventListener(node, 'pointerdown', openTooltip),
-				portalReturn && portalReturn.destroy ? portalReturn.destroy : noop,
-				unsubOpen
+				addEventListener(node, 'pointerdown', openTooltip)
 			);
 
 			return {
 				destroy() {
-					unsub();
+					unsubEvents();
+					unsubPortal();
 					unsubFloating();
+					unsubDerived();
 				},
 			};
 		},
@@ -199,34 +227,33 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 	let isMouseInTooltipArea = false;
 
-	effect(open, ($open) => {
-		if ($open) {
-			return executeCallbacks(
-				addEventListener(document, 'mousemove', (e) => {
-					const triggerEl = document.getElementById(ids.trigger);
-					if (!triggerEl) return;
+	effect([isVisible, activeTrigger], ([$isVisible, $activeTrigger]) => {
+		if (!$isVisible || !$activeTrigger) return;
+		return executeCallbacks(
+			addEventListener(document, 'mousemove', (e) => {
+				const contentEl = document.getElementById(ids.content);
+				if (!contentEl) return;
 
-					const contentEl = document.getElementById(ids.content);
-					if (!contentEl) return;
+				const polygon = makeHullFromElements([$activeTrigger, contentEl]);
 
-					const polygon = makeHullFromElements([triggerEl, contentEl]);
+				isMouseInTooltipArea = pointInPolygon(
+					{
+						x: e.clientX,
+						y: e.clientY,
+					},
+					polygon
+				);
 
-					isMouseInTooltipArea = pointInPolygon(
-						{
-							x: e.clientX,
-							y: e.clientY,
-						},
-						polygon
-					);
-
-					if (isMouseInTooltipArea || (document.activeElement === triggerEl && !clickedTrigger)) {
-						openTooltip();
-					} else {
-						closeTooltip();
-					}
-				})
-			);
-		}
+				if (
+					isMouseInTooltipArea ||
+					(document.activeElement === $activeTrigger && !clickedTrigger)
+				) {
+					openTooltip();
+				} else {
+					closeTooltip();
+				}
+			})
+		);
 	});
 
 	return {

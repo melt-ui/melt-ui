@@ -209,7 +209,8 @@ export function createDialog(props?: CreateDialogProps) {
 			});
 
 			const unsubPortal = effect([portal], ([$portal]) => {
-				const portalAction = usePortal(node, portalParent);
+				if (!$portal) return noop;
+				const portalAction = usePortal(node, portalParent === $portal ? portalParent : $portal);
 				if (portalAction && portalAction.destroy) {
 					return portalAction.destroy;
 				} else {

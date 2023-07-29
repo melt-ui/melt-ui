@@ -13,6 +13,7 @@ import {
 	isHTMLElement,
 	omit,
 	getElemDirection,
+	overridable,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 import { get, writable } from 'svelte/store';
@@ -23,7 +24,6 @@ const defaults = {
 	activateOnFocus: true,
 	loop: true,
 	autoSet: true,
-	onChange: undefined,
 } satisfies Defaults<CreateTabsProps>;
 
 type TabsParts = 'list' | 'trigger' | 'content';
@@ -32,15 +32,13 @@ const { name, selector } = createElHelpers<TabsParts>('tabs');
 export function createTabs(props?: CreateTabsProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateTabsProps;
 
-	const options = toWritableStores(omit(withDefaults, 'value'));
-	const { orientation, activateOnFocus, loop, autoSet, onChange } = options;
+	const options = toWritableStores(omit(withDefaults, 'defaultValue', 'value', 'onValueChange'));
+	const { orientation, activateOnFocus, loop, autoSet } = options;
 
-	const value = writable(withDefaults.value);
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
-	let ssrValue = withDefaults.value;
-	value.subscribe((value) => {
-		get(onChange)?.(value);
-	});
+	let ssrValue = withDefaults.defaultValue;
 
 	// Root
 	const root = builder(name(), {

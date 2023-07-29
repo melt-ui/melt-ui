@@ -459,7 +459,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 												},
 										  }
 										: null,
-									portal: $portal ? (portalParent !== document.body ? null : undefined) : null,
+									portal: $portal ? (portalParent === $portal ? portalParent : $portal) : null,
 								},
 							});
 							if (popper && popper.destroy) {

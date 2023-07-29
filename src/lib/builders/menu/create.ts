@@ -140,8 +140,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	});
 
 	const rootMenu = builder(name(), {
-		stores: [isVisible],
-		returned: ([$isVisible]) => {
+		stores: [isVisible, portal],
+		returned: ([$isVisible, $portal]) => {
 			return {
 				role: 'menu',
 				hidden: $isVisible ? undefined : true,
@@ -151,6 +151,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				id: rootIds.menu,
 				'aria-labelledby': rootIds.trigger,
 				'data-state': $isVisible ? 'open' : 'closed',
+				'data-portal': $portal ? '' : undefined,
 				tabindex: -1,
 			} as const;
 		},
@@ -178,7 +179,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							options: {
 								floating: $positioning,
 								clickOutside: $closeOnOutsideClick ? undefined : null,
-								portal: $portal ? (portalParent === document.body ? null : portalParent) : null,
+								portal: $portal ? (portalParent === $portal ? portalParent : $portal) : null,
 								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
 						});

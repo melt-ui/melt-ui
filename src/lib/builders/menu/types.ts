@@ -72,6 +72,8 @@ export type CreateMenuProps = {
 	/**
 	 * A controlled open state store for the menu. If provided, the
 	 * value of this store will override the `defaultOpen` prop.
+	 *
+	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
 	open?: Writable<boolean>;
 

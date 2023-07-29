@@ -32,7 +32,7 @@ available.
 
 </Callout>
 
-## Bring Your Own Store (BYOS)
+## Bring Your Own Store
 
 By default, we provide an `open` store from the `Dialog` builder that will have its state updated
 whenever a `trigger` or `close` element is pressed.
