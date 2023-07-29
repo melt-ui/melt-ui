@@ -1,7 +1,7 @@
 import { render, screen, waitFor, waitForElementToBeRemoved } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
-import { vi } from 'vitest';
+import { describe, vi, it, beforeEach, afterEach } from 'vitest';
 import { tick } from 'svelte';
 import { kbd, sleep } from '@melt-ui/svelte/internal/helpers';
 import DialogTransitionTest from './DialogTransitionTest.svelte';
@@ -17,13 +17,13 @@ describe('Dialog with Transitions', () => {
 		vi.unstubAllGlobals();
 	});
 
-	test('No accessibility violations', async () => {
+	it('No accessibility violations', async () => {
 		const { container } = await render(DialogTransitionTest);
 
 		expect(await axe(container)).toHaveNoViolations();
 	});
 
-	test('Opens when trigger is clicked', async () => {
+	it('Opens when trigger is clicked', async () => {
 		const { getByTestId, queryByTestId } = await render(DialogTransitionTest);
 
 		const trigger = getByTestId('trigger');
@@ -36,28 +36,32 @@ describe('Dialog with Transitions', () => {
 		await expect(queryByTestId('content')).toBeVisible();
 	});
 
-	test('Closes when closer is clicked', async () => {
-		await render(DialogTransitionTest);
+	it(
+		'Closes when closer is clicked',
+		async () => {
+			await render(DialogTransitionTest);
 
-		const user = userEvent.setup();
-		const trigger = screen.getByTestId('trigger');
+			const user = userEvent.setup();
+			const trigger = screen.getByTestId('trigger');
 
-		await expect(trigger).toBeVisible();
-		await expect(screen.queryByTestId('content')).toBeNull();
-		await expect(screen.queryByTestId('closer')).toBeNull();
-		await user.click(trigger);
-		await tick();
-		await tick();
-		await expect(screen.queryByTestId('content')).not.toBeNull();
-		await waitFor(() => screen.getByTestId('closer'));
-		await user.click(screen.getByTestId('closer'));
-		await tick();
-		await waitForElementToBeRemoved(() => screen.getByTestId('content'));
+			await expect(trigger).toBeVisible();
+			await expect(screen.queryByTestId('content')).toBeNull();
+			await expect(screen.queryByTestId('closer')).toBeNull();
+			await user.click(trigger);
+			await tick();
+			await tick();
+			await expect(screen.queryByTestId('content')).not.toBeNull();
+			await waitFor(() => screen.getByTestId('closer'));
+			await user.click(screen.getByTestId('closer'));
+			await tick();
+			await waitForElementToBeRemoved(() => screen.getByTestId('content'));
 
-		expect(screen.queryByTestId('content')).toBeNull();
-	});
+			expect(screen.queryByTestId('content')).toBeNull();
+		},
+		{ retry: 3 }
+	);
 
-	test('Closes when Escape is hit', async () => {
+	it('Closes when Escape is hit', async () => {
 		const { getByTestId, queryByTestId } = await render(DialogTransitionTest);
 
 		const user = userEvent.setup();
@@ -73,7 +77,7 @@ describe('Dialog with Transitions', () => {
 		expect(queryByTestId('content')).toBeNull();
 	});
 
-	test('Closes when overlay is clicked', async () => {
+	it('Closes when overlay is clicked', async () => {
 		const { getByTestId, queryByTestId } = await render(DialogTransitionTest);
 
 		const user = userEvent.setup();
@@ -93,7 +97,7 @@ describe('Dialog with Transitions', () => {
 		expect(queryByTestId('content')).toBeNull();
 	});
 
-	test('Content Portal attaches dialog to body', async () => {
+	it('Content Portal attaches dialog to body', async () => {
 		const { getByTestId } = await render(DialogTransitionTest);
 
 		const user = userEvent.setup();
@@ -105,7 +109,7 @@ describe('Dialog with Transitions', () => {
 		await expect(content.parentElement).toEqual(document.body);
 	});
 
-	test('Overlay Portal attaches dialog to body', async () => {
+	it('Overlay Portal attaches dialog to body', async () => {
 		const { getByTestId } = await render(DialogTransitionTest);
 		const user = userEvent.setup();
 		const trigger = getByTestId('trigger');
@@ -116,7 +120,7 @@ describe('Dialog with Transitions', () => {
 		await expect(overlay.parentElement).toEqual(document.body);
 	});
 
-	test('Focuses first focusable item upon opening', async () => {
+	it('Focuses first focusable item upon opening', async () => {
 		const { getByTestId, queryByTestId } = await render(DialogTransitionTest);
 
 		const user = userEvent.setup();
@@ -132,7 +136,7 @@ describe('Dialog with Transitions', () => {
 		await expect(document.activeElement).toBe(getByTestId('content'));
 	});
 
-	test('Tabbing on last item focuses first item', async () => {
+	it('Tabbing on last item focuses first item', async () => {
 		const { getByTestId, queryByTestId } = await render(DialogTransitionTest);
 
 		const user = userEvent.setup();

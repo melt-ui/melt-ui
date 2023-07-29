@@ -1,21 +1,19 @@
-import '@testing-library/jest-dom';
-
 import { render } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
-import { describe } from 'vitest';
+import { describe, it } from 'vitest';
 import DialogTest from './DialogTest.svelte';
 import userEvent from '@testing-library/user-event';
 import { sleep } from '$lib/internal/helpers';
 import { kbd } from '$lib/internal/helpers';
 
 describe('Dialog', () => {
-	test('No accessibility violations', async () => {
+	it('No accessibility violations', async () => {
 		const { container } = await render(DialogTest);
 
 		expect(await axe(container)).toHaveNoViolations();
 	});
 
-	test('Opens when trigger is clicked', async () => {
+	it('Opens when trigger is clicked', async () => {
 		const { getByTestId } = await render(DialogTest);
 
 		const trigger = getByTestId('trigger');
@@ -26,7 +24,7 @@ describe('Dialog', () => {
 		await expect(content).toBeVisible();
 	});
 
-	test('Closes when closer is clicked', async () => {
+	it('Closes when closer is clicked', async () => {
 		const { getByTestId } = await render(DialogTest);
 
 		const user = userEvent.setup();
@@ -42,7 +40,7 @@ describe('Dialog', () => {
 		await expect(content).not.toBeVisible();
 	});
 
-	test('Closes when Escape is hit', async () => {
+	it('Closes when Escape is hit', async () => {
 		const { getByTestId } = await render(DialogTest);
 
 		const user = userEvent.setup();
@@ -57,7 +55,7 @@ describe('Dialog', () => {
 		await expect(content).not.toBeVisible();
 	});
 
-	test('Closes when overlay is clicked', async () => {
+	it('Closes when overlay is clicked', async () => {
 		const { getByTestId } = await render(DialogTest);
 
 		const user = userEvent.setup();
@@ -75,7 +73,7 @@ describe('Dialog', () => {
 		await expect(content).not.toBeVisible();
 	});
 
-	test('Content Portal attaches dialog to body', async () => {
+	it('Content Portal attaches dialog to body', async () => {
 		const { getByTestId } = await render(DialogTest);
 
 		const user = userEvent.setup();
@@ -87,7 +85,7 @@ describe('Dialog', () => {
 		await expect(content.parentElement).toEqual(document.body);
 	});
 
-	test('Overlay Portal attaches dialog to body', async () => {
+	it('Overlay Portal attaches dialog to body', async () => {
 		const { getByTestId } = await render(DialogTest);
 		const user = userEvent.setup();
 		const trigger = getByTestId('trigger');
@@ -98,7 +96,7 @@ describe('Dialog', () => {
 		await expect(overlay.parentElement).toEqual(document.body);
 	});
 
-	test('Focuses first focusable item upon opening', async () => {
+	it('Focuses first focusable item upon opening', async () => {
 		const { getByTestId } = await render(DialogTest);
 
 		const user = userEvent.setup();
@@ -114,7 +112,7 @@ describe('Dialog', () => {
 		await expect(document.activeElement).toBe(content);
 	});
 
-	test('Tabbing on last item focuses first item', async () => {
+	it('Tabbing on last item focuses first item', async () => {
 		const { getByTestId } = await render(DialogTest);
 
 		const user = userEvent.setup();
