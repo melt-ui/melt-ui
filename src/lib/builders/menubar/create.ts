@@ -131,6 +131,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 									open: rootOpen,
 									options: {
 										floating: $rootOptions.positioning,
+										portal: $rootOptions.portal,
 									},
 								});
 
