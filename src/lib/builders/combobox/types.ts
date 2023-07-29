@@ -1,4 +1,5 @@
 import type { createCombobox } from './create';
+import type { PortalConfig } from '@melt-ui/svelte/internal/actions';
 
 export type CreateComboboxProps<T> = {
 	/** The list of items to display in the combobox. */
@@ -19,6 +20,13 @@ export type CreateComboboxProps<T> = {
 	filterFunction: (item: T, value: string) => boolean;
 	itemToString: (item: T) => string;
 	loop?: boolean;
+
+	/**
+	 * The container element that the combobox would portal to.
+	 *
+	 * @default null
+	 */
+	portal?: PortalConfig | null;
 };
 
 export type ComboboxItemProps<T> = {

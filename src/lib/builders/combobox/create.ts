@@ -321,6 +321,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		action: (node: HTMLElement) => {
 			let unsubPopper = noop;
 			let unsubScroll = noop;
+			const $options = get(options);
 			const unsubscribe = executeCallbacks(
 				//  Bind the popper portal to the input element.
 				effect([open, activeTrigger], ([$open, $activeTrigger]) => {
@@ -335,6 +336,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 								options: {
 									floating: { placement: 'bottom', sameWidth: true },
 									focusTrap: null,
+									portal: $options.portal,
 									clickOutside: {
 										handler: (e) => {
 											const target = e.target;
