@@ -4,7 +4,10 @@ import type { Writable } from 'svelte/store';
 import type { createSelect } from './create';
 import type { ChangeFn } from '$lib/internal/helpers';
 
-export type CreateSelectProps = {
+export type CreateSelectProps<
+	Item extends Type extends 'multiple' ? Array<unknown> : unknown = any,
+	Type extends 'single' | 'multiple' = 'single'
+> = {
 	/**
 	 * Options for positioning the popover menu.
 	 *
@@ -31,27 +34,6 @@ export type CreateSelectProps = {
 	 * @default false
 	 */
 	disabled?: boolean;
-
-	/**
-	 * The default value set on the select input.
-	 *
-	 * This will be overridden if you also pass a `value` store prop.
-	 *
-	 * @default undefined
-	 */
-	defaultValue?: unknown;
-
-	/**
-	 * An optional controlled store that manages the value state of the combobox.
-	 */
-	value?: Writable<unknown>;
-
-	/**
-	 * A change handler for the value store called when the value would normally change.
-	 *
-	 * @see https://melt-ui.com/docs/controlled#change-functions
-	 */
-	onValueChange?: ChangeFn<unknown>;
 
 	/**
 	 * An optional controlled store that manages the open state of the select menu.
@@ -131,10 +113,33 @@ export type CreateSelectProps = {
 	 * @default false
 	 */
 	forceVisible?: boolean;
+
+	/**
+	 * The default value set on the select input.
+	 *
+	 * This will be overridden if you also pass a `value` store prop.
+	 *
+	 * @default undefined
+	 */
+	defaultValue?: Item;
+
+	/**
+	 * An optional controlled store that manages the value state of the combobox.
+	 */
+	value?: Writable<Item>;
+
+	/**
+	 * A change handler for the value store called when the value would normally change.
+	 *
+	 * @see https://melt-ui.com/docs/controlled#change-functions
+	 */
+	onValueChange?: ChangeFn<Item>;
+
+	type?: Type;
 };
 
-export type SelectOptionProps = {
-	value: unknown;
+export type SelectOptionProps<Item = unknown> = {
+	value: Item;
 	label?: string;
 	disabled?: boolean;
 };

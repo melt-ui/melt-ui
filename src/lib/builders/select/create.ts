@@ -34,6 +34,7 @@ import {
 	getOptions,
 	sleep,
 	derivedVisible,
+	toggle,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
@@ -58,7 +59,7 @@ const defaults = {
 	portal: 'body',
 	closeOnEscape: true,
 	closeOnOutsideClick: true,
-} satisfies CreateSelectProps;
+} satisfies CreateSelectProps<any, 'single'>;
 
 type SelectParts =
 	| 'menu'
@@ -72,10 +73,16 @@ type SelectParts =
 
 const { name } = createElHelpers<SelectParts>('select');
 
-export function createSelect(props?: CreateSelectProps) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps;
+export function createSelect<
+	Item extends Type extends 'multiple' ? Array<any> : any = any,
+	Type extends 'single' | 'multiple' = 'single'
+>(props?: CreateSelectProps<Item, Type>) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps<Item, Type>;
 
-	const options = toWritableStores(omit(withDefaults, 'value', 'defaultValueLabel'));
+	const options = toWritableStores({
+		...omit(withDefaults, 'value', 'defaultValueLabel'),
+		type: withDefaults.type ?? ('single' as Type),
+	});
 
 	const {
 		positioning,
@@ -89,6 +96,7 @@ export function createSelect(props?: CreateSelectProps) {
 		forceVisible,
 		closeOnEscape,
 		closeOnOutsideClick,
+		type,
 	} = options;
 
 	let mounted = false;
@@ -98,7 +106,7 @@ export function createSelect(props?: CreateSelectProps) {
 	// Open so we can register the optionsList items before mounted = true
 	open.set(true);
 
-	const valueWritable = withDefaults.value ?? writable<unknown>(withDefaults.defaultValue);
+	const valueWritable = withDefaults.value ?? writable<Item>(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	const valueLabel = writable<string | number | null>(withDefaults.defaultValueLabel ?? null);
@@ -440,7 +448,7 @@ export function createSelect(props?: CreateSelectProps) {
 		const disabled = el.hasAttribute('data-disabled');
 
 		return {
-			value,
+			value: value ? JSON.parse(value) : value,
 			label: label ?? el.textContent ?? null,
 			disabled: disabled ? true : false,
 		};
@@ -451,7 +459,7 @@ export function createSelect(props?: CreateSelectProps) {
 	const option = builder(name('option'), {
 		stores: value,
 		returned: ($value) => {
-			return (props: SelectOptionProps) => {
+			return (props: SelectOptionProps<Item>) => {
 				const optProps: OptionProps = {
 					value: props.value,
 					label: props.label ?? null,
@@ -462,7 +470,7 @@ export function createSelect(props?: CreateSelectProps) {
 					role: 'option',
 					'aria-selected': $value === props?.value,
 					'data-selected': $value === props?.value ? '' : undefined,
-					'data-value': props.value,
+					'data-value': JSON.stringify(props.value),
 					'data-label': props.label ?? undefined,
 					'data-disabled': props.disabled ? '' : undefined,
 					tabindex: -1,
@@ -482,7 +490,13 @@ export function createSelect(props?: CreateSelectProps) {
 					}
 					handleRovingFocus(itemElement);
 
-					value.set(props.value);
+					value.update((v) => {
+						const $type = get(type);
+						if (Array.isArray(v) || (v === undefined && $type === 'multiple')) {
+							return toggle(props.value, v ?? []);
+						}
+						return props.value;
+					});
 					open.set(false);
 				}),
 
@@ -497,7 +511,14 @@ export function createSelect(props?: CreateSelectProps) {
 						e.preventDefault();
 						const props = getOptionProps(node);
 						node.setAttribute('data-selected', '');
-						value.set(props.value);
+
+						value.update((v) => {
+							const $type = get(type);
+							if (Array.isArray(v) || (v === undefined && $type === 'multiple')) {
+								return toggle(props.value, v);
+							}
+							return props.value;
+						});
 						open.set(false);
 					}
 				}),
@@ -588,6 +609,9 @@ export function createSelect(props?: CreateSelectProps) {
 
 	const isSelected = derived([value], ([$value]) => {
 		return (value: unknown) => {
+			if (Array.isArray($value)) {
+				return $value.includes(value);
+			}
 			return $value === value;
 		};
 	});

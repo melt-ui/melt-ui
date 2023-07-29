@@ -41,14 +41,16 @@ export type CreateAccordionProps<T extends AccordionType = 'single'> = {
 	 *
 	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
-	value?: Writable<string | string[] | undefined>;
+	value?: T extends 'single' ? Writable<string | undefined> : Writable<string[] | undefined>;
 
 	/**
 	 * A callback called when the value of the `value` store should be changed.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onValueChange?: ChangeFn<string | string[] | undefined>;
+	onValueChange?: T extends 'single'
+		? ChangeFn<string | undefined>
+		: ChangeFn<string[] | undefined>;
 };
 
 export type AccordionItemProps =

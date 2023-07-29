@@ -5,10 +5,11 @@
 
 	const {
 		elements: { trigger, menu, option, group, groupLabel, label },
-		states: { valueLabel, open },
+		states: { valueLabel, open, value },
 		helpers: { isSelected },
 	} = createSelect({
 		forceVisible: true,
+		type: 'multiple',
 	});
 
 	const options = {
@@ -17,6 +18,7 @@
 	};
 </script>
 
+{$value}
 <div class="flex flex-col gap-1">
 	<!-- svelte-ignore a11y-label-has-associated-control - $label contains the 'for' attribute -->
 	<label class="block" melt={$label}>Favorite Flavor</label>
