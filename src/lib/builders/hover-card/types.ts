@@ -56,6 +56,14 @@ export type CreateHoverCardProps = {
 	closeOnOutsideClick?: boolean;
 
 	/**
+	 * Whether or not to close the hovercard when the escape key is pressed
+	 * while it is open.
+	 *
+	 * @default true
+	 */
+	closeOnEscape?: boolean;
+
+	/**
 	 * The size of the optional arrow element in pixels
 	 *
 	 * @default 8

@@ -14,11 +14,12 @@ import {
 	overridable,
 	isHTMLElement,
 	getPortalParent,
+	derivedVisible,
 } from '$lib/internal/helpers';
 
 import { usePopper } from '$lib/internal/actions';
 import type { Defaults } from '$lib/internal/types';
-import { tick } from 'svelte';
+import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import type { CreatePopoverProps } from './types';
 
@@ -34,6 +35,7 @@ const defaults = {
 	onOpenChange: undefined,
 	closeOnOutsideClick: true,
 	portal: 'body',
+	forceVisible: false,
 } satisfies Defaults<CreatePopoverProps>;
 
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
@@ -51,6 +53,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		closeOnEscape,
 		closeOnOutsideClick,
 		portal,
+		forceVisible,
 	} = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
@@ -63,22 +66,34 @@ export function createPopover(args?: CreatePopoverProps) {
 		trigger: generateId(),
 	};
 
-	const show = derived([open, activeTrigger], ([$open, $activeTrigger]) => {
-		return $open && $activeTrigger !== null;
+	onMount(() => {
+		activeTrigger.set(document.getElementById(ids.trigger));
 	});
 
+	function handleClose() {
+		open.set(false);
+		const triggerEl = document.getElementById(ids.trigger);
+		if (triggerEl) {
+			tick().then(() => {
+				triggerEl.focus();
+			});
+		}
+	}
+
+	const isVisible = derivedVisible({ open, activeTrigger, forceVisible });
+
 	const content = builder(name('content'), {
-		stores: [show, portal],
-		returned: ([$show, $portal]) => {
+		stores: [isVisible, portal],
+		returned: ([$isVisible, $portal]) => {
 			return {
-				hidden: $show && isBrowser ? undefined : true,
+				hidden: $isVisible && isBrowser ? undefined : true,
 				tabindex: -1,
 				style: styleToString({
-					display: $show ? undefined : 'none',
+					display: $isVisible ? undefined : 'none',
 				}),
 				id: ids.content,
-				'data-state': $show ? 'open' : 'closed',
-				'data-portal': $portal ? '' : '',
+				'data-state': $isVisible ? 'open' : 'closed',
+				'data-portal': $portal ? '' : undefined,
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -92,7 +107,7 @@ export function createPopover(args?: CreatePopoverProps) {
 
 			const unsubDerived = effect(
 				[
-					open,
+					isVisible,
 					activeTrigger,
 					positioning,
 					disableFocusTrap,
@@ -101,7 +116,7 @@ export function createPopover(args?: CreatePopoverProps) {
 					portal,
 				],
 				([
-					$open,
+					$isVisible,
 					$activeTrigger,
 					$positioning,
 					$disableFocusTrap,
@@ -110,7 +125,7 @@ export function createPopover(args?: CreatePopoverProps) {
 					$portal,
 				]) => {
 					unsubPopper();
-					if (!($open && $activeTrigger)) return;
+					if (!$isVisible || !$activeTrigger) return;
 					tick().then(() => {
 						const popper = usePopper(node, {
 							anchorElement: $activeTrigger,
@@ -118,8 +133,23 @@ export function createPopover(args?: CreatePopoverProps) {
 							options: {
 								floating: $positioning,
 								focusTrap: $disableFocusTrap ? null : undefined,
-								clickOutside: $closeOnOutsideClick ? undefined : null,
-								escapeKeydown: $closeOnEscape ? undefined : null,
+								clickOutside: $closeOnOutsideClick
+									? {
+											handler: (e) => {
+												if (!isHTMLElement(e.target)) return;
+												if ($activeTrigger.contains(e.target)) return;
+												if (e.target === $activeTrigger) return;
+												handleClose();
+											},
+									  }
+									: null,
+								escapeKeydown: $closeOnEscape
+									? {
+											handler: () => {
+												handleClose();
+											},
+									  }
+									: null,
 								portal: $portal ? portalParent : null,
 							},
 						});
@@ -153,23 +183,14 @@ export function createPopover(args?: CreatePopoverProps) {
 			} as const;
 		},
 		action: (node: HTMLElement) => {
-			const $activeTrigger = get(activeTrigger);
-
-			if (withDefaults.defaultOpen && $activeTrigger === null) {
-				activeTrigger.set(node);
-			}
-
 			const unsub = addEventListener(node, 'click', () => {
-				open.update(
-					(prev) => !prev,
-					(isOpen) => {
-						if (isOpen) {
-							activeTrigger.set(node);
-						} else {
-							activeTrigger.set(null);
-						}
+				open.update((prev) => {
+					if (prev) {
+						return false;
 					}
-				);
+
+					return true;
+				});
 			});
 
 			return {
@@ -197,7 +218,7 @@ export function createPopover(args?: CreatePopoverProps) {
 			} as const),
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
-				open.set(false);
+				handleClose();
 			});
 
 			return {
@@ -206,11 +227,10 @@ export function createPopover(args?: CreatePopoverProps) {
 		},
 	});
 
-	effect([open], ([$open]) => {
+	effect([open, activeTrigger, preventScroll], ([$open, $activeTrigger, $preventScroll]) => {
 		if (!isBrowser) return;
 
 		const unsubs: Array<() => void> = [];
-		const $activeTrigger = get(activeTrigger);
 
 		if ($open) {
 			if (!$activeTrigger) {
@@ -221,14 +241,9 @@ export function createPopover(args?: CreatePopoverProps) {
 				});
 			}
 
-			if (get(preventScroll)) {
+			if ($preventScroll) {
 				unsubs.push(removeScroll());
 			}
-		}
-
-		if (!$open && $activeTrigger) {
-			// Prevent the keydown event from triggering on the trigger
-			sleep(1).then(() => $activeTrigger.focus());
 		}
 
 		return () => {

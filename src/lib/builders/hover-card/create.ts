@@ -36,6 +36,7 @@ const defaults = {
 	closeOnOutsideClick: true,
 	forceVisible: false,
 	portal: 'body',
+	closeOnEscape: true,
 } satisfies CreateHoverCardProps;
 
 export function createHoverCard(props: CreateHoverCardProps = {}) {
@@ -58,6 +59,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 		closeOnOutsideClick,
 		forceVisible,
 		portal,
+		closeOnEscape,
 	} = options;
 
 	const ids = {
@@ -138,8 +140,8 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
 
 	const content = builder(name('content'), {
-		stores: [isVisible],
-		returned: ([$isVisible]) => {
+		stores: [isVisible, portal],
+		returned: ([$isVisible, $portal]) => {
 			return {
 				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
@@ -150,6 +152,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 				}),
 				id: ids.content,
 				'data-state': $isVisible ? 'open' : 'closed',
+				'data-portal': $portal ? '' : undefined,
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -165,12 +168,17 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[isVisible, positioning, closeOnOutsideClick, portal],
-				([$isVisible, $positioning, $closeOnOutsideClick, $portal]) => {
+				[isVisible, activeTrigger, positioning, closeOnOutsideClick, portal, closeOnEscape],
+				([
+					$isVisible,
+					$activeTrigger,
+					$positioning,
+					$closeOnOutsideClick,
+					$portal,
+					$closeOnEscape,
+				]) => {
 					unsubPopper();
-					if (!$isVisible) return;
-					const $activeTrigger = get(activeTrigger);
-					if (!$activeTrigger) return;
+					if (!$isVisible || !$activeTrigger) return;
 					tick().then(() => {
 						const popper = usePopper(node, {
 							anchorElement: $activeTrigger,
@@ -180,6 +188,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 								clickOutside: $closeOnOutsideClick ? undefined : null,
 								portal: $portal ? (portalParent === document.body ? null : portalParent) : null,
 								focusTrap: null,
+								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
 						});
 

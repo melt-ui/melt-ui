@@ -1,8 +1,8 @@
-import { render } from '@testing-library/svelte';
+import { render, waitFor } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
 import HoverCardTest from './HoverCardTest.svelte';
 import userEvent from '@testing-library/user-event';
-import { sleep } from '../../../internal/helpers/sleep';
+import { kbd } from '@melt-ui/svelte/internal/helpers';
 
 describe('HoverCard (Default)', () => {
 	test('No accessibility violations', async () => {
@@ -11,8 +11,7 @@ describe('HoverCard (Default)', () => {
 		expect(await axe(container)).toHaveNoViolations();
 	});
 
-	// TODO: Figure out why this isn't working
-	test.todo('Opens on hover', async () => {
+	test('Opens on hover', async () => {
 		const { getByTestId } = await render(HoverCardTest);
 		const user = userEvent.setup();
 		const trigger = getByTestId('trigger');
@@ -21,7 +20,41 @@ describe('HoverCard (Default)', () => {
 		await expect(trigger).toBeVisible();
 		await expect(content).not.toBeVisible();
 		await user.hover(getByTestId('trigger'));
-		await sleep(3000);
-		await expect(content).toBeVisible();
+		await waitFor(() => expect(content).toBeVisible());
+		await user.click(content);
+		await waitFor(() => expect(content).toBeVisible());
+	});
+
+	test('Closes on escape', async () => {
+		const { getByTestId } = await render(HoverCardTest);
+		const user = userEvent.setup();
+		const trigger = getByTestId('trigger');
+		const content = getByTestId('content');
+
+		await expect(trigger).toBeVisible();
+		await expect(content).not.toBeVisible();
+		await user.hover(getByTestId('trigger'));
+		await waitFor(() => expect(content).toBeVisible());
+		await user.click(content);
+		await waitFor(() => expect(content).toBeVisible());
+		await user.keyboard(`{${kbd.ESCAPE}}`);
+		await waitFor(() => expect(content).not.toBeVisible());
+	});
+
+	test('Closes when pointer moves outside', async () => {
+		const { getByTestId } = await render(HoverCardTest);
+		const user = userEvent.setup();
+		const trigger = getByTestId('trigger');
+		const content = getByTestId('content');
+
+		await expect(trigger).toBeVisible();
+		await expect(content).not.toBeVisible();
+		await user.hover(getByTestId('trigger'));
+		await waitFor(() => expect(content).toBeVisible());
+		await user.click(content);
+		await waitFor(() => expect(content).toBeVisible());
+		const start = getByTestId('start');
+		await user.hover(start);
+		await waitFor(() => expect(content).not.toBeVisible());
 	});
 });

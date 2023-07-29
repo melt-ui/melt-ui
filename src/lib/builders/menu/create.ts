@@ -159,21 +159,27 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[isVisible, positioning, closeOnOutsideClick, portal],
-				([$isVisible, $positioning, $closeOnOutsideClick, $portal]) => {
+				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal, closeOnEscape],
+				([
+					$isVisible,
+					$rootActiveTrigger,
+					$positioning,
+					$closeOnOutsideClick,
+					$portal,
+					$closeOnEscape,
+				]) => {
 					unsubPopper();
-					if (!$isVisible) return;
-					const activeTrigger = get(rootActiveTrigger);
-					if (!activeTrigger) return;
+					if (!$isVisible || !$rootActiveTrigger) return;
 					tick().then(() => {
 						setMeltMenuAttribute(node, selector);
 						const popper = usePopper(node, {
-							anchorElement: activeTrigger,
+							anchorElement: $rootActiveTrigger,
 							open: rootOpen,
 							options: {
 								floating: $positioning,
 								clickOutside: $closeOnOutsideClick ? undefined : null,
 								portal: $portal ? (portalParent === document.body ? null : portalParent) : null,
+								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
 						});
 
@@ -1008,13 +1014,19 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			rootActiveTrigger.set(triggerEl);
 		}
 
+		let unsubs: Array<() => void> = [];
+
 		const handlePointer = () => isUsingKeyboard.set(false);
+
 		const handleKeyDown = () => {
 			isUsingKeyboard.set(true);
-			document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
-			document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
+			unsubs.push(
+				executeCallbacks(
+					addEventListener(document, 'pointerdown', handlePointer, { capture: true, once: true }),
+					addEventListener(document, 'pointermove', handlePointer, { capture: true, once: true })
+				)
+			);
 		};
-		document.addEventListener('keydown', handleKeyDown, { capture: true });
 
 		const keydownListener = (e: KeyboardEvent) => {
 			if (e.key === kbd.ESCAPE && get(closeOnEscape)) {
@@ -1022,13 +1034,11 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				return;
 			}
 		};
-		document.addEventListener('keydown', keydownListener);
+		unsubs.push(addEventListener(document, 'keydown', handleKeyDown, { capture: true }));
+		unsubs.push(addEventListener(document, 'keydown', keydownListener));
 
 		return () => {
-			document.removeEventListener('keydown', handleKeyDown, { capture: true });
-			document.removeEventListener('pointerdown', handlePointer, { capture: true });
-			document.removeEventListener('pointermove', handlePointer, { capture: true });
-			document.removeEventListener('keydown', keydownListener);
+			unsubs.forEach((unsub) => unsub());
 		};
 	});
 
