@@ -115,6 +115,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 								open: rootOpen,
 								options: {
 									floating: $rootOptions.positioning,
+									portal: $rootOptions.portal,
 									clickOutside: {
 										handler: (e: PointerEvent) => {
 											if (e.defaultPrevented) return;
