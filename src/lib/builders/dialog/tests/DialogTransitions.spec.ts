@@ -1,4 +1,4 @@
-import { render, screen, waitForElementToBeRemoved } from '@testing-library/svelte';
+import { render, screen, waitFor, waitForElementToBeRemoved } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { vi } from 'vitest';
@@ -49,6 +49,7 @@ describe('Dialog with Transitions', () => {
 		await tick();
 		await tick();
 		await expect(screen.queryByTestId('content')).not.toBeNull();
+		await waitFor(() => screen.getByTestId('closer'));
 		await user.click(screen.getByTestId('closer'));
 		await tick();
 		await waitForElementToBeRemoved(() => screen.getByTestId('content'));

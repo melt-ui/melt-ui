@@ -1,5 +1,5 @@
 import { kbd, sleep } from '@melt-ui/svelte/internal/helpers';
-import { render, screen, waitForElementToBeRemoved } from '@testing-library/svelte';
+import { render, screen, waitFor, waitForElementToBeRemoved } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import DialogNestedTest from './DialogNestedTest.svelte';
 import { tick } from 'svelte';
@@ -59,9 +59,8 @@ describe('Nested Dialogs', () => {
 		await userEvent.click(triggerA);
 		await tick();
 		await expect(screen.queryByTestId('contentA')).not.toBeNull();
-		await expect(screen.getByTestId('contentA')).toBeVisible();
+		await waitFor(() => expect(screen.getByTestId('closerA')).toBeVisible());
 		const closerA = screen.getByTestId('closerA');
-		await expect(closerA).toBeVisible();
 		await userEvent.click(closerA);
 		await tick();
 		await waitForElementToBeRemoved(() => screen.getByTestId('contentA'));
