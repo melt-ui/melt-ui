@@ -156,6 +156,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 							options: {
 								floating: $options.positioning,
 								focusTrap: null,
+								portal: $options.portal,
 								clickOutside: !$options.closeOnOutsideClick ? null : undefined,
 							},
 						});
