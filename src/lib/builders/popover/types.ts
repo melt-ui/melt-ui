@@ -1,4 +1,4 @@
-import type { FloatingConfig } from '$lib/internal/actions';
+import type { FloatingConfig,PortalConfig } from '$lib/internal/actions';
 import type { ChangeFn } from '$lib/internal/helpers';
 import type { Writable } from 'svelte/store';
 import type { createPopover } from './create';
@@ -17,6 +17,13 @@ export type CreatePopoverProps = {
 	 * */
 	onOpenChange?: ChangeFn<boolean>;
 	disableFocusTrap?: boolean;
+
+	/**
+	 * The container element that the popover would portal to.
+	 *
+	 * @default null
+	 */
+	portal?: PortalConfig | null;
 };
 
 export type CreatePopoverReturn = ReturnType<typeof createPopover>;

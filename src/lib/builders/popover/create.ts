@@ -73,6 +73,7 @@ export function createPopover(args?: CreatePopoverProps) {
 								options: {
 									floating: $positioning,
 									focusTrap: $options.disableFocusTrap ? null : undefined,
+									portal: $options.portal,
 								},
 							});
 
