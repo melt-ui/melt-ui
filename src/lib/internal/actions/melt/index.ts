@@ -1,12 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Action, ActionReturn } from 'svelte/action';
 
-type SomeBuilder<
-	E = HTMLElement,
-	P = never,
-	A extends Record<string, any> = Record<never, any>
-> = Record<string, any> & {
-	action: Action<E, P, A>;
+type SomeBuilder<Element, Param, Attributes extends Record<string, any>> = Record<string, any> & {
+	action: Action<Element, Param, Attributes>;
 };
 
 type GetActionAttributes<Builder> = Builder extends Record<string, any> & {
@@ -30,9 +26,11 @@ type GetActionAttributes<Builder> = Builder extends Record<string, any> & {
  * ```
  */
 export function melt<
-	Builder extends SomeBuilder,
+	A extends Record<string, any>,
+	Builder extends SomeBuilder<Element, Param, A>,
 	Element extends HTMLElement,
-	Attributes extends GetActionAttributes<Builder>
+	Attributes extends GetActionAttributes<Builder>,
+	Param = never
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 >(node: Element, params: Builder): ActionReturn<Builder, Attributes> {
 	return {};
