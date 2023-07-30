@@ -564,9 +564,17 @@ export function createSelect<
 
 	effect(value, ($value) => {
 		if (!isBrowser) return;
-		const newLabel = optionsList.find((opt) => opt.value === $value)?.label;
 
-		valueLabel.set(newLabel ?? null);
+		if (Array.isArray($value)) {
+			const labels = optionsList
+				.filter((opt) => $value.includes(opt.value))
+				.map((opt) => opt.label);
+
+			valueLabel.set(labels.join(', '));
+		} else {
+			const newLabel = optionsList.find((opt) => opt.value === $value)?.label;
+			valueLabel.set(newLabel ?? null);
+		}
 	});
 
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();

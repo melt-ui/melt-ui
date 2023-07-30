@@ -9,6 +9,7 @@
 		helpers: { isSelected },
 	} = createSelect({
 		forceVisible: true,
+		type: 'multiple',
 	});
 
 	const options = {
