@@ -9,7 +9,7 @@
 		helpers: { isSelected },
 	} = createSelect({
 		forceVisible: true,
-		type: 'multiple',
+		multiple: true,
 	});
 
 	const options = {
@@ -22,13 +22,15 @@
 	<!-- svelte-ignore a11y-label-has-associated-control - $label contains the 'for' attribute -->
 	<label class="block" melt={$label}>Favorite Flavor</label>
 	<button
-		class="flex h-10 min-w-[220px] items-center justify-between rounded-md bg-white px-3
-	py-2 text-magnum-700 transition-opacity hover:opacity-90"
+		class="flex h-10 w-[15rem] items-center justify-between
+	rounded-md bg-white px-3 py-2 text-magnum-700 transition-opacity hover:opacity-90"
 		melt={$trigger}
 		aria-label="Food"
 	>
-		{$valueLabel || 'Select a flavor'}
-		<ChevronDown />
+		<span class="flex-shrink overflow-hidden text-ellipsis whitespace-nowrap">
+			{$valueLabel || 'Select a flavor'}
+		</span>
+		<ChevronDown class="flex-shrink-0" />
 	</button>
 	{#if $open}
 		<div

@@ -59,7 +59,7 @@ const defaults = {
 	portal: 'body',
 	closeOnEscape: true,
 	closeOnOutsideClick: true,
-} satisfies CreateSelectProps<any, 'single'>;
+} satisfies CreateSelectProps;
 
 type SelectParts =
 	| 'menu'
@@ -74,14 +74,14 @@ type SelectParts =
 const { name } = createElHelpers<SelectParts>('select');
 
 export function createSelect<
-	Item extends Type extends 'multiple' ? Array<any> : any = any,
-	Type extends 'single' | 'multiple' = 'single'
->(props?: CreateSelectProps<Item, Type>) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps<Item, Type>;
+	Item extends Multiple extends true ? Array<unknown> : unknown = any,
+	Multiple extends boolean = false
+>(props?: CreateSelectProps<Item, Multiple>) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps<Item, Multiple>;
 
 	const options = toWritableStores({
 		...omit(withDefaults, 'value', 'defaultValueLabel'),
-		type: withDefaults.type ?? ('single' as Type),
+		multiple: withDefaults.multiple ?? (false as Multiple),
 	});
 
 	const {
@@ -96,7 +96,7 @@ export function createSelect<
 		forceVisible,
 		closeOnEscape,
 		closeOnOutsideClick,
-		type,
+		multiple,
 	} = options;
 
 	let mounted = false;
@@ -455,6 +455,16 @@ export function createSelect<
 		};
 	};
 
+	const setValue = (newValue: Item) => {
+		value.update(($value) => {
+			const $multiple = get(multiple);
+			if (Array.isArray($value) || ($value === undefined && $multiple)) {
+				return toggle(newValue, ($value ?? []) as unknown[]) as Item;
+			}
+			return newValue;
+		});
+	};
+
 	const optionsList: OptionProps[] = [];
 
 	const option = builder(name('option'), {
@@ -491,13 +501,7 @@ export function createSelect<
 					}
 					handleRovingFocus(itemElement);
 
-					value.update((v) => {
-						const $type = get(type);
-						if (Array.isArray(v) || (v === undefined && $type === 'multiple')) {
-							return toggle(props.value, v ?? []);
-						}
-						return props.value;
-					});
+					setValue(props.value);
 					open.set(false);
 				}),
 
@@ -513,13 +517,7 @@ export function createSelect<
 						const props = getOptionProps(node);
 						node.setAttribute('data-selected', '');
 
-						value.update((v) => {
-							const $type = get(type);
-							if (Array.isArray(v) || (v === undefined && $type === 'multiple')) {
-								return toggle(props.value, v);
-							}
-							return props.value;
-						});
+						setValue(props.value);
 						open.set(false);
 					}
 				}),
@@ -567,11 +565,14 @@ export function createSelect<
 		if (!isBrowser) return;
 
 		if (Array.isArray($value)) {
-			const labels = optionsList
-				.filter((opt) => $value.includes(opt.value))
-				.map((opt) => opt.label);
+			const labels = optionsList.reduce((result, current) => {
+				if ($value.includes(current.value) && current.label) {
+					result.add(current.label);
+				}
+				return result;
+			}, new Set<string>());
 
-			valueLabel.set(labels.join(', '));
+			valueLabel.set(Array.from(labels).join(', '));
 		} else {
 			const newLabel = optionsList.find((opt) => opt.value === $value)?.label;
 			valueLabel.set(newLabel ?? null);

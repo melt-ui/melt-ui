@@ -5,8 +5,8 @@ import type { createSelect } from './create';
 import type { ChangeFn } from '$lib/internal/helpers';
 
 export type CreateSelectProps<
-	Item extends Type extends 'multiple' ? Array<unknown> : unknown = any,
-	Type extends 'single' | 'multiple' = 'single'
+	Item extends Multiple extends true ? Array<unknown> : unknown = any,
+	Multiple extends boolean = false
 > = {
 	/**
 	 * Options for positioning the popover menu.
@@ -135,7 +135,7 @@ export type CreateSelectProps<
 	 */
 	onValueChange?: ChangeFn<Item>;
 
-	type?: Type;
+	multiple?: Multiple;
 };
 
 export type SelectOptionProps<Item = unknown> = {
