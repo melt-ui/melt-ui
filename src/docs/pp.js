@@ -14,7 +14,7 @@ export function extractMeltAttribute(input) {
 	const meltStart = input.indexOf('use:melt={');
 	if (meltStart === -1) return null;
 
-	const substring = input.slice(meltStart + 6);
+	const substring = input.slice(meltStart + 10);
 	let balance = 1;
 	let index = 0;
 
