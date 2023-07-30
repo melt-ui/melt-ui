@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { createAccordion, type CreateAccordionProps } from '@melt-ui/svelte';
 
-	export let type: 'single' | 'multiple' = 'single';
+	export let multiple = false;
 	export let disabled: CreateAccordionProps['disabled'] = undefined;
 	export let items: { id: string; triggerId: string; title: string; description: string }[] = [];
 
 	const {
 		elements: { root, content, item, trigger },
 		helpers: { isSelected },
-	} = createAccordion({ type, disabled });
+	} = createAccordion({ multiple, disabled });
 </script>
 
 <div melt={$root}>

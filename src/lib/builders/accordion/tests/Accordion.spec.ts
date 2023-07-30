@@ -72,10 +72,10 @@ describe('Accordion', () => {
 		expect(item).toHaveAttribute('data-state', 'closed');
 	});
 
-	test("expands only one item when type is 'single'", async () => {
+	test('expands only one item when multiple is false', async () => {
 		const user = userEvent.setup();
 
-		const { getByTestId } = render(AccordionTest, { type: 'single', items });
+		const { getByTestId } = render(AccordionTest, { multiple: false, items });
 
 		const item1 = getByTestId('item-1');
 		const item2 = getByTestId('item-2');
@@ -97,10 +97,10 @@ describe('Accordion', () => {
 		expect(item2).toHaveAttribute('data-state', 'open');
 	});
 
-	test("expands multiple items when type is 'multiple'", async () => {
+	test('expands multiple items when multiple is true', async () => {
 		const user = userEvent.setup();
 
-		const { getByTestId } = render(AccordionTest, { type: 'multiple', items });
+		const { getByTestId } = render(AccordionTest, { multiple: true, items });
 
 		const item1 = getByTestId('item-1');
 		const item2 = getByTestId('item-2');
@@ -124,7 +124,7 @@ describe('Accordion', () => {
 
 	test('expands item when pressing enter', async () => {
 		const user = userEvent.setup();
-		const { getByTestId } = render(AccordionTest, { type: 'single', items });
+		const { getByTestId } = render(AccordionTest, { multiple: false, items });
 
 		const item = getByTestId('item-1');
 		const triggerElement = getByTestId('trigger-1');
@@ -137,7 +137,7 @@ describe('Accordion', () => {
 
 	test('expands item when pressing space', async () => {
 		const user = userEvent.setup();
-		const { getByTestId } = render(AccordionTest, { type: 'single', items });
+		const { getByTestId } = render(AccordionTest, { multiple: false, items });
 
 		const item = getByTestId('item-1');
 		const triggerElement = getByTestId('trigger-1');
@@ -150,7 +150,7 @@ describe('Accordion', () => {
 
 	test('focuses on item below when pressing key arrow down', async () => {
 		const user = userEvent.setup();
-		const { getByTestId } = render(AccordionTest, { type: 'single', items });
+		const { getByTestId } = render(AccordionTest, { multiple: false, items });
 
 		const trigger1 = getByTestId('trigger-1');
 		const trigger2 = getByTestId('trigger-2');
@@ -164,7 +164,7 @@ describe('Accordion', () => {
 
 	test('focuses on item above when pressing key arrow up', async () => {
 		const user = userEvent.setup();
-		const { getByTestId } = render(AccordionTest, { type: 'single', items });
+		const { getByTestId } = render(AccordionTest, { multiple: false, items });
 
 		const trigger1 = getByTestId('trigger-1');
 		const trigger2 = getByTestId('trigger-2');
@@ -178,7 +178,7 @@ describe('Accordion', () => {
 
 	test('focuses on first item when pressing key home', async () => {
 		const user = userEvent.setup();
-		const { getByTestId } = render(AccordionTest, { type: 'single', items });
+		const { getByTestId } = render(AccordionTest, { multiple: false, items });
 
 		const trigger1 = getByTestId('trigger-1');
 		const trigger3 = getByTestId('trigger-3');
@@ -192,7 +192,7 @@ describe('Accordion', () => {
 
 	test('focuses on last item when pressing key end', async () => {
 		const user = userEvent.setup();
-		const { getByTestId } = render(AccordionTest, { type: 'single', items });
+		const { getByTestId } = render(AccordionTest, { multiple: false, items });
 
 		const trigger1 = getByTestId('trigger-1');
 		const trigger3 = getByTestId('trigger-3');
