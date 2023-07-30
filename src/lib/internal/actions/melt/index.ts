@@ -31,7 +31,7 @@ export function melt<
 	Attributes extends GetActionAttributes<Builder>,
 	A extends Record<string, any>,
 	Param = never
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 >(node: Element, params: Builder): ActionReturn<Builder, Attributes> {
-	return {};
+	// @ts-expect-error calls the action for debugging purposes
+	return params.action(node);
 }
