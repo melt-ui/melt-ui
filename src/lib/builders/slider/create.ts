@@ -12,13 +12,12 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
-	type MeltEventHandler,
 	addMeltEventListener,
 	executeCallbacks,
 } from '$lib/internal/helpers';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateSliderProps } from './types';
-import type { ActionReturn } from 'svelte/action';
+import type { MeltActionReturn } from '$lib/internal/types';
 
 const defaults = {
 	defaultValue: [],
@@ -116,10 +115,6 @@ export const createSlider = (props?: CreateSliderProps) => {
 		);
 	};
 
-	type ThumbEvents = {
-		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
-	};
-
 	const thumb = builder(name('thumb'), {
 		stores: [value, position, min, max, disabled, orientation],
 		returned: ([$value, $position, $min, $max, $disabled, $orientation]) => {
@@ -152,7 +147,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 				} as const;
 			};
 		},
-		action: (node: HTMLElement): ActionReturn<unknown, ThumbEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
 			const unsub = addMeltEventListener(node, 'keydown', (event) => {
 				const $min = get(min);
 				const $max = get(max);

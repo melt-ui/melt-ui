@@ -5,13 +5,11 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
-	type MeltEventHandler,
 	addMeltEventListener,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateSwitchProps } from './types';
-import type { ActionReturn } from 'svelte/action';
 
 const defaults = {
 	defaultChecked: false,
@@ -32,10 +30,6 @@ export function createSwitch(props?: CreateSwitchProps) {
 	const checkedWritable = propsWithDefaults.checked ?? writable(propsWithDefaults.defaultChecked);
 	const checked = overridable(checkedWritable, propsWithDefaults?.onCheckedChange);
 
-	type RootEvents = {
-		'on:m-click'?: MeltEventHandler<MouseEvent>;
-	};
-
 	const root = builder(name(), {
 		stores: [checked, disabled, required],
 		returned: ([$checked, $disabled, $required]) => {
@@ -49,7 +43,7 @@ export function createSwitch(props?: CreateSwitchProps) {
 				'aria-required': $required,
 			} as const;
 		},
-		action(node: HTMLElement): ActionReturn<unknown, RootEvents> {
+		action(node: HTMLElement): MeltActionReturn<'click'> {
 			const unsub = addMeltEventListener(node, 'click', () => {
 				if (get(disabled)) return;
 

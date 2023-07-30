@@ -11,14 +11,12 @@ import {
 	prev,
 	styleToString,
 	toWritableStores,
-	type MeltEventHandler,
 	addMeltEventListener,
 } from '$lib/internal/helpers';
-import type { Defaults } from '@melt-ui/svelte/internal/types';
+import type { Defaults, MeltActionReturn } from '@melt-ui/svelte/internal/types';
 import { tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import type { CreatePinInputProps } from './types';
-import type { ActionReturn } from 'svelte/action';
 
 const { name, selector } = createElHelpers<'input' | 'hidden-input'>('pin-input');
 
@@ -63,14 +61,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 		},
 	});
 
-	type InputEvents = {
-		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
-		'on:m-input'?: MeltEventHandler<Event>;
-		'on:m-paste'?: MeltEventHandler<ClipboardEvent>;
-		'on:m-change'?: MeltEventHandler<Event>;
-		'on:m-focus'?: MeltEventHandler<FocusEvent>;
-		'on:m-blur'?: MeltEventHandler<FocusEvent>;
-	};
+	type InputEvents = 'keydown' | 'input' | 'paste' | 'change' | 'focus' | 'blur';
 
 	const input = builder(name('input'), {
 		stores: [value, placeholder, disabled, type],
@@ -82,7 +73,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 				type: $type,
 			};
 		},
-		action: (node: HTMLInputElement): ActionReturn<unknown, InputEvents> => {
+		action: (node: HTMLInputElement): MeltActionReturn<InputEvents> => {
 			const { elIndex } = getInputs(node);
 			value.update((v) => {
 				v[elIndex] = node.value;

@@ -29,13 +29,12 @@ import {
 	addHighlight,
 	getPortalParent,
 	derivedVisible,
-	type MeltEventHandler,
 	addMeltEventListener,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions';
+import type { MeltActionReturn } from '$lib/internal/types';
 import type { CreateMenubarMenuProps, CreateMenubarProps } from './types';
-import type { ActionReturn } from 'svelte/action';
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
 
@@ -60,10 +59,6 @@ export function createMenubar(props?: CreateMenubarProps) {
 		menubar: generateId(),
 	};
 
-	type MenubarEvents = {
-		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
-	};
-
 	const menubar = builder(name(), {
 		returned() {
 			return {
@@ -73,7 +68,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				id: rootIds.menubar,
 			};
 		},
-		action: (node: HTMLElement): ActionReturn<unknown, MenubarEvents> => {
+		action: (node: HTMLElement) => {
 			const menuTriggers = Array.from(node.querySelectorAll('[data-melt-menubar-trigger]'));
 			if (!menuTriggers.length || !isHTMLElement(menuTriggers[0])) return {};
 			menuTriggers[0].tabIndex = 0;
@@ -131,10 +126,6 @@ export function createMenubar(props?: CreateMenubarProps) {
 			activeTrigger: rootActiveTrigger,
 		});
 
-		type RootMenuEvents = {
-			'on:keydown'?: MeltEventHandler<KeyboardEvent>;
-		};
-
 		const menu = builder(name('menu'), {
 			stores: [isVisible, portal],
 			returned: ([$isVisible, $portal]) => {
@@ -152,7 +143,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 					tabindex: -1,
 				} as const;
 			},
-			action: (node: HTMLElement): ActionReturn<unknown, RootMenuEvents> => {
+			action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
 				/**
 				 * We need to get the parent portal before the menu is opened,
 				 * otherwise the parent will have been moved to the body, and
@@ -238,11 +229,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 			},
 		});
 
-		type RootTriggerEvents = {
-			'on:m-click'?: MeltEventHandler<MouseEvent>;
-			'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
-			'on:m-pointerenter'?: MeltEventHandler<PointerEvent>;
-		};
+		type RootTriggerEvents = 'click' | 'keydown' | 'pointerenter';
 
 		const trigger = builder(name('trigger'), {
 			stores: [rootOpen],
@@ -257,7 +244,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 					role: 'menuitem',
 				} as const;
 			},
-			action: (node: HTMLElement): ActionReturn<unknown, RootTriggerEvents> => {
+			action: (node: HTMLElement): MeltActionReturn<RootTriggerEvents> => {
 				applyAttrsIfDisabled(node);
 
 				const menubarEl = document.getElementById(rootIds.menubar);

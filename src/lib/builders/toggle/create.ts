@@ -2,15 +2,17 @@ import {
 	builder,
 	omit,
 	toWritableStores,
-	type MeltEventHandler,
 	addMeltEventListener,
+	kbd,
+	executeCallbacks,
+	overridable,
 } from '$lib/internal/helpers';
 import { get, writable } from 'svelte/store';
 import type { CreateToggleProps } from './types';
-import type { ActionReturn } from 'svelte/action';
+import type { MeltActionReturn } from '$lib/internal/types';
 
 const defaults = {
-	pressed: false,
+	defaultPressed: false,
 	disabled: false,
 } satisfies CreateToggleProps;
 export function createToggle(props?: CreateToggleProps) {
@@ -19,11 +21,14 @@ export function createToggle(props?: CreateToggleProps) {
 	const options = toWritableStores(omit(withDefaults, 'pressed'));
 	const { disabled } = options;
 
-	const pressed = writable(withDefaults.pressed ?? false);
+	const pressedWritable = withDefaults.pressed ?? writable(withDefaults.defaultPressed);
+	const pressed = overridable(pressedWritable, withDefaults?.onPressedChange);
 
-	type RootEvents = {
-		'on:m-click'?: MeltEventHandler<MouseEvent>;
-	};
+	function handleToggle() {
+		const $disabled = get(disabled);
+		if ($disabled) return;
+		pressed.update((v) => !v);
+	}
 
 	const root = builder('toggle', {
 		stores: [pressed, disabled],
@@ -36,12 +41,17 @@ export function createToggle(props?: CreateToggleProps) {
 				type: 'button',
 			} as const;
 		},
-		action: (node: HTMLElement): ActionReturn<unknown, RootEvents> => {
-			const unsub = addMeltEventListener(node, 'click', () => {
-				const $disabled = get(disabled);
-				if ($disabled) return;
-				pressed.update((v) => !v);
-			});
+		action: (node: HTMLElement): MeltActionReturn<'click'> => {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					handleToggle();
+				}),
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
+					e.preventDefault();
+					handleToggle();
+				})
+			);
 
 			return {
 				destroy: unsub,

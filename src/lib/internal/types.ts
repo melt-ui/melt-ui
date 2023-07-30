@@ -71,7 +71,7 @@ export type MeltEventHandler<E extends Event> = EventHandler<
 	Expand<Omit<MeltEvent<E>, 'initCustomEvent'>>
 >;
 
-export type MeltActionReturn<Events extends keyof HTMLElementEventMap | string> = ActionReturn<
+export type MeltActionReturn<Events extends keyof HTMLElementEventMap> = ActionReturn<
 	undefined,
 	{
 		[K in Events as `on:m-${string & K}`]?: K extends keyof HTMLElementEventMap

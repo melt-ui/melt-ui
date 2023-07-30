@@ -34,16 +34,14 @@ import {
 	getOptions,
 	sleep,
 	derivedVisible,
-	type MeltEventHandler,
 	addMeltEventListener,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
-import { createSeparator } from '$lib/builders';
+import { createLabel, createSeparator } from '$lib/builders';
 import type { CreateSelectProps, SelectOptionProps } from './types';
-import { usePortal } from '@melt-ui/svelte/internal/actions';
-import { createLabel } from '../label';
-import type { ActionReturn } from 'svelte/action';
+import { usePortal } from '$lib/internal/actions';
+import type { MeltActionReturn } from '$lib/internal/types';
 
 const defaults = {
 	arrowSize: 8,
@@ -158,10 +156,6 @@ export function createSelect(props?: CreateSelectProps) {
 
 	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
 
-	type MenuEvents = {
-		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
-	};
-
 	const menu = builder(name('menu'), {
 		stores: [isVisible, portal],
 		returned: ([$isVisible, $portal]) => {
@@ -176,7 +170,7 @@ export function createSelect(props?: CreateSelectProps) {
 				'data-portal': $portal ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement): ActionReturn<unknown, MenuEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
 			/**
 			 * We need to get the parent portal before the menu is opened,
 			 * otherwise the parent will have been moved to the body, and
@@ -275,10 +269,7 @@ export function createSelect(props?: CreateSelectProps) {
 		},
 	});
 
-	type TriggerEvents = {
-		'on:m-click'?: MeltEventHandler<MouseEvent>;
-		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
-	};
+	type TriggerEvents = 'click' | 'keydown';
 
 	const trigger = builder(name('trigger'), {
 		stores: [open, disabled, required],
@@ -298,7 +289,7 @@ export function createSelect(props?: CreateSelectProps) {
 				tabindex: 0,
 			} as const;
 		},
-		action: (node: HTMLElement): ActionReturn<unknown, TriggerEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
 					if (get(disabled)) {
@@ -378,11 +369,8 @@ export function createSelect(props?: CreateSelectProps) {
 	const {
 		elements: { root: labelBuilder },
 	} = createLabel();
-	const { action: labelAction } = get(labelBuilder);
 
-	type LabelEvents = {
-		'on:m-click'?: MeltEventHandler<MouseEvent>;
-	};
+	const { action: labelAction } = get(labelBuilder);
 
 	const label = builder(name('label'), {
 		returned: () => {
@@ -391,7 +379,7 @@ export function createSelect(props?: CreateSelectProps) {
 				for: ids.trigger,
 			};
 		},
-		action: (node): ActionReturn<unknown, LabelEvents> => {
+		action: (node): MeltActionReturn<'click'> => {
 			const destroy = executeCallbacks(
 				labelAction(node).destroy ?? noop,
 				addMeltEventListener(node, 'click', (e) => {
@@ -464,14 +452,7 @@ export function createSelect(props?: CreateSelectProps) {
 
 	const optionsList: OptionProps[] = [];
 
-	type OptionEvents = {
-		'on:m-click'?: MeltEventHandler<MouseEvent>;
-		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
-		'on:m-pointermove'?: MeltEventHandler<PointerEvent>;
-		'on:m-pointerleave'?: MeltEventHandler<PointerEvent>;
-		'on:m-focusin'?: MeltEventHandler<FocusEvent>;
-		'on:m-focusout'?: MeltEventHandler<FocusEvent>;
-	};
+	type OptionEvents = 'click' | 'keydown' | 'pointermove' | 'pointerleave' | 'focusin' | 'focusout';
 
 	const option = builder(name('option'), {
 		stores: value,
@@ -494,7 +475,7 @@ export function createSelect(props?: CreateSelectProps) {
 				} as const;
 			};
 		},
-		action: (node: HTMLElement): ActionReturn<unknown, OptionEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<OptionEvents> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
 					const itemElement = e.currentTarget;

@@ -9,13 +9,11 @@ import {
 	overridable,
 	toWritableStores,
 	getElemDirection,
-	type MeltEventHandler,
 	addMeltEventListener,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateRadioGroupProps, RadioGroupItemProps } from './types';
-import type { ActionReturn } from 'svelte/action';
 
 const defaults = {
 	orientation: 'vertical',
@@ -49,11 +47,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 		},
 	});
 
-	type ItemEvents = {
-		'on:m-click'?: MeltEventHandler<MouseEvent>;
-		'on:m-focus'?: MeltEventHandler<FocusEvent>;
-		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
-	};
+	type ItemEvents = 'click' | 'focus' | 'keydown';
 
 	const item = builder(name('item'), {
 		stores: [value, orientation, disabled],
@@ -78,7 +72,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 				} as const;
 			};
 		},
-		action: (node: HTMLElement): ActionReturn<unknown, ItemEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<ItemEvents> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
 					e.preventDefault();

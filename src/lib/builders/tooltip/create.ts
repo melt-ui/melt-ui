@@ -17,7 +17,6 @@ import {
 	styleToString,
 	toWritableStores,
 	isTouch,
-	type MeltEventHandler,
 	addMeltEventListener,
 } from '$lib/internal/helpers';
 
@@ -25,7 +24,7 @@ import { useFloating, usePortal } from '$lib/internal/actions';
 import { onMount, tick } from 'svelte';
 import { get, writable } from 'svelte/store';
 import type { CreateTooltipProps } from './types';
-import type { ActionReturn } from 'svelte/action';
+import type { MeltActionReturn } from '$lib/internal/types';
 
 const defaults = {
 	positioning: {
@@ -103,14 +102,13 @@ export function createTooltip(props?: CreateTooltipProps) {
 		}, get(closeDelay));
 	}
 
-	type TriggerEvents = {
-		'on:m-pointerdown'?: MeltEventHandler<PointerEvent>;
-		'on:m-pointerenter'?: MeltEventHandler<PointerEvent>;
-		'on:m-pointerleave'?: MeltEventHandler<PointerEvent>;
-		'on:m-focus'?: MeltEventHandler<FocusEvent>;
-		'on:m-blur'?: MeltEventHandler<FocusEvent>;
-		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
-	};
+	type TriggerEvents =
+		| 'pointerdown'
+		| 'pointerenter'
+		| 'pointerleave'
+		| 'focus'
+		| 'blur'
+		| 'keydown';
 
 	const trigger = builder(name('trigger'), {
 		returned: () => {
@@ -118,7 +116,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				'aria-describedby': ids.content,
 			};
 		},
-		action: (node: HTMLElement): ActionReturn<unknown, TriggerEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerdown', () => {
 					const $closeOnPointerDown = get(closeOnPointerDown);
@@ -166,10 +164,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 	const isVisible = derivedVisible({ open, activeTrigger, forceVisible });
 
-	type ContentEvents = {
-		'on:m-pointerenter'?: MeltEventHandler<PointerEvent>;
-		'on:m-pointerdown'?: MeltEventHandler<PointerEvent>;
-	};
+	type ContentEvents = 'pointerenter' | 'pointerdown';
 
 	const content = builder(name('content'), {
 		stores: [isVisible, portal],
@@ -185,7 +180,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				'data-portal': $portal ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement): ActionReturn<unknown, ContentEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<ContentEvents> => {
 			const portalParent = getPortalParent(node);
 
 			let unsubFloating = noop;

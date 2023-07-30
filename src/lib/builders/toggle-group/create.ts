@@ -10,13 +10,11 @@ import {
 	toWritableStores,
 	getElemDirection,
 	overridable,
-	type MeltEventHandler,
 	addMeltEventListener,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateToggleGroupProps, ToggleGroupItemProps, ToggleGroupType } from './types';
-import type { ActionReturn } from 'svelte/action';
 
 const defaults = {
 	type: 'single',
@@ -57,10 +55,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 		},
 	});
 
-	type ItemEvents = {
-		'on:m-click'?: MeltEventHandler<MouseEvent>;
-		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
-	};
+	type ItemEvents = 'click' | 'keydown';
 
 	const item = builder(name('item'), {
 		stores: [value, disabled, orientation, type],
@@ -84,15 +79,8 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 				} as const;
 			};
 		},
-		action: (node: HTMLElement): ActionReturn<unknown, ItemEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<ItemEvents> => {
 			let unsub = noop;
-
-			const getNodeProps = () => {
-				const itemValue = node.dataset.value;
-				const disabled = node.dataset.disabled === 'true';
-
-				return { value: itemValue, disabled };
-			};
 
 			const parentGroup = node.closest(selector());
 			if (!isHTMLElement(parentGroup)) return {};
@@ -105,24 +93,40 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 				node.tabIndex = 0;
 			}
 
+			function getNodeProps() {
+				const itemValue = node.dataset.value;
+				const disabled = node.dataset.disabled === 'true';
+
+				return { value: itemValue, disabled };
+			}
+
+			function handleValueUpdate() {
+				const { value: itemValue, disabled } = getNodeProps();
+				if (itemValue === undefined || disabled) return;
+
+				value.update(($value) => {
+					if (Array.isArray($value)) {
+						if ($value.includes(itemValue)) {
+							return $value.filter((i) => i !== itemValue);
+						}
+						$value.push(itemValue);
+						return $value;
+					}
+					return $value === itemValue ? undefined : itemValue;
+				});
+			}
+
 			unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
-					const { value: itemValue, disabled } = getNodeProps();
-					if (itemValue === undefined || disabled) return;
-
-					value.update(($value) => {
-						if (Array.isArray($value)) {
-							if ($value.includes(itemValue)) {
-								return $value.filter((i) => i !== itemValue);
-							}
-							$value.push(itemValue);
-							return $value;
-						}
-						return $value === itemValue ? undefined : itemValue;
-					});
+					handleValueUpdate();
 				}),
 
 				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key === kbd.SPACE || e.key === kbd.ENTER) {
+						e.preventDefault();
+						handleValueUpdate();
+						return;
+					}
 					if (!get(rovingFocus)) return;
 
 					const el = e.currentTarget;
