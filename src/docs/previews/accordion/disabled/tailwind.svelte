@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createAccordion } from '@melt-ui/svelte';
+	import { createAccordion, melt } from '@melt-ui/svelte';
 	import { slide } from 'svelte/transition';
 
 	const {
@@ -31,19 +31,25 @@
 </script>
 
 <div
-	class="mx-auto w-[18rem] max-w-full rounded-md shadow-lg sm:w-[25rem]"
+	class="mx-auto w-full max-w-md rounded-md shadow-lg"
+	use:melt={$root}
 	{...$root}
 >
 	{#each items as { id, title, description, disabled }, i}
 		<div
-			melt={$item(id)}
+			{...$item(id)}
+			use:melt={$item(id)}
 			class="overflow-hidden transition-colors first:rounded-t
             last:rounded-b focus-within:relative focus-within:z-10 focus-within:ring
             focus-within:ring-magnum-400"
 		>
 			<h2 class="flex">
 				<button
-					melt={$trigger({ value: id, disabled })}
+					on:m-click={() => {
+						console.log('m-click');
+					}}
+					use:melt={$trigger}
+					{...$trigger({ value: id, disabled })}
 					class="flex h-12 flex-1 cursor-pointer items-center justify-between border-b border-b-magnum-700
                  bg-white px-5 text-base font-medium
                  leading-none text-magnum-700 transition-colors hover:bg-opacity-95 focus:!ring-0

@@ -1,13 +1,13 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	omit,
 	overridable,
 	styleToString,
 	toWritableStores,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { derived, get, writable, readonly } from 'svelte/store';
 import type { CreateSwitchProps } from './types';
 
@@ -43,8 +43,8 @@ export function createSwitch(props?: CreateSwitchProps) {
 				'aria-required': $required,
 			} as const;
 		},
-		action(node: HTMLElement) {
-			const unsub = addEventListener(node, 'click', () => {
+		action(node: HTMLElement): MeltActionReturn<'click'> {
+			const unsub = addMeltEventListener(node, 'click', () => {
 				if (get(disabled)) return;
 
 				checked.update((value) => !value);

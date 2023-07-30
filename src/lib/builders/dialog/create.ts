@@ -1,6 +1,5 @@
 import { createFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions';
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	effect,
@@ -15,10 +14,13 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
+	addMeltEventListener,
 	removeScroll,
 	derivedVisible,
+	kbd,
+	executeCallbacks,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { get, writable, readonly } from 'svelte/store';
 import type { CreateDialogProps } from './types';
 import { onMount, tick } from 'svelte';
@@ -57,6 +59,14 @@ export function createDialog(props?: CreateDialogProps) {
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
 	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
 
+	function handleOpen(e: Event) {
+		const el = e.currentTarget;
+		const triggerEl = e.currentTarget;
+		if (!isHTMLElement(el) || !isHTMLElement(triggerEl)) return;
+		open.set(true);
+		activeTrigger.set(triggerEl);
+	}
+
 	function handleClose() {
 		open.set(false);
 		const triggerEl = document.getElementById(ids.trigger);
@@ -85,6 +95,8 @@ export function createDialog(props?: CreateDialogProps) {
 		});
 	});
 
+	type TriggerEvents = 'click' | 'keydown';
+
 	const trigger = builder(name('trigger'), {
 		stores: open,
 		returned: ($open) => {
@@ -96,13 +108,17 @@ export function createDialog(props?: CreateDialogProps) {
 				type: 'button',
 			} as const;
 		},
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', (e) => {
-				const el = e.currentTarget;
-				if (!isHTMLElement(el)) return;
-				open.set(true);
-				activeTrigger.set(node);
-			});
+		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', (e) => {
+					handleOpen(e);
+				}),
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
+					e.preventDefault();
+					handleOpen(e);
+				})
+			);
 
 			return {
 				destroy: unsub,
@@ -264,15 +280,24 @@ export function createDialog(props?: CreateDialogProps) {
 		}),
 	});
 
+	type CloseEvents = 'click' | 'keydown';
+
 	const close = builder(name('close'), {
 		returned: () =>
 			({
 				type: 'button',
 			} as const),
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', () => {
-				handleClose();
-			});
+		action: (node: HTMLElement): MeltActionReturn<CloseEvents> => {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					handleClose();
+				}),
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key !== kbd.SPACE && e.key !== kbd.ENTER) return;
+					e.preventDefault();
+					handleClose();
+				})
+			);
 
 			return {
 				destroy: unsub,

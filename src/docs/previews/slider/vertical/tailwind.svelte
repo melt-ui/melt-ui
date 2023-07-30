@@ -18,7 +18,7 @@
 		<span melt={$range} class="w-full bg-white" />
 	</span>
 	<span
-		melt={$thumb()}
+		melt={$thumb}
 		class="block h-5 w-5 rounded-full bg-white focus:ring-4 focus:ring-black/40"
 	/>
 </span>

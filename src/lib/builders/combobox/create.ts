@@ -1,6 +1,5 @@
 import { useEscapeKeydown, usePopper } from '$lib/internal/actions';
 import {
-	addEventListener,
 	back,
 	builder,
 	createElHelpers,
@@ -29,12 +28,13 @@ import {
 	getOptions,
 	getPortalParent,
 	derivedVisible,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
 import type { ComboboxItemProps, CreateComboboxProps } from './types';
-import { createLabel } from '../label';
-import type { Defaults } from '$lib/internal/types';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+import { createLabel } from '../label/create';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
@@ -195,7 +195,10 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	 * that the filterFunction predicate is applied to any added items. Eg:
 	 * ```ts
 	 * function addNewBook(book: Book) {
-	 *   updateItems((books) => [...books, book]);
+	 *   updateItems((books) => {
+	 *     books.push(book);
+	 *     return books
+	 * });
 	 * };
 	 * ```
 	 */
@@ -210,6 +213,8 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		// Run the filter function on the updated list and store the result.
 		filteredItems.set(updatedItems.filter((item) => $filterFunction(item, $inputValue)));
 	}
+
+	type InputEvents = 'click' | 'keydown' | 'input';
 
 	/** Action and attributes for the text input. */
 	const input = builder(name('input'), {
@@ -226,9 +231,9 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 				role: 'combobox',
 			} as const;
 		},
-		action: (node: HTMLInputElement) => {
+		action: (node: HTMLInputElement): MeltActionReturn<InputEvents> => {
 			const unsubscribe = executeCallbacks(
-				addEventListener(node, 'click', () => {
+				addMeltEventListener(node, 'click', () => {
 					const $open = get(open);
 					if ($open) {
 						return;
@@ -236,7 +241,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 					openMenu($open);
 				}),
 				// Handle all input key events including typing, meta, and navigation.
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const $open = get(open);
 					/**
 					 * When the menu is closed...
@@ -345,7 +350,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 					}
 				}),
 				// Listens to the input value and filters the items accordingly.
-				addEventListener(node, 'input', (e) => {
+				addMeltEventListener(node, 'input', (e) => {
 					if (!isHTMLInputElement(e.target)) return;
 					const $filterFunction = get(filterFunction);
 					const $items = get(items);
@@ -407,7 +412,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 				style: styleToString({ display: $isVisible ? undefined : 'none' }),
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<'pointerleave'> => {
 			/**
 			 * We need to get the parent portal before the menu is opened,
 			 * otherwise the parent will have been moved to the body, and
@@ -470,7 +475,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 					}
 				),
 				// Remove highlight when the pointer leaves the menu.
-				addEventListener(node, 'pointerleave', () => {
+				addMeltEventListener(node, 'pointerleave', () => {
 					highlightedItem.set(null);
 				})
 			);
@@ -483,6 +488,8 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 			};
 		},
 	});
+
+	type ItemEvents = 'pointermove' | 'click';
 
 	// Use our existing label builder to create a label for the combobox input.
 	const {
@@ -514,10 +521,10 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 					role: 'option',
 					style: styleToString({ cursor: props.disabled ? 'default' : 'pointer' }),
 				} as const),
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<ItemEvents> => {
 			const unsubscribe = executeCallbacks(
 				// Handle highlighting items when the pointer moves over them.
-				addEventListener(node, 'pointermove', () => {
+				addMeltEventListener(node, 'pointermove', () => {
 					// Skip highlighting if the item is already highlighted.
 					if (node === get(highlightedItem)) return;
 					// If the item is disabled, clear the highlight.
@@ -528,7 +535,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 					// Otherwise, proceed.
 					highlightedItem.set(node);
 				}),
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
 					// If the item is disabled, `preventDefault` to stop the input losing focus.
 					if (isElementDisabled(node)) {
 						e.preventDefault();

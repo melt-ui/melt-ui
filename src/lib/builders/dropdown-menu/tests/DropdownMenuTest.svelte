@@ -16,7 +16,7 @@
 		elements: { radioGroup, radioItem },
 		helpers: { isChecked },
 	} = createMenuRadioGroup({
-		value: 'Hunter Johnston',
+		defaultValue: 'Hunter Johnston',
 	});
 
 	const personsArr = ['Hunter Johnston', 'Thomas G. Lopes', 'Adrian Gonz', 'Franck Poingt'];

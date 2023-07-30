@@ -15,15 +15,13 @@
 	const {
 		elements: { subMenu: subMenuA, subTrigger: subTriggerA },
 		states: { subOpen },
-	} = createSubmenu({
-		forceVisible: true,
-	});
+	} = createSubmenu();
 
 	const {
 		elements: { radioGroup, radioItem },
 		helpers: { isChecked },
 	} = createMenuRadioGroup({
-		value: 'Hunter Johnston',
+		defaultValue: 'Hunter Johnston',
 	});
 
 	const personsArr = ['Hunter Johnston', 'Thomas G. Lopes', 'Adrian Gonz', 'Franck Poingt'];

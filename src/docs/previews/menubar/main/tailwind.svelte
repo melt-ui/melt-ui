@@ -21,7 +21,7 @@
 		elements: { radioGroup, radioItem },
 		helpers: { isChecked },
 	} = createMenuRadioGroup({
-		value: 'Nord',
+		defaultValue: 'Nord',
 	});
 
 	const {

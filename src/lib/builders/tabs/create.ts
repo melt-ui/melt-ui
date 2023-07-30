@@ -1,5 +1,4 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -14,8 +13,9 @@ import {
 	omit,
 	getElemDirection,
 	overridable,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { get, writable, readonly } from 'svelte/store';
 import type { CreateTabsProps, TabsTriggerProps } from './types';
 
@@ -70,6 +70,8 @@ export function createTabs(props?: CreateTabsProps) {
 		}
 	};
 
+	type TriggerEvents = 'focus' | 'click' | 'keydown';
+
 	const trigger = builder(name('trigger'), {
 		stores: [value, autoSet, orientation],
 		returned: ([$value, $autoSet, $orientation]) => {
@@ -99,12 +101,9 @@ export function createTabs(props?: CreateTabsProps) {
 				};
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', () => {
-					node.focus();
-				}),
-				addEventListener(node, 'focus', () => {
+				addMeltEventListener(node, 'focus', () => {
 					const disabled = node.dataset.disabled === 'true';
 					const tabValue = node.dataset.value;
 
@@ -113,7 +112,9 @@ export function createTabs(props?: CreateTabsProps) {
 					}
 				}),
 
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
+					node.focus();
+
 					e.preventDefault();
 
 					const disabled = node.dataset.disabled === 'true';
@@ -126,7 +127,7 @@ export function createTabs(props?: CreateTabsProps) {
 					}
 				}),
 
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const tabValue = node.dataset.value;
 					if (!tabValue) return;
 

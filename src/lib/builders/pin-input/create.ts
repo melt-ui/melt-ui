@@ -1,5 +1,4 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -12,8 +11,9 @@ import {
 	prev,
 	styleToString,
 	toWritableStores,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
-import type { Defaults } from '@melt-ui/svelte/internal/types';
+import type { Defaults, MeltActionReturn } from '@melt-ui/svelte/internal/types';
 import { tick } from 'svelte';
 import { derived, get, writable, readonly } from 'svelte/store';
 import type { CreatePinInputProps } from './types';
@@ -61,6 +61,8 @@ export function createPinInput(props?: CreatePinInputProps) {
 		},
 	});
 
+	type InputEvents = 'keydown' | 'input' | 'paste' | 'change' | 'focus' | 'blur';
+
 	const input = builder(name('input'), {
 		stores: [value, placeholder, disabled, type],
 		returned: ([$value, $placeholder, $disabled, $type]) => {
@@ -71,7 +73,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 				type: $type,
 			};
 		},
-		action: (node: HTMLInputElement) => {
+		action: (node: HTMLInputElement): MeltActionReturn<InputEvents> => {
 			const { elIndex } = getInputs(node);
 			value.update((v) => {
 				v[elIndex] = node.value;
@@ -79,7 +81,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 			});
 
 			const unsub = executeCallbacks(
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const { inputs, elIndex } = getInputs(node);
 					if (!inputs) return;
 
@@ -123,7 +125,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 						last(inputs).focus();
 					}
 				}),
-				addEventListener(node, 'input', (e) => {
+				addMeltEventListener(node, 'input', (e) => {
 					const { inputs, elIndex } = getInputs(node);
 					if (!inputs) return;
 
@@ -153,7 +155,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 
 					value.set(inputs.map((input) => input.value.slice(-1) ?? undefined));
 				}),
-				addEventListener(node, 'paste', (e) => {
+				addMeltEventListener(node, 'paste', (e) => {
 					e.preventDefault();
 					const { inputs, elIndex } = getInputs(node);
 					if (!inputs) return;
@@ -173,19 +175,19 @@ export function createPinInput(props?: CreatePinInputProps) {
 					inputs[lastIndex]?.focus();
 					value.set(inputs.map((input) => input.value.slice(-1) ?? undefined));
 				}),
-				addEventListener(node, 'change', () => {
+				addMeltEventListener(node, 'change', () => {
 					const { inputs } = getInputs(node);
 					if (!inputs) return;
 					value.set(inputs.map((input) => input.value.slice(-1) ?? undefined));
 				}),
-				addEventListener(node, 'focus', () => {
+				addMeltEventListener(node, 'focus', () => {
 					node.setSelectionRange(1, 1);
 					node.placeholder = '';
 					tick().then(() => {
 						node.placeholder = '';
 					});
 				}),
-				addEventListener(node, 'blur', () => {
+				addMeltEventListener(node, 'blur', () => {
 					node.placeholder = get(placeholder);
 				})
 			);

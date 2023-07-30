@@ -69,11 +69,11 @@
 											<p>
 												{@html transformAPIString(prop.description, true)}
 											</p>
-                                            {#if prop.see}
-                                            <p class="italic">
-                                                See <A href={prop.see.href}>{prop.see.label}</A>
-                                            </p>
-                                            {/if}
+											{#if prop.see}
+												<p class="italic">
+													See <A href={prop.see.href}>{prop.see.label}</A>
+												</p>
+											{/if}
 										</div>
 									{/if}
 								</td>
