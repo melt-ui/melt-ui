@@ -1,12 +1,9 @@
-import { addMeltEventListener, builder, type MeltEventHandler } from '$lib/internal/helpers';
-import type { ActionReturn } from 'svelte/action';
+import { addMeltEventListener, builder } from '$lib/internal/helpers';
+import type { MeltActionReturn } from '$lib/internal/types';
 
 export function createLabel() {
-	type RootEvents = {
-		'on:m-mousedown'?: MeltEventHandler<MouseEvent>;
-	};
 	const root = builder('label', {
-		action: (node: HTMLElement): ActionReturn<unknown, RootEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<'mousedown'> => {
 			const mouseDown = addMeltEventListener(node, 'mousedown', (e) => {
 				if (!e.defaultPrevented && e.detail > 1) {
 					e.preventDefault();

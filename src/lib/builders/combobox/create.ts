@@ -28,14 +28,12 @@ import {
 	getOptions,
 	getPortalParent,
 	derivedVisible,
-	type MeltEventHandler,
 	addMeltEventListener,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
 import type { ComboboxItemProps, CreateComboboxProps } from './types';
-import type { Defaults } from '$lib/internal/types';
-import type { ActionReturn } from 'svelte/action';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { createLabel } from '../label/create';
 
 // prettier-ignore
@@ -215,11 +213,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		filteredItems.set(updatedItems.filter((item) => $filterFunction(item, $inputValue)));
 	}
 
-	type InputEvents = {
-		'on:m-click'?: MeltEventHandler<MouseEvent>;
-		'on:m-keydown'?: MeltEventHandler<KeyboardEvent>;
-		'on:m-input'?: MeltEventHandler<InputEvent>;
-	};
+	type InputEvents = 'click' | 'keydown' | 'input';
 
 	/** Action and attributes for the text input. */
 	const input = builder(name('input'), {
@@ -236,7 +230,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 				role: 'combobox',
 			} as const;
 		},
-		action: (node: HTMLInputElement): ActionReturn<unknown, InputEvents> => {
+		action: (node: HTMLInputElement): MeltActionReturn<InputEvents> => {
 			const unsubscribe = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
 					const $open = get(open);
@@ -393,10 +387,6 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		},
 	});
 
-	type MenuEvents = {
-		'on:pointerleave'?: MeltEventHandler<PointerEvent>;
-	};
-
 	onMount(() => {
 		activeTrigger.set(document.getElementById(ids.input));
 	});
@@ -421,7 +411,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 				style: styleToString({ display: $isVisible ? undefined : 'none' }),
 			} as const;
 		},
-		action: (node: HTMLElement): ActionReturn<unknown, MenuEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<'pointerleave'> => {
 			/**
 			 * We need to get the parent portal before the menu is opened,
 			 * otherwise the parent will have been moved to the body, and
@@ -498,10 +488,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		},
 	});
 
-	type ItemEvents = {
-		'on:pointermove'?: MeltEventHandler<PointerEvent>;
-		'on:click'?: MeltEventHandler<MouseEvent>;
-	};
+	type ItemEvents = 'pointermove' | 'click';
 
 	// Use our existing label builder to create a label for the combobox input.
 	const {
@@ -533,7 +520,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 					role: 'option',
 					style: styleToString({ cursor: props.disabled ? 'default' : 'pointer' }),
 				} as const),
-		action: (node: HTMLElement): ActionReturn<unknown, ItemEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<ItemEvents> => {
 			const unsubscribe = executeCallbacks(
 				// Handle highlighting items when the pointer moves over them.
 				addMeltEventListener(node, 'pointermove', () => {

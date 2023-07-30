@@ -16,13 +16,12 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
-	type MeltEventHandler,
 	addMeltEventListener,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
 import type { CreateHoverCardProps } from './types';
-import type { ActionReturn } from 'svelte/action';
+import type { MeltActionReturn } from '$lib/internal/types';
 
 type HoverCardParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<HoverCardParts>('hover-card');
@@ -102,13 +101,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 		}
 	) as Readable<() => void>;
 
-	type TriggerEvents = {
-		'on:m-pointerenter'?: MeltEventHandler<PointerEvent>;
-		'on:m-pointerleave'?: MeltEventHandler<PointerEvent>;
-		'on:m-focus'?: MeltEventHandler<FocusEvent>;
-		'on:m-blur'?: MeltEventHandler<FocusEvent>;
-		'on:m-touchstart'?: MeltEventHandler<TouchEvent>;
-	};
+	type TriggerEvents = 'pointerenter' | 'pointerleave' | 'focus' | 'blur' | 'touchstart';
 
 	const trigger = builder(name('trigger'), {
 		stores: [open],
@@ -122,7 +115,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 				id: ids.trigger,
 			};
 		},
-		action: (node: HTMLElement): ActionReturn<unknown, TriggerEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
@@ -147,12 +140,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 		},
 	});
 
-	type ContentEvents = {
-		'on:m-pointerdown'?: MeltEventHandler<PointerEvent>;
-		'on:m-pointerenter'?: MeltEventHandler<PointerEvent>;
-		'on:m-pointerleave'?: MeltEventHandler<PointerEvent>;
-		'on:m-focusout'?: MeltEventHandler<FocusEvent>;
-	};
+	type ContentEvents = 'pointerdown' | 'pointerenter' | 'pointerleave' | 'focusout';
 
 	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
 
@@ -172,7 +160,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 				'data-portal': $portal ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement): ActionReturn<unknown, ContentEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<ContentEvents> => {
 			const portalParent = getPortalParent(node);
 			let unsub = noop;
 

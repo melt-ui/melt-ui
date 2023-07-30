@@ -1,3 +1,5 @@
+import type { ActionReturn } from 'svelte/action';
+
 // Check if type are equal or just extends
 export type IfEquals<T, U, Y = unknown, N = never> = (<G>() => G extends T ? 1 : 2) extends <
 	G
@@ -60,3 +62,20 @@ export type StoreValueObj<T> = {
 export type BuilderReturn<T extends (...args: any) => any> = {
 	[P in keyof ReturnType<T>]: ReturnType<T>[P];
 };
+
+export type EventHandler<T extends Event = Event> = (event: T) => void;
+
+export type MeltEvent<E extends Event> = CustomEvent<{ cancel: () => void; originalEvent: E }>;
+
+export type MeltEventHandler<E extends Event> = EventHandler<
+	Expand<Omit<MeltEvent<E>, 'initCustomEvent'>>
+>;
+
+export type MeltActionReturn<Events extends keyof HTMLElementEventMap | string> = ActionReturn<
+	undefined,
+	{
+		[K in Events as `on:m-${string & K}`]?: K extends keyof HTMLElementEventMap
+			? MeltEventHandler<HTMLElementEventMap[K]>
+			: never;
+	}
+>;

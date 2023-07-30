@@ -1,4 +1,4 @@
-import type { Arrayable } from '$lib/internal/types';
+import type { Arrayable, MeltEvent } from '$lib/internal/types';
 import { noop } from './callbacks';
 import { isHTMLElement } from './is';
 
@@ -103,13 +103,6 @@ export function addMeltEventListener(
 	}
 	return () => noop();
 }
-
-export type EventHandler<T extends Event = Event> = (event: T) => void;
-
-type MeltEvent<E extends Event> = CustomEvent<{ cancel: () => void; originalEvent: E }>;
-export type MeltEventHandler<E extends Event> = EventHandler<
-	Expand<Omit<MeltEvent<E>, 'initCustomEvent'>>
->;
 
 export function dispatchMeltEvent<E extends keyof HTMLElementEventMap>(
 	originalEvent: HTMLElementEventMap[E]

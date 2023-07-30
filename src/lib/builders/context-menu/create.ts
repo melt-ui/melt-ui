@@ -15,7 +15,6 @@ import {
 	isLeftClick,
 	toWritableStores,
 	overridable,
-	type MeltEventHandler,
 	addMeltEventListener,
 	getPortalParent,
 } from '$lib/internal/helpers';
@@ -34,7 +33,7 @@ import {
 	setMeltMenuAttribute,
 } from '../menu';
 import type { CreateContextMenuProps } from './types';
-import type { ActionReturn } from 'svelte/action';
+import type { MeltActionReturn } from '$lib/internal/types';
 
 const defaults = {
 	arrowSize: 8,
@@ -100,10 +99,6 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	});
 	const longPressTimer = writable(0);
 
-	type MenuEvents = {
-		'on:keydown'?: MeltEventHandler<KeyboardEvent>;
-	};
-
 	function handleClickOutside(e: PointerEvent) {
 		if (e.defaultPrevented) return;
 
@@ -137,7 +132,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				tabindex: -1,
 			} as const;
 		},
-		action: (node: HTMLElement): ActionReturn<unknown, MenuEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
 			const portalParent = getPortalParent(node);
 			let unsubPopper = noop;
 
@@ -216,13 +211,13 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		},
 	});
 
-	type TriggerEvents = {
-		'on:m-contextmenu'?: MeltEventHandler<MouseEvent>;
-		'on:m-pointerdown'?: MeltEventHandler<PointerEvent>;
-		'on:m-pointermove'?: MeltEventHandler<PointerEvent>;
-		'on:m-pointercancel'?: MeltEventHandler<PointerEvent>;
-		'on:m-pointerup'?: MeltEventHandler<PointerEvent>;
-	};
+	type TriggerEvents =
+		| 'contextmenu'
+		| 'pointerdown'
+		| 'pointermove'
+		| 'pointercancel'
+		| 'pointerup';
+
 	const trigger = builder(name('trigger'), {
 		stores: rootOpen,
 		returned: ($rootOpen) => {
@@ -236,7 +231,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				}),
 			} as const;
 		},
-		action: (node: HTMLElement): ActionReturn<unknown, TriggerEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
 			applyAttrsIfDisabled(node);
 
 			const handleOpen = (e: MouseEvent | PointerEvent) => {
