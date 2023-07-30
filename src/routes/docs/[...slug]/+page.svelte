@@ -4,7 +4,7 @@
 	import type { SvelteComponent } from 'svelte';
 	import type { PageData } from './$types';
 	import { cn } from '$docs/utils';
-	import { createSeparator } from '$lib';
+	import { createSeparator, melt } from '$lib';
 	import { page } from '$app/stores';
 
 	const {
@@ -33,7 +33,7 @@
 		<div class="mdsvex" id="mdsvex">
 			<svelte:component this={component} />
 		</div>
-		<div melt={$separator} class="my-4 md:my-6" />
+		<div use:melt={$separator} class="my-4 md:my-6" />
 		<!-- <DocsPager /> -->
 	</div>
 	<div class="hidden text-sm xl:block">

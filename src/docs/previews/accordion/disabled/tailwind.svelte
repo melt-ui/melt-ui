@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createAccordion } from '@melt-ui/svelte';
+	import { createAccordion, melt } from '@melt-ui/svelte';
 	import { slide } from 'svelte/transition';
 
 	const {
@@ -36,14 +36,14 @@
 >
 	{#each items as { id, title, description, disabled }, i}
 		<div
-			melt={$item(id)}
+			use:melt={$item(id)}
 			class="overflow-hidden transition-colors first:rounded-t
             last:rounded-b focus-within:relative focus-within:z-10 focus-within:ring
             focus-within:ring-magnum-400"
 		>
 			<h2 class="flex">
 				<button
-					melt={$trigger({ value: id, disabled })}
+					use:melt={$trigger({ value: id, disabled })}
 					class="flex h-12 flex-1 cursor-pointer items-center justify-between border-b border-b-magnum-700
                  bg-white px-5 text-base font-medium
                  leading-none text-magnum-700 transition-colors hover:bg-opacity-95 focus:!ring-0
@@ -57,7 +57,7 @@
 			{#if $isSelected(id)}
 				<div
 					class="overflow-hidden bg-neutral-100 text-sm text-neutral-900"
-					melt={$content(id)}
+					use:melt={$content(id)}
 					transition:slide
 				>
 					<div class="px-5 py-4">

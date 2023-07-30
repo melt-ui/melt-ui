@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Orientation } from '$lib/internal/types';
-	import { createSeparator } from '..';
+	import { createSeparator, melt } from '@melt-ui/svelte';
 
 	export let orientation: Orientation = 'vertical';
 
@@ -20,10 +20,10 @@
 
 <div>
 	<h2>Separator</h2>
-	<div melt={$horizontalSeparator} data-testid="horizontal" />
+	<div use:melt={$horizontalSeparator} data-testid="horizontal" />
 	<div>
 		<p>Part 1</p>
-		<div melt={$vertical} data-testid="vertical" />
+		<div use:melt={$vertical} data-testid="vertical" />
 		<p>Part 2</p>
 	</div>
 </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDialog } from '@melt-ui/svelte';
+	import { createDialog, melt } from '@melt-ui/svelte';
 	/** Internal helpers */
 	import { flyAndScale } from '$docs/utils';
 	import { X } from 'lucide-svelte';
@@ -10,9 +10,9 @@
 	} = createDialog();
 </script>
 
-<button melt={$trigger} class="trigger"> Open Dialog </button>
+<button use:melt={$trigger} class="trigger"> Open Dialog </button>
 {#if $open}
-	<div melt={$overlay} class="overlay" />
+	<div use:melt={$overlay} class="overlay" />
 	<div
 		class="content"
 		transition:flyAndScale={{
@@ -20,10 +20,10 @@
 			y: 8,
 			start: 0.96,
 		}}
-		melt={$content}
+		use:melt={$content}
 	>
-		<h2 melt={$title} class="title">Edit profile</h2>
-		<p melt={$description} class="description">
+		<h2 use:melt={$title} class="title">Edit profile</h2>
+		<p use:melt={$description} class="description">
 			Make changes to your profile here. Click save when you're done.
 		</p>
 
@@ -36,11 +36,11 @@
 			<input id="username" value="@thomasglopes" />
 		</fieldset>
 		<div class="actions">
-			<button melt={$close} class="secondary"> Cancel </button>
-			<button melt={$close} class="primary"> Save changes </button>
+			<button use:melt={$close} class="secondary"> Cancel </button>
+			<button use:melt={$close} class="primary"> Save changes </button>
 		</div>
 
-		<button melt={$close} aria-label="close" class="close">
+		<button use:melt={$close} aria-label="close" class="close">
 			<X />
 		</button>
 	</div>

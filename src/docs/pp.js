@@ -11,7 +11,7 @@
  * @returns {MeltAttribute|null} - The builder and arguments of the melt attribute, or null if no melt attribute is found.
  */
 export function extractMeltAttribute(input) {
-	const meltStart = input.indexOf('melt={');
+	const meltStart = input.indexOf('use:melt={');
 	if (meltStart === -1) return null;
 
 	const substring = input.slice(meltStart + 6);
@@ -55,7 +55,7 @@ export function processMeltAttributes(input) {
 	let tries = 0;
 	while (meltAttribute !== null && tries < 100000) {
 		tries++;
-		const oldMelt = `melt={$${
+		const oldMelt = `use:melt={$${
 			meltAttribute.args !== null
 				? `${meltAttribute.builder}(${meltAttribute.args})`
 				: meltAttribute.builder

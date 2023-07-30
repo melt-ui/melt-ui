@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { createCombobox, type ComboboxFilterFunction } from '@melt-ui/svelte';
+	import {
+		createCombobox,
+		type ComboboxFilterFunction,
+		melt,
+	} from '@melt-ui/svelte';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 
@@ -87,13 +91,13 @@
 
 <div class="flex flex-col gap-1">
 	<!-- svelte-ignore a11y-label-has-associated-control - $label contains the 'for' attribute -->
-	<label melt={$label}>
+	<label use:melt={$label}>
 		<span class="block capitalize">Choose your favorite book:</span>
 	</label>
 
 	<div class="relative">
 		<input
-			melt={$input}
+			use:melt={$input}
 			class="flex h-10 items-center justify-between rounded-md bg-white
 					px-3 pr-12 text-magnum-700"
 			placeholder="Best book ever"
@@ -111,7 +115,7 @@
 {#if $open}
 	<ul
 		class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-md"
-		melt={$menu}
+		use:melt={$menu}
 		transition:slide={{ duration: 150 }}
 	>
 		<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
@@ -122,7 +126,7 @@
 			{#if $filteredItems.length !== 0}
 				{#each $filteredItems as book, index (index)}
 					<li
-						melt={$item({
+						use:melt={$item({
 							index,
 							item: book,
 							disabled: book.disabled,
