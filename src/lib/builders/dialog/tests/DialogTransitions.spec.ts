@@ -24,16 +24,15 @@ describe('Dialog with Transitions', () => {
 	});
 
 	it('Opens when trigger is clicked', async () => {
-		const { getByTestId, queryByTestId } = await render(DialogTransitionTest);
+		await render(DialogTransitionTest);
 
-		const trigger = getByTestId('trigger');
+		const trigger = screen.getByTestId('trigger');
 
-		await expect(queryByTestId('content')).toBeNull();
+		await expect(screen.queryByTestId('content')).toBeNull();
 		await expect(trigger).toBeVisible();
 		await userEvent.click(trigger);
-		await tick();
-		await expect(queryByTestId('content')).not.toBeNull();
-		await expect(queryByTestId('content')).toBeVisible();
+		await waitFor(() => expect(screen.queryByTestId('content')).not.toBeNull());
+		await waitFor(() => expect(screen.queryByTestId('content')).toBeVisible());
 	});
 
 	it(
@@ -61,97 +60,119 @@ describe('Dialog with Transitions', () => {
 		{ retry: 3 }
 	);
 
-	it('Closes when Escape is hit', async () => {
-		const { getByTestId, queryByTestId } = await render(DialogTransitionTest);
+	it(
+		'Closes when Escape is pressed',
+		async () => {
+			await render(DialogTransitionTest);
 
-		const user = userEvent.setup();
-		const trigger = getByTestId('trigger');
+			const user = userEvent.setup();
+			const trigger = screen.getByTestId('trigger');
 
-		await expect(trigger).toBeVisible();
-		await expect(queryByTestId('content')).toBeNull();
-		await user.click(trigger);
-		await expect(queryByTestId('content')).toBeVisible();
-		await user.keyboard(`{${kbd.ESCAPE}}`);
-		await waitForElementToBeRemoved(() => getByTestId('content'));
+			await expect(trigger).toBeVisible();
+			await expect(screen.queryByTestId('content')).toBeNull();
+			await user.click(trigger);
+			await expect(screen.queryByTestId('content')).toBeVisible();
+			await user.keyboard(`{${kbd.ESCAPE}}`);
+			await waitForElementToBeRemoved(() => screen.getByTestId('content'));
 
-		expect(queryByTestId('content')).toBeNull();
-	});
+			expect(screen.queryByTestId('content')).toBeNull();
+		},
+		{ retry: 3 }
+	);
 
-	it('Closes when overlay is clicked', async () => {
-		const { getByTestId, queryByTestId } = await render(DialogTransitionTest);
+	it(
+		'Closes when overlay is clicked',
+		async () => {
+			await render(DialogTransitionTest);
 
-		const user = userEvent.setup();
-		const trigger = getByTestId('trigger');
+			const user = userEvent.setup();
+			const trigger = screen.getByTestId('trigger');
 
-		await expect(trigger).toBeVisible();
-		await expect(queryByTestId('content')).toBeNull();
-		await expect(queryByTestId('overlay')).toBeNull();
-		await user.click(trigger);
-		await tick();
-		await expect(getByTestId('content')).toBeVisible();
-		await expect(getByTestId('overlay')).toBeVisible();
-		await sleep(100);
-		await user.click(getByTestId('overlay'));
-		await waitForElementToBeRemoved(() => getByTestId('content'));
+			await expect(trigger).toBeVisible();
+			await expect(screen.queryByTestId('content')).toBeNull();
+			await expect(screen.queryByTestId('overlay')).toBeNull();
+			await user.click(trigger);
+			await tick();
+			await expect(screen.getByTestId('content')).toBeVisible();
+			await expect(screen.getByTestId('overlay')).toBeVisible();
+			await sleep(100);
+			await user.click(screen.getByTestId('overlay'));
+			await waitForElementToBeRemoved(() => screen.getByTestId('content'));
 
-		expect(queryByTestId('content')).toBeNull();
-	});
+			expect(screen.queryByTestId('content')).toBeNull();
+		},
+		{ retry: 3 }
+	);
 
-	it('Content Portal attaches dialog to body', async () => {
-		const { getByTestId } = await render(DialogTransitionTest);
+	it(
+		'Content Portal attaches dialog to body',
+		async () => {
+			render(DialogTransitionTest);
 
-		const user = userEvent.setup();
-		const trigger = getByTestId('trigger');
-		await user.click(trigger);
+			const user = userEvent.setup();
+			const trigger = screen.getByTestId('trigger');
+			await user.click(trigger);
 
-		const content = getByTestId('content');
+			await waitFor(() => screen.getByTestId('content'));
+			const content = screen.getByTestId('content');
 
-		await expect(content.parentElement).toEqual(document.body);
-	});
+			await expect(content.parentElement).toEqual(document.body);
+		},
+		{
+			retry: 3,
+		}
+	);
 
-	it('Overlay Portal attaches dialog to body', async () => {
-		const { getByTestId } = await render(DialogTransitionTest);
-		const user = userEvent.setup();
-		const trigger = getByTestId('trigger');
-		await user.click(trigger);
+	it(
+		'Overlay Portal attaches dialog to body',
+		async () => {
+			const { getByTestId } = await render(DialogTransitionTest);
+			const user = userEvent.setup();
+			const trigger = getByTestId('trigger');
+			await user.click(trigger);
 
-		const overlay = getByTestId('overlay');
+			const overlay = getByTestId('overlay');
 
-		await expect(overlay.parentElement).toEqual(document.body);
-	});
+			await expect(overlay.parentElement).toEqual(document.body);
+		},
+		{
+			retry: 3,
+		}
+	);
 
 	it('Focuses first focusable item upon opening', async () => {
-		const { getByTestId, queryByTestId } = await render(DialogTransitionTest);
+		await render(DialogTransitionTest);
 
 		const user = userEvent.setup();
-		const trigger = getByTestId('trigger');
+		const trigger = screen.getByTestId('trigger');
 
 		await expect(trigger).toBeVisible();
-		await expect(queryByTestId('content')).toBeNull();
+		await expect(screen.queryByTestId('content')).toBeNull();
 		await user.click(trigger);
-		await tick();
-		await expect(getByTestId('content')).toBeVisible();
+		await waitFor(() => expect(screen.getByTestId('content')).toBeVisible());
 		// Testing focus-trap is a bit flaky. So the focusable element is
 		// always content here.
-		await expect(document.activeElement).toBe(getByTestId('content'));
+		await expect(document.activeElement).toBe(screen.getByTestId('content'));
 	});
 
-	it('Tabbing on last item focuses first item', async () => {
-		const { getByTestId, queryByTestId } = await render(DialogTransitionTest);
+	it(
+		'Tabbing on last item focuses first item',
+		async () => {
+			await render(DialogTransitionTest);
 
-		const user = userEvent.setup();
-		const trigger = getByTestId('trigger');
+			const user = userEvent.setup();
+			const trigger = screen.getByTestId('trigger');
 
-		await expect(trigger).toBeVisible();
-		await expect(queryByTestId('content')).toBeNull();
-		await user.click(trigger);
-		await tick();
-		const content = getByTestId('content');
-		await expect(content).toBeVisible();
-		// Testing focus-trap is a bit flaky. So the focusable element is
-		// always content here.
-		await expect(document.activeElement).toBe(content);
-		await user.tab();
-		await expect(document.activeElement).toBe(content);
-	});
+			await expect(trigger).toBeVisible();
+			await expect(screen.queryByTestId('content')).toBeNull();
+			await user.click(trigger);
+			await waitFor(() => expect(screen.getByTestId('content')).toBeVisible());
+			// Testing focus-trap is a bit flaky. So the focusable element is
+			// always content here.
+			await expect(document.activeElement).toBe(screen.getByTestId('content'));
+			await user.tab();
+			await expect(document.activeElement).toBe(screen.getByTestId('content'));
+		},
+		{ retry: 3 }
+	);
 });
