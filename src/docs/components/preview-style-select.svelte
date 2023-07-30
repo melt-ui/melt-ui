@@ -4,7 +4,7 @@
 	import { beforeNavigate } from '$app/navigation';
 	import type { Writable } from 'svelte/store';
 
-	export let options: SelectOptionProps[] = [];
+	export let options: SelectOptionProps<'tailwind' | 'css'>[] = [];
 	export let codingStyle: Writable<'tailwind' | 'css'>;
 
 	const {
