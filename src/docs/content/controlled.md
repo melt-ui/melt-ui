@@ -82,7 +82,7 @@ Whatever is returned from the change function will be used as the new value of t
 The snippet below shows an example of how the change function could be used to prevent the `open`
 store from being set to `true` based on some arbitrary condition.
 
-```svelte {6-11,17}
+```svelte {6-11,16}
 <script lang="ts">
 	import { createDialog, type CreateDialogProps } from '@melt-ui/svelte'
 

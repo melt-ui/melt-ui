@@ -3,6 +3,7 @@
 	import { transformAPIString } from '$docs/utils';
 	import { APITableHeading } from '$docs/components';
 	import TypeDialog from '../type-dialog.svelte';
+	import A from '../markdown/a.svelte';
 	function replaceDoubleQuotes(str: string) {
 		return str.replace(/"/g, "'");
 	}
@@ -68,6 +69,11 @@
 											<p>
 												{@html transformAPIString(prop.description, true)}
 											</p>
+                                            {#if prop.see}
+                                            <p class="italic">
+                                                See <A href={prop.see.href}>{prop.see.label}</A>
+                                            </p>
+                                            {/if}
 										</div>
 									{/if}
 								</td>

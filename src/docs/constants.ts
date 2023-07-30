@@ -46,11 +46,11 @@ export const LONG_TYPES = {
 export const SEE = {
 	CHANGE_FUNCTIONS: {
 		label: 'Change Functions',
-		href: 'https://melt-ui.com/docs/controlled#change-functions',
+		href: '/docs/controlled#change-functions',
 	},
 	BRING_YOUR_OWN_STORE: {
 		label: 'Bring Your Own Store',
-		href: 'https://melt-ui.com/docs/controlled#bring-your-own-store',
+		href: '/docs/controlled#bring-your-own-store',
 	},
 };
 
