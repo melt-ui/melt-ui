@@ -1,4 +1,4 @@
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, SEE } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 import type { BuilderData } from '.';
 
@@ -6,12 +6,6 @@ const builder: APISchema = {
 	title: 'createAccordion',
 	description: DESCRIPTIONS.BUILDER('accordion'),
 	props: [
-		{
-			name: 'value',
-			type: ['string', 'string[]', 'undefined'],
-			description:
-				'The value of the currently open item. You can also pass an array of values to open multiple items at once if the accordion is of type `multiple`.',
-		},
 		{
 			name: 'type',
 			type: ["'single'", "'multiple'"],
@@ -25,19 +19,27 @@ const builder: APISchema = {
 			default: 'false',
 			description: 'Whether or not the accordion is disabled.',
 		},
-	],
-	returnedProps: [
 		{
-			name: 'isSelected',
-			type: 'Readable<(key: string) => boolean>',
+			name: 'defaultValue',
+			type: ['string', 'string[]', 'undefined'],
+			description: 'The default value of the accordion.',
+		},
+		{
+			name: 'value',
+			type: 'Writable<string | string[] | undefined>',
 			description:
-				'A derived store that takes a key and returns whether or not the item is selected.',
+				'A writable store that controls the value of the accordion. If provided, this will override the value passed to `defaultValue`.',
+			see: SEE.BRING_YOUR_OWN_STORE,
 		},
 		{
-			name: 'options',
-			type: 'Writable<CreateAccordionProps>',
-			description: 'A writable store with the options used to create the accordion.',
+			name: 'onValueChange',
+			type: 'ChangeFn<string | string[] | undefined>',
+			description:
+				'A callback called when the value of the `value` store should be changed. This is useful for controlling the value of the accordion from outside the accordion.',
+			see: SEE.CHANGE_FUNCTIONS,
 		},
+	],
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the accordion root.',
@@ -62,6 +64,40 @@ const builder: APISchema = {
 			name: 'heading',
 			description: 'The builder store used to create accordion headings.',
 			link: '#heading',
+		},
+	],
+	states: [
+		{
+			name: 'value',
+			type: 'Writable<string | string[] | undefined>',
+			description: 'A writable store with the value of the currently open item.',
+		},
+	],
+	helpers: [
+		{
+			name: 'isSelected',
+			type: 'Readable<(key: string) => boolean>',
+			description:
+				'A derived store that takes an item ID as an argument and returns whether or not the item is selected.',
+		},
+	],
+	options: [
+		{
+			name: 'type',
+			type: 'Writable<"single" | "multiple">',
+			description:
+				'The type of accordion to create. A `"single"` accordion only allows one item to be open at a time. A `"multiple"` accordion allows multiple items to be open at a time.',
+		},
+		{
+			name: 'disabled',
+			type: 'Writable<boolean>',
+			description: 'Whether or not the accordion is disabled.',
+		},
+		{
+			name: 'forceVisible',
+			type: 'Writable<boolean>',
+			description:
+				'Whether or not the accordion is forced to be visible. This is useful for custom transitions as it prevents the accordion from being hidden while the transition is in progress.',
 		},
 	],
 };

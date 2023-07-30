@@ -1,4 +1,4 @@
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, SEE } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 import type { BuilderData } from '.';
 
@@ -7,36 +7,70 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('checkbox'),
 	props: [
 		{
-			name: 'checked',
-			type: ['boolean', '"indeterminate"'],
-			default: 'false',
-			description:
-				'The initial checked state of the checkbox. `"indeterminate"` is used to indicate that the checkbox is in an indeterminate state.',
-		},
-		{
 			name: 'disabled',
 			type: 'boolean',
 			default: 'false',
-			description: 'Whether or not the checkbox is disabled.',
+			description: 'Whether or not the checkbox is disabled by default.',
 		},
 		{
 			name: 'required',
 			type: 'boolean',
 			default: 'false',
-			description: 'Whether or not the checkbox is required.',
+			description: 'Whether or not the checkbox is required by default.',
 		},
 		{
 			name: 'name',
 			type: 'string',
-			description: 'The name of the checkbox.',
+			description:
+				'The name of the checkbox. Submitted with its owning form as part of a name/value pair.',
 		},
 		{
 			name: 'value',
 			type: 'string',
-			description: 'The value of the checkbox.',
+			description: 'The value given as data when submitted with a `name`.',
+		},
+		{
+			name: 'defaultChecked',
+			type: ['boolean', '"indeterminate"'],
+			default: 'false',
+			description:
+				'The default checked state of the checkbox. `"indeterminate"` is used to indicate that the checkbox is in an indeterminate state.',
+		},
+		{
+			name: 'checked',
+			type: 'Writable<boolean | "indeterminate">',
+			description:
+				'The controlled checked state store of the checkbox. If provided, this will override the value passed to `defaultChecked`.',
+			see: SEE.BRING_YOUR_OWN_STORE,
+		},
+		{
+			name: 'onCheckedChange',
+			type: 'ChangeFn<boolean | "indeterminate">',
+			description:
+				'A callback called when the value of the `checked` store should be changed. This is useful for controlling the checked state of the checkbox from outside the checkbox.',
+			see: SEE.CHANGE_FUNCTIONS,
 		},
 	],
-	returnedProps: [
+	elements: [
+		{
+			name: 'root',
+			description: 'The builder store used to create the checkbox root.',
+			link: '#root',
+		},
+		{
+			name: 'input',
+			description: 'The builder store used to create the checkbox input.',
+			link: '#input',
+		},
+	],
+	states: [
+		{
+			name: 'checked',
+			type: 'Writable<boolean | "indeterminate">',
+			description: 'A store that contains the checked state of the checkbox.',
+		},
+	],
+	helpers: [
 		{
 			name: 'isChecked',
 			type: 'Readable<boolean>',
@@ -48,15 +82,28 @@ const builder: APISchema = {
 			description:
 				'A derived store that returns whether or not the checkbox is in an indeterminate state.',
 		},
+	],
+	options: [
 		{
-			name: 'root',
-			description: 'The builder store used to create the checkbox root.',
-			link: '#root',
+			name: 'disabled',
+			type: 'Writable<boolean>',
+			description: 'Controls whether or not the checkbox is disabled.',
 		},
 		{
-			name: 'input',
-			description: 'The builder store used to create the checkbox input.',
-			link: '#input',
+			name: 'required',
+			type: 'Writable<boolean>',
+			description: 'Controls whether or not the checkbox is required.',
+		},
+		{
+			name: 'name',
+			type: 'Writable<string>',
+			description:
+				'Controls the name of the checkbox. Submitted with its owning form as part of a name/value pair.',
+		},
+		{
+			name: 'value',
+			type: 'Writable<string>',
+			description: 'Controls the value given as data when submitted with a `name`.',
 		},
 	],
 };

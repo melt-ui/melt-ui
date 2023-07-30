@@ -1,4 +1,4 @@
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, SEE } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 import type { BuilderData } from '.';
 
@@ -35,44 +35,58 @@ const builder: APISchema = {
 			default: '"nearest"',
 			description: 'The alignment of the highlighted item when scrolling.',
 		},
-	],
-	returnedProps: [
 		{
-			name: 'filteredItems',
-			type: 'Readable<T[]>',
-			description: 'A derived store that returns the filtered list of items.',
-		},
-		{
-			name: 'updateItems',
-			type: 'UpdaterFunction: (items: T[]) => T[]',
-			description: 'A function that updates the list of items.',
-		},
-		{
-			name: 'inputValue',
-			type: 'Writable<string>',
-			description: 'A writable store that controls the value of the input.',
-		},
-		{
-			name: 'isSelected',
-			type: 'Readable<(item: T) => boolean>',
-			description:
-				'A derived store that returns a function that returns whether or not the item is selected.',
-		},
-		{
-			name: 'selectedItem',
-			type: 'Writable<T>',
-			description: 'A writable store that controls the selected item.',
-		},
-		{
-			name: 'options',
-			type: 'Writable<CreateComboboxProps>',
-			description: 'A writable store with the options used to create the combobox.',
+			name: 'defaultOpen',
+			type: 'boolean',
+			default: 'false',
+			description: 'Whether or not the combobox is open by default.',
 		},
 		{
 			name: 'open',
 			type: 'Writable<boolean>',
 			description: 'A writable store that controls whether or not the combobox is open.',
+			see: SEE.BRING_YOUR_OWN_STORE,
 		},
+		{
+			name: 'onOpenChange',
+			type: 'ChangeFn<boolean>',
+			description: 'A callback called when the value of the `open` store should be changed.',
+			see: SEE.CHANGE_FUNCTIONS,
+		},
+		{
+			name: 'closeOnOutsideClick',
+			type: 'boolean',
+			default: 'true',
+			description:
+				'Whether or not the combobox should close when clicking outside of the combobox.',
+		},
+		{
+			name: 'closeOnEscape',
+			type: 'boolean',
+			default: 'true',
+			description: 'Whether or not the combobox should close when pressing the escape key.',
+		},
+		{
+			name: 'preventScroll',
+			type: 'boolean',
+			default: 'true',
+			description: 'Whether or not to prevent scrolling the body when the combobox menu is open.',
+		},
+		{
+			name: 'portal',
+			type: 'string | HTMLElement',
+			description: 'The element to render the combobox menu into.',
+			default: 'body',
+		},
+		{
+			name: 'forceVisible',
+			type: 'boolean',
+			description:
+				'Whether or not to force the combobox menu to be visible. This is useful for custom transitions and animations.',
+			default: 'false',
+		},
+	],
+	elements: [
 		{
 			name: 'menu',
 			description: 'The builder store used to create the collapsible menu.',
@@ -92,6 +106,92 @@ const builder: APISchema = {
 			name: 'label',
 			description: 'The builder store used to create the label for the combobox.',
 			link: '#label',
+		},
+	],
+	states: [
+		{
+			name: 'open',
+			type: 'Writable<boolean>',
+			description: 'A writable store that controls whether or not the combobox is open.',
+		},
+		{
+			name: 'inputValue',
+			type: 'Writable<string>',
+			description: 'A writable store that controls the value of the input.',
+		},
+		{
+			name: 'filteredItems',
+			type: 'Readable<T[]>',
+			description: 'A derived store that returns the filtered list of items.',
+		},
+		{
+			name: 'selectedItem',
+			type: 'Writable<T>',
+			description: 'A writable store that controls the selected item.',
+		},
+	],
+	helpers: [
+		{
+			name: 'isSelected',
+			type: 'Readable<(item: T) => boolean>',
+			description:
+				'A derived store that returns a function that returns whether or not the item is selected.',
+		},
+		{
+			name: 'updateItems',
+			type: 'UpdaterFunction: (items: T[]) => T[]',
+			description: 'A function that updates the list of items.',
+		},
+	],
+	options: [
+		{
+			name: 'loop',
+			type: 'Writable<boolean>',
+			description:
+				'Whether or not the combobox should loop through the list when the end or beginning is reached.',
+		},
+		{
+			name: 'portal',
+			type: 'Writable<string | HTMLElement>',
+			description: 'The element to render the combobox menu into.',
+		},
+		{
+			name: 'forceVisible',
+			type: 'Writable<boolean>',
+			description:
+				'Whether or not to force the combobox menu to be visible. This is useful for custom transitions and animations.',
+		},
+		{
+			name: 'itemToString',
+			type: 'Writable<(item: T) => string>',
+			description: 'A function that returns a string representation of the item.',
+		},
+		{
+			name: 'closeOnEscape',
+			type: 'Writable<boolean>',
+			description: 'Whether or not the combobox should close when pressing the escape key.',
+		},
+		{
+			name: 'preventScroll',
+			type: 'Writable<boolean>',
+			description: 'Whether or not to prevent scrolling the body when the combobox menu is open.',
+		},
+		{
+			name: 'filterFunction',
+			type: 'Writable<(item: T, inputValue: string)>',
+			description:
+				'A function that returns `true` if the item should be included in the filtered list.',
+		},
+		{
+			name: 'scrollAlignment',
+			type: 'Writable<"nearest" | "center">',
+			description: 'The alignment of the highlighted item when scrolling.',
+		},
+		{
+			name: 'closeOnOutsideClick',
+			type: 'Writable<boolean>',
+			description:
+				'Whether or not the combobox should close when clicking outside of the combobox.',
 		},
 	],
 };
@@ -150,20 +250,20 @@ const item: APISchema = {
 	],
 	dataAttributes: [
 		{
-			name: 'data-melt-combobox-item',
-			value: ATTRS.MELT('item'),
+			name: 'data-index',
+			value: 'The index of the item in the list.',
 		},
 		{
 			name: 'data-disabled',
 			value: ATTRS.DISABLED('`item`'),
 		},
 		{
-			name: 'data-index',
-			value: 'The index of the item in the list.',
-		},
-		{
 			name: 'data-highlighted',
 			value: ATTRS.HIGHLIGHTED(),
+		},
+		{
+			name: 'data-melt-combobox-item',
+			value: ATTRS.MELT('item'),
 		},
 	],
 };

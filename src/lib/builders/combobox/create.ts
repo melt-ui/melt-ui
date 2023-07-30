@@ -85,7 +85,8 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	const selectedItem = writable<T>(undefined);
 
 	// options
-	const options = toWritableStores(omit(withDefaults, 'items'));
+	const options = toWritableStores(omit(withDefaults, 'items', 'open', 'defaultOpen'));
+
 	const {
 		scrollAlignment,
 		loop,

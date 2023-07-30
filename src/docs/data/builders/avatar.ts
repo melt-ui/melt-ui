@@ -1,4 +1,4 @@
-import { ATTRS, DESCRIPTIONS } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, SEE } from '$docs/constants';
 import type { APISchema } from '$docs/types';
 import type { BuilderData } from '.';
 
@@ -10,25 +10,56 @@ const builder: APISchema = {
 			name: 'src',
 			type: 'string',
 			default: '""',
-			description: 'The URL of the image to render.',
+			description: 'The source of the image to display.',
 		},
 		{
 			name: 'delayMs',
 			type: 'number',
-			default: 'undefined',
-			description: 'The number of milliseconds to wait before rendering the fallback image.',
+			default: '0',
+			description: 'The amount of time in milliseconds to wait before displaying the image.',
+		},
+		{
+			name: 'loadingStatus',
+			type: 'Writable<"loading" | "loaded" | "error">',
+			description: 'An optional writable store used to control the loading status of the image.',
+			see: SEE.BRING_YOUR_OWN_STORE,
+		},
+		{
+			name: 'onLoadingStatusChange',
+			type: 'ChangeFn<"loading" | "loaded" | "error">',
+			description: 'A callback invoked when the loading status store of the avatar changes.',
+			see: SEE.CHANGE_FUNCTIONS,
 		},
 	],
-	returnedProps: [
+	elements: [
 		{
 			name: 'image',
-			description: 'The builder store used to create the image element.',
+			description: 'The builder store used to create the the image element.',
 			link: '#image',
 		},
 		{
 			name: 'fallback',
 			description: 'The builder store used to create the fallback element.',
 			link: '#fallback',
+		},
+	],
+	states: [
+		{
+			name: 'loadingStatus',
+			type: 'Writable<"loading" | "loaded" | "error">',
+			description: 'A writable store used to control the value of the loading status.',
+		},
+	],
+	options: [
+		{
+			name: 'src',
+			type: 'Writable<string>',
+			description: 'A writable store used to control the value of the image source.',
+		},
+		{
+			name: 'delayMs',
+			type: 'Writable<number>',
+			description: 'A writable store used to control the value of the delay in milliseconds.',
 		},
 	],
 };

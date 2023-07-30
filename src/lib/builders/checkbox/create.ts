@@ -23,7 +23,7 @@ const defaults = {
 export function createCheckbox(props?: CreateCheckboxProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateCheckboxProps;
 
-	const options = toWritableStores(omit(withDefaults, 'checked'));
+	const options = toWritableStores(omit(withDefaults, 'checked', 'defaultChecked'));
 	const { disabled, name, required, value } = options;
 
 	// States

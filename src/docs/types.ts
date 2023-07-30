@@ -83,6 +83,13 @@ export type Props = Array<{
 	required?: boolean;
 	description?: string;
 	longType?: LongType;
+	/**
+	 * A reference link to more information about the prop.
+	 */
+	see?: {
+		label: string;
+		href: string;
+	};
 }>;
 
 export type Events = Array<{
@@ -107,6 +114,12 @@ export type APISchema = {
 	description: string;
 	props?: Props;
 	dataAttributes?: DataAttributes;
+	elements?: ReturnedProps;
+	helpers?: ReturnedProps;
+	states?: ReturnedProps;
+	builders?: ReturnedProps;
+	actions?: ReturnedProps;
+	options?: ReturnedProps;
 	returnedProps?: ReturnedProps;
 };
 

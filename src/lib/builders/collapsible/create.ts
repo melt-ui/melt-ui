@@ -21,7 +21,7 @@ const { name } = createElHelpers('collapsible');
 export function createCollapsible(props?: CreateCollapsibleProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateCollapsibleProps;
 
-	const options = toWritableStores(omit(withDefaults, 'open'));
+	const options = toWritableStores(omit(withDefaults, 'open', 'defaultOpen', 'onOpenChange'));
 	const { disabled, forceVisible } = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
