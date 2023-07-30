@@ -270,6 +270,7 @@ export function createSelect<
 					unsubDerived();
 					unsubPopper();
 					unsubPortal?.();
+					unsubScroll();
 					unsubEventListeners();
 				},
 			};
