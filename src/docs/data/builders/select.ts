@@ -45,6 +45,12 @@ const builder: APISchema = {
 			default: 'false',
 			description: DESCRIPTIONS.LOOP,
 		},
+		{
+			name: 'multiple',
+			type: 'boolean',
+			default: 'false',
+			description: 'Whether or not the select is a multiple select.',
+		},
 	],
 	returnedProps: [
 		{
