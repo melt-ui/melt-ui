@@ -13,11 +13,10 @@ const builder: APISchema = {
 				'The value of the currently open item. You can also pass an array of values to open multiple items at once if the accordion is of type `multiple`.',
 		},
 		{
-			name: 'type',
-			type: ["'single'", "'multiple'"],
-			default: "'single'",
-			description:
-				'The type of accordion to create. A `"single"` accordion only allows one item to be open at a time. A `"multiple"` accordion allows multiple items to be open at a time.',
+			name: 'multiple',
+			type: 'boolean',
+			default: 'false',
+			description: 'If `true`, multiple accordion items can be open at the same time.',
 		},
 		{
 			name: 'disabled',
