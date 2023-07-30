@@ -26,10 +26,10 @@ type GetActionAttributes<Builder> = Builder extends Record<string, any> & {
  * ```
  */
 export function melt<
-	A extends Record<string, any>,
 	Builder extends SomeBuilder<Element, Param, A>,
 	Element extends HTMLElement,
 	Attributes extends GetActionAttributes<Builder>,
+	A extends Record<string, any>,
 	Param = never
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 >(node: Element, params: Builder): ActionReturn<Builder, Attributes> {
