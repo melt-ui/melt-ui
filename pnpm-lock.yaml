@@ -32,8 +32,8 @@ devDependencies:
     specifier: ^1.1.57
     version: 1.1.57
   '@melt-ui/pp':
-    specifier: ^0.0.5
-    version: 0.0.5(@melt-ui/svelte@0.22.2)(svelte@4.0.0)
+    specifier: 0.1.0-next.0
+    version: 0.1.0-next.0(@melt-ui/svelte@0.22.2)(svelte@4.0.0)
   '@playwright/test':
     specifier: ^1.36.0
     version: 1.36.0
@@ -2810,10 +2810,11 @@ packages:
       react: 18.2.0
     dev: true
 
-  /@melt-ui/pp@0.0.5(@melt-ui/svelte@0.22.2)(svelte@4.0.0):
-    resolution: {integrity: sha512-KFfZXn70wHzEX8jkGy0p+MJpPuv1HS8THF3glZI5kuOGWSvLjVoxtuNhk5UuJSzsNk0OlIlVaAZIRSPrswE5Gw==}
+  /@melt-ui/pp@0.1.0-next.0(@melt-ui/svelte@0.22.2)(svelte@4.0.0):
+    resolution: {integrity: sha512-ks2AxiA2Bw6ACOLOowqdm7TlZ47PmC6277KCD9aTPTluU+IFrDbo9ihC0egitC8agJdR0KN/jntihvVEqO7ysw==}
+    engines: {pnpm: '>=8.6.3'}
     peerDependencies:
-      '@melt-ui/svelte': ^0.22.0
+      '@melt-ui/svelte': '>= 0.22.0'
       svelte: ^3.55.0 || ^4.0.0
     dependencies:
       '@melt-ui/svelte': 0.22.2(svelte@4.0.0)
