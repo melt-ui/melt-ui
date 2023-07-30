@@ -1,45 +1,25 @@
-import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, TYPES, propToOption } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 import type { BuilderData } from '.';
-import rawFloatingConfig from '$docs/data/long-types/floating-config?raw';
 
 const builder: APISchema = {
 	title: 'createContextMenu',
 	description: DESCRIPTIONS.BUILDER('context menu'),
 	props: [
-		{
-			name: 'positioning',
-			default: "placement: 'right'",
-			description: DESCRIPTIONS.FLOATING_CONFIG,
-			type: 'FloatingConfig',
-			longType: {
-				rawCode: rawFloatingConfig,
-			},
-		},
-		{
-			name: 'arrowSize',
-			type: 'number',
-			default: '8',
-			description: DESCRIPTIONS.ARROW_SIZE,
-		},
-		{
-			name: 'preventScroll',
-			type: 'boolean',
-			default: 'true',
-			description: DESCRIPTIONS.PREVENT_SCROLL('context menu'),
-		},
+		PROPS.POSITIONING({ default: "placement: 'right'" }),
+		PROPS.ARROW_SIZE,
+		PROPS.DIR({ name: 'context menu' }),
+		PROPS.PREVENT_SCROLL({ name: 'context menu' }),
+		PROPS.CLOSE_ON_ESCAPE({ name: 'context menu' }),
+		PROPS.PORTAL({ name: 'context menu' }),
+		PROPS.CLOSE_ON_OUTSIDE_CLICK({ name: 'context menu' }),
+		PROPS.LOOP(),
+		PROPS.FORCE_VISIBLE({ name: 'context menu' }),
+		PROPS.DEFAULT_OPEN({ name: 'context menu' }),
+		PROPS.OPEN({ name: 'context menu' }),
+		PROPS.ON_OPEN_CHANGE,
 	],
-	returnedProps: [
-		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls the open state of the context menu.',
-		},
-		{
-			name: 'options',
-			type: 'Writable<CreateContextMenuProps>',
-			description: 'A writable store that controls the options of the context menu.',
-		},
+	elements: [
 		{
 			name: 'menu',
 			description: 'The builder store used to create the context menu.',
@@ -65,6 +45,31 @@ const builder: APISchema = {
 			description: 'The builder store used to create the context menu arrow.',
 			link: '#arrow',
 		},
+	],
+	builders: [
+		{
+			name: 'createSubmenu',
+			description: 'A builder function used to create a submenu.',
+			link: '#createsubmenu',
+		},
+	],
+	states: [
+		{
+			name: 'open',
+			type: 'Writable<boolean>',
+			description: 'A writable store that controls the open state of the context menu.',
+		},
+	],
+	options: [
+		propToOption(PROPS.POSITIONING()),
+		propToOption(PROPS.ARROW_SIZE),
+		propToOption(PROPS.DIR({ name: 'context menu' })),
+		propToOption(PROPS.PREVENT_SCROLL({ name: 'context menu' })),
+		propToOption(PROPS.CLOSE_ON_ESCAPE({ name: 'context menu' })),
+		propToOption(PROPS.PORTAL({ name: 'context menu' })),
+		propToOption(PROPS.CLOSE_ON_OUTSIDE_CLICK({ name: 'context menu' })),
+		propToOption(PROPS.LOOP()),
+		propToOption(PROPS.FORCE_VISIBLE({ name: 'context menu' })),
 	],
 };
 

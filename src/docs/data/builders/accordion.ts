@@ -1,24 +1,22 @@
-import { ATTRS, DESCRIPTIONS, KBD, SEE } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE, propToOption } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 import type { BuilderData } from '.';
+
+const ACCORDION_TYPE = {
+	name: 'type',
+	type: ["'single'", "'multiple'"],
+	default: "'single'",
+	description:
+		'The type of accordion to create. A `"single"` accordion only allows one item to be open at a time. A `"multiple"` accordion allows multiple items to be open at a time.',
+};
 
 const builder: APISchema = {
 	title: 'createAccordion',
 	description: DESCRIPTIONS.BUILDER('accordion'),
 	props: [
-		{
-			name: 'type',
-			type: ["'single'", "'multiple'"],
-			default: "'single'",
-			description:
-				'The type of accordion to create. A `"single"` accordion only allows one item to be open at a time. A `"multiple"` accordion allows multiple items to be open at a time.',
-		},
-		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the accordion is disabled.',
-		},
+		ACCORDION_TYPE,
+		PROPS.DISABLED({ name: 'accordion' }),
+		PROPS.FORCE_VISIBLE({ name: 'accordion' }),
 		{
 			name: 'defaultValue',
 			type: ['string', 'string[]', 'undefined'],
@@ -82,23 +80,9 @@ const builder: APISchema = {
 		},
 	],
 	options: [
-		{
-			name: 'type',
-			type: 'Writable<"single" | "multiple">',
-			description:
-				'The type of accordion to create. A `"single"` accordion only allows one item to be open at a time. A `"multiple"` accordion allows multiple items to be open at a time.',
-		},
-		{
-			name: 'disabled',
-			type: 'Writable<boolean>',
-			description: 'Whether or not the accordion is disabled.',
-		},
-		{
-			name: 'forceVisible',
-			type: 'Writable<boolean>',
-			description:
-				'Whether or not the accordion is forced to be visible. This is useful for custom transitions as it prevents the accordion from being hidden while the transition is in progress.',
-		},
+		propToOption(ACCORDION_TYPE),
+		propToOption(PROPS.DISABLED({ name: 'accordion' })),
+		propToOption(PROPS.FORCE_VISIBLE({ name: 'accordion' })),
 	],
 };
 

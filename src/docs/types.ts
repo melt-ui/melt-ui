@@ -76,7 +76,7 @@ export type LongType = {
 	highlightedCode?: string;
 };
 
-export type Props = Array<{
+export type Prop = {
 	name: string;
 	type: string | string[];
 	default?: string;
@@ -90,7 +90,9 @@ export type Props = Array<{
 		label: string;
 		href: string;
 	};
-}>;
+};
+
+export type Props = Prop[];
 
 export type Events = Array<{
 	label: string;
@@ -107,6 +109,7 @@ export type ReturnedProps = Array<{
 	type?: string;
 	description?: string;
 	link?: string;
+	longType?: LongType;
 }>;
 
 export type APISchema = {

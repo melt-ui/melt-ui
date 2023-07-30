@@ -1,90 +1,49 @@
-import { ATTRS, DESCRIPTIONS, KBD, SEE } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, propToOption } from '$docs/constants';
+import type { APISchema, KeyboardSchema, Prop } from '$docs/types';
 import type { BuilderData } from '.';
+
+const FILTER_FUNCTION: Prop = {
+	name: 'filterFunction',
+	type: '(item: T, inputValue: string)',
+	description:
+		'A function that returns `true` if the item should be included in the filtered list.',
+};
+
+const ITEM_TO_STRING: Prop = {
+	name: 'itemToString',
+	type: '(item: T)',
+	description: 'A function that returns a string representation of the item.',
+};
+
+const SCROLL_ALIGNMENT: Prop = {
+	name: 'scrollAlignment',
+	type: ['"nearest"', '"center"'],
+	default: '"nearest"',
+	description: 'The alignment of the highlighted item when scrolling.',
+};
 
 const builder: APISchema = {
 	title: 'createCombobox',
 	description: DESCRIPTIONS.BUILDER('combobox'),
 	props: [
 		{
-			name: 'filterFunction',
-			type: '(item: T, inputValue: string)',
-			description:
-				'A function that returns `true` if the item should be included in the filtered list.',
-		},
-		{
 			name: 'items',
 			type: 'T[]',
 			description: 'The list of items to display in the combobox list.',
 		},
-		{
-			name: 'itemToString',
-			type: '(item: T)',
-			description: 'A function that returns a string representation of the item.',
-		},
-		{
-			name: 'loop',
-			type: 'boolean',
-			default: 'false',
-			description:
-				'Whether or not the combobox should loop through the list when the end or beginning is reached.',
-		},
-		{
-			name: 'scrollAlignment',
-			type: ['"nearest"', '"center"'],
-			default: '"nearest"',
-			description: 'The alignment of the highlighted item when scrolling.',
-		},
-		{
-			name: 'defaultOpen',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the combobox is open by default.',
-		},
-		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls whether or not the combobox is open.',
-			see: SEE.BRING_YOUR_OWN_STORE,
-		},
-		{
-			name: 'onOpenChange',
-			type: 'ChangeFn<boolean>',
-			description: 'A callback called when the value of the `open` store should be changed.',
-			see: SEE.CHANGE_FUNCTIONS,
-		},
-		{
-			name: 'closeOnOutsideClick',
-			type: 'boolean',
-			default: 'true',
-			description:
-				'Whether or not the combobox should close when clicking outside of the combobox.',
-		},
-		{
-			name: 'closeOnEscape',
-			type: 'boolean',
-			default: 'true',
-			description: 'Whether or not the combobox should close when pressing the escape key.',
-		},
-		{
-			name: 'preventScroll',
-			type: 'boolean',
-			default: 'true',
-			description: 'Whether or not to prevent scrolling the body when the combobox menu is open.',
-		},
-		{
-			name: 'portal',
-			type: 'string | HTMLElement',
-			description: 'The element to render the combobox menu into.',
-			default: 'body',
-		},
-		{
-			name: 'forceVisible',
-			type: 'boolean',
-			description:
-				'Whether or not to force the combobox menu to be visible. This is useful for custom transitions and animations.',
-			default: 'false',
-		},
+		FILTER_FUNCTION,
+		ITEM_TO_STRING,
+		SCROLL_ALIGNMENT,
+		PROPS.DEFAULT_OPEN({ name: 'combobox menu' }),
+		PROPS.OPEN({ name: 'combobox menu' }),
+		PROPS.ON_OPEN_CHANGE,
+		PROPS.LOOP({ name: 'combobox' }),
+		PROPS.CLOSE_ON_OUTSIDE_CLICK({ name: 'combobox menu' }),
+		PROPS.CLOSE_ON_ESCAPE({ name: 'combobox menu' }),
+		PROPS.PREVENT_SCROLL({ name: 'combobox menu' }),
+		PROPS.PORTAL({ name: 'combobox menu' }),
+		PROPS.POSITIONING({ name: 'combobox menu' }),
+		PROPS.FORCE_VISIBLE({ name: 'combobox menu' }),
 	],
 	elements: [
 		{
@@ -144,55 +103,16 @@ const builder: APISchema = {
 		},
 	],
 	options: [
-		{
-			name: 'loop',
-			type: 'Writable<boolean>',
-			description:
-				'Whether or not the combobox should loop through the list when the end or beginning is reached.',
-		},
-		{
-			name: 'portal',
-			type: 'Writable<string | HTMLElement>',
-			description: 'The element to render the combobox menu into.',
-		},
-		{
-			name: 'forceVisible',
-			type: 'Writable<boolean>',
-			description:
-				'Whether or not to force the combobox menu to be visible. This is useful for custom transitions and animations.',
-		},
-		{
-			name: 'itemToString',
-			type: 'Writable<(item: T) => string>',
-			description: 'A function that returns a string representation of the item.',
-		},
-		{
-			name: 'closeOnEscape',
-			type: 'Writable<boolean>',
-			description: 'Whether or not the combobox should close when pressing the escape key.',
-		},
-		{
-			name: 'preventScroll',
-			type: 'Writable<boolean>',
-			description: 'Whether or not to prevent scrolling the body when the combobox menu is open.',
-		},
-		{
-			name: 'filterFunction',
-			type: 'Writable<(item: T, inputValue: string)>',
-			description:
-				'A function that returns `true` if the item should be included in the filtered list.',
-		},
-		{
-			name: 'scrollAlignment',
-			type: 'Writable<"nearest" | "center">',
-			description: 'The alignment of the highlighted item when scrolling.',
-		},
-		{
-			name: 'closeOnOutsideClick',
-			type: 'Writable<boolean>',
-			description:
-				'Whether or not the combobox should close when clicking outside of the combobox.',
-		},
+		propToOption(PROPS.LOOP({ name: 'combobox' })),
+		propToOption(PROPS.CLOSE_ON_OUTSIDE_CLICK({ name: 'combobox menu' })),
+		propToOption(PROPS.CLOSE_ON_ESCAPE({ name: 'combobox menu' })),
+		propToOption(PROPS.PREVENT_SCROLL({ name: 'combobox menu' })),
+		propToOption(PROPS.PORTAL({ name: 'combobox menu' })),
+		propToOption(PROPS.POSITIONING({ name: 'combobox menu' })),
+		propToOption(PROPS.FORCE_VISIBLE({ name: 'combobox menu' })),
+		propToOption(ITEM_TO_STRING),
+		propToOption(FILTER_FUNCTION),
+		propToOption(SCROLL_ALIGNMENT),
 	],
 };
 
@@ -232,14 +152,14 @@ const item: APISchema = {
 	description: 'The menu item element',
 	props: [
 		{
-			name: 'label',
-			type: 'string',
-			description: 'The label of the `item`.',
+			name: 'item',
+			type: 'T',
+			description: 'The item that the option represents.',
 		},
 		{
-			name: 'value',
-			type: 'unknown',
-			description: 'The value of the `item`.',
+			name: 'index',
+			type: 'number',
+			description: 'The array index of the item.',
 		},
 		{
 			name: 'disabled',
