@@ -1,29 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Action, ActionReturn } from 'svelte/action';
 
-declare global {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace svelteHTML {
-		interface HTMLAttributes {
-			/**
-			 * A special attribute for Melt UI's preprocessor `@melt-ui/pp`.
-			 *
-			 * @see https://www.melt-ui.com/docs/preprocessor
-			 *
-			 * @example
-			 * ```svelte
-			 * <script>
-			 * 	const { builder } = createBuilder();
-			 * </script>
-			 *
-			 * <div melt={$builder} />
-			 * ```
-			 */
-			melt?: Record<string, any> & { action: Action<any, any> };
-		}
-	}
-}
-
 type SomeBuilder<
 	E = HTMLElement,
 	P = never,
@@ -38,6 +15,20 @@ type GetActionAttributes<Builder> = Builder extends Record<string, any> & {
 	? Attr
 	: never;
 
+/**
+ * A special action for Melt UI's preprocessor `@melt-ui/pp`.
+ *
+ * @see https://www.melt-ui.com/docs/preprocessor
+ *
+ * @example
+ * ```svelte
+ * <script>
+ * 	const { builder, melt } = createBuilder();
+ * </script>
+ *
+ * <div use:melt={$builder} />
+ * ```
+ */
 export function melt<
 	Builder extends SomeBuilder,
 	Element extends HTMLElement,
