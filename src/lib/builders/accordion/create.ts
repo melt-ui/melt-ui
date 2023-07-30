@@ -11,35 +11,33 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
+	type ChangeFn,
 } from '$lib/internal/helpers';
 import { tick } from 'svelte';
 import { derived, writable, type Writable } from 'svelte/store';
-import type {
-	AccordionHeadingProps,
-	AccordionItemProps,
-	AccordionType,
-	CreateAccordionProps,
-} from './types';
+import type { AccordionHeadingProps, AccordionItemProps, CreateAccordionProps } from './types';
 
 type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
 const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
 const defaults = {
-	type: 'single',
+	multiple: false,
 	disabled: false,
 	forceVisible: false,
 } satisfies CreateAccordionProps;
 
-export const createAccordion = <T extends AccordionType = 'single'>(
-	props?: CreateAccordionProps<T>
+export const createAccordion = <Multiple extends boolean = false>(
+	props?: CreateAccordionProps<Multiple>
 ) => {
 	const withDefaults = { ...defaults, ...props };
 	const options = toWritableStores(omit(withDefaults, 'value'));
 	const { disabled, forceVisible } = options;
 
-	const valueWritable =
-		withDefaults.value ?? writable<string | string[] | undefined>(withDefaults.value);
-	const value = overridable(valueWritable, withDefaults?.onValueChange);
+	const valueWritable = withDefaults.value ?? writable(withDefaults.value);
+	const value = overridable<string | string[] | undefined>(
+		valueWritable,
+		withDefaults?.onValueChange as ChangeFn<string | string[] | undefined>
+	);
 
 	const isSelected = (key: string, v: string | string[] | undefined) => {
 		if (v === undefined) return false;
@@ -116,7 +114,7 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 
 					value.update(($value) => {
 						if ($value === undefined) {
-							return withDefaults.type === 'single' ? itemValue : [itemValue];
+							return withDefaults.multiple ? [itemValue] : itemValue;
 						}
 
 						if (Array.isArray($value)) {
@@ -226,7 +224,7 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 			heading,
 		},
 		states: {
-			value: value as Writable<CreateAccordionProps<T>['value']>,
+			value: value as Writable<CreateAccordionProps<Multiple>['value']>,
 		},
 		helpers: {
 			isSelected: isSelectedStore,

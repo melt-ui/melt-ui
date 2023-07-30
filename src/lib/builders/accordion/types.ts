@@ -3,15 +3,13 @@ import type { Writable } from 'svelte/store';
 import type { createAccordion } from './create';
 import type { ChangeFn } from '$lib/internal/helpers';
 
-export type AccordionType = 'single' | 'multiple';
-
-export type CreateAccordionProps<T extends AccordionType = 'single'> = {
+export type CreateAccordionProps<Multiple extends boolean = false> = {
 	/**
-	 * The type of accordion.
+	 * If `true`, multiple accordion items can be open at the same time.
 	 *
-	 * @default 'single'
+	 * @default false
 	 */
-	type?: T;
+	multiple?: Multiple;
 
 	/**
 	 * When `true`, prevents the user from interacting with the accordion.
@@ -33,7 +31,7 @@ export type CreateAccordionProps<T extends AccordionType = 'single'> = {
 	/**
 	 * The uncontrolled default value of the accordion.
 	 */
-	defaultValue?: T extends 'single' ? string : string[];
+	defaultValue?: Multiple extends false ? string : string[];
 
 	/**
 	 * The controlled value store for the accordion.
@@ -41,14 +39,14 @@ export type CreateAccordionProps<T extends AccordionType = 'single'> = {
 	 *
 	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
-	value?: T extends 'single' ? Writable<string | undefined> : Writable<string[] | undefined>;
+	value?: Multiple extends false ? Writable<string | undefined> : Writable<string[] | undefined>;
 
 	/**
 	 * A callback called when the value of the `value` store should be changed.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onValueChange?: T extends 'single'
+	onValueChange?: Multiple extends false
 		? ChangeFn<string | undefined>
 		: ChangeFn<string[] | undefined>;
 };
