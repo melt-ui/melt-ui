@@ -21,7 +21,7 @@ import {
 
 import { useFloating, usePortal } from '$lib/internal/actions';
 import { onMount, tick } from 'svelte';
-import { get, writable } from 'svelte/store';
+import { get, readonly, writable } from 'svelte/store';
 import type { CreateTooltipProps } from './types';
 
 const defaults = {
@@ -262,7 +262,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 			content,
 			arrow,
 		},
-		states: { open },
+		states: { open: readonly(open) },
 		options,
 	};
 }

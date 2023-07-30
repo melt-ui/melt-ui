@@ -1,36 +1,30 @@
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 import type { BuilderData } from '.';
+
+const ROLE_PROP = {
+	name: 'role',
+	type: ["'dialog'", "'alertdialog'"],
+	default: "'dialog'",
+	description: 'The `role` attribute of the dialog element.',
+};
 
 const builder: APISchema = {
 	title: 'createDialog',
 	description: DESCRIPTIONS.BUILDER('dialog'),
 	props: [
-		{
-			name: 'role',
-			type: ["'dialog'", "'alertdialog'"],
-			default: "'dialog'",
-			description: 'The `role` attribute of the dialog element.',
-		},
-		{
-			name: 'preventScroll',
-			type: 'boolean',
-			default: 'true',
-			description: DESCRIPTIONS.PREVENT_SCROLL('dialog'),
-		},
-		{
-			name: 'closeOnEscape',
-			type: 'boolean',
-			default: 'true',
-			description: DESCRIPTIONS.CLOSE_ON_ESCAPE('dialog'),
-		},
-		{
-			name: 'closeOnOutsideClick',
-			type: 'boolean',
-			default: 'true',
-			description: DESCRIPTIONS.CLOSE_ON_CLICK_OUTSIDE('dialog'),
-		},
+		ROLE_PROP,
+		PROPS.PREVENT_SCROLL({ name: 'dialog' }),
+		PROPS.CLOSE_ON_ESCAPE({ name: 'dialog' }),
+		PROPS.CLOSE_ON_OUTSIDE_CLICK({ name: 'dialog' }),
+		PROPS.PORTAL({ name: 'dialog' }),
+		PROPS.FORCE_VISIBLE({ name: 'dialog' }),
+		PROPS.DEFAULT_OPEN({ name: 'dialog' }),
+		PROPS.OPEN({ name: 'dialog' }),
+		PROPS.ON_OPEN_CHANGE,
 	],
+	elements: [],
+	states: [],
 	returnedProps: [
 		{
 			name: 'open',

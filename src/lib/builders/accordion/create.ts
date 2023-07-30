@@ -13,7 +13,7 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers';
 import { tick } from 'svelte';
-import { derived, writable, type Writable } from 'svelte/store';
+import { derived, readonly, writable, type Writable } from 'svelte/store';
 import type {
 	AccordionHeadingProps,
 	AccordionItemProps,
@@ -226,7 +226,7 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 			heading,
 		},
 		states: {
-			value: value as Writable<CreateAccordionProps<T>['value']>,
+			value: readonly(value as Writable<CreateAccordionProps<T>['value']>),
 		},
 		helpers: {
 			isSelected: isSelectedStore,

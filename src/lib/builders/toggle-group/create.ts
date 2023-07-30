@@ -13,7 +13,7 @@ import {
 	overridable,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, readonly } from 'svelte/store';
 import type { CreateToggleGroupProps, ToggleGroupItemProps, ToggleGroupType } from './types';
 
 const defaults = {
@@ -188,7 +188,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 			item,
 		},
 		states: {
-			value,
+			value: readonly(value),
 		},
 		helpers: {
 			isPressed,

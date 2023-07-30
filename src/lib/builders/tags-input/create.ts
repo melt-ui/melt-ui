@@ -15,7 +15,7 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, readonly, writable } from 'svelte/store';
 import { focusInput, highlightText, setSelectedFromEl } from './helpers';
 import type { CreateTagsInputProps, Tag, TagProps } from './types';
 import { tick } from 'svelte';
@@ -724,10 +724,10 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			tag,
 		},
 		states: {
-			tags,
-			inputValue,
-			inputInvalid,
-			selected,
+			tags: readonly(tags),
+			inputValue: readonly(inputValue),
+			inputInvalid: readonly(inputInvalid),
+			selected: readonly(selected),
 		},
 		helpers: {
 			isSelected,

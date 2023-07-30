@@ -20,7 +20,7 @@ import {
 } from '$lib/internal/helpers';
 import type { VirtualElement } from '@floating-ui/core';
 import { tick } from 'svelte';
-import { get, writable, type Readable } from 'svelte/store';
+import { get, writable, type Readable, readonly } from 'svelte/store';
 import {
 	applyAttrsIfDisabled,
 	clearTimerStore,
@@ -295,7 +295,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			separator,
 		},
 		states: {
-			open: rootOpen,
+			open: readonly(rootOpen),
 		},
 		builders: {
 			createSubmenu,

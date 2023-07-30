@@ -19,12 +19,12 @@
 	import { writable, type Writable } from 'svelte/store';
 
 	export let tabs: string[] = [];
+	const value = writable(tabs[0]);
 
 	const {
 		elements: { root, content, list, trigger },
-		states: { value },
 	} = createTabs({
-		defaultValue: tabs[0],
+		value,
 	});
 
 	$: value.set(tabs[0]);

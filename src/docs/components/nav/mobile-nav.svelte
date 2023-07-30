@@ -6,11 +6,14 @@
 	import { navConfig } from '$docs/config';
 	import Switch from '../switch.svelte';
 	import { usingPreprocessor } from '$routes/store';
+	import { writable } from 'svelte/store';
 
+	const open = writable(false);
 	const {
 		elements: { trigger, overlay, content, close },
-		states: { open },
-	} = createDialog();
+	} = createDialog({
+		open,
+	});
 </script>
 
 <button

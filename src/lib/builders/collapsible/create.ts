@@ -5,10 +5,10 @@ import {
 	omit,
 	overridable,
 	toWritableStores,
+	styleToString,
 } from '$lib/internal/helpers';
-import { derived, writable } from 'svelte/store';
+import { derived, readonly, writable } from 'svelte/store';
 import type { CreateCollapsibleProps } from './types';
-import { styleToString } from '../../internal/helpers/style';
 
 const defaults = {
 	defaultOpen: false,
@@ -80,7 +80,7 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 			content,
 		},
 		states: {
-			open,
+			open: readonly(open),
 		},
 		options,
 	};

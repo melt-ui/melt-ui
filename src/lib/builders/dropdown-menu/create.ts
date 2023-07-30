@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { writable, readonly } from 'svelte/store';
 import { createMenuBuilder } from '../menu';
 import type { CreateDropdownMenuProps } from './types';
 import { overridable, toWritableStores } from '$lib/internal/helpers';
@@ -59,7 +59,7 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 			separator,
 		},
 		states: {
-			open: rootOpen,
+			open: readonly(rootOpen),
 		},
 		builders: {
 			createSubmenu,

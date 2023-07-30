@@ -1,34 +1,28 @@
-import { ATTRS, DESCRIPTIONS, KBD, SEE } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE, propToOption } from '$docs/constants';
+import type { APISchema, KeyboardSchema, Prop } from '$docs/types';
 import type { BuilderData } from '.';
+
+const NAME_PROP: Prop = {
+	name: 'name',
+	type: 'string',
+	description:
+		'The name of the checkbox. Submitted with its owning form as part of a name/value pair.',
+};
+
+const VALUE_PROP: Prop = {
+	name: 'value',
+	type: 'string',
+	description: 'The value given as data when submitted with a `name`.',
+};
 
 const builder: APISchema = {
 	title: 'createCheckbox',
 	description: DESCRIPTIONS.BUILDER('checkbox'),
 	props: [
-		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the checkbox is disabled by default.',
-		},
-		{
-			name: 'required',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the checkbox is required by default.',
-		},
-		{
-			name: 'name',
-			type: 'string',
-			description:
-				'The name of the checkbox. Submitted with its owning form as part of a name/value pair.',
-		},
-		{
-			name: 'value',
-			type: 'string',
-			description: 'The value given as data when submitted with a `name`.',
-		},
+		PROPS.DISABLED({ name: 'checkbox' }),
+		PROPS.REQUIRED({ name: 'checkbox' }),
+		NAME_PROP,
+		VALUE_PROP,
 		{
 			name: 'defaultChecked',
 			type: ['boolean', '"indeterminate"'],
@@ -84,27 +78,10 @@ const builder: APISchema = {
 		},
 	],
 	options: [
-		{
-			name: 'disabled',
-			type: 'Writable<boolean>',
-			description: 'Controls whether or not the checkbox is disabled.',
-		},
-		{
-			name: 'required',
-			type: 'Writable<boolean>',
-			description: 'Controls whether or not the checkbox is required.',
-		},
-		{
-			name: 'name',
-			type: 'Writable<string>',
-			description:
-				'Controls the name of the checkbox. Submitted with its owning form as part of a name/value pair.',
-		},
-		{
-			name: 'value',
-			type: 'Writable<string>',
-			description: 'Controls the value given as data when submitted with a `name`.',
-		},
+		propToOption(PROPS.DISABLED({ name: 'checkbox' })),
+		propToOption(NAME_PROP),
+		propToOption(VALUE_PROP),
+		propToOption(PROPS.REQUIRED({ name: 'checkbox' })),
 	],
 };
 

@@ -1,23 +1,27 @@
-import { ATTRS, DESCRIPTIONS, SEE } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, SEE, propToOption } from '$docs/constants';
 import type { APISchema } from '$docs/types';
 import type { BuilderData } from '.';
+
+const SRC_PROP = {
+	name: 'src',
+	type: 'string',
+	default: '""',
+	description: 'The source of the image to display.',
+};
+
+const DELAY_MS_PROP = {
+	name: 'delayMs',
+	type: 'number',
+	default: '0',
+	description: 'The amount of time in milliseconds to wait before displaying the image.',
+};
 
 const builder: APISchema = {
 	title: 'createAvatar',
 	description: DESCRIPTIONS.BUILDER('avatar'),
 	props: [
-		{
-			name: 'src',
-			type: 'string',
-			default: '""',
-			description: 'The source of the image to display.',
-		},
-		{
-			name: 'delayMs',
-			type: 'number',
-			default: '0',
-			description: 'The amount of time in milliseconds to wait before displaying the image.',
-		},
+		SRC_PROP,
+		DELAY_MS_PROP,
 		{
 			name: 'loadingStatus',
 			type: 'Writable<"loading" | "loaded" | "error">',
@@ -50,18 +54,7 @@ const builder: APISchema = {
 			description: 'A writable store used to control the value of the loading status.',
 		},
 	],
-	options: [
-		{
-			name: 'src',
-			type: 'Writable<string>',
-			description: 'A writable store used to control the value of the image source.',
-		},
-		{
-			name: 'delayMs',
-			type: 'Writable<number>',
-			description: 'A writable store used to control the value of the delay in milliseconds.',
-		},
-	],
+	options: [propToOption(SRC_PROP), propToOption(DELAY_MS_PROP)],
 };
 
 const image: APISchema = {

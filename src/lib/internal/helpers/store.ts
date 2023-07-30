@@ -1,4 +1,4 @@
-import { derived, writable, type Writable } from 'svelte/store';
+import { derived, writable, type Writable, type Readable } from 'svelte/store';
 
 /**
  * Given an object of properties, returns an object of writable stores

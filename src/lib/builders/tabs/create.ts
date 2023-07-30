@@ -16,7 +16,7 @@ import {
 	overridable,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { get, writable } from 'svelte/store';
+import { get, writable, readonly } from 'svelte/store';
 import type { CreateTabsProps, TabsTriggerProps } from './types';
 
 const defaults = {
@@ -206,7 +206,7 @@ export function createTabs(props?: CreateTabsProps) {
 			content,
 		},
 		states: {
-			value,
+			value: readonly(value),
 		},
 		options,
 	};

@@ -1,4 +1,4 @@
-import { ATTRS, DESCRIPTIONS, KBD, SEE } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, propToOption } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 import type { BuilderData } from '.';
 
@@ -6,32 +6,10 @@ const builder: APISchema = {
 	title: 'createCollapsible',
 	description: DESCRIPTIONS.BUILDER('collapsible'),
 	props: [
-		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether the collapsible is disabled which prevents it from being opened.',
-		},
-		{
-			name: 'forceVisible',
-			type: 'boolean',
-			default: 'false',
-			description:
-				'Whether the collapsible content should be displayed even if it is not open. This is useful for animating the collapsible content in and out using transitions.',
-		},
-		{
-			name: 'defaultOpen',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether the collapsible is open by default.',
-		},
-		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			description:
-				'A writable store to control the open state of the collapsible. If provided, this will override the value passed to `defaultOpen`.',
-			see: SEE.BRING_YOUR_OWN_STORE,
-		},
+		PROPS.DISABLED({ name: 'collapsible' }),
+		PROPS.FORCE_VISIBLE({ name: 'collapsible content' }),
+		PROPS.DEFAULT_OPEN({ name: 'collapsible' }),
+		PROPS.OPEN({ name: 'collapsible' }),
 	],
 	elements: [
 		{
@@ -58,17 +36,8 @@ const builder: APISchema = {
 		},
 	],
 	options: [
-		{
-			name: 'disabled',
-			type: 'Writable<boolean>',
-			description: 'Whether the collapsible is disabled which prevents it from being opened.',
-		},
-		{
-			name: 'forceVisible',
-			type: 'Writable<boolean>',
-			description:
-				'Whether the collapsible content should be displayed even if it is not open. This is useful for animating the collapsible content in and out using transitions.',
-		},
+		propToOption(PROPS.DISABLED({ name: 'collapsible' })),
+		propToOption(PROPS.FORCE_VISIBLE({ name: 'collapsible' })),
 	],
 };
 

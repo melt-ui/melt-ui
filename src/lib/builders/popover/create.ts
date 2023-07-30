@@ -19,7 +19,7 @@ import {
 import { usePopper } from '$lib/internal/actions';
 import type { Defaults } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
-import { writable } from 'svelte/store';
+import { writable, readonly } from 'svelte/store';
 import type { CreatePopoverProps } from './types';
 
 const defaults = {
@@ -257,7 +257,7 @@ export function createPopover(args?: CreatePopoverProps) {
 			close,
 		},
 		states: {
-			open,
+			open: readonly(open),
 		},
 		options,
 	};

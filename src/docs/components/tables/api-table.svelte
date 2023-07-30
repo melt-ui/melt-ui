@@ -27,8 +27,8 @@
 	{#if data.states && data.states.length}
 		<ReturnedPropsTable data={data.states} title="States" tableHeading="State">
 			<svelte:fragment slot="info">
-				States are simply Svelte stores that are used to manage the state of a component. You can
-				use them to conditionally render elements, apply classes, or even manage the state of other
+				States are simply readable Svelte stores that contain the state of a component. You can use
+				them to conditionally render elements, apply classes, or even manage the state of other
 				components.
 			</svelte:fragment>
 		</ReturnedPropsTable>

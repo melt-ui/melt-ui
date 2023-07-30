@@ -2,17 +2,18 @@
 	import { beforeNavigate } from '$app/navigation';
 	import { createSwitch } from '$lib';
 	import { generateId } from '$lib/internal/helpers';
+	import { writable } from 'svelte/store';
 
 	export let checked: boolean | undefined = false;
 	export let id: string = generateId();
 	export let keepState = false;
+	const checkedStore = writable(checked);
 
 	const {
 		elements: { root },
 		helpers: { isChecked },
-		states: { checked: checkedStore },
 	} = createSwitch({
-		defaultChecked: checked,
+		checked: checkedStore,
 	});
 
 	isChecked.subscribe((value) => {

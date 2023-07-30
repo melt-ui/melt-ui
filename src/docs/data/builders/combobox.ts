@@ -70,23 +70,23 @@ const builder: APISchema = {
 	states: [
 		{
 			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls whether or not the combobox is open.',
+			type: 'Readable<boolean>',
+			description: 'A readable store with the open state of the combobox menu.',
 		},
 		{
 			name: 'inputValue',
-			type: 'Writable<string>',
-			description: 'A writable store that controls the value of the input.',
+			type: 'Readable<string>',
+			description: 'A readable store with the value of the input.',
 		},
 		{
 			name: 'filteredItems',
 			type: 'Readable<T[]>',
-			description: 'A derived store that returns the filtered list of items.',
+			description: 'A readable store whose value is the filtered list of items.',
 		},
 		{
 			name: 'selectedItem',
-			type: 'Writable<T>',
-			description: 'A writable store that controls the selected item.',
+			type: 'Readable<T>',
+			description: 'A readable store whose value is the selected item.',
 		},
 	],
 	helpers: [

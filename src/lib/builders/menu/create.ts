@@ -26,11 +26,12 @@ import {
 	toWritableStores,
 	getPortalParent,
 	derivedVisible,
+	overridable,
 } from '$lib/internal/helpers';
 import { createSeparator } from '$lib/builders';
 import type { Defaults, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
-import { derived, get, writable, type Writable } from 'svelte/store';
+import { derived, get, readonly, writable, type Writable } from 'svelte/store';
 
 import type {
 	CheckboxItemProps,
@@ -447,7 +448,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	});
 
 	const createMenuRadioGroup = (args: CreateRadioGroupProps = {}) => {
-		const value = writable(args.value ?? null);
+		const valueWritable = args.value ?? writable(args.defaultValue ?? null);
+		const value = overridable(valueWritable, args.onValueChange);
 
 		const radioGroup = builder(name('radio-group'), {
 			returned: () => ({
@@ -569,7 +571,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				radioItem,
 			},
 			states: {
-				value,
+				value: readonly(value),
 			},
 			helpers: {
 				isChecked,
@@ -594,7 +596,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			placement: 'right-start',
 			gutter: 8,
 		},
-		forceVisible: false,
 	} satisfies Defaults<CreateSubmenuProps>;
 
 	const createSubmenu = (args?: CreateSubmenuProps) => {
@@ -605,7 +606,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		// options
 		const options = toWritableStores(withDefaults);
 
-		const { positioning, arrowSize, disabled, forceVisible } = options;
+		const { positioning, arrowSize, disabled } = options;
 
 		const subActiveTrigger = writable<HTMLElement | null>(null);
 		const subOpenTimer = writable<number | null>(null);
@@ -998,7 +999,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				subArrow,
 			},
 			states: {
-				subOpen,
+				subOpen: readonly(subOpen),
 			},
 			options,
 		};

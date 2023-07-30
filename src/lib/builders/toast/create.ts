@@ -1,4 +1,4 @@
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, readonly } from 'svelte/store';
 import {
 	addEventListener,
 	builder,
@@ -194,7 +194,7 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 			close,
 		},
 		states: {
-			toasts,
+			toasts: readonly(toasts),
 		},
 		helpers: {
 			addToast,

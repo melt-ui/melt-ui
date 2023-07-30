@@ -12,7 +12,7 @@ import {
 	getElemDirection,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, readonly } from 'svelte/store';
 import type { CreateRadioGroupProps, RadioGroupItemProps } from './types';
 
 const defaults = {
@@ -167,7 +167,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 			itemInput,
 		},
 		states: {
-			value,
+			value: readonly(value),
 		},
 		helpers: {
 			isChecked,

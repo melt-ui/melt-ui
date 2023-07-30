@@ -1,4 +1,4 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, TYPES, propToOption } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE, TYPES, propToOption } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 import type { BuilderData } from '.';
 
@@ -56,8 +56,8 @@ const builder: APISchema = {
 	states: [
 		{
 			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls the open state of the context menu.',
+			type: 'Readable<boolean>',
+			description: 'A readable store that indicates whether the context menu is open.',
 		},
 	],
 	options: [
@@ -180,11 +180,27 @@ const radioGroupBuilder: APISchema = {
 	description: 'The configuration object passed to the `createMenuRadioGroup` builder function.',
 	props: [
 		{
-			name: 'value',
+			name: 'defaultValue',
 			type: 'string',
-			description: 'The value of the selected radio item.',
+			description: 'The value of the radio item to be selected by default.',
+		},
+		{
+			name: 'value',
+			type: 'Writable<string | null>',
+			description:
+				'A writable store which controls the value of the selected radio item. This will override the `defaultValue` prop if both are provided, so ensure to set your preferred default value as the default value of the store.',
+			see: SEE.BRING_YOUR_OWN_STORE,
+		},
+		{
+			name: 'onValueChange',
+			type: 'ChangeFn<string | null>',
+			description: DESCRIPTIONS.ON_CHANGE('value'),
+			see: SEE.CHANGE_FUNCTIONS,
 		},
 	],
+	elements: [],
+	helpers: [],
+	states: [],
 	returnedProps: [
 		{
 			name: 'value',
@@ -286,33 +302,14 @@ const submenuBuilder: APISchema = {
 	title: 'createSubMenu',
 	description: 'The configuration object passed to the `createDropdownSubMenu` builder function.',
 	props: [
-		{
-			name: 'positioning',
-			type: 'FloatingConfig',
-			default: "placement: 'right'",
-			description: DESCRIPTIONS.FLOATING_CONFIG,
-		},
-		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether the submenu is disabled.',
-		},
+		PROPS.POSITIONING({ default: 'placement: "right-start"' }),
+		PROPS.ARROW_SIZE,
+		PROPS.DISABLED({ name: 'submenu' }),
 	],
-	returnedProps: [
-		{
-			name: 'subOpen',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls the open state of the submenu.',
-		},
-		{
-			name: 'options',
-			type: 'Writable<CreateContextSubmenuProps>',
-			description: 'A writable store that controls the options of the submenu.',
-		},
+	elements: [
 		{
 			name: 'subMenu',
-			description: 'The store used to create the submenu.',
+			description: 'The builder store used to create the submenu.',
 			link: '#menu',
 		},
 		{
@@ -325,6 +322,18 @@ const submenuBuilder: APISchema = {
 			description: 'The builder store used to create the submenumenu arrow.',
 			link: '#arrow',
 		},
+	],
+	states: [
+		{
+			name: 'subOpen',
+			type: 'Readable<boolean>',
+			description: 'A readable store with the open state of the submenu.',
+		},
+	],
+	options: [
+		propToOption(PROPS.POSITIONING({ default: 'placement: "right-start"' })),
+		propToOption(PROPS.ARROW_SIZE),
+		propToOption(PROPS.DISABLED({ name: 'submenu' })),
 	],
 };
 

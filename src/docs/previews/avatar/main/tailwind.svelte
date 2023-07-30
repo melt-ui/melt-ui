@@ -3,6 +3,7 @@
 
 	const {
 		elements: { image, fallback },
+		states: { loadingStatus },
 	} = createAvatar({
 		src: 'https://avatars.githubusercontent.com/u/1162160?v=4',
 	});

@@ -36,7 +36,7 @@ import {
 	derivedVisible,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, readonly } from 'svelte/store';
 import { createSeparator } from '$lib/builders';
 import type { CreateSelectProps, SelectOptionProps } from './types';
 import { usePortal } from '@melt-ui/svelte/internal/actions';
@@ -744,9 +744,9 @@ export function createSelect(props?: CreateSelectProps) {
 			label,
 		},
 		states: {
-			open,
-			value,
-			valueLabel,
+			open: readonly(open),
+			value: readonly(value),
+			valueLabel: readonly(valueLabel),
 		},
 		helpers: {
 			isSelected,

@@ -19,7 +19,7 @@ import {
 	derivedVisible,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { get, writable } from 'svelte/store';
+import { get, writable, readonly } from 'svelte/store';
 import type { CreateDialogProps } from './types';
 import { onMount, tick } from 'svelte';
 
@@ -301,7 +301,7 @@ export function createDialog(props?: CreateDialogProps) {
 			close,
 		},
 		states: {
-			open,
+			open: readonly(open),
 		},
 		options,
 	};

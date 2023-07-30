@@ -13,7 +13,7 @@ import {
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers';
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, readonly } from 'svelte/store';
 import type { CreateSliderProps } from './types';
 
 const defaults = {
@@ -350,7 +350,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 			range,
 		},
 		states: {
-			value,
+			value: readonly(value),
 		},
 		options,
 	};

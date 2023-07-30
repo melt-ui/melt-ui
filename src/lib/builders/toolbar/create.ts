@@ -10,7 +10,7 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, readonly } from 'svelte/store';
 import type {
 	CreateToolbarGroupProps,
 	CreateToolbarProps,
@@ -199,7 +199,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 				item,
 			},
 			states: {
-				value,
+				value: readonly(value),
 			},
 			helpers: {
 				isPressed,

@@ -10,7 +10,7 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, readonly } from 'svelte/store';
 import { getPageItems } from './helpers';
 import type { CreatePaginationProps, Page } from './types';
 
@@ -168,10 +168,10 @@ export function createPagination(props: CreatePaginationProps) {
 			nextButton,
 		},
 		states: {
-			range,
-			page,
-			pages,
-			totalPages,
+			range: readonly(range),
+			page: readonly(page),
+			pages: readonly(pages),
+			totalPages: readonly(totalPages),
 		},
 		options,
 	};

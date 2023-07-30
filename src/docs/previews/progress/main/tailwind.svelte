@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { createProgress } from '@melt-ui/svelte';
+	import { writable } from 'svelte/store';
+
+	const value = writable(30);
 
 	const {
 		elements: { root },
-		states: { value },
 		options: { max },
 	} = createProgress({
-		defaultValue: 30,
+		value,
 		max: 100,
 	});
 

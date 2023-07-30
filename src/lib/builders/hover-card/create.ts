@@ -19,7 +19,7 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
-import { derived, get, writable, type Readable } from 'svelte/store';
+import { derived, get, writable, type Readable, readonly } from 'svelte/store';
 import type { CreateHoverCardProps } from './types';
 
 type HoverCardParts = 'trigger' | 'content' | 'arrow';
@@ -312,7 +312,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 			arrow,
 		},
 		states: {
-			open,
+			open: readonly(open),
 		},
 		options,
 	};

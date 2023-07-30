@@ -9,7 +9,7 @@ import {
 	omit,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, readonly, writable } from 'svelte/store';
 import type { CreateCheckboxProps } from './types';
 
 const defaults = {
@@ -98,7 +98,7 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 			input,
 		},
 		states: {
-			checked,
+			checked: readonly(checked),
 		},
 		helpers: {
 			isIndeterminate,

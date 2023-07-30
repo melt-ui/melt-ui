@@ -15,7 +15,7 @@ import {
 } from '$lib/internal/helpers';
 import type { Defaults } from '@melt-ui/svelte/internal/types';
 import { tick } from 'svelte';
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, readonly } from 'svelte/store';
 import type { CreatePinInputProps } from './types';
 
 const { name, selector } = createElHelpers<'input' | 'hidden-input'>('pin-input');
@@ -224,8 +224,8 @@ export function createPinInput(props?: CreatePinInputProps) {
 			hiddenInput,
 		},
 		states: {
-			value,
-			valueStr,
+			value: readonly(value),
+			valueStr: readonly(valueStr),
 		},
 		helpers: {
 			clear,
