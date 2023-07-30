@@ -9,13 +9,15 @@
 	} = createCollapsible();
 </script>
 
-<div melt={$root} class="mx-auto w-[18rem] max-w-full sm:w-[25rem]">
+<div {...$root} class="mx-auto w-[18rem] max-w-full sm:w-[25rem]">
 	<div class="flex items-center justify-between">
 		<span class="text-sm leading-6 text-white">
 			@thomasglopes starred 3 repositories
 		</span>
 		<button
-			melt={$trigger}
+			use:trigger
+			{...$trigger}
+			on:m-click={() => console.log('clicked')}
 			class="relative h-6 w-6 place-items-center rounded-full bg-white text-sm
             text-magnum-700 shadow-lg hover:opacity-75 data-[disabled]:cursor-not-allowed
             data-[disabled]:opacity-75"

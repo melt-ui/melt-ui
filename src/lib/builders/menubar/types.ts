@@ -11,6 +11,11 @@ export type CreateMenubarProps = {
 	 * @default true
 	 */
 	loop?: boolean;
+
+	/**
+	 * Whether to close the active menu when the escape key is pressed.
+	 */
+	closeOnEscape?: boolean;
 };
 export type CreateMenubarMenuProps = Menu['builder'];
 export type CreateMenubarSubmenuProps = Menu['submenu'];

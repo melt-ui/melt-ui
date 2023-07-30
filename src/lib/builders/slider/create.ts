@@ -12,9 +12,12 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
+	addMeltEventListener,
+	executeCallbacks,
 } from '$lib/internal/helpers';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateSliderProps } from './types';
+import type { MeltActionReturn } from '$lib/internal/types';
 
 const defaults = {
 	defaultValue: [],
@@ -144,8 +147,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 				} as const;
 			};
 		},
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'keydown', (event) => {
+		action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
+			const unsub = addMeltEventListener(node, 'keydown', (event) => {
 				const $min = get(min);
 				const $max = get(max);
 				if (get(disabled)) return;
@@ -329,16 +332,15 @@ export const createSlider = (props?: CreateSliderProps) => {
 				}
 			};
 
-			document.addEventListener('pointerdown', pointerDown);
-			document.addEventListener('pointerup', pointerUp);
-			document.addEventListener('pointerleave', pointerUp);
-			document.addEventListener('pointermove', pointerMove);
+			const unsub = executeCallbacks(
+				addEventListener(document, 'pointerdown', pointerDown),
+				addEventListener(document, 'pointerup', pointerUp),
+				addEventListener(document, 'pointerleave', pointerUp),
+				addEventListener(document, 'pointermove', pointerMove)
+			);
 
 			return () => {
-				document.removeEventListener('pointerdown', pointerDown);
-				document.removeEventListener('pointerup', pointerUp);
-				document.removeEventListener('pointerleave', pointerUp);
-				document.removeEventListener('pointermove', pointerMove);
+				unsub();
 			};
 		}
 	);

@@ -34,13 +34,14 @@ import {
 	getOptions,
 	sleep,
 	derivedVisible,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
-import { createSeparator } from '$lib/builders';
+import { createLabel, createSeparator } from '$lib/builders';
 import type { CreateSelectProps, SelectOptionProps } from './types';
-import { usePortal } from '@melt-ui/svelte/internal/actions';
-import { createLabel } from '../label';
+import { usePortal } from '$lib/internal/actions';
+import type { MeltActionReturn } from '$lib/internal/types';
 
 const defaults = {
 	arrowSize: 8,
@@ -169,7 +170,7 @@ export function createSelect(props?: CreateSelectProps) {
 				'data-portal': $portal ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
 			/**
 			 * We need to get the parent portal before the menu is opened,
 			 * otherwise the parent will have been moved to the body, and
@@ -223,7 +224,7 @@ export function createSelect(props?: CreateSelectProps) {
 			);
 
 			const unsubEventListeners = executeCallbacks(
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const menuEl = e.currentTarget;
 					const target = e.target;
 					if (!isHTMLElement(menuEl) || !isHTMLElement(target)) return;
@@ -269,6 +270,8 @@ export function createSelect(props?: CreateSelectProps) {
 		},
 	});
 
+	type TriggerEvents = 'click' | 'keydown';
+
 	const trigger = builder(name('trigger'), {
 		stores: [open, disabled, required],
 		returned: ([$open, $disabled, $required]) => {
@@ -287,9 +290,9 @@ export function createSelect(props?: CreateSelectProps) {
 				tabindex: 0,
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
 					if (get(disabled)) {
 						e.preventDefault();
 						return;
@@ -311,7 +314,7 @@ export function createSelect(props?: CreateSelectProps) {
 					if (!$open) e.preventDefault();
 				}),
 
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const triggerEl = e.currentTarget;
 					if (!isHTMLElement(triggerEl)) return;
 
@@ -367,6 +370,7 @@ export function createSelect(props?: CreateSelectProps) {
 	const {
 		elements: { root: labelBuilder },
 	} = createLabel();
+
 	const { action: labelAction } = get(labelBuilder);
 
 	const label = builder(name('label'), {
@@ -376,10 +380,10 @@ export function createSelect(props?: CreateSelectProps) {
 				for: ids.trigger,
 			};
 		},
-		action: (node) => {
+		action: (node): MeltActionReturn<'click'> => {
 			const destroy = executeCallbacks(
-				labelAction(node)?.destroy,
-				addEventListener(node, 'click', (e) => {
+				labelAction(node).destroy ?? noop,
+				addMeltEventListener(node, 'click', (e) => {
 					e.preventDefault();
 					const triggerEl = document.getElementById(ids.trigger);
 					if (!isHTMLElement(triggerEl)) return;
@@ -449,6 +453,8 @@ export function createSelect(props?: CreateSelectProps) {
 
 	const optionsList: OptionProps[] = [];
 
+	type OptionEvents = 'click' | 'keydown' | 'pointermove' | 'pointerleave' | 'focusin' | 'focusout';
+
 	const option = builder(name('option'), {
 		stores: value,
 		returned: ($value) => {
@@ -470,9 +476,9 @@ export function createSelect(props?: CreateSelectProps) {
 				} as const;
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<OptionEvents> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
 					const itemElement = e.currentTarget;
 					if (!isHTMLElement(itemElement)) return;
 
@@ -487,7 +493,7 @@ export function createSelect(props?: CreateSelectProps) {
 					open.set(false);
 				}),
 
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const $typed = get(typed);
 					const isTypingAhead = $typed.length > 0;
 					if (isTypingAhead && e.key === kbd.SPACE) {
@@ -502,7 +508,7 @@ export function createSelect(props?: CreateSelectProps) {
 						open.set(false);
 					}
 				}),
-				addEventListener(node, 'pointermove', (e) => {
+				addMeltEventListener(node, 'pointermove', (e) => {
 					const props = getOptionProps(node);
 					if (props.disabled) {
 						e.preventDefault();
@@ -520,16 +526,16 @@ export function createSelect(props?: CreateSelectProps) {
 
 					onOptionPointerMove(e);
 				}),
-				addEventListener(node, 'pointerleave', (e) => {
+				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (!isMouse(e)) return;
 					onOptionLeave();
 				}),
-				addEventListener(node, 'focusin', (e) => {
+				addMeltEventListener(node, 'focusin', (e) => {
 					const itemEl = e.currentTarget;
 					if (!isHTMLElement(itemEl)) return;
 					addHighlight(itemEl);
 				}),
-				addEventListener(node, 'focusout', (e) => {
+				addMeltEventListener(node, 'focusout', (e) => {
 					const itemEl = e.currentTarget;
 					if (!isHTMLElement(itemEl)) return;
 					removeHighlight(itemEl);
@@ -594,13 +600,17 @@ export function createSelect(props?: CreateSelectProps) {
 	});
 
 	onMount(() => {
+		const unsubs: Array<() => void> = [];
 		const handlePointer = () => isUsingKeyboard.set(false);
 		const handleKeyDown = () => {
 			isUsingKeyboard.set(true);
-			document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
-			document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
+			unsubs.push(
+				executeCallbacks(
+					addEventListener(document, 'pointerdown', handlePointer, { capture: true, once: true }),
+					addEventListener(document, 'pointermove', handlePointer, { capture: true, once: true })
+				)
+			);
 		};
-		document.addEventListener('keydown', handleKeyDown, { capture: true });
 
 		const keydownListener = (e: KeyboardEvent) => {
 			if (e.key === kbd.ESCAPE) {
@@ -610,13 +620,16 @@ export function createSelect(props?: CreateSelectProps) {
 				handleRovingFocus($activeTrigger);
 			}
 		};
-		document.addEventListener('keydown', keydownListener);
+
+		unsubs.push(
+			executeCallbacks(
+				addEventListener(document, 'keydown', handleKeyDown, { capture: true }),
+				addEventListener(document, 'keydown', keydownListener)
+			)
+		);
 
 		return () => {
-			document.removeEventListener('keydown', handleKeyDown, { capture: true });
-			document.removeEventListener('pointerdown', handlePointer, { capture: true });
-			document.removeEventListener('pointermove', handlePointer, { capture: true });
-			document.removeEventListener('keydown', keydownListener);
+			unsubs.forEach((unsub) => unsub());
 		};
 	});
 
