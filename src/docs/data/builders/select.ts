@@ -179,6 +179,12 @@ const option: APISchema = {
 			description: 'Whether or not the option is disabled.',
 		},
 	],
+	dataAttributes: [
+		{
+			name: 'data-melt-select-option',
+			value: ATTRS.MELT('option'),
+		},
+	],
 };
 
 const input: APISchema = {
