@@ -262,6 +262,7 @@ export function createSelect(props?: CreateSelectProps) {
 					unsubDerived();
 					unsubPopper();
 					unsubPortal?.();
+					unsubScroll();
 					unsubEventListeners();
 				},
 			};
