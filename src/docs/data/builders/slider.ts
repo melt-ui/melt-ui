@@ -61,6 +61,11 @@ const builder: APISchema = {
 			link: '#root',
 		},
 		{
+			name: 'slider',
+			description: 'An alias for the `root` builder store.',
+			link: '#root',
+		},
+		{
 			name: 'range',
 			description: 'The builder store used to create the slider range element.',
 			link: '#range',
