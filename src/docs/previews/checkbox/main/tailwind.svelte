@@ -13,8 +13,6 @@
 <form>
 	<div class="flex items-center justify-center">
 		<button
-			on:m-click={() => console.log('clicked')}
-			on:m-keydown={() => console.log('keydown')}
 			use:root
 			{...$root}
 			class="flex h-6 w-6 appearance-none items-center justify-center

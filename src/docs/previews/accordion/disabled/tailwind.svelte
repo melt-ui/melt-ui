@@ -45,9 +45,6 @@
 		>
 			<h2 class="flex">
 				<button
-					on:m-click={() => {
-						console.log('m-click');
-					}}
 					use:melt={$trigger}
 					{...$trigger({ value: id, disabled })}
 					class="flex h-12 flex-1 cursor-pointer items-center justify-between border-b border-b-magnum-700
