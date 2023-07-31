@@ -1,33 +1,36 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, propToOption } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
+
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [PROPS.DISABLED, PROPS.FORCE_VISIBLE];
 
 const builder: APISchema = {
 	title: 'createCollapsible',
 	description: DESCRIPTIONS.BUILDER('collapsible'),
-	props: [
-		PROPS.DISABLED({ name: 'collapsible' }),
-		PROPS.FORCE_VISIBLE({ name: 'collapsible content' }),
-		PROPS.DEFAULT_OPEN({ name: 'collapsible' }),
-		PROPS.OPEN({ name: 'collapsible' }),
-	],
-	elements: [
+	props: genProps('collapsible', [
+		...OPTION_PROPS,
+		PROPS.DEFAULT_OPEN,
+		PROPS.OPEN,
+		PROPS.ON_OPEN_CHANGE,
+	]),
+	elements: genElements('collapsible', [
 		{
 			name: 'root',
 			description: 'The builder store used to create the collapsible root.',
-			link: '#root',
 		},
 		{
 			name: 'content',
 			description: 'The builder store used to create the collapsible content.',
-			link: '#content',
 		},
 		{
 			name: 'trigger',
 			description: 'The builder store used to create the collapsible trigger.',
-			link: '#trigger',
 		},
-	],
+	]),
 	states: [
 		{
 			name: 'open',
@@ -35,10 +38,7 @@ const builder: APISchema = {
 			description: 'A writable store that controls the open state of the collapsible.',
 		},
 	],
-	options: [
-		propToOption(PROPS.DISABLED({ name: 'collapsible' })),
-		propToOption(PROPS.FORCE_VISIBLE({ name: 'collapsible' })),
-	],
+	options: propsToOptions('collapsible', OPTION_PROPS),
 };
 
 const root: APISchema = {

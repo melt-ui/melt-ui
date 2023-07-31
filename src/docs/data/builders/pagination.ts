@@ -1,45 +1,79 @@
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, SEE } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import { genElements, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
+
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	{
+		name: 'count',
+		type: 'number',
+		description: 'The total number of items.',
+	},
+	{
+		name: 'perPage',
+		type: 'number',
+		default: '1',
+		description: 'The number of items per page.',
+	},
+	{
+		name: 'siblingCount',
+		type: 'number',
+		default: '1',
+		description: 'The number of page triggers to show on either side of the current page.',
+	},
+];
 
 const builder: APISchema = {
 	title: 'createPagination',
 	description: DESCRIPTIONS.BUILDER('pagination'),
 	props: [
+		...OPTION_PROPS,
 		{
-			name: 'count',
-			type: 'number',
-			description: 'The total number of items.',
-		},
-		{
-			name: 'perPage',
+			name: 'defaultPage',
 			type: 'number',
 			default: '1',
-			description: 'The number of items per page.',
-		},
-		{
-			name: 'siblingCount',
-			type: 'number',
-			default: '1',
-			description: 'The number of page triggers to show on either side of the current page.',
-		},
-		{
-			name: 'page',
-			type: 'number',
-			default: '1',
-			description: 'The current page number.',
-		},
-	],
-	returnedProps: [
-		{
-			name: 'options',
-			type: 'Writable<CreatePaginationProps>',
-			description: 'A writable store that controls the pagination options.',
+			description: 'The default page number.',
 		},
 		{
 			name: 'page',
 			type: 'Writable<number>',
 			description: 'A writable store that controls the current page.',
+			see: SEE.BRING_YOUR_OWN_STORE,
+		},
+		{
+			name: 'onPageChange',
+			type: 'ChangeFn<number>',
+			description:
+				'A callback called when the page of the `page` store should be changed. This is useful for controlling the page of the pagination from outside the pagination.',
+			see: SEE.CHANGE_FUNCTIONS,
+		},
+	],
+	elements: genElements('pagination', [
+		{
+			name: 'root',
+			description: 'The builder store used to create the pagination root.',
+		},
+		{
+			name: 'pageTrigger',
+			description: 'The builder store used to create the pagination page trigger.',
+		},
+		{
+			name: 'prevButton',
+			description: 'The builder store used to create the pagination previous button.',
+		},
+		{
+			name: 'nextButton',
+			description: 'The builder store used to create the pagination next button.',
+		},
+	]),
+	states: [
+		{
+			name: 'range',
+			type: 'Readable<{start: number; end: number}>',
+			description: 'A readable store that contains the start and end page numbers.',
 		},
 		{
 			name: 'pages',
@@ -47,36 +81,17 @@ const builder: APISchema = {
 			description: 'A readable store that contains the page items.',
 		},
 		{
-			name: 'range',
-			type: 'Readable<{start: number; end: number}>',
-			description: 'A readable store that contains the start and end page numbers.',
-		},
-		{
 			name: 'totalPages',
 			type: 'Readable<number>',
 			description: 'A readable store that contains the total number of pages.',
 		},
 		{
-			name: 'root',
-			description: 'The builder store used to create the pagination root.',
-			link: '#root',
-		},
-		{
-			name: 'pageTrigger',
-			description: 'The builder store used to create the pagination page trigger.',
-			link: '#pagetrigger',
-		},
-		{
-			name: 'prevButton',
-			description: 'The builder store used to create the pagination previous button.',
-			link: '#prevbutton',
-		},
-		{
-			name: 'nextButton',
-			description: 'The builder store used to create the pagination next button.',
-			link: '#nextbutton',
+			name: 'page',
+			type: 'Readable<number>',
+			description: 'A readable store that contains the current page number.',
 		},
 	],
+	options: propsToOptions('pagination', OPTION_PROPS),
 };
 
 const root: APISchema = {

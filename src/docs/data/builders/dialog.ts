@@ -1,77 +1,68 @@
 import { ATTRS, DESCRIPTIONS, KBD, PROPS } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
-const ROLE_PROP = {
-	name: 'role',
-	type: ["'dialog'", "'alertdialog'"],
-	default: "'dialog'",
-	description: 'The `role` attribute of the dialog element.',
-};
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	{
+		name: 'role',
+		type: ["'dialog'", "'alertdialog'"],
+		default: "'dialog'",
+		description: 'The `role` attribute of the dialog element.',
+	},
+	PROPS.PREVENT_SCROLL,
+	PROPS.CLOSE_ON_ESCAPE,
+	PROPS.CLOSE_ON_OUTSIDE_CLICK,
+	PROPS.PORTAL,
+	PROPS.FORCE_VISIBLE,
+];
 
 const builder: APISchema = {
 	title: 'createDialog',
 	description: DESCRIPTIONS.BUILDER('dialog'),
-	props: [
-		ROLE_PROP,
-		PROPS.PREVENT_SCROLL({ name: 'dialog' }),
-		PROPS.CLOSE_ON_ESCAPE({ name: 'dialog' }),
-		PROPS.CLOSE_ON_OUTSIDE_CLICK({ name: 'dialog' }),
-		PROPS.PORTAL({ name: 'dialog' }),
-		PROPS.FORCE_VISIBLE({ name: 'dialog' }),
-		PROPS.DEFAULT_OPEN({ name: 'dialog' }),
-		PROPS.OPEN({ name: 'dialog' }),
+	props: genProps('dialog', [
+		...OPTION_PROPS,
+		PROPS.DEFAULT_OPEN,
+		PROPS.OPEN,
 		PROPS.ON_OPEN_CHANGE,
-	],
-	elements: [],
-	states: [],
-	returnedProps: [
-		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls the open state of the dialog.',
-		},
-		{
-			name: 'options',
-			type: 'Writable<CreateDialogProps>',
-			description: 'A writable store that controls the options of the dialog.',
-		},
-		{
-			name: 'portal',
-			type: 'Action<HTMLElement, PortalConfig>',
-			description: 'The portal action for the dialog.',
-		},
+	]),
+	elements: genElements('dialog', [
 		{
 			name: 'trigger',
 			description: 'The builder store used to create the dialog trigger.',
-			link: '#trigger',
 		},
 		{
 			name: 'overlay',
 			description: 'The builder store used to create the dialog overlay.',
-			link: '#overlay',
 		},
 		{
 			name: 'content',
 			description: 'The builder store used to create the dialog content.',
-			link: '#content',
 		},
 		{
 			name: 'close',
 			description: 'The builder store used to create the dialog close button.',
-			link: '#close',
 		},
 		{
 			name: 'title',
 			description: 'The builder store used to create the dialog title.',
-			link: '#title',
 		},
 		{
 			name: 'description',
 			description: 'The builder store used to create the dialog description.',
-			link: '#description',
+		},
+	]),
+	states: [
+		{
+			name: 'open',
+			type: 'Readable<boolean>',
+			description: 'A readable store with the open state of the dialog.',
 		},
 	],
+	options: propsToOptions('dialog', OPTION_PROPS),
 };
 
 const trigger: APISchema = {

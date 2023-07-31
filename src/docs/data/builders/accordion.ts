@@ -1,22 +1,28 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE, propToOption } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
-const ACCORDION_TYPE = {
-	name: 'type',
-	type: ["'single'", "'multiple'"],
-	default: "'single'",
-	description:
-		'The type of accordion to create. A `"single"` accordion only allows one item to be open at a time. A `"multiple"` accordion allows multiple items to be open at a time.',
-};
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	{
+		name: 'type',
+		type: ["'single'", "'multiple'"],
+		default: "'single'",
+		description:
+			'The type of accordion to create. A `"single"` accordion only allows one item to be open at a time. A `"multiple"` accordion allows multiple items to be open at a time.',
+	},
+	PROPS.DISABLED,
+	PROPS.FORCE_VISIBLE,
+];
 
 const builder: APISchema = {
 	title: 'createAccordion',
 	description: DESCRIPTIONS.BUILDER('accordion'),
-	props: [
-		ACCORDION_TYPE,
-		PROPS.DISABLED({ name: 'accordion' }),
-		PROPS.FORCE_VISIBLE({ name: 'accordion' }),
+	props: genProps('accordion', [
+		...OPTION_PROPS,
 		{
 			name: 'defaultValue',
 			type: ['string', 'string[]', 'undefined'],
@@ -36,34 +42,29 @@ const builder: APISchema = {
 				'A callback called when the value of the `value` store should be changed. This is useful for controlling the value of the accordion from outside the accordion.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
-	],
-	elements: [
+	]),
+	elements: genElements('accordion', [
 		{
 			name: 'root',
 			description: 'The builder store used to create the accordion root.',
-			link: '#root',
 		},
 		{
 			name: 'item',
 			description: 'The builder store used to create accordion items.',
-			link: '#item',
 		},
 		{
 			name: 'trigger',
 			description: 'The builder store used to create accordion triggers.',
-			link: '#trigger',
 		},
 		{
 			name: 'content',
 			description: 'The builder store used to create accordion content.',
-			link: '#content',
 		},
 		{
 			name: 'heading',
 			description: 'The builder store used to create accordion headings.',
-			link: '#heading',
 		},
-	],
+	]),
 	states: [
 		{
 			name: 'value',
@@ -79,11 +80,7 @@ const builder: APISchema = {
 				'A derived store that takes an item ID as an argument and returns whether or not the item is selected.',
 		},
 	],
-	options: [
-		propToOption(ACCORDION_TYPE),
-		propToOption(PROPS.DISABLED({ name: 'accordion' })),
-		propToOption(PROPS.FORCE_VISIBLE({ name: 'accordion' })),
-	],
+	options: propsToOptions('accordion', OPTION_PROPS),
 };
 
 const root: APISchema = {

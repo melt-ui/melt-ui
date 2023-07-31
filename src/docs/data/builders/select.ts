@@ -1,124 +1,120 @@
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
+
+const OPTION_PROPS = [
+	PROPS.REQUIRED,
+	PROPS.DISABLED,
+	PROPS.ARROW_SIZE,
+	PROPS.PREVENT_SCROLL,
+	PROPS.LOOP,
+	PROPS.CLOSE_ON_ESCAPE,
+	PROPS.CLOSE_ON_OUTSIDE_CLICK,
+	PROPS.PORTAL,
+	PROPS.FORCE_VISIBLE,
+	PROPS.POSITIONING({ default: "placement: 'bottom'" }),
+	{
+		name: 'defaultValueLabel',
+		type: 'string',
+		description: 'The initial default value label of the select.',
+	},
+	{
+		name: 'name',
+		type: 'string',
+		description: 'The name to be used for the select input.',
+	},
+];
 
 const builder: APISchema = {
 	title: 'createSelect',
 	description: DESCRIPTIONS.BUILDER('select'),
-	props: [
+	props: genProps('select', [
+		...OPTION_PROPS,
 		{
-			name: 'required',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the select is required.',
-		},
-		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the select is disabled.',
-		},
-		{
-			name: 'valueLabel',
-			type: 'string',
-			description: 'The initial value label of the select.',
-		},
-		{
-			name: 'value',
+			name: 'defaultValue',
 			type: 'unknown',
 			description: 'The initial value of the select.',
-		},
-		{
-			name: 'name',
-			type: 'string',
-			description: 'The name of the select.',
-		},
-		{
-			name: 'preventScroll',
-			type: 'boolean',
-			default: 'true',
-			description: DESCRIPTIONS.PREVENT_SCROLL('select'),
-		},
-		{
-			name: 'loop',
-			type: 'boolean',
-			default: 'false',
-			description: DESCRIPTIONS.LOOP,
-		},
-	],
-	returnedProps: [
-		{
-			name: 'options',
-			type: 'Writable<CreateSelectProps>',
-			description: 'A writable store that can be used to update the select props.',
-		},
-		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store that can be used to update the select open state.',
-		},
-		{
-			name: 'isSelected',
-			type: 'Readable<(value: unknown) => boolean>',
-			description: 'A derived store that returns whether or not the given value is selected.',
 		},
 		{
 			name: 'value',
 			type: 'Writable<unknown>',
 			description: 'A writable store that can be used to get or update or the select value.',
+			see: SEE.BRING_YOUR_OWN_STORE,
 		},
 		{
-			name: 'valueLabel',
-			type: 'Writable<string | number | null>',
-			description: 'A writable store that can be used to get or update the select label.',
+			name: 'onValueChange',
+			type: 'ChangeFn<unknown>',
+			description: 'A callback that is called when the value of the select changes.',
+			see: SEE.CHANGE_FUNCTIONS,
 		},
+		PROPS.DEFAULT_OPEN,
+		PROPS.OPEN,
+		PROPS.ON_OPEN_CHANGE,
+	]),
+	elements: genElements('select', [
 		{
 			name: 'trigger',
 			description: 'The builder store used to create the select trigger.',
-			link: '#trigger',
 		},
 		{
 			name: 'menu',
 			description: 'The builder store used to create the select menu.',
-			link: '#menu',
 		},
 		{
 			name: 'option',
 			description: 'The builder store used to create the select options.',
-			link: '#option',
 		},
 		{
 			name: 'input',
 			description: 'The builder store used to create the select input.',
-			link: '#input',
 		},
 		{
 			name: 'label',
 			description: 'The builder store used to create the select label.',
-			link: '#label',
 		},
-
 		{
 			name: 'separator',
 			description: 'The builder store used to create the select separator.',
-			link: '#separator',
 		},
 		{
 			name: 'group',
 			description: 'The builder store used to create the select group.',
-			link: '#group',
 		},
 		{
 			name: 'groupLabel',
 			description: 'The builder store used to create the select group label.',
-			link: '#grouplabel',
 		},
 		{
 			name: 'arrow',
 			description: 'The builder store used to create the select arrow.',
-			link: '#arrow',
+		},
+	]),
+	states: [
+		{
+			name: 'open',
+			type: 'Readable<boolean>',
+			description: 'A derived store that returns whether or not the select is open.',
+		},
+		{
+			name: 'value',
+			type: 'Readable<unknown>',
+			description: 'A derived store that returns the current value of the select.',
+		},
+		{
+			name: 'open',
+			type: 'Readable<boolean>',
+			description: 'A derived store that returns whether or not the select is open.',
 		},
 	],
+	helpers: [
+		{
+			name: 'isSelected',
+			type: 'Readable<(value: unknown) => boolean>',
+			description: 'A derived store that returns whether or not the given value is selected.',
+		},
+	],
+	options: propsToOptions('select', OPTION_PROPS),
 };
 
 const trigger: APISchema = {

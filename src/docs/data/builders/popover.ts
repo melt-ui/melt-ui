@@ -1,78 +1,61 @@
-import { ATTRS, DESCRIPTIONS, KBD, LONG_TYPES } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	PROPS.POSITIONING({ default: 'placement: "bottom"' }),
+	{
+		name: 'disableFocusTrap',
+		type: 'boolean',
+		default: 'false',
+		description: 'Whether to disable the focus trap.',
+	},
+	PROPS.ARROW_SIZE,
+	PROPS.CLOSE_ON_ESCAPE,
+	PROPS.CLOSE_ON_OUTSIDE_CLICK,
+	PROPS.PREVENT_SCROLL,
+	PROPS.PORTAL,
+	PROPS.FORCE_VISIBLE,
+];
 
 const builder: APISchema = {
 	title: 'createPopover',
 	description: DESCRIPTIONS.BUILDER('popover'),
-	props: [
-		{
-			name: 'positioning',
-			type: 'FloatingConfig',
-			default: 'position: "bottom"',
-			description: DESCRIPTIONS.FLOATING_CONFIG,
-			longType: LONG_TYPES.FLOATING_CONFIG,
-		},
-		{
-			name: 'arrowSize',
-			type: 'number',
-			default: '8',
-			description: DESCRIPTIONS.ARROW_SIZE,
-		},
-		{
-			name: 'defaultOpen',
-			type: 'boolean',
-			default: 'false',
-			description: 'The initial state of open. Should only be used if the popover is uncontrolled',
-		},
-		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			default: 'undefined',
-			description:
-				'A store that controls the open state. Use when you want to directly control the popover.',
-		},
-		{
-			name: 'onOpenChange',
-			type: 'ChangeFn<boolean>',
-			default: 'undefined',
-			description:
-				'Optional function that runs whenever `open` should change. The returned value will be used to update `open`.',
-		},
-		{
-			name: 'disableFocusTrap',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether to disable the focus trap.',
-		},
-	],
-	returnedProps: [
-		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls the open state of the popover.',
-		},
+	props: genProps('popover', [
+		...OPTION_PROPS,
+		PROPS.DEFAULT_OPEN,
+		PROPS.OPEN,
+		PROPS.ON_OPEN_CHANGE,
+	]),
+	elements: genElements('popover', [
 		{
 			name: 'trigger',
 			description: 'The builder store used to create the popover trigger.',
-			link: '#trigger',
 		},
 		{
 			name: 'content',
 			description: 'The builder store used to create the popover content.',
-			link: '#content',
 		},
 		{
 			name: 'close',
 			description: 'The builder store used to create the popover close button.',
-			link: '#close',
 		},
 		{
 			name: 'arrow',
 			description: 'The builder store used to create the popover arrow.',
-			link: '#arrow',
+		},
+	]),
+	states: [
+		{
+			name: 'open',
+			type: 'Readable<boolean>',
+			description: 'A readable store which represents the open state of the popover.',
 		},
 	],
+	options: propsToOptions('popover', OPTION_PROPS),
 };
 
 const trigger: APISchema = {

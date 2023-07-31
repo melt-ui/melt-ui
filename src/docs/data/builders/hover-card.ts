@@ -1,76 +1,69 @@
-import { ATTRS, DESCRIPTIONS, LONG_TYPES } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, PROPS } from '$docs/constants';
 import type { APISchema } from '$docs/types';
+import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
+import { getMenuArrowSchema } from './menu';
+
+const OPEN_DELAY = {
+	name: 'openDelay',
+	type: 'number',
+	default: '700',
+	description: 'The delay in milliseconds before the hover card opens.',
+};
+const CLOSE_DELAY = {
+	name: 'closeDelay',
+	type: 'number',
+	default: '300',
+	description: 'The delay in milliseconds before the hover card closes.',
+};
 
 const builder: APISchema = {
 	title: 'createHoverCard',
 	description: DESCRIPTIONS.BUILDER('hover card'),
-	props: [
-		{
-			name: 'defaultOpen',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether the hover card is open by default.',
-		},
-		{
-			name: 'positioning',
-			type: 'FloatingConfig',
-			default: 'placement: "bottom"',
-			description: DESCRIPTIONS.FLOATING_CONFIG,
-			longType: LONG_TYPES.FLOATING_CONFIG,
-		},
-		{
-			name: 'arrowSize',
-			type: 'number',
-			default: '8',
-			description: DESCRIPTIONS.ARROW_SIZE,
-		},
-		{
-			name: 'closeOnOutsideClick',
-			type: 'boolean',
-			default: 'true',
-			description: DESCRIPTIONS.CLOSE_ON_CLICK_OUTSIDE('hover card'),
-		},
-		{
-			name: 'openDelay',
-			type: 'number',
-			default: '700',
-			description: 'The delay in milliseconds before the hover card opens.',
-		},
-		{
-			name: 'closeDelay',
-			type: 'number',
-			default: '300',
-			description: 'The delay in milliseconds before the hover card closes.',
-		},
-	],
-	returnedProps: [
-		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls the open state of the hover card.',
-		},
-		{
-			name: 'options',
-			type: 'Writable<CreateHoverCardProps>',
-			description: 'A writable store that controls the options of the hover card.',
-		},
+	props: genProps('hover card', [
+		PROPS.DEFAULT_OPEN,
+		PROPS.ARROW_SIZE,
+		PROPS.POSITIONING({ default: "placement: 'bottom'" }),
+		PROPS.CLOSE_ON_OUTSIDE_CLICK,
+		PROPS.CLOSE_ON_ESCAPE,
+		PROPS.FORCE_VISIBLE,
+		PROPS.PORTAL,
+		PROPS.OPEN,
+		PROPS.ON_OPEN_CHANGE,
+		OPEN_DELAY,
+		CLOSE_DELAY,
+	]),
+	elements: genElements('hover card', [
 		{
 			name: 'trigger',
 			description: 'The builder store used to create the hover card trigger.',
-			link: '#trigger',
 		},
 		{
 			name: 'content',
 			description: 'The builder store used to create the hover card content.',
-			link: '#content',
 		},
 		{
 			name: 'arrow',
 			description: 'The builder store used to create the hover card arrow.',
-			link: '#arrow',
+		},
+	]),
+	states: [
+		{
+			name: 'open',
+			type: 'Readable<boolean>',
+			description: 'A readable store with the open state of the hover card.',
 		},
 	],
+	options: propsToOptions('hover card', [
+		PROPS.ARROW_SIZE,
+		PROPS.POSITIONING,
+		PROPS.CLOSE_ON_OUTSIDE_CLICK,
+		PROPS.CLOSE_ON_ESCAPE,
+		PROPS.FORCE_VISIBLE,
+		PROPS.PORTAL,
+		CLOSE_DELAY,
+		OPEN_DELAY,
+	]),
 };
 
 const trigger: APISchema = {
@@ -103,20 +96,7 @@ const content: APISchema = {
 	],
 };
 
-const arrow: APISchema = {
-	title: 'arrow',
-	description: 'The optional arrow element that points to the trigger.',
-	dataAttributes: [
-		{
-			name: 'data-arrow',
-			value: ATTRS.TRUE,
-		},
-		{
-			name: 'data-melt-hover-card-arrow',
-			value: ATTRS.MELT('arrow'),
-		},
-	],
-};
+const arrow: APISchema = getMenuArrowSchema('hover card');
 
 const schemas = [builder, trigger, content, arrow];
 

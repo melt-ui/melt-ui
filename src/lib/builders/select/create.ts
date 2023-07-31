@@ -76,7 +76,17 @@ const { name } = createElHelpers<SelectParts>('select');
 export function createSelect(props?: CreateSelectProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps;
 
-	const options = toWritableStores(omit(withDefaults, 'value', 'defaultValueLabel'));
+	const options = toWritableStores(
+		omit(
+			withDefaults,
+			'value',
+			'defaultValueLabel',
+			'onValueChange',
+			'onOpenChange',
+			'open',
+			'defaultOpen'
+		)
+	);
 
 	const {
 		positioning,

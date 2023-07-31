@@ -379,11 +379,11 @@ export function createMenubar(props?: CreateMenubarProps) {
 				menu,
 				trigger,
 				item: m.item,
-				checkboxItem: m.checkboxItem,
 				arrow: m.arrow,
 				separator: m.separator,
 			},
 			builders: {
+				createCheckboxItem: m.createCheckboxItem,
 				createSubmenu: m.createSubmenu,
 				createMenuRadioGroup: m.createMenuRadioGroup,
 			},

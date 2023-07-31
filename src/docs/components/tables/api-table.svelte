@@ -24,6 +24,14 @@
 			</svelte:fragment>
 		</ReturnedPropsTable>
 	{/if}
+	{#if data.builders && data.builders.length}
+		<ReturnedPropsTable data={data.builders} title="Builders" tableHeading="Builder">
+			<svelte:fragment slot="info">
+				Sometimes builder functions return other builder functions. These are typically used to
+				create more complex sub-components with shared context to the parent builder.
+			</svelte:fragment>
+		</ReturnedPropsTable>
+	{/if}
 	{#if data.states && data.states.length}
 		<ReturnedPropsTable data={data.states} title="States" tableHeading="State">
 			<svelte:fragment slot="info">

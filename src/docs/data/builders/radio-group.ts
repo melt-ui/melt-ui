@@ -1,68 +1,88 @@
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, SEE } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import { genElements, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
+
+const OPTION_PROPS = [
+	{
+		name: 'disabled',
+		type: 'boolean',
+		default: 'false',
+		description: 'Whether or not the radio group is disabled.',
+	},
+	{
+		name: 'loop',
+		type: 'boolean',
+		default: 'true',
+		description: 'Whether or not the radio group should loop when navigating with the keyboard.',
+	},
+	{
+		name: 'required',
+		type: 'boolean',
+		default: 'false',
+		description: 'Whether or not the radio group is required.',
+	},
+	{
+		name: 'orientation',
+		type: ['"horizontal"', '"vertical"'],
+		default: '"vertical"',
+		description: 'The orientation of the radio group.',
+	},
+];
 
 const builder: APISchema = {
 	title: 'createRadioGroup',
 	description: DESCRIPTIONS.BUILDER('radio group'),
 	props: [
+		...OPTION_PROPS,
 		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the radio group is disabled.',
-		},
-		{
-			name: 'loop',
-			type: 'boolean',
-			default: 'true',
-			description: 'Whether or not the radio group should loop when navigating with the keyboard.',
-		},
-		{
-			name: 'required',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the radio group is required.',
-		},
-		{
-			name: 'orientation',
-			type: ['"horizontal"', '"vertical"'],
-			default: '"vertical"',
-			description: 'The orientation of the radio group.',
+			name: 'defaultValue',
+			type: 'string',
+			description: 'The value of the default checked radio item.',
 		},
 		{
 			name: 'value',
-			type: 'string',
-			description: 'The value of the checked radio item.',
+			type: 'Writable<string>',
+			description: 'A writable store that can be used to update the radio group value.',
+			see: SEE.BRING_YOUR_OWN_STORE,
+		},
+		{
+			name: 'onValueChange',
+			type: 'ChangeFn<string>',
+			description: 'A callback that is called when the value of the radio group changes.',
+			see: SEE.CHANGE_FUNCTIONS,
 		},
 	],
-	returnedProps: [
-		{
-			name: 'options',
-			type: 'Writable<CreateRadioGroupProps>',
-			description: 'A writable store that can be used to update the radio group props.',
-		},
-		{
-			name: 'value',
-			type: 'Writable<string | null>',
-			description: 'A writable store that can be used to update the radio group value.',
-		},
+	elements: genElements('radio group', [
 		{
 			name: 'root',
 			description: 'The builder store used to create the radio group root.',
-			link: '#root',
 		},
 		{
 			name: 'item',
 			description: 'The builder store used to create the radio group item.',
-			link: '#item',
 		},
 		{
 			name: 'itemInput',
 			description: 'The builder store used to create the radio group item input.',
-			link: '#iteminput',
+		},
+	]),
+	states: [
+		{
+			name: 'value',
+			type: 'Readable<string>',
+			description: 'A readable store with the current value of the radio group.',
 		},
 	],
+	helpers: [
+		{
+			name: 'isChecked',
+			type: 'Readable<(itemValue: string) => boolean>',
+			description:
+				'A derived store function that returns whether or not the radio item is checked.',
+		},
+	],
+	options: propsToOptions('radio group', OPTION_PROPS),
 };
 
 const root: APISchema = {

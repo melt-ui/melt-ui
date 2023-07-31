@@ -3,9 +3,12 @@
 	import { writable } from 'svelte/store';
 	import { ChevronRight, Check } from 'lucide-svelte';
 
+	const settingsSync = writable(true);
+	const hideMeltUI = writable(false);
+
 	const {
-		elements: { trigger, menu, item, checkboxItem, separator },
-		builders: { createSubmenu, createMenuRadioGroup },
+		elements: { trigger, menu, item, separator },
+		builders: { createSubmenu, createMenuRadioGroup, createCheckboxItem },
 	} = createContextMenu();
 
 	const {
@@ -19,15 +22,24 @@
 		defaultValue: 'Hunter Johnston',
 	});
 
+	const {
+		elements: { checkboxItem },
+	} = createCheckboxItem({
+		checked: settingsSync,
+	});
+
+	const {
+		elements: { checkboxItem: checkboxItemA },
+	} = createCheckboxItem({
+		checked: hideMeltUI,
+	});
+
 	const personsArr = [
 		'Hunter Johnston',
 		'Thomas G. Lopes',
 		'Adrian Gonz',
 		'Franck Poingt',
 	];
-
-	const settingsSync = writable(true);
-	const hideMeltUI = writable(false);
 </script>
 
 <span class="trigger" melt={$trigger} aria-label="Update dimensions">
@@ -38,11 +50,7 @@
 	<div class="item" melt={$item}>About Melt UI</div>
 	<div class="item" melt={$item}>Check for Updates...</div>
 	<div class="separator" melt={$separator} />
-	<div
-		class="item"
-		{...$checkboxItem}
-		use:checkboxItem={{ checked: settingsSync }}
-	>
+	<div class="item" {...$checkboxItem} use:checkboxItem>
 		<div class="check">
 			{#if $settingsSync}
 				<Check class="icon" />
@@ -73,11 +81,7 @@
 	</div>
 	<div melt={$separator} class="separator" />
 
-	<div
-		class="item"
-		{...$checkboxItem}
-		use:checkboxItem={{ checked: hideMeltUI }}
-	>
+	<div class="item" {...$checkboxItemA} use:checkboxItemA>
 		<div class="check">
 			{#if $hideMeltUI}
 				<Check class="icon" />

@@ -29,7 +29,8 @@ export function createPagination(props: CreatePaginationProps) {
 	const page = overridable(pageWritable, withDefaults?.onPageChange);
 
 	// options
-	const options = toWritableStores(omit(withDefaults, 'page'));
+	const options = toWritableStores(omit(withDefaults, 'page', 'onPageChange', 'defaultPage'));
+
 	const { perPage, siblingCount, count } = options;
 
 	const totalPages = derived([count, perPage], ([$count, $perPage]) => {

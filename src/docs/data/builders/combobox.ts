@@ -1,72 +1,71 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, propToOption } from '$docs/constants';
-import type { APISchema, KeyboardSchema, Prop } from '$docs/types';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS } from '$docs/constants';
+import type { APISchema, KeyboardSchema } from '$docs/types';
+import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
+import { getMenuArrowSchema } from './menu';
 
-const FILTER_FUNCTION: Prop = {
-	name: 'filterFunction',
-	type: '(item: T, inputValue: string)',
-	description:
-		'A function that returns `true` if the item should be included in the filtered list.',
-};
-
-const ITEM_TO_STRING: Prop = {
-	name: 'itemToString',
-	type: '(item: T)',
-	description: 'A function that returns a string representation of the item.',
-};
-
-const SCROLL_ALIGNMENT: Prop = {
-	name: 'scrollAlignment',
-	type: ['"nearest"', '"center"'],
-	default: '"nearest"',
-	description: 'The alignment of the highlighted item when scrolling.',
-};
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	{
+		name: 'filterFunction',
+		type: '(item: T, inputValue: string)',
+		description:
+			'A function that returns `true` if the item should be included in the filtered list.',
+	},
+	{
+		name: 'itemToString',
+		type: '(item: T)',
+		description: 'A function that returns a string representation of the item.',
+	},
+	{
+		name: 'scrollAlignment',
+		type: ['"nearest"', '"center"'],
+		default: '"nearest"',
+		description: 'The alignment of the highlighted item when scrolling.',
+	},
+	PROPS.LOOP,
+	PROPS.CLOSE_ON_OUTSIDE_CLICK,
+	PROPS.CLOSE_ON_ESCAPE,
+	PROPS.PREVENT_SCROLL,
+	PROPS.PORTAL,
+	PROPS.POSITIONING,
+	PROPS.FORCE_VISIBLE,
+];
 
 const builder: APISchema = {
 	title: 'createCombobox',
 	description: DESCRIPTIONS.BUILDER('combobox'),
-	props: [
+	props: genProps('combobox menu', [
 		{
 			name: 'items',
 			type: 'T[]',
 			description: 'The list of items to display in the combobox list.',
 		},
-		FILTER_FUNCTION,
-		ITEM_TO_STRING,
-		SCROLL_ALIGNMENT,
-		PROPS.DEFAULT_OPEN({ name: 'combobox menu' }),
-		PROPS.OPEN({ name: 'combobox menu' }),
+		...OPTION_PROPS,
+		PROPS.DEFAULT_OPEN,
+		PROPS.OPEN,
 		PROPS.ON_OPEN_CHANGE,
-		PROPS.LOOP({ name: 'combobox' }),
-		PROPS.CLOSE_ON_OUTSIDE_CLICK({ name: 'combobox menu' }),
-		PROPS.CLOSE_ON_ESCAPE({ name: 'combobox menu' }),
-		PROPS.PREVENT_SCROLL({ name: 'combobox menu' }),
-		PROPS.PORTAL({ name: 'combobox menu' }),
-		PROPS.POSITIONING({ name: 'combobox menu' }),
-		PROPS.FORCE_VISIBLE({ name: 'combobox menu' }),
-	],
-	elements: [
+	]),
+	elements: genElements('combobox', [
 		{
 			name: 'menu',
 			description: 'The builder store used to create the collapsible menu.',
-			link: '#menu',
 		},
 		{
 			name: 'input',
 			description: 'The builder store used to create the collapsible input.',
-			link: '#input',
 		},
 		{
 			name: 'item',
 			description: 'The builder store used to create the menu item.',
-			link: '#item',
 		},
 		{
 			name: 'label',
 			description: 'The builder store used to create the label for the combobox.',
-			link: '#label',
 		},
-	],
+	]),
 	states: [
 		{
 			name: 'open',
@@ -102,18 +101,7 @@ const builder: APISchema = {
 			description: 'A function that updates the list of items.',
 		},
 	],
-	options: [
-		propToOption(PROPS.LOOP({ name: 'combobox' })),
-		propToOption(PROPS.CLOSE_ON_OUTSIDE_CLICK({ name: 'combobox menu' })),
-		propToOption(PROPS.CLOSE_ON_ESCAPE({ name: 'combobox menu' })),
-		propToOption(PROPS.PREVENT_SCROLL({ name: 'combobox menu' })),
-		propToOption(PROPS.PORTAL({ name: 'combobox menu' })),
-		propToOption(PROPS.POSITIONING({ name: 'combobox menu' })),
-		propToOption(PROPS.FORCE_VISIBLE({ name: 'combobox menu' })),
-		propToOption(ITEM_TO_STRING),
-		propToOption(FILTER_FUNCTION),
-		propToOption(SCROLL_ALIGNMENT),
-	],
+	options: propsToOptions('combobox menu', OPTION_PROPS),
 };
 
 const menu: APISchema = {
@@ -199,20 +187,7 @@ const label: APISchema = {
 	],
 };
 
-const arrow: APISchema = {
-	title: 'arrow',
-	description: 'An optional arrow element',
-	dataAttributes: [
-		{
-			name: 'data-arrow',
-			value: ATTRS.TRUE,
-		},
-		{
-			name: 'data-melt-combobox-arrow',
-			value: ATTRS.MELT('arrow'),
-		},
-	],
-};
+const arrow: APISchema = getMenuArrowSchema('combobox');
 
 const keyboard: KeyboardSchema = [
 	{

@@ -1,28 +1,32 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE, propToOption } from '$docs/constants';
-import type { APISchema, KeyboardSchema, Prop } from '$docs/types';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
+import type { APISchema, KeyboardSchema } from '$docs/types';
+import { genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
-const NAME_PROP: Prop = {
-	name: 'name',
-	type: 'string',
-	description:
-		'The name of the checkbox. Submitted with its owning form as part of a name/value pair.',
-};
-
-const VALUE_PROP: Prop = {
-	name: 'value',
-	type: 'string',
-	description: 'The value given as data when submitted with a `name`.',
-};
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	PROPS.DISABLED,
+	PROPS.REQUIRED,
+	{
+		name: 'name',
+		type: 'string',
+		description:
+			'The name of the checkbox. Submitted with its owning form as part of a name/value pair.',
+	},
+	{
+		name: 'value',
+		type: 'string',
+		description: 'The value given as data when submitted with a `name`.',
+	},
+];
 
 const builder: APISchema = {
 	title: 'createCheckbox',
 	description: DESCRIPTIONS.BUILDER('checkbox'),
-	props: [
-		PROPS.DISABLED({ name: 'checkbox' }),
-		PROPS.REQUIRED({ name: 'checkbox' }),
-		NAME_PROP,
-		VALUE_PROP,
+	props: genProps('checkbox', [
+		...OPTION_PROPS,
 		{
 			name: 'defaultChecked',
 			type: ['boolean', '"indeterminate"'],
@@ -44,7 +48,7 @@ const builder: APISchema = {
 				'A callback called when the value of the `checked` store should be changed. This is useful for controlling the checked state of the checkbox from outside the checkbox.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
-	],
+	]),
 	elements: [
 		{
 			name: 'root',
@@ -77,12 +81,7 @@ const builder: APISchema = {
 				'A derived store that returns whether or not the checkbox is in an indeterminate state.',
 		},
 	],
-	options: [
-		propToOption(PROPS.DISABLED({ name: 'checkbox' })),
-		propToOption(NAME_PROP),
-		propToOption(VALUE_PROP),
-		propToOption(PROPS.REQUIRED({ name: 'checkbox' })),
-	],
+	options: propsToOptions('checkbox', OPTION_PROPS),
 };
 
 const root: APISchema = {

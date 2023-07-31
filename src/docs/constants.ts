@@ -131,15 +131,6 @@ export const PROPS = {
 	}),
 };
 
-export function propToOption(prop: Prop): ReturnedProps[0] {
-	const type = Array.isArray(prop.type) ? prop.type.join(' | ') : prop.type;
-	return {
-		name: prop.name,
-		type: `Writable<${type}>`,
-		description: prop.description,
-	};
-}
-
 export const ATTRS = {
 	OPEN_CLOSED: "`'open' | 'closed'`",
 	TRUE_FALSE: "`'true' | 'false'`",

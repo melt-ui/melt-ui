@@ -106,11 +106,13 @@ export type CreateRadioGroupProps = {
 };
 
 export type ItemProps = {
-	onSelect?: (e: Event) => void;
+	disabled?: boolean;
 };
 
 export type CheckboxItemProps = ItemProps & {
-	checked: Writable<boolean | 'indeterminate'>;
+	defaultChecked?: boolean | 'indeterminate';
+	checked?: Writable<boolean | 'indeterminate'>;
+	onCheckedChange?: ChangeFn<boolean | 'indeterminate'>;
 };
 
 export type RadioItemProps = {

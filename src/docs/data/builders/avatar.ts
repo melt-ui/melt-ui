@@ -1,27 +1,31 @@
-import { ATTRS, DESCRIPTIONS, SEE, propToOption } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, SEE } from '$docs/constants';
 import type { APISchema } from '$docs/types';
+import { genElements, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
-const SRC_PROP = {
-	name: 'src',
-	type: 'string',
-	default: '""',
-	description: 'The source of the image to display.',
-};
-
-const DELAY_MS_PROP = {
-	name: 'delayMs',
-	type: 'number',
-	default: '0',
-	description: 'The amount of time in milliseconds to wait before displaying the image.',
-};
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	{
+		name: 'src',
+		type: 'string',
+		default: '""',
+		description: 'The source of the image to display.',
+	},
+	{
+		name: 'delayMs',
+		type: 'number',
+		default: '0',
+		description: 'The amount of time in milliseconds to wait before displaying the image.',
+	},
+];
 
 const builder: APISchema = {
 	title: 'createAvatar',
 	description: DESCRIPTIONS.BUILDER('avatar'),
 	props: [
-		SRC_PROP,
-		DELAY_MS_PROP,
+		...OPTION_PROPS,
 		{
 			name: 'loadingStatus',
 			type: 'Writable<"loading" | "loaded" | "error">',
@@ -35,18 +39,16 @@ const builder: APISchema = {
 			see: SEE.CHANGE_FUNCTIONS,
 		},
 	],
-	elements: [
+	elements: genElements('avatar', [
 		{
 			name: 'image',
 			description: 'The builder store used to create the the image element.',
-			link: '#image',
 		},
 		{
 			name: 'fallback',
 			description: 'The builder store used to create the fallback element.',
-			link: '#fallback',
 		},
-	],
+	]),
 	states: [
 		{
 			name: 'loadingStatus',
@@ -54,7 +56,7 @@ const builder: APISchema = {
 			description: 'A writable store used to control the value of the loading status.',
 		},
 	],
-	options: [propToOption(SRC_PROP), propToOption(DELAY_MS_PROP)],
+	options: propsToOptions('avatar', OPTION_PROPS),
 };
 
 const image: APISchema = {

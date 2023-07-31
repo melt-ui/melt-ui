@@ -34,9 +34,9 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 		trigger,
 		menu,
 		item,
-		checkboxItem,
 		arrow,
 		createSubmenu,
+		createCheckboxItem,
 		createMenuRadioGroup,
 		separator,
 	} = createMenuBuilder({
@@ -54,7 +54,6 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 			trigger,
 			menu,
 			item,
-			checkboxItem,
 			arrow,
 			separator,
 		},
@@ -62,6 +61,7 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 			open: readonly(rootOpen),
 		},
 		builders: {
+			createCheckboxItem,
 			createSubmenu,
 			createMenuRadioGroup,
 		},
