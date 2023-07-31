@@ -29,6 +29,21 @@ module.exports = {
 	},
 	rules: {
 		'no-console': 'warn',
+		'no-restricted-imports': [
+			'error',
+			{
+				patterns: [
+					{
+						group: ['**/lib/builders/*'],
+						message: 'If you need to import a builder do it from the root `$lib`',
+					},
+					{
+						group: ['$lib/builders/*'],
+						message: 'If you need to import a builder do it from the root `$lib`',
+					},
+				],
+			},
+		],
 	},
 	globals: {
 		NodeJS: true,
