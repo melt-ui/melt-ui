@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -8,11 +8,11 @@ import type { BuilderData } from '.';
  */
 const OPTION_PROPS = [PROPS.DISABLED];
 
-const builder: APISchema = {
+const BUILDER_NAME = 'toggle';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createToggle',
-	description: DESCRIPTIONS.BUILDER('toggle'),
-	isBuilder: true,
-	props: genProps('toggle', [
+	props: [
 		...OPTION_PROPS,
 		{
 			name: 'defaultPressed',
@@ -33,13 +33,13 @@ const builder: APISchema = {
 				'A callback called when the value of the `pressed` store should be changed. This is useful for controlling the value of the toggle from outside the toggle.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
-	]),
-	elements: genElements('toggle', [
+	],
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the toggle root.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'pressed',
@@ -47,11 +47,10 @@ const builder: APISchema = {
 			description: 'A readable store that represents the pressed state of the toggle.',
 		},
 	],
-	options: propsToOptions('toggle', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The root toggle component.',
 	dataAttributes: [
 		{
@@ -67,7 +66,7 @@ const root: APISchema = {
 			value: ATTRS.MELT('toggle'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

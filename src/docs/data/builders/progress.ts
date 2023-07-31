@@ -1,6 +1,5 @@
-import { ATTRS, DESCRIPTIONS, SEE } from '$docs/constants';
-import type { APISchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, SEE } from '$docs/constants';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -14,12 +13,11 @@ const OPTION_PROPS = [
 		description: 'The maximum value of the progress bar.',
 	},
 ];
+const BUILDER_NAME = 'progress';
 
-const builder: APISchema = {
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createProgress',
-	description: DESCRIPTIONS.BUILDER('progress bar'),
-	isBuilder: true,
-	props: genProps('progress', [
+	props: [
 		...OPTION_PROPS,
 		{
 			name: 'defaultValue',
@@ -39,13 +37,13 @@ const builder: APISchema = {
 			description: 'A callback that is called when the value of the progress bar changes.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
-	]),
-	elements: genElements('progress', [
+	],
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the progress bar.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'value',
@@ -53,11 +51,10 @@ const builder: APISchema = {
 			description: 'A readable store with the current value of the progress bar.',
 		},
 	],
-	options: propsToOptions('progress', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The root progress component.',
 	dataAttributes: [
 		{
@@ -77,7 +74,7 @@ const root: APISchema = {
 			value: ATTRS.MELT('root'),
 		},
 	],
-};
+});
 
 const schemas = [builder, root];
 

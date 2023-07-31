@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -30,11 +30,11 @@ const OPTION_PROPS = [
 	},
 ];
 
-const builder: APISchema = {
+const BUILDER_NAME = 'toggle group';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createToggleGroup',
-	description: DESCRIPTIONS.BUILDER('toggle group'),
-	isBuilder: true,
-	props: genProps('toggle group', [
+	props: [
 		...OPTION_PROPS,
 		{
 			name: 'defaultValue',
@@ -56,8 +56,8 @@ const builder: APISchema = {
 				'A callback called when the value of the `value` store should be changed. This is useful for controlling the value of the toggle group from outside the toggle group.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
-	]),
-	elements: genElements('toggle group', [
+	],
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the toggle group root.',
@@ -66,7 +66,7 @@ const builder: APISchema = {
 			name: 'item',
 			description: 'The builder store used to create toggle group items.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'value',
@@ -82,11 +82,10 @@ const builder: APISchema = {
 				'A derived store that takes an item value and returns whether or not the item is pressed.',
 		},
 	],
-	options: propsToOptions('toggle group', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The root toggle group element.',
 	dataAttributes: [
 		{
@@ -98,10 +97,9 @@ const root: APISchema = {
 			value: ATTRS.MELT('toggle group'),
 		},
 	],
-};
+});
 
-const item: APISchema = {
-	title: 'item',
+const item = elementSchema('item', {
 	description: 'The toggle group item element.',
 	props: [
 		{
@@ -139,7 +137,7 @@ const item: APISchema = {
 			value: ATTRS.MELT('toggle group item'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

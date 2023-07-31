@@ -1,6 +1,5 @@
-import { ATTRS, DESCRIPTIONS, PROPS } from '$docs/constants';
-import type { APISchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, PROPS } from '$docs/constants';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 import { getMenuArrowSchema } from './menu';
 
@@ -28,17 +27,12 @@ const OPTION_PROPS = [
 	PROPS.PORTAL,
 ];
 
-const builder: APISchema = {
+const BUILDER_NAME = 'hover card';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createHoverCard',
-	description: DESCRIPTIONS.BUILDER('hover card'),
-	isBuilder: true,
-	props: genProps('hover card', [
-		...OPTION_PROPS,
-		PROPS.DEFAULT_OPEN,
-		PROPS.OPEN,
-		PROPS.ON_OPEN_CHANGE,
-	]),
-	elements: genElements('hover card', [
+	props: [...OPTION_PROPS, PROPS.DEFAULT_OPEN, PROPS.OPEN, PROPS.ON_OPEN_CHANGE],
+	elements: [
 		{
 			name: 'trigger',
 			description: 'The builder store used to create the hover card trigger.',
@@ -51,7 +45,7 @@ const builder: APISchema = {
 			name: 'arrow',
 			description: 'The builder store used to create the hover card arrow.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'open',
@@ -59,11 +53,10 @@ const builder: APISchema = {
 			description: 'A readable store with the open state of the hover card.',
 		},
 	],
-	options: propsToOptions('hover card', []),
-};
+	options: OPTION_PROPS,
+});
 
-const trigger: APISchema = {
-	title: 'trigger',
+const trigger = elementSchema('trigger', {
 	description: 'The hover card trigger element.',
 	dataAttributes: [
 		{
@@ -75,10 +68,9 @@ const trigger: APISchema = {
 			value: ATTRS.MELT('trigger'),
 		},
 	],
-};
+});
 
-const content: APISchema = {
-	title: 'content',
+const content = elementSchema('content', {
 	description: 'The content displayed in the hovercard',
 	dataAttributes: [
 		{
@@ -90,9 +82,9 @@ const content: APISchema = {
 			value: ATTRS.MELT('content'),
 		},
 	],
-};
+});
 
-const arrow: APISchema = getMenuArrowSchema('hover card');
+const arrow = getMenuArrowSchema(BUILDER_NAME);
 
 const schemas = [builder, trigger, content, arrow];
 

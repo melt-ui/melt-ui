@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, KBD } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema, genProps } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -21,12 +21,12 @@ const OPTION_PROPS = [
 	},
 ];
 
-const builder: APISchema = {
+const BUILDER_NAME = 'toast';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createToaster',
-	description: DESCRIPTIONS.BUILDER('toast'),
-	isBuilder: true,
 	props: genProps('toaster', OPTION_PROPS),
-	elements: genElements('toaster', [
+	elements: [
 		{
 			name: 'content',
 			description: 'The builder store used to create the toast description.',
@@ -43,7 +43,7 @@ const builder: APISchema = {
 			name: 'close',
 			description: 'The builder store used to create the toast close button.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'toasts',
@@ -65,11 +65,10 @@ const builder: APISchema = {
 			description: 'A portal action that renders the toasts into the body.',
 		},
 	],
-	options: propsToOptions('toaster', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const content: APISchema = {
-	title: 'content',
+const content = elementSchema('content', {
 	description: 'The description of the toast. Used for accessibility purposes.',
 	dataAttributes: [
 		{
@@ -77,10 +76,9 @@ const content: APISchema = {
 			value: ATTRS.MELT('content'),
 		},
 	],
-};
+});
 
-const title: APISchema = {
-	title: 'title',
+const title = elementSchema('title', {
 	description: 'The title of the toast. Used for accessibility purposes.',
 	dataAttributes: [
 		{
@@ -88,10 +86,9 @@ const title: APISchema = {
 			value: ATTRS.MELT('title'),
 		},
 	],
-};
+});
 
-const description: APISchema = {
-	title: 'description',
+const description = elementSchema('description', {
 	description: 'The description of the toast. Used for accessibility purposes.',
 	dataAttributes: [
 		{
@@ -99,10 +96,9 @@ const description: APISchema = {
 			value: ATTRS.MELT('description'),
 		},
 	],
-};
+});
 
-const close: APISchema = {
-	title: 'close',
+const close = elementSchema('close', {
 	description: 'The element which closes the toast when clicked or pressed.',
 	dataAttributes: [
 		{
@@ -110,7 +106,7 @@ const close: APISchema = {
 			value: ATTRS.MELT('close'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

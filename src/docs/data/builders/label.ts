@@ -1,22 +1,19 @@
-import { ATTRS, DESCRIPTIONS } from '$docs/constants';
-import type { APISchema } from '$docs/types';
-import { genElements } from '$docs/utils/content';
+import { ATTRS } from '$docs/constants';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
-const builder: APISchema = {
+const BUILDER_NAME = 'label';
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createLabel',
-	description: DESCRIPTIONS.BUILDER('label'),
-	isBuilder: true,
-	elements: genElements('label', [
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the label root.',
 		},
-	]),
-};
+	],
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The label element',
 	dataAttributes: [
 		{
@@ -24,7 +21,7 @@ const root: APISchema = {
 			value: ATTRS.MELT('label'),
 		},
 	],
-};
+});
 
 const schemas = [builder, root];
 

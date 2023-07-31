@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, KBD, PROPS } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -32,17 +32,12 @@ const OPTION_PROPS = [
 	},
 ];
 
-const builder: APISchema = {
+const BUILDER_NAME = 'tooltip';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createTooltip',
-	description: DESCRIPTIONS.BUILDER('tooltip'),
-	isBuilder: true,
-	props: genProps('tooltip', [
-		...OPTION_PROPS,
-		PROPS.DEFAULT_OPEN,
-		PROPS.OPEN,
-		PROPS.ON_OPEN_CHANGE,
-	]),
-	elements: genElements('tooltip', [
+	props: [...OPTION_PROPS, PROPS.DEFAULT_OPEN, PROPS.OPEN, PROPS.ON_OPEN_CHANGE],
+	elements: [
 		{
 			name: 'trigger',
 			description: 'The builder store used to create the tooltip trigger.',
@@ -55,7 +50,7 @@ const builder: APISchema = {
 			name: 'arrow',
 			description: 'The builder store used to create the tooltip arrow.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'open',
@@ -63,11 +58,10 @@ const builder: APISchema = {
 			description: 'A readable store that indicates whether the tooltip is open or not',
 		},
 	],
-	options: propsToOptions('tooltip', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const trigger: APISchema = {
-	title: 'trigger',
+const trigger = elementSchema('trigger', {
 	description: 'The tooltip trigger element.',
 	dataAttributes: [
 		{
@@ -79,10 +73,9 @@ const trigger: APISchema = {
 			value: ATTRS.MELT('tooltip trigger'),
 		},
 	],
-};
+});
 
-const content: APISchema = {
-	title: 'content',
+const content = elementSchema('content', {
 	description: 'The tooltip content element.',
 	dataAttributes: [
 		{
@@ -90,10 +83,9 @@ const content: APISchema = {
 			value: ATTRS.MELT('tooltip content'),
 		},
 	],
-};
+});
 
-const arrow: APISchema = {
-	title: 'arrow',
+const arrow = elementSchema('arrow', {
 	description: 'The tooltip arrow element.',
 	dataAttributes: [
 		{
@@ -105,7 +97,7 @@ const arrow: APISchema = {
 			value: ATTRS.MELT('tooltip arrow'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

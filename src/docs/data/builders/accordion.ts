@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -18,11 +18,11 @@ const OPTION_PROPS = [
 	PROPS.FORCE_VISIBLE,
 ];
 
-const builder: APISchema = {
+const BUILDER_NAME = 'accordion';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createAccordion',
-	isBuilder: true,
-	description: DESCRIPTIONS.BUILDER('accordion'),
-	props: genProps('accordion', [
+	props: [
 		...OPTION_PROPS,
 		{
 			name: 'defaultValue',
@@ -43,8 +43,8 @@ const builder: APISchema = {
 				'A callback called when the value of the `value` store should be changed. This is useful for controlling the value of the accordion from outside the accordion.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
-	]),
-	elements: genElements('accordion', [
+	],
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the accordion root.',
@@ -65,7 +65,7 @@ const builder: APISchema = {
 			name: 'heading',
 			description: 'The builder store used to create accordion headings.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'value',
@@ -81,11 +81,10 @@ const builder: APISchema = {
 				'A derived store that takes an item ID as an argument and returns whether or not the item is selected.',
 		},
 	],
-	options: propsToOptions('accordion', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'Contains all the parts of an accordion.',
 	dataAttributes: [
 		{
@@ -97,10 +96,9 @@ const root: APISchema = {
 			value: ATTRS.MELT('accordion root'),
 		},
 	],
-};
+});
 
-const item: APISchema = {
-	title: 'item',
+const item = elementSchema('item', {
 	description: 'Contains all the parts of a collapsible section.',
 	props: [
 		{
@@ -127,10 +125,9 @@ const item: APISchema = {
 			value: ATTRS.MELT('accordion item'),
 		},
 	],
-};
+});
 
-const trigger: APISchema = {
-	title: 'trigger',
+const trigger = elementSchema('trigger', {
 	description:
 		'Toggles the collapsed state of an item. It should be nested inside of its associated `item`.',
 	props: [
@@ -160,10 +157,9 @@ const trigger: APISchema = {
 			value: ATTRS.MELT('accordion trigger'),
 		},
 	],
-};
+});
 
-const content: APISchema = {
-	title: 'content',
+const content = elementSchema('content', {
 	description: 'Contains the collapsible content for an accordion item.',
 	props: [
 		{
@@ -196,10 +192,9 @@ const content: APISchema = {
 			value: ATTRS.MELT('accordion content'),
 		},
 	],
-};
+});
 
-const heading: APISchema = {
-	title: 'heading',
+const heading = elementSchema('heading', {
 	description:
 		'The heading for an accordion item. It should be nested inside of its associated `item`.',
 	props: [
@@ -219,7 +214,7 @@ const heading: APISchema = {
 			value: ATTRS.MELT('accordion heading'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

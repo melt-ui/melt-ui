@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, KBD, PROPS } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 import { getMenuArrowSchema } from './menu';
 
@@ -34,11 +34,11 @@ const OPTION_PROPS = [
 	PROPS.FORCE_VISIBLE,
 ];
 
-const builder: APISchema = {
+const BUILDER_NAME = 'combobox';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createCombobox',
-	description: DESCRIPTIONS.BUILDER('combobox'),
-	isBuilder: true,
-	props: genProps('combobox menu', [
+	props: [
 		{
 			name: 'items',
 			type: 'T[]',
@@ -48,8 +48,8 @@ const builder: APISchema = {
 		PROPS.DEFAULT_OPEN,
 		PROPS.OPEN,
 		PROPS.ON_OPEN_CHANGE,
-	]),
-	elements: genElements('combobox', [
+	],
+	elements: [
 		{
 			name: 'menu',
 			description: 'The builder store used to create the collapsible menu.',
@@ -66,7 +66,7 @@ const builder: APISchema = {
 			name: 'label',
 			description: 'The builder store used to create the label for the combobox.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'open',
@@ -102,11 +102,10 @@ const builder: APISchema = {
 			description: 'A function that updates the list of items.',
 		},
 	],
-	options: propsToOptions('combobox menu', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const menu: APISchema = {
-	title: 'menu',
+const menu = elementSchema('menu', {
 	description: 'The combobox menu element',
 	dataAttributes: [
 		{
@@ -114,10 +113,9 @@ const menu: APISchema = {
 			value: ATTRS.MELT('menu'),
 		},
 	],
-};
+});
 
-const input: APISchema = {
-	title: 'input',
+const input = elementSchema('input', {
 	description:
 		'The element that opens, closes, filters the list, and displays the selected value from the list.',
 	dataAttributes: [
@@ -134,10 +132,9 @@ const input: APISchema = {
 			value: ATTRS.MELT('input'),
 		},
 	],
-};
+});
 
-const item: APISchema = {
-	title: 'item',
+const item = elementSchema('item', {
 	description: 'The menu item element',
 	props: [
 		{
@@ -175,10 +172,9 @@ const item: APISchema = {
 			value: ATTRS.MELT('item'),
 		},
 	],
-};
+});
 
-const label: APISchema = {
-	title: 'label',
+const label = elementSchema('label', {
 	description: 'The label element for the combobox',
 	dataAttributes: [
 		{
@@ -186,9 +182,9 @@ const label: APISchema = {
 			value: ATTRS.MELT('combobox label'),
 		},
 	],
-};
+});
 
-const arrow: APISchema = getMenuArrowSchema('combobox');
+const arrow = getMenuArrowSchema(BUILDER_NAME);
 
 const keyboard: KeyboardSchema = [
 	{

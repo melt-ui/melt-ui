@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, KBD, PROPS } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -20,17 +20,12 @@ const OPTION_PROPS = [
 	PROPS.FORCE_VISIBLE,
 ];
 
-const builder: APISchema = {
+const BUILDER_NAME = 'dialog';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createDialog',
-	description: DESCRIPTIONS.BUILDER('dialog'),
-	isBuilder: true,
-	props: genProps('dialog', [
-		...OPTION_PROPS,
-		PROPS.DEFAULT_OPEN,
-		PROPS.OPEN,
-		PROPS.ON_OPEN_CHANGE,
-	]),
-	elements: genElements('dialog', [
+	props: [...OPTION_PROPS, PROPS.DEFAULT_OPEN, PROPS.OPEN, PROPS.ON_OPEN_CHANGE],
+	elements: [
 		{
 			name: 'trigger',
 			description: 'The builder store used to create the dialog trigger.',
@@ -55,7 +50,7 @@ const builder: APISchema = {
 			name: 'description',
 			description: 'The builder store used to create the dialog description.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'open',
@@ -63,11 +58,10 @@ const builder: APISchema = {
 			description: 'A readable store with the open state of the dialog.',
 		},
 	],
-	options: propsToOptions('dialog', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const trigger: APISchema = {
-	title: 'trigger',
+const trigger = elementSchema('trigger', {
 	description: 'The element which triggers the dialog to open when clicked or pressed.',
 	dataAttributes: [
 		{
@@ -75,10 +69,9 @@ const trigger: APISchema = {
 			value: ATTRS.MELT('trigger'),
 		},
 	],
-};
+});
 
-const overlay: APISchema = {
-	title: 'overlay',
+const overlay = elementSchema('overlay', {
 	description: 'The overlay element which covers the page when the dialog is open.',
 	dataAttributes: [
 		{
@@ -90,10 +83,9 @@ const overlay: APISchema = {
 			value: ATTRS.MELT('overlay'),
 		},
 	],
-};
+});
 
-const content: APISchema = {
-	title: 'content',
+const content = elementSchema('content', {
 	description: 'The element displayed within the dialog when it is open.',
 	dataAttributes: [
 		{
@@ -105,10 +97,9 @@ const content: APISchema = {
 			value: ATTRS.MELT('content'),
 		},
 	],
-};
+});
 
-const title: APISchema = {
-	title: 'title',
+const title = elementSchema('title', {
 	description: 'The title of the dialog. Used for accessibility purposes.',
 	dataAttributes: [
 		{
@@ -116,10 +107,9 @@ const title: APISchema = {
 			value: ATTRS.MELT('title'),
 		},
 	],
-};
+});
 
-const description: APISchema = {
-	title: 'description',
+const description = elementSchema('description', {
 	description: 'The description of the dialog. Used for accessibility purposes.',
 	dataAttributes: [
 		{
@@ -127,10 +117,9 @@ const description: APISchema = {
 			value: ATTRS.MELT('description'),
 		},
 	],
-};
+});
 
-const close: APISchema = {
-	title: 'close',
+const close = elementSchema('close', {
 	description: 'The element which closes the dialog when clicked or pressed.',
 	dataAttributes: [
 		{
@@ -138,7 +127,7 @@ const close: APISchema = {
 			value: ATTRS.MELT('close'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

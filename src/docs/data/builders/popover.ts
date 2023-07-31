@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, KBD, PROPS } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -22,17 +22,12 @@ const OPTION_PROPS = [
 	PROPS.FORCE_VISIBLE,
 ];
 
-const builder: APISchema = {
+const BUILDER_NAME = 'popover';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createPopover',
-	description: DESCRIPTIONS.BUILDER('popover'),
-	isBuilder: true,
-	props: genProps('popover', [
-		...OPTION_PROPS,
-		PROPS.DEFAULT_OPEN,
-		PROPS.OPEN,
-		PROPS.ON_OPEN_CHANGE,
-	]),
-	elements: genElements('popover', [
+	props: [...OPTION_PROPS, PROPS.DEFAULT_OPEN, PROPS.OPEN, PROPS.ON_OPEN_CHANGE],
+	elements: [
 		{
 			name: 'trigger',
 			description: 'The builder store used to create the popover trigger.',
@@ -49,7 +44,7 @@ const builder: APISchema = {
 			name: 'arrow',
 			description: 'The builder store used to create the popover arrow.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'open',
@@ -57,11 +52,10 @@ const builder: APISchema = {
 			description: 'A readable store which represents the open state of the popover.',
 		},
 	],
-	options: propsToOptions('popover', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const trigger: APISchema = {
-	title: 'trigger',
+const trigger = elementSchema('trigger', {
 	description: 'The button(s) which open/close the popover.',
 	dataAttributes: [
 		{
@@ -73,10 +67,9 @@ const trigger: APISchema = {
 			value: ATTRS.MELT('trigger'),
 		},
 	],
-};
+});
 
-const content: APISchema = {
-	title: 'content',
+const content = elementSchema('content', {
 	description: 'The popover content.',
 	dataAttributes: [
 		{
@@ -84,9 +77,9 @@ const content: APISchema = {
 			value: ATTRS.MELT('content'),
 		},
 	],
-};
+});
 
-const arrow: APISchema = {
+const arrow = elementSchema('arrow', {
 	title: 'arrow',
 	description: 'The optional arrow element.',
 	dataAttributes: [
@@ -99,9 +92,9 @@ const arrow: APISchema = {
 			value: ATTRS.MELT('arrow'),
 		},
 	],
-};
+});
 
-const close: APISchema = {
+const close = elementSchema('close', {
 	title: 'close',
 	description: 'The button(s) which close the popover.',
 	dataAttributes: [
@@ -110,7 +103,7 @@ const close: APISchema = {
 			value: ATTRS.MELT('close'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

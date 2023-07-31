@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, PROPS, SEE } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, PROPS, SEE } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -83,11 +83,11 @@ const OPTION_PROPS = [
 	},
 ];
 
-const builder: APISchema = {
+const BUILDER_NAME = 'tags input';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createTags',
-	description: DESCRIPTIONS.BUILDER('tags input'),
-	isBuilder: true,
-	props: genProps('tags input', [
+	props: [
 		...OPTION_PROPS,
 		{
 			name: 'defaultTags',
@@ -106,8 +106,8 @@ const builder: APISchema = {
 			description: 'A function that is called when the tags change.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
-	]),
-	elements: genElements('tags input', [
+	],
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the tags input root.',
@@ -128,7 +128,7 @@ const builder: APISchema = {
 			name: 'edit',
 			description: 'The builder store used to create the tags input edit.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'tags',
@@ -158,11 +158,10 @@ const builder: APISchema = {
 			description: 'A derived store that returns a function that checks if a tag is selected.',
 		},
 	],
-	options: propsToOptions('tags input', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The root tags input component.',
 	dataAttributes: [
 		{
@@ -186,10 +185,9 @@ const root: APISchema = {
 			value: ATTRS.MELT('tags input'),
 		},
 	],
-};
+});
 
-const input: APISchema = {
-	title: 'input',
+const input = elementSchema('input', {
 	description: 'The hidden input element used for form submission.',
 	dataAttributes: [
 		{
@@ -209,10 +207,9 @@ const input: APISchema = {
 			value: ATTRS.MELT('input'),
 		},
 	],
-};
+});
 
-const tag: APISchema = {
-	title: 'tag',
+const tag = elementSchema('tag', {
 	description: 'The tag components.',
 	props: [
 		{
@@ -260,10 +257,9 @@ const tag: APISchema = {
 			value: ATTRS.MELT('tag'),
 		},
 	],
-};
+});
 
-const deleteTrigger: APISchema = {
-	title: 'deleteTrigger',
+const deleteTrigger = elementSchema('deleteTrigger', {
 	description: 'The button component used to delete a tag.',
 	props: [
 		{
@@ -311,10 +307,9 @@ const deleteTrigger: APISchema = {
 			value: ATTRS.MELT('delete trigger'),
 		},
 	],
-};
+});
 
-const edit: APISchema = {
-	title: 'edit',
+const edit = elementSchema('edit', {
 	description: 'The button component used to edit a tag.',
 	props: [
 		{
@@ -344,7 +339,7 @@ const edit: APISchema = {
 			value: ATTRS.MELT('edit'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

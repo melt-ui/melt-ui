@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, KBD, PROPS } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema, genProps } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -8,17 +8,15 @@ import type { BuilderData } from '.';
  */
 const OPTION_PROPS = [PROPS.DISABLED, PROPS.FORCE_VISIBLE];
 
-const builder: APISchema = {
+const builder = builderSchema('collapsible', {
 	title: 'createCollapsible',
-	isBuilder: true,
-	description: DESCRIPTIONS.BUILDER('collapsible'),
 	props: genProps('collapsible', [
 		...OPTION_PROPS,
 		PROPS.DEFAULT_OPEN,
 		PROPS.OPEN,
 		PROPS.ON_OPEN_CHANGE,
 	]),
-	elements: genElements('collapsible', [
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the collapsible root.',
@@ -31,7 +29,7 @@ const builder: APISchema = {
 			name: 'trigger',
 			description: 'The builder store used to create the collapsible trigger.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'open',
@@ -39,11 +37,10 @@ const builder: APISchema = {
 			description: 'A readable store with the current open state of the collapsible.',
 		},
 	],
-	options: propsToOptions('collapsible', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The root collapsible element.',
 	dataAttributes: [
 		{
@@ -59,10 +56,9 @@ const root: APISchema = {
 			value: ATTRS.MELT('collapsible root'),
 		},
 	],
-};
+});
 
-const trigger: APISchema = {
-	title: 'trigger',
+const trigger = elementSchema('trigger', {
 	description: 'The collapsible trigger element.',
 	dataAttributes: [
 		{
@@ -78,10 +74,9 @@ const trigger: APISchema = {
 			value: ATTRS.MELT('collapsible trigger'),
 		},
 	],
-};
+});
 
-const content: APISchema = {
-	title: 'content',
+const content = elementSchema('content', {
 	description: 'The collapsible content element.',
 	dataAttributes: [
 		{
@@ -97,7 +92,7 @@ const content: APISchema = {
 			value: ATTRS.DISABLED(),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

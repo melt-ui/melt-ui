@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -28,11 +28,11 @@ const OPTION_PROPS = [
 	},
 ];
 
-const builder: APISchema = {
+const BUILDER_NAME = 'tabs';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createTabs',
-	description: DESCRIPTIONS.BUILDER('tabs'),
-	isBuilder: true,
-	props: genProps('tabs', [
+	props: [
 		...OPTION_PROPS,
 		{
 			name: 'defaultValue',
@@ -51,8 +51,8 @@ const builder: APISchema = {
 			description: 'A callback that is called when the value of the tabs changes.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
-	]),
-	elements: genElements('tabs', [
+	],
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the root tabs element.',
@@ -69,7 +69,7 @@ const builder: APISchema = {
 			name: 'content',
 			description: 'The builder store used to create a tabs content element.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'value',
@@ -77,11 +77,10 @@ const builder: APISchema = {
 			description: 'A readable store that represents the current value of the tabs.',
 		},
 	],
-	options: propsToOptions('tabs', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The root tabs component.',
 	dataAttributes: [
 		{
@@ -93,10 +92,9 @@ const root: APISchema = {
 			value: ATTRS.MELT('tabs'),
 		},
 	],
-};
+});
 
-const list: APISchema = {
-	title: 'list',
+const list = elementSchema('list', {
 	description: 'The tabs list component.',
 	dataAttributes: [
 		{
@@ -108,10 +106,9 @@ const list: APISchema = {
 			value: ATTRS.MELT('tab list'),
 		},
 	],
-};
+});
 
-const trigger: APISchema = {
-	title: 'trigger',
+const trigger = elementSchema('trigger', {
 	description: 'The element which opens a given tab.',
 	props: [
 		{
@@ -149,10 +146,9 @@ const trigger: APISchema = {
 			value: ATTRS.MELT('tab trigger'),
 		},
 	],
-};
+});
 
-const content: APISchema = {
-	title: 'content',
+const content = elementSchema('content', {
 	description: 'The element that is opened when a given trigger is clicked.',
 	dataAttributes: [
 		{
@@ -160,7 +156,7 @@ const content: APISchema = {
 			value: ATTRS.MELT('tab content'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -17,12 +17,11 @@ const OPTION_PROPS = [
 		description: 'The orientation of the radio group.',
 	},
 ];
+const BUILDER_NAME = 'radio group';
 
-const builder: APISchema = {
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createRadioGroup',
-	description: DESCRIPTIONS.BUILDER('radio group'),
-	isBuilder: true,
-	props: genProps('radio group', [
+	props: [
 		...OPTION_PROPS,
 		{
 			name: 'defaultValue',
@@ -41,8 +40,8 @@ const builder: APISchema = {
 			description: 'A callback that is called when the value of the radio group changes.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
-	]),
-	elements: genElements('radio group', [
+	],
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the radio group root.',
@@ -55,7 +54,7 @@ const builder: APISchema = {
 			name: 'itemInput',
 			description: 'The builder store used to create the radio group item input.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'value',
@@ -71,11 +70,10 @@ const builder: APISchema = {
 				'A derived store function that returns whether or not the radio item is checked.',
 		},
 	],
-	options: propsToOptions('radio group', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The radio group component.',
 	dataAttributes: [
 		{
@@ -87,10 +85,9 @@ const root: APISchema = {
 			value: ATTRS.MELT('radio group'),
 		},
 	],
-};
+});
 
-const item: APISchema = {
-	title: 'item',
+const item = elementSchema('item', {
 	description: 'The radio group item components.',
 	props: [
 		{
@@ -128,10 +125,9 @@ const item: APISchema = {
 			value: ATTRS.MELT('radio group item'),
 		},
 	],
-};
+});
 
-const itemInput: APISchema = {
-	title: 'itemInput',
+const itemInput = elementSchema('itemInput', {
 	description: 'The hidden input element used for form submission.',
 	props: [
 		{
@@ -147,7 +143,7 @@ const itemInput: APISchema = {
 			description: 'Whether or not the radio item is disabled.',
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

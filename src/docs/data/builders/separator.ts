@@ -1,6 +1,5 @@
-import { ATTRS, DESCRIPTIONS, TYPES } from '$docs/constants';
-import type { APISchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, TYPES } from '$docs/constants';
+import { builderSchema, elementSchema, genProps } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -21,23 +20,21 @@ const OPTION_PROPS = [
 			'Whether or not the separator is for purely decorative purposes. This will determine if the separator is in the accessibility tree or not.',
 	},
 ];
+const BUILDER_NAME = 'separator';
 
-const builder: APISchema = {
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createSeparator',
-	description: DESCRIPTIONS.BUILDER('separator'),
-	isBuilder: true,
 	props: genProps('separator', OPTION_PROPS),
-	elements: genElements('separator', [
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the separator root.',
 		},
-	]),
-	options: propsToOptions('separator', OPTION_PROPS),
-};
+	],
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The separator element.',
 	dataAttributes: [
 		{
@@ -49,7 +46,7 @@ const root: APISchema = {
 			value: ATTRS.MELT('separator'),
 		},
 	],
-};
+});
 
 const schemas = [builder, root];
 

@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -21,11 +21,11 @@ const OPTION_PROPS = [
 	},
 ];
 
-const builder: APISchema = {
+const BUILDER_NAME = 'switch';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createSwitch',
-	description: DESCRIPTIONS.BUILDER('switch'),
-	isBuilder: true,
-	props: genProps('switch', [
+	props: [
 		...OPTION_PROPS,
 		{
 			name: 'defaultChecked',
@@ -47,8 +47,8 @@ const builder: APISchema = {
 				'A callback called when the value of the `checked` store should be changed. This is useful for controlling the checked state of the switch from outside the switch.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
-	]),
-	elements: genElements('switch', [
+	],
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the switch root.',
@@ -59,7 +59,7 @@ const builder: APISchema = {
 			description: 'The builder store used to create the switch input.',
 			link: '#input',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'checked',
@@ -67,11 +67,10 @@ const builder: APISchema = {
 			description: 'A derived store that returns whether or not the switch is checked.',
 		},
 	],
-	options: propsToOptions('switch', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The switch element.',
 	dataAttributes: [
 		{
@@ -87,10 +86,9 @@ const root: APISchema = {
 			value: ATTRS.MELT('switch'),
 		},
 	],
-};
+});
 
-const input: APISchema = {
-	title: 'input',
+const input = elementSchema('input', {
 	description: 'The hidden input element used for form submission.',
 	dataAttributes: [
 		{
@@ -98,7 +96,7 @@ const input: APISchema = {
 			value: ATTRS.MELT('input'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

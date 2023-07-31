@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -29,11 +29,11 @@ const OPTION_PROPS = [
 	},
 ];
 
-const builder: APISchema = {
+const BUILDER_NAME = 'select';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createSelect',
-	description: DESCRIPTIONS.BUILDER('select'),
-	isBuilder: true,
-	props: genProps('select', [
+	props: [
 		...OPTION_PROPS,
 		{
 			name: 'defaultValue',
@@ -55,8 +55,8 @@ const builder: APISchema = {
 		PROPS.DEFAULT_OPEN,
 		PROPS.OPEN,
 		PROPS.ON_OPEN_CHANGE,
-	]),
-	elements: genElements('select', [
+	],
+	elements: [
 		{
 			name: 'trigger',
 			description: 'The builder store used to create the select trigger.',
@@ -93,7 +93,7 @@ const builder: APISchema = {
 			name: 'arrow',
 			description: 'The builder store used to create the select arrow.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'open',
@@ -118,11 +118,10 @@ const builder: APISchema = {
 			description: 'A derived store that returns whether or not the given value is selected.',
 		},
 	],
-	options: propsToOptions('select', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const trigger: APISchema = {
-	title: 'trigger',
+const trigger = elementSchema('trigger', {
 	description: 'The element which opens/closes the select.',
 	dataAttributes: [
 		{
@@ -138,10 +137,9 @@ const trigger: APISchema = {
 			value: ATTRS.MELT('trigger'),
 		},
 	],
-};
+});
 
-const menu: APISchema = {
-	title: 'menu',
+const menu = elementSchema('menu', {
 	description: 'The menu element',
 	dataAttributes: [
 		{
@@ -149,10 +147,9 @@ const menu: APISchema = {
 			value: ATTRS.MELT('menu'),
 		},
 	],
-};
+});
 
-const option: APISchema = {
-	title: 'option',
+const option = elementSchema('option', {
 	description: 'The option elements',
 	props: [
 		{
@@ -173,10 +170,9 @@ const option: APISchema = {
 			description: 'Whether or not the option is disabled.',
 		},
 	],
-};
+});
 
-const input: APISchema = {
-	title: 'input',
+const input = elementSchema('input', {
 	description: 'The hidden input element. Used for form submission.',
 	dataAttributes: [
 		{
@@ -184,10 +180,9 @@ const input: APISchema = {
 			value: ATTRS.MELT('input'),
 		},
 	],
-};
+});
 
-const label: APISchema = {
-	title: 'label',
+const label = elementSchema('label', {
 	description: 'The label element',
 	dataAttributes: [
 		{
@@ -195,10 +190,9 @@ const label: APISchema = {
 			value: ATTRS.MELT('label'),
 		},
 	],
-};
+});
 
-const arrow: APISchema = {
-	title: 'arrow',
+const arrow = elementSchema('arrow', {
 	description: 'The optional arrow element',
 	dataAttributes: [
 		{
@@ -210,10 +204,9 @@ const arrow: APISchema = {
 			value: ATTRS.MELT('arrow'),
 		},
 	],
-};
+});
 
-const separator: APISchema = {
-	title: 'separator',
+const separator = elementSchema('separator', {
 	description: 'An optional separator element',
 	dataAttributes: [
 		{
@@ -221,10 +214,9 @@ const separator: APISchema = {
 			value: ATTRS.MELT('separator'),
 		},
 	],
-};
+});
 
-const group: APISchema = {
-	title: 'group',
+const group = elementSchema('group', {
 	description: 'A function which takes in a unique key to group options together.',
 	props: [
 		{
@@ -239,10 +231,9 @@ const group: APISchema = {
 			value: ATTRS.MELT('group'),
 		},
 	],
-};
+});
 
-const groupLabel: APISchema = {
-	title: 'groupLabel',
+const groupLabel = elementSchema('groupLabel', {
 	description: 'A function which takes in a unique key to group options together.',
 	props: [
 		{
@@ -257,7 +248,7 @@ const groupLabel: APISchema = {
 			value: ATTRS.MELT('group-label'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

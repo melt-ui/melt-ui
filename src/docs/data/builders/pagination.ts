@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, KBD, SEE } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, propsToOptions } from '$docs/utils/content';
+import { ATTRS, KBD, SEE } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -26,10 +26,10 @@ const OPTION_PROPS = [
 	},
 ];
 
-const builder: APISchema = {
+const BUILDER_NAME = 'pagination';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createPagination',
-	description: DESCRIPTIONS.BUILDER('pagination'),
-	isBuilder: true,
 	props: [
 		...OPTION_PROPS,
 		{
@@ -52,7 +52,7 @@ const builder: APISchema = {
 			see: SEE.CHANGE_FUNCTIONS,
 		},
 	],
-	elements: genElements('pagination', [
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the pagination root.',
@@ -69,7 +69,7 @@ const builder: APISchema = {
 			name: 'nextButton',
 			description: 'The builder store used to create the pagination next button.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'range',
@@ -92,11 +92,10 @@ const builder: APISchema = {
 			description: 'A readable store that contains the current page number.',
 		},
 	],
-	options: propsToOptions('pagination', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The root element of the pagination component.',
 	dataAttributes: [
 		{
@@ -105,13 +104,12 @@ const root: APISchema = {
 		},
 		{
 			name: 'data-melt-pagination',
-			value: ATTRS.MELT('pagination'),
+			value: ATTRS.MELT(BUILDER_NAME),
 		},
 	],
-};
+});
 
-const pageTrigger: APISchema = {
-	title: 'pageTrigger',
+const pageTrigger = elementSchema('pageTrigger', {
 	description: 'A button that triggers a page change.',
 	dataAttributes: [
 		{
@@ -123,10 +121,9 @@ const pageTrigger: APISchema = {
 			value: ATTRS.MELT('pageTrigger'),
 		},
 	],
-};
+});
 
-const prevButton: APISchema = {
-	title: 'prevButton',
+const prevButton = elementSchema('prevButton', {
 	description: 'A button that moves to the previous page.',
 	dataAttributes: [
 		{
@@ -134,10 +131,9 @@ const prevButton: APISchema = {
 			value: ATTRS.MELT('prevButton'),
 		},
 	],
-};
+});
 
-const nextButton: APISchema = {
-	title: 'nextButton',
+const nextButton = elementSchema('nextButton', {
 	description: 'A button that moves to the next page.',
 	dataAttributes: [
 		{
@@ -145,7 +141,7 @@ const nextButton: APISchema = {
 			value: ATTRS.MELT('nextButton'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

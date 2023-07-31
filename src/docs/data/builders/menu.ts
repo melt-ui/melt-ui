@@ -1,5 +1,5 @@
 import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
-import type { APISchema, KeyboardSchema, ReturnedProps } from '$docs/types';
+import type { APISchema, KeyboardSchema } from '$docs/types';
 import { toKebabCase } from '$docs/utils';
 import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 
@@ -46,17 +46,17 @@ export function getMenuSchemas(name: string): Record<string, APISchema> {
 	};
 }
 
-export function getMenuBuilderReturns(name: string): Record<string, ReturnedProps> {
+export function getMenuBuilderReturns(name: string) {
 	return {
 		elements: getMenuBuilderEls(name),
 		builders: getMenuBuilderBuilders(name),
 		states: getMenuBuilderStates(name),
-		options: propsToOptions(name, menuBuilderOptions),
+		options: menuBuilderOptions,
 	};
 }
 
 function getMenuBuilderEls(name = 'menu') {
-	return genElements(name, [
+	return [
 		{
 			name: 'menu',
 			description: `The builder store used to create the ${name}.`,
@@ -73,7 +73,7 @@ function getMenuBuilderEls(name = 'menu') {
 			name: 'arrow',
 			description: `The builder store used to create the ${name} arrow.`,
 		},
-	]);
+	];
 }
 
 const CHECKBOX_ITEM_OPTION_PROPS = [PROPS.DISABLED];
@@ -121,7 +121,7 @@ function getMenuCreateCheckboxItemSchema(): APISchema {
 }
 
 function getMenuBuilderBuilders(name = 'menu') {
-	return genElements(name, [
+	return [
 		{
 			name: 'createSubmenu',
 			description: `A builder function used to create a submenu for the ${name}.`,
@@ -134,7 +134,7 @@ function getMenuBuilderBuilders(name = 'menu') {
 			name: 'createCheckboxItem',
 			description: `A builder function used to create a checkbox menu item for the ${name}.`,
 		},
-	]);
+	];
 }
 function getMenuBuilderStates(name = 'menu') {
 	return [

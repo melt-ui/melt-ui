@@ -1,6 +1,5 @@
-import { ATTRS, DESCRIPTIONS, SEE } from '$docs/constants';
-import type { APISchema } from '$docs/types';
-import { genElements, propsToOptions } from '$docs/utils/content';
+import { ATTRS, SEE } from '$docs/constants';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -21,10 +20,8 @@ const OPTION_PROPS = [
 	},
 ];
 
-const builder: APISchema = {
+const builder = builderSchema('avatar', {
 	title: 'createAvatar',
-	isBuilder: true,
-	description: DESCRIPTIONS.BUILDER('avatar'),
 	props: [
 		...OPTION_PROPS,
 		{
@@ -40,7 +37,7 @@ const builder: APISchema = {
 			see: SEE.CHANGE_FUNCTIONS,
 		},
 	],
-	elements: genElements('avatar', [
+	elements: [
 		{
 			name: 'image',
 			description: 'The builder store used to create the the image element.',
@@ -49,7 +46,7 @@ const builder: APISchema = {
 			name: 'fallback',
 			description: 'The builder store used to create the fallback element.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'loadingStatus',
@@ -57,11 +54,10 @@ const builder: APISchema = {
 			description: 'A readable store with the current loading status of the image.',
 		},
 	],
-	options: propsToOptions('avatar', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const image: APISchema = {
-	title: 'image',
+const image = elementSchema('image', {
 	description: 'The image element that is rendered when the `src` prop is provided.',
 	dataAttributes: [
 		{
@@ -69,10 +65,9 @@ const image: APISchema = {
 			value: ATTRS.MELT('avatar image'),
 		},
 	],
-};
+});
 
-const fallback: APISchema = {
-	title: 'fallback',
+const fallback = elementSchema('fallback', {
 	description:
 		'The fallback element that is rendered before the image loads or if it fails to load.',
 	dataAttributes: [
@@ -81,7 +76,7 @@ const fallback: APISchema = {
 			value: ATTRS.MELT('avatar fallback'),
 		},
 	],
-};
+});
 
 const schemas = [builder, image, fallback];
 

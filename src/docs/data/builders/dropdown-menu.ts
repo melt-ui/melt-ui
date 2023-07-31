@@ -1,6 +1,6 @@
-import { DESCRIPTIONS, PROPS } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genProps } from '$docs/utils/content';
+import { PROPS } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 import {
 	getMenuBuilderReturns,
@@ -29,25 +29,19 @@ const {
 
 const { elements, builders, states, options } = getMenuBuilderReturns(BUILDER_NAME);
 
-export const builder: APISchema = {
+export const builder = builderSchema(BUILDER_NAME, {
 	title: 'createDropdownMenu',
-	description: DESCRIPTIONS.BUILDER(BUILDER_NAME),
-	isBuilder: true,
-	props: genProps(BUILDER_NAME, [
-		...menuBuilderProps,
-		PROPS.POSITIONING({ default: "placement: 'bottom'" }),
-	]),
+	props: [...menuBuilderProps, PROPS.POSITIONING({ default: "placement: 'bottom'" })],
 	elements,
 	states,
 	builders,
 	options,
-};
+});
 
-const trigger: APISchema = {
-	title: 'trigger',
+const trigger = elementSchema(BUILDER_NAME, {
 	description: 'The button which toggles the dropdown menu.',
 	dataAttributes: getMenuTriggerDataAttrs(BUILDER_NAME),
-};
+});
 
 const keyboard: KeyboardSchema = getMenuKeyboardSchema();
 

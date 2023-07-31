@@ -1,8 +1,8 @@
-import type { APISchema, KeyboardSchema } from '$docs/types';
+import type { KeyboardSchema } from '$docs/types';
 import { isMac } from '@melt-ui/svelte/internal/helpers';
-import { ATTRS, DESCRIPTIONS, KBD, SEE } from '$docs/constants';
+import { ATTRS, KBD, SEE } from '$docs/constants';
 import type { BuilderData } from '.';
-import { genElements, propsToOptions } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 
 /**
  * Props that are also returned in the form of stores via the `options` property.
@@ -38,10 +38,10 @@ const OPTION_PROPS = [
 	},
 ];
 
-const builder: APISchema = {
+const BUILDER_NAME = 'pin input';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createPinInput',
-	description: DESCRIPTIONS.BUILDER('pin input'),
-	isBuilder: true,
 	props: [
 		...OPTION_PROPS,
 		{
@@ -63,7 +63,7 @@ const builder: APISchema = {
 			see: SEE.CHANGE_FUNCTIONS,
 		},
 	],
-	elements: genElements('pin input', [
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the pin-input root.',
@@ -76,7 +76,7 @@ const builder: APISchema = {
 			name: 'hiddenInput',
 			description: 'The builder store used to create the pin-input hidden input.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'value',
@@ -96,11 +96,10 @@ const builder: APISchema = {
 			description: 'A function that clears the pin-input.',
 		},
 	],
-	options: propsToOptions('pin input', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The root pin-input element.',
 	dataAttributes: [
 		{
@@ -112,10 +111,9 @@ const root: APISchema = {
 			value: ATTRS.MELT('pin-input'),
 		},
 	],
-};
+});
 
-const input: APISchema = {
-	title: 'input',
+const input = elementSchema('input', {
 	description: 'The pin-input input element.',
 	dataAttributes: [
 		{
@@ -127,10 +125,9 @@ const input: APISchema = {
 			value: ATTRS.MELT('input'),
 		},
 	],
-};
+});
 
-const hiddenInput: APISchema = {
-	title: 'hiddenInput',
+const hiddenInput = elementSchema('hiddenInput', {
 	description: 'The hidden input element that stores the pin-input value for form submission.',
 	dataAttributes: [
 		{
@@ -138,7 +135,7 @@ const hiddenInput: APISchema = {
 			value: ATTRS.MELT('hiddenInput'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

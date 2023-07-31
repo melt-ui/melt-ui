@@ -1,6 +1,6 @@
-import { DESCRIPTIONS, PROPS } from '$docs/constants';
+import { PROPS } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genProps } from '$docs/utils/content';
+import { builderSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 import {
 	getMenuBuilderReturns,
@@ -13,19 +13,14 @@ import {
 const BUILDER_NAME = 'context menu';
 const { elements, builders, states, options } = getMenuBuilderReturns(BUILDER_NAME);
 
-const builder: APISchema = {
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createContextMenu',
-	isBuilder: true,
-	description: DESCRIPTIONS.BUILDER(BUILDER_NAME),
-	props: genProps(BUILDER_NAME, [
-		...menuBuilderProps,
-		PROPS.POSITIONING({ default: "placement: 'right'" }),
-	]),
+	props: [...menuBuilderProps, PROPS.POSITIONING({ default: "placement: 'right'" })],
 	elements,
 	builders,
 	states,
 	options,
-};
+});
 
 const {
 	menu,

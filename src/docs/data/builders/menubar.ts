@@ -1,19 +1,27 @@
-import { DESCRIPTIONS, KBD, PROPS } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genProps } from '$docs/utils/content';
+import { KBD, PROPS } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 import { builder as dropdownBuilder } from './dropdown-menu';
 import { getMenuSchemas, getMenuTriggerDataAttrs } from './menu';
+import { elementSchema } from '../../utils/content';
+
+const OPTION_PROPS = [PROPS.CLOSE_ON_ESCAPE, PROPS.LOOP];
 const BUILDER_NAME = 'menubar';
 
-const builder: APISchema = {
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createMenubar',
-	description: DESCRIPTIONS.BUILDER(BUILDER_NAME),
-	isBuilder: true,
-	props: genProps(BUILDER_NAME, [PROPS.LOOP, PROPS.CLOSE_ON_ESCAPE]),
-};
+	props: OPTION_PROPS,
+	builders: [
+		{
+			name: 'createMenu',
+			description: 'Creates a menu inside the menubar',
+		},
+	],
+	options: OPTION_PROPS,
+});
 
-const menuBuilder: APISchema = {
+const menuBuilder = {
 	...dropdownBuilder,
 	title: 'createMenu',
 };
@@ -31,11 +39,10 @@ const {
 	subTrigger,
 } = getMenuSchemas('menubar menu');
 
-const trigger: APISchema = {
-	title: 'trigger',
+const trigger = elementSchema('trigger', {
 	description: 'The button which toggles the dropdown menu.',
 	dataAttributes: getMenuTriggerDataAttrs('menubar menu'),
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

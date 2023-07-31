@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -16,12 +16,12 @@ const OPTION_PROPS = [
 	},
 ];
 
-const builder: APISchema = {
+const BUILDER_NAME = 'toolbar';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createToolbar',
-	description: DESCRIPTIONS.BUILDER('toolbar'),
-	isBuilder: true,
-	props: genProps('toolbar', OPTION_PROPS),
-	elements: genElements('toolbar', [
+	props: OPTION_PROPS,
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the toolbar root.',
@@ -38,7 +38,7 @@ const builder: APISchema = {
 			name: 'separator',
 			description: 'The builder store used to create the toolbar separator.',
 		},
-	]),
+	],
 	builders: [
 		{
 			name: 'createToolbarGroup',
@@ -46,11 +46,10 @@ const builder: APISchema = {
 			link: '#createtoolbargroup',
 		},
 	],
-	options: propsToOptions('toolbar', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The root toolbar element.',
 	dataAttributes: [
 		{
@@ -62,10 +61,9 @@ const root: APISchema = {
 			value: ATTRS.MELT('toolbar'),
 		},
 	],
-};
+});
 
-const button: APISchema = {
-	title: 'button',
+const button = elementSchema('button', {
 	description: 'The toolbar button element.',
 	dataAttributes: [
 		{
@@ -73,10 +71,9 @@ const button: APISchema = {
 			value: ATTRS.MELT('toolbar button'),
 		},
 	],
-};
+});
 
-const link: APISchema = {
-	title: 'link',
+const link = elementSchema('link', {
 	description: 'The toolbar link element.',
 	dataAttributes: [
 		{
@@ -84,10 +81,9 @@ const link: APISchema = {
 			value: ATTRS.MELT('toolbar link'),
 		},
 	],
-};
+});
 
-const separator: APISchema = {
-	title: 'separator',
+const separator = elementSchema('separator', {
 	description: 'The toolbar separator element.',
 	dataAttributes: [
 		{
@@ -99,7 +95,7 @@ const separator: APISchema = {
 			value: ATTRS.MELT('toolbar separator'),
 		},
 	],
-};
+});
 
 const GROUP_OPTION_PROPS = [
 	PROPS.DISABLED,
@@ -112,10 +108,9 @@ const GROUP_OPTION_PROPS = [
 	},
 ];
 
-const groupBuilder: APISchema = {
+const groupBuilder = builderSchema('toolbar group', {
 	title: 'createToolbarGroup',
-	description: DESCRIPTIONS.BUILDER('toolbar group'),
-	props: genProps('toolbar group', [
+	props: [
 		...GROUP_OPTION_PROPS,
 		{
 			name: 'defaultValue',
@@ -134,8 +129,8 @@ const groupBuilder: APISchema = {
 			description: 'A callback function that is called when the toolbar group value changes.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
-	]),
-	elements: genElements('toolbar group', [
+	],
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the toolbar group root.',
@@ -144,7 +139,7 @@ const groupBuilder: APISchema = {
 			name: 'item',
 			description: 'The builder store used to create the toolbar group item.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'value',
@@ -160,11 +155,10 @@ const groupBuilder: APISchema = {
 				'A derived store that returns a function that can be used to check if an item is pressed.',
 		},
 	],
-	options: propsToOptions('toolbar group', GROUP_OPTION_PROPS),
-};
+	options: GROUP_OPTION_PROPS,
+});
 
-const group: APISchema = {
-	title: 'group',
+const group = elementSchema('group', {
 	description: 'The root toolbar element for a toolbar group.',
 	dataAttributes: [
 		{
@@ -176,10 +170,9 @@ const group: APISchema = {
 			value: ATTRS.MELT('toolbar group'),
 		},
 	],
-};
+});
 
-const groupItem: APISchema = {
-	title: 'groupItem',
+const groupItem = elementSchema('groupItem', {
 	description: 'A an item within a toolbar group.',
 	props: [
 		{
@@ -213,7 +206,7 @@ const groupItem: APISchema = {
 			value: ATTRS.ON_OFF,
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -33,12 +33,11 @@ const OPTION_PROPS = [
 	},
 	PROPS.DISABLED,
 ];
+const BUILDER_NAME = 'slider';
 
-const builder: APISchema = {
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createSlider',
-	description: DESCRIPTIONS.BUILDER('slider'),
-	isBuilder: true,
-	props: genProps('slider', [
+	props: [
 		...OPTION_PROPS,
 		{
 			name: 'defaultValue',
@@ -59,8 +58,8 @@ const builder: APISchema = {
 			description: 'A callback that is called when the value of the slider changes.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
-	]),
-	elements: genElements('slider', [
+	],
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the root slider element.',
@@ -73,7 +72,7 @@ const builder: APISchema = {
 			name: 'thumb',
 			description: 'The builder store used to create the slider thumb element.',
 		},
-	]),
+	],
 	states: [
 		{
 			name: 'value',
@@ -81,11 +80,10 @@ const builder: APISchema = {
 			description: 'A readable store that can be used to get the current value of the slider.',
 		},
 	],
-	options: propsToOptions('slider', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The slider component.',
 	dataAttributes: [
 		{
@@ -97,10 +95,9 @@ const root: APISchema = {
 			value: ATTRS.MELT('slider'),
 		},
 	],
-};
+});
 
-const range: APISchema = {
-	title: 'range',
+const range = elementSchema('range', {
 	description: 'The slider range component.',
 	dataAttributes: [
 		{
@@ -108,10 +105,9 @@ const range: APISchema = {
 			value: ATTRS.MELT('slider range'),
 		},
 	],
-};
+});
 
-const thumb: APISchema = {
-	title: 'thumb',
+const thumb = elementSchema('thumb', {
 	description: 'The slider thumb component.',
 	dataAttributes: [
 		{
@@ -119,7 +115,7 @@ const thumb: APISchema = {
 			value: ATTRS.MELT('slider thumb'),
 		},
 	],
-};
+});
 
 const schemas = [builder, root, thumb, range];
 

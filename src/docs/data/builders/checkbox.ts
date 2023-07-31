@@ -1,6 +1,6 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genProps, propsToOptions } from '$docs/utils/content';
+import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
 /**
@@ -22,11 +22,9 @@ const OPTION_PROPS = [
 	},
 ];
 
-const builder: APISchema = {
+const builder = builderSchema('checkbox', {
 	title: 'createCheckbox',
-	isBuilder: true,
-	description: DESCRIPTIONS.BUILDER('checkbox'),
-	props: genProps('checkbox', [
+	props: [
 		...OPTION_PROPS,
 		{
 			name: 'defaultChecked',
@@ -49,7 +47,7 @@ const builder: APISchema = {
 				'A callback called when the value of the `checked` store should be changed. This is useful for controlling the checked state of the checkbox from outside the checkbox.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
-	]),
+	],
 	elements: [
 		{
 			name: 'root',
@@ -82,11 +80,10 @@ const builder: APISchema = {
 				'A derived store that returns whether or not the checkbox is in an indeterminate state.',
 		},
 	],
-	options: propsToOptions('checkbox', OPTION_PROPS),
-};
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The checkbox element.',
 	dataAttributes: [
 		{
@@ -102,10 +99,9 @@ const root: APISchema = {
 			value: ATTRS.MELT('checkbox'),
 		},
 	],
-};
+});
 
-const input: APISchema = {
-	title: 'input',
+const input = elementSchema('input', {
 	description: 'The native input element.',
 	dataAttributes: [
 		{
@@ -113,7 +109,7 @@ const input: APISchema = {
 			value: ATTRS.MELT('checkbox input'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{
