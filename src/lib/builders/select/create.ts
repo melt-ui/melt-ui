@@ -35,7 +35,7 @@ import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import { createSeparator } from '../separator';
 import type { CreateSelectProps, SelectOptionProps } from './types';
-import { usePortal } from '@melt-ui/svelte/internal/actions';
+import { usePortal } from '$lib/internal/actions';
 import { createLabel } from '../label';
 
 const defaults = {

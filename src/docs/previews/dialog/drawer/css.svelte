@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDialog } from '$lib/builders/dialog';
+	import { createDialog } from '$lib';
 	import { fade, fly } from 'svelte/transition';
 	// Internal helpers
 	import X from '~icons/lucide/x';

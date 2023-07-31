@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCombobox } from '@melt-ui/svelte';
+	import { createCombobox } from '$lib';
 	import Check from '~icons/lucide/check';
 	import ChevronDown from '~icons/lucide/chevron-down';
 	import ChevronUp from '~icons/lucide/chevron-up';

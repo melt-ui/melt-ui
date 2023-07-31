@@ -1,4 +1,4 @@
-import { kbd } from '@melt-ui/svelte/internal/helpers/keyboard';
+import { kbd } from '$lib/internal/helpers/keyboard';
 import { render } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';

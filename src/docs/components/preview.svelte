@@ -25,7 +25,7 @@
 	import { cn } from '$docs/utils';
 	import type { SelectOptionProps } from '$lib';
 	import { usingPreprocessor } from '$routes/store';
-	import { isBrowser } from '@melt-ui/svelte/internal/helpers';
+	import { isBrowser } from '$lib/internal/helpers';
 	import { writable } from 'svelte/store';
 	import CodeBlock from './code-block.svelte';
 	import PreviewWrapper from './preview-wrapper.svelte';

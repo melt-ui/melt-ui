@@ -11,7 +11,7 @@ import {
 	prev,
 	styleToString,
 } from '$lib/internal/helpers';
-import type { Defaults } from '@melt-ui/svelte/internal/types';
+import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import type { CreatePinInputProps } from './types';

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createToggle } from '@melt-ui/svelte';
+	import { createToggle } from '$lib';
 	import Italic from '~icons/lucide/italic';
 
 	const { toggle } = createToggle();

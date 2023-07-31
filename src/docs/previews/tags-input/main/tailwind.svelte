@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createTagsInput } from '@melt-ui/svelte';
+	import { createTagsInput } from '$lib';
 	import X from '~icons/lucide/x';
 
 	const { root, input, tags, tag, deleteTrigger, edit } = createTagsInput({

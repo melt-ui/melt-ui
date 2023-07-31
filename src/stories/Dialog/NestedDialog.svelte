@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDialog } from '@melt-ui/svelte';
+	import { createDialog } from '$lib';
 	/** Internal helpers */
 	import { PreviewWrapper } from '$docs/components';
 	import BaseDialog from './BaseDialog.svelte';

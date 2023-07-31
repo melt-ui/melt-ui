@@ -1,5 +1,5 @@
 import type { APISchema, KeyboardSchema } from '$docs/types';
-import { isMac } from '@melt-ui/svelte/internal/helpers';
+import { isMac } from '$lib/internal/helpers';
 import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { BuilderData } from '.';
 
