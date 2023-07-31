@@ -1,0 +1,11 @@
+{
+  "mode": "pre",
+  "tag": "next",
+  "initialVersions": {
+    "@melt-ui/svelte": "0.27.0"
+  },
+  "changesets": [
+    "lazy-students-kick",
+    "light-brooms-talk"
+  ]
+}
