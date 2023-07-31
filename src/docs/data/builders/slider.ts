@@ -3,6 +3,9 @@ import type { APISchema, KeyboardSchema } from '$docs/types';
 import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
 const OPTION_PROPS = [
 	{
 		name: 'min',

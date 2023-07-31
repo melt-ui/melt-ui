@@ -50,11 +50,7 @@
 	<div class="item" melt={$item}>About Melt UI</div>
 	<div class="item" melt={$item}>Check for Updates...</div>
 	<div class="separator" melt={$separator} />
-	<div
-		class="item"
-		{...$checkboxItem}
-		use:checkboxItem
-	>
+	<div class="item" {...$checkboxItem} use:checkboxItem>
 		<div class="check">
 			{#if $settingsSync}
 				<Check class="icon" />
@@ -85,11 +81,7 @@
 	</div>
 	<div melt={$separator} class="separator" />
 
-	<div
-		class="item"
-		{...$checkboxItemA}
-		use:checkboxItemA
-	>
+	<div class="item" {...$checkboxItemA} use:checkboxItemA>
 		<div class="check">
 			{#if $hideMeltUI}
 				<Check class="icon" />

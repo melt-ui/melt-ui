@@ -4,12 +4,26 @@
 	import { AlignJustify, ChevronRight } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 
+	const settingsSync = writable(true);
+	const hideMeltUI = writable(false);
+
 	const {
-		elements: { trigger, menu, item, checkboxItem, separator, arrow },
-		builders: { createSubmenu, createMenuRadioGroup },
+		elements: { trigger, menu, item, separator, arrow },
+		builders: { createSubmenu, createMenuRadioGroup, createCheckboxItem },
 		states: { open },
 	} = createDropdownMenu({
 		forceVisible: true,
+	});
+
+	const {
+		elements: { checkboxItem: settingsSyncCheckbox },
+	} = createCheckboxItem({
+		checked: settingsSync,
+	});
+	const {
+		elements: { checkboxItem: hideMeltUICheckbox },
+	} = createCheckboxItem({
+		checked: hideMeltUI,
 	});
 
 	const {
@@ -25,9 +39,6 @@
 	});
 
 	const personsArr = ['Hunter Johnston', 'Thomas G. Lopes', 'Adrian Gonz', 'Franck Poingt'];
-
-	const settingsSync = writable(true);
-	const hideMeltUI = writable(false);
 </script>
 
 <main>
@@ -44,13 +55,15 @@
 	{#if $open}
 		<div class="menu" melt={$menu} data-testid="menu" transition:slide>
 			<div class="item" melt={$item} data-testid="item1">Item 1</div>
-			<div class="item" melt={$item} data-testid="item2" aria-disabled="true">Item 2</div>
+			<div class="item" melt={$item} data-testid="item2" aria-disabled="true" data-disabled>
+				Item 2
+			</div>
 			<div class="separator" melt={$separator} />
 			<div
 				data-testid="checkboxItem1"
 				class="item"
-				{...$checkboxItem}
-				use:checkboxItem={{ checked: settingsSync }}
+				{...$settingsSyncCheckbox}
+				use:settingsSyncCheckbox
 			>
 				<div class="check">
 					{#if $settingsSync}
@@ -59,12 +72,7 @@
 				</div>
 				Item 3
 			</div>
-			<div
-				data-testid="checkboxItem2"
-				class="item"
-				{...$checkboxItem}
-				use:checkboxItem={{ checked: hideMeltUI }}
-			>
+			<div data-testid="checkboxItem2" class="item" {...$hideMeltUICheckbox} use:hideMeltUICheckbox>
 				<div class="check">
 					{#if $hideMeltUI}
 						<span data-testid="check2"> Check 2 </span>

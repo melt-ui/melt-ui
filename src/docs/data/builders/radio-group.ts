@@ -1,27 +1,15 @@
-import { ATTRS, DESCRIPTIONS, KBD, SEE } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
-import { genElements, propsToOptions } from '$docs/utils/content';
+import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
 
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
 const OPTION_PROPS = [
-	{
-		name: 'disabled',
-		type: 'boolean',
-		default: 'false',
-		description: 'Whether or not the radio group is disabled.',
-	},
-	{
-		name: 'loop',
-		type: 'boolean',
-		default: 'true',
-		description: 'Whether or not the radio group should loop when navigating with the keyboard.',
-	},
-	{
-		name: 'required',
-		type: 'boolean',
-		default: 'false',
-		description: 'Whether or not the radio group is required.',
-	},
+	PROPS.DISABLED,
+	PROPS.REQUIRED,
+	PROPS.LOOP,
 	{
 		name: 'orientation',
 		type: ['"horizontal"', '"vertical"'],
@@ -33,7 +21,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createRadioGroup',
 	description: DESCRIPTIONS.BUILDER('radio group'),
-	props: [
+	props: genProps('radio group', [
 		...OPTION_PROPS,
 		{
 			name: 'defaultValue',
@@ -52,7 +40,7 @@ const builder: APISchema = {
 			description: 'A callback that is called when the value of the radio group changes.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
-	],
+	]),
 	elements: genElements('radio group', [
 		{
 			name: 'root',

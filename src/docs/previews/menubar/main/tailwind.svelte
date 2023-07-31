@@ -3,6 +3,11 @@
 	import { writable } from 'svelte/store';
 	import { ChevronRight, Check } from 'lucide-svelte';
 
+	const tipsAndTricks = writable(true);
+	const hideMeltUI = writable(false);
+	const wordWrap = writable(true);
+	const stickyScroll = writable(false);
+
 	const {
 		elements: { menubar },
 		builders: { createMenu },
@@ -38,11 +43,24 @@
 			trigger: triggerB,
 			menu: menuB,
 			item: itemB,
-			checkboxItem: checkboxItemB,
 			separator: separatorB,
 		},
-		builders: { createSubmenu: createSubmenuB },
+		builders: {
+			createSubmenu: createSubmenuB,
+			createCheckboxItem: createCheckboxItemB,
+		},
 	} = createMenu();
+
+	const {
+		elements: { checkboxItem: wordWrapCheckbox },
+	} = createCheckboxItemB({
+		checked: wordWrap,
+	});
+	const {
+		elements: { checkboxItem: stickyScrollCheckbox },
+	} = createCheckboxItemB({
+		checked: stickyScroll,
+	});
 
 	const {
 		elements: { subMenu: subMenuB, subTrigger: subTriggerB },
@@ -53,17 +71,24 @@
 			trigger: triggerC,
 			menu: menuC,
 			item: itemC,
-			checkboxItem: checkboxItemC,
 			separator: separatorC,
 		},
+		builders: { createCheckboxItem: createCheckboxItemC },
 	} = createMenu();
 
-	const themesArr = ['Nord', 'GitHub Dark', 'Moonlight'];
+	const {
+		elements: { checkboxItem: tipsAndTricksCheckbox },
+	} = createCheckboxItemC({
+		checked: tipsAndTricks,
+	});
 
-	const tipsAndTricks = writable(true);
-	const hideMeltUI = writable(false);
-	const wordWrap = writable(true);
-	const stickyScroll = writable(false);
+	const {
+		elements: { checkboxItem: hideMeltUICheckbox },
+	} = createCheckboxItemC({
+		checked: hideMeltUI,
+	});
+
+	const themesArr = ['Nord', 'GitHub Dark', 'Moonlight'];
 </script>
 
 <div class="flex rounded-md bg-white p-1 shadow-md" melt={$menubar}>
@@ -197,11 +222,7 @@
 		</div>
 		<div class="separator" melt={$separatorB} />
 
-		<div
-			class="item"
-			{...$checkboxItemB}
-			use:$checkboxItemB.action={{ checked: wordWrap }}
-		>
+		<div class="item" {...$wordWrapCheckbox} use:wordWrapCheckbox>
 			<div class="check">
 				{#if $wordWrap}
 					<Check class="icon" />
@@ -210,13 +231,7 @@
 			Word Wrap
 			<div class="rightSlot">⌘H</div>
 		</div>
-		<div
-			class="item"
-			{...$checkboxItemB}
-			use:$checkboxItemB.action={{
-				checked: stickyScroll,
-			}}
-		>
+		<div class="item" {...$stickyScrollCheckbox} use:stickyScrollCheckbox>
 			<div class="check">
 				{#if $stickyScroll}
 					<Check class="icon" />
@@ -242,13 +257,7 @@
 		<div class="item" melt={$itemC}>About Melt UI</div>
 		<div class="item" melt={$itemC}>Check for Updates...</div>
 		<div class="separator" melt={$separatorC} />
-		<div
-			class="item"
-			{...$checkboxItemC}
-			use:$checkboxItemC.action={{
-				checked: tipsAndTricks,
-			}}
-		>
+		<div class="item" {...$tipsAndTricksCheckbox} use:tipsAndTricksCheckbox>
 			<div class="check">
 				{#if $tipsAndTricks}
 					<Check class="icon" />
@@ -259,11 +268,7 @@
 
 		<div melt={$separatorC} class="separator" />
 
-		<div
-			class="item"
-			{...$checkboxItemC}
-			use:$checkboxItemC.action={{ checked: hideMeltUI }}
-		>
+		<div class="item" {...$hideMeltUICheckbox} use:hideMeltUICheckbox>
 			<div class="check">
 				{#if $hideMeltUI}
 					<Check class="icon" />
