@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCollapsible } from '$lib/builders/collapsible';
+	import { createCollapsible } from '$lib';
 	import { PreviewWrapper } from '$docs/components';
 	import { slide } from 'svelte/transition';
 	import X from '~icons/lucide/x';
