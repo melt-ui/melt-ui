@@ -1,60 +1,132 @@
-import { ATTRS, DESCRIPTIONS } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, PROPS, SEE } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
+
+const OPTION_PROPS = [
+	PROPS.DISABLED,
+	{
+		name: 'placeholder',
+		type: 'string',
+		description: 'The placeholder text for the input element.',
+	},
+	{
+		name: 'editable',
+		type: 'boolean',
+		default: 'true',
+		description: 'Whether or not the input is editable.',
+	},
+	{
+		name: 'selected',
+		type: 'Tag',
+		description: 'The selected tag.',
+		longType: {
+			rawCode: 'type Tag = { id: string; value: string; }',
+		},
+	},
+	{
+		name: 'unique',
+		type: 'boolean',
+		default: 'false',
+		description: 'Whether or not the tags input should only allow unique tags.',
+	},
+	{
+		name: 'blur',
+		type: 'boolean',
+		description: 'Whether or not the input should blur when a tag is added.',
+		default: 'true',
+	},
+	{
+		name: 'addOnPaste',
+		type: 'boolean',
+		description: 'Whether or not the input should add tags on paste.',
+		default: 'true',
+	},
+	{
+		name: 'maxTags',
+		type: 'number',
+		description: 'The maximum number of tags allowed.',
+		default: 'Infinity',
+	},
+	{
+		name: 'allowed',
+		type: 'string[]',
+		description: 'The allowed tags.',
+		default: '[]',
+	},
+	{
+		name: 'disallowed',
+		type: 'string[]',
+		description: 'The disallowed tags.',
+		default: '[]',
+	},
+	{
+		name: 'add',
+		type: '(tag: string) => Promise<Tag | string>',
+		description: 'A function that adds a tag.',
+	},
+	{
+		name: 'remove',
+		type: '(tag: Tag) => Promise<boolean>',
+		description: 'A function that removes a tag.',
+	},
+	{
+		name: 'update',
+		type: '(tag: Tag) => Promise<Tag>',
+		description: 'A function that updates a tag.',
+	},
+];
 
 const builder: APISchema = {
 	title: 'createTags',
 	description: DESCRIPTIONS.BUILDER('tags input'),
-	props: [
+	props: genProps('tags input', [
+		...OPTION_PROPS,
 		{
-			name: 'placeholder',
-			type: 'string',
-			description: 'The placeholder text for the input element.',
-		},
-		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the tags input is disabled.',
-		},
-		{
-			name: 'selectedTag',
-			type: '{id: string, value: string}',
-			description: 'The selected tag.',
-		},
-		{
-			name: 'tags',
-			type: ['string[]', '{id: string, value: string}[]'],
-			default: '[]',
-			description: 'The tag items.',
-		},
-		{
-			name: 'unique',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the tags input should only allow unique tags.',
-		},
-	],
-	returnedProps: [
-		{
-			name: 'options',
-			type: 'Writable<CreateTagsInputProps>',
-			description: 'A writable store that contains the props used to create the tags input.',
+			name: 'defaultTags',
+			type: 'string[] | Tag[]',
+			description: 'The default tags to populate the tags input with.',
 		},
 		{
 			name: 'tags',
 			type: 'Writable<Tag[]>',
 			description: 'A writable store that controls the tags.',
+			see: SEE.BRING_YOUR_OWN_STORE,
 		},
 		{
-			name: 'selected',
-			type: 'Writable<Tag | null>',
-			description: 'A writable store that controls the selected tag.',
+			name: 'onTagsChange',
+			type: 'ChangeFn<Tags[]>',
+			description: 'A function that is called when the tags change.',
+			see: SEE.CHANGE_FUNCTIONS,
+		},
+	]),
+	elements: genElements('tags input', [
+		{
+			name: 'root',
+			description: 'The builder store used to create the tags input root.',
 		},
 		{
-			name: 'isSelected',
-			type: 'Readable<(tag: Tag) => boolean>',
-			description: 'A derived store that returns a function that checks if a tag is selected.',
+			name: 'input',
+			description: 'The builder store used to create the tags input input.',
+		},
+		{
+			name: 'tag',
+			description: 'The builder store used to create the tags input tag.',
+		},
+		{
+			name: 'deleteTrigger',
+			description: 'The builder store used to create the tags input delete trigger.',
+		},
+		{
+			name: 'edit',
+			description: 'The builder store used to create the tags input edit.',
+		},
+	]),
+	states: [
+		{
+			name: 'tags',
+			type: 'Readable<Tag[]>',
+			description: 'A derived store that returns the tags.',
 		},
 		{
 			name: 'inputValue',
@@ -67,31 +139,19 @@ const builder: APISchema = {
 			description: 'A derived store that returns whether or not the input element is invalid.',
 		},
 		{
-			name: 'root',
-			description: 'The builder store used to create the tags input root.',
-			link: '#root',
-		},
-		{
-			name: 'input',
-			description: 'The builder store used to create the tags input input.',
-			link: '#input',
-		},
-		{
-			name: 'tag',
-			description: 'The builder store used to create the tags input tag.',
-			link: '#tag',
-		},
-		{
-			name: 'deleteTrigger',
-			description: 'The builder store used to create the tags input delete trigger.',
-			link: '#deletetrigger',
-		},
-		{
-			name: 'edit',
-			description: 'The builder store used to create the tags input edit.',
-			link: '#edit',
+			name: 'selected',
+			type: 'Readable<Tag | null>',
+			description: 'A derived store that returns the selected tag.',
 		},
 	],
+	helpers: [
+		{
+			name: 'isSelected',
+			type: 'Readable<(tag: Tag) => boolean>',
+			description: 'A derived store that returns a function that checks if a tag is selected.',
+		},
+	],
+	options: propsToOptions('tags input', OPTION_PROPS),
 };
 
 const root: APISchema = {

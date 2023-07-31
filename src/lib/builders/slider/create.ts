@@ -33,7 +33,7 @@ const { name } = createElHelpers('slider');
 export const createSlider = (props?: CreateSliderProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSliderProps;
 
-	const options = toWritableStores(omit(withDefaults, 'value'));
+	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
 	const { min, max, step, orientation, disabled } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);

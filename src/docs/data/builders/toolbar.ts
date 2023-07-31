@@ -1,56 +1,48 @@
-import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
+
+const OPTION_PROPS = [
+	PROPS.LOOP,
+	{
+		name: 'orientation',
+		type: TYPES.ORIENTATION,
+		default: '"horizontal"',
+		description: 'The orientation of the toolbar.',
+	},
+];
 
 const builder: APISchema = {
 	title: 'createToolbar',
 	description: DESCRIPTIONS.BUILDER('toolbar'),
-	props: [
+	props: genProps('toolbar', OPTION_PROPS),
+	elements: genElements('toolbar', [
 		{
-			name: 'loop',
-			type: 'boolean',
-			default: 'true',
-			description: DESCRIPTIONS.LOOP,
+			name: 'root',
+			description: 'The builder store used to create the toolbar root.',
 		},
 		{
-			name: 'orientation',
-			type: TYPES.ORIENTATION,
-			default: '"horizontal"',
-			description: 'The orientation of the toolbar.',
+			name: 'button',
+			description: 'The builder store used to create the toolbar button.',
 		},
-	],
-	returnedProps: [
 		{
-			name: 'options',
-			type: 'Writable<CreateToolbarProps>',
-			description: 'A writable store that can be used to update the toolbar props.',
+			name: 'link',
+			description: 'The builder store used to create the toolbar link.',
 		},
+		{
+			name: 'separator',
+			description: 'The builder store used to create the toolbar separator.',
+		},
+	]),
+	builders: [
 		{
 			name: 'createToolbarGroup',
 			description: 'A builder function that creates a toolbar group.',
 			link: '#createtoolbargroup',
 		},
-		{
-			name: 'root',
-			description: 'The builder store used to create the toolbar root.',
-			link: '#root',
-		},
-		{
-			name: 'button',
-			description: 'The builder store used to create the toolbar button.',
-			link: '#button',
-		},
-		{
-			name: 'link',
-			description: 'The builder store used to create the toolbar link.',
-			link: '#link',
-		},
-		{
-			name: 'separator',
-			description: 'The builder store used to create the toolbar separator.',
-			link: '#separator',
-		},
 	],
+	options: propsToOptions('toolbar', OPTION_PROPS),
 };
 
 const root: APISchema = {

@@ -1,41 +1,49 @@
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
+
+const OPTION_PROPS = [PROPS.DISABLED];
 
 const builder: APISchema = {
 	title: 'createToggle',
 	description: DESCRIPTIONS.BUILDER('toggle'),
-	props: [
+	props: genProps('toggle', [
+		...OPTION_PROPS,
 		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the toggle is disabled.',
-		},
-		{
-			name: 'pressed',
+			name: 'defaultPressed',
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the toggle is pressed.',
 		},
-	],
-	returnedProps: [
 		{
 			name: 'pressed',
 			type: 'Writable<boolean>',
 			description: 'A writable store that controls the pressed state of the toggle.',
+			see: SEE.BRING_YOUR_OWN_STORE,
 		},
 		{
-			name: 'disabled',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls whether or not the toggle is disabled.',
+			name: 'onPressedChange',
+			type: 'ChangeFn<boolean>',
+			description:
+				'A callback called when the value of the `pressed` store should be changed. This is useful for controlling the value of the toggle from outside the toggle.',
+			see: SEE.CHANGE_FUNCTIONS,
 		},
+	]),
+	elements: genElements('toggle', [
 		{
 			name: 'root',
 			description: 'The builder store used to create the toggle root.',
-			link: '#root',
+		},
+	]),
+	states: [
+		{
+			name: 'pressed',
+			type: 'Readable<boolean>',
+			description: 'A readable store that represents the pressed state of the toggle.',
 		},
 	],
+	options: propsToOptions('toggle', OPTION_PROPS),
 };
 
 const root: APISchema = {

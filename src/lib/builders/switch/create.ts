@@ -8,7 +8,7 @@ import {
 	addMeltEventListener,
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
-import { derived, get, writable, readonly } from 'svelte/store';
+import { get, writable, readonly } from 'svelte/store';
 import type { CreateSwitchProps } from './types';
 
 const defaults = {
@@ -80,8 +80,6 @@ export function createSwitch(props?: CreateSwitchProps) {
 		},
 	});
 
-	const isChecked = derived(checked, ($checked) => $checked === true);
-
 	return {
 		elements: {
 			root,
@@ -89,9 +87,6 @@ export function createSwitch(props?: CreateSwitchProps) {
 		},
 		states: {
 			checked: readonly(checked),
-		},
-		helpers: {
-			isChecked,
 		},
 		options,
 	};

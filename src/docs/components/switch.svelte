@@ -11,7 +11,7 @@
 
 	const {
 		elements: { root },
-		helpers: { isChecked },
+		states: { checked: isChecked },
 	} = createSwitch({
 		checked: checkedStore,
 	});

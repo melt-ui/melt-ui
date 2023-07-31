@@ -1,78 +1,79 @@
-import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
+
+const OPTION_PROPS = [
+	PROPS.LOOP,
+	{
+		name: 'activateOnFocus',
+		type: 'boolean',
+		default: 'true',
+		description: 'Whether or not to activate the tab when it is focused.',
+	},
+	{
+		name: 'orientation',
+		type: TYPES.ORIENTATION,
+		default: '"horizontal"',
+		description: 'The orientation of the tabs.',
+	},
+	{
+		name: 'autoSet',
+		type: 'boolean',
+		default: 'true',
+		description: 'Whether or not to automatically set the tabs value when a trigger is clicked.',
+	},
+];
 
 const builder: APISchema = {
 	title: 'createTabs',
 	description: DESCRIPTIONS.BUILDER('tabs'),
-	props: [
+	props: genProps('tabs', [
+		...OPTION_PROPS,
 		{
-			name: 'value',
+			name: 'defaultValue',
 			type: 'string',
 			description: 'The initial value of the tabs.',
 		},
 		{
-			name: 'onChange',
-			type: '(value: string) => void',
-			description: 'A callback function that is called when the tabs value changes.',
-		},
-		{
-			name: 'activateOnFocus',
-			type: 'boolean',
-			default: 'true',
-			description: 'Whether or not to activate the tab when it is focused.',
-		},
-		{
-			name: 'loop',
-			type: 'boolean',
-			default: 'true',
-			description: 'Whether or not to loop the tabs when navigating with the keyboard.',
-		},
-		{
-			name: 'orientation',
-			type: TYPES.ORIENTATION,
-			default: '"horizontal"',
-			description: 'The orientation of the tabs.',
-		},
-		{
-			name: 'autoSet',
-			type: 'boolean',
-			default: 'true',
-			description: 'Whether or not to automatically set the tabs value when a trigger is clicked.',
-		},
-	],
-	returnedProps: [
-		{
-			name: 'options',
-			type: 'Writable<CreateTabsProps>',
-			description: 'A writable store that can be used to update the tabs props.',
-		},
-		{
 			name: 'value',
 			type: 'Writable<string>',
-			description: 'A writable store that can be used to update the current tab value.',
+			description: 'A writable store that can be used to update the tabs value.',
+			see: SEE.BRING_YOUR_OWN_STORE,
 		},
+		{
+			name: 'onValueChange',
+			type: 'ChangeFn<string>',
+			description: 'A callback that is called when the value of the tabs changes.',
+			see: SEE.CHANGE_FUNCTIONS,
+		},
+	]),
+	elements: genElements('tabs', [
 		{
 			name: 'root',
 			description: 'The builder store used to create the root tabs element.',
-			link: '#root',
 		},
 		{
 			name: 'list',
 			description: 'The builder store used to create the tabs list element.',
-			link: '#list',
 		},
 		{
 			name: 'trigger',
 			description: 'The builder store used to create a tabs trigger element.',
-			link: '#trigger',
 		},
 		{
 			name: 'content',
 			description: 'The builder store used to create a tabs content element.',
-			link: '#content',
+		},
+	]),
+	states: [
+		{
+			name: 'value',
+			type: 'Readable<string>',
+			description: 'A readable store that represents the current value of the tabs.',
 		},
 	],
+	options: propsToOptions('tabs', OPTION_PROPS),
 };
 
 const root: APISchema = {

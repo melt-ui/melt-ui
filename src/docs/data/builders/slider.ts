@@ -1,76 +1,83 @@
-import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
+
+const OPTION_PROPS = [
+	{
+		name: 'min',
+		type: 'number',
+		default: '0',
+		description: 'The minimum value of the slider.',
+	},
+	{
+		name: 'max',
+		type: 'number',
+		default: '100',
+		description: 'The maximum value of the slider.',
+	},
+	{
+		name: 'step',
+		type: 'number',
+		default: '1',
+		description: 'The amount to increment/decrement the value by when using the keyboard.',
+	},
+	{
+		name: 'orientation',
+		type: TYPES.ORIENTATION,
+		default: "'horizontal'",
+		description: 'The orientation of the slider.',
+	},
+	PROPS.DISABLED,
+];
 
 const builder: APISchema = {
 	title: 'createSlider',
 	description: DESCRIPTIONS.BUILDER('slider'),
-	props: [
+	props: genProps('slider', [
+		...OPTION_PROPS,
 		{
-			name: 'value',
+			name: 'defaultValue',
 			type: 'number[]',
 			default: '[]',
 			description:
-				'The value of the slider. Pass in multiple values for multiple thumbs, creating a range slider.',
-		},
-		{
-			name: 'min',
-			type: 'number',
-			default: '0',
-			description: 'The minimum value of the slider.',
-		},
-		{
-			name: 'max',
-			type: 'number',
-			default: '100',
-			description: 'The maximum value of the slider.',
-		},
-		{
-			name: 'step',
-			type: 'number',
-			default: '1',
-			description: 'The amount to increment/decrement the value by when using the keyboard.',
-		},
-		{
-			name: 'orientation',
-			type: TYPES.ORIENTATION,
-			default: "'horizontal'",
-			description: 'The orientation of the slider.',
-		},
-		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the slider is disabled.',
-		},
-	],
-	returnedProps: [
-		{
-			name: 'options',
-			type: 'Writable<CreateSliderProps>',
-			description: 'A writable store that can be used to update the slider props.',
+				'The default value of the slider. Pass in multiple values for multiple thumbs, creating a range slider.',
 		},
 		{
 			name: 'value',
-			type: 'Writable<number[]>',
+			type: 'Writable<number>',
 			description: 'A writable store that can be used to update the slider value.',
+			see: SEE.BRING_YOUR_OWN_STORE,
 		},
+		{
+			name: 'onValueChange',
+			type: 'ChangeFn<number>',
+			description: 'A callback that is called when the value of the slider changes.',
+			see: SEE.CHANGE_FUNCTIONS,
+		},
+	]),
+	elements: genElements('slider', [
 		{
 			name: 'root',
 			description: 'The builder store used to create the root slider element.',
-			link: '#root',
 		},
 		{
 			name: 'range',
 			description: 'The builder store used to create the slider range element.',
-			link: '#range',
 		},
 		{
 			name: 'thumb',
 			description: 'The builder store used to create the slider thumb element.',
-			link: '#thumb',
+		},
+	]),
+	states: [
+		{
+			name: 'value',
+			type: 'Readable<number[]>',
+			description: 'A readable store that can be used to get the current value of the slider.',
 		},
 	],
+	options: propsToOptions('slider', OPTION_PROPS),
 };
 
 const root: APISchema = {

@@ -1,56 +1,67 @@
 import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
+
+const OPTION_PROPS = [
+	{
+		name: 'closeDelay',
+		type: 'number',
+		default: '5000',
+		description: 'The delay in milliseconds before the toast closes.',
+	},
+	{
+		name: 'type',
+		type: ["'foreground'", "'background'"],
+		default: "'foreground'",
+		description: 'The sensitivity of the toast for accessibility purposes.',
+	},
+];
 
 const builder: APISchema = {
 	title: 'createToaster',
 	description: DESCRIPTIONS.BUILDER('toast'),
-	props: [
+	props: genProps('toaster', OPTION_PROPS),
+	elements: genElements('toaster', [
 		{
-			name: 'closeDelay',
-			type: 'number',
-			default: '5000',
-			description: 'The delay in milliseconds before the toast closes.',
+			name: 'content',
+			description: 'The builder store used to create the toast description.',
 		},
 		{
-			name: 'type',
-			type: ["'foreground'", "'background'"],
-			default: "'foreground'",
-			description: 'The sensitivity of the toast for accessibility purposes.',
+			name: 'title',
+			description: 'The builder store used to create the toast title.',
 		},
-	],
-	returnedProps: [
+		{
+			name: 'description',
+			description: 'The builder store used to create the toast description.',
+		},
+		{
+			name: 'close',
+			description: 'The builder store used to create the toast close button.',
+		},
+	]),
+	states: [
 		{
 			name: 'toasts',
-			type: 'Writable<Toast<ToastData<T>[]>',
-			description: 'A writable store that contains the open toasts.',
+			type: 'Readable<Toast<T>[]>',
+			description: 'A readable store that contains the open toasts.',
 		},
+	],
+	helpers: [
 		{
 			name: 'addToast',
 			type: '(props: AddToastProps<T>) => void',
 			description: 'A helper function to add a toast to the toasts store.',
 		},
+	],
+	actions: [
 		{
-			name: 'content',
-			description: 'The builder store used to create the toast description.',
-			link: '#content',
-		},
-		{
-			name: 'title',
-			description: 'The builder store used to create the toast title.',
-			link: '#title',
-		},
-		{
-			name: 'description',
-			description: 'The builder store used to create the toast description.',
-			link: '#description',
-		},
-		{
-			name: 'close',
-			description: 'The builder store used to create the toast close button.',
-			link: '#close',
+			name: 'portal',
+			type: 'Action',
+			description: 'A portal action that renders the toasts into the body.',
 		},
 	],
+	options: propsToOptions('toaster', OPTION_PROPS),
 };
 
 const content: APISchema = {

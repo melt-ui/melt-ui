@@ -1,78 +1,84 @@
-import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
+import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
+
+const OPTION_PROPS = [
+	{
+		name: 'type',
+		type: ["'single'", "'multiple'"],
+		default: "'single'",
+		description:
+			'The type of toggle group. `single` allows a single item to be selected. `multiple` allows multiple items to be selected.',
+	},
+	PROPS.DISABLED,
+	PROPS.LOOP,
+	{
+		name: 'rovingFocus',
+		type: 'boolean',
+		default: 'true',
+		description: 'Whether or not the toggle group should use roving focus.',
+	},
+	{
+		name: 'orientation',
+		type: TYPES.ORIENTATION,
+		default: "'horizontal'",
+		description: 'The orientation of the toggle group.',
+	},
+];
 
 const builder: APISchema = {
 	title: 'createToggleGroup',
 	description: DESCRIPTIONS.BUILDER('toggle group'),
-	props: [
+	props: genProps('toggle group', [
+		...OPTION_PROPS,
 		{
-			name: 'type',
-			type: ["'single'", "'multiple'"],
-			default: "'single'",
-			description:
-				'The type of toggle group. `single` allows a single item to be selected. `multiple` allows multiple items to be selected.',
-		},
-		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the toggle group is disabled.',
-		},
-		{
-			name: 'value',
-			type: ['string', 'string[]', 'null'],
-			default: 'null',
+			name: 'defaultValue',
+			type: ['string', 'string[]'],
 			description:
 				'The value of the currently selected item. You can also pass an array of values to select multiple items if the toggle group is of type `multiple`.',
 		},
 		{
-			name: 'rovingFocus',
-			type: 'boolean',
-			default: 'true',
-			description: 'Whether or not the toggle group should use roving focus.',
+			name: 'value',
+			type: 'Writable<string | string[] | undefined>',
+			description:
+				'A writable store that controls the value of the toggle group. If provided, this will override the value passed to `defaultValue`.',
+			see: SEE.BRING_YOUR_OWN_STORE,
 		},
 		{
-			name: 'orientation',
-			type: TYPES.ORIENTATION,
-			default: "'horizontal'",
-			description: 'The orientation of the toggle group.',
+			name: 'onValueChange',
+			type: 'ChangeFn<string | string[] | undefined>',
+			description:
+				'A callback called when the value of the `value` store should be changed. This is useful for controlling the value of the toggle group from outside the toggle group.',
+			see: SEE.CHANGE_FUNCTIONS,
+		},
+	]),
+	elements: genElements('toggle group', [
+		{
+			name: 'root',
+			description: 'The builder store used to create the toggle group root.',
 		},
 		{
-			name: 'loop',
-			type: 'boolean',
-			default: 'true',
-			description: DESCRIPTIONS.LOOP,
+			name: 'item',
+			description: 'The builder store used to create toggle group items.',
 		},
-	],
-	returnedProps: [
-		{
-			name: 'options',
-			type: 'Writable<CreateToggleGroupProps>',
-			description: 'A writable store with the options used to create the toggle group.',
-		},
+	]),
+	states: [
 		{
 			name: 'value',
-			type: 'Writable<string | string[] | null>',
-			description: 'A writable store with the value of the currently selected item.',
+			type: 'Readable<string | string[] | undefined>',
+			description: 'A derived store that returns the value of the currently selected item.',
 		},
+	],
+	helpers: [
 		{
 			name: 'isPressed',
 			type: 'Readable<(itemValue: string) => boolean>',
 			description:
 				'A derived store that takes an item value and returns whether or not the item is pressed.',
 		},
-		{
-			name: 'root',
-			description: 'The builder store used to create the toggle group root.',
-			link: '#root',
-		},
-		{
-			name: 'item',
-			description: 'The builder store used to create toggle group items.',
-			link: '#item',
-		},
 	],
+	options: propsToOptions('toggle group', OPTION_PROPS),
 };
 
 const root: APISchema = {

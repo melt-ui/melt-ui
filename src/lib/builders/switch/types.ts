@@ -53,4 +53,3 @@ export type Switch = BuilderReturn<typeof createSwitch>;
 export type SwitchElements = Switch['elements'];
 export type SwitchOptions = Switch['options'];
 export type SwitchStates = Switch['states'];
-export type SwitchHelpers = Switch['helpers'];
