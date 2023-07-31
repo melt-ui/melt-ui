@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createToolbar } from '@melt-ui/svelte';
+	import { createToolbar, melt } from '@melt-ui/svelte';
 
 	// Icons
 	import {
@@ -26,39 +26,39 @@
 </script>
 
 <div
-	melt={$root}
+	use:melt={$root}
 	class="flex min-w-max items-center gap-4 rounded-md bg-white px-3 py-3 text-neutral-700 shadow-sm lg:w-[35rem]"
 >
-	<div class="flex items-center gap-1" melt={$fontGroup}>
-		<button class="item" melt={$fontItem('bold')}>
+	<div class="flex items-center gap-1" use:melt={$fontGroup}>
+		<button class="item" use:melt={$fontItem('bold')}>
 			<Bold />
 		</button>
-		<button class="item" melt={$fontItem('italic')}>
+		<button class="item" use:melt={$fontItem('italic')}>
 			<Italic />
 		</button>
-		<button class="item" melt={$fontItem('strikethrough')}>
+		<button class="item" use:melt={$fontItem('strikethrough')}>
 			<Strikethrough />
 		</button>
 	</div>
-	<div class="separator" melt={$separator} />
-	<div class="flex items-center gap-1" melt={$alignGroup}>
-		<button class="item" melt={$alignItem('left')}>
+	<div class="separator" use:melt={$separator} />
+	<div class="flex items-center gap-1" use:melt={$alignGroup}>
+		<button class="item" use:melt={$alignItem('left')}>
 			<AlignLeft />
 		</button>
-		<button class="item" melt={$alignItem('center')}>
+		<button class="item" use:melt={$alignItem('center')}>
 			<AlignCenter />
 		</button>
-		<button class="item" melt={$alignItem('right')}>
+		<button class="item" use:melt={$alignItem('right')}>
 			<AlignRight />
 		</button>
 	</div>
-	<div class="separator" melt={$separator} />
-	<a href="/" class="link nowrap flex-shrink-0" melt={$link}>
+	<div class="separator" use:melt={$separator} />
+	<a href="/" class="link nowrap flex-shrink-0" use:melt={$link}>
 		Edited 2 hours ago
 	</a>
 	<button
 		class="ml-auto rounded-md bg-magnum-600 px-3 py-1 font-medium text-magnum-100 hover:opacity-75 active:opacity-50"
-		melt={$button}>Save</button
+		use:melt={$button}>Save</button
 	>
 </div>
 

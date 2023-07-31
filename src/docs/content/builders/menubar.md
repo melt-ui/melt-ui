@@ -44,15 +44,15 @@ function and wrap it in a `menubar` element.
 
 ```svelte {5}
 <script lang="ts">
-	import { createMenubar } from '@melt-ui/svelte'
+	import { createMenubar, melt } from '@melt-ui/svelte'
 
 	const { menubar, createMenu } = createMenubar()
 	const { menu, item, trigger } = createMenu()
 </script>
 
-<div melt={$menubar}>
-	<button melt={$trigger}>Open Menu</button>
-	<div melt={$menu}>
+<div use:melt={$menubar}>
+	<button use:melt={$trigger}>Open Menu</button>
+	<div use:melt={$menu}>
 		<div {...$item} use:item>...</div>
 		<div {...$item} use:item>...</div>
 		<div {...$item} use:item>...</div>
@@ -70,7 +70,7 @@ returned variables to prevent any naming conflicts.
 
 ```svelte {6-7}
 <script lang="ts">
-	import { createMenubar } from '@melt-ui/svelte'
+	import { createMenubar, melt } from '@melt-ui/svelte'
 
 	const { menubar, createMenu } = createMenubar()
 	const { menu, item, trigger } = createMenu()
@@ -78,23 +78,23 @@ returned variables to prevent any naming conflicts.
 	const { menu: menuB, item: itemB, trigger: triggerB } = createMenu()
 </script>
 
-<div melt={$menubar}>
-	<button melt={$trigger}>File</button>
-	<div melt={$menu}>
+<div use:melt={$menubar}>
+	<button use:melt={$trigger}>File</button>
+	<div use:melt={$menu}>
 		<div {...$item} use:item>...</div>
 		<div {...$item} use:item>...</div>
 		<div {...$item} use:item>...</div>
 	</div>
 
-	<button melt={$triggerA}>Edit</button>
-	<div melt={$menuA}>
+	<button use:melt={$triggerA}>Edit</button>
+	<div use:melt={$menuA}>
 		<div {...$itemA} use:itemA>...</div>
 		<div {...$itemA} use:itemA>...</div>
 		<div {...$itemA} use:itemA>...</div>
 	</div>
 
-	<button melt={$triggerB}>Help</button>
-	<div melt={$menuB}>
+	<button use:melt={$triggerB}>Help</button>
+	<div use:melt={$menuB}>
 		<div {...$itemB} use:itemB>...</div>
 		<div {...$itemB} use:itemB>...</div>
 		<div {...$itemB} use:itemB>...</div>

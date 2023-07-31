@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createPopover } from '@melt-ui/svelte';
+	import { createPopover, melt } from '@melt-ui/svelte';
 	import { Settings2, X } from 'lucide-svelte';
 
 	const {
@@ -10,7 +10,7 @@
 <button
 	type="button"
 	class="trigger"
-	melt={$trigger}
+	use:melt={$trigger}
 	aria-label="Update dimensions"
 	data-testid="trigger"
 >
@@ -18,8 +18,8 @@
 	<span class="sr-only">Open Popover</span>
 </button>
 
-<div melt={$content} class="content" data-testid="content">
-	<div melt={$arrow} data-testid="arrow" />
+<div use:melt={$content} class="content" data-testid="content">
+	<div use:melt={$arrow} data-testid="arrow" />
 	<div class="flex flex-col gap-2.5">
 		<p>Dimensions</p>
 		<fieldset>
@@ -39,7 +39,7 @@
 			<input type="number" id="weight" class="input" placeholder="Weight" data-testid="input4" />
 		</fieldset>
 	</div>
-	<button class="close" melt={$close} data-testid="close">
+	<button class="close" use:melt={$close} data-testid="close">
 		<X class="h-4 w-4 " />
 	</button>
 </div>

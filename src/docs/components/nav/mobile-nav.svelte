@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDialog } from '@melt-ui/svelte';
+	import { createDialog, melt } from '@melt-ui/svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { Menu, X } from 'lucide-svelte';
 	import { Button, MobileNavLink } from '$docs/components';
@@ -14,7 +14,7 @@
 </script>
 
 <button
-	melt={$trigger}
+	use:melt={$trigger}
 	class="ml-6 text-neutral-400 transition-colors hover:text-neutral-50 md:hidden"
 >
 	<Menu class="h-6 w-6" />
@@ -22,12 +22,12 @@
 </button>
 {#if $open}
 	<div
-		melt={$overlay}
+		use:melt={$overlay}
 		class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
 		transition:fade={{ duration: 150 }}
 	/>
 	<div
-		melt={$content}
+		use:melt={$content}
 		class="menu safe-area fixed bottom-0 z-50 h-2/3 w-full bg-neutral-900 px-2
 				 pt-6 shadow-lg focus:outline-none"
 		transition:fly={{ y: 768, duration: 300, opacity: 1 }}

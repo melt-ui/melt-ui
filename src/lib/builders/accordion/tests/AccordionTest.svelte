@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createAccordion, type CreateAccordionProps } from '@melt-ui/svelte';
+	import { createAccordion, type CreateAccordionProps, melt } from '@melt-ui/svelte';
 
 	export let type: 'single' | 'multiple' = 'single';
 	export let disabled: CreateAccordionProps['disabled'] = undefined;
@@ -11,16 +11,16 @@
 	} = createAccordion({ type, disabled });
 </script>
 
-<div melt={$root}>
+<div use:melt={$root}>
 	{#each items as { id, triggerId, title, description }, i}
-		<div melt={$item(id)} data-testid={id}>
+		<div use:melt={$item(id)} data-testid={id}>
 			<h2 class="flex">
-				<button data-testid={triggerId} melt={$trigger(id)}>
+				<button data-testid={triggerId} use:melt={$trigger(id)}>
 					{title}
 				</button>
 			</h2>
 			{#if $isSelected(id)}
-				<div melt={$content(id)}>
+				<div use:melt={$content(id)}>
 					{description}
 				</div>
 			{/if}

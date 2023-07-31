@@ -16,13 +16,13 @@ In the most simplest form, the PP will take the following code:
 
 ```svelte
 <script>
-	import { createCollapsible } from '@melt-ui/svelte'
+	import { createCollapsible, melt } from '@melt-ui/svelte'
 	const { open, root, content, trigger } = createCollapsible()
 </script>
 
-<div melt={$root}>
-	<button melt={$trigger}>{$open ? 'Close' : 'Open'}</button>
-	<div melt={$content}>Obi-Wan says: Hello there!</div>
+<div use:melt={$root}>
+	<button use:melt={$trigger}>{$open ? 'Close' : 'Open'}</button>
+	<div use:melt={$content}>Obi-Wan says: Hello there!</div>
 </div>
 ```
 
@@ -44,13 +44,13 @@ It can handle more complex scenarios, such as a builder that is a call expressio
 
 ```svelte
 <script>
-	import { createBuilder } from '@melt-ui/svelte'
+	import { createBuilder, melt } from '@melt-ui/svelte'
 	const { builder } = createBuilder()
 </script>
 
 {#each Array(100) as _, i}
 	<!-- Just a normal call expression -->
-	<div melt={$builder({ arg: i })} />
+	<div use:melt={$builder({ arg: i })} />
 {/each}
 ```
 
