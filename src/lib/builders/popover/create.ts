@@ -1,5 +1,4 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	effect,
@@ -14,10 +13,11 @@ import {
 	isHTMLElement,
 	getPortalParent,
 	derivedVisible,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
 
 import { usePopper } from '$lib/internal/actions';
-import type { Defaults } from '$lib/internal/types';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { writable } from 'svelte/store';
 import type { CreatePopoverProps } from './types';
@@ -181,8 +181,8 @@ export function createPopover(args?: CreatePopoverProps) {
 				id: ids.trigger,
 			} as const;
 		},
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', () => {
+		action: (node: HTMLElement): MeltActionReturn<'click'> => {
+			const unsub = addMeltEventListener(node, 'click', () => {
 				open.update((prev) => {
 					if (prev) {
 						return false;
@@ -215,8 +215,8 @@ export function createPopover(args?: CreatePopoverProps) {
 			({
 				type: 'button',
 			} as const),
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', () => {
+		action: (node: HTMLElement): MeltActionReturn<'click'> => {
+			const unsub = addMeltEventListener(node, 'click', () => {
 				handleClose();
 			});
 

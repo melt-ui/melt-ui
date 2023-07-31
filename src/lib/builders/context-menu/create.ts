@@ -1,6 +1,5 @@
 import { usePopper } from '$lib/internal/actions';
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	derivedWithUnsubscribe,
@@ -16,6 +15,7 @@ import {
 	isLeftClick,
 	toWritableStores,
 	overridable,
+	addMeltEventListener,
 	getPortalParent,
 } from '$lib/internal/helpers';
 import type { VirtualElement } from '@floating-ui/core';
@@ -33,6 +33,7 @@ import {
 	setMeltMenuAttribute,
 } from '../menu';
 import type { CreateContextMenuProps } from './types';
+import type { MeltActionReturn } from '$lib/internal/types';
 
 const defaults = {
 	arrowSize: 8,
@@ -131,7 +132,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				tabindex: -1,
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
 			const portalParent = getPortalParent(node);
 			let unsubPopper = noop;
 
@@ -163,7 +164,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			);
 
 			const unsubEvents = executeCallbacks(
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const target = e.target;
 					const menuEl = e.currentTarget;
 					if (!isHTMLElement(target) || !isHTMLElement(menuEl)) return;
@@ -210,6 +211,13 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		},
 	});
 
+	type TriggerEvents =
+		| 'contextmenu'
+		| 'pointerdown'
+		| 'pointermove'
+		| 'pointercancel'
+		| 'pointerup';
+
 	const trigger = builder(name('trigger'), {
 		stores: rootOpen,
 		returned: ($rootOpen) => {
@@ -223,7 +231,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				}),
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
 			applyAttrsIfDisabled(node);
 
 			const handleOpen = (e: MouseEvent | PointerEvent) => {
@@ -242,7 +250,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			};
 
 			const unsub = executeCallbacks(
-				addEventListener(node, 'contextmenu', (e) => {
+				addMeltEventListener(node, 'contextmenu', (e) => {
 					/**
 					 * Clear the long press because some platforms already
 					 * fire a contextmenu event on long press.
@@ -251,7 +259,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					handleOpen(e);
 					e.preventDefault();
 				}),
-				addEventListener(node, 'pointerdown', (e) => {
+				addMeltEventListener(node, 'pointerdown', (e) => {
 					if (!isTouchOrPen(e)) return;
 
 					// Clear the long press in case there's multiple touchpoints
@@ -259,17 +267,17 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 
 					longPressTimer.set(window.setTimeout(() => handleOpen(e), 700));
 				}),
-				addEventListener(node, 'pointermove', (e) => {
+				addMeltEventListener(node, 'pointermove', (e) => {
 					if (!isTouchOrPen(e)) return;
 
 					clearTimerStore(longPressTimer);
 				}),
-				addEventListener(node, 'pointercancel', (e) => {
+				addMeltEventListener(node, 'pointercancel', (e) => {
 					if (!isTouchOrPen(e)) return;
 
 					clearTimerStore(longPressTimer);
 				}),
-				addEventListener(node, 'pointerup', (e) => {
+				addMeltEventListener(node, 'pointerup', (e) => {
 					if (!isTouchOrPen(e)) return;
 
 					clearTimerStore(longPressTimer);

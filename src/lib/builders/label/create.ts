@@ -1,9 +1,10 @@
-import { addEventListener, builder } from '$lib/internal/helpers';
+import { addMeltEventListener, builder } from '$lib/internal/helpers';
+import type { MeltActionReturn } from '$lib/internal/types';
 
 export function createLabel() {
 	const root = builder('label', {
-		action: (node: HTMLElement) => {
-			const mouseDown = addEventListener(node, 'mousedown', (e) => {
+		action: (node: HTMLElement): MeltActionReturn<'mousedown'> => {
+			const mouseDown = addMeltEventListener(node, 'mousedown', (e) => {
 				if (!e.defaultPrevented && e.detail > 1) {
 					e.preventDefault();
 				}

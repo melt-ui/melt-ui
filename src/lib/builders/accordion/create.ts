@@ -1,5 +1,4 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -11,6 +10,7 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
 import { tick } from 'svelte';
 import { derived, writable, type Writable } from 'svelte/store';
@@ -20,6 +20,7 @@ import type {
 	AccordionType,
 	CreateAccordionProps,
 } from './types';
+import type { MeltActionReturn } from '$lib/internal/types';
 
 type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
 const { name, selector } = createElHelpers<AccordionParts>('accordion');
@@ -91,6 +92,8 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 		},
 	});
 
+	type TriggerEvents = 'click' | 'keydown';
+
 	const trigger = builder(name('trigger'), {
 		stores: [value, disabled],
 		returned: ([$value, $disabled]) => {
@@ -107,34 +110,27 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 				};
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', () => {
+				addMeltEventListener(node, 'click', () => {
 					const disabled = node.dataset.disabled === 'true';
 					const itemValue = node.dataset.value;
 					if (disabled || !itemValue) return;
-
-					value.update(($value) => {
-						if ($value === undefined) {
-							return withDefaults.type === 'single' ? itemValue : [itemValue];
-						}
-
-						if (Array.isArray($value)) {
-							if ($value.includes(itemValue)) {
-								return $value.filter((v) => v !== itemValue);
-							}
-							$value.push(itemValue);
-							return $value;
-						}
-
-						return $value === itemValue ? undefined : itemValue;
-					});
+					handleValueUpdate(itemValue);
 				}),
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					if (![kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.HOME, kbd.END].includes(e.key)) {
 						return;
 					}
 					e.preventDefault();
+
+					if (e.key === kbd.SPACE || e.key === kbd.ENTER) {
+						const disabled = node.dataset.disabled === 'true';
+						const itemValue = node.dataset.value;
+						if (disabled || !itemValue) return;
+						handleValueUpdate(itemValue);
+						return;
+					}
 
 					const el = e.target;
 					const rootEl = getElementByMeltId(ids.root);
@@ -216,6 +212,24 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 			};
 		},
 	});
+
+	function handleValueUpdate(itemValue: string) {
+		value.update(($value) => {
+			if ($value === undefined) {
+				return withDefaults.type === 'single' ? itemValue : [itemValue];
+			}
+
+			if (Array.isArray($value)) {
+				if ($value.includes(itemValue)) {
+					return $value.filter((v) => v !== itemValue);
+				}
+				$value.push(itemValue);
+				return $value;
+			}
+
+			return $value === itemValue ? undefined : itemValue;
+		});
+	}
 
 	return {
 		elements: {
