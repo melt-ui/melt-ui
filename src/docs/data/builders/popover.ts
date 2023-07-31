@@ -25,6 +25,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createPopover',
 	description: DESCRIPTIONS.BUILDER('popover'),
+	isBuilder: true,
 	props: genProps('popover', [
 		...OPTION_PROPS,
 		PROPS.DEFAULT_OPEN,

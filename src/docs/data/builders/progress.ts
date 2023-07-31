@@ -18,6 +18,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createProgress',
 	description: DESCRIPTIONS.BUILDER('progress bar'),
+	isBuilder: true,
 	props: genProps('progress', [
 		...OPTION_PROPS,
 		{

@@ -23,6 +23,7 @@ const OPTION_PROPS = [
 
 const builder: APISchema = {
 	title: 'createAvatar',
+	isBuilder: true,
 	description: DESCRIPTIONS.BUILDER('avatar'),
 	props: [
 		...OPTION_PROPS,
@@ -52,8 +53,8 @@ const builder: APISchema = {
 	states: [
 		{
 			name: 'loadingStatus',
-			type: 'Writable<"loading" | "loaded" | "error">',
-			description: 'A writable store used to control the value of the loading status.',
+			type: 'Readable<"loading" | "loaded" | "error">',
+			description: 'A readable store with the current loading status of the image.',
 		},
 	],
 	options: propsToOptions('avatar', OPTION_PROPS),

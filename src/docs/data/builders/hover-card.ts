@@ -31,6 +31,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createHoverCard',
 	description: DESCRIPTIONS.BUILDER('hover card'),
+	isBuilder: true,
 	props: genProps('hover card', [
 		...OPTION_PROPS,
 		PROPS.DEFAULT_OPEN,

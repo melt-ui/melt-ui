@@ -115,6 +115,7 @@ export type ReturnedProps = Array<{
 export type APISchema = {
 	title: string;
 	description: string;
+	isBuilder?: boolean;
 	props?: Props;
 	dataAttributes?: DataAttributes;
 	elements?: ReturnedProps;

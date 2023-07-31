@@ -10,6 +10,7 @@ const OPTION_PROPS = [PROPS.DISABLED, PROPS.FORCE_VISIBLE];
 
 const builder: APISchema = {
 	title: 'createCollapsible',
+	isBuilder: true,
 	description: DESCRIPTIONS.BUILDER('collapsible'),
 	props: genProps('collapsible', [
 		...OPTION_PROPS,
@@ -34,8 +35,8 @@ const builder: APISchema = {
 	states: [
 		{
 			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls the open state of the collapsible.',
+			type: 'Readable<boolean>',
+			description: 'A readable store with the current open state of the collapsible.',
 		},
 	],
 	options: propsToOptions('collapsible', OPTION_PROPS),

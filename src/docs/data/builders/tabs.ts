@@ -31,6 +31,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createTabs',
 	description: DESCRIPTIONS.BUILDER('tabs'),
+	isBuilder: true,
 	props: genProps('tabs', [
 		...OPTION_PROPS,
 		{

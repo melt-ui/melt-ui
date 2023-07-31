@@ -41,6 +41,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createPinInput',
 	description: DESCRIPTIONS.BUILDER('pin input'),
+	isBuilder: true,
 	props: [
 		...OPTION_PROPS,
 		{

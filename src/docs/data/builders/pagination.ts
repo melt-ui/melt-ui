@@ -29,6 +29,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createPagination',
 	description: DESCRIPTIONS.BUILDER('pagination'),
+	isBuilder: true,
 	props: [
 		...OPTION_PROPS,
 		{

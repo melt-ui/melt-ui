@@ -56,7 +56,7 @@ export function getMenuBuilderReturns(name: string): Record<string, ReturnedProp
 }
 
 function getMenuBuilderEls(name = 'menu') {
-	return [
+	return genElements(name, [
 		{
 			name: 'menu',
 			description: `The builder store used to create the ${name}.`,
@@ -73,14 +73,15 @@ function getMenuBuilderEls(name = 'menu') {
 			name: 'arrow',
 			description: `The builder store used to create the ${name} arrow.`,
 		},
-	];
+	]);
 }
 
 const CHECKBOX_ITEM_OPTION_PROPS = [PROPS.DISABLED];
 
-function getMenuCreateCheckboxItemSchema() {
+function getMenuCreateCheckboxItemSchema(): APISchema {
 	return {
 		title: 'createCheckboxItem',
+		isBuilder: true,
 		description: 'The builder function used to create checkbox items for menu elements',
 		props: genProps('menu checkbox item', [
 			...CHECKBOX_ITEM_OPTION_PROPS,
@@ -120,23 +121,20 @@ function getMenuCreateCheckboxItemSchema() {
 }
 
 function getMenuBuilderBuilders(name = 'menu') {
-	return [
+	return genElements(name, [
 		{
 			name: 'createSubmenu',
 			description: `A builder function used to create a submenu for the ${name}.`,
-			link: '#createsubmenu',
 		},
 		{
 			name: 'createRadioGroup',
 			description: `A builder function used to create a radio group for the ${name}.`,
-			link: '#createradiogroup',
 		},
 		{
 			name: 'createCheckboxItem',
 			description: `A builder function used to create a checkbox menu item for the ${name}.`,
-			link: '#createcheckboxitem',
 		},
-	];
+	]);
 }
 function getMenuBuilderStates(name = 'menu') {
 	return [
@@ -223,10 +221,11 @@ function getMenuItemSchema(name: string): APISchema {
 	};
 }
 
-function getMenuRadioGroupBuilderSchema() {
+function getMenuRadioGroupBuilderSchema(): APISchema {
 	return {
 		title: 'createMenuRadioGroup',
 		description: 'The configuration object passed to the `createMenuRadioGroup` builder function.',
+		isBuilder: true,
 		props: [
 			{
 				name: 'defaultValue',
@@ -292,6 +291,7 @@ function getMenuSubmenuBuilderSchema(): APISchema {
 	return {
 		title: 'createSubMenu',
 		description: 'The builder function used to create submenus for context & dropdown menus.',
+		isBuilder: true,
 		props: [
 			PROPS.POSITIONING({ default: 'placement: "right-start"' }),
 			PROPS.ARROW_SIZE,

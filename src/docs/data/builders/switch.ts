@@ -24,6 +24,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createSwitch',
 	description: DESCRIPTIONS.BUILDER('switch'),
+	isBuilder: true,
 	props: genProps('switch', [
 		...OPTION_PROPS,
 		{

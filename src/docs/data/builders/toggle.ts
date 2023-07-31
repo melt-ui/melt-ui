@@ -11,6 +11,7 @@ const OPTION_PROPS = [PROPS.DISABLED];
 const builder: APISchema = {
 	title: 'createToggle',
 	description: DESCRIPTIONS.BUILDER('toggle'),
+	isBuilder: true,
 	props: genProps('toggle', [
 		...OPTION_PROPS,
 		{

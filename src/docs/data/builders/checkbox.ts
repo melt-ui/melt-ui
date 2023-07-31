@@ -24,6 +24,7 @@ const OPTION_PROPS = [
 
 const builder: APISchema = {
 	title: 'createCheckbox',
+	isBuilder: true,
 	description: DESCRIPTIONS.BUILDER('checkbox'),
 	props: genProps('checkbox', [
 		...OPTION_PROPS,

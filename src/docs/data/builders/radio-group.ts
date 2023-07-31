@@ -21,6 +21,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createRadioGroup',
 	description: DESCRIPTIONS.BUILDER('radio group'),
+	isBuilder: true,
 	props: genProps('radio group', [
 		...OPTION_PROPS,
 		{

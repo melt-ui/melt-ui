@@ -33,6 +33,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createToggleGroup',
 	description: DESCRIPTIONS.BUILDER('toggle group'),
+	isBuilder: true,
 	props: genProps('toggle group', [
 		...OPTION_PROPS,
 		{

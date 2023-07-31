@@ -35,6 +35,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createTooltip',
 	description: DESCRIPTIONS.BUILDER('tooltip'),
+	isBuilder: true,
 	props: genProps('tooltip', [
 		...OPTION_PROPS,
 		PROPS.DEFAULT_OPEN,

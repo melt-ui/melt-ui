@@ -86,6 +86,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createTags',
 	description: DESCRIPTIONS.BUILDER('tags input'),
+	isBuilder: true,
 	props: genProps('tags input', [
 		...OPTION_PROPS,
 		{

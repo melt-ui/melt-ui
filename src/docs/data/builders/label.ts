@@ -6,6 +6,7 @@ import type { BuilderData } from '.';
 const builder: APISchema = {
 	title: 'createLabel',
 	description: DESCRIPTIONS.BUILDER('label'),
+	isBuilder: true,
 	elements: genElements('label', [
 		{
 			name: 'root',

@@ -24,6 +24,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createToaster',
 	description: DESCRIPTIONS.BUILDER('toast'),
+	isBuilder: true,
 	props: genProps('toaster', OPTION_PROPS),
 	elements: genElements('toaster', [
 		{

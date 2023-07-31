@@ -32,6 +32,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createSelect',
 	description: DESCRIPTIONS.BUILDER('select'),
+	isBuilder: true,
 	props: genProps('select', [
 		...OPTION_PROPS,
 		{

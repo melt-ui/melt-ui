@@ -37,6 +37,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createCombobox',
 	description: DESCRIPTIONS.BUILDER('combobox'),
+	isBuilder: true,
 	props: genProps('combobox menu', [
 		{
 			name: 'items',

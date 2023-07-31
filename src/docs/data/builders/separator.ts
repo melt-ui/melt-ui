@@ -25,6 +25,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createSeparator',
 	description: DESCRIPTIONS.BUILDER('separator'),
+	isBuilder: true,
 	props: genProps('separator', OPTION_PROPS),
 	elements: genElements('separator', [
 		{

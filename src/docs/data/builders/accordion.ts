@@ -20,6 +20,7 @@ const OPTION_PROPS = [
 
 const builder: APISchema = {
 	title: 'createAccordion',
+	isBuilder: true,
 	description: DESCRIPTIONS.BUILDER('accordion'),
 	props: genProps('accordion', [
 		...OPTION_PROPS,

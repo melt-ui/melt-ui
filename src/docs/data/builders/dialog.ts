@@ -23,6 +23,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createDialog',
 	description: DESCRIPTIONS.BUILDER('dialog'),
+	isBuilder: true,
 	props: genProps('dialog', [
 		...OPTION_PROPS,
 		PROPS.DEFAULT_OPEN,

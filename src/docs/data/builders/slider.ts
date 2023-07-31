@@ -37,6 +37,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createSlider',
 	description: DESCRIPTIONS.BUILDER('slider'),
+	isBuilder: true,
 	props: genProps('slider', [
 		...OPTION_PROPS,
 		{

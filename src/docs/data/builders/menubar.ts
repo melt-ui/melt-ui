@@ -9,6 +9,7 @@ const BUILDER_NAME = 'menubar';
 const builder: APISchema = {
 	title: 'createMenubar',
 	description: DESCRIPTIONS.BUILDER(BUILDER_NAME),
+	isBuilder: true,
 	props: genProps(BUILDER_NAME, [PROPS.LOOP, PROPS.CLOSE_ON_ESCAPE]),
 };
 

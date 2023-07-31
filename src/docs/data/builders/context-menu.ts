@@ -15,6 +15,7 @@ const { elements, builders, states, options } = getMenuBuilderReturns(BUILDER_NA
 
 const builder: APISchema = {
 	title: 'createContextMenu',
+	isBuilder: true,
 	description: DESCRIPTIONS.BUILDER(BUILDER_NAME),
 	props: genProps(BUILDER_NAME, [
 		...menuBuilderProps,

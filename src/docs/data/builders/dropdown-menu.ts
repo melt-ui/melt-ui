@@ -32,6 +32,7 @@ const { elements, builders, states, options } = getMenuBuilderReturns(BUILDER_NA
 export const builder: APISchema = {
 	title: 'createDropdownMenu',
 	description: DESCRIPTIONS.BUILDER(BUILDER_NAME),
+	isBuilder: true,
 	props: genProps(BUILDER_NAME, [
 		...menuBuilderProps,
 		PROPS.POSITIONING({ default: "placement: 'bottom'" }),

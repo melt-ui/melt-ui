@@ -19,6 +19,7 @@ const OPTION_PROPS = [
 const builder: APISchema = {
 	title: 'createToolbar',
 	description: DESCRIPTIONS.BUILDER('toolbar'),
+	isBuilder: true,
 	props: genProps('toolbar', OPTION_PROPS),
 	elements: genElements('toolbar', [
 		{

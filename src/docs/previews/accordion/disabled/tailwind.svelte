@@ -31,7 +31,7 @@
 </script>
 
 <div
-	class="mx-auto w-full max-w-md rounded-md shadow-lg"
+	class="mx-auto w-[18rem] max-w-full rounded-md shadow-lg sm:w-[25rem]"
 	use:melt={$root}
 	{...$root}
 >

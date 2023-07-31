@@ -45,6 +45,7 @@ It's as simple as passing your own `open` store to the `createDialog` builder.
 ```svelte
 <script lang="ts">
 	import { createDialog } from '@melt-ui/svelte'
+	import { writable } from 'svelte/store'
 
 	const customOpen = writable(false)
 
