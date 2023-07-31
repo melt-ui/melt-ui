@@ -4,8 +4,8 @@
 	import { APITableHeading, InfoPopover } from '$docs/components';
 
 	export let data: APISchema['returnedProps'];
-	export let title: 'Returns';
-	export let tableHeading: 'Returned Prop';
+	export let title = 'Returns';
+	export let tableHeading = 'Returned Prop';
 </script>
 
 {#if data}
