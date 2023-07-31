@@ -58,7 +58,7 @@
 	{/if}
 </div>
 
-<style lang="postcss">
+<style>
 	.trigger {
 		display: inline-flex;
 		align-items: center;
@@ -105,7 +105,7 @@
 		z-index: 50;
 
 		height: 100vh;
-		max-width: 350px;
+		max-width: 500px;
 
 		width: 100%;
 
