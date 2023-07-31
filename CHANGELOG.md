@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.27.3
+
+### Patch Changes
+
+- a3781f7c: fix: Remove `@melt-ui/svelte` alias, add text transform
+
 ## 0.27.2
 
 ### Patch Changes
