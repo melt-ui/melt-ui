@@ -1,7 +1,7 @@
 import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
 import type { APISchema, KeyboardSchema, ReturnedProps } from '$docs/types';
 import { toKebabCase } from '$docs/utils';
-import { genElements, propsToOptions } from '$docs/utils/content';
+import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 
 export const menuBuilderProps = [
 	PROPS.ARROW_SIZE,
@@ -39,9 +39,10 @@ export function getMenuSchemas(name: string): Record<string, APISchema> {
 		radioGroupBuilder: getMenuRadioGroupBuilderSchema(),
 		radioGroup: getMenuRadioGroupSchema(name),
 		radioItem: getMenuRadioItemSchema(name),
-		checkboxItem: getMenuCheckboxItemSchema(name),
 		separator: getMenuSeparatorSchema(name),
 		item: getMenuItemSchema(name),
+		checkboxItemBuilder: getMenuCreateCheckboxItemSchema(),
+		checkboxItem: getMenuCheckboxItemSchema(name),
 	};
 }
 
@@ -59,29 +60,63 @@ function getMenuBuilderEls(name = 'menu') {
 		{
 			name: 'menu',
 			description: `The builder store used to create the ${name}.`,
-			link: '#menu',
 		},
 		{
 			name: 'trigger',
 			description: `The builder store used to create the ${name} trigger.`,
-			link: '#trigger',
-		},
-		{
-			name: 'checkboxItem',
-			description: 'The builder store used to create a checkbox menu item.',
-			link: '#checkboxitem',
 		},
 		{
 			name: 'separator',
 			description: 'The builder store used to create a separator menu item.',
-			link: '#separator',
 		},
 		{
 			name: 'arrow',
 			description: `The builder store used to create the ${name} arrow.`,
-			link: '#arrow',
 		},
 	];
+}
+
+const CHECKBOX_ITEM_OPTION_PROPS = [PROPS.DISABLED];
+
+function getMenuCreateCheckboxItemSchema() {
+	return {
+		title: 'createCheckboxItem',
+		description: 'The builder function used to create checkbox items for menu elements',
+		props: genProps('menu checkbox item', [
+			...CHECKBOX_ITEM_OPTION_PROPS,
+			{
+				name: 'defaultChecked',
+				type: 'boolean',
+				description: 'Whether the checkbox is checked by default.',
+			},
+			{
+				name: 'checked',
+				type: 'Writable<boolean>',
+				description: 'A writable store that controls the checked state of the checkbox.',
+				see: SEE.BRING_YOUR_OWN_STORE,
+			},
+			{
+				name: 'onCheckedChange',
+				type: 'ChangeFn<boolean>',
+				description: 'A function that is called when the checked state of the checkbox changes.',
+				see: SEE.BRING_YOUR_OWN_STORE,
+			},
+		]),
+		elements: genElements('submenu', [
+			{
+				name: 'checkboxItem',
+				description: 'The builder store used to create a menu checkbox item.',
+			},
+		]),
+		states: [
+			{
+				name: 'checked',
+				type: 'Readable<boolean>',
+				description: 'A readable store with the checked state of the checkbox item.',
+			},
+		],
+		options: propsToOptions('submenu', CHECKBOX_ITEM_OPTION_PROPS),
+	};
 }
 
 function getMenuBuilderBuilders(name = 'menu') {

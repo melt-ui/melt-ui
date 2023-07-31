@@ -17,6 +17,7 @@ const {
 	arrow,
 	item,
 	checkboxItem,
+	checkboxItemBuilder,
 	radioGroupBuilder,
 	radioGroup,
 	radioItem,
@@ -54,6 +55,9 @@ const schemas = [
 	trigger,
 	menu,
 	item,
+	separator,
+	arrow,
+	checkboxItemBuilder,
 	checkboxItem,
 	radioGroupBuilder,
 	radioGroup,
@@ -61,8 +65,6 @@ const schemas = [
 	submenuBuilder,
 	subTrigger,
 	submenu,
-	separator,
-	arrow,
 ];
 
 const features = [

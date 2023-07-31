@@ -1,4 +1,4 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, TYPES } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 import { genElements, genProps, propsToOptions } from '$docs/utils/content';
 import type { BuilderData } from '.';
@@ -97,57 +97,66 @@ const separator: APISchema = {
 	],
 };
 
+const GROUP_OPTION_PROPS = [
+	PROPS.DISABLED,
+	{
+		name: 'type',
+		type: ["'single'", "'multiple'"],
+		default: "'single'",
+		description:
+			'The type of toolbar group. A `single` group can only have one item selected at a time. A `multiple` group can have multiple items selected at a time.',
+	},
+];
+
 const groupBuilder: APISchema = {
 	title: 'createToolbarGroup',
 	description: DESCRIPTIONS.BUILDER('toolbar group'),
-	props: [
+	props: genProps('toolbar group', [
+		...GROUP_OPTION_PROPS,
 		{
-			name: 'type',
-			type: ["'single'", "'multiple'"],
-			default: "'single'",
-			description:
-				'The type of toolbar group. A `single` group can only have one item selected at a time. A `multiple` group can have multiple items selected at a time.',
+			name: 'defaultValue',
+			type: ['string', 'string[]', 'undefined'],
+			description: 'The value of the default selected item(s).',
 		},
 		{
 			name: 'value',
-			type: ['string', 'string[]', 'null'],
-			description: 'The value of the selected item(s).',
+			type: 'Writable<string | string[] | undefined>',
+			description: 'A writable store that can be used to update the toolbar group value.',
+			see: SEE.BRING_YOUR_OWN_STORE,
 		},
 		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the toolbar group is disabled.',
+			name: 'onValueChange',
+			type: 'ChangeFn<string | string[] | undefined>',
+			description: 'A callback function that is called when the toolbar group value changes.',
+			see: SEE.CHANGE_FUNCTIONS,
+		},
+	]),
+	elements: genElements('toolbar group', [
+		{
+			name: 'root',
+			description: 'The builder store used to create the toolbar group root.',
+		},
+		{
+			name: 'item',
+			description: 'The builder store used to create the toolbar group item.',
+		},
+	]),
+	states: [
+		{
+			name: 'value',
+			type: 'Readable<string | string[] | undefined>',
+			description: 'A derived store that returns the current value of the toolbar group.',
 		},
 	],
-	returnedProps: [
-		{
-			name: 'options',
-			type: 'Writable<CreateToolbarGroupProps>',
-			description: 'A writable store that can be used to update the toolbar group props.',
-		},
-		{
-			name: 'value',
-			type: 'Writable<string | string[] | null>',
-			description: 'A writable store that can be used to update the toolbar group value.',
-		},
+	helpers: [
 		{
 			name: 'isPressed',
 			type: 'Readable<(itemValue: string) => boolean>',
 			description:
 				'A derived store that returns a function that can be used to check if an item is pressed.',
 		},
-		{
-			name: 'root',
-			description: 'The builder store used to create the toolbar group root.',
-			link: '#group',
-		},
-		{
-			name: 'item',
-			description: 'The builder store used to create the toolbar group item.',
-			link: '#groupitem',
-		},
 	],
+	options: propsToOptions('toolbar group', GROUP_OPTION_PROPS),
 };
 
 const group: APISchema = {
