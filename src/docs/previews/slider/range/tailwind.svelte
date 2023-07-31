@@ -15,7 +15,7 @@
 		<span use:melt={$range} class="h-[3px] bg-white" />
 	</span>
 
-	{#each { length: $value.length } as _}
+	{#each $value as _}
 		<span
 			use:melt={$thumb()}
 			class="block h-5 w-5 rounded-full bg-white focus:ring-4 focus:ring-black/40"
