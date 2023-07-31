@@ -18,6 +18,7 @@ import {
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { get, writable, readonly } from 'svelte/store';
 import type { CreateTabsProps, TabsTriggerProps } from './types';
+import type { TabsEvents } from './events';
 
 const defaults = {
 	orientation: 'horizontal',
@@ -70,8 +71,6 @@ export function createTabs(props?: CreateTabsProps) {
 		}
 	};
 
-	type TriggerEvents = 'focus' | 'click' | 'keydown';
-
 	const trigger = builder(name('trigger'), {
 		stores: [value, autoSet, orientation],
 		returned: ([$value, $autoSet, $orientation]) => {
@@ -101,7 +100,7 @@ export function createTabs(props?: CreateTabsProps) {
 				};
 			};
 		},
-		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<TabsEvents['trigger']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'focus', () => {
 					const disabled = node.dataset.disabled === 'true';

@@ -24,6 +24,7 @@ import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { get, writable, readonly } from 'svelte/store';
 import type { CreateDialogProps } from './types';
 import { onMount, tick } from 'svelte';
+import type { DialogEvents } from './events';
 
 type DialogParts = 'trigger' | 'overlay' | 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<DialogParts>('dialog');
@@ -95,8 +96,6 @@ export function createDialog(props?: CreateDialogProps) {
 		});
 	});
 
-	type TriggerEvents = 'click' | 'keydown';
-
 	const trigger = builder(name('trigger'), {
 		stores: open,
 		returned: ($open) => {
@@ -108,7 +107,7 @@ export function createDialog(props?: CreateDialogProps) {
 				type: 'button',
 			} as const;
 		},
-		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<DialogEvents['trigger']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
 					handleOpen(e);
@@ -280,14 +279,12 @@ export function createDialog(props?: CreateDialogProps) {
 		}),
 	});
 
-	type CloseEvents = 'click' | 'keydown';
-
 	const close = builder(name('close'), {
 		returned: () =>
 			({
 				type: 'button',
 			} as const),
-		action: (node: HTMLElement): MeltActionReturn<CloseEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<DialogEvents['close']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
 					handleClose();

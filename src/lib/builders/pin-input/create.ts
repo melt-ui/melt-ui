@@ -17,6 +17,7 @@ import type { Defaults, MeltActionReturn } from '@melt-ui/svelte/internal/types'
 import { tick } from 'svelte';
 import { derived, get, writable, readonly } from 'svelte/store';
 import type { CreatePinInputProps } from './types';
+import type { PinInputEvents } from './events';
 
 const { name, selector } = createElHelpers<'input' | 'hidden-input'>('pin-input');
 
@@ -61,8 +62,6 @@ export function createPinInput(props?: CreatePinInputProps) {
 		},
 	});
 
-	type InputEvents = 'keydown' | 'input' | 'paste' | 'change' | 'focus' | 'blur';
-
 	const input = builder(name('input'), {
 		stores: [value, placeholder, disabled, type],
 		returned: ([$value, $placeholder, $disabled, $type]) => {
@@ -73,7 +72,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 				type: $type,
 			};
 		},
-		action: (node: HTMLInputElement): MeltActionReturn<InputEvents> => {
+		action: (node: HTMLInputElement): MeltActionReturn<PinInputEvents['input']> => {
 			const { elIndex } = getInputs(node);
 			value.update((v) => {
 				v[elIndex] = node.value;

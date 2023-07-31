@@ -6,10 +6,13 @@ import {
 	styleToString,
 	toWritableStores,
 	addMeltEventListener,
+	kbd,
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { get, writable, readonly } from 'svelte/store';
 import type { CreateSwitchProps } from './types';
+import { executeCallbacks } from '../../internal/helpers/callbacks';
+import type { SwitchEvents } from './events';
 
 const defaults = {
 	defaultChecked: false,
@@ -30,6 +33,11 @@ export function createSwitch(props?: CreateSwitchProps) {
 	const checkedWritable = propsWithDefaults.checked ?? writable(propsWithDefaults.defaultChecked);
 	const checked = overridable(checkedWritable, propsWithDefaults?.onCheckedChange);
 
+	function toggleSwitch() {
+		if (get(disabled)) return;
+		checked.update((prev) => !prev);
+	}
+
 	const root = builder(name(), {
 		stores: [checked, disabled, required],
 		returned: ([$checked, $disabled, $required]) => {
@@ -43,12 +51,17 @@ export function createSwitch(props?: CreateSwitchProps) {
 				'aria-required': $required,
 			} as const;
 		},
-		action(node: HTMLElement): MeltActionReturn<'click'> {
-			const unsub = addMeltEventListener(node, 'click', () => {
-				if (get(disabled)) return;
-
-				checked.update((value) => !value);
-			});
+		action(node: HTMLElement): MeltActionReturn<SwitchEvents['root']> {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					toggleSwitch();
+				}),
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
+					e.preventDefault();
+					toggleSwitch();
+				})
+			);
 
 			return {
 				destroy: unsub,

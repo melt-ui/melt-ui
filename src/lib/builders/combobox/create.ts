@@ -35,6 +35,7 @@ import { derived, get, readonly, writable } from 'svelte/store';
 import type { ComboboxItemProps, CreateComboboxProps } from './types';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { createLabel } from '../label/create';
+import type { ComboboxEvents } from './events';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
@@ -214,8 +215,6 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		filteredItems.set(updatedItems.filter((item) => $filterFunction(item, $inputValue)));
 	}
 
-	type InputEvents = 'click' | 'keydown' | 'input';
-
 	/** Action and attributes for the text input. */
 	const input = builder(name('input'), {
 		stores: [open, highlightedItem],
@@ -231,7 +230,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 				role: 'combobox',
 			} as const;
 		},
-		action: (node: HTMLInputElement): MeltActionReturn<InputEvents> => {
+		action: (node: HTMLInputElement): MeltActionReturn<ComboboxEvents['input']> => {
 			const unsubscribe = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
 					const $open = get(open);
@@ -412,7 +411,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 				style: styleToString({ display: $isVisible ? undefined : 'none' }),
 			} as const;
 		},
-		action: (node: HTMLElement): MeltActionReturn<'pointerleave'> => {
+		action: (node: HTMLElement): MeltActionReturn<ComboboxEvents['menu']> => {
 			/**
 			 * We need to get the parent portal before the menu is opened,
 			 * otherwise the parent will have been moved to the body, and
@@ -489,8 +488,6 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		},
 	});
 
-	type ItemEvents = 'pointermove' | 'click';
-
 	// Use our existing label builder to create a label for the combobox input.
 	const {
 		elements: { root: labelBuilder },
@@ -521,7 +518,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 					role: 'option',
 					style: styleToString({ cursor: props.disabled ? 'default' : 'pointer' }),
 				} as const),
-		action: (node: HTMLElement): MeltActionReturn<ItemEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<ComboboxEvents['item']> => {
 			const unsubscribe = executeCallbacks(
 				// Handle highlighting items when the pointer moves over them.
 				addMeltEventListener(node, 'pointermove', () => {

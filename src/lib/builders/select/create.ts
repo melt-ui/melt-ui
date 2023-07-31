@@ -42,6 +42,7 @@ import { createLabel, createSeparator } from '$lib/builders';
 import type { CreateSelectProps, SelectOptionProps } from './types';
 import { usePortal } from '$lib/internal/actions';
 import type { MeltActionReturn } from '$lib/internal/types';
+import type { SelectEvents } from './events';
 
 const defaults = {
 	arrowSize: 8,
@@ -180,7 +181,7 @@ export function createSelect(props?: CreateSelectProps) {
 				'data-portal': $portal ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
+		action: (node: HTMLElement): MeltActionReturn<SelectEvents['menu']> => {
 			/**
 			 * We need to get the parent portal before the menu is opened,
 			 * otherwise the parent will have been moved to the body, and
@@ -280,8 +281,6 @@ export function createSelect(props?: CreateSelectProps) {
 		},
 	});
 
-	type TriggerEvents = 'click' | 'keydown';
-
 	const trigger = builder(name('trigger'), {
 		stores: [open, disabled, required],
 		returned: ([$open, $disabled, $required]) => {
@@ -300,7 +299,7 @@ export function createSelect(props?: CreateSelectProps) {
 				tabindex: 0,
 			} as const;
 		},
-		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<SelectEvents['trigger']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
 					if (get(disabled)) {
@@ -390,7 +389,7 @@ export function createSelect(props?: CreateSelectProps) {
 				for: ids.trigger,
 			};
 		},
-		action: (node): MeltActionReturn<'click'> => {
+		action: (node): MeltActionReturn<SelectEvents['label']> => {
 			const destroy = executeCallbacks(
 				labelAction(node).destroy ?? noop,
 				addMeltEventListener(node, 'click', (e) => {
@@ -463,8 +462,6 @@ export function createSelect(props?: CreateSelectProps) {
 
 	const optionsList: OptionProps[] = [];
 
-	type OptionEvents = 'click' | 'keydown' | 'pointermove' | 'pointerleave' | 'focusin' | 'focusout';
-
 	const option = builder(name('option'), {
 		stores: value,
 		returned: ($value) => {
@@ -486,7 +483,7 @@ export function createSelect(props?: CreateSelectProps) {
 				} as const;
 			};
 		},
-		action: (node: HTMLElement): MeltActionReturn<OptionEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<SelectEvents['option']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
 					const itemElement = e.currentTarget;

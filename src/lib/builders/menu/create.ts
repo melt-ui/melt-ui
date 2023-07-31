@@ -45,6 +45,7 @@ import type {
 	RadioItemProps,
 	Selector,
 } from './types';
+import type { MenuEvents } from './events';
 
 export const SUB_OPEN_KEYS: Record<TextDirection, string[]> = {
 	ltr: [...SELECTION_KEYS, kbd.ARROW_RIGHT],
@@ -156,7 +157,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				tabindex: -1,
 			} as const;
 		},
-		action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
+		action: (node: HTMLElement): MeltActionReturn<MenuEvents['menu']> => {
 			const portalParent = getPortalParent(node);
 			let unsubPopper = noop;
 
@@ -240,8 +241,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		},
 	});
 
-	type RootTriggerEvents = 'pointerdown' | 'keydown';
-
 	const rootTrigger = builder(name('trigger'), {
 		stores: [rootOpen],
 		returned: ([$rootOpen]) => {
@@ -253,7 +252,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				tabindex: 0,
 			} as const;
 		},
-		action: (node: HTMLElement): MeltActionReturn<RootTriggerEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<MenuEvents['trigger']> => {
 			applyAttrsIfDisabled(node);
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
@@ -302,15 +301,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		}),
 	});
 
-	type ItemEvents =
-		| 'pointerdown'
-		| 'click'
-		| 'keydown'
-		| 'pointermove'
-		| 'pointerleave'
-		| 'focusin'
-		| 'focusout';
-
 	const itemDefaults = {
 		disabled: false,
 	} satisfies ItemProps;
@@ -326,7 +316,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				'data-disabled': disabled ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement): MeltActionReturn<ItemEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<MenuEvents['item']> => {
 			setMeltMenuAttribute(node, selector);
 
 			const unsub = executeCallbacks(
@@ -386,15 +376,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		const checked = overridable(checkedWritable, withDefaults.onCheckedChange);
 		const disabled = writable(withDefaults.disabled);
 
-		type CheckboxItemEvents =
-			| 'pointerdown'
-			| 'click'
-			| 'keydown'
-			| 'pointermove'
-			| 'pointerleave'
-			| 'focusin'
-			| 'focusout';
-
 		const checkboxItem = builder(name('checkbox-item'), {
 			stores: [checked, disabled],
 			returned: ([$checked, $disabled]) => {
@@ -407,7 +388,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					'data-state': getCheckedState($checked),
 				} as const;
 			},
-			action: (node: HTMLElement): MeltActionReturn<CheckboxItemEvents> => {
+			action: (node: HTMLElement): MeltActionReturn<MenuEvents['checkboxItem']> => {
 				setMeltMenuAttribute(node, selector);
 				applyAttrsIfDisabled(node);
 
@@ -499,15 +480,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			}),
 		});
 
-		type RadioItemEvents =
-			| 'pointerdown'
-			| 'click'
-			| 'keydown'
-			| 'pointermove'
-			| 'pointerleave'
-			| 'focusin'
-			| 'focusout';
-
 		const radioItemDefaults = {
 			disabled: false,
 		};
@@ -531,7 +503,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					};
 				};
 			},
-			action: (node: HTMLElement): MeltActionReturn<RadioItemEvents> => {
+			action: (node: HTMLElement): MeltActionReturn<MenuEvents['radioItem']> => {
 				setMeltMenuAttribute(node, selector);
 
 				const unsub = executeCallbacks(
@@ -660,8 +632,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		const subOpenTimer = writable<number | null>(null);
 		const pointerGraceTimer = writable(0);
 
-		type SubmenuEvents = 'keydown' | 'pointermove' | 'focusout';
-
 		const subIds = {
 			menu: generateId(),
 			trigger: generateId(),
@@ -699,7 +669,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					tabindex: -1,
 				} as const;
 			},
-			action: (node: HTMLElement): MeltActionReturn<SubmenuEvents> => {
+			action: (node: HTMLElement): MeltActionReturn<MenuEvents['submenu']> => {
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
@@ -820,14 +790,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			},
 		});
 
-		type SubTriggerEvents =
-			| 'click'
-			| 'keydown'
-			| 'pointermove'
-			| 'pointerleave'
-			| 'focusin'
-			| 'focusout';
-
 		const subTrigger = builder(name('subtrigger'), {
 			stores: [subOpen, disabled],
 			returned: ([$subOpen, $disabled]) => {
@@ -842,7 +804,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					'aria-haspopop': 'menu',
 				} as const;
 			},
-			action: (node: HTMLElement): MeltActionReturn<SubTriggerEvents> => {
+			action: (node: HTMLElement): MeltActionReturn<MenuEvents['subTrigger']> => {
 				setMeltMenuAttribute(node, selector);
 				applyAttrsIfDisabled(node);
 

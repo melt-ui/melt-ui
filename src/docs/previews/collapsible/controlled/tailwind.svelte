@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCollapsible } from '$lib/builders/collapsible';
+	import { createCollapsible } from '@melt-ui/svelte/builders/collapsible';
 	import { slide } from 'svelte/transition';
 	import { ChevronsUpDown, X } from 'lucide-svelte';
 	import { writable } from 'svelte/store';

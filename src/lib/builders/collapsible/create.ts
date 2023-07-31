@@ -10,6 +10,7 @@ import {
 import { derived, readonly, writable } from 'svelte/store';
 import type { CreateCollapsibleProps } from './types';
 import type { MeltActionReturn } from '$lib/internal/types';
+import type { CollapsibleEvents } from './events';
 
 const defaults = {
 	defaultOpen: false,
@@ -36,7 +37,6 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 		}),
 	});
 
-	type TriggerEvents = 'click';
 	const trigger = builder(name('trigger'), {
 		stores: [open, disabled],
 		returned: ([$open, $disabled]) =>
@@ -45,7 +45,7 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 				'data-disabled': $disabled ? '' : undefined,
 				disabled: $disabled,
 			} as const),
-		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<CollapsibleEvents['trigger']> => {
 			const unsub = addMeltEventListener(node, 'click', () => {
 				const disabled = node.dataset.disabled !== undefined;
 				if (disabled) return;

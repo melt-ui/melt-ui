@@ -104,6 +104,11 @@ export type DataAttributes = Array<{
 	value: string;
 }>;
 
+export type CustomEvents = Array<{
+	name: string;
+	description: string;
+}>;
+
 export type ReturnedProps = Array<{
 	name: string;
 	type?: string;
@@ -118,6 +123,7 @@ export type APISchema = {
 	isBuilder?: boolean;
 	props?: Props;
 	dataAttributes?: DataAttributes;
+	customEvents?: CustomEvents;
 	elements?: ReturnedProps;
 	helpers?: ReturnedProps;
 	states?: ReturnedProps;

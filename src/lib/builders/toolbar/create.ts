@@ -17,6 +17,7 @@ import type {
 	ToolbarGroupItemProps,
 	ToolbarGroupType,
 } from './types';
+import type { ToolbarEvents } from './events';
 
 const defaults = {
 	loop: true,
@@ -48,7 +49,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 				type: 'button',
 				tabIndex: -1,
 			} as const),
-		action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
+		action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['button']> => {
 			const unsub = addMeltEventListener(node, 'keydown', handleKeyDown);
 
 			return {
@@ -64,7 +65,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 				'data-melt-toolbar-item': '',
 				tabIndex: -1,
 			} as const),
-		action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
+		action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['link']> => {
 			const unsub = addMeltEventListener(node, 'keydown', handleKeyDown);
 
 			return {
@@ -119,8 +120,6 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 			},
 		});
 
-		type ItemEvents = 'click' | 'keydown';
-
 		const item = builder(name('item'), {
 			stores: [disabled, type, value, orientation],
 			returned: ([$disabled, $type, $value, $orientation]) => {
@@ -144,7 +143,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 					} as const;
 				};
 			},
-			action: (node: HTMLElement): MeltActionReturn<ItemEvents> => {
+			action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['item']> => {
 				function getNodeProps() {
 					const itemValue = node.dataset.value;
 					const disabled = node.dataset.disabled === 'true';

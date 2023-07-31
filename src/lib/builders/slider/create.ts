@@ -18,6 +18,7 @@ import {
 import { derived, get, writable, readonly } from 'svelte/store';
 import type { CreateSliderProps } from './types';
 import type { MeltActionReturn } from '$lib/internal/types';
+import type { SliderEvents } from './events';
 
 const defaults = {
 	defaultValue: [],
@@ -147,7 +148,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 				} as const;
 			};
 		},
-		action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
+		action: (node: HTMLElement): MeltActionReturn<SliderEvents['thumb']> => {
 			const unsub = addMeltEventListener(node, 'keydown', (event) => {
 				const $min = get(min);
 				const $max = get(max);

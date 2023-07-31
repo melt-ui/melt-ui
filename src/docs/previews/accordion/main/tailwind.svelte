@@ -40,10 +40,7 @@
             focus-within:ring-magnum-400"
 		>
 			<h2 class="flex">
-				<!-- TODO: Remove before merge (just for testing events) -->
 				<button
-					on:m-keydown={(e) => console.log(e)}
-					on:m-click={(e) => console.log(e)}
 					use:trigger
 					{...$trigger(id)}
 					class="flex h-12 flex-1 cursor-pointer items-center justify-between border-b border-b-magnum-700

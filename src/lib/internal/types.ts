@@ -79,3 +79,9 @@ export type MeltActionReturn<Events extends keyof HTMLElementEventMap> = ActionR
 			: never;
 	}
 >;
+
+type ElementEvents<T> = T extends ReadonlyArray<infer U> ? U : never;
+
+export type GroupedEvents<T> = {
+	[K in keyof T]: ElementEvents<T[K]>;
+};

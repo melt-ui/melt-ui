@@ -10,6 +10,7 @@ import {
 import { get, readonly, writable } from 'svelte/store';
 import type { CreateToggleProps } from './types';
 import type { MeltActionReturn } from '$lib/internal/types';
+import type { ToggleEvents } from './events';
 
 const defaults = {
 	defaultPressed: false,
@@ -42,7 +43,7 @@ export function createToggle(props?: CreateToggleProps) {
 				type: 'button',
 			} as const;
 		},
-		action: (node: HTMLElement): MeltActionReturn<'click' | 'keydown'> => {
+		action: (node: HTMLElement): MeltActionReturn<ToggleEvents['root']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
 					handleToggle();

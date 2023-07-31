@@ -34,6 +34,7 @@ import {
 } from '../menu';
 import type { CreateContextMenuProps } from './types';
 import type { MeltActionReturn } from '$lib/internal/types';
+import type { ContextMenuEvents } from './events';
 
 const defaults = {
 	arrowSize: 8,
@@ -132,7 +133,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				tabindex: -1,
 			} as const;
 		},
-		action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
+		action: (node: HTMLElement): MeltActionReturn<ContextMenuEvents['menu']> => {
 			const portalParent = getPortalParent(node);
 			let unsubPopper = noop;
 
@@ -211,13 +212,6 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		},
 	});
 
-	type TriggerEvents =
-		| 'contextmenu'
-		| 'pointerdown'
-		| 'pointermove'
-		| 'pointercancel'
-		| 'pointerup';
-
 	const trigger = builder(name('trigger'), {
 		stores: rootOpen,
 		returned: ($rootOpen) => {
@@ -231,7 +225,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				}),
 			} as const;
 		},
-		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<ContextMenuEvents['trigger']> => {
 			applyAttrsIfDisabled(node);
 
 			const handleOpen = (e: MouseEvent | PointerEvent) => {

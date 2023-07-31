@@ -20,6 +20,7 @@ import type {
 	AccordionType,
 	CreateAccordionProps,
 } from './types';
+import type { AccordionEvents } from './events';
 import type { MeltActionReturn } from '$lib/internal/types';
 
 type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
@@ -92,8 +93,6 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 		},
 	});
 
-	type TriggerEvents = 'click' | 'keydown';
-
 	const trigger = builder(name('trigger'), {
 		stores: [value, disabled],
 		returned: ([$value, $disabled]) => {
@@ -110,7 +109,7 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 				};
 			};
 		},
-		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<AccordionEvents['trigger']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
 					const disabled = node.dataset.disabled === 'true';
