@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createMenubar } from '@melt-ui/svelte';
+	import { createMenubar } from '$lib';
 	import { writable } from 'svelte/store';
 	import ChevronRight from '~icons/lucide/chevron-right';
 	import Check from '~icons/lucide/check';

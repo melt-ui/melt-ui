@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createPagination } from '@melt-ui/svelte';
+	import { createPagination } from '$lib';
 	import ChevronLeft from '~icons/lucide/chevron-left';
 	import ChevronRight from '~icons/lucide/chevron-right';
 

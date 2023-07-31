@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { CreateDialogReturn } from '@melt-ui/svelte';
-	import { styleToString } from '@melt-ui/svelte/internal/helpers';
+	import type { CreateDialogReturn } from '$lib';
+	import { styleToString } from '$lib/internal/helpers';
 	import { cubicOut } from 'svelte/easing';
 	import type { TransitionConfig } from 'svelte/transition';
 

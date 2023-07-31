@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createLabel } from '@melt-ui/svelte';
+	import { createLabel } from '$lib';
 
 	const root = createLabel();
 </script>

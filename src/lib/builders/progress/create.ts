@@ -1,5 +1,5 @@
 import type { Defaults } from '$lib/internal/types';
-import { builder, createElHelpers } from '@melt-ui/svelte/internal/helpers';
+import { builder, createElHelpers } from '$lib/internal/helpers';
 import { writable } from 'svelte/store';
 import type { CreateProgressProps } from './types';
 

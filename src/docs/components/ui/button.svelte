@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { cn } from '$docs/utils';
-	import { noop } from '@melt-ui/svelte/internal/helpers';
+	import { noop } from '$lib/internal/helpers';
 	import type { Action } from 'svelte/action';
 	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
 	import type { VariantProps } from 'tailwind-variants';

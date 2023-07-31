@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createSeparator, type CreateSeparatorProps } from '@melt-ui/svelte';
+	import { createSeparator, type CreateSeparatorProps } from '$lib';
 
 	export let orientation: CreateSeparatorProps['orientation'] = 'vertical';
 

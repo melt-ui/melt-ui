@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCollapsible } from '$lib/builders/collapsible';
+	import { createCollapsible } from '$lib';
 	import { slide } from 'svelte/transition';
 	import ChevronsUpDown from '~icons/lucide/chevrons-up-down';
 	import X from '~icons/lucide/x';
