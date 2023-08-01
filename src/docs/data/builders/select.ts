@@ -1,4 +1,4 @@
-import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
 import { builderSchema, elementSchema } from '$docs/utils';
 import { selectEvents } from '$lib/builders/select/events';
@@ -41,6 +41,30 @@ const builder = builderSchema(BUILDER_NAME, {
 			type: 'unknown',
 			description: 'The initial value of the select.',
 		},
+		{
+			name: 'name',
+			type: 'string',
+			description: 'The name of the select.',
+		},
+		{
+			name: 'preventScroll',
+			type: 'boolean',
+			default: 'true',
+			description: DESCRIPTIONS.PREVENT_SCROLL('select'),
+		},
+		{
+			name: 'loop',
+			type: 'boolean',
+			default: 'false',
+			description: DESCRIPTIONS.LOOP,
+		},
+		{
+			name: 'multiple',
+			type: 'boolean',
+			default: 'false',
+			description: 'Whether or not the select is a multiple select.',
+		},
+
 		{
 			name: 'value',
 			type: 'Writable<unknown>',
@@ -171,6 +195,12 @@ const option = elementSchema('option', {
 			type: 'boolean',
 			default: 'false',
 			description: 'Whether or not the option is disabled.',
+		},
+	],
+	dataAttributes: [
+		{
+			name: 'data-melt-select-option',
+			value: ATTRS.MELT('option'),
 		},
 	],
 	events: selectEvents['option'],

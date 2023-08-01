@@ -2,11 +2,13 @@
 	import { createSelect, melt } from '$lib';
 	import { Check, ChevronDown } from 'lucide-svelte';
 
+	export let multiple = false;
+
 	const {
 		elements: { trigger, menu, option, group, groupLabel },
 		states: { valueLabel },
 		helpers: { isSelected },
-	} = createSelect();
+	} = createSelect({ multiple });
 
 	const options = {
 		sweet: ['Caramel', 'Chocolate', 'Strawberry', 'Cookies & Cream'],

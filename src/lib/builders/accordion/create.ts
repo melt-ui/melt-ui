@@ -10,38 +10,36 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
+	type ChangeFn,
 	addMeltEventListener,
 } from '$lib/internal/helpers';
+import type { MeltActionReturn } from '$lib/internal/types';
 import { tick } from 'svelte';
 import { derived, readonly, writable, type Writable } from 'svelte/store';
-import type {
-	AccordionHeadingProps,
-	AccordionItemProps,
-	AccordionType,
-	CreateAccordionProps,
-} from './types';
 import type { AccordionEvents } from './events';
-import type { MeltActionReturn } from '$lib/internal/types';
+import type { AccordionHeadingProps, AccordionItemProps, CreateAccordionProps } from './types';
 
 type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
 const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
 const defaults = {
-	type: 'single',
+	multiple: false,
 	disabled: false,
 	forceVisible: false,
 } satisfies CreateAccordionProps;
 
-export const createAccordion = <T extends AccordionType = 'single'>(
-	props?: CreateAccordionProps<T>
+export const createAccordion = <Multiple extends boolean = false>(
+	props?: CreateAccordionProps<Multiple>
 ) => {
 	const withDefaults = { ...defaults, ...props };
 	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
 	const { disabled, forceVisible } = options;
 
-	const valueWritable =
-		withDefaults.value ?? writable<string | string[] | undefined>(withDefaults.value);
-	const value = overridable(valueWritable, withDefaults?.onValueChange);
+	const valueWritable = withDefaults.value ?? writable(withDefaults.value);
+	const value = overridable<string | string[] | undefined>(
+		valueWritable,
+		withDefaults?.onValueChange as ChangeFn<string | string[] | undefined>
+	);
 
 	const isSelected = (key: string, v: string | string[] | undefined) => {
 		if (v === undefined) return false;
@@ -115,6 +113,7 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 					const disabled = node.dataset.disabled === 'true';
 					const itemValue = node.dataset.value;
 					if (disabled || !itemValue) return;
+
 					handleValueUpdate(itemValue);
 				}),
 				addMeltEventListener(node, 'keydown', (e) => {
@@ -215,7 +214,7 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 	function handleValueUpdate(itemValue: string) {
 		value.update(($value) => {
 			if ($value === undefined) {
-				return withDefaults.type === 'single' ? itemValue : [itemValue];
+				return withDefaults.multiple ? [itemValue] : itemValue;
 			}
 
 			if (Array.isArray($value)) {
@@ -239,7 +238,7 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 			heading,
 		},
 		states: {
-			value: readonly(value as Writable<CreateAccordionProps<T>['value']>),
+			value: readonly(value as Writable<CreateAccordionProps<Multiple>['value']>),
 		},
 		helpers: {
 			isSelected: isSelectedStore,
