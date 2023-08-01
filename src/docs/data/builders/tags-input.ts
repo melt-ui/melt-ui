@@ -1,6 +1,7 @@
 import { ATTRS, PROPS, SEE } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { tagsInputEvents } from '@melt-ui/svelte/builders/tags-input/events';
 import type { BuilderData } from '.';
 
 /**
@@ -185,6 +186,7 @@ const root = elementSchema('root', {
 			value: ATTRS.MELT('tags input'),
 		},
 	],
+	events: tagsInputEvents['root'],
 });
 
 const input = elementSchema('input', {
@@ -207,6 +209,7 @@ const input = elementSchema('input', {
 			value: ATTRS.MELT('input'),
 		},
 	],
+	events: tagsInputEvents['input'],
 });
 
 const tag = elementSchema('tag', {
@@ -257,6 +260,7 @@ const tag = elementSchema('tag', {
 			value: ATTRS.MELT('tag'),
 		},
 	],
+	events: tagsInputEvents['tag'],
 });
 
 const deleteTrigger = elementSchema('deleteTrigger', {
@@ -307,6 +311,7 @@ const deleteTrigger = elementSchema('deleteTrigger', {
 			value: ATTRS.MELT('delete trigger'),
 		},
 	],
+	events: tagsInputEvents['deleteTrigger'],
 });
 
 const edit = elementSchema('edit', {
@@ -339,6 +344,7 @@ const edit = elementSchema('edit', {
 			value: ATTRS.MELT('edit'),
 		},
 	],
+	events: tagsInputEvents['edit'],
 });
 
 const keyboard: KeyboardSchema = [

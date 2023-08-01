@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema, genProps } from '$docs/utils/content';
+import { builderSchema, elementSchema, genProps } from '$docs/utils';
+import { collapsibleEvents } from '$lib/builders/collapsible/events';
 import type { BuilderData } from '.';
 
 /**
@@ -74,6 +75,7 @@ const trigger = elementSchema('trigger', {
 			value: ATTRS.MELT('collapsible trigger'),
 		},
 	],
+	events: collapsibleEvents['trigger'],
 });
 
 const content = elementSchema('content', {

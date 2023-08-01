@@ -1,5 +1,6 @@
 import { ATTRS } from '$docs/constants';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { labelEvents } from '$lib/builders/label/events';
 import type { BuilderData } from '.';
 
 const BUILDER_NAME = 'label';
@@ -21,6 +22,7 @@ const root = elementSchema('root', {
 			value: ATTRS.MELT('label'),
 		},
 	],
+	events: labelEvents['root'],
 });
 
 const schemas = [builder, root];

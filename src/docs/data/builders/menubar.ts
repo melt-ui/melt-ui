@@ -1,10 +1,10 @@
 import { KBD, PROPS } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
 import type { BuilderData } from '.';
 import { builder as dropdownBuilder } from './dropdown-menu';
 import { getMenuSchemas, getMenuTriggerDataAttrs } from './menu';
-import { elementSchema } from '../../utils/content';
+import { menubarEvents } from '$lib/builders/menubar/events';
 
 const OPTION_PROPS = [PROPS.CLOSE_ON_ESCAPE, PROPS.LOOP];
 const BUILDER_NAME = 'menubar';
@@ -42,6 +42,7 @@ const {
 const trigger = elementSchema('trigger', {
 	description: 'The button which toggles the dropdown menu.',
 	dataAttributes: getMenuTriggerDataAttrs('menubar menu'),
+	events: menubarEvents['trigger'],
 });
 
 const keyboard: KeyboardSchema = [

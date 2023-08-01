@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { tooltipEvents } from '$lib/builders/tooltip/events';
 import type { BuilderData } from '.';
 
 /**
@@ -73,6 +74,7 @@ const trigger = elementSchema('trigger', {
 			value: ATTRS.MELT('tooltip trigger'),
 		},
 	],
+	events: tooltipEvents['trigger'],
 });
 
 const content = elementSchema('content', {
@@ -83,6 +85,7 @@ const content = elementSchema('content', {
 			value: ATTRS.MELT('tooltip content'),
 		},
 	],
+	events: tooltipEvents['trigger'],
 });
 
 const arrow = elementSchema('arrow', {

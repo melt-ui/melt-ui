@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { accordionEvents } from '$lib/builders/accordion/events';
 import type { BuilderData } from '.';
 
 /**
@@ -157,6 +158,7 @@ const trigger = elementSchema('trigger', {
 			value: ATTRS.MELT('accordion trigger'),
 		},
 	],
+	events: accordionEvents['trigger'],
 });
 
 const content = elementSchema('content', {

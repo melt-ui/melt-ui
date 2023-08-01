@@ -110,7 +110,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 
 		const { name } = createElHelpers('toolbar-group');
 
-		const root = builder(name(), {
+		const group = builder(name(), {
 			stores: orientation,
 			returned: ($orientation) => {
 				return {
@@ -206,7 +206,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 
 		return {
 			elements: {
-				root,
+				group,
 				item,
 			},
 			states: {

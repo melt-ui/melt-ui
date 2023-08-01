@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { sliderEvents } from '$lib/builders/slider/events';
 import type { BuilderData } from '.';
 
 /**
@@ -115,6 +116,7 @@ const thumb = elementSchema('thumb', {
 			value: ATTRS.MELT('slider thumb'),
 		},
 	],
+	events: sliderEvents['thumb'],
 });
 
 const schemas = [builder, root, thumb, range];

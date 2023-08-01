@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { toolbarEvents } from '$lib/builders/toolbar/events';
 import type { BuilderData } from '.';
 
 /**
@@ -71,6 +72,7 @@ const button = elementSchema('button', {
 			value: ATTRS.MELT('toolbar button'),
 		},
 	],
+	events: toolbarEvents['button'],
 });
 
 const link = elementSchema('link', {
@@ -81,6 +83,7 @@ const link = elementSchema('link', {
 			value: ATTRS.MELT('toolbar link'),
 		},
 	],
+	events: toolbarEvents['link'],
 });
 
 const separator = elementSchema('separator', {
@@ -172,7 +175,7 @@ const group = elementSchema('group', {
 	],
 });
 
-const groupItem = elementSchema('groupItem', {
+const item = elementSchema('item', {
 	description: 'A an item within a toolbar group.',
 	props: [
 		{
@@ -206,6 +209,7 @@ const groupItem = elementSchema('groupItem', {
 			value: ATTRS.ON_OFF,
 		},
 	],
+	events: toolbarEvents['item'],
 });
 
 const keyboard: KeyboardSchema = [
@@ -247,7 +251,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, root, button, link, separator, groupBuilder, group, groupItem];
+const schemas = [builder, root, button, link, separator, groupBuilder, group, item];
 
 const features = [
 	'Full keyboard navigation',

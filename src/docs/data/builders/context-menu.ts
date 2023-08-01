@@ -1,6 +1,7 @@
 import { PROPS } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { builderSchema } from '$docs/utils/content';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { contextMenuEvents } from '$lib/builders/context-menu/events';
 import type { BuilderData } from '.';
 import {
 	getMenuBuilderReturns,
@@ -37,11 +38,12 @@ const {
 	subTrigger,
 } = getMenuSchemas(BUILDER_NAME);
 
-const trigger: APISchema = {
+const trigger = elementSchema('trigger', {
 	title: 'trigger',
 	description: 'The element which when right clicked inside, opens the context menu.',
 	dataAttributes: getMenuTriggerDataAttrs('trigger'),
-};
+	events: contextMenuEvents['trigger'],
+});
 
 const keyboard: KeyboardSchema = getMenuKeyboardSchema();
 

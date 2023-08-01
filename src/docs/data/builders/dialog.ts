@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { dialogEvents } from '$lib/builders/dialog/events';
 import type { BuilderData } from '.';
 
 /**
@@ -69,6 +70,7 @@ const trigger = elementSchema('trigger', {
 			value: ATTRS.MELT('trigger'),
 		},
 	],
+	events: dialogEvents['trigger'],
 });
 
 const overlay = elementSchema('overlay', {
@@ -127,6 +129,7 @@ const close = elementSchema('close', {
 			value: ATTRS.MELT('close'),
 		},
 	],
+	events: dialogEvents['close'],
 });
 
 const keyboard: KeyboardSchema = [

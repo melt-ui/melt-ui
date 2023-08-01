@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { radioGroupEvents } from '$lib/builders/radio-group/events';
 import type { BuilderData } from '.';
 
 /**
@@ -125,6 +126,7 @@ const item = elementSchema('item', {
 			value: ATTRS.MELT('radio group item'),
 		},
 	],
+	events: radioGroupEvents['item'],
 });
 
 const itemInput = elementSchema('itemInput', {

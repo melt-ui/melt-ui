@@ -1,7 +1,15 @@
 import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
-import { toKebabCase } from '$docs/utils';
-import { genElements, genProps, propsToOptions } from '$docs/utils/content';
+import {
+	toKebabCase,
+	builderSchema,
+	elementSchema,
+	genElements,
+	genProps,
+	propsToOptions,
+} from '$docs/utils';
+
+import { menuEvents } from '$lib/builders/menu/events';
 
 export const menuBuilderProps = [
 	PROPS.ARROW_SIZE,
@@ -29,7 +37,7 @@ export const menuBuilderOptions = [
 	PROPS.FORCE_VISIBLE,
 ];
 
-export function getMenuSchemas(name: string): Record<string, APISchema> {
+export function getMenuSchemas(name: string) {
 	return {
 		menu: getMenuMenuSchema(name),
 		arrow: getMenuArrowSchema(name),
@@ -159,9 +167,8 @@ export function getMenuTriggerDataAttrs(name: string) {
 	];
 }
 
-function getMenuMenuSchema(name: string): APISchema {
-	return {
-		title: 'menu',
+function getMenuMenuSchema(name: string) {
+	return elementSchema('menu', {
 		description: `The element which wraps the entire ${name}.`,
 		dataAttributes: [
 			{
@@ -173,12 +180,12 @@ function getMenuMenuSchema(name: string): APISchema {
 				value: ATTRS.MELT(name),
 			},
 		],
-	};
+		events: menuEvents['menu'],
+	});
 }
 
-export function getMenuArrowSchema(name: string): APISchema {
-	return {
-		title: 'arrow',
+export function getMenuArrowSchema(name: string) {
+	return elementSchema('arrow', {
 		description: `An optional arrow element which points to the ${name} trigger.`,
 		dataAttributes: [
 			{
@@ -190,11 +197,10 @@ export function getMenuArrowSchema(name: string): APISchema {
 				value: ATTRS.MELT('arrow'),
 			},
 		],
-	};
+	});
 }
-function getMenuItemSchema(name: string): APISchema {
-	return {
-		title: 'item',
+function getMenuItemSchema(name: string) {
+	return elementSchema('item', {
 		description: 'A basic menu item.',
 		props: [
 			{
@@ -218,14 +224,13 @@ function getMenuItemSchema(name: string): APISchema {
 				value: ATTRS.HIGHLIGHTED('item'),
 			},
 		],
-	};
+		events: menuEvents['item'],
+	});
 }
 
 function getMenuRadioGroupBuilderSchema(): APISchema {
-	return {
-		title: 'createMenuRadioGroup',
-		description: 'The configuration object passed to the `createMenuRadioGroup` builder function.',
-		isBuilder: true,
+	return builderSchema('radio group', {
+		title: 'createRadioGroup',
 		props: [
 			{
 				name: 'defaultValue',
@@ -246,7 +251,7 @@ function getMenuRadioGroupBuilderSchema(): APISchema {
 				see: SEE.CHANGE_FUNCTIONS,
 			},
 		],
-		elements: genElements('radio group', [
+		elements: [
 			{
 				name: 'radioGroup',
 				description: 'The builder store used to create the radio group.',
@@ -255,7 +260,7 @@ function getMenuRadioGroupBuilderSchema(): APISchema {
 				name: 'radioItem',
 				description: 'The builder store used to create a radio menu item.',
 			},
-		]),
+		],
 		helpers: [
 			{
 				name: 'isChecked',
@@ -271,12 +276,11 @@ function getMenuRadioGroupBuilderSchema(): APISchema {
 				description: 'A readable store containing the current value of the radio group.',
 			},
 		],
-	};
+	});
 }
 
-export function getMenuSeparatorSchema(name: string): APISchema {
-	return {
-		title: 'separator',
+export function getMenuSeparatorSchema(name: string) {
+	return elementSchema('separator', {
 		description: 'A horizontal line which separates menu items.',
 		dataAttributes: [
 			{
@@ -284,20 +288,19 @@ export function getMenuSeparatorSchema(name: string): APISchema {
 				value: ATTRS.MELT('separator'),
 			},
 		],
-	};
+	});
 }
 
-function getMenuSubmenuBuilderSchema(): APISchema {
-	return {
+function getMenuSubmenuBuilderSchema() {
+	return builderSchema('submenu', {
 		title: 'createSubMenu',
 		description: 'The builder function used to create submenus for context & dropdown menus.',
-		isBuilder: true,
 		props: [
 			PROPS.POSITIONING({ default: 'placement: "right-start"' }),
 			PROPS.ARROW_SIZE,
 			PROPS.DISABLED({ name: 'submenu' }),
 		],
-		elements: genElements('submenu', [
+		elements: [
 			{
 				name: 'subMenu',
 				description: 'The builder store used to create the submenu.',
@@ -310,7 +313,7 @@ function getMenuSubmenuBuilderSchema(): APISchema {
 				name: 'arrow',
 				description: 'The builder store used to create the submenu arrow.',
 			},
-		]),
+		],
 		states: [
 			{
 				name: 'subOpen',
@@ -318,13 +321,12 @@ function getMenuSubmenuBuilderSchema(): APISchema {
 				description: 'A readable store with the open state of the submenu.',
 			},
 		],
-		options: propsToOptions('submenu', [PROPS.POSITIONING(), PROPS.ARROW_SIZE, PROPS.DISABLED]),
-	};
+		options: [PROPS.POSITIONING(), PROPS.ARROW_SIZE, PROPS.DISABLED],
+	});
 }
 
-function getMenuSubmenuSchema(name: string): APISchema {
-	return {
-		title: 'submenu',
+function getMenuSubmenuSchema(name: string) {
+	return elementSchema('submenu', {
 		description: 'A submenu element displayed when its trigger is selected.',
 		dataAttributes: [
 			{
@@ -336,12 +338,12 @@ function getMenuSubmenuSchema(name: string): APISchema {
 				value: ATTRS.MELT('submenu'),
 			},
 		],
-	};
+		events: menuEvents['submenu'],
+	});
 }
 
-function getMenuCheckboxItemSchema(name: string): APISchema {
-	return {
-		title: 'checkboxItem',
+function getMenuCheckboxItemSchema(name: string) {
+	return elementSchema('checkboxItem', {
 		description: 'A checkbox menu item.',
 		props: [
 			{
@@ -364,12 +366,12 @@ function getMenuCheckboxItemSchema(name: string): APISchema {
 				value: ATTRS.HIGHLIGHTED('checkbox item'),
 			},
 		],
-	};
+		events: menuEvents['checkboxItem'],
+	});
 }
 
-function getMenuRadioItemSchema(name: string): APISchema {
-	return {
-		title: 'radioItem',
+function getMenuRadioItemSchema(name: string) {
+	return elementSchema('radioItem', {
 		description: 'A radiogroup menu item.',
 		props: [
 			{
@@ -411,12 +413,12 @@ function getMenuRadioItemSchema(name: string): APISchema {
 				value: ATTRS.HIGHLIGHTED('radio item'),
 			},
 		],
-	};
+		events: menuEvents['radioItem'],
+	});
 }
 
 function getMenuRadioGroupSchema(name: string): APISchema {
-	return {
-		title: 'radioGroup',
+	return elementSchema('radioGroup', {
 		description: 'A group of radio menu items.',
 		dataAttributes: [
 			{
@@ -424,12 +426,11 @@ function getMenuRadioGroupSchema(name: string): APISchema {
 				value: ATTRS.MELT('radio group'),
 			},
 		],
-	};
+	});
 }
 
-function getMenuSubTriggerSchema(name: string): APISchema {
-	return {
-		title: 'subTrigger',
+function getMenuSubTriggerSchema(name: string) {
+	return elementSchema('subTrigger', {
 		description: 'A button which opens its associated submenu.',
 		dataAttributes: [
 			{
@@ -449,7 +450,8 @@ function getMenuSubTriggerSchema(name: string): APISchema {
 				value: ATTRS.HIGHLIGHTED('subtrigger'),
 			},
 		],
-	};
+		events: menuEvents['subTrigger'],
+	});
 }
 
 export function getMenuKeyboardSchema(): KeyboardSchema {

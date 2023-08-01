@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { comboboxEvents } from '$lib/builders/combobox/events';
 import type { BuilderData } from '.';
 import { getMenuArrowSchema } from './menu';
 
@@ -113,6 +114,7 @@ const menu = elementSchema('menu', {
 			value: ATTRS.MELT('menu'),
 		},
 	],
+	events: comboboxEvents['menu'],
 });
 
 const input = elementSchema('input', {
@@ -132,6 +134,7 @@ const input = elementSchema('input', {
 			value: ATTRS.MELT('input'),
 		},
 	],
+	events: comboboxEvents['input'],
 });
 
 const item = elementSchema('item', {
@@ -172,6 +175,7 @@ const item = elementSchema('item', {
 			value: ATTRS.MELT('item'),
 		},
 	],
+	events: comboboxEvents['item'],
 });
 
 const label = elementSchema('label', {

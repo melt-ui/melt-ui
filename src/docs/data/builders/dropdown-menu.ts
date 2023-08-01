@@ -1,6 +1,7 @@
 import { PROPS } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { dropdownMenuEvents } from '$lib/builders/dropdown-menu/events';
 import type { BuilderData } from '.';
 import {
 	getMenuBuilderReturns,
@@ -41,6 +42,7 @@ export const builder = builderSchema(BUILDER_NAME, {
 const trigger = elementSchema(BUILDER_NAME, {
 	description: 'The button which toggles the dropdown menu.',
 	dataAttributes: getMenuTriggerDataAttrs(BUILDER_NAME),
+	events: dropdownMenuEvents['trigger'],
 });
 
 const keyboard: KeyboardSchema = getMenuKeyboardSchema();

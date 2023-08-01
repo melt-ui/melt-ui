@@ -1,6 +1,7 @@
 import { ATTRS, KBD, SEE } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { paginationEvents } from '$lib/builders/pagination/events';
 import type { BuilderData } from '.';
 
 /**
@@ -121,6 +122,7 @@ const pageTrigger = elementSchema('pageTrigger', {
 			value: ATTRS.MELT('pageTrigger'),
 		},
 	],
+	events: paginationEvents['pageTrigger'],
 });
 
 const prevButton = elementSchema('prevButton', {
@@ -131,6 +133,7 @@ const prevButton = elementSchema('prevButton', {
 			value: ATTRS.MELT('prevButton'),
 		},
 	],
+	events: paginationEvents['prevButton'],
 });
 
 const nextButton = elementSchema('nextButton', {
@@ -141,6 +144,7 @@ const nextButton = elementSchema('nextButton', {
 			value: ATTRS.MELT('nextButton'),
 		},
 	],
+	events: paginationEvents['nextButton'],
 });
 
 const keyboard: KeyboardSchema = [

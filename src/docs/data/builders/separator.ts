@@ -1,5 +1,5 @@
 import { ATTRS, TYPES } from '$docs/constants';
-import { builderSchema, elementSchema, genProps } from '$docs/utils/content';
+import { builderSchema, elementSchema, genProps } from '$docs/utils';
 import type { BuilderData } from '.';
 
 /**

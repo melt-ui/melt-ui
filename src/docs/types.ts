@@ -94,11 +94,6 @@ export type Prop = {
 
 export type Props = Prop[];
 
-export type Events = Array<{
-	label: string;
-	payload?: unknown;
-}>;
-
 export type DataAttributes = Array<{
 	name: string;
 	value: string;
@@ -106,7 +101,7 @@ export type DataAttributes = Array<{
 
 export type CustomEvents = Array<{
 	name: string;
-	description: string;
+	payload?: string;
 }>;
 
 export type ReturnedProps = Array<{
@@ -123,7 +118,7 @@ export type APISchema = {
 	isBuilder?: boolean;
 	props?: Props;
 	dataAttributes?: DataAttributes;
-	customEvents?: CustomEvents;
+	events?: CustomEvents;
 	elements?: ReturnedProps;
 	helpers?: ReturnedProps;
 	states?: ReturnedProps;

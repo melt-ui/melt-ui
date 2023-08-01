@@ -1,6 +1,7 @@
 import { ATTRS, KBD } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema, genProps } from '$docs/utils/content';
+import { builderSchema, elementSchema, genProps } from '$docs/utils';
+import { toastEvents } from '@melt-ui/svelte/builders/toast/events';
 import type { BuilderData } from '.';
 
 /**
@@ -76,6 +77,7 @@ const content = elementSchema('content', {
 			value: ATTRS.MELT('content'),
 		},
 	],
+	events: toastEvents['content'],
 });
 
 const title = elementSchema('title', {
@@ -106,6 +108,7 @@ const close = elementSchema('close', {
 			value: ATTRS.MELT('close'),
 		},
 	],
+	events: toastEvents['close'],
 });
 
 const keyboard: KeyboardSchema = [

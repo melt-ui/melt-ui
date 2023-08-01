@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { toggleGroupEvents } from '$lib/builders/toggle-group/events';
 import type { BuilderData } from '.';
 
 /**
@@ -137,6 +138,7 @@ const item = elementSchema('item', {
 			value: ATTRS.MELT('toggle group item'),
 		},
 	],
+	events: toggleGroupEvents['item'],
 });
 
 const keyboard: KeyboardSchema = [

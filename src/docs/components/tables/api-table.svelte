@@ -7,6 +7,7 @@
 		PropsTable,
 		ReturnedPropsTable,
 	} from '$docs/components';
+	import CustomEventsTable from './custom-events-table.svelte';
 
 	export let data: APISchema;
 </script>
@@ -74,7 +75,10 @@
 			</svelte:fragment>
 		</ReturnedPropsTable>
 	{/if}
-	{#if data.dataAttributes}
+	{#if data.dataAttributes && data.dataAttributes.length}
 		<DataAttrTable data={data.dataAttributes} />
+	{/if}
+    {#if data.events && data.events.length}
+		<CustomEventsTable data={data.events} />
 	{/if}
 </div>

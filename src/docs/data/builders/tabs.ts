@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { tabsEvents } from '$lib/builders/tabs/events';
 import type { BuilderData } from '.';
 
 /**
@@ -146,6 +147,7 @@ const trigger = elementSchema('trigger', {
 			value: ATTRS.MELT('tab trigger'),
 		},
 	],
+	events: tabsEvents['trigger'],
 });
 
 const content = elementSchema('content', {

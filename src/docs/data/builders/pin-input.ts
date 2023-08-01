@@ -1,8 +1,9 @@
 import type { KeyboardSchema } from '$docs/types';
-import { isMac } from '@melt-ui/svelte/internal/helpers';
+import { isMac } from '$lib/internal/helpers';
 import { ATTRS, KBD, SEE } from '$docs/constants';
 import type { BuilderData } from '.';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { pinInputEvents } from '$lib/builders/pin-input/events';
 
 /**
  * Props that are also returned in the form of stores via the `options` property.
@@ -125,6 +126,7 @@ const input = elementSchema('input', {
 			value: ATTRS.MELT('input'),
 		},
 	],
+	events: pinInputEvents['input'],
 });
 
 const hiddenInput = elementSchema('hiddenInput', {

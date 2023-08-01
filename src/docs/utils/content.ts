@@ -1,5 +1,12 @@
 import { DESCRIPTIONS } from '$docs/constants';
-import type { APISchema, DataAttributes, Prop, Props, ReturnedProps } from '$docs/types';
+import type {
+	APISchema,
+	CustomEvents,
+	DataAttributes,
+	Prop,
+	Props,
+	ReturnedProps,
+} from '$docs/types';
 
 export function propToOption(prop: Prop): ReturnedProps[0] {
 	const type = Array.isArray(prop.type) ? prop.type.join(' | ') : prop.type;
@@ -67,6 +74,7 @@ type ElementSchema = {
 	description: string;
 	props?: PropGen[];
 	dataAttributes?: DataAttributes;
+	events?: readonly string[];
 };
 
 export function builderSchema(name: string, schema: BuilderSchema): APISchema {
@@ -87,13 +95,22 @@ export function builderSchema(name: string, schema: BuilderSchema): APISchema {
 	};
 }
 
+function eventToCustomEvent(event: string): CustomEvents[0] {
+	return {
+		name: `m-${event}`,
+		payload: '(e: CustomEvent) => void',
+	};
+}
+
 export function elementSchema(name: string, schema: ElementSchema): APISchema {
-	const { title, description, props, dataAttributes } = schema;
+	const { title, description, props, dataAttributes, events } = schema;
+	const customEvents = events ? events.map(eventToCustomEvent) : undefined;
 
 	return {
 		title: title ?? name,
 		description,
 		props: props ? genProps(name, props) : undefined,
 		dataAttributes,
+		events: customEvents,
 	};
 }

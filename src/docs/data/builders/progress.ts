@@ -1,5 +1,5 @@
 import { ATTRS, SEE } from '$docs/constants';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
 import type { BuilderData } from '.';
 
 /**

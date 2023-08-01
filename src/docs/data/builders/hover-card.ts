@@ -1,5 +1,6 @@
 import { ATTRS, PROPS } from '$docs/constants';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { hoverCardEvents } from '$lib/builders/hover-card/events';
 import type { BuilderData } from '.';
 import { getMenuArrowSchema } from './menu';
 
@@ -68,6 +69,7 @@ const trigger = elementSchema('trigger', {
 			value: ATTRS.MELT('trigger'),
 		},
 	],
+	events: hoverCardEvents['trigger'],
 });
 
 const content = elementSchema('content', {
@@ -82,6 +84,7 @@ const content = elementSchema('content', {
 			value: ATTRS.MELT('content'),
 		},
 	],
+	events: hoverCardEvents['content'],
 });
 
 const arrow = getMenuArrowSchema(BUILDER_NAME);

@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { checkboxEvents } from '$lib/builders/checkbox/events';
 import type { BuilderData } from '.';
 
 /**
@@ -99,6 +100,7 @@ const root = elementSchema('root', {
 			value: ATTRS.MELT('checkbox'),
 		},
 	],
+	events: checkboxEvents['root'],
 });
 
 const input = elementSchema('input', {

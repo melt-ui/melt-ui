@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { toggleEvents } from '$lib/builders/toggle/events';
 import type { BuilderData } from '.';
 
 /**
@@ -66,6 +67,7 @@ const root = elementSchema('root', {
 			value: ATTRS.MELT('toggle'),
 		},
 	],
+	events: toggleEvents['root'],
 });
 
 const keyboard: KeyboardSchema = [

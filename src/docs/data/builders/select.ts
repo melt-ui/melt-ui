@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { selectEvents } from '@melt-ui/svelte/builders/select/events';
 import type { BuilderData } from '.';
 
 /**
@@ -137,6 +138,7 @@ const trigger = elementSchema('trigger', {
 			value: ATTRS.MELT('trigger'),
 		},
 	],
+	events: selectEvents['trigger'],
 });
 
 const menu = elementSchema('menu', {
@@ -147,6 +149,7 @@ const menu = elementSchema('menu', {
 			value: ATTRS.MELT('menu'),
 		},
 	],
+	events: selectEvents['menu'],
 });
 
 const option = elementSchema('option', {
@@ -170,6 +173,7 @@ const option = elementSchema('option', {
 			description: 'Whether or not the option is disabled.',
 		},
 	],
+	events: selectEvents['option'],
 });
 
 const input = elementSchema('input', {
@@ -190,6 +194,7 @@ const label = elementSchema('label', {
 			value: ATTRS.MELT('label'),
 		},
 	],
+	events: selectEvents['label'],
 });
 
 const arrow = elementSchema('arrow', {

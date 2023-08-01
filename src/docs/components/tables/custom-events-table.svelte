@@ -1,17 +1,18 @@
 <script lang="ts">
 	import type { APISchema } from '$docs/types';
-	import { transformAPIString } from '$docs/utils';
 	import { APITableHeading } from '$docs/components';
+	import CustomEventDialog from '../custom-event-dialog.svelte';
 
-	export let data: APISchema['customEvents'];
+	export let data: APISchema['events'];
 </script>
 
 {#if data}
 	<APITableHeading>
 		Custom Events
 		<svelte:fragment slot="info">
-			We dispatch custom events for each normal event that we handle, and each of them are prefixed
-			with<code class="neutral">m-</code>.
+			Custom events are dispatched with each normal event that we handle. You can override the way
+			we handle these events by calling
+			<code class="neutral">e.detail.preventDefault()</code> in your event listener.
 		</svelte:fragment>
 	</APITableHeading>
 
@@ -26,13 +27,13 @@
 							</td>
 							<td class="w-[50%] whitespace-nowrap py-2 text-sm font-medium">Value</td>
 						</tr>
-						{#each data as { name, description }}
+						{#each data as { name }}
 							<tr>
 								<td class="py-3 pl-4 align-baseline sm:pl-0">
-									<code>{`m-${name}`}</code>
+									<code>{name}</code>
 								</td>
 								<td class="py-3 align-baseline text-sm">
-									<p>{@html transformAPIString(description)}</p>
+									<CustomEventDialog />
 								</td>
 							</tr>
 						{/each}

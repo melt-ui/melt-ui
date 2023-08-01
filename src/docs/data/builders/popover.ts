@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { popoverEvents } from '$lib/builders/popover/events';
 import type { BuilderData } from '.';
 
 /**
@@ -67,6 +68,7 @@ const trigger = elementSchema('trigger', {
 			value: ATTRS.MELT('trigger'),
 		},
 	],
+	events: popoverEvents['trigger'],
 });
 
 const content = elementSchema('content', {
@@ -103,6 +105,7 @@ const close = elementSchema('close', {
 			value: ATTRS.MELT('close'),
 		},
 	],
+	events: popoverEvents['close'],
 });
 
 const keyboard: KeyboardSchema = [

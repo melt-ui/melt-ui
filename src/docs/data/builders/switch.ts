@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils/content';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { switchEvents } from '$lib/builders/switch/events';
 import type { BuilderData } from '.';
 
 /**
@@ -86,6 +87,7 @@ const root = elementSchema('root', {
 			value: ATTRS.MELT('switch'),
 		},
 	],
+	events: switchEvents['root'],
 });
 
 const input = elementSchema('input', {
