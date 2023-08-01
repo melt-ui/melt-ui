@@ -68,21 +68,15 @@
 
 		border-radius: 0.375rem;
 
-		--tw-bg-opacity: 1;
-		background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+		background-color: rgb(var(--color-white) / 1);
 
 		font-weight: 500;
 		line-height: 1;
 
-		--tw-text-opacity: 1;
-		color: rgb(189 87 17 / var(--tw-text-opacity));
+		color: rgb(var(--color-magnum-700) / 1);
 
-		--tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-			0 4px 6px -4px rgb(0 0 0 / 0.1);
-		--tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color),
-			0 4px 6px -4px var(--tw-shadow-color);
-		box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
-			var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+		box-shadow: 0 10px 15px -3px rgb(var(--color-black) / 0.1),
+			0 4px 6px -4px rgb(var(--color-black) / 0.1);
 	}
 
 	.trigger:hover {
@@ -94,7 +88,7 @@
 		inset: 0;
 		z-index: 50;
 
-		background-color: rgb(0 0 0 / 0.5);
+		background-color: rgb(var(--color-black) / 0.5);
 	}
 
 	.content {
@@ -111,15 +105,10 @@
 
 		padding: 1.5rem;
 
-		--tw-bg-opacity: 1;
-		background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+		background-color: rgb(var(--color-white) / 1);
 
-		--tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-			0 4px 6px -4px rgb(0 0 0 / 0.1);
-		--tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color),
-			0 4px 6px -4px var(--tw-shadow-color);
-		box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
-			var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+		box-shadow: 0 10px 15px -3px rgb(var(--color-black) / 0.1),
+			0 4px 6px -4px rgb(var(--color-black) / 0.1);
 	}
 
 	.content:focus {
@@ -143,30 +132,18 @@
 
 		border-radius: 9999px;
 
-		--tw-text-opacity: 1;
-		color: rgb(150 69 22 / var(--tw-text-opacity));
+		color: rgb(var(--color-magnum-800) / 1);
 	}
 
 	.close:hover {
-		--tw-bg-opacity: 1;
-		background-color: rgb(254 242 214 / var(--tw-bg-opacity));
+		background-color: rgb(var(--color-magnum-100) / 1);
 	}
 
 	.close:focus {
 		outline: 2px solid transparent;
 		outline-offset: 2px;
 
-		--tw-shadow-color: #f7b155;
-		--tw-shadow: var(--tw-shadow-colored);
-
-		--tw-ring-opacity: 1;
-		--tw-ring-color: rgb(247 177 85 / var(--tw-ring-opacity));
-		--tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0
-			var(--tw-ring-offset-width) var(--tw-ring-offset-color);
-		--tw-ring-shadow: var(--tw-ring-inset) 0 0 0
-			calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
-		box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
-			var(--tw-shadow, 0 0 #0000);
+		box-shadow: 0px 0px 0px 3px rgb(var(--color-magnum-400) / 1);
 	}
 
 	.title {
@@ -176,32 +153,25 @@
 		line-height: 1.75rem;
 		font-weight: 500;
 
-		--tw-text-opacity: 1;
-		color: rgb(0 0 0 / var(--tw-text-opacity));
+		color: rgb(var(--color-black) / 1);
 	}
 
 	.description {
 		margin-bottom: 1.25rem;
-		magin-top: 0.5rem;
+		margin-top: 0.5rem;
 
 		line-height: 1.5;
 
-		--tw-text-opacity: 1;
-		color: rgb(82 82 91 / var(--tw-text-opacity));
+		color: rgb(var(--color-zinc-600) / 1);
 	}
 
 	.invitation {
 		border-radius: 0.375rem;
-		background-color: rgb(243 244 246 / 0.8);
+		background-color: rgb(var(--color-grey-100) / 0.8);
 
-		--tw-text-opacity: 1;
-		color: rgb(39 39 42 / var(--tw-text-opacity));
+		color: rgb(var(--color-zinc-800) / 1);
 
-		--tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-		--tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color),
-			0 1px 2px -1px var(--tw-shadow-color);
-		box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
-			var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+		box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
 	}
 
 	.invitation h3 {
@@ -241,18 +211,14 @@
 	}
 
 	.actions button.secondary {
-		--tw-bg-opacity: 1;
-		background-color: rgb(244 244 245 / var(--tw-bg-opacity));
+		background-color: rgb(var(--color-zinc-100) / 1);
 
-		--tw-text-opacity: 1;
-		color: rgb(82 82 91 / var(--tw-text-opacity));
+		color: rgb(var(--color-zinc-600) / 1);
 	}
 
 	.actions button.primary {
-		--tw-bg-opacity: 1;
-		background-color: rgb(254 242 214 / var(--tw-bg-opacity));
+		background-color: rgb(var(--color-magnum-100) / 1);
 
-		--tw-text-opacity: 1;
-		color: rgb(121 58 21 / var(--tw-text-opacity));
+		color: rgb(var(--color-magnum-900) / 1);
 	}
 </style>

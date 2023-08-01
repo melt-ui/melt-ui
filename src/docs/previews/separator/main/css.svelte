@@ -33,30 +33,28 @@
 
 <style>
 	h2 {
-		font-weight: var(--tw-font-weight-bold);
+		font-weight: 700;
 	}
 
 	.ice-creams {
 		display: flex;
 		align-items: center;
-		column-gap: var(--tw-size-3_5);
+		column-gap: 0.875rem;
 	}
 
 	.separator {
-		--tw-bg-opacity: 1;
-
-		background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+		background-color: rgb(var(--color-white) / 1);
 	}
 
 	.separator--horizontal {
-		margin-top: var(--tw-size-3_5);
-		margin-bottom: var(--tw-size-3_5);
+		margin-top: 0.875rem;
+		margin-bottom: 0.875rem;
 		height: 1px;
 		width: 100%;
 	}
 
 	.separator--vertical {
-		height: var(--tw-size-4);
+		height: 1rem;
 		width: 1px;
 	}
 </style>
