@@ -639,10 +639,7 @@ export function createSelect<
 	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
 		if (!isBrowser) return;
 
-		const unsubs: Array<() => void> = [];
-
 		const handlePointer = () => isUsingKeyboard.set(false);
-
 		const handleKeyDown = (e: KeyboardEvent) => {
 			isUsingKeyboard.set(true);
 			if (e.key === kbd.ESCAPE && $open) {
@@ -652,17 +649,11 @@ export function createSelect<
 			}
 		};
 
-		unsubs.push(
-			executeCallbacks(
-				addEventListener(document, 'keydown', handleKeyDown),
-				addEventListener(document, 'pointerdown', handlePointer, { capture: true, once: true }),
-				addEventListener(document, 'pointermove', handlePointer, { capture: true, once: true })
-			)
+		return executeCallbacks(
+			addEventListener(document, 'keydown', handleKeyDown, { capture: true }),
+			addEventListener(document, 'pointerdown', handlePointer, { capture: true, once: true }),
+			addEventListener(document, 'pointermove', handlePointer, { capture: true, once: true })
 		);
-
-		return () => {
-			unsubs.forEach((unsub) => unsub());
-		};
 	});
 
 	const input = builder(name('input'), {
