@@ -23,7 +23,7 @@
 	<Menu class="square-6" />
 	<span class="sr-only">Toggle Menu</span>
 </button>
-<div use:melt={$portalled}>
+<div use:melt={$portalled} class="md:hidden">
 	{#if $open}
 		<div
 			use:melt={$overlay}
