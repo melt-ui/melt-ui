@@ -47,3 +47,7 @@ At a high level, here's how you could use the `forceVisible` prop with the Colla
 	{/if}
 </div>
 ```
+
+As you can see we're using the `forceVisible` prop to prevent Melt from toggling the visibility of
+the content element, and instead we're using the `open` store to manage the visibility ourselves.
+This way we can use the `#if` block to apply the `slide` transition.
