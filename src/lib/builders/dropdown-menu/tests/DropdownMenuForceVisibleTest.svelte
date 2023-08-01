@@ -55,7 +55,7 @@
 	{#if $open}
 		<div class="menu" use:melt={$menu} data-testid="menu" transition:slide>
 			<div class="item" use:melt={$item} data-testid="item1">Item 1</div>
-			<div class="item" use:melt={$item} data-testid="item2" aria-disabled="true">Item 2</div>
+			<div class="item" use:melt={$item} data-testid="item2" data-disabled>Item 2</div>
 			<div class="separator" use:melt={$separator} />
 			<div data-testid="checkboxItem1" class="item" use:melt={$settingsSyncCheckbox}>
 				<div class="check">

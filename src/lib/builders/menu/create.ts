@@ -39,7 +39,6 @@ import type {
 	CreateMenuProps,
 	CreateRadioGroupProps,
 	CreateSubmenuProps,
-	ItemProps,
 	MenuBuilderOptions,
 	MenuParts,
 	RadioItemProps,
@@ -301,23 +300,17 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		}),
 	});
 
-	const itemDefaults = {
-		disabled: false,
-	} satisfies ItemProps;
-
 	const item = builder(name('item'), {
-		returned: (props?: ItemProps) => {
-			const itemWithDefaults = { ...itemDefaults, ...props } satisfies ItemProps;
-			const { disabled } = itemWithDefaults;
+		returned: () => {
 			return {
 				role: 'menuitem',
 				tabindex: -1,
 				'data-orientation': 'vertical',
-				'data-disabled': disabled ? '' : undefined,
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<MenuEvents['item']> => {
 			setMeltMenuAttribute(node, selector);
+			applyAttrsIfDisabled(node);
 
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerdown', (e) => {

@@ -202,14 +202,7 @@ export function getMenuArrowSchema(name: string) {
 function getMenuItemSchema(name: string) {
 	return elementSchema('item', {
 		description: 'A basic menu item.',
-		props: [
-			{
-				name: 'disabled',
-				type: 'boolean',
-				description: 'Whether the item is disabled.',
-				default: 'false',
-			},
-		],
+		props: [PROPS.DISABLED],
 		dataAttributes: [
 			{
 				name: 'data-orientation',
@@ -345,13 +338,7 @@ function getMenuSubmenuSchema(name: string) {
 function getMenuCheckboxItemSchema(name: string) {
 	return elementSchema('checkboxItem', {
 		description: 'A checkbox menu item.',
-		props: [
-			{
-				name: 'disabled',
-				type: 'boolean',
-				description: 'Whether or not the checkbox menu item is disabled.',
-			},
-		],
+		props: [PROPS.DISABLED],
 		dataAttributes: [
 			{
 				name: 'data-orientation',
@@ -380,12 +367,7 @@ function getMenuRadioItemSchema(name: string) {
 				description: 'The value of the radio item.',
 				required: true,
 			},
-			{
-				name: 'disabled',
-				type: 'boolean',
-				default: 'false',
-				description: 'Whether the radio item is disabled.',
-			},
+			PROPS.DISABLED,
 		],
 		dataAttributes: [
 			{
@@ -432,6 +414,7 @@ function getMenuRadioGroupSchema(name: string): APISchema {
 function getMenuSubTriggerSchema(name: string) {
 	return elementSchema('subTrigger', {
 		description: 'A button which opens its associated submenu.',
+		props: [PROPS.DISABLED],
 		dataAttributes: [
 			{
 				name: 'data-state',
