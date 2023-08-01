@@ -24,7 +24,7 @@
 	import { PreviewStyleSelect } from '$docs/components';
 	import { cn } from '$docs/utils';
 	import type { SelectOptionProps } from '$lib';
-	import { usingPreprocessor } from '$routes/store';
+	import { getUsingPreprocessor } from '$routes/store';
 	import { isBrowser } from '$lib/internal/helpers';
 	import { writable } from 'svelte/store';
 	import CodeBlock from './code-block.svelte';
@@ -37,6 +37,8 @@
 	};
 
 	export let code: $$Props['code'];
+
+	const usingPreprocessor = getUsingPreprocessor();
 
 	function normalizeCode(code: $$Props['code']) {
 		if (!Object.prototype.hasOwnProperty.call(code, 'tailwind')) {

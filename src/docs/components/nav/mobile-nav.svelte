@@ -6,9 +6,11 @@
 	import { Button, MobileNavLink } from '$docs/components';
 	import { navConfig } from '$docs/config';
 	import Switch from '../switch.svelte';
-	import { usingPreprocessor } from '$routes/store';
+	import { getUsingPreprocessor } from '$routes/store';
 
 	const { trigger, portal, overlay, content, close, open } = createDialog();
+
+	const usingPreprocessor = getUsingPreprocessor();
 </script>
 
 <button
