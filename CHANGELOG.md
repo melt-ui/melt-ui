@@ -1,5 +1,16 @@
 # @melt-ui/svelte
 
+## 0.30.0
+
+### Minor Changes
+
+- 8218662d: [Select]: Add multiple prop
+
+### Patch Changes
+
+- c2bca81c: [Slider] - Fix vertical slider arrow behavior
+- 3b86f0eb: change accordion type prop to multiple
+
 ## 0.29.0 - The Big Bad
 
 [Release Notes](https://github.com/melt-ui/melt-ui/blob/develop/RELEASE_NOTES/the-big-bad.md)
