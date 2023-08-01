@@ -1,6 +1,8 @@
 # @melt-ui/svelte
 
-## 0.29.0
+## 0.29.0 - The Big Bad
+
+[Release Notes](https://github.com/melt-ui/melt-ui/blob/develop/RELEASE_NOTES/the-big-bad.md)
 
 ### Minor Changes
 
