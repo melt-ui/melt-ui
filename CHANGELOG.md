@@ -1,5 +1,14 @@
 # @melt-ui/svelte
 
+## 0.28.0
+
+### Minor Changes
+
+- 8400a4e5: Replaced the `melt` attribute for the `use:melt` action
+- ab1ec0bd: New Feature: Controlled Props
+  - Controlled props give you more control over the state & behavior of the builder components.
+- 8e5414c8: [New Feature] Custom Melt Events
+
 ## 0.28.0-next.0
 
 ### Minor Changes

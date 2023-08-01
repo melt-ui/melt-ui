@@ -18,9 +18,9 @@
 	Open Dialog
 </button>
 {#if $open}
-	<div use:melt={$overlay} class="fixed inset-0 z-20 bg-black/50" />
+	<div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" />
 	<div
-		class="fixed left-[50%] top-[50%] z-30 max-h-[85vh] w-[90vw]
+		class="fixed left-[50%] top-[50%] z-50 max-h-[85vh] w-[90vw]
             max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white
             p-6 shadow-lg"
 		transition:flyAndScale={{
@@ -62,14 +62,14 @@
 		<div class="mt-6 flex justify-end gap-4">
 			<button
 				use:melt={$close}
-				class="inline-flex h-8 items-center justify-center rounded-[4px]
+				class="inline-flex h-8 items-center justify-center rounded-sm
                     bg-zinc-100 px-4 font-medium leading-none text-zinc-600"
 			>
 				Cancel
 			</button>
 			<button
 				use:melt={$close}
-				class="inline-flex h-8 items-center justify-center rounded-[4px]
+				class="inline-flex h-8 items-center justify-center rounded-sm
                     bg-magnum-100 px-4 font-medium leading-none text-magnum-900"
 			>
 				Save changes
@@ -78,8 +78,8 @@
 		<button
 			use:melt={$close}
 			aria-label="close"
-			class="absolute right-[10px] top-[10px] inline-flex h-6 w-6
-                appearance-none items-center justify-center rounded-full text-magnum-800
+			class="absolute right-4 top-4 inline-flex h-6 w-6 appearance-none
+                items-center justify-center rounded-full p-1 text-magnum-800
                 hover:bg-magnum-100 focus:shadow-magnum-400"
 		>
 			<X />

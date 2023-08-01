@@ -77,7 +77,7 @@
 	.overlay {
 		position: fixed;
 		inset: 0;
-		z-index: 40;
+		z-index: 50;
 
 		background-color: rgb(0 0 0 / 0.5);
 	}

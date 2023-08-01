@@ -40,9 +40,9 @@ At a high level, the anatomy of a dialog looks like this:
 - **Trigger**: The button(s) that open the dialog
 - **Overlay**: The dim background that is typically behind a dialog element.
 - **Content**: Container for the content within the dialog.
-- **Title**: The title of the dialog
-- **Description**: The description which supports the title
-- **Close**: The button(s) that close the dialog
+  - **Title**: The title of the dialog
+  - **Description**: The description which supports the title
+  - **Close**: The button(s) that close the dialog
 
 ## Usage
 

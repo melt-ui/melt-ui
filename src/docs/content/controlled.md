@@ -42,7 +42,7 @@ parts of your app, then we offer a way for you to supply your own.
 
 It's as simple as passing your own `open` store to the `createDialog` builder.
 
-```svelte
+```svelte {5, 10}
 <script lang="ts">
 	import { createDialog } from '@melt-ui/svelte'
 	import { writable } from 'svelte/store'

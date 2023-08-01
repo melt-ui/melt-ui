@@ -21,7 +21,10 @@ describe('Dialog', () => {
 
 		await expect(content).not.toBeVisible();
 		await userEvent.click(trigger);
+		const now = performance.now();
 		await expect(content).toBeVisible();
+		const elapsed = performance.now() - now;
+		expect(elapsed).toBeLessThan(10);
 	});
 
 	it('Closes when closer is clicked', async () => {

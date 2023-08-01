@@ -12,7 +12,7 @@
 		<svelte:fragment slot="info">
 			Custom events are dispatched with each normal event that we handle. You can override the way
 			we handle these events by calling
-			<code class="neutral">e.detail.preventDefault()</code> in your event listener.
+			<code class="neutral">e.detail.cancel()</code> in your event listener.
 		</svelte:fragment>
 	</APITableHeading>
 

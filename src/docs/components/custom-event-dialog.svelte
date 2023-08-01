@@ -17,8 +17,7 @@
 		use:melt={$trigger}
 		class="text-magnum-500 underline underline-offset-[3px] transition-all hover:text-magnum-400 hover:underline-offset-4"
 		>CustomEvent
-	</button>
-	) => void</code
+	</button>) => void</code
 >
 {#if $open}
 	<div use:melt={$overlay} class="fixed inset-0 z-40 bg-black/50" />
