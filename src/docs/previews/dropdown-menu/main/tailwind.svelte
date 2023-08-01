@@ -53,7 +53,7 @@
 	use:melt={$trigger}
 	aria-label="Update dimensions"
 >
-	<AlignJustify class="h-4 w-4" />
+	<AlignJustify class="square-4" />
 	<span class="sr-only">Open Popover</span>
 </button>
 

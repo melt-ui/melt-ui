@@ -31,7 +31,7 @@
 					use:melt={$deleteTrigger(t)}
 					class="flex h-full items-center px-1 enabled:hover:bg-magnum-300"
 				>
-					<X class="h-3 w-3" />
+					<X class="square-3" />
 				</button>
 			</div>
 			<div

@@ -87,9 +87,9 @@
 		<input use:melt={$input} placeholder="Best book ever" value={$inputValue} />
 		<div class="chevron-wrapper">
 			{#if $open}
-				<ChevronUp />
+				<ChevronUp class="square-4" />
 			{:else}
-				<ChevronDown />
+				<ChevronDown class="square-4" />
 			{/if}
 		</div>
 	</div>
@@ -110,7 +110,7 @@
 					>
 						{#if $isSelected(book)}
 							<div class="check">
-								<Check />
+								<Check class="square-4" />
 							</div>
 						{/if}
 						<div>

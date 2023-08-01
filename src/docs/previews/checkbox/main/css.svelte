@@ -14,9 +14,9 @@
 	<div>
 		<button use:melt={$root} id="checkbox">
 			{#if $isIndeterminate}
-				<Minus />
+				<Minus class="square-4" />
 			{:else if $isChecked}
-				<Check />
+				<Check class="square-4" />
 			{/if}
 			<input use:melt={$input} />
 		</button>

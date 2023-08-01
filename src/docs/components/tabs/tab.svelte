@@ -16,11 +16,11 @@
 >
 	<div class="flex items-center gap-2 px-1">
 		{#if tab === 'npm'}
-			<Npm class="h-4 w-4" />
+			<Npm class="square-4" />
 		{:else if tab === 'yarn'}
-			<Yarn class="h-4 w-4" />
+			<Yarn class="square-4" />
 		{:else if tab === 'pnpm'}
-			<Pnpm class="h-4 w-4" />
+			<Pnpm class="square-4" />
 		{/if}
 		<span class="font-mono text-sm font-semibold">{tab}</span>
 	</div>

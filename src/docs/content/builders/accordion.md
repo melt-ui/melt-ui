@@ -41,12 +41,10 @@ To disable a single item, you can pass in an object instead of a string to the f
 
 Pass in the `type` argument to `createAccordion` with a value of `'multiple'`.
 
-```svelte {3}
-<script lang="ts">
+```ts {2}
   const { ... } = createAccordion({
     type: 'multiple'
   })
-</>
 ```
 
 <Preview code={snippets.multiple}>

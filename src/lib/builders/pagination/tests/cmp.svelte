@@ -18,7 +18,7 @@
 		Showing items {$range.start} - {$range.end}
 	</p>
 	<div>
-		<button use:melt={$prevButton} data-testid="prev"><ChevronLeft /></button>
+		<button use:melt={$prevButton} data-testid="prev"><ChevronLeft class="square-4" /></button>
 		{#each $pages as page (page.key)}
 			{#if page.type === 'ellipsis'}
 				<span>...</span>
@@ -26,6 +26,6 @@
 				<button use:melt={$pageTrigger(page)}>{page.value}</button>
 			{/if}
 		{/each}
-		<button use:melt={$nextButton} data-testid="next"><ChevronRight /></button>
+		<button use:melt={$nextButton} data-testid="next"><ChevronRight class="square-4" /></button>
 	</div>
 </nav>

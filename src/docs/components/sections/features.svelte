@@ -8,7 +8,7 @@
 <ul class="my-5 list-none">
 	{#each features as feature}
 		<li class="mt-2.5 flex items-center gap-3" {...$$restProps}>
-			<CheckCircle class="h-6 w-6 text-green-400" />
+			<CheckCircle class="text-green-400 square-5" />
 			{feature}
 		</li>
 	{/each}

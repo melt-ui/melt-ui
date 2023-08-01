@@ -29,7 +29,7 @@
 	use:melt={$trigger}
 	aria-label="Update dimensions"
 >
-	<Settings2 class="h-4 w-4" />
+	<Settings2 class="square-4" />
 	<span class="sr-only">Open Popover</span>
 </button>
 
@@ -105,13 +105,13 @@
 						</fieldset>
 					</div>
 					<button class="close" use:melt={$closeA}>
-						<X class="h-4 w-4 " />
+						<X class="square-4" />
 					</button>
 				</div>
 			{/if}
 		</div>
 		<button class="close" use:melt={$close}>
-			<X class="h-4 w-4 " />
+			<X class="square-4" />
 		</button>
 	</div>
 {/if}

@@ -101,9 +101,9 @@
 		/>
 		<div class="absolute right-1 top-1/2 z-10 -translate-y-1/2 text-magnum-700">
 			{#if $open}
-				<ChevronUp />
+				<ChevronUp class="square-4" />
 			{:else}
-				<ChevronDown />
+				<ChevronDown class="square-4" />
 			{/if}
 		</div>
 	</div>
@@ -133,7 +133,7 @@
 					>
 						{#if $isSelected(book)}
 							<div class="check">
-								<Check />
+								<Check class="square-4" />
 							</div>
 						{/if}
 						<div>

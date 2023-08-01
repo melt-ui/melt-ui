@@ -20,7 +20,7 @@
 	aria-label="Select"
 >
 	{$valueLabel === 'tailwind' ? 'Tailwind' : 'CSS'}
-	<ChevronDown />
+	<ChevronDown class="square-4" />
 </button>
 
 <ul
@@ -37,7 +37,7 @@
 		>
 			{#if $isSelected(o.value)}
 				<div class="check">
-					<Check />
+					<Check class="square-4" />
 				</div>
 			{/if}
 
