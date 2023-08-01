@@ -1,26 +1,42 @@
 <script lang="ts">
-	import { createDropdownMenu } from '$lib';
+	import { createDropdownMenu, melt } from '$lib';
 	import { writable } from 'svelte/store';
-	import AlignJustify from '~icons/lucide/align-justify';
-	import ChevronRight from '~icons/lucide/chevron-right';
-	import Check from '~icons/lucide/check';
+	import { AlignJustify, ChevronRight, Check } from 'lucide-svelte';
+	import { fly } from 'svelte/transition';
+
+	const settingsSync = writable(true);
+	const hideMeltUI = writable(false);
 
 	const {
-		trigger,
-		menu,
-		item,
-		checkboxItem,
-		arrow,
-		separator,
-		createSubMenu,
-		createMenuRadioGroup,
-		open,
-	} = createDropdownMenu();
+		elements: { trigger, menu, item, separator, arrow },
+		builders: { createSubmenu, createMenuRadioGroup, createCheckboxItem },
+		states: { open },
+	} = createDropdownMenu({
+		forceVisible: true,
+	});
 
-	const { subMenu: subMenuA, subTrigger: subTriggerA } = createSubMenu();
+	const {
+		elements: { subMenu, subTrigger },
+		states: { subOpen },
+	} = createSubmenu();
 
-	const { radioGroup, radioItem, isChecked } = createMenuRadioGroup({
-		value: 'Hunter Johnston',
+	const {
+		elements: { radioGroup, radioItem },
+		helpers: { isChecked },
+	} = createMenuRadioGroup({
+		defaultValue: 'Hunter Johnston',
+	});
+
+	const {
+		elements: { checkboxItem },
+	} = createCheckboxItem({
+		checked: settingsSync,
+	});
+
+	const {
+		elements: { checkboxItem: checkboxItemA },
+	} = createCheckboxItem({
+		checked: hideMeltUI,
 	});
 
 	const personsArr = [
@@ -29,84 +45,81 @@
 		'Adrian Gonz',
 		'Franck Poingt',
 	];
-
-	const settingsSync = writable(true);
-	const hideMeltUI = writable(false);
 </script>
 
 <button
 	type="button"
 	class="trigger"
-	melt={$trigger}
+	use:melt={$trigger}
 	aria-label="Update dimensions"
 >
-	<AlignJustify class="h-4 w-4" />
+	<AlignJustify class="square-4" />
 	<span class="sr-only">Open Popover</span>
 </button>
 
-<div class="menu" melt={$menu}>
-	<div class="item" melt={$item}>About Melt UI</div>
-	<div class="item" melt={$item}>Check for Updates...</div>
-	<div class="separator" melt={$separator} />
-	<div
-		class="item"
-		{...$checkboxItem}
-		use:checkboxItem={{ checked: settingsSync }}
-	>
-		<div class="check">
-			{#if $settingsSync}
-				<Check class="icon" />
-			{/if}
+{#if $open}
+	<div class="menu" use:melt={$menu} transition:fly={{ duration: 150, y: -10 }}>
+		<div class="item" use:melt={$item}>About Melt UI</div>
+		<div class="item" use:melt={$item}>Check for Updates...</div>
+		<div class="separator" use:melt={$separator} />
+		<div class="item" use:melt={$checkboxItem}>
+			<div class="check">
+				{#if $settingsSync}
+					<Check class="icon" />
+				{/if}
+			</div>
+			Settings Sync is On
 		</div>
-		Settings Sync is On
-	</div>
-	<div class="item" melt={$subTriggerA}>
-		Profiles
-		<div class="rightSlot">
-			<ChevronRight class="icon" />
+		<div class="item" use:melt={$subTrigger}>
+			Profiles
+			<div class="rightSlot">
+				<ChevronRight class="icon" />
+			</div>
 		</div>
-	</div>
-	<div class="menu subMenu" melt={$subMenuA}>
-		<div class="text">People</div>
-		<div melt={$radioGroup}>
-			{#each personsArr as person}
-				<div class="item" melt={$radioItem({ value: person })}>
-					<div class="check">
-						{#if $isChecked(person)}
-							<div class="dot" />
-						{/if}
-					</div>
-					{person}
+		{#if $subOpen}
+			<div
+				class="menu subMenu"
+				use:melt={$subMenu}
+				transition:fly={{ x: -50, duration: 150 }}
+			>
+				<div class="text">People</div>
+				<div use:melt={$radioGroup}>
+					{#each personsArr as person}
+						<div class="item" use:melt={$radioItem({ value: person })}>
+							<div class="check">
+								{#if $isChecked(person)}
+									<div class="dot" />
+								{/if}
+							</div>
+							{person}
+						</div>
+					{/each}
 				</div>
-			{/each}
-		</div>
-	</div>
-	<div melt={$separator} class="separator" />
+			</div>
+		{/if}
+		<div use:melt={$separator} class="separator" />
 
-	<div
-		class="item"
-		{...$checkboxItem}
-		use:checkboxItem={{ checked: hideMeltUI }}
-	>
-		<div class="check">
-			{#if $hideMeltUI}
-				<Check class="icon" />
-			{/if}
+		<div class="item" use:melt={$checkboxItemA}>
+			<div class="check">
+				{#if $hideMeltUI}
+					<Check class="icon" />
+				{/if}
+			</div>
+			Hide Melt UI
+			<div class="rightSlot">⌘H</div>
 		</div>
-		Hide Melt UI
-		<div class="rightSlot">⌘H</div>
+		<div class="item" use:melt={$item} aria-disabled="true">
+			Show All Components
+			<div class="rightSlot">⇧⌘N</div>
+		</div>
+		<div use:melt={$separator} class="separator" />
+		<div class="item" use:melt={$item}>
+			Quit Melt UI
+			<div class="rightSlot">⌘Q</div>
+		</div>
+		<div use:melt={$arrow} />
 	</div>
-	<div class="item" melt={$item} aria-disabled="true">
-		Show All Components
-		<div class="rightSlot">⇧⌘N</div>
-	</div>
-	<div melt={$separator} class="separator" />
-	<div class="item" melt={$item}>
-		Quit Melt UI
-		<div class="rightSlot">⌘Q</div>
-	</div>
-	<div melt={$arrow} />
-</div>
+{/if}
 
 <style lang="postcss">
 	.menu {

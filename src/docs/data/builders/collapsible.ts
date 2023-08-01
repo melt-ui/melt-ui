@@ -1,53 +1,47 @@
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
+import { ATTRS, KBD, PROPS } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema, genProps } from '$docs/utils';
+import { collapsibleEvents } from '$lib/builders/collapsible/events';
 import type { BuilderData } from '.';
 
-const builder: APISchema = {
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [PROPS.DISABLED, PROPS.FORCE_VISIBLE];
+
+const builder = builderSchema('collapsible', {
 	title: 'createCollapsible',
-	description: DESCRIPTIONS.BUILDER('collapsible'),
-	props: [
-		{
-			name: 'open',
-			type: 'boolean',
-			default: 'false',
-		},
-		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-		},
-	],
-	returnedProps: [
-		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls the open state of the collapsible.',
-		},
-		{
-			name: 'disabled',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls whether or not the collapsible is disabled.',
-		},
+	props: genProps('collapsible', [
+		...OPTION_PROPS,
+		PROPS.DEFAULT_OPEN,
+		PROPS.OPEN,
+		PROPS.ON_OPEN_CHANGE,
+	]),
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the collapsible root.',
-			link: '#root',
 		},
 		{
 			name: 'content',
 			description: 'The builder store used to create the collapsible content.',
-			link: '#content',
 		},
 		{
 			name: 'trigger',
 			description: 'The builder store used to create the collapsible trigger.',
-			link: '#trigger',
 		},
 	],
-};
+	states: [
+		{
+			name: 'open',
+			type: 'Readable<boolean>',
+			description: 'A readable store with the current open state of the collapsible.',
+		},
+	],
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The root collapsible element.',
 	dataAttributes: [
 		{
@@ -63,10 +57,9 @@ const root: APISchema = {
 			value: ATTRS.MELT('collapsible root'),
 		},
 	],
-};
+});
 
-const trigger: APISchema = {
-	title: 'trigger',
+const trigger = elementSchema('trigger', {
 	description: 'The collapsible trigger element.',
 	dataAttributes: [
 		{
@@ -82,10 +75,10 @@ const trigger: APISchema = {
 			value: ATTRS.MELT('collapsible trigger'),
 		},
 	],
-};
+	events: collapsibleEvents['trigger'],
+});
 
-const content: APISchema = {
-	title: 'content',
+const content = elementSchema('content', {
 	description: 'The collapsible content element.',
 	dataAttributes: [
 		{
@@ -101,7 +94,7 @@ const content: APISchema = {
 			value: ATTRS.DISABLED(),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

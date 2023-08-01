@@ -1,19 +1,29 @@
 <script lang="ts">
-	import { createDialog } from '$lib';
+	import { createDialog, melt } from '$lib';
 	/** Internal helpers */
 	import { flyAndScale } from '$docs/utils';
-	import X from '~icons/lucide/x';
+	import { X } from 'lucide-svelte';
 
-	const { trigger, portal, overlay, content, title, description, close, open } =
-		createDialog({
-			role: 'alertdialog',
-		});
+	const {
+		elements: {
+			trigger,
+			overlay,
+			content,
+			title,
+			description,
+			close,
+			portalled,
+		},
+		states: { open },
+	} = createDialog({
+		role: 'alertdialog',
+	});
 </script>
 
-<button melt={$trigger} class="trigger"> Delete Item </button>
-<div use:portal>
+<button use:melt={$trigger} class="trigger"> Delete Item </button>
+<div use:melt={$portalled}>
 	{#if $open}
-		<div melt={$overlay} class="overlay" />
+		<div use:melt={$overlay} class="overlay" />
 		<div
 			class="content"
 			transition:flyAndScale={{
@@ -21,21 +31,23 @@
 				y: 8,
 				start: 0.96,
 			}}
-			melt={$content}
+			use:melt={$content}
 		>
-			<h2 melt={$title} class="title">Are you sure you want to delete this?</h2>
-			<p melt={$description} class="description">
+			<h2 use:melt={$title} class="title">
+				Are you sure you want to delete this?
+			</h2>
+			<p use:melt={$description} class="description">
 				This action cannot be undone. This will permanently delete the item and
 				remove it from our servers.
 			</p>
 
 			<div class="actions">
-				<button melt={$close} class="secondary"> Cancel </button>
-				<button melt={$close} class="primary"> Continue </button>
+				<button use:melt={$close} class="secondary"> Cancel </button>
+				<button use:melt={$close} class="primary"> Continue </button>
 			</div>
 
-			<button melt={$close} aria-label="Close" class="close">
-				<X />
+			<button use:melt={$close} aria-label="Close" class="close">
+				<X class="square-4" />
 			</button>
 		</div>
 	{/if}
@@ -75,7 +87,7 @@
 	.overlay {
 		position: fixed;
 		inset: 0;
-		z-index: 40;
+		z-index: 50;
 
 		background-color: rgb(0 0 0 / 0.5);
 	}

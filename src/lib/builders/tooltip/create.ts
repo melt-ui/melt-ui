@@ -2,41 +2,67 @@ import {
 	addEventListener,
 	builder,
 	createElHelpers,
+	derivedVisible,
 	effect,
 	executeCallbacks,
 	generateId,
+	getPortalParent,
+	isBrowser,
+	kbd,
 	makeHullFromElements,
 	noop,
 	omit,
+	overridable,
 	pointInPolygon,
 	styleToString,
+	toWritableStores,
+	isTouch,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
 
 import { useFloating, usePortal } from '$lib/internal/actions';
-import type { Defaults } from '$lib/internal/types';
-import { tick } from 'svelte';
-import { get, writable } from 'svelte/store';
+import { onMount, tick } from 'svelte';
+import { get, readonly, writable } from 'svelte/store';
 import type { CreateTooltipProps } from './types';
+import type { MeltActionReturn } from '$lib/internal/types';
+import type { TooltipEvents } from './events';
 
 const defaults = {
 	positioning: {
 		placement: 'bottom',
 	},
 	arrowSize: 8,
-	open: false,
+	defaultOpen: false,
 	closeOnPointerDown: true,
 	openDelay: 1000,
 	closeDelay: 0,
-} satisfies Defaults<CreateTooltipProps>;
+	forceVisible: false,
+	portal: 'body',
+	closeOnEscape: true,
+} satisfies CreateTooltipProps;
 
 type TooltipParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<TooltipParts>('tooltip');
 
 export function createTooltip(props?: CreateTooltipProps) {
-	const withDefaults = { ...defaults, ...props } as CreateTooltipProps;
-	const options = writable(omit(withDefaults, 'open'));
+	const withDefaults = { ...defaults, ...props } satisfies CreateTooltipProps;
 
-	const open = writable(withDefaults.open);
+	const options = toWritableStores(omit(withDefaults, 'open'));
+	const {
+		positioning,
+		arrowSize,
+		closeOnPointerDown,
+		openDelay,
+		closeDelay,
+		forceVisible,
+		portal,
+		closeOnEscape,
+	} = options;
+
+	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
+	const open = overridable(openWritable, withDefaults?.onOpenChange);
+
+	const activeTrigger = writable<HTMLElement | null>(null);
 
 	const ids = {
 		content: generateId(),
@@ -47,9 +73,12 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 	let clickedTrigger = false;
 
-	const openTooltip = () => {
-		const $options = get(options);
+	onMount(() => {
+		if (!isBrowser) return;
+		activeTrigger.set(document.querySelector(`[aria-describedby="${ids.content}"]`));
+	});
 
+	function openTooltip() {
 		if (timeout) {
 			window.clearTimeout(timeout);
 			timeout = null;
@@ -57,12 +86,10 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 		timeout = window.setTimeout(() => {
 			open.set(true);
-		}, $options.openDelay);
-	};
+		}, get(openDelay));
+	}
 
-	const closeTooltip = (isBlur?: boolean) => {
-		const $options = get(options);
-
+	function closeTooltip(isBlur?: boolean) {
 		if (timeout) {
 			window.clearTimeout(timeout);
 			timeout = null;
@@ -73,21 +100,20 @@ export function createTooltip(props?: CreateTooltipProps) {
 		timeout = window.setTimeout(() => {
 			open.set(false);
 			if (isBlur) clickedTrigger = false;
-		}, $options.closeDelay);
-	};
+		}, get(closeDelay));
+	}
 
 	const trigger = builder(name('trigger'), {
 		returned: () => {
 			return {
 				'aria-describedby': ids.content,
-				id: ids.trigger,
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['trigger']> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', () => {
-					const $options = get(options);
-					if (!$options.closeOnPointerDown) return;
+				addMeltEventListener(node, 'pointerdown', () => {
+					const $closeOnPointerDown = get(closeOnPointerDown);
+					if (!$closeOnPointerDown) return;
 					open.set(false);
 					clickedTrigger = true;
 					if (timeout) {
@@ -95,24 +121,24 @@ export function createTooltip(props?: CreateTooltipProps) {
 						timeout = null;
 					}
 				}),
-				addEventListener(node, 'pointerenter', (e) => {
-					if (e.pointerType === 'touch') return;
+				addMeltEventListener(node, 'pointerenter', (e) => {
+					if (isTouch(e)) return;
 					openTooltip();
 				}),
-				addEventListener(node, 'pointerleave', (e) => {
-					if (e.pointerType === 'touch') return;
+				addMeltEventListener(node, 'pointerleave', (e) => {
+					if (isTouch(e)) return;
 					if (timeout) {
 						window.clearTimeout(timeout);
 						timeout = null;
 					}
 				}),
-				addEventListener(node, 'focus', () => {
+				addMeltEventListener(node, 'focus', () => {
 					if (clickedTrigger) return;
 					openTooltip();
 				}),
-				addEventListener(node, 'blur', () => closeTooltip(true)),
-				addEventListener(node, 'keydown', (e) => {
-					if (e.key === 'Escape') {
+				addMeltEventListener(node, 'blur', () => closeTooltip(true)),
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (get(closeOnEscape) && e.key === kbd.ESCAPE) {
 						if (timeout) {
 							window.clearTimeout(timeout);
 							timeout = null;
@@ -129,98 +155,117 @@ export function createTooltip(props?: CreateTooltipProps) {
 		},
 	});
 
+	const isVisible = derivedVisible({ open, activeTrigger, forceVisible });
+
 	const content = builder(name('content'), {
-		stores: open,
-		returned: ($open) => {
+		stores: [isVisible, portal],
+		returned: ([$isVisible, $portal]) => {
 			return {
 				role: 'tooltip',
-				hidden: $open ? undefined : true,
+				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
 				style: styleToString({
-					display: $open ? undefined : 'none',
+					display: $isVisible ? undefined : 'none',
 				}),
 				id: ids.content,
+				'data-portal': $portal ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement) => {
-			let unsub = noop;
-
-			const portalReturn = usePortal(node);
+		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['content']> => {
+			const portalParent = getPortalParent(node);
 
 			let unsubFloating = noop;
-			const unsubOpen = open.subscribe(($open) => {
-				if ($open) {
-					tick().then(() => {
-						const triggerEl = document.querySelector(`[aria-describedby="${ids.content}"]`);
-						if (!triggerEl || node.hidden) return;
-						const $options = get(options);
-						const floatingReturn = useFloating(triggerEl, node, $options.positioning);
-						unsubFloating = floatingReturn.destroy;
-					});
-				} else {
-					unsubFloating();
-				}
-			});
+			let unsubPortal = noop;
 
-			unsub = executeCallbacks(
-				addEventListener(node, 'pointerenter', openTooltip),
-				addEventListener(node, 'pointerdown', openTooltip),
-				portalReturn && portalReturn.destroy ? portalReturn.destroy : noop,
-				unsubOpen
+			const unsubDerived = effect(
+				[isVisible, activeTrigger, positioning, portal],
+				([$isVisible, $activeTrigger, $positioning, $portal]) => {
+					if (!$isVisible || !$activeTrigger) {
+						unsubPortal();
+						unsubFloating();
+						return;
+					}
+					tick().then(() => {
+						const floatingReturn = useFloating($activeTrigger, node, $positioning);
+						unsubFloating = floatingReturn.destroy;
+						if (!$portal) {
+							unsubPortal();
+							return;
+						}
+						const portalReturn = usePortal(node, portalParent === $portal ? portalParent : $portal);
+						if (portalReturn && portalReturn.destroy) {
+							unsubPortal = portalReturn.destroy;
+						}
+					});
+				}
+			);
+
+			const unsubEvents = executeCallbacks(
+				addMeltEventListener(node, 'pointerenter', openTooltip),
+				addMeltEventListener(node, 'pointerdown', openTooltip)
 			);
 
 			return {
 				destroy() {
-					unsub();
+					unsubEvents();
+					unsubPortal();
 					unsubFloating();
+					unsubDerived();
 				},
 			};
 		},
 	});
 
 	const arrow = builder(name('arrow'), {
-		stores: options,
-		returned: ($options) => ({
+		stores: arrowSize,
+		returned: ($arrowSize) => ({
 			'data-arrow': true,
 			style: styleToString({
 				position: 'absolute',
-				width: `var(--arrow-size, ${$options.arrowSize}px)`,
-				height: `var(--arrow-size, ${$options.arrowSize}px)`,
+				width: `var(--arrow-size, ${$arrowSize}px)`,
+				height: `var(--arrow-size, ${$arrowSize}px)`,
 			}),
 		}),
 	});
 
 	let isMouseInTooltipArea = false;
 
-	effect(open, ($open) => {
-		if ($open) {
-			return executeCallbacks(
-				addEventListener(document, 'mousemove', (e) => {
-					const triggerEl = document.getElementById(ids.trigger);
-					if (!triggerEl) return;
+	effect([isVisible, activeTrigger], ([$isVisible, $activeTrigger]) => {
+		if (!$isVisible || !$activeTrigger) return;
+		return executeCallbacks(
+			addEventListener(document, 'mousemove', (e) => {
+				const contentEl = document.getElementById(ids.content);
+				if (!contentEl) return;
 
-					const contentEl = document.getElementById(ids.content);
-					if (!contentEl) return;
+				const polygon = makeHullFromElements([$activeTrigger, contentEl]);
 
-					const polygon = makeHullFromElements([triggerEl, contentEl]);
+				isMouseInTooltipArea = pointInPolygon(
+					{
+						x: e.clientX,
+						y: e.clientY,
+					},
+					polygon
+				);
 
-					isMouseInTooltipArea = pointInPolygon(
-						{
-							x: e.clientX,
-							y: e.clientY,
-						},
-						polygon
-					);
-
-					if (isMouseInTooltipArea || (document.activeElement === triggerEl && !clickedTrigger)) {
-						openTooltip();
-					} else {
-						closeTooltip();
-					}
-				})
-			);
-		}
+				if (
+					isMouseInTooltipArea ||
+					(document.activeElement === $activeTrigger && !clickedTrigger)
+				) {
+					openTooltip();
+				} else {
+					closeTooltip();
+				}
+			})
+		);
 	});
 
-	return { trigger, open, content, arrow, options };
+	return {
+		elements: {
+			trigger,
+			content,
+			arrow,
+		},
+		states: { open: readonly(open) },
+		options,
+	};
 }

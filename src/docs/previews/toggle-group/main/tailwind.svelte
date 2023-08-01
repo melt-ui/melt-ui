@@ -1,29 +1,39 @@
 <script lang="ts">
-	import { createToggleGroup } from '$lib';
-	import AlignCenter from '~icons/lucide/align-center';
-	import AlignLeft from '~icons/lucide/align-left';
-	import AlignRight from '~icons/lucide/align-right';
+	import { createToggleGroup, melt } from '$lib';
+	import { AlignCenter, AlignLeft, AlignRight } from 'lucide-svelte';
 
-	const { root, item } = createToggleGroup();
+	const {
+		elements: { root, item },
+	} = createToggleGroup({
+		type: 'multiple',
+	});
 </script>
 
 <div
-	melt={$root}
+	use:melt={$root}
 	class="flex items-center data-[orientation='vertical']:flex-col"
 	aria-label="Text alignment"
 >
-	<button class="toggle-item" melt={$item('left')} aria-label="Left aligned">
-		<AlignLeft />
+	<button
+		class="toggle-item"
+		use:melt={$item('left')}
+		aria-label="Left aligned"
+	>
+		<AlignLeft class="square-4" />
 	</button>
 	<button
 		class="toggle-item"
-		melt={$item('center')}
+		use:melt={$item('center')}
 		aria-label="Center aligned"
 	>
-		<AlignCenter />
+		<AlignCenter class="square-4" />
 	</button>
-	<button class="toggle-item" melt={$item('right')} aria-label="Right aligned">
-		<AlignRight />
+	<button
+		class="toggle-item"
+		use:melt={$item('right')}
+		aria-label="Right aligned"
+	>
+		<AlignRight class="square-4" />
 	</button>
 </div>
 

@@ -1,5 +1,4 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -7,33 +6,42 @@ import {
 	getElementByMeltId,
 	isHTMLElement,
 	kbd,
+	omit,
+	overridable,
+	styleToString,
+	toWritableStores,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
 import { tick } from 'svelte';
-import { derived, writable, type Writable } from 'svelte/store';
+import { derived, readonly, writable, type Writable } from 'svelte/store';
 import type {
 	AccordionHeadingProps,
 	AccordionItemProps,
 	AccordionType,
 	CreateAccordionProps,
 } from './types';
+import type { AccordionEvents } from './events';
+import type { MeltActionReturn } from '$lib/internal/types';
 
 type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
 const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
 const defaults = {
 	type: 'single',
-} satisfies Defaults<CreateAccordionProps>;
+	disabled: false,
+	forceVisible: false,
+} satisfies CreateAccordionProps;
 
 export const createAccordion = <T extends AccordionType = 'single'>(
 	props?: CreateAccordionProps<T>
 ) => {
-	const withDefaults = { ...defaults, ...props } as CreateAccordionProps<T>;
-	const options = writable({
-		disabled: withDefaults.disabled,
-	});
+	const withDefaults = { ...defaults, ...props };
+	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
+	const { disabled, forceVisible } = options;
 
-	const value = writable<string | string[] | undefined>(withDefaults.value);
+	const valueWritable =
+		withDefaults.value ?? writable<string | string[] | undefined>(withDefaults.value);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	const isSelected = (key: string, v: string | string[] | undefined) => {
 		if (v === undefined) return false;
@@ -86,14 +94,14 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 	});
 
 	const trigger = builder(name('trigger'), {
-		stores: [value, options],
-		returned: ([$value, $options]) => {
+		stores: [value, disabled],
+		returned: ([$value, $disabled]) => {
 			return (props: AccordionItemProps) => {
 				const { value: itemValue, disabled } = parseItemProps(props);
 				// generate the content ID here so that we can grab it in the content
 				// builder action to ensure the values match.
 				return {
-					disabled: $options.disabled || disabled,
+					disabled: $disabled || disabled,
 					'aria-expanded': isSelected(itemValue, $value) ? true : false,
 					'aria-disabled': disabled ? true : false,
 					'data-disabled': disabled ? true : undefined,
@@ -101,34 +109,27 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 				};
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<AccordionEvents['trigger']> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', () => {
+				addMeltEventListener(node, 'click', () => {
 					const disabled = node.dataset.disabled === 'true';
 					const itemValue = node.dataset.value;
 					if (disabled || !itemValue) return;
-
-					value.update(($value) => {
-						if ($value === undefined) {
-							return withDefaults.type === 'single' ? itemValue : [itemValue];
-						}
-
-						if (Array.isArray($value)) {
-							if ($value.includes(itemValue)) {
-								return $value.filter((v) => v !== itemValue);
-							}
-							$value.push(itemValue);
-							return $value;
-						}
-
-						return $value === itemValue ? undefined : itemValue;
-					});
+					handleValueUpdate(itemValue);
 				}),
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					if (![kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.HOME, kbd.END].includes(e.key)) {
 						return;
 					}
 					e.preventDefault();
+
+					if (e.key === kbd.SPACE || e.key === kbd.ENTER) {
+						const disabled = node.dataset.disabled === 'true';
+						const itemValue = node.dataset.value;
+						if (disabled || !itemValue) return;
+						handleValueUpdate(itemValue);
+						return;
+					}
 
 					const el = e.target;
 					const rootEl = getElementByMeltId(ids.root);
@@ -165,16 +166,19 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 	});
 
 	const content = builder(name('content'), {
-		stores: [value, options],
-		returned: ([$value, $options]) => {
+		stores: [value, disabled, forceVisible],
+		returned: ([$value, $disabled, $forceVisible]) => {
 			return (props: AccordionItemProps) => {
 				const { value: itemValue } = parseItemProps(props);
-				const selected = isSelected(itemValue, $value);
+				const isVisible = isSelected(itemValue, $value) || $forceVisible;
 				return {
-					'data-state': selected ? 'open' : 'closed',
-					'data-disabled': $options.disabled ? true : undefined,
+					'data-state': isVisible ? 'open' : 'closed',
+					'data-disabled': $disabled ? true : undefined,
 					'data-value': itemValue,
-					hidden: selected ? undefined : true,
+					hidden: isVisible ? undefined : true,
+					style: styleToString({
+						display: isVisible ? undefined : 'none',
+					}),
 				};
 			};
 		},
@@ -208,15 +212,38 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 		},
 	});
 
+	function handleValueUpdate(itemValue: string) {
+		value.update(($value) => {
+			if ($value === undefined) {
+				return withDefaults.type === 'single' ? itemValue : [itemValue];
+			}
+
+			if (Array.isArray($value)) {
+				if ($value.includes(itemValue)) {
+					return $value.filter((v) => v !== itemValue);
+				}
+				$value.push(itemValue);
+				return $value;
+			}
+
+			return $value === itemValue ? undefined : itemValue;
+		});
+	}
+
 	return {
-		root,
-		/** Initial value of accordion */
-		value: value as Writable<CreateAccordionProps<T>['value']>,
-		item,
-		trigger,
-		content,
-		isSelected: isSelectedStore,
+		elements: {
+			root,
+			item,
+			trigger,
+			content,
+			heading,
+		},
+		states: {
+			value: readonly(value as Writable<CreateAccordionProps<T>['value']>),
+		},
+		helpers: {
+			isSelected: isSelectedStore,
+		},
 		options,
-		heading,
 	};
 };

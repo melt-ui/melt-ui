@@ -4,9 +4,11 @@ description: A filterable list of items that supports selection.
 ---
 
 <script>
-    import { APIReference, KbdTable } from '$docs/components'
+    import { APIReference, KbdTable, Preview } from '$docs/components'
     export let schemas
     export let keyboard
+    export let snippets
+    export let previews
 </script>
 
 ## Anatomy
@@ -16,6 +18,16 @@ description: A filterable list of items that supports selection.
 - **Menu**: The popover menu
 - **Item**: The individual list item
 - **Label**: The label for the input
+
+## Usage
+
+## Example Components
+
+### Bring Your Own Store
+
+<Preview code={snippets.controlled}>
+    <svelte:component this={previews.controlled} />
+</Preview>
 
 ## API Reference
 

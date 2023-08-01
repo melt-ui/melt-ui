@@ -1,22 +1,24 @@
 <script lang="ts">
-	import { createCheckbox } from '$lib';
-	import Check from '~icons/lucide/check';
-	import Minus from '~icons/lucide/minus';
+	import { createCheckbox, melt } from '$lib';
+	import { Check, Minus } from 'lucide-svelte';
 
-	const { root, input, isChecked, isIndeterminate } = createCheckbox({
-		checked: 'indeterminate',
+	const {
+		elements: { root, input },
+		helpers: { isChecked, isIndeterminate },
+	} = createCheckbox({
+		defaultChecked: 'indeterminate',
 	});
 </script>
 
 <form>
 	<div>
-		<button melt={$root} id="checkbox">
+		<button use:melt={$root} id="checkbox">
 			{#if $isIndeterminate}
-				<Minus />
+				<Minus class="square-4" />
 			{:else if $isChecked}
-				<Check />
+				<Check class="square-4" />
 			{/if}
-			<input melt={$input} />
+			<input use:melt={$input} />
 		</button>
 		<label for="checkbox"> Accept terms and conditions. </label>
 	</div>

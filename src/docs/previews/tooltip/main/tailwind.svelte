@@ -1,9 +1,12 @@
 <script lang="ts">
-	import { createTooltip } from '$lib';
+	import { createTooltip, melt } from '$lib';
 	import { fade } from 'svelte/transition';
-	import Plus from '~icons/lucide/plus';
+	import { Plus } from 'lucide-svelte';
 
-	const { trigger, content, open, arrow } = createTooltip({
+	const {
+		elements: { trigger, content, arrow },
+		states: { open },
+	} = createTooltip({
 		positioning: {
 			placement: 'top',
 		},
@@ -12,17 +15,17 @@
 	});
 </script>
 
-<button type="button" class="trigger" melt={$trigger} aria-label="Add">
-	<Plus class="h-4 w-4" aria-label="plus" />
+<button type="button" class="trigger" use:melt={$trigger} aria-label="Add">
+	<Plus class="square-4" aria-label="plus" />
 </button>
 
 {#if $open}
 	<div
-		melt={$content}
+		use:melt={$content}
 		transition:fade={{ duration: 100 }}
 		class="z-10 rounded-md bg-white shadow-sm"
 	>
-		<div melt={$arrow} />
+		<div use:melt={$arrow} />
 		<p class="px-4 py-1 text-magnum-700">Add item to library</p>
 	</div>
 {/if}

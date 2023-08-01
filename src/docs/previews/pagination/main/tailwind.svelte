@@ -1,21 +1,22 @@
 <script lang="ts">
-	import { createPagination } from '$lib';
-	import ChevronLeft from '~icons/lucide/chevron-left';
-	import ChevronRight from '~icons/lucide/chevron-right';
+	import { createPagination, melt } from '$lib';
+	import { ChevronLeft, ChevronRight } from 'lucide-svelte';
 
-	const { prevButton, nextButton, pages, pageTrigger, range, root } =
-		createPagination({
-			count: 100,
-			perPage: 10,
-			page: 1,
-			siblingCount: 1,
-		});
+	const {
+		elements: { root, pageTrigger, prevButton, nextButton },
+		states: { pages, range },
+	} = createPagination({
+		count: 100,
+		perPage: 10,
+		defaultPage: 1,
+		siblingCount: 1,
+	});
 </script>
 
 <nav
 	class="flex flex-col items-center gap-4"
 	aria-label="pagination"
-	melt={$root}
+	use:melt={$root}
 >
 	<p class="text-center">
 		Showing items {$range.start} - {$range.end}
@@ -25,7 +26,7 @@
 			class="grid h-8 items-center rounded-sm bg-white px-3 text-sm text-magnum-700 shadow-sm
 			hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-50 data-[selected]:bg-magnum-900
 			data-[selected]:text-white"
-			melt={$prevButton}><ChevronLeft /></button
+			use:melt={$prevButton}><ChevronLeft class="square-4" /></button
 		>
 		{#each $pages as page (page.key)}
 			{#if page.type === 'ellipsis'}
@@ -35,7 +36,7 @@
 					class="grid h-8 items-center rounded-sm bg-white px-3 text-sm text-magnum-700 shadow-sm
 					hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-50 data-[selected]:bg-magnum-900
 				data-[selected]:text-white"
-					melt={$pageTrigger(page)}>{page.value}</button
+					use:melt={$pageTrigger(page)}>{page.value}</button
 				>
 			{/if}
 		{/each}
@@ -43,7 +44,7 @@
 			class="grid h-8 items-center rounded-sm bg-white px-3 text-sm text-magnum-700 shadow-sm
 			hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-50 data-[selected]:bg-magnum-900
 		data-[selected]:text-white"
-			melt={$nextButton}><ChevronRight /></button
+			use:melt={$nextButton}><ChevronRight class="square-4" /></button
 		>
 	</div>
 </nav>

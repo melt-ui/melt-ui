@@ -1,5 +1,4 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -8,14 +7,18 @@ import {
 	kbd,
 	last,
 	next,
-	omit,
 	prev,
+	toWritableStores,
 	isHTMLElement,
+	omit,
+	getElemDirection,
+	overridable,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
-import { getElemDirection } from '$lib/internal/helpers/locale';
-import type { Defaults } from '$lib/internal/types';
-import { get, writable } from 'svelte/store';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+import { get, writable, readonly } from 'svelte/store';
 import type { CreateTabsProps, TabsTriggerProps } from './types';
+import type { TabsEvents } from './events';
 
 const defaults = {
 	orientation: 'horizontal',
@@ -28,33 +31,34 @@ type TabsParts = 'list' | 'trigger' | 'content';
 const { name, selector } = createElHelpers<TabsParts>('tabs');
 
 export function createTabs(props?: CreateTabsProps) {
-	const withDefaults = { ...defaults, ...props };
-	const options = writable(omit(withDefaults, 'value'));
+	const withDefaults = { ...defaults, ...props } satisfies CreateTabsProps;
 
-	const value = writable(withDefaults.value);
-	let ssrValue = withDefaults.value;
-	value.subscribe((value) => {
-		withDefaults.onChange?.(value);
-	});
+	const options = toWritableStores(omit(withDefaults, 'defaultValue', 'value', 'onValueChange'));
+	const { orientation, activateOnFocus, loop, autoSet } = options;
+
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
+
+	let ssrValue = withDefaults.defaultValue ?? get(value);
 
 	// Root
 	const root = builder(name(), {
-		stores: options,
-		returned: ($options) => {
+		stores: orientation,
+		returned: ($orientation) => {
 			return {
-				'data-orientation': $options.orientation,
+				'data-orientation': $orientation,
 			};
 		},
 	});
 
 	// List
 	const list = builder(name('list'), {
-		stores: options,
-		returned: ($options) => {
+		stores: orientation,
+		returned: ($orientation) => {
 			return {
 				role: 'tablist',
-				'aria-orientation': $options.orientation,
-				'data-orientation': $options.orientation,
+				'aria-orientation': $orientation,
+				'data-orientation': $orientation,
 			};
 		},
 	});
@@ -68,12 +72,12 @@ export function createTabs(props?: CreateTabsProps) {
 	};
 
 	const trigger = builder(name('trigger'), {
-		stores: [value, options],
-		returned: ([$value, $options]) => {
+		stores: [value, autoSet, orientation],
+		returned: ([$value, $autoSet, $orientation]) => {
 			return (props: TabsTriggerProps) => {
 				const { value: tabValue, disabled } = parseTriggerProps(props);
 
-				if (!$value && !ssrValue && $options.autoSet) {
+				if (!$value && !ssrValue && $autoSet) {
 					ssrValue = tabValue;
 					value.set(tabValue);
 				}
@@ -90,28 +94,26 @@ export function createTabs(props?: CreateTabsProps) {
 						: 'inactive',
 					tabindex: $value === tabValue ? 0 : -1,
 					'data-value': tabValue,
-					'data-orientation': $options.orientation,
+					'data-orientation': $orientation,
 					'data-disabled': disabled ? true : undefined,
 					disabled,
 				};
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<TabsEvents['trigger']> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', () => {
-					node.focus();
-				}),
-				addEventListener(node, 'focus', () => {
-					const $options = get(options);
+				addMeltEventListener(node, 'focus', () => {
 					const disabled = node.dataset.disabled === 'true';
 					const tabValue = node.dataset.value;
 
-					if ($options.activateOnFocus && !disabled && tabValue !== undefined) {
+					if (get(activateOnFocus) && !disabled && tabValue !== undefined) {
 						value.set(tabValue);
 					}
 				}),
 
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
+					node.focus();
+
 					e.preventDefault();
 
 					const disabled = node.dataset.disabled === 'true';
@@ -124,7 +126,7 @@ export function createTabs(props?: CreateTabsProps) {
 					}
 				}),
 
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const tabValue = node.dataset.value;
 					if (!tabValue) return;
 
@@ -134,7 +136,7 @@ export function createTabs(props?: CreateTabsProps) {
 					const rootEl = el.closest(selector());
 					if (!isHTMLElement(rootEl)) return;
 
-					const $options = get(options);
+					const $loop = get(loop);
 
 					const triggers = Array.from(rootEl.querySelectorAll('[role="tab"]')).filter(
 						(trigger): trigger is HTMLElement => isHTMLElement(trigger)
@@ -143,15 +145,15 @@ export function createTabs(props?: CreateTabsProps) {
 					const triggerIdx = enabledTriggers.findIndex((el) => el === e.target);
 
 					const dir = getElemDirection(rootEl);
-					const { nextKey, prevKey } = getDirectionalKeys(dir, $options.orientation);
+					const { nextKey, prevKey } = getDirectionalKeys(dir, get(orientation));
 
 					if (e.key === nextKey) {
 						e.preventDefault();
-						const nextEl = next(enabledTriggers, triggerIdx, $options.loop);
+						const nextEl = next(enabledTriggers, triggerIdx, $loop);
 						nextEl.focus();
 					} else if (e.key === prevKey) {
 						e.preventDefault();
-						const prevEl = prev(enabledTriggers, triggerIdx, $options.loop);
+						const prevEl = prev(enabledTriggers, triggerIdx, $loop);
 						prevEl.focus();
 					} else if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
 						e.preventDefault();
@@ -197,11 +199,15 @@ export function createTabs(props?: CreateTabsProps) {
 	});
 
 	return {
-		value,
+		elements: {
+			root,
+			list,
+			trigger,
+			content,
+		},
+		states: {
+			value: readonly(value),
+		},
 		options,
-		root: root,
-		list: list,
-		trigger: trigger,
-		content: content,
 	};
 }

@@ -1,19 +1,33 @@
 <script lang="ts">
-	import { createDialog } from '$lib';
+	import { createDialog, melt } from '$lib';
 	import { fade, fly } from 'svelte/transition';
 	// Internal helpers
-	import X from '~icons/lucide/x';
+	import { X } from 'lucide-svelte';
 
-	const { trigger, portal, overlay, content, title, description, close, open } =
-		createDialog();
+	const {
+		elements: {
+			trigger,
+			overlay,
+			content,
+			title,
+			description,
+			close,
+			portalled,
+		},
+		states: { open },
+	} = createDialog();
 </script>
 
-<button melt={$trigger} class="trigger"> View Notifications </button>
-<div use:portal>
+<button use:melt={$trigger} class="trigger"> View Notifications </button>
+<div use:melt={$portalled}>
 	{#if $open}
-		<div melt={$overlay} class="overlay" transition:fade={{ duration: 150 }} />
 		<div
-			melt={$content}
+			use:melt={$overlay}
+			class="overlay"
+			transition:fade={{ duration: 150 }}
+		/>
+		<div
+			use:melt={$content}
 			class="content"
 			transition:fly={{
 				x: -350,
@@ -21,11 +35,11 @@
 				opacity: 1,
 			}}
 		>
-			<button melt={$close} aria-label="Close" class="close">
-				<X />
+			<button use:melt={$close} aria-label="Close" class="close">
+				<X class="square-4" />
 			</button>
-			<h2 melt={$title} class="title">Notifications</h2>
-			<p melt={$description} class="description">
+			<h2 use:melt={$title} class="title">Notifications</h2>
+			<p use:melt={$description} class="description">
 				Check out your latest updates.
 			</p>
 			<section>
@@ -78,7 +92,7 @@
 	.overlay {
 		position: fixed;
 		inset: 0;
-		z-index: 20;
+		z-index: 50;
 
 		background-color: rgb(0 0 0 / 0.5);
 	}

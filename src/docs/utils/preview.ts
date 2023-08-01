@@ -135,7 +135,7 @@ const replaceLibEntriesRegex = /import (.*) from ["|'](?:\$lib.*)["|']/;
 function replaceLibEntries(code: string) {
 	// avoid executing the regex if it doesn't have $lib in the code for performance
 	if (!code.includes('$lib')) return code;
-	return code.replace(replaceLibEntriesRegex, "import $1 from '@melt-ui/svelte'");
+	return code.replace(replaceLibEntriesRegex, "import $1 from '$lib'");
 }
 
 export async function getAllPreviewSnippets({ slug, fetcher }: GetAllPreviewSnippetsArgs) {

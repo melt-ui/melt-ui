@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import ArrowRight from '~icons/lucide/arrow-right';
-	import Check from '~icons/lucide/check';
-	import Copy from '~icons/lucide/copy';
+	import { ArrowRight, Check, Copy } from 'lucide-svelte';
 	import { Button } from '$docs/components';
 
 	let copied = false;
@@ -33,17 +31,17 @@
 			<span>npm install <span class="whitespace-nowrap">@melt-ui/svelte</span></span>
 			{#if copied}
 				<div in:fly={{ y: -4 }}>
-					<Check class="inline-block h-5 w-5 text-magnum-500 transition" />
+					<Check class="inline-block text-magnum-500 transition square-4" />
 				</div>
 			{:else}
 				<div in:fly={{ y: 4 }}>
-					<Copy class="inline-block h-5 w-5 transition" />
+					<Copy class="inline-block transition square-4" />
 				</div>
 			{/if}
 		</button>
 		<Button href="/docs" class="mt-4 gap-2 sm:shrink">
 			Read the docs
-			<ArrowRight class="inline-block h-5 w-5 " />
+			<ArrowRight class="inline-block square-4 " />
 		</Button>
 	</div>
 </div>

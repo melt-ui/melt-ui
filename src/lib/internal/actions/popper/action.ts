@@ -1,32 +1,35 @@
-import { createFocusTrap, useClickOutside, useFloating, usePortal } from '$lib/internal/actions';
 import {
-	addEventListener,
-	executeCallbacks,
-	kbd,
-	type Callback,
-	noop,
-	isHTMLElement,
-} from '$lib/internal/helpers';
+	createFocusTrap,
+	useClickOutside,
+	useEscapeKeydown,
+	useFloating,
+	usePortal,
+} from '$lib/internal/actions';
+import { executeCallbacks, type Callback, noop, isHTMLElement } from '$lib/internal/helpers';
 import type { Action } from 'svelte/action';
-import type { PopperArgs, PopperConfig } from './popper.types';
+import type { PopperArgs, PopperConfig } from './types';
 
 const defaultConfig = {
 	floating: {},
 	focusTrap: {},
 	clickOutside: {},
+	escapeKeydown: {},
 	portal: 'body',
 } satisfies PopperConfig;
 
 export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) => {
-	const { anchorElement, open, options } = args ?? {};
-	if (!(open && anchorElement && options)) return { destroy: noop };
+	popperElement.dataset.escapee = '';
+	const { anchorElement, open, options } = args as PopperArgs;
+	if (!anchorElement || !open || !options) {
+		return { destroy: noop };
+	}
 
 	const opts = { ...defaultConfig, ...options } as PopperConfig;
 
 	const callbacks: Callback[] = [];
 
-	if (options.portal !== null) {
-		const portal = usePortal(popperElement, options.portal);
+	if (opts.portal !== null) {
+		const portal = usePortal(popperElement, opts.portal);
 		if (portal?.destroy) {
 			callbacks.push(portal.destroy);
 		}
@@ -34,7 +37,7 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 
 	callbacks.push(useFloating(anchorElement, popperElement, opts.floating).destroy);
 
-	if (options.focusTrap !== null) {
+	if (opts.focusTrap !== null) {
 		const { useFocusTrap } = createFocusTrap({
 			immediate: true,
 			escapeDeactivates: false,
@@ -51,7 +54,7 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 		}
 	}
 
-	if (options.clickOutside !== null) {
+	if (opts.clickOutside !== null) {
 		callbacks.push(
 			useClickOutside(popperElement, {
 				enabled: open,
@@ -68,19 +71,18 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 		);
 	}
 
-	callbacks.push(
-		addEventListener(popperElement, 'keydown', (e) => {
-			if (e.defaultPrevented) return;
-			const event = e as KeyboardEvent;
-
-			switch (event.key) {
-				case kbd.ESCAPE:
+	if (opts.escapeKeydown !== null) {
+		callbacks.push(
+			useEscapeKeydown(popperElement, {
+				enabled: open,
+				handler: (e: KeyboardEvent) => {
+					if (e.defaultPrevented) return;
 					open.set(false);
-					break;
-				default:
-			}
-		})
-	);
+				},
+				...opts.escapeKeydown,
+			}).destroy
+		);
+	}
 
 	const unsubscribe = executeCallbacks(...callbacks);
 

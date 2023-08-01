@@ -1,8 +1,13 @@
 <script lang="ts">
-	import { createHoverCard } from '$lib';
-	import { fade } from 'svelte/transition';
+	import { createHoverCard, melt } from '$lib';
+	import { fly } from 'svelte/transition';
 
-	const { trigger, content, open, arrow } = createHoverCard();
+	const {
+		elements: { trigger, content, arrow },
+		states: { open },
+	} = createHoverCard({
+		forceVisible: true,
+	});
 </script>
 
 <a
@@ -10,7 +15,7 @@
 	href="https://github.com/melt-ui/melt-ui"
 	target="_blank"
 	rel="noreferrer"
-	melt={$trigger}
+	use:melt={$trigger}
 >
 	<img
 		src="/logo-mark.svg"
@@ -22,8 +27,8 @@
 
 {#if $open}
 	<div
-		melt={$content}
-		transition:fade={{ duration: 100 }}
+		use:melt={$content}
+		transition:fly={{ y: -5, duration: 100 }}
 		class="z-10 rounded-md bg-white shadow-sm"
 	>
 		<div class="w-[300px] rounded-md bg-white p-5 shadow-sm">
@@ -55,7 +60,7 @@
 				</div>
 			</div>
 		</div>
-		<div melt={$arrow} />
+		<div use:melt={$arrow} />
 	</div>
 {/if}
 

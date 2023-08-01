@@ -1,24 +1,20 @@
+import type { BuilderReturn, Orientation } from '$lib/internal/types';
+import type { Writable } from 'svelte/store';
 import type { createToolbar } from './create';
+import type { ChangeFn } from '$lib/internal/helpers';
+
+export type ToolbarGroupType = 'single' | 'multiple';
 
 export type CreateToolbarProps = {
 	loop?: boolean;
-	orientation?: 'horizontal' | 'vertical';
+	orientation?: Orientation;
 };
 
-type SingleToolbarGroupRootProps = {
-	type?: 'single';
-	value?: string | null;
-};
-
-type MultipleToolbarGroupRootProps = {
-	type: 'multiple';
-	value?: string[];
-};
-
-export type CreateToolbarGroupProps = (
-	| SingleToolbarGroupRootProps
-	| MultipleToolbarGroupRootProps
-) & {
+export type CreateToolbarGroupProps<T extends ToolbarGroupType = 'single'> = {
+	defaultValue?: T extends 'single' ? string : string[];
+	value?: Writable<string | string[] | undefined>;
+	onValueChange?: ChangeFn<string | string[] | undefined>;
+	type?: T;
 	disabled?: boolean;
 };
 
@@ -28,4 +24,14 @@ export type ToolbarGroupItemProps =
 			disabled?: boolean;
 	  }
 	| string;
-export type CreateToolbarReturn = ReturnType<typeof createToolbar>;
+
+export type Toolbar = BuilderReturn<typeof createToolbar>;
+export type ToolbarElements = Toolbar['elements'];
+export type ToolbarOptions = Toolbar['options'];
+export type ToolbarBuilders = Toolbar['builders'];
+
+export type ToolbarGroup = BuilderReturn<ToolbarBuilders['createToolbarGroup']>;
+export type ToolbarGroupElements = ToolbarGroup['elements'];
+export type ToolbarGroupOptions = ToolbarGroup['options'];
+export type ToolbarGroupStates = ToolbarGroup['states'];
+export type ToolbarGroupHelpers = ToolbarGroup['helpers'];

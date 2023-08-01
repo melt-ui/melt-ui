@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type { CreateDialogReturn } from '$lib';
+	import type { Dialog } from '$lib';
+	import { melt } from '$lib';
 	import { styleToString } from '$lib/internal/helpers';
 	import { cubicOut } from 'svelte/easing';
 	import type { TransitionConfig } from 'svelte/transition';
@@ -39,23 +40,24 @@
 		};
 	};
 
-	export let dialog: CreateDialogReturn;
-	const { portal, overlay, content, title, description, close, open } = dialog;
+	export let dialog: Dialog;
+	const {
+		elements: { overlay, content, title, description, close },
+		states: { open },
+	} = dialog;
 </script>
 
 <div>
-	<div use:portal>
-		{#if $open}
-			<div melt={$overlay} class="fixed inset-0 z-40 bg-black/50" />
-			<div
-				class="fixed left-[50%] top-[50%] z-50 max-h-[85vh] w-[90vw] max-w-[450px]
+	{#if $open}
+		<div use:melt={$overlay} class="fixed inset-0 z-40 bg-black/50" />
+		<div
+			class="fixed left-[50%] top-[50%] z-50 max-h-[85vh] w-[90vw] max-w-[450px]
 				translate-x-[-50%] translate-y-[-50%] rounded-md bg-white p-6
 				shadow-lg"
-				transition:flyAndScale={{ duration: 150, y: 8, start: 0.96 }}
-				melt={$content}
-			>
-				<slot title={$title} description={$description} close={$close} />
-			</div>
-		{/if}
-	</div>
+			transition:flyAndScale={{ duration: 150, y: 8, start: 0.96 }}
+			use:melt={$content}
+		>
+			<slot title={$title} description={$description} close={$close} />
+		</div>
+	{/if}
 </div>

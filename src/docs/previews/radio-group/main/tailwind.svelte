@@ -1,22 +1,25 @@
 <script lang="ts">
-	import { createRadioGroup } from '$lib';
+	import { createRadioGroup, melt } from '$lib';
 
-	const { root, item, isChecked } = createRadioGroup({
-		value: 'default',
+	const {
+		elements: { root, item },
+		helpers: { isChecked },
+	} = createRadioGroup({
+		defaultValue: 'default',
 	});
 
 	const optionsArr = ['default', 'comfortable', 'compact'];
 </script>
 
 <div
-	melt={$root}
+	use:melt={$root}
 	class="flex flex-col gap-3 data-[orientation=horizontal]:flex-row"
 	aria-label="View density"
 >
 	{#each optionsArr as option}
 		<div class="flex items-center gap-3">
 			<button
-				melt={$item(option)}
+				use:melt={$item(option)}
 				class="grid h-6 w-6 cursor-default place-items-center rounded-full bg-white shadow-sm
 			hover:bg-magnum-100"
 				id={option}

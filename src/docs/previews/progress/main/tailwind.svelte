@@ -1,8 +1,14 @@
 <script lang="ts">
-	import { createProgress } from '$lib';
+	import { createProgress, melt } from '$lib';
+	import { writable } from 'svelte/store';
 
-	const { progress, value, max } = createProgress({
-		value: 30,
+	const value = writable(30);
+
+	const {
+		elements: { root },
+		options: { max },
+	} = createProgress({
+		value,
 		max: 100,
 	});
 
@@ -14,7 +20,7 @@
 </script>
 
 <div
-	melt={$progress}
+	use:melt={$root}
 	class="relative h-6 w-[300px] overflow-hidden rounded-[99999px] bg-black/40"
 >
 	<div
