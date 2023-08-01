@@ -334,7 +334,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 					applyPosition(e.clientX, closestThumb.index, left, right);
 				} else {
 					const { top, bottom } = sliderEl.getBoundingClientRect();
-					applyPosition(e.clientY, closestThumb.index, top, bottom);
+					applyPosition(e.clientY, closestThumb.index, bottom, top);
 				}
 			};
 
