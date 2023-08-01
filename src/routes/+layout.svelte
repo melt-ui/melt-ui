@@ -15,7 +15,7 @@
 	<header class="sticky bottom-0 z-40 w-full bg-neutral-900 px-2 pb-3 md:hidden">
 		<SiteHeader />
 	</header>
-	{#if dev || process.env.CI}
+	{#if dev}
 		<TailwindIndicator />
 		<JsIndicator />
 	{/if}
