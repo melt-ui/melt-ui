@@ -1,6 +1,6 @@
 {
 	"name": "@melt-ui/svelte",
-	"version": "0.27.0",
+	"version": "0.28.0-next.0",
 	"license": "MIT",
 	"scripts": {
 		"dev": "vite dev",
@@ -68,7 +68,7 @@
 		"@huntabyte/mdsvex": "0.16.5",
 		"@iconify-json/lucide": "^1.1.104",
 		"@iconify-json/simple-icons": "^1.1.57",
-		"@melt-ui/pp": "^0.0.5",
+		"@melt-ui/pp": "0.1.0-next.1",
 		"@playwright/test": "^1.36.0",
 		"@storybook/addon-essentials": "^7.0.23",
 		"@storybook/addon-interactions": "^7.0.23",

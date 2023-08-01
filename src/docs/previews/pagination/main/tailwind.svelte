@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createPagination } from '@melt-ui/svelte';
+	import { createPagination, melt } from '@melt-ui/svelte';
 	import { ChevronLeft, ChevronRight } from 'lucide-svelte';
 
 	const {
@@ -16,7 +16,7 @@
 <nav
 	class="flex flex-col items-center gap-4"
 	aria-label="pagination"
-	melt={$root}
+	use:melt={$root}
 >
 	<p class="text-center">
 		Showing items {$range.start} - {$range.end}
@@ -26,7 +26,7 @@
 			class="grid h-8 items-center rounded-sm bg-white px-3 text-sm text-magnum-700 shadow-sm
 			hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-50 data-[selected]:bg-magnum-900
 			data-[selected]:text-white"
-			melt={$prevButton}><ChevronLeft /></button
+			use:melt={$prevButton}><ChevronLeft /></button
 		>
 		{#each $pages as page (page.key)}
 			{#if page.type === 'ellipsis'}
@@ -36,7 +36,7 @@
 					class="grid h-8 items-center rounded-sm bg-white px-3 text-sm text-magnum-700 shadow-sm
 					hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-50 data-[selected]:bg-magnum-900
 				data-[selected]:text-white"
-					melt={$pageTrigger(page)}>{page.value}</button
+					use:melt={$pageTrigger(page)}>{page.value}</button
 				>
 			{/if}
 		{/each}
@@ -44,7 +44,7 @@
 			class="grid h-8 items-center rounded-sm bg-white px-3 text-sm text-magnum-700 shadow-sm
 			hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-50 data-[selected]:bg-magnum-900
 		data-[selected]:text-white"
-			melt={$nextButton}><ChevronRight /></button
+			use:melt={$nextButton}><ChevronRight /></button
 		>
 	</div>
 </nav>

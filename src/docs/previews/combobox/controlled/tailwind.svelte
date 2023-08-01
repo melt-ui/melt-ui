@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { createCombobox, type ComboboxFilterFunction } from '@melt-ui/svelte';
+	import {
+		createCombobox,
+		type ComboboxFilterFunction,
+		melt,
+	} from '@melt-ui/svelte';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
 	import { writable } from 'svelte/store';
 
@@ -106,7 +110,7 @@
 	<span class="block pb-1 capitalize">Choose your favorite book:</span>
 	<div class="relative">
 		<input
-			melt={$input}
+			use:melt={$input}
 			class="flex h-10 items-center justify-between rounded-md bg-white
             px-3 pr-12 text-magnum-700"
 			placeholder="Best book ever"
@@ -124,7 +128,7 @@
 
 <ul
 	class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-md"
-	melt={$menu}
+	use:melt={$menu}
 >
 	<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 	<div
@@ -135,7 +139,7 @@
 			{#if $filteredItems.length !== 0}
 				{#each $filteredItems as book, index (index)}
 					<li
-						melt={$item({
+						use:melt={$item({
 							index,
 							item: book,
 							disabled: book.disabled,

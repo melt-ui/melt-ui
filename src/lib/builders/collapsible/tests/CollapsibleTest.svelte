@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCollapsible } from '..';
+	import { createCollapsible, melt } from '@melt-ui/svelte';
 
 	export let open = false;
 
@@ -10,7 +10,7 @@
 	});
 </script>
 
-<div melt={$root}>
-	<button melt={$trigger} data-testid="trigger">Trigger</button>
-	<div melt={$content} data-testid="content">Content</div>
+<div use:melt={$root}>
+	<button use:melt={$trigger} data-testid="trigger">Trigger</button>
+	<div use:melt={$content} data-testid="content">Content</div>
 </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createProgress } from '@melt-ui/svelte';
+	import { createProgress, melt } from '@melt-ui/svelte';
 	import { writable } from 'svelte/store';
 
 	const value = writable(30);
@@ -20,7 +20,7 @@
 </script>
 
 <div
-	melt={$root}
+	use:melt={$root}
 	class="relative h-6 w-[300px] overflow-hidden rounded-[99999px] bg-black/40"
 >
 	<div

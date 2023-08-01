@@ -27,13 +27,13 @@ element or component.
 
 ```svelte {3} /$root/#hi /$content/#hi /$trigger/#hi
 <script>
-	import { createCollapsible } from '@melt-ui/svelte'
+	import { createCollapsible, melt } from '@melt-ui/svelte'
 	const { open, root, content, trigger } = createCollapsible()
 </script>
 
-<div melt={$root}>
-	<button melt={$trigger}>{$open ? 'Close' : 'Open'}</button>
-	<div melt={$content}>Obi-Wan says: Hello there!</div>
+<div use:melt={$root}>
+	<button use:melt={$trigger}>{$open ? 'Close' : 'Open'}</button>
+	<div use:melt={$content}>Obi-Wan says: Hello there!</div>
 </div>
 ```
 

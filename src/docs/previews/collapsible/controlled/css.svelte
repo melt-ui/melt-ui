@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCollapsible } from '@melt-ui/svelte/builders/collapsible';
+	import { createCollapsible, melt } from '@melt-ui/svelte';
 	import { slide } from 'svelte/transition';
 	import { ChevronsUpDown, X } from 'lucide-svelte';
 	import { writable } from 'svelte/store';
@@ -14,10 +14,10 @@
 	});
 </script>
 
-<div melt={$root} class="root">
+<div use:melt={$root} class="root">
 	<div class="header">
 		<span class="label"> @thomasglopes starred 3 repositories </span>
-		<button melt={$trigger}>
+		<button use:melt={$trigger}>
 			<div class="abs-center">
 				{#if $open}
 					<X />
@@ -33,7 +33,7 @@
 	</div>
 
 	{#if $open}
-		<div melt={$content} transition:slide>
+		<div use:melt={$content} transition:slide>
 			<div class="collapsible">
 				<div class="item">
 					<span>sveltejs/svelte</span>

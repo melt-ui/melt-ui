@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createSwitch } from '@melt-ui/svelte';
+	import { createSwitch, melt } from '@melt-ui/svelte';
 
 	const {
 		elements: { root, input },
@@ -13,7 +13,7 @@
 			Airplane mode
 		</label>
 		<button
-			melt={$root}
+			use:melt={$root}
 			class="relative h-6 w-11 cursor-default rounded-full bg-magnum-800 transition-colors data-[state=checked]:bg-magnum-950"
 			id="airplane-mode"
 		>
@@ -22,7 +22,7 @@
                 transition-transform will-change-transform
                 {$checked && 'translate-x-[22px]'}"
 			/>
-			<input melt={$input} />
+			<input use:melt={$input} />
 		</button>
 	</div>
 </form>
