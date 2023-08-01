@@ -46,7 +46,7 @@ Pass in the `type` argument to `createAccordion` with a value of `'multiple'`.
   const { ... } = createAccordion({
     type: 'multiple'
   })
-</>
+</script>
 ```
 
 <Preview code={snippets.multiple}>

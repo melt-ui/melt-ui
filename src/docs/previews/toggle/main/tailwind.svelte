@@ -15,5 +15,5 @@
     data-[disabled]:cursor-not-allowed data-[state=on]:bg-magnum-200
     data-[state=on]:text-magnum-900"
 >
-	<Italic />
+	<Italic class="square-4" />
 </button>

@@ -23,9 +23,9 @@
 		>
 			<div class="abs-center">
 				{#if $open}
-					<X />
+					<X class="square-4" />
 				{:else}
-					<ChevronsUpDown />
+					<ChevronsUpDown class="square-4" />
 				{/if}
 			</div>
 		</button>

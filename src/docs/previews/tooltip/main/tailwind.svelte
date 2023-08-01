@@ -16,7 +16,7 @@
 </script>
 
 <button type="button" class="trigger" use:melt={$trigger} aria-label="Add">
-	<Plus class="h-4 w-4" aria-label="plus" />
+	<Plus class="square-4" aria-label="plus" />
 </button>
 
 {#if $open}

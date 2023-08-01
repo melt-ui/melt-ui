@@ -48,7 +48,7 @@
                 appearance-none items-center justify-center rounded-full text-magnum-300
                 hover:bg-magnum-800/50 focus:shadow-magnum-400"
 		>
-			<X />
+			<X class="square-4" />
 		</button>
 	</div>
 {/if}

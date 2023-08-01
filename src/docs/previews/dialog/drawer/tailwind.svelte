@@ -51,7 +51,7 @@
                 hover:bg-magnum-100 focus:shadow-magnum-400 focus:outline-none focus:ring-2
                 focus:ring-magnum-400"
 			>
-				<X />
+				<X class="square-4" />
 			</button>
 			<h2 use:melt={$title} class="mb-0 text-lg font-medium text-black">
 				Notifications

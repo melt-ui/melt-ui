@@ -80,7 +80,7 @@
 					class="absolute right-4 top-4 grid place-items-center rounded-full text-magnum-500 square-6
 					hover:bg-magnum-900/50"
 				>
-					<X />
+					<X class="square-4" />
 				</button>
 			</div>
 		</div>

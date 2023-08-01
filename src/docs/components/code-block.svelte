@@ -19,18 +19,18 @@
 	<slot />
 </div>
 <button
-	class={cn('absolute right-5 top-16 z-10', copyBtnClasses)}
+	class={cn('absolute right-4 top-16 z-10', copyBtnClasses)}
 	aria-label="copy"
 	on:click={copyCode}
 	data-code-copy
 >
 	{#if $copied}
 		<div in:fly={{ y: -4 }}>
-			<Check class="text-magnum-500" />
+			<Check class="text-magnum-500 square-4" />
 		</div>
 	{:else}
 		<div in:fly={{ y: 4 }}>
-			<Copy class="hover:text-magnum-500" />
+			<Copy class="square-4 hover:text-magnum-500" />
 		</div>
 	{/if}
 </button>

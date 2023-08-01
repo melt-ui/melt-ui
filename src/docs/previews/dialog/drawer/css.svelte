@@ -36,7 +36,7 @@
 			}}
 		>
 			<button use:melt={$close} aria-label="Close" class="close">
-				<X />
+				<X class="square-4" />
 			</button>
 			<h2 use:melt={$title} class="title">Notifications</h2>
 			<p use:melt={$description} class="description">

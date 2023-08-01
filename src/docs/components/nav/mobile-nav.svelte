@@ -20,7 +20,7 @@
 	use:melt={$trigger}
 	class="ml-6 text-neutral-400 transition-colors hover:text-neutral-50 md:hidden"
 >
-	<Menu class="h-6 w-6" />
+	<Menu class="square-6" />
 	<span class="sr-only">Toggle Menu</span>
 </button>
 {#if $open}
@@ -40,7 +40,7 @@
 				<img src="/logo.svg" alt="Melt UI" class="h-9" />
 			</MobileNavLink>
 			<Button class="px-2" size="sm" variant="faded" {...$close} action={$close.action}>
-				<X class="h-4 w-4" />
+				<X class="square-4" />
 			</Button>
 		</div>
 

@@ -31,25 +31,25 @@
 >
 	<div class="flex items-center gap-1" use:melt={$fontGroup}>
 		<button class="item" use:melt={$fontItem('bold')}>
-			<Bold />
+			<Bold class="square-5" />
 		</button>
 		<button class="item" use:melt={$fontItem('italic')}>
-			<Italic />
+			<Italic class="square-5" />
 		</button>
 		<button class="item" use:melt={$fontItem('strikethrough')}>
-			<Strikethrough />
+			<Strikethrough class="square-5" />
 		</button>
 	</div>
 	<div class="separator" use:melt={$separator} />
 	<div class="flex items-center gap-1" use:melt={$alignGroup}>
 		<button class="item" use:melt={$alignItem('left')}>
-			<AlignLeft />
+			<AlignLeft class="square-5" />
 		</button>
 		<button class="item" use:melt={$alignItem('center')}>
-			<AlignCenter />
+			<AlignCenter class="square-5" />
 		</button>
 		<button class="item" use:melt={$alignItem('right')}>
-			<AlignRight />
+			<AlignRight class="square-5" />
 		</button>
 	</div>
 	<div class="separator" use:melt={$separator} />

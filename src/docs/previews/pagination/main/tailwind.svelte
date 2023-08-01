@@ -26,7 +26,7 @@
 			class="grid h-8 items-center rounded-sm bg-white px-3 text-sm text-magnum-700 shadow-sm
 			hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-50 data-[selected]:bg-magnum-900
 			data-[selected]:text-white"
-			use:melt={$prevButton}><ChevronLeft /></button
+			use:melt={$prevButton}><ChevronLeft class="square-4" /></button
 		>
 		{#each $pages as page (page.key)}
 			{#if page.type === 'ellipsis'}
@@ -44,7 +44,7 @@
 			class="grid h-8 items-center rounded-sm bg-white px-3 text-sm text-magnum-700 shadow-sm
 			hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-50 data-[selected]:bg-magnum-900
 		data-[selected]:text-white"
-			use:melt={$nextButton}><ChevronRight /></button
+			use:melt={$nextButton}><ChevronRight class="square-4" /></button
 		>
 	</div>
 </nav>

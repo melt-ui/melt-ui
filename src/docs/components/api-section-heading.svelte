@@ -14,9 +14,9 @@
 	<H3 class="mb-0 mt-0" id={createHeadingId(title)}>{title}</H3>
 </div>
 {#if isBuilder}
-	<Hammer class="absolute right-4 top-4 h-6 w-6 text-white" />
+	<Hammer class="absolute right-4 top-4 text-white square-4" />
 {:else}
-	<Shapes class="absolute right-4 top-4 h-6 w-6 text-white" />
+	<Shapes class="absolute right-4 top-4 text-white square-4" />
 {/if}
 <P class="mb-6">
 	{@html description}

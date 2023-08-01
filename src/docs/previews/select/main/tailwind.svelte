@@ -27,7 +27,7 @@
 		aria-label="Food"
 	>
 		{$valueLabel || 'Select a flavor'}
-		<ChevronDown />
+		<ChevronDown class="square-5" />
 	</button>
 	{#if $open}
 		<div
@@ -55,7 +55,7 @@
 						>
 							{#if $isSelected(item)}
 								<div class="check">
-									<Check />
+									<Check class="square-4" />
 								</div>
 							{/if}
 							{item}
