@@ -2,6 +2,10 @@
 	import '../app.postcss';
 	import { dev } from '$app/environment';
 	import { JsIndicator, SiteHeader, TailwindIndicator } from '$docs/components';
+
+	import { inject } from '@vercel/analytics';
+
+	inject({ mode: dev ? 'development' : 'production' });
 </script>
 
 <div class="relative flex min-h-screen flex-col" id="page">
