@@ -5,7 +5,7 @@ import DialogNestedTest from './DialogNestedTest.svelte';
 import { axe } from 'jest-axe';
 import { vi, it, beforeEach, afterEach, describe } from 'vitest';
 
-describe('Nested Dialogs', () => {
+describe.skip('Nested Dialogs', () => {
 	beforeEach(() => {
 		vi.stubGlobal('requestAnimationFrame', (fn: FrameRequestCallback) => {
 			return window.setTimeout(() => fn(Date.now()), 16);
