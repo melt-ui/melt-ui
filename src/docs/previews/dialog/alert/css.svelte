@@ -5,7 +5,15 @@
 	import { X } from 'lucide-svelte';
 
 	const {
-		elements: { trigger, overlay, content, title, description, close },
+		elements: {
+			trigger,
+			overlay,
+			content,
+			title,
+			description,
+			close,
+			portalled,
+		},
 		states: { open },
 	} = createDialog({
 		role: 'alertdialog',
@@ -13,35 +21,37 @@
 </script>
 
 <button use:melt={$trigger} class="trigger"> Delete Item </button>
-{#if $open}
-	<div use:melt={$overlay} class="overlay" />
-	<div
-		class="content"
-		transition:flyAndScale={{
-			duration: 150,
-			y: 8,
-			start: 0.96,
-		}}
-		use:melt={$content}
-	>
-		<h2 use:melt={$title} class="title">
-			Are you sure you want to delete this?
-		</h2>
-		<p use:melt={$description} class="description">
-			This action cannot be undone. This will permanently delete the item and
-			remove it from our servers.
-		</p>
+<div use:melt={$portalled}>
+	{#if $open}
+		<div use:melt={$overlay} class="overlay" />
+		<div
+			class="content"
+			transition:flyAndScale={{
+				duration: 150,
+				y: 8,
+				start: 0.96,
+			}}
+			use:melt={$content}
+		>
+			<h2 use:melt={$title} class="title">
+				Are you sure you want to delete this?
+			</h2>
+			<p use:melt={$description} class="description">
+				This action cannot be undone. This will permanently delete the item and
+				remove it from our servers.
+			</p>
 
-		<div class="actions">
-			<button use:melt={$close} class="secondary"> Cancel </button>
-			<button use:melt={$close} class="primary"> Continue </button>
+			<div class="actions">
+				<button use:melt={$close} class="secondary"> Cancel </button>
+				<button use:melt={$close} class="primary"> Continue </button>
+			</div>
+
+			<button use:melt={$close} aria-label="Close" class="close">
+				<X />
+			</button>
 		</div>
-
-		<button use:melt={$close} aria-label="Close" class="close">
-			<X />
-		</button>
-	</div>
-{/if}
+	{/if}
+</div>
 
 <style lang="postcss">
 	.trigger {

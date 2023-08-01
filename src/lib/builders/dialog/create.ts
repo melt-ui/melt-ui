@@ -26,7 +26,14 @@ import type { CreateDialogProps } from './types';
 import { onMount, tick } from 'svelte';
 import type { DialogEvents } from './events';
 
-type DialogParts = 'trigger' | 'overlay' | 'content' | 'title' | 'description' | 'close';
+type DialogParts =
+	| 'trigger'
+	| 'overlay'
+	| 'content'
+	| 'title'
+	| 'description'
+	| 'close'
+	| 'portalled';
 const { name } = createElHelpers<DialogParts>('dialog');
 
 const defaults = {
@@ -139,13 +146,8 @@ export function createDialog(props?: CreateDialogProps) {
 			} as const;
 		},
 		action: (node: HTMLElement) => {
-			let unsubPortal = noop;
 			let unsubEscapeKeydown = noop;
 
-			const portal = usePortal(node);
-			if (portal && portal.destroy) {
-				unsubPortal = portal.destroy;
-			}
 			if (get(closeOnEscape)) {
 				const escapeKeydown = useEscapeKeydown(node, {
 					handler: () => {
@@ -159,7 +161,6 @@ export function createDialog(props?: CreateDialogProps) {
 
 			return {
 				destroy() {
-					unsubPortal();
 					unsubEscapeKeydown();
 				},
 			};
@@ -167,8 +168,8 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const content = builder(name('content'), {
-		stores: [isVisible, portal],
-		returned: ([$isVisible, $portal]) => {
+		stores: [isVisible],
+		returned: ([$isVisible]) => {
 			return {
 				id: ids.content,
 				role: get(role),
@@ -180,12 +181,10 @@ export function createDialog(props?: CreateDialogProps) {
 				style: styleToString({
 					display: $isVisible ? undefined : 'none',
 				}),
-				'data-portal': $portal ? '' : undefined,
 			};
 		},
 
 		action: (node: HTMLElement) => {
-			const portalParent = getPortalParent(node);
 			let activate = noop;
 			let deactivate = noop;
 
@@ -223,16 +222,6 @@ export function createDialog(props?: CreateDialogProps) {
 				}
 			});
 
-			const unsubPortal = effect([portal], ([$portal]) => {
-				if (!$portal) return noop;
-				const portalAction = usePortal(node, portalParent === $portal ? portalParent : $portal);
-				if (portalAction && portalAction.destroy) {
-					return portalAction.destroy;
-				} else {
-					return noop;
-				}
-			});
-
 			const unsubEscapeKeydown = effect([closeOnEscape], ([$closeOnEscape]) => {
 				if (!$closeOnEscape) return noop;
 
@@ -259,9 +248,34 @@ export function createDialog(props?: CreateDialogProps) {
 
 			return {
 				destroy() {
-					unsubPortal();
 					unsubEscapeKeydown();
 					unsubFocusTrap();
+				},
+			};
+		},
+	});
+
+	const portalled = builder(name('portalled'), {
+		stores: portal,
+		returned: ($portal) => ({
+			'data-portal': $portal ? '' : undefined,
+		}),
+		action: (node: HTMLElement) => {
+			const portalParent = getPortalParent(node);
+
+			const unsubPortal = effect([portal], ([$portal]) => {
+				if (!$portal) return noop;
+				const portalAction = usePortal(node, portalParent === $portal ? portalParent : $portal);
+				if (portalAction && portalAction.destroy) {
+					return portalAction.destroy;
+				} else {
+					return noop;
+				}
+			});
+
+			return {
+				destroy() {
+					unsubPortal();
 				},
 			};
 		},
@@ -321,6 +335,7 @@ export function createDialog(props?: CreateDialogProps) {
 			description,
 			overlay,
 			close,
+			portalled,
 		},
 		states: {
 			open: readonly(open),

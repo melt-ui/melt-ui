@@ -5,46 +5,56 @@
 	import { X } from 'lucide-svelte';
 
 	const {
-		elements: { trigger, overlay, content, title, description, close },
+		elements: {
+			trigger,
+			overlay,
+			content,
+			title,
+			description,
+			close,
+			portalled,
+		},
 		states: { open },
 	} = createDialog();
 </script>
 
 <button use:melt={$trigger} class="trigger"> Open Dialog </button>
-{#if $open}
-	<div use:melt={$overlay} class="overlay" />
-	<div
-		class="content"
-		transition:flyAndScale={{
-			duration: 150,
-			y: 8,
-			start: 0.96,
-		}}
-		use:melt={$content}
-	>
-		<h2 use:melt={$title} class="title">Edit profile</h2>
-		<p use:melt={$description} class="description">
-			Make changes to your profile here. Click save when you're done.
-		</p>
+<div use:melt={$portalled}>
+	{#if $open}
+		<div use:melt={$overlay} class="overlay" />
+		<div
+			class="content"
+			transition:flyAndScale={{
+				duration: 150,
+				y: 8,
+				start: 0.96,
+			}}
+			use:melt={$content}
+		>
+			<h2 use:melt={$title} class="title">Edit profile</h2>
+			<p use:melt={$description} class="description">
+				Make changes to your profile here. Click save when you're done.
+			</p>
 
-		<fieldset>
-			<label for="name"> Name </label>
-			<input id="name" value="Thomas G. Lopes" />
-		</fieldset>
-		<fieldset>
-			<label for="username"> Username </label>
-			<input id="username" value="@thomasglopes" />
-		</fieldset>
-		<div class="actions">
-			<button use:melt={$close} class="secondary"> Cancel </button>
-			<button use:melt={$close} class="primary"> Save changes </button>
+			<fieldset>
+				<label for="name"> Name </label>
+				<input id="name" value="Thomas G. Lopes" />
+			</fieldset>
+			<fieldset>
+				<label for="username"> Username </label>
+				<input id="username" value="@thomasglopes" />
+			</fieldset>
+			<div class="actions">
+				<button use:melt={$close} class="secondary"> Cancel </button>
+				<button use:melt={$close} class="primary"> Save changes </button>
+			</div>
+
+			<button use:melt={$close} aria-label="close" class="close">
+				<X />
+			</button>
 		</div>
-
-		<button use:melt={$close} aria-label="close" class="close">
-			<X />
-		</button>
-	</div>
-{/if}
+	{/if}
+</div>
 
 <style lang="postcss">
 	.trigger {

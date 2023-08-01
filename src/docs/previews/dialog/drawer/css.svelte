@@ -5,48 +5,58 @@
 	import { X } from 'lucide-svelte';
 
 	const {
-		elements: { trigger, overlay, content, title, description, close },
+		elements: {
+			trigger,
+			overlay,
+			content,
+			title,
+			description,
+			close,
+			portalled,
+		},
 		states: { open },
 	} = createDialog();
 </script>
 
 <button use:melt={$trigger} class="trigger"> View Notifications </button>
-{#if $open}
-	<div
-		use:melt={$overlay}
-		class="overlay"
-		transition:fade={{ duration: 150 }}
-	/>
-	<div
-		use:melt={$content}
-		class="content"
-		transition:fly={{
-			x: -350,
-			duration: 300,
-			opacity: 1,
-		}}
-	>
-		<button use:melt={$close} aria-label="Close" class="close">
-			<X />
-		</button>
-		<h2 use:melt={$title} class="title">Notifications</h2>
-		<p use:melt={$description} class="description">
-			Check out your latest updates.
-		</p>
-		<section>
-			<div class="invitation">
-				<h3>New invitation</h3>
-				<p>
-					You have been invited to join the <strong>Designers</strong> team.
-				</p>
-				<div class="actions">
-					<button class="secondary"> Reject </button>
-					<button class="primary"> Accept </button>
+<div use:melt={$portalled}>
+	{#if $open}
+		<div
+			use:melt={$overlay}
+			class="overlay"
+			transition:fade={{ duration: 150 }}
+		/>
+		<div
+			use:melt={$content}
+			class="content"
+			transition:fly={{
+				x: -350,
+				duration: 300,
+				opacity: 1,
+			}}
+		>
+			<button use:melt={$close} aria-label="Close" class="close">
+				<X />
+			</button>
+			<h2 use:melt={$title} class="title">Notifications</h2>
+			<p use:melt={$description} class="description">
+				Check out your latest updates.
+			</p>
+			<section>
+				<div class="invitation">
+					<h3>New invitation</h3>
+					<p>
+						You have been invited to join the <strong>Designers</strong> team.
+					</p>
+					<div class="actions">
+						<button class="secondary"> Reject </button>
+						<button class="primary"> Accept </button>
+					</div>
 				</div>
-			</div>
-		</section>
-	</div>
-{/if}
+			</section>
+		</div>
+	{/if}
+</div>
 
 <style lang="postcss">
 	.trigger {
