@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCheckbox } from '$lib';
+	import { createCheckbox, melt } from '$lib';
 	import { Check, Minus } from 'lucide-svelte';
 
 	const {
@@ -12,13 +12,13 @@
 
 <form>
 	<div>
-		<button melt={$root} id="checkbox">
+		<button use:melt={$root} id="checkbox">
 			{#if $isIndeterminate}
-				<Minus />
+				<Minus class="square-4" />
 			{:else if $isChecked}
-				<Check />
+				<Check class="square-4" />
 			{/if}
-			<input melt={$input} />
+			<input use:melt={$input} />
 		</button>
 		<label for="checkbox"> Accept terms and conditions. </label>
 	</div>

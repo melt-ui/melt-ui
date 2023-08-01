@@ -1,5 +1,4 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -12,9 +11,12 @@ import {
 	styleToString,
 	toWritableStores,
 	type ChangeFn,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
+import type { MeltActionReturn } from '$lib/internal/types';
 import { tick } from 'svelte';
-import { derived, writable, type Writable } from 'svelte/store';
+import { derived, readonly, writable, type Writable } from 'svelte/store';
+import type { AccordionEvents } from './events';
 import type { AccordionHeadingProps, AccordionItemProps, CreateAccordionProps } from './types';
 
 type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
@@ -30,7 +32,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 	props?: CreateAccordionProps<Multiple>
 ) => {
 	const withDefaults = { ...defaults, ...props };
-	const options = toWritableStores(omit(withDefaults, 'value'));
+	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
 	const { disabled, forceVisible } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.value);
@@ -105,34 +107,28 @@ export const createAccordion = <Multiple extends boolean = false>(
 				};
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<AccordionEvents['trigger']> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', () => {
+				addMeltEventListener(node, 'click', () => {
 					const disabled = node.dataset.disabled === 'true';
 					const itemValue = node.dataset.value;
 					if (disabled || !itemValue) return;
 
-					value.update(($value) => {
-						if ($value === undefined) {
-							return withDefaults.multiple ? [itemValue] : itemValue;
-						}
-
-						if (Array.isArray($value)) {
-							if ($value.includes(itemValue)) {
-								return $value.filter((v) => v !== itemValue);
-							}
-							$value.push(itemValue);
-							return $value;
-						}
-
-						return $value === itemValue ? undefined : itemValue;
-					});
+					handleValueUpdate(itemValue);
 				}),
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					if (![kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.HOME, kbd.END].includes(e.key)) {
 						return;
 					}
 					e.preventDefault();
+
+					if (e.key === kbd.SPACE || e.key === kbd.ENTER) {
+						const disabled = node.dataset.disabled === 'true';
+						const itemValue = node.dataset.value;
+						if (disabled || !itemValue) return;
+						handleValueUpdate(itemValue);
+						return;
+					}
 
 					const el = e.target;
 					const rootEl = getElementByMeltId(ids.root);
@@ -215,6 +211,24 @@ export const createAccordion = <Multiple extends boolean = false>(
 		},
 	});
 
+	function handleValueUpdate(itemValue: string) {
+		value.update(($value) => {
+			if ($value === undefined) {
+				return withDefaults.multiple ? [itemValue] : itemValue;
+			}
+
+			if (Array.isArray($value)) {
+				if ($value.includes(itemValue)) {
+					return $value.filter((v) => v !== itemValue);
+				}
+				$value.push(itemValue);
+				return $value;
+			}
+
+			return $value === itemValue ? undefined : itemValue;
+		});
+	}
+
 	return {
 		elements: {
 			root,
@@ -224,7 +238,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 			heading,
 		},
 		states: {
-			value: value as Writable<CreateAccordionProps<Multiple>['value']>,
+			value: readonly(value as Writable<CreateAccordionProps<Multiple>['value']>),
 		},
 		helpers: {
 			isSelected: isSelectedStore,

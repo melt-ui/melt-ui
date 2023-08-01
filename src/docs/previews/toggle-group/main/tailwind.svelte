@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createToggleGroup } from '@melt-ui/svelte';
+	import { createToggleGroup, melt } from '$lib';
 	import { AlignCenter, AlignLeft, AlignRight } from 'lucide-svelte';
 
 	const {
@@ -10,22 +10,30 @@
 </script>
 
 <div
-	melt={$root}
+	use:melt={$root}
 	class="flex items-center data-[orientation='vertical']:flex-col"
 	aria-label="Text alignment"
 >
-	<button class="toggle-item" melt={$item('left')} aria-label="Left aligned">
-		<AlignLeft />
+	<button
+		class="toggle-item"
+		use:melt={$item('left')}
+		aria-label="Left aligned"
+	>
+		<AlignLeft class="square-4" />
 	</button>
 	<button
 		class="toggle-item"
-		melt={$item('center')}
+		use:melt={$item('center')}
 		aria-label="Center aligned"
 	>
-		<AlignCenter />
+		<AlignCenter class="square-4" />
 	</button>
-	<button class="toggle-item" melt={$item('right')} aria-label="Right aligned">
-		<AlignRight />
+	<button
+		class="toggle-item"
+		use:melt={$item('right')}
+		aria-label="Right aligned"
+	>
+		<AlignRight class="square-4" />
 	</button>
 </div>
 

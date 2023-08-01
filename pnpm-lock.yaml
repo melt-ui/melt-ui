@@ -32,8 +32,8 @@ devDependencies:
     specifier: ^1.1.57
     version: 1.1.57
   '@melt-ui/pp':
-    specifier: ^0.0.5
-    version: 0.0.5(@melt-ui/svelte@0.22.2)(svelte@4.0.0)
+    specifier: 0.1.0-next.1
+    version: 0.1.0-next.1(@melt-ui/svelte@0.22.2)(svelte@4.0.0)
   '@playwright/test':
     specifier: ^1.36.0
     version: 1.36.0
@@ -103,6 +103,9 @@ devDependencies:
   '@typescript-eslint/parser':
     specifier: ^5.60.0
     version: 5.60.0(eslint@8.45.0)(typescript@5.1.6)
+  '@vercel/analytics':
+    specifier: ^1.0.1
+    version: 1.0.1
   '@vitest/coverage-v8':
     specifier: ^0.33.0
     version: 0.33.0(vitest@0.33.0)
@@ -2810,10 +2813,11 @@ packages:
       react: 18.2.0
     dev: true
 
-  /@melt-ui/pp@0.0.5(@melt-ui/svelte@0.22.2)(svelte@4.0.0):
-    resolution: {integrity: sha512-KFfZXn70wHzEX8jkGy0p+MJpPuv1HS8THF3glZI5kuOGWSvLjVoxtuNhk5UuJSzsNk0OlIlVaAZIRSPrswE5Gw==}
+  /@melt-ui/pp@0.1.0-next.1(@melt-ui/svelte@0.22.2)(svelte@4.0.0):
+    resolution: {integrity: sha512-PeHBH++OhNJkzH43G+OnuW1KYyazOAAnGnUdd0XWdbJQvnhXiKnmqpItHzqVok+6iI5yDgRfa5HfQB586k0EFQ==}
+    engines: {pnpm: '>=8.6.3'}
     peerDependencies:
-      '@melt-ui/svelte': ^0.22.0
+      '@melt-ui/svelte': '>= 0.22.0'
       svelte: ^3.55.0 || ^4.0.0
     dependencies:
       '@melt-ui/svelte': 0.22.2(svelte@4.0.0)
@@ -4896,6 +4900,10 @@ packages:
     dependencies:
       '@typescript-eslint/types': 5.60.0
       eslint-visitor-keys: 3.4.1
+    dev: true
+
+  /@vercel/analytics@1.0.1:
+    resolution: {integrity: sha512-Ux0c9qUfkcPqng3vrR0GTrlQdqNJ2JREn/2ydrVuKwM3RtMfF2mWX31Ijqo1opSjNAq6rK76PwtANw6kl6TAow==}
     dev: true
 
   /@vercel/nft@0.22.6:

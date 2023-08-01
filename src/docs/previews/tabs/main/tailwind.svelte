@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createTabs } from '@melt-ui/svelte';
+	import { createTabs, melt } from '$lib';
 
 	const {
 		elements: { root, list, content, trigger },
@@ -9,21 +9,21 @@
 </script>
 
 <div
-	melt={$root}
+	use:melt={$root}
 	class="flex max-w-[25rem] flex-col overflow-hidden rounded-md shadow-lg
 	data-[orientation=vertical]:flex-row"
 >
 	<div
-		melt={$list}
+		use:melt={$list}
 		class="flex shrink-0 overflow-x-auto border-b border-magnum-100 bg-white
 		data-[orientation=vertical]:flex-col data-[orientation=vertical]:border-r"
 		aria-label="Manage your account"
 	>
-		<button melt={$trigger('tab1')} class="trigger">Account</button>
-		<button melt={$trigger('tab2')} class="trigger">Password</button>
-		<button melt={$trigger('tab3')} class="trigger">Settings</button>
+		<button use:melt={$trigger('tab1')} class="trigger">Account</button>
+		<button use:melt={$trigger('tab2')} class="trigger">Password</button>
+		<button use:melt={$trigger('tab3')} class="trigger">Settings</button>
 	</div>
-	<div melt={$content('tab1')} class="grow bg-white p-5">
+	<div use:melt={$content('tab1')} class="grow bg-white p-5">
 		<p class="mb-5 leading-normal text-magnum-950">
 			Make changes to your account here. Click save when you're done.
 		</p>
@@ -41,7 +41,7 @@
 			<button class="save">Save changes</button>
 		</div>
 	</div>
-	<div melt={$content('tab2')} class="grow bg-white p-5">
+	<div use:melt={$content('tab2')} class="grow bg-white p-5">
 		<p class="mb-5 leading-normal text-magnum-950">
 			Change your password here. Click save when you're done.
 		</p>
@@ -58,7 +58,7 @@
 			<button class="save">Save changes</button>
 		</div>
 	</div>
-	<div melt={$content('tab3')} class="grow bg-white p-5">
+	<div use:melt={$content('tab3')} class="grow bg-white p-5">
 		<p class="mb-5 leading-normal text-magnum-950">
 			Change your settings here. Click save when you're done.
 		</p>

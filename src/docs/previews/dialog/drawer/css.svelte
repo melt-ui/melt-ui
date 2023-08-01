@@ -1,48 +1,62 @@
 <script lang="ts">
-	import { createDialog } from '$lib/builders/dialog';
+	import { createDialog, melt } from '$lib';
 	import { fade, fly } from 'svelte/transition';
 	// Internal helpers
 	import { X } from 'lucide-svelte';
 
 	const {
-		elements: { trigger, overlay, content, title, description, close },
+		elements: {
+			trigger,
+			overlay,
+			content,
+			title,
+			description,
+			close,
+			portalled,
+		},
 		states: { open },
 	} = createDialog();
 </script>
 
-<button melt={$trigger} class="trigger"> View Notifications </button>
-{#if $open}
-	<div melt={$overlay} class="overlay" transition:fade={{ duration: 150 }} />
-	<div
-		melt={$content}
-		class="content"
-		transition:fly={{
-			x: -350,
-			duration: 300,
-			opacity: 1,
-		}}
-	>
-		<button melt={$close} aria-label="Close" class="close">
-			<X />
-		</button>
-		<h2 melt={$title} class="title">Notifications</h2>
-		<p melt={$description} class="description">
-			Check out your latest updates.
-		</p>
-		<section>
-			<div class="invitation">
-				<h3>New invitation</h3>
-				<p>
-					You have been invited to join the <strong>Designers</strong> team.
-				</p>
-				<div class="actions">
-					<button class="secondary"> Reject </button>
-					<button class="primary"> Accept </button>
+<button use:melt={$trigger} class="trigger"> View Notifications </button>
+<div use:melt={$portalled}>
+	{#if $open}
+		<div
+			use:melt={$overlay}
+			class="overlay"
+			transition:fade={{ duration: 150 }}
+		/>
+		<div
+			use:melt={$content}
+			class="content"
+			transition:fly={{
+				x: -350,
+				duration: 300,
+				opacity: 1,
+			}}
+		>
+			<button use:melt={$close} aria-label="Close" class="close">
+				<X class="square-4" />
+			</button>
+			<h2 use:melt={$title} class="title">Notifications</h2>
+			<p use:melt={$description} class="description">
+				Check out your latest updates.
+			</p>
+			<section>
+				<div class="invitation">
+					<h3>New invitation</h3>
+					<p>
+						You have been invited to join the <strong>Designers</strong> team.
+					</p>
+					<div class="actions">
+						<button class="secondary"> Reject </button>
+						<button class="primary"> Accept </button>
+					</div>
 				</div>
-			</div>
-		</section>
-	</div>
-{/if}
+			</section>
+		</div>
+	{/if}
+</div>
 
 <style lang="postcss">
 	.trigger {
@@ -78,7 +92,7 @@
 	.overlay {
 		position: fixed;
 		inset: 0;
-		z-index: 20;
+		z-index: 50;
 
 		background-color: rgb(0 0 0 / 0.5);
 	}

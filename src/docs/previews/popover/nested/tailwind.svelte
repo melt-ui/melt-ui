@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createPopover } from '@melt-ui/svelte';
+	import { createPopover, melt } from '$lib';
 	import { fade } from 'svelte/transition';
 	import { Settings2, X } from 'lucide-svelte';
 
@@ -26,25 +26,25 @@
 <button
 	type="button"
 	class="trigger"
-	melt={$trigger}
+	use:melt={$trigger}
 	aria-label="Update dimensions"
 >
-	<Settings2 class="h-4 w-4" />
+	<Settings2 class="square-4" />
 	<span class="sr-only">Open Popover</span>
 </button>
 
 {#if $open}
 	<div
-		melt={$content}
+		use:melt={$content}
 		transition:fade={{ duration: 100 }}
 		class="z-10 rounded-[4px] bg-white p-5 shadow-md"
 	>
-		<div melt={$arrow} />
+		<div use:melt={$arrow} />
 		<div class="flex flex-col gap-2.5 p-4">
 			<button
 				type="button"
 				class="inline-flex items-center justify-center rounded-md border bg-white px-4 py-2 font-medium leading-none text-magnum-700 shadow-lg transition-colors hover:bg-magnum-100"
-				melt={$triggerA}
+				use:melt={$triggerA}
 				aria-label="Change settings"
 			>
 				Open Nested
@@ -52,11 +52,11 @@
 
 			{#if $openA}
 				<div
-					melt={$contentA}
+					use:melt={$contentA}
 					transition:fade={{ duration: 100 }}
 					class=" z-20 w-64 rounded-md bg-neutral-900 p-5 text-white shadow-lg"
 				>
-					<div melt={$arrowA} />
+					<div use:melt={$arrowA} />
 					<div class="flex flex-col gap-2 px-4 py-2">
 						<p class="mb-2 font-medium text-magnum-500">Dimensions</p>
 						<fieldset>
@@ -104,14 +104,14 @@
 							/>
 						</fieldset>
 					</div>
-					<button class="close" melt={$closeA}>
-						<X class="h-4 w-4 " />
+					<button class="close" use:melt={$closeA}>
+						<X class="square-4" />
 					</button>
 				</div>
 			{/if}
 		</div>
-		<button class="close" melt={$close}>
-			<X class="h-4 w-4 " />
+		<button class="close" use:melt={$close}>
+			<X class="square-4" />
 		</button>
 	</div>
 {/if}

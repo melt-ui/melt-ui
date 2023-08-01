@@ -28,7 +28,7 @@ The first thing you need to do is create a dropdown menu using the `createDropdo
 
 ```svelte {3}
 <script lang="ts">
-	import { createContextMenu } from '@melt-ui/svelte'
+	import { createContextMenu, melt } from '@melt-ui/svelte'
 	const { menu, item, trigger, arrow } = createContextMenu()
 </script>
 ```
@@ -38,16 +38,16 @@ example of how to structure the menu is shown below.
 
 ```svelte
 <script lang="ts">
-	import { createContextMenu } from '@melt-ui/svelte'
+	import { createContextMenu, melt } from '@melt-ui/svelte'
 	const { menu, item, trigger, arrow } = createContextMenu()
 </script>
 
-<span melt={$trigger}>Right click here.</span>
-<div melt={$menu}>
+<span use:melt={$trigger}>Right click here.</span>
+<div use:melt={$menu}>
 	<div {...$item} use:item>...</div>
 	<div {...$item} use:item>...</div>
 	<div {...$item} use:item>...</div>
-	<div melt={$arrow} />
+	<div use:melt={$arrow} />
 </div>
 ```
 

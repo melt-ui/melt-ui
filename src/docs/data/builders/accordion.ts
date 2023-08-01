@@ -1,17 +1,30 @@
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
+import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { accordionEvents } from '$lib/builders/accordion/events';
 import type { BuilderData } from '.';
 
-const builder: APISchema = {
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	{
+		name: 'type',
+		type: ["'single'", "'multiple'"],
+		default: "'single'",
+		description:
+			'The type of accordion to create. A `"single"` accordion only allows one item to be open at a time. A `"multiple"` accordion allows multiple items to be open at a time.',
+	},
+	PROPS.DISABLED,
+	PROPS.FORCE_VISIBLE,
+];
+
+const BUILDER_NAME = 'accordion';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createAccordion',
-	description: DESCRIPTIONS.BUILDER('accordion'),
 	props: [
-		{
-			name: 'value',
-			type: ['string', 'string[]', 'undefined'],
-			description:
-				'The value of the currently open item. You can also pass an array of values to open multiple items at once if the accordion is of type `multiple`.',
-		},
+		...OPTION_PROPS,
 		{
 			name: 'multiple',
 			type: 'boolean',
@@ -24,49 +37,67 @@ const builder: APISchema = {
 			default: 'false',
 			description: 'Whether or not the accordion is disabled.',
 		},
-	],
-	returnedProps: [
 		{
-			name: 'isSelected',
-			type: 'Readable<(key: string) => boolean>',
+			name: 'defaultValue',
+			type: ['string', 'string[]', 'undefined'],
+			description: 'The default value of the accordion.',
+		},
+		{
+			name: 'value',
+			type: 'Writable<string | string[] | undefined>',
 			description:
-				'A derived store that takes a key and returns whether or not the item is selected.',
+				'A writable store that controls the value of the accordion. If provided, this will override the value passed to `defaultValue`.',
+			see: SEE.BRING_YOUR_OWN_STORE,
 		},
 		{
-			name: 'options',
-			type: 'Writable<CreateAccordionProps>',
-			description: 'A writable store with the options used to create the accordion.',
+			name: 'onValueChange',
+			type: 'ChangeFn<string | string[] | undefined>',
+			description:
+				'A callback called when the value of the `value` store should be changed. This is useful for controlling the value of the accordion from outside the accordion.',
+			see: SEE.CHANGE_FUNCTIONS,
 		},
+	],
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the accordion root.',
-			link: '#root',
 		},
 		{
 			name: 'item',
 			description: 'The builder store used to create accordion items.',
-			link: '#item',
 		},
 		{
 			name: 'trigger',
 			description: 'The builder store used to create accordion triggers.',
-			link: '#trigger',
 		},
 		{
 			name: 'content',
 			description: 'The builder store used to create accordion content.',
-			link: '#content',
 		},
 		{
 			name: 'heading',
 			description: 'The builder store used to create accordion headings.',
-			link: '#heading',
 		},
 	],
-};
+	states: [
+		{
+			name: 'value',
+			type: 'Writable<string | string[] | undefined>',
+			description: 'A writable store with the value of the currently open item.',
+		},
+	],
+	helpers: [
+		{
+			name: 'isSelected',
+			type: 'Readable<(key: string) => boolean>',
+			description:
+				'A derived store that takes an item ID as an argument and returns whether or not the item is selected.',
+		},
+	],
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'Contains all the parts of an accordion.',
 	dataAttributes: [
 		{
@@ -78,10 +109,9 @@ const root: APISchema = {
 			value: ATTRS.MELT('accordion root'),
 		},
 	],
-};
+});
 
-const item: APISchema = {
-	title: 'item',
+const item = elementSchema('item', {
 	description: 'Contains all the parts of a collapsible section.',
 	props: [
 		{
@@ -108,10 +138,9 @@ const item: APISchema = {
 			value: ATTRS.MELT('accordion item'),
 		},
 	],
-};
+});
 
-const trigger: APISchema = {
-	title: 'trigger',
+const trigger = elementSchema('trigger', {
 	description:
 		'Toggles the collapsed state of an item. It should be nested inside of its associated `item`.',
 	props: [
@@ -141,10 +170,10 @@ const trigger: APISchema = {
 			value: ATTRS.MELT('accordion trigger'),
 		},
 	],
-};
+	events: accordionEvents['trigger'],
+});
 
-const content: APISchema = {
-	title: 'content',
+const content = elementSchema('content', {
 	description: 'Contains the collapsible content for an accordion item.',
 	props: [
 		{
@@ -177,10 +206,9 @@ const content: APISchema = {
 			value: ATTRS.MELT('accordion content'),
 		},
 	],
-};
+});
 
-const heading: APISchema = {
-	title: 'heading',
+const heading = elementSchema('heading', {
 	description:
 		'The heading for an accordion item. It should be nested inside of its associated `item`.',
 	props: [
@@ -200,7 +228,7 @@ const heading: APISchema = {
 			value: ATTRS.MELT('accordion heading'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

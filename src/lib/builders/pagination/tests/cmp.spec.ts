@@ -2,7 +2,7 @@ import { render } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
 import cmp from './cmp.svelte';
-import { isHTMLElement } from '@melt-ui/svelte/internal/helpers';
+import { isHTMLElement } from '$lib/internal/helpers';
 
 function getValue(el: HTMLElement) {
 	return el.querySelector('[data-selected]')?.getAttribute('data-value');

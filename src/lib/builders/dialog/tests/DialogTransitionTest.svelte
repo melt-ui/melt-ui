@@ -1,23 +1,25 @@
 <script lang="ts">
-	import { createDialog } from '$lib/builders';
+	import { createDialog, melt } from '$lib';
 	import { fade } from 'svelte/transition';
 
 	const {
-		elements: { trigger, overlay, content, title, description, close },
+		elements: { trigger, overlay, content, title, description, close, portalled },
 		states: { open },
 	} = createDialog({});
 </script>
 
 <main>
-	<button melt={$trigger} data-testid="trigger">Open</button>
+	<button use:melt={$trigger} data-testid="trigger">Open</button>
 	{#if $open}
-		<div melt={$overlay} data-testid="overlay" transition:fade />
-		<div melt={$content} data-testid="content">
-			<h2 melt={$title}>Title</h2>
-			<p melt={$description}>Description</p>
+		<div use:melt={$portalled} data-testid="portalled">
+			<div use:melt={$overlay} data-testid="overlay" transition:fade />
+			<div use:melt={$content} data-testid="content">
+				<h2 use:melt={$title}>Title</h2>
+				<p use:melt={$description}>Description</p>
 
-			<button melt={$close} data-testid="closer">Close</button>
-			<button melt={$close} data-testid="last">Close2</button>
+				<button use:melt={$close} data-testid="closer">Close</button>
+				<button use:melt={$close} data-testid="last">Close2</button>
+			</div>
 		</div>
 	{/if}
 </main>

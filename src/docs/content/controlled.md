@@ -10,7 +10,7 @@ description: Melt UI components are uncontrolled by default, but offer the abili
 <Callout type="warning">
 
 Controlled components are an optional advanced feature and should only be used when necessary. If
-you're unsure if you you should be be using the components in a controlled way, you likely don't.
+you're unsure if you should be using the components in a controlled way, you likely don't.
 
 </Callout>
 
@@ -42,9 +42,10 @@ parts of your app, then we offer a way for you to supply your own.
 
 It's as simple as passing your own `open` store to the `createDialog` builder.
 
-```svelte
+```svelte {5, 10}
 <script lang="ts">
 	import { createDialog } from '@melt-ui/svelte'
+	import { writable } from 'svelte/store'
 
 	const customOpen = writable(false)
 
@@ -82,7 +83,7 @@ Whatever is returned from the change function will be used as the new value of t
 The snippet below shows an example of how the change function could be used to prevent the `open`
 store from being set to `true` based on some arbitrary condition.
 
-```svelte {6-11,17}
+```svelte {6-11,16}
 <script lang="ts">
 	import { createDialog, type CreateDialogProps } from '@melt-ui/svelte'
 
@@ -104,3 +105,62 @@ store from being set to `true` based on some arbitrary condition.
 ```
 
 Of course, this is a contrived example, but it nicely demonstrates the power of this feature.
+
+## Custom Events
+
+Melt automatically attaches listeners for and handles events for various elements to provide
+functionality. However, there may be times where you disagree with a particular way we handle the
+event, or you just want to add some extra functionality on top of what we provide.
+
+For each event that we listen to and handle, we also provide a way for you to override the default
+behavior, or add your own in addition to ours. The custom event that we dispatch is always prefixed
+with `m-` and what follows is the name of the original event.
+
+For example, if we're listening to and handling a `click` event on a `trigger` element, then we'll
+dispatch an `m-click` event. If it was a `pointerdown` event, we'd dispatch an `m-pointerdown`. The
+attributes for the elements are typed to include these custom events, so you'll get type support for
+them in your editor.
+
+Here's what the custom events we dispatch looks like:
+
+```ts
+const customMeltEvent: MeltEvent<typeof originalEvent> = new CustomEvent(
+	`m-${originalEvent.type}`,
+	{
+		detail: {
+			cancel: () => {
+				originalEvent.preventDefault()
+			},
+			originalEvent
+		}
+	}
+)
+```
+
+The `cancel` function calls `preventDefault` on the original event. When this function is invoked in
+, Melt immediately stops handling the event, thus preventing the default behavior from happening.
+
+We also pass the original event as a property on the `detail` object so that you can access it in
+case you'd like to do something else with it.
+
+So if you in fact wanted to override the default behavior of a `click` event on a `trigger` element,
+then you could do something like this:
+
+```svelte {3-6}
+<button
+	use:melt={$trigger}
+	on:m-click={(e) => {
+		e.detail.cancel()
+		// do something else
+	}}>
+	Trigger
+</button>
+```
+
+<Callout type="warning">
+
+Overriding the default behavior of a component should be done with caution. We can't guarantee that
+everything will work as expected if you override certain events, but we provide this feature to
+cover those edge cases where you want to do something that the library won't support out of the box.
+
+</Callout>

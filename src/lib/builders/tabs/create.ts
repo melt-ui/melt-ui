@@ -1,5 +1,4 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -14,10 +13,12 @@ import {
 	omit,
 	getElemDirection,
 	overridable,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { get, writable } from 'svelte/store';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+import { get, writable, readonly } from 'svelte/store';
 import type { CreateTabsProps, TabsTriggerProps } from './types';
+import type { TabsEvents } from './events';
 
 const defaults = {
 	orientation: 'horizontal',
@@ -38,7 +39,7 @@ export function createTabs(props?: CreateTabsProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
-	let ssrValue = withDefaults.defaultValue;
+	let ssrValue = withDefaults.defaultValue ?? get(value);
 
 	// Root
 	const root = builder(name(), {
@@ -99,12 +100,9 @@ export function createTabs(props?: CreateTabsProps) {
 				};
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<TabsEvents['trigger']> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', () => {
-					node.focus();
-				}),
-				addEventListener(node, 'focus', () => {
+				addMeltEventListener(node, 'focus', () => {
 					const disabled = node.dataset.disabled === 'true';
 					const tabValue = node.dataset.value;
 
@@ -113,7 +111,9 @@ export function createTabs(props?: CreateTabsProps) {
 					}
 				}),
 
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
+					node.focus();
+
 					e.preventDefault();
 
 					const disabled = node.dataset.disabled === 'true';
@@ -126,7 +126,7 @@ export function createTabs(props?: CreateTabsProps) {
 					}
 				}),
 
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const tabValue = node.dataset.value;
 					if (!tabValue) return;
 
@@ -206,7 +206,7 @@ export function createTabs(props?: CreateTabsProps) {
 			content,
 		},
 		states: {
-			value,
+			value: readonly(value),
 		},
 		options,
 	};

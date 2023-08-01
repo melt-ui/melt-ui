@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCombobox, type ComboboxFilterFunction } from '@melt-ui/svelte';
+	import { createCombobox, type ComboboxFilterFunction, melt } from '$lib';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
 	import { writable } from 'svelte/store';
 
@@ -91,24 +91,24 @@
 <label>
 	<span>Choose your favorite book:</span>
 	<div>
-		<input melt={$input} placeholder="Best book ever" value={$inputValue} />
+		<input use:melt={$input} placeholder="Best book ever" value={$inputValue} />
 		<div class="chevron-wrapper">
 			{#if $open}
-				<ChevronUp />
+				<ChevronUp class="square-4" />
 			{:else}
-				<ChevronDown />
+				<ChevronDown class="square-4" />
 			{/if}
 		</div>
 	</div>
 </label>
 
-<div class="menu-container" melt={$menu}>
+<div class="menu-container" use:melt={$menu}>
 	<ul class="menu">
 		{#if $open}
 			{#if $filteredItems.length !== 0}
 				{#each $filteredItems as book, index (index)}
 					<li
-						melt={$item({
+						use:melt={$item({
 							index,
 							item: book,
 							disabled: book.disabled,
@@ -117,7 +117,7 @@
 					>
 						{#if $isSelected(book)}
 							<div class="check">
-								<Check />
+								<Check class="square-4" />
 							</div>
 						{/if}
 						<div>

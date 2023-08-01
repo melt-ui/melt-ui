@@ -1,5 +1,4 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -8,11 +7,13 @@ import {
 	omit,
 	overridable,
 	toWritableStores,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+import { derived, get, writable, readonly } from 'svelte/store';
 import { getPageItems } from './helpers';
 import type { CreatePaginationProps, Page } from './types';
+import type { PaginationEvents } from './events';
 
 const defaults = {
 	perPage: 1,
@@ -29,7 +30,8 @@ export function createPagination(props: CreatePaginationProps) {
 	const page = overridable(pageWritable, withDefaults?.onPageChange);
 
 	// options
-	const options = toWritableStores(omit(withDefaults, 'page'));
+	const options = toWritableStores(omit(withDefaults, 'page', 'onPageChange', 'defaultPage'));
+
 	const { perPage, siblingCount, count } = options;
 
 	const totalPages = derived([count, perPage], ([$count, $perPage]) => {
@@ -99,14 +101,14 @@ export function createPagination(props: CreatePaginationProps) {
 				};
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<PaginationEvents['pageTrigger']> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', () => {
+				addMeltEventListener(node, 'click', () => {
 					const value = node.dataset.value;
 					if (!value || Number.isNaN(+value)) return;
 					page.set(Number(value));
 				}),
-				addEventListener(node, 'keydown', keydown)
+				addMeltEventListener(node, 'keydown', keydown)
 			);
 
 			return {
@@ -123,12 +125,12 @@ export function createPagination(props: CreatePaginationProps) {
 				disabled: $page <= 1,
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<PaginationEvents['prevButton']> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', () => {
+				addMeltEventListener(node, 'click', () => {
 					page.update((p) => Math.max(p - 1, 1));
 				}),
-				addEventListener(node, 'keydown', keydown)
+				addMeltEventListener(node, 'keydown', keydown)
 			);
 
 			return {
@@ -145,13 +147,13 @@ export function createPagination(props: CreatePaginationProps) {
 				disabled: $page >= $totalPages,
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<PaginationEvents['nextButton']> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', () => {
+				addMeltEventListener(node, 'click', () => {
 					const $totalPages = get(totalPages);
 					page.update((p) => Math.min(p + 1, $totalPages));
 				}),
-				addEventListener(node, 'keydown', keydown)
+				addMeltEventListener(node, 'keydown', keydown)
 			);
 
 			return {
@@ -168,10 +170,10 @@ export function createPagination(props: CreatePaginationProps) {
 			nextButton,
 		},
 		states: {
-			range,
-			page,
-			pages,
-			totalPages,
+			range: readonly(range),
+			page: readonly(page),
+			pages: readonly(pages),
+			totalPages: readonly(totalPages),
 		},
 		options,
 	};

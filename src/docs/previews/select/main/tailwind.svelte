@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createSelect } from '@melt-ui/svelte';
+	import { createSelect, melt } from '$lib';
 	import { Check, ChevronDown } from 'lucide-svelte';
 	import { fly } from 'svelte/transition';
 
@@ -19,29 +19,29 @@
 
 <div class="flex flex-col gap-1">
 	<!-- svelte-ignore a11y-label-has-associated-control - $label contains the 'for' attribute -->
-	<label class="block" melt={$label}>Favorite Flavor</label>
+	<label class="block" use:melt={$label}>Favorite Flavor</label>
 	<button
 		class="flex h-10 min-w-[220px] items-center justify-between rounded-md bg-white px-3
 	py-2 text-magnum-700 transition-opacity hover:opacity-90"
-		melt={$trigger}
+		use:melt={$trigger}
 		aria-label="Food"
 	>
 		{$valueLabel || 'Select a flavor'}
-		<ChevronDown />
+		<ChevronDown class="square-5" />
 	</button>
 	{#if $open}
 		<div
 			class="z-10 flex max-h-[360px] flex-col
 		overflow-y-auto rounded-md bg-white
 		p-1 focus:!ring-0"
-			melt={$menu}
+			use:melt={$menu}
 			transition:fly={{ duration: 100, y: -5 }}
 		>
 			{#each Object.entries(options) as [key, arr]}
-				<div melt={$group(key)}>
+				<div use:melt={$group(key)}>
 					<div
 						class="py-1 pl-4 pr-4 font-semibold capitalize text-neutral-800"
-						melt={$groupLabel(key)}
+						use:melt={$groupLabel(key)}
 					>
 						{key}
 					</div>
@@ -51,11 +51,11 @@
 						focus:z-10 focus:text-magnum-700
 					data-[highlighted]:bg-magnum-50 data-[selected]:bg-magnum-100
 					data-[highlighted]:text-magnum-900 data-[selected]:text-magnum-900"
-							melt={$option({ value: item, label: item })}
+							use:melt={$option({ value: item, label: item })}
 						>
 							{#if $isSelected(item)}
 								<div class="check">
-									<Check />
+									<Check class="square-4" />
 								</div>
 							{/if}
 							{item}

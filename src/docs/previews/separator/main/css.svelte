@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createSeparator, type CreateSeparatorProps } from '@melt-ui/svelte';
+	import { createSeparator, melt, type CreateSeparatorProps } from '$lib';
 
 	export let orientation: CreateSeparatorProps['orientation'] = 'vertical';
 
@@ -21,12 +21,12 @@
 
 <h2>Melt UI</h2>
 <p>Flavors for everyone</p>
-<div melt={$horizontal} class="separator separator--horizontal" />
+<div use:melt={$horizontal} class="separator separator--horizontal" />
 <div class="ice-creams">
 	{#each icecreams as icecream, i}
 		<p>{icecream}</p>
 		{#if i !== icecreams.length - 1}
-			<div melt={$vertical} class="separator separator--vertical" />
+			<div use:melt={$vertical} class="separator separator--vertical" />
 		{/if}
 	{/each}
 </div>

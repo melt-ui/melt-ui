@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createPagination } from '@melt-ui/svelte';
+	import { createPagination, melt } from '$lib';
 	import { ChevronLeft, ChevronRight } from 'lucide-svelte';
 
 	const {
@@ -13,19 +13,19 @@
 	});
 </script>
 
-<nav aria-label="pagination" melt={$root} data-testid="root">
+<nav aria-label="pagination" use:melt={$root} data-testid="root">
 	<p>
 		Showing items {$range.start} - {$range.end}
 	</p>
 	<div>
-		<button melt={$prevButton} data-testid="prev"><ChevronLeft /></button>
+		<button use:melt={$prevButton} data-testid="prev"><ChevronLeft class="square-4" /></button>
 		{#each $pages as page (page.key)}
 			{#if page.type === 'ellipsis'}
 				<span>...</span>
 			{:else}
-				<button melt={$pageTrigger(page)}>{page.value}</button>
+				<button use:melt={$pageTrigger(page)}>{page.value}</button>
 			{/if}
 		{/each}
-		<button melt={$nextButton} data-testid="next"><ChevronRight /></button>
+		<button use:melt={$nextButton} data-testid="next"><ChevronRight class="square-4" /></button>
 	</div>
 </nav>

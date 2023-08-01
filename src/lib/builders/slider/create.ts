@@ -12,9 +12,13 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
+	addMeltEventListener,
+	executeCallbacks,
 } from '$lib/internal/helpers';
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, readonly } from 'svelte/store';
 import type { CreateSliderProps } from './types';
+import type { MeltActionReturn } from '$lib/internal/types';
+import type { SliderEvents } from './events';
 
 const defaults = {
 	defaultValue: [],
@@ -30,7 +34,7 @@ const { name } = createElHelpers('slider');
 export const createSlider = (props?: CreateSliderProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSliderProps;
 
-	const options = toWritableStores(omit(withDefaults, 'value'));
+	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
 	const { min, max, step, orientation, disabled } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
@@ -144,8 +148,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 				} as const;
 			};
 		},
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'keydown', (event) => {
+		action: (node: HTMLElement): MeltActionReturn<SliderEvents['thumb']> => {
+			const unsub = addMeltEventListener(node, 'keydown', (event) => {
 				const $min = get(min);
 				const $max = get(max);
 				if (get(disabled)) return;
@@ -212,7 +216,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if (event.metaKey) {
 							updatePosition($max, index);
 						} else if ($value[index] > $min && $orientation === 'vertical') {
-							const newValue = $value[index] - $step;
+							const newValue = $value[index] + $step;
 							updatePosition(newValue, index);
 						} else if ($value[index] < $max) {
 							const newValue = $value[index] + $step;
@@ -224,7 +228,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if (event.metaKey) {
 							updatePosition($min, index);
 						} else if ($value[index] < $max && $orientation === 'vertical') {
-							const newValue = $value[index] + $step;
+							const newValue = $value[index] - $step;
 							updatePosition(newValue, index);
 						} else if ($value[index] > $min) {
 							const newValue = $value[index] - $step;
@@ -255,11 +259,16 @@ export const createSlider = (props?: CreateSliderProps) => {
 				const percent = (clientXY - leftOrBottom) / (rightOrTop - leftOrBottom);
 				const val = Math.round(percent * ($max - $min) + $min);
 
-				if (val < $min || val > $max) return;
-				const step = $step;
-				const newValue = Math.round(val / step) * step;
+				if (val < $min) {
+					updatePosition($min, activeThumbIdx);
+				} else if (val > $max) {
+					updatePosition($max, activeThumbIdx);
+				} else {
+					const step = $step;
+					const newValue = Math.round(val / step) * step;
 
-				updatePosition(newValue, activeThumbIdx);
+					updatePosition(newValue, activeThumbIdx);
+				}
 			};
 
 			const getClosestThumb = (e: PointerEvent) => {
@@ -325,20 +334,19 @@ export const createSlider = (props?: CreateSliderProps) => {
 					applyPosition(e.clientX, closestThumb.index, left, right);
 				} else {
 					const { top, bottom } = sliderEl.getBoundingClientRect();
-					applyPosition(e.clientY, closestThumb.index, top, bottom);
+					applyPosition(e.clientY, closestThumb.index, bottom, top);
 				}
 			};
 
-			document.addEventListener('pointerdown', pointerDown);
-			document.addEventListener('pointerup', pointerUp);
-			document.addEventListener('pointerleave', pointerUp);
-			document.addEventListener('pointermove', pointerMove);
+			const unsub = executeCallbacks(
+				addEventListener(document, 'pointerdown', pointerDown),
+				addEventListener(document, 'pointerup', pointerUp),
+				addEventListener(document, 'pointerleave', pointerUp),
+				addEventListener(document, 'pointermove', pointerMove)
+			);
 
 			return () => {
-				document.removeEventListener('pointerdown', pointerDown);
-				document.removeEventListener('pointerup', pointerUp);
-				document.removeEventListener('pointerleave', pointerUp);
-				document.removeEventListener('pointermove', pointerMove);
+				unsub();
 			};
 		}
 	);
@@ -350,7 +358,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 			range,
 		},
 		states: {
-			value,
+			value: readonly(value),
 		},
 		options,
 	};

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createHoverCard } from '@melt-ui/svelte';
+	import { createHoverCard, melt } from '$lib';
 	import { fly } from 'svelte/transition';
 
 	const {
@@ -15,7 +15,7 @@
 	href="https://github.com/melt-ui/melt-ui"
 	target="_blank"
 	rel="noreferrer"
-	melt={$trigger}
+	use:melt={$trigger}
 >
 	<img
 		src="/logo-mark.svg"
@@ -27,7 +27,7 @@
 
 {#if $open}
 	<div
-		melt={$content}
+		use:melt={$content}
 		transition:fly={{ y: -5, duration: 100 }}
 		class="z-10 rounded-md bg-white shadow-sm"
 	>
@@ -60,7 +60,7 @@
 				</div>
 			</div>
 		</div>
-		<div melt={$arrow} />
+		<div use:melt={$arrow} />
 	</div>
 {/if}
 

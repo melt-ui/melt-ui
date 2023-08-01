@@ -1,14 +1,16 @@
 import {
-	addEventListener,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	omit,
 	overridable,
 	toWritableStores,
+	styleToString,
 } from '$lib/internal/helpers';
-import { derived, writable } from 'svelte/store';
+import { derived, readonly, writable } from 'svelte/store';
 import type { CreateCollapsibleProps } from './types';
-import { styleToString } from '../../internal/helpers/style';
+import type { MeltActionReturn } from '$lib/internal/types';
+import type { CollapsibleEvents } from './events';
 
 const defaults = {
 	defaultOpen: false,
@@ -21,7 +23,7 @@ const { name } = createElHelpers('collapsible');
 export function createCollapsible(props?: CreateCollapsibleProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateCollapsibleProps;
 
-	const options = toWritableStores(omit(withDefaults, 'open'));
+	const options = toWritableStores(omit(withDefaults, 'open', 'defaultOpen', 'onOpenChange'));
 	const { disabled, forceVisible } = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
@@ -43,8 +45,8 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 				'data-disabled': $disabled ? '' : undefined,
 				disabled: $disabled,
 			} as const),
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', () => {
+		action: (node: HTMLElement): MeltActionReturn<CollapsibleEvents['trigger']> => {
+			const unsub = addMeltEventListener(node, 'click', () => {
 				const disabled = node.dataset.disabled !== undefined;
 				if (disabled) return;
 				open.update(($open) => !$open);
@@ -80,7 +82,7 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 			content,
 		},
 		states: {
-			open,
+			open: readonly(open),
 		},
 		options,
 	};

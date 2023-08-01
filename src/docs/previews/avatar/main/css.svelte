@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createAvatar } from '@melt-ui/svelte';
+	import { createAvatar, melt } from '$lib';
 
 	const {
 		elements: { image, fallback },
@@ -25,18 +25,18 @@
 
 <div class="root">
 	<div class="item">
-		<img melt={$image} alt="Avatar" class="avatar" />
-		<span melt={$fallback} class="fallback">RH</span>
+		<img use:melt={$image} alt="Avatar" class="avatar" />
+		<span use:melt={$fallback} class="fallback">RH</span>
 	</div>
 
 	<div class="item">
-		<img melt={$imageA} alt="Avatar" class="avatar" />
-		<span melt={$fallbackA} class="fallback">SH</span>
+		<img use:melt={$imageA} alt="Avatar" class="avatar" />
+		<span use:melt={$fallbackA} class="fallback">SH</span>
 	</div>
 
 	<div class="item">
-		<img melt={$imageB} alt="Avatar" class="avatar" />
-		<span melt={$fallbackB} class="fallback">UI</span>
+		<img use:melt={$imageB} alt="Avatar" class="avatar" />
+		<span use:melt={$fallbackB} class="fallback">UI</span>
 	</div>
 </div>
 

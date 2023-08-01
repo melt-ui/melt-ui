@@ -1,5 +1,4 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -10,10 +9,12 @@ import {
 	overridable,
 	toWritableStores,
 	getElemDirection,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+import { derived, get, writable, readonly } from 'svelte/store';
 import type { CreateRadioGroupProps, RadioGroupItemProps } from './types';
+import type { RadioGroupEvents } from './events';
 
 const defaults = {
 	orientation: 'vertical',
@@ -70,9 +71,9 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 				} as const;
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<RadioGroupEvents['item']> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
 					e.preventDefault();
 
 					const disabled = node.dataset.disabled === 'true';
@@ -80,13 +81,13 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 					if (disabled || itemValue === undefined) return;
 					value.set(itemValue);
 				}),
-				addEventListener(node, 'focus', () => {
+				addMeltEventListener(node, 'focus', () => {
 					const disabled = node.dataset.disabled === 'true';
 					const itemValue = node.dataset.value;
 					if (disabled || itemValue === undefined) return;
 					value.set(itemValue);
 				}),
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const el = e.currentTarget;
 					if (!isHTMLElement(el)) return;
 
@@ -167,7 +168,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 			itemInput,
 		},
 		states: {
-			value,
+			value: readonly(value),
 		},
 		helpers: {
 			isChecked,

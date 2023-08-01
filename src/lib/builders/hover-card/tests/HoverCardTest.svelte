@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createHoverCard } from '@melt-ui/svelte';
+	import { createHoverCard, melt } from '$lib';
 
 	const {
 		elements: { trigger, content, arrow },
@@ -14,7 +14,7 @@
 	href="https://github.com/melt-ui/melt-ui"
 	target="_blank"
 	rel="noreferrer"
-	melt={$trigger}
+	use:melt={$trigger}
 >
 	<img
 		src="/logo-mark.svg"
@@ -24,7 +24,7 @@
 	<span class="sr-only">Open Melt UI Details</span>
 </a>
 
-<div melt={$content} class="z-10 rounded-md bg-white shadow-sm" data-testid="content">
+<div use:melt={$content} class="z-10 rounded-md bg-white shadow-sm" data-testid="content">
 	<div class="w-[300px] rounded-md bg-white p-5 shadow-sm">
 		<div class="flex flex-col gap-2">
 			<img
@@ -53,7 +53,7 @@
 			</div>
 		</div>
 	</div>
-	<div melt={$arrow} data-testid="arrow" />
+	<div use:melt={$arrow} data-testid="arrow" />
 </div>
 <div data-testid="start" />
 

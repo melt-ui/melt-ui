@@ -1,5 +1,4 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -8,15 +7,17 @@ import {
 	kbd,
 	overridable,
 	toWritableStores,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+import { derived, get, writable, readonly } from 'svelte/store';
 import type {
 	CreateToolbarGroupProps,
 	CreateToolbarProps,
 	ToolbarGroupItemProps,
 	ToolbarGroupType,
 } from './types';
+import type { ToolbarEvents } from './events';
 
 const defaults = {
 	loop: true,
@@ -48,8 +49,8 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 				type: 'button',
 				tabIndex: -1,
 			} as const),
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'keydown', handleKeyDown);
+		action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['button']> => {
+			const unsub = addMeltEventListener(node, 'keydown', handleKeyDown);
 
 			return {
 				destroy: unsub,
@@ -64,8 +65,8 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 				'data-melt-toolbar-item': '',
 				tabIndex: -1,
 			} as const),
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'keydown', handleKeyDown);
+		action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['link']> => {
+			const unsub = addMeltEventListener(node, 'keydown', handleKeyDown);
 
 			return {
 				destroy: unsub,
@@ -109,7 +110,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 
 		const { name } = createElHelpers('toolbar-group');
 
-		const root = builder(name(), {
+		const group = builder(name(), {
 			stores: orientation,
 			returned: ($orientation) => {
 				return {
@@ -142,16 +143,32 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 					} as const;
 				};
 			},
-			action: (node: HTMLElement) => {
-				const getNodeProps = () => {
+			action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['item']> => {
+				function getNodeProps() {
 					const itemValue = node.dataset.value;
 					const disabled = node.dataset.disabled === 'true';
 
 					return { value: itemValue, disabled };
-				};
+				}
+
+				function handleValueUpdate() {
+					const { value: itemValue, disabled } = getNodeProps();
+					if (itemValue === undefined || disabled) return;
+
+					value.update(($value) => {
+						if (Array.isArray($value)) {
+							if ($value.includes(itemValue)) {
+								return $value.filter((i) => i !== itemValue);
+							}
+							$value.push(itemValue);
+							return $value;
+						}
+						return $value === itemValue ? undefined : itemValue;
+					});
+				}
 
 				const parentToolbar = node.closest('[data-melt-toolbar]');
-				if (!isHTMLElement(parentToolbar)) return;
+				if (!isHTMLElement(parentToolbar)) return {};
 
 				const items = getToolbarItems(parentToolbar);
 
@@ -162,23 +179,17 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 				}
 
 				const unsub = executeCallbacks(
-					addEventListener(node, 'click', () => {
-						const { value: itemValue, disabled } = getNodeProps();
-						if (itemValue === undefined || disabled) return;
-
-						value.update(($value) => {
-							if (Array.isArray($value)) {
-								if ($value.includes(itemValue)) {
-									return $value.filter((i) => i !== itemValue);
-								}
-								$value.push(itemValue);
-								return $value;
-							}
-							return $value === itemValue ? undefined : itemValue;
-						});
+					addMeltEventListener(node, 'click', () => {
+						handleValueUpdate();
 					}),
-
-					addEventListener(node, 'keydown', handleKeyDown)
+					addMeltEventListener(node, 'keydown', (e) => {
+						if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
+							e.preventDefault();
+							handleValueUpdate();
+							return;
+						}
+						handleKeyDown(e);
+					})
 				);
 
 				return {
@@ -195,11 +206,11 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 
 		return {
 			elements: {
-				root,
+				group,
 				item,
 			},
 			states: {
-				value,
+				value: readonly(value),
 			},
 			helpers: {
 				isPressed,

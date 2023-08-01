@@ -1,12 +1,15 @@
 <script lang="ts">
-	import { createDropdownMenu } from '$lib';
+	import { createDropdownMenu, melt } from '$lib';
 	import { writable } from 'svelte/store';
 	import { AlignJustify, ChevronRight, Check } from 'lucide-svelte';
 	import { fly } from 'svelte/transition';
 
+	const settingsSync = writable(true);
+	const hideMeltUI = writable(false);
+
 	const {
-		elements: { trigger, menu, item, checkboxItem, separator, arrow },
-		builders: { createSubmenu, createMenuRadioGroup },
+		elements: { trigger, menu, item, separator, arrow },
+		builders: { createSubmenu, createMenuRadioGroup, createCheckboxItem },
 		states: { open },
 	} = createDropdownMenu({
 		forceVisible: true,
@@ -15,15 +18,25 @@
 	const {
 		elements: { subMenu, subTrigger },
 		states: { subOpen },
-	} = createSubmenu({
-		forceVisible: true,
-	});
+	} = createSubmenu();
 
 	const {
 		elements: { radioGroup, radioItem },
 		helpers: { isChecked },
 	} = createMenuRadioGroup({
-		value: 'Hunter Johnston',
+		defaultValue: 'Hunter Johnston',
+	});
+
+	const {
+		elements: { checkboxItem },
+	} = createCheckboxItem({
+		checked: settingsSync,
+	});
+
+	const {
+		elements: { checkboxItem: checkboxItemA },
+	} = createCheckboxItem({
+		checked: hideMeltUI,
 	});
 
 	const personsArr = [
@@ -32,31 +45,24 @@
 		'Adrian Gonz',
 		'Franck Poingt',
 	];
-
-	const settingsSync = writable(true);
-	const hideMeltUI = writable(false);
 </script>
 
 <button
 	type="button"
 	class="trigger"
-	melt={$trigger}
+	use:melt={$trigger}
 	aria-label="Update dimensions"
 >
-	<AlignJustify class="h-4 w-4" />
+	<AlignJustify class="square-4" />
 	<span class="sr-only">Open Popover</span>
 </button>
 
 {#if $open}
-	<div class="menu" melt={$menu} transition:fly={{ duration: 150, y: -10 }}>
-		<div class="item" melt={$item}>About Melt UI</div>
-		<div class="item" melt={$item}>Check for Updates...</div>
-		<div class="separator" melt={$separator} />
-		<div
-			class="item"
-			{...$checkboxItem}
-			use:checkboxItem={{ checked: settingsSync }}
-		>
+	<div class="menu" use:melt={$menu} transition:fly={{ duration: 150, y: -10 }}>
+		<div class="item" use:melt={$item}>About Melt UI</div>
+		<div class="item" use:melt={$item}>Check for Updates...</div>
+		<div class="separator" use:melt={$separator} />
+		<div class="item" use:melt={$checkboxItem}>
 			<div class="check">
 				{#if $settingsSync}
 					<Check class="icon" />
@@ -64,7 +70,7 @@
 			</div>
 			Settings Sync is On
 		</div>
-		<div class="item" melt={$subTrigger}>
+		<div class="item" use:melt={$subTrigger}>
 			Profiles
 			<div class="rightSlot">
 				<ChevronRight class="icon" />
@@ -73,13 +79,13 @@
 		{#if $subOpen}
 			<div
 				class="menu subMenu"
-				melt={$subMenu}
+				use:melt={$subMenu}
 				transition:fly={{ x: -50, duration: 150 }}
 			>
 				<div class="text">People</div>
-				<div melt={$radioGroup}>
+				<div use:melt={$radioGroup}>
 					{#each personsArr as person}
-						<div class="item" melt={$radioItem({ value: person })}>
+						<div class="item" use:melt={$radioItem({ value: person })}>
 							<div class="check">
 								{#if $isChecked(person)}
 									<div class="dot" />
@@ -91,13 +97,9 @@
 				</div>
 			</div>
 		{/if}
-		<div melt={$separator} class="separator" />
+		<div use:melt={$separator} class="separator" />
 
-		<div
-			class="item"
-			{...$checkboxItem}
-			use:checkboxItem={{ checked: hideMeltUI }}
-		>
+		<div class="item" use:melt={$checkboxItemA}>
 			<div class="check">
 				{#if $hideMeltUI}
 					<Check class="icon" />
@@ -106,16 +108,16 @@
 			Hide Melt UI
 			<div class="rightSlot">⌘H</div>
 		</div>
-		<div class="item" melt={$item} aria-disabled="true">
+		<div class="item" use:melt={$item} aria-disabled="true">
 			Show All Components
 			<div class="rightSlot">⇧⌘N</div>
 		</div>
-		<div melt={$separator} class="separator" />
-		<div class="item" melt={$item}>
+		<div use:melt={$separator} class="separator" />
+		<div class="item" use:melt={$item}>
 			Quit Melt UI
 			<div class="rightSlot">⌘Q</div>
 		</div>
-		<div melt={$arrow} />
+		<div use:melt={$arrow} />
 	</div>
 {/if}
 

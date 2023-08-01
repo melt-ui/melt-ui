@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createAccordion } from '@melt-ui/svelte';
+	import { createAccordion, melt } from '$lib';
 	import { slide } from 'svelte/transition';
 
 	const {
@@ -28,16 +28,16 @@
 	];
 </script>
 
-<div class="root" melt={$root}>
+<div class="root" use:melt={$root}>
 	{#each items as { id, title, description }, i}
-		<div melt={$item(id)} class="item">
+		<div use:melt={$item(id)} class="item">
 			<h2>
-				<button melt={$trigger(id)} class="trigger">
+				<button use:melt={$trigger(id)} class="trigger">
 					{title}
 				</button>
 			</h2>
 			{#if $isSelected(id)}
-				<div class="content" melt={$content(id)} transition:slide>
+				<div class="content" use:melt={$content(id)} transition:slide>
 					<div>{description}</div>
 				</div>
 			{/if}

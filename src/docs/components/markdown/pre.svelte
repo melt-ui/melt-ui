@@ -36,18 +36,18 @@
 	</pre>
 	{#if isPPBlock !== undefined}
 		<button
-			class="absolute right-3 top-3 z-10"
+			class="absolute right-4 top-4 z-10"
 			aria-label="copy"
 			on:click={copyCode}
 			data-code-copy
 		>
 			{#if $copied}
-				<div in:fly={{ y: -4 }}>
-					<Check class="text-magnum-500" />
+				<div in:fly={{ y: -4 }} class="bg-neutral-950">
+					<Check class="text-magnum-500 square-4" />
 				</div>
 			{:else}
-				<div in:fly={{ y: 4 }}>
-					<Copy class="hover:text-magnum-500" />
+				<div in:fly={{ y: 4 }} class="bg-neutral-950">
+					<Copy class="square-4 hover:text-magnum-500" />
 				</div>
 			{/if}
 		</button>

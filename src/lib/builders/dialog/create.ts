@@ -1,6 +1,5 @@
 import { createFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions';
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	effect,
@@ -15,15 +14,26 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
+	addMeltEventListener,
 	removeScroll,
 	derivedVisible,
+	kbd,
+	executeCallbacks,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { get, writable } from 'svelte/store';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+import { get, writable, readonly } from 'svelte/store';
 import type { CreateDialogProps } from './types';
 import { onMount, tick } from 'svelte';
+import type { DialogEvents } from './events';
 
-type DialogParts = 'trigger' | 'overlay' | 'content' | 'title' | 'description' | 'close';
+type DialogParts =
+	| 'trigger'
+	| 'overlay'
+	| 'content'
+	| 'title'
+	| 'description'
+	| 'close'
+	| 'portalled';
 const { name } = createElHelpers<DialogParts>('dialog');
 
 const defaults = {
@@ -56,6 +66,14 @@ export function createDialog(props?: CreateDialogProps) {
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
 	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
+
+	function handleOpen(e: Event) {
+		const el = e.currentTarget;
+		const triggerEl = e.currentTarget;
+		if (!isHTMLElement(el) || !isHTMLElement(triggerEl)) return;
+		open.set(true);
+		activeTrigger.set(triggerEl);
+	}
 
 	function handleClose() {
 		open.set(false);
@@ -96,13 +114,17 @@ export function createDialog(props?: CreateDialogProps) {
 				type: 'button',
 			} as const;
 		},
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', (e) => {
-				const el = e.currentTarget;
-				if (!isHTMLElement(el)) return;
-				open.set(true);
-				activeTrigger.set(node);
-			});
+		action: (node: HTMLElement): MeltActionReturn<DialogEvents['trigger']> => {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', (e) => {
+					handleOpen(e);
+				}),
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
+					e.preventDefault();
+					handleOpen(e);
+				})
+			);
 
 			return {
 				destroy: unsub,
@@ -124,13 +146,8 @@ export function createDialog(props?: CreateDialogProps) {
 			} as const;
 		},
 		action: (node: HTMLElement) => {
-			let unsubPortal = noop;
 			let unsubEscapeKeydown = noop;
 
-			const portal = usePortal(node);
-			if (portal && portal.destroy) {
-				unsubPortal = portal.destroy;
-			}
 			if (get(closeOnEscape)) {
 				const escapeKeydown = useEscapeKeydown(node, {
 					handler: () => {
@@ -144,7 +161,6 @@ export function createDialog(props?: CreateDialogProps) {
 
 			return {
 				destroy() {
-					unsubPortal();
 					unsubEscapeKeydown();
 				},
 			};
@@ -152,8 +168,8 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const content = builder(name('content'), {
-		stores: [isVisible, portal],
-		returned: ([$isVisible, $portal]) => {
+		stores: [isVisible],
+		returned: ([$isVisible]) => {
 			return {
 				id: ids.content,
 				role: get(role),
@@ -165,12 +181,10 @@ export function createDialog(props?: CreateDialogProps) {
 				style: styleToString({
 					display: $isVisible ? undefined : 'none',
 				}),
-				'data-portal': $portal ? '' : undefined,
 			};
 		},
 
 		action: (node: HTMLElement) => {
-			const portalParent = getPortalParent(node);
 			let activate = noop;
 			let deactivate = noop;
 
@@ -208,16 +222,6 @@ export function createDialog(props?: CreateDialogProps) {
 				}
 			});
 
-			const unsubPortal = effect([portal], ([$portal]) => {
-				if (!$portal) return noop;
-				const portalAction = usePortal(node, portalParent === $portal ? portalParent : $portal);
-				if (portalAction && portalAction.destroy) {
-					return portalAction.destroy;
-				} else {
-					return noop;
-				}
-			});
-
 			const unsubEscapeKeydown = effect([closeOnEscape], ([$closeOnEscape]) => {
 				if (!$closeOnEscape) return noop;
 
@@ -244,9 +248,34 @@ export function createDialog(props?: CreateDialogProps) {
 
 			return {
 				destroy() {
-					unsubPortal();
 					unsubEscapeKeydown();
 					unsubFocusTrap();
+				},
+			};
+		},
+	});
+
+	const portalled = builder(name('portalled'), {
+		stores: portal,
+		returned: ($portal) => ({
+			'data-portal': $portal ? '' : undefined,
+		}),
+		action: (node: HTMLElement) => {
+			const portalParent = getPortalParent(node);
+
+			const unsubPortal = effect([portal], ([$portal]) => {
+				if (!$portal) return noop;
+				const portalAction = usePortal(node, portalParent === $portal ? portalParent : $portal);
+				if (portalAction && portalAction.destroy) {
+					return portalAction.destroy;
+				} else {
+					return noop;
+				}
+			});
+
+			return {
+				destroy() {
+					unsubPortal();
 				},
 			};
 		},
@@ -269,10 +298,17 @@ export function createDialog(props?: CreateDialogProps) {
 			({
 				type: 'button',
 			} as const),
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', () => {
-				handleClose();
-			});
+		action: (node: HTMLElement): MeltActionReturn<DialogEvents['close']> => {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					handleClose();
+				}),
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key !== kbd.SPACE && e.key !== kbd.ENTER) return;
+					e.preventDefault();
+					handleClose();
+				})
+			);
 
 			return {
 				destroy: unsub,
@@ -299,9 +335,10 @@ export function createDialog(props?: CreateDialogProps) {
 			description,
 			overlay,
 			close,
+			portalled,
 		},
 		states: {
-			open,
+			open: readonly(open),
 		},
 		options,
 	};

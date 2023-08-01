@@ -130,6 +130,14 @@ type GetAllPreviewSnippetsArgs = {
 	fetcher?: typeof fetch;
 };
 
+const replaceLibEntriesRegex = /import (.*) from ["|'](?:\$lib.*)["|']/;
+
+function replaceLibEntries(code: string) {
+	// avoid executing the regex if it doesn't have $lib in the code for performance
+	if (!code.includes('$lib')) return code;
+	return code.replace(replaceLibEntriesRegex, "import $1 from '$lib'");
+}
+
 export async function getAllPreviewSnippets({ slug, fetcher }: GetAllPreviewSnippetsArgs) {
 	const previewsCode = import.meta.glob(`/src/docs/previews/**/*.svelte`, {
 		as: 'raw',
@@ -140,7 +148,7 @@ export async function getAllPreviewSnippets({ slug, fetcher }: GetAllPreviewSnip
 	for (const [path, resolver] of Object.entries(previewsCode)) {
 		const isMatch = previewPathMatcher(path, slug);
 		if (isMatch) {
-			const prev = { path, content: resolver };
+			const prev = { path, content: replaceLibEntries(resolver) };
 			previewCodeMatches.push(prev);
 		}
 	}

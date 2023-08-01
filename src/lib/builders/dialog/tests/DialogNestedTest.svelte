@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { createDialog } from '$lib/builders';
+	import { createDialog, melt } from '$lib';
 	import { fade } from 'svelte/transition';
 
 	const {
-		elements: { trigger, overlay, content, title, description, close },
+		elements: { trigger, overlay, content, title, description, close, portalled },
 		states: { open },
 	} = createDialog({});
 	const {
@@ -14,33 +14,38 @@
 			title: titleA,
 			description: descriptionA,
 			close: closeA,
+			portalled: portalledA,
 		},
 		states: { open: openA },
 	} = createDialog({});
 </script>
 
 <main>
-	<button melt={$trigger} data-testid="trigger">Open</button>
-	{#if $open}
-		<div melt={$overlay} data-testid="overlay" transition:fade />
-		<div melt={$content} data-testid="content">
-			<h2 melt={$title}>Title</h2>
-			<p melt={$description}>Description</p>
+	<button use:melt={$trigger} data-testid="trigger">Open</button>
+	<div use:melt={$portalled} data-testid="portalled">
+		{#if $open}
+			<div use:melt={$overlay} data-testid="overlay" transition:fade />
+			<div use:melt={$content} data-testid="content">
+				<h2 use:melt={$title}>Title</h2>
+				<p use:melt={$description}>Description</p>
 
-			<button melt={$close} data-testid="closer">Close</button>
-			<button melt={$triggerA} data-testid="triggerA">Close2</button>
-			{#if $openA}
-				<div melt={$overlayA} data-testid="overlayA" />
-				<div melt={$contentA} data-testid="contentA" transition:fade>
-					<h2 melt={$titleA}>Title</h2>
-					<p melt={$descriptionA}>Description</p>
+				<button use:melt={$close} data-testid="closer">Close</button>
+				<button use:melt={$triggerA} data-testid="triggerA">Close2</button>
+				<div use:melt={$portalledA} data-testid="portalledA">
+					{#if $openA}
+						<div use:melt={$overlayA} data-testid="overlayA" />
+						<div use:melt={$contentA} data-testid="contentA" transition:fade>
+							<h2 use:melt={$titleA}>Title</h2>
+							<p use:melt={$descriptionA}>Description</p>
 
-					<button melt={$closeA} data-testid="closerA">Close</button>
-					<button melt={$closeA} data-testid="lastA">Close2</button>
+							<button use:melt={$closeA} data-testid="closerA">Close</button>
+							<button use:melt={$closeA} data-testid="lastA">Close2</button>
+						</div>
+					{/if}
 				</div>
-			{/if}
-		</div>
-	{/if}
+			</div>
+		{/if}
+	</div>
 </main>
 
 <style>

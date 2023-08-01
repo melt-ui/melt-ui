@@ -1,6 +1,5 @@
 import { usePopper } from '$lib/internal/actions';
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	createTypeaheadSearch,
@@ -26,24 +25,26 @@ import {
 	toWritableStores,
 	getPortalParent,
 	derivedVisible,
+	overridable,
+	addMeltEventListener,
+	addEventListener,
 } from '$lib/internal/helpers';
 import { createSeparator } from '$lib/builders';
-import type { Defaults, TextDirection } from '$lib/internal/types';
+import type { Defaults, TextDirection, MeltActionReturn } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
-import { derived, get, writable, type Writable } from 'svelte/store';
+import { derived, get, readonly, writable, type Writable } from 'svelte/store';
 
 import type {
 	CheckboxItemProps,
 	CreateMenuProps,
 	CreateRadioGroupProps,
 	CreateSubmenuProps,
-	ItemProps,
 	MenuBuilderOptions,
 	MenuParts,
-	RadioItemActionProps,
 	RadioItemProps,
 	Selector,
 } from './types';
+import type { MenuEvents } from './events';
 
 export const SUB_OPEN_KEYS: Record<TextDirection, string[]> = {
 	ltr: [...SELECTION_KEYS, kbd.ARROW_RIGHT],
@@ -155,7 +156,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				tabindex: -1,
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<MenuEvents['menu']> => {
 			const portalParent = getPortalParent(node);
 			let unsubPopper = noop;
 
@@ -192,7 +193,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			);
 
 			const unsubEvents = executeCallbacks(
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const target = e.target;
 					const menuEl = e.currentTarget;
 					if (!isHTMLElement(target) || !isHTMLElement(menuEl)) return;
@@ -250,10 +251,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				tabindex: 0,
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<MenuEvents['trigger']> => {
 			applyAttrsIfDisabled(node);
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
 					const $rootOpen = get(rootOpen);
 					const triggerEl = e.currentTarget;
 					if (!isHTMLElement(triggerEl)) return;
@@ -261,7 +262,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					handleOpen(triggerEl);
 					if (!$rootOpen) e.preventDefault();
 				}),
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const triggerEl = e.currentTarget;
 					if (!isHTMLElement(triggerEl)) return;
 					if (!(SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN)) return;
@@ -307,14 +308,12 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				'data-orientation': 'vertical',
 			};
 		},
-		action: (node: HTMLElement, params: ItemProps = {}) => {
-			const { onSelect } = params;
-
+		action: (node: HTMLElement): MeltActionReturn<MenuEvents['item']> => {
 			setMeltMenuAttribute(node, selector);
 			applyAttrsIfDisabled(node);
 
 			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', (e) => {
+				addMeltEventListener(node, 'pointerdown', (e) => {
 					const itemEl = e.currentTarget;
 					if (!isHTMLElement(itemEl)) return;
 					if (isElementDisabled(itemEl)) {
@@ -322,7 +321,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						return;
 					}
 				}),
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
 					const itemEl = e.currentTarget;
 					if (!isHTMLElement(itemEl)) return;
 					if (isElementDisabled(itemEl)) {
@@ -334,23 +333,21 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						handleRovingFocus(itemEl);
 						return;
 					}
-					onSelect?.(e);
-					if (e.defaultPrevented) return;
 					rootOpen.set(false);
 				}),
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					onItemKeyDown(e);
 				}),
-				addEventListener(node, 'pointermove', (e) => {
+				addMeltEventListener(node, 'pointermove', (e) => {
 					onMenuItemPointerMove(e);
 				}),
-				addEventListener(node, 'pointerleave', (e) => {
+				addMeltEventListener(node, 'pointerleave', (e) => {
 					onMenuItemPointerLeave(e);
 				}),
-				addEventListener(node, 'focusin', (e) => {
+				addMeltEventListener(node, 'focusin', (e) => {
 					onItemFocusIn(e);
 				}),
-				addEventListener(node, 'focusout', (e) => {
+				addMeltEventListener(node, 'focusout', (e) => {
 					onItemFocusOut(e);
 				})
 			);
@@ -362,92 +359,113 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	});
 
 	const checkboxItemDefaults = {
-		checked: writable(false),
+		defaultChecked: false,
+		disabled: false,
 	};
 
-	const checkboxItem = builder(name('checkbox-item'), {
-		returned: () => ({
-			role: 'menuitemcheckbox',
-			tabindex: -1,
-			'data-orientation': 'vertical',
-		}),
-		action: (node: HTMLElement, params: CheckboxItemProps) => {
-			setMeltMenuAttribute(node, selector);
-			applyAttrsIfDisabled(node);
-			const { checked, onSelect } = { ...checkboxItemDefaults, ...params };
-			const $checked = get(checked);
-			node.setAttribute('aria-checked', isIndeterminate($checked) ? 'mixed' : String($checked));
-			node.setAttribute('data-state', getCheckedState($checked));
+	const createCheckboxItem = (props?: CheckboxItemProps) => {
+		const withDefaults = { ...checkboxItemDefaults, ...props } satisfies CheckboxItemProps;
+		const checkedWritable = withDefaults.checked ?? writable(withDefaults.defaultChecked ?? null);
+		const checked = overridable(checkedWritable, withDefaults.onCheckedChange);
+		const disabled = writable(withDefaults.disabled);
 
-			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', (e) => {
-					const itemEl = e.currentTarget;
-					if (!isHTMLElement(itemEl)) return;
-					if (isElementDisabled(itemEl)) {
-						e.preventDefault();
-						return;
-					}
-				}),
-				addEventListener(node, 'click', (e) => {
-					const itemEl = e.currentTarget;
-					if (!isHTMLElement(itemEl)) return;
-					if (isElementDisabled(itemEl)) {
-						e.preventDefault();
-						return;
-					}
+		const checkboxItem = builder(name('checkbox-item'), {
+			stores: [checked, disabled],
+			returned: ([$checked, $disabled]) => {
+				return {
+					role: 'menuitemcheckbox',
+					tabindex: -1,
+					'data-orientation': 'vertical',
+					'aria-checked': isIndeterminate($checked) ? 'mixed' : $checked ? 'true' : 'false',
+					'data-disabled': $disabled ? '' : undefined,
+					'data-state': getCheckedState($checked),
+				} as const;
+			},
+			action: (node: HTMLElement): MeltActionReturn<MenuEvents['checkboxItem']> => {
+				setMeltMenuAttribute(node, selector);
+				applyAttrsIfDisabled(node);
 
-					if (e.defaultPrevented) {
-						handleRovingFocus(itemEl);
-						return;
-					}
-					onSelect?.(e);
-					if (e.defaultPrevented) return;
-					checked.update((prev) => {
-						if (isIndeterminate(prev)) return true;
-						return !prev;
-					});
+				const unsub = executeCallbacks(
+					addMeltEventListener(node, 'pointerdown', (e) => {
+						const itemEl = e.currentTarget;
+						if (!isHTMLElement(itemEl)) return;
+						if (isElementDisabled(itemEl)) {
+							e.preventDefault();
+							return;
+						}
+					}),
+					addMeltEventListener(node, 'click', (e) => {
+						const itemEl = e.currentTarget;
+						if (!isHTMLElement(itemEl)) return;
+						if (isElementDisabled(itemEl)) {
+							e.preventDefault();
+							return;
+						}
 
-					// We're waiting for a tick to let the checked store update
-					// before closing the menu. If we don't, and the user was to hit
-					// spacebar or enter twice really fast, the menu would close and
-					// reopen without the checked state being updated.
-					tick().then(() => {
-						rootOpen.set(false);
-					});
-				}),
-				addEventListener(node, 'keydown', (e) => {
-					onItemKeyDown(e);
-				}),
-				addEventListener(node, 'pointermove', (e) => {
-					const itemEl = e.currentTarget;
-					if (!isHTMLElement(itemEl)) return;
+						if (e.defaultPrevented) {
+							handleRovingFocus(itemEl);
+							return;
+						}
+						checked.update((prev) => {
+							if (isIndeterminate(prev)) return true;
+							return !prev;
+						});
 
-					if (isElementDisabled(itemEl)) {
-						onItemLeave(e);
-						return;
-					}
+						// We're waiting for a tick to let the checked store update
+						// before closing the menu. If we don't, and the user was to hit
+						// spacebar or enter twice really fast, the menu would close and
+						// reopen without the checked state being updated.
+						tick().then(() => {
+							rootOpen.set(false);
+						});
+					}),
+					addMeltEventListener(node, 'keydown', (e) => {
+						onItemKeyDown(e);
+					}),
+					addMeltEventListener(node, 'pointermove', (e) => {
+						const itemEl = e.currentTarget;
+						if (!isHTMLElement(itemEl)) return;
 
-					onMenuItemPointerMove(e, itemEl);
-				}),
-				addEventListener(node, 'pointerleave', (e) => {
-					onMenuItemPointerLeave(e);
-				}),
-				addEventListener(node, 'focusin', (e) => {
-					onItemFocusIn(e);
-				}),
-				addEventListener(node, 'focusout', (e) => {
-					onItemFocusOut(e);
-				})
-			);
+						if (isElementDisabled(itemEl)) {
+							onItemLeave(e);
+							return;
+						}
 
-			return {
-				destroy: unsub,
-			};
-		},
-	});
+						onMenuItemPointerMove(e, itemEl);
+					}),
+					addMeltEventListener(node, 'pointerleave', (e) => {
+						onMenuItemPointerLeave(e);
+					}),
+					addMeltEventListener(node, 'focusin', (e) => {
+						onItemFocusIn(e);
+					}),
+					addMeltEventListener(node, 'focusout', (e) => {
+						onItemFocusOut(e);
+					})
+				);
+
+				return {
+					destroy: unsub,
+				};
+			},
+		});
+
+		return {
+			elements: {
+				checkboxItem,
+			},
+			states: {
+				checked: readonly(checked),
+			},
+			options: {
+				disabled,
+			},
+		};
+	};
 
 	const createMenuRadioGroup = (args: CreateRadioGroupProps = {}) => {
-		const value = writable(args.value ?? null);
+		const valueWritable = args.value ?? writable(args.defaultValue ?? null);
+		const value = overridable(valueWritable, args.onValueChange);
 
 		const radioGroup = builder(name('radio-group'), {
 			returned: () => ({
@@ -478,12 +496,11 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					};
 				};
 			},
-			action: (node: HTMLElement, params: RadioItemActionProps = {}) => {
+			action: (node: HTMLElement): MeltActionReturn<MenuEvents['radioItem']> => {
 				setMeltMenuAttribute(node, selector);
-				const { onSelect } = params;
 
 				const unsub = executeCallbacks(
-					addEventListener(node, 'pointerdown', (e) => {
+					addMeltEventListener(node, 'pointerdown', (e) => {
 						const itemEl = e.currentTarget;
 						if (!isHTMLElement(itemEl)) return;
 						const itemValue = node.dataset.value;
@@ -494,7 +511,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							return;
 						}
 					}),
-					addEventListener(node, 'click', (e) => {
+					addMeltEventListener(node, 'click', (e) => {
 						const itemEl = e.currentTarget;
 						if (!isHTMLElement(itemEl)) return;
 						const itemValue = node.dataset.value;
@@ -511,8 +528,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							handleRovingFocus(itemEl);
 							return;
 						}
-						onSelect?.(e);
-						if (e.defaultPrevented) return;
 
 						value.set(itemValue);
 
@@ -524,10 +539,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							rootOpen.set(false);
 						});
 					}),
-					addEventListener(node, 'keydown', (e) => {
+					addMeltEventListener(node, 'keydown', (e) => {
 						onItemKeyDown(e);
 					}),
-					addEventListener(node, 'pointermove', (e) => {
+					addMeltEventListener(node, 'pointermove', (e) => {
 						const itemEl = e.currentTarget;
 						if (!isHTMLElement(itemEl)) return;
 
@@ -540,13 +555,13 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						}
 						onMenuItemPointerMove(e, itemEl);
 					}),
-					addEventListener(node, 'pointerleave', (e) => {
+					addMeltEventListener(node, 'pointerleave', (e) => {
 						onMenuItemPointerLeave(e);
 					}),
-					addEventListener(node, 'focusin', (e) => {
+					addMeltEventListener(node, 'focusin', (e) => {
 						onItemFocusIn(e);
 					}),
-					addEventListener(node, 'focusout', (e) => {
+					addMeltEventListener(node, 'focusout', (e) => {
 						onItemFocusOut(e);
 					})
 				);
@@ -569,7 +584,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				radioItem,
 			},
 			states: {
-				value,
+				value: readonly(value),
 			},
 			helpers: {
 				isChecked,
@@ -594,7 +609,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			placement: 'right-start',
 			gutter: 8,
 		},
-		forceVisible: false,
 	} satisfies Defaults<CreateSubmenuProps>;
 
 	const createSubmenu = (args?: CreateSubmenuProps) => {
@@ -605,7 +619,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		// options
 		const options = toWritableStores(withDefaults);
 
-		const { positioning, arrowSize, disabled, forceVisible } = options;
+		const { positioning, arrowSize, disabled } = options;
 
 		const subActiveTrigger = writable<HTMLElement | null>(null);
 		const subOpenTimer = writable<number | null>(null);
@@ -648,7 +662,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					tabindex: -1,
 				} as const;
 			},
-			action: (node: HTMLElement) => {
+			action: (node: HTMLElement): MeltActionReturn<MenuEvents['submenu']> => {
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
@@ -680,7 +694,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				);
 
 				const unsubEvents = executeCallbacks(
-					addEventListener(node, 'keydown', (e) => {
+					addMeltEventListener(node, 'keydown', (e) => {
 						if (e.key === kbd.ESCAPE) {
 							return;
 						}
@@ -734,10 +748,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 						}
 					}),
-					addEventListener(node, 'pointermove', (e) => {
+					addMeltEventListener(node, 'pointermove', (e) => {
 						onMenuPointerMove(e);
 					}),
-					addEventListener(node, 'focusout', (e) => {
+					addMeltEventListener(node, 'focusout', (e) => {
 						const $subActiveTrigger = get(subActiveTrigger);
 						if (get(isUsingKeyboard)) {
 							const target = e.target;
@@ -783,7 +797,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					'aria-haspopop': 'menu',
 				} as const;
 			},
-			action: (node: HTMLElement) => {
+			action: (node: HTMLElement): MeltActionReturn<MenuEvents['subTrigger']> => {
 				setMeltMenuAttribute(node, selector);
 				applyAttrsIfDisabled(node);
 
@@ -794,7 +808,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				};
 
 				const unsubEvents = executeCallbacks(
-					addEventListener(node, 'click', (e) => {
+					addMeltEventListener(node, 'click', (e) => {
 						if (e.defaultPrevented) return;
 
 						const triggerEl = e.currentTarget;
@@ -813,7 +827,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							});
 						}
 					}),
-					addEventListener(node, 'keydown', (e) => {
+					addMeltEventListener(node, 'keydown', (e) => {
 						const $typed = get(typed);
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl) || isElementDisabled(triggerEl)) return;
@@ -838,7 +852,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							handleRovingFocus(firstItem);
 						}
 					}),
-					addEventListener(node, 'pointermove', (e) => {
+					addMeltEventListener(node, 'pointermove', (e) => {
 						if (!isMouse(e)) return;
 						onItemEnter(e);
 
@@ -862,7 +876,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							);
 						}
 					}),
-					addEventListener(node, 'pointerleave', (e) => {
+					addMeltEventListener(node, 'pointerleave', (e) => {
 						if (!isMouse(e)) return;
 						clearTimerStore(subOpenTimer);
 
@@ -903,7 +917,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							pointerGraceIntent.set(null);
 						}
 					}),
-					addEventListener(node, 'focusout', (e) => {
+					addMeltEventListener(node, 'focusout', (e) => {
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
 
@@ -921,7 +935,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							subOpen.set(false);
 						}
 					}),
-					addEventListener(node, 'focusin', (e) => {
+					addMeltEventListener(node, 'focusin', (e) => {
 						onItemFocusIn(e);
 					})
 				);
@@ -998,7 +1012,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				subArrow,
 			},
 			states: {
-				subOpen,
+				subOpen: readonly(subOpen),
 			},
 			options,
 		};
@@ -1098,13 +1112,18 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	});
 
 	onMount(() => {
+		const unsubs: Array<() => void> = [];
+
 		const handlePointer = () => isUsingKeyboard.set(false);
 		const handleKeyDown = () => {
 			isUsingKeyboard.set(true);
-			document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
-			document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
+			unsubs.push(
+				executeCallbacks(
+					addEventListener(document, 'pointerdown', handlePointer, { capture: true, once: true }),
+					addEventListener(document, 'pointermove', handlePointer, { capture: true, once: true })
+				)
+			);
 		};
-		document.addEventListener('keydown', handleKeyDown, { capture: true });
 
 		const keydownListener = (e: KeyboardEvent) => {
 			if (e.key === kbd.ESCAPE) {
@@ -1112,13 +1131,11 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				return;
 			}
 		};
-		document.addEventListener('keydown', keydownListener);
+		unsubs.push(addEventListener(document, 'keydown', handleKeyDown, { capture: true }));
+		unsubs.push(addEventListener(document, 'keydown', keydownListener));
 
 		return () => {
-			document.removeEventListener('keydown', handleKeyDown, { capture: true });
-			document.removeEventListener('pointerdown', handlePointer, { capture: true });
-			document.removeEventListener('pointermove', handlePointer, { capture: true });
-			document.removeEventListener('keydown', keydownListener);
+			unsubs.forEach((unsub) => unsub());
 		};
 	});
 
@@ -1287,9 +1304,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		menu: rootMenu,
 		open: rootOpen,
 		item,
-		checkboxItem,
 		arrow: rootArrow,
 		options: opts.rootOptions,
+		createCheckboxItem,
 		createSubmenu,
 		createMenuRadioGroup,
 		separator,

@@ -7,7 +7,7 @@ import {
 	toWritableStores,
 	omit,
 } from '$lib/internal/helpers';
-import { writable } from 'svelte/store';
+import { readonly, writable } from 'svelte/store';
 import type { CreateAvatarProps } from './types';
 
 const defaults = {
@@ -79,7 +79,7 @@ export const createAvatar = (props?: CreateAvatarProps) => {
 			fallback,
 		},
 		states: {
-			loadingStatus,
+			loadingStatus: readonly(loadingStatus),
 		},
 		options,
 	};

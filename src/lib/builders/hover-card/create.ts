@@ -1,6 +1,5 @@
 import { usePopper } from '$lib/internal/actions';
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	derivedVisible,
@@ -17,10 +16,13 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
-import { derived, get, writable, type Readable } from 'svelte/store';
+import { derived, get, writable, type Readable, readonly } from 'svelte/store';
 import type { CreateHoverCardProps } from './types';
+import type { MeltActionReturn } from '$lib/internal/types';
+import type { HoverCardEvents } from './events';
 
 type HoverCardParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<HoverCardParts>('hover-card');
@@ -112,22 +114,25 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 				id: ids.trigger,
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<HoverCardEvents['trigger']> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerenter', (e) => {
+				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
 					get(handleOpen)();
 				}),
-				addEventListener(node, 'pointerleave', (e) => {
+				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
 					get(handleClose)();
 				}),
-				addEventListener(node, 'focus', () => get(handleOpen)()),
+				addMeltEventListener(node, 'focus', () => get(handleOpen)()),
 
-				addEventListener(node, 'blur', () => get(handleClose)()),
-				addEventListener(node, 'touchstart', (e) => {
+				addMeltEventListener(node, 'blur', () => get(handleClose)()),
+				addMeltEventListener(node, 'touchstart', (e) => {
 					// prevent focus on touch devices
 					e.preventDefault();
+					const currentTarget = e.currentTarget;
+					if (!isHTMLElement(currentTarget)) return;
+					currentTarget.click();
 				})
 			);
 
@@ -155,7 +160,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 				'data-portal': $portal ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<HoverCardEvents['content']> => {
 			const portalParent = getPortalParent(node);
 			let unsub = noop;
 
@@ -200,7 +205,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 			);
 
 			unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', (e) => {
+				addMeltEventListener(node, 'pointerdown', (e) => {
 					const currentTarget = e.currentTarget;
 					const target = e.target;
 					if (!isHTMLElement(currentTarget) || !isHTMLElement(target)) return;
@@ -212,15 +217,15 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 					hasSelection.set(false);
 					isPointerDownOnContent.set(true);
 				}),
-				addEventListener(node, 'pointerenter', (e) => {
+				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
 					get(handleOpen)();
 				}),
-				addEventListener(node, 'pointerleave', (e) => {
+				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
 					get(handleClose)();
 				}),
-				addEventListener(node, 'focusout', (e) => {
+				addMeltEventListener(node, 'focusout', (e) => {
 					e.preventDefault();
 				})
 			);
@@ -312,7 +317,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 			arrow,
 		},
 		states: {
-			open,
+			open: readonly(open),
 		},
 		options,
 	};

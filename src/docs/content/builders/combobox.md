@@ -23,7 +23,7 @@ description: A filterable list of items that supports selection.
 
 ## Example Components
 
-### Controlled (BYOS)
+### Bring Your Own Store
 
 <Preview code={snippets.controlled}>
     <svelte:component this={previews.controlled} />
