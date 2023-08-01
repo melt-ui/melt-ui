@@ -20,7 +20,7 @@ import {
 } from '$lib/internal/helpers';
 import type { VirtualElement } from '@floating-ui/core';
 import { tick } from 'svelte';
-import { get, writable, type Readable } from 'svelte/store';
+import { get, writable, type Readable, readonly } from 'svelte/store';
 import {
 	applyAttrsIfDisabled,
 	clearTimerStore,
@@ -34,6 +34,7 @@ import {
 } from '../menu';
 import type { CreateContextMenuProps } from './types';
 import type { MeltActionReturn } from '$lib/internal/types';
+import type { ContextMenuEvents } from './events';
 
 const defaults = {
 	arrowSize: 8,
@@ -66,7 +67,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 
 	const {
 		item,
-		checkboxItem,
+		createCheckboxItem,
 		arrow,
 		createSubmenu,
 		createMenuRadioGroup,
@@ -132,7 +133,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				tabindex: -1,
 			} as const;
 		},
-		action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
+		action: (node: HTMLElement): MeltActionReturn<ContextMenuEvents['menu']> => {
 			const portalParent = getPortalParent(node);
 			let unsubPopper = noop;
 
@@ -211,13 +212,6 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		},
 	});
 
-	type TriggerEvents =
-		| 'contextmenu'
-		| 'pointerdown'
-		| 'pointermove'
-		| 'pointercancel'
-		| 'pointerup';
-
 	const trigger = builder(name('trigger'), {
 		stores: rootOpen,
 		returned: ($rootOpen) => {
@@ -231,7 +225,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				}),
 			} as const;
 		},
-		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<ContextMenuEvents['trigger']> => {
 			applyAttrsIfDisabled(node);
 
 			const handleOpen = (e: MouseEvent | PointerEvent) => {
@@ -298,15 +292,15 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			menu,
 			trigger,
 			item,
-			checkboxItem,
 			arrow,
 			separator,
 		},
 		states: {
-			open: rootOpen,
+			open: readonly(rootOpen),
 		},
 		builders: {
 			createSubmenu,
+			createCheckboxItem,
 			createMenuRadioGroup,
 		},
 		options: rootOptions,

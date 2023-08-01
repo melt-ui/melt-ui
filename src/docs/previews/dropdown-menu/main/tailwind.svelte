@@ -4,9 +4,12 @@
 	import { AlignJustify, ChevronRight, Check } from 'lucide-svelte';
 	import { fly } from 'svelte/transition';
 
+	const settingsSync = writable(true);
+	const hideMeltUI = writable(false);
+
 	const {
-		elements: { trigger, menu, item, checkboxItem, separator, arrow },
-		builders: { createSubmenu, createMenuRadioGroup },
+		elements: { trigger, menu, item, separator, arrow },
+		builders: { createSubmenu, createMenuRadioGroup, createCheckboxItem },
 		states: { open },
 	} = createDropdownMenu({
 		forceVisible: true,
@@ -15,15 +18,25 @@
 	const {
 		elements: { subMenu, subTrigger },
 		states: { subOpen },
-	} = createSubmenu({
-		forceVisible: true,
-	});
+	} = createSubmenu();
 
 	const {
 		elements: { radioGroup, radioItem },
 		helpers: { isChecked },
 	} = createMenuRadioGroup({
-		value: 'Hunter Johnston',
+		defaultValue: 'Hunter Johnston',
+	});
+
+	const {
+		elements: { checkboxItem },
+	} = createCheckboxItem({
+		checked: settingsSync,
+	});
+
+	const {
+		elements: { checkboxItem: checkboxItemA },
+	} = createCheckboxItem({
+		checked: hideMeltUI,
 	});
 
 	const personsArr = [
@@ -32,9 +45,6 @@
 		'Adrian Gonz',
 		'Franck Poingt',
 	];
-
-	const settingsSync = writable(true);
-	const hideMeltUI = writable(false);
 </script>
 
 <button
@@ -52,11 +62,7 @@
 		<div class="item" use:melt={$item}>About Melt UI</div>
 		<div class="item" use:melt={$item}>Check for Updates...</div>
 		<div class="separator" use:melt={$separator} />
-		<div
-			class="item"
-			{...$checkboxItem}
-			use:checkboxItem={{ checked: settingsSync }}
-		>
+		<div class="item" use:melt={$checkboxItem}>
 			<div class="check">
 				{#if $settingsSync}
 					<Check class="icon" />
@@ -93,11 +99,7 @@
 		{/if}
 		<div use:melt={$separator} class="separator" />
 
-		<div
-			class="item"
-			{...$checkboxItem}
-			use:checkboxItem={{ checked: hideMeltUI }}
-		>
+		<div class="item" use:melt={$checkboxItemA}>
 			<div class="check">
 				{#if $hideMeltUI}
 					<Check class="icon" />

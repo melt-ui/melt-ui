@@ -1,4 +1,4 @@
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, readonly } from 'svelte/store';
 import {
 	builder,
 	createElHelpers,
@@ -8,10 +8,12 @@ import {
 	noop,
 	toWritableStores,
 	addMeltEventListener,
+	kbd,
 } from '$lib/internal/helpers';
 import type { AddToastProps, CreateToasterProps, Toast } from './types';
 import { usePortal } from '$lib/internal/actions';
 import type { MeltActionReturn } from '$lib/internal/types';
+import type { ToastEvents } from './events';
 
 type ToastParts = 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<ToastParts>('toast');
@@ -86,8 +88,6 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 		return toast;
 	};
 
-	type ContentEvents = 'pointerenter' | 'pointerleave' | 'focusout';
-
 	const content = builder(name('content'), {
 		stores: toastsMap,
 		returned: ($toasts) => {
@@ -106,7 +106,7 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 				};
 			};
 		},
-		action: (node: HTMLElement): MeltActionReturn<ContentEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<ToastEvents['content']> => {
 			let unsub = noop;
 
 			const unsubTimers = () => {
@@ -173,11 +173,22 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 				'data-id': id,
 			});
 		},
-		action: (node: HTMLElement): MeltActionReturn<'click'> => {
-			const unsub = addMeltEventListener(node, 'click', () => {
+		action: (node: HTMLElement): MeltActionReturn<ToastEvents['close']> => {
+			function handleClose() {
 				if (!node.dataset.id) return;
 				closeToast(node.dataset.id);
-			});
+			}
+
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					handleClose();
+				}),
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
+					e.preventDefault();
+					handleClose();
+				})
+			);
 
 			return {
 				destroy: unsub,
@@ -197,7 +208,7 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 			close,
 		},
 		states: {
-			toasts,
+			toasts: readonly(toasts),
 		},
 		helpers: {
 			addToast,

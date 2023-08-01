@@ -16,7 +16,6 @@
 		</span>
 		<button
 			use:melt={$trigger}
-			on:m-click={() => console.log('clicked')}
 			class="relative h-6 w-6 place-items-center rounded-full bg-white text-sm
             text-magnum-700 shadow-lg hover:opacity-75 data-[disabled]:cursor-not-allowed
             data-[disabled]:opacity-75"

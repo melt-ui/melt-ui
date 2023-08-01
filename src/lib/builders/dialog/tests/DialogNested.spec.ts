@@ -59,7 +59,7 @@ describe('Nested Dialogs', () => {
 
 			await expect(screen.queryByTestId('content')).not.toBeNull();
 		},
-		{ retry: 3 }
+		{ retry: 1 }
 	);
 
 	it('Closes when Escape is hit', async () => {
@@ -98,7 +98,7 @@ describe('Nested Dialogs', () => {
 
 			expect(screen.queryByTestId('content')).toBeNull();
 		},
-		{ retry: 3 }
+		{ retry: 1 }
 	);
 
 	it(
@@ -114,7 +114,7 @@ describe('Nested Dialogs', () => {
 
 			await expect(content.parentElement).toEqual(document.body);
 		},
-		{ retry: 3 }
+		{ retry: 1 }
 	);
 
 	it(
@@ -130,7 +130,7 @@ describe('Nested Dialogs', () => {
 
 			await expect(overlay.parentElement).toEqual(document.body);
 		},
-		{ retry: 3 }
+		{ retry: 1 }
 	);
 
 	it(
@@ -149,7 +149,7 @@ describe('Nested Dialogs', () => {
 			// always content here.
 			await expect(document.activeElement).toBe(screen.getByTestId('content'));
 		},
-		{ retry: 3 }
+		{ retry: 1 }
 	);
 
 	it(
@@ -170,6 +170,6 @@ describe('Nested Dialogs', () => {
 			await user.tab();
 			await waitFor(() => expect(document.activeElement).toBe(screen.getByTestId('content')));
 		},
-		{ retry: 3 }
+		{ retry: 1 }
 	);
 });

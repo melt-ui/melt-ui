@@ -22,9 +22,10 @@ import {
 
 import { useFloating, usePortal } from '$lib/internal/actions';
 import { onMount, tick } from 'svelte';
-import { get, writable } from 'svelte/store';
+import { get, readonly, writable } from 'svelte/store';
 import type { CreateTooltipProps } from './types';
 import type { MeltActionReturn } from '$lib/internal/types';
+import type { TooltipEvents } from './events';
 
 const defaults = {
 	positioning: {
@@ -102,21 +103,13 @@ export function createTooltip(props?: CreateTooltipProps) {
 		}, get(closeDelay));
 	}
 
-	type TriggerEvents =
-		| 'pointerdown'
-		| 'pointerenter'
-		| 'pointerleave'
-		| 'focus'
-		| 'blur'
-		| 'keydown';
-
 	const trigger = builder(name('trigger'), {
 		returned: () => {
 			return {
 				'aria-describedby': ids.content,
 			};
 		},
-		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['trigger']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerdown', () => {
 					const $closeOnPointerDown = get(closeOnPointerDown);
@@ -164,8 +157,6 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 	const isVisible = derivedVisible({ open, activeTrigger, forceVisible });
 
-	type ContentEvents = 'pointerenter' | 'pointerdown';
-
 	const content = builder(name('content'), {
 		stores: [isVisible, portal],
 		returned: ([$isVisible, $portal]) => {
@@ -180,7 +171,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				'data-portal': $portal ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement): MeltActionReturn<ContentEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['content']> => {
 			const portalParent = getPortalParent(node);
 
 			let unsubFloating = noop;
@@ -274,7 +265,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 			content,
 			arrow,
 		},
-		states: { open },
+		states: { open: readonly(open) },
 		options,
 	};
 }

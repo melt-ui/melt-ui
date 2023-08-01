@@ -13,13 +13,14 @@ import {
 	addMeltEventListener,
 } from '$lib/internal/helpers';
 import { tick } from 'svelte';
-import { derived, writable, type Writable } from 'svelte/store';
+import { derived, readonly, writable, type Writable } from 'svelte/store';
 import type {
 	AccordionHeadingProps,
 	AccordionItemProps,
 	AccordionType,
 	CreateAccordionProps,
 } from './types';
+import type { AccordionEvents } from './events';
 import type { MeltActionReturn } from '$lib/internal/types';
 
 type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
@@ -35,7 +36,7 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 	props?: CreateAccordionProps<T>
 ) => {
 	const withDefaults = { ...defaults, ...props };
-	const options = toWritableStores(omit(withDefaults, 'value'));
+	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
 	const { disabled, forceVisible } = options;
 
 	const valueWritable =
@@ -92,8 +93,6 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 		},
 	});
 
-	type TriggerEvents = 'click' | 'keydown';
-
 	const trigger = builder(name('trigger'), {
 		stores: [value, disabled],
 		returned: ([$value, $disabled]) => {
@@ -110,7 +109,7 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 				};
 			};
 		},
-		action: (node: HTMLElement): MeltActionReturn<TriggerEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<AccordionEvents['trigger']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
 					const disabled = node.dataset.disabled === 'true';
@@ -240,7 +239,7 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 			heading,
 		},
 		states: {
-			value: value as Writable<CreateAccordionProps<T>['value']>,
+			value: readonly(value as Writable<CreateAccordionProps<T>['value']>),
 		},
 		helpers: {
 			isSelected: isSelectedStore,

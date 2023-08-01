@@ -3,7 +3,7 @@
 
 	const {
 		elements: { root, input },
-		helpers: { isChecked },
+		states: { checked },
 	} = createSwitch();
 </script>
 
@@ -20,7 +20,7 @@
 			<span
 				class="block h-5 w-5 translate-x-0.5 rounded-full bg-white
                 transition-transform will-change-transform
-                {$isChecked && 'translate-x-[22px]'}"
+                {$checked && 'translate-x-[22px]'}"
 			/>
 			<input use:melt={$input} />
 		</button>

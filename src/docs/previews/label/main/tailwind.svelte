@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createLabel } from '@melt-ui/svelte';
+	import { createLabel, melt } from '@melt-ui/svelte';
 
 	const {
 		elements: { root },
@@ -9,7 +9,7 @@
 <form>
 	<div class="flex flex-col items-start justify-center">
 		<label
-			use:root
+			use:melt={$root}
 			for="email"
 			class="mb-0.5 font-medium"
 			data-melt-part="root"

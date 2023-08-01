@@ -9,14 +9,12 @@
 
 	const {
 		elements: { trigger, menu, option },
-		states: { value: localValue, valueLabel },
+		states: { valueLabel },
 		helpers: { isSelected },
 	} = createSelect({ value: codingStyle });
 
-	$: localValue.set($codingStyle);
-
 	beforeNavigate(() => {
-		localValue.set('tailwind');
+		codingStyle.set('tailwind');
 	});
 </script>
 

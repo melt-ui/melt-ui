@@ -1,128 +1,128 @@
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
+import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { selectEvents } from '@melt-ui/svelte/builders/select/events';
 import type { BuilderData } from '.';
 
-const builder: APISchema = {
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	PROPS.REQUIRED,
+	PROPS.DISABLED,
+	PROPS.ARROW_SIZE,
+	PROPS.PREVENT_SCROLL,
+	PROPS.LOOP,
+	PROPS.CLOSE_ON_ESCAPE,
+	PROPS.CLOSE_ON_OUTSIDE_CLICK,
+	PROPS.PORTAL,
+	PROPS.FORCE_VISIBLE,
+	PROPS.POSITIONING({ default: "placement: 'bottom'" }),
+	{
+		name: 'defaultValueLabel',
+		type: 'string',
+		description: 'The initial default value label of the select.',
+	},
+	{
+		name: 'name',
+		type: 'string',
+		description: 'The name to be used for the select input.',
+	},
+];
+
+const BUILDER_NAME = 'select';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createSelect',
-	description: DESCRIPTIONS.BUILDER('select'),
 	props: [
+		...OPTION_PROPS,
 		{
-			name: 'required',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the select is required.',
-		},
-		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the select is disabled.',
-		},
-		{
-			name: 'valueLabel',
-			type: 'string',
-			description: 'The initial value label of the select.',
-		},
-		{
-			name: 'value',
+			name: 'defaultValue',
 			type: 'unknown',
 			description: 'The initial value of the select.',
-		},
-		{
-			name: 'name',
-			type: 'string',
-			description: 'The name of the select.',
-		},
-		{
-			name: 'preventScroll',
-			type: 'boolean',
-			default: 'true',
-			description: DESCRIPTIONS.PREVENT_SCROLL('select'),
-		},
-		{
-			name: 'loop',
-			type: 'boolean',
-			default: 'false',
-			description: DESCRIPTIONS.LOOP,
-		},
-	],
-	returnedProps: [
-		{
-			name: 'options',
-			type: 'Writable<CreateSelectProps>',
-			description: 'A writable store that can be used to update the select props.',
-		},
-		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store that can be used to update the select open state.',
-		},
-		{
-			name: 'isSelected',
-			type: 'Readable<(value: unknown) => boolean>',
-			description: 'A derived store that returns whether or not the given value is selected.',
 		},
 		{
 			name: 'value',
 			type: 'Writable<unknown>',
 			description: 'A writable store that can be used to get or update or the select value.',
+			see: SEE.BRING_YOUR_OWN_STORE,
 		},
 		{
-			name: 'valueLabel',
-			type: 'Writable<string | number | null>',
-			description: 'A writable store that can be used to get or update the select label.',
+			name: 'onValueChange',
+			type: 'ChangeFn<unknown>',
+			description: 'A callback that is called when the value of the select changes.',
+			see: SEE.CHANGE_FUNCTIONS,
 		},
+		PROPS.DEFAULT_OPEN,
+		PROPS.OPEN,
+		PROPS.ON_OPEN_CHANGE,
+	],
+	elements: [
 		{
 			name: 'trigger',
 			description: 'The builder store used to create the select trigger.',
-			link: '#trigger',
 		},
 		{
 			name: 'menu',
 			description: 'The builder store used to create the select menu.',
-			link: '#menu',
 		},
 		{
 			name: 'option',
 			description: 'The builder store used to create the select options.',
-			link: '#option',
 		},
 		{
 			name: 'input',
 			description: 'The builder store used to create the select input.',
-			link: '#input',
 		},
 		{
 			name: 'label',
 			description: 'The builder store used to create the select label.',
-			link: '#label',
 		},
-
 		{
 			name: 'separator',
 			description: 'The builder store used to create the select separator.',
-			link: '#separator',
 		},
 		{
 			name: 'group',
 			description: 'The builder store used to create the select group.',
-			link: '#group',
 		},
 		{
 			name: 'groupLabel',
 			description: 'The builder store used to create the select group label.',
-			link: '#grouplabel',
 		},
 		{
 			name: 'arrow',
 			description: 'The builder store used to create the select arrow.',
-			link: '#arrow',
 		},
 	],
-};
+	states: [
+		{
+			name: 'open',
+			type: 'Readable<boolean>',
+			description: 'A derived store that returns whether or not the select is open.',
+		},
+		{
+			name: 'value',
+			type: 'Readable<unknown>',
+			description: 'A derived store that returns the current value of the select.',
+		},
+		{
+			name: 'open',
+			type: 'Readable<boolean>',
+			description: 'A derived store that returns whether or not the select is open.',
+		},
+	],
+	helpers: [
+		{
+			name: 'isSelected',
+			type: 'Readable<(value: unknown) => boolean>',
+			description: 'A derived store that returns whether or not the given value is selected.',
+		},
+	],
+	options: OPTION_PROPS,
+});
 
-const trigger: APISchema = {
-	title: 'trigger',
+const trigger = elementSchema('trigger', {
 	description: 'The element which opens/closes the select.',
 	dataAttributes: [
 		{
@@ -138,10 +138,10 @@ const trigger: APISchema = {
 			value: ATTRS.MELT('trigger'),
 		},
 	],
-};
+	events: selectEvents['trigger'],
+});
 
-const menu: APISchema = {
-	title: 'menu',
+const menu = elementSchema('menu', {
 	description: 'The menu element',
 	dataAttributes: [
 		{
@@ -149,10 +149,10 @@ const menu: APISchema = {
 			value: ATTRS.MELT('menu'),
 		},
 	],
-};
+	events: selectEvents['menu'],
+});
 
-const option: APISchema = {
-	title: 'option',
+const option = elementSchema('option', {
 	description: 'The option elements',
 	props: [
 		{
@@ -173,10 +173,10 @@ const option: APISchema = {
 			description: 'Whether or not the option is disabled.',
 		},
 	],
-};
+	events: selectEvents['option'],
+});
 
-const input: APISchema = {
-	title: 'input',
+const input = elementSchema('input', {
 	description: 'The hidden input element. Used for form submission.',
 	dataAttributes: [
 		{
@@ -184,10 +184,9 @@ const input: APISchema = {
 			value: ATTRS.MELT('input'),
 		},
 	],
-};
+});
 
-const label: APISchema = {
-	title: 'label',
+const label = elementSchema('label', {
 	description: 'The label element',
 	dataAttributes: [
 		{
@@ -195,10 +194,10 @@ const label: APISchema = {
 			value: ATTRS.MELT('label'),
 		},
 	],
-};
+	events: selectEvents['label'],
+});
 
-const arrow: APISchema = {
-	title: 'arrow',
+const arrow = elementSchema('arrow', {
 	description: 'The optional arrow element',
 	dataAttributes: [
 		{
@@ -210,10 +209,9 @@ const arrow: APISchema = {
 			value: ATTRS.MELT('arrow'),
 		},
 	],
-};
+});
 
-const separator: APISchema = {
-	title: 'separator',
+const separator = elementSchema('separator', {
 	description: 'An optional separator element',
 	dataAttributes: [
 		{
@@ -221,10 +219,9 @@ const separator: APISchema = {
 			value: ATTRS.MELT('separator'),
 		},
 	],
-};
+});
 
-const group: APISchema = {
-	title: 'group',
+const group = elementSchema('group', {
 	description: 'A function which takes in a unique key to group options together.',
 	props: [
 		{
@@ -239,10 +236,9 @@ const group: APISchema = {
 			value: ATTRS.MELT('group'),
 		},
 	],
-};
+});
 
-const groupLabel: APISchema = {
-	title: 'groupLabel',
+const groupLabel = elementSchema('groupLabel', {
 	description: 'A function which takes in a unique key to group options together.',
 	props: [
 		{
@@ -257,7 +253,7 @@ const groupLabel: APISchema = {
 			value: ATTRS.MELT('group-label'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

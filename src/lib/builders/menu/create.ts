@@ -25,13 +25,14 @@ import {
 	toWritableStores,
 	getPortalParent,
 	derivedVisible,
+	overridable,
 	addMeltEventListener,
 	addEventListener,
 } from '$lib/internal/helpers';
 import { createSeparator } from '$lib/builders';
 import type { Defaults, TextDirection, MeltActionReturn } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
-import { derived, get, writable, type Writable } from 'svelte/store';
+import { derived, get, readonly, writable, type Writable } from 'svelte/store';
 
 import type {
 	CheckboxItemProps,
@@ -40,10 +41,10 @@ import type {
 	CreateSubmenuProps,
 	MenuBuilderOptions,
 	MenuParts,
-	RadioItemActionProps,
 	RadioItemProps,
 	Selector,
 } from './types';
+import type { MenuEvents } from './events';
 
 export const SUB_OPEN_KEYS: Record<TextDirection, string[]> = {
 	ltr: [...SELECTION_KEYS, kbd.ARROW_RIGHT],
@@ -155,7 +156,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				tabindex: -1,
 			} as const;
 		},
-		action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
+		action: (node: HTMLElement): MeltActionReturn<MenuEvents['menu']> => {
 			const portalParent = getPortalParent(node);
 			let unsubPopper = noop;
 
@@ -239,8 +240,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		},
 	});
 
-	type RootTriggerEvents = 'pointerdown' | 'keydown';
-
 	const rootTrigger = builder(name('trigger'), {
 		stores: [rootOpen],
 		returned: ([$rootOpen]) => {
@@ -252,7 +251,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				tabindex: 0,
 			} as const;
 		},
-		action: (node: HTMLElement): MeltActionReturn<RootTriggerEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<MenuEvents['trigger']> => {
 			applyAttrsIfDisabled(node);
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
@@ -301,15 +300,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		}),
 	});
 
-	type ItemEvents =
-		| 'pointerdown'
-		| 'click'
-		| 'keydown'
-		| 'pointermove'
-		| 'pointerleave'
-		| 'focusin'
-		| 'focusout';
-
 	const item = builder(name('item'), {
 		returned: () => {
 			return {
@@ -318,7 +308,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				'data-orientation': 'vertical',
 			};
 		},
-		action: (node: HTMLElement): MeltActionReturn<ItemEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<MenuEvents['item']> => {
 			setMeltMenuAttribute(node, selector);
 			applyAttrsIfDisabled(node);
 
@@ -368,120 +358,120 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		},
 	});
 
-	type CheckboxItemEvents =
-		| 'pointerdown'
-		| 'click'
-		| 'keydown'
-		| 'pointermove'
-		| 'pointerleave'
-		| 'focusin'
-		| 'focusout';
-
 	const checkboxItemDefaults = {
-		checked: writable(false),
+		defaultChecked: false,
+		disabled: false,
 	};
 
-	const checkboxItem = builder(name('checkbox-item'), {
-		returned: () => ({
-			role: 'menuitemcheckbox',
-			tabindex: -1,
-			'data-orientation': 'vertical',
-		}),
-		action: (
-			node: HTMLElement,
-			params: CheckboxItemProps
-		): MeltActionReturn<CheckboxItemEvents> => {
-			setMeltMenuAttribute(node, selector);
-			applyAttrsIfDisabled(node);
-			const { checked, onSelect } = { ...checkboxItemDefaults, ...params };
-			const $checked = get(checked);
-			node.setAttribute('aria-checked', isIndeterminate($checked) ? 'mixed' : String($checked));
-			node.setAttribute('data-state', getCheckedState($checked));
+	const createCheckboxItem = (props?: CheckboxItemProps) => {
+		const withDefaults = { ...checkboxItemDefaults, ...props } satisfies CheckboxItemProps;
+		const checkedWritable = withDefaults.checked ?? writable(withDefaults.defaultChecked ?? null);
+		const checked = overridable(checkedWritable, withDefaults.onCheckedChange);
+		const disabled = writable(withDefaults.disabled);
 
-			const unsub = executeCallbacks(
-				addMeltEventListener(node, 'pointerdown', (e) => {
-					const itemEl = e.currentTarget;
-					if (!isHTMLElement(itemEl)) return;
-					if (isElementDisabled(itemEl)) {
-						e.preventDefault();
-						return;
-					}
-				}),
-				addMeltEventListener(node, 'click', (e) => {
-					const itemEl = e.currentTarget;
-					if (!isHTMLElement(itemEl)) return;
-					if (isElementDisabled(itemEl)) {
-						e.preventDefault();
-						return;
-					}
+		const checkboxItem = builder(name('checkbox-item'), {
+			stores: [checked, disabled],
+			returned: ([$checked, $disabled]) => {
+				return {
+					role: 'menuitemcheckbox',
+					tabindex: -1,
+					'data-orientation': 'vertical',
+					'aria-checked': isIndeterminate($checked) ? 'mixed' : $checked ? 'true' : 'false',
+					'data-disabled': $disabled ? '' : undefined,
+					'data-state': getCheckedState($checked),
+				} as const;
+			},
+			action: (node: HTMLElement): MeltActionReturn<MenuEvents['checkboxItem']> => {
+				setMeltMenuAttribute(node, selector);
+				applyAttrsIfDisabled(node);
 
-					if (e.defaultPrevented) {
-						handleRovingFocus(itemEl);
-						return;
-					}
-					onSelect?.(e);
-					if (e.defaultPrevented) return;
-					checked.update((prev) => {
-						if (isIndeterminate(prev)) return true;
-						return !prev;
-					});
+				const unsub = executeCallbacks(
+					addMeltEventListener(node, 'pointerdown', (e) => {
+						const itemEl = e.currentTarget;
+						if (!isHTMLElement(itemEl)) return;
+						if (isElementDisabled(itemEl)) {
+							e.preventDefault();
+							return;
+						}
+					}),
+					addMeltEventListener(node, 'click', (e) => {
+						const itemEl = e.currentTarget;
+						if (!isHTMLElement(itemEl)) return;
+						if (isElementDisabled(itemEl)) {
+							e.preventDefault();
+							return;
+						}
 
-					// We're waiting for a tick to let the checked store update
-					// before closing the menu. If we don't, and the user was to hit
-					// spacebar or enter twice really fast, the menu would close and
-					// reopen without the checked state being updated.
-					tick().then(() => {
-						rootOpen.set(false);
-					});
-				}),
-				addMeltEventListener(node, 'keydown', (e) => {
-					onItemKeyDown(e);
-				}),
-				addMeltEventListener(node, 'pointermove', (e) => {
-					const itemEl = e.currentTarget;
-					if (!isHTMLElement(itemEl)) return;
+						if (e.defaultPrevented) {
+							handleRovingFocus(itemEl);
+							return;
+						}
+						checked.update((prev) => {
+							if (isIndeterminate(prev)) return true;
+							return !prev;
+						});
 
-					if (isElementDisabled(itemEl)) {
-						onItemLeave(e);
-						return;
-					}
+						// We're waiting for a tick to let the checked store update
+						// before closing the menu. If we don't, and the user was to hit
+						// spacebar or enter twice really fast, the menu would close and
+						// reopen without the checked state being updated.
+						tick().then(() => {
+							rootOpen.set(false);
+						});
+					}),
+					addMeltEventListener(node, 'keydown', (e) => {
+						onItemKeyDown(e);
+					}),
+					addMeltEventListener(node, 'pointermove', (e) => {
+						const itemEl = e.currentTarget;
+						if (!isHTMLElement(itemEl)) return;
 
-					onMenuItemPointerMove(e, itemEl);
-				}),
-				addMeltEventListener(node, 'pointerleave', (e) => {
-					onMenuItemPointerLeave(e);
-				}),
-				addMeltEventListener(node, 'focusin', (e) => {
-					onItemFocusIn(e);
-				}),
-				addMeltEventListener(node, 'focusout', (e) => {
-					onItemFocusOut(e);
-				})
-			);
+						if (isElementDisabled(itemEl)) {
+							onItemLeave(e);
+							return;
+						}
 
-			return {
-				destroy: unsub,
-			};
-		},
-	});
+						onMenuItemPointerMove(e, itemEl);
+					}),
+					addMeltEventListener(node, 'pointerleave', (e) => {
+						onMenuItemPointerLeave(e);
+					}),
+					addMeltEventListener(node, 'focusin', (e) => {
+						onItemFocusIn(e);
+					}),
+					addMeltEventListener(node, 'focusout', (e) => {
+						onItemFocusOut(e);
+					})
+				);
+
+				return {
+					destroy: unsub,
+				};
+			},
+		});
+
+		return {
+			elements: {
+				checkboxItem,
+			},
+			states: {
+				checked: readonly(checked),
+			},
+			options: {
+				disabled,
+			},
+		};
+	};
 
 	const createMenuRadioGroup = (args: CreateRadioGroupProps = {}) => {
-		const value = writable(args.value ?? null);
+		const valueWritable = args.value ?? writable(args.defaultValue ?? null);
+		const value = overridable(valueWritable, args.onValueChange);
 
 		const radioGroup = builder(name('radio-group'), {
 			returned: () => ({
 				role: 'group',
 			}),
 		});
-
-		type RadioItemEvents =
-			| 'pointerdown'
-			| 'click'
-			| 'keydown'
-			| 'pointermove'
-			| 'pointerleave'
-			| 'focusin'
-			| 'focusout';
 
 		const radioItemDefaults = {
 			disabled: false,
@@ -506,12 +496,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					};
 				};
 			},
-			action: (
-				node: HTMLElement,
-				params: RadioItemActionProps = {}
-			): MeltActionReturn<RadioItemEvents> => {
+			action: (node: HTMLElement): MeltActionReturn<MenuEvents['radioItem']> => {
 				setMeltMenuAttribute(node, selector);
-				const { onSelect } = params;
 
 				const unsub = executeCallbacks(
 					addMeltEventListener(node, 'pointerdown', (e) => {
@@ -542,8 +528,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							handleRovingFocus(itemEl);
 							return;
 						}
-						onSelect?.(e);
-						if (e.defaultPrevented) return;
 
 						value.set(itemValue);
 
@@ -600,7 +584,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				radioItem,
 			},
 			states: {
-				value,
+				value: readonly(value),
 			},
 			helpers: {
 				isChecked,
@@ -625,7 +609,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			placement: 'right-start',
 			gutter: 8,
 		},
-		forceVisible: false,
 	} satisfies Defaults<CreateSubmenuProps>;
 
 	const createSubmenu = (args?: CreateSubmenuProps) => {
@@ -636,13 +619,11 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		// options
 		const options = toWritableStores(withDefaults);
 
-		const { positioning, arrowSize, disabled, forceVisible } = options;
+		const { positioning, arrowSize, disabled } = options;
 
 		const subActiveTrigger = writable<HTMLElement | null>(null);
 		const subOpenTimer = writable<number | null>(null);
 		const pointerGraceTimer = writable(0);
-
-		type SubmenuEvents = 'keydown' | 'pointermove' | 'focusout';
 
 		const subIds = {
 			menu: generateId(),
@@ -681,7 +662,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					tabindex: -1,
 				} as const;
 			},
-			action: (node: HTMLElement): MeltActionReturn<SubmenuEvents> => {
+			action: (node: HTMLElement): MeltActionReturn<MenuEvents['submenu']> => {
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
@@ -802,14 +783,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			},
 		});
 
-		type SubTriggerEvents =
-			| 'click'
-			| 'keydown'
-			| 'pointermove'
-			| 'pointerleave'
-			| 'focusin'
-			| 'focusout';
-
 		const subTrigger = builder(name('subtrigger'), {
 			stores: [subOpen, disabled],
 			returned: ([$subOpen, $disabled]) => {
@@ -824,7 +797,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					'aria-haspopop': 'menu',
 				} as const;
 			},
-			action: (node: HTMLElement): MeltActionReturn<SubTriggerEvents> => {
+			action: (node: HTMLElement): MeltActionReturn<MenuEvents['subTrigger']> => {
 				setMeltMenuAttribute(node, selector);
 				applyAttrsIfDisabled(node);
 
@@ -1039,7 +1012,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				subArrow,
 			},
 			states: {
-				subOpen,
+				subOpen: readonly(subOpen),
 			},
 			options,
 		};
@@ -1331,9 +1304,9 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		menu: rootMenu,
 		open: rootOpen,
 		item,
-		checkboxItem,
 		arrow: rootArrow,
 		options: opts.rootOptions,
+		createCheckboxItem,
 		createSubmenu,
 		createMenuRadioGroup,
 		separator,

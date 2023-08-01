@@ -35,6 +35,7 @@ import { onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions';
 import type { MeltActionReturn } from '$lib/internal/types';
 import type { CreateMenubarMenuProps, CreateMenubarProps } from './types';
+import type { MenubarEvents } from './events';
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
 
@@ -143,7 +144,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 					tabindex: -1,
 				} as const;
 			},
-			action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
+			action: (node: HTMLElement): MeltActionReturn<MenubarEvents['menu']> => {
 				/**
 				 * We need to get the parent portal before the menu is opened,
 				 * otherwise the parent will have been moved to the body, and
@@ -229,8 +230,6 @@ export function createMenubar(props?: CreateMenubarProps) {
 			},
 		});
 
-		type RootTriggerEvents = 'click' | 'keydown' | 'pointerenter';
-
 		const trigger = builder(name('trigger'), {
 			stores: [rootOpen],
 			returned: ([$rootOpen]) => {
@@ -244,7 +243,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 					role: 'menuitem',
 				} as const;
 			},
-			action: (node: HTMLElement): MeltActionReturn<RootTriggerEvents> => {
+			action: (node: HTMLElement): MeltActionReturn<MenubarEvents['trigger']> => {
 				applyAttrsIfDisabled(node);
 
 				const menubarEl = document.getElementById(rootIds.menubar);
@@ -379,11 +378,11 @@ export function createMenubar(props?: CreateMenubarProps) {
 				menu,
 				trigger,
 				item: m.item,
-				checkboxItem: m.checkboxItem,
 				arrow: m.arrow,
 				separator: m.separator,
 			},
 			builders: {
+				createCheckboxItem: m.createCheckboxItem,
 				createSubmenu: m.createSubmenu,
 				createMenuRadioGroup: m.createMenuRadioGroup,
 			},

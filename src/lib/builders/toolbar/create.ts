@@ -10,13 +10,14 @@ import {
 	addMeltEventListener,
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, readonly } from 'svelte/store';
 import type {
 	CreateToolbarGroupProps,
 	CreateToolbarProps,
 	ToolbarGroupItemProps,
 	ToolbarGroupType,
 } from './types';
+import type { ToolbarEvents } from './events';
 
 const defaults = {
 	loop: true,
@@ -48,7 +49,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 				type: 'button',
 				tabIndex: -1,
 			} as const),
-		action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
+		action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['button']> => {
 			const unsub = addMeltEventListener(node, 'keydown', handleKeyDown);
 
 			return {
@@ -64,7 +65,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 				'data-melt-toolbar-item': '',
 				tabIndex: -1,
 			} as const),
-		action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
+		action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['link']> => {
 			const unsub = addMeltEventListener(node, 'keydown', handleKeyDown);
 
 			return {
@@ -109,7 +110,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 
 		const { name } = createElHelpers('toolbar-group');
 
-		const root = builder(name(), {
+		const group = builder(name(), {
 			stores: orientation,
 			returned: ($orientation) => {
 				return {
@@ -118,8 +119,6 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 				} as const;
 			},
 		});
-
-		type ItemEvents = 'click' | 'keydown';
 
 		const item = builder(name('item'), {
 			stores: [disabled, type, value, orientation],
@@ -144,7 +143,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 					} as const;
 				};
 			},
-			action: (node: HTMLElement): MeltActionReturn<ItemEvents> => {
+			action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['item']> => {
 				function getNodeProps() {
 					const itemValue = node.dataset.value;
 					const disabled = node.dataset.disabled === 'true';
@@ -207,11 +206,11 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 
 		return {
 			elements: {
-				root,
+				group,
 				item,
 			},
 			states: {
-				value,
+				value: readonly(value),
 			},
 			helpers: {
 				isPressed,

@@ -57,7 +57,7 @@ describe('Dialog with Transitions', () => {
 
 			expect(screen.queryByTestId('content')).toBeNull();
 		},
-		{ retry: 3 }
+		{ retry: 1 }
 	);
 
 	it(
@@ -77,7 +77,7 @@ describe('Dialog with Transitions', () => {
 
 			expect(screen.queryByTestId('content')).toBeNull();
 		},
-		{ retry: 3 }
+		{ retry: 1 }
 	);
 
 	it(
@@ -101,7 +101,7 @@ describe('Dialog with Transitions', () => {
 
 			expect(screen.queryByTestId('content')).toBeNull();
 		},
-		{ retry: 3 }
+		{ retry: 1 }
 	);
 
 	it(
@@ -119,7 +119,7 @@ describe('Dialog with Transitions', () => {
 			await expect(content.parentElement).toEqual(document.body);
 		},
 		{
-			retry: 3,
+			retry: 1,
 		}
 	);
 
@@ -136,7 +136,7 @@ describe('Dialog with Transitions', () => {
 			await expect(overlay.parentElement).toEqual(document.body);
 		},
 		{
-			retry: 3,
+			retry: 1,
 		}
 	);
 
@@ -173,6 +173,6 @@ describe('Dialog with Transitions', () => {
 			await user.tab();
 			await expect(document.activeElement).toBe(screen.getByTestId('content'));
 		},
-		{ retry: 3 }
+		{ retry: 1 }
 	);
 });

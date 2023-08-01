@@ -13,8 +13,9 @@ import {
 	addMeltEventListener,
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, readonly } from 'svelte/store';
 import type { CreateToggleGroupProps, ToggleGroupItemProps, ToggleGroupType } from './types';
+import type { ToggleGroupEvents } from './events';
 
 const defaults = {
 	type: 'single',
@@ -55,8 +56,6 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 		},
 	});
 
-	type ItemEvents = 'click' | 'keydown';
-
 	const item = builder(name('item'), {
 		stores: [value, disabled, orientation, type],
 		returned: ([$value, $disabled, $orientation, $type]) => {
@@ -79,7 +78,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 				} as const;
 			};
 		},
-		action: (node: HTMLElement): MeltActionReturn<ItemEvents> => {
+		action: (node: HTMLElement): MeltActionReturn<ToggleGroupEvents['item']> => {
 			let unsub = noop;
 
 			const parentGroup = node.closest(selector());
@@ -199,7 +198,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 			item,
 		},
 		states: {
-			value,
+			value: readonly(value),
 		},
 		helpers: {
 			isPressed,

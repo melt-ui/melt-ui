@@ -25,38 +25,6 @@ description:
 To create an accordion, use the `createAccordion` builder function. Follow the anatomy or the
 example at the top of this page to create your accordion.
 
-### Ensuring items are accessible
-
-The easy way to ensure your accordion items are accessible is to wrap each trigger element in a
-heading element, like so:
-
-```svelte
-<h2>
-	<button use:melt={$trigger(id)}>
-		{title}
-	</button>
-</h2>
-```
-
-However, there may be times when you can't use or don't want to use a heading element. In those
-cases, use the `heading` builder to apply the necessary aria attributes to the element. The argument
-passed to the `heading` builder is the heading level you wish to use. In the example below, we set
-the heading level to 4.
-
-```svelte /heading/#hi
-<script lang="ts">
-	const { content, item, trigger, isSelected, root, heading } = createAccordion()
-</script>
-```
-
-```svelte {1}
-<span use:melt={$heading(4)}>
-    <button use:melt={$trigger(id)}>
-        {title}
-    </button>
-<span>
-```
-
 ### Disabling a single item
 
 To disable a single item, you can pass in an object instead of a string to the function.
@@ -75,7 +43,7 @@ Pass in the `type` argument to `createAccordion` with a value of `'multiple'`.
 
 ```svelte {3}
 <script lang="ts">
-  const { content, item, trigger, isSelected, root } = createAccordion({
+  const { ... } = createAccordion({
     type: 'multiple'
   })
 </>
@@ -85,44 +53,39 @@ Pass in the `type` argument to `createAccordion` with a value of `'multiple'`.
     <svelte:component this={previews.multiple} />
 </Preview>
 
-### Controlled access
+### Controlled
 
-To programatically control the Accordion, you can directly set the `value` store. You can also
-update the `options` store with new arguments.
+To programatically control the Accordion, you can
+[Bring Your Own Store](/docs/controlled#bring-your-own-store), to programmatically control the value
+of the Accordion. You can also update any of the returned option stores to update the behavior of
+the Accordion.
 
-```svelte {4,15,19,21}
+#### Bring Your Own Store
+
+```svelte {3,5,11,18}
 <script lang="ts">
 	import { createAccordion, melt } from '@melt-ui/svelte'
+	import { writable } from 'svelte/store'
 
-	let value: string | string[] | undefined = 'item-1'
-	let disabled = false
+	const customValue = writable('item-1')
 
 	const {
-		content,
-		item,
-		trigger,
-		root,
-		value: valueStore,
-		options
+		elements: { content, item, trigger, root },
+		options: { disabled }
 	} = createAccordion({
-		value,
-		disabled
+		value: customValue
 	})
-
-	$: valueStore.set(value)
-	valueStore.subscribe((v) => (value = v))
-	$: options.update((o) => ({ ...o, disabled }))
 </script>
 
 <button
 	on:click={() => {
 		const randPick = Math.floor(Math.random() * 3) + 1
-		value = `item-${randPick}`
+		customValue.set(`item-${randPick}`)
 	}}>
 	Trigger randomly
 </button>
 
-<p>Value: {value} Value Store: {$valueStore}</p>
+<p>Value: {$value}</p>
 
 <div use:melt={$root}>
 	<div use:melt={$item('item-1')}>
@@ -156,5 +119,39 @@ update the `options` store with new arguments.
 
 Adheres to the
 [Accordion WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/)
+
+### Ensuring items are accessible
+
+The easy way to ensure your accordion items are accessible is to wrap each trigger element in a
+heading element, like so:
+
+```svelte
+<h2>
+	<button use:melt={$trigger(id)}>
+		{title}
+	</button>
+</h2>
+```
+
+However, there may be times when you can't use or don't want to use a heading element. In those
+cases, use the `heading` builder to apply the necessary aria attributes to the element. The argument
+passed to the `heading` builder is the heading level you wish to use. In the example below, we set
+the heading level to 4.
+
+```svelte /heading/#hi
+<script lang="ts">
+	const {
+		elements: { root, content, item, trigger, heading }
+	} = createAccordion()
+</script>
+```
+
+```svelte {1}
+<span use:melt={$heading(4)}>
+    <button use:melt={$trigger(id)}>
+        {title}
+    </button>
+<span>
+```
 
 <KbdTable {keyboard} />

@@ -7,14 +7,16 @@ import {
 	executeCallbacks,
 	overridable,
 } from '$lib/internal/helpers';
-import { get, writable } from 'svelte/store';
+import { get, readonly, writable } from 'svelte/store';
 import type { CreateToggleProps } from './types';
 import type { MeltActionReturn } from '$lib/internal/types';
+import type { ToggleEvents } from './events';
 
 const defaults = {
 	defaultPressed: false,
 	disabled: false,
 } satisfies CreateToggleProps;
+
 export function createToggle(props?: CreateToggleProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateToggleProps;
 
@@ -41,7 +43,7 @@ export function createToggle(props?: CreateToggleProps) {
 				type: 'button',
 			} as const;
 		},
-		action: (node: HTMLElement): MeltActionReturn<'click'> => {
+		action: (node: HTMLElement): MeltActionReturn<ToggleEvents['root']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
 					handleToggle();
@@ -64,7 +66,7 @@ export function createToggle(props?: CreateToggleProps) {
 			root,
 		},
 		states: {
-			pressed,
+			pressed: readonly(pressed),
 		},
 		options,
 	};

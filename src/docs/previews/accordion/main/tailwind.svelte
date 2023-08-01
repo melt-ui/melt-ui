@@ -40,11 +40,8 @@
             focus-within:ring-magnum-400"
 		>
 			<h2 class="flex">
-				<!-- TODO: Remove before merge (just for testing events) -->
 				<button
 					use:melt={$trigger(id)}
-					on:m-keydown={(e) => console.log(e)}
-					on:m-click={(e) => console.log(e)}
 					class="flex h-12 flex-1 cursor-pointer items-center justify-between border-b border-b-magnum-700
                  bg-white px-5 text-base font-medium
                  leading-none text-magnum-700 transition-colors hover:bg-opacity-95 focus:!ring-0

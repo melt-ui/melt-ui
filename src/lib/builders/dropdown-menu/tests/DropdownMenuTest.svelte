@@ -3,10 +3,24 @@
 	import { writable } from 'svelte/store';
 	import { AlignJustify, ChevronRight } from 'lucide-svelte';
 
+	const settingsSync = writable(true);
+	const hideMeltUI = writable(false);
+
 	const {
-		elements: { trigger, menu, item, checkboxItem, separator, arrow },
-		builders: { createSubmenu, createMenuRadioGroup },
+		elements: { trigger, menu, item, separator, arrow },
+		builders: { createSubmenu, createMenuRadioGroup, createCheckboxItem },
 	} = createDropdownMenu();
+
+	const {
+		elements: { checkboxItem: settingsSyncCheckbox },
+	} = createCheckboxItem({
+		checked: settingsSync,
+	});
+	const {
+		elements: { checkboxItem: hideMeltUICheckbox },
+	} = createCheckboxItem({
+		checked: hideMeltUI,
+	});
 
 	const {
 		elements: { subMenu: subMenuA, subTrigger: subTriggerA },
@@ -16,13 +30,10 @@
 		elements: { radioGroup, radioItem },
 		helpers: { isChecked },
 	} = createMenuRadioGroup({
-		value: 'Hunter Johnston',
+		defaultValue: 'Hunter Johnston',
 	});
 
 	const personsArr = ['Hunter Johnston', 'Thomas G. Lopes', 'Adrian Gonz', 'Franck Poingt'];
-
-	const settingsSync = writable(true);
-	const hideMeltUI = writable(false);
 </script>
 
 <main>
@@ -39,14 +50,9 @@
 
 	<div class="menu" use:melt={$menu} data-testid="menu">
 		<div class="item" use:melt={$item} data-testid="item1">Item 1</div>
-		<div class="item" use:melt={$item} data-testid="item2" aria-disabled="true">Item 2</div>
+		<div class="item" use:melt={$item} data-testid="item2" data-disabled>Item 2</div>
 		<div class="separator" use:melt={$separator} />
-		<div
-			data-testid="checkboxItem1"
-			class="item"
-			{...$checkboxItem}
-			use:checkboxItem={{ checked: settingsSync }}
-		>
+		<div data-testid="checkboxItem1" class="item" use:melt={$settingsSyncCheckbox}>
 			<div class="check">
 				{#if $settingsSync}
 					<span data-testid="check1"> Check 1 </span>
@@ -54,12 +60,7 @@
 			</div>
 			Item 3
 		</div>
-		<div
-			data-testid="checkboxItem2"
-			class="item"
-			{...$checkboxItem}
-			use:checkboxItem={{ checked: hideMeltUI }}
-		>
+		<div data-testid="checkboxItem2" class="item" use:melt={$hideMeltUICheckbox}>
 			<div class="check">
 				{#if $hideMeltUI}
 					<span data-testid="check2"> Check 2 </span>

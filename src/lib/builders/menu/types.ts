@@ -95,20 +95,24 @@ export type CreateMenuProps = {
 	forceVisible?: boolean;
 };
 
-export type CreateSubmenuProps = CreateMenuProps & {
+export type CreateSubmenuProps = Pick<CreateMenuProps, 'arrowSize' | 'positioning'> & {
 	disabled?: boolean;
 };
 
 export type CreateRadioGroupProps = {
-	value?: string;
+	defaultValue?: string;
+	value?: Writable<string>;
+	onValueChange?: ChangeFn<string | null>;
 };
 
 export type ItemProps = {
-	onSelect?: (e: Event) => void;
+	disabled?: boolean;
 };
 
 export type CheckboxItemProps = ItemProps & {
-	checked: Writable<boolean | 'indeterminate'>;
+	defaultChecked?: boolean | 'indeterminate';
+	checked?: Writable<boolean | 'indeterminate'>;
+	onCheckedChange?: ChangeFn<boolean | 'indeterminate'>;
 };
 
 export type RadioItemProps = {

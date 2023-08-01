@@ -76,23 +76,32 @@ export type LongType = {
 	highlightedCode?: string;
 };
 
-export type Props = Array<{
+export type Prop = {
 	name: string;
 	type: string | string[];
 	default?: string;
 	required?: boolean;
 	description?: string;
 	longType?: LongType;
-}>;
+	/**
+	 * A reference link to more information about the prop.
+	 */
+	see?: {
+		label: string;
+		href: string;
+	};
+};
 
-export type Events = Array<{
-	label: string;
-	payload?: unknown;
-}>;
+export type Props = Prop[];
 
 export type DataAttributes = Array<{
 	name: string;
 	value: string;
+}>;
+
+export type CustomEvents = Array<{
+	name: string;
+	payload?: string;
 }>;
 
 export type ReturnedProps = Array<{
@@ -100,13 +109,22 @@ export type ReturnedProps = Array<{
 	type?: string;
 	description?: string;
 	link?: string;
+	longType?: LongType;
 }>;
 
 export type APISchema = {
 	title: string;
 	description: string;
+	isBuilder?: boolean;
 	props?: Props;
 	dataAttributes?: DataAttributes;
+	events?: CustomEvents;
+	elements?: ReturnedProps;
+	helpers?: ReturnedProps;
+	states?: ReturnedProps;
+	builders?: ReturnedProps;
+	actions?: ReturnedProps;
+	options?: ReturnedProps;
 	returnedProps?: ReturnedProps;
 };
 

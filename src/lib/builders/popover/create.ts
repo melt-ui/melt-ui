@@ -14,13 +14,16 @@ import {
 	getPortalParent,
 	derivedVisible,
 	addMeltEventListener,
+	kbd,
 } from '$lib/internal/helpers';
 
 import { usePopper } from '$lib/internal/actions';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
-import { writable } from 'svelte/store';
+import { writable, readonly } from 'svelte/store';
 import type { CreatePopoverProps } from './types';
+import { executeCallbacks } from '../../internal/helpers/callbacks';
+import type { PopoverEvents } from './events';
 
 const defaults = {
 	positioning: {
@@ -169,6 +172,10 @@ export function createPopover(args?: CreatePopoverProps) {
 		},
 	});
 
+	function toggleOpen() {
+		open.update((prev) => !prev);
+	}
+
 	const trigger = builder(name('trigger'), {
 		stores: open,
 		returned: ($open) => {
@@ -181,16 +188,17 @@ export function createPopover(args?: CreatePopoverProps) {
 				id: ids.trigger,
 			} as const;
 		},
-		action: (node: HTMLElement): MeltActionReturn<'click'> => {
-			const unsub = addMeltEventListener(node, 'click', () => {
-				open.update((prev) => {
-					if (prev) {
-						return false;
-					}
-
-					return true;
-				});
-			});
+		action: (node: HTMLElement): MeltActionReturn<PopoverEvents['trigger']> => {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					toggleOpen();
+				}),
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
+					e.preventDefault();
+					toggleOpen();
+				})
+			);
 
 			return {
 				destroy: unsub,
@@ -215,10 +223,17 @@ export function createPopover(args?: CreatePopoverProps) {
 			({
 				type: 'button',
 			} as const),
-		action: (node: HTMLElement): MeltActionReturn<'click'> => {
-			const unsub = addMeltEventListener(node, 'click', () => {
-				handleClose();
-			});
+		action: (node: HTMLElement): MeltActionReturn<PopoverEvents['close']> => {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					handleClose();
+				}),
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
+					e.preventDefault();
+					toggleOpen();
+				})
+			);
 
 			return {
 				destroy: unsub,
@@ -257,7 +272,7 @@ export function createPopover(args?: CreatePopoverProps) {
 			close,
 		},
 		states: {
-			open,
+			open: readonly(open),
 		},
 		options,
 	};

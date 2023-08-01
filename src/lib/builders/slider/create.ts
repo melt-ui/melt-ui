@@ -15,9 +15,10 @@ import {
 	addMeltEventListener,
 	executeCallbacks,
 } from '$lib/internal/helpers';
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, readonly } from 'svelte/store';
 import type { CreateSliderProps } from './types';
 import type { MeltActionReturn } from '$lib/internal/types';
+import type { SliderEvents } from './events';
 
 const defaults = {
 	defaultValue: [],
@@ -33,7 +34,7 @@ const { name } = createElHelpers('slider');
 export const createSlider = (props?: CreateSliderProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSliderProps;
 
-	const options = toWritableStores(omit(withDefaults, 'value'));
+	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
 	const { min, max, step, orientation, disabled } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
@@ -147,7 +148,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 				} as const;
 			};
 		},
-		action: (node: HTMLElement): MeltActionReturn<'keydown'> => {
+		action: (node: HTMLElement): MeltActionReturn<SliderEvents['thumb']> => {
 			const unsub = addMeltEventListener(node, 'keydown', (event) => {
 				const $min = get(min);
 				const $max = get(max);
@@ -352,7 +353,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 			range,
 		},
 		states: {
-			value,
+			value: readonly(value),
 		},
 		options,
 	};
