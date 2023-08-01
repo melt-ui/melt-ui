@@ -34,6 +34,16 @@ multi-select, simply set the `multiple` prop to `true` on the `createSelect` bui
     <svelte:component this={previews.multi} />
 </Preview>
 
+### Change options with keyboard
+
+Using custom event listeners, you can customize what the keyboard does when interacting with the
+trigger. In this example, we use the `on:keydown` event listener to change the selected option when
+the user presses the up or down arrow keys, instead of opening the menu.
+
+<Preview code={snippets.keyboard}>
+    <svelte:component this={previews.keyboard} />
+</Preview>
+
 ## API Reference
 
 <APIReference {schemas} />
