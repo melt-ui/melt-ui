@@ -20,11 +20,8 @@ description: A succinct message that is displayed temporarily.
 
 Unlike most builders, the toast is not component-based. Instead, it provides a global functionality
 that can be accessed from anywhere in your application. To accomplish this, it is recommended that
-you call the builder function inside the lib directory. This will make the function accessible to
-all components in your application.
-
-To create a toast, use the `createToaster` builder function. You can then reference the anatomy or
-example above to create your toast.
+you call the builder function `createToaster` inside the lib directory. This will make the function
+accessible to all components in your application.
 
 ```typescript
 // lib/toast.ts
@@ -36,8 +33,12 @@ export type ToastData = {
   color: string
 }
 
-export const { toasts, addToast, content, title, description, close, portal } =
-  createToaster<ToastData>({})
+export const {
+  elements: { content, title, description, close },
+  helpers: { addToast },
+  states: { toasts },
+  actions: { portal }
+} = createToaster<ToastData>()
 ```
 
 The second step is to create a `Toast` component that will be used to render toast notifications.
@@ -47,14 +48,15 @@ The second step is to create a `Toast` component that will be used to render toa
   // lib/Toast.svelte
   import { flip } from 'svelte/animate'
   import { fly } from 'svelte/transition'
+  import { melt } from '@melt-ui/svelte'
   import X from '~icons/lucide/x'
-  import { toasts, content, portal, description, title, close } from './toast'
+  import { toasts, content, portal, title, description, close } from './toast'
 </script>
 
 <div class="fixed bottom-0 right-0 z-50 m-4 flex flex-col items-end gap-2" use:portal>
   {#each $toasts as { id, data } (id)}
     <div
-      melt={$content(id)}
+      use:melt={$content(id)}
       animate:flip={{ duration: 500 }}
       in:fly={{ duration: 150, x: '100%' }}
       out:fly={{ duration: 150, x: '100%' }}
@@ -62,16 +64,16 @@ The second step is to create a `Toast` component that will be used to render toa
       <div
         class="relative flex w-[24rem] max-w-[calc(100vw-2rem)] items-center justify-between gap-4 p-5">
         <div>
-          <h3 melt={$title(id)} class="flex items-center gap-2 font-semibold">
+          <h3 use:melt={$title(id)} class="flex items-center gap-2 font-semibold">
             {data.title}
             <span class="rounded-full square-1.5 {data.color}" />
           </h3>
-          <div melt={$description(id)}>
+          <div use:melt={$description(id)}>
             {data.description}
           </div>
         </div>
         <button
-          melt={$close(id)}
+          use:melt={$close(id)}
           class="absolute right-4 top-4 grid place-items-center rounded-full text-magnum-500 square-6
           hover:bg-magnum-900/50">
           <X />
@@ -82,12 +84,12 @@ The second step is to create a `Toast` component that will be used to render toa
 </div>
 ```
 
-This component should be placed in your root `+layout.svelte` or `App.svelte` component.
+This component should be added to your root `+layout.svelte` or `App.svelte` component.
 
 ```svelte
 <script>
   // routes/+layout.svelte
-  import Toast from '$lib/toast/Toast.svelte'
+  import Toast from '$lib/Toast.svelte'
 </script>
 
 <Toast />
@@ -103,7 +105,6 @@ application.
   import { addToast } from '$lib/toast'
 
   function create() {
-    // ...
     addToast({
       data: {
         title: 'Success',
