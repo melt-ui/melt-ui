@@ -636,23 +636,17 @@ export function createSelect<
 		};
 	});
 
-	onMount(() => {
-		const unsubs: Array<() => void> = [];
-		const handlePointer = () => isUsingKeyboard.set(false);
-		const handleKeyDown = () => {
-			isUsingKeyboard.set(true);
-			unsubs.push(
-				executeCallbacks(
-					addEventListener(document, 'pointerdown', handlePointer, { capture: true, once: true }),
-					addEventListener(document, 'pointermove', handlePointer, { capture: true, once: true })
-				)
-			);
-		};
+	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
+		if (!isBrowser) return;
 
-		const keydownListener = (e: KeyboardEvent) => {
-			if (e.key === kbd.ESCAPE) {
+		const unsubs: Array<() => void> = [];
+
+		const handlePointer = () => isUsingKeyboard.set(false);
+
+		const handleKeyDown = (e: KeyboardEvent) => {
+			isUsingKeyboard.set(true);
+			if (e.key === kbd.ESCAPE && $open) {
 				open.set(false);
-				const $activeTrigger = get(activeTrigger);
 				if (!$activeTrigger) return;
 				handleRovingFocus($activeTrigger);
 			}
@@ -660,8 +654,9 @@ export function createSelect<
 
 		unsubs.push(
 			executeCallbacks(
-				addEventListener(document, 'keydown', handleKeyDown, { capture: true }),
-				addEventListener(document, 'keydown', keydownListener)
+				addEventListener(document, 'keydown', handleKeyDown),
+				addEventListener(document, 'pointerdown', handlePointer, { capture: true, once: true }),
+				addEventListener(document, 'pointermove', handlePointer, { capture: true, once: true })
 			)
 		);
 

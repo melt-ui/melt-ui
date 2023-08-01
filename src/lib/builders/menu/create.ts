@@ -1126,7 +1126,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		};
 
 		const keydownListener = (e: KeyboardEvent) => {
-			if (e.key === kbd.ESCAPE) {
+			if (e.key === kbd.ESCAPE && get(rootOpen)) {
 				rootOpen.set(false);
 				return;
 			}
