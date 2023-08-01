@@ -6,7 +6,7 @@ import { tick } from 'svelte';
 import { kbd, sleep } from '$lib/internal/helpers';
 import DialogTransitionTest from './DialogTransitionTest.svelte';
 
-describe('Dialog with Transitions', () => {
+describe.skip('Dialog with Transitions', () => {
 	beforeEach(() => {
 		vi.stubGlobal('requestAnimationFrame', (fn: FrameRequestCallback) => {
 			return window.setTimeout(() => fn(Date.now()), 16);

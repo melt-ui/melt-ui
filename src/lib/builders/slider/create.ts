@@ -216,7 +216,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if (event.metaKey) {
 							updatePosition($max, index);
 						} else if ($value[index] > $min && $orientation === 'vertical') {
-							const newValue = $value[index] - $step;
+							const newValue = $value[index] + $step;
 							updatePosition(newValue, index);
 						} else if ($value[index] < $max) {
 							const newValue = $value[index] + $step;
@@ -228,7 +228,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if (event.metaKey) {
 							updatePosition($min, index);
 						} else if ($value[index] < $max && $orientation === 'vertical') {
-							const newValue = $value[index] + $step;
+							const newValue = $value[index] - $step;
 							updatePosition(newValue, index);
 						} else if ($value[index] > $min) {
 							const newValue = $value[index] - $step;
