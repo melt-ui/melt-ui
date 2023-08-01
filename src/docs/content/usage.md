@@ -15,7 +15,10 @@ collapsible component using Melt UI's [Collapsible](/docs/builders/collapsible) 
 ```svelte
 <script>
 	import { createCollapsible, melt } from '@melt-ui/svelte'
-	const { open, root, content, trigger } = createCollapsible()
+	const {
+		elements: { root, content, trigger },
+		states: { open }
+	} = createCollapsible()
 </script>
 
 <div use:melt={$root}>
@@ -40,7 +43,11 @@ Melt's props, it's all good.
 <script>
   import { createCollapsible, melt } from '@melt-ui/svelte';
   import Button from '$components/button.svelte';
-  const { open, root, content, trigger } = createCollapsible();
+
+	const {
+		elements: { root, content, trigger },
+		states: { open }
+	} = createCollapsible()
 </script>
 
 <!-- Using Svelte Scoped Styles -->
@@ -82,7 +89,9 @@ purposes, should you desire to do so.
 ```svelte
 <script>
 	import { createCollapsible, melt } from '@melt-ui/svelte'
-	const { root, content, trigger } = createCollapsible()
+	const {
+		elements: { root, content, trigger }
+	} = createCollapsible()
 </script>
 
 <div use:melt={$root}>
