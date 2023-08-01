@@ -78,7 +78,7 @@
 	{#if data.dataAttributes && data.dataAttributes.length}
 		<DataAttrTable data={data.dataAttributes} />
 	{/if}
-    {#if data.events && data.events.length}
+	{#if data.events && data.events.length}
 		<CustomEventsTable data={data.events} />
 	{/if}
 </div>
