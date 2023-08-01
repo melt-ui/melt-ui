@@ -77,27 +77,16 @@ describe('Dialog', () => {
 		await expect(content).not.toBeVisible();
 	});
 
-	it('Content Portal attaches dialog to body', async () => {
+	it('Portalled el attaches dialog to body', async () => {
 		await render(DialogTest);
 
 		const user = userEvent.setup();
 		const trigger = screen.getByTestId('trigger');
 		await user.click(trigger);
 
-		const content = screen.getByTestId('content');
+		const portalled = screen.getByTestId('portalled');
 
-		await expect(content.parentElement).toEqual(document.body);
-	});
-
-	it('Overlay Portal attaches dialog to body', async () => {
-		await render(DialogTest);
-		const user = userEvent.setup();
-		const trigger = screen.getByTestId('trigger');
-		await user.click(trigger);
-
-		const overlay = screen.getByTestId('overlay');
-
-		await expect(overlay.parentElement).toEqual(document.body);
+		await expect(portalled.parentElement).toEqual(document.body);
 	});
 
 	it('Focuses first focusable item upon opening', async () => {

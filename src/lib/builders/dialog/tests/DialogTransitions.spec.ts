@@ -105,7 +105,7 @@ describe('Dialog with Transitions', () => {
 	);
 
 	it(
-		'Content Portal attaches dialog to body',
+		'Portalled el attaches dialog to body',
 		async () => {
 			render(DialogTransitionTest);
 
@@ -113,27 +113,10 @@ describe('Dialog with Transitions', () => {
 			const trigger = screen.getByTestId('trigger');
 			await user.click(trigger);
 
-			await waitFor(() => screen.getByTestId('content'));
-			const content = screen.getByTestId('content');
+			await waitFor(() => screen.getByTestId('portalled'));
+			const portalled = screen.getByTestId('portalled');
 
-			await expect(content.parentElement).toEqual(document.body);
-		},
-		{
-			retry: 1,
-		}
-	);
-
-	it(
-		'Overlay Portal attaches dialog to body',
-		async () => {
-			const { getByTestId } = await render(DialogTransitionTest);
-			const user = userEvent.setup();
-			const trigger = getByTestId('trigger');
-			await user.click(trigger);
-
-			const overlay = getByTestId('overlay');
-
-			await expect(overlay.parentElement).toEqual(document.body);
+			await expect(portalled.parentElement).toEqual(document.body);
 		},
 		{
 			retry: 1,

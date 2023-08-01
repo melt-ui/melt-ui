@@ -2,19 +2,21 @@
 	import { createDialog, melt } from '$lib';
 
 	const {
-		elements: { trigger, overlay, content, title, description, close },
+		elements: { trigger, overlay, content, title, description, close, portalled },
 	} = createDialog();
 </script>
 
 <main>
 	<button use:melt={$trigger} data-testid="trigger">Open</button>
-	<div use:melt={$overlay} data-testid="overlay" />
-	<div use:melt={$content} data-testid="content">
-		<h2 use:melt={$title}>Title</h2>
-		<p use:melt={$description}>Description</p>
+	<div use:melt={$portalled} data-testid="portalled">
+		<div use:melt={$overlay} data-testid="overlay" />
+		<div use:melt={$content} data-testid="content">
+			<h2 use:melt={$title}>Title</h2>
+			<p use:melt={$description}>Description</p>
 
-		<button use:melt={$close} data-testid="closer">Close</button>
-		<button use:melt={$close} data-testid="last">Close</button>
+			<button use:melt={$close} data-testid="closer">Close</button>
+			<button use:melt={$close} data-testid="last">Close</button>
+		</div>
 	</div>
 </main>
 

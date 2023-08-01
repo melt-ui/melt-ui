@@ -102,38 +102,6 @@ describe('Nested Dialogs', () => {
 	);
 
 	it(
-		'Content Portal attaches dialog to body',
-		async () => {
-			await render(DialogNestedTest);
-
-			const user = userEvent.setup();
-			const trigger = screen.getByTestId('trigger');
-			await user.click(trigger);
-			await waitFor(() => expect(screen.getByTestId('content')).toBeVisible());
-			const content = screen.getByTestId('content');
-
-			await expect(content.parentElement).toEqual(document.body);
-		},
-		{ retry: 1 }
-	);
-
-	it(
-		'Overlay Portal attaches dialog to body',
-		async () => {
-			await render(DialogNestedTest);
-			const user = userEvent.setup();
-			const trigger = screen.getByTestId('trigger');
-			await user.click(trigger);
-
-			await waitFor(() => expect(screen.getByTestId('overlay')).toBeVisible());
-			const overlay = screen.getByTestId('overlay');
-
-			await expect(overlay.parentElement).toEqual(document.body);
-		},
-		{ retry: 1 }
-	);
-
-	it(
 		'Focuses first focusable item upon opening',
 		async () => {
 			await render(DialogNestedTest);
