@@ -1,28 +1,40 @@
 <script lang="ts">
-	import { createDialog } from '@melt-ui/svelte';
+	import { createDialog, melt } from '$lib';
 	/** Internal helpers */
 	import { flyAndScale } from '$docs/utils';
-	import X from '~icons/lucide/x';
-
-	const { trigger, portal, overlay, content, title, description, close, open } =
-		createDialog();
+	import { X } from 'lucide-svelte';
 
 	const {
-		trigger: triggerNested,
-		portal: portalNested,
-		overlay: overlayNested,
-		content: contentNested,
-		title: titleNested,
-		description: descriptionNested,
-		close: closeNested,
-		open: openNested,
+		elements: {
+			trigger,
+			overlay,
+			content,
+			title,
+			description,
+			close,
+			portalled,
+		},
+		states: { open },
+	} = createDialog();
+
+	const {
+		elements: {
+			trigger: triggerNested,
+			overlay: overlayNested,
+			content: contentNested,
+			title: titleNested,
+			description: descriptionNested,
+			close: closeNested,
+			portalled: portalledNested,
+		},
+		states: { open: openNested },
 	} = createDialog();
 </script>
 
-<button melt={$trigger} class="trigger"> Open Dialog </button>
+<button use:melt={$trigger} class="trigger"> Open Dialog </button>
 <div use:portal>
 	{#if $open}
-		<div melt={$overlay} class="overlay" />
+		<div use:melt={$overlay} class="overlay" />
 		<div
 			class="content"
 			transition:flyAndScale={{
@@ -32,17 +44,17 @@
 			}}
 			melt={$content}
 		>
-			<h2 melt={$title} class="title">First dialog</h2>
-			<p melt={$description} class="description">
+			<h2 use:melt={$title} class="title">First dialog</h2>
+			<p use:melt={$description} class="description">
 				This is the first dialog. It contains a trigger to open a second dialog.
 			</p>
 
 			<div class="actions">
-				<button melt={$close} class="secondary"> Cancel </button>
-				<button melt={$triggerNested} class="primary"> Open second </button>
+				<button use:melt={$close} class="secondary"> Cancel </button>
+				<button use:melt={$triggerNested} class="primary"> Open second </button>
 			</div>
 
-			<button melt={$close} class="close">
+			<button use:melt={$close} class="close">
 				<X />
 			</button>
 		</div>
@@ -51,7 +63,7 @@
 
 <div use:portalNested>
 	{#if $openNested}
-		<div melt={$overlayNested} class="overlay overlay-nested" />
+		<div use:melt={$overlayNested} class="overlay overlay-nested" />
 		<div
 			class="content content-nested"
 			transition:flyAndScale={{
@@ -61,16 +73,16 @@
 			}}
 			melt={$contentNested}
 		>
-			<h2 melt={$titleNested} class="title">Second dialog</h2>
-			<p melt={$descriptionNested} class="description">
+			<h2 use:melt={$titleNested} class="title">Second dialog</h2>
+			<p use:melt={$descriptionNested} class="description">
 				This is the second dialog.
 			</p>
 
 			<div class="actions">
-				<button melt={$closeNested} class="secondary"> Close </button>
+				<button use:melt={$closeNested} class="secondary"> Close </button>
 			</div>
 
-			<button melt={$closeNested} class="close">
+			<button use:melt={$closeNested} class="close">
 				<X />
 			</button>
 		</div>
