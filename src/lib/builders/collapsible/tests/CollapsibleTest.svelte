@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCollapsible, melt } from '@melt-ui/svelte';
+	import { createCollapsible, melt } from '$lib';
 
 	export let open = false;
 

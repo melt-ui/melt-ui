@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDialog, melt } from '@melt-ui/svelte';
+	import { createDialog, melt } from '$lib';
 	import { flyAndScale } from '$docs/utils';
 	import { X } from 'lucide-svelte';
 	import { CodeBlock } from '$docs/components';

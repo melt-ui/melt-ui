@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createAvatar, melt } from '@melt-ui/svelte';
+	import { createAvatar, melt } from '$lib';
 
 	const {
 		elements: { image, fallback },

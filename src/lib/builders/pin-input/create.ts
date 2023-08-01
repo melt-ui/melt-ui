@@ -13,7 +13,7 @@ import {
 	toWritableStores,
 	addMeltEventListener,
 } from '$lib/internal/helpers';
-import type { Defaults, MeltActionReturn } from '@melt-ui/svelte/internal/types';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { tick } from 'svelte';
 import { derived, get, writable, readonly } from 'svelte/store';
 import type { CreatePinInputProps } from './types';

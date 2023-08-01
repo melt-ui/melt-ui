@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { createCollapsible } from '@melt-ui/svelte/builders/collapsible';
+	import { createCollapsible } from '$lib';
 	import { PreviewWrapper } from '$docs/components';
 	import { slide } from 'svelte/transition';
 	import { X } from 'lucide-svelte';
 	import { ChevronsUpDown } from 'lucide-svelte';
-	import { melt } from '@melt-ui/svelte';
+	import { melt } from '$lib';
 
 	let openProp: boolean;
 	let disabledProp: boolean;

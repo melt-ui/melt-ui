@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createProgress, melt } from '@melt-ui/svelte';
+	import { createProgress, melt } from '$lib';
 	import { writable } from 'svelte/store';
 
 	const value = writable(30);

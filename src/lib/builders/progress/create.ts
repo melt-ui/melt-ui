@@ -1,4 +1,3 @@
-import type { Defaults } from '$lib/internal/types';
 import {
 	builder,
 	createElHelpers,
@@ -6,7 +5,8 @@ import {
 	overridable,
 	toWritableStores,
 } from '$lib/internal/helpers';
-import { writable, readonly } from 'svelte/store';
+import type { Defaults } from '$lib/internal/types';
+import { readonly, writable } from 'svelte/store';
 import type { CreateProgressProps } from './types';
 
 const defaults = {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getTabsContext } from '$docs/components/tabs/root.svelte';
 	import { Npm, Yarn, Pnpm } from '$docs/components/icons';
-	import { melt } from '@melt-ui/svelte';
+	import { melt } from '$lib';
 
 	export let tab: string;
 

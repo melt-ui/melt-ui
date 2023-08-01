@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createPinInput, melt } from '@melt-ui/svelte';
+	import { createPinInput, melt } from '$lib';
 
 	const {
 		elements: { root, input },

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCheckbox, type CreateCheckboxProps, melt } from '@melt-ui/svelte';
+	import { createCheckbox, type CreateCheckboxProps, melt } from '$lib';
 
 	export let defaultChecked: CreateCheckboxProps['defaultChecked'] = 'indeterminate';
 

@@ -4,7 +4,7 @@
 	import { X } from 'lucide-svelte';
 	import { CodeBlock } from '$docs/components';
 	import customEventDetail from '$docs/data/long-types/custom-event-detail.html?raw';
-	import { melt } from '@melt-ui/svelte';
+	import { melt } from '$lib';
 
 	const {
 		elements: { trigger, overlay, content, title, close },

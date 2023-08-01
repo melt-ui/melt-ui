@@ -1,4 +1,4 @@
-import { kbd, sleep } from '@melt-ui/svelte/internal/helpers';
+import { kbd, sleep } from '$lib/internal/helpers';
 import { render, screen, waitFor, waitForElementToBeRemoved } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import DialogNestedTest from './DialogNestedTest.svelte';

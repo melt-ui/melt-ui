@@ -1,7 +1,7 @@
 import { ATTRS, PROPS, SEE } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
 import { builderSchema, elementSchema } from '$docs/utils';
-import { tagsInputEvents } from '@melt-ui/svelte/builders/tags-input/events';
+import { tagsInputEvents } from '$lib/builders/tags-input/events';
 import type { BuilderData } from '.';
 
 /**

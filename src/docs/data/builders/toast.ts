@@ -1,7 +1,7 @@
 import { ATTRS, KBD } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
 import { builderSchema, elementSchema, genProps } from '$docs/utils';
-import { toastEvents } from '@melt-ui/svelte/builders/toast/events';
+import { toastEvents } from '$lib/builders/toast/events';
 import type { BuilderData } from '.';
 
 /**

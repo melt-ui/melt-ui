@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createAccordion, type CreateAccordionProps, melt } from '@melt-ui/svelte';
+	import { createAccordion, type CreateAccordionProps, melt } from '$lib';
 
 	export let type: 'single' | 'multiple' = 'single';
 	export let disabled: CreateAccordionProps['disabled'] = undefined;

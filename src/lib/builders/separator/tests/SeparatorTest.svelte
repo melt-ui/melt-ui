@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Orientation } from '$lib/internal/types';
-	import { createSeparator, melt } from '@melt-ui/svelte';
+	import { createSeparator, melt } from '$lib';
 
 	export let orientation: Orientation = 'vertical';
 

@@ -28,7 +28,6 @@ const config = {
 			'$routes/*': 'src/routes/*',
 			'$test-helpers': 'src/test-helpers',
 			$constants: 'src/constants',
-			'@melt-ui/svelte': 'src/lib',
 			$docs: 'src/docs',
 			'$docs/*': 'src/docs/*',
 			$components: 'src/docs/components',

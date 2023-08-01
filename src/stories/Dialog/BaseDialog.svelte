@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { Dialog } from '$lib/builders';
+	import type { Dialog } from '$lib';
+	import { melt } from '$lib';
 	import { styleToString } from '$lib/internal/helpers';
-	import { melt } from '@melt-ui/svelte';
 	import { cubicOut } from 'svelte/easing';
 	import type { TransitionConfig } from 'svelte/transition';
 

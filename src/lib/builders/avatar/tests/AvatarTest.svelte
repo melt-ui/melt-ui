@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createAvatar, melt } from '@melt-ui/svelte';
+	import { createAvatar, melt } from '$lib';
 
 	export let src = 'https://avatars.githubusercontent.com/u/1162160?v=4';
 

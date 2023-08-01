@@ -1,9 +1,9 @@
-import type { KeyboardSchema } from '$docs/types';
-import { isMac } from '$lib/internal/helpers';
 import { ATTRS, KBD, SEE } from '$docs/constants';
-import type { BuilderData } from '.';
+import type { KeyboardSchema } from '$docs/types';
 import { builderSchema, elementSchema } from '$docs/utils';
 import { pinInputEvents } from '$lib/builders/pin-input/events';
+import { isMac } from '$lib/internal/helpers';
+import type { BuilderData } from '.';
 
 /**
  * Props that are also returned in the form of stores via the `options` property.

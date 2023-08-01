@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createHoverCard, melt } from '@melt-ui/svelte';
+	import { createHoverCard, melt } from '$lib';
 
 	const {
 		elements: { trigger, content, arrow },

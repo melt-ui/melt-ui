@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCheckbox, melt } from '@melt-ui/svelte';
+	import { createCheckbox, melt } from '$lib';
 	import { Check, Minus } from 'lucide-svelte';
 
 	const {

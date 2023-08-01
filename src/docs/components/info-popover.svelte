@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { cn } from '$docs/utils';
-	import { createPopover, melt } from '@melt-ui/svelte';
+	import { createPopover, melt } from '$lib';
 	import { fade } from 'svelte/transition';
 	import { Info } from 'lucide-svelte';
 

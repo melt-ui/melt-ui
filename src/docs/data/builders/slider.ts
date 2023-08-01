@@ -66,6 +66,11 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'The builder store used to create the root slider element.',
 		},
 		{
+			name: 'slider',
+			description: 'An alias for the `root` builder store.',
+			link: '#root',
+		},
+		{
 			name: 'range',
 			description: 'The builder store used to create the slider range element.',
 		},

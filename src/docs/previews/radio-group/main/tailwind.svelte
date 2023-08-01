@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createRadioGroup, melt } from '@melt-ui/svelte';
+	import { createRadioGroup, melt } from '$lib';
 
 	const {
 		elements: { root, item },

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDialog, melt } from '@melt-ui/svelte';
+	import { createDialog, melt } from '$lib';
 	import { fade } from 'svelte/transition';
 
 	const {

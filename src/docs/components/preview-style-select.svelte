@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { createSelect, melt, type SelectOptionProps } from '$lib';
-	import { ChevronDown, Check } from 'lucide-svelte';
-	import { beforeNavigate } from '$app/navigation';
+	import { Check, ChevronDown } from 'lucide-svelte';
 	import type { Writable } from 'svelte/store';
 
 	export let options: SelectOptionProps[] = [];
@@ -12,10 +11,6 @@
 		states: { valueLabel },
 		helpers: { isSelected },
 	} = createSelect({ value: codingStyle });
-
-	beforeNavigate(() => {
-		codingStyle.set('tailwind');
-	});
 </script>
 
 <button
@@ -30,7 +25,7 @@
 
 <ul
 	class="0 z-10 flex max-h-[360px] flex-col
-  overflow-y-auto rounded-md bg-neutral-800 p-1 shadow-md"
+  overflow-y-auto rounded-md bg-neutral-800 p-1 shadow-md focus:!ring-0"
 	use:melt={$menu}
 >
 	{#each options as o}

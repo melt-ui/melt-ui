@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { melt } from '@melt-ui/svelte';
+	import { melt } from '$lib';
 	import { getTabsContext } from './root.svelte';
 	import Tab from './tab.svelte';
 

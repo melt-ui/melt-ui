@@ -1,18 +1,23 @@
-import { usePopper } from '$lib/internal/actions';
+import { createLabel, createSeparator } from '$lib/builders';
+import { usePopper, usePortal } from '$lib/internal/actions';
 import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,
 	addEventListener,
 	addHighlight,
+	addMeltEventListener,
 	back,
 	builder,
 	createElHelpers,
 	createTypeaheadSearch,
+	derivedVisible,
 	effect,
 	executeCallbacks,
 	forward,
 	generateId,
+	getFirstOption,
 	getNextFocusable,
+	getOptions,
 	getPortalParent,
 	getPreviousFocusable,
 	handleRovingFocus,
@@ -28,21 +33,15 @@ import {
 	prev,
 	removeHighlight,
 	removeScroll,
+	sleep,
 	styleToString,
 	toWritableStores,
-	getFirstOption,
-	getOptions,
-	sleep,
-	derivedVisible,
-	addMeltEventListener,
 } from '$lib/internal/helpers';
-import { onMount, tick } from 'svelte';
-import { derived, get, writable, readonly } from 'svelte/store';
-import { createLabel, createSeparator } from '$lib/builders';
-import type { CreateSelectProps, SelectOptionProps } from './types';
-import { usePortal } from '$lib/internal/actions';
 import type { MeltActionReturn } from '$lib/internal/types';
+import { onMount, tick } from 'svelte';
+import { derived, get, readonly, writable } from 'svelte/store';
 import type { SelectEvents } from './events';
+import type { CreateSelectProps, SelectOptionProps } from './types';
 
 const defaults = {
 	arrowSize: 8,

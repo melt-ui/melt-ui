@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createPagination, melt } from '@melt-ui/svelte';
+	import { createPagination, melt } from '$lib';
 	import { ChevronLeft, ChevronRight } from 'lucide-svelte';
 
 	const {

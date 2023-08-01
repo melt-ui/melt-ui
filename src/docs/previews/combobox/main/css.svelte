@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCombobox, melt } from '@melt-ui/svelte';
+	import { createCombobox, melt } from '$lib';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
 
 	interface Book {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createAccordion, melt } from '@melt-ui/svelte';
+	import { createAccordion, melt } from '$lib';
 	import { slide } from 'svelte/transition';
 
 	const {

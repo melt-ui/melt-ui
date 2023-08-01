@@ -1,9 +1,5 @@
 <script lang="ts">
-	import {
-		createCombobox,
-		type ComboboxFilterFunction,
-		melt,
-	} from '@melt-ui/svelte';
+	import { createCombobox, type ComboboxFilterFunction, melt } from '$lib';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
 	import { writable } from 'svelte/store';
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDialog, melt } from '@melt-ui/svelte';
+	import { createDialog, melt } from '$lib';
 
 	const {
 		elements: { trigger, overlay, content, title, description, close },
