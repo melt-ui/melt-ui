@@ -16,12 +16,12 @@
 		builders: { createToolbarGroup },
 	} = createToolbar();
 	const {
-		elements: { root: fontGroup, item: fontItem },
+		elements: { group: fontGroup, item: fontItem },
 	} = createToolbarGroup({
 		type: 'multiple',
 	});
 	const {
-		elements: { root: alignGroup, item: alignItem },
+		elements: { group: alignGroup, item: alignItem },
 	} = createToolbarGroup();
 </script>
 
