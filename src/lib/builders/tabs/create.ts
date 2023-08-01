@@ -39,7 +39,7 @@ export function createTabs(props?: CreateTabsProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
-	let ssrValue = withDefaults.defaultValue;
+	let ssrValue = withDefaults.defaultValue ?? get(value);
 
 	// Root
 	const root = builder(name(), {
