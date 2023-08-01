@@ -54,7 +54,7 @@ describe('Select (Default)', () => {
 
 		await expect(menu).not.toBeVisible();
 		await expect(trigger).toBeVisible();
-		await sleep(1000);
+		await sleep(100);
 		await fireEvent.click(trigger);
 		await expect(menu).toBeVisible();
 
@@ -67,7 +67,6 @@ describe('Select (Default)', () => {
 		await expect(firstItem).toHaveFocus();
 
 		// Focuses next item after arrow down
-
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
 		const secondItem = getByTestId('sweet-option-1');
 		await expect(secondItem).toHaveFocus();
@@ -76,6 +75,66 @@ describe('Select (Default)', () => {
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
 		const thirdItem = getByTestId('sweet-option-2');
 		await expect(thirdItem).not.toHaveFocus();
+	});
+
+	test('Selects item when clicked', async () => {
+		const { getByTestId } = await render(SelectTest);
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
+		const user = userEvent.setup();
+
+		await expect(trigger).not.toHaveTextContent('Caramel');
+
+		await expect(menu).not.toBeVisible();
+		await user.click(trigger);
+		await expect(menu).toBeVisible();
+
+		const firstItem = menu.querySelector('[data-melt-select-option]');
+		if (!firstItem) throw new Error('No option found');
+		await user.click(firstItem);
+
+		await expect(menu).not.toBeVisible();
+		await expect(trigger).toHaveTextContent('Caramel');
+
+		await user.click(trigger);
+		await expect(menu).toBeVisible();
+
+		const secondItem = menu.querySelectorAll('[data-melt-select-option]')[1];
+		if (!secondItem) throw new Error('No option found');
+		await user.click(secondItem);
+
+		await expect(menu).not.toBeVisible();
+		await expect(trigger).toHaveTextContent('Chocolate');
+	});
+
+	test('Selects multiple items when `multiple` is true', async () => {
+		const { getByTestId } = await render(SelectTest, { multiple: true });
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
+		const user = userEvent.setup();
+
+		await expect(trigger).not.toHaveTextContent('Caramel');
+
+		await expect(menu).not.toBeVisible();
+		await user.click(trigger);
+		await expect(menu).toBeVisible();
+
+		const firstItem = menu.querySelector('[data-melt-select-option]');
+		if (!firstItem) throw new Error('No option found');
+		await user.click(firstItem);
+
+		await expect(menu).not.toBeVisible();
+		await expect(trigger).toHaveTextContent('Caramel');
+
+		await user.click(trigger);
+		await expect(menu).toBeVisible();
+
+		const secondItem = menu.querySelectorAll('[data-melt-select-option]')[1];
+		if (!secondItem) throw new Error('No option found');
+		await user.click(secondItem);
+
+		await expect(menu).not.toBeVisible();
+		await expect(trigger).toHaveTextContent('Caramel, Chocolate');
 	});
 
 	test.todo('Disabled select cannot be opened');

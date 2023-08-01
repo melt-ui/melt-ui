@@ -10,7 +10,7 @@ description: Melt UI components are uncontrolled by default, but offer the abili
 <Callout type="warning">
 
 Controlled components are an optional advanced feature and should only be used when necessary. If
-you're unsure if you you should be be using the components in a controlled way, you likely don't.
+you're unsure if you should be using the components in a controlled way, you likely don't.
 
 </Callout>
 

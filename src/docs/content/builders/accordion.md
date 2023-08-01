@@ -39,11 +39,12 @@ To disable a single item, you can pass in an object instead of a string to the f
 
 ### Opening multiple items at once
 
-Pass in the `type` argument to `createAccordion` with a value of `'multiple'`.
+Pass in the `multiple` prop to `createAccordion` with a value of `true`.
 
-```ts {2}
-  const { ... } = createAccordion({
-    type: 'multiple'
+```svelte {3}
+<script lang="ts">
+  const { /* ... */ } = createAccordion({
+    multiple: true
   })
 ```
 
