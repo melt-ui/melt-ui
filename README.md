@@ -34,13 +34,13 @@ Import the builders to your code and start using them:
 
 ```html
 <script>
-  import { createCollapsible } from '@melt-ui/svelte'
-  const { open, root, content, trigger } = createCollapsible()
+	import { createCollapsible } from '@melt-ui/svelte'
+	const { open, root, content, trigger } = createCollapsible()
 </script>
 
 <div {...$root}>
-  <button {...$trigger}>{$open ? 'Close' : 'Open'}</button>
-  <div {...$content}>Obi-Wan says: Hello there!</div>
+	<button {...$trigger}>{$open ? 'Close' : 'Open'}</button>
+	<div {...$content}>Obi-Wan says: Hello there!</div>
 </div>
 ```
 

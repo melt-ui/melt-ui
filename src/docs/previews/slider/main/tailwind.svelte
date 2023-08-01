@@ -1,18 +1,20 @@
 <script lang="ts">
-	import { createSlider } from '$lib';
+	import { createSlider, melt } from '$lib';
 
-	const { slider, range, thumb } = createSlider({
-		value: [30],
+	const {
+		elements: { root, range, thumb },
+	} = createSlider({
+		defaultValue: [30],
 		max: 100,
 	});
 </script>
 
-<span melt={$slider} class="relative flex h-[20px] w-[200px] items-center">
+<span use:melt={$root} class="relative flex h-[20px] w-[200px] items-center">
 	<span class="block h-[3px] w-full bg-black/40">
-		<span melt={$range} class="h-[3px] bg-white" />
+		<span use:melt={$range} class="h-[3px] bg-white" />
 	</span>
 	<span
-		melt={$thumb()}
+		use:melt={$thumb()}
 		class="block h-5 w-5 rounded-full bg-white focus:ring-4 focus:ring-black/40"
 	/>
 </span>

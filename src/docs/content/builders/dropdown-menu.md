@@ -28,8 +28,8 @@ The first thing you need to do is create a dropdown menu using the `createDropdo
 
 ```svelte {3}
 <script lang="ts">
-  import { createDropdownMenu } from '@melt-ui/svelte'
-  const { menu, item, trigger, arrow } = createDropdownMenu()
+	import { createDropdownMenu, melt } from '@melt-ui/svelte'
+	const { menu, item, trigger, arrow } = createDropdownMenu()
 </script>
 ```
 
@@ -38,16 +38,16 @@ example of how to structure the menu is shown below.
 
 ```svelte
 <script lang="ts">
-  import { createDropdownMenu } from '@melt-ui/svelte'
-  const { menu, item, trigger, arrow } = createDropdownMenu()
+	import { createDropdownMenu, melt } from '@melt-ui/svelte'
+	const { menu, item, trigger, arrow } = createDropdownMenu()
 </script>
 
-<button melt={$trigger}>Click me</button>
-<div melt={$menu}>
-  <div {...$item} use:item>...</div>
-  <div {...$item} use:item>...</div>
-  <div {...$item} use:item>...</div>
-  <div melt={$arrow} />
+<button use:melt={$trigger}>Click me</button>
+<div use:melt={$menu}>
+	<div {...$item} use:item>...</div>
+	<div {...$item} use:item>...</div>
+	<div {...$item} use:item>...</div>
+	<div use:melt={$arrow} />
 </div>
 ```
 
@@ -71,13 +71,13 @@ occurring.
 
 ```svelte {5}
 <div
-  {...$item}
-  use:item={{
-    onSelect: (e) => {
-      e.preventDefault()
-    }
-  }}>
-  Item 2
+	{...$item}
+	use:item={{
+		onSelect: (e) => {
+			e.preventDefault()
+		}
+	}}>
+	Item 2
 </div>
 ```
 

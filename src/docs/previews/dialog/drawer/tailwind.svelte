@@ -1,30 +1,40 @@
 <script lang="ts">
-	import { createDialog } from '$lib';
+	import { createDialog, melt } from '$lib';
 	import { fade, fly } from 'svelte/transition';
 	// Internal helpers
-	import X from '~icons/lucide/x';
+	import { X } from 'lucide-svelte';
 
-	const { trigger, portal, overlay, content, title, description, close, open } =
-		createDialog();
+	const {
+		elements: {
+			trigger,
+			overlay,
+			content,
+			title,
+			description,
+			close,
+			portalled,
+		},
+		states: { open },
+	} = createDialog();
 </script>
 
 <button
-	melt={$trigger}
+	use:melt={$trigger}
 	class="inline-flex items-center justify-center rounded-md bg-white px-4 py-2 font-medium
     leading-none text-magnum-700 shadow-lg hover:opacity-75 focus:outline-none focus:ring
     focus:ring-magnum-400"
 >
 	View Notifications
 </button>
-<div use:portal>
+<div use:melt={$portalled}>
 	{#if $open}
 		<div
-			melt={$overlay}
-			class="fixed inset-0 z-20 bg-black/50"
+			use:melt={$overlay}
+			class="fixed inset-0 z-50 bg-black/50"
 			transition:fade={{ duration: 150 }}
 		/>
 		<div
-			melt={$content}
+			use:melt={$content}
 			class="fixed left-0 top-0 z-50 h-screen w-full max-w-[350px] bg-white p-6
             shadow-lg focus:outline-none"
 			transition:fly={{
@@ -34,19 +44,19 @@
 			}}
 		>
 			<button
-				melt={$close}
+				use:melt={$close}
 				aria-label="Close"
 				class="absolute right-[10px] top-[10px] inline-flex h-6 w-6
                 appearance-none items-center justify-center rounded-full text-magnum-800
                 hover:bg-magnum-100 focus:shadow-magnum-400 focus:outline-none focus:ring-2
                 focus:ring-magnum-400"
 			>
-				<X />
+				<X class="square-4" />
 			</button>
-			<h2 melt={$title} class="mb-0 text-lg font-medium text-black">
+			<h2 use:melt={$title} class="mb-0 text-lg font-medium text-black">
 				Notifications
 			</h2>
-			<p melt={$description} class="mb-5 mt-2 leading-normal text-zinc-600">
+			<p use:melt={$description} class="mb-5 mt-2 leading-normal text-zinc-600">
 				Check out your latest updates.
 			</p>
 			<section>

@@ -1,34 +1,39 @@
 <script lang="ts">
-	import { createDialog } from '$lib';
+	import { createDialog, melt } from '$lib';
 	import { fade, fly } from 'svelte/transition';
-	import Menu from '~icons/lucide/menu';
-	import X from '~icons/lucide/x';
+	import { Menu, X } from 'lucide-svelte';
 	import { Button, MobileNavLink } from '$docs/components';
 	import { navConfig } from '$docs/config';
 	import Switch from '../switch.svelte';
 	import { getUsingPreprocessor } from '$routes/store';
+	import { writable } from 'svelte/store';
 
-	const { trigger, portal, overlay, content, close, open } = createDialog();
+	const open = writable(false);
+	const {
+		elements: { trigger, overlay, content, close, portalled },
+	} = createDialog({
+		open,
+	});
 
 	const usingPreprocessor = getUsingPreprocessor();
 </script>
 
 <button
-	melt={$trigger}
+	use:melt={$trigger}
 	class="ml-6 text-neutral-400 transition-colors hover:text-neutral-50 md:hidden"
 >
-	<Menu class="h-6 w-6" />
+	<Menu class="square-6" />
 	<span class="sr-only">Toggle Menu</span>
 </button>
-<div use:portal>
+<div use:melt={$portalled} class="md:hidden">
 	{#if $open}
 		<div
-			melt={$overlay}
+			use:melt={$overlay}
 			class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
 			transition:fade={{ duration: 150 }}
 		/>
 		<div
-			melt={$content}
+			use:melt={$content}
 			class="menu safe-area fixed bottom-0 z-50 h-2/3 w-full bg-neutral-900 px-2
 				 pt-6 shadow-lg focus:outline-none"
 			transition:fly={{ y: 768, duration: 300, opacity: 1 }}
@@ -37,8 +42,8 @@
 				<MobileNavLink href="/" {open}>
 					<img src="/logo.svg" alt="Melt UI" class="h-9" />
 				</MobileNavLink>
-				<Button class="px-2" size="sm" variant="faded" {...$close} action={close}>
-					<X class="h-4 w-4" />
+				<Button class="px-2" size="sm" variant="faded" {...$close} action={$close.action}>
+					<X class="square-4" />
 				</Button>
 			</div>
 

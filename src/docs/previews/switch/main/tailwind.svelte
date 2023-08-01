@@ -1,7 +1,10 @@
 <script lang="ts">
-	import { createSwitch } from '$lib';
+	import { createSwitch, melt } from '$lib';
 
-	const { root, input, isChecked } = createSwitch();
+	const {
+		elements: { root, input },
+		states: { checked },
+	} = createSwitch();
 </script>
 
 <form>
@@ -10,16 +13,16 @@
 			Airplane mode
 		</label>
 		<button
-			melt={$root}
+			use:melt={$root}
 			class="relative h-6 w-11 cursor-default rounded-full bg-magnum-800 transition-colors data-[state=checked]:bg-magnum-950"
 			id="airplane-mode"
 		>
 			<span
 				class="block h-5 w-5 translate-x-0.5 rounded-full bg-white
                 transition-transform will-change-transform
-                {$isChecked && 'translate-x-[22px]'}"
+                {$checked && 'translate-x-[22px]'}"
 			/>
-			<input melt={$input} />
+			<input use:melt={$input} />
 		</button>
 	</div>
 </form>

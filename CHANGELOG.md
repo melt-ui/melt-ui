@@ -1,5 +1,45 @@
 # @melt-ui/svelte
 
+## 0.30.0
+
+### Minor Changes
+
+- 8218662d: [Select]: Add multiple prop
+
+### Patch Changes
+
+- c2bca81c: [Slider] - Fix vertical slider arrow behavior
+- 3b86f0eb: change accordion type prop to multiple
+
+## 0.29.0 - The Big Bad
+
+[Release Notes](https://github.com/melt-ui/melt-ui/blob/develop/RELEASE_NOTES/the-big-bad.md)
+
+### Minor Changes
+
+- f44c54eb: Dialog: Add portalled element
+
+### Patch Changes
+
+- d2d7c98f: Fix: vertical slider inversion
+
+## 0.28.0
+
+### Minor Changes
+
+- 8400a4e5: Replaced the `melt` attribute for the `use:melt` action
+- ab1ec0bd: New Feature: Controlled Props
+  - Controlled props give you more control over the state & behavior of the builder components.
+- 8e5414c8: [New Feature] Custom Melt Events
+
+## 0.28.0-next.0
+
+### Minor Changes
+
+- ab1ec0bd: New Feature: Controlled Props
+  - Controlled props give you more control over the state & behavior of the builder components.
+- 8e5414c8: [New Feature] Custom Melt Events
+
 ## 0.27.3
 
 ### Patch Changes

@@ -1,26 +1,3 @@
-import { usePopper } from '$lib/internal/actions';
-import {
-	addEventListener,
-	addHighlight,
-	builder,
-	createElHelpers,
-	effect,
-	executeCallbacks,
-	FIRST_LAST_KEYS,
-	generateId,
-	getNextFocusable,
-	getPreviousFocusable,
-	handleRovingFocus,
-	isBrowser,
-	isHTMLElement,
-	kbd,
-	noop,
-	removeHighlight,
-	SELECTION_KEYS,
-	styleToString,
-} from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { onMount, tick } from 'svelte';
 import { get, writable, type Writable } from 'svelte/store';
 import {
 	applyAttrsIfDisabled,
@@ -30,7 +7,35 @@ import {
 	handleTabNavigation,
 	type MenuParts,
 } from '../menu';
+import {
+	executeCallbacks,
+	isHTMLElement,
+	addEventListener,
+	kbd,
+	SELECTION_KEYS,
+	FIRST_LAST_KEYS,
+	handleRovingFocus,
+	effect,
+	styleToString,
+	noop,
+	generateId,
+	isBrowser,
+	getNextFocusable,
+	getPreviousFocusable,
+	builder,
+	createElHelpers,
+	toWritableStores,
+	removeHighlight,
+	addHighlight,
+	getPortalParent,
+	derivedVisible,
+	addMeltEventListener,
+} from '$lib/internal/helpers';
+import { onMount, tick } from 'svelte';
+import { usePopper } from '$lib/internal/actions';
+import type { MeltActionReturn } from '$lib/internal/types';
 import type { CreateMenubarMenuProps, CreateMenubarProps } from './types';
+import type { MenubarEvents } from './events';
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
 
@@ -38,10 +43,14 @@ const { name } = createElHelpers<MenuParts | 'menu'>('menubar');
 
 const defaults = {
 	loop: true,
-} satisfies Defaults<CreateMenubarProps>;
+	closeOnEscape: true,
+} satisfies CreateMenubarProps;
 
 export function createMenubar(props?: CreateMenubarProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateMenubarProps;
+
+	const options = toWritableStores(withDefaults);
+	const { loop, closeOnEscape } = options;
 	const activeMenu = writable<string>('');
 	const scopedMenus = writable<HTMLElement[]>([]);
 	const nextFocusable = writable<HTMLElement | null>(null);
@@ -62,7 +71,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		},
 		action: (node: HTMLElement) => {
 			const menuTriggers = Array.from(node.querySelectorAll('[data-melt-menubar-trigger]'));
-			if (!menuTriggers.length || !isHTMLElement(menuTriggers[0])) return;
+			if (!menuTriggers.length || !isHTMLElement(menuTriggers[0])) return {};
 			menuTriggers[0].tabIndex = 0;
 
 			const menus = Array.from(node.querySelectorAll('[data-melt-menubar-menu]')).filter(
@@ -82,16 +91,27 @@ export function createMenubar(props?: CreateMenubarProps) {
 			placement: 'bottom-start',
 		},
 		preventScroll: true,
-	} satisfies Defaults<CreateMenubarMenuProps>;
+		arrowSize: 8,
+		dir: 'ltr',
+		loop: false,
+		closeOnEscape: true,
+		closeOnOutsideClick: true,
+		portal: 'body',
+		forceVisible: false,
+		defaultOpen: false,
+	} satisfies CreateMenubarMenuProps;
 
 	const createMenu = (props?: CreateMenubarMenuProps) => {
-		const withDefaults = { ...menuDefaults, ...props } as CreateMenubarMenuProps;
-		const rootOptions = writable(withDefaults);
+		const withDefaults = { ...menuDefaults, ...props } satisfies CreateMenubarMenuProps;
 		const rootOpen = writable(false);
 		const rootActiveTrigger = writable<HTMLElement | null>(null);
 
+		// options
+		const options = toWritableStores(withDefaults);
+		const { positioning, portal, forceVisible } = options;
+
 		const m = createMenuBuilder({
-			rootOptions,
+			rootOptions: options,
 			rootOpen,
 			rootActiveTrigger,
 			disableTriggerRefocus: true,
@@ -101,49 +121,64 @@ export function createMenubar(props?: CreateMenubarProps) {
 			selector: 'menubar-menu',
 		});
 
+		const isVisible = derivedVisible({
+			open: rootOpen,
+			forceVisible,
+			activeTrigger: rootActiveTrigger,
+		});
+
 		const menu = builder(name('menu'), {
-			stores: [rootOpen],
-			returned: ([$rootOpen]) => {
+			stores: [isVisible, portal],
+			returned: ([$isVisible, $portal]) => {
 				return {
 					role: 'menu',
-					hidden: $rootOpen ? undefined : true,
+					hidden: $isVisible ? undefined : true,
 					style: styleToString({
-						display: $rootOpen ? undefined : 'none',
+						display: $isVisible ? undefined : 'none',
 					}),
 					id: m.rootIds.menu,
 					'aria-labelledby': m.rootIds.trigger,
-					'data-state': $rootOpen ? 'open' : 'closed',
+					'data-state': $isVisible ? 'open' : 'closed',
 					'data-melt-scope': rootIds.menubar,
+					'data-portal': $portal ? '' : undefined,
 					tabindex: -1,
 				} as const;
 			},
-			action: (node: HTMLElement) => {
+			action: (node: HTMLElement): MeltActionReturn<MenubarEvents['menu']> => {
+				/**
+				 * We need to get the parent portal before the menu is opened,
+				 * otherwise the parent will have been moved to the body, and
+				 * will no longer be an ancestor of this node.
+				 */
+				const portalParent = getPortalParent(node);
+
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
-					[rootOpen, rootActiveTrigger, rootOptions],
-					([$rootOpen, $rootActiveTrigger, $rootOptions]) => {
+					[rootOpen, rootActiveTrigger, positioning, portal],
+					([$rootOpen, $rootActiveTrigger, $positioning, $portal]) => {
 						unsubPopper();
-						if ($rootOpen && $rootActiveTrigger) {
-							tick().then(() => {
-								const popper = usePopper(node, {
-									anchorElement: $rootActiveTrigger,
-									open: rootOpen,
-									options: {
-										floating: $rootOptions.positioning,
-									},
-								});
+						if (!($rootOpen && $rootActiveTrigger)) return;
 
-								if (popper && popper.destroy) {
-									unsubPopper = popper.destroy;
-								}
+						tick().then(() => {
+							const popper = usePopper(node, {
+								anchorElement: $rootActiveTrigger,
+								open: rootOpen,
+								options: {
+									floating: $positioning,
+									portal: $portal ? (portalParent === $portal ? portalParent : $portal) : null,
+								},
 							});
-						}
+
+							if (popper && popper.destroy) {
+								unsubPopper = popper.destroy;
+							}
+						});
 					}
 				);
 
 				const unsubEvents = executeCallbacks(
-					addEventListener(node, 'keydown', (e) => {
+					addMeltEventListener(node, 'keydown', (e) => {
 						const target = e.target;
 						const menuEl = e.currentTarget;
 
@@ -208,16 +243,16 @@ export function createMenubar(props?: CreateMenubarProps) {
 					role: 'menuitem',
 				} as const;
 			},
-			action: (node: HTMLElement) => {
+			action: (node: HTMLElement): MeltActionReturn<MenubarEvents['trigger']> => {
 				applyAttrsIfDisabled(node);
 
 				const menubarEl = document.getElementById(rootIds.menubar);
-				if (!menubarEl) return;
+				if (!menubarEl) return {};
 
 				const menubarTriggers = Array.from(
 					menubarEl.querySelectorAll('[data-melt-menubar-trigger]')
 				);
-				if (!menubarTriggers.length) return;
+				if (!menubarTriggers.length) return {};
 				if (menubarTriggers[0] === node) {
 					node.tabIndex = 0;
 				} else {
@@ -225,7 +260,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				}
 
 				const unsub = executeCallbacks(
-					addEventListener(node, 'click', (e) => {
+					addMeltEventListener(node, 'click', (e) => {
 						const $rootOpen = get(rootOpen);
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
@@ -233,7 +268,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 						handleOpen(triggerEl);
 						if (!$rootOpen) e.preventDefault();
 					}),
-					addEventListener(node, 'keydown', (e) => {
+					addMeltEventListener(node, 'keydown', (e) => {
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
 
@@ -253,7 +288,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 							handleRovingFocus(menuItems[0]);
 						}
 					}),
-					addEventListener(node, 'pointerenter', (e) => {
+					addMeltEventListener(node, 'pointerenter', (e) => {
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
 
@@ -330,15 +365,31 @@ export function createMenubar(props?: CreateMenubarProps) {
 			});
 		}
 
+		onMount(() => {
+			if (!isBrowser) return;
+			const triggerEl = document.getElementById(m.rootIds.trigger);
+			if (isHTMLElement(triggerEl) && get(rootOpen)) {
+				rootActiveTrigger.set(triggerEl);
+			}
+		});
+
 		return {
-			menu,
-			trigger,
-			item: m.item,
-			checkboxItem: m.checkboxItem,
-			arrow: m.arrow,
-			createSubmenu: m.createSubMenu,
-			createMenuRadioGroup: m.createMenuRadioGroup,
-			separator: m.separator,
+			elements: {
+				menu,
+				trigger,
+				item: m.item,
+				arrow: m.arrow,
+				separator: m.separator,
+			},
+			builders: {
+				createCheckboxItem: m.createCheckboxItem,
+				createSubmenu: m.createSubmenu,
+				createMenuRadioGroup: m.createMenuRadioGroup,
+			},
+			states: {
+				open: rootOpen,
+			},
+			options,
 		};
 	};
 
@@ -349,7 +400,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		if (!menubarEl) return;
 
 		const unsubEvents = executeCallbacks(
-			addEventListener(menubarEl, 'keydown', (e) => {
+			addMeltEventListener(menubarEl, 'keydown', (e) => {
 				const target = e.target;
 				const menuEl = e.currentTarget;
 				if (!isHTMLElement(menuEl) || !isHTMLElement(target)) return;
@@ -365,7 +416,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				}
 			}),
 			addEventListener(document, 'keydown', (e) => {
-				if (e.key === kbd.ESCAPE) {
+				if (get(closeOnEscape) && e.key === kbd.ESCAPE) {
 					activeMenu.set('');
 				}
 			})
@@ -470,14 +521,14 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		// Calculate the index of the next menu item
 		let nextIndex: number;
-		const loop = withDefaults.loop;
+		const $loop = get(loop);
 		switch (e.key) {
 			case kbd.ARROW_RIGHT:
 				nextIndex =
-					currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : loop ? 0 : currentIndex;
+					currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : $loop ? 0 : currentIndex;
 				break;
 			case kbd.ARROW_LEFT:
-				nextIndex = currentIndex > 0 ? currentIndex - 1 : loop ? candidateNodes.length - 1 : 0;
+				nextIndex = currentIndex > 0 ? currentIndex - 1 : $loop ? candidateNodes.length - 1 : 0;
 				break;
 			case kbd.HOME:
 				nextIndex = 0;
@@ -493,7 +544,12 @@ export function createMenubar(props?: CreateMenubarProps) {
 	}
 
 	return {
-		menubar,
-		createMenu,
+		elements: {
+			menubar,
+		},
+		builders: {
+			createMenu,
+		},
+		options,
 	};
 }

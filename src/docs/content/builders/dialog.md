@@ -19,30 +19,30 @@ At a high level, the anatomy of a dialog looks like this:
 
 ```svelte
 <script lang="ts">
-  import { createDialog } from '@melt-ui/svelte'
-  const { trigger, portal, overlay, content, title, description, close, open } = createDialog()
+	import { createDialog, melt } from '@melt-ui/svelte'
+	const { trigger, portal, overlay, content, title, description, close, open } = createDialog()
 </script>
 
-<button melt={$trigger}> Open Dialog </button>
+<button use:melt={$trigger}> Open Dialog </button>
 
 <div use:portal>
-  {#if $open}
-    <div melt={$overlay} />
-    <div melt={$content}>
-      <h2 melt={$title}>Dialog Title</h2>
-      <p melt={$description}>Dialog description</p>
-      <button melt={$close}> Close Dialog </button>
-    </div>
-  {/if}
+	{#if $open}
+		<div use:melt={$overlay} />
+		<div use:melt={$content}>
+			<h2 use:melt={$title}>Dialog Title</h2>
+			<p use:melt={$description}>Dialog description</p>
+			<button use:melt={$close}> Close Dialog </button>
+		</div>
+	{/if}
 </div>
 ```
 
 - **Trigger**: The button(s) that open the dialog
 - **Overlay**: The dim background that is typically behind a dialog element.
 - **Content**: Container for the content within the dialog.
-- **Title**: The title of the dialog
-- **Description**: The description which supports the title
-- **Close**: The button(s) that close the dialog
+  - **Title**: The title of the dialog
+  - **Description**: The description which supports the title
+  - **Close**: The button(s) that close the dialog
 
 ## Usage
 
@@ -64,7 +64,7 @@ dialog, you can set the `role` builder prop to `alertdialog`.
 
 ```ts {2}
 const { trigger, portal, overlay, content } = createDialog({
-  role: 'alertdialog'
+	role: 'alertdialog'
 })
 ```
 
@@ -75,7 +75,7 @@ by setting the `preventScroll` builder prop to `false`.
 
 ```ts {2}
 const { trigger, portal, overlay, content } = createDialog({
-  preventScroll: false
+	preventScroll: false
 })
 ```
 
@@ -86,7 +86,7 @@ the `closeOnOutsideClick` builder prop to `false`.
 
 ```ts {2}
 const { trigger, portal, overlay, content } = createDialog({
-  closeOnOutsideClick: false
+	closeOnOutsideClick: false
 })
 ```
 
@@ -97,7 +97,7 @@ the `closeOnEscape` builder prop to `false`.
 
 ```ts {2}
 const { trigger, portal, overlay, content } = createDialog({
-  closeOnEscape: false
+	closeOnEscape: false
 })
 ```
 
@@ -129,6 +129,12 @@ Dialogs can be nested. For example, here's a dialog that opens another dialog.
 
 <Preview code={snippets.nested}>
     <svelte:component this={previews.nested} />
+</Preview>
+
+### Bring Your Own Store
+
+<Preview code={snippets.controlled}>
+    <svelte:component this={previews.controlled} />
 </Preview>
 
 ## API Reference

@@ -27,20 +27,20 @@ Use the `createTagsInput` builder function.
 
 ```svelte
 <script lang="ts">
-  import { createTagsInput } from '@melt-ui/svelte'
-  const {
-    root,
-    input,
-    tag,
-    deleteTrigger,
-    edit,
-    options,
-    tags,
-    selected,
-    inputValue,
-    inputInvalid,
-    isSelected
-  } = createTagsInput()
+	import { createTagsInput, melt } from '@melt-ui/svelte'
+	const {
+		root,
+		input,
+		tag,
+		deleteTrigger,
+		edit,
+		options,
+		tags,
+		selected,
+		inputValue,
+		inputInvalid,
+		isSelected
+	} = createTagsInput()
 </script>
 ```
 
@@ -48,21 +48,21 @@ Use the return values to construct a tags-input.
 
 ```svelte
 <script lang="ts">
-  import { createTagsInput } from '@melt-ui/svelte'
+	import { createTagsInput, melt } from '@melt-ui/svelte'
 
-  // This is a subset of return values
-  const { root, input, tags, tag, deleteTrigger, edit } = createTagsInput()
+	// This is a subset of return values
+	const { root, input, tags, tag, deleteTrigger, edit } = createTagsInput()
 </script>
 
-<div melt={$root}>
-  {#each $tags as t}
-    <div melt={$tag(t)}>
-      <span>{t.value}</span>
-      <button melt={$deleteTrigger(t)}>x</button>
-    </div>
-    <div melt={$edit(t)}>{t.value}</div>
-  {/each}
-  <input melt={$input} type="text" />
+<div use:melt={$root}>
+	{#each $tags as t}
+		<div use:melt={$tag(t)}>
+			<span>{t.value}</span>
+			<button use:melt={$deleteTrigger(t)}>x</button>
+		</div>
+		<div use:melt={$edit(t)}>{t.value}</div>
+	{/each}
+	<input use:melt={$input} type="text" />
 </div>
 ```
 
@@ -96,22 +96,22 @@ uppercase.
 
 ```svelte
 <script lang="ts">
-  import { createTagsInput } from '@melt-ui/svelte'
+	import { createTagsInput } from '@melt-ui/svelte'
 
-  const { root, input, tag, deleteTrigger } = createTagsInput({
-    add: async (v: string) => {
-      const response = await fetch('https://www.uuidtools.com/api/generate/v1')
+	const { root, input, tag, deleteTrigger } = createTagsInput({
+		add: async (v: string) => {
+			const response = await fetch('https://www.uuidtools.com/api/generate/v1')
 
-      if (!response.ok) throw new Error('HTTP error ' + response.status)
+			if (!response.ok) throw new Error('HTTP error ' + response.status)
 
-      const data = await response.json()
-      if (!Array.isArray(data) || data.length < 1) {
-        throw new Error('Failed to get id')
-      }
+			const data = await response.json()
+			if (!Array.isArray(data) || data.length < 1) {
+				throw new Error('Failed to get id')
+			}
 
-      return { id: data[0], value: v.toUpperCase() }
-    }
-  })
+			return { id: data[0], value: v.toUpperCase() }
+		}
+	})
 </script>
 ```
 
@@ -141,13 +141,13 @@ The following example uses the existing id and sets the value to uppercase
 
 ```svelte
 <script lang="ts">
-  import { createTagsInput, type Tag } from '@melt-ui/svelte'
+	import { createTagsInput, type Tag } from '@melt-ui/svelte'
 
-  const { root, input, tag, deleteTrigger, edit } = createTagsInput({
-    update: async (tag: Tag) => {
-      return { id: tag.id, value: tag.value.toUpperCase() }
-    }
-  })
+	const { root, input, tag, deleteTrigger, edit } = createTagsInput({
+		update: async (tag: Tag) => {
+			return { id: tag.id, value: tag.value.toUpperCase() }
+		}
+	})
 </script>
 ```
 
@@ -177,15 +177,15 @@ The following example disallows a tag with the value `one` to be deleted.
 
 ```svelte
 <script lang="ts">
-  import { createTagsInput, type Tag } from '@melt-ui/svelte'
+	import { createTagsInput, type Tag } from '@melt-ui/svelte'
 
-  const { root, input, tag, deleteTrigger } = createTagsInput({
-    tags: ['one', 'two'],
-    remove: async (t: Tag) => {
-      if (t.value === 'one') return false
-      return true
-    }
-  })
+	const { root, input, tag, deleteTrigger } = createTagsInput({
+		tags: ['one', 'two'],
+		remove: async (t: Tag) => {
+			if (t.value === 'one') return false
+			return true
+		}
+	})
 </script>
 ```
 

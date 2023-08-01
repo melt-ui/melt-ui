@@ -1,81 +1,68 @@
-import { ATTRS, DESCRIPTIONS, KBD, LONG_TYPES } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
+import { ATTRS, KBD, PROPS } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { tooltipEvents } from '$lib/builders/tooltip/events';
 import type { BuilderData } from '.';
 
-const builder: APISchema = {
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	PROPS.POSITIONING({ default: "position: 'top'" }),
+	PROPS.ARROW_SIZE,
+	PROPS.CLOSE_ON_ESCAPE,
+	PROPS.FORCE_VISIBLE,
+	PROPS.PORTAL,
+	{
+		name: 'closeOnPointerDown',
+		type: 'boolean',
+		default: 'true',
+		description: 'Whether the tooltip closes when the pointer is down.',
+	},
+	{
+		name: 'openDelay',
+		type: 'number',
+		default: '1000',
+		description: 'The delay in milliseconds before the tooltip opens after a pointer over event.',
+	},
+	{
+		name: 'closeDelay',
+		type: 'number',
+		default: '500',
+		description: 'The delay in milliseconds before the tooltip closes after a pointer leave event.',
+	},
+];
+
+const BUILDER_NAME = 'tooltip';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createTooltip',
-	description: DESCRIPTIONS.BUILDER('tooltip'),
-	props: [
-		{
-			name: 'positioning',
-			type: 'FloatingConfig',
-			default: "position: 'top'",
-			description: DESCRIPTIONS.FLOATING_CONFIG,
-			longType: LONG_TYPES.FLOATING_CONFIG,
-		},
-		{
-			name: 'arrowSize',
-			type: 'number',
-			default: '8',
-			description: DESCRIPTIONS.ARROW_SIZE,
-		},
-		{
-			name: 'open',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether the tooltip is open or not.',
-		},
-		{
-			name: 'closeOnPointerDown',
-			type: 'boolean',
-			default: 'true',
-			description: 'Whether the tooltip closes when the pointer is down.',
-		},
-		{
-			name: 'openDelay',
-			type: 'number',
-			default: '1000',
-			description: 'The delay in milliseconds before the tooltip opens after a pointer over event.',
-		},
-		{
-			name: 'closeDelay',
-			type: 'number',
-			default: '500',
-			description:
-				'The delay in milliseconds before the tooltip closes after a pointer leave event.',
-		},
-	],
-	returnedProps: [
-		{
-			name: 'options',
-			type: 'Writable<CreateTooltipProps>',
-			description: 'A writable store that controls the options of the tooltip.',
-		},
-		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls the open state of the tooltip.',
-		},
+	props: [...OPTION_PROPS, PROPS.DEFAULT_OPEN, PROPS.OPEN, PROPS.ON_OPEN_CHANGE],
+	elements: [
 		{
 			name: 'trigger',
 			description: 'The builder store used to create the tooltip trigger.',
-			link: '#trigger',
 		},
 		{
 			name: 'content',
 			description: 'The builder store used to create the tooltip content.',
-			link: '#content',
 		},
 		{
 			name: 'arrow',
 			description: 'The builder store used to create the tooltip arrow.',
-			link: '#arrow',
 		},
 	],
-};
+	states: [
+		{
+			name: 'open',
+			type: 'Readable<boolean>',
+			description: 'A readable store that indicates whether the tooltip is open or not',
+		},
+	],
+	options: OPTION_PROPS,
+});
 
-const trigger: APISchema = {
-	title: 'trigger',
+const trigger = elementSchema('trigger', {
 	description: 'The tooltip trigger element.',
 	dataAttributes: [
 		{
@@ -87,10 +74,10 @@ const trigger: APISchema = {
 			value: ATTRS.MELT('tooltip trigger'),
 		},
 	],
-};
+	events: tooltipEvents['trigger'],
+});
 
-const content: APISchema = {
-	title: 'content',
+const content = elementSchema('content', {
 	description: 'The tooltip content element.',
 	dataAttributes: [
 		{
@@ -98,10 +85,10 @@ const content: APISchema = {
 			value: ATTRS.MELT('tooltip content'),
 		},
 	],
-};
+	events: tooltipEvents['trigger'],
+});
 
-const arrow: APISchema = {
-	title: 'arrow',
+const arrow = elementSchema('arrow', {
 	description: 'The tooltip arrow element.',
 	dataAttributes: [
 		{
@@ -113,7 +100,7 @@ const arrow: APISchema = {
 			value: ATTRS.MELT('tooltip arrow'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

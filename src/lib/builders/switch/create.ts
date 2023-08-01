@@ -1,10 +1,21 @@
-import { addEventListener, builder, createElHelpers, styleToString } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
+import {
+	builder,
+	createElHelpers,
+	omit,
+	overridable,
+	styleToString,
+	toWritableStores,
+	addMeltEventListener,
+	kbd,
+} from '$lib/internal/helpers';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+import { get, writable, readonly } from 'svelte/store';
 import type { CreateSwitchProps } from './types';
+import { executeCallbacks } from '../../internal/helpers/callbacks';
+import type { SwitchEvents } from './events';
 
 const defaults = {
-	checked: false,
+	defaultChecked: false,
 	disabled: false,
 	required: false,
 	name: '',
@@ -13,36 +24,44 @@ const defaults = {
 
 const { name } = createElHelpers('switch');
 
-export function createSwitch(props: CreateSwitchProps = {}) {
-	const propsWithDefaults = { ...defaults, ...props };
-	const options = writable({
-		disabled: propsWithDefaults.disabled,
-		required: propsWithDefaults.required,
-		name: propsWithDefaults.name,
-		value: propsWithDefaults.value,
-	});
-	const checked = writable(propsWithDefaults.checked);
+export function createSwitch(props?: CreateSwitchProps) {
+	const propsWithDefaults = { ...defaults, ...props } satisfies CreateSwitchProps;
+
+	const options = toWritableStores(omit(propsWithDefaults, 'checked'));
+	const { disabled, required, name: nameStore, value } = options;
+
+	const checkedWritable = propsWithDefaults.checked ?? writable(propsWithDefaults.defaultChecked);
+	const checked = overridable(checkedWritable, propsWithDefaults?.onCheckedChange);
+
+	function toggleSwitch() {
+		if (get(disabled)) return;
+		checked.update((prev) => !prev);
+	}
 
 	const root = builder(name(), {
-		stores: [checked, options],
-		returned: ([$checked, $options]) => {
+		stores: [checked, disabled, required],
+		returned: ([$checked, $disabled, $required]) => {
 			return {
-				'data-disabled': $options.disabled,
-				disabled: $options.disabled,
+				'data-disabled': $disabled,
+				disabled: $disabled,
 				'data-state': $checked ? 'checked' : 'unchecked',
 				type: 'button',
 				role: 'switch',
 				'aria-checked': $checked,
-				'aria-required': $options.required,
+				'aria-required': $required,
 			} as const;
 		},
-		action(node: HTMLElement) {
-			const unsub = addEventListener(node, 'click', () => {
-				const $options = get(options);
-				if ($options.disabled) return;
-
-				checked.update((value) => !value);
-			});
+		action(node: HTMLElement): MeltActionReturn<SwitchEvents['root']> {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					toggleSwitch();
+				}),
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
+					e.preventDefault();
+					toggleSwitch();
+				})
+			);
 
 			return {
 				destroy: unsub,
@@ -51,18 +70,18 @@ export function createSwitch(props: CreateSwitchProps = {}) {
 	});
 
 	const input = builder(name('input'), {
-		stores: [checked, options],
-		returned: ([$checked, $options]) => {
+		stores: [checked, nameStore, required, disabled, value],
+		returned: ([$checked, $name, $required, $disabled, $value]) => {
 			return {
 				type: 'checkbox' as const,
 				'aria-hidden': true,
 				hidden: true,
 				tabindex: -1,
-				name: $options.name,
-				value: $options.value,
+				name: $name,
+				value: $value,
 				checked: $checked,
-				required: $options.required,
-				disabled: $options.disabled,
+				required: $required,
+				disabled: $disabled,
 				style: styleToString({
 					position: 'absolute',
 					opacity: 0,
@@ -74,13 +93,14 @@ export function createSwitch(props: CreateSwitchProps = {}) {
 		},
 	});
 
-	const isChecked = derived(checked, ($checked) => $checked === true);
-
 	return {
-		root,
-		input,
-		checked,
-		isChecked,
+		elements: {
+			root,
+			input,
+		},
+		states: {
+			checked: readonly(checked),
+		},
 		options,
 	};
 }

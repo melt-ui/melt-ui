@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { createCombobox } from '$lib';
-	import Check from '~icons/lucide/check';
-	import ChevronDown from '~icons/lucide/chevron-down';
-	import ChevronUp from '~icons/lucide/chevron-up';
+	import { createCombobox, type ComboboxFilterFunction, melt } from '$lib';
+	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
+	import { slide } from 'svelte/transition';
 
 	interface Book {
 		author: string;
@@ -63,40 +62,38 @@
 		},
 	];
 
+	const filterFunction: ComboboxFilterFunction<Book> = (item, inputValue) => {
+		// Example string normalization function. Replace as needed.
+		const normalize = (str: string) => str.normalize().toLowerCase();
+		const normalizedInput = normalize(inputValue);
+		return (
+			normalizedInput === '' ||
+			normalize(item.title).includes(normalizedInput) ||
+			normalize(item.author).includes(normalizedInput)
+		);
+	};
+
 	const {
-		open,
-		input,
-		menu,
-		item,
-		inputValue,
-		isSelected,
-		filteredItems,
-		label,
+		elements: { menu, input, item, label },
+		states: { open, inputValue, filteredItems },
+		helpers: { isSelected },
 	} = createCombobox({
-		filterFunction: (item, inputValue) => {
-			// Example string normalization function. Replace as needed.
-			const normalize = (str: string) => str.normalize().toLowerCase();
-			const normalizedInput = normalize(inputValue);
-			return (
-				normalizedInput === '' ||
-				normalize(item.title).includes(normalizedInput) ||
-				normalize(item.author).includes(normalizedInput)
-			);
-		},
+		filterFunction,
 		items: books,
 		itemToString: (item) => item.title,
+		forceVisible: true,
 	});
 </script>
 
 <div class="flex flex-col gap-1">
 	<!-- svelte-ignore a11y-label-has-associated-control - $label contains the 'for' attribute -->
-	<label melt={$label}>
+	<label use:melt={$label}>
 		<span class="block capitalize">Choose your favorite book:</span>
 	</label>
 
 	<div class="relative">
 		<input
-			melt={$input}
+			use:melt={$input}
 			class="flex h-10 items-center justify-between rounded-md bg-white
 					px-3 pr-12 text-magnum-700"
 			placeholder="Best book ever"
@@ -104,28 +101,28 @@
 		/>
 		<div class="absolute right-1 top-1/2 z-10 -translate-y-1/2 text-magnum-700">
 			{#if $open}
-				<ChevronUp />
+				<ChevronUp class="square-4" />
 			{:else}
-				<ChevronDown />
+				<ChevronDown class="square-4" />
 			{/if}
 		</div>
 	</div>
 </div>
-
-<ul
-	class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-md"
-	melt={$menu}
->
-	<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-	<div
-		class="flex max-h-full flex-col gap-2 overflow-y-auto bg-white px-2 py-2"
-		tabindex="0"
+{#if $open}
+	<ul
+		class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-md"
+		use:melt={$menu}
+		transition:slide={{ duration: 150 }}
 	>
-		{#if $open}
+		<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+		<div
+			class="flex max-h-full flex-col gap-2 overflow-y-auto bg-white px-2 py-2"
+			tabindex="0"
+		>
 			{#if $filteredItems.length !== 0}
 				{#each $filteredItems as book, index (index)}
 					<li
-						melt={$item({
+						use:melt={$item({
 							index,
 							item: book,
 							disabled: book.disabled,
@@ -136,7 +133,7 @@
 					>
 						{#if $isSelected(book)}
 							<div class="check">
-								<Check />
+								<Check class="square-4" />
 							</div>
 						{/if}
 						<div>
@@ -154,9 +151,9 @@
 					No results found
 				</li>
 			{/if}
-		{/if}
-	</div>
-</ul>
+		</div>
+	</ul>
+{/if}
 
 <style lang="postcss">
 	.check {

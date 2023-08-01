@@ -1,13 +1,17 @@
 <script lang="ts">
-	import { createSeparator, type CreateSeparatorProps } from '$lib';
+	import { createSeparator, melt, type CreateSeparatorProps } from '$lib';
 
 	export let orientation: CreateSeparatorProps['orientation'] = 'vertical';
 
-	const { root: vertical } = createSeparator({
+	const {
+		elements: { root: vertical },
+	} = createSeparator({
 		orientation,
 	});
 
-	const { root: horizontalSeparator } = createSeparator({
+	const {
+		elements: { root: horizontal },
+	} = createSeparator({
 		orientation: 'horizontal',
 		decorative: true,
 	});
@@ -17,12 +21,12 @@
 
 <h2>Melt UI</h2>
 <p>Flavors for everyone</p>
-<div melt={$horizontalSeparator} class="separator separator--horizontal" />
+<div use:melt={$horizontal} class="separator separator--horizontal" />
 <div class="ice-creams">
 	{#each icecreams as icecream, i}
 		<p>{icecream}</p>
 		{#if i !== icecreams.length - 1}
-			<div melt={$vertical} class="separator separator--vertical" />
+			<div use:melt={$vertical} class="separator separator--vertical" />
 		{/if}
 	{/each}
 </div>

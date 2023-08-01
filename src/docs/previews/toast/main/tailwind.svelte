@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { createToaster } from '$lib';
+	import { createToaster, melt } from '$lib';
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
-	import X from '~icons/lucide/x';
+	import { X } from 'lucide-svelte';
 
 	type ToastData = {
 		title: string;
@@ -10,8 +10,12 @@
 		color: string;
 	};
 
-	const { toasts, addToast, content, title, description, close, portal } =
-		createToaster<ToastData>({});
+	const {
+		elements: { content, title, description, close },
+		helpers: { addToast },
+		states: { toasts },
+		actions: { portal },
+	} = createToaster<ToastData>();
 
 	const toastData: ToastData[] = [
 		{
@@ -50,7 +54,7 @@
 >
 	{#each $toasts as { id, data } (id)}
 		<div
-			melt={$content(id)}
+			use:melt={$content(id)}
 			animate:flip={{ duration: 500 }}
 			in:fly={{ duration: 150, x: '100%' }}
 			out:fly={{ duration: 150, x: '100%' }}
@@ -60,20 +64,23 @@
 				class="relative flex w-[24rem] max-w-[calc(100vw-2rem)] items-center justify-between gap-4 p-5"
 			>
 				<div>
-					<h3 melt={$title(id)} class="flex items-center gap-2 font-semibold">
+					<h3
+						use:melt={$title(id)}
+						class="flex items-center gap-2 font-semibold"
+					>
 						{data.title}
 						<span class="rounded-full square-1.5 {data.color}" />
 					</h3>
-					<div melt={$description(id)}>
+					<div use:melt={$description(id)}>
 						{data.description}
 					</div>
 				</div>
 				<button
-					melt={$close(id)}
+					use:melt={$close(id)}
 					class="absolute right-4 top-4 grid place-items-center rounded-full text-magnum-500 square-6
 					hover:bg-magnum-900/50"
 				>
-					<X />
+					<X class="square-4" />
 				</button>
 			</div>
 		</div>

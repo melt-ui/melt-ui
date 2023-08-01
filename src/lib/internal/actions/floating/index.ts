@@ -1,2 +1,2 @@
-export * from './floating.types';
-export * from './floating';
+export * from './types';
+export * from './action';

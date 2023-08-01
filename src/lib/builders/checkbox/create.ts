@@ -1,52 +1,57 @@
 import {
-	addEventListener,
 	builder,
 	executeCallbacks,
 	kbd,
 	styleToString,
+	toWritableStores,
+	overridable,
+	omit,
+	addMeltEventListener,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+import { derived, get, readonly, writable } from 'svelte/store';
 import type { CreateCheckboxProps } from './types';
+import type { CheckboxEvents } from './events';
 
 const defaults = {
-	checked: false,
 	disabled: false,
 	required: false,
+	name: undefined,
+	value: undefined,
+	defaultChecked: false,
 } satisfies Defaults<CreateCheckboxProps>;
 
-export function createCheckbox(props: CreateCheckboxProps = {}) {
-	const propsWithDefaults = { ...defaults, ...props };
-	const options = writable({
-		disabled: propsWithDefaults.disabled,
-		required: propsWithDefaults.required,
-		name: propsWithDefaults.name,
-		value: propsWithDefaults.value,
-	});
-	const checked = writable(propsWithDefaults.checked);
+export function createCheckbox(props?: CreateCheckboxProps) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateCheckboxProps;
+
+	const options = toWritableStores(omit(withDefaults, 'checked', 'defaultChecked'));
+	const { disabled, name, required, value } = options;
+
+	// States
+	const checkedWritable = withDefaults.checked ?? writable(withDefaults.defaultChecked);
+	const checked = overridable(checkedWritable, withDefaults?.onCheckedChange);
 
 	const root = builder('checkbox', {
-		stores: [checked, options],
-		returned: ([$checked, $options]) => {
+		stores: [checked, disabled, required],
+		returned: ([$checked, $disabled, $required]) => {
 			return {
-				'data-disabled': $options.disabled,
+				'data-disabled': $disabled,
 				'data-state':
 					$checked === 'indeterminate' ? 'indeterminate' : $checked ? 'checked' : 'unchecked',
 				type: 'button',
 				role: 'checkbox',
 				'aria-checked': $checked === 'indeterminate' ? 'mixed' : $checked,
-				'aria-required': $options.required,
+				'aria-required': $required,
 			} as const;
 		},
-		action(node: HTMLElement) {
+		action: (node: HTMLElement): MeltActionReturn<CheckboxEvents['root']> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'keydown', (event) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					// According to WAI ARIA, Checkboxes don't activate on enter keypress
-					if (event.key === kbd.ENTER) event.preventDefault();
+					if (e.key === kbd.ENTER) e.preventDefault();
 				}),
-				addEventListener(node, 'click', () => {
-					const $options = get(options);
-					if ($options.disabled) return;
+				addMeltEventListener(node, 'click', () => {
+					if (get(disabled)) return;
 
 					checked.update((value) => {
 						if (value === 'indeterminate') return true;
@@ -62,18 +67,18 @@ export function createCheckbox(props: CreateCheckboxProps = {}) {
 	});
 
 	const input = builder('checkbox-input', {
-		stores: [checked, options],
-		returned: ([$checked, $options]) => {
+		stores: [checked, name, value, required, disabled],
+		returned: ([$checked, $name, $value, $required, $disabled]) => {
 			return {
 				type: 'checkbox' as const,
 				'aria-hidden': true,
 				hidden: true,
 				tabindex: -1,
-				name: $options.name,
-				value: $options.value,
+				name: $name,
+				value: $value,
 				checked: $checked === 'indeterminate' ? false : $checked,
-				required: $options.required,
-				disabled: $options.disabled,
+				required: $required,
+				disabled: $disabled,
 				style: styleToString({
 					position: 'absolute',
 					opacity: 0,
@@ -89,11 +94,17 @@ export function createCheckbox(props: CreateCheckboxProps = {}) {
 	const isChecked = derived(checked, ($checked) => $checked === true);
 
 	return {
-		root,
-		input,
-		checked,
-		isIndeterminate,
-		isChecked,
+		elements: {
+			root,
+			input,
+		},
+		states: {
+			checked: readonly(checked),
+		},
+		helpers: {
+			isIndeterminate,
+			isChecked,
+		},
 		options,
 	};
 }

@@ -1,23 +1,34 @@
 <script lang="ts">
-	import { createDialog } from '$lib';
+	import { createDialog, melt } from '$lib';
 	/** Internal helpers */
 	import { flyAndScale } from '$docs/utils';
-	import X from '~icons/lucide/x';
+	import { X } from 'lucide-svelte';
 
-	const { trigger, portal, overlay, content, title, description, close, open } =
-		createDialog();
+	const {
+		elements: {
+			trigger,
+			overlay,
+			content,
+			title,
+			description,
+			close,
+			portalled,
+		},
+		states: { open },
+	} = createDialog();
 </script>
 
 <button
-	melt={$trigger}
+	use:melt={$trigger}
 	class="inline-flex items-center justify-center rounded-md bg-white px-4 py-2
     font-medium leading-none text-magnum-700 shadow-lg hover:opacity-75"
 >
 	Open Dialog
 </button>
-<div use:portal>
+
+<div use:melt={$portalled}>
 	{#if $open}
-		<div melt={$overlay} class="fixed inset-0 z-40 bg-black/50" />
+		<div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" />
 		<div
 			class="fixed left-[50%] top-[50%] z-50 max-h-[85vh] w-[90vw]
             max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white
@@ -27,12 +38,12 @@
 				y: 8,
 				start: 0.96,
 			}}
-			melt={$content}
+			use:melt={$content}
 		>
-			<h2 melt={$title} class="m-0 text-lg font-medium text-black">
+			<h2 use:melt={$title} class="m-0 text-lg font-medium text-black">
 				Edit profile
 			</h2>
-			<p melt={$description} class="mb-5 mt-2 leading-normal text-zinc-600">
+			<p use:melt={$description} class="mb-5 mt-2 leading-normal text-zinc-600">
 				Make changes to your profile here. Click save when you're done.
 			</p>
 
@@ -60,29 +71,28 @@
 			</fieldset>
 			<div class="mt-6 flex justify-end gap-4">
 				<button
-					melt={$close}
-					class="inline-flex h-8 items-center justify-center rounded-[4px]
+					use:melt={$close}
+					class="inline-flex h-8 items-center justify-center rounded-sm
                     bg-zinc-100 px-4 font-medium leading-none text-zinc-600"
 				>
 					Cancel
 				</button>
 				<button
-					melt={$close}
-					class="inline-flex h-8 items-center justify-center rounded-[4px]
+					use:melt={$close}
+					class="inline-flex h-8 items-center justify-center rounded-sm
                     bg-magnum-100 px-4 font-medium leading-none text-magnum-900"
 				>
 					Save changes
 				</button>
 			</div>
-
 			<button
-				melt={$close}
+				use:melt={$close}
 				aria-label="close"
-				class="absolute right-[10px] top-[10px] inline-flex h-6 w-6
-                appearance-none items-center justify-center rounded-full text-magnum-800
+				class="absolute right-4 top-4 inline-flex h-6 w-6 appearance-none
+                items-center justify-center rounded-full p-1 text-magnum-800
                 hover:bg-magnum-100 focus:shadow-magnum-400"
 			>
-				<X />
+				<X class="square-4" />
 			</button>
 		</div>
 	{/if}

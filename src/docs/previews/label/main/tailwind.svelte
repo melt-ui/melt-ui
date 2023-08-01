@@ -1,13 +1,15 @@
 <script lang="ts">
-	import { createLabel } from '$lib';
+	import { createLabel, melt } from '$lib';
 
-	const root = createLabel();
+	const {
+		elements: { root },
+	} = createLabel();
 </script>
 
 <form>
 	<div class="flex flex-col items-start justify-center">
 		<label
-			use:root
+			use:melt={$root}
 			for="email"
 			class="mb-0.5 font-medium"
 			data-melt-part="root"

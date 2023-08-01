@@ -1,20 +1,34 @@
-import { derived, get, writable, type Readable } from 'svelte/store';
+import { derived, get, writable, readonly } from 'svelte/store';
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
 	generateId,
 	isTouch,
 	noop,
-} from '../../internal/helpers';
-import type { AddToastProps, Toast } from './types';
+	toWritableStores,
+	addMeltEventListener,
+	kbd,
+} from '$lib/internal/helpers';
+import type { AddToastProps, CreateToasterProps, Toast } from './types';
 import { usePortal } from '$lib/internal/actions';
+import type { MeltActionReturn } from '$lib/internal/types';
+import type { ToastEvents } from './events';
 
 type ToastParts = 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<ToastParts>('toast');
 
-export function createToaster<T = object>(defaults?: Omit<AddToastProps<T>, 'data'>) {
+const defaults = {
+	closeDelay: 5000,
+	type: 'foreground',
+} satisfies CreateToasterProps;
+
+export function createToaster<T = object>(props?: CreateToasterProps) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateToasterProps;
+
+	const options = toWritableStores(withDefaults);
+	const { closeDelay, type } = options;
+
 	const toastsMap = writable(new Map<string, Toast<T>>());
 	const timeouts = new Map<string, number>();
 
@@ -48,13 +62,12 @@ export function createToaster<T = object>(defaults?: Omit<AddToastProps<T>, 'dat
 				}, toast.closeDelay)
 			);
 		};
-	}) as Readable<(id: string) => void>;
+	});
 
 	const addToast = (props: AddToastProps<T>) => {
 		const propsWithDefaults = {
-			closeDelay: 5000,
-			type: 'foreground',
-			...defaults,
+			closeDelay: get(closeDelay),
+			type: get(type),
 			...props,
 		} satisfies AddToastProps<T>;
 
@@ -93,7 +106,7 @@ export function createToaster<T = object>(defaults?: Omit<AddToastProps<T>, 'dat
 				};
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<ToastEvents['content']> => {
 			let unsub = noop;
 
 			const unsubTimers = () => {
@@ -104,15 +117,15 @@ export function createToaster<T = object>(defaults?: Omit<AddToastProps<T>, 'dat
 			};
 
 			unsub = executeCallbacks(
-				addEventListener(node, 'pointerenter', (e) => {
+				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
 					handleOpen(node.id);
 				}),
-				addEventListener(node, 'pointerleave', (e) => {
+				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
 					get(handleClose)(node.id);
 				}),
-				addEventListener(node, 'focusout', (e) => {
+				addMeltEventListener(node, 'focusout', (e) => {
 					e.preventDefault();
 				})
 			);
@@ -160,11 +173,22 @@ export function createToaster<T = object>(defaults?: Omit<AddToastProps<T>, 'dat
 				'data-id': id,
 			});
 		},
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', () => {
+		action: (node: HTMLElement): MeltActionReturn<ToastEvents['close']> => {
+			function handleClose() {
 				if (!node.dataset.id) return;
 				closeToast(node.dataset.id);
-			});
+			}
+
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					handleClose();
+				}),
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
+					e.preventDefault();
+					handleClose();
+				})
+			);
 
 			return {
 				destroy: unsub,
@@ -177,12 +201,21 @@ export function createToaster<T = object>(defaults?: Omit<AddToastProps<T>, 'dat
 	});
 
 	return {
-		toasts,
-		addToast,
-		content,
-		title,
-		description,
-		close,
-		portal: usePortal,
+		elements: {
+			content,
+			title,
+			description,
+			close,
+		},
+		states: {
+			toasts: readonly(toasts),
+		},
+		helpers: {
+			addToast,
+		},
+		actions: {
+			portal: usePortal,
+		},
+		options,
 	};
 }

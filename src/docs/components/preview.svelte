@@ -131,7 +131,7 @@
 
 	$: codeOptions = Object.entries(normalizeCode(code)).map(([key, value]) => {
 		return {
-			value: key,
+			value: key as 'tailwind' | 'css',
 			label: key,
 			disabled: value === null,
 		} satisfies SelectOptionProps;

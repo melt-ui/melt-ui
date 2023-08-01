@@ -1,36 +1,42 @@
 <script lang="ts">
-	import { createAvatar } from '$lib';
+	import { createAvatar, melt } from '$lib';
 
-	const { image, fallback } = createAvatar({
+	const {
+		elements: { image, fallback },
+	} = createAvatar({
 		src: 'https://avatars.githubusercontent.com/u/1162160?v=4',
 	});
 
 	// With an exaggerated fallback delay
-	const { image: imageA, fallback: fallbackA } = createAvatar({
+	const {
+		elements: { image: imageA, fallback: fallbackA },
+	} = createAvatar({
 		src: 'https://avatars.githubusercontent.com/u/5968653?v=4',
 		delayMs: 650,
 	});
 
 	// A blank source to demonstrate the fallback
-	const { image: imageB, fallback: fallbackB } = createAvatar({
+	const {
+		elements: { image: imageB, fallback: fallbackB },
+	} = createAvatar({
 		src: '',
 	});
 </script>
 
 <div class="root">
 	<div class="item">
-		<img melt={$image} alt="Avatar" class="avatar" />
-		<span melt={$fallback} class="fallback">RH</span>
+		<img use:melt={$image} alt="Avatar" class="avatar" />
+		<span use:melt={$fallback} class="fallback">RH</span>
 	</div>
 
 	<div class="item">
-		<img melt={$imageA} alt="Avatar" class="avatar" />
-		<span melt={$fallbackA} class="fallback">SH</span>
+		<img use:melt={$imageA} alt="Avatar" class="avatar" />
+		<span use:melt={$fallbackA} class="fallback">SH</span>
 	</div>
 
 	<div class="item">
-		<img melt={$imageB} alt="Avatar" class="avatar" />
-		<span melt={$fallbackB} class="fallback">UI</span>
+		<img use:melt={$imageB} alt="Avatar" class="avatar" />
+		<span use:melt={$fallbackB} class="fallback">UI</span>
 	</div>
 </div>
 

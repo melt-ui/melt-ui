@@ -1,14 +1,16 @@
 <script lang="ts">
-	import { createCollapsible } from '..';
+	import { createCollapsible, melt } from '$lib';
 
 	export let open = false;
 
-	const { root, trigger, content } = createCollapsible({
-		open,
+	const {
+		elements: { root, trigger, content },
+	} = createCollapsible({
+		defaultOpen: open,
 	});
 </script>
 
-<div melt={$root}>
-	<button melt={$trigger} data-testid="trigger">Trigger</button>
-	<div melt={$content} data-testid="content">Content</div>
+<div use:melt={$root}>
+	<button use:melt={$trigger} data-testid="trigger">Trigger</button>
+	<div use:melt={$content} data-testid="content">Content</div>
 </div>
