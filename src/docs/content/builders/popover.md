@@ -42,8 +42,8 @@ indicates the previous open state, and next indicates the next open state that w
 uncontrolled usage. The value returned by the callback will be used as the next open state.
 
 ```ts {2,3,4,5,6,7,8}
-const { trigger, content, open, arrow, close } = createPopover({
-  onOpenChange: ({ prev, next }) => {
+const popover = createPopover({
+  onOpenChange: ({ curr, next }) => {
     // Do something with the open state
     if (/* some condition */) {
       return false
@@ -62,7 +62,7 @@ If you don't pass an `open` prop, the builder will create a store for you, and r
 ```ts {1,4}
 const open = writable(false)
 
-const { trigger, content, arrow, close } = createPopover({
+const popover = createPopover({
 	open
 })
 ```
