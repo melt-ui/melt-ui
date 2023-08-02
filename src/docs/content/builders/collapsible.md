@@ -17,14 +17,6 @@ description: An interactive component which expands/collapses a panel.
 - **Trigger**: The element that triggers the collapsible to expand/collapse
 - **Content**: The element that is revealed when the collapsible is expanded
 
-## Example Components
-
-### Bring Your Own Store
-
-<Preview code={snippets.controlled}>
-    <svelte:component this={previews.controlled} />
-</Preview>
-
 ## API Reference
 
 <APIReference {schemas} />

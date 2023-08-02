@@ -26,11 +26,14 @@ description:
 
 The first thing you'll need to do is create a menubar using the `createMenubar` builder function.
 
-```svelte {4}
+```svelte {4-7}
 <script lang="ts">
 	import { createMenubar } from '@melt-ui/svelte'
 
-	const { menubar, createMenu } = createMenubar()
+	const {
+		elements: { menubar },
+		builders: { createMenu }
+	} = createMenubar()
 </script>
 ```
 
@@ -42,12 +45,17 @@ the menubar which happens behind the scenes.
 Now that we have a menubar and menu builder function, we can create a menu using the `createMenu`
 function and wrap it in a `menubar` element.
 
-```svelte {5}
+```svelte {5, 8-10}
 <script lang="ts">
 	import { createMenubar, melt } from '@melt-ui/svelte'
 
-	const { menubar, createMenu } = createMenubar()
-	const { menu, item, trigger } = createMenu()
+	const {
+		elements: { menubar },
+		builders: { createMenu }
+	} = createMenubar()
+	const {
+		elements: { menu, item, trigger }
+	} = createMenu()
 </script>
 
 <div use:melt={$menubar}>

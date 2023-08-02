@@ -35,8 +35,8 @@ The first thing you need to do is create a context menu using the `createContext
 </script>
 ```
 
-Then you can use the `menu`, `item`, and `trigger` to construct a dropdown menu. A high level
-example of how to structure the menu is shown below.
+Then you can use the `menu`, `item`, and `trigger` to construct a context menu. A high level example
+of how to structure the menu is shown below.
 
 ```svelte
 <script lang="ts">

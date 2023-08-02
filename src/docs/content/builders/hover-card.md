@@ -25,10 +25,12 @@ respond to keyboard or touch events. On touch devices, the link will be followed
 
 Create a hovercard using the `createHoverCard` builder function.
 
-```svelte {3}
+```svelte {3-5}
 <script lang="ts">
 	import { createHoverCard, melt } from '@melt-ui/svelte'
-	const { trigger, content, open, arrow } = createHoverCard()
+	const {
+		elements: { trigger, content, arrow }
+	} = createHoverCard()
 </script>
 ```
 
@@ -38,7 +40,9 @@ example of how to structure the hovercard is shown below.
 ```svelte
 <script lang="ts">
 	import { createHoverCard, melt } from '@melt-ui/svelte'
-	const { trigger, content, arrow } = createHoverCard()
+	const {
+		elements: { trigger, content, arrow }
+	} = createHoverCard()
 </script>
 
 <button use:melt={$trigger}>Hover Me</button>
