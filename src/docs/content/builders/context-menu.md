@@ -74,7 +74,7 @@ If you wanted to prevent the default behavior that occurs when you select an ite
 `e.detail.cancel()` in your `on:m-click` listener, which will prevent the default behavior from
 occurring.
 
-```svelte {5}
+```svelte {4}
 <div
 	use:melt={$item}
 	on:m-click={(e) => {
