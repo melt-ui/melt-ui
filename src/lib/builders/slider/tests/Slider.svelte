@@ -1,11 +1,16 @@
 <script lang="ts">
 	import { createSlider, melt } from '$lib';
-
+	export let value = [30];
+	export let max = 100;
+	export let min = 0;
+	export let step = 1;
 	const {
 		elements: { root, range, thumb },
 	} = createSlider({
-		defaultValue: [30],
-		max: 100,
+		defaultValue: value,
+		max,
+		min,
+		step,
 	});
 </script>
 

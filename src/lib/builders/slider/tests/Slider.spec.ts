@@ -331,3 +331,56 @@ describe('Slider (Range)', () => {
 		expect(thumb1).toHaveFocus();
 	});
 });
+
+describe.only('Slider (Small min, max, step)', () => {
+	test('Has a thumb positioned at 50% of the container', async () => {
+		const { getByTestId } = render(Slider, {
+			value: [0.5],
+			min: 0,
+			max: 1,
+			step: 0.01,
+		});
+
+		const thumb = getByTestId('thumb');
+		expect(thumb).toBeInTheDocument();
+
+		expect(isCloseEnough(50, thumb.style.left)).toBeTruthy();
+	});
+
+	test.each([kbd.ARROW_RIGHT, kbd.ARROW_UP])('Change by 1% when pressing %s', async (key) => {
+		const { getByTestId } = render(Slider, {
+			value: [0.5],
+			min: 0,
+			max: 1,
+			step: 0.01,
+		});
+
+		const user = userEvent.setup();
+
+		const thumb = getByTestId('thumb');
+		const range = getByTestId('range');
+
+		await act(() => thumb.focus());
+		await user.keyboard(`{${key}}`);
+
+		expectPercentage({ percentage: 51, thumb, range });
+	});
+
+	test.each([kbd.ARROW_LEFT, kbd.ARROW_DOWN])('Change by 10% when pressing %s', async (key) => {
+		const { getByTestId } = render(Slider, {
+			value: [0.5],
+			min: 0,
+			max: 1,
+			step: 0.01,
+		});
+		const user = userEvent.setup();
+
+		const thumb = getByTestId('thumb');
+		const range = getByTestId('range');
+
+		await act(() => thumb.focus());
+		await user.keyboard(`{${key}}`);
+
+		expectPercentage({ percentage: 49, thumb, range });
+	});
+});
