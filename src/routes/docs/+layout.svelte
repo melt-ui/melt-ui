@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { SidebarNav } from '$docs/components';
 	import Switch from '$docs/components/switch.svelte';
-	import { usingPreprocessor } from '$routes/store';
+	import { getUsingPreprocessor } from '$routes/store';
+
+	const usingPreprocessor = getUsingPreprocessor();
 </script>
 
 <div class="container flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6">
