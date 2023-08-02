@@ -166,6 +166,10 @@ const trigger = elementSchema('trigger', {
 			value: 'The value of the associated item.',
 		},
 		{
+			name: 'data-state',
+			value: ATTRS.OPEN_CLOSED,
+		},
+		{
 			name: 'data-melt-accordion-trigger',
 			value: ATTRS.MELT('accordion trigger'),
 		},

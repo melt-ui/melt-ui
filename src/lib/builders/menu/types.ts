@@ -4,7 +4,7 @@ import type { ChangeFn } from '$lib/internal/helpers';
 import type { Writable } from 'svelte/store';
 import type { createMenuBuilder } from './create';
 
-export type CreateMenuProps = {
+export type _CreateMenuProps = {
 	/**
 	 * Options for positioning the popover menu.
 	 *
@@ -95,44 +95,44 @@ export type CreateMenuProps = {
 	forceVisible?: boolean;
 };
 
-export type CreateSubmenuProps = Pick<CreateMenuProps, 'arrowSize' | 'positioning'> & {
+export type _CreateSubmenuProps = Pick<_CreateMenuProps, 'arrowSize' | 'positioning'> & {
 	disabled?: boolean;
 };
 
-export type CreateRadioGroupProps = {
+export type _CreateRadioGroupProps = {
 	defaultValue?: string;
 	value?: Writable<string>;
 	onValueChange?: ChangeFn<string | null>;
 };
 
-export type ItemProps = {
+export type _ItemProps = {
 	disabled?: boolean;
 };
 
-export type CheckboxItemProps = ItemProps & {
+export type _CheckboxItemProps = _ItemProps & {
 	defaultChecked?: boolean | 'indeterminate';
 	checked?: Writable<boolean | 'indeterminate'>;
 	onCheckedChange?: ChangeFn<boolean | 'indeterminate'>;
 };
 
-export type RadioItemProps = {
+export type _RadioItemProps = {
 	value: string;
 	disabled?: boolean;
 };
 
-export type RadioItemActionProps = ItemProps;
+export type _RadioItemActionProps = _ItemProps;
 
-export type Menu = {
-	builder: CreateMenuProps;
-	submenu: CreateSubmenuProps;
-	radioGroup: CreateRadioGroupProps;
-	item: ItemProps;
-	checkboxItem: CheckboxItemProps;
-	radioItem: RadioItemProps;
-	radioItemAction: RadioItemActionProps;
+export type _Menu = {
+	builder: _CreateMenuProps;
+	submenu: _CreateSubmenuProps;
+	radioGroup: _CreateRadioGroupProps;
+	item: _ItemProps;
+	checkboxItem: _CheckboxItemProps;
+	radioItem: _RadioItemProps;
+	radioItemAction: _RadioItemActionProps;
 };
 
-export type MenuBuilderOptions = {
+export type _MenuBuilderOptions = {
 	rootOpen: Writable<boolean>;
 	rootActiveTrigger: Writable<HTMLElement | null>;
 	rootOptions: {
@@ -153,7 +153,7 @@ export type MenuBuilderOptions = {
 	selector: string;
 };
 
-export type MenuParts =
+export type _MenuParts =
 	| 'trigger'
 	| 'arrow'
 	| 'checkbox-item'
@@ -164,6 +164,6 @@ export type MenuParts =
 	| 'subtrigger'
 	| 'subarrow';
 
-export type Selector = (part?: MenuParts | undefined) => string;
+export type Selector = (part?: _MenuParts | undefined) => string;
 
-export type CreateMenuReturn = ReturnType<typeof createMenuBuilder>;
+export type _CreateMenuReturn = ReturnType<typeof createMenuBuilder>;
