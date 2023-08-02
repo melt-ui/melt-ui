@@ -31,7 +31,7 @@ import {
 	addMeltEventListener,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
-import { derived, get, readonly, writable } from 'svelte/store';
+import { derived, get, readonly, writable, type Writable } from 'svelte/store';
 import type { ComboboxItemProps, CreateComboboxProps } from './types';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { createLabel } from '../label/create';
@@ -53,6 +53,7 @@ const defaults = {
 	closeOnEscape: true,
 	portal: 'body',
 	forceVisible: false,
+	itemToString: (item: unknown) => `${item}`,
 } satisfies Defaults<CreateComboboxProps<unknown>>;
 
 const { name, selector } = createElHelpers('combobox');
@@ -60,14 +61,12 @@ const { name, selector } = createElHelpers('combobox');
 /**
  * Creates an ARIA-1.2-compliant combobox.
  *
- * @TODO support providing an initial selected item
  * @TODO expose a nice mechanism for clearing the input.
  * @TODO would it be useful to have a callback for when an item is selected?
  * @TODO multi-select using `tags-input` builder?
  */
-export function createCombobox<T>(props: CreateComboboxProps<T>) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateComboboxProps<T>;
-
+export function createCombobox<Item>(props: CreateComboboxProps<Item>) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateComboboxProps<Item>;
 	// Either the provided open store or a store with the default open value
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	// The overridable open store which is the source of truth for the open state.
@@ -76,15 +75,17 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	const activeTrigger = writable<HTMLElement | null>(null);
 	// The currently highlighted menu item.
 	const highlightedItem = writable<HTMLElement | null>(null);
-	// The current value of the input element.
-	const inputValue = writable('');
 	// All items in the menu.
 	const items = writable(withDefaults.items);
 	// A subset of items that match the filterFunction predicate.
 	const filteredItems = writable(withDefaults.items);
-	// The currently selected menu item.
-	const selectedItem = writable<T>(undefined);
 
+	const valueWritable =
+		withDefaults.value ?? (writable(withDefaults.defaultValue) as Writable<Item | undefined>);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
+
+	// The current value of the input element.
+	const inputValue = writable('');
 	// options
 	const options = toWritableStores(omit(withDefaults, 'items', 'open', 'defaultOpen'));
 
@@ -110,7 +111,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	/** Resets the combobox inputValue and filteredItems back to the selectedItem */
 	function reset() {
 		const $itemToString = get(itemToString);
-		const $selectedItem = get(selectedItem);
+		const $selectedItem = get(value);
 
 		// If no item is selected the input should be cleared and the filter reset.
 		if (!$selectedItem) {
@@ -122,18 +123,22 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 		filteredItems.set(get(items));
 	}
 
+	effect(value, ($value) => {
+		if ($value) {
+			inputValue.set(get(itemToString)($value));
+		}
+	});
+
 	/**
 	 * Selects an item from the menu and updates the input value.
 	 * @param index array index of the item to select.
 	 */
 	function selectItem(item: HTMLElement) {
-		const $itemToString = get(itemToString);
 		if (item.dataset.index) {
 			const index = parseInt(item.dataset.index, 10);
 			const $item = get(filteredItems)[index];
-			inputValue.set($itemToString($item));
 
-			selectedItem.set($item);
+			value.set($item);
 			// Reset the filtered items to the full list.
 			filteredItems.set(get(items));
 			const activeTrigger = document.getElementById(ids.input);
@@ -184,8 +189,8 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	 * Determines if a given item is selected.
 	 * This is useful for displaying additional markup on the selected item.
 	 */
-	const isSelected = derived([selectedItem], ([$selectedItem]) => {
-		return (item: T) => $selectedItem === item;
+	const isSelected = derived([value], ([$selectedItem]) => {
+		return (item: Item) => $selectedItem === item;
 	});
 
 	/**
@@ -203,7 +208,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	 * };
 	 * ```
 	 */
-	function updateItems(updaterFunction: (currentItems: T[]) => T[]): void {
+	function updateItems(updaterFunction: (currentItems: Item[]) => Item[]): void {
 		const $currentItems = get(items);
 		const $inputValue = get(inputValue);
 		const $filterFunction = get(filterFunction);
@@ -265,7 +270,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 						openMenu($open);
 
 						tick().then(() => {
-							const $selectedItem = get(selectedItem);
+							const $selectedItem = get(value);
 							if ($selectedItem) return;
 
 							const menuEl = document.getElementById(ids.menu);
@@ -505,10 +510,10 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 	});
 
 	const item = builder(name('item'), {
-		stores: [selectedItem],
+		stores: [value],
 		returned:
 			([$selectedItem]) =>
-			(props: ComboboxItemProps<T>) =>
+			(props: ComboboxItemProps<Item>) =>
 				({
 					'data-disabled': props.disabled ? '' : undefined,
 					'aria-disabled': props.disabled ? true : undefined,
@@ -578,7 +583,7 @@ export function createCombobox<T>(props: CreateComboboxProps<T>) {
 			open: readonly(open),
 			inputValue: readonly(inputValue),
 			filteredItems: readonly(filteredItems),
-			selectedItem: readonly(selectedItem),
+			selectedItem: readonly(value),
 		},
 		helpers: {
 			updateItems,
