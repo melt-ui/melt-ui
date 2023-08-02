@@ -40,17 +40,19 @@ whenever a `trigger` or `close` element is pressed.
 You can update the `open` store that's returned at any moment, even without expecting an user
 interaction.
 
+```svelte {10}
 <script lang="ts">
 	import { createDialog } from '@melt-ui/svelte'
 	import { writable } from 'svelte/store'
 
 	const {
-		elements: { trigger, overlay, content, title, description, close }.
+		elements: { trigger, overlay, content, title, description, close },
 		states: { open }
 	} = createDialog()
 
-	open.set(true);
+	open.set(true)
 </script>
+```
 
 ## Bring Your Own Store
 
