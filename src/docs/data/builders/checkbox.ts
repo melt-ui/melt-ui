@@ -64,7 +64,7 @@ const builder = builderSchema('checkbox', {
 	states: [
 		{
 			name: 'checked',
-			type: 'Writable<boolean | "indeterminate">',
+			type: 'Readable<boolean | "indeterminate">',
 			description: 'A store that contains the checked state of the checkbox.',
 		},
 	],
