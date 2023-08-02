@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { cn, createCopyCodeButton } from '$docs/utils';
-	import { usingPreprocessor } from '$routes/store';
+	import { getUsingPreprocessor } from '$routes/store';
 	import { fly } from 'svelte/transition';
 	import { Check, Copy } from 'lucide-svelte';
 
 	let className: string | undefined | null = undefined;
 	export { className as class };
+
+	const usingPreprocessor = getUsingPreprocessor();
 
 	const { copied, copyCode, setCodeString } = createCopyCodeButton();
 
