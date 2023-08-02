@@ -1,5 +1,13 @@
 # @melt-ui/svelte
 
+## 0.31.1
+
+### Patch Changes
+
+- f5bd0768: fix various slider bugs
+- 21d19c31: [Dialog] fix: no longer require trigger to open dialog
+- b2d33548: refactor: internal menu types
+
 ## 0.31.0
 
 ### Minor Changes
