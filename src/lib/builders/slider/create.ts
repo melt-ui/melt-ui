@@ -93,18 +93,26 @@ export const createSlider = (props?: CreateSliderProps) => {
 		value.update((prev) => {
 			if (!prev) return [val];
 
-			const isFirst = index === 0;
-			const isLast = index === prev.length - 1;
-
-			if (!isLast && val > prev[index + 1]) {
-				prev[index] = prev[index + 1];
-			} else if (!isFirst && val < prev[index - 1]) {
-				prev[index] = prev[index - 1];
-			} else {
-				const $min = get(min);
-				const $max = get(max);
-				prev[index] = Math.min(Math.max(val, $min), $max);
+			const direction = prev[index] > val ? -1 : +1;
+			function swap() {
+				prev[index] = prev[index + direction];
+				prev[index + direction] = val;
+				const thumbs = getAllThumbs();
+				if (thumbs) {
+					thumbs[index + direction].focus();
+					activeThumb.set({ thumb: thumbs[index + direction], index: index + direction });
+				}
 			}
+			if (direction === -1 && val < prev[index - 1]) {
+				swap();
+				return prev;
+			} else if (direction === 1 && val > prev[index + 1]) {
+				swap();
+				return prev;
+			}
+			const $min = get(min);
+			const $max = get(max);
+			prev[index] = Math.min(Math.max(val, $min), $max);
 
 			return prev;
 		});

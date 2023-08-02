@@ -183,7 +183,7 @@
 
 	.description {
 		margin-bottom: 1.25rem;
-		magin-top: 0.5rem;
+		margin-top: 0.5rem;
 
 		line-height: 1.5;
 
