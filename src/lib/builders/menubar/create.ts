@@ -5,7 +5,7 @@ import {
 	getMenuItems,
 	handleMenuNavigation,
 	handleTabNavigation,
-	type MenuParts,
+	type _MenuParts,
 } from '../menu';
 import {
 	executeCallbacks,
@@ -39,7 +39,7 @@ import type { MenubarEvents } from './events';
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
 
-const { name } = createElHelpers<MenuParts | 'menu'>('menubar');
+const { name } = createElHelpers<_MenuParts | 'menu'>('menubar');
 
 const defaults = {
 	loop: true,
