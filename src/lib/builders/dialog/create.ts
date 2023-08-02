@@ -22,7 +22,7 @@ import {
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
-import { get, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 import type { DialogEvents } from './events';
 import type { CreateDialogProps } from './types';
 
@@ -65,7 +65,9 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
-	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
+	const isVisible = derived([open, forceVisible], ([$open, $forceVisible]) => {
+		return $open || $forceVisible;
+	});
 
 	function handleOpen(e: Event) {
 		const el = e.currentTarget;
