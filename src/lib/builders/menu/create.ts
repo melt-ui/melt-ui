@@ -36,13 +36,13 @@ import { derived, get, writable, type Writable } from 'svelte/store';
 
 import type { MenuEvents } from './events';
 import type {
-	CheckboxItemProps,
-	CreateMenuProps,
-	CreateRadioGroupProps,
-	CreateSubmenuProps,
-	MenuBuilderOptions,
-	MenuParts,
-	RadioItemProps,
+	_CheckboxItemProps,
+	_CreateMenuProps,
+	_CreateRadioGroupProps,
+	_CreateSubmenuProps,
+	_MenuBuilderOptions,
+	_MenuParts,
+	_RadioItemProps,
 	Selector,
 } from './types';
 
@@ -67,10 +67,10 @@ const defaults = {
 	loop: false,
 	dir: 'ltr',
 	defaultOpen: false,
-} satisfies Defaults<CreateMenuProps>;
+} satisfies Defaults<_CreateMenuProps>;
 
-export function createMenuBuilder(opts: MenuBuilderOptions) {
-	const { name, selector } = createElHelpers<MenuParts>(opts.selector);
+export function createMenuBuilder(opts: _MenuBuilderOptions) {
+	const { name, selector } = createElHelpers<_MenuParts>(opts.selector);
 
 	const {
 		preventScroll,
@@ -363,8 +363,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		disabled: false,
 	};
 
-	const createCheckboxItem = (props?: CheckboxItemProps) => {
-		const withDefaults = { ...checkboxItemDefaults, ...props } satisfies CheckboxItemProps;
+	const createCheckboxItem = (props?: _CheckboxItemProps) => {
+		const withDefaults = { ...checkboxItemDefaults, ...props } satisfies _CheckboxItemProps;
 		const checkedWritable = withDefaults.checked ?? writable(withDefaults.defaultChecked ?? null);
 		const checked = overridable(checkedWritable, withDefaults.onCheckedChange);
 		const disabled = writable(withDefaults.disabled);
@@ -463,7 +463,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		};
 	};
 
-	const createMenuRadioGroup = (args: CreateRadioGroupProps = {}) => {
+	const createMenuRadioGroup = (args: _CreateRadioGroupProps = {}) => {
 		const valueWritable = args.value ?? writable(args.defaultValue ?? null);
 		const value = overridable(valueWritable, args.onValueChange);
 
@@ -480,7 +480,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		const radioItem = builder(name('radio-item'), {
 			stores: [value],
 			returned: ([$value]) => {
-				return (itemProps: RadioItemProps) => {
+				return (itemProps: _RadioItemProps) => {
 					const { value: itemValue, disabled } = { ...radioItemDefaults, ...itemProps };
 					const checked = $value === itemValue;
 
@@ -609,10 +609,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			placement: 'right-start',
 			gutter: 8,
 		},
-	} satisfies Defaults<CreateSubmenuProps>;
+	} satisfies Defaults<_CreateSubmenuProps>;
 
-	const createSubmenu = (args?: CreateSubmenuProps) => {
-		const withDefaults = { ...subMenuDefaults, ...args } satisfies CreateSubmenuProps;
+	const createSubmenu = (args?: _CreateSubmenuProps) => {
+		const withDefaults = { ...subMenuDefaults, ...args } satisfies _CreateSubmenuProps;
 
 		const subOpen = writable(false);
 

@@ -1,5 +1,5 @@
 import type { BuilderReturn } from '$lib/internal/types';
-import type { Menu } from '../menu';
+import type { _Menu } from '../menu';
 import type { createMenubar } from './create';
 
 // Props
@@ -17,13 +17,13 @@ export type CreateMenubarProps = {
 	 */
 	closeOnEscape?: boolean;
 };
-export type CreateMenubarMenuProps = Menu['builder'];
-export type CreateMenubarSubmenuProps = Menu['submenu'];
-export type MenubarMenuItemProps = Menu['item'];
-export type MenubarCheckboxItemProps = Menu['checkboxItem'];
-export type CreateMenuRadioGroupProps = Menu['radioGroup'];
-export type MenubarRadioItemProps = Menu['radioItem'];
-export type MenubarRadioItemActionProps = Menu['radioItemAction'];
+export type CreateMenubarMenuProps = _Menu['builder'];
+export type CreateMenubarSubmenuProps = _Menu['submenu'];
+export type MenubarMenuItemProps = _Menu['item'];
+export type MenubarCheckboxItemProps = _Menu['checkboxItem'];
+export type CreateMenuRadioGroupProps = _Menu['radioGroup'];
+export type MenubarRadioItemProps = _Menu['radioItem'];
+export type MenubarRadioItemActionProps = _Menu['radioItemAction'];
 
 // Returns
 export type Menubar = BuilderReturn<typeof createMenubar>;

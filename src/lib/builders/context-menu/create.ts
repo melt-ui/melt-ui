@@ -30,7 +30,7 @@ import {
 	handleMenuNavigation,
 	handleTabNavigation,
 	setMeltMenuAttribute,
-	type MenuParts,
+	type _MenuParts,
 	type Point,
 } from '../menu';
 import type { ContextMenuEvents } from './events';
@@ -51,7 +51,7 @@ const defaults = {
 	forceVisible: false,
 } satisfies CreateContextMenuProps;
 
-const { name, selector } = createElHelpers<MenuParts>('context-menu');
+const { name, selector } = createElHelpers<_MenuParts>('context-menu');
 
 export function createContextMenu(props?: CreateContextMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;

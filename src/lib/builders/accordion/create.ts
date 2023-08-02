@@ -104,6 +104,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 					'aria-disabled': disabled ? true : false,
 					'data-disabled': disabled ? true : undefined,
 					'data-value': itemValue,
+					'data-state': isSelected(itemValue, $value) ? 'open' : 'closed',
 				};
 			};
 		},

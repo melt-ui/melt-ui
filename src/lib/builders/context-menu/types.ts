@@ -1,15 +1,15 @@
 import type { BuilderReturn } from '$lib/internal/types';
-import type { Menu } from '../menu';
+import type { _Menu } from '../menu';
 import type { createContextMenu } from './create';
 
 // Props
-export type CreateContextMenuProps = Menu['builder'];
-export type CreateContextSubmenuProps = Menu['submenu'];
-export type ContextMenuItemProps = Menu['item'];
-export type ContextMenuCheckboxItemProps = Menu['checkboxItem'];
-export type CreateContextMenuRadioGroupProps = Menu['radioGroup'];
-export type ContextMenuRadioItemProps = Menu['radioItem'];
-export type ContextMenuRadioItemActionProps = Menu['radioItemAction'];
+export type CreateContextMenuProps = _Menu['builder'];
+export type CreateContextSubmenuProps = _Menu['submenu'];
+export type ContextMenuItemProps = _Menu['item'];
+export type ContextMenuCheckboxItemProps = _Menu['checkboxItem'];
+export type CreateContextMenuRadioGroupProps = _Menu['radioGroup'];
+export type ContextMenuRadioItemProps = _Menu['radioItem'];
+export type ContextMenuRadioItemActionProps = _Menu['radioItemAction'];
 
 // Returns
 export type ContextMenu = BuilderReturn<typeof createContextMenu>;
