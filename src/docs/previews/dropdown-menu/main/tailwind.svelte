@@ -142,7 +142,7 @@
 		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white;
 		@apply text-magnum-900 transition-colors hover:bg-white/90;
 		@apply data-[highlighted]:ring-magnum-400 data-[highlighted]:ring-offset-2 !important;
-		@apply p-0 text-sm font-medium focus:ring data-[highlighted]:outline-none;
+		@apply p-0 text-sm font-medium  data-[highlighted]:outline-none;
 	}
 	.check {
 		@apply absolute left-2 top-1/2 text-magnum-500;

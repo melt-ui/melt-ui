@@ -36,11 +36,7 @@ const builder = builderSchema(BUILDER_NAME, {
 	title: 'createSelect',
 	props: [
 		...OPTION_PROPS,
-		{
-			name: 'defaultValue',
-			type: 'unknown',
-			description: 'The initial value of the select.',
-		},
+
 		{
 			name: 'name',
 			type: 'string',
@@ -64,7 +60,11 @@ const builder = builderSchema(BUILDER_NAME, {
 			default: 'false',
 			description: 'Whether or not the select is a multiple select.',
 		},
-
+		{
+			name: 'defaultValue',
+			type: 'unknown',
+			description: 'The initial value of the select.',
+		},
 		{
 			name: 'value',
 			type: 'Writable<unknown>',
@@ -122,18 +122,13 @@ const builder = builderSchema(BUILDER_NAME, {
 	states: [
 		{
 			name: 'open',
-			type: 'Readable<boolean>',
-			description: 'A derived store that returns whether or not the select is open.',
+			type: 'Writable<boolean>',
+			description: 'A writable store that returns whether or not the select is open.',
 		},
 		{
 			name: 'value',
-			type: 'Readable<unknown>',
-			description: 'A derived store that returns the current value of the select.',
-		},
-		{
-			name: 'open',
-			type: 'Readable<boolean>',
-			description: 'A derived store that returns whether or not the select is open.',
+			type: 'Writable<unknown>',
+			description: 'A writable store that returns the current value of the select.',
 		},
 	],
 	helpers: [

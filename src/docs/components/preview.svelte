@@ -92,7 +92,7 @@
 
 	const resetCodingStyle = () => {
 		if (!isBrowser) return;
-		const styles = Object.keys(code);
+		const styles = Object.keys(code).filter((k) => !!code[k]);
 		const preferredStyle = localStorage.getItem('melt-coding-style') as CodingStyle | null;
 
 		if (isCodingStyle(preferredStyle) && styles.includes(preferredStyle)) {

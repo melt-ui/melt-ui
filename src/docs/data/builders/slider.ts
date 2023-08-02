@@ -82,8 +82,8 @@ const builder = builderSchema(BUILDER_NAME, {
 	states: [
 		{
 			name: 'value',
-			type: 'Readable<number[]>',
-			description: 'A readable store that can be used to get the current value of the slider.',
+			type: 'Writable<number[]>',
+			description: 'A writable store that can be used to get the current value of the slider.',
 		},
 	],
 	options: OPTION_PROPS,

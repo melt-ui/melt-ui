@@ -171,7 +171,7 @@ export function createPagination(props: CreatePaginationProps) {
 		},
 		states: {
 			range: readonly(range),
-			page: readonly(page),
+			page: page,
 			pages: readonly(pages),
 			totalPages: readonly(totalPages),
 		},

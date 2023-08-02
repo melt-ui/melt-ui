@@ -120,8 +120,8 @@ function getMenuCreateCheckboxItemSchema(): APISchema {
 		states: [
 			{
 				name: 'checked',
-				type: 'Readable<boolean>',
-				description: 'A readable store with the checked state of the checkbox item.',
+				type: 'Writable<boolean>',
+				description: 'A writable store with the checked state of the checkbox item.',
 			},
 		],
 		options: propsToOptions('submenu', CHECKBOX_ITEM_OPTION_PROPS),
@@ -148,8 +148,8 @@ function getMenuBuilderStates(name = 'menu') {
 	return [
 		{
 			name: 'open',
-			type: 'Readable<boolean>',
-			description: `A readable store that indicates whether the ${name} is open.`,
+			type: 'Writable<boolean>',
+			description: `A writable store that indicates whether the ${name} is open.`,
 		},
 	];
 }
@@ -265,8 +265,8 @@ function getMenuRadioGroupBuilderSchema(): APISchema {
 		states: [
 			{
 				name: 'value',
-				type: 'Readable<string | null>',
-				description: 'A readable store containing the current value of the radio group.',
+				type: 'Writable<string | null>',
+				description: 'A writable store containing the current value of the radio group.',
 			},
 		],
 	});
@@ -310,8 +310,8 @@ function getMenuSubmenuBuilderSchema() {
 		states: [
 			{
 				name: 'subOpen',
-				type: 'Readable<boolean>',
-				description: 'A readable store with the open state of the submenu.',
+				type: 'Writable<boolean>',
+				description: 'A writable store with the open state of the submenu.',
 			},
 		],
 		options: [PROPS.POSITIONING(), PROPS.ARROW_SIZE, PROPS.DISABLED],

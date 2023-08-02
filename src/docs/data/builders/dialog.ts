@@ -55,8 +55,8 @@ const builder = builderSchema(BUILDER_NAME, {
 	states: [
 		{
 			name: 'open',
-			type: 'Readable<boolean>',
-			description: 'A readable store with the open state of the dialog.',
+			type: 'Writable<boolean>',
+			description: 'A writable store with the open state of the dialog.',
 		},
 	],
 	options: OPTION_PROPS,

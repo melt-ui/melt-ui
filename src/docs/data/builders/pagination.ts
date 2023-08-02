@@ -89,8 +89,8 @@ const builder = builderSchema(BUILDER_NAME, {
 		},
 		{
 			name: 'page',
-			type: 'Readable<number>',
-			description: 'A readable store that contains the current page number.',
+			type: 'Writable<number>',
+			description: 'A writable store that contains the current page number.',
 		},
 	],
 	options: OPTION_PROPS,

@@ -1,14 +1,21 @@
+import { createSeparator } from '$lib/builders';
 import { usePopper } from '$lib/internal/actions';
 import {
+	FIRST_LAST_KEYS,
+	SELECTION_KEYS,
+	addEventListener,
+	addHighlight,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	createTypeaheadSearch,
+	derivedVisible,
 	derivedWithUnsubscribe,
 	effect,
 	executeCallbacks,
-	FIRST_LAST_KEYS,
 	generateId,
 	getNextFocusable,
+	getPortalParent,
 	getPreviousFocusable,
 	handleRovingFocus,
 	isBrowser,
@@ -16,24 +23,18 @@ import {
 	isHTMLElement,
 	kbd,
 	noop,
+	overridable,
+	removeHighlight,
 	removeScroll,
-	SELECTION_KEYS,
 	sleep,
 	styleToString,
-	addHighlight,
-	removeHighlight,
 	toWritableStores,
-	getPortalParent,
-	derivedVisible,
-	overridable,
-	addMeltEventListener,
-	addEventListener,
 } from '$lib/internal/helpers';
-import { createSeparator } from '$lib/builders';
-import type { Defaults, TextDirection, MeltActionReturn } from '$lib/internal/types';
+import type { Defaults, MeltActionReturn, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
-import { derived, get, readonly, writable, type Writable } from 'svelte/store';
+import { derived, get, writable, type Writable } from 'svelte/store';
 
+import type { MenuEvents } from './events';
 import type {
 	CheckboxItemProps,
 	CreateMenuProps,
@@ -44,7 +45,6 @@ import type {
 	RadioItemProps,
 	Selector,
 } from './types';
-import type { MenuEvents } from './events';
 
 export const SUB_OPEN_KEYS: Record<TextDirection, string[]> = {
 	ltr: [...SELECTION_KEYS, kbd.ARROW_RIGHT],
@@ -455,7 +455,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				checkboxItem,
 			},
 			states: {
-				checked: readonly(checked),
+				checked,
 			},
 			options: {
 				disabled,
@@ -584,7 +584,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				radioItem,
 			},
 			states: {
-				value: readonly(value),
+				value,
 			},
 			helpers: {
 				isChecked,
@@ -1012,7 +1012,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				subArrow,
 			},
 			states: {
-				subOpen: readonly(subOpen),
+				subOpen,
 			},
 			options,
 		};

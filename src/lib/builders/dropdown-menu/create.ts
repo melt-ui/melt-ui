@@ -1,7 +1,7 @@
-import { writable, readonly } from 'svelte/store';
+import { overridable, toWritableStores } from '$lib/internal/helpers';
+import { writable } from 'svelte/store';
 import { createMenuBuilder } from '../menu';
 import type { CreateDropdownMenuProps } from './types';
-import { overridable, toWritableStores } from '$lib/internal/helpers';
 
 const defaults = {
 	arrowSize: 8,
@@ -58,7 +58,7 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 			separator,
 		},
 		states: {
-			open: readonly(rootOpen),
+			open: rootOpen,
 		},
 		builders: {
 			createCheckboxItem,

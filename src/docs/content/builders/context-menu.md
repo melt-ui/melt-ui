@@ -24,29 +24,33 @@ description:
 
 ## Usage
 
-The first thing you need to do is create a dropdown menu using the `createDropdownMenu` function.
+The first thing you need to do is create a context menu using the `createContextMenu` function.
 
-```svelte {3}
+```svelte {3-5}
 <script lang="ts">
 	import { createContextMenu, melt } from '@melt-ui/svelte'
-	const { menu, item, trigger, arrow } = createContextMenu()
+	const {
+		elements: { menu, item, trigger, arrow }
+	} = createContextMenu()
 </script>
 ```
 
-Then you can use the `menu`, `item`, and `trigger` to construct a dropdown menu. A high level
-example of how to structure the menu is shown below.
+Then you can use the `menu`, `item`, and `trigger` to construct a context menu. A high level example
+of how to structure the menu is shown below.
 
 ```svelte
 <script lang="ts">
 	import { createContextMenu, melt } from '@melt-ui/svelte'
-	const { menu, item, trigger, arrow } = createContextMenu()
+	const {
+		elements: { menu, item, trigger, arrow }
+	} = createContextMenu()
 </script>
 
-<span use:melt={$trigger}>Right click here.</span>
+<button use:melt={$trigger}>Click me</button>
 <div use:melt={$menu}>
-	<div {...$item} use:item>...</div>
-	<div {...$item} use:item>...</div>
-	<div {...$item} use:item>...</div>
+	<div use:melt={$item}>...</div>
+	<div use:melt={$item}>...</div>
+	<div use:melt={$item}>...</div>
 	<div use:melt={$arrow} />
 </div>
 ```
@@ -56,26 +60,25 @@ elements go inside the `menu` element. The `arrow` element is optional and can b
 arrow which points to the trigger.
 
 At this point, our menu doesn't really do much except open and close. To add functionality, we could
-turn the `item` elements into links, or we could pass a custom `onSelect` function to the item
-action, which will be called when that item is selected.
+turn the `item` elements into links, or we could pass a `m-click` listener function to the item
+action, which will be called when that item is pressed (Space and Enter keys also trigger the click
+event for items).
 
-```svelte
-<a href="/1" {...$item} use:item>Item 1</a>
-<div {...$item} use:item={{ onSelect: (e) => console.log('Item 2!') }}>Item 2</div>
-<div {...$item} use:item={{ onSelect: (e) => console.log('Item 3!') }}>Item 3</div>
+```svelte /on:m-click={(e) => console.log('Item 2!')}/#hi /on:m-click={(e) => console.log('Item 3!')}/#hi
+<a href="/1" use:melt={$item}>Item 1</a>
+<div use:melt={$item} on:m-click={(e) => console.log('Item 2!')}>Item 2</div>
+<div use:melt={$item} on:m-click={(e) => console.log('Item 3!')}>Item 3</div>
 ```
 
 If you wanted to prevent the default behavior that occurs when you select an item, you can call
-`e.preventDefault()` in your `onSelect` function, which will prevent the default behavior from
+`e.detail.cancel()` in your `on:m-click` listener, which will prevent the default behavior from
 occurring.
 
-```svelte
+```svelte {4}
 <div
-	{...$item}
-	use:item={{
-		onSelect: (e) => {
-			e.preventDefault()
-		}
+	use:melt={$item}
+	on:m-click={(e) => {
+		e.detail.cancel()
 	}}>
 	Item 2
 </div>

@@ -1,20 +1,20 @@
 import {
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
 	getDirectionalKeys,
+	getElemDirection,
 	isHTMLElement,
 	kbd,
 	omit,
 	overridable,
 	toWritableStores,
-	getElemDirection,
-	addMeltEventListener,
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
-import { derived, get, writable, readonly } from 'svelte/store';
-import type { CreateRadioGroupProps, RadioGroupItemProps } from './types';
+import { derived, get, writable } from 'svelte/store';
 import type { RadioGroupEvents } from './events';
+import type { CreateRadioGroupProps, RadioGroupItemProps } from './types';
 
 const defaults = {
 	orientation: 'vertical',
@@ -168,7 +168,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 			itemInput,
 		},
 		states: {
-			value: readonly(value),
+			value,
 		},
 		helpers: {
 			isChecked,

@@ -81,8 +81,8 @@ const builder = builderSchema(BUILDER_NAME, {
 	states: [
 		{
 			name: 'value',
-			type: 'Readable<string[]>',
-			description: 'A derived store that returns the value of the pin-input.',
+			type: 'Writable<string[]>',
+			description: 'A writable store that returns the value of the pin-input.',
 		},
 		{
 			name: 'valueStr',

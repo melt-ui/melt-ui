@@ -1,4 +1,5 @@
 import {
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -7,17 +8,16 @@ import {
 	kbd,
 	overridable,
 	toWritableStores,
-	addMeltEventListener,
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
-import { derived, get, writable, readonly } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
+import type { ToolbarEvents } from './events';
 import type {
 	CreateToolbarGroupProps,
 	CreateToolbarProps,
 	ToolbarGroupItemProps,
 	ToolbarGroupType,
 } from './types';
-import type { ToolbarEvents } from './events';
 
 const defaults = {
 	loop: true,
@@ -210,7 +210,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 				item,
 			},
 			states: {
-				value: readonly(value),
+				value,
 			},
 			helpers: {
 				isPressed,

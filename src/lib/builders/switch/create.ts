@@ -1,18 +1,18 @@
 import {
+	addMeltEventListener,
 	builder,
 	createElHelpers,
+	kbd,
 	omit,
 	overridable,
 	styleToString,
 	toWritableStores,
-	addMeltEventListener,
-	kbd,
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
-import { get, writable, readonly } from 'svelte/store';
-import type { CreateSwitchProps } from './types';
+import { get, writable } from 'svelte/store';
 import { executeCallbacks } from '../../internal/helpers/callbacks';
 import type { SwitchEvents } from './events';
+import type { CreateSwitchProps } from './types';
 
 const defaults = {
 	defaultChecked: false,
@@ -99,7 +99,7 @@ export function createSwitch(props?: CreateSwitchProps) {
 			input,
 		},
 		states: {
-			checked: readonly(checked),
+			checked,
 		},
 		options,
 	};

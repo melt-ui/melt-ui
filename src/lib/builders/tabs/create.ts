@@ -1,24 +1,24 @@
 import {
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
 	getDirectionalKeys,
+	getElemDirection,
 	isBrowser,
+	isHTMLElement,
 	kbd,
 	last,
 	next,
+	omit,
+	overridable,
 	prev,
 	toWritableStores,
-	isHTMLElement,
-	omit,
-	getElemDirection,
-	overridable,
-	addMeltEventListener,
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
-import { get, writable, readonly } from 'svelte/store';
-import type { CreateTabsProps, TabsTriggerProps } from './types';
+import { get, writable } from 'svelte/store';
 import type { TabsEvents } from './events';
+import type { CreateTabsProps, TabsTriggerProps } from './types';
 
 const defaults = {
 	orientation: 'horizontal',
@@ -206,7 +206,7 @@ export function createTabs(props?: CreateTabsProps) {
 			content,
 		},
 		states: {
-			value: readonly(value),
+			value,
 		},
 		options,
 	};

@@ -46,18 +46,17 @@
 		width: 100%;
 		align-items: center;
 		justify-content: center;
-		gap: var(--tw-size-6);
+		gap: 1.5rem;
 	}
 
 	.item {
 		display: flex;
-		height: var(--tw-size-16);
-		width: var(--tw-size-16);
+		height: 4rem;
+		width: 4rem;
 		align-items: center;
 		justify-content: center;
-		border-radius: var(--tw-rounded-full);
-		--tw-bg-opacity: 1;
-		background-color: rgb(245 245 245 / var(--tw-bg-opacity));
+		border-radius: 9999px;
+		background-color: rgb(var(--color-neutral-100) / 1);
 	}
 
 	.item > .avatar {
@@ -67,10 +66,9 @@
 	}
 
 	.item > .fallback {
-		font-size: var(--tw-font-size-3xl);
-		line-height: var(--tw-line-height-3xl);
-		font-weight: var(--tw-font-weight-medium);
-		--tw-text-opacity: 1;
-		color: rgb(189 87 17 / var(--tw-text-opacity));
+		font-size: 1.875rem;
+		line-height: 1.875rem;
+		font-weight: 500;
+		color: rgb(var(--color-magnum-700) / 1);
 	}
 </style>

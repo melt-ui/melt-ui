@@ -50,8 +50,8 @@ const builder = builderSchema('avatar', {
 	states: [
 		{
 			name: 'loadingStatus',
-			type: 'Readable<"loading" | "loaded" | "error">',
-			description: 'A readable store with the current loading status of the image.',
+			type: 'Writable<"loading" | "loaded" | "error">',
+			description: 'A writable store with the current loading status of the image.',
 		},
 	],
 	options: OPTION_PROPS,

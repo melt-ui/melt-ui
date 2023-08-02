@@ -1,4 +1,5 @@
 import {
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -11,11 +12,10 @@ import {
 	styleToString,
 	toWritableStores,
 	type ChangeFn,
-	addMeltEventListener,
 } from '$lib/internal/helpers';
 import type { MeltActionReturn } from '$lib/internal/types';
 import { tick } from 'svelte';
-import { derived, readonly, writable, type Writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import type { AccordionEvents } from './events';
 import type { AccordionHeadingProps, AccordionItemProps, CreateAccordionProps } from './types';
 
@@ -238,7 +238,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 			heading,
 		},
 		states: {
-			value: readonly(value as Writable<CreateAccordionProps<Multiple>['value']>),
+			value: value as NonNullable<CreateAccordionProps<Multiple>['value']>,
 		},
 		helpers: {
 			isSelected: isSelectedStore,

@@ -44,8 +44,8 @@ const builder = builderSchema(BUILDER_NAME, {
 	states: [
 		{
 			name: 'pressed',
-			type: 'Readable<boolean>',
-			description: 'A readable store that represents the pressed state of the toggle.',
+			type: 'Writable<boolean>',
+			description: 'A writable store that represents the pressed state of the toggle.',
 		},
 	],
 	options: OPTION_PROPS,

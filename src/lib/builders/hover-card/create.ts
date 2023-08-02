@@ -1,5 +1,6 @@
 import { usePopper } from '$lib/internal/actions';
 import {
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	derivedVisible,
@@ -16,13 +17,12 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
-	addMeltEventListener,
 } from '$lib/internal/helpers';
-import { onMount, tick } from 'svelte';
-import { derived, get, writable, type Readable, readonly } from 'svelte/store';
-import type { CreateHoverCardProps } from './types';
 import type { MeltActionReturn } from '$lib/internal/types';
+import { onMount, tick } from 'svelte';
+import { derived, get, writable, type Readable } from 'svelte/store';
 import type { HoverCardEvents } from './events';
+import type { CreateHoverCardProps } from './types';
 
 type HoverCardParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<HoverCardParts>('hover-card');
@@ -317,7 +317,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 			arrow,
 		},
 		states: {
-			open: readonly(open),
+			open,
 		},
 		options,
 	};

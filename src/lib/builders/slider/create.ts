@@ -1,8 +1,10 @@
 import {
 	addEventListener,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	effect,
+	executeCallbacks,
 	generateId,
 	getElementByMeltId,
 	isBrowser,
@@ -12,14 +14,12 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
-	addMeltEventListener,
-	executeCallbacks,
 } from '$lib/internal/helpers';
-import { derived, get, writable, readonly } from 'svelte/store';
 import { add, sub, div, mul } from './helpers';
-import type { CreateSliderProps } from './types';
 import type { MeltActionReturn } from '$lib/internal/types';
+import { derived, get, writable } from 'svelte/store';
 import type { SliderEvents } from './events';
+import type { CreateSliderProps } from './types';
 
 const defaults = {
 	defaultValue: [],
@@ -368,7 +368,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 			range,
 		},
 		states: {
-			value: readonly(value),
+			value,
 		},
 		options,
 	};

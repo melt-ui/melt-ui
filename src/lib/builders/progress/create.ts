@@ -6,7 +6,7 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { readonly, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import type { CreateProgressProps } from './types';
 
 const defaults = {
@@ -46,7 +46,7 @@ export const createProgress = (props?: CreateProgressProps) => {
 			root,
 		},
 		states: {
-			value: readonly(value),
+			value,
 		},
 		options,
 	};

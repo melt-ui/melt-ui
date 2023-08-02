@@ -3,7 +3,7 @@ import type { ChangeFn } from '$lib/internal/helpers';
 import type { Writable } from 'svelte/store';
 import type { createCombobox } from './create';
 
-export type CreateComboboxProps<T> = {
+export type CreateComboboxProps<Item> = {
 	/**
 	 * Options for positioning the popover menu.
 	 *
@@ -12,7 +12,7 @@ export type CreateComboboxProps<T> = {
 	positioning?: FloatingConfig;
 
 	/** The list of items to display in the combobox. */
-	items: T[];
+	items: Item[];
 
 	/**
 	 * Determines behavior when scrolling items into view.
@@ -28,8 +28,8 @@ export type CreateComboboxProps<T> = {
 	 * @param value the current input value.
 	 * @returns whether the item should be visible.
 	 */
-	filterFunction: ComboboxFilterFunction<T>;
-	itemToString: ComboboxItemToString<T>;
+	filterFunction: ComboboxFilterFunction<Item>;
+	itemToString?: ComboboxItemToString<Item>;
 
 	/**
 	 * Whether or not the combobox should loop through the list when
@@ -60,6 +60,27 @@ export type CreateComboboxProps<T> = {
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
 	onOpenChange?: ChangeFn<boolean>;
+
+	/**
+	 * The default value set on the select input.
+	 *
+	 * This will be overridden if you also pass a `value` store prop.
+	 *
+	 * @default undefined
+	 */
+	defaultValue?: Item;
+
+	/**
+	 * An optional controlled store that manages the value state of the combobox.
+	 */
+	value?: Writable<Item | undefined>;
+
+	/**
+	 * A change handler for the value store called when the value would normally change.
+	 *
+	 * @see https://melt-ui.com/docs/controlled#change-functions
+	 */
+	onValueChange?: ChangeFn<Item | undefined>;
 
 	/**
 	 * Whether or not to close the combobox menu when the user clicks

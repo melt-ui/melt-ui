@@ -19,16 +19,6 @@ description: A filterable list of items that supports selection.
 - **Item**: The individual list item
 - **Label**: The label for the input
 
-## Usage
-
-## Example Components
-
-### Bring Your Own Store
-
-<Preview code={snippets.controlled}>
-    <svelte:component this={previews.controlled} />
-</Preview>
-
 ## API Reference
 
 <APIReference {schemas} />

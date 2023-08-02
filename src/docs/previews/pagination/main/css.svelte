@@ -46,10 +46,9 @@
 		display: grid;
 		place-items: center;
 		border-radius: 2px;
-		background-color: #fff;
-		color: rgb(189, 87, 17);
-		box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-			rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;
+		background-color: rgb(var(--color-white) / 1);
+		color: rgb(var(--color-magnum-700) / 1);
+		box-shadow: 0px 1px 2px 0px rgb(var(--color-black) / 0.05);
 
 		font-size: 14px;
 
@@ -67,8 +66,8 @@
 	}
 
 	nav :global(button[data-selected]) {
-		background-color: rgb(121, 58, 21);
-		color: #fff;
+		background-color: rgb(var(--color-magnum-900));
+		color: rgb(var(--color-white));
 	}
 
 	.buttons {

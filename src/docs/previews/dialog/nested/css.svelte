@@ -15,12 +15,23 @@
 			portalled,
 		},
 		states: { open },
-	} = createDialog({
-		role: 'alertdialog',
-	});
+	} = createDialog();
+
+	const {
+		elements: {
+			trigger: triggerNested,
+			overlay: overlayNested,
+			content: contentNested,
+			title: titleNested,
+			description: descriptionNested,
+			close: closeNested,
+			portalled: portalledNested,
+		},
+		states: { open: openNested },
+	} = createDialog();
 </script>
 
-<button use:melt={$trigger} class="trigger"> Delete Item </button>
+<button use:melt={$trigger} class="trigger"> Open Dialog </button>
 <div use:melt={$portalled}>
 	{#if $open}
 		<div use:melt={$overlay} class="overlay" />
@@ -33,21 +44,46 @@
 			}}
 			use:melt={$content}
 		>
-			<h2 use:melt={$title} class="title">
-				Are you sure you want to delete this?
-			</h2>
+			<h2 use:melt={$title} class="title">First dialog</h2>
 			<p use:melt={$description} class="description">
-				This action cannot be undone. This will permanently delete the item and
-				remove it from our servers.
+				This is the first dialog. It contains a trigger to open a second dialog.
 			</p>
 
 			<div class="actions">
 				<button use:melt={$close} class="secondary"> Cancel </button>
-				<button use:melt={$close} class="primary"> Continue </button>
+				<button use:melt={$triggerNested} class="primary"> Open second </button>
 			</div>
 
-			<button use:melt={$close} aria-label="Close" class="close">
-				<X class="square-4" />
+			<button use:melt={$close} class="close">
+				<X />
+			</button>
+		</div>
+	{/if}
+</div>
+
+<div use:melt={$portalledNested}>
+	{#if $openNested}
+		<div use:melt={$overlayNested} class="overlay overlay-nested" />
+		<div
+			class="content content-nested"
+			transition:flyAndScale={{
+				duration: 150,
+				y: 8,
+				start: 0.96,
+			}}
+			use:melt={$contentNested}
+		>
+			<h2 use:melt={$titleNested} class="title">Second dialog</h2>
+			<p use:melt={$descriptionNested} class="description">
+				This is the second dialog.
+			</p>
+
+			<div class="actions">
+				<button use:melt={$closeNested} class="secondary"> Close </button>
+			</div>
+
+			<button use:melt={$closeNested} class="close">
+				<X />
 			</button>
 		</div>
 	{/if}
@@ -81,9 +117,13 @@
 	.overlay {
 		position: fixed;
 		inset: 0;
-		z-index: 50;
+		z-index: 40;
 
 		background-color: rgb(var(--color-black) / 0.5);
+	}
+
+	.overlay-nested {
+		background-color: rgb(var(--color-black) / 0.75);
 	}
 
 	.content {
@@ -109,6 +149,45 @@
 			0 4px 6px -4px rgb(var(--color-black) / 0.1);
 	}
 
+	.content:focus {
+		outline: 2px solid transparent;
+		outline-offset: 2px;
+	}
+
+	.content-nested {
+		box-shadow: 0 25px 50px -12px rgb(var(--color-black) / 0.25);
+	}
+
+	.close {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+
+		position: absolute;
+		right: 10px;
+		top: 10px;
+
+		appearance: none;
+
+		height: 1.5rem;
+		width: 1.5rem;
+
+		border-radius: 9999px;
+
+		color: rgb(var(--color-magnum-800) / 1);
+	}
+
+	.close:hover {
+		background-color: rgb(var(--color-magnum-100) / 1);
+	}
+
+	.close:focus {
+		outline: 2px solid transparent;
+		outline-offset: 2px;
+
+		box-shadow: 0px 0px 0px 3px rgb(var(--color-magnum-400) / 1);
+	}
+
 	.title {
 		margin: 0;
 
@@ -125,7 +204,7 @@
 
 		line-height: 1.5;
 
-		color: rgb(var(--color-neutral-600) / 1);
+		color: rgb(var(--color-zinc-600) / 1);
 	}
 
 	.actions {
@@ -161,32 +240,5 @@
 		background-color: rgb(var(--color-magnum-100) / 1);
 
 		color: rgb(var(--color-magnum-900) / 1);
-	}
-
-	.close {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-
-		position: absolute;
-		right: 10px;
-		top: 10px;
-
-		appearance: none;
-
-		height: 1.5rem;
-		width: 1.5rem;
-
-		border-radius: 9999px;
-
-		color: rgb(var(--color-magnum-800) / 1);
-	}
-
-	.close:hover {
-		background-color: rgb(var(--color-magnum-100) / 1);
-	}
-
-	.close:focus {
-		box-shadow: 0px 0px 0px 3px rgb(var(--color-magnum-400) / 1);
 	}
 </style>

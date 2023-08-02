@@ -59,8 +59,7 @@
 		font-size: 0.875rem;
 		line-height: 1.5rem;
 
-		--tw-text-opacity: 1;
-		color: rgb(255 255 255 / var(--tw-text-opacity));
+		color: rgb(var(--color-white) / 1);
 	}
 
 	button {
@@ -70,20 +69,14 @@
 		place-items: center;
 		border-radius: 9999px;
 
-		--tw-bg-opacity: 1;
-		background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+		background-color: rgb(var(--color-white) / 1);
 
-		--tw-text-opacity: 1;
-		color: rgb(189 87 17 / var(--tw-text-opacity));
+		color: rgb(var(--color-magnum-700) / 1);
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 
-		--tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-			0 4px 6px -4px rgb(0 0 0 / 0.1);
-		--tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color),
-			0 4px 6px -4px var(--tw-shadow-color);
-		box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
-			var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+		box-shadow: 0 10px 15px -3px rgb(var(--color-black) / 0.1),
+			0 4px 6px -4px rgb(var(--color-black) / 0.1);
 	}
 
 	button:hover {
@@ -99,23 +92,17 @@
 		padding: 0.75rem;
 		border-radius: 0.25rem;
 
-		--tw-bg-opacity: 1;
-		background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+		background-color: rgb(var(--color-white) / 1);
 
-		--tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-			0 4px 6px -4px rgb(0 0 0 / 0.1);
-		--tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color),
-			0 4px 6px -4px var(--tw-shadow-color);
-		box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
-			var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+		box-shadow: 0 10px 15px -3px rgb(var(--color-black) / 0.1),
+			0 4px 6px -4px rgb(var(--color-black) / 0.1);
 	}
 
 	.item span {
 		font-size: 1rem;
 		line-height: 25px;
 
-		--tw-text-opacity: 1;
-		color: rgb(150 69 22 / var(--tw-text-opacity));
+		color: rgb(var(--color-magnum-800) / 1);
 	}
 
 	.item::first-of-type {

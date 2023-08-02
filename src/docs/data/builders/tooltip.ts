@@ -55,8 +55,8 @@ const builder = builderSchema(BUILDER_NAME, {
 	states: [
 		{
 			name: 'open',
-			type: 'Readable<boolean>',
-			description: 'A readable store that indicates whether the tooltip is open or not',
+			type: 'Writable<boolean>',
+			description: 'A writable store that indicates whether the tooltip is open or not',
 		},
 	],
 	options: OPTION_PROPS,
