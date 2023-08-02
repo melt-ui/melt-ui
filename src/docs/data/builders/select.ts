@@ -36,11 +36,7 @@ const builder = builderSchema(BUILDER_NAME, {
 	title: 'createSelect',
 	props: [
 		...OPTION_PROPS,
-		{
-			name: 'defaultValue',
-			type: 'unknown',
-			description: 'The initial value of the select.',
-		},
+
 		{
 			name: 'name',
 			type: 'string',
@@ -64,7 +60,11 @@ const builder = builderSchema(BUILDER_NAME, {
 			default: 'false',
 			description: 'Whether or not the select is a multiple select.',
 		},
-
+		{
+			name: 'defaultValue',
+			type: 'unknown',
+			description: 'The initial value of the select.',
+		},
 		{
 			name: 'value',
 			type: 'Writable<unknown>',

@@ -1,4 +1,4 @@
-import { ATTRS, KBD, PROPS } from '$docs/constants';
+import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
 import { builderSchema, elementSchema } from '$docs/utils';
 import { comboboxEvents } from '$lib/builders/combobox/events';
@@ -45,10 +45,27 @@ const builder = builderSchema(BUILDER_NAME, {
 			type: 'T[]',
 			description: 'The list of items to display in the combobox list.',
 		},
-		...OPTION_PROPS,
+		{
+			name: 'defaultValue',
+			type: 'T',
+			description: 'The initial value of the select.',
+		},
+		{
+			name: 'value',
+			type: 'Writable<T>',
+			description: 'A writable store that can be used to get or update or the select value.',
+			see: SEE.BRING_YOUR_OWN_STORE,
+		},
+		{
+			name: 'onValueChange',
+			type: 'ChangeFn<T>',
+			description: 'A callback that is called when the value of the select changes.',
+			see: SEE.CHANGE_FUNCTIONS,
+		},
 		PROPS.DEFAULT_OPEN,
 		PROPS.OPEN,
 		PROPS.ON_OPEN_CHANGE,
+		...OPTION_PROPS,
 	],
 	elements: [
 		{
@@ -85,7 +102,7 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'A readable store whose value is the filtered list of items.',
 		},
 		{
-			name: 'selectedItem',
+			name: 'value',
 			type: 'Readable<T>',
 			description: 'A readable store whose value is the selected item.',
 		},
