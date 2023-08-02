@@ -75,6 +75,10 @@
 			background-color: theme('colors.magnum.200');
 			color: theme('colors.magnum.900');
 		}
+
+		&:focus {
+			@apply ring-2 ring-magnum-400;
+		}
 	}
 
 	.separator {

@@ -25,10 +25,13 @@ the example above to create your pagination component.
 ```svelte
 <script lang="ts">
 	import { createPagination, melt } from '@melt-ui/svelte'
-	const { prevButton, nextButton, pages, pageTrigger, range, root } = createPagination({
+	const {
+		elements: { root, pageTrigger, prevButton, nextButton },
+		states: { pages, range }
+	} = createPagination({
 		count: 100,
 		perPage: 10,
-		page: 1,
+		defaultPage: 1,
 		siblingCount: 1
 	})
 </script>

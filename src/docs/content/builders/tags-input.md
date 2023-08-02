@@ -29,17 +29,7 @@ Use the `createTagsInput` builder function.
 <script lang="ts">
 	import { createTagsInput, melt } from '@melt-ui/svelte'
 	const {
-		root,
-		input,
-		tag,
-		deleteTrigger,
-		edit,
-		options,
-		tags,
-		selected,
-		inputValue,
-		inputInvalid,
-		isSelected
+		/* ... */
 	} = createTagsInput()
 </script>
 ```
@@ -51,7 +41,10 @@ Use the return values to construct a tags-input.
 	import { createTagsInput, melt } from '@melt-ui/svelte'
 
 	// This is a subset of return values
-	const { root, input, tags, tag, deleteTrigger, edit } = createTagsInput()
+	const {
+		elements: { root, input, tag, deleteTrigger, edit },
+		states: { tags }
+	} = createTagsInput()
 </script>
 
 <div use:melt={$root}>
@@ -98,7 +91,7 @@ uppercase.
 <script lang="ts">
 	import { createTagsInput } from '@melt-ui/svelte'
 
-	const { root, input, tag, deleteTrigger } = createTagsInput({
+	const tagsInput = createTagsInput({
 		add: async (v: string) => {
 			const response = await fetch('https://www.uuidtools.com/api/generate/v1')
 
@@ -143,7 +136,7 @@ The following example uses the existing id and sets the value to uppercase
 <script lang="ts">
 	import { createTagsInput, type Tag } from '@melt-ui/svelte'
 
-	const { root, input, tag, deleteTrigger, edit } = createTagsInput({
+	const tagsInput = createTagsInput({
 		update: async (tag: Tag) => {
 			return { id: tag.id, value: tag.value.toUpperCase() }
 		}
@@ -179,7 +172,7 @@ The following example disallows a tag with the value `one` to be deleted.
 <script lang="ts">
 	import { createTagsInput, type Tag } from '@melt-ui/svelte'
 
-	const { root, input, tag, deleteTrigger } = createTagsInput({
+	const tagsInput = createTagsInput({
 		tags: ['one', 'two'],
 		remove: async (t: Tag) => {
 			if (t.value === 'one') return false

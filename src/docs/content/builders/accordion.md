@@ -55,13 +55,11 @@ Pass in the `multiple` prop to `createAccordion` with a value of `true`.
 ### Controlled
 
 To programatically control the Accordion, you can
-[Bring Your Own Store](/docs/controlled#bring-your-own-store), to programmatically control the value
-of the Accordion. You can also update any of the returned option stores to update the behavior of
-the Accordion.
+[Bring Your Own Store](/docs/controlled#bring-your-own-store), or directly set the `value` store
+that's returned. You can also update any of the returned option stores to update the behavior of the
+Accordion.
 
-#### Bring Your Own Store
-
-```svelte {3,5,11,18}
+```svelte {3,5,11,19}
 <script lang="ts">
 	import { createAccordion, melt } from '@melt-ui/svelte'
 	import { writable } from 'svelte/store'
@@ -70,7 +68,8 @@ the Accordion.
 
 	const {
 		elements: { content, item, trigger, root },
-		options: { disabled }
+		options: { disabled },
+		states: { value }
 	} = createAccordion({
 		value: customValue
 	})
@@ -80,6 +79,7 @@ the Accordion.
 	on:click={() => {
 		const randPick = Math.floor(Math.random() * 3) + 1
 		customValue.set(`item-${randPick}`)
+		// Alternatively, you can use the value store directly value.set(`item-${randPick}`)
 	}}>
 	Trigger randomly
 </button>
