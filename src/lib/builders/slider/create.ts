@@ -63,8 +63,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 	const position = derived([min, max], ([$min, $max]) => {
 		return (val: number) => {
-			const pos = ((val - $min) / ($max - $min)) * 100;
-
+			const pos = mul(div(sub(val, $min), sub($max, $min)), 100);
 			return pos;
 		};
 	});
@@ -267,8 +266,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 				leftOrBottom: number,
 				rightOrTop: number
 			) => {
-				const percent = (clientXY - leftOrBottom) / (rightOrTop - leftOrBottom);
-				const val = percent * ($max - $min) + $min;
+				const percent = div(sub(clientXY, leftOrBottom), sub(rightOrTop, leftOrBottom));
+				const val = add(mul(percent, sub($max, $min)), $min);
 
 				if (val < $min) {
 					updatePosition($min, activeThumbIdx);
