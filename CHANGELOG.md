@@ -1,5 +1,12 @@
 # @melt-ui/svelte
 
+## 0.31.0
+
+### Minor Changes
+
+- cba5bb7c: convert controllable returned states from readables to writables
+- 714f4b3c: Combobox: add controlled support
+
 ## 0.30.1
 
 ### Patch Changes
