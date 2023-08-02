@@ -2,12 +2,12 @@ import {
 	builder,
 	effect,
 	isBrowser,
+	omit,
 	overridable,
 	styleToString,
 	toWritableStores,
-	omit,
 } from '$lib/internal/helpers';
-import { readonly, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import type { CreateAvatarProps } from './types';
 
 const defaults = {
@@ -79,7 +79,7 @@ export const createAvatar = (props?: CreateAvatarProps) => {
 			fallback,
 		},
 		states: {
-			loadingStatus: readonly(loadingStatus),
+			loadingStatus,
 		},
 		options,
 	};

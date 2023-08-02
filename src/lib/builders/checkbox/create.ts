@@ -1,17 +1,17 @@
 import {
+	addMeltEventListener,
 	builder,
 	executeCallbacks,
 	kbd,
+	omit,
+	overridable,
 	styleToString,
 	toWritableStores,
-	overridable,
-	omit,
-	addMeltEventListener,
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
-import { derived, get, readonly, writable } from 'svelte/store';
-import type { CreateCheckboxProps } from './types';
+import { derived, get, writable } from 'svelte/store';
 import type { CheckboxEvents } from './events';
+import type { CreateCheckboxProps } from './types';
 
 const defaults = {
 	disabled: false,
@@ -99,7 +99,7 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 			input,
 		},
 		states: {
-			checked: readonly(checked),
+			checked,
 		},
 		helpers: {
 			isIndeterminate,

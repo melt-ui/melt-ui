@@ -1,29 +1,29 @@
 import {
+	addMeltEventListener,
 	builder,
 	createElHelpers,
+	derivedVisible,
 	effect,
 	generateId,
+	getPortalParent,
 	isBrowser,
+	isHTMLElement,
+	kbd,
 	noop,
+	omit,
+	overridable,
 	removeScroll,
 	styleToString,
 	toWritableStores,
-	omit,
-	overridable,
-	isHTMLElement,
-	getPortalParent,
-	derivedVisible,
-	addMeltEventListener,
-	kbd,
 } from '$lib/internal/helpers';
 
 import { usePopper } from '$lib/internal/actions';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
-import { writable, readonly } from 'svelte/store';
-import type { CreatePopoverProps } from './types';
+import { writable } from 'svelte/store';
 import { executeCallbacks } from '../../internal/helpers/callbacks';
 import type { PopoverEvents } from './events';
+import type { CreatePopoverProps } from './types';
 
 const defaults = {
 	positioning: {
@@ -272,7 +272,7 @@ export function createPopover(args?: CreatePopoverProps) {
 			close,
 		},
 		states: {
-			open: readonly(open),
+			open,
 		},
 		options,
 	};

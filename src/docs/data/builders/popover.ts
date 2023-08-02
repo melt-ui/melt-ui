@@ -49,8 +49,8 @@ const builder = builderSchema(BUILDER_NAME, {
 	states: [
 		{
 			name: 'open',
-			type: 'Readable<boolean>',
-			description: 'A readable store which represents the open state of the popover.',
+			type: 'Writable<boolean>',
+			description: 'A writable store which represents the open state of the popover.',
 		},
 	],
 	options: OPTION_PROPS,

@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { createAccordion, melt } from '$lib';
+	import { writable } from 'svelte/store';
 	import { slide } from 'svelte/transition';
+
+	const externalValue = writable('item-1');
 
 	const {
 		elements: { content, item, trigger, root },
 		helpers: { isSelected },
-	} = createAccordion();
+	} = createAccordion({ value: externalValue });
 
 	const items = [
 		{

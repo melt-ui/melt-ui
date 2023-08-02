@@ -74,8 +74,8 @@ const builder = builderSchema(BUILDER_NAME, {
 	states: [
 		{
 			name: 'value',
-			type: 'Readable<string>',
-			description: 'A readable store that represents the current value of the tabs.',
+			type: 'Writable<string>',
+			description: 'A writable store that represents the current value of the tabs.',
 		},
 	],
 	options: OPTION_PROPS,

@@ -733,7 +733,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			tag,
 		},
 		states: {
-			tags: readonly(tags),
+			tags,
 			inputValue: readonly(inputValue),
 			inputInvalid: readonly(inputInvalid),
 			selected: readonly(selected),

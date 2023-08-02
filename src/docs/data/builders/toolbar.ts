@@ -146,8 +146,8 @@ const groupBuilder = builderSchema('toolbar group', {
 	states: [
 		{
 			name: 'value',
-			type: 'Readable<string | string[] | undefined>',
-			description: 'A derived store that returns the current value of the toolbar group.',
+			type: 'Writable<string | string[] | undefined>',
+			description: 'A Writable store that returns the current value of the toolbar group.',
 		},
 	],
 	helpers: [

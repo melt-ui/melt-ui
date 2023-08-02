@@ -47,8 +47,8 @@ const builder = builderSchema(BUILDER_NAME, {
 	states: [
 		{
 			name: 'value',
-			type: 'Readable<number>',
-			description: 'A readable store with the current value of the progress bar.',
+			type: 'Writable<number>',
+			description: 'A writable store with the current value of the progress bar.',
 		},
 	],
 	options: OPTION_PROPS,

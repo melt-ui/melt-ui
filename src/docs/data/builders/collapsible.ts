@@ -34,8 +34,8 @@ const builder = builderSchema('collapsible', {
 	states: [
 		{
 			name: 'open',
-			type: 'Readable<boolean>',
-			description: 'A readable store with the current open state of the collapsible.',
+			type: 'Writable<boolean>',
+			description: 'A writable store with the current open state of the collapsible.',
 		},
 	],
 	options: OPTION_PROPS,

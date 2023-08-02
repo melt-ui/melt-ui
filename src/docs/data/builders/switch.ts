@@ -64,8 +64,8 @@ const builder = builderSchema(BUILDER_NAME, {
 	states: [
 		{
 			name: 'checked',
-			type: 'Readable<boolean>',
-			description: 'A derived store that returns whether or not the switch is checked.',
+			type: 'Writable<boolean>',
+			description: 'A writable store that returns whether or not the switch is checked.',
 		},
 	],
 	options: OPTION_PROPS,

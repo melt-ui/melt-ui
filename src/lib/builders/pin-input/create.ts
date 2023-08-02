@@ -225,7 +225,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 			hiddenInput,
 		},
 		states: {
-			value: readonly(value),
+			value,
 			valueStr: readonly(valueStr),
 		},
 		helpers: {

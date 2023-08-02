@@ -71,8 +71,8 @@ const builder = builderSchema(BUILDER_NAME, {
 	states: [
 		{
 			name: 'value',
-			type: 'Readable<string | string[] | undefined>',
-			description: 'A derived store that returns the value of the currently selected item.',
+			type: 'Writable<string | string[] | undefined>',
+			description: 'A writable store that returns the value of the currently selected item.',
 		},
 	],
 	helpers: [

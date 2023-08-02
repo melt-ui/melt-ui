@@ -4,13 +4,13 @@ import {
 	createElHelpers,
 	omit,
 	overridable,
-	toWritableStores,
 	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
-import { derived, readonly, writable } from 'svelte/store';
-import type { CreateCollapsibleProps } from './types';
 import type { MeltActionReturn } from '$lib/internal/types';
+import { derived, writable } from 'svelte/store';
 import type { CollapsibleEvents } from './events';
+import type { CreateCollapsibleProps } from './types';
 
 const defaults = {
 	defaultOpen: false,
@@ -82,7 +82,7 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 			content,
 		},
 		states: {
-			open: readonly(open),
+			open,
 		},
 		options,
 	};

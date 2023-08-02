@@ -82,8 +82,8 @@ const builder = builderSchema(BUILDER_NAME, {
 	states: [
 		{
 			name: 'value',
-			type: 'Readable<string | string[] | undefined>',
-			description: 'A readable store with the value of the currently open item.',
+			type: 'Writable<string | string[] | undefined>',
+			description: 'A writable store with the value of the currently open item.',
 		},
 	],
 	helpers: [

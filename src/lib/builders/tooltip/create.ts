@@ -1,5 +1,6 @@
 import {
 	addEventListener,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	derivedVisible,
@@ -8,6 +9,7 @@ import {
 	generateId,
 	getPortalParent,
 	isBrowser,
+	isTouch,
 	kbd,
 	makeHullFromElements,
 	noop,
@@ -16,16 +18,14 @@ import {
 	pointInPolygon,
 	styleToString,
 	toWritableStores,
-	isTouch,
-	addMeltEventListener,
 } from '$lib/internal/helpers';
 
 import { useFloating, usePortal } from '$lib/internal/actions';
-import { onMount, tick } from 'svelte';
-import { get, readonly, writable } from 'svelte/store';
-import type { CreateTooltipProps } from './types';
 import type { MeltActionReturn } from '$lib/internal/types';
+import { onMount, tick } from 'svelte';
+import { get, writable } from 'svelte/store';
 import type { TooltipEvents } from './events';
+import type { CreateTooltipProps } from './types';
 
 const defaults = {
 	positioning: {
@@ -265,7 +265,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 			content,
 			arrow,
 		},
-		states: { open: readonly(open) },
+		states: { open },
 		options,
 	};
 }

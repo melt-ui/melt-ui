@@ -1,16 +1,16 @@
 import {
-	builder,
-	omit,
-	toWritableStores,
 	addMeltEventListener,
-	kbd,
+	builder,
 	executeCallbacks,
+	kbd,
+	omit,
 	overridable,
+	toWritableStores,
 } from '$lib/internal/helpers';
-import { get, readonly, writable } from 'svelte/store';
-import type { CreateToggleProps } from './types';
 import type { MeltActionReturn } from '$lib/internal/types';
+import { get, writable } from 'svelte/store';
 import type { ToggleEvents } from './events';
+import type { CreateToggleProps } from './types';
 
 const defaults = {
 	defaultPressed: false,
@@ -66,7 +66,7 @@ export function createToggle(props?: CreateToggleProps) {
 			root,
 		},
 		states: {
-			pressed: readonly(pressed),
+			pressed,
 		},
 		options,
 	};

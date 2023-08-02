@@ -122,18 +122,13 @@ const builder = builderSchema(BUILDER_NAME, {
 	states: [
 		{
 			name: 'open',
-			type: 'Readable<boolean>',
-			description: 'A derived store that returns whether or not the select is open.',
+			type: 'Writable<boolean>',
+			description: 'A writable store that returns whether or not the select is open.',
 		},
 		{
 			name: 'value',
-			type: 'Readable<unknown>',
-			description: 'A derived store that returns the current value of the select.',
-		},
-		{
-			name: 'open',
-			type: 'Readable<boolean>',
-			description: 'A derived store that returns whether or not the select is open.',
+			type: 'Writable<unknown>',
+			description: 'A writable store that returns the current value of the select.',
 		},
 	],
 	helpers: [

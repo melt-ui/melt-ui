@@ -1,30 +1,30 @@
 import { createFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions';
 import {
+	addMeltEventListener,
 	builder,
 	createElHelpers,
+	derivedVisible,
 	effect,
+	executeCallbacks,
 	generateId,
 	getPortalParent,
 	isBrowser,
 	isHTMLElement,
 	isLeftClick,
+	kbd,
 	last,
 	noop,
 	overridable,
+	removeScroll,
 	sleep,
 	styleToString,
 	toWritableStores,
-	addMeltEventListener,
-	removeScroll,
-	derivedVisible,
-	kbd,
-	executeCallbacks,
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
-import { get, writable, readonly } from 'svelte/store';
-import type { CreateDialogProps } from './types';
 import { onMount, tick } from 'svelte';
+import { get, writable } from 'svelte/store';
 import type { DialogEvents } from './events';
+import type { CreateDialogProps } from './types';
 
 type DialogParts =
 	| 'trigger'
@@ -338,7 +338,7 @@ export function createDialog(props?: CreateDialogProps) {
 			portalled,
 		},
 		states: {
-			open: readonly(open),
+			open,
 		},
 		options,
 	};

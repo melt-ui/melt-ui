@@ -88,8 +88,8 @@ const builder = builderSchema(BUILDER_NAME, {
 	states: [
 		{
 			name: 'open',
-			type: 'Readable<boolean>',
-			description: 'A readable store with the open state of the combobox menu.',
+			type: 'Writable<boolean>',
+			description: 'A writable store with the open state of the combobox menu.',
 		},
 		{
 			name: 'inputValue',
@@ -103,8 +103,8 @@ const builder = builderSchema(BUILDER_NAME, {
 		},
 		{
 			name: 'value',
-			type: 'Readable<T>',
-			description: 'A readable store whose value is the selected item.',
+			type: 'Writable<T>',
+			description: 'A writable store whose value is the selected item.',
 		},
 	],
 	helpers: [

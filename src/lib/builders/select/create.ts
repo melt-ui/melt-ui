@@ -781,8 +781,8 @@ export function createSelect<
 			label,
 		},
 		states: {
-			open: readonly(open),
-			value: readonly(value),
+			open,
+			value,
 			valueLabel: readonly(valueLabel),
 		},
 		helpers: {

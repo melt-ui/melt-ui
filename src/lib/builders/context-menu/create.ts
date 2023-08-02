@@ -1,26 +1,27 @@
 import { usePopper } from '$lib/internal/actions';
 import {
+	FIRST_LAST_KEYS,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	derivedWithUnsubscribe,
 	effect,
 	executeCallbacks,
 	getNextFocusable,
+	getPortalParent,
 	getPreviousFocusable,
 	isHTMLElement,
-	kbd,
-	FIRST_LAST_KEYS,
-	noop,
-	styleToString,
 	isLeftClick,
-	toWritableStores,
+	kbd,
+	noop,
 	overridable,
-	addMeltEventListener,
-	getPortalParent,
+	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
+import type { MeltActionReturn } from '$lib/internal/types';
 import type { VirtualElement } from '@floating-ui/core';
 import { tick } from 'svelte';
-import { get, writable, type Readable, readonly } from 'svelte/store';
+import { get, writable, type Readable } from 'svelte/store';
 import {
 	applyAttrsIfDisabled,
 	clearTimerStore,
@@ -28,13 +29,12 @@ import {
 	getMenuItems,
 	handleMenuNavigation,
 	handleTabNavigation,
-	type Point,
-	type MenuParts,
 	setMeltMenuAttribute,
+	type MenuParts,
+	type Point,
 } from '../menu';
-import type { CreateContextMenuProps } from './types';
-import type { MeltActionReturn } from '$lib/internal/types';
 import type { ContextMenuEvents } from './events';
+import type { CreateContextMenuProps } from './types';
 
 const defaults = {
 	arrowSize: 8,
@@ -296,7 +296,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			separator,
 		},
 		states: {
-			open: readonly(rootOpen),
+			open: rootOpen,
 		},
 		builders: {
 			createSubmenu,

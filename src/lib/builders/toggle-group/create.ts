@@ -1,21 +1,21 @@
 import {
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
+	getElemDirection,
 	handleRovingFocus,
 	isHTMLElement,
 	kbd,
 	noop,
 	omit,
-	toWritableStores,
-	getElemDirection,
 	overridable,
-	addMeltEventListener,
+	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
-import { derived, get, writable, readonly } from 'svelte/store';
-import type { CreateToggleGroupProps, ToggleGroupItemProps, ToggleGroupType } from './types';
+import { derived, get, writable } from 'svelte/store';
 import type { ToggleGroupEvents } from './events';
+import type { CreateToggleGroupProps, ToggleGroupItemProps, ToggleGroupType } from './types';
 
 const defaults = {
 	type: 'single',
@@ -198,7 +198,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 			item,
 		},
 		states: {
-			value: readonly(value),
+			value,
 		},
 		helpers: {
 			isPressed,

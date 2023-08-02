@@ -32,10 +32,27 @@ available.
 
 </Callout>
 
-## Bring Your Own Store
+## Modify writable states
 
 By default, we provide an `open` store from the `Dialog` builder that will have its state updated
 whenever a `trigger` or `close` element is pressed.
+
+You can update the `open` store that's returned at any moment, even without expecting an user
+interaction.
+
+<script lang="ts">
+	import { createDialog } from '@melt-ui/svelte'
+	import { writable } from 'svelte/store'
+
+	const {
+		elements: { trigger, overlay, content, title, description, close }.
+		states: { open }
+	} = createDialog()
+
+	open.set(true);
+</script>
+
+## Bring Your Own Store
 
 If you wanted to define your own `open` store so that its state could be shared and updated by other
 parts of your app, then we offer a way for you to supply your own.
@@ -60,6 +77,9 @@ It's as simple as passing your own `open` store to the `createDialog` builder.
 Behind the scenes, we're using the custom `open` store you passed in instead of creating our own.
 Which means your store will be updated as the default `open` store normally would, but you'll be
 able to create it and share it with other parts of your app before initializing the Dialog.
+
+Also note that we still return an `open` store on the `states` object. It uses the same custom store
+you pass in though, so modifying it will modify your custom store as well.
 
 <Callout type="warning">
 

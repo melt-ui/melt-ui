@@ -580,10 +580,10 @@ export function createCombobox<Item>(props: CreateComboboxProps<Item>) {
 			label,
 		},
 		states: {
-			open: readonly(open),
+			open,
 			inputValue: readonly(inputValue),
 			filteredItems: readonly(filteredItems),
-			value: readonly(value),
+			value,
 		},
 		helpers: {
 			updateItems,

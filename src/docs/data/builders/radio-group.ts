@@ -59,8 +59,8 @@ const builder = builderSchema(BUILDER_NAME, {
 	states: [
 		{
 			name: 'value',
-			type: 'Readable<string>',
-			description: 'A readable store with the current value of the radio group.',
+			type: 'Writable<string>',
+			description: 'A writable store with the current value of the radio group.',
 		},
 	],
 	helpers: [
