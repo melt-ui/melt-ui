@@ -101,7 +101,7 @@
 	</div>
 </div>
 
-<style lang="postcss">
+<style>
 	.menu {
 		display: flex;
 		flex-direction: column;
@@ -115,24 +115,10 @@
 
 		z-index: 10;
 
-		--tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-			0 4px 6px -4px rgb(0 0 0 / 0.1);
-		--tw-shadow-color: rgb(23 23 23 / 0.3);
-		--tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color),
-			0 4px 6px -4px var(--tw-shadow-color);
-		--tw-shadow: var(--tw-shadow-colored);
-		box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
-			var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+		background-color: rgb(var(--color-white) / 1);
 
-		--tw-bg-opacity: 1;
-		background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-
-		--tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0
-			var(--tw-ring-offset-width) var(--tw-ring-offset-color);
-		--tw-ring-shadow: var(--tw-ring-inset) 0 0 0
-			calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color);
-		box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
-			var(--tw-shadow, 0 0 #0000) !important;
+		box-shadow: 0 10px 15px -3px rgb(var(--color-neutral-900) / 0.3),
+			0 4px 6px -4px rgb(var(--color-neutral-900) / 0.3);
 	}
 
 	@media screen and (min-width: 1024px) {
@@ -144,15 +130,8 @@
 	.subMenu {
 		min-width: 220px;
 
-		--tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
-			0 2px 4px -2px rgb(0 0 0 / 0.1);
-		--tw-shadow-color: rgb(23 23 23 / 0.3);
-		--tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color),
-			0 2px 4px -2px var(--tw-shadow-color);
-		--tw-shadow: var(--tw-shadow-colored);
-
-		box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
-			var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+		box-shadow: 0 4px 6px -1px rgb(var(--color-neutral-900) / 0.3),
+			0 2px 4px -2px rgb(var(--color-neutral-900) / 0.3);
 	}
 
 	.item {
@@ -176,31 +155,22 @@
 
 		z-index: 20;
 
-		--tw-text-opacity: 1;
-		color: rgb(121 58 21 / var(--tw-text-opacity));
+		color: rgb(var(--color-magnum-900) / 1);
 
 		outline: 2px solid transparent;
 		outline-offset: 2px;
 
-		--tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0
-			var(--tw-ring-offset-width) var(--tw-ring-offset-color);
-		--tw-ring-shadow: var(--tw-ring-inset) 0 0 0
-			calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color);
-		box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
-			var(--tw-shadow, 0 0 #0000);
+		box-shadow: none;
 	}
 
 	.item[data-highlighted] {
-		--tw-bg-opacity: 1;
-		background-color: rgb(252 224 172 / var(--tw-bg-opacity));
+		background-color: rgb(var(--color-magnum-200) / 1);
 
-		--tw-text-opacity: 1;
-		color: rgb(121 58 21 / var(--tw-text-opacity));
+		color: rgb(var(--color-magnum-900) / 1);
 	}
 
 	.item[data-disabled] {
-		--tw-text-opacity: 1;
-		color: rgb(212 212 212 / var(--tw-text-opacity));
+		color: rgb(var(--color-neutral-300) / 1);
 	}
 
 	.trigger {
@@ -208,8 +178,7 @@
 		width: 300px;
 		padding: 3rem 0;
 
-		--tw-border-opacity: 1;
-		border-color: rgb(250 250 250 / var(--tw-border-opacity));
+		border-color: rgb(var(--color-neutral-50) / 1);
 		border-width: 2px;
 		border-style: dashed;
 		border-radius: 0.375rem;
@@ -224,8 +193,7 @@
 
 		translate: 0 calc(-50% + 1px);
 
-		--tw-text-opacity: 1;
-		color: rgb(243 141 28 / var(--tw-text-opacity));
+		color: rgb(var(--color-magnum-500) / 1);
 	}
 
 	.dot {
@@ -234,16 +202,14 @@
 
 		border-radius: 9999px;
 
-		--tw-bg-opacity: 1;
-		background-color: rgb(121 58 21 / var(--tw-bg-opacity));
+		background-color: rgb(var(--color-magnum-900) / 1);
 	}
 
 	.separator {
 		height: 1px;
 		margin: 5px;
 
-		--tw-bg-opacity: 1;
-		background-color: rgb(252 224 172 / var(--tw-bg-opacity));
+		background-color: rgb(var(--color-magnum-200) / 1);
 	}
 
 	.rightSlot {
@@ -273,7 +239,6 @@
 		font-size: 0.75rem;
 		line-height: 1.5rem;
 
-		--tw-text-opacity: 1;
-		color: rgb(82 82 82 / var(--tw-text-opacity));
+		color: rgb(var(--color-neutral-600) / 1);
 	}
 </style>
