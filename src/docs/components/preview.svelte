@@ -1,15 +1,16 @@
 <script lang="ts" context="module">
 	type CodeEntry = {
-		'index.svelte'?: {
-			pp: string;
-			base: string;
-		};
-		'tailwind.config.ts'?: string;
-		'globals.css'?: string;
+		[key: string]:
+			| {
+					pp: string;
+					base: string;
+			  }
+			| string
+			| undefined;
 	};
 
-	type ProcessedCodeEntry = Omit<CodeEntry, 'index.svelte'> & {
-		'index.svelte'?: string;
+	type ProcessedCodeEntry = {
+		[key: string]: string | undefined;
 	};
 
 	export type PreviewProps = {

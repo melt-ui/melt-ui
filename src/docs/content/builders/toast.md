@@ -7,6 +7,8 @@ description: A succinct message that is displayed temporarily.
     import { APIReference, KbdTable, Preview } from '$docs/components'
     export let schemas
     export let keyboard
+    export let snippets
+    export let previews
 </script>
 
 ## Anatomy
@@ -121,6 +123,17 @@ the application.
 	Create
 </button>
 ```
+
+## Example Components
+
+### With Progress
+
+Each individual `toast` item provides a `getPercentage` helper function to determine the percentage
+of the time elapsed at any given moment. You can use that to provide a progress bar to your toasts
+
+<Preview code={snippets.progress}>
+    <svelte:component this={previews.progress} />
+</Preview>
 
 ## API Reference
 
