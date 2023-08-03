@@ -6,8 +6,8 @@ import type { createContextMenu } from './create';
 export type CreateContextMenuProps = _Menu['builder'];
 export type CreateContextSubmenuProps = _Menu['submenu'];
 export type ContextMenuItemProps = _Menu['item'];
-export type ContextMenuCheckboxItemProps = _Menu['checkboxItem'];
 export type CreateContextMenuRadioGroupProps = _Menu['radioGroup'];
+export type CreateContextMenuCheckboxItemProps = _Menu['checkboxItem'];
 export type ContextMenuRadioItemProps = _Menu['radioItem'];
 export type ContextMenuRadioItemActionProps = _Menu['radioItemAction'];
 

@@ -6,8 +6,8 @@ import type { createDropdownMenu } from './create';
 export type CreateDropdownMenuProps = _Menu['builder'];
 export type CreateDropdownSubmenuProps = _Menu['submenu'];
 export type DropdownMenuItemProps = _Menu['item'];
-export type DropdownMenuCheckboxItemProps = _Menu['checkboxItem'];
 export type CreateDropdownMenuRadioGroupProps = _Menu['radioGroup'];
+export type CreateDropdownMenuCheckboxItemProps = _Menu['checkboxItem'];
 export type DropdownMenuRadioItemProps = _Menu['radioItem'];
 export type DropdownMenuRadioItemActionProps = _Menu['radioItemAction'];
 
