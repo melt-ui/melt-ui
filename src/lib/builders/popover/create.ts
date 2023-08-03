@@ -5,7 +5,7 @@ import {
 	derivedVisible,
 	effect,
 	generateId,
-	getPortalParent,
+	getPortalDestination,
 	isBrowser,
 	isHTMLElement,
 	kbd,
@@ -36,7 +36,7 @@ const defaults = {
 	preventScroll: false,
 	onOpenChange: undefined,
 	closeOnOutsideClick: true,
-	portal: 'body',
+	portal: undefined,
 	forceVisible: false,
 } satisfies Defaults<CreatePopoverProps>;
 
@@ -104,7 +104,6 @@ export function createPopover(args?: CreatePopoverProps) {
 			 * otherwise the parent will have been moved to the body, and
 			 * will no longer be an ancestor of this node.
 			 */
-			const portalParent = getPortalParent(node);
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
@@ -152,7 +151,7 @@ export function createPopover(args?: CreatePopoverProps) {
 											},
 									  }
 									: null,
-								portal: $portal ? (portalParent === $portal ? portalParent : $portal) : null,
+								portal: getPortalDestination(node, $portal),
 							},
 						});
 

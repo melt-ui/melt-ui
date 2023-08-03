@@ -11,7 +11,7 @@ const defaults = {
 	preventScroll: true,
 	closeOnEscape: true,
 	closeOnOutsideClick: true,
-	portal: 'body',
+	portal: undefined,
 	loop: false,
 	dir: 'ltr',
 	defaultOpen: false,

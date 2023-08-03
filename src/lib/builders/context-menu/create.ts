@@ -8,7 +8,7 @@ import {
 	effect,
 	executeCallbacks,
 	getNextFocusable,
-	getPortalParent,
+	getPortalDestination,
 	getPreviousFocusable,
 	isHTMLElement,
 	isLeftClick,
@@ -44,7 +44,7 @@ const defaults = {
 	preventScroll: true,
 	closeOnEscape: true,
 	closeOnOutsideClick: true,
-	portal: 'body',
+	portal: undefined,
 	loop: false,
 	dir: 'ltr',
 	defaultOpen: false,
@@ -134,7 +134,6 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<ContextMenuEvents['menu']> => {
-			const portalParent = getPortalParent(node);
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
@@ -155,7 +154,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 											handler: handleClickOutside,
 									  }
 									: null,
-								portal: $portal ? (portalParent === document.body ? null : portalParent) : null,
+								portal: getPortalDestination(node, $portal),
 							},
 						});
 						if (!popper || !popper.destroy) return;

@@ -44,7 +44,7 @@ export type _CreateMenuProps = {
 	 *
 	 * @default 'body'
 	 */
-	portal?: HTMLElement | string;
+	portal?: HTMLElement | string | null;
 
 	/**
 	 * Whether or not to close the menu when a click occurs outside of it.
@@ -143,7 +143,7 @@ export type _MenuBuilderOptions = {
 		dir: Writable<TextDirection>;
 		closeOnEscape: Writable<boolean>;
 		closeOnOutsideClick: Writable<boolean>;
-		portal: Writable<string | HTMLElement | undefined>;
+		portal: Writable<string | HTMLElement | undefined | null>;
 		forceVisible: Writable<boolean>;
 	};
 	disableTriggerRefocus?: boolean;

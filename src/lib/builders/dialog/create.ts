@@ -3,7 +3,6 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
-	derivedVisible,
 	effect,
 	executeCallbacks,
 	generateId,
