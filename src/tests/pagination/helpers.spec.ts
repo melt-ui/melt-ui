@@ -1,6 +1,6 @@
+import type { PageItem } from '$lib';
+import { getPageItems } from '$lib/builders/pagination/helpers';
 import { describe, expect } from 'vitest';
-import { getPageItems } from '../helpers';
-import type { PageItem } from '../types';
 
 function pageItemsToString(pageItems: Array<PageItem>): string {
 	let result = '';
