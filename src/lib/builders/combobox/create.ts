@@ -38,7 +38,7 @@ import { createLabel } from '../label/create';
 import type { ComboboxEvents } from './events';
 
 // prettier-ignore
-export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
+export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ESCAPE, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
 
 const defaults = {
 	positioning: {
@@ -222,8 +222,8 @@ export function createCombobox<Item>(props: CreateComboboxProps<Item>) {
 
 	/** Action and attributes for the text input. */
 	const input = builder(name('input'), {
-		stores: [open, highlightedItem],
-		returned: ([$open, $highlightedItem]) => {
+		stores: [open, highlightedItem, inputValue],
+		returned: ([$open, $highlightedItem, inputValue]) => {
 			return {
 				'aria-activedescendant': $highlightedItem?.id,
 				'aria-autocomplete': 'list',
@@ -233,6 +233,7 @@ export function createCombobox<Item>(props: CreateComboboxProps<Item>) {
 				autocomplete: 'off',
 				id: ids.input,
 				role: 'combobox',
+				value: inputValue,
 			} as const;
 		},
 		action: (node: HTMLInputElement): MeltActionReturn<ComboboxEvents['input']> => {

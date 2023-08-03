@@ -75,7 +75,7 @@
 
 	const {
 		elements: { menu, input, item, label },
-		states: { open, inputValue, filteredItems },
+		states: { open, filteredItems },
 		helpers: { isSelected },
 	} = createCombobox({
 		filterFunction,
@@ -97,7 +97,6 @@
 			class="flex h-10 items-center justify-between rounded-md bg-white
 					px-3 pr-12 text-magnum-700"
 			placeholder="Best book ever"
-			value={$inputValue}
 		/>
 		<div class="absolute right-1 top-1/2 z-10 -translate-y-1/2 text-magnum-700">
 			{#if $open}

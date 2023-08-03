@@ -131,12 +131,6 @@ Dialogs can be nested. For example, here's a dialog that opens another dialog.
     <svelte:component this={previews.nested} />
 </Preview>
 
-### Bring Your Own Store
-
-<Preview code={snippets.controlled}>
-    <svelte:component this={previews.controlled} />
-</Preview>
-
 ## API Reference
 
 <APIReference {schemas} />
