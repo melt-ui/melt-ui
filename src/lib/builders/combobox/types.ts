@@ -2,6 +2,7 @@ import type { BuilderReturn } from '$lib/internal/types';
 import type { ChangeFn } from '$lib/internal/helpers';
 import type { Writable } from 'svelte/store';
 import type { createCombobox } from './create';
+import type { FloatingConfig } from '$lib/internal/actions';
 
 export type CreateComboboxProps<Item> = {
 	/**
@@ -11,7 +12,9 @@ export type CreateComboboxProps<Item> = {
 	 */
 	positioning?: FloatingConfig;
 
-	/** The list of items to display in the combobox. */
+	/**
+	 * The list of items to display in the combobox.
+	 */
 	items: Item[];
 
 	/**
@@ -130,9 +133,13 @@ export type ComboboxItemToString<T> = (item: T) => string;
 
 export type ComboboxItemProps<T> = {
 	item: T;
-	/** Array index of the item. */
+	/**
+	 * Array index of the item.
+	 */
 	index: number;
-	/** Is the item disabled? */
+	/**
+	 *  Is the item disabled?
+	 */
 	disabled?: boolean;
 };
 
