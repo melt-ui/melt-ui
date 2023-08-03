@@ -14,10 +14,10 @@ export function getPortalParent(node: HTMLElement) {
 
 export function getPortalDestination(
 	node: HTMLElement,
-	portalProp: string | HTMLElement | undefined
+	portalProp: string | HTMLElement | undefined | null
 ) {
 	const portalParent = getPortalParent(node);
-	if (portalProp) return portalProp;
+	if (portalProp !== undefined) return portalProp;
 	if (portalParent === 'body') return document.body;
 	return null;
 }

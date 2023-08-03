@@ -16,7 +16,7 @@ export type CreateDialogProps = {
 	 *
 	 * @default 'body'
 	 */
-	portal?: HTMLElement | string;
+	portal?: HTMLElement | string | null;
 
 	forceVisible?: boolean;
 };

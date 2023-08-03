@@ -5,6 +5,7 @@ import type { createSelect } from './create';
 import type { ChangeFn } from '$lib/internal/helpers';
 
 export type CreateSelectProps<
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	Item extends Multiple extends true ? Array<unknown> : unknown = any,
 	Multiple extends boolean = false
 > = {
@@ -102,7 +103,7 @@ export type CreateSelectProps<
 	 *
 	 * @default 'body'
 	 */
-	portal?: HTMLElement | string;
+	portal?: HTMLElement | string | null;
 
 	/**
 	 * Whether the menu content should be displayed even if it is not open.

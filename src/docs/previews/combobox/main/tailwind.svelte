@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { createCombobox, type ComboboxFilterFunction, melt } from '$lib';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
-	import { writable } from 'svelte/store';
 	import { slide } from 'svelte/transition';
 
 	interface Book {
