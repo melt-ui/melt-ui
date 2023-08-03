@@ -52,11 +52,15 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 				removeToast(ids.content);
 			}, propsWithDefaults.closeDelay),
 			createdAt: performance.now(),
+			pauseDuration: 0,
 			getPercentage: () => {
-				const now = toast.pausedAt ?? performance.now();
-				const elapsed = now - toast.createdAt;
-				const percentage = (elapsed / toast.closeDelay) * 100;
-				return percentage;
+				const { createdAt, pauseDuration, closeDelay, pausedAt } = toast;
+				if (pausedAt) {
+					return (100 * (pausedAt - createdAt - pauseDuration)) / closeDelay;
+				} else {
+					const now = performance.now();
+					return (100 * (now - createdAt - pauseDuration)) / closeDelay;
+				}
 			},
 		} as Toast<T>;
 
@@ -112,13 +116,14 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 					toastsMap.update((currentMap) => {
 						const currentToast = currentMap.get(node.id);
 						if (!currentToast) return currentMap;
-						const elapsed = currentToast.pausedAt
-							? currentToast.pausedAt - currentToast.createdAt
-							: 0;
+						const pausedAt = currentToast.pausedAt ?? currentToast.createdAt;
+						const elapsed = pausedAt - currentToast.createdAt - currentToast.pauseDuration;
 						const remaining = currentToast.closeDelay - elapsed;
 						currentToast.timeout = window.setTimeout(() => {
 							removeToast(node.id);
 						}, remaining);
+
+						currentToast.pauseDuration += performance.now() - pausedAt;
 						currentToast.pausedAt = undefined;
 						return new Map(currentMap);
 					});

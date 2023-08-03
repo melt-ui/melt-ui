@@ -1,17 +1,18 @@
-<script lang="ts">
-	import { createToaster, melt } from '$lib';
-	import { flip } from 'svelte/animate';
-	import { fly } from 'svelte/transition';
-	import { X } from 'lucide-svelte';
-
-	type ToastData = {
+<script lang="ts" context="module">
+	export type ToastData = {
 		title: string;
 		description: string;
 		color: string;
 	};
+</script>
+
+<script lang="ts">
+	import { createToaster } from '$lib';
+	import { flip } from 'svelte/animate';
+	import Toast from './toast.svelte';
 
 	const {
-		elements: { content, title, description, close },
+		elements,
 		helpers: { addToast },
 		states: { toasts },
 		actions: { portal },
@@ -52,37 +53,9 @@
 	class="fixed right-0 top-0 z-50 m-4 flex flex-col items-end gap-2 md:bottom-0 md:top-auto"
 	use:portal
 >
-	{#each $toasts as { id, data } (id)}
-		<div
-			use:melt={$content(id)}
-			animate:flip={{ duration: 500 }}
-			in:fly={{ duration: 150, x: '100%' }}
-			out:fly={{ duration: 150, x: '100%' }}
-			class="rounded-lg bg-neutral-800 text-white shadow-md"
-		>
-			<div
-				class="relative flex w-[24rem] max-w-[calc(100vw-2rem)] items-center justify-between gap-4 p-5"
-			>
-				<div>
-					<h3
-						use:melt={$title(id)}
-						class="flex items-center gap-2 font-semibold"
-					>
-						{data.title}
-						<span class="rounded-full square-1.5 {data.color}" />
-					</h3>
-					<div use:melt={$description(id)}>
-						{data.description}
-					</div>
-				</div>
-				<button
-					use:melt={$close(id)}
-					class="absolute right-4 top-4 grid place-items-center rounded-full text-magnum-500 square-6
-					hover:bg-magnum-900/50"
-				>
-					<X class="square-4" />
-				</button>
-			</div>
+	{#each $toasts as toast (toast.id)}
+		<div animate:flip={{ duration: 500 }}>
+			<Toast {elements} {toast} />
 		</div>
 	{/each}
 </div>

@@ -25,6 +25,7 @@ export type Toast<T = object> = {
 	timeout: number;
 	createdAt: number;
 	pausedAt?: number;
+	pauseDuration: number;
 	getPercentage: () => number;
 };
 
