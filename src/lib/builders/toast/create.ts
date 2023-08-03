@@ -30,39 +30,6 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 	const { closeDelay, type } = options;
 
 	const toastsMap = writable(new Map<string, Toast<T>>());
-	const timeouts = new Map<string, number>();
-
-	const closeToast = (id: string) => {
-		toastsMap.update((currentMap) => {
-			currentMap.delete(id);
-			return new Map(currentMap);
-		});
-	};
-
-	const handleOpen = (id: string): void => {
-		if (timeouts.has(id)) {
-			window.clearTimeout(timeouts.get(id));
-			timeouts.delete(id);
-		}
-	};
-
-	const handleClose = derived(toastsMap, ($toasts) => {
-		return (id: string): void => {
-			if (timeouts.has(id)) {
-				window.clearTimeout(timeouts.get(id));
-				timeouts.delete(id);
-			}
-
-			const toast = $toasts.get(id);
-			if (!toast) return;
-			timeouts.set(
-				id,
-				window.setTimeout(() => {
-					closeToast(id);
-				}, toast.closeDelay)
-			);
-		};
-	});
 
 	const addToast = (props: AddToastProps<T>) => {
 		const propsWithDefaults = {
@@ -77,15 +44,35 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 			description: generateId(),
 		};
 
-		const toast = { id: ids.content, ids, ...propsWithDefaults };
+		const toast = {
+			id: ids.content,
+			ids,
+			...propsWithDefaults,
+			timeout: window.setTimeout(() => {
+				removeToast(ids.content);
+			}, propsWithDefaults.closeDelay),
+			createdAt: performance.now(),
+			getPercentage: () => {
+				const now = toast.pausedAt ?? performance.now();
+				const elapsed = now - toast.createdAt;
+				const percentage = (elapsed / toast.closeDelay) * 100;
+				return percentage;
+			},
+		} as Toast<T>;
 
 		toastsMap.update((currentMap) => {
 			currentMap.set(ids.content, toast);
 			return new Map(currentMap);
 		});
 
-		get(handleClose)(ids.content);
 		return toast;
+	};
+
+	const removeToast = (id: string) => {
+		toastsMap.update((currentMap) => {
+			currentMap.delete(id);
+			return new Map(currentMap);
+		});
 	};
 
 	const content = builder(name('content'), {
@@ -107,34 +94,42 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<ToastEvents['content']> => {
-			let unsub = noop;
+			let destroy = noop;
 
-			const unsubTimers = () => {
-				if (timeouts.has(node.id)) {
-					window.clearTimeout(timeouts.get(node.id));
-					timeouts.delete(node.id);
-				}
-			};
-
-			unsub = executeCallbacks(
+			destroy = executeCallbacks(
 				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
-					handleOpen(node.id);
+					toastsMap.update((currentMap) => {
+						const currentToast = currentMap.get(node.id);
+						if (!currentToast) return currentMap;
+						window.clearTimeout(currentToast.timeout);
+						currentToast.pausedAt = performance.now();
+						return new Map(currentMap);
+					});
 				}),
 				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
-					get(handleClose)(node.id);
+					toastsMap.update((currentMap) => {
+						const currentToast = currentMap.get(node.id);
+						if (!currentToast) return currentMap;
+						const elapsed = currentToast.pausedAt
+							? currentToast.pausedAt - currentToast.createdAt
+							: 0;
+						const remaining = currentToast.closeDelay - elapsed;
+						currentToast.timeout = window.setTimeout(() => {
+							removeToast(node.id);
+						}, remaining);
+						currentToast.pausedAt = undefined;
+						return new Map(currentMap);
+					});
 				}),
-				addMeltEventListener(node, 'focusout', (e) => {
-					e.preventDefault();
-				})
+				() => {
+					removeToast(node.id);
+				}
 			);
 
 			return {
-				destroy() {
-					unsub();
-					unsubTimers();
-				},
+				destroy,
 			};
 		},
 	});
@@ -176,7 +171,7 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 		action: (node: HTMLElement): MeltActionReturn<ToastEvents['close']> => {
 			function handleClose() {
 				if (!node.dataset.id) return;
-				closeToast(node.dataset.id);
+				removeToast(node.dataset.id);
 			}
 
 			const unsub = executeCallbacks(

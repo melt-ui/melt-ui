@@ -22,6 +22,10 @@ export type Toast<T = object> = {
 	closeDelay: number;
 	type: 'foreground' | 'background';
 	data: T;
+	timeout: number;
+	createdAt: number;
+	pausedAt?: number;
+	getPercentage: () => number;
 };
 
 export type Toasts = BuilderReturn<typeof createToaster>;
