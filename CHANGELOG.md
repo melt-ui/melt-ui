@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.31.3
+
+### Patch Changes
+
+- 2e29832f: [Combobox] Fix type generation issue
+
 ## 0.31.2
 
 ### Patch Changes
