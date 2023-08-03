@@ -1,12 +1,20 @@
 <script lang="ts" context="module">
+	type SvelteFile = `${string}.svelte`;
+	function isSvelteFile(fileName: string): fileName is SvelteFile {
+		return fileName.endsWith('.svelte');
+	}
+
+	type StyleFile = 'tailwind.config.ts' | 'globals.css';
+
 	type CodeEntry = {
-		[key: string]:
+		[fileName: `${string}.svelte`]:
 			| {
 					pp: string;
 					base: string;
 			  }
-			| string
 			| undefined;
+		'globals.css'?: string;
+		'tailwind.config.ts'?: string;
 	};
 
 	type ProcessedCodeEntry = {
@@ -21,12 +29,11 @@
 </script>
 
 <script lang="ts">
-	import { page } from '$app/stores';
 	import { PreviewStyleSelect } from '$docs/components';
 	import { cn } from '$docs/utils';
 	import type { SelectOptionProps } from '$lib';
-	import { getUsingPreprocessor } from '$routes/store';
 	import { isBrowser } from '$lib/internal/helpers';
+	import { getUsingPreprocessor } from '$routes/store';
 	import { writable } from 'svelte/store';
 	import CodeBlock from './code-block.svelte';
 	import PreviewWrapper from './preview-wrapper.svelte';
@@ -60,13 +67,15 @@
 	function processCode({ code, codingStyle, usePP }: ProcessCodeArgs): ProcessedCodeEntry {
 		code = normalizeCode(code);
 
-		const svelteFileObj = code[codingStyle]?.['index.svelte'];
+		const processedCode = {} as ProcessedCodeEntry;
 
-		const processedCode: ProcessedCodeEntry = {
-			...code[codingStyle],
-			['index.svelte']:
-				svelteFileObj !== undefined ? (usePP ? svelteFileObj.pp : svelteFileObj.base) : undefined,
-		};
+		for (const key in code[codingStyle]) {
+			if (isSvelteFile(key)) {
+				processedCode[key] = usePP ? code[codingStyle]?.[key]?.pp : code[codingStyle]?.[key]?.base;
+			} else {
+				processedCode[key] = code[codingStyle]?.[key as StyleFile];
+			}
+		}
 
 		return processedCode;
 	}
@@ -147,10 +156,8 @@
 
 <div class="mt-4 flex flex-row items-center justify-between">
 	{#if viewCode}
-		<div class="flex h-10 items-center md:hidden">
-			{#key $page.url.pathname}
-				<PreviewStyleSelect options={codeOptions} {codingStyle} />
-			{/key}
+		<div class="flex h-10 items-center">
+			<PreviewStyleSelect options={codeOptions} {codingStyle} />
 		</div>
 	{/if}
 
@@ -162,21 +169,13 @@
 <div class="relative mt-2 rounded-md">
 	{#if viewCode}
 		<TabsRoot tabs={files} let:tab>
-			<div class="flex h-10 flex-col-reverse gap-4 md:flex-row md:items-center">
-				<div class={cn(files.length === 1 && 'lg:hidden')}>
+			<div class="flex flex-col-reverse gap-4">
+				<div class={cn('overflow-x-auto', files.length === 1 && 'lg:hidden')}>
 					<TabsList />
-				</div>
-
-				<div class="ml-auto hidden md:block">
-					{#if codeOptions.length > 1}
-						{#key $page.url.pathname}
-							<PreviewStyleSelect options={codeOptions} {codingStyle} />
-						{/key}
-					{/if}
 				</div>
 			</div>
 			{#key $codingStyle}
-				{#if isFileName(tab) && codingStyleObj && codingStyleObj[tab]}
+				{#if codingStyleObj && codingStyleObj[tab]}
 					<CodeBlock>
 						{@html codingStyleObj[tab]}
 					</CodeBlock>
