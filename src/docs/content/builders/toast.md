@@ -20,11 +20,10 @@ description: A succinct message that is displayed temporarily.
 
 Unlike most builders, the toast is not component-based. Instead, it provides a global functionality
 that can be accessed from anywhere in your application. To accomplish this, it is recommended that
-you call the builder function `createToaster` inside the lib directory. This will make the function
-accessible to all components in your application.
+you create a global component that is called on the root of your application.
 
-The first step is to create a `Toast` component that will be used to render toast notifications. We
-can take advantage of
+The first step is to create a `Toaster` component that will be used to render toast notifications.
+We can take advantage of
 [Svelte context module](https://svelte.dev/docs/svelte-components#script-context-module) to create
 the template for the toast notifications and expose the helper function so it can be used in other
 components.
@@ -89,10 +88,10 @@ This component should be added to your root `+layout.svelte` or `App.svelte` com
 
 ```svelte
 <script>
-	import Toast from '$lib/Toast.svelte'
+	import Toaster from '$lib/Toaster.svelte'
 </script>
 
-<Toast />
+<Toaster />
 
 <slot />
 ```
@@ -102,7 +101,7 @@ the application.
 
 ```svelte
 <script lang="ts">
-	import { addToast } from '$lib/Toast.svelte'
+	import { addToast } from '$lib/Toaster.svelte'
 
 	function create() {
 		addToast({
