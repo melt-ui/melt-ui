@@ -1,5 +1,17 @@
 # @melt-ui/svelte
 
+## 0.32.0
+
+### Minor Changes
+
+- b1bfc1a3: - Toast
+  - Change pointerenter behaviour from reset timer to pause timer
+  - Add getPercentage function to calculate percentage of time remaining
+
+### Patch Changes
+
+- 6e4b44e7: refactor: menu types
+
 ## 0.31.3
 
 ### Patch Changes
