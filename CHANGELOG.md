@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.31.2
+
+### Patch Changes
+
+- 14bbbef4: Fix portalling issues
+
 ## 0.31.1
 
 ### Patch Changes
