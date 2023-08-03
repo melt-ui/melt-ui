@@ -18,7 +18,7 @@ import {
 	getFirstOption,
 	getNextFocusable,
 	getOptions,
-	getPortalParent,
+	getPortalDestination,
 	getPreviousFocusable,
 	handleRovingFocus,
 	isBrowser,
@@ -57,7 +57,7 @@ const defaults = {
 	name: undefined,
 	defaultOpen: false,
 	forceVisible: false,
-	portal: 'body',
+	portal: undefined,
 	closeOnEscape: true,
 	closeOnOutsideClick: true,
 } satisfies CreateSelectProps;
@@ -75,6 +75,7 @@ type SelectParts =
 const { name } = createElHelpers<SelectParts>('select');
 
 export function createSelect<
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	Item extends Multiple extends true ? Array<unknown> : unknown = any,
 	Multiple extends boolean = false
 >(props?: CreateSelectProps<Item, Multiple>) {
@@ -187,12 +188,6 @@ export function createSelect<
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<SelectEvents['menu']> => {
-			/**
-			 * We need to get the parent portal before the menu is opened,
-			 * otherwise the parent will have been moved to the body, and
-			 * will no longer be an ancestor of this node.
-			 */
-			const portalParent = getPortalParent(node);
 			let unsubPopper = noop;
 			let unsubScroll = noop;
 
@@ -228,7 +223,7 @@ export function createSelect<
 											},
 									  }
 									: null,
-								portal: $portal ? (portalParent === $portal ? portalParent : $portal) : null,
+								portal: getPortalDestination(node, $portal),
 							},
 						});
 

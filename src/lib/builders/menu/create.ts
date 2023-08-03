@@ -15,7 +15,7 @@ import {
 	executeCallbacks,
 	generateId,
 	getNextFocusable,
-	getPortalParent,
+	getPortalDestination,
 	getPreviousFocusable,
 	handleRovingFocus,
 	isBrowser,
@@ -157,7 +157,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<MenuEvents['menu']> => {
-			const portalParent = getPortalParent(node);
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
@@ -180,7 +179,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							options: {
 								floating: $positioning,
 								clickOutside: $closeOnOutsideClick ? undefined : null,
-								portal: $portal ? (portalParent === $portal ? portalParent : $portal) : null,
+								portal: getPortalDestination(node, $portal),
 								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
 						});

@@ -27,9 +27,9 @@ import {
 	toWritableStores,
 	removeHighlight,
 	addHighlight,
-	getPortalParent,
 	derivedVisible,
 	addMeltEventListener,
+	getPortalDestination,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions';
@@ -96,7 +96,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		loop: false,
 		closeOnEscape: true,
 		closeOnOutsideClick: true,
-		portal: 'body',
+		portal: undefined,
 		forceVisible: false,
 		defaultOpen: false,
 	} satisfies CreateMenubarMenuProps;
@@ -145,13 +145,6 @@ export function createMenubar(props?: CreateMenubarProps) {
 				} as const;
 			},
 			action: (node: HTMLElement): MeltActionReturn<MenubarEvents['menu']> => {
-				/**
-				 * We need to get the parent portal before the menu is opened,
-				 * otherwise the parent will have been moved to the body, and
-				 * will no longer be an ancestor of this node.
-				 */
-				const portalParent = getPortalParent(node);
-
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
@@ -166,7 +159,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 								open: rootOpen,
 								options: {
 									floating: $positioning,
-									portal: $portal ? (portalParent === $portal ? portalParent : $portal) : null,
+									portal: getPortalDestination(node, $portal),
 								},
 							});
 

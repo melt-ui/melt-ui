@@ -26,9 +26,9 @@ import {
 	removeHighlight,
 	omit,
 	getOptions,
-	getPortalParent,
 	derivedVisible,
 	addMeltEventListener,
+	getPortalDestination,
 } from '$lib/internal/helpers';
 import { onMount, tick } from 'svelte';
 import { derived, get, readonly, writable, type Writable } from 'svelte/store';
@@ -51,8 +51,8 @@ const defaults = {
 	closeOnOutsideClick: true,
 	preventScroll: true,
 	closeOnEscape: true,
-	portal: 'body',
 	forceVisible: false,
+	portal: undefined,
 	itemToString: (item: unknown) => `${item}`,
 } satisfies Defaults<CreateComboboxProps<unknown>>;
 
@@ -417,12 +417,6 @@ export function createCombobox<Item>(props: CreateComboboxProps<Item>) {
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<ComboboxEvents['menu']> => {
-			/**
-			 * We need to get the parent portal before the menu is opened,
-			 * otherwise the parent will have been moved to the body, and
-			 * will no longer be an ancestor of this node.
-			 */
-			const portalParent = getPortalParent(node);
 			let unsubPopper = noop;
 			let unsubScroll = noop;
 			const unsubscribe = executeCallbacks(
@@ -469,7 +463,7 @@ export function createCombobox<Item>(props: CreateComboboxProps<Item>) {
 												},
 										  }
 										: null,
-									portal: $portal ? (portalParent === $portal ? portalParent : $portal) : null,
+									portal: getPortalDestination(node, $portal),
 								},
 							});
 							if (popper && popper.destroy) {

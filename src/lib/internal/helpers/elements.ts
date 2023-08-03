@@ -11,3 +11,13 @@ export function getPortalParent(node: HTMLElement) {
 	}
 	return parent || 'body';
 }
+
+export function getPortalDestination(
+	node: HTMLElement,
+	portalProp: string | HTMLElement | undefined
+) {
+	const portalParent = getPortalParent(node);
+	if (portalProp) return portalProp;
+	if (portalParent === 'body') return document.body;
+	return null;
+}
