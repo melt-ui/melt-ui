@@ -23,32 +23,35 @@ that can be accessed from anywhere in your application. To accomplish this, it i
 you call the builder function `createToaster` inside the lib directory. This will make the function
 accessible to all components in your application.
 
-```typescript
-import { createToaster } from '@melt-ui/svelte'
-
-export type ToastData = {
-	title: string
-	description: string
-	color: string
-}
-
-export const {
-	elements: { content, title, description, close },
-	helpers: { addToast },
-	states: { toasts },
-	actions: { portal }
-} = createToaster<ToastData>()
-```
-
-The second step is to create a `Toast` component that will be used to render toast notifications.
+The first step is to create a `Toast` component that will be used to render toast notifications. We
+can take advantage of
+[Svelte context module](https://svelte.dev/docs/svelte-components#script-context-module) to create
+the template for the toast notifications and expose the helper function so it can be used in other
+components.
 
 ```svelte
+<script lang="ts" context="module">
+	export type ToastData = {
+		title: string
+		description: string
+		color: string
+	}
+
+	const {
+		elements: { content, title, description, close },
+		helpers,
+		states: { toasts },
+		actions: { portal }
+	} = createToaster<ToastData>()
+
+	export const addToast = helpers.addToast
+</script>
+
 <script lang="ts">
+	import { createToaster, melt } from '@melt-ui/svelte'
 	import { flip } from 'svelte/animate'
 	import { fly } from 'svelte/transition'
-	import { melt } from '@melt-ui/svelte'
-	import X from '~icons/lucide/x'
-	import { toasts, content, portal, title, description, close } from './toast'
+	import { X } from 'lucide-svelte'
 </script>
 
 <div class="fixed bottom-0 right-0 z-50 m-4 flex flex-col items-end gap-2" use:portal>
@@ -74,7 +77,7 @@ The second step is to create a `Toast` component that will be used to render toa
 					use:melt={$close(id)}
 					class="absolute right-4 top-4 grid place-items-center rounded-full text-magnum-500 square-6
           hover:bg-magnum-900/50">
-					<X />
+					<X class="square-4" />
 				</button>
 			</div>
 		</div>
@@ -94,12 +97,12 @@ This component should be added to your root `+layout.svelte` or `App.svelte` com
 <slot />
 ```
 
-Finally, you can use the exported `addToast` function to add a toast from any component of the
-application.
+Finally, you can use the exported `addToast` helper function to add a toast from any component of
+the application.
 
 ```svelte
 <script lang="ts">
-	import { addToast } from '$lib/toast'
+	import { addToast } from '$lib/Toast.svelte'
 
 	function create() {
 		addToast({
