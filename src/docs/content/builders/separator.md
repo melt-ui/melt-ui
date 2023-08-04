@@ -4,7 +4,7 @@ description: Displays a horizontal or vertical line to separate content.
 ---
 
 <script>
-    import { APIReference } from '$docs/components/index.js'
+    import { APIReference } from '$docs/components'
     export let schemas
 </script>
 

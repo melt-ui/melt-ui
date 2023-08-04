@@ -4,7 +4,7 @@ description: Presents a selection of choices to the user, activated by a button.
 ---
 
 <script>
-    import { APIReference, KbdTable, Preview } from '$docs/components/index.js'
+    import { APIReference, KbdTable, Preview } from '$docs/components'
     export let schemas
     export let keyboard
     export let snippets

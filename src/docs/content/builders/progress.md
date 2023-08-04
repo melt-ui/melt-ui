@@ -6,7 +6,7 @@ description:
 ---
 
 <script>
-    import { APIReference } from '$docs/components/index.js'
+    import { APIReference } from '$docs/components'
     export let schemas
 </script>
 

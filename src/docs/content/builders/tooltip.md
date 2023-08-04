@@ -6,7 +6,7 @@ description:
 ---
 
 <script>
-    import { APIReference, KbdTable, Callout } from '$docs/components/index.js'
+    import { APIReference, KbdTable, Callout } from '$docs/components'
     export let schemas
     export let keyboard
 </script>

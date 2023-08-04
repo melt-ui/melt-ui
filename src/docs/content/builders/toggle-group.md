@@ -4,7 +4,7 @@ description: A set of two-state buttons that can be toggled on or off.
 ---
 
 <script>
-    import { APIReference, KbdTable } from '$docs/components/index.js'
+    import { APIReference, KbdTable } from '$docs/components'
     export let schemas
     export let keyboard
 </script>

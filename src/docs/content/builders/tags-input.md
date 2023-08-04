@@ -4,7 +4,7 @@ description: Render tags inside an input, followed by an actual text input.
 ---
 
 <script>
-    import { APIReference, Callout, KbdTable } from '$docs/components/index.js'
+    import { APIReference, Callout, KbdTable } from '$docs/components'
     export let schemas
     export let keyboard
 </script>

@@ -4,7 +4,7 @@ description: A sequence of one-character alphanumeric inputs.
 ---
 
 <script>
-    import { APIReference, KbdTable } from '$docs/components/index.js'
+    import { APIReference, KbdTable } from '$docs/components'
     export let schemas
     export let keyboard
 </script>

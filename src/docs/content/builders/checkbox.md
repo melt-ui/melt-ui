@@ -4,7 +4,7 @@ description: A control that allows the user to toggle between checked and not ch
 ---
 
 <script>
-    import { APIReference, KbdTable } from '$docs/components/index.js'
+    import { APIReference, KbdTable } from '$docs/components'
     export let schemas
     export let keyboard
 </script>
