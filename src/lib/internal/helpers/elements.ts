@@ -1,4 +1,4 @@
-import { isHTMLElement } from './is';
+import { isHTMLElement } from './is.js';
 
 /**
  * Get an element's ancestor which has a `data-portal` attribute.

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { kbd, getNextKey, getPrevKey, getDirectionalKeys } from '../keyboard';
+import { kbd, getNextKey, getPrevKey, getDirectionalKeys } from '../keyboard.js';
 
 describe('getNextKey', () => {
 	test.each([

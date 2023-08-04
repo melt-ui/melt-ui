@@ -1,7 +1,7 @@
 import { onDestroy } from 'svelte';
 import type { Action } from 'svelte/action';
 import { derived, type Readable, type Subscriber, type Unsubscriber } from 'svelte/store';
-import { isBrowser, isHTMLElement, noop } from '.';
+import { isBrowser, isHTMLElement, noop } from './index.js';
 
 export function getElementByMeltId(id: string) {
 	if (!isBrowser) return null;

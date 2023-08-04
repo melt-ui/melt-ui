@@ -1,6 +1,6 @@
-export * from './hull';
+export * from './hull.js';
 
-import { makeHull, type Point, type Polygon } from './hull';
+import { makeHull, type Point, type Polygon } from './hull.js';
 
 export function getPointsFromEl(el: HTMLElement): Array<Point> {
 	const rect = el.getBoundingClientRect();

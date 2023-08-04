@@ -1,4 +1,4 @@
-import { isHTMLElement } from './is';
+import { isHTMLElement } from './is.js';
 
 /** Retrieves all option descendants of a given element. */
 export function getOptions(el: HTMLElement): HTMLElement[] {

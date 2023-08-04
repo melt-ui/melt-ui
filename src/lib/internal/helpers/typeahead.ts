@@ -1,8 +1,8 @@
 import { get, writable, type Writable } from 'svelte/store';
-import { debounce } from './debounce';
-import { handleRovingFocus } from './rovingFocus';
-import { isHTMLElement } from './is';
-import { wrapArray } from './array';
+import { debounce } from './debounce.js';
+import { handleRovingFocus } from './rovingFocus.js';
+import { isHTMLElement } from './is.js';
+import { wrapArray } from './array.js';
 
 export type TypeaheadArgs = {
 	/**

@@ -1,6 +1,6 @@
 import { tick } from 'svelte';
 import type { Action } from 'svelte/action';
-import { isHTMLElement, noop } from '$lib/internal/helpers';
+import { isHTMLElement, noop } from '$lib/internal/helpers/index.js';
 
 export type PortalConfig = string | HTMLElement | undefined;
 

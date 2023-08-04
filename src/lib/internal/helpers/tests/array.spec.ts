@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { back, forward, last, next, prev, wrapArray } from '../array';
+import { back, forward, last, next, prev, wrapArray } from '../array.js';
 
 describe('back', () => {
 	test.each([

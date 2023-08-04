@@ -1,4 +1,4 @@
-import type { TextDirection } from '$lib/internal/types';
+import type { TextDirection } from '$lib/internal/types.js';
 
 /**
  * Detects the text direction in the element.
