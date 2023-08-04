@@ -32,7 +32,7 @@ import {
 	setMeltMenuAttribute,
 	type _MenuParts,
 	type Point,
-} from '../menu';
+} from '../menu/index.js';
 import type { ContextMenuEvents } from './events.js';
 import type { CreateContextMenuProps } from './types.js';
 
