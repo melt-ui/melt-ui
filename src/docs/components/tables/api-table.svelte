@@ -1,12 +1,12 @@
 <script lang="ts">
-	import type { APISchema } from '$docs/types';
-	import { transformAPIString } from '$docs/utils';
+	import type { APISchema } from '$docs/types.js';
+	import { transformAPIString } from '$docs/utils/index.js';
 	import {
 		APISectionHeading,
 		DataAttrTable,
 		PropsTable,
 		ReturnedPropsTable,
-	} from '$docs/components';
+	} from '$docs/components/index.js';
 	import CustomEventsTable from './custom-events-table.svelte';
 
 	export let data: APISchema;
