@@ -1,7 +1,7 @@
-import { ATTRS } from '$docs/constants';
-import { builderSchema, elementSchema } from '$docs/utils';
-import { labelEvents } from '$lib/builders/label/events';
-import type { BuilderData } from '.';
+import { ATTRS } from '$docs/constants.js';
+import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { labelEvents } from '$lib/builders/label/events.js';
+import type { BuilderData } from './index.js';
 
 const BUILDER_NAME = 'label';
 const builder = builderSchema(BUILDER_NAME, {

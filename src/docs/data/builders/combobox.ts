@@ -1,9 +1,9 @@
-import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
-import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils';
-import { comboboxEvents } from '$lib/builders/combobox/events';
-import type { BuilderData } from '.';
-import { getMenuArrowSchema } from './menu';
+import { ATTRS, KBD, PROPS, SEE } from '$docs/constants.js';
+import type { KeyboardSchema } from '$docs/types.js';
+import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { comboboxEvents } from '$lib/builders/combobox/events.js';
+import type { BuilderData } from './index.js';
+import { getMenuArrowSchema } from './menu.js';
 
 /**
  * Props that are also returned in the form of stores via the `options` property.

@@ -1,15 +1,15 @@
-import { PROPS } from '$docs/constants';
-import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils';
-import { contextMenuEvents } from '$lib/builders/context-menu/events';
-import type { BuilderData } from '.';
+import { PROPS } from '$docs/constants.js';
+import type { KeyboardSchema } from '$docs/types.js';
+import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { contextMenuEvents } from '$lib/builders/context-menu/events.js';
+import type { BuilderData } from './index.js';
 import {
 	getMenuBuilderReturns,
 	getMenuKeyboardSchema,
 	getMenuSchemas,
 	getMenuTriggerDataAttrs,
 	menuBuilderProps,
-} from './menu';
+} from './menu.js';
 
 const BUILDER_NAME = 'context menu';
 const { elements, builders, states, options } = getMenuBuilderReturns(BUILDER_NAME);

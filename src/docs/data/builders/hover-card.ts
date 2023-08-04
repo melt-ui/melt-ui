@@ -1,8 +1,8 @@
-import { ATTRS, PROPS } from '$docs/constants';
-import { builderSchema, elementSchema } from '$docs/utils';
-import { hoverCardEvents } from '$lib/builders/hover-card/events';
-import type { BuilderData } from '.';
-import { getMenuArrowSchema } from './menu';
+import { ATTRS, PROPS } from '$docs/constants.js';
+import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { hoverCardEvents } from '$lib/builders/hover-card/events.js';
+import type { BuilderData } from './index.js';
+import { getMenuArrowSchema } from './menu.js';
 
 /**
  * Props that are also returned in the form of stores via the `options` property.
