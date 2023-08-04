@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createSwitch, melt } from '$lib';
+	import { createSwitch, melt } from '$lib/index.js';
 
 	const {
 		elements: { root, input },

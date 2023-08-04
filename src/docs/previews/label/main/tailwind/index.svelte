@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createLabel, melt } from '$lib';
+	import { createLabel, melt } from '$lib/index.js';
 
 	const {
 		elements: { root },

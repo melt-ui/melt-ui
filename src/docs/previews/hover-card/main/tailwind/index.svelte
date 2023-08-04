@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createHoverCard, melt } from '$lib';
+	import { createHoverCard, melt } from '$lib/index.js';
 	import { fly } from 'svelte/transition';
 
 	const {

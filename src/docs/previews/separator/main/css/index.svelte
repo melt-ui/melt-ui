@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { createSeparator, melt, type CreateSeparatorProps } from '$lib';
+	import {
+		createSeparator,
+		melt,
+		type CreateSeparatorProps,
+	} from '$lib/index.js';
 
 	export let orientation: CreateSeparatorProps['orientation'] = 'vertical';
 

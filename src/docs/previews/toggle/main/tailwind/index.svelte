@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createToggle, melt } from '$lib';
+	import { createToggle, melt } from '$lib/index.js';
 	import { Italic } from 'lucide-svelte';
 
 	const {

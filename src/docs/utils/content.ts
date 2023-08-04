@@ -1,4 +1,4 @@
-import { DESCRIPTIONS } from '$docs/constants';
+import { DESCRIPTIONS } from '$docs/constants.js';
 import type {
 	APISchema,
 	CustomEvents,
@@ -6,7 +6,7 @@ import type {
 	Prop,
 	Props,
 	ReturnedProps,
-} from '$docs/types';
+} from '$docs/types.js';
 
 export function propToOption(prop: Prop): ReturnedProps[0] {
 	const type = Array.isArray(prop.type) ? prop.type.join(' | ') : prop.type;

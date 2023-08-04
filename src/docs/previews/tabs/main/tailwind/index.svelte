@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createTabs, melt } from '$lib';
+	import { createTabs, melt } from '$lib/index.js';
 
 	const {
 		elements: { root, list, content, trigger },

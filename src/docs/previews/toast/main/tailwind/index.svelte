@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createToaster, melt } from '$lib';
+	import { createToaster, melt } from '$lib/index.js';
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
 	import { X } from 'lucide-svelte';

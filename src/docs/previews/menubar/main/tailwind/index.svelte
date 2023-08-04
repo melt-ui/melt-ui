@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createMenubar, melt } from '$lib';
+	import { createMenubar, melt } from '$lib/index.js';
 	import { writable } from 'svelte/store';
 	import { ChevronRight, Check } from 'lucide-svelte';
 

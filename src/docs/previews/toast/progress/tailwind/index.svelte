@@ -7,7 +7,7 @@
 </script>
 
 <script lang="ts">
-	import { createToaster } from '$lib';
+	import { createToaster } from '$lib/index.js';
 	import { flip } from 'svelte/animate';
 	import Toast from './toast.svelte';
 

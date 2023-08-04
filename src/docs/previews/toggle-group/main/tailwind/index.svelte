@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createToggleGroup, melt } from '$lib';
+	import { createToggleGroup, melt } from '$lib/index.js';
 	import { AlignCenter, AlignLeft, AlignRight } from 'lucide-svelte';
 
 	const {

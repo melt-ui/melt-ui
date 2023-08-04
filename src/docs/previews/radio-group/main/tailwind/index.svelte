@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createRadioGroup, melt } from '$lib';
+	import { createRadioGroup, melt } from '$lib/index.js';
 
 	const {
 		elements: { root, item },
