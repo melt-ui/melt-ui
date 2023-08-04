@@ -6,7 +6,7 @@ description:
 ---
 
 <script>
-    import { Construction } from '$docs/components'
+    import { Construction } from '$docs/components/index.js'
 </script>
 
 Melt UI empowers developers to create accessible UIs that embody their unique style. With a strong

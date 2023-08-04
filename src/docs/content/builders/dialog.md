@@ -6,7 +6,7 @@ description:
 ---
 
 <script>
-    import { APIReference, KbdTable, Preview } from '$docs/components'
+    import { APIReference, KbdTable, Preview } from '$docs/components/index.js'
     export let schemas
     export let keyboard
     export let snippets

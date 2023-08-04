@@ -4,7 +4,7 @@ description: It only takes a few lines of code to get started building component
 ---
 
 <script>
-    import { Callout } from '$docs/components';
+    import { Callout } from '$docs/components/index.js';
 </script>
 
 ## Quickstart

@@ -4,7 +4,7 @@ description: An input where the user selects a value from within a given range
 ---
 
 <script>
-    import { APIReference, KbdTable, Preview } from '$docs/components'
+    import { APIReference, KbdTable, Preview } from '$docs/components/index.js'
     export let schemas
     export let keyboard
     export let snippets

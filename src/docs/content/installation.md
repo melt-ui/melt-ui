@@ -4,7 +4,7 @@ description: Install Melt UI, a headless UI library for Svelte.
 ---
 
 <script>
-    import { Callout, InstallTabs } from '$docs/components';
+    import { Callout, InstallTabs } from '$docs/components/index.js';
 </script>
 
 ## Installation

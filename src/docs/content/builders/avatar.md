@@ -4,7 +4,7 @@ description: An image element with a fallback for representing the user.
 ---
 
 <script>
-    import { APIReference } from '$docs/components'
+    import { APIReference } from '$docs/components/index.js'
     export let schemas
 </script>
 

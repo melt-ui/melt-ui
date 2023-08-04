@@ -5,7 +5,7 @@ description:
 ---
 
 <script>
-    import { KbdTable, APIReference } from '$docs/components'
+    import { KbdTable, APIReference } from '$docs/components/index.js'
     export let schemas
     export let keyboard
 </script>

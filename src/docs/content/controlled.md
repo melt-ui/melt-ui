@@ -4,7 +4,7 @@ description: Melt UI components are uncontrolled by default, but offer the abili
 ---
 
 <script>
-    import { Callout } from '$docs/components'
+    import { Callout } from '$docs/components/index.js'
 </script>
 
 <Callout type="warning">

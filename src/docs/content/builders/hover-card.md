@@ -4,7 +4,7 @@ description: Enable sighted users to preview content behind a link.
 ---
 
 <script>
-    import { KbdTable, APIReference, Callout } from '$docs/components'
+    import { KbdTable, APIReference, Callout } from '$docs/components/index.js'
     export let schemas
 </script>
 

@@ -4,7 +4,7 @@ description: An interface that allows navigating between pages that contain spli
 ---
 
 <script>
-    import { APIReference, KbdTable } from '$docs/components'
+    import { APIReference, KbdTable } from '$docs/components/index.js'
     export let schemas
     export let keyboard
 </script>
