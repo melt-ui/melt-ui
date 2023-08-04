@@ -9,7 +9,7 @@ export type CreateSliderProps = {
 	 *
 	 * @default []
 	 */
-	defaultValue: number[];
+	defaultValue?: number[];
 
 	/**
 	 * The controlled value store for the switch.
