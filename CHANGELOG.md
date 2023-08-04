@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.32.1
+
+### Patch Changes
+
+- 270c98e5: fix: outside click not being allowed on dialog
+
 ## 0.32.0
 
 ### Minor Changes
