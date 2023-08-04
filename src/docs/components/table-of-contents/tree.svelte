@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { cn } from '$docs/utils';
-	import type { TableOfContents } from '.';
+	import { cn } from '$docs/utils/index.js';
+	import type { TableOfContents } from './index.js';
 
 	export let tree: TableOfContents = {
 		items: [],
