@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { createDialog, melt } from '$lib';
+	import { createDialog, melt } from '$lib/index.js';
 	import { fade, fly } from 'svelte/transition';
 	import { Menu, X } from 'lucide-svelte';
-	import { Button, MobileNavLink } from '$docs/components';
-	import { navConfig } from '$docs/config';
+	import { Button, MobileNavLink } from '$docs/components/index.js';
+	import { navConfig } from '$docs/config/index.js';
 	import Switch from '../switch.svelte';
-	import { getUsingPreprocessor } from '$routes/store';
+	import { getUsingPreprocessor } from '$routes/store/index.js';
 	import { writable } from 'svelte/store';
 
 	const open = writable(false);
