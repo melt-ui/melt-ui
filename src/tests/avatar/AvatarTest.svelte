@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createAvatar, melt } from '$lib';
+	import { createAvatar, melt } from '$lib/index.js';
 
 	export let src = 'https://avatars.githubusercontent.com/u/1162160?v=4';
 

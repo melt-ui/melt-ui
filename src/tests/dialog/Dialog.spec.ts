@@ -3,8 +3,8 @@ import { axe } from 'jest-axe';
 import { describe, it } from 'vitest';
 import DialogTest from './DialogTest.svelte';
 import userEvent from '@testing-library/user-event';
-import { sleep } from '$lib/internal/helpers';
-import { kbd } from '$lib/internal/helpers';
+import { sleep } from '$lib/internal/helpers/index.js';
+import { kbd } from '$lib/internal/helpers/index.js';
 
 describe('Dialog', () => {
 	it('No accessibility violations', async () => {

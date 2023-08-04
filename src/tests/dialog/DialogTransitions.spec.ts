@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe, vi, it, beforeEach, afterEach } from 'vitest';
 import { tick } from 'svelte';
-import { kbd, sleep } from '$lib/internal/helpers';
+import { kbd, sleep } from '$lib/internal/helpers/index.js';
 import DialogTransitionTest from './DialogTransitionTest.svelte';
 
 describe.skip('Dialog with Transitions', () => {

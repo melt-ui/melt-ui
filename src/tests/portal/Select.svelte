@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { createSelect, melt } from '$lib';
-	import { initLevel } from './level';
+	import { createSelect, melt } from '$lib/index.js';
+	import { initLevel } from './level.js';
 
 	const {
 		elements: { trigger, menu, option, group, groupLabel, label },

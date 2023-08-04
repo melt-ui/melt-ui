@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createSlider, melt } from '$lib';
+	import { createSlider, melt } from '$lib/index.js';
 
 	export let values = [20, 80];
 

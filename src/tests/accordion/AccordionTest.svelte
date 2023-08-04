@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createAccordion, type CreateAccordionProps, melt } from '$lib';
+	import { createAccordion, type CreateAccordionProps, melt } from '$lib/index.js';
 
 	export let multiple = false;
 	export let disabled: CreateAccordionProps['disabled'] = undefined;

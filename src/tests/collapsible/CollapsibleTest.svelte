@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCollapsible, melt } from '$lib';
+	import { createCollapsible, melt } from '$lib/index.js';
 
 	export let open = false;
 
