@@ -1,4 +1,4 @@
-import { useEscapeKeydown, usePopper } from '$lib/internal/actions';
+import { useEscapeKeydown, usePopper } from '$lib/internal/actions/index.js';
 import {
 	back,
 	builder,
@@ -29,13 +29,13 @@ import {
 	derivedVisible,
 	addMeltEventListener,
 	getPortalDestination,
-} from '$lib/internal/helpers';
+} from '$lib/internal/helpers/index.js';
 import { onMount, tick } from 'svelte';
 import { derived, get, readonly, writable, type Writable } from 'svelte/store';
-import type { ComboboxItemProps, CreateComboboxProps } from './types';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
-import { createLabel } from '../label/create';
-import type { ComboboxEvents } from './events';
+import type { ComboboxItemProps, CreateComboboxProps } from './types.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
+import { createLabel } from '../label/create.js';
+import type { ComboboxEvents } from './events.js';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ESCAPE, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];

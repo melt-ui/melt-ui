@@ -6,9 +6,9 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
+} from '$lib/internal/helpers/index.js';
 import { writable } from 'svelte/store';
-import type { CreateAvatarProps } from './types';
+import type { CreateAvatarProps } from './types.js';
 
 const defaults = {
 	src: '',

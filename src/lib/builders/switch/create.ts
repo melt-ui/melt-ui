@@ -7,12 +7,12 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { get, writable } from 'svelte/store';
-import { executeCallbacks } from '../../internal/helpers/callbacks';
-import type { SwitchEvents } from './events';
-import type { CreateSwitchProps } from './types';
+import { executeCallbacks } from '../../internal/helpers/callbacks.js';
+import type { SwitchEvents } from './events.js';
+import type { CreateSwitchProps } from './types.js';
 
 const defaults = {
 	defaultChecked: false,

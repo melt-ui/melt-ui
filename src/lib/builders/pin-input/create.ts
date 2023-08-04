@@ -12,12 +12,12 @@ import {
 	styleToString,
 	toWritableStores,
 	addMeltEventListener,
-} from '$lib/internal/helpers';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
 import { derived, get, writable, readonly } from 'svelte/store';
-import type { CreatePinInputProps } from './types';
-import type { PinInputEvents } from './events';
+import type { CreatePinInputProps } from './types.js';
+import type { PinInputEvents } from './events.js';
 
 const { name, selector } = createElHelpers<'input' | 'hidden-input'>('pin-input');
 

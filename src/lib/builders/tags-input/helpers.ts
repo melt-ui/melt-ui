@@ -1,6 +1,10 @@
-import { getElementByMeltId, isHTMLElement, isHTMLInputElement } from '$lib/internal/helpers';
+import {
+	getElementByMeltId,
+	isHTMLElement,
+	isHTMLInputElement,
+} from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
-import type { Tag } from './types';
+import type { Tag } from './types.js';
 
 export function focusInput(id: string, pos: 'default' | 'start' | 'end' = 'default') {
 	const inputEl = getElementByMeltId(id);

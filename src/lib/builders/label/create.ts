@@ -1,6 +1,6 @@
-import { addMeltEventListener, builder } from '$lib/internal/helpers';
-import type { MeltActionReturn } from '$lib/internal/types';
-import type { LabelEvents } from './events';
+import { addMeltEventListener, builder } from '$lib/internal/helpers/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
+import type { LabelEvents } from './events.js';
 
 export function createLabel() {
 	const root = builder('label', {

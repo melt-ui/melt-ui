@@ -15,15 +15,15 @@ import {
 	removeScroll,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
+} from '$lib/internal/helpers/index.js';
 
-import { usePopper } from '$lib/internal/actions';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+import { usePopper } from '$lib/internal/actions/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
 import { writable } from 'svelte/store';
-import { executeCallbacks } from '../../internal/helpers/callbacks';
-import type { PopoverEvents } from './events';
-import type { CreatePopoverProps } from './types';
+import { executeCallbacks } from '../../internal/helpers/callbacks.js';
+import type { PopoverEvents } from './events.js';
+import type { CreatePopoverProps } from './types.js';
 
 const defaults = {
 	positioning: {

@@ -1,4 +1,4 @@
-import type { GroupedEvents } from '$lib/internal/types';
+import type { GroupedEvents } from '$lib/internal/types.js';
 export const dialogEvents = {
 	trigger: ['click', 'keydown'] as const,
 	close: ['click', 'keydown'] as const,

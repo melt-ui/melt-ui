@@ -1,4 +1,4 @@
-import { createFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions';
+import { createFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions/index.js';
 import {
 	addMeltEventListener,
 	builder,
@@ -18,12 +18,12 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
-import type { DialogEvents } from './events';
-import type { CreateDialogProps } from './types';
+import type { DialogEvents } from './events.js';
+import type { CreateDialogProps } from './types.js';
 
 type DialogParts =
 	| 'trigger'

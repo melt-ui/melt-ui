@@ -14,11 +14,11 @@ import {
 	overridable,
 	prev,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { get, writable } from 'svelte/store';
-import type { TabsEvents } from './events';
-import type { CreateTabsProps, TabsTriggerProps } from './types';
+import type { TabsEvents } from './events.js';
+import type { CreateTabsProps, TabsTriggerProps } from './types.js';
 
 const defaults = {
 	orientation: 'horizontal',

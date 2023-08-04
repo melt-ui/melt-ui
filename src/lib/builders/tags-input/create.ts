@@ -13,13 +13,13 @@ import {
 	styleToString,
 	toWritableStores,
 	addMeltEventListener,
-} from '$lib/internal/helpers';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, readonly, writable } from 'svelte/store';
-import { focusInput, highlightText, setSelectedFromEl } from './helpers';
-import type { CreateTagsInputProps, Tag, TagProps } from './types';
+import { focusInput, highlightText, setSelectedFromEl } from './helpers.js';
+import type { CreateTagsInputProps, Tag, TagProps } from './types.js';
 import { tick } from 'svelte';
-import type { TagsInputEvents } from './events';
+import type { TagsInputEvents } from './events.js';
 
 const defaults = {
 	placeholder: '',

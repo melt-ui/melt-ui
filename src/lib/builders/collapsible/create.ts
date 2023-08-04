@@ -6,11 +6,11 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, writable } from 'svelte/store';
-import type { CollapsibleEvents } from './events';
-import type { CreateCollapsibleProps } from './types';
+import type { CollapsibleEvents } from './events.js';
+import type { CreateCollapsibleProps } from './types.js';
 
 const defaults = {
 	defaultOpen: false,

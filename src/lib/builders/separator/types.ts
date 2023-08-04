@@ -1,5 +1,5 @@
-import type { BuilderReturn, Orientation } from '$lib/internal/types';
-import type { createSeparator } from './create';
+import type { BuilderReturn, Orientation } from '$lib/internal/types.js';
+import type { createSeparator } from './create.js';
 
 export type CreateSeparatorProps = {
 	/*

@@ -1,7 +1,7 @@
-import type { createAvatar } from './create';
-import type { BuilderReturn } from '$lib/internal/types';
+import type { createAvatar } from './create.js';
+import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
-import type { ChangeFn } from '$lib/internal/helpers';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
 
 const imageLoadingStatus = ['loading', 'loaded', 'error'] as const;
 

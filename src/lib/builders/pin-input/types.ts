@@ -1,7 +1,7 @@
-import type { ChangeFn } from '$lib/internal/helpers';
-import type { BuilderReturn } from '$lib/internal/types';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
+import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
-import type { createPinInput } from './create';
+import type { createPinInput } from './create.js';
 
 export type CreatePinInputProps = {
 	/**

@@ -6,7 +6,7 @@ import {
 	handleMenuNavigation,
 	handleTabNavigation,
 	type _MenuParts,
-} from '../menu';
+} from '../menu/index.js';
 import {
 	executeCallbacks,
 	isHTMLElement,
@@ -30,12 +30,12 @@ import {
 	derivedVisible,
 	addMeltEventListener,
 	getPortalDestination,
-} from '$lib/internal/helpers';
+} from '$lib/internal/helpers/index.js';
 import { onMount, tick } from 'svelte';
-import { usePopper } from '$lib/internal/actions';
-import type { MeltActionReturn } from '$lib/internal/types';
-import type { CreateMenubarMenuProps, CreateMenubarProps } from './types';
-import type { MenubarEvents } from './events';
+import { usePopper } from '$lib/internal/actions/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
+import type { CreateMenubarMenuProps, CreateMenubarProps } from './types.js';
+import type { MenubarEvents } from './events.js';
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
 

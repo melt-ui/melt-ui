@@ -1,5 +1,5 @@
-import { createLabel, createSeparator } from '$lib/builders';
-import { usePopper, usePortal } from '$lib/internal/actions';
+import { createLabel, createSeparator } from '$lib/builders/index.js';
+import { usePopper, usePortal } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,
@@ -37,12 +37,12 @@ import {
 	styleToString,
 	toWritableStores,
 	toggle,
-} from '$lib/internal/helpers';
-import type { MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
-import type { SelectEvents } from './events';
-import type { CreateSelectProps, SelectOptionProps } from './types';
+import type { SelectEvents } from './events.js';
+import type { CreateSelectProps, SelectOptionProps } from './types.js';
 
 const defaults = {
 	arrowSize: 8,

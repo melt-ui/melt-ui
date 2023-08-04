@@ -1,8 +1,8 @@
-import type { BuilderReturn } from '$lib/internal/types';
-import type { ChangeFn } from '$lib/internal/helpers';
+import type { BuilderReturn } from '$lib/internal/types.js';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
-import type { createCombobox } from './create';
-import type { FloatingConfig } from '$lib/internal/actions';
+import type { createCombobox } from './create.js';
+import type { FloatingConfig } from '$lib/internal/actions/index.js';
 
 export type CreateComboboxProps<Item> = {
 	/**
