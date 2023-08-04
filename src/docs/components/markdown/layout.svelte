@@ -17,7 +17,7 @@
 		p,
 		pre,
 		ul,
-	} from '$docs/components/markdown';
+	} from '$docs/components/markdown/index.js';
 	export { a, blockquote, h1, h2, h3, h4, h5, h6, hr, img, li, ol, p, pre, ul };
 </script>
 
