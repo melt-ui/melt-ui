@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { createDialog, melt } from '$lib';
+	import { createDialog, melt } from '$lib/index.js';
 	/** Internal helpers */
-	import { PreviewWrapper } from '$docs/components';
+	import { PreviewWrapper } from '$docs/components/index.js';
 	import BaseDialog from './BaseDialog.svelte';
 
 	const dialog = createDialog();
