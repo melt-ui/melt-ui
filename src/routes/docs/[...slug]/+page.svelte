@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { TOC, Description } from '$docs/components';
+	import { TOC, Description } from '$docs/components/index.js';
 
 	import type { SvelteComponent } from 'svelte';
-	import type { PageData } from './$types';
-	import { cn } from '$docs/utils';
-	import { createSeparator, melt } from '$lib';
+	import type { PageData } from './$types.js';
+	import { cn } from '$docs/utils/index.js';
+	import { createSeparator, melt } from '$lib/index.js';
 	import { page } from '$app/stores';
 
 	const {
