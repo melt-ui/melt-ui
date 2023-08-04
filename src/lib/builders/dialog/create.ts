@@ -193,22 +193,16 @@ export function createDialog(props?: CreateDialogProps) {
 				const focusTrap = createFocusTrap({
 					immediate: false,
 					escapeDeactivates: false,
-					allowOutsideClick: (e) => {
-						e.preventDefault();
-						e.stopImmediatePropagation();
-
-						if (e instanceof MouseEvent && !isLeftClick(e)) {
-							return false;
-						}
-
+					allowOutsideClick: () => {
 						const $openDialogIds = get(openDialogIds);
 						const isLast = last($openDialogIds) === ids.content;
 
 						if ($closeOnOutsideClick && isLast) {
 							handleClose();
+							return false;
 						}
 
-						return false;
+						return true;
 					},
 					returnFocusOnDeactivate: false,
 					fallbackFocus: node,
