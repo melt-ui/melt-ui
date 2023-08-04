@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Check, Copy } from 'lucide-svelte';
 	import { fly } from 'svelte/transition';
-	import { cn, createCopyCodeButton } from '$docs/utils';
+	import { cn, createCopyCodeButton } from '$docs/utils/index.js';
 
 	const { copied, setCodeString, copyCode } = createCopyCodeButton();
 

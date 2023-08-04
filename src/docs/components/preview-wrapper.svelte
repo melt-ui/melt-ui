@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$docs/utils';
+	import { cn } from '$docs/utils/index.js';
 </script>
 
 <div class="comp-preview h-[20rem] overflow-x-auto lg:h-[28rem] lg:overflow-x-hidden">

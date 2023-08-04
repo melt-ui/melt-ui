@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { cn } from '$docs/utils';
-	import { noop } from '$lib/internal/helpers';
+	import { cn } from '$docs/utils/index.js';
+	import { noop } from '$lib/internal/helpers/index.js';
 	import type { Action } from 'svelte/action';
 	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
 	import type { VariantProps } from 'tailwind-variants';
-	import { buttonVariants } from '.';
+	import { buttonVariants } from './index.js';
 
 	let className: string | undefined | null = undefined;
 	export { className as class };

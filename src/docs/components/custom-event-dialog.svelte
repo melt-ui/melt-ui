@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { createDialog } from '$lib/builders';
-	import { flyAndScale } from '$docs/utils';
+	import { createDialog } from '$lib/builders/index.js';
+	import { flyAndScale } from '$docs/utils/index.js';
 	import { X } from 'lucide-svelte';
-	import { CodeBlock } from '$docs/components';
+	import { CodeBlock } from '$docs/components/index.js';
 	import customEventDetail from '$docs/data/long-types/custom-event-detail.html?raw';
-	import { melt } from '$lib';
+	import { melt } from '$lib/index.js';
 
 	const {
 		elements: { trigger, overlay, content, title, close },

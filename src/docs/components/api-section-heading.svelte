@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { h3 as H3 } from '$docs/components/markdown';
-	import { createHeadingId } from '$docs/utils';
+	import { h3 as H3 } from '$docs/components/markdown/index.js';
+	import { createHeadingId } from '$docs/utils/index.js';
 	import { Hammer, Shapes } from 'lucide-svelte';
 	import P from './markdown/p.svelte';
 	export let title: string;
