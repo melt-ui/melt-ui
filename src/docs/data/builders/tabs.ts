@@ -21,12 +21,6 @@ const OPTION_PROPS = [
 		default: '"horizontal"',
 		description: 'The orientation of the tabs.',
 	},
-	{
-		name: 'autoSet',
-		type: 'boolean',
-		default: 'true',
-		description: 'Whether or not to automatically set the tabs value when a trigger is clicked.',
-	},
 ];
 
 const BUILDER_NAME = 'tabs';
@@ -35,6 +29,13 @@ const builder = builderSchema(BUILDER_NAME, {
 	title: 'createTabs',
 	props: [
 		...OPTION_PROPS,
+		{
+			name: 'autoSet',
+			type: 'boolean',
+			default: 'true',
+			description:
+				'If `true` and no `defaultValue` or `value` is given, the value state will be set to the first tab item provided on mount.',
+		},
 		{
 			name: 'defaultValue',
 			type: 'string',
