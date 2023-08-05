@@ -37,6 +37,8 @@ const {
 	submenuBuilder,
 	submenu,
 	subTrigger,
+	group,
+	groupLabel,
 } = getMenuSchemas('menubar menu');
 
 const TRIGGER_NAME = 'trigger' as const;
@@ -93,6 +95,8 @@ const schemas = [
 	radioGroupBuilder,
 	radioGroup,
 	radioItem,
+	group,
+	groupLabel,
 	submenuBuilder,
 	subTrigger,
 	submenu,

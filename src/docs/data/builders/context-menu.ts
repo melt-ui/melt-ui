@@ -36,12 +36,14 @@ const {
 	submenuBuilder,
 	submenu,
 	subTrigger,
+	group,
+	groupLabel,
 } = getMenuSchemas(BUILDER_NAME);
 
 const TRIGGER_NAME = 'trigger' as const;
 const trigger = elementSchema(TRIGGER_NAME, {
 	description: 'The element which when right clicked inside, opens the context menu.',
-	dataAttributes: getMenuTriggerDataAttrs('context-menu'),
+	dataAttributes: getMenuTriggerDataAttrs(BUILDER_NAME),
 	events: contextMenuEvents[TRIGGER_NAME],
 });
 
@@ -59,6 +61,8 @@ const schemas = [
 	radioGroupBuilder,
 	radioGroup,
 	radioItem,
+	group,
+	groupLabel,
 	submenuBuilder,
 	subTrigger,
 	submenu,
