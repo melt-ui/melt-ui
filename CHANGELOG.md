@@ -1,5 +1,12 @@
 # @melt-ui/svelte
 
+## 0.32.2
+
+### Patch Changes
+
+- fbfef15b: Slider: defaultValue no longer required
+- 8cc15888: refactor: standardize portal prop
+
 ## 0.32.1
 
 ### Patch Changes
