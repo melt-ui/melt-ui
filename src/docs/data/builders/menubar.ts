@@ -43,7 +43,7 @@ const TRIGGER_NAME = 'trigger' as const;
 
 const trigger = elementSchema(TRIGGER_NAME, {
 	description: 'The button which toggles the dropdown menu.',
-	dataAttributes: getMenuTriggerDataAttrs('menubar-menu'),
+	dataAttributes: getMenuTriggerDataAttrs(`${BUILDER_NAME} menu`),
 	events: menubarEvents[TRIGGER_NAME],
 });
 
