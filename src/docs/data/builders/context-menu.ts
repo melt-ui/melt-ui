@@ -38,11 +38,11 @@ const {
 	subTrigger,
 } = getMenuSchemas(BUILDER_NAME);
 
-const trigger = elementSchema('trigger', {
-	title: 'trigger',
+const TRIGGER_NAME = 'trigger' as const;
+const trigger = elementSchema(TRIGGER_NAME, {
 	description: 'The element which when right clicked inside, opens the context menu.',
-	dataAttributes: getMenuTriggerDataAttrs('trigger'),
-	events: contextMenuEvents['trigger'],
+	dataAttributes: getMenuTriggerDataAttrs('context-menu'),
+	events: contextMenuEvents[TRIGGER_NAME],
 });
 
 const keyboard: KeyboardSchema = getMenuKeyboardSchema();

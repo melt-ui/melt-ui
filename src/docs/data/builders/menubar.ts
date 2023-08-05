@@ -39,10 +39,12 @@ const {
 	subTrigger,
 } = getMenuSchemas('menubar menu');
 
-const trigger = elementSchema('trigger', {
+const TRIGGER_NAME = 'trigger' as const;
+
+const trigger = elementSchema(TRIGGER_NAME, {
 	description: 'The button which toggles the dropdown menu.',
-	dataAttributes: getMenuTriggerDataAttrs('menubar menu'),
-	events: menubarEvents['trigger'],
+	dataAttributes: getMenuTriggerDataAttrs('menubar-menu'),
+	events: menubarEvents[TRIGGER_NAME],
 });
 
 const keyboard: KeyboardSchema = [

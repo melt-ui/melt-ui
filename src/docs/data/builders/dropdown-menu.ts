@@ -39,10 +39,12 @@ export const builder = builderSchema(BUILDER_NAME, {
 	options,
 });
 
-const trigger = elementSchema(BUILDER_NAME, {
+const TRIGGER_NAME = 'trigger' as const;
+
+const trigger = elementSchema(TRIGGER_NAME, {
 	description: 'The button which toggles the dropdown menu.',
-	dataAttributes: getMenuTriggerDataAttrs(BUILDER_NAME),
-	events: dropdownMenuEvents['trigger'],
+	dataAttributes: getMenuTriggerDataAttrs('dropdown-menu'),
+	events: dropdownMenuEvents[TRIGGER_NAME],
 });
 
 const keyboard: KeyboardSchema = getMenuKeyboardSchema();

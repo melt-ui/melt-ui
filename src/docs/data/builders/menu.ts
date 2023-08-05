@@ -154,15 +154,17 @@ function getMenuBuilderStates(name = 'menu') {
 	];
 }
 
-export function getMenuTriggerDataAttrs(name: string) {
+type Menu = 'context-menu' | 'dropdown-menu' | 'menubar-menu';
+
+export function getMenuTriggerDataAttrs(menuName: Menu) {
 	return [
 		{
 			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			name: `data-melt-context-menu-${name}`,
-			value: ATTRS.MELT(name),
+			name: `data-melt-${menuName}-trigger`,
+			value: ATTRS.MELT('trigger'),
 		},
 	];
 }

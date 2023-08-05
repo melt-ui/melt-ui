@@ -20,8 +20,8 @@ export type CreateMenubarProps = {
 export type CreateMenubarMenuProps = _Menu['builder'];
 export type CreateMenubarSubmenuProps = _Menu['submenu'];
 export type MenubarMenuItemProps = _Menu['item'];
-export type MenubarCheckboxItemProps = _Menu['checkboxItem'];
 export type CreateMenuRadioGroupProps = _Menu['radioGroup'];
+export type CreateMenuCheckboxItemProps = _Menu['checkboxItem'];
 export type MenubarRadioItemProps = _Menu['radioItem'];
 export type MenubarRadioItemActionProps = _Menu['radioItemAction'];
 
