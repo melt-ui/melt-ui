@@ -114,7 +114,7 @@ export type CreateComboboxProps<Item> = {
 	 *
 	 * @default 'body'
 	 */
-	portal?: HTMLElement | string;
+	portal?: HTMLElement | string | null;
 
 	/**
 	 * Whether the menu content should be displayed even if it is not open.

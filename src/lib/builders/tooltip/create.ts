@@ -7,7 +7,7 @@ import {
 	effect,
 	executeCallbacks,
 	generateId,
-	getPortalParent,
+	getPortalDestination,
 	isBrowser,
 	isTouch,
 	kbd,
@@ -172,8 +172,6 @@ export function createTooltip(props?: CreateTooltipProps) {
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['content']> => {
-			const portalParent = getPortalParent(node);
-
 			let unsubFloating = noop;
 			let unsubPortal = noop;
 
@@ -192,9 +190,12 @@ export function createTooltip(props?: CreateTooltipProps) {
 							unsubPortal();
 							return;
 						}
-						const portalReturn = usePortal(node, portalParent === $portal ? portalParent : $portal);
-						if (portalReturn && portalReturn.destroy) {
-							unsubPortal = portalReturn.destroy;
+						const portalDest = getPortalDestination(node, $portal);
+						if (portalDest) {
+							const portalReturn = usePortal(node, portalDest);
+							if (portalReturn && portalReturn.destroy) {
+								unsubPortal = portalReturn.destroy;
+							}
 						}
 					});
 				}

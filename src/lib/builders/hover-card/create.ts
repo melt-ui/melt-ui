@@ -7,7 +7,7 @@ import {
 	effect,
 	executeCallbacks,
 	generateId,
-	getPortalParent,
+	getPortalDestination,
 	getTabbableNodes,
 	isBrowser,
 	isHTMLElement,
@@ -161,7 +161,6 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<HoverCardEvents['content']> => {
-			const portalParent = getPortalParent(node);
 			let unsub = noop;
 
 			const unsubTimers = () => {
@@ -191,7 +190,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 							options: {
 								floating: $positioning,
 								clickOutside: $closeOnOutsideClick ? undefined : null,
-								portal: $portal ? (portalParent === $portal ? portalParent : $portal) : null,
+								portal: getPortalDestination(node, $portal),
 								focusTrap: null,
 								escapeKeydown: $closeOnEscape ? undefined : null,
 							},

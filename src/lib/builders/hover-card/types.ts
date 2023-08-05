@@ -87,7 +87,7 @@ export type CreateHoverCardProps = {
 	 *
 	 * @default 'body'
 	 */
-	portal?: HTMLElement | string;
+	portal?: HTMLElement | string | null;
 };
 
 export type HoverCard = BuilderReturn<typeof createHoverCard>;

@@ -6,10 +6,9 @@ import {
 	effect,
 	executeCallbacks,
 	generateId,
-	getPortalParent,
+	getPortalDestination,
 	isBrowser,
 	isHTMLElement,
-	isLeftClick,
 	kbd,
 	last,
 	noop,
@@ -256,11 +255,11 @@ export function createDialog(props?: CreateDialogProps) {
 			'data-portal': $portal ? '' : undefined,
 		}),
 		action: (node: HTMLElement) => {
-			const portalParent = getPortalParent(node);
-
 			const unsubPortal = effect([portal], ([$portal]) => {
 				if (!$portal) return noop;
-				const portalAction = usePortal(node, portalParent === $portal ? portalParent : $portal);
+				const portalDestination = getPortalDestination(node, $portal);
+				if (portalDestination === null) return noop;
+				const portalAction = usePortal(node, portalDestination);
 				if (portalAction && portalAction.destroy) {
 					return portalAction.destroy;
 				} else {

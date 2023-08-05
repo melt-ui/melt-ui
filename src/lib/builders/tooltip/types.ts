@@ -20,7 +20,7 @@ export type CreateTooltipProps = {
 	 *
 	 * @default 'body'
 	 */
-	portal?: HTMLElement | string;
+	portal?: HTMLElement | string | null;
 };
 
 export type Tooltip = BuilderReturn<typeof createTooltip>;
