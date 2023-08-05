@@ -7,7 +7,6 @@ export type CreateTreeViewArgs = {
 };
 
 export type TreeParts =
-	| 'trigger'
 	| 'label'
 	| 'item'
 	| 'group';

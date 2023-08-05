@@ -181,5 +181,5 @@ export const KBD = {
 	BACKSPACE: 'Backspace',
 	DELETE: 'Delete',
 	ASTERISK: '*',
-	LETTER: 'a-z'
+	LETTER: 'A-Z'
 };

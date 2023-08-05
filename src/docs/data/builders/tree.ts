@@ -1,10 +1,10 @@
-import { ATTRS, DESCRIPTIONS, KBD, LONG_TYPES } from '$docs/constants';
+import { DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 import type { BuilderData } from '.';
 
 const builder: APISchema = {
-	title: 'createTooltip',
-	description: DESCRIPTIONS.BUILDER('tooltip'),
+	title: 'createTreeViewBuilder',
+	description: DESCRIPTIONS.BUILDER('tree-view'),
 	props: [
 	],
 	returnedProps: [

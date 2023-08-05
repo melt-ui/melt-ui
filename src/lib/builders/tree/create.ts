@@ -26,23 +26,23 @@ const ATTRS = {
     DATAID: 'data-id'
 }
 
+const { name } = createElHelpers<TreeParts>('tree-view');
+
 export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     const argsWithDefaults = { ...defaults, ...args };
     const { collapse } = argsWithDefaults;
 
-    const { name } = createElHelpers<TreeParts>('tree-view');
-
     /**
      * Track currently focused item in the tree.
      */
-    const currentFocusedItem: Writable<HTMLLIElement | null> = writable(null);
-    const currentSelectedItem: Writable<HTMLLIElement | null> = writable(null);
+    const focusedItem: Writable<HTMLLIElement | null> = writable(null);
+    const selectedItem: Writable<HTMLLIElement | null> = writable(null);
     const selectedId: Writable<string | null> = writable(null);
     const itemsWithHiddenChildren: Writable<string[]> = writable([]);
 
     let rootEl: HTMLElement | null;
     let items: HTMLLIElement[];
-    let currentFocusedItemIdx = 0;
+    let focusedItemIdx = 0;
     // const itemChildren: Writable<ItemDescription[]> = writable([]);
     let itemChildren: ItemDescription[] = [];
 
@@ -67,21 +67,21 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
         })
     });
 
-    function updateFocusElement(newIndex: number) {
+    function updateFocusedElement(newIndex: number) {
         /**
          * Items should not be navigatable with tabs,
          * so we always update the tabindex so that only the currently
          * focused element has a focusable tabindex.
          */
-        items[currentFocusedItemIdx].setAttribute(ATTRS.TABINDEX, '-1');
+        items[focusedItemIdx].setAttribute(ATTRS.TABINDEX, '-1');
         items[newIndex].setAttribute(ATTRS.TABINDEX, '0');
-        currentFocusedItem.set(items[newIndex]);
-        currentFocusedItemIdx = newIndex;
+        focusedItem.set(items[newIndex]);
+        focusedItemIdx = newIndex;
         items[newIndex].focus();
     }
 
     function updateSelectedElement(el: HTMLLIElement) {
-        currentSelectedItem.set(el);
+        selectedItem.set(el);
 
         const id = el.getAttribute(ATTRS.DATAID);
         if (!id) return;
@@ -106,14 +106,13 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
          * Filter out all elements that have parents that are not expanded.
          * I think we might need this in case tick() doesn't work with animations.
          */
-        items = items.filter((item) => !(
-            item.parentNode && 
-            (<HTMLElement>item.parentNode).closest('li[role="treeitem"]') && 
-            (<HTMLElement>item.parentNode).closest('li[role="treeitem"]')?.getAttribute('aria-expanded') === 'false'))
+        const closedParents = Array.from(rootEl.querySelectorAll('li[aria-expanded="false"]'));
+        items = items.filter((item) => !closedParents.some((parent) => item !== parent && parent.contains(item)));
+
         itemChildren = getChildrenOfItems();
 
         // Update the current focus index.
-        currentFocusedItemIdx = items.findIndex((item) => item === el);
+        focusedItemIdx = items.findIndex((item) => item === el);
 
         // Add tabindex to newly added elements. (not doing this caused flickering)
         items.forEach((item) => {
@@ -135,7 +134,7 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
         }
     }
 
-    function showChildrenElements(el: HTMLLIElement) {
+    async function showChildrenElements(el: HTMLLIElement) {
         const { hasChildren, expanded, dataId } = getElementAttributes(el);
 
         if (!hasChildren || expanded === null || dataId === null) return;
@@ -146,11 +145,11 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
             itemsWithHiddenChildren.set(hidden.filter((item) => item !== dataId))
             el.setAttribute(ATTRS.EXPANDED, 'true');
 
-            updateItemList(el);
+            await updateItemList(el);
         } 
     }
 
-    function hideChildrenElements(el: HTMLLIElement) {
+    async function hideChildrenElements(el: HTMLLIElement) {
         const { hasChildren, expanded, dataId } = getElementAttributes(el);
 
         if (!hasChildren || expanded === null || dataId === null) return;
@@ -161,7 +160,7 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
             itemsWithHiddenChildren.set([...hidden, dataId]);
             el.setAttribute(ATTRS.EXPANDED, 'false');
 
-            updateItemList(el);
+            await updateItemList(el);
         }        
     }
 
@@ -232,43 +231,43 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                     e.preventDefault();
 
                     if (key === kbd.ENTER || key === kbd.SPACE) {
-                        updateSelectedElement(items[currentFocusedItemIdx]);
+                        updateSelectedElement(items[focusedItemIdx]);
                     }
                     
-                    else if (key === kbd.ARROW_DOWN && currentFocusedItemIdx !== items.length - 1) {
-                        updateFocusElement(currentFocusedItemIdx + 1);
+                    else if (key === kbd.ARROW_DOWN && focusedItemIdx !== items.length - 1) {
+                        updateFocusedElement(focusedItemIdx + 1);
                     } 
                     
-                    else if (key === kbd.ARROW_UP && currentFocusedItemIdx !== 0) {
-                        updateFocusElement(currentFocusedItemIdx - 1);
+                    else if (key === kbd.ARROW_UP && focusedItemIdx !== 0) {
+                        updateFocusedElement(focusedItemIdx - 1);
                     } 
                     
-                    else if (key === kbd.HOME && currentFocusedItemIdx !== 0) {
-                        updateFocusElement(0);
+                    else if (key === kbd.HOME && focusedItemIdx !== 0) {
+                        updateFocusedElement(0);
                     } 
                     
-                    else if (key === kbd.END && currentFocusedItemIdx != items.length - 1) {
-                        updateFocusElement(items.length - 1);
+                    else if (key === kbd.END && focusedItemIdx != items.length - 1) {
+                        updateFocusedElement(items.length - 1);
                     } 
                     
                     else if (key === kbd.ARROW_LEFT && elementHasChildren(<HTMLLIElement>el) && elementIsExpanded(<HTMLLIElement>el)) {
-                        hideChildrenElements(<HTMLLIElement>el);
+                        await hideChildrenElements(<HTMLLIElement>el);
                     }
 
                     else if (key === kbd.ARROW_LEFT) {
-                        const parentIdx = itemChildren.findIndex((item) => item.childrenIdxs.includes(currentFocusedItemIdx));
+                        const parentIdx = itemChildren.findIndex((item) => item.childrenIdxs.includes(focusedItemIdx));
 
                         if (parentIdx === -1) return;
 
-                        updateFocusElement(parentIdx);
+                        updateFocusedElement(parentIdx);
                     }
 
                     else if (key === kbd.ARROW_RIGHT && elementHasChildren(<HTMLLIElement>el) && elementIsExpanded(<HTMLLIElement>el)) {
-                        updateFocusElement(currentFocusedItemIdx + 1);
+                        updateFocusedElement(focusedItemIdx + 1);
                     }
                     
                     else if (key === kbd.ARROW_RIGHT && elementHasChildren(<HTMLLIElement>el) && !elementIsExpanded(<HTMLLIElement>el)) {
-                        showChildrenElements(<HTMLLIElement>el);
+                        await showChildrenElements(<HTMLLIElement>el);
                     }
 
                     else if (isLetter) {
@@ -277,15 +276,15 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                          * after the current focused element and focus it,
                          * if it does exist. If it does not exist, we check
                          * previous values.
-                         */ 
+                         */
                         const values = items.map((item) => ({ value: item.getAttribute('data-value'), id: item.getAttribute('data-id') }));
 
                         let nextFocusIdx = -1;
 
                         // Check elements after currently focused one.
-                        let foundNextFocusable = values.slice(currentFocusedItemIdx + 1).some((item, i) => {
+                        let foundNextFocusable = values.slice(focusedItemIdx + 1).some((item, i) => {
                             if (item.value?.toLowerCase().at(0) === key) {
-                                nextFocusIdx = currentFocusedItemIdx + 1 + i;
+                                nextFocusIdx = focusedItemIdx + 1 + i;
                                 return true;
                             }
 
@@ -297,7 +296,7 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                              * Check elements before currently focused one,
                              * if no index has been found yet.
                              * */ 
-                            foundNextFocusable = values.slice(0, currentFocusedItemIdx).some((item, i) => {
+                            foundNextFocusable = values.slice(0, focusedItemIdx).some((item, i) => {
                                 if (item.value?.toLowerCase().at(0) === key) {
                                     nextFocusIdx = i;
                                     return true;
@@ -308,7 +307,7 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                         }
 
                         if (foundNextFocusable && values[nextFocusIdx].id) {
-                            updateFocusElement(nextFocusIdx);
+                            updateFocusedElement(nextFocusIdx);
                         } 
                     }
                 }),
@@ -319,19 +318,15 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                     
                     e.stopPropagation();
 
-                    const idx = items.findIndex((item) => item === el);
-
-                    if (idx === -1) return;
                     
                     await handleHiddenElements(<HTMLLIElement>el);
-
-                    // console.log('before click |', 'focused idx:', currentFocusedItemIdx, '| idx:', idx, '| el:', el);
                     
                     updateSelectedElement(<HTMLLIElement>el);
-                    updateFocusElement(idx);
 
-                    // console.log('after click |', 'focused idx:', currentFocusedItemIdx, '| idx:', idx, '| el:', el);
-                    // console.log('----------------------------');
+                    const idx = items.findIndex((item) => item === el);
+                    if (idx === -1) return;
+
+                    updateFocusedElement(idx);
                 })
             );
 
@@ -398,9 +393,8 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
 
         if (items.length === 0) return;
 
-        // Add ids for each element.
+        // Add tabindex for each element.
         items.forEach((item) => {
-            // item.setAttribute('data-id', generateId());
             item.setAttribute(ATTRS.TABINDEX, '-1');
         });
 
@@ -408,19 +402,17 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
          * Set the first item to be the current focused one,
          * and make it tabbable.
          */
-        currentFocusedItem.set(items[0]);
+        focusedItem.set(items[0]);
         items[0].setAttribute(ATTRS.TABINDEX, '0');
 
         // Get the children idxs of each item.
-        // itemChildren.set(getChildrenOfItems());
         itemChildren = getChildrenOfItems();
 
         // Add aria-expanded role for items with children.
-        // get(itemChildren).forEach((item, i) => {
-        //     if (item.hasChildren) items[i].setAttribute(ATTRS.EXPANDED, `${!collapse}`);
-        // });
         itemChildren.forEach((item, i) => {
-            if (item.hasChildren) items[i].setAttribute(ATTRS.EXPANDED, `${!collapse}`);
+            if (item.hasChildren) {
+                items[i].setAttribute(ATTRS.EXPANDED, `${!collapse}`);
+            }
         });
     });
 
@@ -430,8 +422,8 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
         item,
         rootIds,
         group,
-        currentFocusedItem,
-        currentSelectedItem,
+        focusedItem,
+        selectedItem,
         itemsWithHiddenChildren
     }
 }
