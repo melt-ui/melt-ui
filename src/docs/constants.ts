@@ -1,5 +1,5 @@
-import rawFloatingConfig from '$docs/data/long-types/floating-config?raw';
-import type { Prop } from './types';
+import rawFloatingConfig from '$docs/data/long-types/floating-config.js?raw';
+import type { Prop } from './types.js';
 
 export const SEE = {
 	CHANGE_FUNCTIONS: {

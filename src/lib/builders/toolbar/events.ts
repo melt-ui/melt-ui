@@ -1,4 +1,4 @@
-import type { GroupedEvents } from '$lib/internal/types';
+import type { GroupedEvents } from '$lib/internal/types.js';
 
 export const toolbarEvents = {
 	button: ['keydown'] as const,

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createContextMenu, melt } from '$lib';
+	import { createContextMenu, melt } from '$lib/index.js';
 	import { writable } from 'svelte/store';
 	import { ChevronRight, Check } from 'lucide-svelte';
 

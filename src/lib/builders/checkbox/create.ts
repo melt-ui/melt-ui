@@ -7,11 +7,11 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable } from 'svelte/store';
-import type { CheckboxEvents } from './events';
-import type { CreateCheckboxProps } from './types';
+import type { CheckboxEvents } from './events.js';
+import type { CreateCheckboxProps } from './types.js';
 
 const defaults = {
 	disabled: false,

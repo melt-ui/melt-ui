@@ -1,4 +1,4 @@
-import { isHTMLElement } from './is';
+import { isHTMLElement } from './is.js';
 
 export function focus(element: unknown): void {
 	if (isHTMLElement(element)) {

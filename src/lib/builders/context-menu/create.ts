@@ -1,4 +1,4 @@
-import { usePopper } from '$lib/internal/actions';
+import { usePopper } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	addMeltEventListener,
@@ -17,8 +17,8 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { VirtualElement } from '@floating-ui/core';
 import { tick } from 'svelte';
 import { get, writable, type Readable } from 'svelte/store';
@@ -32,9 +32,9 @@ import {
 	setMeltMenuAttribute,
 	type _MenuParts,
 	type Point,
-} from '../menu';
-import type { ContextMenuEvents } from './events';
-import type { CreateContextMenuProps } from './types';
+} from '../menu/index.js';
+import type { ContextMenuEvents } from './events.js';
+import type { CreateContextMenuProps } from './types.js';
 
 const defaults = {
 	arrowSize: 8,

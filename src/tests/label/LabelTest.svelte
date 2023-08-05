@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createLabel } from '$lib';
+	import { createLabel } from '$lib/index.js';
 
 	export let inputId = 'test';
 

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Discord, GitHub, MobileNav } from '$docs/components';
-	import { navConfig, siteConfig } from '$docs/config';
+	import { Discord, GitHub, MobileNav } from '$docs/components/index.js';
+	import { navConfig, siteConfig } from '$docs/config.js';
 </script>
 
 <div class="container flex h-14 items-center rounded-md bg-neutral-800">

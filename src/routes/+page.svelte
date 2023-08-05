@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
 	import { ArrowRight, Check, Copy } from 'lucide-svelte';
-	import { Button } from '$docs/components';
+	import { Button } from '$docs/components/index.js';
 
 	let copied = false;
 	let copytimeout: ReturnType<typeof setTimeout>;

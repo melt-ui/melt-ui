@@ -1,4 +1,4 @@
-import type { GroupedEvents } from '$lib/internal/types';
+import type { GroupedEvents } from '$lib/internal/types.js';
 
 export const toggleEvents = {
 	root: ['click', 'keydown'] as const,

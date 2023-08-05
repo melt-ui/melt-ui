@@ -14,7 +14,7 @@
 </script>
 
 <script lang="ts">
-	import { createTabs, melt } from '$lib';
+	import { createTabs, melt } from '$lib/index.js';
 	import { getContext, setContext } from 'svelte';
 	import { writable, type Writable } from 'svelte/store';
 

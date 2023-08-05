@@ -1,6 +1,6 @@
-import type { Arrayable, MeltEvent } from '$lib/internal/types';
-import { noop } from './callbacks';
-import { isHTMLElement } from './is';
+import type { Arrayable, MeltEvent } from '$lib/internal/types.js';
+import { noop } from './callbacks.js';
+import { isHTMLElement } from './is.js';
 
 /**
  * A type alias for a general event listener function.

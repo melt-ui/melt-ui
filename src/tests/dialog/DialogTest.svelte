@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDialog, melt } from '$lib';
+	import { createDialog, melt } from '$lib/index.js';
 
 	const {
 		elements: { trigger, overlay, content, title, description, close, portalled },

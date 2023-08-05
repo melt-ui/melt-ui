@@ -1,8 +1,8 @@
-import type { FloatingConfig } from '$lib/internal/actions';
-import type { TextDirection } from '$lib/internal/types';
-import type { ChangeFn } from '$lib/internal/helpers';
+import type { FloatingConfig } from '$lib/internal/actions/index.js';
+import type { TextDirection } from '$lib/internal/types.js';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
-import type { createMenuBuilder } from './create';
+import type { createMenuBuilder } from './create.js';
 
 export type _CreateMenuProps = {
 	/**

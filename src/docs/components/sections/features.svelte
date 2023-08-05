@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CheckCircle } from 'lucide-svelte';
-	import { h2 as H2 } from '$docs/components/markdown';
+	import { h2 as H2 } from '$docs/components/markdown/index.js';
 	export let features: string[];
 </script>
 

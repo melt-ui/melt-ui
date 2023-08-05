@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.postcss';
 	import { dev } from '$app/environment';
-	import { JsIndicator, SiteHeader, TailwindIndicator } from '$docs/components';
+	import { JsIndicator, SiteHeader, TailwindIndicator } from '$docs/components/index.js';
 
 	import { inject } from '@vercel/analytics';
 

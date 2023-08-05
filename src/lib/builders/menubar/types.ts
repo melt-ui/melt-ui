@@ -1,6 +1,6 @@
-import type { BuilderReturn } from '$lib/internal/types';
-import type { _Menu } from '../menu';
-import type { createMenubar } from './create';
+import type { BuilderReturn } from '$lib/internal/types.js';
+import type { _Menu } from '../menu/index.js';
+import type { createMenubar } from './create.js';
 
 // Props
 export type CreateMenubarProps = {

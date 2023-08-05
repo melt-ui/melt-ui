@@ -8,16 +8,16 @@ import {
 	kbd,
 	overridable,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable } from 'svelte/store';
-import type { ToolbarEvents } from './events';
+import type { ToolbarEvents } from './events.js';
 import type {
 	CreateToolbarGroupProps,
 	CreateToolbarProps,
 	ToolbarGroupItemProps,
 	ToolbarGroupType,
-} from './types';
+} from './types.js';
 
 const defaults = {
 	loop: true,

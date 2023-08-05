@@ -18,14 +18,14 @@ import {
 	pointInPolygon,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
+} from '$lib/internal/helpers/index.js';
 
-import { useFloating, usePortal } from '$lib/internal/actions';
-import type { MeltActionReturn } from '$lib/internal/types';
+import { useFloating, usePortal } from '$lib/internal/actions/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
 import { get, writable } from 'svelte/store';
-import type { TooltipEvents } from './events';
-import type { CreateTooltipProps } from './types';
+import type { TooltipEvents } from './events.js';
+import type { CreateTooltipProps } from './types.js';
 
 const defaults = {
 	positioning: {

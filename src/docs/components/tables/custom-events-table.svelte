@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { APISchema } from '$docs/types';
-	import { APITableHeading } from '$docs/components';
+	import type { APISchema } from '$docs/types.js';
+	import { APITableHeading } from '$docs/components/index.js';
 	import CustomEventDialog from '../custom-event-dialog.svelte';
 
 	export let data: APISchema['events'];

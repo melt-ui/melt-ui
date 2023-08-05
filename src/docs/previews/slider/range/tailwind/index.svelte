@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createSlider, melt } from '$lib';
+	import { createSlider, melt } from '$lib/index.js';
 
 	const {
 		elements: { root, range, thumb },

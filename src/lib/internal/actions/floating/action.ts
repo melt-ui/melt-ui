@@ -12,8 +12,8 @@ import {
 	computePosition,
 	autoUpdate,
 } from '@floating-ui/dom';
-import type { FloatingConfig } from './types';
-import { isHTMLElement, noop } from '$lib/internal/helpers';
+import type { FloatingConfig } from './types.js';
+import { isHTMLElement, noop } from '$lib/internal/helpers/index.js';
 import type { VirtualElement } from '@floating-ui/core';
 
 const defaultConfig = {

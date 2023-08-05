@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { createProgress, melt, type Toast, type ToastsElements } from '$lib';
+	import {
+		createProgress,
+		melt,
+		type Toast,
+		type ToastsElements,
+	} from '$lib/index.js';
 	import { fly } from 'svelte/transition';
 	import type { ToastData } from './index.svelte';
 	import { X } from 'lucide-svelte';

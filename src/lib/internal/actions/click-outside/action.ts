@@ -3,10 +3,10 @@
 // https://github.com/grail-ui/grail-ui/tree/master/packages/grail-ui/src/clickOutside/clickOutside.ts
 
 import { readable } from 'svelte/store';
-import { addEventListener } from '$lib/internal/helpers/event';
+import { addEventListener } from '$lib/internal/helpers/event.js';
 import { get } from 'svelte/store';
-import { isFunction } from '$lib/internal/helpers/is';
-import type { ClickOutsideConfig } from './types';
+import { isFunction } from '$lib/internal/helpers/is.js';
+import type { ClickOutsideConfig } from './types.js';
 
 /**
  * Creates a readable store that tracks the latest PointerEvent that occurred on the document.

@@ -1,6 +1,6 @@
-import { ATTRS, TYPES } from '$docs/constants';
-import { builderSchema, elementSchema, genProps } from '$docs/utils';
-import type { BuilderData } from '.';
+import { ATTRS, TYPES } from '$docs/constants.js';
+import { builderSchema, elementSchema, genProps } from '$docs/utils/index.js';
+import type { BuilderData } from './index.js';
 
 /**
  * Props that are also returned in the form of stores via the `options` property.

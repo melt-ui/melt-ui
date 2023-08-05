@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { cn, createCopyCodeButton } from '$docs/utils';
-	import { getUsingPreprocessor } from '$routes/store';
+	import { cn, createCopyCodeButton } from '$docs/utils/index.js';
+	import { getUsingPreprocessor } from '$routes/store.js';
 	import { fly } from 'svelte/transition';
 	import { Check, Copy } from 'lucide-svelte';
 

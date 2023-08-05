@@ -4,7 +4,7 @@ description: A control that adds a label to an input element.
 ---
 
 <script>
-    import { APIReference } from "$docs/components"
+    import { APIReference } from "$docs/components/index.js"
     export let schemas
 </script>
 

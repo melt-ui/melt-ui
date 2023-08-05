@@ -3,7 +3,7 @@ import { render, act, fireEvent } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
 import userEvent from '@testing-library/user-event';
-import { kbd, sleep } from '$lib/internal/helpers';
+import { kbd, sleep } from '$lib/internal/helpers/index.js';
 import SelectTest from './SelectTest.svelte';
 import { tick } from 'svelte';
 

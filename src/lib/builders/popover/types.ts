@@ -1,8 +1,8 @@
-import type { FloatingConfig } from '$lib/internal/actions';
-import type { ChangeFn } from '$lib/internal/helpers';
+import type { FloatingConfig } from '$lib/internal/actions/index.js';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
-import type { createPopover } from './create';
-import type { BuilderReturn } from '$lib/internal/types';
+import type { createPopover } from './create.js';
+import type { BuilderReturn } from '$lib/internal/types.js';
 
 export type CreatePopoverProps = {
 	/**

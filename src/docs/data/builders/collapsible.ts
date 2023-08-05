@@ -1,8 +1,8 @@
-import { ATTRS, KBD, PROPS } from '$docs/constants';
-import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema, genProps } from '$docs/utils';
-import { collapsibleEvents } from '$lib/builders/collapsible/events';
-import type { BuilderData } from '.';
+import { ATTRS, KBD, PROPS } from '$docs/constants.js';
+import type { KeyboardSchema } from '$docs/types.js';
+import { builderSchema, elementSchema, genProps } from '$docs/utils/index.js';
+import { collapsibleEvents } from '$lib/builders/collapsible/events.js';
+import type { BuilderData } from './index.js';
 
 /**
  * Props that are also returned in the form of stores via the `options` property.

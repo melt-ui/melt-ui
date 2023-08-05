@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { createCombobox, melt } from '$lib';
-	import { initLevel } from './level';
+	import { createCombobox, melt } from '$lib/index.js';
+	import { initLevel } from './level.js';
 
 	let items = Array(10)
 		.fill(null)

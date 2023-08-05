@@ -1,8 +1,8 @@
-import type { FloatingConfig } from '$lib/internal/actions';
-import type { BuilderReturn } from '$lib/internal/types';
+import type { FloatingConfig } from '$lib/internal/actions/index.js';
+import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
-import type { createSelect } from './create';
-import type { ChangeFn } from '$lib/internal/helpers';
+import type { createSelect } from './create.js';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
 
 export type CreateSelectProps<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any

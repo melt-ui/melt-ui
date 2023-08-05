@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createPinInput, melt } from '$lib';
+	import { createPinInput, melt } from '$lib/index.js';
 
 	const {
 		elements: { root, input },

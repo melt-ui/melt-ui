@@ -1,4 +1,4 @@
-import type { GroupedEvents } from '$lib/internal/types';
+import type { GroupedEvents } from '$lib/internal/types.js';
 
 export const tooltipEvents = {
 	trigger: ['pointerdown', 'pointerenter', 'pointerleave', 'focus', 'blur', 'keydown'] as const,

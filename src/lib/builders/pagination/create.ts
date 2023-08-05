@@ -8,12 +8,12 @@ import {
 	overridable,
 	toWritableStores,
 	addMeltEventListener,
-} from '$lib/internal/helpers';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable, readonly } from 'svelte/store';
-import { getPageItems } from './helpers';
-import type { CreatePaginationProps, Page } from './types';
-import type { PaginationEvents } from './events';
+import { getPageItems } from './helpers.js';
+import type { CreatePaginationProps, Page } from './types.js';
+import type { PaginationEvents } from './events.js';
 
 const defaults = {
 	perPage: 1,

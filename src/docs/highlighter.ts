@@ -1,5 +1,5 @@
 import { get } from 'svelte/store';
-import { highlighterStore } from './stores';
+import { highlighterStore } from './stores.js';
 import { getHighlighter, renderToHtml, type IThemedToken } from 'shiki-es';
 
 async function getShikiHighlighter(fetcher?: typeof fetch) {

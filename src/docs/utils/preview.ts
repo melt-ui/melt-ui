@@ -1,13 +1,13 @@
-import { highlightCode } from '$docs/highlighter';
-import { isBrowser } from '$lib/internal/helpers';
+import { highlightCode } from '$docs/highlighter.js';
+import { isBrowser } from '$lib/internal/helpers/index.js';
 import { error } from '@sveltejs/kit';
 import type { SvelteComponent } from 'svelte';
 import { get, writable } from 'svelte/store';
 import rawGlobalCSS from '../../../other/globalcss.html?raw';
 import rawTailwindConfig from '../../../other/tailwindconfig.html?raw';
-import { data, isBuilderName, type Builder } from '../data/builders';
-import { processMeltAttributes } from '../pp';
-import type { DocResolver, PreviewFile, PreviewResolver } from '../types';
+import { data, isBuilderName, type Builder } from '../data/builders/index.js';
+import { processMeltAttributes } from '../pp.js';
+import type { DocResolver, PreviewFile, PreviewResolver } from '../types.js';
 
 function slugFromPath(path: string) {
 	return path.replace('/src/docs/content/', '').replace('.md', '');
@@ -144,7 +144,7 @@ const replaceLibEntriesRegex = /import (.*) from ["|'](?:\$lib.*)["|']/;
 
 function replaceLibEntries(code: string) {
 	// avoid executing the regex if it doesn't have $lib in the code for performance
-	if (!code.includes('$lib')) return code;
+	if (!code.includes('$lib/index.js')) return code;
 	return code.replace(replaceLibEntriesRegex, "import $1 from '@melt-ui/svelte'");
 }
 

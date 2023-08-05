@@ -1,4 +1,4 @@
-import { usePopper } from '$lib/internal/actions';
+import { usePopper } from '$lib/internal/actions/index.js';
 import {
 	addMeltEventListener,
 	builder,
@@ -17,12 +17,12 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
-import type { HoverCardEvents } from './events';
-import type { CreateHoverCardProps } from './types';
+import type { HoverCardEvents } from './events.js';
+import type { CreateHoverCardProps } from './types.js';
 
 type HoverCardParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<HoverCardParts>('hover-card');

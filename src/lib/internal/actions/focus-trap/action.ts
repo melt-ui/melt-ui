@@ -3,7 +3,7 @@
 // https://github.com/grail-ui/grail-ui/tree/master/packages/grail-ui/src/focusTrap/focusTrap.ts
 
 import type { ActivateOptions, DeactivateOptions, FocusTrap } from 'focus-trap';
-import type { FocusTrapConfig, FocusTrapReturn } from './types';
+import type { FocusTrapConfig, FocusTrapReturn } from './types.js';
 import { writable, readonly } from 'svelte/store';
 import { createFocusTrap as _createFocusTrap } from 'focus-trap';
 

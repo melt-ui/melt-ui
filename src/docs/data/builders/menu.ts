@@ -1,5 +1,5 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants.js';
+import type { APISchema, KeyboardSchema } from '$docs/types.js';
 import {
 	toKebabCase,
 	builderSchema,
@@ -7,9 +7,9 @@ import {
 	genElements,
 	genProps,
 	propsToOptions,
-} from '$docs/utils';
+} from '$docs/utils/index.js';
 
-import { menuEvents } from '$lib/builders/menu/events';
+import { menuEvents } from '$lib/builders/menu/events.js';
 
 export const menuBuilderProps = [
 	PROPS.ARROW_SIZE,

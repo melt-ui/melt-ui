@@ -1,5 +1,5 @@
-import { createSeparator } from '$lib/builders';
-import { usePopper } from '$lib/internal/actions';
+import { createSeparator } from '$lib/builders/index.js';
+import { usePopper } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,
@@ -29,12 +29,12 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { Defaults, MeltActionReturn, TextDirection } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn, TextDirection } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Writable } from 'svelte/store';
 
-import type { MenuEvents } from './events';
+import type { MenuEvents } from './events.js';
 import type {
 	_CheckboxItemProps,
 	_CreateMenuProps,
@@ -44,7 +44,7 @@ import type {
 	_MenuParts,
 	_RadioItemProps,
 	Selector,
-} from './types';
+} from './types.js';
 
 export const SUB_OPEN_KEYS: Record<TextDirection, string[]> = {
 	ltr: [...SELECTION_KEYS, kbd.ARROW_RIGHT],

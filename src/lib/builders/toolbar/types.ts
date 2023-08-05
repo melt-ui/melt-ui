@@ -1,7 +1,7 @@
-import type { BuilderReturn, Orientation } from '$lib/internal/types';
+import type { BuilderReturn, Orientation } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
-import type { createToolbar } from './create';
-import type { ChangeFn } from '$lib/internal/helpers';
+import type { createToolbar } from './create.js';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
 
 export type ToolbarGroupType = 'single' | 'multiple';
 

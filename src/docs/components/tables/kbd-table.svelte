@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { KeyboardSchema } from '$docs/types';
-	import { Kbd } from '$docs/components';
-	import { transformAPIString } from '$docs/utils';
+	import type { KeyboardSchema } from '$docs/types.js';
+	import { Kbd } from '$docs/components/index.js';
+	import { transformAPIString } from '$docs/utils/index.js';
 
 	export let keyboard: KeyboardSchema;
 </script>

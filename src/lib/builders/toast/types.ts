@@ -1,5 +1,5 @@
-import type { BuilderReturn } from '$lib/internal/types';
-import type { createToaster } from './create';
+import type { BuilderReturn } from '$lib/internal/types.js';
+import type { createToaster } from './create.js';
 
 export type EmptyType = Record<never, never>;
 

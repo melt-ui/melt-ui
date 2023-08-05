@@ -4,10 +4,15 @@ import {
 	useEscapeKeydown,
 	useFloating,
 	usePortal,
-} from '$lib/internal/actions';
-import { executeCallbacks, type Callback, noop, isHTMLElement } from '$lib/internal/helpers';
+} from '$lib/internal/actions/index.js';
+import {
+	executeCallbacks,
+	type Callback,
+	noop,
+	isHTMLElement,
+} from '$lib/internal/helpers/index.js';
 import type { Action } from 'svelte/action';
-import type { PopperArgs, PopperConfig } from './types';
+import type { PopperArgs, PopperConfig } from './types.js';
 
 const defaultConfig = {
 	floating: {},

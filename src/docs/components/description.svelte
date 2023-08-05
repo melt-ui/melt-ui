@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$docs/utils';
+	import { cn } from '$docs/utils/index.js';
 	import { balancer } from 'svelte-action-balancer';
 	let className: string | undefined | null = undefined;
 	export { className as class };

@@ -12,12 +12,12 @@ import {
 	styleToString,
 	toWritableStores,
 	type ChangeFn,
-} from '$lib/internal/helpers';
-import type { MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
 import { derived, writable } from 'svelte/store';
-import type { AccordionEvents } from './events';
-import type { AccordionHeadingProps, AccordionItemProps, CreateAccordionProps } from './types';
+import type { AccordionEvents } from './events.js';
+import type { AccordionHeadingProps, AccordionItemProps, CreateAccordionProps } from './types.js';
 
 type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
 const { name, selector } = createElHelpers<AccordionParts>('accordion');
