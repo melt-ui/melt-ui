@@ -163,8 +163,8 @@ export type _MenuParts =
 	| 'submenu'
 	| 'subtrigger'
 	| 'subarrow'
-    | 'group'
-    | 'group-label'
+	| 'group'
+	| 'group-label';
 
 export type Selector = (part?: _MenuParts | undefined) => string;
 
