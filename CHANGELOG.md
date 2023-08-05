@@ -1,5 +1,145 @@
 # @melt-ui/svelte
 
+## 0.32.1
+
+### Patch Changes
+
+- 270c98e5: fix: outside click not being allowed on dialog
+
+## 0.32.0
+
+### Minor Changes
+
+- b1bfc1a3: - Toast
+  - Change pointerenter behaviour from reset timer to pause timer
+  - Add getPercentage function to calculate percentage of time remaining
+
+### Patch Changes
+
+- 6e4b44e7: refactor: menu types
+
+## 0.31.3
+
+### Patch Changes
+
+- 2e29832f: [Combobox] Fix type generation issue
+
+## 0.31.2
+
+### Patch Changes
+
+- 14bbbef4: Fix portalling issues
+
+## 0.31.1
+
+### Patch Changes
+
+- f5bd0768: fix various slider bugs
+- 21d19c31: [Dialog] fix: no longer require trigger to open dialog
+- b2d33548: refactor: internal menu types
+
+## 0.31.0
+
+### Minor Changes
+
+- cba5bb7c: convert controllable returned states from readables to writables
+- 714f4b3c: Combobox: add controlled support
+
+## 0.30.1
+
+### Patch Changes
+
+- 98e05474: fix: Select & Menu keydowns leaking
+
+## 0.30.0
+
+### Minor Changes
+
+- 8218662d: [Select]: Add multiple prop
+
+### Patch Changes
+
+- c2bca81c: [Slider] - Fix vertical slider arrow behavior
+- 3b86f0eb: change accordion type prop to multiple
+
+## 0.29.0 - The Big Bad
+
+[Release Notes](https://github.com/melt-ui/melt-ui/blob/develop/RELEASE_NOTES/the-big-bad.md)
+
+### Minor Changes
+
+- f44c54eb: Dialog: Add portalled element
+
+### Patch Changes
+
+- d2d7c98f: Fix: vertical slider inversion
+
+## 0.28.0
+
+### Minor Changes
+
+- 8400a4e5: Replaced the `melt` attribute for the `use:melt` action
+- ab1ec0bd: New Feature: Controlled Props
+  - Controlled props give you more control over the state & behavior of the builder components.
+- 8e5414c8: [New Feature] Custom Melt Events
+
+## 0.28.0-next.0
+
+### Minor Changes
+
+- ab1ec0bd: New Feature: Controlled Props
+  - Controlled props give you more control over the state & behavior of the builder components.
+- 8e5414c8: [New Feature] Custom Melt Events
+
+## 0.27.3
+
+### Patch Changes
+
+- a3781f7c: fix: Remove `@melt-ui/svelte` alias, add text transform
+
+## 0.27.2
+
+### Patch Changes
+
+- 6f521b22: [Hover Card]
+  - Fix bug where the link/button is unclickable on mobile
+
+## 0.27.1
+
+### Patch Changes
+
+- 467a8ff3: Select: fix bug where quick sliding would not set the values to min/max
+
+## 0.27.0
+
+### Minor Changes
+
+- 1afcc4b2: Select: add label el store
+
+### Patch Changes
+
+- 60067d43: Select: fix value controlled usage not setting valueLabel
+- 548258cd: Select: rename label to valueLabel
+- f94c61ec: Combobox: include for attribute in label
+
+## 0.26.3
+
+### Patch Changes
+
+- 714d8e18: fix: tooltip behaviour
+
+## 0.26.2
+
+### Patch Changes
+
+- 75ba9c3b: fix: tooltip pointerover now only works with mouse inputs
+
+## 0.26.1
+
+### Patch Changes
+
+- 61123724: tooltip: change defaults; improve behaviour consistency
+
 ## 0.26.0
 
 ### Minor Changes

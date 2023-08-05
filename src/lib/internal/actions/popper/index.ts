@@ -1,2 +1,2 @@
-export * from './popper';
-export * from './popper.types';
+export * from './action';
+export * from './types';

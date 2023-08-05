@@ -1,21 +1,24 @@
-import { usePopper } from '$lib/internal/actions/popper';
+import { usePopper } from '$lib/internal/actions';
 import {
-	addEventListener,
+	FIRST_LAST_KEYS,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	derivedWithUnsubscribe,
 	effect,
 	executeCallbacks,
 	getNextFocusable,
+	getPortalDestination,
 	getPreviousFocusable,
 	isHTMLElement,
-	kbd,
-	FIRST_LAST_KEYS,
-	noop,
-	styleToString,
 	isLeftClick,
+	kbd,
+	noop,
+	overridable,
+	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
+import type { MeltActionReturn } from '$lib/internal/types';
 import type { VirtualElement } from '@floating-ui/core';
 import { tick } from 'svelte';
 import { get, writable, type Readable } from 'svelte/store';
@@ -26,10 +29,11 @@ import {
 	getMenuItems,
 	handleMenuNavigation,
 	handleTabNavigation,
-	type Point,
-	type MenuParts,
 	setMeltMenuAttribute,
+	type _MenuParts,
+	type Point,
 } from '../menu';
+import type { ContextMenuEvents } from './events';
 import type { CreateContextMenuProps } from './types';
 
 const defaults = {
@@ -38,23 +42,34 @@ const defaults = {
 		placement: 'bottom-start',
 	},
 	preventScroll: true,
-} satisfies Defaults<CreateContextMenuProps>;
+	closeOnEscape: true,
+	closeOnOutsideClick: true,
+	portal: undefined,
+	loop: false,
+	dir: 'ltr',
+	defaultOpen: false,
+	forceVisible: false,
+} satisfies CreateContextMenuProps;
 
-const { name, selector } = createElHelpers<MenuParts>('context-menu');
+const { name, selector } = createElHelpers<_MenuParts>('context-menu');
 
 export function createContextMenu(props?: CreateContextMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;
-	const rootOptions = writable(withDefaults);
-	const rootOpen = writable(false);
+
+	const rootOptions = toWritableStores(withDefaults);
+	const { positioning, closeOnOutsideClick, portal } = rootOptions;
+
+	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
+	const rootOpen = overridable(openWritable, withDefaults?.onOpenChange);
 	const rootActiveTrigger = writable<HTMLElement | null>(null);
 	const nextFocusable = writable<HTMLElement | null>(null);
 	const prevFocusable = writable<HTMLElement | null>(null);
 
 	const {
 		item,
-		checkboxItem,
+		createCheckboxItem,
 		arrow,
-		createSubMenu,
+		createSubmenu,
 		createMenuRadioGroup,
 		rootIds,
 		separator,
@@ -70,8 +85,10 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		selector: 'context-menu',
 	});
 
-	const point = writable<Point>({ x: 0, y: 0 });
-	const virtual: Readable<VirtualElement> = derivedWithUnsubscribe([point], ([$point]) => {
+	const point = writable<Point | null>(null);
+	const virtual: Readable<VirtualElement | null> = derivedWithUnsubscribe([point], ([$point]) => {
+		if ($point === null) return null;
+
 		return {
 			getBoundingClientRect: () =>
 				DOMRect.fromRect({
@@ -83,67 +100,71 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	});
 	const longPressTimer = writable(0);
 
+	function handleClickOutside(e: PointerEvent) {
+		if (e.defaultPrevented) return;
+
+		const target = e.target;
+		if (!isHTMLElement(target)) return;
+
+		if (target.id === rootIds.trigger && isLeftClick(e)) {
+			rootOpen.set(false);
+			return;
+		}
+
+		if (target.id !== rootIds.trigger && !target.closest(selector())) {
+			rootOpen.set(false);
+		}
+	}
+
 	const menu = builder(name(), {
-		stores: rootOpen,
-		returned: ($rootOpen) => {
+		stores: [rootOpen, rootActiveTrigger],
+		returned: ([$rootOpen, $rootActiveTrigger]) => {
+			// We only want to render the menu when it's open and has an active trigger.
+			const ready = $rootOpen && $rootActiveTrigger;
 			return {
 				role: 'menu',
-				hidden: $rootOpen ? undefined : true,
+				hidden: ready ? undefined : true,
 				style: styleToString({
-					display: $rootOpen ? undefined : 'none',
+					display: ready ? undefined : 'none',
 				}),
 				id: rootIds.menu,
 				'aria-labelledby': rootIds.trigger,
-				'data-state': $rootOpen ? 'open' : 'closed',
+				'data-state': ready ? 'open' : 'closed',
 				tabindex: -1,
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<ContextMenuEvents['menu']> => {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[rootOpen, rootActiveTrigger, rootOptions],
-				([$rootOpen, $rootActiveTrigger, $rootOptions]) => {
+				[rootOpen, rootActiveTrigger, positioning, closeOnOutsideClick, portal],
+				([$rootOpen, $rootActiveTrigger, $positioning, $closeOnOutsideClick, $portal]) => {
 					unsubPopper();
-					if ($rootOpen && $rootActiveTrigger) {
-						tick().then(() => {
-							setMeltMenuAttribute(node, selector);
-							const $virtual = get(virtual);
-
-							const popper = usePopper(node, {
-								anchorElement: $virtual,
-								open: rootOpen,
-								options: {
-									floating: $rootOptions.positioning,
-									clickOutside: {
-										handler: (e: PointerEvent) => {
-											if (e.defaultPrevented) return;
-											const target = e.target;
-											if (!isHTMLElement(target)) return;
-
-											if (target.id === rootIds.trigger && isLeftClick(e)) {
-												rootOpen.set(false);
-												return;
-											}
-
-											if (target.id !== rootIds.trigger && !target.closest(selector())) {
-												rootOpen.set(false);
-											}
-										},
-									},
-								},
-							});
-
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
+					if (!($rootOpen && $rootActiveTrigger)) return;
+					tick().then(() => {
+						setMeltMenuAttribute(node, selector);
+						const $virtual = get(virtual);
+						const popper = usePopper(node, {
+							anchorElement: $virtual ? $virtual : $rootActiveTrigger,
+							open: rootOpen,
+							options: {
+								floating: $positioning,
+								clickOutside: $closeOnOutsideClick
+									? {
+											handler: handleClickOutside,
+									  }
+									: null,
+								portal: getPortalDestination(node, $portal),
+							},
 						});
-					}
+						if (!popper || !popper.destroy) return;
+						unsubPopper = popper.destroy;
+					});
 				}
 			);
 
 			const unsubEvents = executeCallbacks(
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const target = e.target;
 					const menuEl = e.currentTarget;
 					if (!isHTMLElement(target) || !isHTMLElement(menuEl)) return;
@@ -203,7 +224,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				}),
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<ContextMenuEvents['trigger']> => {
 			applyAttrsIfDisabled(node);
 
 			const handleOpen = (e: MouseEvent | PointerEvent) => {
@@ -222,7 +243,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			};
 
 			const unsub = executeCallbacks(
-				addEventListener(node, 'contextmenu', (e) => {
+				addMeltEventListener(node, 'contextmenu', (e) => {
 					/**
 					 * Clear the long press because some platforms already
 					 * fire a contextmenu event on long press.
@@ -231,7 +252,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					handleOpen(e);
 					e.preventDefault();
 				}),
-				addEventListener(node, 'pointerdown', (e) => {
+				addMeltEventListener(node, 'pointerdown', (e) => {
 					if (!isTouchOrPen(e)) return;
 
 					// Clear the long press in case there's multiple touchpoints
@@ -239,17 +260,17 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 
 					longPressTimer.set(window.setTimeout(() => handleOpen(e), 700));
 				}),
-				addEventListener(node, 'pointermove', (e) => {
+				addMeltEventListener(node, 'pointermove', (e) => {
 					if (!isTouchOrPen(e)) return;
 
 					clearTimerStore(longPressTimer);
 				}),
-				addEventListener(node, 'pointercancel', (e) => {
+				addMeltEventListener(node, 'pointercancel', (e) => {
 					if (!isTouchOrPen(e)) return;
 
 					clearTimerStore(longPressTimer);
 				}),
-				addEventListener(node, 'pointerup', (e) => {
+				addMeltEventListener(node, 'pointerup', (e) => {
 					if (!isTouchOrPen(e)) return;
 
 					clearTimerStore(longPressTimer);
@@ -266,16 +287,22 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	});
 
 	return {
-		open: rootOpen,
+		elements: {
+			menu,
+			trigger,
+			item,
+			arrow,
+			separator,
+		},
+		states: {
+			open: rootOpen,
+		},
+		builders: {
+			createSubmenu,
+			createCheckboxItem,
+			createMenuRadioGroup,
+		},
 		options: rootOptions,
-		menu,
-		trigger,
-		item,
-		checkboxItem,
-		arrow,
-		separator,
-		createSubMenu,
-		createMenuRadioGroup,
 	};
 }
 

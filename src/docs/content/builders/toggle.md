@@ -22,42 +22,19 @@ to create your toggle.
 
 To disable a the toggle, set the `disabled` argument to `true`.
 
-```svelte {5,8,10}
+```svelte {7,10,12}
 <script lang="ts">
-  import { createToggle } from '@melt-ui/svelte'
+	import { createToggle } from '@melt-ui/svelte'
 
-  const { toggle, pressed, disabled } = createToggle({
-    disabled: true
-  })
-  // or
-  disabled.set(true)
-  // or
-  disabled.update((d) => !d)
-</script>
-```
-
-### Controlled access
-
-To programmatically control the Toggle, you can directly set the `pressed` store. you can also
-directly set the `disabled` store.
-
-```svelte {4-5,8-9,12-13,15-16}
-<script lang="ts">
-  import { createToggle } from '@melt-ui/svelte'
-
-  export let pressed = true
-  export let disabled = false
-
-  const { pressed: pressedStore, disabled: disabledStore } = createToggle({
-    pressed,
-    disabled
-  })
-
-  $: pressedStore.set(pressed)
-  pressedStore.subscribe((v) => (pressed = v))
-
-  $: disabledStore.set(pressed)
-  disabledStore.subscribe((v) => (disabled = v))
+	const {
+		options: { disabled }
+	} = createToggle({
+		disabled: true
+	})
+	// or
+	disabled.set(true)
+	// or
+	disabled.update((d) => !d)
 </script>
 ```
 

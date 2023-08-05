@@ -1,18 +1,28 @@
+import {
+	builder,
+	createElHelpers,
+	omit,
+	overridable,
+	toWritableStores,
+} from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
-import { builder, createElHelpers } from '@melt-ui/svelte/internal/helpers';
 import { writable } from 'svelte/store';
 import type { CreateProgressProps } from './types';
 
 const defaults = {
+	defaultValue: 0,
 	max: 100,
 } satisfies Defaults<CreateProgressProps>;
 
 const { name } = createElHelpers('progress');
 
-export const createProgress = (props: CreateProgressProps = defaults) => {
-	const withDefaults = { ...defaults, ...props };
-	const value = writable(withDefaults.value ?? null);
-	const max = writable(withDefaults.max);
+export const createProgress = (props?: CreateProgressProps) => {
+	const withDefaults = { ...defaults, ...props } satisfies CreateProgressProps;
+
+	const options = toWritableStores(omit(withDefaults, 'value'));
+	const { max } = options;
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	const root = builder(name(), {
 		stores: [value, max],
@@ -32,9 +42,12 @@ export const createProgress = (props: CreateProgressProps = defaults) => {
 	});
 
 	return {
-		value,
-		max,
-		root,
-		progress: root,
+		elements: {
+			root,
+		},
+		states: {
+			value,
+		},
+		options,
 	};
 };

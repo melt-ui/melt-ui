@@ -25,13 +25,13 @@ To create an indeterminate checkbox, set the `checked` argument as `indeterminat
 
 ```svelte {5,8}
 <script lang="ts">
-  import { createCheckbox } from '@melt-ui/svelte'
+	import { createCheckbox } from '@melt-ui/svelte'
 
-  const { root, input, isChecked, isIndeterminate, checked } = createCheckbox({
-    checked: 'indeterminate'
-  })
-  // or
-  checked.set('indeterminate')
+	const { root, input, isChecked, isIndeterminate, checked } = createCheckbox({
+		checked: 'indeterminate'
+	})
+	// or
+	checked.set('indeterminate')
 </script>
 ```
 
@@ -41,36 +41,13 @@ To disable the checkbox, set the `disabled` argument as `true`.
 
 ```svelte /disabled: true/#hi /options.update((prev) => ({ ...prev, disabled: true }))/#hi
 <script lang="ts">
-  import { createCheckbox } from '@melt-ui/svelte'
+	import { createCheckbox } from '@melt-ui/svelte'
 
-  const { root, input, isChecked, isIndeterminate, checked, options } = createCheckbox({
-    disabled: true
-  })
-  // or
-  options.update((prev) => ({ ...prev, disabled: true }))
-</script>
-```
-
-### Controlled access
-
-To programatically control the checkbox, you can directly set the `checked` store. You can also
-update the `options` store with new arguments.
-
-```svelte {12,14}
-<script lang="ts">
-  import { createCheckbox } from '@melt-ui/svelte'
-
-  export let checked: boolean | 'indeterminate' = true
-  export let disabled = false
-
-  const { checked: checkedStore, options } = createCheckbox({
-    disabled,
-    checked
-  })
-
-  $: checkedStore.set(checked)
-  checkedStore.subscribe((v) => (checked = v))
-  $: options.update((o) => ({ ...o, disabled }))
+	const { root, input, isChecked, isIndeterminate, checked, options } = createCheckbox({
+		disabled: true
+	})
+	// or
+	options.update((prev) => ({ ...prev, disabled: true }))
 </script>
 ```
 

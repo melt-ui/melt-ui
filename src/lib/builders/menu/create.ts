@@ -1,15 +1,21 @@
-import { usePopper } from '$lib/internal/actions/popper';
+import { createSeparator } from '$lib/builders';
+import { usePopper } from '$lib/internal/actions';
 import {
+	FIRST_LAST_KEYS,
+	SELECTION_KEYS,
 	addEventListener,
+	addHighlight,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	createTypeaheadSearch,
+	derivedVisible,
 	derivedWithUnsubscribe,
 	effect,
 	executeCallbacks,
-	FIRST_LAST_KEYS,
 	generateId,
 	getNextFocusable,
+	getPortalDestination,
 	getPreviousFocusable,
 	handleRovingFocus,
 	isBrowser,
@@ -17,27 +23,26 @@ import {
 	isHTMLElement,
 	kbd,
 	noop,
+	overridable,
+	removeHighlight,
 	removeScroll,
-	SELECTION_KEYS,
 	sleep,
 	styleToString,
-	addHighlight,
-	removeHighlight,
+	toWritableStores,
 } from '$lib/internal/helpers';
-import type { Defaults, TextDirection } from '$lib/internal/types';
+import type { Defaults, MeltActionReturn, TextDirection } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Writable } from 'svelte/store';
-import { createSeparator } from '../separator';
+
+import type { MenuEvents } from './events';
 import type {
-	CheckboxItemProps,
-	CreateMenuProps,
-	CreateRadioGroupProps,
-	CreateSubmenuProps,
-	ItemProps,
-	MenuBuilderOptions,
-	MenuParts,
-	RadioItemActionProps,
-	RadioItemProps,
+	_CheckboxItemProps,
+	_CreateMenuProps,
+	_CreateRadioGroupProps,
+	_CreateSubmenuProps,
+	_MenuBuilderOptions,
+	_MenuParts,
+	_RadioItemProps,
 	Selector,
 } from './types';
 
@@ -56,12 +61,27 @@ const defaults = {
 		placement: 'bottom',
 	},
 	preventScroll: true,
-} satisfies Defaults<CreateMenuProps>;
+	closeOnEscape: true,
+	closeOnOutsideClick: true,
+	portal: 'body',
+	loop: false,
+	dir: 'ltr',
+	defaultOpen: false,
+} satisfies Defaults<_CreateMenuProps>;
 
-export function createMenuBuilder(opts: MenuBuilderOptions) {
-	const { name, selector } = createElHelpers<MenuParts>(opts.selector);
+export function createMenuBuilder(opts: _MenuBuilderOptions) {
+	const { name, selector } = createElHelpers<_MenuParts>(opts.selector);
 
-	const rootOptions = opts.rootOptions;
+	const {
+		preventScroll,
+		arrowSize,
+		positioning,
+		closeOnEscape,
+		closeOnOutsideClick,
+		portal,
+		forceVisible,
+	} = opts.rootOptions;
+
 	const rootOpen = opts.rootOpen;
 	const rootActiveTrigger = opts.rootActiveTrigger;
 	/**
@@ -114,49 +134,65 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		trigger: generateId(),
 	};
 
+	const isVisible = derivedVisible({
+		open: rootOpen,
+		forceVisible,
+		activeTrigger: rootActiveTrigger,
+	});
+
 	const rootMenu = builder(name(), {
-		stores: [rootOpen],
-		returned: ([$rootOpen]) => {
+		stores: [isVisible, portal],
+		returned: ([$isVisible, $portal]) => {
 			return {
 				role: 'menu',
-				hidden: $rootOpen ? undefined : true,
+				hidden: $isVisible ? undefined : true,
 				style: styleToString({
-					display: $rootOpen ? undefined : 'none',
+					display: $isVisible ? undefined : 'none',
 				}),
 				id: rootIds.menu,
 				'aria-labelledby': rootIds.trigger,
-				'data-state': $rootOpen ? 'open' : 'closed',
+				'data-state': $isVisible ? 'open' : 'closed',
+				'data-portal': $portal ? '' : undefined,
 				tabindex: -1,
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<MenuEvents['menu']> => {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[rootOpen, rootActiveTrigger, rootOptions],
-				([$rootOpen, $rootActiveTrigger, $rootOptions]) => {
+				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal, closeOnEscape],
+				([
+					$isVisible,
+					$rootActiveTrigger,
+					$positioning,
+					$closeOnOutsideClick,
+					$portal,
+					$closeOnEscape,
+				]) => {
 					unsubPopper();
-					if ($rootOpen && $rootActiveTrigger) {
-						tick().then(() => {
-							setMeltMenuAttribute(node, selector);
-							const popper = usePopper(node, {
-								anchorElement: $rootActiveTrigger,
-								open: rootOpen,
-								options: {
-									floating: $rootOptions.positioning,
-								},
-							});
-
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
+					if (!$isVisible || !$rootActiveTrigger) return;
+					tick().then(() => {
+						setMeltMenuAttribute(node, selector);
+						const popper = usePopper(node, {
+							anchorElement: $rootActiveTrigger,
+							open: rootOpen,
+							options: {
+								floating: $positioning,
+								clickOutside: $closeOnOutsideClick ? undefined : null,
+								portal: getPortalDestination(node, $portal),
+								escapeKeydown: $closeOnEscape ? undefined : null,
+							},
 						});
-					}
+
+						if (popper && popper.destroy) {
+							unsubPopper = popper.destroy;
+						}
+					});
 				}
 			);
 
 			const unsubEvents = executeCallbacks(
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const target = e.target;
 					const menuEl = e.currentTarget;
 					if (!isHTMLElement(target) || !isHTMLElement(menuEl)) return;
@@ -178,7 +214,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					 */
 					if (e.key === kbd.TAB) {
 						e.preventDefault();
-						rootActiveTrigger.set(null);
 						rootOpen.set(false);
 						handleTabNavigation(e, nextFocusable, prevFocusable);
 						return;
@@ -215,10 +250,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				tabindex: 0,
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<MenuEvents['trigger']> => {
 			applyAttrsIfDisabled(node);
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
 					const $rootOpen = get(rootOpen);
 					const triggerEl = e.currentTarget;
 					if (!isHTMLElement(triggerEl)) return;
@@ -226,25 +261,23 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					handleOpen(triggerEl);
 					if (!$rootOpen) e.preventDefault();
 				}),
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const triggerEl = e.currentTarget;
 					if (!isHTMLElement(triggerEl)) return;
+					if (!(SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN)) return;
+					e.preventDefault();
+					handleOpen(triggerEl);
 
-					if (SELECTION_KEYS.includes(e.key) || e.key === kbd.ARROW_DOWN) {
-						e.preventDefault();
-						handleOpen(triggerEl);
+					const menuId = triggerEl.getAttribute('aria-controls');
+					if (!menuId) return;
 
-						const menuId = triggerEl.getAttribute('aria-controls');
-						if (!menuId) return;
+					const menu = document.getElementById(menuId);
+					if (!menu) return;
 
-						const menu = document.getElementById(menuId);
-						if (!isHTMLElement(menu)) return;
+					const menuItems = getMenuItems(menu);
+					if (!menuItems.length) return;
 
-						const menuItems = getMenuItems(menu);
-						if (!menuItems.length) return;
-
-						handleRovingFocus(menuItems[0]);
-					}
+					handleRovingFocus(menuItems[0]);
 				})
 			);
 
@@ -255,13 +288,13 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	});
 
 	const rootArrow = builder(name('arrow'), {
-		stores: rootOptions,
-		returned: ($rootOptions) => ({
+		stores: arrowSize,
+		returned: ($arrowSize) => ({
 			'data-arrow': true,
 			style: styleToString({
 				position: 'absolute',
-				width: `var(--arrow-size, ${$rootOptions.arrowSize}px)`,
-				height: `var(--arrow-size, ${$rootOptions.arrowSize}px)`,
+				width: `var(--arrow-size, ${$arrowSize}px)`,
+				height: `var(--arrow-size, ${$arrowSize}px)`,
 			}),
 		}),
 	});
@@ -274,14 +307,12 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				'data-orientation': 'vertical',
 			};
 		},
-		action: (node: HTMLElement, params: ItemProps = {}) => {
-			const { onSelect } = params;
-
+		action: (node: HTMLElement): MeltActionReturn<MenuEvents['item']> => {
 			setMeltMenuAttribute(node, selector);
 			applyAttrsIfDisabled(node);
 
 			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', (e) => {
+				addMeltEventListener(node, 'pointerdown', (e) => {
 					const itemEl = e.currentTarget;
 					if (!isHTMLElement(itemEl)) return;
 					if (isElementDisabled(itemEl)) {
@@ -289,7 +320,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						return;
 					}
 				}),
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
 					const itemEl = e.currentTarget;
 					if (!isHTMLElement(itemEl)) return;
 					if (isElementDisabled(itemEl)) {
@@ -301,23 +332,21 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						handleRovingFocus(itemEl);
 						return;
 					}
-					onSelect?.(e);
-					if (e.defaultPrevented) return;
 					rootOpen.set(false);
 				}),
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					onItemKeyDown(e);
 				}),
-				addEventListener(node, 'pointermove', (e) => {
+				addMeltEventListener(node, 'pointermove', (e) => {
 					onMenuItemPointerMove(e);
 				}),
-				addEventListener(node, 'pointerleave', (e) => {
+				addMeltEventListener(node, 'pointerleave', (e) => {
 					onMenuItemPointerLeave(e);
 				}),
-				addEventListener(node, 'focusin', (e) => {
+				addMeltEventListener(node, 'focusin', (e) => {
 					onItemFocusIn(e);
 				}),
-				addEventListener(node, 'focusout', (e) => {
+				addMeltEventListener(node, 'focusout', (e) => {
 					onItemFocusOut(e);
 				})
 			);
@@ -329,86 +358,113 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 	});
 
 	const checkboxItemDefaults = {
-		checked: writable(false),
+		defaultChecked: false,
+		disabled: false,
 	};
 
-	const checkboxItem = builder(name('checkbox-item'), {
-		returned: () => ({
-			role: 'menuitemcheckbox',
-			tabindex: -1,
-			'data-orientation': 'vertical',
-		}),
-		action: (node: HTMLElement, params: CheckboxItemProps) => {
-			setMeltMenuAttribute(node, selector);
-			applyAttrsIfDisabled(node);
-			const { checked, onSelect } = { ...checkboxItemDefaults, ...params };
-			const $checked = get(checked);
-			node.setAttribute('aria-checked', isIndeterminate($checked) ? 'mixed' : String($checked));
-			node.setAttribute('data-state', getCheckedState($checked));
+	const createCheckboxItem = (props?: _CheckboxItemProps) => {
+		const withDefaults = { ...checkboxItemDefaults, ...props } satisfies _CheckboxItemProps;
+		const checkedWritable = withDefaults.checked ?? writable(withDefaults.defaultChecked ?? null);
+		const checked = overridable(checkedWritable, withDefaults.onCheckedChange);
+		const disabled = writable(withDefaults.disabled);
 
-			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', (e) => {
-					const itemEl = e.currentTarget;
-					if (!isHTMLElement(itemEl)) return;
-					if (isElementDisabled(itemEl)) {
-						e.preventDefault();
-						return;
-					}
-				}),
-				addEventListener(node, 'click', (e) => {
-					const itemEl = e.currentTarget;
-					if (!isHTMLElement(itemEl)) return;
-					if (isElementDisabled(itemEl)) {
-						e.preventDefault();
-						return;
-					}
+		const checkboxItem = builder(name('checkbox-item'), {
+			stores: [checked, disabled],
+			returned: ([$checked, $disabled]) => {
+				return {
+					role: 'menuitemcheckbox',
+					tabindex: -1,
+					'data-orientation': 'vertical',
+					'aria-checked': isIndeterminate($checked) ? 'mixed' : $checked ? 'true' : 'false',
+					'data-disabled': $disabled ? '' : undefined,
+					'data-state': getCheckedState($checked),
+				} as const;
+			},
+			action: (node: HTMLElement): MeltActionReturn<MenuEvents['checkboxItem']> => {
+				setMeltMenuAttribute(node, selector);
+				applyAttrsIfDisabled(node);
 
-					if (e.defaultPrevented) {
-						handleRovingFocus(itemEl);
-						return;
-					}
-					onSelect?.(e);
-					if (e.defaultPrevented) return;
-					checked.update((prev) => {
-						if (isIndeterminate(prev)) return true;
-						return !prev;
-					});
+				const unsub = executeCallbacks(
+					addMeltEventListener(node, 'pointerdown', (e) => {
+						const itemEl = e.currentTarget;
+						if (!isHTMLElement(itemEl)) return;
+						if (isElementDisabled(itemEl)) {
+							e.preventDefault();
+							return;
+						}
+					}),
+					addMeltEventListener(node, 'click', (e) => {
+						const itemEl = e.currentTarget;
+						if (!isHTMLElement(itemEl)) return;
+						if (isElementDisabled(itemEl)) {
+							e.preventDefault();
+							return;
+						}
 
-					rootOpen.set(false);
-				}),
-				addEventListener(node, 'keydown', (e) => {
-					onItemKeyDown(e);
-				}),
-				addEventListener(node, 'pointermove', (e) => {
-					const itemEl = e.currentTarget;
-					if (!isHTMLElement(itemEl)) return;
+						if (e.defaultPrevented) {
+							handleRovingFocus(itemEl);
+							return;
+						}
+						checked.update((prev) => {
+							if (isIndeterminate(prev)) return true;
+							return !prev;
+						});
 
-					if (isElementDisabled(itemEl)) {
-						onItemLeave(e);
-						return;
-					}
+						// We're waiting for a tick to let the checked store update
+						// before closing the menu. If we don't, and the user was to hit
+						// spacebar or enter twice really fast, the menu would close and
+						// reopen without the checked state being updated.
+						tick().then(() => {
+							rootOpen.set(false);
+						});
+					}),
+					addMeltEventListener(node, 'keydown', (e) => {
+						onItemKeyDown(e);
+					}),
+					addMeltEventListener(node, 'pointermove', (e) => {
+						const itemEl = e.currentTarget;
+						if (!isHTMLElement(itemEl)) return;
 
-					onMenuItemPointerMove(e, itemEl);
-				}),
-				addEventListener(node, 'pointerleave', (e) => {
-					onMenuItemPointerLeave(e);
-				}),
-				addEventListener(node, 'focusin', (e) => {
-					onItemFocusIn(e);
-				}),
-				addEventListener(node, 'focusout', (e) => {
-					onItemFocusOut(e);
-				})
-			);
+						if (isElementDisabled(itemEl)) {
+							onItemLeave(e);
+							return;
+						}
 
-			return {
-				destroy: unsub,
-			};
-		},
-	});
+						onMenuItemPointerMove(e, itemEl);
+					}),
+					addMeltEventListener(node, 'pointerleave', (e) => {
+						onMenuItemPointerLeave(e);
+					}),
+					addMeltEventListener(node, 'focusin', (e) => {
+						onItemFocusIn(e);
+					}),
+					addMeltEventListener(node, 'focusout', (e) => {
+						onItemFocusOut(e);
+					})
+				);
 
-	const createMenuRadioGroup = (args: CreateRadioGroupProps = {}) => {
-		const value = writable(args.value ?? null);
+				return {
+					destroy: unsub,
+				};
+			},
+		});
+
+		return {
+			elements: {
+				checkboxItem,
+			},
+			states: {
+				checked,
+			},
+			options: {
+				disabled,
+			},
+		};
+	};
+
+	const createMenuRadioGroup = (args: _CreateRadioGroupProps = {}) => {
+		const valueWritable = args.value ?? writable(args.defaultValue ?? null);
+		const value = overridable(valueWritable, args.onValueChange);
 
 		const radioGroup = builder(name('radio-group'), {
 			returned: () => ({
@@ -423,7 +479,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		const radioItem = builder(name('radio-item'), {
 			stores: [value],
 			returned: ([$value]) => {
-				return (itemProps: RadioItemProps) => {
+				return (itemProps: _RadioItemProps) => {
 					const { value: itemValue, disabled } = { ...radioItemDefaults, ...itemProps };
 					const checked = $value === itemValue;
 
@@ -439,12 +495,11 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					};
 				};
 			},
-			action: (node: HTMLElement, params: RadioItemActionProps = {}) => {
+			action: (node: HTMLElement): MeltActionReturn<MenuEvents['radioItem']> => {
 				setMeltMenuAttribute(node, selector);
-				const { onSelect } = params;
 
 				const unsub = executeCallbacks(
-					addEventListener(node, 'pointerdown', (e) => {
+					addMeltEventListener(node, 'pointerdown', (e) => {
 						const itemEl = e.currentTarget;
 						if (!isHTMLElement(itemEl)) return;
 						const itemValue = node.dataset.value;
@@ -455,7 +510,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							return;
 						}
 					}),
-					addEventListener(node, 'click', (e) => {
+					addMeltEventListener(node, 'click', (e) => {
 						const itemEl = e.currentTarget;
 						if (!isHTMLElement(itemEl)) return;
 						const itemValue = node.dataset.value;
@@ -472,16 +527,21 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							handleRovingFocus(itemEl);
 							return;
 						}
-						onSelect?.(e);
-						if (e.defaultPrevented) return;
 
 						value.set(itemValue);
-						rootOpen.set(false);
+
+						// We're waiting for a tick to let the checked store update
+						// before closing the menu. If we don't, and the user was to hit
+						// spacebar or enter twice really fast, the menu would close and
+						// reopen without the checked state being updated.
+						tick().then(() => {
+							rootOpen.set(false);
+						});
 					}),
-					addEventListener(node, 'keydown', (e) => {
+					addMeltEventListener(node, 'keydown', (e) => {
 						onItemKeyDown(e);
 					}),
-					addEventListener(node, 'pointermove', (e) => {
+					addMeltEventListener(node, 'pointermove', (e) => {
 						const itemEl = e.currentTarget;
 						if (!isHTMLElement(itemEl)) return;
 
@@ -494,13 +554,13 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						}
 						onMenuItemPointerMove(e, itemEl);
 					}),
-					addEventListener(node, 'pointerleave', (e) => {
+					addMeltEventListener(node, 'pointerleave', (e) => {
 						onMenuItemPointerLeave(e);
 					}),
-					addEventListener(node, 'focusin', (e) => {
+					addMeltEventListener(node, 'focusin', (e) => {
 						onItemFocusIn(e);
 					}),
-					addEventListener(node, 'focusout', (e) => {
+					addMeltEventListener(node, 'focusout', (e) => {
 						onItemFocusOut(e);
 					})
 				);
@@ -518,14 +578,22 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		});
 
 		return {
-			radioGroup,
-			radioItem,
-			isChecked,
-			value,
+			elements: {
+				radioGroup,
+				radioItem,
+			},
+			states: {
+				value,
+			},
+			helpers: {
+				isChecked,
+			},
 		};
 	};
 
-	const { root: separator } = createSeparator({
+	const {
+		elements: { root: separator },
+	} = createSeparator({
 		orientation: 'horizontal',
 	});
 
@@ -540,13 +608,18 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			placement: 'right-start',
 			gutter: 8,
 		},
-	} satisfies Defaults<CreateSubmenuProps>;
+	} satisfies Defaults<_CreateSubmenuProps>;
 
-	const createSubMenu = (args?: CreateSubmenuProps) => {
-		const withDefaults = { ...subMenuDefaults, ...args } as CreateSubmenuProps;
-		const subOptions = writable(withDefaults);
+	const createSubmenu = (args?: _CreateSubmenuProps) => {
+		const withDefaults = { ...subMenuDefaults, ...args } satisfies _CreateSubmenuProps;
 
 		const subOpen = writable(false);
+
+		// options
+		const options = toWritableStores(withDefaults);
+
+		const { positioning, arrowSize, disabled } = options;
+
 		const subActiveTrigger = writable<HTMLElement | null>(null);
 		const subOpenTimer = writable<number | null>(null);
 		const pointerGraceTimer = writable(0);
@@ -556,53 +629,71 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 			trigger: generateId(),
 		};
 
+		onMount(() => {
+			/**
+			 * Set active trigger on mount to handle controlled/forceVisible
+			 * state.
+			 */
+			const subTrigger = document.getElementById(subIds.trigger);
+			if (subTrigger) {
+				subActiveTrigger.set(subTrigger);
+			}
+		});
+
+		const subIsVisible = derivedVisible({
+			open: subOpen,
+			forceVisible,
+			activeTrigger: subActiveTrigger,
+		});
+
 		const subMenu = builder(name('submenu'), {
-			stores: [subOpen],
-			returned: ([$subOpen]) => {
+			stores: [subIsVisible],
+			returned: ([$subIsVisible]) => {
 				return {
 					role: 'menu',
-					hidden: $subOpen ? undefined : true,
+					hidden: $subIsVisible ? undefined : true,
 					style: styleToString({
-						display: $subOpen ? undefined : 'none',
+						display: $subIsVisible ? undefined : 'none',
 					}),
 					id: subIds.menu,
 					'aria-labelledby': subIds.trigger,
-					'data-state': $subOpen ? 'open' : 'closed',
+					'data-state': $subIsVisible ? 'open' : 'closed',
 					tabindex: -1,
 				} as const;
 			},
-			action: (node: HTMLElement) => {
+			action: (node: HTMLElement): MeltActionReturn<MenuEvents['submenu']> => {
 				let unsubPopper = noop;
 
 				const unsubDerived = effect(
-					[subOpen, subActiveTrigger, subOptions],
-					([$subOpen, $subActiveTrigger, $subOptions]) => {
+					[subIsVisible, positioning],
+					([$subIsVisible, $positioning]) => {
 						unsubPopper();
-						if ($subOpen && $subActiveTrigger) {
-							tick().then(() => {
-								const parentMenuEl = getParentMenu($subActiveTrigger);
+						if (!$subIsVisible) return;
+						const activeTrigger = get(subActiveTrigger);
+						if (!activeTrigger) return;
+						tick().then(() => {
+							const parentMenuEl = getParentMenu(activeTrigger);
 
-								const popper = usePopper(node, {
-									anchorElement: $subActiveTrigger,
-									open: subOpen,
-									options: {
-										floating: $subOptions.positioning,
-										portal: parentMenuEl ? parentMenuEl : undefined,
-										clickOutside: null,
-										focusTrap: null,
-									},
-								});
-
-								if (popper && popper.destroy) {
-									unsubPopper = popper.destroy;
-								}
+							const popper = usePopper(node, {
+								anchorElement: activeTrigger,
+								open: subOpen,
+								options: {
+									floating: $positioning,
+									portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
+									clickOutside: null,
+									focusTrap: null,
+								},
 							});
-						}
+
+							if (popper && popper.destroy) {
+								unsubPopper = popper.destroy;
+							}
+						});
 					}
 				);
 
 				const unsubEvents = executeCallbacks(
-					addEventListener(node, 'keydown', (e) => {
+					addMeltEventListener(node, 'keydown', (e) => {
 						if (e.key === kbd.ESCAPE) {
 							return;
 						}
@@ -635,7 +726,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 								if ($subActiveTrigger) {
 									handleRovingFocus($subActiveTrigger);
 								}
-								subActiveTrigger.set(null);
 								return false;
 							});
 							return;
@@ -647,7 +737,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						 */
 						if (e.key === kbd.TAB) {
 							e.preventDefault();
-							rootActiveTrigger.set(null);
 							rootOpen.set(false);
 							handleTabNavigation(e, nextFocusable, prevFocusable);
 							return;
@@ -658,10 +747,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 						}
 					}),
-					addEventListener(node, 'pointermove', (e) => {
+					addMeltEventListener(node, 'pointermove', (e) => {
 						onMenuPointerMove(e);
 					}),
-					addEventListener(node, 'focusout', (e) => {
+					addMeltEventListener(node, 'focusout', (e) => {
 						const $subActiveTrigger = get(subActiveTrigger);
 						if (get(isUsingKeyboard)) {
 							const target = e.target;
@@ -670,7 +759,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 							if (!submenuEl.contains(target) && target !== $subActiveTrigger) {
 								subOpen.set(false);
-								subActiveTrigger.set(null);
 							}
 						} else {
 							const menuEl = e.currentTarget;
@@ -679,7 +767,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 
 							if (!menuEl.contains(relatedTarget) && relatedTarget !== $subActiveTrigger) {
 								subOpen.set(false);
-								subActiveTrigger.set(null);
 							}
 						}
 					})
@@ -696,8 +783,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		});
 
 		const subTrigger = builder(name('subtrigger'), {
-			stores: [subOpen, subOptions],
-			returned: ([$subOpen, $subOptions]) => {
+			stores: [subOpen, disabled],
+			returned: ([$subOpen, $disabled]) => {
 				return {
 					role: 'menuitem',
 					id: subIds.trigger,
@@ -705,11 +792,11 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 					'aria-controls': subIds.menu,
 					'aria-expanded': $subOpen,
 					'data-state': $subOpen ? 'open' : 'closed',
-					'data-disabled': $subOptions.disabled ? '' : undefined,
+					'data-disabled': $disabled ? '' : undefined,
 					'aria-haspopop': 'menu',
 				} as const;
 			},
-			action: (node: HTMLElement) => {
+			action: (node: HTMLElement): MeltActionReturn<MenuEvents['subTrigger']> => {
 				setMeltMenuAttribute(node, selector);
 				applyAttrsIfDisabled(node);
 
@@ -720,7 +807,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				};
 
 				const unsubEvents = executeCallbacks(
-					addEventListener(node, 'click', (e) => {
+					addMeltEventListener(node, 'click', (e) => {
 						if (e.defaultPrevented) return;
 
 						const triggerEl = e.currentTarget;
@@ -739,7 +826,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							});
 						}
 					}),
-					addEventListener(node, 'keydown', (e) => {
+					addMeltEventListener(node, 'keydown', (e) => {
 						const $typed = get(typed);
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl) || isElementDisabled(triggerEl)) return;
@@ -764,7 +851,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							handleRovingFocus(firstItem);
 						}
 					}),
-					addEventListener(node, 'pointermove', (e) => {
+					addMeltEventListener(node, 'pointermove', (e) => {
 						if (!isMouse(e)) return;
 						onItemEnter(e);
 
@@ -788,7 +875,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							);
 						}
 					}),
-					addEventListener(node, 'pointerleave', (e) => {
+					addMeltEventListener(node, 'pointerleave', (e) => {
 						if (!isMouse(e)) return;
 						clearTimerStore(subOpenTimer);
 
@@ -829,7 +916,7 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 							pointerGraceIntent.set(null);
 						}
 					}),
-					addEventListener(node, 'focusout', (e) => {
+					addMeltEventListener(node, 'focusout', (e) => {
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
 
@@ -844,11 +931,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 						const menu = document.getElementById(menuId);
 
 						if (menu && !menu.contains(relatedTarget)) {
-							subActiveTrigger.set(null);
 							subOpen.set(false);
 						}
 					}),
-					addEventListener(node, 'focusin', (e) => {
+					addMeltEventListener(node, 'focusin', (e) => {
 						onItemFocusIn(e);
 					})
 				);
@@ -863,13 +949,13 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		});
 
 		const subArrow = builder(name('subarrow'), {
-			stores: subOptions,
-			returned: ($subOptions) => ({
+			stores: arrowSize,
+			returned: ($arrowSize) => ({
 				'data-arrow': true,
 				style: styleToString({
 					position: 'absolute',
-					width: `var(--arrow-size, ${$subOptions.arrowSize}px)`,
-					height: `var(--arrow-size, ${$subOptions.arrowSize}px)`,
+					width: `var(--arrow-size, ${$arrowSize}px)`,
+					height: `var(--arrow-size, ${$arrowSize}px)`,
 				}),
 			}),
 		});
@@ -886,10 +972,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		});
 
 		effect([pointerGraceIntent], ([$pointerGraceIntent]) => {
-			if (!isBrowser) return;
-			if (!$pointerGraceIntent) {
-				window.clearTimeout(get(pointerGraceTimer));
-			}
+			if (!isBrowser || $pointerGraceIntent) return;
+			window.clearTimeout(get(pointerGraceTimer));
 		});
 
 		effect([subOpen], ([$subOpen]) => {
@@ -921,13 +1005,56 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		});
 
 		return {
-			subTrigger,
-			subMenu,
-			subOpen,
-			subArrow,
-			subOptions,
+			elements: {
+				subTrigger,
+				subMenu,
+				subArrow,
+			},
+			states: {
+				subOpen,
+			},
+			options,
 		};
 	};
+
+	onMount(() => {
+		/**
+		 * We need to set the active trigger on mount to cover the
+		 * case where the user sets the `open` store to `true` without
+		 * clicking on the trigger.
+		 */
+		const triggerEl = document.getElementById(rootIds.trigger);
+		if (isHTMLElement(triggerEl) && get(rootOpen)) {
+			rootActiveTrigger.set(triggerEl);
+		}
+
+		const unsubs: Array<() => void> = [];
+
+		const handlePointer = () => isUsingKeyboard.set(false);
+
+		const handleKeyDown = () => {
+			isUsingKeyboard.set(true);
+			unsubs.push(
+				executeCallbacks(
+					addEventListener(document, 'pointerdown', handlePointer, { capture: true, once: true }),
+					addEventListener(document, 'pointermove', handlePointer, { capture: true, once: true })
+				)
+			);
+		};
+
+		const keydownListener = (e: KeyboardEvent) => {
+			if (e.key === kbd.ESCAPE && get(closeOnEscape)) {
+				rootOpen.set(false);
+				return;
+			}
+		};
+		unsubs.push(addEventListener(document, 'keydown', handleKeyDown, { capture: true }));
+		unsubs.push(addEventListener(document, 'keydown', keydownListener));
+
+		return () => {
+			unsubs.forEach((unsub) => unsub());
+		};
+	});
 
 	/* -------------------------------------------------------------------------------------------------
 	 * Root Effects
@@ -943,9 +1070,8 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		if (!isBrowser) return;
 
 		const unsubs: Array<() => void> = [];
-		const $rootOptions = get(rootOptions);
 
-		if ($rootOpen && $rootOptions.preventScroll) {
+		if ($rootOpen && get(preventScroll)) {
 			unsubs.push(removeScroll());
 		}
 
@@ -984,29 +1110,23 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		};
 	});
 
-	onMount(() => {
-		const handlePointer = () => isUsingKeyboard.set(false);
-		const handleKeyDown = () => {
-			isUsingKeyboard.set(true);
-			document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
-			document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
-		};
-		document.addEventListener('keydown', handleKeyDown, { capture: true });
+	effect(rootOpen, ($rootOpen) => {
+		if (!isBrowser) return;
 
-		const keydownListener = (e: KeyboardEvent) => {
-			if (e.key === kbd.ESCAPE) {
+		const handlePointer = () => isUsingKeyboard.set(false);
+		const handleKeyDown = (e: KeyboardEvent) => {
+			isUsingKeyboard.set(true);
+			if (e.key === kbd.ESCAPE && $rootOpen) {
 				rootOpen.set(false);
 				return;
 			}
 		};
-		document.addEventListener('keydown', keydownListener);
 
-		return () => {
-			document.removeEventListener('keydown', handleKeyDown, { capture: true });
-			document.removeEventListener('pointerdown', handlePointer, { capture: true });
-			document.removeEventListener('pointermove', handlePointer, { capture: true });
-			document.removeEventListener('keydown', keydownListener);
-		};
+		return executeCallbacks(
+			addEventListener(document, 'pointerdown', handlePointer, { capture: true, once: true }),
+			addEventListener(document, 'pointermove', handlePointer, { capture: true, once: true }),
+			addEventListener(document, 'keydown', handleKeyDown, { capture: true })
+		);
 	});
 
 	function handleOpen(triggerEl: HTMLElement) {
@@ -1016,8 +1136,6 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 				nextFocusable.set(getNextFocusable(triggerEl));
 				prevFocusable.set(getPreviousFocusable(triggerEl));
 				rootActiveTrigger.set(triggerEl);
-			} else {
-				rootActiveTrigger.set(null);
 			}
 
 			return isOpen;
@@ -1176,10 +1294,10 @@ export function createMenuBuilder(opts: MenuBuilderOptions) {
 		menu: rootMenu,
 		open: rootOpen,
 		item,
-		checkboxItem,
 		arrow: rootArrow,
-		options: rootOptions,
-		createSubMenu,
+		options: opts.rootOptions,
+		createCheckboxItem,
+		createSubmenu,
 		createMenuRadioGroup,
 		separator,
 		rootIds,

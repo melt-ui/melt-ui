@@ -1,0 +1,40 @@
+<script lang="ts">
+	import { createTooltip, melt } from '$lib';
+	import { fade } from 'svelte/transition';
+	import { Plus } from 'lucide-svelte';
+
+	const {
+		elements: { trigger, content, arrow },
+		states: { open },
+	} = createTooltip({
+		positioning: {
+			placement: 'top',
+		},
+		openDelay: 500,
+		closeOnPointerDown: false,
+	});
+</script>
+
+<button type="button" class="trigger" use:melt={$trigger} aria-label="Add">
+	<Plus class="square-4" aria-label="plus" />
+</button>
+
+{#if $open}
+	<div
+		use:melt={$content}
+		transition:fade={{ duration: 100 }}
+		class="z-10 rounded-md bg-white shadow-sm"
+	>
+		<div use:melt={$arrow} />
+		<p class="px-4 py-1 text-magnum-700">Add item to library</p>
+	</div>
+{/if}
+
+<style lang="postcss">
+	.trigger {
+		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white;
+		@apply text-magnum-900 transition-colors hover:bg-white/90;
+		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
+		@apply p-0 text-sm font-medium;
+	}
+</style>

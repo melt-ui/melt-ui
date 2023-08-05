@@ -1,72 +1,80 @@
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
+import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { radioGroupEvents } from '$lib/builders/radio-group/events';
 import type { BuilderData } from '.';
 
-const builder: APISchema = {
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	PROPS.DISABLED,
+	PROPS.REQUIRED,
+	PROPS.LOOP,
+	{
+		name: 'orientation',
+		type: ['"horizontal"', '"vertical"'],
+		default: '"vertical"',
+		description: 'The orientation of the radio group.',
+	},
+];
+const BUILDER_NAME = 'radio group';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createRadioGroup',
-	description: DESCRIPTIONS.BUILDER('radio group'),
 	props: [
+		...OPTION_PROPS,
 		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the radio group is disabled.',
-		},
-		{
-			name: 'loop',
-			type: 'boolean',
-			default: 'true',
-			description: 'Whether or not the radio group should loop when navigating with the keyboard.',
-		},
-		{
-			name: 'required',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the radio group is required.',
-		},
-		{
-			name: 'orientation',
-			type: ['"horizontal"', '"vertical"'],
-			default: '"vertical"',
-			description: 'The orientation of the radio group.',
+			name: 'defaultValue',
+			type: 'string',
+			description: 'The value of the default checked radio item.',
 		},
 		{
 			name: 'value',
-			type: 'string',
-			description: 'The value of the checked radio item.',
+			type: 'Writable<string>',
+			description: 'A writable store that can be used to update the radio group value.',
+			see: SEE.BRING_YOUR_OWN_STORE,
+		},
+		{
+			name: 'onValueChange',
+			type: 'ChangeFn<string>',
+			description: 'A callback that is called when the value of the radio group changes.',
+			see: SEE.CHANGE_FUNCTIONS,
 		},
 	],
-	returnedProps: [
-		{
-			name: 'options',
-			type: 'Writable<CreateRadioGroupProps>',
-			description: 'A writable store that can be used to update the radio group props.',
-		},
-		{
-			name: 'value',
-			type: 'Writable<string | null>',
-			description: 'A writable store that can be used to update the radio group value.',
-		},
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the radio group root.',
-			link: '#root',
 		},
 		{
 			name: 'item',
 			description: 'The builder store used to create the radio group item.',
-			link: '#item',
 		},
 		{
 			name: 'itemInput',
 			description: 'The builder store used to create the radio group item input.',
-			link: '#iteminput',
 		},
 	],
-};
+	states: [
+		{
+			name: 'value',
+			type: 'Writable<string>',
+			description: 'A writable store with the current value of the radio group.',
+		},
+	],
+	helpers: [
+		{
+			name: 'isChecked',
+			type: 'Readable<(itemValue: string) => boolean>',
+			description:
+				'A derived store function that returns whether or not the radio item is checked.',
+		},
+	],
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The radio group component.',
 	dataAttributes: [
 		{
@@ -78,10 +86,9 @@ const root: APISchema = {
 			value: ATTRS.MELT('radio group'),
 		},
 	],
-};
+});
 
-const item: APISchema = {
-	title: 'item',
+const item = elementSchema('item', {
 	description: 'The radio group item components.',
 	props: [
 		{
@@ -119,10 +126,10 @@ const item: APISchema = {
 			value: ATTRS.MELT('radio group item'),
 		},
 	],
-};
+	events: radioGroupEvents['item'],
+});
 
-const itemInput: APISchema = {
-	title: 'itemInput',
+const itemInput = elementSchema('itemInput', {
 	description: 'The hidden input element used for form submission.',
 	props: [
 		{
@@ -138,7 +145,7 @@ const itemInput: APISchema = {
 			description: 'Whether or not the radio item is disabled.',
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

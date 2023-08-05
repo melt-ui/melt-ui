@@ -4,9 +4,11 @@ description: Displays rich content in a portal, triggered by a button.
 ---
 
 <script>
-    import { APIReference, KbdTable } from '$docs/components' 
+    import { APIReference, KbdTable, Preview } from '$docs/components' 
     export let schemas
     export let keyboard
+    export let snippets
+    export let previews
 </script>
 
 ## Anatomy
@@ -27,7 +29,7 @@ To specify that the popover should be open by default, set the `defaultOpen` pro
 
 ```ts {2}
 const { trigger, content, open, arrow, close } = createPopover({
-  defaultOpen: true
+	defaultOpen: true
 })
 ```
 
@@ -40,8 +42,8 @@ indicates the previous open state, and next indicates the next open state that w
 uncontrolled usage. The value returned by the callback will be used as the next open state.
 
 ```ts {2,3,4,5,6,7,8}
-const { trigger, content, open, arrow, close } = createPopover({
-  onOpenChange: ({ prev, next }) => {
+const popover = createPopover({
+  onOpenChange: ({ curr, next }) => {
     // Do something with the open state
     if (/* some condition */) {
       return false
@@ -60,10 +62,18 @@ If you don't pass an `open` prop, the builder will create a store for you, and r
 ```ts {1,4}
 const open = writable(false)
 
-const { trigger, content, arrow, close } = createPopover({
-  open
+const popover = createPopover({
+	open
 })
 ```
+
+## Example Components
+
+### Nested Popovers
+
+<Preview code={snippets.nested}>
+    <svelte:component this={previews.nested} />
+</Preview>
 
 ## API Reference
 

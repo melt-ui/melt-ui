@@ -1,82 +1,106 @@
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { isMac } from '@melt-ui/svelte/internal/helpers';
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
+import { ATTRS, KBD, SEE } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { pinInputEvents } from '$lib/builders/pin-input/events';
+import { isMac } from '$lib/internal/helpers';
 import type { BuilderData } from '.';
 
-const builder: APISchema = {
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	{
+		name: 'placeholder',
+		type: 'string',
+		default: '○',
+		description: 'The placeholder character to use for empty pin-inputs.',
+	},
+	{
+		name: 'value',
+		type: 'string[]',
+		description: 'The value of the pin-input.',
+	},
+	{
+		name: 'name',
+		type: 'string',
+		description: 'The name of the pin-input.',
+	},
+	{
+		name: 'disabled',
+		type: 'boolean',
+		default: 'false',
+		description: 'Whether or not the pin-input is disabled.',
+	},
+	{
+		name: 'type',
+		type: 'string',
+		default: 'text',
+		description: 'The type of the pin-input.',
+	},
+];
+
+const BUILDER_NAME = 'pin input';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createPinInput',
-	description: DESCRIPTIONS.BUILDER('pin input'),
 	props: [
+		...OPTION_PROPS,
 		{
-			name: 'placeholder',
-			type: 'string',
-			default: '○',
-			description: 'The placeholder character to use for empty pin-inputs.',
-		},
-		{
-			name: 'value',
+			name: 'defaultValue',
 			type: 'string[]',
-			description: 'The value of the pin-input.',
-		},
-		{
-			name: 'name',
-			type: 'string',
-			description: 'The name of the pin-input.',
-		},
-		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the pin-input is disabled.',
-		},
-		{
-			name: 'type',
-			type: 'string',
-			default: 'text',
-			description: 'The type of the pin-input.',
-		},
-	],
-	returnedProps: [
-		{
-			name: 'options',
-			type: 'Writable<CreatePinInputProps>',
-			description: 'A writable store that contains the props used to create the pin-input.',
-		},
-		{
-			name: 'clear',
-			type: '() => void',
-			description: 'A function that clears the pin-input.',
+			description: 'The default value of the pin-input.',
 		},
 		{
 			name: 'value',
 			type: 'Writable<string[]>',
 			description: 'A writable store that controls the value of the pin-input.',
+			see: SEE.BRING_YOUR_OWN_STORE,
+		},
+		{
+			name: 'onValueChange',
+			type: 'ChangeFn<string[]>',
+			description:
+				'A callback called when the value of the `value` store should be changed. This is useful for controlling the value of the pin-input from outside the pin-input.',
+			see: SEE.CHANGE_FUNCTIONS,
+		},
+	],
+	elements: [
+		{
+			name: 'root',
+			description: 'The builder store used to create the pin-input root.',
+		},
+		{
+			name: 'input',
+			description: 'The builder store used to create the pin-input input.',
+		},
+		{
+			name: 'hiddenInput',
+			description: 'The builder store used to create the pin-input hidden input.',
+		},
+	],
+	states: [
+		{
+			name: 'value',
+			type: 'Writable<string[]>',
+			description: 'A writable store that returns the value of the pin-input.',
 		},
 		{
 			name: 'valueStr',
 			type: 'Readable<string>',
 			description: 'A derived store that returns the value of the pin-input as a string.',
 		},
+	],
+	helpers: [
 		{
-			name: 'root',
-			description: 'The builder store used to create the pin-input root.',
-			link: '#root',
-		},
-		{
-			name: 'input',
-			description: 'The builder store used to create the pin-input input.',
-			link: '#input',
-		},
-		{
-			name: 'hiddenInput',
-			description: 'The builder store used to create the pin-input hidden input.',
-			link: '#hiddeninput',
+			name: 'clear',
+			type: '() => void',
+			description: 'A function that clears the pin-input.',
 		},
 	],
-};
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The root pin-input element.',
 	dataAttributes: [
 		{
@@ -88,10 +112,9 @@ const root: APISchema = {
 			value: ATTRS.MELT('pin-input'),
 		},
 	],
-};
+});
 
-const input: APISchema = {
-	title: 'input',
+const input = elementSchema('input', {
 	description: 'The pin-input input element.',
 	dataAttributes: [
 		{
@@ -103,10 +126,10 @@ const input: APISchema = {
 			value: ATTRS.MELT('input'),
 		},
 	],
-};
+	events: pinInputEvents['input'],
+});
 
-const hiddenInput: APISchema = {
-	title: 'hiddenInput',
+const hiddenInput = elementSchema('hiddenInput', {
 	description: 'The hidden input element that stores the pin-input value for form submission.',
 	dataAttributes: [
 		{
@@ -114,7 +137,7 @@ const hiddenInput: APISchema = {
 			value: ATTRS.MELT('hiddenInput'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

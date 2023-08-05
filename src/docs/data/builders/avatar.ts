@@ -1,40 +1,63 @@
-import { ATTRS, DESCRIPTIONS } from '$docs/constants';
-import type { APISchema } from '$docs/types';
+import { ATTRS, SEE } from '$docs/constants';
+import { builderSchema, elementSchema } from '$docs/utils';
 import type { BuilderData } from '.';
 
-const builder: APISchema = {
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	{
+		name: 'src',
+		type: 'string',
+		default: '""',
+		description: 'The source of the image to display.',
+	},
+	{
+		name: 'delayMs',
+		type: 'number',
+		default: '0',
+		description: 'The amount of time in milliseconds to wait before displaying the image.',
+	},
+];
+
+const builder = builderSchema('avatar', {
 	title: 'createAvatar',
-	description: DESCRIPTIONS.BUILDER('avatar'),
 	props: [
+		...OPTION_PROPS,
 		{
-			name: 'src',
-			type: 'string',
-			default: '""',
-			description: 'The URL of the image to render.',
+			name: 'loadingStatus',
+			type: 'Writable<"loading" | "loaded" | "error">',
+			description: 'An optional writable store used to control the loading status of the image.',
+			see: SEE.BRING_YOUR_OWN_STORE,
 		},
 		{
-			name: 'delayMs',
-			type: 'number',
-			default: 'undefined',
-			description: 'The number of milliseconds to wait before rendering the fallback image.',
+			name: 'onLoadingStatusChange',
+			type: 'ChangeFn<"loading" | "loaded" | "error">',
+			description: 'A callback invoked when the loading status store of the avatar changes.',
+			see: SEE.CHANGE_FUNCTIONS,
 		},
 	],
-	returnedProps: [
+	elements: [
 		{
 			name: 'image',
-			description: 'The builder store used to create the image element.',
-			link: '#image',
+			description: 'The builder store used to create the the image element.',
 		},
 		{
 			name: 'fallback',
 			description: 'The builder store used to create the fallback element.',
-			link: '#fallback',
 		},
 	],
-};
+	states: [
+		{
+			name: 'loadingStatus',
+			type: 'Writable<"loading" | "loaded" | "error">',
+			description: 'A writable store with the current loading status of the image.',
+		},
+	],
+	options: OPTION_PROPS,
+});
 
-const image: APISchema = {
-	title: 'image',
+const image = elementSchema('image', {
 	description: 'The image element that is rendered when the `src` prop is provided.',
 	dataAttributes: [
 		{
@@ -42,10 +65,9 @@ const image: APISchema = {
 			value: ATTRS.MELT('avatar image'),
 		},
 	],
-};
+});
 
-const fallback: APISchema = {
-	title: 'fallback',
+const fallback = elementSchema('fallback', {
 	description:
 		'The fallback element that is rendered before the image loads or if it fails to load.',
 	dataAttributes: [
@@ -54,7 +76,7 @@ const fallback: APISchema = {
 			value: ATTRS.MELT('avatar fallback'),
 		},
 	],
-};
+});
 
 const schemas = [builder, image, fallback];
 

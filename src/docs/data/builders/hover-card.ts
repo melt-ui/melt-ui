@@ -1,80 +1,63 @@
-import { ATTRS, DESCRIPTIONS, LONG_TYPES } from '$docs/constants';
-import type { APISchema } from '$docs/types';
+import { ATTRS, PROPS } from '$docs/constants';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { hoverCardEvents } from '$lib/builders/hover-card/events';
 import type { BuilderData } from '.';
+import { getMenuArrowSchema } from './menu';
 
-const builder: APISchema = {
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	{
+		name: 'openDelay',
+		type: 'number',
+		default: '700',
+		description: 'The delay in milliseconds before the hover card opens.',
+	},
+	{
+		name: 'closeDelay',
+		type: 'number',
+		default: '300',
+		description: 'The delay in milliseconds before the hover card closes.',
+	},
+	PROPS.POSITIONING({ default: "placement: 'bottom'" }),
+	PROPS.ARROW_SIZE,
+	PROPS.CLOSE_ON_OUTSIDE_CLICK,
+	PROPS.CLOSE_ON_ESCAPE,
+	PROPS.FORCE_VISIBLE,
+	PROPS.PORTAL,
+];
+
+const BUILDER_NAME = 'hover card';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createHoverCard',
-	description: DESCRIPTIONS.BUILDER('hover card'),
-	props: [
-		{
-			name: 'defaultOpen',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether the hover card is open by default.',
-		},
-		{
-			name: 'positioning',
-			type: 'FloatingConfig',
-			default: 'placement: "bottom"',
-			description: DESCRIPTIONS.FLOATING_CONFIG,
-			longType: LONG_TYPES.FLOATING_CONFIG,
-		},
-		{
-			name: 'arrowSize',
-			type: 'number',
-			default: '8',
-			description: DESCRIPTIONS.ARROW_SIZE,
-		},
-		{
-			name: 'closeOnOutsideClick',
-			type: 'boolean',
-			default: 'true',
-			description: DESCRIPTIONS.CLOSE_ON_CLICK_OUTSIDE('hover card'),
-		},
-		{
-			name: 'openDelay',
-			type: 'number',
-			default: '700',
-			description: 'The delay in milliseconds before the hover card opens.',
-		},
-		{
-			name: 'closeDelay',
-			type: 'number',
-			default: '300',
-			description: 'The delay in milliseconds before the hover card closes.',
-		},
-	],
-	returnedProps: [
-		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls the open state of the hover card.',
-		},
-		{
-			name: 'options',
-			type: 'Writable<CreateHoverCardProps>',
-			description: 'A writable store that controls the options of the hover card.',
-		},
+	props: [...OPTION_PROPS, PROPS.DEFAULT_OPEN, PROPS.OPEN, PROPS.ON_OPEN_CHANGE],
+	elements: [
 		{
 			name: 'trigger',
 			description: 'The builder store used to create the hover card trigger.',
-			link: '#trigger',
 		},
 		{
 			name: 'content',
 			description: 'The builder store used to create the hover card content.',
-			link: '#content',
 		},
 		{
 			name: 'arrow',
 			description: 'The builder store used to create the hover card arrow.',
-			link: '#arrow',
 		},
 	],
-};
+	states: [
+		{
+			name: 'open',
+			type: 'Writable<boolean>',
+			description: 'A writable store with the open state of the hover card.',
+		},
+	],
+	options: OPTION_PROPS,
+});
 
-const trigger: APISchema = {
-	title: 'trigger',
+const trigger = elementSchema('trigger', {
 	description: 'The hover card trigger element.',
 	dataAttributes: [
 		{
@@ -86,10 +69,10 @@ const trigger: APISchema = {
 			value: ATTRS.MELT('trigger'),
 		},
 	],
-};
+	events: hoverCardEvents['trigger'],
+});
 
-const content: APISchema = {
-	title: 'content',
+const content = elementSchema('content', {
 	description: 'The content displayed in the hovercard',
 	dataAttributes: [
 		{
@@ -101,22 +84,10 @@ const content: APISchema = {
 			value: ATTRS.MELT('content'),
 		},
 	],
-};
+	events: hoverCardEvents['content'],
+});
 
-const arrow: APISchema = {
-	title: 'arrow',
-	description: 'The optional arrow element that points to the trigger.',
-	dataAttributes: [
-		{
-			name: 'data-arrow',
-			value: ATTRS.TRUE,
-		},
-		{
-			name: 'data-melt-hover-card-arrow',
-			value: ATTRS.MELT('arrow'),
-		},
-	],
-};
+const arrow = getMenuArrowSchema(BUILDER_NAME);
 
 const schemas = [builder, trigger, content, arrow];
 

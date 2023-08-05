@@ -1,56 +1,55 @@
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
+import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { switchEvents } from '$lib/builders/switch/events';
 import type { BuilderData } from '.';
 
-const builder: APISchema = {
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	PROPS.DISABLED,
+	PROPS.REQUIRED,
+	{
+		name: 'name',
+		type: 'string',
+		description: 'The name of the hidden input element used for form submission..',
+	},
+	{
+		name: 'value',
+		type: 'string',
+		description: 'The value of the hidden input element used for form submission.',
+	},
+];
+
+const BUILDER_NAME = 'switch';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createSwitch',
-	description: DESCRIPTIONS.BUILDER('switch'),
 	props: [
+		...OPTION_PROPS,
 		{
-			name: 'checked',
+			name: 'defaultChecked',
 			type: 'boolean',
 			default: 'false',
 			description: 'The initial checked state of the switch.',
 		},
 		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the switch is disabled.',
-		},
-		{
-			name: 'required',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the switch is required.',
-		},
-		{
-			name: 'name',
-			type: 'string',
-			description: 'The name of the hidden input element used for form submission..',
-		},
-		{
-			name: 'value',
-			type: 'string',
-			description: 'The value of the hidden input element used for form submission.',
-		},
-	],
-	returnedProps: [
-		{
-			name: 'options',
-			type: 'Writable<CreateSwitchProps>',
-			description: 'A writable store that can be used to update the switch props.',
-		},
-		{
 			name: 'checked',
 			type: 'Writable<boolean>',
-			description: 'A writable store that can be used to update the switch checked state.',
+			description:
+				'The controlled checked state store of the switch. If provided, this will override the value passed to `defaultChecked`.',
+			see: SEE.BRING_YOUR_OWN_STORE,
 		},
 		{
-			name: 'isChecked',
-			type: 'Readable<boolean>',
-			description: 'A derived store that returns whether or not the switch is checked.',
+			name: 'onCheckedChange',
+			type: 'ChangeFn<boolean>',
+			description:
+				'A callback called when the value of the `checked` store should be changed. This is useful for controlling the checked state of the switch from outside the switch.',
+			see: SEE.CHANGE_FUNCTIONS,
 		},
+	],
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the switch root.',
@@ -62,10 +61,17 @@ const builder: APISchema = {
 			link: '#input',
 		},
 	],
-};
+	states: [
+		{
+			name: 'checked',
+			type: 'Writable<boolean>',
+			description: 'A writable store that returns whether or not the switch is checked.',
+		},
+	],
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The switch element.',
 	dataAttributes: [
 		{
@@ -81,10 +87,10 @@ const root: APISchema = {
 			value: ATTRS.MELT('switch'),
 		},
 	],
-};
+	events: switchEvents['root'],
+});
 
-const input: APISchema = {
-	title: 'input',
+const input = elementSchema('input', {
 	description: 'The hidden input element used for form submission.',
 	dataAttributes: [
 		{
@@ -92,7 +98,7 @@ const input: APISchema = {
 			value: ATTRS.MELT('input'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{

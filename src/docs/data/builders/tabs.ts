@@ -1,82 +1,87 @@
-import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
+import { ATTRS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils';
+import { tabsEvents } from '$lib/builders/tabs/events';
 import type { BuilderData } from '.';
 
-const builder: APISchema = {
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	PROPS.LOOP,
+	{
+		name: 'activateOnFocus',
+		type: 'boolean',
+		default: 'true',
+		description: 'Whether or not to activate the tab when it is focused.',
+	},
+	{
+		name: 'orientation',
+		type: TYPES.ORIENTATION,
+		default: '"horizontal"',
+		description: 'The orientation of the tabs.',
+	},
+	{
+		name: 'autoSet',
+		type: 'boolean',
+		default: 'true',
+		description: 'Whether or not to automatically set the tabs value when a trigger is clicked.',
+	},
+];
+
+const BUILDER_NAME = 'tabs';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createTabs',
-	description: DESCRIPTIONS.BUILDER('tabs'),
 	props: [
+		...OPTION_PROPS,
 		{
-			name: 'value',
+			name: 'defaultValue',
 			type: 'string',
 			description: 'The initial value of the tabs.',
 		},
 		{
-			name: 'onChange',
-			type: '(value: string) => void',
-			description: 'A callback function that is called when the tabs value changes.',
-		},
-		{
-			name: 'activateOnFocus',
-			type: 'boolean',
-			default: 'true',
-			description: 'Whether or not to activate the tab when it is focused.',
-		},
-		{
-			name: 'loop',
-			type: 'boolean',
-			default: 'true',
-			description: 'Whether or not to loop the tabs when navigating with the keyboard.',
-		},
-		{
-			name: 'orientation',
-			type: TYPES.ORIENTATION,
-			default: '"horizontal"',
-			description: 'The orientation of the tabs.',
-		},
-		{
-			name: 'autoSet',
-			type: 'boolean',
-			default: 'true',
-			description: 'Whether or not to automatically set the tabs value when a trigger is clicked.',
-		},
-	],
-	returnedProps: [
-		{
-			name: 'options',
-			type: 'Writable<CreateTabsProps>',
-			description: 'A writable store that can be used to update the tabs props.',
-		},
-		{
 			name: 'value',
 			type: 'Writable<string>',
-			description: 'A writable store that can be used to update the current tab value.',
+			description: 'A writable store that can be used to update the tabs value.',
+			see: SEE.BRING_YOUR_OWN_STORE,
 		},
+		{
+			name: 'onValueChange',
+			type: 'ChangeFn<string>',
+			description: 'A callback that is called when the value of the tabs changes.',
+			see: SEE.CHANGE_FUNCTIONS,
+		},
+	],
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the root tabs element.',
-			link: '#root',
 		},
 		{
 			name: 'list',
 			description: 'The builder store used to create the tabs list element.',
-			link: '#list',
 		},
 		{
 			name: 'trigger',
 			description: 'The builder store used to create a tabs trigger element.',
-			link: '#trigger',
 		},
 		{
 			name: 'content',
 			description: 'The builder store used to create a tabs content element.',
-			link: '#content',
 		},
 	],
-};
+	states: [
+		{
+			name: 'value',
+			type: 'Writable<string>',
+			description: 'A writable store that represents the current value of the tabs.',
+		},
+	],
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The root tabs component.',
 	dataAttributes: [
 		{
@@ -88,10 +93,9 @@ const root: APISchema = {
 			value: ATTRS.MELT('tabs'),
 		},
 	],
-};
+});
 
-const list: APISchema = {
-	title: 'list',
+const list = elementSchema('list', {
 	description: 'The tabs list component.',
 	dataAttributes: [
 		{
@@ -103,10 +107,9 @@ const list: APISchema = {
 			value: ATTRS.MELT('tab list'),
 		},
 	],
-};
+});
 
-const trigger: APISchema = {
-	title: 'trigger',
+const trigger = elementSchema('trigger', {
 	description: 'The element which opens a given tab.',
 	props: [
 		{
@@ -144,10 +147,10 @@ const trigger: APISchema = {
 			value: ATTRS.MELT('tab trigger'),
 		},
 	],
-};
+	events: tabsEvents['trigger'],
+});
 
-const content: APISchema = {
-	title: 'content',
+const content = elementSchema('content', {
 	description: 'The element that is opened when a given trigger is clicked.',
 	dataAttributes: [
 		{
@@ -155,7 +158,7 @@ const content: APISchema = {
 			value: ATTRS.MELT('tab content'),
 		},
 	],
-};
+});
 
 const keyboard: KeyboardSchema = [
 	{
