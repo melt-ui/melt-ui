@@ -159,7 +159,7 @@ const schemas = [builder, trigger, overlay, content, close, title, description];
 const features = [
 	'Fully managed focus',
 	'Can be controlled or uncontrolled',
-	'Esc closes the component automaticlaly',
+	'Esc closes the component automatically',
 ];
 
 export const dialogData: BuilderData = {
