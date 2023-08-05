@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.33.0
+
+### Minor Changes
+
+- 5ba01f80: feat: Added support for `NodeNext` and `Bundler` for `tsconfig.json`'s `moduleResolution` config option
+
 ## 0.32.2
 
 ### Patch Changes
