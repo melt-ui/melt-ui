@@ -87,11 +87,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 					if (e.key === 'Backspace') {
 						e.preventDefault();
 						const prevEl = prev(inputs, elIndex, false);
-						if (node.value.length === 0 && elIndex !== inputs.length - 1) {
-							prevEl.value = '';
-						} else {
-							node.value = '';
-						}
+						node.value = '';
 						prevEl.focus();
 					}
 
