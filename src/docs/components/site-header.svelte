@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { Discord, GitHub, MobileNav } from '$docs/components/index.js';
 	import { navConfig, siteConfig } from '$docs/config.js';
+	import { melt, type Dialog } from "$lib";
+	import { getContext } from "svelte";
+	import { Search } from 'lucide-svelte';
+    const { elements: { trigger }} = getContext<Dialog>('searchDialog');
 </script>
+
+
 
 <div class="container flex h-14 items-center rounded-md bg-neutral-800">
 	<div class="flex">
@@ -12,9 +18,10 @@
 
 	<div class="flex flex-1 items-center justify-between space-x-2 sm:space-x-4 md:justify-end">
 		<div class="w-full flex-1 md:w-auto md:flex-none">
-			<!-- Search/CMDK here eventually -->
+			<button class="bg-neutral-800" use:melt={$trigger}><Search class="inline" size="18" /> Search</button>
 		</div>
 	</div>
+	
 	<nav class="flex items-center text-sm font-semibold leading-6">
 		<!-- Top Navbar -->
 		<ul class="hidden space-x-8 md:flex">

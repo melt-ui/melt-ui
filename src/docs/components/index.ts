@@ -8,6 +8,7 @@ export * from './tables/index.js';
 export * from './sections/index.js';
 export { default as Construction } from './construction.svelte';
 export { default as SiteHeader } from './site-header.svelte';
+export { default as SearchDialog } from './search-dialog.svelte';
 export { default as Description } from './description.svelte';
 export { default as Callout } from './callout.svelte';
 export { default as InstallTabs } from './install-tabs.svelte';
