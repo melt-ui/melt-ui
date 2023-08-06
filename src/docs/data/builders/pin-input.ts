@@ -150,8 +150,7 @@ const keyboard: KeyboardSchema = [
 	},
 	{
 		key: KBD.BACKSPACE,
-		behavior:
-			'Deletes the value of the current input. If the input is empty, moves to the previous input.',
+		behavior: 'Deletes the value of the current input and moves to the previous input.',
 	},
 	{
 		key: KBD.DELETE,
