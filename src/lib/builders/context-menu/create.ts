@@ -74,6 +74,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		rootIds,
 		separator,
 		handleTypeaheadSearch,
+		group,
+		groupLabel,
 	} = createMenuBuilder({
 		rootOpen,
 		rootActiveTrigger,
@@ -293,6 +295,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			item,
 			arrow,
 			separator,
+			group,
+			groupLabel,
 		},
 		states: {
 			open: rootOpen,

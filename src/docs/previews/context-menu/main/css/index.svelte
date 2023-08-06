@@ -90,7 +90,7 @@
 		Hide Melt UI
 		<div class="rightSlot">⌘H</div>
 	</div>
-	<div class="item" use:melt={$item} aria-disabled="true">
+	<div class="item" use:melt={$item} data-disabled>
 		Show All Components
 		<div class="rightSlot">⇧⌘N</div>
 	</div>

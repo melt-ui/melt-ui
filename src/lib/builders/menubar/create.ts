@@ -373,6 +373,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 				item: m.item,
 				arrow: m.arrow,
 				separator: m.separator,
+				group: m.group,
+				groupLabel: m.groupLabel,
 			},
 			builders: {
 				createCheckboxItem: m.createCheckboxItem,

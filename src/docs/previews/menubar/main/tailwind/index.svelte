@@ -110,7 +110,7 @@
 			New File...
 			<div class="rightSlot">⌘T</div>
 		</div>
-		<div class="item" use:melt={$item} aria-disabled="true">
+		<div class="item" use:melt={$item} data-disabled>
 			New Window...
 			<div class="rightSlot">⇧⌘T</div>
 		</div>
@@ -276,7 +276,7 @@
 			</div>
 			Documentation
 		</div>
-		<div class="item" use:melt={$itemC} aria-disabled="true">
+		<div class="item" use:melt={$itemC} data-disabled>
 			Show All Components
 			<div class="rightSlot">⇧⌘N</div>
 		</div>

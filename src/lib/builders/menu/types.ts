@@ -162,7 +162,9 @@ export type _MenuParts =
 	| 'radio-item'
 	| 'submenu'
 	| 'subtrigger'
-	| 'subarrow';
+	| 'subarrow'
+	| 'group'
+	| 'group-label';
 
 export type Selector = (part?: _MenuParts | undefined) => string;
 

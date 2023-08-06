@@ -39,6 +39,8 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 		createCheckboxItem,
 		createMenuRadioGroup,
 		separator,
+		group,
+		groupLabel,
 	} = createMenuBuilder({
 		rootOptions,
 		rootOpen,
@@ -56,6 +58,8 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 			item,
 			arrow,
 			separator,
+			group,
+			groupLabel,
 		},
 		states: {
 			open: rootOpen,

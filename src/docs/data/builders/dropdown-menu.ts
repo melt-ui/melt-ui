@@ -18,7 +18,6 @@ const {
 	arrow,
 	item,
 	checkboxItem,
-	checkboxItemBuilder,
 	radioGroupBuilder,
 	radioGroup,
 	radioItem,
@@ -26,6 +25,9 @@ const {
 	submenuBuilder,
 	submenu,
 	subTrigger,
+	checkboxItemBuilder,
+	group,
+	groupLabel,
 } = getMenuSchemas(BUILDER_NAME);
 
 const { elements, builders, states, options } = getMenuBuilderReturns(BUILDER_NAME);
@@ -39,10 +41,12 @@ export const builder = builderSchema(BUILDER_NAME, {
 	options,
 });
 
-const trigger = elementSchema(BUILDER_NAME, {
-	description: 'The button which toggles the dropdown menu.',
+const TRIGGER_NAME = 'trigger' as const;
+
+const trigger = elementSchema(TRIGGER_NAME, {
+	description: `The button which toggles the ${BUILDER_NAME}.`,
 	dataAttributes: getMenuTriggerDataAttrs(BUILDER_NAME),
-	events: dropdownMenuEvents['trigger'],
+	events: dropdownMenuEvents[TRIGGER_NAME],
 });
 
 const keyboard: KeyboardSchema = getMenuKeyboardSchema();
@@ -59,6 +63,8 @@ const schemas = [
 	radioGroupBuilder,
 	radioGroup,
 	radioItem,
+	group,
+	groupLabel,
 	submenuBuilder,
 	subTrigger,
 	submenu,

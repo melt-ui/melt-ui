@@ -37,12 +37,16 @@ const {
 	submenuBuilder,
 	submenu,
 	subTrigger,
+	group,
+	groupLabel,
 } = getMenuSchemas('menubar menu');
 
-const trigger = elementSchema('trigger', {
+const TRIGGER_NAME = 'trigger' as const;
+
+const trigger = elementSchema(TRIGGER_NAME, {
 	description: 'The button which toggles the dropdown menu.',
-	dataAttributes: getMenuTriggerDataAttrs('menubar menu'),
-	events: menubarEvents['trigger'],
+	dataAttributes: getMenuTriggerDataAttrs(`${BUILDER_NAME} menu`),
+	events: menubarEvents[TRIGGER_NAME],
 });
 
 const keyboard: KeyboardSchema = [
@@ -91,6 +95,8 @@ const schemas = [
 	radioGroupBuilder,
 	radioGroup,
 	radioItem,
+	group,
+	groupLabel,
 	submenuBuilder,
 	subTrigger,
 	submenu,

@@ -357,6 +357,23 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		},
 	});
 
+	const group = builder(name('group'), {
+		returned: () => {
+			return (groupId: string) => ({
+				role: 'group',
+				'aria-labelledby': groupId,
+			});
+		},
+	});
+
+	const groupLabel = builder(name('group-label'), {
+		returned: () => {
+			return (groupId: string) => ({
+				id: groupId,
+			});
+		},
+	});
+
 	const checkboxItemDefaults = {
 		defaultChecked: false,
 		disabled: false,
@@ -1294,6 +1311,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		menu: rootMenu,
 		open: rootOpen,
 		item,
+		group,
+		groupLabel,
 		arrow: rootArrow,
 		options: opts.rootOptions,
 		createCheckboxItem,
