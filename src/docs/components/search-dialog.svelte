@@ -1,25 +1,8 @@
 <script lang="ts">
-	import { melt, type Dialog } from "$lib";
+	import { melt, type Dialog, createSeparator } from "$lib";
 	import { getContext } from "svelte";
 	import { fly } from "svelte/transition";
     import { Search, ArrowRight } from 'lucide-svelte';
-
-    const { 
-        elements: { overlay, content, portalled },
-        states: { open },
-    } = getContext<Dialog>('searchDialog');
-
-    function handleInput(event: Event) {
-        const inputEl = event.target as HTMLInputElement;
-        const query = inputEl.value;
-        /*
-            TODO:
-            1. Input query into some sort of search algorithm
-            2. Get a list of results back
-            3. Convert those results to an array of type Result[]
-            4. Set results to the new results
-        */
-    }
 
     type Result = {
         label: string;
@@ -32,7 +15,31 @@
         href: string
     }
 
-    const results: Result[] = [
+    const { 
+        elements: { overlay, content, portalled },
+        states: { open },
+    } = getContext<Dialog>('searchDialog');
+
+
+    let debounceTimeMs = 200;
+    let inputDebounce: ReturnType<typeof setTimeout>;
+    function handleInput(event: Event) {
+        if (inputDebounce) clearTimeout(inputDebounce);
+        inputDebounce = setTimeout(() => {
+            const inputEl = event.target as HTMLInputElement;
+            const query = inputEl.value;
+            /*
+                TODO:
+                1. Input query into some sort of search algorithm
+                2. Get a list of results back
+                3. Convert those results to an array of type Result[]
+                4. Set results to the new results
+            */
+        }, debounceTimeMs);
+    }
+
+    // TODO: Replace mocking data with actual searchables
+    let results: Result[] = [
         {
             label: 'Dialog',
             href: '/docs/builders/dialog',
@@ -62,16 +69,10 @@
                     href: '/docs/builders/dialog#accessibility'
                 }
             ]
-        },
-        {
-            label: 'Accordion',
-            href: '/docs/builders/accordion',
-            subResults: [{
-                label: 'Usage',
-                href: '/docs/builders/dialog#usage'
-            }]
-        },
+        }
     ];
+
+    const { elements: { root: vertical }} = createSeparator();
 </script>
 
 <div use:melt={$portalled}>
@@ -86,18 +87,17 @@
                 <Search class="absolute left-2 top-[50%] -translate-y-[50%]" />
                 <input class="bg-neutral-700 w-full p-4 pl-10 text-xl rounded-t-md" type="search" placeholder="Search Melt..." on:input={handleInput} />
             </div>
-            <nav class="p-4 flex flex-col gap-2">
+            <nav class="py-3 flex flex-col gap-2">
                 {#each results as { label, href, subResults }}
-                    <a class="font-bold text-xl"href={href} on:click={() => open.set(false)}>{label} <ArrowRight size="12" class="inline" /></a>
+                    <a class="p-2 font-bold text-xl flex items-center justify-between focus:bg-neutral-600 hover:bg-neutral-600" href={href} on:click={() => open.set(false)}>{label} <ArrowRight size="18" /></a>
                     <div class="flex">
-                        
+                        <div class="w-0.5 bg-white mx-4" use:melt={$vertical} />
                         <div class="flex flex-col">
                             {#each subResults as { label: subLabel, href: subHref}}
-                                <a class="ml-3" href={subHref} on:click={() => open.set(false)}> {subLabel}</a>
+                                <a class="px-2 focus:bg-neutral-600 hover:bg-neutral-600" href={subHref} on:click={() => open.set(false)}> {subLabel}</a>
                             {/each}
                         </div>
                     </div>
-       
                 {:else}
                     <p>No results found</p>
                 {/each}
