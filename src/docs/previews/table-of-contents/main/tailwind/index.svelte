@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Tree from './tree.svelte';
-
-	import { createTableOfContents } from '@melt-ui/svelte';
+	import { createTableOfContents } from '$lib';
 
 	const { activeHeadingIdxs, headingsTree, item } = createTableOfContents({
 		selector: '#toc-builder-preview',
@@ -29,10 +28,12 @@
 	});
 </script>
 
-<div class="flex h-[18rem] flex-col gap-1 md:relative">
+<div
+	class="grid h-[18rem] grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2"
+>
 	<div
 		id="toc-builder-preview"
-		class="h-1/2 space-y-4 overflow-y-auto rounded-lg bg-neutral-900 px-1 py-2 md:h-60 md:w-1/2 lg:w-2/3"
+		class="space-y-2 overflow-y-auto rounded-lg bg-white p-4 text-neutral-900"
 	>
 		<h2>First Heading</h2>
 		<p>This is the first heading.</p>
@@ -74,12 +75,8 @@
 		</p>
 	</div>
 
-	<!-- <div class="absolute right-0 top-0 overflow-visible"> -->
-	<!-- <div class="h-1/2"> -->
-	<div
-		class="space-y-1 overflow-y-scroll rounded-lg bg-neutral-900 p-2 md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2"
-	>
-		<p class="font-medium">On This Page</p>
+	<div class="overflow-y-auto rounded-lg bg-white p-4">
+		<p class="font-medium text-neutral-900">On This Page</p>
 		<nav>
 			<Tree
 				tree={$headingsTree}
@@ -88,14 +85,9 @@
 			/>
 		</nav>
 	</div>
-	<!-- </div> -->
 </div>
 
 <style>
-	/* #toc-builder-preview {
-		@apply h-60 w-1/2 space-y-4 overflow-y-scroll rounded-lg bg-neutral-900 px-4 py-2;
-	} */
-
 	#toc-builder-preview > h2 {
 		@apply text-xl font-bold;
 	}
@@ -106,9 +98,5 @@
 
 	#toc-builder-preview > h4 {
 		@apply text-lg font-semibold;
-	}
-
-	#toc-builder-preview > p {
-		@apply text-justify;
 	}
 </style>

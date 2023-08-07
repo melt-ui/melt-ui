@@ -1,8 +1,9 @@
 <script lang="ts">
-	import type {
-		TableOfContentsItem,
-		CreateTableOfContentsReturn,
-	} from '@melt-ui/svelte';
+	import {
+		type TableOfContentsItem,
+		type CreateTableOfContentsReturn,
+		melt,
+	} from '$lib';
 
 	export let tree: TableOfContentsItem[] = [];
 	export let activeHeadingIdxs: number[];
@@ -13,15 +14,12 @@
 <ul class="m-0 list-none {level !== 1 ? 'pl-4' : ''}">
 	{#if tree && tree.length}
 		{#each tree as heading, i (i)}
-			{@const active = activeHeadingIdxs.includes(heading.index)}
 			<li class="mt-0 pt-2">
 				<a
 					href="#{heading.id}"
-					{...$item(heading.id)}
-					use:item
-					class="inline-block no-underline transition-colors hover:text-magnum-600 {active
-						? 'text-magnum-500'
-						: 'text-neutral-300'}"
+					use:melt={$item(heading.id)}
+					class="inline-block text-neutral-900 no-underline transition-colors
+					hover:text-magnum-600 data-[active]:text-magnum-600"
 				>
 					{heading.title}
 				</a>
