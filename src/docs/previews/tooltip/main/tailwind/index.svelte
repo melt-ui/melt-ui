@@ -12,6 +12,7 @@
 		},
 		openDelay: 500,
 		closeOnPointerDown: false,
+		forceVisible: true,
 	});
 </script>
 
