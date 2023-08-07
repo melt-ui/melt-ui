@@ -24,6 +24,7 @@ import { tagsInputData } from './tags-input.js';
 import { toastData } from './toast.js';
 import { toggleData } from './toggle.js';
 import { toggleGroupData } from './toggle-group.js';
+import { tableOfContentsData } from './table-of-contents.js';
 import { toolbarData } from './toolbar.js';
 import { tooltipData } from './tooltip.js';
 
@@ -48,6 +49,7 @@ export const builderList = [
 	'separator',
 	'slider',
 	'switch',
+	'table-of-contents',
 	'tabs',
 	'tags-input',
 	'toast',
@@ -92,6 +94,7 @@ export const data: Builders = {
 	separator: separatorData,
 	slider: sliderData,
 	switch: switchData,
+	'table-of-contents': tableOfContentsData,
 	tabs: tabsData,
 	'tags-input': tagsInputData,
 	toast: toastData,
