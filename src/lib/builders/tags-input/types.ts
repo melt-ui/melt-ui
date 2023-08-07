@@ -12,6 +12,7 @@ export type CreateTagsInputProps = {
 	tags?: Writable<Tag[]>;
 	onTagsChange?: ChangeFn<Tag[]>;
 	unique?: boolean;
+	trim?: boolean;
 	blur?: Blur;
 	addOnPaste?: boolean;
 	maxTags?: number;
