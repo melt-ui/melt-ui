@@ -26,11 +26,14 @@ description:
 
 The first thing you'll need to do is create a menubar using the `createMenubar` builder function.
 
-```svelte {4}
+```svelte {4-7}
 <script lang="ts">
-  import { createMenubar } from '@melt-ui/svelte'
+	import { createMenubar } from '@melt-ui/svelte'
 
-  const { menubar, createMenu } = createMenubar()
+	const {
+		elements: { menubar },
+		builders: { createMenu }
+	} = createMenubar()
 </script>
 ```
 
@@ -42,21 +45,26 @@ the menubar which happens behind the scenes.
 Now that we have a menubar and menu builder function, we can create a menu using the `createMenu`
 function and wrap it in a `menubar` element.
 
-```svelte {5}
+```svelte {5, 8-10}
 <script lang="ts">
-  import { createMenubar } from '@melt-ui/svelte'
+	import { createMenubar, melt } from '@melt-ui/svelte'
 
-  const { menubar, createMenu } = createMenubar()
-  const { menu, item, trigger } = createMenu()
+	const {
+		elements: { menubar },
+		builders: { createMenu }
+	} = createMenubar()
+	const {
+		elements: { menu, item, trigger }
+	} = createMenu()
 </script>
 
-<div melt={$menubar}>
-  <button melt={$trigger}>Open Menu</button>
-  <div melt={$menu}>
-    <div {...$item} use:item>...</div>
-    <div {...$item} use:item>...</div>
-    <div {...$item} use:item>...</div>
-  </div>
+<div use:melt={$menubar}>
+	<button use:melt={$trigger}>Open Menu</button>
+	<div use:melt={$menu}>
+		<div {...$item} use:item>...</div>
+		<div {...$item} use:item>...</div>
+		<div {...$item} use:item>...</div>
+	</div>
 </div>
 ```
 
@@ -70,35 +78,35 @@ returned variables to prevent any naming conflicts.
 
 ```svelte {6-7}
 <script lang="ts">
-  import { createMenubar } from '@melt-ui/svelte'
+	import { createMenubar, melt } from '@melt-ui/svelte'
 
-  const { menubar, createMenu } = createMenubar()
-  const { menu, item, trigger } = createMenu()
-  const { menu: menuA, item: itemA, trigger: triggerA } = createMenu()
-  const { menu: menuB, item: itemB, trigger: triggerB } = createMenu()
+	const { menubar, createMenu } = createMenubar()
+	const { menu, item, trigger } = createMenu()
+	const { menu: menuA, item: itemA, trigger: triggerA } = createMenu()
+	const { menu: menuB, item: itemB, trigger: triggerB } = createMenu()
 </script>
 
-<div melt={$menubar}>
-  <button melt={$trigger}>File</button>
-  <div melt={$menu}>
-    <div {...$item} use:item>...</div>
-    <div {...$item} use:item>...</div>
-    <div {...$item} use:item>...</div>
-  </div>
+<div use:melt={$menubar}>
+	<button use:melt={$trigger}>File</button>
+	<div use:melt={$menu}>
+		<div {...$item} use:item>...</div>
+		<div {...$item} use:item>...</div>
+		<div {...$item} use:item>...</div>
+	</div>
 
-  <button melt={$triggerA}>Edit</button>
-  <div melt={$menuA}>
-    <div {...$itemA} use:itemA>...</div>
-    <div {...$itemA} use:itemA>...</div>
-    <div {...$itemA} use:itemA>...</div>
-  </div>
+	<button use:melt={$triggerA}>Edit</button>
+	<div use:melt={$menuA}>
+		<div {...$itemA} use:itemA>...</div>
+		<div {...$itemA} use:itemA>...</div>
+		<div {...$itemA} use:itemA>...</div>
+	</div>
 
-  <button melt={$triggerB}>Help</button>
-  <div melt={$menuB}>
-    <div {...$itemB} use:itemB>...</div>
-    <div {...$itemB} use:itemB>...</div>
-    <div {...$itemB} use:itemB>...</div>
-  </div>
+	<button use:melt={$triggerB}>Help</button>
+	<div use:melt={$menuB}>
+		<div {...$itemB} use:itemB>...</div>
+		<div {...$itemB} use:itemB>...</div>
+		<div {...$itemB} use:itemB>...</div>
+	</div>
 </div>
 ```
 

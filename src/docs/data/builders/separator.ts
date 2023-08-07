@@ -1,41 +1,40 @@
-import { ATTRS, DESCRIPTIONS, TYPES } from '$docs/constants';
-import type { APISchema } from '$docs/types';
-import type { BuilderData } from '.';
+import { ATTRS, TYPES } from '$docs/constants.js';
+import { builderSchema, elementSchema, genProps } from '$docs/utils/index.js';
+import type { BuilderData } from './index.js';
 
-const builder: APISchema = {
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	{
+		name: 'orientation',
+		type: TYPES.ORIENTATION,
+		default: "'horizontal'",
+		description: 'The orientation of the separator.',
+	},
+	{
+		name: 'decorative',
+		type: 'boolean',
+		default: 'false',
+		description:
+			'Whether or not the separator is for purely decorative purposes. This will determine if the separator is in the accessibility tree or not.',
+	},
+];
+const BUILDER_NAME = 'separator';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createSeparator',
-	description: DESCRIPTIONS.BUILDER('separator'),
-	props: [
-		{
-			name: 'orientation',
-			type: TYPES.ORIENTATION,
-			default: "'horizontal'",
-			description: 'The orientation of the separator.',
-		},
-		{
-			name: 'decorative',
-			type: 'boolean',
-			default: 'false',
-			description:
-				'Whether or not the separator is for purely decorative purposes. This will determine if the separator is in the accessibility tree or not.',
-		},
-	],
-	returnedProps: [
-		{
-			name: 'options',
-			type: 'Writable<CreateSeparatorProps>',
-			description: 'A writable store that can be used to update the separator props.',
-		},
+	props: genProps('separator', OPTION_PROPS),
+	elements: [
 		{
 			name: 'root',
 			description: 'The builder store used to create the separator root.',
-			link: '#root',
 		},
 	],
-};
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The separator element.',
 	dataAttributes: [
 		{
@@ -47,7 +46,7 @@ const root: APISchema = {
 			value: ATTRS.MELT('separator'),
 		},
 	],
-};
+});
 
 const schemas = [builder, root];
 

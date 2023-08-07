@@ -1,15 +1,15 @@
 import { test, expect } from 'vitest';
-import { extractMeltAttribute, processMeltAttributes } from './pp';
+import { extractMeltAttribute, processMeltAttributes } from './pp.js';
 
 const extractMeltAttributeCases = [
-	{ input: 'melt={$trigger(id)}', expected: { builder: 'trigger', args: 'id' } },
-	{ input: 'melt={$trigger}', expected: { builder: 'trigger', args: null } },
+	{ input: 'use:melt={$trigger(id)}', expected: { builder: 'trigger', args: 'id' } },
+	{ input: 'use:melt={$trigger}', expected: { builder: 'trigger', args: null } },
 	{
-		input: "melt={$trigger({helpme: 'god'} )}",
+		input: "use:melt={$trigger({helpme: 'god'} )}",
 		expected: { builder: 'trigger', args: "{helpme: 'god'} " },
 	},
 	{
-		input: "melt={$trigger({helpme: 'god'} )} awesome={coolio}",
+		input: "use:melt={$trigger({helpme: 'god'} )} awesome={coolio}",
 		expected: { builder: 'trigger', args: "{helpme: 'god'} " },
 	},
 ];
@@ -22,16 +22,16 @@ extractMeltAttributeCases.forEach(({ input, expected }) => {
 
 const processMeltAttributesCases = [
 	{
-		input: 'melt={$trigger(id)} awesome={coolio}',
+		input: 'use:melt={$trigger(id)} awesome={coolio}',
 		expected: '{...$trigger(id)} use:trigger awesome={coolio}',
 	},
-	{ input: 'melt={$trigger}', expected: '{...$trigger} use:trigger' },
+	{ input: 'use:melt={$trigger}', expected: '{...$trigger} use:trigger' },
 	{
-		input: "melt={$trigger({helpme: 'god'} )}",
+		input: "use:melt={$trigger({helpme: 'god'} )}",
 		expected: "{...$trigger({helpme: 'god'} )} use:trigger",
 	},
 	{
-		input: "melt={$trigger({helpme: 'god'} )} awesome={coolio}",
+		input: "use:melt={$trigger({helpme: 'god'} )} awesome={coolio}",
 		expected: "{...$trigger({helpme: 'god'} )} use:trigger awesome={coolio}",
 	},
 ];

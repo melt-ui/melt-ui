@@ -1,4 +1,4 @@
-import type { GetPageItemsArgs, PageItem } from './types';
+import type { GetPageItemsArgs, PageItem } from './types.js';
 
 export function getPageItems({
 	page = 1,

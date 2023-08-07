@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { TableOfContentsItem, CreateTableOfContentsReturn } from '@melt-ui/svelte';
+	import type { TableOfContentsItem, CreateTableOfContentsReturn } from '$lib';
 
 	export let tree: TableOfContentsItem[] = [];
 	export let activeHeadingIdxs: number[];

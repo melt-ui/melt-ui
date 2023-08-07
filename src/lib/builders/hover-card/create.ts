@@ -1,23 +1,28 @@
-import { usePopper, usePortal } from '$lib/internal/actions';
+import { usePopper } from '$lib/internal/actions/index.js';
 import {
-	addEventListener,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
+	derivedVisible,
 	effect,
 	executeCallbacks,
 	generateId,
+	getPortalDestination,
 	getTabbableNodes,
 	isBrowser,
 	isHTMLElement,
 	isTouch,
 	noop,
+	overridable,
 	sleep,
 	styleToString,
-} from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { tick } from 'svelte';
+	toWritableStores,
+} from '$lib/internal/helpers/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
+import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
-import type { CreateHoverCardProps } from './types';
+import type { HoverCardEvents } from './events.js';
+import type { CreateHoverCardProps } from './types.js';
 
 type HoverCardParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<HoverCardParts>('hover-card');
@@ -31,15 +36,33 @@ const defaults = {
 	},
 	arrowSize: 8,
 	closeOnOutsideClick: true,
-} satisfies Defaults<CreateHoverCardProps>;
+	forceVisible: false,
+	portal: 'body',
+	closeOnEscape: true,
+} satisfies CreateHoverCardProps;
 
 export function createHoverCard(props: CreateHoverCardProps = {}) {
-	const propsWithDefaults = { ...defaults, ...props } satisfies CreateHoverCardProps;
-	const options = writable(propsWithDefaults);
-	const open = writable(propsWithDefaults.defaultOpen);
+	const withDefaults = { ...defaults, ...props } satisfies CreateHoverCardProps;
+
+	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
+	const open = overridable(openWritable, withDefaults?.onOpenChange);
 	const hasSelection = writable(false);
 	const isPointerDownOnContent = writable(false);
 	const containSelection = writable(false);
+	const activeTrigger = writable<HTMLElement | null>(null);
+
+	const options = toWritableStores(withDefaults);
+
+	const {
+		openDelay,
+		closeDelay,
+		positioning,
+		arrowSize,
+		closeOnOutsideClick,
+		forceVisible,
+		portal,
+		closeOnEscape,
+	} = options;
 
 	const ids = {
 		content: generateId(),
@@ -49,7 +72,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 	let timeout: number | null = null;
 	let originalBodyUserSelect: string;
 
-	const handleOpen = derived(options, ($options) => {
+	const handleOpen = derived(openDelay, ($openDelay) => {
 		return () => {
 			if (timeout) {
 				window.clearTimeout(timeout);
@@ -58,13 +81,13 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 
 			timeout = window.setTimeout(() => {
 				open.set(true);
-			}, $options.openDelay);
+			}, $openDelay);
 		};
 	}) as Readable<() => void>;
 
 	const handleClose = derived(
-		[options, isPointerDownOnContent, hasSelection],
-		([$options, $isPointerDownOnContent, $hasSelection]) => {
+		[closeDelay, isPointerDownOnContent, hasSelection],
+		([$closeDelay, $isPointerDownOnContent, $hasSelection]) => {
 			return () => {
 				if (timeout) {
 					window.clearTimeout(timeout);
@@ -73,7 +96,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 				if (!$isPointerDownOnContent && !$hasSelection) {
 					timeout = window.setTimeout(() => {
 						open.set(false);
-					}, $options.closeDelay);
+					}, $closeDelay);
 				}
 			};
 		}
@@ -91,22 +114,25 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 				id: ids.trigger,
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<HoverCardEvents['trigger']> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerenter', (e) => {
+				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
 					get(handleOpen)();
 				}),
-				addEventListener(node, 'pointerleave', (e) => {
+				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
 					get(handleClose)();
 				}),
-				addEventListener(node, 'focus', () => get(handleOpen)()),
+				addMeltEventListener(node, 'focus', () => get(handleOpen)()),
 
-				addEventListener(node, 'blur', () => get(handleClose)()),
-				addEventListener(node, 'touchstart', (e) => {
+				addMeltEventListener(node, 'blur', () => get(handleClose)()),
+				addMeltEventListener(node, 'touchstart', (e) => {
 					// prevent focus on touch devices
 					e.preventDefault();
+					const currentTarget = e.currentTarget;
+					if (!isHTMLElement(currentTarget)) return;
+					currentTarget.click();
 				})
 			);
 
@@ -116,22 +142,25 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 		},
 	});
 
+	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
+
 	const content = builder(name('content'), {
-		stores: [open],
-		returned: ([$open]) => {
+		stores: [isVisible, portal],
+		returned: ([$isVisible, $portal]) => {
 			return {
-				hidden: $open ? undefined : true,
+				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
 				style: styleToString({
-					display: $open ? undefined : 'none',
+					display: $isVisible ? undefined : 'none',
 					userSelect: 'text',
 					WebkitUserSelect: 'text',
 				}),
 				id: ids.content,
-				'data-state': $open ? 'open' : 'closed',
+				'data-state': $isVisible ? 'open' : 'closed',
+				'data-portal': $portal ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<HoverCardEvents['content']> => {
 			let unsub = noop;
 
 			const unsubTimers = () => {
@@ -140,40 +169,45 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 				}
 			};
 
-			const portalReturn = usePortal(node);
-
 			let unsubPopper = noop;
-			const unsubOpen = open.subscribe(($open) => {
-				if ($open) {
-					tick().then(() => {
-						const triggerEl = document.getElementById(ids.trigger);
-						if (!triggerEl || node.hidden) return;
-						const $options = get(options);
 
+			const unsubDerived = effect(
+				[isVisible, activeTrigger, positioning, closeOnOutsideClick, portal, closeOnEscape],
+				([
+					$isVisible,
+					$activeTrigger,
+					$positioning,
+					$closeOnOutsideClick,
+					$portal,
+					$closeOnEscape,
+				]) => {
+					unsubPopper();
+					if (!$isVisible || !$activeTrigger) return;
+					tick().then(() => {
 						const popper = usePopper(node, {
-							anchorElement: triggerEl,
-							open,
+							anchorElement: $activeTrigger,
+							open: open,
 							options: {
-								floating: $options.positioning,
+								floating: $positioning,
+								clickOutside: $closeOnOutsideClick ? undefined : null,
+								portal: getPortalDestination(node, $portal),
 								focusTrap: null,
-								clickOutside: !$options.closeOnOutsideClick ? null : undefined,
+								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
 						});
+
 						if (popper && popper.destroy) {
 							unsubPopper = popper.destroy;
 						}
 					});
-				} else {
-					unsubPopper();
 				}
-			});
+			);
 
 			unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', (e) => {
+				addMeltEventListener(node, 'pointerdown', (e) => {
 					const currentTarget = e.currentTarget;
-					if (!isHTMLElement(currentTarget)) return;
 					const target = e.target;
-					if (!isHTMLElement(target)) return;
+					if (!isHTMLElement(currentTarget) || !isHTMLElement(target)) return;
 
 					if (currentTarget.contains(target)) {
 						containSelection.set(true);
@@ -182,20 +216,17 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 					hasSelection.set(false);
 					isPointerDownOnContent.set(true);
 				}),
-				addEventListener(node, 'pointerenter', (e) => {
+				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
 					get(handleOpen)();
 				}),
-				addEventListener(node, 'pointerleave', (e) => {
+				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
 					get(handleClose)();
 				}),
-				addEventListener(node, 'focusout', (e) => {
+				addMeltEventListener(node, 'focusout', (e) => {
 					e.preventDefault();
-				}),
-
-				portalReturn && portalReturn.destroy ? portalReturn.destroy : noop,
-				unsubOpen
+				})
 			);
 
 			return {
@@ -203,76 +234,90 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 					unsub();
 					unsubPopper();
 					unsubTimers();
+					unsubDerived();
 				},
 			};
 		},
 	});
 
 	const arrow = builder(name('arrow'), {
-		stores: options,
-		returned: ($options) => ({
+		stores: arrowSize,
+		returned: ($arrowSize) => ({
 			'data-arrow': true,
 			style: styleToString({
 				position: 'absolute',
-				width: `var(--arrow-size, ${$options.arrowSize}px)`,
-				height: `var(--arrow-size, ${$options.arrowSize}px)`,
+				width: `var(--arrow-size, ${$arrowSize}px)`,
+				height: `var(--arrow-size, ${$arrowSize}px)`,
 			}),
 		}),
 	});
 
 	effect([containSelection], ([$containSelection]) => {
-		if (!isBrowser) return;
-		if ($containSelection) {
-			const body = document.body;
-			const contentElement = document.getElementById(ids.content);
-			if (!isHTMLElement(contentElement)) return;
-			// prefix for safari
-			originalBodyUserSelect = body.style.userSelect || body.style.webkitUserSelect;
-			const originalContentUserSelect =
-				contentElement.style.userSelect || contentElement.style.webkitUserSelect;
-			body.style.userSelect = 'none';
-			body.style.webkitUserSelect = 'none';
+		if (!isBrowser || !$containSelection) return;
+		const body = document.body;
+		const contentElement = document.getElementById(ids.content);
+		if (!contentElement) return;
+		// prefix for safari
+		originalBodyUserSelect = body.style.userSelect || body.style.webkitUserSelect;
+		const originalContentUserSelect =
+			contentElement.style.userSelect || contentElement.style.webkitUserSelect;
+		body.style.userSelect = 'none';
+		body.style.webkitUserSelect = 'none';
 
-			contentElement.style.userSelect = 'text';
-			contentElement.style.webkitUserSelect = 'text';
-			return () => {
-				body.style.userSelect = originalBodyUserSelect;
-				body.style.webkitUserSelect = originalBodyUserSelect;
-				contentElement.style.userSelect = originalContentUserSelect;
-				contentElement.style.webkitUserSelect = originalContentUserSelect;
-			};
-		}
+		contentElement.style.userSelect = 'text';
+		contentElement.style.webkitUserSelect = 'text';
+		return () => {
+			body.style.userSelect = originalBodyUserSelect;
+			body.style.webkitUserSelect = originalBodyUserSelect;
+			contentElement.style.userSelect = originalContentUserSelect;
+			contentElement.style.webkitUserSelect = originalContentUserSelect;
+		};
+	});
+
+	onMount(() => {
+		const triggerEl = document.getElementById(ids.trigger);
+		if (!triggerEl) return;
+		activeTrigger.set(triggerEl);
 	});
 
 	effect([open], ([$open]) => {
-		if (!isBrowser) return;
-		if ($open) {
-			const handlePointerUp = () => {
-				containSelection.set(false);
-				isPointerDownOnContent.set(false);
+		if (!isBrowser || !$open) return;
 
-				sleep(1).then(() => {
-					const isSelection = document.getSelection()?.toString() !== '';
-					if (isSelection) {
-						hasSelection.set(true);
-					}
-				});
-			};
+		const handlePointerUp = () => {
+			containSelection.set(false);
+			isPointerDownOnContent.set(false);
 
-			document.addEventListener('pointerup', handlePointerUp);
+			sleep(1).then(() => {
+				const isSelection = document.getSelection()?.toString() !== '';
+				if (isSelection) {
+					hasSelection.set(true);
+				}
+			});
+		};
 
-			const contentElement = document.getElementById(ids.content);
-			if (!isHTMLElement(contentElement)) return;
-			const tabbables = getTabbableNodes(contentElement);
-			tabbables.forEach((tabbable) => tabbable.setAttribute('tabindex', '-1'));
+		document.addEventListener('pointerup', handlePointerUp);
 
-			return () => {
-				document.removeEventListener('pointerup', handlePointerUp);
-				hasSelection.set(false);
-				isPointerDownOnContent.set(false);
-			};
-		}
+		const contentElement = document.getElementById(ids.content);
+		if (!contentElement) return;
+		const tabbables = getTabbableNodes(contentElement);
+		tabbables.forEach((tabbable) => tabbable.setAttribute('tabindex', '-1'));
+
+		return () => {
+			document.removeEventListener('pointerup', handlePointerUp);
+			hasSelection.set(false);
+			isPointerDownOnContent.set(false);
+		};
 	});
 
-	return { trigger, open, content, arrow, options };
+	return {
+		elements: {
+			trigger,
+			content,
+			arrow,
+		},
+		states: {
+			open,
+		},
+		options,
+	};
 }

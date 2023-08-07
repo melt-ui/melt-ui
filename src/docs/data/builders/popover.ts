@@ -1,82 +1,62 @@
-import { ATTRS, DESCRIPTIONS, KBD, LONG_TYPES } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import type { BuilderData } from '.';
+import { ATTRS, KBD, PROPS } from '$docs/constants.js';
+import type { KeyboardSchema } from '$docs/types.js';
+import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { popoverEvents } from '$lib/builders/popover/events.js';
+import type { BuilderData } from './index.js';
 
-const builder: APISchema = {
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	PROPS.POSITIONING({ default: 'placement: "bottom"' }),
+	{
+		name: 'disableFocusTrap',
+		type: 'boolean',
+		default: 'false',
+		description: 'Whether to disable the focus trap.',
+	},
+	PROPS.ARROW_SIZE,
+	PROPS.CLOSE_ON_ESCAPE,
+	PROPS.CLOSE_ON_OUTSIDE_CLICK,
+	PROPS.PREVENT_SCROLL,
+	PROPS.PORTAL,
+	PROPS.FORCE_VISIBLE,
+];
+
+const BUILDER_NAME = 'popover';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createPopover',
-	description: DESCRIPTIONS.BUILDER('popover'),
-	props: [
-		{
-			name: 'positioning',
-			type: 'FloatingConfig',
-			default: 'position: "bottom"',
-			description: DESCRIPTIONS.FLOATING_CONFIG,
-			longType: LONG_TYPES.FLOATING_CONFIG,
-		},
-		{
-			name: 'arrowSize',
-			type: 'number',
-			default: '8',
-			description: DESCRIPTIONS.ARROW_SIZE,
-		},
-		{
-			name: 'defaultOpen',
-			type: 'boolean',
-			default: 'false',
-			description: 'The initial state of open. Should only be used if the popover is uncontrolled',
-		},
-		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			default: 'undefined',
-			description:
-				'A store that controls the open state. Use when you want to directly control the popover.',
-		},
-		{
-			name: 'onOpenChange',
-			type: 'ChangeFn<boolean>',
-			default: 'undefined',
-			description:
-				'Optional function that runs whenever `open` should change. The returned value will be used to update `open`.',
-		},
-		{
-			name: 'disableFocusTrap',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether to disable the focus trap.',
-		},
-	],
-	returnedProps: [
-		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls the open state of the popover.',
-		},
+	props: [...OPTION_PROPS, PROPS.DEFAULT_OPEN, PROPS.OPEN, PROPS.ON_OPEN_CHANGE],
+	elements: [
 		{
 			name: 'trigger',
 			description: 'The builder store used to create the popover trigger.',
-			link: '#trigger',
 		},
 		{
 			name: 'content',
 			description: 'The builder store used to create the popover content.',
-			link: '#content',
 		},
 		{
 			name: 'close',
 			description: 'The builder store used to create the popover close button.',
-			link: '#close',
 		},
 		{
 			name: 'arrow',
 			description: 'The builder store used to create the popover arrow.',
-			link: '#arrow',
 		},
 	],
-};
+	states: [
+		{
+			name: 'open',
+			type: 'Writable<boolean>',
+			description: 'A writable store which represents the open state of the popover.',
+		},
+	],
+	options: OPTION_PROPS,
+});
 
-const trigger: APISchema = {
-	title: 'trigger',
+const trigger = elementSchema('trigger', {
 	description: 'The button(s) which open/close the popover.',
 	dataAttributes: [
 		{
@@ -88,10 +68,10 @@ const trigger: APISchema = {
 			value: ATTRS.MELT('trigger'),
 		},
 	],
-};
+	events: popoverEvents['trigger'],
+});
 
-const content: APISchema = {
-	title: 'content',
+const content = elementSchema('content', {
 	description: 'The popover content.',
 	dataAttributes: [
 		{
@@ -99,9 +79,9 @@ const content: APISchema = {
 			value: ATTRS.MELT('content'),
 		},
 	],
-};
+});
 
-const arrow: APISchema = {
+const arrow = elementSchema('arrow', {
 	title: 'arrow',
 	description: 'The optional arrow element.',
 	dataAttributes: [
@@ -114,9 +94,9 @@ const arrow: APISchema = {
 			value: ATTRS.MELT('arrow'),
 		},
 	],
-};
+});
 
-const close: APISchema = {
+const close = elementSchema('close', {
 	title: 'close',
 	description: 'The button(s) which close the popover.',
 	dataAttributes: [
@@ -125,7 +105,8 @@ const close: APISchema = {
 			value: ATTRS.MELT('close'),
 		},
 	],
-};
+	events: popoverEvents['close'],
+});
 
 const keyboard: KeyboardSchema = [
 	{

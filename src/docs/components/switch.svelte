@@ -1,18 +1,19 @@
 <script lang="ts">
 	import { beforeNavigate } from '$app/navigation';
-	import { createSwitch } from '$lib';
-	import { generateId } from '$lib/internal/helpers';
+	import { createSwitch, melt } from '$lib/index.js';
+	import { generateId } from '$lib/internal/helpers/index.js';
+	import { writable } from 'svelte/store';
 
 	export let checked: boolean | undefined = false;
 	export let id: string = generateId();
 	export let keepState = false;
+	const checkedStore = writable(checked);
 
 	const {
-		root,
-		isChecked,
-		checked: checkedStore,
+		elements: { root },
+		states: { checked: isChecked },
 	} = createSwitch({
-		checked,
+		checked: checkedStore,
 	});
 
 	isChecked.subscribe((value) => {
@@ -30,7 +31,7 @@
 <div class="flex items-center gap-2">
 	<label class="font-semibold text-white" id={labelId} for={id}><slot /></label>
 	<button
-		melt={$root}
+		use:melt={$root}
 		class="relative h-6 w-11 cursor-default rounded-full bg-magnum-900 outline-none
  data-[state=checked]:bg-magnum-700"
 		{id}

@@ -1,15 +1,24 @@
 <script lang="ts" context="module">
+	type SvelteFile = `${string}.svelte`;
+	function isSvelteFile(fileName: string): fileName is SvelteFile {
+		return fileName.endsWith('.svelte');
+	}
+
+	type StyleFile = 'tailwind.config.ts' | 'globals.css';
+
 	type CodeEntry = {
-		'index.svelte'?: {
-			pp: string;
-			base: string;
-		};
-		'tailwind.config.ts'?: string;
+		[fileName: `${string}.svelte`]:
+			| {
+					pp: string;
+					base: string;
+			  }
+			| undefined;
 		'globals.css'?: string;
+		'tailwind.config.ts'?: string;
 	};
 
-	type ProcessedCodeEntry = Omit<CodeEntry, 'index.svelte'> & {
-		'index.svelte'?: string;
+	type ProcessedCodeEntry = {
+		[key: string]: string | undefined;
 	};
 
 	export type PreviewProps = {
@@ -20,22 +29,24 @@
 </script>
 
 <script lang="ts">
-	import { page } from '$app/stores';
-	import type { CreateSelectProps } from '$lib';
-	import { cn } from '$docs/utils';
+	import { PreviewStyleSelect } from '$docs/components/index.js';
+	import { cn } from '$docs/utils/index.js';
+	import type { SelectOptionProps } from '$lib/index.js';
+	import { isBrowser } from '$lib/internal/helpers/index.js';
+	import { getUsingPreprocessor } from '$routes/store.js';
+	import { writable } from 'svelte/store';
 	import CodeBlock from './code-block.svelte';
 	import PreviewWrapper from './preview-wrapper.svelte';
-	import { PreviewStyleSelect } from '$docs/components';
 	import Switch from './switch.svelte';
-	import { TabsList, TabsRoot } from './tabs';
-	import { writable } from 'svelte/store';
-	import { usingPreprocessor } from '$routes/store';
+	import { TabsList, TabsRoot } from './tabs/index.js';
 
 	type $$Props = PreviewProps & {
 		viewCode: boolean;
 	};
 
 	export let code: $$Props['code'];
+
+	const usingPreprocessor = getUsingPreprocessor();
 
 	function normalizeCode(code: $$Props['code']) {
 		if (!Object.prototype.hasOwnProperty.call(code, 'tailwind')) {
@@ -56,18 +67,59 @@
 	function processCode({ code, codingStyle, usePP }: ProcessCodeArgs): ProcessedCodeEntry {
 		code = normalizeCode(code);
 
-		const svelteFileObj = code[codingStyle]?.['index.svelte'];
+		const processedCode = {} as ProcessedCodeEntry;
 
-		const processedCode: ProcessedCodeEntry = {
-			...code[codingStyle],
-			['index.svelte']:
-				svelteFileObj !== undefined ? (usePP ? svelteFileObj.pp : svelteFileObj.base) : undefined,
-		};
+		for (const key in code[codingStyle]) {
+			if (isSvelteFile(key)) {
+				processedCode[key] = usePP ? code[codingStyle]?.[key]?.pp : code[codingStyle]?.[key]?.base;
+			} else {
+				processedCode[key] = code[codingStyle]?.[key as StyleFile];
+			}
+		}
 
 		return processedCode;
 	}
 
-	const codingStyle = writable<'tailwind' | 'css'>('tailwind');
+	type CodingStyle = 'tailwind' | 'css';
+	function isCodingStyle(value: unknown): value is CodingStyle {
+		return typeof value === 'string' && ['tailwind', 'css'].includes(value);
+	}
+
+	const codingStyle = (function initCodingStyle() {
+		const defaultWritable = writable<CodingStyle>('tailwind' in code ? 'tailwind' : 'css');
+		if (!isBrowser) return defaultWritable;
+		const preferredStyle = localStorage.getItem('melt-coding-style') as CodingStyle | null;
+		if (isCodingStyle(preferredStyle)) {
+			return writable<CodingStyle>(preferredStyle);
+		}
+		return writable<CodingStyle>('tailwind' in code ? 'tailwind' : 'css');
+	})();
+
+	codingStyle.subscribe((value) => {
+		if (!isBrowser) return;
+		localStorage.setItem('melt-coding-style', value);
+	});
+
+	const resetCodingStyle = () => {
+		if (!isBrowser) return;
+		const styles = Object.keys(code).filter((k) => !!code[k]);
+		const preferredStyle = localStorage.getItem('melt-coding-style') as CodingStyle | null;
+
+		if (isCodingStyle(preferredStyle) && styles.includes(preferredStyle)) {
+			codingStyle.set(preferredStyle);
+		} else {
+			codingStyle.set(styles[0] as CodingStyle);
+			// Keep the coding style in local storage up to date
+			if (isCodingStyle(preferredStyle)) {
+				localStorage.setItem('melt-coding-style', preferredStyle);
+			}
+		}
+	};
+
+	$: {
+		code;
+		resetCodingStyle();
+	}
 
 	let codingStyleObj: ProcessedCodeEntry | null = processCode({
 		code,
@@ -85,14 +137,14 @@
 
 	$: files = codingStyleObj !== null ? Object.keys(codingStyleObj) : [];
 
-	let viewCode = false;
+	export let viewCode = false;
 
 	$: codeOptions = Object.entries(normalizeCode(code)).map(([key, value]) => {
 		return {
-			value: key,
+			value: key as 'tailwind' | 'css',
 			label: key,
 			disabled: value === null,
-		} satisfies CreateSelectProps;
+		} satisfies SelectOptionProps;
 	});
 
 	const fileList = ['index.svelte', 'tailwind.config.ts', 'globals.css'] as const;
@@ -104,10 +156,8 @@
 
 <div class="mt-4 flex flex-row items-center justify-between">
 	{#if viewCode}
-		<div class="flex h-10 items-center md:hidden">
-			{#key $page.url.pathname}
-				<PreviewStyleSelect options={codeOptions} {codingStyle} />
-			{/key}
+		<div class="flex h-10 items-center">
+			<PreviewStyleSelect options={codeOptions} {codingStyle} />
 		</div>
 	{/if}
 
@@ -119,26 +169,18 @@
 <div class="relative mt-2 rounded-md">
 	{#if viewCode}
 		<TabsRoot tabs={files} let:tab>
-			<div class="flex h-10 flex-col-reverse gap-4 md:flex-row md:items-center">
-				<div class={cn(files.length === 1 && 'lg:hidden')}>
+			<div class="flex flex-col-reverse gap-4">
+				<div class={cn('overflow-x-auto', files.length === 1 && 'lg:hidden')}>
 					<TabsList />
 				</div>
-
-				<div class="ml-auto hidden md:block">
-					{#if codeOptions.length > 1}
-						{#key $page.url.pathname}
-							<PreviewStyleSelect options={codeOptions} {codingStyle} />
-						{/key}
-					{/if}
-				</div>
 			</div>
-			{#if isFileName(tab)}
+			{#key $codingStyle}
 				{#if codingStyleObj && codingStyleObj[tab]}
 					<CodeBlock>
 						{@html codingStyleObj[tab]}
 					</CodeBlock>
 				{/if}
-			{/if}
+			{/key}
 		</TabsRoot>
 	{:else}
 		<PreviewWrapper>

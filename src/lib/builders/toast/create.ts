@@ -1,59 +1,40 @@
-import { derived, get, writable, type Readable } from 'svelte/store';
+import { derived, get, writable, readonly } from 'svelte/store';
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
 	generateId,
 	isTouch,
 	noop,
-} from '../../internal/helpers';
-import type { AddToastProps, Toast } from './types';
+	toWritableStores,
+	addMeltEventListener,
+	kbd,
+} from '$lib/internal/helpers/index.js';
+import type { AddToastProps, CreateToasterProps, Toast } from './types.js';
+import { usePortal } from '$lib/internal/actions/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
+import type { ToastEvents } from './events.js';
 
 type ToastParts = 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<ToastParts>('toast');
 
-export function createToasts<T = object>(defaults?: Omit<AddToastProps<T>, 'data'>) {
+const defaults = {
+	closeDelay: 5000,
+	type: 'foreground',
+} satisfies CreateToasterProps;
+
+export function createToaster<T = object>(props?: CreateToasterProps) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateToasterProps;
+
+	const options = toWritableStores(withDefaults);
+	const { closeDelay, type } = options;
+
 	const toastsMap = writable(new Map<string, Toast<T>>());
-	const timeouts = new Map<string, number>();
-
-	const closeToast = (id: string) => {
-		toastsMap.update((currentMap) => {
-			currentMap.delete(id);
-			return new Map(currentMap);
-		});
-	};
-
-	const handleOpen = (id: string): void => {
-		if (timeouts.has(id)) {
-			window.clearTimeout(timeouts.get(id));
-			timeouts.delete(id);
-		}
-	};
-
-	const handleClose = derived(toastsMap, ($toasts) => {
-		return (id: string): void => {
-			if (timeouts.has(id)) {
-				window.clearTimeout(timeouts.get(id));
-				timeouts.delete(id);
-			}
-
-			const toast = $toasts.get(id);
-			if (!toast) return;
-			timeouts.set(
-				id,
-				window.setTimeout(() => {
-					closeToast(id);
-				}, toast.closeDelay)
-			);
-		};
-	}) as Readable<(id: string) => void>;
 
 	const addToast = (props: AddToastProps<T>) => {
 		const propsWithDefaults = {
-			closeDelay: 5000,
-			type: 'foreground',
-			...defaults,
+			closeDelay: get(closeDelay),
+			type: get(type),
 			...props,
 		} satisfies AddToastProps<T>;
 
@@ -63,15 +44,39 @@ export function createToasts<T = object>(defaults?: Omit<AddToastProps<T>, 'data
 			description: generateId(),
 		};
 
-		const toast = { id: ids.content, ids, ...propsWithDefaults };
+		const toast = {
+			id: ids.content,
+			ids,
+			...propsWithDefaults,
+			timeout: window.setTimeout(() => {
+				removeToast(ids.content);
+			}, propsWithDefaults.closeDelay),
+			createdAt: performance.now(),
+			pauseDuration: 0,
+			getPercentage: () => {
+				const { createdAt, pauseDuration, closeDelay, pausedAt } = toast;
+				if (pausedAt) {
+					return (100 * (pausedAt - createdAt - pauseDuration)) / closeDelay;
+				} else {
+					const now = performance.now();
+					return (100 * (now - createdAt - pauseDuration)) / closeDelay;
+				}
+			},
+		} as Toast<T>;
 
 		toastsMap.update((currentMap) => {
 			currentMap.set(ids.content, toast);
 			return new Map(currentMap);
 		});
 
-		get(handleClose)(ids.content);
 		return toast;
+	};
+
+	const removeToast = (id: string) => {
+		toastsMap.update((currentMap) => {
+			currentMap.delete(id);
+			return new Map(currentMap);
+		});
 	};
 
 	const content = builder(name('content'), {
@@ -92,35 +97,44 @@ export function createToasts<T = object>(defaults?: Omit<AddToastProps<T>, 'data
 				};
 			};
 		},
-		action: (node: HTMLElement) => {
-			let unsub = noop;
+		action: (node: HTMLElement): MeltActionReturn<ToastEvents['content']> => {
+			let destroy = noop;
 
-			const unsubTimers = () => {
-				if (timeouts.has(node.id)) {
-					window.clearTimeout(timeouts.get(node.id));
-					timeouts.delete(node.id);
+			destroy = executeCallbacks(
+				addMeltEventListener(node, 'pointerenter', (e) => {
+					if (isTouch(e)) return;
+					toastsMap.update((currentMap) => {
+						const currentToast = currentMap.get(node.id);
+						if (!currentToast) return currentMap;
+						window.clearTimeout(currentToast.timeout);
+						currentToast.pausedAt = performance.now();
+						return new Map(currentMap);
+					});
+				}),
+				addMeltEventListener(node, 'pointerleave', (e) => {
+					if (isTouch(e)) return;
+					toastsMap.update((currentMap) => {
+						const currentToast = currentMap.get(node.id);
+						if (!currentToast) return currentMap;
+						const pausedAt = currentToast.pausedAt ?? currentToast.createdAt;
+						const elapsed = pausedAt - currentToast.createdAt - currentToast.pauseDuration;
+						const remaining = currentToast.closeDelay - elapsed;
+						currentToast.timeout = window.setTimeout(() => {
+							removeToast(node.id);
+						}, remaining);
+
+						currentToast.pauseDuration += performance.now() - pausedAt;
+						currentToast.pausedAt = undefined;
+						return new Map(currentMap);
+					});
+				}),
+				() => {
+					removeToast(node.id);
 				}
-			};
-
-			unsub = executeCallbacks(
-				addEventListener(node, 'pointerenter', (e) => {
-					if (isTouch(e)) return;
-					handleOpen(node.id);
-				}),
-				addEventListener(node, 'pointerleave', (e) => {
-					if (isTouch(e)) return;
-					get(handleClose)(node.id);
-				}),
-				addEventListener(node, 'focusout', (e) => {
-					e.preventDefault();
-				})
 			);
 
 			return {
-				destroy() {
-					unsub();
-					unsubTimers();
-				},
+				destroy,
 			};
 		},
 	});
@@ -159,11 +173,22 @@ export function createToasts<T = object>(defaults?: Omit<AddToastProps<T>, 'data
 				'data-id': id,
 			});
 		},
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', () => {
+		action: (node: HTMLElement): MeltActionReturn<ToastEvents['close']> => {
+			function handleClose() {
 				if (!node.dataset.id) return;
-				closeToast(node.dataset.id);
-			});
+				removeToast(node.dataset.id);
+			}
+
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					handleClose();
+				}),
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
+					e.preventDefault();
+					handleClose();
+				})
+			);
 
 			return {
 				destroy: unsub,
@@ -176,11 +201,21 @@ export function createToasts<T = object>(defaults?: Omit<AddToastProps<T>, 'data
 	});
 
 	return {
-		toasts,
-		addToast,
-		content,
-		title,
-		description,
-		close,
+		elements: {
+			content,
+			title,
+			description,
+			close,
+		},
+		states: {
+			toasts: readonly(toasts),
+		},
+		helpers: {
+			addToast,
+		},
+		actions: {
+			portal: usePortal,
+		},
+		options,
 	};
 }

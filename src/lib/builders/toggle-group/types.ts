@@ -1,17 +1,15 @@
-import type { Orientation } from '$lib/internal/types';
-import type { createToggleGroup } from './create';
+import type { BuilderReturn, Orientation } from '$lib/internal/types.js';
+import type { Writable } from 'svelte/store';
+import type { createToggleGroup } from './create.js';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
 
-type SingleToggleGroupRootProps = {
-	type?: 'single';
-	value?: string | null;
-};
+export type ToggleGroupType = 'single' | 'multiple';
 
-type MultipleToggleGroupRootProps = {
-	type: 'multiple';
-	value?: string[];
-};
-
-export type CreateToggleGroupProps = (SingleToggleGroupRootProps | MultipleToggleGroupRootProps) & {
+export type CreateToggleGroupProps<T extends ToggleGroupType = 'single'> = {
+	defaultValue?: T extends 'single' ? string : string[];
+	value?: Writable<string | string[] | undefined>;
+	onValueChange?: ChangeFn<string | string[] | undefined>;
+	type?: T;
 	disabled?: boolean;
 	rovingFocus?: boolean;
 	loop?: boolean;
@@ -25,4 +23,8 @@ export type ToggleGroupItemProps =
 	  }
 	| string;
 
-export type CreateToggleGroupReturn = ReturnType<typeof createToggleGroup>;
+export type ToggleGroup = BuilderReturn<typeof createToggleGroup>;
+export type ToggleGroupElements = ToggleGroup['elements'];
+export type ToggleGroupOptions = ToggleGroup['options'];
+export type ToggleGroupStates = ToggleGroup['states'];
+export type ToggleGroupHelpers = ToggleGroup['helpers'];

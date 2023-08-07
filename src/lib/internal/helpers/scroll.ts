@@ -2,8 +2,8 @@
 // Source: https://github.com/chakra-ui/zag
 // https://github.com/chakra-ui/zag/blob/main/packages/utilities/remove-scroll/src/index.ts
 
-import { noop } from './callbacks';
-import { isIos } from './platform';
+import { noop } from './callbacks.js';
+import { isIos } from './platform.js';
 
 const LOCK_CLASSNAME = 'data-melt-scroll-lock';
 

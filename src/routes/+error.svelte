@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Button } from '$docs/components';
+	import { Button } from '$docs/components/index.js';
 
 	$: message = $page.status === 404 ? 'Page not found' : 'Something went wrong';
 </script>

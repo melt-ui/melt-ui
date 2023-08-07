@@ -1,44 +1,60 @@
-import { ATTRS, DESCRIPTIONS } from '$docs/constants';
-import type { APISchema } from '$docs/types';
-import type { BuilderData } from '.';
+import { ATTRS, SEE } from '$docs/constants.js';
+import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import type { BuilderData } from './index.js';
 
-const builder: APISchema = {
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	{
+		name: 'max',
+		type: 'number',
+		default: '100',
+		description: 'The maximum value of the progress bar.',
+	},
+];
+const BUILDER_NAME = 'progress';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createProgress',
-	description: DESCRIPTIONS.BUILDER('progress bar'),
 	props: [
+		...OPTION_PROPS,
 		{
-			name: 'value',
+			name: 'defaultValue',
 			type: 'number',
-			description: 'The current value of the progress bar.',
+			description: 'The default value of the progress bar.',
+			default: '0',
 		},
 		{
-			name: 'max',
-			type: 'number',
-			default: '100',
-			description: 'The maximum value of the progress bar.',
+			name: 'value',
+			type: 'Writable<number>',
+			description: 'A writable store that controls the current value of the progress bar.',
+			see: SEE.BRING_YOUR_OWN_STORE,
+		},
+		{
+			name: 'onValueChange',
+			type: 'ChangeFn<number>',
+			description: 'A callback that is called when the value of the progress bar changes.',
+			see: SEE.CHANGE_FUNCTIONS,
 		},
 	],
-	returnedProps: [
-		{
-			name: 'value',
-			type: 'Writable<number | null>',
-			description: 'A writable store that controls the current value of the progress bar.',
-		},
-		{
-			name: 'max',
-			type: 'Writable<number>',
-			description: 'A writable store that controls the maximum value of the progress bar.',
-		},
+	elements: [
 		{
 			name: 'root',
-			description: 'The builder store used to create the progress bar root.',
-			link: '#root',
+			description: 'The builder store used to create the progress bar.',
 		},
 	],
-};
+	states: [
+		{
+			name: 'value',
+			type: 'Writable<number>',
+			description: 'A writable store with the current value of the progress bar.',
+		},
+	],
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The root progress component.',
 	dataAttributes: [
 		{
@@ -58,7 +74,7 @@ const root: APISchema = {
 			value: ATTRS.MELT('root'),
 		},
 	],
-};
+});
 
 const schemas = [builder, root];
 

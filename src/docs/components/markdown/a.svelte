@@ -1,7 +1,8 @@
 <script lang="ts">
-	import External from '~icons/lucide/external-link';
+	import { ExternalLink } from 'lucide-svelte';
 
 	export let href: string;
+	export let rel: string | undefined = undefined;
 
 	$: internal = href.startsWith('/') || href.startsWith('#');
 
@@ -17,6 +18,6 @@
 >
 	<slot />
 	{#if !internal}
-		<External class="h-4 w-4" />
+		<ExternalLink class="square-4" />
 	{/if}
 </a>

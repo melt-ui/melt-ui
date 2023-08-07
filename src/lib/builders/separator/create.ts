@@ -1,32 +1,34 @@
-import { builder } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { writable } from 'svelte/store';
-import type { CreateSeparatorProps } from './types';
+import { builder, toWritableStores } from '$lib/internal/helpers/index.js';
+import type { Defaults } from '$lib/internal/types.js';
+import type { CreateSeparatorProps } from './types.js';
 
 const defaults = {
 	orientation: 'horizontal',
 	decorative: false,
 } satisfies Defaults<CreateSeparatorProps>;
 
-export const createSeparator = (props: CreateSeparatorProps = defaults) => {
-	const withDefaults = { ...defaults, ...props };
-	const options = writable({ ...withDefaults });
+export const createSeparator = (props?: CreateSeparatorProps) => {
+	const withDefaults = { ...defaults, ...props } satisfies CreateSeparatorProps;
+	const options = toWritableStores(withDefaults);
+	const { orientation, decorative } = options;
 
 	const root = builder('separator', {
-		stores: options,
-		returned: ({ orientation, decorative }) => {
-			const ariaOrientation = orientation === 'vertical' ? orientation : undefined;
+		stores: [orientation, decorative],
+		returned: ([$orientation, $decorative]) => {
+			const ariaOrientation = $orientation === 'vertical' ? $orientation : undefined;
 			return {
-				role: decorative ? 'none' : 'separator',
+				role: $decorative ? 'none' : 'separator',
 				'aria-orientation': ariaOrientation,
-				'aria-hidden': decorative,
-				'data-orientation': orientation,
+				'aria-hidden': $decorative,
+				'data-orientation': $orientation,
 			};
 		},
 	});
 
 	return {
-		root,
+		elements: {
+			root,
+		},
 		options,
 	};
 };

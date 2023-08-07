@@ -1,5 +1,4 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	effect,
@@ -7,33 +6,42 @@ import {
 	generateId,
 	getElementByMeltId,
 	isBrowser,
+	isHTMLElement,
 	kbd,
 	omit,
+	overridable,
 	styleToString,
-} from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
-import { focusInput, highlightText, setSelectedFromEl } from './helpers';
-import type { CreateTagsInputProps, Tag, TagProps } from './types';
+	toWritableStores,
+	addMeltEventListener,
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
+import { derived, get, readonly, writable } from 'svelte/store';
+import { focusInput, highlightText, setSelectedFromEl } from './helpers.js';
+import type { CreateTagsInputProps, Tag, TagProps } from './types.js';
 import { tick } from 'svelte';
+import type { TagsInputEvents } from './events.js';
 
 const defaults = {
 	placeholder: '',
 	disabled: false,
 	editable: true,
-	tags: [],
+	defaultTags: [],
 	unique: false,
 	blur: 'nothing',
 	addOnPaste: false,
+	maxTags: undefined,
 	allowed: [],
 	denied: [],
+	add: undefined,
+	remove: undefined,
+	update: undefined,
 } satisfies Defaults<CreateTagsInputProps>;
 
 type TagsInputParts = '' | 'tag' | 'delete-trigger' | 'edit' | 'input';
 const { name, attribute, selector } = createElHelpers<TagsInputParts>('tags-input');
 
 export function createTagsInput(props?: CreateTagsInputProps) {
-	const withDefaults = { ...defaults, ...props } as CreateTagsInputProps;
+	const withDefaults = { ...defaults, ...props } satisfies CreateTagsInputProps;
 
 	// UUID for specific containers
 	const ids = {
@@ -41,8 +49,21 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		input: generateId(),
 	};
 
-	// Options store
-	const options = writable(omit(withDefaults, 'tags', 'selected'));
+	const options = toWritableStores(omit(withDefaults, 'tags'));
+	const {
+		placeholder,
+		disabled,
+		editable,
+		unique,
+		blur,
+		addOnPaste,
+		allowed,
+		denied,
+		add,
+		remove,
+		update,
+		maxTags,
+	} = options;
 
 	// A store representing the current input value. A readable version is exposed to the
 	// user
@@ -60,13 +81,17 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	//   - undefined => set empty []
 	//   - string[]  => generate Tag[] from string[]
 	//   - Tag[]     => set Tag[]
-	const tags = writable<Tag[]>(
-		withDefaults.tags && withDefaults.tags.length > 0
-			? typeof withDefaults.tags[0] === 'string'
-				? (withDefaults.tags as string[]).map((tag) => ({ id: generateId(), value: tag }))
-				: (withDefaults.tags as Tag[])
-			: [] // if undefined
-	);
+
+	const tagsWritable =
+		withDefaults.tags ??
+		writable<Tag[]>(
+			withDefaults.defaultTags && withDefaults.defaultTags.length > 0
+				? typeof withDefaults.defaultTags[0] === 'string'
+					? (withDefaults.defaultTags as string[]).map((tag) => ({ id: generateId(), value: tag }))
+					: (withDefaults.defaultTags as Tag[])
+				: [] // if undefined)
+		);
+	const tags = overridable<Tag[]>(tagsWritable, withDefaults?.onTagsChange);
 
 	// Selected tag store. When `null`, no tag is selected
 	const selected = writable<Tag | null>(withDefaults.selected ?? null);
@@ -75,37 +100,37 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 	// Run validation checks and if a validation fails return false immediately
 	const isInputValid = (v: string) => {
-		const $options = get(options);
 		const $tags = get(tags);
 		const $editing = get(editing);
-
+		const $allowed = get(allowed);
+		const $denied = get(denied);
+		const $maxTags = get(maxTags);
 		// Tag uniqueness
-		if ($options.unique && $editing?.value !== v) {
+		if (get(unique) && $editing?.value !== v) {
 			const index = $tags.findIndex((tag) => tag.value === v);
 			if (index >= 0) return false;
 		}
 
 		// Allowed list is populated and this value is not in it
-		if ($options.allowed && $options.allowed.length > 0 && !$options.allowed.includes(v))
-			return false;
+		if ($allowed && $allowed.length > 0 && !$allowed.includes(v)) return false;
 
 		// Deny list is populated and this value is in it
-		if ($options.denied && $options.denied.length > 0 && $options.denied.includes(v)) return false;
+		if ($denied && $denied.length > 0 && $denied.includes(v)) return false;
 
-		if ($options.maxTags && $options.maxTags > 0 && $tags.length >= $options.maxTags) return false;
+		if ($maxTags && $maxTags > 0 && $tags.length >= $maxTags) return false;
 
 		return true;
 	};
 
 	// Add a tag to the $tags store. Calls `$options.add()` if set
 	const addTag = async (v: string) => {
-		const $options = get(options);
+		const $add = get(add);
 
 		let workingTag = { id: '', value: v };
 
-		if ($options.add) {
+		if ($add) {
 			try {
-				const res = await $options.add(v);
+				const res = await $add(v);
 
 				if (typeof res === 'string') workingTag.value = res;
 				else workingTag = res;
@@ -118,22 +143,25 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			workingTag.id = generateId();
 		}
 
-		tags.update((current) => [...current, workingTag]);
+		tags.update((current) => {
+			current.push(workingTag);
+			return current;
+		});
 		return true;
 	};
 
 	// Update a tag in the $tags store. Calls `$options.update()` if set
-	const updateTag = async (tag: Tag, select = false) => {
-		const $options = get(options);
+	async function updateTag(tag: Tag, select = false) {
+		const $update = get(update);
 
 		// Store the id, incase it changes during the update
 		const oldId = tag.id;
 
 		let workingTag = tag;
 
-		if ($options.update) {
+		if ($update) {
 			try {
-				const res = await $options.update(workingTag);
+				const res = await $update(workingTag);
 				workingTag = res;
 
 				// If the id was wiped, give it a new one
@@ -157,15 +185,15 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		if (select) selected.set(workingTag);
 
 		return true;
-	};
+	}
 
 	// Remove a tag from the $tags store. Calls `$options.remove()` if set
-	const removeTag = async (t: Tag) => {
-		const $options = get(options);
+	async function removeTag(t: Tag) {
+		const $remove = get(remove);
 
-		if ($options.remove) {
+		if ($remove) {
 			try {
-				if (!(await $options.remove(t))) return false;
+				if (!(await $remove(t))) return false;
 			} catch {
 				return false;
 			}
@@ -179,22 +207,24 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		});
 
 		return true;
-	};
+	}
 
 	const root = builder(name(''), {
-		stores: options,
-		returned: ($options) => {
+		stores: disabled,
+		returned: ($disabled) => {
 			return {
 				'data-melt-id': ids.root,
-				'data-disabled': $options.disabled ? true : undefined,
-				disabled: $options.disabled,
+				'data-disabled': $disabled ? true : undefined,
+				disabled: $disabled,
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<TagsInputEvents['root']> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'mousedown', (e) => {
+				addMeltEventListener(node, 'mousedown', (e) => {
 					// Focus on input when root is the target
-					if ((e.target as HTMLElement).hasAttribute(attribute())) {
+					const target = e.target;
+					if (!isHTMLElement(target)) return;
+					if (target.hasAttribute(attribute())) {
 						e.preventDefault();
 						focusInput(ids.input);
 					}
@@ -208,26 +238,26 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	});
 
 	const input = builder(name('input'), {
-		stores: options,
-		returned: ($options) => {
+		stores: [disabled, placeholder],
+		returned: ([$disabled, $placeholder]) => {
 			return {
 				'data-melt-id': ids.input,
-				'data-disabled': $options.disabled ? '' : undefined,
-				disabled: $options.disabled,
-				placeholder: $options.placeholder,
+				'data-disabled': $disabled ? '' : undefined,
+				disabled: $disabled,
+				placeholder: $placeholder,
 			};
 		},
-		action: (node: HTMLInputElement) => {
+		action: (node: HTMLInputElement): MeltActionReturn<TagsInputEvents['input']> => {
 			const getTagsInfo = (id: string) => {
 				const rootEl = getElementByMeltId(ids.root);
 
-				let tagsEl: Array<HTMLElement> = [];
+				let tagsEl: Array<Element> = [];
 				let selectedIndex = -1;
 				let prevIndex = -1;
 				let nextIndex = -1;
 
 				if (rootEl) {
-					tagsEl = Array.from(rootEl.querySelectorAll(selector('tag'))) as Array<HTMLElement>;
+					tagsEl = Array.from(rootEl.querySelectorAll(selector('tag')));
 
 					selectedIndex = tagsEl.findIndex((element) => element.getAttribute('data-tag-id') === id);
 
@@ -244,13 +274,13 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			};
 
 			const unsub = executeCallbacks(
-				addEventListener(node, 'focus', () => {
+				addMeltEventListener(node, 'focus', () => {
 					// Set data-focus on root and input
 					const rootEl = getElementByMeltId(ids.root);
 					if (rootEl) rootEl.setAttribute('data-focus', '');
 					node.setAttribute('data-focus', '');
 				}),
-				addEventListener(node, 'blur', async () => {
+				addMeltEventListener(node, 'blur', async () => {
 					// Clear data-focus from root and input
 					const rootEl = getElementByMeltId(ids.root);
 					if (rootEl) rootEl.removeAttribute('data-focus');
@@ -264,11 +294,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					if (!value) return;
 
 					// Handle clear or add (if set)
-					const $options = get(options);
+					const $blur = get(blur);
 
-					if ($options.blur === 'clear') {
+					if ($blur === 'clear') {
 						node.value = '';
-					} else if ($options.blur === 'add') {
+					} else if ($blur === 'add') {
 						if (isInputValid(value) && (await addTag(value))) {
 							node.value = '';
 							inputValue.set('');
@@ -277,14 +307,14 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 						}
 					}
 				}),
-				addEventListener(node, 'paste', async (e) => {
+				addMeltEventListener(node, 'paste', async (e) => {
 					// Do nothing when there is nothing to paste
 					if (!e.clipboardData) return;
 					const pastedText = e.clipboardData.getData('text');
 					if (!pastedText) return;
 
 					// Do nothing when addOnPaste is false
-					if (!get(options).addOnPaste) return;
+					if (!get(addOnPaste)) return;
 
 					// Update value with the pasted text or set invalid
 					if (isInputValid(pastedText) && (await addTag(pastedText))) {
@@ -293,7 +323,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 						inputInvalid.set(true);
 					}
 				}),
-				addEventListener(node, 'keydown', async (e) => {
+				addMeltEventListener(node, 'keydown', async (e) => {
 					const $selected = get(selected);
 
 					if ($selected) {
@@ -405,12 +435,13 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 							// At the start of the input. Move the the last tag (if there is one)
 							e.preventDefault();
 							const { tagsEl } = getTagsInfo('');
-							const lastTag = tagsEl.at(-1) as HTMLElement;
+							const lastTag = tagsEl.at(-1);
+							if (!lastTag) return;
 							setSelectedFromEl(lastTag, selected);
 						}
 					}
 				}),
-				addEventListener(node, 'input', () => {
+				addMeltEventListener(node, 'input', () => {
 					inputValue.set(node.value);
 				})
 			);
@@ -422,11 +453,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	});
 
 	const tag = builder(name('tag'), {
-		stores: [selected, editing, options],
-		returned: ([$selected, $editing, $options]) => {
+		stores: [selected, editing, disabled, editable],
+		returned: ([$selected, $editing, $disabled, $editable]) => {
 			return (tag: TagProps) => {
-				const disabled = $options.disabled || tag.disabled;
-				const editable = $options.editable && tag.editable !== false;
+				const disabled = $disabled || tag.disabled;
+				const editable = $editable && tag.editable !== false;
 				const selected = disabled ? undefined : $selected?.id === tag?.id;
 				const editing = editable ? $editing?.id === tag?.id : undefined;
 
@@ -453,7 +484,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				};
 			};
 		},
-		action: (node: HTMLDivElement) => {
+		action: (node: HTMLDivElement): MeltActionReturn<TagsInputEvents['tag']> => {
 			const getElProps = () => {
 				const id = node.getAttribute('data-tag-id') ?? '';
 
@@ -463,7 +494,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			};
 
 			const unsub = executeCallbacks(
-				addEventListener(node, 'mousedown', (e) => {
+				addMeltEventListener(node, 'mousedown', (e) => {
 					// Do nothing when editing any tag
 					const $editing = get(editing);
 					if ($editing && $editing.id !== getElProps().id) return;
@@ -474,7 +505,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					setSelectedFromEl(node, selected);
 					editing.set(null);
 				}),
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
 					// Do nothing when editing any tag
 					const $editing = get(editing);
 					if ($editing && $editing.id === getElProps().id) return;
@@ -485,7 +516,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					setSelectedFromEl(node, selected);
 					editing.set(null);
 				}),
-				addEventListener(node, 'dblclick', async () => {
+				addMeltEventListener(node, 'dblclick', async () => {
 					if (!isBrowser) return;
 
 					// Do nothing when it is not editable
@@ -519,11 +550,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	});
 
 	const deleteTrigger = builder(name('delete-trigger'), {
-		stores: [selected, editing, options],
-		returned: ([$selected, $editing, $options]) => {
+		stores: [selected, editing, disabled, editable],
+		returned: ([$selected, $editing, $disabled, $editable]) => {
 			return (tag: TagProps) => {
-				const disabled = $options.disabled || tag.disabled;
-				const editable = $options.editable && tag.editable !== false;
+				const disabled = $disabled || tag.disabled;
+				const editable = $editable && tag.editable !== false;
 				const selected = disabled ? undefined : $selected?.id === tag?.id;
 				const editing = editable ? $editing?.id === tag?.id : undefined;
 
@@ -539,19 +570,27 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				};
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<TagsInputEvents['deleteTrigger']> => {
+			function handleDelete() {
+				if (node.hasAttribute('data-disabled')) return;
+
+				// Remove the tag and put focus on the input
+				const value = node.getAttribute('data-tag-value') ?? '';
+				const id = node.getAttribute('data-tag-id') ?? '';
+
+				removeTag({ id, value });
+				focusInput(ids.input);
+			}
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
 					// Do nothing when disabled
 					e.stopPropagation();
-					if (node.hasAttribute('data-disabled')) return;
-
-					// Remove the tag and put focus on the input
-					const value = node.getAttribute('data-tag-value') ?? '';
-					const id = node.getAttribute('data-tag-id') ?? '';
-
-					removeTag({ id, value });
-					focusInput(ids.input);
+					handleDelete();
+				}),
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
+					e.preventDefault();
+					handleDelete();
 				})
 			);
 
@@ -562,10 +601,10 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	});
 
 	const edit = builder(name('edit'), {
-		stores: [editing, options],
-		returned: ([$editing, $options]) => {
+		stores: [editing, editable],
+		returned: ([$editing, $editable]) => {
 			return (tag: Tag) => {
-				const editable = $options.editable;
+				const editable = $editable;
 				const editing = editable ? $editing?.id === tag.id : undefined;
 
 				return {
@@ -586,7 +625,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				};
 			};
 		},
-		action: (node: HTMLDivElement) => {
+		action: (node: HTMLElement): MeltActionReturn<TagsInputEvents['edit']> => {
 			const getElProps = () => {
 				const id = node.getAttribute('data-tag-id') ?? '';
 				const value = node.getAttribute('data-tag-value') ?? '';
@@ -598,16 +637,16 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			};
 
 			const unsub = executeCallbacks(
-				addEventListener(node, 'blur', () => {
+				addMeltEventListener(node, 'blur', () => {
 					if (node.hasAttribute('hidden')) return;
 
 					// Stop editing, reset the value to the original and clear an invalid state
 					editing.set(null);
-					(node as HTMLElement).textContent = getElProps().value;
+					node.textContent = getElProps().value;
 					getElementByMeltId(ids.root)?.removeAttribute('data-invalid-edit');
 					node.removeAttribute('data-invalid-edit');
 				}),
-				addEventListener(node, 'keydown', async (e) => {
+				addMeltEventListener(node, 'keydown', async (e) => {
 					if (node.hasAttribute('hidden')) return;
 
 					if (e.key === kbd.ENTER) {
@@ -621,7 +660,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 						const t = { id: getElProps().id, value };
 
 						if (isInputValid(value) && (await updateTag(t, true))) {
-							(node as HTMLElement).textContent = t.value;
+							node.textContent = t.value;
 							editValue.set('');
 							focusInput(ids.input);
 						} else {
@@ -632,13 +671,13 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 						// Reset the value, clear the edit value store, set this tag as
 						// selected and focus on input
 						e.preventDefault();
-						(node as HTMLElement).textContent = getElProps().value;
+						node.textContent = getElProps().value;
 						editValue.set('');
 						setSelectedFromEl(node, selected);
 						focusInput(ids.input);
 					}
 				}),
-				addEventListener(node, 'input', () => {
+				addMeltEventListener(node, 'input', () => {
 					if (node.hasAttribute('hidden')) return;
 
 					// Update the edit value store
@@ -679,23 +718,29 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 		const invalidEl = Array.from(
 			document.querySelectorAll(selector('edit') + '[data-invalid-edit]')
-		) as Array<HTMLElement>;
+		);
 		invalidEl.forEach((e) => {
 			e.removeAttribute('data-invalid-edit');
 		});
 	});
 
 	return {
-		inputValue: derived(inputValue, ($inputValue) => $inputValue),
-		inputInvalid: derived(inputInvalid, ($inputInvalid) => $inputInvalid),
-		selected,
-		isSelected,
+		elements: {
+			root,
+			input,
+			deleteTrigger,
+			edit,
+			tag,
+		},
+		states: {
+			tags,
+			inputValue: readonly(inputValue),
+			inputInvalid: readonly(inputInvalid),
+			selected: readonly(selected),
+		},
+		helpers: {
+			isSelected,
+		},
 		options,
-		tags,
-		root,
-		input,
-		tag,
-		deleteTrigger,
-		edit,
 	};
 }

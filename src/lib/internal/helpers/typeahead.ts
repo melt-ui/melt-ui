@@ -1,8 +1,8 @@
 import { get, writable, type Writable } from 'svelte/store';
-import { debounce } from './debounce';
-import { handleRovingFocus } from './rovingFocus';
-import { isHTMLElement } from './is';
-import { wrapArray } from './array';
+import { debounce } from './debounce.js';
+import { handleRovingFocus } from './rovingFocus.js';
+import { isHTMLElement } from './is.js';
+import { wrapArray } from './array.js';
 
 export type TypeaheadArgs = {
 	/**
@@ -38,7 +38,8 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 	});
 
 	const handleTypeaheadSearch = (key: string, items: HTMLElement[]) => {
-		const currentItem = document.activeElement as HTMLElement | null;
+		const currentItem = document.activeElement;
+		if (!isHTMLElement(currentItem)) return;
 		const $typed = get(typed);
 		if (!Array.isArray($typed)) {
 			return;
@@ -49,11 +50,9 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 		const candidateItems = items.filter((item) => {
 			if (
 				item.getAttribute('disabled') === 'true' ||
-				item.getAttribute('aria-disabled') === 'true'
+				item.getAttribute('aria-disabled') === 'true' ||
+				item.hasAttribute('data-disabled')
 			) {
-				return false;
-			}
-			if (item.hasAttribute('data-disabled')) {
 				return false;
 			}
 			return true;

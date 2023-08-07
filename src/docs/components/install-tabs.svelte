@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Tabs } from '$docs/components';
+	import { Tabs } from '$docs/components/index.js';
 </script>
 
 <Tabs tabs={['npm', 'yarn', 'pnpm']} let:tab>

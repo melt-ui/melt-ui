@@ -1,20 +1,31 @@
-import { builder, effect, isBrowser, styleToString } from '$lib/internal/helpers';
+import {
+	builder,
+	effect,
+	isBrowser,
+	omit,
+	overridable,
+	styleToString,
+	toWritableStores,
+} from '$lib/internal/helpers/index.js';
 import { writable } from 'svelte/store';
-import type { CreateAvatarProps, ImageLoadingStatus } from './types';
+import type { CreateAvatarProps } from './types.js';
 
 const defaults = {
 	src: '',
+	delayMs: 0,
+	onLoadingStatusChange: undefined,
 } satisfies CreateAvatarProps;
 
-export const createAvatar = (props: CreateAvatarProps = defaults) => {
-	const withDefaults = { ...defaults, ...props };
-	const { delayMs } = withDefaults;
+export const createAvatar = (props?: CreateAvatarProps) => {
+	const withDefaults = { ...defaults, ...props } satisfies CreateAvatarProps;
 
-	const src = writable(withDefaults.src);
+	const options = toWritableStores(omit(withDefaults, 'loadingStatus', 'onLoadingStatusChange'));
+	const { src, delayMs } = options;
 
-	const loadingStatus = writable<ImageLoadingStatus>('loading');
+	const loadingStatusWritable = withDefaults.loadingStatus ?? writable('loading');
+	const loadingStatus = overridable(loadingStatusWritable, withDefaults?.onLoadingStatusChange);
 
-	effect([src], ([$src]) => {
+	effect([src, delayMs], ([$src, $delayMs]) => {
 		if (isBrowser) {
 			const image = new Image();
 			image.src = $src;
@@ -22,7 +33,7 @@ export const createAvatar = (props: CreateAvatarProps = defaults) => {
 				if (delayMs !== undefined) {
 					const timerId = window.setTimeout(() => {
 						loadingStatus.set('loaded');
-					}, delayMs);
+					}, $delayMs);
 					return () => window.clearTimeout(timerId);
 				} else {
 					loadingStatus.set('loaded');
@@ -50,17 +61,26 @@ export const createAvatar = (props: CreateAvatarProps = defaults) => {
 	const fallback = builder('avatar-fallback', {
 		stores: [loadingStatus],
 		returned: ([$loadingStatus]) => {
-			const fallbackStyles = styleToString({
-				display: $loadingStatus === 'loaded' ? 'none' : 'block',
-			});
 			return {
-				style: fallbackStyles,
+				style:
+					$loadingStatus === 'loaded'
+						? styleToString({
+								display: 'none',
+						  })
+						: undefined,
+				hidden: $loadingStatus === 'loaded' ? true : undefined,
 			};
 		},
 	});
 
 	return {
-		image,
-		fallback,
+		elements: {
+			image,
+			fallback,
+		},
+		states: {
+			loadingStatus,
+		},
+		options,
 	};
 };

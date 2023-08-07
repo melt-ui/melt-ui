@@ -1,60 +1,56 @@
-import { ATTRS, DESCRIPTIONS, KBD, TYPES } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import type { BuilderData } from '.';
+import { ATTRS, KBD, PROPS, SEE, TYPES } from '$docs/constants.js';
+import type { KeyboardSchema } from '$docs/types.js';
+import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { toolbarEvents } from '$lib/builders/toolbar/events.js';
+import type { BuilderData } from './index.js';
 
-const builder: APISchema = {
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	PROPS.LOOP,
+	{
+		name: 'orientation',
+		type: TYPES.ORIENTATION,
+		default: '"horizontal"',
+		description: 'The orientation of the toolbar.',
+	},
+];
+
+const BUILDER_NAME = 'toolbar';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createToolbar',
-	description: DESCRIPTIONS.BUILDER('toolbar'),
-	props: [
+	props: OPTION_PROPS,
+	elements: [
 		{
-			name: 'loop',
-			type: 'boolean',
-			default: 'true',
-			description: DESCRIPTIONS.LOOP,
+			name: 'root',
+			description: 'The builder store used to create the toolbar root.',
 		},
 		{
-			name: 'orientation',
-			type: TYPES.ORIENTATION,
-			default: '"horizontal"',
-			description: 'The orientation of the toolbar.',
+			name: 'button',
+			description: 'The builder store used to create the toolbar button.',
+		},
+		{
+			name: 'link',
+			description: 'The builder store used to create the toolbar link.',
+		},
+		{
+			name: 'separator',
+			description: 'The builder store used to create the toolbar separator.',
 		},
 	],
-	returnedProps: [
-		{
-			name: 'options',
-			type: 'Writable<CreateToolbarProps>',
-			description: 'A writable store that can be used to update the toolbar props.',
-		},
+	builders: [
 		{
 			name: 'createToolbarGroup',
 			description: 'A builder function that creates a toolbar group.',
 			link: '#createtoolbargroup',
 		},
-		{
-			name: 'root',
-			description: 'The builder store used to create the toolbar root.',
-			link: '#root',
-		},
-		{
-			name: 'button',
-			description: 'The builder store used to create the toolbar button.',
-			link: '#button',
-		},
-		{
-			name: 'link',
-			description: 'The builder store used to create the toolbar link.',
-			link: '#link',
-		},
-		{
-			name: 'separator',
-			description: 'The builder store used to create the toolbar separator.',
-			link: '#separator',
-		},
 	],
-};
+	options: OPTION_PROPS,
+});
 
-const root: APISchema = {
-	title: 'root',
+const root = elementSchema('root', {
 	description: 'The root toolbar element.',
 	dataAttributes: [
 		{
@@ -66,10 +62,9 @@ const root: APISchema = {
 			value: ATTRS.MELT('toolbar'),
 		},
 	],
-};
+});
 
-const button: APISchema = {
-	title: 'button',
+const button = elementSchema('button', {
 	description: 'The toolbar button element.',
 	dataAttributes: [
 		{
@@ -77,10 +72,10 @@ const button: APISchema = {
 			value: ATTRS.MELT('toolbar button'),
 		},
 	],
-};
+	events: toolbarEvents['button'],
+});
 
-const link: APISchema = {
-	title: 'link',
+const link = elementSchema('link', {
 	description: 'The toolbar link element.',
 	dataAttributes: [
 		{
@@ -88,10 +83,10 @@ const link: APISchema = {
 			value: ATTRS.MELT('toolbar link'),
 		},
 	],
-};
+	events: toolbarEvents['link'],
+});
 
-const separator: APISchema = {
-	title: 'separator',
+const separator = elementSchema('separator', {
 	description: 'The toolbar separator element.',
 	dataAttributes: [
 		{
@@ -103,63 +98,70 @@ const separator: APISchema = {
 			value: ATTRS.MELT('toolbar separator'),
 		},
 	],
-};
+});
 
-const groupBuilder: APISchema = {
+const GROUP_OPTION_PROPS = [
+	PROPS.DISABLED,
+	{
+		name: 'type',
+		type: ["'single'", "'multiple'"],
+		default: "'single'",
+		description:
+			'The type of toolbar group. A `single` group can only have one item selected at a time. A `multiple` group can have multiple items selected at a time.',
+	},
+];
+
+const groupBuilder = builderSchema('toolbar group', {
 	title: 'createToolbarGroup',
-	description: DESCRIPTIONS.BUILDER('toolbar group'),
 	props: [
+		...GROUP_OPTION_PROPS,
 		{
-			name: 'type',
-			type: ["'single'", "'multiple'"],
-			default: "'single'",
-			description:
-				'The type of toolbar group. A `single` group can only have one item selected at a time. A `multiple` group can have multiple items selected at a time.',
+			name: 'defaultValue',
+			type: ['string', 'string[]', 'undefined'],
+			description: 'The value of the default selected item(s).',
 		},
 		{
 			name: 'value',
-			type: ['string', 'string[]', 'null'],
-			description: 'The value of the selected item(s).',
+			type: 'Writable<string | string[] | undefined>',
+			description: 'A writable store that can be used to update the toolbar group value.',
+			see: SEE.BRING_YOUR_OWN_STORE,
 		},
 		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the toolbar group is disabled.',
+			name: 'onValueChange',
+			type: 'ChangeFn<string | string[] | undefined>',
+			description: 'A callback function that is called when the toolbar group value changes.',
+			see: SEE.CHANGE_FUNCTIONS,
 		},
 	],
-	returnedProps: [
+	elements: [
 		{
-			name: 'options',
-			type: 'Writable<CreateToolbarGroupProps>',
-			description: 'A writable store that can be used to update the toolbar group props.',
+			name: 'root',
+			description: 'The builder store used to create the toolbar group root.',
 		},
+		{
+			name: 'item',
+			description: 'The builder store used to create the toolbar group item.',
+		},
+	],
+	states: [
 		{
 			name: 'value',
-			type: 'Writable<string | string[] | null>',
-			description: 'A writable store that can be used to update the toolbar group value.',
+			type: 'Writable<string | string[] | undefined>',
+			description: 'A Writable store that returns the current value of the toolbar group.',
 		},
+	],
+	helpers: [
 		{
 			name: 'isPressed',
 			type: 'Readable<(itemValue: string) => boolean>',
 			description:
 				'A derived store that returns a function that can be used to check if an item is pressed.',
 		},
-		{
-			name: 'root',
-			description: 'The builder store used to create the toolbar group root.',
-			link: '#group',
-		},
-		{
-			name: 'item',
-			description: 'The builder store used to create the toolbar group item.',
-			link: '#groupitem',
-		},
 	],
-};
+	options: GROUP_OPTION_PROPS,
+});
 
-const group: APISchema = {
-	title: 'group',
+const group = elementSchema('group', {
 	description: 'The root toolbar element for a toolbar group.',
 	dataAttributes: [
 		{
@@ -171,10 +173,9 @@ const group: APISchema = {
 			value: ATTRS.MELT('toolbar group'),
 		},
 	],
-};
+});
 
-const groupItem: APISchema = {
-	title: 'groupItem',
+const item = elementSchema('item', {
 	description: 'A an item within a toolbar group.',
 	props: [
 		{
@@ -208,7 +209,8 @@ const groupItem: APISchema = {
 			value: ATTRS.ON_OFF,
 		},
 	],
-};
+	events: toolbarEvents['item'],
+});
 
 const keyboard: KeyboardSchema = [
 	{
@@ -249,7 +251,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, root, button, link, separator, groupBuilder, group, groupItem];
+const schemas = [builder, root, button, link, separator, groupBuilder, group, item];
 
 const features = [
 	'Full keyboard navigation',

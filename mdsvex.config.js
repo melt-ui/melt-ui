@@ -180,5 +180,5 @@ function rehypeRenderCode() {
 }
 
 function tabsToSpaces(code) {
-	return code.replaceAll('    ', '  ');
+	return code.replaceAll('    ', '  ').replaceAll('\t', '  ');
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Construction from '~icons/lucide/construction';
-	import { a as A } from '$docs/components';
+	import { Construction } from 'lucide-svelte';
+	import { a as A } from '$docs/components/index.js';
 </script>
 
 <div

@@ -1,11 +1,12 @@
 import { onDestroy } from 'svelte';
 import type { Action } from 'svelte/action';
 import { derived, type Readable, type Subscriber, type Unsubscriber } from 'svelte/store';
-import { isBrowser, noop } from '.';
+import { isBrowser, isHTMLElement, noop } from './index.js';
 
 export function getElementByMeltId(id: string) {
 	if (!isBrowser) return null;
-	return document.querySelector(`[data-melt-id="${id}"]`) as HTMLElement | null;
+	const el = document.querySelector(`[data-melt-id="${id}"]`);
+	return isHTMLElement(el) ? el : null;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

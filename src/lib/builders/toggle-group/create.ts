@@ -1,18 +1,21 @@
 import {
-	addEventListener,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
+	getElemDirection,
 	handleRovingFocus,
 	isHTMLElement,
 	kbd,
 	noop,
 	omit,
-} from '$lib/internal/helpers';
-import { getElemDirection } from '$lib/internal/helpers/locale';
-import type { Defaults } from '$lib/internal/types';
+	overridable,
+	toWritableStores,
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable } from 'svelte/store';
-import type { CreateToggleGroupProps, ToggleGroupItemProps } from './types';
+import type { ToggleGroupEvents } from './events.js';
+import type { CreateToggleGroupProps, ToggleGroupItemProps, ToggleGroupType } from './types.js';
 
 const defaults = {
 	type: 'single',
@@ -20,77 +23,68 @@ const defaults = {
 	loop: true,
 	rovingFocus: true,
 	disabled: false,
-	value: null,
+	defaultValue: '',
 } satisfies Defaults<CreateToggleGroupProps>;
 
 type ToggleGroupParts = 'item';
 const { name, selector } = createElHelpers<ToggleGroupParts>('toggle-group');
 
-export function createToggleGroup(props: CreateToggleGroupProps = {}) {
+export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
+	props?: CreateToggleGroupProps<T>
+) => {
 	const withDefaults = { ...defaults, ...props };
-	const options = writable(omit(withDefaults, 'value'));
-	const value = writable(withDefaults.value);
 
-	options.subscribe((o) => {
-		value.update((v) => {
-			if (o.type === 'single' && Array.isArray(v)) {
-				return null;
-			}
+	const options = toWritableStores(omit(withDefaults, 'value'));
+	const { type, orientation, loop, rovingFocus, disabled } = options;
 
-			if (o.type === 'multiple' && !Array.isArray(v)) {
-				return v === null ? [] : [v];
-			}
+	const defaultValue = withDefaults.defaultValue
+		? withDefaults.defaultValue
+		: withDefaults.type === 'single'
+		? 'undefined'
+		: [];
 
-			return v;
-		});
-	});
+	const valueWritable = withDefaults.value ?? writable(defaultValue);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	const root = builder(name(), {
-		stores: options,
-		returned: ($options) => {
+		stores: orientation,
+		returned: ($orientation) => {
 			return {
 				role: 'group',
-				'data-orientation': $options.orientation,
+				'data-orientation': $orientation,
 			} as const;
 		},
 	});
 
 	const item = builder(name('item'), {
-		stores: [options, value],
-		returned: ([$options, $value]) => {
+		stores: [value, disabled, orientation, type],
+		returned: ([$value, $disabled, $orientation, $type]) => {
 			return (props: ToggleGroupItemProps) => {
 				const itemValue = typeof props === 'string' ? props : props.value;
 				const argDisabled = typeof props === 'string' ? false : !!props.disabled;
-				const disabled = $options.disabled || argDisabled;
+				const disabled = $disabled || argDisabled;
 				const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
 				return {
 					disabled,
 					pressed,
-					'data-orientation': $options.orientation,
+					'data-orientation': $orientation,
 					'data-disabled': disabled ? true : undefined,
 					'data-state': pressed ? 'on' : 'off',
 					'data-value': itemValue,
 					'aria-pressed': pressed,
 					type: 'button',
-					role: $options.type === 'single' ? 'radio' : undefined,
+					role: $type === 'single' ? 'radio' : undefined,
 					tabindex: pressed ? 0 : -1,
 				} as const;
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<ToggleGroupEvents['item']> => {
 			let unsub = noop;
 
-			const getNodeProps = () => {
-				const itemValue = node.dataset.value;
-				const disabled = node.dataset.disabled === 'true';
+			const parentGroup = node.closest(selector());
+			if (!isHTMLElement(parentGroup)) return {};
 
-				return { value: itemValue, disabled };
-			};
-
-			const parentGroup = node.closest<HTMLElement>(selector());
-			if (!isHTMLElement(parentGroup)) return;
-
-			const items = Array.from(parentGroup.querySelectorAll<HTMLElement>(selector('item')));
+			const items = Array.from(parentGroup.querySelectorAll(selector('item')));
 			const $value = get(value);
 			const anyPressed = Array.isArray($value) ? $value.length > 0 : $value !== null;
 
@@ -98,63 +92,81 @@ export function createToggleGroup(props: CreateToggleGroupProps = {}) {
 				node.tabIndex = 0;
 			}
 
-			unsub = executeCallbacks(
-				addEventListener(node, 'click', () => {
-					const { value: itemValue, disabled } = getNodeProps();
-					if (itemValue === undefined || disabled) return;
+			function getNodeProps() {
+				const itemValue = node.dataset.value;
+				const disabled = node.dataset.disabled === 'true';
 
-					value.update((v) => {
-						if (Array.isArray(v)) {
-							return v.includes(itemValue) ? v.filter((i) => i !== itemValue) : [...v, itemValue];
+				return { value: itemValue, disabled };
+			}
+
+			function handleValueUpdate() {
+				const { value: itemValue, disabled } = getNodeProps();
+				if (itemValue === undefined || disabled) return;
+
+				value.update(($value) => {
+					if (Array.isArray($value)) {
+						if ($value.includes(itemValue)) {
+							return $value.filter((i) => i !== itemValue);
 						}
-						return v === itemValue ? null : itemValue;
-					});
+						$value.push(itemValue);
+						return $value;
+					}
+					return $value === itemValue ? undefined : itemValue;
+				});
+			}
+
+			unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					handleValueUpdate();
 				}),
 
-				addEventListener(node, 'keydown', (e) => {
-					const $options = get(options);
-					if (!$options.rovingFocus) return;
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key === kbd.SPACE || e.key === kbd.ENTER) {
+						e.preventDefault();
+						handleValueUpdate();
+						return;
+					}
+					if (!get(rovingFocus)) return;
 
 					const el = e.currentTarget;
 					if (!isHTMLElement(el)) return;
 
-					const root = el.closest<HTMLElement>(selector());
+					const root = el.closest(selector());
 					if (!isHTMLElement(root)) return;
 
 					const items = Array.from(
-						root.querySelectorAll<HTMLElement>(selector('item') + ':not([data-disabled])')
-					);
+						root.querySelectorAll(selector('item') + ':not([data-disabled])')
+					).filter((item): item is HTMLElement => isHTMLElement(item));
 
 					const currentIndex = items.indexOf(el);
 
 					const dir = getElemDirection(el);
+					const $orientation = get(orientation);
 					const nextKey = {
 						horizontal: dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
 						vertical: kbd.ARROW_DOWN,
-					}[$options.orientation ?? 'horizontal'];
+					}[$orientation ?? 'horizontal'];
 
 					const prevKey = {
 						horizontal: dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
 						vertical: kbd.ARROW_UP,
-					}[$options.orientation ?? 'horizontal'];
+					}[$orientation ?? 'horizontal'];
+
+					const $loop = get(loop);
 
 					if (e.key === nextKey) {
 						e.preventDefault();
 						const nextIndex = currentIndex + 1;
-						if (nextIndex >= items.length) {
-							if ($options.loop) {
-								handleRovingFocus(items[0]);
-							}
+						if (nextIndex >= items.length && $loop) {
+							handleRovingFocus(items[0]);
 						} else {
 							handleRovingFocus(items[nextIndex]);
 						}
 					} else if (e.key === prevKey) {
 						e.preventDefault();
 						const prevIndex = currentIndex - 1;
-						if (prevIndex < 0) {
-							if ($options.loop) {
-								handleRovingFocus(items[items.length - 1]);
-							}
+						if (prevIndex < 0 && $loop) {
+							handleRovingFocus(items[items.length - 1]);
 						} else {
 							handleRovingFocus(items[prevIndex]);
 						}
@@ -181,10 +193,16 @@ export function createToggleGroup(props: CreateToggleGroupProps = {}) {
 	});
 
 	return {
+		elements: {
+			root,
+			item,
+		},
+		states: {
+			value,
+		},
+		helpers: {
+			isPressed,
+		},
 		options,
-		value,
-		root,
-		item,
-		isPressed,
 	};
-}
+};
