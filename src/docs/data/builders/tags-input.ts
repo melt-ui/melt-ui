@@ -38,6 +38,12 @@ const OPTION_PROPS = [
 		description: 'Whether or not the tags input should only allow unique tags.',
 	},
 	{
+		name: 'trim',
+		type: 'boolean',
+		default: 'true',
+		description: 'Whether or not whitespace from both ends of input string should be removed when a tag is added.'
+	},
+	{
 		name: 'blur',
 		type: 'boolean',
 		description: 'Whether or not the input should blur when a tag is added.',

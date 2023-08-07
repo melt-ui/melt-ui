@@ -1,49 +1,28 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import Tree from './tree.svelte';
-	import type { TableOfContents, TableOfContentsItem } from './index.js';
 
-	let filteredHeadingsList: TableOfContents;
+	import { createTableOfContents } from '$lib';
 
-	function getHeadingsWithHierarchy() {
-		const headings: HTMLHeadingElement[] = Array.from(document.querySelectorAll('[data-toc]'));
-		const hierarchy: TableOfContents = { items: [] };
-		let currentLevel: TableOfContentsItem | undefined = undefined;
-
-		headings.forEach((heading: HTMLHeadingElement) => {
-			const level = parseInt(heading.tagName.charAt(1));
-			if (!heading.id) {
-				let newId = heading.innerText
-					.replaceAll(/[^a-zA-Z0-9 ]/g, '')
-					.replaceAll(' ', '-')
-					.toLowerCase();
-				heading.id = `${newId}`;
-			}
-
-			const item: TableOfContentsItem = {
-				title: heading.textContent || '',
-				url: `#${heading.id}`,
-				items: [],
-			};
-
-			if (level === 2) {
-				hierarchy.items.push(item);
-				currentLevel = item;
-			} else if (level === 3 && currentLevel?.items) {
-				currentLevel.items.push(item);
-			}
-		});
-
-		filteredHeadingsList = hierarchy;
-	}
-
-	// Lifecycle
-	onMount(() => {
-		getHeadingsWithHierarchy();
+	/**
+	 * The filter function is for removing headings from the ToC
+	 * docs page where we have a preview with lots of headings.
+	 */
+	const { activeHeadingIdxs, headingsTree, item } = createTableOfContents({
+		selector: '#mdsvex',
+		exclude: ['h1', 'h4', 'h5', 'h6'],
+		activeType: 'all',
+		scrollOffset: 80,
+		scrollBehaviour: 'smooth',
+		headingFilterFn: (heading) =>
+			heading.parentElement !== null &&
+			heading.parentElement.id !== 'toc-builder-preview' &&
+			!heading.parentElement.hasAttribute('data-melt-accordion-item'),
 	});
 </script>
 
 <div class="space-y-2">
 	<p class="font-medium">On This Page</p>
-	<Tree tree={filteredHeadingsList} />
+	<nav>
+		<Tree tree={$headingsTree} activeHeadingIdxs={$activeHeadingIdxs} {item} />
+	</nav>
 </div>

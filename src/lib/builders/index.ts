@@ -19,6 +19,7 @@ export * from './separator/index.js';
 export * from './slider/index.js';
 export * from './switch/index.js';
 export * from './tabs/index.js';
+export * from './table-of-contents/index.js';
 export * from './tags-input/index.js';
 export * from './toast/index.js';
 export * from './toggle/index.js';

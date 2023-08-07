@@ -36,23 +36,11 @@ const builder = builderSchema(BUILDER_NAME, {
 	title: 'createSelect',
 	props: [
 		...OPTION_PROPS,
-
-		{
-			name: 'name',
-			type: 'string',
-			description: 'The name of the select.',
-		},
 		{
 			name: 'preventScroll',
 			type: 'boolean',
 			default: 'true',
 			description: DESCRIPTIONS.PREVENT_SCROLL('select'),
-		},
-		{
-			name: 'loop',
-			type: 'boolean',
-			default: 'false',
-			description: DESCRIPTIONS.LOOP,
 		},
 		{
 			name: 'multiple',
