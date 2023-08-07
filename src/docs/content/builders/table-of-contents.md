@@ -1,7 +1,6 @@
 ---
 title: Table of Contents
-description:
-  An organized list of the content on your page.
+description: An organized list of the content on your page.
 ---
 
 <script>
@@ -18,6 +17,6 @@ description:
 
 <APIReference {schemas} />
 
-## Accessibility
+## Keyboard Navigation
 
 <KbdTable {keyboard} />
