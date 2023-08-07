@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.34.0
+
+### Minor Changes
+
+- 822a0a55: Add TOC
+
+### Patch Changes
+
+- e46d57c8: feature: Add trim option to input-tags
+
 ## 0.33.1
 
 ### Patch Changes
