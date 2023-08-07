@@ -27,6 +27,7 @@ const defaults = {
 	editable: true,
 	defaultTags: [],
 	unique: false,
+	trim: true,
 	blur: 'nothing',
 	addOnPaste: false,
 	maxTags: undefined,
@@ -35,6 +36,7 @@ const defaults = {
 	add: undefined,
 	remove: undefined,
 	update: undefined,
+
 } satisfies Defaults<CreateTagsInputProps>;
 
 type TagsInputParts = '' | 'tag' | 'delete-trigger' | 'edit' | 'input';
@@ -55,6 +57,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		disabled,
 		editable,
 		unique,
+		trim,
 		blur,
 		addOnPaste,
 		allowed,
@@ -105,7 +108,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		const $allowed = get(allowed);
 		const $denied = get(denied);
 		const $maxTags = get(maxTags);
-		// Tag uniqueness
+
+		// Trim the validation value before validations
+		if (get(trim)) v = v.trim();
+
+		// Tag uniqueness		
 		if (get(unique) && $editing?.value !== v) {
 			const index = $tags.findIndex((tag) => tag.value === v);
 			if (index >= 0) return false;
@@ -143,6 +150,10 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			workingTag.id = generateId();
 		}
 
+		// Trim the value, only after the user defined add function
+		if (get(trim)) workingTag.value = workingTag.value.trim();
+
+
 		tags.update((current) => {
 			current.push(workingTag);
 			return current;
@@ -170,6 +181,9 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				return false;
 			}
 		}
+
+		// Trim the value, only after the user defined update function
+		if (get(trim)) workingTag.value = workingTag.value.trim();
 
 		// Update the tag matching the old id
 		tags.update(($tags) => {
@@ -475,11 +489,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					tabindex: -1,
 					style: editing
 						? styleToString({
-								position: 'absolute',
-								opacity: 0,
-								'pointer-events': 'none',
-								margin: 0,
-						  })
+							position: 'absolute',
+							opacity: 0,
+							'pointer-events': 'none',
+							margin: 0,
+						})
 						: undefined,
 				};
 			};
@@ -616,11 +630,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					tabindex: -1,
 					style: !editing
 						? styleToString({
-								position: 'absolute',
-								opacity: 0,
-								'pointer-events': 'none',
-								margin: 0,
-						  })
+							position: 'absolute',
+							opacity: 0,
+							'pointer-events': 'none',
+							margin: 0,
+						})
 						: undefined,
 				};
 			};
