@@ -73,9 +73,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 		},
 		action: (node: HTMLElement): MeltActionReturn<RadioGroupEvents['item']> => {
 			const unsub = executeCallbacks(
-				addMeltEventListener(node, 'click', (e) => {
-					e.preventDefault();
-
+				addMeltEventListener(node, 'click', () => {
 					const disabled = node.dataset.disabled === 'true';
 					const itemValue = node.dataset.value;
 					if (disabled || itemValue === undefined) return;
