@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.34.1
+
+### Patch Changes
+
+- 8a673d15: remove preventDefault from radio button item
+
 ## 0.34.0
 
 ### Minor Changes
