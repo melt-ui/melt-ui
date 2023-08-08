@@ -1,5 +1,12 @@
 # @melt-ui/svelte
 
+## 0.34.2
+
+### Patch Changes
+
+- b3756704: remove TOC logs
+- dbf938bd: change checkbox default value
+
 ## 0.34.1
 
 ### Patch Changes
