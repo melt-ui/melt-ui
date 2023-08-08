@@ -1,6 +1,7 @@
 import {
 	addMeltEventListener,
 	builder,
+	builderV2,
 	createElHelpers,
 	omit,
 	overridable,
@@ -37,23 +38,25 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 		}),
 	});
 
-	const trigger = builder(name('trigger'), {
-		stores: [open, disabled],
-		returned: ([$open, $disabled]) =>
+	const trigger = builderV2(name('trigger'), {
+		stores: { open, disabled },
+		returned: ({ $open, $disabled }) =>
 			({
 				'data-state': $open ? 'open' : 'closed',
 				'data-disabled': $disabled ? '' : undefined,
 				disabled: $disabled,
 			} as const),
-		action: (node: HTMLElement): MeltActionReturn<CollapsibleEvents['trigger']> => {
-			const unsub = addMeltEventListener(node, 'click', () => {
-				const disabled = node.dataset.disabled !== undefined;
-				if (disabled) return;
-				open.update(($open) => !$open);
-			});
+		createAction(getStoreValues) {
+			return (node: HTMLElement): MeltActionReturn<CollapsibleEvents['trigger']> => {
+				const unsub = addMeltEventListener(node, 'click', () => {
+					const { $disabled } = getStoreValues();
+					if ($disabled) return;
+					open.update(($open) => !$open);
+				});
 
-			return {
-				destroy: unsub,
+				return {
+					destroy: unsub,
+				};
 			};
 		},
 	});

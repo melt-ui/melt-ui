@@ -245,3 +245,140 @@ export function createElHelpers<Part extends string = string>(prefix: string) {
 		getEl,
 	};
 }
+
+// BuilderV2
+type StoresObj = Record<string, Readable<unknown>>;
+type StoresObjValues<S extends StoresObj> = {
+	[K in keyof S as `$${K extends string ? K : never}`]: S[K] extends Readable<infer U> ? U : never;
+};
+
+function derivedFromObject<
+	S extends StoresObj,
+	Callback extends (values: StoresObjValues<S>) => unknown
+>(stores: S, fn: Callback): Readable<ReturnType<Callback>> {
+	return derived(Object.values(stores), (values) => {
+		// map the values back to the keys
+		const valuesObj = Object.fromEntries(
+			Object.keys(stores).map((key, i) => [`$${key}`, values[i]])
+		) as StoresObjValues<S>;
+		return fn(valuesObj) as ReturnType<typeof fn>;
+	});
+}
+
+type BuilderV2Callback<S extends StoresObj | undefined> = S extends StoresObj
+	? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+	  (values: StoresObjValues<S>) => Record<string, any> | ((...args: any[]) => Record<string, any>)
+	: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+	  () => Record<string, any> | ((...args: any[]) => Record<string, any>);
+
+type BuilderV2Args<
+	S extends StoresObj | undefined,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<any, any>,
+	R extends BuilderV2Callback<S>
+> = {
+	stores?: S;
+	createAction?: (get: () => S extends StoresObj ? StoresObjValues<S> : undefined) => A;
+	returned?: R;
+};
+
+type BuilderV2Store<
+	S extends StoresObj | undefined,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<any, any>,
+	R extends BuilderV2Callback<S>,
+	Name extends string
+> = Readable<
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	ReturnType<R> extends (...args: any) => any
+		? ((
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore - This is a valid type, but TS doesn't like it for some reason. TODO: Figure out why
+				...args: Parameters<ReturnType<R>>
+		  ) => ReturnType<R> & { [K in `data-melt-${Name}`]: '' } & { action: A }) & { action: A }
+		: ReturnType<R> & { [K in `data-melt-${Name}`]: '' } & { action: A }
+>;
+
+type ExplicitBuilderV2Return<
+	S extends StoresObj | undefined,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<any, any>,
+	R extends BuilderV2Callback<S>,
+	Name extends string
+> = BuilderV2Store<S, A, R, Name> & A;
+
+export function builderV2<
+	S extends StoresObj | undefined,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	A extends Action<any, any>,
+	R extends BuilderV2Callback<S>,
+	Name extends string
+>(name: Name, args?: BuilderV2Args<S, A, R>): ExplicitBuilderV2Return<S, A, R, Name> {
+	const { stores, createAction, returned } = args ?? {};
+
+	let innerValue: S extends StoresObj ? StoresObjValues<S> : undefined;
+	if (stores) {
+		const innerDerived = derivedFromObject(stores, ($stores) => $stores);
+		onDestroy(innerDerived.subscribe(($stores) => (innerValue = $stores as typeof innerValue)));
+	}
+	const action = createAction?.(() => innerValue);
+
+	const { subscribe } = (() => {
+		if (stores && returned) {
+			// If stores are provided, create a derived store from them
+			return derivedFromObject(stores, (values) => {
+				const result = returned(values);
+				if (isFunctionWithParams(result)) {
+					const fn = (...args: Parameters<typeof result>) => {
+						return hiddenAction({
+							...result(...args),
+							[`data-melt-${name}`]: '',
+							action: action ?? noop,
+						});
+					};
+					fn.action = action ?? noop;
+					return fn;
+				}
+
+				return hiddenAction({
+					...result,
+					[`data-melt-${name}`]: '',
+					action: action ?? noop,
+				});
+			});
+		} else {
+			// If stores are not provided, return a lightable store, for consistency
+			const returnedFn = returned as (() => R) | undefined;
+			const result = returnedFn?.();
+
+			if (isFunctionWithParams(result)) {
+				const resultFn = (...args: Parameters<typeof result>) => {
+					return hiddenAction({
+						...result(...args),
+						[`data-melt-${name}`]: '',
+						action: action ?? noop,
+					});
+				};
+				resultFn.action = action ?? noop;
+
+				return lightable(resultFn);
+			}
+
+			return lightable(
+				hiddenAction({
+					...result,
+					[`data-melt-${name}`]: '',
+					action: action ?? noop,
+				})
+			);
+		}
+	})() as BuilderV2Store<S, A, R, Name>;
+
+	const actionFn = (action ??
+		(() => {
+			/** noop */
+		})) as A & { subscribe: typeof subscribe };
+	actionFn.subscribe = subscribe;
+
+	return actionFn;
+}
