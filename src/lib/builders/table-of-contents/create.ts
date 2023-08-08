@@ -290,7 +290,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 			return (id: string) => {
 				const idx = headingsList.findIndex((heading) => heading.id === id);
 				const active = $activeHeadingIdxs.includes(idx);
-				console.log('active', active, { id, idx, $activeHeadingIdxs });
+
 				return {
 					'data-id': id,
 					'data-active': active ? '' : undefined,
