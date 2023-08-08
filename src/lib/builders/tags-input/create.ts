@@ -36,7 +36,6 @@ const defaults = {
 	add: undefined,
 	remove: undefined,
 	update: undefined,
-
 } satisfies Defaults<CreateTagsInputProps>;
 
 type TagsInputParts = '' | 'tag' | 'delete-trigger' | 'edit' | 'input';
@@ -112,7 +111,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		// Trim the validation value before validations
 		if (get(trim)) v = v.trim();
 
-		// Tag uniqueness		
+		// Tag uniqueness
 		if (get(unique) && $editing?.value !== v) {
 			const index = $tags.findIndex((tag) => tag.value === v);
 			if (index >= 0) return false;
@@ -152,7 +151,6 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 		// Trim the value, only after the user defined add function
 		if (get(trim)) workingTag.value = workingTag.value.trim();
-
 
 		tags.update((current) => {
 			current.push(workingTag);
@@ -489,11 +487,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					tabindex: -1,
 					style: editing
 						? styleToString({
-							position: 'absolute',
-							opacity: 0,
-							'pointer-events': 'none',
-							margin: 0,
-						})
+								position: 'absolute',
+								opacity: 0,
+								'pointer-events': 'none',
+								margin: 0,
+						  })
 						: undefined,
 				};
 			};
@@ -630,11 +628,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					tabindex: -1,
 					style: !editing
 						? styleToString({
-							position: 'absolute',
-							opacity: 0,
-							'pointer-events': 'none',
-							margin: 0,
-						})
+								position: 'absolute',
+								opacity: 0,
+								'pointer-events': 'none',
+								margin: 0,
+						  })
 						: undefined,
 				};
 			};

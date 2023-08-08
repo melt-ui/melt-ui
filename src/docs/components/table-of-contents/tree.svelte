@@ -16,9 +16,9 @@
 					href="#{heading.id}"
 					{...$item(heading.id)}
 					use:item
-					class="inline-block no-underline transition-colors hover:text-magnum-600 {active
-						? 'text-magnum-500'
-						: 'text-neutral-300'}"
+					class="inline-block no-underline transition-colors hover:text-magnum-400 {active
+						? 'text-neutral-100'
+						: 'text-neutral-400'}"
 				>
 					{heading.title}
 				</a>

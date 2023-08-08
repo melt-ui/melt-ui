@@ -76,7 +76,7 @@
 	</div>
 
 	<div class="overflow-y-auto rounded-lg bg-white p-4">
-		<p class="font-medium text-neutral-900">On This Page</p>
+		<p class="font-semibold text-neutral-900">On This Page</p>
 		<nav>
 			<Tree
 				tree={$headingsTree}

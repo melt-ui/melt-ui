@@ -41,7 +41,8 @@ const OPTION_PROPS = [
 		name: 'trim',
 		type: 'boolean',
 		default: 'true',
-		description: 'Whether or not whitespace from both ends of input string should be removed when a tag is added.'
+		description:
+			'Whether or not whitespace from both ends of input string should be removed when a tag is added.',
 	},
 	{
 		name: 'blur',

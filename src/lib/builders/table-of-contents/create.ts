@@ -117,13 +117,12 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 			elementTarget?.querySelectorAll(includedHeadings.join(', '));
 
 		// Create a unique ID for each heading which doesn't have one.
-		targetHeaders?.forEach((el: HTMLHeadingElement, i: number) => {
+		targetHeaders?.forEach((el: HTMLHeadingElement) => {
 			if (!el.id) {
 				const uniqueID = el.innerText
 					.replaceAll(/[^a-zA-Z0-9 ]/g, '')
 					.replaceAll(' ', '-')
 					.toLowerCase();
-				// el.id = `heading-${i}-${uniqueID}`;
 				el.id = `${uniqueID}`;
 			}
 
