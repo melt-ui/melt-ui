@@ -154,11 +154,9 @@
 	}
 </script>
 
-<div class="mt-4 flex flex-row items-center justify-between">
+<div class="mt-4 flex h-9 flex-row items-center justify-between">
 	{#if viewCode}
-		<div class="flex h-10 items-center">
-			<PreviewStyleSelect options={codeOptions} {codingStyle} />
-		</div>
+		<PreviewStyleSelect options={codeOptions} {codingStyle} />
 	{/if}
 
 	<div class="ml-auto">
@@ -174,7 +172,7 @@
 					<TabsList />
 				</div>
 			</div>
-			{#key $codingStyle}
+			{#key `${$codingStyle}-${tab}`}
 				{#if codingStyleObj && codingStyleObj[tab]}
 					<CodeBlock>
 						{@html codingStyleObj[tab]}
