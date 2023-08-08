@@ -28,7 +28,7 @@ export type CreateCheckboxProps = {
 	/**
 	 * The value given as data when submitted with a `name`.
 	 *
-	 * @default undefined
+	 * @default 'on'
 	 */
 	value?: string;
 

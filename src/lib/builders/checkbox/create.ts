@@ -17,7 +17,7 @@ const defaults = {
 	disabled: false,
 	required: false,
 	name: undefined,
-	value: undefined,
+	value: 'on',
 	defaultChecked: false,
 } satisfies Defaults<CreateCheckboxProps>;
 

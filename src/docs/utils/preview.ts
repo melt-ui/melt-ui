@@ -284,13 +284,13 @@ export function createHeadingId(text: string) {
 }
 
 export function createCopyCodeButton() {
-	const codeString = writable('');
+	let codeString = '';
 	const copied = writable(false);
 	let copyTimeout = 0;
 
 	function copyCode() {
 		if (!isBrowser) return;
-		navigator.clipboard.writeText(get(codeString));
+		navigator.clipboard.writeText(codeString);
 		copied.set(true);
 		clearTimeout(copyTimeout);
 		copyTimeout = window.setTimeout(() => {
@@ -299,7 +299,7 @@ export function createCopyCodeButton() {
 	}
 
 	function setCodeString(node: HTMLElement) {
-		codeString.set(node.innerText.trim() ?? '');
+		codeString = node.innerText.trim() ?? '';
 	}
 
 	return {
