@@ -17,7 +17,7 @@ export * from './debounce.js';
 export * from './platform.js';
 export * from './polygon/index.js';
 export * from './scroll.js';
-export * from './store.js';
+export * from './store/index.js';
 export * from './rovingFocus.js';
 export * from './typeahead.js';
 export * from './elements.js';

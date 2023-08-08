@@ -52,12 +52,6 @@ export type ExpandDeep<T> = T extends object
 type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
 export type XOR<T, U> = T | U extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U;
 
-export type StoreValue<T> = T extends { subscribe(cb: (value: infer V) => void): void } ? V : never;
-
-export type StoreValueObj<T> = {
-	[P in keyof T]: StoreValue<T[P]>;
-};
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type BuilderReturn<T extends (...args: any) => any> = {
 	[P in keyof ReturnType<T>]: ReturnType<T>[P];
