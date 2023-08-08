@@ -1,11 +1,11 @@
 <script lang="ts">
 	import {
 		createCombobox,
-		type ComboboxFilterFunction,
 		melt,
+		type ComboboxFilterFunction,
 	} from '$lib/index.js';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
-	import { slide } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 
 	interface Book {
 		author: string;
@@ -115,7 +115,7 @@
 	<ul
 		class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-md"
 		use:melt={$menu}
-		transition:slide={{ duration: 150 }}
+		transition:fly={{ duration: 150, y: -5 }}
 	>
 		<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 		<div
