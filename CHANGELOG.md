@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.34.3
+
+### Patch Changes
+
+- adcf8853: Improved pin-input backspace behaviour
+
 ## 0.34.2
 
 ### Patch Changes
