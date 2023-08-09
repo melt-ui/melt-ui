@@ -85,13 +85,16 @@ export function createPinInput(props?: CreatePinInputProps) {
 					if (!inputs) return;
 
 					if (e.key === 'Backspace') {
-						if (node.value.length === 0) {
-							e.preventDefault();
-							const prevEl = prev(inputs, elIndex, false);
-							prevEl.focus();
-						} else {
+						e.preventDefault();
+						if (node.value) {
 							node.value = '';
 							tick().then(() => (node.placeholder = ''));
+							value.set(inputs.map((input) => input.value.slice(-1) ?? undefined));
+						} else {
+							const prevEl = prev(inputs, elIndex, false);
+							prevEl.focus();
+							prevEl.value = '';
+							tick().then(() => (prevEl.placeholder = ''));
 							value.set(inputs.map((input) => input.value.slice(-1) ?? undefined));
 						}
 					}
