@@ -22,7 +22,7 @@
                 transition-transform will-change-transform
                 {$checked && 'translate-x-[22px]'}"
 			/>
-			<input use:melt={$input} />
 		</button>
+		<input use:melt={$input} />
 	</div>
 </form>
