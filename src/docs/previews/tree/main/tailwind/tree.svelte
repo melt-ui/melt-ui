@@ -31,17 +31,19 @@
 	export let treeItems: TreeItem[];
 	export let level = 1;
 
-	const item: CreateTreeViewReturn['item'] = getContext('tree-item');
-	const group: CreateTreeViewReturn['group'] = getContext('tree-group');
-	const itemsWithHiddenChildren: CreateTreeViewReturn['itemsWithHiddenChildren'] =
-		getContext('hidden-children');
-	const selectedItem: CreateTreeViewReturn['selectedItem'] =
+	const item: CreateTreeViewReturn['elements']['item'] =
+		getContext('tree-item');
+	const group: CreateTreeViewReturn['elements']['group'] =
+		getContext('tree-group');
+	const collapsedItems: CreateTreeViewReturn['states']['collapsedItems'] =
+		getContext('collapsed-items');
+	const selectedItem: CreateTreeViewReturn['helpers']['selectedItem'] =
 		getContext('selected');
 </script>
 
 {#each treeItems as { title, icon, children, id }, i (i)}
 	{@const itemId = `${id}`}
-	{@const childrenAreHidden = $itemsWithHiddenChildren.includes(itemId)}
+	{@const childrenAreHidden = $collapsedItems.includes(itemId)}
 	{@const isSelected = $selectedItem?.getAttribute('data-id') === itemId}
 
 	<li
@@ -83,6 +85,6 @@
 		box-shadow: none !important;
 	}
 	li:focus > div {
-		@apply bg-magnum-600/25;
+		@apply bg-magnum-600/60;
 	}
 </style>

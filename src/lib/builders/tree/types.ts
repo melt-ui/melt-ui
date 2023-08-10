@@ -3,6 +3,7 @@ import type { createTreeViewBuilder  } from "./create";
 // TODO: add multiselect option?
 export type CreateTreeViewArgs = {
 	collapse?: boolean;
+	forceVisible?: boolean;
 	// multiselect?: boolean;
 };
 

@@ -7,18 +7,14 @@
 	import { generateId } from '$lib/internal/helpers';
 
 	const {
-		tree,
-		label,
-		item,
-		group,
-		focusedItem,
-		selectedItem,
-		itemsWithHiddenChildren,
-	} = createTreeViewBuilder({ collapse: false });
+		elements: { tree, label, item, group },
+		helpers: { focusedItem, selectedItem },
+		states: { collapsedItems },
+	} = createTreeViewBuilder({ collapse: false, forceVisible: true });
 
 	setContext('tree-item', item);
 	setContext('tree-group', group);
-	setContext('hidden-children', itemsWithHiddenChildren);
+	setContext('collapsed-items', collapsedItems);
 	setContext('selected', selectedItem);
 
 	const treeItems: TreeItem[] = [
@@ -82,20 +78,27 @@
 	addRandomId(treeItems);
 </script>
 
-<div class="flex h-[390px] flex-col gap-1 rounded-lg bg-neutral-900 px-8 py-1">
-	<div class="w-64">
-		<span>Focused value:</span>
-		<span class="text-magnum-500">
-			{$focusedItem?.getAttribute('data-value')}
-		</span>
+<div
+	class="flex h-[300px] flex-col gap-1 overflow-auto rounded-lg bg-white px-8 py-1 text-neutral-900 md:h-[350px]"
+>
+	<div class="w-[225px]">
+		<div>
+			<span>Focused value:</span>
+			<span class="text-magnum-500">
+				{$focusedItem?.getAttribute('data-value')}
+			</span>
+		</div>
+
+		<div>
+			<span>Selected value:</span>
+			<span class="text-magnum-500">
+				{$selectedItem?.getAttribute('data-value')}
+			</span>
+		</div>
 	</div>
-	<div class="w-64">
-		<span>Selected value:</span>
-		<span class="text-magnum-500">
-			{$selectedItem?.getAttribute('data-value')}
-		</span>
-	</div>
-	<hr />
+
+	<hr class="border-1 border-neutral-800/70" />
+
 	<h3 {...$label} class="text-lg font-bold">Project Structure</h3>
 
 	<ul {...$tree}>

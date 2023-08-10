@@ -7,8 +7,10 @@ import {
     executeCallbacks,
     generateId,
     getElementByMeltId,
+    isBrowser,
     isHTMLElement,
-    kbd
+    kbd,
+    styleToString
 } from '$lib/internal/helpers';
 
 import type { CreateTreeViewArgs, ItemDescription, TreeParts } from './types';
@@ -17,6 +19,7 @@ import { onMount, tick } from 'svelte';
 
 const defaults = {
     collapse: false,
+    forceVisible: false,
 } satisfies Defaults<CreateTreeViewArgs>;
 
 const ATTRS = {
@@ -30,7 +33,7 @@ const { name } = createElHelpers<TreeParts>('tree-view');
 
 export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     const argsWithDefaults = { ...defaults, ...args };
-    const { collapse } = argsWithDefaults;
+    const { collapse, forceVisible } = argsWithDefaults;
 
     /**
      * Track currently focused item in the tree.
@@ -38,12 +41,11 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     const focusedItem: Writable<HTMLLIElement | null> = writable(null);
     const selectedItem: Writable<HTMLLIElement | null> = writable(null);
     const selectedId: Writable<string | null> = writable(null);
-    const itemsWithHiddenChildren: Writable<string[]> = writable([]);
+    const collapsedItems: Writable<string[]> = writable([]);
 
     let rootEl: HTMLElement | null;
     let items: HTMLLIElement[];
     let focusedItemIdx = 0;
-    // const itemChildren: Writable<ItemDescription[]> = writable([]);
     let itemChildren: ItemDescription[] = [];
 
     const rootIds = {
@@ -139,10 +141,10 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
 
         if (!hasChildren || expanded === null || dataId === null) return;
 
-        const hidden = get(itemsWithHiddenChildren);
+        const hidden = get(collapsedItems);
 
         if (expanded === 'false') {
-            itemsWithHiddenChildren.set(hidden.filter((item) => item !== dataId))
+            collapsedItems.set(hidden.filter((item) => item !== dataId))
             el.setAttribute(ATTRS.EXPANDED, 'true');
 
             await updateItemList(el);
@@ -154,10 +156,10 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
 
         if (!hasChildren || expanded === null || dataId === null) return;
 
-        const hidden = get(itemsWithHiddenChildren);
+        const hidden = get(collapsedItems);
 
         if (expanded === 'true') {
-            itemsWithHiddenChildren.set([...hidden, dataId]);
+            collapsedItems.set([...hidden, dataId]);
             el.setAttribute(ATTRS.EXPANDED, 'false');
 
             await updateItemList(el);
@@ -177,15 +179,15 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
 
         if (!hasChildren || expanded === null || dataId === null) return;
 
-        const hidden = get(itemsWithHiddenChildren);
+        const hidden = get(collapsedItems);
 
         if (expanded === 'false') {
             // Remove id from hidden items.
-            itemsWithHiddenChildren.set(hidden.filter((item) => item !== dataId))
+            collapsedItems.set(hidden.filter((item) => item !== dataId))
             el.setAttribute(ATTRS.EXPANDED, 'true');
         } else {
             // Add id to hidden items.
-            itemsWithHiddenChildren.set([...hidden, dataId]);
+            collapsedItems.set([...hidden, dataId]);
             el.setAttribute(ATTRS.EXPANDED, 'false');
         }
 
@@ -193,13 +195,13 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     }
 
     const item = builder(name('item'), {
-        stores: [itemsWithHiddenChildren, selectedId],
-        returned: ([$itemWithHiddenChildren, $selectedId]) => {
+        stores: [collapsedItems, selectedId],
+        returned: ([$collapsedItems, $selectedId]) => {
             return (opts: { value: string, id: string, hasChildren: boolean} ) => {
                 // Have some default options that can be passed to the create()
                 const { value, id, hasChildren } = opts;
 
-                const expanded = hasChildren ? { 'aria-expanded': !$itemWithHiddenChildren.includes(id) } : {};
+                const expanded = hasChildren ? { 'aria-expanded': !$collapsedItems.includes(id) } : {};
 
                 return {
                     role: 'treeitem',
@@ -339,29 +341,17 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     });
 
     const group = builder(name('group'), {
-        // stores: [itemsWithHiddenChildren],
-        // returned: ([$itemWithHiddenChildren]) => {
-        returned: () => {
+        stores: [collapsedItems],
+        returned: ([$collapsedItems]) => {
             return (opts: { id: string }) => ({
                 role: 'group',
                 'data-group-id': opts.id,
-                // hidden: $itemWithHiddenChildren.includes(opts.id) ? true : undefined,
-            });
+                hidden: !forceVisible && isBrowser && $collapsedItems.includes(opts.id) ? true : undefined,
+                style: styleToString({
+                    display: !forceVisible && $collapsedItems.includes(opts.id) ? 'none' : undefined
+                })
+            })
         },
-        // action: (node: HTMLUListElement) => {
-        //     const unsubEvents = executeCallbacks(
-        //         // addEventListener(node, 'introstart', async (e) => {
-        //         addEventListener(node, 'click', async (e) => {
-        //             // console.log('introstart');
-        //         })
-        //     );
-
-        //     return {
-        //         destroy() {
-        //             unsubEvents();
-        //         }
-        //     }
-        // }
     });
 
     function getChildrenOfItems(): ItemDescription[] {
@@ -417,13 +407,18 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     });
 
     return {
-        tree: rootTree,
-        label,
-        item,
-        rootIds,
-        group,
-        focusedItem,
-        selectedItem,
-        itemsWithHiddenChildren
+        elements: {
+            tree: rootTree,
+            label,
+            item,
+            group
+        },
+        states: {
+            collapsedItems
+        },
+        helpers: {
+            focusedItem,
+            selectedItem
+        }
     }
 }
