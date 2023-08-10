@@ -220,18 +220,6 @@
 		color: rgb(38 38 38 / var(--tw-text-opacity));
 	}
 
-	.item[data-highlighted] {
-		--tw-bg-opacity: 1;
-		background-color: rgb(254 242 214 / var(--tw-bg-opacity));
-
-		--tw-text-opacity: 1;
-		color: rgb(189 87 17 / var(--tw-text-opacity));
-	}
-
-	.item[data-disabled] {
-		opacity: 0.5;
-	}
-
 	.item .author {
 		display: block;
 

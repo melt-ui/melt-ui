@@ -19,7 +19,7 @@
 					href="#{heading.id}"
 					use:melt={$item(heading.id)}
 					class="inline-block text-neutral-500 no-underline transition-colors
-					 hover:!text-magnum-600 data-[active]:text-magnum-800"
+					 hover:!text-magnum-600 data-[active]:text-magnum-700"
 				>
 					{heading.title}
 				</a>

@@ -2,7 +2,7 @@ import { highlightCode } from '$docs/highlighter.js';
 import { isBrowser } from '$lib/internal/helpers/index.js';
 import { error } from '@sveltejs/kit';
 import type { SvelteComponent } from 'svelte';
-import { get, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import rawGlobalCSS from '../../../other/globalcss.html?raw';
 import rawTailwindConfig from '../../../other/tailwindconfig.html?raw';
 import { data, isBuilderName, type Builder } from '../data/builders/index.js';

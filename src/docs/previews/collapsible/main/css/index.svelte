@@ -83,11 +83,6 @@
 		opacity: 0.75;
 	}
 
-	button[data-disabled] {
-		cursor: not-allowed;
-		opacity: 0.75;
-	}
-
 	.item {
 		padding: 0.75rem;
 		border-radius: 0.25rem;

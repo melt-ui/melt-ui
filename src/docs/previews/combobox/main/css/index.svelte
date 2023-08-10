@@ -203,16 +203,6 @@
 		color: rgb(var(--color-neutral-800) / 1);
 	}
 
-	.item[data-highlighted] {
-		background-color: rgb(var(--color-magnum-100) / 1);
-
-		color: rgb(var(--color-magnum-700) / 1);
-	}
-
-	.item[data-disabled] {
-		opacity: 0.5;
-	}
-
 	.item .author {
 		display: block;
 
