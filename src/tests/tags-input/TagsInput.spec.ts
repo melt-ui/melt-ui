@@ -150,7 +150,6 @@ describe('TagsInput', () => {
 			props: {
 				allowed: [allowedTag],
 				add(v) {
-					console.log({ v });
 					return v.trim();
 				},
 			},
