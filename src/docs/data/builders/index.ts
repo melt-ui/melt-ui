@@ -18,13 +18,13 @@ import { radioGroupData } from './radio-group.js';
 import { selectData } from './select.js';
 import { separatorData } from './separator.js';
 import { sliderData } from './slider.js';
+import { sortableData } from './sortable.js';
 import { switchData } from './switch.js';
 import { tabsData } from './tabs.js';
 import { tagsInputData } from './tags-input.js';
 import { toastData } from './toast.js';
-import { toggleData } from './toggle.js';
 import { toggleGroupData } from './toggle-group.js';
-import { tableOfContentsData } from './table-of-contents.js';
+import { toggleData } from './toggle.js';
 import { toolbarData } from './toolbar.js';
 import { tooltipData } from './tooltip.js';
 
@@ -49,6 +49,7 @@ export const builderList = [
 	'separator',
 	'slider',
 	'switch',
+	'sortable',
 	'table-of-contents',
 	'tabs',
 	'tags-input',
@@ -94,6 +95,7 @@ export const data: Builders = {
 	separator: separatorData,
 	slider: sliderData,
 	switch: switchData,
+	sortable: sortableData,
 	'table-of-contents': tableOfContentsData,
 	tabs: tabsData,
 	'tags-input': tagsInputData,

@@ -86,3 +86,34 @@ export function toggle<T>(item: T, array: T[]): T[] {
 	array.push(item);
 	return array;
 }
+
+/**
+ * Converts the input to a flat array of HTMLElement objects.
+ * @param {Element | Element[] | string | NodeListOf<HTMLElement> | HTMLCollection} input - The
+ * input value to convert.
+ * @returns {HTMLElement[]} - The array of HTMLElement objects.
+ */
+export function flatArray(
+	input: Element | Element[] | string | NodeListOf<HTMLElement> | HTMLCollection
+): HTMLElement[] {
+	let items: HTMLElement[] = [];
+
+	if (typeof input === 'string') {
+		// CSS selector
+		items.push(...Array.from<HTMLElement>(document.querySelectorAll(input)));
+	} else if (Array.isArray(input)) {
+		// Element array
+		items = Array.from(input, (el) => el as HTMLElement);
+	} else if (input instanceof NodeList) {
+		// NodeList
+		items = Array.from(input);
+	} else if (input instanceof HTMLCollection) {
+		// HTMLCollection
+		items = Array.from(input, (el) => el as HTMLElement);
+	} else if (input instanceof HTMLElement) {
+		// Single HTMLElement
+		items.push(input);
+	}
+
+	return items;
+}

@@ -17,6 +17,7 @@ export * from './radio-group/index.js';
 export * from './select/index.js';
 export * from './separator/index.js';
 export * from './slider/index.js';
+export * from './sortable/index.js';
 export * from './switch/index.js';
 export * from './tabs/index.js';
 export * from './table-of-contents/index.js';
