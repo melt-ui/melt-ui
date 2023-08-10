@@ -141,7 +141,6 @@ describe('Select (Default)', () => {
 
 		await expect(menu).not.toBeVisible();
 		await expect(trigger).toHaveTextContent('Caramel, Chocolate');
-
 	});
 
 	test.todo('Disabled select cannot be opened');
