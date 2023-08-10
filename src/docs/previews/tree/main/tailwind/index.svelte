@@ -10,7 +10,7 @@
 		elements: { tree, label, item, group },
 		helpers: { focusedItem, selectedItem },
 		states: { collapsedItems },
-	} = createTreeViewBuilder({ collapse: false, forceVisible: true });
+	} = createTreeViewBuilder({ forceVisible: true });
 
 	setContext('tree-item', item);
 	setContext('tree-group', group);

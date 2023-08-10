@@ -18,7 +18,6 @@ import { onMount, tick } from 'svelte';
 
 
 const defaults = {
-    collapse: false,
     forceVisible: false,
 } satisfies Defaults<CreateTreeViewArgs>;
 
@@ -33,7 +32,7 @@ const { name } = createElHelpers<TreeParts>('tree-view');
 
 export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     const argsWithDefaults = { ...defaults, ...args };
-    const { collapse, forceVisible } = argsWithDefaults;
+    const { forceVisible } = argsWithDefaults;
 
     /**
      * Track currently focused item in the tree.
@@ -368,7 +367,6 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
             }
 
             return {
-                collapsed: collapse,
                 hasChildren,
                 childrenIdxs
             }
@@ -401,7 +399,7 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
         // Add aria-expanded role for items with children.
         itemChildren.forEach((item, i) => {
             if (item.hasChildren) {
-                items[i].setAttribute(ATTRS.EXPANDED, `${!collapse}`);
+                items[i].setAttribute(ATTRS.EXPANDED, 'true');
             }
         });
     });

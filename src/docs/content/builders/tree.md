@@ -11,7 +11,10 @@ description: A hierarchical list of nested items, where each item can have addit
 
 ## Anatomy
 
-- **Root**: 
+- **Tree**: The container in which the tree lies.
+- **Label**: The element that describes the tree.
+- **Item**: The individual tree item element.
+- **Group**: An element where a subtree is nested.
 
 ## API Reference
 

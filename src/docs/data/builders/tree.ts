@@ -1,13 +1,17 @@
-import { DESCRIPTIONS, KBD } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
+import { DESCRIPTIONS, KBD, PROPS } from '$docs/constants';
+import type { KeyboardSchema } from '$docs/types';
+import { builderSchema, elementSchema } from '$docs/utils';
 import type { BuilderData } from '.';
 
-const builder: APISchema = {
+const BUILDER_NAME = 'tree-view';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createTreeViewBuilder',
 	description: DESCRIPTIONS.BUILDER('tree-view'),
 	props: [
+		PROPS.FORCE_VISIBLE
 	],
-	returnedProps: [
+	elements: [
 		{
 			name: 'tree',
 			description: 'The builder store used to create the tree.',
@@ -23,8 +27,108 @@ const builder: APISchema = {
 			description: 'The builder store used to create a tree item.',
 			link: '#item',
 		},
+		{
+			name: 'group',
+			description: 'The builder store used to create a tree group.',
+		}
 	],
-};
+	states: [
+		{
+			name: 'collapsedItems',
+			description: 'The list of IDs of items, who have a group that is not expanded.'
+		}
+	],
+	helpers: [
+		{
+			name: 'focusedItem',
+			description: 'The list item that is currently focused.'
+		},
+		{
+			name: 'selectedItem',
+			description: 'The list item that is currently selected.'
+		}
+	]
+});
+
+const tree = elementSchema('tree', {
+	title: 'tree',
+	description: 'The tree <ul> element.',
+	dataAttributes: [
+		{
+			name: 'role',
+			value: 'tree'
+		},
+		{
+			name: 'aria-labelledby',
+			value: 'The unique ID assigned to the label element.'
+		},
+		{
+			name: 'data-melt-id',
+			value: 'A unique ID.'
+		}
+	]
+});
+
+const label = elementSchema('label', {
+	title: 'label',
+	description: 'The label element.',
+	dataAttributes: [
+		{
+			name: 'id',
+			value: 'A unique ID.'
+		}
+	]
+});
+
+const item = elementSchema('item', {
+	title: 'item',
+	description: 'The list tree item.',
+	dataAttributes: [
+		{
+			name: 'role',
+			value: 'treeitem'
+		},
+		{
+			name: 'aria-selected',
+			value: 'true | false'
+		},
+		{
+			name: 'data-id',
+			value: 'A unique ID.'
+		},
+		{
+			name: 'data-value',
+			value: 'The value of the tree item.'
+		},
+		{
+			name: 'aria-expanded',
+			value: 'Only assigned if the item has children. Is either true or false.'
+		}
+	]
+});
+
+const group = elementSchema('group', {
+	title: 'group',
+	description: 'The list group item.',
+	dataAttributes: [
+		{
+			name: 'role',
+			value: 'group'
+		},
+		{
+			name: 'data-group-id',
+			value: 'The unique ID of the list item the group belongs to.'
+		},
+		{
+			name: 'hidden',
+			value: `Only applied if 'forceVisible' is false. Set to true if the group is collapsed.`
+		},
+		{
+			name: 'display',
+			value: `Only applied if 'forceVisible' is false. Set to 'none' if the group is collapsed.`
+		}
+	]
+})
 
 const keyboard: KeyboardSchema = [
 	{
@@ -65,10 +169,11 @@ const keyboard: KeyboardSchema = [
 	}
 ];
 
-const schemas = [builder];
+const schemas = [builder, tree, label, item, group];
 
 const features: BuilderData['features'] = [
 	'Full keyboard functionality',
+	'Select individual items'
 ];
 
 export const treeData: BuilderData = {
