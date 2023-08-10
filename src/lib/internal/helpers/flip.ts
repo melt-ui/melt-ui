@@ -115,11 +115,6 @@ export function animate(state: FlipState, duration = 150, easing = 'ease-in-out'
 			el.isAnimating = false;
 			el.currentAnimation = undefined;
 		};
-		// Clear the isAnimating flag after the duration and start the animation again.
-		// window.clearTimeout(el.animationResetTimer);
-		// el.animationResetTimer = window.setTimeout(() => {
-		// 	el.isAnimating = false;
-		// }, duration);
 	}
 
 	state.clear();

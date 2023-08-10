@@ -1,26 +1,33 @@
 import {
-	animate,
-	getState,
 	addMeltEventListener,
+	animate,
 	builder,
 	createElHelpers,
 	effect,
 	executeCallbacks,
+	getState,
 	toWritableStores,
-	type AnimationElement,
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { get, writable } from 'svelte/store';
 import type { SortableEvents } from './events';
-import { createGhostEl, intersect, moveSelected, supportedZone, translate } from './helpers';
+import {
+	createGhostEl,
+	intersect,
+	isSupportedZone,
+	moveEl,
+	simpleIntersect,
+	translate,
+} from './helpers';
 import type {
 	CreateSortableProps,
-	SelectedItem,
 	SortableGhost,
+	SortableHit,
 	SortableItemProps,
 	SortableOrientation,
 	SortablePointerZone,
 	SortableQuadrant,
+	SortableSelected,
 	SortableZoneProps,
 } from './types';
 
@@ -41,7 +48,7 @@ export function createSortable(props?: CreateSortableProps) {
 
 	// The target item within a zone. It holds information about the item as it is being
 	// moved within a zone or between zones.
-	const selected = writable<SelectedItem | null>(null);
+	const selected = writable<SortableSelected | null>(null);
 
 	// The Ghost store.
 	const ghost = writable<SortableGhost | null>(null);
@@ -49,20 +56,20 @@ export function createSortable(props?: CreateSortableProps) {
 	// Holds properties for each zone, whereby the key is the zone id.
 	const zoneProps: Record<string, Required<SortableZoneProps>> = {};
 
-	// Populated during the `pointerdown` and `mouseenter` events. It holds information about
-	// the zone the pointer is currently in. When the pointer leaves a zone or it is released,
-	// this is set to null.
+	// Set during a zonal `pointerdown` or `mouseenter` event. It holds information about the
+	// zone the pointer is currently in. When the pointer leaves a zone or the pointer is released,
+	// it is set to null.
 	let pointerZone: SortablePointerZone | null = null;
 
-	// Set when the selected item changes zone. Following this change, the pointer may continue
-	// to intersect with an item, causing weird behavior. This object is used to, stop that. It
-	// is cleared when the pointer begins to intersect with another item or is released.
-	let zoneChange: { el: HTMLElement; quadrant: SortableQuadrant } | null = null;
+	// Set when the selected item intersects another item and triggers a hit. This object will
+	// hold the item that was hit and the quadrant within that item.
+	//
+	// When the selected item moves, the pointer may continue to intersect with the item based
+	// upon dimensions, threshold, etc. This object is used in future intersection check. It is
+	// cleared when the pointer begins to intersect with another item or the pointer is released.
+	let previousHitItem: SortableHit | null = null;
 
-	// Set when an animation begins. It holds the element that the pointer intersected with and
-	// is used to stop future intersections with that element, while it is the last intersected
-	// Item. As the pointer intersects with other elements, this is set
-	let animatedIntersectItem: AnimationElement | null = null;
+	let returningHome: { el: HTMLElement } | null = null;
 
 	const zone = builder(name('zone'), {
 		returned: () => {
@@ -80,10 +87,10 @@ export function createSortable(props?: CreateSortableProps) {
 				};
 
 				return {
-					'data-melt-zone-id': props.id,
-					'data-melt-zone-orientation': props.orientation,
-					'data-melt-zone-disabled': props.disabled ? true : undefined,
-					'data-melt-zone-dropzone': props.dropzone ? true : undefined,
+					'data-melt-sortable-zone-id': props.id,
+					'data-melt-sortable-zone-orientation': props.orientation,
+					'data-melt-sortable-zone-disabled': props.disabled ? true : undefined,
+					'data-melt-sortable-zone-dropzone': props.dropzone ? true : undefined,
 				} as const;
 			};
 		},
@@ -93,7 +100,7 @@ export function createSortable(props?: CreateSortableProps) {
 					// Ignore right click
 					if (e.button === 2) return;
 
-					const zoneId = node.getAttribute('data-melt-zone-id');
+					const zoneId = node.getAttribute('data-melt-sortable-zone-id');
 					if (!zoneId) return;
 
 					const props = zoneProps[zoneId];
@@ -115,18 +122,25 @@ export function createSortable(props?: CreateSortableProps) {
 					if (hasHandle && !hasHandle.contains(e.target as HTMLElement)) return;
 
 					// Ignore when the target is disabled
-					if (targetedItem.hasAttribute('data-melt-item-disabled')) return;
+					if (targetedItem.hasAttribute('data-melt-sortable-item-disabled')) return;
 
 					// Store information about this pointer zone
 					pointerZone = { id: zoneId, el: node, items: items };
 
+					// The item index
+					const index = items.indexOf(targetedItem);
+
 					// Set the selected item
 					selected.set({
-						id: targetedItem.getAttribute('data-melt-item-id') ?? '0',
-						zone: zoneId,
+						id: targetedItem.getAttribute('data-melt-sortable-item-id') ?? '0',
 						originZone: zoneId,
+						originIndex: index,
+						originEl: node,
+						zone: zoneId,
+						zoneIndex: index,
 						zoneEl: node,
-						disabled: false,
+						disabled: false, // Always false if we get here
+						returnHome: targetedItem.hasAttribute('data-melt-sortable-item-return-home'),
 						el: targetedItem,
 					});
 
@@ -136,10 +150,10 @@ export function createSortable(props?: CreateSortableProps) {
 					ghost.set(g);
 
 					// Set item dragging attribute
-					targetedItem.setAttribute('data-melt-item-dragging', '');
+					targetedItem.setAttribute('data-melt-sortable-item-dragging', '');
 				}),
 				addMeltEventListener(node, 'mouseenter', async () => {
-					const zoneId = node.getAttribute('data-melt-zone-id');
+					const zoneId = node.getAttribute('data-melt-sortable-zone-id');
 					if (!zoneId) return;
 
 					const props = zoneProps[zoneId];
@@ -152,8 +166,10 @@ export function createSortable(props?: CreateSortableProps) {
 					const $selected = get(selected);
 					if (!$selected) return;
 
+					// if(returningHome && )
+
 					// Check if this zone supports dropping the item.
-					if (!supportedZone($selected.originZone, zoneId, props.fromZones)) return;
+					if (!isSupportedZone($selected.originZone, zoneId, props.fromZones)) return;
 
 					// Store information about this pointer zone
 					pointerZone = {
@@ -162,12 +178,27 @@ export function createSortable(props?: CreateSortableProps) {
 						items: Array.from(node.querySelectorAll(selector('item'))),
 					};
 
-					if (props.dropzone) node.setAttribute('data-melt-zone-dropzone-hover', '');
+					if (props.dropzone) node.setAttribute('data-melt-zone-sortable-dropzone-hover', '');
 				}),
 				addMeltEventListener(node, 'mouseleave', async () => {
+					// When return home is true, return the item to its origin zone (when it is
+					// not currently there)
+					const $selected = get(selected);
+					if (!$selected) return;
+
+					if ($selected.returnHome && $selected.originZone !== $selected.zone) {
+						// if ($selected.el.isAnimating) {
+						// 	$selected.el.currentAnimation?.cancel();
+						// }
+						returnHome();
+					}
+
+					// Empty the pointer zone and zone change
 					pointerZone = null;
-					zoneChange = null;
-					node.removeAttribute('data-melt-zone-dropzone-hover');
+					previousHitItem = null;
+
+					// We are not over a zone anymore, so clear the dropzone hover attribute
+					node.removeAttribute('data-melt-sortable-zone-dropzone-hover');
 				})
 			);
 			return {
@@ -180,8 +211,9 @@ export function createSortable(props?: CreateSortableProps) {
 		returned: () => {
 			return (props: SortableItemProps) => {
 				return {
-					'data-melt-item-id': props.id,
-					'data-melt-item-disabled': props.disabled ? true : undefined,
+					'data-melt-sortable-item-id': props.id,
+					'data-melt-sortable-item-disabled': props.disabled ? true : undefined,
+					'data-melt-sortable-item-return-home': props.returnHome ? true : undefined,
 				} as const;
 			};
 		},
@@ -206,76 +238,71 @@ export function createSortable(props?: CreateSortableProps) {
 		const handlePointerMove = (e: PointerEvent) => {
 			e.preventDefault();
 
-			// Always update the ghost position
+			// Always update the ghost position.
 			translate($ghost, e);
 
-			// Do nothing when outside a zone or in an unsupported zone
+			// Do nothing when outside a zone or in an unsupported zone.
 			if (!pointerZone) return;
 
-			// Get the selected item
+			// Get the selected item and zone props.
 			const $selected = get(selected);
-			if (!$selected) return;
-
-			// Get the zone properties
 			const props = zoneProps[pointerZone.id];
-			if (!props) return;
+			if (!$selected || !props) return;
 
-			// True when the selected item within the same zone
+			// True when the selected item is in the same zone as the pointer.
 			const isSameZone = $selected.zone === pointerZone.id;
 
-			// When this is an empty zone or it's a dropzone, add the selected item to the end
+			// When this is an empty zone or it's a dropzone, add the selected item to the end.
 			if (pointerZone.items.length === 0 || props.dropzone) {
 				// Do nothing when the item has already been moved to this zone
 				if (isSameZone) return;
 
-				// Attempts to move the item to the end of the zone if the pointer intersects
-				// with the zone
 				moveToEnd(e, props);
-
 				return;
 			}
 
-			// If the pointer is in the same zone as the selected item, do a quick check to see if
-			// the pointer is is intersecting. This stops doing potentially more checks.
+			// We know this zone is not empty or a dropzone, so we can now check if the pointer is
+			// NOT intersecting an item and return early or when the pointer and selected item are
+			// in the same zone, check if the the pointer is intersecting the selected item and
+			// return early.
 			//
-			// When there is a hit, we also clear `zoneChange` as the pointer is now on the selected
-			// item, so we can resume normal intersection checks.
-			if (isSameZone) {
-				const { hit } = intersect($selected.el, $ghost, e, 1, props.orientation);
-				if (hit) {
-					zoneChange = null;
-					return;
-				}
+			// Only do this check when the selected item is not animating, as during an animation
+			// items are moving around.
+			const targetEl = e.target as HTMLElement;
+			if (
+				!$selected.el.isAnimating &&
+				(!targetEl.closest('[data-melt-sortable-item]') ||
+					(isSameZone && simpleIntersect($selected.el, $ghost, e)))
+			) {
+				previousHitItem = null;
+				return;
 			}
 
-			// This loops through all the items in `pointerZone` and checks if the pointer is
-			// intersecting with any items
-
 			for (const [index, item] of pointerZone.items.entries()) {
-				// Ignore the selected item as it was checked above
+				// skip the selected item.
 				if ($selected.el === item) continue;
 
-				// Ignore the last intersected item when it's animating. This is set when the
-				// pointer intersects with an item, starting an animation. This stops the pointer
-				// intersecting with the item as it animates.
-
-				if (
-					animatedIntersectItem &&
-					animatedIntersectItem.isAnimating &&
-					animatedIntersectItem === item
-				) {
+				// Ignore this item when it is the intersecting item  last intersected item when
+				// it's animating.
+				if (previousHitItem && previousHitItem.el.isAnimating && previousHitItem.el === item)
 					continue;
-				}
 
-				// Check this item for a pointer intersection
-				const { hit, quadrant } = intersect(item, $ghost, e, props.threshold, props.orientation);
+				// Check for an intersect hit.
+				const result = intersect(item, $ghost, e, props, previousHitItem);
 
-				if (hit && quadrant) {
-					if (zoneChangeCheck(item, props.orientation, quadrant)) {
-						return;
+				if (result && result.hit && result.quadrant) {
+					props.orientation !== 'both'
+						? singleOrientationMove(index, result.quadrant, props.orientation)
+						: multiOrientationMove(index, result.quadrant);
+
+					// Set the previous hit item when it's not the same as the current hit item.
+					if (!previousHitItem || previousHitItem.el !== item) {
+						previousHitItem = {
+							el: item,
+							quadrant: result.quadrant,
+							newZone: !isSameZone,
+						};
 					}
-
-					moveItem(item, index, quadrant, props.orientation);
 
 					return;
 				}
@@ -292,16 +319,15 @@ export function createSortable(props?: CreateSortableProps) {
 			ghost.set(null);
 
 			// Clean up the pointer zone
-			pointerZone?.el.removeAttribute('data-melt-zone-dropzone-hover');
+			pointerZone?.el.removeAttribute('data-melt-sortable-zone-dropzone-hover');
 			pointerZone = null;
 
-			animatedIntersectItem = null;
-			zoneChange = null;
+			previousHitItem = null;
 
 			// Update selected item attributes and remove from store
 			const $selected = get(selected);
 			if ($selected) {
-				$selected.el.removeAttribute('data-melt-item-dragging');
+				$selected.el.removeAttribute('data-melt-sortable-item-dragging');
 				selected.set(null);
 			}
 
@@ -321,76 +347,164 @@ export function createSortable(props?: CreateSortableProps) {
 	});
 
 	/**
-	 * Moves an item within a zone or to a new zone
+	 * Moves an item within a zone or to a new zone. Use when the orientation is `vertical` or
+	 * `horizontal`.
 	 *
 	 * @param {HTMLElement} item - The item the mouse is intersecting with.
-	 * @param {number} newIndex - The new position for the item within the zone.
 	 * @param {Quadrant} quadrant - The quadrant the intersection took place in.
 	 * @param {SortableOrientation} orientation - The orientation of the zone.
 	 */
-	function moveItem(
-		item: HTMLElement,
-		newIndex: number,
+	function singleOrientationMove(
+		hitItemIndex: number,
 		quadrant: SortableQuadrant,
 		orientation: SortableOrientation
 	) {
-		if (!pointerZone) return;
+		if (!pointerZone || orientation === 'both') return;
 
-		// Get the selected item
+		// Get the selected item.
 		const $selected = get(selected);
 		if (!$selected) return;
 
-		// Get the animation state for the involved zones
+		// Find the hit item.
+		const hitItem = pointerZone.items[hitItemIndex];
+
+		// Get the animation state for the involved zones.
 		const animationState = getAnimationStateForZones(pointerZone, $selected);
 
-		// if   - Move selected within zone and update pointer items array
-		// else - Move selected to new zone and update origin/pointer items array
+		// if   - Move selected within zone and update pointer items array.
+		// else - Move selected to new zone and update origin and pointer items array.
 		if ($selected.zone === pointerZone.id) {
-			const index = pointerZone.items.indexOf($selected.el);
-			pointerZone.items.splice(index, 1);
-			pointerZone.items.splice(newIndex, 0, $selected.el as HTMLElement);
-			moveSelected($selected.el, item, index < newIndex);
+			const selectedIndex = pointerZone.items.indexOf($selected.el);
+
+			pointerZone.items.splice(selectedIndex, 1);
+			pointerZone.items.splice(hitItemIndex, 0, $selected.el as HTMLElement);
+			moveEl($selected.el, hitItem, selectedIndex < hitItemIndex);
 		} else {
 			// Whether to insert the selected item before or after the intersected item
 			let after = true;
 
 			if (orientation === 'vertical') {
 				if (quadrant.vertical === 'top') {
-					newIndex === 0
+					hitItemIndex === 0
 						? pointerZone.items.unshift($selected.el)
-						: pointerZone.items.splice(newIndex, 0, $selected.el);
+						: pointerZone.items.splice(hitItemIndex, 0, $selected.el);
 					after = false;
 				} else {
-					newIndex === pointerZone.items.length - 1
+					hitItemIndex === pointerZone.items.length - 1
 						? pointerZone.items.push($selected.el)
-						: pointerZone.items.splice(newIndex + 1, 0, $selected.el);
+						: pointerZone.items.splice(hitItemIndex + 1, 0, $selected.el);
 				}
 			} else if (orientation === 'horizontal') {
 				if (quadrant.horizontal === 'left') {
-					newIndex === 0
+					hitItemIndex === 0
 						? pointerZone.items.unshift($selected.el)
-						: pointerZone.items.splice(newIndex, 0, $selected.el);
+						: pointerZone.items.splice(hitItemIndex, 0, $selected.el);
 					after = false;
 				} else {
-					newIndex === pointerZone.items.length - 1
+					hitItemIndex === pointerZone.items.length - 1
 						? pointerZone.items.push($selected.el)
-						: pointerZone.items.splice(newIndex + 1, 0, $selected.el);
+						: pointerZone.items.splice(hitItemIndex + 1, 0, $selected.el);
 				}
 			}
+
 			$selected.zone = pointerZone.id;
 			$selected.zoneEl = pointerZone.el;
-			moveSelected($selected.el, item, after);
-
-			// This is a zone change. Store so we can ignore future intersections with this
-			// item until the pointer leaves the quadrant.
-			zoneChange = { el: item, quadrant };
+			moveEl($selected.el, hitItem, after);
 		}
 
 		// Do the animation if we have state
 		if (animationState) {
-			animatedIntersectItem = item;
 			animate(animationState, get(animationDuration), get(animationEasing));
 		}
+	}
+
+	/**
+	 * Moves an item within a zone or to a new zone. Use when the orientation is `both`.
+	 *
+	 * @param {number} hitItemIndex - The index of the hit item in the pointer zone.
+	 * @param {SortableQuadrant} quadrant - The quadrant of the item.
+	 */
+	function multiOrientationMove(hitItemIndex: number, quadrant: SortableQuadrant) {
+		if (!pointerZone) return;
+
+		// Get the selected item.
+		const $selected = get(selected);
+		if (!$selected) return;
+
+		// Find the hit item.
+		const hitItem = pointerZone.items[hitItemIndex];
+
+		// Get the animation state for the involved zones.
+		const animationState = getAnimationStateForZones(pointerZone, $selected);
+
+		console.log(
+			'BEFORE ->',
+			pointerZone.items.map((i) => i.getAttribute('data-melt-sortable-item-id'))
+		);
+
+		// if   - Move selected within zone and update pointer items array.
+		// else - Move selected to new zone and update origin and pointer items array.
+		if ($selected.zone === pointerZone.id) {
+			const selectedIndex = pointerZone.items.indexOf($selected.el);
+
+			// There are 2 scenarios.
+			//
+			// 1. During a previous hit, the pointer ended up intersecting another item. This
+			//    will set the `changedHitItem` flag to true. Additionally `flipMode` will be
+			//    false. In this case we need to manually decide where to insert the selected
+			//    item.
+			// 2. When there is no previous hit item, or the hit item did not change following
+			//    a previous hit, or the `flipMode` flag is true then the selected item will
+			//    be either to the left or right of the hit item. In this case we can use
+			//    simple logic to determine where to insert the selected item.
+			if (previousHitItem && previousHitItem.changedHitItem && !previousHitItem.flipMode) {
+				if (quadrant.horizontal === 'left') {
+					// Move the selected item to before the hit item.
+					if (hitItemIndex - 1 < 0 || hitItemIndex - 1 === selectedIndex) return;
+					pointerZone.items.splice(selectedIndex, 1);
+					pointerZone.items.splice(hitItemIndex - 1, 0, $selected.el as HTMLElement);
+					moveEl($selected.el, hitItem, false);
+				} else if (quadrant.horizontal === 'right') {
+					// Move the selected item to after the hit item.
+					if (hitItemIndex > pointerZone.items.length - 1 || hitItemIndex === selectedIndex) return;
+					pointerZone.items.splice(selectedIndex, 1);
+					pointerZone.items.splice(hitItemIndex, 0, $selected.el as HTMLElement);
+					moveEl($selected.el, hitItem, true);
+				}
+			} else {
+				pointerZone.items.splice(selectedIndex, 1);
+				pointerZone.items.splice(hitItemIndex, 0, $selected.el as HTMLElement);
+				moveEl($selected.el, hitItem, selectedIndex < hitItemIndex);
+			}
+		} else {
+			// Whether to insert the selected item before or after the intersected item
+			let after = true;
+
+			if (quadrant.horizontal === 'left') {
+				hitItemIndex === 0
+					? pointerZone.items.unshift($selected.el)
+					: pointerZone.items.splice(hitItemIndex, 0, $selected.el);
+				after = false;
+			} else {
+				hitItemIndex === pointerZone.items.length - 1
+					? pointerZone.items.push($selected.el)
+					: pointerZone.items.splice(hitItemIndex + 1, 0, $selected.el);
+			}
+
+			$selected.zone = pointerZone.id;
+			$selected.zoneEl = pointerZone.el;
+			moveEl($selected.el, hitItem, after);
+		}
+
+		// Do the animation if we have state
+		if (animationState) {
+			animate(animationState, get(animationDuration), get(animationEasing));
+		}
+
+		console.log(
+			'AFTER -> ',
+			pointerZone.items.map((i) => i.getAttribute('data-melt-sortable-item-id'))
+		);
 	}
 
 	/**
@@ -410,13 +524,7 @@ export function createSortable(props?: CreateSortableProps) {
 		const $selected = get(selected);
 		if (!$selected) return;
 
-		const { hit } = intersect(
-			pointerZone.el,
-			$ghost,
-			e,
-			zoneProps.threshold,
-			zoneProps.orientation
-		);
+		const { hit } = intersect(pointerZone.el, $ghost, e, zoneProps, previousHitItem);
 
 		if (!hit) return;
 
@@ -431,7 +539,45 @@ export function createSortable(props?: CreateSortableProps) {
 
 		// Do the animation if we have state
 		if (animationState) {
-			// animatedIntersectItem = item;
+			animate(animationState, get(animationDuration), get(animationEasing));
+		}
+	}
+
+	/**
+	 * Moves an item within a zone or to a new zone
+	 *
+	 * @param {HTMLElement} item - The item the mouse is intersecting with.
+	 * @param {number} hitItemIndex - The new position for the item within the zone.
+	 * @param {Quadrant} quadrant - The quadrant the intersection took place in.
+	 * @param {SortableOrientation} orientation - The orientation of the zone.
+	 */
+	function returnHome() {
+		if (!pointerZone) return;
+
+		const $selected = get(selected);
+		if (!$selected) return;
+
+		// Get the origin zone
+		const items: HTMLElement[] = Array.from($selected.originEl.querySelectorAll(selector('item')));
+
+		// Get the animation state for the involved zones
+		const itemsToAnimate = [...pointerZone.items, ...items];
+		const animationState = getState(itemsToAnimate);
+
+		returningHome = { el: $selected.zoneEl };
+
+		if (items.length === 0) {
+			$selected.originEl.appendChild($selected.el);
+		}
+
+		const item = items[$selected.originIndex];
+		moveEl($selected.el, item, false);
+
+		$selected.zone = $selected.originZone;
+		$selected.zoneEl = $selected.originEl;
+
+		// Do the animation if we have state
+		if (animationState) {
 			animate(animationState, get(animationDuration), get(animationEasing));
 		}
 	}
@@ -442,7 +588,7 @@ export function createSortable(props?: CreateSortableProps) {
 	 *
 	 * @returns {FlipState|null} - The current state of items in this zone, or null
 	 */
-	function getAnimationStateForZones(pointerZone: SortablePointerZone, selected: SelectedItem) {
+	function getAnimationStateForZones(pointerZone: SortablePointerZone, selected: SortableSelected) {
 		if (!selected) return null;
 
 		const $animationDuration = get(animationDuration);
@@ -454,39 +600,6 @@ export function createSortable(props?: CreateSortableProps) {
 		}
 
 		return getState(itemsToAnimate);
-	}
-
-	/**
-	 * Checks if an item as recently changed zones. If so it compared the zone orientation
-	 * to see if the pointer is in the same quadrant.
-	 *
-	 * For example, if the orientation is vertical and the pointer is in the top half, return
-	 * true while the intersection continues to be in the top half. This stop flickering items
-	 * when they are moved to a new zone.
-	 *
-	 * @param {HTMLElement} item - The HTML element representing the item that was intersected.
-	 * @param {SortableOrientation} orientation - The orientation of the zone.
-	 * @param {SortableQuadrant} quadrant - The quadrant the pointer is in.
-	 * @returns {boolean} - True if there is a zone change, false otherwise.
-	 */
-	function zoneChangeCheck(
-		item: HTMLElement,
-		orientation: SortableOrientation,
-		quadrant: SortableQuadrant
-	) {
-		// Do nothing when there is no zone change
-		if (zoneChange && item === zoneChange.el) {
-			if (
-				(orientation === 'vertical' && zoneChange.quadrant.vertical === quadrant.vertical) ||
-				(orientation === 'horizontal' && zoneChange.quadrant.horizontal === quadrant.horizontal) ||
-				(orientation === 'both' && zoneChange.quadrant === quadrant)
-			) {
-				return true;
-			}
-		}
-
-		zoneChange = null;
-		return false;
 	}
 
 	return {

@@ -4,11 +4,11 @@
 
 	const {
 		elements: { zone, item, handle },
-	} = createSortable({ animationDuration: 200 });
+	} = createSortable({ animationDuration: 1000 });
 
 	const zones = {
 		Todo: ['Build sortable component', 'Write unit tests'],
-		Done: ['Give Melt UI repo a star'],
+		Done: ['Give Melt UI a star', '2', '3'],
 	};
 </script>
 
@@ -26,16 +26,16 @@
 			>
 				{#each zoneItems as zoneItem}
 					<div
-						class="group flex select-none items-center gap-3 rounded border border-transparent bg-magnum-500 p-1 text-white data-[melt-item-dragging]:border-magnum-500 data-[melt-item-dragging]:bg-magnum-300 data-[melt-ghost]:opacity-50"
+						class="group flex select-none items-center gap-3 rounded border border-transparent bg-magnum-500 p-1 text-white data-[melt-sortable-item-id='Build_sortable_component']:h-32 data-[melt-sortable-item-dragging]:border-magnum-500 data-[melt-sortable-item-dragging]:bg-magnum-300 data-[melt-sortable-ghost]:opacity-50"
 						use:melt={$item({ id: zoneItem })}
 					>
 						<span
 							use:melt={$handle}
-							class="cursor-move group-data-[melt-item-dragging]:cursor-default group-data-[melt-item-dragging]:opacity-0"
+							class="cursor-move group-data-[melt-sortable-item-dragging]:cursor-default group-data-[melt-sortable-item-dragging]:opacity-0"
 						>
 							<GripVertical class="h-4 w-4" />
 						</span>
-						<span class="group-data-[melt-item-dragging]:opacity-0"
+						<span class="group-data-[melt-sortable-item-dragging]:opacity-0"
 							>{zoneItem}</span
 						>
 					</div>

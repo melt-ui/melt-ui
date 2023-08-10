@@ -10,16 +10,29 @@ description:
     export let previews
 </script>
 
-## Understanding threshold
 
-`threshold` is a zonal prop that is used when determining how far the pointer must intersect an item, within the given zone, before a __hit__ is considered. This value ranges from `0` to `1` and defaults to `0.95`.
+<Preview code={snippets.grid}>
+    <svelte:component this={previews.grid} />
+</Preview>
 
-- When the threshold is `1`, a __hit__ is considered when the pointer intersects any part of an item. 
-- When the threshold is `0`, an intersection will never occur.
+## Orientation and Threshold
 
-The threshold is calculated from the middle out. The direction of the threshold depends on the `orientation` of the zone. When the orientation is `horizontal`, the horizontal (left/right) plane is used. When the orientation is `vertical`, the vertical (top/bottom) plane is used. When the orientation is `both`, the both the horizontal and vertical planes are used.
+`Orientation` and `threshold` are a zonal props, which are used when determining if intersection (hit) has occurred between the pointer and an item as well as how the items are sorted within the zone.
 
-For example, say the orientation is `horizontal` and the threshold is `0.5`. This would mean that 25% of the left side and right side will not be considered a __hit__.
+`Orientation` is a required prop that defines the direction the items flow in. This value can be `horizontal`, `vertical`, or `both`.
+
+`threshold`, in combination with orientation, is used when determining how far the pointer must intersect an item before a __hit__ is considered. This value ranges from `0` to `1` and defaults to `0.95`.
+
+  - When the threshold is `1`, a __hit__ is considered when the pointer intersects any part of an item. 
+  - When the threshold is `0`, an intersection will never occur.
+
+The threshold is calculated from the middle out. 
+
+- When the orientation is `horizontal`, the threshold will expand on the horizontal (left/right) plane. 
+- When the orientation is `vertical`, the threshold will expand on the vertical (top/bottom) plane. 
+- When the orientation is `both`, the threshold will expand in all directions.
+
+For example, if the orientation is `horizontal` and the threshold is `0.5`, 25% of the left and right sides would NOT trigger a __hit__.
 
 In the following example, the darker areas show where a __hit__ will occur.
 

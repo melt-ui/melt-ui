@@ -2,6 +2,10 @@ import type { AnimationElement } from '$lib/internal/helpers/flip';
 import type { BuilderReturn } from '$lib/internal/types';
 import type { createSortable } from './create';
 
+export type SortableAxis = 'x' | 'y' | 'both';
+export type SortableBounds = 'none' | 'body' | string;
+export type SortableOrientation = 'horizontal' | 'vertical' | 'both';
+
 export type CreateSortableProps = {
 	/**
 	 * The length of time in ms to animate the item to its new position.
@@ -22,7 +26,7 @@ export type SortableZoneProps = {
 	/**
 	 *  A unique id for the zone.
 	 *
-	 *  Sets `data-melt-zone-id=[id]`.
+	 *  Sets `data-melt-sortable-zone-id=[id]`.
 	 */
 	id: string;
 
@@ -41,7 +45,7 @@ export type SortableZoneProps = {
 	 * Disables all items in the zone. Items within this zone cannot be moved, nor can items be
 	 * moved into this zone.
 	 *
-	 * Sets `data-melt-zone-disabled=''` when true.
+	 * Sets `data-melt-sortable-zone-disabled=''` when true.
 	 *
 	 * @default false
 	 */
@@ -69,7 +73,7 @@ export type SortableZoneProps = {
 	 * when true, this zone is considered a dropzone. Items within a dropzone cannot be selected.
 	 * Items from other zones may be dragged into this zone and will be placed at the end.
 	 *
-	 * Sets `data-melt-zone-dropzone=''` when true.
+	 * Sets `data-melt-sortable-zone-dropzone=''` when true.
 	 *
 	 * @default false
 	 */
@@ -113,7 +117,7 @@ export type SortableItemProps = {
 	/**
 	 * A unique id for the item.
 	 *
-	 * Sets `data-melt-item-id=[id]`.
+	 * Sets `data-melt-sortable-item-id=[id]`.
 	 */
 	id: string;
 
@@ -121,18 +125,49 @@ export type SortableItemProps = {
 	 * Whether the item is disabled. Disabled items cannot be dragged but may shift position
 	 * when other items are dragged.
 	 *
-	 * Sets `data-melt-item-disabled=''` when true.
+	 * Sets `data-melt-sortable-item-disabled=''` when true.
 	 *
 	 * @default false
 	 */
 	disabled?: boolean;
+
+	/**
+	 * When true the item will return to its original position in its origin zone when the pointer
+	 * leaves a zone that is not the items origin zone.
+	 *
+	 * Sets `data-melt-sortable-item-return-home=''` when true.
+	 *
+	 * @default false
+	 */
+	returnHome?: boolean;
 };
 
-export type SelectedItem = {
+export type SortableSelected = {
 	/**
 	 * The item element
 	 */
-	el: HTMLElement;
+	el: AnimationElement;
+
+	/**
+	 * This is the origin zone of the item as the time of the pointerdown event. This value
+	 * will not change as the item is dragged between zones.
+	 */
+	originZone: string;
+
+	/**
+	 * This is the index of the item within its origin zone at the time of the pointerdown event.
+	 * It is used when `returnHome` is true to determine its original position within the origin
+	 * zone.
+	 *
+	 * See `returnHome` in `SortableItemProps`
+	 */
+	originIndex: number;
+
+	/**
+	 * A reference to the origin zone element. This value will not change as the item is dragged
+	 * between zones.
+	 */
+	originEl: HTMLElement;
 
 	/**
 	 * The zone this item current belongs to at the time of the pointerdown event. As the item
@@ -141,10 +176,10 @@ export type SelectedItem = {
 	zone: string;
 
 	/**
-	 * This is the origin zone of the item as the time of the pointerdown event. This value
-	 * will not change as the item is dragged between zones.
+	 * The index within this zone at the time of the pointerdown event. As the item is moved this
+	 * value will change.
 	 */
-	originZone: string;
+	zoneIndex: number;
 
 	/**
 	 * A reference to the zone element that this item currently belongs to. As the item is dragged
@@ -198,24 +233,73 @@ export type SortableGhost = {
 };
 
 export type SortablePointerZone = {
+	/**
+	 * The zone id.
+	 */
 	id: string;
+
+	/**
+	 * The zone element.
+	 */
 	el: HTMLElement;
+
+	/**
+	 * An array of items in this zone.
+	 */
 	items: AnimationElement[];
 };
 
-// The axis of a sortable item
-export type SortableAxis = 'x' | 'y' | 'both';
-
-// The bounds of a sortable item
-export type SortableBounds = 'none' | 'body' | string;
-
-// The orientation of a sortable item
-export type SortableOrientation = 'horizontal' | 'vertical' | 'both';
-
-// The quadrants a pointer can be in
 export type SortableQuadrant = {
 	horizontal: 'left' | 'right';
 	vertical: 'top' | 'bottom';
+};
+
+export type SortableHit = {
+	/**
+	 * The previous element that was hit.
+	 */
+	el: AnimationElement;
+
+	/**
+	 * The quadrant that the hit occurred in. This changes based upon various intersect checks.
+	 */
+	quadrant: SortableQuadrant;
+
+	/**
+	 * Whether this intersection took place in a new zone.
+	 */
+	newZone: boolean;
+
+	/**
+	 * When true, we only care about movement from 1 side to the other. This will skip checks such
+	 * as reduced hit zone.
+	 */
+	flipMode?: boolean;
+
+	/**
+	 * True when the hit item changes. This can occur when the orientation is `both` and following
+	 * a DOM update, the pointer is on a different item. Extra checks are required following a
+	 * hit item change.
+	 */
+	changedHitItem?: boolean;
+};
+
+export type SortableIntersect = {
+	/**
+	 * True when there was a hit.
+	 */
+	hit: boolean;
+
+	/**
+	 * The quadrant the hit occurred in.
+	 */
+	quadrant?: SortableQuadrant;
+};
+export type SortableThreshold = {
+	top: number;
+	bottom: number;
+	left: number;
+	right: number;
 };
 
 export type Sortable = BuilderReturn<typeof createSortable>;
