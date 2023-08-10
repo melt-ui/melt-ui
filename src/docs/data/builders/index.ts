@@ -18,7 +18,6 @@ import { radioGroupData } from './radio-group.js';
 import { selectData } from './select.js';
 import { separatorData } from './separator.js';
 import { sliderData } from './slider.js';
-import { sortableData } from './sortable.js';
 import { switchData } from './switch.js';
 import { tabsData } from './tabs.js';
 import { tagsInputData } from './tags-input.js';
