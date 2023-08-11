@@ -1,6 +1,7 @@
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { _Menu } from '../menu/index.js';
 import type { createContextMenu } from './create.js';
+export type { ContextMenuComponentEvents } from './events.js';
 
 // Props
 export type CreateContextMenuProps = _Menu['builder'];

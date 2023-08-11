@@ -2,6 +2,7 @@ import type { createCheckbox } from './create.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
+export type { CheckboxComponentEvents } from './events.js';
 
 export type CreateCheckboxProps = {
 	/**

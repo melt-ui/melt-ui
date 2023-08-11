@@ -1,4 +1,4 @@
-import type { GroupedEvents } from '$lib/internal/types.js';
+import type { GroupedEvents, MeltComponentEvents } from '$lib/internal/types.js';
 
 export const selectEvents = {
 	menu: ['keydown'] as const,
@@ -8,3 +8,4 @@ export const selectEvents = {
 };
 
 export type SelectEvents = GroupedEvents<typeof selectEvents>;
+export type SelectComponentEvents = MeltComponentEvents<SelectEvents>;

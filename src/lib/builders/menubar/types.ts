@@ -1,7 +1,7 @@
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { _Menu } from '../menu/index.js';
 import type { createMenubar } from './create.js';
-
+export type { MenubarComponentEvents } from './events.js';
 // Props
 export type CreateMenubarProps = {
 	/**
