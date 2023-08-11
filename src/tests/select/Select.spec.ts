@@ -123,6 +123,9 @@ describe('Select (Default)', () => {
 		if (!firstItem) throw new Error('No option found');
 		await user.click(firstItem);
 
+		await expect(firstItem).toHaveAttribute('data-selected')
+		await expect(firstItem).toHaveAttribute('aria-selected', "true")
+
 		await expect(menu).not.toBeVisible();
 		await expect(trigger).toHaveTextContent('Caramel');
 
@@ -132,6 +135,9 @@ describe('Select (Default)', () => {
 		const secondItem = menu.querySelectorAll('[data-melt-select-option]')[1];
 		if (!secondItem) throw new Error('No option found');
 		await user.click(secondItem);
+
+		await expect(secondItem).toHaveAttribute('data-selected')
+		await expect(secondItem).toHaveAttribute('aria-selected', "true")
 
 		await expect(menu).not.toBeVisible();
 		await expect(trigger).toHaveTextContent('Caramel, Chocolate');
