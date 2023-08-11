@@ -172,8 +172,8 @@ export function multiOrientationIntersect(
 	// quadrant and the orientation.
 	const sameSide = inSameSide(previousHit.quadrant, quadrant, zoneProps.orientation);
 
-	// When the hit item changed following an animation, ignore hits while the pointer remains in
-	// the same quadrant. When the quadrant changes, accept the hit and update the quadrant.
+	// When the hit item changed (following an animation), ignore hits while the pointer remains
+	// in the same quadrant. When the quadrant changes, accept the hit and update the quadrant.
 	if (sameSide && !previousHit.flipMode && previousHit.changedHitItem) {
 		if (inSameQuadrant(previousHit.quadrant, quadrant)) {
 			return { hit: false };
@@ -183,17 +183,21 @@ export function multiOrientationIntersect(
 		}
 	}
 
-	// In this scenario
-	// We also set the `flipMode` flag to true so the scenario 2 check (reduced hit zone) is
-	// skipped. When we get to here, we only care about flipping from 1 side to another (ex.
-	// top to bottom).
+	// After swapping items, the pointer may still be intersecting the item but on the opposite
+	// side from the original hit. For example, when the previous hit occurred in the left
+	// quadrant, the pointer may now be in the right quadrant. While the pointer resides in this,
+	// ignore hits.
+	//
+	// We also set the `flipMode` flag to true so we never run the above `changedHitItem` check.
+	// When we get to here, we only care about flipping from 1 side to another (ex. left to right).
 	if (!inSameSide(previousHit.quadrant, quadrant, zoneProps.orientation)) {
 		previousHit.flipMode = true;
 		return { hit: false };
 	}
 
-	// The pointer to the same side of the original hit. We flip the quadrant side so future
-	// checks are performed against the opposite side.
+	// The pointer moved to the same side as the original hit. This is a successful hit.
+	//
+	// We flip the quadrant side so future checks are performed against the opposite side.
 	previousHit.quadrant = flipSide(quadrant, zoneProps.orientation);
 	return { hit, quadrant };
 }
@@ -295,8 +299,9 @@ export function singleOrientationIntersect(
 		return { hit: false };
 	}
 
-	// The pointer to the same side of the original hit. We flip the quadrant side so future
-	// checks are performed against the opposite side.
+	// The pointer moved to the same side as the original hit. This is a successful hit.
+	//
+	// We flip the quadrant side so future checks are performed against the opposite side.
 	previousHit.quadrant = flipSide(quadrant, zoneProps.orientation);
 	return { hit, quadrant };
 }
