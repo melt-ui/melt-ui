@@ -6,9 +6,11 @@ import {
 	effect,
 	executeCallbacks,
 	getState,
+	isBrowser,
+	removeScroll,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { get, writable } from 'svelte/store';
 import type { SortableEvents } from './events';
 import {
@@ -18,7 +20,7 @@ import {
 	moveEl,
 	simpleIntersect,
 	translate,
-} from './helpers';
+} from './helpers.js';
 import type {
 	CreateSortableProps,
 	SortableGhost,
@@ -29,7 +31,7 @@ import type {
 	SortableQuadrant,
 	SortableSelected,
 	SortableZoneProps,
-} from './types';
+} from './types.js';
 
 const defaults = {
 	animationDuration: 150,
@@ -231,7 +233,9 @@ export function createSortable(props?: CreateSortableProps) {
 	//   are carried out to see if the mouse is intersecting an item.
 	// - During pointerup events the ghost is removed and additional cleanup is done.
 	effect(ghost, ($ghost) => {
-		if (!$ghost) return;
+		if (!$ghost || !isBrowser) return;
+
+		const unsubs: Array<() => void> = [];
 
 		// Define the event listeners
 		const handlePointerMove = (e: PointerEvent) => {
@@ -335,6 +339,9 @@ export function createSortable(props?: CreateSortableProps) {
 			document.removeEventListener('pointerup', handlePointerUp);
 		};
 
+		// Stop scroll when an item is selected
+		unsubs.push(removeScroll());
+
 		// Add event listeners
 		document.addEventListener('pointermove', handlePointerMove);
 		document.addEventListener('pointerup', handlePointerUp);
@@ -342,6 +349,7 @@ export function createSortable(props?: CreateSortableProps) {
 		// Cleanup when the component is destroyed
 		return () => {
 			cleanup();
+			unsubs.forEach((unsub) => unsub());
 		};
 	});
 

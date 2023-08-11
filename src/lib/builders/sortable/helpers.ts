@@ -1,4 +1,8 @@
-import { calculateInverseScale, clamp, removeAttributesStartingWith } from '$lib/internal/helpers';
+import {
+	calculateInverseScale,
+	clamp,
+	removeAttributesStartingWith,
+} from '$lib/internal/helpers/index.js';
 import type {
 	SortableBounds,
 	SortableGhost,
@@ -8,7 +12,7 @@ import type {
 	SortableQuadrant,
 	SortableThreshold,
 	SortableZoneProps,
-} from './types';
+} from './types.js';
 
 /**
  * Creates a ghost element based on the source element and pointer event.
