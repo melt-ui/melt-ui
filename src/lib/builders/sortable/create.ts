@@ -96,7 +96,7 @@ export function createSortable(props?: CreateSortableProps) {
 					'data-melt-sortable-zone-orientation': props.orientation,
 					'data-melt-sortable-zone-disabled': props.disabled ? true : undefined,
 					'data-melt-sortable-zone-dropzone': props.dropzone ? true : undefined,
-				} as const;
+				};
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<SortableEvents['zone']> => {
@@ -159,7 +159,7 @@ export function createSortable(props?: CreateSortableProps) {
 					// Set item dragging attribute
 					targetedItem.setAttribute('data-melt-sortable-item-dragging', '');
 				}),
-				addMeltEventListener(node, 'mouseenter', async () => {
+				addMeltEventListener(node, 'pointerenter', async () => {
 					const zoneId = node.getAttribute('data-melt-sortable-zone-id');
 					if (!zoneId) return;
 
@@ -187,7 +187,7 @@ export function createSortable(props?: CreateSortableProps) {
 
 					node.setAttribute('data-melt-sortable-zone-focus', '');
 				}),
-				addMeltEventListener(node, 'mouseleave', async () => {
+				addMeltEventListener(node, 'pointerleave', async () => {
 					// When return home is true, return the item to its origin zone (when it is
 					// not currently there)
 					const $selected = get(selected);
@@ -222,7 +222,7 @@ export function createSortable(props?: CreateSortableProps) {
 					'data-melt-sortable-item-id': props.id,
 					'data-melt-sortable-item-disabled': props.disabled ? true : undefined,
 					'data-melt-sortable-item-return-home': props.returnHome ? true : undefined,
-				} as const;
+				};
 			};
 		},
 	});
@@ -321,6 +321,10 @@ export function createSortable(props?: CreateSortableProps) {
 			cleanup();
 		};
 
+		const handleTouchMove = (e: TouchEvent) => {
+			e.preventDefault();
+		};
+
 		const cleanup = () => {
 			// Remove the ghost
 			$ghost.el.remove();
@@ -342,11 +346,13 @@ export function createSortable(props?: CreateSortableProps) {
 			// Cleanup even listeners
 			document.removeEventListener('pointermove', handlePointerMove);
 			document.removeEventListener('pointerup', handlePointerUp);
+			document.removeEventListener('touchmove', handleTouchMove);
 		};
 
 		// Add event listeners
-		document.addEventListener('pointermove', handlePointerMove);
-		document.addEventListener('pointerup', handlePointerUp);
+		document.addEventListener('pointermove', handlePointerMove, false);
+		document.addEventListener('pointerup', handlePointerUp, false);
+		document.addEventListener('touchmove', handleTouchMove, false);
 
 		// Cleanup when the component is destroyed
 		return () => {
@@ -357,11 +363,8 @@ export function createSortable(props?: CreateSortableProps) {
 	// When an item is selected, remove the scroll from the body. Unsubscribe when the item is
 	// deselected.
 	effect(selected, ($selected) => {
-		if ($selected) {
-			unsubScroll = removeScroll();
-		} else {
-			unsubScroll();
-		}
+		if ($selected) unsubScroll = removeScroll();
+		else unsubScroll();
 	});
 
 	/**
