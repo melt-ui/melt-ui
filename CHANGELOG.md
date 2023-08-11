@@ -1,5 +1,12 @@
 # @melt-ui/svelte
 
+## 0.34.5
+
+### Patch Changes
+
+- 69858eaf: Resolves a bug in select builder when multi-select is active where data-selected and aria-selected were not being set properly
+- aba59d25: fix: tag being created/updated even if not valid
+
 ## 0.34.4
 
 ### Patch Changes
