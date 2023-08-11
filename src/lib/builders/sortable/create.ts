@@ -129,6 +129,8 @@ export function createSortable(props?: CreateSortableProps) {
 					// Ignore when the target is disabled
 					if (targetedItem.hasAttribute('data-melt-sortable-item-disabled')) return;
 
+					e.preventDefault();
+
 					// Store information about this pointer zone
 					pointerZone = { id: zoneId, el: node, items: items };
 
