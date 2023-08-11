@@ -120,8 +120,6 @@ export function multiOrientationIntersect(
 		return { hit: false };
 	}
 
-	console.log('IN HERE');
-
 	// Get the item bounds.
 	const itemBounds = el.getBoundingClientRect();
 
@@ -147,7 +145,6 @@ export function multiOrientationIntersect(
 
 	// We have a hit! Skip additional checks when there was not a previous hit.
 	if (!previousHit) {
-		console.log('NO PREVIOUS HIT');
 		return { hit: true, quadrant };
 	}
 
@@ -155,7 +152,6 @@ export function multiOrientationIntersect(
 	// the same item due to elements shifting in DOM. This next hit is ignored. This block
 	// will not run again.
 	if (previousHit.newZone) {
-		console.log('new zone');
 		previousHit.quadrant = flipSide(quadrant, zoneProps.orientation);
 		previousHit.newZone = false;
 		return { hit: false };
@@ -169,7 +165,6 @@ export function multiOrientationIntersect(
 		previousHit.el = el;
 		previousHit.quadrant = quadrant;
 		previousHit.changedHitItem = true;
-		console.log('IGNORE -> changed hit item, new quad', previousHit.quadrant); // TMP
 		return { hit: false };
 	}
 
@@ -181,11 +176,9 @@ export function multiOrientationIntersect(
 	// the same quadrant. When the quadrant changes, accept the hit and update the quadrant.
 	if (sameSide && !previousHit.flipMode && previousHit.changedHitItem) {
 		if (inSameQuadrant(previousHit.quadrant, quadrant)) {
-			console.log('IGNORE -> SAME quadrant');
 			return { hit: false };
 		} else {
 			previousHit.quadrant = flipSide(quadrant, zoneProps.orientation);
-			console.log('HIT -> new quad', previousHit.quadrant);
 			return { hit: true, quadrant };
 		}
 	}
@@ -195,7 +188,6 @@ export function multiOrientationIntersect(
 	// skipped. When we get to here, we only care about flipping from 1 side to another (ex.
 	// top to bottom).
 	if (!inSameSide(previousHit.quadrant, quadrant, zoneProps.orientation)) {
-		console.log('IGNORE -> NOT SAME SIDE'); // TMP
 		previousHit.flipMode = true;
 		return { hit: false };
 	}
@@ -203,7 +195,6 @@ export function multiOrientationIntersect(
 	// The pointer to the same side of the original hit. We flip the quadrant side so future
 	// checks are performed against the opposite side.
 	previousHit.quadrant = flipSide(quadrant, zoneProps.orientation);
-	console.log('hit -> same side, flip quadrant', previousHit.quadrant); // TMP
 	return { hit, quadrant };
 }
 

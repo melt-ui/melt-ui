@@ -45,7 +45,7 @@
 				use:melt={$item({ id: zoneItem })}
 			>
 				<div
-					class="thresholdBg absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-magnum-700 group-data-[melt-sortable-ghost]:opacity-0 group-data-[melt-sortable-item-dragging]:opacity-0"
+					class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-magnum-700 group-data-[melt-sortable-ghost]:opacity-0 group-data-[melt-sortable-item-dragging]:opacity-0"
 					style="height: {$currentOrientation !== 'horizontal'
 						? $threshold[0] * 100
 						: 100}%;
@@ -61,9 +61,3 @@
 
 	<Slider bind:threshold bind:currentOrientation />
 </div>
-
-<style lang="postcss">
-	[data-melt-sortable-ghost] {
-		@apply opacity-50;
-	}
-</style>

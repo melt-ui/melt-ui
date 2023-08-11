@@ -178,7 +178,7 @@ export function createSortable(props?: CreateSortableProps) {
 						items: Array.from(node.querySelectorAll(selector('item'))),
 					};
 
-					if (props.dropzone) node.setAttribute('data-melt-zone-sortable-dropzone-hover', '');
+					node.setAttribute('data-melt-sortable-zone-focus', '');
 				}),
 				addMeltEventListener(node, 'mouseleave', async () => {
 					// When return home is true, return the item to its origin zone (when it is
@@ -197,8 +197,7 @@ export function createSortable(props?: CreateSortableProps) {
 					pointerZone = null;
 					previousHitItem = null;
 
-					// We are not over a zone anymore, so clear the dropzone hover attribute
-					node.removeAttribute('data-melt-sortable-zone-dropzone-hover');
+					node.removeAttribute('data-melt-sortable-zone-focus');
 				})
 			);
 			return {
@@ -319,7 +318,7 @@ export function createSortable(props?: CreateSortableProps) {
 			ghost.set(null);
 
 			// Clean up the pointer zone
-			pointerZone?.el.removeAttribute('data-melt-sortable-zone-dropzone-hover');
+			pointerZone?.el.removeAttribute('data-melt-sortable-zone-focus');
 			pointerZone = null;
 
 			previousHitItem = null;
@@ -437,11 +436,6 @@ export function createSortable(props?: CreateSortableProps) {
 		// Get the animation state for the involved zones.
 		const animationState = getAnimationStateForZones(pointerZone, $selected);
 
-		console.log(
-			'BEFORE ->',
-			pointerZone.items.map((i) => i.getAttribute('data-melt-sortable-item-id'))
-		);
-
 		// if   - Move selected within zone and update pointer items array.
 		// else - Move selected to new zone and update origin and pointer items array.
 		if ($selected.zone === pointerZone.id) {
@@ -500,11 +494,6 @@ export function createSortable(props?: CreateSortableProps) {
 		if (animationState) {
 			animate(animationState, get(animationDuration), get(animationEasing));
 		}
-
-		console.log(
-			'AFTER -> ',
-			pointerZone.items.map((i) => i.getAttribute('data-melt-sortable-item-id'))
-		);
 	}
 
 	/**

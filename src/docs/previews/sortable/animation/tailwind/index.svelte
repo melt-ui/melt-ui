@@ -1,15 +1,21 @@
 <script lang="ts">
 	import { createSortable, melt } from '$lib';
-	import { GripVertical } from 'lucide-svelte';
-
-	const {
-		elements: { zone, item, handle },
-	} = createSortable();
+	import { writable } from 'svelte/store';
+	import Slider from './slider.svelte';
 
 	const zones = {
-		Todo: ['Build sortable component', 'Write unit tests'],
-		Done: ['Give Melt UI a star'],
+		zoneA: ['1', '2'],
+		zoneB: ['3'],
 	};
+
+	let duration = writable([150]);
+
+	const {
+		elements: { zone, item },
+		options,
+	} = createSortable({ animationDuration: $duration[0] });
+
+	$: options.animationDuration.set($duration[0]);
 </script>
 
 <div class="mx-auto flex w-[18rem] max-w-full flex-col gap-1.5 rounded-md">
@@ -26,15 +32,9 @@
 			>
 				{#each zoneItems as zoneItem}
 					<div
-						class="group flex select-none items-center gap-3 rounded border border-transparent bg-magnum-500 p-1 text-white data-[melt-sortable-item-dragging]:border-magnum-500 data-[melt-sortable-item-dragging]:bg-magnum-300 data-[melt-sortable-ghost]:opacity-50"
+						class="group flex cursor-move select-none items-center gap-3 rounded border border-transparent bg-magnum-500 p-1 text-white data-[melt-sortable-item-dragging]:border-magnum-500 data-[melt-sortable-item-dragging]:bg-magnum-300 data-[melt-sortable-ghost]:opacity-50"
 						use:melt={$item({ id: zoneItem })}
 					>
-						<span
-							use:melt={$handle}
-							class="cursor-move group-data-[melt-sortable-item-dragging]:cursor-default group-data-[melt-sortable-item-dragging]:opacity-0"
-						>
-							<GripVertical class="h-4 w-4" />
-						</span>
 						<span class="group-data-[melt-sortable-item-dragging]:opacity-0"
 							>{zoneItem}</span
 						>
@@ -43,4 +43,6 @@
 			</div>
 		</div>
 	{/each}
+
+	<Slider bind:duration />
 </div>

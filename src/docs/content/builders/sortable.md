@@ -10,29 +10,24 @@ description:
     export let previews
 </script>
 
-
-<Preview code={snippets.grid}>
-    <svelte:component this={previews.grid} />
-</Preview>
-
 ## Orientation and Threshold
 
-`Orientation` and `threshold` are a zonal props, which are used when determining if intersection (hit) has occurred between the pointer and an item as well as how the items are sorted within the zone.
+`Orientation` and `threshold` are a zonal props, which are used when determining if a _hit_ has occurred between the pointer and another item.
 
-`Orientation` is a required prop that defines the direction the items flow in. This value can be `horizontal`, `vertical`, or `both`.
+`Orientation` is a required prop that defines the direction the items flow in. This value can be `horizontal`, `vertical`, or `both`, for grid like layouts.
 
-`threshold`, in combination with orientation, is used when determining how far the pointer must intersect an item before a __hit__ is considered. This value ranges from `0` to `1` and defaults to `0.95`.
+`threshold`, is an optional prop and is used in combination with orientation to determine how far the pointer must intersect an item before it is considered a _hit_. This value ranges from `0` to `1` and defaults to `0.95`.
 
-  - When the threshold is `1`, a __hit__ is considered when the pointer intersects any part of an item. 
-  - When the threshold is `0`, an intersection will never occur.
+- When the threshold is `1`, any intersection will result in a hit. 
+- When the threshold is `0`, a hit can never occur.
 
-The threshold is calculated from the middle out. 
+Threshold is calculated from the middle out using the orientation.
 
-- When the orientation is `horizontal`, the threshold will expand on the horizontal (left/right) plane. 
-- When the orientation is `vertical`, the threshold will expand on the vertical (top/bottom) plane. 
-- When the orientation is `both`, the threshold will expand in all directions.
+- When the orientation is `horizontal`, the threshold will expand on the horizontal (left/right) axis. 
+- When the orientation is `vertical`, the threshold will expand on the vertical (top/bottom) axis. 
+- When the orientation is `both`, the threshold will expand on both axis.
 
-For example, if the orientation is `horizontal` and the threshold is `0.5`, 25% of the left and right sides would NOT trigger a __hit__.
+For example, when the orientation is `horizontal` and the threshold is `0.5`, 25% of the left and right sides will not trigger a _hit_.
 
 In the following example, the darker areas show where a __hit__ will occur.
 
@@ -40,13 +35,32 @@ In the following example, the darker areas show where a __hit__ will occur.
     <svelte:component this={previews.threshold} />
 </Preview>
 
+## Animation
+
+Sortable handles the animation of items internally as they are moved, via a custom implementation of FLIP (First, Last, Invert, Play).
+
+`createSortable` accepts 2 optional props for controlling this behavior; `animationDuration` and `animationEasing`.
+
+`animationDuration` is the duration of the animation in milliseconds. This defaults to `150`.
+
+`animationEasing` is the easing function used for the animation. This defaults to `ease-out`.
+
+In the following example, the duration can be set to between 0 and 5 seconds. 
+
+<Preview code={snippets.animation}>
+    <svelte:component this={previews.animation} />
+</Preview>
+
 ## Example Components
 
 ### Dropzone
 
-A zone can be defined as a dropzone by setting the `dropzone` prop to `true`. Items in a dropzone cannot be sorted, nor can they be moved to other zones.
+`dropzone` is an optional zonal prop, that gives a zone the following characteristics:
 
-Items can be placed in a dropzone, if the dropzone supports it in `fromZones`.
+- Items in a dropzone cannot be sorted.
+- Items in a dropzone cannot be moved to other zones.
+- Items from other zones can be moved into a dropzone, if the dropzone support the `fromZone`.
+- Items moved into a dropzone are placed at the end.
 
 <Preview code={snippets.dropzone}>
     <svelte:component this={previews.dropzone} />
