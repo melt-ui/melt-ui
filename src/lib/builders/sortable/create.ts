@@ -7,6 +7,7 @@ import {
 	executeCallbacks,
 	getState,
 	isBrowser,
+	noop,
 	removeScroll,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
@@ -97,10 +98,12 @@ export function createSortable(props?: CreateSortableProps) {
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<SortableEvents['zone']> => {
+			let unsubScroll = noop;
+
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerdown', (e) => {
-					// Ignore right click
-					if (e.button === 2) return;
+					// Ignore right click and multi-touch on mobile
+					if (e.button === 2 || !e.isPrimary) return;
 
 					const zoneId = node.getAttribute('data-melt-sortable-zone-id');
 					if (!zoneId) return;
@@ -145,6 +148,8 @@ export function createSortable(props?: CreateSortableProps) {
 						returnHome: targetedItem.hasAttribute('data-melt-sortable-item-return-home'),
 						el: targetedItem,
 					});
+
+					unsubScroll = removeScroll();
 
 					// Create a ghost. This should be done before any data attributes are set
 					// on the targeted item.
@@ -203,7 +208,10 @@ export function createSortable(props?: CreateSortableProps) {
 				})
 			);
 			return {
-				destroy: unsub,
+				destroy() {
+					unsubScroll();
+					unsub();
+				},
 			};
 		},
 	});
