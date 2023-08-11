@@ -31,6 +31,7 @@ export function createGhostEl(
 
 	ghostEl.style.position = 'fixed';
 	ghostEl.style.pointerEvents = 'none';
+	ghostEl.style.touchAction = 'none';
 	ghostEl.style.zIndex = '99999';
 	ghostEl.style.transitionDuration = '0ms';
 

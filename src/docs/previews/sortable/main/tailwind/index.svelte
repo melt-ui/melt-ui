@@ -4,6 +4,7 @@
 
 	const {
 		elements: { zone, item, handle },
+		logs,
 	} = createSortable();
 
 	const zones = {
@@ -43,4 +44,6 @@
 			</div>
 		</div>
 	{/each}
+
+	<span>log - {$logs}</span>
 </div>

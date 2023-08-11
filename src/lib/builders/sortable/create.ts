@@ -76,6 +76,8 @@ export function createSortable(props?: CreateSortableProps) {
 
 	let unsubScroll = noop;
 
+	const logs = writable('');
+
 	const zone = builder(name('zone'), {
 		returned: () => {
 			return (props: SortableZoneProps) => {
@@ -96,12 +98,14 @@ export function createSortable(props?: CreateSortableProps) {
 					'data-melt-sortable-zone-orientation': props.orientation,
 					'data-melt-sortable-zone-disabled': props.disabled ? true : undefined,
 					'data-melt-sortable-zone-dropzone': props.dropzone ? true : undefined,
+					style: props.disabled ? undefined : 'touch-action: none;',
 				};
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<SortableEvents['zone']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerdown', (e) => {
+					console.log('pointerdown');
 					// Ignore right click and multi-touch on mobile
 					if (e.button === 2 || !e.isPrimary) return;
 
@@ -160,6 +164,7 @@ export function createSortable(props?: CreateSortableProps) {
 					targetedItem.setAttribute('data-melt-sortable-item-dragging', '');
 				}),
 				addMeltEventListener(node, 'pointerenter', async () => {
+					console.log('pointerenter');
 					const zoneId = node.getAttribute('data-melt-sortable-zone-id');
 					if (!zoneId) return;
 
@@ -188,6 +193,7 @@ export function createSortable(props?: CreateSortableProps) {
 					node.setAttribute('data-melt-sortable-zone-focus', '');
 				}),
 				addMeltEventListener(node, 'pointerleave', async () => {
+					console.log('pointerleave');
 					// When return home is true, return the item to its origin zone (when it is
 					// not currently there)
 					const $selected = get(selected);
@@ -245,6 +251,8 @@ export function createSortable(props?: CreateSortableProps) {
 		// Define the event listeners
 		const handlePointerMove = (e: PointerEvent) => {
 			e.preventDefault();
+
+			(e.target as HTMLElement).setPointerCapture(e.pointerId);
 
 			// Always update the ghost position.
 			translate($ghost, e);
@@ -321,10 +329,6 @@ export function createSortable(props?: CreateSortableProps) {
 			cleanup();
 		};
 
-		const handleTouchMove = (e: TouchEvent) => {
-			e.preventDefault();
-		};
-
 		const cleanup = () => {
 			// Remove the ghost
 			$ghost.el.remove();
@@ -346,13 +350,13 @@ export function createSortable(props?: CreateSortableProps) {
 			// Cleanup even listeners
 			document.removeEventListener('pointermove', handlePointerMove);
 			document.removeEventListener('pointerup', handlePointerUp);
-			document.removeEventListener('touchmove', handleTouchMove);
+			// document.removeEventListener('touchmove', handlePointerMove);
 		};
 
 		// Add event listeners
 		document.addEventListener('pointermove', handlePointerMove, false);
 		document.addEventListener('pointerup', handlePointerUp, false);
-		document.addEventListener('touchmove', handleTouchMove, false);
+		// document.addEventListener('touchmove', handlePointerMove, false);
 
 		// Cleanup when the component is destroyed
 		return () => {
@@ -363,8 +367,15 @@ export function createSortable(props?: CreateSortableProps) {
 	// When an item is selected, remove the scroll from the body. Unsubscribe when the item is
 	// deselected.
 	effect(selected, ($selected) => {
-		if ($selected) unsubScroll = removeScroll();
-		else unsubScroll();
+		if ($selected) {
+			//
+			unsubScroll = removeScroll();
+
+			logs.set('scroll removed');
+		} else {
+			logs.set('scroll added ');
+			unsubScroll();
+		}
 	});
 
 	/**
@@ -620,5 +631,6 @@ export function createSortable(props?: CreateSortableProps) {
 			handle,
 		},
 		options,
+		logs,
 	};
 }
