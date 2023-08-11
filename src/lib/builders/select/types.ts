@@ -3,7 +3,7 @@ import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { createSelect } from './create.js';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
-
+export type { SelectComponentEvents } from './events.js';
 export type CreateSelectProps<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	Item extends Multiple extends true ? Array<unknown> : unknown = any,

@@ -3,6 +3,7 @@ import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
 import type { createCombobox } from './create.js';
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
+export type { ComboboxComponentEvents } from './events.js';
 
 export type CreateComboboxProps<Item> = {
 	/**

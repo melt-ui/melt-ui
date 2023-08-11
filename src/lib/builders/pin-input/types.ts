@@ -2,6 +2,7 @@ import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { createPinInput } from './create.js';
+export type { PinInputComponentEvents } from './events.js';
 
 export type CreatePinInputProps = {
 	/**

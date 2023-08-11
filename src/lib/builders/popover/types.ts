@@ -3,6 +3,7 @@ import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
 import type { createPopover } from './create.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
+export type { PopoverComponentEvents } from './events.js';
 
 export type CreatePopoverProps = {
 	/**
