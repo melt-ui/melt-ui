@@ -74,6 +74,8 @@ export function createSortable(props?: CreateSortableProps) {
 
 	let returningHome: { el: HTMLElement } | null = null;
 
+	let unsubScroll = noop;
+
 	const zone = builder(name('zone'), {
 		returned: () => {
 			return (props: SortableZoneProps) => {
@@ -98,8 +100,6 @@ export function createSortable(props?: CreateSortableProps) {
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<SortableEvents['zone']> => {
-			let unsubScroll = noop;
-
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerdown', (e) => {
 					// Ignore right click and multi-touch on mobile
@@ -148,8 +148,6 @@ export function createSortable(props?: CreateSortableProps) {
 						returnHome: targetedItem.hasAttribute('data-melt-sortable-item-return-home'),
 						el: targetedItem,
 					});
-
-					unsubScroll = removeScroll();
 
 					// Create a ghost. This should be done before any data attributes are set
 					// on the targeted item.
@@ -209,7 +207,6 @@ export function createSortable(props?: CreateSortableProps) {
 			);
 			return {
 				destroy() {
-					unsubScroll();
 					unsub();
 				},
 			};
@@ -245,7 +242,6 @@ export function createSortable(props?: CreateSortableProps) {
 
 		// Define the event listeners
 		const handlePointerMove = (e: PointerEvent) => {
-			e.stopPropagation();
 			e.preventDefault();
 
 			// Always update the ghost position.
@@ -354,6 +350,16 @@ export function createSortable(props?: CreateSortableProps) {
 		return () => {
 			cleanup();
 		};
+	});
+
+	// When an item is selected, remove the scroll from the body. Unsubscribe when the item is
+	// deselected.
+	effect(selected, ($selected) => {
+		if ($selected) {
+			unsubScroll = removeScroll();
+		} else {
+			unsubScroll();
+		}
 	});
 
 	/**
