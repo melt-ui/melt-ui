@@ -243,10 +243,9 @@ export function createSortable(props?: CreateSortableProps) {
 	effect(ghost, ($ghost) => {
 		if (!$ghost || !isBrowser) return;
 
-		const unsubs: Array<() => void> = [];
-
 		// Define the event listeners
 		const handlePointerMove = (e: PointerEvent) => {
+			e.stopPropagation();
 			e.preventDefault();
 
 			// Always update the ghost position.
@@ -347,9 +346,6 @@ export function createSortable(props?: CreateSortableProps) {
 			document.removeEventListener('pointerup', handlePointerUp);
 		};
 
-		// Stop scroll when an item is selected
-		unsubs.push(removeScroll());
-
 		// Add event listeners
 		document.addEventListener('pointermove', handlePointerMove);
 		document.addEventListener('pointerup', handlePointerUp);
@@ -357,7 +353,6 @@ export function createSortable(props?: CreateSortableProps) {
 		// Cleanup when the component is destroyed
 		return () => {
 			cleanup();
-			unsubs.forEach((unsub) => unsub());
 		};
 	});
 
