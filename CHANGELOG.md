@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.34.4
+
+### Patch Changes
+
+- c0c66f0d: [Types] Expose ComponentEvent types
+
 ## 0.34.3
 
 ### Patch Changes
