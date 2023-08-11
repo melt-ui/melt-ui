@@ -152,6 +152,9 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		// Trim the value, only after the user defined add function
 		if (get(trim)) workingTag.value = workingTag.value.trim();
 
+		// if it's not valid we don't add it to the tags list
+		if (!isInputValid(workingTag.value)) return false;
+
 		tags.update((current) => {
 			current.push(workingTag);
 			return current;
@@ -182,6 +185,9 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 		// Trim the value, only after the user defined update function
 		if (get(trim)) workingTag.value = workingTag.value.trim();
+
+		// if it's not valid we don't add it to the tags list
+		if (!isInputValid(workingTag.value)) return false;
 
 		// Update the tag matching the old id
 		tags.update(($tags) => {
