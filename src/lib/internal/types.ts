@@ -74,12 +74,6 @@ export type MeltActionReturn<Events extends keyof HTMLElementEventMap> = ActionR
 	}
 >;
 
-export type CustomMeltEvents<Events extends keyof HTMLElementEventMap> = {
-	[K in Events as `on:m-${string & K}`]?: K extends keyof HTMLElementEventMap
-		? MeltEventHandler<HTMLElementEventMap[K]>
-		: never;
-};
-
 type CustomMeltComponentEvents<Events extends keyof HTMLElementEventMap> = {
 	[K in Events as `m-${string & K}`]?: K extends keyof HTMLElementEventMap
 		? MeltEventHandler<HTMLElementEventMap[K]>
