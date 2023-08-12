@@ -333,7 +333,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						return;
 					}
 					// Allows forms to submit before the menu is removed from the DOM
-					new Promise((resolve) => setTimeout(resolve)).then(() => {
+					sleep(1).then(() => {
 						rootOpen.set(false);
 					});
 				}),
