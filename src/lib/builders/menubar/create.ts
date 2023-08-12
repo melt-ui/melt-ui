@@ -1,4 +1,4 @@
-import { get, writable, type Writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import {
 	applyAttrsIfDisabled,
 	createMenuBuilder,
@@ -31,7 +31,6 @@ import {
 	addMeltEventListener,
 	getPortalDestination,
 	removeScroll,
-	sleep,
 } from '$lib/internal/helpers/index.js';
 import { onDestroy, onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions/index.js';
@@ -162,6 +161,11 @@ export function createMenubar(props?: CreateMenubarProps) {
 								options: {
 									floating: $positioning,
 									portal: getPortalDestination(node, $portal),
+									clickOutside: {
+										handler: () => {
+											activeMenu.set('');
+										},
+									},
 								},
 							});
 
@@ -334,6 +338,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 			const triggerEl = document.getElementById(m.rootIds.trigger);
 			if (!triggerEl) return;
 			if (!$rootOpen && get(activeMenu) === m.rootIds.menu) {
+				rootActiveTrigger.set(null);
+				activeMenu.set('');
 				removeHighlight(triggerEl);
 				return;
 			}
