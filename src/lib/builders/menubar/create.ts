@@ -473,9 +473,6 @@ export function createMenubar(props?: CreateMenubarProps) {
 	 * @param e The keyboard event
 	 */
 	function handleCrossMenuNavigation(e: KeyboardEvent) {
-		console.log('Starting handleCrossMenuNavigation');
-		console.log('-----------------------');
-		console.time('handleCrossMenuNavigation');
 		if (!isBrowser) return;
 		e.preventDefault();
 
@@ -521,11 +518,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		}
 
 		const nextFocusedItem = scopedMenus[nextIndex];
-		console.time('activeMenu.set(nextFocusedItem.id)');
 		activeMenu.set(nextFocusedItem.id);
-		console.timeEnd('activeMenu.set(nextFocusedItem.id)');
-		console.timeEnd('handleCrossMenuNavigation');
-		console.log('-------------------------');
 	}
 
 	function getMenuTriggers(el: HTMLElement) {
