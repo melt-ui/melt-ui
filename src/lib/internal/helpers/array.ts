@@ -77,3 +77,12 @@ export function last<T>(array: T[]): T {
 export function wrapArray<T>(array: T[], startIndex: number): T[] {
 	return array.map((_, index) => array[(startIndex + index) % array.length]);
 }
+
+export function toggle<T>(item: T, array: T[]): T[] {
+	if (array.includes(item)) {
+		return array.filter((i) => i !== item);
+	}
+
+	array.push(item);
+	return array;
+}

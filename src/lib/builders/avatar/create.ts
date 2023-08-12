@@ -2,13 +2,13 @@ import {
 	builder,
 	effect,
 	isBrowser,
+	omit,
 	overridable,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
+} from '$lib/internal/helpers/index.js';
 import { writable } from 'svelte/store';
-import type { CreateAvatarProps } from './types';
-import { omit } from '../../internal/helpers/object';
+import type { CreateAvatarProps } from './types.js';
 
 const defaults = {
 	src: '',
@@ -61,11 +61,14 @@ export const createAvatar = (props?: CreateAvatarProps) => {
 	const fallback = builder('avatar-fallback', {
 		stores: [loadingStatus],
 		returned: ([$loadingStatus]) => {
-			const fallbackStyles = styleToString({
-				display: $loadingStatus === 'loaded' ? 'none' : 'block',
-			});
 			return {
-				style: fallbackStyles,
+				style:
+					$loadingStatus === 'loaded'
+						? styleToString({
+								display: 'none',
+						  })
+						: undefined,
+				hidden: $loadingStatus === 'loaded' ? true : undefined,
 			};
 		},
 	});

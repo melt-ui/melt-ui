@@ -1,7 +1,7 @@
-import type { BuilderReturn } from '$lib/internal/types';
-import type { Menu } from '../menu';
-import type { createMenubar } from './create';
-
+import type { BuilderReturn } from '$lib/internal/types.js';
+import type { _Menu } from '../menu/index.js';
+import type { createMenubar } from './create.js';
+export type { MenubarComponentEvents } from './events.js';
 // Props
 export type CreateMenubarProps = {
 	/**
@@ -11,14 +11,19 @@ export type CreateMenubarProps = {
 	 * @default true
 	 */
 	loop?: boolean;
+
+	/**
+	 * Whether to close the active menu when the escape key is pressed.
+	 */
+	closeOnEscape?: boolean;
 };
-export type CreateMenubarMenuProps = Menu['builder'];
-export type CreateMenubarSubmenuProps = Menu['submenu'];
-export type MenubarMenuItemProps = Menu['item'];
-export type MenubarCheckboxItemProps = Menu['checkboxItem'];
-export type CreateMenuRadioGroupProps = Menu['radioGroup'];
-export type MenubarRadioItemProps = Menu['radioItem'];
-export type MenubarRadioItemActionProps = Menu['radioItemAction'];
+export type CreateMenubarMenuProps = _Menu['builder'];
+export type CreateMenubarSubmenuProps = _Menu['submenu'];
+export type MenubarMenuItemProps = _Menu['item'];
+export type CreateMenuRadioGroupProps = _Menu['radioGroup'];
+export type CreateMenuCheckboxItemProps = _Menu['checkboxItem'];
+export type MenubarRadioItemProps = _Menu['radioItem'];
+export type MenubarRadioItemActionProps = _Menu['radioItemAction'];
 
 // Returns
 export type Menubar = BuilderReturn<typeof createMenubar>;

@@ -1,15 +1,16 @@
-import type { BuilderReturn } from '$lib/internal/types';
-import type { Menu } from '../menu';
-import type { createContextMenu } from './create';
+import type { BuilderReturn } from '$lib/internal/types.js';
+import type { _Menu } from '../menu/index.js';
+import type { createContextMenu } from './create.js';
+export type { ContextMenuComponentEvents } from './events.js';
 
 // Props
-export type CreateContextMenuProps = Menu['builder'];
-export type CreateContextSubmenuProps = Menu['submenu'];
-export type ContextMenuItemProps = Menu['item'];
-export type ContextMenuCheckboxItemProps = Menu['checkboxItem'];
-export type CreateContextMenuRadioGroupProps = Menu['radioGroup'];
-export type ContextMenuRadioItemProps = Menu['radioItem'];
-export type ContextMenuRadioItemActionProps = Menu['radioItemAction'];
+export type CreateContextMenuProps = _Menu['builder'];
+export type CreateContextSubmenuProps = _Menu['submenu'];
+export type ContextMenuItemProps = _Menu['item'];
+export type CreateContextMenuRadioGroupProps = _Menu['radioGroup'];
+export type CreateContextMenuCheckboxItemProps = _Menu['checkboxItem'];
+export type ContextMenuRadioItemProps = _Menu['radioItem'];
+export type ContextMenuRadioItemActionProps = _Menu['radioItemAction'];
 
 // Returns
 export type ContextMenu = BuilderReturn<typeof createContextMenu>;

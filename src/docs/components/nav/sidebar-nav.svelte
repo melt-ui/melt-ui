@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { cn } from '$docs/utils';
-	import { navConfig } from '$docs/config';
+	import { cn } from '$docs/utils/index.js';
+	import { navConfig } from '$docs/config.js';
 </script>
 
 <nav class="flex w-full flex-col gap-4">

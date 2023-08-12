@@ -1,5 +1,5 @@
 import {
-	addEventListener,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -9,37 +9,37 @@ import {
 	kbd,
 	omit,
 	overridable,
+	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
+	type ChangeFn,
+} from '$lib/internal/helpers/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
-import { derived, writable, type Writable } from 'svelte/store';
-import type {
-	AccordionHeadingProps,
-	AccordionItemProps,
-	AccordionType,
-	CreateAccordionProps,
-} from './types';
+import { derived, writable } from 'svelte/store';
+import type { AccordionEvents } from './events.js';
+import type { AccordionHeadingProps, AccordionItemProps, CreateAccordionProps } from './types.js';
 
 type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
 const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
 const defaults = {
-	type: 'single',
-	value: undefined,
-	disabled: undefined,
-} satisfies Defaults<CreateAccordionProps>;
+	multiple: false,
+	disabled: false,
+	forceVisible: false,
+} satisfies CreateAccordionProps;
 
-export const createAccordion = <T extends AccordionType = 'single'>(
-	props?: CreateAccordionProps<T>
+export const createAccordion = <Multiple extends boolean = false>(
+	props?: CreateAccordionProps<Multiple>
 ) => {
 	const withDefaults = { ...defaults, ...props };
-	const options = toWritableStores(omit(withDefaults, 'value'));
-	const { disabled } = options;
+	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
+	const { disabled, forceVisible } = options;
 
-	const valueWritable =
-		withDefaults.value ?? writable<string | string[] | undefined>(withDefaults.value);
-	const value = overridable(valueWritable, withDefaults?.onValueChange);
+	const valueWritable = withDefaults.value ?? writable(withDefaults.value);
+	const value = overridable<string | string[] | undefined>(
+		valueWritable,
+		withDefaults?.onValueChange as ChangeFn<string | string[] | undefined>
+	);
 
 	const isSelected = (key: string, v: string | string[] | undefined) => {
 		if (v === undefined) return false;
@@ -104,43 +104,42 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 					'aria-disabled': disabled ? true : false,
 					'data-disabled': disabled ? true : undefined,
 					'data-value': itemValue,
+					'data-state': isSelected(itemValue, $value) ? 'open' : 'closed',
 				};
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<AccordionEvents['trigger']> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', () => {
+				addMeltEventListener(node, 'click', () => {
 					const disabled = node.dataset.disabled === 'true';
 					const itemValue = node.dataset.value;
 					if (disabled || !itemValue) return;
 
-					value.update(($value) => {
-						if (withDefaults.type === 'single') {
-							return $value === itemValue ? undefined : itemValue;
-						} else {
-							const arrValue = $value as string[] | undefined;
-							if (arrValue === undefined) {
-								return [itemValue];
-							} else {
-								return arrValue.includes(itemValue)
-									? arrValue.filter((v) => v !== itemValue)
-									: [...arrValue, itemValue];
-							}
-						}
-					});
+					handleValueUpdate(itemValue);
 				}),
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					if (![kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.HOME, kbd.END].includes(e.key)) {
 						return;
 					}
 					e.preventDefault();
 
+					if (e.key === kbd.SPACE || e.key === kbd.ENTER) {
+						const disabled = node.dataset.disabled === 'true';
+						const itemValue = node.dataset.value;
+						if (disabled || !itemValue) return;
+						handleValueUpdate(itemValue);
+						return;
+					}
+
 					const el = e.target;
-					if (!isHTMLElement(el)) return;
 					const rootEl = getElementByMeltId(ids.root);
-					if (!rootEl) return;
-					const items = Array.from(rootEl.querySelectorAll<HTMLElement>(selector('trigger')));
-					const candidateItems = items.filter((item) => item.dataset.disabled !== 'true');
+					if (!rootEl || !isHTMLElement(el)) return;
+
+					const items = Array.from(rootEl.querySelectorAll(selector('trigger')));
+					const candidateItems = items.filter((item): item is HTMLElement => {
+						if (!isHTMLElement(item)) return false;
+						return item.dataset.disabled !== 'true';
+					});
 
 					if (!candidateItems.length) return;
 					const elIdx = candidateItems.indexOf(el);
@@ -167,16 +166,19 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 	});
 
 	const content = builder(name('content'), {
-		stores: [value, disabled],
-		returned: ([$value, $disabled]) => {
+		stores: [value, disabled, forceVisible],
+		returned: ([$value, $disabled, $forceVisible]) => {
 			return (props: AccordionItemProps) => {
 				const { value: itemValue } = parseItemProps(props);
-				const selected = isSelected(itemValue, $value);
+				const isVisible = isSelected(itemValue, $value) || $forceVisible;
 				return {
-					'data-state': selected ? 'open' : 'closed',
+					'data-state': isVisible ? 'open' : 'closed',
 					'data-disabled': $disabled ? true : undefined,
 					'data-value': itemValue,
-					hidden: selected ? undefined : true,
+					hidden: isVisible ? undefined : true,
+					style: styleToString({
+						display: isVisible ? undefined : 'none',
+					}),
 				};
 			};
 		},
@@ -185,10 +187,10 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 				const contentId = generateId();
 				const triggerId = generateId();
 
-				const parentTrigger = document.querySelector<HTMLElement>(
+				const parentTrigger = document.querySelector(
 					`${selector('trigger')}, [data-value="${node.dataset.value}"]`
 				);
-				if (!parentTrigger) return;
+				if (!isHTMLElement(parentTrigger)) return;
 
 				node.id = contentId;
 				parentTrigger.setAttribute('aria-controls', contentId);
@@ -210,6 +212,24 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 		},
 	});
 
+	function handleValueUpdate(itemValue: string) {
+		value.update(($value) => {
+			if ($value === undefined) {
+				return withDefaults.multiple ? [itemValue] : itemValue;
+			}
+
+			if (Array.isArray($value)) {
+				if ($value.includes(itemValue)) {
+					return $value.filter((v) => v !== itemValue);
+				}
+				$value.push(itemValue);
+				return $value;
+			}
+
+			return $value === itemValue ? undefined : itemValue;
+		});
+	}
+
 	return {
 		elements: {
 			root,
@@ -219,7 +239,7 @@ export const createAccordion = <T extends AccordionType = 'single'>(
 			heading,
 		},
 		states: {
-			value: value as Writable<CreateAccordionProps<T>['value']>,
+			value: value as NonNullable<CreateAccordionProps<Multiple>['value']>,
 		},
 		helpers: {
 			isSelected: isSelectedStore,

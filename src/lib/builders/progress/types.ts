@@ -1,12 +1,36 @@
-import type { BuilderReturn } from '$lib/internal/types';
+import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
-import type { createProgress } from './create';
-import type { ChangeFn } from '$lib/internal/helpers';
+import type { createProgress } from './create.js';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
 
 export type CreateProgressProps = {
+	/**
+	 * The uncontrolled default value of the progress.
+	 *
+	 * @default 0
+	 */
 	defaultValue?: number;
+
+	/**
+	 * The controlled value store for the radio group.
+	 * If provided, this will override the value passed to `defaultValue`.
+	 *
+	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
+	 */
 	value?: Writable<number>;
+
+	/**
+	 * The callback invoked when the value store of the progress changes.
+	 *
+	 * @see https://melt-ui.com/docs/controlled#change-functions
+	 */
 	onValueChange?: ChangeFn<number>;
+
+	/**
+	 * The maximum value of the progress.
+	 *
+	 * @default 100
+	 */
 	max?: number;
 };
 

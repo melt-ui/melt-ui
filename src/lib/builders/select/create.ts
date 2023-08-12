@@ -1,17 +1,24 @@
-import { usePopper } from '$lib/internal/actions/popper';
+import { createLabel, createSeparator } from '$lib/builders/index.js';
+import { usePopper, usePortal } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,
 	addEventListener,
+	addHighlight,
+	addMeltEventListener,
 	back,
 	builder,
 	createElHelpers,
 	createTypeaheadSearch,
+	derivedVisible,
 	effect,
 	executeCallbacks,
 	forward,
 	generateId,
+	getFirstOption,
 	getNextFocusable,
+	getOptions,
+	getPortalDestination,
 	getPreviousFocusable,
 	handleRovingFocus,
 	isBrowser,
@@ -24,17 +31,18 @@ import {
 	omit,
 	overridable,
 	prev,
+	removeHighlight,
 	removeScroll,
+	sleep,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import { getFirstOption, getOptions } from '$lib/internal/helpers/list';
-import { sleep } from '$lib/internal/helpers/sleep';
-import type { Defaults } from '$lib/internal/types';
+	toggle,
+} from '$lib/internal/helpers/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
-import { derived, get, writable } from 'svelte/store';
-import { createSeparator } from '../separator';
-import type { CreateSelectProps, SelectOptionProps } from './types';
+import { derived, get, readonly, writable } from 'svelte/store';
+import type { SelectEvents } from './events.js';
+import type { CreateSelectProps, SelectOptionProps } from './types.js';
 
 const defaults = {
 	arrowSize: 8,
@@ -48,16 +56,44 @@ const defaults = {
 	loop: false,
 	name: undefined,
 	defaultOpen: false,
-	defaultValue: undefined,
-} satisfies Defaults<CreateSelectProps>;
+	forceVisible: false,
+	portal: undefined,
+	closeOnEscape: true,
+	closeOnOutsideClick: true,
+} satisfies CreateSelectProps;
 
-type SelectParts = 'menu' | 'trigger' | 'option' | 'group' | 'group-label' | 'arrow' | 'input';
+type SelectParts =
+	| 'menu'
+	| 'trigger'
+	| 'option'
+	| 'group'
+	| 'group-label'
+	| 'arrow'
+	| 'input'
+	| 'label';
+
 const { name } = createElHelpers<SelectParts>('select');
 
-export function createSelect(props?: CreateSelectProps) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps;
+export function createSelect<
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	Item extends Multiple extends true ? Array<unknown> : unknown = any,
+	Multiple extends boolean = false
+>(props?: CreateSelectProps<Item, Multiple>) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps<Item, Multiple>;
 
-	const options = toWritableStores(omit(withDefaults, 'value', 'label'));
+	const options = toWritableStores({
+		...omit(
+			withDefaults,
+			'value',
+			'defaultValueLabel',
+			'onValueChange',
+			'onOpenChange',
+			'open',
+			'defaultOpen'
+		),
+		multiple: withDefaults.multiple ?? (false as Multiple),
+	});
+
 	const {
 		positioning,
 		arrowSize,
@@ -66,15 +102,24 @@ export function createSelect(props?: CreateSelectProps) {
 		loop,
 		preventScroll,
 		name: nameStore,
+		portal,
+		forceVisible,
+		closeOnEscape,
+		closeOnOutsideClick,
+		multiple,
 	} = options;
 
-	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
-	const open = overridable(openWritable, withDefaults?.onOpenChange);
+	let mounted = false;
 
-	const valueWritable = withDefaults.value ?? writable<unknown>(withDefaults.defaultValue);
+	const openWritable = withDefaults.open ?? writable(true);
+	const open = overridable(openWritable, withDefaults?.onOpenChange);
+	// Open so we can register the optionsList items before mounted = true
+	open.set(true);
+
+	const valueWritable = withDefaults.value ?? writable<Item>(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
-	const label = writable<string | number | null>(withDefaults.label ?? null);
+	const valueLabel = writable<string | number | null>(withDefaults.defaultValueLabel ?? null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	/**
@@ -98,81 +143,117 @@ export function createSelect(props?: CreateSelectProps) {
 	const ids = {
 		menu: generateId(),
 		trigger: generateId(),
+		label: generateId(),
 	};
 
 	onMount(() => {
+		// Run after all initial effects
+		tick().then(() => {
+			mounted = true;
+		});
+
+		open.set(withDefaults.defaultOpen);
+
 		if (!isBrowser) return;
 		const menuEl = document.getElementById(ids.menu);
+
 		if (!menuEl) return;
+
+		const triggerEl = document.getElementById(ids.trigger);
+
+		if (!triggerEl) return;
+		activeTrigger.set(triggerEl);
 
 		const selectedEl = menuEl.querySelector('[data-selected]');
 		if (!isHTMLElement(selectedEl)) return;
 
 		const dataLabel = selectedEl.getAttribute('data-label');
-		label.set(dataLabel ?? selectedEl.textContent ?? null);
+		valueLabel.set(dataLabel ?? selectedEl.textContent ?? null);
 	});
 
+	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
+
 	const menu = builder(name('menu'), {
-		stores: open,
-		returned: ($open) => {
+		stores: [isVisible, portal],
+		returned: ([$isVisible, $portal]) => {
 			return {
-				hidden: $open ? undefined : true,
+				hidden: $isVisible ? undefined : true,
 				style: styleToString({
-					display: $open ? undefined : 'none',
+					display: $isVisible ? undefined : 'none',
 				}),
 				id: ids.menu,
 				'aria-labelledby': ids.trigger,
 				role: 'listbox',
+				'data-portal': $portal ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<SelectEvents['menu']> => {
 			let unsubPopper = noop;
+			let unsubScroll = noop;
 
 			const unsubDerived = effect(
-				[open, activeTrigger, positioning],
-				([$open, $activeTrigger, $positioning]) => {
+				[isVisible, preventScroll, positioning, portal, closeOnEscape, closeOnOutsideClick],
+				([
+					$isVisible,
+					$preventScroll,
+					$positioning,
+					$portal,
+					$closeOnEscape,
+					$closeOnOutsideClick,
+				]) => {
 					unsubPopper();
-					if ($open && $activeTrigger) {
-						tick().then(() => {
-							const popper = usePopper(node, {
-								anchorElement: $activeTrigger,
-								open,
-								options: {
-									floating: $positioning,
-								},
-							});
-
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
-						});
+					unsubScroll();
+					const $activeTrigger = get(activeTrigger);
+					if (!($isVisible && $activeTrigger)) return;
+					if ($preventScroll) {
+						unsubScroll = removeScroll();
 					}
+
+					tick().then(() => {
+						const popper = usePopper(node, {
+							anchorElement: $activeTrigger,
+							open,
+							options: {
+								floating: $positioning,
+								clickOutside: $closeOnOutsideClick ? undefined : null,
+								escapeKeydown: $closeOnEscape
+									? {
+											handler: () => {
+												open.set(false);
+											},
+									  }
+									: null,
+								portal: getPortalDestination(node, $portal),
+							},
+						});
+
+						if (popper && popper.destroy) {
+							unsubPopper = popper.destroy;
+						}
+					});
 				}
 			);
 
 			const unsubEventListeners = executeCallbacks(
-				addEventListener(node, 'keydown', (e) => {
-					const menuElement = e.currentTarget;
-					if (!isHTMLElement(menuElement)) return;
-
+				addMeltEventListener(node, 'keydown', (e) => {
+					const menuEl = e.currentTarget;
 					const target = e.target;
-					if (!isHTMLElement(target)) return;
+					if (!isHTMLElement(menuEl) || !isHTMLElement(target)) return;
 
 					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
 					const isCharacterKey = e.key.length === 1;
 
 					if (e.key === kbd.TAB) {
 						e.preventDefault();
-						activeTrigger.set(null);
 						open.set(false);
 						handleTabNavigation(e);
 					}
 
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						e.preventDefault();
-						if (menuElement === target) {
-							const selectedOption = getSelectedOption(menuElement);
-							if (isHTMLElement(selectedOption)) {
+						if (menuEl === target) {
+							const selectedOption = getSelectedOption(menuEl);
+							if (selectedOption) {
 								handleRovingFocus(selectedOption);
 								return;
 							}
@@ -186,10 +267,14 @@ export function createSelect(props?: CreateSelectProps) {
 				})
 			);
 
+			const unsubPortal = usePortal(node, 'body')?.destroy;
+
 			return {
 				destroy() {
 					unsubDerived();
 					unsubPopper();
+					unsubPortal?.();
+					unsubScroll();
 					unsubEventListeners();
 				},
 			};
@@ -202,46 +287,45 @@ export function createSelect(props?: CreateSelectProps) {
 			return {
 				role: 'combobox',
 				'aria-autocomplete': 'none',
+				'aria-haspopup': 'listbox',
 				'aria-controls': ids.menu,
 				'aria-expanded': $open,
 				'aria-required': $required,
 				'data-state': $open ? 'open' : 'closed',
 				'data-disabled': $disabled ? true : undefined,
+				'aria-labelledby': ids.label,
 				disabled: $disabled,
 				id: ids.trigger,
 				tabindex: 0,
 			} as const;
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<SelectEvents['trigger']> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
 					if (get(disabled)) {
 						e.preventDefault();
 						return;
 					}
 
 					const $open = get(open);
-					const triggerElement = e.currentTarget;
-					if (!isHTMLElement(triggerElement)) return;
+					const triggerEl = e.currentTarget;
+					if (!isHTMLElement(triggerEl)) return;
 
 					open.update((prev) => {
 						const isOpen = !prev;
 						if (isOpen) {
-							nextFocusable.set(getNextFocusable(triggerElement));
-							prevFocusable.set(getPreviousFocusable(triggerElement));
-							activeTrigger.set(triggerElement);
-						} else {
-							activeTrigger.set(null);
+							nextFocusable.set(getNextFocusable(triggerEl));
+							prevFocusable.set(getPreviousFocusable(triggerEl));
+							activeTrigger.set(triggerEl);
 						}
-
 						return isOpen;
 					});
 					if (!$open) e.preventDefault();
 				}),
 
-				addEventListener(node, 'keydown', (e) => {
-					const triggerElement = e.currentTarget;
-					if (!isHTMLElement(triggerElement)) return;
+				addMeltEventListener(node, 'keydown', (e) => {
+					const triggerEl = e.currentTarget;
+					if (!isHTMLElement(triggerEl)) return;
 
 					if (
 						SELECTION_KEYS.includes(e.key) ||
@@ -260,18 +344,16 @@ export function createSelect(props?: CreateSelectProps) {
 							const isOpen = !prev;
 							if (isOpen) {
 								e.preventDefault();
-								nextFocusable.set(getNextFocusable(triggerElement));
-								prevFocusable.set(getPreviousFocusable(triggerElement));
-								activeTrigger.set(triggerElement);
-							} else {
-								activeTrigger.set(null);
+								nextFocusable.set(getNextFocusable(triggerEl));
+								prevFocusable.set(getPreviousFocusable(triggerEl));
+								activeTrigger.set(triggerEl);
 							}
 
 							return isOpen;
 						});
 
 						const menu = document.getElementById(ids.menu);
-						if (!isHTMLElement(menu)) return;
+						if (!menu) return;
 
 						const selectedOption = menu.querySelector('[data-selected]');
 						if (isHTMLElement(selectedOption)) {
@@ -282,16 +364,45 @@ export function createSelect(props?: CreateSelectProps) {
 						const options = getOptions(menu);
 						if (!options.length) return;
 
-						const nextFocusedElement = options[0];
-						if (!isHTMLElement(nextFocusedElement)) return;
-
-						handleRovingFocus(nextFocusedElement);
+						handleRovingFocus(options[0]);
 					}
 				})
 			);
 
 			return {
 				destroy: unsub,
+			};
+		},
+	});
+
+	// Use our existing label builder to create a label for the select trigger.
+	const {
+		elements: { root: labelBuilder },
+	} = createLabel();
+
+	const { action: labelAction } = get(labelBuilder);
+
+	const label = builder(name('label'), {
+		returned: () => {
+			return {
+				id: ids.label,
+				for: ids.trigger,
+			};
+		},
+		action: (node): MeltActionReturn<SelectEvents['label']> => {
+			const destroy = executeCallbacks(
+				labelAction(node).destroy ?? noop,
+				addMeltEventListener(node, 'click', (e) => {
+					e.preventDefault();
+					const triggerEl = document.getElementById(ids.trigger);
+					if (!isHTMLElement(triggerEl)) return;
+
+					triggerEl.focus();
+				})
+			);
+
+			return {
+				destroy,
 			};
 		},
 	});
@@ -331,60 +442,78 @@ export function createSelect(props?: CreateSelectProps) {
 		}),
 	});
 
+	type OptionProps = {
+		value: unknown;
+		label: string | null;
+		disabled: boolean;
+	};
+
+	const getOptionProps = (el: HTMLElement) => {
+		const value = el.getAttribute('data-value');
+		const label = el.getAttribute('data-label');
+		const disabled = el.hasAttribute('data-disabled');
+
+		return {
+			value: value ? JSON.parse(value) : value,
+			label: label ?? el.textContent ?? null,
+			disabled: disabled ? true : false,
+		};
+	};
+
+	const setValue = (newValue: Item) => {
+		value.update(($value) => {
+			const $multiple = get(multiple);
+			if (Array.isArray($value) || ($value === undefined && $multiple)) {
+				return toggle(newValue, ($value ?? []) as unknown[]) as Item;
+			}
+			return newValue;
+		});
+	};
+
+	const optionsList: OptionProps[] = [];
+
 	const option = builder(name('option'), {
 		stores: value,
 		returned: ($value) => {
-			return (props: SelectOptionProps) => {
+			return (props: SelectOptionProps<Item>) => {
+				const optProps: OptionProps = {
+					value: props.value,
+					label: props.label ?? null,
+					disabled: props.disabled ?? false,
+				};
+				optionsList.push(optProps);
+
+				const isSelected = Array.isArray($value) ? $value.includes(props?.value) : $value === props?.value;
+
 				return {
 					role: 'option',
-					'aria-selected': $value === props?.value,
-					'data-selected': $value === props?.value ? '' : undefined,
-					'data-value': props.value,
+					'aria-selected': isSelected,
+					'data-selected': isSelected ? '' : undefined,
+					'data-value': JSON.stringify(props.value),
 					'data-label': props.label ?? undefined,
 					'data-disabled': props.disabled ? '' : undefined,
 					tabindex: -1,
 				} as const;
 			};
 		},
-		action: (node: HTMLElement) => {
-			const getElprops = () => {
-				const value = node.getAttribute('data-value');
-				const label = node.getAttribute('data-label');
-				const disabled = node.hasAttribute('data-disabled');
-
-				return {
-					value,
-					label: label ?? node.textContent ?? null,
-					disabled: disabled ? true : false,
-				};
-			};
-
+		action: (node: HTMLElement): MeltActionReturn<SelectEvents['option']> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', (e) => {
-					const props = getElprops();
-					if (props.disabled) {
-						e.preventDefault();
-						return;
-					}
-				}),
-
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
 					const itemElement = e.currentTarget;
 					if (!isHTMLElement(itemElement)) return;
 
-					const props = getElprops();
+					const props = getOptionProps(node);
 					if (props.disabled) {
 						e.preventDefault();
 						return;
 					}
 					handleRovingFocus(itemElement);
 
-					value.set(props.value);
-					label.set(props.label);
+					setValue(props.value);
 					open.set(false);
 				}),
 
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const $typed = get(typed);
 					const isTypingAhead = $typed.length > 0;
 					if (isTypingAhead && e.key === kbd.SPACE) {
@@ -393,44 +522,44 @@ export function createSelect(props?: CreateSelectProps) {
 					}
 					if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
 						e.preventDefault();
-						const props = getElprops();
+						const props = getOptionProps(node);
 						node.setAttribute('data-selected', '');
-						value.set(props.value);
-						label.set(props.label);
+
+						setValue(props.value);
 						open.set(false);
 					}
 				}),
-				addEventListener(node, 'pointermove', (e) => {
-					const props = getElprops();
+				addMeltEventListener(node, 'pointermove', (e) => {
+					const props = getOptionProps(node);
 					if (props.disabled) {
 						e.preventDefault();
 						return;
 					}
 
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
+					const itemEl = e.currentTarget;
+					if (!isHTMLElement(itemEl)) return;
 
 					if (props.disabled) {
 						const menuElement = document.getElementById(ids.menu);
-						if (!isHTMLElement(menuElement)) return;
+						if (!menuElement) return;
 						handleRovingFocus(menuElement);
 					}
 
 					onOptionPointerMove(e);
 				}),
-				addEventListener(node, 'pointerleave', (e) => {
+				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (!isMouse(e)) return;
 					onOptionLeave();
 				}),
-				addEventListener(node, 'focusin', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-					itemElement.setAttribute('data-highlighted', '');
+				addMeltEventListener(node, 'focusin', (e) => {
+					const itemEl = e.currentTarget;
+					if (!isHTMLElement(itemEl)) return;
+					addHighlight(itemEl);
 				}),
-				addEventListener(node, 'focusout', (e) => {
-					const itemElement = e.currentTarget;
-					if (!isHTMLElement(itemElement)) return;
-					itemElement.removeAttribute('data-highlighted');
+				addMeltEventListener(node, 'focusout', (e) => {
+					const itemEl = e.currentTarget;
+					if (!isHTMLElement(itemEl)) return;
+					removeHighlight(itemEl);
 				})
 			);
 
@@ -438,6 +567,24 @@ export function createSelect(props?: CreateSelectProps) {
 				destroy: unsub,
 			};
 		},
+	});
+
+	effect(value, ($value) => {
+		if (!isBrowser) return;
+
+		if (Array.isArray($value)) {
+			const labels = optionsList.reduce((result, current) => {
+				if ($value.includes(current.value) && current.label) {
+					result.add(current.label);
+				}
+				return result;
+			}, new Set<string>());
+
+			valueLabel.set(Array.from(labels).join(', '));
+		} else {
+			const newLabel = optionsList.find((opt) => opt.value === $value)?.label;
+			valueLabel.set(newLabel ?? null);
+		}
 	});
 
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
@@ -450,15 +597,16 @@ export function createSelect(props?: CreateSelectProps) {
 			unsubs.push(removeScroll());
 		}
 
+		const constantMounted = mounted;
 		sleep(1).then(() => {
 			const menuEl = document.getElementById(ids.menu);
 			if (menuEl && $open && get(isUsingKeyboard)) {
 				// Focus on selected option or first option
 				const selectedOption = getSelectedOption(menuEl);
 
-				if (!isHTMLElement(selectedOption)) {
+				if (!selectedOption) {
 					const firstOption = getFirstOption(menuEl);
-					if (!isHTMLElement(firstOption)) return;
+					if (!firstOption) return;
 					handleRovingFocus(firstOption);
 				} else {
 					handleRovingFocus(selectedOption);
@@ -466,7 +614,7 @@ export function createSelect(props?: CreateSelectProps) {
 			} else if (menuEl && $open) {
 				// focus on the menu element
 				handleRovingFocus(menuEl);
-			} else if ($activeTrigger) {
+			} else if ($activeTrigger && constantMounted) {
 				// Hacky way to prevent the keydown event from triggering on the trigger
 				handleRovingFocus($activeTrigger);
 			}
@@ -479,35 +627,31 @@ export function createSelect(props?: CreateSelectProps) {
 
 	const isSelected = derived([value], ([$value]) => {
 		return (value: unknown) => {
+			if (Array.isArray($value)) {
+				return $value.includes(value);
+			}
 			return $value === value;
 		};
 	});
 
-	onMount(() => {
-		const handlePointer = () => isUsingKeyboard.set(false);
-		const handleKeyDown = () => {
-			isUsingKeyboard.set(true);
-			document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
-			document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
-		};
-		document.addEventListener('keydown', handleKeyDown, { capture: true });
+	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
+		if (!isBrowser) return;
 
-		const keydownListener = (e: KeyboardEvent) => {
-			if (e.key === kbd.ESCAPE) {
+		const handlePointer = () => isUsingKeyboard.set(false);
+		const handleKeyDown = (e: KeyboardEvent) => {
+			isUsingKeyboard.set(true);
+			if (e.key === kbd.ESCAPE && $open) {
 				open.set(false);
-				const $activeTrigger = get(activeTrigger);
 				if (!$activeTrigger) return;
 				handleRovingFocus($activeTrigger);
 			}
 		};
-		document.addEventListener('keydown', keydownListener);
 
-		return () => {
-			document.removeEventListener('keydown', handleKeyDown, { capture: true });
-			document.removeEventListener('pointerdown', handlePointer, { capture: true });
-			document.removeEventListener('pointermove', handlePointer, { capture: true });
-			document.removeEventListener('keydown', keydownListener);
-		};
+		return executeCallbacks(
+			addEventListener(document, 'keydown', handleKeyDown, { capture: true }),
+			addEventListener(document, 'pointerdown', handlePointer, { capture: true, once: true }),
+			addEventListener(document, 'pointermove', handlePointer, { capture: true, once: true })
+		);
 	});
 
 	const input = builder(name('input'), {
@@ -538,7 +682,8 @@ export function createSelect(props?: CreateSelectProps) {
 	}
 
 	function getSelectedOption(menuElement: HTMLElement) {
-		return menuElement.querySelector('[data-selected]');
+		const selectedOption = menuElement.querySelector('[data-selected]');
+		return isHTMLElement(selectedOption) ? selectedOption : null;
 	}
 
 	function onOptionPointerMove(e: PointerEvent) {
@@ -563,11 +708,10 @@ export function createSelect(props?: CreateSelectProps) {
 
 		// currently focused menu item
 		const currentFocusedItem = document.activeElement;
-		if (!isHTMLElement(currentFocusedItem)) return;
 
 		// menu element being navigated
 		const currentTarget = e.currentTarget;
-		if (!isHTMLElement(currentTarget)) return;
+		if (!isHTMLElement(currentFocusedItem) || !isHTMLElement(currentTarget)) return;
 
 		// menu items of the current menu
 		const items = getOptions(currentTarget);
@@ -632,11 +776,12 @@ export function createSelect(props?: CreateSelectProps) {
 			groupLabel,
 			arrow,
 			separator,
+			label,
 		},
 		states: {
 			open,
 			value,
-			label,
+			valueLabel: readonly(valueLabel),
 		},
 		helpers: {
 			isSelected,

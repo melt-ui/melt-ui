@@ -1,8 +1,7 @@
-import type { Defaults } from '$lib/internal/types';
+import { overridable, toWritableStores } from '$lib/internal/helpers/index.js';
 import { writable } from 'svelte/store';
-import { createMenuBuilder } from '../menu';
-import type { CreateDropdownMenuProps } from './types';
-import { overridable, toWritableStores } from '$lib/internal/helpers';
+import { createMenuBuilder } from '../menu/index.js';
+import type { CreateDropdownMenuProps } from './types.js';
 
 const defaults = {
 	arrowSize: 8,
@@ -10,10 +9,14 @@ const defaults = {
 		placement: 'bottom',
 	},
 	preventScroll: true,
+	closeOnEscape: true,
+	closeOnOutsideClick: true,
+	portal: undefined,
 	loop: false,
 	dir: 'ltr',
 	defaultOpen: false,
-} satisfies Defaults<CreateDropdownMenuProps>;
+	forceVisible: false,
+} satisfies CreateDropdownMenuProps;
 
 export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateDropdownMenuProps;
@@ -31,11 +34,13 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 		trigger,
 		menu,
 		item,
-		checkboxItem,
 		arrow,
 		createSubmenu,
+		createCheckboxItem,
 		createMenuRadioGroup,
 		separator,
+		group,
+		groupLabel,
 	} = createMenuBuilder({
 		rootOptions,
 		rootOpen,
@@ -51,14 +56,16 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 			trigger,
 			menu,
 			item,
-			checkboxItem,
 			arrow,
 			separator,
+			group,
+			groupLabel,
 		},
 		states: {
 			open: rootOpen,
 		},
 		builders: {
+			createCheckboxItem,
 			createSubmenu,
 			createMenuRadioGroup,
 		},

@@ -1,13 +1,13 @@
-import { highlightCode } from '$docs/highlighter';
-import { isBrowser } from '$lib/internal/helpers';
+import { highlightCode } from '$docs/highlighter.js';
+import { isBrowser } from '$lib/internal/helpers/index.js';
 import { error } from '@sveltejs/kit';
 import type { SvelteComponent } from 'svelte';
-import { get, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import rawGlobalCSS from '../../../other/globalcss.html?raw';
 import rawTailwindConfig from '../../../other/tailwindconfig.html?raw';
-import { data, isBuilderName, type Builder } from '../data/builders';
-import { processMeltAttributes } from '../pp';
-import type { DocResolver, PreviewFile, PreviewResolver } from '../types';
+import { data, isBuilderName, type Builder } from '../data/builders/index.js';
+import { processMeltAttributes } from '../pp.js';
+import type { DocResolver, PreviewFile, PreviewResolver } from '../types.js';
 
 function slugFromPath(path: string) {
 	return path.replace('/src/docs/content/', '').replace('.md', '');
@@ -20,17 +20,25 @@ function previewPathMatcher(path: string, builder: string) {
 }
 
 interface PreviewObj {
-	[key: string]: {
-		[key: string]: {
-			'index.svelte'?: {
-				pp: string;
-				base: string;
-			};
+	[cmpName: string]: {
+		[codingStyle: string]: {
+			[fileName: `${string}.svelte`]:
+				| {
+						pp: string;
+						base: string;
+				  }
+				| undefined;
 			'globals.css'?: string;
 			'tailwind.config.ts'?: string;
 		};
 	};
 }
+
+type SvelteFile = `${string}.svelte`;
+
+const isSvelteFile = (file: string): file is SvelteFile => {
+	return file.endsWith('.svelte');
+};
 
 type CreatePreviewsObjectArgs = {
 	component: string;
@@ -47,19 +55,21 @@ async function createPreviewsObject({
 	// Create an array of promises, iterating through the objects in the array
 	const promises = objArr.map(async (obj) => {
 		// Extract the parts from the path
-		const regex = new RegExp(`${component}/(.+?)/(.+?)\\.svelte$`);
+		const regex = new RegExp(`${component}/(.+?)/(.+?)/(.*?\\.svelte)$`);
 		const match = regex.exec(obj.path);
 
 		if (match) {
-			const [, groupKey, fileKey] = match; // Destructure the matched parts
+			const [, groupKey, styleKey, fileKey] = match; // Destructure the matched parts
 			const { content } = obj;
+
+			if (!isSvelteFile(fileKey)) return;
 
 			// Create the structure in the returnedObj
 			if (!returnedObj[groupKey]) {
 				returnedObj[groupKey] = {};
 			}
-			if (!returnedObj[groupKey][fileKey]) {
-				returnedObj[groupKey][fileKey] = {};
+			if (!returnedObj[groupKey][styleKey]) {
+				returnedObj[groupKey][styleKey] = {};
 			}
 
 			const [highlightedCode, processedCode] = await Promise.all([
@@ -67,7 +77,7 @@ async function createPreviewsObject({
 				highlightCode({ code: processMeltAttributes(content), lang: 'svelte', fetcher }),
 			]);
 
-			returnedObj[groupKey][fileKey]['index.svelte'] = {
+			returnedObj[groupKey][styleKey][fileKey] = {
 				pp: highlightedCode ?? content,
 				base: processedCode ?? content,
 			};
@@ -80,16 +90,16 @@ async function createPreviewsObject({
 	// Manually add values for 'tailwind.config.ts' and 'globals.css'
 	for (const groupKey in returnedObj) {
 		if (Object.prototype.hasOwnProperty.call(returnedObj, groupKey)) {
-			const fileKeys = Object.keys(returnedObj[groupKey]);
-			for (const fileKey of fileKeys) {
-				if (!Object.prototype.hasOwnProperty.call(returnedObj[groupKey], fileKey)) {
-					returnedObj[groupKey][fileKey] = {};
+			const styleKeys = Object.keys(returnedObj[groupKey]);
+			for (const styleKey of styleKeys) {
+				if (!Object.prototype.hasOwnProperty.call(returnedObj[groupKey], styleKey)) {
+					returnedObj[groupKey][styleKey] = {};
 				}
 
-				if (fileKey === 'tailwind') {
-					returnedObj[groupKey][fileKey]['tailwind.config.ts'] = rawTailwindConfig;
-				} else if (fileKey === 'css') {
-					returnedObj[groupKey][fileKey]['globals.css'] = rawGlobalCSS;
+				if (styleKey === 'tailwind') {
+					returnedObj[groupKey][styleKey]['tailwind.config.ts'] = rawTailwindConfig;
+				} else if (styleKey === 'css') {
+					returnedObj[groupKey][styleKey]['globals.css'] = rawGlobalCSS;
 				}
 			}
 		}
@@ -99,7 +109,7 @@ async function createPreviewsObject({
 }
 
 function isMainPreviewComponent(builder: string, path: string): boolean {
-	const regexPattern = `${builder}/main/tailwind\\.svelte$`;
+	const regexPattern = `${builder}/main/tailwind/index\\.svelte$`;
 	const regex = new RegExp(regexPattern);
 	return regex.test(path);
 }
@@ -130,6 +140,14 @@ type GetAllPreviewSnippetsArgs = {
 	fetcher?: typeof fetch;
 };
 
+const replaceLibEntriesRegex = /import (.*) from ["|'](?:\$lib.*)["|']/;
+
+function replaceLibEntries(code: string) {
+	// avoid executing the regex if it doesn't have $lib in the code for performance
+	if (!code.includes('$lib/index.js')) return code;
+	return code.replace(replaceLibEntriesRegex, "import $1 from '@melt-ui/svelte'");
+}
+
 export async function getAllPreviewSnippets({ slug, fetcher }: GetAllPreviewSnippetsArgs) {
 	const previewsCode = import.meta.glob(`/src/docs/previews/**/*.svelte`, {
 		as: 'raw',
@@ -140,10 +158,11 @@ export async function getAllPreviewSnippets({ slug, fetcher }: GetAllPreviewSnip
 	for (const [path, resolver] of Object.entries(previewsCode)) {
 		const isMatch = previewPathMatcher(path, slug);
 		if (isMatch) {
-			const prev = { path, content: resolver };
+			const prev = { path, content: replaceLibEntries(resolver) };
 			previewCodeMatches.push(prev);
 		}
 	}
+
 	const previews = await createPreviewsObject({
 		component: slug,
 		objArr: previewCodeMatches,
@@ -158,7 +177,7 @@ const getPreviewName = (path: string, slug: string) => {
 };
 
 export async function getAllPreviewComponents(slug: string) {
-	const previewComponents = import.meta.glob('/src/docs/previews/**/tailwind.svelte');
+	const previewComponents = import.meta.glob('/src/docs/previews/**/tailwind/index.svelte');
 
 	const previewCodeMatches: { [key: string]: SvelteComponent } = {};
 
@@ -265,13 +284,13 @@ export function createHeadingId(text: string) {
 }
 
 export function createCopyCodeButton() {
-	const codeString = writable('');
+	let codeString = '';
 	const copied = writable(false);
 	let copyTimeout = 0;
 
 	function copyCode() {
 		if (!isBrowser) return;
-		navigator.clipboard.writeText(get(codeString));
+		navigator.clipboard.writeText(codeString);
 		copied.set(true);
 		clearTimeout(copyTimeout);
 		copyTimeout = window.setTimeout(() => {
@@ -280,7 +299,7 @@ export function createCopyCodeButton() {
 	}
 
 	function setCodeString(node: HTMLElement) {
-		codeString.set(node.innerText.trim() ?? '');
+		codeString = node.innerText.trim() ?? '';
 	}
 
 	return {

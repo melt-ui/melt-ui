@@ -1,15 +1,15 @@
-import type { BuilderReturn } from '$lib/internal/types';
-import type { Menu } from '../menu';
-import type { createDropdownMenu } from './create';
-
+import type { BuilderReturn } from '$lib/internal/types.js';
+import type { _Menu } from '../menu/index.js';
+import type { createDropdownMenu } from './create.js';
+export type { DropdownMenuComponentEvents } from './events.js';
 // Props
-export type CreateDropdownMenuProps = Menu['builder'];
-export type CreateDropdownSubmenuProps = Menu['submenu'];
-export type DropdownMenuItemProps = Menu['item'];
-export type DropdownMenuCheckboxItemProps = Menu['checkboxItem'];
-export type CreateDropdownMenuRadioGroupProps = Menu['radioGroup'];
-export type DropdownMenuRadioItemProps = Menu['radioItem'];
-export type DropdownMenuRadioItemActionProps = Menu['radioItemAction'];
+export type CreateDropdownMenuProps = _Menu['builder'];
+export type CreateDropdownSubmenuProps = _Menu['submenu'];
+export type DropdownMenuItemProps = _Menu['item'];
+export type CreateDropdownMenuRadioGroupProps = _Menu['radioGroup'];
+export type CreateDropdownMenuCheckboxItemProps = _Menu['checkboxItem'];
+export type DropdownMenuRadioItemProps = _Menu['radioItem'];
+export type DropdownMenuRadioItemActionProps = _Menu['radioItemAction'];
 
 // Returns
 export type DropdownMenu = BuilderReturn<typeof createDropdownMenu>;

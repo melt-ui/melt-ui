@@ -1,4 +1,4 @@
-import { styleToString } from '@melt-ui/svelte/internal/helpers';
+import { styleToString } from '$lib/internal/helpers/index.js';
 import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
 

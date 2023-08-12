@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { cn } from '$docs/utils';
+	import { cn } from '$docs/utils/index.js';
 </script>
 
-<div class="comp-preview h-[20rem] overflow-y-visible lg:h-[28rem]">
-	<div class={cn('mx-auto flex w-full justify-center px-4')}>
+<div class="comp-preview h-[20rem] overflow-x-auto lg:h-[28rem] lg:overflow-x-hidden">
+	<div class={cn('mx-auto inline-block px-4')}>
 		<slot />
 	</div>
 </div>

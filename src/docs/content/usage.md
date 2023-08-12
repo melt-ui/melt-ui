@@ -14,13 +14,16 @@ collapsible component using Melt UI's [Collapsible](/docs/builders/collapsible) 
 
 ```svelte
 <script>
-	import { createCollapsible } from '@melt-ui/svelte'
-	const { open, root, content, trigger } = createCollapsible()
+	import { createCollapsible, melt } from '@melt-ui/svelte'
+	const {
+		elements: { root, content, trigger },
+		states: { open }
+	} = createCollapsible()
 </script>
 
-<div melt={$root}>
-	<button melt={$trigger}>{$open ? 'Close' : 'Open'}</button>
-	<div melt={$content}>Obi-Wan says: Hello there!</div>
+<div use:melt={$root}>
+	<button use:melt={$trigger}>{$open ? 'Close' : 'Open'}</button>
+	<div use:melt={$content}>Obi-Wan says: Hello there!</div>
 </div>
 ```
 
@@ -38,19 +41,23 @@ Melt's props, it's all good.
 
 ```svelte
 <script>
-  import { createCollapsible } from '@melt-ui/svelte';
+  import { createCollapsible, melt } from '@melt-ui/svelte';
   import Button from '$components/button.svelte';
-  const { open, root, content, trigger } = createCollapsible();
+
+	const {
+		elements: { root, content, trigger },
+		states: { open }
+	} = createCollapsible()
 </script>
 
 <!-- Using Svelte Scoped Styles -->
-<div class="root" melt={$root}>
+<div class="root" use:melt={$root}>
 <!-- Using an external component -->
 <Button on:click={() => console.log('clicked')} {...$trigger} action={trigger}>
   {$open ? 'Close' : 'Open'}
 </Button>
 <!-- Using an utility class library, such as Tailwind -->
-<div class="rounded-md p-4 text-orange-500 shadow-sm" melt={$content}>
+<div class="rounded-md p-4 text-orange-500 shadow-sm" use:melt={$content}>
   Obi-Wan says: Hello there!
 </div>
 </div>
@@ -81,13 +88,15 @@ purposes, should you desire to do so.
 
 ```svelte
 <script>
-	import { createCollapsible } from '@melt-ui/svelte'
-	const { root, content, trigger } = createCollapsible()
+	import { createCollapsible, melt } from '@melt-ui/svelte'
+	const {
+		elements: { root, content, trigger }
+	} = createCollapsible()
 </script>
 
-<div melt={$root}>
-	<button melt={$trigger}> Toggle </button>
-	<div class="content" melt={$content}>
+<div use:melt={$root}>
+	<button use:melt={$trigger}> Toggle </button>
+	<div class="content" use:melt={$content}>
 		<p>sveltejs/svelte</p>
 		<p>sveltejs/kit</p>
 	</div>

@@ -1,6 +1,6 @@
-import type { NavItem, SidebarNavItem } from '$docs/types';
-import { builderList } from './data/builders';
-import { formatStr } from './utils';
+import type { NavItem, SidebarNavItem } from '$docs/types.js';
+import { builderList } from './data/builders/index.js';
+import { formatStr } from './utils/index.js';
 
 export const siteConfig = {
 	name: 'Melt UI',
@@ -53,6 +53,11 @@ export const navConfig: NavConfig = {
 				{
 					title: 'Usage',
 					href: '/docs/usage',
+					items: [],
+				},
+				{
+					title: 'Transitions',
+					href: '/docs/transitions',
 					items: [],
 				},
 				{

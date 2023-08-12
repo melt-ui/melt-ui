@@ -4,9 +4,11 @@ description: An interactive component which expands/collapses a panel.
 ---
 
 <script>
-    import { KbdTable, APIReference } from '$docs/components'
+    import { KbdTable, APIReference, Preview } from '$docs/components'
     export let keyboard
     export let schemas
+    export let previews
+    export let snippets
 </script>
 
 ## Anatomy

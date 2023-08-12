@@ -1,15 +1,18 @@
 import {
-	addEventListener,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
+	kbd,
 	omit,
 	overridable,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
-import type { CreateSwitchProps } from './types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
+import { get, writable } from 'svelte/store';
+import { executeCallbacks } from '../../internal/helpers/callbacks.js';
+import type { SwitchEvents } from './events.js';
+import type { CreateSwitchProps } from './types.js';
 
 const defaults = {
 	defaultChecked: false,
@@ -30,6 +33,11 @@ export function createSwitch(props?: CreateSwitchProps) {
 	const checkedWritable = propsWithDefaults.checked ?? writable(propsWithDefaults.defaultChecked);
 	const checked = overridable(checkedWritable, propsWithDefaults?.onCheckedChange);
 
+	function toggleSwitch() {
+		if (get(disabled)) return;
+		checked.update((prev) => !prev);
+	}
+
 	const root = builder(name(), {
 		stores: [checked, disabled, required],
 		returned: ([$checked, $disabled, $required]) => {
@@ -43,12 +51,17 @@ export function createSwitch(props?: CreateSwitchProps) {
 				'aria-required': $required,
 			} as const;
 		},
-		action(node: HTMLElement) {
-			const unsub = addEventListener(node, 'click', () => {
-				if (get(disabled)) return;
-
-				checked.update((value) => !value);
-			});
+		action(node: HTMLElement): MeltActionReturn<SwitchEvents['root']> {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					toggleSwitch();
+				}),
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
+					e.preventDefault();
+					toggleSwitch();
+				})
+			);
 
 			return {
 				destroy: unsub,
@@ -80,8 +93,6 @@ export function createSwitch(props?: CreateSwitchProps) {
 		},
 	});
 
-	const isChecked = derived(checked, ($checked) => $checked === true);
-
 	return {
 		elements: {
 			root,
@@ -89,9 +100,6 @@ export function createSwitch(props?: CreateSwitchProps) {
 		},
 		states: {
 			checked,
-		},
-		helpers: {
-			isChecked,
 		},
 		options,
 	};

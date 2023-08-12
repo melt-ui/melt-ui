@@ -1,57 +1,113 @@
-import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import type { BuilderData } from '.';
+import { ATTRS, KBD, PROPS, SEE } from '$docs/constants.js';
+import type { KeyboardSchema } from '$docs/types.js';
+import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { comboboxEvents } from '$lib/builders/combobox/events.js';
+import type { BuilderData } from './index.js';
+import { getMenuArrowSchema } from './menu.js';
 
-const builder: APISchema = {
+/**
+ * Props that are also returned in the form of stores via the `options` property.
+ */
+const OPTION_PROPS = [
+	{
+		name: 'filterFunction',
+		type: '(item: T, inputValue: string)',
+		description:
+			'A function that returns `true` if the item should be included in the filtered list.',
+	},
+	{
+		name: 'itemToString',
+		type: '(item: T)',
+		description: 'A function that returns a string representation of the item.',
+	},
+	{
+		name: 'scrollAlignment',
+		type: ['"nearest"', '"center"'],
+		default: '"nearest"',
+		description: 'The alignment of the highlighted item when scrolling.',
+	},
+	PROPS.LOOP,
+	PROPS.CLOSE_ON_OUTSIDE_CLICK,
+	PROPS.CLOSE_ON_ESCAPE,
+	PROPS.PREVENT_SCROLL,
+	PROPS.PORTAL,
+	PROPS.POSITIONING,
+	PROPS.FORCE_VISIBLE,
+];
+
+const BUILDER_NAME = 'combobox';
+
+const builder = builderSchema(BUILDER_NAME, {
 	title: 'createCombobox',
-	description: DESCRIPTIONS.BUILDER('combobox'),
 	props: [
-		{
-			name: 'filterFunction',
-			type: '(item: T, inputValue: string)',
-			description:
-				'A function that returns `true` if the item should be included in the filtered list.',
-		},
 		{
 			name: 'items',
 			type: 'T[]',
 			description: 'The list of items to display in the combobox list.',
 		},
 		{
-			name: 'itemToString',
-			type: '(item: T)',
-			description: 'A function that returns a string representation of the item.',
+			name: 'defaultValue',
+			type: 'T',
+			description: 'The initial value of the select.',
 		},
 		{
-			name: 'loop',
-			type: 'boolean',
-			default: 'false',
-			description:
-				'Whether or not the combobox should loop through the list when the end or beginning is reached.',
+			name: 'value',
+			type: 'Writable<T>',
+			description: 'A writable store that can be used to get or update or the select value.',
+			see: SEE.BRING_YOUR_OWN_STORE,
 		},
 		{
-			name: 'scrollAlignment',
-			type: ['"nearest"', '"center"'],
-			default: '"nearest"',
-			description: 'The alignment of the highlighted item when scrolling.',
+			name: 'onValueChange',
+			type: 'ChangeFn<T>',
+			description: 'A callback that is called when the value of the select changes.',
+			see: SEE.CHANGE_FUNCTIONS,
+		},
+		PROPS.DEFAULT_OPEN,
+		PROPS.OPEN,
+		PROPS.ON_OPEN_CHANGE,
+		...OPTION_PROPS,
+	],
+	elements: [
+		{
+			name: 'menu',
+			description: 'The builder store used to create the collapsible menu.',
+		},
+		{
+			name: 'input',
+			description: 'The builder store used to create the collapsible input.',
+		},
+		{
+			name: 'item',
+			description: 'The builder store used to create the menu item.',
+		},
+		{
+			name: 'label',
+			description: 'The builder store used to create the label for the combobox.',
 		},
 	],
-	returnedProps: [
+	states: [
 		{
-			name: 'filteredItems',
-			type: 'Readable<T[]>',
-			description: 'A derived store that returns the filtered list of items.',
-		},
-		{
-			name: 'updateItems',
-			type: 'UpdaterFunction: (items: T[]) => T[]',
-			description: 'A function that updates the list of items.',
+			name: 'open',
+			type: 'Writable<boolean>',
+			description: 'A writable store with the open state of the combobox menu.',
 		},
 		{
 			name: 'inputValue',
-			type: 'Writable<string>',
-			description: 'A writable store that controls the value of the input.',
+			type: 'Readable<string>',
+			description: 'A readable store with the value of the input.',
 		},
+		{
+			name: 'filteredItems',
+			type: 'Readable<T[]>',
+			description: 'A readable store whose value is the filtered list of items.',
+		},
+		{
+			name: 'value',
+			type: 'Writable<T>',
+			description: 'A writable store whose value is the selected item.',
+		},
+	],
+	helpers: [
 		{
 			name: 'isSelected',
 			type: 'Readable<(item: T) => boolean>',
@@ -59,40 +115,15 @@ const builder: APISchema = {
 				'A derived store that returns a function that returns whether or not the item is selected.',
 		},
 		{
-			name: 'selectedItem',
-			type: 'Writable<T>',
-			description: 'A writable store that controls the selected item.',
-		},
-		{
-			name: 'options',
-			type: 'Writable<CreateComboboxProps>',
-			description: 'A writable store with the options used to create the combobox.',
-		},
-		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store that controls whether or not the combobox is open.',
-		},
-		{
-			name: 'menu',
-			description: 'The builder store used to create the collapsible menu.',
-			link: '#menu',
-		},
-		{
-			name: 'input',
-			description: 'The builder store used to create the collapsible input.',
-			link: '#input',
-		},
-		{
-			name: 'item',
-			description: 'The builder store used to create the menu item.',
-			link: '#item',
+			name: 'updateItems',
+			type: 'UpdaterFunction: (items: T[]) => T[]',
+			description: 'A function that updates the list of items.',
 		},
 	],
-};
+	options: OPTION_PROPS,
+});
 
-const menu: APISchema = {
-	title: 'menu',
+const menu = elementSchema('menu', {
 	description: 'The combobox menu element',
 	dataAttributes: [
 		{
@@ -100,10 +131,10 @@ const menu: APISchema = {
 			value: ATTRS.MELT('menu'),
 		},
 	],
-};
+	events: comboboxEvents['menu'],
+});
 
-const input: APISchema = {
-	title: 'input',
+const input = elementSchema('input', {
 	description:
 		'The element that opens, closes, filters the list, and displays the selected value from the list.',
 	dataAttributes: [
@@ -120,21 +151,21 @@ const input: APISchema = {
 			value: ATTRS.MELT('input'),
 		},
 	],
-};
+	events: comboboxEvents['input'],
+});
 
-const item: APISchema = {
-	title: 'item',
+const item = elementSchema('item', {
 	description: 'The menu item element',
 	props: [
 		{
-			name: 'label',
-			type: 'string',
-			description: 'The label of the `item`.',
+			name: 'item',
+			type: 'T',
+			description: 'The item that the option represents.',
 		},
 		{
-			name: 'value',
-			type: 'unknown',
-			description: 'The value of the `item`.',
+			name: 'index',
+			type: 'number',
+			description: 'The array index of the item.',
 		},
 		{
 			name: 'disabled',
@@ -145,38 +176,36 @@ const item: APISchema = {
 	],
 	dataAttributes: [
 		{
-			name: 'data-melt-combobox-item',
-			value: ATTRS.MELT('item'),
+			name: 'data-index',
+			value: 'The index of the item in the list.',
 		},
 		{
 			name: 'data-disabled',
 			value: ATTRS.DISABLED('`item`'),
 		},
 		{
-			name: 'data-index',
-			value: 'The index of the item in the list.',
-		},
-		{
 			name: 'data-highlighted',
 			value: ATTRS.HIGHLIGHTED(),
 		},
+		{
+			name: 'data-melt-combobox-item',
+			value: ATTRS.MELT('item'),
+		},
 	],
-};
+	events: comboboxEvents['item'],
+});
 
-const arrow: APISchema = {
-	title: 'arrow',
-	description: 'An optional arrow element',
+const label = elementSchema('label', {
+	description: 'The label element for the combobox',
 	dataAttributes: [
 		{
-			name: 'data-arrow',
-			value: ATTRS.TRUE,
-		},
-		{
-			name: 'data-melt-combobox-arrow',
-			value: ATTRS.MELT('arrow'),
+			name: 'data-melt-combobox-label',
+			value: ATTRS.MELT('combobox label'),
 		},
 	],
-};
+});
+
+const arrow = getMenuArrowSchema(BUILDER_NAME);
 
 const keyboard: KeyboardSchema = [
 	{
@@ -214,7 +243,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, menu, input, item, arrow];
+const schemas = [builder, menu, input, item, label, arrow];
 
 const features = [
 	'Full keyboard navigation',

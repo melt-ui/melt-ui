@@ -1,20 +1,20 @@
 import {
-	addEventListener,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
 	getDirectionalKeys,
+	getElemDirection,
 	isHTMLElement,
-	isLeftClick,
 	kbd,
 	omit,
 	overridable,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import { getElemDirection } from '$lib/internal/helpers/locale';
-import type { Defaults } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable } from 'svelte/store';
-import type { CreateRadioGroupProps, RadioGroupItemProps } from './types';
+import type { RadioGroupEvents } from './events.js';
+import type { CreateRadioGroupProps, RadioGroupItemProps } from './types.js';
 
 const defaults = {
 	orientation: 'vertical',
@@ -71,32 +71,30 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 				} as const;
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<RadioGroupEvents['item']> => {
 			const unsub = executeCallbacks(
-				addEventListener(node, 'pointerdown', (e) => {
-					if (!isLeftClick(e)) {
-						e.preventDefault();
-						return;
-					}
-
+				addMeltEventListener(node, 'click', () => {
 					const disabled = node.dataset.disabled === 'true';
 					const itemValue = node.dataset.value;
 					if (disabled || itemValue === undefined) return;
 					value.set(itemValue);
 				}),
-				addEventListener(node, 'focus', () => {
+				addMeltEventListener(node, 'focus', () => {
 					const disabled = node.dataset.disabled === 'true';
 					const itemValue = node.dataset.value;
 					if (disabled || itemValue === undefined) return;
 					value.set(itemValue);
 				}),
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const el = e.currentTarget;
 					if (!isHTMLElement(el)) return;
-					const root = el.closest<HTMLElement>(selector());
-					if (!root) return;
 
-					const items = Array.from(root.querySelectorAll<HTMLElement>(selector('item')));
+					const root = el.closest(selector());
+					if (!isHTMLElement(root)) return;
+
+					const items = Array.from(root.querySelectorAll(selector('item'))).filter(
+						(el): el is HTMLElement => isHTMLElement(el)
+					);
 					const currentIndex = items.indexOf(el);
 
 					const dir = getElemDirection(root);
@@ -106,20 +104,16 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 					if (e.key === nextKey) {
 						e.preventDefault();
 						const nextIndex = currentIndex + 1;
-						if (nextIndex >= items.length) {
-							if ($loop) {
-								items[0].focus();
-							}
+						if (nextIndex >= items.length && $loop) {
+							items[0].focus();
 						} else {
 							items[nextIndex].focus();
 						}
 					} else if (e.key === prevKey) {
 						e.preventDefault();
 						const prevIndex = currentIndex - 1;
-						if (prevIndex < 0) {
-							if ($loop) {
-								items[items.length - 1].focus();
-							}
+						if (prevIndex < 0 && $loop) {
+							items[items.length - 1].focus();
 						} else {
 							items[prevIndex].focus();
 						}

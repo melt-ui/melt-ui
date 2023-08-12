@@ -27,19 +27,9 @@ Use the `createTagsInput` builder function.
 
 ```svelte
 <script lang="ts">
-	import { createTagsInput } from '@melt-ui/svelte'
+	import { createTagsInput, melt } from '@melt-ui/svelte'
 	const {
-		root,
-		input,
-		tag,
-		deleteTrigger,
-		edit,
-		options,
-		tags,
-		selected,
-		inputValue,
-		inputInvalid,
-		isSelected
+		/* ... */
 	} = createTagsInput()
 </script>
 ```
@@ -48,27 +38,30 @@ Use the return values to construct a tags-input.
 
 ```svelte
 <script lang="ts">
-	import { createTagsInput } from '@melt-ui/svelte'
+	import { createTagsInput, melt } from '@melt-ui/svelte'
 
 	// This is a subset of return values
-	const { root, input, tags, tag, deleteTrigger, edit } = createTagsInput()
+	const {
+		elements: { root, input, tag, deleteTrigger, edit },
+		states: { tags }
+	} = createTagsInput()
 </script>
 
-<div melt={$root}>
+<div use:melt={$root}>
 	{#each $tags as t}
-		<div melt={$tag(t)}>
+		<div use:melt={$tag(t)}>
 			<span>{t.value}</span>
-			<button melt={$deleteTrigger(t)}>x</button>
+			<button use:melt={$deleteTrigger(t)}>x</button>
 		</div>
-		<div melt={$edit(t)}>{t.value}</div>
+		<div use:melt={$edit(t)}>{t.value}</div>
 	{/each}
-	<input melt={$input} type="text" />
+	<input use:melt={$input} type="text" />
 </div>
 ```
 
 ### Adding a tag
 
-An asynchronous `add` function may be passed into the builder. It is called prior to adding the tag
+An `add` function may be passed into the builder. It is called and awaited prior to adding the tag
 to the `$tags` store.
 
 It provides you the ability to validate the input value, set a custom id, for example from a backend
@@ -77,7 +70,7 @@ or 3rd-party API, or update the value to always be uppercase, lowercase, etc.
 The function definition is:
 
 ```ts
-fn: (tag: string) => Promise<Tag | undefined>
+fn: (tag: string) => Tag | string | Promise<Tag | string>
 ```
 
 whereby `tag` is the input value.
@@ -98,7 +91,7 @@ uppercase.
 <script lang="ts">
 	import { createTagsInput } from '@melt-ui/svelte'
 
-	const { root, input, tag, deleteTrigger } = createTagsInput({
+	const tagsInput = createTagsInput({
 		add: async (v: string) => {
 			const response = await fetch('https://www.uuidtools.com/api/generate/v1')
 
@@ -117,7 +110,7 @@ uppercase.
 
 ### Updating a tag
 
-An asynchronous update function may be passed into the builder. It is called prior to updating a tag
+An update function may be passed into the builder. It is called and awaited prior to updating a tag
 in $tags store, following an edit.
 
 It provides the ability do something before a tag is updated, such as updating the value in a
@@ -126,7 +119,7 @@ backend database, setting a new id, or simply manipulating the value to be added
 The function definition is:
 
 ```ts
-fn: (tag: Tag) => Promise<Tag>.
+fn: (tag: Tag) => Tag | Promise<Tag>.
 ```
 
 <Callout type="info">
@@ -143,7 +136,7 @@ The following example uses the existing id and sets the value to uppercase
 <script lang="ts">
 	import { createTagsInput, type Tag } from '@melt-ui/svelte'
 
-	const { root, input, tag, deleteTrigger, edit } = createTagsInput({
+	const tagsInput = createTagsInput({
 		update: async (tag: Tag) => {
 			return { id: tag.id, value: tag.value.toUpperCase() }
 		}
@@ -153,8 +146,8 @@ The following example uses the existing id and sets the value to uppercase
 
 ### Removing a tag
 
-An asynchronous remove function may be passed into the builder. It is called prior to removing the
-tag from the $tags store.
+An asynchronous remove function may be passed into the builder. It is called and awaited prior to
+removing the tag from the $tags store.
 
 It provides the ability do something before the tag is removed from $tags store, such as deleting
 the tag from a backend database.
@@ -162,7 +155,7 @@ the tag from a backend database.
 The function definition is:
 
 ```ts
-fn: (tag: Tag) => Promise<boolean>
+fn: (tag: Tag) => boolean | Promise<boolean>
 ```
 
 whereby tag is the tag to be removed from the $tags store.
@@ -179,7 +172,7 @@ The following example disallows a tag with the value `one` to be deleted.
 <script lang="ts">
 	import { createTagsInput, type Tag } from '@melt-ui/svelte'
 
-	const { root, input, tag, deleteTrigger } = createTagsInput({
+	const tagsInput = createTagsInput({
 		tags: ['one', 'two'],
 		remove: async (t: Tag) => {
 			if (t.value === 'one') return false

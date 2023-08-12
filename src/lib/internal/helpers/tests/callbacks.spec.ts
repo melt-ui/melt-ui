@@ -1,5 +1,5 @@
 import { describe, it, vi } from 'vitest';
-import { executeCallbacks } from '../callbacks';
+import { executeCallbacks } from '../callbacks.js';
 
 describe('executeCallbacks', () => {
 	it('groups callbacks and executes them together', () => {

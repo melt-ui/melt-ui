@@ -1,8 +1,10 @@
 import {
 	addEventListener,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	effect,
+	executeCallbacks,
 	generateId,
 	getElementByMeltId,
 	isBrowser,
@@ -12,9 +14,12 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
+} from '$lib/internal/helpers/index.js';
+import { add, sub, div, mul } from './helpers.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable } from 'svelte/store';
-import type { CreateSliderProps } from './types';
+import type { SliderEvents } from './events.js';
+import type { CreateSliderProps } from './types.js';
 
 const defaults = {
 	defaultValue: [],
@@ -30,7 +35,7 @@ const { name } = createElHelpers('slider');
 export const createSlider = (props?: CreateSliderProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSliderProps;
 
-	const options = toWritableStores(omit(withDefaults, 'value'));
+	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
 	const { min, max, step, orientation, disabled } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
@@ -58,9 +63,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 	const position = derived([min, max], ([$min, $max]) => {
 		return (val: number) => {
-			const pos = ((val - $min) / ($max - $min)) * 100;
-
-			return Math.abs(pos);
+			const pos = mul(div(sub(val, $min), sub($max, $min)), 100);
+			return pos;
 		};
 	});
 
@@ -88,18 +92,28 @@ export const createSlider = (props?: CreateSliderProps) => {
 		value.update((prev) => {
 			if (!prev) return [val];
 
-			const isFirst = index === 0;
-			const isLast = index === prev.length - 1;
-
-			if (!isLast && val > prev[index + 1]) {
-				prev[index] = prev[index + 1];
-			} else if (!isFirst && val < prev[index - 1]) {
-				prev[index] = prev[index - 1];
-			} else {
-				prev[index] = val;
+			const direction = prev[index] > val ? -1 : +1;
+			function swap() {
+				prev[index] = prev[index + direction];
+				prev[index + direction] = val;
+				const thumbs = getAllThumbs();
+				if (thumbs) {
+					thumbs[index + direction].focus();
+					activeThumb.set({ thumb: thumbs[index + direction], index: index + direction });
+				}
 			}
+			if (direction === -1 && val < prev[index - 1]) {
+				swap();
+				return prev;
+			} else if (direction === 1 && val > prev[index + 1]) {
+				swap();
+				return prev;
+			}
+			const $min = get(min);
+			const $max = get(max);
+			prev[index] = Math.min(Math.max(val, $min), $max);
 
-			return prev.map(Math.abs);
+			return prev;
 		});
 	};
 
@@ -107,10 +121,9 @@ export const createSlider = (props?: CreateSliderProps) => {
 		const root = getElementByMeltId(ids.root);
 		if (!root) return null;
 
-		const thumbs = Array.from(root.querySelectorAll('[data-melt-part="thumb"]')).filter(
-			Boolean
-		) as Array<HTMLElement>;
-		return thumbs;
+		return Array.from(root.querySelectorAll('[data-melt-part="thumb"]')).filter(
+			(thumb): thumb is HTMLElement => isHTMLElement(thumb)
+		);
 	};
 
 	const thumb = builder(name('thumb'), {
@@ -145,15 +158,14 @@ export const createSlider = (props?: CreateSliderProps) => {
 				} as const;
 			};
 		},
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'keydown', (event) => {
+		action: (node: HTMLElement): MeltActionReturn<SliderEvents['thumb']> => {
+			const unsub = addMeltEventListener(node, 'keydown', (event) => {
 				const $min = get(min);
 				const $max = get(max);
 				if (get(disabled)) return;
 
 				const target = event.currentTarget;
 				if (!isHTMLElement(target)) return;
-
 				const thumbs = getAllThumbs();
 				if (!thumbs?.length) return;
 
@@ -194,7 +206,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if (event.metaKey) {
 							updatePosition($min, index);
 						} else if ($value[index] > $min) {
-							const newValue = $value[index] - $step;
+							const newValue = sub($value[index], $step);
 							updatePosition(newValue, index);
 						}
 						break;
@@ -205,7 +217,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if (event.metaKey) {
 							updatePosition($max, index);
 						} else if ($value[index] < $max) {
-							const newValue = $value[index] + $step;
+							const newValue = add($value[index], $step);
 							updatePosition(newValue, index);
 						}
 						break;
@@ -214,10 +226,10 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if (event.metaKey) {
 							updatePosition($max, index);
 						} else if ($value[index] > $min && $orientation === 'vertical') {
-							const newValue = $value[index] - $step;
+							const newValue = add($value[index], $step);
 							updatePosition(newValue, index);
 						} else if ($value[index] < $max) {
-							const newValue = $value[index] + $step;
+							const newValue = add($value[index], $step);
 							updatePosition(newValue, index);
 						}
 						break;
@@ -226,10 +238,10 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if (event.metaKey) {
 							updatePosition($min, index);
 						} else if ($value[index] < $max && $orientation === 'vertical') {
-							const newValue = $value[index] + $step;
+							const newValue = sub($value[index], $step);
 							updatePosition(newValue, index);
 						} else if ($value[index] > $min) {
-							const newValue = $value[index] - $step;
+							const newValue = sub($value[index], $step);
 							updatePosition(newValue, index);
 						}
 						break;
@@ -254,20 +266,25 @@ export const createSlider = (props?: CreateSliderProps) => {
 				leftOrBottom: number,
 				rightOrTop: number
 			) => {
-				const percent = (clientXY - leftOrBottom) / (rightOrTop - leftOrBottom);
-				const val = Math.round(percent * ($max - $min) + $min);
+				const percent = div(sub(clientXY, leftOrBottom), sub(rightOrTop, leftOrBottom));
+				const val = add(mul(percent, sub($max, $min)), $min);
 
-				if (val < $min || val > $max) return;
-				const step = $step;
-				const newValue = Math.round(val / step) * step;
+				if (val < $min) {
+					updatePosition($min, activeThumbIdx);
+				} else if (val > $max) {
+					updatePosition($max, activeThumbIdx);
+				} else {
+					const step = $step;
+					const newValue = mul(Math.round(div(val, step)), step);
 
-				updatePosition(newValue, activeThumbIdx);
+					updatePosition(newValue, activeThumbIdx);
+				}
 			};
 
 			const getClosestThumb = (e: PointerEvent) => {
 				const thumbs = getAllThumbs();
 				if (!thumbs) return;
-				thumbs.forEach((thumb) => thumb?.blur());
+				thumbs.forEach((thumb) => thumb.blur());
 
 				const distances = thumbs.map((thumb) => {
 					if ($orientation === 'horizontal') {
@@ -293,9 +310,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 				if (!closestThumb || !sliderEl) return;
 
 				const target = e.target;
-				if (!isHTMLElement(target)) return;
-
-				if (!sliderEl.contains(target)) return;
+				if (!isHTMLElement(target) || !sliderEl.contains(target)) return;
 				e.preventDefault();
 
 				activeThumb.set(closestThumb);
@@ -329,20 +344,19 @@ export const createSlider = (props?: CreateSliderProps) => {
 					applyPosition(e.clientX, closestThumb.index, left, right);
 				} else {
 					const { top, bottom } = sliderEl.getBoundingClientRect();
-					applyPosition(e.clientY, closestThumb.index, top, bottom);
+					applyPosition(e.clientY, closestThumb.index, bottom, top);
 				}
 			};
 
-			document.addEventListener('pointerdown', pointerDown);
-			document.addEventListener('pointerup', pointerUp);
-			document.addEventListener('pointerleave', pointerUp);
-			document.addEventListener('pointermove', pointerMove);
+			const unsub = executeCallbacks(
+				addEventListener(document, 'pointerdown', pointerDown),
+				addEventListener(document, 'pointerup', pointerUp),
+				addEventListener(document, 'pointerleave', pointerUp),
+				addEventListener(document, 'pointermove', pointerMove)
+			);
 
 			return () => {
-				document.removeEventListener('pointerdown', pointerDown);
-				document.removeEventListener('pointerup', pointerUp);
-				document.removeEventListener('pointerleave', pointerUp);
-				document.removeEventListener('pointermove', pointerMove);
+				unsub();
 			};
 		}
 	);

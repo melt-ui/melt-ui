@@ -51,29 +51,6 @@ To disable the checkbox, set the `disabled` argument as `true`.
 </script>
 ```
 
-### Controlled access
-
-To programatically control the checkbox, you can directly set the `checked` store. You can also
-update the `options` store with new arguments.
-
-```svelte {12,14}
-<script lang="ts">
-	import { createCheckbox } from '@melt-ui/svelte'
-
-	export let checked: boolean | 'indeterminate' = true
-	export let disabled = false
-
-	const { checked: checkedStore, options } = createCheckbox({
-		disabled,
-		checked
-	})
-
-	$: checkedStore.set(checked)
-	checkedStore.subscribe((v) => (checked = v))
-	$: options.update((o) => ({ ...o, disabled }))
-</script>
-```
-
 ## API Reference
 
 <APIReference {schemas} />

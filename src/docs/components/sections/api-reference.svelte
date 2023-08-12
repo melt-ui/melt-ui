@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { APISchema } from '$docs/types';
-	import { APITable, APIWrapper } from '$docs/components';
+	import type { APISchema } from '$docs/types.js';
+	import { APITable, APIWrapper } from '$docs/components/index.js';
 
 	export let schemas: APISchema[];
 </script>

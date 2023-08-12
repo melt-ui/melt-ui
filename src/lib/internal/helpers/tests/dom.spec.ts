@@ -1,6 +1,6 @@
 import { render } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
-import { focus, getTabbableNodes } from '../dom';
+import { focus, getTabbableNodes } from '../dom.js';
 import Dom from './DomTest.svelte';
 
 describe('focus', () => {

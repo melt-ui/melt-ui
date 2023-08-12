@@ -1,6 +1,8 @@
-import type { BuilderReturn, Orientation } from '$lib/internal/types';
-import type { createToolbar } from './create';
-
+import type { BuilderReturn, Orientation } from '$lib/internal/types.js';
+import type { Writable } from 'svelte/store';
+import type { createToolbar } from './create.js';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
+export type { ToolbarComponentEvents } from './events.js';
 export type ToolbarGroupType = 'single' | 'multiple';
 
 export type CreateToolbarProps = {
@@ -9,7 +11,9 @@ export type CreateToolbarProps = {
 };
 
 export type CreateToolbarGroupProps<T extends ToolbarGroupType = 'single'> = {
-	value?: T extends 'single' ? string : string[];
+	defaultValue?: T extends 'single' ? string : string[];
+	value?: Writable<string | string[] | undefined>;
+	onValueChange?: ChangeFn<string | string[] | undefined>;
 	type?: T;
 	disabled?: boolean;
 };

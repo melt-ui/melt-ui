@@ -1,5 +1,5 @@
-import { isBrowser, isHTMLElement } from './is';
-import { sleep } from './sleep';
+import { isBrowser, isHTMLElement } from './is.js';
+import { sleep } from './sleep.js';
 
 /**
  * Manage roving focus between elements. Sets the current active element to
@@ -23,7 +23,7 @@ export function handleRovingFocus(nextElement: HTMLElement) {
 
 function getFocusableElements() {
 	return Array.from(
-		document.querySelectorAll<HTMLElement>(
+		document.querySelectorAll(
 			'a[href]:not([tabindex="-1"]), button:not([disabled]):not([tabindex="-1"]), input:not([disabled]):not([tabindex="-1"]), select:not([disabled]):not([tabindex="-1"]), textarea:not([disabled]):not([tabindex="-1"]), [tabindex]:not([tabindex="-1"])'
 		)
 	);
@@ -34,12 +34,20 @@ export function getNextFocusable(currentElement: HTMLElement): HTMLElement | nul
 
 	const currentIndex = focusableElements.indexOf(currentElement);
 	const nextIndex = currentIndex + 1;
-	return nextIndex < focusableElements.length ? focusableElements[nextIndex] : null;
+	const nextElement = focusableElements[nextIndex];
+	if (nextIndex < focusableElements.length && isHTMLElement(nextElement)) {
+		return nextElement;
+	}
+	return null;
 }
 
 export function getPreviousFocusable(currentElement: HTMLElement): HTMLElement | null {
 	const focusableElements = getFocusableElements();
 	const currentIndex = focusableElements.indexOf(currentElement);
 	const previousIndex = currentIndex - 1;
-	return previousIndex >= 0 ? focusableElements[previousIndex] : null;
+	const prevElement = focusableElements[previousIndex];
+	if (previousIndex >= 0 && isHTMLElement(prevElement)) {
+		return prevElement;
+	}
+	return null;
 }

@@ -1,19 +1,23 @@
 <script lang="ts">
-	import type { APISchema } from '$docs/types';
-	import { transformAPIString } from '$docs/utils';
-	import { APITableHeading, InfoPopover } from '$docs/components';
+	import type { APISchema } from '$docs/types.js';
+	import { transformAPIString } from '$docs/utils/index.js';
+	import { APITableHeading, InfoPopover } from '$docs/components/index.js';
 
 	export let data: APISchema['returnedProps'];
+	export let title = 'Returns';
+	export let tableHeading = 'Returned Prop';
 </script>
 
 {#if data}
 	<APITableHeading>
-		Returns
+		{title}
 		<svelte:fragment slot="info">
-			Builder functions return an object which enables the creation of the essential elements for a
-			component. Along with the elements, this object may also include additional properties such as
-			stores to manage the component's state or helper functions that simplify interaction with the
-			component.
+			<slot name="info">
+				Builder functions return an object which enables the creation of the essential elements for
+				a component. Along with the elements, this object may also include additional properties
+				such as stores to manage the component's state or helper functions that simplify interaction
+				with the component.
+			</slot>
 		</svelte:fragment>
 	</APITableHeading>
 
@@ -24,7 +28,7 @@
 					<tbody class="divide-y divide-neutral-700">
 						<tr class="w-1/4 text-neutral-300">
 							<td class="w-[25%] whitespace-nowrap py-2 pl-4 text-sm font-medium sm:pl-0">
-								Returned Prop
+								{tableHeading}
 							</td>
 							<td class="w-[75%] whitespace-nowrap py-2 text-sm font-medium">Description</td>
 						</tr>

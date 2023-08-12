@@ -1,3 +1,2 @@
-export * from './builders';
-export { melt } from './internal/actions';
-export type { StoreValue, StoreValueObj } from './internal/types';
+export * from './builders/index.js';
+export { melt } from './internal/actions/index.js';

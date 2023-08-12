@@ -1,8 +1,9 @@
 import {
-	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
+	isHTMLElement,
+	isHTMLInputElement,
 	last,
 	next,
 	omit,
@@ -10,20 +11,26 @@ import {
 	prev,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { Defaults } from '@melt-ui/svelte/internal/types';
+	addMeltEventListener,
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
-import { derived, get, writable } from 'svelte/store';
-import type { CreatePinInputProps } from './types';
+import { derived, get, writable, readonly } from 'svelte/store';
+import type { CreatePinInputProps } from './types.js';
+import type { PinInputEvents } from './events.js';
 
 const { name, selector } = createElHelpers<'input' | 'hidden-input'>('pin-input');
 
-const getInputs = (node: HTMLElement) => {
+const getInputs = (node: HTMLInputElement) => {
 	const rootEl = node.closest(selector());
-	if (!rootEl) return { inputs: null, el: node as HTMLInputElement, elIndex: -1 };
-	const inputs = Array.from(rootEl.querySelectorAll(selector('input'))) as HTMLInputElement[];
+	if (!isHTMLElement(rootEl)) {
+		return { inputs: null, el: node, elIndex: -1 };
+	}
+	const inputs = Array.from(rootEl.querySelectorAll(selector('input'))).filter(
+		(input): input is HTMLInputElement => isHTMLInputElement(input)
+	);
 	return {
-		elIndex: inputs.indexOf(node as HTMLInputElement),
+		elIndex: inputs.indexOf(node),
 		inputs,
 	};
 };
@@ -65,7 +72,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 				type: $type,
 			};
 		},
-		action: (node: HTMLInputElement) => {
+		action: (node: HTMLInputElement): MeltActionReturn<PinInputEvents['input']> => {
 			const { elIndex } = getInputs(node);
 			value.update((v) => {
 				v[elIndex] = node.value;
@@ -73,18 +80,21 @@ export function createPinInput(props?: CreatePinInputProps) {
 			});
 
 			const unsub = executeCallbacks(
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const { inputs, elIndex } = getInputs(node);
 					if (!inputs) return;
 
 					if (e.key === 'Backspace') {
-						if (node.value.length === 0) {
-							e.preventDefault();
-							const prevEl = prev(inputs, elIndex, false);
-							prevEl.focus();
-						} else {
+						e.preventDefault();
+						if (node.value) {
 							node.value = '';
 							tick().then(() => (node.placeholder = ''));
+							value.set(inputs.map((input) => input.value.slice(-1) ?? undefined));
+						} else {
+							const prevEl = prev(inputs, elIndex, false);
+							prevEl.focus();
+							prevEl.value = '';
+							tick().then(() => (prevEl.placeholder = ''));
 							value.set(inputs.map((input) => input.value.slice(-1) ?? undefined));
 						}
 					}
@@ -117,7 +127,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 						last(inputs).focus();
 					}
 				}),
-				addEventListener(node, 'input', (e) => {
+				addMeltEventListener(node, 'input', (e) => {
 					const { inputs, elIndex } = getInputs(node);
 					if (!inputs) return;
 
@@ -147,7 +157,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 
 					value.set(inputs.map((input) => input.value.slice(-1) ?? undefined));
 				}),
-				addEventListener(node, 'paste', (e) => {
+				addMeltEventListener(node, 'paste', (e) => {
 					e.preventDefault();
 					const { inputs, elIndex } = getInputs(node);
 					if (!inputs) return;
@@ -167,19 +177,19 @@ export function createPinInput(props?: CreatePinInputProps) {
 					inputs[lastIndex]?.focus();
 					value.set(inputs.map((input) => input.value.slice(-1) ?? undefined));
 				}),
-				addEventListener(node, 'change', () => {
+				addMeltEventListener(node, 'change', () => {
 					const { inputs } = getInputs(node);
 					if (!inputs) return;
 					value.set(inputs.map((input) => input.value.slice(-1) ?? undefined));
 				}),
-				addEventListener(node, 'focus', () => {
+				addMeltEventListener(node, 'focus', () => {
 					node.setSelectionRange(1, 1);
 					node.placeholder = '';
 					tick().then(() => {
 						node.placeholder = '';
 					});
 				}),
-				addEventListener(node, 'blur', () => {
+				addMeltEventListener(node, 'blur', () => {
 					node.placeholder = get(placeholder);
 				})
 			);
@@ -219,7 +229,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 		},
 		states: {
 			value,
-			valueStr,
+			valueStr: readonly(valueStr),
 		},
 		helpers: {
 			clear,

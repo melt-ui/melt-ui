@@ -1,27 +1,30 @@
 import {
-	addEventListener,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	omit,
 	overridable,
+	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { writable } from 'svelte/store';
-import type { CreateCollapsibleProps } from './types';
+} from '$lib/internal/helpers/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
+import { derived, writable } from 'svelte/store';
+import type { CollapsibleEvents } from './events.js';
+import type { CreateCollapsibleProps } from './types.js';
 
 const defaults = {
 	defaultOpen: false,
 	disabled: false,
-} satisfies Defaults<CreateCollapsibleProps>;
+	forceVisible: false,
+} satisfies CreateCollapsibleProps;
 
 const { name } = createElHelpers('collapsible');
 
 export function createCollapsible(props?: CreateCollapsibleProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateCollapsibleProps;
 
-	const options = toWritableStores(omit(withDefaults, 'open'));
-	const { disabled } = options;
+	const options = toWritableStores(omit(withDefaults, 'open', 'defaultOpen', 'onOpenChange'));
+	const { disabled, forceVisible } = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
@@ -42,8 +45,8 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 				'data-disabled': $disabled ? '' : undefined,
 				disabled: $disabled,
 			} as const),
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', () => {
+		action: (node: HTMLElement): MeltActionReturn<CollapsibleEvents['trigger']> => {
+			const unsub = addMeltEventListener(node, 'click', () => {
 				const disabled = node.dataset.disabled !== undefined;
 				if (disabled) return;
 				open.update(($open) => !$open);
@@ -55,12 +58,20 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 		},
 	});
 
+	const isVisible = derived(
+		[open, forceVisible],
+		([$open, $forceVisible]) => $open || $forceVisible
+	);
+
 	const content = builder(name('content'), {
-		stores: [open, disabled],
-		returned: ([$open, $disabled]) => ({
-			'data-state': $open ? 'open' : 'closed',
+		stores: [isVisible, disabled],
+		returned: ([$isVisible, $disabled]) => ({
+			'data-state': $isVisible ? 'open' : 'closed',
 			'data-disabled': $disabled ? '' : undefined,
-			hidden: $open ? undefined : true,
+			hidden: $isVisible ? undefined : true,
+			style: styleToString({
+				display: $isVisible ? undefined : 'none',
+			}),
 		}),
 	});
 
