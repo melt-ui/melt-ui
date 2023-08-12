@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Logo from '$docs/components/icons/logo.svelte';
-	import { createNavigationMenu } from '@melt-ui/svelte';
+	import { createNavigationMenu } from '$lib/builders';
 	import { ChevronDown } from 'lucide-svelte';
 	import { quadInOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
@@ -224,7 +224,7 @@
 		<div
 			{...$viewport}
 			use:viewport
-			class="origin-top-center relative mt-1.5 h-[var(--melt-nav-menu-viewport-height)] w-full overflow-hidden rounded-md border bg-white text-magnum-700 shadow-lg transition-height-width duration-200 delay-0 ease-in-out md:w-[var(--melt-nav-menu-viewport-width)]"
+			class="origin-top-center relative mt-1.5 h-[var(--melt-nav-menu-viewport-height)] w-full overflow-hidden rounded-md border bg-white text-magnum-700 shadow-lg transition-height-width delay-0 duration-200 ease-in-out md:w-[var(--melt-nav-menu-viewport-width)]"
 		/>
 	</div>
 </nav>
