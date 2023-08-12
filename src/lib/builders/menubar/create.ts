@@ -33,7 +33,7 @@ import {
 	removeScroll,
 	sleep,
 } from '$lib/internal/helpers/index.js';
-import { onMount, tick } from 'svelte';
+import { onDestroy, onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { CreateMenubarMenuProps, CreateMenubarProps } from './types.js';
@@ -334,12 +334,6 @@ export function createMenubar(props?: CreateMenubarProps) {
 			const triggerEl = document.getElementById(m.rootIds.trigger);
 			if (!triggerEl) return;
 			if (!$rootOpen && get(activeMenu) === m.rootIds.menu) {
-				window.clearTimeout(get(closeTimer));
-				closeTimer.set(
-					window.setTimeout(() => {
-						activeMenu.set('');
-					}, 5)
-				);
 				removeHighlight(triggerEl);
 				return;
 			}
@@ -356,14 +350,6 @@ export function createMenubar(props?: CreateMenubarProps) {
 					prevFocusable.set(getPreviousFocusable(triggerEl));
 					rootActiveTrigger.set(triggerEl);
 					activeMenu.set(m.rootIds.menu);
-				} else {
-					window.clearTimeout(get(closeTimer));
-					closeTimer.set(
-						window.setTimeout(() => {
-							rootActiveTrigger.set(null);
-							activeMenu.set('');
-						}, 5)
-					);
 				}
 
 				return isOpen;
@@ -405,7 +391,6 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		const menubarEl = document.getElementById(rootIds.menubar);
 		if (!menubarEl) return;
-
 		const unsubEvents = executeCallbacks(
 			addMeltEventListener(menubarEl, 'keydown', (e) => {
 				const target = e.target;
@@ -425,11 +410,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 			addEventListener(document, 'keydown', (e) => {
 				if (get(closeOnEscape) && e.key === kbd.ESCAPE) {
 					window.clearTimeout(get(closeTimer));
-					closeTimer.set(
-						window.setTimeout(() => {
-							activeMenu.set('');
-						}, 5)
-					);
+					activeMenu.set('');
 				}
 			})
 		);
@@ -439,16 +420,27 @@ export function createMenubar(props?: CreateMenubarProps) {
 		};
 	});
 
+	const unsubs: Array<() => void> = [];
+
 	effect([activeMenu], ([$activeMenu]) => {
 		if (!isBrowser) return;
 
-		const unsubs: Array<() => void> = [];
+		if ($activeMenu && !scrollRemoved) {
+			unsubs.push(removeScroll());
+			scrollRemoved = true;
+		}
 
 		// do something with remove scroll
 
 		return () => {
-			unsubs.forEach((unsub) => unsub());
+			if (!get(activeMenu)) {
+				unsubs.forEach((unsub) => unsub());
+			}
 		};
+	});
+
+	onDestroy(() => {
+		unsubs.forEach((unsub) => unsub());
 	});
 
 	/**
