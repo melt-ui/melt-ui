@@ -56,6 +56,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 	let scopedMenus: HTMLElement[] = [];
 	const nextFocusable = writable<HTMLElement | null>(null);
 	const prevFocusable = writable<HTMLElement | null>(null);
+	const lastFocusedMenuTrigger = writable<HTMLElement | null>(null);
 	const closeTimer = writable(0);
 	let scrollRemoved = false;
 
@@ -252,6 +253,17 @@ export function createMenubar(props?: CreateMenubarProps) {
 					menubarEl.querySelectorAll('[data-melt-menubar-trigger]')
 				);
 				if (!menubarTriggers.length) return {};
+
+				const unsubEffect = effect([lastFocusedMenuTrigger], ([$lastFocusedMenuTrigger]) => {
+					if (!$lastFocusedMenuTrigger && menubarTriggers[0] === node) {
+						node.tabIndex = 0;
+					} else if ($lastFocusedMenuTrigger === node) {
+						node.tabIndex = 0;
+					} else {
+						node.tabIndex = -1;
+					}
+				});
+
 				if (menubarTriggers[0] === node) {
 					node.tabIndex = 0;
 				} else {
@@ -302,7 +314,10 @@ export function createMenubar(props?: CreateMenubarProps) {
 				);
 
 				return {
-					destroy: unsub,
+					destroy() {
+						unsub();
+						unsubEffect();
+					},
 				};
 			},
 		});
@@ -344,6 +359,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 				return;
 			}
 			if ($rootOpen) {
+				lastFocusedMenuTrigger.set(triggerEl);
 				addHighlight(triggerEl);
 			}
 		});
