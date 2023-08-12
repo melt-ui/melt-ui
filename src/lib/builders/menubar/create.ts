@@ -350,6 +350,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 					prevFocusable.set(getPreviousFocusable(triggerEl));
 					rootActiveTrigger.set(triggerEl);
 					activeMenu.set(m.rootIds.menu);
+				} else {
+					rootActiveTrigger.set(null);
 				}
 
 				return isOpen;
@@ -435,6 +437,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		return () => {
 			if (!get(activeMenu)) {
 				unsubs.forEach((unsub) => unsub());
+				scrollRemoved = false;
 			}
 		};
 	});
