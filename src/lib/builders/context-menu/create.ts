@@ -4,6 +4,7 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	derivedVisible,
 	derivedWithUnsubscribe,
 	effect,
 	executeCallbacks,
@@ -57,7 +58,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;
 
 	const rootOptions = toWritableStores(withDefaults);
-	const { positioning, closeOnOutsideClick, portal } = rootOptions;
+	const { positioning, closeOnOutsideClick, portal, forceVisible, closeOnEscape } = rootOptions;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const rootOpen = overridable(openWritable, withDefaults?.onOpenChange);
@@ -119,20 +120,26 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		}
 	}
 
+	const isVisible = derivedVisible({
+		open: rootOpen,
+		forceVisible,
+		activeTrigger: rootActiveTrigger,
+	});
+
 	const menu = builder(name(), {
-		stores: [rootOpen, rootActiveTrigger],
-		returned: ([$rootOpen, $rootActiveTrigger]) => {
+		stores: [isVisible, portal],
+		returned: ([$isVisible, $portal]) => {
 			// We only want to render the menu when it's open and has an active trigger.
-			const ready = $rootOpen && $rootActiveTrigger;
 			return {
 				role: 'menu',
-				hidden: ready ? undefined : true,
+				hidden: $isVisible ? undefined : true,
 				style: styleToString({
-					display: ready ? undefined : 'none',
+					display: $isVisible ? undefined : 'none',
 				}),
 				id: rootIds.menu,
 				'aria-labelledby': rootIds.trigger,
-				'data-state': ready ? 'open' : 'closed',
+				'data-state': $isVisible ? 'open' : 'closed',
+				'data-portal': $portal ? '' : undefined,
 				tabindex: -1,
 			} as const;
 		},
@@ -140,10 +147,17 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[rootOpen, rootActiveTrigger, positioning, closeOnOutsideClick, portal],
-				([$rootOpen, $rootActiveTrigger, $positioning, $closeOnOutsideClick, $portal]) => {
+				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal, closeOnEscape],
+				([
+					$isVisible,
+					$rootActiveTrigger,
+					$positioning,
+					$closeOnOutsideClick,
+					$portal,
+					$closeOnEscape,
+				]) => {
 					unsubPopper();
-					if (!($rootOpen && $rootActiveTrigger)) return;
+					if (!$isVisible || !$rootActiveTrigger) return;
 					tick().then(() => {
 						setMeltMenuAttribute(node, selector);
 						const $virtual = get(virtual);
@@ -158,6 +172,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 									  }
 									: null,
 								portal: getPortalDestination(node, $portal),
+								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
 						});
 						if (!popper || !popper.destroy) return;
@@ -188,7 +203,6 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					 */
 					if (e.key === kbd.TAB) {
 						e.preventDefault();
-						rootActiveTrigger.set(null);
 						rootOpen.set(false);
 						handleTabNavigation(e, nextFocusable, prevFocusable);
 						return;

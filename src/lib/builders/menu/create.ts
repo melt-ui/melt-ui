@@ -332,7 +332,10 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						handleRovingFocus(itemEl);
 						return;
 					}
-					rootOpen.set(false);
+					// Allows forms to submit before the menu is removed from the DOM
+					sleep(1).then(() => {
+						rootOpen.set(false);
+					});
 				}),
 				addMeltEventListener(node, 'keydown', (e) => {
 					onItemKeyDown(e);
