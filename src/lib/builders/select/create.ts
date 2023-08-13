@@ -483,7 +483,9 @@ export function createSelect<
 				};
 				optionsList.push(optProps);
 
-				const isSelected = Array.isArray($value) ? $value.includes(props?.value) : $value === props?.value;
+				const isSelected = Array.isArray($value)
+					? $value.includes(props?.value)
+					: $value === props?.value;
 
 				return {
 					role: 'option',

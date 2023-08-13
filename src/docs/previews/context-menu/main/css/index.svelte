@@ -206,6 +206,11 @@
 		background-color: rgb(var(--color-magnum-200) / 1);
 	}
 
+	.icon {
+		height: 16px;
+		width: 16px;
+	}
+
 	.rightSlot {
 		margin-left: auto;
 		padding-left: 1.25rem;

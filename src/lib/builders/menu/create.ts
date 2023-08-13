@@ -1083,49 +1083,52 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		}
 	});
 
-	effect([rootOpen, rootActiveTrigger], ([$rootOpen, $rootActiveTrigger]) => {
-		if (!isBrowser) return;
+	effect(
+		[rootOpen, rootActiveTrigger, preventScroll],
+		([$rootOpen, $rootActiveTrigger, $preventScroll]) => {
+			if (!isBrowser) return;
 
-		const unsubs: Array<() => void> = [];
+			const unsubs: Array<() => void> = [];
 
-		if ($rootOpen && get(preventScroll)) {
-			unsubs.push(removeScroll());
-		}
-
-		if (!$rootOpen && $rootActiveTrigger) {
-			handleRovingFocus($rootActiveTrigger);
-		}
-
-		sleep(1).then(() => {
-			const menuEl = document.getElementById(rootIds.menu);
-			if (menuEl && $rootOpen && get(isUsingKeyboard)) {
-				if (opts.disableFocusFirstItem) {
-					handleRovingFocus(menuEl);
-					return;
-				}
-				// Get menu items belonging to the root menu
-				const menuItems = getMenuItems(menuEl);
-				if (!menuItems.length) return;
-
-				// Focus on first menu item
-				handleRovingFocus(menuItems[0]);
-			} else if ($rootActiveTrigger) {
-				// Focus on active trigger trigger
-				handleRovingFocus($rootActiveTrigger);
-			} else {
-				if (opts.disableTriggerRefocus) {
-					return;
-				}
-				const triggerEl = document.getElementById(rootIds.trigger);
-				if (!triggerEl) return;
-				handleRovingFocus(triggerEl);
+			if (opts.removeScroll && $rootOpen && $preventScroll) {
+				unsubs.push(removeScroll());
 			}
-		});
 
-		return () => {
-			unsubs.forEach((unsub) => unsub());
-		};
-	});
+			if (!$rootOpen && $rootActiveTrigger) {
+				handleRovingFocus($rootActiveTrigger);
+			}
+
+			sleep(1).then(() => {
+				const menuEl = document.getElementById(rootIds.menu);
+				if (menuEl && $rootOpen && get(isUsingKeyboard)) {
+					if (opts.disableFocusFirstItem) {
+						handleRovingFocus(menuEl);
+						return;
+					}
+					// Get menu items belonging to the root menu
+					const menuItems = getMenuItems(menuEl);
+					if (!menuItems.length) return;
+
+					// Focus on first menu item
+					handleRovingFocus(menuItems[0]);
+				} else if ($rootActiveTrigger) {
+					// Focus on active trigger trigger
+					handleRovingFocus($rootActiveTrigger);
+				} else {
+					if (opts.disableTriggerRefocus) {
+						return;
+					}
+					const triggerEl = document.getElementById(rootIds.trigger);
+					if (!triggerEl) return;
+					handleRovingFocus(triggerEl);
+				}
+			});
+
+			return () => {
+				unsubs.forEach((unsub) => unsub());
+			};
+		}
+	);
 
 	effect(rootOpen, ($rootOpen) => {
 		if (!isBrowser) return;

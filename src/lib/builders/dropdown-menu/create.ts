@@ -49,6 +49,7 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 		prevFocusable,
 		disableTriggerRefocus: true,
 		selector: 'dropdown-menu',
+		removeScroll: true,
 	});
 
 	return {
