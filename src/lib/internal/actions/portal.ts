@@ -1,10 +1,17 @@
 import { tick } from 'svelte';
 import type { Action } from 'svelte/action';
+import { isHTMLElement, noop } from '$lib/internal/helpers/index.js';
 
 export type PortalConfig = string | HTMLElement | undefined;
 
 export const usePortal: Action<HTMLElement, PortalConfig> = (el, target = 'body') => {
 	let targetEl;
+
+	if (!isHTMLElement(target) && typeof target !== 'string') {
+		return {
+			destroy: noop,
+		};
+	}
 
 	async function update(newTarget: HTMLElement | string | undefined) {
 		target = newTarget;
@@ -26,6 +33,7 @@ export const usePortal: Action<HTMLElement, PortalConfig> = (el, target = 'body'
 				}. Allowed types: string (CSS selector) or HTMLElement.`
 			);
 		}
+		el.dataset.portal = '';
 		targetEl.appendChild(el);
 		el.hidden = false;
 	}

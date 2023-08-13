@@ -1,32 +1,48 @@
-import type { createTagsInput } from './create';
-
-export type CreateTagsInputArgs = {
+import type { BuilderReturn } from '$lib/internal/types.js';
+import type { Writable } from 'svelte/store';
+import type { createTagsInput } from './create.js';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
+export type { TagsInputComponentEvents } from './events.js';
+export type CreateTagsInputProps = {
 	placeholder?: string;
 	disabled?: boolean;
 	editable?: boolean;
 	selected?: Tag;
-	tags?: string[] | Tag[];
+	defaultTags?: string[] | Tag[];
+	tags?: Writable<Tag[]>;
+	onTagsChange?: ChangeFn<Tag[]>;
 	unique?: boolean;
-	blur?: 'nothing' | 'add' | 'clear';
+	trim?: boolean;
+	blur?: Blur;
 	addOnPaste?: boolean;
 	maxTags?: number;
 	allowed?: string[];
 	denied?: string[];
-	add?: (tag: string) => Promise<Tag | string>;
-	remove?: (tag: Tag) => Promise<boolean>;
-	update?: (tag: Tag) => Promise<Tag>;
+	add?: AddTag;
+	remove?: RemoveTag;
+	update?: UpdateTag;
 };
+
+export type Blur = 'nothing' | 'add' | 'clear';
 
 export type Tag = {
 	id: string;
 	value: string;
 };
 
-export type TagArgs = {
+export type TagProps = {
 	id: string;
 	value: string;
 	disabled?: boolean;
 	editable?: boolean;
 };
 
-export type CreateTagsInputReturn = ReturnType<typeof createTagsInput>;
+export type UpdateTag = (tag: Tag) => Tag | Promise<Tag>;
+export type RemoveTag = (tag: Tag) => boolean | Promise<boolean>;
+export type AddTag = (tag: string) => (Tag | string) | Promise<Tag | string>;
+
+export type TagsInput = BuilderReturn<typeof createTagsInput>;
+export type TagsInputElements = TagsInput['elements'];
+export type TagsInputOptions = TagsInput['options'];
+export type TagsInputStates = TagsInput['states'];
+export type TagsInputHelpers = TagsInput['helpers'];

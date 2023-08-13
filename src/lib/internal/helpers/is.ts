@@ -13,8 +13,9 @@ export function isHTMLInputElement(element: unknown): element is HTMLInputElemen
 export function isElementDisabled(element: HTMLElement): boolean {
 	const ariaDisabled = element.getAttribute('aria-disabled');
 	const disabled = element.getAttribute('disabled');
+	const dataDisabled = element.hasAttribute('data-disabled');
 
-	if (ariaDisabled === 'true' || disabled !== null) {
+	if (ariaDisabled === 'true' || disabled !== null || dataDisabled) {
 		return true;
 	}
 
@@ -23,4 +24,8 @@ export function isElementDisabled(element: HTMLElement): boolean {
 
 export function isTouch(event: PointerEvent): boolean {
 	return event.pointerType === 'touch';
+}
+
+export function isLeftClick(event: PointerEvent | MouseEvent): boolean {
+	return event.button === 0 && event.ctrlKey === false && event.metaKey === false;
 }

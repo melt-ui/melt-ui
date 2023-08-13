@@ -1,37 +1,54 @@
-import { addEventListener, builder, createElHelpers } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { writable } from 'svelte/store';
-import type { CreateCollapsibleArgs } from './types';
+import {
+	addMeltEventListener,
+	builder,
+	createElHelpers,
+	omit,
+	overridable,
+	styleToString,
+	toWritableStores,
+} from '$lib/internal/helpers/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
+import { derived, writable } from 'svelte/store';
+import type { CollapsibleEvents } from './events.js';
+import type { CreateCollapsibleProps } from './types.js';
 
 const defaults = {
-	open: false,
+	defaultOpen: false,
 	disabled: false,
-} satisfies Defaults<CreateCollapsibleArgs>;
+	forceVisible: false,
+} satisfies CreateCollapsibleProps;
 
 const { name } = createElHelpers('collapsible');
 
-export function createCollapsible(args?: CreateCollapsibleArgs) {
-	const options = { ...defaults, ...args };
-	const disabled = writable(options.disabled);
+export function createCollapsible(props?: CreateCollapsibleProps) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateCollapsibleProps;
 
-	const open = writable(options.open);
+	const options = toWritableStores(omit(withDefaults, 'open', 'defaultOpen', 'onOpenChange'));
+	const { disabled, forceVisible } = options;
+
+	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
+	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
 	const root = builder(name(), {
-		stores: open,
-		returned: ($open) => ({
+		stores: [open, disabled],
+		returned: ([$open, $disabled]) => ({
 			'data-state': $open ? 'open' : 'closed',
-			'data-disabled': options.disabled ? true : 'undefined',
+			'data-disabled': $disabled ? '' : 'undefined',
 		}),
 	});
 
 	const trigger = builder(name('trigger'), {
 		stores: [open, disabled],
-		returned: ([$open, $disabled]) => ({
-			'data-state': $open ? 'open' : 'closed',
-			'data-disabled': $disabled ? true : undefined,
-		}),
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'click', () => {
+		returned: ([$open, $disabled]) =>
+			({
+				'data-state': $open ? 'open' : 'closed',
+				'data-disabled': $disabled ? '' : undefined,
+				disabled: $disabled,
+			} as const),
+		action: (node: HTMLElement): MeltActionReturn<CollapsibleEvents['trigger']> => {
+			const unsub = addMeltEventListener(node, 'click', () => {
+				const disabled = node.dataset.disabled !== undefined;
+				if (disabled) return;
 				open.update(($open) => !$open);
 			});
 
@@ -41,20 +58,32 @@ export function createCollapsible(args?: CreateCollapsibleArgs) {
 		},
 	});
 
+	const isVisible = derived(
+		[open, forceVisible],
+		([$open, $forceVisible]) => $open || $forceVisible
+	);
+
 	const content = builder(name('content'), {
-		stores: [open, disabled],
-		returned: ([$open, $disabled]) => ({
-			'data-state': $open ? 'open' : 'closed',
-			'data-disabled': $disabled ? true : undefined,
-			hidden: $open ? undefined : true,
+		stores: [isVisible, disabled],
+		returned: ([$isVisible, $disabled]) => ({
+			'data-state': $isVisible ? 'open' : 'closed',
+			'data-disabled': $disabled ? '' : undefined,
+			hidden: $isVisible ? undefined : true,
+			style: styleToString({
+				display: $isVisible ? undefined : 'none',
+			}),
 		}),
 	});
 
 	return {
-		root,
-		trigger,
-		content,
-		open,
-		disabled,
+		elements: {
+			root,
+			trigger,
+			content,
+		},
+		states: {
+			open,
+		},
+		options,
 	};
 }

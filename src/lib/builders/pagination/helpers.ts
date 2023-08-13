@@ -1,22 +1,4 @@
-export type Page = {
-	type: 'page';
-	value: number;
-};
-
-export type Ellipsis = {
-	type: 'ellipsis';
-};
-
-export type PageItem = (Page | Ellipsis) & {
-	/** Unique key for the item, to be passed to svelte #each block */
-	key: string;
-};
-
-export type GetPageItemsArgs = {
-	totalPages: number;
-	siblingCount?: number;
-	page?: number;
-};
+import type { GetPageItemsArgs, PageItem } from './types.js';
 
 export function getPageItems({
 	page = 1,

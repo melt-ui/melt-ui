@@ -1,34 +1,43 @@
 import {
-	addEventListener,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
 	handleRovingFocus,
 	isHTMLElement,
 	kbd,
-	omit,
-} from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable, type Readable } from 'svelte/store';
-import type { CreateToolbarArgs, CreateToolbarGroupArgs } from './types';
+	overridable,
+	toWritableStores,
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
+import { derived, get, writable } from 'svelte/store';
+import type { ToolbarEvents } from './events.js';
+import type {
+	CreateToolbarGroupProps,
+	CreateToolbarProps,
+	ToolbarGroupItemProps,
+	ToolbarGroupType,
+} from './types.js';
 
 const defaults = {
 	loop: true,
 	orientation: 'horizontal',
-} satisfies Defaults<CreateToolbarArgs>;
+} satisfies Defaults<CreateToolbarProps>;
 
 const { name, selector } = createElHelpers('toolbar');
 
-export function createToolbar(args: CreateToolbarArgs = {}) {
-	const withDefaults = { ...defaults, ...args };
-	const toolbarOptions = writable({ ...withDefaults });
+export const createToolbar = (props?: CreateToolbarProps) => {
+	const withDefaults = { ...defaults, ...props } satisfies CreateToolbarProps;
+
+	const options = toWritableStores(withDefaults);
+	const { loop, orientation } = options;
 
 	const root = builder(name(), {
-		stores: toolbarOptions,
-		returned: ($toolbarOptions) => {
+		stores: orientation,
+		returned: ($orientation) => {
 			return {
 				role: 'toolbar',
-				'data-orientation': $toolbarOptions.orientation,
+				'data-orientation': $orientation,
 			};
 		},
 	});
@@ -40,8 +49,8 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 				type: 'button',
 				tabIndex: -1,
 			} as const),
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'keydown', getKeydownHandler(toolbarOptions));
+		action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['button']> => {
+			const unsub = addMeltEventListener(node, 'keydown', handleKeyDown);
 
 			return {
 				destroy: unsub,
@@ -56,8 +65,8 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 				'data-melt-toolbar-item': '',
 				tabIndex: -1,
 			} as const),
-		action: (node: HTMLElement) => {
-			const unsub = addEventListener(node, 'keydown', getKeydownHandler(toolbarOptions));
+		action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['link']> => {
+			const unsub = addMeltEventListener(node, 'keydown', handleKeyDown);
 
 			return {
 				destroy: unsub,
@@ -66,14 +75,12 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 	});
 
 	const separator = builder(name('separator'), {
-		stores: toolbarOptions,
-		returned: ($toolbarOptions) => {
+		stores: orientation,
+		returned: ($orientation) => {
 			return {
 				role: 'separator',
-				'data-orientation':
-					$toolbarOptions.orientation === 'horizontal' ? 'vertical' : 'horizontal',
-				'aria-orientation':
-					$toolbarOptions.orientation === 'horizontal' ? 'vertical' : 'horizontal',
+				'data-orientation': $orientation === 'horizontal' ? 'vertical' : 'horizontal',
+				'aria-orientation': $orientation === 'horizontal' ? 'vertical' : 'horizontal',
 			} as const;
 		},
 	});
@@ -81,81 +88,87 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 	const groupDefaults = {
 		type: 'single',
 		disabled: false,
-		value: null,
-	} satisfies CreateToolbarGroupArgs;
+	} satisfies CreateToolbarGroupProps;
 
-	function createToolbarGroup(args: CreateToolbarGroupArgs = {}) {
-		const groupWithDefaults = { ...groupDefaults, ...args };
-		const groupOptions = writable(omit(groupWithDefaults, 'value'));
+	const createToolbarGroup = <T extends ToolbarGroupType = 'single'>(
+		props?: CreateToolbarGroupProps<T>
+	) => {
+		const groupWithDefaults = { ...groupDefaults, ...props };
 
-		const value = writable(groupWithDefaults.value);
+		const options = toWritableStores(groupWithDefaults);
+		const { type, disabled } = options;
 
-		groupOptions.subscribe((o) => {
-			value.update((v) => {
-				if (o.type === 'single' && Array.isArray(v)) {
-					return null;
-				}
+		const defaultValue = groupWithDefaults.defaultValue
+			? groupWithDefaults.defaultValue
+			: groupWithDefaults.type === 'single'
+			? undefined
+			: [];
 
-				if (o.type === 'multiple' && !Array.isArray(v)) {
-					return v === null ? [] : [v];
-				}
-
-				return v;
-			});
-		});
+		const valueWritable =
+			groupWithDefaults.value ?? writable<string | string[] | undefined>(defaultValue);
+		const value = overridable(valueWritable, groupWithDefaults?.onValueChange);
 
 		const { name } = createElHelpers('toolbar-group');
 
-		const root = builder(name(), {
-			stores: toolbarOptions,
-			returned: ($toolbarOptions) => {
+		const group = builder(name(), {
+			stores: orientation,
+			returned: ($orientation) => {
 				return {
 					role: 'group',
-					'data-orientation': $toolbarOptions.orientation,
+					'data-orientation': $orientation,
 				} as const;
 			},
 		});
 
-		type ToolbarGroupItemArgs =
-			| {
-					value: string;
-					disabled?: boolean;
-			  }
-			| string;
 		const item = builder(name('item'), {
-			stores: [groupOptions, value, toolbarOptions],
-			returned: ([$groupOptions, $value, $toolbarOptions]) => {
-				return (args: ToolbarGroupItemArgs) => {
-					const itemValue = typeof args === 'string' ? args : args.value;
-					const argDisabled = typeof args === 'string' ? false : !!args.disabled;
-					const disabled = $groupOptions.disabled || argDisabled;
+			stores: [disabled, type, value, orientation],
+			returned: ([$disabled, $type, $value, $orientation]) => {
+				return (props: ToolbarGroupItemProps) => {
+					const itemValue = typeof props === 'string' ? props : props.value;
+					const argDisabled = typeof props === 'string' ? false : !!props.disabled;
+					const disabled = $disabled || argDisabled;
 
 					const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
-
 					return {
 						disabled,
 						pressed,
-						'data-orientation': $toolbarOptions.orientation,
+						'data-orientation': $orientation,
 						'data-disabled': disabled ? true : undefined,
 						'data-value': itemValue,
 						'data-state': pressed ? 'on' : 'off',
 						'aria-pressed': pressed,
 						type: 'button',
-						role: $groupOptions.type === 'single' ? 'radio' : undefined,
+						role: $type === 'single' ? 'radio' : undefined,
 						'data-melt-toolbar-item': '',
 					} as const;
 				};
 			},
-			action: (node: HTMLElement) => {
-				const getNodeProps = () => {
+			action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['item']> => {
+				function getNodeProps() {
 					const itemValue = node.dataset.value;
 					const disabled = node.dataset.disabled === 'true';
 
 					return { value: itemValue, disabled };
-				};
+				}
 
-				const parentToolbar = node.closest<HTMLElement>('[data-melt-toolbar]');
-				if (!parentToolbar) return;
+				function handleValueUpdate() {
+					const { value: itemValue, disabled } = getNodeProps();
+					if (itemValue === undefined || disabled) return;
+
+					value.update(($value) => {
+						if (Array.isArray($value)) {
+							if ($value.includes(itemValue)) {
+								return $value.filter((i) => i !== itemValue);
+							}
+							$value.push(itemValue);
+							return $value;
+						}
+						return $value === itemValue ? undefined : itemValue;
+					});
+				}
+
+				const parentToolbar = node.closest('[data-melt-toolbar]');
+				if (!isHTMLElement(parentToolbar)) return {};
 
 				const items = getToolbarItems(parentToolbar);
 
@@ -166,19 +179,17 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 				}
 
 				const unsub = executeCallbacks(
-					addEventListener(node, 'click', () => {
-						const { value: itemValue, disabled } = getNodeProps();
-						if (itemValue === undefined || disabled) return;
-
-						value.update((v) => {
-							if (Array.isArray(v)) {
-								return v.includes(itemValue) ? v.filter((i) => i !== itemValue) : [...v, itemValue];
-							}
-							return v === itemValue ? null : itemValue;
-						});
+					addMeltEventListener(node, 'click', () => {
+						handleValueUpdate();
 					}),
-
-					addEventListener(node, 'keydown', getKeydownHandler(toolbarOptions))
+					addMeltEventListener(node, 'keydown', (e) => {
+						if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
+							e.preventDefault();
+							handleValueUpdate();
+							return;
+						}
+						handleKeyDown(e);
+					})
 				);
 
 				return {
@@ -194,73 +205,65 @@ export function createToolbar(args: CreateToolbarArgs = {}) {
 		});
 
 		return {
-			options: groupOptions,
-			value,
-			root,
-			item,
-			isPressed,
+			elements: {
+				group,
+				item,
+			},
+			states: {
+				value,
+			},
+			helpers: {
+				isPressed,
+			},
+			options,
 		};
+	};
+
+	function getToolbarItems(element: HTMLElement) {
+		return Array.from(
+			element.querySelectorAll(`${selector('item')}, ${selector('button')}`)
+		).filter((el): el is HTMLElement => isHTMLElement(el));
 	}
 
-	return {
-		root,
-		options: toolbarOptions,
-		button,
-		link,
-		separator,
-		createToolbarGroup,
-	};
-}
-
-function getToolbarItems(element: HTMLElement) {
-	return Array.from(
-		element.querySelectorAll<HTMLElement>(`${selector('item')}, ${selector('button')}`)
-	);
-}
-
-const getKeydownHandler =
-	(options: Readable<Pick<CreateToolbarArgs, 'orientation' | 'loop'>>) => (e: KeyboardEvent) => {
-		const $options = get(options);
+	function handleKeyDown(e: KeyboardEvent) {
+		const $orientation = get(orientation);
+		const $loop = get(loop);
 
 		const dir = 'ltr' as 'ltr' | 'rtl';
 		const nextKey = {
 			horizontal: dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
 			vertical: kbd.ARROW_DOWN,
-		}[$options.orientation ?? 'horizontal'];
+		}[$orientation ?? 'horizontal'];
 
 		const prevKey = {
 			horizontal: dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
 			vertical: kbd.ARROW_UP,
-		}[$options.orientation ?? 'horizontal'];
+		}[$orientation ?? 'horizontal'];
 
 		const el = e.currentTarget;
 		if (!isHTMLElement(el)) return;
-		const root = el.closest<HTMLElement>('[data-melt-toolbar]');
+		const root = el.closest('[data-melt-toolbar]');
 		if (!isHTMLElement(root)) return;
 
 		const items = Array.from(
-			root.querySelectorAll<HTMLElement>(`${selector('item')}, ${selector('button')}`)
-		);
+			root.querySelectorAll(`${selector('item')}, ${selector('button')}`)
+		).filter((el): el is HTMLElement => isHTMLElement(el));
 
 		const currentIndex = items.indexOf(el);
 
 		if (e.key === nextKey) {
 			e.preventDefault();
 			const nextIndex = currentIndex + 1;
-			if (nextIndex >= items.length) {
-				if ($options.loop) {
-					handleRovingFocus(items[0]);
-				}
+			if (nextIndex >= items.length && $loop) {
+				handleRovingFocus(items[0]);
 			} else {
 				handleRovingFocus(items[nextIndex]);
 			}
 		} else if (e.key === prevKey) {
 			e.preventDefault();
 			const prevIndex = currentIndex - 1;
-			if (prevIndex < 0) {
-				if ($options.loop) {
-					handleRovingFocus(items[items.length - 1]);
-				}
+			if (prevIndex < 0 && $loop) {
+				handleRovingFocus(items[items.length - 1]);
 			} else {
 				handleRovingFocus(items[prevIndex]);
 			}
@@ -271,4 +274,18 @@ const getKeydownHandler =
 			e.preventDefault();
 			handleRovingFocus(items[items.length - 1]);
 		}
+	}
+
+	return {
+		elements: {
+			root,
+			button,
+			separator,
+			link,
+		},
+		builders: {
+			createToolbarGroup,
+		},
+		options,
 	};
+};

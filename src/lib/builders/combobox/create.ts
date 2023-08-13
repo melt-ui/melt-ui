@@ -1,12 +1,12 @@
-import { getOptions } from '$lib/internal/helpers/list';
-import { usePopper } from '$lib/internal/actions';
+import { useEscapeKeydown, usePopper } from '$lib/internal/actions/index.js';
 import {
-	addEventListener,
+	back,
 	builder,
 	createElHelpers,
 	effect,
 	executeCallbacks,
 	FIRST_LAST_KEYS,
+	forward,
 	generateId,
 	isBrowser,
 	isElementDisabled,
@@ -16,52 +16,91 @@ import {
 	last,
 	next,
 	noop,
-	omit,
+	overridable,
 	prev,
 	removeScroll,
 	sleep,
 	styleToString,
-} from '$lib/internal/helpers';
-
-import { tick } from 'svelte';
-import { derived, get, readonly, writable } from 'svelte/store';
-import type { ComboboxItemArgs, CreateComboboxArgs, CreateComboboxReturn } from './types';
-import type { Defaults } from '$lib/internal/types';
+	toWritableStores,
+	addHighlight,
+	removeHighlight,
+	omit,
+	getOptions,
+	derivedVisible,
+	addMeltEventListener,
+	getPortalDestination,
+} from '$lib/internal/helpers/index.js';
+import { onMount, tick } from 'svelte';
+import { derived, get, readonly, writable, type Writable } from 'svelte/store';
+import type { ComboboxItemProps, CreateComboboxProps } from './types.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
+import { createLabel } from '../label/create.js';
+import type { ComboboxEvents } from './events.js';
 
 // prettier-ignore
-export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
+export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ESCAPE, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
 
 const defaults = {
+	positioning: {
+		placement: 'bottom',
+		sameWidth: true,
+	},
 	scrollAlignment: 'nearest',
-	loop: false,
-} satisfies Defaults<CreateComboboxArgs<unknown>>;
+	loop: true,
+	defaultOpen: false,
+	closeOnOutsideClick: true,
+	preventScroll: true,
+	closeOnEscape: true,
+	forceVisible: false,
+	portal: undefined,
+	itemToString: (item: unknown) => `${item}`,
+} satisfies Defaults<CreateComboboxProps<unknown>>;
 
-const { name } = createElHelpers('combobox');
+const { name, selector } = createElHelpers('combobox');
 
 /**
  * Creates an ARIA-1.2-compliant combobox.
  *
- * @TODO support providing an initial selected item
- * @TODO support PAGE_UP/PAGE_DOWN navigation (+10,-10)
  * @TODO expose a nice mechanism for clearing the input.
  * @TODO would it be useful to have a callback for when an item is selected?
  * @TODO multi-select using `tags-input` builder?
  */
-export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxReturn<T> {
-	const options = writable(omit({ ...defaults, ...args }, 'items'));
-	const open = writable(false);
+export function createCombobox<Item>(props: CreateComboboxProps<Item>) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateComboboxProps<Item>;
+	// Either the provided open store or a store with the default open value
+	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
+	// The overridable open store which is the source of truth for the open state.
+	const open = overridable(openWritable, withDefaults?.onOpenChange);
 	// Trigger element for the popper portal. This will be our input element.
 	const activeTrigger = writable<HTMLElement | null>(null);
 	// The currently highlighted menu item.
 	const highlightedItem = writable<HTMLElement | null>(null);
+	// All items in the menu.
+	const items = writable(withDefaults.items);
+	// A subset of items that match the filterFunction predicate.
+	const filteredItems = writable(withDefaults.items);
+
+	const valueWritable =
+		withDefaults.value ?? (writable(withDefaults.defaultValue) as Writable<Item | undefined>);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
+
 	// The current value of the input element.
 	const inputValue = writable('');
-	// All items in the menu.
-	const items = writable(args.items);
-	// A subset of items that match the filterFunction predicate.
-	const filteredItems = writable(args.items);
-	// The currently selected menu item.
-	const selectedItem = writable<T>(undefined);
+	// options
+	const options = toWritableStores(omit(withDefaults, 'items', 'open', 'defaultOpen'));
+
+	const {
+		scrollAlignment,
+		loop,
+		filterFunction,
+		itemToString,
+		closeOnOutsideClick,
+		closeOnEscape,
+		preventScroll,
+		portal,
+		forceVisible,
+		positioning,
+	} = options;
 
 	const ids = {
 		input: generateId(),
@@ -69,18 +108,68 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 		label: generateId(),
 	};
 
-	/** Closes the menu. */
-	function closeMenu() {
-		open.set(false);
-		activeTrigger.set(null);
+	/** Resets the combobox inputValue and filteredItems back to the selectedItem */
+	function reset() {
+		const $itemToString = get(itemToString);
+		const $selectedItem = get(value);
+
+		// If no item is selected the input should be cleared and the filter reset.
+		if (!$selectedItem) {
+			inputValue.set('');
+		} else {
+			inputValue.set($itemToString($selectedItem));
+		}
+		// Reset the filtered items to the full list.
+		filteredItems.set(get(items));
 	}
 
-	/** Opens the menu. */
-	function openMenu() {
-		const triggerElement = document.getElementById(ids.input);
-		if (!isHTMLElement(triggerElement)) return;
-		activeTrigger.set(triggerElement);
-		open.set(true);
+	effect(value, ($value) => {
+		if ($value) {
+			inputValue.set(get(itemToString)($value));
+		}
+	});
+
+	/**
+	 * Selects an item from the menu and updates the input value.
+	 * @param index array index of the item to select.
+	 */
+	function selectItem(item: HTMLElement) {
+		if (item.dataset.index) {
+			const index = parseInt(item.dataset.index, 10);
+			const $item = get(filteredItems)[index];
+
+			value.set($item);
+			// Reset the filtered items to the full list.
+			filteredItems.set(get(items));
+			const activeTrigger = document.getElementById(ids.input);
+			if (activeTrigger) {
+				activeTrigger.focus();
+			}
+		}
+	}
+
+	/**
+	 * Opens the menu, sets the active trigger, and highlights
+	 * the selected item (if one exists). It also optionally accepts the current
+	 * open state to prevent unnecessary updates if we know the menu is already open.
+	 */
+	function openMenu(currentOpenState = false) {
+		/**
+		 * We're checking the open state here because the menu may have
+		 * been programatically opened by the user using a controlled store.
+		 * In that case we don't want to update the open state, but we do
+		 * want to update the active trigger and highlighted item as normal.
+		 */
+		if (!currentOpenState) {
+			open.set(true);
+		}
+
+		const triggerEl = document.getElementById(ids.input);
+		if (!triggerEl) return;
+
+		// The active trigger is used to anchor the menu to the input element.
+		activeTrigger.set(triggerEl);
+
 		// Wait a tick for the menu to open then highlight the selected item.
 		tick().then(() => {
 			const menuElement = document.getElementById(ids.menu);
@@ -91,10 +180,50 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 		});
 	}
 
+	/** Closes the menu & clears the active trigger */
+	function closeMenu() {
+		open.set(false);
+	}
+
+	/**
+	 * Determines if a given item is selected.
+	 * This is useful for displaying additional markup on the selected item.
+	 */
+	const isSelected = derived([value], ([$selectedItem]) => {
+		return (item: Item) => $selectedItem === item;
+	});
+
+	/**
+	 * Function to update the items in the combobox. It provides the current
+	 * items as an argument and expects an updated list in return.
+	 *
+	 * The updated list is set in both `items` and `filteredItems` stores so
+	 * that the filterFunction predicate is applied to any added items. Eg:
+	 * ```ts
+	 * function addNewBook(book: Book) {
+	 *   updateItems((books) => {
+	 *     books.push(book);
+	 *     return books
+	 * });
+	 * };
+	 * ```
+	 */
+	function updateItems(updaterFunction: (currentItems: Item[]) => Item[]): void {
+		const $currentItems = get(items);
+		const $inputValue = get(inputValue);
+		const $filterFunction = get(filterFunction);
+		// Retrieve the updated list of items from the user-provided function.
+		const updatedItems = updaterFunction($currentItems);
+		// Update the store containing all items.
+		items.set(updatedItems);
+		// Run the filter function on the updated list and store the result.
+		filteredItems.set(updatedItems.filter((item) => $filterFunction(item, $inputValue)));
+	}
+
 	/** Action and attributes for the text input. */
 	const input = builder(name('input'), {
-		stores: [open, highlightedItem],
-		returned: ([$open, $highlightedItem]) => {
+		stores: [open, highlightedItem, inputValue],
+		returned: ([$open, $highlightedItem, inputValue]) => {
 			return {
 				'aria-activedescendant': $highlightedItem?.id,
 				'aria-autocomplete': 'list',
@@ -104,57 +233,69 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 				autocomplete: 'off',
 				id: ids.input,
 				role: 'combobox',
+				value: inputValue,
 			} as const;
 		},
-		action: (node: HTMLInputElement) => {
+		action: (node: HTMLInputElement): MeltActionReturn<ComboboxEvents['input']> => {
 			const unsubscribe = executeCallbacks(
-				// Open the menu portal when the input is focused.
-				addEventListener(node, 'focus', () => {
-					openMenu();
-				}),
-				// When the input loses focus, reset the input value and filter.
-				addEventListener(node, 'blur', () => {
-					const $options = get(options);
-					const $selectedItem = get(selectedItem);
-					// If no item is selected the input should be cleared and the filter reset.
-					if (!$selectedItem) {
-						inputValue.set('');
-					} else {
-						inputValue.set($options.itemToString($selectedItem));
+				addMeltEventListener(node, 'click', () => {
+					const $open = get(open);
+					if ($open) {
+						return;
 					}
-					// Reset the filtered items to the full list.
-					filteredItems.set(get(items));
+					openMenu($open);
 				}),
 				// Handle all input key events including typing, meta, and navigation.
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const $open = get(open);
-					const $options = get(options);
 					/**
 					 * When the menu is closed...
 					 */
 					if (!$open) {
-						// Pressing `esc` should blur the input.
-						if (e.key === kbd.ESCAPE) {
-							node.blur();
-							return;
-						}
 						// Pressing one of the interaction keys shouldn't open the menu.
 						if (INTERACTION_KEYS.includes(e.key)) {
 							return;
 						}
+
+						// Tab should not open the menu.
+						if (e.key === kbd.TAB) {
+							return;
+						}
+
 						// Pressing backspace when the input is blank shouldn't open the menu.
 						if (e.key === kbd.BACKSPACE && node.value === '') {
 							return;
 						}
+
 						// All other events should open the menu.
-						openMenu();
+						openMenu($open);
+
+						tick().then(() => {
+							const $selectedItem = get(value);
+							if ($selectedItem) return;
+
+							const menuEl = document.getElementById(ids.menu);
+							if (!isHTMLElement(menuEl)) return;
+
+							const enabledItems = Array.from(
+								menuEl.querySelectorAll(`${selector('item')}:not([data-disabled])`)
+							).filter((item): item is HTMLElement => isHTMLElement(item));
+							if (!enabledItems.length) return;
+
+							if (e.key === kbd.ARROW_DOWN) {
+								highlightedItem.set(enabledItems[0]);
+							} else if (e.key === kbd.ARROW_UP) {
+								highlightedItem.set(last(enabledItems));
+							}
+						});
 					}
 					/**
 					 * When the menu is open...
 					 */
 					// Pressing `esc` should close the menu.
-					if (e.key === kbd.ESCAPE) {
+					if (e.key === kbd.TAB || e.key === kbd.ESCAPE) {
 						closeMenu();
+						reset();
 						return;
 					}
 					// Pressing enter with a highlighted item should select it.
@@ -182,15 +323,22 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 						// Get the index of the currently highlighted item.
 						const $currentItem = get(highlightedItem);
 						const currentIndex = $currentItem ? candidateNodes.indexOf($currentItem) : -1;
-						// Calculate the index of the next menu item to highlight.
-						const loop = $options.loop;
-						let nextItem: HTMLElement | undefined;
+						// Find the next menu item to highlight.
+						const $loop = get(loop);
+						const $scrollAlignment = get(scrollAlignment);
+						let nextItem: HTMLElement;
 						switch (e.key) {
 							case kbd.ARROW_DOWN:
-								nextItem = next(candidateNodes, currentIndex, loop);
+								nextItem = next(candidateNodes, currentIndex, $loop);
 								break;
 							case kbd.ARROW_UP:
-								nextItem = prev(candidateNodes, currentIndex, loop);
+								nextItem = prev(candidateNodes, currentIndex, $loop);
+								break;
+							case kbd.PAGE_DOWN:
+								nextItem = forward(candidateNodes, currentIndex, 10, $loop);
+								break;
+							case kbd.PAGE_UP:
+								nextItem = back(candidateNodes, currentIndex, 10, $loop);
 								break;
 							case kbd.HOME:
 								nextItem = candidateNodes[0];
@@ -201,90 +349,132 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 							default:
 								return;
 						}
-						/**
-						 * Bail if `next` or `prev` return `undefined`.
-						 * Theoretically this shouldn't be possible but it's a good check anyway.
-						 */
-						if (typeof nextItem === 'undefined') return;
 						// Highlight the new item and scroll it into view.
 						highlightedItem.set(nextItem);
-						nextItem.scrollIntoView({ block: $options.scrollAlignment });
+						nextItem.scrollIntoView({ block: $scrollAlignment });
 					}
 				}),
 				// Listens to the input value and filters the items accordingly.
-				addEventListener(node, 'input', (e) => {
+				addMeltEventListener(node, 'input', (e) => {
 					if (!isHTMLInputElement(e.target)) return;
-					const $options = get(options);
+					const $filterFunction = get(filterFunction);
 					const $items = get(items);
 					const value = e.target.value;
 					inputValue.set(value);
-					filteredItems.set($items.filter((item) => $options.filterFunction(item, value)));
+					filteredItems.set($items.filter((item) => $filterFunction(item, value)));
 				})
 			);
-			return { destroy: unsubscribe };
+
+			let unsubEscapeKeydown = noop;
+
+			effect(open, ($open) => {
+				if ($open) {
+					tick().then(() => {
+						const escape = useEscapeKeydown(node, {
+							handler: () => {
+								closeMenu();
+							},
+						});
+						if (escape && escape.destroy) {
+							unsubEscapeKeydown = escape.destroy;
+						}
+					});
+				} else {
+					unsubEscapeKeydown();
+				}
+			});
+
+			return {
+				destroy() {
+					unsubscribe();
+					unsubEscapeKeydown();
+				},
+			};
 		},
 	});
 
-	/**
-	 * Selects an item from the menu and updates the input value.
-	 * @param index array index of the item to select.
-	 */
-	function selectItem(item: HTMLElement) {
-		const $options = get(options);
-		if (item.dataset.index) {
-			const index = parseInt(item.dataset.index, 10);
-			const $item = get(filteredItems)[index];
-			inputValue.set($options.itemToString($item));
-			selectedItem.set($item);
-			// Reset the filtered items to the full list.
-			filteredItems.set(get(items));
-		}
-	}
+	onMount(() => {
+		activeTrigger.set(document.getElementById(ids.input));
+	});
 
 	/**
-	 * Determines if a given item is selected.
-	 * This is useful for displaying additional markup on the selected item.
+	 * To properly anchor the popper to the input/trigger, we need to ensure both
+	 * the open state is true and the activeTrigger is not null. This helper store's
+	 * value is true when both of these conditions are met and keeps the code tidy.
 	 */
-	const isSelected = derived([selectedItem], ([$selectedItem]) => {
-		return (item: T) => $selectedItem === item;
-	});
+	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
 
 	/**
 	 * Action and attributes for the menu element.
 	 */
 	const menu = builder(name('menu'), {
-		stores: [open],
-		returned: ([$open]) =>
-			({
-				hidden: $open ? undefined : true,
+		stores: [isVisible],
+		returned: ([$isVisible]) => {
+			return {
+				hidden: $isVisible ? undefined : true,
 				id: ids.menu,
 				role: 'listbox',
-				style: styleToString({ display: $open ? undefined : 'none' }),
-			} as const),
-		action: (node: HTMLElement) => {
+				style: styleToString({ display: $isVisible ? undefined : 'none' }),
+			} as const;
+		},
+		action: (node: HTMLElement): MeltActionReturn<ComboboxEvents['menu']> => {
 			let unsubPopper = noop;
 			let unsubScroll = noop;
 			const unsubscribe = executeCallbacks(
 				//  Bind the popper portal to the input element.
-				effect([open, activeTrigger], ([$open, $activeTrigger]) => {
-					unsubPopper();
-					unsubScroll();
-					if ($open && $activeTrigger) {
-						unsubScroll = removeScroll();
+				effect(
+					[isVisible, preventScroll, closeOnEscape, portal, closeOnOutsideClick, positioning],
+					([
+						$isVisible,
+						$preventScroll,
+						$closeOnEscape,
+						$portal,
+						$closeOnOutsideClick,
+						$positioning,
+					]) => {
+						unsubPopper();
+						unsubScroll();
+						const $activeTrigger = get(activeTrigger);
+						if (!($isVisible && $activeTrigger)) return;
+						if ($preventScroll) {
+							unsubScroll = removeScroll();
+						}
+
 						tick().then(() => {
 							const popper = usePopper(node, {
 								anchorElement: $activeTrigger,
 								open,
-								options: { floating: { placement: 'bottom', sameWidth: true }, focusTrap: null },
+								options: {
+									floating: $positioning,
+									focusTrap: null,
+									clickOutside: $closeOnOutsideClick
+										? {
+												handler: (e) => {
+													const target = e.target;
+													if (target === $activeTrigger) return;
+													closeMenu();
+													reset();
+												},
+										  }
+										: null,
+									escapeKeydown: $closeOnEscape
+										? {
+												handler: () => {
+													closeMenu();
+												},
+										  }
+										: null,
+									portal: getPortalDestination(node, $portal),
+								},
 							});
 							if (popper && popper.destroy) {
 								unsubPopper = popper.destroy;
 							}
 						});
 					}
-				}),
+				),
 				// Remove highlight when the pointer leaves the menu.
-				addEventListener(node, 'pointerleave', () => {
+				addMeltEventListener(node, 'pointerleave', () => {
 					highlightedItem.set(null);
 				})
 			);
@@ -298,44 +488,40 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 		},
 	});
 
-	/**
-	 * Handles moving the `data-highlighted` attribute between items when
-	 * the user moves their pointer or navigates with their keyboard.
-	 */
-	effect([highlightedItem, options], ([$highlightedItem, $options]) => {
-		if (!isBrowser) return;
-		const menuElement = document.getElementById(ids.menu);
-		if (!isHTMLElement(menuElement)) return;
-		getOptions(menuElement).forEach((node) => {
-			if (node === $highlightedItem) {
-				node.setAttribute('data-highlighted', '');
-			} else {
-				node.removeAttribute('data-highlighted');
-			}
-		});
-		if ($highlightedItem) {
-			sleep(1).then(() => $highlightedItem.scrollIntoView({ block: $options.scrollAlignment }));
-		}
+	// Use our existing label builder to create a label for the combobox input.
+	const {
+		elements: { root: labelBuilder },
+	} = createLabel();
+	const { action: labelAction } = get(labelBuilder);
+
+	const label = builder(name('label'), {
+		returned: () => {
+			return {
+				id: ids.label,
+				for: ids.input,
+			};
+		},
+		action: labelAction,
 	});
 
 	const item = builder(name('item'), {
-		stores: [selectedItem],
+		stores: [value],
 		returned:
 			([$selectedItem]) =>
-			(args: ComboboxItemArgs<T>) =>
+			(props: ComboboxItemProps<Item>) =>
 				({
-					'data-disabled': args.disabled ? '' : undefined,
-					'aria-disabled': args.disabled ? true : undefined,
-					'aria-selected': args.item === $selectedItem,
-					'data-index': args.index,
-					id: `${ids.input}-descendent-${args.index}`,
+					'data-disabled': props.disabled ? '' : undefined,
+					'aria-disabled': props.disabled ? true : undefined,
+					'aria-selected': props.item === $selectedItem,
+					'data-index': props.index,
+					id: `${ids.input}-descendent-${props.index}`,
 					role: 'option',
-					style: styleToString({ cursor: args.disabled ? 'default' : 'pointer' }),
+					style: styleToString({ cursor: props.disabled ? 'default' : 'pointer' }),
 				} as const),
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<ComboboxEvents['item']> => {
 			const unsubscribe = executeCallbacks(
 				// Handle highlighting items when the pointer moves over them.
-				addEventListener(node, 'pointermove', () => {
+				addMeltEventListener(node, 'pointermove', () => {
 					// Skip highlighting if the item is already highlighted.
 					if (node === get(highlightedItem)) return;
 					// If the item is disabled, clear the highlight.
@@ -346,7 +532,7 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 					// Otherwise, proceed.
 					highlightedItem.set(node);
 				}),
-				addEventListener(node, 'mousedown', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
 					// If the item is disabled, `preventDefault` to stop the input losing focus.
 					if (isElementDisabled(node)) {
 						e.preventDefault();
@@ -362,39 +548,42 @@ export function createCombobox<T>(args: CreateComboboxArgs<T>): CreateComboboxRe
 	});
 
 	/**
-	 * Function to update the items in the combobox. It provides the current
-	 * items as an argument and expects an updated list in return.
-	 *
-	 * The updated list is set in both `items` and `filteredItems` stores so
-	 * that the filterFunction predicate is applied to any added items. Eg:
-	 * ```ts
-	 * function addNewBook(book: Book) {
-	 *   updateItems((books) => [...books, book]);
-	 * };
-	 * ```
+	 * Handles moving the `data-highlighted` attribute between items when
+	 * the user moves their pointer or navigates with their keyboard.
 	 */
-	function updateItems(updaterFunction: (currentItems: T[]) => T[]): void {
-		const $currentItems = get(items);
-		const $inputValue = get(inputValue);
-		const $options = get(options);
-		// Retrieve the updated list of items from the user-provided function.
-		const updatedItems = updaterFunction($currentItems);
-		// Update the store containing all items.
-		items.set(updatedItems);
-		// Run the filter function on the updated list and store the result.
-		filteredItems.set(updatedItems.filter((item) => $options.filterFunction(item, $inputValue)));
-	}
+	effect([highlightedItem, scrollAlignment], ([$highlightedItem, $scrollAlignment]) => {
+		if (!isBrowser) return;
+		const menuElement = document.getElementById(ids.menu);
+		if (!isHTMLElement(menuElement)) return;
+		getOptions(menuElement).forEach((node) => {
+			if (node === $highlightedItem) {
+				addHighlight(node);
+			} else {
+				removeHighlight(node);
+			}
+		});
+		if ($highlightedItem) {
+			sleep(1).then(() => $highlightedItem.scrollIntoView({ block: $scrollAlignment }));
+		}
+	});
 
 	return {
-		filteredItems: readonly(filteredItems),
-		input,
-		menu,
-		item,
-		inputValue,
-		isSelected,
-		open,
+		elements: {
+			input,
+			item,
+			menu,
+			label,
+		},
+		states: {
+			open,
+			inputValue: readonly(inputValue),
+			filteredItems: readonly(filteredItems),
+			value,
+		},
+		helpers: {
+			updateItems,
+			isSelected,
+		},
 		options,
-		selectedItem,
-		updateItems,
 	};
 }

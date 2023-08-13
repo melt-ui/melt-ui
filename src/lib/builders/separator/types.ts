@@ -1,7 +1,7 @@
-import type { Orientation } from '$lib/internal/types';
-import type { createSeparator } from './create';
+import type { BuilderReturn, Orientation } from '$lib/internal/types.js';
+import type { createSeparator } from './create.js';
 
-export type CreateSeparatorArgs = {
+export type CreateSeparatorProps = {
 	/*
 	 * The orientation of the separator.
 	 *
@@ -19,4 +19,6 @@ export type CreateSeparatorArgs = {
 	decorative?: boolean;
 };
 
-export type CreateSeparatorReturn = ReturnType<typeof createSeparator>;
+export type Separator = BuilderReturn<typeof createSeparator>;
+export type SeparatorElements = Separator['elements'];
+export type SeparatorOptions = Separator['options'];

@@ -1,48 +1,67 @@
-import { addEventListener, builder, createElHelpers, styleToString } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import { derived, get, writable } from 'svelte/store';
-import type { CreateSwitchArgs } from './types';
+import {
+	addMeltEventListener,
+	builder,
+	createElHelpers,
+	kbd,
+	omit,
+	overridable,
+	styleToString,
+	toWritableStores,
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
+import { get, writable } from 'svelte/store';
+import { executeCallbacks } from '../../internal/helpers/callbacks.js';
+import type { SwitchEvents } from './events.js';
+import type { CreateSwitchProps } from './types.js';
 
 const defaults = {
-	checked: false,
+	defaultChecked: false,
 	disabled: false,
 	required: false,
 	name: '',
 	value: '',
-} satisfies Defaults<CreateSwitchArgs>;
+} satisfies Defaults<CreateSwitchProps>;
 
 const { name } = createElHelpers('switch');
 
-export function createSwitch(args: CreateSwitchArgs = {}) {
-	const argsWithDefaults = { ...defaults, ...args };
-	const options = writable({
-		disabled: argsWithDefaults.disabled,
-		required: argsWithDefaults.required,
-		name: argsWithDefaults.name,
-		value: argsWithDefaults.value,
-	});
-	const checked = writable(argsWithDefaults.checked);
+export function createSwitch(props?: CreateSwitchProps) {
+	const propsWithDefaults = { ...defaults, ...props } satisfies CreateSwitchProps;
+
+	const options = toWritableStores(omit(propsWithDefaults, 'checked'));
+	const { disabled, required, name: nameStore, value } = options;
+
+	const checkedWritable = propsWithDefaults.checked ?? writable(propsWithDefaults.defaultChecked);
+	const checked = overridable(checkedWritable, propsWithDefaults?.onCheckedChange);
+
+	function toggleSwitch() {
+		if (get(disabled)) return;
+		checked.update((prev) => !prev);
+	}
 
 	const root = builder(name(), {
-		stores: [checked, options],
-		returned: ([$checked, $options]) => {
+		stores: [checked, disabled, required],
+		returned: ([$checked, $disabled, $required]) => {
 			return {
-				'data-disabled': $options.disabled,
-				disabled: $options.disabled,
+				'data-disabled': $disabled,
+				disabled: $disabled,
 				'data-state': $checked ? 'checked' : 'unchecked',
 				type: 'button',
 				role: 'switch',
 				'aria-checked': $checked,
-				'aria-required': $options.required,
+				'aria-required': $required,
 			} as const;
 		},
-		action(node: HTMLElement) {
-			const unsub = addEventListener(node, 'click', () => {
-				const $options = get(options);
-				if ($options.disabled) return;
-
-				checked.update((value) => !value);
-			});
+		action(node: HTMLElement): MeltActionReturn<SwitchEvents['root']> {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					toggleSwitch();
+				}),
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
+					e.preventDefault();
+					toggleSwitch();
+				})
+			);
 
 			return {
 				destroy: unsub,
@@ -50,34 +69,38 @@ export function createSwitch(args: CreateSwitchArgs = {}) {
 		},
 	});
 
-	const input = derived([checked, options], ([$checked, $options]) => {
-		return {
-			type: 'checkbox' as const,
-			'aria-hidden': true,
-			hidden: true,
-			tabindex: -1,
-			name: $options.name,
-			value: $options.value,
-			checked: $checked,
-			required: $options.required,
-			disabled: $options.disabled,
-			style: styleToString({
-				position: 'absolute',
-				opacity: 0,
-				'pointer-events': 'none',
-				margin: 0,
-				transform: 'translateX(-100%)',
-			}),
-		} as const;
+	const input = builder(name('input'), {
+		stores: [checked, nameStore, required, disabled, value],
+		returned: ([$checked, $name, $required, $disabled, $value]) => {
+			return {
+				type: 'checkbox' as const,
+				'aria-hidden': true,
+				hidden: true,
+				tabindex: -1,
+				name: $name,
+				value: $value,
+				checked: $checked,
+				required: $required,
+				disabled: $disabled,
+				style: styleToString({
+					position: 'absolute',
+					opacity: 0,
+					'pointer-events': 'none',
+					margin: 0,
+					transform: 'translateX(-100%)',
+				}),
+			} as const;
+		},
 	});
 
-	const isChecked = derived(checked, ($checked) => $checked === true);
-
 	return {
-		root,
-		input,
-		checked,
-		isChecked,
+		elements: {
+			root,
+			input,
+		},
+		states: {
+			checked,
+		},
 		options,
 	};
 }

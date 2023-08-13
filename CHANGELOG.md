@@ -1,5 +1,367 @@
 # @melt-ui/svelte
 
+## 0.34.5
+
+### Patch Changes
+
+- 69858eaf: Resolves a bug in select builder when multi-select is active where data-selected and aria-selected were not being set properly
+- aba59d25: fix: tag being created/updated even if not valid
+
+## 0.34.4
+
+### Patch Changes
+
+- c0c66f0d: [Types] Expose ComponentEvent types
+
+## 0.34.3
+
+### Patch Changes
+
+- adcf8853: Improved pin-input backspace behaviour
+
+## 0.34.2
+
+### Patch Changes
+
+- b3756704: remove TOC logs
+- dbf938bd: change checkbox default value
+
+## 0.34.1
+
+### Patch Changes
+
+- 8a673d15: remove preventDefault from radio button item
+
+## 0.34.0
+
+### Minor Changes
+
+- 822a0a55: Add TOC
+
+### Patch Changes
+
+- e46d57c8: feature: Add trim option to input-tags
+
+## 0.33.1
+
+### Patch Changes
+
+- 7fd917c1: change tabs autoSet behaviour
+- 2ca365c0: - Add `group` and `groupLabel` elements to the Menu builders
+
+## 0.33.0
+
+### Minor Changes
+
+- 5ba01f80: feat: Added support for `NodeNext` and `Bundler` for `tsconfig.json`'s `moduleResolution` config option
+
+## 0.32.2
+
+### Patch Changes
+
+- fbfef15b: Slider: defaultValue no longer required
+- 8cc15888: refactor: standardize portal prop
+
+## 0.32.1
+
+### Patch Changes
+
+- 270c98e5: fix: outside click not being allowed on dialog
+
+## 0.32.0
+
+### Minor Changes
+
+- b1bfc1a3: - Toast
+  - Change pointerenter behaviour from reset timer to pause timer
+  - Add getPercentage function to calculate percentage of time remaining
+
+### Patch Changes
+
+- 6e4b44e7: refactor: menu types
+
+## 0.31.3
+
+### Patch Changes
+
+- 2e29832f: [Combobox] Fix type generation issue
+
+## 0.31.2
+
+### Patch Changes
+
+- 14bbbef4: Fix portalling issues
+
+## 0.31.1
+
+### Patch Changes
+
+- f5bd0768: fix various slider bugs
+- 21d19c31: [Dialog] fix: no longer require trigger to open dialog
+- b2d33548: refactor: internal menu types
+
+## 0.31.0
+
+### Minor Changes
+
+- cba5bb7c: convert controllable returned states from readables to writables
+- 714f4b3c: Combobox: add controlled support
+
+## 0.30.1
+
+### Patch Changes
+
+- 98e05474: fix: Select & Menu keydowns leaking
+
+## 0.30.0
+
+### Minor Changes
+
+- 8218662d: [Select]: Add multiple prop
+
+### Patch Changes
+
+- c2bca81c: [Slider] - Fix vertical slider arrow behavior
+- 3b86f0eb: change accordion type prop to multiple
+
+## 0.29.0 - The Big Bad
+
+[Release Notes](https://github.com/melt-ui/melt-ui/blob/develop/RELEASE_NOTES/the-big-bad.md)
+
+### Minor Changes
+
+- f44c54eb: Dialog: Add portalled element
+
+### Patch Changes
+
+- d2d7c98f: Fix: vertical slider inversion
+
+## 0.28.0
+
+### Minor Changes
+
+- 8400a4e5: Replaced the `melt` attribute for the `use:melt` action
+- ab1ec0bd: New Feature: Controlled Props
+  - Controlled props give you more control over the state & behavior of the builder components.
+- 8e5414c8: [New Feature] Custom Melt Events
+
+## 0.28.0-next.0
+
+### Minor Changes
+
+- ab1ec0bd: New Feature: Controlled Props
+  - Controlled props give you more control over the state & behavior of the builder components.
+- 8e5414c8: [New Feature] Custom Melt Events
+
+## 0.27.3
+
+### Patch Changes
+
+- a3781f7c: fix: Remove `@melt-ui/svelte` alias, add text transform
+
+## 0.27.2
+
+### Patch Changes
+
+- 6f521b22: [Hover Card]
+  - Fix bug where the link/button is unclickable on mobile
+
+## 0.27.1
+
+### Patch Changes
+
+- 467a8ff3: Select: fix bug where quick sliding would not set the values to min/max
+
+## 0.27.0
+
+### Minor Changes
+
+- 1afcc4b2: Select: add label el store
+
+### Patch Changes
+
+- 60067d43: Select: fix value controlled usage not setting valueLabel
+- 548258cd: Select: rename label to valueLabel
+- f94c61ec: Combobox: include for attribute in label
+
+## 0.26.3
+
+### Patch Changes
+
+- 714d8e18: fix: tooltip behaviour
+
+## 0.26.2
+
+### Patch Changes
+
+- 75ba9c3b: fix: tooltip pointerover now only works with mouse inputs
+
+## 0.26.1
+
+### Patch Changes
+
+- 61123724: tooltip: change defaults; improve behaviour consistency
+
+## 0.26.0
+
+### Minor Changes
+
+- 7a8c0f05: Tooltip: Change default options; Add trigger/content gap handling; Behaviour changes
+
+### Patch Changes
+
+- d055b2a5: [Tooltip] Fix a11y attributes & behavior
+- c5945220: [Avatar] Fixes bug where the fallback is hidden
+- a71ac941: fix: dialog focus-trap
+- 2f803ea8: [Combobox]
+  - Fix Open/Close Flickering
+  - Returns a `label` element builder
+
+## 0.25.1
+
+### Patch Changes
+
+- fix: avatar fallback overriding styles
+
+## 0.25.0
+
+### Minor Changes
+
+- 2d1936b0: feat: tooltip touch support
+
+### Patch Changes
+
+- 902cb5dc: refactor: Internal type-safety & performance changes
+- 6f620f0a: fix: clicks misfiring
+- 9c81f47e: refactor: rename createToasts to createToaster
+
+## 0.24.1
+
+### Patch Changes
+
+- 0f100296: [Checkbox] Unsub checkbox click event
+- afa02ae9: use nanonid/non-secure to support more environments
+
+## 0.24.0
+
+### Minor Changes
+
+- ef32b32a: [New Builder] Toast
+
+### Patch Changes
+
+- f25ed135: [Dialog]: Dialog no longer closes on right-click
+
+## 0.23.2
+
+### Patch Changes
+
+- 3c7725c3: [Tabs] Force focus on click for buttons in safari
+
+## 0.23.1
+
+### Patch Changes
+
+- 55815f04: Slider: invert vertical direction
+- 7639d712: Tooltip: prevent focus on mousedown
+- b7cfbf13: Select: add a11y roles
+- f1e7c64c: Slider: metaKeys to jump to values
+- 7d7b18e8: refactor: improved accordion types
+
+## 0.23.0
+
+### Minor Changes
+
+- 893535af: [Accordion]
+  - Add missing aria attributes
+  - Add `heading` builder to apply aria attributes to non-heading elements used as headings
+
+### Patch Changes
+
+- c987225b: [Combobox]
+  - Fix a bug where tabbing from would open it
+  - Close the menu when tab/shift+tab is pressed
+- de855112: Fix: Type issue with `melt` attribute on certain elements
+
+## 0.22.2
+
+### Patch Changes
+
+- 151fcc35: [Multiple] Fix radio focus & other left click issues
+- b731d118: fix: builders not exposing actions
+
+## 0.22.1
+
+### Patch Changes
+
+- 00043ed4: Fixed the `melt` attribute's documentation
+
+## 0.22.0
+
+### Minor Changes
+
+- 434cc977: feat: Adds the PP
+
+## 0.21.0
+
+### Minor Changes
+
+- 053ea4d5: [Select] Support <kbd>Page Up</kbd> and <kbd>Page Down</kbd> keyboard navigation.
+  [Combobox] Support <kbd>Page Up</kbd> and <kbd>Page Down</kbd> keyboard navigation.
+
+### Patch Changes
+
+- 94861927: [Menus]
+  - Fix lag between submenus and menubar menus
+  - Fix the non-chromium browser issue where `data-highlight` would persist after the menu closes and reopens.
+
+## 0.20.0
+
+### Minor Changes
+
+- 87612adb: feat: allow focus trap disabling popover
+
+## 0.19.1
+
+### Patch Changes
+
+- 1386ff64: feat: popover controlled usage
+- ad43dedd: [Menus] fix: dropdown submenu not closing
+- 8be65692: [Refactor] Args -> Props
+
+## 0.19.0
+
+### Minor Changes
+
+- 476abfc: feat(dialog): support nested dialogs
+
+## 0.18.4
+
+### Patch Changes
+
+- 9a28950: fix(combobox): input blur strange behaviour
+- 7accc8b: fix(slider): disabled slider no longer prevents scroll
+- 7accc8b: refactor(combobox): improve combobox reset behaviour
+- 1966f82: fix(slider): only left-click triggers slider
+- 8f98478: [Dropdown Menu] Fix dropdown trigger tabindex issue
+- bc8a6da: fix collapsible disabled attribute
+- 8df24e5: refactor: disable middle & right clicks on Tabs and Radio Group
+
+## 0.18.3
+
+### Patch Changes
+
+- 9f78da5: [Menus]: Close Menus on Tab press within submenus
+- deb46a9: fix(collapsible): disabled state
+- 5c80008: [Menus] Fix submenu typeahead logic
+
+## 0.18.2
+
+### Patch Changes
+
+- 4170fc5: Fix tag-input focus
+- 0c7008c: fix incomplete builders
+
 ## 0.18.1
 
 ### Patch Changes
