@@ -85,6 +85,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		disableFocusFirstItem: true,
 		disableTriggerRefocus: true,
 		selector: 'context-menu',
+		removeScroll: true,
 	});
 
 	const point = writable<Point | null>(null);

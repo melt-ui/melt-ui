@@ -1090,7 +1090,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 			const unsubs: Array<() => void> = [];
 
-			if (opts.selector !== 'menubar-menu' && $rootOpen && $preventScroll) {
+			if (opts.removeScroll && $rootOpen && $preventScroll) {
 				unsubs.push(removeScroll());
 			}
 

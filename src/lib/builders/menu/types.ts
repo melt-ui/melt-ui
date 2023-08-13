@@ -151,6 +151,11 @@ export type _MenuBuilderOptions = {
 	nextFocusable: Writable<HTMLElement | null>;
 	prevFocusable: Writable<HTMLElement | null>;
 	selector: string;
+	/**
+	 * When you want to handle the scroll removal in the specific menu builder,
+	 * rather than in the menu builder factory.
+	 */
+	removeScroll: boolean;
 };
 
 export type _MenuParts =

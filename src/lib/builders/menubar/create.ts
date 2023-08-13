@@ -121,6 +121,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 			nextFocusable,
 			prevFocusable,
 			selector: 'menubar-menu',
+			removeScroll: false,
 		});
 
 		const isVisible = derivedVisible({
