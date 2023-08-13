@@ -16,6 +16,9 @@
 	target="_blank"
 	rel="noreferrer"
 	use:melt={$trigger}
+	on:m-pointerenter={(e) => {
+		e.detail.cancel();
+	}}
 >
 	<img
 		src="/logo-mark.svg"

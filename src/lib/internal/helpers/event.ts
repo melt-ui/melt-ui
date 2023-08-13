@@ -108,13 +108,15 @@ export function dispatchMeltEvent<E extends keyof HTMLElementEventMap>(
 	originalEvent: HTMLElementEventMap[E]
 ) {
 	const node = originalEvent.currentTarget;
-	if (!isHTMLElement(node)) return;
+	if (!isHTMLElement(node)) return { canceled: false };
 
+	let canceled = false;
 	const customMeltEvent: MeltEvent<typeof originalEvent> = new CustomEvent(
 		`m-${originalEvent.type}`,
 		{
 			detail: {
 				cancel: () => {
+					canceled = true;
 					originalEvent.preventDefault();
 				},
 				originalEvent,
@@ -123,14 +125,16 @@ export function dispatchMeltEvent<E extends keyof HTMLElementEventMap>(
 	);
 
 	node.dispatchEvent(customMeltEvent);
+	return { canceled };
 }
 
 export function withMelt<E extends keyof HTMLElementEventMap>(
 	handler: (event: HTMLElementEventMap[E]) => void
 ) {
 	return (event: HTMLElementEventMap[E]) => {
-		dispatchMeltEvent(event);
-		if (event.defaultPrevented) return;
+		const { canceled } = dispatchMeltEvent(event);
+		console.log({ canceled, defaultPrevented: event.defaultPrevented });
+		if (canceled) return;
 		return handler(event);
 	};
 }
