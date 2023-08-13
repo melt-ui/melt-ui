@@ -483,7 +483,9 @@ export function createSelect<
 				};
 				optionsList.push(optProps);
 
-				const isSelected = Array.isArray($value) ? $value.includes(props?.value) : $value === props?.value;
+				const isSelected = Array.isArray($value)
+					? $value.includes(props?.value)
+					: $value === props?.value;
 
 				return {
 					role: 'option',
@@ -614,7 +616,7 @@ export function createSelect<
 			} else if (menuEl && $open) {
 				// focus on the menu element
 				handleRovingFocus(menuEl);
-			} else if ($activeTrigger && constantMounted) {
+			} else if ($activeTrigger && constantMounted && get(isUsingKeyboard)) {
 				// Hacky way to prevent the keydown event from triggering on the trigger
 				handleRovingFocus($activeTrigger);
 			}
