@@ -78,10 +78,6 @@ export function createMenubar(props?: CreateMenubarProps) {
 			if (!isHTMLElement(menuTriggers[0])) return {};
 			menuTriggers[0].tabIndex = 0;
 
-			scopedMenus = Array.from(node.querySelectorAll('[data-melt-menubar-menu]')).filter(
-				(el): el is HTMLElement => isHTMLElement(el)
-			);
-
 			return {
 				destroy: noop,
 			};
@@ -253,6 +249,11 @@ export function createMenubar(props?: CreateMenubarProps) {
 				const menubarTriggers = Array.from(
 					menubarEl.querySelectorAll('[data-melt-menubar-trigger]')
 				);
+
+				scopedMenus = Array.from(menubarEl.querySelectorAll('[data-melt-menubar-menu]')).filter(
+					(el): el is HTMLElement => isHTMLElement(el)
+				);
+
 				if (!menubarTriggers.length) return {};
 
 				const unsubEffect = effect([lastFocusedMenuTrigger], ([$lastFocusedMenuTrigger]) => {
@@ -316,6 +317,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 				return {
 					destroy() {
+						scopedMenus = scopedMenus.filter((menu) => menu.id !== m.rootIds.menu);
 						unsub();
 						unsubEffect();
 					},
@@ -450,19 +452,20 @@ export function createMenubar(props?: CreateMenubarProps) {
 	effect([activeMenu], ([$activeMenu]) => {
 		if (!isBrowser) return;
 
-		if ($activeMenu && !scrollRemoved) {
+		/**
+		 * To prevent adding/removing the scroll as we cycle through
+		 * menus (which causes horrible performance issues), we only
+		 * want to remove the scroll when the first menu is opened, and
+		 * remove it when no menus are open.
+		 */
+
+		if (!$activeMenu) {
+			unsubs.forEach((unsub) => unsub());
+			scrollRemoved = false;
+		} else if (!scrollRemoved) {
 			unsubs.push(removeScroll());
 			scrollRemoved = true;
 		}
-
-		// do something with remove scroll
-
-		return () => {
-			if (!get(activeMenu)) {
-				unsubs.forEach((unsub) => unsub());
-				scrollRemoved = false;
-			}
-		};
 	});
 
 	onDestroy(() => {
@@ -470,8 +473,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 	});
 
 	/**
-	 * Keyboard event handler for menu navigation
-	 * @param e The keyboard event
+	 * KBD Navigation handler for moving between menus in the menu bar.
 	 */
 	function handleCrossMenuNavigation(e: KeyboardEvent) {
 		if (!isBrowser) return;
@@ -495,10 +497,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 		// prevent navigation when closing a submenu
 		if (isPrevKey && isKeyDownInsideSubMenu) return;
 
-		// menus scoped to the menubar
 		// Index of the currently focused item in the candidate nodes array
 		const currentIndex = scopedMenus.indexOf(currentTarget);
-		// Calculate the index of the next menu item
 		const scopedMenuLength = scopedMenus.length;
 		let nextIndex: number;
 		switch (e.key) {
