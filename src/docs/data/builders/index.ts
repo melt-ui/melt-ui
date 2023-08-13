@@ -5,6 +5,7 @@ import { checkboxData } from './checkbox.js';
 import { collapsibleData } from './collapsible.js';
 import { comboboxData } from './combobox.js';
 import { contextMenuData } from './context-menu.js';
+import { popoverData as datePickerData } from './date-picker.js';
 import { dialogData } from './dialog.js';
 import { dropdownMenuData } from './dropdown-menu.js';
 import { hoverCardData } from './hover-card.js';
@@ -35,6 +36,7 @@ export const builderList = [
 	'collapsible',
 	'combobox',
 	'context-menu',
+	'date-picker',
 	'dialog',
 	'dropdown-menu',
 	'hover-card',
@@ -82,6 +84,7 @@ export const data: Builders = {
 	'context-menu': contextMenuData,
 	dialog: dialogData,
 	'dropdown-menu': dropdownMenuData,
+	'date-picker': datePickerData,
 	'hover-card': hoverCardData,
 	label: labelData,
 	menubar: menubarData,

@@ -33,19 +33,18 @@ import {
 } from './utils';
 
 import { usePopper } from '$lib/internal/actions';
-import type { Defaults } from '$lib/internal/types';
 import { onMount, tick } from 'svelte';
-import { derived, get, readable, writable, type Writable } from 'svelte/store';
-import type { CreateDatePickerArgs, CreateDatePickerOptions, DateArgs } from './types';
+import { derived, get, readable, writable } from 'svelte/store';
+import type { CreateDatePickerProps, DateProps } from './types';
 
-const defaults: CreateDatePickerOptions = {
+const defaults = {
 	closeOnEscape: true,
 	closeOnOutsideClick: true,
 	disabled: false,
 	earliest: null,
 	latest: null,
 	preventScroll: true,
-	type: 'single',
+	mode: 'single',
 	value: [new Date()],
 	autoSelect: true,
 	open: false,
@@ -55,7 +54,7 @@ const defaults: CreateDatePickerOptions = {
 		placement: 'bottom',
 	},
 	activeDate: new Date(),
-};
+} satisfies CreateDatePickerProps;
 
 type CalendarParts =
 	| 'trigger'
@@ -70,12 +69,12 @@ type CalendarParts =
 	| 'date';
 const { name } = createElHelpers<CalendarParts>('calendar');
 
-export function createDatePicker(args?: CreateDatePickerArgs) {
-	const options = writable<CreateDatePickerOptions>({ ...defaults, ...args });
+export function createDatePicker(props?: CreateDatePickerProps) {
+	const options = writable({ ...defaults, ...props });
 	const arrowSize = readable(get(options).arrowSize);
 	const open = writable(get(options).open);
 	const activeTrigger = writable<HTMLElement | null>(null);
-	const value = writable<CreateDatePickerOptions['value']>(get(options).value);
+	const value = writable<CreateDatePickerProps['value']>(get(options).value);
 	const dates = writable<Date[]>([]);
 	const lastMonthDates = writable<Date[]>([]);
 	const nextMonthDates = writable<Date[]>([]);
@@ -295,14 +294,14 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 		stores: [value, options],
 		returned: ([$value, $options]) => {
 			const { earliest, latest } = get(options);
-			return (args: DateArgs) => {
+			return (props: DateProps) => {
 				// console.table({
 				// 	date: new Date(args.value || ''),
 				// 	value: $value,
 				// 	type: get(options).type,
 				// });
 				const selected = getSelectedFromValue({
-					date: new Date(args.value || ''),
+					date: new Date(props.value || ''),
 					value: $value,
 					type: get(options).type,
 				});
@@ -311,17 +310,17 @@ export function createDatePicker(args?: CreateDatePickerArgs) {
 					'aria-selected': selected ? true : undefined,
 					'data-selected': selected ? true : undefined,
 					'data-start':
-						$options.type === 'range' && isSameDay(new Date(args.value), $value[0])
+						$options.type === 'range' && isSameDay(new Date(props.value), $value[0])
 							? ''
 							: undefined,
 					'data-end':
-						$options.type === 'range' && isSameDay(new Date(args.value), $value[1])
+						$options.type === 'range' && isSameDay(new Date(props.value), $value[1])
 							? ''
 							: undefined,
-					'data-value': args.value,
-					'data-label': args.label ?? undefined,
-					'data-disabled': args.disabled ? '' : undefined,
-					tabindex: args.disabled ? -1 : 1,
+					'data-value': props.value,
+					'data-label': props.label ?? undefined,
+					'data-disabled': props.disabled ? '' : undefined,
+					tabindex: props.disabled ? -1 : 1,
 				} as const;
 			};
 		},
