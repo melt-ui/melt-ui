@@ -134,7 +134,7 @@ export function withMelt<E extends keyof HTMLElementEventMap>(
 	return (event: HTMLElementEventMap[E]) => {
 		const { canceled } = dispatchMeltEvent(event);
 		console.log({ canceled, defaultPrevented: event.defaultPrevented });
-		if (canceled) return;
+		if (canceled || event.defaultPrevented) return;
 		return handler(event);
 	};
 }
