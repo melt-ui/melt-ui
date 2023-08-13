@@ -74,14 +74,14 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	const arrowSize = readable(get(options).arrowSize);
 	const open = writable(get(options).open);
 	const activeTrigger = writable<HTMLElement | null>(null);
-	const value = writable<CreateDatePickerProps['value']>(get(options).value);
+	const value = writable<Date[]>(get(options).value ?? [new Date()]);
 	const dates = writable<Date[]>([]);
 	const lastMonthDates = writable<Date[]>([]);
 	const nextMonthDates = writable<Date[]>([]);
 	const selectEnd = writable<boolean>(false);
 	const activeDate = writable<Date>(get(options).activeDate);
 
-	if (get(options).type === 'range') {
+	if (get(options).mode === 'range') {
 		value.update((prev) => {
 			if (prev.length < 2) {
 				prev.push(prev[0]);
@@ -95,7 +95,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		input: generateId(),
 	};
 
-	const nextMonth = builder(name('nextMonth'), {
+	const nextMonthButton = builder(name('nextMonth'), {
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
 				activeDate.update((prev) => {
@@ -115,7 +115,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		},
 	});
 
-	const prevMonth = builder(name('prevMonth'), {
+	const prevMonthButton = builder(name('prevMonth'), {
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
 				activeDate.update((prev) => {
@@ -135,7 +135,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		},
 	});
 
-	const nextYear = builder(name('nextYear'), {
+	const nextYearButton = builder(name('nextYear'), {
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
 				activeDate.update((prev) => {
@@ -155,7 +155,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		},
 	});
 
-	const prevYear = builder(name('prevYear'), {
+	const prevYearButton = builder(name('prevYear'), {
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
 				activeDate.update((prev) => {
@@ -197,7 +197,11 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 						const popper = usePopper(node, {
 							anchorElement: $activeTrigger,
 							open,
-							options: {},
+							options: {
+								floating: {
+									placement: 'bottom',
+								},
+							},
 						});
 
 						if (popper && popper.destroy) {
@@ -303,18 +307,18 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				const selected = getSelectedFromValue({
 					date: new Date(props.value || ''),
 					value: $value,
-					type: get(options).type,
+					mode: get(options).mode,
 				});
 				return {
 					role: 'date',
 					'aria-selected': selected ? true : undefined,
 					'data-selected': selected ? true : undefined,
 					'data-start':
-						$options.type === 'range' && isSameDay(new Date(props.value), $value[0])
+						$options.mode === 'range' && isSameDay(new Date(props.value), $value[0])
 							? ''
 							: undefined,
 					'data-end':
-						$options.type === 'range' && isSameDay(new Date(props.value), $value[1])
+						$options.mode === 'range' && isSameDay(new Date(props.value), $value[1])
 							? ''
 							: undefined,
 					'data-value': props.value,
@@ -340,7 +344,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				const args = getElArgs();
 				if (args.disabled) return;
 				const date = new Date(args.value || '');
-				switch (get(options).type) {
+				switch (get(options).mode) {
 					case 'single':
 						value.set([date]);
 						if (get(options).autoClose) {
@@ -366,7 +370,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 								prev = [...prev, date];
 							}
 
-							console.log(prev);
 							return prev;
 						});
 						break;
@@ -407,14 +410,14 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	function focusElement(add: number) {
-		let node = document.activeElement as HTMLElement;
+		const node = document.activeElement as HTMLElement;
 		if (!node || node.hasAttribute('[data-melt-calendar-date]')) return;
 		const allDates = Array.from(
 			document.querySelectorAll<HTMLElement>(`[data-melt-calendar-date]:not([data-disabled])`)
 		);
-		let index = allDates.indexOf(node);
-		let nextIndex = index + add;
-		let nextDate = allDates[nextIndex];
+		const index = allDates.indexOf(node);
+		const nextIndex = index + add;
+		const nextDate = allDates[nextIndex];
 		if (nextDate) {
 			nextDate.focus();
 		}
@@ -443,11 +446,11 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				.fill(0)
 				.map((_, i) => new Date($activeDate.getFullYear(), $activeDate.getMonth(), i + 1));
 
-			let lastSunday = getLastSunday(datesArray[0]);
-			let nextSaturday = getNextSaturday(datesArray[datesArray.length - 1]);
+			const lastSunday = getLastSunday(datesArray[0]);
+			const nextSaturday = getNextSaturday(datesArray[datesArray.length - 1]);
 
-			let lastMonthDays = getDaysBetween(lastSunday, datesArray[0]);
-			let nextMonthDays = getDaysBetween(datesArray[datesArray.length - 1], nextSaturday);
+			const lastMonthDays = getDaysBetween(lastSunday, datesArray[0]);
+			const nextMonthDays = getDaysBetween(datesArray[datesArray.length - 1], nextSaturday);
 
 			lastMonthDates.set(lastMonthDays);
 			dates.set(datesArray);
@@ -458,7 +461,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	effect([options], ([$options]) => {
 		if (!isBrowser) return;
 
-		if ($options.type === 'range') {
+		if ($options.mode === 'range') {
 			value.update((prev) => {
 				if (prev.length < 2) {
 					prev.push(prev[0]);
@@ -469,21 +472,26 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	return {
-		trigger,
-		open,
-		content,
-		arrow,
-		close,
-		value,
-		nextMonth,
-		prevMonth,
-		activeDate,
-		nextYear,
-		prevYear,
-		dates,
-		date,
-		lastMonthDates,
-		nextMonthDates,
-		confirm,
+		elements: {
+			trigger,
+			content,
+			arrow,
+			close,
+			nextMonthButton,
+			prevMonthButton,
+			nextYearButton,
+			prevYearButton,
+			date,
+			confirm,
+		},
+		states: {
+			open,
+			activeDate,
+			dates,
+			lastMonthDates,
+			nextMonthDates,
+			value,
+		},
+		options: {},
 	};
 }

@@ -105,15 +105,15 @@ export function subYears(date: Date, years: number) {
 interface GetSelectedFromValuesArgs {
 	date: Date;
 	value: Date[];
-	type: CreateDatePickerOptions['type'];
+	mode: CreateDatePickerOptions['mode'];
 }
 
 export const getSelectedFromValue: (props: GetSelectedFromValuesArgs) => boolean = ({
 	date,
-	type,
+	mode,
 	value,
 }) => {
-	switch (type) {
+	switch (mode) {
 		case 'single':
 			return isSameDay(value[0], date);
 		case 'range':

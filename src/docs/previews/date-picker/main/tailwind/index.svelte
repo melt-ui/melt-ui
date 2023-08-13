@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { createPopover } from '$lib/builders';
 	import { createDatePicker } from '$lib/builders';
 	import { fade } from 'svelte/transition';
 	import X from '~icons/lucide/x';
@@ -8,23 +7,27 @@
 	import ChevronsRight from '~icons/lucide/chevrons-right';
 	import ChevronsLeft from '~icons/lucide/chevrons-left';
 	import { dateFormatter } from './formatters';
+	import { melt } from '$lib';
 
 	const {
-		trigger,
-		content,
-		open,
-		arrow,
-		close,
-		value,
-		activeDate,
-		nextMonth,
-		prevMonth,
-		nextYear,
-		prevYear,
-		dates,
-		date,
-		lastMonthDates,
-		nextMonthDates,
+        elements: {
+            trigger,
+            content,
+            arrow,
+            close,
+            nextMonthButton,
+            prevMonthButton,
+            nextYearButton,
+            prevYearButton,
+            date,
+        },
+        states: {
+            open,
+            value,
+            dates,
+            lastMonthDates,
+            nextMonthDates,
+        }
 	} = createDatePicker({
 		mode: 'single'
 	});
@@ -54,18 +57,18 @@
 			</div>
 			<div class="buttons-wrapper">
 				<div class="flex items-center space-x-2">
-					<button {...$prevYear} use:prevYear class="button">
+					<button use:melt={$prevYearButton} class="button">
 						<ChevronsLeft />
 					</button>
-					<button {...$prevMonth} use:prevMonth class="button">
+					<button use:melt={$prevMonthButton} class="button">
 						<ChevronLeft />
 					</button>
 				</div>
 				<div class="flex items-center space-x-2">
-					<button {...$nextMonth} use:nextMonth class="button">
+					<button use:melt={$nextMonthButton} class="button">
 						<ChevronRight />
 					</button>
-					<button {...$nextYear} use:nextYear class="button">
+					<button use:melt={$nextYearButton} class="button">
 						<ChevronsRight />
 					</button>
 				</div>
