@@ -7,8 +7,6 @@ import {
 	executeCallbacks,
 	getState,
 	isBrowser,
-	noop,
-	removeScroll,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
@@ -73,8 +71,6 @@ export function createSortable(props?: CreateSortableProps) {
 	let previousHitItem: SortableHit | null = null;
 
 	let returningHome: { el: HTMLElement } | null = null;
-
-	let unsubScroll = noop;
 
 	const logs = writable('');
 
@@ -250,9 +246,8 @@ export function createSortable(props?: CreateSortableProps) {
 
 		// Define the event listeners
 		const handlePointerMove = (e: PointerEvent) => {
+			// Prevent default behavior while dragging
 			e.preventDefault();
-
-			(e.target as HTMLElement).setPointerCapture(e.pointerId);
 
 			// Always update the ghost position.
 			translate($ghost, e);
@@ -350,32 +345,16 @@ export function createSortable(props?: CreateSortableProps) {
 			// Cleanup even listeners
 			document.removeEventListener('pointermove', handlePointerMove);
 			document.removeEventListener('pointerup', handlePointerUp);
-			// document.removeEventListener('touchmove', handlePointerMove);
 		};
 
 		// Add event listeners
 		document.addEventListener('pointermove', handlePointerMove, false);
 		document.addEventListener('pointerup', handlePointerUp, false);
-		// document.addEventListener('touchmove', handlePointerMove, false);
 
 		// Cleanup when the component is destroyed
 		return () => {
 			cleanup();
 		};
-	});
-
-	// When an item is selected, remove the scroll from the body. Unsubscribe when the item is
-	// deselected.
-	effect(selected, ($selected) => {
-		if ($selected) {
-			//
-			unsubScroll = removeScroll();
-
-			logs.set('scroll removed');
-		} else {
-			logs.set('scroll added ');
-			unsubScroll();
-		}
 	});
 
 	/**
