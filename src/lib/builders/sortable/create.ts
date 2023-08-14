@@ -7,7 +7,6 @@ import {
 	executeCallbacks,
 	getState,
 	isBrowser,
-	throttle,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
@@ -93,14 +92,12 @@ export function createSortable(props?: CreateSortableProps) {
 					'data-melt-sortable-zone-orientation': props.orientation,
 					'data-melt-sortable-zone-disabled': props.disabled ? true : undefined,
 					'data-melt-sortable-zone-dropzone': props.dropzone ? true : undefined,
-					// style: props.disabled ? undefined : 'touch-action: none;',
 				};
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<SortableEvents['zone']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerdown', (e) => {
-					console.log('POINTER DOWN');
 					// Ignore right click and multi-touch on mobile
 					if (e.button === 2 || !e.isPrimary) return;
 
@@ -158,28 +155,14 @@ export function createSortable(props?: CreateSortableProps) {
 					// Set item dragging attribute
 					targetedItem.setAttribute('data-melt-sortable-item-dragging', '');
 
+					// HACK :( .. This is strange but when using touch, the pointerenter and
+					// pointerleave events do not fire until there is a DOM update. The following
+					// moves the target item to before itself, which visually does nothing, but
+					// allows pointerenter and pointerleave to work .. ? It takes on average
+					// 0.15ms.
 					moveEl(targetedItem, targetedItem, false);
-
-					console.log(targetedItem.hasPointerCapture(e.pointerId));
-					console.log('start dragging');
 				}),
-				addMeltEventListener(node, 'gotpointercapture', () => {
-					console.log('ZONE got pointer capture');
-				}),
-				addMeltEventListener(node, 'touchmove', (e: TouchEvent) => {
-					console.log('touchmove');
-					e.preventDefault();
-				}),
-				addMeltEventListener(node, 'touchstart', (e: TouchEvent) => {
-					console.log('touchstart');
-					e.preventDefault();
-				}),
-				// addMeltEventListener(node, 'touchend', (e: TouchEvent) => {
-				// 	console.log('in here');
-				// 	e.preventDefault();
-				// }),
 				addMeltEventListener(node, 'pointerenter', () => {
-					console.log('ZONE ENTER');
 					const zoneId = node.getAttribute('data-melt-sortable-zone-id');
 					if (!zoneId) return;
 
@@ -191,13 +174,7 @@ export function createSortable(props?: CreateSortableProps) {
 
 					// Do nothing when an item is not selected
 					const $selected = get(selected);
-					if (!$selected) {
-						console.log('NO SELECTED');
-
-						return;
-					}
-
-					// if(returningHome && )
+					if (!$selected) return;
 
 					// Check if this zone supports dropping the item.
 					if (!isSupportedZone($selected.originZone, zoneId, props.fromZones)) return;
@@ -212,16 +189,12 @@ export function createSortable(props?: CreateSortableProps) {
 					node.setAttribute('data-melt-sortable-zone-focus', '');
 				}),
 				addMeltEventListener(node, 'pointerleave', async () => {
-					console.log('ZONE LEAVE');
 					// When return home is true, return the item to its origin zone (when it is
 					// not currently there)
 					const $selected = get(selected);
 					if (!$selected) return;
 
 					if ($selected.returnHome && $selected.originZone !== $selected.zone) {
-						// if ($selected.el.isAnimating) {
-						// 	$selected.el.currentAnimation?.cancel();
-						// }
 						returnHome();
 					}
 
@@ -247,6 +220,7 @@ export function createSortable(props?: CreateSortableProps) {
 					'data-melt-sortable-item-id': props.id,
 					'data-melt-sortable-item-disabled': props.disabled ? true : undefined,
 					'data-melt-sortable-item-return-home': props.returnHome ? true : undefined,
+					style: props.disabled ? undefined : 'touch-action: none;',
 				};
 			};
 		},
@@ -267,20 +241,16 @@ export function createSortable(props?: CreateSortableProps) {
 	effect(ghost, ($ghost) => {
 		if (!$ghost || !isBrowser) return;
 
-		const throttledMoveCheck = throttle((...args: unknown[]) => {
-			const [ghost, e] = args as [SortableGhost, PointerEvent];
-			return moveCheck(ghost, e);
-		}, 0);
-
 		// Define the event listeners
 		const handlePointerMove = (e: PointerEvent) => {
 			// Prevent default behavior while dragging
-			// e.preventDefault();
+			e.preventDefault();
 
 			// Always update the ghost position.
 			translate($ghost, e);
 
-			throttledMoveCheck($ghost, e);
+			// After translating the ghost, check if the mouse is intersecting an item.
+			moveCheck($ghost, e);
 		};
 
 		const handlePointerUp = () => {
@@ -313,14 +283,6 @@ export function createSortable(props?: CreateSortableProps) {
 		// Add event listeners
 		document.addEventListener('pointermove', handlePointerMove, false);
 		document.addEventListener('pointerup', handlePointerUp, false);
-		document.addEventListener(
-			'gotpointercapture',
-			(e: PointerEvent) => {
-				console.log('got pointer capture', Math.random());
-				console.log('ghost', $ghost.el.hasPointerCapture(e.pointerId));
-			},
-			false
-		);
 
 		// Cleanup when the component is destroyed
 		return () => {

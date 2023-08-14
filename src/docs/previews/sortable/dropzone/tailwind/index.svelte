@@ -36,7 +36,7 @@
 
 		<!-- Dropzone -->
 		<div
-			class="group flex min-h-[3.5rem] w-72 flex-row flex-wrap place-content-center items-center gap-1.5 rounded border-2 border-dashed border-neutral-50 bg-green-500 p-2 transition-all duration-1000 data-[melt-sortable-zone-focus]:border-solid"
+			class="group flex min-h-[3.5rem] w-72 flex-row flex-wrap place-content-center items-center gap-1.5 rounded border-2 border-dashed border-neutral-50 p-2 transition-all duration-1000 data-[melt-sortable-zone-focus]:border-solid"
 			use:melt={$zone({
 				id: 'Dropzone',
 				orientation: 'horizontal',
@@ -48,14 +48,6 @@
 				class="text-center group-data-[melt-sortable-zone-focus]:hidden [&:not(:last-child)]:hidden"
 				>Dropzone</span
 			>
-			<!-- <div
-				class="group flex cursor-move select-none items-center gap-3 rounded border border-transparent bg-magnum-500 p-1 text-white data-[melt-sortable-item-dragging]:border-magnum-500 data-[melt-sortable-item-dragging]:bg-magnum-300"
-				use:melt={$item({ id: 'bob' })}
-			> -->
-			<!-- <span class="group-data-[melt-sortable-item-dragging]:opacity-0"
-					>bob</span
-				> -->
-			<!-- </div> -->
 		</div>
 	</div>
 </div>
