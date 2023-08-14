@@ -157,11 +157,18 @@ export function createSortable(props?: CreateSortableProps) {
 
 					// Set item dragging attribute
 					targetedItem.setAttribute('data-melt-sortable-item-dragging', '');
-					document.body.offsetHeight; // Force a reflow
+
+					moveEl(targetedItem, targetedItem, false);
+
+					console.log(targetedItem.hasPointerCapture(e.pointerId));
 					console.log('start dragging');
 				}),
 				addMeltEventListener(node, 'gotpointercapture', () => {
-					console.log('zone got pointer capture');
+					console.log('ZONE got pointer capture');
+				}),
+				addMeltEventListener(node, 'touchmove', (e: TouchEvent) => {
+					console.log('touchmove');
+					e.preventDefault();
 				}),
 				addMeltEventListener(node, 'touchstart', (e: TouchEvent) => {
 					console.log('touchstart');
@@ -263,7 +270,7 @@ export function createSortable(props?: CreateSortableProps) {
 		const throttledMoveCheck = throttle((...args: unknown[]) => {
 			const [ghost, e] = args as [SortableGhost, PointerEvent];
 			return moveCheck(ghost, e);
-		}, 50);
+		}, 0);
 
 		// Define the event listeners
 		const handlePointerMove = (e: PointerEvent) => {
@@ -310,7 +317,7 @@ export function createSortable(props?: CreateSortableProps) {
 			'gotpointercapture',
 			(e: PointerEvent) => {
 				console.log('got pointer capture', Math.random());
-				$ghost.el.releasePointerCapture(e.pointerId);
+				console.log('ghost', $ghost.el.hasPointerCapture(e.pointerId));
 			},
 			false
 		);
