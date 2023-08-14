@@ -14,7 +14,7 @@ focus on accessibility, limitless customization options, and an overall delightf
 experience, Melt UI strives to be the de-facto headless UI library for Svelte.
 
 <Construction>
-    Melt UI is in its early stages. Expect breaking changes! And lots of new stuff! 🚀
+    Melt UI is in its early stages. Expect breaking changes in minor releases until 1.0 is ready! And lots of new stuff! 🚀
 </Construction>
 
 ## Features
