@@ -1,4 +1,4 @@
-import type { GroupedEvents } from '$lib/internal/types.js';
+import type { GroupedEvents, MeltComponentEvents } from '$lib/internal/types.js';
 
 export const tagsInputEvents = {
 	root: ['mousedown'] as const,
@@ -9,3 +9,4 @@ export const tagsInputEvents = {
 };
 
 export type TagsInputEvents = GroupedEvents<typeof tagsInputEvents>;
+export type TagsInputComponentEvents = MeltComponentEvents<TagsInputEvents>;

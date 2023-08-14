@@ -482,10 +482,15 @@ export function createSelect<
 					disabled: props.disabled ?? false,
 				};
 				optionsList.push(optProps);
+
+				const isSelected = Array.isArray($value)
+					? $value.includes(props?.value)
+					: $value === props?.value;
+
 				return {
 					role: 'option',
-					'aria-selected': $value === props?.value,
-					'data-selected': $value === props?.value ? '' : undefined,
+					'aria-selected': isSelected,
+					'data-selected': isSelected ? '' : undefined,
 					'data-value': JSON.stringify(props.value),
 					'data-label': props.label ?? undefined,
 					'data-disabled': props.disabled ? '' : undefined,
@@ -611,7 +616,7 @@ export function createSelect<
 			} else if (menuEl && $open) {
 				// focus on the menu element
 				handleRovingFocus(menuEl);
-			} else if ($activeTrigger && constantMounted) {
+			} else if ($activeTrigger && constantMounted && get(isUsingKeyboard)) {
 				// Hacky way to prevent the keydown event from triggering on the trigger
 				handleRovingFocus($activeTrigger);
 			}

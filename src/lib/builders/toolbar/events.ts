@@ -1,4 +1,4 @@
-import type { GroupedEvents } from '$lib/internal/types.js';
+import type { GroupedEvents, MeltComponentEvents } from '$lib/internal/types.js';
 
 export const toolbarEvents = {
 	button: ['keydown'] as const,
@@ -7,3 +7,4 @@ export const toolbarEvents = {
 };
 
 export type ToolbarEvents = GroupedEvents<typeof toolbarEvents>;
+export type ToolbarComponentEvents = MeltComponentEvents<ToolbarEvents>;

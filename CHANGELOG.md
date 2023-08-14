@@ -1,5 +1,26 @@
 # @melt-ui/svelte
 
+## 0.34.6
+
+### Patch Changes
+
+- 13d4cd85: [Context Menu] Fix bug preventing forms from being submitted within the menus
+- 0be3520a: [Select] Prevent trigger refocus when using mouse
+- 19942427: [Menubar] Fix lag when switching between menus
+
+## 0.34.5
+
+### Patch Changes
+
+- 69858eaf: Resolves a bug in select builder when multi-select is active where data-selected and aria-selected were not being set properly
+- aba59d25: fix: tag being created/updated even if not valid
+
+## 0.34.4
+
+### Patch Changes
+
+- c0c66f0d: [Types] Expose ComponentEvent types
+
 ## 0.34.3
 
 ### Patch Changes
