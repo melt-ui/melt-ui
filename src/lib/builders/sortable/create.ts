@@ -7,6 +7,7 @@ import {
 	executeCallbacks,
 	getState,
 	isBrowser,
+	throttle,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
@@ -72,8 +73,6 @@ export function createSortable(props?: CreateSortableProps) {
 
 	let returningHome: { el: HTMLElement } | null = null;
 
-	const logs = writable('');
-
 	const zone = builder(name('zone'), {
 		returned: () => {
 			return (props: SortableZoneProps) => {
@@ -94,14 +93,14 @@ export function createSortable(props?: CreateSortableProps) {
 					'data-melt-sortable-zone-orientation': props.orientation,
 					'data-melt-sortable-zone-disabled': props.disabled ? true : undefined,
 					'data-melt-sortable-zone-dropzone': props.dropzone ? true : undefined,
-					style: props.disabled ? undefined : 'touch-action: none;',
+					// style: props.disabled ? undefined : 'touch-action: none;',
 				};
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<SortableEvents['zone']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerdown', (e) => {
-					console.log('pointerdown');
+					console.log('POINTER DOWN');
 					// Ignore right click and multi-touch on mobile
 					if (e.button === 2 || !e.isPrimary) return;
 
@@ -158,9 +157,22 @@ export function createSortable(props?: CreateSortableProps) {
 
 					// Set item dragging attribute
 					targetedItem.setAttribute('data-melt-sortable-item-dragging', '');
+					document.body.offsetHeight; // Force a reflow
+					console.log('start dragging');
 				}),
-				addMeltEventListener(node, 'pointerenter', async () => {
-					console.log('pointerenter');
+				addMeltEventListener(node, 'gotpointercapture', () => {
+					console.log('zone got pointer capture');
+				}),
+				addMeltEventListener(node, 'touchstart', (e: TouchEvent) => {
+					console.log('touchstart');
+					e.preventDefault();
+				}),
+				// addMeltEventListener(node, 'touchend', (e: TouchEvent) => {
+				// 	console.log('in here');
+				// 	e.preventDefault();
+				// }),
+				addMeltEventListener(node, 'pointerenter', () => {
+					console.log('ZONE ENTER');
 					const zoneId = node.getAttribute('data-melt-sortable-zone-id');
 					if (!zoneId) return;
 
@@ -172,7 +184,11 @@ export function createSortable(props?: CreateSortableProps) {
 
 					// Do nothing when an item is not selected
 					const $selected = get(selected);
-					if (!$selected) return;
+					if (!$selected) {
+						console.log('NO SELECTED');
+
+						return;
+					}
 
 					// if(returningHome && )
 
@@ -189,7 +205,7 @@ export function createSortable(props?: CreateSortableProps) {
 					node.setAttribute('data-melt-sortable-zone-focus', '');
 				}),
 				addMeltEventListener(node, 'pointerleave', async () => {
-					console.log('pointerleave');
+					console.log('ZONE LEAVE');
 					// When return home is true, return the item to its origin zone (when it is
 					// not currently there)
 					const $selected = get(selected);
@@ -244,80 +260,20 @@ export function createSortable(props?: CreateSortableProps) {
 	effect(ghost, ($ghost) => {
 		if (!$ghost || !isBrowser) return;
 
+		const throttledMoveCheck = throttle((...args: unknown[]) => {
+			const [ghost, e] = args as [SortableGhost, PointerEvent];
+			return moveCheck(ghost, e);
+		}, 50);
+
 		// Define the event listeners
 		const handlePointerMove = (e: PointerEvent) => {
 			// Prevent default behavior while dragging
-			e.preventDefault();
+			// e.preventDefault();
 
 			// Always update the ghost position.
 			translate($ghost, e);
 
-			// Do nothing when outside a zone or in an unsupported zone.
-			if (!pointerZone) return;
-
-			// Get the selected item and zone props.
-			const $selected = get(selected);
-			const props = zoneProps[pointerZone.id];
-			if (!$selected || !props) return;
-
-			// True when the selected item is in the same zone as the pointer.
-			const isSameZone = $selected.zone === pointerZone.id;
-
-			// When this is an empty zone or it's a dropzone, add the selected item to the end.
-			if (pointerZone.items.length === 0 || props.dropzone) {
-				// Do nothing when the item has already been moved to this zone
-				if (isSameZone) return;
-
-				moveToEnd(e, props);
-				return;
-			}
-
-			// We know this zone is not empty or a dropzone, so we can now check if the pointer is
-			// NOT intersecting an item and return early or when the pointer and selected item are
-			// in the same zone, check if the the pointer is intersecting the selected item and
-			// return early.
-			//
-			// Only do this check when the selected item is not animating, as during an animation
-			// items are moving around.
-			const targetEl = e.target as HTMLElement;
-			if (
-				!$selected.el.isAnimating &&
-				(!targetEl.closest('[data-melt-sortable-item]') ||
-					(isSameZone && simpleIntersect($selected.el, $ghost, e)))
-			) {
-				previousHitItem = null;
-				return;
-			}
-
-			for (const [index, item] of pointerZone.items.entries()) {
-				// skip the selected item.
-				if ($selected.el === item) continue;
-
-				// Ignore this item when it is the intersecting item  last intersected item when
-				// it's animating.
-				if (previousHitItem && previousHitItem.el.isAnimating && previousHitItem.el === item)
-					continue;
-
-				// Check for an intersect hit.
-				const result = intersect(item, $ghost, e, props, previousHitItem);
-
-				if (result && result.hit && result.quadrant) {
-					props.orientation !== 'both'
-						? singleOrientationMove(index, result.quadrant, props.orientation)
-						: multiOrientationMove(index, result.quadrant);
-
-					// Set the previous hit item when it's not the same as the current hit item.
-					if (!previousHitItem || previousHitItem.el !== item) {
-						previousHitItem = {
-							el: item,
-							quadrant: result.quadrant,
-							newZone: !isSameZone,
-						};
-					}
-
-					return;
-				}
-			}
+			throttledMoveCheck($ghost, e);
 		};
 
 		const handlePointerUp = () => {
@@ -350,12 +306,95 @@ export function createSortable(props?: CreateSortableProps) {
 		// Add event listeners
 		document.addEventListener('pointermove', handlePointerMove, false);
 		document.addEventListener('pointerup', handlePointerUp, false);
+		document.addEventListener(
+			'gotpointercapture',
+			(e: PointerEvent) => {
+				console.log('got pointer capture', Math.random());
+				$ghost.el.releasePointerCapture(e.pointerId);
+			},
+			false
+		);
 
 		// Cleanup when the component is destroyed
 		return () => {
 			cleanup();
 		};
 	});
+
+	/**
+	 * Moves the selected item within a zone or to a new zone based on the hit item and quadrant.
+	 *
+	 * @param {SortableGhost} ghost - The ghost item being dragged.
+	 * @param {PointerEvent} e - The pointer event.
+	 */
+	function moveCheck(ghost: SortableGhost, e: PointerEvent) {
+		// Do nothing when outside a zone or in an unsupported zone.
+		if (!pointerZone) return;
+
+		// Get the selected item and zone props.
+		const $selected = get(selected);
+		const props = zoneProps[pointerZone.id];
+		if (!$selected || !props) return;
+
+		// True when the selected item is in the same zone as the pointer.
+		const isSameZone = $selected.zone === pointerZone.id;
+
+		// When this is an empty zone or it's a dropzone, add the selected item to the end.
+		if (pointerZone.items.length === 0 || props.dropzone) {
+			// Do nothing when the item has already been moved to this zone
+			if (isSameZone) return;
+
+			moveToEnd(e, props);
+			return;
+		}
+
+		// We know this zone is not empty or a dropzone, so we can now check if the pointer is
+		// NOT intersecting an item and return early or when the pointer and selected item are
+		// in the same zone, check if the the pointer is intersecting the selected item and
+		// return early.
+		//
+		// Only do this check when the selected item is not animating, as during an animation
+		// items are moving around.
+		const targetEl = e.target as HTMLElement;
+		if (
+			!$selected.el.isAnimating &&
+			(!targetEl.closest('[data-melt-sortable-item]') ||
+				(isSameZone && simpleIntersect($selected.el, ghost, e)))
+		) {
+			previousHitItem = null;
+			return;
+		}
+
+		for (const [index, item] of pointerZone.items.entries()) {
+			// skip the selected item.
+			if ($selected.el === item) continue;
+
+			// Ignore this item when it is the intersecting item  last intersected item when
+			// it's animating.
+			if (previousHitItem && previousHitItem.el.isAnimating && previousHitItem.el === item)
+				continue;
+
+			// Check for an intersect hit.
+			const result = intersect(item, ghost, e, props, previousHitItem);
+
+			if (result && result.hit && result.quadrant) {
+				props.orientation !== 'both'
+					? singleOrientationMove(index, result.quadrant, props.orientation)
+					: multiOrientationMove(index, result.quadrant);
+
+				// Set the previous hit item when it's not the same as the current hit item.
+				if (!previousHitItem || previousHitItem.el !== item) {
+					previousHitItem = {
+						el: item,
+						quadrant: result.quadrant,
+						newZone: !isSameZone,
+					};
+				}
+
+				return;
+			}
+		}
+	}
 
 	/**
 	 * Moves an item within a zone or to a new zone. Use when the orientation is `vertical` or
@@ -610,6 +649,5 @@ export function createSortable(props?: CreateSortableProps) {
 			handle,
 		},
 		options,
-		logs,
 	};
 }

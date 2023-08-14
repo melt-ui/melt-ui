@@ -12,15 +12,19 @@
 	<div class="flex flex-col gap-3">
 		<!-- Tags -->
 		<div
-			class="flex w-full place-content-center gap-1.5 rounded bg-white p-2"
+			class="flex w-full place-content-center gap-1.5 rounded bg-white p-2 empty:opacity-0"
 			use:melt={$zone({
 				id: 'Tags',
 				orientation: 'horizontal',
 			})}
 		>
+			<span class="text-center text-magnum-700 [&:not(:last-child)]:hidden"
+				>No more tags.</span
+			>
+
 			{#each zoneItems as zoneItem}
 				<div
-					class="group flex cursor-move select-none items-center gap-3 rounded border border-transparent bg-magnum-500 p-1 text-white data-[melt-sortable-item-dragging]:border-magnum-500 data-[melt-sortable-item-dragging]:bg-magnum-300"
+					class="group flex cursor-move select-none items-center gap-3 rounded border border-transparent bg-magnum-500 p-1 text-white data-[melt-sortable-item-dragging]:border-magnum-500 data-[melt-sortable-item-dragging]:bg-magnum-300 group-data-[melt-sortable-zone-id='Dropzone']:cursor-auto"
 					use:melt={$item({ id: zoneItem })}
 				>
 					<span class="group-data-[melt-sortable-item-dragging]:opacity-0"
@@ -32,7 +36,7 @@
 
 		<!-- Dropzone -->
 		<div
-			class="group flex min-h-[3.5rem] w-72 flex-row place-content-center items-center gap-1.5 rounded border-2 border-dashed border-neutral-50 p-2 transition-all duration-1000 data-[melt-sortable-zone-focus]:border-solid"
+			class="group flex min-h-[3.5rem] w-72 flex-row flex-wrap place-content-center items-center gap-1.5 rounded border-2 border-dashed border-neutral-50 bg-green-500 p-2 transition-all duration-1000 data-[melt-sortable-zone-focus]:border-solid"
 			use:melt={$zone({
 				id: 'Dropzone',
 				orientation: 'horizontal',
@@ -44,6 +48,14 @@
 				class="text-center group-data-[melt-sortable-zone-focus]:hidden [&:not(:last-child)]:hidden"
 				>Dropzone</span
 			>
+			<!-- <div
+				class="group flex cursor-move select-none items-center gap-3 rounded border border-transparent bg-magnum-500 p-1 text-white data-[melt-sortable-item-dragging]:border-magnum-500 data-[melt-sortable-item-dragging]:bg-magnum-300"
+				use:melt={$item({ id: 'bob' })}
+			> -->
+			<!-- <span class="group-data-[melt-sortable-item-dragging]:opacity-0"
+					>bob</span
+				> -->
+			<!-- </div> -->
 		</div>
 	</div>
 </div>
