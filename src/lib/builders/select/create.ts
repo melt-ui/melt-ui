@@ -119,7 +119,7 @@ export function createSelect<
 	const valueWritable = withDefaults.value ?? writable<Item>(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
-	const valueLabel = writable<string | number | null>(withDefaults.defaultValueLabel ?? null);
+	const valueLabel = writable<string | null>(withDefaults.defaultValueLabel ?? null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	/**
@@ -145,6 +145,8 @@ export function createSelect<
 		trigger: generateId(),
 		label: generateId(),
 	};
+
+	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
 
 	onMount(() => {
 		// Run after all initial effects
@@ -442,20 +444,14 @@ export function createSelect<
 		}),
 	});
 
-	type OptionProps = {
-		value: unknown;
-		label: string | null;
-		disabled: boolean;
-	};
-
-	const getOptionProps = (el: HTMLElement) => {
+	const getOptionProps = (el: HTMLElement): SelectOptionProps<Item> => {
 		const value = el.getAttribute('data-value');
 		const label = el.getAttribute('data-label');
 		const disabled = el.hasAttribute('data-disabled');
 
 		return {
 			value: value ? JSON.parse(value) : value,
-			label: label ?? el.textContent ?? null,
+			label: label ?? el.textContent ?? undefined,
 			disabled: disabled ? true : false,
 		};
 	};
@@ -470,18 +466,24 @@ export function createSelect<
 		});
 	};
 
-	const optionsList: OptionProps[] = [];
+	/**
+	 * List of options fetched from SSR.
+	 */
+	const ssrOptionPropsArr: SelectOptionProps<Item>[] = [];
+	const getOptionPropsArr = () => {
+		if (!isBrowser) return ssrOptionPropsArr;
+
+		const menuEl = document.getElementById(ids.menu);
+		if (!menuEl) return ssrOptionPropsArr;
+		const options = getOptions(menuEl);
+		return options.map(getOptionProps);
+	};
 
 	const option = builder(name('option'), {
 		stores: value,
 		returned: ($value) => {
 			return (props: SelectOptionProps<Item>) => {
-				const optProps: OptionProps = {
-					value: props.value,
-					label: props.label ?? null,
-					disabled: props.disabled ?? false,
-				};
-				optionsList.push(optProps);
+				ssrOptionPropsArr.push(props);
 
 				const isSelected = Array.isArray($value)
 					? $value.includes(props?.value)
@@ -571,11 +573,11 @@ export function createSelect<
 		},
 	});
 
-	effect(value, ($value) => {
-		if (!isBrowser) return;
+	effect(value, function updateValueLabel($value) {
+		const optionPropsArr = getOptionPropsArr();
 
 		if (Array.isArray($value)) {
-			const labels = optionsList.reduce((result, current) => {
+			const labels = optionPropsArr.reduce((result, current) => {
 				if ($value.includes(current.value) && current.label) {
 					result.add(current.label);
 				}
@@ -584,14 +586,12 @@ export function createSelect<
 
 			valueLabel.set(Array.from(labels).join(', '));
 		} else {
-			const newLabel = optionsList.find((opt) => opt.value === $value)?.label;
+			const newLabel = optionPropsArr.find((opt) => opt.value === $value)?.label;
 			valueLabel.set(newLabel ?? null);
 		}
 	});
 
-	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
-
-	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
+	effect([open, activeTrigger], function handleFocus([$open, $activeTrigger]) {
 		const unsubs: Array<() => void> = [];
 
 		if (!isBrowser) return;
