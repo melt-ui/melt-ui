@@ -38,8 +38,10 @@ export type SortableZoneProps = {
 	 * When `both`, the threshold takes effect on all four sides of the item.
 	 *
 	 * See `threshold` in `SortableZoneProps`
+	 *
+	 * @default vertical
 	 */
-	orientation: SortableOrientation;
+	orientation?: SortableOrientation;
 
 	/**
 	 * Disables all items in the zone. Items within this zone cannot be moved, nor can items be

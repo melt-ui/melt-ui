@@ -26,7 +26,6 @@
 				class="flex min-h-[5px] flex-col gap-1.5"
 				use:melt={$zone({
 					id: zoneName,
-					orientation: 'vertical',
 					fromZones: '*',
 				})}
 			>

@@ -78,7 +78,7 @@ export function createSortable(props?: CreateSortableProps) {
 				zoneProps[props.id] = {
 					...props,
 					id: props.id,
-					orientation: props.orientation,
+					orientation: props.orientation ?? 'vertical',
 					disabled: props.disabled ?? false,
 					threshold: Math.max(0, Math.min(props?.threshold ?? 0.95, 1)),
 					fromZones: props.fromZones ?? '-',

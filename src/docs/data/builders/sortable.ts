@@ -53,7 +53,7 @@ const zone = elementSchema('zone', {
 		{
 			name: 'orientation',
 			type: ['horizontal', 'vertical', 'both'],
-			required: true,
+			default: 'vertical',
 		},
 		{
 			name: 'disabled',

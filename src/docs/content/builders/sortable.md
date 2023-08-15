@@ -46,14 +46,14 @@ A high level example of how to structure a single sortable zone is shown below.
 	} = createSortable()
 </script>
 
-<div use:melt={$zone({ id: 'zone1', orientation: 'vertical' })}>
+<div use:melt={$zone({ id: 'zone1' })}>
 	<div use:melt={$item({ id: 'item1' })}>...</div>
 	<div use:melt={$item({ id: 'item2' })}>...</div>
 </div>
 ```
 
-In the above example, a `zone` is created with the unique id of `zone1` and an orientation of
-`vertical`. This orientation hints at the intended layout of the items within the zone.
+In the above example, a `zone` is created with the unique id of `zone1`. By default this zone will
+have an orientation of vertical and a hit threshold of 0.95.
 
 This zone contains 2 items that are uniquely identified as `item1` and `item2` that can be dragged
 and intersect/swap with each other.
@@ -82,15 +82,8 @@ allow items from `zone2`, while `zone2`, by default, will disallow items from al
 </Callout>
 
 ```svelte {4}
-<div
-	use:melt={$zone({
-		id: 'zone1',
-		orientation: 'vertical',
-		fromZone: ['zone2']
-	})}>
-	...
-</div>
-<div use:melt={$zone({ id: 'zone2', orientation: 'vertical' })}>...</div>
+<div use:melt={$zone({ id: 'zone1', fromZone: ['zone2'] })}>...</div>
+<div use:melt={$zone({ id: 'zone2' })}>...</div>
 ```
 
 ## Orientation and Threshold
@@ -98,8 +91,8 @@ allow items from `zone2`, while `zone2`, by default, will disallow items from al
 `Orientation` and `threshold` are a zonal props, which are used when determining if a _hit_ has
 occurred between the pointer and another item.
 
-`Orientation` is a required prop that defines the direction the items flow in. This value can be
-`horizontal`, `vertical`, or `both`, for grid like layouts.
+`Orientation` is an optional prop that defines the direction the items flow in. This value can be
+`horizontal`, `vertical`, or `both`, for grid like layouts. It defaults to `vertical`.
 
 `threshold`, is an optional prop and is used in combination with orientation to determine how far
 the pointer must intersect an item before it is considered a _hit_. This value ranges from `0` to
@@ -143,8 +136,8 @@ An `animationDuration` can be passed in to the builder to set the duration (defa
 `dropzone` is an optional zonal prop, that gives a zone the following characteristics:
 
 - Items in a dropzone **cannot** be selected and dragged internally or to other zones.
-- Items from other zones **can** be moved into a dropzone, if item is allowed by `fromZone`,
-  and will be placed at the end.
+- Items from other zones **can** be moved into a dropzone, if item is allowed by `fromZone`, and
+  will be placed at the end.
 
 <Preview code={snippets.dropzone}>
     <svelte:component this={previews.dropzone} />
