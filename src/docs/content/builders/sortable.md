@@ -69,21 +69,34 @@ To specify a handle, add a `handle` element within an `item`.
 ...
 ```
 
-### Multiple Zones
+### Multiple Zones (fromZones prop)
 
-By default items from 1 zone cannot be moved to another zone. To enable this, use the `fromZone`
-prop on the `zone` element.
+By default items can not move between zones. To allow this, use the zonal `fromZone` prop.
+
+`fromZone` supports `*` to allow items from all zones, `-` to disallow items from all zones or
+`string[]`` to allow items from specific zones.
 
 The following shows a high level example of 2 zones; `zone1` and `zone2`. `zone1` is configured to
 allow items from `zone2`, while `zone2`, by default, will disallow items from all other zones.
 
-<Callout type='info'>
-<code>fromZone</code> supports '<code>*</code>' to allow items from all zones, '<code>-</code>' to disallow items from all zones or '<code>string[]</code>' to allow items from specific zones.
-</Callout>
-
-```svelte {4}
+```svelte {1}
 <div use:melt={$zone({ id: 'zone1', fromZone: ['zone2'] })}>...</div>
 <div use:melt={$zone({ id: 'zone2' })}>...</div>
+```
+
+### Ghost
+
+When an item is selected, a ghost element is created. This ghost element is a deep clone of the
+selected item.
+
+All `data-melt-*` and `data-sortable-*` attributes are removed and then the element is given the
+`data-melt-sortable-ghost` data attribute.
+
+This attribute can be applied to a zone item to style the ghost element, for example to set the
+opacity, or hide child elements, etc.
+
+```svelte {2}
+<div class="... data-[melt-sortable-ghost]:opacity-50" use:melt={$item({ id: 'item1' })}>...</div>
 ```
 
 ## Orientation and Threshold
