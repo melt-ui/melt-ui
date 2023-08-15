@@ -4,10 +4,94 @@ description: Sort items within a zone or move items between zones.
 ---
 
 <script>
-    import { Preview } from '$docs/components'
+    import { APIReference, Preview, Callout } from '$docs/components'
     export let snippets
     export let previews
+    export let schemas
 </script>
+
+## Anatomy
+
+- **Zone**: A zone container
+- **Item**: An item container within a zone
+- **Handle**: A handle that can be used to move an item
+
+## Usage
+
+To create a sortable zones containing items, use the `createSortable` builder function.
+
+```svelte {3-5}
+<script lang="ts">
+	import { createSortable } from '@melt-ui/svelte'
+	const {
+		elements: { zone, item, handle }
+	} = createSortable()
+</script>
+```
+
+The elements `zone`, `item` and `handle` can then be used to construct 1 or more sortable zones that
+contain items.
+
+A high level example of how to structure a single sortable zone is shown below.
+
+<Callout type='info'>
+<code>handle</code> is optional and if not provided, the entire item is considered the handle.
+</Callout>
+
+```svelte
+<script lang="ts">
+	import { createSortable } from '@melt-ui/svelte'
+	const {
+		elements: { zone, item }
+	} = createSortable()
+</script>
+
+<div use:melt={$zone({ id: 'zone1', orientation: 'vertical' })}>
+	<div use:melt={$item({ id: 'item1' })}>...</div>
+	<div use:melt={$item({ id: 'item2' })}>...</div>
+</div>
+```
+
+In the above example, a `zone` is created with the unique id of `zone1` and an orientation of
+`vertical`. This orientation hints at the intended layout of the items within the zone.
+
+This zone contains 2 items that are uniquely identified as `item1` and `item2` that can be dragged
+and intersect/swap with each other.
+
+To specify a handle, add a `handle` element within an `item`.
+
+```svelte {3}
+...
+<div use:melt={$item({ id: 'item1' })}>
+	<div use:melt={$handle}>...</div>
+	<span>...</span>
+</div>
+...
+```
+
+### Multiple Zones
+
+By default items from 1 zone cannot be moved to another zone. To enable this, use the `fromZone`
+prop on the `zone` element.
+
+The following shows a high level example of 2 zones; `zone1` and `zone2`. `zone1` is configured to
+allow items from `zone2`, while `zone2`, by default, will disallow items from all other zones.
+
+<Callout type='info'>
+<code>fromZone</code> supports '<code>*</code>' to allow items from all zones, '<code>-</code>' to disallow items from all zones or '<code>string[]</code>' to allow items from specific zones.
+</Callout>
+
+```svelte {4}
+<div
+	use:melt={$zone({
+		id: 'zone1',
+		orientation: 'vertical',
+		fromZone: ['zone2']
+	})}>
+	...
+</div>
+<div use:melt={$zone({ id: 'zone2', orientation: 'vertical' })}>...</div>
+```
 
 ## Orientation and Threshold
 
@@ -45,14 +129,8 @@ In the following example, the darker areas show where a **hit** will occur.
 Sortable handles the animation of items internally as they are moved, via a custom implementation of
 FLIP (First, Last, Invert, Play).
 
-`createSortable` accepts 2 optional props for controlling this behavior; `animationDuration` and
-`animationEasing`.
-
-`animationDuration` is the duration of the animation in milliseconds. This defaults to `150`.
-
-`animationEasing` is the easing function used for the animation. This defaults to `ease-out`.
-
-In the following example, the duration can be set to between 0 and 5 seconds.
+An `animationDuration` can be passed in to the builder to set the duration (default: 150ms), while
+`animationEasing` can be passed in to set the easing function (default: ease-out).
 
 <Preview code={snippets.animation}>
     <svelte:component this={previews.animation} />
@@ -64,11 +142,14 @@ In the following example, the duration can be set to between 0 and 5 seconds.
 
 `dropzone` is an optional zonal prop, that gives a zone the following characteristics:
 
-- Items in a dropzone cannot be sorted.
-- Items in a dropzone cannot be moved to other zones.
-- Items from other zones can be moved into a dropzone, if the dropzone support the `fromZone`.
-- Items moved into a dropzone are placed at the end.
+- Items in a dropzone **cannot** be selected and dragged internally or to other zones.
+- Items from other zones **can** be moved into a dropzone, if item is allowed by `fromZone`,
+  and will be placed at the end.
 
 <Preview code={snippets.dropzone}>
     <svelte:component this={previews.dropzone} />
 </Preview>
+
+## API Reference
+
+<APIReference {schemas} />

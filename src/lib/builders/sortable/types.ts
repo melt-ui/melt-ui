@@ -108,7 +108,7 @@ export type SortableZoneProps = {
 	 * When `body`, items can be dragged anywhere within the body.
 	 * When a query selector, items can be dragged anywhere within the element matching the selector.
 	 *
-	 * @default body
+	 * @default none
 	 */
 	restrictTo?: SortableBounds;
 };

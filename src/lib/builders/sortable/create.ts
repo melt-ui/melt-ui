@@ -80,11 +80,11 @@ export function createSortable(props?: CreateSortableProps) {
 					id: props.id,
 					orientation: props.orientation,
 					disabled: props.disabled ?? false,
-					dropzone: props.dropzone ?? false,
 					threshold: Math.max(0, Math.min(props?.threshold ?? 0.95, 1)),
 					fromZones: props.fromZones ?? '-',
+					dropzone: props.dropzone ?? false,
 					axis: props.axis ?? 'both',
-					restrictTo: props.restrictTo ?? 'body',
+					restrictTo: props.restrictTo ?? 'none',
 				};
 
 				return {
@@ -96,7 +96,7 @@ export function createSortable(props?: CreateSortableProps) {
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<SortableEvents['zone']> => {
-			const unsub = executeCallbacks(
+			const unsubscribe = executeCallbacks(
 				addMeltEventListener(node, 'pointerdown', (e) => {
 					// Ignore right click and multi-touch on mobile
 					if (e.button === 2 || !e.isPrimary) return;
@@ -207,7 +207,7 @@ export function createSortable(props?: CreateSortableProps) {
 			);
 			return {
 				destroy() {
-					unsub();
+					unsubscribe();
 				},
 			};
 		},
