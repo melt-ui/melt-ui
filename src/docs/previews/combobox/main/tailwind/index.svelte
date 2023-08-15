@@ -66,26 +66,28 @@
 		},
 	];
 
-	const filterFunction: ComboboxFilterFunction<Book> = (item, inputValue) => {
+	const filterFunction: ComboboxFilterFunction<Book> = ({
+		itemValue,
+		input,
+	}) => {
 		// Example string normalization function. Replace as needed.
 		const normalize = (str: string) => str.normalize().toLowerCase();
-		const normalizedInput = normalize(inputValue);
+		const normalizedInput = normalize(input);
 		return (
 			normalizedInput === '' ||
-			normalize(item.title).includes(normalizedInput) ||
-			normalize(item.author).includes(normalizedInput)
+			normalize(itemValue.title).includes(normalizedInput) ||
+			normalize(itemValue.author).includes(normalizedInput)
 		);
 	};
 
 	const {
 		elements: { menu, input, item, label },
-		states: { open, filteredItems },
+		states: { open },
 		helpers: { isSelected },
 	} = createCombobox({
 		filterFunction,
-		items: books,
-		itemToString: (item) => item.title,
 		forceVisible: true,
+		defaultValue: books[0],
 	});
 </script>
 
@@ -122,30 +124,29 @@
 			class="flex max-h-full flex-col gap-2 overflow-y-auto bg-white px-2 py-2"
 			tabindex="0"
 		>
-			{#if $filteredItems.length !== 0}
-				{#each $filteredItems as book, index (index)}
-					<li
-						use:melt={$item({
-							index,
-							item: book,
-							disabled: book.disabled,
-						})}
-						class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800
+			{#each books as book, index (index)}
+				<li
+					use:melt={$item({
+						value: book,
+						label: book.title,
+						disabled: book.disabled,
+					})}
+					class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800
                         data-[highlighted]:bg-magnum-100 data-[highlighted]:text-magnum-700
                         data-[disabled]:opacity-50"
-					>
-						{#if $isSelected(book)}
-							<div class="check">
-								<Check class="square-4" />
-							</div>
-						{/if}
-						<div>
-							<span>{book.title}</span>
-							<span class="block text-sm opacity-70">{book.author}</span>
+				>
+					{#if $isSelected(book)}
+						<div class="check">
+							<Check class="square-4" />
 						</div>
-					</li>
-				{/each}
-			{:else}
+					{/if}
+					<div>
+						<span>{book.title}</span>
+						<span class="block text-sm opacity-70">{book.author}</span>
+					</div>
+				</li>
+			{/each}
+			<!-- {:else}
 				<li
 					class="relative cursor-pointer rounded-md py-1 pl-8 pr-4
                     text-neutral-800 data-[highlighted]:bg-magnum-100
@@ -153,7 +154,7 @@
 				>
 					No results found
 				</li>
-			{/if}
+			{/if} -->
 		</div>
 	</ul>
 {/if}

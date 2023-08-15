@@ -5,18 +5,13 @@ import type { createCombobox } from './create.js';
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
 export type { ComboboxComponentEvents } from './events.js';
 
-export type CreateComboboxProps<Item> = {
+export type CreateComboboxProps<ItemValue> = {
 	/**
 	 * Options for positioning the popover menu.
 	 *
 	 * @default  placement: 'bottom'
 	 */
 	positioning?: FloatingConfig;
-
-	/**
-	 * The list of items to display in the combobox.
-	 */
-	items: Item[];
 
 	/**
 	 * Determines behavior when scrolling items into view.
@@ -28,12 +23,12 @@ export type CreateComboboxProps<Item> = {
 	 * Predicate function to filter the visible items. When the user types,
 	 * the filterFunction will be run on each item along with the current
 	 * input value. If the predicate returns true, the item will be displayed.
+	 * By default, the item's label will be compared to the current input value.
 	 * @param item the current item being filtered.
 	 * @param value the current input value.
 	 * @returns whether the item should be visible.
 	 */
-	filterFunction: ComboboxFilterFunction<Item>;
-	itemToString?: ComboboxItemToString<Item>;
+	filterFunction?: ComboboxFilterFunction<ItemValue>;
 
 	/**
 	 * Whether or not the combobox should loop through the list when
@@ -72,19 +67,26 @@ export type CreateComboboxProps<Item> = {
 	 *
 	 * @default undefined
 	 */
-	defaultValue?: Item;
+	defaultValue?: ItemValue;
 
 	/**
 	 * An optional controlled store that manages the value state of the combobox.
 	 */
-	value?: Writable<Item | undefined>;
+	value?: Writable<ItemValue | undefined>;
 
 	/**
 	 * A change handler for the value store called when the value would normally change.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onValueChange?: ChangeFn<Item | undefined>;
+	onValueChange?: ChangeFn<ItemValue | undefined>;
+
+	/**
+	 * The default value for inputValue.
+	 *
+	 * @default undefined
+	 */
+	defaultInputValue?: string;
 
 	/**
 	 * Whether or not to close the combobox menu when the user clicks
@@ -128,16 +130,19 @@ export type CreateComboboxProps<Item> = {
 	forceVisible?: boolean;
 };
 
-export type ComboboxFilterFunction<T> = (item: T, value: string) => boolean;
-
-export type ComboboxItemToString<T> = (item: T) => string;
+type ComboboxFilterFunctionArgs<T> = {
+	itemValue: T;
+	input: string;
+};
+export type ComboboxFilterFunction<T> = (args: ComboboxFilterFunctionArgs<T>) => boolean;
 
 export type ComboboxItemProps<T> = {
-	item: T;
+	value: T;
 	/**
-	 * Array index of the item.
+	 * By default, the textContent of the item will be used as the label.
+	 * Use the `label` prop to override this behavior.
 	 */
-	index: number;
+	label?: string;
 	/**
 	 *  Is the item disabled?
 	 */
