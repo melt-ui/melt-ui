@@ -88,6 +88,8 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 	// Open so we can register the optionsList items before mounted = true
 	open.set(true);
 
+	const isEmpty = writable(false);
+
 	const options = toWritableStores(omit(withDefaults, 'open', 'defaultOpen'));
 
 	const {
@@ -171,12 +173,28 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 		}
 	}
 
+	async function handleIsEmpty() {
+		if (!isBrowser) return;
+		await tick();
+
+		const menuElement = document.getElementById(ids.menu);
+		if (!isHTMLElement(menuElement)) return;
+
+		const options = getOptions(menuElement);
+		const visibleOptions = options.filter((opt) => !opt.dataset.hidden);
+		if (!visibleOptions.length) {
+			isEmpty.set(true);
+		} else {
+			isEmpty.set(false);
+		}
+	}
+
 	/**
 	 * Opens the menu, sets the active trigger, and highlights
 	 * the selected item (if one exists). It also optionally accepts the current
 	 * open state to prevent unnecessary updates if we know the menu is already open.
 	 */
-	function openMenu(currentOpenState = false) {
+	async function openMenu(currentOpenState = false) {
 		/**
 		 * We're checking the open state here because the menu may have
 		 * been programatically opened by the user using a controlled store.
@@ -194,13 +212,14 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 		activeTrigger.set(triggerEl);
 
 		// Wait a tick for the menu to open then highlight the selected item.
-		tick().then(() => {
-			const menuElement = document.getElementById(ids.menu);
-			if (!isHTMLElement(menuElement)) return;
-			const selectedItem = menuElement.querySelector('[aria-selected=true]');
-			if (!isHTMLElement(selectedItem)) return;
-			highlightedItem.set(selectedItem);
-		});
+		await tick();
+
+		const menuElement = document.getElementById(ids.menu);
+		if (!isHTMLElement(menuElement)) return;
+
+		const selectedItem = menuElement.querySelector('[aria-selected=true]');
+		if (!isHTMLElement(selectedItem)) return;
+		highlightedItem.set(selectedItem);
 	}
 
 	/** Closes the menu & clears the active trigger */
@@ -320,6 +339,7 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 					// Pressing Alt + Up should close the menu.
 					if (e.key === kbd.ARROW_UP && e.altKey) {
 						closeMenu();
+						reset();
 					}
 					// Navigation (up, down, etc.) should change the highlighted item.
 					if (FIRST_LAST_KEYS.includes(e.key)) {
@@ -399,6 +419,7 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 						const escape = useEscapeKeydown(node, {
 							handler: () => {
 								closeMenu();
+								reset();
 							},
 						});
 						if (escape && escape.destroy) {
@@ -476,6 +497,7 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 										? {
 												handler: () => {
 													closeMenu();
+													reset();
 												},
 										  }
 										: null,
@@ -625,6 +647,10 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 		}
 	});
 
+	effect(inputValue, () => {
+		handleIsEmpty();
+	});
+
 	return {
 		elements: {
 			input,
@@ -636,6 +662,7 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 			open,
 			value,
 			inputValue: readonly(inputValue),
+			isEmpty: readonly(isEmpty),
 		},
 		helpers: {
 			isSelected,

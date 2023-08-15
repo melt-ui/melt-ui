@@ -82,7 +82,7 @@
 
 	const {
 		elements: { menu, input, item, label },
-		states: { open },
+		states: { open, isEmpty },
 		helpers: { isSelected },
 	} = createCombobox({
 		filterFunction,
@@ -146,7 +146,7 @@
 					</div>
 				</li>
 			{/each}
-			<!-- {:else}
+			{#if $isEmpty}
 				<li
 					class="relative cursor-pointer rounded-md py-1 pl-8 pr-4
                     text-neutral-800 data-[highlighted]:bg-magnum-100
@@ -154,7 +154,7 @@
 				>
 					No results found
 				</li>
-			{/if} -->
+			{/if}
 		</div>
 	</ul>
 {/if}
