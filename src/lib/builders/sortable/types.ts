@@ -26,7 +26,7 @@ export type SortableZoneProps = {
 	/**
 	 *  A unique id for the zone.
 	 *
-	 *  Sets `data-melt-sortable-zone-id=[id]`.
+	 *  Sets `data-sortable-id=[id]`.
 	 */
 	id: string;
 
@@ -47,7 +47,7 @@ export type SortableZoneProps = {
 	 * Disables all items in the zone. Items within this zone cannot be moved, nor can items be
 	 * moved into this zone.
 	 *
-	 * Sets `data-melt-sortable-zone-disabled=''` when true.
+	 * Sets `data-sortable-disabled=''` when true.
 	 *
 	 * @default false
 	 */
@@ -75,7 +75,7 @@ export type SortableZoneProps = {
 	 * when true, this zone is considered a dropzone. Items within a dropzone cannot be selected.
 	 * Items from other zones may be dragged into this zone and will be placed at the end.
 	 *
-	 * Sets `data-melt-sortable-zone-dropzone=''` when true.
+	 * Sets `data-sortable-dropzone=''` when true.
 	 *
 	 * @default false
 	 */
@@ -119,7 +119,7 @@ export type SortableItemProps = {
 	/**
 	 * A unique id for the item.
 	 *
-	 * Sets `data-melt-sortable-item-id=[id]`.
+	 * Sets `data-sortable-id=[id]`.
 	 */
 	id: string;
 
@@ -127,7 +127,7 @@ export type SortableItemProps = {
 	 * Whether the item is disabled. Disabled items cannot be dragged but may shift position
 	 * when other items are dragged.
 	 *
-	 * Sets `data-melt-sortable-item-disabled=''` when true.
+	 * Sets `data-sortable-disabled=''` when true.
 	 *
 	 * @default false
 	 */
@@ -137,7 +137,7 @@ export type SortableItemProps = {
 	 * When true the item will return to its original position in its origin zone when the pointer
 	 * leaves a zone that is not the items origin zone.
 	 *
-	 * Sets `data-melt-sortable-item-return-home=''` when true.
+	 * Sets `data-sortable-return-home=''` when true.
 	 *
 	 * @default false
 	 */

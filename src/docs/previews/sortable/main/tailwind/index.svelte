@@ -22,16 +22,16 @@
 			>
 				{#each zoneItems as zoneItem}
 					<div
-						class="group flex select-none items-center gap-3 rounded border border-transparent bg-magnum-500 p-1 text-white data-[melt-sortable-item-dragging]:border-magnum-500 data-[melt-sortable-item-dragging]:bg-magnum-300 data-[melt-sortable-ghost]:opacity-50"
+						class="group flex select-none items-center gap-3 rounded border border-transparent bg-magnum-500 p-1 text-white data-[sortable-dragging]:border-magnum-500 data-[sortable-dragging]:bg-magnum-300 data-[melt-sortable-ghost]:opacity-50"
 						use:melt={$item({ id: zoneItem })}
 					>
 						<span
 							use:melt={$handle}
-							class="cursor-move group-data-[melt-sortable-item-dragging]:cursor-default group-data-[melt-sortable-item-dragging]:opacity-0"
+							class="cursor-move group-data-[sortable-dragging]:cursor-default group-data-[sortable-dragging]:opacity-0"
 						>
 							<GripVertical class="h-4 w-4" />
 						</span>
-						<span class="group-data-[melt-sortable-item-dragging]:opacity-0"
+						<span class="group-data-[sortable-dragging]:opacity-0"
 							>{zoneItem}</span
 						>
 					</div>

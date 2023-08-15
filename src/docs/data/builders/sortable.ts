@@ -92,23 +92,23 @@ const zone = elementSchema('zone', {
 			value: ATTRS.MELT('sortable zone'),
 		},
 		{
-			name: 'data-melt-sortable-zone-id',
+			name: 'data-sortable-id',
 			value: 'The unique id of the zone.',
 		},
 		{
-			name: 'data-melt-sortable-zone-orientation',
+			name: 'data-sortable-orientation',
 			value: "`'vertical' | 'horizontal' | 'both'`",
 		},
 		{
-			name: 'data-melt-sortable-zone-disabled',
+			name: 'data-sortable-disabled',
 			value: ATTRS.DISABLED('zone'),
 		},
 		{
-			name: 'data-melt-sortable-zone-disabled',
+			name: 'data-sortable-disabled',
 			value: 'Present when the zone is a dropzone.',
 		},
 		{
-			name: 'data-melt-sortable-zone-focus',
+			name: 'data-sortable-focus',
 			value: 'Present when an item is selected and the pointer is within the zone.',
 		},
 	],
@@ -122,20 +122,20 @@ const item = elementSchema('item', {
 			value: ATTRS.MELT('sortable item'),
 		},
 		{
-			name: 'data-melt-sortable-item-id',
+			name: 'data-sortable-id',
 			value: 'The unique id of the item.',
 		},
 		{
-			name: 'data-melt-sortable-item-disabled',
+			name: 'data-sortable-disabled',
 			value: ATTRS.DISABLED('item'),
 		},
 		{
-			name: 'data-melt-sortable-item-return-home',
+			name: 'data-sortable-return-home',
 			value:
 				'Present when the item should return to its origin zone when the pointer moves outside of a foreign zone.',
 		},
 		{
-			name: 'data-melt-sortable-item-dragging',
+			name: 'data-sortable-dragging',
 			value: 'Present when the item is selected and being dragged.',
 		},
 	],

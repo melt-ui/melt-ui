@@ -88,10 +88,10 @@ export function createSortable(props?: CreateSortableProps) {
 				};
 
 				return {
-					'data-melt-sortable-zone-id': props.id,
-					'data-melt-sortable-zone-orientation': props.orientation,
-					'data-melt-sortable-zone-disabled': props.disabled ? true : undefined,
-					'data-melt-sortable-zone-dropzone': props.dropzone ? true : undefined,
+					'data-sortable-id': props.id,
+					'data-sortable-orientation': props.orientation,
+					'data-sortable-disabled': props.disabled ? true : undefined,
+					'data-sortable-dropzone': props.dropzone ? true : undefined,
 				};
 			};
 		},
@@ -101,7 +101,7 @@ export function createSortable(props?: CreateSortableProps) {
 					// Ignore right click and multi-touch on mobile
 					if (e.button === 2 || !e.isPrimary) return;
 
-					const zoneId = node.getAttribute('data-melt-sortable-zone-id');
+					const zoneId = node.getAttribute('data-sortable-id');
 					if (!zoneId) return;
 
 					const props = zoneProps[zoneId];
@@ -123,7 +123,7 @@ export function createSortable(props?: CreateSortableProps) {
 					if (hasHandle && !hasHandle.contains(e.target as HTMLElement)) return;
 
 					// Ignore when the target is disabled
-					if (targetedItem.hasAttribute('data-melt-sortable-item-disabled')) return;
+					if (targetedItem.hasAttribute('data-sortable-disabled')) return;
 
 					e.preventDefault();
 
@@ -135,7 +135,7 @@ export function createSortable(props?: CreateSortableProps) {
 
 					// Set the selected item
 					selected.set({
-						id: targetedItem.getAttribute('data-melt-sortable-item-id') ?? '0',
+						id: targetedItem.getAttribute('data-sortable-id') ?? '0',
 						originZone: zoneId,
 						originIndex: index,
 						originEl: node,
@@ -143,7 +143,7 @@ export function createSortable(props?: CreateSortableProps) {
 						zoneIndex: index,
 						zoneEl: node,
 						disabled: false, // Always false if we get here
-						returnHome: targetedItem.hasAttribute('data-melt-sortable-item-return-home'),
+						returnHome: targetedItem.hasAttribute('data-sortable-return-home'),
 						el: targetedItem,
 					});
 
@@ -153,7 +153,7 @@ export function createSortable(props?: CreateSortableProps) {
 					ghost.set(g);
 
 					// Set item dragging attribute
-					targetedItem.setAttribute('data-melt-sortable-item-dragging', '');
+					targetedItem.setAttribute('data-sortable-dragging', '');
 
 					// HACK :( .. This is strange but when using touch, the pointerenter and
 					// pointerleave events do not fire until there is a DOM update. The following
@@ -163,7 +163,7 @@ export function createSortable(props?: CreateSortableProps) {
 					moveEl(targetedItem, targetedItem, false);
 				}),
 				addMeltEventListener(node, 'pointerenter', () => {
-					const zoneId = node.getAttribute('data-melt-sortable-zone-id');
+					const zoneId = node.getAttribute('data-sortable-id');
 					if (!zoneId) return;
 
 					const props = zoneProps[zoneId];
@@ -186,7 +186,7 @@ export function createSortable(props?: CreateSortableProps) {
 						items: Array.from(node.querySelectorAll(selector('item'))),
 					};
 
-					node.setAttribute('data-melt-sortable-zone-focus', '');
+					node.setAttribute('data-sortable-focus', '');
 				}),
 				addMeltEventListener(node, 'pointerleave', async () => {
 					// When return home is true, return the item to its origin zone (when it is
@@ -202,7 +202,7 @@ export function createSortable(props?: CreateSortableProps) {
 					pointerZone = null;
 					previousHitItem = null;
 
-					node.removeAttribute('data-melt-sortable-zone-focus');
+					node.removeAttribute('data-sortable-focus');
 				})
 			);
 			return {
@@ -217,9 +217,9 @@ export function createSortable(props?: CreateSortableProps) {
 		returned: () => {
 			return (props: SortableItemProps) => {
 				return {
-					'data-melt-sortable-item-id': props.id,
-					'data-melt-sortable-item-disabled': props.disabled ? true : undefined,
-					'data-melt-sortable-item-return-home': props.returnHome ? true : undefined,
+					'data-sortable-id': props.id,
+					'data-sortable-disabled': props.disabled ? true : undefined,
+					'data-sortable-return-home': props.returnHome ? true : undefined,
 					style: props.disabled ? undefined : 'touch-action: none;',
 				};
 			};
@@ -263,7 +263,7 @@ export function createSortable(props?: CreateSortableProps) {
 			ghost.set(null);
 
 			// Clean up the pointer zone
-			pointerZone?.el.removeAttribute('data-melt-sortable-zone-focus');
+			pointerZone?.el.removeAttribute('data-sortable-focus');
 			pointerZone = null;
 
 			previousHitItem = null;
@@ -271,7 +271,7 @@ export function createSortable(props?: CreateSortableProps) {
 			// Update selected item attributes and remove from store
 			const $selected = get(selected);
 			if ($selected) {
-				$selected.el.removeAttribute('data-melt-sortable-item-dragging');
+				$selected.el.removeAttribute('data-sortable-dragging');
 				selected.set(null);
 			}
 
@@ -327,7 +327,7 @@ export function createSortable(props?: CreateSortableProps) {
 		const targetEl = e.target as HTMLElement;
 		if (
 			!$selected.el.isAnimating &&
-			(!targetEl.closest('[data-melt-sortable-item]') ||
+			(!targetEl.closest(selector('item')) ||
 				(isSameZone && simpleIntersect($selected.el, ghost, e)))
 		) {
 			previousHitItem = null;

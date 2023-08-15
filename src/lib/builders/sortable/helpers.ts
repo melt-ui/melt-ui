@@ -35,6 +35,7 @@ export function createGhostEl(
 	ghostEl.style.transitionDuration = '0ms';
 
 	removeAttributesStartingWith(ghostEl, 'data-melt-sortable');
+	removeAttributesStartingWith(ghostEl, 'data-sortable');
 	ghostEl.setAttribute('data-melt-sortable-ghost', '');
 
 	// Get the bounding box of the source element

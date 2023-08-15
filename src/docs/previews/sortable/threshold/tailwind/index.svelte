@@ -41,18 +41,17 @@
 	>
 		{#each zoneItems as zoneItem}
 			<div
-				class="group relative flex h-20 w-20 cursor-move select-none items-center justify-center gap-3 rounded bg-magnum-500 text-white data-[melt-sortable-item-dragging]:border-2 data-[melt-sortable-item-dragging]:border-white data-[melt-sortable-item-dragging]:bg-magnum-400 data-[melt-sortable-ghost]:opacity-50"
+				class="group relative flex h-20 w-20 cursor-move select-none items-center justify-center gap-3 rounded bg-magnum-500 text-white data-[sortable-dragging]:border-2 data-[sortable-dragging]:border-white data-[sortable-dragging]:bg-magnum-400 data-[melt-sortable-ghost]:opacity-50"
 				use:melt={$item({ id: zoneItem })}
 			>
 				<div
-					class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-magnum-700 group-data-[melt-sortable-ghost]:opacity-0 group-data-[melt-sortable-item-dragging]:opacity-0"
+					class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-magnum-700 group-data-[melt-sortable-ghost]:opacity-0 group-data-[sortable-dragging]:opacity-0"
 					style="height: {$currentOrientation !== 'horizontal'
 						? $threshold[0] * 100
 						: 100}%;
 								width: {$currentOrientation !== 'vertical' ? $threshold[0] * 100 : 100}%;"
 				/>
-				<span
-					class="z-10 text-xl group-data-[melt-sortable-item-dragging]:opacity-0"
+				<span class="z-10 text-xl group-data-[sortable-dragging]:opacity-0"
 					>{zoneItem}</span
 				>
 			</div>
