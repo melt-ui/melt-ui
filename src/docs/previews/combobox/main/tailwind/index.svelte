@@ -87,7 +87,6 @@
 	} = createCombobox({
 		filterFunction,
 		forceVisible: true,
-		debounce: 500,
 	});
 </script>
 

@@ -106,7 +106,7 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 		positioning,
 	} = options;
 
-	const touchedInput = writable(false);
+	const touchedInput = debounceable(false, withDefaults.debounce);
 
 	const ids = {
 		input: generateId(),
@@ -157,7 +157,7 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 			inputValue.forceSet(getSelectedLabel() ?? '');
 		}
 
-		touchedInput.set(false);
+		touchedInput.forceSet(false);
 	}
 
 	/**
@@ -227,7 +227,7 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 	/** Closes the menu & clears the active trigger */
 	function closeMenu() {
 		open.set(false);
-		touchedInput.set(false);
+		touchedInput.forceSet(false);
 	}
 
 	/**
@@ -551,7 +551,7 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 				cachedItemPropsArr.push(props);
 				let hidden = false;
 				if (
-					$touchedInput &&
+					$touchedInput.debounced &&
 					$filterFunction?.({ input: $inputValue.debounced, itemValue: props.value }) === false
 				) {
 					hidden = true;
