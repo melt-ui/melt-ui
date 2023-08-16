@@ -34,9 +34,9 @@
 						class="group flex cursor-move select-none items-center gap-3 rounded border border-transparent bg-magnum-500 p-1 text-white data-[sortable-dragging]:border-magnum-500 data-[sortable-dragging]:bg-magnum-300 data-[melt-sortable-ghost]:opacity-50"
 						use:melt={$item({ id: zoneItem })}
 					>
-						<span class="group-data-[sortable-dragging]:opacity-0"
-							>{zoneItem}</span
-						>
+						<span class="group-data-[sortable-dragging]:opacity-0">
+							{zoneItem}
+						</span>
 					</div>
 				{/each}
 			</div>

@@ -37,7 +37,7 @@ const defaults = {
 	animationEasing: 'ease-out',
 } satisfies Defaults<CreateSortableProps>;
 
-type SortableParts = 'zone' | 'item' | 'handle';
+type SortableParts = 'zone' | 'item-group' | 'item' | 'handle';
 const { name, selector } = createElHelpers<SortableParts>('sortable');
 
 export function createSortable(props?: CreateSortableProps) {
@@ -210,6 +210,12 @@ export function createSortable(props?: CreateSortableProps) {
 					unsubscribe();
 				},
 			};
+		},
+	});
+
+	const itemGroup = builder(name('item-group'), {
+		returned: () => {
+			return {};
 		},
 	});
 
@@ -537,14 +543,14 @@ export function createSortable(props?: CreateSortableProps) {
 
 		if (!hit) return;
 
-		// Get the animation state for the involved zones
+		// Get the animation state for the involved zones.
 		const animationState = getAnimationStateForZones(pointerZone, $selected);
 
-		// Update the pointer zone to include the item
 		$selected.zone = pointerZone.id;
-
 		pointerZone.items.push($selected.el);
-		pointerZone.el.appendChild($selected.el);
+
+		const itemGroupEl = pointerZone.el.querySelector(selector('item-group'));
+		!itemGroupEl ? pointerZone.el.appendChild($selected.el) : itemGroupEl.appendChild($selected.el);
 
 		// Do the animation if we have state
 		if (animationState) {
@@ -614,6 +620,7 @@ export function createSortable(props?: CreateSortableProps) {
 	return {
 		elements: {
 			zone,
+			itemGroup,
 			item,
 			handle,
 		},

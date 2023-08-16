@@ -13,7 +13,8 @@ description: Sort items within a zone or move items between zones.
 ## Anatomy
 
 - **Zone**: A zone container
-- **Item**: An item container within a zone
+- **Items**: An items container within a zone
+- **Item**: An item container within a zone or items container
 - **Handle**: A handle that can be used to move an item
 
 ## Usage
@@ -24,18 +25,21 @@ To create a sortable zones containing items, use the `createSortable` builder fu
 <script lang="ts">
 	import { createSortable } from '@melt-ui/svelte'
 	const {
-		elements: { zone, item, handle }
+		elements: { zone, itemGroup, item, handle }
 	} = createSortable()
 </script>
 ```
 
-The elements `zone`, `item` and `handle` can then be used to construct 1 or more sortable zones that
-contain items.
+These elements can then be used to construct 1 or more sortable zones that contain items.
 
-A high level example of how to structure a single sortable zone is shown below.
+A high level example of how to structure a single sortable zone, with 2 items, is shown below.
 
-<Callout type='info'>
-<code>handle</code> is optional and if not provided, the entire item is considered the handle.
+<Callout type='warning'>
+
+⚠️ It is important to place a <code>min-height</code> on <code>$zone</code> elements, otherwise they
+will collapse when they become empty and a pointer intersection will never occur, unless that is the
+intended behavior.
+
 </Callout>
 
 ```svelte
@@ -47,8 +51,8 @@ A high level example of how to structure a single sortable zone is shown below.
 </script>
 
 <div use:melt={$zone({ id: 'zone1' })}>
-	<div use:melt={$item({ id: 'item1' })}>...</div>
-	<div use:melt={$item({ id: 'item2' })}>...</div>
+	<div use:melt={$item({ id: 'item1' })}>item 1</div>
+	<div use:melt={$item({ id: 'item2' })}>item 2</div>
 </div>
 ```
 
@@ -58,15 +62,43 @@ have an orientation of vertical and a hit threshold of 0.95.
 This zone contains 2 items that are uniquely identified as `item1` and `item2` that can be dragged
 and intersect/swap with each other.
 
+### Item Group
+
+An `itemGroup` element can be used as a target location for items to be placed together, within a
+zone.
+
+When a zone contains no `$item` elements, the first item dragged into this zone will be added as a
+child. added as a child of the zone. This may not be the desired behavior, and instead you wish to
+have a target location for items to be placed.
+
+Multiple item groups can be used within the same zone. This can be useful when you wish to separate
+items into different groups.
+
+<Callout type='warning'>
+
+⚠️ It is important to place a <code>min-height</code> on <code>$itemGroup</code> elements, otherwise
+they will collapse when they become empty and a pointer intersection will never occur, unless that
+is the intended behavior.
+
+</Callout>
+
+```svelte {2}
+<div use:melt={$zone({ id: 'zone1' })}>
+	<div use:melt={$itemGroup}>
+		<div use:melt={$item({ id: 'item1' })}>item 1</div>
+	</div>
+</div>
+```
+
+### Item Handle
+
 To specify a handle, add a `handle` element within an `item`.
 
-```svelte {3}
-...
+```svelte {2}
 <div use:melt={$item({ id: 'item1' })}>
 	<div use:melt={$handle}>...</div>
-	<span>...</span>
+	<span>item 1</span>
 </div>
-...
 ```
 
 ### Multiple Zones (fromZones prop)
@@ -92,11 +124,16 @@ selected item.
 All `data-melt-*` and `data-sortable-*` attributes are removed and then the element is given the
 `data-melt-sortable-ghost` data attribute.
 
-This attribute can be applied to a zone item to style the ghost element, for example to set the
-opacity, or hide child elements, etc.
+This attribute can be applied to an `$item` to style the element when it selected and cloned into a
+ghost element. You could, for example, reduce the opacity, set a border, hide child elements, etc.
 
+<!-- prettier-ignore -->
 ```svelte {2}
-<div class="... data-[melt-sortable-ghost]:opacity-50" use:melt={$item({ id: 'item1' })}>...</div>
+<div 
+	class="data-[melt-sortable-ghost]:opacity-50 ..." 
+	use:melt={$item({ id: 'item1' })}>
+	item 1
+</div>
 ```
 
 ## Orientation and Threshold
@@ -154,6 +191,17 @@ An `animationDuration` can be passed in to the builder to set the duration (defa
 
 <Preview code={snippets.dropzone}>
     <svelte:component this={previews.dropzone} />
+</Preview>
+
+### Item Groups
+
+The following example shows how to use `$itemGroup` to separate items into different groups, within
+the same zone.
+
+Items can be moved between groups.
+
+<Preview code={snippets.items}>
+    <svelte:component this={previews.items} />
 </Preview>
 
 ## API Reference

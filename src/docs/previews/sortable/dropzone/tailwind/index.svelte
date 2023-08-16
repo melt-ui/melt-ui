@@ -18,18 +18,18 @@
 				orientation: 'horizontal',
 			})}
 		>
-			<span class="text-center text-magnum-700 [&:not(:last-child)]:hidden"
-				>No more tags.</span
-			>
+			<span class="text-center text-magnum-700 [&:not(:last-child)]:hidden">
+				No more tags.
+			</span>
 
 			{#each zoneItems as zoneItem}
 				<div
 					class="group flex cursor-move select-none items-center gap-3 rounded border border-transparent bg-magnum-500 p-1 text-white data-[sortable-dragging]:border-magnum-500 data-[sortable-dragging]:bg-magnum-300 data-[melt-sortable-ghost]:opacity-50 group-data-[sortable-id='Dropzone']:cursor-auto"
 					use:melt={$item({ id: zoneItem })}
 				>
-					<span class="group-data-[sortable-dragging]:opacity-0"
-						>{zoneItem}</span
-					>
+					<span class="group-data-[sortable-dragging]:opacity-0">
+						{zoneItem}
+					</span>
 				</div>
 			{/each}
 		</div>
@@ -46,8 +46,9 @@
 		>
 			<span
 				class="text-center group-data-[sortable-focus]:hidden [&:not(:last-child)]:hidden"
-				>Dropzone</span
 			>
+				Dropzone
+			</span>
 		</div>
 	</div>
 </div>

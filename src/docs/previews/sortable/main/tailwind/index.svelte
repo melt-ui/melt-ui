@@ -31,9 +31,9 @@
 						>
 							<GripVertical class="h-4 w-4" />
 						</span>
-						<span class="group-data-[sortable-dragging]:opacity-0"
-							>{zoneItem}</span
-						>
+						<span class="group-data-[sortable-dragging]:opacity-0">
+							{zoneItem}
+						</span>
 					</div>
 				{/each}
 			</div>
