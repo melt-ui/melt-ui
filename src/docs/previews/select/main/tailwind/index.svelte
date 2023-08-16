@@ -9,6 +9,11 @@
 		helpers: { isSelected },
 	} = createSelect({
 		forceVisible: true,
+		positioning: {
+			placement: 'bottom',
+			fitViewport: true,
+			sameWidth: true,
+		},
 	});
 
 	const options = {
@@ -31,7 +36,7 @@
 	</button>
 	{#if $open}
 		<div
-			class="z-10 flex max-h-[360px] flex-col
+			class="z-10 flex max-h-[300px] flex-col
 		overflow-y-auto rounded-md bg-white
 		p-1 focus:!ring-0"
 			use:melt={$menu}
