@@ -85,7 +85,7 @@ export const mdsvexOptions = {
 		backticks: false,
 		dashes: false,
 	},
-	remarkPlugins: [remarkGfm, codeImport],
+	remarkPlugins: [remarkGfm, remarkEscapeSvelte, codeImport],
 	rehypePlugins: [
 		[rehypeRewrite, rehypeRewriteOptions],
 		rehypeComponentPreToPre,
@@ -105,6 +105,25 @@ function rehypeComponentPreToPre() {
 				node.tagName = 'pre';
 			}
 		});
+	};
+}
+
+const entities = [
+	[/</g, '&lt;'],
+	[/>/g, '&gt;'],
+	[/{/g, '&#123;'],
+	[/}/g, '&#125;'],
+];
+
+function remarkEscapeSvelte() {
+	return async (tree) => {
+		visit(tree, 'inlineCode', escape);
+
+		function escape(node) {
+			for (let i = 0; i < entities.length; i += 1) {
+				node.value = node.value.replace(entities[i][0], entities[i][1]);
+			}
+		}
 	};
 }
 
