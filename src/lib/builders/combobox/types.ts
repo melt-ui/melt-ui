@@ -128,6 +128,11 @@ export type CreateComboboxProps<ItemValue> = {
 	 * @default false
 	 */
 	forceVisible?: boolean;
+
+	/**
+	 * The delay in milliseconds for the filterFunction to be called after the input value changes.
+	 */
+	debounce?: number;
 };
 
 type ComboboxFilterFunctionArgs<T> = {

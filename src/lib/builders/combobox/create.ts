@@ -37,6 +37,7 @@ import type { ComboboxItemProps, CreateComboboxProps } from './types.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { createLabel } from '../label/create.js';
 import type { ComboboxEvents } from './events.js';
+import { debounceable } from '$lib/internal/helpers/store/debounceable.js';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ESCAPE, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
@@ -55,6 +56,7 @@ const defaults = {
 	forceVisible: false,
 	portal: undefined,
 	filterFunction: () => true,
+	debounce: 0,
 } satisfies Defaults<CreateComboboxProps<unknown>>;
 
 const { name, selector } = createElHelpers('combobox');
@@ -79,7 +81,7 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
 	// The current value of the input element.
-	const inputValue = writable(withDefaults.defaultInputValue ?? '');
+	const inputValue = debounceable(withDefaults.defaultInputValue ?? '', withDefaults.debounce);
 
 	// Either the provided open store or a store with the default open value
 	const openWritable = withDefaults.open ?? writable(true);
@@ -90,7 +92,7 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 
 	const isEmpty = writable(false);
 
-	const options = toWritableStores(omit(withDefaults, 'open', 'defaultOpen'));
+	const options = toWritableStores(omit(withDefaults, 'open', 'defaultOpen', 'debounce'));
 
 	const {
 		scrollAlignment,
@@ -150,9 +152,9 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 
 		// If no item is selected the input should be cleared and the filter reset.
 		if (!$selectedItem) {
-			inputValue.set('');
+			inputValue.forceSet('');
 		} else {
-			inputValue.set(getSelectedLabel() ?? '');
+			inputValue.forceSet(getSelectedLabel() ?? '');
 		}
 
 		touchedInput.set(false);
@@ -250,7 +252,7 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 	/** Action and attributes for the text input. */
 	const input = builder(name('input'), {
 		stores: [open, highlightedItem, inputValue],
-		returned: ([$open, $highlightedItem, inputValue]) => {
+		returned: ([$open, $highlightedItem, $inputValue]) => {
 			return {
 				'aria-activedescendant': $highlightedItem?.id,
 				'aria-autocomplete': 'list',
@@ -260,7 +262,7 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 				autocomplete: 'off',
 				id: ids.input,
 				role: 'combobox',
-				value: inputValue,
+				value: $inputValue.value,
 			} as const;
 		},
 		action: (node: HTMLInputElement): MeltActionReturn<ComboboxEvents['input']> => {
@@ -550,7 +552,7 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 				let hidden = false;
 				if (
 					$touchedInput &&
-					$filterFunction?.({ input: $inputValue, itemValue: props.value }) === false
+					$filterFunction?.({ input: $inputValue.debounced, itemValue: props.value }) === false
 				) {
 					hidden = true;
 				}

@@ -87,7 +87,7 @@
 	} = createCombobox({
 		filterFunction,
 		forceVisible: true,
-		defaultValue: books[0],
+		debounce: 500,
 	});
 </script>
 
