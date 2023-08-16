@@ -127,8 +127,14 @@ export function createSortable(props?: CreateSortableProps) {
 
 					e.preventDefault();
 
+					// Get the item groups (if there are any).
+					const groups = Array.from<HTMLElement>(node.querySelectorAll(selector('item-group')));
+
+					// Determine which group the targeted item belongs to.
+					const groupEl = groups.find((group) => group.contains(targetedItem));
+
 					// Store information about this pointer zone
-					pointerZone = { id: zoneId, el: node, items: items };
+					pointerZone = { id: zoneId, el: node, groups, itemsTmp: items };
 
 					// The item index
 					const index = items.indexOf(targetedItem);
@@ -136,12 +142,14 @@ export function createSortable(props?: CreateSortableProps) {
 					// Set the selected item
 					selected.set({
 						id: targetedItem.getAttribute('data-sortable-id') ?? '0',
-						originZone: zoneId,
+						originZoneId: zoneId,
 						originIndex: index,
-						originEl: node,
-						zone: zoneId,
-						zoneIndex: index,
-						zoneEl: node,
+						originZoneEl: node,
+						originGroupEl: groupEl,
+						workingZoneId: zoneId,
+						workingZoneIndex: index,
+						workingZoneEl: node,
+						workingGroupEl: groupEl,
 						disabled: false, // Always false if we get here
 						returnHome: targetedItem.hasAttribute('data-sortable-return-home'),
 						el: targetedItem,
@@ -177,13 +185,17 @@ export function createSortable(props?: CreateSortableProps) {
 					if (!$selected) return;
 
 					// Check if this zone supports dropping the item.
-					if (!isSupportedZone($selected.originZone, zoneId, props.fromZones)) return;
+					if (!isSupportedZone($selected.originZoneId, zoneId, props.fromZones)) return;
+
+					// Get the item groups (if there are any)
+					const groups = Array.from<HTMLElement>(node.querySelectorAll(selector('item-group')));
 
 					// Store information about this pointer zone
 					pointerZone = {
 						id: zoneId,
 						el: node,
-						items: Array.from(node.querySelectorAll(selector('item'))),
+						groups,
+						itemsTmp: Array.from(node.querySelectorAll(selector('item'))),
 					};
 
 					node.setAttribute('data-sortable-focus', '');
@@ -194,7 +206,7 @@ export function createSortable(props?: CreateSortableProps) {
 					const $selected = get(selected);
 					if (!$selected) return;
 
-					if ($selected.returnHome && $selected.originZone !== $selected.zone) {
+					if ($selected.returnHome && $selected.originZoneId !== $selected.workingZoneId) {
 						returnHome();
 					}
 
@@ -312,14 +324,14 @@ export function createSortable(props?: CreateSortableProps) {
 		if (!$selected || !props) return;
 
 		// True when the selected item is in the same zone as the pointer.
-		const isSameZone = $selected.zone === pointerZone.id;
+		const isSameZone = $selected.workingZoneId === pointerZone.id;
 
 		// When this is an empty zone or it's a dropzone, add the selected item to the end.
-		if (pointerZone.items.length === 0 || props.dropzone) {
+		if (pointerZone.itemsTmp.length === 0 || props.dropzone) {
 			// Do nothing when the item has already been moved to this zone
 			if (isSameZone) return;
 
-			moveToEnd(e, props);
+			moveToEmptyZone(e);
 			return;
 		}
 
@@ -333,14 +345,29 @@ export function createSortable(props?: CreateSortableProps) {
 		const targetEl = e.target as HTMLElement;
 		if (
 			!$selected.el.isAnimating &&
-			(!targetEl.closest(selector('item')) ||
+			((!targetEl.closest(selector('item')) && !targetEl.closest(selector('item-group'))) ||
 				(isSameZone && simpleIntersect($selected.el, ghost, e)))
 		) {
 			previousHitItem = null;
 			return;
 		}
 
-		for (const [index, item] of pointerZone.items.entries()) {
+		// Now check if the pointer is intersecting an empty item group within the same zone.
+		for (const [_, groupItem] of pointerZone.groups.entries()) {
+			const itemsEl = groupItem.querySelectorAll(selector('item'));
+			if (itemsEl.length > 0) continue;
+
+			if (!simpleIntersect(groupItem, ghost, e)) continue;
+
+			// The pointer is inter
+			moveToEmptyGroup(groupItem);
+
+			return;
+		}
+
+		// Finally loop through the items in the zone and check if the pointer is intersecting
+		// any of them. As soon as we get a hit, we stop.
+		for (const [index, item] of pointerZone.itemsTmp.entries()) {
 			// skip the selected item.
 			if ($selected.el === item) continue;
 
@@ -391,18 +418,28 @@ export function createSortable(props?: CreateSortableProps) {
 		if (!$selected) return;
 
 		// Find the hit item.
-		const hitItem = pointerZone.items[hitItemIndex];
+		const hitItem = pointerZone.itemsTmp[hitItemIndex];
+
+		const isSameZone = $selected.workingZoneId === pointerZone.id;
+
+		// Determine if the hit item is in a different group
+		let isSameGroup = true;
+		const hitItemGroupEl = pointerZone.groups.find((group) => group.contains(hitItem));
+		if (isSameZone && hitItemGroupEl) {
+			isSameGroup = false;
+		}
 
 		// Get the animation state for the involved zones.
 		const animationState = getAnimationStateForZones(pointerZone, $selected);
 
-		// if   - Move selected within zone and update pointer items array.
-		// else - Move selected to new zone and update origin and pointer items array.
-		if ($selected.zone === pointerZone.id) {
-			const selectedIndex = pointerZone.items.indexOf($selected.el);
+		// if   - Move selected item within the same zone and shift items in pointer items array.
+		// else - Move selected item from its working zone to its new zone or from its working
+		//		  group to its new group (in the same zone) and update pointer items array.
+		if (isSameZone && isSameGroup) {
+			const selectedIndex = pointerZone.itemsTmp.indexOf($selected.el);
 
-			pointerZone.items.splice(selectedIndex, 1);
-			pointerZone.items.splice(hitItemIndex, 0, $selected.el as HTMLElement);
+			pointerZone.itemsTmp.splice(selectedIndex, 1);
+			pointerZone.itemsTmp.splice(hitItemIndex, 0, $selected.el as HTMLElement);
 			moveEl($selected.el, hitItem, selectedIndex < hitItemIndex);
 		} else {
 			// Whether to insert the selected item before or after the intersected item
@@ -411,29 +448,38 @@ export function createSortable(props?: CreateSortableProps) {
 			if (orientation === 'vertical') {
 				if (quadrant.vertical === 'top') {
 					hitItemIndex === 0
-						? pointerZone.items.unshift($selected.el)
-						: pointerZone.items.splice(hitItemIndex, 0, $selected.el);
+						? pointerZone.itemsTmp.unshift($selected.el)
+						: pointerZone.itemsTmp.splice(hitItemIndex, 0, $selected.el);
 					after = false;
 				} else {
-					hitItemIndex === pointerZone.items.length - 1
-						? pointerZone.items.push($selected.el)
-						: pointerZone.items.splice(hitItemIndex + 1, 0, $selected.el);
+					hitItemIndex === pointerZone.itemsTmp.length - 1
+						? pointerZone.itemsTmp.push($selected.el)
+						: pointerZone.itemsTmp.splice(hitItemIndex + 1, 0, $selected.el);
 				}
 			} else if (orientation === 'horizontal') {
 				if (quadrant.horizontal === 'left') {
 					hitItemIndex === 0
-						? pointerZone.items.unshift($selected.el)
-						: pointerZone.items.splice(hitItemIndex, 0, $selected.el);
+						? pointerZone.itemsTmp.unshift($selected.el)
+						: pointerZone.itemsTmp.splice(hitItemIndex, 0, $selected.el);
 					after = false;
 				} else {
-					hitItemIndex === pointerZone.items.length - 1
-						? pointerZone.items.push($selected.el)
-						: pointerZone.items.splice(hitItemIndex + 1, 0, $selected.el);
+					hitItemIndex === pointerZone.itemsTmp.length - 1
+						? pointerZone.itemsTmp.push($selected.el)
+						: pointerZone.itemsTmp.splice(hitItemIndex + 1, 0, $selected.el);
 				}
 			}
 
-			$selected.zone = pointerZone.id;
-			$selected.zoneEl = pointerZone.el;
+			// if -   The selected item moved to a new group in the same zone, but a different
+			//        group, update workingGroupEl.
+			// else - The selected item moved to a new zone. Update workingZoneId and
+			//        workingZoneEl
+			if (isSameZone) {
+				$selected.workingGroupEl = hitItemGroupEl;
+			} else {
+				$selected.workingZoneId = pointerZone.id;
+				$selected.workingZoneEl = pointerZone.el;
+			}
+
 			moveEl($selected.el, hitItem, after);
 		}
 
@@ -457,15 +503,25 @@ export function createSortable(props?: CreateSortableProps) {
 		if (!$selected) return;
 
 		// Find the hit item.
-		const hitItem = pointerZone.items[hitItemIndex];
+		const hitItem = pointerZone.itemsTmp[hitItemIndex];
+
+		const isSameZone = $selected.workingZoneId === pointerZone.id;
+
+		// Determine if the hit item is in a different group
+		let isSameGroup = true;
+		const hitItemGroupEl = pointerZone.groups.find((group) => group.contains(hitItem));
+		if (isSameZone && hitItemGroupEl) {
+			isSameGroup = false;
+		}
 
 		// Get the animation state for the involved zones.
 		const animationState = getAnimationStateForZones(pointerZone, $selected);
 
-		// if   - Move selected within zone and update pointer items array.
-		// else - Move selected to new zone and update origin and pointer items array.
-		if ($selected.zone === pointerZone.id) {
-			const selectedIndex = pointerZone.items.indexOf($selected.el);
+		// if   - Move selected item within the same zone and shift items in pointer items array.
+		// else - Move selected item from its working zone to its new zone or from its working
+		//		  group to its new group (in the same zone) and update pointer items array.
+		if (isSameZone && isSameGroup) {
+			const selectedIndex = pointerZone.itemsTmp.indexOf($selected.el);
 
 			// There are 2 scenarios.
 			//
@@ -481,19 +537,20 @@ export function createSortable(props?: CreateSortableProps) {
 				if (quadrant.horizontal === 'left') {
 					// Move the selected item to before the hit item.
 					if (hitItemIndex - 1 < 0 || hitItemIndex - 1 === selectedIndex) return;
-					pointerZone.items.splice(selectedIndex, 1);
-					pointerZone.items.splice(hitItemIndex - 1, 0, $selected.el as HTMLElement);
+					pointerZone.itemsTmp.splice(selectedIndex, 1);
+					pointerZone.itemsTmp.splice(hitItemIndex - 1, 0, $selected.el as HTMLElement);
 					moveEl($selected.el, hitItem, false);
 				} else if (quadrant.horizontal === 'right') {
 					// Move the selected item to after the hit item.
-					if (hitItemIndex > pointerZone.items.length - 1 || hitItemIndex === selectedIndex) return;
-					pointerZone.items.splice(selectedIndex, 1);
-					pointerZone.items.splice(hitItemIndex, 0, $selected.el as HTMLElement);
+					if (hitItemIndex > pointerZone.itemsTmp.length - 1 || hitItemIndex === selectedIndex)
+						return;
+					pointerZone.itemsTmp.splice(selectedIndex, 1);
+					pointerZone.itemsTmp.splice(hitItemIndex, 0, $selected.el as HTMLElement);
 					moveEl($selected.el, hitItem, true);
 				}
 			} else {
-				pointerZone.items.splice(selectedIndex, 1);
-				pointerZone.items.splice(hitItemIndex, 0, $selected.el as HTMLElement);
+				pointerZone.itemsTmp.splice(selectedIndex, 1);
+				pointerZone.itemsTmp.splice(hitItemIndex, 0, $selected.el as HTMLElement);
 				moveEl($selected.el, hitItem, selectedIndex < hitItemIndex);
 			}
 		} else {
@@ -502,17 +559,26 @@ export function createSortable(props?: CreateSortableProps) {
 
 			if (quadrant.horizontal === 'left') {
 				hitItemIndex === 0
-					? pointerZone.items.unshift($selected.el)
-					: pointerZone.items.splice(hitItemIndex, 0, $selected.el);
+					? pointerZone.itemsTmp.unshift($selected.el)
+					: pointerZone.itemsTmp.splice(hitItemIndex, 0, $selected.el);
 				after = false;
 			} else {
-				hitItemIndex === pointerZone.items.length - 1
-					? pointerZone.items.push($selected.el)
-					: pointerZone.items.splice(hitItemIndex + 1, 0, $selected.el);
+				hitItemIndex === pointerZone.itemsTmp.length - 1
+					? pointerZone.itemsTmp.push($selected.el)
+					: pointerZone.itemsTmp.splice(hitItemIndex + 1, 0, $selected.el);
 			}
 
-			$selected.zone = pointerZone.id;
-			$selected.zoneEl = pointerZone.el;
+			// if -   The selected item moved to a new group in the same zone, but a different
+			//        group, update workingGroupEl.
+			// else - The selected item moved to a new zone. Update workingZoneId and
+			//        workingZoneEl
+			if (isSameZone) {
+				$selected.workingGroupEl = hitItemGroupEl;
+			} else {
+				$selected.workingZoneId = pointerZone.id;
+				$selected.workingZoneEl = pointerZone.el;
+			}
+
 			moveEl($selected.el, hitItem, after);
 		}
 
@@ -523,14 +589,20 @@ export function createSortable(props?: CreateSortableProps) {
 	}
 
 	/**
-	 * Moves the selected element to the end of the sortable zone. This should only be called
-	 * when the zone is empty or it is a dropzone. It checks to see if the pointer is intersecting
-	 * with the zone (as opposed to an item).
+	 * Moves the selected element to an empty zone. This is only called when the zone is empty or
+	 * it is a dropzone.
+	 *
+	 * When the zone does NOT contain item groups, a simple intersect check is carried out to see
+	 * if the pointer is intersecting with the zone. If it is, the selected item is appended to
+	 * the zone.
+	 *
+	 * When the zone contains item groups, additional checks are made to see if an item group is
+	 * being intersected by the pointer and if it is the selected item is appended to the item
+	 * group within the zone.
 	 *
 	 * @param {PointerEvent} e - The pointer event.
-	 * @param {Required<SortableZoneProps>} zoneProps - The required sortable zone properties.
 	 */
-	function moveToEnd(e: PointerEvent, zoneProps: Required<SortableZoneProps>) {
+	function moveToEmptyZone(e: PointerEvent) {
 		if (!pointerZone) return;
 
 		const $ghost = get(ghost);
@@ -539,18 +611,40 @@ export function createSortable(props?: CreateSortableProps) {
 		const $selected = get(selected);
 		if (!$selected) return;
 
-		const { hit } = intersect(pointerZone.el, $ghost, e, zoneProps, previousHitItem);
-
-		if (!hit) return;
+		// Check if the pointer is intersecting the zone.
+		if (!simpleIntersect(pointerZone.el, $ghost, e)) return;
 
 		// Get the animation state for the involved zones.
 		const animationState = getAnimationStateForZones(pointerZone, $selected);
 
-		$selected.zone = pointerZone.id;
-		pointerZone.items.push($selected.el);
+		if (pointerZone.groups.length > 0) {
+			let intersectingGroup: HTMLElement | null = null;
 
-		const itemGroupEl = pointerZone.el.querySelector(selector('item-group'));
-		!itemGroupEl ? pointerZone.el.appendChild($selected.el) : itemGroupEl.appendChild($selected.el);
+			// Check if the pointer is intersecting an item group.
+			for (let i = 0; i < pointerZone.groups.length; i++) {
+				if (simpleIntersect(pointerZone.groups[i], $ghost, e)) {
+					intersectingGroup = pointerZone.groups[i];
+					break;
+				}
+			}
+
+			// Return if the pointer is not intersecting an item group.
+			if (!intersectingGroup) return;
+
+			// Move the selected item to the end of the item group.
+			$selected.workingGroupEl = intersectingGroup;
+			intersectingGroup.appendChild($selected.el);
+		} else {
+			// Move the selected item to the end of the zone.
+
+			pointerZone.el.appendChild($selected.el);
+		}
+
+		// Regardless of whether the zone contains item groups or not, we need to update the
+		// pointer zone items array, zone id and zone element.
+		pointerZone.itemsTmp.push($selected.el);
+		$selected.workingZoneId = pointerZone.id;
+		$selected.workingZoneEl = pointerZone.el;
 
 		// Do the animation if we have state
 		if (animationState) {
@@ -558,6 +652,29 @@ export function createSortable(props?: CreateSortableProps) {
 		}
 	}
 
+	/**
+	 * Moves the selected element to an empty group within the same zone.
+	 *
+	 * @param {HTMLElement} group - The group element to move the selected item to.
+	 */
+	function moveToEmptyGroup(group: HTMLElement) {
+		if (!pointerZone) return;
+
+		const $selected = get(selected);
+		if (!$selected) return;
+
+		// Get the animation state for this zone.
+		const animationState = getAnimationStateForZones(pointerZone, $selected);
+
+		// Move the selected item to the end of the item group.
+		$selected.workingGroupEl = group;
+		group.appendChild($selected.el);
+
+		// Do the animation if we have state
+		if (animationState) {
+			animate(animationState, get(animationDuration), get(animationEasing));
+		}
+	}
 	/**
 	 * Moves an item within a zone or to a new zone
 	 *
@@ -573,23 +690,25 @@ export function createSortable(props?: CreateSortableProps) {
 		if (!$selected) return;
 
 		// Get the origin zone
-		const items: HTMLElement[] = Array.from($selected.originEl.querySelectorAll(selector('item')));
+		const items: HTMLElement[] = Array.from(
+			$selected.originZoneEl.querySelectorAll(selector('item'))
+		);
 
 		// Get the animation state for the involved zones
-		const itemsToAnimate = [...pointerZone.items, ...items];
+		const itemsToAnimate = [...pointerZone.itemsTmp, ...items];
 		const animationState = getState(itemsToAnimate);
 
-		returningHome = { el: $selected.zoneEl };
+		returningHome = { el: $selected.workingZoneEl };
 
 		if (items.length === 0) {
-			$selected.originEl.appendChild($selected.el);
+			$selected.originZoneEl.appendChild($selected.el);
 		}
 
 		const item = items[$selected.originIndex];
 		moveEl($selected.el, item, false);
 
-		$selected.zone = $selected.originZone;
-		$selected.zoneEl = $selected.originEl;
+		$selected.workingZoneId = $selected.originZoneId;
+		$selected.workingZoneEl = $selected.originZoneEl;
 
 		// Do the animation if we have state
 		if (animationState) {
@@ -609,9 +728,9 @@ export function createSortable(props?: CreateSortableProps) {
 		const $animationDuration = get(animationDuration);
 		if ($animationDuration <= 0) return null;
 
-		const itemsToAnimate = [...(pointerZone.items as Element[])];
-		if (selected.zone !== pointerZone.id) {
-			itemsToAnimate.push(...Array.from(selected.zoneEl.querySelectorAll(selector('item'))));
+		const itemsToAnimate = [...(pointerZone.itemsTmp as Element[])];
+		if (selected.workingZoneId !== pointerZone.id) {
+			itemsToAnimate.push(...Array.from(selected.workingZoneEl.querySelectorAll(selector('item'))));
 		}
 
 		return getState(itemsToAnimate);

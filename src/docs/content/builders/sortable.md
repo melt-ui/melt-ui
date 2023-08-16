@@ -68,11 +68,10 @@ An `itemGroup` element can be used as a target location for items to be placed t
 zone.
 
 When a zone contains no `$item` elements, the first item dragged into this zone will be added as a
-child. added as a child of the zone. This may not be the desired behavior, and instead you wish to
-have a target location for items to be placed.
+child. This may not be the desired behavior, and instead you wish to have a target location for
+items to be placed.
 
-Multiple item groups can be used within the same zone. This can be useful when you wish to separate
-items into different groups.
+Multiple item groups can be used within the same zone.
 
 <Callout type='warning'>
 

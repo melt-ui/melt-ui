@@ -154,7 +154,7 @@ export type SortableSelected = {
 	 * This is the origin zone of the item as the time of the pointerdown event. This value
 	 * will not change as the item is dragged between zones.
 	 */
-	originZone: string;
+	originZoneId: string;
 
 	/**
 	 * This is the index of the item within its origin zone at the time of the pointerdown event.
@@ -169,25 +169,37 @@ export type SortableSelected = {
 	 * A reference to the origin zone element. This value will not change as the item is dragged
 	 * between zones.
 	 */
-	originEl: HTMLElement;
+	originZoneEl: HTMLElement;
+
+	/**
+	 * An optional reference to the origin group element. This value will not change as the item
+	 * is dragged between zones/groups.
+	 */
+	originGroupEl?: HTMLElement;
 
 	/**
 	 * The zone this item current belongs to at the time of the pointerdown event. As the item
 	 * is dragged between zones, this value will change.
 	 */
-	zone: string;
+	workingZoneId: string;
 
 	/**
 	 * The index within this zone at the time of the pointerdown event. As the item is moved this
 	 * value will change.
 	 */
-	zoneIndex: number;
+	workingZoneIndex: number;
 
 	/**
 	 * A reference to the zone element that this item currently belongs to. As the item is dragged
 	 * between zones, this value will change.
 	 */
-	zoneEl: HTMLElement;
+	workingZoneEl: HTMLElement;
+
+	/**
+	 * An optional reference to the group element that this item currently belongs to. As the
+	 * item is dragged between zones, this value will change.
+	 */
+	workingGroupEl?: HTMLElement;
 } & Required<SortableItemProps>;
 
 export type SortableGhost = {
@@ -246,9 +258,14 @@ export type SortablePointerZone = {
 	el: HTMLElement;
 
 	/**
+	 * An array of groups in this zone.
+	 */
+	groups: HTMLElement[];
+
+	/**
 	 * An array of items in this zone.
 	 */
-	items: AnimationElement[];
+	itemsTmp: AnimationElement[];
 };
 
 export type SortableQuadrant = {
