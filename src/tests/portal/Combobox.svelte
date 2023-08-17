@@ -8,11 +8,7 @@
 
 	const {
 		elements: { menu, input, item, label },
-		states: { filteredItems },
-	} = createCombobox({
-		items,
-		filterFunction: (item, value) => item.includes(value),
-	});
+	} = createCombobox();
 
 	const level = initLevel();
 </script>
@@ -26,20 +22,15 @@
 	<slot />
 	<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 	<div tabindex="0">
-		{#if $filteredItems.length !== 0}
-			{#each $filteredItems as it, index (index)}
-				<li
-					use:melt={$item({
-						index,
-						item: it,
-					})}
-				>
-					{it}
-				</li>
-			{/each}
-		{:else}
-			<li>No results found</li>
-		{/if}
+		{#each items as it, index (index)}
+			<li
+				use:melt={$item({
+					value: it,
+				})}
+			>
+				{it}
+			</li>
+		{/each}
 	</div>
 </ul>
 

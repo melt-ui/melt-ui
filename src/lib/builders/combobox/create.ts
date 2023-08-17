@@ -68,7 +68,7 @@ const { name, selector } = createElHelpers('combobox');
  * @TODO would it be useful to have a callback for when an item is selected?
  * @TODO multi-select using `tags-input` builder?
  */
-export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>) {
+export function createCombobox<ItemValue>(props?: CreateComboboxProps<ItemValue>) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateComboboxProps<ItemValue>;
 
 	// Trigger element for the popper portal. This will be our input element.
