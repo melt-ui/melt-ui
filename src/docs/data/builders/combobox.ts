@@ -11,14 +11,9 @@ import { getMenuArrowSchema } from './menu.js';
 const OPTION_PROPS = [
 	{
 		name: 'filterFunction',
-		type: '(item: T, inputValue: string)',
+		type: '({ itemValue: T; input: string; })',
 		description:
 			'A function that returns `true` if the item should be included in the filtered list.',
-	},
-	{
-		name: 'itemToString',
-		type: '(item: T)',
-		description: 'A function that returns a string representation of the item.',
 	},
 	{
 		name: 'scrollAlignment',
@@ -40,11 +35,6 @@ const BUILDER_NAME = 'combobox';
 const builder = builderSchema(BUILDER_NAME, {
 	title: 'createCombobox',
 	props: [
-		{
-			name: 'items',
-			type: 'T[]',
-			description: 'The list of items to display in the combobox list.',
-		},
 		{
 			name: 'defaultValue',
 			type: 'T',

@@ -180,10 +180,14 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 		await tick();
 
 		const menuElement = document.getElementById(ids.menu);
+
 		if (!isHTMLElement(menuElement)) return;
 
 		const options = getOptions(menuElement);
-		const visibleOptions = options.filter((opt) => !opt.dataset.hidden);
+		const visibleOptions = options.filter((opt) => {
+			const isHidden = opt.dataset.hidden !== undefined;
+			return !isHidden;
+		});
 		if (!visibleOptions.length) {
 			isEmpty.set(true);
 		} else {
@@ -649,7 +653,7 @@ export function createCombobox<ItemValue>(props: CreateComboboxProps<ItemValue>)
 		}
 	});
 
-	effect(inputValue, () => {
+	effect([inputValue, touchedInput], () => {
 		handleIsEmpty();
 	});
 
