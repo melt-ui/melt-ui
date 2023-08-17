@@ -116,6 +116,23 @@ const zone = elementSchema('zone', {
 
 const item = elementSchema('item', {
 	description: 'Contains all the parts of a sortable zone item.',
+	props: [
+		{
+			name: 'id',
+			type: 'string',
+			required: true,
+		},
+		{
+			name: 'disabled',
+			type: 'boolean',
+			default: 'false',
+		},
+		{
+			name: 'returnHome',
+			type: 'boolean',
+			default: 'false',
+		},
+	],
 	dataAttributes: [
 		{
 			name: 'data-melt-sortable-item',
