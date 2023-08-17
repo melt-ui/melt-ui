@@ -126,11 +126,8 @@ describe('Select (Default)', () => {
 		await expect(firstItem).toHaveAttribute('data-selected');
 		await expect(firstItem).toHaveAttribute('aria-selected', 'true');
 
-		await expect(menu).not.toBeVisible();
-		await expect(trigger).toHaveTextContent('Caramel');
-
-		await user.click(trigger);
 		await expect(menu).toBeVisible();
+		await expect(trigger).toHaveTextContent('Caramel');
 
 		const secondItem = menu.querySelectorAll('[data-melt-select-option]')[1];
 		if (!secondItem) throw new Error('No option found');
@@ -139,8 +136,11 @@ describe('Select (Default)', () => {
 		await expect(secondItem).toHaveAttribute('data-selected');
 		await expect(secondItem).toHaveAttribute('aria-selected', 'true');
 
-		await expect(menu).not.toBeVisible();
+		await expect(menu).toBeVisible();
 		await expect(trigger).toHaveTextContent('Caramel, Chocolate');
+
+		await user.keyboard(`{${kbd.ESCAPE}}`);
+		await expect(menu).not.toBeVisible();
 	});
 
 	test('Shows correct label when defaultValue is provided', async () => {
