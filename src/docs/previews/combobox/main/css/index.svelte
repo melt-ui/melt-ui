@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { createCombobox, melt } from '$lib/index.js';
+	import {
+		createCombobox,
+		melt,
+		type ComboboxFilterFunction,
+	} from '$lib/index.js';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
 
 	interface Book {
@@ -61,30 +65,34 @@
 		},
 	];
 
+	const filterFunction: ComboboxFilterFunction<Book> = ({
+		itemValue,
+		input,
+	}) => {
+		// Example string normalization function. Replace as needed.
+		const normalize = (str: string) => str.normalize().toLowerCase();
+		const normalizedInput = normalize(input);
+		return (
+			normalizedInput === '' ||
+			normalize(itemValue.title).includes(normalizedInput) ||
+			normalize(itemValue.author).includes(normalizedInput)
+		);
+	};
+
 	const {
-		elements: { input, menu, item, label },
-		states: { open, inputValue, filteredItems },
+		elements: { menu, input, item, label },
+		states: { open, isEmpty },
 		helpers: { isSelected },
 	} = createCombobox({
-		filterFunction: (item, inputValue) => {
-			// Example string normalization function. Replace as needed.
-			const normalize = (str: string) => str.normalize().toLowerCase();
-			const normalizedInput = normalize(inputValue);
-			return (
-				normalizedInput === '' ||
-				normalize(item.title).includes(normalizedInput) ||
-				normalize(item.author).includes(normalizedInput)
-			);
-		},
-		items: books,
-		itemToString: (item) => item.title,
+		filterFunction,
+		forceVisible: true,
 	});
 </script>
 
 <label use:melt={$label}>
 	<span>Choose your favorite book:</span>
 	<div>
-		<input use:melt={$input} placeholder="Best book ever" value={$inputValue} />
+		<input use:melt={$input} placeholder="Best book ever" />
 		<div class="chevron-wrapper">
 			{#if $open}
 				<ChevronUp class="square-4" />
@@ -96,34 +104,33 @@
 </label>
 
 <div class="menu-container" use:melt={$menu}>
-	<ul class="menu">
-		{#if $open}
-			{#if $filteredItems.length !== 0}
-				{#each $filteredItems as book, index (index)}
-					<li
-						use:melt={$item({
-							index,
-							item: book,
-							disabled: book.disabled,
-						})}
-						class="item"
-					>
-						{#if $isSelected(book)}
-							<div class="check">
-								<Check class="square-4" />
-							</div>
-						{/if}
-						<div>
-							<span>{book.title}</span>
-							<span class="author">{book.author}</span>
+	{#if $open}
+		<ul class="menu">
+			{#each books as book, index (index)}
+				<li
+					use:melt={$item({
+						value: book,
+						label: book.title,
+						disabled: book.disabled,
+					})}
+					class="item"
+				>
+					{#if $isSelected(book)}
+						<div class="check">
+							<Check class="square-4" />
 						</div>
-					</li>
-				{/each}
-			{:else}
+					{/if}
+					<div>
+						<span>{book.title}</span>
+						<span class="author">{book.author}</span>
+					</div>
+				</li>
+			{/each}
+			{#if $isEmpty}
 				<li class="item">No results found</li>
 			{/if}
-		{/if}
-	</ul>
+		</ul>
+	{/if}
 </div>
 
 <style>

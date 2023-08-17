@@ -76,10 +76,10 @@ const { name } = createElHelpers<SelectParts>('select');
 
 export function createSelect<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	Item extends Multiple extends true ? Array<unknown> : unknown = any,
+	Value extends Multiple extends true ? Array<unknown> : unknown = any,
 	Multiple extends boolean = false
->(props?: CreateSelectProps<Item, Multiple>) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps<Item, Multiple>;
+>(props?: CreateSelectProps<Value, Multiple>) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps<Value, Multiple>;
 
 	const options = toWritableStores({
 		...omit(
@@ -116,10 +116,10 @@ export function createSelect<
 	// Open so we can register the optionsList items before mounted = true
 	open.set(true);
 
-	const valueWritable = withDefaults.value ?? writable<Item>(withDefaults.defaultValue);
+	const valueWritable = withDefaults.value ?? writable<Value>(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
-	const valueLabel = writable<string | number | null>(withDefaults.defaultValueLabel ?? null);
+	const valueLabel = writable<string | null>(withDefaults.defaultValueLabel ?? null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	/**
@@ -138,13 +138,15 @@ export function createSelect<
 	 * This is used to determine how we handle focus on open behavior differently
 	 * than when the user is using the mouse.
 	 */
-	const isUsingKeyboard = writable(false);
+	let isUsingKeyboard = false;
 
 	const ids = {
 		menu: generateId(),
 		trigger: generateId(),
 		label: generateId(),
 	};
+
+	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
 
 	onMount(() => {
 		// Run after all initial effects
@@ -160,9 +162,9 @@ export function createSelect<
 		if (!menuEl) return;
 
 		const triggerEl = document.getElementById(ids.trigger);
-
-		if (!triggerEl) return;
-		activeTrigger.set(triggerEl);
+		if (triggerEl) {
+			activeTrigger.set(triggerEl);
+		}
 
 		const selectedEl = menuEl.querySelector('[data-selected]');
 		if (!isHTMLElement(selectedEl)) return;
@@ -442,46 +444,46 @@ export function createSelect<
 		}),
 	});
 
-	type OptionProps = {
-		value: unknown;
-		label: string | null;
-		disabled: boolean;
-	};
-
-	const getOptionProps = (el: HTMLElement) => {
+	const getOptionProps = (el: HTMLElement): SelectOptionProps<Value> => {
 		const value = el.getAttribute('data-value');
 		const label = el.getAttribute('data-label');
 		const disabled = el.hasAttribute('data-disabled');
 
 		return {
 			value: value ? JSON.parse(value) : value,
-			label: label ?? el.textContent ?? null,
+			label: label ?? el.textContent ?? undefined,
 			disabled: disabled ? true : false,
 		};
 	};
 
-	const setValue = (newValue: Item) => {
+	const setValue = (newValue: Value) => {
 		value.update(($value) => {
 			const $multiple = get(multiple);
 			if (Array.isArray($value) || ($value === undefined && $multiple)) {
-				return toggle(newValue, ($value ?? []) as unknown[]) as Item;
+				return toggle(newValue, ($value ?? []) as unknown[]) as Value;
 			}
 			return newValue;
 		});
 	};
 
-	const optionsList: OptionProps[] = [];
+	/**
+	 * List of options fetched from SSR.
+	 */
+	const cachedOptionPropsArr: SelectOptionProps<Value>[] = [];
+	const getOptionPropsArr = () => {
+		if (!isBrowser) return cachedOptionPropsArr;
+
+		const menuEl = document.getElementById(ids.menu);
+		if (!menuEl) return cachedOptionPropsArr;
+		const options = getOptions(menuEl);
+		return options.map(getOptionProps);
+	};
 
 	const option = builder(name('option'), {
 		stores: value,
 		returned: ($value) => {
-			return (props: SelectOptionProps<Item>) => {
-				const optProps: OptionProps = {
-					value: props.value,
-					label: props.label ?? null,
-					disabled: props.disabled ?? false,
-				};
-				optionsList.push(optProps);
+			return (props: SelectOptionProps<Value>) => {
+				cachedOptionPropsArr.push(props);
 
 				const isSelected = Array.isArray($value)
 					? $value.includes(props?.value)
@@ -571,11 +573,11 @@ export function createSelect<
 		},
 	});
 
-	effect(value, ($value) => {
-		if (!isBrowser) return;
+	effect(value, function updateValueLabel($value) {
+		const optionPropsArr = getOptionPropsArr();
 
 		if (Array.isArray($value)) {
-			const labels = optionsList.reduce((result, current) => {
+			const labels = optionPropsArr.reduce((result, current) => {
 				if ($value.includes(current.value) && current.label) {
 					result.add(current.label);
 				}
@@ -584,14 +586,12 @@ export function createSelect<
 
 			valueLabel.set(Array.from(labels).join(', '));
 		} else {
-			const newLabel = optionsList.find((opt) => opt.value === $value)?.label;
+			const newLabel = optionPropsArr.find((opt) => opt.value === $value)?.label;
 			valueLabel.set(newLabel ?? null);
 		}
 	});
 
-	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
-
-	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
+	effect([open, activeTrigger], function handleFocus([$open, $activeTrigger]) {
 		const unsubs: Array<() => void> = [];
 
 		if (!isBrowser) return;
@@ -602,7 +602,7 @@ export function createSelect<
 		const constantMounted = mounted;
 		sleep(1).then(() => {
 			const menuEl = document.getElementById(ids.menu);
-			if (menuEl && $open && get(isUsingKeyboard)) {
+			if (menuEl && $open && isUsingKeyboard) {
 				// Focus on selected option or first option
 				const selectedOption = getSelectedOption(menuEl);
 
@@ -616,7 +616,7 @@ export function createSelect<
 			} else if (menuEl && $open) {
 				// focus on the menu element
 				handleRovingFocus(menuEl);
-			} else if ($activeTrigger && constantMounted && get(isUsingKeyboard)) {
+			} else if ($activeTrigger && constantMounted && isUsingKeyboard) {
 				// Hacky way to prevent the keydown event from triggering on the trigger
 				handleRovingFocus($activeTrigger);
 			}
@@ -639,9 +639,9 @@ export function createSelect<
 	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
 		if (!isBrowser) return;
 
-		const handlePointer = () => isUsingKeyboard.set(false);
+		const handlePointer = () => (isUsingKeyboard = false);
 		const handleKeyDown = (e: KeyboardEvent) => {
-			isUsingKeyboard.set(true);
+			isUsingKeyboard = true;
 			if (e.key === kbd.ESCAPE && $open) {
 				open.set(false);
 				if (!$activeTrigger) return;
