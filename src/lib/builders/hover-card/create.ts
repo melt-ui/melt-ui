@@ -123,16 +123,6 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
 					get(handleClose)();
-				}),
-				addMeltEventListener(node, 'focus', () => get(handleOpen)()),
-
-				addMeltEventListener(node, 'blur', () => get(handleClose)()),
-				addMeltEventListener(node, 'touchstart', (e) => {
-					// prevent focus on touch devices
-					e.preventDefault();
-					const currentTarget = e.currentTarget;
-					if (!isHTMLElement(currentTarget)) return;
-					currentTarget.click();
 				})
 			);
 
