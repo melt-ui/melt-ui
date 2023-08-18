@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.36.0
+
+### Minor Changes
+
+- 886ea40b: improve event canceling; replace e.detail.cancel() with e.preventDefault()
+
 ## 0.35.1
 
 ### Patch Changes
