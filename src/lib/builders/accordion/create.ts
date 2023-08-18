@@ -35,7 +35,8 @@ export const createAccordion = <Multiple extends boolean = false>(
 	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
 	const { disabled, forceVisible } = options;
 
-	const valueWritable = withDefaults.value ?? writable(withDefaults.value);
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+
 	const value = overridable<string | string[] | undefined>(
 		valueWritable,
 		withDefaults?.onValueChange as ChangeFn<string | string[] | undefined>
