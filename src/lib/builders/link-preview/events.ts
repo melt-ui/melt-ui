@@ -1,7 +1,7 @@
 import type { GroupedEvents, MeltComponentEvents } from '$lib/internal/types.js';
 
 export const linkPreviewEvents = {
-	trigger: ['pointerenter', 'pointerleave', 'focus', 'blur', 'touchstart'] as const,
+	trigger: ['pointerenter', 'pointerleave', 'focus', 'blur'] as const,
 	content: ['pointerdown', 'pointerenter', 'pointerleave', 'focusout'] as const,
 };
 

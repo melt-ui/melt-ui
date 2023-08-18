@@ -10,6 +10,8 @@ import {
 	getPortalDestination,
 	getTabbableNodes,
 	isBrowser,
+	isElement,
+	isFocusVisible,
 	isHTMLElement,
 	isTouch,
 	noop,
@@ -124,16 +126,11 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 					if (isTouch(e)) return;
 					get(handleClose)();
 				}),
-				addMeltEventListener(node, 'focus', () => get(handleOpen)()),
-
-				addMeltEventListener(node, 'blur', () => get(handleClose)()),
-				addMeltEventListener(node, 'touchstart', (e) => {
-					// prevent focus on touch devices
-					e.preventDefault();
-					const currentTarget = e.currentTarget;
-					if (!isHTMLElement(currentTarget)) return;
-					currentTarget.click();
-				})
+				addMeltEventListener(node, 'focus', (e) => {
+					if (!isElement(e.currentTarget) || !isFocusVisible(e.currentTarget)) return;
+					get(handleOpen)();
+				}),
+				addMeltEventListener(node, 'blur', () => get(handleClose)())
 			);
 
 			return {
