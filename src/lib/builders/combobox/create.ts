@@ -357,7 +357,7 @@ export function createCombobox<ItemValue>(props?: CreateComboboxProps<ItemValue>
 						if (!itemElements.length) return;
 						// Disabled items can't be highlighted. Skip them.
 						const candidateNodes = itemElements.filter(
-							(opt) => !isElementDisabled(opt) && !opt.dataset.hidden
+							(opt) => !isElementDisabled(opt) && opt.dataset.hidden === undefined
 						);
 						// Get the index of the currently highlighted item.
 						const $currentItem = get(highlightedItem);
