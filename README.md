@@ -87,8 +87,8 @@ we'd love to have you there.
 | Dialog            | ✅     |
 | Dropdown Menu     | ✅     |
 | Dropzone          |        |
-| Hover Card        | ✅     |
 | Label             | ✅     |
+| Link Preview      | ✅     |
 | Menubar           | ✅     |
 | Navigation Menu   |        |
 | Pagination        | ✅     |

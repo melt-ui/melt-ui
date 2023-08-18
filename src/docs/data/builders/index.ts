@@ -7,8 +7,8 @@ import { comboboxData } from './combobox.js';
 import { contextMenuData } from './context-menu.js';
 import { dialogData } from './dialog.js';
 import { dropdownMenuData } from './dropdown-menu.js';
-import { hoverCardData } from './hover-card.js';
 import { labelData } from './label.js';
+import { linkPreviewData } from './link-preview.js';
 import { menubarData } from './menubar.js';
 import { paginationData } from './pagination.js';
 import { pinInputData } from './pin-input.js';
@@ -37,8 +37,8 @@ export const builderList = [
 	'context-menu',
 	'dialog',
 	'dropdown-menu',
-	'hover-card',
 	'label',
+	'link-preview',
 	'menubar',
 	'pagination',
 	'pin-input',
@@ -82,8 +82,8 @@ export const data: Builders = {
 	'context-menu': contextMenuData,
 	dialog: dialogData,
 	'dropdown-menu': dropdownMenuData,
-	'hover-card': hoverCardData,
 	label: labelData,
+	'link-preview': linkPreviewData,
 	menubar: menubarData,
 	pagination: paginationData,
 	'pin-input': pinInputData,

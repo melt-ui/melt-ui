@@ -1,6 +1,6 @@
 import { ATTRS, PROPS } from '$docs/constants.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
-import { hoverCardEvents } from '$lib/builders/hover-card/events.js';
+import { linkPreviewEvents } from '$lib/builders/link-preview/events.js';
 import type { BuilderData } from './index.js';
 import { getMenuArrowSchema } from './menu.js';
 
@@ -12,13 +12,13 @@ const OPTION_PROPS = [
 		name: 'openDelay',
 		type: 'number',
 		default: '700',
-		description: 'The delay in milliseconds before the hover card opens.',
+		description: 'The delay in milliseconds before the link preview opens.',
 	},
 	{
 		name: 'closeDelay',
 		type: 'number',
 		default: '300',
-		description: 'The delay in milliseconds before the hover card closes.',
+		description: 'The delay in milliseconds before the link preview closes.',
 	},
 	PROPS.POSITIONING({ default: "placement: 'bottom'" }),
 	PROPS.ARROW_SIZE,
@@ -28,63 +28,63 @@ const OPTION_PROPS = [
 	PROPS.PORTAL,
 ];
 
-const BUILDER_NAME = 'hover card';
+const BUILDER_NAME = 'link preview';
 
 const builder = builderSchema(BUILDER_NAME, {
-	title: 'createHoverCard',
+	title: 'createLinkPreview',
 	props: [...OPTION_PROPS, PROPS.DEFAULT_OPEN, PROPS.OPEN, PROPS.ON_OPEN_CHANGE],
 	elements: [
 		{
 			name: 'trigger',
-			description: 'The builder store used to create the hover card trigger.',
+			description: 'The builder store used to create the link preview trigger.',
 		},
 		{
 			name: 'content',
-			description: 'The builder store used to create the hover card content.',
+			description: 'The builder store used to create the link preview content.',
 		},
 		{
 			name: 'arrow',
-			description: 'The builder store used to create the hover card arrow.',
+			description: 'The builder store used to create the link preview arrow.',
 		},
 	],
 	states: [
 		{
 			name: 'open',
 			type: 'Writable<boolean>',
-			description: 'A writable store with the open state of the hover card.',
+			description: 'A writable store with the open state of the link preview.',
 		},
 	],
 	options: OPTION_PROPS,
 });
 
 const trigger = elementSchema('trigger', {
-	description: 'The hover card trigger element.',
+	description: 'The link preview trigger element.',
 	dataAttributes: [
 		{
 			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			name: 'data-melt-hover-card-trigger',
+			name: 'data-melt-link-preview-trigger',
 			value: ATTRS.MELT('trigger'),
 		},
 	],
-	events: hoverCardEvents['trigger'],
+	events: linkPreviewEvents['trigger'],
 });
 
 const content = elementSchema('content', {
-	description: 'The content displayed in the hovercard',
+	description: 'The content displayed in the linkpreview',
 	dataAttributes: [
 		{
 			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			name: 'data-melt-hover-card-content',
+			name: 'data-melt-link-preview-content',
 			value: ATTRS.MELT('content'),
 		},
 	],
-	events: hoverCardEvents['content'],
+	events: linkPreviewEvents['content'],
 });
 
 const arrow = getMenuArrowSchema(BUILDER_NAME);
@@ -98,7 +98,7 @@ const features = [
 	'Positioning and alignment customization',
 ];
 
-export const hoverCardData: BuilderData = {
+export const linkPreviewData: BuilderData = {
 	schemas,
 	features,
 };

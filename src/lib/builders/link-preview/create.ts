@@ -10,6 +10,8 @@ import {
 	getPortalDestination,
 	getTabbableNodes,
 	isBrowser,
+	isElement,
+	isFocusVisible,
 	isHTMLElement,
 	isTouch,
 	noop,
@@ -21,11 +23,11 @@ import {
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
-import type { HoverCardEvents } from './events.js';
-import type { CreateHoverCardProps } from './types.js';
+import type { LinkPreviewEvents } from './events.js';
+import type { CreateLinkPreviewProps } from './types.js';
 
-type HoverCardParts = 'trigger' | 'content' | 'arrow';
-const { name } = createElHelpers<HoverCardParts>('hover-card');
+type LinkPreviewParts = 'trigger' | 'content' | 'arrow';
+const { name } = createElHelpers<LinkPreviewParts>('hover-card');
 
 const defaults = {
 	defaultOpen: false,
@@ -39,10 +41,10 @@ const defaults = {
 	forceVisible: false,
 	portal: 'body',
 	closeOnEscape: true,
-} satisfies CreateHoverCardProps;
+} satisfies CreateLinkPreviewProps;
 
-export function createHoverCard(props: CreateHoverCardProps = {}) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateHoverCardProps;
+export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateLinkPreviewProps;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
@@ -114,7 +116,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 				id: ids.trigger,
 			};
 		},
-		action: (node: HTMLElement): MeltActionReturn<HoverCardEvents['trigger']> => {
+		action: (node: HTMLElement): MeltActionReturn<LinkPreviewEvents['trigger']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
@@ -124,16 +126,11 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 					if (isTouch(e)) return;
 					get(handleClose)();
 				}),
-				addMeltEventListener(node, 'focus', () => get(handleOpen)()),
-
-				addMeltEventListener(node, 'blur', () => get(handleClose)()),
-				addMeltEventListener(node, 'touchstart', (e) => {
-					// prevent focus on touch devices
-					e.preventDefault();
-					const currentTarget = e.currentTarget;
-					if (!isHTMLElement(currentTarget)) return;
-					currentTarget.click();
-				})
+				addMeltEventListener(node, 'focus', (e) => {
+					if (!isElement(e.currentTarget) || !isFocusVisible(e.currentTarget)) return;
+					get(handleOpen)();
+				}),
+				addMeltEventListener(node, 'blur', () => get(handleClose)())
 			);
 
 			return {
@@ -160,7 +157,7 @@ export function createHoverCard(props: CreateHoverCardProps = {}) {
 				'data-portal': $portal ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement): MeltActionReturn<HoverCardEvents['content']> => {
+		action: (node: HTMLElement): MeltActionReturn<LinkPreviewEvents['content']> => {
 			let unsub = noop;
 
 			const unsubTimers = () => {

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { createHoverCard, melt } from '$lib/index.js';
+	import { createLinkPreview, melt } from '$lib/index.js';
 
 	const {
 		elements: { trigger, content, arrow },
-	} = createHoverCard({
+	} = createLinkPreview({
 		openDelay: 0,
 	});
 </script>

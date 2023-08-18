@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { createHoverCard, melt } from '$lib/index.js';
+	import { createLinkPreview, melt } from '$lib/index.js';
 	import { fly } from 'svelte/transition';
 
 	const {
 		elements: { trigger, content, arrow },
 		states: { open },
-	} = createHoverCard({
+	} = createLinkPreview({
 		forceVisible: true,
 	});
 </script>
