@@ -627,7 +627,11 @@ export function createCombobox<ItemValue>(props?: CreateComboboxProps<ItemValue>
 	});
 
 	effect(value, function setInputValue($value) {
-		if (!$value) return;
+		if (!$value) {
+			inputValue.set('');
+			return;
+		}
+
 		tick().then(() => {
 			inputValue.set(getSelectedLabel() ?? '');
 		});
