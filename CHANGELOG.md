@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.37.2
+
+### Patch Changes
+
+- b10b2906: refacotr menubar internals
+
 ## 0.37.1
 
 ### Patch Changes
