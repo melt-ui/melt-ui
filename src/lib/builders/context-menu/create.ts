@@ -108,7 +108,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		if (e.defaultPrevented) return;
 
 		const target = e.target;
-		if (!isHTMLElement(target)) return;
+		if (!(target instanceof Element)) return;
 
 		if (target.id === rootIds.trigger && isLeftClick(e)) {
 			rootOpen.set(false);
