@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.35.1
+
+### Patch Changes
+
+- 7ab57673: fix accordion defaultValue
+
 ## 0.35.0
 
 ### Minor Changes
