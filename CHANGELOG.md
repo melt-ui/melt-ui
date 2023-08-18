@@ -1,5 +1,18 @@
 # @melt-ui/svelte
 
+## 0.37.0
+
+### Minor Changes
+
+- 77a39a59: fix pin input controlled value
+- 908f68ef: Rename Hover Card to Link Preview
+
+### Patch Changes
+
+- 4d9212fc: Keep Select menu open on select when `multiple` prop is `true`
+- abcae57d: fix: context menu not closing when clicking on svg element
+- 698a22d6: fix combobox controlled reset
+
 ## 0.36.0
 
 ### Minor Changes
