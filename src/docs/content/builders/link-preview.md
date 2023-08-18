@@ -1,5 +1,5 @@
 ---
-title: Hover Card
+title: Link Preview
 description: Enable sighted users to preview content behind a link.
 ---
 
@@ -10,45 +10,45 @@ description: Enable sighted users to preview content behind a link.
 
 <Callout type="warning">
 
-⚠️ The Hover Card is only intended to be used with a mouse or other pointing device and doesn't
+⚠️ The Link Preview is only intended to be used with a mouse or other pointing device and doesn't
 respond to keyboard or touch events. On touch devices, the link will be followed immediately.
 
 </Callout>
 
 ## Anatomy
 
-- **Trigger**: The element that opens the hovercard on hover.
-- **Content**: The element containing the content for the hovercard.
+- **Trigger**: The element that opens the linkpreview on hover.
+- **Content**: The element containing the content for the linkpreview.
 - **Arrow**: An optional arrow component
 
 ## Usage
 
-Create a hovercard using the `createHoverCard` builder function.
+Create a linkpreview using the `createLinkPreview` builder function.
 
 ```svelte {3-5}
 <script lang="ts">
-	import { createHoverCard, melt } from '@melt-ui/svelte'
+	import { createLinkPreview, melt } from '@melt-ui/svelte'
 	const {
 		elements: { trigger, content, arrow }
-	} = createHoverCard()
+	} = createLinkPreview()
 </script>
 ```
 
-Then you can use the `trigger`, `content`, and `arrow` to construct a hovercard. A high level
-example of how to structure the hovercard is shown below.
+Then you can use the `trigger`, `content`, and `arrow` to construct a linkpreview. A high level
+example of how to structure the linkpreview is shown below.
 
 ```svelte
 <script lang="ts">
-	import { createHoverCard, melt } from '@melt-ui/svelte'
+	import { createLinkPreview, melt } from '@melt-ui/svelte'
 	const {
 		elements: { trigger, content, arrow }
-	} = createHoverCard()
+	} = createLinkPreview()
 </script>
 
 <button use:melt={$trigger}>Hover Me</button>
 
 <div use:melt={$content}>
-	<div>I am content inside the hover card</div>
+	<div>I am content inside the link preview</div>
 	<div use:melt={$arrow} />
 </div>
 ```
@@ -62,5 +62,5 @@ page.
 
 ## Accessibility
 
-The hover card is only intended to be used with a mouse or other pointing device and doesn't respond
-to keyboard events.
+The link preview is only intended to be used with a mouse or other pointing device and doesn't
+respond to keyboard events.

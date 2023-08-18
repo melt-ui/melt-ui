@@ -1,10 +1,10 @@
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
-import type { createHoverCard } from './create.js';
+import type { createLinkPreview } from './create.js';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
-export type { HoverCardComponentEvents } from './events.js';
-export type CreateHoverCardProps = {
+export type { LinkPreviewComponentEvents } from './events.js';
+export type CreateLinkPreviewProps = {
 	/**
 	 * Options for positioning the popover menu.
 	 *
@@ -13,14 +13,14 @@ export type CreateHoverCardProps = {
 	positioning?: FloatingConfig;
 
 	/**
-	 * Whether or not the hovercard is open by default.
+	 * Whether or not the linkpreview is open by default.
 	 *
 	 * @default false
 	 */
 	defaultOpen?: boolean;
 
 	/**
-	 * A controlled open state store for the hovercard. If provided, the
+	 * A controlled open state store for the linkpreview. If provided, the
 	 * value of this store will override the `defaultOpen` prop.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
@@ -35,7 +35,7 @@ export type CreateHoverCardProps = {
 	onOpenChange?: ChangeFn<boolean>;
 
 	/**
-	 * The delay in milliseconds to hover before opening the hovercard
+	 * The delay in milliseconds to hover before opening the linkpreview
 	 *
 	 * @default 700
 	 */
@@ -43,14 +43,14 @@ export type CreateHoverCardProps = {
 
 	/**
 	 * The delay in milliseconds after the pointer leaves the
-	 * hovercard before closing it.
+	 * linkpreview before closing it.
 	 *
 	 * @default 300
 	 */
 	closeDelay?: number;
 
 	/**
-	 * Whether or not to close the hovercard when the pointer is clicked
+	 * Whether or not to close the linkpreview when the pointer is clicked
 	 * outside of it.
 	 *
 	 * @default true
@@ -58,7 +58,7 @@ export type CreateHoverCardProps = {
 	closeOnOutsideClick?: boolean;
 
 	/**
-	 * Whether or not to close the hovercard when the escape key is pressed
+	 * Whether or not to close the linkpreview when the escape key is pressed
 	 * while it is open.
 	 *
 	 * @default true
@@ -90,7 +90,7 @@ export type CreateHoverCardProps = {
 	portal?: HTMLElement | string | null;
 };
 
-export type HoverCard = BuilderReturn<typeof createHoverCard>;
-export type HoverCardElements = HoverCard['elements'];
-export type HoverCardOptions = HoverCard['options'];
-export type HoverCardStates = HoverCard['states'];
+export type LinkPreview = BuilderReturn<typeof createLinkPreview>;
+export type LinkPreviewElements = LinkPreview['elements'];
+export type LinkPreviewOptions = LinkPreview['options'];
+export type LinkPreviewStates = LinkPreview['states'];

@@ -6,7 +6,7 @@ export * from './combobox/index.js';
 export * from './context-menu/index.js';
 export * from './dialog/index.js';
 export * from './dropdown-menu/index.js';
-export * from './hover-card/index.js';
+export * from './link-preview/index.js';
 export * from './label/index.js';
 export * from './menubar/index.js';
 export * from './pagination/index.js';

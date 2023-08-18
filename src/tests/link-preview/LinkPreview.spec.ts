@@ -1,18 +1,18 @@
 import { render, waitFor } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
-import HoverCardTest from './HoverCardTest.svelte';
+import LinkPreviewTest from './LinkPreviewTest.svelte';
 import userEvent from '@testing-library/user-event';
 import { kbd } from '$lib/internal/helpers/index.js';
 
-describe('HoverCard (Default)', () => {
+describe('LinkPreview (Default)', () => {
 	test('No accessibility violations', async () => {
-		const { container } = await render(HoverCardTest);
+		const { container } = await render(LinkPreviewTest);
 
 		expect(await axe(container)).toHaveNoViolations();
 	});
 
 	test('Opens on hover', async () => {
-		const { getByTestId } = await render(HoverCardTest);
+		const { getByTestId } = await render(LinkPreviewTest);
 		const user = userEvent.setup();
 		const trigger = getByTestId('trigger');
 		const content = getByTestId('content');
@@ -26,7 +26,7 @@ describe('HoverCard (Default)', () => {
 	});
 
 	test('Closes on escape', async () => {
-		const { getByTestId } = await render(HoverCardTest);
+		const { getByTestId } = await render(LinkPreviewTest);
 		const user = userEvent.setup();
 		const trigger = getByTestId('trigger');
 		const content = getByTestId('content');
@@ -42,7 +42,7 @@ describe('HoverCard (Default)', () => {
 	});
 
 	test('Closes when pointer moves outside', async () => {
-		const { getByTestId } = await render(HoverCardTest);
+		const { getByTestId } = await render(LinkPreviewTest);
 		const user = userEvent.setup();
 		const trigger = getByTestId('trigger');
 		const content = getByTestId('content');
