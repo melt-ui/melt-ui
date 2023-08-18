@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.37.1
+
+### Patch Changes
+
+- c560cd5b: [Menubar] Hotfix: menubar race conditions
+
 ## 0.37.0
 
 ### Minor Changes
