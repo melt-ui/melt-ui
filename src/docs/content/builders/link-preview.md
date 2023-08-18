@@ -12,7 +12,8 @@ description: Enable sighted users to preview content behind a link.
 
 ⚠️ The Link Preview is only intended to be used with a mouse or other pointing device. It doesn't
 respond to touch events, and the preview content cannot be accessed via the keyboard. On touch
-devices, the link will be followed immediately.
+devices, the link will be followed immediately. As it is not accessible to all users, the preview
+should not contain vital information.
 
 </Callout>
 
@@ -85,4 +86,5 @@ events.
 ## Accessibility
 
 The link preview is only intended to be used with a mouse or other pointing device and the preview
-content cannot be accessed via the keyboard and is not exposed to screen readers.
+content cannot be accessed via the keyboard and is not exposed to screen readers. As a result the
+preview should contain content that is otherwise not visible elswhere.
