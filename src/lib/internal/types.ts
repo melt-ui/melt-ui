@@ -59,7 +59,7 @@ export type BuilderReturn<T extends (...args: any) => any> = {
 
 export type EventHandler<T extends Event = Event> = (event: T) => void;
 
-export type MeltEvent<E extends Event> = CustomEvent<{ cancel: () => void; originalEvent: E }>;
+export type MeltEvent<E extends Event> = CustomEvent<{ originalEvent: E }>;
 
 export type MeltEventHandler<E extends Event> = EventHandler<
 	Expand<Omit<MeltEvent<E>, 'initCustomEvent'>>

@@ -30,19 +30,22 @@
 	py-2 text-magnum-700 transition-opacity hover:opacity-90"
 		use:melt={$trigger}
 		aria-label="Food"
-		on:m-keydown={({ detail: { cancel, originalEvent: e } }) => {
-			cancel();
+		on:m-keydown={(e) => {
+			e.preventDefault(); // Cancel default builder behabiour
+			e.detail.originalEvent.preventDefault(); // Cancel page scroll
 
-			if (!['ArrowDown', 'ArrowUp', 'Space', 'Enter'].includes(e.key)) return;
+			const { key } = e.detail.originalEvent;
+
+			if (!['ArrowDown', 'ArrowUp', 'Space', 'Enter'].includes(key)) return;
 
 			const allOptions = Object.values(options).flat();
 			const index = allOptions.indexOf(`${$valueLabel}`);
 
-			if (e.key === 'ArrowDown') {
+			if (key === 'ArrowDown') {
 				const nextIndex = index + 1;
 				const nextOption = allOptions[nextIndex] || allOptions[0];
 				value.set(nextOption);
-			} else if (e.key === 'ArrowUp') {
+			} else if (key === 'ArrowUp') {
 				const prevIndex = index - 1;
 				const prevOption =
 					allOptions[prevIndex] || allOptions[allOptions.length - 1];
