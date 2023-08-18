@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- b10b2906: refacotr menubar internals
+- b10b2906: refactor menubar internals
 
 ## 0.37.1
 
