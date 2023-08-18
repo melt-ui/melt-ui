@@ -126,7 +126,6 @@ Looking for more? Check out these other projects too:
 - [Carbon Components Svelte](https://github.com/carbon-design-system/carbon-components-svelte/)
 - [Svelte Material UI](https://sveltematerialui.com/)
 - [SvelteStrap](https://github.com/bestguy/sveltestrap)
-- [Noir UI](https://github.com/khairulhaaziq/noir-ui)
 - [Zag](https://github.com/chakra-ui/zag)
 - [Grail UI](https://grail-ui.vercel.app/)
 
