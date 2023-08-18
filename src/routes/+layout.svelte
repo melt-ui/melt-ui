@@ -8,6 +8,7 @@
 	inject({ mode: dev ? 'development' : 'production' });
 </script>
 
+<a href="/docs/example">Example</a>
 <div class="relative flex min-h-screen flex-col" id="page">
 	<header class="sticky top-0 z-40 hidden w-full bg-neutral-900 px-2 pt-2 md:block">
 		<SiteHeader />

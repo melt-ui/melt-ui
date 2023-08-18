@@ -250,9 +250,11 @@ export function createMenubar(props?: CreateMenubarProps) {
 					menubarEl.querySelectorAll('[data-melt-menubar-trigger]')
 				);
 
-				scopedMenus = Array.from(menubarEl.querySelectorAll('[data-melt-menubar-menu]')).filter(
-					(el): el is HTMLElement => isHTMLElement(el)
-				);
+				tick().then(() => {
+					scopedMenus = Array.from(menubarEl.querySelectorAll('[data-melt-menubar-menu]')).filter(
+						(el): el is HTMLElement => isHTMLElement(el)
+					);
+				});
 
 				if (!menubarTriggers.length) return {};
 
