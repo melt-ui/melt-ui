@@ -150,17 +150,14 @@ const customMeltEvent: MeltEvent<typeof originalEvent> = new CustomEvent(
 	`m-${originalEvent.type}`,
 	{
 		detail: {
-			cancel: () => {
-				originalEvent.preventDefault()
-			},
 			originalEvent
-		}
+		},
+		cancelable: true
 	}
 )
 ```
 
-The `cancel` function calls `preventDefault` on the original event. When this function is invoked in
-, Melt immediately stops handling the event, thus preventing the default behavior from happening.
+By marking the custom event as `cancelable`, you may use `preventDefault` on it, which signals Melt to immediately stop handling the event, thus preventing the builder's default behavior from happening.
 
 We also pass the original event as a property on the `detail` object so that you can access it in
 case you'd like to do something else with it.
@@ -172,7 +169,7 @@ then you could do something like this:
 <button
 	use:melt={$trigger}
 	on:m-click={(e) => {
-		e.detail.cancel()
+		e.preventDefault();
 		// do something else
 	}}>
 	Trigger

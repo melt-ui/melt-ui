@@ -71,14 +71,14 @@ event for items).
 ```
 
 If you wanted to prevent the default behavior that occurs when you select an item, you can call
-`e.detail.cancel()` in your `on:m-click` listener, which will prevent the default behavior from
+`e.preventDefault()` in your `on:m-click` listener, which will prevent the default behavior from
 occurring.
 
 ```svelte {4}
 <div
 	use:melt={$item}
 	on:m-click={(e) => {
-		e.detail.cancel()
+		e.preventDefault()
 	}}>
 	Item 2
 </div>
