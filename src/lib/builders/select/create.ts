@@ -514,7 +514,8 @@ export function createSelect<
 					handleRovingFocus(itemElement);
 
 					setValue(props.value);
-					open.set(false);
+					const $multiple = get(multiple);
+					if (!$multiple) open.set(false);
 				}),
 
 				addMeltEventListener(node, 'keydown', (e) => {
@@ -530,7 +531,8 @@ export function createSelect<
 						node.setAttribute('data-selected', '');
 
 						setValue(props.value);
-						open.set(false);
+						const $multiple = get(multiple);
+						if (!$multiple) open.set(false);
 					}
 				}),
 				addMeltEventListener(node, 'pointermove', (e) => {
