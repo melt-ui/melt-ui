@@ -12,6 +12,9 @@ import {
 	styleToString,
 	toWritableStores,
 	addMeltEventListener,
+	effect,
+	generateId,
+	isBrowser,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
@@ -53,23 +56,47 @@ export function createPinInput(props?: CreatePinInputProps) {
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 	const valueStr = derived(value, (v) => v.join(''));
 
+	const ids = {
+		root: generateId(),
+	};
+
 	const root = builder(name(), {
 		stores: value,
 		returned: ($value) => {
 			return {
+				id: ids.root,
 				'data-complete': $value.length && $value.every((v) => v.length > 0) ? '' : undefined,
 			};
 		},
 	});
 
+	let index = 0;
+
+	const getTotalItems = () => {
+		if (!isBrowser) return Infinity;
+		const rootEl = document.getElementById(ids.root);
+		if (!rootEl) return Infinity;
+
+		const inputs = Array.from(rootEl.querySelectorAll(selector('input')));
+		return inputs.length;
+	};
+
 	const input = builder(name('input'), {
 		stores: [value, placeholder, disabled, type],
 		returned: ([$value, $placeholder, $disabled, $type]) => {
-			return {
-				'data-complete': $value.length && $value.every((v) => v.length > 0) ? '' : undefined,
-				placeholder: $placeholder,
-				disabled: $disabled,
-				type: $type,
+			return () => {
+				const totalItems = getTotalItems();
+				const currIndex = index % totalItems;
+				index = (index + 1) % totalItems;
+				const currValue = $value[currIndex] ?? '';
+
+				return {
+					'data-complete': $value.length && $value.every((v) => v.length > 0) ? '' : undefined,
+					placeholder: $placeholder,
+					disabled: $disabled,
+					type: $type,
+					value: currValue,
+				};
 			};
 		},
 		action: (node: HTMLInputElement): MeltActionReturn<PinInputEvents['input']> => {
