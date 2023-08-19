@@ -1,7 +1,9 @@
 import {
+	addEventListener,
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	effect,
 	executeCallbacks,
 	getDirectionalKeys,
 	getElemDirection,
@@ -12,6 +14,7 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
+import { onMount } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import type { RadioGroupEvents } from './events.js';
 import type { CreateRadioGroupProps, RadioGroupItemProps } from './types.js';
@@ -37,6 +40,42 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
+	/** Lifecycle & Effects */
+	const focusedHistory: {
+		prev: HTMLElement | null;
+		curr: HTMLElement | null;
+	} = {
+		prev: null,
+		curr: null,
+	};
+
+	onMount(() => {
+		return addEventListener(document, 'focus', (e) => {
+			const focusedItem = e.target as HTMLElement;
+			if (!isHTMLElement(focusedItem)) return;
+			focusedHistory.prev = focusedHistory.curr;
+			focusedHistory.curr = focusedItem;
+		});
+	});
+
+	let hasActiveTabIndex = false;
+	effect(value, ($value) => {
+		if ($value === undefined) {
+			hasActiveTabIndex = false;
+		} else {
+			hasActiveTabIndex = true;
+		}
+	});
+
+	/* Helpers */
+	const selectItem = (item: HTMLElement) => {
+		const disabled = item.dataset.disabled === 'true';
+		const itemValue = item.dataset.value;
+		if (disabled || itemValue === undefined) return;
+		value.set(itemValue);
+	};
+
+	/** Elements */
 	const root = builder(name(), {
 		stores: [required, orientation],
 		returned: ([$required, $orientation]) => {
@@ -58,6 +97,9 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 
 				const checked = $value === itemValue;
 
+				const tabindex = !hasActiveTabIndex ? 0 : checked ? 0 : -1;
+				hasActiveTabIndex = true;
+
 				return {
 					disabled,
 					'data-value': itemValue,
@@ -67,23 +109,14 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 					'aria-checked': checked,
 					type: 'button',
 					role: 'radio',
-					tabindex: $value === null ? 0 : checked ? 0 : -1,
+					tabindex,
 				} as const;
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<RadioGroupEvents['item']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
-					const disabled = node.dataset.disabled === 'true';
-					const itemValue = node.dataset.value;
-					if (disabled || itemValue === undefined) return;
-					value.set(itemValue);
-				}),
-				addMeltEventListener(node, 'focus', () => {
-					const disabled = node.dataset.disabled === 'true';
-					const itemValue = node.dataset.value;
-					if (disabled || itemValue === undefined) return;
-					value.set(itemValue);
+					selectItem(node);
 				}),
 				addMeltEventListener(node, 'keydown', (e) => {
 					const el = e.currentTarget;
@@ -101,28 +134,34 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 					const { nextKey, prevKey } = getDirectionalKeys(dir, get(orientation));
 					const $loop = get(loop);
 
+					let itemToFocus: HTMLElement | null = null;
 					if (e.key === nextKey) {
 						e.preventDefault();
 						const nextIndex = currentIndex + 1;
 						if (nextIndex >= items.length && $loop) {
-							items[0].focus();
+							itemToFocus = items[0];
 						} else {
-							items[nextIndex].focus();
+							itemToFocus = items[nextIndex];
 						}
 					} else if (e.key === prevKey) {
 						e.preventDefault();
 						const prevIndex = currentIndex - 1;
 						if (prevIndex < 0 && $loop) {
-							items[items.length - 1].focus();
+							itemToFocus = items[items.length - 1];
 						} else {
-							items[prevIndex].focus();
+							itemToFocus = items[prevIndex];
 						}
 					} else if (e.key === kbd.HOME) {
 						e.preventDefault();
-						items[0].focus();
+						itemToFocus = items[0];
 					} else if (e.key === kbd.END) {
 						e.preventDefault();
-						items[items.length - 1].focus();
+						itemToFocus = items[items.length - 1];
+					}
+
+					if (itemToFocus) {
+						itemToFocus.focus();
+						selectItem(itemToFocus);
 					}
 				})
 			);

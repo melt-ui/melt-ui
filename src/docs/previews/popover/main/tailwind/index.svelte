@@ -6,16 +6,9 @@
 	const {
 		elements: { trigger, content, arrow, close },
 		states: { open },
-	} = createPopover();
-
-	const {
-		elements: {
-			trigger: trigger2,
-			content: content2,
-			arrow: arrow2,
-			close: close2,
-		},
-	} = createPopover();
+	} = createPopover({
+		forceVisible: true,
+	});
 </script>
 
 <button
@@ -27,42 +20,6 @@
 	<Settings2 class="square-4" />
 	<span class="sr-only">Open Popover</span>
 </button>
-
-<button
-	type="button"
-	class="trigger"
-	use:melt={$trigger2}
-	aria-label="Update dimensions"
->
-	<Settings2 class="square-4" />
-	<span class="sr-only">Open Popover</span>
-</button>
-
-<div use:melt={$content2} transition:fade={{ duration: 100 }} class="content">
-	<div use:melt={$arrow2} />
-	<div class="flex flex-col gap-2.5">
-		<p>Dimensions</p>
-		<fieldset>
-			<label for="width">Width</label>
-			<input type="number" id="width" class="input" placeholder="Width" />
-		</fieldset>
-		<fieldset>
-			<label for="height">Height</label>
-			<input type="number" id="height" class="input" placeholder="Height" />
-		</fieldset>
-		<fieldset>
-			<label for="depth">Depth</label>
-			<input type="number" id="depth" class="input" placeholder="Depth" />
-		</fieldset>
-		<fieldset>
-			<label for="weight">Weight</label>
-			<input type="number" id="weight" class="input" placeholder="Weight" />
-		</fieldset>
-	</div>
-	<button class="close" use:melt={$close2}>
-		<X class="square-4" />
-	</button>
-</div>
 
 {#if $open}
 	<div use:melt={$content} transition:fade={{ duration: 100 }} class="content">
