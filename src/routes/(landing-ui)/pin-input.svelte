@@ -17,7 +17,7 @@
 	{#each Array.from({ length: 5 }) as _, i}
 		<input
 			class="rounded-xl bg-white text-center text-lg text-magnum-900 shadow-sm square-12"
-			use:melt={$input}
+			use:melt={$input()}
 		/>
 	{/each}
 </div>
