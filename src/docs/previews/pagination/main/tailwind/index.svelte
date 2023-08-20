@@ -18,7 +18,7 @@
 	aria-label="pagination"
 	use:melt={$root}
 >
-	<p class="text-center">
+	<p class="text-center text-magnum-900">
 		Showing items {$range.start} - {$range.end}
 	</p>
 	<div class="flex items-center gap-2">

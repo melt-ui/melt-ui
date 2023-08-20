@@ -10,7 +10,7 @@
 <form>
 	<div class="flex items-center">
 		<label
-			class="pr-4 leading-none text-white"
+			class="pr-4 leading-none text-magnum-900"
 			for="airplane-mode"
 			id="airplane-mode-label"
 		>

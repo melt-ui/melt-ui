@@ -30,7 +30,7 @@
 				{/if}
 			</button>
 			<label
-				class="capitalize leading-none text-white"
+				class="font-medium capitalize leading-none text-magnum-900"
 				for={option}
 				id="{option}-label"
 			>

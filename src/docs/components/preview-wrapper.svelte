@@ -27,7 +27,35 @@
 			inset: 0;
 			background-image: radial-gradient(
 				circle at 1px 1px,
-				theme('colors.magnum.900/0.25') 1px,
+				theme('colors.magnum.700/0.25') 1px,
+				transparent 0
+			);
+			background-size: 1rem 1rem;
+			background-repeat: repeat;
+			background-position: 0.5rem center;
+		}
+	}
+
+	.comp-preview-dark {
+		display: flex;
+		align-items: center;
+
+		background-color: theme('colors.neutral.800/0.5');
+		border: 1px solid theme('colors.neutral.700/0.5');
+		border-radius: theme('borderRadius.xl');
+		position: relative;
+
+		@media screen('md') {
+			padding: theme('spacing.12');
+		}
+
+		&::before {
+			position: absolute;
+			content: '';
+			inset: 0;
+			background-image: radial-gradient(
+				circle at 1px 1px,
+				theme('colors.magnum.400/0.125') 1px,
 				transparent 0
 			);
 			background-size: 1rem 1rem;

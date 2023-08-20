@@ -20,7 +20,7 @@
 
 <div class="flex flex-col gap-1">
 	<!-- svelte-ignore a11y-label-has-associated-control - $label contains the 'for' attribute -->
-	<label class="block" use:melt={$label}>Favorite Flavor</label>
+	<label class="block text-magnum-900" use:melt={$label}>Favorite Flavor</label>
 	<button
 		class="flex h-10 w-[15rem] items-center justify-between
 	rounded-md bg-white px-3 py-2 text-magnum-700 transition-opacity hover:opacity-90"
