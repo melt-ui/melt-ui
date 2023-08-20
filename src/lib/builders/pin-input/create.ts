@@ -1,7 +1,10 @@
 import {
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
+	generateId,
+	isBrowser,
 	isHTMLElement,
 	isHTMLInputElement,
 	last,
@@ -11,16 +14,12 @@ import {
 	prev,
 	styleToString,
 	toWritableStores,
-	addMeltEventListener,
-	effect,
-	generateId,
-	isBrowser,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
-import { derived, get, writable, readonly } from 'svelte/store';
-import type { CreatePinInputProps } from './types.js';
+import { derived, get, readonly, writable } from 'svelte/store';
 import type { PinInputEvents } from './events.js';
+import type { CreatePinInputProps } from './types.js';
 
 const { name, selector } = createElHelpers<'input' | 'hidden-input'>('pin-input');
 
