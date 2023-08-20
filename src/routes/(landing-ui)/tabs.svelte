@@ -30,7 +30,7 @@
 	use:melt={$root}
 	class={cn(
 		'flex max-w-[25rem] flex-col overflow-hidden rounded-xl shadow-lg	data-[orientation=vertical]:flex-row',
-		className,
+		className
 	)}
 >
 	<div
@@ -57,12 +57,7 @@
 			Make changes to your account here. Click save when you're done.
 		</p>
 		<fieldset class="mb-4 flex w-full flex-col justify-start">
-			<label
-				class="mb-2.5 block text-sm leading-none text-neutral-900"
-				for="name"
-			>
-				Name
-			</label>
+			<label class="mb-2.5 block text-sm leading-none text-neutral-900" for="name"> Name </label>
 			<input id="name" value="Thomas G. Lopes" />
 		</fieldset>
 
@@ -75,10 +70,7 @@
 			Change your password here. Click save when you're done.
 		</p>
 		<fieldset class="mb-4 flex w-full flex-col justify-start">
-			<label
-				class="mb-2.5 block text-sm leading-none text-neutral-900"
-				for="new"
-			>
+			<label class="mb-2.5 block text-sm leading-none text-neutral-900" for="new">
 				New password
 			</label>
 			<input id="new" type="password" />
@@ -93,10 +85,7 @@
 		</p>
 
 		<fieldset class="mb-4 flex w-full flex-col justify-start">
-			<label
-				class="mb-2.5 block text-sm leading-none text-neutral-900"
-				for="new"
-			>
+			<label class="mb-2.5 block text-sm leading-none text-neutral-900" for="new">
 				New email
 			</label>
 			<input id="new" type="password" />

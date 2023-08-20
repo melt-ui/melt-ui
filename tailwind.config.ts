@@ -10,7 +10,7 @@ export default {
 			center: true,
 			padding: '2rem',
 			screens: {
-				'2xl': '1440px',
+				'2xl': '1540px',
 			},
 		},
 		extend: {
@@ -31,6 +31,25 @@ export default {
 			},
 			fontFamily: {
 				sans: [
+					'Inter',
+					'-apple-system',
+					'BlinkMacSystemFont',
+					'Segoe UI',
+					'Roboto',
+					'Oxygen',
+					'Ubuntu',
+					'Cantarell',
+					'Fira Sans',
+					'Droid Sans',
+					'Helvetica Neue',
+					'Arial',
+					'sans-serif',
+					'Apple Color Emoji',
+					'Segoe UI Emoji',
+					'Segoe UI Symbol',
+				],
+				display: [
+					'GT Maru',
 					'-apple-system',
 					'BlinkMacSystemFont',
 					'Segoe UI',
@@ -48,6 +67,7 @@ export default {
 					'Segoe UI Symbol',
 				],
 				mono: [
+					'GT Maru Mono',
 					'ui-monospace',
 					'SFMono-Regular',
 					'SF Mono',

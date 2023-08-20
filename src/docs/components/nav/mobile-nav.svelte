@@ -2,7 +2,7 @@
 	import { createDialog, melt } from '$lib/index.js';
 	import { fade, fly } from 'svelte/transition';
 	import { Menu, X } from 'lucide-svelte';
-	import { Button, MobileNavLink } from '$docs/components/index.js';
+	import { Button, Logo, MobileNavLink } from '$docs/components/index.js';
 	import { navConfig } from '$docs/config.js';
 	import Switch from '../switch.svelte';
 	import { getUsingPreprocessor } from '$routes/store.js';
@@ -40,7 +40,7 @@
 		>
 			<div class="flex items-center justify-between">
 				<MobileNavLink href="/" {open}>
-					<img src="/logo.svg" alt="Melt UI" class="h-9" />
+					<Logo class="h-9" withText textColor="white" />
 				</MobileNavLink>
 				<Button class="px-2" size="sm" variant="faded" {...$close} action={$close.action}>
 					<X class="square-4" />

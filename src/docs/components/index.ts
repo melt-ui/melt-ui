@@ -22,4 +22,5 @@ export { default as PreviewWrapper } from './preview-wrapper.svelte';
 export { default as APISectionHeading } from './api-section-heading.svelte';
 export { default as InfoPopover } from './info-popover.svelte';
 export { default as TypeDialog } from './type-dialog.svelte';
+export { default as Logo } from './logo.svelte';
 export { default as CustomEventDialog } from './custom-event-dialog.svelte';

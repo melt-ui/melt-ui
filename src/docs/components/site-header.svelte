@@ -1,12 +1,22 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import { Discord, GitHub, MobileNav } from '$docs/components/index.js';
 	import { navConfig, siteConfig } from '$docs/config.js';
+	import { cn } from '$docs/utils';
+	import Logo from './logo.svelte';
+
+	$: isRoot = $page.url.pathname === '/';
 </script>
 
-<div class="container flex h-14 items-center rounded-md bg-neutral-800">
+<div
+	class={cn(
+		'container flex h-14 items-center rounded-md bg-neutral-800',
+		isRoot && 'md:bg-transparent'
+	)}
+>
 	<div class="flex">
-		<a href="/" class="mr-6 flex items-center">
-			<img src="/logo.svg" alt="Melt UI Logo" class="h-9 w-auto" />
+		<a href="/" class="mr-6 flex items-center transition-opacity hover:opacity-75">
+			<Logo class="h-9" withText textColor="white" />
 		</a>
 	</div>
 

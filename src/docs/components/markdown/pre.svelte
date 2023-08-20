@@ -28,7 +28,7 @@
 		use:setCodeString
 		use:setIsPPBlock
 		class={cn(
-			'mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border border-neutral-500/50 bg-neutral-950/60 py-4 font-bold',
+			'mb-4 mt-6 max-h-[650px] overflow-x-auto !rounded-xl border !border-neutral-700/50 !bg-neutral-800/50 py-4 font-bold',
 			isPPBlock === undefined && 'data-[non-pp]:hidden',
 			className
 		)}
@@ -60,5 +60,9 @@
 	/* Override theme colors for WCAG concerns */
 	pre :global([style*='color: #6A737D']) {
 		color: #727e8b !important;
+	}
+
+	pre {
+		font-weight: initial;
 	}
 </style>

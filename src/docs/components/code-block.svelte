@@ -34,3 +34,10 @@
 		</div>
 	{/if}
 </button>
+
+<style>
+	[data-rehype-pretty-code-fragment] :global(pre) {
+		font-weight: initial !important;
+		@apply border-neutral-700/50 bg-neutral-800/50;
+	}
+</style>

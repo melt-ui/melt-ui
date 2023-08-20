@@ -2,4 +2,4 @@
 '@melt-ui/svelte': patch
 ---
 
-fix combobox arrow keys
+fix accordion defaultValue

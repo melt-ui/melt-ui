@@ -1,5 +1,18 @@
 # @melt-ui/svelte
 
+## 0.37.4
+
+### Patch Changes
+
+- 41db52bf: fix missing tabindex on radio-group
+- afe293bd: fix popover click outside & nested popovers
+
+## 0.37.3
+
+### Patch Changes
+
+- 2579257b: fix combobox arrow keys
+
 ## 0.37.2
 
 ### Patch Changes

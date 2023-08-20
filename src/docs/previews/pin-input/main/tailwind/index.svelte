@@ -3,7 +3,9 @@
 
 	const {
 		elements: { root, input },
-	} = createPinInput();
+	} = createPinInput({
+		defaultValue: ['1', '2', '3', '4', '5'],
+	});
 </script>
 
 <div use:melt={$root} class="flex items-center gap-2">

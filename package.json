@@ -1,6 +1,6 @@
 {
 	"name": "@melt-ui/svelte",
-	"version": "0.37.2",
+	"version": "0.37.4",
 	"license": "MIT",
 	"scripts": {
 		"dev": "vite dev",
@@ -65,6 +65,7 @@
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.26.2",
+		"@fontsource/inter": "^5.0.8",
 		"@huntabyte/mdsvex": "0.16.5",
 		"@iconify-json/lucide": "^1.1.104",
 		"@iconify-json/simple-icons": "^1.1.57",
