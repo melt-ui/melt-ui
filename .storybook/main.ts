@@ -1,6 +1,7 @@
 import type { Plugin, InlineConfig } from 'vite';
 import type { StorybookConfig } from '@storybook/sveltekit';
 
+// https://github.com/storybookjs/storybook/issues/20562#issuecomment-1467329472
 const workaroundSvelteDocgenPluginConflictWithUnpluginIcons = (config: InlineConfig) => {
 	if (!config.plugins) return config;
 
@@ -28,14 +29,7 @@ const config: StorybookConfig = {
 		'@storybook/addon-links',
 		'@storybook/addon-essentials',
 		'@storybook/addon-interactions',
-		{
-			name: '@storybook/addon-styling',
-			options: {
-				// Check out https://github.com/storybookjs/addon-styling/blob/main/docs/api.md
-				// For more details on this addon's options.
-				postCss: true,
-			},
-		},
+		'@storybook/addon-styling'
 	],
 	framework: {
 		name: '@storybook/sveltekit',
