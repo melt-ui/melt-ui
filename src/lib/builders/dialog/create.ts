@@ -1,4 +1,9 @@
-import { createFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions/index.js';
+import {
+	createFocusTrap,
+	useClickOutside,
+	useEscapeKeydown,
+	usePortal,
+} from '$lib/internal/actions/index.js';
 import {
 	addMeltEventListener,
 	builder,
@@ -187,25 +192,28 @@ export function createDialog(props?: CreateDialogProps) {
 		action: (node: HTMLElement) => {
 			let activate = noop;
 			let deactivate = noop;
+			let unsubClickOutside = noop;
 
 			const unsubFocusTrap = effect([closeOnOutsideClick], ([$closeOnOutsideClick]) => {
 				const focusTrap = createFocusTrap({
 					immediate: false,
 					escapeDeactivates: false,
-					allowOutsideClick: () => {
-						const $openDialogIds = get(openDialogIds);
-						const isLast = last($openDialogIds) === ids.content;
-
-						if ($closeOnOutsideClick && isLast) {
-							handleClose();
-							return false;
-						}
-
-						return true;
-					},
 					returnFocusOnDeactivate: false,
 					fallbackFocus: node,
 				});
+				unsubClickOutside();
+				unsubClickOutside = useClickOutside(node, {
+					enabled: true,
+					handler: (e: PointerEvent) => {
+						if (e.defaultPrevented) return;
+						const $openDialogIds = get(openDialogIds);
+						const isLast = last($openDialogIds) === ids.content;
+						if ($closeOnOutsideClick && isLast) {
+							handleClose();
+						}
+					},
+				}).destroy;
+
 				activate = focusTrap.activate;
 				deactivate = focusTrap.deactivate;
 				const ac = focusTrap.useFocusTrap(node);
@@ -244,6 +252,7 @@ export function createDialog(props?: CreateDialogProps) {
 				destroy() {
 					unsubEscapeKeydown();
 					unsubFocusTrap();
+					unsubClickOutside();
 				},
 			};
 		},
