@@ -193,17 +193,34 @@ export function createDialog(props?: CreateDialogProps) {
 			let activate = noop;
 			let deactivate = noop;
 			let unsubClickOutside = noop;
+			let unsubFocusTrap = noop;
 
-			const unsubFocusTrap = effect([closeOnOutsideClick], ([$closeOnOutsideClick]) => {
+			effect([open], ([$open]) => {
+				unsubFocusTrap();
+				if (!$open) return;
 				const focusTrap = createFocusTrap({
 					immediate: false,
 					escapeDeactivates: false,
 					returnFocusOnDeactivate: false,
 					fallbackFocus: node,
 				});
+
+				activate = focusTrap.activate;
+				deactivate = focusTrap.deactivate;
+				const ac = focusTrap.useFocusTrap(node);
+				if (ac && ac.destroy) {
+					unsubFocusTrap = ac.destroy;
+					return;
+				} else {
+					unsubFocusTrap = focusTrap.deactivate;
+					return;
+				}
+			});
+
+			effect([closeOnOutsideClick, open], ([$closeOnOutsideClick, $open]) => {
 				unsubClickOutside();
 				unsubClickOutside = useClickOutside(node, {
-					enabled: true,
+					enabled: $open,
 					handler: (e: PointerEvent) => {
 						if (e.defaultPrevented) return;
 						const $openDialogIds = get(openDialogIds);
@@ -213,15 +230,6 @@ export function createDialog(props?: CreateDialogProps) {
 						}
 					},
 				}).destroy;
-
-				activate = focusTrap.activate;
-				deactivate = focusTrap.deactivate;
-				const ac = focusTrap.useFocusTrap(node);
-				if (ac && ac.destroy) {
-					return ac.destroy;
-				} else {
-					return focusTrap.deactivate;
-				}
 			});
 
 			const unsubEscapeKeydown = effect([closeOnEscape], ([$closeOnEscape]) => {
