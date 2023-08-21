@@ -115,4 +115,5 @@ we'd love to have you there.
 
 ## Similar projects
 
-Looking for more? Check out the [other component library projects available for Svelte](https://sveltesociety.dev/components#design-systems).
+Looking for more? Check out the
+[other component library projects available for Svelte](https://sveltesociety.dev/components#design-systems).
