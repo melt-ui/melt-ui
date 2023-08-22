@@ -29,6 +29,13 @@ export type CreateAccordionProps<Multiple extends boolean = false> = {
 	forceVisible?: boolean;
 
 	/**
+	 * The orientation of the accordion.
+	 *
+	 * @default 'horizontal'
+	 */
+	orientation?: 'horizontal' | 'vertical';
+
+	/**
 	 * The uncontrolled default value of the accordion.
 	 */
 	defaultValue?: Multiple extends false ? string : string[];

@@ -133,6 +133,27 @@ export type CreateComboboxProps<ItemValue> = {
 	 * The delay in milliseconds for the filterFunction to be called after the input value changes.
 	 */
 	debounce?: number;
+
+	/**
+	 * The name of the combobox input element which is used for form submission.
+	 *
+	 * @default undefined
+	 */
+	name?: string;
+
+	/**
+	 * Whether the combobox input is disabled or not.
+	 *
+	 * @default false
+	 */
+	disabled?: boolean;
+
+	/**
+	 * Whether the combobox input is required or not.
+	 *
+	 * @default false
+	 */
+	required?: boolean;
 };
 
 type ComboboxFilterFunctionArgs<T> = {

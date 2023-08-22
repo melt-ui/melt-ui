@@ -26,6 +26,7 @@ const defaults = {
 	multiple: false,
 	disabled: false,
 	forceVisible: false,
+	orientation: 'horizontal',
 } satisfies CreateAccordionProps;
 
 export const createAccordion = <Multiple extends boolean = false>(
@@ -33,7 +34,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 ) => {
 	const withDefaults = { ...defaults, ...props };
 	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
-	const { disabled, forceVisible } = options;
+	const { disabled, forceVisible, orientation } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 
@@ -79,22 +80,23 @@ export const createAccordion = <Multiple extends boolean = false>(
 	};
 
 	const item = builder(name('item'), {
-		stores: [value, disabled],
-		returned: ([$value, $disabled]) => {
+		stores: [value, disabled, orientation],
+		returned: ([$value, $disabled, $orientation]) => {
 			return (props: AccordionItemProps) => {
 				const { value: itemValue, disabled } = parseItemProps(props);
 				const isDisabled = $disabled || disabled;
 				return {
 					'data-state': isSelected(itemValue, $value) ? 'open' : 'closed',
 					'data-disabled': isDisabled ? '' : undefined,
+					'data-orientation': $orientation,
 				};
 			};
 		},
 	});
 
 	const trigger = builder(name('trigger'), {
-		stores: [value, disabled],
-		returned: ([$value, $disabled]) => {
+		stores: [value, disabled, orientation],
+		returned: ([$value, $disabled, $orientation]) => {
 			return (props: AccordionItemProps) => {
 				const { value: itemValue, disabled } = parseItemProps(props);
 				// generate the content ID here so that we can grab it in the content
@@ -107,6 +109,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 					'data-disabled': isDisabled ? '' : undefined,
 					'data-value': itemValue,
 					'data-state': isItemSelected ? 'open' : 'closed',
+					'data-orientation': $orientation,
 				};
 			};
 		},
@@ -175,8 +178,8 @@ export const createAccordion = <Multiple extends boolean = false>(
 	});
 
 	const content = builder(name('content'), {
-		stores: [value, disabled, forceVisible],
-		returned: ([$value, $disabled, $forceVisible]) => {
+		stores: [value, disabled, orientation, forceVisible],
+		returned: ([$value, $disabled, $orientation, $forceVisible]) => {
 			return (props: AccordionItemProps) => {
 				const { value: itemValue, disabled } = parseItemProps(props);
 				const isVisible = isSelected(itemValue, $value) || $forceVisible;
@@ -189,6 +192,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 					style: styleToString({
 						display: isVisible ? undefined : 'none',
 					}),
+					'data-orientation': $orientation,
 				};
 			};
 		},
@@ -210,13 +214,16 @@ export const createAccordion = <Multiple extends boolean = false>(
 	});
 
 	const heading = builder(name('heading'), {
-		returned: () => {
+		stores: [orientation, disabled],
+		returned: ([$orientation, $disabled]) => {
 			return (props: AccordionHeadingProps) => {
 				const { level } = parseHeadingProps(props);
 				return {
 					role: 'heading',
 					'aria-level': level,
 					'data-heading-level': level,
+					'data-orientation': $orientation,
+					'data-disabled': $disabled ? '' : undefined,
 				};
 			};
 		},

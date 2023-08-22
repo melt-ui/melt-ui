@@ -34,17 +34,16 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 		returned: ([$open, $disabled]) => ({
 			'data-state': $open ? 'open' : 'closed',
 			'data-disabled': $disabled ? '' : 'undefined',
+			'aria-disabled': $disabled,
 		}),
 	});
 
 	const trigger = builder(name('trigger'), {
 		stores: [open, disabled],
 		returned: ([$open, $disabled]) => {
-			const disabledVal = $disabled ? '' : undefined;
 			return {
 				'data-state': $open ? 'open' : 'closed',
-				'data-disabled': disabledVal,
-				disabled: disabledVal,
+				'data-disabled': $disabled ? '' : undefined,
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<CollapsibleEvents['trigger']> => {

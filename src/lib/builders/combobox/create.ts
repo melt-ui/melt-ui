@@ -57,6 +57,9 @@ const defaults = {
 	portal: undefined,
 	filterFunction: () => true,
 	debounce: 0,
+	required: false,
+	disabled: false,
+	name: undefined,
 } satisfies Defaults<CreateComboboxProps<unknown>>;
 
 const { name, selector } = createElHelpers('combobox');
@@ -104,6 +107,9 @@ export function createCombobox<ItemValue>(props?: CreateComboboxProps<ItemValue>
 		portal,
 		forceVisible,
 		positioning,
+		disabled,
+		required,
+		name: inputName,
 	} = options;
 
 	const touchedInput = debounceable(false, withDefaults.debounce);
@@ -255,8 +261,8 @@ export function createCombobox<ItemValue>(props?: CreateComboboxProps<ItemValue>
 
 	/** Action and attributes for the text input. */
 	const input = builder(name('input'), {
-		stores: [open, highlightedItem, inputValue],
-		returned: ([$open, $highlightedItem, $inputValue]) => {
+		stores: [open, highlightedItem, inputValue, disabled, required, inputName],
+		returned: ([$open, $highlightedItem, $inputValue, $disabled, $required, $inputName]) => {
 			return {
 				'aria-activedescendant': $highlightedItem?.id,
 				'aria-autocomplete': 'list',
@@ -267,9 +273,20 @@ export function createCombobox<ItemValue>(props?: CreateComboboxProps<ItemValue>
 				id: ids.input,
 				role: 'combobox',
 				value: $inputValue.value,
+				name: $inputName,
+				'data-disabled': $disabled ? '' : undefined,
+				'data-required': $required ? '' : undefined,
 			} as const;
 		},
 		action: (node: HTMLInputElement): MeltActionReturn<ComboboxEvents['input']> => {
+			node.disabled = node.hasAttribute('data-disabled');
+			node.required = node.hasAttribute('data-required');
+
+			const unsubAttrs = effect([disabled, required], ([$disabled, $required]) => {
+				node.disabled = $disabled;
+				node.required = $required;
+			});
+
 			const unsubscribe = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
 					const $open = get(open);
@@ -441,6 +458,7 @@ export function createCombobox<ItemValue>(props?: CreateComboboxProps<ItemValue>
 				destroy() {
 					unsubscribe();
 					unsubEscapeKeydown();
+					unsubAttrs();
 				},
 			};
 		},

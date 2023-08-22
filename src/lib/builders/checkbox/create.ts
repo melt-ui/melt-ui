@@ -1,6 +1,7 @@
 import {
 	addMeltEventListener,
 	builder,
+	effect,
 	executeCallbacks,
 	kbd,
 	omit,
@@ -43,6 +44,7 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 				role: 'checkbox',
 				'aria-checked': isIndeterminate ? 'mixed' : $checked,
 				'aria-required': $required,
+				'aria-disabled': $disabled,
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<CheckboxEvents['root']> => {
@@ -78,16 +80,25 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 				name: $name,
 				value: $value,
 				checked: $checked === 'indeterminate' ? false : $checked,
-				required: $required,
-				disabled: $disabled ? '' : undefined,
+				'data-required': $required ? '' : undefined,
+				'data-disabled': $disabled ? '' : undefined,
 				style: styleToString({
-					position: 'absolute',
-					opacity: 0,
-					'pointer-events': 'none',
-					margin: 0,
-					transform: 'translateX(-100%)',
+					display: 'none',
 				}),
 			} as const;
+		},
+		action: (node: HTMLInputElement) => {
+			node.disabled = node.hasAttribute('data-disabled');
+			node.required = node.hasAttribute('data-required');
+
+			const unsub = effect([disabled, required], ([$disabled, $required]) => {
+				node.disabled = $disabled;
+				node.required = $required;
+			});
+
+			return {
+				destroy: unsub,
+			};
 		},
 	});
 
