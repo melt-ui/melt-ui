@@ -1,5 +1,12 @@
 # @melt-ui/svelte
 
+## 0.37.6
+
+### Patch Changes
+
+- f56e9309: fix(#419) preserve body padding in removeScroll
+- 8355263b: fix: bug where dialog would call `handleClose` twice on click outside events
+
 ## 0.37.5
 
 ### Patch Changes
