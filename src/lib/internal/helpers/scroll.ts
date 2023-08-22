@@ -51,11 +51,12 @@ export function removeScroll(_document?: Document): () => void {
 	const setScrollbarWidthProperty = () =>
 		setCSSProperty(documentElement, '--scrollbar-width', `${scrollbarWidth}px`);
 	const paddingProperty = getPaddingProperty(documentElement);
+	const scrollbarSidePadding = win.getComputedStyle(body)[paddingProperty];
 
 	const setStyle = () =>
 		assignStyle(body, {
 			overflow: 'hidden',
-			[paddingProperty]: `${scrollbarWidth}px`,
+			[paddingProperty]: `calc(${scrollbarSidePadding} + ${scrollbarWidth}px)`,
 		});
 
 	// Only iOS doesn't respect `overflow: hidden` on document.body
@@ -72,7 +73,7 @@ export function removeScroll(_document?: Document): () => void {
 			top: `${-(scrollY - Math.floor(offsetTop))}px`,
 			left: `${-(scrollX - Math.floor(offsetLeft))}px`,
 			right: '0',
-			[paddingProperty]: `${scrollbarWidth}px`,
+			[paddingProperty]: `calc(${scrollbarSidePadding} + ${scrollbarWidth}px)`,
 		});
 
 		return () => {
