@@ -101,14 +101,13 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 
 				const tabindex = !hasActiveTabIndex ? 0 : checked ? 0 : -1;
 				hasActiveTabIndex = true;
-				const disabledVal = disabled ? '' : undefined;
 				return {
-					disabled: disabledVal,
 					'data-value': itemValue,
 					'data-orientation': $orientation,
-					'data-disabled': disabledVal,
+					'data-disabled': disabled ? '' : undefined,
 					'data-state': checked ? 'checked' : 'unchecked',
 					'aria-checked': checked,
+					'aria-disabled': disabled,
 					type: 'button',
 					role: 'radio',
 					tabindex,

@@ -100,23 +100,27 @@ export const createAccordion = <Multiple extends boolean = false>(
 				// generate the content ID here so that we can grab it in the content
 				// builder action to ensure the values match.
 				const isDisabled = $disabled || disabled;
-				const disabledVal = isDisabled ? '' : undefined;
 				const isItemSelected = isSelected(itemValue, $value);
 				return {
-					disabled: disabledVal,
 					'aria-expanded': isItemSelected ? true : false,
 					'aria-disabled': disabled ? true : false,
-					'data-disabled': disabledVal,
+					'data-disabled': isDisabled ? '' : undefined,
 					'data-value': itemValue,
 					'data-state': isItemSelected ? 'open' : 'closed',
 				};
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<AccordionEvents['trigger']> => {
+			function getTriggerProps() {
+				return {
+					disabled: node.hasAttribute('data-disabled'),
+					itemValue: node.dataset.value,
+				};
+			}
+
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
-					const disabled = node.hasAttribute('data-disabled');
-					const itemValue = node.dataset.value;
+					const { disabled, itemValue } = getTriggerProps();
 					if (disabled || !itemValue) {
 						return;
 					}
@@ -130,8 +134,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 					e.preventDefault();
 
 					if (e.key === kbd.SPACE || e.key === kbd.ENTER) {
-						const disabled = node.hasAttribute('data-disabled');
-						const itemValue = node.dataset.value;
+						const { disabled, itemValue } = getTriggerProps();
 						if (disabled || !itemValue) return;
 						handleValueUpdate(itemValue);
 						return;
