@@ -115,16 +115,5 @@ we'd love to have you there.
 
 ## Similar projects
 
-Looking for more? Check out these other projects too:
-
-- [Shadcn Svelte](https://shadcn-svelte.com/)
-- [Skeleton](https://skeleton.dev/)
-- [Svelte Headless UI](https://svelte-headlessui.goss.io/docs)
-- [Flowbite Svelte](https://flowbite-svelte.com/)
-- [Svelte Put](https://svelte-put.vnphanquang.com/)
-- [Carbon Components Svelte](https://github.com/carbon-design-system/carbon-components-svelte/)
-- [Svelte Material UI](https://sveltematerialui.com/)
-- [SvelteStrap](https://github.com/bestguy/sveltestrap)
-
-This list is not exhaustive or sorted in any particular order. If you know of any other similar
-projects for Svelte, feel free to open a PR to add them here.
+Looking for more? Check out the
+[other component library projects available for Svelte](https://sveltesociety.dev/components#design-systems).
