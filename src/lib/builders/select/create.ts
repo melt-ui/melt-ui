@@ -150,11 +150,16 @@ export function createSelect<
 
 	onMount(() => {
 		// Run after all initial effects
+		const $forceVisible = get(forceVisible);
 		tick().then(() => {
 			mounted = true;
+			if ($forceVisible) {
+				open.set(withDefaults.defaultOpen);
+			}
 		});
-
-		open.set(withDefaults.defaultOpen);
+		if (!$forceVisible) {
+			open.set(withDefaults.defaultOpen);
+		}
 
 		if (!isBrowser) return;
 		const menuEl = document.getElementById(ids.menu);
