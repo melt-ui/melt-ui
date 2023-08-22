@@ -11,6 +11,7 @@ import {
 	kbd,
 	omit,
 	overridable,
+	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
@@ -25,6 +26,7 @@ const defaults = {
 	disabled: false,
 	required: false,
 	defaultValue: undefined,
+	name: undefined,
 } satisfies Defaults<CreateRadioGroupProps>;
 
 type RadioGroupParts = 'item' | 'item-input';
@@ -35,7 +37,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 
 	// options
 	const options = toWritableStores(omit(withDefaults, 'value'));
-	const { disabled, required, loop, orientation } = options;
+	const { disabled, required, loop, orientation, name: inputName } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
@@ -173,21 +175,40 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 	});
 
 	const itemInput = builder(name('item-input'), {
-		stores: [disabled, value],
-		returned: ([$disabled, $value]) => {
+		stores: [disabled, required, value, inputName],
+		returned: ([$disabled, $required, $value, $inputName]) => {
 			return (props: RadioGroupItemProps) => {
 				const itemValue = typeof props === 'string' ? props : props.value;
 				const argDisabled = typeof props === 'string' ? false : !!props.disabled;
+
 				const disabled = $disabled || argDisabled;
 
 				return {
-					type: 'hidden',
-					'aria-hidden': true,
+					type: 'radio',
+					name: $inputName,
 					tabindex: -1,
 					value: itemValue,
 					checked: $value === itemValue,
-					disabled,
+					'aria-hidden': true,
+					'data-disabled': disabled ? '' : undefined,
+					'data-required': $required ? '' : undefined,
+					style: styleToString({
+						display: 'none',
+					}),
 				};
+			};
+		},
+		action: (node: HTMLInputElement) => {
+			node.disabled = node.hasAttribute('data-disabled');
+			node.required = node.hasAttribute('data-required');
+
+			const unsub = effect([disabled, required], ([$disabled, $required]) => {
+				node.disabled = $disabled || node.hasAttribute('data-disabled');
+				node.required = $required || node.hasAttribute('data-required');
+			});
+
+			return {
+				destroy: unsub,
 			};
 		},
 	});

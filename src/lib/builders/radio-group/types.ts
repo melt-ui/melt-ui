@@ -6,7 +6,8 @@ export type { RadioGroupComponentEvents } from './events.js';
 
 export type CreateRadioGroupProps = {
 	/**
-	 * When `true`, prevents the user from interacting with the radio group.
+	 * When `true`, prevents the user from interacting with the radio group in its entirety.
+	 * To disable individual radio items, use the `disabled` prop on the `item` builder instead.
 	 *
 	 * @default false
 	 */
@@ -19,6 +20,13 @@ export type CreateRadioGroupProps = {
 	 * @default false
 	 */
 	required?: boolean;
+
+	/**
+	 * The name of the radio group input that is submitted with form data.
+	 *
+	 * @default undefined
+	 */
+	name?: string;
 
 	/**
 	 * Whether or not the radio group should loop around when the end
