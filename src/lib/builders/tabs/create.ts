@@ -87,7 +87,7 @@ export function createTabs(props?: CreateTabsProps) {
 
 				const sourceOfTruth = isBrowser ? $value : ssrValue;
 				const isActive = sourceOfTruth === tabValue;
-
+				const disabledVal = disabled ? '' : undefined;
 				return {
 					type: 'button',
 					role: 'tab',
@@ -95,15 +95,15 @@ export function createTabs(props?: CreateTabsProps) {
 					tabindex: isActive ? 0 : -1,
 					'data-value': tabValue,
 					'data-orientation': $orientation,
-					'data-disabled': disabled ? true : undefined,
-					disabled,
+					'data-disabled': disabledVal,
+					disabled: disabledVal,
 				};
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<TabsEvents['trigger']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'focus', () => {
-					const disabled = node.dataset.disabled === 'true';
+					const disabled = node.hasAttribute('data-disabled');
 					const tabValue = node.dataset.value;
 
 					if (get(activateOnFocus) && !disabled && tabValue !== undefined) {
@@ -116,7 +116,7 @@ export function createTabs(props?: CreateTabsProps) {
 
 					e.preventDefault();
 
-					const disabled = node.dataset.disabled === 'true';
+					const disabled = node.hasAttribute('data-disabled');
 					if (disabled) return;
 
 					const tabValue = node.dataset.value;

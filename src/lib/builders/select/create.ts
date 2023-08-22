@@ -286,6 +286,7 @@ export function createSelect<
 	const trigger = builder(name('trigger'), {
 		stores: [open, disabled, required],
 		returned: ([$open, $disabled, $required]) => {
+			const disabledVal = $disabled ? '' : undefined;
 			return {
 				role: 'combobox',
 				'aria-autocomplete': 'none',
@@ -294,9 +295,9 @@ export function createSelect<
 				'aria-expanded': $open,
 				'aria-required': $required,
 				'data-state': $open ? 'open' : 'closed',
-				'data-disabled': $disabled ? true : undefined,
+				'data-disabled': disabledVal,
 				'aria-labelledby': ids.label,
-				disabled: $disabled,
+				disabled: disabledVal,
 				id: ids.trigger,
 				tabindex: 0,
 			} as const;
@@ -669,7 +670,7 @@ export function createSelect<
 				hidden: true,
 				tabIndex: -1,
 				required: $required,
-				disabled: $disabled,
+				disabled: $disabled ? '' : undefined,
 				style: styleToString({
 					position: 'absolute',
 					opacity: 0,

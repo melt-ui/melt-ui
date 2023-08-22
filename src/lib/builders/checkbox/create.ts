@@ -34,13 +34,14 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 	const root = builder('checkbox', {
 		stores: [checked, disabled, required],
 		returned: ([$checked, $disabled, $required]) => {
+			const isIndeterminate = $checked === 'indeterminate';
+
 			return {
-				'data-disabled': $disabled,
-				'data-state':
-					$checked === 'indeterminate' ? 'indeterminate' : $checked ? 'checked' : 'unchecked',
+				'data-disabled': $disabled ? '' : undefined,
+				'data-state': isIndeterminate ? 'indeterminate' : $checked ? 'checked' : 'unchecked',
 				type: 'button',
 				role: 'checkbox',
-				'aria-checked': $checked === 'indeterminate' ? 'mixed' : $checked,
+				'aria-checked': isIndeterminate ? 'mixed' : $checked,
 				'aria-required': $required,
 			} as const;
 		},
@@ -78,7 +79,7 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 				value: $value,
 				checked: $checked === 'indeterminate' ? false : $checked,
 				required: $required,
-				disabled: $disabled,
+				disabled: $disabled ? '' : undefined,
 				style: styleToString({
 					position: 'absolute',
 					opacity: 0,

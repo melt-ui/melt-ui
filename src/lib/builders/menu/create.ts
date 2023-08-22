@@ -504,7 +504,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					const checked = $value === itemValue;
 
 					return {
-						disabled,
+						disabled: disabled ? '' : undefined,
 						role: 'menuitemradio',
 						'data-state': checked ? 'checked' : 'unchecked',
 						'aria-checked': checked,

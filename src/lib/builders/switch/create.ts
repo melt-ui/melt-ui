@@ -41,14 +41,17 @@ export function createSwitch(props?: CreateSwitchProps) {
 	const root = builder(name(), {
 		stores: [checked, disabled, required],
 		returned: ([$checked, $disabled, $required]) => {
+			const disabledVal = $disabled ? '' : undefined;
+
 			return {
-				'data-disabled': $disabled,
-				disabled: $disabled,
+				'data-disabled': disabledVal,
+				disabled: disabledVal,
 				'data-state': $checked ? 'checked' : 'unchecked',
 				type: 'button',
 				role: 'switch',
 				'aria-checked': $checked,
 				'aria-required': $required,
+				'aria-disabled': $disabled,
 			} as const;
 		},
 		action(node: HTMLElement): MeltActionReturn<SwitchEvents['root']> {
@@ -81,7 +84,7 @@ export function createSwitch(props?: CreateSwitchProps) {
 				value: $value,
 				checked: $checked,
 				required: $required,
-				disabled: $disabled,
+				disabled: $disabled ? '' : undefined,
 				style: styleToString({
 					position: 'absolute',
 					opacity: 0,

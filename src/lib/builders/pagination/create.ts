@@ -122,7 +122,7 @@ export function createPagination(props: CreatePaginationProps) {
 		returned: ($page) => {
 			return {
 				'aria-label': 'Previous',
-				disabled: $page <= 1,
+				disabled: $page <= 1 ? '' : undefined,
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<PaginationEvents['prevButton']> => {
@@ -142,9 +142,11 @@ export function createPagination(props: CreatePaginationProps) {
 	const nextButton = builder(name('next'), {
 		stores: [page, totalPages],
 		returned: ([$page, $totalPages]) => {
+			const disabledVal = $page >= $totalPages ? '' : undefined;
 			return {
 				'aria-label': 'Next',
-				disabled: $page >= $totalPages,
+				disabled: disabledVal,
+				'data-disabled': disabledVal,
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<PaginationEvents['nextButton']> => {

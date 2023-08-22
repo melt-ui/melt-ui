@@ -129,11 +129,12 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 					const disabled = $disabled || argDisabled;
 
 					const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
+					const disabledVal = disabled ? '' : undefined;
 					return {
-						disabled,
+						disabled: disabledVal,
 						pressed,
 						'data-orientation': $orientation,
-						'data-disabled': disabled ? true : undefined,
+						'data-disabled': disabledVal,
 						'data-value': itemValue,
 						'data-state': pressed ? 'on' : 'off',
 						'aria-pressed': pressed,
@@ -146,7 +147,7 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 			action: (node: HTMLElement): MeltActionReturn<ToolbarEvents['item']> => {
 				function getNodeProps() {
 					const itemValue = node.dataset.value;
-					const disabled = node.dataset.disabled === 'true';
+					const disabled = node.hasAttribute('data-disabled');
 
 					return { value: itemValue, disabled };
 				}

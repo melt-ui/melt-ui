@@ -233,7 +233,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			return {
 				'data-melt-id': ids.root,
 				'data-disabled': $disabled ? true : undefined,
-				disabled: $disabled,
+				disabled: $disabled ? '' : undefined,
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<TagsInputEvents['root']> => {
@@ -261,7 +261,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			return {
 				'data-melt-id': ids.input,
 				'data-disabled': $disabled ? '' : undefined,
-				disabled: $disabled,
+				disabled: $disabled ? '' : undefined,
 				placeholder: $placeholder,
 			};
 		},
@@ -488,7 +488,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					'data-editable': editable ? '' : undefined,
 					'data-editing': editing ? '' : undefined,
 					'data-disabled': disabled ? '' : undefined,
-					disabled: disabled,
+					disabled: disabled ? '' : undefined,
 					hidden: editing,
 					tabindex: -1,
 					style: editing
@@ -576,14 +576,15 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				const selected = disabled ? undefined : $selected?.id === tag?.id;
 				const editing = editable ? $editing?.id === tag?.id : undefined;
 
+				const disabledVal = disabled ? '' : undefined;
 				return {
 					'aria-selected': selected,
 					'data-tag-id': tag.id,
 					'data-tag-value': tag.value,
 					'data-selected': selected ? '' : undefined,
 					'data-editing': editing ? '' : undefined,
-					'data-disabled': disabled ? '' : undefined,
-					disabled: disabled,
+					'data-disabled': disabledVal,
+					disabled: disabledVal,
 					tabindex: -1,
 				};
 			};

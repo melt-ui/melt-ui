@@ -64,14 +64,16 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 				const argDisabled = typeof props === 'string' ? false : !!props.disabled;
 				const disabled = $disabled || argDisabled;
 				const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
+				const disabledVal = disabled ? '' : undefined;
 				return {
-					disabled,
+					disabled: disabledVal,
 					pressed,
 					'data-orientation': $orientation,
-					'data-disabled': disabled ? true : undefined,
+					'data-disabled': disabledVal,
 					'data-state': pressed ? 'on' : 'off',
 					'data-value': itemValue,
 					'aria-pressed': pressed,
+					'aria-disabled': disabled,
 					type: 'button',
 					role: $type === 'single' ? 'radio' : undefined,
 					tabindex: pressed ? 0 : -1,
@@ -94,7 +96,7 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 
 			function getNodeProps() {
 				const itemValue = node.dataset.value;
-				const disabled = node.dataset.disabled === 'true';
+				const disabled = node.hasAttribute('data-disabled');
 
 				return { value: itemValue, disabled };
 			}

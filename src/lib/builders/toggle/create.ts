@@ -35,9 +35,11 @@ export function createToggle(props?: CreateToggleProps) {
 	const root = builder('toggle', {
 		stores: [pressed, disabled],
 		returned: ([$pressed, $disabled]) => {
+			const disabledVal = $disabled ? '' : undefined;
 			return {
-				'data-disabled': $disabled ? true : undefined,
-				disabled: $disabled,
+				'data-disabled': disabledVal,
+				'aria-disabled': $disabled,
+				disabled: disabledVal,
 				'data-state': $pressed ? 'on' : 'off',
 				'aria-pressed': $pressed,
 				type: 'button',

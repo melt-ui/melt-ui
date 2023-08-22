@@ -52,8 +52,10 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const root = builder(name(), {
 		stores: [disabled, orientation],
 		returned: ([$disabled, $orientation]) => {
+			const disabledVal = $disabled ? '' : undefined;
 			return {
-				disabled: $disabled,
+				disabled: disabledVal,
+				'data-disabled': disabledVal,
 				'data-orientation': $orientation,
 				style: $disabled ? undefined : 'touch-action: none;',
 				'data-melt-id': ids.root,
@@ -148,6 +150,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 					'aria-valuemax': $max,
 					'aria-valuenow': $value[index],
 					'data-melt-part': 'thumb',
+					'aria-disabled': $disabled,
+					'data-disabled': $disabled ? '' : undefined,
 					style: styleToString({
 						position: 'absolute',
 						...($orientation === 'horizontal'

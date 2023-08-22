@@ -79,14 +79,14 @@ export const createAccordion = <Multiple extends boolean = false>(
 	};
 
 	const item = builder(name('item'), {
-		stores: value,
-		returned: ($value) => {
+		stores: [value, disabled],
+		returned: ([$value, $disabled]) => {
 			return (props: AccordionItemProps) => {
 				const { value: itemValue, disabled } = parseItemProps(props);
-
+				const isDisabled = $disabled || disabled;
 				return {
 					'data-state': isSelected(itemValue, $value) ? 'open' : 'closed',
-					'data-disabled': disabled ? true : undefined,
+					'data-disabled': isDisabled ? '' : undefined,
 				};
 			};
 		},
@@ -99,22 +99,27 @@ export const createAccordion = <Multiple extends boolean = false>(
 				const { value: itemValue, disabled } = parseItemProps(props);
 				// generate the content ID here so that we can grab it in the content
 				// builder action to ensure the values match.
+				const isDisabled = $disabled || disabled;
+				const disabledVal = isDisabled ? '' : undefined;
+				const isItemSelected = isSelected(itemValue, $value);
 				return {
-					disabled: $disabled || disabled,
-					'aria-expanded': isSelected(itemValue, $value) ? true : false,
+					disabled: disabledVal,
+					'aria-expanded': isItemSelected ? true : false,
 					'aria-disabled': disabled ? true : false,
-					'data-disabled': disabled ? true : undefined,
+					'data-disabled': disabledVal,
 					'data-value': itemValue,
-					'data-state': isSelected(itemValue, $value) ? 'open' : 'closed',
+					'data-state': isItemSelected ? 'open' : 'closed',
 				};
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<AccordionEvents['trigger']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
-					const disabled = node.dataset.disabled === 'true';
+					const disabled = node.hasAttribute('data-disabled');
 					const itemValue = node.dataset.value;
-					if (disabled || !itemValue) return;
+					if (disabled || !itemValue) {
+						return;
+					}
 
 					handleValueUpdate(itemValue);
 				}),
@@ -125,7 +130,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 					e.preventDefault();
 
 					if (e.key === kbd.SPACE || e.key === kbd.ENTER) {
-						const disabled = node.dataset.disabled === 'true';
+						const disabled = node.hasAttribute('data-disabled');
 						const itemValue = node.dataset.value;
 						if (disabled || !itemValue) return;
 						handleValueUpdate(itemValue);
@@ -139,7 +144,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 					const items = Array.from(rootEl.querySelectorAll(selector('trigger')));
 					const candidateItems = items.filter((item): item is HTMLElement => {
 						if (!isHTMLElement(item)) return false;
-						return item.dataset.disabled !== 'true';
+						return !item.hasAttribute('data-disabled');
 					});
 
 					if (!candidateItems.length) return;
@@ -170,11 +175,12 @@ export const createAccordion = <Multiple extends boolean = false>(
 		stores: [value, disabled, forceVisible],
 		returned: ([$value, $disabled, $forceVisible]) => {
 			return (props: AccordionItemProps) => {
-				const { value: itemValue } = parseItemProps(props);
+				const { value: itemValue, disabled } = parseItemProps(props);
 				const isVisible = isSelected(itemValue, $value) || $forceVisible;
+				const isDisabled = $disabled || disabled;
 				return {
 					'data-state': isVisible ? 'open' : 'closed',
-					'data-disabled': $disabled ? true : undefined,
+					'data-disabled': isDisabled ? '' : undefined,
 					'data-value': itemValue,
 					hidden: isVisible ? undefined : true,
 					style: styleToString({

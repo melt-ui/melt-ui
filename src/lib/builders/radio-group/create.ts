@@ -69,7 +69,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 
 	/* Helpers */
 	const selectItem = (item: HTMLElement) => {
-		const disabled = item.dataset.disabled === 'true';
+		const disabled = item.hasAttribute('data-disabled');
 		const itemValue = item.dataset.value;
 		if (disabled || itemValue === undefined) return;
 		value.set(itemValue);
@@ -99,12 +99,12 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 
 				const tabindex = !hasActiveTabIndex ? 0 : checked ? 0 : -1;
 				hasActiveTabIndex = true;
-
+				const disabledVal = disabled ? '' : undefined;
 				return {
-					disabled,
+					disabled: disabledVal,
 					'data-value': itemValue,
 					'data-orientation': $orientation,
-					'data-disabled': disabled ? true : undefined,
+					'data-disabled': disabledVal,
 					'data-state': checked ? 'checked' : 'unchecked',
 					'aria-checked': checked,
 					type: 'button',
@@ -186,7 +186,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 					tabindex: -1,
 					value: itemValue,
 					checked: $value === itemValue,
-					disabled,
+					disabled: disabled ? '' : undefined,
 				};
 			};
 		},

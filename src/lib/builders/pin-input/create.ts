@@ -88,11 +88,12 @@ export function createPinInput(props?: CreatePinInputProps) {
 				const currIndex = index % totalItems;
 				index = (index + 1) % totalItems;
 				const currValue = $value[currIndex] ?? '';
-
+				const disabledVal = $disabled ? '' : undefined;
 				return {
 					'data-complete': $value.length && $value.every((v) => v.length > 0) ? '' : undefined,
 					placeholder: $placeholder,
-					disabled: $disabled,
+					disabled: disabledVal,
+					'data-disabled': disabledVal,
 					type: $type,
 					value: currValue,
 				};

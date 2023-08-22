@@ -39,15 +39,17 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 
 	const trigger = builder(name('trigger'), {
 		stores: [open, disabled],
-		returned: ([$open, $disabled]) =>
-			({
+		returned: ([$open, $disabled]) => {
+			const disabledVal = $disabled ? '' : undefined;
+			return {
 				'data-state': $open ? 'open' : 'closed',
-				'data-disabled': $disabled ? '' : undefined,
-				disabled: $disabled,
-			} as const),
+				'data-disabled': disabledVal,
+				disabled: disabledVal,
+			} as const;
+		},
 		action: (node: HTMLElement): MeltActionReturn<CollapsibleEvents['trigger']> => {
 			const unsub = addMeltEventListener(node, 'click', () => {
-				const disabled = node.dataset.disabled !== undefined;
+				const disabled = node.hasAttribute('data-disabled');
 				if (disabled) return;
 				open.update(($open) => !$open);
 			});
@@ -65,14 +67,16 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 
 	const content = builder(name('content'), {
 		stores: [isVisible, disabled],
-		returned: ([$isVisible, $disabled]) => ({
-			'data-state': $isVisible ? 'open' : 'closed',
-			'data-disabled': $disabled ? '' : undefined,
-			hidden: $isVisible ? undefined : true,
-			style: styleToString({
-				display: $isVisible ? undefined : 'none',
-			}),
-		}),
+		returned: ([$isVisible, $disabled]) => {
+			return {
+				'data-state': $isVisible ? 'open' : 'closed',
+				'data-disabled': $disabled ? '' : undefined,
+				hidden: $isVisible ? undefined : true,
+				style: styleToString({
+					display: $isVisible ? undefined : 'none',
+				}),
+			};
+		},
 	});
 
 	return {
