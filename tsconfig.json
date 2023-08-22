@@ -11,9 +11,6 @@
 		"strict": true,
 		"moduleResolution": "Bundler"
 	},
-	"types": [
-		"unplugin-icons/types/svelte"
-	],
 	"exclude": [
 		"*.ignore-ts",
 		"*.ignore-svelte",

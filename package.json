@@ -138,7 +138,6 @@
 		"tslib": "^2.6.1",
 		"typescript": "^5.1.6",
 		"unist-util-visit": "^4.1.2",
-		"unplugin-icons": "^0.16.5",
 		"vite": "^4.4.7",
 		"vitest": "^0.33.0"
 	},

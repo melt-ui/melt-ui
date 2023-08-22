@@ -1,8 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
 /// <reference types="@sveltejs/kit" />
 
-import 'unplugin-icons/types/svelte';
-
 import type { TextDirection } from '$lib/internal/types.js';
 
 // for information about these interfaces
