@@ -240,6 +240,7 @@ export function createSelect<
 				addMeltEventListener(node, 'keydown', (e) => {
 					const menuEl = e.currentTarget;
 					const target = e.target;
+
 					if (!isHTMLElement(menuEl) || !isHTMLElement(target)) return;
 
 					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
@@ -288,6 +289,7 @@ export function createSelect<
 		returned: ([$open, $disabled, $required]) => {
 			return {
 				role: 'combobox',
+				type: 'button',
 				'aria-autocomplete': 'none',
 				'aria-haspopup': 'listbox',
 				'aria-controls': ids.menu,
