@@ -15,7 +15,9 @@
 			portalled,
 		},
 		states: { open },
-	} = createDialog();
+	} = createDialog({
+		forceVisible: true,
+	});
 </script>
 
 <button

@@ -11,6 +11,7 @@ import {
 	kbd,
 	omit,
 	overridable,
+	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
@@ -27,7 +28,7 @@ const defaults = {
 	defaultValue: undefined,
 } satisfies Defaults<CreateRadioGroupProps>;
 
-type RadioGroupParts = 'item' | 'item-input';
+type RadioGroupParts = 'item' | 'hidden-input';
 const { name, selector } = createElHelpers<RadioGroupParts>('radio-group');
 
 export function createRadioGroup(props?: CreateRadioGroupProps) {
@@ -93,7 +94,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 			return (props: RadioGroupItemProps) => {
 				const itemValue = typeof props === 'string' ? props : props.value;
 				const argDisabled = typeof props === 'string' ? false : !!props.disabled;
-				const disabled = $disabled || (argDisabled as boolean);
+				const disabled = $disabled || argDisabled;
 
 				const checked = $value === itemValue;
 
@@ -172,23 +173,27 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 		},
 	});
 
-	const itemInput = builder(name('item-input'), {
-		stores: [disabled, value],
-		returned: ([$disabled, $value]) => {
-			return (props: RadioGroupItemProps) => {
-				const itemValue = typeof props === 'string' ? props : props.value;
-				const argDisabled = typeof props === 'string' ? false : !!props.disabled;
-				const disabled = $disabled || argDisabled;
-
-				return {
-					type: 'hidden',
-					'aria-hidden': true,
-					tabindex: -1,
-					value: itemValue,
-					checked: $value === itemValue,
-					disabled,
-				};
+	const hiddenInput = builder(name('hidden-input'), {
+		stores: [disabled, value, required],
+		returned: ([$disabled, $value, $required]) => {
+			return {
+				'aria-hidden': true,
+				tabindex: -1,
+				disabled: $disabled,
+				value: $value,
+				required: $required,
+				style: styleToString({
+					'pointer-events': 'none',
+					position: 'absolute',
+					opacity: 0,
+					width: 0,
+					height: 0,
+				}),
 			};
+		},
+		action: (_node: HTMLInputElement) => {
+			_node;
+			// no-op, just to enforce the type of the element
 		},
 	});
 
@@ -202,7 +207,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 		elements: {
 			root,
 			item,
-			itemInput,
+			hiddenInput,
 		},
 		states: {
 			value,

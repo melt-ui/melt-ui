@@ -1,5 +1,17 @@
 # @melt-ui/svelte
 
+## 0.38.0
+
+### Minor Changes
+
+- eedcbb92: Change radio-group item-inputs to single hidden-input
+
+### Patch Changes
+
+- 0de31f18: remove slider default aria lavel
+- 7f4aa574: fix dialog content click closing
+- eedcbb92: Fix required attribute in radio-group
+
 ## 0.37.6
 
 ### Patch Changes

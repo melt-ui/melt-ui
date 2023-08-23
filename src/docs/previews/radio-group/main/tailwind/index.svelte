@@ -2,7 +2,7 @@
 	import { createRadioGroup, melt } from '$lib/index.js';
 
 	const {
-		elements: { root, item },
+		elements: { root, item, hiddenInput },
 		helpers: { isChecked },
 	} = createRadioGroup({
 		defaultValue: 'default',
@@ -38,4 +38,5 @@
 			</label>
 		</div>
 	{/each}
+	<input name="line-height" use:melt={$hiddenInput} />
 </div>

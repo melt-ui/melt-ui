@@ -31,7 +31,7 @@
 <div class="relative flex min-h-[1080px] w-full flex-col items-center px-2">
 	<h1
 		class="z-10 mt-12 max-w-2xl text-center font-display text-5xl sm:text-6xl
-		md:max-w-3xl md:text-7xl lg:max-w-5xl lg:text-[7rem] lg:leading-none"
+		md:max-w-3xl md:text-7xl lg:max-w-5xl lg:text-[6rem] lg:leading-none"
 	>
 		<Logo class="inline-block h-12 md:-my-2 md:h-20  lg:-my-4 lg:h-32" /> <b>melt</b> away complexity
 	</h1>
