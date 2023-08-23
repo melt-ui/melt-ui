@@ -143,7 +143,6 @@ export const createSlider = (props?: CreateSliderProps) => {
 				const thumbPosition = `${$position($value[index])}%`;
 				return {
 					role: 'slider',
-					'aria-label': 'Volume',
 					'aria-valuemin': $min,
 					'aria-valuemax': $max,
 					'aria-valuenow': $value[index],
