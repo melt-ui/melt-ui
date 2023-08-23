@@ -149,18 +149,12 @@ export function createSelect<
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
 
 	onMount(() => {
-		const $forceVisible = get(forceVisible);
 		// Run after all initial effects
 		tick().then(() => {
 			mounted = true;
-			if ($forceVisible) {
-				open.set(withDefaults.defaultOpen);
-			}
 		});
 
-		if (!$forceVisible) {
-			open.set(withDefaults.defaultOpen);
-		}
+		open.set(withDefaults.defaultOpen);
 
 		if (!isBrowser) return;
 		const menuEl = document.getElementById(ids.menu);

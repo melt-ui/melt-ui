@@ -608,14 +608,7 @@ export function createCombobox<ItemValue>(props?: CreateComboboxProps<ItemValue>
 	/** ------------------- */
 
 	onMount(() => {
-		const $forceVisible = get(forceVisible);
-		if ($forceVisible) {
-			tick().then(() => {
-				open.set(withDefaults.defaultOpen);
-			});
-		} else {
-			open.set(withDefaults.defaultOpen);
-		}
+		open.set(withDefaults.defaultOpen);
 
 		if (!isBrowser) return;
 		const menuEl = document.getElementById(ids.menu);
