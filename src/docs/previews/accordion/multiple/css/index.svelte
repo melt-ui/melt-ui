@@ -31,7 +31,7 @@
 </script>
 
 <div class="root" use:melt={$root}>
-	{#each items as { id, title, description }, i}
+	{#each items as { id, title, description }}
 		<div use:melt={$item(id)} class="item">
 			<h2>
 				<button use:melt={$trigger(id)} class="trigger">

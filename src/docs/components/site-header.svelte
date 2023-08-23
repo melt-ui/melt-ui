@@ -40,7 +40,7 @@
 			<a
 				href={siteConfig.links.discord}
 				target="_blank"
-				rel="noreferrer"
+				rel="noopener noreferrer"
 				class=" text-neutral-400 transition-colors hover:text-neutral-50"
 			>
 				<Discord class="h-5 w-5" />
@@ -49,7 +49,7 @@
 			<a
 				href={siteConfig.links.github}
 				target="_blank"
-				rel="noreferrer"
+				rel="noopener noreferrer"
 				class="ml-6 text-neutral-400 transition-colors hover:text-neutral-50"
 			>
 				<GitHub class="h-5 w-5" />

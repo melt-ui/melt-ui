@@ -12,11 +12,13 @@
 
 	export let data: PageData;
 
+	// eslint-disable-next-line no-undef
 	type Component = $$Generic<typeof SvelteComponent>;
 	$: component = data.doc.default as unknown as Component;
 	$: doc = data.doc.metadata;
 	$: snippets = data.snippets;
 	$: mainPreview = data.mainPreview as unknown as Component;
+	// eslint-disable-next-line svelte/no-reactive-literals, svelte/no-immutable-reactive-statements
 	$: viewCode = false;
 	$: previews = data.previews;
 	$: features = data.builderData.features;

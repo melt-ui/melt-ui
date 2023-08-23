@@ -14,7 +14,7 @@
 </script>
 
 <div use:melt={$root} class={cn('flex items-center gap-2', className)}>
-	{#each Array.from({ length: 5 }) as _, i}
+	{#each Array.from({ length: 5 }) as _}
 		<input
 			class="rounded-xl bg-white text-center text-lg text-magnum-900 shadow-sm square-12"
 			use:melt={$input()}
