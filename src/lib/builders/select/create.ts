@@ -685,6 +685,13 @@ export function createSelect<
 		}
 	});
 
+	let hasOpened = false;
+	effect(open, ($open) => {
+		if ($open) {
+			hasOpened = true;
+		}
+	});
+
 	effect([open, activeTrigger], function handleFocus([$open, $activeTrigger]) {
 		const unsubs: Array<() => void> = [];
 
@@ -709,7 +716,7 @@ export function createSelect<
 			} else if (menuEl && $open) {
 				// focus on the menu element
 				handleRovingFocus(menuEl);
-			} else if ($activeTrigger) {
+			} else if ($activeTrigger && hasOpened) {
 				// Hacky way to prevent the keydown event from triggering on the trigger
 				handleRovingFocus($activeTrigger);
 			}
