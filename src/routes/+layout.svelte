@@ -14,21 +14,27 @@
 	import { JsIndicator, SiteHeader, TailwindIndicator } from '$docs/components/index.js';
 
 	import { inject } from '@vercel/analytics';
+	import { page } from '$app/stores';
+	import { cn } from '$docs/utils';
 
 	inject({ mode: dev ? 'development' : 'production' });
+
+	$: isRoot = $page.url.pathname === '/';
 </script>
 
-<div class="relative flex min-h-screen flex-col" id="page">
-	<header class="sticky top-0 z-40 hidden w-full bg-neutral-900 px-2 pt-2 md:block">
-		<SiteHeader />
-	</header>
+<div class="relative flex min-h-screen flex-col md:flex-col-reverse" id="page">
 	<div class="flex flex-1">
 		<slot />
 	</div>
-	<!-- Mobile Navbar -->
-	<header class="sticky bottom-0 z-40 w-full bg-neutral-900 px-2 pb-3 md:hidden">
+	<header
+		class={cn(
+			'sticky bottom-0 z-40 w-full px-2 pb-2 md:bottom-[none] md:top-0 md:pb-0 md:pt-2',
+			!isRoot && 'bg-neutral-900'
+		)}
+	>
 		<SiteHeader />
 	</header>
+
 	{#if dev}
 		<TailwindIndicator />
 		<JsIndicator />

@@ -40,7 +40,6 @@
 		overflow-y-auto rounded-md bg-white
 		p-1 focus:!ring-0"
 			use:melt={$menu}
-			transition:fly={{ duration: 150, y: -5 }}
 		>
 			{#each Object.entries(options) as [key, arr]}
 				<div use:melt={$group(key)}>
