@@ -7,7 +7,7 @@
 		elements: { root, item },
 	} = createToggleGroup({
 		type: 'single',
-		defaultValue: 'left',
+		defaultValue: 'right',
 		onValueChange: ({ curr, next }) => {
 			if (next === undefined) {
 				return curr;

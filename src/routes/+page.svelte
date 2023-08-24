@@ -31,14 +31,14 @@
 <div class="relative flex min-h-[1080px] w-full flex-col items-center">
 	<div class="flex flex-col items-center px-2">
 		<h1
-			class="z-10 mt-12 max-w-2xl text-center font-display text-5xl sm:text-6xl
+			class="z-10 mt-8 max-w-2xl text-center font-display text-5xl sm:text-6xl
 		md:max-w-3xl md:text-7xl lg:max-w-5xl lg:text-[6rem] lg:leading-none"
 		>
 			<Logo class="inline-block h-12 md:-my-2 md:h-20 lg:-my-4 lg:h-32" /> <b>melt</b> away complexity
 		</h1>
 
 		<p
-			class="mt-6 max-w-sm text-center text-neutral-400 md:max-w-md lg:mt-12 lg:max-w-xl lg:text-xl"
+			class="mt-6 max-w-sm text-center text-neutral-400 md:max-w-md lg:mt-8 lg:max-w-xl lg:text-xl"
 		>
 			An open-source Svelte library for building high-quality, accessible design systems and web
 			apps.
@@ -71,21 +71,21 @@
 	</div>
 
 	<div class="dotted-bg mt-1 grid w-full grow overflow-hidden">
-		<div class="absolute left-1/2 top-0 z-10 h-[50rem] w-[90rem] -translate-x-1/2 md:block">
-			<Accordion class="absolute left-1/2 top-[10rem] -translate-x-1/2" />
-			<Slider class="absolute left-1/2 top-[30rem] translate-x-[calc(-50%+30px)]" />
-			<Switch class="absolute left-[57%] top-[5rem] sm:left-[70%] sm:top-[8rem]" />
-			<TagsInput class="absolute left-[70%] top-[16rem]" />
-			<PinInput class="absolute left-[62%] top-[22rem] sm:left-[67.5%] lg:left-[75%]" />
+		<div class="absolute -top-2 left-1/2 z-10 h-[50rem] w-[90rem] -translate-x-1/2 md:block">
+			<Accordion class="absolute left-1/2 top-[7rem] -translate-x-1/2 sm:top-[5rem]" />
+			<Slider class="absolute left-1/2 top-[25rem] translate-x-[calc(-50%+30px)]" />
+			<Switch class="absolute left-[52.5rem] top-[3.5rem] sm:left-[62.5rem] sm:top-[3.5rem]" />
+			<TagsInput class="absolute left-[70%] top-[10rem]" />
+			<PinInput class="absolute left-[62%] top-[15rem] sm:left-[67.5%] lg:left-[75%]" />
 			<Popover
-				class="absolute left-[25%] top-[35%] hidden md:flex lg:left-[20%] "
+				class="absolute left-[25%] top-[10rem] hidden md:flex lg:left-[20%] "
 				contentClass="hidden md:block"
 			/>
-			<Tabs class="absolute bottom-[10%] left-[10%] sm:left-0" />
+			<Tabs class="absolute left-[20rem] top-[30rem] sm:left-0 sm:top-[16rem]" />
 			<ToggleGroup
-				class="absolute left-[36%] top-[12%] sm:left-[22%] sm:top-[30%] md:left-[-5%] md:top-[45%]"
+				class="absolute left-[25rem] top-[10rem] sm:left-[20rem] sm:top-[7.5rem] md:left-[-2rem] md:top-[10rem]"
 			/>
-			<Toolbar class="absolute bottom-[10rem] left-[50%] md:bottom-[17rem] md:left-[72.5%]" />
+			<Toolbar class="absolute left-[50rem] top-[30rem] md:left-[72.5%] md:top-[30rem]" />
 		</div>
 	</div>
 </div>
@@ -107,7 +107,7 @@
 			position: absolute;
 			content: '';
 			inset: 0;
-			background: linear-gradient(to bottom, theme('colors.neutral.900') 0%, transparent 50%);
+			background: linear-gradient(to bottom, theme('colors.neutral.900') 0%, transparent 25%);
 		}
 	}
 </style>

@@ -50,8 +50,6 @@ export default {
 				],
 				display: [
 					'GT Maru',
-					'-apple-system',
-					'BlinkMacSystemFont',
 					'Segoe UI',
 					'Roboto',
 					'Oxygen',

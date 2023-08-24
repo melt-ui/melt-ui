@@ -8,7 +8,7 @@
 		elements: { root, list, content, trigger },
 		states: { value },
 	} = createTabs({
-		defaultValue: 'tab-1',
+		defaultValue: 'tab-3',
 	});
 
 	let className = '';
