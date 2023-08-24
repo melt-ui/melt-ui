@@ -1,5 +1,13 @@
 # @melt-ui/svelte
 
+## 0.38.1
+
+### Patch Changes
+
+- 25118ed8: - Fix bug in `Select` where it would intercept form submissions
+- ede9de82: Internal: Swap custom deepEqual fn with `deep-equal` package
+- d790d32c: Tag Input: Add JSDoc to `add`, `update` and `remove` functions
+
 ## 0.38.0
 
 ### Minor Changes
