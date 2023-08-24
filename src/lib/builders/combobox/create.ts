@@ -29,7 +29,6 @@ import {
 	derivedVisible,
 	addMeltEventListener,
 	getPortalDestination,
-	deepEqual,
 } from '$lib/internal/helpers/index.js';
 import { onMount, tick } from 'svelte';
 import { derived, get, readonly, writable, type Writable } from 'svelte/store';
@@ -38,6 +37,7 @@ import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { createLabel } from '../label/create.js';
 import type { ComboboxEvents } from './events.js';
 import { debounceable } from '$lib/internal/helpers/store/debounceable.js';
+import deepEqual from 'deep-equal';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ESCAPE, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
