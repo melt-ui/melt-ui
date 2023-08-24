@@ -33,6 +33,7 @@ const defaults = {
 	maxTags: undefined,
 	allowed: [],
 	denied: [],
+	regex: /(^[a-zA-Z0-9])\w+/,
 	add: undefined,
 	remove: undefined,
 	update: undefined,
@@ -61,6 +62,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		addOnPaste,
 		allowed,
 		denied,
+		regex,
 		add,
 		remove,
 		update,
@@ -107,6 +109,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		const $allowed = get(allowed);
 		const $denied = get(denied);
 		const $maxTags = get(maxTags);
+		const $regex = get(regex);
 
 		// Trim the validation value before validations
 		if (get(trim)) v = v.trim();
@@ -124,6 +127,8 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		if ($denied && $denied.length > 0 && $denied.includes(v)) return false;
 
 		if ($maxTags && $maxTags > 0 && $tags.length >= $maxTags) return false;
+
+		if (!regex.test(v)) return false
 
 		return true;
 	};
