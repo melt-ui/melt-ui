@@ -151,15 +151,119 @@ export function createSelect<
 
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
 
-	onMount(() => {
-		const triggerEl = document.getElementById(ids.trigger);
-		if (triggerEl) {
-			activeTrigger.set(triggerEl);
-		}
+	/* ------- */
+	/* Helpers */
+	/* ------- */
+	const isSelected = derived([selected], ([$selected]) => {
+		return (value: Value) => {
+			if (Array.isArray($selected)) {
+				return $selected.map((o) => o.value).includes(value);
+			}
+			return ($selected as SelectOption<Value>) === value;
+		};
 	});
+
+	function isMouse(e: PointerEvent) {
+		return e.pointerType === 'mouse';
+	}
+
+	function getSelectedOption(menuElement: HTMLElement) {
+		const selectedOption = menuElement.querySelector('[data-selected]');
+		return isHTMLElement(selectedOption) ? selectedOption : null;
+	}
+
+	function onOptionPointerMove(e: PointerEvent) {
+		if (!isMouse(e)) return;
+		const currentTarget = e.currentTarget;
+		if (!isHTMLElement(currentTarget)) return;
+		handleRovingFocus(currentTarget);
+	}
+
+	function onOptionLeave() {
+		const menuElement = document.getElementById(ids.menu);
+		if (!isHTMLElement(menuElement)) return;
+		handleRovingFocus(menuElement);
+	}
+
+	/**
+	 * Keyboard event handler for menu navigation
+	 * @param e The keyboard event
+	 */
+	function handleMenuNavigation(e: KeyboardEvent) {
+		e.preventDefault();
+
+		// currently focused menu item
+		const currentFocusedItem = document.activeElement;
+
+		// menu element being navigated
+		const currentTarget = e.currentTarget;
+		if (!isHTMLElement(currentFocusedItem) || !isHTMLElement(currentTarget)) return;
+
+		// menu items of the current menu
+		const items = getOptions(currentTarget);
+		if (!items.length) return;
+		// Disabled items can't be highlighted. Skip them.
+		const candidateNodes = items.filter((opt) => !isElementDisabled(opt));
+		// Get the index of the currently highlighted item.
+		const currentIndex = candidateNodes.indexOf(currentFocusedItem);
+		// Find the next menu item to highlight.
+		let nextItem: HTMLElement;
+		const $loop = get(loop);
+		switch (e.key) {
+			case kbd.ARROW_DOWN:
+				nextItem = next(candidateNodes, currentIndex, $loop);
+				break;
+			case kbd.PAGE_DOWN:
+				nextItem = forward(candidateNodes, currentIndex, 10, $loop);
+				break;
+			case kbd.ARROW_UP:
+				nextItem = prev(candidateNodes, currentIndex, $loop);
+				break;
+			case kbd.PAGE_UP:
+				nextItem = back(candidateNodes, currentIndex, 10, $loop);
+				break;
+			case kbd.HOME:
+				nextItem = candidateNodes[0];
+				break;
+			case kbd.END:
+				nextItem = last(candidateNodes);
+				break;
+			default:
+				return;
+		}
+		handleRovingFocus(nextItem);
+	}
+
+	function handleTabNavigation(e: KeyboardEvent) {
+		if (e.shiftKey) {
+			const $prevFocusable = get(prevFocusable);
+			if ($prevFocusable) {
+				e.preventDefault();
+				$prevFocusable.focus();
+				prevFocusable.set(null);
+			}
+		} else {
+			const $nextFocusable = get(nextFocusable);
+			if ($nextFocusable) {
+				e.preventDefault();
+				$nextFocusable.focus();
+				nextFocusable.set(null);
+			}
+		}
+	}
 
 	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
 
+	const selectedLabel = derived(selected, ($selected) => {
+		if (Array.isArray($selected)) {
+			return $selected.map((o) => o.label).join(', ');
+		}
+		return $selected?.label ?? '';
+	});
+
+	/* -------- */
+	/* Builders */
+	/* -------- */
 	const menu = builder(name('menu'), {
 		stores: [isVisible, portal],
 		returned: ([$isVisible, $portal]) => {
@@ -548,6 +652,39 @@ export function createSelect<
 		},
 	});
 
+	const input = builder(name('input'), {
+		stores: [selected, required, disabled, nameStore],
+		returned: ([$value, $required, $disabled, $nameStore]) => {
+			return {
+				type: 'hidden',
+				name: $nameStore,
+				value: $value,
+				'aria-hidden': true,
+				hidden: true,
+				tabIndex: -1,
+				required: $required,
+				disabled: $disabled,
+				style: styleToString({
+					position: 'absolute',
+					opacity: 0,
+					'pointer-events': 'none',
+					margin: 0,
+					transform: 'translateX(-100%)',
+				}),
+			};
+		},
+	});
+
+	/* ------------------- */
+	/* Lifecycle & Effects */
+	/* ------------------- */
+	onMount(() => {
+		const triggerEl = document.getElementById(ids.trigger);
+		if (triggerEl) {
+			activeTrigger.set(triggerEl);
+		}
+	});
+
 	effect([open, activeTrigger], function handleFocus([$open, $activeTrigger]) {
 		const unsubs: Array<() => void> = [];
 
@@ -583,15 +720,6 @@ export function createSelect<
 		};
 	});
 
-	const isSelected = derived([selected], ([$selected]) => {
-		return (value: Value) => {
-			if (Array.isArray($selected)) {
-				return $selected.map((o) => o.value).includes(value);
-			}
-			return ($selected as SelectOption<Value>) === value;
-		};
-	});
-
 	effect([open, activeTrigger], ([$open, $activeTrigger]) => {
 		if (!isBrowser) return;
 
@@ -612,118 +740,6 @@ export function createSelect<
 		);
 	});
 
-	const input = builder(name('input'), {
-		stores: [selected, required, disabled, nameStore],
-		returned: ([$value, $required, $disabled, $nameStore]) => {
-			return {
-				type: 'hidden',
-				name: $nameStore,
-				value: $value,
-				'aria-hidden': true,
-				hidden: true,
-				tabIndex: -1,
-				required: $required,
-				disabled: $disabled,
-				style: styleToString({
-					position: 'absolute',
-					opacity: 0,
-					'pointer-events': 'none',
-					margin: 0,
-					transform: 'translateX(-100%)',
-				}),
-			};
-		},
-	});
-
-	function isMouse(e: PointerEvent) {
-		return e.pointerType === 'mouse';
-	}
-
-	function getSelectedOption(menuElement: HTMLElement) {
-		const selectedOption = menuElement.querySelector('[data-selected]');
-		return isHTMLElement(selectedOption) ? selectedOption : null;
-	}
-
-	function onOptionPointerMove(e: PointerEvent) {
-		if (!isMouse(e)) return;
-		const currentTarget = e.currentTarget;
-		if (!isHTMLElement(currentTarget)) return;
-		handleRovingFocus(currentTarget);
-	}
-
-	function onOptionLeave() {
-		const menuElement = document.getElementById(ids.menu);
-		if (!isHTMLElement(menuElement)) return;
-		handleRovingFocus(menuElement);
-	}
-
-	/**
-	 * Keyboard event handler for menu navigation
-	 * @param e The keyboard event
-	 */
-	function handleMenuNavigation(e: KeyboardEvent) {
-		e.preventDefault();
-
-		// currently focused menu item
-		const currentFocusedItem = document.activeElement;
-
-		// menu element being navigated
-		const currentTarget = e.currentTarget;
-		if (!isHTMLElement(currentFocusedItem) || !isHTMLElement(currentTarget)) return;
-
-		// menu items of the current menu
-		const items = getOptions(currentTarget);
-		if (!items.length) return;
-		// Disabled items can't be highlighted. Skip them.
-		const candidateNodes = items.filter((opt) => !isElementDisabled(opt));
-		// Get the index of the currently highlighted item.
-		const currentIndex = candidateNodes.indexOf(currentFocusedItem);
-		// Find the next menu item to highlight.
-		let nextItem: HTMLElement;
-		const $loop = get(loop);
-		switch (e.key) {
-			case kbd.ARROW_DOWN:
-				nextItem = next(candidateNodes, currentIndex, $loop);
-				break;
-			case kbd.PAGE_DOWN:
-				nextItem = forward(candidateNodes, currentIndex, 10, $loop);
-				break;
-			case kbd.ARROW_UP:
-				nextItem = prev(candidateNodes, currentIndex, $loop);
-				break;
-			case kbd.PAGE_UP:
-				nextItem = back(candidateNodes, currentIndex, 10, $loop);
-				break;
-			case kbd.HOME:
-				nextItem = candidateNodes[0];
-				break;
-			case kbd.END:
-				nextItem = last(candidateNodes);
-				break;
-			default:
-				return;
-		}
-		handleRovingFocus(nextItem);
-	}
-
-	function handleTabNavigation(e: KeyboardEvent) {
-		if (e.shiftKey) {
-			const $prevFocusable = get(prevFocusable);
-			if ($prevFocusable) {
-				e.preventDefault();
-				$prevFocusable.focus();
-				prevFocusable.set(null);
-			}
-		} else {
-			const $nextFocusable = get(nextFocusable);
-			if ($nextFocusable) {
-				e.preventDefault();
-				$nextFocusable.focus();
-				nextFocusable.set(null);
-			}
-		}
-	}
-
 	return {
 		elements: {
 			menu,
@@ -739,6 +755,7 @@ export function createSelect<
 		states: {
 			open,
 			selected,
+			selectedLabel,
 		},
 		helpers: {
 			isSelected,

@@ -30,9 +30,9 @@ the top of this page to create your select.
 A multi-select is a select that allows the user to select multiple options. To create a
 multi-select, simply set the `multiple` prop to `true` on the `createSelect` builder.
 
-<!-- <Preview code={snippets.multi}>
+<Preview code={snippets.multi}>
     <svelte:component this={previews.multi} />
-</Preview> -->
+</Preview>
 
 ### Change options with keyboard
 
@@ -40,9 +40,9 @@ Using custom event listeners, you can customize what the keyboard does when inte
 trigger. In this example, we use the `on:keydown` event listener to change the selected option when
 the user presses the up or down arrow keys, instead of opening the menu.
 
-<!-- <Preview code={snippets.keyboard}>
+<Preview code={snippets.keyboard}>
     <svelte:component this={previews.keyboard} />
-</Preview> -->
+</Preview>
 
 ## API Reference
 

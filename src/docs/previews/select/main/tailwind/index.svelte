@@ -9,7 +9,7 @@
 
 	const {
 		elements: { trigger, menu, option, group, groupLabel, label },
-		states: { selected, open },
+		states: { selectedLabel, open },
 		helpers: { isSelected },
 	} = createSelect({
 		forceVisible: true,
@@ -30,7 +30,7 @@
 		use:melt={$trigger}
 		aria-label="Food"
 	>
-		{$selected?.label || 'Select a flavor'}
+		{$selectedLabel || 'Select a flavor'}
 		<ChevronDown class="square-5" />
 	</button>
 	{#if $open}
