@@ -64,9 +64,9 @@ export type TagProps = {
 	editable?: boolean;
 };
 
-export type UpdateTag = (tag: Tag) => Tag | Promise<Tag>;
-export type RemoveTag = (tag: Tag) => boolean | Promise<boolean>;
-export type AddTag = (tag: string) => (Tag | string) | Promise<Tag | string>;
+export type UpdateTag = (tag: Tag) => (Tag | never) | Promise<Tag | never>;
+export type RemoveTag = (tag: Tag) => (boolean | never) | Promise<boolean | never>;
+export type AddTag = (tag: string) => (Tag | string | never) | Promise<Tag | string | never>;
 
 export type TagsInput = BuilderReturn<typeof createTagsInput>;
 export type TagsInputElements = TagsInput['elements'];
