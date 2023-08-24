@@ -40,9 +40,9 @@ import {
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
-import { derived, get, readonly, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 import type { SelectEvents } from './events.js';
-import type { CreateSelectProps, SelectOptionProps } from './types.js';
+import type { CreateSelectProps, SelectOption, SelectOptionProps } from './types.js';
 
 const defaults = {
 	arrowSize: 8,
@@ -75,18 +75,25 @@ type SelectParts =
 const { name } = createElHelpers<SelectParts>('select');
 
 export function createSelect<
+	Value = unknown,
+	Multiple extends boolean = false,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	Value extends Multiple extends true ? Array<unknown> : unknown = any,
-	Multiple extends boolean = false
->(props?: CreateSelectProps<Value, Multiple>) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps<Value, Multiple>;
+	Selected extends Multiple extends true
+		? Array<SelectOption<Value>>
+		: SelectOption<Value> = Multiple extends true ? Array<SelectOption<Value>> : SelectOption<Value>
+>(props?: CreateSelectProps<Value, Multiple, Selected>) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps<
+		Value,
+		Multiple,
+		Selected
+	>;
 
 	const options = toWritableStores({
 		...omit(
 			withDefaults,
-			'value',
-			'defaultValueLabel',
-			'onValueChange',
+			'selected',
+			'defaultSelected',
+			'onSelectedChange',
 			'onOpenChange',
 			'open',
 			'defaultOpen'
@@ -109,17 +116,13 @@ export function createSelect<
 		multiple,
 	} = options;
 
-	let mounted = false;
-
-	const openWritable = withDefaults.open ?? writable(true);
+	const openWritable = withDefaults.open ?? writable(false);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
-	// Open so we can register the optionsList items before mounted = true
-	open.set(true);
 
-	const valueWritable = withDefaults.value ?? writable<Value>(withDefaults.defaultValue);
-	const value = overridable(valueWritable, withDefaults?.onValueChange);
+	const selectedWritable =
+		withDefaults.selected ?? writable<Selected | undefined>(withDefaults.defaultSelected);
+	const selected = overridable(selectedWritable, withDefaults?.onSelectedChange);
 
-	const valueLabel = writable<string | null>(withDefaults.defaultValueLabel ?? null);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	/**
@@ -149,28 +152,10 @@ export function createSelect<
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
 
 	onMount(() => {
-		// Run after all initial effects
-		tick().then(() => {
-			mounted = true;
-		});
-
-		open.set(withDefaults.defaultOpen);
-
-		if (!isBrowser) return;
-		const menuEl = document.getElementById(ids.menu);
-
-		if (!menuEl) return;
-
 		const triggerEl = document.getElementById(ids.trigger);
 		if (triggerEl) {
 			activeTrigger.set(triggerEl);
 		}
-
-		const selectedEl = menuEl.querySelector('[data-selected]');
-		if (!isHTMLElement(selectedEl)) return;
-
-		const dataLabel = selectedEl.getAttribute('data-label');
-		valueLabel.set(dataLabel ?? selectedEl.textContent ?? null);
 	});
 
 	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
@@ -453,43 +438,29 @@ export function createSelect<
 
 		return {
 			value: value ? JSON.parse(value) : value,
-			label: label ?? el.textContent ?? undefined,
+			label: label ?? el.textContent ?? value ?? undefined,
 			disabled: disabled ? true : false,
 		};
 	};
 
-	const setValue = (newValue: Value) => {
-		value.update(($value) => {
+	const setOption = (newOption: SelectOption<Value>) => {
+		selected.update(($option) => {
 			const $multiple = get(multiple);
-			if (Array.isArray($value) || ($value === undefined && $multiple)) {
-				return toggle(newValue, ($value ?? []) as unknown[]) as Value;
+			if ($multiple) {
+				const optionArr = Array.isArray($option) ? $option : [];
+				return toggle(newOption, optionArr) as Selected;
 			}
-			return newValue;
+			return newOption as Selected;
 		});
 	};
 
-	/**
-	 * List of options fetched from SSR.
-	 */
-	const cachedOptionPropsArr: SelectOptionProps<Value>[] = [];
-	const getOptionPropsArr = () => {
-		if (!isBrowser) return cachedOptionPropsArr;
-
-		const menuEl = document.getElementById(ids.menu);
-		if (!menuEl) return cachedOptionPropsArr;
-		const options = getOptions(menuEl);
-		return options.map(getOptionProps);
-	};
-
 	const option = builder(name('option'), {
-		stores: value,
-		returned: ($value) => {
+		stores: selected,
+		returned: ($selected) => {
 			return (props: SelectOptionProps<Value>) => {
-				cachedOptionPropsArr.push(props);
-
-				const isSelected = Array.isArray($value)
-					? $value.includes(props?.value)
-					: $value === props?.value;
+				const isSelected = Array.isArray($selected)
+					? $selected.map((o) => o.value).includes(props.value)
+					: $selected?.value === props?.value;
 
 				return {
 					role: 'option',
@@ -515,7 +486,7 @@ export function createSelect<
 					}
 					handleRovingFocus(itemElement);
 
-					setValue(props.value);
+					setOption(props);
 					const $multiple = get(multiple);
 					if (!$multiple) open.set(false);
 				}),
@@ -532,7 +503,7 @@ export function createSelect<
 						const props = getOptionProps(node);
 						node.setAttribute('data-selected', '');
 
-						setValue(props.value);
+						setOption(props);
 						const $multiple = get(multiple);
 						if (!$multiple) open.set(false);
 					}
@@ -577,24 +548,6 @@ export function createSelect<
 		},
 	});
 
-	effect(value, function updateValueLabel($value) {
-		const optionPropsArr = getOptionPropsArr();
-
-		if (Array.isArray($value)) {
-			const labels = optionPropsArr.reduce((result, current) => {
-				if ($value.includes(current.value) && current.label) {
-					result.add(current.label);
-				}
-				return result;
-			}, new Set<string>());
-
-			valueLabel.set(Array.from(labels).join(', '));
-		} else {
-			const newLabel = optionPropsArr.find((opt) => opt.value === $value)?.label;
-			valueLabel.set(newLabel ?? null);
-		}
-	});
-
 	effect([open, activeTrigger], function handleFocus([$open, $activeTrigger]) {
 		const unsubs: Array<() => void> = [];
 
@@ -603,7 +556,6 @@ export function createSelect<
 			unsubs.push(removeScroll());
 		}
 
-		const constantMounted = mounted;
 		sleep(1).then(() => {
 			const menuEl = document.getElementById(ids.menu);
 			if (menuEl && $open && isUsingKeyboard) {
@@ -620,7 +572,7 @@ export function createSelect<
 			} else if (menuEl && $open) {
 				// focus on the menu element
 				handleRovingFocus(menuEl);
-			} else if ($activeTrigger && constantMounted && isUsingKeyboard) {
+			} else if ($activeTrigger) {
 				// Hacky way to prevent the keydown event from triggering on the trigger
 				handleRovingFocus($activeTrigger);
 			}
@@ -631,12 +583,12 @@ export function createSelect<
 		};
 	});
 
-	const isSelected = derived([value], ([$value]) => {
-		return (value: unknown) => {
-			if (Array.isArray($value)) {
-				return $value.includes(value);
+	const isSelected = derived([selected], ([$selected]) => {
+		return (value: Value) => {
+			if (Array.isArray($selected)) {
+				return $selected.map((o) => o.value).includes(value);
 			}
-			return $value === value;
+			return ($selected as SelectOption<Value>) === value;
 		};
 	});
 
@@ -661,7 +613,7 @@ export function createSelect<
 	});
 
 	const input = builder(name('input'), {
-		stores: [value, required, disabled, nameStore],
+		stores: [selected, required, disabled, nameStore],
 		returned: ([$value, $required, $disabled, $nameStore]) => {
 			return {
 				type: 'hidden',
@@ -786,8 +738,7 @@ export function createSelect<
 		},
 		states: {
 			open,
-			value,
-			valueLabel: readonly(valueLabel),
+			selected,
 		},
 		helpers: {
 			isSelected,

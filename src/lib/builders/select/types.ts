@@ -3,11 +3,21 @@ import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { createSelect } from './create.js';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
+
 export type { SelectComponentEvents } from './events.js';
+
+export type SelectOption<Value> = {
+	value: Value;
+	label?: string;
+};
+
 export type CreateSelectProps<
+	Value = unknown,
+	Multiple extends boolean = false,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	Item extends Multiple extends true ? Array<unknown> : unknown = any,
-	Multiple extends boolean = false
+	Selected extends Multiple extends true
+		? Array<SelectOption<Value>>
+		: SelectOption<Value> = Multiple extends true ? Array<SelectOption<Value>> : SelectOption<Value>
 > = {
 	/**
 	 * Options for positioning the popover menu.
@@ -55,13 +65,6 @@ export type CreateSelectProps<
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
 	onOpenChange?: ChangeFn<boolean>;
-
-	/**
-	 * The label for the select input.
-	 *
-	 * @default undefined
-	 */
-	defaultValueLabel?: string;
 
 	/**
 	 * The name for the select input.
@@ -122,26 +125,24 @@ export type CreateSelectProps<
 	 *
 	 * @default undefined
 	 */
-	defaultValue?: Item;
+	defaultSelected?: Selected;
 
 	/**
 	 * An optional controlled store that manages the value state of the combobox.
 	 */
-	value?: Writable<Item>;
+	selected?: Writable<Selected>;
 
 	/**
 	 * A change handler for the value store called when the value would normally change.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onValueChange?: ChangeFn<Item>;
+	onSelectedChange?: ChangeFn<Selected | undefined>;
 
 	multiple?: Multiple;
 };
 
-export type SelectOptionProps<Item = unknown> = {
-	value: Item;
-	label?: string;
+export type SelectOptionProps<Value = unknown> = SelectOption<Value> & {
 	disabled?: boolean;
 };
 
