@@ -18,6 +18,7 @@ export type CreateTagsInputProps = {
 	maxTags?: number;
 	allowed?: string[];
 	denied?: string[];
+	regex?: string;
 	add?: AddTag;
 	remove?: RemoveTag;
 	update?: UpdateTag;
