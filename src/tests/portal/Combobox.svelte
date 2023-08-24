@@ -7,7 +7,7 @@
 		.map(() => '');
 
 	const {
-		elements: { menu, input, item, label },
+		elements: { menu, input, option: item, label },
 	} = createCombobox();
 
 	const level = initLevel();

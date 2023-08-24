@@ -1,13 +1,18 @@
 import { useEscapeKeydown, usePopper } from '$lib/internal/actions/index.js';
 import {
+	FIRST_LAST_KEYS,
+	addHighlight,
+	addMeltEventListener,
 	back,
 	builder,
 	createElHelpers,
+	derivedVisible,
 	effect,
 	executeCallbacks,
-	FIRST_LAST_KEYS,
 	forward,
 	generateId,
+	getOptions,
+	getPortalDestination,
 	isBrowser,
 	isElementDisabled,
 	isHTMLElement,
@@ -16,28 +21,23 @@ import {
 	last,
 	next,
 	noop,
+	omit,
 	overridable,
 	prev,
+	removeHighlight,
 	removeScroll,
 	sleep,
 	styleToString,
 	toWritableStores,
-	addHighlight,
-	removeHighlight,
-	omit,
-	getOptions,
-	derivedVisible,
-	addMeltEventListener,
-	getPortalDestination,
 } from '$lib/internal/helpers/index.js';
+import { debounceable } from '$lib/internal/helpers/store/debounceable.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
+import deepEqual from 'deep-equal';
 import { onMount, tick } from 'svelte';
 import { derived, get, readonly, writable, type Writable } from 'svelte/store';
-import type { ComboboxItemProps, CreateComboboxProps } from './types.js';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { createLabel } from '../label/create.js';
 import type { ComboboxEvents } from './events.js';
-import { debounceable } from '$lib/internal/helpers/store/debounceable.js';
-import deepEqual from 'deep-equal';
+import type { ComboboxItemProps, ComboboxOption, CreateComboboxProps } from './types.js';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ESCAPE, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
@@ -68,27 +68,26 @@ const { name, selector } = createElHelpers('combobox');
  * @TODO would it be useful to have a callback for when an item is selected?
  * @TODO multi-select using `tags-input` builder?
  */
-export function createCombobox<ItemValue>(props?: CreateComboboxProps<ItemValue>) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateComboboxProps<ItemValue>;
+export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateComboboxProps<Value>;
 
 	// Trigger element for the popper portal. This will be our input element.
 	const activeTrigger = writable<HTMLElement | null>(null);
 	// The currently highlighted menu item.
 	const highlightedItem = writable<HTMLElement | null>(null);
 
-	const valueWritable =
-		withDefaults.value ?? (writable(withDefaults.defaultValue) as Writable<ItemValue | undefined>);
-	const value = overridable(valueWritable, withDefaults?.onValueChange);
+	const selectedWritable =
+		withDefaults.selected ??
+		(writable(withDefaults.defaultSelected) as Writable<ComboboxOption<Value> | undefined>);
+	const selected = overridable(selectedWritable, withDefaults?.onSelectedChange);
 
 	// The current value of the input element.
-	const inputValue = debounceable(withDefaults.defaultInputValue ?? '', withDefaults.debounce);
+	const inputValue = debounceable(withDefaults.defaultSelected?.label ?? '', withDefaults.debounce);
 
 	// Either the provided open store or a store with the default open value
-	const openWritable = withDefaults.open ?? writable(true);
+	const openWritable = withDefaults.open ?? writable(false);
 	// The overridable open store which is the source of truth for the open state.
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
-	// Open so we can register the optionsList items before mounted = true
-	open.set(true);
 
 	const isEmpty = writable(false);
 
@@ -117,7 +116,7 @@ export function createCombobox<ItemValue>(props?: CreateComboboxProps<ItemValue>
 	/** ------- */
 	/** HELPERS */
 	/** ------- */
-	function getItemProps(el: HTMLElement): ComboboxItemProps<ItemValue> {
+	function getOptionProps(el: HTMLElement): ComboboxItemProps<Value> {
 		const value = el.getAttribute('data-value');
 		const label = el.getAttribute('data-label');
 		const disabled = el.hasAttribute('data-disabled');
@@ -129,32 +128,15 @@ export function createCombobox<ItemValue>(props?: CreateComboboxProps<ItemValue>
 		};
 	}
 
-	const cachedItemPropsArr: ComboboxItemProps<ItemValue>[] = [];
-	function getItemPropsArr(): ComboboxItemProps<ItemValue>[] {
-		if (!isBrowser) return cachedItemPropsArr;
-		const menuElement = document.getElementById(ids.menu);
-		if (!isHTMLElement(menuElement)) return cachedItemPropsArr;
-
-		const items = getOptions(menuElement);
-		return items.map(getItemProps);
-	}
-
-	function getSelectedLabel(): string | undefined {
-		const $value = get(value);
-		const itemPropsArr = getItemPropsArr();
-		const selectedItem = itemPropsArr.find((item) => deepEqual(item.value, $value));
-		return selectedItem?.label;
-	}
-
 	/** Resets the combobox inputValue and filteredItems back to the selectedItem */
 	function reset() {
-		const $selectedItem = get(value);
+		const $selectedItem = get(selected);
 
 		// If no item is selected the input should be cleared and the filter reset.
 		if (!$selectedItem) {
 			inputValue.forceSet('');
 		} else {
-			inputValue.forceSet(getSelectedLabel() ?? '');
+			inputValue.forceSet(get(selected)?.label ?? '');
 		}
 
 		touchedInput.forceSet(false);
@@ -165,9 +147,9 @@ export function createCombobox<ItemValue>(props?: CreateComboboxProps<ItemValue>
 	 * @param index array index of the item to select.
 	 */
 	function selectItem(item: HTMLElement) {
-		if (!item.dataset.value) return;
+		const props = getOptionProps(item);
 
-		value.set(JSON.parse(item.dataset.value));
+		selected.set(props);
 
 		const activeTrigger = document.getElementById(ids.input);
 		if (activeTrigger) {
@@ -245,8 +227,8 @@ export function createCombobox<ItemValue>(props?: CreateComboboxProps<ItemValue>
 	 * Determines if a given item is selected.
 	 * This is useful for displaying additional markup on the selected item.
 	 */
-	const isSelected = derived([value], ([$value]) => {
-		return (item: ItemValue) => $value === item;
+	const isSelected = derived([selected], ([$value]) => {
+		return (item: Value) => $value === item;
 	});
 
 	/** -------- */
@@ -304,7 +286,7 @@ export function createCombobox<ItemValue>(props?: CreateComboboxProps<ItemValue>
 						openMenu($open);
 
 						tick().then(() => {
-							const $selectedItem = get(value);
+							const $selectedItem = get(selected);
 							if ($selectedItem) return;
 
 							const menuEl = document.getElementById(ids.menu);
@@ -547,12 +529,11 @@ export function createCombobox<ItemValue>(props?: CreateComboboxProps<ItemValue>
 		action: labelAction,
 	});
 
-	const item = builder(name('item'), {
-		stores: [value, filterFunction, inputValue, touchedInput],
+	const option = builder(name('option'), {
+		stores: [selected, filterFunction, inputValue, touchedInput],
 		returned:
 			([$value, $filterFunction, $inputValue, $touchedInput]) =>
-			(props: ComboboxItemProps<ItemValue>) => {
-				cachedItemPropsArr.push(props);
+			(props: ComboboxItemProps<Value>) => {
 				let hidden = false;
 				if (
 					$touchedInput.debounced &&
@@ -626,15 +607,8 @@ export function createCombobox<ItemValue>(props?: CreateComboboxProps<ItemValue>
 		inputValue.set(dataLabel ?? selectedEl.textContent ?? '');
 	});
 
-	effect(value, function setInputValue($value) {
-		if (!$value) {
-			inputValue.set('');
-			return;
-		}
-
-		tick().then(() => {
-			inputValue.set(getSelectedLabel() ?? '');
-		});
+	effect(selected, function setInputValue($selected) {
+		inputValue.set($selected?.label ?? '');
 	});
 
 	/**
@@ -664,13 +638,13 @@ export function createCombobox<ItemValue>(props?: CreateComboboxProps<ItemValue>
 	return {
 		elements: {
 			input,
-			item,
+			option,
 			menu,
 			label,
 		},
 		states: {
 			open,
-			value,
+			selected,
 			inputValue: readonly(inputValue),
 			isEmpty: readonly(isEmpty),
 		},

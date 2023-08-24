@@ -80,7 +80,7 @@
 	};
 
 	const {
-		elements: { menu, input, item, label },
+		elements: { menu, input, option, label },
 		states: { open, isEmpty },
 		helpers: { isSelected },
 	} = createCombobox({
@@ -108,7 +108,7 @@
 		<ul class="menu">
 			{#each books as book, index (index)}
 				<li
-					use:melt={$item({
+					use:melt={$option({
 						value: book,
 						label: book.title,
 						disabled: book.disabled,

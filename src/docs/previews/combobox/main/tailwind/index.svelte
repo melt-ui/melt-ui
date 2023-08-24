@@ -81,7 +81,7 @@
 	};
 
 	const {
-		elements: { menu, input, item, label },
+		elements: { menu, input, option, label },
 		states: { open, isEmpty },
 		helpers: { isSelected },
 	} = createCombobox({
@@ -102,7 +102,7 @@
 		<input
 			use:melt={$input}
 			class="flex h-10 items-center justify-between rounded-lg bg-white
-					px-4 pr-12 text-black"
+					px-3 pr-12 text-black"
 			placeholder="Best book ever"
 		/>
 		<div class="absolute right-2 top-1/2 z-10 -translate-y-1/2 text-magnum-900">
@@ -127,7 +127,7 @@
 		>
 			{#each books as book, index (index)}
 				<li
-					use:melt={$item({
+					use:melt={$option({
 						value: book,
 						label: book.title,
 						disabled: book.disabled,

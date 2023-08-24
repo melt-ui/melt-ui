@@ -5,7 +5,12 @@ import type { createCombobox } from './create.js';
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
 export type { ComboboxComponentEvents } from './events.js';
 
-export type CreateComboboxProps<ItemValue> = {
+export type ComboboxOption<Value> = {
+	value: Value;
+	label?: string;
+};
+
+export type CreateComboboxProps<Value> = {
 	/**
 	 * Options for positioning the popover menu.
 	 *
@@ -28,7 +33,7 @@ export type CreateComboboxProps<ItemValue> = {
 	 * @param value the current input value.
 	 * @returns whether the item should be visible.
 	 */
-	filterFunction?: ComboboxFilterFunction<ItemValue>;
+	filterFunction?: ComboboxFilterFunction<Value>;
 
 	/**
 	 * Whether or not the combobox should loop through the list when
@@ -61,32 +66,25 @@ export type CreateComboboxProps<ItemValue> = {
 	onOpenChange?: ChangeFn<boolean>;
 
 	/**
-	 * The default value set on the select input.
+	 * The default selected option.
 	 *
-	 * This will be overridden if you also pass a `value` store prop.
+	 * This will be overridden if you also pass a `selected` store prop.
 	 *
 	 * @default undefined
 	 */
-	defaultValue?: ItemValue;
+	defaultSelected?: ComboboxOption<Value>;
 
 	/**
-	 * An optional controlled store that manages the value state of the combobox.
+	 * An optional controlled store that manages the selected option of the combobox.
 	 */
-	value?: Writable<ItemValue | undefined>;
+	selected?: Writable<ComboboxOption<Value> | undefined>;
 
 	/**
-	 * A change handler for the value store called when the value would normally change.
+	 * A change handler for the selected store called when the selected would normally change.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onValueChange?: ChangeFn<ItemValue | undefined>;
-
-	/**
-	 * The default value for inputValue.
-	 *
-	 * @default undefined
-	 */
-	defaultInputValue?: string;
+	onSelectedChange?: ChangeFn<ComboboxOption<Value> | undefined>;
 
 	/**
 	 * Whether or not to close the combobox menu when the user clicks
@@ -141,13 +139,7 @@ type ComboboxFilterFunctionArgs<T> = {
 };
 export type ComboboxFilterFunction<T> = (args: ComboboxFilterFunctionArgs<T>) => boolean;
 
-export type ComboboxItemProps<T> = {
-	value: T;
-	/**
-	 * By default, the textContent of the item will be used as the label.
-	 * Use the `label` prop to override this behavior.
-	 */
-	label?: string;
+export type ComboboxItemProps<Value> = ComboboxOption<Value> & {
 	/**
 	 *  Is the item disabled?
 	 */

@@ -542,7 +542,7 @@ export function createSelect<
 
 		return {
 			value: value ? JSON.parse(value) : value,
-			label: label ?? el.textContent ?? value ?? undefined,
+			label: label ?? el.textContent ?? undefined,
 			disabled: disabled ? true : false,
 		};
 	};
