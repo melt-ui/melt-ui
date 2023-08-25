@@ -12,12 +12,12 @@
 
 	export let data: PageData;
 
+	// eslint-disable-next-line no-undef
 	type Component = $$Generic<typeof SvelteComponent>;
 	$: component = data.doc.default as unknown as Component;
 	$: doc = data.doc.metadata;
 	$: snippets = data.snippets;
 	$: mainPreview = data.mainPreview as unknown as Component;
-	$: viewCode = false;
 	$: previews = data.previews;
 	$: features = data.builderData.features;
 	$: keyboard = data.builderData.keyboard;
@@ -38,7 +38,7 @@
 		</div>
 		<div use:melt={$separator} class="my-4 md:my-6" />
 		<div class="mdsvex" id="mdsvex">
-			<Preview code={snippets.main} {viewCode}>
+			<Preview code={snippets.main} viewCode={false}>
 				<svelte:component this={mainPreview} />
 			</Preview>
 			<Features {features} />

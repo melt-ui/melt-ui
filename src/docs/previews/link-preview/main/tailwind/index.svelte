@@ -14,7 +14,7 @@
 	class="trigger"
 	href="https://github.com/melt-ui/melt-ui"
 	target="_blank"
-	rel="noreferrer"
+	rel="noopener noreferrer"
 	use:melt={$trigger}
 >
 	<img

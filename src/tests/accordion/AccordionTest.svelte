@@ -12,7 +12,7 @@
 </script>
 
 <div use:melt={$root}>
-	{#each items as { id, triggerId, title, description }, i}
+	{#each items as { id, triggerId, title, description }}
 		<div use:melt={$item(id)} data-testid={id}>
 			<h2 class="flex">
 				<button data-testid={triggerId} use:melt={$trigger(id)}>
