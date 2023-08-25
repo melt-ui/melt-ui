@@ -85,7 +85,7 @@ const content = elementSchema('content', {
 			value: ATTRS.MELT('tooltip content'),
 		},
 	],
-	events: tooltipEvents['trigger'],
+	events: tooltipEvents['content'],
 });
 
 const arrow = elementSchema('arrow', {
