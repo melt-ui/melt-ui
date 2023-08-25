@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.39.1
+
+### Patch Changes
+
+- ff0e0316: Select: fix isSelected
+
 ## 0.39.0
 
 ### Minor Changes
