@@ -44,11 +44,11 @@
 			data-code-copy
 		>
 			{#if $copied}
-				<div in:fly={{ y: -4 }} class="bg-neutral-950">
+				<div in:fly={{ y: -4 }}>
 					<Check class="text-magnum-500 square-4" />
 				</div>
 			{:else}
-				<div in:fly={{ y: 4 }} class="bg-neutral-950">
+				<div in:fly={{ y: 4 }}>
 					<Copy class="square-4 hover:text-magnum-500" />
 				</div>
 			{/if}
