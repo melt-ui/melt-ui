@@ -1,5 +1,16 @@
 # @melt-ui/svelte
 
+## 0.39.0
+
+### Minor Changes
+
+- d15008fd: Combobox: combine value and label into single selected state
+- 85254927: Select: combine value and label into single selected state
+
+### Patch Changes
+
+- b3637384: fix tooltip timers
+
 ## 0.38.1
 
 ### Patch Changes
