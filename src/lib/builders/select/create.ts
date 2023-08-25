@@ -159,7 +159,7 @@ export function createSelect<
 			if (Array.isArray($selected)) {
 				return $selected.map((o) => o.value).includes(value);
 			}
-			return ($selected as SelectOption<Value>) === value;
+			return $selected?.value === value;
 		};
 	});
 
