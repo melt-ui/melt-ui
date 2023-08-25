@@ -758,6 +758,10 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		},
 		helpers: {
 			isSelected,
+			isInputValid,
+			addTag,
+			updateTag,
+			removeTag
 		},
 		options,
 	};
