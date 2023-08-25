@@ -8,9 +8,17 @@
 
 	const {
 		elements: { trigger, menu, option, group, groupLabel },
-		states: { valueLabel, value },
+		states: { selected, selectedLabel },
 		helpers: { isSelected },
-	} = createSelect({ multiple, defaultValue });
+	} = createSelect({
+		multiple,
+		defaultSelected: defaultValue
+			? {
+					value: defaultValue,
+					label: defaultValue,
+			  }
+			: undefined,
+	});
 
 	let options = {
 		sweet: ['Caramel', 'Chocolate', 'Strawberry', 'Cookies & Cream'],
@@ -21,7 +29,7 @@
 <main>
 	<button
 		on:click={() => {
-			value.set('Chocolate');
+			selected.set({ value: 'Chocolate', label: 'Chocolate' });
 		}}
 		data-testid="manual-btn"
 	>
@@ -35,7 +43,10 @@
 			options = options;
 			// Let the DOM update
 			await tick();
-			value.set('Vanilla');
+			selected.set({
+				value: 'Vanilla',
+				label: 'Vanilla',
+			});
 		}}
 		data-testid="update-btn"
 	>
@@ -43,7 +54,7 @@
 	</button>
 
 	<button use:melt={$trigger} aria-label="Food" data-testid="trigger">
-		{$valueLabel || 'Select an option'}
+		{$selectedLabel || 'Select an option'}
 		<ChevronDown />
 	</button>
 
