@@ -11,10 +11,12 @@
 		states: { collapsedItems, focusedItem, selectedItem },
 	} = createTreeViewBuilder({ forceVisible: true });
 
-	setContext('tree-item', item);
-	setContext('tree-group', group);
-	setContext('collapsed-items', collapsedItems);
-	setContext('selected', selectedItem);
+	setContext('tree', {
+		item,
+		group,
+		collapsedItems,
+		selectedItem,
+	});
 
 	const treeItems: TreeItem[] = [
 		{
@@ -63,7 +65,14 @@
 		},
 	];
 
-	// Recursively add a random ID to each tree item.
+	/**
+	 * Recursively add a random ID to each tree item.
+	 * This is needed so that each item can be identified and have
+	 * their open state remembered, so that if the item is
+	 * open or closed it will remain so, even if the parent it belogns
+	 * to is closed and opened again.
+	 * @param tree
+	 */
 	function addRandomId(tree: TreeItem[]) {
 		tree.forEach((item) => {
 			item.id = generateId();

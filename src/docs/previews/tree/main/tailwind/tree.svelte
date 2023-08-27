@@ -29,14 +29,12 @@
 	export let treeItems: TreeItem[];
 	export let level = 1;
 
-	const item: CreateTreeViewReturn['elements']['item'] =
-		getContext('tree-item');
-	const group: CreateTreeViewReturn['elements']['group'] =
-		getContext('tree-group');
-	const collapsedItems: CreateTreeViewReturn['states']['collapsedItems'] =
-		getContext('collapsed-items');
-	const selectedItem: CreateTreeViewReturn['states']['selectedItem'] =
-		getContext('selected');
+	const { item, group, collapsedItems, selectedItem } = getContext<{
+		item: CreateTreeViewReturn['elements']['item'];
+		group: CreateTreeViewReturn['elements']['group'];
+		collapsedItems: CreateTreeViewReturn['states']['collapsedItems'];
+		selectedItem: CreateTreeViewReturn['states']['selectedItem'];
+	}>('tree');
 </script>
 
 {#each treeItems as { title, icon, children, id }, i (i)}
@@ -48,7 +46,7 @@
 		{...$item({
 			value: title,
 			id: itemId,
-			hasChildren: children !== undefined && children.length > 0,
+			hasChildren: children?.length > 0,
 		})}
 		use:item
 		class={level !== 1 ? 'pl-4' : ''}

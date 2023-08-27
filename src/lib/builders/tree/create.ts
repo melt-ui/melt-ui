@@ -8,6 +8,7 @@ import {
     generateId,
     getElementByMeltId,
     isBrowser,
+    isLetter,
     isHTMLElement,
     kbd,
     styleToString
@@ -217,9 +218,9 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                 addEventListener(node, 'keydown', async (e) => {
                     const { key } = e;
 
-                    const isLetter = /^[a-z]$/i.test(key);
+                    const keyIsLetter = isLetter(key);
 
-                    if (![kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.ENTER, kbd.SPACE, kbd.END, kbd.HOME, kbd.ASTERISK].includes(key) && !isLetter) {
+                    if (![kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.ENTER, kbd.SPACE, kbd.END, kbd.HOME, kbd.ASTERISK].includes(key) && !keyIsLetter) {
                         return;
                     }
 
@@ -271,7 +272,7 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                         await showChildrenElements(<HTMLLIElement>el);
                     }
 
-                    else if (isLetter) {
+                    else if (keyIsLetter) {
                         /** 
                          * Check whether a value with the letter exists
                          * after the current focused element and focus it,
