@@ -1,4 +1,3 @@
-import type { Plugin, InlineConfig } from 'vite';
 import type { StorybookConfig } from '@storybook/sveltekit';
 
 const config: StorybookConfig = {
