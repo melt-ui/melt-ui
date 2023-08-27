@@ -98,7 +98,7 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'A readable store that returns true when no visible items are present.',
 		},
 		{
-			name: 'value',
+			name: 'selected',
 			type: 'Writable<T>',
 			description: 'A writable store whose value is the selected item.',
 		},
