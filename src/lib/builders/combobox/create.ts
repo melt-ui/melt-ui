@@ -228,7 +228,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 	 * This is useful for displaying additional markup on the selected item.
 	 */
 	const isSelected = derived([selected], ([$value]) => {
-		return (item: Value) => JSON.stringify($value?.value) === JSON.stringify(item);
+		return (item: Value) => deepEqual($value?.value, item);
 	});
 
 	/** -------- */
