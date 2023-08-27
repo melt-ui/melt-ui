@@ -268,7 +268,6 @@ export function createSelect<
 		stores: [isVisible, portal],
 		returned: ([$isVisible, $portal]) => {
 			return {
-				hidden: $isVisible ? undefined : true,
 				style: styleToString({
 					display: $isVisible ? undefined : 'none',
 				}),
@@ -359,13 +358,10 @@ export function createSelect<
 				})
 			);
 
-			const unsubPortal = usePortal(node, 'body')?.destroy;
-
 			return {
 				destroy() {
 					unsubDerived();
 					unsubPopper();
-					unsubPortal?.();
 					unsubScroll();
 					unsubEventListeners();
 				},
