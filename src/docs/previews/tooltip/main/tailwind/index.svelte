@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createTooltip, melt } from '$lib';
+	import { createTooltip, melt } from '$lib/index.js';
 	import { fade } from 'svelte/transition';
 	import { Plus } from 'lucide-svelte';
 
@@ -12,6 +12,7 @@
 		},
 		openDelay: 500,
 		closeOnPointerDown: false,
+		forceVisible: true,
 	});
 </script>
 
@@ -23,7 +24,7 @@
 	<div
 		use:melt={$content}
 		transition:fade={{ duration: 100 }}
-		class="z-10 rounded-md bg-white shadow-sm"
+		class="z-10 rounded-lg bg-white shadow"
 	>
 		<div use:melt={$arrow} />
 		<p class="px-4 py-1 text-magnum-700">Add item to library</p>

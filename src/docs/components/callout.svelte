@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { tv, type VariantProps } from 'tailwind-variants';
-	import { cn } from '$docs/utils';
+	import { cn } from '$docs/utils/index.js';
 	const calloutVariants = tv({
-		base: 'relative rounded-tr-md rounded-br-md px-5 py-3 before:absolute before:left-0 before:top-0 before:h-full before:w-0.5 before:content-[""] my-6 ',
+		base: 'relative rounded-tr-xl rounded-br-xl px-5 py-3 before:absolute before:left-0 before:top-0 before:h-full before:w-0.5 before:content-[""] my-6 ',
 		variants: {
 			type: {
 				default: 'before:bg-magnum-700 bg-magnum-700/10 text-white border-magnum-700',

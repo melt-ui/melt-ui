@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createContextMenu, melt } from '$lib';
+	import { createContextMenu, melt } from '$lib/index.js';
 	import { writable } from 'svelte/store';
 	import { ChevronRight, Check } from 'lucide-svelte';
 
@@ -53,7 +53,7 @@
 	<div class="item" use:melt={$checkboxItem}>
 		<div class="check">
 			{#if $settingsSync}
-				<Check class="icon" />
+				<Check class="square-4" />
 			{/if}
 		</div>
 		Settings Sync is On
@@ -61,7 +61,7 @@
 	<div class="item" use:melt={$subTriggerA}>
 		Profiles
 		<div class="rightSlot">
-			<ChevronRight class="icon" />
+			<ChevronRight class="square-4" />
 		</div>
 	</div>
 	<div class="menu subMenu" use:melt={$subMenuA}>
@@ -84,13 +84,13 @@
 	<div class="item" use:melt={$checkboxItemA}>
 		<div class="check">
 			{#if $hideMeltUI}
-				<Check class="icon" />
+				<Check class="square-4" />
 			{/if}
 		</div>
 		Hide Melt UI
 		<div class="rightSlot">⌘H</div>
 	</div>
-	<div class="item" use:melt={$item} aria-disabled="true">
+	<div class="item" use:melt={$item} data-disabled>
 		Show All Components
 		<div class="rightSlot">⇧⌘N</div>
 	</div>
@@ -103,15 +103,15 @@
 
 <style lang="postcss">
 	.menu {
-		@apply z-10 flex max-h-[300px] min-w-[220px] flex-col shadow-lg shadow-neutral-900/30;
-		@apply rounded-md bg-white p-1 lg:max-h-none;
+		@apply z-10 flex max-h-[300px] min-w-[220px] flex-col shadow;
+		@apply rounded-lg bg-white p-1 lg:max-h-none;
 		@apply ring-0 !important;
 	}
 	.subMenu {
 		@apply min-w-[220px] shadow-md shadow-neutral-900/30;
 	}
 	.item {
-		@apply relative h-6 min-h-[24px] select-none rounded-sm pl-6 pr-1;
+		@apply relative h-6 min-h-[24px] select-none rounded-md pl-6 pr-1;
 		@apply z-20 text-magnum-900 outline-none;
 		@apply data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900;
 		@apply data-[disabled]:text-neutral-300;
@@ -120,8 +120,8 @@
 	}
 
 	.trigger {
-		@apply block rounded-md border-2 border-dashed border-neutral-50;
-		@apply w-[300px] py-12 text-center;
+		@apply block rounded-xl border-2 border-dashed border-magnum-900 font-semibold text-magnum-700;
+		@apply w-[300px] bg-magnum-100 py-12 text-center shadow;
 	}
 	.check {
 		@apply absolute left-2 top-1/2 text-magnum-500;
@@ -140,9 +140,6 @@
 		@apply ml-auto pl-5;
 	}
 
-	.icon {
-		@apply h-[13px] w-[13px];
-	}
 	.check {
 		@apply absolute left-0 inline-flex w-6 items-center justify-center;
 	}

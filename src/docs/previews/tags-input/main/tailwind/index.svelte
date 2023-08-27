@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createTagsInput, melt } from '$lib';
+	import { createTagsInput, melt } from '$lib/index.js';
 	import { X } from 'lucide-svelte';
 
 	const {
@@ -8,6 +8,9 @@
 	} = createTagsInput({
 		defaultTags: ['Svelte', 'Typescript'],
 		unique: true,
+		add(tag) {
+			return { id: tag, value: tag };
+		},
 	});
 </script>
 

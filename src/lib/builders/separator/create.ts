@@ -1,6 +1,6 @@
-import { builder, toWritableStores } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
-import type { CreateSeparatorProps } from './types';
+import { builder, toWritableStores } from '$lib/internal/helpers/index.js';
+import type { Defaults } from '$lib/internal/types.js';
+import type { CreateSeparatorProps } from './types.js';
 
 const defaults = {
 	orientation: 'horizontal',

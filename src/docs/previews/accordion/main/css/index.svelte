@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createAccordion, melt } from '$lib';
+	import { createAccordion, melt } from '$lib/index.js';
 	import { slide } from 'svelte/transition';
 
 	const {
@@ -29,7 +29,7 @@
 </script>
 
 <div class="root" use:melt={$root}>
-	{#each items as { id, title, description }, i}
+	{#each items as { id, title, description }}
 		<div use:melt={$item(id)} class="item">
 			<h2>
 				<button use:melt={$trigger(id)} class="trigger">

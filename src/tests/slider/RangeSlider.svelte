@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createSlider, melt } from '$lib';
+	import { createSlider, melt } from '$lib/index.js';
 
 	export let values = [20, 80];
 
@@ -20,6 +20,7 @@
 
 		{#each $value as _, i}
 			<span
+				aria-label="Volume"
 				data-testid="thumb-{i}"
 				use:melt={$thumb()}
 				class="block h-5 w-5 rounded-full bg-white focus:ring-4 focus:ring-black/40"

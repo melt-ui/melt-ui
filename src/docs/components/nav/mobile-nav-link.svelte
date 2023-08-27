@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { cn } from '$docs/utils';
+	import { cn } from '$docs/utils/index.js';
 	import type { Writable } from 'svelte/store';
-	import { buttonVariants } from '$docs/components';
+	import { buttonVariants } from '$docs/components/index.js';
 
 	export let href: string;
 	export let open: Writable<boolean>;

@@ -1,29 +1,29 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { cn } from '$docs/utils';
-	import type { TableOfContents } from '.';
+	import type { TableOfContentsItem, CreateTableOfContentsReturn } from '$lib';
 
-	export let tree: TableOfContents = {
-		items: [],
-	};
+	export let tree: TableOfContentsItem[] = [];
+	export let activeHeadingIdxs: number[];
+	export let item: CreateTableOfContentsReturn['item'];
 	export let level = 1;
 </script>
 
-<ul class={cn('m-0 list-none', { 'pl-4': level !== 1 })}>
-	{#if tree.items && tree.items.length}
-		{#each tree.items as item, i (i)}
-			<li class={cn('mt-0 pt-2')}>
+<ul class="m-0 list-none {level !== 1 ? 'pl-4' : ''}">
+	{#if tree && tree.length}
+		{#each tree as heading, i (i)}
+			{@const active = activeHeadingIdxs.includes(heading.index)}
+			<li class="mt-0 pt-2">
 				<a
-					href={item.url}
-					class={cn(
-						'inline-block no-underline transition-colors hover:text-white',
-						item.url === $page.url.hash ? 'font-medium text-white' : 'text-neutral-300'
-					)}
+					href="#{heading.id}"
+					{...$item(heading.id)}
+					use:item
+					class="inline-block no-underline transition-colors hover:text-magnum-400 {active
+						? 'text-neutral-100'
+						: 'text-neutral-400'}"
 				>
-					{item.title}
+					{heading.title}
 				</a>
-				{#if item.items && item.items.length}
-					<svelte:self tree={item} level={level + 1} />
+				{#if heading.children && heading.children.length}
+					<svelte:self tree={heading.children} level={level + 1} {activeHeadingIdxs} {item} />
 				{/if}
 			</li>
 		{/each}

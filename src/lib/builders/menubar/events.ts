@@ -1,5 +1,5 @@
-import type { GroupedEvents } from '$lib/internal/types';
-import { menuEvents } from '../menu/events';
+import type { GroupedEvents, MeltComponentEvents } from '$lib/internal/types.js';
+import { menuEvents } from '../menu/events.js';
 
 export const menubarEvents = {
 	...menuEvents,
@@ -8,3 +8,4 @@ export const menubarEvents = {
 };
 
 export type MenubarEvents = GroupedEvents<typeof menubarEvents>;
+export type MenubarComponentEvents = MeltComponentEvents<MenubarEvents>;

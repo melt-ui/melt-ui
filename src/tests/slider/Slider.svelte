@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createSlider, melt } from '$lib';
+	import { createSlider, melt } from '$lib/index.js';
 	export let value = [30];
 	export let max = 100;
 	export let min = 0;
@@ -20,6 +20,7 @@
 			<span data-testid="range" use:melt={$range} class="h-[3px] bg-white" />
 		</span>
 		<span
+			aria-label="Volume"
 			data-testid="thumb"
 			use:melt={$thumb()}
 			class="block h-5 w-5 rounded-full bg-white focus:ring-4 focus:ring-black/40"

@@ -1,10 +1,10 @@
-import { KBD, PROPS } from '$docs/constants';
-import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils';
-import type { BuilderData } from '.';
-import { builder as dropdownBuilder } from './dropdown-menu';
-import { getMenuSchemas, getMenuTriggerDataAttrs } from './menu';
-import { menubarEvents } from '$lib/builders/menubar/events';
+import { KBD, PROPS } from '$docs/constants.js';
+import type { KeyboardSchema } from '$docs/types.js';
+import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import type { BuilderData } from './index.js';
+import { builder as dropdownBuilder } from './dropdown-menu.js';
+import { getMenuSchemas, getMenuTriggerDataAttrs } from './menu.js';
+import { menubarEvents } from '$lib/builders/menubar/events.js';
 
 const OPTION_PROPS = [PROPS.CLOSE_ON_ESCAPE, PROPS.LOOP];
 const BUILDER_NAME = 'menubar';
@@ -37,12 +37,16 @@ const {
 	submenuBuilder,
 	submenu,
 	subTrigger,
+	group,
+	groupLabel,
 } = getMenuSchemas('menubar menu');
 
-const trigger = elementSchema('trigger', {
+const TRIGGER_NAME = 'trigger' as const;
+
+const trigger = elementSchema(TRIGGER_NAME, {
 	description: 'The button which toggles the dropdown menu.',
-	dataAttributes: getMenuTriggerDataAttrs('menubar menu'),
-	events: menubarEvents['trigger'],
+	dataAttributes: getMenuTriggerDataAttrs(`${BUILDER_NAME} menu`),
+	events: menubarEvents[TRIGGER_NAME],
 });
 
 const keyboard: KeyboardSchema = [
@@ -91,6 +95,8 @@ const schemas = [
 	radioGroupBuilder,
 	radioGroup,
 	radioItem,
+	group,
+	groupLabel,
 	submenuBuilder,
 	subTrigger,
 	submenu,

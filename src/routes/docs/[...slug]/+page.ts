@@ -1,6 +1,6 @@
-import type { EntryGenerator, PageLoad } from './$types';
-import { getDoc } from '$docs/utils';
-import { navConfig } from '$docs/config';
+import type { EntryGenerator, PageLoad } from './$types.js';
+import { getDoc } from '$docs/utils/index.js';
+import { navConfig } from '$docs/config.js';
 
 export const entries = (() => {
 	return navConfig.sidebarNav[0].items.map((item) => {

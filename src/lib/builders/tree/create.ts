@@ -412,9 +412,7 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
             group
         },
         states: {
-            collapsedItems
-        },
-        helpers: {
+            collapsedItems,
             focusedItem,
             selectedItem
         }

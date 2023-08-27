@@ -1,9 +1,7 @@
 <script context="module" lang="ts">
-	import Svelte from '~icons/simple-icons/svelte';
-	import Folder from '~icons/lucide/folder';
-	import FolderOpen from '~icons/lucide/folder-open';
-	import JS from '~icons/simple-icons/javascript';
-	import Highlight from '~icons/lucide/arrow-left';
+	import JS from './JS.svelte';
+	import Svelte from './Svelte.svelte';
+	import { FolderOpen, Folder, ArrowLeft } from 'lucide-svelte';
 
 	type Icon = 'svelte' | 'folder' | 'js';
 
@@ -19,7 +17,7 @@
 		folder: Folder,
 		folderOpen: FolderOpen,
 		js: JS,
-		highlight: Highlight,
+		highlight: ArrowLeft,
 	};
 </script>
 
@@ -37,7 +35,7 @@
 		getContext('tree-group');
 	const collapsedItems: CreateTreeViewReturn['states']['collapsedItems'] =
 		getContext('collapsed-items');
-	const selectedItem: CreateTreeViewReturn['helpers']['selectedItem'] =
+	const selectedItem: CreateTreeViewReturn['states']['selectedItem'] =
 		getContext('selected');
 </script>
 
@@ -67,7 +65,7 @@
 
 			<!-- Selected icon. -->
 			{#if isSelected}
-				<svelte:component this={icons['highlight']} />
+				<svelte:component this={icons['highlight']} class="h-4 w-4" />
 			{/if}
 		</div>
 

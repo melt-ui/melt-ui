@@ -14,11 +14,11 @@ import {
 	overridable,
 	prev,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { get, writable } from 'svelte/store';
-import type { TabsEvents } from './events';
-import type { CreateTabsProps, TabsTriggerProps } from './types';
+import type { TabsEvents } from './events.js';
+import type { CreateTabsProps, TabsTriggerProps } from './types.js';
 
 const defaults = {
 	orientation: 'horizontal',
@@ -33,8 +33,10 @@ const { name, selector } = createElHelpers<TabsParts>('tabs');
 export function createTabs(props?: CreateTabsProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateTabsProps;
 
-	const options = toWritableStores(omit(withDefaults, 'defaultValue', 'value', 'onValueChange'));
-	const { orientation, activateOnFocus, loop, autoSet } = options;
+	const options = toWritableStores(
+		omit(withDefaults, 'defaultValue', 'value', 'onValueChange', 'autoSet')
+	);
+	const { orientation, activateOnFocus, loop } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
@@ -72,27 +74,25 @@ export function createTabs(props?: CreateTabsProps) {
 	};
 
 	const trigger = builder(name('trigger'), {
-		stores: [value, autoSet, orientation],
-		returned: ([$value, $autoSet, $orientation]) => {
+		stores: [value, orientation],
+		returned: ([$value, $orientation]) => {
 			return (props: TabsTriggerProps) => {
 				const { value: tabValue, disabled } = parseTriggerProps(props);
 
-				if (!$value && !ssrValue && $autoSet) {
+				if (!$value && !ssrValue && withDefaults.autoSet) {
 					ssrValue = tabValue;
+					$value = tabValue;
 					value.set(tabValue);
 				}
+
+				const sourceOfTruth = isBrowser ? $value : ssrValue;
+				const isActive = sourceOfTruth === tabValue;
 
 				return {
 					type: 'button',
 					role: 'tab',
-					'data-state': isBrowser
-						? $value === tabValue
-							? 'active'
-							: 'inactive'
-						: ssrValue === tabValue
-						? 'active'
-						: 'inactive',
-					tabindex: $value === tabValue ? 0 : -1,
+					'data-state': isActive ? 'active' : 'inactive',
+					tabindex: isActive ? 0 : -1,
 					'data-value': tabValue,
 					'data-orientation': $orientation,
 					'data-disabled': disabled ? true : undefined,

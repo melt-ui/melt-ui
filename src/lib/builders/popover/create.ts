@@ -15,15 +15,15 @@ import {
 	removeScroll,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
+} from '$lib/internal/helpers/index.js';
 
-import { usePopper } from '$lib/internal/actions';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+import { usePopper } from '$lib/internal/actions/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
 import { writable } from 'svelte/store';
-import { executeCallbacks } from '../../internal/helpers/callbacks';
-import type { PopoverEvents } from './events';
-import type { CreatePopoverProps } from './types';
+import { executeCallbacks } from '../../internal/helpers/callbacks.js';
+import type { PopoverEvents } from './events.js';
+import type { CreatePopoverProps } from './types.js';
 
 const defaults = {
 	positioning: {
@@ -134,16 +134,7 @@ export function createPopover(args?: CreatePopoverProps) {
 							options: {
 								floating: $positioning,
 								focusTrap: $disableFocusTrap ? null : undefined,
-								clickOutside: $closeOnOutsideClick
-									? {
-											handler: (e) => {
-												if (!isHTMLElement(e.target)) return;
-												if ($activeTrigger.contains(e.target)) return;
-												if (e.target === $activeTrigger) return;
-												handleClose();
-											},
-									  }
-									: null,
+								clickOutside: $closeOnOutsideClick ? undefined : null,
 								escapeKeydown: $closeOnEscape
 									? {
 											handler: () => {
@@ -190,11 +181,13 @@ export function createPopover(args?: CreatePopoverProps) {
 		action: (node: HTMLElement): MeltActionReturn<PopoverEvents['trigger']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
+					activeTrigger.set(node);
 					toggleOpen();
 				}),
 				addMeltEventListener(node, 'keydown', (e) => {
 					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
 					e.preventDefault();
+					activeTrigger.set(node);
 					toggleOpen();
 				})
 			);

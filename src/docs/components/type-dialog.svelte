@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { createDialog, melt } from '$lib';
-	import { flyAndScale } from '$docs/utils';
+	import { createDialog, melt } from '$lib/index.js';
+	import { flyAndScale } from '$docs/utils/index.js';
 	import { X } from 'lucide-svelte';
-	import { CodeBlock } from '$docs/components';
+	import { CodeBlock } from '$docs/components/index.js';
 
 	const {
 		elements: { trigger, overlay, content, title, close },

@@ -13,13 +13,13 @@ import {
 	styleToString,
 	toWritableStores,
 	addMeltEventListener,
-} from '$lib/internal/helpers';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, readonly, writable } from 'svelte/store';
-import { focusInput, highlightText, setSelectedFromEl } from './helpers';
-import type { CreateTagsInputProps, Tag, TagProps } from './types';
+import { focusInput, highlightText, setSelectedFromEl } from './helpers.js';
+import type { CreateTagsInputProps, Tag, TagProps } from './types.js';
 import { tick } from 'svelte';
-import type { TagsInputEvents } from './events';
+import type { TagsInputEvents } from './events.js';
 
 const defaults = {
 	placeholder: '',
@@ -27,6 +27,7 @@ const defaults = {
 	editable: true,
 	defaultTags: [],
 	unique: false,
+	trim: true,
 	blur: 'nothing',
 	addOnPaste: false,
 	maxTags: undefined,
@@ -55,6 +56,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		disabled,
 		editable,
 		unique,
+		trim,
 		blur,
 		addOnPaste,
 		allowed,
@@ -105,6 +107,10 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		const $allowed = get(allowed);
 		const $denied = get(denied);
 		const $maxTags = get(maxTags);
+
+		// Trim the validation value before validations
+		if (get(trim)) v = v.trim();
+
 		// Tag uniqueness
 		if (get(unique) && $editing?.value !== v) {
 			const index = $tags.findIndex((tag) => tag.value === v);
@@ -143,6 +149,12 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			workingTag.id = generateId();
 		}
 
+		// Trim the value, only after the user defined add function
+		if (get(trim)) workingTag.value = workingTag.value.trim();
+
+		// if it's not valid we don't add it to the tags list
+		if (!isInputValid(workingTag.value)) return false;
+
 		tags.update((current) => {
 			current.push(workingTag);
 			return current;
@@ -170,6 +182,12 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				return false;
 			}
 		}
+
+		// Trim the value, only after the user defined update function
+		if (get(trim)) workingTag.value = workingTag.value.trim();
+
+		// if it's not valid we don't add it to the tags list
+		if (!isInputValid(workingTag.value)) return false;
 
 		// Update the tag matching the old id
 		tags.update(($tags) => {
@@ -740,6 +758,10 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		},
 		helpers: {
 			isSelected,
+			isInputValid,
+			addTag,
+			updateTag,
+			removeTag
 		},
 		options,
 	};

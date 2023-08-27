@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { APISchema } from '$docs/types';
-	import { APITableHeading } from '$docs/components';
+	import type { APISchema } from '$docs/types.js';
+	import { APITableHeading } from '$docs/components/index.js';
 	import CustomEventDialog from '../custom-event-dialog.svelte';
 
 	export let data: APISchema['events'];
@@ -12,7 +12,7 @@
 		<svelte:fragment slot="info">
 			Custom events are dispatched with each normal event that we handle. You can override the way
 			we handle these events by calling
-			<code class="neutral">e.detail.cancel()</code> in your event listener.
+			<code class="neutral">e.preventDefault()</code> in your event listener.
 		</svelte:fragment>
 	</APITableHeading>
 

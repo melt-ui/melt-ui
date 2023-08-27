@@ -1,9 +1,9 @@
 import { readable } from 'svelte/store';
-import { addEventListener } from '$lib/internal/helpers/event';
+import { addEventListener } from '$lib/internal/helpers/event.js';
 import { get } from 'svelte/store';
-import { isFunction, isHTMLElement } from '$lib/internal/helpers/is';
-import type { EscapeKeydownConfig } from './types';
-import { kbd } from '../../helpers';
+import { isFunction, isHTMLElement } from '$lib/internal/helpers/is.js';
+import type { EscapeKeydownConfig } from './types.js';
+import { kbd } from '../../helpers/index.js';
 
 /**
  * Creates a readable store that tracks the latest Escape Keydown that occurred on the document.

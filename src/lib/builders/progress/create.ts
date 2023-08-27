@@ -4,10 +4,10 @@ import {
 	omit,
 	overridable,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults } from '$lib/internal/types.js';
 import { writable } from 'svelte/store';
-import type { CreateProgressProps } from './types';
+import type { CreateProgressProps } from './types.js';
 
 const defaults = {
 	defaultValue: 0,

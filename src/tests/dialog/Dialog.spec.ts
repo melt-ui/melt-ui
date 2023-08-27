@@ -3,8 +3,8 @@ import { axe } from 'jest-axe';
 import { describe, it } from 'vitest';
 import DialogTest from './DialogTest.svelte';
 import userEvent from '@testing-library/user-event';
-import { sleep } from '$lib/internal/helpers';
-import { kbd } from '$lib/internal/helpers';
+import { sleep } from '$lib/internal/helpers/index.js';
+import { kbd } from '$lib/internal/helpers/index.js';
 
 describe('Dialog', () => {
 	it('No accessibility violations', async () => {
@@ -121,5 +121,31 @@ describe('Dialog', () => {
 		await expect(document.activeElement).toBe(content);
 		await user.tab();
 		await expect(document.activeElement).toBe(content);
+	});
+
+	it("Doesn't close when cliking content", async () => {
+		await render(DialogTest);
+
+		const user = userEvent.setup();
+		const trigger = screen.getByTestId('trigger');
+		const content = screen.getByTestId('content');
+		const closer = screen.getByTestId('closer');
+
+		await expect(trigger).toBeVisible();
+		await expect(content).not.toBeVisible();
+		await user.click(trigger);
+		await expect(content).toBeVisible();
+		await user.click(content);
+		await expect(content).toBeVisible();
+
+		// Close
+		await user.click(closer);
+		await expect(content).not.toBeVisible();
+
+		// Open again to retest
+		await user.click(trigger);
+		await expect(content).toBeVisible();
+		await user.click(content);
+		await expect(content).toBeVisible();
 	});
 });

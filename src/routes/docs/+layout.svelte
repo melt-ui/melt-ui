@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { SidebarNav } from '$docs/components';
+	import { SidebarNav } from '$docs/components/index.js';
 	import Switch from '$docs/components/switch.svelte';
-	import { getUsingPreprocessor } from '$routes/store';
+	import { getUsingPreprocessor } from '$routes/store.js';
 
 	const usingPreprocessor = getUsingPreprocessor();
 </script>

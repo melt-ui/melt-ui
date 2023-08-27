@@ -11,11 +11,11 @@ import {
 	omit,
 	overridable,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable } from 'svelte/store';
-import type { ToggleGroupEvents } from './events';
-import type { CreateToggleGroupProps, ToggleGroupItemProps, ToggleGroupType } from './types';
+import type { ToggleGroupEvents } from './events.js';
+import type { CreateToggleGroupProps, ToggleGroupItemProps, ToggleGroupType } from './types.js';
 
 const defaults = {
 	type: 'single',

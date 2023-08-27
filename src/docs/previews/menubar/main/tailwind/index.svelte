@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createMenubar, melt } from '$lib';
+	import { createMenubar, melt } from '$lib/index.js';
 	import { writable } from 'svelte/store';
 	import { ChevronRight, Check } from 'lucide-svelte';
 
@@ -110,7 +110,7 @@
 			New File...
 			<div class="rightSlot">⌘T</div>
 		</div>
-		<div class="item" use:melt={$item} aria-disabled="true">
+		<div class="item" use:melt={$item} data-disabled>
 			New Window...
 			<div class="rightSlot">⇧⌘T</div>
 		</div>
@@ -118,7 +118,7 @@
 		<div class="item" use:melt={$subTrigger}>
 			Select theme
 			<div class="rightSlot">
-				<ChevronRight class="icon" />
+				<ChevronRight class="square-4" />
 			</div>
 		</div>
 		<div class="menu subMenu" use:melt={$subMenu}>
@@ -211,7 +211,7 @@
 		<div class="item" use:melt={$subTriggerB}>
 			Appearance
 			<div class="rightSlot">
-				<ChevronRight class="icon" />
+				<ChevronRight class="square-4" />
 			</div>
 		</div>
 		<div class="menu subMenu" use:melt={$subMenuB}>
@@ -225,7 +225,7 @@
 		<div class="item" use:melt={$wordWrapCheckbox}>
 			<div class="check">
 				{#if $wordWrap}
-					<Check class="icon" />
+					<Check class="square-4" />
 				{/if}
 			</div>
 			Word Wrap
@@ -234,7 +234,7 @@
 		<div class="item" use:melt={$stickyScrollCheckbox}>
 			<div class="check">
 				{#if $stickyScroll}
-					<Check class="icon" />
+					<Check class="square-4" />
 				{/if}
 			</div>
 			Sticky Scroll
@@ -260,7 +260,7 @@
 		<div class="item" use:melt={$tipsAndTricksCheckbox}>
 			<div class="check">
 				{#if $tipsAndTricks}
-					<Check class="icon" />
+					<Check class="square-4" />
 				{/if}
 			</div>
 			Tips & Tricks
@@ -271,12 +271,12 @@
 		<div class="item" use:melt={$hideMeltUICheckbox}>
 			<div class="check">
 				{#if $hideMeltUI}
-					<Check class="icon" />
+					<Check class="square-4" />
 				{/if}
 			</div>
 			Documentation
 		</div>
-		<div class="item" use:melt={$itemC} aria-disabled="true">
+		<div class="item" use:melt={$itemC} data-disabled>
 			Show All Components
 			<div class="rightSlot">⇧⌘N</div>
 		</div>
@@ -326,9 +326,6 @@
 		@apply ml-auto pl-5;
 	}
 
-	.icon {
-		@apply h-[13px] w-[13px];
-	}
 	.check {
 		@apply absolute left-0 inline-flex w-6 items-center justify-center;
 	}

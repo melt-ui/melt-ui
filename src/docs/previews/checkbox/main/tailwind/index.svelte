@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCheckbox, melt } from '$lib';
+	import { createCheckbox, melt } from '$lib/index.js';
 	import { Check, Minus } from 'lucide-svelte';
 
 	const {
@@ -14,18 +14,18 @@
 	<div class="flex items-center justify-center">
 		<button
 			use:melt={$root}
-			class="flex h-6 w-6 appearance-none items-center justify-center
-            rounded-sm bg-white text-magnum-600 shadow-lg hover:opacity-75"
+			class="flex appearance-none items-center justify-center rounded-lg
+            bg-white text-magnum-600 shadow square-7 hover:opacity-75"
 			id="checkbox"
 		>
 			{#if $isIndeterminate}
-				<Minus class="square-4" />
+				<Minus class="square-5" />
 			{:else if $isChecked}
-				<Check class="square-4" />
+				<Check class="square-5" />
 			{/if}
 			<input use:melt={$input} />
 		</button>
-		<label class="pl-[15px] text-[15px] leading-none text-white" for="checkbox">
+		<label class="pl-4 font-medium text-magnum-900" for="checkbox">
 			Accept terms and conditions.
 		</label>
 	</div>

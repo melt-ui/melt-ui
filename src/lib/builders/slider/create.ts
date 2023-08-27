@@ -14,12 +14,12 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import { add, sub, div, mul } from './helpers';
-import type { MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import { add, sub, div, mul } from './helpers.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable } from 'svelte/store';
-import type { SliderEvents } from './events';
-import type { CreateSliderProps } from './types';
+import type { SliderEvents } from './events.js';
+import type { CreateSliderProps } from './types.js';
 
 const defaults = {
 	defaultValue: [],
@@ -143,7 +143,6 @@ export const createSlider = (props?: CreateSliderProps) => {
 				const thumbPosition = `${$position($value[index])}%`;
 				return {
 					role: 'slider',
-					'aria-label': 'Volume',
 					'aria-valuemin': $min,
 					'aria-valuemax': $max,
 					'aria-valuenow': $value[index],

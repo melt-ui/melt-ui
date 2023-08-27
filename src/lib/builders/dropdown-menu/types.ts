@@ -1,7 +1,7 @@
-import type { BuilderReturn } from '$lib/internal/types';
-import type { _Menu } from '../menu';
-import type { createDropdownMenu } from './create';
-
+import type { BuilderReturn } from '$lib/internal/types.js';
+import type { _Menu } from '../menu/index.js';
+import type { createDropdownMenu } from './create.js';
+export type { DropdownMenuComponentEvents } from './events.js';
 // Props
 export type CreateDropdownMenuProps = _Menu['builder'];
 export type CreateDropdownSubmenuProps = _Menu['submenu'];

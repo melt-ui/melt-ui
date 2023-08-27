@@ -1,8 +1,8 @@
-import { ATTRS, PROPS, SEE } from '$docs/constants';
-import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils';
-import { tagsInputEvents } from '$lib/builders/tags-input/events';
-import type { BuilderData } from '.';
+import { ATTRS, PROPS, SEE } from '$docs/constants.js';
+import type { KeyboardSchema } from '$docs/types.js';
+import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { tagsInputEvents } from '$lib/builders/tags-input/events.js';
+import type { BuilderData } from './index.js';
 
 /**
  * Props that are also returned in the form of stores via the `options` property.
@@ -36,6 +36,13 @@ const OPTION_PROPS = [
 		type: 'boolean',
 		default: 'false',
 		description: 'Whether or not the tags input should only allow unique tags.',
+	},
+	{
+		name: 'trim',
+		type: 'boolean',
+		default: 'true',
+		description:
+			'Whether or not whitespace from both ends of input string should be removed when a tag is added.',
 	},
 	{
 		name: 'blur',
@@ -157,6 +164,26 @@ const builder = builderSchema(BUILDER_NAME, {
 			name: 'isSelected',
 			type: 'Readable<(tag: Tag) => boolean>',
 			description: 'A derived store that returns a function that checks if a tag is selected.',
+		},
+		{
+			name: 'isInputValid',
+			type: '(input: string) => boolean',
+			description: 'A method that returns if a input would be valid according to the props defined in the builder.',
+		},
+		{
+			name: 'addTag',
+			type: '(input: string) => Promise<boolean>',
+			description: 'A method that attempts to add a tag, the same as if a user tried to.',
+		},
+		{
+			name: 'updateTag',
+			type: '(tag: Tag, select = false) => Promise<boolean>',
+			description: 'A method that attempts to update a tag, the same as if a user tried to.',
+		},
+		{
+			name: 'removeTag',
+			type: '(tag: Tag) => Promise<boolean>',
+			description: 'A method that attempts to remove a tag, the same as if a user tried to.',
 		},
 	],
 	options: OPTION_PROPS,

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { setContext } from 'svelte';
-	import { createTreeViewBuilder } from '$lib';
+	import { createTreeViewBuilder } from '$lib/index.js';
 
 	import Tree from './tree.svelte';
 	import type { TreeItem } from './tree.svelte';
@@ -8,8 +8,7 @@
 
 	const {
 		elements: { tree, label, item, group },
-		helpers: { focusedItem, selectedItem },
-		states: { collapsedItems },
+		states: { collapsedItems, focusedItem, selectedItem },
 	} = createTreeViewBuilder({ forceVisible: true });
 
 	setContext('tree-item', item);
@@ -81,7 +80,7 @@
 <div
 	class="flex h-[300px] flex-col gap-1 overflow-auto rounded-lg bg-white px-8 py-1 text-neutral-900 md:h-[350px]"
 >
-	<div class="w-[225px]">
+	<div class="w-[240px]">
 		<div>
 			<span>Focused value:</span>
 			<span class="text-magnum-500">

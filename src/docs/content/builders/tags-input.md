@@ -61,7 +61,7 @@ Use the return values to construct a tags-input.
 
 ### Adding a tag
 
-An asynchronous `add` function may be passed into the builder. It is called prior to adding the tag
+An `add` function may be passed into the builder. It is called and awaited prior to adding the tag
 to the `$tags` store.
 
 It provides you the ability to validate the input value, set a custom id, for example from a backend
@@ -70,7 +70,7 @@ or 3rd-party API, or update the value to always be uppercase, lowercase, etc.
 The function definition is:
 
 ```ts
-fn: (tag: string) => Promise<Tag | undefined>
+fn: (tag: string) => Tag | string | Promise<Tag | string>
 ```
 
 whereby `tag` is the input value.
@@ -110,7 +110,7 @@ uppercase.
 
 ### Updating a tag
 
-An asynchronous update function may be passed into the builder. It is called prior to updating a tag
+An update function may be passed into the builder. It is called and awaited prior to updating a tag
 in $tags store, following an edit.
 
 It provides the ability do something before a tag is updated, such as updating the value in a
@@ -119,7 +119,7 @@ backend database, setting a new id, or simply manipulating the value to be added
 The function definition is:
 
 ```ts
-fn: (tag: Tag) => Promise<Tag>.
+fn: (tag: Tag) => Tag | Promise<Tag>.
 ```
 
 <Callout type="info">
@@ -146,8 +146,8 @@ The following example uses the existing id and sets the value to uppercase
 
 ### Removing a tag
 
-An asynchronous remove function may be passed into the builder. It is called prior to removing the
-tag from the $tags store.
+An asynchronous remove function may be passed into the builder. It is called and awaited prior to
+removing the tag from the $tags store.
 
 It provides the ability do something before the tag is removed from $tags store, such as deleting
 the tag from a backend database.
@@ -155,7 +155,7 @@ the tag from a backend database.
 The function definition is:
 
 ```ts
-fn: (tag: Tag) => Promise<boolean>
+fn: (tag: Tag) => boolean | Promise<boolean>
 ```
 
 whereby tag is the tag to be removed from the $tags store.

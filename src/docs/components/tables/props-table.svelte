@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { APISchema } from '$docs/types';
-	import { transformAPIString } from '$docs/utils';
-	import { APITableHeading } from '$docs/components';
+	import type { APISchema } from '$docs/types.js';
+	import { transformAPIString } from '$docs/utils/index.js';
+	import { APITableHeading } from '$docs/components/index.js';
 	import TypeDialog from '../type-dialog.svelte';
 	import A from '../markdown/a.svelte';
 	function replaceDoubleQuotes(str: string) {

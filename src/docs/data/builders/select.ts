@@ -1,8 +1,8 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
-import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils';
-import { selectEvents } from '$lib/builders/select/events';
-import type { BuilderData } from '.';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants.js';
+import type { KeyboardSchema } from '$docs/types.js';
+import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { selectEvents } from '$lib/builders/select/events.js';
+import type { BuilderData } from './index.js';
 
 /**
  * Props that are also returned in the form of stores via the `options` property.
@@ -36,23 +36,11 @@ const builder = builderSchema(BUILDER_NAME, {
 	title: 'createSelect',
 	props: [
 		...OPTION_PROPS,
-
-		{
-			name: 'name',
-			type: 'string',
-			description: 'The name of the select.',
-		},
 		{
 			name: 'preventScroll',
 			type: 'boolean',
 			default: 'true',
 			description: DESCRIPTIONS.PREVENT_SCROLL('select'),
-		},
-		{
-			name: 'loop',
-			type: 'boolean',
-			default: 'false',
-			description: DESCRIPTIONS.LOOP,
 		},
 		{
 			name: 'multiple',
@@ -61,20 +49,20 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'Whether or not the select is a multiple select.',
 		},
 		{
-			name: 'defaultValue',
-			type: 'unknown',
-			description: 'The initial value of the select.',
+			name: 'defaultSelected',
+			type: 'SelectOption<unknown>',
+			description: 'The initial selected option.',
 		},
 		{
-			name: 'value',
-			type: 'Writable<unknown>',
-			description: 'A writable store that can be used to get or update or the select value.',
+			name: 'selected',
+			type: 'Writable<SelectOption<unknown>>',
+			description: 'A writable store that can be used to get or update or the selected option.',
 			see: SEE.BRING_YOUR_OWN_STORE,
 		},
 		{
-			name: 'onValueChange',
-			type: 'ChangeFn<unknown>',
-			description: 'A callback that is called when the value of the select changes.',
+			name: 'onSelectChange',
+			type: 'ChangeFn<SelectOption<unknown>>',
+			description: 'A callback that is called when the selected option changes.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
 		PROPS.DEFAULT_OPEN,

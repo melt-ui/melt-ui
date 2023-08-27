@@ -1,8 +1,8 @@
-import type { BuilderReturn } from '$lib/internal/types';
+import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
-import type { createSlider } from './create';
-import type { ChangeFn } from '$lib/internal/helpers';
-
+import type { createSlider } from './create.js';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
+export type { SliderComponentEvents } from './events.js';
 export type CreateSliderProps = {
 	/**
 	 * The uncontrolled default value of the slider.

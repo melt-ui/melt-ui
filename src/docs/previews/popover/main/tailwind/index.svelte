@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { createPopover, melt } from '$lib';
+	import { createPopover, melt } from '$lib/index.js';
 	import { fade } from 'svelte/transition';
 	import { Settings2, X } from 'lucide-svelte';
 
 	const {
 		elements: { trigger, content, arrow, close },
 		states: { open },
-	} = createPopover();
+	} = createPopover({
+		forceVisible: true,
+	});
 </script>
 
 <button

@@ -1,8 +1,8 @@
-import type { BuilderReturn } from '$lib/internal/types';
+import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
-import type { createAccordion } from './create';
-import type { ChangeFn } from '$lib/internal/helpers';
-
+import type { createAccordion } from './create.js';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
+export type { AccordionComponentEvents } from './events.js';
 export type CreateAccordionProps<Multiple extends boolean = false> = {
 	/**
 	 * If `true`, multiple accordion items can be open at the same time.

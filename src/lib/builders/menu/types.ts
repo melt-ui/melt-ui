@@ -1,8 +1,8 @@
-import type { FloatingConfig } from '$lib/internal/actions';
-import type { TextDirection } from '$lib/internal/types';
-import type { ChangeFn } from '$lib/internal/helpers';
+import type { FloatingConfig } from '$lib/internal/actions/index.js';
+import type { TextDirection } from '$lib/internal/types.js';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
-import type { createMenuBuilder } from './create';
+import type { createMenuBuilder } from './create.js';
 
 export type _CreateMenuProps = {
 	/**
@@ -151,6 +151,11 @@ export type _MenuBuilderOptions = {
 	nextFocusable: Writable<HTMLElement | null>;
 	prevFocusable: Writable<HTMLElement | null>;
 	selector: string;
+	/**
+	 * When you want to handle the scroll removal in the specific menu builder,
+	 * rather than in the menu builder factory.
+	 */
+	removeScroll: boolean;
 };
 
 export type _MenuParts =
@@ -162,7 +167,9 @@ export type _MenuParts =
 	| 'radio-item'
 	| 'submenu'
 	| 'subtrigger'
-	| 'subarrow';
+	| 'subarrow'
+	| 'group'
+	| 'group-label';
 
 export type Selector = (part?: _MenuParts | undefined) => string;
 

@@ -1,9 +1,10 @@
-import { usePopper } from '$lib/internal/actions';
+import { usePopper } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	derivedVisible,
 	derivedWithUnsubscribe,
 	effect,
 	executeCallbacks,
@@ -17,8 +18,8 @@ import {
 	overridable,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { VirtualElement } from '@floating-ui/core';
 import { tick } from 'svelte';
 import { get, writable, type Readable } from 'svelte/store';
@@ -32,9 +33,9 @@ import {
 	setMeltMenuAttribute,
 	type _MenuParts,
 	type Point,
-} from '../menu';
-import type { ContextMenuEvents } from './events';
-import type { CreateContextMenuProps } from './types';
+} from '../menu/index.js';
+import type { ContextMenuEvents } from './events.js';
+import type { CreateContextMenuProps } from './types.js';
 
 const defaults = {
 	arrowSize: 8,
@@ -57,7 +58,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;
 
 	const rootOptions = toWritableStores(withDefaults);
-	const { positioning, closeOnOutsideClick, portal } = rootOptions;
+	const { positioning, closeOnOutsideClick, portal, forceVisible, closeOnEscape } = rootOptions;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const rootOpen = overridable(openWritable, withDefaults?.onOpenChange);
@@ -74,6 +75,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		rootIds,
 		separator,
 		handleTypeaheadSearch,
+		group,
+		groupLabel,
 	} = createMenuBuilder({
 		rootOpen,
 		rootActiveTrigger,
@@ -83,6 +86,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		disableFocusFirstItem: true,
 		disableTriggerRefocus: true,
 		selector: 'context-menu',
+		removeScroll: true,
 	});
 
 	const point = writable<Point | null>(null);
@@ -104,7 +108,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		if (e.defaultPrevented) return;
 
 		const target = e.target;
-		if (!isHTMLElement(target)) return;
+		if (!(target instanceof Element)) return;
 
 		if (target.id === rootIds.trigger && isLeftClick(e)) {
 			rootOpen.set(false);
@@ -116,20 +120,26 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		}
 	}
 
+	const isVisible = derivedVisible({
+		open: rootOpen,
+		forceVisible,
+		activeTrigger: rootActiveTrigger,
+	});
+
 	const menu = builder(name(), {
-		stores: [rootOpen, rootActiveTrigger],
-		returned: ([$rootOpen, $rootActiveTrigger]) => {
+		stores: [isVisible, portal],
+		returned: ([$isVisible, $portal]) => {
 			// We only want to render the menu when it's open and has an active trigger.
-			const ready = $rootOpen && $rootActiveTrigger;
 			return {
 				role: 'menu',
-				hidden: ready ? undefined : true,
+				hidden: $isVisible ? undefined : true,
 				style: styleToString({
-					display: ready ? undefined : 'none',
+					display: $isVisible ? undefined : 'none',
 				}),
 				id: rootIds.menu,
 				'aria-labelledby': rootIds.trigger,
-				'data-state': ready ? 'open' : 'closed',
+				'data-state': $isVisible ? 'open' : 'closed',
+				'data-portal': $portal ? '' : undefined,
 				tabindex: -1,
 			} as const;
 		},
@@ -137,10 +147,17 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
-				[rootOpen, rootActiveTrigger, positioning, closeOnOutsideClick, portal],
-				([$rootOpen, $rootActiveTrigger, $positioning, $closeOnOutsideClick, $portal]) => {
+				[isVisible, rootActiveTrigger, positioning, closeOnOutsideClick, portal, closeOnEscape],
+				([
+					$isVisible,
+					$rootActiveTrigger,
+					$positioning,
+					$closeOnOutsideClick,
+					$portal,
+					$closeOnEscape,
+				]) => {
 					unsubPopper();
-					if (!($rootOpen && $rootActiveTrigger)) return;
+					if (!$isVisible || !$rootActiveTrigger) return;
 					tick().then(() => {
 						setMeltMenuAttribute(node, selector);
 						const $virtual = get(virtual);
@@ -155,6 +172,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 									  }
 									: null,
 								portal: getPortalDestination(node, $portal),
+								escapeKeydown: $closeOnEscape ? undefined : null,
 							},
 						});
 						if (!popper || !popper.destroy) return;
@@ -185,7 +203,6 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					 */
 					if (e.key === kbd.TAB) {
 						e.preventDefault();
-						rootActiveTrigger.set(null);
 						rootOpen.set(false);
 						handleTabNavigation(e, nextFocusable, prevFocusable);
 						return;
@@ -293,6 +310,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 			item,
 			arrow,
 			separator,
+			group,
+			groupLabel,
 		},
 		states: {
 			open: rootOpen,

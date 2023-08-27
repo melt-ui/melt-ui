@@ -9,11 +9,11 @@ import {
 	toWritableStores,
 	addMeltEventListener,
 	kbd,
-} from '$lib/internal/helpers';
-import type { AddToastProps, CreateToasterProps, Toast } from './types';
-import { usePortal } from '$lib/internal/actions';
-import type { MeltActionReturn } from '$lib/internal/types';
-import type { ToastEvents } from './events';
+} from '$lib/internal/helpers/index.js';
+import type { AddToastProps, CreateToasterProps, Toast } from './types.js';
+import { usePortal } from '$lib/internal/actions/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
+import type { ToastEvents } from './events.js';
 
 type ToastParts = 'content' | 'title' | 'description' | 'close';
 const { name } = createElHelpers<ToastParts>('toast');

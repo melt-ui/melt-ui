@@ -2,8 +2,8 @@
 // Source: https://github.com/chakra-ui/zag
 // https://github.com/chakra-ui/zag/blob/main/packages/utilities/remove-scroll/src/index.ts
 
-import { noop } from './callbacks';
-import { isIos } from './platform';
+import { noop } from './callbacks.js';
+import { isIos } from './platform.js';
 
 const LOCK_CLASSNAME = 'data-melt-scroll-lock';
 
@@ -51,11 +51,12 @@ export function removeScroll(_document?: Document): () => void {
 	const setScrollbarWidthProperty = () =>
 		setCSSProperty(documentElement, '--scrollbar-width', `${scrollbarWidth}px`);
 	const paddingProperty = getPaddingProperty(documentElement);
+	const scrollbarSidePadding = win.getComputedStyle(body)[paddingProperty];
 
 	const setStyle = () =>
 		assignStyle(body, {
 			overflow: 'hidden',
-			[paddingProperty]: `${scrollbarWidth}px`,
+			[paddingProperty]: `calc(${scrollbarSidePadding} + ${scrollbarWidth}px)`,
 		});
 
 	// Only iOS doesn't respect `overflow: hidden` on document.body
@@ -72,7 +73,7 @@ export function removeScroll(_document?: Document): () => void {
 			top: `${-(scrollY - Math.floor(offsetTop))}px`,
 			left: `${-(scrollX - Math.floor(offsetLeft))}px`,
 			right: '0',
-			[paddingProperty]: `${scrollbarWidth}px`,
+			[paddingProperty]: `calc(${scrollbarSidePadding} + ${scrollbarWidth}px)`,
 		});
 
 		return () => {

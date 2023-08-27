@@ -1,8 +1,8 @@
-import { ATTRS, KBD, PROPS, SEE, TYPES } from '$docs/constants';
-import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils';
-import { toggleGroupEvents } from '$lib/builders/toggle-group/events';
-import type { BuilderData } from '.';
+import { ATTRS, KBD, PROPS, SEE, TYPES } from '$docs/constants.js';
+import type { KeyboardSchema } from '$docs/types.js';
+import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { toggleGroupEvents } from '$lib/builders/toggle-group/events.js';
+import type { BuilderData } from './index.js';
 
 /**
  * Props that are also returned in the form of stores via the `options` property.

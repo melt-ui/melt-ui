@@ -1,8 +1,8 @@
-import { ATTRS, KBD, PROPS, SEE } from '$docs/constants';
-import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils';
-import { radioGroupEvents } from '$lib/builders/radio-group/events';
-import type { BuilderData } from '.';
+import { ATTRS, KBD, PROPS, SEE } from '$docs/constants.js';
+import type { KeyboardSchema } from '$docs/types.js';
+import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { radioGroupEvents } from '$lib/builders/radio-group/events.js';
+import type { BuilderData } from './index.js';
 
 /**
  * Props that are also returned in the form of stores via the `options` property.
@@ -52,8 +52,8 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'The builder store used to create the radio group item.',
 		},
 		{
-			name: 'itemInput',
-			description: 'The builder store used to create the radio group item input.',
+			name: 'hidden-input',
+			description: 'The builder store used to create the radio group hidden input.',
 		},
 	],
 	states: [
@@ -129,22 +129,8 @@ const item = elementSchema('item', {
 	events: radioGroupEvents['item'],
 });
 
-const itemInput = elementSchema('itemInput', {
+const hiddenInput = elementSchema('hiddenInput', {
 	description: 'The hidden input element used for form submission.',
-	props: [
-		{
-			name: 'value',
-			type: 'string',
-			description: 'The value of the radio item.',
-			required: true,
-		},
-		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the radio item is disabled.',
-		},
-	],
 });
 
 const keyboard: KeyboardSchema = [
@@ -174,7 +160,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, root, item, itemInput];
+const schemas = [builder, root, item, hiddenInput];
 
 const features = [
 	'Full keyboard navigation',

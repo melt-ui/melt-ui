@@ -1,13 +1,13 @@
-import { highlightCode } from '$docs/highlighter';
-import { isBrowser } from '$lib/internal/helpers';
+import { highlightCode } from '$docs/highlighter.js';
+import { isBrowser } from '$lib/internal/helpers/index.js';
 import { error } from '@sveltejs/kit';
 import type { SvelteComponent } from 'svelte';
-import { get, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import rawGlobalCSS from '../../../other/globalcss.html?raw';
 import rawTailwindConfig from '../../../other/tailwindconfig.html?raw';
-import { data, isBuilderName, type Builder } from '../data/builders';
-import { processMeltAttributes } from '../pp';
-import type { DocResolver, PreviewFile, PreviewResolver } from '../types';
+import { data, isBuilderName, type Builder } from '../data/builders/index.js';
+import { processMeltAttributes } from '../pp.js';
+import type { DocResolver, PreviewFile, PreviewResolver } from '../types.js';
 
 function slugFromPath(path: string) {
 	return path.replace('/src/docs/content/', '').replace('.md', '');
@@ -140,12 +140,10 @@ type GetAllPreviewSnippetsArgs = {
 	fetcher?: typeof fetch;
 };
 
-const replaceLibEntriesRegex = /import (.*) from ["|'](?:\$lib.*)["|']/;
-
 function replaceLibEntries(code: string) {
 	// avoid executing the regex if it doesn't have $lib in the code for performance
-	if (!code.includes('$lib')) return code;
-	return code.replace(replaceLibEntriesRegex, "import $1 from '@melt-ui/svelte'");
+	if (!code.includes('$lib/index.js')) return code;
+	return code.replace(/\$lib\/index\.js/g, '@melt-ui/svelte');
 }
 
 export async function getAllPreviewSnippets({ slug, fetcher }: GetAllPreviewSnippetsArgs) {
@@ -284,13 +282,13 @@ export function createHeadingId(text: string) {
 }
 
 export function createCopyCodeButton() {
-	const codeString = writable('');
+	let codeString = '';
 	const copied = writable(false);
 	let copyTimeout = 0;
 
 	function copyCode() {
 		if (!isBrowser) return;
-		navigator.clipboard.writeText(get(codeString));
+		navigator.clipboard.writeText(codeString);
 		copied.set(true);
 		clearTimeout(copyTimeout);
 		copyTimeout = window.setTimeout(() => {
@@ -299,7 +297,7 @@ export function createCopyCodeButton() {
 	}
 
 	function setCodeString(node: HTMLElement) {
-		codeString.set(node.innerText.trim() ?? '');
+		codeString = node.innerText.trim() ?? '';
 	}
 
 	return {

@@ -1,5 +1,5 @@
-import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants';
-import type { APISchema, KeyboardSchema } from '$docs/types';
+import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants.js';
+import type { APISchema, KeyboardSchema } from '$docs/types.js';
 import {
 	toKebabCase,
 	builderSchema,
@@ -7,9 +7,9 @@ import {
 	genElements,
 	genProps,
 	propsToOptions,
-} from '$docs/utils';
+} from '$docs/utils/index.js';
 
-import { menuEvents } from '$lib/builders/menu/events';
+import { menuEvents } from '$lib/builders/menu/events.js';
 
 export const menuBuilderProps = [
 	PROPS.ARROW_SIZE,
@@ -36,8 +36,9 @@ export const menuBuilderOptions = [
 	PROPS.LOOP(),
 	PROPS.FORCE_VISIBLE,
 ];
+type Menu = 'context menu' | 'dropdown menu' | 'menubar menu';
 
-export function getMenuSchemas(name: string) {
+export function getMenuSchemas(name: Menu) {
 	return {
 		menu: getMenuMenuSchema(name),
 		arrow: getMenuArrowSchema(name),
@@ -51,6 +52,8 @@ export function getMenuSchemas(name: string) {
 		item: getMenuItemSchema(name),
 		checkboxItemBuilder: getMenuCreateCheckboxItemSchema(),
 		checkboxItem: getMenuCheckboxItemSchema(name),
+		group: getMenuGroupSchema(name),
+		groupLabel: getMenuGroupLabelSchema(name),
 	};
 }
 
@@ -154,53 +157,54 @@ function getMenuBuilderStates(name = 'menu') {
 	];
 }
 
-export function getMenuTriggerDataAttrs(name: string) {
+export function getMenuTriggerDataAttrs(menuName: Menu) {
 	return [
 		{
 			name: 'data-state',
 			value: ATTRS.OPEN_CLOSED,
 		},
 		{
-			name: `data-melt-context-menu-${name}`,
-			value: ATTRS.MELT(name),
+			name: `data-melt-${toKebabCase(menuName)}-trigger`,
+			value: ATTRS.MELT('trigger'),
 		},
 	];
 }
 
-function getMenuMenuSchema(name: string) {
+function getMenuMenuSchema(builderName: string) {
 	return elementSchema('menu', {
-		description: `The element which wraps the entire ${name}.`,
+		description: `The element which wraps the entire menu.`,
 		dataAttributes: [
 			{
 				name: 'data-state',
 				value: ATTRS.OPEN_CLOSED,
 			},
 			{
-				name: `data-melt-${name.split(' ').join('-').toLowerCase()}`,
-				value: ATTRS.MELT(name),
+				name: `data-melt-${toKebabCase(builderName)}`,
+				value: ATTRS.MELT(builderName),
 			},
 		],
 		events: menuEvents['menu'],
 	});
 }
 
-export function getMenuArrowSchema(name: string) {
+export function getMenuArrowSchema(builderName: string) {
 	return elementSchema('arrow', {
-		description: `An optional arrow element which points to the ${name} trigger.`,
+		description: `An optional arrow element which points to the menu's trigger.`,
 		dataAttributes: [
 			{
 				name: 'data-arrow',
 				value: ATTRS.TRUE,
 			},
 			{
-				name: `data-melt-${toKebabCase(name)}-arrow`,
+				name: `data-melt-${toKebabCase(builderName)}-arrow`,
 				value: ATTRS.MELT('arrow'),
 			},
 		],
 	});
 }
-function getMenuItemSchema(name: string) {
-	return elementSchema('item', {
+function getMenuItemSchema(builderName: Menu) {
+	const ITEM = 'item';
+	return elementSchema(ITEM, {
 		description: 'A basic menu item.',
 		props: [PROPS.DISABLED],
 		dataAttributes: [
@@ -209,12 +213,12 @@ function getMenuItemSchema(name: string) {
 				value: ATTRS.ORIENTATION,
 			},
 			{
-				name: `data-${toKebabCase(name)}-item`,
-				value: ATTRS.MELT('item'),
+				name: `data-${toKebabCase(builderName)}-${ITEM}`,
+				value: ATTRS.MELT(ITEM),
 			},
 			{
 				name: 'data-highlighted',
-				value: ATTRS.HIGHLIGHTED('item'),
+				value: ATTRS.HIGHLIGHTED(ITEM),
 			},
 		],
 		events: menuEvents['item'],
@@ -434,6 +438,44 @@ function getMenuSubTriggerSchema(name: string) {
 			},
 		],
 		events: menuEvents['subTrigger'],
+	});
+}
+
+function getMenuGroupSchema(menuName: Menu) {
+	return elementSchema('group', {
+		description: 'A function which takes in a unique key to group menu items together.',
+		props: [
+			{
+				name: 'key',
+				type: 'string',
+				description: 'A unique key for the group.',
+			},
+		],
+		dataAttributes: [
+			{
+				name: `data-melt-${toKebabCase(menuName)}-group`,
+				value: ATTRS.MELT('group'),
+			},
+		],
+	});
+}
+
+function getMenuGroupLabelSchema(menuName: Menu) {
+	return elementSchema('groupLabel', {
+		description: 'A function which takes in a unique key to group menu items together.',
+		props: [
+			{
+				name: 'key',
+				type: 'string',
+				description: 'A unique key for the group.',
+			},
+		],
+		dataAttributes: [
+			{
+				name: `data-melt-${toKebabCase(menuName)}-group-label`,
+				value: ATTRS.MELT('group-label'),
+			},
+		],
 	});
 }
 

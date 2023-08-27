@@ -2,9 +2,9 @@ import { render, waitFor } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
 import PopoverTest from './PopoverTest.svelte';
 import userEvent from '@testing-library/user-event';
-import { kbd } from '$lib/internal/helpers';
+import { kbd } from '$lib/internal/helpers/index.js';
 
-describe('HoverCard (Default)', () => {
+describe('Popover (Default)', () => {
 	test('No accessibility violations', async () => {
 		const { container } = await render(PopoverTest);
 

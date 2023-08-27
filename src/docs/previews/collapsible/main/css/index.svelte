@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCollapsible, melt } from '$lib';
+	import { createCollapsible, melt } from '$lib/index.js';
 	import { slide } from 'svelte/transition';
 	import { ChevronsUpDown, X } from 'lucide-svelte';
 
@@ -80,11 +80,6 @@
 	}
 
 	button:hover {
-		opacity: 0.75;
-	}
-
-	button[data-disabled] {
-		cursor: not-allowed;
 		opacity: 0.75;
 	}
 

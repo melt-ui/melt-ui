@@ -1,8 +1,8 @@
-import type { BuilderReturn } from '$lib/internal/types';
+import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
-import type { createToggle } from './create';
-import type { ChangeFn } from '$lib/internal/helpers';
-
+import type { createToggle } from './create.js';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
+export type { ToggleComponentEvents } from './events.js';
 export type CreateToggleProps = {
 	disabled?: boolean;
 	defaultPressed?: boolean;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createToggleGroup, melt } from '$lib';
+	import { createToggleGroup, melt } from '$lib/index.js';
 	import { AlignCenter, AlignLeft, AlignRight } from 'lucide-svelte';
 
 	const {
@@ -69,11 +69,11 @@
 		@apply border-x border-l-transparent border-r-magnum-200;
 
 		&:first-child {
-			@apply rounded-l;
+			@apply rounded-l-md;
 		}
 
 		&:last-child {
-			@apply rounded-r border-r-transparent;
+			@apply rounded-r-md border-r-transparent;
 		}
 	}
 
@@ -81,11 +81,11 @@
 		@apply border-x border-l-magnum-200 border-r-transparent;
 
 		&:first-child {
-			@apply rounded-r;
+			@apply rounded-r-md;
 		}
 
 		&:last-child {
-			@apply rounded-l border-l-transparent;
+			@apply rounded-l-md border-l-transparent;
 		}
 	}
 
@@ -93,11 +93,11 @@
 		@apply border-y border-b-magnum-200 border-t-transparent;
 
 		&:first-child {
-			@apply rounded-t;
+			@apply rounded-t-md;
 		}
 
 		&:last-child {
-			@apply rounded-b border-b-transparent;
+			@apply rounded-b-md border-b-transparent;
 		}
 	}
 

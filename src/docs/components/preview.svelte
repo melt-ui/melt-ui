@@ -29,16 +29,16 @@
 </script>
 
 <script lang="ts">
-	import { PreviewStyleSelect } from '$docs/components';
-	import { cn } from '$docs/utils';
-	import type { SelectOptionProps } from '$lib';
-	import { isBrowser } from '$lib/internal/helpers';
-	import { getUsingPreprocessor } from '$routes/store';
+	import { PreviewStyleSelect } from '$docs/components/index.js';
+	import { cn } from '$docs/utils/index.js';
+	import type { SelectOptionProps } from '$lib/index.js';
+	import { isBrowser } from '$lib/internal/helpers/index.js';
+	import { getUsingPreprocessor } from '$routes/store.js';
 	import { writable } from 'svelte/store';
 	import CodeBlock from './code-block.svelte';
 	import PreviewWrapper from './preview-wrapper.svelte';
 	import Switch from './switch.svelte';
-	import { TabsList, TabsRoot } from './tabs';
+	import { TabsList, TabsRoot } from './tabs/index.js';
 
 	type $$Props = PreviewProps & {
 		viewCode: boolean;
@@ -154,11 +154,9 @@
 	}
 </script>
 
-<div class="mt-4 flex flex-row items-center justify-between">
+<div class="mt-4 flex h-9 flex-row items-center justify-between">
 	{#if viewCode}
-		<div class="flex h-10 items-center">
-			<PreviewStyleSelect options={codeOptions} {codingStyle} />
-		</div>
+		<PreviewStyleSelect options={codeOptions} {codingStyle} />
 	{/if}
 
 	<div class="ml-auto">
@@ -174,7 +172,7 @@
 					<TabsList />
 				</div>
 			</div>
-			{#key $codingStyle}
+			{#key `${$codingStyle}-${tab}`}
 				{#if codingStyleObj && codingStyleObj[tab]}
 					<CodeBlock>
 						{@html codingStyleObj[tab]}

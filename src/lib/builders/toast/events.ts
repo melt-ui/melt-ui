@@ -1,4 +1,4 @@
-import type { GroupedEvents } from '$lib/internal/types';
+import type { GroupedEvents, MeltComponentEvents } from '$lib/internal/types.js';
 
 export const toastEvents = {
 	content: ['pointerenter', 'pointerleave', 'focusout'] as const,
@@ -6,3 +6,4 @@ export const toastEvents = {
 };
 
 export type ToastEvents = GroupedEvents<typeof toastEvents>;
+export type ToastComponentEvents = MeltComponentEvents<ToastEvents>;

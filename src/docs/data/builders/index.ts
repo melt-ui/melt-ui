@@ -1,32 +1,33 @@
-import type { APISchema, KeyboardSchema } from '$docs/types';
-import { accordionData } from './accordion';
-import { avatarData } from './avatar';
-import { checkboxData } from './checkbox';
-import { collapsibleData } from './collapsible';
-import { comboboxData } from './combobox';
-import { contextMenuData } from './context-menu';
-import { dialogData } from './dialog';
-import { dropdownMenuData } from './dropdown-menu';
-import { hoverCardData } from './hover-card';
-import { labelData } from './label';
-import { menubarData } from './menubar';
-import { paginationData } from './pagination';
-import { pinInputData } from './pin-input';
-import { popoverData } from './popover';
-import { progressData } from './progress';
-import { radioGroupData } from './radio-group';
-import { selectData } from './select';
-import { separatorData } from './separator';
-import { sliderData } from './slider';
-import { switchData } from './switch';
-import { tabsData } from './tabs';
-import { tagsInputData } from './tags-input';
-import { toastData } from './toast';
-import { toggleData } from './toggle';
-import { toggleGroupData } from './toggle-group';
-import { toolbarData } from './toolbar';
-import { tooltipData } from './tooltip';
-import { treeData } from './tree';
+import type { APISchema, KeyboardSchema } from '$docs/types.js';
+import { accordionData } from './accordion.js';
+import { avatarData } from './avatar.js';
+import { checkboxData } from './checkbox.js';
+import { collapsibleData } from './collapsible.js';
+import { comboboxData } from './combobox.js';
+import { contextMenuData } from './context-menu.js';
+import { dialogData } from './dialog.js';
+import { dropdownMenuData } from './dropdown-menu.js';
+import { labelData } from './label.js';
+import { linkPreviewData } from './link-preview.js';
+import { menubarData } from './menubar.js';
+import { paginationData } from './pagination.js';
+import { pinInputData } from './pin-input.js';
+import { popoverData } from './popover.js';
+import { progressData } from './progress.js';
+import { radioGroupData } from './radio-group.js';
+import { selectData } from './select.js';
+import { separatorData } from './separator.js';
+import { sliderData } from './slider.js';
+import { switchData } from './switch.js';
+import { tabsData } from './tabs.js';
+import { tagsInputData } from './tags-input.js';
+import { toastData } from './toast.js';
+import { toggleData } from './toggle.js';
+import { toggleGroupData } from './toggle-group.js';
+import { treeData } from './tree.js';
+import { tableOfContentsData } from './table-of-contents.js';
+import { toolbarData } from './toolbar.js';
+import { tooltipData } from './tooltip.js';
 
 export const builderList = [
 	'accordion',
@@ -37,8 +38,8 @@ export const builderList = [
 	'context-menu',
 	'dialog',
 	'dropdown-menu',
-	'hover-card',
 	'label',
+	'link-preview',
 	'menubar',
 	'pagination',
 	'pin-input',
@@ -49,6 +50,7 @@ export const builderList = [
 	'separator',
 	'slider',
 	'switch',
+	'table-of-contents',
 	'tabs',
 	'tags-input',
 	'toast',
@@ -82,8 +84,8 @@ export const data: Builders = {
 	'context-menu': contextMenuData,
 	dialog: dialogData,
 	'dropdown-menu': dropdownMenuData,
-	'hover-card': hoverCardData,
 	label: labelData,
+	'link-preview': linkPreviewData,
 	menubar: menubarData,
 	pagination: paginationData,
 	'pin-input': pinInputData,
@@ -94,6 +96,7 @@ export const data: Builders = {
 	separator: separatorData,
 	slider: sliderData,
 	switch: switchData,
+	'table-of-contents': tableOfContentsData,
 	tabs: tabsData,
 	'tags-input': tagsInputData,
 	toast: toastData,

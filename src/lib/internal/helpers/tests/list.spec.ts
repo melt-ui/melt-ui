@@ -1,6 +1,6 @@
 import { render } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
-import { getFirstOption, getOptions } from '../list';
+import { getFirstOption, getOptions } from '../list.js';
 import List from './ListTest.svelte';
 import ListDisabled from './ListDisabledTest.svelte';
 

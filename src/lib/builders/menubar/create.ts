@@ -1,4 +1,4 @@
-import { get, writable, type Writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import {
 	applyAttrsIfDisabled,
 	createMenuBuilder,
@@ -6,7 +6,7 @@ import {
 	handleMenuNavigation,
 	handleTabNavigation,
 	type _MenuParts,
-} from '../menu';
+} from '../menu/index.js';
 import {
 	executeCallbacks,
 	isHTMLElement,
@@ -30,12 +30,13 @@ import {
 	derivedVisible,
 	addMeltEventListener,
 	getPortalDestination,
-} from '$lib/internal/helpers';
-import { onMount, tick } from 'svelte';
-import { usePopper } from '$lib/internal/actions';
-import type { MeltActionReturn } from '$lib/internal/types';
-import type { CreateMenubarMenuProps, CreateMenubarProps } from './types';
-import type { MenubarEvents } from './events';
+	removeScroll,
+} from '$lib/internal/helpers/index.js';
+import { onDestroy, onMount, tick } from 'svelte';
+import { usePopper } from '$lib/internal/actions/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
+import type { CreateMenubarMenuProps, CreateMenubarProps } from './types.js';
+import type { MenubarEvents } from './events.js';
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
 
@@ -52,9 +53,12 @@ export function createMenubar(props?: CreateMenubarProps) {
 	const options = toWritableStores(withDefaults);
 	const { loop, closeOnEscape } = options;
 	const activeMenu = writable<string>('');
-	const scopedMenus = writable<HTMLElement[]>([]);
+
 	const nextFocusable = writable<HTMLElement | null>(null);
 	const prevFocusable = writable<HTMLElement | null>(null);
+	const lastFocusedMenuTrigger = writable<HTMLElement | null>(null);
+	const closeTimer = writable(0);
+	let scrollRemoved = false;
 
 	const rootIds = {
 		menubar: generateId(),
@@ -71,14 +75,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 		},
 		action: (node: HTMLElement) => {
 			const menuTriggers = Array.from(node.querySelectorAll('[data-melt-menubar-trigger]'));
-			if (!menuTriggers.length || !isHTMLElement(menuTriggers[0])) return {};
+			if (!isHTMLElement(menuTriggers[0])) return {};
 			menuTriggers[0].tabIndex = 0;
-
-			const menus = Array.from(node.querySelectorAll('[data-melt-menubar-menu]')).filter(
-				(el): el is HTMLElement => isHTMLElement(el)
-			);
-
-			scopedMenus.set(menus);
 
 			return {
 				destroy: noop,
@@ -119,6 +117,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 			nextFocusable,
 			prevFocusable,
 			selector: 'menubar-menu',
+			removeScroll: false,
 		});
 
 		const isVisible = derivedVisible({
@@ -160,6 +159,11 @@ export function createMenubar(props?: CreateMenubarProps) {
 								options: {
 									floating: $positioning,
 									portal: getPortalDestination(node, $portal),
+									clickOutside: {
+										handler: () => {
+											activeMenu.set('');
+										},
+									},
 								},
 							});
 
@@ -178,7 +182,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 						if (!isHTMLElement(menuEl) || !isHTMLElement(target)) return;
 
 						if (MENUBAR_NAV_KEYS.includes(e.key)) {
-							handleCrossMenuNavigation(e, activeMenu);
+							handleCrossMenuNavigation(e);
 						}
 
 						/**
@@ -245,7 +249,19 @@ export function createMenubar(props?: CreateMenubarProps) {
 				const menubarTriggers = Array.from(
 					menubarEl.querySelectorAll('[data-melt-menubar-trigger]')
 				);
+
 				if (!menubarTriggers.length) return {};
+
+				const unsubEffect = effect([lastFocusedMenuTrigger], ([$lastFocusedMenuTrigger]) => {
+					if (!$lastFocusedMenuTrigger && menubarTriggers[0] === node) {
+						node.tabIndex = 0;
+					} else if ($lastFocusedMenuTrigger === node) {
+						node.tabIndex = 0;
+					} else {
+						node.tabIndex = -1;
+					}
+				});
+
 				if (menubarTriggers[0] === node) {
 					node.tabIndex = 0;
 				} else {
@@ -296,10 +312,29 @@ export function createMenubar(props?: CreateMenubarProps) {
 				);
 
 				return {
-					destroy: unsub,
+					destroy() {
+						unsub();
+						unsubEffect();
+					},
 				};
 			},
 		});
+
+		function handleOpen(triggerEl: HTMLElement) {
+			rootOpen.update((prev) => {
+				const isOpen = !prev;
+				if (isOpen) {
+					nextFocusable.set(getNextFocusable(triggerEl));
+					prevFocusable.set(getPreviousFocusable(triggerEl));
+					rootActiveTrigger.set(triggerEl);
+					activeMenu.set(m.rootIds.menu);
+				} else {
+					rootActiveTrigger.set(null);
+				}
+
+				return isOpen;
+			});
+		}
 
 		effect([activeMenu], ([$activeMenu]) => {
 			if (!isBrowser) return;
@@ -319,9 +354,9 @@ export function createMenubar(props?: CreateMenubarProps) {
 				if (get(rootOpen)) {
 					const triggerEl = document.getElementById(m.rootIds.trigger);
 					if (!triggerEl) return;
-					removeHighlight(triggerEl);
 					rootActiveTrigger.set(null);
 					rootOpen.set(false);
+					removeHighlight(triggerEl);
 				}
 				return;
 			}
@@ -332,31 +367,16 @@ export function createMenubar(props?: CreateMenubarProps) {
 			const triggerEl = document.getElementById(m.rootIds.trigger);
 			if (!triggerEl) return;
 			if (!$rootOpen && get(activeMenu) === m.rootIds.menu) {
+				rootActiveTrigger.set(null);
 				activeMenu.set('');
 				removeHighlight(triggerEl);
 				return;
 			}
 			if ($rootOpen) {
+				lastFocusedMenuTrigger.set(triggerEl);
 				addHighlight(triggerEl);
 			}
 		});
-
-		function handleOpen(triggerEl: HTMLElement) {
-			rootOpen.update((prev) => {
-				const isOpen = !prev;
-				if (isOpen) {
-					nextFocusable.set(getNextFocusable(triggerEl));
-					prevFocusable.set(getPreviousFocusable(triggerEl));
-					rootActiveTrigger.set(triggerEl);
-					activeMenu.set(m.rootIds.menu);
-				} else {
-					rootActiveTrigger.set(null);
-					activeMenu.set('');
-				}
-
-				return isOpen;
-			});
-		}
 
 		onMount(() => {
 			if (!isBrowser) return;
@@ -373,6 +393,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 				item: m.item,
 				arrow: m.arrow,
 				separator: m.separator,
+				group: m.group,
+				groupLabel: m.groupLabel,
 			},
 			builders: {
 				createCheckboxItem: m.createCheckboxItem,
@@ -386,45 +408,14 @@ export function createMenubar(props?: CreateMenubarProps) {
 		};
 	};
 
-	onMount(() => {
-		if (!isBrowser) return;
-
-		const menubarEl = document.getElementById(rootIds.menubar);
-		if (!menubarEl) return;
-
-		const unsubEvents = executeCallbacks(
-			addMeltEventListener(menubarEl, 'keydown', (e) => {
-				const target = e.target;
-				const menuEl = e.currentTarget;
-				if (!isHTMLElement(menuEl) || !isHTMLElement(target)) return;
-				/**
-				 * Submenu key events bubble through portals and
-				 * we only care about key events that happen inside this menu.
-				 */
-				const isTargetTrigger = target.hasAttribute('data-melt-menubar-trigger');
-				if (!isTargetTrigger) return;
-
-				if (MENUBAR_NAV_KEYS.includes(e.key)) {
-					handleMenubarNavigation(e);
-				}
-			}),
-			addEventListener(document, 'keydown', (e) => {
-				if (get(closeOnEscape) && e.key === kbd.ESCAPE) {
-					activeMenu.set('');
-				}
-			})
-		);
-
-		return () => {
-			unsubEvents();
-		};
-	});
+	/* -------- */
+	/* Helpers */
+	/* -------- */
 
 	/**
-	 * Keyboard event handler for menu navigation
-	 * @param e The keyboard event
+	 * KBD Navigation handler for moving between menus in the menu bar.
 	 */
-	function handleCrossMenuNavigation(e: KeyboardEvent, activeMenu: Writable<string>) {
+	function handleCrossMenuNavigation(e: KeyboardEvent) {
 		if (!isBrowser) return;
 		e.preventDefault();
 
@@ -446,32 +437,35 @@ export function createMenubar(props?: CreateMenubarProps) {
 		// prevent navigation when closing a submenu
 		if (isPrevKey && isKeyDownInsideSubMenu) return;
 
-		// menus scoped to the menubar
-		const childMenus = get(scopedMenus);
-		if (!childMenus.length) return;
 		// Index of the currently focused item in the candidate nodes array
-		const currentIndex = childMenus.indexOf(currentTarget);
-		// Calculate the index of the next menu item
+		const menubarEl = document.getElementById(rootIds.menubar);
+		if (!isHTMLElement(menubarEl)) return;
+		const triggers = getMenuTriggers(menubarEl);
+		const currTriggerId = currentTarget.getAttribute('aria-labelledby');
+
+		const currIndex = triggers.findIndex((trigger) => trigger.id === currTriggerId);
+
 		let nextIndex: number;
 		switch (e.key) {
 			case kbd.ARROW_RIGHT:
-				nextIndex = currentIndex < childMenus.length - 1 ? currentIndex + 1 : 0;
+				nextIndex = currIndex < triggers.length - 1 ? currIndex + 1 : 0;
 				break;
 			case kbd.ARROW_LEFT:
-				nextIndex = currentIndex > 0 ? currentIndex - 1 : childMenus.length - 1;
+				nextIndex = currIndex > 0 ? currIndex - 1 : triggers.length - 1;
 				break;
 			case kbd.HOME:
 				nextIndex = 0;
 				break;
 			case kbd.END:
-				nextIndex = childMenus.length - 1;
+				nextIndex = triggers.length - 1;
 				break;
 			default:
 				return;
 		}
 
-		const nextFocusedItem = childMenus[nextIndex];
-		activeMenu.set(nextFocusedItem.id);
+		const nextFocusedTrigger = triggers[nextIndex];
+		const menuId = nextFocusedTrigger.getAttribute('aria-controls');
+		menuId && activeMenu.set(menuId);
 	}
 
 	function getMenuTriggers(el: HTMLElement) {
@@ -535,6 +529,68 @@ export function createMenubar(props?: CreateMenubarProps) {
 
 		handleRovingFocus(candidateNodes[nextIndex]);
 	}
+
+	/* --------------------*/
+	/* Lifecycle & Effects */
+	/* --------------------*/
+
+	onMount(() => {
+		if (!isBrowser) return;
+
+		const menubarEl = document.getElementById(rootIds.menubar);
+		if (!menubarEl) return;
+		const unsubEvents = executeCallbacks(
+			addMeltEventListener(menubarEl, 'keydown', (e) => {
+				const target = e.target;
+				const menuEl = e.currentTarget;
+				if (!isHTMLElement(menuEl) || !isHTMLElement(target)) return;
+				/**
+				 * Submenu key events bubble through portals and
+				 * we only care about key events that happen inside this menu.
+				 */
+				const isTargetTrigger = target.hasAttribute('data-melt-menubar-trigger');
+				if (!isTargetTrigger) return;
+
+				if (MENUBAR_NAV_KEYS.includes(e.key)) {
+					handleMenubarNavigation(e);
+				}
+			}),
+			addEventListener(document, 'keydown', (e) => {
+				if (get(closeOnEscape) && e.key === kbd.ESCAPE) {
+					window.clearTimeout(get(closeTimer));
+					activeMenu.set('');
+				}
+			})
+		);
+
+		return () => {
+			unsubEvents();
+		};
+	});
+
+	const unsubs: Array<() => void> = [];
+	effect([activeMenu], ([$activeMenu]) => {
+		if (!isBrowser) return;
+
+		/**
+		 * To prevent adding/removing the scroll as we cycle through
+		 * menus (which causes horrible performance issues), we only
+		 * want to remove the scroll when the first menu is opened, and
+		 * remove it when no menus are open.
+		 */
+
+		if (!$activeMenu) {
+			unsubs.forEach((unsub) => unsub());
+			scrollRemoved = false;
+		} else if (!scrollRemoved) {
+			unsubs.push(removeScroll());
+			scrollRemoved = true;
+		}
+	});
+
+	onDestroy(() => {
+		unsubs.forEach((unsub) => unsub());
+	});
 
 	return {
 		elements: {

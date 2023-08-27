@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createAvatar, melt } from '$lib';
+	import { createAvatar, melt } from '$lib/index.js';
 
 	const {
 		elements: { image, fallback },

@@ -1,4 +1,9 @@
-import { createFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions';
+import {
+	createFocusTrap,
+	useClickOutside,
+	useEscapeKeydown,
+	usePortal,
+} from '$lib/internal/actions/index.js';
 import {
 	addMeltEventListener,
 	builder,
@@ -6,10 +11,9 @@ import {
 	effect,
 	executeCallbacks,
 	generateId,
-	getPortalParent,
+	getPortalDestination,
 	isBrowser,
 	isHTMLElement,
-	isLeftClick,
 	kbd,
 	last,
 	noop,
@@ -18,12 +22,12 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { Defaults, MeltActionReturn } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
-import type { DialogEvents } from './events';
-import type { CreateDialogProps } from './types';
+import type { DialogEvents } from './events.js';
+import type { CreateDialogProps } from './types.js';
 
 type DialogParts =
 	| 'trigger'
@@ -189,63 +193,65 @@ export function createDialog(props?: CreateDialogProps) {
 			let activate = noop;
 			let deactivate = noop;
 
-			const unsubFocusTrap = effect([closeOnOutsideClick], ([$closeOnOutsideClick]) => {
-				const focusTrap = createFocusTrap({
-					immediate: false,
-					escapeDeactivates: false,
-					allowOutsideClick: () => {
-						const $openDialogIds = get(openDialogIds);
-						const isLast = last($openDialogIds) === ids.content;
+			const destroy = executeCallbacks(
+				effect([open], ([$open]) => {
+					if (!$open) return;
+					const focusTrap = createFocusTrap({
+						immediate: false,
+						escapeDeactivates: false,
+						returnFocusOnDeactivate: false,
+						fallbackFocus: node,
+					});
 
-						if ($closeOnOutsideClick && isLast) {
-							handleClose();
-							return false;
-						}
-
-						return true;
-					},
-					returnFocusOnDeactivate: false,
-					fallbackFocus: node,
-				});
-				activate = focusTrap.activate;
-				deactivate = focusTrap.deactivate;
-				const ac = focusTrap.useFocusTrap(node);
-				if (ac && ac.destroy) {
-					return ac.destroy;
-				} else {
-					return focusTrap.deactivate;
-				}
-			});
-
-			const unsubEscapeKeydown = effect([closeOnEscape], ([$closeOnEscape]) => {
-				if (!$closeOnEscape) return noop;
-
-				const escapeKeydown = useEscapeKeydown(node, {
-					handler: () => {
-						handleClose();
-					},
-				});
-				if (escapeKeydown && escapeKeydown.destroy) {
-					return escapeKeydown.destroy;
-				}
-				return noop;
-			});
-
-			effect([isVisible], ([$isVisible]) => {
-				tick().then(() => {
-					if (!$isVisible) {
-						deactivate();
+					activate = focusTrap.activate;
+					deactivate = focusTrap.deactivate;
+					const ac = focusTrap.useFocusTrap(node);
+					if (ac && ac.destroy) {
+						return ac.destroy;
 					} else {
-						activate();
+						return focusTrap.deactivate;
 					}
-				});
-			});
+				}),
+
+				effect([closeOnOutsideClick, open], ([$closeOnOutsideClick, $open]) => {
+					return useClickOutside(node, {
+						enabled: $open,
+						handler: (e: PointerEvent) => {
+							if (e.defaultPrevented) return;
+							const $openDialogIds = get(openDialogIds);
+							const isLast = last($openDialogIds) === ids.content;
+							if ($closeOnOutsideClick && isLast) {
+								handleClose();
+							}
+						},
+					}).destroy;
+				}),
+				effect([closeOnEscape], ([$closeOnEscape]) => {
+					if (!$closeOnEscape) return noop;
+
+					const escapeKeydown = useEscapeKeydown(node, {
+						handler: () => {
+							handleClose();
+						},
+					});
+					if (escapeKeydown && escapeKeydown.destroy) {
+						return escapeKeydown.destroy;
+					}
+					return noop;
+				}),
+				effect([isVisible], ([$isVisible]) => {
+					tick().then(() => {
+						if (!$isVisible) {
+							deactivate();
+						} else {
+							activate();
+						}
+					});
+				})
+			);
 
 			return {
-				destroy() {
-					unsubEscapeKeydown();
-					unsubFocusTrap();
-				},
+				destroy,
 			};
 		},
 	});
@@ -256,11 +262,11 @@ export function createDialog(props?: CreateDialogProps) {
 			'data-portal': $portal ? '' : undefined,
 		}),
 		action: (node: HTMLElement) => {
-			const portalParent = getPortalParent(node);
-
 			const unsubPortal = effect([portal], ([$portal]) => {
 				if (!$portal) return noop;
-				const portalAction = usePortal(node, portalParent === $portal ? portalParent : $portal);
+				const portalDestination = getPortalDestination(node, $portal);
+				if (portalDestination === null) return noop;
+				const portalAction = usePortal(node, portalDestination);
 				if (portalAction && portalAction.destroy) {
 					return portalAction.destroy;
 				} else {

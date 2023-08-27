@@ -52,12 +52,6 @@ export type ExpandDeep<T> = T extends object
 type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
 export type XOR<T, U> = T | U extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U;
 
-export type StoreValue<T> = T extends { subscribe(cb: (value: infer V) => void): void } ? V : never;
-
-export type StoreValueObj<T> = {
-	[P in keyof T]: StoreValue<T[P]>;
-};
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type BuilderReturn<T extends (...args: any) => any> = {
 	[P in keyof ReturnType<T>]: ReturnType<T>[P];
@@ -65,7 +59,7 @@ export type BuilderReturn<T extends (...args: any) => any> = {
 
 export type EventHandler<T extends Event = Event> = (event: T) => void;
 
-export type MeltEvent<E extends Event> = CustomEvent<{ cancel: () => void; originalEvent: E }>;
+export type MeltEvent<E extends Event> = CustomEvent<{ originalEvent: E }>;
 
 export type MeltEventHandler<E extends Event> = EventHandler<
 	Expand<Omit<MeltEvent<E>, 'initCustomEvent'>>
@@ -80,8 +74,18 @@ export type MeltActionReturn<Events extends keyof HTMLElementEventMap> = ActionR
 	}
 >;
 
+type CustomMeltComponentEvents<Events extends keyof HTMLElementEventMap> = {
+	[K in Events as `m-${string & K}`]?: K extends keyof HTMLElementEventMap
+		? MeltEventHandler<HTMLElementEventMap[K]>
+		: never;
+};
+
 type ElementEvents<T> = T extends ReadonlyArray<infer U> ? U : never;
 
 export type GroupedEvents<T> = {
 	[K in keyof T]: ElementEvents<T[K]>;
+};
+
+export type MeltComponentEvents<T> = {
+	[K in keyof T]: T[K] extends keyof HTMLElementEventMap ? CustomMeltComponentEvents<T[K]> : never;
 };

@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { Construction } from 'lucide-svelte';
-	import { a as A } from '$docs/components';
+	import { a as A } from '$docs/components/index.js';
 </script>
 
 <div
-	class="my-4 flex flex-col items-start gap-2 rounded-md border border-magnum-500 bg-magnum-500/10 p-4
+	class="my-4 flex flex-col items-start gap-2 rounded-xl border border-magnum-400 bg-magnum-900/10 p-4
 	lg:flex-row lg:items-center"
 >
-	<Construction class="shrink-0 text-magnum-300 square-8 lg:square-6" />
 	<p>
+		<Construction class="shrink-0 text-magnum-400 square-8 lg:inline-block lg:square-6" />
 		<span class="font-bold">In Construction:</span>
 		<slot>
 			This page is still a WIP. Please check back later, or help us by contributing to

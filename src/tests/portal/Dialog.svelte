@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { createDialog, melt } from '$lib';
+	import { createDialog, melt } from '$lib/index.js';
 	import { fade } from 'svelte/transition';
-	import { initLevel } from './level';
+	import { initLevel } from './level.js';
 
 	const {
 		elements: { trigger, overlay, content, title, description, close, portalled },

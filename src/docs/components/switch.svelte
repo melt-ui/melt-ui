@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { beforeNavigate } from '$app/navigation';
-	import { createSwitch, melt } from '$lib';
-	import { generateId } from '$lib/internal/helpers';
+	import { createSwitch, melt } from '$lib/index.js';
+	import { generateId } from '$lib/internal/helpers/index.js';
 	import { writable } from 'svelte/store';
 
 	export let checked: boolean | undefined = false;

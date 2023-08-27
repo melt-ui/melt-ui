@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCheckbox, type CreateCheckboxProps, melt } from '$lib';
+	import { createCheckbox, type CreateCheckboxProps, melt } from '$lib/index.js';
 
 	export let defaultChecked: CreateCheckboxProps['defaultChecked'] = 'indeterminate';
 

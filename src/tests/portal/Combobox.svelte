@@ -1,18 +1,14 @@
 <script lang="ts">
-	import { createCombobox, melt } from '$lib';
-	import { initLevel } from './level';
+	import { createCombobox, melt } from '$lib/index.js';
+	import { initLevel } from './level.js';
 
 	let items = Array(10)
 		.fill(null)
 		.map(() => '');
 
 	const {
-		elements: { menu, input, item, label },
-		states: { filteredItems },
-	} = createCombobox({
-		items,
-		filterFunction: (item, value) => item.includes(value),
-	});
+		elements: { menu, input, option: item, label },
+	} = createCombobox();
 
 	const level = initLevel();
 </script>
@@ -26,20 +22,15 @@
 	<slot />
 	<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 	<div tabindex="0">
-		{#if $filteredItems.length !== 0}
-			{#each $filteredItems as it, index (index)}
-				<li
-					use:melt={$item({
-						index,
-						item: it,
-					})}
-				>
-					{it}
-				</li>
-			{/each}
-		{:else}
-			<li>No results found</li>
-		{/if}
+		{#each items as it, index (index)}
+			<li
+				use:melt={$item({
+					value: it,
+				})}
+			>
+				{it}
+			</li>
+		{/each}
 	</div>
 </ul>
 

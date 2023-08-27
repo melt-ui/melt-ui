@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createToolbar, melt } from '$lib';
+	import { createToolbar, melt } from '$lib/index.js';
 
 	// Icons
 	import {

@@ -1,15 +1,15 @@
-import { PROPS } from '$docs/constants';
-import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils';
-import { contextMenuEvents } from '$lib/builders/context-menu/events';
-import type { BuilderData } from '.';
+import { PROPS } from '$docs/constants.js';
+import type { KeyboardSchema } from '$docs/types.js';
+import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { contextMenuEvents } from '$lib/builders/context-menu/events.js';
+import type { BuilderData } from './index.js';
 import {
 	getMenuBuilderReturns,
 	getMenuKeyboardSchema,
 	getMenuSchemas,
 	getMenuTriggerDataAttrs,
 	menuBuilderProps,
-} from './menu';
+} from './menu.js';
 
 const BUILDER_NAME = 'context menu';
 const { elements, builders, states, options } = getMenuBuilderReturns(BUILDER_NAME);
@@ -36,13 +36,15 @@ const {
 	submenuBuilder,
 	submenu,
 	subTrigger,
+	group,
+	groupLabel,
 } = getMenuSchemas(BUILDER_NAME);
 
-const trigger = elementSchema('trigger', {
-	title: 'trigger',
+const TRIGGER_NAME = 'trigger' as const;
+const trigger = elementSchema(TRIGGER_NAME, {
 	description: 'The element which when right clicked inside, opens the context menu.',
-	dataAttributes: getMenuTriggerDataAttrs('trigger'),
-	events: contextMenuEvents['trigger'],
+	dataAttributes: getMenuTriggerDataAttrs(BUILDER_NAME),
+	events: contextMenuEvents[TRIGGER_NAME],
 });
 
 const keyboard: KeyboardSchema = getMenuKeyboardSchema();
@@ -59,6 +61,8 @@ const schemas = [
 	radioGroupBuilder,
 	radioGroup,
 	radioItem,
+	group,
+	groupLabel,
 	submenuBuilder,
 	subTrigger,
 	submenu,

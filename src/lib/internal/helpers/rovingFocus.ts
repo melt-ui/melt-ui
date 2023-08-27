@@ -1,5 +1,5 @@
-import { isBrowser, isHTMLElement } from './is';
-import { sleep } from './sleep';
+import { isBrowser, isHTMLElement } from './is.js';
+import { sleep } from './sleep.js';
 
 /**
  * Manage roving focus between elements. Sets the current active element to

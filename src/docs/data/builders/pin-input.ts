@@ -1,9 +1,9 @@
-import { ATTRS, KBD, SEE } from '$docs/constants';
-import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils';
-import { pinInputEvents } from '$lib/builders/pin-input/events';
-import { isMac } from '$lib/internal/helpers';
-import type { BuilderData } from '.';
+import { ATTRS, KBD, SEE } from '$docs/constants.js';
+import type { KeyboardSchema } from '$docs/types.js';
+import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { pinInputEvents } from '$lib/builders/pin-input/events.js';
+import { isMac } from '$lib/internal/helpers/index.js';
+import type { BuilderData } from './index.js';
 
 /**
  * Props that are also returned in the form of stores via the `options` property.
@@ -151,7 +151,7 @@ const keyboard: KeyboardSchema = [
 	{
 		key: KBD.BACKSPACE,
 		behavior:
-			'Deletes the value of the current input. If the input is empty, moves to the previous input.',
+			'Deletes the value of the current input. If the input is empty, moves to the previous input and deletes that value as well.',
 	},
 	{
 		key: KBD.DELETE,

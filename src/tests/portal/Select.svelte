@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { createSelect, melt } from '$lib';
-	import { initLevel } from './level';
+	import { createSelect, melt } from '$lib/index.js';
+	import { initLevel } from './level.js';
 
 	const {
 		elements: { trigger, menu, option, group, groupLabel, label },
-		states: { valueLabel },
+		states: { selectedLabel },
 	} = createSelect();
 
 	const options = {
@@ -18,7 +18,7 @@
 <!-- svelte-ignore a11y-label-has-associated-control - $label contains the 'for' attribute -->
 <label use:melt={$label}>Favorite Flavor</label>
 <button use:melt={$trigger} aria-label="Food" data-testid="select-trigger-{level}">
-	{$valueLabel || 'Select a flavor'}
+	{$selectedLabel || 'Select a flavor'}
 </button>
 
 <div use:melt={$menu} data-testid="select-content-{level}">

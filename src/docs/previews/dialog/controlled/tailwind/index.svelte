@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { createDialog, melt } from '$lib';
+	import { createDialog, melt } from '$lib/index.js';
 	/** Internal helpers */
-	import { flyAndScale } from '$docs/utils';
+	import { flyAndScale } from '$docs/utils/index.js';
 	import { X } from 'lucide-svelte';
 	import { writable } from 'svelte/store';
 

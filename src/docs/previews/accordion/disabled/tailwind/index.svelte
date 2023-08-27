@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { createAccordion, melt } from '$lib';
+	import { cn } from '$docs/utils';
+	import { createAccordion, melt } from '$lib/index.js';
 	import { slide } from 'svelte/transition';
 
 	const {
@@ -10,55 +11,64 @@
 	const items = [
 		{
 			id: 'item-1',
-			title: 'Is it accessible?',
-			description: 'Yes. It adheres to the WAI-ARIA design pattern.',
+			title: 'What is it?',
+			description:
+				'A collection of accessible & unstyled component builders for Svelte applications.',
 			disabled: false,
 		},
 		{
 			id: 'item-2',
 			title: "I'm a disabled accordion item",
-			description: "You can't open me.",
+			description: "You can't see me!",
 			disabled: true,
 		},
 		{
 			id: 'item-3',
-			title: 'Can it be animated?',
-			description:
-				'Yes! You can use the transition prop to configure the animation.',
+			title: 'Svelte is awesome, huh?',
+			description: 'Yes, and so are you!',
 			disabled: false,
 		},
 	];
+
+	let className = '';
+	export { className as class };
 </script>
 
 <div
-	class="mx-auto w-[18rem] max-w-full rounded-md shadow-lg sm:w-[25rem]"
-	use:melt={$root}
+	class={cn(
+		'mx-auto w-[18rem] max-w-full rounded-xl bg-white shadow-lg sm:w-[25rem]',
+		className,
+	)}
 	{...$root}
 >
 	{#each items as { id, title, description, disabled }, i}
+		{@const props = { value: id, disabled }}
 		<div
-			use:melt={$item(id)}
-			class="overflow-hidden transition-colors first:rounded-t
-            last:rounded-b focus-within:relative focus-within:z-10 focus-within:ring
-            focus-within:ring-magnum-400"
+			use:melt={$item(props)}
+			class="overflow-hidden transition-colors first:rounded-t-xl
+            last:rounded-b-xl"
 		>
 			<h2 class="flex">
 				<button
-					use:melt={$trigger({ value: id, disabled })}
-					class="flex h-12 flex-1 cursor-pointer items-center justify-between border-b border-b-magnum-700
-                 bg-white px-5 text-base font-medium
-                 leading-none text-magnum-700 transition-colors hover:bg-opacity-95 focus:!ring-0
-								 {i === items.length - 1 ? 'border-b-0' : ''} {disabled
-						? 'cursor-not-allowed bg-neutral-300 text-opacity-60'
-						: ''}"
+					use:melt={$trigger(props)}
+					class={cn(
+						'flex flex-1 cursor-pointer items-center justify-between ',
+						'bg-white px-5 py-5 text-base font-medium leading-none',
+						'text-black transition-colors hover:bg-neutral-100 focus:!ring-0',
+						'focus-visible:text-magnum-800 data-[disabled]:cursor-not-allowed data-[disabled]:text-neutral-400',
+						i !== 0 && 'border-t border-t-neutral-300',
+					)}
 				>
 					{title}
 				</button>
 			</h2>
 			{#if $isSelected(id)}
 				<div
-					class="overflow-hidden bg-neutral-100 text-sm text-neutral-900"
-					use:melt={$content(id)}
+					class={cn(
+						'content',
+						'overflow-hidden bg-neutral-100 text-sm text-neutral-600',
+					)}
+					use:melt={$content(props)}
 					transition:slide
 				>
 					<div class="px-5 py-4">
@@ -69,3 +79,9 @@
 		</div>
 	{/each}
 </div>
+
+<style lang="postcss">
+	.content {
+		box-shadow: inset 0px 1px 0px theme('colors.neutral.300');
+	}
+</style>

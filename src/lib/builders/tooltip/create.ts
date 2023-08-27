@@ -7,7 +7,7 @@ import {
 	effect,
 	executeCallbacks,
 	generateId,
-	getPortalParent,
+	getPortalDestination,
 	isBrowser,
 	isTouch,
 	kbd,
@@ -18,14 +18,14 @@ import {
 	pointInPolygon,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
+} from '$lib/internal/helpers/index.js';
 
-import { useFloating, usePortal } from '$lib/internal/actions';
-import type { MeltActionReturn } from '$lib/internal/types';
+import { useFloating, usePortal } from '$lib/internal/actions/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
 import { get, writable } from 'svelte/store';
-import type { TooltipEvents } from './events';
-import type { CreateTooltipProps } from './types';
+import type { TooltipEvents } from './events.js';
+import type { CreateTooltipProps } from './types.js';
 
 const defaults = {
 	positioning: {
@@ -69,8 +69,6 @@ export function createTooltip(props?: CreateTooltipProps) {
 		trigger: generateId(),
 	};
 
-	let timeout: number | null = null;
-
 	let clickedTrigger = false;
 
 	onMount(() => {
@@ -78,29 +76,38 @@ export function createTooltip(props?: CreateTooltipProps) {
 		activeTrigger.set(document.querySelector(`[aria-describedby="${ids.content}"]`));
 	});
 
+	let openTimeout: number | null = null;
+	let closeTimeout: number | null = null;
+
 	function openTooltip() {
-		if (timeout) {
-			window.clearTimeout(timeout);
-			timeout = null;
+		if (closeTimeout) {
+			window.clearTimeout(closeTimeout);
+			closeTimeout = null;
 		}
 
-		timeout = window.setTimeout(() => {
-			open.set(true);
-		}, get(openDelay));
+		if (!openTimeout) {
+			openTimeout = window.setTimeout(() => {
+				open.set(true);
+				openTimeout = null;
+			}, get(openDelay));
+		}
 	}
 
 	function closeTooltip(isBlur?: boolean) {
-		if (timeout) {
-			window.clearTimeout(timeout);
-			timeout = null;
+		if (openTimeout) {
+			window.clearTimeout(openTimeout);
+			openTimeout = null;
 		}
 
 		if (isBlur && isMouseInTooltipArea) return;
 
-		timeout = window.setTimeout(() => {
-			open.set(false);
-			if (isBlur) clickedTrigger = false;
-		}, get(closeDelay));
+		if (!closeTimeout) {
+			closeTimeout = window.setTimeout(() => {
+				open.set(false);
+				if (isBlur) clickedTrigger = false;
+				closeTimeout = null;
+			}, get(closeDelay));
+		}
 	}
 
 	const trigger = builder(name('trigger'), {
@@ -116,9 +123,9 @@ export function createTooltip(props?: CreateTooltipProps) {
 					if (!$closeOnPointerDown) return;
 					open.set(false);
 					clickedTrigger = true;
-					if (timeout) {
-						window.clearTimeout(timeout);
-						timeout = null;
+					if (openTimeout) {
+						window.clearTimeout(openTimeout);
+						openTimeout = null;
 					}
 				}),
 				addMeltEventListener(node, 'pointerenter', (e) => {
@@ -127,9 +134,9 @@ export function createTooltip(props?: CreateTooltipProps) {
 				}),
 				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
-					if (timeout) {
-						window.clearTimeout(timeout);
-						timeout = null;
+					if (openTimeout) {
+						window.clearTimeout(openTimeout);
+						openTimeout = null;
 					}
 				}),
 				addMeltEventListener(node, 'focus', () => {
@@ -139,9 +146,9 @@ export function createTooltip(props?: CreateTooltipProps) {
 				addMeltEventListener(node, 'blur', () => closeTooltip(true)),
 				addMeltEventListener(node, 'keydown', (e) => {
 					if (get(closeOnEscape) && e.key === kbd.ESCAPE) {
-						if (timeout) {
-							window.clearTimeout(timeout);
-							timeout = null;
+						if (openTimeout) {
+							window.clearTimeout(openTimeout);
+							openTimeout = null;
 						}
 
 						open.set(false);
@@ -172,8 +179,6 @@ export function createTooltip(props?: CreateTooltipProps) {
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['content']> => {
-			const portalParent = getPortalParent(node);
-
 			let unsubFloating = noop;
 			let unsubPortal = noop;
 
@@ -192,9 +197,12 @@ export function createTooltip(props?: CreateTooltipProps) {
 							unsubPortal();
 							return;
 						}
-						const portalReturn = usePortal(node, portalParent === $portal ? portalParent : $portal);
-						if (portalReturn && portalReturn.destroy) {
-							unsubPortal = portalReturn.destroy;
+						const portalDest = getPortalDestination(node, $portal);
+						if (portalDest) {
+							const portalReturn = usePortal(node, portalDest);
+							if (portalReturn && portalReturn.destroy) {
+								unsubPortal = portalReturn.destroy;
+							}
 						}
 					});
 				}

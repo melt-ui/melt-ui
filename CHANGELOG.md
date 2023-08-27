@@ -1,5 +1,191 @@
 # @melt-ui/svelte
 
+## 0.39.2
+
+### Patch Changes
+
+- aae6d6e2: Expose isInputValid, addTag, etc to helpers in tags-input
+
+## 0.39.1
+
+### Patch Changes
+
+- ff0e0316: Select: fix isSelected
+
+## 0.39.0
+
+### Minor Changes
+
+- d15008fd: Combobox: combine value and label into single selected state
+- 85254927: Select: combine value and label into single selected state
+
+### Patch Changes
+
+- b3637384: fix tooltip timers
+
+## 0.38.1
+
+### Patch Changes
+
+- 25118ed8: - Fix bug in `Select` where it would intercept form submissions
+- ede9de82: Internal: Swap custom deepEqual fn with `deep-equal` package
+- d790d32c: Tag Input: Add JSDoc to `add`, `update` and `remove` functions
+
+## 0.38.0
+
+### Minor Changes
+
+- eedcbb92: Change radio-group item-inputs to single hidden-input
+
+### Patch Changes
+
+- 0de31f18: remove slider default aria lavel
+- 7f4aa574: fix dialog content click closing
+- eedcbb92: Fix required attribute in radio-group
+
+## 0.37.6
+
+### Patch Changes
+
+- f56e9309: fix(#419) preserve body padding in removeScroll
+- 8355263b: fix: bug where dialog would call `handleClose` twice on click outside events
+
+## 0.37.5
+
+### Patch Changes
+
+- 8a6cdd76: fix accordion defaultValue
+
+## 0.37.4
+
+### Patch Changes
+
+- 41db52bf: fix missing tabindex on radio-group
+- afe293bd: fix popover click outside & nested popovers
+
+## 0.37.3
+
+### Patch Changes
+
+- 2579257b: fix combobox arrow keys
+
+## 0.37.2
+
+### Patch Changes
+
+- b10b2906: refactor menubar internals
+
+## 0.37.1
+
+### Patch Changes
+
+- c560cd5b: [Menubar] Hotfix: menubar race conditions
+
+## 0.37.0
+
+### Minor Changes
+
+- 77a39a59: fix pin input controlled value
+- 908f68ef: Rename Hover Card to Link Preview
+
+### Patch Changes
+
+- 4d9212fc: Keep Select menu open on select when `multiple` prop is `true`
+- abcae57d: fix: context menu not closing when clicking on svg element
+- 698a22d6: fix combobox controlled reset
+
+## 0.36.0
+
+### Minor Changes
+
+- 886ea40b: improve event canceling; replace e.detail.cancel() with e.preventDefault()
+
+## 0.35.1
+
+### Patch Changes
+
+- 7ab57673: fix accordion defaultValue
+
+## 0.35.0
+
+### Minor Changes
+
+- a5270d8d: Combobox: refactor API to be more declarative
+
+### Patch Changes
+
+- 9fe1832f: Select: improve valueLabel behaviour
+
+## 0.34.6
+
+### Patch Changes
+
+- 13d4cd85: [Context Menu] Fix bug preventing forms from being submitted within the menus
+- 0be3520a: [Select] Prevent trigger refocus when using mouse
+- 19942427: [Menubar] Fix lag when switching between menus
+
+## 0.34.5
+
+### Patch Changes
+
+- 69858eaf: Resolves a bug in select builder when multi-select is active where data-selected and aria-selected were not being set properly
+- aba59d25: fix: tag being created/updated even if not valid
+
+## 0.34.4
+
+### Patch Changes
+
+- c0c66f0d: [Types] Expose ComponentEvent types
+
+## 0.34.3
+
+### Patch Changes
+
+- adcf8853: Improved pin-input backspace behaviour
+
+## 0.34.2
+
+### Patch Changes
+
+- b3756704: remove TOC logs
+- dbf938bd: change checkbox default value
+
+## 0.34.1
+
+### Patch Changes
+
+- 8a673d15: remove preventDefault from radio button item
+
+## 0.34.0
+
+### Minor Changes
+
+- 822a0a55: Add TOC
+
+### Patch Changes
+
+- e46d57c8: feature: Add trim option to input-tags
+
+## 0.33.1
+
+### Patch Changes
+
+- 7fd917c1: change tabs autoSet behaviour
+- 2ca365c0: - Add `group` and `groupLabel` elements to the Menu builders
+
+## 0.33.0
+
+### Minor Changes
+
+- 5ba01f80: feat: Added support for `NodeNext` and `Bundler` for `tsconfig.json`'s `moduleResolution` config option
+
+## 0.32.2
+
+### Patch Changes
+
+- fbfef15b: Slider: defaultValue no longer required
+- 8cc15888: refactor: standardize portal prop
+
 ## 0.32.1
 
 ### Patch Changes

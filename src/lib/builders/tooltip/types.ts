@@ -1,9 +1,9 @@
-import type { FloatingConfig } from '$lib/internal/actions';
-import type { BuilderReturn } from '$lib/internal/types';
+import type { FloatingConfig } from '$lib/internal/actions/index.js';
+import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
-import type { createTooltip } from './create';
-import type { ChangeFn } from '$lib/internal/helpers';
-
+import type { createTooltip } from './create.js';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
+export type { TooltipComponentEvents } from './events.js';
 export type CreateTooltipProps = {
 	positioning?: FloatingConfig;
 	arrowSize?: number;
@@ -20,7 +20,7 @@ export type CreateTooltipProps = {
 	 *
 	 * @default 'body'
 	 */
-	portal?: HTMLElement | string;
+	portal?: HTMLElement | string | null;
 };
 
 export type Tooltip = BuilderReturn<typeof createTooltip>;

@@ -1,7 +1,7 @@
-import type { BuilderReturn } from '$lib/internal/types';
-import type { _Menu } from '../menu';
-import type { createMenubar } from './create';
-
+import type { BuilderReturn } from '$lib/internal/types.js';
+import type { _Menu } from '../menu/index.js';
+import type { createMenubar } from './create.js';
+export type { MenubarComponentEvents } from './events.js';
 // Props
 export type CreateMenubarProps = {
 	/**
@@ -20,8 +20,8 @@ export type CreateMenubarProps = {
 export type CreateMenubarMenuProps = _Menu['builder'];
 export type CreateMenubarSubmenuProps = _Menu['submenu'];
 export type MenubarMenuItemProps = _Menu['item'];
-export type MenubarCheckboxItemProps = _Menu['checkboxItem'];
 export type CreateMenuRadioGroupProps = _Menu['radioGroup'];
+export type CreateMenuCheckboxItemProps = _Menu['checkboxItem'];
 export type MenubarRadioItemProps = _Menu['radioItem'];
 export type MenubarRadioItemActionProps = _Menu['radioItemAction'];
 

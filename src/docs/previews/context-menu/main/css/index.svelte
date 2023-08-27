@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createContextMenu, melt } from '$lib';
+	import { createContextMenu, melt } from '$lib/index.js';
 	import { writable } from 'svelte/store';
 	import { ChevronRight, Check } from 'lucide-svelte';
 
@@ -90,7 +90,7 @@
 		Hide Melt UI
 		<div class="rightSlot">⌘H</div>
 	</div>
-	<div class="item" use:melt={$item} aria-disabled="true">
+	<div class="item" use:melt={$item} data-disabled>
 		Show All Components
 		<div class="rightSlot">⇧⌘N</div>
 	</div>
@@ -163,12 +163,6 @@
 		box-shadow: none;
 	}
 
-	.item[data-highlighted] {
-		background-color: rgb(var(--color-magnum-200) / 1);
-
-		color: rgb(var(--color-magnum-900) / 1);
-	}
-
 	.item[data-disabled] {
 		color: rgb(var(--color-neutral-300) / 1);
 	}
@@ -215,11 +209,6 @@
 	.rightSlot {
 		margin-left: auto;
 		padding-left: 1.25rem;
-	}
-
-	.icon {
-		height: 13px;
-		width: 13px;
 	}
 
 	.check {

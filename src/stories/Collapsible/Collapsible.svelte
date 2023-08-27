@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { createCollapsible } from '$lib';
-	import { PreviewWrapper } from '$docs/components';
+	import { createCollapsible, melt } from '$lib/index.js';
+	import { PreviewWrapper } from '$docs/components/index.js';
 	import { slide } from 'svelte/transition';
 	import { X } from 'lucide-svelte';
 	import { ChevronsUpDown } from 'lucide-svelte';
-	import { melt } from '$lib';
 
 	let openProp: boolean;
 	let disabledProp: boolean;

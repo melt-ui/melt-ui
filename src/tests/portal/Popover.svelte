@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { createPopover, melt } from '$lib';
+	import { createPopover, melt } from '$lib/index.js';
 	import { Settings2 } from 'lucide-svelte';
-	import { initLevel } from './level';
+	import { initLevel } from './level.js';
 
 	const {
 		elements: { trigger, content, arrow, close },

@@ -4,7 +4,7 @@ import type {
 	FocusTrapConfig,
 	PortalConfig,
 	EscapeKeydownConfig,
-} from '$lib/internal/actions';
+} from '$lib/internal/actions/index.js';
 import type { VirtualElement } from '@floating-ui/core';
 import type { Writable } from 'svelte/store';
 

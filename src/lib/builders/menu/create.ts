@@ -1,5 +1,5 @@
-import { createSeparator } from '$lib/builders';
-import { usePopper } from '$lib/internal/actions';
+import { createSeparator } from '$lib/builders/index.js';
+import { usePopper } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,
@@ -29,12 +29,12 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
-} from '$lib/internal/helpers';
-import type { Defaults, MeltActionReturn, TextDirection } from '$lib/internal/types';
+} from '$lib/internal/helpers/index.js';
+import type { Defaults, MeltActionReturn, TextDirection } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Writable } from 'svelte/store';
 
-import type { MenuEvents } from './events';
+import type { MenuEvents } from './events.js';
 import type {
 	_CheckboxItemProps,
 	_CreateMenuProps,
@@ -44,7 +44,7 @@ import type {
 	_MenuParts,
 	_RadioItemProps,
 	Selector,
-} from './types';
+} from './types.js';
 
 export const SUB_OPEN_KEYS: Record<TextDirection, string[]> = {
 	ltr: [...SELECTION_KEYS, kbd.ARROW_RIGHT],
@@ -332,7 +332,10 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						handleRovingFocus(itemEl);
 						return;
 					}
-					rootOpen.set(false);
+					// Allows forms to submit before the menu is removed from the DOM
+					sleep(1).then(() => {
+						rootOpen.set(false);
+					});
 				}),
 				addMeltEventListener(node, 'keydown', (e) => {
 					onItemKeyDown(e);
@@ -354,6 +357,23 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			return {
 				destroy: unsub,
 			};
+		},
+	});
+
+	const group = builder(name('group'), {
+		returned: () => {
+			return (groupId: string) => ({
+				role: 'group',
+				'aria-labelledby': groupId,
+			});
+		},
+	});
+
+	const groupLabel = builder(name('group-label'), {
+		returned: () => {
+			return (groupId: string) => ({
+				id: groupId,
+			});
 		},
 	});
 
@@ -1066,49 +1086,52 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		}
 	});
 
-	effect([rootOpen, rootActiveTrigger], ([$rootOpen, $rootActiveTrigger]) => {
-		if (!isBrowser) return;
+	effect(
+		[rootOpen, rootActiveTrigger, preventScroll],
+		([$rootOpen, $rootActiveTrigger, $preventScroll]) => {
+			if (!isBrowser) return;
 
-		const unsubs: Array<() => void> = [];
+			const unsubs: Array<() => void> = [];
 
-		if ($rootOpen && get(preventScroll)) {
-			unsubs.push(removeScroll());
-		}
-
-		if (!$rootOpen && $rootActiveTrigger) {
-			handleRovingFocus($rootActiveTrigger);
-		}
-
-		sleep(1).then(() => {
-			const menuEl = document.getElementById(rootIds.menu);
-			if (menuEl && $rootOpen && get(isUsingKeyboard)) {
-				if (opts.disableFocusFirstItem) {
-					handleRovingFocus(menuEl);
-					return;
-				}
-				// Get menu items belonging to the root menu
-				const menuItems = getMenuItems(menuEl);
-				if (!menuItems.length) return;
-
-				// Focus on first menu item
-				handleRovingFocus(menuItems[0]);
-			} else if ($rootActiveTrigger) {
-				// Focus on active trigger trigger
-				handleRovingFocus($rootActiveTrigger);
-			} else {
-				if (opts.disableTriggerRefocus) {
-					return;
-				}
-				const triggerEl = document.getElementById(rootIds.trigger);
-				if (!triggerEl) return;
-				handleRovingFocus(triggerEl);
+			if (opts.removeScroll && $rootOpen && $preventScroll) {
+				unsubs.push(removeScroll());
 			}
-		});
 
-		return () => {
-			unsubs.forEach((unsub) => unsub());
-		};
-	});
+			if (!$rootOpen && $rootActiveTrigger) {
+				handleRovingFocus($rootActiveTrigger);
+			}
+
+			sleep(1).then(() => {
+				const menuEl = document.getElementById(rootIds.menu);
+				if (menuEl && $rootOpen && get(isUsingKeyboard)) {
+					if (opts.disableFocusFirstItem) {
+						handleRovingFocus(menuEl);
+						return;
+					}
+					// Get menu items belonging to the root menu
+					const menuItems = getMenuItems(menuEl);
+					if (!menuItems.length) return;
+
+					// Focus on first menu item
+					handleRovingFocus(menuItems[0]);
+				} else if ($rootActiveTrigger) {
+					// Focus on active trigger trigger
+					handleRovingFocus($rootActiveTrigger);
+				} else {
+					if (opts.disableTriggerRefocus) {
+						return;
+					}
+					const triggerEl = document.getElementById(rootIds.trigger);
+					if (!triggerEl) return;
+					handleRovingFocus(triggerEl);
+				}
+			});
+
+			return () => {
+				unsubs.forEach((unsub) => unsub());
+			};
+		}
+	);
 
 	effect(rootOpen, ($rootOpen) => {
 		if (!isBrowser) return;
@@ -1294,6 +1317,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		menu: rootMenu,
 		open: rootOpen,
 		item,
+		group,
+		groupLabel,
 		arrow: rootArrow,
 		options: opts.rootOptions,
 		createCheckboxItem,

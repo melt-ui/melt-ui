@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest';
-import { extractMeltAttribute, processMeltAttributes } from './pp';
+import { extractMeltAttribute, processMeltAttributes } from './pp.js';
 
 const extractMeltAttributeCases = [
 	{ input: 'use:melt={$trigger(id)}', expected: { builder: 'trigger', args: 'id' } },

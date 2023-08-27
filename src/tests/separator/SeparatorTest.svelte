@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Orientation } from '$lib/internal/types';
-	import { createSeparator, melt } from '$lib';
+	import type { Orientation } from '$lib/internal/types.js';
+	import { createSeparator, melt } from '$lib/index.js';
 
 	export let orientation: Orientation = 'vertical';
 

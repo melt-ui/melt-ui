@@ -1,8 +1,8 @@
-import { ATTRS, KBD, PROPS } from '$docs/constants';
-import type { KeyboardSchema } from '$docs/types';
-import { builderSchema, elementSchema } from '$docs/utils';
-import { dialogEvents } from '$lib/builders/dialog/events';
-import type { BuilderData } from '.';
+import { ATTRS, KBD, PROPS } from '$docs/constants.js';
+import type { KeyboardSchema } from '$docs/types.js';
+import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { dialogEvents } from '$lib/builders/dialog/events.js';
+import type { BuilderData } from './index.js';
 
 /**
  * Props that are also returned in the form of stores via the `options` property.
@@ -159,7 +159,7 @@ const schemas = [builder, trigger, overlay, content, close, title, description];
 const features = [
 	'Fully managed focus',
 	'Can be controlled or uncontrolled',
-	'Esc closes the component automaticlaly',
+	'Esc closes the component automatically',
 ];
 
 export const dialogData: BuilderData = {
