@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.39.2
+
+### Patch Changes
+
+- aae6d6e2: Expose isInputValid, addTag, etc to helpers in tags-input
+
 ## 0.39.1
 
 ### Patch Changes
