@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.39.3
+
+### Patch Changes
+
+- 350246dd: Fix: Bug where selecitng an item in a `Select` would close it's parent popover or dialog
+
 ## 0.39.2
 
 ### Patch Changes
