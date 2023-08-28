@@ -137,11 +137,11 @@
 					data-[disabled]:opacity-50"
 				>
 					{#if $isSelected(book)}
-						<div class="check">
+						<div class="check absolute left-2 top-1/2 z-10 text-magnum-900">
 							<Check class="square-4" />
 						</div>
 					{/if}
-					<div>
+					<div class="pl-4">
 						<span class="font-medium">{book.title}</span>
 						<span class="block text-sm opacity-75">{book.author}</span>
 					</div>
