@@ -67,6 +67,7 @@ const defaults = {
 	loop: false,
 	dir: 'ltr',
 	defaultOpen: false,
+	typeahead: true
 } satisfies Defaults<_CreateMenuProps>;
 
 export function createMenuBuilder(opts: _MenuBuilderOptions) {
@@ -80,6 +81,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		closeOnOutsideClick,
 		portal,
 		forceVisible,
+		typeahead
 	} = opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
@@ -224,7 +226,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					 */
 					const isCharacterKey = e.key.length === 1;
 					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-					if (!isModifierKey && isCharacterKey) {
+					if (!isModifierKey && isCharacterKey && get(typeahead) === true) {
 						handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 					}
 				})
@@ -762,7 +764,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							return;
 						}
 
-						if (!isModifierKey && isCharacterKey) {
+						if (!isModifierKey && isCharacterKey && get(typeahead) === true) {
 							// typeahead logic
 							handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 						}
