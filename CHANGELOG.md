@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.39.5
+
+### Patch Changes
+
+- 6f2063e6: fix slider overrideable
+
 ## 0.39.4
 
 ### Patch Changes
