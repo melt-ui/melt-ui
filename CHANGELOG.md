@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.39.4
+
+### Patch Changes
+
+- 2c9ef167: fix: Combobox isSelected function
+
 ## 0.39.3
 
 ### Patch Changes
