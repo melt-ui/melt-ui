@@ -34,7 +34,7 @@ import { debounceable } from '$lib/internal/helpers/store/debounceable.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import deepEqual from 'deep-equal';
 import { onMount, tick } from 'svelte';
-import { derived, get, readonly, writable, type Writable } from 'svelte/store';
+import { derived, get, readonly, writable, type Readable, type Writable } from 'svelte/store';
 import { createLabel } from '../label/create.js';
 import type { ComboboxEvents } from './events.js';
 import type { ComboboxItemProps, ComboboxOption, CreateComboboxProps } from './types.js';
@@ -80,6 +80,10 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		withDefaults.selected ??
 		(writable(withDefaults.defaultSelected) as Writable<ComboboxOption<Value> | undefined>);
 	const selected = overridable(selectedWritable, withDefaults?.onSelectedChange);
+
+	const highlighted = derived(highlightedItem, ($highlightedItem) =>
+		$highlightedItem ? getOptionProps($highlightedItem) : undefined
+	) as Readable<ComboboxOption<Value> | undefined>;
 
 	// The current value of the input element.
 	const inputValue = debounceable(withDefaults.defaultSelected?.label ?? '', withDefaults.debounce);
@@ -237,7 +241,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 	 */
 	const isHighlighted = derived([highlightedItem], ([$value]) => {
 		return (item: Value) => {
-			return deepEqual(JSON.parse($value?.getAttribute('data-value') ?? 'null'), item);
+			return deepEqual($value ? getOptionProps($value).value : null, item);
 		};
 	});
 
@@ -655,6 +659,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		states: {
 			open,
 			selected,
+			highlighted,
 			inputValue: readonly(inputValue),
 			isEmpty: readonly(isEmpty),
 		},
