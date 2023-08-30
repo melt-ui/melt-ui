@@ -94,12 +94,11 @@ export type _CreateMenuProps = {
 	 */
 	forceVisible?: boolean;
 
-
 	/**
 	 * Whether to use typeahead to automatically focus elements.
 	 * @default true
 	 */
-	typeahead?: boolean
+	typeahead?: boolean;
 };
 
 export type _CreateSubmenuProps = Pick<_CreateMenuProps, 'arrowSize' | 'positioning'> & {

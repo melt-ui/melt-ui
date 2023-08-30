@@ -1,5 +1,5 @@
 import { createLabel, createSeparator } from '$lib/builders/index.js';
-import { usePopper, usePortal } from '$lib/internal/actions/index.js';
+import { usePopper } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
 	SELECTION_KEYS,

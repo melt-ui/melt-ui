@@ -67,7 +67,7 @@ const defaults = {
 	loop: false,
 	dir: 'ltr',
 	defaultOpen: false,
-	typeahead: true
+	typeahead: true,
 } satisfies Defaults<_CreateMenuProps>;
 
 export function createMenuBuilder(opts: _MenuBuilderOptions) {
@@ -81,7 +81,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		closeOnOutsideClick,
 		portal,
 		forceVisible,
-		typeahead
+		typeahead,
 	} = opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
