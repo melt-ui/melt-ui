@@ -32,7 +32,7 @@ import {
 } from '$lib/internal/helpers/index.js';
 import { debounceable } from '$lib/internal/helpers/store/debounceable.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import deepEqual from 'deep-equal';
+import { dequal as deepEqual } from 'dequal';
 import { onMount, tick } from 'svelte';
 import { derived, get, readonly, writable, type Writable } from 'svelte/store';
 import { createLabel } from '../label/create.js';
