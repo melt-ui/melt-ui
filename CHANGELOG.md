@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.40.0
+
+### Minor Changes
+
+- 0528b0e1: Dropdown Menu: Add option to enable or disable typeahead
+
 ## 0.39.5
 
 ### Patch Changes

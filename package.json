@@ -1,6 +1,6 @@
 {
 	"name": "@melt-ui/svelte",
-	"version": "0.39.5",
+	"version": "0.40.0",
 	"license": "MIT",
 	"scripts": {
 		"dev": "vite dev",
