@@ -102,6 +102,11 @@ const builder = builderSchema(BUILDER_NAME, {
 			type: 'Writable<T>',
 			description: 'A writable store whose value is the selected item.',
 		},
+		{
+			name: 'highlighted',
+			type: 'Writable<T>',
+			description: 'A writable store whose value is the highlighted item.',
+		},
 	],
 	helpers: [
 		{
