@@ -93,6 +93,13 @@ export type _CreateMenuProps = {
 	 * @default false
 	 */
 	forceVisible?: boolean;
+
+
+	/**
+	 * Whether to use typeahead to automatically focus elements.
+	 * @default true
+	 */
+	typeahead?: boolean
 };
 
 export type _CreateSubmenuProps = Pick<_CreateMenuProps, 'arrowSize' | 'positioning'> & {
@@ -145,6 +152,7 @@ export type _MenuBuilderOptions = {
 		closeOnOutsideClick: Writable<boolean>;
 		portal: Writable<string | HTMLElement | undefined | null>;
 		forceVisible: Writable<boolean>;
+		typeahead: Writable<boolean>;
 	};
 	disableTriggerRefocus?: boolean;
 	disableFocusFirstItem?: boolean;
