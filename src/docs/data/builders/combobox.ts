@@ -110,6 +110,12 @@ const builder = builderSchema(BUILDER_NAME, {
 			description:
 				'A derived store that returns a function that returns whether or not the item is selected.',
 		},
+		{
+			name: 'isHighlighted',
+			type: 'Readable<(item: T) => boolean>',
+			description:
+				'A derived store that returns a function that returns whether or not the item is highlighted.',
+		},
 	],
 	options: OPTION_PROPS,
 });

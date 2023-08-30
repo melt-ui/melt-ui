@@ -231,6 +231,16 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		return (item: Value) => deepEqual($value?.value, item);
 	});
 
+	/**
+	 * Determines if a given item is highlighted.
+	 * This is useful for displaying additional markup on the highlighted item.
+	 */
+	const isHighlighted = derived([highlightedItem], ([$value]) => {
+		return (item: Value) => {
+			return deepEqual(JSON.parse($value?.getAttribute('data-value') ?? 'null'), item);
+		};
+	});
+
 	/** -------- */
 	/** ELEMENTS */
 	/** -------- */
@@ -650,6 +660,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		},
 		helpers: {
 			isSelected,
+			isHighlighted,
 		},
 		options,
 	};
