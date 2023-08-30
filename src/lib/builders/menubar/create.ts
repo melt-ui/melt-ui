@@ -97,6 +97,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		portal: undefined,
 		forceVisible: false,
 		defaultOpen: false,
+		typeahead: true,
 	} satisfies CreateMenubarMenuProps;
 
 	const createMenu = (props?: CreateMenubarMenuProps) => {
