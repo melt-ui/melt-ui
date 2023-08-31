@@ -30,7 +30,7 @@ import {
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
-import { debounceable } from '$lib/internal/helpers/store/debounceable.js';
+import { debounceable } from '$lib/internal/helpers/store/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { dequal as deepEqual } from 'dequal';
 import { onMount, tick } from 'svelte';
@@ -134,12 +134,12 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 
 		// If no item is selected the input should be cleared and the filter reset.
 		if (!$selectedItem) {
-			inputValue.forceSet('');
+			inputValue.set('');
 		} else {
-			inputValue.forceSet(get(selected)?.label ?? '');
+			inputValue.set(get(selected)?.label ?? '');
 		}
 
-		touchedInput.forceSet(false);
+		touchedInput.set(false);
 	}
 
 	/**
@@ -213,7 +213,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 	/** Closes the menu & clears the active trigger */
 	function closeMenu() {
 		open.set(false);
-		touchedInput.forceSet(false);
+		touchedInput.set(false);
 	}
 
 	/**
@@ -379,8 +379,8 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 				addMeltEventListener(node, 'input', (e) => {
 					if (!isHTMLInputElement(e.target)) return;
 					const value = e.target.value;
-					inputValue.set(value);
-					touchedInput.set(true);
+					inputValue.debouncedSet(value);
+					touchedInput.debouncedSet(true);
 
 					tick().then(() => {
 						const $highlightedItem = get(highlightedItem);
@@ -604,11 +604,11 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		if (!isHTMLElement(selectedEl)) return;
 
 		const dataLabel = selectedEl.getAttribute('data-label');
-		inputValue.set(dataLabel ?? selectedEl.textContent ?? '');
+		inputValue.debouncedSet(dataLabel ?? selectedEl.textContent ?? '');
 	});
 
 	effect(selected, function setInputValue($selected) {
-		inputValue.set($selected?.label ?? '');
+		inputValue.debouncedSet($selected?.label ?? '');
 	});
 
 	/**
@@ -645,7 +645,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		states: {
 			open,
 			selected,
-			inputValue: readonly(inputValue),
+			inputValue: inputValue,
 			isEmpty: readonly(isEmpty),
 		},
 		helpers: {
