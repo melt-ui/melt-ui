@@ -15,7 +15,7 @@
 	let copied = false;
 	let copytimeout: ReturnType<typeof setTimeout>;
 	function copyInstallCommand() {
-		navigator.clipboard.writeText(`npm install @melt-ui/svelte`);
+		navigator.clipboard.writeText(`npx @melt-ui/cli@latest init`);
 		copied = true;
 		clearTimeout(copytimeout);
 		copytimeout = setTimeout(() => {
@@ -50,7 +50,7 @@
 				active:translate-y-0.5 sm:shrink"
 			aria-label="Copy install command"
 		>
-			<span>npm install <span class="whitespace-nowrap">@melt-ui/svelte</span></span>
+			<span>npx @melt-ui/cli@latest init</span>
 			{#if copied}
 				<div in:fly={{ y: -4 }}>
 					<Check class="inline-block text-magnum-500 transition square-4" />
