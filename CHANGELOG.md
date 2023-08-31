@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.41.0
+
+### Minor Changes
+
+- e6fbcbce: Combobox: change inputValue to Writable
+
+### Patch Changes
+
+- f74ec13d: fix context-menu and menubar typeahead
+
 ## 0.40.0
 
 ### Minor Changes
