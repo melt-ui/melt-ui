@@ -31,7 +31,7 @@
 <div class="relative flex min-h-[1080px] w-full flex-col items-center">
 	<div class="flex flex-col items-center px-2">
 		<h1
-			class="z-10 mt-8 max-w-2xl text-center font-display text-5xl sm:text-6xl
+			class="z-10 mt-[clamp(2rem,5vh,6rem)] max-w-2xl text-center font-display text-5xl sm:text-6xl
 		md:max-w-3xl md:text-7xl lg:max-w-5xl lg:text-[6rem] lg:leading-none"
 		>
 			<Logo class="inline-block h-12 md:-my-2 md:h-20 lg:-my-4 lg:h-32" /> <b>melt</b> away complexity
@@ -71,7 +71,10 @@
 	</div>
 
 	<div class="dotted-bg mt-1 grid w-full grow overflow-hidden">
-		<div class="absolute -top-2 left-1/2 z-10 h-[50rem] w-[90rem] -translate-x-1/2 md:block">
+		<div
+			class="translate-y absolute -top-2 left-1/2 z-10 h-[50rem]
+			w-[90rem] -translate-x-1/2 translate-y-[clamp(0px,5vh,5rem)] md:block"
+		>
 			<Accordion class="absolute left-1/2 top-[7rem] -translate-x-1/2 sm:top-[5rem]" />
 			<Slider class="absolute left-1/2 top-[25rem] translate-x-[calc(-50%+30px)]" />
 			<Switch class="absolute left-[52.5rem] top-[3.5rem] sm:left-[62.5rem] sm:top-[3.5rem]" />
