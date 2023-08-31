@@ -45,6 +45,18 @@ const builder = builderSchema(BUILDER_NAME, {
 			name: 'selectedItem',
 			description: 'The list item that is currently selected.'
 		}
+	],
+	helpers: [
+		{
+			name: 'isCollapsedGroup',
+			description: 'A derived store that returns a function that returns whether or not the item is collapsed.',
+			type: 'Readable<(itemId: string) => boolean>'
+		},
+		{
+			name: 'isSelected',
+			description: 'A derived store that returns a function that returns whether or not the item is selected.',
+			type: 'Readable<(itemId: string) => boolean>'
+		},
 	]
 });
 
