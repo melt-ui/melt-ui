@@ -34,11 +34,9 @@ const builder = builderSchema(BUILDER_NAME, {
 	],
 	states: [
 		{
-			name: 'collapsedItems',
+			name: 'collapsedGroups',
 			description: 'The list of IDs of items, who have a group that is not expanded.'
-		}
-	],
-	helpers: [
+		},
 		{
 			name: 'focusedItem',
 			description: 'The list item that is currently focused.'

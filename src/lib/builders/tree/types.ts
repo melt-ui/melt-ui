@@ -1,7 +1,7 @@
-import type { createTreeViewBuilder  } from "./create";
+import type { createTreeView  } from "./create";
 
 // TODO: add multiselect option?
-export type CreateTreeViewArgs = {
+export type CreateTreeViewProps = {
 	forceVisible?: boolean;
 	// multiselect?: boolean;
 };
@@ -16,4 +16,7 @@ export type ItemDescription = {
     childrenIdxs: number[];
 };
 
-export type CreateTreeViewReturn = ReturnType<typeof createTreeViewBuilder>;
+export type TreeView = ReturnType<typeof createTreeView>;
+export type TreeViewElements = TreeView['elements'];
+export type TreeViewStates = TreeView['states'];
+export type TreeViewHelpers = TreeView['helpers'];

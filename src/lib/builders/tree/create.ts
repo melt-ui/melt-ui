@@ -1,10 +1,11 @@
-import { get, writable, type Writable } from 'svelte/store';
+import { derived, get, writable, type Writable } from 'svelte/store';
 import type { Defaults } from "$lib/internal/types";
 import {
     addEventListener,
     builder,
     createElHelpers,
     executeCallbacks,
+    handleRovingFocus,
     generateId,
     getElementByMeltId,
     isBrowser,
@@ -14,13 +15,13 @@ import {
     styleToString
 } from '$lib/internal/helpers';
 
-import type { CreateTreeViewArgs, ItemDescription, TreeParts } from './types';
+import type { CreateTreeViewProps, ItemDescription, TreeParts } from './types';
 import { onMount, tick } from 'svelte';
 
 
 const defaults = {
     forceVisible: false,
-} satisfies Defaults<CreateTreeViewArgs>;
+} satisfies Defaults<CreateTreeViewProps>;
 
 const ATTRS = {
     TABINDEX: 'tabindex',
@@ -31,7 +32,7 @@ const ATTRS = {
 
 const { name } = createElHelpers<TreeParts>('tree-view');
 
-export function createTreeViewBuilder(args: CreateTreeViewArgs) {
+export function createTreeView(args: CreateTreeViewProps) {
     const argsWithDefaults = { ...defaults, ...args };
     const { forceVisible } = argsWithDefaults;
 
@@ -41,12 +42,29 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     const focusedItem: Writable<HTMLLIElement | null> = writable(null);
     const selectedItem: Writable<HTMLLIElement | null> = writable(null);
     const selectedId: Writable<string | null> = writable(null);
-    const collapsedItems: Writable<string[]> = writable([]);
+    const collapsedGroups: Writable<string[]> = writable([]);
 
     let rootEl: HTMLElement | null;
     let items: HTMLLIElement[];
     let focusedItemIdx = 0;
     let itemChildren: ItemDescription[] = [];
+
+    /**
+     * Determines if the tree view item is selected.
+     * This is useful for displaying additional markup.
+     */
+    const isSelected = derived([selectedItem], ([$value]) => {
+        return (itemId: string) => $value?.getAttribute('data-id') === itemId;
+    });
+
+    /**
+     * Determines if a tree view item is collapsed or not.
+     * This is useful for displaying additional markup or using Svelte transitions
+     * on the group item.
+     */
+    const isCollapsedGroup = derived([collapsedGroups], ([$value]) => {
+        return (itemId: string) => $value.includes(itemId);
+    });
 
     const rootIds = {
 		tree: generateId(),
@@ -75,11 +93,9 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
          * so we always update the tabindex so that only the currently
          * focused element has a focusable tabindex.
          */
-        items[focusedItemIdx].setAttribute(ATTRS.TABINDEX, '-1');
-        items[newIndex].setAttribute(ATTRS.TABINDEX, '0');
+        handleRovingFocus(items[newIndex]);
         focusedItem.set(items[newIndex]);
         focusedItemIdx = newIndex;
-        items[newIndex].focus();
     }
 
     function updateSelectedElement(el: HTMLLIElement) {
@@ -92,7 +108,7 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     }
 
     /**
-     * After trees get expanded or collapsed, we need to 
+     * After trees get expanded or collapsed, we need to
      * update our list of items to properly reflect those changes.
      */
     async function updateItemList(el: HTMLLIElement) {
@@ -125,7 +141,7 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     }
 
     function getElementAttributes(el: HTMLLIElement) {
-        const hasChildren = el.hasAttribute(ATTRS.EXPANDED);        
+        const hasChildren = el.hasAttribute(ATTRS.EXPANDED);
         const expanded = el.getAttribute(ATTRS.EXPANDED);
         const dataId = el.getAttribute(ATTRS.DATAID);
 
@@ -141,14 +157,14 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
 
         if (!hasChildren || expanded === null || dataId === null) return;
 
-        const hidden = get(collapsedItems);
+        const hidden = get(collapsedGroups);
 
         if (expanded === 'false') {
-            collapsedItems.set(hidden.filter((item) => item !== dataId))
+            collapsedGroups.set(hidden.filter((item) => item !== dataId))
             el.setAttribute(ATTRS.EXPANDED, 'true');
 
             await updateItemList(el);
-        } 
+        }
     }
 
     async function hideChildrenElements(el: HTMLLIElement) {
@@ -156,14 +172,14 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
 
         if (!hasChildren || expanded === null || dataId === null) return;
 
-        const hidden = get(collapsedItems);
+        const hidden = get(collapsedGroups);
 
         if (expanded === 'true') {
-            collapsedItems.set([...hidden, dataId]);
+            collapsedGroups.set([...hidden, dataId]);
             el.setAttribute(ATTRS.EXPANDED, 'false');
 
             await updateItemList(el);
-        }        
+        }
     }
 
     function elementHasChildren(el: HTMLLIElement) {
@@ -174,20 +190,20 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
         return el.getAttribute(ATTRS.EXPANDED) === 'true';
     }
 
-    async function handleHiddenElements(el: HTMLLIElement) {      
+    async function handleHiddenElements(el: HTMLLIElement) {
         const { hasChildren, expanded, dataId } = getElementAttributes(el);
 
         if (!hasChildren || expanded === null || dataId === null) return;
 
-        const hidden = get(collapsedItems);
+        const hidden = get(collapsedGroups);
 
         if (expanded === 'false') {
             // Remove id from hidden items.
-            collapsedItems.set(hidden.filter((item) => item !== dataId))
+            collapsedGroups.set(hidden.filter((item) => item !== dataId))
             el.setAttribute(ATTRS.EXPANDED, 'true');
         } else {
             // Add id to hidden items.
-            collapsedItems.set([...hidden, dataId]);
+            collapsedGroups.set([...hidden, dataId]);
             el.setAttribute(ATTRS.EXPANDED, 'false');
         }
 
@@ -195,13 +211,13 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     }
 
     const item = builder(name('item'), {
-        stores: [collapsedItems, selectedId],
-        returned: ([$collapsedItems, $selectedId]) => {
+        stores: [collapsedGroups, selectedId],
+        returned: ([$collapsedGroups, $selectedId]) => {
             return (opts: { value: string, id: string, hasChildren: boolean} ) => {
                 // Have some default options that can be passed to the create()
                 const { value, id, hasChildren } = opts;
 
-                const expanded = hasChildren ? { 'aria-expanded': !$collapsedItems.includes(id) } : {};
+                const expanded = hasChildren ? { 'aria-expanded': !$collapsedGroups.includes(id) } : {};
 
                 return {
                     role: 'treeitem',
@@ -225,7 +241,7 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                     }
 
                     const el = e.target;
-                    
+
                     if (!rootEl || !isHTMLElement(el) || el.getAttribute('role') !== 'treeitem' || items.length === 0) return;
 
                     // Prevent other tree events from also firing the event.
@@ -235,23 +251,23 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                     if (key === kbd.ENTER || key === kbd.SPACE) {
                         updateSelectedElement(items[focusedItemIdx]);
                     }
-                    
+
                     else if (key === kbd.ARROW_DOWN && focusedItemIdx !== items.length - 1) {
                         updateFocusedElement(focusedItemIdx + 1);
-                    } 
-                    
+                    }
+
                     else if (key === kbd.ARROW_UP && focusedItemIdx !== 0) {
                         updateFocusedElement(focusedItemIdx - 1);
-                    } 
-                    
+                    }
+
                     else if (key === kbd.HOME && focusedItemIdx !== 0) {
                         updateFocusedElement(0);
-                    } 
-                    
+                    }
+
                     else if (key === kbd.END && focusedItemIdx != items.length - 1) {
                         updateFocusedElement(items.length - 1);
-                    } 
-                    
+                    }
+
                     else if (key === kbd.ARROW_LEFT && elementHasChildren(<HTMLLIElement>el) && elementIsExpanded(<HTMLLIElement>el)) {
                         await hideChildrenElements(<HTMLLIElement>el);
                     }
@@ -267,13 +283,13 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                     else if (key === kbd.ARROW_RIGHT && elementHasChildren(<HTMLLIElement>el) && elementIsExpanded(<HTMLLIElement>el)) {
                         updateFocusedElement(focusedItemIdx + 1);
                     }
-                    
+
                     else if (key === kbd.ARROW_RIGHT && elementHasChildren(<HTMLLIElement>el) && !elementIsExpanded(<HTMLLIElement>el)) {
                         await showChildrenElements(<HTMLLIElement>el);
                     }
 
                     else if (keyIsLetter) {
-                        /** 
+                        /**
                          * Check whether a value with the letter exists
                          * after the current focused element and focus it,
                          * if it does exist. If it does not exist, we check
@@ -294,10 +310,10 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
                         })
 
                         if (!foundNextFocusable) {
-                            /** 
+                            /**
                              * Check elements before currently focused one,
                              * if no index has been found yet.
-                             * */ 
+                             * */
                             foundNextFocusable = values.slice(0, focusedItemIdx).some((item, i) => {
                                 if (item.value?.toLowerCase().at(0) === key) {
                                     nextFocusIdx = i;
@@ -310,19 +326,19 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
 
                         if (foundNextFocusable && values[nextFocusIdx].id) {
                             updateFocusedElement(nextFocusIdx);
-                        } 
+                        }
                     }
                 }),
                 addEventListener(node, 'click', async (e) => {
                     const el = e.currentTarget;
-                    
+
                     if (!rootEl || !isHTMLElement(el) || el.getAttribute('role') !== 'treeitem' || !items.length) return;
-                    
+
                     e.stopPropagation();
 
-                    
+
                     await handleHiddenElements(<HTMLLIElement>el);
-                    
+
                     updateSelectedElement(<HTMLLIElement>el);
 
                     const idx = items.findIndex((item) => item === el);
@@ -341,14 +357,14 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
     });
 
     const group = builder(name('group'), {
-        stores: [collapsedItems],
-        returned: ([$collapsedItems]) => {
+        stores: [collapsedGroups],
+        returned: ([$collapsedGroups]) => {
             return (opts: { id: string }) => ({
                 role: 'group',
                 'data-group-id': opts.id,
-                hidden: !forceVisible && isBrowser && $collapsedItems.includes(opts.id) ? true : undefined,
+                hidden: !forceVisible && isBrowser && $collapsedGroups.includes(opts.id) ? true : undefined,
                 style: styleToString({
-                    display: !forceVisible && $collapsedItems.includes(opts.id) ? 'none' : undefined
+                    display: !forceVisible && $collapsedGroups.includes(opts.id) ? 'none' : undefined
                 })
             })
         },
@@ -413,9 +429,13 @@ export function createTreeViewBuilder(args: CreateTreeViewArgs) {
             group
         },
         states: {
-            collapsedItems,
+            collapsedGroups,
             focusedItem,
             selectedItem
+        },
+        helpers: {
+            isCollapsedGroup,
+            isSelected
         }
     }
 }

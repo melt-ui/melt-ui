@@ -24,36 +24,37 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { slide } from 'svelte/transition';
-	import type { CreateTreeViewReturn } from '$lib';
+	import {
+		melt,
+		type TreeViewElements,
+		type TreeViewHelpers,
+	} from '$lib/index.js';
 
 	export let treeItems: TreeItem[];
 	export let level = 1;
 
-	const { item, group, collapsedItems, selectedItem } = getContext<{
-		item: CreateTreeViewReturn['elements']['item'];
-		group: CreateTreeViewReturn['elements']['group'];
-		collapsedItems: CreateTreeViewReturn['states']['collapsedItems'];
-		selectedItem: CreateTreeViewReturn['states']['selectedItem'];
+	const { item, group, isCollapsedGroup, isSelected } = getContext<{
+		item: TreeViewElements['item'];
+		group: TreeViewElements['group'];
+		isCollapsedGroup: TreeViewHelpers['isCollapsedGroup'];
+		isSelected: TreeViewHelpers['isSelected'];
 	}>('tree');
 </script>
 
 {#each treeItems as { title, icon, children, id }, i (i)}
 	{@const itemId = `${id}`}
-	{@const childrenAreHidden = $collapsedItems.includes(itemId)}
-	{@const isSelected = $selectedItem?.getAttribute('data-id') === itemId}
 
 	<li
-		{...$item({
+		use:melt={$item({
 			value: title,
 			id: itemId,
 			hasChildren: children?.length > 0,
 		})}
-		use:item
 		class={level !== 1 ? 'pl-4' : ''}
 	>
 		<div class="flex items-center gap-1 rounded-md p-1">
 			<!-- Add icon. -->
-			{#if icon === 'folder' && children && !childrenAreHidden}
+			{#if icon === 'folder' && children && !$isCollapsedGroup(itemId)}
 				<svelte:component this={icons['folderOpen']} class="h-4 w-4" />
 			{:else}
 				<svelte:component this={icons[icon]} class="h-4 w-4" />
@@ -62,13 +63,13 @@
 			<span class="select-none">{title}</span>
 
 			<!-- Selected icon. -->
-			{#if isSelected}
+			{#if $isSelected(itemId)}
 				<svelte:component this={icons['highlight']} class="h-4 w-4" />
 			{/if}
 		</div>
 
-		{#if children && !childrenAreHidden}
-			<ul {...$group({ id: itemId })} use:group transition:slide>
+		{#if children && !$isCollapsedGroup(itemId)}
+			<ul use:melt={$group({ id: itemId })} transition:slide>
 				<svelte:self treeItems={children} level={level + 1} />
 			</ul>
 		{/if}

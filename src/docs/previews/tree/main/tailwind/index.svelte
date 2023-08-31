@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { setContext } from 'svelte';
-	import { createTreeViewBuilder } from '$lib/index.js';
+	import { createTreeView } from '$lib/index.js';
 
 	import Tree from './tree.svelte';
 	import type { TreeItem } from './tree.svelte';
@@ -8,14 +8,17 @@
 
 	const {
 		elements: { tree, label, item, group },
-		states: { collapsedItems, focusedItem, selectedItem },
-	} = createTreeViewBuilder({ forceVisible: true });
+		states: { collapsedGroups, focusedItem, selectedItem },
+		helpers: { isCollapsedGroup, isSelected },
+	} = createTreeView({ forceVisible: true });
 
 	setContext('tree', {
 		item,
 		group,
-		collapsedItems,
+		collapsedGroups,
 		selectedItem,
+		isCollapsedGroup,
+		isSelected,
 	});
 
 	const treeItems: TreeItem[] = [
@@ -44,11 +47,11 @@
 			],
 		},
 		{
-			title: 'src',
+			title: 'routes',
 			icon: 'folder',
 			children: [
 				{
-					title: 'routes',
+					title: 'contents',
 					icon: 'folder',
 					children: [
 						{
