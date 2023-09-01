@@ -401,23 +401,15 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 
 			let unsubEscapeKeydown = noop;
 
-			effect(open, ($open) => {
-				if ($open) {
-					tick().then(() => {
-						const escape = useEscapeKeydown(node, {
-							handler: () => {
-								closeMenu();
-								reset();
-							},
-						});
-						if (escape && escape.destroy) {
-							unsubEscapeKeydown = escape.destroy;
-						}
-					});
-				} else {
-					unsubEscapeKeydown();
-				}
+			const escape = useEscapeKeydown(node, {
+				handler: () => {
+					closeMenu();
+					reset();
+				},
 			});
+			if (escape && escape.destroy) {
+				unsubEscapeKeydown = escape.destroy;
+			}
 
 			return {
 				destroy() {
@@ -447,7 +439,15 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 			const unsubscribe = executeCallbacks(
 				//  Bind the popper portal to the input element.
 				effect(
-					[isVisible, preventScroll, closeOnEscape, portal, closeOnOutsideClick, positioning],
+					[
+						isVisible,
+						preventScroll,
+						closeOnEscape,
+						portal,
+						closeOnOutsideClick,
+						positioning,
+						activeTrigger,
+					],
 					([
 						$isVisible,
 						$preventScroll,
@@ -455,47 +455,46 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 						$portal,
 						$closeOnOutsideClick,
 						$positioning,
+						$activeTrigger,
 					]) => {
 						unsubPopper();
 						unsubScroll();
-						const $activeTrigger = get(activeTrigger);
-						if (!($isVisible && $activeTrigger)) return;
+
+						if (!$isVisible || !$activeTrigger) return;
 						if ($preventScroll) {
 							unsubScroll = removeScroll();
 						}
 
-						tick().then(() => {
-							const popper = usePopper(node, {
-								anchorElement: $activeTrigger,
-								open,
-								options: {
-									floating: $positioning,
-									focusTrap: null,
-									clickOutside: $closeOnOutsideClick
-										? {
-												handler: (e) => {
-													const target = e.target;
-													if (target === $activeTrigger) return;
-													closeMenu();
-													reset();
-												},
-										  }
-										: null,
-									escapeKeydown: $closeOnEscape
-										? {
-												handler: () => {
-													closeMenu();
-													reset();
-												},
-										  }
-										: null,
-									portal: getPortalDestination(node, $portal),
-								},
-							});
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
+						const popper = usePopper(node, {
+							anchorElement: $activeTrigger,
+							open,
+							options: {
+								floating: $positioning,
+								focusTrap: null,
+								clickOutside: $closeOnOutsideClick
+									? {
+											handler: (e) => {
+												const target = e.target;
+												if (target === $activeTrigger) return;
+												closeMenu();
+												reset();
+											},
+									  }
+									: null,
+								escapeKeydown: $closeOnEscape
+									? {
+											handler: () => {
+												closeMenu();
+												reset();
+											},
+									  }
+									: null,
+								portal: getPortalDestination(node, $portal),
+							},
 						});
+						if (popper && popper.destroy) {
+							unsubPopper = popper.destroy;
+						}
 					}
 				),
 				// Remove highlight when the pointer leaves the menu.
