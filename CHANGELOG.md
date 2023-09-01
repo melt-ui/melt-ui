@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.41.1
+
+### Patch Changes
+
+- 37afdfc8: set package json entry point
+
 ## 0.41.0
 
 ### Minor Changes
