@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.41.2
+
+### Patch Changes
+
+- d92db5aa: fix derivedWithUnsubscribe not properly unsubscribing
+
 ## 0.41.1
 
 ### Patch Changes
