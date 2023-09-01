@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.41.3
+
+### Patch Changes
+
+- 5d41f209: Popover: fix edge-case where multiple menus were appearing on click
+
 ## 0.41.2
 
 ### Patch Changes
