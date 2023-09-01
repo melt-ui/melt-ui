@@ -31,6 +31,7 @@ import {
 	addMeltEventListener,
 	getPortalDestination,
 	removeScroll,
+	isElement,
 } from '$lib/internal/helpers/index.js';
 import { onDestroy, onMount, tick } from 'svelte';
 import { usePopper } from '$lib/internal/actions/index.js';
@@ -161,6 +162,12 @@ export function createMenubar(props?: CreateMenubarProps) {
 									floating: $positioning,
 									portal: getPortalDestination(node, $portal),
 									clickOutside: {
+										ignore: (e) => {
+											const target = e.target;
+											const menubarEl = document.getElementById(rootIds.menubar);
+											if (!menubarEl || !isElement(target)) return false;
+											return menubarEl.contains(target);
+										},
 										handler: () => {
 											activeMenu.set('');
 										},
