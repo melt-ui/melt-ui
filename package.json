@@ -143,6 +143,7 @@
 		"vitest": "^0.33.0"
 	},
 	"svelte": "./dist/index.js",
+	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"type": "module",
 	"packageManager": "pnpm@8.6.3"
