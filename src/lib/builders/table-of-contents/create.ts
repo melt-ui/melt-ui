@@ -378,7 +378,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 		initialization();
 
 		mutationObserver = new MutationObserver(mutationHandler);
-		mutationObserver.observe(elementTarget, { childList: true })
+		mutationObserver.observe(elementTarget, { childList: true, subtree: true })
 
 		return () => {
 			observer?.disconnect();
