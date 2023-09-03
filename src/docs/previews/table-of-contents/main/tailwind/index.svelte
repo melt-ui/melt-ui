@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Bird } from 'lucide-svelte';
 	import Tree from './tree.svelte';
 	import { createTableOfContents } from '$lib';
 
@@ -26,6 +27,8 @@
 			}
 		},
 	});
+
+	let hideHeading = false;
 </script>
 
 <div
@@ -35,15 +38,30 @@
 		id="toc-builder-preview"
 		class="space-y-2 overflow-y-auto rounded-lg bg-white p-4 text-neutral-900"
 	>
-		<h2>First Heading</h2>
-		<p>This is the first heading.</p>
-		<h3>Sub-Heading</h3>
-		<p>This is a sub-heading H3 example.</p>
+		<button
+			on:click={() => (hideHeading = !hideHeading)}
+			class="border-1 rounded-md border-magnum-500 bg-magnum-500/70 px-2 py-1 hover:bg-magnum-500"
+		>
+			{hideHeading ? 'Show heading' : 'Hide heading'}
+		</button>
+
+		{#if !hideHeading}
+			<h2>First Heading</h2>
+			<p>This is the first heading.</p>
+
+			<h3>Sub-Heading</h3>
+			<p>This is a sub-heading H3 example.</p>
+		{/if}
 		<h4>This H4 is excluded</h4>
 		<p>
 			H4 headings were added to the list of excluded heading tags, so this will
 			not show up in the table of contents.
 		</p>
+		<h2 class="inline-flex items-center justify-center gap-2">
+			<Bird />
+			Icon heading
+		</h2>
+		<p>Here we have a heading with an icon.</p>
 		<h2 data-toc-ignore>This H2 gets ignored</h2>
 		<p>
 			You can adjust the filter function to show or hide headings based on
@@ -78,11 +96,13 @@
 	<div class="overflow-y-auto rounded-lg bg-white p-4">
 		<p class="font-semibold text-neutral-900">On This Page</p>
 		<nav>
-			<Tree
-				tree={$headingsTree}
-				activeHeadingIdxs={$activeHeadingIdxs}
-				{item}
-			/>
+			{#key $headingsTree}
+				<Tree
+					tree={$headingsTree}
+					activeHeadingIdxs={$activeHeadingIdxs}
+					{item}
+				/>
+			{/key}
 		</nav>
 	</div>
 </div>

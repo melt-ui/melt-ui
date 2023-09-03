@@ -8,6 +8,7 @@ import type { Defaults } from '$lib/internal/types';
 
 import { onMount } from 'svelte';
 import { get, writable, type Writable } from 'svelte/store';
+import { dequal } from 'dequal';
 
 import type {
 	Heading,
@@ -59,13 +60,17 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 	let headingsList: HTMLHeadingElement[] = [];
 	let elementsList: Element[] = [];
 	/** Lookup to see which heading an element belongs to. */
-	const elementHeadingLU: ElementHeadingLU = {};
+	let elementHeadingLU: ElementHeadingLU = {};
 	/** Lookup to see which parent headings a heading has. */
-	const headingParentsLU: HeadingParentsLU = {};
+	let headingParentsLU: HeadingParentsLU = {};
 	/** List of the active parent indexes. */
 	const activeParentIdxs: Writable<number[]> = writable([]);
 	/** List of the indexes of the visible elements. */
 	const visibleElementIdxs: Writable<number[]> = writable([]);
+
+	let elementTarget: Element | null = null;
+
+	let mutationObserver: MutationObserver | null = null;
 
 	let observer: IntersectionObserver | null = null;
 	const observer_threshold = 0.25;
@@ -88,6 +93,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 				title: arr[i].innerText,
 				index: startIndex + i,
 				id: arr[i].id,
+				node: arr[i],
 				children: [],
 			};
 
@@ -109,10 +115,13 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 		return tree;
 	}
 
-	function generateInitialLists(): void {
+	function generateInitialLists(elementTarget: Element) {
+		let headingsList: HTMLHeadingElement[] = [];
+		let elementsList: Element[] = [];
+
 		const includedHeadings = possibleHeadings.filter((h) => !exclude.includes(h));
 
-		const elementTarget = document.querySelector(selector);
+		// const elementTarget = document.querySelector(selector);
 		const targetHeaders: NodeListOf<HTMLHeadingElement> | undefined =
 			elementTarget?.querySelectorAll(includedHeadings.join(', '));
 
@@ -146,6 +155,11 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
 		// We don't care about elements before our first header element, so we can remove those as well.
 		elementsList.splice(0, elementsList.indexOf(headingsList[0]));
+
+		return {
+			headingsList,
+			elementsList
+		}
 	}
 
 	function findParentIdxs(): void {
@@ -317,9 +331,28 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 		},
 	});
 
-	onMount(() => {
-		// Init
-		generateInitialLists();
+	function mutationHandler() {
+		const newElementTarget = document.querySelector(selector);
+
+		if (!newElementTarget) return;
+
+		const { headingsList: newHeadingsList, elementsList: newElementsList } = generateInitialLists(newElementTarget);
+
+		if (dequal(headingsList, newHeadingsList)) return;
+
+		// Update lists and LUs and re-run initialization.
+		headingsList = newHeadingsList;
+		elementsList = newElementsList;
+
+		headingParentsLU = {};
+		elementHeadingLU = {};
+
+		initialization();
+	}
+
+	function initialization() {
+		observer?.disconnect();
+
 		findParentIdxs();
 		createElementHeadingLU();
 
@@ -333,9 +366,23 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 			});
 			elementsList.forEach((el) => observer?.observe(el));
 		}
+	}
+
+	onMount(() => {
+		elementTarget = document.querySelector(selector);
+
+		if (!elementTarget) return;
+
+		({headingsList, elementsList} = generateInitialLists(elementTarget));
+
+		initialization();
+
+		mutationObserver = new MutationObserver(mutationHandler);
+		mutationObserver.observe(elementTarget, { childList: true })
 
 		return () => {
 			observer?.disconnect();
+			mutationObserver?.disconnect();
 		};
 	});
 
