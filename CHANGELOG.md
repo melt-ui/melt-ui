@@ -1,5 +1,16 @@
 # @melt-ui/svelte
 
+## 0.42.0
+
+### Minor Changes
+
+- 4aa5ee70: Toasts: updateToast helper fn && null closeDelay option
+
+### Patch Changes
+
+- 113776fa: internal refactors
+- a53aa213: Fix: bug preventing menubar triggers from toggling
+
 ## 0.41.3
 
 ### Patch Changes
