@@ -3,7 +3,10 @@
 	import Tree from './tree.svelte';
 	import { createTableOfContents } from '$lib';
 
-	const { activeHeadingIdxs, headingsTree, item } = createTableOfContents({
+	const {
+		elements: { item },
+		states: { activeHeadingIdxs, headingsTree },
+	} = createTableOfContents({
 		selector: '#toc-builder-preview',
 		exclude: ['h1', 'h4', 'h5', 'h6'],
 		activeType: 'lowest-parents',

@@ -387,8 +387,12 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 	});
 
 	return {
-		activeHeadingIdxs,
-		headingsTree,
-		item,
+		elements: {
+			item
+		},
+		states: {
+			activeHeadingIdxs,
+			headingsTree
+		}
 	};
 }

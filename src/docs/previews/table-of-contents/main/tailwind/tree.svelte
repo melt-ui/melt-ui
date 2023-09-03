@@ -1,13 +1,13 @@
 <script lang="ts">
 	import {
 		type TableOfContentsItem,
-		type CreateTableOfContentsReturn,
+		type TableOfContentsElements,
 		melt,
 	} from '$lib';
 
 	export let tree: TableOfContentsItem[] = [];
 	export let activeHeadingIdxs: number[];
-	export let item: CreateTableOfContentsReturn['item'];
+	export let item: TableOfContentsElements['item'];
 	export let level = 1;
 </script>
 
