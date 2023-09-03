@@ -121,7 +121,6 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
 		const includedHeadings = possibleHeadings.filter((h) => !exclude.includes(h));
 
-		// const elementTarget = document.querySelector(selector);
 		const targetHeaders: NodeListOf<HTMLHeadingElement> | undefined =
 			elementTarget?.querySelectorAll(includedHeadings.join(', '));
 
