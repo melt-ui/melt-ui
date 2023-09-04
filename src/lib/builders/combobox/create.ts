@@ -239,9 +239,9 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 	 * Determines if a given item is highlighted.
 	 * This is useful for displaying additional markup on the highlighted item.
 	 */
-	const isHighlighted = derived([highlightedItem], ([$value]) => {
+	const isHighlighted = derived([highlighted], ([$value]) => {
 		return (item: Value) => {
-			return deepEqual($value ? getOptionProps($value).value : null, item);
+			return deepEqual($value?.value, item);
 		};
 	});
 
