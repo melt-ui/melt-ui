@@ -1,5 +1,4 @@
 <script lang="ts" context="module">
-	import Combobox from './Combobox.svelte';
 	import Dialog from './Dialog.svelte';
 	import Popover from './Popover.svelte';
 	import Select from './Select.svelte';
@@ -7,7 +6,6 @@
 	const components = {
 		dialog: Dialog,
 		popover: Popover,
-		combobox: Combobox,
 		select: Select,
 	} as const;
 
@@ -26,10 +24,9 @@
 					},
 				],
 			},
-			{ name: 'combobox' },
 			{
 				name: 'popover',
-				children: [{ name: 'dialog' }, { name: 'popover' }, { name: 'combobox' }],
+				children: [{ name: 'dialog' }, { name: 'popover' }],
 			},
 			{ name: 'select' },
 		],

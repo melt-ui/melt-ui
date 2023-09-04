@@ -12,7 +12,7 @@ const OPTION_PROPS = [
 		name: 'closeDelay',
 		type: 'number',
 		default: '5000',
-		description: 'The delay in milliseconds before the toast closes.',
+		description: 'The delay in milliseconds before the toast closes. Set to 0 to disable.',
 	},
 	{
 		name: 'type',
@@ -57,6 +57,16 @@ const builder = builderSchema(BUILDER_NAME, {
 			name: 'addToast',
 			type: '(props: AddToastProps<T>) => void',
 			description: 'A helper function to add a toast to the toasts store.',
+		},
+		{
+			name: 'removeToast',
+			type: '(id: string) => void',
+			description: 'A helper function to remove a toast from the toasts store.',
+		},
+		{
+			name: 'updateToast',
+			type: '(id: string, props: T) => void',
+			description: "A helper function to update a toast's data in the toasts store.",
 		},
 	],
 	actions: [

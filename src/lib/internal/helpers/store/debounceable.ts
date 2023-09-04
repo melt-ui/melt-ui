@@ -4,7 +4,7 @@ export function debounceable<T>(initialValue: T, wait = 0) {
 	const store = writable({ value: initialValue, debounced: initialValue });
 	let timeout: NodeJS.Timeout | undefined;
 
-	function set(value: T) {
+	function debouncedSet(value: T) {
 		store.update((state) => {
 			state.value = value;
 			return state;
@@ -22,7 +22,7 @@ export function debounceable<T>(initialValue: T, wait = 0) {
 		}, wait);
 	}
 
-	function update(fn: (value: T) => T) {
+	function debouncedUpdate(fn: (value: T) => T) {
 		store.update((state) => {
 			state.value = fn(state.value);
 			return state;
@@ -40,7 +40,7 @@ export function debounceable<T>(initialValue: T, wait = 0) {
 		}, wait);
 	}
 
-	function forceSet(value: T) {
+	function set(value: T) {
 		store.update((state) => {
 			state.value = value;
 			state.debounced = value;
@@ -48,7 +48,7 @@ export function debounceable<T>(initialValue: T, wait = 0) {
 		});
 	}
 
-	function forceUpdate(fn: (value: T) => T) {
+	function update(fn: (value: T) => T) {
 		store.update((state) => {
 			state.value = fn(state.value);
 			state.debounced = state.value;
@@ -58,9 +58,9 @@ export function debounceable<T>(initialValue: T, wait = 0) {
 
 	return {
 		...store,
+		debouncedSet,
+		debouncedUpdate,
 		set,
 		update,
-		forceSet,
-		forceUpdate,
 	};
 }

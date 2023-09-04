@@ -3,12 +3,22 @@
 
 	const {
 		elements: { root, range, thumb },
+		states: { value },
 	} = createSlider({
-		defaultValue: [30],
-		max: 100,
+		defaultValue: [0],
+		max: 13,
+		step: 5,
+		onValueChange({ curr, next }) {
+			const isMultipleOf5 = next[0] % 5 === 0;
+			if (!isMultipleOf5) {
+				return curr;
+			}
+			return next;
+		},
 	});
 </script>
 
+{$value}
 <span use:melt={$root} class="relative flex h-[20px] w-[200px] items-center">
 	<span class="block h-[3px] w-full bg-black/40">
 		<span use:melt={$range} class="h-[3px] bg-white" />

@@ -23,7 +23,7 @@
 <button
 	use:melt={$trigger}
 	class="inline-flex items-center justify-center rounded-xl bg-white px-4 py-3
-    font-medium leading-none text-magnum-700 shadow hover:opacity-75"
+	font-medium leading-none text-magnum-700 shadow hover:opacity-75"
 >
 	Open Dialog
 </button>

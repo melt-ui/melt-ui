@@ -1,5 +1,50 @@
 # @melt-ui/svelte
 
+## 0.42.0
+
+### Minor Changes
+
+- 4aa5ee70: Toasts: updateToast helper fn && null closeDelay option
+
+### Patch Changes
+
+- 113776fa: internal refactors
+- a53aa213: Fix: bug preventing menubar triggers from toggling
+
+## 0.41.3
+
+### Patch Changes
+
+- 5d41f209: Popover: fix edge-case where multiple menus were appearing on click
+
+## 0.41.2
+
+### Patch Changes
+
+- d92db5aa: fix derivedWithUnsubscribe not properly unsubscribing
+
+## 0.41.1
+
+### Patch Changes
+
+- 37afdfc8: set package json entry point
+
+## 0.41.0
+
+### Minor Changes
+
+- e6fbcbce: Combobox: change inputValue to Writable
+
+### Patch Changes
+
+- f74ec13d: fix context-menu and menubar typeahead
+
+## 0.40.0
+
+### Minor Changes
+
+- 0528b0e1: Dropdown Menu: Add option to enable or disable typeahead
+
 ## 0.39.5
 
 ### Patch Changes

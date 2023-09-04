@@ -111,6 +111,7 @@ export function useFloating(
 			const y = Math.round(data.y);
 
 			Object.assign(floating.style, {
+				position: options.strategy,
 				top: `${y}px`,
 				left: `${x}px`,
 			});

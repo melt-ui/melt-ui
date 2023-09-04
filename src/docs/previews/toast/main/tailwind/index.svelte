@@ -36,13 +36,16 @@
 	];
 
 	function addRandomToast() {
-		addToast({ data: toastData[Math.floor(Math.random() * toastData.length)] });
+		addToast({
+			data: toastData[Math.floor(Math.random() * toastData.length)],
+			closeDelay: 0,
+		});
 	}
 </script>
 
 <button
-	class="inline-flex items-center justify-center rounded-md bg-white px-4 py-2 font-medium leading-none
-	text-magnum-700 shadow-lg hover:opacity-75"
+	class="inline-flex items-center justify-center rounded-xl bg-white px-4 py-3
+	font-medium leading-none text-magnum-700 shadow hover:opacity-75"
 	on:click={addRandomToast}
 >
 	Show toast

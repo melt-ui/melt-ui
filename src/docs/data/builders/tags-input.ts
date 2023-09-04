@@ -168,7 +168,8 @@ const builder = builderSchema(BUILDER_NAME, {
 		{
 			name: 'isInputValid',
 			type: '(input: string) => boolean',
-			description: 'A method that returns if a input would be valid according to the props defined in the builder.',
+			description:
+				'A method that returns if a input would be valid according to the props defined in the builder.',
 		},
 		{
 			name: 'addTag',

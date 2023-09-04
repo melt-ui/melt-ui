@@ -30,9 +30,9 @@ import {
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
-import { debounceable } from '$lib/internal/helpers/store/debounceable.js';
+import { debounceable } from '$lib/internal/helpers/store/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import deepEqual from 'deep-equal';
+import { dequal as deepEqual } from 'dequal';
 import { onMount, tick } from 'svelte';
 import { derived, get, readonly, writable, type Readable, type Writable } from 'svelte/store';
 import { createLabel } from '../label/create.js';
@@ -138,12 +138,12 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 
 		// If no item is selected the input should be cleared and the filter reset.
 		if (!$selectedItem) {
-			inputValue.forceSet('');
+			inputValue.set('');
 		} else {
-			inputValue.forceSet(get(selected)?.label ?? '');
+			inputValue.set(get(selected)?.label ?? '');
 		}
 
-		touchedInput.forceSet(false);
+		touchedInput.set(false);
 	}
 
 	/**
@@ -217,7 +217,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 	/** Closes the menu & clears the active trigger */
 	function closeMenu() {
 		open.set(false);
-		touchedInput.forceSet(false);
+		touchedInput.set(false);
 	}
 
 	/**
@@ -393,8 +393,8 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 				addMeltEventListener(node, 'input', (e) => {
 					if (!isHTMLInputElement(e.target)) return;
 					const value = e.target.value;
-					inputValue.set(value);
-					touchedInput.set(true);
+					inputValue.debouncedSet(value);
+					touchedInput.debouncedSet(true);
 
 					tick().then(() => {
 						const $highlightedItem = get(highlightedItem);
@@ -415,23 +415,15 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 
 			let unsubEscapeKeydown = noop;
 
-			effect(open, ($open) => {
-				if ($open) {
-					tick().then(() => {
-						const escape = useEscapeKeydown(node, {
-							handler: () => {
-								closeMenu();
-								reset();
-							},
-						});
-						if (escape && escape.destroy) {
-							unsubEscapeKeydown = escape.destroy;
-						}
-					});
-				} else {
-					unsubEscapeKeydown();
-				}
+			const escape = useEscapeKeydown(node, {
+				handler: () => {
+					closeMenu();
+					reset();
+				},
 			});
+			if (escape && escape.destroy) {
+				unsubEscapeKeydown = escape.destroy;
+			}
 
 			return {
 				destroy() {
@@ -461,7 +453,15 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 			const unsubscribe = executeCallbacks(
 				//  Bind the popper portal to the input element.
 				effect(
-					[isVisible, preventScroll, closeOnEscape, portal, closeOnOutsideClick, positioning],
+					[
+						isVisible,
+						preventScroll,
+						closeOnEscape,
+						portal,
+						closeOnOutsideClick,
+						positioning,
+						activeTrigger,
+					],
 					([
 						$isVisible,
 						$preventScroll,
@@ -469,47 +469,46 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 						$portal,
 						$closeOnOutsideClick,
 						$positioning,
+						$activeTrigger,
 					]) => {
 						unsubPopper();
 						unsubScroll();
-						const $activeTrigger = get(activeTrigger);
-						if (!($isVisible && $activeTrigger)) return;
+
+						if (!$isVisible || !$activeTrigger) return;
 						if ($preventScroll) {
 							unsubScroll = removeScroll();
 						}
 
-						tick().then(() => {
-							const popper = usePopper(node, {
-								anchorElement: $activeTrigger,
-								open,
-								options: {
-									floating: $positioning,
-									focusTrap: null,
-									clickOutside: $closeOnOutsideClick
-										? {
-												handler: (e) => {
-													const target = e.target;
-													if (target === $activeTrigger) return;
-													closeMenu();
-													reset();
-												},
-										  }
-										: null,
-									escapeKeydown: $closeOnEscape
-										? {
-												handler: () => {
-													closeMenu();
-													reset();
-												},
-										  }
-										: null,
-									portal: getPortalDestination(node, $portal),
-								},
-							});
-							if (popper && popper.destroy) {
-								unsubPopper = popper.destroy;
-							}
+						const popper = usePopper(node, {
+							anchorElement: $activeTrigger,
+							open,
+							options: {
+								floating: $positioning,
+								focusTrap: null,
+								clickOutside: $closeOnOutsideClick
+									? {
+											handler: (e) => {
+												const target = e.target;
+												if (target === $activeTrigger) return;
+												closeMenu();
+												reset();
+											},
+									  }
+									: null,
+								escapeKeydown: $closeOnEscape
+									? {
+											handler: () => {
+												closeMenu();
+												reset();
+											},
+									  }
+									: null,
+								portal: getPortalDestination(node, $portal),
+							},
 						});
+						if (popper && popper.destroy) {
+							unsubPopper = popper.destroy;
+						}
 					}
 				),
 				// Remove highlight when the pointer leaves the menu.
@@ -618,11 +617,11 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		if (!isHTMLElement(selectedEl)) return;
 
 		const dataLabel = selectedEl.getAttribute('data-label');
-		inputValue.set(dataLabel ?? selectedEl.textContent ?? '');
+		inputValue.debouncedSet(dataLabel ?? selectedEl.textContent ?? '');
 	});
 
 	effect(selected, function setInputValue($selected) {
-		inputValue.set($selected?.label ?? '');
+		inputValue.debouncedSet($selected?.label ?? '');
 	});
 
 	/**
@@ -660,7 +659,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 			open,
 			selected,
 			highlighted,
-			inputValue: readonly(inputValue),
+			inputValue,
 			isEmpty: readonly(isEmpty),
 		},
 		helpers: {

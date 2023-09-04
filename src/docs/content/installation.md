@@ -7,7 +7,19 @@ description: Install Melt UI, a headless UI library for Svelte.
     import { Callout, InstallTabs } from '$docs/components';
 </script>
 
-## Installation
+## Automatic Installation
+
+Melt UI provides a CLI to help you get started quickly. To use it, run the following command in your
+terminal.
+
+```bash
+npx @melt-ui/cli@latest init
+```
+
+It will automatically add `@melt-ui/svelte` to your dependencies. You may optionally choose to
+install our [preprocessor](/docs/preprocessor) as well.
+
+## Manual Installation
 
 Install Melt UI with your package manager of choice.
 

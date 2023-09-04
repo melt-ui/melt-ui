@@ -89,7 +89,7 @@ const builder = builderSchema(BUILDER_NAME, {
 		},
 		{
 			name: 'inputValue',
-			type: 'Readable<string>',
+			type: 'Writable<string>',
 			description: 'A readable store with the value of the input.',
 		},
 		{

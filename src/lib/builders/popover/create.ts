@@ -99,11 +99,6 @@ export function createPopover(args?: CreatePopoverProps) {
 			};
 		},
 		action: (node: HTMLElement) => {
-			/**
-			 * We need to get the parent portal before the menu is opened,
-			 * otherwise the parent will have been moved to the body, and
-			 * will no longer be an ancestor of this node.
-			 */
 			let unsubPopper = noop;
 
 			const unsubDerived = effect(
@@ -127,29 +122,28 @@ export function createPopover(args?: CreatePopoverProps) {
 				]) => {
 					unsubPopper();
 					if (!$isVisible || !$activeTrigger) return;
-					tick().then(() => {
-						const popper = usePopper(node, {
-							anchorElement: $activeTrigger,
-							open,
-							options: {
-								floating: $positioning,
-								focusTrap: $disableFocusTrap ? null : undefined,
-								clickOutside: $closeOnOutsideClick ? undefined : null,
-								escapeKeydown: $closeOnEscape
-									? {
-											handler: () => {
-												handleClose();
-											},
-									  }
-									: null,
-								portal: getPortalDestination(node, $portal),
-							},
-						});
 
-						if (popper && popper.destroy) {
-							unsubPopper = popper.destroy;
-						}
+					const popper = usePopper(node, {
+						anchorElement: $activeTrigger,
+						open,
+						options: {
+							floating: $positioning,
+							focusTrap: $disableFocusTrap ? null : undefined,
+							clickOutside: $closeOnOutsideClick ? undefined : null,
+							escapeKeydown: $closeOnEscape
+								? {
+										handler: () => {
+											handleClose();
+										},
+								  }
+								: null,
+							portal: getPortalDestination(node, $portal),
+						},
 					});
+
+					if (popper && popper.destroy) {
+						unsubPopper = popper.destroy;
+					}
 				}
 			);
 
@@ -162,8 +156,13 @@ export function createPopover(args?: CreatePopoverProps) {
 		},
 	});
 
-	function toggleOpen() {
-		open.update((prev) => !prev);
+	function toggleOpen(triggerEl?: HTMLElement) {
+		open.update((prev) => {
+			return !prev;
+		});
+		if (triggerEl) {
+			activeTrigger.set(triggerEl);
+		}
 	}
 
 	const trigger = builder(name('trigger'), {
@@ -181,14 +180,12 @@ export function createPopover(args?: CreatePopoverProps) {
 		action: (node: HTMLElement): MeltActionReturn<PopoverEvents['trigger']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
-					activeTrigger.set(node);
-					toggleOpen();
+					toggleOpen(node);
 				}),
 				addMeltEventListener(node, 'keydown', (e) => {
 					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
 					e.preventDefault();
-					activeTrigger.set(node);
-					toggleOpen();
+					toggleOpen(node);
 				})
 			);
 

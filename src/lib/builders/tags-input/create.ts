@@ -761,7 +761,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			isInputValid,
 			addTag,
 			updateTag,
-			removeTag
+			removeTag,
 		},
 		options,
 	};

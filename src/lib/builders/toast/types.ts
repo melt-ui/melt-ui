@@ -4,6 +4,8 @@ export type { ToastComponentEvents } from './events.js';
 export type EmptyType = Record<never, never>;
 
 export type CreateToasterProps = {
+	// Time in milliseconds before the toast is automatically closed.
+	// If set to 0, the toast will not be automatically closed.
 	closeDelay?: number;
 	type?: 'foreground' | 'background';
 };
@@ -22,7 +24,7 @@ export type Toast<T = object> = {
 	closeDelay: number;
 	type: 'foreground' | 'background';
 	data: T;
-	timeout: number;
+	timeout: number | null;
 	createdAt: number;
 	pausedAt?: number;
 	pauseDuration: number;
