@@ -233,7 +233,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			return {
 				'data-melt-id': ids.root,
 				'data-disabled': $disabled ? true : undefined,
-				disabled: $disabled,
+				disabled: $disabled ?? undefined,
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<TagsInputEvents['root']> => {
@@ -261,7 +261,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			return {
 				'data-melt-id': ids.input,
 				'data-disabled': $disabled ? '' : undefined,
-				disabled: $disabled,
+				disabled: $disabled ?? undefined,
 				placeholder: $placeholder,
 			};
 		},

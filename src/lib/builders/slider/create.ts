@@ -53,7 +53,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 		stores: [disabled, orientation],
 		returned: ([$disabled, $orientation]) => {
 			return {
-				disabled: $disabled,
+				disabled: $disabled ?? undefined,
 				'data-orientation': $orientation,
 				style: $disabled ? undefined : 'touch-action: none;',
 				'data-melt-id': ids.root,

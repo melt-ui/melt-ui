@@ -100,7 +100,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 				// generate the content ID here so that we can grab it in the content
 				// builder action to ensure the values match.
 				return {
-					disabled: $disabled || disabled,
+					disabled: ($disabled || disabled) ?? undefined,
 					'aria-expanded': isSelected(itemValue, $value) ? true : false,
 					'aria-disabled': disabled ? true : false,
 					'data-disabled': disabled ? true : undefined,

@@ -92,7 +92,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 				return {
 					'data-complete': $value.length && $value.every((v) => v.length > 0) ? '' : undefined,
 					placeholder: $placeholder,
-					disabled: $disabled,
+					disabled: $disabled ?? undefined,
 					type: $type,
 					value: currValue,
 				};

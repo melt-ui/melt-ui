@@ -37,7 +37,7 @@ export function createToggle(props?: CreateToggleProps) {
 		returned: ([$pressed, $disabled]) => {
 			return {
 				'data-disabled': $disabled ? true : undefined,
-				disabled: $disabled,
+				disabled: $disabled ?? undefined,
 				'data-state': $pressed ? 'on' : 'off',
 				'aria-pressed': $pressed,
 				type: 'button',

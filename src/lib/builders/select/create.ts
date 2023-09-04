@@ -383,7 +383,7 @@ export function createSelect<
 				'data-state': $open ? 'open' : 'closed',
 				'data-disabled': $disabled ? true : undefined,
 				'aria-labelledby': ids.label,
-				disabled: $disabled,
+				disabled: $disabled ?? undefined,
 				id: ids.trigger,
 				tabindex: 0,
 			} as const;
@@ -659,7 +659,7 @@ export function createSelect<
 				hidden: true,
 				tabIndex: -1,
 				required: $required,
-				disabled: $disabled,
+				disabled: $disabled ?? undefined,
 				style: styleToString({
 					position: 'absolute',
 					opacity: 0,

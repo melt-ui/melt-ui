@@ -179,7 +179,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 			return {
 				'aria-hidden': true,
 				tabindex: -1,
-				disabled: $disabled,
+				disabled: $disabled ?? undefined,
 				value: $value,
 				required: $required,
 				style: styleToString({

@@ -78,7 +78,7 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 				value: $value,
 				checked: $checked === 'indeterminate' ? false : $checked,
 				required: $required,
-				disabled: $disabled,
+				disabled: $disabled ?? undefined,
 				style: styleToString({
 					position: 'absolute',
 					opacity: 0,

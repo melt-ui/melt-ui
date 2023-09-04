@@ -43,7 +43,7 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 			({
 				'data-state': $open ? 'open' : 'closed',
 				'data-disabled': $disabled ? '' : undefined,
-				disabled: $disabled,
+				disabled: $disabled ?? undefined,
 			} as const),
 		action: (node: HTMLElement): MeltActionReturn<CollapsibleEvents['trigger']> => {
 			const unsub = addMeltEventListener(node, 'click', () => {
