@@ -13,6 +13,7 @@ import {
 	styleToString,
 	toWritableStores,
 	addMeltEventListener,
+	disabledAttr,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, readonly, writable } from 'svelte/store';
@@ -232,8 +233,8 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		returned: ($disabled) => {
 			return {
 				'data-melt-id': ids.root,
-				'data-disabled': $disabled ? true : undefined,
-				disabled: $disabled ?? undefined,
+				'data-disabled': disabledAttr($disabled),
+				disabled: disabledAttr($disabled),
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<TagsInputEvents['root']> => {
@@ -260,8 +261,8 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		returned: ([$disabled, $placeholder]) => {
 			return {
 				'data-melt-id': ids.input,
-				'data-disabled': $disabled ? '' : undefined,
-				disabled: $disabled ?? undefined,
+				'data-disabled': disabledAttr($disabled),
+				disabled: disabledAttr($disabled),
 				placeholder: $placeholder,
 			};
 		},
@@ -487,8 +488,8 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					'data-selected': selected ? '' : undefined,
 					'data-editable': editable ? '' : undefined,
 					'data-editing': editing ? '' : undefined,
-					'data-disabled': disabled ? '' : undefined,
-					disabled: disabled,
+					'data-disabled': disabledAttr(!!disabled),
+					disabled: disabledAttr(!!disabled),
 					hidden: editing,
 					tabindex: -1,
 					style: editing
@@ -582,8 +583,8 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					'data-tag-value': tag.value,
 					'data-selected': selected ? '' : undefined,
 					'data-editing': editing ? '' : undefined,
-					'data-disabled': disabled ? '' : undefined,
-					disabled: disabled,
+					'data-disabled': disabledAttr(!!disabled),
+					disabled: disabledAttr(!!disabled),
 					tabindex: -1,
 				};
 			};

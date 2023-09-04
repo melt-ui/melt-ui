@@ -3,6 +3,7 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	disabledAttr,
 	effect,
 	executeCallbacks,
 	getDirectionalKeys,
@@ -105,7 +106,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 					disabled,
 					'data-value': itemValue,
 					'data-orientation': $orientation,
-					'data-disabled': disabled ? true : undefined,
+					'data-disabled': disabledAttr(disabled),
 					'data-state': checked ? 'checked' : 'unchecked',
 					'aria-checked': checked,
 					type: 'button',
@@ -179,7 +180,7 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 			return {
 				'aria-hidden': true,
 				tabindex: -1,
-				disabled: $disabled ?? undefined,
+				disabled: disabledAttr($disabled),
 				value: $value,
 				required: $required,
 				style: styleToString({

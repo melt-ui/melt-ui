@@ -2,6 +2,7 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	disabledAttr,
 	executeCallbacks,
 	handleRovingFocus,
 	isHTMLElement,
@@ -130,10 +131,10 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 
 					const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
 					return {
-						disabled,
+						disabled: disabledAttr(disabled),
 						pressed,
 						'data-orientation': $orientation,
-						'data-disabled': disabled ? true : undefined,
+						'data-disabled': disabledAttr(disabled),
 						'data-value': itemValue,
 						'data-state': pressed ? 'on' : 'off',
 						'aria-pressed': pressed,

@@ -2,6 +2,7 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	disabledAttr,
 	executeCallbacks,
 	generateId,
 	isBrowser,
@@ -92,7 +93,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 				return {
 					'data-complete': $value.length && $value.every((v) => v.length > 0) ? '' : undefined,
 					placeholder: $placeholder,
-					disabled: $disabled ?? undefined,
+					disabled: disabledAttr($disabled),
 					type: $type,
 					value: currValue,
 				};

@@ -11,6 +11,7 @@ import {
 	createElHelpers,
 	createTypeaheadSearch,
 	derivedVisible,
+	disabledAttr,
 	effect,
 	executeCallbacks,
 	forward,
@@ -381,9 +382,9 @@ export function createSelect<
 				'aria-expanded': $open,
 				'aria-required': $required,
 				'data-state': $open ? 'open' : 'closed',
-				'data-disabled': $disabled ? true : undefined,
+				'data-disabled': disabledAttr($disabled),
 				'aria-labelledby': ids.label,
-				disabled: $disabled ?? undefined,
+				disabled: disabledAttr($disabled),
 				id: ids.trigger,
 				tabindex: 0,
 			} as const;
@@ -568,7 +569,7 @@ export function createSelect<
 					'data-selected': isSelected ? '' : undefined,
 					'data-value': JSON.stringify(props.value),
 					'data-label': props.label ?? undefined,
-					'data-disabled': props.disabled ? '' : undefined,
+					'data-disabled': disabledAttr(!!props.disabled),
 					tabindex: -1,
 				} as const;
 			};
@@ -659,7 +660,7 @@ export function createSelect<
 				hidden: true,
 				tabIndex: -1,
 				required: $required,
-				disabled: $disabled ?? undefined,
+				disabled: disabledAttr($disabled),
 				style: styleToString({
 					position: 'absolute',
 					opacity: 0,

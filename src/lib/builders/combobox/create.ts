@@ -7,6 +7,7 @@ import {
 	builder,
 	createElHelpers,
 	derivedVisible,
+	disabledAttr,
 	effect,
 	executeCallbacks,
 	forward,
@@ -545,7 +546,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 				return {
 					'data-value': JSON.stringify(props.value),
 					'data-label': props.label,
-					'data-disabled': props.disabled ? '' : undefined,
+					'data-disabled': disabledAttr(!!props.disabled),
 					'aria-disabled': props.disabled ? true : undefined,
 					'aria-selected': selected,
 					'data-selected': selected ? '' : undefined,

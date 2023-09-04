@@ -2,6 +2,7 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	disabledAttr,
 	executeCallbacks,
 	getDirectionalKeys,
 	getElemDirection,
@@ -95,8 +96,8 @@ export function createTabs(props?: CreateTabsProps) {
 					tabindex: isActive ? 0 : -1,
 					'data-value': tabValue,
 					'data-orientation': $orientation,
-					'data-disabled': disabled ? true : undefined,
-					disabled,
+					'data-disabled': disabledAttr(!!disabled),
+					disabled: disabledAttr(!!disabled),
 				};
 			};
 		},
