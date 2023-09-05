@@ -9,7 +9,7 @@
 	const {
 		elements: { tree, label, item, group },
 		states: { collapsedGroups, focusedItem, selectedItem },
-		helpers: { isCollapsedGroup, isSelected },
+		helpers: { isCollapsedGroup, isSelected, isFocused },
 	} = createTreeView({ forceVisible: true });
 
 	setContext('tree', {
@@ -19,6 +19,7 @@
 		selectedItem,
 		isCollapsedGroup,
 		isSelected,
+		isFocused,
 	});
 
 	const treeItems: TreeItem[] = [

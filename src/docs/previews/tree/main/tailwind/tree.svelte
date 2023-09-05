@@ -33,11 +33,12 @@
 	export let treeItems: TreeItem[];
 	export let level = 1;
 
-	const { item, group, isCollapsedGroup, isSelected } = getContext<{
+	const { item, group, isCollapsedGroup, isSelected, isFocused } = getContext<{
 		item: TreeViewElements['item'];
 		group: TreeViewElements['group'];
 		isCollapsedGroup: TreeViewHelpers['isCollapsedGroup'];
 		isSelected: TreeViewHelpers['isSelected'];
+		isFocused: TreeViewHelpers['isFocused'];
 	}>('tree');
 </script>
 
@@ -48,11 +49,15 @@
 		use:melt={$item({
 			value: title,
 			id: itemId,
-			hasChildren: children?.length > 0,
+			hasChildren: !!children && children?.length > 0,
 		})}
 		class={level !== 1 ? 'pl-4' : ''}
 	>
-		<div class="flex items-center gap-1 rounded-md p-1">
+		<div
+			class="flex items-center gap-1 rounded-md p-1 {$isFocused(itemId)
+				? 'bg-magnum-600/60'
+				: ''}"
+		>
 			<!-- Add icon. -->
 			{#if icon === 'folder' && children && !$isCollapsedGroup(itemId)}
 				<svelte:component this={icons['folderOpen']} class="h-4 w-4" />
@@ -80,8 +85,5 @@
 	/* Remove docs' focus box-shadow styling. */
 	li:focus {
 		box-shadow: none !important;
-	}
-	li:focus > div {
-		@apply bg-magnum-600/60;
 	}
 </style>

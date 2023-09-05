@@ -58,6 +58,14 @@ export function createTreeView(args: CreateTreeViewProps) {
     });
 
     /**
+     * Determines if the tree view item is focused.
+     * Can be useful for applying extra markup or adding CSS rules.
+     */
+    const isFocused = derived([focusedItem], ([$value]) => {
+        return (itemId: string) => $value?.getAttribute('data-id') === itemId;
+    });
+
+    /**
      * Determines if a tree view item is collapsed or not.
      * This is useful for displaying additional markup or using Svelte transitions
      * on the group item.
@@ -435,7 +443,8 @@ export function createTreeView(args: CreateTreeViewProps) {
         },
         helpers: {
             isCollapsedGroup,
-            isSelected
+            isSelected,
+            isFocused
         }
     }
 }
