@@ -157,8 +157,8 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
 		return {
 			headingsList,
-			elementsList
-		}
+			elementsList,
+		};
 	}
 
 	function findParentIdxs(): void {
@@ -335,7 +335,8 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
 		if (!newElementTarget) return;
 
-		const { headingsList: newHeadingsList, elementsList: newElementsList } = generateInitialLists(newElementTarget);
+		const { headingsList: newHeadingsList, elementsList: newElementsList } =
+			generateInitialLists(newElementTarget);
 
 		if (dequal(headingsList, newHeadingsList)) return;
 
@@ -372,12 +373,12 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
 		if (!elementTarget) return;
 
-		({headingsList, elementsList} = generateInitialLists(elementTarget));
+		({ headingsList, elementsList } = generateInitialLists(elementTarget));
 
 		initialization();
 
 		mutationObserver = new MutationObserver(mutationHandler);
-		mutationObserver.observe(elementTarget, { childList: true, subtree: true })
+		mutationObserver.observe(elementTarget, { childList: true, subtree: true });
 
 		return () => {
 			observer?.disconnect();
@@ -387,11 +388,11 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
 	return {
 		elements: {
-			item
+			item,
 		},
 		states: {
 			activeHeadingIdxs,
-			headingsTree
-		}
+			headingsTree,
+		},
 	};
 }

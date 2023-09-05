@@ -50,7 +50,7 @@ export type TableOfContentsItem = {
 	title: string;
 	index: number;
 	id: string;
-	node: HTMLHeadingElement,
+	node: HTMLHeadingElement;
 	children?: TableOfContentsItem[];
 };
 

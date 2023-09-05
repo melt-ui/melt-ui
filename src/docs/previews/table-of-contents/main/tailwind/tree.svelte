@@ -22,8 +22,8 @@
 					 hover:!text-magnum-600 data-[active]:text-magnum-700"
 				>
 					<!--
-						Along with the heading title, the original heading node 
-						is also passed down, so you can display headings 
+						Along with the heading title, the original heading node
+						is also passed down, so you can display headings
 						however you want.
 					-->
 					{@html heading.node.innerHTML}

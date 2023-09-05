@@ -9,9 +9,7 @@
 	} = createTableOfContents({
 		selector: '#toc-builder-preview',
 		exclude: ['h1', 'h4', 'h5', 'h6'],
-		activeType: 'lowest-parents',
-		// scrollOffset: 20,
-		// scrollBehaviour: 'smooth',
+		activeType: 'all',
 		headingFilterFn: (heading) => !heading.hasAttribute('data-toc-ignore'),
 		scrollFn: (id) => {
 			/**
@@ -24,7 +22,7 @@
 
 			if (container && element) {
 				container.scrollTo({
-					top: element.offsetTop - container.offsetTop,
+					top: element.offsetTop - container.offsetTop - 16,
 					behavior: 'smooth',
 				});
 			}
@@ -41,10 +39,7 @@
 		id="toc-builder-preview"
 		class="space-y-2 overflow-y-auto rounded-lg bg-white p-4 text-neutral-900"
 	>
-		<button
-			on:click={() => (hideHeading = !hideHeading)}
-			class="border-1 rounded-md border-magnum-500 bg-magnum-500/70 px-2 py-1 hover:bg-magnum-500"
-		>
+		<button on:click={() => (hideHeading = !hideHeading)} class="hide-heading">
 			{hideHeading ? 'Show heading' : 'Hide heading'}
 		</button>
 
@@ -110,7 +105,7 @@
 	</div>
 </div>
 
-<style>
+<style lang="postcss">
 	#toc-builder-preview > h2 {
 		@apply text-xl font-bold;
 	}
@@ -121,5 +116,24 @@
 
 	#toc-builder-preview > h4 {
 		@apply text-lg font-semibold;
+	}
+
+	.hide-heading {
+		display: inline-flex;
+		height: theme(spacing.8);
+		cursor: default;
+		align-items: center;
+		justify-content: center;
+		border-radius: theme(borderRadius.md);
+		background-color: theme(colors.magnum.200);
+		padding-inline: theme(spacing.4);
+		line-height: 1;
+		font-weight: theme(fontWeight.semibold);
+		color: theme(colors.magnum.900);
+		@apply transition;
+
+		&:hover {
+			opacity: 0.75;
+		}
 	}
 </style>
