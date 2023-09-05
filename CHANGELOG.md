@@ -1,5 +1,17 @@
 # @melt-ui/svelte
 
+## 0.43.0
+
+### Minor Changes
+
+- 0f00ca50: Adds highlighted store and isHighlighted helper to combobox
+- 5a35ad18: add mutation observer to ToC to make it update when headings change and also return the original heading node within the headings list
+
+### Patch Changes
+
+- 9e15ccd4: Select: fix isSelected function for single option.
+- 4991c06d: - Improve handling of custom labels/IDs for select & combo
+
 ## 0.42.0
 
 ### Minor Changes
