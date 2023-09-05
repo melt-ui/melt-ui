@@ -5,12 +5,14 @@ import {
 	addMeltEventListener,
 	back,
 	builder,
+	createClickOutsideIgnore,
 	createElHelpers,
 	derivedVisible,
 	effect,
 	executeCallbacks,
 	forward,
 	generateId,
+	getElementByMeltId,
 	getOptions,
 	getPortalDestination,
 	isBrowser,
@@ -155,7 +157,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 
 		selected.set(props);
 
-		const activeTrigger = document.getElementById(ids.input);
+		const activeTrigger = getElementByMeltId(ids.input);
 		if (activeTrigger) {
 			activeTrigger.focus();
 		}
@@ -197,7 +199,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 			open.set(true);
 		}
 
-		const triggerEl = document.getElementById(ids.input);
+		const triggerEl = getElementByMeltId(ids.input);
 		if (!triggerEl) return;
 
 		// The active trigger is used to anchor the menu to the input element.
@@ -259,6 +261,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 				'aria-controls': ids.menu,
 				'aria-expanded': $open,
 				'aria-labelledby': ids.label,
+				'data-melt-id': ids.input,
 				autocomplete: 'off',
 				id: ids.input,
 				role: 'combobox',
@@ -479,6 +482,8 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 							unsubScroll = removeScroll();
 						}
 
+						const ignoreHandler = createClickOutsideIgnore(ids.input);
+
 						const popper = usePopper(node, {
 							anchorElement: $activeTrigger,
 							open,
@@ -493,6 +498,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 												closeMenu();
 												reset();
 											},
+											ignore: ignoreHandler,
 									  }
 									: null,
 								escapeKeydown: $closeOnEscape
@@ -608,7 +614,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		const menuEl = document.getElementById(ids.menu);
 		if (!menuEl) return;
 
-		const triggerEl = document.getElementById(ids.input);
+		const triggerEl = getElementByMeltId(ids.input);
 		if (triggerEl) {
 			activeTrigger.set(triggerEl);
 		}
