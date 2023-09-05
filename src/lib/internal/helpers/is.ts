@@ -14,6 +14,10 @@ export function isHTMLInputElement(element: unknown): element is HTMLInputElemen
 	return element instanceof HTMLInputElement;
 }
 
+export function isHTMLLabelElement(element: unknown): element is HTMLLabelElement {
+	return element instanceof HTMLLabelElement;
+}
+
 export function isElementDisabled(element: HTMLElement): boolean {
 	const ariaDisabled = element.getAttribute('aria-disabled');
 	const disabled = element.getAttribute('disabled');
