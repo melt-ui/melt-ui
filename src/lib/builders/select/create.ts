@@ -39,6 +39,7 @@ import {
 	toggle,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
+import { dequal as deepEqual } from 'dequal';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import type { SelectEvents } from './events.js';
@@ -159,7 +160,7 @@ export function createSelect<
 			if (Array.isArray($selected)) {
 				return $selected.map((o) => o.value).includes(value);
 			}
-			return $selected?.value === value;
+			return deepEqual($selected?.value, value);
 		};
 	});
 
@@ -560,7 +561,7 @@ export function createSelect<
 			return (props: SelectOptionProps<Value>) => {
 				const isSelected = Array.isArray($selected)
 					? $selected.map((o) => o.value).includes(props.value)
-					: $selected?.value === props?.value;
+					: deepEqual($selected?.value, props?.value);
 
 				return {
 					role: 'option',
