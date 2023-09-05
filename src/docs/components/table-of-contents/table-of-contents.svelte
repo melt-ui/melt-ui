@@ -7,7 +7,10 @@
 	 * The filter function is for removing headings from the ToC
 	 * docs page where we have a preview with lots of headings.
 	 */
-	const { activeHeadingIdxs, headingsTree, item } = createTableOfContents({
+	const {
+		elements: { item },
+		states: { activeHeadingIdxs, headingsTree },
+	} = createTableOfContents({
 		selector: '#mdsvex',
 		exclude: ['h1', 'h4', 'h5', 'h6'],
 		activeType: 'all',

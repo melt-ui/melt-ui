@@ -8,6 +8,7 @@ import {
 	addMeltEventListener,
 	back,
 	builder,
+	createClickOutsideIgnore,
 	createElHelpers,
 	createTypeaheadSearch,
 	derivedVisible,
@@ -39,10 +40,12 @@ import {
 	toggle,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
+import { dequal as deepEqual } from 'dequal';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import type { SelectEvents } from './events.js';
 import type { CreateSelectProps, SelectOption, SelectOptionProps } from './types.js';
+import { getElementByMeltId } from '../../internal/helpers/builder';
 
 const defaults = {
 	arrowSize: 8,
@@ -159,7 +162,7 @@ export function createSelect<
 			if (Array.isArray($selected)) {
 				return $selected.map((o) => o.value).includes(value);
 			}
-			return $selected?.value === value;
+			return deepEqual($selected?.value, value);
 		};
 	});
 
@@ -299,13 +302,19 @@ export function createSelect<
 						unsubScroll = removeScroll();
 					}
 
+					const ignoreHandler = createClickOutsideIgnore(ids.trigger);
+
 					tick().then(() => {
 						const popper = usePopper(node, {
 							anchorElement: $activeTrigger,
 							open,
 							options: {
 								floating: $positioning,
-								clickOutside: $closeOnOutsideClick ? undefined : null,
+								clickOutside: $closeOnOutsideClick
+									? {
+											ignore: ignoreHandler,
+									  }
+									: null,
 								escapeKeydown: $closeOnEscape
 									? {
 											handler: () => {
@@ -383,6 +392,7 @@ export function createSelect<
 				'data-state': $open ? 'open' : 'closed',
 				'data-disabled': $disabled ? true : undefined,
 				'aria-labelledby': ids.label,
+				'data-melt-id': ids.trigger,
 				disabled: $disabled,
 				id: ids.trigger,
 				tabindex: 0,
@@ -560,7 +570,7 @@ export function createSelect<
 			return (props: SelectOptionProps<Value>) => {
 				const isSelected = Array.isArray($selected)
 					? $selected.map((o) => o.value).includes(props.value)
-					: $selected?.value === props?.value;
+					: deepEqual($selected?.value, props?.value);
 
 				return {
 					role: 'option',
@@ -675,7 +685,7 @@ export function createSelect<
 	/* Lifecycle & Effects */
 	/* ------------------- */
 	onMount(() => {
-		const triggerEl = document.getElementById(ids.trigger);
+		const triggerEl = getElementByMeltId(ids.trigger);
 		if (triggerEl) {
 			activeTrigger.set(triggerEl);
 		}

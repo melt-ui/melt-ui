@@ -5,12 +5,14 @@ import {
 	addMeltEventListener,
 	back,
 	builder,
+	createClickOutsideIgnore,
 	createElHelpers,
 	derivedVisible,
 	effect,
 	executeCallbacks,
 	forward,
 	generateId,
+	getElementByMeltId,
 	getOptions,
 	getPortalDestination,
 	isBrowser,
@@ -34,7 +36,7 @@ import { debounceable } from '$lib/internal/helpers/store/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { dequal as deepEqual } from 'dequal';
 import { onMount, tick } from 'svelte';
-import { derived, get, readonly, writable, type Writable } from 'svelte/store';
+import { derived, get, readonly, writable, type Readable, type Writable } from 'svelte/store';
 import { createLabel } from '../label/create.js';
 import type { ComboboxEvents } from './events.js';
 import type { ComboboxItemProps, ComboboxOption, CreateComboboxProps } from './types.js';
@@ -80,6 +82,10 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		withDefaults.selected ??
 		(writable(withDefaults.defaultSelected) as Writable<ComboboxOption<Value> | undefined>);
 	const selected = overridable(selectedWritable, withDefaults?.onSelectedChange);
+
+	const highlighted = derived(highlightedItem, ($highlightedItem) =>
+		$highlightedItem ? getOptionProps($highlightedItem) : undefined
+	) as Readable<ComboboxOption<Value> | undefined>;
 
 	// The current value of the input element.
 	const inputValue = debounceable(withDefaults.defaultSelected?.label ?? '', withDefaults.debounce);
@@ -151,7 +157,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 
 		selected.set(props);
 
-		const activeTrigger = document.getElementById(ids.input);
+		const activeTrigger = getElementByMeltId(ids.input);
 		if (activeTrigger) {
 			activeTrigger.focus();
 		}
@@ -193,7 +199,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 			open.set(true);
 		}
 
-		const triggerEl = document.getElementById(ids.input);
+		const triggerEl = getElementByMeltId(ids.input);
 		if (!triggerEl) return;
 
 		// The active trigger is used to anchor the menu to the input element.
@@ -231,6 +237,16 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		return (item: Value) => deepEqual($value?.value, item);
 	});
 
+	/**
+	 * Determines if a given item is highlighted.
+	 * This is useful for displaying additional markup on the highlighted item.
+	 */
+	const isHighlighted = derived([highlighted], ([$value]) => {
+		return (item: Value) => {
+			return deepEqual($value?.value, item);
+		};
+	});
+
 	/** -------- */
 	/** ELEMENTS */
 	/** -------- */
@@ -245,6 +261,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 				'aria-controls': ids.menu,
 				'aria-expanded': $open,
 				'aria-labelledby': ids.label,
+				'data-melt-id': ids.input,
 				autocomplete: 'off',
 				id: ids.input,
 				role: 'combobox',
@@ -465,6 +482,8 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 							unsubScroll = removeScroll();
 						}
 
+						const ignoreHandler = createClickOutsideIgnore(ids.input);
+
 						const popper = usePopper(node, {
 							anchorElement: $activeTrigger,
 							open,
@@ -479,6 +498,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 												closeMenu();
 												reset();
 											},
+											ignore: ignoreHandler,
 									  }
 									: null,
 								escapeKeydown: $closeOnEscape
@@ -594,7 +614,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		const menuEl = document.getElementById(ids.menu);
 		if (!menuEl) return;
 
-		const triggerEl = document.getElementById(ids.input);
+		const triggerEl = getElementByMeltId(ids.input);
 		if (triggerEl) {
 			activeTrigger.set(triggerEl);
 		}
@@ -644,11 +664,13 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		states: {
 			open,
 			selected,
-			inputValue: inputValue,
+			highlighted,
+			inputValue,
 			isEmpty: readonly(isEmpty),
 		},
 		helpers: {
 			isSelected,
+			isHighlighted,
 		},
 		options,
 	};
