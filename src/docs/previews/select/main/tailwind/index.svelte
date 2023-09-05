@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createSelect, melt } from '$lib/index.js';
 	import { Check, ChevronDown } from 'lucide-svelte';
+	import { fade } from 'svelte/transition';
 
 	const options = {
 		sweet: ['Caramel', 'Chocolate', 'Strawberry', 'Cookies & Cream'],
@@ -39,6 +40,7 @@
 		overflow-y-auto rounded-lg bg-white p-1
 		shadow focus:!ring-0"
 			use:melt={$menu}
+			transition:fade={{ duration: 150 }}
 		>
 			{#each Object.entries(options) as [key, arr]}
 				<div use:melt={$group(key)}>

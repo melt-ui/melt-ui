@@ -89,7 +89,7 @@ const builder = builderSchema(BUILDER_NAME, {
 		},
 		{
 			name: 'inputValue',
-			type: 'Readable<string>',
+			type: 'Writable<string>',
 			description: 'A readable store with the value of the input.',
 		},
 		{
@@ -98,7 +98,7 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'A readable store that returns true when no visible items are present.',
 		},
 		{
-			name: 'value',
+			name: 'selected',
 			type: 'Writable<T>',
 			description: 'A writable store whose value is the selected item.',
 		},

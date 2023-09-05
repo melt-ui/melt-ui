@@ -50,6 +50,7 @@ const defaults = {
 	dir: 'ltr',
 	defaultOpen: false,
 	forceVisible: false,
+	typeahead: true,
 } satisfies CreateContextMenuProps;
 
 const { name, selector } = createElHelpers<_MenuParts>('context-menu');

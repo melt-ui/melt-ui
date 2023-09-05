@@ -148,7 +148,8 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
 				style: styleToString({
-					display: $isVisible ? undefined : 'none',
+					'pointer-events': $isVisible ? undefined : 'none',
+					opacity: $isVisible ? 1 : 0,
 					userSelect: 'text',
 					WebkitUserSelect: 'text',
 				}),
@@ -180,23 +181,22 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 				]) => {
 					unsubPopper();
 					if (!$isVisible || !$activeTrigger) return;
-					tick().then(() => {
-						const popper = usePopper(node, {
-							anchorElement: $activeTrigger,
-							open: open,
-							options: {
-								floating: $positioning,
-								clickOutside: $closeOnOutsideClick ? undefined : null,
-								portal: getPortalDestination(node, $portal),
-								focusTrap: null,
-								escapeKeydown: $closeOnEscape ? undefined : null,
-							},
-						});
 
-						if (popper && popper.destroy) {
-							unsubPopper = popper.destroy;
-						}
+					const popper = usePopper(node, {
+						anchorElement: $activeTrigger,
+						open: open,
+						options: {
+							floating: $positioning,
+							clickOutside: $closeOnOutsideClick ? undefined : null,
+							portal: getPortalDestination(node, $portal),
+							focusTrap: null,
+							escapeKeydown: $closeOnEscape ? undefined : null,
+						},
 					});
+
+					if (popper && popper.destroy) {
+						unsubPopper = popper.destroy;
+					}
 				}
 			);
 
