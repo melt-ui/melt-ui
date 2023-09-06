@@ -1,5 +1,5 @@
 import {
-	addEventListener,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	effect,
@@ -13,9 +13,10 @@ import {
 	last,
 	styleToString,
 } from '$lib/internal/helpers';
-import type { Defaults } from '$lib/internal/types';
+import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { derived, writable, type Writable } from 'svelte/store';
 
+import type { TreeEvents } from './events';
 import type { CreateTreeViewProps, TreeParts } from './types';
 
 const defaults = {
@@ -121,9 +122,9 @@ export function createTreeView(args: CreateTreeViewProps) {
 				};
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<TreeEvents['item']> => {
 			const unsubEvents = executeCallbacks(
-				addEventListener(node, 'keydown', (e) => {
+				addMeltEventListener(node, 'keydown', (e) => {
 					const { key } = e;
 
 					const keyIsLetter = isLetter(key);
@@ -250,7 +251,7 @@ export function createTreeView(args: CreateTreeViewProps) {
 						}
 					}
 				}),
-				addEventListener(node, 'click', async (e) => {
+				addMeltEventListener(node, 'click', async (e) => {
 					e.stopPropagation();
 					updateSelectedElement(node);
 					setFocusedItem(node);
@@ -350,7 +351,6 @@ export function createTreeView(args: CreateTreeViewProps) {
 		},
 		states: {
 			collapsedGroups,
-
 			selectedItem,
 		},
 		helpers: {
