@@ -255,6 +255,7 @@ export function createTreeView(args: CreateTreeViewProps) {
 					e.stopPropagation();
 					updateSelectedElement(node);
 					setFocusedItem(node);
+					toggleChildrenElements(node);
 				})
 			);
 

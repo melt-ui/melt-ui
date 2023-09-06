@@ -36,6 +36,7 @@
 
 {#each treeItems as { title, icon, children }, i}
 	{@const itemId = `${title}-${i}`}
+	{@const hasChildren = !!children?.length}
 
 	<li class={level !== 1 ? 'pl-4' : ''}>
 		<button
@@ -43,11 +44,11 @@
 			use:melt={$item({
 				value: title,
 				id: itemId,
-				hasChildren: !!children && children?.length > 0,
+				hasChildren,
 			})}
 		>
 			<!-- Add icon. -->
-			{#if icon === 'folder' && children && !$isCollapsedGroup(itemId)}
+			{#if icon === 'folder' && hasChildren && !$isCollapsedGroup(itemId)}
 				<svelte:component this={icons['folderOpen']} class="h-4 w-4" />
 			{:else}
 				<svelte:component this={icons[icon]} class="h-4 w-4" />
