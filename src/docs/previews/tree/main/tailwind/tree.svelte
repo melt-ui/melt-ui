@@ -8,7 +8,7 @@
 	export type TreeItem = {
 		title: string;
 		icon: Icon;
-		id?: string;
+
 		children?: TreeItem[];
 	};
 
@@ -42,8 +42,11 @@
 	}>('tree');
 </script>
 
-{#each treeItems as { title, icon, children, id }, i (i)}
-	{@const itemId = `${id}`}
+{#each treeItems as { title, icon, children }, i}
+	{@const itemId = `${title}-${i}`}
+	{@const _ =
+		title === 'tree' &&
+		console.log(title, children, !$isCollapsedGroup(itemId))}
 
 	<li
 		use:melt={$item({
@@ -74,7 +77,15 @@
 		</div>
 
 		{#if children && !$isCollapsedGroup(itemId)}
-			<ul use:melt={$group({ id: itemId })} transition:slide>
+			<ul
+				class="bg-red-500/25"
+				use:melt={$group({ id: itemId })}
+				transition:slide|local={{ duration: 200 }}
+				on:introstart={() => console.log(title, 'intro started')}
+				on:outrostart={() => console.log(title, 'outro started')}
+				on:introend={() => console.log(title, 'intro ended')}
+				on:outroend={() => console.log(title, 'outro ended')}
+			>
 				<svelte:self treeItems={children} level={level + 1} />
 			</ul>
 		{/if}
