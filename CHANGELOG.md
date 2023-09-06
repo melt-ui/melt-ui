@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.45.1
+
+### Patch Changes
+
+- e8ca932a: Refactor: remove leftover logs
+
 ## 0.45.0
 
 ### Minor Changes
