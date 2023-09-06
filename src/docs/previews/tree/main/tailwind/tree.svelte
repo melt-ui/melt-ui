@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
-	import JS from './JS.svelte';
-	import Svelte from './Svelte.svelte';
+	import JS from './icons/JS.svelte';
+	import Svelte from './icons/Svelte.svelte';
 	import { FolderOpen, Folder, ArrowLeft } from 'lucide-svelte';
 
 	type Icon = 'svelte' | 'folder' | 'js';
@@ -55,7 +55,7 @@
 	>
 		<div
 			class="flex items-center gap-1 rounded-md p-1 {$isFocused(itemId)
-				? 'bg-magnum-600/60'
+				? 'bg-magnum-200'
 				: ''}"
 		>
 			<!-- Add icon. -->

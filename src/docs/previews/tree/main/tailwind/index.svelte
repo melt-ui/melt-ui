@@ -91,22 +91,20 @@
 </script>
 
 <div
-	class="flex h-[300px] flex-col gap-1 overflow-auto rounded-lg bg-white px-8 py-1 text-neutral-900 md:h-[350px]"
+	class="flex h-[18.75rem] w-[18.75rem] flex-col gap-1 overflow-auto rounded-xl bg-white px-8 py-1 text-neutral-900 md:h-[350px]"
 >
-	<div class="w-[240px]">
-		<div>
-			<span>Focused value:</span>
-			<span class="text-magnum-500">
-				{$focusedItem?.getAttribute('data-value')}
-			</span>
-		</div>
+	<div>
+		<span>Focused value:</span>
+		<span class="text-magnum-500">
+			{$focusedItem?.getAttribute('data-value')}
+		</span>
+	</div>
 
-		<div>
-			<span>Selected value:</span>
-			<span class="text-magnum-500">
-				{$selectedItem?.getAttribute('data-value')}
-			</span>
-		</div>
+	<div>
+		<span>Selected value:</span>
+		<span class="text-magnum-500">
+			{$selectedItem?.getAttribute('data-value')}
+		</span>
 	</div>
 
 	<hr class="border-1 border-neutral-800/70" />
