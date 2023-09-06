@@ -2,6 +2,7 @@ import {
 	addEventListener,
 	builder,
 	createElHelpers,
+	effect,
 	executeCallbacks,
 	generateId,
 	getElementByMeltId,
@@ -37,24 +38,19 @@ export function createTreeView(args: CreateTreeViewProps) {
 	/**
 	 * Track currently focused item in the tree.
 	 */
-	const focusedItem: Writable<HTMLElement | null> = writable(null);
+	const lastFocusedId: Writable<string | null> = writable(null);
 	const selectedItem: Writable<HTMLElement | null> = writable(null);
-	const selectedId: Writable<string | null> = writable(null);
 	const collapsedGroups: Writable<string[]> = writable([]);
+
+	const selectedId = derived([selectedItem], ([$selectedItem]) => {
+		return $selectedItem?.getAttribute('data-id');
+	});
 
 	/**
 	 * Determines if the tree view item is selected.
 	 * This is useful for displaying additional markup.
 	 */
 	const isSelected = derived([selectedItem], ([$value]) => {
-		return (itemId: string) => $value?.getAttribute('data-id') === itemId;
-	});
-
-	/**
-	 * Determines if the tree view item is focused.
-	 * Can be useful for applying extra markup or adding CSS rules.
-	 */
-	const isFocused = derived([focusedItem], ([$value]) => {
 		return (itemId: string) => $value?.getAttribute('data-id') === itemId;
 	});
 
@@ -88,22 +84,40 @@ export function createTreeView(args: CreateTreeViewProps) {
 		}),
 	});
 
+	let hasActiveTabIndex = false;
+	effect(selectedItem, ($selectedItem) => {
+		if (!$selectedItem) {
+			hasActiveTabIndex = false;
+		} else {
+			hasActiveTabIndex = true;
+		}
+	});
+
 	const item = builder(name('item'), {
-		stores: [collapsedGroups, selectedId],
-		returned: ([$collapsedGroups, $selectedId]) => {
+		stores: [collapsedGroups, selectedId, lastFocusedId],
+		returned: ([$collapsedGroups, $selectedId, $lastFocusedId]) => {
 			return (opts: { value: string; id: string; hasChildren: boolean }) => {
 				// Have some default options that can be passed to the create()
 				const { value, id, hasChildren } = opts;
 
-				const expanded = hasChildren ? { 'aria-expanded': !$collapsedGroups.includes(id) } : {};
+				let tabindex = -1;
+				if (!hasActiveTabIndex) {
+					tabindex = 0;
+				} else if ($selectedId) {
+					tabindex = $selectedId === id ? 0 : -1;
+				} else {
+					tabindex = $lastFocusedId === id ? 0 : -1;
+				}
+
+				hasActiveTabIndex = true;
 
 				return {
 					role: 'treeitem',
-					'aria-selected': id === $selectedId,
+					'aria-selected': $selectedId === id,
 					'data-id': id,
 					'data-value': value,
-					tabIndex: $selectedId === id || !$selectedId ? 0 : -1,
-					...expanded,
+					tabindex,
+					'aria-expanded': hasChildren ? !$collapsedGroups.includes(id) : undefined,
 				};
 			};
 		},
@@ -266,7 +280,7 @@ export function createTreeView(args: CreateTreeViewProps) {
 	});
 
 	function setFocusedItem(el: HTMLElement) {
-		focusedItem.set(el);
+		lastFocusedId.set(el.getAttribute('data-id'));
 		el.focus();
 	}
 
@@ -275,7 +289,6 @@ export function createTreeView(args: CreateTreeViewProps) {
 		if (!id) return;
 
 		selectedItem.set(el);
-		selectedId.set(id);
 	}
 
 	function getItems(): HTMLElement[] {
@@ -337,13 +350,12 @@ export function createTreeView(args: CreateTreeViewProps) {
 		},
 		states: {
 			collapsedGroups,
-			focusedItem,
+
 			selectedItem,
 		},
 		helpers: {
 			isCollapsedGroup,
 			isSelected,
-			isFocused,
 		},
 	};
 }

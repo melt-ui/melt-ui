@@ -1,26 +1,16 @@
 <script lang="ts">
-	import { setContext } from 'svelte';
 	import { createTreeView } from '$lib/index.js';
+	import { setContext } from 'svelte';
 
-	import Tree from './tree.svelte';
 	import type { TreeItem } from './tree.svelte';
-	import { generateId } from '$lib/internal/helpers';
+	import Tree from './tree.svelte';
+
+	const ctx = createTreeView({ forceVisible: true });
+	setContext('tree', ctx);
 
 	const {
-		elements: { tree, label, item, group },
-		states: { collapsedGroups, selectedItem },
-		helpers: { isCollapsedGroup, isSelected, isFocused },
-	} = createTreeView({ forceVisible: true });
-
-	setContext('tree', {
-		item,
-		group,
-		collapsedGroups,
-		selectedItem,
-		isCollapsedGroup,
-		isSelected,
-		isFocused,
-	});
+		elements: { tree, label },
+	} = ctx;
 
 	const treeItems: TreeItem[] = [
 		{

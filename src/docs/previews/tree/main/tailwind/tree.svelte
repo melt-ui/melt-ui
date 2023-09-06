@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
+	import { ArrowLeft, Folder, FolderOpen } from 'lucide-svelte';
 	import JS from './icons/JS.svelte';
 	import Svelte from './icons/Svelte.svelte';
-	import { FolderOpen, Folder, ArrowLeft } from 'lucide-svelte';
 
 	type Icon = 'svelte' | 'folder' | 'js';
 
@@ -22,24 +22,16 @@
 </script>
 
 <script lang="ts">
+	import { melt, type TreeView } from '$lib/index.js';
 	import { getContext } from 'svelte';
-	import { slide } from 'svelte/transition';
-	import {
-		melt,
-		type TreeViewElements,
-		type TreeViewHelpers,
-	} from '$lib/index.js';
 
 	export let treeItems: TreeItem[];
 	export let level = 1;
 
-	const { item, group, isCollapsedGroup, isSelected, isFocused } = getContext<{
-		item: TreeViewElements['item'];
-		group: TreeViewElements['group'];
-		isCollapsedGroup: TreeViewHelpers['isCollapsedGroup'];
-		isSelected: TreeViewHelpers['isSelected'];
-		isFocused: TreeViewHelpers['isFocused'];
-	}>('tree');
+	const {
+		elements: { item, group },
+		helpers: { isCollapsedGroup, isSelected },
+	} = getContext<TreeView>('tree');
 </script>
 
 {#each treeItems as { title, icon, children }, i}
@@ -47,9 +39,7 @@
 
 	<li class={level !== 1 ? 'pl-4' : ''}>
 		<button
-			class="flex items-center gap-1 rounded-md p-1 {$isFocused(itemId)
-				? 'bg-magnum-200'
-				: ''}"
+			class="flex items-center gap-1 rounded-md p-1 focus:bg-magnum-200"
 			use:melt={$item({
 				value: title,
 				id: itemId,
