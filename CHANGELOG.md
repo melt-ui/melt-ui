@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.44.0
+
+### Minor Changes
+
+- 2c07edcb: ✨ [New builder] Tree View
+
 ## 0.43.0
 
 ### Minor Changes
