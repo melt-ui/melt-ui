@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.45.0
+
+### Minor Changes
+
+- 5ef61385: Tree: remove label
+
 ## 0.44.0
 
 ### Minor Changes
