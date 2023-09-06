@@ -209,6 +209,15 @@ export function createPinInput(props?: CreatePinInputProps) {
 					value.set(inputs.map((input) => input.value.slice(-1) ?? undefined));
 				}),
 				addMeltEventListener(node, 'focus', () => {
+					const { inputs, elIndex } = getInputs(node);
+					if (elIndex && inputs) {
+						const prevEl = prev(inputs, elIndex, false);
+						if (prevEl.value === '') {
+							prevEl.focus();
+							return;
+						}
+					}
+
 					node.setSelectionRange(1, 1);
 					node.placeholder = '';
 					tick().then(() => {
