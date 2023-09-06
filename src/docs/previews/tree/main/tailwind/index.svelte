@@ -5,11 +5,14 @@
 	import type { TreeItem } from './tree.svelte';
 	import Tree from './tree.svelte';
 
-	const ctx = createTreeView({ forceVisible: true });
+	const ctx = createTreeView({
+		defaultExpanded: ['lib-0', 'tree-0'],
+	});
 	setContext('tree', ctx);
 
 	const {
 		elements: { tree },
+		states: { expanded },
 	} = ctx;
 
 	const treeItems: TreeItem[] = [

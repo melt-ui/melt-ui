@@ -89,3 +89,15 @@ export type GroupedEvents<T> = {
 export type MeltComponentEvents<T> = {
 	[K in keyof T]: T[K] extends keyof HTMLElementEventMap ? CustomMeltComponentEvents<T[K]> : never;
 };
+
+// This type is awesome, but can't be annotated it seems.
+// type Default<Label extends string> = `default${Capitalize<Label>}`;
+// type onChange<Label extends string> = `on${Capitalize<Label>}Change`;
+
+// type WithChangeFn<Label extends string, T> = {
+// 	[K in Default<Label> | onChange<Label> | Label]: K extends Default<Label>
+// 		? T
+// 		: T extends onChange<Label>
+// 		? ChangeFn<T>
+// 		: Writable<T>;
+// };

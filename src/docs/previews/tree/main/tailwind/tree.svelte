@@ -30,7 +30,7 @@
 
 	const {
 		elements: { item, group },
-		helpers: { isCollapsedGroup, isSelected },
+		helpers: { isExpanded, isSelected },
 	} = getContext<TreeView>('tree');
 </script>
 
@@ -42,13 +42,12 @@
 		<button
 			class="flex items-center gap-1 rounded-md p-1 focus:bg-magnum-200"
 			use:melt={$item({
-				value: title,
 				id: itemId,
 				hasChildren,
 			})}
 		>
 			<!-- Add icon. -->
-			{#if icon === 'folder' && hasChildren && !$isCollapsedGroup(itemId)}
+			{#if icon === 'folder' && hasChildren && $isExpanded(itemId)}
 				<svelte:component this={icons['folderOpen']} class="h-4 w-4" />
 			{:else}
 				<svelte:component this={icons[icon]} class="h-4 w-4" />
@@ -62,7 +61,7 @@
 			{/if}
 		</button>
 
-		{#if children && !$isCollapsedGroup(itemId)}
+		{#if children}
 			<ul use:melt={$group({ id: itemId })}>
 				<svelte:self treeItems={children} level={level + 1} />
 			</ul>

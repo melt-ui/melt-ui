@@ -6,11 +6,11 @@ import {
 	executeCallbacks,
 	generateId,
 	getElementByMeltId,
-	isBrowser,
 	isHTMLElement,
 	isLetter,
 	kbd,
 	last,
+	overridable,
 	styleToString,
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
@@ -21,6 +21,7 @@ import type { CreateTreeViewProps, TreeParts } from './types';
 
 const defaults = {
 	forceVisible: false,
+	defaultExpanded: [] as string[],
 } satisfies Defaults<CreateTreeViewProps>;
 
 const ATTRS = {
@@ -33,15 +34,17 @@ const ATTRS = {
 const { name } = createElHelpers<TreeParts>('tree-view');
 
 export function createTreeView(args?: CreateTreeViewProps) {
-	const argsWithDefaults = { ...defaults, ...args };
-	const { forceVisible } = argsWithDefaults;
+	const withDefaults = { ...defaults, ...args };
+	const { forceVisible } = withDefaults;
 
 	/**
 	 * Track currently focused item in the tree.
 	 */
 	const lastFocusedId: Writable<string | null> = writable(null);
 	const selectedItem: Writable<HTMLElement | null> = writable(null);
-	const collapsedGroups: Writable<string[]> = writable([]);
+
+	const expandedWritable = withDefaults.expanded ?? writable(withDefaults.defaultExpanded);
+	const expanded = overridable(expandedWritable, withDefaults?.onExpandedChange);
 
 	const selectedId = derived([selectedItem], ([$selectedItem]) => {
 		return $selectedItem?.getAttribute('data-id');
@@ -60,8 +63,8 @@ export function createTreeView(args?: CreateTreeViewProps) {
 	 * This is useful for displaying additional markup or using Svelte transitions
 	 * on the group item.
 	 */
-	const isCollapsedGroup = derived([collapsedGroups], ([$collapsedGroups]) => {
-		return (itemId: string) => $collapsedGroups.includes(itemId);
+	const isExpanded = derived([expanded], ([$expanded]) => {
+		return (itemId: string) => $expanded.includes(itemId);
 	});
 
 	const rootIds = {
@@ -88,8 +91,8 @@ export function createTreeView(args?: CreateTreeViewProps) {
 
 	let isKeydown = false;
 	const item = builder(name('item'), {
-		stores: [collapsedGroups, selectedId, lastFocusedId],
-		returned: ([$collapsedGroups, $selectedId, $lastFocusedId]) => {
+		stores: [expanded, selectedId, lastFocusedId],
+		returned: ([$expanded, $selectedId, $lastFocusedId]) => {
 			return (opts: { id: string; hasChildren?: boolean }) => {
 				// Have some default options that can be passed to the create()
 				const { id, hasChildren } = opts;
@@ -110,7 +113,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 					'aria-selected': $selectedId === id,
 					'data-id': id,
 					tabindex,
-					'aria-expanded': hasChildren ? !$collapsedGroups.includes(id) : undefined,
+					'aria-expanded': hasChildren ? $expanded.includes(id) : undefined,
 				};
 			};
 		},
@@ -266,14 +269,14 @@ export function createTreeView(args?: CreateTreeViewProps) {
 	});
 
 	const group = builder(name('group'), {
-		stores: [collapsedGroups],
-		returned: ([$collapsedGroups]) => {
+		stores: [expanded],
+		returned: ([$expanded]) => {
 			return (opts: { id: string }) => ({
 				role: 'group',
 				'data-group-id': opts.id,
-				hidden: !forceVisible && isBrowser && $collapsedGroups.includes(opts.id) ? true : undefined,
+				hidden: !forceVisible && !$expanded.includes(opts.id) ? true : undefined,
 				style: styleToString({
-					display: !forceVisible && $collapsedGroups.includes(opts.id) ? 'none' : undefined,
+					display: !forceVisible && !$expanded.includes(opts.id) ? 'none' : undefined,
 				}),
 			});
 		},
@@ -323,13 +326,13 @@ export function createTreeView(args?: CreateTreeViewProps) {
 	}
 
 	function toggleChildrenElements(el: HTMLElement) {
-		const { hasChildren, expanded, dataId } = getElementAttributes(el);
-		if (!hasChildren || expanded === null || dataId === null) return;
+		const { hasChildren, expanded: expandedAttr, dataId } = getElementAttributes(el);
+		if (!hasChildren || expandedAttr === null || dataId === null) return;
 
-		if (expanded === 'false') {
-			collapsedGroups.update((prev) => prev.filter((item) => item !== dataId));
+		if (expandedAttr === 'false') {
+			expanded.update((prev) => [...prev, dataId]);
 		} else {
-			collapsedGroups.update((prev) => [...prev, dataId]);
+			expanded.update((prev) => prev.filter((item) => item !== dataId));
 		}
 	}
 
@@ -348,11 +351,11 @@ export function createTreeView(args?: CreateTreeViewProps) {
 			group,
 		},
 		states: {
-			collapsedGroups,
+			expanded,
 			selectedItem,
 		},
 		helpers: {
-			isCollapsedGroup,
+			isExpanded,
 			isSelected,
 		},
 	};
