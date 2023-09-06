@@ -90,9 +90,9 @@ export function createTreeView(args: CreateTreeViewProps) {
 	const item = builder(name('item'), {
 		stores: [collapsedGroups, selectedId, lastFocusedId],
 		returned: ([$collapsedGroups, $selectedId, $lastFocusedId]) => {
-			return (opts: { value: string; id: string; hasChildren: boolean }) => {
+			return (opts: { id: string; hasChildren?: boolean }) => {
 				// Have some default options that can be passed to the create()
-				const { value, id, hasChildren } = opts;
+				const { id, hasChildren } = opts;
 
 				let tabindex = -1;
 				if (!hasActiveTabIndex) {
@@ -109,7 +109,6 @@ export function createTreeView(args: CreateTreeViewProps) {
 					role: 'treeitem',
 					'aria-selected': $selectedId === id,
 					'data-id': id,
-					'data-value': value,
 					tabindex,
 					'aria-expanded': hasChildren ? !$collapsedGroups.includes(id) : undefined,
 				};
@@ -206,16 +205,18 @@ export function createTreeView(args: CreateTreeViewProps) {
 						 * if it does exist. If it does not exist, we check
 						 * previous values.
 						 */
-						const values = items.map((item) => ({
-							value: item.getAttribute('data-value'),
-							id: item.getAttribute('data-id'),
-						}));
+						const values = items.map((item) => {
+							return {
+								value: item.textContent?.toLowerCase().trim(),
+								id: item.getAttribute('data-id'),
+							};
+						});
 
 						let nextFocusIdx = -1;
 
 						// Check elements after currently focused one.
 						let foundNextFocusable = values.slice(nodeIdx + 1).some((item, i) => {
-							if (item.value?.toLowerCase().at(0) === key) {
+							if (item.value?.toLowerCase()[0] === key) {
 								nextFocusIdx = nodeIdx + 1 + i;
 								return true;
 							}

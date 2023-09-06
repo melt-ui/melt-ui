@@ -1,9 +1,7 @@
 import type { createTreeView } from './create';
 
-// TODO: add multiselect option?
 export type CreateTreeViewProps = {
 	forceVisible?: boolean;
-	// multiselect?: boolean;
 };
 
 export type TreeParts = 'label' | 'item' | 'group';
