@@ -68,23 +68,15 @@ export function createTreeView(args: CreateTreeViewProps) {
 
 	const rootIds = {
 		tree: generateId(),
-		label: generateId(),
 	};
 
 	const rootTree = builder(name(), {
 		returned: () => {
 			return {
 				role: 'tree',
-				'aria-labelledby': rootIds.label,
 				'data-melt-id': rootIds.tree,
 			} as const;
 		},
-	});
-
-	const label = builder(name('label'), {
-		returned: () => ({
-			id: rootIds.label,
-		}),
 	});
 
 	let hasActiveTabIndex = false;
@@ -354,7 +346,6 @@ export function createTreeView(args: CreateTreeViewProps) {
 	return {
 		elements: {
 			tree: rootTree,
-			label,
 			item,
 			group,
 		},

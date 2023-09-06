@@ -17,11 +17,6 @@ const builder = builderSchema(BUILDER_NAME, {
 			link: '#tree',
 		},
 		{
-			name: 'label',
-			description: 'The builder store used to create the label.',
-			link: '#label',
-		},
-		{
 			name: 'item',
 			description: 'The builder store used to create a tree item.',
 			link: '#item',
@@ -67,17 +62,6 @@ const tree = elementSchema('tree', {
 	dataAttributes: [
 		{
 			name: 'data-melt-id',
-			value: 'A unique ID.',
-		},
-	],
-});
-
-const label = elementSchema('label', {
-	title: 'label',
-	description: 'The label element.',
-	dataAttributes: [
-		{
-			name: 'data-id',
 			value: 'A unique ID.',
 		},
 	],
@@ -169,7 +153,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, tree, label, item, group];
+const schemas = [builder, tree, item, group];
 
 const features: BuilderData['features'] = [
 	'Full keyboard functionality',
