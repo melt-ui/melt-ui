@@ -32,7 +32,7 @@ const ATTRS = {
 
 const { name } = createElHelpers<TreeParts>('tree-view');
 
-export function createTreeView(args: CreateTreeViewProps) {
+export function createTreeView(args?: CreateTreeViewProps) {
 	const argsWithDefaults = { ...defaults, ...args };
 	const { forceVisible } = argsWithDefaults;
 
