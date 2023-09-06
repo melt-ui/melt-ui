@@ -44,22 +44,17 @@
 
 {#each treeItems as { title, icon, children }, i}
 	{@const itemId = `${title}-${i}`}
-	{@const _ =
-		title === 'tree' &&
-		console.log(title, children, !$isCollapsedGroup(itemId))}
 
-	<li
-		use:melt={$item({
-			value: title,
-			id: itemId,
-			hasChildren: !!children && children?.length > 0,
-		})}
-		class={level !== 1 ? 'pl-4' : ''}
-	>
-		<div
+	<li class={level !== 1 ? 'pl-4' : ''}>
+		<button
 			class="flex items-center gap-1 rounded-md p-1 {$isFocused(itemId)
 				? 'bg-magnum-200'
 				: ''}"
+			use:melt={$item({
+				value: title,
+				id: itemId,
+				hasChildren: !!children && children?.length > 0,
+			})}
 		>
 			<!-- Add icon. -->
 			{#if icon === 'folder' && children && !$isCollapsedGroup(itemId)}
@@ -74,18 +69,10 @@
 			{#if $isSelected(itemId)}
 				<svelte:component this={icons['highlight']} class="h-4 w-4" />
 			{/if}
-		</div>
+		</button>
 
 		{#if children && !$isCollapsedGroup(itemId)}
-			<ul
-				class="bg-red-500/25"
-				use:melt={$group({ id: itemId })}
-				transition:slide|local={{ duration: 200 }}
-				on:introstart={() => console.log(title, 'intro started')}
-				on:outrostart={() => console.log(title, 'outro started')}
-				on:introend={() => console.log(title, 'intro ended')}
-				on:outroend={() => console.log(title, 'outro ended')}
-			>
+			<ul use:melt={$group({ id: itemId })}>
 				<svelte:self treeItems={children} level={level + 1} />
 			</ul>
 		{/if}

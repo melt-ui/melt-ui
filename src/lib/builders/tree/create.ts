@@ -1,22 +1,21 @@
-import { derived, get, writable, type Writable } from 'svelte/store';
-import type { Defaults } from '$lib/internal/types';
 import {
 	addEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
-	handleRovingFocus,
 	generateId,
 	getElementByMeltId,
 	isBrowser,
-	isLetter,
 	isHTMLElement,
+	isLetter,
 	kbd,
+	last,
 	styleToString,
 } from '$lib/internal/helpers';
+import type { Defaults } from '$lib/internal/types';
+import { derived, writable, type Writable } from 'svelte/store';
 
-import type { CreateTreeViewProps, ItemDescription, TreeParts } from './types';
-import { onMount, tick } from 'svelte';
+import type { CreateTreeViewProps, TreeParts } from './types';
 
 const defaults = {
 	forceVisible: false,
@@ -38,15 +37,10 @@ export function createTreeView(args: CreateTreeViewProps) {
 	/**
 	 * Track currently focused item in the tree.
 	 */
-	const focusedItem: Writable<HTMLLIElement | null> = writable(null);
-	const selectedItem: Writable<HTMLLIElement | null> = writable(null);
+	const focusedItem: Writable<HTMLElement | null> = writable(null);
+	const selectedItem: Writable<HTMLElement | null> = writable(null);
 	const selectedId: Writable<string | null> = writable(null);
 	const collapsedGroups: Writable<string[]> = writable([]);
-
-	let rootEl: HTMLElement | null;
-	let items: HTMLLIElement[];
-	let focusedItemIdx = 0;
-	let itemChildren: ItemDescription[] = [];
 
 	/**
 	 * Determines if the tree view item is selected.
@@ -94,131 +88,6 @@ export function createTreeView(args: CreateTreeViewProps) {
 		}),
 	});
 
-	function updateFocusedElement(newIndex: number) {
-		/**
-		 * Items should not be navigatable with tabs,
-		 * so we always update the tabindex so that only the currently
-		 * focused element has a focusable tabindex.
-		 */
-		handleRovingFocus(items[newIndex]);
-		focusedItem.set(items[newIndex]);
-		focusedItemIdx = newIndex;
-	}
-
-	function updateSelectedElement(el: HTMLLIElement) {
-		selectedItem.set(el);
-
-		const id = el.getAttribute(ATTRS.DATAID);
-		if (!id) return;
-
-		selectedId.set(id);
-	}
-
-	/**
-	 * After trees get expanded or collapsed, we need to
-	 * update our list of items to properly reflect those changes.
-	 */
-	async function updateItemList(el: HTMLLIElement) {
-		await tick();
-
-		rootEl = getElementByMeltId(rootIds.tree);
-		if (!rootEl) return;
-
-		// Select all 'treeitem' li elements within our root element.
-		items = Array.from(rootEl.querySelectorAll('li[role="treeitem"]'));
-
-		/**
-		 * Filter out all elements that have parents that are not expanded.
-		 * I think we might need this in case tick() doesn't work with animations.
-		 */
-		const closedParents = Array.from(rootEl.querySelectorAll('li[aria-expanded="false"]'));
-		items = items.filter(
-			(item) => !closedParents.some((parent) => item !== parent && parent.contains(item))
-		);
-
-		itemChildren = getChildrenOfItems();
-
-		// Update the current focus index.
-		focusedItemIdx = items.findIndex((item) => item === el);
-
-		// Add tabindex to newly added elements. (not doing this caused flickering)
-		items.forEach((item) => {
-			if (!item.hasAttribute(ATTRS.TABINDEX)) {
-				item.setAttribute(ATTRS.TABINDEX, '-1');
-			}
-		});
-	}
-
-	function getElementAttributes(el: HTMLLIElement) {
-		const hasChildren = el.hasAttribute(ATTRS.EXPANDED);
-		const expanded = el.getAttribute(ATTRS.EXPANDED);
-		const dataId = el.getAttribute(ATTRS.DATAID);
-
-		return {
-			hasChildren,
-			expanded,
-			dataId,
-		};
-	}
-
-	async function showChildrenElements(el: HTMLLIElement) {
-		const { hasChildren, expanded, dataId } = getElementAttributes(el);
-
-		if (!hasChildren || expanded === null || dataId === null) return;
-
-		const $collapsedGroups = get(collapsedGroups);
-
-		if (expanded === 'false') {
-			collapsedGroups.set($collapsedGroups.filter((item) => item !== dataId));
-			el.setAttribute(ATTRS.EXPANDED, 'true');
-
-			await updateItemList(el);
-		}
-	}
-
-	async function hideChildrenElements(el: HTMLLIElement) {
-		const { hasChildren, expanded, dataId } = getElementAttributes(el);
-
-		if (!hasChildren || expanded === null || dataId === null) return;
-
-		const $collapsedGroups = get(collapsedGroups);
-
-		if (expanded === 'true') {
-			collapsedGroups.set([...$collapsedGroups, dataId]);
-			el.setAttribute(ATTRS.EXPANDED, 'false');
-
-			await updateItemList(el);
-		}
-	}
-
-	function elementHasChildren(el: HTMLLIElement) {
-		return el.hasAttribute(ATTRS.EXPANDED);
-	}
-
-	function elementIsExpanded(el: HTMLLIElement) {
-		return el.getAttribute(ATTRS.EXPANDED) === 'true';
-	}
-
-	async function handleHiddenElements(el: HTMLLIElement) {
-		const { hasChildren, expanded, dataId } = getElementAttributes(el);
-
-		if (!hasChildren || expanded === null || dataId === null) return;
-
-		const $collapsedGroups = get(collapsedGroups);
-
-		if (expanded === 'false') {
-			// Remove id from hidden items.
-			collapsedGroups.set($collapsedGroups.filter((item) => item !== dataId));
-			el.setAttribute(ATTRS.EXPANDED, 'true');
-		} else {
-			// Add id to hidden items.
-			collapsedGroups.set([...$collapsedGroups, dataId]);
-			el.setAttribute(ATTRS.EXPANDED, 'false');
-		}
-
-		await updateItemList(el);
-	}
-
 	const item = builder(name('item'), {
 		stores: [collapsedGroups, selectedId],
 		returned: ([$collapsedGroups, $selectedId]) => {
@@ -233,84 +102,94 @@ export function createTreeView(args: CreateTreeViewProps) {
 					'aria-selected': id === $selectedId,
 					'data-id': id,
 					'data-value': value,
+					tabIndex: $selectedId === id || !$selectedId ? 0 : -1,
 					...expanded,
 				};
 			};
 		},
-		action: (node: HTMLLIElement) => {
+		action: (node: HTMLElement) => {
 			const unsubEvents = executeCallbacks(
-				addEventListener(node, 'keydown', async (e) => {
+				addEventListener(node, 'keydown', (e) => {
 					const { key } = e;
 
 					const keyIsLetter = isLetter(key);
 
-					if (
-						![
-							kbd.ARROW_DOWN,
-							kbd.ARROW_UP,
-							kbd.ARROW_LEFT,
-							kbd.ARROW_RIGHT,
-							kbd.ENTER,
-							kbd.SPACE,
-							kbd.END,
-							kbd.HOME,
-							kbd.ASTERISK,
-						].includes(key) &&
-						!keyIsLetter
-					) {
+					const keys = [
+						kbd.ARROW_DOWN,
+						kbd.ARROW_UP,
+						kbd.ARROW_LEFT,
+						kbd.ARROW_RIGHT,
+						kbd.ENTER,
+						kbd.SPACE,
+						kbd.END,
+						kbd.HOME,
+						kbd.ASTERISK,
+					] as const;
+
+					if (!keys.includes(key) && !keyIsLetter) {
 						return;
 					}
 
-					const el = e.target;
-
-					if (
-						!rootEl ||
-						!isHTMLElement(el) ||
-						el.getAttribute('role') !== 'treeitem' ||
-						items.length === 0
-					)
+					const rootEl = getElementByMeltId(rootIds.tree);
+					if (!rootEl || !isHTMLElement(node) || node.getAttribute('role') !== 'treeitem') {
 						return;
+					}
+
+					const items = getItems();
+					const nodeIdx = items.findIndex((item) => item === node);
 
 					// Prevent other tree events from also firing the event.
 					e.stopPropagation();
-					e.preventDefault();
+
+					if (key !== kbd.ENTER && key !== kbd.SPACE) {
+						e.preventDefault();
+					}
 
 					if (key === kbd.ENTER || key === kbd.SPACE) {
-						updateSelectedElement(items[focusedItemIdx]);
-					} else if (key === kbd.ARROW_DOWN && focusedItemIdx !== items.length - 1) {
-						updateFocusedElement(focusedItemIdx + 1);
-					} else if (key === kbd.ARROW_UP && focusedItemIdx !== 0) {
-						updateFocusedElement(focusedItemIdx - 1);
-					} else if (key === kbd.HOME && focusedItemIdx !== 0) {
-						updateFocusedElement(0);
-					} else if (key === kbd.END && focusedItemIdx != items.length - 1) {
-						updateFocusedElement(items.length - 1);
-					} else if (
-						key === kbd.ARROW_LEFT &&
-						elementHasChildren(<HTMLLIElement>el) &&
-						elementIsExpanded(<HTMLLIElement>el)
-					) {
-						await hideChildrenElements(<HTMLLIElement>el);
+						// Select el
+						updateSelectedElement(node);
+					} else if (key === kbd.ARROW_DOWN && nodeIdx !== items.length - 1) {
+						// Focus next el
+						const nextItem = items[nodeIdx + 1];
+						if (!nextItem) return;
+						setFocusedItem(nextItem);
+					} else if (key === kbd.ARROW_UP && nodeIdx !== 0) {
+						// Focus previous el
+						const prevItem = items[nodeIdx - 1];
+						if (!prevItem) return;
+						setFocusedItem(prevItem);
+					} else if (key === kbd.HOME && nodeIdx !== 0) {
+						// Focus first el
+						const item = items[0];
+						if (!item) return;
+						setFocusedItem(item);
+					} else if (key === kbd.END && nodeIdx != items.length - 1) {
+						// Focus last el
+						const item = last(items);
+						if (!item) return;
+						setFocusedItem(item);
 					} else if (key === kbd.ARROW_LEFT) {
-						const parentIdx = itemChildren.findIndex((item) =>
-							item.childrenIdxs.includes(focusedItemIdx)
-						);
-
-						if (parentIdx === -1) return;
-
-						updateFocusedElement(parentIdx);
-					} else if (
-						key === kbd.ARROW_RIGHT &&
-						elementHasChildren(<HTMLLIElement>el) &&
-						elementIsExpanded(<HTMLLIElement>el)
-					) {
-						updateFocusedElement(focusedItemIdx + 1);
-					} else if (
-						key === kbd.ARROW_RIGHT &&
-						elementHasChildren(<HTMLLIElement>el) &&
-						!elementIsExpanded(<HTMLLIElement>el)
-					) {
-						await showChildrenElements(<HTMLLIElement>el);
+						if (elementIsExpanded(node)) {
+							// Collapse group
+							toggleChildrenElements(node);
+						} else {
+							// Focus parent group
+							const parentGroup = node?.closest('[role="group"]');
+							const groupId = parentGroup?.getAttribute('data-group-id');
+							const item = items.find((item) => item.getAttribute('data-id') === groupId);
+							if (!item) return;
+							setFocusedItem(item as HTMLElement);
+						}
+					} else if (key === kbd.ARROW_RIGHT) {
+						if (elementIsExpanded(node)) {
+							// Focus first child
+							const nextItem = items[nodeIdx + 1];
+							if (!nextItem) return;
+							setFocusedItem(nextItem);
+						} else if (elementHasChildren(node)) {
+							// Expand group
+							toggleChildrenElements(node);
+						}
 					} else if (keyIsLetter) {
 						/**
 						 * Check whether a value with the letter exists
@@ -326,9 +205,9 @@ export function createTreeView(args: CreateTreeViewProps) {
 						let nextFocusIdx = -1;
 
 						// Check elements after currently focused one.
-						let foundNextFocusable = values.slice(focusedItemIdx + 1).some((item, i) => {
+						let foundNextFocusable = values.slice(nodeIdx + 1).some((item, i) => {
 							if (item.value?.toLowerCase().at(0) === key) {
-								nextFocusIdx = focusedItemIdx + 1 + i;
+								nextFocusIdx = nodeIdx + 1 + i;
 								return true;
 							}
 
@@ -340,7 +219,7 @@ export function createTreeView(args: CreateTreeViewProps) {
 							 * Check elements before currently focused one,
 							 * if no index has been found yet.
 							 * */
-							foundNextFocusable = values.slice(0, focusedItemIdx).some((item, i) => {
+							foundNextFocusable = values.slice(0, nodeIdx).some((item, i) => {
 								if (item.value?.toLowerCase().at(0) === key) {
 									nextFocusIdx = i;
 									return true;
@@ -351,31 +230,16 @@ export function createTreeView(args: CreateTreeViewProps) {
 						}
 
 						if (foundNextFocusable && values[nextFocusIdx].id) {
-							updateFocusedElement(nextFocusIdx);
+							const nextFocusEl = items[nextFocusIdx];
+							if (!nextFocusEl) return;
+							setFocusedItem(nextFocusEl);
 						}
 					}
 				}),
 				addEventListener(node, 'click', async (e) => {
-					const el = e.currentTarget;
-
-					if (
-						!rootEl ||
-						!isHTMLElement(el) ||
-						el.getAttribute('role') !== 'treeitem' ||
-						!items.length
-					)
-						return;
-
 					e.stopPropagation();
-
-					await handleHiddenElements(<HTMLLIElement>el);
-
-					updateSelectedElement(<HTMLLIElement>el);
-
-					const idx = items.findIndex((item) => item === el);
-					if (idx === -1) return;
-
-					updateFocusedElement(idx);
+					updateSelectedElement(node);
+					setFocusedItem(node);
 				})
 			);
 
@@ -401,58 +265,68 @@ export function createTreeView(args: CreateTreeViewProps) {
 		},
 	});
 
-	function getChildrenOfItems(): ItemDescription[] {
-		return items.map((item) => {
-			const groups = Array.from(item.querySelectorAll('ul[role="group"]'));
-
-			const hasChildren = groups.length > 0;
-			const childrenIdxs: number[] = [];
-
-			if (hasChildren) {
-				const children = <HTMLLIElement[]>(
-					Array.from(groups[0].querySelectorAll(':scope > li[role="treeitem"]'))
-				);
-
-				children.forEach((child) => childrenIdxs.push(items.indexOf(child)));
-			}
-
-			return {
-				hasChildren,
-				childrenIdxs,
-			};
-		});
+	function setFocusedItem(el: HTMLElement) {
+		focusedItem.set(el);
+		el.focus();
 	}
 
-	onMount(() => {
-		rootEl = getElementByMeltId(rootIds.tree);
+	function updateSelectedElement(el: HTMLElement) {
+		const id = el.getAttribute(ATTRS.DATAID);
+		if (!id) return;
 
-		if (!rootEl) return;
-		items = Array.from(rootEl.querySelectorAll('li[role="treeitem"]'));
+		selectedItem.set(el);
+		selectedId.set(id);
+	}
 
-		if (items.length === 0) return;
+	function getItems(): HTMLElement[] {
+		let items = [] as HTMLElement[];
+		const rootEl = getElementByMeltId(rootIds.tree);
+		if (!rootEl) return items;
 
-		// Add tabindex for each element.
-		items.forEach((item) => {
-			item.setAttribute(ATTRS.TABINDEX, '-1');
-		});
+		// Select all 'treeitem' li elements within our root element.
+		items = Array.from(rootEl.querySelectorAll('[role="treeitem"]'));
 
 		/**
-		 * Set the first item to be the current focused one,
-		 * and make it tabbable.
+		 * Filter out all elements that have parents that are not expanded.
 		 */
-		focusedItem.set(items[0]);
-		items[0].setAttribute(ATTRS.TABINDEX, '0');
+		const closedParents = Array.from(rootEl.querySelectorAll('[aria-expanded="false"]'));
+		items = items.filter(
+			(item) => !closedParents.some((parent) => item !== parent && parent.contains(item))
+		);
 
-		// Get the children idxs of each item.
-		itemChildren = getChildrenOfItems();
+		return items;
+	}
 
-		// Add aria-expanded role for items with children.
-		itemChildren.forEach((item, i) => {
-			if (item.hasChildren) {
-				items[i].setAttribute(ATTRS.EXPANDED, 'true');
-			}
-		});
-	});
+	function getElementAttributes(el: HTMLElement) {
+		const hasChildren = el.hasAttribute(ATTRS.EXPANDED);
+		const expanded = el.getAttribute(ATTRS.EXPANDED);
+		const dataId = el.getAttribute(ATTRS.DATAID);
+
+		return {
+			hasChildren,
+			expanded,
+			dataId,
+		};
+	}
+
+	function toggleChildrenElements(el: HTMLElement) {
+		const { hasChildren, expanded, dataId } = getElementAttributes(el);
+		if (!hasChildren || expanded === null || dataId === null) return;
+
+		if (expanded === 'false') {
+			collapsedGroups.update((prev) => prev.filter((item) => item !== dataId));
+		} else {
+			collapsedGroups.update((prev) => [...prev, dataId]);
+		}
+	}
+
+	function elementHasChildren(el: HTMLElement) {
+		return el.hasAttribute(ATTRS.EXPANDED);
+	}
+
+	function elementIsExpanded(el: HTMLElement) {
+		return el.getAttribute(ATTRS.EXPANDED) === 'true';
+	}
 
 	return {
 		elements: {
