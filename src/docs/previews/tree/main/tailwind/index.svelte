@@ -61,12 +61,14 @@
 </script>
 
 <div
-	class="flex h-[18.75rem] w-[18.75rem] flex-col gap-1 rounded-xl bg-white p-4 text-neutral-900 md:h-[350px]"
+	class="h-[18.75rem] w-[18.75rem] rounded-xl bg-white text-neutral-900 md:h-[350px]"
 >
-	<h3 {...$label} class="text-lg font-bold">Project Structure</h3>
-	<hr />
+	<div class="flex flex-col gap-1 px-4 pt-4">
+		<h3 {...$label} class="text-lg font-bold">Project Structure</h3>
+		<hr />
+	</div>
 
-	<ul class="overflow-auto" {...$tree}>
+	<ul class="overflow-auto px-4 pb-4 pt-2" {...$tree}>
 		<Tree {treeItems} />
 	</ul>
 </div>
