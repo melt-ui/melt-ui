@@ -1,4 +1,4 @@
-import type { createTreeView  } from "./create";
+import type { createTreeView } from './create';
 
 // TODO: add multiselect option?
 export type CreateTreeViewProps = {
@@ -6,14 +6,11 @@ export type CreateTreeViewProps = {
 	// multiselect?: boolean;
 };
 
-export type TreeParts =
-	| 'label'
-	| 'item'
-	| 'group';
+export type TreeParts = 'label' | 'item' | 'group';
 
 export type ItemDescription = {
-    hasChildren: boolean;
-    childrenIdxs: number[];
+	hasChildren: boolean;
+	childrenIdxs: number[];
 };
 
 export type TreeView = ReturnType<typeof createTreeView>;

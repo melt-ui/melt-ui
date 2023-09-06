@@ -1,6 +1,7 @@
 ---
 title: Tree View
-description: A hierarchical list of nested items, where each item can have additional children elements.
+description:
+  A hierarchical list of nested items, where each item can have additional children elements.
 ---
 
 <script>
@@ -22,6 +23,7 @@ description: A hierarchical list of nested items, where each item can have addit
 
 ## Accessibility
 
-Adheres to the [Tree View WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/treeview/)
+Adheres to the
+[Tree View WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/treeview/)
 
 <KbdTable {keyboard} />

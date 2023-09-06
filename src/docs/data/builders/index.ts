@@ -58,7 +58,7 @@ export const builderList = [
 	'toggle-group',
 	'toolbar',
 	'tooltip',
-	'tree'
+	'tree',
 ] as const;
 
 export type Builder = (typeof builderList)[number];
@@ -104,5 +104,5 @@ export const data: Builders = {
 	toggle: toggleData,
 	toolbar: toolbarData,
 	tooltip: tooltipData,
-	tree: treeData
+	tree: treeData,
 };

@@ -11,7 +11,6 @@ import {
 	isLetter,
 	kbd,
 	last,
-	sleep,
 	styleToString,
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
@@ -19,7 +18,6 @@ import { derived, writable, type Writable } from 'svelte/store';
 
 import type { TreeEvents } from './events';
 import type { CreateTreeViewProps, TreeParts } from './types';
-import { tick } from 'svelte';
 
 const defaults = {
 	forceVisible: false,
@@ -157,7 +155,6 @@ export function createTreeView(args: CreateTreeViewProps) {
 
 					if (key === kbd.ENTER || key === kbd.SPACE) {
 						// Select el
-						console.log('select el');
 						updateSelectedElement(node);
 						isKeydown = true;
 					} else if (key === kbd.ARROW_DOWN && nodeIdx !== items.length - 1) {
