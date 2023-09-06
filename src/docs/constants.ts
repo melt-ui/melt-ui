@@ -180,4 +180,6 @@ export const KBD = {
 	SHIFT_TAB: 'Shift + Tab',
 	BACKSPACE: 'Backspace',
 	DELETE: 'Delete',
+	ASTERISK: '*',
+	LETTER: 'A-Z'
 };
