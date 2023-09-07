@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.47.0
+
+### Minor Changes
+
+- ae88900e: Tree: invert logic from collapsed to expanded
+
+### Patch Changes
+
+- 4dcacd19: Tree: mark args as optional
+
 ## 0.46.0
 
 ### Minor Changes
