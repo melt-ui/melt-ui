@@ -132,9 +132,6 @@ export function createTreeView(args?: CreateTreeViewProps) {
 					const items = getItems();
 					const nodeIdx = items.findIndex((item) => item === node);
 
-					// Prevent other tree events from also firing the event.
-					e.stopPropagation();
-
 					if (key !== kbd.ENTER && key !== kbd.SPACE) {
 						e.preventDefault();
 					}
@@ -234,7 +231,6 @@ export function createTreeView(args?: CreateTreeViewProps) {
 					}
 				}),
 				addMeltEventListener(node, 'click', async (e) => {
-					e.stopPropagation();
 					updateSelectedElement(node);
 					setFocusedItem(node);
 					if (!isKeydown) {
