@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.47.3
+
+### Patch Changes
+
+- bb3349ec: Tree: fix initial tabindex
+
 ## 0.47.2
 
 ### Patch Changes
