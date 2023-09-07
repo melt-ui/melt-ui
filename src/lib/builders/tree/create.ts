@@ -7,6 +7,7 @@ import {
 	generateId,
 	getElementByMeltId,
 	isHTMLElement,
+	isHidden,
 	isLetter,
 	kbd,
 	last,
@@ -146,6 +147,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 					}
 
 					const items = getItems();
+					console.log(items);
 					const nodeIdx = items.findIndex((item) => item === node);
 
 					// Prevent other tree events from also firing the event.
@@ -300,7 +302,9 @@ export function createTreeView(args?: CreateTreeViewProps) {
 		if (!rootEl) return items;
 
 		// Select all 'treeitem' li elements within our root element.
-		items = Array.from(rootEl.querySelectorAll('[role="treeitem"]'));
+		items = Array.from(rootEl.querySelectorAll('[role="treeitem"]')).filter(
+			(el) => !isHidden(el as HTMLElement)
+		) as HTMLElement[];
 
 		/**
 		 * Filter out all elements that have parents that are not expanded.

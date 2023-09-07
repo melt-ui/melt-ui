@@ -35,6 +35,14 @@
 					],
 				},
 				{
+					title: 'icons',
+					icon: 'folder',
+					children: [
+						{ title: 'JS.svelte', icon: 'svelte' },
+						{ title: 'Svelte.svelte', icon: 'svelte' },
+					],
+				},
+				{
 					title: 'index.js',
 					icon: 'js',
 				},
