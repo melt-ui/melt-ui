@@ -72,7 +72,7 @@
 </script>
 
 <div
-	class="h-[18.75rem] w-[18.75rem] rounded-xl bg-white text-neutral-900 md:h-[350px]"
+	class="flex h-[18.75rem] w-[18.75rem] flex-col rounded-xl bg-white text-neutral-900 md:h-[350px]"
 >
 	<div class="flex flex-col gap-1 px-4 pt-4">
 		<h3 class="text-lg font-bold">Project Structure</h3>

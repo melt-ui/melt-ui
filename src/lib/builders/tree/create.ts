@@ -2,7 +2,6 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
-	effect,
 	executeCallbacks,
 	generateId,
 	getElementByMeltId,
@@ -243,7 +242,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 					}
 					isKeydown = false;
 				}),
-				addMeltEventListener(node, 'focus', (e) => {
+				addMeltEventListener(node, 'focus', () => {
 					lastFocusedId.update((p) => node.getAttribute('data-id') ?? p);
 				})
 			);
@@ -291,14 +290,6 @@ export function createTreeView(args?: CreateTreeViewProps) {
 		items = Array.from(rootEl.querySelectorAll('[role="treeitem"]')).filter(
 			(el) => !isHidden(el as HTMLElement)
 		) as HTMLElement[];
-
-		/**
-		 * Filter out all elements that have parents that are not expanded.
-		 */
-		const closedParents = Array.from(rootEl.querySelectorAll('[aria-expanded="false"]'));
-		items = items.filter(
-			(item) => !closedParents.some((parent) => item !== parent && parent.contains(item))
-		);
 
 		return items;
 	}
