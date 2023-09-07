@@ -16,6 +16,7 @@
 	} = ctx;
 
 	const treeItems: TreeItem[] = [
+		{ title: 'a.svelte', icon: 'svelte' },
 		{
 			title: 'lib',
 			icon: 'folder',

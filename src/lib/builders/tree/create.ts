@@ -99,15 +99,12 @@ export function createTreeView(args?: CreateTreeViewProps) {
 				const { id, hasChildren } = opts;
 
 				let tabindex = -1;
-				if (!hasActiveTabIndex) {
-					tabindex = 0;
-				} else if ($selectedId) {
-					tabindex = $selectedId === id ? 0 : -1;
-				} else {
+				if ($lastFocusedId) {
 					tabindex = $lastFocusedId === id ? 0 : -1;
+				} else if (!hasActiveTabIndex) {
+					tabindex = 0;
+					hasActiveTabIndex = true;
 				}
-
-				hasActiveTabIndex = true;
 
 				return {
 					role: 'treeitem',
@@ -147,7 +144,6 @@ export function createTreeView(args?: CreateTreeViewProps) {
 					}
 
 					const items = getItems();
-					console.log(items);
 					const nodeIdx = items.findIndex((item) => item === node);
 
 					// Prevent other tree events from also firing the event.
