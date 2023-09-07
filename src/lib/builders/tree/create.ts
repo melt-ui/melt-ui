@@ -81,15 +81,6 @@ export function createTreeView(args?: CreateTreeViewProps) {
 		},
 	});
 
-	let hasActiveTabIndex = false;
-	effect(selectedItem, ($selectedItem) => {
-		if (!$selectedItem) {
-			hasActiveTabIndex = false;
-		} else {
-			hasActiveTabIndex = true;
-		}
-	});
-
 	let isKeydown = false;
 	const item = builder(name('item'), {
 		stores: [expanded, selectedId, lastFocusedId],
@@ -98,14 +89,10 @@ export function createTreeView(args?: CreateTreeViewProps) {
 				// Have some default options that can be passed to the create()
 				const { id, hasChildren } = opts;
 
-				let tabindex = -1;
-				if ($lastFocusedId) {
+				let tabindex = 0;
+				if ($lastFocusedId !== null) {
 					tabindex = $lastFocusedId === id ? 0 : -1;
-				} else if (!hasActiveTabIndex) {
-					tabindex = 0;
-					hasActiveTabIndex = true;
 				}
-
 				return {
 					role: 'treeitem',
 					'aria-selected': $selectedId === id,
@@ -255,6 +242,9 @@ export function createTreeView(args?: CreateTreeViewProps) {
 						toggleChildrenElements(node);
 					}
 					isKeydown = false;
+				}),
+				addMeltEventListener(node, 'focus', (e) => {
+					lastFocusedId.update((p) => node.getAttribute('data-id') ?? p);
 				})
 			);
 
@@ -281,7 +271,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 	});
 
 	function setFocusedItem(el: HTMLElement) {
-		lastFocusedId.set(el.getAttribute('data-id'));
+		lastFocusedId.update((p) => el.getAttribute('data-id') ?? p);
 		el.focus();
 	}
 
