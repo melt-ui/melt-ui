@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.47.2
+
+### Patch Changes
+
+- e5f48244: Tree: refactor tabindex behaviour
+
 ## 0.47.1
 
 ### Patch Changes
