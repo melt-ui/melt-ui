@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.47.1
+
+### Patch Changes
+
+- 1e3bb94d: Tree: fix arrow key nav
+
 ## 0.47.0
 
 ### Minor Changes
