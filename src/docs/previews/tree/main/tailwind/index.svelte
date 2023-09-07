@@ -12,11 +12,10 @@
 
 	const {
 		elements: { tree },
-		states: { expanded },
 	} = ctx;
 
 	const treeItems: TreeItem[] = [
-		{ title: 'a.svelte', icon: 'svelte' },
+		{ title: 'index.svelte', icon: 'svelte' },
 		{
 			title: 'lib',
 			icon: 'folder',
