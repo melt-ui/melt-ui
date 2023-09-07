@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.47.4
+
+### Patch Changes
+
+- da5eed08: Tree: improve arrow key performance
+
 ## 0.47.3
 
 ### Patch Changes
