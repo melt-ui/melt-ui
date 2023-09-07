@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.47.5
+
+### Patch Changes
+
+- 952396b2: Tree: remove stopPropagation
+
 ## 0.47.4
 
 ### Patch Changes
