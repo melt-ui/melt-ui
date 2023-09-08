@@ -101,3 +101,11 @@ export type MeltComponentEvents<T> = {
 // 		? ChangeFn<T>
 // 		: Writable<T>;
 // };
+
+export type WhenTrue<TrueOrFalse, IfTrue, IfFalse, IfNeither = IfTrue | IfFalse> = [
+	TrueOrFalse
+] extends [true]
+	? IfTrue
+	: [TrueOrFalse] extends [false]
+	? IfFalse
+	: IfNeither;
