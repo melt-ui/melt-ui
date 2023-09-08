@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.47.6
+
+### Patch Changes
+
+- f30c4d17: improve accordion types
+
 ## 0.47.5
 
 ### Patch Changes
