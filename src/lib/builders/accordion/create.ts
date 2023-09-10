@@ -87,7 +87,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 
 				return {
 					'data-state': isSelected(itemValue, $value) ? 'open' : 'closed',
-					'data-disabled': disabledAttr(!!disabled),
+					'data-disabled': disabledAttr(disabled),
 				};
 			};
 		},
@@ -101,10 +101,10 @@ export const createAccordion = <Multiple extends boolean = false>(
 				// generate the content ID here so that we can grab it in the content
 				// builder action to ensure the values match.
 				return {
-					disabled: disabledAttr(!!($disabled || disabled)),
+					disabled: disabledAttr($disabled || disabled),
 					'aria-expanded': isSelected(itemValue, $value) ? true : false,
 					'aria-disabled': disabled ? true : false,
-					'data-disabled': disabledAttr(!!disabled),
+					'data-disabled': disabledAttr(disabled),
 					'data-value': itemValue,
 					'data-state': isSelected(itemValue, $value) ? 'open' : 'closed',
 				};

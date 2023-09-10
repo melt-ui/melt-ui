@@ -488,8 +488,8 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					'data-selected': selected ? '' : undefined,
 					'data-editable': editable ? '' : undefined,
 					'data-editing': editing ? '' : undefined,
-					'data-disabled': disabledAttr(!!disabled),
-					disabled: disabledAttr(!!disabled),
+					'data-disabled': disabledAttr(disabled),
+					disabled: disabledAttr(disabled),
 					hidden: editing,
 					tabindex: -1,
 					style: editing
@@ -583,8 +583,8 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					'data-tag-value': tag.value,
 					'data-selected': selected ? '' : undefined,
 					'data-editing': editing ? '' : undefined,
-					'data-disabled': disabledAttr(!!disabled),
-					disabled: disabledAttr(!!disabled),
+					'data-disabled': disabledAttr(disabled),
+					disabled: disabledAttr(disabled),
 					tabindex: -1,
 				};
 			};

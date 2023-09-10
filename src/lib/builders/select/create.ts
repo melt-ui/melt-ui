@@ -569,7 +569,7 @@ export function createSelect<
 					'data-selected': isSelected ? '' : undefined,
 					'data-value': JSON.stringify(props.value),
 					'data-label': props.label ?? undefined,
-					'data-disabled': disabledAttr(!!props.disabled),
+					'data-disabled': disabledAttr(props.disabled),
 					tabindex: -1,
 				} as const;
 			};

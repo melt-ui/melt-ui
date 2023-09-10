@@ -96,8 +96,8 @@ export function createTabs(props?: CreateTabsProps) {
 					tabindex: isActive ? 0 : -1,
 					'data-value': tabValue,
 					'data-orientation': $orientation,
-					'data-disabled': disabledAttr(!!disabled),
-					disabled: disabledAttr(!!disabled),
+					'data-disabled': disabledAttr(disabled),
+					disabled: disabledAttr(disabled),
 				};
 			};
 		},
