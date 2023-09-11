@@ -25,17 +25,6 @@ export type CreateComboboxProps<Value> = {
 	scrollAlignment?: 'nearest' | 'center';
 
 	/**
-	 * Predicate function to filter the visible items. When the user types,
-	 * the filterFunction will be run on each item along with the current
-	 * input value. If the predicate returns true, the item will be displayed.
-	 * By default, the item's label will be compared to the current input value.
-	 * @param item the current item being filtered.
-	 * @param value the current input value.
-	 * @returns whether the item should be visible.
-	 */
-	filterFunction?: ComboboxFilterFunction<Value>;
-
-	/**
 	 * Whether or not the combobox should loop through the list when
 	 * the end or beginning is reached.
 	 *
@@ -126,18 +115,7 @@ export type CreateComboboxProps<Value> = {
 	 * @default false
 	 */
 	forceVisible?: boolean;
-
-	/**
-	 * The delay in milliseconds for the filterFunction to be called after the input value changes.
-	 */
-	debounce?: number;
 };
-
-type ComboboxFilterFunctionArgs<T> = {
-	itemValue: T;
-	input: string;
-};
-export type ComboboxFilterFunction<T> = (args: ComboboxFilterFunctionArgs<T>) => boolean;
 
 export type ComboboxItemProps<Value> = ComboboxOption<Value> & {
 	/**
