@@ -1,6 +1,7 @@
 import {
 	addMeltEventListener,
 	builder,
+	disabledAttr,
 	executeCallbacks,
 	kbd,
 	omit,
@@ -36,8 +37,8 @@ export function createToggle(props?: CreateToggleProps) {
 		stores: [pressed, disabled],
 		returned: ([$pressed, $disabled]) => {
 			return {
-				'data-disabled': $disabled ? true : undefined,
-				disabled: $disabled,
+				'data-disabled': disabledAttr($disabled),
+				disabled: disabledAttr($disabled),
 				'data-state': $pressed ? 'on' : 'off',
 				'aria-pressed': $pressed,
 				type: 'button',

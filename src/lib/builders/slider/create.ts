@@ -3,6 +3,7 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	disabledAttr,
 	effect,
 	executeCallbacks,
 	generateId,
@@ -53,7 +54,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 		stores: [disabled, orientation],
 		returned: ([$disabled, $orientation]) => {
 			return {
-				disabled: $disabled,
+				disabled: disabledAttr($disabled),
 				'data-orientation': $orientation,
 				style: $disabled ? undefined : 'touch-action: none;',
 				'data-melt-id': ids.root,

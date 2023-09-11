@@ -1,4 +1,5 @@
 export * from './array.js';
+export * from './attr.js';
 export * from './builder.js';
 export * from './dom.js';
 export * from './event.js';
