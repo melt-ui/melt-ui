@@ -17,8 +17,9 @@ description:
 
 - **Root**: The root container for the accordion
 - **Item**: The container for each accordion item
-- **Trigger**: The trigger for the accordion item
-- **Content**: The content area that is revealed when the trigger is clicked
+  - **Header**: The header for the accordion trigger
+    - **Trigger**: The trigger for the accordion item
+  - **Content**: The content area that is revealed when the trigger is clicked
 
 ## Usage
 

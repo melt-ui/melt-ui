@@ -21,7 +21,6 @@ export function derivedWithUnsubscribe<S extends Stores, T>(
 	};
 
 	const unsubscribe = () => {
-		// console.log('dfu unsubscribing');
 		// Call all of the unsubscribe functions from the previous run of the function
 		unsubscribers.forEach((fn) => fn());
 		// Clear the list of unsubscribe functions

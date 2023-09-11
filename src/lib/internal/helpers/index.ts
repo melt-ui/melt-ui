@@ -22,3 +22,4 @@ export * from './store/index.js';
 export * from './rovingFocus.js';
 export * from './typeahead.js';
 export * from './elements.js';
+export * from './ignore.js';

@@ -102,6 +102,11 @@ const builder = builderSchema(BUILDER_NAME, {
 			type: 'Writable<T>',
 			description: 'A writable store whose value is the selected item.',
 		},
+		{
+			name: 'highlighted',
+			type: 'Writable<T>',
+			description: 'A writable store whose value is the highlighted item.',
+		},
 	],
 	helpers: [
 		{
@@ -109,6 +114,12 @@ const builder = builderSchema(BUILDER_NAME, {
 			type: 'Readable<(item: T) => boolean>',
 			description:
 				'A derived store that returns a function that returns whether or not the item is selected.',
+		},
+		{
+			name: 'isHighlighted',
+			type: 'Readable<(item: T) => boolean>',
+			description:
+				'A derived store that returns a function that returns whether or not the item is highlighted.',
 		},
 	],
 	options: OPTION_PROPS,

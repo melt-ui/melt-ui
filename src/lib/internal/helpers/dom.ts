@@ -29,3 +29,7 @@ export function getTabbableNodes(container: HTMLElement): HTMLElement[] {
 	}
 	return nodes;
 }
+
+export function isHidden(el: HTMLElement): boolean {
+	return el.offsetParent === null;
+}

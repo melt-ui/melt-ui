@@ -1,5 +1,87 @@
 # @melt-ui/svelte
 
+## 0.47.6
+
+### Patch Changes
+
+- f30c4d17: improve accordion types
+
+## 0.47.5
+
+### Patch Changes
+
+- 952396b2: Tree: remove stopPropagation
+
+## 0.47.4
+
+### Patch Changes
+
+- da5eed08: Tree: improve arrow key performance
+
+## 0.47.3
+
+### Patch Changes
+
+- bb3349ec: Tree: fix initial tabindex
+
+## 0.47.2
+
+### Patch Changes
+
+- e5f48244: Tree: refactor tabindex behaviour
+
+## 0.47.1
+
+### Patch Changes
+
+- 1e3bb94d: Tree: fix arrow key nav
+
+## 0.47.0
+
+### Minor Changes
+
+- ae88900e: Tree: invert logic from collapsed to expanded
+
+### Patch Changes
+
+- 4dcacd19: Tree: mark args as optional
+
+## 0.46.0
+
+### Minor Changes
+
+- 38fd632f: Tree: remove value prop
+
+## 0.45.1
+
+### Patch Changes
+
+- e8ca932a: Refactor: remove leftover logs
+
+## 0.45.0
+
+### Minor Changes
+
+- 5ef61385: Tree: remove label
+
+## 0.44.0
+
+### Minor Changes
+
+- 2c07edcb: ✨ [New builder] Tree View
+
+## 0.43.0
+
+### Minor Changes
+
+- 0f00ca50: Adds highlighted store and isHighlighted helper to combobox
+- 5a35ad18: add mutation observer to ToC to make it update when headings change and also return the original heading node within the headings list
+
+### Patch Changes
+
+- 9e15ccd4: Select: fix isSelected function for single option.
+- 4991c06d: - Improve handling of custom labels/IDs for select & combo
+
 ## 0.42.0
 
 ### Minor Changes

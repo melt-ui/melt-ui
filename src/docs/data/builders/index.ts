@@ -24,6 +24,7 @@ import { tagsInputData } from './tags-input.js';
 import { toastData } from './toast.js';
 import { toggleData } from './toggle.js';
 import { toggleGroupData } from './toggle-group.js';
+import { treeData } from './tree.js';
 import { tableOfContentsData } from './table-of-contents.js';
 import { toolbarData } from './toolbar.js';
 import { tooltipData } from './tooltip.js';
@@ -57,6 +58,7 @@ export const builderList = [
 	'toggle-group',
 	'toolbar',
 	'tooltip',
+	'tree',
 ] as const;
 
 export type Builder = (typeof builderList)[number];
@@ -102,4 +104,5 @@ export const data: Builders = {
 	toggle: toggleData,
 	toolbar: toolbarData,
 	tooltip: tooltipData,
+	tree: treeData,
 };
