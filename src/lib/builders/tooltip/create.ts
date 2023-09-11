@@ -39,6 +39,7 @@ const defaults = {
 	forceVisible: false,
 	portal: 'body',
 	closeOnEscape: true,
+	disableHoverableContent: false,
 } satisfies CreateTooltipProps;
 
 type TooltipParts = 'trigger' | 'content' | 'arrow';
@@ -57,6 +58,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 		forceVisible,
 		portal,
 		closeOnEscape,
+		disableHoverableContent,
 	} = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
@@ -244,8 +246,9 @@ export function createTooltip(props?: CreateTooltipProps) {
 			addEventListener(document, 'mousemove', (e) => {
 				const contentEl = document.getElementById(ids.content);
 				if (!contentEl) return;
-
-				const polygon = makeHullFromElements([$activeTrigger, contentEl]);
+				
+				const polygonElements = get(disableHoverableContent) ? [$activeTrigger] : [$activeTrigger, contentEl];
+				const polygon = makeHullFromElements(polygonElements);
 
 				isMouseInTooltipArea = pointInPolygon(
 					{
