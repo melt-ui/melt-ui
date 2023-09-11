@@ -1,5 +1,16 @@
 # @melt-ui/svelte
 
+## 0.48.0
+
+### Minor Changes
+
+- 82d37a43: Tooltip: Add `disableHoverableContent` prop
+
+### Patch Changes
+
+- c472cf1d: chore(package.json): add 'repository' property to `package.json`
+- 244aae3f: refactor: ensure type safety for `disabled` & `data-disabled` props
+
 ## 0.47.6
 
 ### Patch Changes
