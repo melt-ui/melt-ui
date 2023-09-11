@@ -1,5 +1,13 @@
 # @melt-ui/svelte
 
+## 0.49.0
+
+### Minor Changes
+
+- 4da1aa73: Combobox: Refactor API, allowing for a more general use case.
+  - Discarded `isEmpty`, `filterFunction` & `debounce`.
+  - Added `touchedInput` state
+
 ## 0.48.0
 
 ### Minor Changes
