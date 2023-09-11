@@ -10,6 +10,7 @@
 	import '@fontsource/inter/900.css';
 	import '../fonts.css';
 	import '../app.postcss';
+
 	import { browser, dev } from '$app/environment';
 	import { JsIndicator, SiteHeader, TailwindIndicator } from '$docs/components/index.js';
 	import * as Fathom from 'fathom-client';
@@ -18,12 +19,11 @@
 	import { onMount } from 'svelte';
 	import { env } from '$env/dynamic/public';
 
-	onMount(async () => {
-		if (env.PUBLIC_FATHOM_ID && env.PUBLIC_FATHOM_URL) {
-			Fathom.load(env.PUBLIC_FATHOM_ID, {
-				url: env.PUBLIC_FATHOM_URL,
-			});
-		}
+	onMount(() => {
+		if (!env.PUBLIC_FATHOM_ID || !env.PUBLIC_FATHOM_URL) return;
+		Fathom.load(env.PUBLIC_FATHOM_ID, {
+			url: env.PUBLIC_FATHOM_URL,
+		});
 	});
 
 	$: $page.url.pathname, browser && Fathom.trackPageview();
