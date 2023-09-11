@@ -394,7 +394,7 @@ export function createSelect<
 				'data-disabled': disabledAttr($disabled),
 				'aria-labelledby': ids.label,
 				disabled: disabledAttr($disabled),
-        'data-melt-id': ids.trigger,
+				'data-melt-id': ids.trigger,
 				id: ids.trigger,
 				tabindex: 0,
 			} as const;
