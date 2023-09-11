@@ -31,6 +31,12 @@ const OPTION_PROPS = [
 		default: '500',
 		description: 'The delay in milliseconds before the tooltip closes after a pointer leave event.',
 	},
+	{
+		name: 'disableHoverableContent',
+		type: 'boolean',
+		default: 'false',
+		description: 'Prevents the tooltip content element from remaining open when hovered. If `true`, the tooltip will only be open when hovering the trigger element.'
+	}
 ];
 
 const BUILDER_NAME = 'tooltip';
