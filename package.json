@@ -2,9 +2,7 @@
 	"name": "@melt-ui/svelte",
 	"version": "0.47.5",
 	"license": "MIT",
-	"repository": {
-		"url": "github:melt-ui/melt-ui"
-	},
+	"repository": "github:melt-ui/melt-ui",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
