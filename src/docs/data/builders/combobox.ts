@@ -49,12 +49,6 @@ const builder = builderSchema(BUILDER_NAME, {
 		PROPS.DEFAULT_OPEN,
 		PROPS.OPEN,
 		PROPS.ON_OPEN_CHANGE,
-		{
-			name: 'debounce',
-			type: 'number',
-			default: '0',
-			description: 'The debounce time for the inputValue.',
-		},
 		...OPTION_PROPS,
 	],
 	elements: [
@@ -89,7 +83,7 @@ const builder = builderSchema(BUILDER_NAME, {
 		{
 			name: 'touchedInput',
 			type: 'Writable<boolean>',
-			description: `A writable store with the touched state of the input. When the menu closes, the state is reset to \`false\`. 
+			description: `A writable store with the touched state of the input. When the menu closes, the state is reset to \`false\`.
 			Whenever a key is pressed into the input, the state is set to \`true\`.`,
 		},
 		{
