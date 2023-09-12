@@ -1,4 +1,5 @@
 export * from './array.js';
+export * from './attr.js';
 export * from './builder.js';
 export * from './dom.js';
 export * from './event.js';
@@ -21,3 +22,4 @@ export * from './store/index.js';
 export * from './rovingFocus.js';
 export * from './typeahead.js';
 export * from './elements.js';
+export * from './ignore.js';

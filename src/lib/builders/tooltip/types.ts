@@ -15,6 +15,7 @@ export type CreateTooltipProps = {
 	closeDelay?: number;
 	forceVisible?: boolean;
 	closeOnEscape?: boolean;
+	disableHoverableContent?: boolean;
 	/**
 	 * If not undefined, the tooltip will be rendered within the provided element or selector.
 	 *

@@ -5,18 +5,22 @@ import {
 	addMeltEventListener,
 	back,
 	builder,
+	createClickOutsideIgnore,
 	createElHelpers,
 	derivedVisible,
+	disabledAttr,
 	effect,
 	executeCallbacks,
 	forward,
 	generateId,
+	getElementByMeltId,
 	getOptions,
 	getPortalDestination,
 	isBrowser,
 	isElementDisabled,
 	isHTMLElement,
 	isHTMLInputElement,
+	isHidden,
 	kbd,
 	last,
 	next,
@@ -30,11 +34,10 @@ import {
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
-import { debounceable } from '$lib/internal/helpers/store/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { dequal as deepEqual } from 'dequal';
 import { onMount, tick } from 'svelte';
-import { derived, get, readonly, writable, type Writable } from 'svelte/store';
+import { derived, get, writable, type Readable, type Writable } from 'svelte/store';
 import { createLabel } from '../label/create.js';
 import type { ComboboxEvents } from './events.js';
 import type { ComboboxItemProps, ComboboxOption, CreateComboboxProps } from './types.js';
@@ -55,8 +58,6 @@ const defaults = {
 	closeOnEscape: true,
 	forceVisible: false,
 	portal: undefined,
-	filterFunction: () => true,
-	debounce: 0,
 } satisfies Defaults<CreateComboboxProps<unknown>>;
 
 const { name, selector } = createElHelpers('combobox');
@@ -81,22 +82,23 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		(writable(withDefaults.defaultSelected) as Writable<ComboboxOption<Value> | undefined>);
 	const selected = overridable(selectedWritable, withDefaults?.onSelectedChange);
 
+	const highlighted = derived(highlightedItem, ($highlightedItem) =>
+		$highlightedItem ? getOptionProps($highlightedItem) : undefined
+	) as Readable<ComboboxOption<Value> | undefined>;
+
 	// The current value of the input element.
-	const inputValue = debounceable(withDefaults.defaultSelected?.label ?? '', withDefaults.debounce);
+	const inputValue = writable(withDefaults.defaultSelected?.label ?? '');
 
 	// Either the provided open store or a store with the default open value
 	const openWritable = withDefaults.open ?? writable(false);
 	// The overridable open store which is the source of truth for the open state.
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
-	const isEmpty = writable(false);
-
-	const options = toWritableStores(omit(withDefaults, 'open', 'defaultOpen', 'debounce'));
+	const options = toWritableStores(omit(withDefaults, 'open', 'defaultOpen'));
 
 	const {
 		scrollAlignment,
 		loop,
-		filterFunction,
 		closeOnOutsideClick,
 		closeOnEscape,
 		preventScroll,
@@ -105,8 +107,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		positioning,
 	} = options;
 
-	const touchedInput = debounceable(false, withDefaults.debounce);
-
+	const touchedInput = writable(false);
 	const ids = {
 		input: generateId(),
 		menu: generateId(),
@@ -150,30 +151,11 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		const props = getOptionProps(item);
 
 		selected.set(props);
+		inputValue.set(props.label ?? '');
 
-		const activeTrigger = document.getElementById(ids.input);
+		const activeTrigger = getElementByMeltId(ids.input);
 		if (activeTrigger) {
 			activeTrigger.focus();
-		}
-	}
-
-	async function handleIsEmpty() {
-		if (!isBrowser) return;
-		await tick();
-
-		const menuElement = document.getElementById(ids.menu);
-
-		if (!isHTMLElement(menuElement)) return;
-
-		const options = getOptions(menuElement);
-		const visibleOptions = options.filter((opt) => {
-			const isHidden = opt.dataset.hidden !== undefined;
-			return !isHidden;
-		});
-		if (!visibleOptions.length) {
-			isEmpty.set(true);
-		} else {
-			isEmpty.set(false);
 		}
 	}
 
@@ -193,7 +175,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 			open.set(true);
 		}
 
-		const triggerEl = document.getElementById(ids.input);
+		const triggerEl = getElementByMeltId(ids.input);
 		if (!triggerEl) return;
 
 		// The active trigger is used to anchor the menu to the input element.
@@ -231,6 +213,16 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		return (item: Value) => deepEqual($value?.value, item);
 	});
 
+	/**
+	 * Determines if a given item is highlighted.
+	 * This is useful for displaying additional markup on the highlighted item.
+	 */
+	const isHighlighted = derived([highlighted], ([$value]) => {
+		return (item: Value) => {
+			return deepEqual($value?.value, item);
+		};
+	});
+
 	/** -------- */
 	/** ELEMENTS */
 	/** -------- */
@@ -245,10 +237,11 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 				'aria-controls': ids.menu,
 				'aria-expanded': $open,
 				'aria-labelledby': ids.label,
+				'data-melt-id': ids.input,
 				autocomplete: 'off',
 				id: ids.input,
 				role: 'combobox',
-				value: $inputValue.value,
+				value: $inputValue,
 			} as const;
 		},
 		action: (node: HTMLInputElement): MeltActionReturn<ComboboxEvents['input']> => {
@@ -379,12 +372,16 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 				addMeltEventListener(node, 'input', (e) => {
 					if (!isHTMLInputElement(e.target)) return;
 					const value = e.target.value;
-					inputValue.debouncedSet(value);
-					touchedInput.debouncedSet(true);
+					inputValue.set(value);
+					touchedInput.set(true);
 
 					tick().then(() => {
 						const $highlightedItem = get(highlightedItem);
-						if ($highlightedItem?.dataset.hidden) {
+						if (
+							!$highlightedItem ||
+							$highlightedItem?.dataset.hidden ||
+							isHidden($highlightedItem)
+						) {
 							// Find next visible item
 							const menuElement = document.getElementById(ids.menu);
 							if (!isHTMLElement(menuElement)) return;
@@ -465,6 +462,8 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 							unsubScroll = removeScroll();
 						}
 
+						const ignoreHandler = createClickOutsideIgnore(ids.input);
+
 						const popper = usePopper(node, {
 							anchorElement: $activeTrigger,
 							open,
@@ -479,6 +478,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 												closeMenu();
 												reset();
 											},
+											ignore: ignoreHandler,
 									  }
 									: null,
 								escapeKeydown: $closeOnEscape
@@ -529,28 +529,19 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 	});
 
 	const option = builder(name('option'), {
-		stores: [selected, filterFunction, inputValue, touchedInput],
+		stores: [selected],
 		returned:
-			([$value, $filterFunction, $inputValue, $touchedInput]) =>
+			([$selected]) =>
 			(props: ComboboxItemProps<Value>) => {
-				let hidden = false;
-				if (
-					$touchedInput.debounced &&
-					$filterFunction?.({ input: $inputValue.debounced, itemValue: props.value }) === false
-				) {
-					hidden = true;
-				}
-				const selected = deepEqual(props.value, $value);
+				const selected = deepEqual(props.value, $selected?.value);
 
 				return {
 					'data-value': JSON.stringify(props.value),
 					'data-label': props.label,
-					'data-disabled': props.disabled ? '' : undefined,
+					'data-disabled': disabledAttr(props.disabled),
 					'aria-disabled': props.disabled ? true : undefined,
 					'aria-selected': selected,
 					'data-selected': selected ? '' : undefined,
-					hidden: hidden ? true : undefined,
-					'data-hidden': hidden ? '' : undefined,
 					id: generateId(),
 					role: 'option',
 					style: styleToString({ cursor: props.disabled ? 'default' : 'pointer' }),
@@ -594,7 +585,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		const menuEl = document.getElementById(ids.menu);
 		if (!menuEl) return;
 
-		const triggerEl = document.getElementById(ids.input);
+		const triggerEl = getElementByMeltId(ids.input);
 		if (triggerEl) {
 			activeTrigger.set(triggerEl);
 		}
@@ -603,11 +594,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		if (!isHTMLElement(selectedEl)) return;
 
 		const dataLabel = selectedEl.getAttribute('data-label');
-		inputValue.debouncedSet(dataLabel ?? selectedEl.textContent ?? '');
-	});
-
-	effect(selected, function setInputValue($selected) {
-		inputValue.debouncedSet($selected?.label ?? '');
+		inputValue.set(dataLabel ?? selectedEl.textContent ?? '');
 	});
 
 	/**
@@ -630,10 +617,6 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		}
 	});
 
-	effect([inputValue, touchedInput], () => {
-		handleIsEmpty();
-	});
-
 	return {
 		elements: {
 			input,
@@ -644,11 +627,13 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		states: {
 			open,
 			selected,
-			inputValue: inputValue,
-			isEmpty: readonly(isEmpty),
+			highlighted,
+			inputValue,
+			touchedInput,
 		},
 		helpers: {
 			isSelected,
+			isHighlighted,
 		},
 		options,
 	};

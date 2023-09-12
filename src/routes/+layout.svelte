@@ -10,15 +10,23 @@
 	import '@fontsource/inter/900.css';
 	import '../fonts.css';
 	import '../app.postcss';
-	import { dev } from '$app/environment';
-	import { JsIndicator, SiteHeader, TailwindIndicator } from '$docs/components/index.js';
 
-	import { inject } from '@vercel/analytics';
+	import { browser, dev } from '$app/environment';
+	import { JsIndicator, SiteHeader, TailwindIndicator } from '$docs/components/index.js';
+	import * as Fathom from 'fathom-client';
 	import { page } from '$app/stores';
 	import { cn } from '$docs/utils';
+	import { onMount } from 'svelte';
+	import { env } from '$env/dynamic/public';
 
-	inject({ mode: dev ? 'development' : 'production' });
+	onMount(() => {
+		if (!env.PUBLIC_FATHOM_ID || !env.PUBLIC_FATHOM_URL) return;
+		Fathom.load(env.PUBLIC_FATHOM_ID, {
+			url: env.PUBLIC_FATHOM_URL,
+		});
+	});
 
+	$: $page.url.pathname, browser && Fathom.trackPageview();
 	$: isRoot = $page.url.pathname === '/';
 </script>
 

@@ -21,7 +21,7 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
-import { onMount, tick } from 'svelte';
+import { onMount } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
 import type { LinkPreviewEvents } from './events.js';
 import type { CreateLinkPreviewProps } from './types.js';

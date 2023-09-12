@@ -1,6 +1,7 @@
 import {
 	addMeltEventListener,
 	builder,
+	disabledAttr,
 	executeCallbacks,
 	kbd,
 	omit,
@@ -35,7 +36,7 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 		stores: [checked, disabled, required],
 		returned: ([$checked, $disabled, $required]) => {
 			return {
-				'data-disabled': $disabled,
+				'data-disabled': disabledAttr($disabled),
 				'data-state':
 					$checked === 'indeterminate' ? 'indeterminate' : $checked ? 'checked' : 'unchecked',
 				type: 'button',
@@ -78,7 +79,7 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 				value: $value,
 				checked: $checked === 'indeterminate' ? false : $checked,
 				required: $required,
-				disabled: $disabled,
+				disabled: disabledAttr($disabled),
 				style: styleToString({
 					position: 'absolute',
 					opacity: 0,

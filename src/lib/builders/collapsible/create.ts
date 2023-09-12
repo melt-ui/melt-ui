@@ -2,6 +2,7 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	disabledAttr,
 	omit,
 	overridable,
 	styleToString,
@@ -33,7 +34,7 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 		stores: [open, disabled],
 		returned: ([$open, $disabled]) => ({
 			'data-state': $open ? 'open' : 'closed',
-			'data-disabled': $disabled ? '' : 'undefined',
+			'data-disabled': disabledAttr($disabled),
 		}),
 	});
 
@@ -42,8 +43,8 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 		returned: ([$open, $disabled]) =>
 			({
 				'data-state': $open ? 'open' : 'closed',
-				'data-disabled': $disabled ? '' : undefined,
-				disabled: $disabled,
+				'data-disabled': disabledAttr($disabled),
+				disabled: disabledAttr($disabled),
 			} as const),
 		action: (node: HTMLElement): MeltActionReturn<CollapsibleEvents['trigger']> => {
 			const unsub = addMeltEventListener(node, 'click', () => {
@@ -67,7 +68,7 @@ export function createCollapsible(props?: CreateCollapsibleProps) {
 		stores: [isVisible, disabled],
 		returned: ([$isVisible, $disabled]) => ({
 			'data-state': $isVisible ? 'open' : 'closed',
-			'data-disabled': $disabled ? '' : undefined,
+			'data-disabled': disabledAttr($disabled),
 			hidden: $isVisible ? undefined : true,
 			style: styleToString({
 				display: $isVisible ? undefined : 'none',

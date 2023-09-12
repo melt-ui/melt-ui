@@ -1,100 +1,91 @@
 <script lang="ts">
-	import {
-		createCombobox,
-		melt,
-		type ComboboxFilterFunction,
-	} from '$lib/index.js';
+	import { createCombobox, melt } from '$lib/index.js';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
 	import { fly } from 'svelte/transition';
 
-	interface Book {
+	const {
+		elements: { menu, input, option, label },
+		states: { open, inputValue, touchedInput },
+		helpers: { isSelected },
+	} = createCombobox({
+		forceVisible: true,
+	});
+
+	type Manga = {
 		author: string;
 		title: string;
 		disabled: boolean;
-	}
+	};
 
-	let books: Book[] = [
+	let mangas: Manga[] = [
 		{
-			author: 'Harper Lee',
-			title: 'To Kill a Mockingbird',
+			author: 'Kentaro Miura',
+			title: 'Berserk',
 			disabled: false,
 		},
 		{
-			author: 'Lev Tolstoy',
-			title: 'War and Peace',
+			author: 'Hajime Isayama',
+			title: 'Attack on Titan',
 			disabled: false,
 		},
 		{
-			author: 'Fyodor Dostoyevsy',
-			title: 'The Idiot',
+			author: 'Junji Ito',
+			title: 'Uzumaki',
+			disabled: false,
+		},
+		{
+			author: 'Yomi Sarachi',
+			title: 'Steins Gate',
+			disabled: false,
+		},
+		{
+			author: 'Tite Kubo',
+			title: 'Bleach',
+			disabled: false,
+		},
+		{
+			author: 'Masashi Kishimoto',
+			title: 'Naruto',
 			disabled: true,
 		},
 		{
-			author: 'Oscar Wilde',
-			title: 'A Picture of Dorian Gray',
+			author: 'Katsura Hoshino',
+			title: 'D.Gray Man',
 			disabled: false,
 		},
 		{
-			author: 'George Orwell',
-			title: '1984',
+			author: 'Tsugumi Ohba',
+			title: 'Death Note',
 			disabled: false,
 		},
 		{
-			author: 'Jane Austen',
-			title: 'Pride and Prejudice',
+			author: 'ONE',
+			title: 'Mob Psycho 100',
 			disabled: false,
 		},
 		{
-			author: 'Marcus Aurelius',
-			title: 'Meditations',
-			disabled: false,
-		},
-		{
-			author: 'Fyodor Dostoevsky',
-			title: 'The Brothers Karamazov',
-			disabled: false,
-		},
-		{
-			author: 'Lev Tolstoy',
-			title: 'Anna Karenina',
-			disabled: false,
-		},
-		{
-			author: 'Fyodor Dostoevsky',
-			title: 'Crime and Punishment',
+			author: 'Hiromu Arakawa',
+			title: 'Fullmetal Alchemist',
 			disabled: false,
 		},
 	];
 
-	const filterFunction: ComboboxFilterFunction<Book> = ({
-		itemValue,
-		input,
-	}) => {
-		// Example string normalization function. Replace as needed.
-		const normalize = (str: string) => str.normalize().toLowerCase();
-		const normalizedInput = normalize(input);
-		return (
-			normalizedInput === '' ||
-			normalize(itemValue.title).includes(normalizedInput) ||
-			normalize(itemValue.author).includes(normalizedInput)
-		);
-	};
-
-	const {
-		elements: { menu, input, option, label },
-		states: { open, isEmpty },
-		helpers: { isSelected },
-	} = createCombobox({
-		filterFunction,
-		forceVisible: true,
-	});
+	$: filteredMangas = $touchedInput
+		? mangas.filter(({ title, author }) => {
+				const normalizedInput = $inputValue.toLowerCase();
+				return (
+					title.toLowerCase().includes(normalizedInput) ||
+					author.toLowerCase().includes(normalizedInput)
+				);
+		  })
+		: mangas;
 </script>
 
 <div class="flex flex-col gap-1">
 	<!-- svelte-ignore a11y-label-has-associated-control - $label contains the 'for' attribute -->
 	<label use:melt={$label}>
 		<span class="text-sm font-medium text-magnum-900"
-			>Choose your favorite book:</span
+			>Choose your favorite manga:</span
 		>
 	</label>
 
@@ -125,7 +116,7 @@
 			class="flex max-h-full flex-col gap-0 overflow-y-auto bg-white px-2 py-2 text-black"
 			tabindex="0"
 		>
-			{#each books as book, index (index)}
+			{#each filteredMangas as book, index (index)}
 				<li
 					use:melt={$option({
 						value: book,
@@ -146,15 +137,14 @@
 						<span class="block text-sm opacity-75">{book.author}</span>
 					</div>
 				</li>
-			{/each}
-			{#if $isEmpty}
+			{:else}
 				<li
 					class="relative cursor-pointer rounded-md py-1 pl-8 pr-4
 				data-[highlighted]:bg-magnum-100 data-[highlighted]:text-magnum-700"
 				>
 					No results found
 				</li>
-			{/if}
+			{/each}
 		</div>
 	</ul>
 {/if}

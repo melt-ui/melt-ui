@@ -1,8 +1,11 @@
-import type { BuilderReturn } from '$lib/internal/types.js';
+import type { BuilderReturn, WhenTrue } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { createAccordion } from './create.js';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
 export type { AccordionComponentEvents } from './events.js';
+
+type AccordionValue<Multiple extends boolean> = WhenTrue<Multiple, string[], string>;
+
 export type CreateAccordionProps<Multiple extends boolean = false> = {
 	/**
 	 * If `true`, multiple accordion items can be open at the same time.
@@ -31,7 +34,7 @@ export type CreateAccordionProps<Multiple extends boolean = false> = {
 	/**
 	 * The uncontrolled default value of the accordion.
 	 */
-	defaultValue?: Multiple extends false ? string : string[];
+	defaultValue?: AccordionValue<Multiple>;
 
 	/**
 	 * The controlled value store for the accordion.
@@ -39,16 +42,14 @@ export type CreateAccordionProps<Multiple extends boolean = false> = {
 	 *
 	 * @see https://melt-ui.com/docs/controlled#bring-your-own-store
 	 */
-	value?: Multiple extends false ? Writable<string | undefined> : Writable<string[] | undefined>;
+	value?: Writable<AccordionValue<Multiple> | undefined>;
 
 	/**
 	 * A callback called when the value of the `value` store should be changed.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onValueChange?: Multiple extends false
-		? ChangeFn<string | undefined>
-		: ChangeFn<string[] | undefined>;
+	onValueChange?: ChangeFn<AccordionValue<Multiple> | undefined>;
 };
 
 export type AccordionItemProps =

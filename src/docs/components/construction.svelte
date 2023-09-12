@@ -4,7 +4,7 @@
 </script>
 
 <div
-	class="my-4 flex flex-col items-start gap-2 rounded-xl border border-magnum-400 bg-magnum-900/10 p-4
+	class="my-4 flex flex-col items-start gap-2 rounded-xl border border-magnum-400 bg-magnum-900/25 p-4
 	lg:flex-row lg:items-center"
 >
 	<p>

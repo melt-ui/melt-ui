@@ -10,12 +10,6 @@ import { getMenuArrowSchema } from './menu.js';
  */
 const OPTION_PROPS = [
 	{
-		name: 'filterFunction',
-		type: '({ itemValue: T; input: string; })',
-		description:
-			'A function that returns `true` if the item should be included in the filtered list.',
-	},
-	{
 		name: 'scrollAlignment',
 		type: ['"nearest"', '"center"'],
 		default: '"nearest"',
@@ -93,14 +87,20 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'A readable store with the value of the input.',
 		},
 		{
-			name: 'isEmpty',
-			type: 'Readable<boolean>',
-			description: 'A readable store that returns true when no visible items are present.',
+			name: 'touchedInput',
+			type: 'Writable<boolean>',
+			description: `A writable store with the touched state of the input. When the menu closes, the state is reset to \`false\`. 
+			Whenever a key is pressed into the input, the state is set to \`true\`.`,
 		},
 		{
 			name: 'selected',
 			type: 'Writable<T>',
 			description: 'A writable store whose value is the selected item.',
+		},
+		{
+			name: 'highlighted',
+			type: 'Writable<T>',
+			description: 'A writable store whose value is the highlighted item.',
 		},
 	],
 	helpers: [
@@ -109,6 +109,12 @@ const builder = builderSchema(BUILDER_NAME, {
 			type: 'Readable<(item: T) => boolean>',
 			description:
 				'A derived store that returns a function that returns whether or not the item is selected.',
+		},
+		{
+			name: 'isHighlighted',
+			type: 'Readable<(item: T) => boolean>',
+			description:
+				'A derived store that returns a function that returns whether or not the item is highlighted.',
 		},
 	],
 	options: OPTION_PROPS,
