@@ -19,6 +19,16 @@ description: A filterable list of items that supports selection.
 - **Item**: The individual list item
 - **Label**: The label for the input
 
+## Examples
+
+### Debounce
+
+It may be useful to debounce user input in the `input` element.
+
+<Preview code={snippets.debounce}>
+  <svelte:component this={previews.debounce} />
+</Preview>
+
 ## API Reference
 
 <APIReference {schemas} />
