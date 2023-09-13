@@ -26,10 +26,12 @@ description:
 
 ### Debounce
 
-It may be useful to debounce user input in the `input` element.
+Sometimes you may want to [debounce](https://www.freecodecamp.org/news/javascript-debounce-example/)
+user input in the `input` element. This pattern can be useful to prevent over-requesting data from a
+server, for example.
 
-<Preview code={snippets.debounce}>
-  <svelte:component this={previews.debounce} />
+<Preview code={snippets.debounce}> 
+  <svelte:component this={previews.debounce} /> 
 </Preview>
 
 ## API Reference
