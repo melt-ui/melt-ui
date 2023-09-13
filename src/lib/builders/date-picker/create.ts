@@ -9,6 +9,7 @@ import {
 	kbd,
 	overridable,
 	toWritableStores,
+	omit,
 } from '$lib/internal/helpers';
 
 import {
@@ -21,13 +22,12 @@ import {
 	getLastSunday,
 	getNextSaturday,
 	getDaysBetween,
-	getSelectedFromValue,
+	isSelected,
 } from './utils';
 
 import { onMount } from 'svelte';
 import { get, writable } from 'svelte/store';
 import type { CreateDatePickerProps, DateProps } from './types';
-import { omit } from '../../internal/helpers/object';
 
 const defaults = {
 	disabled: false,
@@ -39,6 +39,8 @@ const defaults = {
 	activeDate: new Date(),
 	allowDeselect: false,
 } satisfies CreateDatePickerProps;
+
+// selectionStrategy - name for range behavior
 
 type CalendarParts =
 	| 'content'
@@ -60,7 +62,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue ?? [new Date()]);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
-	const { activeDate, mode, allowDeselect, earliest, latest } = options;
+	const { activeDate, mode, allowDeselect } = options;
 
 	let lastClickedDate: Date | null = null;
 
@@ -255,7 +257,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		stores: [value, mode],
 		returned: ([$value, $mode]) => {
 			return (props: DateProps) => {
-				const selected = getSelectedFromValue({
+				const selected = isSelected({
 					date: new Date(props.value || ''),
 					value: $value,
 					mode: $mode,
@@ -335,6 +337,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	effect([activeDate], ([$activeDate]) => {
 		if (!isBrowser) return;
+		console.log('activeDate: ', $activeDate);
 
 		if ($activeDate) {
 			const daysInMonth = new Date(

@@ -118,6 +118,9 @@ devDependencies:
   clsx:
     specifier: ^1.2.1
     version: 1.2.1
+  dayjs:
+    specifier: ^1.11.9
+    version: 1.11.9
   escape-html:
     specifier: ^1.0.3
     version: 1.0.3
@@ -6111,6 +6114,10 @@ packages:
       abab: 2.0.6
       whatwg-mimetype: 3.0.0
       whatwg-url: 12.0.1
+    dev: true
+
+  /dayjs@1.11.9:
+    resolution: {integrity: sha512-QvzAURSbQ0pKdIye2txOzNaHmxtUBXerpY0FJsFXUMKbIZeFm5ht1LS/jFsrncjnmtv8HsG0W2g6c0zUjZWmpA==}
     dev: true
 
   /debug@2.6.9:

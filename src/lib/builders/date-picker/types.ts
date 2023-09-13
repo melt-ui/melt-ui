@@ -1,4 +1,3 @@
-import type { FloatingConfig } from '@melt-ui/svelte/internal/actions';
 import type { createDatePicker } from './create';
 import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers';
@@ -27,20 +26,20 @@ export type BaseDatePickerProps = {
 	fixedWeeks: boolean;
 };
 
-type DateRange = {
+export type DateRange = {
 	from: Date | undefined;
 	to?: Date;
 };
 
-type DateBefore = {
+export type DateBefore = {
 	before: Date;
 };
 
-type DateAfter = {
+export type DateAfter = {
 	after: Date;
 };
 
-type DateInterval = {
+export type DateInterval = {
 	after: Date;
 	before: Date;
 };
