@@ -4,22 +4,14 @@ import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers';
 
 export type BaseDatePickerProps = {
-	preventScroll: boolean;
-	closeOnEscape: boolean;
-	closeOnOutsideClick: boolean;
-	open: boolean;
-	arrowSize: number;
-	positioning: FloatingConfig;
 	earliest: Date | null;
 	latest: Date | null;
 	autoSelect: boolean;
-
 	/**
 	 * When in `single` mode, allow deselecting the selected date when the
 	 * date is clicked again.
 	 */
 	allowDeselect: boolean;
-	autoClose: boolean;
 	defaultValue: Date[];
 	onValueChange: ChangeFn<Date[]>;
 	value: Writable<Date[]>;
