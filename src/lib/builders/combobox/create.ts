@@ -311,6 +311,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 					}
 					// Pressing enter with a highlighted item should select it.
 					if (e.key === kbd.ENTER) {
+						e.preventDefault();
 						const $highlightedItem = get(highlightedItem);
 						if ($highlightedItem) {
 							selectItem($highlightedItem);
