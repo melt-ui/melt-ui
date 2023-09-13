@@ -46,10 +46,9 @@
 			>
 				<div
 					class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-magnum-700 group-data-[melt-sortable-ghost]:opacity-0 group-data-[sortable-dragging]:opacity-0"
-					style="height: {$currentOrientation !== 'horizontal'
+					style:height="{$currentOrientation !== 'horizontal'
 						? $threshold[0] * 100
-						: 100}%;
-								width: {$currentOrientation !== 'vertical' ? $threshold[0] * 100 : 100}%;"
+						: 100}%" style:width="{$currentOrientation !== 'vertical' ? $threshold[0] * 100 : 100}%"
 				/>
 				<span class="z-10 text-xl group-data-[sortable-dragging]:opacity-0"
 					>{zoneItem}</span

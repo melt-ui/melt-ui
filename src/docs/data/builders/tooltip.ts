@@ -35,8 +35,9 @@ const OPTION_PROPS = [
 		name: 'disableHoverableContent',
 		type: 'boolean',
 		default: 'false',
-		description: 'Prevents the tooltip content element from remaining open when hovered. If `true`, the tooltip will only be open when hovering the trigger element.'
-	}
+		description:
+			'Prevents the tooltip content element from remaining open when hovered. If `true`, the tooltip will only be open when hovering the trigger element.',
+	},
 ];
 
 const BUILDER_NAME = 'tooltip';
