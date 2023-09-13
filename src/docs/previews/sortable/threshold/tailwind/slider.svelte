@@ -1,10 +1,14 @@
 <script lang="ts">
-	import { createSlider, melt, type SortableOrientation } from '$lib';
-	import { getOptions } from '$lib/internal/helpers';
-	import { writable } from 'svelte/store';
+	import {
+		createSlider,
+		melt,
+		type SelectOption,
+		type SortableOrientation,
+	} from '$lib';
+	import { writable, type Writable } from 'svelte/store';
 
 	export let threshold = writable([0.5]);
-	export let currentOrientation = writable<SortableOrientation>('vertical');
+	export let currentOrientation: Writable<SelectOption<SortableOrientation>>;
 
 	const {
 		elements: { root, range, thumb },
@@ -16,11 +20,11 @@
 		value: threshold,
 		step: 0.01,
 		orientation:
-			$currentOrientation === 'horizontal' ? 'horizontal' : 'vertical',
+			$currentOrientation.value === 'horizontal' ? 'horizontal' : 'vertical',
 	});
 
 	$: options.orientation.set(
-		$currentOrientation === 'horizontal' ? 'horizontal' : 'vertical',
+		$currentOrientation.value === 'horizontal' ? 'horizontal' : 'vertical',
 	);
 </script>
 
