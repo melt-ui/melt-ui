@@ -13,7 +13,7 @@ description: Sort items within a zone or move items between zones.
 ## Anatomy
 
 - **Zone**: A zone container
-- **Items**: An items container within a zone
+- **Item Group**: An item group container within a zone
 - **Item**: An item container within a zone or items container
 - **Handle**: A handle that can be used to move an item
 
@@ -102,7 +102,7 @@ To specify a handle, add a `handle` element within an `item`.
 
 ### Multiple Zones (fromZones prop)
 
-By default items can not move between zones. To allow this, use the zonal `fromZone` prop.
+By default items cannot move between zones. To allow items to move from one zone to  another, use the zonal prop `fromZone`.
 
 `fromZone` supports `*` to allow items from all zones, `-` to disallow items from all zones or
 `string[]`` to allow items from specific zones.
@@ -123,7 +123,7 @@ selected item.
 All `data-melt-*` and `data-sortable-*` attributes are removed and then the element is given the
 `data-melt-sortable-ghost` data attribute.
 
-This attribute can be applied to an `$item` to style the element when it selected and cloned into a
+This attribute can be use on with any `$item` elements to style the element when it selected and cloned into a
 ghost element. You could, for example, reduce the opacity, set a border, hide child elements, etc.
 
 <!-- prettier-ignore -->
@@ -132,6 +132,27 @@ ghost element. You could, for example, reduce the opacity, set a border, hide ch
 	class="data-[melt-sortable-ghost]:opacity-50 ..." 
 	use:melt={$item({ id: 'item1' })}>
 	item 1
+</div>
+```
+
+
+### Nesting
+
+Nesting is supported. To enable nesting, set the zonal prop `nesting` to true.
+
+When `nesting` is `true`, items can be places within other items. 
+
+```svelte {2}
+<div use:melt={$zone({ id: 'zone 1', nesting: true })}>
+	<!-- Item 1 -->
+	<div use:melt={$item({ id: 'item 1' })}>
+		<span>Item 1</span>
+
+		<!--Item 1.1 -->
+		<div use:melt={$item({ id: 'item 1.1' })}>
+			<span>Item 1.1</span>
+		</div>
+	</div>
 </div>
 ```
 
@@ -199,8 +220,15 @@ the same zone.
 
 Items can be moved between groups.
 
-<Preview code={snippets.items}>
-    <svelte:component this={previews.items} />
+<Preview code={snippets.itemGroups}>
+    <svelte:component this={previews.itemGroups} />
+</Preview>
+
+### Nesting
+
+
+<Preview code={snippets.nesting}>
+    <svelte:component this={previews.nesting} />
 </Preview>
 
 ## API Reference

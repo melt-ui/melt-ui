@@ -21,7 +21,7 @@
 <div class="mx-auto flex w-[18rem] max-w-full flex-col gap-1.5 rounded-md">
 	{#each Object.entries(zones) as [zoneName, zoneItems]}
 		<span class="font-bold text-white">{zoneName}</span>
-		<div class="flex flex-col gap-1.5 rounded bg-white p-2">
+		<div class="flex flex-col gap-1.5 rounded bg-white p-1.5">
 			<div
 				class="flex min-h-[5px] flex-col gap-1.5"
 				use:melt={$zone({

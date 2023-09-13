@@ -40,13 +40,26 @@ export function calculateInverseScale(node: HTMLElement, rect: DOMRect) {
  * Removes attributes from an HTML element that start with a specified string.
  *
  * @param {Element} node - The HTML element from which to remove the attributes.
- * @param {string} startString - The string to check for at the beginning of the attribute names.
+ * @param {string[]} prefixes - The prefixes of the attributes to remove.
+ * @param {boolean} [fromChildren=false] - Whether to recursively call the function on each child
+ * node.
  */
-export function removeAttributesStartingWith(node: Element, startString: string): void {
-	const attributeNames = Array.from(node.attributes, (attr) => attr.name);
+export function removeAttributesStartingWith(
+	el: Element,
+	prefixes: string[],
+	fromChildren = false
+): void {
+	const attributeNames = Array.from(el.attributes, (attr) => attr.name);
 	for (const attributeName of attributeNames) {
-		if (attributeName.startsWith(startString)) {
-			node.removeAttribute(attributeName);
+		if (prefixes.some((prefix) => attributeName.startsWith(prefix))) {
+			el.removeAttribute(attributeName);
+		}
+	}
+
+	if (fromChildren) {
+		// Recursively call the function on each child node
+		for (const child of Array.from(el.children)) {
+			removeAttributesStartingWith(child, prefixes, true);
 		}
 	}
 }

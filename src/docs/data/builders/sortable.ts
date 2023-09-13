@@ -71,6 +71,11 @@ const zone = elementSchema('zone', {
 			default: '-',
 		},
 		{
+			name: 'nesting',
+			type: 'boolean',
+			default: 'false',
+		},
+		{
 			name: 'dropzone',
 			type: 'boolean',
 			default: 'false',

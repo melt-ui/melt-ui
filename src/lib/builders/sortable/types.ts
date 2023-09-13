@@ -113,6 +113,13 @@ export type SortableZoneProps = {
 	 * @default none
 	 */
 	restrictTo?: SortableBounds;
+
+	/**
+	 * When true, items can nest inside other items.
+	 *
+	 * @default false
+	 */
+	nesting?: boolean;
 };
 
 export type SortableItemProps = {
@@ -200,6 +207,17 @@ export type SortableSelected = {
 	 * item is dragged between zones, this value will change.
 	 */
 	workingGroupEl?: HTMLElement;
+
+	/**
+	 * When the selected item is nested, this will be set to the parent element. It is used
+	 * during intersect checks.
+	 */
+	nestedParentEl?: HTMLElement;
+
+	/**
+	 * When the selected item is nesting items, this will be true.
+	 */
+	isNestingItems: boolean;
 } & Required<SortableItemProps>;
 
 export type SortableGhost = {
@@ -246,6 +264,11 @@ export type SortableGhost = {
 	clientToNodeOffsetY: number;
 };
 
+export type SortableItemNode = {
+	el: AnimationElement;
+	children: SortableItemNode[];
+};
+
 export type SortablePointerZone = {
 	/**
 	 * The zone id.
@@ -265,7 +288,7 @@ export type SortablePointerZone = {
 	/**
 	 * An array of items in this zone.
 	 */
-	itemsTmp: AnimationElement[];
+	items: AnimationElement[];
 };
 
 export type SortableQuadrant = {
@@ -301,6 +324,11 @@ export type SortableHit = {
 	 * hit item change.
 	 */
 	changedHitItem?: boolean;
+
+	/**
+	 * Whether the selected item moved into a new parent, as in, it was nested.
+	 */
+	newParent: boolean;
 };
 
 export type SortableIntersect = {
@@ -313,7 +341,15 @@ export type SortableIntersect = {
 	 * The quadrant the hit occurred in.
 	 */
 	quadrant?: SortableQuadrant;
+
+	/**
+	 * Set to true when a hit is detected but we are returning hit:false and required no further
+	 * intersect checks. For example, when a nested child is intersecting it's parent, we do
+	 * nothing and require no further checks.
+	 */
+	stopChecking?: boolean;
 };
+
 export type SortableThreshold = {
 	top: number;
 	bottom: number;

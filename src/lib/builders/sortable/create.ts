@@ -5,6 +5,7 @@ import {
 	createElHelpers,
 	effect,
 	executeCallbacks,
+	generateId,
 	getState,
 	isBrowser,
 	toWritableStores,
@@ -14,7 +15,11 @@ import { get, writable } from 'svelte/store';
 import type { SortableEvents } from './events';
 import {
 	createGhostEl,
-	intersect,
+	extendedIntersect,
+	findDeepestChild,
+	findFirstChild,
+	getTargetItem,
+	getZoneItems,
 	isSupportedZone,
 	moveEl,
 	simpleIntersect,
@@ -85,6 +90,7 @@ export function createSortable(props?: CreateSortableProps) {
 					dropzone: props.dropzone ?? false,
 					axis: props.axis ?? 'both',
 					restrictTo: props.restrictTo ?? 'none',
+					nesting: props.nesting ?? false,
 				};
 
 				return {
@@ -92,6 +98,7 @@ export function createSortable(props?: CreateSortableProps) {
 					'data-sortable-orientation': props.orientation,
 					'data-sortable-disabled': props.disabled ? true : undefined,
 					'data-sortable-dropzone': props.dropzone ? true : undefined,
+					'data-sortable-nesting': props.nesting ? true : undefined,
 				};
 			};
 		},
@@ -110,19 +117,20 @@ export function createSortable(props?: CreateSortableProps) {
 					// Do nothing when disabled or a dropzone.
 					if (props.disabled || props.dropzone) return;
 
-					// Get items in this zone
-					const items: HTMLElement[] = Array.from(node.querySelectorAll(selector('item')));
+					// Get the items. Nested items are ignored when nesting is disabled.
+					const items = getZoneItems(node, props, selector('item'));
 					if (items.length === 0) return;
 
-					// Check if target is a sortable item
-					const targetedItem = (e.target as HTMLElement).closest<HTMLElement>(selector('item'));
+					// Get the targeted item within the zone. When a nested items is selected and
+					// nesting is disabled, the parent item is returned instead.
+					const targetedItem = getTargetItem(e.target as HTMLElement, selector('item'), items);
 					if (!targetedItem) return;
 
 					// Check if this item has a handle and if so, was it the target
 					const hasHandle = targetedItem.querySelector(selector('handle'));
 					if (hasHandle && !hasHandle.contains(e.target as HTMLElement)) return;
 
-					// Ignore when the target is disabled
+					// Ignore when the target is disabled.
 					if (targetedItem.hasAttribute('data-sortable-disabled')) return;
 
 					e.preventDefault();
@@ -133,15 +141,15 @@ export function createSortable(props?: CreateSortableProps) {
 					// Determine which group the targeted item belongs to.
 					const groupEl = groups.find((group) => group.contains(targetedItem));
 
-					// Store information about this pointer zone
+					// Store information about this pointer zone.
 					pointerZone = { id: zoneId, el: node, groups, items: items };
 
-					// The item index
+					// The item index.
 					const index = items.indexOf(targetedItem);
 
-					// Set the selected item
+					// Set the selected item.
 					selected.set({
-						id: targetedItem.getAttribute('data-sortable-id') ?? '0',
+						id: targetedItem.getAttribute('data-sortable-id') ?? generateId(),
 						originZoneId: zoneId,
 						originIndex: index,
 						originZoneEl: node,
@@ -153,6 +161,11 @@ export function createSortable(props?: CreateSortableProps) {
 						disabled: false, // Always false if we get here
 						returnHome: targetedItem.hasAttribute('data-sortable-return-home'),
 						el: targetedItem,
+						nestedParentEl: !props.nesting
+							? undefined
+							: targetedItem.parentElement?.closest<HTMLElement>(`${selector('item')}`) ??
+							  undefined,
+						isNestingItems: !props.nesting ? false : !!targetedItem.querySelector(selector('item')),
 					});
 
 					// Create a ghost. This should be done before any data attributes are set
@@ -195,7 +208,7 @@ export function createSortable(props?: CreateSortableProps) {
 						id: zoneId,
 						el: node,
 						groups,
-						items: Array.from(node.querySelectorAll(selector('item'))),
+						items: getZoneItems(node, props, selector('item')),
 					};
 
 					node.setAttribute('data-sortable-focus', '');
@@ -352,22 +365,25 @@ export function createSortable(props?: CreateSortableProps) {
 			return;
 		}
 
-		// Now check if the pointer is intersecting an empty item group within the same zone.
-		for (const [_, groupItem] of pointerZone.groups.entries()) {
-			const itemsEl = groupItem.querySelectorAll(selector('item'));
+		// Check to see if the pointer is intersecting an empty item group.
+		for (let i = 0; i < pointerZone.groups.length; i++) {
+			// Check to see if this group has an items
+			const itemsEl = pointerZone.groups[i].querySelectorAll(selector('item'));
 			if (itemsEl.length > 0) continue;
 
-			if (!simpleIntersect(groupItem, ghost, e)) continue;
+			if (!simpleIntersect(pointerZone.groups[i], ghost, e)) continue;
 
-			// The pointer is inter
-			moveToEmptyGroup(groupItem);
-
+			moveToEmptyGroup(pointerZone.groups[i]);
 			return;
 		}
 
+		// When nesting check items in reverse (nested first)
+		let items = pointerZone.items;
+		if (props.nesting) items = pointerZone.items.slice().reverse();
+
 		// Finally loop through the items in the zone and check if the pointer is intersecting
 		// any of them. As soon as we get a hit, we stop.
-		for (const [index, item] of pointerZone.items.entries()) {
+		for (const [index, item] of items.entries()) {
 			// skip the selected item.
 			if ($selected.el === item) continue;
 
@@ -377,19 +393,47 @@ export function createSortable(props?: CreateSortableProps) {
 				continue;
 
 			// Check for an intersect hit.
-			const result = intersect(item, ghost, e, props, previousHitItem);
+			const result = extendedIntersect($selected, item, ghost, e, props, previousHitItem);
+
+			// Do no further checks when stopChecks is true
+			if (result && result.stopChecking) return;
 
 			if (result && result.hit && result.quadrant) {
-				props.orientation !== 'both'
-					? singleOrientationMove(index, result.quadrant, props.orientation)
-					: multiOrientationMove(index, result.quadrant);
+				// Check if this hit item and selected item are in the same group. When they are
+				// not, treat it like it is in a different zone.
+				const hitItemGroupEl = pointerZone.groups.find((group) => group.contains(item));
+				let isSameGroup = true;
+				if (isSameZone && hitItemGroupEl && $selected.workingGroupEl !== hitItemGroupEl)
+					isSameGroup = false;
 
-				// Set the previous hit item when it's not the same as the current hit item.
+				// Check if the selected item is going to be nested in the hit item.
+				const newParent =
+					props.nesting && (!$selected.nestedParentEl || $selected.nestedParentEl !== item);
+
+				// Determine how to move the selected item.
+				if (props.orientation !== 'both') {
+					if (!props.nesting) {
+						singleOrientationMove(index, result.quadrant, props.orientation);
+					} else {
+						// Items are reversed so we need to get the correct index of the hit item.
+						singleOrientationNestedMove(
+							pointerZone.items.indexOf(item),
+							result.quadrant,
+							props.orientation
+						);
+					}
+				} else {
+					multiOrientationMove(index, result.quadrant);
+				}
+
+				// Set the previous hit item when it's not the same as the current hit item. This
+				// is used during future intersection checks.
 				if (!previousHitItem || previousHitItem.el !== item) {
 					previousHitItem = {
 						el: item,
 						quadrant: result.quadrant,
-						newZone: !isSameZone,
+						newZone: !isSameZone || !isSameGroup,
+						newParent: newParent,
 					};
 				}
 
@@ -420,12 +464,14 @@ export function createSortable(props?: CreateSortableProps) {
 		// Find the hit item.
 		const hitItem = pointerZone.items[hitItemIndex];
 
+		// True when the selected item is in the same zone as the hit item.
 		const isSameZone = $selected.workingZoneId === pointerZone.id;
 
-		// Determine if the hit item is in a different group
+		// Determine if the hit item is in a different group. When it is, treat it like it is in
+		// a different zone.
 		let isSameGroup = true;
 		const hitItemGroupEl = pointerZone.groups.find((group) => group.contains(hitItem));
-		if (isSameZone && hitItemGroupEl) {
+		if (isSameZone && hitItemGroupEl && $selected.workingGroupEl !== hitItemGroupEl) {
 			isSameGroup = false;
 		}
 
@@ -439,7 +485,8 @@ export function createSortable(props?: CreateSortableProps) {
 			const selectedIndex = pointerZone.items.indexOf($selected.el);
 
 			pointerZone.items.splice(selectedIndex, 1);
-			pointerZone.items.splice(hitItemIndex, 0, $selected.el as HTMLElement);
+			pointerZone.items.splice(hitItemIndex, 0, $selected.el);
+
 			moveEl($selected.el, hitItem, selectedIndex < hitItemIndex);
 		} else {
 			// Whether to insert the selected item before or after the intersected item
@@ -469,8 +516,8 @@ export function createSortable(props?: CreateSortableProps) {
 				}
 			}
 
-			// if -   The selected item moved to a new group in the same zone, but a different
-			//        group, update workingGroupEl.
+			// if -   The selected item moved to a new group in the same zone, update
+			//        workingGroupEl.
 			// else - The selected item moved to a new zone. Update workingZoneId and
 			//        workingZoneEl
 			if (isSameZone) {
@@ -481,6 +528,98 @@ export function createSortable(props?: CreateSortableProps) {
 			}
 
 			moveEl($selected.el, hitItem, after);
+		}
+
+		// Do the animation if we have state
+		if (animationState) {
+			animate(animationState, get(animationDuration), get(animationEasing));
+		}
+	}
+
+	/**
+	 * Moves an item within a zone for nesting items. Use when the orientation is `vertical` or
+	 * `horizontal` and nesting is in play
+	 *
+	 * @param {HTMLElement} item - The item the mouse is intersecting with.
+	 * @param {Quadrant} quadrant - The quadrant the intersection took place in.
+	 * @param {SortableOrientation} orientation - The orientation of the zone.
+	 */
+	function singleOrientationNestedMove(
+		hitItemIndex: number,
+		quadrant: SortableQuadrant,
+		orientation: SortableOrientation
+	) {
+		if (!pointerZone || orientation === 'both') return;
+
+		// Get the selected item and zone props
+		const $selected = get(selected);
+		const props = zoneProps[pointerZone.id];
+		if (!$selected || !props) return;
+
+		// Find the hit item.
+		const hitItem = pointerZone.items[hitItemIndex];
+
+		// True when the selected item has intersected its parent.
+		const nestedParentHit = $selected.nestedParentEl && hitItem === $selected.nestedParentEl;
+
+		// True when the selected item hits an item that is it not yet nested in.
+		const newParentHit = !$selected.nestedParentEl || $selected.nestedParentEl !== hitItem;
+
+		// Get the animation state for the involved zones.
+		const animationState = getAnimationStateForZones(pointerZone, $selected, true);
+
+		if (nestedParentHit) {
+			// Move the selected item OUT of its nested parent. Do this by moving the selected
+			// to the same level as the nested parent, either before or after, depending on the
+			// quadrant.
+			const after =
+				(orientation === 'vertical' && quadrant.vertical === 'bottom') ||
+				(orientation === 'horizontal' && quadrant.horizontal === 'right');
+
+			// Move it to before/after the hit item
+			moveEl($selected.el, hitItem, after);
+
+			// The easiest way to get the order of items is to simply capture the zone items again.
+			pointerZone.items = getZoneItems(pointerZone.el, props, selector('item'));
+
+			// Set the new nested parent (if there is one)
+			$selected.nestedParentEl =
+				$selected.el.parentElement?.closest<HTMLElement>(selector('item')) ?? undefined;
+		} else if (newParentHit) {
+			// Nest the selected item in the hit item. Do this by moving the selected item
+			// to either the start of end of the hit item, depending on the hit quadrant.
+			let siblingEl: HTMLElement | null = null;
+			let after = true;
+
+			if (quadrant.vertical === 'bottom' || quadrant.horizontal === 'right') {
+				// There was a hit on the bottom or right of the new parent. Determine the
+				// selected items new position in the items array by finding the deepest child
+				// of the parent and adding 1.
+				const { lastDirectDescendant } = findDeepestChild(pointerZone.items, hitItem);
+				siblingEl = lastDirectDescendant;
+			} else {
+				// There was a hit on the top or left of the new parent. Move the selected item to
+				// either the start of the hit item or before the first child of the hit item.
+				siblingEl = findFirstChild(pointerZone.items, hitItem);
+				after = false;
+			}
+
+			// If the new parent has children then move the selected element to before the first
+			// child, or after the last child. If the parent has no children add the selected
+			// item as the only child.
+			siblingEl ? moveEl($selected.el, siblingEl, after) : hitItem.appendChild($selected.el);
+
+			// The easiest way to get the new order of items is to simply capture the zone items
+			// again.
+			pointerZone.items = getZoneItems(pointerZone.el, props, selector('item'));
+
+			// Set the new nested parent
+			$selected.nestedParentEl = hitItem;
+
+			// When animating remove the hit item from the animation state. This is because when
+			// the selected item is added as a child, the hit item will grow either horizontally
+			// or vertically. This looks terrible in an animation.
+			if (animationState) animationState.delete(hitItem);
 		}
 
 		// Do the animation if we have state
@@ -635,7 +774,6 @@ export function createSortable(props?: CreateSortableProps) {
 			intersectingGroup.appendChild($selected.el);
 		} else {
 			// Move the selected item to the end of the zone.
-
 			pointerZone.el.appendChild($selected.el);
 		}
 
@@ -674,6 +812,7 @@ export function createSortable(props?: CreateSortableProps) {
 			animate(animationState, get(animationDuration), get(animationEasing));
 		}
 	}
+
 	/**
 	 * Moves an item within a zone or to a new zone
 	 *
@@ -716,20 +855,33 @@ export function createSortable(props?: CreateSortableProps) {
 	}
 
 	/**
-	 * Gets the current (FLIP) state for items in the pointer zone and items the the selected
-	 * item resides in (if different).
+	 * Gets the current (FLIP) state for items in the pointer zone as well as the items the
+	 * selected item resides in (if different).
 	 *
 	 * @returns {FlipState|null} - The current state of items in this zone, or null
 	 */
-	function getAnimationStateForZones(pointerZone: SortablePointerZone, selected: SortableSelected) {
+	function getAnimationStateForZones(
+		pointerZone: SortablePointerZone,
+		selected: SortableSelected,
+		isNesting = false
+	) {
 		if (!selected) return null;
 
 		const $animationDuration = get(animationDuration);
 		if ($animationDuration <= 0) return null;
 
-		const itemsToAnimate = [...(pointerZone.items as Element[])];
+		let itemsToAnimate = [...(pointerZone.items as Element[])];
+
 		if (selected.workingZoneId !== pointerZone.id) {
 			itemsToAnimate.push(...Array.from(selected.workingZoneEl.querySelectorAll(selector('item'))));
+		}
+
+		// Filter to remove the children of the selected item. This is because the parent is
+		// marked for animation.
+		if (isNesting) {
+			itemsToAnimate = itemsToAnimate.filter(
+				(item) => !selected.el.contains(item) || item === selected.el
+			);
 		}
 
 		return getState(itemsToAnimate);
