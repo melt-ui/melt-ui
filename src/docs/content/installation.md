@@ -104,4 +104,6 @@ const config = {
 		preprocessMeltUI() // add to the end!
 	])
 }
+
+export default config
 ```
