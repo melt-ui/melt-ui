@@ -6,7 +6,7 @@ import { isHTMLElement } from './is.js';
  */
 function getPortalParent(node: HTMLElement) {
 	let parent = node.parentElement;
-	while (isHTMLElement(parent) && parent.getAttribute('data-portal') === null) {
+	while (isHTMLElement(parent) && !parent.hasAttribute('data-portal')) {
 		parent = parent.parentElement;
 	}
 	return parent || 'body';

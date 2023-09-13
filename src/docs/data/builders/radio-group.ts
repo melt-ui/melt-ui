@@ -52,8 +52,8 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'The builder store used to create the radio group item.',
 		},
 		{
-			name: 'itemInput',
-			description: 'The builder store used to create the radio group item input.',
+			name: 'hidden-input',
+			description: 'The builder store used to create the radio group hidden input.',
 		},
 	],
 	states: [
@@ -129,22 +129,8 @@ const item = elementSchema('item', {
 	events: radioGroupEvents['item'],
 });
 
-const itemInput = elementSchema('itemInput', {
+const hiddenInput = elementSchema('hiddenInput', {
 	description: 'The hidden input element used for form submission.',
-	props: [
-		{
-			name: 'value',
-			type: 'string',
-			description: 'The value of the radio item.',
-			required: true,
-		},
-		{
-			name: 'disabled',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the radio item is disabled.',
-		},
-	],
 });
 
 const keyboard: KeyboardSchema = [
@@ -174,7 +160,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, root, item, itemInput];
+const schemas = [builder, root, item, hiddenInput];
 
 const features = [
 	'Full keyboard navigation',

@@ -7,8 +7,8 @@ import { comboboxData } from './combobox.js';
 import { contextMenuData } from './context-menu.js';
 import { dialogData } from './dialog.js';
 import { dropdownMenuData } from './dropdown-menu.js';
-import { hoverCardData } from './hover-card.js';
 import { labelData } from './label.js';
+import { linkPreviewData } from './link-preview.js';
 import { menubarData } from './menubar.js';
 import { paginationData } from './pagination.js';
 import { pinInputData } from './pin-input.js';
@@ -28,6 +28,7 @@ import { toggleGroupData } from './toggle-group.js';
 import { toggleData } from './toggle.js';
 import { toolbarData } from './toolbar.js';
 import { tooltipData } from './tooltip.js';
+import { treeData } from './tree.js';
 
 export const builderList = [
 	'accordion',
@@ -38,8 +39,8 @@ export const builderList = [
 	'context-menu',
 	'dialog',
 	'dropdown-menu',
-	'hover-card',
 	'label',
+	'link-preview',
 	'menubar',
 	'pagination',
 	'pin-input',
@@ -49,8 +50,8 @@ export const builderList = [
 	'select',
 	'separator',
 	'slider',
-	'switch',
 	'sortable',
+	'switch',
 	'table-of-contents',
 	'tabs',
 	'tags-input',
@@ -59,6 +60,7 @@ export const builderList = [
 	'toggle-group',
 	'toolbar',
 	'tooltip',
+	'tree',
 ] as const;
 
 export type Builder = (typeof builderList)[number];
@@ -84,8 +86,8 @@ export const data: Builders = {
 	'context-menu': contextMenuData,
 	dialog: dialogData,
 	'dropdown-menu': dropdownMenuData,
-	'hover-card': hoverCardData,
 	label: labelData,
+	'link-preview': linkPreviewData,
 	menubar: menubarData,
 	pagination: paginationData,
 	'pin-input': pinInputData,
@@ -95,8 +97,8 @@ export const data: Builders = {
 	select: selectData,
 	separator: separatorData,
 	slider: sliderData,
-	switch: switchData,
 	sortable: sortableData,
+	switch: switchData,
 	'table-of-contents': tableOfContentsData,
 	tabs: tabsData,
 	'tags-input': tagsInputData,
@@ -105,4 +107,5 @@ export const data: Builders = {
 	toggle: toggleData,
 	toolbar: toolbarData,
 	tooltip: tooltipData,
+	tree: treeData,
 };

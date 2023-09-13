@@ -12,6 +12,7 @@ import {
 	styleToString,
 	toWritableStores,
 	type ChangeFn,
+	disabledAttr,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
@@ -35,7 +36,8 @@ export const createAccordion = <Multiple extends boolean = false>(
 	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
 	const { disabled, forceVisible } = options;
 
-	const valueWritable = withDefaults.value ?? writable(withDefaults.value);
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+
 	const value = overridable<string | string[] | undefined>(
 		valueWritable,
 		withDefaults?.onValueChange as ChangeFn<string | string[] | undefined>
@@ -85,7 +87,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 
 				return {
 					'data-state': isSelected(itemValue, $value) ? 'open' : 'closed',
-					'data-disabled': disabled ? true : undefined,
+					'data-disabled': disabledAttr(disabled),
 				};
 			};
 		},
@@ -99,10 +101,10 @@ export const createAccordion = <Multiple extends boolean = false>(
 				// generate the content ID here so that we can grab it in the content
 				// builder action to ensure the values match.
 				return {
-					disabled: $disabled || disabled,
+					disabled: disabledAttr($disabled || disabled),
 					'aria-expanded': isSelected(itemValue, $value) ? true : false,
 					'aria-disabled': disabled ? true : false,
-					'data-disabled': disabled ? true : undefined,
+					'data-disabled': disabledAttr(disabled),
 					'data-value': itemValue,
 					'data-state': isSelected(itemValue, $value) ? 'open' : 'closed',
 				};
@@ -173,7 +175,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 				const isVisible = isSelected(itemValue, $value) || $forceVisible;
 				return {
 					'data-state': isVisible ? 'open' : 'closed',
-					'data-disabled': $disabled ? true : undefined,
+					'data-disabled': disabledAttr($disabled),
 					'data-value': itemValue,
 					hidden: isVisible ? undefined : true,
 					style: styleToString({

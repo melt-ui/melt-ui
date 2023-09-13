@@ -50,6 +50,7 @@ const defaults = {
 	dir: 'ltr',
 	defaultOpen: false,
 	forceVisible: false,
+	typeahead: true,
 } satisfies CreateContextMenuProps;
 
 const { name, selector } = createElHelpers<_MenuParts>('context-menu');
@@ -108,7 +109,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		if (e.defaultPrevented) return;
 
 		const target = e.target;
-		if (!isHTMLElement(target)) return;
+		if (!(target instanceof Element)) return;
 
 		if (target.id === rootIds.trigger && isLeftClick(e)) {
 			rootOpen.set(false);

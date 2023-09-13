@@ -1,4 +1,5 @@
 export * from './array.js';
+export * from './attr.js';
 export * from './builder.js';
 export * from './callbacks.js';
 export * from './debounce.js';
@@ -8,6 +9,7 @@ export * from './event.js';
 export * from './flip.js';
 export * from './highlight.js';
 export * from './id.js';
+export * from './ignore.js';
 export * from './is.js';
 export * from './keyboard.js';
 export * from './list.js';
@@ -22,5 +24,5 @@ export * from './scroll.js';
 export * from './sleep.js';
 export * from './store/index.js';
 export * from './style.js';
-export * from './throttle.js';
 export * from './typeahead.js';
+

@@ -1,108 +1,102 @@
 <script lang="ts">
-	import {
-		createCombobox,
-		melt,
-		type ComboboxFilterFunction,
-	} from '$lib/index.js';
+	import { createCombobox, melt } from '$lib/index.js';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
 	import { fly } from 'svelte/transition';
 
-	interface Book {
+	const {
+		elements: { menu, input, option, label },
+		states: { open, inputValue, touchedInput },
+		helpers: { isSelected },
+	} = createCombobox({
+		forceVisible: true,
+	});
+
+	type Manga = {
 		author: string;
 		title: string;
 		disabled: boolean;
-	}
+	};
 
-	let books: Book[] = [
+	let mangas: Manga[] = [
 		{
-			author: 'Harper Lee',
-			title: 'To Kill a Mockingbird',
+			author: 'Kentaro Miura',
+			title: 'Berserk',
 			disabled: false,
 		},
 		{
-			author: 'Lev Tolstoy',
-			title: 'War and Peace',
+			author: 'Hajime Isayama',
+			title: 'Attack on Titan',
 			disabled: false,
 		},
 		{
-			author: 'Fyodor Dostoyevsy',
-			title: 'The Idiot',
+			author: 'Junji Ito',
+			title: 'Uzumaki',
+			disabled: false,
+		},
+		{
+			author: 'Yomi Sarachi',
+			title: 'Steins Gate',
+			disabled: false,
+		},
+		{
+			author: 'Tite Kubo',
+			title: 'Bleach',
+			disabled: false,
+		},
+		{
+			author: 'Masashi Kishimoto',
+			title: 'Naruto',
 			disabled: true,
 		},
 		{
-			author: 'Oscar Wilde',
-			title: 'A Picture of Dorian Gray',
+			author: 'Katsura Hoshino',
+			title: 'D.Gray Man',
 			disabled: false,
 		},
 		{
-			author: 'George Orwell',
-			title: '1984',
+			author: 'Tsugumi Ohba',
+			title: 'Death Note',
 			disabled: false,
 		},
 		{
-			author: 'Jane Austen',
-			title: 'Pride and Prejudice',
+			author: 'ONE',
+			title: 'Mob Psycho 100',
 			disabled: false,
 		},
 		{
-			author: 'Marcus Aurelius',
-			title: 'Meditations',
-			disabled: false,
-		},
-		{
-			author: 'Fyodor Dostoevsky',
-			title: 'The Brothers Karamazov',
-			disabled: false,
-		},
-		{
-			author: 'Lev Tolstoy',
-			title: 'Anna Karenina',
-			disabled: false,
-		},
-		{
-			author: 'Fyodor Dostoevsky',
-			title: 'Crime and Punishment',
+			author: 'Hiromu Arakawa',
+			title: 'Fullmetal Alchemist',
 			disabled: false,
 		},
 	];
 
-	const filterFunction: ComboboxFilterFunction<Book> = (item, inputValue) => {
-		// Example string normalization function. Replace as needed.
-		const normalize = (str: string) => str.normalize().toLowerCase();
-		const normalizedInput = normalize(inputValue);
-		return (
-			normalizedInput === '' ||
-			normalize(item.title).includes(normalizedInput) ||
-			normalize(item.author).includes(normalizedInput)
-		);
-	};
-
-	const {
-		elements: { menu, input, item, label },
-		states: { open, filteredItems },
-		helpers: { isSelected },
-	} = createCombobox({
-		filterFunction,
-		items: books,
-		itemToString: (item) => item.title,
-		forceVisible: true,
-	});
+	$: filteredMangas = $touchedInput
+		? mangas.filter(({ title, author }) => {
+				const normalizedInput = $inputValue.toLowerCase();
+				return (
+					title.toLowerCase().includes(normalizedInput) ||
+					author.toLowerCase().includes(normalizedInput)
+				);
+		  })
+		: mangas;
 </script>
 
 <div class="flex flex-col gap-1">
 	<!-- svelte-ignore a11y-label-has-associated-control - $label contains the 'for' attribute -->
 	<label use:melt={$label}>
-		<span class="block capitalize">Choose your favorite book:</span>
+		<span class="text-sm font-medium text-magnum-900"
+			>Choose your favorite manga:</span
+		>
 	</label>
 
 	<div class="relative">
 		<input
 			use:melt={$input}
-			class="flex h-10 items-center justify-between rounded-md bg-white
-					px-3 pr-12 text-magnum-700"
+			class="flex h-10 items-center justify-between rounded-lg bg-white
+					px-3 pr-12 text-black"
 			placeholder="Best book ever"
 		/>
-		<div class="absolute right-1 top-1/2 z-10 -translate-y-1/2 text-magnum-700">
+		<div class="absolute right-2 top-1/2 z-10 -translate-y-1/2 text-magnum-900">
 			{#if $open}
 				<ChevronUp class="square-4" />
 			{:else}
@@ -113,47 +107,44 @@
 </div>
 {#if $open}
 	<ul
-		class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-md"
+		class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-lg"
 		use:melt={$menu}
 		transition:fly={{ duration: 150, y: -5 }}
 	>
 		<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 		<div
-			class="flex max-h-full flex-col gap-2 overflow-y-auto bg-white px-2 py-2"
+			class="flex max-h-full flex-col gap-0 overflow-y-auto bg-white px-2 py-2 text-black"
 			tabindex="0"
 		>
-			{#if $filteredItems.length !== 0}
-				{#each $filteredItems as book, index (index)}
-					<li
-						use:melt={$item({
-							index,
-							item: book,
-							disabled: book.disabled,
-						})}
-						class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-800
-                        data-[highlighted]:bg-magnum-100 data-[highlighted]:text-magnum-700
-                        data-[disabled]:opacity-50"
-					>
-						{#if $isSelected(book)}
-							<div class="check">
-								<Check class="square-4" />
-							</div>
-						{/if}
-						<div>
-							<span>{book.title}</span>
-							<span class="block text-sm opacity-70">{book.author}</span>
+			{#each filteredMangas as book, index (index)}
+				<li
+					use:melt={$option({
+						value: book,
+						label: book.title,
+						disabled: book.disabled,
+					})}
+					class="relative cursor-pointer scroll-my-2 rounded-md py-2 pl-4 pr-4
+				data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900
+					data-[disabled]:opacity-50"
+				>
+					{#if $isSelected(book)}
+						<div class="check absolute left-2 top-1/2 z-10 text-magnum-900">
+							<Check class="square-4" />
 						</div>
-					</li>
-				{/each}
+					{/if}
+					<div class="pl-4">
+						<span class="font-medium">{book.title}</span>
+						<span class="block text-sm opacity-75">{book.author}</span>
+					</div>
+				</li>
 			{:else}
 				<li
 					class="relative cursor-pointer rounded-md py-1 pl-8 pr-4
-                    text-neutral-800 data-[highlighted]:bg-magnum-100
-                    data-[highlighted]:text-magnum-700"
+				data-[highlighted]:bg-magnum-100 data-[highlighted]:text-magnum-700"
 				>
 					No results found
 				</li>
-			{/if}
+			{/each}
 		</div>
 	</ul>
 {/if}

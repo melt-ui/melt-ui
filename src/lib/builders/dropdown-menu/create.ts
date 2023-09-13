@@ -16,6 +16,7 @@ const defaults = {
 	dir: 'ltr',
 	defaultOpen: false,
 	forceVisible: false,
+	typeahead: true,
 } satisfies CreateDropdownMenuProps;
 
 export function createDropdownMenu(props?: CreateDropdownMenuProps) {

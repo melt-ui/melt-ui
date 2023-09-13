@@ -23,15 +23,15 @@
 	const icecreams = ['Caramel', 'Vanilla', 'Napolitan'];
 </script>
 
-<div>
+<div class="text-magnum-900">
 	<h2 class="font-bold">Melt UI</h2>
 	<p>Flavors for everyone</p>
-	<div use:melt={$horizontal} class="my-3.5 h-[1px] w-full bg-white" />
+	<div use:melt={$horizontal} class="my-3.5 h-[1px] w-full bg-magnum-900" />
 	<div class="flex items-center space-x-3.5">
 		{#each icecreams as icecream, i}
 			<p>{icecream}</p>
 			{#if i !== icecreams.length - 1}
-				<div use:melt={$vertical} class="h-4 w-[1px] bg-white" />
+				<div use:melt={$vertical} class="h-4 w-[1px] bg-magnum-900" />
 			{/if}
 		{/each}
 	</div>

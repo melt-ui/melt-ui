@@ -10,17 +10,6 @@ import { getMenuArrowSchema } from './menu.js';
  */
 const OPTION_PROPS = [
 	{
-		name: 'filterFunction',
-		type: '(item: T, inputValue: string)',
-		description:
-			'A function that returns `true` if the item should be included in the filtered list.',
-	},
-	{
-		name: 'itemToString',
-		type: '(item: T)',
-		description: 'A function that returns a string representation of the item.',
-	},
-	{
 		name: 'scrollAlignment',
 		type: ['"nearest"', '"center"'],
 		default: '"nearest"',
@@ -41,30 +30,31 @@ const builder = builderSchema(BUILDER_NAME, {
 	title: 'createCombobox',
 	props: [
 		{
-			name: 'items',
-			type: 'T[]',
-			description: 'The list of items to display in the combobox list.',
+			name: 'defaultSelected',
+			type: 'ComboboxOption<T>',
+			description: 'The initial selected item.',
 		},
 		{
-			name: 'defaultValue',
-			type: 'T',
-			description: 'The initial value of the select.',
-		},
-		{
-			name: 'value',
-			type: 'Writable<T>',
-			description: 'A writable store that can be used to get or update or the select value.',
+			name: 'selected',
+			type: 'Writable<ComboboxOption<T>>',
+			description: 'A writable store that can be used to get or update the selected item.',
 			see: SEE.BRING_YOUR_OWN_STORE,
 		},
 		{
-			name: 'onValueChange',
-			type: 'ChangeFn<T>',
-			description: 'A callback that is called when the value of the select changes.',
+			name: 'onSelectedChange',
+			type: 'ChangeFn<ComboboxOption<T>>',
+			description: 'A callback that is called when the selected item changes.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
 		PROPS.DEFAULT_OPEN,
 		PROPS.OPEN,
 		PROPS.ON_OPEN_CHANGE,
+		{
+			name: 'debounce',
+			type: 'number',
+			default: '0',
+			description: 'The debounce time for the inputValue.',
+		},
 		...OPTION_PROPS,
 	],
 	elements: [
@@ -93,18 +83,24 @@ const builder = builderSchema(BUILDER_NAME, {
 		},
 		{
 			name: 'inputValue',
-			type: 'Readable<string>',
+			type: 'Writable<string>',
 			description: 'A readable store with the value of the input.',
 		},
 		{
-			name: 'filteredItems',
-			type: 'Readable<T[]>',
-			description: 'A readable store whose value is the filtered list of items.',
+			name: 'touchedInput',
+			type: 'Writable<boolean>',
+			description: `A writable store with the touched state of the input. When the menu closes, the state is reset to \`false\`. 
+			Whenever a key is pressed into the input, the state is set to \`true\`.`,
 		},
 		{
-			name: 'value',
+			name: 'selected',
 			type: 'Writable<T>',
 			description: 'A writable store whose value is the selected item.',
+		},
+		{
+			name: 'highlighted',
+			type: 'Writable<T>',
+			description: 'A writable store whose value is the highlighted item.',
 		},
 	],
 	helpers: [
@@ -115,9 +111,10 @@ const builder = builderSchema(BUILDER_NAME, {
 				'A derived store that returns a function that returns whether or not the item is selected.',
 		},
 		{
-			name: 'updateItems',
-			type: 'UpdaterFunction: (items: T[]) => T[]',
-			description: 'A function that updates the list of items.',
+			name: 'isHighlighted',
+			type: 'Readable<(item: T) => boolean>',
+			description:
+				'A derived store that returns a function that returns whether or not the item is highlighted.',
 		},
 	],
 	options: OPTION_PROPS,
@@ -158,14 +155,15 @@ const item = elementSchema('item', {
 	description: 'The menu item element',
 	props: [
 		{
-			name: 'item',
+			name: 'value',
 			type: 'T',
-			description: 'The item that the option represents.',
+			description: 'The value of the item.',
+			required: true,
 		},
 		{
-			name: 'index',
-			type: 'number',
-			description: 'The array index of the item.',
+			name: 'label',
+			type: 'string',
+			description: 'The label of the item. When not present, the text content will be used.',
 		},
 		{
 			name: 'disabled',
@@ -176,12 +174,12 @@ const item = elementSchema('item', {
 	],
 	dataAttributes: [
 		{
-			name: 'data-index',
-			value: 'The index of the item in the list.',
-		},
-		{
 			name: 'data-disabled',
 			value: ATTRS.DISABLED('`item`'),
+		},
+		{
+			name: 'data-selected',
+			value: ATTRS.SELECTED('`item`'),
 		},
 		{
 			name: 'data-highlighted',
@@ -247,7 +245,7 @@ const schemas = [builder, menu, input, item, label, arrow];
 
 const features = [
 	'Full keyboard navigation',
-	'Updatable data source',
+	'Declarative API',
 	'Can be controlled or uncontrolled',
 	'Custom positioning',
 ];

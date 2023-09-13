@@ -3,6 +3,7 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	disabledAttr,
 	effect,
 	executeCallbacks,
 	generateId,
@@ -53,7 +54,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 		stores: [disabled, orientation],
 		returned: ([$disabled, $orientation]) => {
 			return {
-				disabled: $disabled,
+				disabled: disabledAttr($disabled),
 				'data-orientation': $orientation,
 				style: $disabled ? undefined : 'touch-action: none;',
 				'data-melt-id': ids.root,
@@ -91,29 +92,30 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const updatePosition = (val: number, index: number) => {
 		value.update((prev) => {
 			if (!prev) return [val];
+			const newValue = [...prev];
 
-			const direction = prev[index] > val ? -1 : +1;
+			const direction = newValue[index] > val ? -1 : +1;
 			function swap() {
-				prev[index] = prev[index + direction];
-				prev[index + direction] = val;
+				newValue[index] = newValue[index + direction];
+				newValue[index + direction] = val;
 				const thumbs = getAllThumbs();
 				if (thumbs) {
 					thumbs[index + direction].focus();
 					activeThumb.set({ thumb: thumbs[index + direction], index: index + direction });
 				}
 			}
-			if (direction === -1 && val < prev[index - 1]) {
+			if (direction === -1 && val < newValue[index - 1]) {
 				swap();
-				return prev;
-			} else if (direction === 1 && val > prev[index + 1]) {
+				return newValue;
+			} else if (direction === 1 && val > newValue[index + 1]) {
 				swap();
-				return prev;
+				return newValue;
 			}
 			const $min = get(min);
 			const $max = get(max);
-			prev[index] = Math.min(Math.max(val, $min), $max);
+			newValue[index] = Math.min(Math.max(val, $min), $max);
 
-			return prev;
+			return newValue;
 		});
 	};
 
@@ -143,7 +145,6 @@ export const createSlider = (props?: CreateSliderProps) => {
 				const thumbPosition = `${$position($value[index])}%`;
 				return {
 					role: 'slider',
-					'aria-label': 'Volume',
 					'aria-valuemin': $min,
 					'aria-valuemax': $max,
 					'aria-valuenow': $value[index],

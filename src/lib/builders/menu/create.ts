@@ -11,6 +11,7 @@ import {
 	createTypeaheadSearch,
 	derivedVisible,
 	derivedWithUnsubscribe,
+	disabledAttr,
 	effect,
 	executeCallbacks,
 	generateId,
@@ -67,6 +68,7 @@ const defaults = {
 	loop: false,
 	dir: 'ltr',
 	defaultOpen: false,
+	typeahead: true,
 } satisfies Defaults<_CreateMenuProps>;
 
 export function createMenuBuilder(opts: _MenuBuilderOptions) {
@@ -80,6 +82,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		closeOnOutsideClick,
 		portal,
 		forceVisible,
+		typeahead,
 	} = opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
@@ -224,7 +227,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					 */
 					const isCharacterKey = e.key.length === 1;
 					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-					if (!isModifierKey && isCharacterKey) {
+					if (!isModifierKey && isCharacterKey && get(typeahead) === true) {
 						handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 					}
 				})
@@ -396,7 +399,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					tabindex: -1,
 					'data-orientation': 'vertical',
 					'aria-checked': isIndeterminate($checked) ? 'mixed' : $checked ? 'true' : 'false',
-					'data-disabled': $disabled ? '' : undefined,
+					'data-disabled': disabledAttr($disabled),
 					'data-state': getCheckedState($checked),
 				} as const;
 			},
@@ -508,7 +511,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						role: 'menuitemradio',
 						'data-state': checked ? 'checked' : 'unchecked',
 						'aria-checked': checked,
-						'data-disabled': disabled ? '' : undefined,
+						'data-disabled': disabledAttr(disabled),
 						'data-value': itemValue,
 						'data-orientation': 'vertical',
 						tabindex: -1,
@@ -762,7 +765,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							return;
 						}
 
-						if (!isModifierKey && isCharacterKey) {
+						if (!isModifierKey && isCharacterKey && get(typeahead) === true) {
 							// typeahead logic
 							handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 						}
@@ -812,7 +815,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					'aria-controls': subIds.menu,
 					'aria-expanded': $subOpen,
 					'data-state': $subOpen ? 'open' : 'closed',
-					'data-disabled': $disabled ? '' : undefined,
+					'data-disabled': disabledAttr($disabled),
 					'aria-haspopop': 'menu',
 				} as const;
 			},

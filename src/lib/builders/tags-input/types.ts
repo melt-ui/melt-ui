@@ -18,8 +18,35 @@ export type CreateTagsInputProps = {
 	maxTags?: number;
 	allowed?: string[];
 	denied?: string[];
+	/**
+	 * Optional validator/parser function that runs on tag addition.
+	 *
+	 * If an error is thrown, or the promise is rejected, the tag will not be added.
+	 *
+	 * Otherwise, return a Tag or a string for the tag to be added.
+	 *
+	 * @param tag The tag to be added
+	 */
 	add?: AddTag;
+	/**
+	 * Optional validator/parser function that runs on tag removal.
+	 *
+	 * If an error is thrown, the promise is rejected, or `false` is returned, the tag will not be removed.
+	 *
+	 * Otherwise, return `true` for the tag to be removed.
+	 *
+	 * @param tag The tag to be removed
+	 */
 	remove?: RemoveTag;
+	/**
+	 * Optional validator/parser function that runs on tag update.
+	 *
+	 * If an error is thrown, or the promise is rejected, the tag will not be updated.
+	 *
+	 * Otherwise, return a Tag or a string for the tag to be updated.
+	 *
+	 * @param tag The tag to be updated
+	 */
 	update?: UpdateTag;
 };
 
@@ -37,9 +64,9 @@ export type TagProps = {
 	editable?: boolean;
 };
 
-export type UpdateTag = (tag: Tag) => Tag | Promise<Tag>;
-export type RemoveTag = (tag: Tag) => boolean | Promise<boolean>;
-export type AddTag = (tag: string) => (Tag | string) | Promise<Tag | string>;
+export type UpdateTag = (tag: Tag) => (Tag | never) | Promise<Tag | never>;
+export type RemoveTag = (tag: Tag) => (boolean | never) | Promise<boolean | never>;
+export type AddTag = (tag: string) => (Tag | string | never) | Promise<Tag | string | never>;
 
 export type TagsInput = BuilderReturn<typeof createTagsInput>;
 export type TagsInputElements = TagsInput['elements'];

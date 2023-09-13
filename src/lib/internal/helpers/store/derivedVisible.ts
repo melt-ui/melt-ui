@@ -5,6 +5,7 @@ type DerivedVisibleObj = {
 	forceVisible: Writable<boolean>;
 	activeTrigger: Writable<HTMLElement | null>;
 };
+
 /**
  * Helper function to standardize the way we derive a visible state for the
  * popper/floating elements.

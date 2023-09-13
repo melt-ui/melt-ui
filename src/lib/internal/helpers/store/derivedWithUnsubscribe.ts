@@ -34,5 +34,16 @@ export function derivedWithUnsubscribe<S extends Stores, T>(
 
 	onDestroy(unsubscribe);
 
-	return derivedStore;
+	const subscribe: typeof derivedStore.subscribe = (...args) => {
+		const unsub = derivedStore.subscribe(...args);
+		return () => {
+			unsub();
+			unsubscribe();
+		};
+	};
+
+	return {
+		...derivedStore,
+		subscribe,
+	};
 }

@@ -8,6 +8,9 @@
 	} = createTagsInput({
 		defaultTags: ['Svelte', 'Typescript'],
 		unique: true,
+		add(tag) {
+			return { id: tag, value: tag };
+		},
 	});
 </script>
 

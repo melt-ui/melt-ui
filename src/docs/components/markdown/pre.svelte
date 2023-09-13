@@ -28,7 +28,7 @@
 		use:setCodeString
 		use:setIsPPBlock
 		class={cn(
-			'mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border border-neutral-500/50 bg-neutral-950/60 py-4 font-bold',
+			'mb-4 mt-6 max-h-[650px] overflow-x-auto !rounded-xl border !border-neutral-700/50 !bg-neutral-800/50 py-4 font-bold',
 			isPPBlock === undefined && 'data-[non-pp]:hidden',
 			className
 		)}
@@ -44,11 +44,11 @@
 			data-code-copy
 		>
 			{#if $copied}
-				<div in:fly={{ y: -4 }} class="bg-neutral-950">
+				<div in:fly={{ y: -4 }}>
 					<Check class="text-magnum-500 square-4" />
 				</div>
 			{:else}
-				<div in:fly={{ y: 4 }} class="bg-neutral-950">
+				<div in:fly={{ y: 4 }}>
 					<Copy class="square-4 hover:text-magnum-500" />
 				</div>
 			{/if}
@@ -60,5 +60,9 @@
 	/* Override theme colors for WCAG concerns */
 	pre :global([style*='color: #6A737D']) {
 		color: #727e8b !important;
+	}
+
+	pre {
+		font-weight: initial;
 	}
 </style>

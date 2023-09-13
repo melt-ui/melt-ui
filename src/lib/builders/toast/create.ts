@@ -44,24 +44,33 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 			description: generateId(),
 		};
 
+		const timeout =
+			propsWithDefaults.closeDelay === 0
+				? null
+				: window.setTimeout(() => {
+						removeToast(ids.content);
+				  }, propsWithDefaults.closeDelay);
+
+		const getPercentage = () => {
+			const { createdAt, pauseDuration, closeDelay, pausedAt } = toast;
+			if (closeDelay === 0) return 0;
+
+			if (pausedAt) {
+				return (100 * (pausedAt - createdAt - pauseDuration)) / closeDelay;
+			} else {
+				const now = performance.now();
+				return (100 * (now - createdAt - pauseDuration)) / closeDelay;
+			}
+		};
+
 		const toast = {
 			id: ids.content,
 			ids,
 			...propsWithDefaults,
-			timeout: window.setTimeout(() => {
-				removeToast(ids.content);
-			}, propsWithDefaults.closeDelay),
+			timeout,
 			createdAt: performance.now(),
 			pauseDuration: 0,
-			getPercentage: () => {
-				const { createdAt, pauseDuration, closeDelay, pausedAt } = toast;
-				if (pausedAt) {
-					return (100 * (pausedAt - createdAt - pauseDuration)) / closeDelay;
-				} else {
-					const now = performance.now();
-					return (100 * (now - createdAt - pauseDuration)) / closeDelay;
-				}
-			},
+			getPercentage,
 		} as Toast<T>;
 
 		toastsMap.update((currentMap) => {
@@ -75,6 +84,16 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 	const removeToast = (id: string) => {
 		toastsMap.update((currentMap) => {
 			currentMap.delete(id);
+			return new Map(currentMap);
+		});
+	};
+
+	const updateToast = (id: string, data: T) => {
+		toastsMap.update((currentMap) => {
+			const toast = currentMap.get(id);
+			if (!toast) return currentMap;
+
+			currentMap.set(id, { ...toast, data });
 			return new Map(currentMap);
 		});
 	};
@@ -105,8 +124,11 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 					if (isTouch(e)) return;
 					toastsMap.update((currentMap) => {
 						const currentToast = currentMap.get(node.id);
-						if (!currentToast) return currentMap;
-						window.clearTimeout(currentToast.timeout);
+						if (!currentToast || currentToast.closeDelay === 0) return currentMap;
+
+						if (currentToast.timeout !== null) {
+							window.clearTimeout(currentToast.timeout);
+						}
 						currentToast.pausedAt = performance.now();
 						return new Map(currentMap);
 					});
@@ -115,7 +137,8 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 					if (isTouch(e)) return;
 					toastsMap.update((currentMap) => {
 						const currentToast = currentMap.get(node.id);
-						if (!currentToast) return currentMap;
+						if (!currentToast || currentToast.closeDelay === 0) return currentMap;
+
 						const pausedAt = currentToast.pausedAt ?? currentToast.createdAt;
 						const elapsed = pausedAt - currentToast.createdAt - currentToast.pauseDuration;
 						const remaining = currentToast.closeDelay - elapsed;
@@ -212,6 +235,8 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 		},
 		helpers: {
 			addToast,
+			removeToast,
+			updateToast,
 		},
 		actions: {
 			portal: usePortal,

@@ -6,7 +6,9 @@
 	const {
 		elements: { trigger, content, arrow, close },
 		states: { open },
-	} = createPopover();
+	} = createPopover({
+		forceVisible: true,
+	});
 </script>
 
 <button

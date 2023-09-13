@@ -1,4 +1,9 @@
-import { createFocusTrap, useEscapeKeydown, usePortal } from '$lib/internal/actions/index.js';
+import {
+	createFocusTrap,
+	useClickOutside,
+	useEscapeKeydown,
+	usePortal,
+} from '$lib/internal/actions/index.js';
 import {
 	addMeltEventListener,
 	builder,
@@ -188,63 +193,65 @@ export function createDialog(props?: CreateDialogProps) {
 			let activate = noop;
 			let deactivate = noop;
 
-			const unsubFocusTrap = effect([closeOnOutsideClick], ([$closeOnOutsideClick]) => {
-				const focusTrap = createFocusTrap({
-					immediate: false,
-					escapeDeactivates: false,
-					allowOutsideClick: () => {
-						const $openDialogIds = get(openDialogIds);
-						const isLast = last($openDialogIds) === ids.content;
+			const destroy = executeCallbacks(
+				effect([open], ([$open]) => {
+					if (!$open) return;
+					const focusTrap = createFocusTrap({
+						immediate: false,
+						escapeDeactivates: false,
+						returnFocusOnDeactivate: false,
+						fallbackFocus: node,
+					});
 
-						if ($closeOnOutsideClick && isLast) {
-							handleClose();
-							return false;
-						}
-
-						return true;
-					},
-					returnFocusOnDeactivate: false,
-					fallbackFocus: node,
-				});
-				activate = focusTrap.activate;
-				deactivate = focusTrap.deactivate;
-				const ac = focusTrap.useFocusTrap(node);
-				if (ac && ac.destroy) {
-					return ac.destroy;
-				} else {
-					return focusTrap.deactivate;
-				}
-			});
-
-			const unsubEscapeKeydown = effect([closeOnEscape], ([$closeOnEscape]) => {
-				if (!$closeOnEscape) return noop;
-
-				const escapeKeydown = useEscapeKeydown(node, {
-					handler: () => {
-						handleClose();
-					},
-				});
-				if (escapeKeydown && escapeKeydown.destroy) {
-					return escapeKeydown.destroy;
-				}
-				return noop;
-			});
-
-			effect([isVisible], ([$isVisible]) => {
-				tick().then(() => {
-					if (!$isVisible) {
-						deactivate();
+					activate = focusTrap.activate;
+					deactivate = focusTrap.deactivate;
+					const ac = focusTrap.useFocusTrap(node);
+					if (ac && ac.destroy) {
+						return ac.destroy;
 					} else {
-						activate();
+						return focusTrap.deactivate;
 					}
-				});
-			});
+				}),
+
+				effect([closeOnOutsideClick, open], ([$closeOnOutsideClick, $open]) => {
+					return useClickOutside(node, {
+						enabled: $open,
+						handler: (e: PointerEvent) => {
+							if (e.defaultPrevented) return;
+							const $openDialogIds = get(openDialogIds);
+							const isLast = last($openDialogIds) === ids.content;
+							if ($closeOnOutsideClick && isLast) {
+								handleClose();
+							}
+						},
+					}).destroy;
+				}),
+				effect([closeOnEscape], ([$closeOnEscape]) => {
+					if (!$closeOnEscape) return noop;
+
+					const escapeKeydown = useEscapeKeydown(node, {
+						handler: () => {
+							handleClose();
+						},
+					});
+					if (escapeKeydown && escapeKeydown.destroy) {
+						return escapeKeydown.destroy;
+					}
+					return noop;
+				}),
+				effect([isVisible], ([$isVisible]) => {
+					tick().then(() => {
+						if (!$isVisible) {
+							deactivate();
+						} else {
+							activate();
+						}
+					});
+				})
+			);
 
 			return {
-				destroy() {
-					unsubEscapeKeydown();
-					unsubFocusTrap();
-				},
+				destroy,
 			};
 		},
 	});

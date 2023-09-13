@@ -1,5 +1,285 @@
 # @melt-ui/svelte
 
+## 0.49.0
+
+### Minor Changes
+
+- 4da1aa73: Combobox: Refactor API, allowing for a more general use case.
+  - Discarded `isEmpty`, `filterFunction` & `debounce`.
+  - Added `touchedInput` state
+
+## 0.48.0
+
+### Minor Changes
+
+- 82d37a43: Tooltip: Add `disableHoverableContent` prop
+
+### Patch Changes
+
+- c472cf1d: chore(package.json): add 'repository' property to `package.json`
+- 244aae3f: refactor: ensure type safety for `disabled` & `data-disabled` props
+
+## 0.47.6
+
+### Patch Changes
+
+- f30c4d17: improve accordion types
+
+## 0.47.5
+
+### Patch Changes
+
+- 952396b2: Tree: remove stopPropagation
+
+## 0.47.4
+
+### Patch Changes
+
+- da5eed08: Tree: improve arrow key performance
+
+## 0.47.3
+
+### Patch Changes
+
+- bb3349ec: Tree: fix initial tabindex
+
+## 0.47.2
+
+### Patch Changes
+
+- e5f48244: Tree: refactor tabindex behaviour
+
+## 0.47.1
+
+### Patch Changes
+
+- 1e3bb94d: Tree: fix arrow key nav
+
+## 0.47.0
+
+### Minor Changes
+
+- ae88900e: Tree: invert logic from collapsed to expanded
+
+### Patch Changes
+
+- 4dcacd19: Tree: mark args as optional
+
+## 0.46.0
+
+### Minor Changes
+
+- 38fd632f: Tree: remove value prop
+
+## 0.45.1
+
+### Patch Changes
+
+- e8ca932a: Refactor: remove leftover logs
+
+## 0.45.0
+
+### Minor Changes
+
+- 5ef61385: Tree: remove label
+
+## 0.44.0
+
+### Minor Changes
+
+- 2c07edcb: ✨ [New builder] Tree View
+
+## 0.43.0
+
+### Minor Changes
+
+- 0f00ca50: Adds highlighted store and isHighlighted helper to combobox
+- 5a35ad18: add mutation observer to ToC to make it update when headings change and also return the original heading node within the headings list
+
+### Patch Changes
+
+- 9e15ccd4: Select: fix isSelected function for single option.
+- 4991c06d: - Improve handling of custom labels/IDs for select & combo
+
+## 0.42.0
+
+### Minor Changes
+
+- 4aa5ee70: Toasts: updateToast helper fn && null closeDelay option
+
+### Patch Changes
+
+- 113776fa: internal refactors
+- a53aa213: Fix: bug preventing menubar triggers from toggling
+
+## 0.41.3
+
+### Patch Changes
+
+- 5d41f209: Popover: fix edge-case where multiple menus were appearing on click
+
+## 0.41.2
+
+### Patch Changes
+
+- d92db5aa: fix derivedWithUnsubscribe not properly unsubscribing
+
+## 0.41.1
+
+### Patch Changes
+
+- 37afdfc8: set package json entry point
+
+## 0.41.0
+
+### Minor Changes
+
+- e6fbcbce: Combobox: change inputValue to Writable
+
+### Patch Changes
+
+- f74ec13d: fix context-menu and menubar typeahead
+
+## 0.40.0
+
+### Minor Changes
+
+- 0528b0e1: Dropdown Menu: Add option to enable or disable typeahead
+
+## 0.39.5
+
+### Patch Changes
+
+- 6f2063e6: fix slider overrideable
+
+## 0.39.4
+
+### Patch Changes
+
+- 2c9ef167: fix: Combobox isSelected function
+
+## 0.39.3
+
+### Patch Changes
+
+- 350246dd: Fix: Bug where selecitng an item in a `Select` would close it's parent popover or dialog
+
+## 0.39.2
+
+### Patch Changes
+
+- aae6d6e2: Expose isInputValid, addTag, etc to helpers in tags-input
+
+## 0.39.1
+
+### Patch Changes
+
+- ff0e0316: Select: fix isSelected
+
+## 0.39.0
+
+### Minor Changes
+
+- d15008fd: Combobox: combine value and label into single selected state
+- 85254927: Select: combine value and label into single selected state
+
+### Patch Changes
+
+- b3637384: fix tooltip timers
+
+## 0.38.1
+
+### Patch Changes
+
+- 25118ed8: - Fix bug in `Select` where it would intercept form submissions
+- ede9de82: Internal: Swap custom deepEqual fn with `deep-equal` package
+- d790d32c: Tag Input: Add JSDoc to `add`, `update` and `remove` functions
+
+## 0.38.0
+
+### Minor Changes
+
+- eedcbb92: Change radio-group item-inputs to single hidden-input
+
+### Patch Changes
+
+- 0de31f18: remove slider default aria lavel
+- 7f4aa574: fix dialog content click closing
+- eedcbb92: Fix required attribute in radio-group
+
+## 0.37.6
+
+### Patch Changes
+
+- f56e9309: fix(#419) preserve body padding in removeScroll
+- 8355263b: fix: bug where dialog would call `handleClose` twice on click outside events
+
+## 0.37.5
+
+### Patch Changes
+
+- 8a6cdd76: fix accordion defaultValue
+
+## 0.37.4
+
+### Patch Changes
+
+- 41db52bf: fix missing tabindex on radio-group
+- afe293bd: fix popover click outside & nested popovers
+
+## 0.37.3
+
+### Patch Changes
+
+- 2579257b: fix combobox arrow keys
+
+## 0.37.2
+
+### Patch Changes
+
+- b10b2906: refactor menubar internals
+
+## 0.37.1
+
+### Patch Changes
+
+- c560cd5b: [Menubar] Hotfix: menubar race conditions
+
+## 0.37.0
+
+### Minor Changes
+
+- 77a39a59: fix pin input controlled value
+- 908f68ef: Rename Hover Card to Link Preview
+
+### Patch Changes
+
+- 4d9212fc: Keep Select menu open on select when `multiple` prop is `true`
+- abcae57d: fix: context menu not closing when clicking on svg element
+- 698a22d6: fix combobox controlled reset
+
+## 0.36.0
+
+### Minor Changes
+
+- 886ea40b: improve event canceling; replace e.detail.cancel() with e.preventDefault()
+
+## 0.35.1
+
+### Patch Changes
+
+- 7ab57673: fix accordion defaultValue
+
+## 0.35.0
+
+### Minor Changes
+
+- a5270d8d: Combobox: refactor API to be more declarative
+
+### Patch Changes
+
+- 9fe1832f: Select: improve valueLabel behaviour
+
 ## 0.34.6
 
 ### Patch Changes

@@ -11,7 +11,7 @@
 		<label
 			use:melt={$root}
 			for="email"
-			class="mb-0.5 font-medium"
+			class="mb-0.5 font-medium text-magnum-900"
 			data-melt-part="root"
 		>
 			<span>Email</span>

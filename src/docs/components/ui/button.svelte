@@ -31,6 +31,7 @@
 		href?: never;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	type $$Props = AnchorElement | ButtonElement;
 </script>
 

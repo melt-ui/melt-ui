@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { TableOfContentsItem, CreateTableOfContentsReturn } from '$lib';
+	import type { TableOfContentsItem, TableOfContentsElements } from '$lib';
 
 	export let tree: TableOfContentsItem[] = [];
 	export let activeHeadingIdxs: number[];
-	export let item: CreateTableOfContentsReturn['item'];
+	export let item: TableOfContentsElements['item'];
 	export let level = 1;
 </script>
 
