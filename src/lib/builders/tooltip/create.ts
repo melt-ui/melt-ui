@@ -246,8 +246,10 @@ export function createTooltip(props?: CreateTooltipProps) {
 			addEventListener(document, 'mousemove', (e) => {
 				const contentEl = document.getElementById(ids.content);
 				if (!contentEl) return;
-				
-				const polygonElements = get(disableHoverableContent) ? [$activeTrigger] : [$activeTrigger, contentEl];
+
+				const polygonElements = get(disableHoverableContent)
+					? [$activeTrigger]
+					: [$activeTrigger, contentEl];
 				const polygon = makeHullFromElements(polygonElements);
 
 				isMouseInTooltipArea = pointInPolygon(

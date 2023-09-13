@@ -230,7 +230,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 						}
 					}
 				}),
-				addMeltEventListener(node, 'click', async (e) => {
+				addMeltEventListener(node, 'click', async () => {
 					updateSelectedElement(node);
 					setFocusedItem(node);
 					if (!isKeydown) {
