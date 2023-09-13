@@ -1,27 +1,22 @@
 import {
-	SELECTION_KEYS,
 	addEventListener,
 	builder,
 	createElHelpers,
 	effect,
 	generateId,
-	getNextFocusable,
-	getPreviousFocusable,
-	handleRovingFocus,
 	isBrowser,
 	isHTMLElement,
 	kbd,
 	noop,
+	overridable,
 	sleep,
 	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
 
 import {
-	isAfter,
 	isBefore,
-	isBetween,
 	isSameDay,
-	isToday,
 	nextMonth as getNextMonth,
 	nextYear as getNextYear,
 	prevMonth as getPrevMonth,
@@ -34,8 +29,9 @@ import {
 
 import { usePopper } from '$lib/internal/actions';
 import { onMount, tick } from 'svelte';
-import { derived, get, readable, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 import type { CreateDatePickerProps, DateProps } from './types';
+import { omit } from '../../internal/helpers/object';
 
 const defaults = {
 	closeOnEscape: true,
@@ -45,7 +41,7 @@ const defaults = {
 	latest: null,
 	preventScroll: true,
 	mode: 'single',
-	value: [new Date()],
+	value: undefined,
 	autoSelect: true,
 	open: false,
 	arrowSize: 6,
@@ -54,6 +50,7 @@ const defaults = {
 		placement: 'bottom',
 	},
 	activeDate: new Date(),
+	allowDeselect: false,
 } satisfies CreateDatePickerProps;
 
 type CalendarParts =
@@ -70,18 +67,33 @@ type CalendarParts =
 const { name } = createElHelpers<CalendarParts>('calendar');
 
 export function createDatePicker(props?: CreateDatePickerProps) {
-	const options = writable({ ...defaults, ...props });
-	const arrowSize = readable(get(options).arrowSize);
-	const open = writable(get(options).open);
+	const withDefaults = { ...defaults, ...props } satisfies CreateDatePickerProps;
+
+	const options = toWritableStores({
+		...omit(withDefaults, 'value'),
+	});
+
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue ?? [new Date()]);
+	const value = overridable(valueWritable, withDefaults?.onValueChange);
+
+	const {
+		arrowSize,
+		open,
+		activeDate,
+		mode,
+		autoClose,
+		autoSelect,
+		allowDeselect,
+		earliest,
+		latest,
+	} = options;
+
 	const activeTrigger = writable<HTMLElement | null>(null);
-	const value = writable<Date[]>(get(options).value ?? [new Date()]);
 	const dates = writable<Date[]>([]);
 	const lastMonthDates = writable<Date[]>([]);
 	const nextMonthDates = writable<Date[]>([]);
-	const selectEnd = writable<boolean>(false);
-	const activeDate = writable<Date>(get(options).activeDate);
 
-	if (get(options).mode === 'range') {
+	if (get(mode) === 'range') {
 		value.update((prev) => {
 			if (prev.length < 2) {
 				prev.push(prev[0]);
@@ -188,28 +200,34 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			};
 		},
 		action: (node: HTMLElement) => {
-			let unsubPopper = noop;
+			/**
+			 * I don't think we should force this to be a popper.
+			 * It can be added to a popover, dialog, whatever with minimal effort
+			 * and same functionality.
+			 */
 
-			const unsubDerived = effect([open, activeTrigger], ([$open, $activeTrigger]) => {
-				unsubPopper();
-				if ($open && $activeTrigger) {
-					tick().then(() => {
-						const popper = usePopper(node, {
-							anchorElement: $activeTrigger,
-							open,
-							options: {
-								floating: {
-									placement: 'bottom',
-								},
-							},
-						});
+			// let unsubPopper = noop;
 
-						if (popper && popper.destroy) {
-							unsubPopper = popper.destroy;
-						}
-					});
-				}
-			});
+			// const unsubDerived = effect([open, activeTrigger], ([$open, $activeTrigger]) => {
+			// 	unsubPopper();
+			// 	if ($open && $activeTrigger) {
+			// 		tick().then(() => {
+			// 			const popper = usePopper(node, {
+			// 				anchorElement: $activeTrigger,
+			// 				open,
+			// 				options: {
+			// 					floating: {
+			// 						placement: 'bottom',
+			// 					},
+			// 				},
+			// 			});
+
+			// 			if (popper && popper.destroy) {
+			// 				unsubPopper = popper.destroy;
+			// 			}
+			// 		});
+			// 	}
+			// });
 
 			const unsubKb = addEventListener(node, 'keydown', (e) => {
 				const triggerElement = e.currentTarget;
@@ -231,8 +249,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 			return {
 				destroy() {
-					unsubDerived();
-					unsubPopper();
 					unsubKb();
 				},
 			};
@@ -294,33 +310,59 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		},
 	});
 
+	function handleRangeClick(date: Date) {
+		value.update((prev) => {
+			if (prev[0] === prev[1] && prev[0] === date) {
+				return prev;
+			}
+
+			if (prev.length) {
+				if (prev.length > 1 || isBefore(date, prev[0])) {
+					return [date];
+				}
+			}
+
+			prev.push(date);
+			return prev;
+		});
+	}
+
+	function handleSingleClick(date: Date) {
+		if (get(allowDeselect)) {
+			value.update((prev) => (prev.length ? [] : [date]));
+		} else {
+			value.set([date]);
+		}
+		if (get(autoClose)) {
+			open.set(false);
+		}
+	}
+
+	function handleMultipleClick(date: Date) {
+		value.update((prev) => {
+			if (prev.some((d) => isSameDay(d, date))) {
+				prev = prev.filter((d) => !isSameDay(d, date));
+			} else {
+				prev = [...prev, date];
+			}
+
+			return prev;
+		});
+	}
+
 	const date = builder(name('date'), {
-		stores: [value, options],
-		returned: ([$value, $options]) => {
-			const { earliest, latest } = get(options);
+		stores: [value, earliest, latest, mode],
+		returned: ([$value, $earliest, $latest, $mode]) => {
 			return (props: DateProps) => {
-				// console.table({
-				// 	date: new Date(args.value || ''),
-				// 	value: $value,
-				// 	type: get(options).type,
-				// });
 				const selected = getSelectedFromValue({
 					date: new Date(props.value || ''),
 					value: $value,
-					mode: get(options).mode,
+					mode: $mode,
 				});
 				return {
 					role: 'date',
 					'aria-selected': selected ? true : undefined,
 					'data-selected': selected ? true : undefined,
-					'data-start':
-						$options.mode === 'range' && isSameDay(new Date(props.value), $value[0])
-							? ''
-							: undefined,
-					'data-end':
-						$options.mode === 'range' && isSameDay(new Date(props.value), $value[1])
-							? ''
-							: undefined,
 					'data-value': props.value,
 					'data-label': props.label ?? undefined,
 					'data-disabled': props.disabled ? '' : undefined,
@@ -344,34 +386,15 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				const args = getElArgs();
 				if (args.disabled) return;
 				const date = new Date(args.value || '');
-				switch (get(options).mode) {
+				switch (get(mode)) {
 					case 'single':
-						value.set([date]);
-						if (get(options).autoClose) {
-							open.set(false);
-						}
+						handleSingleClick(date);
 						break;
 					case 'range':
-						value.update((prev) => {
-							if (get(selectEnd)) {
-								prev[0] = date;
-							} else {
-								prev[1] = date;
-							}
-							return prev;
-						});
-						selectEnd.set(!get(selectEnd));
+						handleRangeClick(date);
 						break;
 					case 'multiple':
-						value.update((prev) => {
-							if (prev.some((d) => isSameDay(d, date))) {
-								prev = prev.filter((d) => !isSameDay(d, date));
-							} else {
-								prev = [...prev, date];
-							}
-
-							return prev;
-						});
+						handleMultipleClick(date);
 						break;
 
 					default:
@@ -398,7 +421,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		action: (node: HTMLElement) => {
 			const unsub = addEventListener(node, 'click', () => {
 				// value.set(get(activeDate) || get(value));
-				if (get(options).autoClose) {
+				if (autoClose) {
 					open.set(false);
 				}
 			});
@@ -458,10 +481,14 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		}
 	});
 
-	effect([options], ([$options]) => {
+	effect([value], ([$value]) => {
+		console.log('value: ', $value);
+	});
+
+	effect([mode], ([$mode]) => {
 		if (!isBrowser) return;
 
-		if ($options.mode === 'range') {
+		if ($mode === 'range') {
 			value.update((prev) => {
 				if (prev.length < 2) {
 					prev.push(prev[0]);

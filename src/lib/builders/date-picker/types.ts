@@ -1,5 +1,7 @@
 import type { FloatingConfig } from '@melt-ui/svelte/internal/actions';
 import type { createDatePicker } from './create';
+import type { Writable } from 'svelte/store';
+import type { ChangeFn } from '$lib/internal/helpers';
 
 export type BaseDatePickerProps = {
 	preventScroll: boolean;
@@ -11,8 +13,16 @@ export type BaseDatePickerProps = {
 	earliest: Date | null;
 	latest: Date | null;
 	autoSelect: boolean;
+
+	/**
+	 * When in `single` mode, allow deselecting the selected date when the
+	 * date is clicked again.
+	 */
+	allowDeselect: boolean;
 	autoClose: boolean;
-	value: Date[];
+	defaultValue: Date[];
+	onValueChange: ChangeFn<Date[]>;
+	value: Writable<Date[]>;
 	mode: 'single' | 'range' | 'multiple';
 	activeDate: Date;
 	ISOWeek: boolean;

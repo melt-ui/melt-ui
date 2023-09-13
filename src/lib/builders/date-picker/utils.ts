@@ -1,4 +1,4 @@
-import type { CreateDatePickerOptions } from './types';
+import type { CreateDatePickerProps } from './types';
 
 export function isBefore(date1: Date, date2: Date) {
 	const d1 = date1.setHours(0, 0, 0, 0);
@@ -105,7 +105,7 @@ export function subYears(date: Date, years: number) {
 interface GetSelectedFromValuesArgs {
 	date: Date;
 	value: Date[];
-	mode: CreateDatePickerOptions['mode'];
+	mode: CreateDatePickerProps['mode'];
 }
 
 export const getSelectedFromValue: (props: GetSelectedFromValuesArgs) => boolean = ({
@@ -115,13 +115,20 @@ export const getSelectedFromValue: (props: GetSelectedFromValuesArgs) => boolean
 }) => {
 	switch (mode) {
 		case 'single':
-			return isSameDay(value[0], date);
+			if (value.length) {
+				return isSameDay(value[0], date);
+			}
+			return false;
 		case 'range':
-			return (
-				isSameDay(value[0], date) ||
-				isSameDay(value[1], date) ||
-				isBetween(date, value[0], value[1])
-			);
+			if (isSameDay(value[0], date)) {
+				return true;
+			} else if (value.length > 1 && isSameDay(value[1], date)) {
+				return true;
+			} else if (value.length > 1 && isBetween(date, value[0], value[1])) {
+				return true;
+			}
+
+			return false;
 		case 'multiple':
 			return value.some((d) => isSameDay(d, date));
 		default:

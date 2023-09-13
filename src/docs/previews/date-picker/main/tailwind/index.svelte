@@ -10,26 +10,22 @@
 	import { melt } from '$lib';
 
 	const {
-        elements: {
-            trigger,
-            content,
-            arrow,
-            close,
-            nextMonthButton,
-            prevMonthButton,
-            nextYearButton,
-            prevYearButton,
-            date,
-        },
-        states: {
-            open,
-            value,
-            dates,
-            lastMonthDates,
-            nextMonthDates,
-        }
+		elements: {
+			trigger,
+			content,
+			arrow,
+			close,
+			nextMonthButton,
+			prevMonthButton,
+			nextYearButton,
+			prevYearButton,
+			date,
+		},
+		states: { open, value, dates, lastMonthDates, nextMonthDates },
 	} = createDatePicker({
-		mode: 'single'
+		mode: 'single',
+		allowDeselect: true,
+		autoClose: false,
 	});
 </script>
 
