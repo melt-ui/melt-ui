@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.49.1
+
+### Patch Changes
+
+- ca04a433: Combobox: Pressing enter no longer submits form
+
 ## 0.49.0
 
 ### Minor Changes
