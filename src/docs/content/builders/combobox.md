@@ -22,6 +22,16 @@ description:
   - **Label**: The label for the input
   - **Arrow**: An optional arrow element which points to the menu's input
 
+## Examples
+
+### Debounce
+
+It may be useful to debounce user input in the `input` element.
+
+<Preview code={snippets.debounce}>
+  <svelte:component this={previews.debounce} />
+</Preview>
+
 ## API Reference
 
 <APIReference {schemas} />
