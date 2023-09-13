@@ -26,11 +26,18 @@
 >
 	{#if $copied}
 		<div in:fly={{ y: -4 }}>
-			<Check class="bg-neutral-950 text-magnum-500 square-4" />
+			<Check class=" text-magnum-500 square-4" />
 		</div>
 	{:else}
 		<div in:fly={{ y: 4 }}>
-			<Copy class="bg-neutral-950 square-4 hover:text-magnum-500" />
+			<Copy class=" square-4 hover:text-magnum-500" />
 		</div>
 	{/if}
 </button>
+
+<style>
+	[data-rehype-pretty-code-fragment] :global(pre) {
+		font-weight: initial !important;
+		@apply border-neutral-700/50 bg-neutral-800/50;
+	}
+</style>

@@ -74,61 +74,46 @@ we'd love to have you there.
 
 ## Roadmap
 
-| Component name  | Status |
-| --------------- | ------ |
-| Accordion       | ✅     |
-| Avatar          | ✅     |
-| Calendar        |        |
-| Checkbox        | ✅     |
-| Collapsible     | ✅     |
-| ComboBox        | ✅     |
-| Command Menu    |        |
-| Context Menu    | ✅     |
-| Dialog          | ✅     |
-| Dropdown Menu   | ✅     |
-| Dropzone        |        |
-| Hover Card      | ✅     |
-| Label           | ✅     |
-| Menubar         | ✅     |
-| Navigation Menu |        |
-| Pagination      | ✅     |
-| Pin Input       | ✅     |
-| Popover         | ✅     |
-| Progress        | ✅     |
-| Radio Group     | ✅     |
-| Scroll Area     |        |
-| Select          | ✅     |
-| Separator       | ✅     |
-| Slider          | ✅     |
-| Spin Button     |        |
-| Switch          | ✅     |
-| Tabs            | ✅     |
-| Tags Input      | ✅     |
-| Toast           | ✅     |
-| Toggle          | ✅     |
-| Toggle Group    | ✅     |
-| Toolbar         | ✅     |
-| Tooltip         | ✅     |
-| Tree View       |        |
-| ???             |        |
-
-**Progress:** 26/???
+| Component name    | Status |
+| ----------------- | ------ |
+| Accordion         | ✅     |
+| Avatar            | ✅     |
+| Calendar          |        |
+| Checkbox          | ✅     |
+| Collapsible       | ✅     |
+| ComboBox          | ✅     |
+| Command Center    |        |
+| Context Menu      | ✅     |
+| Dialog            | ✅     |
+| Dropdown Menu     | ✅     |
+| Dropzone          |        |
+| Label             | ✅     |
+| Link Preview      | ✅     |
+| Menubar           | ✅     |
+| Navigation Menu   |        |
+| Pagination        | ✅     |
+| Pin Input         | ✅     |
+| Popover           | ✅     |
+| Progress          | ✅     |
+| Radio Group       | ✅     |
+| Scroll Area       |        |
+| Select            | ✅     |
+| Separator         | ✅     |
+| Slider            | ✅     |
+| Spin Button       |        |
+| Switch            | ✅     |
+| Table of Contents | ✅     |
+| Tabs              | ✅     |
+| Tags Input        | ✅     |
+| Toast             | ✅     |
+| Toggle            | ✅     |
+| Toggle Group      | ✅     |
+| Toolbar           | ✅     |
+| Tooltip           | ✅     |
+| Tree View         |        |
+| ???               |        |
 
 ## Similar projects
 
-Looking for more? Check out these other projects too:
-
-- [Shadcn Svelte](https://shadcn-svelte.com/)
-- [Radix Svelte](https://radix-svelte.com/)
-- [Skeleton](https://skeleton.dev/)
-- [Svelte Headless UI](https://svelte-headlessui.goss.io/docs)
-- [Flowbite Svelte](https://flowbite-svelte.com/)
-- [Carbon Components Svelte](https://github.com/carbon-design-system/carbon-components-svelte/)
-- [Svelte Material UI](https://sveltematerialui.com/)
-- [SvelteStrap](https://github.com/bestguy/sveltestrap)
-- [Noir UI](https://github.com/khairulhaaziq/noir-ui)
-- [Zag](https://github.com/chakra-ui/zag)
-- [Grail UI](https://grail-ui.vercel.app/)
-
-This list is not exhaustive or sorted in any particular order. If you know of any other similar
-projects for Svelte, feel free to open a PR to add them here.
+Looking for more? Check out the
+[other component library projects available for Svelte](https://sveltesociety.dev/components#design-systems).

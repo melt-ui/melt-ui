@@ -1,13 +1,15 @@
 <script lang="ts">
+	import { Bird } from 'lucide-svelte';
 	import Tree from './tree.svelte';
 	import { createTableOfContents } from '$lib';
 
-	const { activeHeadingIdxs, headingsTree, item } = createTableOfContents({
+	const {
+		elements: { item },
+		states: { activeHeadingIdxs, headingsTree },
+	} = createTableOfContents({
 		selector: '#toc-builder-preview',
 		exclude: ['h1', 'h4', 'h5', 'h6'],
-		activeType: 'lowest-parents',
-		// scrollOffset: 20,
-		// scrollBehaviour: 'smooth',
+		activeType: 'all',
 		headingFilterFn: (heading) => !heading.hasAttribute('data-toc-ignore'),
 		scrollFn: (id) => {
 			/**
@@ -20,12 +22,14 @@
 
 			if (container && element) {
 				container.scrollTo({
-					top: element.offsetTop - container.offsetTop,
+					top: element.offsetTop - container.offsetTop - 16,
 					behavior: 'smooth',
 				});
 			}
 		},
 	});
+
+	let hideHeading = false;
 </script>
 
 <div
@@ -35,15 +39,27 @@
 		id="toc-builder-preview"
 		class="space-y-2 overflow-y-auto rounded-lg bg-white p-4 text-neutral-900"
 	>
-		<h2>First Heading</h2>
-		<p>This is the first heading.</p>
-		<h3>Sub-Heading</h3>
-		<p>This is a sub-heading H3 example.</p>
+		<button on:click={() => (hideHeading = !hideHeading)} class="hide-heading">
+			{hideHeading ? 'Show heading' : 'Hide heading'}
+		</button>
+
+		{#if !hideHeading}
+			<h2>First Heading</h2>
+			<p>This is the first heading.</p>
+
+			<h3>Sub-Heading</h3>
+			<p>This is a sub-heading H3 example.</p>
+		{/if}
 		<h4>This H4 is excluded</h4>
 		<p>
 			H4 headings were added to the list of excluded heading tags, so this will
 			not show up in the table of contents.
 		</p>
+		<h2 class="inline-flex items-center justify-center gap-2">
+			<Bird />
+			Icon heading
+		</h2>
+		<p>Here we have a heading with an icon.</p>
 		<h2 data-toc-ignore>This H2 gets ignored</h2>
 		<p>
 			You can adjust the filter function to show or hide headings based on
@@ -78,16 +94,18 @@
 	<div class="overflow-y-auto rounded-lg bg-white p-4">
 		<p class="font-semibold text-neutral-900">On This Page</p>
 		<nav>
-			<Tree
-				tree={$headingsTree}
-				activeHeadingIdxs={$activeHeadingIdxs}
-				{item}
-			/>
+			{#key $headingsTree}
+				<Tree
+					tree={$headingsTree}
+					activeHeadingIdxs={$activeHeadingIdxs}
+					{item}
+				/>
+			{/key}
 		</nav>
 	</div>
 </div>
 
-<style>
+<style lang="postcss">
 	#toc-builder-preview > h2 {
 		@apply text-xl font-bold;
 	}
@@ -98,5 +116,24 @@
 
 	#toc-builder-preview > h4 {
 		@apply text-lg font-semibold;
+	}
+
+	.hide-heading {
+		display: inline-flex;
+		height: theme(spacing.8);
+		cursor: default;
+		align-items: center;
+		justify-content: center;
+		border-radius: theme(borderRadius.md);
+		background-color: theme(colors.magnum.200);
+		padding-inline: theme(spacing.4);
+		line-height: 1;
+		font-weight: theme(fontWeight.semibold);
+		color: theme(colors.magnum.900);
+		@apply transition;
+
+		&:hover {
+			opacity: 0.75;
+		}
 	}
 </style>

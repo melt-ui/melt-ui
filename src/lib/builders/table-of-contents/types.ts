@@ -50,7 +50,10 @@ export type TableOfContentsItem = {
 	title: string;
 	index: number;
 	id: string;
+	node: HTMLHeadingElement;
 	children?: TableOfContentsItem[];
 };
 
-export type CreateTableOfContentsReturn = ReturnType<typeof createTableOfContents>;
+export type TableOfContents = ReturnType<typeof createTableOfContents>;
+export type TableOfContentsElements = TableOfContents['elements'];
+export type TableOfContentsStates = TableOfContents['states'];

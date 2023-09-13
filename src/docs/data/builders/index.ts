@@ -8,8 +8,8 @@ import { contextMenuData } from './context-menu.js';
 import { popoverData as datePickerData } from './date-picker.js';
 import { dialogData } from './dialog.js';
 import { dropdownMenuData } from './dropdown-menu.js';
-import { hoverCardData } from './hover-card.js';
 import { labelData } from './label.js';
+import { linkPreviewData } from './link-preview.js';
 import { menubarData } from './menubar.js';
 import { paginationData } from './pagination.js';
 import { pinInputData } from './pin-input.js';
@@ -25,6 +25,7 @@ import { tagsInputData } from './tags-input.js';
 import { toastData } from './toast.js';
 import { toggleData } from './toggle.js';
 import { toggleGroupData } from './toggle-group.js';
+import { treeData } from './tree.js';
 import { tableOfContentsData } from './table-of-contents.js';
 import { toolbarData } from './toolbar.js';
 import { tooltipData } from './tooltip.js';
@@ -39,8 +40,8 @@ export const builderList = [
 	'date-picker',
 	'dialog',
 	'dropdown-menu',
-	'hover-card',
 	'label',
+	'link-preview',
 	'menubar',
 	'pagination',
 	'pin-input',
@@ -59,6 +60,7 @@ export const builderList = [
 	'toggle-group',
 	'toolbar',
 	'tooltip',
+	'tree',
 ] as const;
 
 export type Builder = (typeof builderList)[number];
@@ -85,8 +87,8 @@ export const data: Builders = {
 	dialog: dialogData,
 	'dropdown-menu': dropdownMenuData,
 	'date-picker': datePickerData,
-	'hover-card': hoverCardData,
 	label: labelData,
+	'link-preview': linkPreviewData,
 	menubar: menubarData,
 	pagination: paginationData,
 	'pin-input': pinInputData,
@@ -105,4 +107,5 @@ export const data: Builders = {
 	toggle: toggleData,
 	toolbar: toolbarData,
 	tooltip: tooltipData,
+	tree: treeData,
 };

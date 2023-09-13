@@ -11,6 +11,7 @@ import {
 	createTypeaheadSearch,
 	derivedVisible,
 	derivedWithUnsubscribe,
+	disabledAttr,
 	effect,
 	executeCallbacks,
 	generateId,
@@ -67,6 +68,7 @@ const defaults = {
 	loop: false,
 	dir: 'ltr',
 	defaultOpen: false,
+	typeahead: true,
 } satisfies Defaults<_CreateMenuProps>;
 
 export function createMenuBuilder(opts: _MenuBuilderOptions) {
@@ -80,6 +82,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		closeOnOutsideClick,
 		portal,
 		forceVisible,
+		typeahead,
 	} = opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
@@ -224,7 +227,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					 */
 					const isCharacterKey = e.key.length === 1;
 					const isModifierKey = e.ctrlKey || e.altKey || e.metaKey;
-					if (!isModifierKey && isCharacterKey) {
+					if (!isModifierKey && isCharacterKey && get(typeahead) === true) {
 						handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 					}
 				})
@@ -332,7 +335,10 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						handleRovingFocus(itemEl);
 						return;
 					}
-					rootOpen.set(false);
+					// Allows forms to submit before the menu is removed from the DOM
+					sleep(1).then(() => {
+						rootOpen.set(false);
+					});
 				}),
 				addMeltEventListener(node, 'keydown', (e) => {
 					onItemKeyDown(e);
@@ -393,7 +399,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					tabindex: -1,
 					'data-orientation': 'vertical',
 					'aria-checked': isIndeterminate($checked) ? 'mixed' : $checked ? 'true' : 'false',
-					'data-disabled': $disabled ? '' : undefined,
+					'data-disabled': disabledAttr($disabled),
 					'data-state': getCheckedState($checked),
 				} as const;
 			},
@@ -505,7 +511,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						role: 'menuitemradio',
 						'data-state': checked ? 'checked' : 'unchecked',
 						'aria-checked': checked,
-						'data-disabled': disabled ? '' : undefined,
+						'data-disabled': disabledAttr(disabled),
 						'data-value': itemValue,
 						'data-orientation': 'vertical',
 						tabindex: -1,
@@ -759,7 +765,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							return;
 						}
 
-						if (!isModifierKey && isCharacterKey) {
+						if (!isModifierKey && isCharacterKey && get(typeahead) === true) {
 							// typeahead logic
 							handleTypeaheadSearch(e.key, getMenuItems(menuEl));
 						}
@@ -809,7 +815,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					'aria-controls': subIds.menu,
 					'aria-expanded': $subOpen,
 					'data-state': $subOpen ? 'open' : 'closed',
-					'data-disabled': $disabled ? '' : undefined,
+					'data-disabled': disabledAttr($disabled),
 					'aria-haspopop': 'menu',
 				} as const;
 			},
@@ -1083,49 +1089,52 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		}
 	});
 
-	effect([rootOpen, rootActiveTrigger], ([$rootOpen, $rootActiveTrigger]) => {
-		if (!isBrowser) return;
+	effect(
+		[rootOpen, rootActiveTrigger, preventScroll],
+		([$rootOpen, $rootActiveTrigger, $preventScroll]) => {
+			if (!isBrowser) return;
 
-		const unsubs: Array<() => void> = [];
+			const unsubs: Array<() => void> = [];
 
-		if ($rootOpen && get(preventScroll)) {
-			unsubs.push(removeScroll());
-		}
-
-		if (!$rootOpen && $rootActiveTrigger) {
-			handleRovingFocus($rootActiveTrigger);
-		}
-
-		sleep(1).then(() => {
-			const menuEl = document.getElementById(rootIds.menu);
-			if (menuEl && $rootOpen && get(isUsingKeyboard)) {
-				if (opts.disableFocusFirstItem) {
-					handleRovingFocus(menuEl);
-					return;
-				}
-				// Get menu items belonging to the root menu
-				const menuItems = getMenuItems(menuEl);
-				if (!menuItems.length) return;
-
-				// Focus on first menu item
-				handleRovingFocus(menuItems[0]);
-			} else if ($rootActiveTrigger) {
-				// Focus on active trigger trigger
-				handleRovingFocus($rootActiveTrigger);
-			} else {
-				if (opts.disableTriggerRefocus) {
-					return;
-				}
-				const triggerEl = document.getElementById(rootIds.trigger);
-				if (!triggerEl) return;
-				handleRovingFocus(triggerEl);
+			if (opts.removeScroll && $rootOpen && $preventScroll) {
+				unsubs.push(removeScroll());
 			}
-		});
 
-		return () => {
-			unsubs.forEach((unsub) => unsub());
-		};
-	});
+			if (!$rootOpen && $rootActiveTrigger) {
+				handleRovingFocus($rootActiveTrigger);
+			}
+
+			sleep(1).then(() => {
+				const menuEl = document.getElementById(rootIds.menu);
+				if (menuEl && $rootOpen && get(isUsingKeyboard)) {
+					if (opts.disableFocusFirstItem) {
+						handleRovingFocus(menuEl);
+						return;
+					}
+					// Get menu items belonging to the root menu
+					const menuItems = getMenuItems(menuEl);
+					if (!menuItems.length) return;
+
+					// Focus on first menu item
+					handleRovingFocus(menuItems[0]);
+				} else if ($rootActiveTrigger) {
+					// Focus on active trigger trigger
+					handleRovingFocus($rootActiveTrigger);
+				} else {
+					if (opts.disableTriggerRefocus) {
+						return;
+					}
+					const triggerEl = document.getElementById(rootIds.trigger);
+					if (!triggerEl) return;
+					handleRovingFocus(triggerEl);
+				}
+			});
+
+			return () => {
+				unsubs.forEach((unsub) => unsub());
+			};
+		}
+	);
 
 	effect(rootOpen, ($rootOpen) => {
 		if (!isBrowser) return;

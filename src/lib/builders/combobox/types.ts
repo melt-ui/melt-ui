@@ -5,7 +5,12 @@ import type { createCombobox } from './create.js';
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
 export type { ComboboxComponentEvents } from './events.js';
 
-export type CreateComboboxProps<Item> = {
+export type ComboboxOption<Value> = {
+	value: Value;
+	label?: string;
+};
+
+export type CreateComboboxProps<Value> = {
 	/**
 	 * Options for positioning the popover menu.
 	 *
@@ -14,26 +19,10 @@ export type CreateComboboxProps<Item> = {
 	positioning?: FloatingConfig;
 
 	/**
-	 * The list of items to display in the combobox.
-	 */
-	items: Item[];
-
-	/**
 	 * Determines behavior when scrolling items into view.
 	 * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block
 	 */
 	scrollAlignment?: 'nearest' | 'center';
-
-	/**
-	 * Predicate function to filter the visible items. When the user types,
-	 * the filterFunction will be run on each item along with the current
-	 * input value. If the predicate returns true, the item will be displayed.
-	 * @param item the current item being filtered.
-	 * @param value the current input value.
-	 * @returns whether the item should be visible.
-	 */
-	filterFunction: ComboboxFilterFunction<Item>;
-	itemToString?: ComboboxItemToString<Item>;
 
 	/**
 	 * Whether or not the combobox should loop through the list when
@@ -66,25 +55,25 @@ export type CreateComboboxProps<Item> = {
 	onOpenChange?: ChangeFn<boolean>;
 
 	/**
-	 * The default value set on the select input.
+	 * The default selected option.
 	 *
-	 * This will be overridden if you also pass a `value` store prop.
+	 * This will be overridden if you also pass a `selected` store prop.
 	 *
 	 * @default undefined
 	 */
-	defaultValue?: Item;
+	defaultSelected?: ComboboxOption<Value>;
 
 	/**
-	 * An optional controlled store that manages the value state of the combobox.
+	 * An optional controlled store that manages the selected option of the combobox.
 	 */
-	value?: Writable<Item | undefined>;
+	selected?: Writable<ComboboxOption<Value> | undefined>;
 
 	/**
-	 * A change handler for the value store called when the value would normally change.
+	 * A change handler for the selected store called when the selected would normally change.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onValueChange?: ChangeFn<Item | undefined>;
+	onSelectedChange?: ChangeFn<ComboboxOption<Value> | undefined>;
 
 	/**
 	 * Whether or not to close the combobox menu when the user clicks
@@ -128,16 +117,7 @@ export type CreateComboboxProps<Item> = {
 	forceVisible?: boolean;
 };
 
-export type ComboboxFilterFunction<T> = (item: T, value: string) => boolean;
-
-export type ComboboxItemToString<T> = (item: T) => string;
-
-export type ComboboxItemProps<T> = {
-	item: T;
-	/**
-	 * Array index of the item.
-	 */
-	index: number;
+export type ComboboxItemProps<Value> = ComboboxOption<Value> & {
 	/**
 	 *  Is the item disabled?
 	 */

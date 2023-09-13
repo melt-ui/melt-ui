@@ -16,6 +16,7 @@ const defaults = {
 	dir: 'ltr',
 	defaultOpen: false,
 	forceVisible: false,
+	typeahead: true,
 } satisfies CreateDropdownMenuProps;
 
 export function createDropdownMenu(props?: CreateDropdownMenuProps) {
@@ -49,6 +50,7 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 		prevFocusable,
 		disableTriggerRefocus: true,
 		selector: 'dropdown-menu',
+		removeScroll: true,
 	});
 
 	return {

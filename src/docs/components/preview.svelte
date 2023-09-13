@@ -135,7 +135,18 @@
 		});
 	}
 
-	$: files = codingStyleObj !== null ? Object.keys(codingStyleObj) : [];
+	$: files =
+		codingStyleObj !== null
+			? Object.keys(codingStyleObj).sort((a, b) => {
+					if (a === 'index.svelte') return -1;
+					if (b === 'index.svelte') return 1;
+					if (a.includes('.svelte') && !b.includes('.svelte')) return -1;
+					if (!a.includes('.svelte') && b.includes('.svelte')) return 1;
+					if (a.includes('/') && !b.includes('/')) return 1;
+					if (!a.includes('/') && b.includes('/')) return -1;
+					return a.localeCompare(b);
+			  })
+			: [];
 
 	export let viewCode = false;
 

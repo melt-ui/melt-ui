@@ -14,9 +14,11 @@
 		<div class="py-6 pr-6 lg:py-8">
 			<SidebarNav />
 		</div>
-		<div class="sticky bottom-0 flex w-full justify-center rounded-lg bg-neutral-800 px-4 py-2">
+		<div class="sticky bottom-0 flex w-full justify-center rounded-xl bg-neutral-800 px-4 py-3">
 			<Switch id="preprocessor" bind:checked={$usingPreprocessor} keepState>
-				<a href="/docs/preprocessor" class="underline"> Preprocessor </a>
+				<a href="/docs/preprocessor" class="underline transition hover:opacity-75">
+					Preprocessor
+				</a>
 			</Switch>
 		</div>
 	</aside>

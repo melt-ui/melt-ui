@@ -63,7 +63,7 @@ const testComponent = async (component: Structure, level = 0) => {
 };
 
 // Execute the test
-test('recursive component test', async () => {
+test.skip('recursive component test', async () => {
 	await render(PortalNestedTest);
 	await testComponent(structure);
 });

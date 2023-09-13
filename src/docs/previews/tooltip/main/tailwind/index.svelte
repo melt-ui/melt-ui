@@ -24,7 +24,7 @@
 	<div
 		use:melt={$content}
 		transition:fade={{ duration: 100 }}
-		class="z-10 rounded-md bg-white shadow-sm"
+		class="z-10 rounded-lg bg-white shadow"
 	>
 		<div use:melt={$arrow} />
 		<p class="px-4 py-1 text-magnum-700">Add item to library</p>

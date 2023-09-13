@@ -165,6 +165,27 @@ const builder = builderSchema(BUILDER_NAME, {
 			type: 'Readable<(tag: Tag) => boolean>',
 			description: 'A derived store that returns a function that checks if a tag is selected.',
 		},
+		{
+			name: 'isInputValid',
+			type: '(input: string) => boolean',
+			description:
+				'A method that returns if a input would be valid according to the props defined in the builder.',
+		},
+		{
+			name: 'addTag',
+			type: '(input: string) => Promise<boolean>',
+			description: 'A method that attempts to add a tag, the same as if a user tried to.',
+		},
+		{
+			name: 'updateTag',
+			type: '(tag: Tag, select = false) => Promise<boolean>',
+			description: 'A method that attempts to update a tag, the same as if a user tried to.',
+		},
+		{
+			name: 'removeTag',
+			type: '(tag: Tag) => Promise<boolean>',
+			description: 'A method that attempts to remove a tag, the same as if a user tried to.',
+		},
 	],
 	options: OPTION_PROPS,
 });

@@ -2,6 +2,7 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	disabledAttr,
 	executeCallbacks,
 	getElemDirection,
 	handleRovingFocus,
@@ -65,10 +66,10 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 				const disabled = $disabled || argDisabled;
 				const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
 				return {
-					disabled,
+					disabled: disabledAttr(disabled),
 					pressed,
 					'data-orientation': $orientation,
-					'data-disabled': disabled ? true : undefined,
+					'data-disabled': disabledAttr(disabled),
 					'data-state': pressed ? 'on' : 'off',
 					'data-value': itemValue,
 					'aria-pressed': pressed,

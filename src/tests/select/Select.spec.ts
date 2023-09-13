@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, act, fireEvent } from '@testing-library/svelte';
+import { render, act, fireEvent, waitFor } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
 import userEvent from '@testing-library/user-event';
@@ -123,24 +123,49 @@ describe('Select (Default)', () => {
 		if (!firstItem) throw new Error('No option found');
 		await user.click(firstItem);
 
-		await expect(firstItem).toHaveAttribute('data-selected')
-		await expect(firstItem).toHaveAttribute('aria-selected', "true")
+		await expect(firstItem).toHaveAttribute('data-selected');
+		await expect(firstItem).toHaveAttribute('aria-selected', 'true');
 
-		await expect(menu).not.toBeVisible();
-		await expect(trigger).toHaveTextContent('Caramel');
-
-		await user.click(trigger);
 		await expect(menu).toBeVisible();
+		await expect(trigger).toHaveTextContent('Caramel');
 
 		const secondItem = menu.querySelectorAll('[data-melt-select-option]')[1];
 		if (!secondItem) throw new Error('No option found');
 		await user.click(secondItem);
 
-		await expect(secondItem).toHaveAttribute('data-selected')
-		await expect(secondItem).toHaveAttribute('aria-selected', "true")
+		await expect(secondItem).toHaveAttribute('data-selected');
+		await expect(secondItem).toHaveAttribute('aria-selected', 'true');
 
-		await expect(menu).not.toBeVisible();
+		await expect(menu).toBeVisible();
 		await expect(trigger).toHaveTextContent('Caramel, Chocolate');
+
+		await user.keyboard(`{${kbd.ESCAPE}}`);
+		await expect(menu).not.toBeVisible();
+	});
+
+	test('Shows correct label when defaultValue is provided', async () => {
+		const { getByTestId } = await render(SelectTest, { defaultValue: 'Chocolate' });
+		const trigger = getByTestId('trigger');
+
+		await expect(trigger).toHaveTextContent('Chocolate');
+	});
+
+	test('Manually setting the value updates the label', async () => {
+		const { getByTestId } = await render(SelectTest);
+		const manualBtn = getByTestId('manual-btn');
+		const trigger = getByTestId('trigger');
+
+		manualBtn.click();
+		await waitFor(() => expect(trigger).toHaveTextContent('Chocolate'), { timeout: 50 });
+	});
+
+	test('Updating options and setting the value updates the label', async () => {
+		const { getByTestId } = await render(SelectTest);
+		const updateBtn = getByTestId('update-btn');
+		const trigger = getByTestId('trigger');
+
+		updateBtn.click();
+		await waitFor(() => expect(trigger).toHaveTextContent('Vanilla'), { timeout: 500 });
 	});
 
 	test.todo('Disabled select cannot be opened');

@@ -39,6 +39,7 @@ const defaults = {
 	forceVisible: false,
 	portal: 'body',
 	closeOnEscape: true,
+	disableHoverableContent: false,
 } satisfies CreateTooltipProps;
 
 type TooltipParts = 'trigger' | 'content' | 'arrow';
@@ -57,6 +58,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 		forceVisible,
 		portal,
 		closeOnEscape,
+		disableHoverableContent,
 	} = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
@@ -69,8 +71,6 @@ export function createTooltip(props?: CreateTooltipProps) {
 		trigger: generateId(),
 	};
 
-	let timeout: number | null = null;
-
 	let clickedTrigger = false;
 
 	onMount(() => {
@@ -78,29 +78,38 @@ export function createTooltip(props?: CreateTooltipProps) {
 		activeTrigger.set(document.querySelector(`[aria-describedby="${ids.content}"]`));
 	});
 
+	let openTimeout: number | null = null;
+	let closeTimeout: number | null = null;
+
 	function openTooltip() {
-		if (timeout) {
-			window.clearTimeout(timeout);
-			timeout = null;
+		if (closeTimeout) {
+			window.clearTimeout(closeTimeout);
+			closeTimeout = null;
 		}
 
-		timeout = window.setTimeout(() => {
-			open.set(true);
-		}, get(openDelay));
+		if (!openTimeout) {
+			openTimeout = window.setTimeout(() => {
+				open.set(true);
+				openTimeout = null;
+			}, get(openDelay));
+		}
 	}
 
 	function closeTooltip(isBlur?: boolean) {
-		if (timeout) {
-			window.clearTimeout(timeout);
-			timeout = null;
+		if (openTimeout) {
+			window.clearTimeout(openTimeout);
+			openTimeout = null;
 		}
 
 		if (isBlur && isMouseInTooltipArea) return;
 
-		timeout = window.setTimeout(() => {
-			open.set(false);
-			if (isBlur) clickedTrigger = false;
-		}, get(closeDelay));
+		if (!closeTimeout) {
+			closeTimeout = window.setTimeout(() => {
+				open.set(false);
+				if (isBlur) clickedTrigger = false;
+				closeTimeout = null;
+			}, get(closeDelay));
+		}
 	}
 
 	const trigger = builder(name('trigger'), {
@@ -116,9 +125,9 @@ export function createTooltip(props?: CreateTooltipProps) {
 					if (!$closeOnPointerDown) return;
 					open.set(false);
 					clickedTrigger = true;
-					if (timeout) {
-						window.clearTimeout(timeout);
-						timeout = null;
+					if (openTimeout) {
+						window.clearTimeout(openTimeout);
+						openTimeout = null;
 					}
 				}),
 				addMeltEventListener(node, 'pointerenter', (e) => {
@@ -127,9 +136,9 @@ export function createTooltip(props?: CreateTooltipProps) {
 				}),
 				addMeltEventListener(node, 'pointerleave', (e) => {
 					if (isTouch(e)) return;
-					if (timeout) {
-						window.clearTimeout(timeout);
-						timeout = null;
+					if (openTimeout) {
+						window.clearTimeout(openTimeout);
+						openTimeout = null;
 					}
 				}),
 				addMeltEventListener(node, 'focus', () => {
@@ -139,9 +148,9 @@ export function createTooltip(props?: CreateTooltipProps) {
 				addMeltEventListener(node, 'blur', () => closeTooltip(true)),
 				addMeltEventListener(node, 'keydown', (e) => {
 					if (get(closeOnEscape) && e.key === kbd.ESCAPE) {
-						if (timeout) {
-							window.clearTimeout(timeout);
-							timeout = null;
+						if (openTimeout) {
+							window.clearTimeout(openTimeout);
+							openTimeout = null;
 						}
 
 						open.set(false);
@@ -237,8 +246,9 @@ export function createTooltip(props?: CreateTooltipProps) {
 			addEventListener(document, 'mousemove', (e) => {
 				const contentEl = document.getElementById(ids.content);
 				if (!contentEl) return;
-
-				const polygon = makeHullFromElements([$activeTrigger, contentEl]);
+				
+				const polygonElements = get(disableHoverableContent) ? [$activeTrigger] : [$activeTrigger, contentEl];
+				const polygon = makeHullFromElements(polygonElements);
 
 				isMouseInTooltipArea = pointInPolygon(
 					{

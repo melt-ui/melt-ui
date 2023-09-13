@@ -8,7 +8,7 @@
 	{#each navConfig.sidebarNav as navItem, index (index)}
 		<div>
 			<span
-				class="text-md block whitespace-nowrap rounded-md border border-transparent px-3 pb-2 text-sm font-semibold uppercase tracking-wider text-zinc-400"
+				class="text-md block whitespace-nowrap rounded-lg border border-transparent px-3 pb-2 text-sm font-semibold uppercase tracking-wider text-zinc-400"
 			>
 				{navItem.title}
 			</span>
@@ -20,9 +20,9 @@
 								<a
 									href={item.href}
 									class={cn(
-										'block whitespace-nowrap rounded-md border border-transparent px-3 py-2 font-medium capitalize',
-										'hover:bg-magnum-600/25',
-										'data-[active=true]:border-magnum-600 data-[active=true]:bg-magnum-600/25'
+										'block whitespace-nowrap rounded-lg border-2 border-transparent px-3 py-2 font-medium capitalize',
+										'hover:bg-magnum-900/25',
+										'data-[active=true]:border-magnum-400 data-[active=true]:bg-magnum-900/50'
 									)}
 									data-active={$page.url.pathname === item.href}
 								>

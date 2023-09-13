@@ -1,6 +1,8 @@
 ---
 title: Combobox
-description: A filterable list of items that supports selection.
+description:
+  An input with an associated popup containing a list of options. Commonly used for autocomplete
+  functionality and command palettes.
 ---
 
 <script>
@@ -16,8 +18,9 @@ description: A filterable list of items that supports selection.
 - **Input**: The input that opens, closes, filters the list, and displays the selected value from
   the list
 - **Menu**: The popover menu
-- **Item**: The individual list item
-- **Label**: The label for the input
+  - **Item**: The individual list item
+  - **Label**: The label for the input
+  - **Arrow**: An optional arrow element which points to the menu's input
 
 ## API Reference
 

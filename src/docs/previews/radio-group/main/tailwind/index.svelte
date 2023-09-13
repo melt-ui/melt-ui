@@ -2,7 +2,7 @@
 	import { createRadioGroup, melt } from '$lib/index.js';
 
 	const {
-		elements: { root, item },
+		elements: { root, item, hiddenInput },
 		helpers: { isChecked },
 	} = createRadioGroup({
 		defaultValue: 'default',
@@ -30,7 +30,7 @@
 				{/if}
 			</button>
 			<label
-				class="capitalize leading-none text-white"
+				class="font-medium capitalize leading-none text-magnum-900"
 				for={option}
 				id="{option}-label"
 			>
@@ -38,4 +38,5 @@
 			</label>
 		</div>
 	{/each}
+	<input name="line-height" use:melt={$hiddenInput} />
 </div>

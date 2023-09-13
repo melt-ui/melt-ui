@@ -2,6 +2,7 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	disabledAttr,
 	kbd,
 	omit,
 	overridable,
@@ -42,8 +43,8 @@ export function createSwitch(props?: CreateSwitchProps) {
 		stores: [checked, disabled, required],
 		returned: ([$checked, $disabled, $required]) => {
 			return {
-				'data-disabled': $disabled,
-				disabled: $disabled,
+				'data-disabled': disabledAttr($disabled),
+				disabled: disabledAttr($disabled),
 				'data-state': $checked ? 'checked' : 'unchecked',
 				type: 'button',
 				role: 'switch',
@@ -81,7 +82,7 @@ export function createSwitch(props?: CreateSwitchProps) {
 				value: $value,
 				checked: $checked,
 				required: $required,
-				disabled: $disabled,
+				disabled: disabledAttr($disabled),
 				style: styleToString({
 					position: 'absolute',
 					opacity: 0,

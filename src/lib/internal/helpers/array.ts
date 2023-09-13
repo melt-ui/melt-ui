@@ -1,3 +1,5 @@
+import { dequal as deepEqual } from 'dequal';
+
 /**
  * Returns the element some number before the given index. If the target index is out of bounds:
  *   - If looping is disabled, the first element will be returned.
@@ -79,10 +81,12 @@ export function wrapArray<T>(array: T[], startIndex: number): T[] {
 }
 
 export function toggle<T>(item: T, array: T[]): T[] {
-	if (array.includes(item)) {
-		return array.filter((i) => i !== item);
+	const itemIdx = array.findIndex((i) => deepEqual(i, item));
+	if (itemIdx !== -1) {
+		array.splice(itemIdx, 1);
+	} else {
+		array.push(item);
 	}
 
-	array.push(item);
 	return array;
 }
