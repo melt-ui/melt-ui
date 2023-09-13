@@ -2,6 +2,7 @@ export * from './accordion/index.js';
 export * from './avatar/index.js';
 export * from './checkbox/index.js';
 export * from './collapsible/index.js';
+export * from './color-picker/index.js';
 export * from './combobox/index.js';
 export * from './context-menu/index.js';
 export * from './dialog/index.js';

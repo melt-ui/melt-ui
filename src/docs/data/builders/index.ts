@@ -3,6 +3,7 @@ import { accordionData } from './accordion.js';
 import { avatarData } from './avatar.js';
 import { checkboxData } from './checkbox.js';
 import { collapsibleData } from './collapsible.js';
+import { colorPickerData } from './color-picker.js';
 import { comboboxData } from './combobox.js';
 import { contextMenuData } from './context-menu.js';
 import { dialogData } from './dialog.js';
@@ -34,6 +35,7 @@ export const builderList = [
 	'avatar',
 	'checkbox',
 	'collapsible',
+	'color-picker',
 	'combobox',
 	'context-menu',
 	'dialog',
@@ -80,6 +82,7 @@ export const data: Builders = {
 	avatar: avatarData,
 	checkbox: checkboxData,
 	collapsible: collapsibleData,
+	"color-picker": colorPickerData,
 	combobox: comboboxData,
 	'context-menu': contextMenuData,
 	dialog: dialogData,
