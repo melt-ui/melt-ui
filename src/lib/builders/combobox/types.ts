@@ -10,7 +10,13 @@ export type ComboboxOption<Value> = {
 	label?: string;
 };
 
-export type CreateComboboxProps<Value> = {
+export type CreateComboboxProps<Value,
+	Multiple extends boolean = false,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	Selected extends Multiple extends true
+		? Array<ComboboxOption<Value>>
+		: ComboboxOption<Value> = Multiple extends true ? Array<ComboboxOption<Value>> : ComboboxOption<Value>
+> = {
 	/**
 	 * Options for positioning the popover menu.
 	 *
@@ -61,19 +67,19 @@ export type CreateComboboxProps<Value> = {
 	 *
 	 * @default undefined
 	 */
-	defaultSelected?: ComboboxOption<Value>;
+	defaultSelected?: Selected;
 
 	/**
 	 * An optional controlled store that manages the selected option of the combobox.
 	 */
-	selected?: Writable<ComboboxOption<Value> | undefined>;
+	selected?: Writable<Selected>;
 
 	/**
 	 * A change handler for the selected store called when the selected would normally change.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onSelectedChange?: ChangeFn<ComboboxOption<Value> | undefined>;
+	onSelectedChange?: ChangeFn<Selected>;
 
 	/**
 	 * Whether or not to close the combobox menu when the user clicks
@@ -115,6 +121,8 @@ export type CreateComboboxProps<Value> = {
 	 * @default false
 	 */
 	forceVisible?: boolean;
+
+	multiple?: Multiple;
 };
 
 export type ComboboxItemProps<Value> = ComboboxOption<Value> & {
