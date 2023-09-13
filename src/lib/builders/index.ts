@@ -1,4 +1,5 @@
 export * from './accordion/index.js';
+export * from './autocomplete-tags/index.js';
 export * from './avatar/index.js';
 export * from './checkbox/index.js';
 export * from './collapsible/index.js';

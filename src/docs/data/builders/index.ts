@@ -1,5 +1,6 @@
 import type { APISchema, KeyboardSchema } from '$docs/types.js';
 import { accordionData } from './accordion.js';
+import { autocompleteTagsData } from './autocomplete-tags.js';
 import { avatarData } from './avatar.js';
 import { checkboxData } from './checkbox.js';
 import { collapsibleData } from './collapsible.js';
@@ -31,6 +32,7 @@ import { tooltipData } from './tooltip.js';
 
 export const builderList = [
 	'accordion',
+	'autocomplete-tags',
 	'avatar',
 	'checkbox',
 	'collapsible',
@@ -77,6 +79,7 @@ export type Builders = Record<(typeof builderList)[number], BuilderData>;
 
 export const data: Builders = {
 	accordion: accordionData,
+	"autocomplete-tags": autocompleteTagsData,
 	avatar: avatarData,
 	checkbox: checkboxData,
 	collapsible: collapsibleData,
