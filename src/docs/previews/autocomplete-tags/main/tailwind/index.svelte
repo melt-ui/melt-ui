@@ -1,31 +1,30 @@
 ﻿<script lang="ts">
-    import {createAutocompleteTags, melt} from '$lib/index.js';
+    import {createAutocompleteTags, melt, type AutocompleteTagsOption} from '$lib/index.js';
     import {Check, ChevronDown, X} from 'lucide-svelte';
 
     type Choice = {
-        value: string,
         label: string,
     }
 
     const options: { [key: string]: Choice[] } = {
         sweet: [
-            {label: 'Caramel', value: 'caramel'}, 
-            {label: 'Chocolate', value: 'chocolate'}, 
-            {label: 'Strawberry', value: 'strawberry'}, 
-            {label: 'Cookies & Cream', value: 'cookiesandcream'}
+            {label: 'Caramel'}, 
+            {label: 'Chocolate'}, 
+            {label: 'Strawberry'}, 
+            {label: 'Cookies & Cream'}
         ],
         savory: [
-            {label: 'Basil', value: 'basil'}, 
-            {label: 'Bacon', value: 'bacon'}, 
-            {label: 'Rosemary', value: 'rosemary'}
+            {label: 'Basil'}, 
+            {label: 'Bacon'}, 
+            {label: 'Rosemary'}
         ],
     };
 
     const {
         elements: {input, menu, option, group, groupLabel, label, tag, deleteTrigger, root},
-        states: {selected, open, inputValue, highlightedItem},
+        states: {selected, open, inputValue},
         helpers: {isSelected},
-    } = createAutocompleteTags({
+    } = createAutocompleteTags<Choice, Array<AutocompleteTagsOption<Choice>>>({
         forceVisible: true,
         positioning: {
             placement: 'bottom',
@@ -35,6 +34,7 @@
     });
     
     $: filteredOptions = Object.fromEntries(Object.entries(options).map(([key, value]) => {
+            //if (($selected as ComboboxOption<Array<Choice>>).some(x => x.value === choice.value)) return false; // Exclude selected options from dropdown
             return [key, value.filter((choice) => {
                 const {label} = choice;
                 const normalizedInput = $inputValue.toLowerCase();
@@ -43,6 +43,8 @@
                 );
             })]
         }).filter(([_, value]) => value.length));
+    let filteredOptionsEntries: Array<[string, Array<Choice>]>
+    $: filteredOptionsEntries = Object.entries(filteredOptions);
 </script>
 
 <div class="flex flex-col gap-1">
@@ -90,7 +92,7 @@
 		shadow focus:!ring-0"
                 use:melt={$menu}
         >
-            {#each Object.entries(filteredOptions) as [key, arr]}
+            {#each filteredOptionsEntries as [key, arr]}
                 <div use:melt={$group(key)}>
                     <div
                             class="py-1 pl-4 pr-4 font-semibold capitalize text-neutral-800"
@@ -104,9 +106,9 @@
 							focus:z-10 focus:text-magnum-700
 						data-[highlighted]:bg-magnum-50 data-[selected]:bg-magnum-100
 						data-[highlighted]:text-magnum-900 data-[selected]:text-magnum-900"
-                                use:melt={$option(item)}
+                                use:melt={$option({value: item, label: item.label})}
                         >
-                            <div class="check {$isSelected(item.value) ? 'block' : 'hidden'}">
+                            <div class="check {$isSelected(item) ? 'block' : 'hidden'}">
                                 <Check class="square-4"/>
                             </div>
 

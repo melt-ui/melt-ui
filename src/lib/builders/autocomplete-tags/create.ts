@@ -42,9 +42,7 @@ import {createLabel} from '../label/create.js';
 import type {AutocompleteTagsEvents} from './events.js';
 import type {AutocompleteTagsOption, AutocompleteTagsItemProps, CreateAutocompleteTagsProps} from './types.js';
 import {createSeparator} from "$lib/builders";
-
-// prettier-ignore
-export const INTERACTION_KEYS = [kbd.ESCAPE, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
+import {INTERACTION_KEYS} from "$lib/builders";
 
 const defaults = {
     positioning: {
@@ -81,7 +79,7 @@ export function createAutocompleteTags<Value,
 
     const selectedWritable =
         withDefaults.selected ?? writable<Selected>((withDefaults.defaultSelected ?? []) as Selected);
-    const selected = overridable(selectedWritable, withDefaults?.onSelectedChange);
+    const selected = overridable<Selected>(selectedWritable, withDefaults?.onSelectedChange);
 
     const highlighted = derived(highlightedItem, ($highlightedItem) =>
         $highlightedItem ? getOptionProps($highlightedItem) : undefined
@@ -210,7 +208,7 @@ export function createAutocompleteTags<Value,
      * This is useful for displaying additional markup on the selected item.
      */
     const isSelected = derived([selected], ([$value]) => {
-        return (item: Value) => $value?.map((o) => o.value).includes(item) ?? false
+        return (item: Value): boolean => $value?.map((o) => o.value).some(o => deepEqual(o, item)) ?? false
     });
 
     /**
@@ -639,7 +637,7 @@ export function createAutocompleteTags<Value,
         returned: ([$selected]) => {
             return (tag: AutocompleteTagsItemProps<Value>) => {
                 const disabled = tag.disabled;
-                const selected = disabled ? undefined : $selected?.map((o) => o.value).includes(tag.value) ?? false;
+                const selected = disabled ? undefined : $selected?.map((o) => o.value).some(o => deepEqual(o, tag.value)) ?? false;
 
                 return {
                     'aria-selected': selected,

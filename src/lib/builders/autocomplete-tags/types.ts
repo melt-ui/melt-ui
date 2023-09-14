@@ -74,7 +74,7 @@ export type CreateAutocompleteTagsProps<Value,
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onSelectedChange?: ChangeFn<Selected | undefined>;
+	onSelectedChange?: ChangeFn<Selected>;
 
 	/**
 	 * Whether or not to close the AutocompleteTags menu when the user clicks
