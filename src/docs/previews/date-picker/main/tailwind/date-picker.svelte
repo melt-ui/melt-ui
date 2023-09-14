@@ -6,7 +6,7 @@
 		ChevronsRight,
 		ChevronsLeft,
 	} from 'lucide-svelte';
-	import { dateFormatter } from './formatters';
+	import { dateFormatter, monthYearFormatter } from './formatters';
 	import { melt } from '$lib';
 
 	export let mode: 'single' | 'multiple' | 'range' = 'single';
@@ -21,7 +21,7 @@
 			prevYearButton,
 			date,
 		},
-		states: { value, dates, lastMonthDates, nextMonthDates },
+		states: { value, dates, lastMonthDates, nextMonthDates,activeDate  },
 		options: { mode: modeStore },
 	} = createDatePicker({
 		mode,
@@ -34,7 +34,7 @@
 	<div {...$content} use:content class="content">
 		<div class="flex flex-col gap-2.5 text-magnum-800">
 			<div class="text-magnum-800">
-				{dateFormatter.format($value[0] || new Date())}
+				{monthYearFormatter.format($activeDate)}
 			</div>
 			<div class="buttons-wrapper">
 				<div class="flex items-center space-x-2">
