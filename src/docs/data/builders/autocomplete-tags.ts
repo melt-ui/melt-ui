@@ -4,7 +4,6 @@ import { builderSchema, elementSchema } from '$docs/utils/index.js';
 import { autocompleteTagsEvents } from '$lib/builders/autocomplete-tags/events.js';
 import type { BuilderData } from './index.js';
 import { getMenuArrowSchema } from './menu.js';
-import {tagsInputEvents} from "$lib/builders/tags-input/events";
 
 /**
  * Props that are also returned in the form of stores via the `options` property.
@@ -75,6 +74,30 @@ const builder = builderSchema(BUILDER_NAME, {
 			name: 'label',
 			description: 'The builder store used to create the label for the autocomplete-tags.',
 		},
+		{
+			name: 'root',
+			description: 'The builder store used to create the tags container root.',
+		},
+		{
+			name: 'tag',
+			description: 'The builder store used to create the tag.',
+		},
+		{
+			name: 'deleteTrigger',
+			description: 'The builder store used to create the tags delete trigger.',
+		},
+		{
+			name: 'separator',
+			description: 'The builder store used to create the autocomplete tags separator.',
+		},
+		{
+			name: 'group',
+			description: 'The builder store used to create the autocomplete tags group.',
+		},
+		{
+			name: 'groupLabel',
+			description: 'The builder store used to create the autocomplete tags group label.',
+		},
 	],
 	states: [
 		{
@@ -86,12 +109,6 @@ const builder = builderSchema(BUILDER_NAME, {
 			name: 'inputValue',
 			type: 'Writable<string>',
 			description: 'A readable store with the value of the input.',
-		},
-		{
-			name: 'touchedInput',
-			type: 'Writable<boolean>',
-			description: `A writable store with the touched state of the input. When the menu closes, the state is reset to \`false\`. 
-			Whenever a key is pressed into the input, the state is set to \`true\`.`,
 		},
 		{
 			name: 'selected',
@@ -412,7 +429,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, menu, input, item, label, arrow];
+const schemas = [builder, menu, input, item, label, arrow, separator, group, groupLabel, root, tag, deleteTrigger];
 
 const features = [
 	'Full keyboard navigation',
