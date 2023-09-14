@@ -85,6 +85,10 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	};
 
 	const nextMonthButton = builder(name('nextMonth'), {
+		stores: [],
+		returned: () => {
+			return {};
+		},
 		action: (node: HTMLElement) => {
 			const unsub = addMeltEventListener(node, 'click', () => {
 				activeDate.update((prev) => {
@@ -97,10 +101,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					unsub();
 				},
 			};
-		},
-		stores: [activeDate],
-		returned: () => {
-			return {};
 		},
 	});
 
@@ -368,10 +368,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			dates.set(datesArray);
 			nextMonthDates.set(nextMonthDays);
 		}
-	});
-
-	effect([value], ([$value]) => {
-		console.log('value: ', $value);
 	});
 
 	effect([mode], ([$mode]) => {

@@ -8,9 +8,13 @@
 	} from 'lucide-svelte';
 	import { dateFormatter, monthYearFormatter } from './formatters';
 	import { melt } from '$lib';
+	import dayjs from 'dayjs'
 
 	export let mode: 'single' | 'multiple' | 'range' = 'single';
 	export let disabled: Matcher | Matcher[] = false;
+
+	const d1 = new Date("2023-09-12 12:00:00")
+	const d2 = new Date("2023-09-16 12:00:00")
 
 	const {
 		elements: {
@@ -21,12 +25,13 @@
 			prevYearButton,
 			date,
 		},
-		states: { value, dates, lastMonthDates, nextMonthDates,activeDate  },
+		states: { value, dates, lastMonthDates, nextMonthDates, activeDate },
 		options: { mode: modeStore },
 	} = createDatePicker({
 		mode,
 		allowDeselect: true,
 		disabled,
+		defaultValue: [d1, d2]
 	});
 </script>
 
