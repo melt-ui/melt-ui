@@ -23,6 +23,7 @@ import {
 	getNextSaturday,
 	getDaysBetween,
 	isSelected,
+	isMatch,
 } from './utils';
 
 import { onMount } from 'svelte';
@@ -35,7 +36,6 @@ const defaults = {
 	latest: null,
 	mode: 'single',
 	value: undefined,
-	autoSelect: true,
 	activeDate: new Date(),
 	allowDeselect: false,
 } satisfies CreateDatePickerProps;
@@ -59,10 +59,10 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		...omit(withDefaults, 'value'),
 	});
 
-	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue ?? [new Date()]);
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue ?? []);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
-	const { activeDate, mode, allowDeselect } = options;
+	const { activeDate, mode, allowDeselect, disabled } = options;
 
 	let lastClickedDate: Date | null = null;
 
@@ -72,7 +72,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	if (get(mode) === 'range') {
 		value.update((prev) => {
-			if (prev.length < 2) {
+			if (prev.length && prev.length < 2) {
 				prev.push(prev[0]);
 			}
 			return prev;
@@ -99,7 +99,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			};
 		},
 		stores: [activeDate],
-		returned: (dates) => {
+		returned: () => {
 			return {};
 		},
 	});
@@ -119,7 +119,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			};
 		},
 		stores: [dates, activeDate],
-		returned: (dates) => {
+		returned: () => {
 			return {};
 		},
 	});
@@ -139,7 +139,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			};
 		},
 		stores: [dates, activeDate],
-		returned: (dates) => {
+		returned: () => {
 			return {};
 		},
 	});
@@ -159,7 +159,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			};
 		},
 		stores: [activeDate],
-		returned: (dates) => {
+		returned: () => {
 			return {};
 		},
 	});
@@ -201,20 +201,22 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	function handleRangeClick(date: Date) {
 		value.update((prev) => {
-			// If the value array of dates is empty
-			if (!prev.length) {
+			const isEmpty = prev.length === 0;
+			const isSame = prev.length > 1 && isSameDay(prev[0], prev[1]);
+
+			if (isEmpty) {
 				prev.push(date, date);
 				return prev;
 			}
 
 			// If the value array of dates has one date and the
 			// new date is the same as the existing date
-			if (prev[0] === prev[1] && prev[0] === date) {
+			if (isSame && isSameDay(date, prev[0])) {
 				return prev;
 			}
 
 			if (isBefore(date, prev[0])) {
-				if (prev[0] === prev[1]) {
+				if (isSame) {
 					prev.splice(0, 2);
 					prev.push(date, date);
 					return prev;
@@ -222,8 +224,13 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 				return [date, date];
 			}
+			const daysBetween = getDaysBetween(prev[0], date);
+			if (daysBetween.some((d) => isMatch(d, get(disabled)))) {
+				return prev;
+			}
 			prev.pop();
 			prev.push(date);
+
 			return prev;
 		});
 	}
@@ -254,11 +261,13 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	}
 
 	const date = builder(name('date'), {
-		stores: [value, mode],
-		returned: ([$value, $mode]) => {
+		stores: [value, mode, disabled],
+		returned: ([$value, $mode, $disabled]) => {
 			return (props: DateProps) => {
+				const isDisabled = isMatch(props.value, $disabled);
+
 				const selected = isSelected({
-					date: new Date(props.value || ''),
+					date: props.value,
 					value: $value,
 					mode: $mode,
 				});
@@ -268,8 +277,8 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					'data-selected': selected ? true : undefined,
 					'data-value': props.value,
 					'data-label': props.label ?? undefined,
-					'data-disabled': props.disabled ? '' : undefined,
-					tabindex: props.disabled ? -1 : 1,
+					'data-disabled': isDisabled ? '' : undefined,
+					tabindex: isDisabled ? -1 : 1,
 				} as const;
 			};
 		},
@@ -337,7 +346,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	effect([activeDate], ([$activeDate]) => {
 		if (!isBrowser) return;
-		console.log('activeDate: ', $activeDate);
 
 		if ($activeDate) {
 			const daysInMonth = new Date(

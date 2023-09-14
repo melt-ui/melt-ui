@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDatePicker } from '$lib/builders';
+	import { createDatePicker, type Matcher } from '$lib/builders';
 	import {
 		ChevronRight,
 		ChevronLeft,
@@ -10,6 +10,7 @@
 	import { melt } from '$lib';
 
 	export let mode: 'single' | 'multiple' | 'range' = 'single';
+	export let disabled: Matcher | Matcher[] = false;
 
 	const {
 		elements: {
@@ -25,6 +26,7 @@
 	} = createDatePicker({
 		mode,
 		allowDeselect: true,
+		disabled,
 	});
 </script>
 
@@ -56,7 +58,7 @@
 				{#each $lastMonthDates as d}
 					<button
 						use:date
-						{...$date({ label: d.toDateString(), value: d, disabled: true })}
+						{...$date({ label: d.toDateString(), value: d })}
 						class="date"
 					>
 						<span class="">{d.getDate()}</span>
@@ -65,7 +67,7 @@
 				{#each $dates as d}
 					<button
 						use:date
-						{...$date({ label: d.toDateString(), value: d, disabled: false })}
+						{...$date({ label: d.toDateString(), value: d })}
 						class="date"
 					>
 						<span class="">{d.getDate()}</span>
@@ -74,7 +76,7 @@
 				{#each $nextMonthDates as d}
 					<button
 						use:date
-						{...$date({ label: d.toDateString(), value: d, disabled: true })}
+						{...$date({ label: d.toDateString(), value: d })}
 						class="date"
 					>
 						<span class="">{d.getDate()}</span>
@@ -84,22 +86,33 @@
 		</div>
 	</div>
 	{#if $modeStore === 'range'}
-		<p class="text-xs text-magnum-900">
-			Selected Range: {dateFormatter.format($value[0])} - {dateFormatter.format(
-				$value[1],
-			)}
-		</p>
+		<div class="text-xs text-magnum-900">
+			Selected Range:
+			<p>
+				{#if $value.length}
+					{$value[0] && dateFormatter.format($value[0])} - {$value[1] &&
+						dateFormatter.format($value[1])}
+				{/if}
+			</p>
+		</div>
 	{:else if $modeStore === 'single'}
-		<p class="text-xs text-magnum-900">
-			Selected Value: {dateFormatter.format($value[0])}
-		</p>
+		<div class="text-xs text-magnum-900">
+			Selected Value:
+			<p>
+				{#if $value.length && $value[0]}
+					{dateFormatter.format($value[0])}
+				{/if}
+			</p>
+		</div>
 	{:else if $modeStore === 'multiple'}
-		<p class="text-xs text-magnum-900">
+		<div class="text-xs text-magnum-900">
 			Selected Value:
 			{#each $value as v, i (i)}
-				{dateFormatter.format(v)}
+				<p>
+					{dateFormatter.format(v)}
+				</p>
 			{/each}
-		</p>
+		</div>
 	{/if}
 </div>
 

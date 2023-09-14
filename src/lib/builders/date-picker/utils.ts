@@ -1,9 +1,27 @@
-import type { CreateDatePickerProps, DateRange, Matcher } from './types';
+import type {
+	CreateDatePickerProps,
+	DateAfter,
+	DateBefore,
+	DateInterval,
+	DateRange,
+	DayOfWeek,
+	Matcher,
+} from './types';
 import dayjs from 'dayjs';
 
 export function isBefore(date1: Date, date2: Date) {
 	const d1 = dayjs(date1);
 	return d1.isBefore(date2);
+}
+
+export function isBeforeOrSame(date1: Date, date2: Date) {
+	const d1 = dayjs(date1);
+	return d1.isBefore(date2) || d1.isSame(date2);
+}
+
+export function isAfterOrSame(date1: Date, date2: Date) {
+	const d1 = dayjs(date1);
+	return d1.isAfter(date2) || d1.isSame(date2);
 }
 
 export function isAfter(date1: Date, date2: Date) {
@@ -13,6 +31,10 @@ export function isAfter(date1: Date, date2: Date) {
 
 export function isBetween(date: Date, start: Date, end: Date) {
 	return isAfter(date, start) && isBefore(date, end);
+}
+
+export function isBetweenInclusive(date: Date, start: Date, end: Date) {
+	return isAfterOrSame(date, start) && isBeforeOrSame(date, end);
 }
 
 export function isSameDay(date1: Date, date2: Date) {
@@ -101,6 +123,11 @@ export function subYears(date: Date, years: number): Date {
 	return d.toDate();
 }
 
+/** Returns true if `value` is an array of valid dates. */
+function isArrayOfDates(value: unknown): value is Date[] {
+	return Array.isArray(value) && value.every((v) => v instanceof Date);
+}
+
 type IsSelectedArgs = {
 	date: Date;
 	value: Date[];
@@ -112,36 +139,158 @@ export function isSelected(props: IsSelectedArgs) {
 
 	if (mode === 'single') {
 		if (value.length) {
-			return isSameDay(value[0], date);
+			const isSame = isSameDay(value[0], date);
+			return isSame;
 		}
 		return false;
-	} else if (mode === 'range') {
-		if (isSameDay(value[0], date)) {
-			return true;
-		} else if (value.length > 1 && isSameDay(value[1], date)) {
-			return true;
-		} else if (value.length > 1 && isBetween(date, value[0], value[1])) {
-			return true;
+	}
+
+	if (mode === 'range') {
+		if (value.length) {
+			if (value[0] === undefined && value[0] === value[1]) {
+				return false;
+			}
+			if (isSameDay(value[0], date)) {
+				return true;
+			}
+			if (value.length > 1 && isSameDay(value[1], date)) {
+				return true;
+			}
+			if (value.length > 1 && isBetween(date, value[0], value[1])) {
+				return true;
+			}
 		}
 		return false;
-	} else if (mode === 'multiple') {
+	}
+
+	if (mode === 'multiple') {
 		return value.some((d) => isSameDay(d, date));
 	}
 	return false;
 }
 
-// function isDisabled(date: Date, matcher: Matcher | Matcher[]) {
-// 	if (Array.isArray(matcher)) {
-// 		// handle multiple matchers
-// 	}
-// }
+export function isMatch(date: Date, matcher: Matcher | Matcher[]): boolean {
+	if (Array.isArray(matcher)) {
+		if (isArrayOfDates(matcher)) {
+			return matchDateArray(matcher, date);
+		}
+		return matcher.some((m) => checkIsMatch(date, m));
+	}
+	return checkIsMatch(date, matcher);
+}
 
-// function matchDateRange(matcher: DateRange, date: Date) {
-// 	if (matcher.to && !matcher.from) {
-// 		return isBefore(date, matcher.to);
-// 	}
+// What do we name this??
+function checkIsMatch(date: Date, matcher: Matcher): boolean {
+	if (isArrayOfDates(matcher)) {
+		return matchDateArray(matcher, date);
+	}
 
-// 	if (matcher.to && matcher.from) {
-// 		return isBetween(date, matcher.from, matcher.to);
-// 	}
-// }
+	if (isFunctionMatcher(matcher)) {
+		return matcher(date);
+	}
+
+	if (typeof matcher === 'boolean') {
+		return matcher;
+	}
+
+	if (matcher instanceof Date) {
+		return matchDate(matcher, date);
+	}
+
+	if (isDateRangeMatcher(matcher)) {
+		return matchDateRange(matcher, date);
+	}
+
+	if (isDateIntervalMatcher(matcher)) {
+		return matchDateInterval(matcher, date);
+	}
+
+	if (isDateBeforeMatcher(matcher)) {
+		return matchDateBefore(matcher, date);
+	}
+
+	if (isDateAfterMatcher(matcher)) {
+		return matchDateAfter(matcher, date);
+	}
+
+	if (isDayOfWeekMatcher(matcher)) {
+		return matchDayOfWeek(matcher, date);
+	}
+
+	return false;
+}
+
+function isDateRangeMatcher(matcher: Matcher): matcher is DateRange {
+	return typeof matcher === 'object' && 'from' in matcher;
+}
+
+function isDateIntervalMatcher(matcher: Matcher): matcher is DateInterval {
+	return typeof matcher === 'object' && 'before' in matcher && 'after' in matcher;
+}
+
+function isDateBeforeMatcher(matcher: Matcher): matcher is DateBefore {
+	return typeof matcher === 'object' && 'before' in matcher;
+}
+
+function isDateAfterMatcher(matcher: Matcher): matcher is DateAfter {
+	return typeof matcher === 'object' && 'after' in matcher;
+}
+
+function isFunctionMatcher(matcher: Matcher): matcher is (date: Date) => boolean {
+	return typeof matcher === 'function';
+}
+
+function isDayOfWeekMatcher(matcher: Matcher): matcher is DayOfWeek {
+	return typeof matcher === 'object' && 'daysOfWeek' in matcher;
+}
+
+/**
+ * Match a date against an inclusive date range matcher.
+ */
+function matchDateRange(matcher: DateRange, date: Date): boolean {
+	if (!(matcher.to && matcher.from)) {
+		// if both are not defined we can't match
+		return false;
+	}
+
+	if (matcher.to && !matcher.from) {
+		// if only to is defined, match if date is before or same as to
+		return isBeforeOrSame(date, matcher.to);
+	}
+
+	if (matcher.to && matcher.from) {
+		// if both are defined, match if date is between or same as to and from
+		return isBetweenInclusive(date, matcher.from, matcher.to);
+	}
+
+	if (matcher.from) {
+		// if only from is defined, match if date is after or same as from
+		return isAfterOrSame(date, matcher.from);
+	}
+	return false;
+}
+
+function matchDateBefore(matcher: DateBefore, date: Date): boolean {
+	return isBefore(date, matcher.before);
+}
+
+function matchDateAfter(matcher: DateAfter, date: Date): boolean {
+	return isAfter(date, matcher.after);
+}
+
+function matchDateArray(matcher: Date[], date: Date): boolean {
+	return matcher.some((d) => isSameDay(d, date));
+}
+
+function matchDate(matcher: Date, date: Date): boolean {
+	return isSameDay(matcher, date);
+}
+
+function matchDateInterval(matcher: DateInterval, date: Date): boolean {
+	return isBetween(date, matcher.before, matcher.after);
+}
+
+function matchDayOfWeek(matcher: DayOfWeek, date: Date): boolean {
+	const d = dayjs(date);
+	return matcher.daysOfWeek.includes(d.day() as DayOfWeek['daysOfWeek'][number]);
+}
