@@ -85,10 +85,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	};
 
 	const nextMonthButton = builder(name('nextMonth'), {
-		stores: [],
-		returned: () => {
-			return {};
-		},
 		action: (node: HTMLElement) => {
 			const unsub = addMeltEventListener(node, 'click', () => {
 				activeDate.update((prev) => {
@@ -105,6 +101,10 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	const prevMonthButton = builder(name('prevMonth'), {
+		stores: [dates, activeDate],
+		returned: () => {
+			return {};
+		},
 		action: (node: HTMLElement) => {
 			const unsub = addMeltEventListener(node, 'click', () => {
 				activeDate.update((prev) => {
@@ -117,10 +117,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					unsub();
 				},
 			};
-		},
-		stores: [dates, activeDate],
-		returned: () => {
-			return {};
 		},
 	});
 
@@ -138,10 +134,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				},
 			};
 		},
-		stores: [dates, activeDate],
-		returned: () => {
-			return {};
-		},
 	});
 
 	const prevYearButton = builder(name('prevYear'), {
@@ -158,20 +150,10 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				},
 			};
 		},
-		stores: [activeDate],
-		returned: () => {
-			return {};
-		},
 	});
 
 	const content = builder(name('content'), {
-		stores: [],
-		returned: () => {
-			return {
-				tabindex: -1,
-				id: ids.content,
-			};
-		},
+		returned: () => ({ tabindex: -1, id: ids.content }),
 		action: (node: HTMLElement) => {
 			const unsubKb = addMeltEventListener(node, 'keydown', (e) => {
 				const triggerElement = e.currentTarget;
