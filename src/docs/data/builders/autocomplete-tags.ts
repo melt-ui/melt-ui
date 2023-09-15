@@ -429,7 +429,20 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, menu, input, item, label, arrow, separator, group, groupLabel, root, tag, deleteTrigger];
+const schemas = [
+	builder,
+	menu,
+	input,
+	item,
+	label,
+	arrow,
+	separator,
+	group,
+	groupLabel,
+	root,
+	tag,
+	deleteTrigger,
+];
 
 const features = [
 	'Full keyboard navigation',

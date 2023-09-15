@@ -10,8 +10,10 @@ export type AutocompleteTagsOption<Value> = {
 	label?: string;
 };
 
-export type CreateAutocompleteTagsProps<Value, 
-	Selected extends Array<AutocompleteTagsOption<Value>> = Array<AutocompleteTagsOption<Value>>> = {
+export type CreateAutocompleteTagsProps<
+	Value,
+	Selected extends Array<AutocompleteTagsOption<Value>> = Array<AutocompleteTagsOption<Value>>
+> = {
 	/**
 	 * Options for positioning the popover menu.
 	 *
