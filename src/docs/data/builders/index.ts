@@ -79,7 +79,7 @@ export type Builders = Record<(typeof builderList)[number], BuilderData>;
 
 export const data: Builders = {
 	accordion: accordionData,
-	"autocomplete-tags": autocompleteTagsData,
+	'autocomplete-tags': autocompleteTagsData,
 	avatar: avatarData,
 	checkbox: checkboxData,
 	collapsible: collapsibleData,
