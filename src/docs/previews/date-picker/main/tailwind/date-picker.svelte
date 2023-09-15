@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { createDatePicker, type Matcher } from '$lib/builders';
+	import {
+		createDatePicker,
+		type CreateDatePickerProps,
+		type Matcher,
+	} from '$lib/builders';
 	import {
 		ChevronRight,
 		ChevronLeft,
@@ -8,13 +12,12 @@
 	} from 'lucide-svelte';
 	import { dateFormatter, monthYearFormatter } from './formatters';
 	import { melt } from '$lib';
-	import dayjs from 'dayjs'
 
 	export let mode: 'single' | 'multiple' | 'range' = 'single';
 	export let disabled: Matcher | Matcher[] = false;
-
-	const d1 = new Date("2023-09-12 12:00:00")
-	const d2 = new Date("2023-09-16 12:00:00")
+	export let activeDate: CreateDatePickerProps['activeDate'] = new Date();
+	export let defaultValue: Date[] = [];
+	export let numberOfMonths: CreateDatePickerProps['numberOfMonths'] = 1;
 
 	const {
 		elements: {
@@ -25,101 +28,107 @@
 			prevYearButton,
 			date,
 		},
-		states: { value, dates, lastMonthDates, nextMonthDates, activeDate },
+		states: { value, months, activeDate: activeDateStore },
 		options: { mode: modeStore },
 	} = createDatePicker({
 		mode,
 		allowDeselect: true,
 		disabled,
-		defaultValue: [d1, d2]
+		defaultValue,
+		activeDate,
+		numberOfMonths,
 	});
 </script>
 
-<div>
-	<div {...$content} use:content class="content">
-		<div class="flex flex-col gap-2.5 text-magnum-800">
-			<div class="text-magnum-800">
-				{monthYearFormatter.format($activeDate)}
-			</div>
-			<div class="buttons-wrapper">
-				<div class="flex items-center space-x-2">
-					<button use:melt={$prevYearButton} class="button">
-						<ChevronsLeft />
-					</button>
-					<button use:melt={$prevMonthButton} class="button">
-						<ChevronLeft />
-					</button>
+{#each $months as month}
+	{@const { dates, lastMonthDates, nextMonthDates, month: monthDate } = month}
+	<div>
+		<div {...$content} use:content class="content">
+			<div class="flex flex-col gap-2.5 text-magnum-800">
+				<div class="text-magnum-800">
+					{monthYearFormatter.format(monthDate)}
 				</div>
-				<div class="flex items-center space-x-2">
-					<button use:melt={$nextMonthButton} class="button">
-						<ChevronRight />
-					</button>
-					<button use:melt={$nextYearButton} class="button">
-						<ChevronsRight />
-					</button>
+				<div class="buttons-wrapper">
+					<div class="flex items-center space-x-2">
+						<button use:melt={$prevYearButton} class="button">
+							<ChevronsLeft />
+						</button>
+						<button use:melt={$prevMonthButton} class="button">
+							<ChevronLeft />
+						</button>
+					</div>
+					<div class="flex items-center space-x-2">
+						<button use:melt={$nextMonthButton} class="button">
+							<ChevronRight />
+						</button>
+						<button use:melt={$nextYearButton} class="button">
+							<ChevronsRight />
+						</button>
+					</div>
+				</div>
+
+				<div class="grid grid-cols-7 gap-2">
+					{#each lastMonthDates as d}
+						<button
+							use:date
+							{...$date({ label: d.toDateString(), value: d })}
+							class="date"
+						>
+							<span class="">{d.getDate()}</span>
+						</button>
+					{/each}
+					{#each dates as d}
+						<button
+							use:date
+							{...$date({ label: d.toDateString(), value: d })}
+							class="date"
+						>
+							<span class="">{d.getDate()}</span>
+						</button>
+					{/each}
+					{#each nextMonthDates as d}
+						<button
+							use:date
+							{...$date({ label: d.toDateString(), value: d })}
+							class="date"
+						>
+							<span class="">{d.getDate()}</span>
+						</button>
+					{/each}
 				</div>
 			</div>
-			<div class="grid grid-cols-7 gap-2">
-				{#each $lastMonthDates as d}
-					<button
-						use:date
-						{...$date({ label: d.toDateString(), value: d })}
-						class="date"
-					>
-						<span class="">{d.getDate()}</span>
-					</button>
-				{/each}
-				{#each $dates as d}
-					<button
-						use:date
-						{...$date({ label: d.toDateString(), value: d })}
-						class="date"
-					>
-						<span class="">{d.getDate()}</span>
-					</button>
-				{/each}
-				{#each $nextMonthDates as d}
-					<button
-						use:date
-						{...$date({ label: d.toDateString(), value: d })}
-						class="date"
-					>
-						<span class="">{d.getDate()}</span>
-					</button>
-				{/each}
-			</div>
 		</div>
-	</div>
-	{#if $modeStore === 'range'}
-		<div class="text-xs text-magnum-900">
-			Selected Range:
-			<p>
-				{#if $value.length}
-					{$value[0] && dateFormatter.format($value[0])} - {$value[1] &&
-						dateFormatter.format($value[1])}
-				{/if}
-			</p>
-		</div>
-	{:else if $modeStore === 'single'}
-		<div class="text-xs text-magnum-900">
-			Selected Value:
-			<p>
-				{#if $value.length && $value[0]}
-					{dateFormatter.format($value[0])}
-				{/if}
-			</p>
-		</div>
-	{:else if $modeStore === 'multiple'}
-		<div class="text-xs text-magnum-900">
-			Selected Value:
-			{#each $value as v, i (i)}
+		{#if $modeStore === 'range'}
+			<div class="text-xs text-magnum-900">
+				Selected Range:
 				<p>
-					{dateFormatter.format(v)}
+					{#if $value.length}
+						{$value[0] && dateFormatter.format($value[0])} - {$value[1] &&
+							dateFormatter.format($value[1])}
+					{/if}
 				</p>
-			{/each}
-		</div>
-	{/if}
-</div>
+			</div>
+		{:else if $modeStore === 'single'}
+			<div class="text-xs text-magnum-900">
+				Selected Value:
+				<p>
+					{#if $value.length && $value[0]}
+						{dateFormatter.format($value[0])}
+					{/if}
+				</p>
+			</div>
+		{:else if $modeStore === 'multiple'}
+			<div class="text-xs text-magnum-900">
+				Selected Value:
+				{#each $value as v, i (i)}
+					<p>
+						{dateFormatter.format(v)}
+					</p>
+				{/each}
+			</div>
+		{/if}
+	</div>
+{/each}
 
 <style lang="postcss">
 	.input {

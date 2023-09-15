@@ -28,7 +28,8 @@ import {
 
 import { onMount } from 'svelte';
 import { get, writable } from 'svelte/store';
-import type { CreateDatePickerProps, DateProps } from './types';
+import type { CreateDatePickerProps, DateProps, Month } from './types';
+import dayjs from 'dayjs';
 
 const defaults = {
 	disabled: false,
@@ -38,6 +39,7 @@ const defaults = {
 	value: undefined,
 	activeDate: new Date(),
 	allowDeselect: false,
+	numberOfMonths: 1,
 } satisfies CreateDatePickerProps;
 
 // selectionStrategy - name for range behavior
@@ -62,11 +64,11 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue ?? []);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
-	const { activeDate, mode, allowDeselect, disabled } = options;
+	const { activeDate, mode, allowDeselect, disabled, numberOfMonths } = options;
 
 	let lastClickedDate: Date | null = null;
 
-	const dates = writable<Date[]>([]);
+	const months = writable<Month[]>([]);
 	const lastMonthDates = writable<Date[]>([]);
 	const nextMonthDates = writable<Date[]>([]);
 
@@ -101,10 +103,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	const prevMonthButton = builder(name('prevMonth'), {
-		stores: [dates, activeDate],
-		returned: () => {
-			return {};
-		},
 		action: (node: HTMLElement) => {
 			const unsub = addMeltEventListener(node, 'click', () => {
 				activeDate.update((prev) => {
@@ -327,30 +325,46 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	effect([activeDate], ([$activeDate]) => {
-		if (!isBrowser) return;
+		if (!isBrowser || !$activeDate) return;
 
-		if ($activeDate) {
-			const daysInMonth = new Date(
-				$activeDate.getFullYear(),
-				$activeDate.getMonth() + 1,
-				0
-			).getDate();
+		months.set([createMonth($activeDate)]);
+		const $numberOfMonths = get(numberOfMonths);
+		if ($numberOfMonths > 1) {
+			const d = dayjs($activeDate);
 
-			const datesArray = Array(daysInMonth)
-				.fill(0)
-				.map((_, i) => new Date($activeDate.getFullYear(), $activeDate.getMonth(), i + 1));
-
-			const lastSunday = getLastSunday(datesArray[0]);
-			const nextSaturday = getNextSaturday(datesArray[datesArray.length - 1]);
-
-			const lastMonthDays = getDaysBetween(lastSunday, datesArray[0]);
-			const nextMonthDays = getDaysBetween(datesArray[datesArray.length - 1], nextSaturday);
-
-			lastMonthDates.set(lastMonthDays);
-			dates.set(datesArray);
-			nextMonthDates.set(nextMonthDays);
+			for (let i = 1; i < $numberOfMonths; i++) {
+				const nextMonth = d.add(i, 'month').toDate();
+				months.update((prev) => {
+					prev.push(createMonth(nextMonth));
+					return prev;
+				});
+			}
 		}
 	});
+
+	function createMonth(date: Date): Month {
+		const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+
+		const datesArray = Array(daysInMonth)
+			.fill(0)
+			.map((_, i) => new Date(date.getFullYear(), date.getMonth(), i + 1));
+
+		const lastSunday = getLastSunday(datesArray[0]);
+		const nextSaturday = getNextSaturday(datesArray[datesArray.length - 1]);
+
+		const lastMonthDays = getDaysBetween(lastSunday, datesArray[0]);
+		const nextMonthDays = getDaysBetween(datesArray[datesArray.length - 1], nextSaturday);
+
+		lastMonthDates.set(lastMonthDays);
+		nextMonthDates.set(nextMonthDays);
+
+		return {
+			month: date,
+			dates: datesArray,
+			nextMonthDates: nextMonthDays,
+			lastMonthDates: lastMonthDays,
+		};
+	}
 
 	effect([mode], ([$mode]) => {
 		if (!isBrowser) return;
@@ -376,7 +390,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		},
 		states: {
 			activeDate,
-			dates,
+			months,
 			lastMonthDates,
 			nextMonthDates,
 			value,

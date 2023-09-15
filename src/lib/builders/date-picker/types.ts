@@ -22,7 +22,7 @@ export type BaseDatePickerProps = {
 	/**
 	 * The default value for the date picker.
 	 */
-	defaultValue: Date[];
+	defaultValue?: Date[];
 
 	/**
 	 * Change function called when the value of the date picker changes.
@@ -45,29 +45,36 @@ export type BaseDatePickerProps = {
 	mode: 'single' | 'range' | 'multiple';
 
 	/**
-	 * The date that is used to display the initial month
-	 * in the datepicker.
+	 * The date that is used to display the initial month and
+	 * which date will be focused when the date picker is opened.
 	 *
 	 * @default new Date()
 	 */
 	activeDate: Date;
 	ISOWeek: boolean;
-	defaultMonth: Date;
+
 	/**
 	 * Any dates that match the provided matchers will
 	 * be disabled.
 	 */
 	disabled: Matcher | Matcher[];
+
 	/**
 	 * Any dates that match the provided matchers will
 	 * be hidden.
 	 */
 	hidden: Matcher | Matcher[];
+
 	/**
 	 * Display 6 weeks per month, regardless the month's number of weeks.
 	 * To use this, ensure `showOutsideDays` is `true`.
 	 */
 	fixedWeeks: boolean;
+
+	/**
+	 * The number of months to display at once.
+	 */
+	numberOfMonths: number;
 };
 
 export type DateRange = {
@@ -113,3 +120,10 @@ export type DateProps = {
 };
 
 export type CreateDatePickerReturn = ReturnType<typeof createDatePicker>;
+
+export type Month = {
+	month: Date;
+	dates: Date[];
+	nextMonthDates: Date[];
+	lastMonthDates: Date[];
+};

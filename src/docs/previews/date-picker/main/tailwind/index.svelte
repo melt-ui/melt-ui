@@ -1,12 +1,9 @@
 <script lang="ts">
-	import type { DayOfWeek } from '$lib';
 	import DatePicker from './date-picker.svelte';
-
-	const disabledDaysOfWeek: DayOfWeek['daysOfWeek'][number][] = [3, 4, 5];
 </script>
 
 <div class="flex gap-4">
-	<DatePicker disabled={new Date()} />
-	<DatePicker mode="multiple" />
-	<DatePicker mode="range" disabled={{ daysOfWeek: disabledDaysOfWeek }} />
+	<DatePicker activeDate={new Date(1979, 8)} numberOfMonths={2} />
+	<DatePicker mode="multiple" activeDate={new Date(1985, 11)} />
+	<DatePicker mode="range" activeDate={new Date(2023, 9)} />
 </div>

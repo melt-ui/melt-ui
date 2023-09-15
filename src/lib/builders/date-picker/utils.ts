@@ -294,3 +294,35 @@ function matchDayOfWeek(matcher: DayOfWeek, date: Date): boolean {
 	const d = dayjs(date);
 	return matcher.daysOfWeek.includes(d.day() as DayOfWeek['daysOfWeek'][number]);
 }
+
+/**
+ * Rename me later
+ */
+
+type GetDefaultDatesArgs = {
+	mode: CreateDatePickerProps['mode'];
+	value: Date[] | undefined;
+	disabled: Matcher | Matcher[];
+};
+
+// function getDefaultDates(args: GetDefaultDatesArgs) {
+// 	const { mode, value, disabled } = args;
+
+// 	let dates: Date[] = [];
+
+// 	if (Array.isArray(value)) {
+// 		dates = value;
+// 	} else {
+// 		dates = [value];
+// 	}
+
+// 	const isDisabled = value.some((date) => isMatch(date, disabled));
+
+// 	if (mode === 'single' || mode === 'multiple') {
+// 		return isDisabled ? [undefined] : value;
+// 	}
+// 	if (mode === 'range') {
+// 		return [undefined, undefined];
+// 	}
+// 	return [];
+// }
