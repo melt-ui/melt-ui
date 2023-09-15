@@ -32,7 +32,8 @@ import {
 	removeScroll,
 	sleep,
 	styleToString,
-	toWritableStores, toggle,
+	toWritableStores,
+	toggle,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { dequal as deepEqual } from 'dequal';
@@ -69,13 +70,21 @@ const { name, selector } = createElHelpers('combobox');
  * @TODO would it be useful to have a callback for when an item is selected?
  * @TODO multi-select using `tags-input` builder?
  */
-export function createCombobox<Value,
+export function createCombobox<
+	Value,
 	Multiple extends boolean = false,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	Selected extends Multiple extends true
 		? Array<ComboboxOption<Value>>
-		: ComboboxOption<Value> = Multiple extends true ? Array<ComboboxOption<Value>> : ComboboxOption<Value>>(props?: CreateComboboxProps<Value, Multiple, Selected>) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateComboboxProps<Value, Multiple, Selected>;
+		: ComboboxOption<Value> = Multiple extends true
+		? Array<ComboboxOption<Value>>
+		: ComboboxOption<Value>
+>(props?: CreateComboboxProps<Value, Multiple, Selected>) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateComboboxProps<
+		Value,
+		Multiple,
+		Selected
+	>;
 
 	// Trigger element for the popper portal. This will be our input element.
 	const activeTrigger = writable<HTMLElement | null>(null);
@@ -83,7 +92,12 @@ export function createCombobox<Value,
 	const highlightedItem = writable<HTMLElement | null>(null);
 
 	const selectedWritable =
-		withDefaults.selected ?? (writable((withDefaults.defaultSelected ?? withDefaults.multiple ? [] as Array<ComboboxOption<Value>> : undefined) as Selected));
+		withDefaults.selected ??
+		writable(
+			(withDefaults.defaultSelected ?? withDefaults.multiple
+				? ([] as Array<ComboboxOption<Value>>)
+				: undefined) as Selected
+		);
 	const selected = overridable(selectedWritable, withDefaults?.onSelectedChange);
 
 	const highlighted = derived(highlightedItem, ($highlightedItem) =>
@@ -92,7 +106,7 @@ export function createCombobox<Value,
 
 	// The current value of the input element.
 	const inputValue = writable(
-	!Array.isArray(withDefaults.defaultSelected) ? withDefaults.defaultSelected?.label ?? '' : ''
+		!Array.isArray(withDefaults.defaultSelected) ? withDefaults.defaultSelected?.label ?? '' : ''
 	);
 
 	// Either the provided open store or a store with the default open value
@@ -101,8 +115,8 @@ export function createCombobox<Value,
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
 	const options = toWritableStores({
-		...omit(withDefaults, 'open', 'defaultOpen'), 
-		multiple: withDefaults.multiple ?? (false as Multiple)
+		...omit(withDefaults, 'open', 'defaultOpen'),
+		multiple: withDefaults.multiple ?? (false as Multiple),
 	});
 
 	const {
@@ -114,7 +128,7 @@ export function createCombobox<Value,
 		portal,
 		forceVisible,
 		positioning,
-		multiple
+		multiple,
 	} = options;
 
 	const touchedInput = writable(false);
@@ -164,7 +178,6 @@ export function createCombobox<Value,
 		});
 	};
 
-
 	/**
 	 * Selects an item from the menu and updates the input value.
 	 * @param index array index of the item to select.
@@ -172,10 +185,9 @@ export function createCombobox<Value,
 	function selectItem(item: HTMLElement) {
 		const props = getOptionProps(item);
 
-		setOption(props)
-		
-		if (!get(multiple))
-			inputValue.set(props.label ?? '');
+		setOption(props);
+
+		if (!get(multiple)) inputValue.set(props.label ?? '');
 
 		const activeTrigger = getElementByMeltId(ids.input);
 		if (activeTrigger) {
@@ -562,7 +574,9 @@ export function createCombobox<Value,
 		returned:
 			([$selected]) =>
 			(props: ComboboxItemProps<Value>) => {
-				const selected = Array.isArray($selected) ? $selected.map((o) => o.value).includes(props.value) : deepEqual($selected?.value, props.value);
+				const selected = Array.isArray($selected)
+					? $selected.map((o) => o.value).includes(props.value)
+					: deepEqual($selected?.value, props.value);
 
 				return {
 					'data-value': JSON.stringify(props.value),

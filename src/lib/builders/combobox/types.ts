@@ -10,12 +10,15 @@ export type ComboboxOption<Value> = {
 	label?: string;
 };
 
-export type CreateComboboxProps<Value,
+export type CreateComboboxProps<
+	Value,
 	Multiple extends boolean = false,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	Selected extends Multiple extends true
 		? Array<ComboboxOption<Value>>
-		: ComboboxOption<Value> = Multiple extends true ? Array<ComboboxOption<Value>> : ComboboxOption<Value>
+		: ComboboxOption<Value> = Multiple extends true
+		? Array<ComboboxOption<Value>>
+		: ComboboxOption<Value>
 > = {
 	/**
 	 * Options for positioning the popover menu.
