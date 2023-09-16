@@ -40,6 +40,7 @@ const defaults = {
 	activeDate: new Date(),
 	allowDeselect: false,
 	numberOfMonths: 1,
+	pagedNavigation: false,
 } satisfies CreateDatePickerProps;
 
 // selectionStrategy - name for range behavior
@@ -51,7 +52,9 @@ type CalendarParts =
 	| 'nextYear'
 	| 'prevYear'
 	| 'dateGrid'
-	| 'date';
+	| 'date'
+	| 'next'
+	| 'prev';
 const { name } = createElHelpers<CalendarParts>('calendar');
 
 export function createDatePicker(props?: CreateDatePickerProps) {
@@ -64,7 +67,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue ?? []);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
-	const { activeDate, mode, allowDeselect, disabled, numberOfMonths } = options;
+	const { activeDate, mode, allowDeselect, disabled, numberOfMonths, pagedNavigation } = options;
 
 	let lastClickedDate: Date | null = null;
 
@@ -85,6 +88,47 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		content: generateId(),
 		input: generateId(),
 	};
+
+	const nextButton = builder(name('next'), {
+		action: (node: HTMLElement) => {
+			const unsub = addMeltEventListener(node, 'click', () => {
+				if (get(pagedNavigation)) {
+					const $numberOfMonths = get(numberOfMonths);
+					activeDate.update((prev) => {
+						const d = dayjs(prev);
+
+						return d.add($numberOfMonths, 'month').toDate();
+					});
+				}
+			});
+
+			return {
+				destroy() {
+					unsub();
+				},
+			};
+		},
+	});
+	const prevButton = builder(name('next'), {
+		action: (node: HTMLElement) => {
+			const unsub = addMeltEventListener(node, 'click', () => {
+				if (get(pagedNavigation)) {
+					const $numberOfMonths = get(numberOfMonths);
+					activeDate.update((prev) => {
+						const d = dayjs(prev);
+
+						return d.subtract($numberOfMonths, 'month').toDate();
+					});
+				}
+			});
+
+			return {
+				destroy() {
+					unsub();
+				},
+			};
+		},
+	});
 
 	const nextMonthButton = builder(name('nextMonth'), {
 		action: (node: HTMLElement) => {
@@ -325,6 +369,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	effect([activeDate], ([$activeDate]) => {
+		console.log('activeDate changed');
 		if (!isBrowser || !$activeDate) return;
 
 		months.set([createMonth($activeDate)]);
@@ -343,8 +388,8 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	function createMonth(date: Date): Month {
-		const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-
+		const d = dayjs(date);
+		const daysInMonth = d.daysInMonth();
 		const datesArray = Array(daysInMonth)
 			.fill(0)
 			.map((_, i) => new Date(date.getFullYear(), date.getMonth(), i + 1));
@@ -386,6 +431,8 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			prevMonthButton,
 			nextYearButton,
 			prevYearButton,
+			nextButton,
+			prevButton,
 			date,
 		},
 		states: {

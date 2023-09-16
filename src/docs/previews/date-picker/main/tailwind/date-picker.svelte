@@ -18,7 +18,7 @@
 	export let activeDate: CreateDatePickerProps['activeDate'] = new Date();
 	export let defaultValue: Date[] = [];
 	export let numberOfMonths: CreateDatePickerProps['numberOfMonths'] = 1;
-
+	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = false;
 	const {
 		elements: {
 			content,
@@ -27,8 +27,10 @@
 			nextYearButton,
 			prevYearButton,
 			date,
+			prevButton,
+			nextButton,
 		},
-		states: { value, months, activeDate: activeDateStore },
+		states: { value, months },
 		options: { mode: modeStore },
 	} = createDatePicker({
 		mode,
@@ -37,98 +39,113 @@
 		defaultValue,
 		activeDate,
 		numberOfMonths,
+		pagedNavigation,
 	});
 </script>
 
-{#each $months as month}
-	{@const { dates, lastMonthDates, nextMonthDates, month: monthDate } = month}
-	<div>
-		<div {...$content} use:content class="content">
-			<div class="flex flex-col gap-2.5 text-magnum-800">
-				<div class="text-magnum-800">
-					{monthYearFormatter.format(monthDate)}
-				</div>
-				<div class="buttons-wrapper">
-					<div class="flex items-center space-x-2">
-						<button use:melt={$prevYearButton} class="button">
-							<ChevronsLeft />
-						</button>
-						<button use:melt={$prevMonthButton} class="button">
-							<ChevronLeft />
-						</button>
-					</div>
-					<div class="flex items-center space-x-2">
-						<button use:melt={$nextMonthButton} class="button">
-							<ChevronRight />
-						</button>
-						<button use:melt={$nextYearButton} class="button">
-							<ChevronsRight />
-						</button>
-					</div>
-				</div>
-
-				<div class="grid grid-cols-7 gap-2">
-					{#each lastMonthDates as d}
-						<button
-							use:date
-							{...$date({ label: d.toDateString(), value: d })}
-							class="date"
-						>
-							<span class="">{d.getDate()}</span>
-						</button>
-					{/each}
-					{#each dates as d}
-						<button
-							use:date
-							{...$date({ label: d.toDateString(), value: d })}
-							class="date"
-						>
-							<span class="">{d.getDate()}</span>
-						</button>
-					{/each}
-					{#each nextMonthDates as d}
-						<button
-							use:date
-							{...$date({ label: d.toDateString(), value: d })}
-							class="date"
-						>
-							<span class="">{d.getDate()}</span>
-						</button>
-					{/each}
-				</div>
-			</div>
-		</div>
-		{#if $modeStore === 'range'}
-			<div class="text-xs text-magnum-900">
-				Selected Range:
-				<p>
-					{#if $value.length}
-						{$value[0] && dateFormatter.format($value[0])} - {$value[1] &&
-							dateFormatter.format($value[1])}
-					{/if}
-				</p>
-			</div>
-		{:else if $modeStore === 'single'}
-			<div class="text-xs text-magnum-900">
-				Selected Value:
-				<p>
-					{#if $value.length && $value[0]}
-						{dateFormatter.format($value[0])}
-					{/if}
-				</p>
-			</div>
-		{:else if $modeStore === 'multiple'}
-			<div class="text-xs text-magnum-900">
-				Selected Value:
-				{#each $value as v, i (i)}
-					<p>
-						{dateFormatter.format(v)}
-					</p>
-				{/each}
-			</div>
-		{/if}
+<div class="flex flex-col">
+	<div class="flex items-center justify-between">
+		<button use:melt={$prevButton}>Prev</button>
+		<button use:melt={$nextButton}>Next</button>
 	</div>
-{/each}
+	<div class="flex items-center gap-4">
+		<!-- Calendar view -->
+		{#each $months as month}
+			{@const {
+				dates,
+				lastMonthDates,
+				nextMonthDates,
+				month: monthDate,
+			} = month}
+			<div>
+				<div {...$content} use:content class="content">
+					<div class="flex flex-col gap-2.5 text-magnum-800">
+						<div class="text-magnum-800">
+							{monthYearFormatter.format(monthDate)}
+						</div>
+						<div class="buttons-wrapper">
+							<div class="flex items-center space-x-2">
+								<button use:melt={$prevYearButton} class="button">
+									<ChevronsLeft />
+								</button>
+								<button use:melt={$prevMonthButton} class="button">
+									<ChevronLeft />
+								</button>
+							</div>
+							<div class="flex items-center space-x-2">
+								<button use:melt={$nextMonthButton} class="button">
+									<ChevronRight />
+								</button>
+								<button use:melt={$nextYearButton} class="button">
+									<ChevronsRight />
+								</button>
+							</div>
+						</div>
+
+						<div class="grid grid-cols-7 gap-2">
+							{#each lastMonthDates as d}
+								<button
+									use:date
+									{...$date({ label: d.toDateString(), value: d })}
+									class="date"
+								>
+									<span class="">{d.getDate()}</span>
+								</button>
+							{/each}
+							{#each dates as d}
+								<button
+									use:date
+									{...$date({ label: d.toDateString(), value: d })}
+									class="date"
+								>
+									<span class="">{d.getDate()}</span>
+								</button>
+							{/each}
+							{#each nextMonthDates as d}
+								<button
+									use:date
+									{...$date({ label: d.toDateString(), value: d })}
+									class="date"
+								>
+									<span class="">{d.getDate()}</span>
+								</button>
+							{/each}
+						</div>
+					</div>
+				</div>
+			</div>
+		{/each}
+	</div>
+	{#if $modeStore === 'range'}
+		<div class="text-xs text-magnum-900">
+			Selected Range:
+			<p>
+				{#if $value.length}
+					{$value[0] && dateFormatter.format($value[0])} - {$value[1] &&
+						dateFormatter.format($value[1])}
+				{/if}
+			</p>
+		</div>
+	{:else if $modeStore === 'single'}
+		<div class="text-xs text-magnum-900">
+			Selected Value:
+			<p>
+				{#if $value.length && $value[0]}
+					{dateFormatter.format($value[0])}
+				{/if}
+			</p>
+		</div>
+	{:else if $modeStore === 'multiple'}
+		<div class="text-xs text-magnum-900">
+			Selected Value:
+			{#each $value as v, i (i)}
+				<p>
+					{dateFormatter.format(v)}
+				</p>
+			{/each}
+		</div>
+	{/if}
+</div>
 
 <style lang="postcss">
 	.input {

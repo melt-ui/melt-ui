@@ -90,7 +90,7 @@ export function addDays(date: Date, days: number): Date {
 
 export function getDaysBetween(start: Date, end: Date) {
 	const days: Date[] = [];
-	let dCurrent = dayjs(start).add(1);
+	let dCurrent = dayjs(start).add(1, 'day');
 	const dEnd = dayjs(end);
 	while (dCurrent.isBefore(dEnd)) {
 		days.push(dCurrent.toDate());

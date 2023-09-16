@@ -51,7 +51,18 @@ export type BaseDatePickerProps = {
 	 * @default new Date()
 	 */
 	activeDate: Date;
-	ISOWeek: boolean;
+
+	/**
+	 * Whether or not to use paged navigation for the next and previous
+	 * buttons in the date picker. Paged navigation will change all months
+	 * in the view when the next/prev buttons are clicked. Non-paged navigation
+	 * just shifts by a single month.
+	 *
+	 * @default false
+	 */
+	pagedNavigation?: boolean;
+
+	ISOWeek?: boolean;
 
 	/**
 	 * Any dates that match the provided matchers will
@@ -73,6 +84,8 @@ export type BaseDatePickerProps = {
 
 	/**
 	 * The number of months to display at once.
+	 *
+	 * @default 1
 	 */
 	numberOfMonths: number;
 };
