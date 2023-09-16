@@ -5,6 +5,8 @@ export type ColorRGB = {
     b: number;
 };
 
+export type Orientation = 'horizontal' | 'vertical';
+
 export type CreateColorPickerProps = {
     forceVisible?: boolean;
 
@@ -12,6 +14,11 @@ export type CreateColorPickerProps = {
      * Which color is selected by default.
      */
     defaultColor?: string;
+
+    /**
+     * The orientation of the hue slider.
+     */
+    hueSliderOrientation?: Orientation;
 };
 
 export type NodeElement<T> = {
@@ -20,4 +27,4 @@ export type NodeElement<T> = {
     width: number;
 };
 
-export type ColorPickerParts = 'trigger' | 'canvas' | 'picker' | 'hue';
+export type ColorPickerParts = 'trigger' | 'canvas' | 'picker' | 'hue' | 'hue-picker';
