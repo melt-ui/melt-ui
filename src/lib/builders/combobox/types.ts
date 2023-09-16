@@ -84,7 +84,7 @@ export type CreateComboboxProps<
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onSelectedChange?: ChangeFn<S>;
+	onSelectedChange?: ChangeFn<S | undefined>;
 
 	/**
 	 * Whether or not to close the combobox menu when the user clicks
