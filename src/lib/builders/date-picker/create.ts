@@ -81,8 +81,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	let lastClickedDate: Date | null = null;
 
 	const months = writable<Month[]>([]);
-	const lastMonthDates = writable<Date[]>([]);
-	const nextMonthDates = writable<Date[]>([]);
 
 	if (get(mode) === 'range') {
 		value.update((prev) => {
@@ -407,14 +405,21 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		}
 	});
 
-	const daysOfWeek = derived([lastMonthDates, months], ([$lastMonthDates, $months]) => {
+	const daysOfWeek = derived([months], ([$months]) => {
 		if (!$months.length) return [];
-		const days = Array.from({ length: 7 - $lastMonthDates.length }, (_, i) => {
+
+		const lastMonthDates = $months[0].lastMonthDates;
+
+		const days = Array.from({ length: 7 - lastMonthDates.length }, (_, i) => {
 			const d = dayjs($months[0].dates[i]);
 			return d.toDate();
 		});
 
-		return $lastMonthDates.concat(days);
+		if (lastMonthDates.length) {
+			return lastMonthDates.concat(days);
+		}
+
+		return days;
 	});
 
 	function createMonth(date: Date): Month {
@@ -440,9 +445,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			lastDayOfMonth.toDate(),
 			dayjs(nextSaturday).add(1, 'day').toDate()
 		);
-
-		lastMonthDates.set(lastMonthDays);
-		nextMonthDates.set(nextMonthDays);
 
 		return {
 			month: date,
@@ -479,8 +481,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		states: {
 			activeDate,
 			months,
-			lastMonthDates,
-			nextMonthDates,
 			value,
 			daysOfWeek,
 		},
