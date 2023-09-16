@@ -381,7 +381,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	effect([activeDate], ([$activeDate]) => {
-		console.log('activeDate changed');
 		if (!isBrowser || !$activeDate) return;
 
 		months.set([createMonth($activeDate)]);
@@ -402,15 +401,26 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	function createMonth(date: Date): Month {
 		const d = dayjs(date);
 		const daysInMonth = d.daysInMonth();
-		const datesArray = Array(daysInMonth)
-			.fill(0)
-			.map((_, i) => new Date(date.getFullYear(), date.getMonth(), i + 1));
 
-		const lastSunday = getLastSunday(datesArray[0]);
-		const nextSaturday = getNextSaturday(datesArray[datesArray.length - 1]);
+		const datesArray = Array.from(
+			{ length: daysInMonth },
+			(_, i) => new Date(d.date(i + 1).toDate())
+		);
 
-		const lastMonthDays = getDaysBetween(lastSunday, datesArray[0]);
-		const nextMonthDays = getDaysBetween(datesArray[datesArray.length - 1], nextSaturday);
+		const firstDayOfMonth = d.startOf('month');
+		const lastDayOfMonth = d.endOf('month');
+
+		const lastSunday = getLastSunday(firstDayOfMonth.toDate());
+		const nextSaturday = getNextSaturday(lastDayOfMonth.toDate());
+
+		const lastMonthDays = getDaysBetween(
+			dayjs(lastSunday).subtract(1, 'day').toDate(),
+			firstDayOfMonth.toDate()
+		);
+		const nextMonthDays = getDaysBetween(
+			lastDayOfMonth.toDate(),
+			dayjs(nextSaturday).add(1, 'day').toDate()
+		);
 
 		lastMonthDates.set(lastMonthDays);
 		nextMonthDates.set(nextMonthDays);

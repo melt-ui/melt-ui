@@ -76,10 +76,19 @@ export function getLastSunday(date: Date): Date {
 	return d;
 }
 
-export function getNextSaturday(date: Date): Date {
+export function getNextSunday(date: Date): Date {
 	const d = new Date(date);
-	d.setDate(d.getDate() + (6 - d.getDay()));
+	d.setDate(d.getDate() + (7 - d.getDay()));
 	return d;
+}
+
+export function getNextSaturday(date: Date): Date {
+	const d = dayjs(date);
+	const day = d.day();
+	if (day === 6) {
+		return d.toDate();
+	}
+	return d.add(6 - day, 'day').toDate();
 }
 
 export function addDays(date: Date, days: number): Date {
