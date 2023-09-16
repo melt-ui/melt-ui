@@ -1,5 +1,5 @@
 ---
-'@melt-ui/svelte': patch
+'@melt-ui/svelte': minor
 ---
 
-Add multi option for Combobox
+Combobox: Add multiple option

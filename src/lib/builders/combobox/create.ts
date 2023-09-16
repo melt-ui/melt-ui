@@ -41,7 +41,12 @@ import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
 import { createLabel } from '../label/create.js';
 import type { ComboboxEvents } from './events.js';
-import type { ComboboxItemProps, ComboboxOption, CreateComboboxProps } from './types.js';
+import type {
+	ComboboxItemProps,
+	ComboboxOption,
+	ComboboxSelected,
+	CreateComboboxProps,
+} from './types.js';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ESCAPE, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
@@ -74,17 +79,9 @@ export function createCombobox<
 	Value,
 	Multiple extends boolean = false,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	Selected extends Multiple extends true
-		? Array<ComboboxOption<Value>>
-		: ComboboxOption<Value> = Multiple extends true
-		? Array<ComboboxOption<Value>>
-		: ComboboxOption<Value>
->(props?: CreateComboboxProps<Value, Multiple, Selected>) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateComboboxProps<
-		Value,
-		Multiple,
-		Selected
-	>;
+	S extends ComboboxSelected<Multiple, Value> = ComboboxSelected<Multiple, Value>
+>(props?: CreateComboboxProps<Value, Multiple, S>) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateComboboxProps<Value, Multiple, S>;
 
 	// Trigger element for the popper portal. This will be our input element.
 	const activeTrigger = writable<HTMLElement | null>(null);
@@ -96,7 +93,7 @@ export function createCombobox<
 		writable(
 			(withDefaults.defaultSelected ?? withDefaults.multiple
 				? ([] as Array<ComboboxOption<Value>>)
-				: undefined) as Selected
+				: undefined) as S
 		);
 	const selected = overridable(selectedWritable, withDefaults?.onSelectedChange);
 
@@ -172,9 +169,9 @@ export function createCombobox<
 			const $multiple = get(multiple);
 			if ($multiple) {
 				const optionArr = Array.isArray($option) ? $option : [];
-				return toggle(newOption, optionArr) as Selected;
+				return toggle(newOption, optionArr) as S;
 			}
-			return newOption as Selected;
+			return newOption as S;
 		});
 	};
 

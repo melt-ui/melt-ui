@@ -50,7 +50,7 @@ const builder = builderSchema(BUILDER_NAME, {
 			name: 'multiple',
 			type: 'boolean',
 			default: 'false',
-			description: 'Whether or not the combobox is a multiple combobox, required for tags.',
+			description: 'Whether or not the combobox is a multiple combobox.',
 		},
 		PROPS.DEFAULT_OPEN,
 		PROPS.OPEN,

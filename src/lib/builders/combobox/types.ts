@@ -1,4 +1,4 @@
-import type { BuilderReturn } from '$lib/internal/types.js';
+import type { BuilderReturn, WhenTrue } from '$lib/internal/types.js';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
 import type { createCombobox } from './create.js';
@@ -10,15 +10,17 @@ export type ComboboxOption<Value> = {
 	label?: string;
 };
 
+export type ComboboxSelected<Multiple extends boolean, Value> = WhenTrue<
+	Multiple,
+	ComboboxOption<Value>[],
+	ComboboxOption<Value>
+>;
+
 export type CreateComboboxProps<
 	Value,
 	Multiple extends boolean = false,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	Selected extends Multiple extends true
-		? Array<ComboboxOption<Value>>
-		: ComboboxOption<Value> = Multiple extends true
-		? Array<ComboboxOption<Value>>
-		: ComboboxOption<Value>
+	S extends ComboboxSelected<Multiple, Value> = ComboboxSelected<Multiple, Value>
 > = {
 	/**
 	 * Options for positioning the popover menu.
@@ -70,19 +72,19 @@ export type CreateComboboxProps<
 	 *
 	 * @default undefined
 	 */
-	defaultSelected?: Selected;
+	defaultSelected?: S;
 
 	/**
 	 * An optional controlled store that manages the selected option of the combobox.
 	 */
-	selected?: Writable<Selected>;
+	selected?: Writable<S>;
 
 	/**
 	 * A change handler for the selected store called when the selected would normally change.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onSelectedChange?: ChangeFn<Selected>;
+	onSelectedChange?: ChangeFn<S>;
 
 	/**
 	 * Whether or not to close the combobox menu when the user clicks
