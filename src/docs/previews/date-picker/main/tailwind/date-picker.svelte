@@ -12,6 +12,7 @@
 	} from 'lucide-svelte';
 	import { dateFormatter, monthYearFormatter } from './formatters';
 	import { melt } from '$lib';
+	import dayjs from 'dayjs';
 
 	export let mode: 'single' | 'multiple' | 'range' = 'single';
 	export let disabled: Matcher | Matcher[] = false;
@@ -19,6 +20,8 @@
 	export let defaultValue: Date[] = [];
 	export let numberOfMonths: CreateDatePickerProps['numberOfMonths'] = 1;
 	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = false;
+	export let firstDayOfWeek: CreateDatePickerProps['firstDayOfWeek'] = 0;
+
 	const {
 		elements: {
 			content,
@@ -30,7 +33,7 @@
 			prevButton,
 			nextButton,
 		},
-		states: { value, months },
+		states: { value, months, daysOfWeek },
 		options: { mode: modeStore },
 	} = createDatePicker({
 		mode,
@@ -40,6 +43,7 @@
 		activeDate,
 		numberOfMonths,
 		pagedNavigation,
+		firstDayOfWeek,
 	});
 </script>
 
@@ -81,8 +85,12 @@
 								</button>
 							</div>
 						</div>
-
 						<div class="grid grid-cols-7 gap-2">
+							{#each $daysOfWeek as day}
+								<div class="date">
+									<span class="font-bold">{dayjs(day).format('dd')}</span>
+								</div>
+							{/each}
 							{#each lastMonthDates as d}
 								<button
 									use:date

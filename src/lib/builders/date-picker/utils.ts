@@ -70,6 +70,34 @@ export function prevYear(date: Date): Date {
 	return d;
 }
 
+export function getLastFirstDayOfWeek(date: Date, firstDayOfWeek: number): Date {
+	const d = dayjs(date);
+	const day = d.day();
+	if (firstDayOfWeek > day) {
+		return d.subtract(day + 7 - firstDayOfWeek, 'day').toDate();
+	}
+	if (firstDayOfWeek === day) {
+		return d.toDate();
+	}
+	return d.subtract(day - firstDayOfWeek, 'day').toDate();
+}
+
+export function getNextLastDayOfWeek(date: Date, firstDayOfWeek: number): Date {
+	const d = dayjs(date);
+	const day = d.day();
+	const lastDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+
+	if (day === lastDayOfWeek) {
+		return d.toDate();
+	}
+
+	if (day > lastDayOfWeek) {
+		return d.add(7 - day + lastDayOfWeek, 'day').toDate();
+	}
+
+	return d.add(lastDayOfWeek - day, 'day').toDate();
+}
+
 export function getLastSunday(date: Date): Date {
 	const d = new Date(date);
 	d.setDate(d.getDate() - d.getDay());

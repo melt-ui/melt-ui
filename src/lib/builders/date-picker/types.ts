@@ -62,6 +62,14 @@ export type BaseDatePickerProps = {
 	 */
 	pagedNavigation?: boolean;
 
+	/**
+	 * Which day of the week to start the calendar on.
+	 * 0 = Sunday, 1 = Monday, etc.
+	 *
+	 * @default 0 (Sunday)
+	 */
+	firstDayOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
 	ISOWeek?: boolean;
 
 	/**

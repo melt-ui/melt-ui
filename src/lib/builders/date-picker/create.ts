@@ -19,15 +19,15 @@ import {
 	nextYear as getNextYear,
 	prevMonth as getPrevMonth,
 	prevYear as getPrevYear,
-	getLastSunday,
-	getNextSaturday,
 	getDaysBetween,
 	isSelected,
 	isMatch,
+	getLastFirstDayOfWeek,
+	getNextLastDayOfWeek,
 } from './utils';
 
 import { onMount } from 'svelte';
-import { get, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 import type { CreateDatePickerProps, DateProps, Month } from './types';
 import dayjs from 'dayjs';
 
@@ -41,6 +41,7 @@ const defaults = {
 	allowDeselect: false,
 	numberOfMonths: 1,
 	pagedNavigation: false,
+	firstDayOfWeek: 0,
 } satisfies CreateDatePickerProps;
 
 // selectionStrategy - name for range behavior
@@ -67,7 +68,15 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue ?? []);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 
-	const { activeDate, mode, allowDeselect, disabled, numberOfMonths, pagedNavigation } = options;
+	const {
+		activeDate,
+		mode,
+		allowDeselect,
+		disabled,
+		numberOfMonths,
+		pagedNavigation,
+		firstDayOfWeek,
+	} = options;
 
 	let lastClickedDate: Date | null = null;
 
@@ -398,6 +407,16 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		}
 	});
 
+	const daysOfWeek = derived([lastMonthDates, months], ([$lastMonthDates, $months]) => {
+		if (!$months.length) return [];
+		const days = Array.from({ length: 7 - $lastMonthDates.length }, (_, i) => {
+			const d = dayjs($months[0].dates[i]);
+			return d.toDate();
+		});
+
+		return $lastMonthDates.concat(days);
+	});
+
 	function createMonth(date: Date): Month {
 		const d = dayjs(date);
 		const daysInMonth = d.daysInMonth();
@@ -410,8 +429,8 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		const firstDayOfMonth = d.startOf('month');
 		const lastDayOfMonth = d.endOf('month');
 
-		const lastSunday = getLastSunday(firstDayOfMonth.toDate());
-		const nextSaturday = getNextSaturday(lastDayOfMonth.toDate());
+		const lastSunday = getLastFirstDayOfWeek(firstDayOfMonth.toDate(), get(firstDayOfWeek));
+		const nextSaturday = getNextLastDayOfWeek(lastDayOfMonth.toDate(), get(firstDayOfWeek));
 
 		const lastMonthDays = getDaysBetween(
 			dayjs(lastSunday).subtract(1, 'day').toDate(),
@@ -463,6 +482,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			lastMonthDates,
 			nextMonthDates,
 			value,
+			daysOfWeek,
 		},
 		options,
 	};

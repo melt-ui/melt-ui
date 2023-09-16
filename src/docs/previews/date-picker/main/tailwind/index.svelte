@@ -3,7 +3,7 @@
 </script>
 
 <div class="flex gap-4">
-	<DatePicker numberOfMonths={2} />
+	<DatePicker numberOfMonths={2} firstDayOfWeek={3} />
 	<!-- <DatePicker mode="multiple" activeDate={new Date(1985, 11)} /> -->
 	<!-- <DatePicker mode="range" activeDate={new Date(2023, 9)} /> -->
 </div>
