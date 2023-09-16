@@ -4,8 +4,8 @@
 	export let values = [20, 80];
 
 	const {
-		elements: { root, range, thumb },
-		states: { value },
+		elements: { root, range, thumb, tick },
+		states: { value, ticks },
 	} = createSlider({
 		defaultValue: values,
 		max: 100,
@@ -25,6 +25,10 @@
 				use:melt={$thumb()}
 				class="block h-5 w-5 rounded-full bg-white focus:ring-4 focus:ring-black/40"
 			/>
+		{/each}
+
+		{#each { length: $ticks } as _}
+			<span use:melt={$tick()} data-testid="tick" />
 		{/each}
 	</span>
 </main>
