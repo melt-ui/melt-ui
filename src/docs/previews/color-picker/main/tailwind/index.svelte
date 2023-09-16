@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { createColorPicker } from '$lib';
 
-	const ctx = createColorPicker();
-
 	const {
 		elements: { canvas, picker, hue, huePicker },
-	} = ctx;
+	} = createColorPicker({
+		defaultColor: '#5b52aa',
+	});
 </script>
 
 <!-- Canvas size needs to be the same as the container size. -->

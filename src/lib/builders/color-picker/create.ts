@@ -2,7 +2,7 @@ import { addMeltEventListener, builder, createElHelpers, executeCallbacks, gener
 import type { Defaults } from "$lib/internal/types";
 import { onMount } from "svelte";
 
-import type { ColorPickerParts, CreateColorPickerProps, NodeElement } from "./types";
+import type { ColorHSL, ColorHSV, ColorPickerParts, ColorRGB, CreateColorPickerProps, NodeElement } from "./types";
 
 
 const defaults = {
@@ -31,10 +31,12 @@ export function createColorPicker(args?: CreateColorPickerProps) {
      * - [ ] ...
      */
 
-    const rootIds = {
-        trigger: generateId(),
-        content: generateId(),
-    };
+    const isValidHex = (hex: string) => /^#([0-9a-f]{3}){1,2}$/i.test(hex);
+
+    // const rootIds = {
+    //     trigger: generateId(),
+    //     content: generateId(),
+    // };
 
     const trigger = builder(name('trigger'), {
         returned: () => {
@@ -73,6 +75,15 @@ export function createColorPicker(args?: CreateColorPickerProps) {
                 addMeltEventListener(node, 'mouseup', () => {
                     dragging = false;
                 }),
+                addMeltEventListener(node, 'mouseleave', (e) => {
+                    if (!canvasNode) return;
+
+                    const { offsetX: x, offsetY: y } = e;
+
+                    if (x < 0 || x > canvasNode.width || y < 0 || y > canvasNode.height) {
+                        hueDragging = false;
+                    }
+                }),
                 addMeltEventListener(node, 'mousemove', (e) => {
                     if (!dragging) return;
 
@@ -80,7 +91,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
                     updatePickerButtonColor();
                 })
             );
-
 
             return {
                 destroy() {
@@ -337,6 +347,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         pickerNode.node.style.backgroundColor = `rgb(${imageData[0]}, ${imageData[1]}, ${imageData[2]})`;
     }
 
+    // Hue functions
     function updateHuePickerButtonPosition(e: MouseEvent): void {
         if (!huePickerNode || !hueNode) return;
 
@@ -359,8 +370,115 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         updatePickerButtonColor();
     }
 
+    function hexToRGB(hex: string, normalize=false): ColorRGB {
+        const rgb: ColorRGB = {
+            r: 0,
+            g: 0,
+            b: 0
+        };
+
+        if (hex.length === 4) {
+            rgb.r = parseInt(`0x${hex[1]}${hex[1]}`, 16);
+            rgb.g = parseInt(`0x${hex[2]}${hex[2]}`, 16);
+            rgb.b = parseInt(`0x${hex[3]}${hex[3]}`, 16);
+        } else {
+            rgb.r = parseInt(`0x${hex[1]}${hex[2]}`, 16);
+            rgb.g = parseInt(`0x${hex[3]}${hex[4]}`, 16);
+            rgb.b = parseInt(`0x${hex[5]}${hex[6]}`, 16);
+        }
+
+        if (normalize) {
+            rgb.r = rgb.r / 255;
+            rgb.g = rgb.g / 255;
+            rgb.b = rgb.b / 255;
+        }
+
+        return rgb;
+    }
+
+    // Source: https://css-tricks.com/converting-color-spaces-in-javascript/
+    function hexToHSL(hex: string): ColorHSL {
+        const rgb = hexToRGB(hex, true);
+
+        const cmin = Math.min(rgb.r, rgb.g, rgb.b);
+        const cmax = Math.max(rgb.r, rgb.g, rgb.b);
+        const delta = cmax - cmin;
+        let h = 0;
+        let s = 0;
+        let l = 0;
+
+        if (delta === 0) {
+            h = 0;
+        } else if (cmax === rgb.r) {
+            h = ((rgb.g - rgb.b) / delta) % 6;
+        } else if (cmax === rgb.g) {
+            h = (rgb.b - rgb.r) / delta + 2;
+        } else {
+            h = (rgb.r - rgb.g) / delta + 4;
+        }
+
+        h = Math.round(h * 60);
+
+        if (h < 0) h += 360;
+
+        l = (cmax + cmin) / 2;
+        s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+        s = +(s * 100).toFixed(1);
+        l = +(l * 100).toFixed(1);
+
+        // return "hsl(" + h + "," + s + "%," + l + "%)";
+        return { h, s, l };
+    }
+
+    function hexToHSV(hex: string): ColorHSV {
+        const { r, g, b} = hexToRGB(hex, true);
+
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+        const v = max;
+        let h = 0;
+
+        const d = max - min;
+        const s = max == 0 ? 0 : d / max;
+
+        if (max == min) {
+            h = 0; // achromatic
+        } else {
+            switch (max) {
+                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                case g: h = (b - r) / d + 2; break;
+                case b: h = (r - g) / d + 4; break;
+            }
+
+            h /= 6;
+        }
+
+        return { h: Math.round(h * 360), s, v };
+    }
+
+    function updateOnColorInput(hex: string) {
+        if (!canvasNode || !hueNode || !pickerNode || !huePickerNode) return;
+
+        const { h, s, v } = hexToHSV(hex);
+
+        // Update main canvas color and picker position.
+        // fillPickerCanvas(`hsl(${h}, 100%, 50%)`);
+        pickerNode.node.style.left = `${Math.round(canvasNode.width * s)}px`;
+        pickerNode.node.style.top = `${Math.round((1 - v) * canvasNode.height)}px`;
+
+        huePickerNode.node.style.left = `${Math.round(hueNode.width * h / 360)}px`;
+        updateHuePickerButtonColor();
+    }
+
     onMount(() => {
-        console.log('onMount');
+        if (!isValidHex(argsWithDefaults.defaultColor)) return;
+
+        updateOnColorInput(argsWithDefaults.defaultColor);
+
+        /**
+         * TODO:
+         * - [ ] update the hue slider button to be at the right degree
+         * - [ ] update the canvas button to be at the right spot depending on s & l values
+         */
     });
 
     return {

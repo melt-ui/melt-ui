@@ -5,6 +5,18 @@ export type ColorRGB = {
     b: number;
 };
 
+export type ColorHSL = {
+    h: number;
+    s: number;
+    l: number;
+};
+
+export type ColorHSV = {
+    h: number;
+    s: number;
+    v: number;
+};
+
 export type Orientation = 'horizontal' | 'vertical';
 
 export type CreateColorPickerProps = {
@@ -12,6 +24,7 @@ export type CreateColorPickerProps = {
 
     /**
      * Which color is selected by default.
+     * Should be a hex value: #4242ff.
      */
     defaultColor?: string;
 
