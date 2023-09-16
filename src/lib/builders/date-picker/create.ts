@@ -99,7 +99,14 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 						return d.add($numberOfMonths, 'month').toDate();
 					});
+					return;
 				}
+
+				activeDate.update((prev) => {
+					const d = dayjs(prev);
+
+					return d.add(1, 'month').toDate();
+				});
 			});
 
 			return {
@@ -120,6 +127,11 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 						return d.subtract($numberOfMonths, 'month').toDate();
 					});
 				}
+				activeDate.update((prev) => {
+					const d = dayjs(prev);
+
+					return d.subtract(1, 'month').toDate();
+				});
 			});
 
 			return {
