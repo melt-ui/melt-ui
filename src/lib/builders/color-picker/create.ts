@@ -30,13 +30,20 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     const huePickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
     // const huePickerPos: Writable<Position> = writable({ x: 0, y: 0 });
 
+    const alphaSliderDims: Writable<NodeElement<HTMLCanvasElement>> = writable({ height: 1, width: 1 });
+    const alphaPickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
+
     const hueAngle: Writable<number> = writable(0);
 
     /**
-     * TODO: Helper functions
-     * - [ ] getCurrentColor()
-     * - [ ] ...
+     * TODO:
+     * - [X] getCurrentColor()
+     * - [ ] isFocused() functions for buttons, so different styling can be applied 
+     *       to canvases
+     * - [ ] aria attributes for picker buttons & canvases
      * - [ ] builder: alpha canvas and picker
+     * - [ ] when arrow buttons are pressed for a long time increase the movement speed
+     *       (https://svelte-awesome-color-picker.vercel.app/)
      * - [ ] builder: eye dropper: https://developer.mozilla.org/en-US/docs/Web/API/EyeDropper
      */
     const isValidHex = (hex: string) => /^#([0-9a-f]{3}){1,2}$/i.test(hex);
