@@ -15,9 +15,6 @@ import {
 import {
 	isBefore,
 	isSameDay,
-	nextYear as getNextYear,
-	prevMonth as getPrevMonth,
-	prevYear as getPrevYear,
 	getDaysBetween,
 	isSelected,
 	isMatch,
@@ -29,6 +26,7 @@ import { onMount } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateDatePickerProps, DateProps, Month } from './types';
 import dayjs from 'dayjs';
+import { dayJsStore } from './date-store';
 
 const defaults = {
 	disabled: false,
@@ -69,16 +67,9 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue ?? []);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
+	const activeDate = dayJsStore(options.activeDate);
 
-	const {
-		activeDate,
-		mode,
-		allowDeselect,
-		disabled,
-		numberOfMonths,
-		pagedNavigation,
-		weekStartsOn,
-	} = options;
+	const { mode, allowDeselect, disabled, numberOfMonths, pagedNavigation, weekStartsOn } = options;
 
 	let lastClickedDate: Date | null = null;
 
@@ -92,35 +83,35 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	function nextPage() {
 		if (get(pagedNavigation)) {
 			const $numberOfMonths = get(numberOfMonths);
-			activeDate.update((prev) => {
-				const d = dayjs(prev);
-
-				return d.add($numberOfMonths, 'month').toDate();
-			});
-			return;
+			activeDate.add($numberOfMonths, 'month');
+		} else {
+			activeDate.add(1, 'month');
 		}
-
-		activeDate.update((prev) => {
-			const d = dayjs(prev);
-
-			return d.add(1, 'month').toDate();
-		});
 	}
 
 	function prevPage() {
 		if (get(pagedNavigation)) {
 			const $numberOfMonths = get(numberOfMonths);
-			activeDate.update((prev) => {
-				const d = dayjs(prev);
-
-				return d.subtract($numberOfMonths, 'month').toDate();
-			});
+			activeDate.subtract($numberOfMonths, 'month');
+		} else {
+			activeDate.subtract(1, 'month');
 		}
-		activeDate.update((prev) => {
-			const d = dayjs(prev);
+	}
 
-			return d.subtract(1, 'month').toDate();
-		});
+	function prevMonth() {
+		activeDate.subtract(1, 'month');
+	}
+
+	function nextMonth() {
+		activeDate.add(1, 'month');
+	}
+
+	function nextYear() {
+		activeDate.add(1, 'year');
+	}
+
+	function prevYear() {
+		activeDate.subtract(1, 'year');
 	}
 
 	/**
@@ -159,11 +150,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	const nextMonthButton = builder(name('nextMonth'), {
 		action: (node: HTMLElement) => {
-			const unsub = addMeltEventListener(node, 'click', () => {
-				activeDate.update((prev) => {
-					return dayjs(prev).add(1, 'month').toDate();
-				});
-			});
+			const unsub = addMeltEventListener(node, 'click', nextMonth);
 
 			return {
 				destroy() {
@@ -175,11 +162,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	const prevMonthButton = builder(name('prevMonth'), {
 		action: (node: HTMLElement) => {
-			const unsub = addMeltEventListener(node, 'click', () => {
-				activeDate.update((prev) => {
-					return getPrevMonth(prev ?? new Date());
-				});
-			});
+			const unsub = addMeltEventListener(node, 'click', prevMonth);
 
 			return {
 				destroy() {
@@ -191,12 +174,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	const nextYearButton = builder(name('nextYear'), {
 		action: (node: HTMLElement) => {
-			const unsub = addMeltEventListener(node, 'click', () => {
-				activeDate.update((prev) => {
-					return getNextYear(prev ?? new Date());
-				});
-			});
-
+			const unsub = addMeltEventListener(node, 'click', () => nextYear);
 			return {
 				destroy() {
 					unsub();
@@ -207,12 +185,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	const prevYearButton = builder(name('prevYear'), {
 		action: (node: HTMLElement) => {
-			const unsub = addMeltEventListener(node, 'click', () => {
-				activeDate.update((prev) => {
-					return getPrevYear(prev ?? new Date());
-				});
-			});
-
+			const unsub = addMeltEventListener(node, 'click', prevYear);
 			return {
 				destroy() {
 					unsub();

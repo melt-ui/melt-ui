@@ -46,30 +46,6 @@ export function isToday(date: Date) {
 	return isSameDay(date, new Date());
 }
 
-export function nextMonth(date: Date): Date {
-	const d = new Date(date);
-	d.setMonth(d.getMonth() + 1);
-	return d;
-}
-
-export function prevMonth(date: Date): Date {
-	const d = new Date(date);
-	d.setMonth(d.getMonth() - 1);
-	return d;
-}
-
-export function nextYear(date: Date): Date {
-	const d = new Date(date);
-	d.setFullYear(d.getFullYear() + 1);
-	return d;
-}
-
-export function prevYear(date: Date): Date {
-	const d = new Date(date);
-	d.setFullYear(d.getFullYear() - 1);
-	return d;
-}
-
 export function getLastFirstDayOfWeek(date: Date, firstDayOfWeek: number): Date {
 	const d = dayjs(date);
 	const day = d.day();
@@ -136,30 +112,6 @@ export function getDaysBetween(start: Date, end: Date) {
 	return days;
 }
 
-export function addMonths(date: Date, months: number): Date {
-	const d = dayjs(date);
-	d.add(months, 'month');
-	return d.toDate();
-}
-
-export function subMonths(date: Date, months: number): Date {
-	const d = dayjs(date);
-	d.subtract(months, 'month');
-	return d.toDate();
-}
-
-export function addYears(date: Date, years: number): Date {
-	const d = dayjs(date);
-	d.add(years, 'year');
-	return d.toDate();
-}
-
-export function subYears(date: Date, years: number): Date {
-	const d = dayjs(date);
-	d.subtract(years, 'year');
-	return d.toDate();
-}
-
 /** Returns true if `value` is an array of valid dates. */
 function isArrayOfDates(value: unknown): value is Date[] {
 	return Array.isArray(value) && value.every((v) => v instanceof Date);
@@ -216,7 +168,6 @@ export function isMatch(date: Date, matcher: Matcher | Matcher[]): boolean {
 	return checkIsMatch(date, matcher);
 }
 
-// What do we name this??
 function checkIsMatch(date: Date, matcher: Matcher): boolean {
 	if (isArrayOfDates(matcher)) {
 		return matchDateArray(matcher, date);
