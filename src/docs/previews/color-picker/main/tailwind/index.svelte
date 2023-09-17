@@ -2,13 +2,20 @@
 	import { createColorPicker } from '$lib';
 
 	const {
-		elements: { colorCanvas, colorPicker, hueSlider, huePicker },
+		elements: {
+			colorCanvas,
+			colorPicker,
+			hueSlider,
+			huePicker,
+			alphaSlider,
+			alphaPicker,
+		},
 	} = createColorPicker({
 		defaultColor: '#5b52aa',
 	});
 </script>
 
-<div class="rounded-md bg-white p-4">
+<div class="flex flex-col gap-2 rounded-md bg-white p-4">
 	<div class="canvas relative">
 		<canvas
 			{...$colorCanvas}
@@ -22,16 +29,29 @@
 		/>
 	</div>
 
-	<div class="hue relative mt-2 h-[10px] w-[175px]">
+	<div class="hue relative h-[10px] w-[175px]">
 		<canvas
 			{...$hueSlider}
 			use:hueSlider
-			class="h-[10px] w-[175px] cursor-pointer rounded-md"
+			class="h-[10px] w-[175px] cursor-pointer rounded-md border border-gray-500/50"
 		/>
 		<button
 			{...$huePicker}
 			use:huePicker
 			class="absolute h-3 w-3 rounded-full border border-black !outline !outline-1 !outline-white focus:outline-offset-2"
 		/>
+	</div>
+
+	<div class="hue relative h-[10px] w-[175px]">
+		<canvas
+			{...$alphaSlider}
+			use:alphaSlider
+			class="h-[10px] w-[175px] cursor-pointer rounded-md border border-gray-500/50"
+		/>
+		<!-- <button
+			{...$huePicker}
+			use:huePicker
+			class="absolute h-3 w-3 rounded-full border border-black !outline !outline-1 !outline-white focus:outline-offset-2"
+		/> -->
 	</div>
 </div>

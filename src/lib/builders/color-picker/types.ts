@@ -32,6 +32,11 @@ export type CreateColorPickerProps = {
      * The orientation of the hue slider.
      */
     hueSliderOrientation?: Orientation;
+
+    /**
+     * The orientation of the alpha slider.
+     */
+    alphaSliderOrientation?: Orientation;
 };
 
 export type NodeElement<T> = {
@@ -50,4 +55,4 @@ export type Position = {
     y: number;
 };
 
-export type ColorPickerParts = 'trigger' | 'color-canvas' | 'color-picker' | 'hue-slider' | 'hue-picker';
+export type ColorPickerParts = 'trigger' | 'color-canvas' | 'color-picker' | 'hue-slider' | 'hue-picker' | 'alpha-slider' | 'alpha-picker';

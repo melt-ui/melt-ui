@@ -3,13 +3,14 @@ import type { Defaults } from "$lib/internal/types";
 import { onMount } from "svelte";
 
 import type { ColorHSL, ColorHSV, ColorPickerParts, ColorRGB, CreateColorPickerProps, NodeElement, NodeSize, Position } from "./types";
-import { get, writable, type Writable } from "svelte/store";
+import { derived, get, writable, type Readable, type Writable } from "svelte/store";
 
 
 const defaults = {
     forceVisible: false,
     defaultColor: '#ff0000',
     hueSliderOrientation: 'horizontal',
+    alphaSliderOrientation: 'horizontal',
 } satisfies Defaults<CreateColorPickerProps>;
 
 const { name } = createElHelpers<ColorPickerParts>('color-picker');
@@ -27,7 +28,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
     const hueSliderDims: Writable<NodeElement<HTMLCanvasElement>> = writable({ height: 1, width: 1 });
     const huePickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
-    const huePickerPos: Writable<Position> = writable({ x: 0, y: 0 });
+    // const huePickerPos: Writable<Position> = writable({ x: 0, y: 0 });
 
     const hueAngle: Writable<number> = writable(0);
 
@@ -35,10 +36,22 @@ export function createColorPicker(args?: CreateColorPickerProps) {
      * TODO: Helper functions
      * - [ ] getCurrentColor()
      * - [ ] ...
+     * - [ ] builder: alpha canvas and picker
      * - [ ] builder: eye dropper: https://developer.mozilla.org/en-US/docs/Web/API/EyeDropper
      */
-
     const isValidHex = (hex: string) => /^#([0-9a-f]{3}){1,2}$/i.test(hex);
+
+    /**
+     * Returns the current color of the color picker.
+     */
+    const getCurrentColor: Readable<() => ColorRGB> = derived([hueAngle, colorPickerPos, colorCanvasDims], ([$hueAngle, $colorPickerPos, $colorCanvasDims]) => {
+        const x = $colorPickerPos.x / $colorCanvasDims.width;
+        const y = 1 - $colorPickerPos.y / $colorCanvasDims.height;
+
+        const rgb = HSVtoRGB($hueAngle / 360, x, y);
+
+        return () => rgb;
+    });
 
     const colorCanvas = builder(name('color-canvas'), {
         stores: [hueAngle],
@@ -84,15 +97,12 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     });
 
     const colorPicker = builder(name('color-picker'), {
-        stores: [colorPickerPos, hueAngle, colorPickerDims, colorCanvasDims],
-        returned: ([$colorPickerPos, $hueAngle, $colorPickerDims, $colorCanvasDims]) => {
+        stores: [colorPickerPos, colorPickerDims, getCurrentColor],
+        returned: ([$colorPickerPos, $colorPickerDims, $getCurrentColor]) => {
             const top = Math.round($colorPickerPos.y - $colorPickerDims.height / 2);
             const left = Math.round($colorPickerPos.x - $colorPickerDims.width / 2);
 
-            const x = $colorPickerPos.x / $colorCanvasDims.width;
-            const y = 1 - $colorPickerPos.y / $colorCanvasDims.height;
-
-            const rgb = HSVtoRGB($hueAngle / 360, x, y);
+            const rgb = $getCurrentColor();
 
             return {
                 style: `position: absolute; top: ${top}px; left: ${left}px; background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b});`
@@ -198,6 +208,106 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     });
 
     const huePicker = builder(name('hue-picker'), {
+        stores: [hueAngle, huePickerDims, hueSliderDims],
+        returned: ([$hueAngle, $huePickerDims, $hueSliderDims]) => {
+            const left = Math.round($hueAngle / 360 * $hueSliderDims.width - $huePickerDims.width / 2);
+
+            return {
+                style: `position: absolute; background: hsl(${$hueAngle}, 100%, 50%); left: ${left}px; top: 50%; transform: translateY(-50%);`
+            }
+        },
+        action: (node: HTMLButtonElement) => {
+            const rect = node.getBoundingClientRect();
+
+            huePickerDims.set({
+                height: rect.height,
+                width: rect.width,
+            });
+
+            const unsubEvents = executeCallbacks(
+                addMeltEventListener(node, 'mousedown', () => {
+                    hueDragging = true;
+                }),
+                addMeltEventListener(node, 'mouseup', () => {
+                    hueDragging = false;
+                }),
+                addMeltEventListener(node, 'keydown', (e) => {
+                    const { key } = e;
+                    const keys = ['ArrowLeft', 'ArrowRight'];
+
+                    if (!keys.includes(key)) return;
+
+                    e.preventDefault();
+
+                    const angle = get(hueAngle);
+
+                    // Move the picker button and restrict movement to within the canvas.
+                    if (key === 'ArrowRight' && angle + 1 < 360) {
+                        hueAngle.set(angle + 1);
+                    } else if (key === 'ArrowLeft' && angle - 1 >= 0) {
+                        hueAngle.set(angle - 1);
+                    }
+                })
+            );
+
+            return {
+                destroy() {
+                    unsubEvents();
+                },
+            }
+        }
+    });
+
+    const alphaSlider = builder(name('alpha-slider'), {
+        stores: [getCurrentColor],
+        returned: ([$getCurrentColor]) => {
+            const orientation = argsWithDefaults.hueSliderOrientation === 'horizontal' ? 'right' : 'bottom';
+
+            const rgb = $getCurrentColor();
+            const color = `${rgb.r}, ${rgb.g}, ${rgb.b}`;
+
+            return {
+                style: `background: linear-gradient(to ${orientation}, rgba(${color}, 0), rgba(${color}, 1));`
+            }
+        },
+        // action: (node: HTMLCanvasElement) => {
+        //     const rect = node.getBoundingClientRect();
+
+        //     hueSliderDims.set({
+        //         node,
+        //         width: rect.width,
+        //         height: rect.height
+        //     });
+
+        //     const unsubEvents = executeCallbacks(
+        //         addMeltEventListener(node, 'click', (e) => {
+        //             const { offsetX: x } = e;
+
+        //             hueAngle.set(Math.round(x / get(hueSliderDims).width * 360));
+        //         }),
+        //         addMeltEventListener(node, 'mousedown', () => {
+        //             alphaDragging = true;
+        //         }),
+        //         addMeltEventListener(node, 'mouseup', () => {
+        //             alphaDragging = false;
+        //         }),
+        //         addMeltEventListener(node, 'mousemove', (e) => {
+        //             if (!alphaDragging) return;
+
+        //             const { offsetX: x } = e;
+        //             hueAngle.set(Math.round(x / get(hueSliderDims).width * 360));
+        //         })
+        //     );
+
+        //     return {
+        //         destroy() {
+        //             unsubEvents();
+        //         }
+        //     }
+        // }
+    });
+
+    const alphaPicker = builder(name('alpha-picker'), {
         stores: [hueAngle, huePickerDims, hueSliderDims],
         returned: ([$hueAngle, $huePickerDims, $hueSliderDims]) => {
             const left = Math.round($hueAngle / 360 * $hueSliderDims.width - $huePickerDims.width / 2);
@@ -470,25 +580,13 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             window.addEventListener('mousemove', handleWindowsMouseMove);
             window.addEventListener('mouseup', handleWindowsMouseUp);
         }
-        // if (colorCanvas) {
-        //     const size = colorCanvas.getBoundingClientRect();
-        //     colorCanvasSize = {
-        //         width: size.width,
-        //         height: size.height
-        //     };
-        // }
-        // if (!isValidHex(argsWithDefaults.defaultColor)) return;
 
-        // updateOnColorInput(argsWithDefaults.defaultColor);
+        // Check if the given color is valid and replace it with
+        // the default color if not.
         argsWithDefaults.defaultColor = isValidHex(argsWithDefaults.defaultColor) ? argsWithDefaults.defaultColor : defaults.defaultColor;
 
+        // Update the color and hue picker button positions.
         updateOnColorInput(argsWithDefaults.defaultColor);
-
-        /**
-         * TODO:
-         * - [ ] update the hue slider button to be at the right degree
-         * - [ ] update the canvas button to be at the right spot depending on s & l values
-         */
 
         return () => {
             window.removeEventListener('mousemove', handleWindowsMouseMove);
@@ -501,7 +599,9 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             colorCanvas,
             colorPicker,
             hueSlider,
-            huePicker
+            huePicker,
+            alphaSlider,
+            alphaPicker
         }
     }
 }
