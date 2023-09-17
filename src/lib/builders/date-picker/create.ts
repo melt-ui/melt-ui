@@ -80,6 +80,13 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		input: generateId(),
 	};
 
+	/**
+	 * Navigate to the next page of the calendar.
+	 * If using paged navigation, this will move the calendar forward
+	 * by the number of months specified in the `numberOfMonths` prop.
+	 * If not using paged navigation, this will move the calendar forward
+	 * by one month.
+	 */
 	function nextPage() {
 		if (get(pagedNavigation)) {
 			const $numberOfMonths = get(numberOfMonths);
@@ -89,6 +96,13 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		}
 	}
 
+	/**
+	 * Navigate to the previous page of the calendar.
+	 * If using paged navigation, this will move the calendar backwards
+	 * by the number of months specified in the `numberOfMonths` prop.
+	 * If not using paged navigation, this will move the calendar backwards
+	 * by one month.
+	 */
 	function prevPage() {
 		if (get(pagedNavigation)) {
 			const $numberOfMonths = get(numberOfMonths);
@@ -98,18 +112,30 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		}
 	}
 
+	/**
+	 * Navigate to the previous month of the calendar.
+	 */
 	function prevMonth() {
 		activeDate.subtract(1, 'month');
 	}
 
+	/**
+	 * Navigate to the next month of the calendar.
+	 */
 	function nextMonth() {
 		activeDate.add(1, 'month');
 	}
 
+	/**
+	 * Navigate to the previous year of the calendar.
+	 */
 	function nextYear() {
 		activeDate.add(1, 'year');
 	}
 
+	/**
+	 * Navigate to the next year of the calendar.
+	 */
 	function prevYear() {
 		activeDate.subtract(1, 'year');
 	}
