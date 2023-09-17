@@ -79,6 +79,9 @@ devDependencies:
   '@sveltejs/package':
     specifier: ^2.2.0
     version: 2.2.0(svelte@4.0.0)(typescript@5.1.6)
+  '@svitejs/changesets-changelog-github-compact':
+    specifier: ^1.1.0
+    version: 1.1.0
   '@tailwindcss/typography':
     specifier: ^0.5.9
     version: 0.5.9(tailwindcss@3.3.3)
@@ -1712,6 +1715,15 @@ packages:
       chalk: 2.4.2
       fs-extra: 7.0.1
       semver: 7.5.4
+    dev: true
+
+  /@changesets/get-github-info@0.5.2:
+    resolution: {integrity: sha512-JppheLu7S114aEs157fOZDjFqUDpm7eHdq5E8SSR0gUBTEK0cNSHsrSR5a66xs0z3RWuo46QvA3vawp8BxDHvg==}
+    dependencies:
+      dataloader: 1.4.0
+      node-fetch: 2.6.11
+    transitivePeerDependencies:
+      - encoding
     dev: true
 
   /@changesets/get-release-plan@3.0.17:
@@ -4295,6 +4307,16 @@ packages:
       - supports-color
     dev: true
 
+  /@svitejs/changesets-changelog-github-compact@1.1.0:
+    resolution: {integrity: sha512-qhUGGDHcpbY2zpjW3SwqchuW8J/5EzlPFud7xNntHKA7f3a/mx5+g+ruJKFHSAiVZYo30PALt+AyhmPUNKH/Og==}
+    engines: {node: ^14.13.1 || ^16.0.0 || >=18}
+    dependencies:
+      '@changesets/get-github-info': 0.5.2
+      dotenv: 16.0.3
+    transitivePeerDependencies:
+      - encoding
+    dev: true
+
   /@tailwindcss/typography@0.5.9(tailwindcss@3.3.3):
     resolution: {integrity: sha512-t8Sg3DyynFysV9f4JDOVISGsjazNb48AeIYQwcL+Bsq5uf4RYL75C1giZ43KISjeDGBaTN3Kxh7Xj/vRSMJUUg==}
     peerDependencies:
@@ -6111,6 +6133,10 @@ packages:
       abab: 2.0.6
       whatwg-mimetype: 3.0.0
       whatwg-url: 12.0.1
+    dev: true
+
+  /dataloader@1.4.0:
+    resolution: {integrity: sha512-68s5jYdlvasItOJnCuI2Q9s4q98g0pCyL3HrcKJu8KNugUl8ahgmZYg38ysLTgQjjXX3H8CJLkAvWrclWfcalw==}
     dev: true
 
   /debug@2.6.9:

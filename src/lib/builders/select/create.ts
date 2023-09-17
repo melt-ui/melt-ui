@@ -45,7 +45,12 @@ import { dequal as deepEqual } from 'dequal';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import type { SelectEvents } from './events.js';
-import type { CreateSelectProps, SelectOption, SelectOptionProps } from './types.js';
+import type {
+	CreateSelectProps,
+	SelectOption,
+	SelectOptionProps,
+	SelectSelected,
+} from './types.js';
 import { getElementByMeltId } from '../../internal/helpers/builder';
 
 const defaults = {
@@ -82,15 +87,9 @@ export function createSelect<
 	Value = unknown,
 	Multiple extends boolean = false,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	Selected extends Multiple extends true
-		? Array<SelectOption<Value>>
-		: SelectOption<Value> = Multiple extends true ? Array<SelectOption<Value>> : SelectOption<Value>
->(props?: CreateSelectProps<Value, Multiple, Selected>) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps<
-		Value,
-		Multiple,
-		Selected
-	>;
+	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
+>(props?: CreateSelectProps<Value, Multiple, S>) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateSelectProps<Value, Multiple, S>;
 
 	const options = toWritableStores({
 		...omit(
@@ -124,7 +123,7 @@ export function createSelect<
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
 	const selectedWritable =
-		withDefaults.selected ?? writable<Selected | undefined>(withDefaults.defaultSelected);
+		withDefaults.selected ?? writable<S | undefined>(withDefaults.defaultSelected);
 	const selected = overridable(selectedWritable, withDefaults?.onSelectedChange);
 
 	const activeTrigger = writable<HTMLElement | null>(null);
@@ -161,7 +160,7 @@ export function createSelect<
 	const isSelected = derived([selected], ([$selected]) => {
 		return (value: Value) => {
 			if (Array.isArray($selected)) {
-				return $selected.map((o) => o.value).includes(value);
+				return $selected.some((o) => deepEqual(o.value, value));
 			}
 			return deepEqual($selected?.value, value);
 		};
@@ -559,9 +558,9 @@ export function createSelect<
 			const $multiple = get(multiple);
 			if ($multiple) {
 				const optionArr = Array.isArray($option) ? $option : [];
-				return toggle(newOption, optionArr) as Selected;
+				return toggle(newOption, optionArr) as S;
 			}
-			return newOption as Selected;
+			return newOption as S;
 		});
 	};
 
