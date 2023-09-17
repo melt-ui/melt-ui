@@ -35,9 +35,19 @@ export type CreateColorPickerProps = {
 };
 
 export type NodeElement<T> = {
-    node: T;
+    node?: T;
     height: number;
     width: number;
 };
 
-export type ColorPickerParts = 'trigger' | 'canvas' | 'picker' | 'hue' | 'hue-picker';
+export type NodeSize = {
+    height: number;
+    width: number;
+};
+
+export type Position = {
+    x: number;
+    y: number;
+};
+
+export type ColorPickerParts = 'trigger' | 'color-canvas' | 'color-picker' | 'hue-slider' | 'hue-picker';

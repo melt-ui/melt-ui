@@ -2,7 +2,7 @@
 	import { createColorPicker } from '$lib';
 
 	const {
-		elements: { colorCanvas, colorPicker, hueSlider, huePicker },
+		elements: { canvas, picker, hue, huePicker },
 	} = createColorPicker({
 		defaultColor: '#5b52aa',
 	});
@@ -13,31 +13,21 @@
 	<div class="canvas relative">
 		<!-- Make sure to use width and height attributes, instead of classes. -->
 		<canvas
-			{...$colorCanvas}
-			use:colorCanvas
-			class="color-canvas h-[175px] w-[175px]"
-		/>
-		<!-- <canvas
 			{...$canvas}
 			use:canvas
 			class="cursor-pointer"
 			width="175"
 			height="175"
-		/> -->
+		/>
 		<button
-			{...$colorPicker}
-			use:colorPicker
+			{...$picker}
+			use:picker
 			class="absolute h-3 w-3 rounded-full border border-black !outline !outline-1 !outline-white focus:outline-offset-2"
 		/>
 	</div>
 
 	<div class="hue relative mt-2 h-[10px] w-[175px]">
-		<canvas
-			{...$hueSlider}
-			use:hueSlider
-			class="h-[10px] w-[175px] rounded-full"
-		/>
-		<!-- <canvas {...$hue} use:hue class="rounded-full" width="175" height="10" /> -->
+		<canvas {...$hue} use:hue class="rounded-full" width="175" height="10" />
 		<button
 			{...$huePicker}
 			use:huePicker

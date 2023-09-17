@@ -1,8 +1,9 @@
-import { addMeltEventListener, builder, createElHelpers, executeCallbacks, generateId } from "$lib/internal/helpers";
+import { addMeltEventListener, builder, createElHelpers, executeCallbacks, isBrowser } from "$lib/internal/helpers";
 import type { Defaults } from "$lib/internal/types";
 import { onMount } from "svelte";
 
-import type { ColorHSL, ColorHSV, ColorPickerParts, ColorRGB, CreateColorPickerProps, NodeElement } from "./types";
+import type { ColorHSL, ColorHSV, ColorPickerParts, ColorRGB, CreateColorPickerProps, NodeElement, NodeSize, Position } from "./types";
+import { get, writable, type Writable } from "svelte/store";
 
 
 const defaults = {
@@ -22,8 +23,19 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     let hueNode: NodeElement<HTMLCanvasElement> | null = null;
     let hueCtx: CanvasRenderingContext2D | null = null;
     let huePickerNode: NodeElement<HTMLButtonElement> | null = null;
+
     let dragging = false;
     let hueDragging = false;
+
+    const colorCanvasDims: Writable<NodeElement<HTMLCanvasElement>> = writable({ height: 1, width: 1 });
+    const colorPickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
+    const colorPickerPos: Writable<{ x: number; y: number; }> = writable({ x: 0, y: 0 });
+
+    const hueSliderDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
+    const huePickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
+    const huePickerPos: Writable<Position> = writable({ x: 0, y: 0 });
+
+    const hueAngle: Writable<number> = writable(0);
 
     /**
      * TODO: Helper functions
@@ -33,41 +45,28 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
     const isValidHex = (hex: string) => /^#([0-9a-f]{3}){1,2}$/i.test(hex);
 
-    // const rootIds = {
-    //     trigger: generateId(),
-    //     content: generateId(),
-    // };
-
-    const trigger = builder(name('trigger'), {
-        returned: () => {
+    const colorCanvas = builder(name('color-canvas'), {
+        stores: [hueAngle],
+        returned: ([$hueAngle]) => {
             return {
-                'aria-expanded': true
+                style: `background-color: hsl(${$hueAngle}, 100%, 50%); background-image: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), linear-gradient(to right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));`
             }
-        }
-    });
-
-    const canvas = builder(name('canvas'), {
+        },
         action: (node: HTMLCanvasElement) => {
-            const { width, height } = node;
+            const rect = node.getBoundingClientRect();
 
-            canvasNode = {
+            console.log('canvas:', rect.x, rect.y);
+
+            colorCanvasDims.set({
                 node,
-                width,
-                height
-            };
-
-            canvasCtx = node.getContext('2d', {
-                willReadFrequently: true
+                width: rect.width,
+                height: rect.height
             });
-
-            if (!canvasCtx) return;
-
-            fillPickerCanvas('#ff0000');
 
             const unsubEvents = executeCallbacks(
                 addMeltEventListener(node, 'click', (e) => {
-                    updatePickerButtonPosition(e);
-                    updatePickerButtonColor();
+                    const { offsetX: x, offsetY: y } = e;
+                    colorPickerPos.set({ x, y });
                 }),
                 addMeltEventListener(node, 'mousedown', () => {
                     dragging = true;
@@ -76,19 +75,38 @@ export function createColorPicker(args?: CreateColorPickerProps) {
                     dragging = false;
                 }),
                 addMeltEventListener(node, 'mouseleave', (e) => {
-                    if (!canvasNode) return;
+                    if (!dragging) return;
 
-                    const { offsetX: x, offsetY: y } = e;
+                    // const { offsetX: x, offsetY: y } = e;
+                    // const { width, height } = get(colorCanvasDims);
 
-                    if (x < 0 || x > canvasNode.width || y < 0 || y > canvasNode.height) {
-                        hueDragging = false;
-                    }
+                    // if (x <= 0 && y <= 0) {
+                    //     colorPickerPos.set({ x: 0, y: 0 });
+                    // } else if (x <= 0 && y <= height ) {
+                    //     colorPickerPos.set({ x: 0, y });
+                    // } else if (x <= 0 && y > height ) {
+                    //     colorPickerPos.set({ x: 0, y: height });
+                    // } else if (x <= width && y <= 0) {
+                    //     colorPickerPos.set({ x, y: 0 });
+                    // } else if (x <= width && y > height) {
+                    //     colorPickerPos.set({ x, y: height });
+                    // } else if (x > width && y <= 0) {
+                    //     colorPickerPos.set({ x: width, y: 0 });
+                    // } else if (x > width && y <= height ) {
+                    //     colorPickerPos.set({ x: width, y });
+                    // } else if (x > width && y > height) {
+                    //     colorPickerPos.set({ x: width, y: height });
+                    // }
+
+                    // if( x <= 0 || x >= width || y <= 0 || y >= height ) {
+                    //     dragging = false;
+                    // }
                 }),
                 addMeltEventListener(node, 'mousemove', (e) => {
                     if (!dragging) return;
 
-                    updatePickerButtonPosition(e);
-                    updatePickerButtonColor();
+                    const { offsetX: x, offsetY: y } = e;
+                    colorPickerPos.set({ x, y });
                 })
             );
 
@@ -100,204 +118,194 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         }
     });
 
-    const hue = builder(name('hue'), {
-        action: (node: HTMLCanvasElement) => {
-            const { width, height } = node;
+    const colorPicker = builder(name('color-picker'), {
+        stores: [colorPickerPos, hueAngle, colorPickerDims, colorCanvasDims],
+        returned: ([$colorPickerPos, $hueAngle, $colorPickerDims, $colorCanvasDims]) => {
+            const top = Math.round($colorPickerPos.y - $colorPickerDims.height / 2);
+            const left = Math.round($colorPickerPos.x - $colorPickerDims.width / 2);
 
-            hueNode = {
-                node,
-                width,
-                height
-            };
+            const x = $colorPickerPos.x / $colorCanvasDims.width;
+            const y = 1 - $colorPickerPos.y / $colorCanvasDims.height;
 
-            hueCtx = node.getContext('2d', {
-                willReadFrequently: true
+            const rgb = HSVtoRGB($hueAngle / 360, x, y);
+
+            return {
+                style: `position: absolute; top: ${top}px; left: ${left}px; background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b});`
+            }
+        },
+        action: (node: HTMLButtonElement) => {
+            const rect = node.getBoundingClientRect();
+
+            colorPickerDims.set({
+                width: rect.width,
+                height: rect.height
             });
 
-            if (!hueCtx) return;
-
-            // node.style.backgroundColor = 'linear-gradient(hsl(0, 100%, 50%)';
-
-            const hueGradient = hueCtx.createLinearGradient(0, 0, width, 0);
-
-            for (let i = 0; i < 360; i++) {
-                const color = `hsl(${i}, 100%, 50%)`;
-                hueGradient.addColorStop(i / 360, color);
-            }
-
-            hueCtx.fillStyle = hueGradient;
-            hueCtx.fillRect(0, 0, width, height);
-
             const unsubEvents = executeCallbacks(
-                addMeltEventListener(node, 'click', (e) => {
-                    updateHuePickerButtonPosition(e);
-                    updateHuePickerButtonColor();
-                }),
-                addMeltEventListener(node, 'mousedown', () => {
-                    hueDragging = true;
-                }),
-                addMeltEventListener(node, 'mouseup', () => {
-                    hueDragging = false;
-                }),
-                addMeltEventListener(node, 'mouseleave', (e) => {
-                    if (!hueNode) return;
-
-                    const { offsetX: x, offsetY: y } = e;
-
-                    if (x < 0 || x > hueNode.width || y < 0 || y > hueNode.height) {
-                        hueDragging = false;
-                    }
-                }),
-                addMeltEventListener(node, 'mousemove', (e) => {
-                    if (!hueDragging) return;
-
-                    updateHuePickerButtonPosition(e);
-                    updateHuePickerButtonColor();
-                })
-            );
-
-
-            return {
-                destroy() {
-                    unsubEvents();
-                }
-            }
-        }
-    });
-
-    const picker = builder(name('picker'), {
-        action: (node: HTMLButtonElement) => {
-            const { height, width } = node.getBoundingClientRect();
-
-            // Set the starting position and color.
-            node.style.position = "absolute";
-            node.style.left = `-${width / 2}px`;
-            node.style.top = `-${height / 2}px`;
-            node.style.backgroundColor = 'rgb(255, 255, 255)';
-
-            pickerNode = {
-                node,
-                width,
-                height
-            }
-
-            const unsubEvents = executeCallbacks(
-                addMeltEventListener(node, 'click', (e) => {
-                    e.preventDefault();
-                }),
+                // addMeltEventListener(node, 'click', (e) => {
+                //     e.preventDefault();
+                // }),
                 addMeltEventListener(node, 'mousedown', () => {
                     dragging = true;
                 }),
                 addMeltEventListener(node, 'mouseup', () => {
                     dragging = false;
                 }),
-                addMeltEventListener(node, 'keydown', (e) => {
-                    const { key } = e;
-                    const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+                // addMeltEventListener(node, 'keydown', (e) => {
+                //     const { key } = e;
+                //     const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
-                    if (!keys.includes(key) || !canvasNode || !pickerNode) return;
+                //     if (!keys.includes(key) || !canvasNode || !pickerNode) return;
 
-                    e.preventDefault();
+                //     e.preventDefault();
 
-                    let updateColor = false;
+                //     let updateColor = false;
 
-                    // Move the picker button and restrict movement to within the canvas.
-                    if (key === 'ArrowUp' && node.offsetTop - 1 > -1 * pickerNode.height / 2) {
-                        node.style.top = `${node.offsetTop - 1}px`;
-                        updateColor = true;
-                    } else if (key === 'ArrowDown' && node.offsetTop + 1 < canvasNode.height - pickerNode.height / 2) {
-                        node.style.top = `${node.offsetTop + 1}px`;
-                        updateColor = true;
-                    } else if (key === 'ArrowRight' && node.offsetLeft + 1 < canvasNode.width - pickerNode.width / 2) {
-                        node.style.left = `${node.offsetLeft + 1}px`;
-                        updateColor = true;
-                    } else if (key === 'ArrowLeft' && node.offsetLeft - 1 > -1 * pickerNode.width / 2) {
-                        node.style.left = `${node.offsetLeft - 1}px`;
-                        updateColor = true;
-                    }
+                //     // Move the picker button and restrict movement to within the canvas.
+                //     if (key === 'ArrowUp' && node.offsetTop - 1 > -1 * pickerNode.height / 2) {
+                //         node.style.top = `${node.offsetTop - 1}px`;
+                //         updateColor = true;
+                //     } else if (key === 'ArrowDown' && node.offsetTop + 1 < canvasNode.height - pickerNode.height / 2) {
+                //         node.style.top = `${node.offsetTop + 1}px`;
+                //         updateColor = true;
+                //     } else if (key === 'ArrowRight' && node.offsetLeft + 1 < canvasNode.width - pickerNode.width / 2) {
+                //         node.style.left = `${node.offsetLeft + 1}px`;
+                //         updateColor = true;
+                //     } else if (key === 'ArrowLeft' && node.offsetLeft - 1 > -1 * pickerNode.width / 2) {
+                //         node.style.left = `${node.offsetLeft - 1}px`;
+                //         updateColor = true;
+                //     }
 
-                    if (updateColor) updatePickerButtonColor();
-                })
+                //     if (updateColor) updatePickerButtonColor();
+                // })
             );
 
             return {
                 destroy() {
                     unsubEvents();
                 },
+            }
+        }
+    });
+
+    const hueSlider = builder(name('hue-slider'), {
+        returned: () => {
+            const orientation = argsWithDefaults.hueSliderOrientation === 'horizontal' ? 'right' : 'bottom';
+
+            // Create hue color gradient.
+            const hueColors: string[] = [];
+
+            for (let i = 0; i < 360; i++) {
+                hueColors.push(`hsl(${i}, 100%, 50%)`)
+            }
+
+            return {
+                style: `background: linear-gradient(to ${orientation}, ${hueColors.join(',')});`
+            }
+        },
+        action: (node: HTMLCanvasElement) => {
+            const rect = node.getBoundingClientRect();
+
+            hueSliderDims.set({
+                width: rect.width,
+                height: rect.height
+            });
+
+            const unsubEvents = executeCallbacks(
+                addMeltEventListener(node, 'click', (e) => {
+                    const { offsetX: x } = e;
+
+                    hueAngle.set(Math.round(x / get(hueSliderDims).width * 360));
+                }),
+            );
+
+            return {
+                destroy() {
+                    unsubEvents();
+                }
             }
         }
     });
 
     const huePicker = builder(name('hue-picker'), {
-        action: (node: HTMLButtonElement) => {
-            const { height, width } = node.getBoundingClientRect();
-
-            huePickerNode = {
-                node,
-                height,
-                width
-            };
-
-            // Set the starting position and color.
-            node.style.position = "absolute";
-
-            if (argsWithDefaults.hueSliderOrientation === 'horizontal') {
-                node.style.left = `-${width / 2}px`;
-                node.style.top = `50%`;
-                node.style.transform = 'translateY(-50%)';
-            } else {
-                node.style.top = `-${height / 2}px`;
-                node.style.left = `50%`;
-                node.style.transform = 'translateX(-50%)';
-            }
-            node.style.backgroundColor = 'rgb(255, 0, 0)';
-
-            const unsubEvents = executeCallbacks(
-                addMeltEventListener(node, 'click', (e) => {
-                    e.preventDefault();
-                }),
-                addMeltEventListener(node, 'mousedown', () => {
-                    hueDragging = true;
-                }),
-                addMeltEventListener(node, 'mouseup', () => {
-                    hueDragging = false;
-                }),
-                addMeltEventListener(node, 'keydown', (e) => {
-                    const { key } = e;
-                    const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-
-                    if (!keys.includes(key) || !hueNode || !huePickerNode) return;
-
-                    e.preventDefault();
-
-                    let updateColor = false;
-
-                    const { hueSliderOrientation: orientation } = argsWithDefaults;
-
-                    // Move the hue picker button and restrict movement to within the hue canvas.
-                    if (key === 'ArrowRight' && orientation === 'horizontal' && node.offsetLeft + 1 < hueNode.width - huePickerNode.width / 2) {
-                        node.style.left = `${node.offsetLeft + 1}px`;
-                        updateColor = true;
-                    } else if (key === 'ArrowLeft' && orientation === 'horizontal' && node.offsetLeft - 1 > -1 * huePickerNode.width / 2) {
-                        node.style.left = `${node.offsetLeft - 1}px`;
-                        updateColor = true;
-                    } else if (key === 'ArrowUp' && orientation === 'vertical' && node.offsetTop - 1 > -1 * huePickerNode.height / 2) {
-                        node.style.top = `${node.offsetTop - 1}px`;
-                        updateColor = true;
-                    } else if (key === 'ArrowDown' && orientation === 'vertical' && node.offsetTop + 1 < hueNode.height - huePickerNode.height / 2) {
-                        node.style.top = `${node.offsetTop + 1}px`;
-                        updateColor = true;
-                    }
-
-                    if (updateColor) updateHuePickerButtonColor();
-                })
-            );
+        stores: [hueAngle, huePickerPos, huePickerDims],
+        returned: ([$hueAngle, $huePickerPos, $huePickerDims]) => {
+            // const top = Math.round($huePickerPos.y - $huePickerDims.height / 2);
+            // const left = Math.round($huePickerPos.x - $huePickerDims.width / 2);
+            const left = Math.round($hueAngle / 360 * 100);
 
             return {
-                destroy() {
-                    unsubEvents();
-                },
+                style: `position: absolute; background: hsl(${$hueAngle}, 100%, 50%); left: ${left}%; top: 50%; transform: translateY(-50%);`
             }
+        },
+        action: (node: HTMLButtonElement) => {
+            const rect = node.getBoundingClientRect();
+
+            huePickerDims.set({
+                height: rect.height,
+                width: rect.width,
+            });
+
+            // Set the starting position and color.
+            // node.style.position = "absolute";
+
+            // if (argsWithDefaults.hueSliderOrientation === 'horizontal') {
+            //     node.style.left = `-${width / 2}px`;
+            //     node.style.top = `50%`;
+            //     node.style.transform = 'translateY(-50%)';
+            // } else {
+            //     node.style.top = `-${height / 2}px`;
+            //     node.style.left = `50%`;
+            //     node.style.transform = 'translateX(-50%)';
+            // }
+            // node.style.backgroundColor = 'rgb(255, 0, 0)';
+
+            // const unsubEvents = executeCallbacks(
+            //     addMeltEventListener(node, 'click', (e) => {
+            //         e.preventDefault();
+            //     }),
+            //     addMeltEventListener(node, 'mousedown', () => {
+            //         hueDragging = true;
+            //     }),
+            //     addMeltEventListener(node, 'mouseup', () => {
+            //         hueDragging = false;
+            //     }),
+            //     addMeltEventListener(node, 'keydown', (e) => {
+            //         const { key } = e;
+            //         const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+
+            //         if (!keys.includes(key) || !hueNode || !huePickerNode) return;
+
+            //         e.preventDefault();
+
+            //         let updateColor = false;
+
+            //         const { hueSliderOrientation: orientation } = argsWithDefaults;
+
+            //         // Move the hue picker button and restrict movement to within the hue canvas.
+            //         if (key === 'ArrowRight' && orientation === 'horizontal' && node.offsetLeft + 1 < hueNode.width - huePickerNode.width / 2) {
+            //             node.style.left = `${node.offsetLeft + 1}px`;
+            //             updateColor = true;
+            //         } else if (key === 'ArrowLeft' && orientation === 'horizontal' && node.offsetLeft - 1 > -1 * huePickerNode.width / 2) {
+            //             node.style.left = `${node.offsetLeft - 1}px`;
+            //             updateColor = true;
+            //         } else if (key === 'ArrowUp' && orientation === 'vertical' && node.offsetTop - 1 > -1 * huePickerNode.height / 2) {
+            //             node.style.top = `${node.offsetTop - 1}px`;
+            //             updateColor = true;
+            //         } else if (key === 'ArrowDown' && orientation === 'vertical' && node.offsetTop + 1 < hueNode.height - huePickerNode.height / 2) {
+            //             node.style.top = `${node.offsetTop + 1}px`;
+            //             updateColor = true;
+            //         }
+
+            //         if (updateColor) updateHuePickerButtonColor();
+            //     })
+            // );
+
+            // return {
+            //     destroy() {
+            //         unsubEvents();
+            //     },
+            // }
         }
     });
 
@@ -430,6 +438,31 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         return { h, s, l };
     }
 
+    function HSVtoRGB(h: number, s: number, v: number) {
+        let r = 0;
+        let g = 0;
+        let b = 0;
+
+        const i = Math.floor(h * 6);
+        const f = h * 6 - i;
+        const p = v * (1 - s);
+        const q = v * (1 - f * s);
+        const t = v * (1 - (1 - f) * s);
+        switch (i % 6) {
+            case 0: r = v, g = t, b = p; break;
+            case 1: r = q, g = v, b = p; break;
+            case 2: r = p, g = v, b = t; break;
+            case 3: r = p, g = q, b = v; break;
+            case 4: r = t, g = p, b = v; break;
+            case 5: r = v, g = p, b = q; break;
+        }
+        return {
+            r: Math.round(r * 255),
+            g: Math.round(g * 255),
+            b: Math.round(b * 255)
+        };
+    }
+
     function hexToHSV(hex: string): ColorHSV {
         const { r, g, b} = hexToRGB(hex, true);
 
@@ -461,7 +494,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         const { h, s, v } = hexToHSV(hex);
 
         // Update main canvas color and picker position.
-        // fillPickerCanvas(`hsl(${h}, 100%, 50%)`);
         pickerNode.node.style.left = `${Math.round(canvasNode.width * s)}px`;
         pickerNode.node.style.top = `${Math.round((1 - v) * canvasNode.height)}px`;
 
@@ -469,24 +501,91 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         updateHuePickerButtonColor();
     }
 
-    onMount(() => {
-        if (!isValidHex(argsWithDefaults.defaultColor)) return;
+    /**
+     * Move the color picker around the edges of the canvas element
+     * if the mouse moves outside of the canvas element.
+     * @param e The mousemove event.
+     */
+    function handleWindowsMouseMove(e: MouseEvent) {
+        const cc = get(colorCanvasDims);
 
-        updateOnColorInput(argsWithDefaults.defaultColor);
+        if (!dragging || !cc.node) return;
+
+        const { clientX: x, clientY: y } = e;
+        const { width, height, node } = cc;
+        const { x: nodeX, y: nodeY } = node.getBoundingClientRect();
+
+        if (x <= nodeX && y <= nodeY) {
+            colorPickerPos.set({ x: 0, y: 0 });
+        } else if (x <= nodeX && y <= nodeY + height ) {
+            colorPickerPos.set({ x: 0, y: y - nodeY });
+        } else if (x <= nodeX && y > nodeY + height ) {
+            colorPickerPos.set({ x: 0, y: height });
+        } else if (x <= nodeX + width && y <= nodeY) {
+            colorPickerPos.set({ x: x - nodeX, y: 0 });
+        } else if (x <= nodeX + width && y > nodeY + height) {
+            colorPickerPos.set({ x: x - nodeX, y: height });
+        } else if (x > nodeX + width && y <= nodeY) {
+            colorPickerPos.set({ x: width, y: 0 });
+        } else if (x > nodeX + width && y <= nodeY + height ) {
+            colorPickerPos.set({ x: width, y: y - nodeY });
+        } else if (x > nodeX + width && y > nodeY + height) {
+            colorPickerPos.set({ x: width, y: height });
+        }
+    }
+
+    /**
+     * Turn off dragging if a mouse up event occurs outside of
+     * the canvas element while dragging is going on.
+     * @param e The mouse up event.
+     */
+    function handleWindowsMouseUp(e: MouseEvent) {
+        const cc = get(colorCanvasDims);
+
+        if (!dragging || !cc.node) return;
+
+        const { clientX: x, clientY: y } = e;
+        const { width, height, node } = cc;
+        const { x: nodeX, y: nodeY } = node.getBoundingClientRect();
+
+        if (x < nodeX || x > nodeX + width || y < nodeY || y > nodeY + height) {
+            dragging = false;
+        }
+    }
+
+    onMount(() => {
+        if (isBrowser) {
+            window.addEventListener('mousemove', handleWindowsMouseMove);
+            window.addEventListener('mouseup', handleWindowsMouseUp);
+        }
+        // if (colorCanvas) {
+        //     const size = colorCanvas.getBoundingClientRect();
+        //     colorCanvasSize = {
+        //         width: size.width,
+        //         height: size.height
+        //     };
+        // }
+        // if (!isValidHex(argsWithDefaults.defaultColor)) return;
+
+        // updateOnColorInput(argsWithDefaults.defaultColor);
 
         /**
          * TODO:
          * - [ ] update the hue slider button to be at the right degree
          * - [ ] update the canvas button to be at the right spot depending on s & l values
          */
+
+        return () => {
+            window.removeEventListener('mousemove', handleWindowsMouseMove);
+            window.removeEventListener('mouseup', handleWindowsMouseUp);
+        }
     });
 
     return {
         elements: {
-            trigger,
-            canvas,
-            picker,
-            hue,
+            colorCanvas,
+            colorPicker,
+            hueSlider,
             huePicker
         }
     }
