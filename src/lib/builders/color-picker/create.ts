@@ -453,6 +453,18 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         }
     }
 
+    function updateOnColorInput(hex: string) {
+        const hsv = hexToHSV(hex);
+
+        const { width, height } = get(colorCanvasDims);
+        hueAngle.set(hsv.h);
+
+        colorPickerPos.set({
+            x: Math.round(hsv.s * width),
+            y: Math.round((1 - hsv.v) * height)
+        });
+    }
+
     onMount(() => {
         if (isBrowser) {
             window.addEventListener('mousemove', handleWindowsMouseMove);
@@ -468,6 +480,9 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         // if (!isValidHex(argsWithDefaults.defaultColor)) return;
 
         // updateOnColorInput(argsWithDefaults.defaultColor);
+        argsWithDefaults.defaultColor = isValidHex(argsWithDefaults.defaultColor) ? argsWithDefaults.defaultColor : defaults.defaultColor;
+
+        updateOnColorInput(argsWithDefaults.defaultColor);
 
         /**
          * TODO:
