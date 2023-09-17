@@ -4,12 +4,7 @@
 		type CreateDatePickerProps,
 		type Matcher,
 	} from '$lib/builders';
-	import {
-		ChevronRight,
-		ChevronLeft,
-		ChevronsRight,
-		ChevronsLeft,
-	} from 'lucide-svelte';
+	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
 	import { dateFormatter, monthYearFormatter } from './formatters';
 	import { melt } from '$lib';
 	import dayjs from 'dayjs';
@@ -20,19 +15,10 @@
 	export let defaultValue: Date[] = [];
 	export let numberOfMonths: CreateDatePickerProps['numberOfMonths'] = 1;
 	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = false;
-	export let firstDayOfWeek: CreateDatePickerProps['firstDayOfWeek'] = 0;
+	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = 0;
 
 	const {
-		elements: {
-			content,
-			nextMonthButton,
-			prevMonthButton,
-			nextYearButton,
-			prevYearButton,
-			date,
-			prevButton,
-			nextButton,
-		},
+		elements: { content, date, prevButton, nextButton },
 		states: { value, months, daysOfWeek },
 		options: { mode: modeStore },
 	} = createDatePicker({
@@ -43,15 +29,11 @@
 		activeDate,
 		numberOfMonths,
 		pagedNavigation,
-		firstDayOfWeek,
+		weekStartsOn,
 	});
 </script>
 
-<div class="flex flex-col">
-	<div class="flex items-center justify-between">
-		<button use:melt={$prevButton}>Prev</button>
-		<button use:melt={$nextButton}>Next</button>
-	</div>
+<div class="flex flex-col gap-3">
 	<div class="flex items-center gap-4">
 		<!-- Calendar view -->
 		{#each $months as month}
@@ -62,43 +44,35 @@
 				month: monthDate,
 			} = month}
 			<div>
-				<div {...$content} use:content class="content">
+				<div
+					{...$content}
+					use:content
+					class="w-80 rounded-lg bg-white p-4 shadow-sm"
+				>
 					<div class="flex flex-col gap-2.5 text-magnum-800">
-						<div class="text-magnum-800">
-							{monthYearFormatter.format(monthDate)}
-						</div>
-						<div class="buttons-wrapper">
-							<div class="flex items-center space-x-2">
-								<button use:melt={$prevYearButton} class="button">
-									<ChevronsLeft />
-								</button>
-								<button use:melt={$prevMonthButton} class="button">
+						<div class="flex w-full items-center justify-between">
+							<p class="font-semibold text-magnum-800">
+								{monthYearFormatter.format(monthDate)}
+							</p>
+							<div class="flex items-center gap-8">
+								<button use:melt={$prevButton}>
 									<ChevronLeft />
 								</button>
-							</div>
-							<div class="flex items-center space-x-2">
-								<button use:melt={$nextMonthButton} class="button">
+								<button use:melt={$nextButton}>
 									<ChevronRight />
-								</button>
-								<button use:melt={$nextYearButton} class="button">
-									<ChevronsRight />
 								</button>
 							</div>
 						</div>
 						<div class="grid grid-cols-7 gap-2">
 							{#each $daysOfWeek as day}
 								<div class="date">
-									<span class="font-bold">{dayjs(day).format('dd')}</span>
+									<span class="text-sm font-medium"
+										>{dayjs(day).format('dd')}</span
+									>
 								</div>
 							{/each}
 							{#each lastMonthDates as d}
-								<button
-									use:date
-									{...$date({ label: d.toDateString(), value: d })}
-									class="date"
-								>
-									<span class="">{d.getDate()}</span>
-								</button>
+								<span class="" />
 							{/each}
 							{#each dates as d}
 								<button
@@ -110,13 +84,7 @@
 								</button>
 							{/each}
 							{#each nextMonthDates as d}
-								<button
-									use:date
-									{...$date({ label: d.toDateString(), value: d })}
-									class="date"
-								>
-									<span class="">{d.getDate()}</span>
-								</button>
+								<span class="" />
 							{/each}
 						</div>
 					</div>
@@ -125,31 +93,25 @@
 		{/each}
 	</div>
 	{#if $modeStore === 'range'}
-		<div class="text-xs text-magnum-900">
-			Selected Range:
-			<p>
-				{#if $value.length}
-					{$value[0] && dateFormatter.format($value[0])} - {$value[1] &&
-						dateFormatter.format($value[1])}
-				{/if}
-			</p>
+		<div class="text-sm text-magnum-900">
+			You selected:
+			{#if $value.length}
+				{$value[0] && dateFormatter.format($value[0])} - {$value[1] &&
+					dateFormatter.format($value[1])}
+			{/if}
 		</div>
 	{:else if $modeStore === 'single'}
-		<div class="text-xs text-magnum-900">
-			Selected Value:
-			<p>
-				{#if $value.length && $value[0]}
-					{dateFormatter.format($value[0])}
-				{/if}
-			</p>
+		<div class="text-sm text-magnum-900">
+			You selected:
+			{#if $value.length && $value[0]}
+				{dateFormatter.format($value[0])}
+			{/if}
 		</div>
 	{:else if $modeStore === 'multiple'}
-		<div class="text-xs text-magnum-900">
-			Selected Value:
+		<div class="text-sm text-magnum-900">
+			You selected:
 			{#each $value as v, i (i)}
-				<p>
-					{dateFormatter.format(v)}
-				</p>
+				{dateFormatter.format(v)}
 			{/each}
 		</div>
 	{/if}
@@ -193,10 +155,10 @@
 	}
 
 	.date {
-		@apply flex h-6 w-6 items-center justify-center rounded hover:bg-magnum-100 data-[selected]:bg-magnum-200 data-[disabled]:opacity-40;
+		@apply flex h-6 w-6 items-center justify-center rounded p-4 hover:bg-magnum-100 data-[selected]:bg-magnum-200 data-[disabled]:opacity-40;
 	}
 
 	.date span {
-		@apply text-sm text-magnum-800;
+		@apply text-magnum-800;
 	}
 </style>

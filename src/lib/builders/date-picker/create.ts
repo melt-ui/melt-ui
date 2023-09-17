@@ -15,7 +15,6 @@ import {
 import {
 	isBefore,
 	isSameDay,
-	nextMonth as getNextMonth,
 	nextYear as getNextYear,
 	prevMonth as getPrevMonth,
 	prevYear as getPrevYear,
@@ -33,15 +32,18 @@ import dayjs from 'dayjs';
 
 const defaults = {
 	disabled: false,
-	earliest: null,
-	latest: null,
+	earliest: undefined,
+	latest: undefined,
 	mode: 'single',
 	value: undefined,
 	activeDate: new Date(),
 	allowDeselect: false,
 	numberOfMonths: 1,
 	pagedNavigation: false,
-	firstDayOfWeek: 0,
+	weekStartsOn: 0,
+	hidden: undefined,
+	defaultValue: undefined,
+	onValueChange: undefined,
 } satisfies CreateDatePickerProps;
 
 // selectionStrategy - name for range behavior
@@ -59,7 +61,7 @@ type CalendarParts =
 const { name } = createElHelpers<CalendarParts>('calendar');
 
 export function createDatePicker(props?: CreateDatePickerProps) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateDatePickerProps;
+	const withDefaults = { ...defaults, ...props };
 
 	const options = toWritableStores({
 		...omit(withDefaults, 'value'),
@@ -75,47 +77,61 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		disabled,
 		numberOfMonths,
 		pagedNavigation,
-		firstDayOfWeek,
+		weekStartsOn,
 	} = options;
 
 	let lastClickedDate: Date | null = null;
 
 	const months = writable<Month[]>([]);
 
-	if (get(mode) === 'range') {
-		value.update((prev) => {
-			if (prev.length && prev.length < 2) {
-				prev.push(prev[0]);
-			}
-			return prev;
-		});
-	}
-
 	const ids = {
 		content: generateId(),
 		input: generateId(),
 	};
 
+	function nextPage() {
+		if (get(pagedNavigation)) {
+			const $numberOfMonths = get(numberOfMonths);
+			activeDate.update((prev) => {
+				const d = dayjs(prev);
+
+				return d.add($numberOfMonths, 'month').toDate();
+			});
+			return;
+		}
+
+		activeDate.update((prev) => {
+			const d = dayjs(prev);
+
+			return d.add(1, 'month').toDate();
+		});
+	}
+
+	function prevPage() {
+		if (get(pagedNavigation)) {
+			const $numberOfMonths = get(numberOfMonths);
+			activeDate.update((prev) => {
+				const d = dayjs(prev);
+
+				return d.subtract($numberOfMonths, 'month').toDate();
+			});
+		}
+		activeDate.update((prev) => {
+			const d = dayjs(prev);
+
+			return d.subtract(1, 'month').toDate();
+		});
+	}
+
+	/**
+	 * When using paged navigation, moves the calendar forward
+	 * by the number of months specified in the `numberOfMonths` prop.
+	 *
+	 * When not using paged navigation, move the calendar forward by one month.
+	 */
 	const nextButton = builder(name('next'), {
 		action: (node: HTMLElement) => {
-			const unsub = addMeltEventListener(node, 'click', () => {
-				if (get(pagedNavigation)) {
-					const $numberOfMonths = get(numberOfMonths);
-					activeDate.update((prev) => {
-						const d = dayjs(prev);
-
-						return d.add($numberOfMonths, 'month').toDate();
-					});
-					return;
-				}
-
-				activeDate.update((prev) => {
-					const d = dayjs(prev);
-
-					return d.add(1, 'month').toDate();
-				});
-			});
-
+			const unsub = addMeltEventListener(node, 'click', nextPage);
 			return {
 				destroy() {
 					unsub();
@@ -123,24 +139,16 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			};
 		},
 	});
+
+	/**
+	 * When using paged navigation, moves the calendar backward
+	 * by the number of months specified in the `numberOfMonths` prop.
+	 *
+	 * When not using paged navigation, move the calendar backward by one month.
+	 */
 	const prevButton = builder(name('next'), {
 		action: (node: HTMLElement) => {
-			const unsub = addMeltEventListener(node, 'click', () => {
-				if (get(pagedNavigation)) {
-					const $numberOfMonths = get(numberOfMonths);
-					activeDate.update((prev) => {
-						const d = dayjs(prev);
-
-						return d.subtract($numberOfMonths, 'month').toDate();
-					});
-				}
-				activeDate.update((prev) => {
-					const d = dayjs(prev);
-
-					return d.subtract(1, 'month').toDate();
-				});
-			});
-
+			const unsub = addMeltEventListener(node, 'click', prevPage);
 			return {
 				destroy() {
 					unsub();
@@ -153,7 +161,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		action: (node: HTMLElement) => {
 			const unsub = addMeltEventListener(node, 'click', () => {
 				activeDate.update((prev) => {
-					return getNextMonth(prev ?? new Date());
+					return dayjs(prev).add(1, 'month').toDate();
 				});
 			});
 
@@ -434,8 +442,8 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		const firstDayOfMonth = d.startOf('month');
 		const lastDayOfMonth = d.endOf('month');
 
-		const lastSunday = getLastFirstDayOfWeek(firstDayOfMonth.toDate(), get(firstDayOfWeek));
-		const nextSaturday = getNextLastDayOfWeek(lastDayOfMonth.toDate(), get(firstDayOfWeek));
+		const lastSunday = getLastFirstDayOfWeek(firstDayOfMonth.toDate(), get(weekStartsOn));
+		const nextSaturday = getNextLastDayOfWeek(lastDayOfMonth.toDate(), get(weekStartsOn));
 
 		const lastMonthDays = getDaysBetween(
 			dayjs(lastSunday).subtract(1, 'day').toDate(),

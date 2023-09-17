@@ -68,7 +68,7 @@ export type BaseDatePickerProps = {
 	 *
 	 * @default 0 (Sunday)
 	 */
-	firstDayOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+	weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 	ISOWeek?: boolean;
 
