@@ -8,22 +8,13 @@
 	});
 </script>
 
-<!-- Canvas size needs to be the same as the container size. -->
-<div class="h-[175px] w-[175px]">
+<div class="rounded-md bg-white p-4">
 	<div class="canvas relative">
-		<!-- Make sure to use width and height attributes, instead of classes. -->
 		<canvas
 			{...$colorCanvas}
 			use:colorCanvas
-			class="color-canvas h-[175px] w-[175px]"
+			class="color-canvas h-[175px] w-[175px] cursor-pointer rounded-sm"
 		/>
-		<!-- <canvas
-			{...$canvas}
-			use:canvas
-			class="cursor-pointer"
-			width="175"
-			height="175"
-		/> -->
 		<button
 			{...$colorPicker}
 			use:colorPicker
@@ -35,9 +26,8 @@
 		<canvas
 			{...$hueSlider}
 			use:hueSlider
-			class="h-[10px] w-[175px] rounded-full"
+			class="h-[10px] w-[175px] cursor-pointer rounded-md"
 		/>
-		<!-- <canvas {...$hue} use:hue class="rounded-full" width="175" height="10" /> -->
 		<button
 			{...$huePicker}
 			use:huePicker
