@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { createSpinButton, melt } from '$lib';
 
-	export let minValue: number;
-	export let maxValue: number;
+	export let minValue = 1
+	export let maxValue = 10
 
 	const {
 		elements: { root, label, value, spinbutton, increase, decrease },
+    states: { currentValue }
 	} = createSpinButton({
 		minValue,
 		maxValue,
@@ -21,7 +22,7 @@
 		class="spinbutton"
 		aria-label="Font size in points"
 	>
-		<span class="value" data-testid="spinbutton-value" use:melt={$value}>14pt</span>
+		<span class="value" data-testid="spinbutton-value" use:melt={$value}>{currentValue}pt</span>
 		<span use:melt={$increase} data-testid="spinbutton-increase" class="increase">
 			<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12">
 				<polygon class="increase" fill="#333" points="0,12 11,12 6,2" />

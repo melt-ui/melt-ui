@@ -1,5 +1,6 @@
 import { render } from '@testing-library/svelte';
 import SpinButton from './Spinbutton.svelte';
+import userEvent from '@testing-library/user-event';
 
 describe('Spinbutton', () => {
 	it('should have the required attributes are present on the elements', () => {
@@ -39,5 +40,42 @@ describe('Spinbutton', () => {
 		expect(Number(min)).toEqual(minValue);
 		expect(Number(max)).toEqual(maxValue);
 		expect(Number(currentValue)).toEqual(minValue);
+	});
+
+	it('should update the currentValue to 2 when using the buttons', async () => {
+		const user = userEvent.setup();
+
+		const minValue = 1;
+		const maxValue = 10;
+
+		let currentValue = 0;
+		const { getByTestId } = render(SpinButton, { minValue, maxValue });
+
+		const spinbutton = getByTestId('spinbutton');
+		const increase = getByTestId('spinbutton-increase');
+		const decrease = getByTestId('spinbutton-decrease');
+
+		await user.click(increase);
+		currentValue = Number(spinbutton.getAttribute('aria-valuenow'));
+		expect(currentValue).toEqual(2);
+
+		await user.click(decrease);
+		currentValue = Number(spinbutton.getAttribute('aria-valuenow'));
+		expect(currentValue).toEqual(1);
+	});
+
+	it('should update the currentValue to 10 when decrementing for the first time', async () => {
+		const user = userEvent.setup();
+
+		const minValue = 1;
+		const maxValue = 10;
+
+		const { getByTestId } = render(SpinButton, { minValue, maxValue });
+		const spinbutton = getByTestId('spinbutton');
+		const decrease = getByTestId('spinbutton-decrease');
+
+		await user.click(decrease);
+		const currentValue = Number(spinbutton.getAttribute('aria-valuenow'));
+		expect(currentValue).toEqual(maxValue);
 	});
 });
