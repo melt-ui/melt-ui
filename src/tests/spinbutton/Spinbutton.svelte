@@ -1,15 +1,17 @@
 <script lang="ts">
 	import { createSpinButton, melt } from '$lib';
 
-	export let minValue = 1
-	export let maxValue = 10
+	export let minValue = 1;
+	export let maxValue = 10;
+	export let steps = 4;
 
 	const {
 		elements: { root, label, value, spinbutton, increase, decrease },
-    states: { currentValue }
+		states: { currentValue },
 	} = createSpinButton({
 		minValue,
 		maxValue,
+		steps,
 	});
 </script>
 

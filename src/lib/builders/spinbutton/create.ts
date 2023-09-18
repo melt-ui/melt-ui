@@ -4,6 +4,7 @@ import {
 	createElHelpers,
 	executeCallbacks,
 	generateId,
+	kbd,
 	toWritableStores,
 } from '$lib/internal/helpers';
 import { get, readonly, writable } from 'svelte/store';
@@ -15,6 +16,7 @@ import type { SpinbuttonEvents } from './events';
 const defaults = {
 	minValue: 0,
 	maxValue: 0,
+	steps: 4,
 } satisfies CreateSpinbuttonProps;
 
 const { name } = createElHelpers('spinbutton');
@@ -23,7 +25,7 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSpinbuttonProps;
 	const options = toWritableStores(withDefaults);
 
-	const { minValue, maxValue } = options;
+	const { minValue, maxValue, steps: step } = options;
 
 	const currentValue = writable<number>(undefined);
 	currentValue.set(get(minValue));
@@ -32,14 +34,14 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 		label: generateId(),
 	};
 
-	function handleDecrease() {
+	function handleDecrease(step = 1) {
 		if (get(currentValue) === get(minValue)) currentValue.set(get(maxValue));
-    else currentValue.update((value) => value - 1);
+		else currentValue.update((value) => value - step);
 	}
 
-	function handleIncrease() {
+	function handleIncrease(step = 1) {
 		if (get(currentValue) === get(maxValue)) currentValue.set(get(minValue));
-    else currentValue.update((value) => value + 1);
+		else currentValue.update((value) => value + step);
 	}
 
 	const root = builder(name(''), {
@@ -71,7 +73,43 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 			'aria-valuenow': $currentValue,
 			'aria-valuemin': $minValue,
 			'aria-valuemax': $maxValue,
+			'aria-invalid': $currentValue > $maxValue || $currentValue < $minValue,
 		}),
+		action: (node: HTMLElement): MeltActionReturn<SpinbuttonEvents['spinbutton']> => {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'keydown', (e) => {
+					e.preventDefault();
+
+					switch (e.key) {
+						case kbd.ARROW_UP:
+							handleIncrease();
+							break;
+						case kbd.ARROW_DOWN:
+							handleDecrease();
+							break;
+						case kbd.PAGE_UP:
+							handleIncrease(get(step));
+							break;
+						case kbd.PAGE_DOWN:
+							handleDecrease(get(step));
+							break;
+						case kbd.HOME:
+							currentValue.set(get(minValue));
+							break;
+						case kbd.END:
+							currentValue.set(get(maxValue));
+							break;
+
+						default:
+							break;
+					}
+				})
+			);
+
+			return {
+				destroy: unsub,
+			};
+		},
 	});
 
 	const increase = builder(name('increase'), {
