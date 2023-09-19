@@ -55,6 +55,13 @@ export type CreatePinInputProps = {
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
 	onValueChange?: ChangeFn<string[]>;
+
+	/**
+	 * Whether you want to hide the input with a mask.
+	 *
+	 * @default false
+	 */
+	mask?: boolean;
 };
 
 export type PinInput = BuilderReturn<typeof createPinInput>;

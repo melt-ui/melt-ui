@@ -44,6 +44,7 @@ const defaults = {
 	type: 'text',
 	name: undefined,
 	defaultValue: [],
+	mask: false,
 } satisfies Defaults<CreatePinInputProps>;
 
 export function createPinInput(props?: CreatePinInputProps) {
@@ -95,7 +96,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 					placeholder: $placeholder,
 					disabled: disabledAttr($disabled),
 					type: $type,
-					value: currValue,
+					value: options.mask && currValue ? '*' : currValue,
 				};
 			};
 		},
