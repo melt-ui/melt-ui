@@ -2,7 +2,7 @@ import { addMeltEventListener, builder, createElHelpers, executeCallbacks, isBro
 import type { Defaults } from "$lib/internal/types";
 import { onMount } from "svelte";
 
-import type { ArrowKeys, ColorHSL, ColorHSV, ColorPickerParts, ColorRGB, CreateColorPickerProps, KeyDurations, NodeElement, NodeSize, Position } from "./types";
+import type { ArrowKeys, ColorHSL, ColorHSV, ColorPickerParts, ColorRGB, CreateColorPickerProps, EyeDropper, KeyDurations, NodeElement, NodeSize, Position } from "./types";
 import { derived, get, writable, type Readable, type Writable } from "svelte/store";
 
 
@@ -38,6 +38,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     const alphaPickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
     const alphaValue: Writable<number> = writable(100);
 
+    let eye: EyeDropper | null = null;
+
     /**
      * TODO:
      * - [X] getCurrentColor()
@@ -69,6 +71,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         stores: [hueAngle],
         returned: ([$hueAngle]) => {
             return {
+                'aria-label': 'Color canvas for showing saturation and brightness.',
                 style: `background-color: hsl(${$hueAngle}, 100%, 50%); background-image: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), linear-gradient(to right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));`
             }
         },
@@ -117,6 +120,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             const rgb = $getCurrentColor();
 
             return {
+                'aria-label': 'Button on color canvas, used to select the saturation and brightness.',
                 style: `position: absolute; top: ${top}px; left: ${left}px; background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b});`
             }
         },
@@ -194,6 +198,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             }
 
             return {
+                'aria-label': 'A canvas element showing all available hue colors.',
                 style: `background: linear-gradient(to ${orientation}, ${hueColors.join(',')});`
             }
         },
@@ -240,6 +245,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             const left = Math.round($hueAngle / 360 * $hueSliderDims.width - $huePickerDims.width / 2);
 
             return {
+                'aria-label': 'The button to select the hue color.',
                 style: `position: absolute; background: hsl(${$hueAngle}, 100%, 50%); left: ${left}px; top: 50%; transform: translateY(-50%);`
             }
         },
@@ -294,6 +300,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             const color = `${rgb.r}, ${rgb.g}, ${rgb.b}`;
 
             return {
+                'aria-label': 'A canvas element showing the alpha values for the color.',
                 style: `background: linear-gradient(to ${orientation}, rgba(${color}, 0), rgba(${color}, 1));`
             }
         },
@@ -342,6 +349,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             const { r, g, b } = $getCurrentColor();
 
             return {
+                'aria-label': 'The button to select the alpha value for the color.',
                 style: `position: absolute; background: rgba(${r}, ${g}, ${b}, ${$alphaValue / 100}); left: ${left}px; top: 50%; transform: translateY(-50%);`
             }
         },
@@ -383,6 +391,37 @@ export function createColorPicker(args?: CreateColorPickerProps) {
                 destroy() {
                     unsubEvents();
                 },
+            }
+        }
+    });
+
+    const eyeDropper = builder(name('eye-dropper'), {
+        returned: () => {
+            return {
+                'aria-label': 'An eye dropper button, allowing you to select any color on the screen.'
+            }
+        },
+        action: (node: HTMLButtonElement) => {
+
+            if (window.EyeDropper) {
+                eye = new EyeDropper();
+            }
+
+            const unsubEvents = executeCallbacks(
+                addMeltEventListener(node, 'click', () => {
+                    if (!eye) return;
+
+                    eye
+                        .open()
+                        .then((result) => updateOnColorInput(result.sRGBHex))
+                        .catch((e) => console.log(e));
+                })
+            );
+
+            return {
+                destroy() {
+                    unsubEvents();
+                }
             }
         }
     });
@@ -649,7 +688,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             hueSlider,
             huePicker,
             alphaSlider,
-            alphaPicker
+            alphaPicker,
+            eyeDropper
         }
     }
 }

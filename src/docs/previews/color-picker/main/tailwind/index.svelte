@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { createColorPicker } from '$lib';
 
+	import { Pipette } from 'lucide-svelte';
+
 	const {
 		elements: {
 			colorCanvas,
@@ -9,6 +11,7 @@
 			huePicker,
 			alphaSlider,
 			alphaPicker,
+			eyeDropper,
 		},
 	} = createColorPicker({
 		defaultColor: '#5b52aa',
@@ -46,6 +49,15 @@
 			class="h-[10px] w-[175px] cursor-pointer rounded-full"
 		/>
 	</div>
+
+	<button
+		{...$eyeDropper}
+		use:eyeDropper
+		class="inline-flex items-center justify-center gap-1 rounded-md bg-magnum-500 p-1"
+	>
+		<Pipette class="square-5" />
+		<span>Pick</span>
+	</button>
 </div>
 
 <style lang="postcss">

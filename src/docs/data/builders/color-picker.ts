@@ -7,44 +7,72 @@ const builder: APISchema = {
 	description: DESCRIPTIONS.BUILDER('color picker'),
 	props: [
 		{
-			name: 'selector',
+			name: 'defaultColor',
 			type: 'string',
-			required: true,
-			description:
-				'The selector of the container for which the table of contents (ToC) should be created.',
+			description: 'The default selected color. Should be a hex value, eg: #424242.',
 		},
-	],
-	returnedProps: [
 		{
-			name: 'activeHeadingIdxs',
-			type: 'Writable<number[]>',
-			description: 'A writable store that shows the list of active headers.',
+			name: 'hueSliderOrientation',
+			type: 'Orientation',
+			description: 'The orientation of the hue slider.'
+		},
+		{
+			name: 'alphaSliderOrientation',
+			type: 'Orientation',
+			description: 'The orientation of the alpha slider.'
 		}
 	],
-};
-
-const item: APISchema = {
-	title: 'item',
-	description: 'A table of contents item.',
-	dataAttributes: [
+	elements: [
 		{
-			name: 'data-id',
-			value: 'The id of the heading element the item links to.',
+			name: 'colorCanvas',
+			description: 'The builder store used to create the color canvas.'
 		},
-	],
+		{
+			name: 'colorPicker',
+			description: 'The builder store used to create the color picker button.'
+		},
+		{
+			name: 'hueSlider',
+			description: 'The builder store used to create the hue canvas.'
+		},
+		{
+			name: 'huePicker',
+			description: 'The builder store used to create the hue picker button.'
+		},
+		{
+			name: 'alphaSlider',
+			description: 'The builder store used to create the alpha canvas.'
+		},
+		{
+			name: 'alphaPicker',
+			description: 'The builder store used to create the alpha picker button.'
+		},
+	]
 };
 
-const schemas = [builder, item];
+const schemas = [builder];
 
 const features = [
-	'',
+	'Full keyboard navigation',
 ];
 
 const keyboard: KeyboardSchema = [
 	{
-		key: KBD.ENTER,
-		behavior: 'Scrolls to the focused heading.',
+		key: KBD.ARROW_UP,
+		behavior: 'Moves the focused button up.',
 	},
+	{
+		key: KBD.ARROW_DOWN,
+		behavior: 'Moves the focused button down.'
+	},
+	{
+		key: KBD.ARROW_LEFT,
+		behavior: 'Moves the focused button left.'
+	},
+	{
+		key: KBD.ARROW_RIGHT,
+		behavior: 'Moves the focused button right.'
+	}
 ];
 
 export const colorPickerData: BuilderData = {

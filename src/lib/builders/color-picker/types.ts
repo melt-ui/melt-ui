@@ -1,4 +1,6 @@
 
+export type ColorPickerParts = 'trigger' | 'color-canvas' | 'color-picker' | 'hue-slider' | 'hue-picker' | 'alpha-slider' | 'alpha-picker' | 'eye-dropper';
+
 export type ColorRGB = {
     r: number;
     g: number;
@@ -59,4 +61,22 @@ export type Position = {
     y: number;
 };
 
-export type ColorPickerParts = 'trigger' | 'color-canvas' | 'color-picker' | 'hue-slider' | 'hue-picker' | 'alpha-slider' | 'alpha-picker';
+export interface ColorSelectionOptions {
+    signal?: AbortSignal
+}
+
+export interface ColorSelectionResult {
+    sRGBHex: string
+}
+
+export interface EyeDropper {
+    open: (options?: ColorSelectionOptions) => Promise<ColorSelectionResult>
+}
+
+export interface EyeDropperConstructor {
+    new (): EyeDropper
+}
+
+export interface Window {
+    EyeDropper?: EyeDropperConstructor | undefined
+}
