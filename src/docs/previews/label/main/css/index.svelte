@@ -32,11 +32,13 @@
 		align-items: flex-start;
 		flex-direction: column;
 	}
+
 	.formkit-label {
 		margin-bottom: 2px;
 		font-weight: 500;
 		color: hsl(22, 70%, 28%);
 	}
+
 	.formkit-input {
 		height: 40px;
 		width: 240px;
