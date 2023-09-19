@@ -6,7 +6,7 @@
 	export let step = 1;
 	const {
 		elements: { root, range, thumb, tick },
-		states: { ticks }
+		states: { ticks },
 	} = createSlider({
 		defaultValue: value,
 		max,
