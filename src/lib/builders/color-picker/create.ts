@@ -2,7 +2,7 @@ import { addMeltEventListener, builder, createElHelpers, executeCallbacks, isBro
 import type { Defaults } from "$lib/internal/types";
 import { onMount } from "svelte";
 
-import type { ColorHSL, ColorHSV, ColorPickerParts, ColorRGB, CreateColorPickerProps, NodeElement, NodeSize, Position } from "./types";
+import type { ArrowKeys, ColorHSL, ColorHSV, ColorPickerParts, ColorRGB, CreateColorPickerProps, KeyDurations, NodeElement, NodeSize, Position } from "./types";
 import { derived, get, writable, type Readable, type Writable } from "svelte/store";
 
 
@@ -16,11 +16,14 @@ const defaults = {
 const { name } = createElHelpers<ColorPickerParts>('color-picker');
 
 export function createColorPicker(args?: CreateColorPickerProps) {
-    const argsWithDefaults = { ...defaults, ...args }; 
+    const argsWithDefaults = { ...defaults, ...args };
 
     let dragging = false;
     let hueDragging = false;
     let alphaDragging = false;
+    const speepUpStep = 5;
+
+    const keyDurations = <KeyDurations>{};
 
     const colorCanvasDims: Writable<NodeElement<HTMLCanvasElement>> = writable({ height: 1, width: 1 });
     const colorPickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
@@ -29,11 +32,11 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     const hueSliderDims: Writable<NodeElement<HTMLCanvasElement>> = writable({ height: 1, width: 1 });
     const huePickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
     // const huePickerPos: Writable<Position> = writable({ x: 0, y: 0 });
+    const hueAngle: Writable<number> = writable(0);
 
     const alphaSliderDims: Writable<NodeElement<HTMLCanvasElement>> = writable({ height: 1, width: 1 });
     const alphaPickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
-
-    const hueAngle: Writable<number> = writable(0);
+    const alphaValue: Writable<number> = writable(100);
 
     /**
      * TODO:
@@ -47,6 +50,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
      * - [ ] builder: eye dropper: https://developer.mozilla.org/en-US/docs/Web/API/EyeDropper
      */
     const isValidHex = (hex: string) => /^#([0-9a-f]{3}){1,2}$/i.test(hex);
+
+    const setAlphaValue = (x: number) => alphaValue.set(Math.round(x / get(alphaSliderDims).width * 100));
 
     /**
      * Returns the current color of the color picker.
@@ -130,6 +135,14 @@ export function createColorPicker(args?: CreateColorPickerProps) {
                 addMeltEventListener(node, 'mouseup', () => {
                     dragging = false;
                 }),
+                addMeltEventListener(node, 'keyup', (e) => {
+                    const { key } = e;
+                    const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+
+                    if (!keys.includes(key)) return;
+
+                    keyDurations[<ArrowKeys>key] = null;
+                }),
                 addMeltEventListener(node, 'keydown', (e) => {
                     const { key } = e;
                     const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
@@ -138,18 +151,25 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
                     e.preventDefault();
 
+                    if (!keyDurations[<ArrowKeys>key]) {
+                        keyDurations[<ArrowKeys>key] = Date.now();
+                    }
+
+                    const duration = Date.now() - keyDurations[<ArrowKeys>key];
+                    const step = duration > 1000 ? speepUpStep : 1;
+
                     const { x, y } = get(colorPickerPos);
                     const { height: canvasH, width: canvasW } = get(colorCanvasDims);
 
                     // Move the picker button and restrict movement to within the canvas.
                     if (key === 'ArrowUp' && y - 1 >= 0) {
-                        colorPickerPos.set({ x, y: y - 1 });
+                        colorPickerPos.set({ x, y: Math.max(y - step, 0) });
                     } else if (key === 'ArrowDown' && y + 1 <= canvasH) {
-                        colorPickerPos.set({ x, y: y + 1 });
+                        colorPickerPos.set({ x, y: Math.min(y + step, canvasH) });
                     } else if (key === 'ArrowRight' && x + 1 <= canvasW) {
-                        colorPickerPos.set({ x: x + 1, y });
+                        colorPickerPos.set({ x: Math.min(x + step, canvasW), y });
                     } else if (key === 'ArrowLeft' && x - 1 >= 0) {
-                        colorPickerPos.set({ x: x - 1, y });
+                        colorPickerPos.set({ x: Math.max(x - step, 0), y });
                     }
                 })
             );
@@ -277,66 +297,68 @@ export function createColorPicker(args?: CreateColorPickerProps) {
                 style: `background: linear-gradient(to ${orientation}, rgba(${color}, 0), rgba(${color}, 1));`
             }
         },
-        // action: (node: HTMLCanvasElement) => {
-        //     const rect = node.getBoundingClientRect();
+        action: (node: HTMLCanvasElement) => {
+            const rect = node.getBoundingClientRect();
 
-        //     hueSliderDims.set({
-        //         node,
-        //         width: rect.width,
-        //         height: rect.height
-        //     });
+            alphaSliderDims.set({
+                node,
+                width: rect.width,
+                height: rect.height
+            });
 
-        //     const unsubEvents = executeCallbacks(
-        //         addMeltEventListener(node, 'click', (e) => {
-        //             const { offsetX: x } = e;
+            const unsubEvents = executeCallbacks(
+                addMeltEventListener(node, 'click', (e) => {
+                    const { offsetX: x } = e;
 
-        //             hueAngle.set(Math.round(x / get(hueSliderDims).width * 360));
-        //         }),
-        //         addMeltEventListener(node, 'mousedown', () => {
-        //             alphaDragging = true;
-        //         }),
-        //         addMeltEventListener(node, 'mouseup', () => {
-        //             alphaDragging = false;
-        //         }),
-        //         addMeltEventListener(node, 'mousemove', (e) => {
-        //             if (!alphaDragging) return;
+                    setAlphaValue(x);
+                }),
+                addMeltEventListener(node, 'mousedown', () => {
+                    alphaDragging = true;
+                }),
+                addMeltEventListener(node, 'mouseup', () => {
+                    alphaDragging = false;
+                }),
+                addMeltEventListener(node, 'mousemove', (e) => {
+                    if (!alphaDragging) return;
 
-        //             const { offsetX: x } = e;
-        //             hueAngle.set(Math.round(x / get(hueSliderDims).width * 360));
-        //         })
-        //     );
+                    const { offsetX: x } = e;
+                    setAlphaValue(x);
+                })
+            );
 
-        //     return {
-        //         destroy() {
-        //             unsubEvents();
-        //         }
-        //     }
-        // }
+            return {
+                destroy() {
+                    unsubEvents();
+                }
+            }
+        }
     });
 
     const alphaPicker = builder(name('alpha-picker'), {
-        stores: [hueAngle, huePickerDims, hueSliderDims],
-        returned: ([$hueAngle, $huePickerDims, $hueSliderDims]) => {
-            const left = Math.round($hueAngle / 360 * $hueSliderDims.width - $huePickerDims.width / 2);
+        stores: [alphaValue, alphaPickerDims, alphaSliderDims, getCurrentColor],
+        returned: ([$alphaValue, $alphaPickerDims, $alphaSliderDims, $getCurrentColor]) => {
+            const left = Math.round($alphaValue / 100 * $alphaSliderDims.width - $alphaPickerDims.width / 2);
+
+            const { r, g, b } = $getCurrentColor();
 
             return {
-                style: `position: absolute; background: hsl(${$hueAngle}, 100%, 50%); left: ${left}px; top: 50%; transform: translateY(-50%);`
+                style: `position: absolute; background: rgba(${r}, ${g}, ${b}, ${$alphaValue / 100}); left: ${left}px; top: 50%; transform: translateY(-50%);`
             }
         },
         action: (node: HTMLButtonElement) => {
             const rect = node.getBoundingClientRect();
 
-            huePickerDims.set({
+            alphaPickerDims.set({
                 height: rect.height,
                 width: rect.width,
             });
 
             const unsubEvents = executeCallbacks(
                 addMeltEventListener(node, 'mousedown', () => {
-                    hueDragging = true;
+                    alphaDragging = true;
                 }),
                 addMeltEventListener(node, 'mouseup', () => {
-                    hueDragging = false;
+                    alphaDragging = false;
                 }),
                 addMeltEventListener(node, 'keydown', (e) => {
                     const { key } = e;
@@ -346,13 +368,13 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
                     e.preventDefault();
 
-                    const angle = get(hueAngle);
+                    const alpha = get(alphaValue);
 
                     // Move the picker button and restrict movement to within the canvas.
-                    if (key === 'ArrowRight' && angle + 1 < 360) {
-                        hueAngle.set(angle + 1);
-                    } else if (key === 'ArrowLeft' && angle - 1 >= 0) {
-                        hueAngle.set(angle - 1);
+                    if (key === 'ArrowRight' && alpha + 1 <= 100) {
+                        alphaValue.set(alpha + 1);
+                    } else if (key === 'ArrowLeft' && alpha - 1 >= 0) {
+                        alphaValue.set(alpha - 1);
                     }
                 })
             );
@@ -529,6 +551,24 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             } else if (x >= nodeX + width) {
                 hueAngle.set(359);
             }
+        } else if (alphaDragging) {
+            const as = get(alphaSliderDims);
+
+            if (!as.node) return;
+
+            e.preventDefault();
+
+            const { clientX: x, clientY: y } = e;
+            const { width, height, node } = as;
+            const { x: nodeX, y: nodeY } = node.getBoundingClientRect();
+
+            if (x < nodeX) {
+                alphaValue.set(0);
+            } else if (x <= nodeX + width && (y <= nodeY || y > nodeY + height)) {
+                alphaValue.set(Math.round((x - nodeX) / width * 100));
+            } else if (x >= nodeX + width) {
+                alphaValue.set(100);
+            }
         }
 
     }
@@ -553,19 +593,20 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             if (x < nodeX || x > nodeX + width || y < nodeY || y > nodeY + height) {
                 dragging = false;
             }
-        } else if (hueDragging) {
-            const hs = get(hueSliderDims);
+        } else if (hueDragging || alphaDragging) {
+            const dims = hueDragging ? get(hueSliderDims) : get(alphaSliderDims);
 
-            if (!hs.node) return;
+            if (!dims.node) return;
 
             e.preventDefault();
 
             const { clientX: x, clientY: y } = e;
-            const { width, height, node } = hs;
+            const { width, height, node } = dims;
             const { x: nodeX, y: nodeY } = node.getBoundingClientRect();
 
             if (x < nodeX || x > nodeX + width || y < nodeY || y > nodeY + height) {
                 hueDragging = false;
+                alphaDragging = false;
             }
         }
     }

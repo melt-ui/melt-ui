@@ -30,28 +30,27 @@
 	</div>
 
 	<div class="hue relative h-[10px] w-[175px]">
+		<button {...$huePicker} use:huePicker class="hue-picker" />
 		<canvas
 			{...$hueSlider}
 			use:hueSlider
-			class="h-[10px] w-[175px] cursor-pointer rounded-md border border-gray-500/50"
-		/>
-		<button
-			{...$huePicker}
-			use:huePicker
-			class="absolute h-3 w-3 rounded-full border border-black !outline !outline-1 !outline-white focus:outline-offset-2"
+			class="h-[10px] w-[175px] cursor-pointer rounded-md"
 		/>
 	</div>
 
-	<div class="hue relative h-[10px] w-[175px]">
+	<div class="alpha relative h-[10px] w-[175px] rounded-full">
+		<button {...$alphaPicker} use:alphaPicker class="alpha-picker" />
 		<canvas
 			{...$alphaSlider}
 			use:alphaSlider
-			class="h-[10px] w-[175px] cursor-pointer rounded-md border border-gray-500/50"
+			class="h-[10px] w-[175px] cursor-pointer rounded-full"
 		/>
-		<!-- <button
-			{...$huePicker}
-			use:huePicker
-			class="absolute h-3 w-3 rounded-full border border-black !outline !outline-1 !outline-white focus:outline-offset-2"
-		/> -->
 	</div>
 </div>
+
+<style lang="postcss">
+	.alpha-picker,
+	.hue-picker {
+		@apply absolute h-3 w-3 rounded-full border border-black !outline !outline-1 !outline-white focus:outline-offset-2;
+	}
+</style>

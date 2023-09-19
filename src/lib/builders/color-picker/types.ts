@@ -39,6 +39,10 @@ export type CreateColorPickerProps = {
     alphaSliderOrientation?: Orientation;
 };
 
+export type ArrowKeys = 'ArrowUp' | 'ArrowLeft' | 'ArrowDown' | 'ArrowRight';
+
+export type KeyDurations = Record<ArrowKeys, number | null>;
+
 export type NodeElement<T> = {
     node?: T;
     height: number;
