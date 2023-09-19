@@ -160,7 +160,7 @@ export function createSelect<
 	const isSelected = derived([selected], ([$selected]) => {
 		return (value: Value) => {
 			if (Array.isArray($selected)) {
-				return $selected.map((o) => o.value).includes(value);
+				return $selected.some((o) => deepEqual(o.value, value));
 			}
 			return deepEqual($selected?.value, value);
 		};

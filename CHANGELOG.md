@@ -1,5 +1,17 @@
 # @melt-ui/svelte
 
+## 0.50.0
+
+### Minor Changes
+
+- Combobox: Add multiple option ([#533](https://github.com/melt-ui/melt-ui/pull/533))
+
+- Slider: add ticks ([#534](https://github.com/melt-ui/melt-ui/pull/534))
+
+### Patch Changes
+
+- Select: fix deep equality on isSelected ([`ad02e18f`](https://github.com/melt-ui/melt-ui/commit/ad02e18f2029d573c2b99ee95dce46a9ddeb6e35))
+
 ## 0.49.1
 
 ### Patch Changes

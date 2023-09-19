@@ -89,12 +89,8 @@ export function createCombobox<
 	const highlightedItem = writable<HTMLElement | null>(null);
 
 	const selectedWritable =
-		withDefaults.selected ??
-		writable(
-			(withDefaults.defaultSelected ?? withDefaults.multiple
-				? ([] as Array<ComboboxOption<Value>>)
-				: undefined) as S
-		);
+		withDefaults.selected ?? writable<S | undefined>(withDefaults.defaultSelected);
+
 	const selected = overridable(selectedWritable, withDefaults?.onSelectedChange);
 
 	const highlighted = derived(highlightedItem, ($highlightedItem) =>
@@ -103,7 +99,7 @@ export function createCombobox<
 
 	// The current value of the input element.
 	const inputValue = writable(
-		!Array.isArray(withDefaults.defaultSelected) ? withDefaults.defaultSelected?.label ?? '' : ''
+		Array.isArray(withDefaults.defaultSelected) ? '' : withDefaults.defaultSelected?.label ?? ''
 	);
 
 	// Either the provided open store or a store with the default open value
@@ -155,10 +151,10 @@ export function createCombobox<
 		const $selectedItem = get(selected);
 
 		// If no item is selected the input should be cleared and the filter reset.
-		if (!$selectedItem || multiple) {
+		if (!$selectedItem || Array.isArray($selectedItem)) {
 			inputValue.set('');
 		} else {
-			inputValue.set((get(selected) as ComboboxOption<Value>)?.label ?? '');
+			inputValue.set($selectedItem?.label ?? '');
 		}
 
 		touchedInput.set(false);
@@ -184,7 +180,9 @@ export function createCombobox<
 
 		setOption(props);
 
-		if (!get(multiple)) inputValue.set(props.label ?? '');
+		if (!get(multiple)) {
+			inputValue.set(props.label ?? '');
+		}
 
 		const activeTrigger = getElementByMeltId(ids.input);
 		if (activeTrigger) {
@@ -245,7 +243,7 @@ export function createCombobox<
 	const isSelected = derived([selected], ([$selected]) => {
 		return (value: Value) => {
 			if (Array.isArray($selected)) {
-				return $selected.map((o) => o.value).includes(value);
+				return $selected.some((o) => deepEqual(o.value, value));
 			}
 			return deepEqual($selected?.value, value);
 		};

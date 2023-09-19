@@ -78,12 +78,21 @@ const builder = builderSchema(BUILDER_NAME, {
 			name: 'thumb',
 			description: 'The builder store used to create the slider thumb element.',
 		},
+		{
+			name: 'tick',
+			description: 'The builder store used to create the slider tick element.',
+		},
 	],
 	states: [
 		{
 			name: 'value',
 			type: 'Writable<number[]>',
 			description: 'A writable store that can be used to get the current value of the slider.',
+		},
+		{
+			name: 'ticks',
+			type: 'Writable<number>',
+			description: 'A readable store that can be used to get the current number of ticks.',
 		},
 	],
 	options: OPTION_PROPS,

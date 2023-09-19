@@ -37,6 +37,14 @@ example:
     <svelte:component this={previews.vertical} />
 </Preview>
 
+### Slider ticks
+
+You can add slider ticks using the `ticks` state and the `tick` element returned by `createSlider`.
+
+<Preview code={snippets.ticks}>
+    <svelte:component this={previews.ticks} />
+</Preview>
+
 ## API Reference
 
 <APIReference {schemas} />
