@@ -36,7 +36,7 @@
 	.formkit-label {
 		margin-bottom: 2px;
 		font-weight: 500;
-		color: hsl(22, 70%, 28%);
+		color: rgb(var(--color-magnum-900) / 1);
 	}
 
 	.formkit-input {
@@ -44,6 +44,6 @@
 		width: 240px;
 		border-radius: 6px;
 		padding: 8px 12px;
-		color: hsl(24, 83%, 40%);
+		color: rgb(var(--color-magnum-700) / 1);
 	}
 </style>
