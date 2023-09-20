@@ -5,7 +5,13 @@ export type ColorRGB = {
     r: number;
     g: number;
     b: number;
+    a?: number;
 };
+
+export type ReturnedColor = {
+    rgb: ColorRGB;
+    hex: string;
+}
 
 export type ColorHSL = {
     h: number;

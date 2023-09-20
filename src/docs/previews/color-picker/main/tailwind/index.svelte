@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createColorPicker } from '$lib';
+	import { createColorPicker, type ReturnedColor } from '$lib';
 
 	import { Pipette } from 'lucide-svelte';
 
@@ -13,10 +13,18 @@
 			alphaPicker,
 			eyeDropper,
 		},
+		states: { color },
+		helpers: { getCurrentColor },
 	} = createColorPicker({
 		defaultColor: '#5b52aa',
 	});
+
+	let savedColors: ReturnedColor[] = [];
+
+	$: savedColorsLimited = savedColors.slice(0, 5);
 </script>
+
+<p>{$color}</p>
 
 <div class="flex flex-col gap-2 rounded-md bg-white p-4">
 	<div class="canvas relative">
@@ -58,6 +66,23 @@
 		<Pipette class="square-5" />
 		<span>Pick</span>
 	</button>
+
+	<button
+		class="rounded-md bg-magnum-500 p-1"
+		on:click={() => (savedColors = [$getCurrentColor(), ...savedColors])}
+	>
+		Save
+	</button>
+
+	<div class="flex h-8 items-center justify-center gap-2">
+		{#each savedColorsLimited as { rgb, hex }}
+			<button
+				class="h-6 w-6 rounded-md"
+				style="background-color: rgba({rgb.r}, {rgb.g}, {rgb.b})"
+				on:click={() => ($color = hex)}
+			/>
+		{/each}
+	</div>
 </div>
 
 <style lang="postcss">

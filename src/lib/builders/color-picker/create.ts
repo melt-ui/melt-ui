@@ -2,7 +2,7 @@ import { addMeltEventListener, builder, createElHelpers, executeCallbacks, isBro
 import type { Defaults } from "$lib/internal/types";
 import { onMount } from "svelte";
 
-import type { ArrowKeys, ColorHSL, ColorHSV, ColorPickerParts, ColorRGB, CreateColorPickerProps, EyeDropper, KeyDurations, NodeElement, NodeSize, Position } from "./types";
+import type { ArrowKeys, ColorHSL, ColorHSV, ColorPickerParts, ColorRGB, CreateColorPickerProps, EyeDropper, KeyDurations, NodeElement, NodeSize, Position, ReturnedColor } from "./types";
 import { derived, get, writable, type Readable, type Writable } from "svelte/store";
 
 
@@ -15,6 +15,16 @@ const defaults = {
 
 const { name } = createElHelpers<ColorPickerParts>('color-picker');
 
+/**
+ * TODO:
+ * - [ ] create preview example of vertical sliders
+ * - [ ] bind color store to changes in canvas
+ * - [ ] create input builders
+ * - [ ] create trigger builder to hide / show color-picker
+ * - [ ] helper function for detecting the browser for eye dropper?
+ * - [ ] ...
+ */
+
 export function createColorPicker(args?: CreateColorPickerProps) {
     const argsWithDefaults = { ...defaults, ...args };
 
@@ -24,6 +34,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     const speepUpStep = 5;
 
     const keyDurations = <KeyDurations>{};
+
+    const color: Writable<string> = writable(defaults.defaultColor);
 
     const colorCanvasDims: Writable<NodeElement<HTMLCanvasElement>> = writable({ height: 1, width: 1 });
     const colorPickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
@@ -40,31 +52,28 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
     let eye: EyeDropper | null = null;
 
-    /**
-     * TODO:
-     * - [X] getCurrentColor()
-     * - [ ] isFocused() functions for buttons, so different styling can be applied 
-     *       to canvases
-     * - [ ] aria attributes for picker buttons & canvases
-     * - [ ] builder: alpha canvas and picker
-     * - [ ] when arrow buttons are pressed for a long time increase the movement speed
-     *       (https://svelte-awesome-color-picker.vercel.app/)
-     * - [ ] builder: eye dropper: https://developer.mozilla.org/en-US/docs/Web/API/EyeDropper
-     */
     const isValidHex = (hex: string) => /^#([0-9a-f]{3}){1,2}$/i.test(hex);
 
     const setAlphaValue = (x: number) => alphaValue.set(Math.round(x / get(alphaSliderDims).width * 100));
 
     /**
+     * Update the canvases when the color changes.
+     */
+    // const updateCanvases = derived([color], ([$color]) => {
+    //     if (isValidHex($color)) updateOnColorInput($color);
+    // });
+
+    /**
      * Returns the current color of the color picker.
      */
-    const getCurrentColor: Readable<() => ColorRGB> = derived([hueAngle, colorPickerPos, colorCanvasDims], ([$hueAngle, $colorPickerPos, $colorCanvasDims]) => {
+    const getCurrentColor: Readable<() => ReturnedColor> = derived([hueAngle, colorPickerPos, colorCanvasDims, alphaValue], ([$hueAngle, $colorPickerPos, $colorCanvasDims, $alphaValue]) => {
         const x = $colorPickerPos.x / $colorCanvasDims.width;
         const y = 1 - $colorPickerPos.y / $colorCanvasDims.height;
 
         const rgb = HSVtoRGB($hueAngle / 360, x, y);
+        const hex = RGBtoHex(rgb);
 
-        return () => rgb;
+        return () => ({ rgb: { ...rgb, a: $alphaValue }, hex });
     });
 
     const colorCanvas = builder(name('color-canvas'), {
@@ -117,11 +126,14 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             const top = Math.round($colorPickerPos.y - $colorPickerDims.height / 2);
             const left = Math.round($colorPickerPos.x - $colorPickerDims.width / 2);
 
-            const rgb = $getCurrentColor();
+            const { rgb, hex } = $getCurrentColor();
+            const { r, g, b } = rgb;
+
+            color.set(hex);
 
             return {
                 'aria-label': 'Button on color canvas, used to select the saturation and brightness.',
-                style: `position: absolute; top: ${top}px; left: ${left}px; background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b});`
+                style: `position: absolute; top: ${top}px; left: ${left}px; background-color: rgb(${r}, ${g}, ${b});`
             }
         },
         action: (node: HTMLButtonElement) => {
@@ -296,8 +308,9 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         returned: ([$getCurrentColor]) => {
             const orientation = argsWithDefaults.hueSliderOrientation === 'horizontal' ? 'right' : 'bottom';
 
-            const rgb = $getCurrentColor();
-            const color = `${rgb.r}, ${rgb.g}, ${rgb.b}`;
+            const { rgb } = $getCurrentColor();
+            const { r, g, b } = rgb;
+            const color = `${r}, ${g}, ${b}`;
 
             return {
                 'aria-label': 'A canvas element showing the alpha values for the color.',
@@ -346,7 +359,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         returned: ([$alphaValue, $alphaPickerDims, $alphaSliderDims, $getCurrentColor]) => {
             const left = Math.round($alphaValue / 100 * $alphaSliderDims.width - $alphaPickerDims.width / 2);
 
-            const { r, g, b } = $getCurrentColor();
+            const { rgb } = $getCurrentColor();
+            const { r, g, b } = rgb;
 
             return {
                 'aria-label': 'The button to select the alpha value for the color.',
@@ -427,6 +441,18 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     });
 
     // Helper functions
+    function RGBtoHex(rgb: ColorRGB) {
+        const { r, g, b } = rgb;
+
+        const hex = [r, g, b].map((x) => {
+            const xHex = x.toString(16);
+
+            return xHex.length === 1 ? `0${xHex}` : xHex;
+        }).join('');
+
+        return `#${hex}`;
+    }
+
     function hexToRGB(hex: string, normalize=false): ColorRGB {
         const rgb: ColorRGB = {
             r: 0,
@@ -672,6 +698,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         // the default color if not.
         argsWithDefaults.defaultColor = isValidHex(argsWithDefaults.defaultColor) ? argsWithDefaults.defaultColor : defaults.defaultColor;
 
+        color.set(argsWithDefaults.defaultColor);
+
         // Update the color and hue picker button positions.
         updateOnColorInput(argsWithDefaults.defaultColor);
 
@@ -690,6 +718,12 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             alphaSlider,
             alphaPicker,
             eyeDropper
+        },
+        states: {
+            color
+        },
+        helpers: {
+            getCurrentColor
         }
     }
 }
