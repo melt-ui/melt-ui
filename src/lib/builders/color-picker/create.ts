@@ -109,6 +109,31 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
                     const { offsetX: x, offsetY: y } = e;
                     colorPickerPos.set({ x, y });
+                }),
+                addMeltEventListener(node, 'touchstart', () => {
+                    dragging = true;
+                }),
+                addMeltEventListener(node, 'touchend', () => {
+                    dragging = false;
+                }),
+                addMeltEventListener(node, 'touchmove', (e) => {
+                    if (!dragging) return;
+
+                    const cc = get(colorCanvasDims);
+
+                    if (!cc.node) return;
+
+                    e.preventDefault();
+
+                    const { clientX: x, clientY: y } = e.touches[0];
+                    const { width, height, node } = cc;
+                    const { x: nodeX, y: nodeY } = node.getBoundingClientRect();
+
+                    if (x > nodeX && x < nodeX + width && y > nodeY && y < nodeY + height) {
+                        colorPickerPos.set({ x: x - nodeX, y: y - nodeY });
+                    } else {
+                        handleOutsideColorCanvasMovement({ x, y, nodeX, nodeY, width, height });
+                    }
                 })
             );
 
@@ -240,6 +265,31 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
                     const { offsetX: x } = e;
                     hueAngle.set(Math.round(x / get(hueSliderDims).width * 360));
+                }),
+                addMeltEventListener(node, 'touchstart', () => {
+                    hueDragging = true;
+                }),
+                addMeltEventListener(node, 'touchend', () => {
+                    hueDragging = false;
+                }),
+                addMeltEventListener(node, 'touchmove', (e) => {
+                    if (!hueDragging) return;
+
+                    const hs = get(hueSliderDims);
+
+                    if (!hs.node) return;
+
+                    e.preventDefault();
+
+                    const { clientX: x, clientY: y } = e.touches[0];
+                    const { width, height, node } = hs;
+                    const { x: nodeX, y: nodeY } = node.getBoundingClientRect();
+
+                    if (x > nodeX && x < nodeX + width && y > nodeY && y < nodeY + height) {
+                        hueAngle.set(Math.round((x - nodeX) / width * 359));
+                    } else {
+                        handleOutsideHueMovement({ x, y, nodeX, nodeY, width, height });
+                    }
                 })
             );
 
@@ -343,6 +393,31 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
                     const { offsetX: x } = e;
                     setAlphaValue(x);
+                }),
+                addMeltEventListener(node, 'touchstart', () => {
+                    alphaDragging = true;
+                }),
+                addMeltEventListener(node, 'touchend', () => {
+                    alphaDragging = false;
+                }),
+                addMeltEventListener(node, 'touchmove', (e) => {
+                    if (!alphaDragging) return;
+
+                    const as = get(alphaSliderDims);
+
+                    if (!as.node) return;
+
+                    e.preventDefault();
+
+                    const { clientX: x, clientY: y } = e.touches[0];
+                    const { width, height, node } = as;
+                    const { x: nodeX, y: nodeY } = node.getBoundingClientRect();
+
+                    if (x > nodeX && x < nodeX + width && y > nodeY && y < nodeY + height) {
+                        alphaValue.set(Math.round((x - nodeX) / width * 100));
+                    } else {
+                        handleOutsideAlphaMovement({ x, y, nodeX, nodeY, width, height });
+                    }
                 })
             );
 
@@ -563,6 +638,61 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         return { h: Math.round(h * 360), s, v };
     }
 
+    type HandleMovementArgs = {
+        x: number;
+        y: number;
+        nodeX: number;
+        nodeY: number;
+        width: number;
+        height: number;
+    };
+
+    function handleOutsideColorCanvasMovement(args: HandleMovementArgs) {
+        const { x, y, nodeX, nodeY, width, height } = args;
+
+        if (x <= nodeX && y <= nodeY) {
+            colorPickerPos.set({ x: 0, y: 0 });
+        } else if (x <= nodeX && y <= nodeY + height ) {
+            colorPickerPos.set({ x: 0, y: y - nodeY });
+        } else if (x <= nodeX && y > nodeY + height ) {
+            colorPickerPos.set({ x: 0, y: height });
+        } else if (x <= nodeX + width && y <= nodeY) {
+            colorPickerPos.set({ x: x - nodeX, y: 0 });
+        } else if (x <= nodeX + width && y > nodeY + height) {
+            colorPickerPos.set({ x: x - nodeX, y: height });
+        } else if (x > nodeX + width && y <= nodeY) {
+            colorPickerPos.set({ x: width, y: 0 });
+        } else if (x > nodeX + width && y <= nodeY + height ) {
+            colorPickerPos.set({ x: width, y: y - nodeY });
+        } else if (x > nodeX + width && y > nodeY + height) {
+            colorPickerPos.set({ x: width, y: height });
+        }
+    }
+
+    function handleOutsideHueMovement(args: HandleMovementArgs) {
+        const { x, y, nodeX, nodeY, width, height } = args;
+
+        if (x <= nodeX) {
+            hueAngle.set(0);
+        } else if (x <= nodeX + width && (y <= nodeY || y >= nodeY + height)) {
+            hueAngle.set(Math.round((x - nodeX) / width * 359));
+        } else if (x >= nodeX + width) {
+            hueAngle.set(359);
+        }
+    }
+
+    function handleOutsideAlphaMovement(args: HandleMovementArgs) {
+        const { x, y, nodeX, nodeY, width, height } = args;
+
+        if (x <= nodeX) {
+            alphaValue.set(0);
+        } else if (x <= nodeX + width && (y <= nodeY || y >= nodeY + height)) {
+            alphaValue.set(Math.round((x - nodeX) / width * 100));
+        } else if (x >= nodeX + width) {
+            alphaValue.set(100);
+        }
+    }
+
     /**
      * Move the color picker around the edges of the canvas element
      * if the mouse moves outside of the canvas element.
@@ -581,23 +711,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             const { width, height, node } = cc;
             const { x: nodeX, y: nodeY } = node.getBoundingClientRect();
 
-            if (x <= nodeX && y <= nodeY) {
-                colorPickerPos.set({ x: 0, y: 0 });
-            } else if (x <= nodeX && y <= nodeY + height ) {
-                colorPickerPos.set({ x: 0, y: y - nodeY });
-            } else if (x <= nodeX && y > nodeY + height ) {
-                colorPickerPos.set({ x: 0, y: height });
-            } else if (x <= nodeX + width && y <= nodeY) {
-                colorPickerPos.set({ x: x - nodeX, y: 0 });
-            } else if (x <= nodeX + width && y > nodeY + height) {
-                colorPickerPos.set({ x: x - nodeX, y: height });
-            } else if (x > nodeX + width && y <= nodeY) {
-                colorPickerPos.set({ x: width, y: 0 });
-            } else if (x > nodeX + width && y <= nodeY + height ) {
-                colorPickerPos.set({ x: width, y: y - nodeY });
-            } else if (x > nodeX + width && y > nodeY + height) {
-                colorPickerPos.set({ x: width, y: height });
-            }
+            handleOutsideColorCanvasMovement({ x, y, nodeX, nodeY, width, height });
         } else if (hueDragging) {
             const hs = get(hueSliderDims);
 
@@ -609,13 +723,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             const { width, height, node } = hs;
             const { x: nodeX, y: nodeY } = node.getBoundingClientRect();
 
-            if (x < nodeX) {
-                hueAngle.set(0);
-            } else if (x <= nodeX + width && (y <= nodeY || y > nodeY + height)) {
-                hueAngle.set(Math.round((x - nodeX) / width * 359));
-            } else if (x >= nodeX + width) {
-                hueAngle.set(359);
-            }
+            handleOutsideHueMovement({ x, y, nodeX, nodeY, width, height });
         } else if (alphaDragging) {
             const as = get(alphaSliderDims);
 
@@ -627,13 +735,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             const { width, height, node } = as;
             const { x: nodeX, y: nodeY } = node.getBoundingClientRect();
 
-            if (x < nodeX) {
-                alphaValue.set(0);
-            } else if (x <= nodeX + width && (y <= nodeY || y > nodeY + height)) {
-                alphaValue.set(Math.round((x - nodeX) / width * 100));
-            } else if (x >= nodeX + width) {
-                alphaValue.set(100);
-            }
+            handleOutsideAlphaMovement({ x, y, nodeX, nodeY, width, height });
         }
 
     }
