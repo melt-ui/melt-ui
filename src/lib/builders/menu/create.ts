@@ -1443,7 +1443,7 @@ export function handleMenuNavigation(e: KeyboardEvent) {
 			nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : currentIndex;
 			break;
 		case kbd.ARROW_UP:
-			nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
+			nextIndex = currentIndex < 0 ? candidateNodes.length - 1 : currentIndex > 0 ? currentIndex - 1 : 0;
 			break;
 		case kbd.HOME:
 			nextIndex = 0;
