@@ -84,7 +84,7 @@ describe('Spinbutton', () => {
 
 		['October', 'February', kbd.PAGE_DOWN],
 		['November', 'March', kbd.PAGE_DOWN],
-    ['September', 'January', kbd.PAGE_DOWN],
+		['September', 'January', kbd.PAGE_DOWN],
 		['March', 'November', kbd.PAGE_UP],
 		['February', 'October', kbd.PAGE_UP],
 		['April', 'December', kbd.PAGE_UP],

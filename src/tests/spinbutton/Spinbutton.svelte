@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { createSpinButton, melt } from '$lib';
 
-  export let defaultValue = '';
+	export let defaultValue = '';
 	export let steps = 4;
-  export let disabled = false
+	export let disabled = false;
 
 	const months = [
 		'January',
@@ -25,9 +25,9 @@
 		states: { value },
 	} = createSpinButton({
 		steps,
-    defaultValue,
-    values: months,
-    disabled
+		defaultValue,
+		values: months,
+		disabled,
 	});
 </script>
 
@@ -40,12 +40,8 @@
 		</svg>
 	</span>
 
-	<div
-		use:melt={$content}
-		data-testid="spinbutton"
-		class="spinbutton"
-	>
-    {$value}
+	<div use:melt={$content} data-testid="spinbutton" class="spinbutton">
+		{$value}
 	</div>
 
 	<span use:melt={$decreaseTrigger} data-testid="spinbutton-decrease" class="decrease">

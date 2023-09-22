@@ -50,18 +50,20 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 
 	function handleDecrease(step = 1) {
 		if (get(currentValue) === minValue) currentValue.set(maxValue - step + 1);
-		else currentValue.update((value) => {
-      if (value >= step) return value - step
-      else return maxValue - step + value
-    });
+		else
+			currentValue.update((value) => {
+				if (value >= step) return value - step;
+				else return maxValue - step + value;
+			});
 	}
 
 	function handleIncrease(step = 1) {
 		if (get(currentValue) === maxValue) currentValue.set(minValue + step - 1);
-		else currentValue.update((value) => {
-      if (value + step >= maxValue) return  step - (maxValue - value)
-      else return value + step
-    });
+		else
+			currentValue.update((value) => {
+				if (value + step >= maxValue) return step - (maxValue - value);
+				else return value + step;
+			});
 	}
 
 	const root = builder(name(''), {
@@ -86,7 +88,7 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 		returned: ([$currentValue, $disabled]) => ({
 			role: 'spinbutton',
 			tabindex: '0',
-      disabled: disabledAttr($disabled),
+			disabled: disabledAttr($disabled),
 			'data-disabled': disabledAttr($disabled),
 			'aria-valuenow': $currentValue,
 			'aria-valuemin': minValue,
@@ -134,18 +136,18 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 	});
 
 	const increaseTrigger = builder(name('increase-trigger'), {
-    stores: [disabled],
+		stores: [disabled],
 		returned: ([$disabled]) => ({
 			// type: 'button',
 			tabindex: '-1',
-      disabled: disabledAttr($disabled),
+			disabled: disabledAttr($disabled),
 			'data-disabled': disabledAttr($disabled),
 		}),
 		action: (node: HTMLElement): MeltActionReturn<SpinbuttonEvents['increaseTrigger']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
-          const disabled = node.dataset.disabled !== undefined;
-          if (disabled) return;
+					const disabled = node.dataset.disabled !== undefined;
+					if (disabled) return;
 
 					e.stopPropagation();
 					handleIncrease();
@@ -159,18 +161,18 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 	});
 
 	const decreaseTrigger = builder(name('decrease-trigger'), {
-    stores: [disabled],
+		stores: [disabled],
 		returned: ([$disabled]) => ({
 			type: 'button',
 			tabindex: '-1',
-      disabled: disabledAttr($disabled),
+			disabled: disabledAttr($disabled),
 			'data-disabled': disabledAttr($disabled),
 		}),
 		action: (node: HTMLElement): MeltActionReturn<SpinbuttonEvents['decreaseTrigger']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
-          const disabled = node.dataset.disabled !== undefined;
-          if (disabled) return;
+					const disabled = node.dataset.disabled !== undefined;
+					if (disabled) return;
 
 					e.stopPropagation();
 					handleDecrease();

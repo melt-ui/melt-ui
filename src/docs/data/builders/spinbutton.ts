@@ -27,8 +27,7 @@ const builder = builderSchema(BUILDER_NAME, {
 		{
 			name: 'defaultValue',
 			type: '<string | number>',
-			description:
-				'The default value of the spinbutton.',
+			description: 'The default value of the spinbutton.',
 		},
 	],
 	elements: [

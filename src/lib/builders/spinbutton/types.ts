@@ -3,10 +3,10 @@ import type { createSpinButton } from './create';
 
 export type SpinbuttonValue = number | string;
 export type CreateSpinbuttonProps = {
-  values: SpinbuttonValue[];
-  defaultValue?: SpinbuttonValue;
+	values: SpinbuttonValue[];
+	defaultValue?: SpinbuttonValue;
 	steps?: number;
-  disabled?: boolean;
+	disabled?: boolean;
 };
 
 export type SpinButton = BuilderReturn<typeof createSpinButton>;
