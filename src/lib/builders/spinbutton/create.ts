@@ -28,16 +28,12 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSpinbuttonProps;
 	const options = toWritableStores(omit(withDefaults, 'value'));
 
-	const { values, steps: step, disabled } = options;
+	const { values, steps, disabled } = options;
 
 	const valueWritable = writable<SpinbuttonValue>(
 		withDefaults.defaultValue ? withDefaults.defaultValue : get(values)[0]
 	);
 	const spinbuttonValue = overridable<SpinbuttonValue>(valueWritable, withDefaults.onValueChange);
-
-	// const currentValue = derived(spinbuttonValue, ($spinbuttonValue) => {
-	//   get(values).indexOf($spinbuttonValue) + 1
-	// }) as Readable<SpinbuttonValue>
 
 	const currentIdx = get(values).indexOf(get(spinbuttonValue));
 	const currentValue = writable<number>(currentIdx + 1);
@@ -56,12 +52,12 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 	});
 
 	function handleDecrease(step = 1) {
-		if (get(currentValue) === minValue) currentValue.set(maxValue);
+		if (get(currentValue) === minValue) currentValue.set(maxValue - step + 1);
 		else currentValue.update((value) => value - step);
 	}
 
 	function handleIncrease(step = 1) {
-		if (get(currentValue) === maxValue) currentValue.set(minValue);
+		if (get(currentValue) === maxValue) currentValue.set(minValue + step - 1);
 		else currentValue.update((value) => value + step);
 	}
 
@@ -93,7 +89,7 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 		returned: ([$currentValue, $disabled]) => ({
 			role: 'spinbutton',
 			tabindex: '0',
-      disabled: disabledAttr($disabled),
+			disabled: disabledAttr($disabled),
 			'data-disabled': disabledAttr($disabled),
 			'aria-valuenow': $currentValue,
 			'aria-valuemin': minValue,
@@ -116,10 +112,10 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 							handleDecrease();
 							break;
 						case kbd.PAGE_UP:
-							handleIncrease(get(step));
+							handleIncrease(get(steps));
 							break;
 						case kbd.PAGE_DOWN:
-							handleDecrease(get(step));
+							handleDecrease(get(steps));
 							break;
 						case kbd.HOME:
 							currentValue.set(minValue);
@@ -141,18 +137,18 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 	});
 
 	const increase = builder(name('increase'), {
-    stores: [disabled],
+		stores: [disabled],
 		returned: ([$disabled]) => ({
 			// type: 'button',
 			tabindex: '-1',
-      disabled: disabledAttr($disabled),
+			disabled: disabledAttr($disabled),
 			'data-disabled': disabledAttr($disabled),
 		}),
 		action: (node: HTMLElement): MeltActionReturn<SpinbuttonEvents['increaseTrigger']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
-          const disabled = node.dataset.disabled !== undefined;
-          if (disabled) return;
+					const disabled = node.dataset.disabled !== undefined;
+					if (disabled) return;
 
 					e.stopPropagation();
 					handleIncrease();
@@ -166,18 +162,18 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 	});
 
 	const decrease = builder(name('decrease'), {
-    stores: [disabled],
+		stores: [disabled],
 		returned: ([$disabled]) => ({
 			type: 'button',
 			tabindex: '-1',
-      disabled: disabledAttr($disabled),
+			disabled: disabledAttr($disabled),
 			'data-disabled': disabledAttr($disabled),
 		}),
 		action: (node: HTMLElement): MeltActionReturn<SpinbuttonEvents['increaseTrigger']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
-          const disabled = node.dataset.disabled !== undefined;
-          if (disabled) return;
+					const disabled = node.dataset.disabled !== undefined;
+					if (disabled) return;
 
 					e.stopPropagation();
 					handleDecrease();
