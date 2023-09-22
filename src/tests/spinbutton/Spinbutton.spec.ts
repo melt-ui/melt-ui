@@ -81,10 +81,14 @@ describe('Spinbutton', () => {
 		['January', 'December', kbd.ARROW_UP],
 		['March', 'April', kbd.ARROW_DOWN],
 		['May', 'April', kbd.ARROW_UP],
-		['February', 'April', kbd.PAGE_DOWN],
-		['June', 'April', kbd.PAGE_UP],
-		['November', 'January', kbd.PAGE_DOWN],
-		['February', 'December', kbd.PAGE_UP],
+
+		['October', 'February', kbd.PAGE_DOWN],
+		['November', 'March', kbd.PAGE_DOWN],
+    ['September', 'January', kbd.PAGE_DOWN],
+		['March', 'November', kbd.PAGE_UP],
+		['February', 'October', kbd.PAGE_UP],
+		['April', 'December', kbd.PAGE_UP],
+
 		['January', 'April', kbd.HOME],
 		['December', 'April', kbd.END],
 	])(
@@ -92,7 +96,7 @@ describe('Spinbutton', () => {
 		async (expected, defaultValue, key) => {
 			const user = userEvent.setup();
 
-			const { getByTestId } = render(Spinbutton, { steps: 2, defaultValue });
+			const { getByTestId } = render(Spinbutton, { defaultValue });
 			const spinbutton = getByTestId('spinbutton');
 
 			spinbutton.focus();

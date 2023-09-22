@@ -50,12 +50,18 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 
 	function handleDecrease(step = 1) {
 		if (get(currentValue) === minValue) currentValue.set(maxValue - step + 1);
-		else currentValue.update((value) => value - step);
+		else currentValue.update((value) => {
+      if (value >= step) return value - step
+      else return maxValue - step + value
+    });
 	}
 
 	function handleIncrease(step = 1) {
 		if (get(currentValue) === maxValue) currentValue.set(minValue + step - 1);
-		else currentValue.update((value) => value + step);
+		else currentValue.update((value) => {
+      if (value + step >= maxValue) return  step - (maxValue - value)
+      else return value + step
+    });
 	}
 
 	const root = builder(name(''), {
