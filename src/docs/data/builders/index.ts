@@ -18,6 +18,7 @@ import { radioGroupData } from './radio-group.js';
 import { selectData } from './select.js';
 import { separatorData } from './separator.js';
 import { sliderData } from './slider.js';
+import { spinbuttonData } from './spinbutton.js';
 import { switchData } from './switch.js';
 import { tabsData } from './tabs.js';
 import { tagsInputData } from './tags-input.js';
@@ -49,6 +50,7 @@ export const builderList = [
 	'select',
 	'separator',
 	'slider',
+	'spinbutton',
 	'switch',
 	'table-of-contents',
 	'tabs',
@@ -95,6 +97,7 @@ export const data: Builders = {
 	select: selectData,
 	separator: separatorData,
 	slider: sliderData,
+	spinbutton: spinbuttonData,
 	switch: switchData,
 	'table-of-contents': tableOfContentsData,
 	tabs: tabsData,

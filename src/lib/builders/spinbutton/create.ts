@@ -7,8 +7,6 @@ import {
 	executeCallbacks,
 	generateId,
 	kbd,
-	omit,
-	overridable,
 	toWritableStores,
 } from '$lib/internal/helpers';
 import { get, readonly, writable } from 'svelte/store';
@@ -26,14 +24,13 @@ const { name } = createElHelpers('spinbutton');
 
 export function createSpinButton(props?: CreateSpinbuttonProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSpinbuttonProps;
-	const options = toWritableStores(omit(withDefaults, 'value'));
+	const options = toWritableStores(withDefaults);
 
 	const { values, steps, disabled } = options;
 
-	const valueWritable = writable<SpinbuttonValue>(
+	const spinbuttonValue = writable<SpinbuttonValue>(
 		withDefaults.defaultValue ? withDefaults.defaultValue : get(values)[0]
 	);
-	const spinbuttonValue = overridable<SpinbuttonValue>(valueWritable, withDefaults.onValueChange);
 
 	const currentIdx = get(values).indexOf(get(spinbuttonValue));
 	const currentValue = writable<number>(currentIdx + 1);
@@ -78,25 +75,19 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 		}),
 	});
 
-	// const value = builder(name('value'), {
-	// 	returned: () => ({
-	// 		tabindex: '0',
-	// 	}),
-	// });
-
-	const spinbutton = builder(name('spinbutton'), {
+	const content = builder(name('content'), {
 		stores: [currentValue, disabled],
 		returned: ([$currentValue, $disabled]) => ({
 			role: 'spinbutton',
 			tabindex: '0',
-			disabled: disabledAttr($disabled),
+      disabled: disabledAttr($disabled),
 			'data-disabled': disabledAttr($disabled),
 			'aria-valuenow': $currentValue,
 			'aria-valuemin': minValue,
 			'aria-valuemax': maxValue,
 			'aria-invalid': $currentValue > maxValue || $currentValue < minValue,
 		}),
-		action: (node: HTMLElement): MeltActionReturn<SpinbuttonEvents['spinbutton']> => {
+		action: (node: HTMLElement): MeltActionReturn<SpinbuttonEvents['content']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'keydown', (e) => {
 					const disabled = node.dataset.disabled !== undefined;
@@ -136,19 +127,19 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 		},
 	});
 
-	const increase = builder(name('increase'), {
-		stores: [disabled],
+	const increaseTrigger = builder(name('increase-trigger'), {
+    stores: [disabled],
 		returned: ([$disabled]) => ({
 			// type: 'button',
 			tabindex: '-1',
-			disabled: disabledAttr($disabled),
+      disabled: disabledAttr($disabled),
 			'data-disabled': disabledAttr($disabled),
 		}),
 		action: (node: HTMLElement): MeltActionReturn<SpinbuttonEvents['increaseTrigger']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
-					const disabled = node.dataset.disabled !== undefined;
-					if (disabled) return;
+          const disabled = node.dataset.disabled !== undefined;
+          if (disabled) return;
 
 					e.stopPropagation();
 					handleIncrease();
@@ -161,19 +152,19 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 		},
 	});
 
-	const decrease = builder(name('decrease'), {
-		stores: [disabled],
+	const decreaseTrigger = builder(name('decrease-trigger'), {
+    stores: [disabled],
 		returned: ([$disabled]) => ({
 			type: 'button',
 			tabindex: '-1',
-			disabled: disabledAttr($disabled),
+      disabled: disabledAttr($disabled),
 			'data-disabled': disabledAttr($disabled),
 		}),
-		action: (node: HTMLElement): MeltActionReturn<SpinbuttonEvents['increaseTrigger']> => {
+		action: (node: HTMLElement): MeltActionReturn<SpinbuttonEvents['decreaseTrigger']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
-					const disabled = node.dataset.disabled !== undefined;
-					if (disabled) return;
+          const disabled = node.dataset.disabled !== undefined;
+          if (disabled) return;
 
 					e.stopPropagation();
 					handleDecrease();
@@ -190,13 +181,13 @@ export function createSpinButton(props?: CreateSpinbuttonProps) {
 		elements: {
 			root,
 			label,
-			spinbutton,
-			increase,
-			decrease,
+			content,
+			increaseTrigger,
+			decreaseTrigger,
 		},
 		states: {
 			value: readonly(spinbuttonValue),
-			values: readonly(values),
+			// values: readonly(values),
 			// TODO: return the previousValue & the nextValue
 		},
 		options,
