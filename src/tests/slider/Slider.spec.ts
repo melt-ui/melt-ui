@@ -527,3 +527,42 @@ describe('Slider (value=[3,6], min=0, max=10, step=3)', () => {
 		}
 	});
 });
+
+describe('Slider changing options after building', () => {
+	const props = {
+		value: [5],
+		min: 0,
+		max: 10,
+		step: 1,
+	};
+
+	test('Changing min', async () => {
+		const { getAllByTestId, rerender } = render(Slider, props);
+
+		expect(getAllByTestId('tick')).toHaveLength(11);
+
+		await rerender({ ...props, resetMin: 2 });
+
+		expect(getAllByTestId('tick')).toHaveLength(9);
+	});
+
+	test('Changing max', async () => {
+		const { getAllByTestId, rerender } = render(Slider, props);
+
+		expect(getAllByTestId('tick')).toHaveLength(11);
+
+		await rerender({ ...props, resetMax: 8 });
+
+		expect(getAllByTestId('tick')).toHaveLength(9);
+	});
+
+	test('Changing step', async () => {
+		const { getAllByTestId, rerender } = render(Slider, props);
+
+		expect(getAllByTestId('tick')).toHaveLength(11);
+
+		await rerender({ ...props, resetStep: 2 });
+
+		expect(getAllByTestId('tick')).toHaveLength(6);
+	});
+});
