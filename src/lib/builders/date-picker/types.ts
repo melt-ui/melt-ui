@@ -86,6 +86,13 @@ export type BaseDatePickerProps = {
 
 	/**
 	 * Display 6 weeks per month, regardless the month's number of weeks.
+	 * This is useful for displaying a consistent calendar, where the size
+	 * of the calendar doesn't change month to month.
+	 *
+	 * To display 6 weeks per month, you will need to render out the previous
+	 * and next month's dates in the calendar as well.
+	 *
+	 * @default false
 	 */
 	fixedWeeks: boolean;
 

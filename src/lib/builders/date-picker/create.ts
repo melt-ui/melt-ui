@@ -38,7 +38,7 @@ const defaults = {
 	numberOfMonths: 1,
 	pagedNavigation: false,
 	weekStartsOn: 0,
-	hidden: undefined,
+	hidden: false,
 	defaultValue: undefined,
 	onValueChange: undefined,
 	fixedWeeks: false,
@@ -68,6 +68,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue ?? []);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 	const activeDate = dayJsStore(options.activeDate);
+	const today = dayjs(new Date());
 
 	const {
 		mode,
@@ -77,6 +78,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		pagedNavigation,
 		weekStartsOn,
 		fixedWeeks,
+		hidden,
 	} = options;
 
 	let lastClickedDate: Date | null = null;
@@ -319,10 +321,14 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	}
 
 	const date = builder(name('date'), {
-		stores: [value, mode, disabled],
-		returned: ([$value, $mode, $disabled]) => {
+		stores: [value, mode, disabled, hidden, activeDate],
+		returned: ([$value, $mode, $disabled, $hidden, $activeDate]) => {
 			return (props: DateProps) => {
 				const isDisabled = isMatch(props.value, $disabled);
+				const isHidden = isMatch(props.value, $hidden);
+
+				const isToday = dayjs(props.value).isSame(today, 'day');
+				const isInCurrentMonth = dayjs(props.value).isSame($activeDate, 'month');
 
 				const selected = isSelected({
 					date: props.value,
@@ -336,6 +342,10 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					'data-value': props.value,
 					'data-label': props.label ?? undefined,
 					'data-disabled': isDisabled ? '' : undefined,
+					'data-hidden': isHidden ? '' : undefined,
+					'data-date': '',
+					'data-today': isToday ? '' : undefined,
+					'data-outside-month': isInCurrentMonth ? undefined : '',
 					tabindex: isDisabled ? -1 : 1,
 				} as const;
 			};
