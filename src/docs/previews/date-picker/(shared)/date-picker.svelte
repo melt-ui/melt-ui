@@ -107,25 +107,31 @@
 		{/each}
 	</div>
 	{#if $modeStore === 'range'}
-		<div class="text-sm text-magnum-900">
-			You selected:
-			{#if $value.length}
-				{$value[0] && dateFormatter.format($value[0])} - {$value[1] &&
-					dateFormatter.format($value[1])}
-			{/if}
+		<div class="flex flex-col text-xs text-magnum-900">
+			<div>You selected:</div>
+			<div>
+				{#if $value.length}
+					{$value[0] && dateFormatter.format($value[0])} - {$value[1] &&
+						dateFormatter.format($value[1])}
+				{/if}
+			</div>
 		</div>
 	{:else if $modeStore === 'single'}
-		<div class="text-sm text-magnum-900">
-			You selected:
-			{#if $value.length && $value[0]}
-				{dateFormatter.format($value[0])}
-			{/if}
+		<div class="flex flex-col text-xs text-magnum-900">
+			<div>You selected:</div>
+			<div>
+				{#if $value.length && $value[0]}
+					{dateFormatter.format($value[0])}
+				{/if}
+			</div>
 		</div>
 	{:else if $modeStore === 'multiple'}
-		<div class="text-sm text-magnum-900">
-			You selected:
+		<div class="flex flex-col text-xs text-magnum-900">
+			<div>You selected:</div>
 			{#each $value as v, i (i)}
-				{dateFormatter.format(v)}
+				<div>
+					{dateFormatter.format(v)}
+				</div>
 			{/each}
 		</div>
 	{/if}
