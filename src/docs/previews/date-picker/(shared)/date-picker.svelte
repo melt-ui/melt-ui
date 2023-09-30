@@ -106,34 +106,38 @@
 			</div>
 		{/each}
 	</div>
-	{#if $modeStore === 'range'}
-		<div class="flex flex-col text-xs text-magnum-900">
-			<div>You selected:</div>
-			<div>
-				{#if $value.length}
-					{$value[0] && dateFormatter.format($value[0])} - {$value[1] &&
-						dateFormatter.format($value[1])}
-				{/if}
-			</div>
-		</div>
-	{:else if $modeStore === 'single'}
-		<div class="flex flex-col text-xs text-magnum-900">
-			<div>You selected:</div>
-			<div>
-				{#if $value.length && $value[0]}
-					{dateFormatter.format($value[0])}
-				{/if}
-			</div>
-		</div>
-	{:else if $modeStore === 'multiple'}
-		<div class="flex flex-col text-xs text-magnum-900">
-			<div>You selected:</div>
-			{#each $value as v, i (i)}
+	{#if $value}
+		{#if $modeStore === 'range'}
+			<div class="flex flex-col text-xs text-magnum-900">
+				<div>You selected:</div>
 				<div>
-					{dateFormatter.format(v)}
+					{#if 'to' in $value && 'from' in $value}
+						{$value.from && dateFormatter.format($value.from)} - {$value.to &&
+							dateFormatter.format($value.to)}
+					{/if}
 				</div>
-			{/each}
-		</div>
+			</div>
+		{:else if $modeStore === 'single'}
+			<div class="flex flex-col text-xs text-magnum-900">
+				<div>You selected:</div>
+				<div>
+					{#if $value instanceof Date}
+						{dateFormatter.format($value)}
+					{/if}
+				</div>
+			</div>
+		{:else if $modeStore === 'multiple'}
+			<div class="flex flex-col text-xs text-magnum-900">
+				<div>You selected:</div>
+				{#if Array.isArray($value)}
+					{#each $value as v, i (i)}
+						<div>
+							{dateFormatter.format(v)}
+						</div>
+					{/each}
+				{/if}
+			</div>
+		{/if}
 	{/if}
 </div>
 

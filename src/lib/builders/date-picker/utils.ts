@@ -1,12 +1,4 @@
-import type {
-	CreateDatePickerProps,
-	DateAfter,
-	DateBefore,
-	DateInterval,
-	DateRange,
-	DayOfWeek,
-	Matcher,
-} from './types';
+import type { DateAfter, DateBefore, DateInterval, DateRange, DayOfWeek, Matcher } from './types';
 import dayjs from 'dayjs';
 
 export function isBefore(date1: Date, date2: Date) {
@@ -119,40 +111,28 @@ function isArrayOfDates(value: unknown): value is Date[] {
 
 type IsSelectedArgs = {
 	date: Date;
-	value: Date[];
-	mode: CreateDatePickerProps['mode'];
+	value: Date[] | Date | DateRange | undefined;
 };
 
 export function isSelected(props: IsSelectedArgs) {
-	const { mode, value, date } = props;
+	const { value, date } = props;
 
-	if (mode === 'single') {
-		if (value.length) {
-			const isSame = isSameDay(value[0], date);
-			return isSame;
+	if (isSingleDate(value)) {
+		return isSameDay(value, date);
+	}
+
+	if (isDateRange(value)) {
+		if (value.from === undefined) return false;
+
+		if (isSameDay(value.from, date)) return true;
+		if (value.to !== undefined) {
+			if (isSameDay(value.to, date)) return true;
+			if (isBetween(date, value.from, value.to)) return true;
 		}
 		return false;
 	}
 
-	if (mode === 'range') {
-		if (value.length) {
-			if (value[0] === undefined && value[0] === value[1]) {
-				return false;
-			}
-			if (isSameDay(value[0], date)) {
-				return true;
-			}
-			if (value.length > 1 && isSameDay(value[1], date)) {
-				return true;
-			}
-			if (value.length > 1 && isBetween(date, value[0], value[1])) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	if (mode === 'multiple') {
+	if (isDateArray(value)) {
 		return value.some((d) => isSameDay(d, date));
 	}
 	return false;
@@ -281,4 +261,17 @@ function matchDateInterval(matcher: DateInterval, date: Date): boolean {
 function matchDayOfWeek(matcher: DayOfWeek, date: Date): boolean {
 	const d = dayjs(date);
 	return matcher.daysOfWeek.includes(d.day() as DayOfWeek['daysOfWeek'][number]);
+}
+
+export function isSingleDate(value: Date | Date[] | DateRange | undefined): value is Date {
+	return value instanceof Date;
+}
+
+export function isDateRange(value: Date | Date[] | DateRange | undefined): value is DateRange {
+	if (value === undefined) return false;
+	return 'from' in value && 'to' in value;
+}
+
+export function isDateArray(value: Date | Date[] | DateRange | undefined): value is Date[] {
+	return Array.isArray(value);
 }

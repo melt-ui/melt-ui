@@ -10,6 +10,7 @@ import {
 	overridable,
 	toWritableStores,
 	omit,
+	type ChangeFn,
 } from '$lib/internal/helpers';
 
 import {
@@ -20,10 +21,12 @@ import {
 	isMatch,
 	getLastFirstDayOfWeek,
 	getNextLastDayOfWeek,
+	isDateArray,
+	isSingleDate,
 } from './utils';
 
 import { derived, get, writable } from 'svelte/store';
-import type { CreateDatePickerProps, DateProps, Month } from './types';
+import type { CreateDatePickerProps, DateProps, DateRange, Month } from './types';
 import dayjs from 'dayjs';
 import { dayJsStore } from './date-store';
 
@@ -65,8 +68,11 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		...omit(withDefaults, 'value'),
 	});
 
-	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue ?? []);
-	const value = overridable(valueWritable, withDefaults?.onValueChange);
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const value = overridable<Date | Date[] | DateRange | undefined>(
+		valueWritable,
+		withDefaults?.onValueChange as ChangeFn<Date | Date[] | DateRange | undefined>
+	);
 	const activeDate = dayJsStore(options.activeDate);
 	const today = dayjs(new Date());
 
@@ -260,56 +266,65 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	function handleRangeClick(date: Date) {
+		if (lastClickedDate && isSameDay(lastClickedDate, date)) {
+			value.set({
+				from: date,
+				to: date,
+			});
+		}
+		lastClickedDate = date;
 		value.update((prev) => {
-			const isEmpty = prev.length === 0;
-			const isSame = prev.length > 1 && isSameDay(prev[0], prev[1]);
+			if (typeof prev !== 'object') return prev;
+			if (!('from' in prev && 'to' in prev)) return prev;
+
+			const isEmpty = prev.to === undefined && prev.from === undefined;
+			const isSame = prev.to === prev.from;
 
 			if (isEmpty) {
-				prev.push(date, date);
-				return prev;
+				return {
+					from: date,
+					to: date,
+				};
 			}
 
 			// If the value array of dates has one date and the
 			// new date is the same as the existing date
-			if (isSame && isSameDay(date, prev[0])) {
-				return prev;
-			}
-
-			if (isBefore(date, prev[0])) {
-				if (isSame) {
-					prev.splice(0, 2);
-					prev.push(date, date);
+			if (prev.from !== undefined) {
+				if (isSame && isSameDay(prev.from, date)) {
 					return prev;
 				}
 
-				return [date, date];
+				if (isBefore(date, prev.from)) {
+					return {
+						from: date,
+						to: date,
+					};
+				}
+				const daysBetween = getDaysBetween(prev.from, date);
+				if (daysBetween.some((d) => isMatch(d, get(disabled)))) {
+					return prev;
+				}
 			}
-			const daysBetween = getDaysBetween(prev[0], date);
-			if (daysBetween.some((d) => isMatch(d, get(disabled)))) {
-				return prev;
-			}
-			prev.pop();
-			prev.push(date);
-
+			prev.to = date;
 			return prev;
 		});
 	}
 
 	function handleSingleClick(date: Date) {
-		if (get(allowDeselect)) {
-			value.update((prev) => {
-				if (prev.length && isSameDay(prev[0], date)) {
-					return [];
+		value.update((prev) => {
+			if (isSingleDate(prev) || prev === undefined) {
+				if (prev === undefined) return date;
+				if (get(allowDeselect) && isSameDay(prev, date)) {
+					return undefined;
 				}
-				return [date];
-			});
-		} else {
-			value.set([date]);
-		}
+			}
+			return date;
+		});
 	}
 
 	function handleMultipleClick(date: Date) {
 		value.update((prev) => {
+			if (!isDateArray(prev)) return prev;
 			if (prev.some((d) => isSameDay(d, date))) {
 				prev = prev.filter((d) => !isSameDay(d, date));
 			} else {
@@ -321,8 +336,8 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	}
 
 	const date = builder(name('date'), {
-		stores: [value, mode, disabled, hidden, activeDate],
-		returned: ([$value, $mode, $disabled, $hidden, $activeDate]) => {
+		stores: [value, disabled, hidden, activeDate],
+		returned: ([$value, $disabled, $hidden, $activeDate]) => {
 			return (props: DateProps) => {
 				const isDisabled = isMatch(props.value, $disabled);
 				const isHidden = isMatch(props.value, $hidden);
@@ -333,7 +348,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				const selected = isSelected({
 					date: props.value,
 					value: $value,
-					mode: $mode,
 				});
 				return {
 					role: 'date',
@@ -366,11 +380,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				const args = getElArgs();
 				if (args.disabled) return;
 				const date = new Date(args.value || '');
-
-				if (lastClickedDate && isSameDay(lastClickedDate, date)) {
-					value.set([date, date]);
-				}
-				lastClickedDate = date;
 
 				switch (get(mode)) {
 					case 'single':
@@ -486,19 +495,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			lastMonthDates: lastMonthDays,
 		};
 	}
-
-	effect([mode], ([$mode]) => {
-		if (!isBrowser) return;
-
-		if ($mode === 'range') {
-			value.update((prev) => {
-				if (prev.length < 2) {
-					prev.push(prev[0]);
-				}
-				return prev;
-			});
-		}
-	});
 
 	return {
 		elements: {

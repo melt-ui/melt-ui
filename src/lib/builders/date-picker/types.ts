@@ -22,18 +22,18 @@ export type BaseDatePickerProps = {
 	/**
 	 * The default value for the date picker.
 	 */
-	defaultValue?: Date[];
+	defaultValue?: Date | DateRange | Date[] | undefined;
 
 	/**
 	 * Change function called when the value of the date picker changes.
 	 */
-	onValueChange: ChangeFn<Date[]>;
+	onValueChange: ChangeFn<Date | DateRange | Date[] | undefined>;
 
 	/**
 	 * An option writable store that can be used to control the value of the
 	 * date picker from outside the builder.
 	 */
-	value: Writable<Date[]>;
+	value: Writable<Date | DateRange | Date[] | undefined>;
 
 	/**
 	 * The mode of the date picker.
