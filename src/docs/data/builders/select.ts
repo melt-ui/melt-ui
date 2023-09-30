@@ -19,11 +19,6 @@ const OPTION_PROPS = [
 	PROPS.FORCE_VISIBLE,
 	PROPS.POSITIONING({ default: "placement: 'bottom'" }),
 	{
-		name: 'defaultValueLabel',
-		type: 'string',
-		description: 'The initial default value label of the select.',
-	},
-	{
 		name: 'name',
 		type: 'string',
 		description: 'The name to be used for the select input.',
@@ -35,19 +30,6 @@ const BUILDER_NAME = 'select';
 const builder = builderSchema(BUILDER_NAME, {
 	title: 'createSelect',
 	props: [
-		...OPTION_PROPS,
-		{
-			name: 'preventScroll',
-			type: 'boolean',
-			default: 'true',
-			description: DESCRIPTIONS.PREVENT_SCROLL('select'),
-		},
-		{
-			name: 'multiple',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the select is a multiple select.',
-		},
 		{
 			name: 'defaultSelected',
 			type: 'SelectOption<unknown>',
@@ -65,6 +47,20 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'A callback that is called when the selected option changes.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
+		...OPTION_PROPS,
+		{
+			name: 'preventScroll',
+			type: 'boolean',
+			default: 'true',
+			description: DESCRIPTIONS.PREVENT_SCROLL('select'),
+		},
+		{
+			name: 'multiple',
+			type: 'boolean',
+			default: 'false',
+			description: 'Whether or not the select is a multiple select.',
+		},
+
 		PROPS.DEFAULT_OPEN,
 		PROPS.OPEN,
 		PROPS.ON_OPEN_CHANGE,
@@ -114,9 +110,14 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'A writable store that returns whether or not the select is open.',
 		},
 		{
-			name: 'value',
+			name: 'selected',
 			type: 'Writable<unknown>',
-			description: 'A writable store that returns the current value of the select.',
+			description: 'A writable store whose value is the selected option.',
+		},
+		{
+			name: 'selectedLabel',
+			type: 'Readable<string>',
+			description: "A readable store whose value is the selected option's label.",
 		},
 	],
 	helpers: [

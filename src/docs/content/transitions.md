@@ -39,7 +39,6 @@ At a high level, here's how you could use the `forceVisible` prop with the Colla
 	<button use:melt={$trigger} aria-label="Toggle">
 		Open
 	</button>
-    </div>
 	{#if $open}
 		<div use:melt={$content} transition:slide>
 			Collapsible content

@@ -33,14 +33,20 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
+	toggle,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { dequal as deepEqual } from 'dequal';
 import { onMount, tick } from 'svelte';
-import { derived, get, writable, type Readable, type Writable } from 'svelte/store';
+import { derived, get, writable, type Readable } from 'svelte/store';
 import { createLabel } from '../label/create.js';
 import type { ComboboxEvents } from './events.js';
-import type { ComboboxItemProps, ComboboxOption, CreateComboboxProps } from './types.js';
+import type {
+	ComboboxItemProps,
+	ComboboxOption,
+	ComboboxSelected,
+	CreateComboboxProps,
+} from './types.js';
 
 // prettier-ignore
 export const INTERACTION_KEYS = [kbd.ARROW_LEFT, kbd.ESCAPE, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
@@ -69,8 +75,13 @@ const { name, selector } = createElHelpers('combobox');
  * @TODO would it be useful to have a callback for when an item is selected?
  * @TODO multi-select using `tags-input` builder?
  */
-export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
-	const withDefaults = { ...defaults, ...props } satisfies CreateComboboxProps<Value>;
+export function createCombobox<
+	Value,
+	Multiple extends boolean = false,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	S extends ComboboxSelected<Multiple, Value> = ComboboxSelected<Multiple, Value>
+>(props?: CreateComboboxProps<Value, Multiple, S>) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateComboboxProps<Value, Multiple, S>;
 
 	// Trigger element for the popper portal. This will be our input element.
 	const activeTrigger = writable<HTMLElement | null>(null);
@@ -78,8 +89,8 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 	const highlightedItem = writable<HTMLElement | null>(null);
 
 	const selectedWritable =
-		withDefaults.selected ??
-		(writable(withDefaults.defaultSelected) as Writable<ComboboxOption<Value> | undefined>);
+		withDefaults.selected ?? writable<S | undefined>(withDefaults.defaultSelected);
+
 	const selected = overridable(selectedWritable, withDefaults?.onSelectedChange);
 
 	const highlighted = derived(highlightedItem, ($highlightedItem) =>
@@ -87,14 +98,19 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 	) as Readable<ComboboxOption<Value> | undefined>;
 
 	// The current value of the input element.
-	const inputValue = writable(withDefaults.defaultSelected?.label ?? '');
+	const inputValue = writable(
+		Array.isArray(withDefaults.defaultSelected) ? '' : withDefaults.defaultSelected?.label ?? ''
+	);
 
 	// Either the provided open store or a store with the default open value
 	const openWritable = withDefaults.open ?? writable(false);
 	// The overridable open store which is the source of truth for the open state.
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
-	const options = toWritableStores(omit(withDefaults, 'open', 'defaultOpen'));
+	const options = toWritableStores({
+		...omit(withDefaults, 'open', 'defaultOpen'),
+		multiple: withDefaults.multiple ?? (false as Multiple),
+	});
 
 	const {
 		scrollAlignment,
@@ -105,6 +121,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		portal,
 		forceVisible,
 		positioning,
+		multiple,
 	} = options;
 
 	const touchedInput = writable(false);
@@ -134,14 +151,25 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		const $selectedItem = get(selected);
 
 		// If no item is selected the input should be cleared and the filter reset.
-		if (!$selectedItem) {
+		if (!$selectedItem || Array.isArray($selectedItem)) {
 			inputValue.set('');
 		} else {
-			inputValue.set(get(selected)?.label ?? '');
+			inputValue.set($selectedItem?.label ?? '');
 		}
 
 		touchedInput.set(false);
 	}
+
+	const setOption = (newOption: ComboboxOption<Value>) => {
+		selected.update(($option) => {
+			const $multiple = get(multiple);
+			if ($multiple) {
+				const optionArr = Array.isArray($option) ? $option : [];
+				return toggle(newOption, optionArr) as S;
+			}
+			return newOption as S;
+		});
+	};
 
 	/**
 	 * Selects an item from the menu and updates the input value.
@@ -150,8 +178,11 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 	function selectItem(item: HTMLElement) {
 		const props = getOptionProps(item);
 
-		selected.set(props);
-		inputValue.set(props.label ?? '');
+		setOption(props);
+
+		if (!get(multiple)) {
+			inputValue.set(props.label ?? '');
+		}
 
 		const activeTrigger = getElementByMeltId(ids.input);
 		if (activeTrigger) {
@@ -209,8 +240,13 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 	 * Determines if a given item is selected.
 	 * This is useful for displaying additional markup on the selected item.
 	 */
-	const isSelected = derived([selected], ([$value]) => {
-		return (item: Value) => deepEqual($value?.value, item);
+	const isSelected = derived([selected], ([$selected]) => {
+		return (value: Value) => {
+			if (Array.isArray($selected)) {
+				return $selected.some((o) => deepEqual(o.value, value));
+			}
+			return deepEqual($selected?.value, value);
+		};
 	});
 
 	/**
@@ -311,6 +347,7 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 					}
 					// Pressing enter with a highlighted item should select it.
 					if (e.key === kbd.ENTER) {
+						e.preventDefault();
 						const $highlightedItem = get(highlightedItem);
 						if ($highlightedItem) {
 							selectItem($highlightedItem);
@@ -533,7 +570,9 @@ export function createCombobox<Value>(props?: CreateComboboxProps<Value>) {
 		returned:
 			([$selected]) =>
 			(props: ComboboxItemProps<Value>) => {
-				const selected = deepEqual(props.value, $selected?.value);
+				const selected = Array.isArray($selected)
+					? $selected.map((o) => o.value).includes(props.value)
+					: deepEqual($selected?.value, props.value);
 
 				return {
 					'data-value': JSON.stringify(props.value),
