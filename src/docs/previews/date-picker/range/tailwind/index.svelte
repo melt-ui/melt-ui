@@ -1,9 +1,7 @@
 <script lang="ts">
-	import DatePicker from './date-picker.svelte';
+	import DatePicker from '../../(shared)/date-picker.svelte';
 </script>
 
 <div class="flex gap-4">
-	<DatePicker fixedWeeks={true} />
-	<!-- <DatePicker mode="multiple" activeDate={new Date(1985, 11)} /> -->
-	<!-- <DatePicker mode="range" activeDate={new Date(2023, 9)} /> -->
+	<DatePicker mode="range" />
 </div>
