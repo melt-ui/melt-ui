@@ -86,7 +86,6 @@ export type BaseDatePickerProps = {
 
 	/**
 	 * Display 6 weeks per month, regardless the month's number of weeks.
-	 * To use this, ensure `showOutsideDays` is `true`.
 	 */
 	fixedWeeks: boolean;
 

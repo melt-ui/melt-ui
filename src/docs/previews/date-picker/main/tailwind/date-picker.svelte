@@ -16,6 +16,7 @@
 	export let numberOfMonths: CreateDatePickerProps['numberOfMonths'] = 1;
 	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = false;
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = 0;
+	export let fixedWeeks: CreateDatePickerProps['fixedWeeks'] = false;
 
 	const {
 		elements: { content, date, prevButton, nextButton },
@@ -30,6 +31,7 @@
 		numberOfMonths,
 		pagedNavigation,
 		weekStartsOn,
+		fixedWeeks,
 	});
 </script>
 
@@ -71,20 +73,32 @@
 									>
 								</div>
 							{/each}
-							{#each lastMonthDates as d}
-								<span class="" />
-							{/each}
-							{#each dates as d}
+							{#each lastMonthDates as day}
 								<button
 									use:date
-									{...$date({ label: d.toDateString(), value: d })}
+									{...$date({ label: day.toDateString(), value: day })}
 									class="date"
 								>
-									<span class="">{d.getDate()}</span>
+									<span class="opacity-50">{day.getDate()}</span>
 								</button>
 							{/each}
-							{#each nextMonthDates as d}
-								<span class="" />
+							{#each dates as day}
+								<button
+									use:date
+									{...$date({ label: day.toDateString(), value: day })}
+									class="date"
+								>
+									<span class="">{day.getDate()}</span>
+								</button>
+							{/each}
+							{#each nextMonthDates as day}
+								<button
+									use:date
+									{...$date({ label: day.toDateString(), value: day })}
+									class="date"
+								>
+									<span class="opacity-50">{day.getDate()}</span>
+								</button>
 							{/each}
 						</div>
 					</div>

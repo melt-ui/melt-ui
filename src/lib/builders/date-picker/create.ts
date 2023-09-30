@@ -22,7 +22,6 @@ import {
 	getNextLastDayOfWeek,
 } from './utils';
 
-import { onMount } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateDatePickerProps, DateProps, Month } from './types';
 import dayjs from 'dayjs';
@@ -42,6 +41,7 @@ const defaults = {
 	hidden: undefined,
 	defaultValue: undefined,
 	onValueChange: undefined,
+	fixedWeeks: false,
 } satisfies CreateDatePickerProps;
 
 // selectionStrategy - name for range behavior
@@ -69,7 +69,15 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 	const activeDate = dayJsStore(options.activeDate);
 
-	const { mode, allowDeselect, disabled, numberOfMonths, pagedNavigation, weekStartsOn } = options;
+	const {
+		mode,
+		allowDeselect,
+		disabled,
+		numberOfMonths,
+		pagedNavigation,
+		weekStartsOn,
+		fixedWeeks,
+	} = options;
 
 	let lastClickedDate: Date | null = null;
 
@@ -390,10 +398,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		}
 	}
 
-	onMount(() => {
-		// TODO: add keyboard navigation
-	});
-
 	effect([activeDate], ([$activeDate]) => {
 		if (!isBrowser || !$activeDate) return;
 
@@ -452,6 +456,18 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			lastDayOfMonth.toDate(),
 			dayjs(nextSaturday).add(1, 'day').toDate()
 		);
+
+		const totalDays = lastMonthDays.length + datesArray.length + nextMonthDays.length;
+
+		if (get(fixedWeeks) && totalDays < 42) {
+			const extraDays = 42 - totalDays;
+			const startFrom = dayjs(nextMonthDays[nextMonthDays.length - 1]);
+			const extraDaysArray = Array.from({ length: extraDays }, (_, i) => {
+				const incr = i + 1;
+				return startFrom.add(incr, 'day').toDate();
+			});
+			nextMonthDays.push(...extraDaysArray);
+		}
 
 		return {
 			month: date,
