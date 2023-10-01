@@ -28,11 +28,11 @@ export type CreatePinInputProps = {
 	disabled?: boolean;
 
 	/**
-	 * The type of the input.
+	 * The type of the input. Use `password` to mask the input.
 	 *
 	 * @default 'text'
 	 */
-	type?: string;
+	type?: 'text' | 'password';
 
 	/**
 	 * The uncontrolled default value of the pin input.
@@ -55,13 +55,6 @@ export type CreatePinInputProps = {
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
 	onValueChange?: ChangeFn<string[]>;
-
-	/**
-	 * Whether you want to hide the input with a mask.
-	 *
-	 * @default false
-	 */
-	mask?: boolean;
 };
 
 export type PinInput = BuilderReturn<typeof createPinInput>;
