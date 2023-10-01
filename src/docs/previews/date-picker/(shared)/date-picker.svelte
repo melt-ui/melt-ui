@@ -4,12 +4,11 @@
 		type CreateDatePickerProps,
 		type Matcher,
 	} from '$lib/builders';
-	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
+	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
 	import { monthYearFormatter } from './formatters';
 	import dayjs from 'dayjs';
 	import { melt } from '$lib';
 
-	export let mode: 'single' | 'multiple' | 'range' = 'single';
 	export let disabled: Matcher | Matcher[] = false;
 	export let activeDate: CreateDatePickerProps['activeDate'] = new Date();
 	export let defaultValue: CreateDatePickerProps['defaultValue'] = undefined;
@@ -26,6 +25,7 @@
 			daySegment,
 			monthSegment,
 			yearSegment,
+			trigger,
 		},
 		states: { value, months, daysOfWeek, dayValue, monthValue, yearValue },
 		helpers: { prevMonth, nextMonth },
@@ -50,7 +50,7 @@
 <div class="flex flex-col gap-3">
 	<div
 		use:melt={$dateInput}
-		class="flex w-[200px] items-center gap-1 rounded-md border bg-white p-1.5 text-magnum-800"
+		class="flex max-w-[180px] items-center gap-1 rounded-md border bg-white p-1.5 text-magnum-800"
 	>
 		<div use:melt={$daySegment}>
 			{$dayValue ?? 'dd'}
@@ -62,6 +62,11 @@
 		<div aria-hidden="true" class="opacity-60">/</div>
 		<div use:melt={$yearSegment}>
 			{$yearValue ?? 'yyyy'}
+		</div>
+		<div class="ml-4 flex w-full items-center justify-end">
+			<button use:melt={$trigger} class="rounded bg-magnum-800 p-1">
+				<Calendar class="h-4 w-4 text-white" />
+			</button>
 		</div>
 	</div>
 	{#if open}

@@ -61,7 +61,9 @@ type DatePickerParts =
 	| 'date-input'
 	| 'month-segment'
 	| 'day-segment'
-	| 'year-segment';
+	| 'year-segment'
+	| 'trigger';
+
 const { name } = createElHelpers<DatePickerParts>('calendar');
 
 export function createDatePicker(props?: CreateDatePickerProps) {
@@ -212,6 +214,16 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		},
 	});
 
+	const trigger = builder(name('trigger'), {
+		returned: () => {
+			return {
+				id: ids.trigger,
+				tabindex: 0,
+				'data-segment': '',
+			};
+		},
+	});
+
 	const daySegment = builder(name('day-segment'), {
 		stores: [activeDate, dayValue],
 		returned: ([$activeDate, $dayValue]) => {
@@ -234,6 +246,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				autocorrect: 'off',
 				enterkeyhint: 'next',
 				'data-type': 'day',
+				'data-segment': '',
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -275,6 +288,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				autocorrect: 'off',
 				enterkeyhint: 'next',
 				'data-type': 'month',
+				'data-segment': '',
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -315,6 +329,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				autocorrect: 'off',
 				enterkeyhint: 'next',
 				'data-type': 'year',
+				'data-segment': '',
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -847,6 +862,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			daySegment,
 			monthSegment,
 			yearSegment,
+			trigger,
 		},
 		states: {
 			activeDate,
@@ -886,4 +902,43 @@ function isAcceptableSegmentKey(key: string) {
 function isNumberKey(key: string) {
 	if (isNaN(parseInt(key))) return false;
 	return true;
+}
+
+function getPrevNextSegments(node: HTMLElement, containerId: string) {
+	const segments = getSegments(containerId);
+	if (!segments || !segments.length) {
+		return {
+			next: null,
+			prev: null,
+		};
+	}
+	return {
+		next: getNextSegment(node, segments),
+		prev: getPrevSegment(node, segments),
+	};
+}
+
+function getSegments(id: string) {
+	const inputContainer = document.getElementById(id);
+	if (!isHTMLElement(inputContainer)) return null;
+	const segments = Array.from(inputContainer.querySelectorAll('[data-segment]')).filter(
+		(el): el is HTMLElement => isHTMLElement(el)
+	);
+	return segments;
+}
+
+function getNextSegment(node: HTMLElement, segments: HTMLElement[]) {
+	const index = segments.indexOf(node);
+	if (index === segments.length - 1 || index === -1) return null;
+	const nextIndex = index + 1;
+	const nextSegment = segments[nextIndex];
+	return nextSegment;
+}
+
+function getPrevSegment(node: HTMLElement, segments: HTMLElement[]) {
+	const index = segments.indexOf(node);
+	if (index === 0 || index === -1) return null;
+	const prevIndex = index - 1;
+	const prevSegment = segments[prevIndex];
+	return prevSegment;
 }

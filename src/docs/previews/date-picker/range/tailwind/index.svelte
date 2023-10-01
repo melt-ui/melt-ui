@@ -3,5 +3,5 @@
 </script>
 
 <div class="flex gap-4">
-	<DatePicker mode="range" />
+	<DatePicker />
 </div>
