@@ -108,12 +108,6 @@ async function createPreviewsObject({
 	return returnedObj;
 }
 
-function isMainPreviewComponent(builder: string, path: string): boolean {
-	const regexPattern = `${builder}/main/tailwind/index\\.svelte$`;
-	const regex = new RegExp(regexPattern);
-	return regex.test(path);
-}
-
 export async function getDocData(slug: string) {
 	const modules = import.meta.glob('/src/docs/content/builders/**/*.md');
 
@@ -193,6 +187,25 @@ export async function getAllPreviewComponents(slug: string) {
 	return previewCodeMatches;
 }
 
+function isMainPreviewComponent(
+	builder: string,
+	path: string
+): { type: 'css' | 'tailwind'; path: string } | null {
+	const cssRegexPattern = `${builder}/main/css/index\\.svelte$`;
+	const cssRegex = new RegExp(cssRegexPattern);
+	if (cssRegex.test(path)) {
+		return { type: 'css', path };
+	}
+
+	const tailwindRegexPattern = `${builder}/main/tailwind/index\\.svelte$`;
+	const tailwindRegex = new RegExp(tailwindRegexPattern);
+	if (tailwindRegex.test(path)) {
+		return { type: 'tailwind', path };
+	}
+
+	return null;
+}
+
 export async function getMainPreviewComponent(slug: string) {
 	if (!isBuilderName(slug)) {
 		throw error(500);
@@ -201,9 +214,15 @@ export async function getMainPreviewComponent(slug: string) {
 	const previewComponents = import.meta.glob('/src/docs/previews/**/*.svelte');
 	let mainPreviewObj: { path?: string; resolver?: PreviewResolver } = {};
 	for (const [path, resolver] of Object.entries(previewComponents)) {
-		if (isMainPreviewComponent(slug, path)) {
-			mainPreviewObj = { path, resolver: resolver as unknown as PreviewResolver };
-			break;
+		const mainPreviewComponent = isMainPreviewComponent(slug, path);
+		if (mainPreviewComponent) {
+			mainPreviewObj = {
+				path: mainPreviewComponent.path,
+				resolver: resolver as unknown as PreviewResolver,
+			};
+			if (mainPreviewComponent.type === 'css') {
+				break;
+			}
 		}
 	}
 
