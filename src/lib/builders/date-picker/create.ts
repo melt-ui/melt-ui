@@ -23,6 +23,7 @@ import {
 	getNextLastDayOfWeek,
 	isDateArray,
 	isSingleDate,
+	isDateRange,
 } from './utils';
 
 import { derived, get, writable } from 'svelte/store';
@@ -266,16 +267,27 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	function handleRangeClick(date: Date) {
-		if (lastClickedDate && isSameDay(lastClickedDate, date)) {
+		if (lastClickedDate === null) {
+			lastClickedDate = date;
+		} else if (isSameDay(lastClickedDate, date)) {
 			value.set({
-				from: date,
 				to: date,
+				from: date,
 			});
+			lastClickedDate = date;
+			return;
+		} else {
+			lastClickedDate = date;
 		}
-		lastClickedDate = date;
+
 		value.update((prev) => {
-			if (typeof prev !== 'object') return prev;
-			if (!('from' in prev && 'to' in prev)) return prev;
+			if (prev === undefined) {
+				return {
+					from: date,
+					to: date,
+				};
+			}
+			if (!isDateRange(prev)) return prev;
 
 			const isEmpty = prev.to === undefined && prev.from === undefined;
 			const isSame = prev.to === prev.from;
@@ -390,9 +402,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 						break;
 					case 'multiple':
 						handleMultipleClick(date);
-						break;
-					default:
-						value.set([new Date(args.value || '')]);
 						break;
 				}
 			});
