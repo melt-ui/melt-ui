@@ -91,7 +91,7 @@ const builder = builderSchema(BUILDER_NAME, {
 		},
 		{
 			name: 'ticks',
-			type: 'Writable<number>',
+			type: 'Readable<number>',
 			description: 'A readable store that can be used to get the current number of ticks.',
 		},
 	],
@@ -133,7 +133,21 @@ const thumb = elementSchema('thumb', {
 	events: sliderEvents['thumb'],
 });
 
-const schemas = [builder, root, thumb, range];
+const tick = elementSchema('tick', {
+	description: 'The slider tick component.',
+	dataAttributes: [
+		{
+			name: 'data-melt-slider-tick',
+			value: ATTRS.MELT('slider tick'),
+		},
+		{
+			name: 'data-bounded',
+			value: "Present when a tick is inside the `value`'s bounds."
+		}
+	],
+});
+
+const schemas = [builder, root, thumb, range, tick];
 
 const features = [
 	'Supports multiple thumbs',

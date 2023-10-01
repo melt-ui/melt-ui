@@ -19,12 +19,14 @@ element.
 
 ```svelte
 <script lang="ts">
-	import { createLabel } from '@melt-ui/svelte'
-
-	const label = createLabel()
+  import { createLabel, melt } from '@melt-ui/svelte';
+ 
+  const {
+    elements: { root },
+  } = createLabel();
 </script>
 
-<label for="name" use:label>Name</label>
+<label for="name" use:melt={$root}>Name</label>
 <input type="text" id="name" />
 ```
 
