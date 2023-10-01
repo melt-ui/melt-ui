@@ -5,7 +5,7 @@
 		type Matcher,
 	} from '$lib/builders';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
-	import { dateFormatter, monthYearFormatter } from './formatters';
+	import { monthYearFormatter } from './formatters';
 	import dayjs from 'dayjs';
 	import { melt } from '$lib';
 
@@ -28,10 +28,8 @@
 			yearSegment,
 		},
 		states: { value, months, daysOfWeek, dayValue, monthValue, yearValue },
-		options: { mode: modeStore },
 		helpers: { prevMonth, nextMonth },
 	} = createDatePicker({
-		mode,
 		allowDeselect: true,
 		disabled,
 		defaultValue,
@@ -52,15 +50,17 @@
 <div class="flex flex-col gap-3">
 	<div
 		use:melt={$dateInput}
-		class="flex w-[300px] items-center gap-2 rounded-md border bg-white p-1.5"
+		class="flex w-[200px] items-center gap-1 rounded-md border bg-white p-1.5 text-magnum-800"
 	>
-		<div use:melt={$daySegment} class="text-magnum-800">
+		<div use:melt={$daySegment}>
 			{$dayValue ?? 'dd'}
 		</div>
-		<div use:melt={$monthSegment} class="text-magnum-800">
+		<div aria-hidden="true" class="opacity-60">/</div>
+		<div use:melt={$monthSegment}>
 			{$monthValue ?? 'mm'}
 		</div>
-		<div use:melt={$yearSegment} class="text-magnum-800">
+		<div aria-hidden="true" class="opacity-60">/</div>
+		<div use:melt={$yearSegment}>
 			{$yearValue ?? 'yyyy'}
 		</div>
 	</div>
@@ -132,39 +132,6 @@
 				</div>
 			{/each}
 		</div>
-		{#if $value}
-			{#if $modeStore === 'range'}
-				<div class="flex flex-col text-xs text-magnum-900">
-					<div>You selected:</div>
-					<div>
-						{#if 'to' in $value && 'from' in $value}
-							{$value.from && dateFormatter.format($value.from)} - {$value.to &&
-								dateFormatter.format($value.to)}
-						{/if}
-					</div>
-				</div>
-			{:else if $modeStore === 'single'}
-				<div class="flex flex-col text-xs text-magnum-900">
-					<div>You selected:</div>
-					<div>
-						{#if $value instanceof Date}
-							{dateFormatter.format($value)}
-						{/if}
-					</div>
-				</div>
-			{:else if $modeStore === 'multiple'}
-				<div class="flex flex-col text-xs text-magnum-900">
-					<div>You selected:</div>
-					{#if Array.isArray($value)}
-						{#each $value as v, i (i)}
-							<div>
-								{dateFormatter.format(v)}
-							</div>
-						{/each}
-					{/if}
-				</div>
-			{/if}
-		{/if}
 	{/if}
 </div>
 

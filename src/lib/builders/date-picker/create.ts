@@ -15,22 +15,19 @@ import {
 } from '$lib/internal/helpers/index.js';
 
 import {
-	isBefore,
 	isSameDay,
 	getDaysBetween,
 	isSelected,
 	isMatch,
 	getLastFirstDayOfWeek,
 	getNextLastDayOfWeek,
-	isDateArray,
 	isSingleDate,
-	isDateRange,
 	isInSameMonth,
 	isToday,
 } from '$lib/builders/calendar/utils.js';
 
 import { derived, get, writable } from 'svelte/store';
-import type { DateProps, DateRange, Month } from '$lib/builders/index.js';
+import type { DateProps, Month } from '$lib/builders/index.js';
 import type { CreateDatePickerProps } from './types.js';
 import dayjs from 'dayjs';
 import { dayJsStore } from './date-store.js';
@@ -39,7 +36,6 @@ const defaults = {
 	disabled: false,
 	earliest: undefined,
 	latest: undefined,
-	mode: 'single',
 	value: undefined,
 	activeDate: new Date(),
 	allowDeselect: false,
@@ -76,9 +72,9 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-	const value = overridable<Date | Date[] | DateRange | undefined>(
+	const value = overridable<Date | undefined>(
 		valueWritable,
-		withDefaults?.onValueChange as ChangeFn<Date | Date[] | DateRange | undefined>
+		withDefaults?.onValueChange as ChangeFn<Date | undefined>
 	);
 	const activeDate = dayJsStore(options.activeDate);
 
@@ -86,8 +82,14 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	const monthValue = writable<number | null>(null);
 	const yearValue = writable<number | null>(null);
 
+	let dayLastKeyZero = false;
+	let monthLastKeyZero = false;
+
+	let dayHasLeftFocus = false;
+	let monthHasLeftFocus = false;
+	let yearHasLeftFocus = false;
+
 	const {
-		mode,
 		allowDeselect,
 		disabled,
 		numberOfMonths,
@@ -105,6 +107,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		daySegment: generateId(),
 		monthSegment: generateId(),
 		yearSegment: generateId(),
+		trigger: generateId(),
 	};
 
 	/**
@@ -182,50 +185,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		},
 	});
 
-	function handleRangeClick(date: Date) {
-		value.update((prev) => {
-			if (prev === undefined) {
-				return {
-					from: date,
-					to: date,
-				};
-			}
-			if (!isDateRange(prev)) return prev;
-
-			const isEmpty = prev.to === undefined && prev.from === undefined;
-			const isSame = prev.to === prev.from;
-			const isComplete = !isSame && prev.to !== undefined && prev.from !== undefined;
-
-			if (isEmpty || isComplete) {
-				return {
-					from: date,
-					to: date,
-				};
-			}
-
-			// If the value array of dates has one date and the
-			// new date is the same as the existing date
-			if (prev.from !== undefined) {
-				if (isSame && isSameDay(prev.from, date)) {
-					return undefined;
-				}
-
-				if (isBefore(date, prev.from)) {
-					return {
-						from: date,
-						to: prev.from,
-					};
-				}
-				const daysBetween = getDaysBetween(prev.from, date);
-				if (daysBetween.some((d) => isMatch(d, get(disabled)))) {
-					return prev;
-				}
-			}
-			prev.to = date;
-			return prev;
-		});
-	}
-
 	function handleSingleClick(date: Date) {
 		value.update((prev) => {
 			if (isSingleDate(prev) || prev === undefined) {
@@ -239,22 +198,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				}
 			}
 			return date;
-		});
-	}
-
-	function handleMultipleClick(date: Date) {
-		value.update((prev) => {
-			if (prev === undefined) {
-				return [date];
-			}
-			if (!isDateArray(prev)) return prev;
-			if (prev.some((d) => isSameDay(d, date))) {
-				prev = prev.filter((d) => !isSameDay(d, date));
-			} else {
-				prev.push(date);
-			}
-
-			return prev;
 		});
 	}
 
@@ -296,82 +239,8 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		action: (node: HTMLElement) => {
 			node.style.caretColor = 'transparent';
 			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'keydown', (e) => {
-					if (!isAcceptableSegmentKey(e.key)) {
-						e.preventDefault();
-						return;
-					}
-					const next = document.getElementById(ids.monthSegment);
-
-					const $activeDate = get(activeDate);
-					const activeDjs = dayjs($activeDate);
-
-					if (e.key === kbd.ARROW_UP) {
-						e.preventDefault();
-						dayValue.update((prev) => {
-							if (prev === null || prev === activeDjs.daysInMonth()) return 1;
-							return prev + 1;
-						});
-						return;
-					}
-					if (e.key === kbd.ARROW_DOWN) {
-						e.preventDefault();
-						dayValue.update((prev) => {
-							if (prev === null || prev === 1) {
-								return activeDjs.daysInMonth();
-							}
-							return prev - 1;
-						});
-						return;
-					}
-
-					if (isNumberKey(e.key)) {
-						e.preventDefault();
-						const num = parseInt(e.key);
-						let moveToNext = false;
-						dayValue.update((prev) => {
-							const max = activeDjs.daysInMonth();
-							const maxStart = Math.floor(max / 10);
-							if (prev === null) {
-								if (num > maxStart) {
-									moveToNext = true;
-								}
-								return num;
-							}
-
-							const str = prev.toString() + num.toString();
-							let int = parseInt(str);
-							if (int > max) {
-								int = num;
-							}
-							if (int > maxStart) {
-								moveToNext = true;
-							}
-							return int;
-						});
-
-						if (moveToNext) {
-							if (!isHTMLElement(next)) return;
-							next.focus();
-						}
-					}
-
-					if (e.key === kbd.BACKSPACE) {
-						e.preventDefault();
-						dayValue.update((prev) => {
-							if (prev === null) return null;
-							const str = prev.toString();
-							if (str.length === 1) return null;
-							return parseInt(str.slice(0, -1));
-						});
-					}
-
-					if (e.key === kbd.ARROW_RIGHT) {
-						e.preventDefault();
-						if (!isHTMLElement(next)) return;
-						next.focus();
-					}
-				})
+				addMeltEventListener(node, 'keydown', handleDaySegmentKeydown),
+				addMeltEventListener(node, 'focusout', () => (dayHasLeftFocus = true))
 			);
 
 			return {
@@ -395,7 +264,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				role: 'spinbutton',
 				tabindex: 0,
 				id: ids.monthSegment,
-				'aria-label': 'day, ',
+				'aria-label': 'month, ',
 				contenteditable: true,
 				'aria-valuemin': valueMin,
 				'aria-valuemax': valueMax,
@@ -405,87 +274,14 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				inputmode: 'numeric',
 				autocorrect: 'off',
 				enterkeyhint: 'next',
-				'data-type': 'day',
+				'data-type': 'month',
 			};
 		},
 		action: (node: HTMLElement) => {
 			node.style.caretColor = 'transparent';
 			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'keydown', (e) => {
-					if (!isAcceptableSegmentKey(e.key)) {
-						e.preventDefault();
-						return;
-					}
-					const next = document.getElementById(ids.yearSegment);
-
-					const max = 12;
-					const min = 1;
-
-					if (e.key === kbd.ARROW_UP) {
-						e.preventDefault();
-						monthValue.update((prev) => {
-							if (prev === null || prev === max) return 1;
-							return prev + 1;
-						});
-						return;
-					}
-					if (e.key === kbd.ARROW_DOWN) {
-						e.preventDefault();
-						monthValue.update((prev) => {
-							if (prev === null || prev === min) {
-								return 12;
-							}
-							return prev - 1;
-						});
-						return;
-					}
-
-					if (isNumberKey(e.key)) {
-						e.preventDefault();
-						const num = parseInt(e.key);
-						let moveToNext = false;
-						monthValue.update((prev) => {
-							const maxStart = Math.floor(max / 10);
-							if (prev === null) {
-								if (num > maxStart) {
-									moveToNext = true;
-								}
-								return num;
-							}
-
-							const str = prev.toString() + num.toString();
-							let int = parseInt(str);
-							if (int > max) {
-								int = num;
-							}
-							if (int > maxStart) {
-								moveToNext = true;
-							}
-							return int;
-						});
-
-						if (moveToNext) {
-							if (!isHTMLElement(next)) return;
-							next.focus();
-						}
-					}
-
-					if (e.key === kbd.BACKSPACE) {
-						e.preventDefault();
-						monthValue.update((prev) => {
-							if (prev === null) return null;
-							const str = prev.toString();
-							if (str.length === 1) return null;
-							return parseInt(str.slice(0, -1));
-						});
-					}
-
-					if (e.key === kbd.ARROW_RIGHT) {
-						e.preventDefault();
-						if (!isHTMLElement(next)) return;
-						next.focus();
-					}
-				})
+				addMeltEventListener(node, 'keydown', handleMonthSegmentKeydown),
+				addMeltEventListener(node, 'focusout', () => (monthHasLeftFocus = true))
 			);
 
 			return {
@@ -499,74 +295,33 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	const yearSegment = builder(name('year-segment'), {
 		stores: [activeDate, yearValue],
 		returned: ([$activeDate, $yearValue]) => {
+			const valueMin = 1;
+			const valueMax = 9999;
+
+			const currentYear = dayjs(new Date()).year();
+
 			return {
-				id: ids.yearSegment,
-				tabindex: '0',
 				role: 'spinbutton',
+				tabindex: 0,
+				id: ids.yearSegment,
+				'aria-label': 'year, ',
+				contenteditable: true,
+				'aria-valuemin': valueMin,
+				'aria-valuemax': valueMax,
+				'aria-valuenow': $yearValue ?? `${currentYear}`,
+				'aria-valuetext': $yearValue ?? 'Empty',
+				spellcheck: false,
+				inputmode: 'numeric',
+				autocorrect: 'off',
+				enterkeyhint: 'next',
+				'data-type': 'year',
 			};
 		},
 		action: (node: HTMLElement) => {
 			node.style.caretColor = 'transparent';
 			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'keydown', (e) => {
-					if (!isAcceptableSegmentKey(e.key)) {
-						e.preventDefault();
-						return;
-					}
-
-					const $activeDate = get(activeDate);
-					const activeDjs = dayjs($activeDate);
-					const min = 0;
-
-					if (e.key === kbd.ARROW_UP) {
-						e.preventDefault();
-						yearValue.update((prev) => {
-							if (prev === null) return activeDjs.get('year');
-							return prev + 1;
-						});
-						return;
-					}
-					if (e.key === kbd.ARROW_DOWN) {
-						e.preventDefault();
-						yearValue.update((prev) => {
-							if (prev === null || prev === min) {
-								return activeDjs.get('year');
-							}
-							return prev - 1;
-						});
-						return;
-					}
-
-					if (isNumberKey(e.key)) {
-						e.preventDefault();
-						const num = parseInt(e.key);
-						yearValue.update((prev) => {
-							if (prev === null) {
-								return num;
-							}
-							const str = prev.toString() + num.toString();
-							if (str.length > 4) return num;
-
-							const int = parseInt(str);
-
-							return int;
-						});
-					}
-
-					if (e.key === kbd.BACKSPACE) {
-						e.preventDefault();
-						yearValue.update((prev) => {
-							if (prev === null) return null;
-							const str = prev.toString();
-							if (str.length === 1) return null;
-							return parseInt(str.slice(0, -1));
-						});
-					}
-
-					if (e.key === kbd.ARROW_RIGHT) {
-						e.preventDefault();
-					}
-				})
+				addMeltEventListener(node, 'keydown', handleYearSegmentKeydown),
+				addMeltEventListener(node, 'focusout', () => (yearHasLeftFocus = true))
 			);
 
 			return {
@@ -623,18 +378,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					const args = getElArgs();
 					if (args.disabled) return;
 					const date = new Date(args.value || '');
-
-					switch (get(mode)) {
-						case 'single':
-							handleSingleClick(date);
-							break;
-						case 'range':
-							handleRangeClick(date);
-							break;
-						case 'multiple':
-							handleMultipleClick(date);
-							break;
-					}
+					handleSingleClick(date);
 				})
 			);
 
@@ -643,6 +387,339 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			};
 		},
 	});
+
+	/**
+	 * The event handler responsible for handling keydown events
+	 * on the day segment.
+	 */
+	function handleDaySegmentKeydown(e: KeyboardEvent) {
+		if (!isAcceptableSegmentKey(e.key)) {
+			return;
+		}
+		e.preventDefault();
+		const nextSegment = document.getElementById(ids.monthSegment);
+
+		const $activeDate = get(activeDate);
+		const activeDjs = dayjs($activeDate);
+		const daysInMonth = activeDjs.daysInMonth();
+
+		if (e.key === kbd.ARROW_UP) {
+			dayValue.update((prev) => {
+				if (prev === null || prev === daysInMonth) return 1;
+				return prev + 1;
+			});
+			return;
+		}
+		if (e.key === kbd.ARROW_DOWN) {
+			dayValue.update((prev) => {
+				if (prev === null || prev === 1) {
+					return daysInMonth;
+				}
+				return prev - 1;
+			});
+			return;
+		}
+
+		if (isNumberKey(e.key)) {
+			const num = parseInt(e.key);
+			let moveToNext = false;
+			dayValue.update((prev) => {
+				const max = daysInMonth;
+				const maxStart = Math.floor(max / 10);
+
+				/**
+				 * If the user has left the segment, we want to reset the
+				 * `prev` value so that we can start the segment over again
+				 * when the user types a number.
+				 */
+				if (dayHasLeftFocus) {
+					prev = null;
+					dayHasLeftFocus = false;
+				}
+
+				if (prev === null) {
+					/**
+					 * If the user types a 0 as the first number, we want
+					 * to keep track of that so that when they type the next
+					 * number, we can move to the next segment.
+					 */
+					if (num === 0) {
+						dayLastKeyZero = true;
+						return null;
+					}
+
+					/**
+					 * If the last key was a 0, or if the first number is
+					 * greater than the max start digit (0-3 in most cases), then
+					 * we want to move to the next segment, since it's not possible
+					 * to continue typing a valid number in this segment.
+					 */
+					if (dayLastKeyZero || num > maxStart) {
+						moveToNext = true;
+						return num;
+					}
+
+					/**
+					 * If none of the above conditions are met, then we can just
+					 * return the number as the segment value and continue typing
+					 * in this segment.
+					 */
+					return num;
+				}
+
+				const digits = prev.toString().length;
+				const total = parseInt(prev.toString() + num.toString());
+
+				/**
+				 * If the number of digits is 2, or if the total with the existing digit
+				 * and the pressed digit is greater than the maximum value for this
+				 * month, then we will reset the segment as if the user had pressed the
+				 * backspace key and then typed the number.
+				 */
+				if (digits === 2 || total > max) {
+					/**
+					 * As we're doing elsewhere, we're checking if the number is greater
+					 * than the max start digit (0-3 in most months), and if so, we're
+					 * going to move to the next segment.
+					 */
+					if (num > maxStart) {
+						moveToNext = true;
+					}
+
+					return num;
+				}
+				moveToNext = true;
+
+				return total;
+			});
+
+			if (moveToNext) {
+				if (!isHTMLElement(nextSegment)) return;
+				nextSegment.focus();
+			}
+		}
+
+		if (e.key === kbd.BACKSPACE) {
+			const currentTarget = e.currentTarget;
+			if (!isHTMLElement(currentTarget)) return;
+
+			dayValue.update((prev) => {
+				if (prev === null) return null;
+				const str = prev.toString();
+				if (str.length === 1) return null;
+				return parseInt(str.slice(0, -1));
+			});
+		}
+
+		if (e.key === kbd.ARROW_RIGHT) {
+			if (!isHTMLElement(nextSegment)) return;
+			nextSegment.focus();
+		}
+	}
+
+	/**
+	 * The event handler responsible for handling keydown events
+	 * on the month segment.
+	 */
+	function handleMonthSegmentKeydown(e: KeyboardEvent) {
+		if (!isAcceptableSegmentKey(e.key)) {
+			return;
+		}
+		e.preventDefault();
+
+		const nextSegment = document.getElementById(ids.yearSegment);
+		const prevSegment = document.getElementById(ids.daySegment);
+
+		const min = 1;
+		const max = 12;
+
+		if (e.key === kbd.ARROW_UP) {
+			monthValue.update((prev) => {
+				if (prev === null || prev === max) return 1;
+				return prev + 1;
+			});
+			return;
+		}
+		if (e.key === kbd.ARROW_DOWN) {
+			monthValue.update((prev) => {
+				if (prev === null || prev === min) {
+					return max;
+				}
+				return prev - 1;
+			});
+			return;
+		}
+
+		if (isNumberKey(e.key)) {
+			const num = parseInt(e.key);
+			let moveToNext = false;
+			monthValue.update((prev) => {
+				const maxStart = Math.floor(max / 10);
+
+				/**
+				 * If the user has left the segment, we want to reset the
+				 * `prev` value so that we can start the segment over again
+				 * when the user types a number.
+				 */
+				if (monthHasLeftFocus) {
+					prev = null;
+					monthHasLeftFocus = false;
+				}
+
+				if (prev === null) {
+					/**
+					 * If the user types a 0 as the first number, we want
+					 * to keep track of that so that when they type the next
+					 * number, we can move to the next segment.
+					 */
+					if (num === 0) {
+						monthLastKeyZero = true;
+						return null;
+					}
+
+					/**
+					 * If the last key was a 0, or if the first number is
+					 * greater than the max start digit (1), then
+					 * we want to move to the next segment, since it's not possible
+					 * to continue typing a valid number in this segment.
+					 */
+					if (monthLastKeyZero || num > maxStart) {
+						moveToNext = true;
+						return num;
+					}
+
+					/**
+					 * If none of the above conditions are met, then we can just
+					 * return the number as the segment value and continue typing
+					 * in this segment.
+					 */
+					return num;
+				}
+
+				const digits = prev.toString().length;
+				const total = parseInt(prev.toString() + num.toString());
+
+				/**
+				 * If the number of digits is 2, or if the total with the existing digit
+				 * and the pressed digit is greater than the maximum value for this
+				 * month, then we will reset the segment as if the user had pressed the
+				 * backspace key and then typed the number.
+				 */
+				if (digits === 2 || total > max) {
+					/**
+					 * As we're doing elsewhere, we're checking if the number is greater
+					 * than the max start digit (0-3 in most months), and if so, we're
+					 * going to move to the next segment.
+					 */
+					if (num > maxStart) {
+						moveToNext = true;
+					}
+
+					return num;
+				}
+				moveToNext = true;
+
+				return total;
+			});
+
+			if (moveToNext) {
+				if (!isHTMLElement(nextSegment)) return;
+				nextSegment.focus();
+			}
+		}
+
+		if (e.key === kbd.BACKSPACE) {
+			monthHasLeftFocus = false;
+			monthValue.update((prev) => {
+				if (prev === null) return null;
+				const str = prev.toString();
+				if (str.length === 1) return null;
+				return parseInt(str.slice(0, -1));
+			});
+		}
+
+		if (e.key === kbd.ARROW_RIGHT || e.key === kbd.ARROW_LEFT) {
+			if (e.key === kbd.ARROW_LEFT) {
+				if (!isHTMLElement(prevSegment)) return;
+				prevSegment.focus();
+				return;
+			}
+			if (e.key === kbd.ARROW_RIGHT) {
+				if (!isHTMLElement(nextSegment)) return;
+				nextSegment.focus();
+				return;
+			}
+		}
+	}
+
+	function handleYearSegmentKeydown(e: KeyboardEvent) {
+		if (!isAcceptableSegmentKey(e.key)) {
+			return;
+		}
+
+		e.preventDefault();
+
+		const min = 0;
+		const currentYear = dayjs(new Date()).year();
+
+		if (e.key === kbd.ARROW_UP) {
+			yearValue.update((prev) => {
+				if (prev === null) return currentYear;
+				return prev + 1;
+			});
+			return;
+		}
+		if (e.key === kbd.ARROW_DOWN) {
+			yearValue.update((prev) => {
+				if (prev === null || prev === min) {
+					return currentYear;
+				}
+				return prev - 1;
+			});
+			return;
+		}
+
+		if (isNumberKey(e.key)) {
+			const num = parseInt(e.key);
+			yearValue.update((prev) => {
+				if (yearHasLeftFocus) {
+					prev = null;
+					yearHasLeftFocus = false;
+				}
+
+				if (prev === null) {
+					return num;
+				}
+				const str = prev.toString() + num.toString();
+				if (str.length > 4) return num;
+
+				const int = parseInt(str);
+
+				return int;
+			});
+		}
+
+		if (e.key === kbd.BACKSPACE) {
+			yearValue.update((prev) => {
+				if (prev === null) return null;
+				const str = prev.toString();
+				if (str.length === 1) return null;
+				return parseInt(str.slice(0, -1));
+			});
+		}
+
+		if (e.key === kbd.ARROW_RIGHT) {
+			const next = document.getElementById(ids.trigger);
+			if (!isHTMLElement(next)) return;
+			next.focus();
+		}
+
+		if (e.key === kbd.ARROW_LEFT) {
+			const prevSegment = document.getElementById(ids.monthSegment);
+			if (!isHTMLElement(prevSegment)) return;
+			prevSegment.focus();
+		}
+	}
 
 	function focusElement(add: number) {
 		const node = document.activeElement as HTMLElement;
@@ -793,7 +870,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 }
 
 const acceptableKeys = [
-	kbd.TAB,
 	kbd.ARROW_UP,
 	kbd.ARROW_DOWN,
 	kbd.ARROW_LEFT,
