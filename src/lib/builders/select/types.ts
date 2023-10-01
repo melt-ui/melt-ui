@@ -134,7 +134,7 @@ export type CreateSelectProps<
 	/**
 	 * An optional controlled store that manages the value state of the combobox.
 	 */
-	selected?: Writable<S>;
+	selected?: Writable<S | undefined>;
 
 	/**
 	 * A change handler for the value store called when the value would normally change.
