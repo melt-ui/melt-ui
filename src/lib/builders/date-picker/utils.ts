@@ -275,3 +275,7 @@ export function isDateRange(value: Date | Date[] | DateRange | undefined): value
 export function isDateArray(value: Date | Date[] | DateRange | undefined): value is Date[] {
 	return Array.isArray(value);
 }
+
+export function isInSameMonth(date1: Date, date2: Date) {
+	return dayjs(date1).isSame(date2, 'month');
+}

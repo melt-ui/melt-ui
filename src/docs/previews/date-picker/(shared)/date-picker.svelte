@@ -6,22 +6,23 @@
 	} from '$lib/builders';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
 	import { dateFormatter, monthYearFormatter } from './formatters';
-	import { melt } from '$lib';
 	import dayjs from 'dayjs';
+	import { melt } from '$lib';
 
 	export let mode: 'single' | 'multiple' | 'range' = 'single';
 	export let disabled: Matcher | Matcher[] = false;
 	export let activeDate: CreateDatePickerProps['activeDate'] = new Date();
-	export let defaultValue: CreateDatePickerProps["defaultValue"] = undefined
+	export let defaultValue: CreateDatePickerProps['defaultValue'] = undefined;
 	export let numberOfMonths: CreateDatePickerProps['numberOfMonths'] = 1;
 	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = false;
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = 0;
 	export let fixedWeeks: CreateDatePickerProps['fixedWeeks'] = false;
 
 	const {
-		elements: { content, date, prevButton, nextButton },
+		elements: { content, date },
 		states: { value, months, daysOfWeek },
 		options: { mode: modeStore },
+		helpers: { prevMonth, nextMonth, setMonth },
 	} = createDatePicker({
 		mode,
 		allowDeselect: true,
@@ -33,6 +34,10 @@
 		weekStartsOn,
 		fixedWeeks,
 	});
+
+	function getDayOfWeek(date: Date) {
+		return dayjs(date).format('dd');
+	}
 </script>
 
 <div class="flex flex-col gap-3">
@@ -46,21 +51,17 @@
 				month: monthDate,
 			} = month}
 			<div>
-				<div
-					{...$content}
-					use:content
-					class="w-80 rounded-lg bg-white p-4 shadow-sm"
-				>
+				<div use:melt={$content} class="w-80 rounded-lg bg-white p-4 shadow-sm">
 					<div class="flex flex-col gap-2.5 text-magnum-800">
 						<div class="flex w-full items-center justify-between">
 							<p class="font-semibold text-magnum-800">
 								{monthYearFormatter.format(monthDate)}
 							</p>
 							<div class="flex items-center gap-8">
-								<button use:melt={$prevButton}>
+								<button on:click={prevMonth}>
 									<ChevronLeft />
 								</button>
-								<button use:melt={$nextButton}>
+								<button on:click={nextMonth}>
 									<ChevronRight />
 								</button>
 							</div>
@@ -68,9 +69,7 @@
 						<div class="grid grid-cols-7 gap-2">
 							{#each $daysOfWeek as day}
 								<div class="date">
-									<span class="text-sm font-medium"
-										>{dayjs(day).format('dd')}</span
-									>
+									<span class="text-sm font-medium">{getDayOfWeek(day)}</span>
 								</div>
 							{/each}
 							{#each lastMonthDates as day}

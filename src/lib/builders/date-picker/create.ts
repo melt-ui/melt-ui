@@ -24,6 +24,8 @@ import {
 	isDateArray,
 	isSingleDate,
 	isDateRange,
+	isInSameMonth,
+	isToday,
 } from './utils';
 
 import { derived, get, writable } from 'svelte/store';
@@ -47,8 +49,6 @@ const defaults = {
 	onValueChange: undefined,
 	fixedWeeks: false,
 } satisfies CreateDatePickerProps;
-
-// selectionStrategy - name for range behavior
 
 type CalendarParts =
 	| 'content'
@@ -75,7 +75,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		withDefaults?.onValueChange as ChangeFn<Date | Date[] | DateRange | undefined>
 	);
 	const activeDate = dayJsStore(options.activeDate);
-	const today = dayjs(new Date());
 
 	const {
 		mode,
@@ -104,7 +103,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	 * If not using paged navigation, this will move the calendar forward
 	 * by one month.
 	 */
-	function nextPage() {
+	function nextMonth() {
 		if (get(pagedNavigation)) {
 			const $numberOfMonths = get(numberOfMonths);
 			activeDate.add($numberOfMonths, 'month');
@@ -120,27 +119,13 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	 * If not using paged navigation, this will move the calendar backwards
 	 * by one month.
 	 */
-	function prevPage() {
+	function prevMonth() {
 		if (get(pagedNavigation)) {
 			const $numberOfMonths = get(numberOfMonths);
 			activeDate.subtract($numberOfMonths, 'month');
 		} else {
 			activeDate.subtract(1, 'month');
 		}
-	}
-
-	/**
-	 * Navigate to the previous month of the calendar.
-	 */
-	function prevMonth() {
-		activeDate.subtract(1, 'month');
-	}
-
-	/**
-	 * Navigate to the next month of the calendar.
-	 */
-	function nextMonth() {
-		activeDate.add(1, 'month');
 	}
 
 	/**
@@ -156,86 +141,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	function prevYear() {
 		activeDate.subtract(1, 'year');
 	}
-
-	/**
-	 * When using paged navigation, moves the calendar forward
-	 * by the number of months specified in the `numberOfMonths` prop.
-	 *
-	 * When not using paged navigation, move the calendar forward by one month.
-	 */
-	const nextButton = builder(name('next'), {
-		action: (node: HTMLElement) => {
-			const unsub = addMeltEventListener(node, 'click', nextPage);
-			return {
-				destroy() {
-					unsub();
-				},
-			};
-		},
-	});
-
-	/**
-	 * When using paged navigation, moves the calendar backward
-	 * by the number of months specified in the `numberOfMonths` prop.
-	 *
-	 * When not using paged navigation, move the calendar backward by one month.
-	 */
-	const prevButton = builder(name('next'), {
-		action: (node: HTMLElement) => {
-			const unsub = addMeltEventListener(node, 'click', prevPage);
-			return {
-				destroy() {
-					unsub();
-				},
-			};
-		},
-	});
-
-	const nextMonthButton = builder(name('nextMonth'), {
-		action: (node: HTMLElement) => {
-			const unsub = addMeltEventListener(node, 'click', nextMonth);
-
-			return {
-				destroy() {
-					unsub();
-				},
-			};
-		},
-	});
-
-	const prevMonthButton = builder(name('prevMonth'), {
-		action: (node: HTMLElement) => {
-			const unsub = addMeltEventListener(node, 'click', prevMonth);
-
-			return {
-				destroy() {
-					unsub();
-				},
-			};
-		},
-	});
-
-	const nextYearButton = builder(name('nextYear'), {
-		action: (node: HTMLElement) => {
-			const unsub = addMeltEventListener(node, 'click', () => nextYear);
-			return {
-				destroy() {
-					unsub();
-				},
-			};
-		},
-	});
-
-	const prevYearButton = builder(name('prevYear'), {
-		action: (node: HTMLElement) => {
-			const unsub = addMeltEventListener(node, 'click', prevYear);
-			return {
-				destroy() {
-					unsub();
-				},
-			};
-		},
-	});
 
 	const content = builder(name('content'), {
 		returned: () => ({ tabindex: -1, id: ids.content }),
@@ -325,6 +230,10 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	function handleSingleClick(date: Date) {
 		value.update((prev) => {
 			if (isSingleDate(prev) || prev === undefined) {
+				if (!isInSameMonth(date, get(activeDate))) {
+					activeDate.set(date);
+				}
+
 				if (prev === undefined) return date;
 				if (get(allowDeselect) && isSameDay(prev, date)) {
 					return undefined;
@@ -336,6 +245,9 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	function handleMultipleClick(date: Date) {
 		value.update((prev) => {
+			if (prev === undefined) {
+				return [date];
+			}
 			if (!isDateArray(prev)) return prev;
 			if (prev.some((d) => isSameDay(d, date))) {
 				prev = prev.filter((d) => !isSameDay(d, date));
@@ -353,9 +265,8 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			return (props: DateProps) => {
 				const isDisabled = isMatch(props.value, $disabled);
 				const isHidden = isMatch(props.value, $hidden);
-
-				const isToday = dayjs(props.value).isSame(today, 'day');
-				const isInCurrentMonth = dayjs(props.value).isSame($activeDate, 'month');
+				const isDateToday = isToday(props.value);
+				const isInCurrentMonth = isInSameMonth(props.value, $activeDate);
 
 				const selected = isSelected({
 					date: props.value,
@@ -370,7 +281,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					'data-disabled': isDisabled ? '' : undefined,
 					'data-hidden': isHidden ? '' : undefined,
 					'data-date': '',
-					'data-today': isToday ? '' : undefined,
+					'data-today': isDateToday ? '' : undefined,
 					'data-outside-month': isInCurrentMonth ? undefined : '',
 					tabindex: isDisabled ? -1 : 1,
 				} as const;
@@ -424,6 +335,31 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		if (nextDate) {
 			nextDate.focus();
 		}
+	}
+
+	/**
+	 * A helper function to set the year of the active date. This is
+	 * useful when the user wants to have a select input to change the
+	 * year of the calendar.
+	 */
+	function setYear(year: number) {
+		activeDate.update((prev) => {
+			prev.setFullYear(year);
+			return prev;
+		});
+	}
+
+	/**
+	 * A helper function to set the month of the active date. This is
+	 * useful when the user wants to have a select input to change the
+	 * month of the calendar.
+	 */
+	function setMonth(month: number) {
+		if (month < 0 || month > 11) throw new Error('Month must be between 0 and 11');
+		activeDate.update((prev) => {
+			prev.setMonth(month);
+			return prev;
+		});
 	}
 
 	effect([activeDate], ([$activeDate]) => {
@@ -508,12 +444,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	return {
 		elements: {
 			content,
-			nextMonthButton,
-			prevMonthButton,
-			nextYearButton,
-			prevYearButton,
-			nextButton,
-			prevButton,
 			date,
 		},
 		states: {
@@ -521,6 +451,14 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			months,
 			value,
 			daysOfWeek,
+		},
+		helpers: {
+			nextMonth,
+			prevMonth,
+			nextYear,
+			prevYear,
+			setYear,
+			setMonth,
 		},
 		options,
 	};
