@@ -1,5 +1,19 @@
 # @melt-ui/svelte
 
+## 0.50.1
+
+### Patch Changes
+
+- Select: Fix `selected` prop type ([#539](https://github.com/melt-ui/melt-ui/pull/539))
+
+- Pin Input: bind `$valueStr` store to `hiddenInput` of `pin-input` builder ([#557](https://github.com/melt-ui/melt-ui/pull/557))
+
+- Combobox: Fix exported types ([`9e4c6a26`](https://github.com/melt-ui/melt-ui/commit/9e4c6a26b8623d4cb33fd939b80a140e15597cc1))
+
+- Dropdown Menu: Up key focuses last menu item if there is no selection ([#550](https://github.com/melt-ui/melt-ui/pull/550))
+
+- Pin Input: Change `type` prop's types (that's confusing!) ([#545](https://github.com/melt-ui/melt-ui/pull/545))
+
 ## 0.50.0
 
 ### Minor Changes
