@@ -434,7 +434,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 		},
 		states: {
 			value,
-			ticks
+			ticks,
 		},
 		options,
 	};
