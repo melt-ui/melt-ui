@@ -2,4 +2,4 @@
 "@melt-ui/svelte": patch
 ---
 
-Pin Input: add `mask` prop
+Pin Input: Change `type` prop's types (that's confusing!)
