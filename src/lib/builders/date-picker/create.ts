@@ -278,6 +278,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 			return {
 				role: 'spinbutton',
+				id: ids.daySegment,
 				'aria-label': 'day, ',
 				contenteditable: true,
 				'aria-valuemin': valueMin,
@@ -293,9 +294,83 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			};
 		},
 		action: (node: HTMLElement) => {
+			node.style.caretColor = 'transparent';
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'keydown', (e) => {
-					//
+					if (!isAcceptableSegmentKey(e.key)) {
+						e.preventDefault();
+						return;
+					}
+					const next = document.getElementById(ids.monthSegment);
+
+					const $activeDate = get(activeDate);
+					const activeDjs = dayjs($activeDate);
+
+					if (e.key === kbd.ARROW_UP) {
+						e.preventDefault();
+						dayValue.update((prev) => {
+							if (prev === null || prev === activeDjs.daysInMonth()) return 1;
+							return prev + 1;
+						});
+						return;
+					}
+					if (e.key === kbd.ARROW_DOWN) {
+						e.preventDefault();
+						dayValue.update((prev) => {
+							if (prev === null || prev === 1) {
+								return activeDjs.daysInMonth();
+							}
+							return prev - 1;
+						});
+						return;
+					}
+
+					if (isNumberKey(e.key)) {
+						e.preventDefault();
+						const num = parseInt(e.key);
+						let moveToNext = false;
+						dayValue.update((prev) => {
+							const max = activeDjs.daysInMonth();
+							const maxStart = Math.floor(max / 10);
+							if (prev === null) {
+								if (num > maxStart) {
+									moveToNext = true;
+								}
+								return num;
+							}
+
+							const str = prev.toString() + num.toString();
+							let int = parseInt(str);
+							if (int > max) {
+								int = num;
+							}
+							if (int > maxStart) {
+								moveToNext = true;
+							}
+							return int;
+						});
+
+						if (moveToNext) {
+							if (!isHTMLElement(next)) return;
+							next.focus();
+						}
+					}
+
+					if (e.key === kbd.BACKSPACE) {
+						e.preventDefault();
+						dayValue.update((prev) => {
+							if (prev === null) return null;
+							const str = prev.toString();
+							if (str.length === 1) return null;
+							return parseInt(str.slice(0, -1));
+						});
+					}
+
+					if (e.key === kbd.ARROW_RIGHT) {
+						e.preventDefault();
+						if (!isHTMLElement(next)) return;
+						next.focus();
+					}
 				})
 			);
 
@@ -308,19 +383,196 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	const monthSegment = builder(name('month-segment'), {
-		stores: [],
-		returned: () => {
+		stores: [activeDate, monthValue],
+		returned: ([$activeDate, $monthValue]) => {
+			const valueMin = 1;
+			const valueMax = 12;
+			const activeDjs = dayjs($activeDate);
+			const activeMonth = activeDjs.month();
+			const activeMonthString = activeDjs.format('MMMM');
+
 			return {
+				role: 'spinbutton',
 				tabindex: 0,
+				id: ids.monthSegment,
+				'aria-label': 'day, ',
+				contenteditable: true,
+				'aria-valuemin': valueMin,
+				'aria-valuemax': valueMax,
+				'aria-valuenow': $monthValue ?? `${activeMonth + 1} - ${activeMonthString}`,
+				'aria-valuetext': $monthValue ?? 'Empty',
+				spellcheck: false,
+				inputmode: 'numeric',
+				autocorrect: 'off',
+				enterkeyhint: 'next',
+				'data-type': 'day',
+			};
+		},
+		action: (node: HTMLElement) => {
+			node.style.caretColor = 'transparent';
+			const unsubEvents = executeCallbacks(
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (!isAcceptableSegmentKey(e.key)) {
+						e.preventDefault();
+						return;
+					}
+					const next = document.getElementById(ids.yearSegment);
+
+					const max = 12;
+					const min = 1;
+
+					if (e.key === kbd.ARROW_UP) {
+						e.preventDefault();
+						monthValue.update((prev) => {
+							if (prev === null || prev === max) return 1;
+							return prev + 1;
+						});
+						return;
+					}
+					if (e.key === kbd.ARROW_DOWN) {
+						e.preventDefault();
+						monthValue.update((prev) => {
+							if (prev === null || prev === min) {
+								return 12;
+							}
+							return prev - 1;
+						});
+						return;
+					}
+
+					if (isNumberKey(e.key)) {
+						e.preventDefault();
+						const num = parseInt(e.key);
+						let moveToNext = false;
+						monthValue.update((prev) => {
+							const maxStart = Math.floor(max / 10);
+							if (prev === null) {
+								if (num > maxStart) {
+									moveToNext = true;
+								}
+								return num;
+							}
+
+							const str = prev.toString() + num.toString();
+							let int = parseInt(str);
+							if (int > max) {
+								int = num;
+							}
+							if (int > maxStart) {
+								moveToNext = true;
+							}
+							return int;
+						});
+
+						if (moveToNext) {
+							if (!isHTMLElement(next)) return;
+							next.focus();
+						}
+					}
+
+					if (e.key === kbd.BACKSPACE) {
+						e.preventDefault();
+						monthValue.update((prev) => {
+							if (prev === null) return null;
+							const str = prev.toString();
+							if (str.length === 1) return null;
+							return parseInt(str.slice(0, -1));
+						});
+					}
+
+					if (e.key === kbd.ARROW_RIGHT) {
+						e.preventDefault();
+						if (!isHTMLElement(next)) return;
+						next.focus();
+					}
+				})
+			);
+
+			return {
+				destroy() {
+					unsubEvents();
+				},
 			};
 		},
 	});
 
 	const yearSegment = builder(name('year-segment'), {
-		stores: [],
-		returned: () => {
+		stores: [activeDate, yearValue],
+		returned: ([$activeDate, $yearValue]) => {
 			return {
-				tabindex: 0,
+				id: ids.yearSegment,
+				tabindex: '0',
+				role: 'spinbutton',
+			};
+		},
+		action: (node: HTMLElement) => {
+			node.style.caretColor = 'transparent';
+			const unsubEvents = executeCallbacks(
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (!isAcceptableSegmentKey(e.key)) {
+						e.preventDefault();
+						return;
+					}
+
+					const $activeDate = get(activeDate);
+					const activeDjs = dayjs($activeDate);
+					const min = 0;
+
+					if (e.key === kbd.ARROW_UP) {
+						e.preventDefault();
+						yearValue.update((prev) => {
+							if (prev === null) return activeDjs.get('year');
+							return prev + 1;
+						});
+						return;
+					}
+					if (e.key === kbd.ARROW_DOWN) {
+						e.preventDefault();
+						yearValue.update((prev) => {
+							if (prev === null || prev === min) {
+								return activeDjs.get('year');
+							}
+							return prev - 1;
+						});
+						return;
+					}
+
+					if (isNumberKey(e.key)) {
+						e.preventDefault();
+						const num = parseInt(e.key);
+						yearValue.update((prev) => {
+							if (prev === null) {
+								return num;
+							}
+							const str = prev.toString() + num.toString();
+							if (str.length > 4) return num;
+
+							const int = parseInt(str);
+
+							return int;
+						});
+					}
+
+					if (e.key === kbd.BACKSPACE) {
+						e.preventDefault();
+						yearValue.update((prev) => {
+							if (prev === null) return null;
+							const str = prev.toString();
+							if (str.length === 1) return null;
+							return parseInt(str.slice(0, -1));
+						});
+					}
+
+					if (e.key === kbd.ARROW_RIGHT) {
+						e.preventDefault();
+					}
+				})
+			);
+
+			return {
+				destroy() {
+					unsubEvents();
+				},
 			};
 		},
 	});
@@ -524,6 +776,9 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			months,
 			value,
 			daysOfWeek,
+			dayValue,
+			monthValue,
+			yearValue,
 		},
 		helpers: {
 			nextMonth,
@@ -535,4 +790,24 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		},
 		options,
 	};
+}
+
+const acceptableKeys = [
+	kbd.TAB,
+	kbd.ARROW_UP,
+	kbd.ARROW_DOWN,
+	kbd.ARROW_LEFT,
+	kbd.ARROW_RIGHT,
+	kbd.BACKSPACE,
+];
+
+function isAcceptableSegmentKey(key: string) {
+	if (acceptableKeys.includes(key)) return true;
+	if (isNumberKey(key)) return true;
+	return false;
+}
+
+function isNumberKey(key: string) {
+	if (isNaN(parseInt(key))) return false;
+	return true;
 }

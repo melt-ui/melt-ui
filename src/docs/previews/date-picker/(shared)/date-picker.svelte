@@ -19,10 +19,17 @@
 	export let fixedWeeks: CreateDatePickerProps['fixedWeeks'] = false;
 
 	const {
-		elements: { content, date },
-		states: { value, months, daysOfWeek },
+		elements: {
+			content,
+			date,
+			dateInput,
+			daySegment,
+			monthSegment,
+			yearSegment,
+		},
+		states: { value, months, daysOfWeek, dayValue, monthValue, yearValue },
 		options: { mode: modeStore },
-		helpers: { prevMonth, nextMonth, setMonth },
+		helpers: { prevMonth, nextMonth },
 	} = createDatePicker({
 		mode,
 		allowDeselect: true,
@@ -38,9 +45,26 @@
 	function getDayOfWeek(date: Date) {
 		return dayjs(date).format('dd');
 	}
+
+	$: console.log($dayValue);
 </script>
 
 <div class="flex flex-col gap-3">
+	<div
+		use:melt={$dateInput}
+		class="flex w-[300px] items-center gap-2 rounded-md border bg-white p-1.5"
+	>
+		<div use:melt={$daySegment} class="text-magnum-800">
+			{$dayValue ?? 'dd'}
+		</div>
+		<div use:melt={$monthSegment} class="text-magnum-800">
+			{$monthValue ?? 'mm'}
+		</div>
+		<div use:melt={$yearSegment} class="text-magnum-800">
+			{$yearValue ?? 'yyyy'}
+		</div>
+	</div>
+
 	<div class="flex items-center gap-4">
 		<!-- Calendar view -->
 		{#each $months as month}
