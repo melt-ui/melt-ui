@@ -207,10 +207,8 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		returned: () => {
 			return {
 				role: 'group',
+				id: ids.input,
 			};
-		},
-		action: (node: HTMLElement) => {
-			//
 		},
 	});
 
@@ -220,6 +218,17 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				id: ids.trigger,
 				tabindex: 0,
 				'data-segment': '',
+			};
+		},
+		action: (node: HTMLElement) => {
+			const unsubEvents = executeCallbacks(
+				addMeltEventListener(node, 'keydown', handleTriggerKeydown)
+			);
+
+			return {
+				destroy() {
+					unsubEvents();
+				},
 			};
 		},
 	});
@@ -307,8 +316,8 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	const yearSegment = builder(name('year-segment'), {
-		stores: [activeDate, yearValue],
-		returned: ([$activeDate, $yearValue]) => {
+		stores: [yearValue],
+		returned: ([$yearValue]) => {
 			const valueMin = 1;
 			const valueMax = 9999;
 
@@ -412,7 +421,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			return;
 		}
 		e.preventDefault();
-		const nextSegment = document.getElementById(ids.monthSegment);
 
 		const $activeDate = get(activeDate);
 		const activeDjs = dayjs($activeDate);
@@ -509,8 +517,11 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			});
 
 			if (moveToNext) {
-				if (!isHTMLElement(nextSegment)) return;
-				nextSegment.focus();
+				const node = e.currentTarget;
+				if (!isHTMLElement(node)) return;
+				const { next } = getPrevNextSegments(node, ids.input);
+				if (!next) return;
+				next.focus();
 			}
 		}
 
@@ -526,9 +537,8 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			});
 		}
 
-		if (e.key === kbd.ARROW_RIGHT) {
-			if (!isHTMLElement(nextSegment)) return;
-			nextSegment.focus();
+		if (isSegmentNavigationKey(e.key)) {
+			handleSegmentNavigation(e);
 		}
 	}
 
@@ -541,9 +551,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			return;
 		}
 		e.preventDefault();
-
-		const nextSegment = document.getElementById(ids.yearSegment);
-		const prevSegment = document.getElementById(ids.daySegment);
 
 		const min = 1;
 		const max = 12;
@@ -638,8 +645,11 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			});
 
 			if (moveToNext) {
-				if (!isHTMLElement(nextSegment)) return;
-				nextSegment.focus();
+				const node = e.currentTarget;
+				if (!isHTMLElement(node)) return;
+				const { next } = getPrevNextSegments(node, ids.input);
+				if (!next) return;
+				next.focus();
 			}
 		}
 
@@ -653,17 +663,8 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			});
 		}
 
-		if (e.key === kbd.ARROW_RIGHT || e.key === kbd.ARROW_LEFT) {
-			if (e.key === kbd.ARROW_LEFT) {
-				if (!isHTMLElement(prevSegment)) return;
-				prevSegment.focus();
-				return;
-			}
-			if (e.key === kbd.ARROW_RIGHT) {
-				if (!isHTMLElement(nextSegment)) return;
-				nextSegment.focus();
-				return;
-			}
+		if (isSegmentNavigationKey(e.key)) {
+			handleSegmentNavigation(e);
 		}
 	}
 
@@ -695,6 +696,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		}
 
 		if (isNumberKey(e.key)) {
+			let moveToNext = false;
 			const num = parseInt(e.key);
 			yearValue.update((prev) => {
 				if (yearHasLeftFocus) {
@@ -707,11 +709,22 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				}
 				const str = prev.toString() + num.toString();
 				if (str.length > 4) return num;
+				if (str.length === 4) {
+					moveToNext = true;
+				}
 
 				const int = parseInt(str);
 
 				return int;
 			});
+
+			if (moveToNext) {
+				const node = e.currentTarget;
+				if (!isHTMLElement(node)) return;
+				const { next } = getPrevNextSegments(node, ids.input);
+				if (!next) return;
+				next.focus();
+			}
 		}
 
 		if (e.key === kbd.BACKSPACE) {
@@ -723,16 +736,15 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			});
 		}
 
-		if (e.key === kbd.ARROW_RIGHT) {
-			const next = document.getElementById(ids.trigger);
-			if (!isHTMLElement(next)) return;
-			next.focus();
+		if (isSegmentNavigationKey(e.key)) {
+			handleSegmentNavigation(e);
 		}
+	}
 
-		if (e.key === kbd.ARROW_LEFT) {
-			const prevSegment = document.getElementById(ids.monthSegment);
-			if (!isHTMLElement(prevSegment)) return;
-			prevSegment.focus();
+	function handleTriggerKeydown(e: KeyboardEvent) {
+		if (isSegmentNavigationKey(e.key)) {
+			e.preventDefault();
+			handleSegmentNavigation(e);
 		}
 	}
 
@@ -854,6 +866,21 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		};
 	}
 
+	function handleSegmentNavigation(e: KeyboardEvent) {
+		const currentTarget = e.currentTarget;
+		if (!isHTMLElement(currentTarget)) return;
+
+		const { prev, next } = getPrevNextSegments(currentTarget, ids.input);
+
+		if (e.key === kbd.ARROW_LEFT) {
+			if (!prev) return;
+			prev.focus();
+		} else if (e.key === kbd.ARROW_RIGHT) {
+			if (!next) return;
+			next.focus();
+		}
+	}
+
 	return {
 		elements: {
 			content,
@@ -902,6 +929,11 @@ function isAcceptableSegmentKey(key: string) {
 function isNumberKey(key: string) {
 	if (isNaN(parseInt(key))) return false;
 	return true;
+}
+
+function isSegmentNavigationKey(key: string) {
+	if (key === kbd.ARROW_RIGHT || key === kbd.ARROW_LEFT) return true;
+	return false;
 }
 
 function getPrevNextSegments(node: HTMLElement, containerId: string) {
