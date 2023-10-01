@@ -51,7 +51,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreatePinInputProps;
 
 	const options = toWritableStores(omit(withDefaults, 'value'));
-	const { placeholder, disabled, type, name: nameStore } = options;
+	const { placeholder, disabled, type, name: nameStore, mask } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
@@ -83,8 +83,8 @@ export function createPinInput(props?: CreatePinInputProps) {
 	};
 
 	const input = builder(name('input'), {
-		stores: [value, placeholder, disabled, type],
-		returned: ([$value, $placeholder, $disabled, $type]) => {
+		stores: [value, placeholder, disabled, type, mask],
+		returned: ([$value, $placeholder, $disabled, $type, $mask]) => {
 			return () => {
 				const totalItems = getTotalItems();
 				const currIndex = index % totalItems;
@@ -95,8 +95,8 @@ export function createPinInput(props?: CreatePinInputProps) {
 					'data-complete': $value.length && $value.every((v) => v.length > 0) ? '' : undefined,
 					placeholder: $placeholder,
 					disabled: disabledAttr($disabled),
-					type: $type,
-					value: options.mask && currValue ? '*' : currValue,
+					type: $mask ? 'password' : $type,
+					value: currValue,
 				};
 			};
 		},
