@@ -3,42 +3,45 @@
 	import { slide } from 'svelte/transition';
 
 	const {
-		elements: { root, content, item, trigger },
+		elements: { content, item, trigger, root },
 		helpers: { isSelected },
-	} = createAccordion();
+	} = createAccordion({
+		defaultValue: 'item-1',
+	});
 
 	const items = [
 		{
 			id: 'item-1',
-			title: 'Is it accessible?',
-			description: 'Yes. It adheres to the WAI-ARIA design pattern.',
+			title: 'What is it?',
+			description:
+				'A collection of accessible & unstyled component builders for Svelte applications.',
 		},
 		{
 			id: 'item-2',
-			title: 'Is it unstyled?',
-			description:
-				"Yes. It's unstyled by default, giving you freedom over the look and feel.",
+			title: 'Can I customize it?',
+			description: 'Totally, it is 100% stylable and overridable.',
 		},
 		{
 			id: 'item-3',
-			title: 'Can it be animated?',
-			description:
-				'Yes! You can use the transition prop to configure the animation.',
+			title: 'Svelte is awesome, huh?',
+			description: 'Yes, and so are you!',
 		},
 	];
 </script>
 
-<div class="root" use:melt={$root}>
+<div class="root" {...$root}>
 	{#each items as { id, title, description }}
 		<div use:melt={$item(id)} class="item">
-			<h2>
+			<h2 class="flex">
 				<button use:melt={$trigger(id)} class="trigger">
 					{title}
 				</button>
 			</h2>
 			{#if $isSelected(id)}
 				<div class="content" use:melt={$content(id)} transition:slide>
-					<div>{description}</div>
+					<div>
+						{description}
+					</div>
 				</div>
 			{/if}
 		</div>
@@ -46,87 +49,107 @@
 </div>
 
 <style>
-	.root {
-		margin-left: auto;
-		margin-right: auto;
-		width: 100%;
-		max-width: 28rem;
-		border-radius: 0.375rem;
-		box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+	* {
+		all: unset;
+	}
+
+	:root {
+		--magnum-50: #fff9ed;
+		--magnum-100: #fef2d6;
+		--magnum-200: #fce0ac;
+		--magnum-300: #f9c978;
+		--magnum-400: #f7b155;
+		--magnum-500: #f38d1c;
+		--magnum-600: #e47312;
+		--magnum-700: #bd5711;
+		--magnum-800: #964516;
+		--magnum-900: #793a15;
+		--magnum-950: #411c09;
+
+		--neutral-50: #fafafa;
+		--neutral-100: #f5f5f5;
+		--neutral-200: #e5e5e5;
+		--neutral-300: #d4d4d4;
+		--neutral-400: #a3a3a3;
+		--neutral-500: #737373;
+		--neutral-600: #525252;
+		--neutral-700: #404040;
+		--neutral-800: #262626;
+		--neutral-900: #171717;
+		--neutral-950: #0a0a0a;
+
+		--shadow-xl: 0 0 #0000, 0 0 #0000, 0 10px 15px -3px rgb(0 0 0 / 0.1),
 			0 4px 6px -4px rgb(0 0 0 / 0.1);
 	}
 
-	.item {
-		margin-top: 1px;
-
+	.root {
+		/* mx-auto w-[18rem] max-w-full rounded-xl bg-white shadow-lg sm:w-[25rem]; */
+		display: block;
+		margin-inline: auto;
+		width: 18rem;
+		max-width: 100%;
+		border-radius: 0.75rem;
 		overflow: hidden;
 
-		transition-property: color, background-color, border-color,
-			text-decoration-color, fill, stroke, -webkit-text-decoration-color;
-
-		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-		transition-duration: 150ms;
+		background-color: white;
+		box-shadow: var(--shadow-xl);
 	}
 
-	.item:first-child {
-		margin-top: 0px;
-		border-radius: 0.25rem 0.25rem 0 0;
+	@media (min-width: 640px) {
+		.root {
+			width: 25rem;
+		}
 	}
 
-	.item:last-child {
-		border-radius: 0 0 0.25rem 0.25rem;
-	}
-
-	.item:focus-within {
-		position: relative;
-		z-index: 10;
-
-		box-shadow: 0 0 0 3px rgb(var(--color-magnum-400) / 1);
-	}
-
-	.item > h2 {
-		display: flex;
+	.item {
+		overflow: hidden;
 	}
 
 	.trigger {
 		display: flex;
-		height: 3rem;
-		flex: 1 1 0%;
-		cursor: pointer;
+		flex: 1;
 		align-items: center;
 		justify-content: space-between;
 
-		background-color: rgb(var(--color-white) / 1);
-
-		padding: 0 1.25rem;
+		cursor: pointer;
+		background-color: white;
+		color: black;
 
 		font-size: 1rem;
 		font-weight: 500;
-		line-height: 1;
+		line-height: 1rem;
 
-		color: rgb(var(--color-magnum-700) / 1);
+		padding: 1.25rem;
+		width: 100%;
 
-		box-shadow: none;
-
-		transition-property: color, background-color, border-color,
-			text-decoration-color, fill, stroke, -webkit-text-decoration-color;
-		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-		transition-duration: 150ms;
+		transition: 250ms ease;
 	}
 
 	.trigger:hover {
-		background-color: rgb(var(--color-white) / 0.95);
+		background-color: var(--neutral-100);
+	}
+
+	.trigger:focus-visible {
+		color: var(--magnum-800);
+		box-shadow: none !important;
+	}
+
+	.item:nth-child(n + 1) .trigger {
+		border-top: 1px solid var(--neutral-300);
 	}
 
 	.content {
+		display: block;
+
+		box-shadow: inset 0px 1px 0px var(--neutral-300);
 		overflow: hidden;
-		background-color: rgb(var(--color-neutral-100) / 1);
+		background-color: var(--neutral-100);
+		color: var(--neutral-600);
 		font-size: 0.875rem;
-		line-height: 1.25rem;
-		color: rgb(var(--color-neutral-900) / 1);
 	}
 
 	.content > div {
+		display: block;
 		padding: 1rem 1.25rem;
 	}
 </style>
