@@ -25,9 +25,22 @@
 			daySegment,
 			monthSegment,
 			yearSegment,
+			minuteSegment,
+			hourSegment,
+			secondSegment,
 			trigger,
 		},
-		states: { value, months, daysOfWeek, dayValue, monthValue, yearValue },
+		states: {
+			value,
+			months,
+			daysOfWeek,
+			dayValue,
+			monthValue,
+			yearValue,
+			hourValue,
+			minuteValue,
+			secondValue,
+		},
 		helpers: { prevMonth, nextMonth },
 	} = createDatePicker({
 		allowDeselect: true,
@@ -50,18 +63,30 @@
 <div class="flex flex-col gap-3">
 	<div
 		use:melt={$dateInput}
-		class="flex max-w-[180px] items-center gap-1 rounded-md border bg-white p-1.5 text-magnum-800"
+		class="flex max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
 	>
 		<div use:melt={$monthSegment}>
 			{$monthValue ?? 'mm'}
 		</div>
-		<div aria-hidden="true" class="opacity-60">/</div>
+		<div aria-hidden="true" class="px-1">/</div>
 		<div use:melt={$daySegment}>
 			{$dayValue ?? 'dd'}
 		</div>
-		<div aria-hidden="true" class="opacity-60">/</div>
+		<div aria-hidden="true" class="px-1">/</div>
 		<div use:melt={$yearSegment}>
 			{$yearValue ?? 'yyyy'}
+		</div>
+		<div aria-hidden="true" class="pr-2">,</div>
+		<div use:melt={$hourSegment} class="whitespace-nowrap">
+			{$hourValue ?? '--'}
+		</div>
+		<div aria-hidden="true" class="px-1">:</div>
+		<div use:melt={$minuteSegment} class="whitespace-nowrap">
+			{$minuteValue ?? '--'}
+		</div>
+		<div aria-hidden="true" class="px-1">:</div>
+		<div use:melt={$secondSegment} class="whitespace-nowrap">
+			{$secondValue ?? '--'}
 		</div>
 		<div class="ml-4 flex w-full items-center justify-end">
 			<button use:melt={$trigger} class="rounded bg-magnum-800 p-1">

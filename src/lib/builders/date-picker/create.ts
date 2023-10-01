@@ -106,6 +106,17 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	let minuteHasLeftFocus = false;
 	let secondHasLeftFocus = false;
 
+	const segmentDefaults = {
+		role: 'spinbutton',
+		contenteditable: true,
+		tabindex: 0,
+		spellcheck: false,
+		inputmode: 'numeric',
+		autocorrect: 'off',
+		enterkeyhint: 'next',
+		'data-segment': '',
+	};
+
 	const {
 		allowDeselect,
 		disabled,
@@ -261,21 +272,14 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			const valueMax = dayjs($activeDate).daysInMonth();
 
 			return {
-				role: 'spinbutton',
+				...segmentDefaults,
 				id: ids.daySegment,
 				'aria-label': 'day, ',
-				contenteditable: true,
 				'aria-valuemin': valueMin,
 				'aria-valuemax': valueMax,
 				'aria-valuenow': $dayValue ?? activeDay,
 				'aria-valuetext': $dayValue ?? 'Empty',
-				tabindex: 0,
-				spellcheck: false,
-				inputmode: 'numeric',
-				autocorrect: 'off',
-				enterkeyhint: 'next',
 				'data-type': 'day',
-				'data-segment': '',
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -303,8 +307,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			const activeMonthString = activeDjs.format('MMMM');
 
 			return {
-				role: 'spinbutton',
-				tabindex: 0,
+				...segmentDefaults,
 				id: ids.monthSegment,
 				'aria-label': 'month, ',
 				contenteditable: true,
@@ -312,12 +315,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				'aria-valuemax': valueMax,
 				'aria-valuenow': $monthValue ?? `${activeMonth + 1} - ${activeMonthString}`,
 				'aria-valuetext': $monthValue ?? 'Empty',
-				spellcheck: false,
-				inputmode: 'numeric',
-				autocorrect: 'off',
-				enterkeyhint: 'next',
 				'data-type': 'month',
-				'data-segment': '',
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -344,21 +342,14 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			const currentYear = dayjs(new Date()).year();
 
 			return {
-				role: 'spinbutton',
-				tabindex: 0,
+				...segmentDefaults,
 				id: ids.yearSegment,
 				'aria-label': 'year, ',
-				contenteditable: true,
 				'aria-valuemin': valueMin,
 				'aria-valuemax': valueMax,
 				'aria-valuenow': $yearValue ?? `${currentYear}`,
 				'aria-valuetext': $yearValue ?? 'Empty',
-				spellcheck: false,
-				inputmode: 'numeric',
-				autocorrect: 'off',
-				enterkeyhint: 'next',
 				'data-type': 'year',
-				'data-segment': '',
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -383,21 +374,14 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			const valueMax = $hourCycle === 12 ? 12 : 23;
 
 			return {
-				role: 'spinbutton',
-				tabindex: 0,
+				...segmentDefaults,
 				id: ids.hourSegment,
 				'aria-label': 'hour, ',
-				contenteditable: true,
 				'aria-valuemin': valueMin,
 				'aria-valuemax': valueMax,
 				'aria-valuenow': $hourValue ?? `${valueMin}`,
 				'aria-valuetext': $hourValue ?? 'Empty',
-				spellcheck: false,
-				inputmode: 'numeric',
-				autocorrect: 'off',
-				enterkeyhint: 'next',
 				'data-type': 'hour',
-				'data-segment': '',
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -422,29 +406,20 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			const valueMax = 59;
 
 			return {
-				role: 'spinbutton',
-				tabindex: 0,
+				...segmentDefaults,
 				id: ids.minuteSegment,
 				'aria-label': 'minute, ',
-				contenteditable: true,
 				'aria-valuemin': valueMin,
 				'aria-valuemax': valueMax,
 				'aria-valuenow': $minuteValue ?? `${valueMin}`,
 				'aria-valuetext': $minuteValue ?? 'Empty',
-				spellcheck: false,
-				inputmode: 'numeric',
-				autocorrect: 'off',
-				enterkeyhint: 'next',
 				'data-type': 'minute',
-				'data-segment': '',
 			};
 		},
 		action: (node: HTMLElement) => {
 			node.style.caretColor = 'transparent';
 			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'keydown', () => {
-					//
-				}),
+				addMeltEventListener(node, 'keydown', handleMinuteSegmentKeydown),
 				addMeltEventListener(node, 'focusout', () => (minuteHasLeftFocus = true))
 			);
 
@@ -463,30 +438,21 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			const valueMax = 59;
 
 			return {
-				role: 'spinbutton',
-				tabindex: 0,
-				id: ids.minuteSegment,
+				...segmentDefaults,
+				id: ids.secondSegment,
 				'aria-label': 'second, ',
-				contenteditable: true,
 				'aria-valuemin': valueMin,
 				'aria-valuemax': valueMax,
 				'aria-valuenow': $secondValue ?? `${valueMin}`,
 				'aria-valuetext': $secondValue ?? 'Empty',
-				spellcheck: false,
-				inputmode: 'numeric',
-				autocorrect: 'off',
-				enterkeyhint: 'next',
 				'data-type': 'second',
-				'data-segment': '',
 			};
 		},
 		action: (node: HTMLElement) => {
 			node.style.caretColor = 'transparent';
 			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'keydown', () => {
-					//
-				}),
-				addMeltEventListener(node, 'focusout', () => (minuteHasLeftFocus = true))
+				addMeltEventListener(node, 'keydown', handleSecondSegmentKeydown),
+				addMeltEventListener(node, 'focusout', () => (secondHasLeftFocus = true))
 			);
 
 			return {
@@ -1406,6 +1372,9 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			dayValue,
 			monthValue,
 			yearValue,
+			hourValue,
+			minuteValue,
+			secondValue,
 		},
 		helpers: {
 			nextMonth,
