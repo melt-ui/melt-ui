@@ -1,8 +1,8 @@
-import type { createDatePicker } from './create';
+import type { createCalendar } from './create';
 import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers';
 
-export type BaseDatePickerProps = {
+export type BaseCalendarProps = {
 	/**
 	 * The earliest date that can be selected.
 	 */
@@ -139,14 +139,14 @@ export type Matcher =
 	| DateInterval
 	| DayOfWeek;
 
-export type CreateDatePickerProps = Partial<BaseDatePickerProps>;
+export type CreateCalendarProps = Partial<BaseCalendarProps>;
 
 export type DateProps = {
 	value: Date;
 	label: string;
 };
 
-export type CreateDatePickerReturn = ReturnType<typeof createDatePicker>;
+export type CreateCalendarReturn = ReturnType<typeof createCalendar>;
 
 export type Month = {
 	month: Date;

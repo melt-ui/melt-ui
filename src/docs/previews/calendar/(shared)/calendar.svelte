@@ -1,7 +1,7 @@
 <script lang="ts">
 	import {
-		createDatePicker,
-		type CreateDatePickerProps,
+		createCalendar,
+		type CreateCalendarProps,
 		type Matcher,
 	} from '$lib/builders';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
@@ -11,19 +11,19 @@
 
 	export let mode: 'single' | 'multiple' | 'range' = 'single';
 	export let disabled: Matcher | Matcher[] = false;
-	export let activeDate: CreateDatePickerProps['activeDate'] = new Date();
-	export let defaultValue: CreateDatePickerProps['defaultValue'] = undefined;
-	export let numberOfMonths: CreateDatePickerProps['numberOfMonths'] = 1;
-	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = false;
-	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = 0;
-	export let fixedWeeks: CreateDatePickerProps['fixedWeeks'] = false;
+	export let activeDate: CreateCalendarProps['activeDate'] = new Date();
+	export let defaultValue: CreateCalendarProps['defaultValue'] = undefined;
+	export let numberOfMonths: CreateCalendarProps['numberOfMonths'] = 1;
+	export let pagedNavigation: CreateCalendarProps['pagedNavigation'] = false;
+	export let weekStartsOn: CreateCalendarProps['weekStartsOn'] = 0;
+	export let fixedWeeks: CreateCalendarProps['fixedWeeks'] = false;
 
 	const {
 		elements: { content, date },
 		states: { value, months, daysOfWeek },
 		options: { mode: modeStore },
 		helpers: { prevMonth, nextMonth, setMonth },
-	} = createDatePicker({
+	} = createCalendar({
 		mode,
 		allowDeselect: true,
 		disabled,
@@ -178,7 +178,7 @@
 	}
 
 	.date {
-		@apply flex h-6 w-6 items-center justify-center rounded p-4 hover:bg-magnum-100 data-[selected]:bg-magnum-200 data-[disabled]:opacity-40;
+		@apply flex h-6 w-6 items-center justify-center rounded p-4 hover:bg-magnum-100 data-[selected]:bg-magnum-200 data-[disabled]:opacity-40 data-[range-highlighted]:bg-magnum-200;
 	}
 
 	.date span {

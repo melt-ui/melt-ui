@@ -29,9 +29,10 @@ import {
 } from './utils';
 
 import { derived, get, writable } from 'svelte/store';
-import type { CreateDatePickerProps, DateProps, DateRange, Month } from './types';
+import type { CreateCalendarProps, DateProps, DateRange, Month } from './types';
 import dayjs from 'dayjs';
 import { dayJsStore } from './date-store';
+import { executeCallbacks } from '../../internal/helpers/callbacks';
 
 const defaults = {
 	disabled: false,
@@ -48,7 +49,7 @@ const defaults = {
 	defaultValue: undefined,
 	onValueChange: undefined,
 	fixedWeeks: false,
-} satisfies CreateDatePickerProps;
+} satisfies CreateCalendarProps;
 
 type CalendarParts =
 	| 'content'
@@ -62,7 +63,7 @@ type CalendarParts =
 	| 'prev';
 const { name } = createElHelpers<CalendarParts>('calendar');
 
-export function createDatePicker(props?: CreateDatePickerProps) {
+export function createCalendar(props?: CreateCalendarProps) {
 	const withDefaults = { ...defaults, ...props };
 
 	const options = toWritableStores({
@@ -86,8 +87,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		fixedWeeks,
 		hidden,
 	} = options;
-
-	let lastClickedDate: Date | null = null;
 
 	const months = writable<Month[]>([]);
 
@@ -172,19 +171,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	function handleRangeClick(date: Date) {
-		if (lastClickedDate === null) {
-			lastClickedDate = date;
-		} else if (isSameDay(lastClickedDate, date)) {
-			value.set({
-				to: date,
-				from: date,
-			});
-			lastClickedDate = date;
-			return;
-		} else {
-			lastClickedDate = date;
-		}
-
 		value.update((prev) => {
 			if (prev === undefined) {
 				return {
@@ -196,8 +182,9 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 			const isEmpty = prev.to === undefined && prev.from === undefined;
 			const isSame = prev.to === prev.from;
+			const isComplete = !isSame && prev.to !== undefined && prev.from !== undefined;
 
-			if (isEmpty) {
+			if (isEmpty || isComplete) {
 				return {
 					from: date,
 					to: date,
@@ -208,13 +195,13 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			// new date is the same as the existing date
 			if (prev.from !== undefined) {
 				if (isSame && isSameDay(prev.from, date)) {
-					return prev;
+					return undefined;
 				}
 
 				if (isBefore(date, prev.from)) {
 					return {
 						from: date,
-						to: date,
+						to: prev.from,
 					};
 				}
 				const daysBetween = getDaysBetween(prev.from, date);
@@ -272,6 +259,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					date: props.value,
 					value: $value,
 				});
+
 				return {
 					role: 'date',
 					'aria-selected': selected ? true : undefined,
@@ -299,23 +287,25 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					disabled: disabled ? true : false,
 				};
 			};
-			const unsub = addMeltEventListener(node, 'click', () => {
-				const args = getElArgs();
-				if (args.disabled) return;
-				const date = new Date(args.value || '');
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					const args = getElArgs();
+					if (args.disabled) return;
+					const date = new Date(args.value || '');
 
-				switch (get(mode)) {
-					case 'single':
-						handleSingleClick(date);
-						break;
-					case 'range':
-						handleRangeClick(date);
-						break;
-					case 'multiple':
-						handleMultipleClick(date);
-						break;
-				}
-			});
+					switch (get(mode)) {
+						case 'single':
+							handleSingleClick(date);
+							break;
+						case 'range':
+							handleRangeClick(date);
+							break;
+						case 'multiple':
+							handleMultipleClick(date);
+							break;
+					}
+				})
+			);
 
 			return {
 				destroy: unsub,

@@ -5,7 +5,7 @@ import { checkboxData } from './checkbox.js';
 import { collapsibleData } from './collapsible.js';
 import { comboboxData } from './combobox.js';
 import { contextMenuData } from './context-menu.js';
-import { popoverData as datePickerData } from './date-picker.js';
+import { popoverData as calendarData } from './calendar.js';
 import { dialogData } from './dialog.js';
 import { dropdownMenuData } from './dropdown-menu.js';
 import { labelData } from './label.js';
@@ -33,11 +33,11 @@ import { tooltipData } from './tooltip.js';
 export const builderList = [
 	'accordion',
 	'avatar',
+	'calendar',
 	'checkbox',
 	'collapsible',
 	'combobox',
 	'context-menu',
-	'date-picker',
 	'dialog',
 	'dropdown-menu',
 	'label',
@@ -86,7 +86,7 @@ export const data: Builders = {
 	'context-menu': contextMenuData,
 	dialog: dialogData,
 	'dropdown-menu': dropdownMenuData,
-	'date-picker': datePickerData,
+	calendar: calendarData,
 	label: labelData,
 	'link-preview': linkPreviewData,
 	menubar: menubarData,
