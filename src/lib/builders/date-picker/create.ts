@@ -66,7 +66,7 @@ type DatePickerParts =
 	| 'hour-segment'
 	| 'minute-segment'
 	| 'second-segment'
-	| 'time-indicator-segment'
+	| 'dayPeriod-segment'
 	| 'trigger';
 
 const { name } = createElHelpers<DatePickerParts>('calendar');
@@ -91,7 +91,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	const hourValue = writable<number | null>(null);
 	const minuteValue = writable<number | null>(null);
 	const secondValue = writable<number | null>(null);
-	const indicatorValue = writable<'AM' | 'PM' | null>(null);
+	const dayPeriodValue = writable<'AM' | 'PM'>('AM');
 
 	let dayLastKeyZero = false;
 	let monthLastKeyZero = false;
@@ -453,6 +453,38 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'keydown', handleSecondSegmentKeydown),
 				addMeltEventListener(node, 'focusout', () => (secondHasLeftFocus = true))
+			);
+
+			return {
+				destroy() {
+					unsubEvents();
+				},
+			};
+		},
+	});
+
+	const dayPeriodSegment = builder(name('dayPeriod-segment'), {
+		stores: [dayPeriodValue],
+		returned: ([$dayPeriodValue]) => {
+			const valueMin = 0;
+			const valueMax = 12;
+
+			return {
+				...segmentDefaults,
+				inputmode: 'text',
+				id: ids.secondSegment,
+				'aria-label': 'AM/PM',
+				'aria-valuemin': valueMin,
+				'aria-valuemax': valueMax,
+				'aria-valuenow': $dayPeriodValue ?? `${valueMin}`,
+				'aria-valuetext': $dayPeriodValue ?? 'AM',
+				'data-type': 'second',
+			};
+		},
+		action: (node: HTMLElement) => {
+			node.style.caretColor = 'transparent';
+			const unsubEvents = executeCallbacks(
+				addMeltEventListener(node, 'keydown', handleDayPeriodSegmentKeydown)
 			);
 
 			return {
@@ -1203,6 +1235,47 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		}
 	}
 
+	function handleDayPeriodSegmentKeydown(e: KeyboardEvent) {
+		const acceptableKeys = [
+			kbd.ARROW_UP,
+			kbd.ARROW_DOWN,
+			kbd.ARROW_LEFT,
+			kbd.ARROW_RIGHT,
+			kbd.BACKSPACE,
+			'a',
+			'p',
+		];
+
+		if (!acceptableKeys.includes(e.key)) {
+			return;
+		}
+		e.preventDefault();
+
+		if (e.key === kbd.ARROW_UP || e.key === kbd.ARROW_DOWN) {
+			dayPeriodValue.update((prev) => {
+				if (prev === 'AM') return 'PM';
+				return 'AM';
+			});
+			return;
+		}
+
+		if (e.key === kbd.BACKSPACE) {
+			secondHasLeftFocus = false;
+			dayPeriodValue.update(() => 'AM');
+		}
+
+		if (e.key === 'a') {
+			dayPeriodValue.update(() => 'AM');
+		}
+		if (e.key === 'p') {
+			dayPeriodValue.update(() => 'PM');
+		}
+
+		if (isSegmentNavigationKey(e.key)) {
+			handleSegmentNavigation(e);
+		}
+	}
+
 	function handleTriggerKeydown(e: KeyboardEvent) {
 		if (isSegmentNavigationKey(e.key)) {
 			e.preventDefault();
@@ -1362,6 +1435,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			hourSegment,
 			minuteSegment,
 			secondSegment,
+			dayPeriodSegment,
 			trigger,
 		},
 		states: {
@@ -1375,6 +1449,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			hourValue,
 			minuteValue,
 			secondValue,
+			dayPeriodValue,
 		},
 		helpers: {
 			nextMonth,

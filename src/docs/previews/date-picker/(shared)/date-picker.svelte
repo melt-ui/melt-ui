@@ -28,6 +28,7 @@
 			minuteSegment,
 			hourSegment,
 			secondSegment,
+			dayPeriodSegment,
 			trigger,
 		},
 		states: {
@@ -40,6 +41,7 @@
 			hourValue,
 			minuteValue,
 			secondValue,
+			dayPeriodValue
 		},
 		helpers: { prevMonth, nextMonth },
 	} = createDatePicker({
@@ -51,6 +53,7 @@
 		pagedNavigation,
 		weekStartsOn,
 		fixedWeeks,
+		hourCycle: 12,
 	});
 
 	function getDayOfWeek(date: Date) {
@@ -80,13 +83,16 @@
 		<div use:melt={$hourSegment} class="whitespace-nowrap">
 			{$hourValue ?? '--'}
 		</div>
-		<div aria-hidden="true" class="px-1">:</div>
+		<div aria-hidden="true" class="px-0.5">:</div>
 		<div use:melt={$minuteSegment} class="whitespace-nowrap">
 			{$minuteValue ?? '--'}
 		</div>
-		<div aria-hidden="true" class="px-1">:</div>
+		<div aria-hidden="true" class="px-0.5">:</div>
 		<div use:melt={$secondSegment} class="whitespace-nowrap">
 			{$secondValue ?? '--'}
+		</div>
+		<div use:melt={$dayPeriodSegment} class="ml-2">
+			{$dayPeriodValue}
 		</div>
 		<div class="ml-4 flex w-full items-center justify-end">
 			<button use:melt={$trigger} class="rounded bg-magnum-800 p-1">
