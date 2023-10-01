@@ -31,10 +31,9 @@ import {
 
 import { derived, get, writable } from 'svelte/store';
 import type { DateProps, DateRange, Month } from '$lib/builders/index.js';
-import type { CreateDatePicker } from './types.js';
+import type { CreateDatePickerProps } from './types.js';
 import dayjs from 'dayjs';
 import { dayJsStore } from './date-store.js';
-import { executeCallbacks } from '../../internal/helpers/callbacks';
 
 const defaults = {
 	disabled: false,
@@ -51,7 +50,7 @@ const defaults = {
 	defaultValue: undefined,
 	onValueChange: undefined,
 	fixedWeeks: false,
-} satisfies CreateDatePicker;
+} satisfies CreateDatePickerProps;
 
 type DatePickerParts =
 	| 'content'
@@ -69,7 +68,7 @@ type DatePickerParts =
 	| 'year-segment';
 const { name } = createElHelpers<DatePickerParts>('calendar');
 
-export function createDatePicker(props?: CreateDatePicker) {
+export function createDatePicker(props?: CreateDatePickerProps) {
 	const withDefaults = { ...defaults, ...props };
 
 	const options = toWritableStores({
@@ -103,6 +102,9 @@ export function createDatePicker(props?: CreateDatePicker) {
 	const ids = {
 		content: generateId(),
 		input: generateId(),
+		daySegment: generateId(),
+		monthSegment: generateId(),
+		yearSegment: generateId(),
 	};
 
 	/**
@@ -290,19 +292,36 @@ export function createDatePicker(props?: CreateDatePicker) {
 				'data-type': 'day',
 			};
 		},
+		action: (node: HTMLElement) => {
+			const unsubEvents = executeCallbacks(
+				addMeltEventListener(node, 'keydown', (e) => {
+					//
+				})
+			);
+
+			return {
+				destroy() {
+					unsubEvents();
+				},
+			};
+		},
 	});
 
 	const monthSegment = builder(name('month-segment'), {
 		stores: [],
 		returned: () => {
-			return {};
+			return {
+				tabindex: 0,
+			};
 		},
 	});
 
 	const yearSegment = builder(name('year-segment'), {
 		stores: [],
 		returned: () => {
-			return {};
+			return {
+				tabindex: 0,
+			};
 		},
 	});
 
@@ -497,6 +516,8 @@ export function createDatePicker(props?: CreateDatePicker) {
 			date,
 			dateInput,
 			daySegment,
+			monthSegment,
+			yearSegment,
 		},
 		states: {
 			activeDate,

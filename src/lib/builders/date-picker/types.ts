@@ -105,6 +105,6 @@ export type BaseDatePickerProps = {
 	numberOfMonths: number;
 };
 
-export type CreateDatePicker = Partial<BaseDatePickerProps>;
+export type CreateDatePickerProps = Partial<BaseDatePickerProps>;
 
 export type CreateDatePickerReturn = ReturnType<typeof createDatePicker>;

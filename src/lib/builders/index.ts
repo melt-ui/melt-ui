@@ -5,6 +5,7 @@ export * from './collapsible/index.js';
 export * from './combobox/index.js';
 export * from './context-menu/index.js';
 export * from './calendar/index.js';
+export * from './date-picker/index.js';
 export * from './dialog/index.js';
 export * from './dropdown-menu/index.js';
 export * from './link-preview/index.js';
