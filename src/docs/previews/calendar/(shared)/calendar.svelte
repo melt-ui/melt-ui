@@ -178,7 +178,7 @@
 	}
 
 	.date {
-		@apply flex h-6 w-6 items-center justify-center rounded p-4 hover:bg-magnum-100 data-[selected]:bg-magnum-200 data-[disabled]:opacity-40 data-[range-highlighted]:bg-magnum-200;
+		@apply flex h-6 w-6 items-center justify-center rounded p-4 hover:bg-magnum-100 data-[range-highlighted]:bg-magnum-200 data-[selected]:bg-magnum-200 data-[disabled]:opacity-40;
 	}
 
 	.date span {
