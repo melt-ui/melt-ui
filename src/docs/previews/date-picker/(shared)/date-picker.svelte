@@ -8,6 +8,7 @@
 	import { monthYearFormatter } from './formatters';
 	import dayjs from 'dayjs';
 	import { melt } from '$lib';
+	import { fade } from 'svelte/transition';
 
 	export let disabled: Matcher | Matcher[] = false;
 	export let activeDate: CreateDatePickerProps['activeDate'] = new Date();
@@ -19,8 +20,8 @@
 
 	const {
 		elements: {
-			content,
-			date,
+			grid,
+			cell,
 			dateInput,
 			daySegment,
 			monthSegment,
@@ -30,6 +31,7 @@
 			secondSegment,
 			dayPeriodSegment,
 			trigger,
+			content,
 		},
 		states: {
 			value,
@@ -41,7 +43,8 @@
 			hourValue,
 			minuteValue,
 			secondValue,
-			dayPeriodValue
+			dayPeriodValue,
+			open,
 		},
 		helpers: { prevMonth, nextMonth },
 	} = createDatePicker({
@@ -54,13 +57,12 @@
 		weekStartsOn,
 		fixedWeeks,
 		hourCycle: 12,
+		forceVisible: true,
 	});
 
 	function getDayOfWeek(date: Date) {
 		return dayjs(date).format('dd');
 	}
-
-	let open = false;
 </script>
 
 <div class="flex flex-col gap-3">
@@ -100,73 +102,84 @@
 			</button>
 		</div>
 	</div>
-	{#if open}
-		<div class="flex items-center gap-4">
-			<!-- Calendar view -->
-			{#each $months as month}
-				{@const {
-					dates,
-					lastMonthDates,
-					nextMonthDates,
-					month: monthDate,
-				} = month}
-				<div>
-					<div
-						use:melt={$content}
-						class="w-80 rounded-lg bg-white p-4 shadow-sm"
-					>
-						<div class="flex flex-col gap-2.5 text-magnum-800">
-							<div class="flex w-full items-center justify-between">
-								<p class="font-semibold text-magnum-800">
-									{monthYearFormatter.format(monthDate)}
-								</p>
-								<div class="flex items-center gap-8">
-									<button on:click={prevMonth}>
-										<ChevronLeft />
-									</button>
-									<button on:click={nextMonth}>
-										<ChevronRight />
-									</button>
-								</div>
-							</div>
-							<div class="grid grid-cols-7 gap-2">
-								{#each $daysOfWeek as day}
-									<div class="date">
-										<span class="text-sm font-medium">{getDayOfWeek(day)}</span>
+	{#if $open}
+		<div
+			class="z-10 w-80 rounded-[4px] bg-white p-3 shadow-sm"
+			use:melt={$content}
+			transition:fade={{ duration: 100 }}
+		>
+			<div class="flex items-center gap-4">
+				<!-- Calendar view -->
+				{#each $months as month}
+					{@const {
+						dates,
+						lastMonthDates,
+						nextMonthDates,
+						month: monthDate,
+					} = month}
+					<div>
+						<div use:melt={$grid} class="rounded-lg bg-white p-4 shadow-sm">
+							<div class="flex flex-col gap-2.5 text-magnum-800">
+								<div class="flex w-full items-center justify-between">
+									<p class="font-semibold text-magnum-800">
+										{monthYearFormatter.format(monthDate)}
+									</p>
+									<div class="flex items-center gap-8">
+										<button on:click={prevMonth}>
+											<ChevronLeft />
+										</button>
+										<button on:click={nextMonth}>
+											<ChevronRight />
+										</button>
 									</div>
-								{/each}
-								{#each lastMonthDates as day}
-									<button
-										use:date
-										{...$date({ label: day.toDateString(), value: day })}
-										class="date"
-									>
-										<span class="opacity-50">{day.getDate()}</span>
-									</button>
-								{/each}
-								{#each dates as day}
-									<button
-										use:date
-										{...$date({ label: day.toDateString(), value: day })}
-										class="date"
-									>
-										<span class="">{day.getDate()}</span>
-									</button>
-								{/each}
-								{#each nextMonthDates as day}
-									<button
-										use:date
-										{...$date({ label: day.toDateString(), value: day })}
-										class="date"
-									>
-										<span class="opacity-50">{day.getDate()}</span>
-									</button>
-								{/each}
+								</div>
+								<div class="grid grid-cols-7 gap-2">
+									{#each $daysOfWeek as day}
+										<div class="cell">
+											<span class="text-sm font-medium"
+												>{getDayOfWeek(day)}</span
+											>
+										</div>
+									{/each}
+									{#each lastMonthDates as day}
+										<button
+											use:melt={$cell({
+												label: day.toDateString(),
+												value: day,
+											})}
+											class="cell"
+										>
+											<span class="opacity-50">{day.getDate()}</span>
+										</button>
+									{/each}
+									{#each dates as day}
+										<button
+											use:melt={$cell({
+												label: day.toDateString(),
+												value: day,
+											})}
+											class="cell"
+										>
+											<span class="">{day.getDate()}</span>
+										</button>
+									{/each}
+									{#each nextMonthDates as day}
+										<button
+											use:melt={$cell({
+												label: day.toDateString(),
+												value: day,
+											})}
+											class="cell"
+										>
+											<span class="opacity-50">{day.getDate()}</span>
+										</button>
+									{/each}
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			{/each}
+				{/each}
+			</div>
 		</div>
 	{/if}
 </div>
@@ -208,11 +221,11 @@
 		@apply flex items-center justify-between border-y border-magnum-700 py-1;
 	}
 
-	.date {
+	.cell {
 		@apply flex h-6 w-6 items-center justify-center rounded p-4 hover:bg-magnum-100 data-[range-highlighted]:bg-magnum-200 data-[selected]:bg-magnum-200 data-[disabled]:opacity-40;
 	}
 
-	.date span {
+	.cell span {
 		@apply text-magnum-800;
 	}
 </style>

@@ -27,7 +27,7 @@ import {
 } from '$lib/builders/calendar/utils.js';
 
 import { derived, get, writable } from 'svelte/store';
-import type { DateProps, Month } from '$lib/builders/index.js';
+import { createPopover, type DateProps, type Month } from '$lib/builders/index.js';
 import type { CreateDatePickerProps } from './types.js';
 import dayjs from 'dayjs';
 import { dayJsStore } from './date-store.js';
@@ -47,6 +47,18 @@ const defaults = {
 	onValueChange: undefined,
 	fixedWeeks: false,
 	hourCycle: 24,
+	positioning: {
+		placement: 'bottom',
+	},
+	arrowSize: 8,
+	defaultOpen: false,
+	disableFocusTrap: false,
+	closeOnEscape: true,
+	preventScroll: false,
+	onOpenChange: undefined,
+	closeOnOutsideClick: true,
+	portal: undefined,
+	forceVisible: false,
 } satisfies CreateDatePickerProps;
 
 type DatePickerParts =
@@ -55,8 +67,8 @@ type DatePickerParts =
 	| 'prevMonth'
 	| 'nextYear'
 	| 'prevYear'
-	| 'dateGrid'
-	| 'date'
+	| 'grid'
+	| 'cell'
 	| 'next'
 	| 'prev'
 	| 'date-input'
@@ -74,8 +86,23 @@ const { name } = createElHelpers<DatePickerParts>('calendar');
 export function createDatePicker(props?: CreateDatePickerProps) {
 	const withDefaults = { ...defaults, ...props };
 
+	const popover = createPopover({
+		positioning: withDefaults.positioning,
+		arrowSize: withDefaults.arrowSize,
+		defaultOpen: withDefaults.defaultOpen,
+		open: withDefaults.open,
+		disableFocusTrap: withDefaults.disableFocusTrap,
+		closeOnEscape: withDefaults.closeOnEscape,
+		preventScroll: withDefaults.preventScroll,
+		onOpenChange: withDefaults.onOpenChange,
+		closeOnOutsideClick: withDefaults.closeOnOutsideClick,
+		portal: withDefaults.portal,
+		forceVisible: withDefaults.forceVisible,
+	});
+
 	const options = toWritableStores({
 		...omit(withDefaults, 'value'),
+		...popover.options,
 	});
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
@@ -111,6 +138,9 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		second: false,
 	};
 
+	/**
+	 * The default attributes applied to each segment
+	 */
 	const segmentDefaults = {
 		role: 'spinbutton',
 		contenteditable: true,
@@ -136,7 +166,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	const months = writable<Month[]>([]);
 
 	const ids = {
-		content: generateId(),
+		grid: generateId(),
 		input: generateId(),
 		daySegment: generateId(),
 		monthSegment: generateId(),
@@ -145,7 +175,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		minuteSegment: generateId(),
 		secondSegment: generateId(),
 		timeIndicatorSegment: generateId(),
-		trigger: generateId(),
+		...popover.ids,
 	};
 
 	/**
@@ -194,8 +224,8 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		activeDate.subtract(1, 'year');
 	}
 
-	const content = builder(name('content'), {
-		returned: () => ({ tabindex: -1, id: ids.content }),
+	const grid = builder(name('grid'), {
+		returned: () => ({ tabindex: -1, id: ids.grid }),
 		action: (node: HTMLElement) => {
 			const unsubKb = addMeltEventListener(node, 'keydown', (e) => {
 				const triggerElement = e.currentTarget;
@@ -500,7 +530,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		},
 	});
 
-	const date = builder(name('date'), {
+	const cell = builder(name('cell'), {
 		stores: [value, disabled, hidden, activeDate],
 		returned: ([$value, $disabled, $hidden, $activeDate]) => {
 			return (props: DateProps) => {
@@ -1431,8 +1461,8 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	return {
 		elements: {
-			content,
-			date,
+			grid,
+			cell,
 			dateInput,
 			daySegment,
 			monthSegment,
@@ -1441,7 +1471,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			minuteSegment,
 			secondSegment,
 			dayPeriodSegment,
-			trigger,
+			...popover.elements,
 		},
 		states: {
 			activeDate,
@@ -1455,6 +1485,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			minuteValue,
 			secondValue,
 			dayPeriodValue,
+			...popover.states,
 		},
 		helpers: {
 			nextMonth,
@@ -1465,6 +1496,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			setMonth,
 		},
 		options,
+		ids,
 	};
 }
 

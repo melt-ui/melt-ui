@@ -1,7 +1,7 @@
 import type { Writable } from 'svelte/store';
-import type { ChangeFn } from '$lib/internal/helpers';
-import type { createDatePicker } from './create';
-import type { Matcher } from '$lib/builders';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
+import type { createDatePicker } from './create.js';
+import type { CreatePopoverProps, Matcher } from '$lib/builders/index.js';
 
 export type BaseDatePickerProps = {
 	/**
@@ -103,6 +103,6 @@ export type BaseDatePickerProps = {
 	hourCycle: 12 | 24;
 };
 
-export type CreateDatePickerProps = Partial<BaseDatePickerProps>;
+export type CreateDatePickerProps = Partial<BaseDatePickerProps> & CreatePopoverProps;
 
 export type CreateDatePickerReturn = ReturnType<typeof createDatePicker>;
