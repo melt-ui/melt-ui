@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Calendar from '../../(shared)/date-picker.svelte';
+	import DatePicker from '../../(shared)/date-picker.svelte';
 </script>
 
 <div class="flex gap-4">
-	<Calendar />
+	<DatePicker />
 </div>

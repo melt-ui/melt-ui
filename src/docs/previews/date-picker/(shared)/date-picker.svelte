@@ -46,7 +46,7 @@
 		return dayjs(date).format('dd');
 	}
 
-	$: console.log($dayValue);
+	let open = false;
 </script>
 
 <div class="flex flex-col gap-3">
@@ -64,102 +64,106 @@
 			{$yearValue ?? 'yyyy'}
 		</div>
 	</div>
-
-	<div class="flex items-center gap-4">
-		<!-- Calendar view -->
-		{#each $months as month}
-			{@const {
-				dates,
-				lastMonthDates,
-				nextMonthDates,
-				month: monthDate,
-			} = month}
-			<div>
-				<div use:melt={$content} class="w-80 rounded-lg bg-white p-4 shadow-sm">
-					<div class="flex flex-col gap-2.5 text-magnum-800">
-						<div class="flex w-full items-center justify-between">
-							<p class="font-semibold text-magnum-800">
-								{monthYearFormatter.format(monthDate)}
-							</p>
-							<div class="flex items-center gap-8">
-								<button on:click={prevMonth}>
-									<ChevronLeft />
-								</button>
-								<button on:click={nextMonth}>
-									<ChevronRight />
-								</button>
-							</div>
-						</div>
-						<div class="grid grid-cols-7 gap-2">
-							{#each $daysOfWeek as day}
-								<div class="date">
-									<span class="text-sm font-medium">{getDayOfWeek(day)}</span>
+	{#if open}
+		<div class="flex items-center gap-4">
+			<!-- Calendar view -->
+			{#each $months as month}
+				{@const {
+					dates,
+					lastMonthDates,
+					nextMonthDates,
+					month: monthDate,
+				} = month}
+				<div>
+					<div
+						use:melt={$content}
+						class="w-80 rounded-lg bg-white p-4 shadow-sm"
+					>
+						<div class="flex flex-col gap-2.5 text-magnum-800">
+							<div class="flex w-full items-center justify-between">
+								<p class="font-semibold text-magnum-800">
+									{monthYearFormatter.format(monthDate)}
+								</p>
+								<div class="flex items-center gap-8">
+									<button on:click={prevMonth}>
+										<ChevronLeft />
+									</button>
+									<button on:click={nextMonth}>
+										<ChevronRight />
+									</button>
 								</div>
-							{/each}
-							{#each lastMonthDates as day}
-								<button
-									use:date
-									{...$date({ label: day.toDateString(), value: day })}
-									class="date"
-								>
-									<span class="opacity-50">{day.getDate()}</span>
-								</button>
-							{/each}
-							{#each dates as day}
-								<button
-									use:date
-									{...$date({ label: day.toDateString(), value: day })}
-									class="date"
-								>
-									<span class="">{day.getDate()}</span>
-								</button>
-							{/each}
-							{#each nextMonthDates as day}
-								<button
-									use:date
-									{...$date({ label: day.toDateString(), value: day })}
-									class="date"
-								>
-									<span class="opacity-50">{day.getDate()}</span>
-								</button>
-							{/each}
+							</div>
+							<div class="grid grid-cols-7 gap-2">
+								{#each $daysOfWeek as day}
+									<div class="date">
+										<span class="text-sm font-medium">{getDayOfWeek(day)}</span>
+									</div>
+								{/each}
+								{#each lastMonthDates as day}
+									<button
+										use:date
+										{...$date({ label: day.toDateString(), value: day })}
+										class="date"
+									>
+										<span class="opacity-50">{day.getDate()}</span>
+									</button>
+								{/each}
+								{#each dates as day}
+									<button
+										use:date
+										{...$date({ label: day.toDateString(), value: day })}
+										class="date"
+									>
+										<span class="">{day.getDate()}</span>
+									</button>
+								{/each}
+								{#each nextMonthDates as day}
+									<button
+										use:date
+										{...$date({ label: day.toDateString(), value: day })}
+										class="date"
+									>
+										<span class="opacity-50">{day.getDate()}</span>
+									</button>
+								{/each}
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-		{/each}
-	</div>
-	{#if $value}
-		{#if $modeStore === 'range'}
-			<div class="flex flex-col text-xs text-magnum-900">
-				<div>You selected:</div>
-				<div>
-					{#if 'to' in $value && 'from' in $value}
-						{$value.from && dateFormatter.format($value.from)} - {$value.to &&
-							dateFormatter.format($value.to)}
+			{/each}
+		</div>
+		{#if $value}
+			{#if $modeStore === 'range'}
+				<div class="flex flex-col text-xs text-magnum-900">
+					<div>You selected:</div>
+					<div>
+						{#if 'to' in $value && 'from' in $value}
+							{$value.from && dateFormatter.format($value.from)} - {$value.to &&
+								dateFormatter.format($value.to)}
+						{/if}
+					</div>
+				</div>
+			{:else if $modeStore === 'single'}
+				<div class="flex flex-col text-xs text-magnum-900">
+					<div>You selected:</div>
+					<div>
+						{#if $value instanceof Date}
+							{dateFormatter.format($value)}
+						{/if}
+					</div>
+				</div>
+			{:else if $modeStore === 'multiple'}
+				<div class="flex flex-col text-xs text-magnum-900">
+					<div>You selected:</div>
+					{#if Array.isArray($value)}
+						{#each $value as v, i (i)}
+							<div>
+								{dateFormatter.format(v)}
+							</div>
+						{/each}
 					{/if}
 				</div>
-			</div>
-		{:else if $modeStore === 'single'}
-			<div class="flex flex-col text-xs text-magnum-900">
-				<div>You selected:</div>
-				<div>
-					{#if $value instanceof Date}
-						{dateFormatter.format($value)}
-					{/if}
-				</div>
-			</div>
-		{:else if $modeStore === 'multiple'}
-			<div class="flex flex-col text-xs text-magnum-900">
-				<div>You selected:</div>
-				{#if Array.isArray($value)}
-					{#each $value as v, i (i)}
-						<div>
-							{dateFormatter.format(v)}
-						</div>
-					{/each}
-				{/if}
-			</div>
+			{/if}
 		{/if}
 	{/if}
 </div>
