@@ -1,6 +1,6 @@
 ---
-title: Date Picker
-description: A calendar day picker.
+title: Calendar
+description: A calendar component for selecting & displaying dates.
 ---
 
 <script>
