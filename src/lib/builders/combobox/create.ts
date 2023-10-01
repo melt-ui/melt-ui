@@ -183,11 +183,6 @@ export function createCombobox<
 		if (!get(multiple)) {
 			inputValue.set(props.label ?? '');
 		}
-
-		const activeTrigger = getElementByMeltId(ids.input);
-		if (activeTrigger) {
-			activeTrigger.focus();
-		}
 	}
 
 	/**
