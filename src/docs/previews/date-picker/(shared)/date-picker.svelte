@@ -52,12 +52,12 @@
 		use:melt={$dateInput}
 		class="flex max-w-[180px] items-center gap-1 rounded-md border bg-white p-1.5 text-magnum-800"
 	>
-		<div use:melt={$daySegment}>
-			{$dayValue ?? 'dd'}
-		</div>
-		<div aria-hidden="true" class="opacity-60">/</div>
 		<div use:melt={$monthSegment}>
 			{$monthValue ?? 'mm'}
+		</div>
+		<div aria-hidden="true" class="opacity-60">/</div>
+		<div use:melt={$daySegment}>
+			{$dayValue ?? 'dd'}
 		</div>
 		<div aria-hidden="true" class="opacity-60">/</div>
 		<div use:melt={$yearSegment}>

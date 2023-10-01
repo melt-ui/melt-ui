@@ -46,6 +46,7 @@ const defaults = {
 	defaultValue: undefined,
 	onValueChange: undefined,
 	fixedWeeks: false,
+	hourCycle: 24,
 } satisfies CreateDatePickerProps;
 
 type DatePickerParts =
@@ -62,6 +63,10 @@ type DatePickerParts =
 	| 'month-segment'
 	| 'day-segment'
 	| 'year-segment'
+	| 'hour-segment'
+	| 'minute-segment'
+	| 'second-segment'
+	| 'time-indicator-segment'
 	| 'trigger';
 
 const { name } = createElHelpers<DatePickerParts>('calendar');
@@ -83,13 +88,23 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	const dayValue = writable<number | null>(null);
 	const monthValue = writable<number | null>(null);
 	const yearValue = writable<number | null>(null);
+	const hourValue = writable<number | null>(null);
+	const minuteValue = writable<number | null>(null);
+	const secondValue = writable<number | null>(null);
+	const indicatorValue = writable<'AM' | 'PM' | null>(null);
 
 	let dayLastKeyZero = false;
 	let monthLastKeyZero = false;
+	let hourLastKeyZero = false;
+	let minuteLastKeyZero = false;
+	let secondLastKeyZero = false;
 
 	let dayHasLeftFocus = false;
 	let monthHasLeftFocus = false;
 	let yearHasLeftFocus = false;
+	let hourHasLeftFocus = false;
+	let minuteHasLeftFocus = false;
+	let secondHasLeftFocus = false;
 
 	const {
 		allowDeselect,
@@ -99,6 +114,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		weekStartsOn,
 		fixedWeeks,
 		hidden,
+		hourCycle,
 	} = options;
 
 	const months = writable<Month[]>([]);
@@ -109,6 +125,10 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		daySegment: generateId(),
 		monthSegment: generateId(),
 		yearSegment: generateId(),
+		hourSegment: generateId(),
+		minuteSegment: generateId(),
+		secondSegment: generateId(),
+		timeIndicatorSegment: generateId(),
 		trigger: generateId(),
 	};
 
@@ -356,6 +376,127 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		},
 	});
 
+	const hourSegment = builder(name('hour-segment'), {
+		stores: [hourValue, hourCycle],
+		returned: ([$hourValue, $hourCycle]) => {
+			const valueMin = $hourCycle === 12 ? 1 : 0;
+			const valueMax = $hourCycle === 12 ? 12 : 23;
+
+			return {
+				role: 'spinbutton',
+				tabindex: 0,
+				id: ids.hourSegment,
+				'aria-label': 'hour, ',
+				contenteditable: true,
+				'aria-valuemin': valueMin,
+				'aria-valuemax': valueMax,
+				'aria-valuenow': $hourValue ?? `${valueMin}`,
+				'aria-valuetext': $hourValue ?? 'Empty',
+				spellcheck: false,
+				inputmode: 'numeric',
+				autocorrect: 'off',
+				enterkeyhint: 'next',
+				'data-type': 'hour',
+				'data-segment': '',
+			};
+		},
+		action: (node: HTMLElement) => {
+			node.style.caretColor = 'transparent';
+			const unsubEvents = executeCallbacks(
+				addMeltEventListener(node, 'keydown', handleHourSegmentKeydown),
+				addMeltEventListener(node, 'focusout', () => (hourHasLeftFocus = true))
+			);
+
+			return {
+				destroy() {
+					unsubEvents();
+				},
+			};
+		},
+	});
+
+	const minuteSegment = builder(name('minute-segment'), {
+		stores: [minuteValue],
+		returned: ([$minuteValue]) => {
+			const valueMin = 0;
+			const valueMax = 59;
+
+			return {
+				role: 'spinbutton',
+				tabindex: 0,
+				id: ids.minuteSegment,
+				'aria-label': 'minute, ',
+				contenteditable: true,
+				'aria-valuemin': valueMin,
+				'aria-valuemax': valueMax,
+				'aria-valuenow': $minuteValue ?? `${valueMin}`,
+				'aria-valuetext': $minuteValue ?? 'Empty',
+				spellcheck: false,
+				inputmode: 'numeric',
+				autocorrect: 'off',
+				enterkeyhint: 'next',
+				'data-type': 'minute',
+				'data-segment': '',
+			};
+		},
+		action: (node: HTMLElement) => {
+			node.style.caretColor = 'transparent';
+			const unsubEvents = executeCallbacks(
+				addMeltEventListener(node, 'keydown', () => {
+					//
+				}),
+				addMeltEventListener(node, 'focusout', () => (minuteHasLeftFocus = true))
+			);
+
+			return {
+				destroy() {
+					unsubEvents();
+				},
+			};
+		},
+	});
+
+	const secondSegment = builder(name('minute-segment'), {
+		stores: [secondValue],
+		returned: ([$secondValue]) => {
+			const valueMin = 0;
+			const valueMax = 59;
+
+			return {
+				role: 'spinbutton',
+				tabindex: 0,
+				id: ids.minuteSegment,
+				'aria-label': 'second, ',
+				contenteditable: true,
+				'aria-valuemin': valueMin,
+				'aria-valuemax': valueMax,
+				'aria-valuenow': $secondValue ?? `${valueMin}`,
+				'aria-valuetext': $secondValue ?? 'Empty',
+				spellcheck: false,
+				inputmode: 'numeric',
+				autocorrect: 'off',
+				enterkeyhint: 'next',
+				'data-type': 'second',
+				'data-segment': '',
+			};
+		},
+		action: (node: HTMLElement) => {
+			node.style.caretColor = 'transparent';
+			const unsubEvents = executeCallbacks(
+				addMeltEventListener(node, 'keydown', () => {
+					//
+				}),
+				addMeltEventListener(node, 'focusout', () => (minuteHasLeftFocus = true))
+			);
+
+			return {
+				destroy() {
+					unsubEvents();
+				},
+			};
+		},
+	});
+
 	const date = builder(name('date'), {
 		stores: [value, disabled, hidden, activeDate],
 		returned: ([$value, $disabled, $hidden, $activeDate]) => {
@@ -517,11 +658,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			});
 
 			if (moveToNext) {
-				const node = e.currentTarget;
-				if (!isHTMLElement(node)) return;
-				const { next } = getPrevNextSegments(node, ids.input);
-				if (!next) return;
-				next.focus();
+				moveToNextSegment(e);
 			}
 		}
 
@@ -645,11 +782,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			});
 
 			if (moveToNext) {
-				const node = e.currentTarget;
-				if (!isHTMLElement(node)) return;
-				const { next } = getPrevNextSegments(node, ids.input);
-				if (!next) return;
-				next.focus();
+				moveToNextSegment(e);
 			}
 		}
 
@@ -668,6 +801,10 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		}
 	}
 
+	/**
+	 * The event handler responsible for handling keydown events
+	 * on the day segment.
+	 */
 	function handleYearSegmentKeydown(e: KeyboardEvent) {
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
@@ -719,16 +856,375 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			});
 
 			if (moveToNext) {
-				const node = e.currentTarget;
-				if (!isHTMLElement(node)) return;
-				const { next } = getPrevNextSegments(node, ids.input);
-				if (!next) return;
-				next.focus();
+				moveToNextSegment(e);
 			}
 		}
 
 		if (e.key === kbd.BACKSPACE) {
 			yearValue.update((prev) => {
+				if (prev === null) return null;
+				const str = prev.toString();
+				if (str.length === 1) return null;
+				return parseInt(str.slice(0, -1));
+			});
+		}
+
+		if (isSegmentNavigationKey(e.key)) {
+			handleSegmentNavigation(e);
+		}
+	}
+
+	/**
+	 * The event handler responsible for handling keydown events
+	 * on the hour segment.
+	 */
+	function handleHourSegmentKeydown(e: KeyboardEvent) {
+		if (!isAcceptableSegmentKey(e.key)) {
+			return;
+		}
+		e.preventDefault();
+
+		const min = get(hourCycle) === 12 ? 1 : 0;
+		const max = get(hourCycle) === 12 ? 12 : 23;
+
+		if (e.key === kbd.ARROW_UP) {
+			hourValue.update((prev) => {
+				if (prev === null || prev === max) return min;
+				return prev + 1;
+			});
+			return;
+		}
+		if (e.key === kbd.ARROW_DOWN) {
+			hourValue.update((prev) => {
+				if (prev === null || prev === min) {
+					return max;
+				}
+				return prev - 1;
+			});
+			return;
+		}
+
+		if (isNumberKey(e.key)) {
+			const num = parseInt(e.key);
+			let moveToNext = false;
+			hourValue.update((prev) => {
+				const maxStart = Math.floor(max / 10);
+
+				/**
+				 * If the user has left the segment, we want to reset the
+				 * `prev` value so that we can start the segment over again
+				 * when the user types a number.
+				 */
+				if (hourHasLeftFocus) {
+					prev = null;
+					hourHasLeftFocus = false;
+				}
+
+				if (prev === null) {
+					/**
+					 * If the user types a 0 as the first number, we want
+					 * to keep track of that so that when they type the next
+					 * number, we can move to the next segment.
+					 */
+					if (num === 0) {
+						hourLastKeyZero = true;
+						return null;
+					}
+
+					/**
+					 * If the last key was a 0, or if the first number is
+					 * greater than the max start digit, then we want to move
+					 * to the next segment, since it's not possible to continue
+					 * typing a valid number in this segment.
+					 */
+					if (hourLastKeyZero || num > maxStart) {
+						moveToNext = true;
+						return num;
+					}
+
+					/**
+					 * If none of the above conditions are met, then we can just
+					 * return the number as the segment value and continue typing
+					 * in this segment.
+					 */
+					return num;
+				}
+
+				const digits = prev.toString().length;
+				const total = parseInt(prev.toString() + num.toString());
+
+				/**
+				 * If the number of digits is 2, or if the total with the existing digit
+				 * and the pressed digit is greater than the maximum value, then we will
+				 * reset the segment as if the user had pressed the backspace key and then
+				 * typed a number.
+				 */
+				if (digits === 2 || total > max) {
+					/**
+					 * As we're doing elsewhere, we're checking if the number is greater
+					 * than the max start digit, and if so, we're moving to the next segment.
+					 */
+					if (num > maxStart) {
+						moveToNext = true;
+					}
+
+					return num;
+				}
+				moveToNext = true;
+
+				return total;
+			});
+
+			if (moveToNext) {
+				moveToNextSegment(e);
+			}
+		}
+
+		if (e.key === kbd.BACKSPACE) {
+			hourHasLeftFocus = false;
+			hourValue.update((prev) => {
+				if (prev === null) return null;
+				const str = prev.toString();
+				if (str.length === 1) return null;
+				return parseInt(str.slice(0, -1));
+			});
+		}
+
+		if (isSegmentNavigationKey(e.key)) {
+			handleSegmentNavigation(e);
+		}
+	}
+
+	/**
+	 * The event handler responsible for handling keydown events
+	 * on the minute segment.
+	 */
+	function handleMinuteSegmentKeydown(e: KeyboardEvent) {
+		if (!isAcceptableSegmentKey(e.key)) {
+			return;
+		}
+		e.preventDefault();
+
+		const min = 0;
+		const max = 59;
+
+		if (e.key === kbd.ARROW_UP) {
+			minuteValue.update((prev) => {
+				if (prev === null || prev === max) return min;
+				return prev + 1;
+			});
+			return;
+		}
+		if (e.key === kbd.ARROW_DOWN) {
+			minuteValue.update((prev) => {
+				if (prev === null || prev === min) {
+					return max;
+				}
+				return prev - 1;
+			});
+			return;
+		}
+
+		if (isNumberKey(e.key)) {
+			const num = parseInt(e.key);
+			let moveToNext = false;
+			minuteValue.update((prev) => {
+				const maxStart = Math.floor(max / 10);
+
+				/**
+				 * If the user has left the segment, we want to reset the
+				 * `prev` value so that we can start the segment over again
+				 * when the user types a number.
+				 */
+				if (minuteHasLeftFocus) {
+					prev = null;
+					minuteHasLeftFocus = false;
+				}
+
+				if (prev === null) {
+					/**
+					 * If the user types a 0 as the first number, we want
+					 * to keep track of that so that when they type the next
+					 * number, we can move to the next segment.
+					 */
+					if (num === 0) {
+						minuteLastKeyZero = true;
+						return null;
+					}
+
+					/**
+					 * If the last key was a 0, or if the first number is
+					 * greater than the max start digit, then we want to move
+					 * to the next segment, since it's not possible to continue
+					 * typing a valid number in this segment.
+					 */
+					if (minuteLastKeyZero || num > maxStart) {
+						moveToNext = true;
+						return num;
+					}
+
+					/**
+					 * If none of the above conditions are met, then we can just
+					 * return the number as the segment value and continue typing
+					 * in this segment.
+					 */
+					return num;
+				}
+
+				const digits = prev.toString().length;
+				const total = parseInt(prev.toString() + num.toString());
+
+				/**
+				 * If the number of digits is 2, or if the total with the existing digit
+				 * and the pressed digit is greater than the maximum value, then we will
+				 * reset the segment as if the user had pressed the backspace key and then
+				 * typed a number.
+				 */
+				if (digits === 2 || total > max) {
+					/**
+					 * As we're doing elsewhere, we're checking if the number is greater
+					 * than the max start digit, and if so, we're moving to the next segment.
+					 */
+					if (num > maxStart) {
+						moveToNext = true;
+					}
+
+					return num;
+				}
+				moveToNext = true;
+
+				return total;
+			});
+
+			if (moveToNext) {
+				moveToNextSegment(e);
+			}
+		}
+
+		if (e.key === kbd.BACKSPACE) {
+			minuteHasLeftFocus = false;
+			minuteValue.update((prev) => {
+				if (prev === null) return null;
+				const str = prev.toString();
+				if (str.length === 1) return null;
+				return parseInt(str.slice(0, -1));
+			});
+		}
+
+		if (isSegmentNavigationKey(e.key)) {
+			handleSegmentNavigation(e);
+		}
+	}
+
+	/**
+	 * The event handler responsible for handling keydown events
+	 * on the minute segment.
+	 */
+	function handleSecondSegmentKeydown(e: KeyboardEvent) {
+		if (!isAcceptableSegmentKey(e.key)) {
+			return;
+		}
+		e.preventDefault();
+
+		const min = 0;
+		const max = 59;
+
+		if (e.key === kbd.ARROW_UP) {
+			secondValue.update((prev) => {
+				if (prev === null || prev === max) return min;
+				return prev + 1;
+			});
+			return;
+		}
+		if (e.key === kbd.ARROW_DOWN) {
+			secondValue.update((prev) => {
+				if (prev === null || prev === min) {
+					return max;
+				}
+				return prev - 1;
+			});
+			return;
+		}
+
+		if (isNumberKey(e.key)) {
+			const num = parseInt(e.key);
+			let moveToNext = false;
+			secondValue.update((prev) => {
+				const maxStart = Math.floor(max / 10);
+
+				/**
+				 * If the user has left the segment, we want to reset the
+				 * `prev` value so that we can start the segment over again
+				 * when the user types a number.
+				 */
+				if (secondHasLeftFocus) {
+					prev = null;
+					secondHasLeftFocus = false;
+				}
+
+				if (prev === null) {
+					/**
+					 * If the user types a 0 as the first number, we want
+					 * to keep track of that so that when they type the next
+					 * number, we can move to the next segment.
+					 */
+					if (num === 0) {
+						secondLastKeyZero = true;
+						return null;
+					}
+
+					/**
+					 * If the last key was a 0, or if the first number is
+					 * greater than the max start digit, then we want to move
+					 * to the next segment, since it's not possible to continue
+					 * typing a valid number in this segment.
+					 */
+					if (secondLastKeyZero || num > maxStart) {
+						moveToNext = true;
+						return num;
+					}
+
+					/**
+					 * If none of the above conditions are met, then we can just
+					 * return the number as the segment value and continue typing
+					 * in this segment.
+					 */
+					return num;
+				}
+
+				const digits = prev.toString().length;
+				const total = parseInt(prev.toString() + num.toString());
+
+				/**
+				 * If the number of digits is 2, or if the total with the existing digit
+				 * and the pressed digit is greater than the maximum value, then we will
+				 * reset the segment as if the user had pressed the backspace key and then
+				 * typed a number.
+				 */
+				if (digits === 2 || total > max) {
+					/**
+					 * As we're doing elsewhere, we're checking if the number is greater
+					 * than the max start digit, and if so, we're moving to the next segment.
+					 */
+					if (num > maxStart) {
+						moveToNext = true;
+					}
+
+					return num;
+				}
+				moveToNext = true;
+
+				return total;
+			});
+
+			if (moveToNext) {
+				moveToNextSegment(e);
+			}
+		}
+
+		if (e.key === kbd.BACKSPACE) {
+			secondHasLeftFocus = false;
+			secondValue.update((prev) => {
 				if (prev === null) return null;
 				const str = prev.toString();
 				if (str.length === 1) return null;
@@ -881,6 +1377,14 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		}
 	}
 
+	function moveToNextSegment(e: KeyboardEvent) {
+		const node = e.currentTarget;
+		if (!isHTMLElement(node)) return;
+		const { next } = getPrevNextSegments(node, ids.input);
+		if (!next) return;
+		next.focus();
+	}
+
 	return {
 		elements: {
 			content,
@@ -889,6 +1393,9 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			daySegment,
 			monthSegment,
 			yearSegment,
+			hourSegment,
+			minuteSegment,
+			secondSegment,
 			trigger,
 		},
 		states: {
@@ -913,6 +1420,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 }
 
 const acceptableKeys = [
+	kbd.ENTER,
 	kbd.ARROW_UP,
 	kbd.ARROW_DOWN,
 	kbd.ARROW_LEFT,

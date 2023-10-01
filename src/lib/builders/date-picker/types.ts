@@ -94,6 +94,13 @@ export type BaseDatePickerProps = {
 	 * @default 1
 	 */
 	numberOfMonths: number;
+
+	/**
+	 * The format to use for displaying the time in the input.
+	 *
+	 * @default 24
+	 */
+	hourCycle: 12 | 24;
 };
 
 export type CreateDatePickerProps = Partial<BaseDatePickerProps>;
