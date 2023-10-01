@@ -93,18 +93,23 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	const secondValue = writable<number | null>(null);
 	const dayPeriodValue = writable<'AM' | 'PM'>('AM');
 
-	let dayLastKeyZero = false;
-	let monthLastKeyZero = false;
-	let hourLastKeyZero = false;
-	let minuteLastKeyZero = false;
-	let secondLastKeyZero = false;
+	const lastKeyZero = {
+		day: false,
+		month: false,
+		year: false,
+		hour: false,
+		minute: false,
+		second: false,
+	};
 
-	let dayHasLeftFocus = false;
-	let monthHasLeftFocus = false;
-	let yearHasLeftFocus = false;
-	let hourHasLeftFocus = false;
-	let minuteHasLeftFocus = false;
-	let secondHasLeftFocus = false;
+	const hasLeftFocus = {
+		day: false,
+		month: false,
+		year: false,
+		hour: false,
+		minute: false,
+		second: false,
+	};
 
 	const segmentDefaults = {
 		role: 'spinbutton',
@@ -286,7 +291,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			node.style.caretColor = 'transparent';
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'keydown', handleDaySegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (dayHasLeftFocus = true))
+				addMeltEventListener(node, 'focusout', () => (hasLeftFocus.day = true))
 			);
 
 			return {
@@ -322,7 +327,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			node.style.caretColor = 'transparent';
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'keydown', handleMonthSegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (monthHasLeftFocus = true))
+				addMeltEventListener(node, 'focusout', () => (hasLeftFocus.month = true))
 			);
 
 			return {
@@ -356,7 +361,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			node.style.caretColor = 'transparent';
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'keydown', handleYearSegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (yearHasLeftFocus = true))
+				addMeltEventListener(node, 'focusout', () => (hasLeftFocus.year = true))
 			);
 
 			return {
@@ -388,7 +393,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			node.style.caretColor = 'transparent';
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'keydown', handleHourSegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (hourHasLeftFocus = true))
+				addMeltEventListener(node, 'focusout', () => (hasLeftFocus.hour = true))
 			);
 
 			return {
@@ -420,7 +425,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			node.style.caretColor = 'transparent';
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'keydown', handleMinuteSegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (minuteHasLeftFocus = true))
+				addMeltEventListener(node, 'focusout', () => (hasLeftFocus.minute = true))
 			);
 
 			return {
@@ -452,7 +457,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			node.style.caretColor = 'transparent';
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'keydown', handleSecondSegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (secondHasLeftFocus = true))
+				addMeltEventListener(node, 'focusout', () => (hasLeftFocus.second = true))
 			);
 
 			return {
@@ -594,9 +599,9 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				 * `prev` value so that we can start the segment over again
 				 * when the user types a number.
 				 */
-				if (dayHasLeftFocus) {
+				if (hasLeftFocus.day) {
 					prev = null;
-					dayHasLeftFocus = false;
+					hasLeftFocus.day = false;
 				}
 
 				if (prev === null) {
@@ -606,7 +611,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					 * number, we can move to the next segment.
 					 */
 					if (num === 0) {
-						dayLastKeyZero = true;
+						lastKeyZero.day = true;
 						return null;
 					}
 
@@ -616,7 +621,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					 * we want to move to the next segment, since it's not possible
 					 * to continue typing a valid number in this segment.
 					 */
-					if (dayLastKeyZero || num > maxStart) {
+					if (lastKeyZero.day || num > maxStart) {
 						moveToNext = true;
 						return num;
 					}
@@ -718,9 +723,9 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				 * `prev` value so that we can start the segment over again
 				 * when the user types a number.
 				 */
-				if (monthHasLeftFocus) {
+				if (hasLeftFocus.month) {
 					prev = null;
-					monthHasLeftFocus = false;
+					hasLeftFocus.month = false;
 				}
 
 				if (prev === null) {
@@ -730,7 +735,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					 * number, we can move to the next segment.
 					 */
 					if (num === 0) {
-						monthLastKeyZero = true;
+						lastKeyZero.month = true;
 						return null;
 					}
 
@@ -740,7 +745,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					 * we want to move to the next segment, since it's not possible
 					 * to continue typing a valid number in this segment.
 					 */
-					if (monthLastKeyZero || num > maxStart) {
+					if (lastKeyZero.month || num > maxStart) {
 						moveToNext = true;
 						return num;
 					}
@@ -785,7 +790,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		}
 
 		if (e.key === kbd.BACKSPACE) {
-			monthHasLeftFocus = false;
+			hasLeftFocus.month = false;
 			monthValue.update((prev) => {
 				if (prev === null) return null;
 				const str = prev.toString();
@@ -834,9 +839,9 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			let moveToNext = false;
 			const num = parseInt(e.key);
 			yearValue.update((prev) => {
-				if (yearHasLeftFocus) {
+				if (hasLeftFocus.year) {
 					prev = null;
-					yearHasLeftFocus = false;
+					hasLeftFocus.year = false;
 				}
 
 				if (prev === null) {
@@ -913,9 +918,9 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				 * `prev` value so that we can start the segment over again
 				 * when the user types a number.
 				 */
-				if (hourHasLeftFocus) {
+				if (hasLeftFocus.hour) {
 					prev = null;
-					hourHasLeftFocus = false;
+					hasLeftFocus.hour = false;
 				}
 
 				if (prev === null) {
@@ -925,7 +930,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					 * number, we can move to the next segment.
 					 */
 					if (num === 0) {
-						hourLastKeyZero = true;
+						lastKeyZero.hour = true;
 						return null;
 					}
 
@@ -935,7 +940,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					 * to the next segment, since it's not possible to continue
 					 * typing a valid number in this segment.
 					 */
-					if (hourLastKeyZero || num > maxStart) {
+					if (lastKeyZero.hour || num > maxStart) {
 						moveToNext = true;
 						return num;
 					}
@@ -979,7 +984,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		}
 
 		if (e.key === kbd.BACKSPACE) {
-			hourHasLeftFocus = false;
+			hasLeftFocus.hour = false;
 			hourValue.update((prev) => {
 				if (prev === null) return null;
 				const str = prev.toString();
@@ -1034,9 +1039,9 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				 * `prev` value so that we can start the segment over again
 				 * when the user types a number.
 				 */
-				if (minuteHasLeftFocus) {
+				if (hasLeftFocus.minute) {
 					prev = null;
-					minuteHasLeftFocus = false;
+					hasLeftFocus.minute = false;
 				}
 
 				if (prev === null) {
@@ -1046,7 +1051,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					 * number, we can move to the next segment.
 					 */
 					if (num === 0) {
-						minuteLastKeyZero = true;
+						lastKeyZero.minute = true;
 						return null;
 					}
 
@@ -1056,7 +1061,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					 * to the next segment, since it's not possible to continue
 					 * typing a valid number in this segment.
 					 */
-					if (minuteLastKeyZero || num > maxStart) {
+					if (lastKeyZero.minute || num > maxStart) {
 						moveToNext = true;
 						return num;
 					}
@@ -1100,7 +1105,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		}
 
 		if (e.key === kbd.BACKSPACE) {
-			minuteHasLeftFocus = false;
+			hasLeftFocus.minute = false;
 			minuteValue.update((prev) => {
 				if (prev === null) return null;
 				const str = prev.toString();
@@ -1155,9 +1160,9 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				 * `prev` value so that we can start the segment over again
 				 * when the user types a number.
 				 */
-				if (secondHasLeftFocus) {
+				if (hasLeftFocus.second) {
 					prev = null;
-					secondHasLeftFocus = false;
+					hasLeftFocus.second = false;
 				}
 
 				if (prev === null) {
@@ -1167,7 +1172,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					 * number, we can move to the next segment.
 					 */
 					if (num === 0) {
-						secondLastKeyZero = true;
+						lastKeyZero.second = true;
 						return null;
 					}
 
@@ -1177,7 +1182,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					 * to the next segment, since it's not possible to continue
 					 * typing a valid number in this segment.
 					 */
-					if (secondLastKeyZero || num > maxStart) {
+					if (lastKeyZero.second || num > maxStart) {
 						moveToNext = true;
 						return num;
 					}
@@ -1221,7 +1226,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		}
 
 		if (e.key === kbd.BACKSPACE) {
-			secondHasLeftFocus = false;
+			hasLeftFocus.second = false;
 			secondValue.update((prev) => {
 				if (prev === null) return null;
 				const str = prev.toString();
@@ -1260,7 +1265,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		}
 
 		if (e.key === kbd.BACKSPACE) {
-			secondHasLeftFocus = false;
+			hasLeftFocus.second = false;
 			dayPeriodValue.update(() => 'AM');
 		}
 
