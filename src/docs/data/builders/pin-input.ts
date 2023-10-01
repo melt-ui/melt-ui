@@ -35,13 +35,7 @@ const OPTION_PROPS = [
 		name: 'type',
 		type: 'string',
 		default: 'text',
-		description: 'The type of the pin-input.',
-	},
-	{
-		name: 'mask',
-		type: 'boolean',
-		default: 'false',
-		description: 'Whether or not to use a mask to hide the pin-input.',
+		description: 'The type of the pin-input. Use `password` to mask the input.',
 	},
 ];
 
