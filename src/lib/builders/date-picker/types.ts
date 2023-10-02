@@ -47,13 +47,49 @@ export type DatePickerProps = {
 
 	/**
 	 * The date that is used to display the initial month and
-	 * year of the calendar. When a `defaultValue` is provided,
-	 * or a value exists in the `value` store, the `activeDate`
-	 * will be set to that value.
+	 * year of the calendar. When a `defaultValue` or `value`
+	 * prop containing a date is provided, this prop is ignored.
 	 *
-	 * @default new Date() - the current date
+	 * It is useful when you want to display a specific month
+	 * and year when the calendar is first opened, but you don't
+	 * necessarily want to set the value of the date picker to
+	 * that date.
+	 *
+	 * @default Date() - the current date
 	 */
-	activeDate?: Date;
+	defaultFocusedValue?: Date;
+
+	/**
+	 * A writable store that can be used to control the focused
+	 * date from outside the builder. When this prop is provided,
+	 * the `defaultFocusedValue` prop is ignored, and the value
+	 * of this store is used instead.
+	 *
+	 * The `focusedValue` store is not used to set the value of the
+	 * date picker, it is only used to control the navigation of the
+	 * calendar, which determines which month/year is displayed, and
+	 * which date should be focused.
+	 *
+	 * When the date picker is first opened, if the `value` of the
+	 * date picker is set, the `focusedValue` will initially be set
+	 * to the same value as the `value` prop. If the `value` prop is
+	 * not set, the `focusedValue` will initially be set to the same
+	 * value as the `defaultFocusedValue` prop.
+	 *
+	 * @default writable(defaultFocusedValue)
+	 */
+	focusedValue?: Writable<Date>;
+
+	/**
+	 * A function called when the focused value changes. It receives
+	 * a single argument, which is an object containing `curr` and
+	 * `prev` properties, whose values are the current and previous
+	 * values of the `focusedValue` store. Whatever you return from this
+	 * function will be set as the new value of the `focusedValue` store.
+	 *
+	 * @default undefined
+	 */
+	onFocusedValueChange?: ChangeFn<Date>;
 
 	/**
 	 * Only applicable when `numberOfMonths` is greater than 1.

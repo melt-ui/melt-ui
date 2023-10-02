@@ -59,7 +59,7 @@ export function createSegments(props: CreateSegmentProps) {
 		second: false,
 	};
 
-	const { activeDate, value } = stores;
+	const { focusedValue, value } = stores;
 	const { hourCycle } = options;
 
 	type NumOrNull = number | null;
@@ -73,11 +73,11 @@ export function createSegments(props: CreateSegmentProps) {
 	const dayPeriodValue = writable<'AM' | 'PM'>('AM');
 
 	const daySegment = builder(name('day-segment'), {
-		stores: [activeDate, dayValue],
-		returned: ([$activeDate, $dayValue]) => {
-			const activeDay = dayjs($activeDate).date();
+		stores: [focusedValue, dayValue],
+		returned: ([$focusedValue, $dayValue]) => {
+			const activeDay = dayjs($focusedValue).date();
 			const valueMin = 1;
-			const valueMax = dayjs($activeDate).daysInMonth();
+			const valueMax = dayjs($focusedValue).daysInMonth();
 
 			return {
 				...segmentDefaults,
@@ -105,11 +105,11 @@ export function createSegments(props: CreateSegmentProps) {
 	});
 
 	const monthSegment = builder(name('month-segment'), {
-		stores: [activeDate, monthValue],
-		returned: ([$activeDate, $monthValue]) => {
+		stores: [focusedValue, monthValue],
+		returned: ([$focusedValue, $monthValue]) => {
 			const valueMin = 1;
 			const valueMax = 12;
-			const activeDjs = dayjs($activeDate);
+			const activeDjs = dayjs($focusedValue);
 			const activeMonth = activeDjs.month();
 			const activeMonthString = activeDjs.format('MMMM');
 
@@ -308,8 +308,8 @@ export function createSegments(props: CreateSegmentProps) {
 			return;
 		}
 
-		const $activeDate = get(activeDate);
-		const activeDjs = dayjs($activeDate);
+		const $focusedValue = get(focusedValue);
+		const activeDjs = dayjs($focusedValue);
 		const daysInMonth = activeDjs.daysInMonth();
 
 		if (e.key === kbd.ARROW_UP) {

@@ -9,6 +9,8 @@ import { derivedWithUnsubscribe } from '$lib/internal/helpers';
  * some convenience methods for manipulating the date using dayjs.
  */
 export function dayJsStore(store: Writable<Date>, localeStore: Writable<Locale>) {
+	const originalValue = get(store);
+
 	const { set, update, subscribe } = store;
 
 	let locale = initLocale(get(localeStore));
@@ -86,6 +88,12 @@ export function dayJsStore(store: Writable<Date>, localeStore: Writable<Locale>)
 		});
 	}
 
+	function reset() {
+		update(() => {
+			return originalValue;
+		});
+	}
+
 	return {
 		set,
 		update,
@@ -98,5 +106,6 @@ export function dayJsStore(store: Writable<Date>, localeStore: Writable<Locale>)
 		setHour,
 		setMinute,
 		setSecond,
+		reset,
 	};
 }

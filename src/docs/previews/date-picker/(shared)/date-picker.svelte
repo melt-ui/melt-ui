@@ -18,7 +18,6 @@
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = 0;
 	export let fixedWeeks: CreateDatePickerProps['fixedWeeks'] = false;
 
-
 	const {
 		elements: {
 			grid,
@@ -59,7 +58,7 @@
 		fixedWeeks,
 		hourCycle: 12,
 		forceVisible: true,
-		locale: 'de'
+		locale: 'de',
 	});
 
 	function getDayOfWeek(date: Date) {
@@ -142,7 +141,7 @@
 									</div>
 								{/each}
 								{#each lastMonthDates as day}
-									<button
+									<div
 										use:melt={$cell({
 											label: day.toDateString(),
 											value: day,
@@ -150,10 +149,10 @@
 										class="cell"
 									>
 										<span class="opacity-50">{day.getDate()}</span>
-									</button>
+									</div>
 								{/each}
 								{#each dates as day}
-									<button
+									<div
 										use:melt={$cell({
 											label: day.toDateString(),
 											value: day,
@@ -161,10 +160,10 @@
 										class="cell"
 									>
 										<span class="">{day.getDate()}</span>
-									</button>
+									</div>
 								{/each}
 								{#each nextMonthDates as day}
-									<button
+									<div
 										use:melt={$cell({
 											label: day.toDateString(),
 											value: day,
@@ -172,7 +171,7 @@
 										class="cell"
 									>
 										<span class="opacity-50">{day.getDate()}</span>
-									</button>
+									</div>
 								{/each}
 							</div>
 						</div>

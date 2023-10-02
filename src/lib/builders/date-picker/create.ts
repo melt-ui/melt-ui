@@ -38,7 +38,8 @@ const defaults = {
 	disabled: false,
 	unavailable: false,
 	value: undefined,
-	activeDate: new Date(),
+	defaultFocusedValue: new Date(),
+	focusedValue: undefined,
 	allowDeselect: false,
 	numberOfMonths: 1,
 	pagedNavigation: false,
@@ -99,7 +100,7 @@ const { name } = createElHelpers<_DatePickerParts>('calendar');
  */
 export type _DatePickerStores = {
 	value: Writable<Date | undefined>;
-	activeDate: ReturnType<typeof dayJsStore>;
+	focusedValue: ReturnType<typeof dayJsStore>;
 };
 
 /**
@@ -148,8 +149,12 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		},
 	});
 
+	const {
+		states: { open },
+	} = popover;
+
 	const options = toWritableStores({
-		...omit(withDefaults, 'value'),
+		...omit(withDefaults, 'value', 'focusedValue'),
 		...popover.options,
 	});
 
@@ -166,21 +171,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		locale,
 	} = options;
 
-	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-	const value = overridable<Date | undefined>(
-		valueWritable,
-		withDefaults?.onValueChange as ChangeFn<Date | undefined>
-	);
-	const activeDate = dayJsStore(options.activeDate, locale);
-
-	const stores = {
-		value,
-		activeDate,
-		locale,
-	};
-
-	const months = writable<Month[]>([]);
-
 	const ids: _DatePickerIds = {
 		grid: generateId(),
 		input: generateId(),
@@ -195,51 +185,27 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		...popover.ids,
 	};
 
-	/**
-	 * Navigate to the next page of the calendar.
-	 * If using paged navigation, this will move the calendar forward
-	 * by the number of months specified in the `numberOfMonths` prop.
-	 * If not using paged navigation, this will move the calendar forward
-	 * by one month.
-	 */
-	function nextMonth() {
-		if (get(pagedNavigation)) {
-			const $numberOfMonths = get(numberOfMonths);
-			activeDate.add($numberOfMonths, 'month');
-		} else {
-			activeDate.add(1, 'month');
-		}
-	}
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const value = overridable<Date | undefined>(
+		valueWritable,
+		withDefaults?.onValueChange as ChangeFn<Date | undefined>
+	);
 
-	/**
-	 * Navigate to the previous page of the calendar.
-	 * If using paged navigation, this will move the calendar backwards
-	 * by the number of months specified in the `numberOfMonths` prop.
-	 * If not using paged navigation, this will move the calendar backwards
-	 * by one month.
-	 */
-	function prevMonth() {
-		if (get(pagedNavigation)) {
-			const $numberOfMonths = get(numberOfMonths);
-			activeDate.subtract($numberOfMonths, 'month');
-		} else {
-			activeDate.subtract(1, 'month');
-		}
-	}
+	const focusedValueWritable =
+		withDefaults.focusedValue ?? writable(withDefaults.defaultFocusedValue);
 
-	/**
-	 * Navigate to the previous year of the calendar.
-	 */
-	function nextYear() {
-		activeDate.add(1, 'year');
-	}
+	const focusedValue = dayJsStore(
+		overridable(focusedValueWritable, withDefaults?.onFocusedValueChange),
+		locale
+	);
 
-	/**
-	 * Navigate to the next year of the calendar.
-	 */
-	function prevYear() {
-		activeDate.subtract(1, 'year');
-	}
+	const stores = {
+		value,
+		focusedValue,
+		locale,
+	};
+
+	const months = writable<Month[]>([]);
 
 	const grid = builder(name('grid'), {
 		returned: () => ({ tabindex: -1, id: ids.grid }),
@@ -251,23 +217,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			 */
 			createAccessibleHeading(node, get(calendarLabel));
 
-			const unsubKb = addMeltEventListener(node, 'keydown', (e) => {
-				const triggerElement = e.currentTarget;
-				if (!isHTMLElement(triggerElement)) return;
-
-				if ([kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.ARROW_LEFT, kbd.ARROW_RIGHT].includes(e.key)) {
-					e.preventDefault();
-					if (e.key === kbd.ARROW_RIGHT) {
-						focusElement(1);
-					} else if (e.key === kbd.ARROW_LEFT) {
-						focusElement(-1);
-					} else if (e.key === kbd.ARROW_UP) {
-						focusElement(-7);
-					} else if (e.key === kbd.ARROW_DOWN) {
-						focusElement(7);
-					}
-				}
-			});
+			const unsubKb = addMeltEventListener(node, 'keydown', handleGridKeydown);
 
 			return {
 				destroy() {
@@ -276,22 +226,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			};
 		},
 	});
-
-	function handleSingleClick(date: Date) {
-		value.update((prev) => {
-			if (isSingleDate(prev) || prev === undefined) {
-				if (!isInSameMonth(date, get(activeDate))) {
-					activeDate.set(date);
-				}
-
-				if (prev === undefined) return date;
-				if (get(allowDeselect) && isSameDay(prev, date)) {
-					return undefined;
-				}
-			}
-			return date;
-		});
-	}
 
 	const dateInput = builder(name('date-input'), {
 		returned: () => {
@@ -307,13 +241,13 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	 * single day in the month.
 	 */
 	const cell = builder(name('cell'), {
-		stores: [value, disabled, unavailable, activeDate],
-		returned: ([$value, $disabled, $unavailable, $activeDate]) => {
+		stores: [value, disabled, unavailable, focusedValue],
+		returned: ([$value, $disabled, $unavailable, $focusedValue]) => {
 			return (props: DateProps) => {
 				const isDisabled = isMatch(props.value, $disabled);
 				const isUnavailable = isMatch(props.value, $unavailable);
 				const isDateToday = isToday(props.value);
-				const isInCurrentMonth = isInSameMonth(props.value, $activeDate);
+				const isInCurrentMonth = isInSameMonth(props.value, $focusedValue ?? new Date());
 
 				const selected = isSelected({
 					date: props.value,
@@ -331,7 +265,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					'data-date': '',
 					'data-today': isDateToday ? '' : undefined,
 					'data-outside-month': isInCurrentMonth ? undefined : '',
-					tabindex: isDisabled ? -1 : 1,
+					tabindex: -1,
 				} as const;
 			};
 		},
@@ -370,59 +304,13 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		},
 	});
 
-	function handleTriggerKeydown(e: KeyboardEvent) {
-		if (isSegmentNavigationKey(e.key)) {
-			e.preventDefault();
-			handleSegmentNavigation(e, ids.input);
-		}
-	}
+	effect([focusedValue], ([$focusedValue]) => {
+		if (!isBrowser || !$focusedValue) return;
 
-	function focusElement(add: number) {
-		const node = document.activeElement as HTMLElement;
-		if (!node || node.hasAttribute('[data-melt-calendar-date]')) return;
-		const allDates = Array.from(
-			document.querySelectorAll<HTMLElement>(`[data-melt-calendar-date]:not([data-disabled])`)
-		);
-		const index = allDates.indexOf(node);
-		const nextIndex = index + add;
-		const nextDate = allDates[nextIndex];
-		if (nextDate) {
-			nextDate.focus();
-		}
-	}
-
-	/**
-	 * A helper function to set the year of the active date. This is
-	 * useful when the user wants to have a select input to change the
-	 * year of the calendar.
-	 */
-	function setYear(year: number) {
-		activeDate.update((prev) => {
-			prev.setFullYear(year);
-			return prev;
-		});
-	}
-
-	/**
-	 * A helper function to set the month of the active date. This is
-	 * useful when the user wants to have a select input to change the
-	 * month of the calendar.
-	 */
-	function setMonth(month: number) {
-		if (month < 0 || month > 11) throw new Error('Month must be between 0 and 11');
-		activeDate.update((prev) => {
-			prev.setMonth(month);
-			return prev;
-		});
-	}
-
-	effect([activeDate], ([$activeDate]) => {
-		if (!isBrowser || !$activeDate) return;
-
-		months.set([createMonth($activeDate)]);
+		months.set([createMonth($focusedValue)]);
 		const $numberOfMonths = get(numberOfMonths);
 		if ($numberOfMonths > 1) {
-			const d = dayjs($activeDate);
+			const d = dayjs($focusedValue);
 
 			for (let i = 1; i < $numberOfMonths; i++) {
 				const nextMonth = d.add(i, 'month').toDate();
@@ -431,6 +319,28 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					return prev;
 				});
 			}
+		}
+	});
+
+	/**
+	 * Update the accessible heading's text content when the
+	 * `calendarLabel` store changes.
+	 */
+	effect([calendarLabel], ([$calendarLabel]) => {
+		if (!isBrowser) return;
+		const node = document.getElementById(ids.accessibleHeading);
+		if (!isHTMLElement(node)) return;
+		node.textContent = $calendarLabel;
+	});
+
+	effect([open, value], ([$open, $value]) => {
+		if (!$open || !$value) {
+			focusedValue.reset();
+			return;
+		}
+
+		if ($value && get(focusedValue) !== $value) {
+			focusedValue.set($value);
 		}
 	});
 
@@ -534,15 +444,138 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	}
 
 	/**
-	 * Update the accessible heading's text content when the
-	 * `calendarLabel` store changes.
+	 * Navigate to the next page of the calendar.
+	 * If using paged navigation, this will move the calendar forward
+	 * by the number of months specified in the `numberOfMonths` prop.
+	 * If not using paged navigation, this will move the calendar forward
+	 * by one month.
 	 */
-	effect([calendarLabel], ([$calendarLabel]) => {
-		if (!isBrowser) return;
-		const node = document.getElementById(ids.accessibleHeading);
-		if (!isHTMLElement(node)) return;
-		node.textContent = $calendarLabel;
-	});
+	function nextMonth() {
+		if (get(pagedNavigation)) {
+			const $numberOfMonths = get(numberOfMonths);
+			focusedValue.add($numberOfMonths, 'month');
+		} else {
+			focusedValue.add(1, 'month');
+		}
+	}
+
+	/**
+	 * Navigate to the previous page of the calendar.
+	 * If using paged navigation, this will move the calendar backwards
+	 * by the number of months specified in the `numberOfMonths` prop.
+	 * If not using paged navigation, this will move the calendar backwards
+	 * by one month.
+	 */
+	function prevMonth() {
+		if (get(pagedNavigation)) {
+			const $numberOfMonths = get(numberOfMonths);
+			focusedValue.subtract($numberOfMonths, 'month');
+		} else {
+			focusedValue.subtract(1, 'month');
+		}
+	}
+
+	/**
+	 * Navigate to the previous year of the calendar.
+	 */
+	function nextYear() {
+		focusedValue.add(1, 'year');
+	}
+
+	/**
+	 * Navigate to the next year of the calendar.
+	 */
+	function prevYear() {
+		focusedValue.subtract(1, 'year');
+	}
+
+	const ARROW_KEYS = [kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.ARROW_LEFT, kbd.ARROW_RIGHT];
+
+	function handleTriggerKeydown(e: KeyboardEvent) {
+		if (isSegmentNavigationKey(e.key)) {
+			e.preventDefault();
+			handleSegmentNavigation(e, ids.input);
+		}
+	}
+
+	/**
+	 * A helper function to set the year of the active date. This is
+	 * useful when the user wants to have a select input to change the
+	 * year of the calendar.
+	 */
+	function setYear(year: number) {
+		focusedValue.update((prev) => {
+			prev.setFullYear(year);
+			return prev;
+		});
+	}
+
+	/**
+	 * A helper function to set the month of the active date. This is
+	 * useful when the user wants to have a select input to change the
+	 * month of the calendar.
+	 */
+	function setMonth(month: number) {
+		if (month < 0 || month > 11) throw new Error('Month must be between 0 and 11');
+		focusedValue.update((prev) => {
+			prev.setMonth(month);
+			return prev;
+		});
+	}
+
+	function handleSingleClick(date: Date) {
+		value.update((prev) => {
+			if (isSingleDate(prev) || prev === undefined) {
+				const $focusedValue = get(focusedValue);
+				if ($focusedValue && !isInSameMonth(date, $focusedValue)) {
+					focusedValue.set(date);
+				}
+
+				if (prev === undefined) return date;
+				if (get(allowDeselect) && isSameDay(prev, date)) {
+					return undefined;
+				}
+			}
+			return date;
+		});
+	}
+
+	function handleGridKeydown(e: KeyboardEvent) {
+		if (!ARROW_KEYS.includes(e.key)) return;
+		e.preventDefault();
+		// the cell that is currently focused
+		const currentCell = e.target;
+		const grid = e.currentTarget;
+		if (!isHTMLElement(currentCell) || !isHTMLElement(grid)) return;
+		const allCells = getSelectableCells(grid);
+
+		if (e.key === kbd.ARROW_DOWN) {
+			shiftFocus(currentCell, allCells, 7);
+		}
+		if (e.key === kbd.ARROW_UP) {
+			shiftFocus(currentCell, allCells, -7);
+		}
+		if (e.key === kbd.ARROW_LEFT) {
+			shiftFocus(currentCell, allCells, -1);
+		}
+		if (e.key === kbd.ARROW_RIGHT) {
+			shiftFocus(currentCell, allCells, 1);
+		}
+	}
+
+	function shiftFocus(node: HTMLElement, candidateCells: HTMLElement[], add: number) {
+		const index = candidateCells.indexOf(node);
+		const nextIndex = index + add;
+
+		if (nextIndex >= 0 && nextIndex < candidateCells.length) {
+			const nextCell = candidateCells[nextIndex];
+			nextCell.focus();
+		}
+	}
+
+	function getGridNode() {
+		return document.getElementById(ids.grid);
+	}
 
 	return {
 		elements: {
@@ -553,7 +586,11 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			...popover.elements,
 		},
 		states: {
-			activeDate,
+			focusedValue: {
+				subscribe: focusedValue.subscribe,
+				set: focusedValue.set,
+				update: focusedValue.update,
+			},
 			months,
 			value,
 			daysOfWeek,
@@ -571,4 +608,24 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		options,
 		ids,
 	};
+}
+
+/**
+ * Given a grid node and a date string, this function will return
+ * the cell in the grid that matches that date string.
+ */
+function getFocusableCellByDate(node: HTMLElement, dateStr: string) {
+	const cell = node.querySelector(
+		`[data-value="${dateStr}"]:not([data-disabled]):not([data-outside-month])`
+	);
+	if (!isHTMLElement(cell)) return null;
+	return cell;
+}
+
+function getSelectableCells(node: HTMLElement) {
+	return Array.from(
+		node.querySelectorAll(
+			`[data-melt-calendar-cell]:not([data-disabled]):not([data-outside-month])`
+		)
+	).filter((el): el is HTMLElement => isHTMLElement(el));
 }
