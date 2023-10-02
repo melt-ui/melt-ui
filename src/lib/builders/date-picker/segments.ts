@@ -2,17 +2,15 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	effect,
 	executeCallbacks,
 	isHTMLElement,
 	kbd,
-	overridable,
 	styleToString,
-	derivedWithUnsubscribe,
-	type ChangeFn,
 } from '$lib/internal/helpers/index.js';
 import dayjs from 'dayjs';
 import type { _DatePickerParts, _DatePickerIds, _DatePickerStores } from './create.js';
-import { get, writable, type Readable, type Writable } from 'svelte/store';
+import { get, writable, type Writable } from 'svelte/store';
 
 const { name } = createElHelpers<_DatePickerParts>('calendar');
 
@@ -62,37 +60,17 @@ export function createSegments(props: CreateSegmentProps) {
 	};
 
 	const { activeDate, value } = stores;
-
-	const dayValue = dependable<NumOrNull, Date | undefined>({
-		initialValue: null,
-		dependStore: value,
-		onChange: onDayValueChange,
-		onDepChange: onDayDepChange,
-	});
+	const { hourCycle } = options;
 
 	type NumOrNull = number | null;
 
-	type SegmentDepProps = Parameters<OnChange<NumOrNull, Date | undefined>>[0];
-	type SegmentChangeProps = Parameters<ChangeFn<NumOrNull>>[0];
-
-	function onDayValueChange(props: SegmentChangeProps) {
-		const { curr, next } = props;
-		return next;
-	}
-
-	function onDayDepChange(props: SegmentDepProps) {
-		const { curr, depends } = props;
-		return curr;
-	}
-
-	const monthValue = overridable<number | null>(writable(null));
-	const yearValue = overridable<number | null>(writable(null));
-	const hourValue = overridable<number | null>(writable(null));
-	const minuteValue = overridable<number | null>(writable(null));
-	const secondValue = overridable<number | null>(writable(null));
+	const dayValue = writable<NumOrNull>(null);
+	const monthValue = writable<NumOrNull>(null);
+	const yearValue = writable<NumOrNull>(null);
+	const hourValue = writable<NumOrNull>(null);
+	const minuteValue = writable<NumOrNull>(null);
+	const secondValue = writable<NumOrNull>(null);
 	const dayPeriodValue = writable<'AM' | 'PM'>('AM');
-
-	const { hourCycle } = options;
 
 	const daySegment = builder(name('day-segment'), {
 		stores: [activeDate, dayValue],
@@ -1043,6 +1021,73 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 	}
 
+	effect([value], ([$value]) => {
+		if ($value === null) return;
+		const djs = dayjs($value);
+
+		if (get(dayValue) !== djs.date()) {
+			dayValue.set(djs.date());
+		}
+		if (get(monthValue) !== djs.month() + 1) {
+			monthValue.set(djs.month() + 1);
+		}
+		if (get(yearValue) !== djs.year()) {
+			yearValue.set(djs.year());
+		}
+		if (get(hourValue) !== djs.hour()) {
+			hourValue.set(djs.hour());
+		}
+		if (get(minuteValue) !== djs.minute()) {
+			minuteValue.set(djs.minute());
+		}
+		if (get(secondValue) !== djs.second()) {
+			secondValue.set(djs.second());
+		}
+	});
+
+	effect([dayValue], ([$dayValue]) => {
+		const djs = dayjs(get(value));
+
+		if ($dayValue !== djs.date()) {
+			value.set(djs.date($dayValue ? $dayValue : 1).toDate());
+		}
+	});
+
+	effect([monthValue], ([$monthValue]) => {
+		const djs = dayjs(get(value));
+		if ($monthValue !== djs.month() + 1) {
+			value.set(djs.month($monthValue ? $monthValue - 1 : 0).toDate());
+		}
+	});
+
+	effect([yearValue], ([$yearValue]) => {
+		const djs = dayjs(get(value));
+		if ($yearValue !== djs.year()) {
+			value.set(djs.year($yearValue ? $yearValue : 0).toDate());
+		}
+	});
+
+	effect([hourValue], ([$hourValue]) => {
+		const djs = dayjs(get(value));
+		if ($hourValue !== djs.hour()) {
+			value.set(djs.hour($hourValue ? $hourValue : 0).toDate());
+		}
+	});
+
+	effect([minuteValue], ([$minuteValue]) => {
+		const djs = dayjs(get(value));
+		if ($minuteValue !== djs.minute()) {
+			value.set(djs.minute($minuteValue ? $minuteValue : 0).toDate());
+		}
+	});
+
+	effect([secondValue], ([$secondValue]) => {
+		const djs = dayjs(get(value));
+		if ($secondValue !== djs.second()) {
+			value.set(djs.second($secondValue ? $secondValue : 0).toDate());
+		}
+	});
+
 	return {
 		elements: {
 			daySegment,
@@ -1163,31 +1208,4 @@ function getPrevSegment(node: HTMLElement, segments: HTMLElement[]) {
 	const prevIndex = index - 1;
 	const prevSegment = segments[prevIndex];
 	return prevSegment;
-}
-
-type OnChange<T, U> = ({ curr, depends }: { curr: T; depends: U }) => T;
-
-type DependableProps<T, U> = {
-	initialValue: T;
-	dependStore: Readable<U>;
-	onDepChange?: OnChange<T, U>;
-	onChange?: ChangeFn<T>;
-};
-
-function dependable<T, U>(props: DependableProps<T, U>) {
-	const { initialValue, dependStore, onDepChange, onChange } = props;
-
-	const store = overridable(writable(initialValue), onChange);
-
-	const _ = derivedWithUnsubscribe(dependStore, ($dependStore) => {
-		if (!onDepChange) return $dependStore;
-		store.update((prev) => {
-			return onDepChange({ depends: $dependStore, curr: prev });
-		});
-		return $dependStore;
-	});
-
-	return {
-		...store,
-	};
 }

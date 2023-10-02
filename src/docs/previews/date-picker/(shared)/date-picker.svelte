@@ -12,7 +12,7 @@
 
 	export let disabled: Matcher | Matcher[] = false;
 	export let activeDate: CreateDatePickerProps['activeDate'] = new Date();
-	export let defaultValue: CreateDatePickerProps['defaultValue'] = undefined;
+	export let defaultValue: CreateDatePickerProps['defaultValue'] = new Date();
 	export let numberOfMonths: CreateDatePickerProps['numberOfMonths'] = 1;
 	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = false;
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = 0;
@@ -66,6 +66,7 @@
 </script>
 
 <div class="flex flex-col gap-3">
+	<p>Current Value: {$value}</p>
 	<div
 		use:melt={$dateInput}
 		class="flex max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
