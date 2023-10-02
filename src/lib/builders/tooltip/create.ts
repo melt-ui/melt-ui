@@ -98,16 +98,6 @@ export function createTooltip(props?: CreateTooltipProps) {
 				openTimeout = null;
 			}, get(openDelay));
 		}
-
-		const groupValue = get(group);
-		if (groupValue === undefined || groupValue === false) {
-			return;
-		}
-		// Close the currently open tooltip in the same group
-		// and set this tooltip as the open one.
-		const currentOpen = _groupMap.get(groupValue);
-		currentOpen?.set(false);
-		_groupMap.set(groupValue, open);
 	}
 
 	function closeTooltip(isBlur?: boolean) {
@@ -254,6 +244,21 @@ export function createTooltip(props?: CreateTooltipProps) {
 	});
 
 	let isMouseInTooltipArea = false;
+
+	effect(open, ($open) => {
+		if ($open) {
+			const groupValue = get(group);
+			if (groupValue === undefined || groupValue === false) {
+				return;
+			}
+
+			// Close the currently open tooltip in the same group
+			// and set this tooltip as the open one.
+			const currentOpen = _groupMap.get(groupValue);
+			currentOpen?.set(false);
+			_groupMap.set(groupValue, open);
+		}
+	});
 
 	effect([isVisible, activeTrigger], ([$isVisible, $activeTrigger]) => {
 		if (!$isVisible || !$activeTrigger) return;
