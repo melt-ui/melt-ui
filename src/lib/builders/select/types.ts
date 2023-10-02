@@ -150,8 +150,33 @@ export type SelectOptionProps<Value = unknown> = SelectOption<Value> & {
 	disabled?: boolean;
 };
 
-export type Select = BuilderReturn<typeof createSelect>;
-export type SelectElements = Select['elements'];
-export type SelectOptions = Select['options'];
-export type SelectStates = Select['states'];
-export type SelectHelpers = Select['helpers'];
+export type Select<
+	Value = unknown,
+	Multiple extends boolean = false,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
+> = BuilderReturn<typeof createSelect<Value, Multiple, S>>;
+export type SelectElements<
+	Value = unknown,
+	Multiple extends boolean = false,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
+> = BuilderReturn<typeof createSelect<Value, Multiple, S>>['elements'];
+export type SelectOptions<
+	Value = unknown,
+	Multiple extends boolean = false,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
+> = BuilderReturn<typeof createSelect<Value, Multiple, S>>['options'];
+export type SelectStates<
+	Value = unknown,
+	Multiple extends boolean = false,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
+> = BuilderReturn<typeof createSelect<Value, Multiple, S>>['states'];
+export type SelectHelpers<
+	Value = unknown,
+	Multiple extends boolean = false,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
+> = BuilderReturn<typeof createSelect<Value, Multiple, S>>['helpers'];

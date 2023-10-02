@@ -65,8 +65,19 @@ export type AccordionHeadingProps =
 	  }
 	| number;
 
-export type Accordion = BuilderReturn<typeof createAccordion>;
-export type AccordionElements = Accordion['elements'];
-export type AccordionOptions = Accordion['options'];
-export type AccordionStates = Accordion['states'];
-export type AccordionHelpers = Accordion['helpers'];
+// export type Accordion = BuilderReturn<typeof createAccordion>;
+export type Accordion<Multiple extends boolean = false> = BuilderReturn<
+	typeof createAccordion<Multiple>
+>;
+export type AccordionElements<Multiple extends boolean = false> = BuilderReturn<
+	typeof createAccordion<Multiple>
+>['elements'];
+export type AccordionOptions<Multiple extends boolean = false> = BuilderReturn<
+	typeof createAccordion<Multiple>
+>['options'];
+export type AccordionStates<Multiple extends boolean = false> = BuilderReturn<
+	typeof createAccordion<Multiple>
+>['states'];
+export type AccordionHelpers<Multiple extends boolean = false> = BuilderReturn<
+	typeof createAccordion<Multiple>
+>['helpers'];
