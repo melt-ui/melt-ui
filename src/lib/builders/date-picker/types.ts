@@ -3,22 +3,12 @@ import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { createDatePicker } from './create.js';
 import type { CreatePopoverProps, Matcher } from '$lib/builders/index.js';
 
-export type BaseDatePickerProps = {
-	/**
-	 * The earliest date that can be selected.
-	 */
-	earliest: Date | null;
-
-	/**
-	 * The latest date that can be selected.
-	 */
-	latest: Date | null;
-
+export type DatePickerProps = {
 	/**
 	 * When in `single` mode, allow deselecting the selected date when the
 	 * date is clicked again.
 	 */
-	allowDeselect: boolean;
+	allowDeselect?: boolean;
 
 	/**
 	 * The default value for the date picker.
@@ -28,13 +18,13 @@ export type BaseDatePickerProps = {
 	/**
 	 * Change function called when the value of the date picker changes.
 	 */
-	onValueChange: ChangeFn<Date | undefined>;
+	onValueChange?: ChangeFn<Date | undefined>;
 
 	/**
 	 * An option writable store that can be used to control the value of the
 	 * date picker from outside the builder.
 	 */
-	value: Writable<Date | undefined>;
+	value?: Writable<Date | undefined>;
 
 	/**
 	 * The date that is used to display the initial month and
@@ -42,7 +32,7 @@ export type BaseDatePickerProps = {
 	 *
 	 * @default new Date()
 	 */
-	activeDate: Date;
+	activeDate?: Date;
 
 	/**
 	 * Whether or not to use paged navigation for the next and previous
@@ -68,13 +58,22 @@ export type BaseDatePickerProps = {
 	 * Any dates that match the provided matchers will
 	 * be disabled.
 	 */
-	disabled: Matcher | Matcher[];
+	disabled?: Matcher | Matcher[];
 
 	/**
-	 * Any dates that match the provided matchers will
-	 * be hidden.
+	 * Any dates that match the provided matchers will be
+	 * marked as unavailable, which is different from disabled,
+	 * as unavailable dates can still be focused and selected,
+	 * but will cause the date picker to be marked as invalid if
+	 * selected.
+	 *
+	 * For example, if you are displaying a calendar for booking
+	 * appointments, you may want to mark dates that are already
+	 * bookes as unavailable, but may become available again before
+	 * the appointment date, so the user can still select them to
+	 * learn more about the appointment.
 	 */
-	hidden: Matcher | Matcher[];
+	unavailable?: Matcher | Matcher[];
 
 	/**
 	 * Display 6 weeks per month, regardless the month's number of weeks.
@@ -86,23 +85,40 @@ export type BaseDatePickerProps = {
 	 *
 	 * @default false
 	 */
-	fixedWeeks: boolean;
+	fixedWeeks?: boolean;
 
 	/**
 	 * The number of months to display at once.
 	 *
 	 * @default 1
 	 */
-	numberOfMonths: number;
+	numberOfMonths?: number;
 
 	/**
 	 * The format to use for displaying the time in the input.
 	 *
 	 * @default 24
 	 */
-	hourCycle: 12 | 24;
+	hourCycle?: 12 | 24;
+
+	/**
+	 * The label for the calendar, which is used for
+	 * accessibility purposes only and is not visible on the page,
+	 * it is read by screen readers when the calendar is opened.
+	 *
+	 * We take the label you provide and append the current month and year
+	 * to it, so you don't need to include that in the label.
+	 *
+	 * @example 'Date of birth' - will be read as 'Date of birth, January 2021' if the
+	 * current month is January 2021.
+	 * @example 'Appointment date' - will be read as 'Appointment date, January 2021' if the
+	 * current month is January 2021.
+	 * @example 'Booking date' - will be read as 'Booking date, January 2021' if the
+	 * current month is January 2021.
+	 */
+	calendarLabel?: string;
 };
 
-export type CreateDatePickerProps = Partial<BaseDatePickerProps> & CreatePopoverProps;
+export type CreateDatePickerProps = DatePickerProps & CreatePopoverProps;
 
-export type CreateDatePickerReturn = ReturnType<typeof createDatePicker>;
+export type DatePicker = ReturnType<typeof createDatePicker>;

@@ -80,6 +80,12 @@ type CustomMeltComponentEvents<Events extends keyof HTMLElementEventMap> = {
 		: never;
 };
 
+export type InternalCustomEvents<Events extends keyof HTMLElementEventMap> = {
+	[K in Events as K]?: K extends keyof HTMLElementEventMap
+		? EventHandler<HTMLElementEventMap[K]>
+		: never;
+};
+
 type ElementEvents<T> = T extends ReadonlyArray<infer U> ? U : never;
 
 export type GroupedEvents<T> = {

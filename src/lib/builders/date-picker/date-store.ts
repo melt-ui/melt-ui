@@ -24,11 +24,53 @@ export function dayJsStore(store: Writable<Date>) {
 		});
 	}
 
+	function setDate(dayInMonth: number) {
+		update((d) => {
+			return dayjs(d).set('date', dayInMonth).toDate();
+		});
+	}
+
+	function setMonth(month: number) {
+		update((d) => {
+			return dayjs(d).set('month', month).toDate();
+		});
+	}
+
+	function setYear(year: number) {
+		update((d) => {
+			return dayjs(d).set('year', year).toDate();
+		});
+	}
+
+	function setHour(hour: number) {
+		update((d) => {
+			return dayjs(d).set('hour', hour).toDate();
+		});
+	}
+
+	function setMinute(minute: number) {
+		update((d) => {
+			return dayjs(d).set('minute', minute).toDate();
+		});
+	}
+
+	function setSecond(second: number) {
+		update((d) => {
+			return dayjs(d).set('second', second).toDate();
+		});
+	}
+
 	return {
 		set,
 		update,
 		subscribe,
 		add,
 		subtract,
+		setDate,
+		setMonth,
+		setYear,
+		setHour,
+		setMinute,
+		setSecond,
 	};
 }

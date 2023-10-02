@@ -23,7 +23,7 @@ import { onMount, tick } from 'svelte';
 import { writable } from 'svelte/store';
 import { executeCallbacks } from '../../internal/helpers/callbacks.js';
 import type { PopoverEvents } from './events.js';
-import type { CreatePopoverProps } from './types.js';
+import type { CreatePopoverProps, InternalPopoverProps } from './types.js';
 
 const defaults = {
 	positioning: {
@@ -38,15 +38,19 @@ const defaults = {
 	closeOnOutsideClick: true,
 	portal: undefined,
 	forceVisible: false,
-} satisfies Defaults<CreatePopoverProps>;
+	attrs: undefined,
+	handlers: undefined,
+} satisfies Defaults<InternalPopoverProps>;
 
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
 const { name } = createElHelpers<PopoverParts>('popover');
 
-export function createPopover(args?: CreatePopoverProps) {
-	const withDefaults = { ...defaults, ...args } satisfies CreatePopoverProps;
+export function createPopover(args?: InternalPopoverProps) {
+	const withDefaults = { ...defaults, ...args } satisfies InternalPopoverProps;
 
-	const options = toWritableStores(omit(withDefaults, 'open'));
+	const { handlers } = withDefaults;
+
+	const options = toWritableStores(omit(withDefaults, 'open', 'handlers'));
 	const {
 		positioning,
 		arrowSize,
@@ -56,6 +60,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		closeOnOutsideClick,
 		portal,
 		forceVisible,
+		attrs,
 	} = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
@@ -85,8 +90,10 @@ export function createPopover(args?: CreatePopoverProps) {
 	const isVisible = derivedVisible({ open, activeTrigger, forceVisible });
 
 	const content = builder(name('content'), {
-		stores: [isVisible, portal],
-		returned: ([$isVisible, $portal]) => {
+		stores: [isVisible, portal, attrs],
+		returned: ([$isVisible, $portal, $attrs]) => {
+			const extraAttrs = $attrs && $attrs.content ? $attrs.content : {};
+
 			return {
 				hidden: $isVisible && isBrowser ? undefined : true,
 				tabindex: -1,
@@ -96,6 +103,7 @@ export function createPopover(args?: CreatePopoverProps) {
 				id: ids.content,
 				'data-state': $isVisible ? 'open' : 'closed',
 				'data-portal': $portal ? '' : undefined,
+				...extraAttrs,
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -166,8 +174,9 @@ export function createPopover(args?: CreatePopoverProps) {
 	}
 
 	const trigger = builder(name('trigger'), {
-		stores: open,
-		returned: ($open) => {
+		stores: [open, attrs],
+		returned: ([$open, $attrs]) => {
+			const extraAttrs = $attrs && $attrs.trigger ? $attrs.trigger : {};
 			return {
 				role: 'button',
 				'aria-haspopup': 'dialog',
@@ -175,14 +184,17 @@ export function createPopover(args?: CreatePopoverProps) {
 				'data-state': $open ? 'open' : 'closed',
 				'aria-controls': ids.content,
 				id: ids.trigger,
+				...extraAttrs,
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<PopoverEvents['trigger']> => {
 			const unsub = executeCallbacks(
-				addMeltEventListener(node, 'click', () => {
+				addMeltEventListener(node, 'click', (e) => {
+					handlers?.trigger?.click?.(e);
 					toggleOpen(node);
 				}),
 				addMeltEventListener(node, 'keydown', (e) => {
+					handlers?.trigger?.keydown?.(e);
 					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
 					e.preventDefault();
 					toggleOpen(node);
@@ -214,10 +226,14 @@ export function createPopover(args?: CreatePopoverProps) {
 			} as const),
 		action: (node: HTMLElement): MeltActionReturn<PopoverEvents['close']> => {
 			const unsub = executeCallbacks(
-				addMeltEventListener(node, 'click', () => {
+				addMeltEventListener(node, 'click', (e) => {
+					handlers?.close?.click?.(e);
+					if (e.defaultPrevented) return;
 					handleClose();
 				}),
 				addMeltEventListener(node, 'keydown', (e) => {
+					handlers?.close?.keydown?.(e);
+					if (e.defaultPrevented) return;
 					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
 					e.preventDefault();
 					toggleOpen();

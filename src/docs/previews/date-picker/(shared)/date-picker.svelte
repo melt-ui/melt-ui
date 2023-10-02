@@ -117,64 +117,60 @@
 						nextMonthDates,
 						month: monthDate,
 					} = month}
-					<div>
-						<div use:melt={$grid} class="rounded-lg bg-white p-4 shadow-sm">
-							<div class="flex flex-col gap-2.5 text-magnum-800">
-								<div class="flex w-full items-center justify-between">
-									<p class="font-semibold text-magnum-800">
-										{monthYearFormatter.format(monthDate)}
-									</p>
-									<div class="flex items-center gap-8">
-										<button on:click={prevMonth}>
-											<ChevronLeft />
-										</button>
-										<button on:click={nextMonth}>
-											<ChevronRight />
-										</button>
+					<div use:melt={$grid} class="rounded-lg bg-white p-4 shadow-sm">
+						<div class="flex flex-col gap-2.5 text-magnum-800">
+							<div class="flex w-full items-center justify-between">
+								<p class="font-semibold text-magnum-800">
+									{monthYearFormatter.format(monthDate)}
+								</p>
+								<div class="flex items-center gap-8">
+									<button on:click={prevMonth}>
+										<ChevronLeft />
+									</button>
+									<button on:click={nextMonth}>
+										<ChevronRight />
+									</button>
+								</div>
+							</div>
+							<div class="grid grid-cols-7 gap-2">
+								{#each $daysOfWeek as day}
+									<div class="cell">
+										<span class="text-sm font-medium">{getDayOfWeek(day)}</span>
 									</div>
-								</div>
-								<div class="grid grid-cols-7 gap-2">
-									{#each $daysOfWeek as day}
-										<div class="cell">
-											<span class="text-sm font-medium"
-												>{getDayOfWeek(day)}</span
-											>
-										</div>
-									{/each}
-									{#each lastMonthDates as day}
-										<button
-											use:melt={$cell({
-												label: day.toDateString(),
-												value: day,
-											})}
-											class="cell"
-										>
-											<span class="opacity-50">{day.getDate()}</span>
-										</button>
-									{/each}
-									{#each dates as day}
-										<button
-											use:melt={$cell({
-												label: day.toDateString(),
-												value: day,
-											})}
-											class="cell"
-										>
-											<span class="">{day.getDate()}</span>
-										</button>
-									{/each}
-									{#each nextMonthDates as day}
-										<button
-											use:melt={$cell({
-												label: day.toDateString(),
-												value: day,
-											})}
-											class="cell"
-										>
-											<span class="opacity-50">{day.getDate()}</span>
-										</button>
-									{/each}
-								</div>
+								{/each}
+								{#each lastMonthDates as day}
+									<button
+										use:melt={$cell({
+											label: day.toDateString(),
+											value: day,
+										})}
+										class="cell"
+									>
+										<span class="opacity-50">{day.getDate()}</span>
+									</button>
+								{/each}
+								{#each dates as day}
+									<button
+										use:melt={$cell({
+											label: day.toDateString(),
+											value: day,
+										})}
+										class="cell"
+									>
+										<span class="">{day.getDate()}</span>
+									</button>
+								{/each}
+								{#each nextMonthDates as day}
+									<button
+										use:melt={$cell({
+											label: day.toDateString(),
+											value: day,
+										})}
+										class="cell"
+									>
+										<span class="opacity-50">{day.getDate()}</span>
+									</button>
+								{/each}
 							</div>
 						</div>
 					</div>
