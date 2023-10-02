@@ -49,10 +49,12 @@
 </div>
 
 <style>
+	/* Reset */
 	* {
 		all: unset;
 	}
 
+	/* CSS Variables */
 	:root {
 		--magnum-50: #fff9ed;
 		--magnum-100: #fef2d6;
@@ -80,15 +82,50 @@
 
 		--shadow-xl: 0 0 #0000, 0 0 #0000, 0 10px 15px -3px rgb(0 0 0 / 0.1),
 			0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+		--fs-xs: 0.75rem;
+		--fs-sm: 0.875rem;
+		--fs-base: 1rem;
+		--fs-lg: 1.125rem;
+		--fs-xl: 1.25rem;
+		--fs-2xl: 1.5rem;
+		--fs-3xl: 1.875rem;
+		--fs-4xl: 2.25rem;
+		--fs-5xl: 3rem;
+		--fs-6xl: 4rem;
+		--fs-7xl: 5rem;
+		--fs-8xl: 6rem;
+		--fs-9xl: 8rem;
+
+		--fw-thin: 100;
+		--fw-extralight: 200;
+		--fw-light: 300;
+		--fw-normal: 400;
+		--fw-medium: 500;
+		--fw-semibold: 600;
+		--fw-bold: 700;
+		--fw-extrabold: 800;
+		--fw-black: 900;
+
+		--radius-sm: 0.125rem;
+		--radius-base: 0.25rem;
+		--radius-md: 0.375rem;
+		--radius-lg: 0.5rem;
+		--radius-xl: 0.75rem;
+		--radius-2xl: 1rem;
+		--radius-3xl: 1.5rem;
+		--radius-full: 9999px;
+
+		--lh-none: 1;
 	}
 
+	/* Elements */
 	.root {
-		/* mx-auto w-[18rem] max-w-full rounded-xl bg-white shadow-lg sm:w-[25rem]; */
 		display: block;
 		margin-inline: auto;
 		width: 18rem;
 		max-width: 100%;
-		border-radius: 0.75rem;
+		border-radius: var(--radius-xl);
 		overflow: hidden;
 
 		background-color: white;
@@ -115,9 +152,9 @@
 		background-color: white;
 		color: black;
 
-		font-size: 1rem;
-		font-weight: 500;
-		line-height: 1rem;
+		font-size: var(--fs-base);
+		font-weight: var(--fw-medium);
+		line-height: var(--lh-none);
 
 		padding: 1.25rem;
 		width: 100%;
@@ -134,7 +171,7 @@
 		box-shadow: none !important;
 	}
 
-	.item:nth-child(n + 1) .trigger {
+	.item:not(:first-child) .trigger {
 		border-top: 1px solid var(--neutral-300);
 	}
 
@@ -145,7 +182,7 @@
 		overflow: hidden;
 		background-color: var(--neutral-100);
 		color: var(--neutral-600);
-		font-size: 0.875rem;
+		font-size: var(--fs-sm);
 	}
 
 	.content > div {
