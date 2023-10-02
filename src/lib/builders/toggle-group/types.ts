@@ -23,8 +23,18 @@ export type ToggleGroupItemProps =
 	  }
 	| string;
 
-export type ToggleGroup = BuilderReturn<typeof createToggleGroup>;
-export type ToggleGroupElements = ToggleGroup['elements'];
-export type ToggleGroupOptions = ToggleGroup['options'];
-export type ToggleGroupStates = ToggleGroup['states'];
-export type ToggleGroupHelpers = ToggleGroup['helpers'];
+export type ToggleGroup<T extends ToggleGroupType = 'single'> = BuilderReturn<
+	typeof createToggleGroup<T>
+>;
+export type ToggleGroupElements<T extends ToggleGroupType = 'single'> = BuilderReturn<
+	typeof createToggleGroup<T>
+>['elements'];
+export type ToggleGroupOptions<T extends ToggleGroupType = 'single'> = BuilderReturn<
+	typeof createToggleGroup<T>
+>['options'];
+export type ToggleGroupStates<T extends ToggleGroupType = 'single'> = BuilderReturn<
+	typeof createToggleGroup<T>
+>['states'];
+export type ToggleGroupHelpers<T extends ToggleGroupType = 'single'> = BuilderReturn<
+	typeof createToggleGroup<T>
+>['helpers'];
