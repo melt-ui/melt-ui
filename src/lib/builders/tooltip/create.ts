@@ -47,7 +47,7 @@ type TooltipParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<TooltipParts>('tooltip');
 
 // Store a global map to get the currently open tooltip.
-const _groupMap = new Map<string | boolean, Writable<boolean>>();
+const groupMap = new Map<string | true, Writable<boolean>>();
 
 export function createTooltip(props?: CreateTooltipProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateTooltipProps;
@@ -246,7 +246,8 @@ export function createTooltip(props?: CreateTooltipProps) {
 	let isMouseInTooltipArea = false;
 
 	effect(open, ($open) => {
-		if (!$open) return
+		if (!$open) return;
+
 		const groupValue = get(group);
 		if (groupValue === undefined || groupValue === false) {
 			return;
@@ -254,10 +255,9 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 		// Close the currently open tooltip in the same group
 		// and set this tooltip as the open one.
-		const currentOpen = _groupMap.get(groupValue);
+		const currentOpen = groupMap.get(groupValue);
 		currentOpen?.set(false);
-		_groupMap.set(groupValue, open);
-	
+		groupMap.set(groupValue, open);
 	});
 
 	effect([isVisible, activeTrigger], ([$isVisible, $activeTrigger]) => {
