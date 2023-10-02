@@ -5,48 +5,76 @@ import type { CreatePopoverProps, Matcher } from '$lib/builders/index.js';
 
 export type DatePickerProps = {
 	/**
-	 * When in `single` mode, allow deselecting the selected date when the
-	 * date is clicked again.
+	 * Allow deselecting the selected date, which would set the
+	 * value to `undefined`. You can use this to ensure a date
+	 * is always selected in certain situations.
+	 *
+	 * @default true
 	 */
 	allowDeselect?: boolean;
 
 	/**
-	 * The default value for the date picker.
+	 * The default value for the date picker. When provided,
+	 * the `activeDate` will assume this value so the calendar
+	 * will open to the month/year of this value.
+	 *
+	 * @default undefined;
 	 */
 	defaultValue?: Date;
 
 	/**
-	 * Change function called when the value of the date picker changes.
+	 * A function called when the value of the date picker changes.
+	 * It receives a single argument, which is an object containing
+	 * `curr` and `prev` properties, whose values are the current
+	 * and previous values of the value store. Whatever you return
+	 * from this function will be set as the new value of the value
+	 * store.
+	 *
+	 * @default undefined
 	 */
 	onValueChange?: ChangeFn<Date | undefined>;
 
 	/**
-	 * An option writable store that can be used to control the value of the
-	 * date picker from outside the builder.
+	 * A writable store than can be used to control the value of the
+	 * date picker from outside the builder. This is useful if you
+	 * want to sync the value of the date picker with another store
+	 * used in your app.
+	 *
+	 * @default undefined;
 	 */
 	value?: Writable<Date | undefined>;
 
 	/**
 	 * The date that is used to display the initial month and
-	 * which date will be focused when the date picker is opened.
+	 * year of the calendar. When a `defaultValue` is provided,
+	 * or a value exists in the `value` store, the `activeDate`
+	 * will be set to that value.
 	 *
-	 * @default new Date()
+	 * @default new Date() - the current date
 	 */
 	activeDate?: Date;
 
 	/**
+	 * Only applicable when `numberOfMonths` is greater than 1.
+	 *
 	 * Whether or not to use paged navigation for the next and previous
 	 * buttons in the date picker. Paged navigation will change all months
 	 * in the view when the next/prev buttons are clicked. Non-paged navigation
 	 * just shifts by a single month.
+	 *
+	 * For example, with `pagedNavigation` set to `true`, if you have 2 months
+	 * displayed, January and February, and you click the next button, the months
+	 * in view will change to March and April. If `pagedNavigation` is `false`,
+	 * the months in view will change to February and March.
 	 *
 	 * @default false
 	 */
 	pagedNavigation?: boolean;
 
 	/**
-	 * Which day of the week to start the calendar on.
-	 * 0 = Sunday, 1 = Monday, etc.
+	 * The day of the week to start the calendar on, which must
+	 * be a number between 0 and 6, where 0 is Sunday and 6 is
+	 * Saturday.
 	 *
 	 * @default 0 (Sunday)
 	 */
@@ -56,7 +84,12 @@ export type DatePickerProps = {
 
 	/**
 	 * Any dates that match the provided matchers will
-	 * be disabled.
+	 * be marked as disabled, which means they cannot be
+	 * focused or selected. They will also include a data
+	 * attribute that can be used to style them differently
+	 * than the other dates.
+	 *
+	 * @default undefined;
 	 */
 	disabled?: Matcher | Matcher[];
 
@@ -72,6 +105,8 @@ export type DatePickerProps = {
 	 * bookes as unavailable, but may become available again before
 	 * the appointment date, so the user can still select them to
 	 * learn more about the appointment.
+	 *
+	 * @default undefined;
 	 */
 	unavailable?: Matcher | Matcher[];
 
@@ -88,7 +123,8 @@ export type DatePickerProps = {
 	fixedWeeks?: boolean;
 
 	/**
-	 * The number of months to display at once.
+	 * The number of months to display on the calendar at once. To control
+	 * how the months are navigated between, see the `pagedNavigation` prop.
 	 *
 	 * @default 1
 	 */
@@ -96,8 +132,11 @@ export type DatePickerProps = {
 
 	/**
 	 * The format to use for displaying the time in the input.
+	 * If using a 12 hour clock, ensure you also include the
+	 * `dayPeriod` segment in your input to ensure the user
+	 * can select AM/PM.
 	 *
-	 * @default 24
+	 * @default 12
 	 */
 	hourCycle?: 12 | 24;
 
