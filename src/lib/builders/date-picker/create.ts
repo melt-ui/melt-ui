@@ -60,6 +60,7 @@ const defaults = {
 	portal: undefined,
 	forceVisible: false,
 	calendarLabel: 'Date Picker',
+	locale: 'en',
 } satisfies CreateDatePickerProps;
 
 const defaultTriggerAttrs = {
@@ -152,18 +153,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		...popover.options,
 	});
 
-	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-
-	const stores: _DatePickerStores = {
-		value: overridable<Date | undefined>(
-			valueWritable,
-			withDefaults?.onValueChange as ChangeFn<Date | undefined>
-		),
-		activeDate: dayJsStore(options.activeDate),
-	};
-
-	const { value, activeDate } = stores;
-
 	const {
 		allowDeselect,
 		disabled,
@@ -174,7 +163,21 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		calendarLabel,
 		unavailable,
 		hourCycle,
+		locale,
 	} = options;
+
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const value = overridable<Date | undefined>(
+		valueWritable,
+		withDefaults?.onValueChange as ChangeFn<Date | undefined>
+	);
+	const activeDate = dayJsStore(options.activeDate, locale);
+
+	const stores = {
+		value,
+		activeDate,
+		locale,
+	};
 
 	const months = writable<Month[]>([]);
 

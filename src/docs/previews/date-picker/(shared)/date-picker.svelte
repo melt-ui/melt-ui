@@ -18,6 +18,7 @@
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = 0;
 	export let fixedWeeks: CreateDatePickerProps['fixedWeeks'] = false;
 
+
 	const {
 		elements: {
 			grid,
@@ -58,6 +59,7 @@
 		fixedWeeks,
 		hourCycle: 12,
 		forceVisible: true,
+		locale: 'de'
 	});
 
 	function getDayOfWeek(date: Date) {

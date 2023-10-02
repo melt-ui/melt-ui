@@ -2,6 +2,7 @@ import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { createDatePicker } from './create.js';
 import type { CreatePopoverProps, Matcher } from '$lib/builders/index.js';
+import type { Locale } from '$lib/internal/locale.js';
 
 export type DatePickerProps = {
 	/**
@@ -156,6 +157,11 @@ export type DatePickerProps = {
 	 * current month is January 2021.
 	 */
 	calendarLabel?: string;
+
+	/**
+	 * @default 'en'
+	 */
+	locale?: Locale;
 };
 
 export type CreateDatePickerProps = DatePickerProps & CreatePopoverProps;

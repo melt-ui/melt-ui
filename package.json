@@ -81,7 +81,6 @@
 		"@storybook/svelte": "^7.3.2",
 		"@storybook/sveltekit": "^7.3.2",
 		"@storybook/testing-library": "^0.2.0",
-		"@sveltejs/adapter-auto": "^2.1.0",
 		"@sveltejs/adapter-vercel": "^3.0.2",
 		"@sveltejs/kit": "^1.22.3",
 		"@sveltejs/package": "^2.2.0",
@@ -143,7 +142,8 @@
 		"typescript": "^5.1.6",
 		"unist-util-visit": "^4.1.2",
 		"vite": "^4.4.7",
-		"vitest": "^0.33.0"
+		"vitest": "^0.33.0",
+		"zod": "^3.22.2"
 	},
 	"svelte": "./dist/index.js",
 	"main": "./dist/index.js",
