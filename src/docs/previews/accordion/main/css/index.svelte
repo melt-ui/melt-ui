@@ -3,7 +3,7 @@
 	import { slide } from 'svelte/transition';
 
 	const {
-		elements: { content, item, trigger, root },
+		elements: { content, item, trigger, root, heading },
 		helpers: { isSelected },
 	} = createAccordion({
 		defaultValue: 'item-1',
@@ -32,7 +32,7 @@
 <div class="root" {...$root}>
 	{#each items as { id, title, description }}
 		<div use:melt={$item(id)} class="item">
-			<h2 class="flex">
+			<h2 use:melt={$heading({ level: 2 })} class="flex">
 				<button use:melt={$trigger(id)} class="trigger">
 					{title}
 				</button>

@@ -99,7 +99,7 @@ async function createPreviewsObject({
 				if (styleKey === 'tailwind') {
 					returnedObj[groupKey][styleKey]['tailwind.config.ts'] = rawTailwindConfig;
 				} else if (styleKey === 'css') {
-					returnedObj[groupKey][styleKey]['globals.css'] = rawGlobalCSS;
+					// returnedObj[groupKey][styleKey]['globals.css'] = rawGlobalCSS;
 				}
 			}
 		}
