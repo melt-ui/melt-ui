@@ -84,9 +84,7 @@ export type CreatePopoverProps = {
 	 * @default false
 	 */
 	forceVisible?: boolean;
-};
 
-export type InternalPopoverProps = CreatePopoverProps & {
 	/**
 	 * Additional attributes to programatically add to popover elements when
 	 * initialized internally within other builders.

@@ -23,7 +23,7 @@ import { onMount, tick } from 'svelte';
 import { writable } from 'svelte/store';
 import { executeCallbacks } from '../../internal/helpers/callbacks.js';
 import type { PopoverEvents } from './events.js';
-import type { CreatePopoverProps, InternalPopoverProps } from './types.js';
+import type { CreatePopoverProps } from './types.js';
 
 const defaults = {
 	positioning: {
@@ -40,13 +40,13 @@ const defaults = {
 	forceVisible: false,
 	attrs: undefined,
 	handlers: undefined,
-} satisfies Defaults<InternalPopoverProps>;
+} satisfies Defaults<CreatePopoverProps>;
 
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
 const { name } = createElHelpers<PopoverParts>('popover');
 
-export function createPopover(args?: InternalPopoverProps) {
-	const withDefaults = { ...defaults, ...args } satisfies InternalPopoverProps;
+export function createPopover(args?: CreatePopoverProps) {
+	const withDefaults = { ...defaults, ...args } satisfies CreatePopoverProps;
 
 	const { handlers } = withDefaults;
 
