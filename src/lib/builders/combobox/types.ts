@@ -137,8 +137,37 @@ export type ComboboxItemProps<Value> = ComboboxOption<Value> & {
 	disabled?: boolean;
 };
 
-export type Combobox = BuilderReturn<typeof createCombobox>;
-export type ComboboxElements = Combobox['elements'];
-export type ComboboxOptions = Combobox['options'];
-export type ComboboxStates = Combobox['states'];
-export type ComboboxHelpers = Combobox['helpers'];
+export type Combobox<
+	Value = unknown,
+	Multiple extends boolean = false,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	S extends ComboboxSelected<Multiple, Value> = ComboboxSelected<Multiple, Value>
+> = BuilderReturn<typeof createCombobox<Value, Multiple, S>>;
+
+export type ComboboxElements<
+	Value = unknown,
+	Multiple extends boolean = false,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	S extends ComboboxSelected<Multiple, Value> = ComboboxSelected<Multiple, Value>
+> = Combobox<Value, Multiple, S>['elements'];
+
+export type ComboboxOptions<
+	Value = unknown,
+	Multiple extends boolean = false,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	S extends ComboboxSelected<Multiple, Value> = ComboboxSelected<Multiple, Value>
+> = Combobox<Value, Multiple, S>['options'];
+
+export type ComboboxStates<
+	Value = unknown,
+	Multiple extends boolean = false,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	S extends ComboboxSelected<Multiple, Value> = ComboboxSelected<Multiple, Value>
+> = Combobox<Value, Multiple, S>['states'];
+
+export type ComboboxHelpers<
+	Value = unknown,
+	Multiple extends boolean = false,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	S extends ComboboxSelected<Multiple, Value> = ComboboxSelected<Multiple, Value>
+> = Combobox<Value, Multiple, S>['helpers'];

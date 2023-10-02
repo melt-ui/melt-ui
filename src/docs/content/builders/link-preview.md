@@ -87,4 +87,4 @@ events.
 
 The link preview is only intended to be used with a mouse or other pointing device and the preview
 content cannot be accessed via the keyboard and is not exposed to screen readers. As a result the
-preview should contain content that is otherwise not visible elswhere.
+preview should not contain content that is otherwise not visible elsewhere.
