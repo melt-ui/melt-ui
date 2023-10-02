@@ -65,7 +65,6 @@ export type AccordionHeadingProps =
 	  }
 	| number;
 
-// export type Accordion = BuilderReturn<typeof createAccordion>;
 export type Accordion<Multiple extends boolean = false> = BuilderReturn<
 	typeof createAccordion<Multiple>
 >;

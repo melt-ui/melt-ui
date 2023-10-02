@@ -20,7 +20,6 @@ export type SelectSelected<Multiple extends boolean, Value> = WhenTrue<
 export type CreateSelectProps<
 	Value = unknown,
 	Multiple extends boolean = false,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
 > = {
 	/**
@@ -153,30 +152,25 @@ export type SelectOptionProps<Value = unknown> = SelectOption<Value> & {
 export type Select<
 	Value = unknown,
 	Multiple extends boolean = false,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
 > = BuilderReturn<typeof createSelect<Value, Multiple, S>>;
 export type SelectElements<
 	Value = unknown,
 	Multiple extends boolean = false,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
 > = BuilderReturn<typeof createSelect<Value, Multiple, S>>['elements'];
 export type SelectOptions<
 	Value = unknown,
 	Multiple extends boolean = false,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
 > = BuilderReturn<typeof createSelect<Value, Multiple, S>>['options'];
 export type SelectStates<
 	Value = unknown,
 	Multiple extends boolean = false,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
 > = BuilderReturn<typeof createSelect<Value, Multiple, S>>['states'];
 export type SelectHelpers<
 	Value = unknown,
 	Multiple extends boolean = false,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
 > = BuilderReturn<typeof createSelect<Value, Multiple, S>>['helpers'];
