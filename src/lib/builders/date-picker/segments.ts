@@ -301,10 +301,12 @@ export function createSegments(props: CreateSegmentProps) {
 	 * on the day segment.
 	 */
 	function handleDaySegmentKeydown(e: KeyboardEvent) {
+		if (e.key !== kbd.TAB) {
+			e.preventDefault();
+		}
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}
-		e.preventDefault();
 
 		const $activeDate = get(activeDate);
 		const activeDjs = dayjs($activeDate);
@@ -427,10 +429,13 @@ export function createSegments(props: CreateSegmentProps) {
 	 * on the month segment.
 	 */
 	function handleMonthSegmentKeydown(e: KeyboardEvent) {
+		if (e.key !== kbd.TAB) {
+			e.preventDefault();
+		}
+
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}
-		e.preventDefault();
 
 		const min = 1;
 		const max = 12;
@@ -549,11 +554,12 @@ export function createSegments(props: CreateSegmentProps) {
 	 * on the day segment.
 	 */
 	function handleYearSegmentKeydown(e: KeyboardEvent) {
+		if (e.key !== kbd.TAB) {
+			e.preventDefault();
+		}
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}
-
-		e.preventDefault();
 
 		const min = 0;
 		const currentYear = dayjs(new Date()).year();
@@ -622,10 +628,13 @@ export function createSegments(props: CreateSegmentProps) {
 	 * on the hour segment.
 	 */
 	function handleHourSegmentKeydown(e: KeyboardEvent) {
+		if (e.key !== kbd.TAB) {
+			e.preventDefault();
+		}
+
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}
-		e.preventDefault();
 
 		const min = get(hourCycle) === 12 ? 1 : 0;
 		const max = get(hourCycle) === 12 ? 12 : 23;
@@ -743,10 +752,13 @@ export function createSegments(props: CreateSegmentProps) {
 	 * on the minute segment.
 	 */
 	function handleMinuteSegmentKeydown(e: KeyboardEvent) {
+		if (e.key !== kbd.TAB) {
+			e.preventDefault();
+		}
+
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}
-		e.preventDefault();
 
 		const min = 0;
 		const max = 59;
@@ -864,10 +876,12 @@ export function createSegments(props: CreateSegmentProps) {
 	 * on the minute segment.
 	 */
 	function handleSecondSegmentKeydown(e: KeyboardEvent) {
+		if (e.key !== kbd.TAB) {
+			e.preventDefault();
+		}
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}
-		e.preventDefault();
 
 		const min = 0;
 		const max = 59;
@@ -991,10 +1005,13 @@ export function createSegments(props: CreateSegmentProps) {
 			'p',
 		];
 
+		if (e.key !== kbd.TAB) {
+			e.preventDefault();
+		}
+
 		if (!acceptableKeys.includes(e.key)) {
 			return;
 		}
-		e.preventDefault();
 
 		if (e.key === kbd.ARROW_UP || e.key === kbd.ARROW_DOWN) {
 			dayPeriodValue.update((prev) => {
