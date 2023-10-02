@@ -19,7 +19,7 @@ type GetActionAttributes<Builder> = Builder extends Record<string, any> & {
  * @example
  * ```svelte
  * <script>
- * 	import { createBuilder, melt } from '@melt-ui/svelte';
+ * 	import { createLabel, melt } from '@melt-ui/svelte';
  * 	const { elements: { root } } = createLabel();
  * </script>
  *
