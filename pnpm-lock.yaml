@@ -11,6 +11,9 @@ dependencies:
   '@floating-ui/dom':
     specifier: ^1.4.5
     version: 1.4.5
+  '@melt-ui/svelte':
+    specifier: 'link:'
+    version: 'link:'
   dequal:
     specifier: ^2.0.3
     version: 2.0.3
@@ -39,7 +42,7 @@ devDependencies:
     version: 1.1.57
   '@melt-ui/pp':
     specifier: 0.1.0
-    version: 0.1.0(@melt-ui/svelte@0.30.1)(svelte@4.0.0)
+    version: 0.1.0(@melt-ui/svelte@)(svelte@4.0.0)
   '@playwright/test':
     specifier: ^1.36.0
     version: 1.36.0
@@ -2354,26 +2357,14 @@ packages:
       react: 18.2.0
     dev: true
 
-  /@melt-ui/pp@0.1.0(@melt-ui/svelte@0.30.1)(svelte@4.0.0):
+  /@melt-ui/pp@0.1.0(@melt-ui/svelte@)(svelte@4.0.0):
     resolution: {integrity: sha512-GbzqhLDjfxh3BwC0It7kVUHvx05f+IdBad+mXWMO76xgfdqBkAO/pS6Q+tAEntKglQvxXugV3gHAyEJgSI0AlA==}
     engines: {pnpm: '>=8.6.3'}
     peerDependencies:
       '@melt-ui/svelte': '>= 0.29.0'
       svelte: ^3.55.0 || ^4.0.0
     dependencies:
-      '@melt-ui/svelte': 0.30.1(svelte@4.0.0)
-      svelte: 4.0.0
-    dev: true
-
-  /@melt-ui/svelte@0.30.1(svelte@4.0.0):
-    resolution: {integrity: sha512-8EA5mQXBQp11alHbZ76iCoZAiTkCrZHL0GKT3bDbYgw1h4vxnSqNTAwQXDhCq3Sy5q23y+67Z7FghgPgnBNwxQ==}
-    peerDependencies:
-      svelte: '>=3 <5'
-    dependencies:
-      '@floating-ui/core': 1.3.1
-      '@floating-ui/dom': 1.4.5
-      focus-trap: 7.5.2
-      nanoid: 4.0.2
+      '@melt-ui/svelte': 'link:'
       svelte: 4.0.0
     dev: true
 
@@ -7219,6 +7210,7 @@ packages:
     resolution: {integrity: sha512-p6vGNNWLDGwJCiEjkSK6oERj/hEyI9ITsSwIUICBoKLlWiTWXJRfQibCwcoi50rTZdbi87qDtUlMCmQwsGSgPw==}
     dependencies:
       tabbable: 6.2.0
+    dev: false
 
   /for-each@0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
@@ -9490,6 +9482,7 @@ packages:
     resolution: {integrity: sha512-7ZtY5KTCNheRGfEFxnedV5zFiORN1+Y1N6zvPTnHQd8ENUvfaDBeuJDZb2bN/oXwXxu3qkTXDzy57W5vAmDTBw==}
     engines: {node: ^14 || ^16 || >=18}
     hasBin: true
+    dev: false
 
   /natural-compare-lite@1.4.0:
     resolution: {integrity: sha512-Tj+HTDSJJKaZnfiuw+iaF9skdPpTo2GtEly5JHnWV/hfv2Qj/9RKsGISQtLh2ox3l5EAGw487hnBee0sIJ6v2g==}
@@ -11701,6 +11694,7 @@ packages:
 
   /tabbable@6.2.0:
     resolution: {integrity: sha512-Cat63mxsVJlzYvN51JmVXIgNoUokrIaT2zLclCXjRd8boZ0004U4KCs/sToJ75C6sdlByWxpYnb5Boif1VSFew==}
+    dev: false
 
   /tailwind-merge@1.14.0:
     resolution: {integrity: sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ==}
