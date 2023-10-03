@@ -571,7 +571,7 @@ export function createSelect<
 		returned: ($selected) => {
 			return (props: SelectOptionProps<Value>) => {
 				const isSelected = Array.isArray($selected)
-					? $selected.map((o) => o.value).includes(props.value)
+					? $selected.some((o) => deepEqual(o.value, props.value))
 					: deepEqual($selected?.value, props?.value);
 
 				return {
