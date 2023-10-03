@@ -20,7 +20,18 @@ At a high level, the anatomy of a dialog looks like this:
 ```svelte
 <script lang="ts">
 	import { createDialog, melt } from '@melt-ui/svelte'
-	const { trigger, portal, overlay, content, title, description, close, open } = createDialog()
+	const { 
+		elements: {
+			trigger, 
+			portal, 
+			overlay, 
+			content, 
+			title, 
+			description, 
+			close, 
+			open,
+		},
+	} = createDialog();
 </script>
 
 <button use:melt={$trigger}> Open Dialog </button>
@@ -63,9 +74,16 @@ By default, we set the `role` attribute to `dialog`. If you want it to be consid
 dialog, you can set the `role` builder prop to `alertdialog`.
 
 ```ts {2}
-const { trigger, portal, overlay, content } = createDialog({
-	role: 'alertdialog'
-})
+const { 
+	elements: {
+		trigger, 
+		portal, 
+		overlay, 
+		content,
+		},
+	} = createDialog({
+	role: 'alertdialog',
+});
 ```
 
 ### Disable Scroll Prevention
@@ -74,9 +92,16 @@ By default, scrolling is prevented on the body when a dialog is open. You can di
 by setting the `preventScroll` builder prop to `false`.
 
 ```ts {2}
-const { trigger, portal, overlay, content } = createDialog({
-	preventScroll: false
-})
+const { 
+	elements: {
+		trigger, 
+		portal, 
+		overlay, 
+		content,
+		},
+	} = createDialog({
+	preventScroll: false,
+});
 ```
 
 ### Disable Close on Outside Click
@@ -85,9 +110,16 @@ By default, clicking outside of the dialog will close it. You can disable this b
 the `closeOnOutsideClick` builder prop to `false`.
 
 ```ts {2}
-const { trigger, portal, overlay, content } = createDialog({
-	closeOnOutsideClick: false
-})
+const { 
+	elements: {
+		trigger, 
+		portal, 
+		overlay, 
+		content,
+		},
+	} = createDialog({
+	closeOnOutsideClick: false,
+});
 ```
 
 ### Disable Close on Escape
@@ -96,9 +128,16 @@ By default, pressing the escape key will close the dialog. You can disable this 
 the `closeOnEscape` builder prop to `false`.
 
 ```ts {2}
-const { trigger, portal, overlay, content } = createDialog({
-	closeOnEscape: false
-})
+const { 
+	elements: {
+		trigger, 
+		portal, 
+		overlay, 
+		content,
+		},
+	} = createDialog({
+	closeOnEscape: false,
+});
 ```
 
 ## Example Components
