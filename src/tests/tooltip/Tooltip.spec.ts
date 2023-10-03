@@ -1,7 +1,77 @@
-import { render } from '@testing-library/svelte';
+import { render, waitFor } from '@testing-library/svelte';
 import { get, writable } from 'svelte/store';
 import { describe, expect, test } from 'vitest';
 import Tooltip from './Tooltip.svelte';
+
+describe('Tooltip', () => {
+	test('It opens when hovered, and closes when left', () => {
+		const { getByTestId } = render(Tooltip);
+
+		const trigger = getByTestId('trigger');
+		const content = getByTestId('content');
+		expect(content).not.toBeVisible();
+
+		trigger.dispatchEvent(new MouseEvent('mouseenter'));
+		waitFor(() => expect(content).toBeVisible());
+
+		trigger.dispatchEvent(new MouseEvent('mouseleave'));
+		waitFor(() => expect(content).not.toBeVisible());
+	});
+
+	test('It opens when focused, and closes when blurred', () => {
+		const { getByTestId } = render(Tooltip);
+
+		const trigger = getByTestId('trigger');
+		const content = getByTestId('content');
+		expect(content).not.toBeVisible();
+
+		trigger.dispatchEvent(new FocusEvent('focus'));
+		waitFor(() => expect(content).toBeVisible());
+
+		trigger.dispatchEvent(new FocusEvent('blur'));
+		waitFor(() => expect(content).not.toBeVisible());
+	});
+
+	test('When the tooltip was opened by focusing, leaving the trigger does not close it', () => {
+		const { getByTestId } = render(Tooltip);
+
+		const trigger = getByTestId('trigger');
+		const content = getByTestId('content');
+		expect(content).not.toBeVisible();
+
+		trigger.dispatchEvent(new FocusEvent('focus'));
+		waitFor(() => expect(content).toBeVisible());
+
+		trigger.dispatchEvent(new MouseEvent('mouseenter'));
+		waitFor(() => expect(content).toBeVisible());
+
+		trigger.dispatchEvent(new MouseEvent('mouseleave'));
+		waitFor(() => expect(content).toBeVisible());
+
+		trigger.dispatchEvent(new FocusEvent('blur'));
+		waitFor(() => expect(content).not.toBeVisible());
+	});
+
+	test('When the tooltip was opened by pointer, blurring the trigger does not close it', () => {
+		const { getByTestId } = render(Tooltip);
+
+		const trigger = getByTestId('trigger');
+		const content = getByTestId('content');
+		expect(content).not.toBeVisible();
+
+		trigger.dispatchEvent(new MouseEvent('mouseenter'));
+		waitFor(() => expect(content).toBeVisible());
+
+		trigger.dispatchEvent(new FocusEvent('focus'));
+		waitFor(() => expect(content).toBeVisible());
+
+		trigger.dispatchEvent(new FocusEvent('blur'));
+		waitFor(() => expect(content).toBeVisible());
+
+		trigger.dispatchEvent(new MouseEvent('mouseleave'));
+		waitFor(() => expect(content).not.toBeVisible());
+	});
+});
 
 describe('2 tooltips, group=true', () => {
 	test('When a tooltip opens, the other closes', () => {

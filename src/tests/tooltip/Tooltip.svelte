@@ -2,8 +2,9 @@
 	import { createTooltip, melt, type CreateTooltipProps } from '$lib';
 	import type { Writable } from 'svelte/store';
 
-	export let open: Writable<boolean>;
+	export let open: Writable<boolean> | undefined = undefined;
 	export let group: CreateTooltipProps['group'] = undefined;
+	export let closeOnPointerDown: CreateTooltipProps['closeOnPointerDown'] = undefined;
 
 	const {
 		elements: { content, trigger },
@@ -11,13 +12,11 @@
 	} = createTooltip({
 		open,
 		group,
-		// Make sure tests pass even if the default
-		// value changes some day in the future
-		openDelay: 1000,
+		closeOnPointerDown,
 	});
 
 	$: options.group.set(group);
 </script>
 
-<button use:melt={$trigger}>Trigger</button>
-<div use:melt={$content}>Content</div>
+<button use:melt={$trigger} data-testid="trigger">Trigger</button>
+<div use:melt={$content} data-testid="content">Content</div>
