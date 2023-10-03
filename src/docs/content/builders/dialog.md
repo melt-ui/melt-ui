@@ -74,14 +74,7 @@ By default, we set the `role` attribute to `dialog`. If you want it to be consid
 dialog, you can set the `role` builder prop to `alertdialog`.
 
 ```ts {2}
-const { 
-	elements: {
-		trigger, 
-		portal, 
-		overlay, 
-		content,
-		},
-	} = createDialog({
+const { /* ... */ } = createDialog({
 	role: 'alertdialog',
 });
 ```
@@ -92,14 +85,7 @@ By default, scrolling is prevented on the body when a dialog is open. You can di
 by setting the `preventScroll` builder prop to `false`.
 
 ```ts {2}
-const { 
-	elements: {
-		trigger, 
-		portal, 
-		overlay, 
-		content,
-		},
-	} = createDialog({
+const { /* ... */ } = createDialog({
 	preventScroll: false,
 });
 ```
@@ -110,14 +96,7 @@ By default, clicking outside of the dialog will close it. You can disable this b
 the `closeOnOutsideClick` builder prop to `false`.
 
 ```ts {2}
-const { 
-	elements: {
-		trigger, 
-		portal, 
-		overlay, 
-		content,
-		},
-	} = createDialog({
+const { /* ... */ } = createDialog({
 	closeOnOutsideClick: false,
 });
 ```
@@ -128,14 +107,7 @@ By default, pressing the escape key will close the dialog. You can disable this 
 the `closeOnEscape` builder prop to `false`.
 
 ```ts {2}
-const { 
-	elements: {
-		trigger, 
-		portal, 
-		overlay, 
-		content,
-		},
-	} = createDialog({
+const { /* ... */ } = createDialog({
 	closeOnEscape: false,
 });
 ```

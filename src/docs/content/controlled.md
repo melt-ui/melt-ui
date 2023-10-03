@@ -46,16 +46,9 @@ interaction.
 	import { writable } from 'svelte/store'
 
 	const {
-		elements: { 
-			trigger, 
-			overlay, 
-			content, 
-			title, 
-			description, 
-			close,
-		},
-		states: { open },
-	} = createDialog();
+		elements: { trigger, overlay, content, title, description, close },
+		states: { open }
+	} = createDialog()
 
 	open.set(true)
 </script>
@@ -76,17 +69,10 @@ It's as simple as passing your own `open` store to the `createDialog` builder.
 	const customOpen = writable(false)
 
 	const {
-		elements: { 
-			trigger, 
-			overlay, 
-			content, 
-			title, 
-			description, 
-			close, 
-		},
+		elements: { trigger, overlay, content, title, description, close }
 	} = createDialog({
-		open: customOpen,
-	});
+		open: customOpen
+	})
 </script>
 ```
 
@@ -133,17 +119,10 @@ store from being set to `true` based on some arbitrary condition.
 	}
 
 	const {
-		elements: { 
-			trigger, 
-			overlay, 
-			content, 
-			title, 
-			description, 
-			close,
-		},
+		elements: { trigger, overlay, content, title, description, close }
 	} = createDialog({
-		onOpenChange: handleOpen,
-	});
+		onOpenChange: handleOpen
+	})
 </script>
 ```
 
