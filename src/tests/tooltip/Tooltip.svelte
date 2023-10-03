@@ -4,7 +4,7 @@
 
 	export let open: Writable<boolean> | undefined = undefined;
 	export let group: CreateTooltipProps['group'] = undefined;
-	export let closeOnPointerDown: CreateTooltipProps['closeOnPointerDown'] = undefined;
+	export let closeOnPointerDown: CreateTooltipProps['closeOnPointerDown'] = false;
 
 	const {
 		elements: { content, trigger },
@@ -13,6 +13,8 @@
 		open,
 		group,
 		closeOnPointerDown,
+		openDelay: 0,
+		closeDelay: 0,
 	});
 
 	$: options.group.set(group);

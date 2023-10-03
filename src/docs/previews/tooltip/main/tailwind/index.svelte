@@ -10,7 +10,8 @@
 		positioning: {
 			placement: 'top',
 		},
-		openDelay: 500,
+		openDelay: 0,
+		closeDelay: 0,
 		closeOnPointerDown: false,
 		forceVisible: true,
 	});
