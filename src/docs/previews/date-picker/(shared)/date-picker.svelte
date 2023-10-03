@@ -12,7 +12,7 @@
 
 	export let disabled: Matcher | Matcher[] = false;
 	export let defaultFocusedValue: CreateDatePickerProps['defaultFocusedValue'] = new Date();
-	export let defaultValue: CreateDatePickerProps['defaultValue'] = undefined;
+	export let defaultValue: CreateDatePickerProps['defaultValue'] = undefined
 	export let numberOfMonths: CreateDatePickerProps['numberOfMonths'] = 1;
 	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = false;
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = 0;

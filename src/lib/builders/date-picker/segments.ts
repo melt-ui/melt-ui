@@ -7,6 +7,7 @@ import {
 	isHTMLElement,
 	kbd,
 	styleToString,
+	withSideEffect,
 } from '$lib/internal/helpers/index.js';
 import dayjs from 'dayjs';
 import type { _DatePickerParts, _DatePickerIds, _DatePickerStores } from './create.js';
@@ -39,46 +40,46 @@ type CreateSegmentProps = {
 	};
 };
 
+const segmentKeys = ['day', 'month', 'year', 'hour', 'minute', 'second'] as const;
+
+type SegmentKeys = (typeof segmentKeys)[number];
+
+type SegmentState = {
+	lastKeyZero: boolean;
+	hasLeftFocus: boolean;
+	hasInitialized: boolean;
+	hasTouched: boolean;
+};
+
+type SegmentStates = {
+	[K in SegmentKeys]: SegmentState;
+};
+
 export function createSegments(props: CreateSegmentProps) {
 	const { stores, ids, options } = props;
-	const lastKeyZero = {
-		day: false,
-		month: false,
-		year: false,
-		hour: false,
-		minute: false,
-		second: false,
-	};
 
-	const hasLeftFocus = {
-		day: false,
-		month: false,
-		year: false,
-		hour: false,
-		minute: false,
-		second: false,
-	};
-
-	const hasInitialized = {
-		day: false,
-		month: false,
-		year: false,
-		hour: false,
-		minute: false,
-		second: false,
-	};
-
-	const hasTouched = {
-		day: false,
-		month: false,
-		year: false,
-		hour: false,
-		minute: false,
-		second: false,
-	};
+	/**
+	 * State for each segment used to better handle certain
+	 * events and key presses within each segment.
+	 */
+	const states = segmentKeys.reduce((acc, key) => {
+		acc[key] = {
+			lastKeyZero: false,
+			hasLeftFocus: false,
+			hasInitialized: false,
+			hasTouched: false,
+		};
+		return acc;
+	}, {} as SegmentStates);
 
 	const { focusedValue, value } = stores;
 	const { hourCycle } = options;
+
+	function displayValueSideEffect(newValue: Date | undefined) {
+		value.set(newValue);
+	}
+
+	const displayValue = withSideEffect<Date | undefined>(get(value), displayValueSideEffect);
 
 	type NumOrNull = number | null;
 
@@ -111,7 +112,7 @@ export function createSegments(props: CreateSegmentProps) {
 		action: (node: HTMLElement) => {
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'keydown', handleDaySegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (hasLeftFocus.day = true))
+				addMeltEventListener(node, 'focusout', () => (states.day.hasLeftFocus = true))
 			);
 
 			return {
@@ -146,7 +147,7 @@ export function createSegments(props: CreateSegmentProps) {
 		action: (node: HTMLElement) => {
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'keydown', handleMonthSegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (hasLeftFocus.month = true))
+				addMeltEventListener(node, 'focusout', () => (states.month.hasLeftFocus = true))
 			);
 
 			return {
@@ -179,7 +180,7 @@ export function createSegments(props: CreateSegmentProps) {
 		action: (node: HTMLElement) => {
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'keydown', handleYearSegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (hasLeftFocus.year = true))
+				addMeltEventListener(node, 'focusout', () => (states.year.hasLeftFocus = true))
 			);
 
 			return {
@@ -210,7 +211,7 @@ export function createSegments(props: CreateSegmentProps) {
 		action: (node: HTMLElement) => {
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'keydown', handleHourSegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (hasLeftFocus.hour = true))
+				addMeltEventListener(node, 'focusout', () => (states.hour.hasLeftFocus = true))
 			);
 
 			return {
@@ -241,7 +242,7 @@ export function createSegments(props: CreateSegmentProps) {
 		action: (node: HTMLElement) => {
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'keydown', handleMinuteSegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (hasLeftFocus.minute = true))
+				addMeltEventListener(node, 'focusout', () => (states.minute.hasLeftFocus = true))
 			);
 
 			return {
@@ -272,7 +273,7 @@ export function createSegments(props: CreateSegmentProps) {
 		action: (node: HTMLElement) => {
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'keydown', handleSecondSegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (hasLeftFocus.second = true))
+				addMeltEventListener(node, 'focusout', () => (states.second.hasLeftFocus = true))
 			);
 
 			return {
@@ -359,9 +360,9 @@ export function createSegments(props: CreateSegmentProps) {
 				 * `prev` value so that we can start the segment over again
 				 * when the user types a number.
 				 */
-				if (hasLeftFocus.day) {
+				if (states.day.hasLeftFocus) {
 					prev = null;
-					hasLeftFocus.day = false;
+					states.day.hasLeftFocus = false;
 				}
 
 				if (prev === null) {
@@ -371,7 +372,7 @@ export function createSegments(props: CreateSegmentProps) {
 					 * number, we can move to the next segment.
 					 */
 					if (num === 0) {
-						lastKeyZero.day = true;
+						states.day.lastKeyZero = true;
 						return null;
 					}
 
@@ -381,7 +382,7 @@ export function createSegments(props: CreateSegmentProps) {
 					 * we want to move to the next segment, since it's not possible
 					 * to continue typing a valid number in this segment.
 					 */
-					if (lastKeyZero.day || num > maxStart) {
+					if (states.day.lastKeyZero || num > maxStart) {
 						moveToNext = true;
 						return num;
 					}
@@ -455,7 +456,7 @@ export function createSegments(props: CreateSegmentProps) {
 			return;
 		}
 
-		hasTouched.month = true;
+		states.month.hasTouched = true;
 
 		const min = 1;
 		const max = 12;
@@ -488,9 +489,9 @@ export function createSegments(props: CreateSegmentProps) {
 				 * `prev` value so that we can start the segment over again
 				 * when the user types a number.
 				 */
-				if (hasLeftFocus.month) {
+				if (states.month.hasLeftFocus) {
 					prev = null;
-					hasLeftFocus.month = false;
+					states.month.hasLeftFocus = false;
 				}
 
 				if (prev === null) {
@@ -500,7 +501,7 @@ export function createSegments(props: CreateSegmentProps) {
 					 * number, we can move to the next segment.
 					 */
 					if (num === 0) {
-						lastKeyZero.month = true;
+						states.month.lastKeyZero = true;
 						return null;
 					}
 
@@ -510,7 +511,7 @@ export function createSegments(props: CreateSegmentProps) {
 					 * we want to move to the next segment, since it's not possible
 					 * to continue typing a valid number in this segment.
 					 */
-					if (lastKeyZero.month || num > maxStart) {
+					if (states.month.lastKeyZero || num > maxStart) {
 						moveToNext = true;
 						return num;
 					}
@@ -555,7 +556,7 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 
 		if (e.key === kbd.BACKSPACE) {
-			hasLeftFocus.month = false;
+			states.month.hasLeftFocus = false;
 			monthValue.update((prev) => {
 				if (prev === null) return null;
 				const str = prev.toString();
@@ -581,7 +582,7 @@ export function createSegments(props: CreateSegmentProps) {
 			return;
 		}
 
-		hasTouched.year = true;
+		states.year.hasTouched = true;
 
 		const min = 0;
 		const currentYear = dayjs(new Date()).year();
@@ -607,9 +608,9 @@ export function createSegments(props: CreateSegmentProps) {
 			let moveToNext = false;
 			const num = parseInt(e.key);
 			yearValue.update((prev) => {
-				if (hasLeftFocus.year) {
+				if (states.year.hasLeftFocus) {
 					prev = null;
-					hasLeftFocus.year = false;
+					states.year.hasLeftFocus = false;
 				}
 
 				if (prev === null) {
@@ -658,7 +659,7 @@ export function createSegments(props: CreateSegmentProps) {
 			return;
 		}
 
-		hasTouched.hour = true;
+		states.hour.hasTouched = true;
 
 		const min = get(hourCycle) === 12 ? 1 : 0;
 		const max = get(hourCycle) === 12 ? 12 : 23;
@@ -691,9 +692,9 @@ export function createSegments(props: CreateSegmentProps) {
 				 * `prev` value so that we can start the segment over again
 				 * when the user types a number.
 				 */
-				if (hasLeftFocus.hour) {
+				if (states.hour.hasLeftFocus) {
 					prev = null;
-					hasLeftFocus.hour = false;
+					states.hour.hasLeftFocus = false;
 				}
 
 				if (prev === null) {
@@ -703,7 +704,7 @@ export function createSegments(props: CreateSegmentProps) {
 					 * number, we can move to the next segment.
 					 */
 					if (num === 0) {
-						lastKeyZero.hour = true;
+						states.hour.lastKeyZero = true;
 						return null;
 					}
 
@@ -713,7 +714,7 @@ export function createSegments(props: CreateSegmentProps) {
 					 * to the next segment, since it's not possible to continue
 					 * typing a valid number in this segment.
 					 */
-					if (lastKeyZero.hour || num > maxStart) {
+					if (states.hour.lastKeyZero || num > maxStart) {
 						moveToNext = true;
 						return num;
 					}
@@ -757,7 +758,7 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 
 		if (e.key === kbd.BACKSPACE) {
-			hasLeftFocus.hour = false;
+			states.hour.hasLeftFocus = false;
 			hourValue.update((prev) => {
 				if (prev === null) return null;
 				const str = prev.toString();
@@ -784,7 +785,7 @@ export function createSegments(props: CreateSegmentProps) {
 			return;
 		}
 
-		hasTouched.minute = true;
+		states.minute.hasTouched = true;
 
 		const min = 0;
 		const max = 59;
@@ -817,9 +818,9 @@ export function createSegments(props: CreateSegmentProps) {
 				 * `prev` value so that we can start the segment over again
 				 * when the user types a number.
 				 */
-				if (hasLeftFocus.minute) {
+				if (states.minute.hasLeftFocus) {
 					prev = null;
-					hasLeftFocus.minute = false;
+					states.minute.hasLeftFocus = false;
 				}
 
 				if (prev === null) {
@@ -829,7 +830,7 @@ export function createSegments(props: CreateSegmentProps) {
 					 * number, we can move to the next segment.
 					 */
 					if (num === 0) {
-						lastKeyZero.minute = true;
+						states.minute.lastKeyZero = true;
 						return null;
 					}
 
@@ -839,7 +840,7 @@ export function createSegments(props: CreateSegmentProps) {
 					 * to the next segment, since it's not possible to continue
 					 * typing a valid number in this segment.
 					 */
-					if (lastKeyZero.minute || num > maxStart) {
+					if (states.minute.lastKeyZero || num > maxStart) {
 						moveToNext = true;
 						return num;
 					}
@@ -883,7 +884,7 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 
 		if (e.key === kbd.BACKSPACE) {
-			hasLeftFocus.minute = false;
+			states.minute.hasLeftFocus = false;
 			minuteValue.update((prev) => {
 				if (prev === null) return null;
 				const str = prev.toString();
@@ -909,7 +910,7 @@ export function createSegments(props: CreateSegmentProps) {
 			return;
 		}
 
-		hasTouched.second = true;
+		states.second.hasTouched = true;
 
 		const min = 0;
 		const max = 59;
@@ -942,9 +943,9 @@ export function createSegments(props: CreateSegmentProps) {
 				 * `prev` value so that we can start the segment over again
 				 * when the user types a number.
 				 */
-				if (hasLeftFocus.second) {
+				if (states.second.hasLeftFocus) {
 					prev = null;
-					hasLeftFocus.second = false;
+					states.second.hasLeftFocus = false;
 				}
 
 				if (prev === null) {
@@ -954,7 +955,7 @@ export function createSegments(props: CreateSegmentProps) {
 					 * number, we can move to the next segment.
 					 */
 					if (num === 0) {
-						lastKeyZero.second = true;
+						states.second.lastKeyZero = true;
 						return null;
 					}
 
@@ -964,7 +965,7 @@ export function createSegments(props: CreateSegmentProps) {
 					 * to the next segment, since it's not possible to continue
 					 * typing a valid number in this segment.
 					 */
-					if (lastKeyZero.second || num > maxStart) {
+					if (states.second.lastKeyZero || num > maxStart) {
 						moveToNext = true;
 						return num;
 					}
@@ -1008,7 +1009,7 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 
 		if (e.key === kbd.BACKSPACE) {
-			hasLeftFocus.second = false;
+			states.second.hasLeftFocus = false;
 			secondValue.update((prev) => {
 				if (prev === null) return null;
 				const str = prev.toString();
@@ -1050,7 +1051,7 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 
 		if (e.key === kbd.BACKSPACE) {
-			hasLeftFocus.second = false;
+			states.second.hasLeftFocus = false;
 			dayPeriodValue.update(() => 'AM');
 		}
 
@@ -1070,96 +1071,96 @@ export function createSegments(props: CreateSegmentProps) {
 		if ($value === undefined) return;
 		const djs = dayjs($value);
 
-		if (get(dayValue) !== djs.date() && hasTouched.day) {
+		if (get(dayValue) !== djs.date()) {
 			dayValue.set(djs.date());
 		}
-		if (get(monthValue) !== djs.month() + 1 && hasTouched.month) {
+		if (get(monthValue) !== djs.month() + 1) {
 			monthValue.set(djs.month() + 1);
 		}
-		if (get(yearValue) !== djs.year() && hasTouched.year) {
+		if (get(yearValue) !== djs.year()) {
 			yearValue.set(djs.year());
 		}
-		if (get(hourValue) !== djs.hour() && hasTouched.hour) {
+		if (get(hourValue) !== djs.hour()) {
 			hourValue.set(djs.hour());
 		}
-		if (get(minuteValue) !== djs.minute() && hasTouched.minute) {
+		if (get(minuteValue) !== djs.minute()) {
 			minuteValue.set(djs.minute());
 		}
-		if (get(secondValue) !== djs.second() && hasTouched.second) {
+		if (get(secondValue) !== djs.second()) {
 			secondValue.set(djs.second());
 		}
 	});
 
 	effect([dayValue], ([$dayValue]) => {
 		const $value = get(value);
-		if ($value === undefined && !hasInitialized.day) {
-			hasInitialized.day = true;
+		if ($value === undefined && !states.day.hasInitialized) {
+			states.day.hasInitialized = true;
 			return;
 		}
 		const djs = dayjs($value);
 
 		if ($dayValue !== djs.date()) {
-			value.set(djs.date($dayValue ? $dayValue : 1).toDate());
+			displayValue.set(djs.date($dayValue ? $dayValue : 1).toDate());
 		}
 	});
 
 	effect([monthValue], ([$monthValue]) => {
 		const $value = get(value);
-		if ($value === undefined && !hasInitialized.month) {
-			hasInitialized.month = true;
+		if ($value === undefined && !states.month.hasInitialized) {
+			states.month.hasInitialized = true;
 			return;
 		}
 		const djs = dayjs($value);
 		if ($monthValue !== djs.month() + 1) {
-			value.set(djs.month($monthValue ? $monthValue - 1 : 0).toDate());
+			displayValue.set(djs.month($monthValue ? $monthValue - 1 : 0).toDate());
 		}
 	});
 
 	effect([yearValue], ([$yearValue]) => {
 		const $value = get(value);
-		if ($value === undefined && !hasInitialized.year) {
-			hasInitialized.year = true;
+		if ($value === undefined && !states.year.hasInitialized) {
+			states.year.hasInitialized = true;
 			return;
 		}
 		const djs = dayjs($value);
 		if ($yearValue !== djs.year()) {
-			value.set(djs.year($yearValue ? $yearValue : 0).toDate());
+			displayValue.set(djs.year($yearValue ? $yearValue : 0).toDate());
 		}
 	});
 
 	effect([hourValue], ([$hourValue]) => {
 		const $value = get(value);
-		if ($value === undefined && !hasInitialized.hour) {
-			hasInitialized.hour = true;
+		if ($value === undefined && !states.hour.hasInitialized) {
+			states.hour.hasInitialized = true;
 			return;
 		}
 		const djs = dayjs($value);
 		if ($hourValue !== djs.hour()) {
-			value.set(djs.hour($hourValue ? $hourValue : 0).toDate());
+			displayValue.set(djs.hour($hourValue ? $hourValue : 0).toDate());
 		}
 	});
 
 	effect([minuteValue], ([$minuteValue]) => {
 		const $value = get(value);
-		if ($value === undefined && !hasInitialized.minute) {
-			hasInitialized.minute = true;
+		if ($value === undefined && !states.minute.hasInitialized) {
+			states.minute.hasInitialized = true;
 			return;
 		}
 		const djs = dayjs($value);
 		if ($minuteValue !== djs.minute()) {
-			value.set(djs.minute($minuteValue ? $minuteValue : 0).toDate());
+			displayValue.set(djs.minute($minuteValue ? $minuteValue : 0).toDate());
 		}
 	});
 
 	effect([secondValue], ([$secondValue]) => {
 		const $value = get(value);
-		if ($value === undefined && !hasInitialized.second) {
-			hasInitialized.second = true;
+		if ($value === undefined && !states.second.hasInitialized) {
+			states.second.hasInitialized = true;
 			return;
 		}
 		const djs = dayjs($value);
 		if ($secondValue !== djs.second()) {
-			value.set(djs.second($secondValue ? $secondValue : 0).toDate());
+			displayValue.set(djs.second($secondValue ? $secondValue : 0).toDate());
 		}
 	});
 
