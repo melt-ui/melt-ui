@@ -558,7 +558,9 @@ export function createSelect<
 			const $multiple = get(multiple);
 			if ($multiple) {
 				const optionArr = Array.isArray($option) ? $option : [];
-				return toggle(newOption, optionArr) as S;
+				return toggle(newOption, optionArr, (itemA, itemB) =>
+					deepEqual(itemA.value, itemB.value)
+				) as S;
 			}
 			return newOption as S;
 		});
