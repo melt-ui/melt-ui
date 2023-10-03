@@ -61,7 +61,6 @@
 	"dependencies": {
 		"@floating-ui/core": "^1.3.1",
 		"@floating-ui/dom": "^1.4.5",
-		"@melt-ui/svelte": "link:",
 		"dequal": "^2.0.3",
 		"focus-trap": "^7.5.2",
 		"nanoid": "^4.0.2"

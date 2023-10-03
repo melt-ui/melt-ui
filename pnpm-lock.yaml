@@ -11,9 +11,6 @@ dependencies:
   '@floating-ui/dom':
     specifier: ^1.4.5
     version: 1.4.5
-  '@melt-ui/svelte':
-    specifier: 'link:'
-    version: 'link:'
   dequal:
     specifier: ^2.0.3
     version: 2.0.3
@@ -42,7 +39,7 @@ devDependencies:
     version: 1.1.57
   '@melt-ui/pp':
     specifier: 0.1.0
-    version: 0.1.0(@melt-ui/svelte@)(svelte@4.0.0)
+    version: 0.1.0(@melt-ui/svelte@0.30.1)(svelte@4.0.0)
   '@playwright/test':
     specifier: ^1.36.0
     version: 1.36.0
@@ -2357,14 +2354,14 @@ packages:
       react: 18.2.0
     dev: true
 
-  /@melt-ui/pp@0.1.0(@melt-ui/svelte@)(svelte@4.0.0):
+  /@melt-ui/pp@0.1.0(@melt-ui/svelte@0.30.1)(svelte@4.0.0):
     resolution: {integrity: sha512-GbzqhLDjfxh3BwC0It7kVUHvx05f+IdBad+mXWMO76xgfdqBkAO/pS6Q+tAEntKglQvxXugV3gHAyEJgSI0AlA==}
     engines: {pnpm: '>=8.6.3'}
     peerDependencies:
       '@melt-ui/svelte': '>= 0.29.0'
       svelte: ^3.55.0 || ^4.0.0
     dependencies:
-      '@melt-ui/svelte': 'link:'
+      '@melt-ui/svelte': 0.30.1(svelte@4.0.0)
       svelte: 4.0.0
     dev: true
 
