@@ -55,6 +55,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 		returned: ([$disabled, $orientation]) => {
 			return {
 				disabled: disabledAttr($disabled),
+                'aria-disabled': $disabled ? 'true' : 'false',
 				'data-orientation': $orientation,
 				style: $disabled ? undefined : 'touch-action: none;',
 				'data-melt-id': ids.root,
