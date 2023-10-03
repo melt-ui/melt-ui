@@ -7,12 +7,11 @@ import {
 	isHTMLElement,
 	kbd,
 	styleToString,
-	withSideEffect,
 } from '$lib/internal/helpers/index.js';
 import dayjs from 'dayjs';
 import type { _DatePickerParts, _DatePickerIds, _DatePickerStores } from './create.js';
-import { get, writable, type Writable } from 'svelte/store';
-import { isSameDay } from '../calendar/utils.js';
+import { get, writable, type Updater, type Writable } from 'svelte/store';
+import type { Action } from 'svelte/action';
 
 const { name } = createElHelpers<_DatePickerParts>('calendar');
 
@@ -27,7 +26,6 @@ const segmentDefaults = {
 	inputmode: 'numeric',
 	autocorrect: 'off',
 	enterkeyhint: 'next',
-	'data-segment': '',
 	style: styleToString({
 		'caret-color': 'transparent',
 	}),
@@ -41,9 +39,9 @@ type CreateSegmentProps = {
 	};
 };
 
-const segmentKeys = ['day', 'month', 'year', 'hour', 'minute', 'second'] as const;
+const segmentParts = ['date', 'month', 'year', 'hour', 'minute', 'second'] as const;
 
-type SegmentKeys = (typeof segmentKeys)[number];
+type SegmentPart = (typeof segmentParts)[number];
 
 type SegmentState = {
 	lastKeyZero: boolean;
@@ -52,8 +50,10 @@ type SegmentState = {
 	hasTouched: boolean;
 };
 
+type SegmentValueObj = Record<SegmentPart, number | null>;
+
 type SegmentStates = {
-	[K in SegmentKeys]: SegmentState;
+	[K in SegmentPart]: SegmentState;
 };
 
 export function createSegments(props: CreateSegmentProps) {
@@ -63,7 +63,7 @@ export function createSegments(props: CreateSegmentProps) {
 	 * State for each segment used to better handle certain
 	 * events and key presses within each segment.
 	 */
-	const states = segmentKeys.reduce((acc, key) => {
+	const states = segmentParts.reduce((acc, key) => {
 		acc[key] = {
 			lastKeyZero: false,
 			hasLeftFocus: false,
@@ -76,259 +76,197 @@ export function createSegments(props: CreateSegmentProps) {
 	const { focusedValue, value } = stores;
 	const { hourCycle } = options;
 
-	const displayValue = withSideEffect<Date | undefined>(get(value), displayValueSideEffect);
+	const initialSegments = Object.fromEntries(
+		segmentParts.map((part) => [part, null])
+	) as SegmentValueObj;
 
-	type NumOrNull = number | null;
-
-	const initDjs = get(value) ? dayjs(get(value)) : null;
-
-	const dayValue = writable<NumOrNull>(initDjs ? initDjs.date() : null);
-	const monthValue = writable<NumOrNull>(initDjs ? initDjs.month() + 1 : null);
-	const yearValue = writable<NumOrNull>(initDjs ? initDjs.year() : null);
-	const hourValue = writable<NumOrNull>(initDjs ? initDjs.hour() : null);
-	const minuteValue = writable<NumOrNull>(initDjs ? initDjs.minute() : null);
-	const secondValue = writable<NumOrNull>(initDjs ? initDjs.second() : null);
+	const segmentValues = writable(structuredClone(initialSegments));
 	const dayPeriodValue = writable<'AM' | 'PM'>('AM');
 
-	function displayValueSideEffect(newValue: Date | undefined) {
-		value.set(newValue);
-		const djs = newValue ? dayjs(newValue) : null;
-		dayValue.set(djs ? djs.date() : null);
-		monthValue.set(djs ? djs.month() + 1 : null);
-		yearValue.set(djs ? djs.year() : null);
-		hourValue.set(djs ? djs.hour() : null);
-		minuteValue.set(djs ? djs.minute() : null);
-		secondValue.set(djs ? djs.second() : null);
+	/**
+	 * Syncs the segment values with the `value` store.
+	 */
+	function syncSegmentValues(value: Date) {
+		const djs = dayjs(value);
+		segmentValues.set(
+			Object.fromEntries(
+				segmentParts.map((part) => [part, part === 'month' ? djs.get(part) + 1 : djs.get(part)])
+			) as SegmentValueObj
+		);
 	}
 
-	const daySegment = builder(name('day-segment'), {
-		stores: [focusedValue, dayValue],
-		returned: ([$focusedValue, $dayValue]) => {
-			const activeDay = dayjs($focusedValue).date();
-			const valueMin = 1;
-			const valueMax = dayjs($focusedValue).daysInMonth();
+	/**
+	 * Get the segments being used/ are rendered in the DOM.
+	 */
+	function getUsedSegments() {
+		const segmentRoot = document.getElementById(ids.input);
+		if (!segmentRoot) return [];
+		const segmentEls = Array.from(segmentRoot.querySelectorAll('[data-segment]'))
+			.filter((el): el is HTMLElement => isHTMLElement(el))
+			.map((el) => {
+				return el.dataset.segment;
+			});
+		return segmentEls.filter((part): part is SegmentPart => {
+			return segmentParts.includes(part as SegmentPart);
+		});
+	}
 
-			return {
-				...segmentDefaults,
-				id: ids.daySegment,
-				'aria-label': 'day, ',
-				'aria-valuemin': valueMin,
-				'aria-valuemax': valueMax,
-				'aria-valuenow': $dayValue ?? activeDay,
-				'aria-valuetext': $dayValue ?? 'Empty',
-				'data-type': 'day',
-			};
-		},
-		action: (node: HTMLElement) => {
-			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'keydown', handleDaySegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (states.day.hasLeftFocus = true))
-			);
+	function getPartFromNode(node: HTMLElement) {
+		const part = node.dataset.segment;
+		if (!part) return null;
+		return part as SegmentPart;
+	}
 
-			return {
-				destroy() {
-					unsubEvents();
-				},
-			};
-		},
-	});
+	function setValueFromSegments(segmentObj: SegmentValueObj) {
+		const usedSegments = getUsedSegments();
+		let djs = dayjs();
+		usedSegments.forEach((part) => {
+			const value = segmentObj[part];
+			if (value === null) return;
+			djs = djs.set(part, part === 'month' ? value - 1 : value);
+		});
 
-	const monthSegment = builder(name('month-segment'), {
-		stores: [focusedValue, monthValue],
-		returned: ([$focusedValue, $monthValue]) => {
-			const valueMin = 1;
-			const valueMax = 12;
-			const activeDjs = dayjs($focusedValue);
-			const activeMonth = activeDjs.month();
-			const activeMonthString = activeDjs.format('MMMM');
-
-			return {
-				...segmentDefaults,
-				id: ids.monthSegment,
-				'aria-label': 'month, ',
-				contenteditable: true,
-				'aria-valuemin': valueMin,
-				'aria-valuemax': valueMax,
-				'aria-valuenow': $monthValue ?? `${activeMonth + 1} - ${activeMonthString}`,
-				'aria-valuetext': $monthValue ?? 'Empty',
-				'data-type': 'month',
-			};
-		},
-		action: (node: HTMLElement) => {
-			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'keydown', handleMonthSegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (states.month.hasLeftFocus = true))
-			);
-
-			return {
-				destroy() {
-					unsubEvents();
-				},
-			};
-		},
-	});
-
-	const yearSegment = builder(name('year-segment'), {
-		stores: [yearValue],
-		returned: ([$yearValue]) => {
-			const valueMin = 1;
-			const valueMax = 9999;
-
-			const currentYear = dayjs(new Date()).year();
-
-			return {
-				...segmentDefaults,
-				id: ids.yearSegment,
-				'aria-label': 'year, ',
-				'aria-valuemin': valueMin,
-				'aria-valuemax': valueMax,
-				'aria-valuenow': $yearValue ?? `${currentYear}`,
-				'aria-valuetext': $yearValue ?? 'Empty',
-				'data-type': 'year',
-			};
-		},
-		action: (node: HTMLElement) => {
-			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'keydown', handleYearSegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (states.year.hasLeftFocus = true))
-			);
-
-			return {
-				destroy() {
-					unsubEvents();
-				},
-			};
-		},
-	});
-
-	const hourSegment = builder(name('hour-segment'), {
-		stores: [hourValue, hourCycle],
-		returned: ([$hourValue, $hourCycle]) => {
-			const valueMin = $hourCycle === 12 ? 1 : 0;
-			const valueMax = $hourCycle === 12 ? 12 : 23;
-
-			return {
-				...segmentDefaults,
-				id: ids.hourSegment,
-				'aria-label': 'hour, ',
-				'aria-valuemin': valueMin,
-				'aria-valuemax': valueMax,
-				'aria-valuenow': $hourValue ?? `${valueMin}`,
-				'aria-valuetext': $hourValue ?? 'Empty',
-				'data-type': 'hour',
-			};
-		},
-		action: (node: HTMLElement) => {
-			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'keydown', handleHourSegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (states.hour.hasLeftFocus = true))
-			);
-
-			return {
-				destroy() {
-					unsubEvents();
-				},
-			};
-		},
-	});
-
-	const minuteSegment = builder(name('minute-segment'), {
-		stores: [minuteValue],
-		returned: ([$minuteValue]) => {
-			const valueMin = 0;
-			const valueMax = 59;
-
-			return {
-				...segmentDefaults,
-				id: ids.minuteSegment,
-				'aria-label': 'minute, ',
-				'aria-valuemin': valueMin,
-				'aria-valuemax': valueMax,
-				'aria-valuenow': $minuteValue ?? `${valueMin}`,
-				'aria-valuetext': $minuteValue ?? 'Empty',
-				'data-type': 'minute',
-			};
-		},
-		action: (node: HTMLElement) => {
-			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'keydown', handleMinuteSegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (states.minute.hasLeftFocus = true))
-			);
-
-			return {
-				destroy() {
-					unsubEvents();
-				},
-			};
-		},
-	});
-
-	const secondSegment = builder(name('minute-segment'), {
-		stores: [secondValue],
-		returned: ([$secondValue]) => {
-			const valueMin = 0;
-			const valueMax = 59;
-
-			return {
-				...segmentDefaults,
-				id: ids.secondSegment,
-				'aria-label': 'second, ',
-				'aria-valuemin': valueMin,
-				'aria-valuemax': valueMax,
-				'aria-valuenow': $secondValue ?? `${valueMin}`,
-				'aria-valuetext': $secondValue ?? 'Empty',
-				'data-type': 'second',
-			};
-		},
-		action: (node: HTMLElement) => {
-			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'keydown', handleSecondSegmentKeydown),
-				addMeltEventListener(node, 'focusout', () => (states.second.hasLeftFocus = true))
-			);
-
-			return {
-				destroy() {
-					unsubEvents();
-				},
-			};
-		},
-	});
-
-	const dayPeriodSegment = builder(name('dayPeriod-segment'), {
-		stores: [dayPeriodValue],
-		returned: ([$dayPeriodValue]) => {
-			const valueMin = 0;
-			const valueMax = 12;
-
-			return {
-				...segmentDefaults,
-				inputmode: 'text',
-				id: ids.secondSegment,
-				'aria-label': 'AM/PM',
-				'aria-valuemin': valueMin,
-				'aria-valuemax': valueMax,
-				'aria-valuenow': $dayPeriodValue ?? `${valueMin}`,
-				'aria-valuetext': $dayPeriodValue ?? 'AM',
-				'data-type': 'second',
-			};
-		},
-		action: (node: HTMLElement) => {
-			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'keydown', handleDayPeriodSegmentKeydown)
-			);
-
-			return {
-				destroy() {
-					unsubEvents();
-				},
-			};
-		},
-	});
+		return value.set(djs.toDate());
+	}
 
 	/**
-	 * The event handler responsible for handling keydown events
-	 * on the day segment.
+	 *
 	 */
+	function areAllSegmentsFilled() {
+		const usedSegments = getUsedSegments();
+		const $segmentValues = get(segmentValues);
+		return usedSegments.every((part) => $segmentValues[part] !== null);
+	}
+
+	function updateSegment(part: SegmentPart, cb: Updater<number | null>) {
+		segmentValues.update((prev) => {
+			const prevSegment = prev[part];
+			return {
+				...prev,
+				[part]: prevSegment === null ? 0 : cb(prevSegment),
+			};
+		});
+		const $segmentValues = get(segmentValues);
+		if (areAllSegmentsFilled()) {
+			setValueFromSegments($segmentValues);
+		}
+	}
+
+	const segmentBuilders: SegmentBuilders = {
+		date: {
+			attrs: daySegmentAttrs,
+			action: daySegmentAction,
+		},
+		month: {
+			attrs: monthSegmentAttrs,
+			action: monthSegmentAction,
+		},
+		year: {
+			attrs: yearSegmentAttrs,
+			action: yearSegmentAction,
+		},
+		hour: {
+			attrs: hourSegmentAttrs,
+			action: hourSegmentAction,
+		},
+		minute: {
+			attrs: minuteSegmentAttrs,
+			action: minuteSegmentAction,
+		},
+		second: {
+			attrs: secondSegmentAttrs,
+			action: secondSegmentAction,
+		},
+	};
+
+	effect(value, ($value) => {
+		if ($value) {
+			syncSegmentValues($value);
+		} else {
+			segmentValues.set(structuredClone(initialSegments));
+		}
+	});
+
+	const segment = builder(name('segment'), {
+		stores: [focusedValue, segmentValues, hourCycle],
+		returned: ([$focusedValue, $segmentValues, $hourCycle]) => {
+			const props = {
+				$focusedValue,
+				$segmentValues,
+				$hourCycle,
+			};
+			return (part: SegmentPart) => getSegmentAttrs(part, props);
+		},
+		action: (node: HTMLElement) => getSegmentAction(node),
+	});
+
+	type SegmentAttrFn = (props: SegmentAttrProps) => Record<string, string | number | boolean>;
+
+	type SegmentBuilders = Record<
+		SegmentPart,
+		{
+			attrs: SegmentAttrFn;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			action: Action<any, any, any>;
+		}
+	>;
+
+	type SegmentAttrProps = {
+		$focusedValue: Date;
+		$segmentValues: SegmentValueObj;
+		$hourCycle: 12 | 24 | undefined;
+	};
+
+	function getSegmentAttrs(part: SegmentPart, props: SegmentAttrProps) {
+		return segmentBuilders[part].attrs(props);
+	}
+
+	function getSegmentAction(node: HTMLElement) {
+		const part = getPartFromNode(node);
+		if (!part) throw new Error('No segment part found');
+		return segmentBuilders[part].action(node);
+	}
+
+	/*
+	 * ---------------------------------------------------------------------------------------------
+	 *
+	 * DAY SEGMENT
+	 *
+	 * ---------------------------------------------------------------------------------------------
+	 */
+
+	function daySegmentAttrs(props: SegmentAttrProps) {
+		const { $segmentValues, $focusedValue } = props;
+		const dayValue = $segmentValues.date;
+		const activeDay = dayjs($focusedValue).date();
+		const valueMin = 1;
+		const valueMax = dayjs($focusedValue).daysInMonth();
+
+		return {
+			...segmentDefaults,
+			id: ids.daySegment,
+			'aria-label': 'day, ',
+			'aria-valuemin': valueMin,
+			'aria-valuemax': valueMax,
+			'aria-valuenow': dayValue ?? activeDay,
+			'aria-valuetext': dayValue ?? 'Empty',
+			'data-segment': 'date',
+		};
+	}
+
+	function daySegmentAction(node: HTMLElement) {
+		const unsubEvents = executeCallbacks(
+			addMeltEventListener(node, 'keydown', handleDaySegmentKeydown),
+			addMeltEventListener(node, 'focusout', () => (states.date.hasLeftFocus = true))
+		);
+
+		return {
+			destroy() {
+				unsubEvents();
+			},
+		};
+	}
+
 	function handleDaySegmentKeydown(e: KeyboardEvent) {
 		if (e.key !== kbd.TAB) {
 			e.preventDefault();
@@ -342,14 +280,14 @@ export function createSegments(props: CreateSegmentProps) {
 		const daysInMonth = activeDjs.daysInMonth();
 
 		if (e.key === kbd.ARROW_UP) {
-			dayValue.update((prev) => {
+			updateSegment('date', (prev) => {
 				if (prev === null || prev === daysInMonth) return 1;
 				return prev + 1;
 			});
 			return;
 		}
 		if (e.key === kbd.ARROW_DOWN) {
-			dayValue.update((prev) => {
+			updateSegment('date', (prev) => {
 				if (prev === null || prev === 1) {
 					return daysInMonth;
 				}
@@ -361,7 +299,7 @@ export function createSegments(props: CreateSegmentProps) {
 		if (isNumberKey(e.key)) {
 			const num = parseInt(e.key);
 			let moveToNext = false;
-			dayValue.update((prev) => {
+			updateSegment('date', (prev) => {
 				const max = daysInMonth;
 				const maxStart = Math.floor(max / 10);
 
@@ -370,9 +308,9 @@ export function createSegments(props: CreateSegmentProps) {
 				 * `prev` value so that we can start the segment over again
 				 * when the user types a number.
 				 */
-				if (states.day.hasLeftFocus) {
+				if (states.date.hasLeftFocus) {
 					prev = null;
-					states.day.hasLeftFocus = false;
+					states.date.hasLeftFocus = false;
 				}
 
 				if (prev === null) {
@@ -382,7 +320,7 @@ export function createSegments(props: CreateSegmentProps) {
 					 * number, we can move to the next segment.
 					 */
 					if (num === 0) {
-						states.day.lastKeyZero = true;
+						states.date.lastKeyZero = true;
 						return null;
 					}
 
@@ -392,7 +330,7 @@ export function createSegments(props: CreateSegmentProps) {
 					 * we want to move to the next segment, since it's not possible
 					 * to continue typing a valid number in this segment.
 					 */
-					if (states.day.lastKeyZero || num > maxStart) {
+					if (states.date.lastKeyZero || num > maxStart) {
 						moveToNext = true;
 						return num;
 					}
@@ -440,7 +378,7 @@ export function createSegments(props: CreateSegmentProps) {
 			const currentTarget = e.currentTarget;
 			if (!isHTMLElement(currentTarget)) return;
 
-			dayValue.update((prev) => {
+			updateSegment('date', (prev) => {
 				if (prev === null) return null;
 				const str = prev.toString();
 				if (str.length === 1) return null;
@@ -453,10 +391,49 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 	}
 
-	/**
-	 * The event handler responsible for handling keydown events
-	 * on the month segment.
+	/*
+	 * ---------------------------------------------------------------------------------------------
+	 *
+	 * MONTH SEGMENT
+	 *
+	 * ---------------------------------------------------------------------------------------------
 	 */
+
+	function monthSegmentAttrs(props: SegmentAttrProps) {
+		const { $segmentValues, $focusedValue } = props;
+		const monthValue = $segmentValues.month;
+		const valueMin = 1;
+		const valueMax = 12;
+		const activeDjs = dayjs($focusedValue);
+		const activeMonth = activeDjs.month();
+		const activeMonthString = activeDjs.format('MMMM');
+
+		return {
+			...segmentDefaults,
+			id: ids.monthSegment,
+			'aria-label': 'month, ',
+			contenteditable: true,
+			'aria-valuemin': valueMin,
+			'aria-valuemax': valueMax,
+			'aria-valuenow': monthValue ?? `${activeMonth + 1} - ${activeMonthString}`,
+			'aria-valuetext': monthValue ?? 'Empty',
+			'data-segment': 'month',
+		};
+	}
+
+	function monthSegmentAction(node: HTMLElement) {
+		const unsubEvents = executeCallbacks(
+			addMeltEventListener(node, 'keydown', handleMonthSegmentKeydown),
+			addMeltEventListener(node, 'focusout', () => (states.month.hasLeftFocus = true))
+		);
+
+		return {
+			destroy() {
+				unsubEvents();
+			},
+		};
+	}
+
 	function handleMonthSegmentKeydown(e: KeyboardEvent) {
 		if (e.key !== kbd.TAB) {
 			e.preventDefault();
@@ -472,14 +449,14 @@ export function createSegments(props: CreateSegmentProps) {
 		const max = 12;
 
 		if (e.key === kbd.ARROW_UP) {
-			monthValue.update((prev) => {
+			updateSegment('month', (prev) => {
 				if (prev === null || prev === max) return 1;
 				return prev + 1;
 			});
 			return;
 		}
 		if (e.key === kbd.ARROW_DOWN) {
-			monthValue.update((prev) => {
+			updateSegment('month', (prev) => {
 				if (prev === null || prev === min) {
 					return max;
 				}
@@ -491,7 +468,7 @@ export function createSegments(props: CreateSegmentProps) {
 		if (isNumberKey(e.key)) {
 			const num = parseInt(e.key);
 			let moveToNext = false;
-			monthValue.update((prev) => {
+			updateSegment('month', (prev) => {
 				const maxStart = Math.floor(max / 10);
 
 				/**
@@ -567,7 +544,7 @@ export function createSegments(props: CreateSegmentProps) {
 
 		if (e.key === kbd.BACKSPACE) {
 			states.month.hasLeftFocus = false;
-			monthValue.update((prev) => {
+			updateSegment('month', (prev) => {
 				if (prev === null) return null;
 				const str = prev.toString();
 				if (str.length === 1) return null;
@@ -580,10 +557,47 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 	}
 
-	/**
-	 * The event handler responsible for handling keydown events
-	 * on the day segment.
+	/*
+	 * ---------------------------------------------------------------------------------------------
+	 *
+	 * YEAR SEGMENT
+	 *
+	 * ---------------------------------------------------------------------------------------------
 	 */
+
+	function yearSegmentAttrs(props: SegmentAttrProps) {
+		const { $segmentValues } = props;
+		const yearValue = $segmentValues.year;
+		const valueMin = 1;
+		const valueMax = 9999;
+
+		const currentYear = dayjs(new Date()).year();
+
+		return {
+			...segmentDefaults,
+			id: ids.yearSegment,
+			'aria-label': 'year, ',
+			'aria-valuemin': valueMin,
+			'aria-valuemax': valueMax,
+			'aria-valuenow': yearValue ?? `${currentYear}`,
+			'aria-valuetext': yearValue ?? 'Empty',
+			'data-segment': 'year',
+		};
+	}
+
+	function yearSegmentAction(node: HTMLElement) {
+		const unsubEvents = executeCallbacks(
+			addMeltEventListener(node, 'keydown', handleYearSegmentKeydown),
+			addMeltEventListener(node, 'focusout', () => (states.year.hasLeftFocus = true))
+		);
+
+		return {
+			destroy() {
+				unsubEvents();
+			},
+		};
+	}
+
 	function handleYearSegmentKeydown(e: KeyboardEvent) {
 		if (e.key !== kbd.TAB) {
 			e.preventDefault();
@@ -598,14 +612,14 @@ export function createSegments(props: CreateSegmentProps) {
 		const currentYear = dayjs(new Date()).year();
 
 		if (e.key === kbd.ARROW_UP) {
-			yearValue.update((prev) => {
+			updateSegment('year', (prev) => {
 				if (prev === null) return currentYear;
 				return prev + 1;
 			});
 			return;
 		}
 		if (e.key === kbd.ARROW_DOWN) {
-			yearValue.update((prev) => {
+			updateSegment('year', (prev) => {
 				if (prev === null || prev === min) {
 					return currentYear;
 				}
@@ -617,7 +631,7 @@ export function createSegments(props: CreateSegmentProps) {
 		if (isNumberKey(e.key)) {
 			let moveToNext = false;
 			const num = parseInt(e.key);
-			yearValue.update((prev) => {
+			updateSegment('year', (prev) => {
 				if (states.year.hasLeftFocus) {
 					prev = null;
 					states.year.hasLeftFocus = false;
@@ -643,7 +657,7 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 
 		if (e.key === kbd.BACKSPACE) {
-			yearValue.update((prev) => {
+			updateSegment('year', (prev) => {
 				if (prev === null) return null;
 				const str = prev.toString();
 				if (str.length === 1) return null;
@@ -656,10 +670,45 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 	}
 
-	/**
-	 * The event handler responsible for handling keydown events
-	 * on the hour segment.
+	/*
+	 * ---------------------------------------------------------------------------------------------
+	 *
+	 * HOUR SEGMENT
+	 *
+	 * ---------------------------------------------------------------------------------------------
 	 */
+
+	function hourSegmentAttrs(props: SegmentAttrProps) {
+		const { $segmentValues, $hourCycle } = props;
+		const hourValue = $segmentValues.hour;
+		const valueMin = $hourCycle === 12 ? 1 : 0;
+		const valueMax = $hourCycle === 12 ? 12 : 23;
+
+		return {
+			...segmentDefaults,
+			id: ids.hourSegment,
+			'aria-label': 'hour, ',
+			'aria-valuemin': valueMin,
+			'aria-valuemax': valueMax,
+			'aria-valuenow': hourValue ?? `${valueMin}`,
+			'aria-valuetext': hourValue ?? 'Empty',
+			'data-segment': 'hour',
+		};
+	}
+
+	function hourSegmentAction(node: HTMLElement) {
+		const unsubEvents = executeCallbacks(
+			addMeltEventListener(node, 'keydown', handleHourSegmentKeydown),
+			addMeltEventListener(node, 'focusout', () => (states.hour.hasLeftFocus = true))
+		);
+
+		return {
+			destroy() {
+				unsubEvents();
+			},
+		};
+	}
+
 	function handleHourSegmentKeydown(e: KeyboardEvent) {
 		if (e.key !== kbd.TAB) {
 			e.preventDefault();
@@ -675,14 +724,14 @@ export function createSegments(props: CreateSegmentProps) {
 		const max = get(hourCycle) === 12 ? 12 : 23;
 
 		if (e.key === kbd.ARROW_UP) {
-			hourValue.update((prev) => {
+			updateSegment('hour', (prev) => {
 				if (prev === null || prev === max) return min;
 				return prev + 1;
 			});
 			return;
 		}
 		if (e.key === kbd.ARROW_DOWN) {
-			hourValue.update((prev) => {
+			updateSegment('hour', (prev) => {
 				if (prev === null || prev === min) {
 					return max;
 				}
@@ -694,7 +743,7 @@ export function createSegments(props: CreateSegmentProps) {
 		if (isNumberKey(e.key)) {
 			const num = parseInt(e.key);
 			let moveToNext = false;
-			hourValue.update((prev) => {
+			updateSegment('hour', (prev) => {
 				const maxStart = Math.floor(max / 10);
 
 				/**
@@ -769,7 +818,7 @@ export function createSegments(props: CreateSegmentProps) {
 
 		if (e.key === kbd.BACKSPACE) {
 			states.hour.hasLeftFocus = false;
-			hourValue.update((prev) => {
+			updateSegment('hour', (prev) => {
 				if (prev === null) return null;
 				const str = prev.toString();
 				if (str.length === 1) return null;
@@ -782,10 +831,45 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 	}
 
-	/**
-	 * The event handler responsible for handling keydown events
-	 * on the minute segment.
+	/*
+	 * ---------------------------------------------------------------------------------------------
+	 *
+	 * MINUTE SEGMENT
+	 *
+	 * ---------------------------------------------------------------------------------------------
 	 */
+
+	function minuteSegmentAttrs(props: SegmentAttrProps) {
+		const { $segmentValues } = props;
+		const minuteValue = $segmentValues.minute;
+		const valueMin = 0;
+		const valueMax = 59;
+
+		return {
+			...segmentDefaults,
+			id: ids.minuteSegment,
+			'aria-label': 'minute, ',
+			'aria-valuemin': valueMin,
+			'aria-valuemax': valueMax,
+			'aria-valuenow': minuteValue ?? `${valueMin}`,
+			'aria-valuetext': minuteValue ?? 'Empty',
+			'data-segment': 'minute',
+		};
+	}
+
+	function minuteSegmentAction(node: HTMLElement) {
+		const unsubEvents = executeCallbacks(
+			addMeltEventListener(node, 'keydown', handleMinuteSegmentKeydown),
+			addMeltEventListener(node, 'focusout', () => (states.minute.hasLeftFocus = true))
+		);
+
+		return {
+			destroy() {
+				unsubEvents();
+			},
+		};
+	}
+
 	function handleMinuteSegmentKeydown(e: KeyboardEvent) {
 		if (e.key !== kbd.TAB) {
 			e.preventDefault();
@@ -801,14 +885,14 @@ export function createSegments(props: CreateSegmentProps) {
 		const max = 59;
 
 		if (e.key === kbd.ARROW_UP) {
-			minuteValue.update((prev) => {
+			updateSegment('minute', (prev) => {
 				if (prev === null || prev === max) return min;
 				return prev + 1;
 			});
 			return;
 		}
 		if (e.key === kbd.ARROW_DOWN) {
-			minuteValue.update((prev) => {
+			updateSegment('minute', (prev) => {
 				if (prev === null || prev === min) {
 					return max;
 				}
@@ -820,7 +904,7 @@ export function createSegments(props: CreateSegmentProps) {
 		if (isNumberKey(e.key)) {
 			const num = parseInt(e.key);
 			let moveToNext = false;
-			minuteValue.update((prev) => {
+			updateSegment('minute', (prev) => {
 				const maxStart = Math.floor(max / 10);
 
 				/**
@@ -895,7 +979,7 @@ export function createSegments(props: CreateSegmentProps) {
 
 		if (e.key === kbd.BACKSPACE) {
 			states.minute.hasLeftFocus = false;
-			minuteValue.update((prev) => {
+			updateSegment('minute', (prev) => {
 				if (prev === null) return null;
 				const str = prev.toString();
 				if (str.length === 1) return null;
@@ -908,10 +992,45 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 	}
 
-	/**
-	 * The event handler responsible for handling keydown events
-	 * on the minute segment.
+	/*
+	 * ---------------------------------------------------------------------------------------------
+	 *
+	 * SECOND SEGMENT
+	 *
+	 * ---------------------------------------------------------------------------------------------
 	 */
+
+	function secondSegmentAttrs(props: SegmentAttrProps) {
+		const { $segmentValues } = props;
+		const secondValue = $segmentValues.second;
+		const valueMin = 0;
+		const valueMax = 59;
+
+		return {
+			...segmentDefaults,
+			id: ids.secondSegment,
+			'aria-label': 'second, ',
+			'aria-valuemin': valueMin,
+			'aria-valuemax': valueMax,
+			'aria-valuenow': secondValue ?? `${valueMin}`,
+			'aria-valuetext': secondValue ?? 'Empty',
+			'data-segment': 'second',
+		};
+	}
+
+	function secondSegmentAction(node: HTMLElement) {
+		const unsubEvents = executeCallbacks(
+			addMeltEventListener(node, 'keydown', handleSecondSegmentKeydown),
+			addMeltEventListener(node, 'focusout', () => (states.second.hasLeftFocus = true))
+		);
+
+		return {
+			destroy() {
+				unsubEvents();
+			},
+		};
+	}
+
 	function handleSecondSegmentKeydown(e: KeyboardEvent) {
 		if (e.key !== kbd.TAB) {
 			e.preventDefault();
@@ -926,14 +1045,14 @@ export function createSegments(props: CreateSegmentProps) {
 		const max = 59;
 
 		if (e.key === kbd.ARROW_UP) {
-			secondValue.update((prev) => {
+			updateSegment('second', (prev) => {
 				if (prev === null || prev === max) return min;
 				return prev + 1;
 			});
 			return;
 		}
 		if (e.key === kbd.ARROW_DOWN) {
-			secondValue.update((prev) => {
+			updateSegment('second', (prev) => {
 				if (prev === null || prev === min) {
 					return max;
 				}
@@ -945,7 +1064,7 @@ export function createSegments(props: CreateSegmentProps) {
 		if (isNumberKey(e.key)) {
 			const num = parseInt(e.key);
 			let moveToNext = false;
-			secondValue.update((prev) => {
+			updateSegment('second', (prev) => {
 				const maxStart = Math.floor(max / 10);
 
 				/**
@@ -1020,7 +1139,7 @@ export function createSegments(props: CreateSegmentProps) {
 
 		if (e.key === kbd.BACKSPACE) {
 			states.second.hasLeftFocus = false;
-			secondValue.update((prev) => {
+			updateSegment('second', (prev) => {
 				if (prev === null) return null;
 				const str = prev.toString();
 				if (str.length === 1) return null;
@@ -1032,6 +1151,50 @@ export function createSegments(props: CreateSegmentProps) {
 			handleSegmentNavigation(e, ids.input);
 		}
 	}
+
+	/*
+	 * ---------------------------------------------------------------------------------------------
+	 *
+	 * DAY PERIOD SEGMENT
+	 *
+	 * ---------------------------------------------------------------------------------------------
+	 */
+
+	const dayPeriodSegment = builder(name('dayPeriod-segment'), {
+		stores: [dayPeriodValue],
+		returned: ([$dayPeriodValue]) => {
+			const valueMin = 0;
+			const valueMax = 12;
+
+			return {
+				...segmentDefaults,
+				inputmode: 'text',
+				id: ids.secondSegment,
+				'aria-label': 'AM/PM',
+				'aria-valuemin': valueMin,
+				'aria-valuemax': valueMax,
+				'aria-valuenow': $dayPeriodValue ?? `${valueMin}`,
+				'aria-valuetext': $dayPeriodValue ?? 'AM',
+				'data-segment': 'period',
+			};
+		},
+		action: (node: HTMLElement) => {
+			const unsubEvents = executeCallbacks(
+				addMeltEventListener(node, 'keydown', handleDayPeriodSegmentKeydown)
+			);
+
+			return {
+				destroy() {
+					unsubEvents();
+				},
+			};
+		},
+	});
+
+	/**
+	 * The event handler responsible for handling keydown events
+	 * on the minute segment.
+	 */
 
 	function handleDayPeriodSegmentKeydown(e: KeyboardEvent) {
 		const acceptableKeys = [
@@ -1077,125 +1240,13 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 	}
 
-	effect([value], ([$value]) => {
-		if ($value === undefined) return;
-		const djs = dayjs($value);
-		const displayDjs = dayjs(get(displayValue));
-
-		if (!isSameDay(djs.toDate(), displayDjs.toDate())) {
-			displayValue.set(djs.toDate());
-		}
-
-		if (get(dayValue) !== djs.date() && states.day.hasTouched) {
-			dayValue.set(djs.date());
-		}
-		if (get(monthValue) !== djs.month() + 1 && states.month.hasTouched) {
-			monthValue.set(djs.month() + 1);
-		}
-		if (get(yearValue) !== djs.year() && states.year.hasTouched) {
-			yearValue.set(djs.year());
-		}
-		if (get(hourValue) !== djs.hour() && states.hour.hasTouched) {
-			hourValue.set(djs.hour());
-		}
-		if (get(minuteValue) !== djs.minute() && states.minute.hasTouched) {
-			minuteValue.set(djs.minute());
-		}
-		if (get(secondValue) !== djs.second() && states.second.hasTouched) {
-			secondValue.set(djs.second());
-		}
-	});
-
-	effect([dayValue], ([$dayValue]) => {
-		const $value = get(value);
-		if ($value === undefined && !states.day.hasInitialized) {
-			states.day.hasInitialized = true;
-			return;
-		}
-		const djs = dayjs($value);
-
-		if ($dayValue !== djs.date()) {
-			displayValue.set(djs.date($dayValue ? $dayValue : 1).toDate());
-		}
-	});
-
-	effect([monthValue], ([$monthValue]) => {
-		const $value = get(value);
-		if ($value === undefined && !states.month.hasInitialized) {
-			states.month.hasInitialized = true;
-			return;
-		}
-		const djs = dayjs($value);
-		if ($monthValue !== djs.month() + 1) {
-			displayValue.set(djs.month($monthValue ? $monthValue - 1 : 0).toDate());
-		}
-	});
-
-	effect([yearValue], ([$yearValue]) => {
-		const $value = get(value);
-		if ($value === undefined && !states.year.hasInitialized) {
-			states.year.hasInitialized = true;
-			return;
-		}
-		const djs = dayjs($value);
-		if ($yearValue !== djs.year()) {
-			displayValue.set(djs.year($yearValue ? $yearValue : 0).toDate());
-		}
-	});
-
-	effect([hourValue], ([$hourValue]) => {
-		const $value = get(value);
-		if ($value === undefined && !states.hour.hasInitialized) {
-			states.hour.hasInitialized = true;
-			return;
-		}
-		const djs = dayjs($value);
-		if ($hourValue !== djs.hour()) {
-			displayValue.set(djs.hour($hourValue ? $hourValue : 0).toDate());
-		}
-	});
-
-	effect([minuteValue], ([$minuteValue]) => {
-		const $value = get(value);
-		if ($value === undefined && !states.minute.hasInitialized) {
-			states.minute.hasInitialized = true;
-			return;
-		}
-		const djs = dayjs($value);
-		if ($minuteValue !== djs.minute()) {
-			displayValue.set(djs.minute($minuteValue ? $minuteValue : 0).toDate());
-		}
-	});
-
-	effect([secondValue], ([$secondValue]) => {
-		const $value = get(value);
-		if ($value === undefined && !states.second.hasInitialized) {
-			states.second.hasInitialized = true;
-			return;
-		}
-		const djs = dayjs($value);
-		if ($secondValue !== djs.second()) {
-			displayValue.set(djs.second($secondValue ? $secondValue : 0).toDate());
-		}
-	});
-
 	return {
 		elements: {
-			daySegment,
-			monthSegment,
-			yearSegment,
-			hourSegment,
-			minuteSegment,
-			secondSegment,
+			segment,
 			dayPeriodSegment,
 		},
 		states: {
-			dayValue,
-			monthValue,
-			yearValue,
-			hourValue,
-			minuteValue,
-			secondValue,
+			segmentValues,
 			dayPeriodValue,
 		},
 	};

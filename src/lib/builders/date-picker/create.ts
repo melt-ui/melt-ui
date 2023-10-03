@@ -92,6 +92,7 @@ export type _DatePickerParts =
 	| 'minute-segment'
 	| 'second-segment'
 	| 'dayPeriod-segment'
+	| 'segment'
 	| 'trigger';
 
 const { name } = createElHelpers<_DatePickerParts>('calendar');

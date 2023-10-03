@@ -11,8 +11,9 @@
 	import { fade } from 'svelte/transition';
 
 	export let disabled: Matcher | Matcher[] = false;
-	export let defaultFocusedValue: CreateDatePickerProps['defaultFocusedValue'] = new Date();
-	export let defaultValue: CreateDatePickerProps['defaultValue'] = undefined;
+	export let defaultFocusedValue: CreateDatePickerProps['defaultFocusedValue'] =
+		undefined;
+	export let defaultValue: CreateDatePickerProps['defaultValue'] = new Date();
 	export let numberOfMonths: CreateDatePickerProps['numberOfMonths'] = 1;
 	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = false;
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = 0;
@@ -23,29 +24,12 @@
 			grid,
 			cell,
 			dateInput,
-			daySegment,
-			monthSegment,
-			yearSegment,
-			minuteSegment,
-			hourSegment,
-			secondSegment,
 			dayPeriodSegment,
+			segment,
 			trigger,
 			content,
 		},
-		states: {
-			value,
-			months,
-			daysOfWeek,
-			dayValue,
-			monthValue,
-			yearValue,
-			hourValue,
-			minuteValue,
-			secondValue,
-			dayPeriodValue,
-			open,
-		},
+		states: { value, months, daysOfWeek, segmentValues, dayPeriodValue, open },
 		helpers: { prevMonth, nextMonth },
 	} = createDatePicker({
 		allowDeselect: true,
@@ -67,32 +51,33 @@
 </script>
 
 <div class="flex flex-col gap-3">
+	<p class="text-xs">{$value}</p>
 	<div
 		use:melt={$dateInput}
 		class="flex max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
 	>
-		<div use:melt={$monthSegment}>
-			{$monthValue ?? 'mm'}
+		<div use:melt={$segment('month')}>
+			{$segmentValues.month ?? 'mm'}
 		</div>
 		<div aria-hidden="true" class="px-1">/</div>
-		<div use:melt={$daySegment}>
-			{$dayValue ?? 'dd'}
+		<div use:melt={$segment('date')}>
+			{$segmentValues.date ?? 'dd'}
 		</div>
 		<div aria-hidden="true" class="px-1">/</div>
-		<div use:melt={$yearSegment}>
-			{$yearValue ?? 'yyyy'}
+		<div use:melt={$segment('year')}>
+			{$segmentValues.year ?? 'yyyy'}
 		</div>
 		<div aria-hidden="true" class="pr-2">,</div>
-		<div use:melt={$hourSegment} class="whitespace-nowrap">
-			{$hourValue ?? '--'}
+		<div use:melt={$segment('hour')} class="whitespace-nowrap">
+			{$segmentValues.hour ?? '--'}
 		</div>
 		<div aria-hidden="true" class="px-0.5">:</div>
-		<div use:melt={$minuteSegment} class="whitespace-nowrap">
-			{$minuteValue ?? '--'}
+		<div use:melt={$segment('minute')} class="whitespace-nowrap">
+			{$segmentValues.minute ?? '--'}
 		</div>
 		<div aria-hidden="true" class="px-0.5">:</div>
-		<div use:melt={$secondSegment} class="whitespace-nowrap">
-			{$secondValue ?? '--'}
+		<div use:melt={$segment('second')} class="whitespace-nowrap">
+			{$segmentValues.second ?? '--'}
 		</div>
 		<div use:melt={$dayPeriodSegment} class="ml-2">
 			{$dayPeriodValue}
