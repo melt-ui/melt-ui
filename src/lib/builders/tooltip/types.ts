@@ -16,11 +16,11 @@ export type CreateTooltipProps = {
 	forceVisible?: boolean;
 	closeOnEscape?: boolean;
 	disableHoverableContent?: boolean;
-    /**
-     * If set to `true`, whenever you open this tooltip, all other tooltips
-     * with `group` also set to `true` will close. If you pass in a string
-     * instead, only tooltips with the same `group` value will be closed.
-     */
+	/**
+	 * If set to `true`, whenever you open this tooltip, all other tooltips
+	 * with `group` also set to `true` will close. If you pass in a string
+	 * instead, only tooltips with the same `group` value will be closed.
+	 */
 	group?: boolean | string;
 	/**
 	 * If not undefined, the tooltip will be rendered within the provided element or selector.
