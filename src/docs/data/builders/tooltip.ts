@@ -38,6 +38,11 @@ const OPTION_PROPS = [
 		description:
 			'Prevents the tooltip content element from remaining open when hovered. If `true`, the tooltip will only be open when hovering the trigger element.',
 	},
+    {
+        name: 'group',
+        type: 'string | boolean',
+        description: 'If set to `true`, whenever you open this tooltip, all other tooltips with `group` also set to `true` will close. If you pass in a string instead, only tooltips with the same `group` value will be closed.'
+   }
 ];
 
 const BUILDER_NAME = 'tooltip';
