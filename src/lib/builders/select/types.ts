@@ -1,5 +1,5 @@
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
-import type { BuilderReturn } from '$lib/internal/types.js';
+import type { BuilderReturn, WhenTrue } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { createSelect } from './create.js';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
@@ -11,13 +11,16 @@ export type SelectOption<Value> = {
 	label?: string;
 };
 
+export type SelectSelected<Multiple extends boolean, Value> = WhenTrue<
+	Multiple,
+	SelectOption<Value>[],
+	SelectOption<Value>
+>;
+
 export type CreateSelectProps<
 	Value = unknown,
 	Multiple extends boolean = false,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	Selected extends Multiple extends true
-		? Array<SelectOption<Value>>
-		: SelectOption<Value> = Multiple extends true ? Array<SelectOption<Value>> : SelectOption<Value>
+	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
 > = {
 	/**
 	 * Options for positioning the popover menu.
@@ -125,19 +128,19 @@ export type CreateSelectProps<
 	 *
 	 * @default undefined
 	 */
-	defaultSelected?: Selected;
+	defaultSelected?: S;
 
 	/**
 	 * An optional controlled store that manages the value state of the combobox.
 	 */
-	selected?: Writable<Selected>;
+	selected?: Writable<S | undefined>;
 
 	/**
 	 * A change handler for the value store called when the value would normally change.
 	 *
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
-	onSelectedChange?: ChangeFn<Selected | undefined>;
+	onSelectedChange?: ChangeFn<S | undefined>;
 
 	multiple?: Multiple;
 };
@@ -146,8 +149,28 @@ export type SelectOptionProps<Value = unknown> = SelectOption<Value> & {
 	disabled?: boolean;
 };
 
-export type Select = BuilderReturn<typeof createSelect>;
-export type SelectElements = Select['elements'];
-export type SelectOptions = Select['options'];
-export type SelectStates = Select['states'];
-export type SelectHelpers = Select['helpers'];
+export type Select<
+	Value = unknown,
+	Multiple extends boolean = false,
+	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
+> = BuilderReturn<typeof createSelect<Value, Multiple, S>>;
+export type SelectElements<
+	Value = unknown,
+	Multiple extends boolean = false,
+	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
+> = BuilderReturn<typeof createSelect<Value, Multiple, S>>['elements'];
+export type SelectOptions<
+	Value = unknown,
+	Multiple extends boolean = false,
+	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
+> = BuilderReturn<typeof createSelect<Value, Multiple, S>>['options'];
+export type SelectStates<
+	Value = unknown,
+	Multiple extends boolean = false,
+	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
+> = BuilderReturn<typeof createSelect<Value, Multiple, S>>['states'];
+export type SelectHelpers<
+	Value = unknown,
+	Multiple extends boolean = false,
+	S extends SelectSelected<Multiple, Value> = SelectSelected<Multiple, Value>
+> = BuilderReturn<typeof createSelect<Value, Multiple, S>>['helpers'];

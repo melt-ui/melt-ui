@@ -21,26 +21,27 @@ Melt UI is meant to be used as a base for your own styles and components. It off
 
 ## Getting started
 
-Install the `@melt-ui/svelte` package with your package manager of choice:
+Run our installer script to get started:
 
 ```sh
-npm install @melt-ui/svelte
-yarn add @melt-ui/svelte
-pnpm add @melt-ui/svelte
-bun add @melt-ui/svelte
+npx @melt-ui/cli@latest init
 ```
 
 Import the builders to your code and start using them:
 
 ```html
 <script>
-	import { createCollapsible } from '@melt-ui/svelte'
-	const { open, root, content, trigger } = createCollapsible()
+	import { createCollapsible, melt } from '@melt-ui/svelte'
+
+	const {
+		elements: { root, content, trigger },
+		states: { open }
+	} = createCollapsible()
 </script>
 
-<div {...$root}>
-	<button {...$trigger}>{$open ? 'Close' : 'Open'}</button>
-	<div {...$content}>Obi-Wan says: Hello there!</div>
+<div use:melt="{$root}">
+	<button use:melt="{$trigger}">{$open ? 'Close' : 'Open'}</button>
+	<div use:melt="{$content}">Obi-Wan says: Hello there!</div>
 </div>
 ```
 
@@ -49,11 +50,10 @@ Import the builders to your code and start using them:
 **Contributions are welcome and encouraged!**
 
 Melt UI is under active development. Currently planned features can be found in the
-[roadmap](#roadmap), or in the [issues tab](https://github.com/melt-ui/melt-ui/issues), alongside
-bug reports.
+[issues tab](https://github.com/melt-ui/melt-ui/issues), alongside bug reports.
 
 We work on this project on a volunteer basis in our free time. If you notice something that hasn't
-been implemented yet or could be improved, do consider contributing to the project. The goal is to
+been implemented yet or could be improved, do consider contributing to the project! The goal is to
 enhance the experience of building with Svelte and improve the ecosystem for everyone.
 
 Check out our [Contributing guide](./CONTRIBUTING.md) to learn more.
@@ -71,47 +71,6 @@ we'd love to have you there.
   <img alt="Melt UI Discord community" src="https://invidget.switchblade.xyz/2QDjZkYunf?theme=light">
 </picture>
 </a>
-
-## Roadmap
-
-| Component name    | Status |
-| ----------------- | ------ |
-| Accordion         | ✅     |
-| Avatar            | ✅     |
-| Calendar          |        |
-| Checkbox          | ✅     |
-| Collapsible       | ✅     |
-| ComboBox          | ✅     |
-| Command Center    |        |
-| Context Menu      | ✅     |
-| Dialog            | ✅     |
-| Dropdown Menu     | ✅     |
-| Dropzone          |        |
-| Label             | ✅     |
-| Link Preview      | ✅     |
-| Menubar           | ✅     |
-| Navigation Menu   |        |
-| Pagination        | ✅     |
-| Pin Input         | ✅     |
-| Popover           | ✅     |
-| Progress          | ✅     |
-| Radio Group       | ✅     |
-| Scroll Area       |        |
-| Select            | ✅     |
-| Separator         | ✅     |
-| Slider            | ✅     |
-| Spin Button       |        |
-| Switch            | ✅     |
-| Table of Contents | ✅     |
-| Tabs              | ✅     |
-| Tags Input        | ✅     |
-| Toast             | ✅     |
-| Toggle            | ✅     |
-| Toggle Group      | ✅     |
-| Toolbar           | ✅     |
-| Tooltip           | ✅     |
-| Tree View         |        |
-| ???               |        |
 
 ## Similar projects
 

@@ -24,6 +24,14 @@ description:
 
 ## Examples
 
+### Multiple
+
+We expose a `multiple` prop to allow for multiple selections.
+
+<Preview code={snippets.multi}> 
+  <svelte:component this={previews.multi} /> 
+</Preview>
+
 ### Debounce
 
 Sometimes you may want to [debounce](https://www.freecodecamp.org/news/javascript-debounce-example/)

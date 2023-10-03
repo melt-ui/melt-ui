@@ -1,5 +1,47 @@
 # @melt-ui/svelte
 
+## 0.51.0
+
+### Minor Changes
+
+- Tooltip: Add `group` prop ([#575](https://github.com/melt-ui/melt-ui/pull/575))
+
+### Patch Changes
+
+- Combobox: Fixed focus management (#569) ([#570](https://github.com/melt-ui/melt-ui/pull/570))
+
+- fix: change JSDoc example for `melt` action ([#576](https://github.com/melt-ui/melt-ui/pull/576))
+
+- Tooltip: rework open & close behaviours ([`21bcf3d0`](https://github.com/melt-ui/melt-ui/commit/21bcf3d003af2e4d2fe0f066e6b2b255fc797629))
+
+- fix: add generics to exported types ([#579](https://github.com/melt-ui/melt-ui/pull/579))
+
+## 0.50.1
+
+### Patch Changes
+
+- Select: Fix `selected` prop type ([#539](https://github.com/melt-ui/melt-ui/pull/539))
+
+- Pin Input: bind `$valueStr` store to `hiddenInput` of `pin-input` builder ([#557](https://github.com/melt-ui/melt-ui/pull/557))
+
+- Combobox: Fix exported types ([`9e4c6a26`](https://github.com/melt-ui/melt-ui/commit/9e4c6a26b8623d4cb33fd939b80a140e15597cc1))
+
+- Dropdown Menu: Up key focuses last menu item if there is no selection ([#550](https://github.com/melt-ui/melt-ui/pull/550))
+
+- Pin Input: Change `type` prop's types (that's confusing!) ([#545](https://github.com/melt-ui/melt-ui/pull/545))
+
+## 0.50.0
+
+### Minor Changes
+
+- Combobox: Add multiple option ([#533](https://github.com/melt-ui/melt-ui/pull/533))
+
+- Slider: add ticks ([#534](https://github.com/melt-ui/melt-ui/pull/534))
+
+### Patch Changes
+
+- Select: fix deep equality on isSelected ([`ad02e18f`](https://github.com/melt-ui/melt-ui/commit/ad02e18f2029d573c2b99ee95dce46a9ddeb6e35))
+
 ## 0.49.1
 
 ### Patch Changes

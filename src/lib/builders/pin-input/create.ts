@@ -230,9 +230,9 @@ export function createPinInput(props?: CreatePinInputProps) {
 	});
 
 	const hiddenInput = builder(name('hidden-input'), {
-		stores: [value, nameStore],
-		returned: ([$value, $nameStore]) => ({
-			value: $value,
+		stores: [valueStr, nameStore],
+		returned: ([$valueStr, $nameStore]) => ({
+			value: $valueStr,
 			name: $nameStore,
 			hidden: true,
 			style: styleToString({

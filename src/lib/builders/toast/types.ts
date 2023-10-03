@@ -31,8 +31,8 @@ export type Toast<T = object> = {
 	getPercentage: () => number;
 };
 
-export type Toasts = BuilderReturn<typeof createToaster>;
-export type ToastsElements = Toasts['elements'];
-export type ToastsOptions = Toasts['options'];
-export type ToastsStates = Toasts['states'];
-export type ToastsHelpers = Toasts['helpers'];
+export type Toasts<T = object> = BuilderReturn<typeof createToaster<T>>;
+export type ToastsElements<T = object> = BuilderReturn<typeof createToaster<T>>['elements'];
+export type ToastsOptions<T = object> = BuilderReturn<typeof createToaster<T>>['options'];
+export type ToastsStates<T = object> = BuilderReturn<typeof createToaster<T>>['states'];
+export type ToastsHelpers<T = object> = BuilderReturn<typeof createToaster<T>>['helpers'];

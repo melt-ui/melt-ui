@@ -46,6 +46,12 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'A callback that is called when the selected item changes.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
+		{
+			name: 'multiple',
+			type: 'boolean',
+			default: 'false',
+			description: 'Whether or not the combobox is a multiple combobox.',
+		},
 		PROPS.DEFAULT_OPEN,
 		PROPS.OPEN,
 		PROPS.ON_OPEN_CHANGE,

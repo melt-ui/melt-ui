@@ -256,6 +256,69 @@ export const createSlider = (props?: CreateSliderProps) => {
 		},
 	});
 
+	const ticks = derived([min, max, step], ([$min, $max, $step]) => {
+		const difference = sub($max, $min);
+
+		// min = 0, max = 8, step = 3:
+		// ----------------------------
+		// 0, 3, 6
+		// (8 - 0) / 3 = 2.666... = 3 ceiled
+		let count = Math.ceil(div(difference, $step));
+
+		// min = 0, max = 9, step = 3:
+		// ---------------------------
+		// 0, 3, 6, 9
+		// (9 - 0) / 3 = 3
+		// We need to add 1 because `difference` is a multiple of `step`.
+		if (difference % $step == 0) {
+			count++;
+		}
+
+		return count;
+	});
+
+	const tick = builder(name('tick'), {
+		stores: [ticks, value, min, max, step, orientation],
+		returned: ([$ticks, $value, $min, $max, $step, $orientation]) => {
+			let index = -1;
+			return () => {
+				index++;
+
+				const horizontal = $orientation === 'horizontal';
+				const style: Record<string, string | number | undefined> = {
+					position: 'absolute',
+				};
+
+				// The track is divided into sections of ratio `step / (max - min)`
+				const positionPercentage = mul(index, div($step, sub($max, $min)), 100);
+				style[horizontal ? 'left' : 'bottom'] = `${positionPercentage}%`;
+
+				// Offset each tick by half its size to center it, except for
+				// the first tick as it would be rendered outside the slider.
+				//
+				// As for the last tick, offset it by its full size rather than
+				// half also to prevent it from being rendered outside.
+				if (index === $ticks - 1) {
+					// Left is negative, down is positive.
+					style.translate = horizontal ? '-100% 0' : '0 100%';
+				} else if (index !== 0) {
+					style.translate = horizontal ? '-50% 0' : '0 50%';
+				}
+
+				const tickValue = add($min, mul(index, $step));
+				const bounded =
+					$value.length === 1
+						? tickValue <= $value[0]
+						: $value[0] <= tickValue && tickValue <= $value[$value.length - 1];
+
+				return {
+					'data-bounded': bounded ? true : undefined,
+					style: styleToString(style),
+				};
+			};
+		},
+	});
+
 	effect(
 		[root, min, max, disabled, orientation, step],
 		([$root, $min, $max, $disabled, $orientation, $step]) => {
@@ -367,9 +430,11 @@ export const createSlider = (props?: CreateSliderProps) => {
 			root,
 			thumb,
 			range,
+			tick,
 		},
 		states: {
 			value,
+			ticks,
 		},
 		options,
 	};
