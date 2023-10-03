@@ -25,6 +25,7 @@ import {
 	isSingleDate,
 	isInSameMonth,
 	isToday,
+	isFocused,
 } from '$lib/builders/calendar/utils.js';
 
 import { derived, get, writable, type Writable } from 'svelte/store';
@@ -33,6 +34,7 @@ import type { CreateDatePickerProps } from './types.js';
 import dayjs from 'dayjs';
 import { dayJsStore } from './date-store.js';
 import { createSegments, handleSegmentNavigation, isSegmentNavigationKey } from './segments.js';
+import { tick } from 'svelte';
 
 const defaults = {
 	disabled: false,
@@ -248,16 +250,16 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				const isUnavailable = isMatch(props.value, $unavailable);
 				const isDateToday = isToday(props.value);
 				const isInCurrentMonth = isInSameMonth(props.value, $focusedValue ?? new Date());
-
-				const selected = isSelected({
+				const isFocusedDate = isFocused({ date: props.value, focusedValue: $focusedValue });
+				const isSelectedDate = isSelected({
 					date: props.value,
 					value: $value,
 				});
 
 				return {
 					role: 'date',
-					'aria-selected': selected ? true : undefined,
-					'data-selected': selected ? true : undefined,
+					'aria-selected': isSelectedDate ? true : undefined,
+					'data-selected': isSelectedDate ? true : undefined,
 					'data-value': props.value,
 					'data-label': props.label ?? undefined,
 					'data-disabled': isDisabled ? '' : undefined,
@@ -265,7 +267,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					'data-date': '',
 					'data-today': isDateToday ? '' : undefined,
 					'data-outside-month': isInCurrentMonth ? undefined : '',
-					tabindex: -1,
+					tabindex: isFocusedDate ? 0 : -1,
 				} as const;
 			};
 		},
@@ -545,36 +547,119 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		e.preventDefault();
 		// the cell that is currently focused
 		const currentCell = e.target;
-		const grid = e.currentTarget;
-		if (!isHTMLElement(currentCell) || !isHTMLElement(grid)) return;
-		const allCells = getSelectableCells(grid);
+		if (!isHTMLElement(currentCell)) return;
 
 		if (e.key === kbd.ARROW_DOWN) {
-			shiftFocus(currentCell, allCells, 7);
+			shiftFocus(currentCell, 7);
 		}
 		if (e.key === kbd.ARROW_UP) {
-			shiftFocus(currentCell, allCells, -7);
+			shiftFocus(currentCell, -7);
 		}
 		if (e.key === kbd.ARROW_LEFT) {
-			shiftFocus(currentCell, allCells, -1);
+			shiftFocus(currentCell, -1);
 		}
 		if (e.key === kbd.ARROW_RIGHT) {
-			shiftFocus(currentCell, allCells, 1);
+			shiftFocus(currentCell, 1);
 		}
 	}
 
-	function shiftFocus(node: HTMLElement, candidateCells: HTMLElement[], add: number) {
+	function shiftFocus(node: HTMLElement, add: number) {
+		// TODO: Determine if this is okay when using paged navigation
+		// with multiple months.
+		const candidateCells = getSelectableCells();
+		if (!candidateCells.length) {
+			console.log('No candidate cells found in top level shiftFocus');
+			return;
+		}
+
 		const index = candidateCells.indexOf(node);
 		const nextIndex = index + add;
 
-		if (nextIndex >= 0 && nextIndex < candidateCells.length) {
+		/**
+		 * If the next cell is within the bounds of the
+		 * displayed/rendered cells, easy day, just focus it.
+		 */
+		if (isValidIndex(nextIndex, candidateCells)) {
 			const nextCell = candidateCells[nextIndex];
-			nextCell.focus();
+			return nextCell.focus();
+		}
+
+		/**
+		 * If the next cell is outside the bounds of the
+		 * displayed/rendered cells, we need to updated the focused
+		 * value to the prev/next month depending on the direction,
+		 * and then focus the appropriate cell.
+		 */
+
+		if (nextIndex < 0) {
+			/**
+			 * Since we're in the negative index range, we need to
+			 * go back a month, refetch the candidate cells within that
+			 * month, and then starting at the end of that array, shift
+			 * focus by the difference between the nextIndex
+			 */
+
+			// shift the calendar back a month
+			focusedValue.subtract(1, 'month');
+
+			// Without a tick here, it seems to be too fast for
+			// the DOM to update, with the tick it works great
+			tick().then(() => {
+				const newCandidateCells = getSelectableCells();
+				if (!newCandidateCells.length) {
+					return;
+				}
+
+				// starting at the end of the array, shift focus by the nextIndex amount
+				// since in this case, nextIndex is negative, we'll convert it to a positive
+				// before subtracting it from the length of the array
+				const newIndex = newCandidateCells.length - Math.abs(nextIndex);
+				if (isValidIndex(newIndex, candidateCells)) {
+					const newCell = newCandidateCells[newIndex];
+					return newCell.focus();
+				}
+			});
+		}
+
+		if (nextIndex >= candidateCells.length) {
+			/**
+			 * Since we're in the positive index range, we need to
+			 * go forward a month, refetch the candidate cells within that
+			 * month, and then starting at the beginning of that array,
+			 * shift focus by the nextIndex amount.
+			 */
+
+			// shift the calendar forward a month
+			focusedValue.add(1, 'month');
+
+			// we may need a tick here, but we'll see how it goes
+			const newCandidateCells = getSelectableCells();
+			if (!newCandidateCells.length) {
+				return;
+			}
+
+			// We need to determine how far into the next month we need to go
+			// to get the next index. So if we only went over the previous
+			// month by 1, we need to go into the next month by 1 to get the
+			// right index.
+			const newIndex = nextIndex - candidateCells.length;
+
+			if (isValidIndex(newIndex, newCandidateCells)) {
+				const nextCell = newCandidateCells[newIndex];
+				return nextCell.focus();
+			}
 		}
 	}
 
-	function getGridNode() {
-		return document.getElementById(ids.grid);
+	function getSelectableCells() {
+		const node = document.getElementById(ids.grid);
+		if (!node) return [];
+
+		return Array.from(
+			node.querySelectorAll(
+				`[data-melt-calendar-cell]:not([data-disabled]):not([data-outside-month])`
+			)
+		).filter((el): el is HTMLElement => isHTMLElement(el));
 	}
 
 	return {
@@ -622,10 +707,6 @@ function getFocusableCellByDate(node: HTMLElement, dateStr: string) {
 	return cell;
 }
 
-function getSelectableCells(node: HTMLElement) {
-	return Array.from(
-		node.querySelectorAll(
-			`[data-melt-calendar-cell]:not([data-disabled]):not([data-outside-month])`
-		)
-	).filter((el): el is HTMLElement => isHTMLElement(el));
+function isValidIndex(index: number, arr: unknown[]) {
+	return index >= 0 && index < arr.length;
 }

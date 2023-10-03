@@ -59,6 +59,24 @@ export function createSegments(props: CreateSegmentProps) {
 		second: false,
 	};
 
+	const hasInitialized = {
+		day: false,
+		month: false,
+		year: false,
+		hour: false,
+		minute: false,
+		second: false,
+	};
+
+	const hasTouched = {
+		day: false,
+		month: false,
+		year: false,
+		hour: false,
+		minute: false,
+		second: false,
+	};
+
 	const { focusedValue, value } = stores;
 	const { hourCycle } = options;
 
@@ -437,6 +455,8 @@ export function createSegments(props: CreateSegmentProps) {
 			return;
 		}
 
+		hasTouched.month = true;
+
 		const min = 1;
 		const max = 12;
 
@@ -561,6 +581,8 @@ export function createSegments(props: CreateSegmentProps) {
 			return;
 		}
 
+		hasTouched.year = true;
+
 		const min = 0;
 		const currentYear = dayjs(new Date()).year();
 
@@ -635,6 +657,8 @@ export function createSegments(props: CreateSegmentProps) {
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}
+
+		hasTouched.hour = true;
 
 		const min = get(hourCycle) === 12 ? 1 : 0;
 		const max = get(hourCycle) === 12 ? 12 : 23;
@@ -760,6 +784,8 @@ export function createSegments(props: CreateSegmentProps) {
 			return;
 		}
 
+		hasTouched.minute = true;
+
 		const min = 0;
 		const max = 59;
 
@@ -882,6 +908,8 @@ export function createSegments(props: CreateSegmentProps) {
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}
+
+		hasTouched.second = true;
 
 		const min = 0;
 		const max = 59;
@@ -1039,31 +1067,36 @@ export function createSegments(props: CreateSegmentProps) {
 	}
 
 	effect([value], ([$value]) => {
-		if ($value === null) return;
+		if ($value === undefined) return;
 		const djs = dayjs($value);
 
-		if (get(dayValue) !== djs.date()) {
+		if (get(dayValue) !== djs.date() && hasTouched.day) {
 			dayValue.set(djs.date());
 		}
-		if (get(monthValue) !== djs.month() + 1) {
+		if (get(monthValue) !== djs.month() + 1 && hasTouched.month) {
 			monthValue.set(djs.month() + 1);
 		}
-		if (get(yearValue) !== djs.year()) {
+		if (get(yearValue) !== djs.year() && hasTouched.year) {
 			yearValue.set(djs.year());
 		}
-		if (get(hourValue) !== djs.hour()) {
+		if (get(hourValue) !== djs.hour() && hasTouched.hour) {
 			hourValue.set(djs.hour());
 		}
-		if (get(minuteValue) !== djs.minute()) {
+		if (get(minuteValue) !== djs.minute() && hasTouched.minute) {
 			minuteValue.set(djs.minute());
 		}
-		if (get(secondValue) !== djs.second()) {
+		if (get(secondValue) !== djs.second() && hasTouched.second) {
 			secondValue.set(djs.second());
 		}
 	});
 
 	effect([dayValue], ([$dayValue]) => {
-		const djs = dayjs(get(value));
+		const $value = get(value);
+		if ($value === undefined && !hasInitialized.day) {
+			hasInitialized.day = true;
+			return;
+		}
+		const djs = dayjs($value);
 
 		if ($dayValue !== djs.date()) {
 			value.set(djs.date($dayValue ? $dayValue : 1).toDate());
@@ -1071,35 +1104,60 @@ export function createSegments(props: CreateSegmentProps) {
 	});
 
 	effect([monthValue], ([$monthValue]) => {
-		const djs = dayjs(get(value));
+		const $value = get(value);
+		if ($value === undefined && !hasInitialized.month) {
+			hasInitialized.month = true;
+			return;
+		}
+		const djs = dayjs($value);
 		if ($monthValue !== djs.month() + 1) {
 			value.set(djs.month($monthValue ? $monthValue - 1 : 0).toDate());
 		}
 	});
 
 	effect([yearValue], ([$yearValue]) => {
-		const djs = dayjs(get(value));
+		const $value = get(value);
+		if ($value === undefined && !hasInitialized.year) {
+			hasInitialized.year = true;
+			return;
+		}
+		const djs = dayjs($value);
 		if ($yearValue !== djs.year()) {
 			value.set(djs.year($yearValue ? $yearValue : 0).toDate());
 		}
 	});
 
 	effect([hourValue], ([$hourValue]) => {
-		const djs = dayjs(get(value));
+		const $value = get(value);
+		if ($value === undefined && !hasInitialized.hour) {
+			hasInitialized.hour = true;
+			return;
+		}
+		const djs = dayjs($value);
 		if ($hourValue !== djs.hour()) {
 			value.set(djs.hour($hourValue ? $hourValue : 0).toDate());
 		}
 	});
 
 	effect([minuteValue], ([$minuteValue]) => {
-		const djs = dayjs(get(value));
+		const $value = get(value);
+		if ($value === undefined && !hasInitialized.minute) {
+			hasInitialized.minute = true;
+			return;
+		}
+		const djs = dayjs($value);
 		if ($minuteValue !== djs.minute()) {
 			value.set(djs.minute($minuteValue ? $minuteValue : 0).toDate());
 		}
 	});
 
 	effect([secondValue], ([$secondValue]) => {
-		const djs = dayjs(get(value));
+		const $value = get(value);
+		if ($value === undefined && !hasInitialized.second) {
+			hasInitialized.second = true;
+			return;
+		}
+		const djs = dayjs($value);
 		if ($secondValue !== djs.second()) {
 			value.set(djs.second($secondValue ? $secondValue : 0).toDate());
 		}

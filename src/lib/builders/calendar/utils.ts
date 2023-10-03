@@ -138,6 +138,17 @@ export function isSelected(props: IsSelectedArgs) {
 	return false;
 }
 
+type IsFocusedArgs = {
+	date: Date;
+	focusedValue: Date | undefined;
+};
+
+export function isFocused(props: IsFocusedArgs) {
+	const { date, focusedValue } = props;
+	if (!focusedValue) return false;
+	return isSameDay(date, focusedValue);
+}
+
 export function isMatch(date: Date, matcher: Matcher | Matcher[]): boolean {
 	if (Array.isArray(matcher)) {
 		if (isArrayOfDates(matcher)) {
