@@ -23,7 +23,7 @@ import {
 import { useFloating, usePortal } from '$lib/internal/actions/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
-import { get, writable } from 'svelte/store';
+import { get, writable, type Writable } from 'svelte/store';
 import type { TooltipEvents } from './events.js';
 import type { CreateTooltipProps } from './types.js';
 
@@ -40,10 +40,14 @@ const defaults = {
 	portal: 'body',
 	closeOnEscape: true,
 	disableHoverableContent: false,
+	group: undefined,
 } satisfies CreateTooltipProps;
 
 type TooltipParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<TooltipParts>('tooltip');
+
+// Store a global map to get the currently open tooltip.
+const groupMap = new Map<string | true, Writable<boolean>>();
 
 export function createTooltip(props?: CreateTooltipProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateTooltipProps;
@@ -59,6 +63,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 		portal,
 		closeOnEscape,
 		disableHoverableContent,
+		group,
 	} = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
@@ -239,6 +244,21 @@ export function createTooltip(props?: CreateTooltipProps) {
 	});
 
 	let isMouseInTooltipArea = false;
+
+	effect(open, ($open) => {
+		if (!$open) return;
+
+		const groupValue = get(group);
+		if (groupValue === undefined || groupValue === false) {
+			return;
+		}
+
+		// Close the currently open tooltip in the same group
+		// and set this tooltip as the open one.
+		const currentOpen = groupMap.get(groupValue);
+		currentOpen?.set(false);
+		groupMap.set(groupValue, open);
+	});
 
 	effect([isVisible, activeTrigger], ([$isVisible, $activeTrigger]) => {
 		if (!$isVisible || !$activeTrigger) return;
