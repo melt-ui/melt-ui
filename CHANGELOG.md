@@ -1,5 +1,13 @@
 # @melt-ui/svelte
 
+## 0.51.1
+
+### Patch Changes
+
+- Select: Fix defaultSelected clash when `multiple` is true ([`d0a1d4c8`](https://github.com/melt-ui/melt-ui/commit/d0a1d4c8514ca298b082f9ff62fe46b52d5d45ad))
+
+- Combobox: Fix defaultSelected clash when `multiple` is true ([`633bacf0`](https://github.com/melt-ui/melt-ui/commit/633bacf062b1affcab92f4148ae4609a1532e747))
+
 ## 0.51.0
 
 ### Minor Changes
