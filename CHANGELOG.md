@@ -1,5 +1,21 @@
 # @melt-ui/svelte
 
+## 0.51.0
+
+### Minor Changes
+
+- Tooltip: Add `group` prop ([#575](https://github.com/melt-ui/melt-ui/pull/575))
+
+### Patch Changes
+
+- Combobox: Fixed focus management (#569) ([#570](https://github.com/melt-ui/melt-ui/pull/570))
+
+- fix: change JSDoc example for `melt` action ([#576](https://github.com/melt-ui/melt-ui/pull/576))
+
+- Tooltip: rework open & close behaviours ([`21bcf3d0`](https://github.com/melt-ui/melt-ui/commit/21bcf3d003af2e4d2fe0f066e6b2b255fc797629))
+
+- fix: add generics to exported types ([#579](https://github.com/melt-ui/melt-ui/pull/579))
+
 ## 0.50.1
 
 ### Patch Changes
