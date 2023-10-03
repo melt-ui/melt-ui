@@ -12,6 +12,7 @@ import {
 import dayjs from 'dayjs';
 import type { _DatePickerParts, _DatePickerIds, _DatePickerStores } from './create.js';
 import { get, writable, type Writable } from 'svelte/store';
+import { isSameDay } from '../calendar/utils.js';
 
 const { name } = createElHelpers<_DatePickerParts>('calendar');
 
@@ -75,21 +76,30 @@ export function createSegments(props: CreateSegmentProps) {
 	const { focusedValue, value } = stores;
 	const { hourCycle } = options;
 
-	function displayValueSideEffect(newValue: Date | undefined) {
-		value.set(newValue);
-	}
-
 	const displayValue = withSideEffect<Date | undefined>(get(value), displayValueSideEffect);
 
 	type NumOrNull = number | null;
 
-	const dayValue = writable<NumOrNull>(null);
-	const monthValue = writable<NumOrNull>(null);
-	const yearValue = writable<NumOrNull>(null);
-	const hourValue = writable<NumOrNull>(null);
-	const minuteValue = writable<NumOrNull>(null);
-	const secondValue = writable<NumOrNull>(null);
+	const initDjs = get(value) ? dayjs(get(value)) : null;
+
+	const dayValue = writable<NumOrNull>(initDjs ? initDjs.date() : null);
+	const monthValue = writable<NumOrNull>(initDjs ? initDjs.month() + 1 : null);
+	const yearValue = writable<NumOrNull>(initDjs ? initDjs.year() : null);
+	const hourValue = writable<NumOrNull>(initDjs ? initDjs.hour() : null);
+	const minuteValue = writable<NumOrNull>(initDjs ? initDjs.minute() : null);
+	const secondValue = writable<NumOrNull>(initDjs ? initDjs.second() : null);
 	const dayPeriodValue = writable<'AM' | 'PM'>('AM');
+
+	function displayValueSideEffect(newValue: Date | undefined) {
+		value.set(newValue);
+		const djs = newValue ? dayjs(newValue) : null;
+		dayValue.set(djs ? djs.date() : null);
+		monthValue.set(djs ? djs.month() + 1 : null);
+		yearValue.set(djs ? djs.year() : null);
+		hourValue.set(djs ? djs.hour() : null);
+		minuteValue.set(djs ? djs.minute() : null);
+		secondValue.set(djs ? djs.second() : null);
+	}
 
 	const daySegment = builder(name('day-segment'), {
 		stores: [focusedValue, dayValue],
@@ -1070,23 +1080,28 @@ export function createSegments(props: CreateSegmentProps) {
 	effect([value], ([$value]) => {
 		if ($value === undefined) return;
 		const djs = dayjs($value);
+		const displayDjs = dayjs(get(displayValue));
 
-		if (get(dayValue) !== djs.date()) {
+		if (!isSameDay(djs.toDate(), displayDjs.toDate())) {
+			displayValue.set(djs.toDate());
+		}
+
+		if (get(dayValue) !== djs.date() && states.day.hasTouched) {
 			dayValue.set(djs.date());
 		}
-		if (get(monthValue) !== djs.month() + 1) {
+		if (get(monthValue) !== djs.month() + 1 && states.month.hasTouched) {
 			monthValue.set(djs.month() + 1);
 		}
-		if (get(yearValue) !== djs.year()) {
+		if (get(yearValue) !== djs.year() && states.year.hasTouched) {
 			yearValue.set(djs.year());
 		}
-		if (get(hourValue) !== djs.hour()) {
+		if (get(hourValue) !== djs.hour() && states.hour.hasTouched) {
 			hourValue.set(djs.hour());
 		}
-		if (get(minuteValue) !== djs.minute()) {
+		if (get(minuteValue) !== djs.minute() && states.minute.hasTouched) {
 			minuteValue.set(djs.minute());
 		}
-		if (get(secondValue) !== djs.second()) {
+		if (get(secondValue) !== djs.second() && states.second.hasTouched) {
 			secondValue.set(djs.second());
 		}
 	});

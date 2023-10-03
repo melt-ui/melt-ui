@@ -568,7 +568,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		// with multiple months.
 		const candidateCells = getSelectableCells();
 		if (!candidateCells.length) {
-			console.log('No candidate cells found in top level shiftFocus');
 			return;
 		}
 
@@ -581,6 +580,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		 */
 		if (isValidIndex(nextIndex, candidateCells)) {
 			const nextCell = candidateCells[nextIndex];
+			handleFocusedValue(nextCell);
 			return nextCell.focus();
 		}
 
@@ -616,6 +616,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				const newIndex = newCandidateCells.length - Math.abs(nextIndex);
 				if (isValidIndex(newIndex, candidateCells)) {
 					const newCell = newCandidateCells[newIndex];
+					handleFocusedValue(newCell);
 					return newCell.focus();
 				}
 			});
@@ -662,6 +663,16 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		).filter((el): el is HTMLElement => isHTMLElement(el));
 	}
 
+	/**
+	 * A helper function to extract the date from the `data-value`
+	 * attribute of a date cell and set it as the focused value.
+	 */
+	function handleFocusedValue(node: HTMLElement) {
+		const cellValue = node.getAttribute('data-value');
+		if (!cellValue) return;
+		focusedValue.set(new Date(cellValue));
+	}
+
 	return {
 		elements: {
 			grid,
@@ -693,18 +704,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		options,
 		ids,
 	};
-}
-
-/**
- * Given a grid node and a date string, this function will return
- * the cell in the grid that matches that date string.
- */
-function getFocusableCellByDate(node: HTMLElement, dateStr: string) {
-	const cell = node.querySelector(
-		`[data-value="${dateStr}"]:not([data-disabled]):not([data-outside-month])`
-	);
-	if (!isHTMLElement(cell)) return null;
-	return cell;
 }
 
 function isValidIndex(index: number, arr: unknown[]) {
