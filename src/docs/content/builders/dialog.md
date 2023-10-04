@@ -23,7 +23,7 @@ At a high level, the anatomy of a dialog looks like this:
 	const { 
 		elements: {
 			trigger, 
-			portal, 
+			portalled, 
 			overlay, 
 			content, 
 			title, 
@@ -148,7 +148,7 @@ Dialogs can be nested. For example, here's a dialog that opens another dialog.
 
 ## Accessibility
 
-Adheres to the [Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog/) &
+Adheres to the [Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) &
 [Alert Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/)
 
 <KbdTable {keyboard} />
