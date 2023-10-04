@@ -654,6 +654,7 @@ export function createCombobox<
 	});
 
 	return {
+		ids,
 		elements: {
 			input,
 			option,

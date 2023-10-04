@@ -249,6 +249,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 	};
 
 	return {
+		ids,
 		elements: {
 			root,
 			input,

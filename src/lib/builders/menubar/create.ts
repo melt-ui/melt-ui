@@ -601,6 +601,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 	});
 
 	return {
+		ids: rootIds,
 		elements: {
 			menubar,
 		},

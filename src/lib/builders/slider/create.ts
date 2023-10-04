@@ -426,6 +426,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	);
 
 	return {
+		ids,
 		elements: {
 			root,
 			thumb,
