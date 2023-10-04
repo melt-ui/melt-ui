@@ -60,8 +60,8 @@
 			{$segmentValues.month ?? 'mm'}
 		</div>
 		<div aria-hidden="true" class="px-1">/</div>
-		<div use:melt={$segment('date')}>
-			{$segmentValues.date ?? 'dd'}
+		<div use:melt={$segment('day')}>
+			{$segmentValues.day ?? 'dd'}
 		</div>
 		<div aria-hidden="true" class="px-1">/</div>
 		<div use:melt={$segment('year')}>

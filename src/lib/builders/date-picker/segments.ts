@@ -39,7 +39,7 @@ type CreateSegmentProps = {
 	};
 };
 
-const segmentParts = ['date', 'month', 'year', 'hour', 'minute', 'second'] as const;
+const segmentParts = ['day', 'month', 'year', 'hour', 'minute', 'second'] as const;
 
 type SegmentPart = (typeof segmentParts)[number];
 
@@ -55,6 +55,18 @@ type SegmentValueObj = Record<SegmentPart, number | null>;
 type SegmentStates = {
 	[K in SegmentPart]: SegmentState;
 };
+
+const acceptableSegmentKeys = [
+	kbd.ENTER,
+	kbd.ARROW_UP,
+	kbd.ARROW_DOWN,
+	kbd.ARROW_LEFT,
+	kbd.ARROW_RIGHT,
+	kbd.BACKSPACE,
+	kbd.SPACE,
+	kbd.A,
+	kbd.P,
+];
 
 export function createSegments(props: CreateSegmentProps) {
 	const { stores, ids, options } = props;
@@ -90,7 +102,16 @@ export function createSegments(props: CreateSegmentProps) {
 		const djs = dayjs(value);
 		segmentValues.set(
 			Object.fromEntries(
-				segmentParts.map((part) => [part, part === 'month' ? djs.get(part) + 1 : djs.get(part)])
+				segmentParts.map((part) => {
+					switch (part) {
+						case 'day':
+							return [part, djs.get('date')];
+						case 'month':
+							return [part, djs.get(part) + 1];
+						default:
+							return [part, djs.get(part)];
+					}
+				})
 			) as SegmentValueObj
 		);
 	}
@@ -123,7 +144,16 @@ export function createSegments(props: CreateSegmentProps) {
 		usedSegments.forEach((part) => {
 			const value = segmentObj[part];
 			if (value === null) return;
-			djs = djs.set(part, part === 'month' ? value - 1 : value);
+			switch (part) {
+				case 'day':
+					djs = djs.set('date', value);
+					break;
+				case 'month':
+					djs = djs.set(part, value - 1);
+					break;
+				default:
+					djs = djs.set(part, value);
+			}
 		});
 
 		return value.set(djs.toDate());
@@ -153,7 +183,7 @@ export function createSegments(props: CreateSegmentProps) {
 	}
 
 	const segmentBuilders: SegmentBuilders = {
-		date: {
+		day: {
 			attrs: daySegmentAttrs,
 			action: daySegmentAction,
 		},
@@ -188,14 +218,13 @@ export function createSegments(props: CreateSegmentProps) {
 	});
 
 	const segment = builder(name('segment'), {
-		stores: [focusedValue, segmentValues, hourCycle],
-		returned: ([$focusedValue, $segmentValues, $hourCycle]) => {
+		stores: [segmentValues, hourCycle],
+		returned: ([$segmentValues, $hourCycle]) => {
 			const props = {
-				$focusedValue,
 				$segmentValues,
 				$hourCycle,
 			};
-			return (part: SegmentPart) => getSegmentAttrs(part, props);
+			return (part: SegmentPart) => ({ ...getSegmentAttrs(part, props), 'data-segment': part });
 		},
 		action: (node: HTMLElement) => getSegmentAction(node),
 	});
@@ -212,7 +241,6 @@ export function createSegments(props: CreateSegmentProps) {
 	>;
 
 	type SegmentAttrProps = {
-		$focusedValue: Date;
 		$segmentValues: SegmentValueObj;
 		$hourCycle: 12 | 24 | undefined;
 	};
@@ -236,11 +264,13 @@ export function createSegments(props: CreateSegmentProps) {
 	 */
 
 	function daySegmentAttrs(props: SegmentAttrProps) {
-		const { $segmentValues, $focusedValue } = props;
-		const dayValue = $segmentValues.date;
-		const activeDay = dayjs($focusedValue).date();
+		const { $segmentValues } = props;
+		const isEmpty = $segmentValues.day === null;
+		const djs = $segmentValues.day ? dayjs().set('date', $segmentValues.day) : dayjs();
+		const valueNow = djs.date();
 		const valueMin = 1;
-		const valueMax = dayjs($focusedValue).daysInMonth();
+		const valueMax = djs.daysInMonth();
+		const valueText = isEmpty ? 'Empty' : `${valueNow}`;
 
 		return {
 			...segmentDefaults,
@@ -248,16 +278,15 @@ export function createSegments(props: CreateSegmentProps) {
 			'aria-label': 'day, ',
 			'aria-valuemin': valueMin,
 			'aria-valuemax': valueMax,
-			'aria-valuenow': dayValue ?? activeDay,
-			'aria-valuetext': dayValue ?? 'Empty',
-			'data-segment': 'date',
+			'aria-valuenow': valueNow,
+			'aria-valuetext': valueText,
 		};
 	}
 
 	function daySegmentAction(node: HTMLElement) {
 		const unsubEvents = executeCallbacks(
 			addMeltEventListener(node, 'keydown', handleDaySegmentKeydown),
-			addMeltEventListener(node, 'focusout', () => (states.date.hasLeftFocus = true))
+			addMeltEventListener(node, 'focusout', () => (states.day.hasLeftFocus = true))
 		);
 
 		return {
@@ -268,8 +297,8 @@ export function createSegments(props: CreateSegmentProps) {
 	}
 
 	function handleDaySegmentKeydown(e: KeyboardEvent) {
-		if (e.key !== kbd.TAB) {
-			e.preventDefault();
+		if (!isTabKey(e.key)) {
+			e.preventDefault;
 		}
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
@@ -280,14 +309,14 @@ export function createSegments(props: CreateSegmentProps) {
 		const daysInMonth = activeDjs.daysInMonth();
 
 		if (e.key === kbd.ARROW_UP) {
-			updateSegment('date', (prev) => {
+			updateSegment('day', (prev) => {
 				if (prev === null || prev === daysInMonth) return 1;
 				return prev + 1;
 			});
 			return;
 		}
 		if (e.key === kbd.ARROW_DOWN) {
-			updateSegment('date', (prev) => {
+			updateSegment('day', (prev) => {
 				if (prev === null || prev === 1) {
 					return daysInMonth;
 				}
@@ -299,7 +328,7 @@ export function createSegments(props: CreateSegmentProps) {
 		if (isNumberKey(e.key)) {
 			const num = parseInt(e.key);
 			let moveToNext = false;
-			updateSegment('date', (prev) => {
+			updateSegment('day', (prev) => {
 				const max = daysInMonth;
 				const maxStart = Math.floor(max / 10);
 
@@ -308,9 +337,9 @@ export function createSegments(props: CreateSegmentProps) {
 				 * `prev` value so that we can start the segment over again
 				 * when the user types a number.
 				 */
-				if (states.date.hasLeftFocus) {
+				if (states.day.hasLeftFocus) {
 					prev = null;
-					states.date.hasLeftFocus = false;
+					states.day.hasLeftFocus = false;
 				}
 
 				if (prev === null) {
@@ -320,7 +349,7 @@ export function createSegments(props: CreateSegmentProps) {
 					 * number, we can move to the next segment.
 					 */
 					if (num === 0) {
-						states.date.lastKeyZero = true;
+						states.day.lastKeyZero = true;
 						return null;
 					}
 
@@ -330,7 +359,7 @@ export function createSegments(props: CreateSegmentProps) {
 					 * we want to move to the next segment, since it's not possible
 					 * to continue typing a valid number in this segment.
 					 */
-					if (states.date.lastKeyZero || num > maxStart) {
+					if (states.day.lastKeyZero || num > maxStart) {
 						moveToNext = true;
 						return num;
 					}
@@ -378,7 +407,7 @@ export function createSegments(props: CreateSegmentProps) {
 			const currentTarget = e.currentTarget;
 			if (!isHTMLElement(currentTarget)) return;
 
-			updateSegment('date', (prev) => {
+			updateSegment('day', (prev) => {
 				if (prev === null) return null;
 				const str = prev.toString();
 				if (str.length === 1) return null;
@@ -400,13 +429,13 @@ export function createSegments(props: CreateSegmentProps) {
 	 */
 
 	function monthSegmentAttrs(props: SegmentAttrProps) {
-		const { $segmentValues, $focusedValue } = props;
-		const monthValue = $segmentValues.month;
+		const { $segmentValues } = props;
+		const isEmpty = $segmentValues.month === null;
+		const djs = $segmentValues.month ? dayjs().set('month', $segmentValues.month - 1) : dayjs();
+		const valueNow = djs.month() + 1;
 		const valueMin = 1;
 		const valueMax = 12;
-		const activeDjs = dayjs($focusedValue);
-		const activeMonth = activeDjs.month();
-		const activeMonthString = activeDjs.format('MMMM');
+		const valueText = isEmpty ? 'Empty' : `${valueNow} - ${djs.format('MMMM')}`;
 
 		return {
 			...segmentDefaults,
@@ -415,9 +444,8 @@ export function createSegments(props: CreateSegmentProps) {
 			contenteditable: true,
 			'aria-valuemin': valueMin,
 			'aria-valuemax': valueMax,
-			'aria-valuenow': monthValue ?? `${activeMonth + 1} - ${activeMonthString}`,
-			'aria-valuetext': monthValue ?? 'Empty',
-			'data-segment': 'month',
+			'aria-valuenow': valueNow,
+			'aria-valuetext': valueText,
 		};
 	}
 
@@ -435,7 +463,7 @@ export function createSegments(props: CreateSegmentProps) {
 	}
 
 	function handleMonthSegmentKeydown(e: KeyboardEvent) {
-		if (e.key !== kbd.TAB) {
+		if (!isTabKey(e.key)) {
 			e.preventDefault();
 		}
 
@@ -567,11 +595,12 @@ export function createSegments(props: CreateSegmentProps) {
 
 	function yearSegmentAttrs(props: SegmentAttrProps) {
 		const { $segmentValues } = props;
-		const yearValue = $segmentValues.year;
+		const isEmpty = $segmentValues.year === null;
+		const djs = $segmentValues.year ? dayjs().set('year', $segmentValues.year) : dayjs();
 		const valueMin = 1;
 		const valueMax = 9999;
-
-		const currentYear = dayjs(new Date()).year();
+		const valueNow = djs.year();
+		const valueText = isEmpty ? 'Empty' : `${valueNow}`;
 
 		return {
 			...segmentDefaults,
@@ -579,9 +608,8 @@ export function createSegments(props: CreateSegmentProps) {
 			'aria-label': 'year, ',
 			'aria-valuemin': valueMin,
 			'aria-valuemax': valueMax,
-			'aria-valuenow': yearValue ?? `${currentYear}`,
-			'aria-valuetext': yearValue ?? 'Empty',
-			'data-segment': 'year',
+			'aria-valuenow': valueNow,
+			'aria-valuetext': valueText,
 		};
 	}
 
@@ -599,7 +627,7 @@ export function createSegments(props: CreateSegmentProps) {
 	}
 
 	function handleYearSegmentKeydown(e: KeyboardEvent) {
-		if (e.key !== kbd.TAB) {
+		if (!isTabKey(e.key)) {
 			e.preventDefault();
 		}
 		if (!isAcceptableSegmentKey(e.key)) {
@@ -680,9 +708,12 @@ export function createSegments(props: CreateSegmentProps) {
 
 	function hourSegmentAttrs(props: SegmentAttrProps) {
 		const { $segmentValues, $hourCycle } = props;
-		const hourValue = $segmentValues.hour;
+		const isEmpty = $segmentValues.hour === null;
+		const djs = $segmentValues.hour ? dayjs().set('hour', $segmentValues.hour) : dayjs();
+		const valueNow = djs.hour();
 		const valueMin = $hourCycle === 12 ? 1 : 0;
 		const valueMax = $hourCycle === 12 ? 12 : 23;
+		const valueText = isEmpty ? 'Empty' : `${valueNow} ${get(dayPeriodValue)}`;
 
 		return {
 			...segmentDefaults,
@@ -690,9 +721,8 @@ export function createSegments(props: CreateSegmentProps) {
 			'aria-label': 'hour, ',
 			'aria-valuemin': valueMin,
 			'aria-valuemax': valueMax,
-			'aria-valuenow': hourValue ?? `${valueMin}`,
-			'aria-valuetext': hourValue ?? 'Empty',
-			'data-segment': 'hour',
+			'aria-valuenow': valueNow,
+			'aria-valuetext': valueText,
 		};
 	}
 
@@ -710,7 +740,7 @@ export function createSegments(props: CreateSegmentProps) {
 	}
 
 	function handleHourSegmentKeydown(e: KeyboardEvent) {
-		if (e.key !== kbd.TAB) {
+		if (!isTabKey(e.key)) {
 			e.preventDefault();
 		}
 
@@ -841,9 +871,12 @@ export function createSegments(props: CreateSegmentProps) {
 
 	function minuteSegmentAttrs(props: SegmentAttrProps) {
 		const { $segmentValues } = props;
-		const minuteValue = $segmentValues.minute;
+		const isEmpty = $segmentValues.minute === null;
+		const djs = $segmentValues.minute ? dayjs().set('minute', $segmentValues.minute) : dayjs();
+		const valueNow = djs.minute();
 		const valueMin = 0;
 		const valueMax = 59;
+		const valueText = isEmpty ? 'Empty' : `${valueNow}`;
 
 		return {
 			...segmentDefaults,
@@ -851,9 +884,8 @@ export function createSegments(props: CreateSegmentProps) {
 			'aria-label': 'minute, ',
 			'aria-valuemin': valueMin,
 			'aria-valuemax': valueMax,
-			'aria-valuenow': minuteValue ?? `${valueMin}`,
-			'aria-valuetext': minuteValue ?? 'Empty',
-			'data-segment': 'minute',
+			'aria-valuenow': valueNow,
+			'aria-valuetext': valueText,
 		};
 	}
 
@@ -871,10 +903,9 @@ export function createSegments(props: CreateSegmentProps) {
 	}
 
 	function handleMinuteSegmentKeydown(e: KeyboardEvent) {
-		if (e.key !== kbd.TAB) {
+		if (!isTabKey(e.key)) {
 			e.preventDefault();
 		}
-
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}
@@ -1014,7 +1045,6 @@ export function createSegments(props: CreateSegmentProps) {
 			'aria-valuemax': valueMax,
 			'aria-valuenow': secondValue ?? `${valueMin}`,
 			'aria-valuetext': secondValue ?? 'Empty',
-			'data-segment': 'second',
 		};
 	}
 
@@ -1032,7 +1062,7 @@ export function createSegments(props: CreateSegmentProps) {
 	}
 
 	function handleSecondSegmentKeydown(e: KeyboardEvent) {
-		if (e.key !== kbd.TAB) {
+		if (!isTabKey(e.key)) {
 			e.preventDefault();
 		}
 		if (!isAcceptableSegmentKey(e.key)) {
@@ -1175,7 +1205,7 @@ export function createSegments(props: CreateSegmentProps) {
 				'aria-valuemax': valueMax,
 				'aria-valuenow': $dayPeriodValue ?? `${valueMin}`,
 				'aria-valuetext': $dayPeriodValue ?? 'AM',
-				'data-segment': 'period',
+				'data-segment': 'dayPeriod',
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -1197,21 +1227,11 @@ export function createSegments(props: CreateSegmentProps) {
 	 */
 
 	function handleDayPeriodSegmentKeydown(e: KeyboardEvent) {
-		const acceptableKeys = [
-			kbd.ARROW_UP,
-			kbd.ARROW_DOWN,
-			kbd.ARROW_LEFT,
-			kbd.ARROW_RIGHT,
-			kbd.BACKSPACE,
-			'a',
-			'p',
-		];
-
-		if (e.key !== kbd.TAB) {
+		if (!isTabKey(e.key)) {
 			e.preventDefault();
 		}
 
-		if (!acceptableKeys.includes(e.key)) {
+		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}
 
@@ -1252,15 +1272,6 @@ export function createSegments(props: CreateSegmentProps) {
 	};
 }
 
-const acceptableKeys = [
-	kbd.ENTER,
-	kbd.ARROW_UP,
-	kbd.ARROW_DOWN,
-	kbd.ARROW_LEFT,
-	kbd.ARROW_RIGHT,
-	kbd.BACKSPACE,
-];
-
 export function handleSegmentNavigation(e: KeyboardEvent, containerId: string) {
 	const currentTarget = e.currentTarget;
 	if (!isHTMLElement(currentTarget)) return;
@@ -1285,7 +1296,7 @@ export function moveToNextSegment(e: KeyboardEvent, containerId: string) {
 }
 
 function isAcceptableSegmentKey(key: string) {
-	if (acceptableKeys.includes(key)) return true;
+	if (acceptableSegmentKeys.includes(key)) return true;
 	if (isNumberKey(key)) return true;
 	return false;
 }
@@ -1350,4 +1361,8 @@ function getPrevSegment(node: HTMLElement, segments: HTMLElement[]) {
 	const prevIndex = index - 1;
 	const prevSegment = segments[prevIndex];
 	return prevSegment;
+}
+
+function isTabKey(key: string) {
+	return key === kbd.TAB;
 }
