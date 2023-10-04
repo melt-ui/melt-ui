@@ -40,9 +40,6 @@ type CreateSegmentProps = {
 };
 
 const segmentParts = ['day', 'month', 'year', 'hour', 'minute', 'second'] as const;
-function isSegmentPart(part: string): part is SegmentPart {
-	return segmentParts.includes(part as SegmentPart);
-}
 
 type SegmentPart = (typeof segmentParts)[number];
 
@@ -103,28 +100,28 @@ export function createSegments(props: CreateSegmentProps) {
 		const contents = Object.keys($segmentValues).reduce((obj, part) => {
 			if (!isSegmentPart(part)) return obj;
 			const value = $segmentValues[part];
-			const djs = dayjs();
+			const d = dayjs();
 
 			const notNull = value !== null;
 
 			switch (part) {
 				case 'day':
-					obj[part] = notNull ? djs.set('date', value).format('DD') : 'DD';
+					obj[part] = notNull ? d.set('date', value).format('DD') : 'DD';
 					break;
 				case 'month':
-					obj[part] = notNull ? djs.set('month', value - 1).format('MM') : 'MM';
+					obj[part] = notNull ? d.set('month', value - 1).format('MM') : 'MM';
 					break;
 				case 'year':
-					obj[part] = notNull ? djs.set('year', value).format('YYYY') : 'YYYY';
+					obj[part] = notNull ? d.set('year', value).format('YYYY') : 'YYYY';
 					break;
 				case 'hour':
-					obj[part] = notNull ? djs.set('hour', value).format('hh') : 'hh';
+					obj[part] = notNull ? d.set('hour', value).format('hh') : 'hh';
 					break;
 				case 'minute':
-					obj[part] = notNull ? djs.set('minute', value).format('mm') : 'mm';
+					obj[part] = notNull ? d.set('minute', value).format('mm') : 'mm';
 					break;
 				case 'second':
-					obj[part] = notNull ? djs.set('second', value).format('ss') : 'ss';
+					obj[part] = notNull ? d.set('second', value).format('ss') : 'ss';
 					break;
 			}
 			return obj;
@@ -134,7 +131,8 @@ export function createSegments(props: CreateSegmentProps) {
 	});
 
 	/**
-	 * Syncs the segment values with the `value` store.
+	 * Sets the individual segment values based on the current
+	 * value of the date picker.
 	 */
 	function syncSegmentValues(value: Date) {
 		const djs = dayjs(value);
@@ -146,6 +144,8 @@ export function createSegments(props: CreateSegmentProps) {
 							return [part, djs.get('date')];
 						case 'month':
 							return [part, djs.get(part) + 1];
+						case 'hour':
+							return [part, getHourForSegmentValue(djs.get(part))];
 						default:
 							return [part, djs.get(part)];
 					}
@@ -156,6 +156,9 @@ export function createSegments(props: CreateSegmentProps) {
 
 	/**
 	 * Get the segments being used/ are rendered in the DOM.
+	 * We're using this to determine when to set the value of
+	 * the date picker, which is when all the segments have
+	 * been filled.
 	 */
 	function getUsedSegments() {
 		let dayPeriodExists = false;
@@ -181,6 +184,11 @@ export function createSegments(props: CreateSegmentProps) {
 		return part as SegmentPart;
 	}
 
+	/**
+	 * Constructs a new date object based on the current
+	 * values of the used segments, and sets the value
+	 * store to that new date.
+	 */
 	function setValueFromSegments(segmentObj: SegmentValueObj) {
 		const usedSegments = getUsedSegments();
 		let djs = dayjs();
@@ -194,12 +202,48 @@ export function createSegments(props: CreateSegmentProps) {
 				case 'month':
 					djs = djs.set(part, value - 1);
 					break;
+				case 'hour':
+					djs = djs.set(part, getHourForValue(value));
+					break;
 				default:
 					djs = djs.set(part, value);
 			}
 		});
 
 		return value.set(djs.toDate());
+	}
+
+	function getHourForSegmentValue(hour: number) {
+		const $hourCycle = get(hourCycle);
+		if ($hourCycle === 24) return hour;
+
+		// convert hour from 24 to 12 hour cycle and set day period
+		if (hour > 12) {
+			dayPeriodValue.set('PM');
+			return hour - 12;
+		}
+		if (hour === 0) {
+			dayPeriodValue.set('AM');
+			return 12;
+		}
+		dayPeriodValue.set('AM');
+		return hour;
+	}
+
+	function getHourForValue(hour: number) {
+		const $hourCycle = get(hourCycle);
+		const $dayPeriodValue = get(dayPeriodValue);
+		if ($hourCycle === 24) return hour;
+
+		// convert hour from 12 to 24 hour cycle based on day period
+		if ($dayPeriodValue === 'AM' && hour === 12) {
+			return 0;
+		}
+		if ($dayPeriodValue === 'PM' && hour !== 12) {
+			return hour + 12;
+		}
+
+		return hour;
 	}
 
 	function areAllSegmentsFilled() {
@@ -1419,4 +1463,8 @@ function getPrevSegment(node: HTMLElement, segments: HTMLElement[]) {
 
 function isTabKey(key: string) {
 	return key === kbd.TAB;
+}
+
+function isSegmentPart(part: string): part is SegmentPart {
+	return segmentParts.includes(part as SegmentPart);
 }
