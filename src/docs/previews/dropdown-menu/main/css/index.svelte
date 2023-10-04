@@ -224,8 +224,8 @@
 		padding: 0;
 	}
 
-	/* TODO: is the data-attribute present in the element? */
-	.trigger[data-highlighted] {
+	/* TODO: is this data-attribute present in the element? */
+	:global(.trigger[data-highlighted]) {
 		outline: none;
 	}
 
@@ -278,7 +278,7 @@
 		font-size: var(--fs-sm);
 	}
 
-	.item[data-highlighted] {
+	:global(.item[data-highlighted]) {
 		background-color: var(--magnum-200);
 		color: var(--magnum-900);
 	}
