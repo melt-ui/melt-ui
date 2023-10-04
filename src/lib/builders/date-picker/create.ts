@@ -13,6 +13,7 @@ import {
 	type ChangeFn,
 	executeCallbacks,
 	styleToString,
+	chunk,
 } from '$lib/internal/helpers/index.js';
 
 import {
@@ -62,7 +63,7 @@ const defaults = {
 	closeOnOutsideClick: true,
 	portal: undefined,
 	forceVisible: false,
-	calendarLabel: 'Date Picker',
+	calendarLabel: 'Event Date',
 	locale: 'en',
 } satisfies CreateDatePickerProps;
 
@@ -201,7 +202,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	const focusedValueWritable =
 		withDefaults.focusedValue ?? writable(withDefaults.defaultFocusedValue);
-
 	const focusedValue = dayJsStore(
 		overridable(focusedValueWritable, withDefaults?.onFocusedValueChange),
 		locale
@@ -215,16 +215,47 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	const months = writable<Month[]>([]);
 
-	const grid = builder(name('grid'), {
-		returned: () => ({ tabindex: -1, id: ids.grid }),
+	const isInvalid = writable(false);
+
+	const ariaCalendarLabel = derived(
+		[months, locale, calendarLabel],
+		([$months, $locale, $calendarLabel]) => {
+			if (!$months.length) return $calendarLabel;
+			if ($months.length === 1) {
+				const month = $months[0];
+				return `${$calendarLabel}, ${dayjs(month.monthDate).locale($locale).format('MMMM')}`;
+			}
+			const firstMonthName = dayjs($months[0].monthDate).locale($locale).format('MMMM');
+			const lastMonthName = dayjs($months[$months.length - 1].monthDate)
+				.locale($locale)
+				.format('MMMM');
+
+			return `${$calendarLabel}, ${firstMonthName} - ${lastMonthName}`;
+		}
+	);
+
+	const calendar = builder(name(), {
+		stores: [ariaCalendarLabel, isInvalid],
+		returned: ([$ariaCalendarLabel, $isInvalid]) => {
+			return {
+				role: 'application',
+				'aria-label': $ariaCalendarLabel,
+				'data-invalid': $isInvalid ? '' : undefined,
+			};
+		},
 		action: (node: HTMLElement) => {
 			/**
 			 * Create the accessible heading for the calendar
 			 * when the grid is mounted. The label is updated
 			 * via an effect when the active date or label changes.
 			 */
-			createAccessibleHeading(node, get(calendarLabel));
+			createAccessibleHeading(node, get(ariaCalendarLabel));
+		},
+	});
 
+	const grid = builder(name('grid'), {
+		returned: () => ({ tabindex: -1, id: ids.grid }),
+		action: (node: HTMLElement) => {
 			const unsubKb = addMeltEventListener(node, 'keydown', handleGridKeydown);
 
 			return {
@@ -333,13 +364,13 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	/**
 	 * Update the accessible heading's text content when the
-	 * `calendarLabel` store changes.
+	 * `ariaCalendarLabel` store changes.
 	 */
-	effect([calendarLabel], ([$calendarLabel]) => {
+	effect([ariaCalendarLabel], ([$ariaCalendarLabel]) => {
 		if (!isBrowser) return;
 		const node = document.getElementById(ids.accessibleHeading);
 		if (!isHTMLElement(node)) return;
-		node.textContent = $calendarLabel;
+		node.textContent = $ariaCalendarLabel;
 	});
 
 	effect([open, value], ([$open, $value]) => {
@@ -358,24 +389,15 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	 * the days of the week, used to render the days of the week in the
 	 * calendar header.
 	 *
+	 * It returns the days of the week from the first week of the first
+	 * month in the calendar view.
+	 *
 	 * This remains in sync with the `weekStartsOn` option, so if it is
 	 * changed, this store and the calendar will update accordingly.
 	 */
 	const daysOfWeek = derived([months], ([$months]) => {
 		if (!$months.length) return [];
-
-		const lastMonthDates = $months[0].lastMonthDates;
-
-		const days = Array.from({ length: 7 - lastMonthDates.length }, (_, i) => {
-			const d = dayjs($months[0].dates[i]);
-			return d.toDate();
-		});
-
-		if (lastMonthDates.length) {
-			return lastMonthDates.concat(days);
-		}
-
-		return days;
+		return $months[0].weeks[0];
 	});
 
 	/**
@@ -422,11 +444,14 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			nextMonthDays.push(...extraDaysArray);
 		}
 
+		const allDays = lastMonthDays.concat(datesArray, nextMonthDays);
+
+		const weeks = chunk(allDays, 7);
+
 		return {
-			month: date,
-			dates: datesArray,
-			nextMonthDates: nextMonthDays,
-			lastMonthDates: lastMonthDays,
+			monthDate: date,
+			dates: allDays,
+			weeks,
 		};
 	}
 
@@ -689,6 +714,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	return {
 		elements: {
+			calendar,
 			grid,
 			cell,
 			dateInput,

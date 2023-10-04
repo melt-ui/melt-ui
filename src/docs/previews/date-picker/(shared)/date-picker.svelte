@@ -21,6 +21,7 @@
 
 	const {
 		elements: {
+			calendar,
 			grid,
 			cell,
 			dateInput,
@@ -101,73 +102,72 @@
 			use:melt={$content}
 			transition:fade={{ duration: 100 }}
 		>
-			<div class="flex items-center gap-4">
-				<!-- Calendar view -->
-				{#each $months as month}
-					{@const {
-						dates,
-						lastMonthDates,
-						nextMonthDates,
-						month: monthDate,
-					} = month}
-					<div use:melt={$grid} class="rounded-lg bg-white p-4 shadow-sm">
-						<div class="flex flex-col gap-2.5 text-magnum-800">
-							<div class="flex w-full items-center justify-between">
-								<p class="font-semibold text-magnum-800">
-									{monthYearFormatter.format(monthDate)}
-								</p>
-								<div class="flex items-center gap-8">
-									<button on:click={prevMonth} tabindex={1}>
-										<ChevronLeft />
-									</button>
-									<button on:click={nextMonth} tabindex={2}>
-										<ChevronRight />
-									</button>
+			<div class="w-full" use:melt={$calendar}>
+				<table class="flex items-center gap-4">
+					<!-- Calendar view -->
+					{#each $months as month}
+						{@const { weeks, monthDate } = month}
+						<div use:melt={$grid} class="rounded-lg bg-white p-4 shadow-sm">
+							<div class="flex flex-col gap-2.5 text-magnum-800">
+								<div class="flex w-full items-center justify-between">
+									<p class="font-semibold text-magnum-800">
+										{monthYearFormatter.format(monthDate)}
+									</p>
+									<div class="flex items-center gap-8">
+										<button on:click={prevMonth} tabindex={1}>
+											<ChevronLeft />
+										</button>
+										<button on:click={nextMonth} tabindex={2}>
+											<ChevronRight />
+										</button>
+									</div>
+								</div>
+								<div class="grid grid-cols-7 gap-2">
+									{#each $daysOfWeek as day}
+										<div class="cell">
+											<span class="text-sm font-medium"
+												>{getDayOfWeek(day)}</span
+											>
+										</div>
+									{/each}
+									{#each lastMonthDates as day}
+										<div
+											use:melt={$cell({
+												label: day.toDateString(),
+												value: day,
+											})}
+											class="cell"
+										>
+											<span class="opacity-50">{day.getDate()}</span>
+										</div>
+									{/each}
+									{#each dates as day}
+										<div
+											use:melt={$cell({
+												label: day.toDateString(),
+												value: day,
+											})}
+											class="cell"
+										>
+											<span class="">{day.getDate()}</span>
+										</div>
+									{/each}
+									{#each nextMonthDates as day}
+										<div
+											use:melt={$cell({
+												label: day.toDateString(),
+												value: day,
+											})}
+											class="cell"
+										>
+											<span class="opacity-50">{day.getDate()}</span>
+										</div>
+									{/each}
 								</div>
 							</div>
-							<div class="grid grid-cols-7 gap-2">
-								{#each $daysOfWeek as day}
-									<div class="cell">
-										<span class="text-sm font-medium">{getDayOfWeek(day)}</span>
-									</div>
-								{/each}
-								{#each lastMonthDates as day}
-									<div
-										use:melt={$cell({
-											label: day.toDateString(),
-											value: day,
-										})}
-										class="cell"
-									>
-										<span class="opacity-50">{day.getDate()}</span>
-									</div>
-								{/each}
-								{#each dates as day}
-									<div
-										use:melt={$cell({
-											label: day.toDateString(),
-											value: day,
-										})}
-										class="cell"
-									>
-										<span class="">{day.getDate()}</span>
-									</div>
-								{/each}
-								{#each nextMonthDates as day}
-									<div
-										use:melt={$cell({
-											label: day.toDateString(),
-											value: day,
-										})}
-										class="cell"
-									>
-										<span class="opacity-50">{day.getDate()}</span>
-									</div>
-								{/each}
-							</div>
 						</div>
-					</div>
-				{/each}
+					{/each}
+				</table>
 			</div>
 		</div>
 	{/if}
