@@ -197,3 +197,18 @@ describe('2 tooltips, group=undefined', () => {
 		expect(get(open2)).toBe(true);
 	});
 });
+
+describe('Single tooltip, group=true', () => {
+    test('Tooltip does not prevent itself from opening', async () => {
+        const open = writable(true);
+        render(Tooltip, {
+            open,
+            group: true
+        });
+
+        open.set(false);
+
+        open.set(true);
+        expect(get(open)).toBe(true);
+    })
+})
