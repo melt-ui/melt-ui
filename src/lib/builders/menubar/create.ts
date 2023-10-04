@@ -395,6 +395,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		});
 
 		return {
+			ids,
 			elements: {
 				menu,
 				trigger,
