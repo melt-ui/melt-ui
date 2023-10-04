@@ -255,7 +255,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				const isDisabled = isMatch(props.value, $disabled);
 				const isUnavailable = isMatch(props.value, $unavailable);
 				const isDateToday = isToday(props.value);
-				const isInCurrentMonth = isInSameMonth(props.value, $focusedValue ?? new Date());
+				const isOutsideMonth = !isInSameMonth(props.value, $focusedValue ?? new Date());
 				const isFocusedDate = isFocused({ date: props.value, focusedValue: $focusedValue });
 				const isSelectedDate = isSelected({
 					date: props.value,
@@ -272,7 +272,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					'data-unavailable': isUnavailable ? '' : undefined,
 					'data-date': '',
 					'data-today': isDateToday ? '' : undefined,
-					'data-outside-month': isInCurrentMonth ? undefined : '',
+					'data-outside-month': isOutsideMonth ? '' : undefined,
 					'data-focused': isFocusedDate ? '' : undefined,
 					tabindex: isFocusedDate ? 0 : -1,
 				} as const;
