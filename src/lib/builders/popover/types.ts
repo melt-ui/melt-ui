@@ -1,4 +1,4 @@
-import type { FloatingConfig } from '$lib/internal/actions/index.js';
+import type { FloatingConfig, FocusTrapConfig } from '$lib/internal/actions/index.js';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
 import type { createPopover } from './create.js';
@@ -102,6 +102,13 @@ export type CreatePopoverProps = {
 	 * @internal
 	 */
 	handlers?: InternalPopoverHandlers;
+
+	/**
+	 * Options used to configure the focus trap behaviour.
+	 *
+	 * @see https://github.com/focus-trap/focus-trap#createoptions
+	 */
+	focusTrap?: FocusTrapConfig;
 };
 
 export type Popover = BuilderReturn<typeof createPopover>;

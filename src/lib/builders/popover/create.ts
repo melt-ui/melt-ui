@@ -40,6 +40,7 @@ const defaults = {
 	forceVisible: false,
 	attrs: undefined,
 	handlers: undefined,
+	focusTrap: undefined,
 } satisfies Defaults<CreatePopoverProps>;
 
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
@@ -61,6 +62,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		portal,
 		forceVisible,
 		attrs,
+		focusTrap,
 	} = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
@@ -118,6 +120,7 @@ export function createPopover(args?: CreatePopoverProps) {
 					closeOnEscape,
 					closeOnOutsideClick,
 					portal,
+					focusTrap,
 				],
 				([
 					$isVisible,
@@ -127,6 +130,7 @@ export function createPopover(args?: CreatePopoverProps) {
 					$closeOnEscape,
 					$closeOnOutsideClick,
 					$portal,
+					$focusTrap,
 				]) => {
 					unsubPopper();
 					if (!$isVisible || !$activeTrigger) return;
@@ -136,7 +140,7 @@ export function createPopover(args?: CreatePopoverProps) {
 						open,
 						options: {
 							floating: $positioning,
-							focusTrap: $disableFocusTrap ? null : undefined,
+							focusTrap: $disableFocusTrap ? null : $focusTrap,
 							clickOutside: $closeOnOutsideClick ? undefined : null,
 							escapeKeydown: $closeOnEscape
 								? {
