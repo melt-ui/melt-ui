@@ -1330,7 +1330,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		createSubmenu,
 		createMenuRadioGroup,
 		separator,
-		rootIds,
 		handleTypeaheadSearch,
 	};
 }
