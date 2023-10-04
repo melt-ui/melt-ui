@@ -10,7 +10,7 @@ import {
 } from '$lib/internal/helpers/index.js';
 import dayjs from 'dayjs';
 import type { _DatePickerParts, _DatePickerIds, _DatePickerStores } from './create.js';
-import { get, writable, type Updater, type Writable } from 'svelte/store';
+import { get, writable, type Updater, type Writable, derived } from 'svelte/store';
 import type { Action } from 'svelte/action';
 
 const { name } = createElHelpers<_DatePickerParts>('calendar');
@@ -40,6 +40,9 @@ type CreateSegmentProps = {
 };
 
 const segmentParts = ['day', 'month', 'year', 'hour', 'minute', 'second'] as const;
+function isSegmentPart(part: string): part is SegmentPart {
+	return segmentParts.includes(part as SegmentPart);
+}
 
 type SegmentPart = (typeof segmentParts)[number];
 
@@ -64,9 +67,9 @@ const acceptableSegmentKeys = [
 	kbd.ARROW_RIGHT,
 	kbd.BACKSPACE,
 	kbd.SPACE,
-	kbd.A,
-	kbd.P,
 ];
+
+type SegmentContent = Record<SegmentPart, string>;
 
 export function createSegments(props: CreateSegmentProps) {
 	const { stores, ids, options } = props;
@@ -85,7 +88,7 @@ export function createSegments(props: CreateSegmentProps) {
 		return acc;
 	}, {} as SegmentStates);
 
-	const { focusedValue, value } = stores;
+	const { value } = stores;
 	const { hourCycle } = options;
 
 	const initialSegments = Object.fromEntries(
@@ -95,6 +98,40 @@ export function createSegments(props: CreateSegmentProps) {
 	const segmentValues = writable(structuredClone(initialSegments));
 	const dayPeriodValue = writable<'AM' | 'PM'>('AM');
 	const isUsingDayPeriod = writable(false);
+
+	const segmentContents = derived(segmentValues, ($segmentValues) => {
+		const contents = Object.keys($segmentValues).reduce((obj, part) => {
+			if (!isSegmentPart(part)) return obj;
+			const value = $segmentValues[part];
+			const djs = dayjs();
+
+			const notNull = value !== null;
+
+			switch (part) {
+				case 'day':
+					obj[part] = notNull ? djs.set('date', value).format('DD') : 'DD';
+					break;
+				case 'month':
+					obj[part] = notNull ? djs.set('month', value - 1).format('MM') : 'MM';
+					break;
+				case 'year':
+					obj[part] = notNull ? djs.set('year', value).format('YYYY') : 'YYYY';
+					break;
+				case 'hour':
+					obj[part] = notNull ? djs.set('hour', value).format('hh') : 'hh';
+					break;
+				case 'minute':
+					obj[part] = notNull ? djs.set('minute', value).format('mm') : 'mm';
+					break;
+				case 'second':
+					obj[part] = notNull ? djs.set('second', value).format('ss') : 'ss';
+					break;
+			}
+			return obj;
+		}, {} as SegmentContent);
+
+		return contents;
+	});
 
 	/**
 	 * Syncs the segment values with the `value` store.
@@ -174,9 +211,18 @@ export function createSegments(props: CreateSegmentProps) {
 	function updateSegment(part: SegmentPart, cb: Updater<number | null>) {
 		segmentValues.update((prev) => {
 			const prevSegment = prev[part];
+			const next = cb(prevSegment);
+			if (part === 'month' && next !== null && prev['day'] !== null) {
+				const djs = dayjs().set('month', next - 1);
+				const daysInMonth = djs.daysInMonth();
+				if (prev['day'] > daysInMonth) {
+					prev['day'] = daysInMonth;
+				}
+			}
+
 			return {
 				...prev,
-				[part]: prevSegment === null ? 0 : cb(prevSegment),
+				[part]: next,
 			};
 		});
 		const $segmentValues = get(segmentValues);
@@ -301,15 +347,16 @@ export function createSegments(props: CreateSegmentProps) {
 
 	function handleDaySegmentKeydown(e: KeyboardEvent) {
 		if (!isTabKey(e.key)) {
-			e.preventDefault;
+			e.preventDefault();
 		}
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}
 
-		const $focusedValue = get(focusedValue);
-		const activeDjs = dayjs($focusedValue);
-		const daysInMonth = activeDjs.daysInMonth();
+		const $segmentMonthValue = get(segmentValues).month;
+		const daysInMonth = $segmentMonthValue
+			? dayjs($segmentMonthValue).daysInMonth()
+			: dayjs().daysInMonth();
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('day', (prev) => {
@@ -1036,9 +1083,12 @@ export function createSegments(props: CreateSegmentProps) {
 
 	function secondSegmentAttrs(props: SegmentAttrProps) {
 		const { $segmentValues } = props;
-		const secondValue = $segmentValues.second;
+		const isEmpty = $segmentValues.second === null;
+		const djs = $segmentValues.second ? dayjs().set('second', $segmentValues.second) : dayjs();
+		const valueNow = djs.second();
 		const valueMin = 0;
 		const valueMax = 59;
+		const valueText = isEmpty ? 'Empty' : `${valueNow}`;
 
 		return {
 			...segmentDefaults,
@@ -1046,8 +1096,8 @@ export function createSegments(props: CreateSegmentProps) {
 			'aria-label': 'second, ',
 			'aria-valuemin': valueMin,
 			'aria-valuemax': valueMax,
-			'aria-valuenow': secondValue ?? `${valueMin}`,
-			'aria-valuetext': secondValue ?? 'Empty',
+			'aria-valuenow': valueNow,
+			'aria-valuetext': valueText,
 		};
 	}
 
@@ -1234,7 +1284,7 @@ export function createSegments(props: CreateSegmentProps) {
 			e.preventDefault();
 		}
 
-		if (!isAcceptableSegmentKey(e.key)) {
+		if (!isAcceptableSegmentKey(e.key) && e.key !== kbd.A && e.key !== kbd.P) {
 			return;
 		}
 
@@ -1271,6 +1321,7 @@ export function createSegments(props: CreateSegmentProps) {
 		states: {
 			segmentValues,
 			dayPeriodValue,
+			segmentContents,
 		},
 	};
 }

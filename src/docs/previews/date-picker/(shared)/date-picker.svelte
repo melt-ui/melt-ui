@@ -29,7 +29,7 @@
 			trigger,
 			content,
 		},
-		states: { value, months, daysOfWeek, segmentValues, dayPeriodValue, open },
+		states: { value, months, daysOfWeek, segmentContents, dayPeriodValue, open },
 		helpers: { prevMonth, nextMonth },
 	} = createDatePicker({
 		allowDeselect: true,
@@ -57,27 +57,27 @@
 		class="flex max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
 	>
 		<div use:melt={$segment('month')}>
-			{$segmentValues.month ?? 'mm'}
+			{$segmentContents.month}
 		</div>
 		<div aria-hidden="true" class="px-1">/</div>
 		<div use:melt={$segment('day')}>
-			{$segmentValues.day ?? 'dd'}
+			{$segmentContents.day}
 		</div>
 		<div aria-hidden="true" class="px-1">/</div>
 		<div use:melt={$segment('year')}>
-			{$segmentValues.year ?? 'yyyy'}
+			{$segmentContents.year}
 		</div>
 		<div aria-hidden="true" class="pr-2">,</div>
 		<div use:melt={$segment('hour')} class="whitespace-nowrap">
-			{$segmentValues.hour ?? '--'}
+			{$segmentContents.hour}
 		</div>
 		<div aria-hidden="true" class="px-0.5">:</div>
 		<div use:melt={$segment('minute')} class="whitespace-nowrap">
-			{$segmentValues.minute ?? '--'}
+			{$segmentContents.minute}
 		</div>
 		<div aria-hidden="true" class="px-0.5">:</div>
 		<div use:melt={$segment('second')} class="whitespace-nowrap">
-			{$segmentValues.second ?? '--'}
+			{$segmentContents.second}
 		</div>
 		<div use:melt={$dayPeriodSegment} class="ml-2">
 			{$dayPeriodValue}
