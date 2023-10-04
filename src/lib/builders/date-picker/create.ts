@@ -13,7 +13,6 @@ import {
 	type ChangeFn,
 	executeCallbacks,
 	styleToString,
-	sleep,
 } from '$lib/internal/helpers/index.js';
 
 import {

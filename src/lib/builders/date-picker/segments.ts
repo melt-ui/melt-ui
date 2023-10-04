@@ -4,6 +4,7 @@ import {
 	createElHelpers,
 	effect,
 	executeCallbacks,
+	isBrowser,
 	isHTMLElement,
 	kbd,
 	styleToString,
@@ -56,6 +57,8 @@ type SegmentStates = {
 	[K in SegmentPart]: SegmentState;
 };
 
+type DayPeriod = 'AM' | 'PM';
+
 const acceptableSegmentKeys = [
 	kbd.ENTER,
 	kbd.ARROW_UP,
@@ -93,7 +96,7 @@ export function createSegments(props: CreateSegmentProps) {
 	) as SegmentValueObj;
 
 	const segmentValues = writable(structuredClone(initialSegments));
-	const dayPeriodValue = writable<'AM' | 'PM'>('AM');
+	const dayPeriodValue = writable<DayPeriod>('AM');
 	const isUsingDayPeriod = writable(false);
 
 	const segmentContents = derived(segmentValues, ($segmentValues) => {
@@ -162,6 +165,7 @@ export function createSegments(props: CreateSegmentProps) {
 	 */
 	function getUsedSegments() {
 		let dayPeriodExists = false;
+		if (!isBrowser) return [];
 		const usedSegments = getSegments(ids.input)
 			.map((el) => {
 				if (el.dataset.segment === 'dayPeriod') {
@@ -302,12 +306,27 @@ export function createSegments(props: CreateSegmentProps) {
 		},
 	};
 
-	effect(value, ($value) => {
+	effect([value], ([$value]) => {
 		if ($value) {
 			syncSegmentValues($value);
 		} else {
 			segmentValues.set(structuredClone(initialSegments));
 		}
+	});
+
+	effect([dayPeriodValue], ([$dayPeriodValue]) => {
+		updateSegment('hour', (prev) => {
+			if (!prev) return prev;
+			const hour = prev;
+
+			const $hourCycle = get(hourCycle);
+			if ($hourCycle === 24) return prev;
+
+			if ($dayPeriodValue === 'AM' && hour >= 12) {
+				prev = hour - 12;
+			}
+			return prev;
+		});
 	});
 
 	const segment = builder(name('segment'), {
