@@ -13,6 +13,7 @@ import {
 	type ChangeFn,
 	executeCallbacks,
 	styleToString,
+	sleep,
 } from '$lib/internal/helpers/index.js';
 
 import {
@@ -150,6 +151,11 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				keydown: handleTriggerKeydown,
 			},
 		},
+		focusTrap: {
+			// We want to focus the focused date when the popover
+			// is open regardless of the DOM order
+			initialFocus: `[data-melt-calendar-cell][data-focused]`,
+		},
 	});
 
 	const {
@@ -268,6 +274,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 					'data-date': '',
 					'data-today': isDateToday ? '' : undefined,
 					'data-outside-month': isInCurrentMonth ? undefined : '',
+					'data-focused': isFocusedDate ? '' : undefined,
 					tabindex: isFocusedDate ? 0 : -1,
 				} as const;
 			};
@@ -543,12 +550,15 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		});
 	}
 
+	const SELECT_KEYS = [kbd.ENTER, kbd.SPACE];
+
 	function handleGridKeydown(e: KeyboardEvent) {
-		if (!ARROW_KEYS.includes(e.key)) return;
+		const currentCell = e.target;
+		if (!isCalendarCell(currentCell)) return;
+		if (!ARROW_KEYS.includes(e.key) && !SELECT_KEYS.includes(e.key)) return;
+
 		e.preventDefault();
 		// the cell that is currently focused
-		const currentCell = e.target;
-		if (!isHTMLElement(currentCell)) return;
 
 		if (e.key === kbd.ARROW_DOWN) {
 			shiftFocus(currentCell, 7);
@@ -561,6 +571,10 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		}
 		if (e.key === kbd.ARROW_RIGHT) {
 			shiftFocus(currentCell, 1);
+		}
+
+		if (e.key === kbd.SPACE || e.key === kbd.ENTER) {
+			handleSingleClick(new Date(currentCell.getAttribute('data-value') ?? ''));
 		}
 	}
 
@@ -615,7 +629,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				// since in this case, nextIndex is negative, we'll convert it to a positive
 				// before subtracting it from the length of the array
 				const newIndex = newCandidateCells.length - Math.abs(nextIndex);
-				if (isValidIndex(newIndex, candidateCells)) {
+				if (isValidIndex(newIndex, newCandidateCells)) {
 					const newCell = newCandidateCells[newIndex];
 					handleFocusedValue(newCell);
 					return newCell.focus();
@@ -709,4 +723,10 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 function isValidIndex(index: number, arr: unknown[]) {
 	return index >= 0 && index < arr.length;
+}
+
+function isCalendarCell(node: unknown): node is HTMLElement {
+	if (!isHTMLElement(node)) return false;
+	if (!node.hasAttribute('data-melt-calendar-cell')) return false;
+	return true;
 }
