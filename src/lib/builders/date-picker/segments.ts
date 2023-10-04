@@ -94,6 +94,7 @@ export function createSegments(props: CreateSegmentProps) {
 
 	const segmentValues = writable(structuredClone(initialSegments));
 	const dayPeriodValue = writable<'AM' | 'PM'>('AM');
+	const isUsingDayPeriod = writable(false);
 
 	/**
 	 * Syncs the segment values with the `value` store.
@@ -120,16 +121,21 @@ export function createSegments(props: CreateSegmentProps) {
 	 * Get the segments being used/ are rendered in the DOM.
 	 */
 	function getUsedSegments() {
-		const segmentRoot = document.getElementById(ids.input);
-		if (!segmentRoot) return [];
-		const segmentEls = Array.from(segmentRoot.querySelectorAll('[data-segment]'))
-			.filter((el): el is HTMLElement => isHTMLElement(el))
+		let dayPeriodExists = false;
+		const usedSegments = getSegments(ids.input)
 			.map((el) => {
+				if (el.dataset.segment === 'dayPeriod') {
+					dayPeriodExists = true;
+				}
 				return el.dataset.segment;
+			})
+			.filter((part): part is SegmentPart => {
+				return segmentParts.includes(part as SegmentPart);
 			});
-		return segmentEls.filter((part): part is SegmentPart => {
-			return segmentParts.includes(part as SegmentPart);
-		});
+		if (dayPeriodExists) {
+			isUsingDayPeriod.set(true);
+		}
+		return usedSegments;
 	}
 
 	function getPartFromNode(node: HTMLElement) {
@@ -159,9 +165,6 @@ export function createSegments(props: CreateSegmentProps) {
 		return value.set(djs.toDate());
 	}
 
-	/**
-	 *
-	 */
 	function areAllSegmentsFilled() {
 		const usedSegments = getUsedSegments();
 		const $segmentValues = get(segmentValues);
@@ -1317,7 +1320,7 @@ export function isSegmentNavigationKey(key: string) {
  */
 function getPrevNextSegments(node: HTMLElement, containerId: string) {
 	const segments = getSegments(containerId);
-	if (!segments || !segments.length) {
+	if (!segments.length) {
 		return {
 			next: null,
 			prev: null,
@@ -1334,7 +1337,7 @@ function getPrevNextSegments(node: HTMLElement, containerId: string) {
  */
 function getSegments(id: string) {
 	const inputContainer = document.getElementById(id);
-	if (!isHTMLElement(inputContainer)) return null;
+	if (!isHTMLElement(inputContainer)) return [];
 	const segments = Array.from(inputContainer.querySelectorAll('[data-segment]')).filter(
 		(el): el is HTMLElement => isHTMLElement(el)
 	);
