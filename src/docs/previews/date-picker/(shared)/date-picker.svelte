@@ -5,8 +5,6 @@
 		type Matcher,
 	} from '$lib/builders';
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
-	import { monthYearFormatter } from './formatters';
-	import dayjs from 'dayjs';
 	import { melt } from '$lib';
 	import { fade } from 'svelte/transition';
 
@@ -18,6 +16,7 @@
 	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = false;
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = 0;
 	export let fixedWeeks: CreateDatePickerProps['fixedWeeks'] = false;
+	export let locale: CreateDatePickerProps['locale'] = 'de';
 
 	const {
 		elements: {
@@ -57,10 +56,8 @@
 	});
 
 	function getDayOfWeek(date: Date) {
-		return dayjs(date).format('dd');
+		return new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(date);
 	}
-
-	$: console.log($headingValue);
 </script>
 
 <div class="flex flex-col gap-3">
@@ -96,63 +93,61 @@
 			{$dayPeriodValue}
 		</div>
 		<div class="ml-4 flex w-full items-center justify-end">
-			<!-- <button use:melt={$trigger} class="rounded bg-magnum-800 p-1">
+			<button use:melt={$trigger} class="rounded bg-magnum-800 p-1">
 				<Calendar class="h-4 w-4 text-white" />
-			</button> -->
+			</button>
 		</div>
 	</div>
-
-	<div
-		class="z-10 w-80 rounded-[4px] bg-white p-3 shadow-sm"
-		transition:fade={{ duration: 100 }}
-	>
-		<div class="w-full text-magnum-800" use:melt={$calendar}>
-			<header>
-				<button use:melt={$prevButton}>
-					<ChevronLeft />
-				</button>
-				<h2 use:melt={$heading}>
-					{$headingValue}
-				</h2>
-				<button use:melt={$nextButton}>
-					<ChevronRight />
-				</button>
-			</header>
-			<table class="flex items-center gap-4">
-				<!-- Calendar view -->
+	{#if $open}
+		<div
+			class="z-10 w-80 rounded-[4px] bg-white p-3 shadow-sm"
+			transition:fade={{ duration: 100 }}
+			use:melt={$content}
+		>
+			<div class="w-full text-magnum-800" use:melt={$calendar}>
+				<header class="flex items-center justify-between pb-4">
+					<button use:melt={$prevButton}>
+						<ChevronLeft />
+					</button>
+					<h2 class="font-semibold text-magnum-800" use:melt={$heading}>
+						{$headingValue}
+					</h2>
+					<button use:melt={$nextButton}>
+						<ChevronRight />
+					</button>
+				</header>
 				{#each $months as month}
-					{@const { weeks, monthDate } = month}
-					<div use:melt={$grid} class="rounded-lg bg-white p-4 shadow-sm">
-						<div class="flex flex-col gap-2.5 text-magnum-800">
-							<div class="flex w-full items-center justify-between">
-								<p class="font-semibold text-magnum-800">
-									{monthYearFormatter.format(monthDate)}
-								</p>
-							</div>
-							<div class="grid grid-cols-7 gap-2">
+					{@const { weeks } = month}
+					<table use:melt={$grid} class="w-full">
+						<thead aria-hidden="true">
+							<tr>
 								{#each $daysOfWeek as day}
-									<div class="cell">
-										<span class="text-sm font-medium">{getDayOfWeek(day)}</span>
-									</div>
+									<th class="text-sm font-medium text-magnum-800">
+										<div class="flex h-6 w-6 items-center justify-center p-4">
+											{getDayOfWeek(day)}
+										</div>
+									</th>
 								{/each}
-								{#each month.dates as day}
-									<div
-										use:melt={$cell({
-											label: day.toDateString(),
-											value: day,
-										})}
-										class="cell"
-									>
-										<span class="">{day.getDate()}</span>
-									</div>
-								{/each}
-							</div>
-						</div>
-					</div>
+							</tr>
+						</thead>
+						<tbody>
+							{#each weeks as days}
+								<tr>
+									{#each days as day}
+										<td role="gridcell">
+											<div use:melt={$cell(day)} class="cell">
+												{day.getDate()}
+											</div>
+										</td>
+									{/each}
+								</tr>
+							{/each}
+						</tbody>
+					</table>
 				{/each}
-			</table>
+			</div>
 		</div>
-	</div>
+	{/if}
 </div>
 
 <style lang="postcss">
@@ -193,7 +188,7 @@
 	}
 
 	.cell {
-		@apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded p-4 hover:bg-magnum-100 focus:ring focus:ring-magnum-400 data-[range-highlighted]:bg-magnum-200 data-[selected]:bg-magnum-200 data-[disabled]:opacity-40;
+		@apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded p-4 hover:bg-magnum-100 focus:ring focus:ring-magnum-400 data-[outside-month]:pointer-events-none data-[outside-month]:cursor-default data-[range-highlighted]:bg-magnum-200 data-[selected]:bg-magnum-200 data-[disabled]:opacity-40 data-[outside-month]:opacity-40 data-[outside-month]:hover:bg-transparent;
 	}
 
 	.cell span {

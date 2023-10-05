@@ -30,7 +30,7 @@ import {
 } from '$lib/builders/calendar/utils.js';
 
 import { derived, get, writable, type Writable } from 'svelte/store';
-import { createPopover, type DateProps, type Month } from '$lib/builders/index.js';
+import { createPopover, type Month } from '$lib/builders/index.js';
 import type { CreateDatePickerProps } from './types.js';
 import dayjs from 'dayjs';
 import { dayJsStore } from './date-store.js';
@@ -121,6 +121,7 @@ export type _DatePickerIds = {
 	accessibleHeading: string;
 	content: string;
 	trigger: string;
+	calendar: string;
 };
 
 export function createDatePicker(props?: CreateDatePickerProps) {
@@ -178,6 +179,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	} = options;
 
 	const ids: _DatePickerIds = {
+		calendar: generateId(),
 		grid: generateId(),
 		field: generateId(),
 		daySegment: generateId(),
@@ -252,6 +254,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		stores: [fullCalendarLabel, isInvalid],
 		returned: ([$fullCalendarLabel, $isInvalid]) => {
 			return {
+				id: ids.calendar,
 				role: 'application',
 				'aria-label': $fullCalendarLabel,
 				'data-invalid': $isInvalid ? '' : undefined,
@@ -264,6 +267,14 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			 * via an effect when the active date or label changes.
 			 */
 			createAccessibleHeading(node, get(fullCalendarLabel));
+
+			const unsubKb = addMeltEventListener(node, 'keydown', handleCalendarKeydown);
+
+			return {
+				destroy() {
+					unsubKb();
+				},
+			};
 		},
 	});
 
@@ -276,16 +287,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	const grid = builder(name('grid'), {
-		returned: () => ({ tabindex: -1, id: ids.grid }),
-		action: (node: HTMLElement) => {
-			const unsubKb = addMeltEventListener(node, 'keydown', handleGridKeydown);
-
-			return {
-				destroy() {
-					unsubKb();
-				},
-			};
-		},
+		returned: () => ({ tabindex: -1, id: ids.grid, role: 'grid' }),
 	});
 
 	const dateField = builder(name('dateField'), {
@@ -342,30 +344,38 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	const cell = builder(name('cell'), {
 		stores: [value, disabled, unavailable, focusedValue],
 		returned: ([$value, $disabled, $unavailable, $focusedValue]) => {
-			return (props: DateProps) => {
-				const isDisabled = isMatch(props.value, $disabled);
-				const isUnavailable = isMatch(props.value, $unavailable);
-				const isDateToday = isToday(props.value);
-				const isOutsideMonth = !isInSameMonth(props.value, $focusedValue ?? new Date());
-				const isFocusedDate = isFocused({ date: props.value, focusedValue: $focusedValue });
+			return (cellValue: Date) => {
+				const isDisabled = isMatch(cellValue, $disabled);
+				const isUnavailable = isMatch(cellValue, $unavailable);
+				const isDateToday = isToday(cellValue);
+				const isOutsideMonth = !isInSameMonth(cellValue, $focusedValue ?? new Date());
+				const isFocusedDate = isFocused({ date: cellValue, focusedValue: $focusedValue });
 				const isSelectedDate = isSelected({
-					date: props.value,
+					date: cellValue,
 					value: $value,
 				});
 
+				const labelText = format.custom(dayjs(cellValue).toDate(), {
+					weekday: 'long',
+					month: 'long',
+					day: 'numeric',
+					year: 'numeric',
+				});
+
 				return {
-					role: 'date',
+					role: 'button',
+					'aria-label': labelText,
 					'aria-selected': isSelectedDate ? true : undefined,
+					'aria-disabled': isOutsideMonth ? true : undefined,
 					'data-selected': isSelectedDate ? true : undefined,
-					'data-value': props.value,
-					'data-label': props.label ?? undefined,
-					'data-disabled': isDisabled ? '' : undefined,
+					'data-value': cellValue,
+					'data-disabled': isDisabled || isOutsideMonth ? '' : undefined,
 					'data-unavailable': isUnavailable ? '' : undefined,
 					'data-date': '',
 					'data-today': isDateToday ? '' : undefined,
 					'data-outside-month': isOutsideMonth ? '' : undefined,
 					'data-focused': isFocusedDate ? '' : undefined,
-					tabindex: isFocusedDate ? 0 : -1,
+					tabindex: isFocusedDate ? 0 : isOutsideMonth || isDisabled ? undefined : -1,
 				} as const;
 			};
 		},
@@ -642,7 +652,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	const SELECT_KEYS = [kbd.ENTER, kbd.SPACE];
 
-	function handleGridKeydown(e: KeyboardEvent) {
+	function handleCalendarKeydown(e: KeyboardEvent) {
 		const currentCell = e.target;
 		if (!isCalendarCell(currentCell)) return;
 		if (!ARROW_KEYS.includes(e.key) && !SELECT_KEYS.includes(e.key)) return;
@@ -739,26 +749,28 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			focusedValue.add(1, 'month');
 
 			// we may need a tick here, but we'll see how it goes
-			const newCandidateCells = getSelectableCells();
-			if (!newCandidateCells.length) {
-				return;
-			}
+			tick().then(() => {
+				const newCandidateCells = getSelectableCells();
+				if (!newCandidateCells.length) {
+					return;
+				}
 
-			// We need to determine how far into the next month we need to go
-			// to get the next index. So if we only went over the previous
-			// month by 1, we need to go into the next month by 1 to get the
-			// right index.
-			const newIndex = nextIndex - candidateCells.length;
+				// We need to determine how far into the next month we need to go
+				// to get the next index. So if we only went over the previous
+				// month by 1, we need to go into the next month by 1 to get the
+				// right index.
+				const newIndex = nextIndex - candidateCells.length;
 
-			if (isValidIndex(newIndex, newCandidateCells)) {
-				const nextCell = newCandidateCells[newIndex];
-				return nextCell.focus();
-			}
+				if (isValidIndex(newIndex, newCandidateCells)) {
+					const nextCell = newCandidateCells[newIndex];
+					return nextCell.focus();
+				}
+			});
 		}
 	}
 
 	function getSelectableCells() {
-		const node = document.getElementById(ids.grid);
+		const node = document.getElementById(ids.calendar);
 		if (!node) return [];
 
 		return Array.from(

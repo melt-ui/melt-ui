@@ -141,11 +141,6 @@ export type Matcher =
 
 export type CreateCalendarProps = Partial<BaseCalendarProps>;
 
-export type DateProps = {
-	value: Date;
-	label: string;
-};
-
 export type CreateCalendarReturn = ReturnType<typeof createCalendar>;
 
 export type Month = {
