@@ -9,7 +9,7 @@
 	} = createCollapsible();
   </script>
   
-  <div use:melt={$root} class="mx-auto w-[18rem] max-w-full sm:w-[25rem] relative">
+  <div use:melt={$root} class="mx-auto w-[18rem] max-w-full sm:w-[25rem] relative mb-28">
 	<div class="flex items-center justify-between">
 	  <span class="text-sm font-semibold text-magnum-900">
 		@thomasglopes starred 3 repositories
