@@ -31,6 +31,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     let dragging = false;
     let hueDragging = false;
     let alphaDragging = false;
+    let insideUpdate = false;
     const speepUpStep = 5;
 
     const keyDurations = <KeyDurations>{};
@@ -146,19 +147,20 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     });
 
     const colorPicker = builder(name('color-picker'), {
-        stores: [colorPickerPos, colorPickerDims, getCurrentColor],
-        returned: ([$colorPickerPos, $colorPickerDims, $getCurrentColor]) => {
+        stores: [colorPickerPos, colorPickerDims, getCurrentColor, color],
+        returned: ([$colorPickerPos, $colorPickerDims, $getCurrentColor, $color]) => {
             const top = Math.round($colorPickerPos.y - $colorPickerDims.height / 2);
             const left = Math.round($colorPickerPos.x - $colorPickerDims.width / 2);
 
-            const { rgb, hex } = $getCurrentColor();
-            const { r, g, b } = rgb;
+            // const { rgb, hex } = $getCurrentColor();
+            // const { r, g, b } = rgb;
 
-            color.set(hex);
+            // color.set(hex);
 
             return {
                 'aria-label': 'Button on color canvas, used to select the saturation and brightness.',
-                style: `position: absolute; top: ${top}px; left: ${left}px; background-color: rgb(${r}, ${g}, ${b});`
+                // style: `position: absolute; top: ${top}px; left: ${left}px; background-color: rgb(${r}, ${g}, ${b});`
+                style: `position: absolute; top: ${top}px; left: ${left}px; background-color: ${$color};`
             }
         },
         action: (node: HTMLButtonElement) => {
@@ -185,18 +187,20 @@ export function createColorPicker(args?: CreateColorPickerProps) {
                     keyDurations[<ArrowKeys>key] = null;
                 }),
                 addMeltEventListener(node, 'keydown', (e) => {
-                    const { key } = e;
+                    // const { key } = e;
                     const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
-                    if (!keys.includes(key)) return;
+                    if (!keys.includes(e.key)) return;
+
+                    const key = e.key as ArrowKeys;
 
                     e.preventDefault();
 
-                    if (!keyDurations[<ArrowKeys>key]) {
-                        keyDurations[<ArrowKeys>key] = Date.now();
+                    if (!keyDurations[key]) {
+                        keyDurations[key] = Date.now();
                     }
 
-                    const duration = Date.now() - keyDurations[<ArrowKeys>key];
+                    const duration = Date.now() - keyDurations[key];
                     const step = duration > 1000 ? speepUpStep : 1;
 
                     const { x, y } = get(colorPickerPos);
@@ -804,6 +808,37 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
         // Update the color and hue picker button positions.
         updateOnColorInput(argsWithDefaults.defaultColor);
+
+        colorPickerPos.subscribe(() => {
+            const { hex } = get(getCurrentColor)();
+            insideUpdate = true;
+            color.set(hex);
+        });
+
+        hueAngle.subscribe(() => {
+            const { hex } = get(getCurrentColor)();
+            insideUpdate = true;
+            color.set(hex);
+        });
+
+        // TODO: update colorpickerpos and hueAngle when color is updated from the outside.
+        // Problem... getting into a circular dependency...
+        color.subscribe((hex) => {
+            if (insideUpdate) {
+                insideUpdate = false;
+                return;
+            }
+
+            if (!isValidHex(hex)) return;
+
+            const { h, s, v } = hexToHSV(hex);
+            const { width, height } = get(colorCanvasDims);
+            hueAngle.set(h === 360 ? 0 : h);
+            colorPickerPos.set({
+                x: width * s,
+                y: height * v
+            });
+        });
 
         return () => {
             window.removeEventListener('mousemove', handleWindowsMouseMove);
