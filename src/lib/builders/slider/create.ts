@@ -1,6 +1,7 @@
 import {
 	addEventListener,
 	addMeltEventListener,
+	ariaDisabledAttr,
 	builder,
 	createElHelpers,
 	disabledAttr,
@@ -55,7 +56,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 		returned: ([$disabled, $orientation]) => {
 			return {
 				disabled: disabledAttr($disabled),
-				'aria-disabled': $disabled ? 'true' : 'false',
+				'aria-disabled': ariaDisabledAttr($disabled),
 				'data-orientation': $orientation,
 				style: $disabled ? undefined : 'touch-action: none;',
 				'data-melt-id': ids.root,
