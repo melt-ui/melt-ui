@@ -60,9 +60,6 @@ enhance the experience of building with Svelte and improve the ecosystem for eve
 
 Check out our [Contributing guide](./CONTRIBUTING.md) to learn more.
 
-
-
-
 ## Community
 
 Got any questions? Want to talk to the maintainers?
