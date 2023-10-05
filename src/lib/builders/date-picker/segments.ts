@@ -166,7 +166,7 @@ export function createSegments(props: CreateSegmentProps) {
 	function getUsedSegments() {
 		let dayPeriodExists = false;
 		if (!isBrowser) return [];
-		const usedSegments = getSegments(ids.input)
+		const usedSegments = getSegments(ids.field)
 			.map((el) => {
 				if (el.dataset.segment === 'dayPeriod') {
 					dayPeriodExists = true;
@@ -512,7 +512,7 @@ export function createSegments(props: CreateSegmentProps) {
 			});
 
 			if (moveToNext) {
-				moveToNextSegment(e, ids.input);
+				moveToNextSegment(e, ids.field);
 			}
 		}
 
@@ -529,7 +529,7 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 
 		if (isSegmentNavigationKey(e.key)) {
-			handleSegmentNavigation(e, ids.input);
+			handleSegmentNavigation(e, ids.field);
 		}
 	}
 
@@ -679,7 +679,7 @@ export function createSegments(props: CreateSegmentProps) {
 			});
 
 			if (moveToNext) {
-				moveToNextSegment(e, ids.input);
+				moveToNextSegment(e, ids.field);
 			}
 		}
 
@@ -694,7 +694,7 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 
 		if (isSegmentNavigationKey(e.key)) {
-			handleSegmentNavigation(e, ids.input);
+			handleSegmentNavigation(e, ids.field);
 		}
 	}
 
@@ -793,7 +793,7 @@ export function createSegments(props: CreateSegmentProps) {
 			});
 
 			if (moveToNext) {
-				moveToNextSegment(e, ids.input);
+				moveToNextSegment(e, ids.field);
 			}
 		}
 
@@ -807,7 +807,7 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 
 		if (isSegmentNavigationKey(e.key)) {
-			handleSegmentNavigation(e, ids.input);
+			handleSegmentNavigation(e, ids.field);
 		}
 	}
 
@@ -955,7 +955,7 @@ export function createSegments(props: CreateSegmentProps) {
 			});
 
 			if (moveToNext) {
-				moveToNextSegment(e, ids.input);
+				moveToNextSegment(e, ids.field);
 			}
 		}
 
@@ -970,7 +970,7 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 
 		if (isSegmentNavigationKey(e.key)) {
-			handleSegmentNavigation(e, ids.input);
+			handleSegmentNavigation(e, ids.field);
 		}
 	}
 
@@ -1117,7 +1117,7 @@ export function createSegments(props: CreateSegmentProps) {
 			});
 
 			if (moveToNext) {
-				moveToNextSegment(e, ids.input);
+				moveToNextSegment(e, ids.field);
 			}
 		}
 
@@ -1132,7 +1132,7 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 
 		if (isSegmentNavigationKey(e.key)) {
-			handleSegmentNavigation(e, ids.input);
+			handleSegmentNavigation(e, ids.field);
 		}
 	}
 
@@ -1279,7 +1279,7 @@ export function createSegments(props: CreateSegmentProps) {
 			});
 
 			if (moveToNext) {
-				moveToNextSegment(e, ids.input);
+				moveToNextSegment(e, ids.field);
 			}
 		}
 
@@ -1294,7 +1294,7 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 
 		if (isSegmentNavigationKey(e.key)) {
-			handleSegmentNavigation(e, ids.input);
+			handleSegmentNavigation(e, ids.field);
 		}
 	}
 
@@ -1372,7 +1372,7 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 
 		if (isSegmentNavigationKey(e.key)) {
-			handleSegmentNavigation(e, ids.input);
+			handleSegmentNavigation(e, ids.field);
 		}
 	}
 

@@ -22,9 +22,12 @@
 	const {
 		elements: {
 			calendar,
+			heading,
 			grid,
 			cell,
-			dateInput,
+			dateField,
+			prevButton,
+			nextButton,
 			dayPeriodSegment,
 			segment,
 			trigger,
@@ -33,12 +36,12 @@
 		states: {
 			value,
 			months,
+			headingValue,
 			daysOfWeek,
 			segmentContents,
 			dayPeriodValue,
 			open,
 		},
-		helpers: { prevMonth, nextMonth },
 	} = createDatePicker({
 		allowDeselect: true,
 		disabled,
@@ -56,12 +59,14 @@
 	function getDayOfWeek(date: Date) {
 		return dayjs(date).format('dd');
 	}
+
+	$: console.log($headingValue);
 </script>
 
 <div class="flex flex-col gap-3">
 	<p class="text-xs">{$value}</p>
 	<div
-		use:melt={$dateInput}
+		use:melt={$dateField}
 		class="flex max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
 	>
 		<div use:melt={$segment('month')}>
@@ -91,86 +96,63 @@
 			{$dayPeriodValue}
 		</div>
 		<div class="ml-4 flex w-full items-center justify-end">
-			<button use:melt={$trigger} class="rounded bg-magnum-800 p-1">
+			<!-- <button use:melt={$trigger} class="rounded bg-magnum-800 p-1">
 				<Calendar class="h-4 w-4 text-white" />
-			</button>
+			</button> -->
 		</div>
 	</div>
-	{#if $open}
-		<div
-			class="z-10 w-80 rounded-[4px] bg-white p-3 shadow-sm"
-			use:melt={$content}
-			transition:fade={{ duration: 100 }}
-		>
-			<div class="w-full" use:melt={$calendar}>
-				<table class="flex items-center gap-4">
-					<!-- Calendar view -->
-					{#each $months as month}
-						{@const { weeks, monthDate } = month}
-						<div use:melt={$grid} class="rounded-lg bg-white p-4 shadow-sm">
-							<div class="flex flex-col gap-2.5 text-magnum-800">
-								<div class="flex w-full items-center justify-between">
-									<p class="font-semibold text-magnum-800">
-										{monthYearFormatter.format(monthDate)}
-									</p>
-									<div class="flex items-center gap-8">
-										<button on:click={prevMonth} tabindex={1}>
-											<ChevronLeft />
-										</button>
-										<button on:click={nextMonth} tabindex={2}>
-											<ChevronRight />
-										</button>
+
+	<div
+		class="z-10 w-80 rounded-[4px] bg-white p-3 shadow-sm"
+		transition:fade={{ duration: 100 }}
+	>
+		<div class="w-full text-magnum-800" use:melt={$calendar}>
+			<header>
+				<button use:melt={$prevButton}>
+					<ChevronLeft />
+				</button>
+				<h2 use:melt={$heading}>
+					{$headingValue}
+				</h2>
+				<button use:melt={$nextButton}>
+					<ChevronRight />
+				</button>
+			</header>
+			<table class="flex items-center gap-4">
+				<!-- Calendar view -->
+				{#each $months as month}
+					{@const { weeks, monthDate } = month}
+					<div use:melt={$grid} class="rounded-lg bg-white p-4 shadow-sm">
+						<div class="flex flex-col gap-2.5 text-magnum-800">
+							<div class="flex w-full items-center justify-between">
+								<p class="font-semibold text-magnum-800">
+									{monthYearFormatter.format(monthDate)}
+								</p>
+							</div>
+							<div class="grid grid-cols-7 gap-2">
+								{#each $daysOfWeek as day}
+									<div class="cell">
+										<span class="text-sm font-medium">{getDayOfWeek(day)}</span>
 									</div>
-								</div>
-								<div class="grid grid-cols-7 gap-2">
-									{#each $daysOfWeek as day}
-										<div class="cell">
-											<span class="text-sm font-medium"
-												>{getDayOfWeek(day)}</span
-											>
-										</div>
-									{/each}
-									{#each lastMonthDates as day}
-										<div
-											use:melt={$cell({
-												label: day.toDateString(),
-												value: day,
-											})}
-											class="cell"
-										>
-											<span class="opacity-50">{day.getDate()}</span>
-										</div>
-									{/each}
-									{#each dates as day}
-										<div
-											use:melt={$cell({
-												label: day.toDateString(),
-												value: day,
-											})}
-											class="cell"
-										>
-											<span class="">{day.getDate()}</span>
-										</div>
-									{/each}
-									{#each nextMonthDates as day}
-										<div
-											use:melt={$cell({
-												label: day.toDateString(),
-												value: day,
-											})}
-											class="cell"
-										>
-											<span class="opacity-50">{day.getDate()}</span>
-										</div>
-									{/each}
-								</div>
+								{/each}
+								{#each month.dates as day}
+									<div
+										use:melt={$cell({
+											label: day.toDateString(),
+											value: day,
+										})}
+										class="cell"
+									>
+										<span class="">{day.getDate()}</span>
+									</div>
+								{/each}
 							</div>
 						</div>
-					{/each}
-				</table>
-			</div>
+					</div>
+				{/each}
+			</table>
 		</div>
-	{/if}
+	</div>
 </div>
 
 <style lang="postcss">

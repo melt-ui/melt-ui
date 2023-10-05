@@ -35,7 +35,9 @@ import type { CreateDatePickerProps } from './types.js';
 import dayjs from 'dayjs';
 import { dayJsStore } from './date-store.js';
 import { createSegments, handleSegmentNavigation, isSegmentNavigationKey } from './segments.js';
-import { tick } from 'svelte';
+import { onMount, tick } from 'svelte';
+import { getLocale } from '$lib/internal/locale.js';
+import { createFormatter } from './formatter.js';
 
 const defaults = {
 	disabled: false,
@@ -77,23 +79,18 @@ const defaultTriggerAttrs = {
  */
 export type _DatePickerParts =
 	| 'content'
-	| 'nextMonth'
-	| 'prevMonth'
+	| 'nextButton'
+	| 'prevButton'
 	| 'nextYear'
 	| 'prevYear'
 	| 'grid'
 	| 'cell'
 	| 'next'
 	| 'prev'
-	| 'date-input'
-	| 'month-segment'
-	| 'day-segment'
-	| 'year-segment'
-	| 'hour-segment'
-	| 'minute-segment'
-	| 'second-segment'
+	| 'dateField'
 	| 'dayPeriod-segment'
 	| 'segment'
+	| 'heading'
 	| 'trigger';
 
 const { name } = createElHelpers<_DatePickerParts>('calendar');
@@ -113,7 +110,7 @@ export type _DatePickerStores = {
  */
 export type _DatePickerIds = {
 	grid: string;
-	input: string;
+	field: string;
 	daySegment: string;
 	monthSegment: string;
 	yearSegment: string;
@@ -182,7 +179,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	const ids: _DatePickerIds = {
 		grid: generateId(),
-		input: generateId(),
+		field: generateId(),
 		daySegment: generateId(),
 		monthSegment: generateId(),
 		yearSegment: generateId(),
@@ -203,9 +200,10 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	const focusedValueWritable =
 		withDefaults.focusedValue ?? writable(withDefaults.defaultFocusedValue);
 	const focusedValue = dayJsStore(
-		overridable(focusedValueWritable, withDefaults?.onFocusedValueChange),
-		locale
+		overridable(focusedValueWritable, withDefaults?.onFocusedValueChange)
 	);
+
+	const format = createFormatter(get(locale));
 
 	const stores = {
 		value,
@@ -213,33 +211,49 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		locale,
 	};
 
-	const months = writable<Month[]>([]);
+	const months = writable<Month[]>([createMonth(get(focusedValue))]);
 
 	const isInvalid = writable(false);
 
-	const ariaCalendarLabel = derived(
-		[months, locale, calendarLabel],
-		([$months, $locale, $calendarLabel]) => {
-			if (!$months.length) return $calendarLabel;
-			if ($months.length === 1) {
-				const month = $months[0];
-				return `${$calendarLabel}, ${dayjs(month.monthDate).locale($locale).format('MMMM')}`;
-			}
-			const firstMonthName = dayjs($months[0].monthDate).locale($locale).format('MMMM');
-			const lastMonthName = dayjs($months[$months.length - 1].monthDate)
-				.locale($locale)
-				.format('MMMM');
+	const headingValue = derived([months, locale], ([$months, $locale]) => {
+		if (!$months.length) return '';
+		if ($locale !== format.getLocale()) {
+			format.setLocale($locale);
+		}
+		if ($months.length === 1) {
+			const month = $months[0].monthDate;
+			return `${format.fullMonthAndYear(month)}`;
+		}
 
-			return `${$calendarLabel}, ${firstMonthName} - ${lastMonthName}`;
+		const startMonth = $months[0].monthDate;
+		const endMonth = $months[$months.length - 1].monthDate;
+
+		const startMonthName = format.fullMonth(startMonth);
+		const endMonthName = format.fullMonth(endMonth);
+		const startMonthYear = format.fullYear(startMonth);
+		const endMonthYear = format.fullYear(endMonth);
+
+		const content =
+			startMonthYear === endMonthYear
+				? `${startMonthName} - ${endMonthName} ${endMonthYear}`
+				: `${startMonthName} ${startMonthYear} - ${endMonthName} ${endMonthYear}`;
+
+		return content;
+	});
+
+	const fullCalendarLabel = derived(
+		[headingValue, calendarLabel],
+		([$headingValue, $calendarLabel]) => {
+			return `${$calendarLabel}, ${$headingValue}`;
 		}
 	);
 
 	const calendar = builder(name(), {
-		stores: [ariaCalendarLabel, isInvalid],
-		returned: ([$ariaCalendarLabel, $isInvalid]) => {
+		stores: [fullCalendarLabel, isInvalid],
+		returned: ([$fullCalendarLabel, $isInvalid]) => {
 			return {
 				role: 'application',
-				'aria-label': $ariaCalendarLabel,
+				'aria-label': $fullCalendarLabel,
 				'data-invalid': $isInvalid ? '' : undefined,
 			};
 		},
@@ -249,7 +263,15 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			 * when the grid is mounted. The label is updated
 			 * via an effect when the active date or label changes.
 			 */
-			createAccessibleHeading(node, get(ariaCalendarLabel));
+			createAccessibleHeading(node, get(fullCalendarLabel));
+		},
+	});
+
+	const heading = builder(name('heading'), {
+		returned: () => {
+			return {
+				'aria-hidden': true,
+			};
 		},
 	});
 
@@ -266,11 +288,49 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		},
 	});
 
-	const dateInput = builder(name('date-input'), {
+	const dateField = builder(name('dateField'), {
 		returned: () => {
 			return {
 				role: 'group',
-				id: ids.input,
+				id: ids.field,
+			};
+		},
+	});
+
+	const prevButton = builder(name('prevButton'), {
+		returned: () => {
+			return {
+				role: 'button',
+				'aria-label': 'Previous',
+			};
+		},
+		action: (node: HTMLElement) => {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					prevPage();
+				})
+			);
+			return {
+				destroy: unsub,
+			};
+		},
+	});
+
+	const nextButton = builder(name('nextButton'), {
+		returned: () => {
+			return {
+				role: 'button',
+				'aria-label': 'Next',
+			};
+		},
+		action: (node: HTMLElement) => {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					nextPage();
+				})
+			);
+			return {
+				destroy: unsub,
 			};
 		},
 	});
@@ -344,6 +404,11 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		},
 	});
 
+	effect([locale], ([$locale]) => {
+		if (format.getLocale() === $locale) return;
+		format.setLocale($locale);
+	});
+
 	effect([focusedValue], ([$focusedValue]) => {
 		if (!isBrowser || !$focusedValue) return;
 
@@ -364,13 +429,13 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	/**
 	 * Update the accessible heading's text content when the
-	 * `ariaCalendarLabel` store changes.
+	 * `fullCalendarLabel` store changes.
 	 */
-	effect([ariaCalendarLabel], ([$ariaCalendarLabel]) => {
+	effect([fullCalendarLabel], ([$fullCalendarLabel]) => {
 		if (!isBrowser) return;
 		const node = document.getElementById(ids.accessibleHeading);
 		if (!isHTMLElement(node)) return;
-		node.textContent = $ariaCalendarLabel;
+		node.textContent = $fullCalendarLabel;
 	});
 
 	effect([open, value], ([$open, $value]) => {
@@ -484,7 +549,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	 * If not using paged navigation, this will move the calendar forward
 	 * by one month.
 	 */
-	function nextMonth() {
+	function nextPage() {
 		if (get(pagedNavigation)) {
 			const $numberOfMonths = get(numberOfMonths);
 			focusedValue.add($numberOfMonths, 'month');
@@ -500,7 +565,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	 * If not using paged navigation, this will move the calendar backwards
 	 * by one month.
 	 */
-	function prevMonth() {
+	function prevPage() {
 		if (get(pagedNavigation)) {
 			const $numberOfMonths = get(numberOfMonths);
 			focusedValue.subtract($numberOfMonths, 'month');
@@ -528,7 +593,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	function handleTriggerKeydown(e: KeyboardEvent) {
 		if (isSegmentNavigationKey(e.key)) {
 			e.preventDefault();
-			handleSegmentNavigation(e, ids.input);
+			handleSegmentNavigation(e, ids.field);
 		}
 	}
 
@@ -715,9 +780,12 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	return {
 		elements: {
 			calendar,
+			heading,
 			grid,
 			cell,
-			dateInput,
+			dateField,
+			nextButton,
+			prevButton,
 			...segments.elements,
 			...popover.elements,
 		},
@@ -730,12 +798,13 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			months,
 			value,
 			daysOfWeek,
+			headingValue,
 			...segments.states,
 			...popover.states,
 		},
 		helpers: {
-			nextMonth,
-			prevMonth,
+			nextPage,
+			prevPage,
 			nextYear,
 			prevYear,
 			setYear,

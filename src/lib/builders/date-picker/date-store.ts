@@ -1,44 +1,19 @@
 import { get, type Writable } from 'svelte/store';
 import djs from 'dayjs';
 import type { Dayjs } from 'dayjs';
-import { getLocale, type Locale } from '$lib/internal/locale.js';
-import { derivedWithUnsubscribe } from '$lib/internal/helpers';
 
 /**
  * A higher order store that wraps a writable date store and adds
  * some convenience methods for manipulating the date using dayjs.
  */
-export function dayJsStore(store: Writable<Date>, localeStore: Writable<Locale>) {
+export function dayJsStore(store: Writable<Date>) {
 	const originalValue = get(store);
 
 	const { set, update, subscribe } = store;
 
-	let locale = initLocale(get(localeStore));
-
-	const _ = derivedWithUnsubscribe(localeStore, ($locale) => {
-		if ($locale !== locale) {
-			setLocale($locale);
-		}
-	});
-
-	function initLocale(initialLocale: Locale) {
-		if (initialLocale !== 'en') {
-			getLocale(initialLocale);
-		}
-		return initialLocale;
-	}
-
-	function setLocale(newLocale: Locale) {
-		locale = newLocale;
-		if (locale !== 'en') {
-			getLocale(newLocale);
-		}
-	}
-
 	function add(...args: Parameters<typeof Dayjs.prototype.add>) {
 		update((d) => {
 			return djs(d)
-				.locale(locale)
 				.add(...args)
 				.toDate();
 		});
