@@ -35,8 +35,7 @@ import type { CreateDatePickerProps } from './types.js';
 import dayjs from 'dayjs';
 import { dayJsStore } from './date-store.js';
 import { createSegments, handleSegmentNavigation, isSegmentNavigationKey } from './segments.js';
-import { onMount, tick } from 'svelte';
-import { getLocale } from '$lib/internal/locale.js';
+import { tick } from 'svelte';
 import { createFormatter } from './formatter.js';
 
 const defaults = {

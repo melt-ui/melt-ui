@@ -122,7 +122,7 @@
 						<thead aria-hidden="true">
 							<tr>
 								{#each $daysOfWeek as day}
-									<th class="text-sm font-medium text-magnum-800">
+									<th class="text-sm font-semibold text-magnum-800">
 										<div class="flex h-6 w-6 items-center justify-center p-4">
 											{getDayOfWeek(day)}
 										</div>
