@@ -2,7 +2,7 @@ import { addMeltEventListener, builder, createElHelpers, executeCallbacks, isBro
 import type { Defaults } from "$lib/internal/types";
 import { onMount } from "svelte";
 
-import type { ArrowKeys, ColorHSL, ColorHSV, ColorPickerParts, ColorRGB, CreateColorPickerProps, EyeDropper, KeyDurations, NodeElement, NodeSize, Position, ReturnedColor } from "./types";
+import type { ArrowKeys, ColorHSL, ColorHSV, ColorPickerParts, ColorRGB, CreateColorPickerProps, EyeDropperType, KeyDurations, NodeElement, NodeSize, Position, ReturnedColor } from "./types";
 import { derived, get, writable, type Readable, type Writable } from "svelte/store";
 
 
@@ -52,7 +52,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     const alphaPickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
     const alphaValue: Writable<number> = writable(100);
 
-    let eye: EyeDropper | null = null;
+    let eye: EyeDropperType | null = null;
 
     const isValidHex = (hex: string) => /^#([0-9a-f]{3}){1,2}$/i.test(hex);
 
@@ -148,15 +148,10 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     });
 
     const colorPicker = builder(name('color-picker'), {
-        stores: [colorPickerPos, colorPickerDims, getCurrentColor, color],
-        returned: ([$colorPickerPos, $colorPickerDims, $getCurrentColor, $color]) => {
+        stores: [colorPickerPos, colorPickerDims, color],
+        returned: ([$colorPickerPos, $colorPickerDims, $color]) => {
             const top = Math.round($colorPickerPos.y - $colorPickerDims.height / 2);
             const left = Math.round($colorPickerPos.x - $colorPickerDims.width / 2);
-
-            // const { rgb, hex } = $getCurrentColor();
-            // const { r, g, b } = rgb;
-
-            // color.set(hex);
 
             return {
                 'aria-label': 'Button on color canvas, used to select the saturation and brightness.',
@@ -507,8 +502,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
                     eye
                         .open()
-                        .then((result) => updateOnColorInput(result.sRGBHex))
-                        .catch((e) => console.log(e));
+                        .then((result) => updateOnColorInput(result.sRGBHex));
+                        // .catch((e) => console.log(e));
                 })
             );
 
@@ -524,12 +519,11 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         action: (node: HTMLInputElement) => {
 
             const unsubEvents = executeCallbacks(
-                addMeltEventListener(node, 'keydown', () => {
+                addMeltEventListener(node, 'keyup', () => {
                     const { value } = node;
 
                     if (!isValidHex(value)) return;
 
-                    inputUpdate = true;
                     color.set(value);
                 })
             );
@@ -834,6 +828,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
         const colorPickerUnsub = colorPickerPos.subscribe(() => {
             if (inputUpdate) {
+                // console.log('color picker pos not updating');
                 inputUpdate = false;
                 return;
             }
@@ -845,7 +840,12 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
         const hueAngleUnsub = hueAngle.subscribe(() => {
             if (inputUpdate) {
-                inputUpdate = false;
+                // console.log('hue angle not updating');
+                /**
+                 * Set the inputUpdate to false inside the colorPickerPos subscribe above.
+                 * Question... can we always rely on hueAngle subscribe to run first?
+                 */
+                // inputUpdate = false;
                 return;
             }
 
@@ -862,13 +862,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
             if (!isValidHex(hex)) return;
 
-            const { h, s, v } = hexToHSV(hex);
-            const { width, height } = get(colorCanvasDims);
-            hueAngle.set(h === 360 ? 0 : h);
-            colorPickerPos.set({
-                x: width * s,
-                y: height * v
-            });
+            inputUpdate = true;
+            updateOnColorInput(hex);
         });
 
         return () => {

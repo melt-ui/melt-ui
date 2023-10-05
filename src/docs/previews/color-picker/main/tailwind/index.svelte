@@ -3,6 +3,8 @@
 
 	import { Pipette } from 'lucide-svelte';
 
+	const defaultColor = '#5b52aa';
+
 	const {
 		elements: {
 			colorCanvas,
@@ -17,7 +19,7 @@
 		states: { color },
 		helpers: { getCurrentColor },
 	} = createColorPicker({
-		defaultColor: '#5b52aa',
+		defaultColor,
 	});
 
 	let savedColors: ReturnedColor[] = [];
@@ -75,6 +77,7 @@
 			type="text"
 			value={$color}
 			class="w-24 rounded-md border border-gray-800 px-2 py-1 text-black"
+			aria-label="hex color value"
 		/>
 
 		<button

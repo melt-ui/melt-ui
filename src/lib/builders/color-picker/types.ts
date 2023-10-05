@@ -76,12 +76,12 @@ export interface ColorSelectionResult {
     sRGBHex: string
 }
 
-export interface EyeDropper {
+export interface EyeDropperType {
     open: (options?: ColorSelectionOptions) => Promise<ColorSelectionResult>
 }
 
 export interface EyeDropperConstructor {
-    new (): EyeDropper
+    new (): EyeDropperType
 }
 
 export interface Window {
