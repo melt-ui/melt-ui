@@ -16,7 +16,7 @@
 	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = false;
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = 0;
 	export let fixedWeeks: CreateDatePickerProps['fixedWeeks'] = false;
-	export let locale: CreateDatePickerProps['locale'] = 'de';
+	export let locale: CreateDatePickerProps['locale'] = 'en'
 
 	const {
 		elements: {
@@ -52,12 +52,15 @@
 		fixedWeeks,
 		hourCycle: 12,
 		forceVisible: true,
-		locale: 'de',
+		locale,
 	});
 
 	function getDayOfWeek(date: Date) {
 		return new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(date);
 	}
+
+	const dateSegments = ['month', 'day', 'year'] as const;
+	const timeSegments = ['hour', 'minute', 'second'] as const;
 </script>
 
 <div class="flex flex-col gap-3">
@@ -66,29 +69,23 @@
 		use:melt={$dateField}
 		class="flex max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
 	>
-		<div use:melt={$segment('month')}>
-			{$segmentContents.month}
-		</div>
-		<div aria-hidden="true" class="px-1">/</div>
-		<div use:melt={$segment('day')}>
-			{$segmentContents.day}
-		</div>
-		<div aria-hidden="true" class="px-1">/</div>
-		<div use:melt={$segment('year')}>
-			{$segmentContents.year}
-		</div>
+		{#each dateSegments as seg, i}
+			<div use:melt={$segment(seg)}>
+				{$segmentContents[seg]}
+			</div>
+			{#if i < dateSegments.length - 1}
+				<div aria-hidden="true" class="px-1">/</div>
+			{/if}
+		{/each}
 		<div aria-hidden="true" class="pr-2">,</div>
-		<div use:melt={$segment('hour')} class="whitespace-nowrap">
-			{$segmentContents.hour}
-		</div>
-		<div aria-hidden="true" class="px-0.5">:</div>
-		<div use:melt={$segment('minute')} class="whitespace-nowrap">
-			{$segmentContents.minute}
-		</div>
-		<div aria-hidden="true" class="px-0.5">:</div>
-		<div use:melt={$segment('second')} class="whitespace-nowrap">
-			{$segmentContents.second}
-		</div>
+		{#each timeSegments as seg, i}
+			<div use:melt={$segment(seg)} class="whitespace-nowrap">
+				{$segmentContents[seg]}
+			</div>
+			{#if i < timeSegments.length - 1}
+				<div aria-hidden="true" class="px-0.5">:</div>
+			{/if}
+		{/each}
 		<div use:melt={$dayPeriodSegment} class="ml-2">
 			{$dayPeriodValue}
 		</div>
@@ -191,7 +188,4 @@
 		@apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded p-4 hover:bg-magnum-100 focus:ring focus:ring-magnum-400 data-[outside-month]:pointer-events-none data-[outside-month]:cursor-default data-[range-highlighted]:bg-magnum-200 data-[selected]:bg-magnum-200 data-[disabled]:opacity-40 data-[outside-month]:opacity-40 data-[outside-month]:hover:bg-transparent;
 	}
 
-	.cell span {
-		@apply text-magnum-800;
-	}
 </style>
