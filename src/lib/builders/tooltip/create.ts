@@ -303,6 +303,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 	});
 
 	return {
+		ids,
 		elements: {
 			trigger,
 			content,

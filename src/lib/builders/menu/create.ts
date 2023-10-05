@@ -1028,6 +1028,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		});
 
 		return {
+			ids: subIds,
 			elements: {
 				subTrigger,
 				subMenu,
@@ -1316,6 +1317,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	}
 
 	return {
+		ids: rootIds,
 		trigger: rootTrigger,
 		menu: rootMenu,
 		open: rootOpen,
@@ -1328,7 +1330,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		createSubmenu,
 		createMenuRadioGroup,
 		separator,
-		rootIds,
 		handleTypeaheadSearch,
 	};
 }
