@@ -53,6 +53,9 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	const containSelection = writable(false);
 	const activeTrigger = writable<HTMLElement | null>(null);
 
+	// type OpenReason = 'pointer' | 'focus';
+	// const openReason = writable<null | OpenReason>(null);
+
 	const options = toWritableStores(withDefaults);
 
 	const {
@@ -278,7 +281,10 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	});
 
 	effect([open], ([$open]) => {
-		if (!isBrowser || !$open) return;
+		if (!isBrowser || !$open) {
+			hasSelection.set(false);
+			return;
+		}
 
 		const handlePointerUp = () => {
 			containSelection.set(false);
