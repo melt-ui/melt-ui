@@ -64,7 +64,7 @@
 
 	const {
 		elements: { menu, input, option, label },
-		states: { open, inputValue, touchedInput, selected },
+		states: { open, inputValue, touchedInput },
 		helpers: { isSelected },
 	} = createCombobox({
 		forceVisible: true,

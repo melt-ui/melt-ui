@@ -74,7 +74,8 @@ const trigger = elementSchema('trigger', {
 });
 
 const portalled = elementSchema('portalled', {
-	description: "The element that will be portalled (or moved) to a different location in the DOM based on the `portal` prop value.",
+	description:
+		'The element that will be portalled (or moved) to a different location in the DOM based on the `portal` prop value.',
 	dataAttributes: [
 		{
 			name: 'data-portal',
@@ -83,9 +84,9 @@ const portalled = elementSchema('portalled', {
 		{
 			name: 'data-melt-dialog-portalled',
 			value: ATTRS.MELT('portalled'),
-		}
+		},
 	],
-});	
+});
 
 const overlay = elementSchema('overlay', {
 	description: 'The overlay element which covers the page when the dialog is open.',
