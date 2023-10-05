@@ -1,5 +1,6 @@
+import type { createColorPicker } from "./create";
 
-export type ColorPickerParts = 'trigger' | 'color-canvas' | 'color-picker' | 'hue-slider' | 'hue-picker' | 'alpha-slider' | 'alpha-picker' | 'eye-dropper';
+export type ColorPickerParts = 'color-canvas' | 'color-picker' | 'hue-slider' | 'hue-picker' | 'alpha-slider' | 'alpha-picker' | 'eye-dropper' | 'hex-input';
 
 export type ColorRGB = {
     r: number;
@@ -86,3 +87,8 @@ export interface EyeDropperConstructor {
 export interface Window {
     EyeDropper?: EyeDropperConstructor | undefined
 }
+
+export type ColorPicker = ReturnType<typeof createColorPicker>;
+export type ColorPickerElements = ColorPicker['elements'];
+export type ColorPickerStates = ColorPicker['states'];
+export type ColorPickerHelpers = ColorPicker['helpers'];

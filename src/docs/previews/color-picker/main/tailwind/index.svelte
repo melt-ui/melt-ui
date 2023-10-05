@@ -12,6 +12,7 @@
 			alphaSlider,
 			alphaPicker,
 			eyeDropper,
+			hexInput,
 		},
 		states: { color },
 		helpers: { getCurrentColor },
@@ -25,7 +26,7 @@
 </script>
 
 <div
-	class="flex w-[200px] flex-col items-center justify-center gap-2 rounded-md bg-white p-2"
+	class="flex flex-col items-center justify-center gap-2 rounded-md bg-white p-2"
 >
 	<div class="canvas relative">
 		<canvas
@@ -69,8 +70,10 @@
 		</button>
 
 		<input
+			{...$hexInput}
+			use:hexInput
 			type="text"
-			bind:value={$color}
+			value={$color}
 			class="w-24 rounded-md border border-gray-800 px-2 py-1 text-black"
 		/>
 

@@ -32,6 +32,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     let hueDragging = false;
     let alphaDragging = false;
     let insideUpdate = false;
+    let inputUpdate = false;
     const speepUpStep = 5;
 
     const keyDurations = <KeyDurations>{};
@@ -519,6 +520,28 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         }
     });
 
+    const hexInput = builder(name('hex-input'), {
+        action: (node: HTMLInputElement) => {
+
+            const unsubEvents = executeCallbacks(
+                addMeltEventListener(node, 'keydown', () => {
+                    const { value } = node;
+
+                    if (!isValidHex(value)) return;
+
+                    inputUpdate = true;
+                    color.set(value);
+                })
+            );
+
+            return {
+                destroy() {
+                    unsubEvents();
+                }
+            }
+        }
+    });
+
     // Helper functions
     function RGBtoHex(rgb: ColorRGB) {
         const { r, g, b } = rgb;
@@ -809,21 +832,29 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         // Update the color and hue picker button positions.
         updateOnColorInput(argsWithDefaults.defaultColor);
 
-        colorPickerPos.subscribe(() => {
+        const colorPickerUnsub = colorPickerPos.subscribe(() => {
+            if (inputUpdate) {
+                inputUpdate = false;
+                return;
+            }
+
             const { hex } = get(getCurrentColor)();
             insideUpdate = true;
             color.set(hex);
         });
 
-        hueAngle.subscribe(() => {
+        const hueAngleUnsub = hueAngle.subscribe(() => {
+            if (inputUpdate) {
+                inputUpdate = false;
+                return;
+            }
+
             const { hex } = get(getCurrentColor)();
             insideUpdate = true;
             color.set(hex);
         });
 
-        // TODO: update colorpickerpos and hueAngle when color is updated from the outside.
-        // Problem... getting into a circular dependency...
-        color.subscribe((hex) => {
+        const colorUnsub = color.subscribe((hex) => {
             if (insideUpdate) {
                 insideUpdate = false;
                 return;
@@ -843,6 +874,9 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         return () => {
             window.removeEventListener('mousemove', handleWindowsMouseMove);
             window.removeEventListener('mouseup', handleWindowsMouseUp);
+            colorPickerUnsub();
+            hueAngleUnsub();
+            colorUnsub();
         }
     });
 
@@ -854,7 +888,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             huePicker,
             alphaSlider,
             alphaPicker,
-            eyeDropper
+            eyeDropper,
+            hexInput
         },
         states: {
             color
