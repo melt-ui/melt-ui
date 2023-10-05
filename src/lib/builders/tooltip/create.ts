@@ -258,18 +258,24 @@ export function createTooltip(props?: CreateTooltipProps) {
 	let isMouseInTooltipArea = false;
 
 	effect(open, ($open) => {
-		if (!$open) return;
+		const currentGroup = get(group);
+		if (currentGroup === undefined || currentGroup === false) {
+			return;
+		}
 
-		const groupValue = get(group);
-		if (groupValue === undefined || groupValue === false) {
+		if (!$open) {
+			if (groupMap.get(currentGroup) === open) {
+				// Tooltip is no longer open
+				groupMap.delete(currentGroup);
+			}
 			return;
 		}
 
 		// Close the currently open tooltip in the same group
 		// and set this tooltip as the open one.
-		const currentOpen = groupMap.get(groupValue);
+		const currentOpen = groupMap.get(currentGroup);
 		currentOpen?.set(false);
-		groupMap.set(groupValue, open);
+		groupMap.set(currentGroup, open);
 	});
 
 	effect([open, openReason], ([$open, $openReason]) => {
