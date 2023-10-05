@@ -73,7 +73,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		arrow,
 		createSubmenu,
 		createMenuRadioGroup,
-		rootIds,
+		ids,
 		separator,
 		handleTypeaheadSearch,
 		group,
@@ -111,12 +111,12 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		const target = e.target;
 		if (!(target instanceof Element)) return;
 
-		if (target.id === rootIds.trigger && isLeftClick(e)) {
+		if (target.id === ids.trigger && isLeftClick(e)) {
 			rootOpen.set(false);
 			return;
 		}
 
-		if (target.id !== rootIds.trigger && !target.closest(selector())) {
+		if (target.id !== ids.trigger && !target.closest(selector())) {
 			rootOpen.set(false);
 		}
 	}
@@ -137,8 +137,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				style: styleToString({
 					display: $isVisible ? undefined : 'none',
 				}),
-				id: rootIds.menu,
-				'aria-labelledby': rootIds.trigger,
+				id: ids.menu,
+				'aria-labelledby': ids.trigger,
 				'data-state': $isVisible ? 'open' : 'closed',
 				'data-portal': $portal ? '' : undefined,
 				tabindex: -1,
@@ -233,10 +233,10 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		stores: rootOpen,
 		returned: ($rootOpen) => {
 			return {
-				'aria-controls': rootIds.menu,
+				'aria-controls': ids.menu,
 				'aria-expanded': $rootOpen,
 				'data-state': $rootOpen ? 'open' : 'closed',
-				id: rootIds.trigger,
+				id: ids.trigger,
 				style: styleToString({
 					WebkitTouchCallout: 'none',
 				}),

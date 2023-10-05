@@ -756,6 +756,7 @@ export function createSelect<
 	});
 
 	return {
+		ids,
 		elements: {
 			menu,
 			trigger,

@@ -254,6 +254,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		};
 	});
 	return {
+		ids,
 		elements: {
 			trigger,
 			content,
