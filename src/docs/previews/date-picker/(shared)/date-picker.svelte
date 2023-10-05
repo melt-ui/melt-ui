@@ -7,16 +7,37 @@
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
 	import { melt } from '$lib';
 	import { fade } from 'svelte/transition';
+	import {
+		parseZonedDateTime,
+		parseAbsolute,
+		parseAbsoluteToLocal,
+		parseDateTime,
+		parseDate,
+	} from '@internationalized/date';
+
+	const exampleDates = {
+		date: parseDate('2023-10-05'),
+		dateTime: parseDateTime('2023-10-05T00:45:00.000Z'),
+		zonedDateTime: parseZonedDateTime('2023-10-05T00:45[America/New_York]'),
+		zonedDateTimeAbsolute: parseAbsolute(
+			'2023-10-05T00:45:00.000Z',
+			'America/Los_Angeles',
+		),
+		conedDateTimeAbsoluteToLocal: parseAbsoluteToLocal(
+			'2023-10-05T00:45:00.000Z',
+		),
+	};
 
 	export let disabled: Matcher | Matcher[] = false;
 	export let defaultFocusedValue: CreateDatePickerProps['defaultFocusedValue'] =
 		undefined;
-	export let defaultValue: CreateDatePickerProps['defaultValue'] = new Date();
+	export let defaultValue: CreateDatePickerProps['defaultValue'] =
+		exampleDates.date;
 	export let numberOfMonths: CreateDatePickerProps['numberOfMonths'] = 1;
 	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = false;
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = 0;
 	export let fixedWeeks: CreateDatePickerProps['fixedWeeks'] = false;
-	export let locale: CreateDatePickerProps['locale'] = 'en'
+	export let locale: CreateDatePickerProps['locale'] = 'en';
 
 	const {
 		elements: {
@@ -187,5 +208,4 @@
 	.cell {
 		@apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded p-4 hover:bg-magnum-100 focus:ring focus:ring-magnum-400 data-[outside-month]:pointer-events-none data-[outside-month]:cursor-default data-[range-highlighted]:bg-magnum-200 data-[selected]:bg-magnum-200 data-[disabled]:opacity-40 data-[outside-month]:opacity-40 data-[outside-month]:hover:bg-transparent;
 	}
-
 </style>

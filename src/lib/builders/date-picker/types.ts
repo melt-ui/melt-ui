@@ -3,8 +3,18 @@ import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { createDatePicker } from './create.js';
 import type { CreatePopoverProps, Matcher } from '$lib/builders/index.js';
 import type { Locale } from '$lib/internal/locale.js';
+import type { CalendarDate, CalendarDateTime, ZonedDateTime } from '@internationalized/date';
 
-export type DatePickerProps = {
+export type DateValue = CalendarDate | CalendarDateTime | ZonedDateTime;
+export type MappedDateValue<T> = T extends ZonedDateTime
+	? ZonedDateTime
+	: T extends CalendarDateTime
+	? CalendarDateTime
+	: T extends CalendarDate
+	? CalendarDate
+	: never;
+
+export type DatePickerProps<T extends DateValue> = {
 	/**
 	 * Allow deselecting the selected date, which would set the
 	 * value to `undefined`. You can use this to ensure a date
