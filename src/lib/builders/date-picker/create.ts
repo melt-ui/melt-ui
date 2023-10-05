@@ -402,6 +402,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		options: {
 			hourCycle,
 		},
+		format,
 	});
 
 	effect([locale], ([$locale]) => {

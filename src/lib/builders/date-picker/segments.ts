@@ -13,6 +13,7 @@ import dayjs from 'dayjs';
 import type { _DatePickerParts, _DatePickerIds, _DatePickerStores } from './create.js';
 import { get, writable, type Updater, type Writable, derived } from 'svelte/store';
 import type { Action } from 'svelte/action';
+import type { createFormatter } from './formatter.js';
 
 const { name } = createElHelpers<_DatePickerParts>('calendar');
 
@@ -38,6 +39,7 @@ type CreateSegmentProps = {
 	options: {
 		hourCycle: Writable<12 | 24 | undefined>;
 	};
+	format: ReturnType<typeof createFormatter>;
 };
 
 const segmentParts = ['day', 'month', 'year', 'hour', 'minute', 'second'] as const;
@@ -72,7 +74,7 @@ const acceptableSegmentKeys = [
 type SegmentContent = Record<SegmentPart, string>;
 
 export function createSegments(props: CreateSegmentProps) {
-	const { stores, ids, options } = props;
+	const { stores, ids, options, format } = props;
 
 	/**
 	 * State for each segment used to better handle certain
@@ -548,7 +550,7 @@ export function createSegments(props: CreateSegmentProps) {
 		const valueNow = djs.month() + 1;
 		const valueMin = 1;
 		const valueMax = 12;
-		const valueText = isEmpty ? 'Empty' : `${valueNow} - ${djs.format('MMMM')}`;
+		const valueText = isEmpty ? 'Empty' : `${valueNow} - ${format.fullMonth(djs.toDate())}`;
 
 		return {
 			...segmentDefaults,
