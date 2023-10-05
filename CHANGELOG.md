@@ -1,5 +1,21 @@
 # @melt-ui/svelte
 
+## 0.52.0
+
+### Minor Changes
+
+- return an `ids` object from builders which contains the `id`s Melt applies to certain elements internally ([#591](https://github.com/melt-ui/melt-ui/pull/591))
+
+### Patch Changes
+
+- Tooltip: Fix bug with `group` parameter ([#590](https://github.com/melt-ui/melt-ui/pull/590))
+
+- Link Preview: Fix bug where content would not close ([`c882dfa5`](https://github.com/melt-ui/melt-ui/commit/c882dfa52f1f2005bf1afe7e345c83dffb9daf36))
+
+- Slider: Add `aria-disabled` to root ([#584](https://github.com/melt-ui/melt-ui/pull/584))
+
+- Tooltip: fix esc handler ([`178ef63e`](https://github.com/melt-ui/melt-ui/commit/178ef63ebc0e1382aa2bb2896a55d8345eb1e852))
+
 ## 0.51.1
 
 ### Patch Changes
