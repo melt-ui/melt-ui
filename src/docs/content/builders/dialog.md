@@ -49,7 +49,7 @@ At a high level, the anatomy of a dialog looks like this:
 ```
 
 - **Trigger**: The button(s) that open the dialog
-- **Portalled**: The container that is portalled to the body
+- **Portalled**: The container that is portalled (to `body`, by default)
 - **Overlay**: The dim background that is typically behind a dialog element.
 - **Content**: Container for the content within the dialog.
   - **Title**: The title of the dialog
