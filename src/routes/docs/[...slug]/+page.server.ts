@@ -37,6 +37,8 @@ let storedContributors: FullContributor[] | undefined;
 const getContributors = async () => {
 	if (!storedContributors) {
 		try {
+			// eslint-disable-next-line no-console
+			console.log('Fetching contributors...');
 			const res = await fetch(`https://api.github.com/repos/melt-ui/melt-ui/contributors`, {
 				headers: {
 					Authorization: `Bearer ${GITHUB_TOKEN}`,
@@ -62,6 +64,8 @@ const getContributors = async () => {
 			)) as FullContributor[];
 
 			storedContributors = contributorsWithName.filter(({ login }) => !login.includes('[bot]'));
+			// eslint-disable-next-line no-console
+			console.log(`Fetched ${storedContributors.length} contributors`);
 		} catch {
 			return [];
 		}
