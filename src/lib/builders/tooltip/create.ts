@@ -134,6 +134,17 @@ export function createTooltip(props?: CreateTooltipProps) {
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['trigger']> => {
+			const keydownHandler = (e: KeyboardEvent) => {
+				if (get(closeOnEscape) && e.key === kbd.ESCAPE) {
+					if (openTimeout) {
+						window.clearTimeout(openTimeout);
+						openTimeout = null;
+					}
+
+					open.set(false);
+				}
+			};
+
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'pointerdown', () => {
 					const $closeOnPointerDown = get(closeOnPointerDown);
@@ -161,16 +172,8 @@ export function createTooltip(props?: CreateTooltipProps) {
 					openTooltip('focus');
 				}),
 				addMeltEventListener(node, 'blur', () => closeTooltip(true)),
-				addMeltEventListener(node, 'keydown', (e) => {
-					if (get(closeOnEscape) && e.key === kbd.ESCAPE) {
-						if (openTimeout) {
-							window.clearTimeout(openTimeout);
-							openTimeout = null;
-						}
-
-						open.set(false);
-					}
-				})
+				addMeltEventListener(node, 'keydown', keydownHandler),
+				addEventListener(document, 'keydown', keydownHandler)
 			);
 
 			return {
