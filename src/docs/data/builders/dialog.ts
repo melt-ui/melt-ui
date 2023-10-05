@@ -78,7 +78,7 @@ const portalled = elementSchema('portalled', {
 	dataAttributes: [
 		{
 			name: 'data-portal',
-			value: ATTRS.OPEN_CLOSED,
+			value: ATTRS.MELT('portalled'),
 		},
 		{
 			name: 'data-melt-dialog-portalled',
