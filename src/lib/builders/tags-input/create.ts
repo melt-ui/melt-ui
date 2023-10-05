@@ -744,6 +744,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	});
 
 	return {
+		ids,
 		elements: {
 			root,
 			input,

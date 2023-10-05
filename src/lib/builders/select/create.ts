@@ -558,7 +558,9 @@ export function createSelect<
 			const $multiple = get(multiple);
 			if ($multiple) {
 				const optionArr = Array.isArray($option) ? $option : [];
-				return toggle(newOption, optionArr) as S;
+				return toggle(newOption, optionArr, (itemA, itemB) =>
+					deepEqual(itemA.value, itemB.value)
+				) as S;
 			}
 			return newOption as S;
 		});
@@ -569,7 +571,7 @@ export function createSelect<
 		returned: ($selected) => {
 			return (props: SelectOptionProps<Value>) => {
 				const isSelected = Array.isArray($selected)
-					? $selected.map((o) => o.value).includes(props.value)
+					? $selected.some((o) => deepEqual(o.value, props.value))
 					: deepEqual($selected?.value, props?.value);
 
 				return {
@@ -754,6 +756,7 @@ export function createSelect<
 	});
 
 	return {
+		ids,
 		elements: {
 			menu,
 			trigger,

@@ -307,6 +307,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	});
 
 	return {
+		ids,
 		elements: {
 			trigger,
 			content,
