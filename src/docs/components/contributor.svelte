@@ -56,7 +56,7 @@
 				alt="{contributor.login}'s avatar"
 			/>
 			<div class="flex flex-col">
-				<h3 class="text-lg font-medium">{contributor.name}</h3>
+				<h3 class="text-lg font-medium">{contributor.name ?? contributor.login}</h3>
 				<p class="mb-2 text-sm text-neutral-400">{contributor.login}</p>
 				{#if contributor.bio}
 					<p class="mb-2 text-sm text-neutral-300">{contributor.bio}</p>
