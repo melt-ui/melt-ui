@@ -61,10 +61,7 @@ enhance the experience of building with Svelte and improve the ecosystem for eve
 Check out our [Contributing guide](./CONTRIBUTING.md) to learn more.
 
 
-## Contribute from a browser IDE 
-Make changes and contribute to OctoBot in a single click with an **already setup and ready to code developer environment** using Gitpod !
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/?autostart=true#https://github.com/melt-ui/melt-ui/tree/develop)
 
 ## Community
 
