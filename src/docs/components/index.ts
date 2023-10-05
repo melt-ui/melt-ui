@@ -24,3 +24,4 @@ export { default as InfoPopover } from './info-popover.svelte';
 export { default as TypeDialog } from './type-dialog.svelte';
 export { default as Logo } from './logo.svelte';
 export { default as CustomEventDialog } from './custom-event-dialog.svelte';
+export { default as Contributors } from './contributors.svelte';

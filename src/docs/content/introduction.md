@@ -6,7 +6,7 @@ description:
 ---
 
 <script>
-    import { Construction } from '$docs/components'
+    import { Construction, Contributors } from '$docs/components'
 </script>
 
 Melt UI empowers developers to create accessible UIs that embody their unique style. With a strong
@@ -76,6 +76,13 @@ Melt UI offers a fully-typed API, safeguarding your code while providing autocom
 in your preferred code editor. All our components share a consistent API, promoting familiarity and
 minimizing surprises. The components are also build with SSR in mind, making them a perfect fit for
 SvelteKit.
+
+## Built by the community
+
+Melt UI is an open-source project built by the community for the community. It wouldn't be possible
+if it wasn't for the amazing work of some amazing people.
+
+<Contributors />
 
 ## Inspiration & Credits
 
