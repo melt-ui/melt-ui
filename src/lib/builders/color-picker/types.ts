@@ -84,7 +84,7 @@ export interface EyeDropperConstructor {
     new (): EyeDropperType
 }
 
-export interface Window {
+export interface EyeDropperWindow {
     EyeDropper?: EyeDropperConstructor | undefined
 }
 

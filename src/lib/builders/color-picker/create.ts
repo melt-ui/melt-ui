@@ -2,7 +2,7 @@ import { addMeltEventListener, builder, createElHelpers, executeCallbacks, isBro
 import type { Defaults } from "$lib/internal/types";
 import { onMount } from "svelte";
 
-import type { ArrowKeys, ColorHSL, ColorHSV, ColorPickerParts, ColorRGB, CreateColorPickerProps, EyeDropperType, KeyDurations, NodeElement, NodeSize, Position, ReturnedColor } from "./types";
+import type { ArrowKeys, ColorHSL, ColorHSV, ColorPickerParts, ColorRGB, CreateColorPickerProps, EyeDropperType, EyeDropperWindow, KeyDurations, NodeElement, NodeSize, Position, ReturnedColor } from "./types";
 import { derived, get, writable, type Readable, type Writable } from "svelte/store";
 
 
@@ -15,15 +15,6 @@ const defaults = {
 
 const { name } = createElHelpers<ColorPickerParts>('color-picker');
 
-/**
- * TODO:
- * - [ ] create preview example of vertical sliders
- * - [ ] bind color store to changes in canvas
- * - [ ] create input builders
- * - [ ] create trigger builder to hide / show color-picker
- * - [ ] helper function for detecting the browser for eye dropper?
- * - [ ] ...
- */
 
 export function createColorPicker(args?: CreateColorPickerProps) {
     const argsWithDefaults = { ...defaults, ...args };
@@ -35,7 +26,12 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     let inputUpdate = false;
     const speepUpStep = 5;
 
-    const keyDurations = <KeyDurations>{};
+    const keyDurations: KeyDurations = {
+        'ArrowDown': null,
+        'ArrowLeft': null,
+        'ArrowUp': null,
+        'ArrowRight': null
+    };
 
     const color: Writable<string> = writable(defaults.defaultColor);
 
@@ -188,15 +184,19 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
                     if (!keys.includes(e.key)) return;
 
-                    const key = e.key as ArrowKeys;
+                    const key = <ArrowKeys>e.key;
 
                     e.preventDefault();
 
+                    let duration = 0;
+
                     if (!keyDurations[key]) {
                         keyDurations[key] = Date.now();
+                    } else {
+                        duration = Date.now() - <number>keyDurations[key];
                     }
 
-                    const duration = Date.now() - keyDurations[key];
+                    // const duration = Date.now() - keyDurations[key];
                     const step = duration > 1000 ? speepUpStep : 1;
 
                     const { x, y } = get(colorPickerPos);
@@ -492,8 +492,10 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         },
         action: (node: HTMLButtonElement) => {
 
-            if (window.EyeDropper) {
-                eye = new EyeDropper();
+            const eyeWindow = <EyeDropperWindow>window;
+
+            if (eyeWindow.EyeDropper) {
+                eye = new eyeWindow.EyeDropper();
             }
 
             const unsubEvents = executeCallbacks(
