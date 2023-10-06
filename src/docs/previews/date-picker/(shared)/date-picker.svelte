@@ -7,6 +7,7 @@
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
 	import { melt } from '$lib';
 	import { fade } from 'svelte/transition';
+	import { getLocalTimeZone } from '@internationalized/date';
 
 	export let disabled: Matcher | Matcher[] = false;
 	export let defaultFocusedValue: CreateDatePickerProps['defaultFocusedValue'] =
@@ -118,10 +119,10 @@
 					<table use:melt={$grid} class="w-full">
 						<thead aria-hidden="true">
 							<tr>
-								{#each $daysOfWeek as day}
+								{#each $daysOfWeek as date}
 									<th class="text-sm font-semibold text-magnum-800">
 										<div class="flex h-6 w-6 items-center justify-center p-4">
-											{getDayOfWeek(day)}
+											{getDayOfWeek(date.toDate(getLocalTimeZone()))}
 										</div>
 									</th>
 								{/each}
@@ -130,10 +131,10 @@
 						<tbody>
 							{#each weeks as days}
 								<tr>
-									{#each days as day}
+									{#each days as date}
 										<td role="gridcell">
-											<div use:melt={$cell(day)} class="cell">
-												{day.getDate()}
+											<div use:melt={$cell(date)} class="cell">
+												{date.day}
 											</div>
 										</td>
 									{/each}

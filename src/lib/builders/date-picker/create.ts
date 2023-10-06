@@ -10,26 +10,17 @@ import {
 	overridable,
 	toWritableStores,
 	omit,
-	type ChangeFn,
 	executeCallbacks,
 	styleToString,
 	chunk,
 } from '$lib/internal/helpers/index.js';
-
-import {
-	isMatch,
-	isSingleDate,
-	isInSameMonth,
-	getDaysBetween2,
-	getLastFirstDayOfWeek2,
-	getNextLastDayOfWeek2,
-} from '$lib/builders/calendar/utils.js';
+import { isMatch } from '$lib/builders/calendar/utils.js';
+import { getDaysBetween, getLastFirstDayOfWeek, getNextLastDayOfWeek } from './utils.js';
 
 import { derived, get, writable, type Writable } from 'svelte/store';
 import { createPopover, type Month } from '$lib/builders/index.js';
 import type { CreateDatePickerProps } from './types.js';
-import dayjs from 'dayjs';
-import { dateStore, dayJsStore } from './date-store.js';
+import { dateStore } from './date-store.js';
 import { createSegments, handleSegmentNavigation, isSegmentNavigationKey } from './segments.js';
 import { tick } from 'svelte';
 import { createFormatter } from './formatter.js';
@@ -47,6 +38,7 @@ import {
 	CalendarDateTime,
 	parseDateTime,
 	parseDate,
+	now,
 } from '@internationalized/date';
 import { getDaysInMonth } from './utils.js';
 
@@ -54,7 +46,7 @@ const defaults = {
 	disabled: false,
 	unavailable: false,
 	value: undefined,
-	defaultFocusedValue: today(getLocalTimeZone()),
+	defaultFocusedValue: undefined,
 	focusedValue: undefined,
 	allowDeselect: false,
 	numberOfMonths: 1,
@@ -110,9 +102,10 @@ const { name } = createElHelpers<_DatePickerParts>('calendar');
  * For internal use only.
  * @internal
  */
-export type _DatePickerStores = {
-	value: Writable<Date | undefined>;
-	focusedValue: ReturnType<typeof dayJsStore>;
+export type _DatePickerStores<T extends DateValue = DateValue> = {
+	value: Writable<T | undefined>;
+	focusedValue: ReturnType<typeof dateStore>;
+	locale: Writable<string>;
 };
 
 /**
@@ -135,7 +128,9 @@ export type _DatePickerIds = {
 	calendar: string;
 };
 
-export function createDatePicker<T extends DateValue>(props?: CreateDatePickerProps<T>) {
+export function createDatePicker<T extends DateValue = DateValue>(
+	props?: CreateDatePickerProps<T>
+) {
 	const withDefaults = { ...defaults, ...props };
 
 	const popover = createPopover({
@@ -205,10 +200,7 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 	};
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-	const value = overridable<DateValue | undefined>(
-		valueWritable,
-		withDefaults?.onValueChange as ChangeFn<DateValue | undefined>
-	);
+	const value = overridable<DateValue | undefined>(valueWritable, withDefaults?.onValueChange);
 
 	const focusedValueWritable =
 		withDefaults.focusedValue ?? writable(withDefaults.defaultFocusedValue);
@@ -224,7 +216,9 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 		locale,
 	};
 
-	const months = writable<Month<T>[]>([createMonth(get(focusedValue) as T)]);
+	const months = writable<Month<DateValue>[]>([
+		createMonth(withDefaults.defaultFocusedValue ?? now(getLocalTimeZone())),
+	]);
 
 	const isInvalid = writable(false);
 
@@ -408,8 +402,8 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 				addMeltEventListener(node, 'click', () => {
 					const args = getElArgs();
 					if (args.disabled) return;
-					const date = new Date(args.value || '');
-					handleSingleClick(date);
+					if (!args.value) return;
+					handleSingleClick(parseToDateObj(args.value));
 				})
 			);
 
@@ -436,13 +430,11 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 	effect([focusedValue], ([$focusedValue]) => {
 		if (!isBrowser || !$focusedValue) return;
 
-		months.set([createMonth($focusedValue as T)]);
+		months.set([createMonth($focusedValue)]);
 		const $numberOfMonths = get(numberOfMonths);
 		if ($numberOfMonths > 1) {
-			const d = dayjs($focusedValue);
-
 			for (let i = 1; i < $numberOfMonths; i++) {
-				const nextMonth = d.add(i, 'month').toDate();
+				const nextMonth = $focusedValue.add({ months: i });
 				months.update((prev) => {
 					prev.push(createMonth(nextMonth));
 					return prev;
@@ -497,9 +489,9 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 	 * previous and next months that are needed to fill out the
 	 * calendar grid.
 	 */
-	function createMonth(dateObj: T): Month<T> {
+	function createMonth(dateObj: DateValue): Month<DateValue> {
 		const tz = getLocalTimeZone();
-		const date = dateObj.toDate(tz);
+		const date = dateObj instanceof ZonedDateTime ? dateObj.toDate() : dateObj.toDate(tz);
 		const daysInMonth = getDaysInMonth(date);
 
 		const datesArray = Array.from({ length: daysInMonth }, (_, i) => dateObj.set({ day: i + 1 }));
@@ -507,11 +499,11 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 		const firstDayOfMonth = startOfMonth(dateObj);
 		const lastDayOfMonth = endOfMonth(dateObj);
 
-		const lastSunday = getLastFirstDayOfWeek2(firstDayOfMonth, get(weekStartsOn), get(locale));
-		const nextSaturday = getNextLastDayOfWeek2(lastDayOfMonth, get(weekStartsOn), get(locale));
+		const lastSunday = getLastFirstDayOfWeek(firstDayOfMonth, get(weekStartsOn), get(locale));
+		const nextSaturday = getNextLastDayOfWeek(lastDayOfMonth, get(weekStartsOn), get(locale));
 
-		const lastMonthDays = getDaysBetween2(lastSunday.subtract({ days: 1 }), firstDayOfMonth);
-		const nextMonthDays = getDaysBetween2(lastDayOfMonth, nextSaturday.add({ days: 1 }));
+		const lastMonthDays = getDaysBetween(lastSunday.subtract({ days: 1 }), firstDayOfMonth);
+		const nextMonthDays = getDaysBetween(lastDayOfMonth, nextSaturday.add({ days: 1 }));
 
 		const totalDays = lastMonthDays.length + datesArray.length + nextMonthDays.length;
 
@@ -526,7 +518,7 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 			nextMonthDays.push(...extraDaysArray);
 		}
 
-		const allDays = lastMonthDays.concat(datesArray, nextMonthDays) as T[];
+		const allDays = lastMonthDays.concat(datesArray, nextMonthDays);
 
 		const weeks = chunk(allDays, 7);
 
@@ -633,19 +625,15 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 		focusedValue.setDate({ month: month });
 	}
 
-	function handleSingleClick(date: Date) {
+	function handleSingleClick(date: DateValue) {
 		value.update((prev) => {
-			if (isSingleDate(prev) || prev === undefined) {
-				const $focusedValue = get(focusedValue);
-				if ($focusedValue && !isInSameMonth(date, $focusedValue)) {
-					focusedValue.set(date);
-				}
+			const $focusedValue = get(focusedValue);
+			if (!isSameMonth(date, $focusedValue)) {
+				focusedValue.set(date);
+			}
 
-				if (prev === undefined) return date;
-				if (get(allowDeselect) && isSameDay(prev, date)) {
-					focusedValue.set(date);
-					return undefined;
-				}
+			if (get(allowDeselect) && prev && isSameDay(prev, date)) {
+				return undefined;
 			}
 			return date;
 		});
@@ -675,7 +663,10 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 		}
 
 		if (e.key === kbd.SPACE || e.key === kbd.ENTER) {
-			handleSingleClick(new Date(currentCell.getAttribute('data-value') ?? ''));
+			const cellValue = currentCell.getAttribute('data-value');
+			if (!cellValue) return;
+
+			handleSingleClick(parseToDateObj(cellValue));
 		}
 	}
 
@@ -716,7 +707,7 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 			 */
 
 			// shift the calendar back a month
-			focusedValue.subtract(1, 'month');
+			focusedValue.subtract({ months: 1 });
 
 			// Without a tick here, it seems to be too fast for
 			// the DOM to update, with the tick it works great
@@ -747,7 +738,7 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 			 */
 
 			// shift the calendar forward a month
-			focusedValue.add(1, 'month');
+			focusedValue.add({ months: 1 });
 
 			// we may need a tick here, but we'll see how it goes
 			tick().then(() => {
@@ -788,10 +779,10 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 	function handleFocusedValue(node: HTMLElement) {
 		const cellValue = node.getAttribute('data-value');
 		if (!cellValue) return;
-		focusedValue.set(new Date(cellValue));
+		focusedValue.set(parseToDateObj(cellValue));
 	}
 
-	function parseToDateObj(dateStr: string) {
+	function parseToDateObj(dateStr: string): DateValue {
 		const $focusedValue = get(focusedValue);
 		if ($focusedValue instanceof ZonedDateTime) {
 			return parseZonedDateTime(dateStr);

@@ -9,11 +9,12 @@ import {
 	kbd,
 	styleToString,
 } from '$lib/internal/helpers/index.js';
-import dayjs from 'dayjs';
 import type { _DatePickerParts, _DatePickerIds, _DatePickerStores } from './create.js';
 import { get, writable, type Updater, type Writable, derived } from 'svelte/store';
 import type { Action } from 'svelte/action';
 import type { createFormatter } from './formatter.js';
+import { getLocalTimeZone, type DateValue, now } from '@internationalized/date';
+import { getDaysInMonth } from './utils.js';
 
 const { name } = createElHelpers<_DatePickerParts>('calendar');
 
@@ -39,7 +40,7 @@ type CreateSegmentProps = {
 	options: {
 		hourCycle: Writable<12 | 24 | undefined>;
 	};
-	format: ReturnType<typeof createFormatter>;
+	formatter: ReturnType<typeof createFormatter>;
 };
 
 const segmentParts = ['day', 'month', 'year', 'hour', 'minute', 'second'] as const;
@@ -74,7 +75,7 @@ const acceptableSegmentKeys = [
 type SegmentContent = Record<SegmentPart, string>;
 
 export function createSegments(props: CreateSegmentProps) {
-	const { stores, ids, options, format } = props;
+	const { stores, ids, options, formatter } = props;
 
 	/**
 	 * State for each segment used to better handle certain
@@ -93,6 +94,8 @@ export function createSegments(props: CreateSegmentProps) {
 	const { value } = stores;
 	const { hourCycle } = options;
 
+	const dateNow = now(getLocalTimeZone());
+
 	const initialSegments = Object.fromEntries(
 		segmentParts.map((part) => [part, null])
 	) as SegmentValueObj;
@@ -105,28 +108,51 @@ export function createSegments(props: CreateSegmentProps) {
 		const contents = Object.keys($segmentValues).reduce((obj, part) => {
 			if (!isSegmentPart(part)) return obj;
 			const value = $segmentValues[part];
-			const d = dayjs();
 
 			const notNull = value !== null;
 
 			switch (part) {
 				case 'day':
-					obj[part] = notNull ? d.set('date', value).format('DD') : 'DD';
+					obj[part] = notNull
+						? formatter.custom(dateNow.set({ day: value }).toDate(), {
+								day: '2-digit',
+						  })
+						: 'DD';
 					break;
 				case 'month':
-					obj[part] = notNull ? d.set('month', value - 1).format('MM') : 'MM';
+					obj[part] = notNull
+						? formatter.custom(dateNow.set({ month: value - 1 }).toDate(), {
+								month: '2-digit',
+						  })
+						: 'MM';
 					break;
 				case 'year':
-					obj[part] = notNull ? d.set('year', value).format('YYYY') : 'YYYY';
+					obj[part] = notNull
+						? formatter.custom(dateNow.set({ year: value }).toDate(), {
+								year: 'numeric',
+						  })
+						: 'YYYY';
 					break;
 				case 'hour':
-					obj[part] = notNull ? d.set('hour', value).format('hh') : 'hh';
+					obj[part] = notNull
+						? formatter.custom(dateNow.set({ hour: value }).toDate(), {
+								hour: '2-digit',
+						  })
+						: 'hh';
 					break;
 				case 'minute':
-					obj[part] = notNull ? d.set('minute', value).format('mm') : 'mm';
+					obj[part] = notNull
+						? formatter.custom(dateNow.set({ minute: value }).toDate(), {
+								minute: '2-digit',
+						  })
+						: 'mm';
 					break;
 				case 'second':
-					obj[part] = notNull ? d.set('second', value).format('ss') : 'ss';
+					obj[part] = notNull
+						? formatter.custom(dateNow.set({ second: value }).toDate(), {
+								second: '2-digit',
+						  })
+						: 'ss';
 					break;
 			}
 			return obj;
@@ -139,20 +165,23 @@ export function createSegments(props: CreateSegmentProps) {
 	 * Sets the individual segment values based on the current
 	 * value of the date picker.
 	 */
-	function syncSegmentValues(value: Date) {
-		const djs = dayjs(value);
+	function syncSegmentValues(value: DateValue) {
 		segmentValues.set(
 			Object.fromEntries(
 				segmentParts.map((part) => {
 					switch (part) {
 						case 'day':
-							return [part, djs.get('date')];
+							return [part, value.day];
 						case 'month':
-							return [part, djs.get(part) + 1];
+							return [part, value.month + 1];
+						case 'year':
+							return [part, value.year];
 						case 'hour':
-							return [part, getHourForSegmentValue(djs.get(part))];
-						default:
-							return [part, djs.get(part)];
+							return [part, getHourForSegmentValue(value && 'hour' in value ? value.hour : 0)];
+						case 'minute':
+							return [part, value && 'minute' in value ? value.minute : 0];
+						case 'second':
+							return [part, value && 'second' in value ? value.second : 0];
 					}
 				})
 			) as SegmentValueObj
@@ -197,26 +226,25 @@ export function createSegments(props: CreateSegmentProps) {
 	 */
 	function setValueFromSegments(segmentObj: SegmentValueObj) {
 		const usedSegments = getUsedSegments();
-		let djs = dayjs();
+		let date = dateNow;
 		usedSegments.forEach((part) => {
 			const value = segmentObj[part];
 			if (value === null) return;
 			switch (part) {
-				case 'day':
-					djs = djs.set('date', value);
-					break;
 				case 'month':
-					djs = djs.set(part, value - 1);
+					date = date.set({ month: value - 1 });
 					break;
 				case 'hour':
-					djs = djs.set(part, getHourForValue(value));
+					date = date.set({ hour: getHourForValue(value) });
 					break;
 				default:
-					djs = djs.set(part, value);
+					date = date.set({
+						[part]: value,
+					});
 			}
 		});
 
-		return value.set(djs.toDate());
+		return value.set(date);
 	}
 
 	function getHourForSegmentValue(hour: number) {
@@ -262,11 +290,11 @@ export function createSegments(props: CreateSegmentProps) {
 		segmentValues.update((prev) => {
 			const prevSegment = prev[part];
 			const next = cb(prevSegment);
-			if (part === 'month' && next !== null && prev['day'] !== null) {
-				const djs = dayjs().set('month', next - 1);
-				const daysInMonth = djs.daysInMonth();
-				if (prev['day'] > daysInMonth) {
-					prev['day'] = daysInMonth;
+			if (part === 'month' && next !== null && prev.day !== null) {
+				const date = dateNow.set({ month: next - 1 });
+				const daysInMonth = getDaysInMonth(date.toDate());
+				if (prev.day > daysInMonth) {
+					prev.day = daysInMonth;
 				}
 			}
 
@@ -380,10 +408,14 @@ export function createSegments(props: CreateSegmentProps) {
 	function daySegmentAttrs(props: SegmentAttrProps) {
 		const { $segmentValues } = props;
 		const isEmpty = $segmentValues.day === null;
-		const djs = $segmentValues.day ? dayjs().set('date', $segmentValues.day) : dayjs();
-		const valueNow = djs.date();
+		const $focusedValue = get(stores.focusedValue);
+		const date = $segmentValues.day
+			? $focusedValue.set({ day: $segmentValues.day })
+			: $focusedValue;
+
+		const valueNow = date.day;
 		const valueMin = 1;
-		const valueMax = djs.daysInMonth();
+		const valueMax = getDaysInMonth(date.toDate(getLocalTimeZone()));
 		const valueText = isEmpty ? 'Empty' : `${valueNow}`;
 
 		return {
@@ -419,9 +451,10 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 
 		const $segmentMonthValue = get(segmentValues).month;
+
 		const daysInMonth = $segmentMonthValue
-			? dayjs($segmentMonthValue).daysInMonth()
-			: dayjs().daysInMonth();
+			? getDaysInMonth(dateNow.set({ month: $segmentMonthValue }).toDate())
+			: getDaysInMonth(dateNow.toDate());
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('day', (prev) => {
@@ -546,11 +579,11 @@ export function createSegments(props: CreateSegmentProps) {
 	function monthSegmentAttrs(props: SegmentAttrProps) {
 		const { $segmentValues } = props;
 		const isEmpty = $segmentValues.month === null;
-		const djs = $segmentValues.month ? dayjs().set('month', $segmentValues.month - 1) : dayjs();
-		const valueNow = djs.month() + 1;
+		const date = $segmentValues.month ? dateNow.set({ month: $segmentValues.month - 1 }) : dateNow;
+		const valueNow = date.month + 1;
 		const valueMin = 1;
 		const valueMax = 12;
-		const valueText = isEmpty ? 'Empty' : `${valueNow} - ${format.fullMonth(djs.toDate())}`;
+		const valueText = isEmpty ? 'Empty' : `${valueNow} - ${formatter.fullMonth(date.toDate())}`;
 
 		return {
 			...segmentDefaults,
@@ -711,10 +744,10 @@ export function createSegments(props: CreateSegmentProps) {
 	function yearSegmentAttrs(props: SegmentAttrProps) {
 		const { $segmentValues } = props;
 		const isEmpty = $segmentValues.year === null;
-		const djs = $segmentValues.year ? dayjs().set('year', $segmentValues.year) : dayjs();
+		const date = $segmentValues.year ? dateNow.set({ year: $segmentValues.year }) : dateNow;
 		const valueMin = 1;
 		const valueMax = 9999;
-		const valueNow = djs.year();
+		const valueNow = date.year;
 		const valueText = isEmpty ? 'Empty' : `${valueNow}`;
 
 		return {
@@ -752,7 +785,7 @@ export function createSegments(props: CreateSegmentProps) {
 		states.year.hasTouched = true;
 
 		const min = 0;
-		const currentYear = dayjs(new Date()).year();
+		const currentYear = dateNow.year;
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('year', (prev) => {
@@ -824,8 +857,8 @@ export function createSegments(props: CreateSegmentProps) {
 	function hourSegmentAttrs(props: SegmentAttrProps) {
 		const { $segmentValues, $hourCycle } = props;
 		const isEmpty = $segmentValues.hour === null;
-		const djs = $segmentValues.hour ? dayjs().set('hour', $segmentValues.hour) : dayjs();
-		const valueNow = djs.hour();
+		const date = $segmentValues.hour ? dateNow.set({ hour: $segmentValues.hour }) : dateNow;
+		const valueNow = date.hour;
 		const valueMin = $hourCycle === 12 ? 1 : 0;
 		const valueMax = $hourCycle === 12 ? 12 : 23;
 		const valueText = isEmpty ? 'Empty' : `${valueNow} ${get(dayPeriodValue)}`;
@@ -987,8 +1020,8 @@ export function createSegments(props: CreateSegmentProps) {
 	function minuteSegmentAttrs(props: SegmentAttrProps) {
 		const { $segmentValues } = props;
 		const isEmpty = $segmentValues.minute === null;
-		const djs = $segmentValues.minute ? dayjs().set('minute', $segmentValues.minute) : dayjs();
-		const valueNow = djs.minute();
+		const date = $segmentValues.minute ? dateNow.set({ minute: $segmentValues.minute }) : dateNow;
+		const valueNow = date.minute;
 		const valueMin = 0;
 		const valueMax = 59;
 		const valueText = isEmpty ? 'Empty' : `${valueNow}`;
@@ -1149,8 +1182,8 @@ export function createSegments(props: CreateSegmentProps) {
 	function secondSegmentAttrs(props: SegmentAttrProps) {
 		const { $segmentValues } = props;
 		const isEmpty = $segmentValues.second === null;
-		const djs = $segmentValues.second ? dayjs().set('second', $segmentValues.second) : dayjs();
-		const valueNow = djs.second();
+		const date = $segmentValues.second ? dateNow.set({ second: $segmentValues.second }) : dateNow;
+		const valueNow = date.second;
 		const valueMin = 0;
 		const valueMax = 59;
 		const valueText = isEmpty ? 'Empty' : `${valueNow}`;
