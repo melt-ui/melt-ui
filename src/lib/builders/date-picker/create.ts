@@ -204,7 +204,8 @@ export function createDatePicker<T extends DateValue = DateValue>(
 	const focusedValueWritable =
 		withDefaults.focusedValue ?? writable(withDefaults.defaultFocusedValue);
 	const focusedValue = dateStore(
-		overridable(focusedValueWritable, withDefaults?.onFocusedValueChange)
+		overridable(focusedValueWritable, withDefaults?.onFocusedValueChange),
+		withDefaults.defaultFocusedValue ?? now(getLocalTimeZone())
 	);
 
 	const formatter = createFormatter(get(locale));
@@ -356,7 +357,7 @@ export function createDatePicker<T extends DateValue = DateValue>(
 				const isDisabled = isMatch(cellDate, $disabled);
 				const isUnavailable = isMatch(cellDate, $unavailable);
 				const isDateToday = isToday(cellValue, getLocalTimeZone());
-				const isOutsideMonth = isSameMonth(cellValue, $focusedValue ?? new Date());
+				const isOutsideMonth = !isSameMonth(cellValue, $focusedValue);
 
 				const isFocusedDate = isSameDay(cellValue, $focusedValue);
 				const isSelectedDate = $value ? isSameDay(cellValue, $value) : false;
@@ -374,7 +375,7 @@ export function createDatePicker<T extends DateValue = DateValue>(
 					'aria-selected': isSelectedDate ? true : undefined,
 					'aria-disabled': isOutsideMonth ? true : undefined,
 					'data-selected': isSelectedDate ? true : undefined,
-					'data-value': cellValue,
+					'data-value': cellValue.toString(),
 					'data-disabled': isDisabled || isOutsideMonth ? '' : undefined,
 					'data-unavailable': isUnavailable ? '' : undefined,
 					'data-date': '',
@@ -402,7 +403,7 @@ export function createDatePicker<T extends DateValue = DateValue>(
 					const args = getElArgs();
 					if (args.disabled) return;
 					if (!args.value) return;
-					handleSingleClick(parseToDateObj(args.value));
+					handleCellClick(parseToDateObj(args.value));
 				})
 			);
 
@@ -454,11 +455,9 @@ export function createDatePicker<T extends DateValue = DateValue>(
 	});
 
 	effect([open, value], ([$open, $value]) => {
-		if (!$open || !$value) {
+		if (!$open) {
 			focusedValue.reset();
-			return;
 		}
-
 		if ($value && get(focusedValue) !== $value) {
 			focusedValue.set($value);
 		}
@@ -624,14 +623,10 @@ export function createDatePicker<T extends DateValue = DateValue>(
 		focusedValue.setDate({ month: month });
 	}
 
-	function handleSingleClick(date: DateValue) {
+	function handleCellClick(date: DateValue) {
 		value.update((prev) => {
-			const $focusedValue = get(focusedValue);
-			if (!isSameMonth(date, $focusedValue)) {
-				focusedValue.set(date);
-			}
-
 			if (get(allowDeselect) && prev && isSameDay(prev, date)) {
+				focusedValue.set(date);
 				return undefined;
 			}
 			return date;
@@ -665,7 +660,7 @@ export function createDatePicker<T extends DateValue = DateValue>(
 			const cellValue = currentCell.getAttribute('data-value');
 			if (!cellValue) return;
 
-			handleSingleClick(parseToDateObj(cellValue));
+			handleCellClick(parseToDateObj(cellValue));
 		}
 	}
 
