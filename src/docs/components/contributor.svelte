@@ -40,7 +40,9 @@
 	use:melt={$trigger}
 >
 	<img use:melt={$image} alt="Avatar" class="avatar" />
-	<div use:melt={$fallback} class="fallback">{getInitials(contributor.login)}</div>
+	<div use:melt={$fallback} class="fallback">
+		{getInitials(contributor.name ?? contributor.login)}
+	</div>
 </a>
 
 {#if $open}
