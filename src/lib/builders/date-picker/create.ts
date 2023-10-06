@@ -420,7 +420,11 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	effect([focusedValue], ([$focusedValue]) => {
-		if (!isBrowser || !$focusedValue) return;
+		if (!isBrowser) return;
+
+		if (!$focusedValue) {
+			console.log('no focused value');
+		}
 
 		months.set([createMonth($focusedValue)]);
 		const $numberOfMonths = get(numberOfMonths);

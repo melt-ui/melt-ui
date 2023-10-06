@@ -1,9 +1,7 @@
-import type { Locale } from '$lib/internal/locale';
-
-export function createFormatter(initialLocale: Locale) {
+export function createFormatter(initialLocale: string) {
 	let locale = initialLocale;
 
-	function setLocale(newLocale: Locale) {
+	function setLocale(newLocale: string) {
 		locale = newLocale;
 	}
 
