@@ -15,11 +15,11 @@
 
 Melt UI is meant to be used as a base for your own styles and components. It offers:
 
-- Uncoupled builders that can be attached to any element/component
-- Typescript and [SvelteKit](https://kit.svelte.dev/) support out-of-the-box
-- Strict adherence to [WAI-ARIA guidelines](https://www.w3.org/WAI/ARIA/apg/)
-- Easy to use examples and documentation
-- A high emphasis on accessibility, extensibility, quality and consistency
+- Uncoupled builders that can be attached to any element/component.
+- Typescript and [SvelteKit](https://kit.svelte.dev/) support out-of-the-box.
+- Strict adherence to [WAI-ARIA guidelines](https://www.w3.org/WAI/ARIA/apg/).
+- Easy to use examples and documentation.
+- A high emphasis on accessibility, extensibility, quality and consistency.
 
 ## Getting started
 
