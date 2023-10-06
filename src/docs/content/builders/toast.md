@@ -111,7 +111,9 @@ the application.
 				title: 'Success',
 				description: 'The resource was created!',
 				color: 'bg-green-500'
-			}
+			},
+			closeDelay: 10000, // overrides the default delay (5000)
+			type: 'background' // overrides the default type ('foreground')
 		})
 	}
 </script>
