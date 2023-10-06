@@ -2,8 +2,9 @@ import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { createDatePicker } from './create.js';
 import type { CreatePopoverProps, Matcher } from '$lib/builders/index.js';
+import type { DateValue } from '@internationalized/date';
 
-export type DatePickerProps = {
+export type DatePickerProps<T extends DateValue> = {
 	/**
 	 * Allow deselecting the selected date, which would set the
 	 * value to `undefined`. You can use this to ensure a date
@@ -20,7 +21,7 @@ export type DatePickerProps = {
 	 *
 	 * @default undefined;
 	 */
-	defaultValue?: Date;
+	defaultValue?: T;
 
 	/**
 	 * A function called when the value of the date picker changes.
@@ -32,7 +33,7 @@ export type DatePickerProps = {
 	 *
 	 * @default undefined
 	 */
-	onValueChange?: ChangeFn<Date | undefined>;
+	onValueChange?: ChangeFn<DateValue | undefined>;
 
 	/**
 	 * A writable store than can be used to control the value of the
@@ -42,7 +43,7 @@ export type DatePickerProps = {
 	 *
 	 * @default undefined;
 	 */
-	value?: Writable<Date | undefined>;
+	value?: Writable<DateValue | undefined>;
 
 	/**
 	 * The date that is used to display the initial month and
@@ -56,7 +57,7 @@ export type DatePickerProps = {
 	 *
 	 * @default Date() - the current date
 	 */
-	defaultFocusedValue?: Date;
+	defaultFocusedValue?: DateValue;
 
 	/**
 	 * A writable store that can be used to control the focused
@@ -77,7 +78,7 @@ export type DatePickerProps = {
 	 *
 	 * @default writable(defaultFocusedValue)
 	 */
-	focusedValue?: Writable<Date>;
+	focusedValue?: Writable<DateValue>;
 
 	/**
 	 * A function called when the focused value changes. It receives
@@ -88,7 +89,7 @@ export type DatePickerProps = {
 	 *
 	 * @default undefined
 	 */
-	onFocusedValueChange?: ChangeFn<Date>;
+	onFocusedValueChange?: ChangeFn<DateValue>;
 
 	/**
 	 * Only applicable when `numberOfMonths` is greater than 1.
@@ -199,6 +200,7 @@ export type DatePickerProps = {
 	locale?: string;
 };
 
-export type CreateDatePickerProps = DatePickerProps & CreatePopoverProps;
+export type CreateDatePickerProps<T extends DateValue = DateValue> = DatePickerProps<T> &
+	CreatePopoverProps;
 
 export type DatePicker = ReturnType<typeof createDatePicker>;

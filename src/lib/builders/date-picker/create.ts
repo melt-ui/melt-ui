@@ -33,16 +33,17 @@ import { derived, get, writable, type Writable } from 'svelte/store';
 import { createPopover, type Month } from '$lib/builders/index.js';
 import type { CreateDatePickerProps } from './types.js';
 import dayjs from 'dayjs';
-import { dayJsStore } from './date-store.js';
+import { dateStore, dayJsStore } from './date-store.js';
 import { createSegments, handleSegmentNavigation, isSegmentNavigationKey } from './segments.js';
 import { tick } from 'svelte';
 import { createFormatter } from './formatter.js';
+import { today, type DateValue, getLocalTimeZone } from '@internationalized/date';
 
 const defaults = {
 	disabled: false,
 	unavailable: false,
 	value: undefined,
-	defaultFocusedValue: new Date(),
+	defaultFocusedValue: today(getLocalTimeZone()),
 	focusedValue: undefined,
 	allowDeselect: false,
 	numberOfMonths: 1,
@@ -123,7 +124,7 @@ export type _DatePickerIds = {
 	calendar: string;
 };
 
-export function createDatePicker(props?: CreateDatePickerProps) {
+export function createDatePicker<T extends DateValue>(props?: CreateDatePickerProps<T>) {
 	const withDefaults = { ...defaults, ...props };
 
 	const popover = createPopover({
@@ -193,14 +194,14 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	};
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-	const value = overridable<Date | undefined>(
+	const value = overridable<DateValue | undefined>(
 		valueWritable,
-		withDefaults?.onValueChange as ChangeFn<Date | undefined>
+		withDefaults?.onValueChange as ChangeFn<DateValue | undefined>
 	);
 
 	const focusedValueWritable =
 		withDefaults.focusedValue ?? writable(withDefaults.defaultFocusedValue);
-	const focusedValue = dayJsStore(
+	const focusedValue = dateStore(
 		overridable(focusedValueWritable, withDefaults?.onFocusedValueChange)
 	);
 
@@ -420,11 +421,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	});
 
 	effect([focusedValue], ([$focusedValue]) => {
-		if (!isBrowser) return;
-
-		if (!$focusedValue) {
-			console.log('no focused value');
-		}
+		if (!isBrowser || !$focusedValue) return;
 
 		months.set([createMonth($focusedValue)]);
 		const $numberOfMonths = get(numberOfMonths);
@@ -646,6 +643,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 				if (prev === undefined) return date;
 				if (get(allowDeselect) && isSameDay(prev, date)) {
+					focusedValue.set(date);
 					return undefined;
 				}
 			}
