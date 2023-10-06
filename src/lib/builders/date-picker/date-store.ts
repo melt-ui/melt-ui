@@ -15,6 +15,7 @@ import {
 	type Disambiguation,
 	type TimeField,
 	type TimeFields,
+	getLocalTimeZone,
 } from '@internationalized/date';
 
 /**
@@ -180,7 +181,10 @@ export function dateStore<T extends DateValue>(store: Writable<T>) {
 		return get(store) as T;
 	}
 
-	function toDateWithTz(timeZone: string, disambiguation?: Disambiguation) {
+	function toDateWithTz(timeZone?: string, disambiguation?: Disambiguation) {
+		if (!timeZone) {
+			return get(store).toDate(getLocalTimeZone());
+		}
 		return get(store).toDate(timeZone, disambiguation);
 	}
 
@@ -195,6 +199,13 @@ export function dateStore<T extends DateValue>(store: Writable<T>) {
 			return true;
 		}
 		return false;
+	}
+
+	function daysInMonth() {
+		const $storeValue = get(store);
+		const year = $storeValue.year;
+		const month = $storeValue.month;
+		return new Date(year, month, 0).getDate();
 	}
 
 	const toDate = isZoned() ? toDateZoned : toDateWithTz;
@@ -212,5 +223,23 @@ export function dateStore<T extends DateValue>(store: Writable<T>) {
 		toDate,
 		copy,
 		toString,
+		daysInMonth,
 	};
 }
+
+export type DateStore<T> = Writable<T> & {
+	add: (duration: MappedDuration<T>) => void;
+	subtract: (duration: MappedDuration<T>) => void;
+	setDate: (
+		fields: MappedFields<T>,
+		disambiguation?: T extends ZonedDateTime ? Disambiguation : never
+	) => void;
+	cycle: (field: MappedField<T>, amount: number, options?: MappedCycleOptions<T>) => void;
+	reset: () => void;
+	compare: (b: CalendarDate | CalendarDateTime | ZonedDateTime) => number;
+	toString: () => string;
+	copy: () => T;
+	toDate: () => Date;
+	isZoned: () => boolean;
+	daysInMonth: () => number;
+};

@@ -17,16 +17,12 @@ import {
 } from '$lib/internal/helpers/index.js';
 
 import {
-	isSameDay,
-	getDaysBetween,
-	isSelected,
 	isMatch,
-	getLastFirstDayOfWeek,
-	getNextLastDayOfWeek,
 	isSingleDate,
 	isInSameMonth,
-	isToday,
-	isFocused,
+	getDaysBetween2,
+	getLastFirstDayOfWeek2,
+	getNextLastDayOfWeek2,
 } from '$lib/builders/calendar/utils.js';
 
 import { derived, get, writable, type Writable } from 'svelte/store';
@@ -37,7 +33,22 @@ import { dateStore, dayJsStore } from './date-store.js';
 import { createSegments, handleSegmentNavigation, isSegmentNavigationKey } from './segments.js';
 import { tick } from 'svelte';
 import { createFormatter } from './formatter.js';
-import { today, type DateValue, getLocalTimeZone } from '@internationalized/date';
+import {
+	today,
+	type DateValue,
+	getLocalTimeZone,
+	isToday,
+	isSameMonth,
+	isSameDay,
+	startOfMonth,
+	endOfMonth,
+	ZonedDateTime,
+	parseZonedDateTime,
+	CalendarDateTime,
+	parseDateTime,
+	parseDate,
+} from '@internationalized/date';
+import { getDaysInMonth } from './utils.js';
 
 const defaults = {
 	disabled: false,
@@ -205,7 +216,7 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 		overridable(focusedValueWritable, withDefaults?.onFocusedValueChange)
 	);
 
-	const format = createFormatter(get(locale));
+	const formatter = createFormatter(get(locale));
 
 	const stores = {
 		value,
@@ -213,27 +224,27 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 		locale,
 	};
 
-	const months = writable<Month[]>([createMonth(get(focusedValue))]);
+	const months = writable<Month<T>[]>([createMonth(get(focusedValue) as T)]);
 
 	const isInvalid = writable(false);
 
 	const headingValue = derived([months, locale], ([$months, $locale]) => {
 		if (!$months.length) return '';
-		if ($locale !== format.getLocale()) {
-			format.setLocale($locale);
+		if ($locale !== formatter.getLocale()) {
+			formatter.setLocale($locale);
 		}
 		if ($months.length === 1) {
 			const month = $months[0].monthDate;
-			return `${format.fullMonthAndYear(month)}`;
+			return `${formatter.fullMonthAndYear(month)}`;
 		}
 
 		const startMonth = $months[0].monthDate;
 		const endMonth = $months[$months.length - 1].monthDate;
 
-		const startMonthName = format.fullMonth(startMonth);
-		const endMonthName = format.fullMonth(endMonth);
-		const startMonthYear = format.fullYear(startMonth);
-		const endMonthYear = format.fullYear(endMonth);
+		const startMonthName = formatter.fullMonth(startMonth);
+		const endMonthName = formatter.fullMonth(endMonth);
+		const startMonthYear = formatter.fullYear(startMonth);
+		const endMonthYear = formatter.fullYear(endMonth);
 
 		const content =
 			startMonthYear === endMonthYear
@@ -344,18 +355,20 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 	const cell = builder(name('cell'), {
 		stores: [value, disabled, unavailable, focusedValue],
 		returned: ([$value, $disabled, $unavailable, $focusedValue]) => {
-			return (cellValue: Date) => {
-				const isDisabled = isMatch(cellValue, $disabled);
-				const isUnavailable = isMatch(cellValue, $unavailable);
-				const isDateToday = isToday(cellValue);
-				const isOutsideMonth = !isInSameMonth(cellValue, $focusedValue ?? new Date());
-				const isFocusedDate = isFocused({ date: cellValue, focusedValue: $focusedValue });
-				const isSelectedDate = isSelected({
-					date: cellValue,
-					value: $value,
-				});
+			return (cellValue: T) => {
+				// TODO: Handle ability to set timezone via props or default
+				// to local timezone
+				const cellDate = cellValue.toDate(getLocalTimeZone());
 
-				const labelText = format.custom(dayjs(cellValue).toDate(), {
+				const isDisabled = isMatch(cellDate, $disabled);
+				const isUnavailable = isMatch(cellDate, $unavailable);
+				const isDateToday = isToday(cellValue, getLocalTimeZone());
+				const isOutsideMonth = isSameMonth(cellValue, $focusedValue ?? new Date());
+
+				const isFocusedDate = isSameDay(cellValue, $focusedValue);
+				const isSelectedDate = $value ? isSameDay(cellValue, $value) : false;
+
+				const labelText = formatter.custom(cellValue.toDate(getLocalTimeZone()), {
 					weekday: 'long',
 					month: 'long',
 					day: 'numeric',
@@ -412,18 +425,18 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 		options: {
 			hourCycle,
 		},
-		format,
+		formatter,
 	});
 
 	effect([locale], ([$locale]) => {
-		if (format.getLocale() === $locale) return;
-		format.setLocale($locale);
+		if (formatter.getLocale() === $locale) return;
+		formatter.setLocale($locale);
 	});
 
 	effect([focusedValue], ([$focusedValue]) => {
 		if (!isBrowser || !$focusedValue) return;
 
-		months.set([createMonth($focusedValue)]);
+		months.set([createMonth($focusedValue as T)]);
 		const $numberOfMonths = get(numberOfMonths);
 		if ($numberOfMonths > 1) {
 			const d = dayjs($focusedValue);
@@ -484,43 +497,36 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 	 * previous and next months that are needed to fill out the
 	 * calendar grid.
 	 */
-	function createMonth(date: Date): Month {
-		const d = dayjs(date);
-		const daysInMonth = d.daysInMonth();
+	function createMonth(dateObj: T): Month<T> {
+		const tz = getLocalTimeZone();
+		const date = dateObj.toDate(tz);
+		const daysInMonth = getDaysInMonth(date);
 
-		const datesArray = Array.from(
-			{ length: daysInMonth },
-			(_, i) => new Date(d.date(i + 1).toDate())
-		);
+		const datesArray = Array.from({ length: daysInMonth }, (_, i) => dateObj.set({ day: i + 1 }));
 
-		const firstDayOfMonth = d.startOf('month');
-		const lastDayOfMonth = d.endOf('month');
+		const firstDayOfMonth = startOfMonth(dateObj);
+		const lastDayOfMonth = endOfMonth(dateObj);
 
-		const lastSunday = getLastFirstDayOfWeek(firstDayOfMonth.toDate(), get(weekStartsOn));
-		const nextSaturday = getNextLastDayOfWeek(lastDayOfMonth.toDate(), get(weekStartsOn));
+		const lastSunday = getLastFirstDayOfWeek2(firstDayOfMonth, get(weekStartsOn), get(locale));
+		const nextSaturday = getNextLastDayOfWeek2(lastDayOfMonth, get(weekStartsOn), get(locale));
 
-		const lastMonthDays = getDaysBetween(
-			dayjs(lastSunday).subtract(1, 'day').toDate(),
-			firstDayOfMonth.toDate()
-		);
-		const nextMonthDays = getDaysBetween(
-			lastDayOfMonth.toDate(),
-			dayjs(nextSaturday).add(1, 'day').toDate()
-		);
+		const lastMonthDays = getDaysBetween2(lastSunday.subtract({ days: 1 }), firstDayOfMonth);
+		const nextMonthDays = getDaysBetween2(lastDayOfMonth, nextSaturday.add({ days: 1 }));
 
 		const totalDays = lastMonthDays.length + datesArray.length + nextMonthDays.length;
 
 		if (get(fixedWeeks) && totalDays < 42) {
 			const extraDays = 42 - totalDays;
-			const startFrom = dayjs(nextMonthDays[nextMonthDays.length - 1]);
+
+			const startFrom = nextMonthDays[nextMonthDays.length - 1];
 			const extraDaysArray = Array.from({ length: extraDays }, (_, i) => {
 				const incr = i + 1;
-				return startFrom.add(incr, 'day').toDate();
+				return startFrom.add({ days: incr });
 			});
 			nextMonthDays.push(...extraDaysArray);
 		}
 
-		const allDays = lastMonthDays.concat(datesArray, nextMonthDays);
+		const allDays = lastMonthDays.concat(datesArray, nextMonthDays) as T[];
 
 		const weeks = chunk(allDays, 7);
 
@@ -563,9 +569,9 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 	function nextPage() {
 		if (get(pagedNavigation)) {
 			const $numberOfMonths = get(numberOfMonths);
-			focusedValue.add($numberOfMonths, 'month');
+			focusedValue.add({ months: $numberOfMonths });
 		} else {
-			focusedValue.add(1, 'month');
+			focusedValue.add({ months: 1 });
 		}
 	}
 
@@ -579,9 +585,9 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 	function prevPage() {
 		if (get(pagedNavigation)) {
 			const $numberOfMonths = get(numberOfMonths);
-			focusedValue.subtract($numberOfMonths, 'month');
+			focusedValue.subtract({ months: $numberOfMonths });
 		} else {
-			focusedValue.subtract(1, 'month');
+			focusedValue.subtract({ months: 1 });
 		}
 	}
 
@@ -589,14 +595,14 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 	 * Navigate to the previous year of the calendar.
 	 */
 	function nextYear() {
-		focusedValue.add(1, 'year');
+		focusedValue.add({ years: 1 });
 	}
 
 	/**
 	 * Navigate to the next year of the calendar.
 	 */
 	function prevYear() {
-		focusedValue.subtract(1, 'year');
+		focusedValue.subtract({ years: 1 });
 	}
 
 	const ARROW_KEYS = [kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.ARROW_LEFT, kbd.ARROW_RIGHT];
@@ -614,10 +620,7 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 	 * year of the calendar.
 	 */
 	function setYear(year: number) {
-		focusedValue.update((prev) => {
-			prev.setFullYear(year);
-			return prev;
-		});
+		focusedValue.setDate({ year: year });
 	}
 
 	/**
@@ -627,10 +630,7 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 	 */
 	function setMonth(month: number) {
 		if (month < 0 || month > 11) throw new Error('Month must be between 0 and 11');
-		focusedValue.update((prev) => {
-			prev.setMonth(month);
-			return prev;
-		});
+		focusedValue.setDate({ month: month });
 	}
 
 	function handleSingleClick(date: Date) {
@@ -789,6 +789,17 @@ export function createDatePicker<T extends DateValue>(props?: CreateDatePickerPr
 		const cellValue = node.getAttribute('data-value');
 		if (!cellValue) return;
 		focusedValue.set(new Date(cellValue));
+	}
+
+	function parseToDateObj(dateStr: string) {
+		const $focusedValue = get(focusedValue);
+		if ($focusedValue instanceof ZonedDateTime) {
+			return parseZonedDateTime(dateStr);
+		}
+		if ($focusedValue instanceof CalendarDateTime) {
+			return parseDateTime(dateStr);
+		}
+		return parseDate(dateStr);
 	}
 
 	return {

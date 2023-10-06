@@ -1,6 +1,7 @@
 import type { createCalendar } from './create';
 import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers';
+import type { DateValue } from '@internationalized/date';
 
 export type BaseCalendarProps = {
 	/**
@@ -143,7 +144,7 @@ export type CreateCalendarProps = Partial<BaseCalendarProps>;
 
 export type CreateCalendarReturn = ReturnType<typeof createCalendar>;
 
-export type Month = {
+export type Month<T> = {
 	/**
 	 * A date that can be used to get the month and year
 	 * of the calendar to display in a heading or other
@@ -161,7 +162,7 @@ export type Month = {
 	 * grid using a table, where each row represents a week and each cell
 	 * represents a day.
 	 */
-	weeks: Date[][];
+	weeks: T[][];
 
 	/**
 	 * An array of all the dates in the current month, including dates from
@@ -170,5 +171,5 @@ export type Month = {
 	 * as it provides all the dates that should be displayed in the grid in a flat
 	 * array.
 	 */
-	dates: Date[];
+	dates: T[];
 };
