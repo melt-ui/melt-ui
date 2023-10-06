@@ -108,50 +108,76 @@ export function createSegments(props: CreateSegmentProps) {
 		const contents = Object.keys($segmentValues).reduce((obj, part) => {
 			if (!isSegmentPart(part)) return obj;
 			const value = $segmentValues[part];
-
 			const notNull = value !== null;
 
 			switch (part) {
 				case 'day':
 					obj[part] = notNull
-						? formatter.custom(dateNow.set({ day: value }).toDate(), {
-								day: '2-digit',
-						  })
+						? formatter.part(
+								dateNow.set({ day: value }).toDate(),
+								{
+									day: '2-digit',
+								},
+								part
+						  )
 						: 'DD';
 					break;
 				case 'month':
 					obj[part] = notNull
-						? formatter.custom(dateNow.set({ month: value - 1 }).toDate(), {
-								month: '2-digit',
-						  })
+						? formatter.part(
+								dateNow.set({ month: value }).toDate(),
+								{
+									month: '2-digit',
+								},
+								part
+						  )
 						: 'MM';
 					break;
 				case 'year':
 					obj[part] = notNull
-						? formatter.custom(dateNow.set({ year: value }).toDate(), {
-								year: 'numeric',
-						  })
+						? formatter.part(
+								dateNow.set({ year: value }).toDate(),
+								{
+									year: 'numeric',
+								},
+								part
+						  )
 						: 'YYYY';
 					break;
 				case 'hour':
 					obj[part] = notNull
-						? formatter.custom(dateNow.set({ hour: value }).toDate(), {
-								hour: '2-digit',
-						  })
+						? formatter.part(
+								dateNow.set({ hour: value }).toDate(),
+								{
+									hour: '2-digit',
+								},
+								part
+						  )
 						: 'hh';
+
 					break;
 				case 'minute':
 					obj[part] = notNull
-						? formatter.custom(dateNow.set({ minute: value }).toDate(), {
-								minute: '2-digit',
-						  })
+						? formatter.part(
+								dateNow.set({ minute: value }).toDate(),
+								{
+									fractionalSecondDigits: 1,
+									minute: '2-digit',
+								},
+								part
+						  )
 						: 'mm';
 					break;
 				case 'second':
 					obj[part] = notNull
-						? formatter.custom(dateNow.set({ second: value }).toDate(), {
-								second: '2-digit',
-						  })
+						? formatter.part(
+								dateNow.set({ second: value }).toDate(),
+								{
+									fractionalSecondDigits: 1,
+									second: '2-digit',
+								},
+								part
+						  )
 						: 'ss';
 					break;
 			}
@@ -173,7 +199,7 @@ export function createSegments(props: CreateSegmentProps) {
 						case 'day':
 							return [part, value.day];
 						case 'month':
-							return [part, value.month + 1];
+							return [part, value.month];
 						case 'year':
 							return [part, value.year];
 						case 'hour':
@@ -232,7 +258,7 @@ export function createSegments(props: CreateSegmentProps) {
 			if (value === null) return;
 			switch (part) {
 				case 'month':
-					date = date.set({ month: value - 1 });
+					date = date.set({ month: value });
 					break;
 				case 'hour':
 					date = date.set({ hour: getHourForValue(value) });
@@ -291,7 +317,7 @@ export function createSegments(props: CreateSegmentProps) {
 			const prevSegment = prev[part];
 			const next = cb(prevSegment);
 			if (part === 'month' && next !== null && prev.day !== null) {
-				const date = dateNow.set({ month: next - 1 });
+				const date = dateNow.set({ month: next });
 				const daysInMonth = getDaysInMonth(date.toDate());
 				if (prev.day > daysInMonth) {
 					prev.day = daysInMonth;
@@ -408,14 +434,11 @@ export function createSegments(props: CreateSegmentProps) {
 	function daySegmentAttrs(props: SegmentAttrProps) {
 		const { $segmentValues } = props;
 		const isEmpty = $segmentValues.day === null;
-		const $focusedValue = get(stores.focusedValue);
-		const date = $segmentValues.day
-			? $focusedValue.set({ day: $segmentValues.day })
-			: $focusedValue;
+		const date = $segmentValues.day ? dateNow.set({ day: $segmentValues.day }) : dateNow;
 
 		const valueNow = date.day;
 		const valueMin = 1;
-		const valueMax = getDaysInMonth(date.toDate(getLocalTimeZone()));
+		const valueMax = getDaysInMonth(date.toDate());
 		const valueText = isEmpty ? 'Empty' : `${valueNow}`;
 
 		return {
@@ -458,8 +481,11 @@ export function createSegments(props: CreateSegmentProps) {
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('day', (prev) => {
-				if (prev === null || prev === daysInMonth) return 1;
-				return prev + 1;
+				if (prev === null) {
+					return 1;
+				}
+				const next = dateNow.set({ day: prev }).cycle('day', 1).day;
+				return next;
 			});
 			return;
 		}
@@ -468,7 +494,8 @@ export function createSegments(props: CreateSegmentProps) {
 				if (prev === null || prev === 1) {
 					return daysInMonth;
 				}
-				return prev - 1;
+				const next = dateNow.set({ day: prev }).cycle('day', -1).day;
+				return next;
 			});
 			return;
 		}
@@ -619,24 +646,26 @@ export function createSegments(props: CreateSegmentProps) {
 			return;
 		}
 
-		states.month.hasTouched = true;
-
-		const min = 1;
 		const max = 12;
+
+		states.month.hasTouched = true;
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('month', (prev) => {
-				if (prev === null || prev === max) return 1;
-				return prev + 1;
+				if (prev === null) {
+					return 0;
+				}
+				const next = dateNow.set({ month: prev }).cycle('month', 1).month;
+				return next;
 			});
 			return;
 		}
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('month', (prev) => {
-				if (prev === null || prev === min) {
-					return max;
+				if (prev === null) {
+					return 11;
 				}
-				return prev - 1;
+				return dateNow.set({ month: prev }).cycle('month', -1).month;
 			});
 			return;
 		}
@@ -903,17 +932,19 @@ export function createSegments(props: CreateSegmentProps) {
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('hour', (prev) => {
-				if (prev === null || prev === max) return min;
-				return prev + 1;
+				if (prev === null) return min;
+				const next = dateNow.set({ hour: prev }).cycle('hour', 1).hour;
+				return next;
 			});
 			return;
 		}
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('hour', (prev) => {
-				if (prev === null || prev === min) {
+				if (prev === null) {
 					return max;
 				}
-				return prev - 1;
+				const next = dateNow.set({ hour: prev }).cycle('hour', -1).hour;
+				return next;
 			});
 			return;
 		}
@@ -1065,17 +1096,21 @@ export function createSegments(props: CreateSegmentProps) {
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('minute', (prev) => {
-				if (prev === null || prev === max) return min;
-				return prev + 1;
+				if (prev === null) {
+					return min;
+				}
+				const next = dateNow.set({ minute: prev }).cycle('minute', 1).minute;
+				return next;
 			});
 			return;
 		}
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('minute', (prev) => {
-				if (prev === null || prev === min) {
+				if (prev === null) {
 					return max;
 				}
-				return prev - 1;
+				const next = dateNow.set({ minute: prev }).cycle('minute', -1).minute;
+				return next;
 			});
 			return;
 		}
@@ -1227,17 +1262,21 @@ export function createSegments(props: CreateSegmentProps) {
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('second', (prev) => {
-				if (prev === null || prev === max) return min;
-				return prev + 1;
+				if (prev === null) {
+					return min;
+				}
+				const next = dateNow.set({ second: prev }).cycle('second', 1).second;
+				return next;
 			});
 			return;
 		}
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('second', (prev) => {
-				if (prev === null || prev === min) {
+				if (prev === null) {
 					return max;
 				}
-				return prev - 1;
+				const next = dateNow.set({ second: prev }).cycle('second', -1).second;
+				return next;
 			});
 			return;
 		}

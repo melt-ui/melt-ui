@@ -25,7 +25,6 @@ import { createSegments, handleSegmentNavigation, isSegmentNavigationKey } from 
 import { tick } from 'svelte';
 import { createFormatter } from './formatter.js';
 import {
-	today,
 	type DateValue,
 	getLocalTimeZone,
 	isToday,
