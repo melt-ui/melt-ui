@@ -1554,12 +1554,15 @@ export function createSegments(props: CreateSegmentProps) {
 			hour: '2-digit',
 			minute: '2-digit',
 			second: '2-digit',
+			dayPeriod: 'short',
 		};
 
 		if (granularity === 'day') {
 			delete opts.second;
 			delete opts.hour;
 			delete opts.minute;
+			delete opts.timeZoneName;
+			delete opts.dayPeriod;
 		}
 		if (granularity === 'hour') {
 			delete opts.minute;

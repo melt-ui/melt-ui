@@ -38,6 +38,7 @@ import {
 	parseDateTime,
 	parseDate,
 	now,
+	CalendarDate,
 } from '@internationalized/date';
 import { getDaysInMonth } from './utils.js';
 
@@ -45,8 +46,8 @@ const defaults = {
 	disabled: false,
 	unavailable: false,
 	value: undefined,
-	defaultFocusedValue: undefined,
-	focusedValue: undefined,
+	defaultPlaceholderValue: getDefaultDate(),
+	placeholderValue: undefined,
 	allowDeselect: false,
 	numberOfMonths: 1,
 	pagedNavigation: false,
@@ -104,7 +105,7 @@ const { name } = createElHelpers<_DatePickerParts>('calendar');
  */
 export type _DatePickerStores<T extends DateValue = DateValue> = {
 	value: Writable<T | undefined>;
-	focusedValue: ReturnType<typeof dateStore>;
+	placeholderValue: ReturnType<typeof dateStore>;
 	locale: Writable<string>;
 	granularity: Writable<Granularity>;
 };
@@ -168,7 +169,7 @@ export function createDatePicker<T extends DateValue = DateValue>(
 	} = popover;
 
 	const options = toWritableStores({
-		...omit(withDefaults, 'value', 'focusedValue'),
+		...omit(withDefaults, 'value', 'placeholderValue'),
 		...popover.options,
 	});
 
@@ -204,18 +205,16 @@ export function createDatePicker<T extends DateValue = DateValue>(
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable<DateValue | undefined>(valueWritable, withDefaults?.onValueChange);
 
-	const focusedValueWritable =
-		withDefaults.focusedValue ?? writable(withDefaults.defaultFocusedValue);
-	const focusedValue = dateStore(
-		overridable(focusedValueWritable, withDefaults?.onFocusedValueChange),
-		withDefaults.defaultFocusedValue ?? now(getLocalTimeZone())
+	const placeholderValueWritable =
+		withDefaults.placeholderValue ?? writable(withDefaults.defaultPlaceholderValue);
+	const placeholderValue = dateStore(
+		overridable(placeholderValueWritable, withDefaults?.onPlaceholderValueChange),
+		withDefaults.defaultPlaceholderValue ?? now(getLocalTimeZone())
 	);
 
 	const formatter = createFormatter(get(locale));
 
-	const months = writable<Month<DateValue>[]>([
-		createMonth(withDefaults.defaultFocusedValue ?? now(getLocalTimeZone())),
-	]);
+	const months = writable<Month<DateValue>[]>([createMonth(withDefaults.defaultPlaceholderValue)]);
 
 	const isInvalid = writable(false);
 
@@ -344,8 +343,8 @@ export function createDatePicker<T extends DateValue = DateValue>(
 	 * single day in the month.
 	 */
 	const cell = builder(name('cell'), {
-		stores: [value, disabled, unavailable, focusedValue],
-		returned: ([$value, $disabled, $unavailable, $focusedValue]) => {
+		stores: [value, disabled, unavailable, placeholderValue],
+		returned: ([$value, $disabled, $unavailable, $placeholderValue]) => {
 			return (cellValue: T) => {
 				// TODO: Handle ability to set timezone via props or default
 				// to local timezone
@@ -354,9 +353,9 @@ export function createDatePicker<T extends DateValue = DateValue>(
 				const isDisabled = isMatch(cellDate, $disabled);
 				const isUnavailable = isMatch(cellDate, $unavailable);
 				const isDateToday = isToday(cellValue, getLocalTimeZone());
-				const isOutsideMonth = !isSameMonth(cellValue, $focusedValue);
+				const isOutsideMonth = !isSameMonth(cellValue, $placeholderValue);
 
-				const isFocusedDate = isSameDay(cellValue, $focusedValue);
+				const isFocusedDate = isSameDay(cellValue, $placeholderValue);
 				const isSelectedDate = $value ? isSameDay(cellValue, $value) : false;
 
 				const labelText = formatter.custom(cellValue.toDate(getLocalTimeZone()), {
@@ -413,7 +412,7 @@ export function createDatePicker<T extends DateValue = DateValue>(
 	const segments = createSegments({
 		stores: {
 			value,
-			focusedValue,
+			placeholderValue,
 			locale,
 			granularity,
 		},
@@ -429,14 +428,14 @@ export function createDatePicker<T extends DateValue = DateValue>(
 		formatter.setLocale($locale);
 	});
 
-	effect([focusedValue], ([$focusedValue]) => {
-		if (!isBrowser || !$focusedValue) return;
+	effect([placeholderValue], ([$placeholderValue]) => {
+		if (!isBrowser || !$placeholderValue) return;
 
-		months.set([createMonth($focusedValue)]);
+		months.set([createMonth($placeholderValue)]);
 		const $numberOfMonths = get(numberOfMonths);
 		if ($numberOfMonths > 1) {
 			for (let i = 1; i < $numberOfMonths; i++) {
-				const nextMonth = $focusedValue.add({ months: i });
+				const nextMonth = $placeholderValue.add({ months: i });
 				months.update((prev) => {
 					prev.push(createMonth(nextMonth));
 					return prev;
@@ -458,10 +457,10 @@ export function createDatePicker<T extends DateValue = DateValue>(
 
 	effect([open, value], ([$open, $value]) => {
 		if (!$open) {
-			focusedValue.reset();
+			placeholderValue.reset();
 		}
-		if ($value && get(focusedValue) !== $value) {
-			focusedValue.set($value);
+		if ($value && get(placeholderValue) !== $value) {
+			placeholderValue.set($value);
 		}
 	});
 
@@ -561,9 +560,9 @@ export function createDatePicker<T extends DateValue = DateValue>(
 	function nextPage() {
 		if (get(pagedNavigation)) {
 			const $numberOfMonths = get(numberOfMonths);
-			focusedValue.add({ months: $numberOfMonths });
+			placeholderValue.add({ months: $numberOfMonths });
 		} else {
-			focusedValue.add({ months: 1 });
+			placeholderValue.add({ months: 1 });
 		}
 	}
 
@@ -577,9 +576,9 @@ export function createDatePicker<T extends DateValue = DateValue>(
 	function prevPage() {
 		if (get(pagedNavigation)) {
 			const $numberOfMonths = get(numberOfMonths);
-			focusedValue.subtract({ months: $numberOfMonths });
+			placeholderValue.subtract({ months: $numberOfMonths });
 		} else {
-			focusedValue.subtract({ months: 1 });
+			placeholderValue.subtract({ months: 1 });
 		}
 	}
 
@@ -587,14 +586,14 @@ export function createDatePicker<T extends DateValue = DateValue>(
 	 * Navigate to the previous year of the calendar.
 	 */
 	function nextYear() {
-		focusedValue.add({ years: 1 });
+		placeholderValue.add({ years: 1 });
 	}
 
 	/**
 	 * Navigate to the next year of the calendar.
 	 */
 	function prevYear() {
-		focusedValue.subtract({ years: 1 });
+		placeholderValue.subtract({ years: 1 });
 	}
 
 	const ARROW_KEYS = [kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.ARROW_LEFT, kbd.ARROW_RIGHT];
@@ -612,7 +611,7 @@ export function createDatePicker<T extends DateValue = DateValue>(
 	 * year of the calendar.
 	 */
 	function setYear(year: number) {
-		focusedValue.setDate({ year: year });
+		placeholderValue.setDate({ year: year });
 	}
 
 	/**
@@ -622,13 +621,13 @@ export function createDatePicker<T extends DateValue = DateValue>(
 	 */
 	function setMonth(month: number) {
 		if (month < 0 || month > 11) throw new Error('Month must be between 0 and 11');
-		focusedValue.setDate({ month: month });
+		placeholderValue.setDate({ month: month });
 	}
 
 	function handleCellClick(date: DateValue) {
 		value.update((prev) => {
 			if (get(allowDeselect) && prev && isSameDay(prev, date)) {
-				focusedValue.set(date);
+				placeholderValue.set(date);
 				return undefined;
 			}
 			return date;
@@ -683,7 +682,7 @@ export function createDatePicker<T extends DateValue = DateValue>(
 		 */
 		if (isValidIndex(nextIndex, candidateCells)) {
 			const nextCell = candidateCells[nextIndex];
-			handleFocusedValue(nextCell);
+			handlePlaceholderValue(nextCell);
 			return nextCell.focus();
 		}
 
@@ -703,7 +702,7 @@ export function createDatePicker<T extends DateValue = DateValue>(
 			 */
 
 			// shift the calendar back a month
-			focusedValue.subtract({ months: 1 });
+			placeholderValue.subtract({ months: 1 });
 
 			// Without a tick here, it seems to be too fast for
 			// the DOM to update, with the tick it works great
@@ -719,7 +718,7 @@ export function createDatePicker<T extends DateValue = DateValue>(
 				const newIndex = newCandidateCells.length - Math.abs(nextIndex);
 				if (isValidIndex(newIndex, newCandidateCells)) {
 					const newCell = newCandidateCells[newIndex];
-					handleFocusedValue(newCell);
+					handlePlaceholderValue(newCell);
 					return newCell.focus();
 				}
 			});
@@ -734,7 +733,7 @@ export function createDatePicker<T extends DateValue = DateValue>(
 			 */
 
 			// shift the calendar forward a month
-			focusedValue.add({ months: 1 });
+			placeholderValue.add({ months: 1 });
 
 			// we may need a tick here, but we'll see how it goes
 			tick().then(() => {
@@ -770,20 +769,20 @@ export function createDatePicker<T extends DateValue = DateValue>(
 
 	/**
 	 * A helper function to extract the date from the `data-value`
-	 * attribute of a date cell and set it as the focused value.
+	 * attribute of a date cell and set it as the placeholder value.
 	 */
-	function handleFocusedValue(node: HTMLElement) {
+	function handlePlaceholderValue(node: HTMLElement) {
 		const cellValue = node.getAttribute('data-value');
 		if (!cellValue) return;
-		focusedValue.set(parseToDateObj(cellValue));
+		placeholderValue.set(parseToDateObj(cellValue));
 	}
 
 	function parseToDateObj(dateStr: string): DateValue {
-		const $focusedValue = get(focusedValue);
-		if ($focusedValue instanceof ZonedDateTime) {
+		const $placeholderValue = get(placeholderValue);
+		if ($placeholderValue instanceof ZonedDateTime) {
 			return parseZonedDateTime(dateStr);
 		}
-		if ($focusedValue instanceof CalendarDateTime) {
+		if ($placeholderValue instanceof CalendarDateTime) {
 			return parseDateTime(dateStr);
 		}
 		return parseDate(dateStr);
@@ -802,10 +801,10 @@ export function createDatePicker<T extends DateValue = DateValue>(
 			...popover.elements,
 		},
 		states: {
-			focusedValue: {
-				subscribe: focusedValue.subscribe,
-				set: focusedValue.set,
-				update: focusedValue.update,
+			placeholderValue: {
+				subscribe: placeholderValue.subscribe,
+				set: placeholderValue.set,
+				update: placeholderValue.update,
 			},
 			months,
 			value,
@@ -835,4 +834,12 @@ function isCalendarCell(node: unknown): node is HTMLElement {
 	if (!isHTMLElement(node)) return false;
 	if (!node.hasAttribute('data-melt-calendar-cell')) return false;
 	return true;
+}
+
+function getDefaultDate() {
+	const date = new Date();
+	const year = date.getFullYear();
+	const month = date.getMonth();
+	const day = date.getDate();
+	return new CalendarDate(year, month, day);
 }

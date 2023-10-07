@@ -55,41 +55,47 @@ export type DatePickerProps<T extends DateValue> = {
 	 * necessarily want to set the value of the date picker to
 	 * that date.
 	 *
-	 * @default Date() - the current date
+	 * @default CalendarDate - the current date at midnight.
 	 */
-	defaultFocusedValue?: DateValue;
+	defaultPlaceholderValue?: DateValue;
 
 	/**
-	 * A writable store that can be used to control the focused
+	 * A writable store that can be used to control the placeholder
 	 * date from outside the builder. When this prop is provided,
-	 * the `defaultFocusedValue` prop is ignored, and the value
+	 * the `defaultPlaceholderValue` prop is ignored, and the value
 	 * of this store is used instead.
 	 *
-	 * The `focusedValue` store is not used to set the value of the
-	 * date picker, it is only used to control the navigation of the
-	 * calendar, which determines which month/year is displayed, and
-	 * which date should be focused.
+	 * The `placeholderValue` store is not used to set the value of the
+	 * date picker, it is only used to control the starting point for
+	 * the calendar. The `placeholderValue` store is used to determine
+	 * where the calendar should start when it is first opened without
+	 * a value, as well as the starting point for cycling through the
+	 * individual date segments.
 	 *
 	 * When the date picker is first opened, if the `value` of the
-	 * date picker is set, the `focusedValue` will initially be set
-	 * to the same value as the `value` prop. If the `value` prop is
-	 * not set, the `focusedValue` will initially be set to the same
-	 * value as the `defaultFocusedValue` prop.
+	 * date picker is set, the `placeholderValue` will be set
+	 * to the same value as the `value` store. If the `value` store is
+	 * not set, the `placeholderValue` will initially be set to the same
+	 * value as the `defaultPlaceholderValue` prop.
 	 *
-	 * @default writable(defaultFocusedValue)
+	 * @default Writable<CalendarDate> - the current date at midnight.
 	 */
-	focusedValue?: Writable<DateValue>;
+	placeholderValue?: Writable<DateValue>;
 
 	/**
-	 * A function called when the focused value changes. It receives
+	 * A function called when the placeholder value changes. It receives
 	 * a single argument, which is an object containing `curr` and
 	 * `prev` properties, whose values are the current and previous
-	 * values of the `focusedValue` store. Whatever you return from this
-	 * function will be set as the new value of the `focusedValue` store.
+	 * values of the `placeholderValue` store. Whatever you return from this
+	 * function will be set as the new value of the `placeholderValue` store.
+	 *
+	 * The `placeholderValue` is kept in sync with the `value` store, so
+	 * ensure you know what you're doing if you intend on overriding the
+	 * value, as it may render the date picker unusable.
 	 *
 	 * @default undefined
 	 */
-	onFocusedValueChange?: ChangeFn<DateValue>;
+	onPlaceholderValueChange?: ChangeFn<DateValue>;
 
 	/**
 	 * Only applicable when `numberOfMonths` is greater than 1.
