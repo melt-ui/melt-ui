@@ -52,7 +52,7 @@
 		fixedWeeks,
 		hourCycle: 12,
 		forceVisible: true,
-		locale
+		locale,
 	});
 
 	function getDayOfWeek(date: Date) {

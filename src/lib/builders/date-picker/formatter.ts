@@ -27,7 +27,7 @@ export function createFormatter(initialLocale: string) {
 		return new DateFormatter(locale, { year: 'numeric' }).format(date);
 	}
 
-	function toParts(date: Date, options: Intl.DateTimeFormatOptions) {
+	function toParts(date: Date, options?: Intl.DateTimeFormatOptions) {
 		return new DateFormatter(locale, options).formatToParts(date);
 	}
 
@@ -47,7 +47,6 @@ export function createFormatter(initialLocale: string) {
 	) {
 		const opts = { ...defaultPartOptions, ...options };
 		const parts = toParts(date, opts);
-		console.log(parts);
 		const part = parts.find((p) => p.type === type);
 		return part ? part.value : '';
 	}

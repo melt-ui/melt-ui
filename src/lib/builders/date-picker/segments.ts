@@ -10,15 +10,7 @@ import {
 	styleToString,
 } from '$lib/internal/helpers/index.js';
 import type { _DatePickerParts, _DatePickerIds, _DatePickerStores } from './create.js';
-import {
-	get,
-	writable,
-	type Updater,
-	type Writable,
-	derived,
-	readonly,
-	readable,
-} from 'svelte/store';
+import { get, writable, type Updater, type Writable, derived } from 'svelte/store';
 import type { Action } from 'svelte/action';
 import type { createFormatter } from './formatter.js';
 import { getLocalTimeZone, type DateValue, now } from '@internationalized/date';
@@ -127,8 +119,6 @@ export function createSegments(props: CreateSegmentProps) {
 	) as SegmentValueObj;
 
 	const segmentValues = writable(structuredClone(initialSegments));
-	const dayPeriodValue = writable<DayPeriod>('AM');
-	const isUsingDayPeriod = writable(false);
 
 	const segmentContents = derived([segmentValues, locale], ([$segmentValues, $locale]) => {
 		const contents = Object.keys($segmentValues).reduce((obj, part) => {
@@ -235,21 +225,12 @@ export function createSegments(props: CreateSegmentProps) {
 	 * been filled.
 	 */
 	function getUsedSegments() {
-		let dayPeriodExists = false;
 		if (!isBrowser) return [];
 		const usedSegments = getSegments(ids.field)
-			.map((el) => {
-				if (el.dataset.segment === 'dayPeriod') {
-					dayPeriodExists = true;
-				}
-				return el.dataset.segment;
-			})
+			.map((el) => el.dataset.segment)
 			.filter((part): part is SegmentPart => {
 				return segmentParts.includes(part as SegmentPart);
 			});
-		if (dayPeriodExists) {
-			isUsingDayPeriod.set(true);
-		}
 		return usedSegments;
 	}
 
@@ -309,16 +290,10 @@ export function createSegments(props: CreateSegmentProps) {
 
 		// convert hour from 24 to 12 hour cycle and set day period
 		if (hour > 12) {
-			dayPeriodValue.set('PM');
 			return hour - 12;
 		}
 		if (hour === 0) {
-			dayPeriodValue.set('AM');
 			return 12;
-		}
-
-		if (hour === 12) {
-			dayPeriodValue.set('PM');
 		}
 
 		return hour;
@@ -338,14 +313,15 @@ export function createSegments(props: CreateSegmentProps) {
 
 	function getHourForValue(hour: number) {
 		const $hourCycle = get(hourCycle);
-		const $dayPeriodValue = get(dayPeriodValue);
+		const $segmentValues = get(segmentValues);
 		if ($hourCycle === 24) return hour;
+		if (!hasTime($segmentValues)) return hour;
 
 		// convert hour from 12 to 24 hour cycle based on day period
-		if ($dayPeriodValue === 'AM' && hour === 12) {
+		if ($segmentValues.dayPeriod === 'AM' && hour === 12) {
 			return 0;
 		}
-		if ($dayPeriodValue === 'PM' && hour !== 12) {
+		if ($segmentValues.dayPeriod === 'PM' && hour !== 12) {
 			return hour + 12;
 		}
 
@@ -469,21 +445,6 @@ export function createSegments(props: CreateSegmentProps) {
 		} else {
 			segmentValues.set(structuredClone(initialSegments));
 		}
-	});
-
-	effect([dayPeriodValue], ([$dayPeriodValue]) => {
-		updateSegment('hour', (prev) => {
-			if (!prev) return prev;
-			const hour = prev;
-
-			const $hourCycle = get(hourCycle);
-			if ($hourCycle === 24) return prev;
-
-			if ($dayPeriodValue === 'AM' && hour >= 12) {
-				prev = hour - 12;
-			}
-			return prev;
-		});
 	});
 
 	const segment = builder(name('segment'), {
@@ -992,7 +953,7 @@ export function createSegments(props: CreateSegmentProps) {
 		const valueNow = date.hour;
 		const valueMin = $hourCycle === 12 ? 1 : 0;
 		const valueMax = $hourCycle === 12 ? 12 : 23;
-		const valueText = isEmpty ? 'Empty' : `${valueNow} ${get(dayPeriodValue)}`;
+		const valueText = isEmpty ? 'Empty' : `${valueNow} ${$segmentValues.dayPeriod ?? ''}`;
 
 		return {
 			...segmentDefaults,
@@ -1533,23 +1494,24 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 
 		if (e.key === kbd.ARROW_UP || e.key === kbd.ARROW_DOWN) {
-			dayPeriodValue.update((prev) => {
+			updateSegment('dayPeriod', (prev) => {
 				if (prev === 'AM') return 'PM';
 				return 'AM';
 			});
+
 			return;
 		}
 
 		if (e.key === kbd.BACKSPACE) {
 			states.second.hasLeftFocus = false;
-			dayPeriodValue.update(() => 'AM');
+			updateSegment('dayPeriod', () => 'AM');
 		}
 
 		if (e.key === 'a') {
-			dayPeriodValue.update(() => 'AM');
+			updateSegment('dayPeriod', () => 'AM');
 		}
 		if (e.key === 'p') {
-			dayPeriodValue.update(() => 'PM');
+			updateSegment('dayPeriod', () => 'PM');
 		}
 
 		if (isSegmentNavigationKey(e.key)) {
@@ -1557,13 +1519,39 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 	}
 
+	function initializeSegments() {
+		const parts = formatter.toParts(now(getLocalTimeZone()).toDate(), {
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			second: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+		});
+		const initialParts = parts.map((part) => {
+			if (part.type === 'literal' || part.type === 'dayPeriod') {
+				return [part.type, part.value];
+			}
+			return [part.type, null];
+		});
+		return initialParts;
+	}
+
+	// const initialSegments = Object.fromEntries(
+	// 	segmentParts.map((part) => {
+	// 		if (part === 'dayPeriod') {
+	// 			return [part, 'AM'];
+	// 		}
+	// 		return [part, null];
+	// 	})
+	// ) as SegmentValueObj;
+
 	return {
 		elements: {
 			segment,
 		},
 		states: {
 			segmentValues,
-			dayPeriodValue,
 			segmentContents,
 		},
 	};
