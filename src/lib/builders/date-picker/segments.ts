@@ -16,6 +16,7 @@ import type { createFormatter } from './formatter.js';
 import { getLocalTimeZone, type DateValue, now } from '@internationalized/date';
 import { getDaysInMonth } from './utils.js';
 import { getPlaceholderValue } from './placeholders.js';
+import type { Granularity } from './types.js';
 
 const { name } = createElHelpers<_DatePickerParts>('calendar');
 
@@ -104,105 +105,110 @@ export function createSegments(props: CreateSegmentProps) {
 		return acc;
 	}, {} as SegmentStates);
 
-	const { value, locale } = stores;
+	const { value, locale, granularity } = stores;
 	const { hourCycle } = options;
 
 	const dateNow = now(getLocalTimeZone());
 
-	const initialSegments = Object.fromEntries(initializeSegments()) as SegmentValueObj;
+	const initialSegments = Object.fromEntries(
+		initializeSegments(get(granularity))
+	) as SegmentValueObj;
 
 	const segmentValues = writable(structuredClone(initialSegments));
 
-	const segmentContents = derived([segmentValues, locale], ([$segmentValues, $locale]) => {
-		const valueContents = Object.keys($segmentValues).reduce((obj, part) => {
-			if (!isSegmentPart(part)) return obj;
-			if (part === 'day') {
-				const value = $segmentValues[part];
-				const notNull = value !== null;
-				if (notNull) {
-					obj[part] = formatter.part(dateNow.set({ day: value }).toDate(), part);
-				} else {
-					obj[part] = getPlaceholderValue(part, '', $locale);
-				}
-			} else if (part === 'month') {
-				const value = $segmentValues[part];
-				const notNull = value !== null;
-				if (notNull) {
-					obj[part] = formatter.part(dateNow.set({ month: value }).toDate(), part);
-				} else {
-					obj[part] = getPlaceholderValue(part, '', $locale);
-				}
-			} else if (part === 'year') {
-				const value = $segmentValues[part];
-				const notNull = value !== null;
-				if (notNull) {
-					obj[part] = formatter.part(dateNow.set({ year: value }).toDate(), part);
-				} else {
-					obj[part] = getPlaceholderValue(part, '', $locale);
-				}
-			}
-			if ('hour' in $segmentValues) {
-				if (part === 'hour') {
+	const segmentContents = derived(
+		[segmentValues, locale, granularity],
+		([$segmentValues, $locale, $granularity]) => {
+			const valueContents = Object.keys($segmentValues).reduce((obj, part) => {
+				if (!isSegmentPart(part)) return obj;
+				if (part === 'day') {
 					const value = $segmentValues[part];
 					const notNull = value !== null;
 					if (notNull) {
-						obj[part] = formatter.part(dateNow.set({ hour: value }).toDate(), part);
+						obj[part] = formatter.part(dateNow.set({ day: value }).toDate(), part);
 					} else {
 						obj[part] = getPlaceholderValue(part, '', $locale);
 					}
-				} else if (part === 'minute') {
+				} else if (part === 'month') {
 					const value = $segmentValues[part];
 					const notNull = value !== null;
 					if (notNull) {
-						obj[part] = formatter.part(dateNow.set({ minute: value }).toDate(), part);
+						obj[part] = formatter.part(dateNow.set({ month: value }).toDate(), part);
 					} else {
 						obj[part] = getPlaceholderValue(part, '', $locale);
 					}
-				} else if (part === 'second') {
+				} else if (part === 'year') {
 					const value = $segmentValues[part];
 					const notNull = value !== null;
 					if (notNull) {
-						obj[part] = formatter.part(dateNow.set({ second: value }).toDate(), part);
+						obj[part] = formatter.part(dateNow.set({ year: value }).toDate(), part);
 					} else {
 						obj[part] = getPlaceholderValue(part, '', $locale);
-					}
-				} else if (part === 'dayPeriod') {
-					const value = $segmentValues[part];
-					const notNull = value !== null;
-					if (notNull) {
-						obj[part] = value;
-					} else {
-						obj[part] = getPlaceholderValue(part, 'AM', $locale);
 					}
 				}
-			}
+				if ('hour' in $segmentValues) {
+					if (part === 'hour') {
+						const value = $segmentValues[part];
+						const notNull = value !== null;
+						if (notNull) {
+							obj[part] = formatter.part(dateNow.set({ hour: value }).toDate(), part);
+						} else {
+							obj[part] = getPlaceholderValue(part, '', $locale);
+						}
+					} else if (part === 'minute') {
+						const value = $segmentValues[part];
+						const notNull = value !== null;
+						if (notNull) {
+							obj[part] = formatter.part(dateNow.set({ minute: value }).toDate(), part);
+						} else {
+							obj[part] = getPlaceholderValue(part, '', $locale);
+						}
+					} else if (part === 'second') {
+						const value = $segmentValues[part];
+						const notNull = value !== null;
+						if (notNull) {
+							obj[part] = formatter.part(dateNow.set({ second: value }).toDate(), part);
+						} else {
+							obj[part] = getPlaceholderValue(part, '', $locale);
+						}
+					} else if (part === 'dayPeriod') {
+						const value = $segmentValues[part];
+						const notNull = value !== null;
+						if (notNull) {
+							obj[part] = value;
+						} else {
+							obj[part] = getPlaceholderValue(part, 'AM', $locale);
+						}
+					}
+				}
 
-			return obj;
-		}, {} as SegmentContent);
+				return obj;
+			}, {} as SegmentContent);
 
-		const segmentContent = initializeSegments()
-			.map(([part, value]) => {
-				if (part === null || !isSegmentPart(part)) {
+			const segmentContent = initializeSegments($granularity)
+				.map(([part, value]) => {
+					if (part === null || !isSegmentPart(part)) {
+						return {
+							part,
+							value,
+						};
+					}
 					return {
 						part,
-						value,
+						value: valueContents[part],
 					};
-				}
-				return {
-					part,
-					value: valueContents[part],
-				};
-			})
-			.filter((segment): segment is { part: SegmentPart | 'literal'; value: string } => {
-				if (segment.part === null || segment.value === null) return false;
-				return true;
-			});
+				})
+				.filter((segment): segment is { part: SegmentPart | 'literal'; value: string } => {
+					if (segment.part === null || segment.value === null) return false;
+					return true;
+				});
 
-		return {
-			arr: segmentContent,
-			obj: valueContents,
-		};
-	});
+			return {
+				arr: segmentContent,
+				obj: valueContents,
+			};
+		}
+	);
 
 	/**
 	 * Sets the individual segment values based on the current
@@ -1540,15 +1546,36 @@ export function createSegments(props: CreateSegmentProps) {
 		}
 	}
 
-	function initializeSegments() {
-		const parts = formatter.toParts(now(getLocalTimeZone()).toDate(), {
+	function getOptsByGranularity(granularity: Granularity) {
+		const opts: Intl.DateTimeFormatOptions = {
 			year: 'numeric',
 			month: '2-digit',
 			day: '2-digit',
-			second: '2-digit',
 			hour: '2-digit',
 			minute: '2-digit',
-		});
+			second: '2-digit',
+		};
+
+		if (granularity === 'day') {
+			delete opts.second;
+			delete opts.hour;
+			delete opts.minute;
+		}
+		if (granularity === 'hour') {
+			delete opts.minute;
+		}
+		if (granularity === 'minute') {
+			delete opts.second;
+		}
+
+		return opts;
+	}
+
+	function initializeSegments(granularity: Granularity) {
+		const parts = formatter.toParts(
+			now(getLocalTimeZone()).toDate(),
+			getOptsByGranularity(granularity)
+		);
 		const initialParts = parts.map((part) => {
 			if (part.type === 'literal' || part.type === 'dayPeriod') {
 				return [part.type, part.value];
@@ -1693,36 +1720,6 @@ function isSegmentPart(part: string): part is SegmentPart {
 function isDateSegmentPart(part: unknown): part is DateSegmentPart {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	return dateSegmentParts.includes(part as any);
-}
-
-function isTimeSegmentPart(part: unknown): part is TimeSegmentPart {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return timeSegmentParts.includes(part as any);
-}
-
-function isDateSegmentObj(obj: unknown): obj is DateSegmentObj {
-	if (typeof obj !== 'object' || obj === null) return false;
-	return Object.entries(obj).every(([key, value]) => {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const validKey = dateSegmentParts.includes(key as any);
-		const validValue = typeof value === 'number' || value === null;
-
-		return validKey && validValue;
-	});
-}
-
-function isTimeSegmentObj(obj: unknown): obj is TimeSegmentObj {
-	if (typeof obj !== 'object' || obj === null) return false;
-	return Object.entries(obj).every(([key, value]) => {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const validKey = timeSegmentParts.includes(key as any);
-		const validValue =
-			key === 'dayPeriod'
-				? value === 'AM' || value === 'PM' || value === null
-				: typeof value === 'number' || value === null;
-
-		return validKey && validValue;
-	});
 }
 
 function isDateAndTimeSegmentObj(obj: unknown): obj is DateAndTimeSegmentObj {

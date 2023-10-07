@@ -2,6 +2,7 @@
 	import {
 		createDatePicker,
 		type CreateDatePickerProps,
+		type Granularity,
 		type Matcher,
 	} from '$lib/builders';
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
@@ -17,7 +18,7 @@
 	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = false;
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = 0;
 	export let fixedWeeks: CreateDatePickerProps['fixedWeeks'] = false;
-	export let locale: CreateDatePickerProps['locale'] = 'en';
+	// export let locale: CreateDatePickerProps['locale'] = 'en';
 
 	const {
 		elements: {
@@ -33,6 +34,7 @@
 			content,
 		},
 		states: { value, months, headingValue, daysOfWeek, segmentContents, open },
+		options: { granularity, locale },
 	} = createDatePicker({
 		allowDeselect: true,
 		disabled,
@@ -44,16 +46,19 @@
 		fixedWeeks,
 		hourCycle: 12,
 		forceVisible: true,
-		locale,
+		locale: 'en',
+		granularity: 'day',
 	});
 
 	function getDayOfWeek(date: Date) {
-		return new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(date);
+		return new Intl.DateTimeFormat($locale, { weekday: 'narrow' }).format(date);
 	}
 </script>
 
-<div class="flex flex-col gap-3">
-	<p class="text-xs">{$value}</p>
+<div class="flex w-full flex-col items-center gap-3">
+	<div class="flex w-full items-center justify-center">
+		<p class="text-xs">{$value}</p>
+	</div>
 	<div
 		use:melt={$dateField}
 		class="flex max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"

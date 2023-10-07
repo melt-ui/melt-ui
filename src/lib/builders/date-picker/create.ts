@@ -19,7 +19,7 @@ import { getDaysBetween, getLastFirstDayOfWeek, getNextLastDayOfWeek } from './u
 
 import { derived, get, writable, type Writable } from 'svelte/store';
 import { createPopover, type Month } from '$lib/builders/index.js';
-import type { CreateDatePickerProps } from './types.js';
+import type { CreateDatePickerProps, Granularity } from './types.js';
 import { dateStore } from './date-store.js';
 import { createSegments, handleSegmentNavigation, isSegmentNavigationKey } from './segments.js';
 import { tick } from 'svelte';
@@ -69,6 +69,7 @@ const defaults = {
 	forceVisible: false,
 	calendarLabel: 'Event Date',
 	locale: 'en',
+	granularity: 'day',
 } satisfies CreateDatePickerProps;
 
 const defaultTriggerAttrs = {
@@ -105,6 +106,7 @@ export type _DatePickerStores<T extends DateValue = DateValue> = {
 	value: Writable<T | undefined>;
 	focusedValue: ReturnType<typeof dateStore>;
 	locale: Writable<string>;
+	granularity: Writable<Granularity>;
 };
 
 /**
@@ -181,6 +183,7 @@ export function createDatePicker<T extends DateValue = DateValue>(
 		unavailable,
 		hourCycle,
 		locale,
+		granularity,
 	} = options;
 
 	const ids: _DatePickerIds = {
@@ -209,12 +212,6 @@ export function createDatePicker<T extends DateValue = DateValue>(
 	);
 
 	const formatter = createFormatter(get(locale));
-
-	const stores = {
-		value,
-		focusedValue,
-		locale,
-	};
 
 	const months = writable<Month<DateValue>[]>([
 		createMonth(withDefaults.defaultFocusedValue ?? now(getLocalTimeZone())),
@@ -414,7 +411,12 @@ export function createDatePicker<T extends DateValue = DateValue>(
 	});
 
 	const segments = createSegments({
-		stores,
+		stores: {
+			value,
+			focusedValue,
+			locale,
+			granularity,
+		},
 		ids,
 		options: {
 			hourCycle,
