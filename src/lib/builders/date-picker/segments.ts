@@ -114,7 +114,7 @@ export function createSegments(props: CreateSegmentProps) {
 	const segmentValues = writable(structuredClone(initialSegments));
 
 	const segmentContents = derived([segmentValues, locale], ([$segmentValues, $locale]) => {
-		const contents = Object.keys($segmentValues).reduce((obj, part) => {
+		const valueContents = Object.keys($segmentValues).reduce((obj, part) => {
 			if (!isSegmentPart(part)) return obj;
 			if (part === 'day') {
 				const value = $segmentValues[part];
@@ -180,7 +180,28 @@ export function createSegments(props: CreateSegmentProps) {
 			return obj;
 		}, {} as SegmentContent);
 
-		return contents;
+		const segmentContent = initializeSegments()
+			.map(([part, value]) => {
+				if (part === null || !isSegmentPart(part)) {
+					return {
+						part,
+						value,
+					};
+				}
+				return {
+					part,
+					value: valueContents[part],
+				};
+			})
+			.filter((segment): segment is { part: SegmentPart | 'literal'; value: string } => {
+				if (segment.part === null || segment.value === null) return false;
+				return true;
+			});
+
+		return {
+			arr: segmentContent,
+			obj: valueContents,
+		};
 	});
 
 	/**
@@ -451,7 +472,10 @@ export function createSegments(props: CreateSegmentProps) {
 				$segmentValues,
 				$hourCycle,
 			};
-			return (part: SegmentPart) => ({ ...getSegmentAttrs(part, props), 'data-segment': part });
+			return (part: SegmentPart | 'literal') => ({
+				...getSegmentAttrs(part, props),
+				'data-segment': part,
+			});
 		},
 		action: (node: HTMLElement) => getSegmentAction(node),
 	});
@@ -459,7 +483,7 @@ export function createSegments(props: CreateSegmentProps) {
 	type SegmentAttrFn = (props: SegmentAttrProps) => Record<string, string | number | boolean>;
 
 	type SegmentBuilders = Record<
-		SegmentPart,
+		SegmentPart | 'literal',
 		{
 			attrs: SegmentAttrFn;
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -472,7 +496,7 @@ export function createSegments(props: CreateSegmentProps) {
 		$hourCycle: 12 | 24 | undefined;
 	};
 
-	function getSegmentAttrs(part: SegmentPart, props: SegmentAttrProps) {
+	function getSegmentAttrs(part: SegmentPart | 'literal', props: SegmentAttrProps) {
 		return segmentBuilders[part].attrs(props);
 	}
 
@@ -1549,7 +1573,7 @@ export function createSegments(props: CreateSegmentProps) {
 		};
 	}
 
-	function literalSegmentAction(node: HTMLElement) {
+	function literalSegmentAction() {
 		return {
 			// noop
 		};
@@ -1629,9 +1653,9 @@ function getPrevNextSegments(node: HTMLElement, containerId: string) {
 function getSegments(id: string) {
 	const inputContainer = document.getElementById(id);
 	if (!isHTMLElement(inputContainer)) return [];
-	const segments = Array.from(inputContainer.querySelectorAll('[data-segment]')).filter(
-		(el): el is HTMLElement => isHTMLElement(el)
-	);
+	const segments = Array.from(
+		inputContainer.querySelectorAll('[data-segment]:not([data-segment="literal"]')
+	).filter((el): el is HTMLElement => isHTMLElement(el));
 	return segments;
 }
 

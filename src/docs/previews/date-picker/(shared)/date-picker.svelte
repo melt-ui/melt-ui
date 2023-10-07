@@ -32,14 +32,7 @@
 			trigger,
 			content,
 		},
-		states: {
-			value,
-			months,
-			headingValue,
-			daysOfWeek,
-			segmentContents,
-			open,
-		},
+		states: { value, months, headingValue, daysOfWeek, segmentContents, open },
 	} = createDatePicker({
 		allowDeselect: true,
 		disabled,
@@ -57,9 +50,6 @@
 	function getDayOfWeek(date: Date) {
 		return new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(date);
 	}
-
-	const dateSegments = ['month', 'day', 'year'] as const;
-	const timeSegments = ['hour', 'minute', 'second'] as const;
 </script>
 
 <div class="flex flex-col gap-3">
@@ -68,26 +58,11 @@
 		use:melt={$dateField}
 		class="flex max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
 	>
-		{#each dateSegments as seg, i}
-			<div use:melt={$segment(seg)}>
-				{$segmentContents[seg]}
+		{#each $segmentContents.arr as seg}
+			<div use:melt={$segment(seg.part)}>
+				{seg.value}
 			</div>
-			{#if i < dateSegments.length - 1}
-				<div aria-hidden="true" class="px-1">/</div>
-			{/if}
 		{/each}
-		<div aria-hidden="true" class="pr-2">,</div>
-		{#each timeSegments as seg, i}
-			<div use:melt={$segment(seg)} class="whitespace-nowrap">
-				{$segmentContents[seg]}
-			</div>
-			{#if i < timeSegments.length - 1}
-				<div aria-hidden="true" class="px-0.5">:</div>
-			{/if}
-		{/each}
-		<div use:melt={$segment('dayPeriod')} class="ml-2">
-			{$segmentContents['dayPeriod']}
-		</div>
 		<div class="ml-4 flex w-full items-center justify-end">
 			<button use:melt={$trigger} class="rounded bg-magnum-800 p-1">
 				<Calendar class="h-4 w-4 text-white" />
