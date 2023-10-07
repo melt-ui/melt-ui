@@ -38,7 +38,6 @@ import {
 	parseDateTime,
 	parseDate,
 	now,
-	today,
 } from '@internationalized/date';
 import { getDaysInMonth } from './utils.js';
 

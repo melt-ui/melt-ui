@@ -43,11 +43,23 @@ type CreateSegmentProps = {
 	formatter: ReturnType<typeof createFormatter>;
 };
 
-const segmentParts = ['day', 'month', 'year', 'hour', 'minute', 'second'] as const;
+const dateSegmentParts = ['day', 'month', 'year'] as const;
+const timeSegmentParts = ['hour', 'minute', 'second', 'dayPeriod'] as const;
+
+const segmentParts = [...dateSegmentParts, ...timeSegmentParts] as const;
 
 type SegmentPart = (typeof segmentParts)[number];
+type DateSegmentPart = (typeof dateSegmentParts)[number];
+type TimeSegmentPart = (typeof timeSegmentParts)[number];
 
-type SegmentValueObj = Record<SegmentPart, number | null>;
+type DateSegmentObj = {
+	[K in DateSegmentPart]: number | null;
+};
+type TimeSegmentObj = {
+	[K in TimeSegmentPart as K]: K extends 'dayPeriod' ? DayPeriod : number | null;
+};
+type DateAndTimeSegmentObj = DateSegmentObj & TimeSegmentObj;
+type SegmentValueObj = DateSegmentObj | DateAndTimeSegmentObj;
 
 type SegmentState = {
 	lastKeyZero: boolean;
@@ -60,7 +72,7 @@ type SegmentStates = {
 	[K in SegmentPart]: SegmentState;
 };
 
-type DayPeriod = 'AM' | 'PM';
+type DayPeriod = 'AM' | 'PM' | null;
 
 const acceptableSegmentKeys = [
 	kbd.ENTER,
@@ -97,7 +109,12 @@ export function createSegments(props: CreateSegmentProps) {
 	const dateNow = now(getLocalTimeZone());
 
 	const initialSegments = Object.fromEntries(
-		segmentParts.map((part) => [part, null])
+		segmentParts.map((part) => {
+			if (part === 'dayPeriod') {
+				return [part, 'AM'];
+			}
+			return [part, null];
+		})
 	) as SegmentValueObj;
 
 	const segmentValues = writable(structuredClone(initialSegments));
@@ -107,35 +124,39 @@ export function createSegments(props: CreateSegmentProps) {
 	const segmentContents = derived(segmentValues, ($segmentValues) => {
 		const contents = Object.keys($segmentValues).reduce((obj, part) => {
 			if (!isSegmentPart(part)) return obj;
-			const value = $segmentValues[part];
-			const notNull = value !== null;
-
-			switch (part) {
-				case 'day':
-					obj[part] = notNull ? formatter.part(dateNow.set({ day: value }).toDate(), part) : 'DD';
-					break;
-				case 'month':
-					obj[part] = notNull ? formatter.part(dateNow.set({ month: value }).toDate(), part) : 'MM';
-					break;
-				case 'year':
-					obj[part] = notNull
-						? formatter.part(dateNow.set({ year: value }).toDate(), part)
-						: 'YYYY';
-					break;
-				case 'hour':
+			if (part === 'day') {
+				const value = $segmentValues[part];
+				const notNull = value !== null;
+				obj[part] = notNull ? formatter.part(dateNow.set({ day: value }).toDate(), part) : 'DD';
+			} else if (part === 'month') {
+				const value = $segmentValues[part];
+				const notNull = value !== null;
+				obj[part] = notNull ? formatter.part(dateNow.set({ month: value }).toDate(), part) : 'MM';
+			} else if (part === 'year') {
+				const value = $segmentValues[part];
+				const notNull = value !== null;
+				obj[part] = notNull ? formatter.part(dateNow.set({ year: value }).toDate(), part) : 'YYYY';
+			}
+			if ('hour' in $segmentValues) {
+				if (part === 'hour') {
+					const value = $segmentValues[part];
+					const notNull = value !== null;
 					obj[part] = notNull ? formatter.part(dateNow.set({ hour: value }).toDate(), part) : 'hh';
-					break;
-				case 'minute':
+				} else if (part === 'minute') {
+					const value = $segmentValues[part];
+					const notNull = value !== null;
 					obj[part] = notNull
 						? formatter.part(dateNow.set({ minute: value }).toDate(), part)
 						: 'mm';
-					break;
-				case 'second':
+				} else if (part === 'second') {
+					const value = $segmentValues[part];
+					const notNull = value !== null;
 					obj[part] = notNull
 						? formatter.part(dateNow.set({ second: value }).toDate(), part)
 						: 'ss';
-					break;
+				}
 			}
+
 			return obj;
 		}, {} as SegmentContent);
 
@@ -147,26 +168,27 @@ export function createSegments(props: CreateSegmentProps) {
 	 * value of the date picker.
 	 */
 	function syncSegmentValues(value: DateValue) {
-		segmentValues.set(
-			Object.fromEntries(
-				segmentParts.map((part) => {
-					switch (part) {
-						case 'day':
-							return [part, value.day];
-						case 'month':
-							return [part, value.month];
-						case 'year':
-							return [part, value.year];
-						case 'hour':
-							return [part, getHourForSegmentValue(value && 'hour' in value ? value.hour : 0)];
-						case 'minute':
-							return [part, value && 'minute' in value ? value.minute : 0];
-						case 'second':
-							return [part, value && 'second' in value ? value.second : 0];
-					}
-				})
-			) as SegmentValueObj
-		);
+		const dateValues = dateSegmentParts.map((part) => {
+			return [part, value[part]];
+		});
+		if ('hour' in value) {
+			const timeValues = timeSegmentParts.map((part) => {
+				switch (part) {
+					case 'hour':
+						return [part, getHourForSegmentValue(value.hour)];
+					case 'dayPeriod':
+						return [part, getDayPeriodFromHour(value.hour)];
+					default:
+						return [part, value[part]];
+				}
+			});
+
+			const mergedSegmentValues = [...dateValues, ...timeValues];
+			segmentValues.set(Object.fromEntries(mergedSegmentValues) as SegmentValueObj);
+			return;
+		}
+
+		segmentValues.set(Object.fromEntries(dateValues) as SegmentValueObj);
 	}
 
 	/**
@@ -209,19 +231,35 @@ export function createSegments(props: CreateSegmentProps) {
 		const usedSegments = getUsedSegments();
 		let date = dateNow;
 		usedSegments.forEach((part) => {
-			const value = segmentObj[part];
-			if (value === null) return;
-			switch (part) {
-				case 'month':
-					date = date.set({ month: value });
-					break;
-				case 'hour':
-					date = date.set({ hour: getHourForValue(value) });
-					break;
-				default:
-					date = date.set({
-						[part]: value,
-					});
+			if (part === 'day') {
+				const day = segmentObj[part];
+				if (day === null) return;
+				date = date.set({ day });
+				return;
+			} else if (part === 'month') {
+				const month = segmentObj[part];
+				if (month === null) return;
+				date = date.set({ month });
+				return;
+			} else if (part === 'year') {
+				const year = segmentObj[part];
+				if (year === null) return;
+				date = date.set({ year });
+				return;
+			}
+
+			if ('hour' in segmentObj) {
+				if (part === 'minute' || part === 'second') {
+					const partValue = segmentObj[part];
+					if (partValue === null) return;
+					date = date.set({ [part]: partValue });
+					return;
+				} else if (part === 'hour') {
+					const hour = segmentObj[part];
+					if (hour === null) return;
+					date = date.set({ hour: getHourForValue(hour) });
+					return;
+				}
 			}
 		});
 
@@ -249,6 +287,18 @@ export function createSegments(props: CreateSegmentProps) {
 		return hour;
 	}
 
+	function getDayPeriodFromHour(hour: number): DayPeriod {
+		const $hourCycle = get(hourCycle);
+		if ($hourCycle === 24) return null;
+
+		// convert hour from 24 to 12 hour cycle and set day period
+		if (hour > 12 || hour === 12) {
+			return 'PM';
+		}
+
+		return 'AM';
+	}
+
 	function getHourForValue(hour: number) {
 		const $hourCycle = get(hourCycle);
 		const $dayPeriodValue = get(dayPeriodValue);
@@ -268,25 +318,63 @@ export function createSegments(props: CreateSegmentProps) {
 	function areAllSegmentsFilled() {
 		const usedSegments = getUsedSegments();
 		const $segmentValues = get(segmentValues);
-		return usedSegments.every((part) => $segmentValues[part] !== null);
+		return usedSegments.every((part) => {
+			if ('hour' in $segmentValues) {
+				return $segmentValues[part] !== null;
+			} else if (part === 'day' || part === 'month' || part === 'year') {
+				return $segmentValues[part] !== null;
+			}
+		});
 	}
 
-	function updateSegment(part: SegmentPart, cb: Updater<number | null>) {
+	function updateSegment<T extends keyof DateAndTimeSegmentObj>(
+		part: T,
+		cb: T extends 'dayPeriod' ? Updater<DayPeriod> : Updater<number | null>,
+		another: DateAndTimeSegmentObj[T]
+	) {
+		if (part === 'dayPeriod') {
+			console.log(another);
+		}
+
 		segmentValues.update((prev) => {
-			const prevSegment = prev[part];
-			const next = cb(prevSegment);
-			if (part === 'month' && next !== null && prev.day !== null) {
-				const date = dateNow.set({ month: next });
-				const daysInMonth = getDaysInMonth(date.toDate());
-				if (prev.day > daysInMonth) {
-					prev.day = daysInMonth;
+			if ('hour' in prev) {
+				if (part === 'day' || part === 'month' || part === 'year') {
+					const prevSegment = prev[part];
+					if (prevSegment === null || prevSegment === undefined) return prev;
+
+					const next = cb(prevSegment);
+					if (part === 'month' && next !== null && prev.day !== null) {
+						const date = dateNow.set({ month: next });
+						const daysInMonth = getDaysInMonth(date.toDate());
+						if (prev.day > daysInMonth) {
+							prev.day = daysInMonth;
+						}
+					}
+
+					return {
+						...prev,
+						[part]: next,
+					};
 				}
 			}
 
-			return {
-				...prev,
-				[part]: next,
-			};
+			if ('hour' in prev) {
+				const prevSegment = prev[part];
+				if (prevSegment === null || prevSegment === undefined) return prev;
+
+				const next = cb(prevSegment);
+				if (next !== null && prev.dayPeriod !== null) {
+					const hour = getHourForValue(next);
+					const dayPeriod = getDayPeriodFromHour(hour);
+					prev.dayPeriod = dayPeriod;
+				}
+
+				return {
+					...prev,
+					[part]: next,
+				};
+			}
+			return prev;
 		});
 		const $segmentValues = get(segmentValues);
 		if (areAllSegmentsFilled()) {
