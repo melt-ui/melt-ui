@@ -124,7 +124,6 @@ export function createSegments(props: CreateSegmentProps) {
 					break;
 				case 'hour':
 					obj[part] = notNull ? formatter.part(dateNow.set({ hour: value }).toDate(), part) : 'hh';
-
 					break;
 				case 'minute':
 					obj[part] = notNull
@@ -242,7 +241,11 @@ export function createSegments(props: CreateSegmentProps) {
 			dayPeriodValue.set('AM');
 			return 12;
 		}
-		dayPeriodValue.set('AM');
+
+		if (hour === 12) {
+			dayPeriodValue.set('PM');
+		}
+
 		return hour;
 	}
 
