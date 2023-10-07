@@ -109,14 +109,7 @@ export function createSegments(props: CreateSegmentProps) {
 
 	const dateNow = now(getLocalTimeZone());
 
-	const initialSegments = Object.fromEntries(
-		segmentParts.map((part) => {
-			if (part === 'dayPeriod') {
-				return [part, 'AM'];
-			}
-			return [part, null];
-		})
-	) as SegmentValueObj;
+	const initialSegments = Object.fromEntries(initializeSegments()) as SegmentValueObj;
 
 	const segmentValues = writable(structuredClone(initialSegments));
 
@@ -436,6 +429,10 @@ export function createSegments(props: CreateSegmentProps) {
 		dayPeriod: {
 			attrs: dayPeriodSegmentAttrs,
 			action: dayPeriodSegmentAction,
+		},
+		literal: {
+			attrs: literalSegmentAttrs,
+			action: literalSegmentAction,
 		},
 	};
 
@@ -1537,14 +1534,26 @@ export function createSegments(props: CreateSegmentProps) {
 		return initialParts;
 	}
 
-	// const initialSegments = Object.fromEntries(
-	// 	segmentParts.map((part) => {
-	// 		if (part === 'dayPeriod') {
-	// 			return [part, 'AM'];
-	// 		}
-	// 		return [part, null];
-	// 	})
-	// ) as SegmentValueObj;
+	/*
+	 * ---------------------------------------------------------------------------------------------
+	 *
+	 * LITERAL SEGMENT
+	 *
+	 * ---------------------------------------------------------------------------------------------
+	 */
+
+	function literalSegmentAttrs(_: SegmentAttrProps) {
+		return {
+			'aria-hidden': true,
+			'data-type': 'literal',
+		};
+	}
+
+	function literalSegmentAction(node: HTMLElement) {
+		return {
+			// noop
+		};
+	}
 
 	return {
 		elements: {

@@ -38,7 +38,6 @@
 			headingValue,
 			daysOfWeek,
 			segmentContents,
-			dayPeriodValue,
 			open,
 		},
 	} = createDatePicker({
