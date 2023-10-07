@@ -28,7 +28,6 @@
 			dateField,
 			prevButton,
 			nextButton,
-			dayPeriodSegment,
 			segment,
 			trigger,
 			content,
@@ -53,7 +52,7 @@
 		fixedWeeks,
 		hourCycle: 12,
 		forceVisible: true,
-		locale,
+		locale
 	});
 
 	function getDayOfWeek(date: Date) {
@@ -87,8 +86,8 @@
 				<div aria-hidden="true" class="px-0.5">:</div>
 			{/if}
 		{/each}
-		<div use:melt={$dayPeriodSegment} class="ml-2">
-			{$dayPeriodValue}
+		<div use:melt={$segment('dayPeriod')} class="ml-2">
+			{$segmentContents['dayPeriod']}
 		</div>
 		<div class="ml-4 flex w-full items-center justify-end">
 			<button use:melt={$trigger} class="rounded bg-magnum-800 p-1">

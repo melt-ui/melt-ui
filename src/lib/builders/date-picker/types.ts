@@ -198,7 +198,25 @@ export type DatePickerProps<T extends DateValue> = {
 	 * @default 'en'
 	 */
 	locale?: string;
+
+	/**
+	 * The granularity of the date field. This determines which
+	 * segments will be includes in the segments array used to
+	 * build the date field.
+	 *
+	 * By default, when a `CalendarDate` value is used, the granularity
+	 * will default to `'day'`, and when a `CalendarDateTime` or `ZonedDateTime`
+	 * value is used, the granularity will default to `'minute'`.
+	 *
+	 * Granularity is only used for visual purposes, and does not impact
+	 * the value of the date field. You can have the same value synced
+	 * between multiple date fields with different granularities and they
+	 * will all contain the same value.
+	 */
+	granularity?: Granularity;
 };
+
+export type Granularity = 'day' | 'hour' | 'minute' | 'second';
 
 export type CreateDatePickerProps<T extends DateValue = DateValue> = DatePickerProps<T> &
 	CreatePopoverProps;

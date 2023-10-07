@@ -10,11 +10,20 @@ import {
 	styleToString,
 } from '$lib/internal/helpers/index.js';
 import type { _DatePickerParts, _DatePickerIds, _DatePickerStores } from './create.js';
-import { get, writable, type Updater, type Writable, derived } from 'svelte/store';
+import {
+	get,
+	writable,
+	type Updater,
+	type Writable,
+	derived,
+	readonly,
+	readable,
+} from 'svelte/store';
 import type { Action } from 'svelte/action';
 import type { createFormatter } from './formatter.js';
 import { getLocalTimeZone, type DateValue, now } from '@internationalized/date';
 import { getDaysInMonth } from './utils.js';
+import { getPlaceholderValue } from './placeholders.js';
 
 const { name } = createElHelpers<_DatePickerParts>('calendar');
 
@@ -103,7 +112,7 @@ export function createSegments(props: CreateSegmentProps) {
 		return acc;
 	}, {} as SegmentStates);
 
-	const { value } = stores;
+	const { value, locale } = stores;
 	const { hourCycle } = options;
 
 	const dateNow = now(getLocalTimeZone());
@@ -121,39 +130,67 @@ export function createSegments(props: CreateSegmentProps) {
 	const dayPeriodValue = writable<DayPeriod>('AM');
 	const isUsingDayPeriod = writable(false);
 
-	const segmentContents = derived(segmentValues, ($segmentValues) => {
+	const segmentContents = derived([segmentValues, locale], ([$segmentValues, $locale]) => {
 		const contents = Object.keys($segmentValues).reduce((obj, part) => {
 			if (!isSegmentPart(part)) return obj;
 			if (part === 'day') {
 				const value = $segmentValues[part];
 				const notNull = value !== null;
-				obj[part] = notNull ? formatter.part(dateNow.set({ day: value }).toDate(), part) : 'DD';
+				if (notNull) {
+					obj[part] = formatter.part(dateNow.set({ day: value }).toDate(), part);
+				} else {
+					obj[part] = getPlaceholderValue(part, '', $locale);
+				}
 			} else if (part === 'month') {
 				const value = $segmentValues[part];
 				const notNull = value !== null;
-				obj[part] = notNull ? formatter.part(dateNow.set({ month: value }).toDate(), part) : 'MM';
+				if (notNull) {
+					obj[part] = formatter.part(dateNow.set({ month: value }).toDate(), part);
+				} else {
+					obj[part] = getPlaceholderValue(part, '', $locale);
+				}
 			} else if (part === 'year') {
 				const value = $segmentValues[part];
 				const notNull = value !== null;
-				obj[part] = notNull ? formatter.part(dateNow.set({ year: value }).toDate(), part) : 'YYYY';
+				if (notNull) {
+					obj[part] = formatter.part(dateNow.set({ year: value }).toDate(), part);
+				} else {
+					obj[part] = getPlaceholderValue(part, '', $locale);
+				}
 			}
 			if ('hour' in $segmentValues) {
 				if (part === 'hour') {
 					const value = $segmentValues[part];
 					const notNull = value !== null;
-					obj[part] = notNull ? formatter.part(dateNow.set({ hour: value }).toDate(), part) : 'hh';
+					if (notNull) {
+						obj[part] = formatter.part(dateNow.set({ hour: value }).toDate(), part);
+					} else {
+						obj[part] = getPlaceholderValue(part, '', $locale);
+					}
 				} else if (part === 'minute') {
 					const value = $segmentValues[part];
 					const notNull = value !== null;
-					obj[part] = notNull
-						? formatter.part(dateNow.set({ minute: value }).toDate(), part)
-						: 'mm';
+					if (notNull) {
+						obj[part] = formatter.part(dateNow.set({ minute: value }).toDate(), part);
+					} else {
+						obj[part] = getPlaceholderValue(part, '', $locale);
+					}
 				} else if (part === 'second') {
 					const value = $segmentValues[part];
 					const notNull = value !== null;
-					obj[part] = notNull
-						? formatter.part(dateNow.set({ second: value }).toDate(), part)
-						: 'ss';
+					if (notNull) {
+						obj[part] = formatter.part(dateNow.set({ second: value }).toDate(), part);
+					} else {
+						obj[part] = getPlaceholderValue(part, '', $locale);
+					}
+				} else if (part === 'dayPeriod') {
+					const value = $segmentValues[part];
+					const notNull = value !== null;
+					if (notNull) {
+						obj[part] = value;
+					} else {
+						obj[part] = getPlaceholderValue(part, 'AM', $locale);
+					}
 				}
 			}
 
@@ -329,20 +366,18 @@ export function createSegments(props: CreateSegmentProps) {
 
 	function updateSegment<T extends keyof DateAndTimeSegmentObj>(
 		part: T,
-		cb: T extends 'dayPeriod' ? Updater<DayPeriod> : Updater<number | null>,
-		another: DateAndTimeSegmentObj[T]
+		cb: T extends DateSegmentPart
+			? Updater<DateSegmentObj[T]>
+			: T extends TimeSegmentPart
+			? Updater<TimeSegmentObj[T]>
+			: Updater<DateAndTimeSegmentObj[T]>
 	) {
-		if (part === 'dayPeriod') {
-			console.log(another);
-		}
-
 		segmentValues.update((prev) => {
-			if ('hour' in prev) {
-				if (part === 'day' || part === 'month' || part === 'year') {
-					const prevSegment = prev[part];
-					if (prevSegment === null || prevSegment === undefined) return prev;
-
-					const next = cb(prevSegment);
+			if (isDateAndTimeSegmentObj(prev)) {
+				const pVal = prev[part];
+				const castCb = cb as Updater<DateAndTimeSegmentObj[T]>;
+				if (part === 'month') {
+					const next = castCb(pVal) as DateAndTimeSegmentObj['month'];
 					if (part === 'month' && next !== null && prev.day !== null) {
 						const date = dateNow.set({ month: next });
 						const daysInMonth = getDaysInMonth(date.toDate());
@@ -350,30 +385,45 @@ export function createSegments(props: CreateSegmentProps) {
 							prev.day = daysInMonth;
 						}
 					}
-
+					return {
+						...prev,
+						[part]: next,
+					};
+				} else if (part === 'hour') {
+					const next = castCb(pVal) as DateAndTimeSegmentObj['hour'];
+					if (next !== null && prev.dayPeriod !== null) {
+						const hour = getHourForValue(next);
+						const dayPeriod = getDayPeriodFromHour(hour);
+						prev.dayPeriod = dayPeriod;
+					}
 					return {
 						...prev,
 						[part]: next,
 					};
 				}
-			}
 
-			if ('hour' in prev) {
-				const prevSegment = prev[part];
-				if (prevSegment === null || prevSegment === undefined) return prev;
-
-				const next = cb(prevSegment);
-				if (next !== null && prev.dayPeriod !== null) {
-					const hour = getHourForValue(next);
-					const dayPeriod = getDayPeriodFromHour(hour);
-					prev.dayPeriod = dayPeriod;
+				const next = castCb(pVal);
+				return {
+					...prev,
+					[part]: next,
+				};
+			} else if (isDateSegmentPart(part)) {
+				const pVal = prev[part];
+				const castCb = cb as Updater<DateSegmentObj[DateSegmentPart]>;
+				const next = castCb(pVal);
+				if (part === 'month' && next !== null && prev.day !== null) {
+					const date = dateNow.set({ month: next });
+					const daysInMonth = getDaysInMonth(date.toDate());
+					if (prev.day > daysInMonth) {
+						prev.day = daysInMonth;
+					}
 				}
-
 				return {
 					...prev,
 					[part]: next,
 				};
 			}
+
 			return prev;
 		});
 		const $segmentValues = get(segmentValues);
@@ -406,6 +456,10 @@ export function createSegments(props: CreateSegmentProps) {
 		second: {
 			attrs: secondSegmentAttrs,
 			action: secondSegmentAction,
+		},
+		dayPeriod: {
+			attrs: dayPeriodSegmentAttrs,
+			action: dayPeriodSegmentAction,
 		},
 	};
 
@@ -932,6 +986,7 @@ export function createSegments(props: CreateSegmentProps) {
 
 	function hourSegmentAttrs(props: SegmentAttrProps) {
 		const { $segmentValues, $hourCycle } = props;
+		if (!hasTime($segmentValues)) return {};
 		const isEmpty = $segmentValues.hour === null;
 		const date = $segmentValues.hour ? dateNow.set({ hour: $segmentValues.hour }) : dateNow;
 		const valueNow = date.hour;
@@ -1097,6 +1152,7 @@ export function createSegments(props: CreateSegmentProps) {
 
 	function minuteSegmentAttrs(props: SegmentAttrProps) {
 		const { $segmentValues } = props;
+		if (!hasTime($segmentValues)) return {};
 		const isEmpty = $segmentValues.minute === null;
 		const date = $segmentValues.minute ? dateNow.set({ minute: $segmentValues.minute }) : dateNow;
 		const valueNow = date.minute;
@@ -1263,6 +1319,7 @@ export function createSegments(props: CreateSegmentProps) {
 
 	function secondSegmentAttrs(props: SegmentAttrProps) {
 		const { $segmentValues } = props;
+		if (!hasTime($segmentValues)) return {};
 		const isEmpty = $segmentValues.second === null;
 		const date = $segmentValues.second ? dateNow.set({ second: $segmentValues.second }) : dateNow;
 		const valueNow = date.second;
@@ -1427,36 +1484,39 @@ export function createSegments(props: CreateSegmentProps) {
 	 * ---------------------------------------------------------------------------------------------
 	 */
 
-	const dayPeriodSegment = builder(name('dayPeriod-segment'), {
-		stores: [dayPeriodValue],
-		returned: ([$dayPeriodValue]) => {
-			const valueMin = 0;
-			const valueMax = 12;
+	function dayPeriodSegmentAttrs(props: SegmentAttrProps) {
+		const { $segmentValues } = props;
+		if (!hasTime($segmentValues)) return {};
 
-			return {
-				...segmentDefaults,
-				inputmode: 'text',
-				id: ids.secondSegment,
-				'aria-label': 'AM/PM',
-				'aria-valuemin': valueMin,
-				'aria-valuemax': valueMax,
-				'aria-valuenow': $dayPeriodValue ?? `${valueMin}`,
-				'aria-valuetext': $dayPeriodValue ?? 'AM',
-				'data-segment': 'dayPeriod',
-			};
-		},
-		action: (node: HTMLElement) => {
-			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'keydown', handleDayPeriodSegmentKeydown)
-			);
+		const valueMin = 0;
+		const valueMax = 12;
+		const valueNow = $segmentValues.dayPeriod === 'AM' ? valueMin : valueMax;
+		const valueText = $segmentValues.dayPeriod ?? 'AM';
 
-			return {
-				destroy() {
-					unsubEvents();
-				},
-			};
-		},
-	});
+		return {
+			...segmentDefaults,
+			inputmode: 'text',
+			id: ids.secondSegment,
+			'aria-label': 'AM/PM',
+			'aria-valuemin': valueMin,
+			'aria-valuemax': valueMax,
+			'aria-valuenow': valueNow,
+			'aria-valuetext': valueText,
+			'data-segment': 'dayPeriod',
+		};
+	}
+
+	function dayPeriodSegmentAction(node: HTMLElement) {
+		const unsubEvents = executeCallbacks(
+			addMeltEventListener(node, 'keydown', handleDayPeriodSegmentKeydown)
+		);
+
+		return {
+			destroy() {
+				unsubEvents();
+			},
+		};
+	}
 
 	/**
 	 * The event handler responsible for handling keydown events
@@ -1500,7 +1560,6 @@ export function createSegments(props: CreateSegmentProps) {
 	return {
 		elements: {
 			segment,
-			dayPeriodSegment,
 		},
 		states: {
 			segmentValues,
@@ -1606,5 +1665,58 @@ function isTabKey(key: string) {
 }
 
 function isSegmentPart(part: string): part is SegmentPart {
-	return segmentParts.includes(part as SegmentPart);
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return segmentParts.includes(part as any);
+}
+
+function isDateSegmentPart(part: unknown): part is DateSegmentPart {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return dateSegmentParts.includes(part as any);
+}
+
+function isTimeSegmentPart(part: unknown): part is TimeSegmentPart {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return timeSegmentParts.includes(part as any);
+}
+
+function isDateSegmentObj(obj: unknown): obj is DateSegmentObj {
+	if (typeof obj !== 'object' || obj === null) return false;
+	return Object.entries(obj).every(([key, value]) => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const validKey = dateSegmentParts.includes(key as any);
+		const validValue = typeof value === 'number' || value === null;
+
+		return validKey && validValue;
+	});
+}
+
+function isTimeSegmentObj(obj: unknown): obj is TimeSegmentObj {
+	if (typeof obj !== 'object' || obj === null) return false;
+	return Object.entries(obj).every(([key, value]) => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const validKey = timeSegmentParts.includes(key as any);
+		const validValue =
+			key === 'dayPeriod'
+				? value === 'AM' || value === 'PM' || value === null
+				: typeof value === 'number' || value === null;
+
+		return validKey && validValue;
+	});
+}
+
+function isDateAndTimeSegmentObj(obj: unknown): obj is DateAndTimeSegmentObj {
+	if (typeof obj !== 'object' || obj === null) return false;
+	return Object.entries(obj).every(([key, value]) => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const validKey = timeSegmentParts.includes(key as any) || dateSegmentParts.includes(key as any);
+		const validValue =
+			key === 'dayPeriod'
+				? value === 'AM' || value === 'PM' || value === null
+				: typeof value === 'number' || value === null;
+		return validKey && validValue;
+	});
+}
+
+function hasTime(obj: SegmentValueObj): obj is DateAndTimeSegmentObj {
+	return 'hour' in obj;
 }

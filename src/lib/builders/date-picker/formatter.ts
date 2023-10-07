@@ -47,6 +47,7 @@ export function createFormatter(initialLocale: string) {
 	) {
 		const opts = { ...defaultPartOptions, ...options };
 		const parts = toParts(date, opts);
+		console.log(parts);
 		const part = parts.find((p) => p.type === type);
 		return part ? part.value : '';
 	}
