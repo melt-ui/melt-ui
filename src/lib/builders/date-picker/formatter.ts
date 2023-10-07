@@ -31,12 +31,22 @@ export function createFormatter(initialLocale: string) {
 		return new DateFormatter(locale, options).formatToParts(date);
 	}
 
+	const defaultPartOptions: Intl.DateTimeFormatOptions = {
+		year: 'numeric',
+		month: 'numeric',
+		day: 'numeric',
+		hour: 'numeric',
+		minute: 'numeric',
+		second: 'numeric',
+	};
+
 	function part(
 		date: Date,
-		options: Intl.DateTimeFormatOptions,
-		type: Intl.DateTimeFormatPartTypes
+		type: Intl.DateTimeFormatPartTypes,
+		options: Intl.DateTimeFormatOptions = {}
 	) {
-		const parts = toParts(date, options);
+		const opts = { ...defaultPartOptions, ...options };
+		const parts = toParts(date, opts);
 		const part = parts.find((p) => p.type === type);
 		return part ? part.value : '';
 	}

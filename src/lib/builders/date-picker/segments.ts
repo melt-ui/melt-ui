@@ -47,14 +47,14 @@ const segmentParts = ['day', 'month', 'year', 'hour', 'minute', 'second'] as con
 
 type SegmentPart = (typeof segmentParts)[number];
 
+type SegmentValueObj = Record<SegmentPart, number | null>;
+
 type SegmentState = {
 	lastKeyZero: boolean;
 	hasLeftFocus: boolean;
 	hasInitialized: boolean;
 	hasTouched: boolean;
 };
-
-type SegmentValueObj = Record<SegmentPart, number | null>;
 
 type SegmentStates = {
 	[K in SegmentPart]: SegmentState;
@@ -112,72 +112,28 @@ export function createSegments(props: CreateSegmentProps) {
 
 			switch (part) {
 				case 'day':
-					obj[part] = notNull
-						? formatter.part(
-								dateNow.set({ day: value }).toDate(),
-								{
-									day: '2-digit',
-								},
-								part
-						  )
-						: 'DD';
+					obj[part] = notNull ? formatter.part(dateNow.set({ day: value }).toDate(), part) : 'DD';
 					break;
 				case 'month':
-					obj[part] = notNull
-						? formatter.part(
-								dateNow.set({ month: value }).toDate(),
-								{
-									month: '2-digit',
-								},
-								part
-						  )
-						: 'MM';
+					obj[part] = notNull ? formatter.part(dateNow.set({ month: value }).toDate(), part) : 'MM';
 					break;
 				case 'year':
 					obj[part] = notNull
-						? formatter.part(
-								dateNow.set({ year: value }).toDate(),
-								{
-									year: 'numeric',
-								},
-								part
-						  )
+						? formatter.part(dateNow.set({ year: value }).toDate(), part)
 						: 'YYYY';
 					break;
 				case 'hour':
-					obj[part] = notNull
-						? formatter.part(
-								dateNow.set({ hour: value }).toDate(),
-								{
-									hour: '2-digit',
-								},
-								part
-						  )
-						: 'hh';
+					obj[part] = notNull ? formatter.part(dateNow.set({ hour: value }).toDate(), part) : 'hh';
 
 					break;
 				case 'minute':
 					obj[part] = notNull
-						? formatter.part(
-								dateNow.set({ minute: value }).toDate(),
-								{
-									fractionalSecondDigits: 1,
-									minute: '2-digit',
-								},
-								part
-						  )
+						? formatter.part(dateNow.set({ minute: value }).toDate(), part)
 						: 'mm';
 					break;
 				case 'second':
 					obj[part] = notNull
-						? formatter.part(
-								dateNow.set({ second: value }).toDate(),
-								{
-									fractionalSecondDigits: 1,
-									second: '2-digit',
-								},
-								part
-						  )
+						? formatter.part(dateNow.set({ second: value }).toDate(), part)
 						: 'ss';
 					break;
 			}
