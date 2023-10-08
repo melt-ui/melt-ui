@@ -4,7 +4,7 @@ import type { createDatePicker } from './create.js';
 import type { CreatePopoverProps, Matcher } from '$lib/builders/index.js';
 import type { DateValue } from '@internationalized/date';
 
-export type DatePickerProps<T extends DateValue> = {
+export type DatePickerProps = {
 	/**
 	 * Allow deselecting the selected date, which would set the
 	 * value to `undefined`. You can use this to ensure a date
@@ -21,7 +21,7 @@ export type DatePickerProps<T extends DateValue> = {
 	 *
 	 * @default undefined;
 	 */
-	defaultValue?: T;
+	defaultValue?: DateValue;
 
 	/**
 	 * A function called when the value of the date picker changes.
@@ -224,7 +224,6 @@ export type DatePickerProps<T extends DateValue> = {
 
 export type Granularity = 'day' | 'hour' | 'minute' | 'second';
 
-export type CreateDatePickerProps<T extends DateValue = DateValue> = DatePickerProps<T> &
-	CreatePopoverProps;
+export type CreateDatePickerProps = DatePickerProps & CreatePopoverProps;
 
 export type DatePicker = ReturnType<typeof createDatePicker>;

@@ -37,7 +37,6 @@ import {
 	CalendarDateTime,
 	parseDateTime,
 	parseDate,
-	now,
 	CalendarDate,
 } from '@internationalized/date';
 import { getDaysInMonth } from './utils.js';
@@ -46,14 +45,10 @@ const defaults = {
 	disabled: false,
 	unavailable: false,
 	value: undefined,
-	defaultPlaceholderValue: getDefaultDate(),
-	placeholderValue: undefined,
 	allowDeselect: false,
 	numberOfMonths: 1,
 	pagedNavigation: false,
 	weekStartsOn: 0,
-	defaultValue: undefined,
-	onValueChange: undefined,
 	fixedWeeks: false,
 	hourCycle: 24,
 	positioning: {
@@ -130,9 +125,7 @@ export type _DatePickerIds = {
 	calendar: string;
 };
 
-export function createDatePicker<T extends DateValue = DateValue>(
-	props?: CreateDatePickerProps<T>
-) {
+export function createDatePicker<T extends DateValue = DateValue>(props?: CreateDatePickerProps) {
 	const withDefaults = { ...defaults, ...props };
 
 	const popover = createPopover({
@@ -202,19 +195,23 @@ export function createDatePicker<T extends DateValue = DateValue>(
 		...popover.ids,
 	};
 
+	const defaultDate = getDefaultDate();
+
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable<DateValue | undefined>(valueWritable, withDefaults?.onValueChange);
 
 	const placeholderValueWritable =
-		withDefaults.placeholderValue ?? writable(withDefaults.defaultPlaceholderValue);
+		withDefaults.placeholderValue ?? writable(withDefaults.defaultPlaceholderValue ?? defaultDate);
 	const placeholderValue = dateStore(
 		overridable(placeholderValueWritable, withDefaults?.onPlaceholderValueChange),
-		withDefaults.defaultPlaceholderValue ?? now(getLocalTimeZone())
+		withDefaults.defaultPlaceholderValue ?? defaultDate
 	);
 
 	const formatter = createFormatter(get(locale));
 
-	const months = writable<Month<DateValue>[]>([createMonth(withDefaults.defaultPlaceholderValue)]);
+	const months = writable<Month<DateValue>[]>([
+		createMonth(withDefaults.defaultPlaceholderValue ?? defaultDate),
+	]);
 
 	const isInvalid = writable(false);
 
@@ -788,6 +785,21 @@ export function createDatePicker<T extends DateValue = DateValue>(
 		return parseDate(dateStr);
 	}
 
+	function getDefaultDate() {
+		const date = new Date();
+		const year = date.getFullYear();
+		const month = date.getMonth();
+		const day = date.getDate();
+		const $granularity = get(granularity);
+		const calendarDateTimeGranularities = ['hour', 'minute', 'second'];
+
+		if (calendarDateTimeGranularities.includes($granularity)) {
+			return new CalendarDateTime(year, month, day, 0, 0, 0);
+		}
+
+		return new CalendarDate(year, month, day);
+	}
+
 	return {
 		elements: {
 			calendar,
@@ -834,12 +846,4 @@ function isCalendarCell(node: unknown): node is HTMLElement {
 	if (!isHTMLElement(node)) return false;
 	if (!node.hasAttribute('data-melt-calendar-cell')) return false;
 	return true;
-}
-
-function getDefaultDate() {
-	const date = new Date();
-	const year = date.getFullYear();
-	const month = date.getMonth();
-	const day = date.getDate();
-	return new CalendarDate(year, month, day);
 }

@@ -8,12 +8,11 @@
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
 	import { melt } from '$lib';
 	import { fade } from 'svelte/transition';
-	import { getLocalTimeZone } from '@internationalized/date';
+	import { getLocalTimeZone, today } from '@internationalized/date';
 
 	export let disabled: Matcher | Matcher[] = false;
-	export let defaultFocusedValue: CreateDatePickerProps['defaultFocusedValue'] =
+	export let defaultPlaceholderValue: CreateDatePickerProps['defaultPlaceholderValue'] =
 		undefined;
-	export let defaultValue: CreateDatePickerProps['defaultValue'] = undefined;
 	export let numberOfMonths: CreateDatePickerProps['numberOfMonths'] = 1;
 	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = false;
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = 0;
@@ -38,8 +37,7 @@
 	} = createDatePicker({
 		allowDeselect: true,
 		disabled,
-		defaultValue,
-		defaultFocusedValue,
+		defaultPlaceholderValue,
 		numberOfMonths,
 		pagedNavigation,
 		weekStartsOn,
@@ -47,7 +45,7 @@
 		hourCycle: 12,
 		forceVisible: true,
 		locale: 'en',
-		granularity: 'day',
+		granularity: 'minute',
 	});
 
 	function getDayOfWeek(date: Date) {

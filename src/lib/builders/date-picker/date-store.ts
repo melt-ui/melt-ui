@@ -38,7 +38,7 @@ type MappedField<T> = T extends AnyDateTime
 
 type MappedCycleOptions<T> = T extends AnyDateTime ? CycleTimeOptions : CycleOptions;
 
-export function dateStore<T extends DateValue>(store: Writable<T>, defaultFocusedValue: T) {
+export function dateStore<T extends DateValue>(store: Writable<T>, defaultValue: T) {
 	const { set, update, subscribe } = store;
 
 	function add(duration: MappedDuration<T>) {
@@ -78,7 +78,7 @@ export function dateStore<T extends DateValue>(store: Writable<T>, defaultFocuse
 
 	function reset() {
 		update(() => {
-			return defaultFocusedValue;
+			return defaultValue;
 		});
 	}
 

@@ -1,4 +1,10 @@
-import { DateFormatter } from '@internationalized/date';
+import {
+	DateFormatter,
+	ZonedDateTime,
+	type DateValue,
+	CalendarDateTime,
+	getLocalTimeZone,
+} from '@internationalized/date';
 
 export function createFormatter(initialLocale: string) {
 	let locale = initialLocale;
@@ -41,11 +47,19 @@ export function createFormatter(initialLocale: string) {
 	};
 
 	function part(
-		date: Date,
+		dateObj: DateValue,
 		type: Intl.DateTimeFormatPartTypes,
 		options: Intl.DateTimeFormatOptions = {}
 	) {
 		const opts = { ...defaultPartOptions, ...options };
+		let date: Date;
+
+		if (dateObj instanceof ZonedDateTime) {
+			date = dateObj.toDate();
+		} else {
+			date = dateObj.toDate(getLocalTimeZone());
+		}
+
 		const parts = toParts(date, opts);
 		const part = parts.find((p) => p.type === type);
 		return part ? part.value : '';
