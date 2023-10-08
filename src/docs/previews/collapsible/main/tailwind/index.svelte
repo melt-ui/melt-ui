@@ -38,7 +38,12 @@
 		<span class="text-base text-black">melt-ui/melt-ui</span>
 	</div>
 
-	<div style:position="absolute" style:top="calc(100% + 10px)" style:right="0" style:left="0">
+	<div
+		style:position="absolute"
+		style:top="calc(100% + 10px)"
+		style:right="0"
+		style:left="0"
+	>
 		{#if $open}
 			<div use:melt={$content} transition:slide>
 				<div class="flex flex-col gap-2">

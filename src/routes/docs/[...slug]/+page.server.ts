@@ -1,6 +1,9 @@
 import { navConfig } from '$docs/config.js';
-import { GITHUB_TOKEN } from '$env/static/private';
 import type { EntryGenerator, PageLoad } from './$types.js';
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import { GITHUB_TOKEN } from '$env/static/private';
 
 export const entries = (() => {
 	return navConfig.sidebarNav[0].items.map((item) => {
