@@ -52,12 +52,14 @@ type CreateSegmentProps = {
 
 const dateSegmentParts = ['day', 'month', 'year'] as const;
 const timeSegmentParts = ['hour', 'minute', 'second', 'dayPeriod'] as const;
+const nonInteractiveSegmentParts = ['literal', 'timeZoneName'] as const;
 
 const segmentParts = [...dateSegmentParts, ...timeSegmentParts] as const;
 
 type SegmentPart = (typeof segmentParts)[number];
 type DateSegmentPart = (typeof dateSegmentParts)[number];
 type TimeSegmentPart = (typeof timeSegmentParts)[number];
+type NonInteractiveSegmentPart = (typeof nonInteractiveSegmentParts)[number];
 
 type DateSegmentObj = {
 	[K in DateSegmentPart]: number | null;
@@ -209,7 +211,7 @@ export function createSegments(props: CreateSegmentProps) {
 				.filter(
 					(
 						segment
-					): segment is { part: SegmentPart | 'literal' | 'timeZoneName'; value: string } => {
+					): segment is { part: SegmentPart | NonInteractiveSegmentPart; value: string } => {
 						if (segment.part === null || segment.value === null) return false;
 						const date = get(placeholderValue);
 						if (segment.part === 'timeZoneName' && !isZonedDateTime(date)) return false;
@@ -481,7 +483,7 @@ export function createSegments(props: CreateSegmentProps) {
 				$hourCycle,
 				$placeholderValue,
 			};
-			return (part: SegmentPart | 'literal') => ({
+			return (part: SegmentPart | NonInteractiveSegmentPart) => ({
 				...getSegmentAttrs(part, props),
 				'data-segment': part,
 			});
@@ -492,7 +494,7 @@ export function createSegments(props: CreateSegmentProps) {
 	type SegmentAttrFn = (props: SegmentAttrProps) => Record<string, string | number | boolean>;
 
 	type SegmentBuilders = Record<
-		SegmentPart | 'literal' | 'timeZoneName',
+		SegmentPart | NonInteractiveSegmentPart,
 		{
 			attrs: SegmentAttrFn;
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -506,10 +508,7 @@ export function createSegments(props: CreateSegmentProps) {
 		$placeholderValue: DateValue;
 	};
 
-	function getSegmentAttrs(
-		part: SegmentPart | 'literal' | 'timeZoneName',
-		props: SegmentAttrProps
-	) {
+	function getSegmentAttrs(part: SegmentPart | NonInteractiveSegmentPart, props: SegmentAttrProps) {
 		return segmentBuilders[part].attrs(props);
 	}
 
