@@ -206,10 +206,17 @@ export function createSegments(props: CreateSegmentProps) {
 						value: valueContents[part],
 					};
 				})
-				.filter((segment): segment is { part: SegmentPart | 'literal'; value: string } => {
-					if (segment.part === null || segment.value === null) return false;
-					return true;
-				});
+				.filter(
+					(
+						segment
+					): segment is { part: SegmentPart | 'literal' | 'timeZoneName'; value: string } => {
+						if (segment.part === null || segment.value === null) return false;
+						const date = get(placeholderValue);
+						if (segment.part === 'timeZoneName' && !isZonedDateTime(date)) return false;
+
+						return true;
+					}
+				);
 
 			return {
 				arr: segmentContent,
@@ -1819,4 +1826,8 @@ function toDate(dateObj: DateValue) {
 
 function hasTime(dateObj: DateValue): dateObj is CalendarDateTime | ZonedDateTime {
 	return dateObj instanceof CalendarDateTime || dateObj instanceof ZonedDateTime;
+}
+
+function isZonedDateTime(dateObj: DateValue): dateObj is ZonedDateTime {
+	return dateObj instanceof ZonedDateTime;
 }
