@@ -379,19 +379,18 @@
 	}
 
 	.trigger {
+		--bg-opacity: 1;
+
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		border-radius: var(--radius-md);
-		background-color: white;
+		background-color: rgb(255 255 255 / var(--bg-opacity));
 		padding-inline: 0.75rem;
 		padding-block: 0.5rem;
 
 		color: var(--magnum-900);
-		transition-property: color, background-color, border-color, outline-color,
-			text-decoration-color, fill, stroke;
-		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-		transition-duration: 150ms;
+		transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 
 		overflow: visible;
 		cursor: default !important;
@@ -401,7 +400,7 @@
 	}
 
 	.trigger:hover {
-		background-color: rgb(255 255 255 / 0.9);
+		--bg-opacity: 0.9;
 	}
 
 	.trigger:focus {

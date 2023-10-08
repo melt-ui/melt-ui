@@ -220,13 +220,15 @@
 	}
 
 	.trigger {
+		--bg-opacity: 1;
+
 		height: 2.25rem;
 		width: 2.25rem;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		border-radius: var(--radius-full);
-		background-color: white;
+		background-color: rgb(255 255 255 / var(--bg-opacity));
 		cursor: pointer;
 
 		color: var(--magnum-900);
@@ -241,12 +243,12 @@
 		padding: 0;
 	}
 
-	:global([data-highlighted]).trigger {
-		outline: none;
+	.trigger:hover {
+		--bg-opacity: 0.9;
 	}
 
-	.trigger:hover {
-		background-color: rgb(255 255 255 / 0.9);
+	:global([data-highlighted]).trigger {
+		outline: none;
 	}
 
 	.menu {

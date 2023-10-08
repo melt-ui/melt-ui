@@ -137,23 +137,24 @@
 	}
 
 	.trigger {
+		--bg-opacity: 1;
+
 		display: flex;
 		height: 3rem;
 		width: 3rem;
 		align-items: center;
 		justify-content: center;
 		border-radius: var(--radius-full);
-		background-color: white;
+		background-color: rgb(255 255 255 / var(--bg-opacity));
 		color: var(--magnum-900);
 		font-size: var(--fs-sm);
 		line-height: 1.25rem;
 		font-weight: var(--fw-medium);
-		transition: color, background-color, border-color, text-decoration-color,
-			fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1);
+		transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	.trigger:hover {
-		background-color: rgb(0 0 0 / 0.9);
+		--bg-opacity: 0.9;
 	}
 
 	.trigger:focus-visible {
