@@ -1,4 +1,4 @@
-import type { ColorRGB, Orientation } from "$lib/internal/types";
+import type { ColorHSL, ColorHSV, ColorRGB, Orientation } from "$lib/internal/types";
 import type { createColorPicker } from "./create";
 
 export type ColorPickerParts = 'color-canvas' | 'color-picker' | 'hue-slider' | 'hue-picker' | 'alpha-slider' | 'alpha-picker' | 'eye-dropper' | 'hex-input';
@@ -46,7 +46,8 @@ export type Position = {
 
 export type ReturnedColor = {
     rgb: ColorRGB;
-    hex: string;
+    hsv: ColorHSV;
+    hsl: ColorHSL;
 }
 
 export interface ColorSelectionOptions {

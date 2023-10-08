@@ -4,14 +4,15 @@ import {
     createElHelpers,
     executeCallbacks,
     isBrowser,
-    isValidHex,
+    isValidHexColor,
     styleToString,
     RGBtoHex,
     hexToHSV,
     HSVtoRGB,
+    hexToHSL,
 } from "$lib/internal/helpers";
 
-import type { Defaults } from "$lib/internal/types";
+import type { ColorRGB, Defaults } from "$lib/internal/types";
 import { onMount } from "svelte";
 
 import type { ArrowKeys, ColorPickerParts, CreateColorPickerProps, EyeDropperType, EyeDropperWindow, KeyDurations, NodeElement, NodeSize, Position, ReturnedColor } from "./types";
@@ -64,8 +65,11 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
     /**
      * Returns the current color of the color picker.
+     * This function is used in some builder return parameters,
+     * as well as the subscribe methods, since we sometimes need to
+     * update the $colors value when the hue angle is changed.
      */
-    const getCurrentColor: Readable<() => ReturnedColor> = derived([hueAngle, colorPickerPos, colorCanvasDims, alphaValue], ([$hueAngle, $colorPickerPos, $colorCanvasDims, $alphaValue]) => {
+    const getCurrentColor: Readable<() => { rgb: ColorRGB, hex: string }> = derived([hueAngle, colorPickerPos, colorCanvasDims, alphaValue], ([$hueAngle, $colorPickerPos, $colorCanvasDims, $alphaValue]) => {
         const x = $colorPickerPos.x / $colorCanvasDims.width;
         const y = 1 - $colorPickerPos.y / $colorCanvasDims.height;
 
@@ -73,6 +77,25 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         const hex = RGBtoHex(rgb);
 
         return () => ({ rgb: { ...rgb, a: $alphaValue }, hex });
+    });
+
+
+    /**
+     * A derived store that returns different color representations (RGB, HSV, HSL).
+     */
+    const derivedColors: Readable<ReturnedColor> = derived([color, hueAngle, colorPickerPos, colorCanvasDims, alphaValue], ([$color, $hueAngle, $colorPickerPos, $colorCanvasDims]) => {
+        const x = $colorPickerPos.x / $colorCanvasDims.width;
+        const y = 1 - $colorPickerPos.y / $colorCanvasDims.height;
+
+        const rgb = HSVtoRGB({ h: $hueAngle / 360, s: x, v: y });
+        const hsv = hexToHSV($color);
+        const hsl = hexToHSL($color);
+
+        return {
+            rgb,
+            hsv,
+            hsl
+        }
     });
 
     const colorCanvas = builder(name('color-canvas'), {
@@ -368,18 +391,14 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     });
 
     const alphaSlider = builder(name('alpha-slider'), {
-        stores: [getCurrentColor],
-        returned: ([$getCurrentColor]) => {
+        stores: [color],
+        returned: ([$color]) => {
             const orientation = argsWithDefaults.hueSliderOrientation === 'horizontal' ? 'right' : 'bottom';
-
-            const { rgb } = $getCurrentColor();
-            const { r, g, b } = rgb;
-            const color = `${r}, ${g}, ${b}`;
 
             return {
                 'aria-label': 'A canvas element showing the alpha values for the color.',
                 style: styleToString({
-                    background: `linear-gradient(to ${orientation}, rgba(${color}, 0), rgba(${color}, 1))`
+                    background: `linear-gradient(to ${orientation}, ${$color}00, ${$color})`
                 })
             }
         },
@@ -546,7 +565,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
                 addMeltEventListener(node, 'keyup', () => {
                     const { value } = node;
 
-                    if (!isValidHex(value)) return;
+                    if (!isValidHexColor(value)) return;
 
                     color.set(value);
                 })
@@ -721,16 +740,19 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
         // Check if the given color is valid and replace it with
         // the default color if not.
-        argsWithDefaults.defaultColor = isValidHex(argsWithDefaults.defaultColor) ? argsWithDefaults.defaultColor : defaults.defaultColor;
+        argsWithDefaults.defaultColor = isValidHexColor(argsWithDefaults.defaultColor) ? argsWithDefaults.defaultColor : defaults.defaultColor;
 
         color.set(argsWithDefaults.defaultColor);
 
-        // Update the color and hue picker button positions.
+        // Update the color and hue picker button positions to default one.
         updateOnColorInput(argsWithDefaults.defaultColor);
 
+        /**
+         * If the color is updated from outside we do not need to update the color again,
+         * so we check if inputUpdate = true.
+         */
         const colorPickerUnsub = colorPickerPos.subscribe(() => {
             if (inputUpdate) {
-                // console.log('color picker pos not updating');
                 inputUpdate = false;
                 return;
             }
@@ -740,6 +762,11 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             color.set(hex);
         });
 
+        /**
+         * If the hue angle is being updated from outside we need to update the color value,
+         * else we can just return. Here we are not setting inputUpdate to false because
+         * that is done when colorPickerPos.subscribe is run.
+         */
         const hueAngleUnsub = hueAngle.subscribe(() => {
             if (inputUpdate) {
                 // console.log('hue angle not updating');
@@ -756,13 +783,18 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             color.set(hex);
         });
 
+        /**
+         * Check if the color is updated, and whether it was internally or externally.
+         * If the source is external, we need to update the hue angle and the color
+         * picker position.
+         */
         const colorUnsub = color.subscribe((hex) => {
             if (insideUpdate) {
                 insideUpdate = false;
                 return;
             }
 
-            if (!isValidHex(hex)) return;
+            if (!isValidHexColor(hex)) return;
 
             inputUpdate = true;
             updateOnColorInput(hex);
@@ -792,7 +824,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             color
         },
         helpers: {
-            getCurrentColor
+            derivedColors
         }
     }
 }

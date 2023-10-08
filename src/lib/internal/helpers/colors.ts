@@ -1,15 +1,22 @@
 import type { ColorHSL, ColorHSV, ColorRGB } from "../types";
 
 /**
- * Determines if the hex value is valid.
+ * Determines if the hex color value is valid.
+ * Eg. #fff and #ffffff (3 and 6 values are considered valid).
  *
  * @param hex - The hex color string value
- * @returns Whether it's a valid hex value as a boolean.
+ * @returns Whether it's a valid hex value as a boolean
  */
-export const isValidHex = (hex: string) => /^#([0-9a-f]{3}){1,2}$/i.test(hex);
+export const isValidHexColor = (hex: string) => /^#([0-9a-f]{3}){1,2}$/i.test(hex);
 
 // Source: https://css-tricks.com/converting-color-spaces-in-javascript/
 
+/**
+ * Convert an RGB color value to a hex representation.
+ *
+ * @param rgb - The RGB values
+ * @returns The color as a hex value string
+ */
 export function RGBtoHex(rgb: ColorRGB) {
     const { r, g, b } = rgb;
 
@@ -22,6 +29,13 @@ export function RGBtoHex(rgb: ColorRGB) {
     return `#${hex}`;
 }
 
+/**
+ * Converts a hex color value to RGB.
+ *
+ * @param hex - The hex color value
+ * @param normalize - Whether to normalize the RGB values between 0 and 1
+ * @returns The RGV values
+ */
 export function hexToRGB(hex: string, normalize=false): ColorRGB {
     const rgb: ColorRGB = {
         r: 0,
@@ -48,6 +62,12 @@ export function hexToRGB(hex: string, normalize=false): ColorRGB {
     return rgb;
 }
 
+/**
+ * Converts a hex color value to HSL.
+ *
+ * @param hex - The hex color value
+ * @returns The HSL values
+ */
 export function hexToHSL(hex: string): ColorHSL {
     const rgb = hexToRGB(hex, true);
 
@@ -81,6 +101,12 @@ export function hexToHSL(hex: string): ColorHSL {
     return { h, s, l };
 }
 
+/**
+ * Converts HSV values to RGB.
+ *
+ * @param hsv - The HSV values
+ * @returns The RGB values
+ */
 export function HSVtoRGB(hsv: ColorHSV) {
     const { h, s, v } = hsv;
 
@@ -108,6 +134,12 @@ export function HSVtoRGB(hsv: ColorHSV) {
     };
 }
 
+/**
+ * Converts a hex color value to HSV.
+ *
+ * @param hex - The hex color value
+ * @returns The HSV color values
+ */
 export function hexToHSV(hex: string): ColorHSV {
     const { r, g, b} = hexToRGB(hex, true);
 

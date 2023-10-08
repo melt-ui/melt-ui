@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createColorPicker, type ReturnedColor } from '$lib';
+	import { createColorPicker } from '$lib';
 
 	import { Pipette } from 'lucide-svelte';
 
@@ -22,7 +22,8 @@
 		defaultColor,
 	});
 
-	let savedColors: ReturnedColor[] = [];
+	// let savedColors: ReturnedColor[] = [];
+	let savedColors: string[] = [];
 
 	$: savedColorsLimited = savedColors.slice(0, 5);
 </script>
@@ -82,17 +83,17 @@
 
 		<button
 			class="rounded-md bg-magnum-600 p-1"
-			on:click={() => (savedColors = [$getCurrentColor(), ...savedColors])}
+			on:click={() => (savedColors = [$color, ...savedColors])}
 		>
 			Save
 		</button>
 	</div>
 
 	<div class="flex flex-wrap items-center justify-center gap-2">
-		{#each savedColorsLimited as { rgb, hex }}
+		{#each savedColorsLimited as hex}
 			<button
 				class="h-6 w-6 rounded-md border border-gray-400"
-				style="background-color: rgba({rgb.r}, {rgb.g}, {rgb.b})"
+				style="background-color: {hex}"
 				on:click={() => ($color = hex)}
 			/>
 		{/each}
