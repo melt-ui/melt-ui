@@ -57,6 +57,10 @@
 {/if}
 
 <style>
+	* {
+		all: unset;
+	}
+
 	/* CSS Variables */
 	:root {
 		--magnum-50: #fff9ed;
@@ -125,7 +129,7 @@
 		--ring-width: 1px;
 		--ring-offset-width: 2px;
 		--ring-color: var(--magnum-400);
-		--ring-offset-color: #fff;
+		--ring-offset-color: white;
 		--ring-offset-shadow: 0 0 0 var(--ring-offset-width)
 			var(--ring-offset-color);
 		--ring-shadow: 0 0 0 calc(var(--ring-width) + var(--ring-offset-width))
@@ -152,9 +156,8 @@
 		background-color: rgb(0 0 0 / 0.9);
 	}
 
-	/* TODO: this is not working */
 	.trigger:focus-visible {
-		box-shadow: var(--ring-offset-shadow), var(--ring-shadow), 0 0 #0000;
+		box-shadow: var(--ring-offset-shadow), var(--ring-shadow) !important;
 	}
 
 	.trigger img {
@@ -164,6 +167,7 @@
 		background-color: var(--neutral-900);
 		object-fit: contain;
 		padding: 0.5rem;
+		box-sizing: border-box;
 	}
 
 	.sr-only {
@@ -186,6 +190,7 @@
 	}
 
 	.content-wrapper {
+		display: block;
 		width: 300px;
 		border-radius: var(--radius-md);
 		background-color: white;

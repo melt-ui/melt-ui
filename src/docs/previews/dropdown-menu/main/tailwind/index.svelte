@@ -144,7 +144,7 @@
 		@apply data-[highlighted]:ring-magnum-400 data-[highlighted]:ring-offset-2 !important;
 		@apply p-0 text-sm font-medium  data-[highlighted]:outline-none;
 	}
-	/* isn't this duplicated */
+
 	.check {
 		@apply absolute left-2 top-1/2 text-magnum-500;
 		translate: 0 calc(-50% + 1px);
@@ -162,11 +162,10 @@
 		@apply ml-auto pl-5;
 	}
 
-	/* this isn't used in the markup */
 	.icon {
 		@apply h-[13px] w-[13px];
 	}
-	/* isn't this duplicated */
+
 	.check {
 		@apply absolute left-0 inline-flex w-6 items-center justify-center;
 	}

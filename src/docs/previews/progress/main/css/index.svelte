@@ -29,9 +29,14 @@
 </div>
 
 <style>
+	* {
+		all: unset;
+	}
+
 	.track {
+		display: block;
 		position: relative;
-		height: 24px;
+		height: 1.5rem;
 		width: 300px;
 		overflow: hidden;
 		border-radius: 99999px;
@@ -39,9 +44,10 @@
 	}
 
 	.progress-bar {
+		display: block;
 		width: 100%;
 		height: 100%;
 		background-color: white;
-    transition: transform 660ms cubic-bezier(0.65, 0, 0.35, 1);
+		transition: transform 660ms cubic-bezier(0.65, 0, 0.35, 1);
 	}
 </style>

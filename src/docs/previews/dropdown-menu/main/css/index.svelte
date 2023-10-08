@@ -122,6 +122,10 @@
 {/if}
 
 <style>
+	* {
+		all: unset;
+	}
+
 	:root {
 		--magnum-50: #fff9ed;
 		--magnum-100: #fef2d6;
@@ -203,6 +207,18 @@
 			var(--ring-color);
 	}
 
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
+	}
+
 	.trigger {
 		height: 2.25rem;
 		width: 2.25rem;
@@ -211,6 +227,7 @@
 		justify-content: center;
 		border-radius: var(--radius-full);
 		background-color: white;
+		cursor: pointer;
 
 		color: var(--magnum-900);
 		transition-property: color, background-color, border-color, outline-color,
@@ -224,13 +241,12 @@
 		padding: 0;
 	}
 
-	/* TODO: is this data-attribute present in the element? */
-	:global(.trigger[data-highlighted]) {
+	:global([data-highlighted]).trigger {
 		outline: none;
 	}
 
 	.trigger:hover {
-		background-color: rbg(255 255 255 / 0.9);
+		background-color: rgb(255 255 255 / 0.9);
 	}
 
 	.menu {
@@ -278,7 +294,11 @@
 		font-size: var(--fs-sm);
 	}
 
-	:global(.item[data-highlighted]) {
+	.item:focus-visible {
+		box-shadow: none !important;
+	}
+
+	:global([data-highlighted]).item {
 		background-color: var(--magnum-200);
 		color: var(--magnum-900);
 	}
@@ -294,6 +314,7 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
+		color: var(--magnum-500);
 	}
 
 	.dot {

@@ -286,6 +286,10 @@
 </div>
 
 <style>
+	* {
+		all: unset;
+	}
+
 	/* CSS Variables */
 	:root {
 		--magnum-50: #fff9ed;
@@ -404,9 +408,9 @@
 		z-index: 30;
 	}
 
-	:global(.trigger[data-highlighted]) {
+	:global([data-highlighted]).trigger {
 		outline: none;
-    background-color: var(--magnum-200);
+		background-color: var(--magnum-200);
 	}
 
 	.menu {
@@ -427,7 +431,11 @@
 		}
 	}
 
-  	.subMenu {
+	.menu:focus-visible {
+		box-shadow: none !important;
+	}
+
+	.subMenu {
 		--shadow-color: rgb(23 23 23 / 0.3);
 
 		min-width: 220px;
@@ -452,10 +460,11 @@
 		align-items: center;
 		line-height: 1;
 		font-size: var(--fs-sm);
-    cursor: default;
+		cursor: default;
+		box-shadow: none !important;
 	}
 
-	:global(.item[data-highlighted]) {
+	:global([data-highlighted]).item {
 		background-color: var(--magnum-200);
 		color: var(--magnum-900);
 	}
@@ -471,7 +480,7 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-    color: var(--magnum-500);
+		color: var(--magnum-500);
 	}
 
 	.dot {
