@@ -2,7 +2,6 @@ import {
 	DateFormatter,
 	ZonedDateTime,
 	type DateValue,
-	CalendarDateTime,
 	getLocalTimeZone,
 } from '@internationalized/date';
 

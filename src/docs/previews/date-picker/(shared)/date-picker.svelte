@@ -44,7 +44,7 @@
 		fixedWeeks,
 		hourCycle: 12,
 		forceVisible: true,
-		locale: 'en',
+		locale: 'en-UK',
 		granularity: 'minute',
 	});
 

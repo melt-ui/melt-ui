@@ -16,7 +16,6 @@ import type { createFormatter } from './formatter.js';
 import {
 	getLocalTimeZone,
 	type DateValue,
-	now,
 	ZonedDateTime,
 	CalendarDateTime,
 } from '@internationalized/date';
@@ -1490,13 +1489,13 @@ export function createSegments(props: CreateSegmentProps) {
 	 */
 
 	function dayPeriodSegmentAttrs(props: SegmentAttrProps) {
-		const { $segmentValues } = props;
-		if (!hasTime($segmentValues)) return {};
+		const { $segmentValues, $placeholderValue } = props;
+		if (!('dayPeriod' in $segmentValues) || !('dayPeriod' in $placeholderValue)) return {};
 
 		const valueMin = 0;
 		const valueMax = 12;
-		const valueNow = $segmentValues.dayPeriod === 'AM' ? valueMin : valueMax;
-		const valueText = $segmentValues.dayPeriod ?? 'AM';
+		const valueNow = $segmentValues.dayPeriod ?? $placeholderValue.dayPeriod;
+		const valueText = $segmentValues.dayPeriod ?? $placeholderValue.dayPeriod;
 
 		return {
 			...segmentDefaults,
@@ -1775,7 +1774,6 @@ function isDateSegmentPart(part: unknown): part is DateSegmentPart {
 
 function isDateAndTimeSegmentObj(obj: unknown): obj is DateAndTimeSegmentObj {
 	if (typeof obj !== 'object' || obj === null) {
-		console.log('not an object or null so returning');
 		return false;
 	}
 	return Object.entries(obj).every(([key, value]) => {
@@ -1785,11 +1783,7 @@ function isDateAndTimeSegmentObj(obj: unknown): obj is DateAndTimeSegmentObj {
 			key === 'dayPeriod'
 				? value === 'AM' || value === 'PM' || value === null
 				: typeof value === 'number' || value === null;
-		console.log('key: ', key);
-		console.log(`valid key: ${validKey}`);
-		console.log('value: ', value);
-		console.log(`validValue: ${validValue}`);
-		console.log('------');
+
 		return validKey && validValue;
 	});
 }
