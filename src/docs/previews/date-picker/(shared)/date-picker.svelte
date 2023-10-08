@@ -50,10 +50,6 @@
 </script>
 
 <div class="flex w-full flex-col items-center gap-3">
-	<div class="flex items-center gap-2">
-		<button class="btn" on:click={() => locale.set('en')}>EN</button>
-		<button class="btn" on:click={() => locale.set('en-UK')}>EN-UK</button>
-	</div>
 	<div class="flex w-full items-center justify-center">
 		<p class="text-xs">{$value}</p>
 	</div>
