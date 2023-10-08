@@ -65,10 +65,8 @@ an alert dialog would be appropriate.
 By default, we set the `role` attribute to `dialog`. If you want it to be considered an alert
 dialog, you can set the `role` builder prop to `alertdialog`.
 
-```ts {4}
-const {
-	/* ... */
-} = createDialog({
+```ts {2}
+const { /* ... */ } = createDialog({
 	role: 'alertdialog'
 })
 ```
@@ -78,10 +76,8 @@ const {
 By default, scrolling is prevented on the body when a dialog is open. You can disable this behavior
 by setting the `preventScroll` builder prop to `false`.
 
-```ts {4}
-const {
-	/* ... */
-} = createDialog({
+```ts {2}
+const {	/* ... */ } = createDialog({
 	preventScroll: false
 })
 ```
@@ -91,10 +87,8 @@ const {
 By default, clicking outside of the dialog will close it. You can disable this behavior by setting
 the `closeOnOutsideClick` builder prop to `false`.
 
-```ts {4}
-const {
-	/* ... */
-} = createDialog({
+```ts {2}
+const {	/* ... */ } = createDialog({
 	closeOnOutsideClick: false
 })
 ```
@@ -104,10 +98,8 @@ const {
 By default, pressing the escape key will close the dialog. You can disable this behavior by setting
 the `closeOnEscape` builder prop to `false`.
 
-```ts {4}
-const {
-	/* ... */
-} = createDialog({
+```ts {2}
+const { /* ... */ } = createDialog({
 	closeOnEscape: false
 })
 ```
