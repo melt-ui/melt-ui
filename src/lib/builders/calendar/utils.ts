@@ -1,5 +1,58 @@
+import { getDayOfWeek, type DateValue } from '@internationalized/date';
 import type { DateAfter, DateBefore, DateInterval, DateRange, DayOfWeek, Matcher } from './types';
 import dayjs from 'dayjs';
+
+export function getDaysInMonth(date: Date) {
+	const year = date.getFullYear();
+	const month = date.getMonth() + 1;
+	return new Date(year, month, 0).getDate();
+}
+
+export function getDaysBetween<T extends DateValue = DateValue>(start: T, end: T) {
+	const days: T[] = [];
+	let dCurrent = start.add({ days: 1 }) as T;
+	const dEnd = end;
+	while (dCurrent.compare(dEnd) < 0) {
+		days.push(dCurrent);
+		dCurrent = dCurrent.add({ days: 1 }) as T;
+	}
+	return days;
+}
+
+export function getNextLastDayOfWeek<T extends DateValue = DateValue>(
+	date: T,
+	firstDayOfWeek: number,
+	locale: string
+): T {
+	const day = getDayOfWeek(date, locale);
+	const lastDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+
+	if (day === lastDayOfWeek) {
+		return date as T;
+	}
+
+	if (day > lastDayOfWeek) {
+		return date.add({ days: 7 - day + lastDayOfWeek }) as T;
+	}
+
+	return date.add({ days: lastDayOfWeek - day }) as T;
+}
+
+export function getLastFirstDayOfWeek<T extends DateValue = DateValue>(
+	date: T,
+	firstDayOfWeek: number,
+	locale: string
+): T {
+	const day = getDayOfWeek(date, locale);
+
+	if (firstDayOfWeek > day) {
+		return date.subtract({ days: day + 7 - firstDayOfWeek }) as T;
+	}
+	if (firstDayOfWeek === day) {
+		return date as T;
+	}
+	return date.subtract({ days: day - firstDayOfWeek }) as T;
+}
 
 export function isBefore(date1: Date, date2: Date) {
 	const d1 = dayjs(date1);
@@ -38,34 +91,6 @@ export function isToday(date: Date) {
 	return isSameDay(date, new Date());
 }
 
-export function getLastFirstDayOfWeek(date: Date, firstDayOfWeek: number): Date {
-	const d = dayjs(date);
-	const day = d.day();
-	if (firstDayOfWeek > day) {
-		return d.subtract(day + 7 - firstDayOfWeek, 'day').toDate();
-	}
-	if (firstDayOfWeek === day) {
-		return d.toDate();
-	}
-	return d.subtract(day - firstDayOfWeek, 'day').toDate();
-}
-
-export function getNextLastDayOfWeek(date: Date, firstDayOfWeek: number): Date {
-	const d = dayjs(date);
-	const day = d.day();
-	const lastDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
-
-	if (day === lastDayOfWeek) {
-		return d.toDate();
-	}
-
-	if (day > lastDayOfWeek) {
-		return d.add(7 - day + lastDayOfWeek, 'day').toDate();
-	}
-
-	return d.add(lastDayOfWeek - day, 'day').toDate();
-}
-
 export function getLastSunday(date: Date): Date {
 	const d = new Date(date);
 	d.setDate(d.getDate() - d.getDay());
@@ -91,17 +116,6 @@ export function addDays(date: Date, days: number): Date {
 	const d = dayjs(date);
 	d.add(days, 'day');
 	return d.toDate();
-}
-
-export function getDaysBetween(start: Date, end: Date) {
-	const days: Date[] = [];
-	let dCurrent = dayjs(start).add(1, 'day');
-	const dEnd = dayjs(end);
-	while (dCurrent.isBefore(dEnd)) {
-		days.push(dCurrent.toDate());
-		dCurrent = dCurrent.add(1, 'day');
-	}
-	return days;
 }
 
 /** Returns true if `value` is an array of valid dates. */
@@ -285,8 +299,4 @@ export function isDateRange(value: Date | Date[] | DateRange | undefined): value
 
 export function isDateArray(value: Date | Date[] | DateRange | undefined): value is Date[] {
 	return Array.isArray(value);
-}
-
-export function isInSameMonth(date1: Date, date2: Date) {
-	return dayjs(date1).isSame(date2, 'month');
 }

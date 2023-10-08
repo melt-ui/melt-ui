@@ -7,160 +7,169 @@ import {
 	isBrowser,
 	isHTMLElement,
 	kbd,
-	overridable,
 	toWritableStores,
 	omit,
-	type ChangeFn,
-} from '$lib/internal/helpers';
-
-import {
-	isBefore,
-	isSameDay,
-	getDaysBetween,
-	isSelected,
-	isMatch,
-	getLastFirstDayOfWeek,
-	getNextLastDayOfWeek,
-	isDateArray,
-	isSingleDate,
-	isDateRange,
-	isInSameMonth,
-	isToday,
-} from './utils';
-
+	executeCallbacks,
+	styleToString,
+	chunk,
+	overridable,
+} from '$lib/internal/helpers/index.js';
+import { isMatch } from '$lib/builders/calendar/utils.js';
+import { getDaysBetween, getLastFirstDayOfWeek, getNextLastDayOfWeek } from './utils.js';
 import { derived, get, writable } from 'svelte/store';
-import type { CreateCalendarProps, DateProps, DateRange, Month } from './types';
-import dayjs from 'dayjs';
-import { dayJsStore } from './date-store';
-import { executeCallbacks } from '../../internal/helpers/callbacks';
+import type { CreateCalendarProps, Month } from './types.js';
+import { tick } from 'svelte';
+import {
+	type DateValue,
+	getLocalTimeZone,
+	isToday,
+	isSameMonth,
+	isSameDay,
+	startOfMonth,
+	endOfMonth,
+	ZonedDateTime,
+	parseZonedDateTime,
+	CalendarDateTime,
+	parseDateTime,
+	parseDate,
+} from '@internationalized/date';
+import {
+	dateStore,
+	createFormatter,
+	getDaysInMonth,
+	getDefaultDate,
+} from '$lib/internal/date/index.js';
 
 const defaults = {
 	disabled: false,
-	earliest: undefined,
-	latest: undefined,
-	mode: 'single',
+	unavailable: false,
 	value: undefined,
-	activeDate: new Date(),
 	allowDeselect: false,
 	numberOfMonths: 1,
 	pagedNavigation: false,
 	weekStartsOn: 0,
-	hidden: false,
-	defaultValue: undefined,
-	onValueChange: undefined,
 	fixedWeeks: false,
+	hourCycle: 24,
+	calendarLabel: 'Event Date',
+	locale: 'en',
+	granularity: 'day',
 } satisfies CreateCalendarProps;
 
+/**
+ * For internal use only.
+ * @internal
+ */
 type CalendarParts =
 	| 'content'
-	| 'nextMonth'
-	| 'prevMonth'
+	| 'nextButton'
+	| 'prevButton'
 	| 'nextYear'
 	| 'prevYear'
-	| 'dateGrid'
-	| 'date'
+	| 'grid'
+	| 'cell'
 	| 'next'
-	| 'prev';
+	| 'prev'
+	| 'heading';
+
 const { name } = createElHelpers<CalendarParts>('calendar');
 
-export function createCalendar(props?: CreateCalendarProps) {
+export function createCalendar<T extends DateValue = DateValue>(props?: CreateCalendarProps) {
 	const withDefaults = { ...defaults, ...props };
 
 	const options = toWritableStores({
-		...omit(withDefaults, 'value'),
+		...omit(withDefaults, 'value', 'placeholderValue'),
 	});
 
-	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-	const value = overridable<Date | Date[] | DateRange | undefined>(
-		valueWritable,
-		withDefaults?.onValueChange as ChangeFn<Date | Date[] | DateRange | undefined>
-	);
-	const activeDate = dayJsStore(options.activeDate);
-
 	const {
-		mode,
 		allowDeselect,
 		disabled,
 		numberOfMonths,
 		pagedNavigation,
 		weekStartsOn,
 		fixedWeeks,
-		hidden,
+		calendarLabel,
+		unavailable,
+		locale,
+		granularity,
 	} = options;
 
-	const months = writable<Month[]>([]);
-
 	const ids = {
-		content: generateId(),
-		input: generateId(),
+		calendar: generateId(),
+		grid: generateId(),
+		accessibleHeading: generateId(),
 	};
 
-	/**
-	 * Navigate to the next page of the calendar.
-	 * If using paged navigation, this will move the calendar forward
-	 * by the number of months specified in the `numberOfMonths` prop.
-	 * If not using paged navigation, this will move the calendar forward
-	 * by one month.
-	 */
-	function nextMonth() {
-		if (get(pagedNavigation)) {
-			const $numberOfMonths = get(numberOfMonths);
-			activeDate.add($numberOfMonths, 'month');
-		} else {
-			activeDate.add(1, 'month');
+	const defaultDate = getDefaultDate(get(granularity));
+	const formatter = createFormatter(get(locale));
+
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const value = overridable(valueWritable, withDefaults.onValueChange);
+
+	const placeholderValueWritable =
+		withDefaults.placeholderValue ?? writable(withDefaults.placeholderValue ?? defaultDate);
+	const placeholderValue = dateStore(
+		overridable(placeholderValueWritable, withDefaults.onPlaceholderValueChange),
+		withDefaults.defaultPlaceholderValue ?? defaultDate
+	);
+
+	const months = writable<Month<DateValue>[]>([
+		createMonth(withDefaults.defaultPlaceholderValue ?? defaultDate),
+	]);
+
+	const isInvalid = writable(false);
+
+	const headingValue = derived([months, locale], ([$months, $locale]) => {
+		if (!$months.length) return '';
+		if ($locale !== formatter.getLocale()) {
+			formatter.setLocale($locale);
 		}
-	}
-
-	/**
-	 * Navigate to the previous page of the calendar.
-	 * If using paged navigation, this will move the calendar backwards
-	 * by the number of months specified in the `numberOfMonths` prop.
-	 * If not using paged navigation, this will move the calendar backwards
-	 * by one month.
-	 */
-	function prevMonth() {
-		if (get(pagedNavigation)) {
-			const $numberOfMonths = get(numberOfMonths);
-			activeDate.subtract($numberOfMonths, 'month');
-		} else {
-			activeDate.subtract(1, 'month');
+		if ($months.length === 1) {
+			const month = $months[0].monthDate;
+			return `${formatter.fullMonthAndYear(month)}`;
 		}
-	}
 
-	/**
-	 * Navigate to the previous year of the calendar.
-	 */
-	function nextYear() {
-		activeDate.add(1, 'year');
-	}
+		const startMonth = $months[0].monthDate;
+		const endMonth = $months[$months.length - 1].monthDate;
 
-	/**
-	 * Navigate to the next year of the calendar.
-	 */
-	function prevYear() {
-		activeDate.subtract(1, 'year');
-	}
+		const startMonthName = formatter.fullMonth(startMonth);
+		const endMonthName = formatter.fullMonth(endMonth);
+		const startMonthYear = formatter.fullYear(startMonth);
+		const endMonthYear = formatter.fullYear(endMonth);
 
-	const content = builder(name('content'), {
-		returned: () => ({ tabindex: -1, id: ids.content }),
+		const content =
+			startMonthYear === endMonthYear
+				? `${startMonthName} - ${endMonthName} ${endMonthYear}`
+				: `${startMonthName} ${startMonthYear} - ${endMonthName} ${endMonthYear}`;
+
+		return content;
+	});
+
+	const fullCalendarLabel = derived(
+		[headingValue, calendarLabel],
+		([$headingValue, $calendarLabel]) => {
+			return `${$calendarLabel}, ${$headingValue}`;
+		}
+	);
+
+	const calendar = builder(name(), {
+		stores: [fullCalendarLabel, isInvalid],
+		returned: ([$fullCalendarLabel, $isInvalid]) => {
+			return {
+				id: ids.calendar,
+				role: 'application',
+				'aria-label': $fullCalendarLabel,
+				'data-invalid': $isInvalid ? '' : undefined,
+			};
+		},
 		action: (node: HTMLElement) => {
-			const unsubKb = addMeltEventListener(node, 'keydown', (e) => {
-				const triggerElement = e.currentTarget;
-				if (!isHTMLElement(triggerElement)) return;
+			/**
+			 * Create the accessible heading for the calendar
+			 * when the grid is mounted. The label is updated
+			 * via an effect when the active date or label changes.
+			 */
+			createAccessibleHeading(node, get(fullCalendarLabel));
 
-				if ([kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.ARROW_LEFT, kbd.ARROW_RIGHT].includes(e.key)) {
-					e.preventDefault();
-					if (e.key === kbd.ARROW_RIGHT) {
-						focusElement(1);
-					} else if (e.key === kbd.ARROW_LEFT) {
-						focusElement(-1);
-					} else if (e.key === kbd.ARROW_UP) {
-						focusElement(-7);
-					} else if (e.key === kbd.ARROW_DOWN) {
-						focusElement(7);
-					}
-				}
-			});
+			const unsubKb = addMeltEventListener(node, 'keydown', handleCalendarKeydown);
 
 			return {
 				destroy() {
@@ -170,108 +179,97 @@ export function createCalendar(props?: CreateCalendarProps) {
 		},
 	});
 
-	function handleRangeClick(date: Date) {
-		value.update((prev) => {
-			if (prev === undefined) {
-				return {
-					from: date,
-					to: date,
-				};
-			}
-			if (!isDateRange(prev)) return prev;
+	const heading = builder(name('heading'), {
+		returned: () => {
+			return {
+				'aria-hidden': true,
+			};
+		},
+	});
 
-			const isEmpty = prev.to === undefined && prev.from === undefined;
-			const isSame = prev.to === prev.from;
-			const isComplete = !isSame && prev.to !== undefined && prev.from !== undefined;
+	const grid = builder(name('grid'), {
+		returned: () => ({ tabindex: -1, id: ids.grid, role: 'grid' }),
+	});
 
-			if (isEmpty || isComplete) {
-				return {
-					from: date,
-					to: date,
-				};
-			}
+	const prevButton = builder(name('prevButton'), {
+		returned: () => {
+			return {
+				role: 'button',
+				'aria-label': 'Previous',
+			};
+		},
+		action: (node: HTMLElement) => {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					prevPage();
+				})
+			);
+			return {
+				destroy: unsub,
+			};
+		},
+	});
 
-			// If the value array of dates has one date and the
-			// new date is the same as the existing date
-			if (prev.from !== undefined) {
-				if (isSame && isSameDay(prev.from, date)) {
-					return undefined;
-				}
+	const nextButton = builder(name('nextButton'), {
+		returned: () => {
+			return {
+				role: 'button',
+				'aria-label': 'Next',
+			};
+		},
+		action: (node: HTMLElement) => {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					nextPage();
+				})
+			);
+			return {
+				destroy: unsub,
+			};
+		},
+	});
 
-				if (isBefore(date, prev.from)) {
-					return {
-						from: date,
-						to: prev.from,
-					};
-				}
-				const daysBetween = getDaysBetween(prev.from, date);
-				if (daysBetween.some((d) => isMatch(d, get(disabled)))) {
-					return prev;
-				}
-			}
-			prev.to = date;
-			return prev;
-		});
-	}
+	/**
+	 * An individual date cell in the calendar grid, which represents a
+	 * single day in the month.
+	 */
+	const cell = builder(name('cell'), {
+		stores: [value, disabled, unavailable, placeholderValue],
+		returned: ([$value, $disabled, $unavailable, $placeholderValue]) => {
+			return (cellValue: T) => {
+				// TODO: Handle ability to set timezone via props or default
+				// to local timezone
+				const cellDate = cellValue.toDate(getLocalTimeZone());
 
-	function handleSingleClick(date: Date) {
-		value.update((prev) => {
-			if (isSingleDate(prev) || prev === undefined) {
-				if (!isInSameMonth(date, get(activeDate))) {
-					activeDate.set(date);
-				}
+				const isDisabled = isMatch(cellDate, $disabled);
+				const isUnavailable = isMatch(cellDate, $unavailable);
+				const isDateToday = isToday(cellValue, getLocalTimeZone());
+				const isOutsideMonth = !isSameMonth(cellValue, $placeholderValue);
 
-				if (prev === undefined) return date;
-				if (get(allowDeselect) && isSameDay(prev, date)) {
-					return undefined;
-				}
-			}
-			return date;
-		});
-	}
+				const isFocusedDate = isSameDay(cellValue, $placeholderValue);
+				const isSelectedDate = $value ? isSameDay(cellValue, $value) : false;
 
-	function handleMultipleClick(date: Date) {
-		value.update((prev) => {
-			if (prev === undefined) {
-				return [date];
-			}
-			if (!isDateArray(prev)) return prev;
-			if (prev.some((d) => isSameDay(d, date))) {
-				prev = prev.filter((d) => !isSameDay(d, date));
-			} else {
-				prev.push(date);
-			}
-
-			return prev;
-		});
-	}
-
-	const date = builder(name('date'), {
-		stores: [value, disabled, hidden, activeDate],
-		returned: ([$value, $disabled, $hidden, $activeDate]) => {
-			return (props: DateProps) => {
-				const isDisabled = isMatch(props.value, $disabled);
-				const isHidden = isMatch(props.value, $hidden);
-				const isDateToday = isToday(props.value);
-				const isInCurrentMonth = isInSameMonth(props.value, $activeDate);
-
-				const selected = isSelected({
-					date: props.value,
-					value: $value,
+				const labelText = formatter.custom(cellValue.toDate(getLocalTimeZone()), {
+					weekday: 'long',
+					month: 'long',
+					day: 'numeric',
+					year: 'numeric',
 				});
 
 				return {
-					role: 'date',
-					'aria-selected': selected ? true : undefined,
-					'data-selected': selected ? true : undefined,
-					'data-value': props.value,
-					'data-label': props.label ?? undefined,
-					'data-disabled': isDisabled ? '' : undefined,
-					'data-hidden': isHidden ? '' : undefined,
+					role: 'button',
+					'aria-label': labelText,
+					'aria-selected': isSelectedDate ? true : undefined,
+					'aria-disabled': isOutsideMonth ? true : undefined,
+					'data-selected': isSelectedDate ? true : undefined,
+					'data-value': cellValue.toString(),
+					'data-disabled': isDisabled || isOutsideMonth ? '' : undefined,
+					'data-unavailable': isUnavailable ? '' : undefined,
 					'data-date': '',
 					'data-today': isDateToday ? '' : undefined,
-					'data-outside-month': isInCurrentMonth ? undefined : '',
-					tabindex: isDisabled ? -1 : 1,
+					'data-outside-month': isOutsideMonth ? '' : undefined,
+					'data-focused': isFocusedDate ? '' : undefined,
+					tabindex: isFocusedDate ? 0 : isOutsideMonth || isDisabled ? undefined : -1,
 				} as const;
 			};
 		},
@@ -291,19 +289,8 @@ export function createCalendar(props?: CreateCalendarProps) {
 				addMeltEventListener(node, 'click', () => {
 					const args = getElArgs();
 					if (args.disabled) return;
-					const date = new Date(args.value || '');
-
-					switch (get(mode)) {
-						case 'single':
-							handleSingleClick(date);
-							break;
-						case 'range':
-							handleRangeClick(date);
-							break;
-						case 'multiple':
-							handleMultipleClick(date);
-							break;
-					}
+					if (!args.value) return;
+					handleCellClick(parseToDateObj(args.value));
 				})
 			);
 
@@ -313,19 +300,177 @@ export function createCalendar(props?: CreateCalendarProps) {
 		},
 	});
 
-	function focusElement(add: number) {
-		const node = document.activeElement as HTMLElement;
-		if (!node || node.hasAttribute('[data-melt-calendar-date]')) return;
-		const allDates = Array.from(
-			document.querySelectorAll<HTMLElement>(`[data-melt-calendar-date]:not([data-disabled])`)
-		);
-		const index = allDates.indexOf(node);
-		const nextIndex = index + add;
-		const nextDate = allDates[nextIndex];
-		if (nextDate) {
-			nextDate.focus();
+	effect([locale], ([$locale]) => {
+		if (formatter.getLocale() === $locale) return;
+		formatter.setLocale($locale);
+	});
+
+	effect([placeholderValue], ([$placeholderValue]) => {
+		if (!isBrowser || !$placeholderValue) return;
+
+		months.set([createMonth($placeholderValue)]);
+		const $numberOfMonths = get(numberOfMonths);
+		if ($numberOfMonths > 1) {
+			for (let i = 1; i < $numberOfMonths; i++) {
+				const nextMonth = $placeholderValue.add({ months: i });
+				months.update((prev) => {
+					prev.push(createMonth(nextMonth));
+					return prev;
+				});
+			}
+		}
+	});
+
+	/**
+	 * Update the accessible heading's text content when the
+	 * `fullCalendarLabel` store changes.
+	 */
+	effect([fullCalendarLabel], ([$fullCalendarLabel]) => {
+		if (!isBrowser) return;
+		const node = document.getElementById(ids.accessibleHeading);
+		if (!isHTMLElement(node)) return;
+		node.textContent = $fullCalendarLabel;
+	});
+
+	effect([value], ([$value]) => {
+		if ($value && get(placeholderValue) !== $value) {
+			placeholderValue.set($value);
+		}
+	});
+
+	/**
+	 * A derived store whose value is an array of dates that represent
+	 * the days of the week, used to render the days of the week in the
+	 * calendar header.
+	 *
+	 * It returns the days of the week from the first week of the first
+	 * month in the calendar view.
+	 *
+	 * This remains in sync with the `weekStartsOn` option, so if it is
+	 * changed, this store and the calendar will update accordingly.
+	 */
+	const daysOfWeek = derived([months], ([$months]) => {
+		if (!$months.length) return [];
+		return $months[0].weeks[0];
+	});
+
+	/**
+	 * Given a date, this function will return an object containing
+	 * the necessary values to render a calendar month, including
+	 * the month's date, which can be used to render the name of the
+	 * month, the dates within that month, and the dates from the
+	 * previous and next months that are needed to fill out the
+	 * calendar grid.
+	 */
+	function createMonth(dateObj: DateValue): Month<DateValue> {
+		const tz = getLocalTimeZone();
+		const date = dateObj instanceof ZonedDateTime ? dateObj.toDate() : dateObj.toDate(tz);
+		const daysInMonth = getDaysInMonth(date);
+
+		const datesArray = Array.from({ length: daysInMonth }, (_, i) => dateObj.set({ day: i + 1 }));
+
+		const firstDayOfMonth = startOfMonth(dateObj);
+		const lastDayOfMonth = endOfMonth(dateObj);
+
+		const lastSunday = getLastFirstDayOfWeek(firstDayOfMonth, get(weekStartsOn), get(locale));
+		const nextSaturday = getNextLastDayOfWeek(lastDayOfMonth, get(weekStartsOn), get(locale));
+
+		const lastMonthDays = getDaysBetween(lastSunday.subtract({ days: 1 }), firstDayOfMonth);
+		const nextMonthDays = getDaysBetween(lastDayOfMonth, nextSaturday.add({ days: 1 }));
+
+		const totalDays = lastMonthDays.length + datesArray.length + nextMonthDays.length;
+
+		if (get(fixedWeeks) && totalDays < 42) {
+			const extraDays = 42 - totalDays;
+
+			const startFrom = nextMonthDays[nextMonthDays.length - 1];
+			const extraDaysArray = Array.from({ length: extraDays }, (_, i) => {
+				const incr = i + 1;
+				return startFrom.add({ days: incr });
+			});
+			nextMonthDays.push(...extraDaysArray);
+		}
+
+		const allDays = lastMonthDays.concat(datesArray, nextMonthDays);
+
+		const weeks = chunk(allDays, 7);
+
+		return {
+			monthDate: date,
+			dates: allDays,
+			weeks,
+		};
+	}
+
+	function createAccessibleHeading(node: HTMLElement, label: string) {
+		if (!isBrowser) return;
+		const div = document.createElement('div');
+		div.style.cssText = styleToString({
+			border: '0px',
+			clip: 'rect(0px, 0px, 0px, 0px)',
+			'clip-path': 'inset(50%)',
+			height: '1px',
+			margin: '-1px',
+			overflow: 'hidden',
+			padding: '0px',
+			position: 'absolute',
+			'white-space': 'nowrap',
+			width: '1px',
+		});
+		const h2 = document.createElement('h2');
+		h2.textContent = label;
+		h2.id = ids.accessibleHeading;
+		node.insertBefore(div, node.firstChild);
+		div.appendChild(h2);
+	}
+
+	/**
+	 * Navigate to the next page of the calendar.
+	 * If using paged navigation, this will move the calendar forward
+	 * by the number of months specified in the `numberOfMonths` prop.
+	 * If not using paged navigation, this will move the calendar forward
+	 * by one month.
+	 */
+	function nextPage() {
+		if (get(pagedNavigation)) {
+			const $numberOfMonths = get(numberOfMonths);
+			placeholderValue.add({ months: $numberOfMonths });
+		} else {
+			placeholderValue.add({ months: 1 });
 		}
 	}
+
+	/**
+	 * Navigate to the previous page of the calendar.
+	 * If using paged navigation, this will move the calendar backwards
+	 * by the number of months specified in the `numberOfMonths` prop.
+	 * If not using paged navigation, this will move the calendar backwards
+	 * by one month.
+	 */
+	function prevPage() {
+		if (get(pagedNavigation)) {
+			const $numberOfMonths = get(numberOfMonths);
+			placeholderValue.subtract({ months: $numberOfMonths });
+		} else {
+			placeholderValue.subtract({ months: 1 });
+		}
+	}
+
+	/**
+	 * Navigate to the previous year of the calendar.
+	 */
+	function nextYear() {
+		placeholderValue.add({ years: 1 });
+	}
+
+	/**
+	 * Navigate to the next year of the calendar.
+	 */
+	function prevYear() {
+		placeholderValue.subtract({ years: 1 });
+	}
+
+	const ARROW_KEYS = [kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.ARROW_LEFT, kbd.ARROW_RIGHT];
 
 	/**
 	 * A helper function to set the year of the active date. This is
@@ -333,10 +478,7 @@ export function createCalendar(props?: CreateCalendarProps) {
 	 * year of the calendar.
 	 */
 	function setYear(year: number) {
-		activeDate.update((prev) => {
-			prev.setFullYear(year);
-			return prev;
-		});
+		placeholderValue.setDate({ year: year });
 	}
 
 	/**
@@ -346,110 +488,212 @@ export function createCalendar(props?: CreateCalendarProps) {
 	 */
 	function setMonth(month: number) {
 		if (month < 0 || month > 11) throw new Error('Month must be between 0 and 11');
-		activeDate.update((prev) => {
-			prev.setMonth(month);
-			return prev;
+		placeholderValue.setDate({ month: month });
+	}
+
+	function handleCellClick(date: DateValue) {
+		value.update((prev) => {
+			if (get(allowDeselect) && prev && isSameDay(prev, date)) {
+				placeholderValue.set(date);
+				return undefined;
+			}
+			return date;
 		});
 	}
 
-	effect([activeDate], ([$activeDate]) => {
-		if (!isBrowser || !$activeDate) return;
+	const SELECT_KEYS = [kbd.ENTER, kbd.SPACE];
 
-		months.set([createMonth($activeDate)]);
-		const $numberOfMonths = get(numberOfMonths);
-		if ($numberOfMonths > 1) {
-			const d = dayjs($activeDate);
+	function handleCalendarKeydown(e: KeyboardEvent) {
+		const currentCell = e.target;
+		if (!isCalendarCell(currentCell)) return;
+		if (!ARROW_KEYS.includes(e.key) && !SELECT_KEYS.includes(e.key)) return;
 
-			for (let i = 1; i < $numberOfMonths; i++) {
-				const nextMonth = d.add(i, 'month').toDate();
-				months.update((prev) => {
-					prev.push(createMonth(nextMonth));
-					return prev;
-				});
-			}
+		e.preventDefault();
+		// the cell that is currently focused
+
+		if (e.key === kbd.ARROW_DOWN) {
+			shiftFocus(currentCell, 7);
 		}
-	});
-
-	const daysOfWeek = derived([months], ([$months]) => {
-		if (!$months.length) return [];
-
-		const lastMonthDates = $months[0].lastMonthDates;
-
-		const days = Array.from({ length: 7 - lastMonthDates.length }, (_, i) => {
-			const d = dayjs($months[0].dates[i]);
-			return d.toDate();
-		});
-
-		if (lastMonthDates.length) {
-			return lastMonthDates.concat(days);
+		if (e.key === kbd.ARROW_UP) {
+			shiftFocus(currentCell, -7);
+		}
+		if (e.key === kbd.ARROW_LEFT) {
+			shiftFocus(currentCell, -1);
+		}
+		if (e.key === kbd.ARROW_RIGHT) {
+			shiftFocus(currentCell, 1);
 		}
 
-		return days;
-	});
+		if (e.key === kbd.SPACE || e.key === kbd.ENTER) {
+			const cellValue = currentCell.getAttribute('data-value');
+			if (!cellValue) return;
 
-	function createMonth(date: Date): Month {
-		const d = dayjs(date);
-		const daysInMonth = d.daysInMonth();
+			handleCellClick(parseToDateObj(cellValue));
+		}
+	}
 
-		const datesArray = Array.from(
-			{ length: daysInMonth },
-			(_, i) => new Date(d.date(i + 1).toDate())
-		);
+	function shiftFocus(node: HTMLElement, add: number) {
+		// TODO: Determine if this is okay when using paged navigation
+		// with multiple months.
+		const candidateCells = getSelectableCells();
+		if (!candidateCells.length) {
+			return;
+		}
 
-		const firstDayOfMonth = d.startOf('month');
-		const lastDayOfMonth = d.endOf('month');
+		const index = candidateCells.indexOf(node);
+		const nextIndex = index + add;
 
-		const lastSunday = getLastFirstDayOfWeek(firstDayOfMonth.toDate(), get(weekStartsOn));
-		const nextSaturday = getNextLastDayOfWeek(lastDayOfMonth.toDate(), get(weekStartsOn));
+		/**
+		 * If the next cell is within the bounds of the
+		 * displayed/rendered cells, easy day, just focus it.
+		 */
+		if (isValidIndex(nextIndex, candidateCells)) {
+			const nextCell = candidateCells[nextIndex];
+			handlePlaceholderValue(nextCell);
+			return nextCell.focus();
+		}
 
-		const lastMonthDays = getDaysBetween(
-			dayjs(lastSunday).subtract(1, 'day').toDate(),
-			firstDayOfMonth.toDate()
-		);
-		const nextMonthDays = getDaysBetween(
-			lastDayOfMonth.toDate(),
-			dayjs(nextSaturday).add(1, 'day').toDate()
-		);
+		/**
+		 * If the next cell is outside the bounds of the
+		 * displayed/rendered cells, we need to updated the focused
+		 * value to the prev/next month depending on the direction,
+		 * and then focus the appropriate cell.
+		 */
 
-		const totalDays = lastMonthDays.length + datesArray.length + nextMonthDays.length;
+		if (nextIndex < 0) {
+			/**
+			 * Since we're in the negative index range, we need to
+			 * go back a month, refetch the candidate cells within that
+			 * month, and then starting at the end of that array, shift
+			 * focus by the difference between the nextIndex
+			 */
 
-		if (get(fixedWeeks) && totalDays < 42) {
-			const extraDays = 42 - totalDays;
-			const startFrom = dayjs(nextMonthDays[nextMonthDays.length - 1]);
-			const extraDaysArray = Array.from({ length: extraDays }, (_, i) => {
-				const incr = i + 1;
-				return startFrom.add(incr, 'day').toDate();
+			// shift the calendar back a month
+			placeholderValue.subtract({ months: 1 });
+
+			// Without a tick here, it seems to be too fast for
+			// the DOM to update, with the tick it works great
+			tick().then(() => {
+				const newCandidateCells = getSelectableCells();
+				if (!newCandidateCells.length) {
+					return;
+				}
+
+				// starting at the end of the array, shift focus by the nextIndex amount
+				// since in this case, nextIndex is negative, we'll convert it to a positive
+				// before subtracting it from the length of the array
+				const newIndex = newCandidateCells.length - Math.abs(nextIndex);
+				if (isValidIndex(newIndex, newCandidateCells)) {
+					const newCell = newCandidateCells[newIndex];
+					handlePlaceholderValue(newCell);
+					return newCell.focus();
+				}
 			});
-			nextMonthDays.push(...extraDaysArray);
 		}
 
-		return {
-			month: date,
-			dates: datesArray,
-			nextMonthDates: nextMonthDays,
-			lastMonthDates: lastMonthDays,
-		};
+		if (nextIndex >= candidateCells.length) {
+			/**
+			 * Since we're in the positive index range, we need to
+			 * go forward a month, refetch the candidate cells within that
+			 * month, and then starting at the beginning of that array,
+			 * shift focus by the nextIndex amount.
+			 */
+
+			// shift the calendar forward a month
+			placeholderValue.add({ months: 1 });
+
+			// we may need a tick here, but we'll see how it goes
+			tick().then(() => {
+				const newCandidateCells = getSelectableCells();
+				if (!newCandidateCells.length) {
+					return;
+				}
+
+				// We need to determine how far into the next month we need to go
+				// to get the next index. So if we only went over the previous
+				// month by 1, we need to go into the next month by 1 to get the
+				// right index.
+				const newIndex = nextIndex - candidateCells.length;
+
+				if (isValidIndex(newIndex, newCandidateCells)) {
+					const nextCell = newCandidateCells[newIndex];
+					return nextCell.focus();
+				}
+			});
+		}
+	}
+
+	function getSelectableCells() {
+		const node = document.getElementById(ids.calendar);
+		if (!node) return [];
+
+		return Array.from(
+			node.querySelectorAll(
+				`[data-melt-calendar-cell]:not([data-disabled]):not([data-outside-month])`
+			)
+		).filter((el): el is HTMLElement => isHTMLElement(el));
+	}
+
+	/**
+	 * A helper function to extract the date from the `data-value`
+	 * attribute of a date cell and set it as the placeholder value.
+	 */
+	function handlePlaceholderValue(node: HTMLElement) {
+		const cellValue = node.getAttribute('data-value');
+		if (!cellValue) return;
+		placeholderValue.set(parseToDateObj(cellValue));
+	}
+
+	function parseToDateObj(dateStr: string): DateValue {
+		const $placeholderValue = get(placeholderValue);
+		if ($placeholderValue instanceof ZonedDateTime) {
+			return parseZonedDateTime(dateStr);
+		}
+		if ($placeholderValue instanceof CalendarDateTime) {
+			return parseDateTime(dateStr);
+		}
+		return parseDate(dateStr);
 	}
 
 	return {
 		elements: {
-			content,
-			date,
+			calendar,
+			heading,
+			grid,
+			cell,
+			nextButton,
+			prevButton,
 		},
 		states: {
-			activeDate,
+			placeholderValue: {
+				subscribe: placeholderValue.subscribe,
+				set: placeholderValue.set,
+				update: placeholderValue.update,
+			},
 			months,
 			value,
 			daysOfWeek,
+			headingValue,
 		},
 		helpers: {
-			nextMonth,
-			prevMonth,
+			nextPage,
+			prevPage,
 			nextYear,
 			prevYear,
 			setYear,
 			setMonth,
 		},
 		options,
+		ids,
 	};
+}
+
+function isValidIndex(index: number, arr: unknown[]) {
+	return index >= 0 && index < arr.length;
+}
+
+function isCalendarCell(node: unknown): node is HTMLElement {
+	if (!isHTMLElement(node)) return false;
+	if (!node.hasAttribute('data-melt-calendar-cell')) return false;
+	return true;
 }
