@@ -1,9 +1,8 @@
 import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { createDateField } from './create.js';
-import type { Matcher } from '$lib/builders/index.js';
 import type { DateValue } from '@internationalized/date';
-import type { Granularity } from '$lib/internal/date/types.js';
+import type { Granularity, Matcher } from '$lib/index.js';
 
 export type DateFieldProps = {
 	/**
@@ -113,6 +112,11 @@ export type DateFieldProps = {
 	 * will all contain the same value.
 	 */
 	granularity?: Granularity;
+
+	/**
+	 * Whether or not to hide the timeZoneName segment from the date field.
+	 */
+	hideTimeZone?: boolean;
 };
 
 export type CreateDateFieldProps = DateFieldProps;

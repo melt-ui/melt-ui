@@ -2,7 +2,7 @@ import type { createCalendar } from './create';
 import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers';
 import type { DateValue } from '@internationalized/date';
-import type { Granularity } from '$lib/internal/date';
+import type { Granularity, Matcher } from '$lib/index.js';
 
 export type CalendarProps = {
 	/**
@@ -225,41 +225,6 @@ export type CalendarProps = {
 export type CreateCalendarProps = CalendarProps;
 
 export type Calendar = ReturnType<typeof createCalendar>;
-
-export type DateRange = {
-	from: Date | undefined;
-	to?: Date;
-};
-
-export type DateBefore = {
-	before: Date;
-};
-
-export type DateAfter = {
-	after: Date;
-};
-
-export type DateInterval = {
-	after: Date;
-	before: Date;
-};
-
-// Days of the week, starting with Sunday
-const daysOfWeek = [0, 1, 2, 3, 4, 5, 6] as const;
-export type DayOfWeek = {
-	daysOfWeek: (typeof daysOfWeek)[number][];
-};
-
-export type Matcher =
-	| boolean
-	| ((date: Date) => boolean)
-	| Date
-	| Date[]
-	| DateRange
-	| DateBefore
-	| DateAfter
-	| DateInterval
-	| DayOfWeek;
 
 export type Month<T> = {
 	/**

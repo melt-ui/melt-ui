@@ -121,9 +121,6 @@ devDependencies:
   clsx:
     specifier: ^1.2.1
     version: 1.2.1
-  dayjs:
-    specifier: ^1.11.9
-    version: 1.11.9
   escape-html:
     specifier: ^1.0.3
     version: 1.0.3
@@ -6146,10 +6143,6 @@ packages:
 
   /dataloader@1.4.0:
     resolution: {integrity: sha512-68s5jYdlvasItOJnCuI2Q9s4q98g0pCyL3HrcKJu8KNugUl8ahgmZYg38ysLTgQjjXX3H8CJLkAvWrclWfcalw==}
-    dev: true
-
-  /dayjs@1.11.9:
-    resolution: {integrity: sha512-QvzAURSbQ0pKdIye2txOzNaHmxtUBXerpY0FJsFXUMKbIZeFm5ht1LS/jFsrncjnmtv8HsG0W2g6c0zUjZWmpA==}
     dev: true
 
   /debug@2.6.9:

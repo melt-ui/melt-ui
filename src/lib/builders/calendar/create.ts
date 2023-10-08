@@ -14,11 +14,11 @@ import {
 	chunk,
 	overridable,
 } from '$lib/internal/helpers/index.js';
-import { isMatch } from '$lib/builders/calendar/utils.js';
 import { getDaysBetween, getLastFirstDayOfWeek, getNextLastDayOfWeek } from './utils.js';
 import { derived, get, writable } from 'svelte/store';
 import type { CreateCalendarProps, Month } from './types.js';
 import { tick } from 'svelte';
+import { isMatch, toDate } from '$lib/internal/date/index.js';
 import {
 	type DateValue,
 	getLocalTimeZone,
@@ -237,19 +237,15 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		stores: [value, disabled, unavailable, placeholderValue],
 		returned: ([$value, $disabled, $unavailable, $placeholderValue]) => {
 			return (cellValue: T) => {
-				// TODO: Handle ability to set timezone via props or default
-				// to local timezone
-				const cellDate = cellValue.toDate(getLocalTimeZone());
-
-				const isDisabled = isMatch(cellDate, $disabled);
-				const isUnavailable = isMatch(cellDate, $unavailable);
+				const cellDate = toDate(cellValue);
+				const isDisabled = isMatch(cellValue, $disabled);
+				const isUnavailable = isMatch(cellValue, $unavailable);
 				const isDateToday = isToday(cellValue, getLocalTimeZone());
 				const isOutsideMonth = !isSameMonth(cellValue, $placeholderValue);
-
 				const isFocusedDate = isSameDay(cellValue, $placeholderValue);
 				const isSelectedDate = $value ? isSameDay(cellValue, $value) : false;
 
-				const labelText = formatter.custom(cellValue.toDate(getLocalTimeZone()), {
+				const labelText = formatter.custom(cellDate, {
 					weekday: 'long',
 					month: 'long',
 					day: 'numeric',
@@ -260,7 +256,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 					role: 'button',
 					'aria-label': labelText,
 					'aria-selected': isSelectedDate ? true : undefined,
-					'aria-disabled': isOutsideMonth ? true : undefined,
+					'aria-disabled': isOutsideMonth || isDisabled ? true : undefined,
 					'data-selected': isSelectedDate ? true : undefined,
 					'data-value': cellValue.toString(),
 					'data-disabled': isDisabled || isOutsideMonth ? '' : undefined,
