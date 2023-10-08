@@ -1,32 +1,8 @@
+import type { ColorRGB, Orientation } from "$lib/internal/types";
 import type { createColorPicker } from "./create";
 
 export type ColorPickerParts = 'color-canvas' | 'color-picker' | 'hue-slider' | 'hue-picker' | 'alpha-slider' | 'alpha-picker' | 'eye-dropper' | 'hex-input';
 
-export type ColorRGB = {
-    r: number;
-    g: number;
-    b: number;
-    a?: number;
-};
-
-export type ReturnedColor = {
-    rgb: ColorRGB;
-    hex: string;
-}
-
-export type ColorHSL = {
-    h: number;
-    s: number;
-    l: number;
-};
-
-export type ColorHSV = {
-    h: number;
-    s: number;
-    v: number;
-};
-
-export type Orientation = 'horizontal' | 'vertical';
 
 export type CreateColorPickerProps = {
     forceVisible?: boolean;
@@ -67,6 +43,11 @@ export type Position = {
     x: number;
     y: number;
 };
+
+export type ReturnedColor = {
+    rgb: ColorRGB;
+    hex: string;
+}
 
 export interface ColorSelectionOptions {
     signal?: AbortSignal

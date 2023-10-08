@@ -1,8 +1,20 @@
-import { addMeltEventListener, builder, createElHelpers, executeCallbacks, isBrowser } from "$lib/internal/helpers";
+import {
+    addMeltEventListener,
+    builder,
+    createElHelpers,
+    executeCallbacks,
+    isBrowser,
+    isValidHex,
+    styleToString,
+    RGBtoHex,
+    hexToHSV,
+    HSVtoRGB,
+} from "$lib/internal/helpers";
+
 import type { Defaults } from "$lib/internal/types";
 import { onMount } from "svelte";
 
-import type { ArrowKeys, ColorHSL, ColorHSV, ColorPickerParts, ColorRGB, CreateColorPickerProps, EyeDropperType, EyeDropperWindow, KeyDurations, NodeElement, NodeSize, Position, ReturnedColor } from "./types";
+import type { ArrowKeys, ColorPickerParts, CreateColorPickerProps, EyeDropperType, EyeDropperWindow, KeyDurations, NodeElement, NodeSize, Position, ReturnedColor } from "./types";
 import { derived, get, writable, type Readable, type Writable } from "svelte/store";
 
 
@@ -14,7 +26,6 @@ const defaults = {
 } satisfies Defaults<CreateColorPickerProps>;
 
 const { name } = createElHelpers<ColorPickerParts>('color-picker');
-
 
 export function createColorPicker(args?: CreateColorPickerProps) {
     const argsWithDefaults = { ...defaults, ...args };
@@ -37,11 +48,10 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
     const colorCanvasDims: Writable<NodeElement<HTMLCanvasElement>> = writable({ height: 1, width: 1 });
     const colorPickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
-    const colorPickerPos: Writable<{ x: number; y: number; }> = writable({ x: 0, y: 0 });
+    const colorPickerPos: Writable<Position> = writable({ x: 0, y: 0 });
 
     const hueSliderDims: Writable<NodeElement<HTMLCanvasElement>> = writable({ height: 1, width: 1 });
     const huePickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
-    // const huePickerPos: Writable<Position> = writable({ x: 0, y: 0 });
     const hueAngle: Writable<number> = writable(0);
 
     const alphaSliderDims: Writable<NodeElement<HTMLCanvasElement>> = writable({ height: 1, width: 1 });
@@ -50,16 +60,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
     let eye: EyeDropperType | null = null;
 
-    const isValidHex = (hex: string) => /^#([0-9a-f]{3}){1,2}$/i.test(hex);
-
     const setAlphaValue = (x: number) => alphaValue.set(Math.round(x / get(alphaSliderDims).width * 100));
-
-    /**
-     * Update the canvases when the color changes.
-     */
-    // const updateCanvases = derived([color], ([$color]) => {
-    //     if (isValidHex($color)) updateOnColorInput($color);
-    // });
 
     /**
      * Returns the current color of the color picker.
@@ -68,7 +69,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         const x = $colorPickerPos.x / $colorCanvasDims.width;
         const y = 1 - $colorPickerPos.y / $colorCanvasDims.height;
 
-        const rgb = HSVtoRGB($hueAngle / 360, x, y);
+        const rgb = HSVtoRGB({ h: $hueAngle / 360, s: x, v: y });
         const hex = RGBtoHex(rgb);
 
         return () => ({ rgb: { ...rgb, a: $alphaValue }, hex });
@@ -79,7 +80,10 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         returned: ([$hueAngle]) => {
             return {
                 'aria-label': 'Color canvas for showing saturation and brightness.',
-                style: `background-color: hsl(${$hueAngle}, 100%, 50%); background-image: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), linear-gradient(to right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));`
+                style: styleToString({
+                    'background-color': `hsl(${$hueAngle}, 100%, 50%)`,
+                    'background-image': 'linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), linear-gradient(to right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0))'
+                })
             }
         },
         action: (node: HTMLCanvasElement) => {
@@ -151,8 +155,12 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
             return {
                 'aria-label': 'Button on color canvas, used to select the saturation and brightness.',
-                // style: `position: absolute; top: ${top}px; left: ${left}px; background-color: rgb(${r}, ${g}, ${b});`
-                style: `position: absolute; top: ${top}px; left: ${left}px; background-color: ${$color};`
+                style: styleToString({
+                    position: 'absolute',
+                    top: `${top}px`,
+                    left: `${left}px`,
+                    'background-color': `${$color}`
+                })
             }
         },
         action: (node: HTMLButtonElement) => {
@@ -179,7 +187,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
                     keyDurations[<ArrowKeys>key] = null;
                 }),
                 addMeltEventListener(node, 'keydown', (e) => {
-                    // const { key } = e;
                     const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
                     if (!keys.includes(e.key)) return;
@@ -196,7 +203,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
                         duration = Date.now() - <number>keyDurations[key];
                     }
 
-                    // const duration = Date.now() - keyDurations[key];
                     const step = duration > 1000 ? speepUpStep : 1;
 
                     const { x, y } = get(colorPickerPos);
@@ -236,7 +242,9 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
             return {
                 'aria-label': 'A canvas element showing all available hue colors.',
-                style: `background: linear-gradient(to ${orientation}, ${hueColors.join(',')});`
+                style: styleToString({
+                    background: `linear-gradient(to ${orientation}, ${hueColors.join(',')})`
+                })
             }
         },
         action: (node: HTMLCanvasElement) => {
@@ -308,7 +316,13 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
             return {
                 'aria-label': 'The button to select the hue color.',
-                style: `position: absolute; background: hsl(${$hueAngle}, 100%, 50%); left: ${left}px; top: 50%; transform: translateY(-50%);`
+                style: styleToString({
+                    position: 'absolute',
+                    background: `hsl(${$hueAngle}, 100%, 50%)`,
+                    left: `${left}px`,
+                    top: `50%`,
+                    transform: `translateY(-50%)`
+                })
             }
         },
         action: (node: HTMLButtonElement) => {
@@ -364,7 +378,9 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
             return {
                 'aria-label': 'A canvas element showing the alpha values for the color.',
-                style: `background: linear-gradient(to ${orientation}, rgba(${color}, 0), rgba(${color}, 1));`
+                style: styleToString({
+                    background: `linear-gradient(to ${orientation}, rgba(${color}, 0), rgba(${color}, 1))`
+                })
             }
         },
         action: (node: HTMLCanvasElement) => {
@@ -439,7 +455,13 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
             return {
                 'aria-label': 'The button to select the alpha value for the color.',
-                style: `position: absolute; background: rgba(${r}, ${g}, ${b}, ${$alphaValue / 100}); left: ${left}px; top: 50%; transform: translateY(-50%);`
+                style: styleToString({
+                    position: 'absolute',
+                    background: `rgba(${r}, ${g}, ${b}, ${$alphaValue / 100})`,
+                    left: `${left}px`,
+                    top: '50%',
+                    transform: 'translateY(-50%)'
+                })
             }
         },
         action: (node: HTMLButtonElement) => {
@@ -538,128 +560,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         }
     });
 
-    // Helper functions
-    function RGBtoHex(rgb: ColorRGB) {
-        const { r, g, b } = rgb;
-
-        const hex = [r, g, b].map((x) => {
-            const xHex = x.toString(16);
-
-            return xHex.length === 1 ? `0${xHex}` : xHex;
-        }).join('');
-
-        return `#${hex}`;
-    }
-
-    function hexToRGB(hex: string, normalize=false): ColorRGB {
-        const rgb: ColorRGB = {
-            r: 0,
-            g: 0,
-            b: 0
-        };
-
-        if (hex.length === 4) {
-            rgb.r = parseInt(`0x${hex[1]}${hex[1]}`, 16);
-            rgb.g = parseInt(`0x${hex[2]}${hex[2]}`, 16);
-            rgb.b = parseInt(`0x${hex[3]}${hex[3]}`, 16);
-        } else {
-            rgb.r = parseInt(`0x${hex[1]}${hex[2]}`, 16);
-            rgb.g = parseInt(`0x${hex[3]}${hex[4]}`, 16);
-            rgb.b = parseInt(`0x${hex[5]}${hex[6]}`, 16);
-        }
-
-        if (normalize) {
-            rgb.r = rgb.r / 255;
-            rgb.g = rgb.g / 255;
-            rgb.b = rgb.b / 255;
-        }
-
-        return rgb;
-    }
-
-    // Source: https://css-tricks.com/converting-color-spaces-in-javascript/
-    function hexToHSL(hex: string): ColorHSL {
-        const rgb = hexToRGB(hex, true);
-
-        const cmin = Math.min(rgb.r, rgb.g, rgb.b);
-        const cmax = Math.max(rgb.r, rgb.g, rgb.b);
-        const delta = cmax - cmin;
-        let h = 0;
-        let s = 0;
-        let l = 0;
-
-        if (delta === 0) {
-            h = 0;
-        } else if (cmax === rgb.r) {
-            h = ((rgb.g - rgb.b) / delta) % 6;
-        } else if (cmax === rgb.g) {
-            h = (rgb.b - rgb.r) / delta + 2;
-        } else {
-            h = (rgb.r - rgb.g) / delta + 4;
-        }
-
-        h = Math.round(h * 60);
-
-        if (h < 0) h += 360;
-
-        l = (cmax + cmin) / 2;
-        s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
-        s = +(s * 100).toFixed(1);
-        l = +(l * 100).toFixed(1);
-
-        // return "hsl(" + h + "," + s + "%," + l + "%)";
-        return { h, s, l };
-    }
-
-    function HSVtoRGB(h: number, s: number, v: number) {
-        let r = 0;
-        let g = 0;
-        let b = 0;
-
-        const i = Math.floor(h * 6);
-        const f = h * 6 - i;
-        const p = v * (1 - s);
-        const q = v * (1 - f * s);
-        const t = v * (1 - (1 - f) * s);
-        switch (i % 6) {
-            case 0: r = v, g = t, b = p; break;
-            case 1: r = q, g = v, b = p; break;
-            case 2: r = p, g = v, b = t; break;
-            case 3: r = p, g = q, b = v; break;
-            case 4: r = t, g = p, b = v; break;
-            case 5: r = v, g = p, b = q; break;
-        }
-        return {
-            r: Math.round(r * 255),
-            g: Math.round(g * 255),
-            b: Math.round(b * 255)
-        };
-    }
-
-    function hexToHSV(hex: string): ColorHSV {
-        const { r, g, b} = hexToRGB(hex, true);
-
-        const max = Math.max(r, g, b), min = Math.min(r, g, b);
-        const v = max;
-        let h = 0;
-
-        const d = max - min;
-        const s = max == 0 ? 0 : d / max;
-
-        if (max == min) {
-            h = 0; // achromatic
-        } else {
-            switch (max) {
-                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                case g: h = (b - r) / d + 2; break;
-                case b: h = (r - g) / d + 4; break;
-            }
-
-            h /= 6;
-        }
-
-        return { h: Math.round(h * 360), s, v };
-    }
 
     type HandleMovementArgs = {
         x: number;

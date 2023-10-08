@@ -109,3 +109,24 @@ export type WhenTrue<TrueOrFalse, IfTrue, IfFalse, IfNeither = IfTrue | IfFalse>
 	: [TrueOrFalse] extends [false]
 	? IfFalse
 	: IfNeither;
+
+
+// Colors
+export type ColorRGB = {
+    r: number;
+    g: number;
+    b: number;
+    a?: number;
+};
+
+export type ColorHSL = {
+    h: number;
+    s: number;
+    l: number;
+};
+
+export type ColorHSV = {
+    h: number;
+    s: number;
+    v: number;
+};
