@@ -87,7 +87,6 @@ export type _DatePickerParts =
 	| 'next'
 	| 'prev'
 	| 'dateField'
-	| 'dayPeriod-segment'
 	| 'segment'
 	| 'heading'
 	| 'trigger';
@@ -198,12 +197,12 @@ export function createDatePicker<T extends DateValue = DateValue>(props?: Create
 	const defaultDate = getDefaultDate();
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-	const value = overridable<DateValue | undefined>(valueWritable, withDefaults?.onValueChange);
+	const value = overridable<DateValue | undefined>(valueWritable, withDefaults.onValueChange);
 
 	const placeholderValueWritable =
 		withDefaults.placeholderValue ?? writable(withDefaults.defaultPlaceholderValue ?? defaultDate);
 	const placeholderValue = dateStore(
-		overridable(placeholderValueWritable, withDefaults?.onPlaceholderValueChange),
+		overridable(placeholderValueWritable, withDefaults.onPlaceholderValueChange),
 		withDefaults.defaultPlaceholderValue ?? defaultDate
 	);
 

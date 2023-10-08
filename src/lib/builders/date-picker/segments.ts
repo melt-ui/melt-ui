@@ -73,7 +73,6 @@ type SegmentValueObj = DateSegmentObj | DateAndTimeSegmentObj;
 type SegmentState = {
 	lastKeyZero: boolean;
 	hasLeftFocus: boolean;
-	hasInitialized: boolean;
 	hasTouched: boolean;
 };
 
@@ -106,7 +105,6 @@ export function createSegments(props: CreateSegmentProps) {
 		acc[key] = {
 			lastKeyZero: false,
 			hasLeftFocus: false,
-			hasInitialized: false,
 			hasTouched: false,
 		};
 		return acc;
