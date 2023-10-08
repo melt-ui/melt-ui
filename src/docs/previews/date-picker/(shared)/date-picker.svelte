@@ -16,7 +16,6 @@
 	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = false;
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = 0;
 	export let fixedWeeks: CreateDatePickerProps['fixedWeeks'] = false;
-	// export let locale: CreateDatePickerProps['locale'] = 'en';
 
 	const {
 		elements: {
@@ -32,7 +31,7 @@
 			content,
 		},
 		states: { value, months, headingValue, daysOfWeek, segmentContents, open },
-		options: { granularity, locale },
+		options: { locale },
 	} = createDatePicker({
 		allowDeselect: true,
 		disabled,
@@ -41,9 +40,7 @@
 		pagedNavigation,
 		weekStartsOn,
 		fixedWeeks,
-		hourCycle: 12,
 		forceVisible: true,
-		locale: 'en',
 		granularity: 'minute',
 	});
 

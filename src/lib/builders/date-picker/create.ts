@@ -7,7 +7,6 @@ import {
 	isBrowser,
 	isHTMLElement,
 	kbd,
-	overridable,
 	toWritableStores,
 	omit,
 	executeCallbacks,
@@ -16,14 +15,14 @@ import {
 } from '$lib/internal/helpers/index.js';
 import { isMatch } from '$lib/builders/calendar/utils.js';
 import { getDaysBetween, getLastFirstDayOfWeek, getNextLastDayOfWeek } from './utils.js';
-
-import { derived, get, writable, type Writable } from 'svelte/store';
-import { createPopover, type Month } from '$lib/builders/index.js';
-import type { CreateDatePickerProps, Granularity } from './types.js';
-import { dateStore } from './date-store.js';
-import { createSegments, handleSegmentNavigation, isSegmentNavigationKey } from './segments.js';
+import { derived, get, writable } from 'svelte/store';
+import { createDateField, createPopover, type Month } from '$lib/builders/index.js';
+import type { CreateDatePickerProps } from './types.js';
+import {
+	handleSegmentNavigation,
+	isSegmentNavigationKey,
+} from '$lib/builders/date-field/_internal/helpers.js';
 import { tick } from 'svelte';
-import { createFormatter } from './formatter.js';
 import {
 	type DateValue,
 	getLocalTimeZone,
@@ -39,7 +38,7 @@ import {
 	parseDate,
 	CalendarDate,
 } from '@internationalized/date';
-import { getDaysInMonth } from './utils.js';
+import { dateStore, createFormatter, getDaysInMonth } from '$lib/internal/date/index.js';
 
 const defaults = {
 	disabled: false,
@@ -93,39 +92,16 @@ export type _DatePickerParts =
 
 const { name } = createElHelpers<_DatePickerParts>('calendar');
 
-/**
- * For internal use only.
- * @internal
- */
-export type _DatePickerStores<T extends DateValue = DateValue> = {
-	value: Writable<T | undefined>;
-	placeholderValue: ReturnType<typeof dateStore>;
-	locale: Writable<string>;
-	granularity: Writable<Granularity>;
-};
-
-/**
- * For internal use only.
- * @internal
- */
-export type _DatePickerIds = {
-	grid: string;
-	field: string;
-	daySegment: string;
-	monthSegment: string;
-	yearSegment: string;
-	hourSegment: string;
-	minuteSegment: string;
-	secondSegment: string;
-	timeIndicatorSegment: string;
-	accessibleHeading: string;
-	content: string;
-	trigger: string;
-	calendar: string;
-};
-
 export function createDatePicker<T extends DateValue = DateValue>(props?: CreateDatePickerProps) {
 	const withDefaults = { ...defaults, ...props };
+
+	const dateField = createDateField({
+		...withDefaults,
+	});
+
+	const {
+		states: { value },
+	} = dateField;
 
 	const popover = createPopover({
 		positioning: withDefaults.positioning,
@@ -174,39 +150,25 @@ export function createDatePicker<T extends DateValue = DateValue>(props?: Create
 		fixedWeeks,
 		calendarLabel,
 		unavailable,
-		hourCycle,
 		locale,
 		granularity,
 	} = options;
 
-	const ids: _DatePickerIds = {
+	const ids = {
 		calendar: generateId(),
 		grid: generateId(),
-		field: generateId(),
-		daySegment: generateId(),
-		monthSegment: generateId(),
-		yearSegment: generateId(),
-		hourSegment: generateId(),
-		minuteSegment: generateId(),
-		secondSegment: generateId(),
-		timeIndicatorSegment: generateId(),
 		accessibleHeading: generateId(),
 		...popover.ids,
+		...dateField.ids,
 	};
 
 	const defaultDate = getDefaultDate();
+	const formatter = createFormatter(get(locale));
 
-	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-	const value = overridable<DateValue | undefined>(valueWritable, withDefaults.onValueChange);
-
-	const placeholderValueWritable =
-		withDefaults.placeholderValue ?? writable(withDefaults.defaultPlaceholderValue ?? defaultDate);
 	const placeholderValue = dateStore(
-		overridable(placeholderValueWritable, withDefaults.onPlaceholderValueChange),
+		dateField.states.placeholderValue,
 		withDefaults.defaultPlaceholderValue ?? defaultDate
 	);
-
-	const formatter = createFormatter(get(locale));
 
 	const months = writable<Month<DateValue>[]>([
 		createMonth(withDefaults.defaultPlaceholderValue ?? defaultDate),
@@ -285,15 +247,6 @@ export function createDatePicker<T extends DateValue = DateValue>(props?: Create
 
 	const grid = builder(name('grid'), {
 		returned: () => ({ tabindex: -1, id: ids.grid, role: 'grid' }),
-	});
-
-	const dateField = builder(name('dateField'), {
-		returned: () => {
-			return {
-				role: 'group',
-				id: ids.field,
-			};
-		},
 	});
 
 	const prevButton = builder(name('prevButton'), {
@@ -403,20 +356,6 @@ export function createDatePicker<T extends DateValue = DateValue>(props?: Create
 				destroy: unsub,
 			};
 		},
-	});
-
-	const segments = createSegments({
-		stores: {
-			value,
-			placeholderValue,
-			locale,
-			granularity,
-		},
-		ids,
-		options: {
-			hourCycle,
-		},
-		formatter,
 	});
 
 	effect([locale], ([$locale]) => {
@@ -805,13 +744,13 @@ export function createDatePicker<T extends DateValue = DateValue>(props?: Create
 			heading,
 			grid,
 			cell,
-			dateField,
 			nextButton,
 			prevButton,
-			...segments.elements,
+			...dateField.elements,
 			...popover.elements,
 		},
 		states: {
+			...dateField.states,
 			placeholderValue: {
 				subscribe: placeholderValue.subscribe,
 				set: placeholderValue.set,
@@ -821,7 +760,6 @@ export function createDatePicker<T extends DateValue = DateValue>(props?: Create
 			value,
 			daysOfWeek,
 			headingValue,
-			...segments.states,
 			...popover.states,
 		},
 		helpers: {

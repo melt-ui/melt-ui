@@ -3,6 +3,7 @@ import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { createDatePicker } from './create.js';
 import type { CreatePopoverProps, Matcher } from '$lib/builders/index.js';
 import type { DateValue } from '@internationalized/date';
+import type { CreateDateFieldProps } from '../date-field/types';
 
 export type DatePickerProps = {
 	/**
@@ -224,6 +225,6 @@ export type DatePickerProps = {
 
 export type Granularity = 'day' | 'hour' | 'minute' | 'second';
 
-export type CreateDatePickerProps = DatePickerProps & CreatePopoverProps;
+export type CreateDatePickerProps = DatePickerProps & CreateDateFieldProps & CreatePopoverProps;
 
 export type DatePicker = ReturnType<typeof createDatePicker>;
