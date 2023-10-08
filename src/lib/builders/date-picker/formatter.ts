@@ -36,6 +36,19 @@ export function createFormatter(initialLocale: string) {
 		return new DateFormatter(locale, options).formatToParts(date);
 	}
 
+	function dayPeriod(date: Date): 'AM' | 'PM' {
+		const parts = new DateFormatter(locale, {
+			hour12: true,
+			hour: 'numeric',
+			minute: 'numeric',
+		}).formatToParts(date);
+		const value = parts.find((p) => p.type === 'dayPeriod')?.value;
+		if (value === 'PM') {
+			return 'PM';
+		}
+		return 'AM';
+	}
+
 	const defaultPartOptions: Intl.DateTimeFormatOptions = {
 		year: 'numeric',
 		month: 'numeric',
@@ -73,5 +86,6 @@ export function createFormatter(initialLocale: string) {
 		toParts,
 		custom,
 		part,
+		dayPeriod,
 	};
 }

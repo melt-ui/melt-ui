@@ -2,13 +2,12 @@
 	import {
 		createDatePicker,
 		type CreateDatePickerProps,
-		type Granularity,
 		type Matcher,
 	} from '$lib/builders';
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
 	import { melt } from '$lib';
 	import { fade } from 'svelte/transition';
-	import { getLocalTimeZone, today } from '@internationalized/date';
+	import { getLocalTimeZone } from '@internationalized/date';
 
 	export let disabled: Matcher | Matcher[] = false;
 	export let defaultPlaceholderValue: CreateDatePickerProps['defaultPlaceholderValue'] =
@@ -44,7 +43,7 @@
 		fixedWeeks,
 		hourCycle: 12,
 		forceVisible: true,
-		locale: 'en-UK',
+		locale: 'en',
 		granularity: 'minute',
 	});
 
@@ -54,6 +53,10 @@
 </script>
 
 <div class="flex w-full flex-col items-center gap-3">
+	<div class="flex items-center gap-2">
+		<button class="btn" on:click={() => locale.set('en')}>EN</button>
+		<button class="btn" on:click={() => locale.set('en-UK')}>EN-UK</button>
+	</div>
 	<div class="flex w-full items-center justify-center">
 		<p class="text-xs">{$value}</p>
 	</div>
@@ -163,5 +166,9 @@
 
 	.cell {
 		@apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded p-4 hover:bg-magnum-100 focus:ring focus:ring-magnum-400 data-[outside-month]:pointer-events-none data-[outside-month]:cursor-default data-[range-highlighted]:bg-magnum-200 data-[selected]:bg-magnum-300 data-[disabled]:opacity-40 data-[outside-month]:opacity-40 data-[outside-month]:hover:bg-transparent;
+	}
+
+	.btn {
+		@apply rounded bg-magnum-600 p-1 text-xs text-white;
 	}
 </style>

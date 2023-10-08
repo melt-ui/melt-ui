@@ -114,10 +114,10 @@ export function createSegments(props: CreateSegmentProps) {
 	const { hourCycle } = options;
 
 	const dateNow = get(placeholderValue);
-
 	const initialSegments = initializeSegmentValues(get(granularity));
-
 	const segmentValues = writable(structuredClone(initialSegments));
+
+	let updatingDayPeriod: 'AM' | 'PM' | null = null;
 
 	const segmentContents = derived(
 		[segmentValues, locale, granularity],
@@ -218,23 +218,25 @@ export function createSegments(props: CreateSegmentProps) {
 	 * value of the date picker.
 	 */
 	function syncSegmentValues(value: DateValue) {
+		console.log('syncing segment values');
 		const dateValues = dateSegmentParts.map((part) => {
 			return [part, value[part]];
 		});
 		if ('hour' in value) {
 			const timeValues = timeSegmentParts.map((part) => {
-				switch (part) {
-					case 'hour':
-						return [part, getHourForSegmentValue(value.hour)];
-					case 'dayPeriod':
-						return [part, getDayPeriodFromHour(value.hour)];
-					default:
-						return [part, value[part]];
+				if (part === 'dayPeriod') {
+					if (updatingDayPeriod) {
+						return [part, updatingDayPeriod];
+					} else {
+						return [part, formatter.dayPeriod(toDate(value))];
+					}
 				}
+				return [part, value[part]];
 			});
 
 			const mergedSegmentValues = [...dateValues, ...timeValues];
 			segmentValues.set(Object.fromEntries(mergedSegmentValues) as SegmentValueObj);
+			updatingDayPeriod = null;
 			return;
 		}
 
@@ -295,60 +297,17 @@ export function createSegments(props: CreateSegmentProps) {
 					if (partValue === null) return;
 					date = date.set({ [part]: partValue });
 					return;
-				} else if (part === 'hour') {
-					const hour = segmentObj[part];
-					if (hour === null) return;
-					date = date.set({ hour: getHourForValue(hour) });
+				}
+				if (part === 'hour') {
+					const partValue = segmentObj[part];
+					if (partValue === null) return;
+					date = date.set({ [part]: partValue });
 					return;
 				}
 			}
 		});
 
 		return value.set(date);
-	}
-
-	function getHourForSegmentValue(hour: number) {
-		const $hourCycle = get(hourCycle);
-		if ($hourCycle === 24) return hour;
-
-		// convert hour from 24 to 12 hour cycle and set day period
-		if (hour > 12) {
-			return hour - 12;
-		}
-		if (hour === 0) {
-			return 12;
-		}
-
-		return hour;
-	}
-
-	function getDayPeriodFromHour(hour: number): DayPeriod {
-		const $hourCycle = get(hourCycle);
-		if ($hourCycle === 24) return null;
-
-		// convert hour from 24 to 12 hour cycle and set day period
-		if (hour > 12 || hour === 12) {
-			return 'PM';
-		}
-
-		return 'AM';
-	}
-
-	function getHourForValue(hour: number) {
-		const $hourCycle = get(hourCycle);
-		const $segmentValues = get(segmentValues);
-		if ($hourCycle === 24) return hour;
-		if (!hasTime($segmentValues)) return hour;
-
-		// convert hour from 12 to 24 hour cycle based on day period
-		if ($segmentValues.dayPeriod === 'AM' && hour === 12) {
-			return 0;
-		}
-		if ($segmentValues.dayPeriod === 'PM' && hour !== 12) {
-			return hour + 12;
-		}
-
-		return hour;
 	}
 
 	function areAllSegmentsFilled() {
@@ -388,12 +347,34 @@ export function createSegments(props: CreateSegmentProps) {
 						...prev,
 						[part]: next,
 					};
+				} else if (part === 'dayPeriod') {
+					const next = castCb(pVal) as DateAndTimeSegmentObj['dayPeriod'];
+					updatingDayPeriod = next;
+					const date = get(placeholderValue);
+					if (hasTime(date)) {
+						const trueHour = date.hour;
+						if (next === 'AM') {
+							if (trueHour >= 12) {
+								prev.hour = trueHour - 12;
+							}
+						} else if (next === 'PM') {
+							if (trueHour < 12) {
+								prev.hour = trueHour + 12;
+							}
+						}
+					}
+
+					return {
+						...prev,
+						[part]: next,
+					};
 				} else if (part === 'hour') {
 					const next = castCb(pVal) as DateAndTimeSegmentObj['hour'];
 					if (next !== null && prev.dayPeriod !== null) {
-						const hour = getHourForValue(next);
-						const dayPeriod = getDayPeriodFromHour(hour);
-						prev.dayPeriod = dayPeriod;
+						const dayPeriod = formatter.dayPeriod(toDate(dateNow.set({ hour: next })));
+						if (dayPeriod === 'AM' || dayPeriod === 'PM') {
+							prev.dayPeriod = dayPeriod;
+						}
 					}
 					return {
 						...prev,
@@ -428,6 +409,7 @@ export function createSegments(props: CreateSegmentProps) {
 		const $segmentValues = get(segmentValues);
 		if (areAllSegmentsFilled()) {
 			setValueFromSegments($segmentValues);
+			updatingDayPeriod = null;
 		}
 	}
 
@@ -466,7 +448,9 @@ export function createSegments(props: CreateSegmentProps) {
 		},
 	};
 
-	effect([value], ([$value]) => {
+	effect([value, locale], ([$value, _]) => {
+		// using `locale` as a dep so that we can reconvert
+		// when using a different hour cycle
 		if ($value) {
 			syncSegmentValues($value);
 		} else {
@@ -580,8 +564,7 @@ export function createSegments(props: CreateSegmentProps) {
 				if (prev === null) {
 					return 1;
 				}
-				const next = dateNow.set({ day: prev }).cycle('day', 1).day;
-				return next;
+				return dateNow.set({ day: prev }).cycle('day', 1).day;
 			});
 			return;
 		}
@@ -590,8 +573,7 @@ export function createSegments(props: CreateSegmentProps) {
 				if (prev === null || prev === 1) {
 					return daysInMonth;
 				}
-				const next = dateNow.set({ day: prev }).cycle('day', -1).day;
-				return next;
+				return dateNow.set({ day: prev }).cycle('day', -1).day;
 			});
 			return;
 		}
@@ -1489,13 +1471,13 @@ export function createSegments(props: CreateSegmentProps) {
 	 */
 
 	function dayPeriodSegmentAttrs(props: SegmentAttrProps) {
-		const { $segmentValues, $placeholderValue } = props;
-		if (!('dayPeriod' in $segmentValues) || !('dayPeriod' in $placeholderValue)) return {};
+		const { $segmentValues } = props;
+		if (!('dayPeriod' in $segmentValues)) return {};
 
 		const valueMin = 0;
 		const valueMax = 12;
-		const valueNow = $segmentValues.dayPeriod ?? $placeholderValue.dayPeriod;
-		const valueText = $segmentValues.dayPeriod ?? $placeholderValue.dayPeriod;
+		const valueNow = $segmentValues.dayPeriod ?? 0;
+		const valueText = $segmentValues.dayPeriod ?? 'AM';
 
 		return {
 			...segmentDefaults,
@@ -1541,7 +1523,6 @@ export function createSegments(props: CreateSegmentProps) {
 				if (prev === 'AM') return 'PM';
 				return 'AM';
 			});
-
 			return;
 		}
 
@@ -1788,10 +1769,6 @@ function isDateAndTimeSegmentObj(obj: unknown): obj is DateAndTimeSegmentObj {
 	});
 }
 
-function hasTime(obj: SegmentValueObj): obj is DateAndTimeSegmentObj {
-	return 'hour' in obj;
-}
-
 /**
  * Conditionally handles converting the provided date object to
  * a Date object based on the type of `DateValue`.
@@ -1802,4 +1779,8 @@ function toDate(dateObj: DateValue) {
 	} else {
 		return dateObj.toDate(getLocalTimeZone());
 	}
+}
+
+function hasTime(dateObj: DateValue): dateObj is CalendarDateTime | ZonedDateTime {
+	return dateObj instanceof CalendarDateTime || dateObj instanceof ZonedDateTime;
 }
