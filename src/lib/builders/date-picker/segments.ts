@@ -11,7 +11,7 @@ import {
 } from '$lib/internal/helpers/index.js';
 import type { _DatePickerParts, _DatePickerIds, _DatePickerStores } from './create.js';
 import { get, writable, type Updater, type Writable, derived } from 'svelte/store';
-import type { Action, ActionReturn } from 'svelte/action';
+import type { Action } from 'svelte/action';
 import type { createFormatter } from './formatter.js';
 import {
 	getLocalTimeZone,
@@ -183,7 +183,7 @@ export function createSegments(props: CreateSegmentProps) {
 						const value = $segmentValues[part];
 						const notNull = value !== null;
 						if (notNull) {
-							obj[part] = value;
+							obj[part] = `${value}`;
 						} else {
 							obj[part] = getPlaceholderValue(part, 'AM', $locale);
 						}
@@ -450,6 +450,10 @@ export function createSegments(props: CreateSegmentProps) {
 			attrs: literalSegmentAttrs,
 			action: literalSegmentAction,
 		},
+		timeZoneName: {
+			attrs: timeZoneSegmentAttrs,
+			action: timeZoneSegmentAction,
+		},
 	};
 
 	effect([value, locale], ([$value, _]) => {
@@ -481,7 +485,7 @@ export function createSegments(props: CreateSegmentProps) {
 	type SegmentAttrFn = (props: SegmentAttrProps) => Record<string, string | number | boolean>;
 
 	type SegmentBuilders = Record<
-		SegmentPart | 'literal',
+		SegmentPart | 'literal' | 'timeZoneName',
 		{
 			attrs: SegmentAttrFn;
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -495,7 +499,10 @@ export function createSegments(props: CreateSegmentProps) {
 		$placeholderValue: DateValue;
 	};
 
-	function getSegmentAttrs(part: SegmentPart | 'literal', props: SegmentAttrProps) {
+	function getSegmentAttrs(
+		part: SegmentPart | 'literal' | 'timeZoneName',
+		props: SegmentAttrProps
+	) {
 		return segmentBuilders[part].attrs(props);
 	}
 
@@ -882,7 +889,6 @@ export function createSegments(props: CreateSegmentProps) {
 
 		return {
 			destroy() {
-				console.log('destroying year segment');
 				unsubEvents();
 			},
 		};
@@ -1556,6 +1562,7 @@ export function createSegments(props: CreateSegmentProps) {
 			hour: '2-digit',
 			minute: '2-digit',
 			second: '2-digit',
+			timeZoneName: 'short',
 		};
 
 		if (granularity === 'day') {
@@ -1603,7 +1610,7 @@ export function createSegments(props: CreateSegmentProps) {
 			getOptsByGranularity(granularity)
 		);
 		const initialParts = parts.map((part) => {
-			if (part.type === 'literal' || part.type === 'dayPeriod') {
+			if (part.type === 'literal' || part.type === 'dayPeriod' || part.type === 'timeZoneName') {
 				return [part.type, part.value];
 			}
 			return [part.type, null];
@@ -1639,6 +1646,30 @@ export function createSegments(props: CreateSegmentProps) {
 	function literalSegmentAction() {
 		return {
 			// noop
+		};
+	}
+
+	/*
+	 * ---------------------------------------------------------------------------------------------
+	 *
+	 * TIMEZONE SEGMENT
+	 *
+	 * ---------------------------------------------------------------------------------------------
+	 */
+
+	function timeZoneSegmentAttrs(_: SegmentAttrProps) {
+		return {
+			role: 'textbox',
+			'aria-label': 'timezone, ',
+			'data-readonly': true,
+			'data-segment': 'timeZoneName',
+			tabindex: 0,
+		};
+	}
+
+	function timeZoneSegmentAction() {
+		return {
+			// nooop
 		};
 	}
 

@@ -62,10 +62,10 @@
 	</div>
 	<div
 		use:melt={$dateField}
-		class="flex max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
+		class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
 	>
 		{#each $segmentContents.arr as seg, i (`${i}-${$locale}`)}
-			<div use:melt={$segment(seg.part)}>
+			<div use:melt={$segment(seg.part)} class="segment whitespace-nowrap">
 				{seg.value}
 			</div>
 		{/each}
@@ -166,6 +166,10 @@
 
 	.cell {
 		@apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded p-4 hover:bg-magnum-100 focus:ring focus:ring-magnum-400 data-[outside-month]:pointer-events-none data-[outside-month]:cursor-default data-[range-highlighted]:bg-magnum-200 data-[selected]:bg-magnum-300 data-[disabled]:opacity-40 data-[outside-month]:opacity-40 data-[outside-month]:hover:bg-transparent;
+	}
+
+	.segment {
+		@apply data-[segment="dayPeriod"]:pl-0.5 data-[segment="hour"]:pl-1 data-[segment="timeZoneName"]:pl-1;
 	}
 
 	.btn {
