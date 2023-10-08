@@ -6,6 +6,7 @@ import { collapsibleData } from './collapsible.js';
 import { comboboxData } from './combobox.js';
 import { contextMenuData } from './context-menu.js';
 import { popoverData as calendarData } from './calendar.js';
+import { popoverData as dateFieldData } from './date-field.js';
 import { dialogData } from './dialog.js';
 import { dropdownMenuData } from './dropdown-menu.js';
 import { labelData } from './label.js';
@@ -39,6 +40,7 @@ export const builderList = [
 	'combobox',
 	'context-menu',
 	'date-picker',
+	'date-field',
 	'dialog',
 	'dropdown-menu',
 	'label',
@@ -87,6 +89,7 @@ export const data: Builders = {
 	combobox: comboboxData,
 	'context-menu': contextMenuData,
 	'date-picker': calendarData,
+	'date-field': dateFieldData,
 	dialog: dialogData,
 	'dropdown-menu': dropdownMenuData,
 	label: labelData,

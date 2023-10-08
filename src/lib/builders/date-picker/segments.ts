@@ -1523,7 +1523,6 @@ export function createSegments(props: CreateSegmentProps) {
 	 * The event handler responsible for handling keydown events
 	 * on the minute segment.
 	 */
-
 	function handleDayPeriodSegmentKeydown(e: KeyboardEvent) {
 		if (!isTabKey(e.key)) {
 			e.preventDefault();

@@ -123,6 +123,14 @@ export function dateStore<T extends DateValue>(store: Writable<T>, defaultValue:
 
 	const toDate = isZoned() ? toDateZoned : toDateWithTz;
 
+	function toWritable() {
+		return {
+			set,
+			subscribe,
+			update,
+		};
+	}
+
 	return {
 		set,
 		update,
@@ -137,6 +145,7 @@ export function dateStore<T extends DateValue>(store: Writable<T>, defaultValue:
 		copy,
 		toString,
 		daysInMonth,
+		toWritable,
 	};
 }
 

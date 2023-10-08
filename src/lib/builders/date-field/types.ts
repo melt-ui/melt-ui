@@ -3,6 +3,7 @@ import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { createDateField } from './create.js';
 import type { Matcher } from '$lib/builders/index.js';
 import type { DateValue } from '@internationalized/date';
+import type { Granularity } from '$lib/internal/date/types.js';
 
 export type DateFieldProps = {
 	/**
@@ -114,6 +115,5 @@ export type DateFieldProps = {
 	granularity?: Granularity;
 };
 
-export type Granularity = 'day' | 'hour' | 'minute' | 'second';
 export type CreateDateFieldProps = DateFieldProps;
-export type DatePicker = ReturnType<typeof createDateField>;
+export type DateField = ReturnType<typeof createDateField>;

@@ -29,3 +29,4 @@ export * from './toggle-group/index.js';
 export * from './toolbar/index.js';
 export * from './tooltip/index.js';
 export * from './tree/index.js';
+export * from './date-field/index.js';
