@@ -11,7 +11,7 @@ import {
 } from '$lib/internal/helpers/index.js';
 import type { _DatePickerParts, _DatePickerIds, _DatePickerStores } from './create.js';
 import { get, writable, type Updater, type Writable, derived } from 'svelte/store';
-import type { Action } from 'svelte/action';
+import type { Action, ActionReturn } from 'svelte/action';
 import type { createFormatter } from './formatter.js';
 import {
 	getLocalTimeZone,
@@ -117,6 +117,11 @@ export function createSegments(props: CreateSegmentProps) {
 	const initialSegments = initializeSegmentValues(get(granularity));
 	const segmentValues = writable(structuredClone(initialSegments));
 
+	/**
+	 * Prevent a condition where the value of the date
+	 * overrides the updated dayPeriod value when all
+	 * segments are filled.
+	 */
 	let updatingDayPeriod: 'AM' | 'PM' | null = null;
 
 	const segmentContents = derived(
@@ -218,7 +223,6 @@ export function createSegments(props: CreateSegmentProps) {
 	 * value of the date picker.
 	 */
 	function syncSegmentValues(value: DateValue) {
-		console.log('syncing segment values');
 		const dateValues = dateSegmentParts.map((part) => {
 			return [part, value[part]];
 		});
@@ -459,8 +463,8 @@ export function createSegments(props: CreateSegmentProps) {
 	});
 
 	const segment = builder(name('segment'), {
-		stores: [segmentValues, hourCycle, placeholderValue],
-		returned: ([$segmentValues, $hourCycle, $placeholderValue]) => {
+		stores: [segmentValues, hourCycle, placeholderValue, locale],
+		returned: ([$segmentValues, $hourCycle, $placeholderValue, _]) => {
 			const props = {
 				$segmentValues,
 				$hourCycle,
@@ -878,6 +882,7 @@ export function createSegments(props: CreateSegmentProps) {
 
 		return {
 			destroy() {
+				console.log('destroying year segment');
 				unsubEvents();
 			},
 		};
