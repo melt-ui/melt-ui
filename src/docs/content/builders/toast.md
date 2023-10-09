@@ -111,9 +111,7 @@ the application.
 				title: 'Success',
 				description: 'The resource was created!',
 				color: 'bg-green-500'
-			},
-			closeDelay: 10000, // overrides the default delay (5000)
-			type: 'background' // overrides the default type ('foreground')
+			}
 		})
 	}
 </script>
@@ -123,6 +121,49 @@ the application.
   text-magnum-700 shadow-lg hover:opacity-75"
 	on:click={create}>
 	Create
+</button>
+```
+
+### Overriding default values for individual toasts
+
+While you can define some global values for the Toaster on initialization, it is possible to override these defaults for individual toasts using the `addToast` helper function.
+
+```svelte
+<script lang="ts">
+	const { helpers } = createToaster({
+		closeDelay: 5000, // the default delay is defined to 5000
+		type: 'background' // the default type is defined to 'background'
+	})
+
+	// this will use the default values
+	function create() {
+		addToast({
+			data: { /* ... */ }
+		})
+	}
+
+	// this overrides some values
+	function createImportant() {
+		addToast({
+			data: { /* ... */ },
+			closeDelay: 10000, // overrides the default delay (5000)
+			type: 'foreground' // overrides the default type ('background')
+		})
+	}
+</script>
+
+<button
+	class="inline-flex items-center justify-center rounded-md bg-white px-4 py-2 font-medium leading-none
+  text-magnum-700 shadow-lg hover:opacity-75"
+	on:click={create}>
+	Create
+</button>
+
+<button
+	class="inline-flex items-center justify-center rounded-md bg-magnum-200 px-4 py-2 font-medium leading-none
+  text-magnum-800 shadow-lg hover:opacity-75"
+	on:click={createImportant}>
+	Create Important
 </button>
 ```
 
