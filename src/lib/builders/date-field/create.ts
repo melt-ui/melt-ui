@@ -23,6 +23,7 @@ import {
 	createFormatter,
 } from '$lib/internal/date';
 import { derived, get, writable, type Updater } from 'svelte/store';
+import { isFirstSegment } from './_internal/helpers';
 import {
 	areAllSegmentsFilled,
 	createContent,
@@ -35,15 +36,16 @@ import {
 	isDateSegmentPart,
 	isSegmentNavigationKey,
 	moveToNextSegment,
-	getAnnouncer,
 	getPartFromNode,
 	inferGranularity,
 	isAcceptableSegmentKey,
 	removeDescriptionElement,
 	syncSegmentValues,
 	setDescription,
+	getAnnouncer,
 } from './_internal/helpers';
 import type {
+	Announcer,
 	AnyExceptLiteral,
 	AnySegmentPart,
 	DateAndTimeSegmentObj,
@@ -103,7 +105,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const initialSegments = initializeSegmentValues(get(inferredGranularity));
 	const segmentValues = writable(structuredClone(initialSegments));
 
-	const announcer = getAnnouncer();
+	let announcer: Announcer = getAnnouncer();
 
 	/**
 	 * Prevent a condition where the value of the date
@@ -171,7 +173,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			};
 		},
 		action: () => {
-			getAnnouncer();
+			announcer = getAnnouncer();
 
 			return {
 				destroy() {
@@ -236,10 +238,14 @@ export function createDateField(props?: CreateDateFieldProps) {
 				if (part === 'literal') {
 					return defaultAttrs;
 				}
+				const id = ids[part];
+				const hasDescription = isFirstSegment(id, ids.field) && $value;
+
 				return {
 					...defaultAttrs,
+					id: ids[part],
 					'aria-labelledby': getLabelledBy(part),
-					'aria-describedby': $value ? ids.description : undefined,
+					'aria-describedby': hasDescription ? ids.description : undefined,
 				};
 			};
 		},

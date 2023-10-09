@@ -52,13 +52,20 @@ export function initializeSegmentValues(granularity: Granularity) {
 	return Object.fromEntries(initialParts) as SegmentValueObj;
 }
 
-type CreateContentObjProps = {
-	segmentValues: SegmentValueObj;
-	formatter: Formatter;
-	locale: string;
-	dateRef: DateValue;
+type SharedContentProps = {
 	granularity: Granularity;
+	dateRef: DateValue;
+	formatter: Formatter;
 	hideTimeZone: boolean;
+};
+
+type CreateContentObjProps = SharedContentProps & {
+	segmentValues: SegmentValueObj;
+	locale: string;
+};
+
+type CreateContentArrProps = SharedContentProps & {
+	contentObj: SegmentContentObj;
 };
 
 export function createContentObj(props: CreateContentObjProps) {
@@ -103,14 +110,6 @@ export function createContentObj(props: CreateContentObjProps) {
 
 	return content;
 }
-
-type CreateContentArrProps = {
-	granularity: Granularity;
-	dateRef: DateValue;
-	formatter: Formatter;
-	contentObj: SegmentContentObj;
-	hideTimeZone: boolean;
-};
 
 function createContentArr(props: CreateContentArrProps) {
 	const { granularity, dateRef, formatter, contentObj, hideTimeZone } = props;
@@ -445,6 +444,19 @@ export function inferGranularity(
 }
 
 /**
+ * Determines if the element with the provided id is the first focusable
+ * segment in the date field with the provided fieldId.
+ *
+ * @param id - The id of the element to check if it's the first segment
+ * @param fieldId - The id of the date field associated with the segment
+ */
+export function isFirstSegment(id: string, fieldId: string) {
+	if (!isBrowser) return false;
+	const segments = getSegments(fieldId);
+	return segments.length ? segments[0].id === id : false;
+}
+
+/**
  * Creates or updates a description element for a date field
  * which enables screen readers to read the date field's value.
  */
@@ -472,6 +484,13 @@ export function removeDescriptionElement(id: string) {
 	document.body.removeChild(el);
 }
 
+/**
+ * Creates or gets an announcer element which is used to
+ * announce messages to screen readers. Within the date
+ * components, we use this to announce when the values of
+ * the individual segments change, as without it we get
+ * inconsistent behavior across screen readers.
+ */
 function initAnnouncer() {
 	if (!isBrowser) return null;
 	let el = document.querySelector('[data-melt-announcer]');
@@ -493,6 +512,7 @@ function initAnnouncer() {
 		div.appendChild(createLog('assertive'));
 		div.appendChild(createLog('polite'));
 		el = div;
+		document.body.insertBefore(el, document.body.firstChild);
 	}
 
 	function createLog(kind: 'assertive' | 'polite') {
@@ -516,11 +536,10 @@ function initAnnouncer() {
 }
 
 export function getAnnouncer() {
-	if (!isBrowser) return;
 	const announcer = initAnnouncer();
-	if (!announcer) return;
 
 	function announce(value: string, kind: 'assertive' | 'polite' = 'assertive', timeout = 7500) {
+		if (!announcer || !isBrowser) return;
 		const log = announcer?.getLog(kind);
 		const content = document.createElement('div');
 		content.innerText = value;

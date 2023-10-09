@@ -7,6 +7,7 @@ import type {
 } from './parts.js';
 import type { Action } from 'svelte/action';
 import type { IdObj } from '$lib/internal/types.js';
+import type { getAnnouncer } from './helpers.js';
 
 export type SegmentPart = (typeof segmentParts)[number];
 export type DateSegmentPart = (typeof dateSegmentParts)[number];
@@ -55,3 +56,4 @@ export type SegmentBuilders = Record<
 >;
 
 export type DateFieldIds = IdObj<AnyExceptLiteral | 'field' | 'label' | 'description'>;
+export type Announcer = ReturnType<typeof getAnnouncer>;
