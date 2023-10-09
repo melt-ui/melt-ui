@@ -4,6 +4,7 @@ import {
 	type DateValue,
 	getLocalTimeZone,
 } from '@internationalized/date';
+import { hasTime, toDate } from '.';
 
 export type Formatter = ReturnType<typeof createFormatter>;
 
@@ -20,6 +21,19 @@ export function createFormatter(initialLocale: string) {
 
 	function custom(date: Date, options: Intl.DateTimeFormatOptions) {
 		return new DateFormatter(locale, options).format(date);
+	}
+
+	function selectedDate(date: DateValue) {
+		if (hasTime(date)) {
+			return custom(toDate(date), {
+				dateStyle: 'long',
+				timeStyle: 'long',
+			});
+		} else {
+			return custom(toDate(date), {
+				dateStyle: 'long',
+			});
+		}
 	}
 
 	function fullMonthAndYear(date: Date) {
@@ -89,5 +103,6 @@ export function createFormatter(initialLocale: string) {
 		custom,
 		part,
 		dayPeriod,
+		selectedDate,
 	};
 }

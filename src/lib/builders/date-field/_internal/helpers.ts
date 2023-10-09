@@ -448,14 +448,9 @@ export function inferGranularity(
  * Creates or updates a description element for a date field
  * which enables screen readers to read the date field's value.
  */
-export function updateDescriptionElement(id: string, formatter: Formatter, value: DateValue) {
+export function setDescription(id: string, formatter: Formatter, value: DateValue) {
 	if (!isBrowser) return;
-
-	const valueString = formatter.custom(toDate(value), {
-		dateStyle: 'long',
-		timeStyle: 'full',
-	});
-
+	const valueString = formatter.selectedDate(value);
 	const el = document.getElementById(id);
 	if (!el) {
 		const div = document.createElement('div');
@@ -477,9 +472,9 @@ export function removeDescriptionElement(id: string) {
 	document.body.removeChild(el);
 }
 
-export function getAnnouncer() {
-	if (!isBrowser) return;
-	const el = document.querySelector('[data-melt-announcer]');
+function initAnnouncer() {
+	if (!isBrowser) return null;
+	let el = document.querySelector('[data-melt-announcer]');
 	if (!isHTMLElement(el)) {
 		const div = document.createElement('div');
 		div.style.cssText = styleToString({
@@ -495,33 +490,47 @@ export function getAnnouncer() {
 			width: '1px',
 		});
 		div.setAttribute('data-melt-announcer', '');
-		const assertive = document.createElement('div');
-		assertive.role = 'log';
-		assertive.ariaLive = 'assertive';
-		assertive.setAttribute('aria-relevant', 'additions');
-
-		const passive = document.createElement('div');
-		passive.role = 'log';
-		passive.ariaLive = 'polite';
-		passive.setAttribute('aria-relevant', 'additions');
-		document.body.insertBefore(div, document.body.firstChild);
-		div.appendChild(assertive);
-		div.appendChild(passive);
-
-		return div;
+		div.appendChild(createLog('assertive'));
+		div.appendChild(createLog('polite'));
+		el = div;
 	}
-	return el;
+
+	function createLog(kind: 'assertive' | 'polite') {
+		const log = document.createElement('div');
+		log.role = 'log';
+		log.ariaLive = kind;
+		log.setAttribute('aria-relevant', 'additions');
+		return log;
+	}
+
+	function getLog(kind: 'assertive' | 'polite') {
+		if (!isHTMLElement(el)) return null;
+		const log = el.querySelector(`[aria-live="${kind}"]`);
+		if (!isHTMLElement(log)) return null;
+		return log;
+	}
+
+	return {
+		getLog,
+	};
 }
 
-export function announceAssertive(value: string) {
+export function getAnnouncer() {
 	if (!isBrowser) return;
-	const content = document.createElement('div');
-	content.innerText = value;
-	const el = getAnnouncer();
-	if (!isHTMLElement(el)) return;
+	const announcer = initAnnouncer();
+	if (!announcer) return;
 
-	el.querySelector('[aria-live="assertive"]')?.replaceChildren(content);
-	return setTimeout(() => {
-		content.remove();
-	}, 7500);
+	function announce(value: string, kind: 'assertive' | 'polite' = 'assertive', timeout = 7500) {
+		const log = announcer?.getLog(kind);
+		const content = document.createElement('div');
+		content.innerText = value;
+		log?.replaceChildren(content);
+		return setTimeout(() => {
+			content.remove();
+		}, timeout);
+	}
+
+	return {
+		announce,
+	};
 }

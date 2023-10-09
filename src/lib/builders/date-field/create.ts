@@ -35,14 +35,13 @@ import {
 	isDateSegmentPart,
 	isSegmentNavigationKey,
 	moveToNextSegment,
-	announceAssertive,
 	getAnnouncer,
 	getPartFromNode,
 	inferGranularity,
 	isAcceptableSegmentKey,
 	removeDescriptionElement,
 	syncSegmentValues,
-	updateDescriptionElement,
+	setDescription,
 } from './_internal/helpers';
 import type {
 	AnyExceptLiteral,
@@ -103,6 +102,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const dateRef = get(placeholderValue);
 	const initialSegments = initializeSegmentValues(get(inferredGranularity));
 	const segmentValues = writable(structuredClone(initialSegments));
+
+	const announcer = getAnnouncer();
 
 	/**
 	 * Prevent a condition where the value of the date
@@ -404,11 +405,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 			updateSegment('day', (prev) => {
 				if (prev === null) {
 					const next = dateRef.set({ day: 1 }).day;
-					announceAssertive(`${next}`);
+					announcer?.announce(`${next}`);
 					return 1;
 				}
 				const next = dateRef.set({ day: prev }).cycle('day', 1).day;
-				announceAssertive(`${next}`);
+				announcer?.announce(`${next}`);
 				return next;
 			});
 			return;
@@ -419,7 +420,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					return daysInMonth;
 				}
 				const next = dateRef.set({ day: prev }).cycle('day', -1).day;
-				announceAssertive(`${next}`);
+				announcer?.announce(`${next}`);
 				return next;
 			});
 			return;
@@ -582,11 +583,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 				const pValue = get(placeholderValue);
 				if (prev === null) {
 					const next = pValue.set({ month: 0 });
-					announceAssertive(`${next.month} - ${formatter.fullMonth(toDate(next))}`);
+					announcer?.announce(`${next.month} - ${formatter.fullMonth(toDate(next))}`);
 					return 0;
 				}
 				const next = pValue.set({ month: prev }).cycle('month', 1);
-				announceAssertive(`${next.month} - ${formatter.fullMonth(toDate(next))}`);
+				announcer?.announce(`${next.month} - ${formatter.fullMonth(toDate(next))}`);
 
 				return next.month;
 			});
@@ -760,10 +761,10 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('year', (prev) => {
 				if (prev === null || prev === min) {
-					announceAssertive(`${currentYear}`);
+					announcer?.announce(`${currentYear}`);
 					return currentYear;
 				}
-				announceAssertive(`${prev - 1}`);
+				announcer?.announce(`${prev - 1}`);
 				return prev - 1;
 			});
 			return;
@@ -872,11 +873,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('hour', (prev) => {
 				if (prev === null) {
-					announceAssertive(`${min}`);
+					announcer?.announce(`${min}`);
 					return min;
 				}
 				const next = dateRef.set({ hour: prev }).cycle('hour', 1).hour;
-				announceAssertive(`${next}`);
+				announcer?.announce(`${next}`);
 				return next;
 			});
 			return;
@@ -884,11 +885,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('hour', (prev) => {
 				if (prev === null) {
-					announceAssertive(`${max}`);
+					announcer?.announce(`${max}`);
 					return max;
 				}
 				const next = dateRef.set({ hour: prev }).cycle('hour', 1).hour;
-				announceAssertive(`${next}`);
+				announcer?.announce(`${next}`);
 				return next;
 			});
 			return;
@@ -1481,7 +1482,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 	effect(value, ($value) => {
 		if ($value) {
-			updateDescriptionElement(ids.description, formatter, $value);
+			// Set the description of the field for screen readers
+			setDescription(ids.description, formatter, $value);
 		}
 		if ($value && get(placeholderValue) !== $value) {
 			placeholderValue.set($value);
