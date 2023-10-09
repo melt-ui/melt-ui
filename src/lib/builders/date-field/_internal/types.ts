@@ -6,6 +6,7 @@ import type {
 	timeSegmentParts,
 } from './parts.js';
 import type { Action } from 'svelte/action';
+import type { IdObj } from '$lib/internal/types.js';
 
 export type SegmentPart = (typeof segmentParts)[number];
 export type DateSegmentPart = (typeof dateSegmentParts)[number];
@@ -50,3 +51,5 @@ export type SegmentBuilders = Record<
 		action: Action<any, any, any>;
 	}
 >;
+
+export type DateFieldIds = IdObj<SegmentPart | 'field' | 'label'>;

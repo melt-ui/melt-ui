@@ -115,3 +115,13 @@ export type WhenTrue<TrueOrFalse, IfTrue, IfFalse, IfNeither = IfTrue | IfFalse>
 	: [TrueOrFalse] extends [false]
 	? IfFalse
 	: IfNeither;
+
+export type RenameProperties<T, NewNames extends Partial<Record<keyof T, string>>> = Expand<{
+	[K in keyof T as K extends keyof NewNames
+		? NewNames[K] extends PropertyKey
+			? NewNames[K]
+			: K
+		: K]: T[K];
+}>;
+
+export type IdObj<T extends PropertyKey> = Record<T, string>;

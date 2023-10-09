@@ -2,7 +2,8 @@ import type { createCalendar } from './create';
 import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers';
 import type { DateValue } from '@internationalized/date';
-import type { Granularity, Matcher } from '$lib/index.js';
+import type { Matcher } from '$lib/index.js';
+import type { IdObj } from '$lib/internal/types';
 
 export type CalendarProps = {
 	/**
@@ -123,8 +124,6 @@ export type CalendarProps = {
 	 */
 	weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
-	ISOWeek?: boolean;
-
 	/**
 	 * Any dates that match the provided matchers will
 	 * be marked as disabled, which means they cannot be
@@ -174,16 +173,6 @@ export type CalendarProps = {
 	numberOfMonths?: number;
 
 	/**
-	 * The format to use for displaying the time in the input.
-	 * If using a 12 hour clock, ensure you also include the
-	 * `dayPeriod` segment in your input to ensure the user
-	 * can select AM/PM.
-	 *
-	 * @default 12
-	 */
-	hourCycle?: 12 | 24;
-
-	/**
 	 * The label for the calendar, which is used for
 	 * accessibility purposes only and is not visible on the page,
 	 * it is read by screen readers when the calendar is opened.
@@ -206,26 +195,20 @@ export type CalendarProps = {
 	locale?: string;
 
 	/**
-	 * The granularity of the date field. This determines which
-	 * segments will be includes in the segments array used to
-	 * build the date field.
+	 * Override any of the element IDs set by the builder.
 	 *
-	 * By default, when a `CalendarDate` value is used, the granularity
-	 * will default to `'day'`, and when a `CalendarDateTime` or `ZonedDateTime`
-	 * value is used, the granularity will default to `'minute'`.
-	 *
-	 * Granularity is only used for visual purposes, and does not impact
-	 * the value of the date field. You can have the same value synced
-	 * between multiple date fields with different granularities and they
-	 * will all contain the same value.
+	 * NOTE: you should only use this prop if you know what
+	 * you're doing, as it could break the out-of-the-box
+	 * accessibility and functionality of the date field if
+	 * implemented incorrectly.
 	 */
-	granularity?: Granularity;
+	ids?: Partial<CalendarIds>;
 };
 
+export type CalendarIds = IdObj<'calendar' | 'grid' | 'accessibleHeading'>;
+
 export type CreateCalendarProps = CalendarProps;
-
 export type Calendar = ReturnType<typeof createCalendar>;
-
 export type Month<T> = {
 	/**
 	 * A date that can be used to get the month and year

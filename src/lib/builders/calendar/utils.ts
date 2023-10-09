@@ -1,3 +1,4 @@
+import { isHTMLElement } from '$lib/internal/helpers';
 import { getDayOfWeek, type DateValue } from '@internationalized/date';
 
 export function getDaysInMonth(date: Date) {
@@ -50,4 +51,10 @@ export function getLastFirstDayOfWeek<T extends DateValue = DateValue>(
 		return date as T;
 	}
 	return date.subtract({ days: day - firstDayOfWeek }) as T;
+}
+
+export function isCalendarCell(node: unknown): node is HTMLElement {
+	if (!isHTMLElement(node)) return false;
+	if (!node.hasAttribute('data-melt-calendar-cell')) return false;
+	return true;
 }

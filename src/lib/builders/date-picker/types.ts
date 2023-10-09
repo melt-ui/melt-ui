@@ -1,10 +1,11 @@
 import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { createDatePicker } from './create.js';
-import type { CreatePopoverProps } from '$lib/builders/index.js';
+import type { CreateCalendarProps, CreatePopoverProps } from '$lib/builders/index.js';
 import type { DateValue } from '@internationalized/date';
 import type { CreateDateFieldProps } from '../date-field/types';
 import type { Granularity, Matcher } from '$lib/index.js';
+import type { RenameProperties } from '$lib/internal/types.js';
 
 export type DatePickerProps = {
 	/**
@@ -224,6 +225,12 @@ export type DatePickerProps = {
 	granularity?: Granularity;
 };
 
-export type CreateDatePickerProps = DatePickerProps & CreateDateFieldProps & CreatePopoverProps;
+type ModifiedDateFieldProps = RenameProperties<CreateDateFieldProps, { ids: 'dateFieldIds' }>;
+type ModifiedCalendarProps = RenameProperties<CreateCalendarProps, { ids: 'calendarIds' }>;
+type ModifiedPopoverProps = RenameProperties<CreatePopoverProps, { ids: 'popoverIds' }>;
+
+export type CreateDatePickerProps = Expand<
+	DatePickerProps & ModifiedDateFieldProps & ModifiedPopoverProps & ModifiedCalendarProps
+>;
 
 export type DatePicker = ReturnType<typeof createDatePicker>;

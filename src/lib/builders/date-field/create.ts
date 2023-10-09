@@ -44,6 +44,7 @@ import {
 import type {
 	AnySegmentPart,
 	DateAndTimeSegmentObj,
+	DateFieldIds,
 	DateSegmentObj,
 	DateSegmentPart,
 	DayPeriod,
@@ -56,7 +57,7 @@ import type {
 const defaults = {
 	unavailable: false,
 	value: undefined,
-	hourCycle: 24,
+	hourCycle: undefined,
 	locale: 'en',
 	granularity: 'day',
 } satisfies CreateDateFieldProps;
@@ -97,7 +98,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const ids = {
 		...initSegmentIds(),
 		field: generateId(),
-	};
+		label: generateId(),
+	} satisfies DateFieldIds;
 
 	const states = initSegmentStates();
 

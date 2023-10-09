@@ -1,4 +1,4 @@
-import { effect, generateId, toWritableStores, omit } from '$lib/internal/helpers/index.js';
+import { effect, toWritableStores, omit } from '$lib/internal/helpers/index.js';
 import { get } from 'svelte/store';
 import { createCalendar, createDateField, createPopover } from '$lib/builders/index.js';
 import type { CreateDatePickerProps } from './types.js';
@@ -55,6 +55,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		...withDefaults,
 		placeholderValue: dfPlaceholderValue,
 		value: value,
+		ids: withDefaults.calendarIds,
 	});
 
 	const popover = createPopover({
@@ -97,14 +98,6 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	const { locale } = options;
 
-	const ids = {
-		calendar: generateId(),
-		grid: generateId(),
-		accessibleHeading: generateId(),
-		...popover.ids,
-		...dateField.ids,
-	};
-
 	const defaultDate = getDefaultDate(get(dateField.options.granularity));
 	const formatter = createFormatter(get(locale));
 
@@ -127,7 +120,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	function handleTriggerKeydown(e: KeyboardEvent) {
 		if (isSegmentNavigationKey(e.key)) {
 			e.preventDefault();
-			handleSegmentNavigation(e, ids.field);
+			handleSegmentNavigation(e, dateField.ids.field);
 		}
 	}
 
@@ -140,11 +133,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		states: {
 			...dateField.states,
 			...calendar.states,
-			placeholderValue: {
-				subscribe: placeholderValue.subscribe,
-				set: placeholderValue.set,
-				update: placeholderValue.update,
-			},
+			placeholderValue: placeholderValue.toWritable(),
 			value,
 			...popover.states,
 		},
@@ -153,9 +142,9 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		},
 		options,
 		ids: {
-			...calendar.ids,
-			...dateField.ids,
-			...popover.ids,
+			dateField: dateField.ids,
+			calendar: calendar.ids,
+			popover: popover.ids,
 		},
 	};
 }

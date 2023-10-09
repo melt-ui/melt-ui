@@ -122,3 +122,14 @@ export function chunk<T>(arr: T[], size: number): T[][] {
 	}
 	return result;
 }
+
+/**
+ * Checks if the given index is valid for the given array.
+ *
+ * @param index - The index to check
+ * @param arr - The array to check
+ */
+
+export function isValidIndex(index: number, arr: unknown[]) {
+	return index >= 0 && index < arr.length;
+}

@@ -13,10 +13,16 @@ import {
 	styleToString,
 	chunk,
 	overridable,
+	isValidIndex,
 } from '$lib/internal/helpers/index.js';
-import { getDaysBetween, getLastFirstDayOfWeek, getNextLastDayOfWeek } from './utils.js';
+import {
+	getDaysBetween,
+	getLastFirstDayOfWeek,
+	getNextLastDayOfWeek,
+	isCalendarCell,
+} from './utils.js';
 import { derived, get, writable } from 'svelte/store';
-import type { CreateCalendarProps, Month } from './types.js';
+import type { CalendarIds, CreateCalendarProps, Month } from './types.js';
 import { tick } from 'svelte';
 import { isMatch, toDate } from '$lib/internal/date/index.js';
 import {
@@ -49,27 +55,15 @@ const defaults = {
 	pagedNavigation: false,
 	weekStartsOn: 0,
 	fixedWeeks: false,
-	hourCycle: 24,
 	calendarLabel: 'Event Date',
 	locale: 'en',
-	granularity: 'day',
 } satisfies CreateCalendarProps;
 
 /**
  * For internal use only.
  * @internal
  */
-type CalendarParts =
-	| 'content'
-	| 'nextButton'
-	| 'prevButton'
-	| 'nextYear'
-	| 'prevYear'
-	| 'grid'
-	| 'cell'
-	| 'next'
-	| 'prev'
-	| 'heading';
+type CalendarParts = 'content' | 'nextButton' | 'prevButton' | 'grid' | 'cell' | 'heading';
 
 const { name } = createElHelpers<CalendarParts>('calendar');
 
@@ -90,16 +84,15 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		calendarLabel,
 		unavailable,
 		locale,
-		granularity,
 	} = options;
 
 	const ids = {
 		calendar: generateId(),
 		grid: generateId(),
 		accessibleHeading: generateId(),
-	};
+	} satisfies CalendarIds;
 
-	const defaultDate = getDefaultDate(get(granularity));
+	const defaultDate = getDefaultDate();
 	const formatter = createFormatter(get(locale));
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
@@ -598,7 +591,6 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			// shift the calendar forward a month
 			placeholderValue.add({ months: 1 });
 
-			// we may need a tick here, but we'll see how it goes
 			tick().then(() => {
 				const newCandidateCells = getSelectableCells();
 				if (!newCandidateCells.length) {
@@ -622,12 +614,11 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	function getSelectableCells() {
 		const node = document.getElementById(ids.calendar);
 		if (!node) return [];
+		const selectableSelector = `[data-melt-calendar-cell]:not([data-disabled]):not([data-outside-month])`;
 
-		return Array.from(
-			node.querySelectorAll(
-				`[data-melt-calendar-cell]:not([data-disabled]):not([data-outside-month])`
-			)
-		).filter((el): el is HTMLElement => isHTMLElement(el));
+		return Array.from(node.querySelectorAll(selectableSelector)).filter((el): el is HTMLElement =>
+			isHTMLElement(el)
+		);
 	}
 
 	/**
@@ -661,11 +652,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			prevButton,
 		},
 		states: {
-			placeholderValue: {
-				subscribe: placeholderValue.subscribe,
-				set: placeholderValue.set,
-				update: placeholderValue.update,
-			},
+			placeholderValue: placeholderValue.toWritable(),
 			months,
 			value,
 			daysOfWeek,
@@ -682,14 +669,4 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		options,
 		ids,
 	};
-}
-
-function isValidIndex(index: number, arr: unknown[]) {
-	return index >= 0 && index < arr.length;
-}
-
-function isCalendarCell(node: unknown): node is HTMLElement {
-	if (!isHTMLElement(node)) return false;
-	if (!node.hasAttribute('data-melt-calendar-cell')) return false;
-	return true;
 }

@@ -13,7 +13,7 @@ import {
 /**
  * Generate a default `DateValue` using granularity.
  */
-export function getDefaultDate(granularity: Granularity): DateValue {
+export function getDefaultDate(granularity: Granularity = 'day'): DateValue {
 	const date = new Date();
 	const year = date.getFullYear();
 	const month = date.getMonth();

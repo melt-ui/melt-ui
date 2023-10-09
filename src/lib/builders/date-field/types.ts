@@ -3,6 +3,7 @@ import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { createDateField } from './create.js';
 import type { DateValue } from '@internationalized/date';
 import type { Granularity, Matcher } from '$lib/index.js';
+import type { DateFieldIds } from './_internal/types.js';
 
 export type DateFieldProps = {
 	/**
@@ -117,7 +118,18 @@ export type DateFieldProps = {
 	 * Whether or not to hide the timeZoneName segment from the date field.
 	 */
 	hideTimeZone?: boolean;
+
+	/**
+	 * Override any of the element IDs set by the builder.
+	 *
+	 * NOTE: you should only use this prop if you know what
+	 * you're doing, as it could break the out-of-the-box
+	 * accessibility and functionality of the date field if
+	 * implemented incorrectly.
+	 */
+	ids?: Partial<DateFieldIds>;
 };
 
+export type { DateFieldIds };
 export type CreateDateFieldProps = DateFieldProps;
 export type DateField = ReturnType<typeof createDateField>;
