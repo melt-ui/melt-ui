@@ -538,11 +538,21 @@ function initAnnouncer() {
 export function getAnnouncer() {
 	const announcer = initAnnouncer();
 
-	function announce(value: string, kind: 'assertive' | 'polite' = 'assertive', timeout = 7500) {
+	function announce(
+		value: string | null | number,
+		kind: 'assertive' | 'polite' = 'assertive',
+		timeout = 7500
+	) {
 		if (!announcer || !isBrowser) return;
 		const log = announcer?.getLog(kind);
 		const content = document.createElement('div');
-		content.innerText = value;
+		if (typeof value === 'number') {
+			value = value.toString();
+		} else if (value === null) {
+			value = 'Empty';
+		} else {
+			value = value.trim();
+		}
 		log?.replaceChildren(content);
 		return setTimeout(() => {
 			content.remove();

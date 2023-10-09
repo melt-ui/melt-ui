@@ -402,31 +402,34 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 
 		const $segmentMonthValue = get(segmentValues).month;
+		const $placeholderValue = get(placeholderValue);
 
 		const daysInMonth = $segmentMonthValue
-			? getDaysInMonth(toDate(dateRef.set({ month: $segmentMonthValue })))
-			: getDaysInMonth(toDate(dateRef));
+			? getDaysInMonth(toDate($placeholderValue.set({ month: $segmentMonthValue })))
+			: getDaysInMonth(toDate($placeholderValue));
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('day', (prev) => {
 				if (prev === null) {
-					const next = dateRef.set({ day: 1 }).day;
-					announcer?.announce(`${next}`);
-					return 1;
+					const next = $placeholderValue.day;
+					announcer.announce(`${next}`);
+					return next;
 				}
-				const next = dateRef.set({ day: prev }).cycle('day', 1).day;
-				announcer?.announce(`${next}`);
+				const next = $placeholderValue.set({ day: prev }).cycle('day', 1).day;
+				announcer.announce(`${next}`);
 				return next;
 			});
 			return;
 		}
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('day', (prev) => {
-				if (prev === null || prev === 1) {
-					return daysInMonth;
+				if (prev === null) {
+					const next = $placeholderValue.day;
+					announcer.announce(`${next}`);
+					return next;
 				}
 				const next = dateRef.set({ day: prev }).cycle('day', -1).day;
-				announcer?.announce(`${next}`);
+				announcer.announce(`${next}`);
 				return next;
 			});
 			return;
@@ -580,21 +583,24 @@ export function createDateField(props?: CreateDateFieldProps) {
 			return;
 		}
 
+		const $placeholderValue = get(placeholderValue);
+		function getMonthAnnouncement(month: number) {
+			return `${month} - ${formatter.fullMonth(toDate($placeholderValue.set({ month })))}`;
+		}
+
 		const max = 12;
 
 		states.month.hasTouched = true;
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('month', (prev) => {
-				const pValue = get(placeholderValue);
 				if (prev === null) {
-					const next = pValue.set({ month: 0 });
-					announcer?.announce(`${next.month} - ${formatter.fullMonth(toDate(next))}`);
-					return 0;
+					const next = $placeholderValue.month + 1;
+					announcer.announce(getMonthAnnouncement(next));
+					return next;
 				}
-				const next = pValue.set({ month: prev }).cycle('month', 1);
-				announcer?.announce(`${next.month} - ${formatter.fullMonth(toDate(next))}`);
-
+				const next = $placeholderValue.set({ month: prev }).cycle('month', 1);
+				announcer.announce(getMonthAnnouncement(next.month));
 				return next.month;
 			});
 			return;
@@ -602,11 +608,13 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('month', (prev) => {
 				if (prev === null) {
-					return 11;
+					const next = $placeholderValue.month + 1;
+					announcer.announce(getMonthAnnouncement(next));
+					return next;
 				}
-				const pValue = get(placeholderValue);
-				const next = pValue.set({ month: prev }).cycle('month', -1);
-				return next.month;
+				const next = $placeholderValue.set({ month: prev }).cycle('month', -1).month;
+				announcer.announce(getMonthAnnouncement(next));
+				return next;
 			});
 			return;
 		}
@@ -691,10 +699,18 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.BACKSPACE) {
 			states.month.hasLeftFocus = false;
 			updateSegment('month', (prev) => {
-				if (prev === null) return null;
+				if (prev === null) {
+					announcer.announce('Empty');
+					return null;
+				}
 				const str = prev.toString();
-				if (str.length === 1) return null;
-				return parseInt(str.slice(0, -1));
+				if (str.length === 1) {
+					announcer.announce('Empty');
+					return null;
+				}
+				const next = parseInt(str.slice(0, -1));
+				announcer.announce(getMonthAnnouncement(next));
+				return next;
 			});
 		}
 
@@ -753,25 +769,31 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 
 		states.year.hasTouched = true;
-
-		const min = 0;
-		const currentYear = dateRef.year;
+		const $placeholderValue = get(placeholderValue);
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('year', (prev) => {
-				if (prev === null) return currentYear;
-				return prev + 1;
+				if (prev === null) {
+					const next = $placeholderValue.year;
+					announcer.announce(`${next}`);
+					return next;
+				}
+				const next = $placeholderValue.set({ year: prev }).cycle('year', 1).year;
+				announcer.announce(`${next}`);
+				return next;
 			});
 			return;
 		}
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('year', (prev) => {
-				if (prev === null || prev === min) {
-					announcer?.announce(`${currentYear}`);
-					return currentYear;
+				if (prev === null) {
+					const next = $placeholderValue.year;
+					announcer.announce(`${next}`);
+					return next;
 				}
-				announcer?.announce(`${prev - 1}`);
-				return prev - 1;
+				const next = $placeholderValue.set({ year: prev }).cycle('year', -1).year;
+				announcer.announce(`${next}`);
+				return next;
 			});
 			return;
 		}
@@ -786,16 +808,20 @@ export function createDateField(props?: CreateDateFieldProps) {
 				}
 
 				if (prev === null) {
+					announcer.announce(`${num}`);
 					return num;
 				}
 				const str = prev.toString() + num.toString();
-				if (str.length > 4) return num;
+				if (str.length > 4) {
+					announcer.announce(`${num}`);
+					return num;
+				}
 				if (str.length === 4) {
 					moveToNext = true;
 				}
 
 				const int = parseInt(str);
-
+				announcer.announce(`${int}`);
 				return int;
 			});
 
@@ -806,10 +832,18 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 		if (e.key === kbd.BACKSPACE) {
 			updateSegment('year', (prev) => {
-				if (prev === null) return null;
+				if (prev === null) {
+					announcer.announce('Empty');
+					return null;
+				}
 				const str = prev.toString();
-				if (str.length === 1) return null;
-				return parseInt(str.slice(0, -1));
+				if (str.length === 1) {
+					announcer.announce('Empty');
+					return null;
+				}
+				const next = parseInt(str.slice(0, -1));
+				announcer.announce(`${next}`);
+				return next;
 			});
 		}
 
@@ -925,6 +959,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					 */
 					if (num === 0) {
 						states.hour.lastKeyZero = true;
+						announcer.announce('Empty');
 						return null;
 					}
 
@@ -936,6 +971,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					 */
 					if (states.hour.lastKeyZero || num > maxStart) {
 						moveToNext = true;
+						announcer.announce(`${num}`);
 						return num;
 					}
 
@@ -964,11 +1000,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 					if (num > maxStart) {
 						moveToNext = true;
 					}
-
+					announcer.announce(`${num}`);
 					return num;
 				}
 				moveToNext = true;
-
+				announcer.announce(`${total}`);
 				return total;
 			});
 
@@ -980,10 +1016,18 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.BACKSPACE) {
 			states.hour.hasLeftFocus = false;
 			updateSegment('hour', (prev) => {
-				if (prev === null) return null;
+				if (prev === null) {
+					announcer.announce('Empty');
+					return null;
+				}
 				const str = prev.toString();
-				if (str.length === 1) return null;
-				return parseInt(str.slice(0, -1));
+				if (str.length === 1) {
+					announcer.announce('Empty');
+					return null;
+				}
+				const next = parseInt(str.slice(0, -1));
+				announcer.announce(`${next}`);
+				return next;
 			});
 		}
 
@@ -1052,18 +1096,24 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('minute', (prev) => {
 				if (prev === null) {
+					announcer.announce(`${min}`);
 					return min;
 				}
-				return dateRef.set({ minute: prev }).cycle('minute', 1).minute;
+				const next = dateRef.set({ minute: prev }).cycle('minute', 1).minute;
+				announcer.announce(`${next}`);
+				return next;
 			});
 			return;
 		}
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('minute', (prev) => {
 				if (prev === null) {
+					announcer.announce(`${max}`);
 					return max;
 				}
-				return dateRef.set({ minute: prev }).cycle('minute', -1).minute;
+				const next = dateRef.set({ minute: prev }).cycle('minute', -1).minute;
+				announcer.announce(`${next}`);
+				return next;
 			});
 			return;
 		}
@@ -1092,6 +1142,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					 */
 					if (num === 0) {
 						states.minute.lastKeyZero = true;
+						announcer.announce('Empty');
 						return null;
 					}
 
@@ -1103,6 +1154,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					 */
 					if (states.minute.lastKeyZero || num > maxStart) {
 						moveToNext = true;
+						announcer.announce(`${num}`);
 						return num;
 					}
 
@@ -1131,11 +1183,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 					if (num > maxStart) {
 						moveToNext = true;
 					}
-
+					announcer.announce(`${num}`);
 					return num;
 				}
 				moveToNext = true;
-
+				announcer.announce(`${total}`);
 				return total;
 			});
 
@@ -1147,10 +1199,18 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.BACKSPACE) {
 			states.minute.hasLeftFocus = false;
 			updateSegment('minute', (prev) => {
-				if (prev === null) return null;
+				if (prev === null) {
+					announcer.announce('Empty');
+					return null;
+				}
 				const str = prev.toString();
-				if (str.length === 1) return null;
-				return parseInt(str.slice(0, -1));
+				if (str.length === 1) {
+					announcer.announce('Empty');
+					return null;
+				}
+				const next = parseInt(str.slice(0, -1));
+				announcer.announce(`${next}`);
+				return next;
 			});
 		}
 
@@ -1220,18 +1280,24 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('second', (prev) => {
 				if (prev === null) {
+					announcer.announce(min);
 					return min;
 				}
-				return dateRef.set({ second: prev }).cycle('second', 1).second;
+				const next = dateRef.set({ second: prev }).cycle('second', 1).second;
+				announcer.announce(next);
+				return next;
 			});
 			return;
 		}
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('second', (prev) => {
 				if (prev === null) {
+					announcer.announce(max);
 					return max;
 				}
-				return dateRef.set({ second: prev }).cycle('second', -1).second;
+				const next = dateRef.set({ second: prev }).cycle('second', -1).second;
+				announcer.announce(next);
+				return next;
 			});
 			return;
 		}
@@ -1260,6 +1326,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					 */
 					if (num === 0) {
 						states.second.lastKeyZero = true;
+						announcer.announce(null);
 						return null;
 					}
 
@@ -1271,7 +1338,6 @@ export function createDateField(props?: CreateDateFieldProps) {
 					 */
 					if (states.second.lastKeyZero || num > maxStart) {
 						moveToNext = true;
-						return num;
 					}
 
 					/**
@@ -1279,6 +1345,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					 * return the number as the segment value and continue typing
 					 * in this segment.
 					 */
+					announcer.announce(num);
 					return num;
 				}
 
@@ -1299,11 +1366,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 					if (num > maxStart) {
 						moveToNext = true;
 					}
-
+					announcer.announce(num);
 					return num;
 				}
 				moveToNext = true;
-
+				announcer.announce(total);
 				return total;
 			});
 
@@ -1315,10 +1382,18 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.BACKSPACE) {
 			states.second.hasLeftFocus = false;
 			updateSegment('second', (prev) => {
-				if (prev === null) return null;
+				if (prev === null) {
+					announcer.announce(null);
+					return null;
+				}
 				const str = prev.toString();
-				if (str.length === 1) return null;
-				return parseInt(str.slice(0, -1));
+				if (str.length === 1) {
+					announcer.announce(null);
+					return null;
+				}
+				const next = parseInt(str.slice(0, -1));
+				announcer.announce(next);
+				return next;
 			});
 		}
 
@@ -1383,22 +1458,40 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 		if (e.key === kbd.ARROW_UP || e.key === kbd.ARROW_DOWN) {
 			updateSegment('dayPeriod', (prev) => {
-				if (prev === 'AM') return 'PM';
-				return 'AM';
+				if (prev === 'AM') {
+					const next = 'PM';
+					announcer.announce(next);
+					return next;
+				}
+				const next = 'AM';
+				announcer.announce(next);
+				return next;
 			});
 			return;
 		}
 
 		if (e.key === kbd.BACKSPACE) {
 			states.second.hasLeftFocus = false;
-			updateSegment('dayPeriod', () => 'AM');
+			updateSegment('dayPeriod', () => {
+				const next = 'AM';
+				announcer.announce(next);
+				return 'AM';
+			});
 		}
 
 		if (e.key === 'a') {
-			updateSegment('dayPeriod', () => 'AM');
+			updateSegment('dayPeriod', () => {
+				const next = 'AM';
+				announcer.announce(next);
+				return 'AM';
+			});
 		}
 		if (e.key === 'p') {
-			updateSegment('dayPeriod', () => 'PM');
+			updateSegment('dayPeriod', () => {
+				const next = 'PM';
+				announcer.announce(next);
+				return 'PM';
+			});
 		}
 
 		if (isSegmentNavigationKey(e.key)) {
