@@ -54,4 +54,4 @@ export type SegmentBuilders = Record<
 	}
 >;
 
-export type DateFieldIds = IdObj<AnyExceptLiteral | 'field' | 'label'>;
+export type DateFieldIds = IdObj<AnyExceptLiteral | 'field' | 'label' | 'description'>;

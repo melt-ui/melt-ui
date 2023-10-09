@@ -6,10 +6,7 @@
 	const {
 		elements: { dateField, segment, label },
 		states: { value, segmentContents },
-	} = createDateField({
-		defaultPlaceholderValue: now(getLocalTimeZone()),
-		locale: 'en-UK',
-	});
+	} = createDateField({});
 </script>
 
 <div class="flex w-full flex-col items-center gap-3">

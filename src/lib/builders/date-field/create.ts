@@ -24,12 +24,6 @@ import {
 } from '$lib/internal/date';
 import { derived, get, writable, type Updater } from 'svelte/store';
 import {
-	getPartFromNode,
-	inferGranularity,
-	isAcceptableSegmentKey,
-	syncSegmentValues,
-} from './_internal/helpers';
-import {
 	areAllSegmentsFilled,
 	createContent,
 	getValueFromSegments,
@@ -41,6 +35,14 @@ import {
 	isDateSegmentPart,
 	isSegmentNavigationKey,
 	moveToNextSegment,
+	announceAssertive,
+	getAnnouncer,
+	getPartFromNode,
+	inferGranularity,
+	isAcceptableSegmentKey,
+	removeDescriptionElement,
+	syncSegmentValues,
+	updateDescriptionElement,
 } from './_internal/helpers';
 import type {
 	AnyExceptLiteral,
@@ -113,6 +115,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		...initSegmentIds(),
 		field: generateId(),
 		label: generateId(),
+		description: generateId(),
 	} satisfies DateFieldIds;
 
 	/**
@@ -157,11 +160,22 @@ export function createDateField(props?: CreateDateFieldProps) {
 	});
 
 	const dateField = builder(name(), {
-		returned: () => {
+		stores: [value],
+		returned: ([$value]) => {
 			return {
 				role: 'group',
 				id: ids.field,
 				'aria-labelledby': ids.label,
+				'aria-describedby': $value ? ids.description : undefined,
+			};
+		},
+		action: () => {
+			getAnnouncer();
+
+			return {
+				destroy() {
+					removeDescriptionElement(ids.description);
+				},
 			};
 		},
 	});
@@ -206,8 +220,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 	};
 
 	const segment = builder(name('segment'), {
-		stores: [segmentValues, hourCycle, placeholderValue, locale],
-		returned: ([$segmentValues, $hourCycle, $placeholderValue, _]) => {
+		stores: [segmentValues, hourCycle, placeholderValue, value, locale],
+		returned: ([$segmentValues, $hourCycle, $placeholderValue, $value, _]) => {
 			const props = {
 				segmentValues: $segmentValues,
 				hourCycle: $hourCycle,
@@ -224,6 +238,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				return {
 					...defaultAttrs,
 					'aria-labelledby': getLabelledBy(part),
+					'aria-describedby': $value ? ids.description : undefined,
 				};
 			};
 		},
@@ -350,7 +365,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		return {
 			...defaultSegmentAttrs,
 			id: ids.day,
-			'aria-label': 'day, ',
+			'aria-label': `day,`,
 			'aria-valuemin': valueMin,
 			'aria-valuemax': valueMax,
 			'aria-valuenow': valueNow,
@@ -388,9 +403,13 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('day', (prev) => {
 				if (prev === null) {
+					const next = dateRef.set({ day: 1 }).day;
+					announceAssertive(`${next}`);
 					return 1;
 				}
-				return dateRef.set({ day: prev }).cycle('day', 1).day;
+				const next = dateRef.set({ day: prev }).cycle('day', 1).day;
+				announceAssertive(`${next}`);
+				return next;
 			});
 			return;
 		}
@@ -399,7 +418,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 				if (prev === null || prev === 1) {
 					return daysInMonth;
 				}
-				return dateRef.set({ day: prev }).cycle('day', -1).day;
+				const next = dateRef.set({ day: prev }).cycle('day', -1).day;
+				announceAssertive(`${next}`);
+				return next;
 			});
 			return;
 		}
@@ -558,10 +579,15 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('month', (prev) => {
+				const pValue = get(placeholderValue);
 				if (prev === null) {
+					const next = pValue.set({ month: 0 });
+					announceAssertive(`${next.month} - ${formatter.fullMonth(toDate(next))}`);
 					return 0;
 				}
-				return dateRef.set({ month: prev }).cycle('month', 1).month;
+				const next = pValue.set({ month: prev }).cycle('month', 1);
+				announceAssertive(`${next.month} - ${formatter.fullMonth(toDate(next))}`);
+				return next.month;
 			});
 			return;
 		}
@@ -570,7 +596,10 @@ export function createDateField(props?: CreateDateFieldProps) {
 				if (prev === null) {
 					return 11;
 				}
-				return dateRef.set({ month: prev }).cycle('month', -1).month;
+				const pValue = get(placeholderValue);
+				const next = pValue.set({ month: prev }).cycle('month', -1);
+				announceAssertive(`${next.month} - ${formatter.fullMonth(toDate(next))}`);
+				return next.month;
 			});
 			return;
 		}
@@ -731,8 +760,10 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('year', (prev) => {
 				if (prev === null || prev === min) {
+					announceAssertive(`${currentYear}`);
 					return currentYear;
 				}
+				announceAssertive(`${prev - 1}`);
 				return prev - 1;
 			});
 			return;
@@ -840,17 +871,25 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('hour', (prev) => {
-				if (prev === null) return min;
-				return dateRef.set({ hour: prev }).cycle('hour', 1).hour;
+				if (prev === null) {
+					announceAssertive(`${min}`);
+					return min;
+				}
+				const next = dateRef.set({ hour: prev }).cycle('hour', 1).hour;
+				announceAssertive(`${next}`);
+				return next;
 			});
 			return;
 		}
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('hour', (prev) => {
 				if (prev === null) {
+					announceAssertive(`${max}`);
 					return max;
 				}
-				return dateRef.set({ hour: prev }).cycle('hour', -1).hour;
+				const next = dateRef.set({ hour: prev }).cycle('hour', 1).hour;
+				announceAssertive(`${next}`);
+				return next;
 			});
 			return;
 		}
@@ -1441,6 +1480,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 	});
 
 	effect(value, ($value) => {
+		if ($value) {
+			updateDescriptionElement(ids.description, formatter, $value);
+		}
 		if ($value && get(placeholderValue) !== $value) {
 			placeholderValue.set($value);
 		}

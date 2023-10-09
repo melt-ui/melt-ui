@@ -27,6 +27,7 @@ import {
 	generateId,
 	kbd,
 	isNumberKey,
+	styleToString,
 } from '$lib/internal/helpers/index.js';
 import { get, type Writable } from 'svelte/store';
 import type { IdObj } from '$lib/internal/types.js';
@@ -441,4 +442,86 @@ export function inferGranularity(
 		return 'minute';
 	}
 	return 'day';
+}
+
+/**
+ * Creates or updates a description element for a date field
+ * which enables screen readers to read the date field's value.
+ */
+export function updateDescriptionElement(id: string, formatter: Formatter, value: DateValue) {
+	if (!isBrowser) return;
+
+	const valueString = formatter.custom(toDate(value), {
+		dateStyle: 'long',
+		timeStyle: 'full',
+	});
+
+	const el = document.getElementById(id);
+	if (!el) {
+		const div = document.createElement('div');
+		div.style.cssText = styleToString({
+			display: 'none',
+		});
+		div.id = id;
+		div.innerText = `Selected Date: ${valueString}`;
+		document.body.appendChild(div);
+	} else {
+		el.innerText = `Selected Date: ${valueString}`;
+	}
+}
+
+export function removeDescriptionElement(id: string) {
+	if (!isBrowser) return;
+	const el = document.getElementById(id);
+	if (!el) return;
+	document.body.removeChild(el);
+}
+
+export function getAnnouncer() {
+	if (!isBrowser) return;
+	const el = document.querySelector('[data-melt-announcer]');
+	if (!isHTMLElement(el)) {
+		const div = document.createElement('div');
+		div.style.cssText = styleToString({
+			border: '0px',
+			clip: 'rect(0px, 0px, 0px, 0px)',
+			'clip-path': 'inset(50%)',
+			height: '1px',
+			margin: '-1px',
+			overflow: 'hidden',
+			padding: '0px',
+			position: 'absolute',
+			'white-space': 'nowrap',
+			width: '1px',
+		});
+		div.setAttribute('data-melt-announcer', '');
+		const assertive = document.createElement('div');
+		assertive.role = 'log';
+		assertive.ariaLive = 'assertive';
+		assertive.setAttribute('aria-relevant', 'additions');
+
+		const passive = document.createElement('div');
+		passive.role = 'log';
+		passive.ariaLive = 'polite';
+		passive.setAttribute('aria-relevant', 'additions');
+		document.body.insertBefore(div, document.body.firstChild);
+		div.appendChild(assertive);
+		div.appendChild(passive);
+
+		return div;
+	}
+	return el;
+}
+
+export function announceAssertive(value: string) {
+	if (!isBrowser) return;
+	const content = document.createElement('div');
+	content.innerText = value;
+	const el = getAnnouncer();
+	if (!isHTMLElement(el)) return;
+
+	el.querySelector('[aria-live="assertive"]')?.replaceChildren(content);
+	return setTimeout(() => {
+		content.remove();
+	}, 7500);
 }
