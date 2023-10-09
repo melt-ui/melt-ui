@@ -493,12 +493,12 @@ export function createDateField(props?: CreateDateFieldProps) {
 		const { segmentValues, placeholderValue } = props;
 		const isEmpty = segmentValues.month === null;
 		const date = segmentValues.month
-			? placeholderValue.set({ month: segmentValues.month - 1 })
+			? placeholderValue.set({ month: segmentValues.month })
 			: placeholderValue;
-		const valueNow = date.month + 1;
+		const valueNow = date.month;
 		const valueMin = 1;
 		const valueMax = 12;
-		const valueText = isEmpty ? 'Empty' : `${valueNow} - ${formatter.fullMonth(toDate(date))}`;
+		const valueText = isEmpty ? 'Empty' : `${valueNow}, ${formatter.fullMonth(toDate(date))}`;
 
 		return {
 			...defaultSegmentAttrs,
@@ -543,8 +543,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				if (prev === null) {
 					return 0;
 				}
-				const next = dateRef.set({ month: prev }).cycle('month', 1).month;
-				return next;
+				return dateRef.set({ month: prev }).cycle('month', 1).month;
 			});
 			return;
 		}
@@ -824,8 +823,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('hour', (prev) => {
 				if (prev === null) return min;
-				const next = dateRef.set({ hour: prev }).cycle('hour', 1).hour;
-				return next;
+				return dateRef.set({ hour: prev }).cycle('hour', 1).hour;
 			});
 			return;
 		}
@@ -834,8 +832,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				if (prev === null) {
 					return max;
 				}
-				const next = dateRef.set({ hour: prev }).cycle('hour', -1).hour;
-				return next;
+				return dateRef.set({ hour: prev }).cycle('hour', -1).hour;
 			});
 			return;
 		}
@@ -993,8 +990,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				if (prev === null) {
 					return min;
 				}
-				const next = dateRef.set({ minute: prev }).cycle('minute', 1).minute;
-				return next;
+				return dateRef.set({ minute: prev }).cycle('minute', 1).minute;
 			});
 			return;
 		}
@@ -1003,8 +999,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				if (prev === null) {
 					return max;
 				}
-				const next = dateRef.set({ minute: prev }).cycle('minute', -1).minute;
-				return next;
+				return dateRef.set({ minute: prev }).cycle('minute', -1).minute;
 			});
 			return;
 		}
@@ -1163,8 +1158,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				if (prev === null) {
 					return min;
 				}
-				const next = dateRef.set({ second: prev }).cycle('second', 1).second;
-				return next;
+				return dateRef.set({ second: prev }).cycle('second', 1).second;
 			});
 			return;
 		}
@@ -1173,8 +1167,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				if (prev === null) {
 					return max;
 				}
-				const next = dateRef.set({ second: prev }).cycle('second', -1).second;
-				return next;
+				return dateRef.set({ second: prev }).cycle('second', -1).second;
 			});
 			return;
 		}
