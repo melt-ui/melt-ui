@@ -3,7 +3,7 @@
 	import { melt } from '$lib';
 
 	const {
-		elements: { dateField, segment },
+		elements: { dateField, segment, label },
 		states: { value, segmentContents },
 	} = createDateField();
 </script>
@@ -12,15 +12,18 @@
 	<div class="flex w-full items-center justify-center">
 		<p class="text-xs">{$value}</p>
 	</div>
-	<div
-		use:melt={$dateField}
-		class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
-	>
-		{#each $segmentContents.arr as seg, i (i)}
-			<div use:melt={$segment(seg.part)} class="segment whitespace-nowrap">
-				{seg.value}
-			</div>
-		{/each}
+	<div>
+		<span use:melt={$label} class="cursor-default">Date</span>
+		<div
+			use:melt={$dateField}
+			class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
+		>
+			{#each $segmentContents.arr as seg, i (i)}
+				<div use:melt={$segment(seg.part)} class="segment whitespace-nowrap">
+					{seg.value}
+				</div>
+			{/each}
+		</div>
 	</div>
 </div>
 

@@ -14,6 +14,8 @@ export type TimeSegmentPart = (typeof timeSegmentParts)[number];
 export type NonInteractiveSegmentPart = (typeof nonInteractiveSegmentParts)[number];
 export type AnySegmentPart = SegmentPart | NonInteractiveSegmentPart;
 
+export type AnyExceptLiteral = Exclude<AnySegmentPart, 'literal'>;
+
 export type DayPeriod = 'AM' | 'PM' | null;
 export type DateSegmentObj = {
 	[K in DateSegmentPart]: number | null;
@@ -52,4 +54,4 @@ export type SegmentBuilders = Record<
 	}
 >;
 
-export type DateFieldIds = IdObj<SegmentPart | 'field' | 'label'>;
+export type DateFieldIds = IdObj<AnyExceptLiteral | 'field' | 'label'>;

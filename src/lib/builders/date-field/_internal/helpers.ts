@@ -16,6 +16,7 @@ import type {
 	DateAndTimeSegmentObj,
 	DayPeriod,
 	AnySegmentPart,
+	AnyExceptLiteral,
 } from './types.js';
 import { allSegmentParts, dateSegmentParts, segmentParts, timeSegmentParts } from './parts.js';
 import {
@@ -24,26 +25,10 @@ import {
 	isNull,
 	generateId,
 	kbd,
-	styleToString,
 	isNumberKey,
 } from '$lib/internal/helpers/index.js';
 import { get, type Writable } from 'svelte/store';
-
-/**
- * The default attributes applied to each segment
- */
-export const defaultSegmentAttrs = {
-	role: 'spinbutton',
-	contenteditable: true,
-	tabindex: 0,
-	spellcheck: false,
-	inputmode: 'numeric',
-	autocorrect: 'off',
-	enterkeyhint: 'next',
-	style: styleToString({
-		'caret-color': 'transparent',
-	}),
-};
+import type { IdObj } from '$lib/internal/types.js';
 
 export function initializeSegmentValues(granularity: Granularity) {
 	const calendarDateTimeGranularities = ['hour', 'minute', 'second'];
@@ -205,10 +190,12 @@ export function initSegmentStates() {
 
 export function initSegmentIds() {
 	return Object.fromEntries(
-		segmentParts.map((part) => {
-			return [part, generateId()];
-		})
-	) as Record<SegmentPart, string>;
+		allSegmentParts
+			.map((part) => {
+				return [part, generateId()];
+			})
+			.filter(([key]) => key !== 'literal')
+	) as IdObj<AnyExceptLiteral>;
 }
 
 export function isDateSegmentPart(part: unknown): part is DateSegmentPart {

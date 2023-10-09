@@ -13,6 +13,7 @@ import {
 	executeCallbacks,
 	isTabKey,
 	isNumberKey,
+	styleToString,
 } from '$lib/internal/helpers';
 import {
 	dateStore,
@@ -22,12 +23,7 @@ import {
 	createFormatter,
 } from '$lib/internal/date';
 import { derived, get, writable, type Updater } from 'svelte/store';
-import {
-	defaultSegmentAttrs,
-	getPartFromNode,
-	isAcceptableSegmentKey,
-	syncSegmentValues,
-} from './_internal/helpers';
+import { getPartFromNode, isAcceptableSegmentKey, syncSegmentValues } from './_internal/helpers';
 import {
 	areAllSegmentsFilled,
 	createContent,
@@ -42,6 +38,7 @@ import {
 	moveToNextSegment,
 } from './_internal/helpers';
 import type {
+	AnyExceptLiteral,
 	AnySegmentPart,
 	DateAndTimeSegmentObj,
 	DateFieldIds,
@@ -62,7 +59,7 @@ const defaults = {
 	granularity: 'day',
 } satisfies CreateDateFieldProps;
 
-type DateFieldParts = 'segment';
+type DateFieldParts = 'segment' | 'label';
 
 const { name } = createElHelpers<DateFieldParts>('dateField');
 
@@ -101,6 +98,23 @@ export function createDateField(props?: CreateDateFieldProps) {
 		label: generateId(),
 	} satisfies DateFieldIds;
 
+	/**
+	 * The default attributes applied to the segments
+	 * that are interactive.
+	 */
+	const defaultSegmentAttrs = {
+		role: 'spinbutton',
+		contenteditable: true,
+		tabindex: 0,
+		spellcheck: false,
+		inputmode: 'numeric',
+		autocorrect: 'off',
+		enterkeyhint: 'next',
+		style: styleToString({
+			'caret-color': 'transparent',
+		}),
+	};
+
 	const states = initSegmentStates();
 
 	const segmentContents = derived(
@@ -116,11 +130,20 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 	);
 
+	const label = builder(name('label'), {
+		returned: () => {
+			return {
+				id: ids.label,
+			};
+		},
+	});
+
 	const dateField = builder(name(), {
 		returned: () => {
 			return {
 				role: 'group',
 				id: ids.field,
+				'aria-labelledby': ids.label,
 			};
 		},
 	});
@@ -173,9 +196,16 @@ export function createDateField(props?: CreateDateFieldProps) {
 				placeholderValue: $placeholderValue,
 			};
 			return (part: AnySegmentPart) => {
-				return {
+				const defaultAttrs = {
 					...getSegmentAttrs(part, props),
 					'data-segment': `${part}`,
+				};
+				if (part === 'literal') {
+					return defaultAttrs;
+				}
+				return {
+					...defaultAttrs,
+					'aria-labelledby': getLabelledBy(part),
 				};
 			};
 		},
@@ -1374,6 +1404,10 @@ export function createDateField(props?: CreateDateFieldProps) {
 		return segmentBuilders[part].action(node);
 	}
 
+	function getLabelledBy(part: AnyExceptLiteral) {
+		return `${ids[part]} ${ids.label}`;
+	}
+
 	effect(locale, ($locale) => {
 		if (formatter.getLocale() === $locale) return;
 		formatter.setLocale($locale);
@@ -1404,6 +1438,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		elements: {
 			dateField,
 			segment,
+			label,
 		},
 		states: {
 			value,
