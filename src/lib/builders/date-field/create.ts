@@ -537,7 +537,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		const valueNow = date.month;
 		const valueMin = 1;
 		const valueMax = 12;
-		const valueText = isEmpty ? 'Empty' : `${valueNow}, ${formatter.fullMonth(toDate(date))}`;
+		const valueText = isEmpty ? 'Empty' : `${valueNow} - ${formatter.fullMonth(toDate(date))}`;
 
 		return {
 			...defaultSegmentAttrs,
@@ -587,6 +587,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				}
 				const next = pValue.set({ month: prev }).cycle('month', 1);
 				announceAssertive(`${next.month} - ${formatter.fullMonth(toDate(next))}`);
+
 				return next.month;
 			});
 			return;
@@ -598,7 +599,6 @@ export function createDateField(props?: CreateDateFieldProps) {
 				}
 				const pValue = get(placeholderValue);
 				const next = pValue.set({ month: prev }).cycle('month', -1);
-				announceAssertive(`${next.month} - ${formatter.fullMonth(toDate(next))}`);
 				return next.month;
 			});
 			return;
