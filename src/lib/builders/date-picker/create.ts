@@ -113,7 +113,12 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	effect([open], ([$open]) => {
 		if (!$open) {
-			placeholderValue.reset();
+			const $value = get(value);
+			if ($value) {
+				placeholderValue.set($value);
+			} else {
+				placeholderValue.reset();
+			}
 		}
 	});
 
