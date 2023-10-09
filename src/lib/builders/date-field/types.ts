@@ -89,7 +89,7 @@ export type DateFieldProps = {
 	 * `dayPeriod` segment in your input to ensure the user
 	 * can select AM/PM.
 	 *
-	 * @default - to the user's locale
+	 * Defaults to the locale's default time format.
 	 */
 	hourCycle?: 12 | 24;
 

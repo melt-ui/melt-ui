@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { createDateField } from '$lib/builders';
 	import { melt } from '$lib';
+	import { getLocalTimeZone, now } from '@internationalized/date';
 
 	const {
 		elements: { dateField, segment, label },
 		states: { value, segmentContents },
-	} = createDateField();
+	} = createDateField({
+		defaultPlaceholderValue: now(getLocalTimeZone()),
+		locale: 'en-UK',
+	});
 </script>
 
 <div class="flex w-full flex-col items-center gap-3">
@@ -28,6 +32,9 @@
 </div>
 
 <style lang="postcss">
+	.segment:not([data-segment='literal']) {
+		@apply px-0.5;
+	}
 	.segment {
 		@apply data-[segment="dayPeriod"]:pl-0.5 data-[segment="hour"]:pl-1 data-[segment="timeZoneName"]:pl-1;
 	}

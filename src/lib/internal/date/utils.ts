@@ -57,12 +57,16 @@ export function toDate(dateValue: DateValue, tz: string = getLocalTimeZone()) {
 	}
 }
 
+export function isCalendarDateTime(dateValue: DateValue): dateValue is CalendarDateTime {
+	return dateValue instanceof CalendarDateTime;
+}
+
 export function isZonedDateTime(dateValue: DateValue): dateValue is ZonedDateTime {
 	return dateValue instanceof ZonedDateTime;
 }
 
 export function hasTime(dateValue: DateValue) {
-	return dateValue instanceof CalendarDateTime || dateValue instanceof ZonedDateTime;
+	return isCalendarDateTime(dateValue) || isZonedDateTime(dateValue);
 }
 
 export function getDaysInMonth(date: Date) {

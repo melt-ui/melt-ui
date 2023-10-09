@@ -4,6 +4,7 @@ import {
 	type Granularity,
 	toDate,
 	isZonedDateTime,
+	hasTime,
 } from '$lib/internal/date';
 import type { DateValue } from '@internationalized/date';
 import type {
@@ -56,6 +57,7 @@ type CreateContentObjProps = {
 	locale: string;
 	dateRef: DateValue;
 	granularity: Granularity;
+	hideTimeZone: boolean;
 };
 
 export function createContentObj(props: CreateContentObjProps) {
@@ -106,10 +108,11 @@ type CreateContentArrProps = {
 	dateRef: DateValue;
 	formatter: Formatter;
 	contentObj: SegmentContentObj;
+	hideTimeZone: boolean;
 };
 
 function createContentArr(props: CreateContentArrProps) {
-	const { granularity, dateRef, formatter, contentObj } = props;
+	const { granularity, dateRef, formatter, contentObj, hideTimeZone } = props;
 
 	const parts = formatter.toParts(toDate(dateRef), getOptsByGranularity(granularity));
 	const segmentContentArr = parts
@@ -128,7 +131,7 @@ function createContentArr(props: CreateContentArrProps) {
 		})
 		.filter((segment): segment is { part: AnySegmentPart; value: string } => {
 			if (isNull(segment.part) || isNull(segment.value)) return false;
-			if (segment.part === 'timeZoneName' && !isZonedDateTime(dateRef)) {
+			if (segment.part === 'timeZoneName' && (!isZonedDateTime(dateRef) || hideTimeZone)) {
 				return false;
 			}
 			return true;
@@ -422,4 +425,20 @@ export function syncSegmentValues(props: SyncSegmentValuesProps) {
 	}
 
 	segmentValues.set(Object.fromEntries(dateValues) as SegmentValueObj);
+}
+
+/**
+ * If granularity is undefined, infer it from the provided value.
+ */
+export function inferGranularity(
+	value: DateValue,
+	granularity: Granularity | undefined
+): Granularity {
+	if (granularity) {
+		return granularity;
+	}
+	if (hasTime(value)) {
+		return 'minute';
+	}
+	return 'day';
 }

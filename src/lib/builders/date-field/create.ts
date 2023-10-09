@@ -23,7 +23,12 @@ import {
 	createFormatter,
 } from '$lib/internal/date';
 import { derived, get, writable, type Updater } from 'svelte/store';
-import { getPartFromNode, isAcceptableSegmentKey, syncSegmentValues } from './_internal/helpers';
+import {
+	getPartFromNode,
+	inferGranularity,
+	isAcceptableSegmentKey,
+	syncSegmentValues,
+} from './_internal/helpers';
 import {
 	areAllSegmentsFilled,
 	createContent,
@@ -56,7 +61,8 @@ const defaults = {
 	value: undefined,
 	hourCycle: undefined,
 	locale: 'en',
-	granularity: 'day',
+	granularity: undefined,
+	hideTimeZone: false,
 } satisfies CreateDateFieldProps;
 
 type DateFieldParts = 'segment' | 'label';
@@ -67,22 +73,33 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const withDefaults = { ...defaults, ...props };
 
 	const options = toWritableStores(omit(withDefaults, 'value', 'placeholderValue'));
-	const { locale, granularity, hourCycle } = options;
+	const { locale, granularity, hourCycle, hideTimeZone } = options;
 
 	const defaultDate = getDefaultDate(withDefaults.granularity);
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
 	const placeholderValueWritable =
-		withDefaults.placeholderValue ?? writable(withDefaults.placeholderValue ?? defaultDate);
+		withDefaults.placeholderValue ?? writable(withDefaults.defaultPlaceholderValue ?? defaultDate);
 	const placeholderValue = dateStore(
 		overridable(placeholderValueWritable, withDefaults.onPlaceholderValueChange),
 		withDefaults.defaultPlaceholderValue ?? defaultDate
 	);
 
+	const inferredGranularity = derived(
+		[placeholderValue, granularity],
+		([$placeholderValue, $granularity]) => {
+			if ($granularity) {
+				return $granularity;
+			} else {
+				return inferGranularity($placeholderValue, $granularity);
+			}
+		}
+	);
+
 	const formatter = createFormatter(get(locale));
 	const dateRef = get(placeholderValue);
-	const initialSegments = initializeSegmentValues(get(granularity));
+	const initialSegments = initializeSegmentValues(get(inferredGranularity));
 	const segmentValues = writable(structuredClone(initialSegments));
 
 	/**
@@ -118,14 +135,15 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const states = initSegmentStates();
 
 	const segmentContents = derived(
-		[segmentValues, locale, granularity],
-		([$segmentValues, $locale, $granularity]) => {
+		[segmentValues, locale, inferredGranularity, hideTimeZone],
+		([$segmentValues, $locale, $inferredGranularity, $hideTimeZone]) => {
 			return createContent({
 				segmentValues: $segmentValues,
 				formatter,
 				locale: $locale,
-				granularity: $granularity,
+				granularity: $inferredGranularity,
 				dateRef: get(placeholderValue),
+				hideTimeZone: $hideTimeZone,
 			});
 		}
 	);
@@ -1379,10 +1397,26 @@ export function createDateField(props?: CreateDateFieldProps) {
 		};
 	}
 
-	function timeZoneSegmentAction() {
+	function timeZoneSegmentAction(node: HTMLElement) {
+		const unsubEvents = executeCallbacks(
+			addMeltEventListener(node, 'keydown', handleTimeZoneSegmentKeydown)
+		);
+
 		return {
-			// nooop
+			destroy() {
+				unsubEvents();
+			},
 		};
+	}
+
+	function handleTimeZoneSegmentKeydown(e: KeyboardEvent) {
+		if (!isTabKey(e.key)) {
+			e.preventDefault();
+		}
+
+		if (isSegmentNavigationKey(e.key)) {
+			handleSegmentNavigation(e, ids.field);
+		}
 	}
 
 	function getSegmentAttrs(part: AnySegmentPart, props: SegmentAttrProps) {
