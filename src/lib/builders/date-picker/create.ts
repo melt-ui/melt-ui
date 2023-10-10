@@ -61,6 +61,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		attrs: {
 			trigger: {
 				...defaultTriggerAttrs,
+				'aria-label': 'Open date picker',
 			},
 		},
 		handlers: {

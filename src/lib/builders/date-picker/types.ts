@@ -127,7 +127,10 @@ export type DatePickerProps = {
 
 type ModifiedDateFieldProps = RenameProperties<CreateDateFieldProps, { ids: 'dateFieldIds' }>;
 type ModifiedCalendarProps = RenameProperties<CreateCalendarProps, { ids: 'calendarIds' }>;
-type ModifiedPopoverProps = RenameProperties<CreatePopoverProps, { ids: 'popoverIds' }>;
+type ModifiedPopoverProps = Omit<
+	RenameProperties<CreatePopoverProps, { ids: 'popoverIds' }>,
+	'disabled'
+>;
 
 export type CreateDatePickerProps = Expand<
 	DatePickerProps & ModifiedDateFieldProps & ModifiedPopoverProps & ModifiedCalendarProps
