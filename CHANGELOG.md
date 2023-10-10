@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.53.0
+
+### Minor Changes
+
+- Feat: Allow opting-out of floating UI ([`1614f12c`](https://github.com/melt-ui/melt-ui/commit/1614f12c5e09cdce8c0e19a94d4e52b8e591626f))
+
 ## 0.52.0
 
 ### Minor Changes
