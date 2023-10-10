@@ -438,9 +438,9 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	function nextPage() {
 		if (get(pagedNavigation)) {
 			const $numberOfMonths = get(numberOfMonths);
-			placeholderValue.add({ months: $numberOfMonths });
+			placeholderValue.nextPage($numberOfMonths);
 		} else {
-			placeholderValue.add({ months: 1 });
+			placeholderValue.nextPage(1);
 		}
 	}
 
@@ -454,9 +454,9 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	function prevPage() {
 		if (get(pagedNavigation)) {
 			const $numberOfMonths = get(numberOfMonths);
-			placeholderValue.subtract({ months: $numberOfMonths });
+			placeholderValue.prevPage($numberOfMonths);
 		} else {
-			placeholderValue.subtract({ months: 1 });
+			placeholderValue.prevPage(1);
 		}
 	}
 

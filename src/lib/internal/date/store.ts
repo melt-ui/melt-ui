@@ -47,6 +47,18 @@ export function dateStore<T extends DateValue>(store: Writable<T>, defaultValue:
 		});
 	}
 
+	function nextPage(amount: number) {
+		update((d) => {
+			return d.set({ day: 1 }).add({ months: amount }) as T;
+		});
+	}
+
+	function prevPage(amount: number) {
+		update((d) => {
+			return d.set({ day: 1 }).subtract({ months: amount }) as T;
+		});
+	}
+
 	function subtract(duration: MappedDuration<T>) {
 		update((d) => {
 			return d.subtract(duration) as T;
@@ -146,6 +158,8 @@ export function dateStore<T extends DateValue>(store: Writable<T>, defaultValue:
 		toString,
 		daysInMonth,
 		toWritable,
+		nextPage,
+		prevPage,
 	};
 }
 
@@ -164,4 +178,6 @@ export type DateStore<T> = Writable<T> & {
 	toDate: () => Date;
 	isZoned: () => boolean;
 	daysInMonth: () => number;
+	nextPage: (amount: number) => void;
+	prevPage: (amount: number) => void;
 };
