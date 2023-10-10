@@ -203,6 +203,7 @@ export function createCombobox<
 	function closeMenu() {
 		open.set(false);
 		touchedInput.set(false);
+		highlightedItem.set(null);
 	}
 
 	/**
