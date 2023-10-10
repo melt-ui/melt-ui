@@ -22,6 +22,7 @@ import {
 	toDate,
 	createFormatter,
 	getAnnouncer,
+	isMatch,
 } from '$lib/internal/date/index.js';
 import { derived, get, writable, type Updater } from 'svelte/store';
 import {
@@ -45,7 +46,6 @@ import {
 	setDescription,
 } from './_internal/helpers.js';
 import type {
-	Announcer,
 	AnyExceptLiteral,
 	AnySegmentPart,
 	DateAndTimeSegmentObj,
@@ -58,6 +58,7 @@ import type {
 	TimeSegmentObj,
 	TimeSegmentPart,
 } from './_internal/types.js';
+import type { DateValue } from '@internationalized/date';
 
 const defaults = {
 	unavailable: false,
@@ -76,11 +77,17 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const withDefaults = { ...defaults, ...props };
 
 	const options = toWritableStores(omit(withDefaults, 'value', 'placeholderValue'));
-	const { locale, granularity, hourCycle, hideTimeZone } = options;
+	const { locale, granularity, hourCycle, hideTimeZone, unavailable } = options;
 
 	const defaultDate = getDefaultDate(withDefaults.granularity);
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
+
+	const isInvalid = derived([value, unavailable], ([$value, $unavailable]) => {
+		if (!$value) return false;
+		if (isMatch($value, $unavailable)) return true;
+		return false;
+	});
 
 	const placeholderValueWritable =
 		withDefaults.placeholderValue ?? writable(withDefaults.defaultPlaceholderValue ?? defaultDate);
@@ -105,7 +112,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const initialSegments = initializeSegmentValues(get(inferredGranularity));
 	const segmentValues = writable(structuredClone(initialSegments));
 
-	let announcer: Announcer = getAnnouncer();
+	let announcer = getAnnouncer();
 
 	/**
 	 * Prevent a condition where the value of the date
@@ -163,13 +170,14 @@ export function createDateField(props?: CreateDateFieldProps) {
 	});
 
 	const dateField = builder(name(), {
-		stores: [value],
-		returned: ([$value]) => {
+		stores: [value, isInvalid],
+		returned: ([$value, $isInvalid]) => {
 			return {
 				role: 'group',
 				id: ids.field,
 				'aria-labelledby': ids.label,
 				'aria-describedby': $value ? ids.description : undefined,
+				'data-invalid': $isInvalid ? '' : undefined,
 			};
 		},
 		action: () => {
@@ -223,8 +231,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 	};
 
 	const segment = builder(name('segment'), {
-		stores: [segmentValues, hourCycle, placeholderValue, value, locale],
-		returned: ([$segmentValues, $hourCycle, $placeholderValue, $value, _]) => {
+		stores: [segmentValues, hourCycle, placeholderValue, value, isInvalid, locale],
+		returned: ([$segmentValues, $hourCycle, $placeholderValue, $value, $isInvalid, _]) => {
 			const props = {
 				segmentValues: $segmentValues,
 				hourCycle: $hourCycle,
@@ -234,6 +242,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 				const defaultAttrs = {
 					...getSegmentAttrs(part, props),
 					'data-segment': `${part}`,
+					'aria-invalid': $isInvalid ? 'true' : undefined,
+					'data-invalid': $isInvalid ? '' : undefined,
 				};
 				if (part === 'literal') {
 					return defaultAttrs;
@@ -348,6 +358,35 @@ export function createDateField(props?: CreateDateFieldProps) {
 			updatingDayPeriod.set(null);
 		}
 	}
+
+	/**
+	 * A helper function to determine if a date is unavailable,
+	 * which uses the `Matcher`(s) provided via the `unavailable`
+	 * prop.
+	 *
+	 * Although we set attributes on the cells themselves, this
+	 * function is useful when you want to conditionally handle
+	 * something outside of the cell, such as its wrapping element.
+	 *
+	 * @example
+	 * ```svelte
+	 * {#each dates as date}
+	 * <td role="gridcell">
+	 * 	{#if $isUnavailable(date)}
+	 * 		X
+	 * 	{/if}
+	 * 	<!-- ... -->
+	 * </td>
+	 * {/each}
+	 * ```
+	 *
+	 * @param date - The `DateValue` to check
+	 * @returns `true` if the date is disabled, `false` otherwise
+	 */
+
+	const isUnavailable = derived(unavailable, ($unavailable) => {
+		return (date: DateValue) => isMatch(date, $unavailable);
+	});
 
 	/*
 	 * -----------------------------------------------------
@@ -1615,6 +1654,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 			segmentValues,
 			segmentContents,
 			placeholderValue: placeholderValue.toWritable(),
+		},
+		helpers: {
+			isUnavailable,
 		},
 		options,
 		ids,

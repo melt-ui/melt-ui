@@ -1,19 +1,13 @@
 <script lang="ts">
-	import { createCalendar, type CreateDatePickerProps } from '$lib/builders';
+	import { createCalendar } from '$lib/builders';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
 	import { melt } from '$lib';
-	import { getLocalTimeZone } from '@internationalized/date';
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
 		states: { value, months, headingValue, daysOfWeek },
-		options: { locale },
-		helpers: { isDisabled },
-	} = createCalendar({});
-
-	function getDayOfWeek(date: Date) {
-		return new Intl.DateTimeFormat($locale, { weekday: 'narrow' }).format(date);
-	}
+		helpers: { isDisabled, isUnavailable },
+	} = createCalendar();
 </script>
 
 <div class="flex h-full">
@@ -52,7 +46,10 @@
 							{#each month.weeks as dates}
 								<tr>
 									{#each dates as date}
-										<td role="gridcell" aria-disabled={$isDisabled(date)}>
+										<td
+											role="gridcell"
+											aria-disabled={$isDisabled(date) || $isUnavailable(date)}
+										>
 											<div use:melt={$cell(date)} class="cell">
 												{date.day}
 											</div>

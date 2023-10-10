@@ -109,7 +109,12 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		createMonth(withDefaults.defaultPlaceholderValue ?? defaultDate),
 	]);
 
-	const isInvalid = writable(false);
+	const isInvalid = derived([value, disabled, unavailable], ([$value, $disabled, $unavailable]) => {
+		if (!$value) return false;
+		if (isMatch($value, $disabled)) return true;
+		if (isMatch($value, $unavailable)) return true;
+		return false;
+	});
 
 	let announcer = getAnnouncer();
 
@@ -252,7 +257,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 					role: 'button',
 					'aria-label': labelText,
 					'aria-selected': isSelectedDate ? true : undefined,
-					'aria-disabled': isOutsideMonth || isDisabled ? true : undefined,
+					'aria-disabled': isOutsideMonth || isDisabled || isUnavailable ? true : undefined,
 					'data-selected': isSelectedDate ? true : undefined,
 					'data-value': cellValue.toString(),
 					'data-disabled': isDisabled || isOutsideMonth ? '' : undefined,

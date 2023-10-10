@@ -84,6 +84,19 @@ export type DateFieldProps = {
 	unavailable?: Matcher | Matcher[];
 
 	/**
+	 * If true, the date field will be disabled and users
+	 * will not be able to interact with it.
+	 */
+	fieldDisabled?: boolean;
+
+	/**
+	 * If true, the date field will be readonly, and users
+	 * will not be able to edit the values of any of the
+	 * individual segments.
+	 */
+	fieldReadOnly?: boolean;
+
+	/**
 	 * The format to use for displaying the time in the input.
 	 * If using a 12 hour clock, ensure you also include the
 	 * `dayPeriod` segment in your input to ensure the user
