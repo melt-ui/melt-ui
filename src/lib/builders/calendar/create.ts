@@ -24,7 +24,7 @@ import {
 import { derived, get, writable } from 'svelte/store';
 import type { CalendarIds, CreateCalendarProps, Month } from './types.js';
 import { tick } from 'svelte';
-import { isMatch, toDate } from '$lib/internal/date/index.js';
+import { getAnnouncer, isMatch, toDate } from '$lib/internal/date/index.js';
 import {
 	type DateValue,
 	getLocalTimeZone,
@@ -99,7 +99,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
 	const placeholderValueWritable =
-		withDefaults.placeholderValue ?? writable(withDefaults.placeholderValue ?? defaultDate);
+		withDefaults.placeholderValue ?? writable(withDefaults.defaultPlaceholderValue ?? defaultDate);
 	const placeholderValue = dateStore(
 		overridable(placeholderValueWritable, withDefaults.onPlaceholderValueChange),
 		withDefaults.defaultPlaceholderValue ?? defaultDate
@@ -110,6 +110,8 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	]);
 
 	const isInvalid = writable(false);
+
+	let announcer = getAnnouncer();
 
 	const headingValue = derived([months, locale], ([$months, $locale]) => {
 		if (!$months.length) return '';
@@ -161,6 +163,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			 * via an effect when the active date or label changes.
 			 */
 			createAccessibleHeading(node, get(fullCalendarLabel));
+			announcer = getAnnouncer();
 
 			const unsubKb = addMeltEventListener(node, 'keydown', handleCalendarKeydown);
 
@@ -328,19 +331,21 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	});
 
 	/**
-	 * A derived store whose value is an array of dates that represent
-	 * the days of the week, used to render the days of the week in the
-	 * calendar header.
+	 * A derived store whose value is an array days of the week
+	 * for the current locale and calendar view.
 	 *
-	 * It returns the days of the week from the first week of the first
-	 * month in the calendar view.
-	 *
-	 * This remains in sync with the `weekStartsOn` option, so if it is
+	 * This remains in sync with the `weekStartsOn` prop, so if it is
 	 * changed, this store and the calendar will update accordingly.
+	 *
+	 * If you prefer to format/render the days of the week yourself,
+	 * you can do so by accessing the first week of the first month,
+	 * and mapping over the dates to get/format each day of the week.
 	 */
 	const daysOfWeek = derived([months], ([$months]) => {
 		if (!$months.length) return [];
-		return $months[0].weeks[0];
+		return $months[0].weeks[0].map((date) => {
+			return formatter.dayOfWeek(toDate(date));
+		});
 	});
 
 	/**
@@ -391,6 +396,11 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		};
 	}
 
+	/**
+	 * Creates an accessible heading for the calendar so when it
+	 * is focused by a screen reader, the date range being displayed
+	 * is announced.
+	 */
 	function createAccessibleHeading(node: HTMLElement, label: string) {
 		if (!isBrowser) return;
 		const div = document.createElement('div');
@@ -484,8 +494,10 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		value.update((prev) => {
 			if (get(allowDeselect) && prev && isSameDay(prev, date)) {
 				placeholderValue.set(date);
+				announcer.announce('Selected date is now empty.', 'polite', 5000);
 				return undefined;
 			}
+			announcer.announce(`Selected Date: ${formatter.selectedDate(date, false)}`, 'polite');
 			return date;
 		});
 	}
@@ -642,6 +654,65 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		return parseDate(dateStr);
 	}
 
+	/**
+	 * A helper function to determine if a date is disabled,
+	 * which uses the `Matcher`(s) provided via the `disabled`
+	 * prop, as well as other internal logic, such as if the
+	 * date is outside of the current month.
+	 *
+	 * Although we set attributes on the cells themselves, this
+	 * function is useful when you want to conditionally handle
+	 * something outside of the cell, such as its wrapping element.
+	 *
+	 * @example
+	 * ```svelte
+	 * {#each dates as date}
+	 * <td role="gridcell" aria-disabled={$isDisabled(date)}>
+	 * 	<!-- ... -->
+	 * </td>
+	 * {/each}
+	 * ```
+	 *
+	 * @param date - The `DateValue` to check
+	 * @returns `true` if the date is disabled, `false` otherwise
+	 */
+	const isDisabled = derived([disabled, placeholderValue], ([$disabled, $placeholderValue]) => {
+		return (date: DateValue) => {
+			if (isMatch(date, $disabled)) return true;
+			if (!isSameMonth(date, $placeholderValue)) return true;
+			return false;
+		};
+	});
+
+	/**
+	 * A helper function to determine if a date is unavailable,
+	 * which uses the `Matcher`(s) provided via the `unavailable`
+	 * prop.
+	 *
+	 * Although we set attributes on the cells themselves, this
+	 * function is useful when you want to conditionally handle
+	 * something outside of the cell, such as its wrapping element.
+	 *
+	 * @example
+	 * ```svelte
+	 * {#each dates as date}
+	 * <td role="gridcell">
+	 * 	{#if $isUnavailable(date)}
+	 * 		X
+	 * 	{/if}
+	 * 	<!-- ... -->
+	 * </td>
+	 * {/each}
+	 * ```
+	 *
+	 * @param date - The `DateValue` to check
+	 * @returns `true` if the date is disabled, `false` otherwise
+	 */
+
+	const isUnavailable = derived(unavailable, ($unavailable) => {
+		return (date: DateValue) => isMatch(date, $unavailable);
+	});
+
 	return {
 		elements: {
 			calendar,
@@ -665,6 +736,8 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			prevYear,
 			setYear,
 			setMonth,
+			isDisabled,
+			isUnavailable,
 		},
 		options,
 		ids,

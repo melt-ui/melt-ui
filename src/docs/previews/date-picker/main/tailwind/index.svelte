@@ -3,7 +3,6 @@
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
 	import { melt } from '$lib';
 	import { fade } from 'svelte/transition';
-	import { getLocalTimeZone } from '@internationalized/date';
 
 	const {
 		elements: {
@@ -27,9 +26,6 @@
 		granularity: 'minute',
 	});
 
-	function getDayOfWeek(date: Date) {
-		return new Intl.DateTimeFormat($locale, { weekday: 'narrow' }).format(date);
-	}
 </script>
 
 <div class="flex w-full flex-col items-center gap-3">
@@ -77,10 +73,10 @@
 					<table use:melt={$grid} class="w-full">
 						<thead aria-hidden="true">
 							<tr>
-								{#each $daysOfWeek as date}
+								{#each $daysOfWeek as day}
 									<th class="text-sm font-semibold text-magnum-800">
 										<div class="flex h-6 w-6 items-center justify-center p-4">
-											{getDayOfWeek(date.toDate(getLocalTimeZone()))}
+											{day}
 										</div>
 									</th>
 								{/each}

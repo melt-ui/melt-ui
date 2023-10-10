@@ -23,8 +23,8 @@ export function createFormatter(initialLocale: string) {
 		return new DateFormatter(locale, options).format(date);
 	}
 
-	function selectedDate(date: DateValue) {
-		if (hasTime(date)) {
+	function selectedDate(date: DateValue, includeTime = true) {
+		if (hasTime(date) && includeTime) {
 			return custom(toDate(date), {
 				dateStyle: 'long',
 				timeStyle: 'long',
@@ -50,6 +50,10 @@ export function createFormatter(initialLocale: string) {
 
 	function toParts(date: Date, options?: Intl.DateTimeFormatOptions) {
 		return new DateFormatter(locale, options).formatToParts(date);
+	}
+
+	function dayOfWeek(date: Date, length: Intl.DateTimeFormatOptions['weekday'] = 'narrow') {
+		return new DateFormatter(locale, { weekday: length }).format(date);
 	}
 
 	function dayPeriod(date: Date): 'AM' | 'PM' {
@@ -104,5 +108,6 @@ export function createFormatter(initialLocale: string) {
 		part,
 		dayPeriod,
 		selectedDate,
+		dayOfWeek,
 	};
 }

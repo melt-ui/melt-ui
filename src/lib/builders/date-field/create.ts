@@ -14,17 +14,18 @@ import {
 	isTabKey,
 	isNumberKey,
 	styleToString,
-} from '$lib/internal/helpers';
+} from '$lib/internal/helpers/index.js';
 import {
 	dateStore,
 	getDaysInMonth,
 	getDefaultDate,
 	toDate,
 	createFormatter,
-} from '$lib/internal/date';
+	getAnnouncer,
+} from '$lib/internal/date/index.js';
 import { derived, get, writable, type Updater } from 'svelte/store';
-import { isFirstSegment } from './_internal/helpers';
 import {
+	isFirstSegment,
 	areAllSegmentsFilled,
 	createContent,
 	getValueFromSegments,
@@ -42,8 +43,7 @@ import {
 	removeDescriptionElement,
 	syncSegmentValues,
 	setDescription,
-	getAnnouncer,
-} from './_internal/helpers';
+} from './_internal/helpers.js';
 import type {
 	Announcer,
 	AnyExceptLiteral,
@@ -57,7 +57,7 @@ import type {
 	SegmentBuilders,
 	TimeSegmentObj,
 	TimeSegmentPart,
-} from './_internal/types';
+} from './_internal/types.js';
 
 const defaults = {
 	unavailable: false,

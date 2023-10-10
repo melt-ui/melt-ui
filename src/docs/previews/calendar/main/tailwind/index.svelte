@@ -1,35 +1,15 @@
 <script lang="ts">
-	import {
-		createCalendar,
-		type CreateDatePickerProps,
-		type Matcher,
-	} from '$lib/builders';
+	import { createCalendar, type CreateDatePickerProps } from '$lib/builders';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
 	import { melt } from '$lib';
 	import { getLocalTimeZone } from '@internationalized/date';
-
-	export let disabled: Matcher | Matcher[] = false;
-	export let defaultPlaceholderValue: CreateDatePickerProps['defaultPlaceholderValue'] =
-		undefined;
-	export let numberOfMonths: CreateDatePickerProps['numberOfMonths'] = 1;
-	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = false;
-	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = 0;
-	export let fixedWeeks: CreateDatePickerProps['fixedWeeks'] = false;
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
 		states: { value, months, headingValue, daysOfWeek },
 		options: { locale },
-	} = createCalendar({
-		allowDeselect: true,
-		disabled,
-		defaultPlaceholderValue,
-		numberOfMonths,
-		pagedNavigation,
-		weekStartsOn,
-		fixedWeeks,
-		granularity: 'minute',
-	});
+		helpers: { isDisabled },
+	} = createCalendar({});
 
 	function getDayOfWeek(date: Date) {
 		return new Intl.DateTimeFormat($locale, { weekday: 'narrow' }).format(date);
@@ -56,24 +36,23 @@
 					</button>
 				</header>
 				{#each $months as month}
-					{@const { weeks } = month}
 					<table use:melt={$grid} class="w-full">
 						<thead aria-hidden="true">
 							<tr>
-								{#each $daysOfWeek as date}
+								{#each $daysOfWeek as day}
 									<th class="text-sm font-semibold text-magnum-800">
 										<div class="flex h-6 w-6 items-center justify-center p-4">
-											{getDayOfWeek(date.toDate(getLocalTimeZone()))}
+											{day}
 										</div>
 									</th>
 								{/each}
 							</tr>
 						</thead>
 						<tbody>
-							{#each weeks as days}
+							{#each month.weeks as dates}
 								<tr>
-									{#each days as date}
-										<td role="gridcell">
+									{#each dates as date}
+										<td role="gridcell" aria-disabled={$isDisabled(date)}>
 											<div use:melt={$cell(date)} class="cell">
 												{date.day}
 											</div>
