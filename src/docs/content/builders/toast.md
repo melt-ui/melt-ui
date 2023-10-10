@@ -126,7 +126,8 @@ the application.
 
 ### Overriding default values for individual toasts
 
-While you can define some global values for the Toaster on initialization, it is possible to override these defaults for individual toasts using the `addToast` helper function.
+While you can define some global values for the Toaster on initialization, it is possible to
+override these defaults for individual toasts using the `addToast` helper function.
 
 ```svelte
 <script lang="ts">
@@ -138,14 +139,14 @@ While you can define some global values for the Toaster on initialization, it is
 	// this will use the default values
 	function create() {
 		addToast({
-			data: { /* ... */ }
+			data
 		})
 	}
 
 	// this overrides some values
 	function createImportant() {
 		addToast({
-			data: { /* ... */ },
+			data,
 			closeDelay: 10000, // overrides the default delay (5000)
 			type: 'foreground' // overrides the default type ('background')
 		})
