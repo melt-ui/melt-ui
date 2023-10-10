@@ -42,7 +42,7 @@ const builder = builderSchema(BUILDER_NAME, {
 			see: SEE.BRING_YOUR_OWN_STORE,
 		},
 		{
-			name: 'onSelectChange',
+			name: 'onSelectedChange',
 			type: 'ChangeFn<SelectOption<unknown>>',
 			description: 'A callback that is called when the selected option changes.',
 			see: SEE.CHANGE_FUNCTIONS,
