@@ -56,9 +56,8 @@ export function createFormatter(initialLocale: string) {
 		return new DateFormatter(locale, { weekday: length }).format(date);
 	}
 
-	function dayPeriod(date: Date): 'AM' | 'PM' {
+	function dayPeriod(date: Date) {
 		const parts = new DateFormatter(locale, {
-			hour12: true,
 			hour: 'numeric',
 			minute: 'numeric',
 		}).formatToParts(date);

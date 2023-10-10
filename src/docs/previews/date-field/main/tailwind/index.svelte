@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { createDateField } from '$lib/builders';
 	import { melt } from '$lib';
+	import { CalendarDateTime } from '@internationalized/date';
 
 	const {
 		elements: { dateField, segment, label },
 		states: { value, segmentContents },
 	} = createDateField({
-		granularity: 'minute',
+		defaultPlaceholderValue: new CalendarDateTime(1980, 1, 20, 12, 30, 0, 0),
 	});
 </script>
 

@@ -79,7 +79,12 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const options = toWritableStores(omit(withDefaults, 'value', 'placeholderValue'));
 	const { locale, granularity, hourCycle, hideTimeZone, unavailable } = options;
 
-	const defaultDate = getDefaultDate(withDefaults.granularity);
+	const defaultDate = withDefaults.defaultValue
+		? withDefaults.defaultValue
+		: withDefaults.defaultPlaceholderValue
+		? withDefaults.defaultPlaceholderValue
+		: getDefaultDate(withDefaults.granularity);
+
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
@@ -636,7 +641,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('month', (prev) => {
 				if (prev === null) {
-					const next = $placeholderValue.month + 1;
+					const next = $placeholderValue.month;
 					announcer.announce(getMonthAnnouncement(next));
 					return next;
 				}
@@ -649,7 +654,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('month', (prev) => {
 				if (prev === null) {
-					const next = $placeholderValue.month + 1;
+					const next = $placeholderValue.month;
 					announcer.announce(getMonthAnnouncement(next));
 					return next;
 				}

@@ -241,9 +241,13 @@ function getUsedSegments(id: string) {
 function getSegments(id: string) {
 	const inputContainer = document.getElementById(id);
 	if (!isHTMLElement(inputContainer)) return [];
-	const segments = Array.from(
-		inputContainer.querySelectorAll('[data-segment]:not([data-segment="literal"]')
-	).filter((el): el is HTMLElement => isHTMLElement(el));
+	const segments = Array.from(inputContainer.querySelectorAll('[data-segment]')).filter(
+		(el): el is HTMLElement => {
+			if (!isHTMLElement(el)) return false;
+			if (el.dataset.segment === 'literal') return false;
+			return true;
+		}
+	);
 	return segments;
 }
 

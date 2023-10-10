@@ -18,7 +18,11 @@ export default defineConfig({
 		},
 		alias: [{ find: /^svelte$/, replacement: 'svelte/internal' }],
 		deps: {
-			inline: ['clsx'],
+			optimizer: {
+				web: {
+					include: ['clsx'],
+				},
+			},
 		},
 	},
 });
