@@ -10,6 +10,7 @@ import {
     hexToHSV,
     HSVtoRGB,
     hexToHSL,
+    overridable,
 } from "$lib/internal/helpers";
 
 import type { ColorRGB, Defaults } from "$lib/internal/types";
@@ -45,7 +46,9 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         'ArrowRight': null
     };
 
-    const color: Writable<string> = writable(defaults.defaultColor);
+    // const value: Writable<string> = writable(defaults.defaultColor);
+    const valueWritable = argsWithDefaults.value ?? writable(argsWithDefaults.defaultColor);
+	const value = overridable(valueWritable, argsWithDefaults?.onValueChange);
 
     const colorCanvasDims: Writable<NodeElement<HTMLCanvasElement>> = writable({ height: 1, width: 1 });
     const colorPickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
@@ -53,11 +56,11 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
     const hueSliderDims: Writable<NodeElement<HTMLCanvasElement>> = writable({ height: 1, width: 1 });
     const huePickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
-    const hueAngle: Writable<number> = writable(0);
+    const hueAngle: Writable<number> = argsWithDefaults.hueAngle ?? writable(0);
 
     const alphaSliderDims: Writable<NodeElement<HTMLCanvasElement>> = writable({ height: 1, width: 1 });
     const alphaPickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
-    const alphaValue: Writable<number> = writable(100);
+    const alphaValue: Writable<number> = argsWithDefaults.alphaValue ?? writable(100);
 
     let eye: EyeDropperType | null = null;
 
@@ -83,13 +86,13 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     /**
      * A derived store that returns different color representations (RGB, HSV, HSL).
      */
-    const derivedColors: Readable<ReturnedColor> = derived([color, hueAngle, colorPickerPos, colorCanvasDims, alphaValue], ([$color, $hueAngle, $colorPickerPos, $colorCanvasDims]) => {
+    const derivedColors: Readable<ReturnedColor> = derived([value, hueAngle, colorPickerPos, colorCanvasDims, alphaValue], ([$value, $hueAngle, $colorPickerPos, $colorCanvasDims]) => {
         const x = $colorPickerPos.x / $colorCanvasDims.width;
         const y = 1 - $colorPickerPos.y / $colorCanvasDims.height;
 
         const rgb = HSVtoRGB({ h: $hueAngle / 360, s: x, v: y });
-        const hsv = hexToHSV($color);
-        const hsl = hexToHSL($color);
+        const hsv = hexToHSV($value);
+        const hsl = hexToHSL($value);
 
         return {
             rgb,
@@ -171,8 +174,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     });
 
     const colorPicker = builder(name('color-picker'), {
-        stores: [colorPickerPos, colorPickerDims, color],
-        returned: ([$colorPickerPos, $colorPickerDims, $color]) => {
+        stores: [colorPickerPos, colorPickerDims, value],
+        returned: ([$colorPickerPos, $colorPickerDims, $value]) => {
             const top = Math.round($colorPickerPos.y - $colorPickerDims.height / 2);
             const left = Math.round($colorPickerPos.x - $colorPickerDims.width / 2);
 
@@ -182,7 +185,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
                     position: 'absolute',
                     top: `${top}px`,
                     left: `${left}px`,
-                    'background-color': `${$color}`
+                    'background-color': `${$value}`
                 })
             }
         },
@@ -391,14 +394,14 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     });
 
     const alphaSlider = builder(name('alpha-slider'), {
-        stores: [color],
-        returned: ([$color]) => {
+        stores: [value],
+        returned: ([$value]) => {
             const orientation = argsWithDefaults.hueSliderOrientation === 'horizontal' ? 'right' : 'bottom';
 
             return {
                 'aria-label': 'A canvas element showing the alpha values for the color.',
                 style: styleToString({
-                    background: `linear-gradient(to ${orientation}, ${$color}00, ${$color})`
+                    background: `linear-gradient(to ${orientation}, ${$value}00, ${$value})`
                 })
             }
         },
@@ -563,11 +566,11 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
             const unsubEvents = executeCallbacks(
                 addMeltEventListener(node, 'keyup', () => {
-                    const { value } = node;
+                    const { value: hexValue } = node;
 
-                    if (!isValidHexColor(value)) return;
+                    if (!isValidHexColor(hexValue)) return;
 
-                    color.set(value);
+                    value.set(hexValue);
                 })
             );
 
@@ -742,7 +745,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         // the default color if not.
         argsWithDefaults.defaultColor = isValidHexColor(argsWithDefaults.defaultColor) ? argsWithDefaults.defaultColor : defaults.defaultColor;
 
-        color.set(argsWithDefaults.defaultColor);
+        value.set(argsWithDefaults.defaultColor);
 
         // Update the color and hue picker button positions to default one.
         updateOnColorInput(argsWithDefaults.defaultColor);
@@ -759,7 +762,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
             const { hex } = get(getCurrentColor)();
             insideUpdate = true;
-            color.set(hex);
+            value.set(hex);
         });
 
         /**
@@ -780,7 +783,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
             const { hex } = get(getCurrentColor)();
             insideUpdate = true;
-            color.set(hex);
+            value.set(hex);
         });
 
         /**
@@ -788,7 +791,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
          * If the source is external, we need to update the hue angle and the color
          * picker position.
          */
-        const colorUnsub = color.subscribe((hex) => {
+        const colorUnsub = value.subscribe((hex) => {
             if (insideUpdate) {
                 insideUpdate = false;
                 return;
@@ -821,7 +824,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             hexInput
         },
         states: {
-            color
+            value
         },
         helpers: {
             derivedColors

@@ -2,8 +2,12 @@
 	import { createColorPicker } from '$lib';
 
 	import { Pipette } from 'lucide-svelte';
+	import { writable } from 'svelte/store';
 
 	const defaultColor = '#5b52aa';
+
+	const alphaValue = writable(100);
+	const hueAngle = writable(0);
 
 	const {
 		elements: {
@@ -16,13 +20,18 @@
 			eyeDropper,
 			hexInput,
 		},
-		states: { color },
-		helpers: { getCurrentColor },
+		states: { value },
+		helpers: { derivedColors },
 	} = createColorPicker({
 		defaultColor,
+		alphaValue,
+		hueAngle,
+		onValueChange: ({ curr, next }) => {
+			// console.log('curr:', curr, 'next:', next);
+			return next;
+		},
 	});
 
-	// let savedColors: ReturnedColor[] = [];
 	let savedColors: string[] = [];
 
 	$: savedColorsLimited = savedColors.slice(0, 5);
@@ -76,14 +85,14 @@
 			{...$hexInput}
 			use:hexInput
 			type="text"
-			value={$color}
+			value={$value}
 			class="w-24 rounded-md border border-gray-800 px-2 py-1 text-black"
 			aria-label="hex color value"
 		/>
 
 		<button
 			class="rounded-md bg-magnum-600 p-1"
-			on:click={() => (savedColors = [$color, ...savedColors])}
+			on:click={() => (savedColors = [$value, ...savedColors])}
 		>
 			Save
 		</button>
@@ -94,7 +103,7 @@
 			<button
 				class="h-6 w-6 rounded-md border border-gray-400"
 				style="background-color: {hex}"
-				on:click={() => ($color = hex)}
+				on:click={() => ($value = hex)}
 			/>
 		{/each}
 	</div>
