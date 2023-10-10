@@ -126,6 +126,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		field: generateId(),
 		label: generateId(),
 		description: generateId(),
+		...withDefaults.ids,
 	} satisfies DateFieldIds;
 
 	/**

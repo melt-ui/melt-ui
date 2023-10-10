@@ -1,18 +1,23 @@
 import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
-import type { createDateField } from './create.js';
+import type { createDateRangeField } from './create.js';
 import type { DateValue } from '@internationalized/date';
-import type { Granularity, Matcher } from '$lib/index.js';
+import type { CreateDateFieldProps, Matcher } from '$lib/index.js';
 import type { DateFieldIds } from './_internal/types.js';
 
-export type DateFieldProps = {
+type DateRange<T extends DateValue = DateValue> = {
+	start?: T;
+	end?: T;
+};
+
+export type DateRangeFieldProps<T extends DateValue = DateValue> = {
 	/**
 	 * The default value for the date field. When provided,
 	 * the `placeholderValue` will also assume this value.
 	 *
 	 * @default undefined;
 	 */
-	defaultValue?: DateValue;
+	defaultValue?: DateRange<T>;
 
 	/**
 	 * A function called when the value of the date field changes.
@@ -24,7 +29,7 @@ export type DateFieldProps = {
 	 *
 	 * @default undefined
 	 */
-	onValueChange?: ChangeFn<DateValue | undefined>;
+	onValueChange?: ChangeFn<DateRange<T> | undefined>;
 
 	/**
 	 * A writable store than can be used to control the value of the
@@ -34,7 +39,7 @@ export type DateFieldProps = {
 	 *
 	 * @default undefined;
 	 */
-	value?: Writable<DateValue | undefined>;
+	value?: Writable<DateRange<T> | undefined>;
 
 	/**
 	 * The date that is used when the date field is empty to
@@ -84,53 +89,9 @@ export type DateFieldProps = {
 	unavailable?: Matcher | Matcher[];
 
 	/**
-	 * If true, the date field will be disabled and users
-	 * will not be able to interact with it.
-	 */
-	fieldDisabled?: boolean;
-
-	/**
-	 * If true, the date field will be readonly, and users
-	 * will not be able to edit the values of any of the
-	 * individual segments.
-	 */
-	fieldReadOnly?: boolean;
-
-	/**
-	 * The format to use for displaying the time in the input.
-	 * If using a 12 hour clock, ensure you also include the
-	 * `dayPeriod` segment in your input to ensure the user
-	 * can select AM/PM.
-	 *
-	 * Defaults to the locale's default time format.
-	 */
-	hourCycle?: 12 | 24;
-
-	/**
 	 * @default 'en'
 	 */
 	locale?: string;
-
-	/**
-	 * The granularity of the date field. This determines which
-	 * segments will be includes in the segments array used to
-	 * build the date field.
-	 *
-	 * By default, when a `CalendarDate` value is used, the granularity
-	 * will default to `'day'`, and when a `CalendarDateTime` or `ZonedDateTime`
-	 * value is used, the granularity will default to `'minute'`.
-	 *
-	 * Granularity is only used for visual purposes, and does not impact
-	 * the value of the date field. You can have the same value synced
-	 * between multiple date fields with different granularities and they
-	 * will all contain the same value.
-	 */
-	granularity?: Granularity;
-
-	/**
-	 * Whether or not to hide the timeZoneName segment from the date field.
-	 */
-	hideTimeZone?: boolean;
 
 	/**
 	 * Override any of the element IDs set by the builder.
@@ -144,5 +105,8 @@ export type DateFieldProps = {
 };
 
 export type { DateFieldIds };
-export type CreateDateFieldProps = DateFieldProps;
-export type DateField = ReturnType<typeof createDateField>;
+export type CreateDateRangeFieldProps = Expand<
+	DateRangeFieldProps &
+		Omit<CreateDateFieldProps, 'value' | 'defaultValue' | 'onValueChange' | 'ids'>
+>;
+export type DateRangeField = ReturnType<typeof createDateRangeField>;
