@@ -7,6 +7,7 @@ import { comboboxData } from './combobox.js';
 import { contextMenuData } from './context-menu.js';
 import { popoverData as calendarData } from './calendar.js';
 import { popoverData as dateFieldData } from './date-field.js';
+import { popoverData as dateRangeFieldData } from './date-range-field.js';
 import { dialogData } from './dialog.js';
 import { dropdownMenuData } from './dropdown-menu.js';
 import { labelData } from './label.js';
@@ -41,6 +42,7 @@ export const builderList = [
 	'context-menu',
 	'date-picker',
 	'date-field',
+	'date-range-field',
 	'dialog',
 	'dropdown-menu',
 	'label',
@@ -90,6 +92,7 @@ export const data: Builders = {
 	'context-menu': contextMenuData,
 	'date-picker': calendarData,
 	'date-field': dateFieldData,
+	'date-range-field': dateRangeFieldData,
 	dialog: dialogData,
 	'dropdown-menu': dropdownMenuData,
 	label: labelData,
