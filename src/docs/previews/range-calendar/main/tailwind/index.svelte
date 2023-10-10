@@ -7,7 +7,9 @@
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
 		states: { startValue, endValue, months, headingValue, daysOfWeek },
 		helpers: { isDisabled, isUnavailable },
-	} = createRangeCalendar();
+	} = createRangeCalendar({
+		allowDeselect: true,
+	});
 </script>
 
 <div class="flex h-full">

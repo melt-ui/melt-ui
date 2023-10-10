@@ -109,13 +109,6 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	const endValueWritable = withDefaults.endValue ?? writable(withDefaults.defaultEndValue);
 	const endValue = overridable(endValueWritable, withDefaults.onEndValueChange);
 
-	const rangeValue = derived([startValue, endValue], ([$startValue, $endValue]) => {
-		return {
-			start: $startValue,
-			end: $endValue,
-		};
-	});
-
 	const placeholderValueWritable =
 		withDefaults.placeholderValue ?? writable(withDefaults.defaultPlaceholderValue ?? defaultDate);
 	const placeholderValue = dateStore(
@@ -623,34 +616,32 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		const $startValue = get(startValue);
 		const $endValue = get(endValue);
 
+		if ($startValue && isSameDay($startValue, date) && get(allowDeselect) && !$endValue) {
+			startValue.set(undefined);
+			placeholderValue.set(date);
+			announcer.announce('Selected date is now empty.', 'polite');
+			return;
+		}
+
 		if (!$startValue) {
-			startValue.update((prev) => {
-				if (get(allowDeselect) && prev && isSameDay(prev, date)) {
-					placeholderValue.set(date);
-					announcer.announce('Selected date is now empty.', 'polite', 5000);
-					return undefined;
-				}
+			startValue.update(() => {
 				announcer.announce(`Selected Date: ${formatter.selectedDate(date, false)}`, 'polite');
 				return date;
 			});
 		} else if (!$endValue) {
-			endValue.update((prev) => {
-				if (get(allowDeselect) && prev && isSameDay(prev, date)) {
-					placeholderValue.set(date);
-					announcer.announce('Selected date is now empty.', 'polite', 5000);
-					return undefined;
-				}
-				announcer.announce(`Selected Date: ${formatter.selectedDate(date, false)}`, 'polite');
+			endValue.update(() => {
+				announcer.announce(
+					`Selected Dates: ${formatter.selectedDate(
+						$startValue,
+						false
+					)} to ${formatter.selectedDate(date, false)}`,
+					'polite'
+				);
 				return date;
 			});
 		} else if ($endValue && $startValue) {
 			endValue.set(undefined);
-			startValue.update((prev) => {
-				if (get(allowDeselect) && prev && isSameDay(prev, date)) {
-					placeholderValue.set(date);
-					announcer.announce('Selected date is now empty.', 'polite', 5000);
-					return undefined;
-				}
+			startValue.update(() => {
 				announcer.announce(`Selected Date: ${formatter.selectedDate(date, false)}`, 'polite');
 				return date;
 			});
