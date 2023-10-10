@@ -14,7 +14,6 @@ import {
 	omit,
 	overridable,
 	prev,
-	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';

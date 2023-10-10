@@ -13,7 +13,6 @@ import {
 	kbd,
 	omit,
 	overridable,
-	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
