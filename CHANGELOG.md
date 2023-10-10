@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.54.0
+
+### Minor Changes
+
+- Combobox: add hiddenInput element; refactor behaviours ([`a73b82c6`](https://github.com/melt-ui/melt-ui/commit/a73b82c68e83f31f092d010eb749d41a051f7432))
+
+### Patch Changes
+
+- Select: rename `input` to `hiddenInput` ([`4c53736c`](https://github.com/melt-ui/melt-ui/commit/4c53736c8c26e65dc3e8c709e7383bb7fff440aa))
+
 ## 0.53.0
 
 ### Minor Changes
