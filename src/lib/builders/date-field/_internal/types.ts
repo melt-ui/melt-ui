@@ -55,3 +55,5 @@ export type SegmentBuilders = Record<
 >;
 
 export type DateFieldIds = IdObj<AnyExceptLiteral | 'field' | 'label' | 'description'>;
+
+export type HourCycle = 12 | 24 | undefined;

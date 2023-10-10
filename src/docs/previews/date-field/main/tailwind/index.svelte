@@ -5,7 +5,9 @@
 	const {
 		elements: { dateField, segment, label },
 		states: { value, segmentContents },
-	} = createDateField({});
+	} = createDateField({
+		granularity: 'minute',
+	});
 </script>
 
 <div class="flex w-full flex-col items-center gap-3">

@@ -149,8 +149,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const states = initSegmentStates();
 
 	const segmentContents = derived(
-		[segmentValues, locale, inferredGranularity, hideTimeZone],
-		([$segmentValues, $locale, $inferredGranularity, $hideTimeZone]) => {
+		[segmentValues, locale, inferredGranularity, hideTimeZone, hourCycle],
+		([$segmentValues, $locale, $inferredGranularity, $hideTimeZone, $hourCycle]) => {
 			return createContent({
 				segmentValues: $segmentValues,
 				formatter,
@@ -158,6 +158,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				granularity: $inferredGranularity,
 				dateRef: get(placeholderValue),
 				hideTimeZone: $hideTimeZone,
+				hourCycle: $hourCycle,
 			});
 		}
 	);
@@ -947,16 +948,16 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 		states.hour.hasTouched = true;
 
-		const min = get(hourCycle) === 12 ? 1 : 0;
-		const max = get(hourCycle) === 12 ? 12 : 23;
+		const $hourCycle = get(hourCycle);
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('hour', (prev) => {
 				if (prev === null) {
-					announcer?.announce(`${min}`);
-					return min;
+					const next = dateRef.cycle('hour', 1, { hourCycle: $hourCycle }).hour;
+					announcer?.announce(`${next}`);
+					return next;
 				}
-				const next = dateRef.set({ hour: prev }).cycle('hour', 1).hour;
+				const next = dateRef.set({ hour: prev }).cycle('hour', 1, { hourCycle: $hourCycle }).hour;
 				announcer?.announce(`${next}`);
 				return next;
 			});
@@ -965,10 +966,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('hour', (prev) => {
 				if (prev === null) {
-					announcer?.announce(`${max}`);
-					return max;
+					const next = dateRef.cycle('hour', -1, { hourCycle: $hourCycle }).hour;
+					announcer?.announce(`${next}`);
+					return next;
 				}
-				const next = dateRef.set({ hour: prev }).cycle('hour', 1).hour;
+				const next = dateRef.set({ hour: prev }).cycle('hour', -1, { hourCycle: $hourCycle }).hour;
 				announcer?.announce(`${next}`);
 				return next;
 			});
@@ -979,7 +981,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			const num = parseInt(e.key);
 			let moveToNext = false;
 			updateSegment('hour', (prev) => {
-				const maxStart = Math.floor(max / 10);
+				const maxStart = Math.floor(24 / 10);
 
 				/**
 				 * If the user has left the segment, we want to reset the
@@ -1032,7 +1034,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				 * reset the segment as if the user had pressed the backspace key and then
 				 * typed a number.
 				 */
-				if (digits === 2 || total > max) {
+				if (digits === 2 || total > 24) {
 					/**
 					 * As we're doing elsewhere, we're checking if the number is greater
 					 * than the max start digit, and if so, we're moving to the next segment.

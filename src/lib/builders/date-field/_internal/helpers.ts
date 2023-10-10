@@ -18,6 +18,7 @@ import type {
 	DayPeriod,
 	AnySegmentPart,
 	AnyExceptLiteral,
+	HourCycle,
 } from './types.js';
 import { allSegmentParts, dateSegmentParts, segmentParts, timeSegmentParts } from './parts.js';
 import {
@@ -57,6 +58,7 @@ type SharedContentProps = {
 	dateRef: DateValue;
 	formatter: Formatter;
 	hideTimeZone: boolean;
+	hourCycle: HourCycle;
 };
 
 type CreateContentObjProps = SharedContentProps & {
@@ -91,7 +93,9 @@ function createContentObj(props: CreateContentObjProps) {
 		if ('hour' in segmentValues) {
 			const value = segmentValues[part];
 			if (!isNull(value)) {
-				return formatter.part(dateRef.set({ [part]: value }), part);
+				return formatter.part(dateRef.set({ [part]: value }), part, {
+					hourCycle: props.hourCycle === 24 ? 'h24' : undefined,
+				});
 			} else {
 				return getPlaceholderValue(part, '', locale);
 			}
@@ -112,9 +116,9 @@ function createContentObj(props: CreateContentObjProps) {
 }
 
 function createContentArr(props: CreateContentArrProps) {
-	const { granularity, dateRef, formatter, contentObj, hideTimeZone } = props;
+	const { granularity, dateRef, formatter, contentObj, hideTimeZone, hourCycle } = props;
 
-	const parts = formatter.toParts(toDate(dateRef), getOptsByGranularity(granularity));
+	const parts = formatter.toParts(toDate(dateRef), getOptsByGranularity(granularity, hourCycle));
 	const segmentContentArr = parts
 		.map((part) => {
 			const defaultParts = ['literal', 'dayPeriod', 'timeZoneName', null];
@@ -153,7 +157,7 @@ export function createContent(props: CreateContentProps) {
 	};
 }
 
-function getOptsByGranularity(granularity: Granularity) {
+function getOptsByGranularity(granularity: Granularity, hourCycle: HourCycle) {
 	const opts: Intl.DateTimeFormatOptions = {
 		year: 'numeric',
 		month: '2-digit',
@@ -162,6 +166,8 @@ function getOptsByGranularity(granularity: Granularity) {
 		minute: '2-digit',
 		second: '2-digit',
 		timeZoneName: 'short',
+		hourCycle: hourCycle === 24 ? 'h24' : undefined,
+		hour12: hourCycle === 24 ? false : undefined,
 	};
 
 	if (granularity === 'day') {
