@@ -23,6 +23,7 @@ import {
 	getPortalDestination,
 	getPreviousFocusable,
 	handleRovingFocus,
+	hiddenInputAttrs,
 	isBrowser,
 	isElementDisabled,
 	isHTMLElement,
@@ -119,7 +120,7 @@ export function createSelect<
 		multiple,
 	} = options;
 
-	const openWritable = withDefaults.open ?? writable(false);
+	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
 	const selectedWritable =
@@ -662,23 +663,14 @@ export function createSelect<
 
 	const hiddenInput = builder(name('hidden-input'), {
 		stores: [selected, required, disabled, nameStore],
-		returned: ([$value, $required, $disabled, $nameStore]) => {
+		returned: ([$selected, $required, $disabled, $nameStore]) => {
+			const value = Array.isArray($selected) ? $selected.map((o) => o.value) : $selected?.value;
 			return {
-				type: 'hidden',
+				...hiddenInputAttrs,
 				name: $nameStore,
-				value: $value,
-				'aria-hidden': true,
-				hidden: true,
-				tabIndex: -1,
+				value,
 				required: $required,
 				disabled: disabledAttr($disabled),
-				style: styleToString({
-					position: 'absolute',
-					opacity: 0,
-					'pointer-events': 'none',
-					margin: 0,
-					transform: 'translateX(-100%)',
-				}),
 			};
 		},
 	});

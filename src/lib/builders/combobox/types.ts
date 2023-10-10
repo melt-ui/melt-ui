@@ -129,7 +129,7 @@ export type CreateComboboxProps<
 	multiple?: Multiple;
 };
 
-export type ComboboxItemProps<Value> = ComboboxOption<Value> & {
+export type ComboboxOptionProps<Value> = ComboboxOption<Value> & {
 	/**
 	 *  Is the item disabled?
 	 */

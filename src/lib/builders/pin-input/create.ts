@@ -5,6 +5,7 @@ import {
 	disabledAttr,
 	executeCallbacks,
 	generateId,
+	hiddenInputAttrs,
 	isBrowser,
 	isHTMLElement,
 	isHTMLInputElement,
@@ -232,12 +233,9 @@ export function createPinInput(props?: CreatePinInputProps) {
 	const hiddenInput = builder(name('hidden-input'), {
 		stores: [valueStr, nameStore],
 		returned: ([$valueStr, $nameStore]) => ({
+			...hiddenInputAttrs,
 			value: $valueStr,
 			name: $nameStore,
-			hidden: true,
-			style: styleToString({
-				display: 'none',
-			}),
 		}),
 	});
 

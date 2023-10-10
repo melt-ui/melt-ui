@@ -1,6 +1,7 @@
 import { useEscapeKeydown, usePopper } from '$lib/internal/actions/index.js';
 import {
 	FIRST_LAST_KEYS,
+	addEventListener,
 	addHighlight,
 	addMeltEventListener,
 	back,
@@ -16,11 +17,11 @@ import {
 	getElementByMeltId,
 	getOptions,
 	getPortalDestination,
+	hiddenInputAttrs,
 	isBrowser,
 	isElementDisabled,
 	isHTMLElement,
 	isHTMLInputElement,
-	isHidden,
 	kbd,
 	last,
 	next,
@@ -30,7 +31,6 @@ import {
 	prev,
 	removeHighlight,
 	removeScroll,
-	sleep,
 	styleToString,
 	toWritableStores,
 	toggle,
@@ -42,8 +42,8 @@ import { derived, get, writable, type Readable } from 'svelte/store';
 import { createLabel } from '../label/create.js';
 import type { ComboboxEvents } from './events.js';
 import type {
-	ComboboxItemProps,
 	ComboboxOption,
+	ComboboxOptionProps,
 	ComboboxSelected,
 	CreateComboboxProps,
 } from './types.js';
@@ -98,9 +98,12 @@ export function createCombobox<
 	) as Readable<ComboboxOption<Value> | undefined>;
 
 	// Either the provided open store or a store with the default open value
-	const openWritable = withDefaults.open ?? writable(false);
+	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	// The overridable open store which is the source of truth for the open state.
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
+
+	const inputValue = writable('');
+	const touchedInput = writable(false);
 
 	const options = toWritableStores({
 		...omit(withDefaults, 'open', 'defaultOpen'),
@@ -119,7 +122,6 @@ export function createCombobox<
 		multiple,
 	} = options;
 
-	const touchedInput = writable(false);
 	const ids = {
 		input: generateId(),
 		menu: generateId(),
@@ -129,7 +131,7 @@ export function createCombobox<
 	/** ------- */
 	/** HELPERS */
 	/** ------- */
-	function getOptionProps(el: HTMLElement): ComboboxItemProps<Value> {
+	function getOptionProps(el: HTMLElement): ComboboxOptionProps<Value> {
 		const value = el.getAttribute('data-value');
 		const label = el.getAttribute('data-label');
 		const disabled = el.hasAttribute('data-disabled');
@@ -139,11 +141,6 @@ export function createCombobox<
 			label: label ?? el.textContent ?? undefined,
 			disabled: disabled ? true : false,
 		};
-	}
-
-	/** Resets the combobox inputValue and filteredItems back to the selectedItem */
-	function reset() {
-		touchedInput.set(false);
 	}
 
 	const setOption = (newOption: ComboboxOption<Value>) => {
@@ -215,6 +212,10 @@ export function createCombobox<
 	 */
 	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
 
+	/* ------ */
+	/* STATES */
+	/* ------ */
+
 	/**
 	 * Determines if a given item is selected.
 	 * This is useful for displaying additional markup on the selected item.
@@ -238,14 +239,14 @@ export function createCombobox<
 		};
 	});
 
-	/** -------- */
-	/** ELEMENTS */
-	/** -------- */
+	/* -------- */
+	/* ELEMENTS */
+	/* -------- */
 
 	/** Action and attributes for the text input. */
 	const input = builder(name('input'), {
-		stores: [open, highlightedItem],
-		returned: ([$open, $highlightedItem]) => {
+		stores: [open, highlightedItem, inputValue],
+		returned: ([$open, $highlightedItem, $inputValue]) => {
 			return {
 				'aria-activedescendant': $highlightedItem?.id,
 				'aria-autocomplete': 'list',
@@ -256,6 +257,7 @@ export function createCombobox<
 				autocomplete: 'off',
 				id: ids.input,
 				role: 'combobox',
+				value: $inputValue,
 			} as const;
 		},
 		action: (node: HTMLInputElement): MeltActionReturn<ComboboxEvents['input']> => {
@@ -309,8 +311,10 @@ export function createCombobox<
 
 							if (e.key === kbd.ARROW_DOWN) {
 								highlightedItem.set(enabledItems[0]);
+								enabledItems[0].scrollIntoView({ block: get(scrollAlignment) });
 							} else if (e.key === kbd.ARROW_UP) {
 								highlightedItem.set(last(enabledItems));
+								last(enabledItems).scrollIntoView({ block: get(scrollAlignment) });
 							}
 						});
 					}
@@ -320,7 +324,6 @@ export function createCombobox<
 					// Pressing `esc` should close the menu.
 					if (e.key === kbd.TAB || e.key === kbd.ESCAPE) {
 						closeMenu();
-						reset();
 						return;
 					}
 					// Pressing enter with a highlighted item should select it.
@@ -335,7 +338,6 @@ export function createCombobox<
 					// Pressing Alt + Up should close the menu.
 					if (e.key === kbd.ARROW_UP && e.altKey) {
 						closeMenu();
-						reset();
 					}
 					// Navigation (up, down, etc.) should change the highlighted item.
 					if (FIRST_LAST_KEYS.includes(e.key)) {
@@ -383,29 +385,15 @@ export function createCombobox<
 						nextItem.scrollIntoView({ block: $scrollAlignment });
 					}
 				}),
-				// Listens to the input value and filters the items accordingly.
+
 				addMeltEventListener(node, 'input', (e) => {
 					if (!isHTMLInputElement(e.target)) return;
 					touchedInput.set(true);
-
-					tick().then(() => {
-						const $highlightedItem = get(highlightedItem);
-						if (
-							!$highlightedItem ||
-							$highlightedItem?.dataset.hidden ||
-							isHidden($highlightedItem)
-						) {
-							// Find next visible item
-							const menuElement = document.getElementById(ids.menu);
-							if (!isHTMLElement(menuElement)) return;
-							const itemElements = getOptions(menuElement);
-							const candidateNodes = itemElements.filter(
-								(opt) => !isElementDisabled(opt) && !opt.dataset.hidden
-							);
-
-							highlightedItem.set(candidateNodes[0] ?? null);
-						}
-					});
+				}),
+				// This shouldn't be cancelled ever, so we don't use addMeltEventListener.
+				addEventListener(node, 'input', (e) => {
+					if (!isHTMLInputElement(e.target)) return;
+					inputValue.set(e.target.value);
 				})
 			);
 
@@ -414,7 +402,6 @@ export function createCombobox<
 			const escape = useEscapeKeydown(node, {
 				handler: () => {
 					closeMenu();
-					reset();
 				},
 			});
 			if (escape && escape.destroy) {
@@ -447,7 +434,7 @@ export function createCombobox<
 			let unsubPopper = noop;
 			let unsubScroll = noop;
 			const unsubscribe = executeCallbacks(
-				//  Bind the popper portal to the input element.
+				// Bind the popper portal to the input element.
 				effect(
 					[
 						isVisible,
@@ -489,7 +476,6 @@ export function createCombobox<
 												const target = e.target;
 												if (target === $activeTrigger) return;
 												closeMenu();
-												reset();
 											},
 											ignore: ignoreHandler,
 									  }
@@ -498,7 +484,6 @@ export function createCombobox<
 									? {
 											handler: () => {
 												closeMenu();
-												reset();
 											},
 									  }
 									: null,
@@ -509,11 +494,7 @@ export function createCombobox<
 							unsubPopper = popper.destroy;
 						}
 					}
-				),
-				// Remove highlight when the pointer leaves the menu.
-				addMeltEventListener(node, 'pointerleave', () => {
-					highlightedItem.set(null);
-				})
+				)
 			);
 			return {
 				destroy: () => {
@@ -545,7 +526,7 @@ export function createCombobox<
 		stores: [selected],
 		returned:
 			([$selected]) =>
-			(props: ComboboxItemProps<Value>) => {
+			(props: ComboboxOptionProps<Value>) => {
 				const selected = Array.isArray($selected)
 					? $selected.some((o) => deepEqual(o.value, props.value))
 					: deepEqual($selected?.value, props.value);
@@ -564,16 +545,6 @@ export function createCombobox<
 			},
 		action: (node: HTMLElement): MeltActionReturn<ComboboxEvents['item']> => {
 			const unsubscribe = executeCallbacks(
-				// Handle highlighting items when the pointer moves over them.
-				addMeltEventListener(node, 'pointermove', () => {
-					// If the item is disabled, clear the highlight.
-					if (isElementDisabled(node)) {
-						highlightedItem.set(null);
-						return;
-					}
-					// Otherwise, proceed.
-					highlightedItem.set(node);
-				}),
 				addMeltEventListener(node, 'click', (e) => {
 					// If the item is disabled, `preventDefault` to stop the input losing focus.
 					if (isElementDisabled(node)) {
@@ -589,13 +560,22 @@ export function createCombobox<
 		},
 	});
 
-	/** ------------------- */
-	/** LIFECYCLE & EFFECTS */
-	/** ------------------- */
+	const hiddenInput = builder(name('hidden-input'), {
+		stores: [selected],
+		returned: ([$selected]) => {
+			const value = Array.isArray($selected) ? $selected.map((o) => o.value) : $selected?.value;
+			return {
+				...hiddenInputAttrs,
+				value,
+			};
+		},
+	});
+
+	/* ------------------- */
+	/* LIFECYCLE & EFFECTS */
+	/* ------------------- */
 
 	onMount(() => {
-		open.set(withDefaults.defaultOpen);
-
 		if (!isBrowser) return;
 		const menuEl = document.getElementById(ids.menu);
 		if (!menuEl) return;
@@ -613,7 +593,7 @@ export function createCombobox<
 	 * Handles moving the `data-highlighted` attribute between items when
 	 * the user moves their pointer or navigates with their keyboard.
 	 */
-	effect([highlightedItem, scrollAlignment], ([$highlightedItem, $scrollAlignment]) => {
+	effect([highlightedItem], ([$highlightedItem]) => {
 		if (!isBrowser) return;
 		const menuElement = document.getElementById(ids.menu);
 		if (!isHTMLElement(menuElement)) return;
@@ -624,9 +604,6 @@ export function createCombobox<
 				removeHighlight(node);
 			}
 		});
-		if ($highlightedItem) {
-			sleep(1).then(() => $highlightedItem.scrollIntoView({ block: $scrollAlignment }));
-		}
 	});
 
 	return {
@@ -636,12 +613,14 @@ export function createCombobox<
 			option,
 			menu,
 			label,
+			hiddenInput,
 		},
 		states: {
 			open,
 			selected,
 			highlighted,
 			touchedInput,
+			inputValue,
 		},
 		helpers: {
 			isSelected,

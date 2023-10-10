@@ -1,15 +1,11 @@
 <script lang="ts">
-	import { createCombobox, melt } from '$lib/index.js';
+	import {
+		createCombobox,
+		melt,
+		type ComboboxOptionProps,
+	} from '$lib/index.js';
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
 	import { fly } from 'svelte/transition';
-
-	const {
-		elements: { menu, input, option, label },
-		states: { open, inputValue, touchedInput },
-		helpers: { isSelected },
-	} = createCombobox({
-		forceVisible: true,
-	});
 
 	type Manga = {
 		author: string;
@@ -70,6 +66,24 @@
 		},
 	];
 
+	const toOption = (manga: Manga): ComboboxOptionProps<Manga> => ({
+		value: manga,
+		label: manga.title,
+		disabled: manga.disabled,
+	});
+
+	const {
+		elements: { menu, input, option, label },
+		states: { open, inputValue, touchedInput, selected },
+		helpers: { isSelected },
+	} = createCombobox<Manga>({
+		forceVisible: true,
+	});
+
+	$: if (!$open) {
+		$inputValue = $selected?.label ?? '';
+	}
+
 	$: filteredMangas = $touchedInput
 		? mangas.filter(({ title, author }) => {
 				const normalizedInput = $inputValue.toLowerCase();
@@ -116,32 +130,26 @@
 			class="flex max-h-full flex-col gap-0 overflow-y-auto bg-white px-2 py-2 text-black"
 			tabindex="0"
 		>
-			{#each filteredMangas as book, index (index)}
+			{#each filteredMangas as manga, index (index)}
 				<li
-					use:melt={$option({
-						value: book,
-						label: book.title,
-						disabled: book.disabled,
-					})}
+					use:melt={$option(toOption(manga))}
 					class="relative cursor-pointer scroll-my-2 rounded-md py-2 pl-4 pr-4
+				hover:bg-magnum-100
 				data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900
 					data-[disabled]:opacity-50"
 				>
-					{#if $isSelected(book)}
+					{#if $isSelected(manga)}
 						<div class="check absolute left-2 top-1/2 z-10 text-magnum-900">
 							<Check class="square-4" />
 						</div>
 					{/if}
 					<div class="pl-4">
-						<span class="font-medium">{book.title}</span>
-						<span class="block text-sm opacity-75">{book.author}</span>
+						<span class="font-medium">{manga.title}</span>
+						<span class="block text-sm opacity-75">{manga.author}</span>
 					</div>
 				</li>
 			{:else}
-				<li
-					class="relative cursor-pointer rounded-md py-1 pl-8 pr-4
-				data-[highlighted]:bg-magnum-100 data-[highlighted]:text-magnum-700"
-				>
+				<li class="relative cursor-pointer rounded-md py-1 pl-8 pr-4">
 					No results found
 				</li>
 			{/each}

@@ -304,9 +304,9 @@ const schemas = [
 	option,
 	group,
 	groupLabel,
-	hiddenInput,
 	separator,
 	arrow,
+	hiddenInput,
 ];
 
 const features = [

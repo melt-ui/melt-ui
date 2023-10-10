@@ -3,14 +3,6 @@
 	import { Check, ChevronDown, ChevronUp } from 'lucide-svelte';
 	import { fly } from 'svelte/transition';
 
-	const {
-		elements: { menu, input, option, label },
-		states: { open, inputValue, touchedInput },
-		helpers: { isSelected },
-	} = createCombobox({
-		forceVisible: true,
-	});
-
 	type Manga = {
 		author: string;
 		title: string;
@@ -69,6 +61,14 @@
 			disabled: false,
 		},
 	];
+
+	const {
+		elements: { menu, input, option, label },
+		states: { open, inputValue, touchedInput },
+		helpers: { isSelected },
+	} = createCombobox({
+		forceVisible: true,
+	});
 
 	let debounceTimer: ReturnType<typeof setTimeout>;
 
