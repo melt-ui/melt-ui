@@ -8,6 +8,7 @@ import { contextMenuData } from './context-menu.js';
 import { popoverData as calendarData } from './calendar.js';
 import { popoverData as dateFieldData } from './date-field.js';
 import { popoverData as dateRangeFieldData } from './date-range-field.js';
+import { popoverData as rangeCalendarData } from './range-calendar.js';
 import { dialogData } from './dialog.js';
 import { dropdownMenuData } from './dropdown-menu.js';
 import { labelData } from './label.js';
@@ -53,6 +54,7 @@ export const builderList = [
 	'popover',
 	'progress',
 	'radio-group',
+	'range-calendar',
 	'select',
 	'separator',
 	'slider',
@@ -103,6 +105,7 @@ export const data: Builders = {
 	popover: popoverData,
 	progress: progressData,
 	'radio-group': radioGroupData,
+	'range-calendar': rangeCalendarData,
 	select: selectData,
 	separator: separatorData,
 	slider: sliderData,
