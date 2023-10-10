@@ -68,7 +68,7 @@ type CreateContentArrProps = SharedContentProps & {
 	contentObj: SegmentContentObj;
 };
 
-export function createContentObj(props: CreateContentObjProps) {
+function createContentObj(props: CreateContentObjProps) {
 	const { segmentValues, formatter, locale, dateRef } = props;
 
 	const content = Object.keys(segmentValues).reduce((obj, part) => {
@@ -219,7 +219,7 @@ export function isAnySegmentPart(part: unknown): part is AnySegmentPart {
  * the date picker, which is when all the segments have
  * been filled.
  */
-export function getUsedSegments(id: string) {
+function getUsedSegments(id: string) {
 	if (!isBrowser) return [];
 	const usedSegments = getSegments(id)
 		.map((el) => el.dataset.segment)
@@ -232,7 +232,7 @@ export function getUsedSegments(id: string) {
 /**
  * Gets all the segments in the container with the provided id.
  */
-export function getSegments(id: string) {
+function getSegments(id: string) {
 	const inputContainer = document.getElementById(id);
 	if (!isHTMLElement(inputContainer)) return [];
 	const segments = Array.from(
@@ -331,7 +331,7 @@ function getPrevSegment(node: HTMLElement, segments: HTMLElement[]) {
  * Gets an object containing the next and previous segments relative
  * to the provided node.
  */
-export function getPrevNextSegments(node: HTMLElement, containerId: string) {
+function getPrevNextSegments(node: HTMLElement, containerId: string) {
 	const segments = getSegments(containerId);
 	if (!segments.length) {
 		return {
@@ -345,6 +345,10 @@ export function getPrevNextSegments(node: HTMLElement, containerId: string) {
 	};
 }
 
+/**
+ * Moves focus to the next segment in the list of segments
+ * within the container with the provided id.
+ */
 export function moveToNextSegment(e: KeyboardEvent, containerId: string) {
 	const node = e.currentTarget;
 	if (!isHTMLElement(node)) return;
