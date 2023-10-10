@@ -4,9 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
 import DateFieldTest from './DateFieldTest.svelte';
-import { CalendarDate, CalendarDateTime, toZoned, today } from '@internationalized/date';
+import { CalendarDate, CalendarDateTime, toZoned } from '@internationalized/date';
 
-const calendarDateToday = today('America/New_York');
 const calendarDateOther = new CalendarDate(1980, 1, 20);
 const calendarDateTimeOther = new CalendarDateTime(1980, 1, 20, 12, 30, 0, 0);
 const zonedDateTimeOther = toZoned(calendarDateTimeOther, 'America/New_York');
@@ -109,9 +108,6 @@ describe('DateField', () => {
 		});
 		expect(queryByTestId('dayPeriod')).not.toBeNull();
 	});
-});
-
-describe('Navigation', () => {
 	test('focuses first segment on click', async () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(DateFieldTest);
@@ -125,24 +121,24 @@ describe('Navigation', () => {
 	test('increments segment on arrow up', async () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(DateFieldTest, {
-			defaultPlaceholderValue: calendarDateToday,
+			defaultPlaceholderValue: calendarDateOther,
 		});
 		const firstSegment = getByTestId('month');
 		await user.click(firstSegment);
 
 		await user.keyboard(`{${kbd.ARROW_UP}}`);
 
-		const currentMonth = calendarDateToday.month;
+		const currentMonth = calendarDateOther.month;
 		expect(firstSegment).toHaveTextContent(String(currentMonth));
 
 		await user.keyboard(`{${kbd.ARROW_UP}}`);
-		expect(firstSegment).toHaveTextContent(String(calendarDateToday.month + 1));
+		expect(firstSegment).toHaveTextContent(String(calendarDateOther.month + 1));
 	});
 
 	test('increments segment on arrow down', async () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(DateFieldTest, {
-			defaultPlaceholderValue: calendarDateToday,
+			defaultPlaceholderValue: calendarDateOther,
 		});
 
 		const firstSegment = getByTestId('month');
@@ -150,17 +146,17 @@ describe('Navigation', () => {
 
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
 
-		const currentMonth = calendarDateToday.month;
+		const currentMonth = calendarDateOther.month;
 		expect(firstSegment).toHaveTextContent(String(currentMonth));
 
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
-		expect(firstSegment).toHaveTextContent(String(calendarDateToday.month - 1));
+		expect(firstSegment).toHaveTextContent(String(12));
 	});
 
 	test('increments segment on arrow down', async () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(DateFieldTest, {
-			defaultPlaceholderValue: calendarDateToday,
+			defaultPlaceholderValue: calendarDateOther,
 		});
 
 		const firstSegment = getByTestId('month');
@@ -168,11 +164,11 @@ describe('Navigation', () => {
 
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
 
-		const currentMonth = calendarDateToday.month;
+		const currentMonth = calendarDateOther.month;
 		expect(firstSegment).toHaveTextContent(String(currentMonth));
 
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
-		expect(firstSegment).toHaveTextContent(String(calendarDateToday.month - 1));
+		expect(firstSegment).toHaveTextContent(String(12));
 	});
 
 	test('navigates segments using arrow keys', async () => {

@@ -1,41 +1,77 @@
 <script lang="ts">
-	import { createCalendar } from '$lib/builders';
+	import { createCalendar, type CreateCalendarProps } from '$lib/builders';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
 	import { melt } from '$lib';
 
+	export let value: CreateCalendarProps['value'] = undefined;
+	export let defaultValue: CreateCalendarProps['defaultValue'] = undefined;
+	export let defaultPlaceholderValue: CreateCalendarProps['defaultPlaceholderValue'] = undefined;
+	export let onValueChange: CreateCalendarProps['onValueChange'] = undefined;
+	export let onPlaceholderValueChange: CreateCalendarProps['onPlaceholderValueChange'] = undefined;
+	export let isUnavailable: CreateCalendarProps['isUnavailable'] = undefined;
+	export let isDisabled: CreateCalendarProps['isDisabled'] = undefined;
+	export let locale: CreateCalendarProps['locale'] = 'en';
+	export let calendarLabel: CreateCalendarProps['calendarLabel'] = undefined;
+	export let allowDeselect: CreateCalendarProps['allowDeselect'] = undefined;
+	export let numberOfMonths: CreateCalendarProps['numberOfMonths'] = undefined;
+	export let pagedNavigation: CreateCalendarProps['pagedNavigation'] = undefined;
+	export let placeholderValue: CreateCalendarProps['placeholderValue'] = undefined;
+	export let weekStartsOn: CreateCalendarProps['weekStartsOn'] = undefined;
+	export let fixedWeeks: CreateCalendarProps['fixedWeeks'] = undefined;
+
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { value, months, headingValue, daysOfWeek },
+		states: { value: insideValue, months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable },
-	} = createCalendar();
+	} = createCalendar({
+		value,
+		defaultValue,
+		defaultPlaceholderValue,
+		onValueChange,
+		onPlaceholderValueChange,
+		isUnavailable,
+		isDisabled,
+		locale,
+		calendarLabel,
+		allowDeselect,
+		numberOfMonths,
+		pagedNavigation,
+		placeholderValue,
+		weekStartsOn,
+		fixedWeeks,
+	});
 </script>
 
-<div class="flex h-full">
+<main class="flex h-full">
 	<div class="flex w-full flex-col items-center gap-3">
 		<div class="flex w-full items-center justify-center">
-			<p class="text-xs">{$value}</p>
+			<p class="text-xs" data-testid="inside-value">{$insideValue}</p>
 		</div>
 
 		<div class="z-10 w-80 rounded-[4px] bg-white p-3 shadow-sm">
-			<div class="w-full text-magnum-800" use:melt={$calendar}>
+			<div class="w-full text-magnum-800" use:melt={$calendar} data-testid="calendar">
 				<header class="flex items-center justify-between pb-4">
-					<button use:melt={$prevButton}>
+					<button use:melt={$prevButton} data-testid="prev-button">
 						<ChevronLeft />
 					</button>
-					<h2 class="font-semibold text-magnum-800" use:melt={$heading}>
+					<h2 class="font-semibold text-magnum-800" use:melt={$heading} data-testid="heading">
 						{$headingValue}
 					</h2>
-					<button use:melt={$nextButton}>
+					<button use:melt={$nextButton} data-testid="next-button">
 						<ChevronRight />
 					</button>
 				</header>
-				{#each $months as month}
-					<table use:melt={$grid} class="w-full">
+				{#each $months as month, i (i)}
+					{@const { weeks } = month}
+					<table use:melt={$grid} class="w-full" data-testid="grid-{i}">
 						<thead aria-hidden="true">
 							<tr>
-								{#each $daysOfWeek as day}
+								{#each $daysOfWeek as day, idx}
 									<th class="text-sm font-semibold text-magnum-800">
-										<div class="flex h-6 w-6 items-center justify-center p-4">
+										<div
+											class="flex h-6 w-6 items-center justify-center p-4"
+											data-testid="day-of-week-{idx}"
+										>
 											{day}
 										</div>
 									</th>
@@ -43,15 +79,15 @@
 							</tr>
 						</thead>
 						<tbody>
-							{#each month.weeks as dates}
+							{#each weeks as days}
 								<tr>
-									{#each dates as date}
-										<td
-											role="gridcell"
-											aria-disabled={$isDateDisabled(date) ||
-												$isDateUnavailable(date)}
-										>
-											<div use:melt={$cell(date)} class="cell">
+									{#each days as date}
+										<td role="gridcell">
+											<div
+												use:melt={$cell(date)}
+												class="cell"
+												data-testid="month-{i}-date-{date.day}"
+											>
 												{date.day}
 											</div>
 										</td>
@@ -64,7 +100,7 @@
 			</div>
 		</div>
 	</div>
-</div>
+</main>
 
 <style lang="postcss">
 	.input {
