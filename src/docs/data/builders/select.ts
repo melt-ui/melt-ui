@@ -79,8 +79,8 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'The builder store used to create the select options.',
 		},
 		{
-			name: 'input',
-			description: 'The builder store used to create the select input.',
+			name: 'hidden-input',
+			description: 'The builder store used to create the select hidden input.',
 		},
 		{
 			name: 'label',
@@ -190,12 +190,12 @@ const option = elementSchema('option', {
 	events: selectEvents['option'],
 });
 
-const input = elementSchema('input', {
+const hiddenInput = elementSchema('hidden-input', {
 	description: 'The hidden input element. Used for form submission.',
 	dataAttributes: [
 		{
-			name: 'data-melt-select-input',
-			value: ATTRS.MELT('input'),
+			name: 'data-melt-select-hidden-input',
+			value: ATTRS.MELT('hidden-input'),
 		},
 	],
 });
@@ -296,7 +296,18 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, trigger, label, menu, option, group, groupLabel, input, separator, arrow];
+const schemas = [
+	builder,
+	trigger,
+	label,
+	menu,
+	option,
+	group,
+	groupLabel,
+	hiddenInput,
+	separator,
+	arrow,
+];
 
 const features = [
 	'Full keyboard navigation',

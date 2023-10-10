@@ -78,7 +78,7 @@ type SelectParts =
 	| 'group'
 	| 'group-label'
 	| 'arrow'
-	| 'input'
+	| 'hidden-input'
 	| 'label';
 
 const { name } = createElHelpers<SelectParts>('select');
@@ -660,7 +660,7 @@ export function createSelect<
 		},
 	});
 
-	const input = builder(name('input'), {
+	const hiddenInput = builder(name('hidden-input'), {
 		stores: [selected, required, disabled, nameStore],
 		returned: ([$value, $required, $disabled, $nameStore]) => {
 			return {
@@ -761,7 +761,7 @@ export function createSelect<
 			menu,
 			trigger,
 			option,
-			input,
+			hiddenInput,
 			group,
 			groupLabel,
 			arrow,

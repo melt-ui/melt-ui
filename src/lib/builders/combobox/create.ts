@@ -97,11 +97,6 @@ export function createCombobox<
 		$highlightedItem ? getOptionProps($highlightedItem) : undefined
 	) as Readable<ComboboxOption<Value> | undefined>;
 
-	// The current value of the input element.
-	const inputValue = writable(
-		Array.isArray(withDefaults.defaultSelected) ? '' : withDefaults.defaultSelected?.label ?? ''
-	);
-
 	// Either the provided open store or a store with the default open value
 	const openWritable = withDefaults.open ?? writable(false);
 	// The overridable open store which is the source of truth for the open state.
@@ -148,15 +143,6 @@ export function createCombobox<
 
 	/** Resets the combobox inputValue and filteredItems back to the selectedItem */
 	function reset() {
-		const $selectedItem = get(selected);
-
-		// If no item is selected the input should be cleared and the filter reset.
-		if (!$selectedItem || Array.isArray($selectedItem)) {
-			inputValue.set('');
-		} else {
-			inputValue.set($selectedItem?.label ?? '');
-		}
-
 		touchedInput.set(false);
 	}
 
@@ -174,17 +160,13 @@ export function createCombobox<
 	};
 
 	/**
-	 * Selects an item from the menu and updates the input value.
+	 * Selects an item from the menu
 	 * @param index array index of the item to select.
 	 */
 	function selectItem(item: HTMLElement) {
 		const props = getOptionProps(item);
 
 		setOption(props);
-
-		if (!get(multiple)) {
-			inputValue.set(props.label ?? '');
-		}
 	}
 
 	/**
@@ -262,8 +244,8 @@ export function createCombobox<
 
 	/** Action and attributes for the text input. */
 	const input = builder(name('input'), {
-		stores: [open, highlightedItem, inputValue],
-		returned: ([$open, $highlightedItem, $inputValue]) => {
+		stores: [open, highlightedItem],
+		returned: ([$open, $highlightedItem]) => {
 			return {
 				'aria-activedescendant': $highlightedItem?.id,
 				'aria-autocomplete': 'list',
@@ -274,7 +256,6 @@ export function createCombobox<
 				autocomplete: 'off',
 				id: ids.input,
 				role: 'combobox',
-				value: $inputValue,
 			} as const;
 		},
 		action: (node: HTMLInputElement): MeltActionReturn<ComboboxEvents['input']> => {
@@ -405,8 +386,6 @@ export function createCombobox<
 				// Listens to the input value and filters the items accordingly.
 				addMeltEventListener(node, 'input', (e) => {
 					if (!isHTMLInputElement(e.target)) return;
-					const value = e.target.value;
-					inputValue.set(value);
 					touchedInput.set(true);
 
 					tick().then(() => {
@@ -628,9 +607,6 @@ export function createCombobox<
 
 		const selectedEl = menuEl.querySelector('[data-selected]');
 		if (!isHTMLElement(selectedEl)) return;
-
-		const dataLabel = selectedEl.getAttribute('data-label');
-		inputValue.set(dataLabel ?? selectedEl.textContent ?? '');
 	});
 
 	/**
@@ -665,7 +641,6 @@ export function createCombobox<
 			open,
 			selected,
 			highlighted,
-			inputValue,
 			touchedInput,
 		},
 		helpers: {
