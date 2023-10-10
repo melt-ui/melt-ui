@@ -1,15 +1,14 @@
-<h1 align="center">
- <img align="center" src="https://raw.githubusercontent.com/melt-ui/melt-ui/main/static/banner.png"  />
-</h1>
-
-[Melt UI](https://www.melt-ui.com/) is a set of headless, accessible component builders for Svelte.
-
 [![](https://img.shields.io/npm/v/@melt-ui/svelte?style=flat)](https://www.npmjs.com/package/@melt-ui/svelte)
 ![npm](https://img.shields.io/npm/dw/%40melt-ui%2Fsvelte?style=flat&color=orange)
-
 [![](https://img.shields.io/github/actions/workflow/status/melt-ui/melt-ui/ci.yaml?style=flat)](https://github.com/melt-ui/melt-ui/actions/workflows/ci.yaml)
 ![](https://img.shields.io/github/license/melt-ui/melt-ui?style=flat)
 [![](https://dcbadge.vercel.app/api/server/2QDjZkYunf?style=flat)](https://discord.gg/2QDjZkYunf)
+
+![](static/banner.png)
+
+[Melt UI](https://www.melt-ui.com/) is a set of headless, accessible component builders for Svelte.
+
+[Bug Report](https://github.com/melt-ui/melt-ui/issues/new?assignees=&labels=bug&projects=&template=bug_report.md&title=%F0%9F%90%9BBug%3A) · [Builder](https://github.com/melt-ui/melt-ui/issues/new?assignees=&labels=builder&projects=&template=component.md&title=%E2%9C%A8+Builder%3A) · [Documentation](https://github.com/melt-ui/melt-ui/issues/new?assignees=&labels=documentation&projects=&template=documentation.md&title=%F0%9F%93%81Docs%3A) · [Feature Request](https://github.com/melt-ui/melt-ui/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md&title=%F0%9F%8C%9FFeature+request%3A) · [Tech Debt](https://github.com/melt-ui/melt-ui/issues/new?assignees=&labels=tech+debt&projects=&template=tech-debt.md&title=%E2%9A%99Tech+Debt%3A)
 
 ## About
 
@@ -67,14 +66,15 @@ Got any questions? Want to talk to the maintainers?
 Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get in touch with us, and
 we'd love to have you there.
 
-<a href="https://discord.gg/2QDjZkYunf" alt="Melt UI Discord community">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://invidget.switchblade.xyz/2QDjZkYunf">
-  <img alt="Melt UI Discord community" src="https://invidget.switchblade.xyz/2QDjZkYunf?theme=light">
-</picture>
-</a>
+[![Melt UI Discord community](https://invidget.switchblade.xyz/2QDjZkYunf?theme=dark)](https://discord.gg/2QDjZkYunf)
 
 ## Similar projects
 
 Looking for more? Check out the
 [other component library projects available for Svelte](https://sveltesociety.dev/components#design-systems).
+
+## Thanks to all Contributors
+
+Thank you very much for taking your time to help Melt.
+
+[![Contributors](https://contrib.rocks/image?repo=melt-ui/melt-ui)]([https://github.com/codemaniac-sahil/news-webapp-api](https://github.com/melt-ui/melt-ui)https://github.com/melt-ui/melt-ui/graphs/contributors)
