@@ -66,6 +66,8 @@ const defaults = {
 	locale: 'en',
 	granularity: undefined,
 	hideTimeZone: false,
+	fieldDisabled: false,
+	fieldReadonly: false,
 } satisfies CreateDateFieldProps;
 
 type DateFieldParts = 'segment' | 'label';
@@ -76,7 +78,15 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const withDefaults = { ...defaults, ...props };
 
 	const options = toWritableStores(omit(withDefaults, 'value', 'placeholderValue'));
-	const { locale, granularity, hourCycle, hideTimeZone, isUnavailable } = options;
+	const {
+		locale,
+		granularity,
+		hourCycle,
+		hideTimeZone,
+		isUnavailable,
+		fieldDisabled,
+		fieldReadonly,
+	} = options;
 
 	const defaultDate = withDefaults.defaultValue
 		? withDefaults.defaultValue
@@ -176,14 +186,16 @@ export function createDateField(props?: CreateDateFieldProps) {
 	});
 
 	const dateField = builder(name(), {
-		stores: [value, isFieldInvalid],
-		returned: ([$value, $isFieldInvalid]) => {
+		stores: [value, isFieldInvalid, fieldDisabled, fieldReadonly],
+		returned: ([$value, $isFieldInvalid, $fieldDisabled, $fieldReadonly]) => {
 			return {
 				role: 'group',
 				id: ids.field,
 				'aria-labelledby': ids.label,
 				'aria-describedby': $value ? ids.description : undefined,
 				'data-invalid': $isFieldInvalid ? '' : undefined,
+				'aria-disabled': $fieldDisabled ? 'true' : undefined,
+				'aria-readonly': $fieldReadonly ? 'true' : undefined,
 			};
 		},
 		action: () => {
@@ -237,8 +249,26 @@ export function createDateField(props?: CreateDateFieldProps) {
 	};
 
 	const segment = builder(name('segment'), {
-		stores: [segmentValues, hourCycle, placeholderValue, value, isFieldInvalid, locale],
-		returned: ([$segmentValues, $hourCycle, $placeholderValue, $value, $isFieldInvalid, _]) => {
+		stores: [
+			segmentValues,
+			hourCycle,
+			placeholderValue,
+			value,
+			isFieldInvalid,
+			fieldDisabled,
+			fieldReadonly,
+			locale,
+		],
+		returned: ([
+			$segmentValues,
+			$hourCycle,
+			$placeholderValue,
+			$value,
+			$isFieldInvalid,
+			$fieldDisabled,
+			$fieldReadonly,
+			_,
+		]) => {
 			const props = {
 				segmentValues: $segmentValues,
 				hourCycle: $hourCycle,
@@ -247,9 +277,12 @@ export function createDateField(props?: CreateDateFieldProps) {
 			return (part: AnySegmentPart) => {
 				const defaultAttrs = {
 					...getSegmentAttrs(part, props),
-					'data-segment': `${part}`,
 					'aria-invalid': $isFieldInvalid ? 'true' : undefined,
+					'aria-disabled': $fieldDisabled ? 'true' : undefined,
+					'aria-readonly': $fieldReadonly ? 'true' : undefined,
 					'data-invalid': $isFieldInvalid ? '' : undefined,
+					'data-disabled': $fieldDisabled ? '' : undefined,
+					'data-segment': `${part}`,
 				};
 				if (part === 'literal') {
 					return defaultAttrs;
@@ -261,7 +294,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 					...defaultAttrs,
 					id: ids[part],
 					'aria-labelledby': getLabelledBy(part),
+					contentEditable: $fieldReadonly || $fieldDisabled ? false : true,
 					'aria-describedby': hasDescription ? ids.description : undefined,
+					tabindex: $fieldDisabled ? undefined : 0,
 				};
 			};
 		},
@@ -276,6 +311,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			? Updater<TimeSegmentObj[T]>
 			: Updater<DateAndTimeSegmentObj[T]>
 	) {
+		if (get(fieldDisabled) || get(fieldReadonly)) return;
 		segmentValues.update((prev) => {
 			if (isDateAndTimeSegmentObj(prev)) {
 				const pVal = prev[part];
@@ -365,6 +401,50 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 	}
 
+	function handleSegmentKeydown(e: KeyboardEvent, part: AnyExceptLiteral) {
+		const $fieldDisabled = get(fieldDisabled);
+
+		if (e.key !== kbd.TAB) {
+			e.preventDefault();
+		}
+		if ($fieldDisabled) return;
+
+		switch (part) {
+			case 'day':
+				handleDaySegmentKeydown(e);
+				break;
+			case 'month':
+				handleMonthSegmentKeydown(e);
+				break;
+			case 'year':
+				handleYearSegmentKeydown(e);
+				break;
+			case 'hour':
+				handleHourSegmentKeydown(e);
+				break;
+			case 'minute':
+				handleMinuteSegmentKeydown(e);
+				break;
+			case 'second':
+				handleSecondSegmentKeydown(e);
+				break;
+			case 'dayPeriod':
+				handleDayPeriodSegmentKeydown(e);
+				break;
+			case 'timeZoneName':
+				handleTimeZoneSegmentKeydown(e);
+				break;
+		}
+	}
+
+	function handleSegmentClick(e: MouseEvent) {
+		const $fieldDisabled = get(fieldDisabled);
+		if ($fieldDisabled) {
+			e.preventDefault();
+			return;
+		}
+	}
+
 	/*
 	 * -----------------------------------------------------
 	 *
@@ -398,8 +478,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 	function daySegmentAction(node: HTMLElement) {
 		const unsubEvents = executeCallbacks(
-			addMeltEventListener(node, 'keydown', handleDaySegmentKeydown),
-			addMeltEventListener(node, 'focusout', () => (states.day.hasLeftFocus = true))
+			addMeltEventListener(node, 'keydown', (e) => handleSegmentKeydown(e, 'day')),
+			addMeltEventListener(node, 'focusout', () => (states.day.hasLeftFocus = true)),
+			addMeltEventListener(node, 'click', handleSegmentClick)
 		);
 
 		return {
@@ -579,8 +660,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 	function monthSegmentAction(node: HTMLElement) {
 		const unsubEvents = executeCallbacks(
-			addMeltEventListener(node, 'keydown', handleMonthSegmentKeydown),
-			addMeltEventListener(node, 'focusout', () => (states.month.hasLeftFocus = true))
+			addMeltEventListener(node, 'keydown', (e) => handleSegmentKeydown(e, 'month')),
+			addMeltEventListener(node, 'focusout', () => (states.month.hasLeftFocus = true)),
+			addMeltEventListener(node, 'click', handleSegmentClick)
 		);
 
 		return {
@@ -765,8 +847,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 	function yearSegmentAction(node: HTMLElement) {
 		const unsubEvents = executeCallbacks(
-			addMeltEventListener(node, 'keydown', handleYearSegmentKeydown),
-			addMeltEventListener(node, 'focusout', () => (states.year.hasLeftFocus = true))
+			addMeltEventListener(node, 'keydown', (e) => handleSegmentKeydown(e, 'year')),
+			addMeltEventListener(node, 'focusout', () => (states.year.hasLeftFocus = true)),
+			addMeltEventListener(node, 'click', handleSegmentClick)
 		);
 
 		return {
@@ -901,8 +984,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 	function hourSegmentAction(node: HTMLElement) {
 		const unsubEvents = executeCallbacks(
-			addMeltEventListener(node, 'keydown', handleHourSegmentKeydown),
-			addMeltEventListener(node, 'focusout', () => (states.hour.hasLeftFocus = true))
+			addMeltEventListener(node, 'keydown', (e) => handleSegmentKeydown(e, 'hour')),
+			addMeltEventListener(node, 'focusout', () => (states.hour.hasLeftFocus = true)),
+			addMeltEventListener(node, 'click', handleSegmentClick)
 		);
 
 		return {
@@ -1086,8 +1170,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 	function minuteSegmentAction(node: HTMLElement) {
 		const unsubEvents = executeCallbacks(
-			addMeltEventListener(node, 'keydown', handleMinuteSegmentKeydown),
-			addMeltEventListener(node, 'focusout', () => (states.minute.hasLeftFocus = true))
+			addMeltEventListener(node, 'keydown', (e) => handleSegmentKeydown(e, 'minute')),
+			addMeltEventListener(node, 'focusout', () => (states.minute.hasLeftFocus = true)),
+			addMeltEventListener(node, 'click', handleSegmentClick)
 		);
 
 		return {
@@ -1269,8 +1354,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 	function secondSegmentAction(node: HTMLElement) {
 		const unsubEvents = executeCallbacks(
-			addMeltEventListener(node, 'keydown', handleSecondSegmentKeydown),
-			addMeltEventListener(node, 'focusout', () => (states.second.hasLeftFocus = true))
+			addMeltEventListener(node, 'keydown', (e) => handleSegmentKeydown(e, 'second')),
+			addMeltEventListener(node, 'focusout', () => (states.second.hasLeftFocus = true)),
+			addMeltEventListener(node, 'click', handleSegmentClick)
 		);
 
 		return {
@@ -1450,7 +1536,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 	function dayPeriodSegmentAction(node: HTMLElement) {
 		const unsubEvents = executeCallbacks(
-			addMeltEventListener(node, 'keydown', handleDayPeriodSegmentKeydown)
+			addMeltEventListener(node, 'keydown', (e) => handleSegmentKeydown(e, 'dayPeriod')),
+			addMeltEventListener(node, 'click', handleSegmentClick)
 		);
 
 		return {
@@ -1555,7 +1642,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 	function timeZoneSegmentAction(node: HTMLElement) {
 		const unsubEvents = executeCallbacks(
-			addMeltEventListener(node, 'keydown', handleTimeZoneSegmentKeydown)
+			addMeltEventListener(node, 'keydown', (e) => handleSegmentKeydown(e, 'timeZoneName')),
+			addMeltEventListener(node, 'click', handleSegmentClick)
 		);
 
 		return {

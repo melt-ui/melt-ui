@@ -94,7 +94,7 @@ export type DateFieldProps = {
 	 * will not be able to edit the values of any of the
 	 * individual segments.
 	 */
-	fieldReadOnly?: boolean;
+	fieldReadonly?: boolean;
 
 	/**
 	 * The format to use for displaying the time in the input.

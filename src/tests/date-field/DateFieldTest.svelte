@@ -7,9 +7,9 @@
 	export let defaultPlaceholderValue: CreateDateFieldProps['defaultPlaceholderValue'] = undefined;
 	export let onValueChange: CreateDateFieldProps['onValueChange'] = undefined;
 	export let onPlaceholderValueChange: CreateDateFieldProps['onPlaceholderValueChange'] = undefined;
-	export let unavailable: CreateDateFieldProps['unavailable'] = undefined;
+	export let isUnavailable: CreateDateFieldProps['isUnavailable'] = undefined;
 	export let fieldDisabled: CreateDateFieldProps['fieldDisabled'] = undefined;
-	export let fieldReadOnly: CreateDateFieldProps['fieldReadOnly'] = undefined;
+	export let fieldReadonly: CreateDateFieldProps['fieldReadonly'] = undefined;
 	export let hourCycle: CreateDateFieldProps['hourCycle'] = undefined;
 	export let locale: CreateDateFieldProps['locale'] = 'en';
 	export let hideTimeZone: CreateDateFieldProps['hideTimeZone'] = undefined;
@@ -25,9 +25,9 @@
 		defaultPlaceholderValue,
 		onValueChange,
 		onPlaceholderValueChange,
-		unavailable,
+		isUnavailable,
 		fieldDisabled,
-		fieldReadOnly,
+		fieldReadonly,
 		hourCycle,
 		locale,
 		hideTimeZone,

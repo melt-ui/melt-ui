@@ -20,198 +20,268 @@ describe('DateField', () => {
 		});
 	});
 
-	describe('Props', () => {
-		test('segments populated with defaultValue - CalendarDate', async () => {
-			const { getByTestId } = render(DateFieldTest, {
-				defaultValue: calendarDateOther,
-			});
-
-			const monthSegment = getByTestId('month');
-			const daySegment = getByTestId('day');
-			const yearSegment = getByTestId('year');
-			const insideValue = getByTestId('inside-value');
-
-			expect(monthSegment).toHaveTextContent(String(calendarDateOther.month));
-			expect(daySegment).toHaveTextContent(String(calendarDateOther.day));
-			expect(yearSegment).toHaveTextContent(String(calendarDateOther.year));
-			expect(insideValue).toHaveTextContent(calendarDateOther.toString());
-		});
-		test('segments populated with defaultValue - CalendarDateTime', async () => {
-			const { getByTestId } = render(DateFieldTest, {
-				defaultValue: calendarDateTimeOther,
-			});
-
-			const monthSegment = getByTestId('month');
-			const daySegment = getByTestId('day');
-			const yearSegment = getByTestId('year');
-			const hourSegment = getByTestId('hour');
-			const minuteSegment = getByTestId('minute');
-			const insideValue = getByTestId('inside-value');
-
-			expect(monthSegment).toHaveTextContent(String(calendarDateTimeOther.month));
-			expect(daySegment).toHaveTextContent(String(calendarDateTimeOther.day));
-			expect(yearSegment).toHaveTextContent(String(calendarDateTimeOther.year));
-			expect(hourSegment).toHaveTextContent(String(calendarDateTimeOther.hour));
-			expect(minuteSegment).toHaveTextContent(String(calendarDateTimeOther.minute));
-			expect(insideValue).toHaveTextContent(calendarDateTimeOther.toString());
+	test('segments populated with defaultValue - CalendarDate', async () => {
+		const { getByTestId } = render(DateFieldTest, {
+			defaultValue: calendarDateOther,
 		});
 
-		test('segments populated with defaultValue - ZonedDateTime', async () => {
-			const { getByTestId } = render(DateFieldTest, {
-				defaultValue: zonedDateTimeOther,
-			});
+		const monthSegment = getByTestId('month');
+		const daySegment = getByTestId('day');
+		const yearSegment = getByTestId('year');
+		const insideValue = getByTestId('inside-value');
 
-			const monthSegment = getByTestId('month');
-			const daySegment = getByTestId('day');
-			const yearSegment = getByTestId('year');
-			const hourSegment = getByTestId('hour');
-			const minuteSegment = getByTestId('minute');
-			const dayPeriodSegment = getByTestId('dayPeriod');
-			const timeZoneSegment = getByTestId('timeZoneName');
-			const insideValue = getByTestId('inside-value');
-
-			expect(monthSegment).toHaveTextContent(String(zonedDateTimeOther.month));
-			expect(daySegment).toHaveTextContent(String(zonedDateTimeOther.day));
-			expect(yearSegment).toHaveTextContent(String(zonedDateTimeOther.year));
-			expect(hourSegment).toHaveTextContent(String(zonedDateTimeOther.hour));
-			expect(minuteSegment).toHaveTextContent(String(zonedDateTimeOther.minute));
-			expect(dayPeriodSegment).toHaveTextContent('PM');
-			expect(timeZoneSegment).toHaveTextContent(String('EST'));
-			expect(insideValue).toHaveTextContent(zonedDateTimeOther.toString());
+		expect(monthSegment).toHaveTextContent(String(calendarDateOther.month));
+		expect(daySegment).toHaveTextContent(String(calendarDateOther.day));
+		expect(yearSegment).toHaveTextContent(String(calendarDateOther.year));
+		expect(insideValue).toHaveTextContent(calendarDateOther.toString());
+	});
+	test('segments populated with defaultValue - CalendarDateTime', async () => {
+		const { getByTestId } = render(DateFieldTest, {
+			defaultValue: calendarDateTimeOther,
 		});
 
-		test('locale changes segment positioning', async () => {
-			const { getByTestId } = render(DateFieldTest, {
-				locale: 'en-UK',
-			});
+		const monthSegment = getByTestId('month');
+		const daySegment = getByTestId('day');
+		const yearSegment = getByTestId('year');
+		const hourSegment = getByTestId('hour');
+		const minuteSegment = getByTestId('minute');
+		const insideValue = getByTestId('inside-value');
 
-			const field = getByTestId('field');
-			const firstSegment = field.firstChild;
-			// there are literals rendered between segments, so we need to skip them
-			const secondSegment = field.children[2];
-			const thirdSegment = field.children[4];
-
-			expect(firstSegment).toHaveTextContent('dd');
-			expect(secondSegment).toHaveTextContent('mm');
-			expect(thirdSegment).toHaveTextContent('yyyy');
-		});
-
-		test('certain locales do not show day period segment', async () => {
-			const { queryByTestId } = render(DateFieldTest, {
-				locale: 'en-UK',
-				defaultValue: calendarDateTimeOther,
-			});
-			expect(queryByTestId('dayPeriod')).toBeNull();
-		});
-
-		test('certain locales do show day period segment', async () => {
-			const { queryByTestId } = render(DateFieldTest, {
-				defaultValue: calendarDateTimeOther,
-			});
-			expect(queryByTestId('dayPeriod')).not.toBeNull();
-		});
+		expect(monthSegment).toHaveTextContent(String(calendarDateTimeOther.month));
+		expect(daySegment).toHaveTextContent(String(calendarDateTimeOther.day));
+		expect(yearSegment).toHaveTextContent(String(calendarDateTimeOther.year));
+		expect(hourSegment).toHaveTextContent(String(calendarDateTimeOther.hour));
+		expect(minuteSegment).toHaveTextContent(String(calendarDateTimeOther.minute));
+		expect(insideValue).toHaveTextContent(calendarDateTimeOther.toString());
 	});
 
-	describe('Navigation', () => {
-		test('focuses first segment on click', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DateFieldTest);
-
-			const firstSegment = getByTestId('month');
-			await user.click(firstSegment);
-
-			expect(firstSegment).toHaveFocus();
+	test('segments populated with defaultValue - ZonedDateTime', async () => {
+		const { getByTestId } = render(DateFieldTest, {
+			defaultValue: zonedDateTimeOther,
 		});
 
-		test('increments segment on arrow up', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DateFieldTest, {
-				defaultPlaceholderValue: calendarDateToday,
-			});
-			const firstSegment = getByTestId('month');
-			await user.click(firstSegment);
+		const monthSegment = getByTestId('month');
+		const daySegment = getByTestId('day');
+		const yearSegment = getByTestId('year');
+		const hourSegment = getByTestId('hour');
+		const minuteSegment = getByTestId('minute');
+		const dayPeriodSegment = getByTestId('dayPeriod');
+		const timeZoneSegment = getByTestId('timeZoneName');
+		const insideValue = getByTestId('inside-value');
 
+		expect(monthSegment).toHaveTextContent(String(zonedDateTimeOther.month));
+		expect(daySegment).toHaveTextContent(String(zonedDateTimeOther.day));
+		expect(yearSegment).toHaveTextContent(String(zonedDateTimeOther.year));
+		expect(hourSegment).toHaveTextContent(String(zonedDateTimeOther.hour));
+		expect(minuteSegment).toHaveTextContent(String(zonedDateTimeOther.minute));
+		expect(dayPeriodSegment).toHaveTextContent('PM');
+		expect(timeZoneSegment).toHaveTextContent(String('EST'));
+		expect(insideValue).toHaveTextContent(zonedDateTimeOther.toString());
+	});
+
+	test('locale changes segment positioning', async () => {
+		const { getByTestId } = render(DateFieldTest, {
+			locale: 'en-UK',
+		});
+
+		const field = getByTestId('field');
+		const firstSegment = field.firstChild;
+		// there are literals rendered between segments, so we need to skip them
+		const secondSegment = field.children[2];
+		const thirdSegment = field.children[4];
+
+		expect(firstSegment).toHaveTextContent('dd');
+		expect(secondSegment).toHaveTextContent('mm');
+		expect(thirdSegment).toHaveTextContent('yyyy');
+	});
+
+	test('certain locales do not show day period segment', async () => {
+		const { queryByTestId } = render(DateFieldTest, {
+			locale: 'en-UK',
+			defaultValue: calendarDateTimeOther,
+		});
+		expect(queryByTestId('dayPeriod')).toBeNull();
+	});
+
+	test('certain locales do show day period segment', async () => {
+		const { queryByTestId } = render(DateFieldTest, {
+			defaultValue: calendarDateTimeOther,
+		});
+		expect(queryByTestId('dayPeriod')).not.toBeNull();
+	});
+});
+
+describe('Navigation', () => {
+	test('focuses first segment on click', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DateFieldTest);
+
+		const firstSegment = getByTestId('month');
+		await user.click(firstSegment);
+
+		expect(firstSegment).toHaveFocus();
+	});
+
+	test('increments segment on arrow up', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DateFieldTest, {
+			defaultPlaceholderValue: calendarDateToday,
+		});
+		const firstSegment = getByTestId('month');
+		await user.click(firstSegment);
+
+		await user.keyboard(`{${kbd.ARROW_UP}}`);
+
+		const currentMonth = calendarDateToday.month;
+		expect(firstSegment).toHaveTextContent(String(currentMonth));
+
+		await user.keyboard(`{${kbd.ARROW_UP}}`);
+		expect(firstSegment).toHaveTextContent(String(calendarDateToday.month + 1));
+	});
+
+	test('increments segment on arrow down', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DateFieldTest, {
+			defaultPlaceholderValue: calendarDateToday,
+		});
+
+		const firstSegment = getByTestId('month');
+		await user.click(firstSegment);
+
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+
+		const currentMonth = calendarDateToday.month;
+		expect(firstSegment).toHaveTextContent(String(currentMonth));
+
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(firstSegment).toHaveTextContent(String(calendarDateToday.month - 1));
+	});
+
+	test('increments segment on arrow down', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DateFieldTest, {
+			defaultPlaceholderValue: calendarDateToday,
+		});
+
+		const firstSegment = getByTestId('month');
+		await user.click(firstSegment);
+
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+
+		const currentMonth = calendarDateToday.month;
+		expect(firstSegment).toHaveTextContent(String(currentMonth));
+
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(firstSegment).toHaveTextContent(String(calendarDateToday.month - 1));
+	});
+
+	test('navigates segments using arrow keys', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DateFieldTest);
+
+		const monthSegment = getByTestId('month');
+		const daySegment = getByTestId('day');
+		const yearSegment = getByTestId('year');
+
+		await user.click(monthSegment);
+		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		expect(daySegment).toHaveFocus();
+
+		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		expect(yearSegment).toHaveFocus();
+
+		await user.keyboard(`{${kbd.ARROW_LEFT}}`);
+		expect(daySegment).toHaveFocus();
+
+		await user.keyboard(`{${kbd.ARROW_LEFT}}`);
+		expect(monthSegment).toHaveFocus();
+	});
+
+	test('navigates segments using tab', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DateFieldTest);
+
+		const monthSegment = getByTestId('month');
+		const daySegment = getByTestId('day');
+		const yearSegment = getByTestId('year');
+
+		await user.click(monthSegment);
+		await user.keyboard(`{${kbd.TAB}}`);
+		expect(daySegment).toHaveFocus();
+
+		await user.keyboard(`{${kbd.TAB}}`);
+		expect(yearSegment).toHaveFocus();
+	});
+
+	test('fieldDisabled prop prevents interaction', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DateFieldTest, {
+			fieldDisabled: true,
+		});
+		const monthSegment = getByTestId('month');
+		const daySegment = getByTestId('day');
+		const yearSegment = getByTestId('year');
+
+		await user.click(monthSegment);
+		expect(monthSegment).not.toHaveFocus();
+		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		expect(daySegment).not.toHaveFocus();
+		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		expect(yearSegment).not.toHaveFocus();
+
+		await user.click(daySegment);
+		expect(daySegment).not.toHaveFocus();
+		await user.click(yearSegment);
+		expect(yearSegment).not.toHaveFocus();
+	});
+
+	test('fieldReadonly prop prevents modifying segments', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DateFieldTest, {
+			fieldReadonly: true,
+			defaultValue: calendarDateOther,
+		});
+		const segments = ['month', 'day', 'year'] as const;
+
+		for (const segment of segments) {
+			const el = getByTestId(segment);
+			expect(el).toHaveTextContent(String(calendarDateOther[segment]));
+			await user.click(el);
+			expect(el).toHaveFocus();
 			await user.keyboard(`{${kbd.ARROW_UP}}`);
+			expect(el).toHaveTextContent(String(calendarDateOther[segment]));
+		}
+	});
 
-			const currentMonth = calendarDateToday.month;
-			expect(firstSegment).toHaveTextContent(String(currentMonth));
-
-			await user.keyboard(`{${kbd.ARROW_UP}}`);
-			expect(firstSegment).toHaveTextContent(String(calendarDateToday.month + 1));
+	test('if selected date unavailable, mark field as invalid', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DateFieldTest, {
+			granularity: 'day',
+			isUnavailable: (date) => {
+				return date.day === 20;
+			},
 		});
+		const daySegment = getByTestId('day');
+		const monthSegment = getByTestId('month');
+		const yearSegment = getByTestId('year');
 
-		test('increments segment on arrow down', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DateFieldTest, {
-				defaultPlaceholderValue: calendarDateToday,
-			});
+		await user.click(monthSegment);
+		await user.keyboard(`{2}`);
+		expect(monthSegment).toHaveTextContent('2');
+		expect(daySegment).toHaveFocus();
+		await user.keyboard(`{20}`);
+		expect(daySegment).toHaveTextContent('20');
+		expect(yearSegment).toHaveFocus();
+		await user.keyboard(`{1111}`);
+		expect(yearSegment).toHaveTextContent('1111');
 
-			const firstSegment = getByTestId('month');
-			await user.click(firstSegment);
+		const segments = [daySegment, monthSegment, yearSegment];
 
-			await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		for (const segment of segments) {
+			expect(segment).toHaveAttribute('data-invalid');
+			expect(segment).toHaveAttribute('aria-invalid');
+		}
 
-			const currentMonth = calendarDateToday.month;
-			expect(firstSegment).toHaveTextContent(String(currentMonth));
-
-			await user.keyboard(`{${kbd.ARROW_DOWN}}`);
-			expect(firstSegment).toHaveTextContent(String(calendarDateToday.month - 1));
-		});
-
-		test('increments segment on arrow down', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DateFieldTest, {
-				defaultPlaceholderValue: calendarDateToday,
-			});
-
-			const firstSegment = getByTestId('month');
-			await user.click(firstSegment);
-
-			await user.keyboard(`{${kbd.ARROW_DOWN}}`);
-
-			const currentMonth = calendarDateToday.month;
-			expect(firstSegment).toHaveTextContent(String(currentMonth));
-
-			await user.keyboard(`{${kbd.ARROW_DOWN}}`);
-			expect(firstSegment).toHaveTextContent(String(calendarDateToday.month - 1));
-		});
-
-		test('navigates segments using arrow keys', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DateFieldTest);
-
-			const monthSegment = getByTestId('month');
-			const daySegment = getByTestId('day');
-			const yearSegment = getByTestId('year');
-
-			await user.click(monthSegment);
-			await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
-			expect(daySegment).toHaveFocus();
-
-			await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
-			expect(yearSegment).toHaveFocus();
-
-			await user.keyboard(`{${kbd.ARROW_LEFT}}`);
-			expect(daySegment).toHaveFocus();
-
-			await user.keyboard(`{${kbd.ARROW_LEFT}}`);
-			expect(monthSegment).toHaveFocus();
-		});
-
-		test('navigates segments using tab', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DateFieldTest);
-
-			const monthSegment = getByTestId('month');
-			const daySegment = getByTestId('day');
-			const yearSegment = getByTestId('year');
-
-			await user.click(monthSegment);
-			await user.keyboard(`{${kbd.TAB}}`);
-			expect(daySegment).toHaveFocus();
-
-			await user.keyboard(`{${kbd.TAB}}`);
-			expect(yearSegment).toHaveFocus();
-		});
+		expect(getByTestId('field')).toHaveAttribute('data-invalid', '');
 	});
 });

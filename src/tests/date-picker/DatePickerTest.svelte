@@ -13,10 +13,10 @@
 	export let onValueChange: CreateDatePickerProps['onValueChange'] = undefined;
 	export let onPlaceholderValueChange: CreateDatePickerProps['onPlaceholderValueChange'] =
 		undefined;
-	export let unavailable: CreateDatePickerProps['unavailable'] = undefined;
-	export let disabled: CreateDatePickerProps['disabled'] = undefined;
+	export let isUnavailable: CreateDatePickerProps['isUnavailable'] = undefined;
+	export let isDisabled: CreateDatePickerProps['isDisabled'] = undefined;
 	export let fieldDisabled: CreateDatePickerProps['fieldDisabled'] = undefined;
-	export let fieldReadOnly: CreateDatePickerProps['fieldReadOnly'] = undefined;
+	export let fieldReadonly: CreateDatePickerProps['fieldReadonly'] = undefined;
 	export let hourCycle: CreateDatePickerProps['hourCycle'] = undefined;
 	export let locale: CreateDatePickerProps['locale'] = 'en';
 	export let hideTimeZone: CreateDatePickerProps['hideTimeZone'] = undefined;
@@ -53,9 +53,9 @@
 		defaultPlaceholderValue,
 		onValueChange,
 		onPlaceholderValueChange,
-		unavailable,
+		isUnavailable,
 		fieldDisabled,
-		fieldReadOnly,
+		fieldReadonly,
 		hourCycle,
 		locale,
 		hideTimeZone,
@@ -69,7 +69,7 @@
 		pagedNavigation,
 		placeholderValue,
 		weekStartsOn,
-		disabled,
+		isDisabled,
 	});
 </script>
 
