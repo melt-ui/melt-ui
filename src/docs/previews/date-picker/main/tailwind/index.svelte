@@ -16,7 +16,7 @@
 			segment,
 			trigger,
 			content,
-			label
+			label,
 		},
 		states: { value, months, headingValue, daysOfWeek, segmentContents, open },
 		options: { locale },
@@ -25,7 +25,6 @@
 		forceVisible: true,
 		granularity: 'minute',
 	});
-
 </script>
 
 <div class="flex w-full flex-col items-center gap-3">
@@ -35,21 +34,21 @@
 	<div>
 		<span use:melt={$label} class="cursor-default text-magnum-800">Date</span>
 		<div
-		use:melt={$dateField}
-		class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
+			use:melt={$dateField}
+			class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
 		>
-		{#each $segmentContents.arr as seg, i (`${i}-${$locale}`)}
-		<div use:melt={$segment(seg.part)} class="segment whitespace-nowrap">
-			{seg.value}
-		</div>
-		{/each}
-		<div class="ml-4 flex w-full items-center justify-end">
-			<button use:melt={$trigger} class="rounded bg-magnum-800 p-1">
-				<Calendar class="h-4 w-4 text-white" />
-			</button>
+			{#each $segmentContents.arr as seg, i (`${i}-${$locale}`)}
+				<div use:melt={$segment(seg.part)} class="segment whitespace-nowrap">
+					{seg.value}
+				</div>
+			{/each}
+			<div class="ml-4 flex w-full items-center justify-end">
+				<button use:melt={$trigger} class="rounded bg-magnum-800 p-1">
+					<Calendar class="h-4 w-4 text-white" />
+				</button>
+			</div>
 		</div>
 	</div>
-</div>
 	{#if $open}
 		<div
 			class="z-10 w-80 rounded-[4px] bg-white p-3 shadow-sm"
@@ -145,6 +144,9 @@
 
 	.segment {
 		@apply data-[segment="dayPeriod"]:pl-0.5 data-[segment="hour"]:pl-1 data-[segment="timeZoneName"]:pl-1;
+	}
+	.segment:not([data-segment='literal']) {
+		@apply px-0.5;
 	}
 
 	.btn {

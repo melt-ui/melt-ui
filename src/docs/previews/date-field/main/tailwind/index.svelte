@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { createDateField } from '$lib/builders';
 	import { melt } from '$lib';
-	import { getLocalTimeZone, now } from '@internationalized/date';
 
 	const {
 		elements: { dateField, segment, label },
