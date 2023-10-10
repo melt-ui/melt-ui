@@ -100,7 +100,7 @@ export type DatePickerProps = {
 	 *
 	 * @default undefined;
 	 */
-	disabled?: Matcher;
+	isDisabled?: Matcher;
 
 	/**
 	 * Any dates that match the provided matchers will be
@@ -117,7 +117,7 @@ export type DatePickerProps = {
 	 *
 	 * @default undefined;
 	 */
-	unavailable?: Matcher;
+	isUnavailable?: Matcher;
 
 	/**
 	 * @default 'en'

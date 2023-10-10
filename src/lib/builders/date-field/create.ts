@@ -58,10 +58,9 @@ import type {
 	TimeSegmentObj,
 	TimeSegmentPart,
 } from './_internal/types.js';
-import type { DateValue } from '@internationalized/date';
 
 const defaults = {
-	unavailable: defaultMatcher,
+	isUnavailable: defaultMatcher,
 	value: undefined,
 	hourCycle: undefined,
 	locale: 'en',
@@ -77,7 +76,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const withDefaults = { ...defaults, ...props };
 
 	const options = toWritableStores(omit(withDefaults, 'value', 'placeholderValue'));
-	const { locale, granularity, hourCycle, hideTimeZone, unavailable } = options;
+	const { locale, granularity, hourCycle, hideTimeZone, isUnavailable } = options;
 
 	const defaultDate = withDefaults.defaultValue
 		? withDefaults.defaultValue
@@ -88,9 +87,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
-	const isFieldInvalid = derived([value, unavailable], ([$value, $unavailable]) => {
+	const isFieldInvalid = derived([value, isUnavailable], ([$value, $isUnavailable]) => {
 		if (!$value) return false;
-		if ($unavailable($value)) return true;
+		if ($isUnavailable?.($value)) return true;
 		return false;
 	});
 
@@ -365,35 +364,6 @@ export function createDateField(props?: CreateDateFieldProps) {
 			updatingDayPeriod.set(null);
 		}
 	}
-
-	/**
-	 * A helper function to determine if a date is unavailable,
-	 * which uses the `Matcher`(s) provided via the `unavailable`
-	 * prop.
-	 *
-	 * Although we set attributes on the cells themselves, this
-	 * function is useful when you want to conditionally handle
-	 * something outside of the cell, such as its wrapping element.
-	 *
-	 * @example
-	 * ```svelte
-	 * {#each dates as date}
-	 * <td role="gridcell">
-	 * 	{#if $isUnavailable(date)}
-	 * 		X
-	 * 	{/if}
-	 * 	<!-- ... -->
-	 * </td>
-	 * {/each}
-	 * ```
-	 *
-	 * @param date - The `DateValue` to check
-	 * @returns `true` if the date is disabled, `false` otherwise
-	 */
-
-	const isUnavailable = derived(unavailable, ($unavailable) => {
-		return (date: DateValue) => $unavailable(date);
-	});
 
 	/*
 	 * -----------------------------------------------------
@@ -1663,9 +1633,6 @@ export function createDateField(props?: CreateDateFieldProps) {
 			segmentContents,
 			placeholderValue: placeholderValue.toWritable(),
 			isFieldInvalid,
-		},
-		helpers: {
-			isUnavailable,
 		},
 		options,
 		ids,

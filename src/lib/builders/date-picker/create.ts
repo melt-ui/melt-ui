@@ -15,8 +15,8 @@ import {
 } from '$lib/internal/date/index.js';
 
 const defaults = {
-	disabled: defaultMatcher,
-	unavailable: defaultMatcher,
+	isDisabled: defaultMatcher,
+	isUnavailable: defaultMatcher,
 	value: undefined,
 	positioning: {
 		placement: 'bottom',
@@ -92,7 +92,11 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	const { locale } = options;
 
-	const defaultDate = getDefaultDate(get(dateField.options.granularity));
+	const defaultDate = withDefaults.defaultValue
+		? withDefaults.defaultValue
+		: withDefaults.defaultPlaceholderValue
+		? withDefaults.defaultPlaceholderValue
+		: getDefaultDate(withDefaults.granularity);
 	const formatter = createFormatter(get(locale));
 
 	const placeholderValue = dateStore(

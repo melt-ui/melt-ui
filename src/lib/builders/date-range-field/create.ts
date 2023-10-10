@@ -19,7 +19,7 @@ import { removeDescriptionElement } from './_internal/helpers.js';
 import { createDateField } from '$lib/index.js';
 
 const defaults = {
-	unavailable: defaultMatcher,
+	isUnavailable: defaultMatcher,
 	startValue: undefined,
 	endValue: undefined,
 	hourCycle: undefined,
@@ -46,7 +46,12 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		description: generateId(),
 	};
 
-	const defaultDate = getDefaultDate(withDefaults.granularity);
+	const defaultDate = withDefaults.defaultStartValue
+		? withDefaults.defaultStartValue
+		: withDefaults.defaultPlaceholderValue
+		? withDefaults.defaultPlaceholderValue
+		: getDefaultDate(withDefaults.granularity);
+
 	const startValueWritable = withDefaults.startValue ?? writable(withDefaults.defaultStartValue);
 	const startValue = overridable(startValueWritable, withDefaults.onStartValueChange);
 	const endValueWritable = withDefaults.endValue ?? writable(withDefaults.defaultEndValue);

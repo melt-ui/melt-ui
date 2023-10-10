@@ -51,8 +51,8 @@ import {
 } from '@internationalized/date';
 
 const defaults = {
-	disabled: defaultMatcher,
-	unavailable: defaultMatcher,
+	isDisabled: defaultMatcher,
+	isUnavailable: defaultMatcher,
 	startValue: undefined,
 	endValue: undefined,
 	allowDeselect: false,
@@ -83,13 +83,13 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 
 	const {
 		allowDeselect,
-		disabled,
+		isDisabled,
 		numberOfMonths,
 		pagedNavigation,
 		weekStartsOn,
 		fixedWeeks,
 		calendarLabel,
-		unavailable,
+		isUnavailable,
 		locale,
 	} = options;
 
@@ -121,17 +121,17 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	]);
 
 	const isStartInvalid = derived(
-		[startValue, unavailable, disabled],
-		([$startValue, $unavailable, $disabled]) => {
+		[startValue, isUnavailable, isDisabled],
+		([$startValue, $isUnavailable, $isDisabled]) => {
 			if (!$startValue) return false;
-			return $unavailable($startValue) || $disabled($startValue);
+			return $isUnavailable?.($startValue) || $isDisabled?.($startValue);
 		}
 	);
 	const isEndInvalid = derived(
-		[endValue, unavailable, disabled],
-		([$endValue, $unavailable, $disabled]) => {
+		[endValue, isUnavailable, isDisabled],
+		([$endValue, $isUnavailable, $isDisabled]) => {
 			if (!$endValue) return false;
-			return $unavailable($endValue) || $disabled($endValue);
+			return $isUnavailable?.($endValue) || $isDisabled?.($endValue);
 		}
 	);
 
@@ -312,8 +312,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			isSelectionEnd,
 			isSelectionStart,
 			isHighlighted,
-			disabled,
-			unavailable,
+			isDisabled,
+			isUnavailable,
 			placeholderValue,
 		],
 		returned: ([
@@ -327,8 +327,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		]) => {
 			return (cellValue: T) => {
 				const cellDate = toDate(cellValue);
-				const isDisabled = $disabled(cellValue);
-				const isUnavailable = $unavailable(cellValue);
+				const isDisabled = $disabled?.(cellValue);
+				const isUnavailable = $unavailable?.(cellValue);
 				const isDateToday = isToday(cellValue, getLocalTimeZone());
 				const isOutsideMonth = !isSameMonth(cellValue, $placeholderValue);
 				const isFocusedDate = isSameDay(cellValue, $placeholderValue);
@@ -355,7 +355,6 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 					'data-value': cellValue.toString(),
 					'data-disabled': isDisabled || isOutsideMonth ? '' : undefined,
 					'data-unavailable': isUnavailable ? '' : undefined,
-					'data-date': '',
 					'data-today': isDateToday ? '' : undefined,
 					'data-outside-month': isOutsideMonth ? '' : undefined,
 					'data-focused': isFocusedDate ? '' : undefined,
@@ -820,13 +819,16 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * @param date - The `DateValue` to check
 	 * @returns `true` if the date is disabled, `false` otherwise
 	 */
-	const isDisabled = derived([disabled, placeholderValue], ([$disabled, $placeholderValue]) => {
-		return (date: DateValue) => {
-			if ($disabled(date)) return true;
-			if (!isSameMonth(date, $placeholderValue)) return true;
-			return false;
-		};
-	});
+	const isDateDisabled = derived(
+		[isDisabled, placeholderValue],
+		([$isDisabled, $placeholderValue]) => {
+			return (date: DateValue) => {
+				if ($isDisabled?.(date)) return true;
+				if (!isSameMonth(date, $placeholderValue)) return true;
+				return false;
+			};
+		}
+	);
 
 	/**
 	 * A helper function to determine if a date is unavailable,
@@ -852,9 +854,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * @param date - The `DateValue` to check
 	 * @returns `true` if the date is disabled, `false` otherwise
 	 */
-
-	const isUnavailable = derived(unavailable, ($unavailable) => {
-		return (date: DateValue) => $unavailable(date);
+	const isDateUnavailable = derived(isUnavailable, ($isUnavailable) => {
+		return (date: DateValue) => $isUnavailable?.(date);
 	});
 
 	return {
@@ -881,8 +882,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			prevYear,
 			setYear,
 			setMonth,
-			isDisabled,
-			isUnavailable,
+			isDateDisabled,
+			isDateUnavailable,
 		},
 		options,
 		ids,

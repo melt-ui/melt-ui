@@ -111,7 +111,7 @@ export type DateRangeFieldProps = {
 	 *
 	 * @default undefined;
 	 */
-	unavailable?: Matcher;
+	isUnavailable?: Matcher;
 
 	/**
 	 * @default 'en'

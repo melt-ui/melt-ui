@@ -81,7 +81,7 @@ export type DateFieldProps = {
 	 *
 	 * @default undefined;
 	 */
-	unavailable?: Matcher;
+	isUnavailable?: Matcher;
 
 	/**
 	 * If true, the date field will be disabled and users

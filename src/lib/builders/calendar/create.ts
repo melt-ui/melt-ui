@@ -47,8 +47,8 @@ import {
 } from '$lib/internal/date/index.js';
 
 const defaults = {
-	disabled: defaultMatcher,
-	unavailable: defaultMatcher,
+	isDisabled: defaultMatcher,
+	isUnavailable: defaultMatcher,
 	value: undefined,
 	allowDeselect: false,
 	numberOfMonths: 1,
@@ -76,13 +76,13 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 
 	const {
 		allowDeselect,
-		disabled,
+		isDisabled,
 		numberOfMonths,
 		pagedNavigation,
 		weekStartsOn,
 		fixedWeeks,
 		calendarLabel,
-		unavailable,
+		isUnavailable,
 		locale,
 	} = options;
 
@@ -92,7 +92,12 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		accessibleHeading: generateId(),
 	} satisfies CalendarIds;
 
-	const defaultDate = getDefaultDate();
+	const defaultDate = withDefaults.defaultValue
+		? withDefaults.defaultValue
+		: withDefaults.defaultPlaceholderValue
+		? withDefaults.defaultPlaceholderValue
+		: getDefaultDate();
+
 	const formatter = createFormatter(get(locale));
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
@@ -109,12 +114,15 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		createMonth(withDefaults.defaultPlaceholderValue ?? defaultDate),
 	]);
 
-	const isInvalid = derived([value, disabled, unavailable], ([$value, $disabled, $unavailable]) => {
-		if (!$value) return false;
-		if ($disabled($value)) return true;
-		if ($unavailable($value)) return true;
-		return false;
-	});
+	const isInvalid = derived(
+		[value, isDisabled, isUnavailable],
+		([$value, $isDisabled, $isUnavailable]) => {
+			if (!$value) return false;
+			if ($isDisabled?.($value)) return true;
+			if ($isUnavailable?.($value)) return true;
+			return false;
+		}
+	);
 
 	let announcer = getAnnouncer();
 
@@ -235,12 +243,12 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * single day in the month.
 	 */
 	const cell = builder(name('cell'), {
-		stores: [value, disabled, unavailable, placeholderValue],
-		returned: ([$value, $disabled, $unavailable, $placeholderValue]) => {
+		stores: [value, isDisabled, isUnavailable, placeholderValue],
+		returned: ([$value, $isDisabled, $isUnavailable, $placeholderValue]) => {
 			return (cellValue: T) => {
 				const cellDate = toDate(cellValue);
-				const isDisabled = $disabled(cellValue);
-				const isUnavailable = $unavailable(cellValue);
+				const isDisabled = $isDisabled?.(cellValue);
+				const isUnavailable = $isUnavailable?.(cellValue);
 				const isDateToday = isToday(cellValue, getLocalTimeZone());
 				const isOutsideMonth = !isSameMonth(cellValue, $placeholderValue);
 				const isFocusedDate = isSameDay(cellValue, $placeholderValue);
@@ -681,13 +689,16 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * @param date - The `DateValue` to check
 	 * @returns `true` if the date is disabled, `false` otherwise
 	 */
-	const isDisabled = derived([disabled, placeholderValue], ([$disabled, $placeholderValue]) => {
-		return (date: DateValue) => {
-			if ($disabled(date)) return true;
-			if (!isSameMonth(date, $placeholderValue)) return true;
-			return false;
-		};
-	});
+	const isDateDisabled = derived(
+		[isDisabled, placeholderValue],
+		([$isDisabled, $placeholderValue]) => {
+			return (date: DateValue) => {
+				if ($isDisabled(date)) return true;
+				if (!isSameMonth(date, $placeholderValue)) return true;
+				return false;
+			};
+		}
+	);
 
 	/**
 	 * A helper function to determine if a date is unavailable,
@@ -713,9 +724,8 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * @param date - The `DateValue` to check
 	 * @returns `true` if the date is disabled, `false` otherwise
 	 */
-
-	const isUnavailable = derived(unavailable, ($unavailable) => {
-		return (date: DateValue) => $unavailable(date);
+	const isDateUnavailable = derived(isUnavailable, ($isUnavailable) => {
+		return (date: DateValue) => $isUnavailable(date);
 	});
 
 	return {
@@ -741,8 +751,8 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			prevYear,
 			setYear,
 			setMonth,
-			isDisabled,
-			isUnavailable,
+			isDateDisabled,
+			isDateUnavailable,
 		},
 		options,
 		ids,
