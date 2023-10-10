@@ -25,11 +25,15 @@ import { derived, get, writable } from 'svelte/store';
 import type { CalendarIds, CreateRangeCalendarProps, Month } from './types.js';
 import { tick } from 'svelte';
 import {
+	defaultMatcher,
 	getAnnouncer,
 	isBefore,
 	isBetweenInclusive,
-	isMatch,
 	toDate,
+	dateStore,
+	createFormatter,
+	getDaysInMonth,
+	getDefaultDate,
 } from '$lib/internal/date/index.js';
 import {
 	type DateValue,
@@ -45,16 +49,10 @@ import {
 	parseDateTime,
 	parseDate,
 } from '@internationalized/date';
-import {
-	dateStore,
-	createFormatter,
-	getDaysInMonth,
-	getDefaultDate,
-} from '$lib/internal/date/index.js';
 
 const defaults = {
-	disabled: false,
-	unavailable: false,
+	disabled: defaultMatcher,
+	unavailable: defaultMatcher,
 	startValue: undefined,
 	endValue: undefined,
 	allowDeselect: false,
@@ -126,14 +124,14 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		[startValue, unavailable, disabled],
 		([$startValue, $unavailable, $disabled]) => {
 			if (!$startValue) return false;
-			return isMatch($startValue, $unavailable) || isMatch($startValue, $disabled);
+			return $unavailable($startValue) || $disabled($startValue);
 		}
 	);
 	const isEndInvalid = derived(
 		[endValue, unavailable, disabled],
 		([$endValue, $unavailable, $disabled]) => {
 			if (!$endValue) return false;
-			return isMatch($endValue, $unavailable) || isMatch($endValue, $disabled);
+			return $unavailable($endValue) || $disabled($endValue);
 		}
 	);
 
@@ -329,8 +327,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		]) => {
 			return (cellValue: T) => {
 				const cellDate = toDate(cellValue);
-				const isDisabled = isMatch(cellValue, $disabled);
-				const isUnavailable = isMatch(cellValue, $unavailable);
+				const isDisabled = $disabled(cellValue);
+				const isUnavailable = $unavailable(cellValue);
 				const isDateToday = isToday(cellValue, getLocalTimeZone());
 				const isOutsideMonth = !isSameMonth(cellValue, $placeholderValue);
 				const isFocusedDate = isSameDay(cellValue, $placeholderValue);
@@ -824,7 +822,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 */
 	const isDisabled = derived([disabled, placeholderValue], ([$disabled, $placeholderValue]) => {
 		return (date: DateValue) => {
-			if (isMatch(date, $disabled)) return true;
+			if ($disabled(date)) return true;
 			if (!isSameMonth(date, $placeholderValue)) return true;
 			return false;
 		};
@@ -856,7 +854,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 */
 
 	const isUnavailable = derived(unavailable, ($unavailable) => {
-		return (date: DateValue) => isMatch(date, $unavailable);
+		return (date: DateValue) => $unavailable(date);
 	});
 
 	return {

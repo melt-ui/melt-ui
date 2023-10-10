@@ -7,11 +7,16 @@ import {
 	isSegmentNavigationKey,
 } from '$lib/builders/date-field/_internal/helpers.js';
 
-import { dateStore, createFormatter, getDefaultDate } from '$lib/internal/date/index.js';
+import {
+	dateStore,
+	createFormatter,
+	getDefaultDate,
+	defaultMatcher,
+} from '$lib/internal/date/index.js';
 
 const defaults = {
-	disabled: false,
-	unavailable: false,
+	disabled: defaultMatcher,
+	unavailable: defaultMatcher,
 	value: undefined,
 	positioning: {
 		placement: 'bottom',

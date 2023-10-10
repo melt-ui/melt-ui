@@ -146,3 +146,7 @@ export function isDateValue(value: unknown): value is DateValue {
 export function isDateValueArray(value: unknown): value is DateValue[] {
 	return Array.isArray(value) && value.every((v) => isDateValue(v));
 }
+
+export function defaultMatcher(_: DateValue) {
+	return false;
+}

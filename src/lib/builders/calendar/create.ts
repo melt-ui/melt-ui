@@ -24,7 +24,7 @@ import {
 import { derived, get, writable } from 'svelte/store';
 import type { CalendarIds, CreateCalendarProps, Month } from './types.js';
 import { tick } from 'svelte';
-import { getAnnouncer, isMatch, toDate } from '$lib/internal/date/index.js';
+import { defaultMatcher, getAnnouncer, toDate } from '$lib/internal/date/index.js';
 import {
 	type DateValue,
 	getLocalTimeZone,
@@ -47,8 +47,8 @@ import {
 } from '$lib/internal/date/index.js';
 
 const defaults = {
-	disabled: false,
-	unavailable: false,
+	disabled: defaultMatcher,
+	unavailable: defaultMatcher,
 	value: undefined,
 	allowDeselect: false,
 	numberOfMonths: 1,
@@ -111,8 +111,8 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 
 	const isInvalid = derived([value, disabled, unavailable], ([$value, $disabled, $unavailable]) => {
 		if (!$value) return false;
-		if (isMatch($value, $disabled)) return true;
-		if (isMatch($value, $unavailable)) return true;
+		if ($disabled($value)) return true;
+		if ($unavailable($value)) return true;
 		return false;
 	});
 
@@ -239,8 +239,8 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		returned: ([$value, $disabled, $unavailable, $placeholderValue]) => {
 			return (cellValue: T) => {
 				const cellDate = toDate(cellValue);
-				const isDisabled = isMatch(cellValue, $disabled);
-				const isUnavailable = isMatch(cellValue, $unavailable);
+				const isDisabled = $disabled(cellValue);
+				const isUnavailable = $unavailable(cellValue);
 				const isDateToday = isToday(cellValue, getLocalTimeZone());
 				const isOutsideMonth = !isSameMonth(cellValue, $placeholderValue);
 				const isFocusedDate = isSameDay(cellValue, $placeholderValue);
@@ -683,7 +683,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 */
 	const isDisabled = derived([disabled, placeholderValue], ([$disabled, $placeholderValue]) => {
 		return (date: DateValue) => {
-			if (isMatch(date, $disabled)) return true;
+			if ($disabled(date)) return true;
 			if (!isSameMonth(date, $placeholderValue)) return true;
 			return false;
 		};
@@ -715,7 +715,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 */
 
 	const isUnavailable = derived(unavailable, ($unavailable) => {
-		return (date: DateValue) => isMatch(date, $unavailable);
+		return (date: DateValue) => $unavailable(date);
 	});
 
 	return {

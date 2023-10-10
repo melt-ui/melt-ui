@@ -1,4 +1,4 @@
-import type { CreateDateRangeFieldProps } from './types';
+import type { CreateDateRangeFieldProps } from './types.js';
 import {
 	builder,
 	createElHelpers,
@@ -7,13 +7,19 @@ import {
 	toWritableStores,
 	omit,
 } from '$lib/internal/helpers/index.js';
-import { dateStore, getDefaultDate, getAnnouncer, isBefore } from '$lib/internal/date/index.js';
+import {
+	dateStore,
+	getDefaultDate,
+	getAnnouncer,
+	isBefore,
+	defaultMatcher,
+} from '$lib/internal/date/index.js';
 import { derived, writable } from 'svelte/store';
 import { removeDescriptionElement } from './_internal/helpers.js';
-import { createDateField } from '..';
+import { createDateField } from '$lib/index.js';
 
 const defaults = {
-	unavailable: false,
+	unavailable: defaultMatcher,
 	startValue: undefined,
 	endValue: undefined,
 	hourCycle: undefined,

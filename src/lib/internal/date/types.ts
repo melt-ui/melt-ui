@@ -22,14 +22,6 @@ export type DayOfWeek = {
 	daysOfWeek: (typeof daysOfWeek)[number][];
 };
 
-export type Matcher =
-	| boolean
-	| ((date: DateValue) => boolean)
-	| DateValue
-	| DateValue[]
-	| DateRange
-	| DateBefore
-	| DateAfter
-	| DayOfWeek;
+export type Matcher = (date: DateValue) => boolean;
 
 export type Announcer = ReturnType<typeof getAnnouncer>;

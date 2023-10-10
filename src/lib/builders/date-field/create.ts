@@ -22,7 +22,7 @@ import {
 	toDate,
 	createFormatter,
 	getAnnouncer,
-	isMatch,
+	defaultMatcher,
 } from '$lib/internal/date/index.js';
 import { derived, get, writable, type Updater } from 'svelte/store';
 import {
@@ -61,7 +61,7 @@ import type {
 import type { DateValue } from '@internationalized/date';
 
 const defaults = {
-	unavailable: false,
+	unavailable: defaultMatcher,
 	value: undefined,
 	hourCycle: undefined,
 	locale: 'en',
@@ -90,7 +90,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 	const isFieldInvalid = derived([value, unavailable], ([$value, $unavailable]) => {
 		if (!$value) return false;
-		if (isMatch($value, $unavailable)) return true;
+		if ($unavailable($value)) return true;
 		return false;
 	});
 
@@ -392,7 +392,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	 */
 
 	const isUnavailable = derived(unavailable, ($unavailable) => {
-		return (date: DateValue) => isMatch(date, $unavailable);
+		return (date: DateValue) => $unavailable(date);
 	});
 
 	/*

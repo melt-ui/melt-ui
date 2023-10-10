@@ -1,7 +1,6 @@
 <script lang="ts">
 	import {
 		createDatePicker,
-		type CreateDateFieldProps,
 		type CreateDatePickerProps,
 	} from '$lib/builders';
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
