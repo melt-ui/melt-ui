@@ -17,6 +17,7 @@ const defaults = {
 		placement: 'bottom',
 	},
 	closeOnEscape: true,
+	closeOnOutsideClick: true,
 	preventScroll: false,
 	forceVisible: false,
 	locale: 'en',
