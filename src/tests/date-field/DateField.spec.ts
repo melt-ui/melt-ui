@@ -284,4 +284,78 @@ describe('Navigation', () => {
 
 		expect(getByTestId('field')).toHaveAttribute('data-invalid', '');
 	});
+
+	test('hourcycle prop changes the hour cycle', async () => {
+		const user = userEvent.setup();
+		const { getByTestId, queryByTestId } = render(DateFieldTest, {
+			defaultValue: calendarDateTimeOther,
+			hourCycle: 24,
+		});
+		expect(queryByTestId('dayPeriod')).toBeNull();
+
+		const hourSegment = getByTestId('hour');
+
+		expect(hourSegment).toHaveTextContent('12');
+		await user.click(hourSegment);
+		expect(hourSegment).toHaveFocus();
+		await user.keyboard(`{${kbd.ARROW_UP}}`);
+		expect(hourSegment).toHaveTextContent('13');
+	});
+
+	test('day granularity overrides default displayed segments', async () => {
+		const { getByTestId, queryByTestId } = render(DateFieldTest, {
+			defaultValue: calendarDateTimeOther,
+			granularity: 'day',
+		});
+
+		const monthSegment = getByTestId('month');
+		const daySegment = getByTestId('day');
+		const yearSegment = getByTestId('year');
+
+		const nonDisplayedSegments = ['hour', 'minute', 'second', 'dayPeriod'];
+
+		for (const segment of nonDisplayedSegments) {
+			expect(queryByTestId(segment)).toBeNull();
+		}
+
+		for (const segment of [monthSegment, daySegment, yearSegment]) {
+			expect(segment).toBeVisible();
+		}
+	});
+
+	test('minute granularity overrides default displayed segments', async () => {
+		const { queryByTestId } = render(DateFieldTest, {
+			defaultValue: calendarDateOther,
+			granularity: 'minute',
+		});
+
+		const segments = ['month', 'day', 'year', 'hour', 'minute', 'dayPeriod'];
+		const nonDisplayedSegments = ['second'];
+
+		for (const segment of nonDisplayedSegments) {
+			expect(queryByTestId(segment)).toBeNull();
+		}
+
+		for (const segment of segments) {
+			expect(queryByTestId(segment)).not.toBeNull();
+		}
+	});
+
+	test('changing the dayperiod segment changes the value', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DateFieldTest, {
+			defaultValue: calendarDateTimeOther,
+		});
+
+		const dayPeriodSegment = getByTestId('dayPeriod');
+		const insideValue = getByTestId('inside-value');
+
+		expect(dayPeriodSegment).toHaveTextContent('PM');
+
+		await user.click(dayPeriodSegment);
+		expect(dayPeriodSegment).toHaveFocus();
+		await user.keyboard(`{${kbd.ARROW_UP}}`);
+		expect(dayPeriodSegment).toHaveTextContent('AM');
+		expect(insideValue).toHaveTextContent('1980-01-20T00:30');
+	});
 });
