@@ -118,6 +118,101 @@ describe('DatePicker', () => {
 			expect(heading).toHaveTextContent('January 1980');
 		});
 
+		test('month navigation', async () => {
+			const user = userEvent.setup();
+			const { getByTestId } = render(DatePickerTest, {
+				defaultValue: zonedDateTimeOther,
+			});
+
+			const trigger = getByTestId('trigger');
+			await user.click(trigger);
+
+			const calendar = getByTestId('calendar');
+			expect(calendar).toBeVisible();
+
+			const heading = getByTestId('heading');
+			expect(heading).toHaveTextContent('January 1980');
+
+			const prevButton = getByTestId('prev-button');
+			const nextButton = getByTestId('next-button');
+
+			await user.click(nextButton);
+			expect(heading).toHaveTextContent('February 1980');
+
+			await user.click(prevButton);
+			expect(heading).toHaveTextContent('January 1980');
+
+			await user.click(prevButton);
+			expect(heading).toHaveTextContent('December 1979');
+		});
+
+		test('allow deselection', async () => {
+			const user = userEvent.setup();
+			const { getByTestId, container } = render(DatePickerTest, {
+				defaultValue: zonedDateTimeOther,
+				allowDeselect: true,
+			});
+
+			const trigger = getByTestId('trigger');
+			await user.click(trigger);
+
+			const calendar = getByTestId('calendar');
+			expect(calendar).toBeVisible();
+
+			const selectedDay = container.querySelector('[data-selected]') as HTMLElement;
+			expect(selectedDay).toHaveTextContent(String(zonedDateTimeOther.day));
+
+			await user.click(selectedDay);
+
+			const insideValue = getByTestId('inside-value');
+			expect(insideValue).toHaveTextContent('undefined');
+		});
+
+		test('selection with mouse', async () => {
+			const user = userEvent.setup();
+			const { getByTestId } = render(DatePickerTest, {
+				defaultPlaceholderValue: zonedDateTimeOther,
+				allowDeselect: true,
+			});
+			const trigger = getByTestId('trigger');
+			await user.click(trigger);
+			const calendar = getByTestId('calendar');
+			expect(calendar).toBeVisible();
+			const secondDayInMonth = getByTestId('month-0-date-2');
+			await user.click(secondDayInMonth);
+			expect(secondDayInMonth).toHaveAttribute('data-selected');
+
+			const newDate = zonedDateTimeOther.set({ day: 2 });
+			const insideValue = getByTestId('inside-value');
+			expect(insideValue).toHaveTextContent(newDate.toString());
+		});
+
+		test('selection with keyboard', async () => {
+			const user = userEvent.setup();
+			const { getByTestId } = render(DatePickerTest, {
+				defaultPlaceholderValue: zonedDateTimeOther,
+			});
+			const trigger = getByTestId('trigger');
+			await user.click(trigger);
+			const calendar = getByTestId('calendar');
+			expect(calendar).toBeVisible();
+			const secondDayInMonth = getByTestId('month-0-date-2');
+			secondDayInMonth.focus();
+			await user.keyboard(`{${kbd.SPACE}}`);
+			expect(secondDayInMonth).toHaveAttribute('data-selected');
+			const newDate = zonedDateTimeOther.set({ day: 2 });
+			const insideValue = getByTestId('inside-value');
+			expect(insideValue).toHaveTextContent(newDate.toString());
+			await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+			await user.keyboard(`{${kbd.ENTER}}`);
+
+			const thirdDayInMonth = getByTestId('month-0-date-3');
+			expect(thirdDayInMonth).toHaveAttribute('data-selected');
+			const newDate2 = zonedDateTimeOther.set({ day: 3 });
+			const insideValue2 = getByTestId('inside-value');
+			expect(insideValue2).toHaveTextContent(newDate2.toString());
+		});
+
 		test('locale changes segment positioning', async () => {
 			const { getByTestId } = render(DatePickerTest, {
 				locale: 'en-UK',
