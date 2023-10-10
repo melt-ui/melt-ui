@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.54.1
+
+### Patch Changes
+
+- Combobox: fix highlightedItem behaviour ([`36d7526c`](https://github.com/melt-ui/melt-ui/commit/36d7526c9b414a6eb8bc6ccb5499eb3665d2a213))
+
 ## 0.54.0
 
 ### Minor Changes
