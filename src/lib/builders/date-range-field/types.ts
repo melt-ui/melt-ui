@@ -5,19 +5,14 @@ import type { DateValue } from '@internationalized/date';
 import type { CreateDateFieldProps, DateFieldIds, Matcher } from '$lib/index.js';
 import type { RangeDateFieldIds } from './_internal/types.js';
 
-type DateRange<T extends DateValue = DateValue> = {
-	start?: T;
-	end?: T;
-};
-
-export type DateRangeFieldProps<T extends DateValue = DateValue> = {
+export type DateRangeFieldProps = {
 	/**
 	 * The default value for the date field. When provided,
 	 * the `placeholderValue` will also assume this value.
 	 *
 	 * @default undefined;
 	 */
-	defaultValue?: DateRange<T>;
+	defaultStartValue?: DateValue;
 
 	/**
 	 * A function called when the value of the date field changes.
@@ -29,7 +24,7 @@ export type DateRangeFieldProps<T extends DateValue = DateValue> = {
 	 *
 	 * @default undefined
 	 */
-	onValueChange?: ChangeFn<DateRange<T> | undefined>;
+	onStartValueChange?: ChangeFn<DateValue | undefined>;
 
 	/**
 	 * A writable store than can be used to control the value of the
@@ -39,7 +34,37 @@ export type DateRangeFieldProps<T extends DateValue = DateValue> = {
 	 *
 	 * @default undefined;
 	 */
-	value?: Writable<DateRange<T> | undefined>;
+	endValue?: Writable<DateValue | undefined>;
+
+	/**
+	 * The default value for the date field. When provided,
+	 * the `placeholderValue` will also assume this value.
+	 *
+	 * @default undefined;
+	 */
+	defaultEndValue?: DateValue;
+
+	/**
+	 * A function called when the value of the date field changes.
+	 * It receives a single argument, which is an object containing
+	 * `curr` and `prev` properties, whose values are the current
+	 * and previous values of the value store. Whatever you return
+	 * from this function will be set as the new value of the value
+	 * store.
+	 *
+	 * @default undefined
+	 */
+	onEndValueChange?: ChangeFn<DateValue | undefined>;
+
+	/**
+	 * A writable store than can be used to control the value of the
+	 * date picker from outside the builder. This is useful if you
+	 * want to sync the value of the date field with another store
+	 * used in your app.
+	 *
+	 * @default undefined;
+	 */
+	startValue?: Writable<DateValue | undefined>;
 
 	/**
 	 * The date that is used when the date field is empty to

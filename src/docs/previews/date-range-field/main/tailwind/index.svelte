@@ -4,25 +4,31 @@
 
 	const {
 		elements: { dateField, startSegment, endSegment, label },
-		states: { value, startSegmentContents, endSegmentContents, isInvalid },
+		states: {
+			startValue,
+			endValue,
+			startSegmentContents,
+			endSegmentContents,
+			isFieldInvalid,
+		},
 	} = createDateRangeField({});
 </script>
 
 <div class="flex w-full flex-col items-center gap-3">
 	<div class="flex w-full items-center justify-center">
-		<p class="text-xs">{$value?.start} - {$value?.end}</p>
+		<p class="text-xs">{$startValue} - {$endValue}</p>
 	</div>
 	<div>
 		<span use:melt={$label} class="text-magnum-800">Booking Dates</span>
 		<div
 			use:melt={$dateField}
-			class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800 {$isInvalid &&
+			class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800 {$isFieldInvalid &&
 				'border-2 border-red-600'}"
 		>
 			{#each $startSegmentContents.arr as seg, i (i)}
 				<div
 					use:melt={$startSegment(seg.part)}
-					class="segment {$isInvalid && 'text-red-600'}"
+					class="segment {$isFieldInvalid && 'text-red-600'}"
 				>
 					{seg.value}
 				</div>
@@ -31,7 +37,7 @@
 			{#each $endSegmentContents.arr as seg, i (i)}
 				<div
 					use:melt={$endSegment(seg.part)}
-					class="segment {$isInvalid && 'text-red-600'}"
+					class="segment {$isFieldInvalid && 'text-red-600'}"
 				>
 					{seg.value}
 				</div>

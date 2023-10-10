@@ -83,7 +83,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
-	const isInvalid = derived([value, unavailable], ([$value, $unavailable]) => {
+	const isFieldInvalid = derived([value, unavailable], ([$value, $unavailable]) => {
 		if (!$value) return false;
 		if (isMatch($value, $unavailable)) return true;
 		return false;
@@ -171,14 +171,14 @@ export function createDateField(props?: CreateDateFieldProps) {
 	});
 
 	const dateField = builder(name(), {
-		stores: [value, isInvalid],
-		returned: ([$value, $isInvalid]) => {
+		stores: [value, isFieldInvalid],
+		returned: ([$value, $isFieldInvalid]) => {
 			return {
 				role: 'group',
 				id: ids.field,
 				'aria-labelledby': ids.label,
 				'aria-describedby': $value ? ids.description : undefined,
-				'data-invalid': $isInvalid ? '' : undefined,
+				'data-invalid': $isFieldInvalid ? '' : undefined,
 			};
 		},
 		action: () => {
@@ -232,8 +232,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 	};
 
 	const segment = builder(name('segment'), {
-		stores: [segmentValues, hourCycle, placeholderValue, value, isInvalid, locale],
-		returned: ([$segmentValues, $hourCycle, $placeholderValue, $value, $isInvalid, _]) => {
+		stores: [segmentValues, hourCycle, placeholderValue, value, isFieldInvalid, locale],
+		returned: ([$segmentValues, $hourCycle, $placeholderValue, $value, $isFieldInvalid, _]) => {
 			const props = {
 				segmentValues: $segmentValues,
 				hourCycle: $hourCycle,
@@ -243,8 +243,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 				const defaultAttrs = {
 					...getSegmentAttrs(part, props),
 					'data-segment': `${part}`,
-					'aria-invalid': $isInvalid ? 'true' : undefined,
-					'data-invalid': $isInvalid ? '' : undefined,
+					'aria-invalid': $isFieldInvalid ? 'true' : undefined,
+					'data-invalid': $isFieldInvalid ? '' : undefined,
 				};
 				if (part === 'literal') {
 					return defaultAttrs;
@@ -1655,6 +1655,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			segmentValues,
 			segmentContents,
 			placeholderValue: placeholderValue.toWritable(),
+			isFieldInvalid,
 		},
 		helpers: {
 			isUnavailable,
