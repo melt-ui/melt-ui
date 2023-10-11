@@ -1,3 +1,4 @@
+import type { Matcher } from '$lib';
 import { isHTMLElement } from '$lib/internal/helpers';
 import { getDayOfWeek, type DateValue } from '@internationalized/date';
 
@@ -16,6 +17,28 @@ export function getDaysBetween<T extends DateValue = DateValue>(start: T, end: T
 		dCurrent = dCurrent.add({ days: 1 }) as T;
 	}
 	return days;
+}
+
+export function getDaysBetweenIfAllValid<T extends DateValue = DateValue>(
+	start: T,
+	end: T,
+	isUnavailable: Matcher,
+	isDisabled: Matcher
+) {
+	const days: T[] = [];
+	let dCurrent = start.add({ days: 1 }) as T;
+	if (isDisabled(dCurrent) || isUnavailable(dCurrent)) {
+		return [];
+	}
+	const dEnd = end;
+	while (dCurrent.compare(dEnd) < 0) {
+		days.push(dCurrent);
+		dCurrent = dCurrent.add({ days: 1 }) as T;
+		if (isDisabled(dCurrent) || isUnavailable(dCurrent)) {
+			return [];
+		}
+	}
+	return days.map((d) => d.toString());
 }
 
 export function getNextLastDayOfWeek<T extends DateValue = DateValue>(

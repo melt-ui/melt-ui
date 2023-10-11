@@ -17,6 +17,7 @@ import {
 } from '$lib/internal/helpers/index.js';
 import {
 	getDaysBetween,
+	getDaysBetweenIfAllValid,
 	getLastFirstDayOfWeek,
 	getNextLastDayOfWeek,
 	isCalendarCell,
@@ -106,6 +107,13 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	const startValue = overridable(startValueWritable, withDefaults.onStartValueChange);
 	const endValueWritable = withDefaults.endValue ?? writable(withDefaults.defaultEndValue);
 	const endValue = overridable(endValueWritable, withDefaults.onEndValueChange);
+
+	const rangeValue = derived([startValue, endValue], ([$startValue, $endValue]) => {
+		return {
+			start: $startValue,
+			end: $endValue,
+		};
+	});
 
 	const placeholderValueWritable =
 		withDefaults.placeholderValue ?? writable(withDefaults.defaultPlaceholderValue ?? defaultDate);
@@ -287,18 +295,22 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		};
 	});
 
-	const isHighlighted = derived(
-		[startValue, endValue, focusedValue],
-		([$startValue, $endValue, $focusedValue]) => {
-			return (date: DateValue) => {
-				if ($startValue && $endValue) return false;
-				if (!$focusedValue) return false;
-				if (!$startValue) return false;
-				return (
-					isBetweenInclusive(date, $startValue, $focusedValue) ||
-					isBetweenInclusive(date, $focusedValue, $startValue)
-				);
-			};
+	const highlightedRange = derived(
+		[startValue, endValue, focusedValue, isDisabled, isUnavailable],
+		([$startValue, $endValue, $focusedValue, $isDisabled, $isUnavailable]) => {
+			if ($startValue && $endValue) return null;
+			if (!$startValue || !$focusedValue) return null;
+			const isStartBeforeFocused = isBefore($startValue, $focusedValue);
+			const start = isStartBeforeFocused ? $startValue : $focusedValue;
+			const end = isStartBeforeFocused ? $focusedValue : $startValue;
+			const range = getDaysBetweenIfAllValid(start, end, $isUnavailable, $isDisabled);
+			if (range.length) {
+				return {
+					start: start,
+					end: end,
+				};
+			}
+			return null;
 		}
 	);
 
@@ -311,7 +323,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			isSelected,
 			isSelectionEnd,
 			isSelectionStart,
-			isHighlighted,
+			highlightedRange,
 			isDisabled,
 			isUnavailable,
 			placeholderValue,
@@ -320,7 +332,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			$isSelected,
 			$isSelectionEnd,
 			$isSelectionStart,
-			$isHighlighted,
+			$highlightedRange,
 			$disabled,
 			$unavailable,
 			$placeholderValue,
@@ -335,7 +347,9 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				const isSelectedDate = $isSelected(cellValue);
 				const isSelectionStart = $isSelectionStart(cellValue);
 				const isSelectionEnd = $isSelectionEnd(cellValue);
-				const isHighlighted = $isHighlighted(cellValue);
+				const isHighlighted = $highlightedRange
+					? isBetweenInclusive(cellValue, $highlightedRange.start, $highlightedRange.end)
+					: false;
 
 				const labelText = formatter.custom(cellDate, {
 					weekday: 'long',
@@ -376,11 +390,11 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				};
 			};
 			const unsub = executeCallbacks(
-				addMeltEventListener(node, 'click', () => {
+				addMeltEventListener(node, 'click', (e) => {
 					const args = getElArgs();
 					if (args.disabled) return;
 					if (!args.value) return;
-					handleCellClick(parseToDateObj(args.value));
+					handleCellClick(e, parseToDateObj(args.value));
 				}),
 				addMeltEventListener(node, 'mouseenter', () => {
 					const args = getElArgs();
@@ -609,9 +623,23 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		placeholderValue.setDate({ month: month });
 	}
 
-	function handleCellClick(date: DateValue) {
+	function handleCellClick(e: Event, date: DateValue) {
 		const $startValue = get(startValue);
 		const $endValue = get(endValue);
+		const $highlightedRange = get(highlightedRange);
+
+		if ($startValue && $highlightedRange === null) {
+			if (isSameDay($startValue, date) && get(allowDeselect) && !$endValue) {
+				startValue.set(undefined);
+				placeholderValue.set(date);
+				announcer.announce('Selected date is now empty.', 'polite');
+				return;
+			} else if (!$endValue) {
+				e.preventDefault();
+				focusedValue.set($startValue);
+				return;
+			}
+		}
 
 		if ($startValue && isSameDay($startValue, date) && get(allowDeselect) && !$endValue) {
 			startValue.set(undefined);
@@ -672,7 +700,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			const cellValue = currentCell.getAttribute('data-value');
 			if (!cellValue) return;
 
-			handleCellClick(parseToDateObj(cellValue));
+			handleCellClick(e, parseToDateObj(cellValue));
 		}
 	}
 
@@ -874,6 +902,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			endValue,
 			daysOfWeek,
 			headingValue,
+			rangeValue,
 		},
 		helpers: {
 			nextPage,

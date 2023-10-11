@@ -133,7 +133,7 @@ export type CalendarProps = {
 	 *
 	 * @default undefined;
 	 */
-	disabled?: Matcher;
+	isDisabled?: Matcher;
 
 	/**
 	 * Any dates that match the provided matchers will be
@@ -150,7 +150,7 @@ export type CalendarProps = {
 	 *
 	 * @default undefined;
 	 */
-	unavailable?: Matcher;
+	isUnavailable?: Matcher;
 
 	/**
 	 * Display 6 weeks per month, regardless the month's number of weeks.

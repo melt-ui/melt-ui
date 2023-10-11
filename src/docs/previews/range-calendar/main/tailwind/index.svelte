@@ -6,9 +6,10 @@
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
 		states: { startValue, endValue, months, headingValue, daysOfWeek },
-		helpers: { isDisabled, isUnavailable },
+		helpers: { isDateDisabled, isDateUnavailable },
 	} = createRangeCalendar({
 		allowDeselect: true,
+		isDisabled: (date) => date.day === 15,
 	});
 </script>
 
@@ -50,7 +51,8 @@
 									{#each dates as date}
 										<td
 											role="gridcell"
-											aria-disabled={$isDisabled(date) || $isUnavailable(date)}
+											aria-disabled={$isDateDisabled(date) ||
+												$isDateUnavailable(date)}
 											class="my-1"
 										>
 											<div use:melt={$cell(date)} class="cell">
