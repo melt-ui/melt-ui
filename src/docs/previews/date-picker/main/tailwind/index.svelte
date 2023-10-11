@@ -86,7 +86,7 @@
 								<tr>
 									{#each days as date}
 										<td role="gridcell">
-											<div use:melt={$cell(date)} class="cell">
+											<div use:melt={$cell(date, month.value)} class="cell">
 												{date.day}
 											</div>
 										</td>
