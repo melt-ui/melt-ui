@@ -1,3 +1,7 @@
+/**
+ * @module dateTypes
+ */
+
 import type { DateValue } from '@internationalized/date';
 import type { getAnnouncer } from './announcer.js';
 
@@ -14,4 +18,34 @@ export type Announcer = ReturnType<typeof getAnnouncer>;
 export type DateRange = {
 	start: DateValue | undefined;
 	end: DateValue | undefined;
+};
+
+export type Month<T> = {
+	/**
+	 * A date that can be used to get the month and year
+	 * of the calendar to display in a heading or other
+	 * UI element.
+	 *
+	 * It will always be the 00:00:00 time of the first day
+	 * of the month.
+	 */
+	monthDate: Date;
+
+	/**
+	 * An array of arrays representing the weeks in the calendar.
+	 * Each sub-array represents a week, and contains the dates for each
+	 * day in that week. This structure is useful for rendering the calendar
+	 * grid using a table, where each row represents a week and each cell
+	 * represents a day.
+	 */
+	weeks: T[][];
+
+	/**
+	 * An array of all the dates in the current month, including dates from
+	 * the previous and next months that are used to fill out the calendar grid.
+	 * This array is useful for rendering the calendar grid in a customizable way,
+	 * as it provides all the dates that should be displayed in the grid in a flat
+	 * array.
+	 */
+	dates: T[];
 };

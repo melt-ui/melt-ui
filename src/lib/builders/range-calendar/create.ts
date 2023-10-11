@@ -11,19 +11,12 @@ import {
 	omit,
 	executeCallbacks,
 	styleToString,
-	chunk,
 	overridable,
 	isValidIndex,
 } from '$lib/internal/helpers/index.js';
-import {
-	getDaysBetween,
-	areAllDaysBetweenValid,
-	getLastFirstDayOfWeek,
-	getNextLastDayOfWeek,
-	isCalendarCell,
-} from './utils.js';
+
 import { derived, get, writable } from 'svelte/store';
-import type { CalendarIds, CreateRangeCalendarProps, Month } from './types.js';
+import type { CalendarIds, CreateRangeCalendarProps } from './types.js';
 import { tick } from 'svelte';
 import {
 	getAnnouncer,
@@ -32,9 +25,12 @@ import {
 	toDate,
 	dateStore,
 	createFormatter,
-	getDaysInMonth,
 	getDefaultDate,
 	parseStringToDateValue,
+	areAllDaysBetweenValid,
+	isCalendarCell,
+	type Month,
+	createMonth,
 } from '$lib/internal/date/index.js';
 import {
 	type DateValue,
@@ -42,9 +38,6 @@ import {
 	isToday,
 	isSameMonth,
 	isSameDay,
-	startOfMonth,
-	endOfMonth,
-	ZonedDateTime,
 } from '@internationalized/date';
 
 const defaults = {
@@ -126,7 +119,12 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	const focusedValue = writable<DateValue | null>(null);
 
 	const months = writable<Month<DateValue>[]>([
-		createMonth(withDefaults.defaultPlaceholderValue ?? defaultDate),
+		createMonth({
+			dateObj: withDefaults.defaultPlaceholderValue ?? defaultDate,
+			weekStartsOn: withDefaults.weekStartsOn,
+			locale: withDefaults.locale,
+			fixedWeeks: withDefaults.fixedWeeks,
+		}),
 	]);
 
 	const isStartInvalid = derived(
@@ -430,21 +428,45 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		formatter.setLocale($locale);
 	});
 
-	effect([placeholderValue], ([$placeholderValue]) => {
-		if (!isBrowser || !$placeholderValue) return;
+	/**
+	 * Handles updating the months when the placeholder value
+	 * changes, which is the value used to determine what
+	 * months to display in the calendar.
+	 */
+	effect(
+		[placeholderValue, weekStartsOn, locale, fixedWeeks],
+		([$placeholderValue, $weekStartsOn, $locale, $fixedWeeks]) => {
+			if (!isBrowser || !$placeholderValue) return;
 
-		months.set([createMonth($placeholderValue)]);
-		const $numberOfMonths = get(numberOfMonths);
-		if ($numberOfMonths > 1) {
-			for (let i = 1; i < $numberOfMonths; i++) {
-				const nextMonth = $placeholderValue.add({ months: i });
-				months.update((prev) => {
-					prev.push(createMonth(nextMonth));
-					return prev;
-				});
+			const defaultMonthProps = {
+				weekStartsOn: $weekStartsOn,
+				locale: $locale,
+				fixedWeeks: $fixedWeeks,
+			};
+
+			months.set([
+				createMonth({
+					...defaultMonthProps,
+					dateObj: $placeholderValue,
+				}),
+			]);
+			const $numberOfMonths = get(numberOfMonths);
+			if ($numberOfMonths > 1) {
+				for (let i = 1; i < $numberOfMonths; i++) {
+					const nextMonth = $placeholderValue.add({ months: i });
+					months.update((prev) => {
+						prev.push(
+							createMonth({
+								...defaultMonthProps,
+								dateObj: nextMonth,
+							})
+						);
+						return prev;
+					});
+				}
 			}
 		}
-	});
+	);
 
 	/**
 	 * Update the accessible heading's text content when the
@@ -480,54 +502,6 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			return formatter.dayOfWeek(toDate(date));
 		});
 	});
-
-	/**
-	 * Given a date, this function will return an object containing
-	 * the necessary values to render a calendar month, including
-	 * the month's date, which can be used to render the name of the
-	 * month, the dates within that month, and the dates from the
-	 * previous and next months that are needed to fill out the
-	 * calendar grid.
-	 */
-	function createMonth(dateObj: DateValue): Month<DateValue> {
-		const tz = getLocalTimeZone();
-		const date = dateObj instanceof ZonedDateTime ? dateObj.toDate() : dateObj.toDate(tz);
-		const daysInMonth = getDaysInMonth(date);
-
-		const datesArray = Array.from({ length: daysInMonth }, (_, i) => dateObj.set({ day: i + 1 }));
-
-		const firstDayOfMonth = startOfMonth(dateObj);
-		const lastDayOfMonth = endOfMonth(dateObj);
-
-		const lastSunday = getLastFirstDayOfWeek(firstDayOfMonth, get(weekStartsOn), get(locale));
-		const nextSaturday = getNextLastDayOfWeek(lastDayOfMonth, get(weekStartsOn), get(locale));
-
-		const lastMonthDays = getDaysBetween(lastSunday.subtract({ days: 1 }), firstDayOfMonth);
-		const nextMonthDays = getDaysBetween(lastDayOfMonth, nextSaturday.add({ days: 1 }));
-
-		const totalDays = lastMonthDays.length + datesArray.length + nextMonthDays.length;
-
-		if (get(fixedWeeks) && totalDays < 42) {
-			const extraDays = 42 - totalDays;
-
-			const startFrom = nextMonthDays[nextMonthDays.length - 1];
-			const extraDaysArray = Array.from({ length: extraDays }, (_, i) => {
-				const incr = i + 1;
-				return startFrom.add({ days: incr });
-			});
-			nextMonthDays.push(...extraDaysArray);
-		}
-
-		const allDays = lastMonthDays.concat(datesArray, nextMonthDays);
-
-		const weeks = chunk(allDays, 7);
-
-		return {
-			monthDate: date,
-			dates: allDays,
-			weeks,
-		};
-	}
 
 	/**
 	 * Creates an accessible heading for the calendar so when it

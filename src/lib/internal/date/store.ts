@@ -26,9 +26,9 @@ type DerivedFields<T> = T extends AnyDateTime
 	: never;
 
 /**
- * A higher order store that wraps a writable store containing
- * a `DateValue` from `@internationalized/date` and provides a
- * set of methods to easily manipulate the date value.
+ * A higher order store that encapsulates a writable store holding a `DateValue` from the
+ * '@internationalized/date' library. It provides some convenience methods for common
+ * date manipulations.
  *
  * @see [@internationalized/date](https://react-spectrum.adobe.com/internationalized/date/index.html)
  */

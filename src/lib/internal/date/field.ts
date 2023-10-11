@@ -1,17 +1,16 @@
 import { isHTMLElement, kbd } from '$lib/internal/helpers/index.js';
 
 /**
- * Given an event and the id of the segment container, navigate
- * to the next or previous segment depending on the key pressed.
+ * Handles segment navigation based on the provided keyboard event and field ID.
  *
  * @param e - The keyboard event
- * @param containerId - The id of the container we're navigating within
+ * @param fieldId - The ID of the field we're navigating within
  */
-export function handleSegmentNavigation(e: KeyboardEvent, containerId: string) {
+export function handleSegmentNavigation(e: KeyboardEvent, fieldId: string) {
 	const currentTarget = e.currentTarget;
 	if (!isHTMLElement(currentTarget)) return;
 
-	const { prev, next } = getPrevNextSegments(currentTarget, containerId);
+	const { prev, next } = getPrevNextSegments(currentTarget, fieldId);
 
 	if (e.key === kbd.ARROW_LEFT) {
 		if (!prev) return;
@@ -23,10 +22,10 @@ export function handleSegmentNavigation(e: KeyboardEvent, containerId: string) {
 }
 
 /**
- * Gets the next segment in the list of segments relative to the provided node.
+ * Retrieves the next segment in the list of segments relative to the provided node.
  *
- * @param node - The node we're moving from
- * @param segments - The list of candidate segments to move to
+ * @param node - The node we're starting from
+ * @param segments - The list of candidate segments to navigate through
  */
 function getNextSegment(node: HTMLElement, segments: HTMLElement[]) {
 	const index = segments.indexOf(node);
@@ -37,10 +36,10 @@ function getNextSegment(node: HTMLElement, segments: HTMLElement[]) {
 }
 
 /**
- * Gets the prev segment in the list of segments relative to the provided node.
+ * Retrieves the previous segment in the list of segments relative to the provided node.
  *
- * @param node - The node we're moving from
- * @param segments - The list of candidate segments to move to
+ * @param node - The node we're starting from
+ * @param segments - The list of candidate segments to navigate through
  */
 function getPrevSegment(node: HTMLElement, segments: HTMLElement[]) {
 	const index = segments.indexOf(node);
@@ -51,14 +50,13 @@ function getPrevSegment(node: HTMLElement, segments: HTMLElement[]) {
 }
 
 /**
- * Gets an object containing the next and previous segments
- * relative to the current node.
+ * Retrieves an object containing the next and previous segments relative to the current node.
  *
- * @param node - The node we're moving from
- * @param containerId - The id of the container we're navigating within
+ * @param node - The node we're starting from
+ * @param fieldId - The ID of the field we're navigating within
  */
-function getPrevNextSegments(node: HTMLElement, containerId: string) {
-	const segments = getSegments(containerId);
+function getPrevNextSegments(node: HTMLElement, fieldId: string) {
+	const segments = getSegments(fieldId);
 	if (!segments.length) {
 		return {
 			next: null,
@@ -72,13 +70,13 @@ function getPrevNextSegments(node: HTMLElement, containerId: string) {
 }
 
 /**
- * Moves focus to the next segment in the list of segments
- * within the container with the provided id.
+ * Shifts the focus to the next segment in the list of segments
+ * within the field identified by the provided ID.
  */
-export function moveToNextSegment(e: KeyboardEvent, containerId: string) {
+export function moveToNextSegment(e: KeyboardEvent, fieldId: string) {
 	const node = e.currentTarget;
 	if (!isHTMLElement(node)) return;
-	const { next } = getPrevNextSegments(node, containerId);
+	const { next } = getPrevNextSegments(node, fieldId);
 	if (!next) return;
 	next.focus();
 }
@@ -89,8 +87,7 @@ export function isSegmentNavigationKey(key: string) {
 }
 
 /**
- * Gets all the interactive segments within the
- * container with the provided id.
+ * Retrieves all the interactive segments within the field identified by the provided ID.
  */
 export function getSegments(id: string) {
 	const inputContainer = document.getElementById(id);

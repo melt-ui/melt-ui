@@ -1,4 +1,4 @@
-import type { Granularity } from './types.js';
+import type { Granularity, Matcher } from './types.js';
 import {
 	CalendarDate,
 	CalendarDateTime,
@@ -8,6 +8,7 @@ import {
 	parseDateTime,
 	parseDate,
 	getLocalTimeZone,
+	getDayOfWeek,
 } from '@internationalized/date';
 
 type GetDefaultDateProps = {
@@ -181,4 +182,62 @@ export function isBetweenInclusive(date: DateValue, start: DateValue, end: DateV
  */
 export function isBetween(date: DateValue, start: DateValue, end: DateValue) {
 	return isAfter(date, start) && isBefore(date, end);
+}
+
+export function getLastFirstDayOfWeek<T extends DateValue = DateValue>(
+	date: T,
+	firstDayOfWeek: number,
+	locale: string
+): T {
+	const day = getDayOfWeek(date, locale);
+
+	if (firstDayOfWeek > day) {
+		return date.subtract({ days: day + 7 - firstDayOfWeek }) as T;
+	}
+	if (firstDayOfWeek === day) {
+		return date as T;
+	}
+	return date.subtract({ days: day - firstDayOfWeek }) as T;
+}
+
+export function getNextLastDayOfWeek<T extends DateValue = DateValue>(
+	date: T,
+	firstDayOfWeek: number,
+	locale: string
+): T {
+	const day = getDayOfWeek(date, locale);
+	const lastDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+
+	if (day === lastDayOfWeek) {
+		return date as T;
+	}
+
+	if (day > lastDayOfWeek) {
+		return date.add({ days: 7 - day + lastDayOfWeek }) as T;
+	}
+
+	return date.add({ days: lastDayOfWeek - day }) as T;
+}
+
+export function areAllDaysBetweenValid(
+	start: DateValue,
+	end: DateValue,
+	isUnavailable: Matcher | undefined,
+	isDisabled: Matcher | undefined
+) {
+	if (isUnavailable === undefined && isDisabled === undefined) {
+		return true;
+	}
+	let dCurrent = start.add({ days: 1 });
+	if (isDisabled?.(dCurrent) || isUnavailable?.(dCurrent)) {
+		return false;
+	}
+	const dEnd = end;
+	while (dCurrent.compare(dEnd) < 0) {
+		dCurrent = dCurrent.add({ days: 1 });
+		if (isDisabled?.(dCurrent) || isUnavailable?.(dCurrent)) {
+			return false;
+		}
+	}
+	return true;
 }

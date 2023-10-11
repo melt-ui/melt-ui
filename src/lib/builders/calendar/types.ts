@@ -17,7 +17,7 @@ export type CalendarProps = {
 
 	/**
 	 * The default value for the date picker. When provided,
-	 * the `activeDate` will assume this value so the calendar
+	 * the `placeholderValue` will assume this value so the calendar
 	 * will open to the month/year of this value.
 	 *
 	 * @default undefined;
@@ -61,55 +61,46 @@ export type CalendarProps = {
 	defaultPlaceholderValue?: DateValue;
 
 	/**
-	 * A writable store that can be used to control the placeholder
-	 * date from outside the builder. When this prop is provided,
-	 * the `defaultPlaceholderValue` prop is ignored, and the value
-	 * of this store is used instead.
+	 * A writable store that can be used to externally control the placeholder date.
+	 * When provided, it overrides the `defaultPlaceholderValue` prop.
 	 *
-	 * The `placeholderValue` store is not used to set the value of the
-	 * date picker, it is only used to control the starting point for
-	 * the calendar. The `placeholderValue` store is used to determine
-	 * where the calendar should start when it is first opened without
-	 * a value, as well as the starting point for cycling through the
+	 * The `placeholderValue` store determines the initial display when the calendar is
+	 * first opened without a value, and it serves as the starting point for cycling through
 	 * individual date segments.
 	 *
-	 * When the date picker is first opened, if the `value` of the
-	 * date picker is set, the `placeholderValue` will be set
-	 * to the same value as the `value` store. If the `value` store is
-	 * not set, the `placeholderValue` will initially be set to the same
-	 * value as the `defaultPlaceholderValue` prop.
+	 * When the date picker is first opened, if the `value` of the date picker is set,
+	 * the `placeholderValue` will be set to the same value as the `value` store. If the
+	 * `value` store is not set, the `placeholderValue` will initially match the
+	 * `defaultPlaceholderValue` prop.
 	 *
-	 * @default Writable<CalendarDate> - the current date at midnight.
+	 * @default Writable<CalendarDate> - set to the current date at midnight.
 	 */
 	placeholderValue?: Writable<DateValue>;
 
 	/**
-	 * A function called when the placeholder value changes. It receives
-	 * a single argument, which is an object containing `curr` and
-	 * `prev` properties, whose values are the current and previous
-	 * values of the `placeholderValue` store. Whatever you return from this
-	 * function will be set as the new value of the `placeholderValue` store.
+	 * A function called when the placeholder value changes. It takes a single argument,
+	 * an object with `curr` and `prev` properties representing the current and previous
+	 * values of the `placeholderValue` store. Any value you return from this function
+	 * will replace the current value of the `placeholderValue` store.
 	 *
-	 * The `placeholderValue` is kept in sync with the `value` store, so
-	 * ensure you know what you're doing if you intend on overriding the
-	 * value, as it may render the date picker unusable.
+	 * It's important to note that the `placeholderValue` is synchronized with the `value`
+	 * store. Therefore, caution is required when overriding this value, as it may impact
+	 * the functionality of the date picker.
 	 *
 	 * @default undefined
 	 */
 	onPlaceholderValueChange?: ChangeFn<DateValue>;
 
 	/**
-	 * Only applicable when `numberOfMonths` is greater than 1.
+	 * Applicable only when `numberOfMonths` is greater than 1.
 	 *
-	 * Whether or not to use paged navigation for the next and previous
-	 * buttons in the date picker. Paged navigation will change all months
-	 * in the view when the next/prev buttons are clicked. Non-paged navigation
-	 * just shifts by a single month.
+	 * Controls whether to use paged navigation for the next and previous buttons in the
+	 * date picker. With paged navigation set to `true`, clicking the next/prev buttons
+	 * changes all months in view. When set to `false`, it shifts the view by a single month.
 	 *
-	 * For example, with `pagedNavigation` set to `true`, if you have 2 months
-	 * displayed, January and February, and you click the next button, the months
-	 * in view will change to March and April. If `pagedNavigation` is `false`,
-	 * the months in view will change to February and March.
+	 * For example, with `pagedNavigation` set to `true` and 2 months displayed (January and
+	 * February), clicking the next button changes the view to March and April. If `pagedNavigation`
+	 * is `false`, the view shifts to February and March.
 	 *
 	 * @default false
 	 */
@@ -125,28 +116,29 @@ export type CalendarProps = {
 	weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 	/**
-	 * Any dates that match the provided matchers will
-	 * be marked as disabled, which means they cannot be
-	 * focused or selected. They will also include a data
-	 * attribute that can be used to style them differently
-	 * than the other dates.
+	 * A function that receives a date and returns `true` or `false` to indicate whether
+	 * the date is disabled.
+	 *
+	 * @remarks
+	 * Disabled dates cannot be focused or selected. Additionally, they are tagged
+	 * with a data attribute to enable custom styling.
+	 *
+	 * `[data-disabled]` - applied to disabled dates
 	 *
 	 * @default undefined;
 	 */
 	isDisabled?: Matcher;
 
 	/**
-	 * Any dates that match the provided matchers will be
-	 * marked as unavailable, which is different from disabled,
-	 * as unavailable dates can still be focused and selected,
-	 * but will cause the date picker to be marked as invalid if
-	 * selected.
+	 * Dates matching the provided matchers are marked as "unavailable." Unlike disabled dates,
+	 * users can still focus and select unavailable dates. However, selecting an unavailable date
+	 * renders the date picker as invalid.
 	 *
-	 * For example, if you are displaying a calendar for booking
-	 * appointments, you may want to mark dates that are already
-	 * bookes as unavailable, but may become available again before
-	 * the appointment date, so the user can still select them to
-	 * learn more about the appointment.
+	 * For example, in a calendar for booking appointments, you might mark already booked dates as
+	 * unavailable. These dates could become available again before the appointment date, allowing
+	 * users to select them to learn more about the appointment.
+	 *
+	 * `[data-unavailable]` - applied to unavailable dates
 	 *
 	 * @default undefined;
 	 */
@@ -165,42 +157,38 @@ export type CalendarProps = {
 	fixedWeeks?: boolean;
 
 	/**
-	 * The number of months to display on the calendar at once. To control
-	 * how the months are navigated between, see the `pagedNavigation` prop.
+	 * Determines the number of months to display on the calendar simultaneously.
+	 * For navigation between months, refer to the `pagedNavigation` prop.
 	 *
 	 * @default 1
 	 */
 	numberOfMonths?: number;
 
 	/**
-	 * The label for the calendar, which is used for
-	 * accessibility purposes only and is not visible on the page,
-	 * it is read by screen readers when the calendar is opened.
+	 * This label is exclusively used for accessibility, remaining hidden from the page.
+	 * It's read by screen readers when the calendar is opened. The current month and year
+	 * are automatically appended to the label, so you only need to provide the base label.
 	 *
-	 * We take the label you provide and append the current month and year
-	 * to it, so you don't need to include that in the label.
-	 *
-	 * @example 'Date of birth' - will be read as 'Date of birth, January 2021' if the
-	 * current month is January 2021.
-	 * @example 'Appointment date' - will be read as 'Appointment date, January 2021' if the
-	 * current month is January 2021.
-	 * @example 'Booking date' - will be read as 'Booking date, January 2021' if the
-	 * current month is January 2021.
+	 * For instance:
+	 * - 'Date of birth' will be read as 'Date of birth, January 2021' if the current month is January 2021.
+	 * - 'Appointment date' will be read as 'Appointment date, January 2021' if the current month is January 2021.
+	 * - 'Booking date' will be read as 'Booking date, January 2021' if the current month is January 2021.
 	 */
 	calendarLabel?: string;
 
 	/**
+	 * The default locale setting.
+	 *
 	 * @default 'en'
 	 */
 	locale?: string;
 
 	/**
-	 * Override any of the element IDs set by the builder.
+	 * Allows you to override any of the element IDs set by the builder.
 	 *
-	 * NOTE: you should only use this prop if you know what
-	 * you're doing, as it could break the out-of-the-box
-	 * accessibility and functionality of the date field if
-	 * implemented incorrectly.
+	 * NOTE: Use this prop with caution, and only if you have a deep understanding
+	 * of its implications, as incorrect usage may disrupt the out-of-the-box
+	 * accessibility and functionality of the calendar.
 	 */
 	ids?: Partial<CalendarIds>;
 };
@@ -209,33 +197,3 @@ export type CalendarIds = IdObj<'calendar' | 'grid' | 'accessibleHeading'>;
 
 export type CreateCalendarProps = CalendarProps;
 export type Calendar = ReturnType<typeof createCalendar>;
-
-export type Month<T> = {
-	/**
-	 * A date that can be used to get the month and year
-	 * of the calendar to display in a heading or other
-	 * UI element.
-	 *
-	 * It will always be the 00:00:00 time of the first day
-	 * of the month.
-	 */
-	monthDate: Date;
-
-	/**
-	 * An array of arrays representing the weeks in the calendar.
-	 * Each sub-array represents a week, and contains the dates for each
-	 * day in that week. This structure is useful for rendering the calendar
-	 * grid using a table, where each row represents a week and each cell
-	 * represents a day.
-	 */
-	weeks: T[][];
-
-	/**
-	 * An array of all the dates in the current month, including dates from
-	 * the previous and next months that are used to fill out the calendar grid.
-	 * This array is useful for rendering the calendar grid in a customizable way,
-	 * as it provides all the dates that should be displayed in the grid in a flat
-	 * array.
-	 */
-	dates: T[];
-};
