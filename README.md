@@ -65,7 +65,12 @@ Got any questions? Want to talk to the maintainers?
 Our [Discord community](https://discord.gg/2QDjZkYunf) is a great place to get in touch with us, and
 we'd love to have you there.
 
-[![Melt UI Discord community](https://invidget.switchblade.xyz/2QDjZkYunf?theme=dark)](https://discord.gg/2QDjZkYunf)
+<a href="https://discord.gg/2QDjZkYunf" alt="Melt UI Discord community">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://invidget.switchblade.xyz/2QDjZkYunf">
+  <img alt="Melt UI Discord community" src="https://invidget.switchblade.xyz/2QDjZkYunf?theme=light">
+</picture>
+</a>
 
 ## Similar projects
 
