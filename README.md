@@ -1,12 +1,13 @@
-[![](https://img.shields.io/npm/v/@melt-ui/svelte?style=flat)](https://www.npmjs.com/package/@melt-ui/svelte)
-![npm](https://img.shields.io/npm/dw/%40melt-ui%2Fsvelte?style=flat&color=orange)
-[![](https://img.shields.io/github/actions/workflow/status/melt-ui/melt-ui/ci.yaml?style=flat)](https://github.com/melt-ui/melt-ui/actions/workflows/ci.yaml)
-![](https://img.shields.io/github/license/melt-ui/melt-ui?style=flat)
-[![](https://dcbadge.vercel.app/api/server/2QDjZkYunf?style=flat)](https://discord.gg/2QDjZkYunf)
-
 ![](static/banner.png)
 
 [Melt UI](https://www.melt-ui.com/) is a set of headless, accessible component builders for Svelte.
+
+[![](https://img.shields.io/npm/v/@melt-ui/svelte?style=flat)](https://www.npmjs.com/package/@melt-ui/svelte)
+![npm](https://img.shields.io/npm/dw/%40melt-ui%2Fsvelte?style=flat&color=orange)
+
+[![](https://img.shields.io/github/actions/workflow/status/melt-ui/melt-ui/ci.yaml?style=flat)](https://github.com/melt-ui/melt-ui/actions/workflows/ci.yaml)
+![](https://img.shields.io/github/license/melt-ui/melt-ui?style=flat)
+[![](https://dcbadge.vercel.app/api/server/2QDjZkYunf?style=flat)](https://discord.gg/2QDjZkYunf)
 
 ## About
 
