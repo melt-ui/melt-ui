@@ -8,8 +8,6 @@
 
 [Melt UI](https://www.melt-ui.com/) is a set of headless, accessible component builders for Svelte.
 
-[Bug Report](https://github.com/melt-ui/melt-ui/issues/new?assignees=&labels=bug&projects=&template=bug_report.md&title=%F0%9F%90%9BBug%3A) · [Builder](https://github.com/melt-ui/melt-ui/issues/new?assignees=&labels=builder&projects=&template=component.md&title=%E2%9C%A8+Builder%3A) · [Documentation](https://github.com/melt-ui/melt-ui/issues/new?assignees=&labels=documentation&projects=&template=documentation.md&title=%F0%9F%93%81Docs%3A) · [Feature Request](https://github.com/melt-ui/melt-ui/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md&title=%F0%9F%8C%9FFeature+request%3A) · [Tech Debt](https://github.com/melt-ui/melt-ui/issues/new?assignees=&labels=tech+debt&projects=&template=tech-debt.md&title=%E2%9A%99Tech+Debt%3A)
-
 ## About
 
 Melt UI is meant to be used as a base for your own styles and components. It offers:
