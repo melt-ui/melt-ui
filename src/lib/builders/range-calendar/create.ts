@@ -17,7 +17,7 @@ import {
 } from '$lib/internal/helpers/index.js';
 import {
 	getDaysBetween,
-	getDaysBetweenIfAllValid,
+	areAllDaysBetweenValid,
 	getLastFirstDayOfWeek,
 	getNextLastDayOfWeek,
 	isCalendarCell,
@@ -26,7 +26,6 @@ import { derived, get, writable } from 'svelte/store';
 import type { CalendarIds, CreateRangeCalendarProps, Month } from './types.js';
 import { tick } from 'svelte';
 import {
-	defaultMatcher,
 	getAnnouncer,
 	isBefore,
 	isBetweenInclusive,
@@ -35,6 +34,7 @@ import {
 	createFormatter,
 	getDaysInMonth,
 	getDefaultDate,
+	parseStringToDateValue,
 } from '$lib/internal/date/index.js';
 import {
 	type DateValue,
@@ -45,15 +45,11 @@ import {
 	startOfMonth,
 	endOfMonth,
 	ZonedDateTime,
-	parseZonedDateTime,
-	CalendarDateTime,
-	parseDateTime,
-	parseDate,
 } from '@internationalized/date';
 
 const defaults = {
-	isDisabled: defaultMatcher,
-	isUnavailable: defaultMatcher,
+	isDisabled: undefined,
+	isUnavailable: undefined,
 	value: undefined,
 	defaultValue: {
 		start: undefined,
@@ -316,8 +312,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				};
 			}
 
-			const range = getDaysBetweenIfAllValid(start, end, $isUnavailable, $isDisabled);
-			if (range.length) {
+			const isValid = areAllDaysBetweenValid(start, end, $isUnavailable, $isDisabled);
+			if (isValid) {
 				return {
 					start: start,
 					end: end,
@@ -407,19 +403,19 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 					const args = getElArgs();
 					if (args.disabled) return;
 					if (!args.value) return;
-					handleCellClick(e, parseToDateObj(args.value));
+					handleCellClick(e, parseStringToDateValue(args.value, get(placeholderValue)));
 				}),
 				addMeltEventListener(node, 'mouseenter', () => {
 					const args = getElArgs();
 					if (args.disabled) return;
 					if (!args.value) return;
-					focusedValue.set(parseToDateObj(args.value));
+					focusedValue.set(parseStringToDateValue(args.value, get(placeholderValue)));
 				}),
 				addMeltEventListener(node, 'focusin', () => {
 					const args = getElArgs();
 					if (args.disabled) return;
 					if (!args.value) return;
-					focusedValue.set(parseToDateObj(args.value));
+					focusedValue.set(parseStringToDateValue(args.value, get(placeholderValue)));
 				})
 			);
 
@@ -704,7 +700,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			const cellValue = currentCell.getAttribute('data-value');
 			if (!cellValue) return;
 
-			handleCellClick(e, parseToDateObj(cellValue));
+			handleCellClick(e, parseStringToDateValue(cellValue, get(placeholderValue)));
 		}
 	}
 
@@ -816,18 +812,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	function handlePlaceholderValue(node: HTMLElement) {
 		const cellValue = node.getAttribute('data-value');
 		if (!cellValue) return;
-		placeholderValue.set(parseToDateObj(cellValue));
-	}
-
-	function parseToDateObj(dateStr: string): DateValue {
-		const $placeholderValue = get(placeholderValue);
-		if ($placeholderValue instanceof ZonedDateTime) {
-			return parseZonedDateTime(dateStr);
-		}
-		if ($placeholderValue instanceof CalendarDateTime) {
-			return parseDateTime(dateStr);
-		}
-		return parseDate(dateStr);
+		placeholderValue.set(parseStringToDateValue(cellValue, get(placeholderValue)));
 	}
 
 	/**

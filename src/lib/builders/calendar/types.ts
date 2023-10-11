@@ -209,6 +209,7 @@ export type CalendarIds = IdObj<'calendar' | 'grid' | 'accessibleHeading'>;
 
 export type CreateCalendarProps = CalendarProps;
 export type Calendar = ReturnType<typeof createCalendar>;
+
 export type Month<T> = {
 	/**
 	 * A date that can be used to get the month and year

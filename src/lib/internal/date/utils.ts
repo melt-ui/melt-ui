@@ -10,17 +10,6 @@ import {
 	getLocalTimeZone,
 } from '@internationalized/date';
 
-/**
- * A helper function used throughout the various
- * date builders to generate a default date value
- * using the `defaultValue`, `defaultPlaceholderValue`,
- * and `granularity` props.
- *
- * It's able to ensure the right type of date value is
- * returned based on the props provided.
- *
- */
-
 type GetDefaultDateProps = {
 	defaultValue?: DateValue | undefined;
 	defaultPlaceholderValue?: DateValue | undefined;
@@ -33,6 +22,16 @@ const defaultDateDefaults = {
 	granularity: 'day',
 };
 
+/**
+ * A helper function used throughout the various date builders
+ * to generate a default `DateValue` using the `defaultValue`,
+ * `defaultPlaceholderValue`, and `granularity` props.
+ *
+ * It's important to match the `DateValue` type being used
+ * elsewhere in the builder, so they behave according to the
+ * behavior the user expects based on the props they've provided.
+ *
+ */
 export function getDefaultDate(props: GetDefaultDateProps): DateValue {
 	const withDefaults = { ...defaultDateDefaults, ...props };
 	const { defaultValue, defaultPlaceholderValue, granularity } = withDefaults;
@@ -61,7 +60,7 @@ export function getDefaultDate(props: GetDefaultDateProps): DateValue {
  * string to the same type as the reference object.
  *
  * Useful for parsing strings from data attributes, which are always
- * strings, to the same type as the value of the date field.
+ * strings, to the same type being used by the date component.
  */
 export function parseStringToDateValue(dateStr: string, referenceVal: DateValue): DateValue {
 	if (referenceVal instanceof ZonedDateTime) {
@@ -98,16 +97,26 @@ export function hasTime(dateValue: DateValue) {
 	return isCalendarDateTime(dateValue) || isZonedDateTime(dateValue);
 }
 
+/**
+ * Given a date, return the number of days in the month.
+ */
 export function getDaysInMonth(date: Date) {
 	const year = date.getFullYear();
 	const month = date.getMonth() + 1;
+	/**
+	 * By using zero as the day, we get the
+	 * last day of the previous month, which
+	 * is the month we originally passed in.
+	 */
 	return new Date(year, month, 0).getDate();
 }
 
 /**
  * Determine if a date is before the reference date.
- * @param dateToCompare - the date to compare
- * @param referenceDate - the reference date to make the comparison against
+ * @param dateToCompare - is this date before the `referenceDate`
+ * @param referenceDate - is the `dateToCompare` before this date
+ *
+ * @see {@link isBeforeOrSame} for inclusive
  */
 export function isBefore(dateToCompare: DateValue, referenceDate: DateValue) {
 	return dateToCompare.compare(referenceDate) < 0;
@@ -115,8 +124,10 @@ export function isBefore(dateToCompare: DateValue, referenceDate: DateValue) {
 
 /**
  * Determine if a date is after the reference date.
- * @param dateToCompare - the date to compare
- * @param referenceDate - the reference date to make the comparison against
+ * @param dateToCompare - is this date after the `referenceDate`
+ * @param referenceDate - is the `dateToCompare` after this date
+ *
+ * @see {@link isAfterOrSame} for inclusive
  */
 export function isAfter(dateToCompare: DateValue, referenceDate: DateValue) {
 	return dateToCompare.compare(referenceDate) > 0;
@@ -127,6 +138,8 @@ export function isAfter(dateToCompare: DateValue, referenceDate: DateValue) {
  *
  * @param dateToCompare - the date to compare
  * @param referenceDate - the reference date to make the comparison against
+ *
+ * @see {@link isBefore} for non-inclusive
  */
 export function isBeforeOrSame(dateToCompare: DateValue, referenceDate: DateValue) {
 	return dateToCompare.compare(referenceDate) <= 0;
@@ -135,8 +148,10 @@ export function isBeforeOrSame(dateToCompare: DateValue, referenceDate: DateValu
 /**
  * Determine if a date is after or the same as the reference date.
  *
- * @param dateToCompare - the date to compare
- * @param referenceDate - the reference date to make the comparison against
+ * @param dateToCompare - is this date after or the same as the `referenceDate`
+ * @param referenceDate - is the `dateToCompare` after or the same as this date
+ *
+ * @see {@link isAfter} for non-inclusive
  */
 export function isAfterOrSame(dateToCompare: DateValue, referenceDate: DateValue) {
 	return dateToCompare.compare(referenceDate) >= 0;
@@ -145,9 +160,11 @@ export function isAfterOrSame(dateToCompare: DateValue, referenceDate: DateValue
 /**
  * Determine if a date is inclusively between a start and end reference date.
  *
- * @param date - the date to compare
+ * @param date - is this date inclusively between the `start` and `end` dates
  * @param start - the start reference date to make the comparison against
  * @param end - the end reference date to make the comparison against
+ *
+ * @see {@link isBetween} for non-inclusive
  */
 export function isBetweenInclusive(date: DateValue, start: DateValue, end: DateValue) {
 	return isAfterOrSame(date, start) && isBeforeOrSame(date, end);
@@ -156,26 +173,12 @@ export function isBetweenInclusive(date: DateValue, start: DateValue, end: DateV
 /**
  * Determine if a date is between a start and end reference date.
  *
- * @param date - the date to compare
+ * @param date - is this date between the `start` and `end` dates
  * @param start - the start reference date to make the comparison against
  * @param end - the end reference date to make the comparison against
+ *
+ * @see {@link isBetweenInclusive} for inclusive
  */
 export function isBetween(date: DateValue, start: DateValue, end: DateValue) {
 	return isAfter(date, start) && isBefore(date, end);
-}
-
-export function isDateValue(value: unknown): value is DateValue {
-	return (
-		value instanceof CalendarDate ||
-		value instanceof CalendarDateTime ||
-		value instanceof ZonedDateTime
-	);
-}
-
-export function isDateValueArray(value: unknown): value is DateValue[] {
-	return Array.isArray(value) && value.every((v) => isDateValue(v));
-}
-
-export function defaultMatcher(_: DateValue) {
-	return false;
 }

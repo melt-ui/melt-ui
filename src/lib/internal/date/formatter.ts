@@ -8,6 +8,14 @@ import { hasTime, toDate } from '.';
 
 export type Formatter = ReturnType<typeof createFormatter>;
 
+/**
+ * Creates a wrapper around the `DateFormatter`, which is
+ * an improved version of the {@link Intl.DateTimeFormat} API,
+ * that is used internally by the various date builders to
+ * easily format dates in a consistent way.
+ *
+ * @see [DateFormatter](https://react-spectrum.adobe.com/internationalized/date/DateFormatter.html)
+ */
 export function createFormatter(initialLocale: string) {
 	let locale = initialLocale;
 

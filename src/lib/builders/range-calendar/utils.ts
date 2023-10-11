@@ -19,26 +19,27 @@ export function getDaysBetween<T extends DateValue = DateValue>(start: T, end: T
 	return days;
 }
 
-export function getDaysBetweenIfAllValid<T extends DateValue = DateValue>(
-	start: T,
-	end: T,
-	isUnavailable: Matcher,
-	isDisabled: Matcher
+export function areAllDaysBetweenValid(
+	start: DateValue,
+	end: DateValue,
+	isUnavailable: Matcher | undefined,
+	isDisabled: Matcher | undefined
 ) {
-	const days: T[] = [];
-	let dCurrent = start.add({ days: 1 }) as T;
-	if (isDisabled(dCurrent) || isUnavailable(dCurrent)) {
-		return [];
+	if (isUnavailable === undefined && isDisabled === undefined) {
+		return true;
+	}
+	let dCurrent = start.add({ days: 1 });
+	if (isDisabled?.(dCurrent) || isUnavailable?.(dCurrent)) {
+		return false;
 	}
 	const dEnd = end;
 	while (dCurrent.compare(dEnd) < 0) {
-		days.push(dCurrent);
-		dCurrent = dCurrent.add({ days: 1 }) as T;
-		if (isDisabled(dCurrent) || isUnavailable(dCurrent)) {
-			return [];
+		dCurrent = dCurrent.add({ days: 1 });
+		if (isDisabled?.(dCurrent) || isUnavailable?.(dCurrent)) {
+			return false;
 		}
 	}
-	return days;
+	return true;
 }
 
 export function getNextLastDayOfWeek<T extends DateValue = DateValue>(

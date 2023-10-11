@@ -122,13 +122,11 @@ export function getPlaceholderValue(
 }
 
 function isSupportedLocale(locale: string): locale is SupportedLocale {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return supportedLocales.includes(locale as any);
+	return supportedLocales.includes(locale as SupportedLocale);
 }
 
 function isPlaceholderField(field: unknown): field is PlaceholderField {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return placeholderFields.includes(field as any);
+	return placeholderFields.includes(field as PlaceholderField);
 }
 
 function isTimeField(field: unknown): field is 'hour' | 'minute' | 'second' {

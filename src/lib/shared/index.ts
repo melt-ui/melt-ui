@@ -4,7 +4,6 @@
  * use, they should be exported from this file to prevent conflicts
  * with other builders that may export the same types or functions.
  */
-import type { Granularity, Matcher } from '$lib/internal/date';
+import type { Granularity, Matcher, DateRange } from '$lib/internal/date';
 
-export * from './date/index.js';
-export type { Granularity, Matcher };
+export type { Granularity, Matcher, DateRange };

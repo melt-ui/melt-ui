@@ -51,6 +51,10 @@ function initAnnouncer() {
 	};
 }
 
+/**
+ * Creates an announcer object that can be used to
+ * make `aria-live` announcements to screen readers.
+ */
 export function getAnnouncer() {
 	const announcer = initAnnouncer();
 

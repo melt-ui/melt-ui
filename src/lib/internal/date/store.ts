@@ -1,47 +1,41 @@
-import { get, type Writable } from 'svelte/store';
-import {
-	type CalendarDate,
+import type { Writable } from 'svelte/store';
+import type {
+	CalendarDate,
 	ZonedDateTime,
-	type CalendarDateTime,
-	type CycleOptions,
-	type CycleTimeOptions,
-	type DateDuration,
-	type DateField,
-	type DateFields,
-	type DateTimeDuration,
-	type DateValue,
-	type Disambiguation,
-	type TimeField,
-	type TimeFields,
-	getLocalTimeZone,
+	CalendarDateTime,
+	DateDuration,
+	DateFields,
+	DateTimeDuration,
+	DateValue,
+	Disambiguation,
+	TimeFields,
 } from '@internationalized/date';
 
 type AnyDateTime = ZonedDateTime | CalendarDateTime;
 
-type MappedDuration<T> = T extends AnyDateTime
+type DerivedDuration<T> = T extends AnyDateTime
 	? DateTimeDuration
 	: T extends CalendarDate
 	? DateDuration
 	: never;
 
-type MappedFields<T> = T extends AnyDateTime
+type DerivedFields<T> = T extends AnyDateTime
 	? DateFields & TimeFields
 	: T extends CalendarDate
 	? DateFields
 	: never;
 
-type MappedField<T> = T extends AnyDateTime
-	? DateField | TimeField
-	: T extends CalendarDate
-	? DateField
-	: never;
-
-type MappedCycleOptions<T> = T extends AnyDateTime ? CycleTimeOptions : CycleOptions;
-
+/**
+ * A higher order store that wraps a writable store containing
+ * a `DateValue` from `@internationalized/date` and provides a
+ * set of methods to easily manipulate the date value.
+ *
+ * @see [@internationalized/date](https://react-spectrum.adobe.com/internationalized/date/index.html)
+ */
 export function dateStore<T extends DateValue>(store: Writable<T>, defaultValue: T) {
 	const { set, update, subscribe } = store;
 
-	function add(duration: MappedDuration<T>) {
+	function add(duration: DerivedDuration<T>) {
 		update((d) => {
 			return d.add(duration) as T;
 		});
@@ -59,14 +53,14 @@ export function dateStore<T extends DateValue>(store: Writable<T>, defaultValue:
 		});
 	}
 
-	function subtract(duration: MappedDuration<T>) {
+	function subtract(duration: DerivedDuration<T>) {
 		update((d) => {
 			return d.subtract(duration) as T;
 		});
 	}
 
 	function setDate(
-		fields: MappedFields<T>,
+		fields: DerivedFields<T>,
 		disambiguation?: T extends ZonedDateTime ? Disambiguation : never
 	) {
 		if (disambiguation) {
@@ -81,59 +75,11 @@ export function dateStore<T extends DateValue>(store: Writable<T>, defaultValue:
 		});
 	}
 
-	function cycle(field: MappedField<T>, amount: number, options?: MappedCycleOptions<T>) {
-		update((d) => {
-			//@ts-expect-error - need to figure out how to type this
-			return d.cycle(field, amount, options) as T;
-		});
-	}
-
 	function reset() {
 		update(() => {
 			return defaultValue;
 		});
 	}
-
-	function compare(b: CalendarDate | CalendarDateTime | ZonedDateTime) {
-		return get(store).compare(b);
-	}
-
-	function toString() {
-		return get(store).toString();
-	}
-
-	function copy() {
-		return get(store) as T;
-	}
-
-	function toDateWithTz(timeZone?: string, disambiguation?: Disambiguation) {
-		if (!timeZone) {
-			return get(store).toDate(getLocalTimeZone());
-		}
-		return get(store).toDate(timeZone, disambiguation);
-	}
-
-	function toDateZoned() {
-		const $storeValue = get(store) as ZonedDateTime;
-		return $storeValue.toDate();
-	}
-
-	function isZoned() {
-		const $storeValue = get(store);
-		if ($storeValue instanceof ZonedDateTime) {
-			return true;
-		}
-		return false;
-	}
-
-	function daysInMonth() {
-		const $storeValue = get(store);
-		const year = $storeValue.year;
-		const month = $storeValue.month;
-		return new Date(year, month, 0).getDate();
-	}
-
-	const toDate = isZoned() ? toDateZoned : toDateWithTz;
 
 	function toWritable() {
 		return {
@@ -151,12 +97,6 @@ export function dateStore<T extends DateValue>(store: Writable<T>, defaultValue:
 		subtract,
 		setDate,
 		reset,
-		cycle,
-		compare,
-		toDate,
-		copy,
-		toString,
-		daysInMonth,
 		toWritable,
 		nextPage,
 		prevPage,
@@ -164,20 +104,13 @@ export function dateStore<T extends DateValue>(store: Writable<T>, defaultValue:
 }
 
 export type DateStore<T> = Writable<T> & {
-	add: (duration: MappedDuration<T>) => void;
-	subtract: (duration: MappedDuration<T>) => void;
+	add: (duration: DerivedDuration<T>) => void;
+	subtract: (duration: DerivedDuration<T>) => void;
 	setDate: (
-		fields: MappedFields<T>,
+		fields: DerivedFields<T>,
 		disambiguation?: T extends ZonedDateTime ? Disambiguation : never
 	) => void;
-	cycle: (field: MappedField<T>, amount: number, options?: MappedCycleOptions<T>) => void;
 	reset: () => void;
-	compare: (b: CalendarDate | CalendarDateTime | ZonedDateTime) => number;
-	toString: () => string;
-	copy: () => T;
-	toDate: () => Date;
-	isZoned: () => boolean;
-	daysInMonth: () => number;
 	nextPage: (amount: number) => void;
 	prevPage: (amount: number) => void;
 };

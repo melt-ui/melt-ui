@@ -2,21 +2,13 @@ import { effect, toWritableStores, omit } from '$lib/internal/helpers/index.js';
 import { get } from 'svelte/store';
 import { createCalendar, createDateField, createPopover } from '$lib/builders/index.js';
 import type { CreateDatePickerProps } from './types.js';
-import {
-	handleSegmentNavigation,
-	isSegmentNavigationKey,
-} from '$lib/builders/date-field/_internal/helpers.js';
+import { handleSegmentNavigation, isSegmentNavigationKey } from '$lib/internal/date/index.js';
 
-import {
-	dateStore,
-	createFormatter,
-	getDefaultDate,
-	defaultMatcher,
-} from '$lib/internal/date/index.js';
+import { dateStore, createFormatter, getDefaultDate } from '$lib/internal/date/index.js';
 
 const defaults = {
-	isDisabled: defaultMatcher,
-	isUnavailable: defaultMatcher,
+	isDisabled: undefined,
+	isUnavailable: undefined,
 	value: undefined,
 	positioning: {
 		placement: 'bottom',
@@ -92,11 +84,11 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 
 	const { locale } = options;
 
-	const defaultDate = withDefaults.defaultValue
-		? withDefaults.defaultValue
-		: withDefaults.defaultPlaceholderValue
-		? withDefaults.defaultPlaceholderValue
-		: getDefaultDate(withDefaults.granularity);
+	const defaultDate = getDefaultDate({
+		defaultPlaceholderValue: withDefaults.defaultPlaceholderValue,
+		defaultValue: withDefaults.defaultValue,
+		granularity: withDefaults.granularity,
+	});
 	const formatter = createFormatter(get(locale));
 
 	const placeholderValue = dateStore(

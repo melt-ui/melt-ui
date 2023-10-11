@@ -48,11 +48,7 @@ export function isNull(value: unknown): value is null {
 	return value === null;
 }
 
-export function isNumberKey(key: string) {
-	if (isNaN(parseInt(key))) return false;
+export function isNumberString(value: string) {
+	if (isNaN(parseInt(value))) return false;
 	return true;
-}
-
-export function isTabKey(key: string) {
-	return key === 'Tab';
 }

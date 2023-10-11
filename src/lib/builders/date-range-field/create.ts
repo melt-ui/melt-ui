@@ -8,20 +8,14 @@ import {
 	omit,
 	effect,
 } from '$lib/internal/helpers/index.js';
-import {
-	dateStore,
-	getDefaultDate,
-	getAnnouncer,
-	isBefore,
-	defaultMatcher,
-} from '$lib/internal/date/index.js';
+import { dateStore, getDefaultDate, getAnnouncer, isBefore } from '$lib/internal/date/index.js';
 import { derived, get, writable } from 'svelte/store';
 import { removeDescriptionElement } from './_internal/helpers.js';
 import { createDateField } from '$lib/index.js';
 import type { DateValue } from '@internationalized/date';
 
 const defaults = {
-	isUnavailable: defaultMatcher,
+	isUnavailable: undefined,
 	value: undefined,
 	hourCycle: undefined,
 	locale: 'en',

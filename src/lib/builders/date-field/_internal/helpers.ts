@@ -5,6 +5,7 @@ import {
 	toDate,
 	isZonedDateTime,
 	hasTime,
+	getSegments,
 } from '$lib/internal/date';
 import type { DateValue } from '@internationalized/date';
 import type {
@@ -23,11 +24,10 @@ import type {
 import { allSegmentParts, dateSegmentParts, segmentParts, timeSegmentParts } from './parts.js';
 import {
 	isBrowser,
-	isHTMLElement,
 	isNull,
 	generateId,
 	kbd,
-	isNumberKey,
+	isNumberString,
 	styleToString,
 } from '$lib/internal/helpers/index.js';
 import { get, type Writable } from 'svelte/store';
@@ -235,22 +235,6 @@ function getUsedSegments(id: string) {
 	return usedSegments;
 }
 
-/**
- * Gets all the segments in the container with the provided id.
- */
-function getSegments(id: string) {
-	const inputContainer = document.getElementById(id);
-	if (!isHTMLElement(inputContainer)) return [];
-	const segments = Array.from(inputContainer.querySelectorAll('[data-segment]')).filter(
-		(el): el is HTMLElement => {
-			if (!isHTMLElement(el)) return false;
-			if (el.dataset.segment === 'literal') return false;
-			return true;
-		}
-	);
-	return segments;
-}
-
 type GetValueFromSegments = {
 	segmentObj: SegmentValueObj;
 	id: string;
@@ -279,6 +263,9 @@ export function getValueFromSegments(props: GetValueFromSegments) {
 
 /**
  * Check if all the segments being used have been filled.
+ * We use this to determine when we should set the value
+ * store of the date field(s).
+ *
  * @param segmentValues - The current `SegmentValueObj`
  * @param id  - The id of the date field
  */
@@ -293,19 +280,28 @@ export function areAllSegmentsFilled(segmentValues: SegmentValueObj, id: string)
 	});
 }
 
+/**
+ * Extracts the segment part from the provided node,
+ * if it exists, otherwise returns null.
+ */
 export function getPartFromNode(node: HTMLElement) {
 	const part = node.dataset.segment;
 	if (!isAnySegmentPart(part)) return null;
 	return part;
 }
 
+/**
+ * Determines if the provided object is a valid `DateAndTimeSegmentObj`
+ * by checking if it has the correct keys and values for each key.
+ */
 export function isDateAndTimeSegmentObj(obj: unknown): obj is DateAndTimeSegmentObj {
 	if (typeof obj !== 'object' || obj === null) {
 		return false;
 	}
 	return Object.entries(obj).every(([key, value]) => {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const validKey = timeSegmentParts.includes(key as any) || dateSegmentParts.includes(key as any);
+		const validKey =
+			timeSegmentParts.includes(key as TimeSegmentPart) ||
+			dateSegmentParts.includes(key as DateSegmentPart);
 		const validValue =
 			key === 'dayPeriod'
 				? value === 'AM' || value === 'PM' || value === null
@@ -316,75 +312,20 @@ export function isDateAndTimeSegmentObj(obj: unknown): obj is DateAndTimeSegment
 }
 
 /**
- * Gets the next segment in the list of segments relative to the provided node.
+ * Infer the granularity to use based on the
+ * value and granularity props.
  */
-function getNextSegment(node: HTMLElement, segments: HTMLElement[]) {
-	const index = segments.indexOf(node);
-	if (index === segments.length - 1 || index === -1) return null;
-	const nextIndex = index + 1;
-	const nextSegment = segments[nextIndex];
-	return nextSegment;
-}
-
-/**
- * Gets the prev segment in the list of segments relative to the provided node.
- */
-function getPrevSegment(node: HTMLElement, segments: HTMLElement[]) {
-	const index = segments.indexOf(node);
-	if (index === 0 || index === -1) return null;
-	const prevIndex = index - 1;
-	const prevSegment = segments[prevIndex];
-	return prevSegment;
-}
-
-/**
- * Gets an object containing the next and previous segments relative
- * to the provided node.
- */
-function getPrevNextSegments(node: HTMLElement, containerId: string) {
-	const segments = getSegments(containerId);
-	if (!segments.length) {
-		return {
-			next: null,
-			prev: null,
-		};
+export function inferGranularity(
+	value: DateValue,
+	granularity: Granularity | undefined
+): Granularity {
+	if (granularity) {
+		return granularity;
 	}
-	return {
-		next: getNextSegment(node, segments),
-		prev: getPrevSegment(node, segments),
-	};
-}
-
-/**
- * Moves focus to the next segment in the list of segments
- * within the container with the provided id.
- */
-export function moveToNextSegment(e: KeyboardEvent, containerId: string) {
-	const node = e.currentTarget;
-	if (!isHTMLElement(node)) return;
-	const { next } = getPrevNextSegments(node, containerId);
-	if (!next) return;
-	next.focus();
-}
-
-export function isSegmentNavigationKey(key: string) {
-	if (key === kbd.ARROW_RIGHT || key === kbd.ARROW_LEFT) return true;
-	return false;
-}
-
-export function handleSegmentNavigation(e: KeyboardEvent, containerId: string) {
-	const currentTarget = e.currentTarget;
-	if (!isHTMLElement(currentTarget)) return;
-
-	const { prev, next } = getPrevNextSegments(currentTarget, containerId);
-
-	if (e.key === kbd.ARROW_LEFT) {
-		if (!prev) return;
-		prev.focus();
-	} else if (e.key === kbd.ARROW_RIGHT) {
-		if (!next) return;
-		next.focus();
+	if (hasTime(value)) {
+		return 'minute';
 	}
+	return 'day';
 }
 
 export function isAcceptableSegmentKey(key: string) {
@@ -398,7 +339,7 @@ export function isAcceptableSegmentKey(key: string) {
 		kbd.SPACE,
 	];
 	if (acceptableSegmentKeys.includes(key)) return true;
-	if (isNumberKey(key)) return true;
+	if (isNumberString(key)) return true;
 	return false;
 }
 
@@ -411,7 +352,9 @@ type SyncSegmentValuesProps = {
 
 /**
  * Sets the individual segment values based on the current
- * value of the date picker.
+ * value of the date picker. This is used to initialize the
+ * segment values if a default value is provided, and to
+ * keep it in sync as the value changes outside the builder.
  */
 export function syncSegmentValues(props: SyncSegmentValuesProps) {
 	const { value, updatingDayPeriod, segmentValues, formatter } = props;
@@ -442,22 +385,6 @@ export function syncSegmentValues(props: SyncSegmentValuesProps) {
 }
 
 /**
- * If granularity is undefined, infer it from the provided value.
- */
-export function inferGranularity(
-	value: DateValue,
-	granularity: Granularity | undefined
-): Granularity {
-	if (granularity) {
-		return granularity;
-	}
-	if (hasTime(value)) {
-		return 'minute';
-	}
-	return 'day';
-}
-
-/**
  * Determines if the element with the provided id is the first focusable
  * segment in the date field with the provided fieldId.
  *
@@ -473,6 +400,10 @@ export function isFirstSegment(id: string, fieldId: string) {
 /**
  * Creates or updates a description element for a date field
  * which enables screen readers to read the date field's value.
+ *
+ * This element is hidden from view, and is portalled to the body
+ * so it can be associated via `aria-describedby` and read by
+ * screen readers as the user interacts with the date field.
  */
 export function setDescription(id: string, formatter: Formatter, value: DateValue) {
 	if (!isBrowser) return;
@@ -491,6 +422,11 @@ export function setDescription(id: string, formatter: Formatter, value: DateValu
 	}
 }
 
+/**
+ * Removes the description element for the date field with
+ * the provided ID. This function should be called when the
+ * date field is unmounted.
+ */
 export function removeDescriptionElement(id: string) {
 	if (!isBrowser) return;
 	const el = document.getElementById(id);

@@ -11,8 +11,7 @@ import {
 	isHTMLElement,
 	addMeltEventListener,
 	executeCallbacks,
-	isTabKey,
-	isNumberKey,
+	isNumberString,
 	styleToString,
 } from '$lib/internal/helpers/index.js';
 import {
@@ -22,7 +21,6 @@ import {
 	toDate,
 	createFormatter,
 	getAnnouncer,
-	defaultMatcher,
 } from '$lib/internal/date/index.js';
 import { derived, get, writable, type Updater } from 'svelte/store';
 import {
@@ -30,21 +28,23 @@ import {
 	areAllSegmentsFilled,
 	createContent,
 	getValueFromSegments,
-	handleSegmentNavigation,
 	initSegmentIds,
 	initSegmentStates,
 	initializeSegmentValues,
 	isDateAndTimeSegmentObj,
 	isDateSegmentPart,
-	isSegmentNavigationKey,
-	moveToNextSegment,
 	getPartFromNode,
-	inferGranularity,
 	isAcceptableSegmentKey,
 	removeDescriptionElement,
 	syncSegmentValues,
 	setDescription,
+	inferGranularity,
 } from './_internal/helpers.js';
+import {
+	handleSegmentNavigation,
+	isSegmentNavigationKey,
+	moveToNextSegment,
+} from '$lib/internal/date/index.js';
 import type {
 	AnyExceptLiteral,
 	AnySegmentPart,
@@ -60,7 +60,7 @@ import type {
 } from './_internal/types.js';
 
 const defaults = {
-	isUnavailable: defaultMatcher,
+	isUnavailable: undefined,
 	value: undefined,
 	hourCycle: undefined,
 	locale: 'en',
@@ -185,6 +185,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 		},
 	});
 
+	/**
+	 * The date field element which contains all the segments.
+	 */
 	const dateField = builder(name(), {
 		stores: [value, isFieldInvalid, fieldDisabled, fieldReadonly],
 		returned: ([$value, $isFieldInvalid, $fieldDisabled, $fieldReadonly]) => {
@@ -199,6 +202,10 @@ export function createDateField(props?: CreateDateFieldProps) {
 			};
 		},
 		action: () => {
+			/**
+			 * Initialize the announcer here, where
+			 * we know we have access to the DOM.
+			 */
 			announcer = getAnnouncer();
 
 			return {
@@ -404,42 +411,37 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 	}
 
+	/**
+	 * Maps the segment part to its corresponding handler function.
+	 * We're using a map here to avoid a switch statement, yet
+	 * still have the ability to share common logic between all
+	 * the handlers.
+	 */
 	function handleSegmentKeydown(e: KeyboardEvent, part: AnyExceptLiteral) {
 		const $fieldDisabled = get(fieldDisabled);
-
 		if (e.key !== kbd.TAB) {
 			e.preventDefault();
 		}
 		if ($fieldDisabled) return;
+		const segmentKeydownHandlers = {
+			day: handleDaySegmentKeydown,
+			month: handleMonthSegmentKeydown,
+			year: handleYearSegmentKeydown,
+			hour: handleHourSegmentKeydown,
+			minute: handleMinuteSegmentKeydown,
+			second: handleSecondSegmentKeydown,
+			dayPeriod: handleDayPeriodSegmentKeydown,
+			timeZoneName: handleTimeZoneSegmentKeydown,
+		} as const;
 
-		switch (part) {
-			case 'day':
-				handleDaySegmentKeydown(e);
-				break;
-			case 'month':
-				handleMonthSegmentKeydown(e);
-				break;
-			case 'year':
-				handleYearSegmentKeydown(e);
-				break;
-			case 'hour':
-				handleHourSegmentKeydown(e);
-				break;
-			case 'minute':
-				handleMinuteSegmentKeydown(e);
-				break;
-			case 'second':
-				handleSecondSegmentKeydown(e);
-				break;
-			case 'dayPeriod':
-				handleDayPeriodSegmentKeydown(e);
-				break;
-			case 'timeZoneName':
-				handleTimeZoneSegmentKeydown(e);
-				break;
-		}
+		segmentKeydownHandlers[part](e);
 	}
 
+	/**
+	 * Handles 'click' events on the segments,
+	 * which prevents the default behavior of
+	 * focusing the segment if the field is disabled.
+	 */
 	function handleSegmentClick(e: MouseEvent) {
 		const $fieldDisabled = get(fieldDisabled);
 		if ($fieldDisabled) {
@@ -494,9 +496,6 @@ export function createDateField(props?: CreateDateFieldProps) {
 	}
 
 	function handleDaySegmentKeydown(e: KeyboardEvent) {
-		if (!isTabKey(e.key)) {
-			e.preventDefault();
-		}
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}
@@ -512,11 +511,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 			updateSegment('day', (prev) => {
 				if (prev === null) {
 					const next = $placeholderValue.day;
-					announcer.announce(`${next}`);
+					announcer.announce(next);
 					return next;
 				}
 				const next = $placeholderValue.set({ day: prev }).cycle('day', 1).day;
-				announcer.announce(`${next}`);
+				announcer.announce(next);
 				return next;
 			});
 			return;
@@ -525,17 +524,17 @@ export function createDateField(props?: CreateDateFieldProps) {
 			updateSegment('day', (prev) => {
 				if (prev === null) {
 					const next = $placeholderValue.day;
-					announcer.announce(`${next}`);
+					announcer.announce(next);
 					return next;
 				}
 				const next = dateRef.set({ day: prev }).cycle('day', -1).day;
-				announcer.announce(`${next}`);
+				announcer.announce(next);
 				return next;
 			});
 			return;
 		}
 
-		if (isNumberKey(e.key)) {
+		if (isNumberString(e.key)) {
 			const num = parseInt(e.key);
 			let moveToNext = false;
 			updateSegment('day', (prev) => {
@@ -676,10 +675,6 @@ export function createDateField(props?: CreateDateFieldProps) {
 	}
 
 	function handleMonthSegmentKeydown(e: KeyboardEvent) {
-		if (!isTabKey(e.key)) {
-			e.preventDefault();
-		}
-
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}
@@ -720,7 +715,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			return;
 		}
 
-		if (isNumberKey(e.key)) {
+		if (isNumberString(e.key)) {
 			const num = parseInt(e.key);
 			let moveToNext = false;
 			updateSegment('month', (prev) => {
@@ -744,6 +739,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					 */
 					if (num === 0) {
 						states.month.lastKeyZero = true;
+						announcer.announce(null);
 						return null;
 					}
 
@@ -755,7 +751,6 @@ export function createDateField(props?: CreateDateFieldProps) {
 					 */
 					if (states.month.lastKeyZero || num > maxStart) {
 						moveToNext = true;
-						return num;
 					}
 
 					/**
@@ -763,6 +758,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					 * return the number as the segment value and continue typing
 					 * in this segment.
 					 */
+					announcer.announce(num);
 					return num;
 				}
 
@@ -784,11 +780,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 					if (num > maxStart) {
 						moveToNext = true;
 					}
-
+					announcer.announce(num);
 					return num;
 				}
 				moveToNext = true;
-
+				announcer.announce(total);
 				return total;
 			});
 
@@ -801,12 +797,12 @@ export function createDateField(props?: CreateDateFieldProps) {
 			states.month.hasLeftFocus = false;
 			updateSegment('month', (prev) => {
 				if (prev === null) {
-					announcer.announce('Empty');
+					announcer.announce(null);
 					return null;
 				}
 				const str = prev.toString();
 				if (str.length === 1) {
-					announcer.announce('Empty');
+					announcer.announce(null);
 					return null;
 				}
 				const next = parseInt(str.slice(0, -1));
@@ -863,9 +859,6 @@ export function createDateField(props?: CreateDateFieldProps) {
 	}
 
 	function handleYearSegmentKeydown(e: KeyboardEvent) {
-		if (!isTabKey(e.key)) {
-			e.preventDefault();
-		}
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}
@@ -877,11 +870,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 			updateSegment('year', (prev) => {
 				if (prev === null) {
 					const next = $placeholderValue.year;
-					announcer.announce(`${next}`);
+					announcer.announce(next);
 					return next;
 				}
 				const next = $placeholderValue.set({ year: prev }).cycle('year', 1).year;
-				announcer.announce(`${next}`);
+				announcer.announce(next);
 				return next;
 			});
 			return;
@@ -890,17 +883,17 @@ export function createDateField(props?: CreateDateFieldProps) {
 			updateSegment('year', (prev) => {
 				if (prev === null) {
 					const next = $placeholderValue.year;
-					announcer.announce(`${next}`);
+					announcer.announce(next);
 					return next;
 				}
 				const next = $placeholderValue.set({ year: prev }).cycle('year', -1).year;
-				announcer.announce(`${next}`);
+				announcer.announce(next);
 				return next;
 			});
 			return;
 		}
 
-		if (isNumberKey(e.key)) {
+		if (isNumberString(e.key)) {
 			let moveToNext = false;
 			const num = parseInt(e.key);
 			updateSegment('year', (prev) => {
@@ -910,12 +903,12 @@ export function createDateField(props?: CreateDateFieldProps) {
 				}
 
 				if (prev === null) {
-					announcer.announce(`${num}`);
+					announcer.announce(num);
 					return num;
 				}
 				const str = prev.toString() + num.toString();
 				if (str.length > 4) {
-					announcer.announce(`${num}`);
+					announcer.announce(num);
 					return num;
 				}
 				if (str.length === 4) {
@@ -923,7 +916,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				}
 
 				const int = parseInt(str);
-				announcer.announce(`${int}`);
+				announcer.announce(int);
 				return int;
 			});
 
@@ -935,16 +928,16 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.BACKSPACE) {
 			updateSegment('year', (prev) => {
 				if (prev === null) {
-					announcer.announce('Empty');
+					announcer.announce(null);
 					return null;
 				}
 				const str = prev.toString();
 				if (str.length === 1) {
-					announcer.announce('Empty');
+					announcer.announce(null);
 					return null;
 				}
 				const next = parseInt(str.slice(0, -1));
-				announcer.announce(`${next}`);
+				announcer.announce(next);
 				return next;
 			});
 		}
@@ -1000,10 +993,6 @@ export function createDateField(props?: CreateDateFieldProps) {
 	}
 
 	function handleHourSegmentKeydown(e: KeyboardEvent) {
-		if (!isTabKey(e.key)) {
-			e.preventDefault();
-		}
-
 		if (!isAcceptableSegmentKey(e.key) || !('hour' in dateRef)) {
 			return;
 		}
@@ -1016,11 +1005,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 			updateSegment('hour', (prev) => {
 				if (prev === null) {
 					const next = dateRef.cycle('hour', 1, { hourCycle: $hourCycle }).hour;
-					announcer?.announce(`${next}`);
+					announcer.announce(next);
 					return next;
 				}
 				const next = dateRef.set({ hour: prev }).cycle('hour', 1, { hourCycle: $hourCycle }).hour;
-				announcer?.announce(`${next}`);
+				announcer.announce(next);
 				return next;
 			});
 			return;
@@ -1029,17 +1018,17 @@ export function createDateField(props?: CreateDateFieldProps) {
 			updateSegment('hour', (prev) => {
 				if (prev === null) {
 					const next = dateRef.cycle('hour', -1, { hourCycle: $hourCycle }).hour;
-					announcer?.announce(`${next}`);
+					announcer.announce(next);
 					return next;
 				}
 				const next = dateRef.set({ hour: prev }).cycle('hour', -1, { hourCycle: $hourCycle }).hour;
-				announcer?.announce(`${next}`);
+				announcer.announce(next);
 				return next;
 			});
 			return;
 		}
 
-		if (isNumberKey(e.key)) {
+		if (isNumberString(e.key)) {
 			const num = parseInt(e.key);
 			let moveToNext = false;
 			updateSegment('hour', (prev) => {
@@ -1063,7 +1052,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					 */
 					if (num === 0) {
 						states.hour.lastKeyZero = true;
-						announcer.announce('Empty');
+						announcer.announce(null);
 						return null;
 					}
 
@@ -1075,7 +1064,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					 */
 					if (states.hour.lastKeyZero || num > maxStart) {
 						moveToNext = true;
-						announcer.announce(`${num}`);
+						announcer.announce(num);
 						return num;
 					}
 
@@ -1104,11 +1093,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 					if (num > maxStart) {
 						moveToNext = true;
 					}
-					announcer.announce(`${num}`);
+					announcer.announce(num);
 					return num;
 				}
 				moveToNext = true;
-				announcer.announce(`${total}`);
+				announcer.announce(total);
 				return total;
 			});
 
@@ -1121,16 +1110,16 @@ export function createDateField(props?: CreateDateFieldProps) {
 			states.hour.hasLeftFocus = false;
 			updateSegment('hour', (prev) => {
 				if (prev === null) {
-					announcer.announce('Empty');
+					announcer.announce(null);
 					return null;
 				}
 				const str = prev.toString();
 				if (str.length === 1) {
-					announcer.announce('Empty');
+					announcer.announce(null);
 					return null;
 				}
 				const next = parseInt(str.slice(0, -1));
-				announcer.announce(`${next}`);
+				announcer.announce(next);
 				return next;
 			});
 		}
@@ -1186,9 +1175,6 @@ export function createDateField(props?: CreateDateFieldProps) {
 	}
 
 	function handleMinuteSegmentKeydown(e: KeyboardEvent) {
-		if (!isTabKey(e.key)) {
-			e.preventDefault();
-		}
 		if (!isAcceptableSegmentKey(e.key) || !('minute' in dateRef)) {
 			return;
 		}
@@ -1201,11 +1187,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('minute', (prev) => {
 				if (prev === null) {
-					announcer.announce(`${min}`);
+					announcer.announce(min);
 					return min;
 				}
 				const next = dateRef.set({ minute: prev }).cycle('minute', 1).minute;
-				announcer.announce(`${next}`);
+				announcer.announce(next);
 				return next;
 			});
 			return;
@@ -1213,17 +1199,17 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('minute', (prev) => {
 				if (prev === null) {
-					announcer.announce(`${max}`);
+					announcer.announce(max);
 					return max;
 				}
 				const next = dateRef.set({ minute: prev }).cycle('minute', -1).minute;
-				announcer.announce(`${next}`);
+				announcer.announce(next);
 				return next;
 			});
 			return;
 		}
 
-		if (isNumberKey(e.key)) {
+		if (isNumberString(e.key)) {
 			const num = parseInt(e.key);
 			let moveToNext = false;
 			updateSegment('minute', (prev) => {
@@ -1247,7 +1233,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					 */
 					if (num === 0) {
 						states.minute.lastKeyZero = true;
-						announcer.announce('Empty');
+						announcer.announce(null);
 						return null;
 					}
 
@@ -1259,7 +1245,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					 */
 					if (states.minute.lastKeyZero || num > maxStart) {
 						moveToNext = true;
-						announcer.announce(`${num}`);
+						announcer.announce(num);
 						return num;
 					}
 
@@ -1288,11 +1274,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 					if (num > maxStart) {
 						moveToNext = true;
 					}
-					announcer.announce(`${num}`);
+					announcer.announce(num);
 					return num;
 				}
 				moveToNext = true;
-				announcer.announce(`${total}`);
+				announcer.announce(total);
 				return total;
 			});
 
@@ -1314,7 +1300,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					return null;
 				}
 				const next = parseInt(str.slice(0, -1));
-				announcer.announce(`${next}`);
+				announcer.announce(next);
 				return next;
 			});
 		}
@@ -1370,9 +1356,6 @@ export function createDateField(props?: CreateDateFieldProps) {
 	}
 
 	function handleSecondSegmentKeydown(e: KeyboardEvent) {
-		if (!isTabKey(e.key)) {
-			e.preventDefault();
-		}
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}
@@ -1408,7 +1391,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			return;
 		}
 
-		if (isNumberKey(e.key)) {
+		if (isNumberString(e.key)) {
 			const num = parseInt(e.key);
 			let moveToNext = false;
 			updateSegment('second', (prev) => {
@@ -1555,10 +1538,6 @@ export function createDateField(props?: CreateDateFieldProps) {
 	 * on the minute segment.
 	 */
 	function handleDayPeriodSegmentKeydown(e: KeyboardEvent) {
-		if (!isTabKey(e.key)) {
-			e.preventDefault();
-		}
-
 		if (!isAcceptableSegmentKey(e.key) && e.key !== kbd.A && e.key !== kbd.P) {
 			return;
 		}
@@ -1648,7 +1627,6 @@ export function createDateField(props?: CreateDateFieldProps) {
 			addMeltEventListener(node, 'keydown', (e) => handleSegmentKeydown(e, 'timeZoneName')),
 			addMeltEventListener(node, 'click', handleSegmentClick)
 		);
-
 		return {
 			destroy() {
 				unsubEvents();
@@ -1657,10 +1635,6 @@ export function createDateField(props?: CreateDateFieldProps) {
 	}
 
 	function handleTimeZoneSegmentKeydown(e: KeyboardEvent) {
-		if (!isTabKey(e.key)) {
-			e.preventDefault();
-		}
-
 		if (isSegmentNavigationKey(e.key)) {
 			handleSegmentNavigation(e, ids.field);
 		}
@@ -1678,10 +1652,17 @@ export function createDateField(props?: CreateDateFieldProps) {
 		return segmentBuilders[part].action(node);
 	}
 
+	/**
+	 * Gets the `aria-labelledby` value for a given segment part.
+	 */
 	function getLabelledBy(part: AnyExceptLiteral) {
 		return `${ids[part]} ${ids.label}`;
 	}
 
+	/**
+	 * Keeping the locale used in the formatter in sync
+	 * with the locale option store.
+	 */
 	effect(locale, ($locale) => {
 		if (formatter.getLocale() === $locale) return;
 		formatter.setLocale($locale);

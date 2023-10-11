@@ -24,7 +24,7 @@ import {
 import { derived, get, writable } from 'svelte/store';
 import type { CalendarIds, CreateCalendarProps, Month } from './types.js';
 import { tick } from 'svelte';
-import { defaultMatcher, getAnnouncer, toDate } from '$lib/internal/date/index.js';
+import { getAnnouncer, parseStringToDateValue, toDate } from '$lib/internal/date/index.js';
 import {
 	type DateValue,
 	getLocalTimeZone,
@@ -34,10 +34,6 @@ import {
 	startOfMonth,
 	endOfMonth,
 	ZonedDateTime,
-	parseZonedDateTime,
-	CalendarDateTime,
-	parseDateTime,
-	parseDate,
 } from '@internationalized/date';
 import {
 	dateStore,
@@ -47,8 +43,8 @@ import {
 } from '$lib/internal/date/index.js';
 
 const defaults = {
-	isDisabled: defaultMatcher,
-	isUnavailable: defaultMatcher,
+	isDisabled: undefined,
+	isUnavailable: undefined,
 	value: undefined,
 	allowDeselect: false,
 	numberOfMonths: 1,
@@ -97,8 +93,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		defaultValue: withDefaults.defaultValue,
 	});
 
-	const formatter = createFormatter(get(locale));
-
+	const formatter = createFormatter(withDefaults.locale);
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
@@ -113,6 +108,11 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		createMonth(withDefaults.defaultPlaceholderValue ?? defaultDate),
 	]);
 
+	/**
+	 * A derived helper store that is true if the currently
+	 * selected date is invalid, based on the `isDisabled`,
+	 * and `isUnavailable` matchers passed as props.
+	 */
 	const isInvalid = derived(
 		[value, isDisabled, isUnavailable],
 		([$value, $isDisabled, $isUnavailable]) => {
@@ -123,8 +123,27 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		}
 	);
 
+	/**
+	 * Initialize the announcer, which doesn't do anything
+	 * here, as this will be SSR'd, but we will update it
+	 * in the action of the calendar builder.
+	 *
+	 * The announcer is responsible for `aria-live` announcements
+	 * for the calendar, such as when a date is selected.
+	 */
 	let announcer = getAnnouncer();
 
+	/**
+	 * The current heading value for the calender, which
+	 * should be used alongside the `heading` builder to
+	 * render what month and year is currently being displayed
+	 * in the calendar, formatted for the current locale.
+	 *
+	 * This automatically updates as the user navigates the
+	 * calendar, and also accounts for multiple months being
+	 * displayed at once if displaying multiple months via
+	 * the `numberOfMonths` prop.
+	 */
 	const headingValue = derived([months, locale], ([$months, $locale]) => {
 		if (!$months.length) return '';
 		if ($locale !== formatter.getLocale()) {
@@ -151,6 +170,12 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		return content;
 	});
 
+	/**
+	 * The accessible heading label for the calender,
+	 * which is a combination of the `calendarLabel`
+	 * prop and the `headingValue` store, to read
+	 * something like `Event Date, January 2021`.
+	 */
 	const fullCalendarLabel = derived(
 		[headingValue, calendarLabel],
 		([$headingValue, $calendarLabel]) => {
@@ -158,6 +183,11 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		}
 	);
 
+	/**
+	 * The root element for the calendar, which can
+	 * contain multiple grids/months if using paged
+	 * navigation.
+	 */
 	const calendar = builder(name(), {
 		stores: [fullCalendarLabel, isInvalid],
 		returned: ([$fullCalendarLabel, $isInvalid]) => {
@@ -187,6 +217,24 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		},
 	});
 
+	/**
+	 * The heading for the calendar, used to visually
+	 * display the current month and year. This is hidden
+	 * from screen readers, as an accessible heading is
+	 * automatically created for the calendar.
+	 *
+	 * If you want to change what that heading says, you
+	 * can use the `calendarLabel` prop to change the
+	 * prefix of the accessible heading.
+	 *
+	 * By default, the accessible heading will be read as
+	 * `Event Date, January 2021` if the current month is
+	 * January 2021.
+	 *
+	 * If you pass a `calendarLabel` prop of `Booking Date`,
+	 * the accessible heading will be read as `Booking Date,
+	 * January 2021` if the current month is January 2021.
+	 */
 	const heading = builder(name('heading'), {
 		returned: () => {
 			return {
@@ -195,10 +243,24 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		},
 	});
 
+	/**
+	 * A grid element responsible for containing a single
+	 * month of the calendar. Grids should be rendered for
+	 * each month in the `months` store returned by the
+	 * `createCalendar` builder.
+	 */
 	const grid = builder(name('grid'), {
 		returned: () => ({ tabindex: -1, id: ids.grid, role: 'grid' }),
 	});
 
+	/**
+	 * The prev button for the calendar, which is used to
+	 * navigate to the previous page of the calendar. If using
+	 * paged navigation, this will move the calendar backwards
+	 * by the number of months specified in the `numberOfMonths`
+	 * prop. If not using paged navigation, this will move the
+	 * calendar backwards by one month.
+	 */
 	const prevButton = builder(name('prevButton'), {
 		returned: () => {
 			return {
@@ -218,6 +280,13 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		},
 	});
 
+	/**
+	 * A button element responsible for navigating to the
+	 * next page of the calendar. If using paged navigation,
+	 * moves the calendar forward by the number of months
+	 * specified in the `numberOfMonths` prop. If not using
+	 * paged navigation, moves the calendar forward by one month.
+	 */
 	const nextButton = builder(name('nextButton'), {
 		returned: () => {
 			return {
@@ -238,8 +307,10 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	});
 
 	/**
-	 * An individual date cell in the calendar grid, which represents a
-	 * single day in the month.
+	 * An individual date cell in the calendar grid, which
+	 * represents a single day in the month. Applies the
+	 * necessary attributes and event handlers to make the
+	 * cell accessible and interactive.
 	 */
 	const cell = builder(name('cell'), {
 		stores: [value, isDisabled, isUnavailable, placeholderValue],
@@ -294,7 +365,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 					const args = getElArgs();
 					if (args.disabled) return;
 					if (!args.value) return;
-					handleCellClick(parseToDateObj(args.value));
+					handleCellClick(parseStringToDateValue(args.value, get(placeholderValue)));
 				})
 			);
 
@@ -304,11 +375,21 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		},
 	});
 
+	/**
+	 * Keep the locale used within the formatter in
+	 * sync with the `locale` store so dynamic updates
+	 * are reflected in the calendar.
+	 */
 	effect([locale], ([$locale]) => {
 		if (formatter.getLocale() === $locale) return;
 		formatter.setLocale($locale);
 	});
 
+	/**
+	 * Handles updating the months when the placeholder value
+	 * changes, which is the value used to determine what
+	 * months to display in the calendar.
+	 */
 	effect([placeholderValue], ([$placeholderValue]) => {
 		if (!isBrowser || !$placeholderValue) return;
 
@@ -336,6 +417,9 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		node.textContent = $fullCalendarLabel;
 	});
 
+	/**
+	 * Keeping the placeholder value in sync with the value.
+	 */
 	effect([value], ([$value]) => {
 		if ($value && get(placeholderValue) !== $value) {
 			placeholderValue.set($value);
@@ -343,15 +427,61 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	});
 
 	/**
-	 * A derived store whose value is an array days of the week
-	 * for the current locale and calendar view.
+	 * A derived store whose value is an array of strings with the
+	 * days of the week for the current locale and calendar view.
+	 * This remains in sync with the `weekStartsOn` option, so if
+	 * it is changed, this store will update accordingly.
 	 *
-	 * This remains in sync with the `weekStartsOn` prop, so if it is
-	 * changed, this store and the calendar will update accordingly.
+	 * It's highly recommended you use this store to render the
+	 * days of the week in your calendar, as it will ensure the days
+	 * are formatted correctly for the current locale and calendar view.
+	 *
+	 * @example
+	 *
+	 * ```svelte
+	 * <table use:melt={$grid} class="w-full">
+	 * 	<thead aria-hidden="true">
+	 * 		<tr>
+	 * 			{#each $daysOfWeek as day}
+	 * 				<th class="text-sm font-semibold text-magnum-800">
+	 * 					<div class="flex h-6 w-6 items-center justify-center p-4">
+	 * 						{day}
+	 * 					</div>
+	 * 				</th>
+	 * 			{/each}
+	 * 		</tr>
+	 * 	</thead>
+	 * 	<!-- ... -->
+	 * </table>
+	 * ```
 	 *
 	 * If you prefer to format/render the days of the week yourself,
 	 * you can do so by accessing the first week of the first month,
 	 * and mapping over the dates to get/format each day of the week.
+	 *
+	 *
+	 * @example
+	 *
+	 * ```svelte
+	 * {#each $months as month}
+	 * 	<table use:melt={$grid} class="w-full">
+	 * 		<thead aria-hidden="true">
+	 * 			<tr>
+	 * 				{#each month.weeks[0] as dayOfWeek}
+	 * 					<th class="text-sm font-semibold text-magnum-800">
+	 * 						<div class="flex h-6 w-6 items-center justify-center p-4">
+	 * 							{new Intl.DateTimeFormat('en', { weekday: 'long' }).format
+	 * 							(dayOfWeek)}
+	 * 						</div>
+	 * 					</th>
+	 * 				{/each}
+	 * 			</tr>
+	 * 		</thead>
+	 * 		<!-- ... -->
+	 * 	</table>
+	 * {/each}
+	 * ```
+	 *
 	 */
 	const daysOfWeek = derived([months], ([$months]) => {
 		if (!$months.length) return [];
@@ -363,10 +493,11 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	/**
 	 * Given a date, this function will return an object containing
 	 * the necessary values to render a calendar month, including
-	 * the month's date, which can be used to render the name of the
-	 * month, the dates within that month, and the dates from the
-	 * previous and next months that are needed to fill out the
-	 * calendar grid.
+	 * the month's date (which is the first day of that month), which
+	 * can be used to render the name of the month, as well as an array
+	 * of all dates in that month, and an array of weeks, where each
+	 * week is an array of dates, useful for rendering an accessible
+	 * calendar grid using a loop and table elements.
 	 */
 	function createMonth(dateObj: DateValue): Month<DateValue> {
 		const tz = getLocalTimeZone();
@@ -412,6 +543,10 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * Creates an accessible heading for the calendar so when it
 	 * is focused by a screen reader, the date range being displayed
 	 * is announced.
+	 *
+	 * This is to ensure that the calendar is accessible to screen readers,
+	 * and the heading is hidden from view so it doesn't interfere with
+	 * the visual design of the calendar.
 	 */
 	function createAccessibleHeading(node: HTMLElement, label: string) {
 		if (!isBrowser) return;
@@ -436,11 +571,21 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	}
 
 	/**
-	 * Navigate to the next page of the calendar.
+	 * A helper function to navigate to the next page of the calendar.
 	 * If using paged navigation, this will move the calendar forward
 	 * by the number of months specified in the `numberOfMonths` prop.
 	 * If not using paged navigation, this will move the calendar forward
 	 * by one month.
+	 *
+	 * @example
+	 * ```svelte
+	 * <script>
+	 * 	import { createCalendar } from '@melt-ui/svelte';
+	 * 	const { { ... }, helpers: { nextPage } } = createCalendar()
+	 * </script>
+	 *
+	 * <button on:click={nextPage} aria-label="Next page">▶️</button>
+	 * ```
 	 */
 	function nextPage() {
 		if (get(pagedNavigation)) {
@@ -452,11 +597,21 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	}
 
 	/**
-	 * Navigate to the previous page of the calendar.
+	 * A helper function to navigate to the previous page of the calendar.
 	 * If using paged navigation, this will move the calendar backwards
 	 * by the number of months specified in the `numberOfMonths` prop.
 	 * If not using paged navigation, this will move the calendar backwards
 	 * by one month.
+	 *
+	 * @example
+	 * ```svelte
+	 * <script>
+	 * 	import { createCalendar } from '@melt-ui/svelte';
+	 * 	const { { ... }, helpers: { prevPage } } = createCalendar()
+	 * </script>
+	 *
+	 * <button on:click={prevPage} aria-label="Previous page">◀️</button>
+	 * ```
 	 */
 	function prevPage() {
 		if (get(pagedNavigation)) {
@@ -468,14 +623,42 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	}
 
 	/**
-	 * Navigate to the previous year of the calendar.
+	 * A helper function to navigate to the next year in the calendar,
+	 * which is useful if you want to extend the calendar to have buttons
+	 * to navigate to the next/prev year.
+	 *
+	 * @example
+	 * ```svelte
+	 * <script>
+	 * 	import { createCalendar } from '@melt-ui/svelte';
+	 * 	const { { ... }, helpers: { nextYear, prevYear } } = createCalendar()
+	 * </script>
+	 *
+	 * <button on:click={prevYear} aria-label="Previous year">◀️</button>
+	 * <button on:click={nextYear} aria-label="Next year">▶️</button>
+	 *
+	 * ```
 	 */
 	function nextYear() {
 		placeholderValue.add({ years: 1 });
 	}
 
 	/**
-	 * Navigate to the next year of the calendar.
+	 * A helper function to navigate to the previous year in the calendar,
+	 * which is useful if you want to extend the calendar to have buttons
+	 * to navigate to the next/prev year.
+	 *
+	 * @example
+	 * ```svelte
+	 * <script>
+	 * 	import { createCalendar } from '@melt-ui/svelte';
+	 * 	const { { ... }, helpers: { nextYear, prevYear } } = createCalendar()
+	 * </script>
+	 *
+	 * <button on:click={prevYear} aria-label="Previous year">◀️</button>
+	 * <button on:click={nextYear} aria-label="Next year">▶️</button>
+	 *
+	 * ```
 	 */
 	function prevYear() {
 		placeholderValue.subtract({ years: 1 });
@@ -484,21 +667,56 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	const ARROW_KEYS = [kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.ARROW_LEFT, kbd.ARROW_RIGHT];
 
 	/**
-	 * A helper function to set the year of the active date. This is
-	 * useful when the user wants to have a select input to change the
-	 * year of the calendar.
+	 * A helper function to set the year of the placeholder value's
+	 * date. This is useful if you want to extend the calendar to have
+	 * alternative ways to change the year, such as a select input.
+	 *
+	 * @example
+	 * ```svelte
+	 * <script>
+	 * 	import { createCalendar } from '@melt-ui/svelte';
+	 * 	const { { ... }, helpers: { setYear } } = createCalendar()
+	 *
+	 * 	let selectValue = 2023;
+	 * 	$: setYear(selectValue);
+	 * </script>
+	 *
+	 * <select bind:value={selectValue} aria-label='Select a year'>
+	 * 	<option value={2023}>2023</option>
+	 * 	<option value={2024}>2024</option>
+	 * 	<option value={2025}>2025</option>
+	 * 	<!-- ... -->
+	 * </select>
+	 * ```
 	 */
 	function setYear(year: number) {
 		placeholderValue.setDate({ year: year });
 	}
 
 	/**
-	 * A helper function to set the month of the active date. This is
-	 * useful when the user wants to have a select input to change the
-	 * month of the calendar.
+	 * A helper function to set the month of the placeholder value's
+	 * date. This is useful if you want to extend the calendar to have
+	 * alternative ways to change the month, such as a select input.
+	 *
+	 * @example
+	 * ```svelte
+	 * <script>
+	 * 	import { createCalendar } from '@melt-ui/svelte';
+	 * 	const { { ... }, helpers: { setMonth } } = createCalendar()
+	 *
+	 * 	let selectValue = 1;
+	 * 	$: setMonth(selectValue);
+	 * </script>
+	 *
+	 * <select bind:value={selectValue} aria-label='Select a month'>
+	 * 	<option value={1}>January</option>
+	 * 	<option value={2}>February</option>
+	 * 	<option value={3}>March</option>
+	 * 	<!-- ... -->
+	 * </select>
+	 * ```
 	 */
 	function setMonth(month: number) {
-		if (month < 0 || month > 11) throw new Error('Month must be between 0 and 11');
 		placeholderValue.setDate({ month: month });
 	}
 
@@ -541,7 +759,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			const cellValue = currentCell.getAttribute('data-value');
 			if (!cellValue) return;
 
-			handleCellClick(parseToDateObj(cellValue));
+			handleCellClick(parseStringToDateValue(cellValue, get(placeholderValue)));
 		}
 	}
 
@@ -652,25 +870,15 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	function handlePlaceholderValue(node: HTMLElement) {
 		const cellValue = node.getAttribute('data-value');
 		if (!cellValue) return;
-		placeholderValue.set(parseToDateObj(cellValue));
-	}
-
-	function parseToDateObj(dateStr: string): DateValue {
-		const $placeholderValue = get(placeholderValue);
-		if ($placeholderValue instanceof ZonedDateTime) {
-			return parseZonedDateTime(dateStr);
-		}
-		if ($placeholderValue instanceof CalendarDateTime) {
-			return parseDateTime(dateStr);
-		}
-		return parseDate(dateStr);
+		placeholderValue.set(parseStringToDateValue(cellValue, get(placeholderValue)));
 	}
 
 	/**
 	 * A helper function to determine if a date is disabled,
-	 * which uses the `Matcher`(s) provided via the `disabled`
-	 * prop, as well as other internal logic, such as if the
-	 * date is outside of the current month.
+	 * which uses the `Matcher`(s) provided via the `isDisabled`
+	 * prop, as well as other internal logic, that determines
+	 * if a date is disabled, such as if it's outside of the
+	 * month, or if it's before/after the min/max dates.
 	 *
 	 * Although we set attributes on the cells themselves, this
 	 * function is useful when you want to conditionally handle
@@ -692,7 +900,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		[isDisabled, placeholderValue],
 		([$isDisabled, $placeholderValue]) => {
 			return (date: DateValue) => {
-				if ($isDisabled(date)) return true;
+				if ($isDisabled?.(date)) return true;
 				if (!isSameMonth(date, $placeholderValue)) return true;
 				return false;
 			};
@@ -724,7 +932,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * @returns `true` if the date is disabled, `false` otherwise
 	 */
 	const isDateUnavailable = derived(isUnavailable, ($isUnavailable) => {
-		return (date: DateValue) => $isUnavailable(date);
+		return (date: DateValue) => $isUnavailable?.(date);
 	});
 
 	return {

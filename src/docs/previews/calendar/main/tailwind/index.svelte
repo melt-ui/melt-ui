@@ -43,9 +43,9 @@
 							</tr>
 						</thead>
 						<tbody>
-							{#each month.weeks as dates}
+							{#each month.weeks as weekDates}
 								<tr>
-									{#each dates as date}
+									{#each weekDates as date}
 										<td
 											role="gridcell"
 											aria-disabled={$isDateDisabled(date) ||
