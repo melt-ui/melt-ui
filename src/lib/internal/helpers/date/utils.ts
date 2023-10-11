@@ -44,7 +44,7 @@ export function getDefaultDate(props: GetDefaultDateProps): DateValue {
 	} else {
 		const date = new Date();
 		const year = date.getFullYear();
-		const month = date.getMonth();
+		const month = date.getMonth() + 1;
 		const day = date.getDate();
 		const calendarDateTimeGranularities = ['hour', 'minute', 'second'];
 
@@ -101,15 +101,19 @@ export function hasTime(dateValue: DateValue) {
 /**
  * Given a date, return the number of days in the month.
  */
-export function getDaysInMonth(date: Date) {
-	const year = date.getFullYear();
-	const month = date.getMonth() + 1;
-	/**
-	 * By using zero as the day, we get the
-	 * last day of the previous month, which
-	 * is the month we originally passed in.
-	 */
-	return new Date(year, month, 0).getDate();
+export function getDaysInMonth(date: Date | DateValue) {
+	if (date instanceof Date) {
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1;
+		/**
+		 * By using zero as the day, we get the
+		 * last day of the previous month, which
+		 * is the month we originally passed in.
+		 */
+		return new Date(year, month, 0).getDate();
+	} else {
+		return date.set({ day: 100 }).day;
+	}
 }
 
 /**

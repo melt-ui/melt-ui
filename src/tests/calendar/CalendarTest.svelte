@@ -84,7 +84,7 @@
 									{#each days as date}
 										<td role="gridcell">
 											<div
-												use:melt={$cell(date)}
+												use:melt={$cell(date, month.value)}
 												class="cell"
 												data-testid="month-{i}-date-{date.day}"
 											>

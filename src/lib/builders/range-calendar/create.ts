@@ -30,7 +30,7 @@ import {
 	areAllDaysBetweenValid,
 	isCalendarCell,
 	type Month,
-	createMonth,
+	createMonths,
 	getSelectableCells,
 	isAfter,
 	setPlaceholderToNodeValue,
@@ -125,14 +125,32 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 
 	const focusedValue = writable<DateValue | null>(null);
 
-	const months = writable<Month<DateValue>[]>([
-		createMonth({
+	const months = writable<Month<DateValue>[]>(
+		createMonths({
 			dateObj: withDefaults.defaultPlaceholderValue ?? defaultDate,
 			weekStartsOn: withDefaults.weekStartsOn,
 			locale: withDefaults.locale,
 			fixedWeeks: withDefaults.fixedWeeks,
-		}),
-	]);
+			numberOfMonths: withDefaults.numberOfMonths,
+		})
+	);
+
+	/**
+	 * A derived store that maintains the currently visible months in the calendar,
+	 * which we use to determine how keyboard navigation and if we should apply
+	 * `data-outside-month` to cells.
+	 */
+	const visibleMonths = derived([months], ([$months]) => {
+		return $months.map((month) => {
+			return month.value;
+		});
+	});
+
+	const isOutsideVisibleMonths = derived([visibleMonths], ([$visibleMonths]) => {
+		return (date: DateValue) => {
+			return !$visibleMonths.some((month) => isSameMonth(date, month));
+		};
+	});
 
 	const isStartInvalid = derived(
 		[startValue, isUnavailable, isDisabled],
@@ -170,12 +188,12 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			formatter.setLocale($locale);
 		}
 		if ($months.length === 1) {
-			const month = $months[0].monthDate;
+			const month = toDate($months[0].value);
 			return `${formatter.fullMonthAndYear(month)}`;
 		}
 
-		const startMonth = $months[0].monthDate;
-		const endMonth = $months[$months.length - 1].monthDate;
+		const startMonth = toDate($months[0].value);
+		const endMonth = toDate($months[$months.length - 1].value);
 
 		const startMonthName = formatter.fullMonth(startMonth);
 		const endMonthName = formatter.fullMonth(endMonth);
@@ -341,6 +359,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			isDisabled,
 			isUnavailable,
 			placeholderValue,
+			isOutsideVisibleMonths,
 		],
 		returned: ([
 			$isSelected,
@@ -350,15 +369,17 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			$disabled,
 			$unavailable,
 			$placeholderValue,
+			$isOutsideVisibleMonths,
 		]) => {
-			return (cellValue: T) => {
+			return (cellValue: T, monthValue: T) => {
 				const cellDate = toDate(cellValue);
 				const isDisabled = $disabled?.(cellValue);
 				const isUnavailable = $unavailable?.(cellValue);
 				const isDateToday = isToday(cellValue, getLocalTimeZone());
-				const isOutsideMonth = !isSameMonth(cellValue, $placeholderValue);
+				const isOutsideMonth = !isSameMonth(cellValue, monthValue);
 				const isFocusedDate = isSameDay(cellValue, $placeholderValue);
-				const isSelectedDate = $isSelected(cellValue);
+				const isOutsideVisibleMonths = $isOutsideVisibleMonths(cellValue);
+				const isSelectedDate = $isSelected(cellValue) && !isOutsideMonth;
 				const isSelectionStart = $isSelectionStart(cellValue);
 				const isSelectionEnd = $isSelectionEnd(cellValue);
 				const isHighlighted = $highlightedRange
@@ -385,6 +406,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 					'data-unavailable': isUnavailable ? '' : undefined,
 					'data-today': isDateToday ? '' : undefined,
 					'data-outside-month': isOutsideMonth ? '' : undefined,
+					'data-outside-visible-months': isOutsideVisibleMonths ? '' : undefined,
 					'data-focused': isFocusedDate ? '' : undefined,
 					'data-highlighted': isHighlighted ? '' : undefined,
 					tabindex: isFocusedDate ? 0 : isOutsideMonth || isDisabled ? undefined : -1,
@@ -439,42 +461,37 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	});
 
 	/**
-	 * Handles updating the months when the placeholder value
-	 * changes, which is the value used to determine what
-	 * months to display in the calendar.
+	 * Updates the displayed months based on changes in the placeholder value,
+	 * which determines the months to show in the calendar.
 	 */
 	effect(
-		[placeholderValue, weekStartsOn, locale, fixedWeeks],
-		([$placeholderValue, $weekStartsOn, $locale, $fixedWeeks]) => {
+		[placeholderValue, weekStartsOn, locale, fixedWeeks, numberOfMonths],
+		([$placeholderValue, $weekStartsOn, $locale, $fixedWeeks, $numberOfMonths]) => {
 			if (!isBrowser || !$placeholderValue) return;
+
+			const $visibleMonths = get(visibleMonths);
+
+			/**
+			 * If the placeholderValue's month is already in the visible months,
+			 * we don't need to do anything.
+			 */
+			if ($visibleMonths.some((month) => isSameMonth(month, $placeholderValue))) {
+				return;
+			}
 
 			const defaultMonthProps = {
 				weekStartsOn: $weekStartsOn,
 				locale: $locale,
 				fixedWeeks: $fixedWeeks,
+				numberOfMonths: $numberOfMonths,
 			};
 
-			months.set([
-				createMonth({
+			months.set(
+				createMonths({
 					...defaultMonthProps,
 					dateObj: $placeholderValue,
-				}),
-			]);
-			const $numberOfMonths = get(numberOfMonths);
-			if ($numberOfMonths > 1) {
-				for (let i = 1; i < $numberOfMonths; i++) {
-					const nextMonth = $placeholderValue.add({ months: i });
-					months.update((prev) => {
-						prev.push(
-							createMonth({
-								...defaultMonthProps,
-								dateObj: nextMonth,
-							})
-						);
-						return prev;
-					});
-				}
-			}
+				})
+			);
 		}
 	);
 
@@ -542,33 +559,82 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 
 	/**
 	 * Navigate to the next page of the calendar.
+	 *
+	 * @remarks
 	 * If using paged navigation, this will move the calendar forward
 	 * by the number of months specified in the `numberOfMonths` prop.
 	 * If not using paged navigation, this will move the calendar forward
 	 * by one month.
+	 *
+	 * @example
+	 * ```svelte
+	 * <script>
+	 * 	import { createCalendar } from '@melt-ui/svelte';
+	 * 	const { { ... }, helpers: { nextPage } } = createCalendar()
+	 * </script>
+	 *
+	 * <button on:click={nextPage} aria-label="Next page">▶️</button>
+	 * ```
 	 */
 	function nextPage() {
+		const $months = get(months);
+		const $numberOfMonths = get(numberOfMonths);
 		if (get(pagedNavigation)) {
-			const $numberOfMonths = get(numberOfMonths);
-			placeholderValue.nextPage($numberOfMonths);
+			const firstMonth = $months[0].value;
+			placeholderValue.set(firstMonth.add({ months: $numberOfMonths }));
 		} else {
-			placeholderValue.nextPage(1);
+			const firstMonth = $months[0].value;
+			const newMonths = createMonths({
+				dateObj: firstMonth.add({ months: 1 }),
+				weekStartsOn: get(weekStartsOn),
+				locale: get(locale),
+				fixedWeeks: get(fixedWeeks),
+				numberOfMonths: $numberOfMonths,
+			});
+
+			months.set(newMonths);
+			placeholderValue.set(newMonths[0].value.set({ day: 1 }));
 		}
 	}
 
 	/**
 	 * Navigate to the previous page of the calendar.
+	 *
+	 * @remarks
+	 * A helper function to navigate to the previous page of the calendar.
 	 * If using paged navigation, this will move the calendar backwards
 	 * by the number of months specified in the `numberOfMonths` prop.
 	 * If not using paged navigation, this will move the calendar backwards
 	 * by one month.
+	 *
+	 * @example
+	 * ```svelte
+	 * <script>
+	 * 	import { createCalendar } from '@melt-ui/svelte';
+	 * 	const { { ... }, helpers: { prevPage } } = createCalendar()
+	 * </script>
+	 *
+	 * <button on:click={prevPage} aria-label="Previous page">◀️</button>
+	 * ```
 	 */
 	function prevPage() {
+		const $months = get(months);
+		const $numberOfMonths = get(numberOfMonths);
 		if (get(pagedNavigation)) {
-			const $numberOfMonths = get(numberOfMonths);
-			placeholderValue.prevPage($numberOfMonths);
+			const firstMonth = $months[0].value;
+			placeholderValue.set(firstMonth.subtract({ months: $numberOfMonths }));
 		} else {
-			placeholderValue.prevPage(1);
+			const firstMonth = $months[0].value;
+			const newMonths = createMonths({
+				dateObj: firstMonth.subtract({ months: 1 }),
+				weekStartsOn: get(weekStartsOn),
+				locale: get(locale),
+				fixedWeeks: get(fixedWeeks),
+				numberOfMonths: $numberOfMonths,
+			});
+
+			months.set(newMonths);
+			placeholderValue.set(newMonths[0].value.set({ day: 1 }));
 		}
 	}
 
@@ -725,7 +791,10 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			 */
 
 			// shift the calendar back a month
-			placeholderValue.subtract({ months: 1 });
+			const $months = get(months);
+			const firstMonth = $months[0].value;
+			const $numberOfMonths = get(numberOfMonths);
+			placeholderValue.set(firstMonth.subtract({ months: $numberOfMonths }));
 
 			// Without a tick here, it seems to be too fast for
 			// the DOM to update, with the tick it works great
@@ -756,7 +825,10 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			 */
 
 			// shift the calendar forward a month
-			placeholderValue.add({ months: 1 });
+			const $months = get(months);
+			const firstMonth = $months[0].value;
+			const $numberOfMonths = get(numberOfMonths);
+			placeholderValue.set(firstMonth.add({ months: $numberOfMonths }));
 
 			tick().then(() => {
 				const newCandidateCells = getSelectableCells(ids.calendar);

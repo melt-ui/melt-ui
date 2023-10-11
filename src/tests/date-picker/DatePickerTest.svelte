@@ -1,8 +1,5 @@
 <script lang="ts">
-	import {
-		createDatePicker,
-		type CreateDatePickerProps,
-	} from '$lib/builders';
+	import { createDatePicker, type CreateDatePickerProps } from '$lib/builders';
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
 	import { melt } from '$lib';
 	import { fade } from 'svelte/transition';
@@ -140,7 +137,7 @@
 								{#each days as date}
 									<td role="gridcell">
 										<div
-											use:melt={$cell(date)}
+											use:melt={$cell(date, month.value)}
 											class="cell"
 											data-testid="month-{i}-date-{date.day}"
 										>

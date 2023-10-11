@@ -7,7 +7,9 @@
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
 		states: { value, months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable },
-	} = createCalendar();
+	} = createCalendar({
+		numberOfMonths: 2,
+	});
 </script>
 
 <div class="flex h-full">
@@ -16,7 +18,7 @@
 			<p class="text-xs">{$value}</p>
 		</div>
 
-		<div class="z-10 w-80 rounded-[4px] bg-white p-3 shadow-sm">
+		<div class="z-10 rounded-[4px] bg-white p-3 shadow-sm">
 			<div class="w-full text-magnum-800" use:melt={$calendar}>
 				<header class="flex items-center justify-between pb-4">
 					<button use:melt={$prevButton}>
@@ -29,38 +31,40 @@
 						<ChevronRight />
 					</button>
 				</header>
-				{#each $months as month}
-					<table use:melt={$grid} class="w-full">
-						<thead aria-hidden="true">
-							<tr>
-								{#each $daysOfWeek as day}
-									<th class="text-sm font-semibold text-magnum-800">
-										<div class="flex h-6 w-6 items-center justify-center p-4">
-											{day}
-										</div>
-									</th>
-								{/each}
-							</tr>
-						</thead>
-						<tbody>
-							{#each month.weeks as weekDates}
+				<div class="flex items-center gap-8">
+					{#each $months as month}
+						<table use:melt={$grid} class="w-full">
+							<thead aria-hidden="true">
 								<tr>
-									{#each weekDates as date}
-										<td
-											role="gridcell"
-											aria-disabled={$isDateDisabled(date) ||
-												$isDateUnavailable(date)}
-										>
-											<div use:melt={$cell(date)} class="cell">
-												{date.day}
+									{#each $daysOfWeek as day}
+										<th class="text-sm font-semibold text-magnum-800">
+											<div class="flex h-6 w-6 items-center justify-center p-4">
+												{day}
 											</div>
-										</td>
+										</th>
 									{/each}
 								</tr>
-							{/each}
-						</tbody>
-					</table>
-				{/each}
+							</thead>
+							<tbody>
+								{#each month.weeks as weekDates}
+									<tr>
+										{#each weekDates as date}
+											<td
+												role="gridcell"
+												aria-disabled={$isDateDisabled(date) ||
+													$isDateUnavailable(date)}
+											>
+												<div use:melt={$cell(date, month.value)} class="cell">
+													{date.day}
+												</div>
+											</td>
+										{/each}
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					{/each}
+				</div>
 			</div>
 		</div>
 	</div>
@@ -104,7 +108,12 @@
 	}
 
 	.cell {
-		@apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded p-4 hover:bg-magnum-100 focus:ring focus:ring-magnum-400 data-[outside-month]:pointer-events-none data-[outside-month]:cursor-default data-[range-highlighted]:bg-magnum-200 data-[selected]:bg-magnum-300 data-[disabled]:opacity-40 data-[outside-month]:opacity-40 data-[outside-month]:hover:bg-transparent;
+		@apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded p-4 hover:bg-magnum-100 focus:ring focus:ring-magnum-400 data-[outside-visible-months]:pointer-events-none data-[outside-visible-months]:cursor-default data-[range-highlighted]:bg-magnum-200 data-[selected]:bg-magnum-300 data-[disabled]:opacity-40 data-[outside-visible-months]:opacity-40 data-[outside-visible-months]:hover:bg-transparent;
+	}
+
+	/* If `data-outside-month="true"` AND `data-outside-visible-months="true"` */
+	.cell[data-outside-month='true'][data-outside-visible-months='true'] {
+		@apply opacity-0;
 	}
 
 	.segment {

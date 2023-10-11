@@ -1,11 +1,5 @@
 import { chunk, isHTMLElement } from '$lib/internal/helpers/index.js';
-import {
-	getLocalTimeZone,
-	type DateValue,
-	ZonedDateTime,
-	startOfMonth,
-	endOfMonth,
-} from '@internationalized/date';
+import { type DateValue, startOfMonth, endOfMonth } from '@internationalized/date';
 import type { Month } from './types.js';
 import {
 	getDaysInMonth,
@@ -77,11 +71,9 @@ export type CreateMonthProps = {
  * using a loop and table elements.
  *
  */
-export function createMonth(props: CreateMonthProps): Month<DateValue> {
+function createMonth(props: CreateMonthProps): Month<DateValue> {
 	const { dateObj, weekStartsOn, fixedWeeks, locale } = props;
-	const tz = getLocalTimeZone();
-	const date = dateObj instanceof ZonedDateTime ? dateObj.toDate() : dateObj.toDate(tz);
-	const daysInMonth = getDaysInMonth(date);
+	const daysInMonth = getDaysInMonth(dateObj);
 
 	const datesArray = Array.from({ length: daysInMonth }, (_, i) => dateObj.set({ day: i + 1 }));
 
@@ -112,16 +104,57 @@ export function createMonth(props: CreateMonthProps): Month<DateValue> {
 	const weeks = chunk(allDays, 7);
 
 	return {
-		monthDate: date,
+		value: dateObj,
 		dates: allDays,
 		weeks,
 	};
 }
 
+type SetMonthProps = CreateMonthProps & {
+	numberOfMonths: number | undefined;
+	currentMonths?: Month<DateValue>[];
+};
+
+export function createMonths(props: SetMonthProps) {
+	const { numberOfMonths, dateObj, ...monthProps } = props;
+
+	const months: Month<DateValue>[] = [];
+
+	if (!numberOfMonths || numberOfMonths === 1) {
+		months.push(
+			createMonth({
+				...monthProps,
+				dateObj,
+			})
+		);
+		return months;
+	}
+
+	months.push(
+		createMonth({
+			...monthProps,
+			dateObj,
+		})
+	);
+
+	// Create all the months, starting with the current month
+	for (let i = 1; i < numberOfMonths; i++) {
+		const nextMonth = dateObj.add({ months: i });
+		months.push(
+			createMonth({
+				...monthProps,
+				dateObj: nextMonth,
+			})
+		);
+	}
+
+	return months;
+}
+
 export function getSelectableCells(calendarId: string) {
 	const node = document.getElementById(calendarId);
 	if (!node) return [];
-	const selectableSelector = `[data-calendar-cell]:not([data-disabled]):not([data-outside-month])`;
+	const selectableSelector = `[data-calendar-cell]:not([data-disabled]):not([data-outside-visible-months])`;
 
 	return Array.from(node.querySelectorAll(selectableSelector)).filter((el): el is HTMLElement =>
 		isHTMLElement(el)

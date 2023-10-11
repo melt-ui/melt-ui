@@ -19,7 +19,7 @@ import { derived, get, writable } from 'svelte/store';
 import type { CalendarIds, CreateCalendarProps } from './types.js';
 import { tick } from 'svelte';
 import {
-	createMonth,
+	createMonths,
 	getAnnouncer,
 	isCalendarCell,
 	parseStringToDateValue,
@@ -54,10 +54,6 @@ const defaults = {
 	maxValue: undefined,
 } satisfies CreateCalendarProps;
 
-/**
- * For internal use only.
- * @internal
- */
 type CalendarParts = 'content' | 'nextButton' | 'prevButton' | 'grid' | 'cell' | 'heading';
 
 const { name } = createElHelpers<CalendarParts>('calendar');
@@ -108,14 +104,32 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	/**
 	 * A store containing the months to display in the calendar.
 	 */
-	const months = writable<Month<DateValue>[]>([
-		createMonth({
+	const months = writable<Month<DateValue>[]>(
+		createMonths({
 			dateObj: withDefaults.defaultPlaceholderValue ?? defaultDate,
 			weekStartsOn: withDefaults.weekStartsOn,
 			locale: withDefaults.locale,
 			fixedWeeks: withDefaults.fixedWeeks,
-		}),
-	]);
+			numberOfMonths: withDefaults.numberOfMonths,
+		})
+	);
+
+	/**
+	 * A derived store that maintains the currently visible months in the calendar,
+	 * which we use to determine how keyboard navigation and if we should apply
+	 * `data-outside-month` to cells.
+	 */
+	const visibleMonths = derived([months], ([$months]) => {
+		return $months.map((month) => {
+			return month.value;
+		});
+	});
+
+	const isOutsideVisibleMonths = derived([visibleMonths], ([$visibleMonths]) => {
+		return (date: DateValue) => {
+			return !$visibleMonths.some((month) => isSameMonth(date, month));
+		};
+	});
 
 	/**
 	 * A derived helper store that evaluates to true if the currently selected date is invalid.
@@ -152,12 +166,12 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			formatter.setLocale($locale);
 		}
 		if ($months.length === 1) {
-			const month = $months[0].monthDate;
-			return `${formatter.fullMonthAndYear(month)}`;
+			const month = $months[0].value;
+			return `${formatter.fullMonthAndYear(toDate(month))}`;
 		}
 
-		const startMonth = $months[0].monthDate;
-		const endMonth = $months[$months.length - 1].monthDate;
+		const startMonth = toDate($months[0].value);
+		const endMonth = toDate($months[$months.length - 1].value);
 
 		const startMonthName = formatter.fullMonth(startMonth);
 		const endMonthName = formatter.fullMonth(endMonth);
@@ -302,16 +316,30 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * and interactivity.
 	 */
 	const cell = builder(name('cell'), {
-		stores: [value, isDisabled, isUnavailable, placeholderValue],
-		returned: ([$value, $isDisabled, $isUnavailable, $placeholderValue]) => {
-			return (cellValue: T) => {
+		stores: [value, isDisabled, isUnavailable, isOutsideVisibleMonths, placeholderValue],
+		returned: ([
+			$value,
+			$isDisabled,
+			$isUnavailable,
+			$isOutsideVisibleMonths,
+			$placeholderValue,
+		]) => {
+			/**
+			 * Applies the appropriate attributes to each date cell in the calendar.
+			 *
+			 * @params cellValue - The `DateValue` for the current cell.
+			 * @params monthValue - The `DateValue` for the current month, which is used
+			 * to determine if the current cell is outside the current month.
+			 */
+			return (cellValue: T, monthValue: T) => {
 				const cellDate = toDate(cellValue);
 				const isDisabled = $isDisabled?.(cellValue);
 				const isUnavailable = $isUnavailable?.(cellValue);
 				const isDateToday = isToday(cellValue, getLocalTimeZone());
-				const isOutsideMonth = !isSameMonth(cellValue, $placeholderValue);
+				const isOutsideMonth = !isSameMonth(cellValue, monthValue);
+				const isOutsideVisibleMonths = $isOutsideVisibleMonths(cellValue);
 				const isFocusedDate = isSameDay(cellValue, $placeholderValue);
-				const isSelectedDate = $value ? isSameDay(cellValue, $value) : false;
+				const isSelectedDate = $value ? isSameDay(cellValue, $value) && !isOutsideMonth : false;
 
 				const labelText = formatter.custom(cellDate, {
 					weekday: 'long',
@@ -329,9 +357,9 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 					'data-value': cellValue.toString(),
 					'data-disabled': isDisabled || isOutsideMonth ? '' : undefined,
 					'data-unavailable': isUnavailable ? '' : undefined,
-					'data-date': '',
 					'data-today': isDateToday ? '' : undefined,
 					'data-outside-month': isOutsideMonth ? '' : undefined,
+					'data-outside-visible-months': isOutsideVisibleMonths ? '' : undefined,
 					'data-focused': isFocusedDate ? '' : undefined,
 					tabindex: isFocusedDate ? 0 : isOutsideMonth || isDisabled ? undefined : -1,
 					// We share some selection logic between this and the range calendar
@@ -385,34 +413,29 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		([$placeholderValue, $weekStartsOn, $locale, $fixedWeeks, $numberOfMonths]) => {
 			if (!isBrowser || !$placeholderValue) return;
 
+			const $visibleMonths = get(visibleMonths);
+
+			/**
+			 * If the placeholderValue's month is already in the visible months,
+			 * we don't need to do anything.
+			 */
+			if ($visibleMonths.some((month) => isSameMonth(month, $placeholderValue))) {
+				return;
+			}
+
 			const defaultMonthProps = {
 				weekStartsOn: $weekStartsOn,
 				locale: $locale,
 				fixedWeeks: $fixedWeeks,
+				numberOfMonths: $numberOfMonths,
 			};
 
-			months.set([
-				createMonth({
+			months.set(
+				createMonths({
 					...defaultMonthProps,
 					dateObj: $placeholderValue,
-				}),
-			]);
-
-			if ($numberOfMonths <= 1) return;
-
-			// Create the remaining months
-			for (let i = 1; i < $numberOfMonths; i++) {
-				const nextMonth = $placeholderValue.add({ months: i });
-				months.update((prev) => {
-					prev.push(
-						createMonth({
-							...defaultMonthProps,
-							dateObj: nextMonth,
-						})
-					);
-					return prev;
-				});
-			}
+				})
+			);
 		}
 	);
 
@@ -543,11 +566,23 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * ```
 	 */
 	function nextPage() {
+		const $months = get(months);
+		const $numberOfMonths = get(numberOfMonths);
 		if (get(pagedNavigation)) {
-			const $numberOfMonths = get(numberOfMonths);
-			placeholderValue.nextPage($numberOfMonths);
+			const firstMonth = $months[0].value;
+			placeholderValue.set(firstMonth.add({ months: $numberOfMonths }));
 		} else {
-			placeholderValue.nextPage(1);
+			const firstMonth = $months[0].value;
+			const newMonths = createMonths({
+				dateObj: firstMonth.add({ months: 1 }),
+				weekStartsOn: get(weekStartsOn),
+				locale: get(locale),
+				fixedWeeks: get(fixedWeeks),
+				numberOfMonths: $numberOfMonths,
+			});
+
+			months.set(newMonths);
+			placeholderValue.set(newMonths[0].value.set({ day: 1 }));
 		}
 	}
 
@@ -572,11 +607,23 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * ```
 	 */
 	function prevPage() {
+		const $months = get(months);
+		const $numberOfMonths = get(numberOfMonths);
 		if (get(pagedNavigation)) {
-			const $numberOfMonths = get(numberOfMonths);
-			placeholderValue.prevPage($numberOfMonths);
+			const firstMonth = $months[0].value;
+			placeholderValue.set(firstMonth.subtract({ months: $numberOfMonths }));
 		} else {
-			placeholderValue.prevPage(1);
+			const firstMonth = $months[0].value;
+			const newMonths = createMonths({
+				dateObj: firstMonth.subtract({ months: 1 }),
+				weekStartsOn: get(weekStartsOn),
+				locale: get(locale),
+				fixedWeeks: get(fixedWeeks),
+				numberOfMonths: $numberOfMonths,
+			});
+
+			months.set(newMonths);
+			placeholderValue.set(newMonths[0].value.set({ day: 1 }));
 		}
 	}
 
@@ -729,12 +776,8 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	}
 
 	function shiftFocus(node: HTMLElement, add: number) {
-		// TODO: Determine if this is okay when using paged navigation
-		// with multiple months.
 		const candidateCells = getSelectableCells(ids.calendar);
-		if (!candidateCells.length) {
-			return;
-		}
+		if (!candidateCells.length) return;
 
 		const index = candidateCells.indexOf(node);
 		const nextIndex = index + add;
@@ -764,7 +807,11 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			 */
 
 			// shift the calendar back a month
-			placeholderValue.subtract({ months: 1 });
+
+			const $months = get(months);
+			const firstMonth = $months[0].value;
+			const $numberOfMonths = get(numberOfMonths);
+			placeholderValue.set(firstMonth.subtract({ months: $numberOfMonths }));
 
 			// Without a tick here, it seems to be too fast for
 			// the DOM to update, with the tick it works great
@@ -797,7 +844,10 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			 * shift focus by the nextIndex amount.
 			 */
 
-			placeholderValue.add({ months: 1 });
+			const $months = get(months);
+			const firstMonth = $months[0].value;
+			const $numberOfMonths = get(numberOfMonths);
+			placeholderValue.set(firstMonth.add({ months: $numberOfMonths }));
 
 			tick().then(() => {
 				const newCandidateCells = getSelectableCells(ids.calendar);

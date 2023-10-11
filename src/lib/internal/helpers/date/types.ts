@@ -22,14 +22,12 @@ export type DateRange = {
 
 export type Month<T> = {
 	/**
-	 * A date that can be used to get the month and year
-	 * of the calendar to display in a heading or other
-	 * UI element.
-	 *
-	 * It will always be the 00:00:00 time of the first day
-	 * of the month.
+	 * A `DateValue` used to represent the month. Since days
+	 * from the previous and next months may be included in the
+	 * calendar grid, we need a source of truth for the value
+	 * the grid is representing.
 	 */
-	monthDate: Date;
+	value: DateValue;
 
 	/**
 	 * An array of arrays representing the weeks in the calendar.

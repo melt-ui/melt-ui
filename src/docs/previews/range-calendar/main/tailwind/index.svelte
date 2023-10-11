@@ -55,7 +55,7 @@
 												$isDateUnavailable(date)}
 											class="my-1"
 										>
-											<div use:melt={$cell(date)} class="cell">
+											<div use:melt={$cell(date, month.value)} class="cell">
 												{date.day}
 											</div>
 										</td>
