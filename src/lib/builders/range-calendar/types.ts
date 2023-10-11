@@ -2,7 +2,7 @@ import type { createRangeCalendar } from './create';
 import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers';
 import type { DateValue } from '@internationalized/date';
-import type { Matcher } from '$lib/index.js';
+import type { DateRange, Matcher } from '$lib/index.js';
 import type { IdObj } from '$lib/internal/types';
 
 export type RangeCalendarProps = {
@@ -21,7 +21,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default undefined;
 	 */
-	defaultStartValue?: DateValue;
+	defaultValue?: DateRange;
 
 	/**
 	 * A function called when the value of the date field changes.
@@ -33,7 +33,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default undefined
 	 */
-	onStartValueChange?: ChangeFn<DateValue | undefined>;
+	onValueChange?: ChangeFn<DateRange>;
 
 	/**
 	 * A writable store than can be used to control the value of the
@@ -43,37 +43,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default undefined;
 	 */
-	endValue?: Writable<DateValue | undefined>;
-
-	/**
-	 * The default value for the date field. When provided,
-	 * the `placeholderValue` will also assume this value.
-	 *
-	 * @default undefined;
-	 */
-	defaultEndValue?: DateValue;
-
-	/**
-	 * A function called when the value of the date field changes.
-	 * It receives a single argument, which is an object containing
-	 * `curr` and `prev` properties, whose values are the current
-	 * and previous values of the value store. Whatever you return
-	 * from this function will be set as the new value of the value
-	 * store.
-	 *
-	 * @default undefined
-	 */
-	onEndValueChange?: ChangeFn<DateValue | undefined>;
-
-	/**
-	 * A writable store than can be used to control the value of the
-	 * date picker from outside the builder. This is useful if you
-	 * want to sync the value of the date field with another store
-	 * used in your app.
-	 *
-	 * @default undefined;
-	 */
-	startValue?: Writable<DateValue | undefined>;
+	value?: Writable<DateRange>;
 
 	/**
 	 * The date that is used to display the initial month and

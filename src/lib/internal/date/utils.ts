@@ -11,20 +11,49 @@ import {
 } from '@internationalized/date';
 
 /**
- * Generate a default `DateValue` using granularity.
+ * A helper function used throughout the various
+ * date builders to generate a default date value
+ * using the `defaultValue`, `defaultPlaceholderValue`,
+ * and `granularity` props.
+ *
+ * It's able to ensure the right type of date value is
+ * returned based on the props provided.
+ *
  */
-export function getDefaultDate(granularity: Granularity = 'day'): DateValue {
-	const date = new Date();
-	const year = date.getFullYear();
-	const month = date.getMonth();
-	const day = date.getDate();
-	const calendarDateTimeGranularities = ['hour', 'minute', 'second'];
 
-	if (calendarDateTimeGranularities.includes(granularity)) {
-		return new CalendarDateTime(year, month, day, 0, 0, 0);
+type GetDefaultDateProps = {
+	defaultValue?: DateValue | undefined;
+	defaultPlaceholderValue?: DateValue | undefined;
+	granularity?: Granularity;
+};
+
+const defaultDateDefaults = {
+	defaultValue: undefined,
+	defaultPlaceholderValue: undefined,
+	granularity: 'day',
+};
+
+export function getDefaultDate(props: GetDefaultDateProps): DateValue {
+	const withDefaults = { ...defaultDateDefaults, ...props };
+	const { defaultValue, defaultPlaceholderValue, granularity } = withDefaults;
+
+	if (defaultValue) {
+		return defaultValue;
+	} else if (defaultPlaceholderValue) {
+		return defaultPlaceholderValue;
+	} else {
+		const date = new Date();
+		const year = date.getFullYear();
+		const month = date.getMonth();
+		const day = date.getDate();
+		const calendarDateTimeGranularities = ['hour', 'minute', 'second'];
+
+		if (calendarDateTimeGranularities.includes(granularity ?? 'day')) {
+			return new CalendarDateTime(year, month, day, 0, 0, 0);
+		}
+
+		return new CalendarDate(year, month, day);
 	}
-
-	return new CalendarDate(year, month, day);
 }
 
 /**

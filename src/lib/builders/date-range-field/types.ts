@@ -2,7 +2,7 @@ import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { createDateRangeField } from './create.js';
 import type { DateValue } from '@internationalized/date';
-import type { CreateDateFieldProps, DateFieldIds, Matcher } from '$lib/index.js';
+import type { CreateDateFieldProps, DateFieldIds, DateRange, Matcher } from '$lib/index.js';
 import type { RangeDateFieldIds } from './_internal/types.js';
 
 export type DateRangeFieldProps = {
@@ -12,7 +12,7 @@ export type DateRangeFieldProps = {
 	 *
 	 * @default undefined;
 	 */
-	defaultStartValue?: DateValue;
+	defaultValue?: DateRange;
 
 	/**
 	 * A function called when the value of the date field changes.
@@ -24,7 +24,7 @@ export type DateRangeFieldProps = {
 	 *
 	 * @default undefined
 	 */
-	onStartValueChange?: ChangeFn<DateValue | undefined>;
+	onValueChange?: ChangeFn<DateRange>;
 
 	/**
 	 * A writable store than can be used to control the value of the
@@ -34,37 +34,7 @@ export type DateRangeFieldProps = {
 	 *
 	 * @default undefined;
 	 */
-	endValue?: Writable<DateValue | undefined>;
-
-	/**
-	 * The default value for the date field. When provided,
-	 * the `placeholderValue` will also assume this value.
-	 *
-	 * @default undefined;
-	 */
-	defaultEndValue?: DateValue;
-
-	/**
-	 * A function called when the value of the date field changes.
-	 * It receives a single argument, which is an object containing
-	 * `curr` and `prev` properties, whose values are the current
-	 * and previous values of the value store. Whatever you return
-	 * from this function will be set as the new value of the value
-	 * store.
-	 *
-	 * @default undefined
-	 */
-	onEndValueChange?: ChangeFn<DateValue | undefined>;
-
-	/**
-	 * A writable store than can be used to control the value of the
-	 * date picker from outside the builder. This is useful if you
-	 * want to sync the value of the date field with another store
-	 * used in your app.
-	 *
-	 * @default undefined;
-	 */
-	startValue?: Writable<DateValue | undefined>;
+	value?: Writable<DateRange>;
 
 	/**
 	 * The date that is used when the date field is empty to
@@ -96,9 +66,9 @@ export type DateRangeFieldProps = {
 	 * values of the `placeholderValue` store. Whatever you return from this
 	 * function will be set as the new value of the `placeholderValue` store.
 	 *
-	 * The `placeholderValue` is kept in sync with the `value` store, so
-	 * ensure you know what you're doing if you intend on overriding the
-	 * value, as it may render the date field unusable.
+	 * The `placeholderValue` is synced with the `value` store, to manage so
+	 * internal behavior, so ensure you know what you're doing if you intend
+	 * on overriding the value, as it may render the component unusable.
 	 *
 	 * @default undefined
 	 */

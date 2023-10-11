@@ -6,4 +6,5 @@
  */
 import type { Granularity, Matcher } from '$lib/internal/date';
 
+export * from './date/index.js';
 export type { Granularity, Matcher };

@@ -88,11 +88,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 		fieldReadonly,
 	} = options;
 
-	const defaultDate = withDefaults.defaultValue
-		? withDefaults.defaultValue
-		: withDefaults.defaultPlaceholderValue
-		? withDefaults.defaultPlaceholderValue
-		: getDefaultDate(withDefaults.granularity);
+	const defaultDate = getDefaultDate({
+		defaultPlaceholderValue: withDefaults.defaultPlaceholderValue,
+		granularity: withDefaults.granularity,
+		defaultValue: withDefaults.defaultValue,
+	});
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
@@ -398,6 +398,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 				})
 			);
 			updatingDayPeriod.set(null);
+		} else {
+			value.set(undefined);
+			segmentValues.set($segmentValues);
 		}
 	}
 

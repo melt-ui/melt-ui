@@ -92,11 +92,10 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		accessibleHeading: generateId(),
 	} satisfies CalendarIds;
 
-	const defaultDate = withDefaults.defaultValue
-		? withDefaults.defaultValue
-		: withDefaults.defaultPlaceholderValue
-		? withDefaults.defaultPlaceholderValue
-		: getDefaultDate();
+	const defaultDate = getDefaultDate({
+		defaultPlaceholderValue: withDefaults.defaultPlaceholderValue,
+		defaultValue: withDefaults.defaultValue,
+	});
 
 	const formatter = createFormatter(get(locale));
 

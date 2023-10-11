@@ -54,8 +54,11 @@ import {
 const defaults = {
 	isDisabled: defaultMatcher,
 	isUnavailable: defaultMatcher,
-	startValue: undefined,
-	endValue: undefined,
+	value: undefined,
+	defaultValue: {
+		start: undefined,
+		end: undefined,
+	},
 	allowDeselect: false,
 	numberOfMonths: 1,
 	pagedNavigation: false,
@@ -79,7 +82,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	const withDefaults = { ...defaults, ...props };
 
 	const options = toWritableStores({
-		...omit(withDefaults, 'startValue', 'endValue', 'placeholderValue'),
+		...omit(withDefaults, 'value', 'placeholderValue'),
 	});
 
 	const {
@@ -100,20 +103,22 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		accessibleHeading: generateId(),
 	} satisfies CalendarIds;
 
-	const defaultDate = getDefaultDate();
+	const defaultDate = getDefaultDate({
+		defaultValue: withDefaults.defaultValue.start,
+		defaultPlaceholderValue: withDefaults.defaultPlaceholderValue,
+	});
 	const formatter = createFormatter(get(locale));
 
-	const startValueWritable = withDefaults.startValue ?? writable(withDefaults.defaultStartValue);
-	const startValue = overridable(startValueWritable, withDefaults.onStartValueChange);
-	const endValueWritable = withDefaults.endValue ?? writable(withDefaults.defaultEndValue);
-	const endValue = overridable(endValueWritable, withDefaults.onEndValueChange);
+	const defaultStart = withDefaults.value ? get(withDefaults.value).start : undefined;
+	const startValue = writable<DateValue | undefined>(
+		defaultStart ?? withDefaults.defaultValue.start
+	);
 
-	const rangeValue = derived([startValue, endValue], ([$startValue, $endValue]) => {
-		return {
-			start: $startValue,
-			end: $endValue,
-		};
-	});
+	const defaultEnd = withDefaults.value ? get(withDefaults.value).end : undefined;
+	const endValue = writable<DateValue | undefined>(defaultEnd ?? withDefaults.defaultValue.end);
+
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const value = overridable(valueWritable, withDefaults.onValueChange);
 
 	const placeholderValueWritable =
 		withDefaults.placeholderValue ?? writable(withDefaults.defaultPlaceholderValue ?? defaultDate);
@@ -422,15 +427,6 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				destroy: unsub,
 			};
 		},
-	});
-
-	effect([startValue, endValue], ([$startValue, $endValue]) => {
-		if (!$startValue || !$endValue) return;
-
-		if (isBefore($endValue, $startValue)) {
-			startValue.set($endValue);
-			endValue.set($startValue);
-		}
 	});
 
 	effect([locale], ([$locale]) => {
@@ -895,6 +891,62 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		return (date: DateValue) => $isUnavailable?.(date);
 	});
 
+	/**
+	 * Synchronize the `value` store with the individual `startValue`
+	 * and `endValue` stores that are used by the individual date fields.
+	 *
+	 * We only want to update the `value` store when both the `startValue`
+	 * and `endValue` stores are not `undefined`. This is because the
+	 * `value` store is used to determine if the date field is completed,
+	 * and we don't want to mark the date field as completed until both
+	 * the start and end dates have been selected.
+	 */
+
+	effect([value], ([$value]) => {
+		const $startValue = get(startValue);
+		const $endValue = get(endValue);
+
+		if ($value.start && $value.end) {
+			if ($value.start !== $startValue) {
+				startValue.set($value.start);
+			}
+			if ($value.end !== $endValue) {
+				endValue.set($value.end);
+			}
+			return;
+		}
+	});
+
+	effect([startValue, endValue], ([$startValue, $endValue]) => {
+		if (!$startValue || !$endValue) return;
+	});
+
+	effect([startValue, endValue], ([$startValue, $endValue]) => {
+		if ($startValue && $endValue) {
+			valueWritable.update((prev) => {
+				if (prev.start === $startValue && prev.end === $endValue) {
+					return prev;
+				}
+				if (isBefore($endValue, $startValue)) {
+					return {
+						start: $endValue,
+						end: $startValue,
+					};
+				} else {
+					return {
+						start: $startValue,
+						end: $endValue,
+					};
+				}
+			});
+		} else {
+			valueWritable.set({
+				start: undefined,
+				end: undefined,
+			});
+		}
+	});
+
 	return {
 		elements: {
 			calendar,
@@ -907,11 +959,9 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		states: {
 			placeholderValue: placeholderValue.toWritable(),
 			months,
-			startValue,
-			endValue,
 			daysOfWeek,
 			headingValue,
-			rangeValue,
+			value,
 		},
 		helpers: {
 			nextPage,

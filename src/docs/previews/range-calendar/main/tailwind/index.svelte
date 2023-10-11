@@ -5,7 +5,7 @@
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { startValue, endValue, months, headingValue, daysOfWeek },
+		states: { value, months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable },
 	} = createRangeCalendar({
 		allowDeselect: true,
@@ -16,7 +16,7 @@
 <div class="flex h-full">
 	<div class="flex w-full flex-col items-center gap-3">
 		<div class="flex w-full items-center justify-center">
-			<p class="text-xs">{$startValue} - {$endValue}</p>
+			<p class="text-xs">{$value.start} - {$value.end}</p>
 		</div>
 
 		<div class="z-10 w-80 rounded-[4px] bg-white p-3 shadow-sm">
