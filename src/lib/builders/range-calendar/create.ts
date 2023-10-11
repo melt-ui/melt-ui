@@ -31,7 +31,10 @@ import {
 	isCalendarCell,
 	type Month,
 	createMonth,
-} from '$lib/internal/date/index.js';
+	getSelectableCells,
+	isAfter,
+	setPlaceholderToNodeValue,
+} from '$lib/internal/helpers/date/index.js';
 import {
 	type DateValue,
 	getLocalTimeZone,
@@ -55,6 +58,8 @@ const defaults = {
 	fixedWeeks: false,
 	calendarLabel: 'Event Date',
 	locale: 'en',
+	minValue: undefined,
+	maxValue: undefined,
 } satisfies CreateRangeCalendarProps;
 
 /**
@@ -84,6 +89,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		calendarLabel,
 		isUnavailable,
 		locale,
+		minValue,
+		maxValue,
 	} = options;
 
 	const ids = {
@@ -381,6 +388,9 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 					'data-focused': isFocusedDate ? '' : undefined,
 					'data-highlighted': isHighlighted ? '' : undefined,
 					tabindex: isFocusedDate ? 0 : isOutsideMonth || isDisabled ? undefined : -1,
+					// We share selection logic between this & the calendar builder
+					// so we aren't using the `melt` attr to select
+					'data-calendar-cell': '',
 				} as const;
 			};
 		},
@@ -681,7 +691,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	function shiftFocus(node: HTMLElement, add: number) {
 		// TODO: Determine if this is okay when using paged navigation
 		// with multiple months.
-		const candidateCells = getSelectableCells();
+		const candidateCells = getSelectableCells(ids.calendar);
 		if (!candidateCells.length) {
 			return;
 		}
@@ -695,7 +705,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		 */
 		if (isValidIndex(nextIndex, candidateCells)) {
 			const nextCell = candidateCells[nextIndex];
-			handlePlaceholderValue(nextCell);
+			setPlaceholderToNodeValue(nextCell, placeholderValue);
 			return nextCell.focus();
 		}
 
@@ -720,7 +730,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			// Without a tick here, it seems to be too fast for
 			// the DOM to update, with the tick it works great
 			tick().then(() => {
-				const newCandidateCells = getSelectableCells();
+				const newCandidateCells = getSelectableCells(ids.calendar);
 				if (!newCandidateCells.length) {
 					return;
 				}
@@ -731,7 +741,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				const newIndex = newCandidateCells.length - Math.abs(nextIndex);
 				if (isValidIndex(newIndex, newCandidateCells)) {
 					const newCell = newCandidateCells[newIndex];
-					handlePlaceholderValue(newCell);
+					setPlaceholderToNodeValue(newCell, placeholderValue);
 					return newCell.focus();
 				}
 			});
@@ -749,7 +759,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			placeholderValue.add({ months: 1 });
 
 			tick().then(() => {
-				const newCandidateCells = getSelectableCells();
+				const newCandidateCells = getSelectableCells(ids.calendar);
 				if (!newCandidateCells.length) {
 					return;
 				}
@@ -769,26 +779,6 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		}
 	}
 
-	function getSelectableCells() {
-		const node = document.getElementById(ids.calendar);
-		if (!node) return [];
-		const selectableSelector = `[data-melt-calendar-cell]:not([data-disabled]):not([data-outside-month])`;
-
-		return Array.from(node.querySelectorAll(selectableSelector)).filter((el): el is HTMLElement =>
-			isHTMLElement(el)
-		);
-	}
-
-	/**
-	 * A helper function to extract the date from the `data-value`
-	 * attribute of a date cell and set it as the placeholder value.
-	 */
-	function handlePlaceholderValue(node: HTMLElement) {
-		const cellValue = node.getAttribute('data-value');
-		if (!cellValue) return;
-		placeholderValue.set(parseStringToDateValue(cellValue, get(placeholderValue)));
-	}
-
 	/**
 	 * A helper function to determine if a date is disabled,
 	 * which uses the `Matcher`(s) provided via the `disabled`
@@ -802,9 +792,9 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * @example
 	 * ```svelte
 	 * {#each dates as date}
-	 * <td role="gridcell" aria-disabled={$isDisabled(date)}>
-	 * 	<!-- ... -->
-	 * </td>
+	 * 	<td role="gridcell" aria-disabled={$isDisabled(date)}>
+	 * 		<!-- ... -->
+	 * 	</td>
 	 * {/each}
 	 * ```
 	 *
@@ -812,10 +802,12 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * @returns `true` if the date is disabled, `false` otherwise
 	 */
 	const isDateDisabled = derived(
-		[isDisabled, placeholderValue],
-		([$isDisabled, $placeholderValue]) => {
+		[isDisabled, placeholderValue, minValue, maxValue],
+		([$isDisabled, $placeholderValue, $minValue, $maxValue]) => {
 			return (date: DateValue) => {
 				if ($isDisabled?.(date)) return true;
+				if ($minValue && isBefore(date, $minValue)) return true;
+				if ($maxValue && isAfter(date, $maxValue)) return true;
 				if (!isSameMonth(date, $placeholderValue)) return true;
 				return false;
 			};
@@ -834,12 +826,12 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * @example
 	 * ```svelte
 	 * {#each dates as date}
-	 * <td role="gridcell">
-	 * 	{#if $isUnavailable(date)}
-	 * 		X
-	 * 	{/if}
-	 * 	<!-- ... -->
-	 * </td>
+	 * 	<td role="gridcell">
+	 * 		{#if $isUnavailable(date)}
+	 * 			<span>X</span>
+	 * 		{/if}
+	 * 		<!-- ... -->
+	 * 	</td>
 	 * {/each}
 	 * ```
 	 *
@@ -874,10 +866,6 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			}
 			return;
 		}
-	});
-
-	effect([startValue, endValue], ([$startValue, $endValue]) => {
-		if (!$startValue || !$endValue) return;
 	});
 
 	effect([startValue, endValue], ([$startValue, $endValue]) => {

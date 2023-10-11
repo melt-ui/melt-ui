@@ -21,7 +21,7 @@ import {
 	toDate,
 	createFormatter,
 	getAnnouncer,
-} from '$lib/internal/date/index.js';
+} from '$lib/internal/helpers/date/index.js';
 import { derived, get, writable, type Updater } from 'svelte/store';
 import {
 	isFirstSegment,
@@ -44,7 +44,7 @@ import {
 	handleSegmentNavigation,
 	isSegmentNavigationKey,
 	moveToNextSegment,
-} from '$lib/internal/date/index.js';
+} from '$lib/internal/helpers/date/index.js';
 import type {
 	AnyExceptLiteral,
 	AnySegmentPart,

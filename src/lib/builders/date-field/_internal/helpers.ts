@@ -6,7 +6,7 @@ import {
 	isZonedDateTime,
 	hasTime,
 	getSegments,
-} from '$lib/internal/date';
+} from '$lib/internal/helpers/date/index.js';
 import type { DateValue } from '@internationalized/date';
 import type {
 	DateSegmentPart,

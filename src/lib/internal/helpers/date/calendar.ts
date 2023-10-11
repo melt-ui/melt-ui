@@ -7,7 +7,13 @@ import {
 	endOfMonth,
 } from '@internationalized/date';
 import type { Month } from './types.js';
-import { getDaysInMonth, getLastFirstDayOfWeek, getNextLastDayOfWeek } from '.';
+import {
+	getDaysInMonth,
+	getLastFirstDayOfWeek,
+	getNextLastDayOfWeek,
+	parseStringToDateValue,
+} from './index.js';
+import { get, type Writable } from 'svelte/store';
 
 /**
  * Checks if a given node is a calendar cell element.
@@ -110,4 +116,32 @@ export function createMonth(props: CreateMonthProps): Month<DateValue> {
 		dates: allDays,
 		weeks,
 	};
+}
+
+export function getSelectableCells(calendarId: string) {
+	const node = document.getElementById(calendarId);
+	if (!node) return [];
+	const selectableSelector = `[data-calendar-cell]:not([data-disabled]):not([data-outside-month])`;
+
+	return Array.from(node.querySelectorAll(selectableSelector)).filter((el): el is HTMLElement =>
+		isHTMLElement(el)
+	);
+}
+
+/**
+ * A helper function to extract the date from the `data-value`
+ * attribute of a date cell and set it as the placeholder value.
+ *
+ * Shared between the calendar and range calendar builders.
+ *
+ * @param node - The node to extract the date from.
+ * @param placeholderValue - The placeholder value store which will be set to the extracted date.
+ */
+export function setPlaceholderToNodeValue(
+	node: HTMLElement,
+	placeholderValue: Writable<DateValue>
+) {
+	const cellValue = node.getAttribute('data-value');
+	if (!cellValue) return;
+	placeholderValue.set(parseStringToDateValue(cellValue, get(placeholderValue)));
 }

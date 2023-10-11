@@ -25,7 +25,11 @@ import {
 	parseStringToDateValue,
 	toDate,
 	type Month,
-} from '$lib/internal/date/index.js';
+	isBefore,
+	isAfter,
+	getSelectableCells,
+	setPlaceholderToNodeValue,
+} from '$lib/internal/helpers/date/index.js';
 import {
 	type DateValue,
 	getLocalTimeZone,
@@ -33,7 +37,7 @@ import {
 	isSameMonth,
 	isSameDay,
 } from '@internationalized/date';
-import { dateStore, createFormatter, getDefaultDate } from '$lib/internal/date/index.js';
+import { dateStore, createFormatter, getDefaultDate } from '$lib/internal/helpers/date/index.js';
 
 const defaults = {
 	isDisabled: undefined,
@@ -46,6 +50,8 @@ const defaults = {
 	fixedWeeks: false,
 	calendarLabel: 'Event Date',
 	locale: 'en',
+	minValue: undefined,
+	maxValue: undefined,
 } satisfies CreateCalendarProps;
 
 /**
@@ -73,6 +79,8 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		calendarLabel,
 		isUnavailable,
 		locale,
+		minValue,
+		maxValue,
 	} = options;
 
 	const ids = {
@@ -99,7 +107,6 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 
 	/**
 	 * A store containing the months to display in the calendar.
-	 * @see {@link Month} for more information on the shape of the month object.
 	 */
 	const months = writable<Month<DateValue>[]>([
 		createMonth({
@@ -112,9 +119,6 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 
 	/**
 	 * A derived helper store that evaluates to true if the currently selected date is invalid.
-	 * It considers the `isDisabled` and `isUnavailable` matchers passed as props.
-	 *
-	 * For more information on the shape of the matchers, refer to {@link Matcher}.
 	 */
 	const isInvalid = derived(
 		[value, isDisabled, isUnavailable],
@@ -330,6 +334,9 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 					'data-outside-month': isOutsideMonth ? '' : undefined,
 					'data-focused': isFocusedDate ? '' : undefined,
 					tabindex: isFocusedDate ? 0 : isOutsideMonth || isDisabled ? undefined : -1,
+					// We share some selection logic between this and the range calendar
+					// so we use a common data attr that isn't a `melt` attr
+					'data-calendar-cell': '',
 				} as const;
 			};
 		},
@@ -724,7 +731,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	function shiftFocus(node: HTMLElement, add: number) {
 		// TODO: Determine if this is okay when using paged navigation
 		// with multiple months.
-		const candidateCells = getSelectableCells();
+		const candidateCells = getSelectableCells(ids.calendar);
 		if (!candidateCells.length) {
 			return;
 		}
@@ -738,7 +745,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		 */
 		if (isValidIndex(nextIndex, candidateCells)) {
 			const nextCell = candidateCells[nextIndex];
-			handlePlaceholderValue(nextCell);
+			setPlaceholderToNodeValue(nextCell, placeholderValue);
 			return nextCell.focus();
 		}
 
@@ -762,7 +769,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			// Without a tick here, it seems to be too fast for
 			// the DOM to update, with the tick it works great
 			tick().then(() => {
-				const newCandidateCells = getSelectableCells();
+				const newCandidateCells = getSelectableCells(ids.calendar);
 				if (!newCandidateCells.length) {
 					return;
 				}
@@ -776,7 +783,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 				const newIndex = newCandidateCells.length - Math.abs(nextIndex);
 				if (isValidIndex(newIndex, newCandidateCells)) {
 					const newCell = newCandidateCells[newIndex];
-					handlePlaceholderValue(newCell);
+					setPlaceholderToNodeValue(newCell, placeholderValue);
 					return newCell.focus();
 				}
 			});
@@ -793,7 +800,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			placeholderValue.add({ months: 1 });
 
 			tick().then(() => {
-				const newCandidateCells = getSelectableCells();
+				const newCandidateCells = getSelectableCells(ids.calendar);
 				if (!newCandidateCells.length) {
 					return;
 				}
@@ -814,43 +821,24 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		}
 	}
 
-	function getSelectableCells() {
-		const node = document.getElementById(ids.calendar);
-		if (!node) return [];
-		const selectableSelector = `[data-melt-calendar-cell]:not([data-disabled]):not([data-outside-month])`;
-
-		return Array.from(node.querySelectorAll(selectableSelector)).filter((el): el is HTMLElement =>
-			isHTMLElement(el)
-		);
-	}
-
-	/**
-	 * A helper function to extract the date from the `data-value`
-	 * attribute of a date cell and set it as the placeholder value.
-	 */
-	function handlePlaceholderValue(node: HTMLElement) {
-		const cellValue = node.getAttribute('data-value');
-		if (!cellValue) return;
-		placeholderValue.set(parseStringToDateValue(cellValue, get(placeholderValue)));
-	}
-
 	/**
 	 * A helper function to determine if a date is disabled,
 	 * which uses the `Matcher`(s) provided via the `isDisabled`
 	 * prop, as well as other internal logic, that determines
 	 * if a date is disabled, such as if it's outside of the
-	 * month, or if it's before/after the min/max dates.
+	 * month, or if it's before/after the min/max values.
 	 *
-	 * Although we set attributes on the cells themselves, this
-	 * function is useful when you want to conditionally handle
-	 * something outside of the cell, such as its wrapping element.
+	 * Although we set attributes on the cells themselves, for
+	 * easy styling this function is useful when you want to
+	 * conditionally handle something outside of the cell,
+	 * such as its wrapping element.
 	 *
 	 * @example
 	 * ```svelte
 	 * {#each dates as date}
-	 * <td role="gridcell" aria-disabled={$isDisabled(date)}>
-	 * 	<!-- ... -->
-	 * </td>
+	 * 	<td role="gridcell" aria-disabled={$isDisabled(date)}>
+	 * 		<!-- ... -->
+	 * 	</td>
 	 * {/each}
 	 * ```
 	 *
@@ -858,10 +846,12 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * @returns `true` if the date is disabled, `false` otherwise
 	 */
 	const isDateDisabled = derived(
-		[isDisabled, placeholderValue],
-		([$isDisabled, $placeholderValue]) => {
+		[isDisabled, placeholderValue, minValue, maxValue],
+		([$isDisabled, $placeholderValue, $minValue, $maxValue]) => {
 			return (date: DateValue) => {
 				if ($isDisabled?.(date)) return true;
+				if ($minValue && isBefore(date, $minValue)) return true;
+				if ($maxValue && isAfter(date, $maxValue)) return true;
 				if (!isSameMonth(date, $placeholderValue)) return true;
 				return false;
 			};

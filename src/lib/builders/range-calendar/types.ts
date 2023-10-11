@@ -16,6 +16,24 @@ export type RangeCalendarProps = {
 	allowDeselect?: boolean;
 
 	/**
+	 * The minimum selectable date. When provided, the
+	 * calendar will not shift to a month before this date,
+	 * and all dates before this date will be disabled.
+	 *
+	 * @default undefined
+	 */
+	minValue?: DateValue;
+
+	/**
+	 * The maximum selectable date. When provided, the
+	 * calendar will not shift to a month after this date,
+	 * and all dates before this date will be disabled.
+	 *
+	 * @default undefined
+	 */
+	maxValue?: DateValue;
+
+	/**
 	 * The default value for the date field. When provided,
 	 * the `placeholderValue` will also assume this value.
 	 *

@@ -1,4 +1,4 @@
-import { isBrowser, isHTMLElement, styleToString } from '../helpers';
+import { isBrowser, isHTMLElement, styleToString } from '..';
 
 /**
  * Creates or gets an announcer element which is used to announce messages to screen readers.

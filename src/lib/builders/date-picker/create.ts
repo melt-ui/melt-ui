@@ -2,9 +2,12 @@ import { effect, toWritableStores, omit } from '$lib/internal/helpers/index.js';
 import { get } from 'svelte/store';
 import { createCalendar, createDateField, createPopover } from '$lib/builders/index.js';
 import type { CreateDatePickerProps } from './types.js';
-import { handleSegmentNavigation, isSegmentNavigationKey } from '$lib/internal/date/index.js';
+import {
+	handleSegmentNavigation,
+	isSegmentNavigationKey,
+} from '$lib/internal/helpers/date/index.js';
 
-import { dateStore, createFormatter, getDefaultDate } from '$lib/internal/date/index.js';
+import { dateStore, createFormatter, getDefaultDate } from '$lib/internal/helpers/date/index.js';
 
 const defaults = {
 	isDisabled: undefined,

@@ -4,6 +4,6 @@
  * use, they should be exported from this file to prevent conflicts
  * with other builders that may export the same types or functions.
  */
-import type { Granularity, Matcher, DateRange, Month } from '$lib/internal/date';
+import type { Granularity, Matcher, DateRange, Month } from '$lib/internal/helpers/date';
 
 export type { Granularity, Matcher, DateRange, Month };
