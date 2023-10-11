@@ -58,6 +58,10 @@ enhance the experience of building with Svelte and improve the ecosystem for eve
 
 Check out our [Contributing guide](./CONTRIBUTING.md) to learn more.
 
+Melt UI is an open-source project built by the community for the community. It wouldn't be possible if it wasn't for the work of some amazing people.
+
+[![Contributors](https://contrib.rocks/image?repo=melt-ui/melt-ui)]([https://github.com/codemaniac-sahil/news-webapp-api](https://github.com/melt-ui/melt-ui)https://github.com/melt-ui/melt-ui/graphs/contributors)
+
 ## Community
 
 Got any questions? Want to talk to the maintainers?
@@ -76,9 +80,3 @@ we'd love to have you there.
 
 Looking for more? Check out the
 [other component library projects available for Svelte](https://sveltesociety.dev/components#design-systems).
-
-## Thanks to all Contributors
-
-Thank you very much for taking your time to help Melt.
-
-[![Contributors](https://contrib.rocks/image?repo=melt-ui/melt-ui)]([https://github.com/codemaniac-sahil/news-webapp-api](https://github.com/melt-ui/melt-ui)https://github.com/melt-ui/melt-ui/graphs/contributors)
