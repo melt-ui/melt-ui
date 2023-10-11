@@ -303,6 +303,14 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			const isStartBeforeFocused = isBefore($startValue, $focusedValue);
 			const start = isStartBeforeFocused ? $startValue : $focusedValue;
 			const end = isStartBeforeFocused ? $focusedValue : $startValue;
+
+			if (isSameDay(start.add({ days: 1 }), end)) {
+				return {
+					start: start,
+					end: end,
+				};
+			}
+
 			const range = getDaysBetweenIfAllValid(start, end, $isUnavailable, $isDisabled);
 			if (range.length) {
 				return {
@@ -780,10 +788,11 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 					return;
 				}
 
-				// We need to determine how far into the next month we need to go
-				// to get the next index. So if we only went over the previous
-				// month by 1, we need to go into the next month by 1 to get the
-				// right index.
+				/**
+				 * We need to determine how far into the next month we need to go
+				 * to get the next index. So if we only went over the previous month
+				 * by 1, we need to go into the next month by 1 to get the right index.
+				 */
 				const newIndex = nextIndex - candidateCells.length;
 
 				if (isValidIndex(newIndex, newCandidateCells)) {

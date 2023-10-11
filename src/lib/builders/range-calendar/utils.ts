@@ -38,7 +38,7 @@ export function getDaysBetweenIfAllValid<T extends DateValue = DateValue>(
 			return [];
 		}
 	}
-	return days.map((d) => d.toString());
+	return days;
 }
 
 export function getNextLastDayOfWeek<T extends DateValue = DateValue>(
