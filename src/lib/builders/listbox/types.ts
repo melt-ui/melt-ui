@@ -127,6 +127,13 @@ export type CreateListboxProps<
 	forceVisible?: boolean;
 
 	multiple?: Multiple;
+
+	/**
+	 * The name of the builder using listbox.
+	 *
+	 * @default 'listbox
+	 */
+	builder?: string;
 };
 
 export type ListboxOptionProps<Value> = ListboxOption<Value> & {

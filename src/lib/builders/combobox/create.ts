@@ -35,7 +35,7 @@ export function createCombobox<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	S extends ComboboxSelected<Multiple, Value> = ComboboxSelected<Multiple, Value>
 >(props?: CreateComboboxProps<Value, Multiple, S>) {
-	const listbox = createListbox(props);
+	const listbox = createListbox({ ...props, builder: 'combobox' });
 
 	const inputValue = writable('');
 	const touchedInput = writable(false);

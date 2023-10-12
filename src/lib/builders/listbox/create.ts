@@ -62,9 +62,8 @@ const defaults = {
 	closeOnEscape: true,
 	forceVisible: false,
 	portal: undefined,
+	builder: 'listbox',
 } satisfies Defaults<CreateListboxProps<unknown>>;
-
-const { name, selector } = createElHelpers('listbox');
 
 /**
  * Creates an ARIA-1.2-compliant listbox.
@@ -99,7 +98,7 @@ export function createListbox<
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
 	const options = toWritableStores({
-		...omit(withDefaults, 'open', 'defaultOpen'),
+		...omit(withDefaults, 'open', 'defaultOpen', 'builder'),
 		multiple: withDefaults.multiple ?? (false as Multiple),
 	});
 
@@ -114,6 +113,7 @@ export function createListbox<
 		positioning,
 		multiple,
 	} = options;
+	const { name, selector } = createElHelpers(withDefaults.builder);
 
 	const ids = {
 		trigger: generateId(),
