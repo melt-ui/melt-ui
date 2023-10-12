@@ -4,12 +4,8 @@
 
 	const {
 		elements: { dateField, startSegment, endSegment, label },
-		states: {
-			segmentContents,
-			isFieldInvalid,
-			value
-		},
-	} = createDateRangeField({});
+		states: { segmentContents, isFieldInvalid, value },
+	} = createDateRangeField();
 </script>
 
 <div class="flex w-full flex-col items-center gap-3">

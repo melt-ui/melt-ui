@@ -1,16 +1,20 @@
 <script lang="ts">
-	import { createDateField } from '$lib/builders';
-	import { melt } from '$lib';
+	import { createDateField, melt } from '$lib';
+	import { CalendarDateTime } from '@internationalized/date';
 
 	const {
 		elements: { dateField, segment, label },
 		states: { value, segmentContents },
-	} = createDateField();
+	} = createDateField({
+		defaultPlaceholderValue: new CalendarDateTime(2021, 1, 1),
+	});
 </script>
 
 <div class="flex w-full flex-col items-center gap-3">
 	<div>
-		<span use:melt={$label} class="font-medium text-magnum-900">Due Date</span>
+		<span use:melt={$label} class="font-medium text-magnum-900"
+			>Appointment Date</span
+		>
 		<div
 			use:melt={$dateField}
 			class="mt-0.5 flex w-full min-w-[200px] items-center rounded-lg border bg-white p-1.5 text-magnum-900"

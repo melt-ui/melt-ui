@@ -175,7 +175,7 @@
 	</div>
 </div>
 
-<div class="relative mt-2 rounded-md">
+<div class="relative mt-2 rounded-md" data-comp-preview>
 	{#if viewCode}
 		<TabsRoot tabs={files} let:tab>
 			<div class="flex flex-col-reverse gap-4">

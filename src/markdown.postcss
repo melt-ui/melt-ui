@@ -82,3 +82,11 @@
 [data-callout] > p:last-child {
 	@apply mb-0 !important;
 }
+
+[data-comp-preview] + p {
+	@apply mt-6;
+}
+
+[data-metadata]:not(:has(pre)) {
+	display: none;
+}
