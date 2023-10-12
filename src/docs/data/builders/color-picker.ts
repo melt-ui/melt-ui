@@ -190,7 +190,7 @@ const schemas = [builder, colorCanvas, colorPicker, hueSlider, huePicker, alphaS
 
 const features = [
 	'Full keyboard navigation',
-	'Horizontal or vertical orientation',
+	'Horizontal or vertical slider orientation',
 	'Different color representations'
 ];
 

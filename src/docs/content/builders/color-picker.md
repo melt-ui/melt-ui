@@ -5,7 +5,7 @@ description: A canvas element from which a color can be selected.
 
 <script>
     import { KbdTable, APIReference, Preview } from '$docs/components';
-    
+
     export let schemas;
     export let keyboard;
     export let snippets;
@@ -27,6 +27,8 @@ description: A canvas element from which a color can be selected.
 We use the [EyeDropper API](https://developer.mozilla.org/en-US/docs/Web/API/EyeDropper) for the eye dropper builder store. This API is currently not supported by all browsers, so when using this feature you might want to hide the component depending on the user's browser.
 
 ## Orientation
+
+The hue and alpha sliders can also be displayed vertically. Use the `hueSliderOrienation` and `alphaSliderOrientation` props for it.
 
 <Preview code={snippets.orientation}>
     <svelte:component this={previews.orientation} />
