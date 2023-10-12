@@ -450,7 +450,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             return {
                 'aria-label': 'A canvas element showing the alpha values for the color.',
                 style: styleToString({
-                    // background: `linear-gradient(to ${orientation}, ${$value}00, ${$value})`
                     background: `linear-gradient(to ${orientation}, rgba(${color}, 0), ${$value})`
                 })
             }
