@@ -129,3 +129,19 @@ collect from the user.
 
 TODO: Add a separate docs page to further break down the different parser functions and when it
 makes sense to use each one.
+
+```svelte {4,7}
+<script lang="ts">
+	import { now, getLocalTimeZone } from '@internationalized/date'
+
+	const defaultPlaceholderValue = now(getLocalTimeZone())
+
+	const field = createDateField({
+		defaultPlaceholderValue
+	})
+</script>
+```
+
+<Preview code={snippets.zdtPlaceholder}>
+	<svelte:component this={previews.zdtPlaceholder} />
+</Preview>

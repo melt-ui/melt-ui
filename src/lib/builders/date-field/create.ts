@@ -1628,6 +1628,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 			'data-readonly': true,
 			'data-segment': 'timeZoneName',
 			tabindex: 0,
+			style: styleToString({
+				'caret-color': 'transparent',
+			}),
 		};
 	}
 

@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { createDateField, melt } from '$lib';
-	import { CalendarDateTime } from '@internationalized/date';
+	import { createDateField, melt, type CreateDateFieldProps } from '$lib';
+
+	export let defaultPlaceholderValue: CreateDateFieldProps['defaultPlaceholderValue'] =
+		undefined;
 
 	const {
 		elements: { dateField, segment, label },
 		states: { value, segmentContents },
 	} = createDateField({
-		defaultPlaceholderValue: new CalendarDateTime(2023, 10, 11, 12, 30),
+		defaultPlaceholderValue,
 	});
 </script>
 
