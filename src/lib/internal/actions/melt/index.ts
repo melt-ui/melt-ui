@@ -33,6 +33,7 @@ export function melt<
 	A extends Record<string, any>,
 	Param = never
 >(node: Element, params: Builder): ActionReturn<Builder, Attributes> {
-	// @ts-expect-error calls the action for debugging purposes
-	return params.action(node);
+	throw new Error(
+		"[MELTUI ERROR]: The `use:melt` action cannot be used without MeltUI's Preprocessor. See: https://www.melt-ui.com/docs/preprocessor"
+	);
 }
