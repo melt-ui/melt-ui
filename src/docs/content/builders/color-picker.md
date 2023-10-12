@@ -4,9 +4,12 @@ description: A canvas element from which a color can be selected.
 ---
 
 <script>
-    import { KbdTable, APIReference, Preview } from '$docs/components'
+    import { KbdTable, APIReference, Preview } from '$docs/components';
+    
     export let schemas;
     export let keyboard;
+    export let snippets;
+    export let previews;
 </script>
 
 ## Anatomy
@@ -22,6 +25,12 @@ description: A canvas element from which a color can be selected.
 ## Eye Dropper
 
 We use the [EyeDropper API](https://developer.mozilla.org/en-US/docs/Web/API/EyeDropper) for the eye dropper builder store. This API is currently not supported by all browsers, so when using this feature you might want to hide the component depending on the user's browser.
+
+## Orientation
+
+<Preview code={snippets.orientation}>
+    <svelte:component this={previews.orientation} />
+</Preview>
 
 ## Helper functions
 
