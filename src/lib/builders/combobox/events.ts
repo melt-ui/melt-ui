@@ -1,9 +1,9 @@
 import type { GroupedEvents, MeltComponentEvents } from '$lib/internal/types.js';
+import { listboxEvents } from '../listbox/events';
 
 export const comboboxEvents = {
+	...listboxEvents,
 	input: ['click', 'keydown', 'input'] as const,
-	menu: ['pointerleave'] as const,
-	item: ['pointermove', 'click'] as const,
 };
 
 export type ComboboxEvents = GroupedEvents<typeof comboboxEvents>;
