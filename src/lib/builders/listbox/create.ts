@@ -185,16 +185,8 @@ export function createListbox<
 	 * the selected item (if one exists). It also optionally accepts the current
 	 * open state to prevent unnecessary updates if we know the menu is already open.
 	 */
-	async function openMenu(currentOpenState = false) {
-		/**
-		 * We're checking the open state here because the menu may have
-		 * been programatically opened by the user using a controlled store.
-		 * In that case we don't want to update the open state, but we do
-		 * want to update the active trigger and highlighted item as normal.
-		 */
-		if (!currentOpenState) {
-			open.set(true);
-		}
+	async function openMenu() {
+		open.set(true);
 
 		const triggerEl = getElementByMeltId(ids.trigger);
 		if (!triggerEl) return;
@@ -281,9 +273,10 @@ export function createListbox<
 				addMeltEventListener(node, 'click', () => {
 					const $open = get(open);
 					if ($open) {
-						return;
+						closeMenu();
+					} else {
+						openMenu();
 					}
-					openMenu($open);
 				}),
 				// Handle all input key events including typing, meta, and navigation.
 				addMeltEventListener(node, 'keydown', (e) => {
@@ -307,8 +300,14 @@ export function createListbox<
 							return;
 						}
 
+						// Clicking space on a button triggers a click event. We don't want to
+						// open the menu in this case, and we let the click handler handle it.
+						if (e.key === kbd.SPACE && node instanceof HTMLButtonElement) {
+							return;
+						}
+
 						// All other events should open the menu.
-						openMenu($open);
+						openMenu();
 
 						tick().then(() => {
 							const $selectedItem = get(selected);
@@ -349,12 +348,15 @@ export function createListbox<
 						if ($highlightedItem) {
 							selectItem($highlightedItem);
 						}
-						closeMenu();
+						if (!get(multiple)) {
+							closeMenu();
+						}
 					}
 					// Pressing Alt + Up should close the menu.
 					if (e.key === kbd.ARROW_UP && e.altKey) {
 						closeMenu();
 					}
+
 					// Navigation (up, down, etc.) should change the highlighted item.
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						e.preventDefault();
@@ -398,7 +400,7 @@ export function createListbox<
 						}
 						// Highlight the new item and scroll it into view.
 						highlightedItem.set(nextItem);
-						nextItem.scrollIntoView({ block: $scrollAlignment });
+						nextItem?.scrollIntoView({ block: $scrollAlignment });
 					} else if (get(typeahead)) {
 						const menuEl = document.getElementById(ids.menu);
 						if (!isHTMLElement(menuEl)) return;
@@ -564,7 +566,9 @@ export function createListbox<
 					}
 					// Otherwise, select the item and close the menu.
 					selectItem(node);
-					closeMenu();
+					if (!get(multiple)) {
+						closeMenu();
+					}
 				})
 			);
 			return { destroy: unsubscribe };

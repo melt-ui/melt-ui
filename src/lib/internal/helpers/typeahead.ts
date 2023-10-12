@@ -75,8 +75,9 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 			wrappedItems = wrappedItems.filter((v) => v !== currentItem);
 		}
 
-		const nextItem = wrappedItems.find((item) =>
-			item.innerText.toLowerCase().startsWith(normalizeSearch.toLowerCase())
+		const nextItem = wrappedItems.find(
+			(item) =>
+				item?.innerText && item.innerText.toLowerCase().startsWith(normalizeSearch.toLowerCase())
 		);
 
 		if (isHTMLElement(nextItem) && nextItem !== currentItem) {
