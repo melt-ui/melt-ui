@@ -87,14 +87,14 @@ export type DateFieldProps = {
 	 * If true, the date field will be disabled and users
 	 * will not be able to interact with it.
 	 */
-	fieldDisabled?: boolean;
+	disabled?: boolean;
 
 	/**
 	 * If true, the date field will be readonly, and users
 	 * will not be able to edit the values of any of the
 	 * individual segments.
 	 */
-	fieldReadonly?: boolean;
+	readonly?: boolean;
 
 	/**
 	 * The format to use for displaying the time in the input.

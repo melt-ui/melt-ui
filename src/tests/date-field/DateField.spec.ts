@@ -215,10 +215,10 @@ describe('DateField', () => {
 		expect(yearSegment).toHaveFocus();
 	});
 
-	test('fieldDisabled prop prevents interaction', async () => {
+	test('disabled prop prevents interaction', async () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(DateFieldTest, {
-			fieldDisabled: true,
+			disabled: true,
 		});
 		const monthSegment = getByTestId('month');
 		const daySegment = getByTestId('day');
@@ -237,10 +237,10 @@ describe('DateField', () => {
 		expect(yearSegment).not.toHaveFocus();
 	});
 
-	test('fieldReadonly prop prevents modifying segments', async () => {
+	test('readonly prop prevents modifying segments', async () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(DateFieldTest, {
-			fieldReadonly: true,
+			readonly: true,
 			defaultValue: calendarDateOther,
 		});
 		const segments = ['month', 'day', 'year'] as const;

@@ -8,8 +8,8 @@
 	export let onValueChange: CreateDateFieldProps['onValueChange'] = undefined;
 	export let onPlaceholderValueChange: CreateDateFieldProps['onPlaceholderValueChange'] = undefined;
 	export let isUnavailable: CreateDateFieldProps['isUnavailable'] = undefined;
-	export let fieldDisabled: CreateDateFieldProps['fieldDisabled'] = undefined;
-	export let fieldReadonly: CreateDateFieldProps['fieldReadonly'] = undefined;
+	export let disabled: CreateDateFieldProps['disabled'] = undefined;
+	export let readonly: CreateDateFieldProps['readonly'] = undefined;
 	export let hourCycle: CreateDateFieldProps['hourCycle'] = undefined;
 	export let locale: CreateDateFieldProps['locale'] = 'en';
 	export let hideTimeZone: CreateDateFieldProps['hideTimeZone'] = undefined;
@@ -26,8 +26,8 @@
 		onValueChange,
 		onPlaceholderValueChange,
 		isUnavailable,
-		fieldDisabled,
-		fieldReadonly,
+		disabled,
+		readonly,
 		hourCycle,
 		locale,
 		hideTimeZone,
@@ -48,7 +48,7 @@
 				class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
 				data-testid="field"
 			>
-				{#each $segmentContents.arr as seg, i (i)}
+				{#each $segmentContents as seg, i (i)}
 					<div
 						use:melt={$segment(seg.part)}
 						class="segment whitespace-nowrap"

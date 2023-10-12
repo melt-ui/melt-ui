@@ -66,8 +66,8 @@ const defaults = {
 	locale: 'en',
 	granularity: undefined,
 	hideTimeZone: false,
-	fieldDisabled: false,
-	fieldReadonly: false,
+	disabled: false,
+	readonly: false,
 } satisfies CreateDateFieldProps;
 
 type DateFieldParts = 'segment' | 'label';
@@ -78,15 +78,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const withDefaults = { ...defaults, ...props };
 
 	const options = toWritableStores(omit(withDefaults, 'value', 'placeholderValue'));
-	const {
-		locale,
-		granularity,
-		hourCycle,
-		hideTimeZone,
-		isUnavailable,
-		fieldDisabled,
-		fieldReadonly,
-	} = options;
+	const { locale, granularity, hourCycle, hideTimeZone, isUnavailable, disabled, readonly } =
+		options;
 
 	const defaultDate = getDefaultDate({
 		defaultPlaceholderValue: withDefaults.defaultPlaceholderValue,
@@ -161,7 +154,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 	const states = initSegmentStates();
 
-	const segmentContents = derived(
+	const allSegmentContent = derived(
 		[segmentValues, locale, inferredGranularity, hideTimeZone, hourCycle],
 		([$segmentValues, $locale, $inferredGranularity, $hideTimeZone, $hourCycle]) => {
 			return createContent({
@@ -176,6 +169,16 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 	);
 
+	const segmentContents = derived(
+		allSegmentContent,
+		($allSegmentContent) => $allSegmentContent.arr
+	);
+
+	const segmentContentsObj = derived(
+		allSegmentContent,
+		($allSegmentContent) => $allSegmentContent.obj
+	);
+
 	const label = builder(name('label'), {
 		returned: () => {
 			return {
@@ -188,16 +191,16 @@ export function createDateField(props?: CreateDateFieldProps) {
 	 * The date field element which contains all the segments.
 	 */
 	const dateField = builder(name(), {
-		stores: [value, isFieldInvalid, fieldDisabled, fieldReadonly],
-		returned: ([$value, $isFieldInvalid, $fieldDisabled, $fieldReadonly]) => {
+		stores: [value, isFieldInvalid, disabled, readonly],
+		returned: ([$value, $isFieldInvalid, $disabled, $readonly]) => {
 			return {
 				role: 'group',
 				id: ids.field,
 				'aria-labelledby': ids.label,
 				'aria-describedby': $value ? ids.description : undefined,
 				'data-invalid': $isFieldInvalid ? '' : undefined,
-				'aria-disabled': $fieldDisabled ? 'true' : undefined,
-				'aria-readonly': $fieldReadonly ? 'true' : undefined,
+				'aria-disabled': $disabled ? 'true' : undefined,
+				'aria-readonly': $readonly ? 'true' : undefined,
 			};
 		},
 		action: () => {
@@ -261,8 +264,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 			placeholderValue,
 			value,
 			isFieldInvalid,
-			fieldDisabled,
-			fieldReadonly,
+			disabled,
+			readonly,
 			locale,
 		],
 		returned: ([
@@ -271,8 +274,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 			$placeholderValue,
 			$value,
 			$isFieldInvalid,
-			$fieldDisabled,
-			$fieldReadonly,
+			$disabled,
+			$readonly,
 			_,
 		]) => {
 			const props = {
@@ -284,10 +287,10 @@ export function createDateField(props?: CreateDateFieldProps) {
 				const defaultAttrs = {
 					...getSegmentAttrs(part, props),
 					'aria-invalid': $isFieldInvalid ? 'true' : undefined,
-					'aria-disabled': $fieldDisabled ? 'true' : undefined,
-					'aria-readonly': $fieldReadonly ? 'true' : undefined,
+					'aria-disabled': $disabled ? 'true' : undefined,
+					'aria-readonly': $readonly ? 'true' : undefined,
 					'data-invalid': $isFieldInvalid ? '' : undefined,
-					'data-disabled': $fieldDisabled ? '' : undefined,
+					'data-disabled': $disabled ? '' : undefined,
 					'data-segment': `${part}`,
 				};
 				if (part === 'literal') {
@@ -300,9 +303,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 					...defaultAttrs,
 					id: ids[part],
 					'aria-labelledby': getLabelledBy(part),
-					contentEditable: $fieldReadonly || $fieldDisabled ? false : true,
+					contentEditable: $readonly || $disabled ? false : true,
 					'aria-describedby': hasDescription ? ids.description : undefined,
-					tabindex: $fieldDisabled ? undefined : 0,
+					tabindex: $disabled ? undefined : 0,
 				};
 			};
 		},
@@ -317,7 +320,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			? Updater<TimeSegmentObj[T]>
 			: Updater<DateAndTimeSegmentObj[T]>
 	) {
-		if (get(fieldDisabled) || get(fieldReadonly)) return;
+		if (get(disabled) || get(readonly)) return;
 		segmentValues.update((prev) => {
 			const dateRef = get(placeholderValue);
 			if (isDateAndTimeSegmentObj(prev)) {
@@ -418,11 +421,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 	 * the handlers.
 	 */
 	function handleSegmentKeydown(e: KeyboardEvent, part: AnyExceptLiteral) {
-		const $fieldDisabled = get(fieldDisabled);
+		const $disabled = get(disabled);
 		if (e.key !== kbd.TAB) {
 			e.preventDefault();
 		}
-		if ($fieldDisabled) return;
+		if ($disabled) return;
 		const segmentKeydownHandlers = {
 			day: handleDaySegmentKeydown,
 			month: handleMonthSegmentKeydown,
@@ -443,8 +446,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 	 * focusing the segment if the field is disabled.
 	 */
 	function handleSegmentClick(e: MouseEvent) {
-		const $fieldDisabled = get(fieldDisabled);
-		if ($fieldDisabled) {
+		const $disabled = get(disabled);
+		if ($disabled) {
 			e.preventDefault();
 			return;
 		}
@@ -1720,6 +1723,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			value,
 			segmentValues,
 			segmentContents,
+			segmentContentsObj,
 			placeholderValue: placeholderValue.toWritable(),
 			isFieldInvalid,
 		},

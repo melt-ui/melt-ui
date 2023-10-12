@@ -12,8 +12,8 @@
 		undefined;
 	export let isUnavailable: CreateDatePickerProps['isUnavailable'] = undefined;
 	export let isDisabled: CreateDatePickerProps['isDisabled'] = undefined;
-	export let fieldDisabled: CreateDatePickerProps['fieldDisabled'] = undefined;
-	export let fieldReadonly: CreateDatePickerProps['fieldReadonly'] = undefined;
+	export let disabled: CreateDatePickerProps['disabled'] = undefined;
+	export let readonly: CreateDatePickerProps['readonly'] = undefined;
 	export let hourCycle: CreateDatePickerProps['hourCycle'] = undefined;
 	export let locale: CreateDatePickerProps['locale'] = 'en';
 	export let hideTimeZone: CreateDatePickerProps['hideTimeZone'] = undefined;
@@ -51,8 +51,8 @@
 		onValueChange,
 		onPlaceholderValueChange,
 		isUnavailable,
-		fieldDisabled,
-		fieldReadonly,
+		disabled,
+		readonly,
 		hourCycle,
 		locale,
 		hideTimeZone,
@@ -81,7 +81,7 @@
 			class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
 			data-testid="field"
 		>
-			{#each $segmentContents.arr as seg, i (`${i}-${$insideLocale}`)}
+			{#each $segmentContents as seg, i (`${i}-${$insideLocale}`)}
 				<div
 					use:melt={$segment(seg.part)}
 					class="segment whitespace-nowrap"

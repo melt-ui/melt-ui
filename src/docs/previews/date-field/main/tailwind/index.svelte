@@ -15,7 +15,7 @@
 			use:melt={$dateField}
 			class="mt-0.5 flex w-full min-w-[200px] items-center rounded-lg border bg-white p-1.5 text-magnum-900"
 		>
-			{#each $segmentContents.arr as seg, i (i)}
+			{#each $segmentContents as seg, i (i)}
 				<div use:melt={$segment(seg.part)} class="segment whitespace-nowrap">
 					{seg.value}
 				</div>

@@ -4,7 +4,7 @@ description: An enhanced alternative to a native date input.
 ---
 
 <script>
-	import { Preview } from '$docs/components'
+	import { Preview, Callout } from '$docs/components'
 	export let snippets
 	export let previews
 </script>
@@ -19,63 +19,141 @@ It's _very_ heavily inspired by the research and work done by the
 [React Aria](https://react-spectrum.adobe.com/react-aria/) team at Adobe, who we believe have
 created the most robust date components in terms of accessibility, user experience, and flexibility.
 
-## Working with Dates & Times
+## Anatomy
 
-The Date Field, along with the other date-related builders, uses, and expects you to use the
-[@internationalized/date](https://react-spectrum.adobe.com/internationalized/date/index.html)
-package. There are countless jokes about how painful it is to work with dates in JavaScript, and
-this package solves a lot of those problems.
+```svelte
+<script lang="ts">
+	import { createDateField, melt } from '@melt-ui/svelte'
+	const {
+		elements: { dateField, segment, label },
+		states: { value, segmentContents }
+	} = createDateField()
+</script>
 
-We highly recommend reading through the documentation for the package to get a better feel for how
-it works, but we'll be covering the basics throughout the rest of this page.
+<span use:melt={$label}>Due Date</span>
+<div use:melt={$dateField}>
+	{#each $segmentContents.arr as seg, i (i)}
+		<div use:melt={$segment(seg.part)}>
+			{seg.value}
+		</div>
+	{/each}
+</div>
+```
 
-### DateValue Objects
+- **dateField**: The element which contains the date segments
+- **segment**: An individual segment of the date (day, month, year, etc.)
+- **label**: The label for the date field
 
-The Date Field uses `DateValue` objects to represent dates. These objects are immutable, and provide
-information about the type of date they represent:
+## Quick Start
 
-- `CalendarDate`: A date with no time component, such as <code class="neutral">2023-10-11</code>.
-- `CalendarDateTime`: A date with a time component, but without a timezone, such as
-  <code class="neutral">2023-10-11T12:30:00</code>.
-- `ZonedDateTime`: A date with a time component and a timezone, such as
-  <code class="neutral">2023-10-11T21:00:00:00-04:00[America/New_York]</code>.
+<Callout type="warning">
+Before jumping into the quick start, it's recommended that you understand how we work with dates &
+times in Melt, which you can read about <a href="/docs/dates-and-times" target="_blank">here</a>.
+</Callout>
 
-The benefit of using these objects is that we can be very specific about the type of date we want,
-and the field will render the appropriate UI for that type of date.
+You can initialize a new Date Field using the `createDateField` function, which returns an object
+consisting of the stores & methods needed to construct the field.
 
-### Parser Functions
+At a minimum, we'll want to destructure the `dateField`, `segment`, and `label` elements, as well
+as the `value` and `segmentContents` states.
 
-The [@internationalized/date](https://react-spectrum.adobe.com/internationalized/date/index.html)
-package provides a number of parser functions that can be used to:
+```svelte
+<script lang="ts">
+	import { createDateField, melt } from '@melt-ui/svelte'
+	const {
+		elements: { dateField, segment, label },
+		states: { value, segmentContents }
+	} = createDateField()
+</script>
+```
 
-- convert an ISO 8601 formatted string into a `DateValue` object
-- convert one type of `DateValue` object into another type
-- convert a `DateValue` object into an ISO 8601 formatted string
-- convert a `DateValue` object into a JavaScript `Date` object
-- and many more...
+The `dateField` is responsible for containing the date segments. The `label` for the date field is
+not an actual `<label>` element, due to the way we interact with the field, but is still accessible
+to screen readers in the same way.
 
-We'll be using some of these functions throughout the rest of the page, but we can't cover them all,
-so be sure to check out the docs for a full list.
+```svelte
+<script lang="ts">
+	import { createDateField, melt } from '@melt-ui/svelte'
+	const {
+		elements: { dateField, segment, label },
+		states: { value, segmentContents }
+	} = createDateField()
+</script>
 
-## Placeholder Value
+<span use:melt={$label}>Appointment Date</span>
+<div use:melt={$dateField}>
+	<!-- ... -->
+</div>
+```
 
-The placeholder value is responsible for determining the type of date the field represents when no
-value is present, which determines how the field is rendered and formatted. It also sets the
-starting point for the stepper buttons, so that when empty, the user doesn't have to start from
-scratch.
+Unlike the others "elements", `segment` is a function which takes a `DateSegment` as an argument,
+and returns that segment's element.
 
-You can set the placeholder value using the `defaultPlaceholderValue` prop, or using the
-[controlled](/docs/controlled) `placeholderValue` store, however, if a `defaultValue` or `value` is
-provided, those will take precedence, and the `placeholderValue` will be set to their value.
+While it's possible to use the `segment` function to render each segment individually like so:
 
-### Default Behavior
+```svelte {3,6,9}
+<span use:melt={$label}>Appointment Date</span>
+<div use:melt={$dateField}>
+	<div use:melt={$segment('day')}>
+		<!-- ... -->
+	</div>
+	<div use:melt={$segment('month')}>
+		<!-- ... -->
+	</div>
+	<div use:melt={$segment('year')}>
+		<!-- ... -->
+	</div>
+	<!-- ...rest -->
+</div>
+```
+
+It's not recommended, as the format doesn't automatically adapt the user's locale and the type of
+date being represented, which is one of the more powerful features of the Date Field.
+
+Instead, we can use the `segmentContents` state to loop through each segment and render it.
+
+```svelte
+<script lang="ts">
+	import { createDateField, melt } from '@melt-ui/svelte'
+	const {
+		elements: { dateField, segment, label },
+		states: { value, segmentContents }
+	} = createDateField()
+</script>
+
+<span use:melt={$label}>Appointment Date</span>
+<div use:melt={$dateField}>
+	{#each $segmentContents as seg, i (i)}
+		<div use:melt={$segment(seg.part)}>
+			{seg.value}
+		</div>
+	{/each}
+</div>
+```
+
+## Values
+
+The Date Field along with the other date-related builders, have two value-related props,
+**Placeholder Values** and **Values**.
+
+The value props are used to set the value of the field, and are used to determine what type of date
+the field represents. The placeholder value props are used to set the value of the field when it's
+empty, but is overwritten by the value props when they're set.
+
+The value can be set using the `defaultValue` or the [controlled](/docs/controlled) `value` prop.
+The placeholder can be set using the `defaultPlaceholderValue` prop, or the
+[controlled](/docs/controlled) `placeholderValue` prop.
+
+### Date
 
 By default, if no placeholder or value props are passed to the field, it will default to represent
 the `CalendarDate` type, which you can see an example of below.
 
 ```svelte
 <script lang="ts">
-	const field = createDateField()
+	const {
+		/* ... */
+	} = createDateField()
 </script>
 ```
 
@@ -108,7 +186,9 @@ const defaultPlaceholderValue = parseDateTime('2023-10-11T12:30:00')
 
 	const defaultPlaceholderValue = new CalendarDateTime(2023, 10, 11, 12, 30)
 
-	const field = createDateField({
+	const {
+		/* ... */
+	} = createDateField({
 		defaultPlaceholderValue
 	})
 </script>
@@ -127,21 +207,42 @@ provides a number of parser functions to convert other `DateValue` objects into 
 object, as well as multiple string parsing functions depending on what information you need to
 collect from the user.
 
-TODO: Add a separate docs page to further break down the different parser functions and when it
-makes sense to use each one.
-
 ```svelte {4,7}
 <script lang="ts">
 	import { now, getLocalTimeZone } from '@internationalized/date'
 
 	const defaultPlaceholderValue = now(getLocalTimeZone())
 
-	const field = createDateField({
+	const {
+		/* ... */
+	} = createDateField({
 		defaultPlaceholderValue
 	})
 </script>
 ```
 
+In the first field below, we're using the `now` parser function to create a `ZonedDateTime` object
+with the current date and time, and we're getting the user's local timezone using the
+`getLocalTimeZone` function.
+
+In the second, we're harcoding the timezone to `America/Los_Angeles` by passing it as the argument
+to the `now` function.
+
 <Preview code={snippets.zdtPlaceholder}>
 	<svelte:component this={previews.zdtPlaceholder} />
 </Preview>
+
+## Value
+
+As mentioned in the [Placeholder Value](#placeholder-value) section, the `value` and `defaultValue`
+props take precedence over the placeholder props, and will set the `placeholderValue` to their
+value.
+
+### CalendarDate
+
+```svelte
+
+
+
+
+```

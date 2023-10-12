@@ -19,7 +19,7 @@
 			class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800 {$isFieldInvalid &&
 				'border-2 border-red-600'}"
 		>
-			{#each $segmentContents.start.arr as seg, i (i)}
+			{#each $segmentContents.start as seg, i (i)}
 				<div
 					use:melt={$startSegment(seg.part)}
 					class="segment {$isFieldInvalid && 'text-red-600'}"
@@ -28,7 +28,7 @@
 				</div>
 			{/each}
 			<div aria-hidden="true" class="px-2">-</div>
-			{#each $segmentContents.end.arr as seg, i (i)}
+			{#each $segmentContents.end as seg, i (i)}
 				<div
 					use:melt={$endSegment(seg.part)}
 					class="segment {$isFieldInvalid && 'text-red-600'}"
