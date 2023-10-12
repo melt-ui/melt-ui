@@ -82,6 +82,20 @@ const builder: APISchema = {
 			description: 'The builder store used to create the hex color input element.'
 		}
 	],
+	states: [
+		{
+			name: 'value',
+			type: 'Writable<string>',
+			description: 'The store for the hex color value.'
+		}
+	],
+	helpers: [
+		{
+			name: 'derivedColors',
+			type: 'Readable<ReturnedColor>',
+			description: 'Returns the colors in different formats: RGB, HSV, HSL.'
+		}
+	]
 };
 
 const colorCanvas = elementSchema('colorCanvas', {
