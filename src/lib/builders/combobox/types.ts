@@ -1,14 +1,19 @@
 import type { BuilderReturn } from '$lib/internal/types.js';
-import type { ListboxSelected } from '../listbox/types.js';
+import type { CreateListboxProps, ListboxSelected } from '../listbox/types.js';
 import type { createCombobox } from './create.js';
 export type { ComboboxComponentEvents } from './events.js';
 
 export type {
 	ListboxOption as ComboboxOption,
 	ListboxSelected as ComboboxSelected,
-	CreateListboxProps as CreateComboboxProps,
 	ListboxOptionProps as ComboboxOptionProps,
 } from '../listbox/types.js';
+
+export type CreateComboboxProps<
+	Value,
+	Multiple extends boolean = false,
+	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
+> = Omit<CreateListboxProps<Value, Multiple, S>, 'builder' | 'typeahead'>;
 
 export type Combobox<
 	Value = unknown,

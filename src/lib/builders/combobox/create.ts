@@ -25,8 +25,6 @@ const { name } = createElHelpers('combobox');
 /**
  * Creates an ARIA-1.2-compliant combobox.
  *
- * @TODO expose a nice mechanism for clearing the input.
- * @TODO would it be useful to have a callback for when an item is selected?
  * @TODO multi-select using `tags-input` builder?
  */
 export function createCombobox<

@@ -7,6 +7,7 @@ import {
 	builder,
 	createClickOutsideIgnore,
 	createElHelpers,
+	createTypeaheadSearch,
 	derivedVisible,
 	disabledAttr,
 	effect,
@@ -20,6 +21,7 @@ import {
 	isBrowser,
 	isElementDisabled,
 	isHTMLElement,
+	isHTMLInputElement,
 	kbd,
 	last,
 	next,
@@ -63,6 +65,10 @@ const defaults = {
 	forceVisible: false,
 	portal: undefined,
 	builder: 'listbox',
+	disabled: false,
+	required: false,
+	name: undefined,
+	typeahead: true,
 } satisfies Defaults<CreateListboxProps<unknown>>;
 
 /**
@@ -112,6 +118,11 @@ export function createListbox<
 		forceVisible,
 		positioning,
 		multiple,
+		arrowSize,
+		disabled,
+		required,
+		typeahead,
+		name: nameProp,
 	} = options;
 	const { name, selector } = createElHelpers(withDefaults.builder);
 
@@ -120,6 +131,16 @@ export function createListbox<
 		menu: generateId(),
 		label: generateId(),
 	};
+
+	const { handleTypeaheadSearch } = createTypeaheadSearch({
+		onMatch: (element) => {
+			highlightedItem.set(element);
+			element.scrollIntoView({ block: get(scrollAlignment) });
+		},
+		getCurrentItem() {
+			return get(highlightedItem);
+		},
+	});
 
 	/** ------- */
 	/** HELPERS */
@@ -238,8 +259,8 @@ export function createListbox<
 
 	/** Action and attributes for the text input. */
 	const trigger = builder(name('trigger'), {
-		stores: [open, highlightedItem],
-		returned: ([$open, $highlightedItem]) => {
+		stores: [open, highlightedItem, disabled],
+		returned: ([$open, $highlightedItem, $disabled]) => {
 			return {
 				'aria-activedescendant': $highlightedItem?.id,
 				'aria-autocomplete': 'list',
@@ -247,12 +268,15 @@ export function createListbox<
 				'aria-expanded': $open,
 				'aria-labelledby': ids.label,
 				'data-melt-id': ids.trigger,
-				autocomplete: 'off',
+				// autocomplete: 'off',
 				id: ids.trigger,
-				role: 'listbox',
+				role: 'combobox',
+				disabled: disabledAttr($disabled),
 			} as const;
 		},
-		action: (node: HTMLInputElement): MeltActionReturn<ListboxEvents['trigger']> => {
+		action: (node: HTMLElement): MeltActionReturn<ListboxEvents['trigger']> => {
+			const isInput = isHTMLInputElement(node);
+
 			const unsubscribe = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
 					const $open = get(open);
@@ -279,7 +303,7 @@ export function createListbox<
 						}
 
 						// Pressing backspace when the input is blank shouldn't open the menu.
-						if (e.key === kbd.BACKSPACE && node.value === '') {
+						if (e.key === kbd.BACKSPACE && isInput && node.value === '') {
 							return;
 						}
 
@@ -375,6 +399,11 @@ export function createListbox<
 						// Highlight the new item and scroll it into view.
 						highlightedItem.set(nextItem);
 						nextItem.scrollIntoView({ block: $scrollAlignment });
+					} else if (get(typeahead)) {
+						const menuEl = document.getElementById(ids.menu);
+						if (!isHTMLElement(menuEl)) return;
+
+						handleTypeaheadSearch(e.key, getOptions(menuEl));
 					}
 				})
 			);
@@ -543,14 +572,28 @@ export function createListbox<
 	});
 
 	const hiddenInput = builder(name('hidden-input'), {
-		stores: [selected],
-		returned: ([$selected]) => {
+		stores: [selected, required, nameProp],
+		returned: ([$selected, $required, $name]) => {
 			const value = Array.isArray($selected) ? $selected.map((o) => o.value) : $selected?.value;
 			return {
 				...hiddenInputAttrs,
+				required: $required ? true : undefined,
 				value,
+				name: $name,
 			};
 		},
+	});
+
+	const arrow = builder(name('arrow'), {
+		stores: arrowSize,
+		returned: ($arrowSize) => ({
+			'data-arrow': true,
+			style: styleToString({
+				position: 'absolute',
+				width: `var(--arrow-size, ${$arrowSize}px)`,
+				height: `var(--arrow-size, ${$arrowSize}px)`,
+			}),
+		}),
 	});
 
 	/* ------------------- */
@@ -596,6 +639,7 @@ export function createListbox<
 			menu,
 			label,
 			hiddenInput,
+			arrow,
 		},
 		states: {
 			open,

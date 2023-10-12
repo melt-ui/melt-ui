@@ -29,6 +29,12 @@ export type CreateListboxProps<
 	positioning?: FloatingConfig;
 
 	/**
+	 * The size of the arrow in pixels.
+	 * @default 8
+	 */
+	arrowSize?: number;
+
+	/**
 	 * Determines behavior when scrolling items into view.
 	 * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block
 	 */
@@ -41,6 +47,10 @@ export type CreateListboxProps<
 	 * @default true
 	 */
 	loop?: boolean;
+
+	disabled?: boolean;
+	required?: boolean;
+	name?: string;
 
 	/**
 	 * Whether or not the listbox should be open by default
@@ -134,6 +144,13 @@ export type CreateListboxProps<
 	 * @default 'listbox
 	 */
 	builder?: string;
+
+	/**
+	 * Whether or not to enable typeahead.
+	 *
+	 * @default true
+	 */
+	typeahead?: boolean;
 };
 
 export type ListboxOptionProps<Value> = ListboxOption<Value> & {
