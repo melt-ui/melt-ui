@@ -38,7 +38,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     let insideUpdate = false;
     let inputUpdate = false;
     let lastValid = argsWithDefaults.defaultColor;
-    const speepUpStep = 5;
+    const speedUpStep = 5;
 
     const keyDurations: KeyDurations = {
         'ArrowDown': null,
@@ -235,7 +235,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
                         duration = Date.now() - <number>keyDurations[key];
                     }
 
-                    const step = duration > 1000 ? speepUpStep : 1;
+                    const step = duration > 1000 ? speedUpStep : 1;
 
                     const { x, y } = get(colorPickerPos);
                     const { height: canvasH, width: canvasW } = get(colorCanvasDims);
