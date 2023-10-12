@@ -190,7 +190,7 @@ export function initSegmentStates() {
 	return segmentParts.reduce((acc, key) => {
 		acc[key] = {
 			lastKeyZero: false,
-			hasLeftFocus: false,
+			hasLeftFocus: true,
 			hasTouched: false,
 		};
 		return acc;

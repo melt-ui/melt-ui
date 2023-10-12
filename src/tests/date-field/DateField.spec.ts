@@ -354,4 +354,116 @@ describe('DateField', () => {
 		expect(dayPeriodSegment).toHaveTextContent('AM');
 		expect(insideValue).toHaveTextContent('1980-01-20T00:30');
 	});
+
+	test('spamming 3 takes you all the way through the segment', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DateFieldTest, {
+			defaultValue: calendarDateTimeOther,
+			granularity: 'minute',
+		});
+
+		const monthSegment = getByTestId('month');
+		const daySegment = getByTestId('day');
+		const yearSegment = getByTestId('year');
+		const hourSegment = getByTestId('hour');
+		const minuteSegment = getByTestId('minute');
+
+		await user.click(monthSegment);
+		expect(monthSegment).toHaveFocus();
+		await user.keyboard(`{3}`);
+		expect(daySegment).toHaveFocus();
+		await user.keyboard(`{3}`);
+		await user.keyboard(`{3}`);
+		expect(yearSegment).toHaveFocus();
+		await user.keyboard(`{3}`);
+		await user.keyboard(`{3}`);
+		await user.keyboard(`{3}`);
+		await user.keyboard(`{3}`);
+		expect(hourSegment).toHaveFocus();
+		await user.keyboard(`{3}`);
+		expect(minuteSegment).toHaveFocus();
+		await user.keyboard(`{3}`);
+		await user.keyboard(`{3}`);
+
+		expect(monthSegment).toHaveTextContent('3');
+		expect(daySegment).toHaveTextContent('3');
+		expect(yearSegment).toHaveTextContent('3333');
+		expect(hourSegment).toHaveTextContent('3');
+		expect(minuteSegment).toHaveTextContent('33');
+	});
+
+	test('fully overwrite on first click and type - month', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DateFieldTest, {
+			defaultValue: calendarDateTimeOther,
+			granularity: 'second',
+		});
+
+		const monthSegment = getByTestId('month');
+		await user.click(monthSegment);
+		expect(monthSegment).toHaveFocus();
+		expect(monthSegment).toHaveTextContent('1');
+		await user.keyboard(`{3}`);
+		expect(monthSegment).toHaveTextContent('3');
+	});
+
+	test('fully overwrite on first click and type - day', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DateFieldTest, {
+			defaultValue: calendarDateTimeOther,
+			granularity: 'second',
+		});
+
+		const daySegment = getByTestId('day');
+		await user.click(daySegment);
+		expect(daySegment).toHaveFocus();
+		expect(daySegment).toHaveTextContent('20');
+		await user.keyboard(`{1}`);
+		expect(daySegment).toHaveTextContent('1');
+	});
+
+	test('fully overwrite on first click and type - year', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DateFieldTest, {
+			defaultValue: calendarDateTimeOther,
+			granularity: 'second',
+		});
+
+		const yearSegment = getByTestId('year');
+		await user.click(yearSegment);
+		expect(yearSegment).toHaveFocus();
+		expect(yearSegment).toHaveTextContent('1980');
+		await user.keyboard(`{1}`);
+		expect(yearSegment).toHaveTextContent('1');
+	});
+
+	test('fully overwrite on first click and type - hour', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DateFieldTest, {
+			defaultValue: calendarDateTimeOther,
+			granularity: 'second',
+		});
+
+		const hourSegment = getByTestId('hour');
+		await user.click(hourSegment);
+		expect(hourSegment).toHaveFocus();
+		expect(hourSegment).toHaveTextContent('12');
+		await user.keyboard(`{1}`);
+		expect(hourSegment).toHaveTextContent('1');
+	});
+
+	test('fully overwrite on first click and type - minute', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DateFieldTest, {
+			defaultValue: calendarDateTimeOther,
+			granularity: 'second',
+		});
+
+		const minuteSegment = getByTestId('minute');
+		await user.click(minuteSegment);
+		expect(minuteSegment).toHaveFocus();
+		expect(minuteSegment).toHaveTextContent('30');
+		await user.keyboard(`{1}`);
+		expect(minuteSegment).toHaveTextContent('1');
+	});
 });

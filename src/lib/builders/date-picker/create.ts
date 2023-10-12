@@ -31,9 +31,7 @@ const defaultTriggerAttrs = {
 export function createDatePicker(props?: CreateDatePickerProps) {
 	const withDefaults = { ...defaults, ...props };
 
-	const dateField = createDateField({
-		...withDefaults,
-	});
+	const dateField = createDateField(withDefaults);
 
 	const {
 		states: { value, placeholderValue: dfPlaceholderValue },

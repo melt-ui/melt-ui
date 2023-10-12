@@ -47,7 +47,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	};
 
 	const defaultDate = getDefaultDate({
-		defaultValue: withDefaults.defaultValue.start,
+		defaultValue: withDefaults.defaultValue?.start,
 		defaultPlaceholderValue: withDefaults.defaultPlaceholderValue,
 		granularity: withDefaults.granularity,
 	});
@@ -55,8 +55,8 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
-	const startValue = writable<DateValue | undefined>(withDefaults.defaultValue.start);
-	const endValue = writable<DateValue | undefined>(withDefaults.defaultValue.end);
+	const startValue = writable<DateValue | undefined>(withDefaults.defaultValue?.start);
+	const endValue = writable<DateValue | undefined>(withDefaults.defaultValue?.end);
 
 	const isCompleted = derived(value, ($value) => {
 		return $value?.start && $value?.end;
@@ -176,7 +176,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		const $startValue = get(startValue);
 		const $endValue = get(endValue);
 
-		if ($value.start && $value.end) {
+		if ($value?.start && $value?.end) {
 			if ($value.start !== $startValue) {
 				startValue.set($value.start);
 			}
@@ -217,9 +217,9 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 			value,
 			placeholderValue: placeholderValue.toWritable(),
 			segmentContents,
-			isFieldInvalid,
 			endSegmentValues,
 			startSegmentValues,
+			isFieldInvalid,
 		},
 		options,
 		ids,

@@ -504,8 +504,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 		const $placeholderValue = get(placeholderValue);
 
 		const daysInMonth = $segmentMonthValue
-			? getDaysInMonth(toDate($placeholderValue.set({ month: $segmentMonthValue })))
-			: getDaysInMonth(toDate($placeholderValue));
+			? getDaysInMonth($placeholderValue.set({ month: $segmentMonthValue }))
+			: getDaysInMonth($placeholderValue);
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('day', (prev) => {
@@ -527,7 +527,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					announcer.announce(next);
 					return next;
 				}
-				const next = dateRef.set({ day: prev }).cycle('day', -1).day;
+				const next = $placeholderValue.set({ day: prev }).cycle('day', -1).day;
 				announcer.announce(next);
 				return next;
 			});
@@ -570,8 +570,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 					 */
 					if (states.day.lastKeyZero || num > maxStart) {
 						moveToNext = true;
-						return num;
 					}
+					states.day.lastKeyZero = false;
 
 					/**
 					 * If none of the above conditions are met, then we can just
@@ -581,6 +581,12 @@ export function createDateField(props?: CreateDateFieldProps) {
 					return num;
 				}
 
+				/**
+				 * If the number of digits is 2, or if the total with the existing digit
+				 * and the pressed digit is greater than the maximum value for this
+				 * month, then we will reset the segment as if the user had pressed the
+				 * backspace key and then typed the number.
+				 */
 				const digits = prev.toString().length;
 				const total = parseInt(prev.toString() + num.toString());
 
@@ -590,20 +596,21 @@ export function createDateField(props?: CreateDateFieldProps) {
 				 * month, then we will reset the segment as if the user had pressed the
 				 * backspace key and then typed the number.
 				 */
+
 				if (digits === 2 || total > max) {
 					/**
 					 * As we're doing elsewhere, we're checking if the number is greater
 					 * than the max start digit (0-3 in most months), and if so, we're
 					 * going to move to the next segment.
 					 */
-					if (num > maxStart) {
+					if (num > maxStart || total > max) {
 						moveToNext = true;
 					}
-
+					announcer.announce(num);
 					return num;
 				}
 				moveToNext = true;
-
+				announcer.announce(total);
 				return total;
 			});
 
@@ -752,6 +759,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					if (states.month.lastKeyZero || num > maxStart) {
 						moveToNext = true;
 					}
+					states.month.lastKeyZero = false;
 
 					/**
 					 * If none of the above conditions are met, then we can just
@@ -1064,10 +1072,10 @@ export function createDateField(props?: CreateDateFieldProps) {
 					 */
 					if (states.hour.lastKeyZero || num > maxStart) {
 						moveToNext = true;
-						announcer.announce(num);
-						return num;
 					}
 
+					states.hour.lastKeyZero = false;
+					announcer.announce(num);
 					/**
 					 * If none of the above conditions are met, then we can just
 					 * return the number as the segment value and continue typing
@@ -1245,10 +1253,10 @@ export function createDateField(props?: CreateDateFieldProps) {
 					 */
 					if (states.minute.lastKeyZero || num > maxStart) {
 						moveToNext = true;
-						announcer.announce(num);
-						return num;
 					}
 
+					states.minute.lastKeyZero = false;
+					announcer.announce(num);
 					/**
 					 * If none of the above conditions are met, then we can just
 					 * return the number as the segment value and continue typing
@@ -1428,6 +1436,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					if (states.second.lastKeyZero || num > maxStart) {
 						moveToNext = true;
 					}
+					states.second.lastKeyZero = false;
 
 					/**
 					 * If none of the above conditions are met, then we can just

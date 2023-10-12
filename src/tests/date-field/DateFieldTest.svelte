@@ -61,9 +61,3 @@
 		</div>
 	</div>
 </main>
-
-<style lang="postcss">
-	.btn {
-		@apply rounded bg-magnum-600 p-1 text-xs text-white;
-	}
-</style>
