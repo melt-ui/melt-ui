@@ -56,7 +56,7 @@
 		gap: 0.75rem;
 	}
 
-	.root[data-orientation='horizontal'] {
+	:global([data-orientation='horizontal']).root {
 		flex-direction: row;
 	}
 
