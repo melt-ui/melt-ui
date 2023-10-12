@@ -21,7 +21,12 @@ import type {
 	AnyExceptLiteral,
 	HourCycle,
 } from './types.js';
-import { allSegmentParts, dateSegmentParts, segmentParts, timeSegmentParts } from './parts.js';
+import {
+	ALL_SEGMENT_PARTS,
+	DATE_SEGMENT_PARTS,
+	INTERACTIVE_SEGMENT_PARTS,
+	TIME_SEGMENT_PARTS,
+} from './parts.js';
 import {
 	isBrowser,
 	isNull,
@@ -35,21 +40,19 @@ import type { IdObj } from '$lib/internal/types.js';
 
 export function initializeSegmentValues(granularity: Granularity) {
 	const calendarDateTimeGranularities = ['hour', 'minute', 'second'];
-	const initialParts = segmentParts
-		.map((part) => {
-			if (part === 'dayPeriod') {
-				return [part, 'AM'];
-			}
-			return [part, null];
-		})
-		.filter(([key]) => {
-			if (key === 'literal' || key === null) return false;
-			if (granularity === 'day') {
-				return !calendarDateTimeGranularities.includes(key);
-			} else {
-				return true;
-			}
-		});
+	const initialParts = INTERACTIVE_SEGMENT_PARTS.map((part) => {
+		if (part === 'dayPeriod') {
+			return [part, 'AM'];
+		}
+		return [part, null];
+	}).filter(([key]) => {
+		if (key === 'literal' || key === null) return false;
+		if (granularity === 'day') {
+			return !calendarDateTimeGranularities.includes(key);
+		} else {
+			return true;
+		}
+	});
 	return Object.fromEntries(initialParts) as SegmentValueObj;
 }
 
@@ -187,7 +190,7 @@ function getOptsByGranularity(granularity: Granularity, hourCycle: HourCycle) {
 }
 
 export function initSegmentStates() {
-	return segmentParts.reduce((acc, key) => {
+	return INTERACTIVE_SEGMENT_PARTS.reduce((acc, key) => {
 		acc[key] = {
 			lastKeyZero: false,
 			hasLeftFocus: true,
@@ -199,24 +202,22 @@ export function initSegmentStates() {
 
 export function initSegmentIds() {
 	return Object.fromEntries(
-		allSegmentParts
-			.map((part) => {
-				return [part, generateId()];
-			})
-			.filter(([key]) => key !== 'literal')
+		ALL_SEGMENT_PARTS.map((part) => {
+			return [part, generateId()];
+		}).filter(([key]) => key !== 'literal')
 	) as IdObj<AnyExceptLiteral>;
 }
 
 export function isDateSegmentPart(part: unknown): part is DateSegmentPart {
-	return dateSegmentParts.includes(part as DateSegmentPart);
+	return DATE_SEGMENT_PARTS.includes(part as DateSegmentPart);
 }
 
 export function isSegmentPart(part: string): part is SegmentPart {
-	return segmentParts.includes(part as SegmentPart);
+	return INTERACTIVE_SEGMENT_PARTS.includes(part as SegmentPart);
 }
 
 export function isAnySegmentPart(part: unknown): part is AnySegmentPart {
-	return allSegmentParts.includes(part as SegmentPart);
+	return ALL_SEGMENT_PARTS.includes(part as SegmentPart);
 }
 
 /**
@@ -230,7 +231,7 @@ function getUsedSegments(id: string) {
 	const usedSegments = getSegments(id)
 		.map((el) => el.dataset.segment)
 		.filter((part): part is SegmentPart => {
-			return segmentParts.includes(part as SegmentPart);
+			return INTERACTIVE_SEGMENT_PARTS.includes(part as SegmentPart);
 		});
 	return usedSegments;
 }
@@ -300,8 +301,8 @@ export function isDateAndTimeSegmentObj(obj: unknown): obj is DateAndTimeSegment
 	}
 	return Object.entries(obj).every(([key, value]) => {
 		const validKey =
-			timeSegmentParts.includes(key as TimeSegmentPart) ||
-			dateSegmentParts.includes(key as DateSegmentPart);
+			TIME_SEGMENT_PARTS.includes(key as TimeSegmentPart) ||
+			DATE_SEGMENT_PARTS.includes(key as DateSegmentPart);
 		const validValue =
 			key === 'dayPeriod'
 				? value === 'AM' || value === 'PM' || value === null
@@ -359,11 +360,11 @@ type SyncSegmentValuesProps = {
 export function syncSegmentValues(props: SyncSegmentValuesProps) {
 	const { value, updatingDayPeriod, segmentValues, formatter } = props;
 
-	const dateValues = dateSegmentParts.map((part) => {
+	const dateValues = DATE_SEGMENT_PARTS.map((part) => {
 		return [part, value[part]];
 	});
 	if ('hour' in value) {
-		const timeValues = timeSegmentParts.map((part) => {
+		const timeValues = TIME_SEGMENT_PARTS.map((part) => {
 			if (part === 'dayPeriod') {
 				const $updatingDayPeriod = get(updatingDayPeriod);
 				if ($updatingDayPeriod) {

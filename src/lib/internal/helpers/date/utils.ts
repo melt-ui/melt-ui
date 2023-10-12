@@ -33,7 +33,7 @@ const defaultDateDefaults = {
  * behavior the user expects based on the props they've provided.
  *
  */
-export function getDefaultDate(props: GetDefaultDateProps): DateValue {
+export function getDefaultDate(props?: GetDefaultDateProps): DateValue {
 	const withDefaults = { ...defaultDateDefaults, ...props };
 	const { defaultValue, defaultPlaceholderValue, granularity } = withDefaults;
 

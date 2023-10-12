@@ -53,7 +53,6 @@ export function createFormatter(initialLocale: string) {
 
 	function toParts(date: DateValue, options?: Intl.DateTimeFormatOptions) {
 		if (isZonedDateTime(date)) {
-			console.log(date.timeZone);
 			return new DateFormatter(locale, {
 				...options,
 				timeZone: date.timeZone,

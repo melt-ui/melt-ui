@@ -1,3 +1,4 @@
+import { isAnySegmentPart } from '$lib/builders/date-field/_internal/helpers';
 import { isHTMLElement, kbd } from '$lib/internal/helpers/index.js';
 
 /**
@@ -27,7 +28,7 @@ export function handleSegmentNavigation(e: KeyboardEvent, fieldId: string) {
  * @param node - The node we're starting from
  * @param segments - The list of candidate segments to navigate through
  */
-function getNextSegment(node: HTMLElement, segments: HTMLElement[]) {
+export function getNextSegment(node: HTMLElement, segments: HTMLElement[]) {
 	const index = segments.indexOf(node);
 	if (index === segments.length - 1 || index === -1) return null;
 	const nextIndex = index + 1;
@@ -41,7 +42,7 @@ function getNextSegment(node: HTMLElement, segments: HTMLElement[]) {
  * @param node - The node we're starting from
  * @param segments - The list of candidate segments to navigate through
  */
-function getPrevSegment(node: HTMLElement, segments: HTMLElement[]) {
+export function getPrevSegment(node: HTMLElement, segments: HTMLElement[]) {
 	const index = segments.indexOf(node);
 	if (index === 0 || index === -1) return null;
 	const prevIndex = index - 1;
@@ -55,7 +56,7 @@ function getPrevSegment(node: HTMLElement, segments: HTMLElement[]) {
  * @param node - The node we're starting from
  * @param fieldId - The ID of the field we're navigating within
  */
-function getPrevNextSegments(node: HTMLElement, fieldId: string) {
+export function getPrevNextSegments(node: HTMLElement, fieldId: string) {
 	const segments = getSegments(fieldId);
 	if (!segments.length) {
 		return {
@@ -95,7 +96,8 @@ export function getSegments(id: string) {
 	const segments = Array.from(inputContainer.querySelectorAll('[data-segment]')).filter(
 		(el): el is HTMLElement => {
 			if (!isHTMLElement(el)) return false;
-			if (el.dataset.segment === 'literal') return false;
+			const segment = el.dataset.segment;
+			if (!isAnySegmentPart(segment) || segment === 'literal') return false;
 			return true;
 		}
 	);

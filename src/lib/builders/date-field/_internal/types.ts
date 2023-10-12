@@ -1,17 +1,17 @@
 import type { DateValue } from '@internationalized/date';
 import type {
-	dateSegmentParts,
-	nonInteractiveSegmentParts,
-	segmentParts,
-	timeSegmentParts,
+	DATE_SEGMENT_PARTS,
+	NON_INTERACTIVE_SEGMENT_PARTS,
+	INTERACTIVE_SEGMENT_PARTS,
+	TIME_SEGMENT_PARTS,
 } from './parts.js';
 import type { Action } from 'svelte/action';
 import type { IdObj } from '$lib/internal/types.js';
 
-export type SegmentPart = (typeof segmentParts)[number];
-export type DateSegmentPart = (typeof dateSegmentParts)[number];
-export type TimeSegmentPart = (typeof timeSegmentParts)[number];
-export type NonInteractiveSegmentPart = (typeof nonInteractiveSegmentParts)[number];
+export type SegmentPart = (typeof INTERACTIVE_SEGMENT_PARTS)[number];
+export type DateSegmentPart = (typeof DATE_SEGMENT_PARTS)[number];
+export type TimeSegmentPart = (typeof TIME_SEGMENT_PARTS)[number];
+export type NonInteractiveSegmentPart = (typeof NON_INTERACTIVE_SEGMENT_PARTS)[number];
 export type AnySegmentPart = SegmentPart | NonInteractiveSegmentPart;
 
 export type AnyExceptLiteral = Exclude<AnySegmentPart, 'literal'>;

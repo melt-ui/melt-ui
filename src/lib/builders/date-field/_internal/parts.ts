@@ -1,5 +1,8 @@
-export const dateSegmentParts = ['day', 'month', 'year'] as const;
-export const timeSegmentParts = ['hour', 'minute', 'second', 'dayPeriod'] as const;
-export const nonInteractiveSegmentParts = ['literal', 'timeZoneName'] as const;
-export const segmentParts = [...dateSegmentParts, ...timeSegmentParts] as const;
-export const allSegmentParts = [...segmentParts, ...nonInteractiveSegmentParts] as const;
+export const DATE_SEGMENT_PARTS = ['day', 'month', 'year'] as const;
+export const TIME_SEGMENT_PARTS = ['hour', 'minute', 'second', 'dayPeriod'] as const;
+export const NON_INTERACTIVE_SEGMENT_PARTS = ['literal', 'timeZoneName'] as const;
+export const INTERACTIVE_SEGMENT_PARTS = [...DATE_SEGMENT_PARTS, ...TIME_SEGMENT_PARTS] as const;
+export const ALL_SEGMENT_PARTS = [
+	...INTERACTIVE_SEGMENT_PARTS,
+	...NON_INTERACTIVE_SEGMENT_PARTS,
+] as const;
