@@ -21,7 +21,6 @@ import { derived, get, writable, type Readable, type Writable } from "svelte/sto
 
 
 const defaults = {
-    forceVisible: false,
     defaultColor: '#ff0000',
     hueSliderOrientation: 'horizontal',
     alphaSliderOrientation: 'horizontal',
@@ -37,6 +36,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     let alphaDragging = false;
     let insideUpdate = false;
     let inputUpdate = false;
+    let lastValid = argsWithDefaults.defaultColor;
     const speepUpStep = 5;
 
     const keyDurations: KeyDurations = {
@@ -46,7 +46,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         'ArrowRight': null
     };
 
-    // const value: Writable<string> = writable(defaults.defaultColor);
     const valueWritable = argsWithDefaults.value ?? writable(argsWithDefaults.defaultColor);
 	const value = overridable(valueWritable, argsWithDefaults?.onValueChange);
 
@@ -565,12 +564,26 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         action: (node: HTMLInputElement) => {
 
             const unsubEvents = executeCallbacks(
-                addMeltEventListener(node, 'keyup', () => {
+                addMeltEventListener(node, 'keydown', (e) => {
+
+                    if (e.key !== 'Enter') return;
+
                     const { value: hexValue } = node;
 
-                    if (!isValidHexColor(hexValue)) return;
+                    if (!isValidHexColor(hexValue)) {
+                        value.set(lastValid);
+                        return;
+                    }
 
                     value.set(hexValue);
+                }),
+                addMeltEventListener(node, 'blur', () => {
+                    const { value: hexValue } = node;
+
+                    if (!isValidHexColor(hexValue)) {
+                        node.value = lastValid;
+                        return;
+                    }
                 })
             );
 
@@ -798,6 +811,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             }
 
             if (!isValidHexColor(hex)) return;
+
+            lastValid = hex;
 
             inputUpdate = true;
             updateOnColorInput(hex);

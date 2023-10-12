@@ -7,8 +7,6 @@ export type ColorPickerParts = 'color-canvas' | 'color-picker' | 'hue-slider' | 
 
 
 export type CreateColorPickerProps = {
-    forceVisible?: boolean;
-
     /**
      * Which color is selected by default.
      * Should be a hex value: #4242ff.

@@ -1,6 +1,8 @@
-import { DESCRIPTIONS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD, SEE } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 import type { BuilderData } from '.';
+import { colorPickerEvents } from '$lib/builders/color-picker/events';
+import { elementSchema } from '$docs/utils';
 
 const builder: APISchema = {
 	title: 'createColorPicker',
@@ -20,6 +22,30 @@ const builder: APISchema = {
 			name: 'alphaSliderOrientation',
 			type: 'Orientation',
 			description: 'The orientation of the alpha slider.'
+		},
+		{
+			name: 'value',
+			type: 'Writable<string>',
+			description: 'The controlled value store for the hex color value.',
+			see: SEE.BRING_YOUR_OWN_STORE
+		},
+		{
+			name: 'onValueChange',
+			type: 'ChangeFn<string>',
+			description: 'The callback invoked when the value store of the color picker changes.',
+			see: SEE.CHANGE_FUNCTIONS
+		},
+		{
+			name: 'hueAngle',
+			type: 'Writable<number>',
+			description: 'The controlled value store for the hue angle. Should be a value between 0 and 360.',
+			see: SEE.BRING_YOUR_OWN_STORE
+		},
+		{
+			name: 'alphaValue',
+			type: 'Writable<number>',
+			description: 'The controlled value store for the alpha value. Should be a value between 0 and 100.',
+			see: SEE.BRING_YOUR_OWN_STORE
 		}
 	],
 	elements: [
@@ -47,13 +73,111 @@ const builder: APISchema = {
 			name: 'alphaPicker',
 			description: 'The builder store used to create the alpha picker button.'
 		},
-	]
+		{
+			name: 'eyeDropper',
+			description: 'The builder store used to create the eye dropper button.'
+		},
+		{
+			name: 'hexInput',
+			description: 'The builder store used to create the hex color input element.'
+		}
+	],
 };
 
-const schemas = [builder];
+const colorCanvas = elementSchema('colorCanvas', {
+	description: 'The main color canvas element.',
+	dataAttributes: [
+		{
+			name: 'data-melt-color-picker-color-canvas',
+			value: ATTRS.MELT('color-canvas')
+		}
+	],
+	events: colorPickerEvents['colorCanvas']
+});
+
+const colorPicker = elementSchema('colorPicker', {
+	description: 'The color picker element for the color canvas.',
+	dataAttributes: [
+		{
+			name: 'data-melt-color-picker-color-picker',
+			value: ATTRS.MELT('color-picker')
+		}
+	],
+	events: colorPickerEvents['colorPicker']
+});
+
+const hueSlider = elementSchema('hueSlider', {
+	description: 'The hue slider element.',
+	dataAttributes: [
+		{
+			name: 'data-melt-color-picker-hue-slider',
+			value: ATTRS.MELT('hue-slider')
+		}
+	],
+	events: colorPickerEvents['hueSlider']
+});
+
+const huePicker = elementSchema('huePicker', {
+	description: 'The hue picker element.',
+	dataAttributes: [
+		{
+			name: 'data-melt-color-picker-hue-picker',
+			value: ATTRS.MELT('hue-picker')
+		}
+	],
+	events: colorPickerEvents['huePicker']
+});
+
+const alphaSlider = elementSchema('alphaSlider', {
+	description: 'The alpha slider element.',
+	dataAttributes: [
+		{
+			name: 'data-melt-color-picker-alpha-slider',
+			value: ATTRS.MELT('alpha-slider')
+		}
+	],
+	events: colorPickerEvents['alphaSlider']
+});
+
+const alphaPicker = elementSchema('alphaPicker', {
+	description: 'The alpha picker element.',
+	dataAttributes: [
+		{
+			name: 'data-melt-color-picker-alpha-picker',
+			value: ATTRS.MELT('alpha-picker')
+		}
+	],
+	events: colorPickerEvents['alphaPicker']
+});
+
+const eyeDropper = elementSchema('eyeDropper', {
+	description: 'The eye dropper element.',
+	dataAttributes: [
+		{
+			name: 'data-melt-color-picker-eye-dropper',
+			value: ATTRS.MELT('eye-dropper')
+		}
+	],
+	events: colorPickerEvents['eyeDropper']
+});
+
+const hexInput = elementSchema('hexInput', {
+	description: 'The hex input element.',
+	dataAttributes: [
+		{
+			name: 'data-melt-color-picker-hex-input',
+			value: ATTRS.MELT('hex-input')
+		}
+	],
+	events: colorPickerEvents['hexInput']
+});
+
+const schemas = [builder, colorCanvas, colorPicker, hueSlider, huePicker, alphaSlider, alphaPicker, eyeDropper, hexInput];
 
 const features = [
 	'Full keyboard navigation',
+	'Horizontal or vertical orientation',
+	'Different color representations'
 ];
 
 const keyboard: KeyboardSchema = [
