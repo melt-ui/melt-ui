@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.55.0
+
+### Minor Changes
+
+- Select: use listbox builder ([#613](https://github.com/melt-ui/melt-ui/pull/613))
+
+- Combobox: Use listbox builder ([#613](https://github.com/melt-ui/melt-ui/pull/613))
+
+- Add new internal builder `listbox` ([#613](https://github.com/melt-ui/melt-ui/pull/613))
+
 ## 0.54.1
 
 ### Patch Changes
