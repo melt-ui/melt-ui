@@ -12,9 +12,7 @@ description:
     export let keyboard
 </script>
 
-# Documenting Differences Between Tooltip and Link-Preview in Melt UI
 
-In the context of Melt UI, tooltips and link previews serve different purposes and have distinct characteristics. Below, I'll document the key differences between tooltips and link previews in Melt UI:
 
 ## Tooltips
 
