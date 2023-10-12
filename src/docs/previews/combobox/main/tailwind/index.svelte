@@ -20,6 +20,11 @@
 			disabled: false,
 		},
 		{
+			author: 'ONE',
+			title: 'Mob Psycho 100',
+			disabled: false,
+		},
+		{
 			author: 'Hajime Isayama',
 			title: 'Attack on Titan',
 			disabled: false,
@@ -52,11 +57,6 @@
 		{
 			author: 'Tsugumi Ohba',
 			title: 'Death Note',
-			disabled: false,
-		},
-		{
-			author: 'ONE',
-			title: 'Mob Psycho 100',
 			disabled: false,
 		},
 		{
