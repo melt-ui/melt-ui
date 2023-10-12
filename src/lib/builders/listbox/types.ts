@@ -5,7 +5,7 @@ import type { createListbox } from './create.js';
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
 export type { ListboxComponentEvents } from './events.js';
 
-export type ListboxOption<Value> = {
+export type ListboxOption<Value = unknown> = {
 	value: Value;
 	label?: string;
 };
@@ -17,7 +17,7 @@ export type ListboxSelected<Multiple extends boolean, Value> = WhenTrue<
 >;
 
 export type CreateListboxProps<
-	Value,
+	Value = unknown,
 	Multiple extends boolean = false,
 	S extends ListboxSelected<Multiple, Value> = ListboxSelected<Multiple, Value>
 > = {
@@ -153,7 +153,7 @@ export type CreateListboxProps<
 	typeahead?: boolean;
 };
 
-export type ListboxOptionProps<Value> = ListboxOption<Value> & {
+export type ListboxOptionProps<Value = unknown> = ListboxOption<Value> & {
 	/**
 	 *  Is the item disabled?
 	 */
