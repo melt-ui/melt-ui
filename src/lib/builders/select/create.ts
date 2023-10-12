@@ -22,7 +22,6 @@ import {
 	getOptions,
 	getPortalDestination,
 	getPreviousFocusable,
-	handleRovingFocus,
 	hiddenInputAttrs,
 	isBrowser,
 	isElementDisabled,
@@ -174,13 +173,6 @@ export function createSelect<
 	function getSelectedOption(menuElement: HTMLElement) {
 		const selectedOption = menuElement.querySelector('[data-selected]');
 		return isHTMLElement(selectedOption) ? selectedOption : null;
-	}
-
-	function onOptionPointerMove(e: PointerEvent) {
-		if (!isMouse(e)) return;
-		const currentTarget = e.currentTarget;
-		if (!isHTMLElement(currentTarget)) return;
-		handleRovingFocus(currentTarget);
 	}
 
 	function onOptionLeave() {
