@@ -1,17 +1,7 @@
-#Tool Tooltip_and_Link_Preview
 ---
-title: Tooltip and Link Preview
-description:
-  A popup that displays information related to an element when the element receives keyboard focus
-  or the mouse hovers over it.
+Title: Docs
+Description: Document differences between tooltip and link-preview
 ---
-
-<script>
-    import { APIReference, KbdTable, Callout } from '$docs/components'
-    export let schemas
-    export let keyboard
-</script>
-
 
 
 ## Tooltips
