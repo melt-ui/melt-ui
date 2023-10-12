@@ -11,6 +11,7 @@ import {
     HSVtoRGB,
     hexToHSL,
     overridable,
+    hexToRGB,
 } from "$lib/internal/helpers";
 
 import type { ColorRGB, Defaults, Orientation } from "$lib/internal/types";
@@ -441,10 +442,16 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         returned: ([$value]) => {
             const orientation = argsWithDefaults.hueSliderOrientation === 'horizontal' ? 'right' : 'bottom';
 
+            const rgb = hexToRGB($value);
+            const { r, g, b } = rgb;
+
+            const color = `${r}, ${g}, ${b}`;
+
             return {
                 'aria-label': 'A canvas element showing the alpha values for the color.',
                 style: styleToString({
-                    background: `linear-gradient(to ${orientation}, ${$value}00, ${$value})`
+                    // background: `linear-gradient(to ${orientation}, ${$value}00, ${$value})`
+                    background: `linear-gradient(to ${orientation}, rgba(${color}, 0), ${$value})`
                 })
             }
         },
