@@ -122,7 +122,6 @@ export function createDateField(props?: CreateDateFieldProps) {
 	);
 
 	const formatter = createFormatter(get(locale));
-	const dateRef = get(placeholderValue);
 	const initialSegments = initializeSegmentValues(get(inferredGranularity));
 	const segmentValues = writable(structuredClone(initialSegments));
 
@@ -320,6 +319,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	) {
 		if (get(fieldDisabled) || get(fieldReadonly)) return;
 		segmentValues.update((prev) => {
+			const dateRef = get(placeholderValue);
 			if (isDateAndTimeSegmentObj(prev)) {
 				const pVal = prev[part];
 				const castCb = cb as Updater<DateAndTimeSegmentObj[T]>;
@@ -833,9 +833,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 	 */
 
 	function yearSegmentAttrs(props: SegmentAttrProps) {
-		const { segmentValues } = props;
+		const { segmentValues, placeholderValue } = props;
 		const isEmpty = segmentValues.year === null;
-		const date = segmentValues.year ? dateRef.set({ year: segmentValues.year }) : dateRef;
+		const date = segmentValues.year
+			? placeholderValue.set({ year: segmentValues.year })
+			: placeholderValue;
 		const valueMin = 1;
 		const valueMax = 9999;
 		const valueNow = date.year;
@@ -1001,6 +1003,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	}
 
 	function handleHourSegmentKeydown(e: KeyboardEvent) {
+		const dateRef = get(placeholderValue);
 		if (!isAcceptableSegmentKey(e.key) || !('hour' in dateRef)) {
 			return;
 		}
@@ -1183,6 +1186,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	}
 
 	function handleMinuteSegmentKeydown(e: KeyboardEvent) {
+		const dateRef = get(placeholderValue);
 		if (!isAcceptableSegmentKey(e.key) || !('minute' in dateRef)) {
 			return;
 		}
@@ -1364,6 +1368,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	}
 
 	function handleSecondSegmentKeydown(e: KeyboardEvent) {
+		const dateRef = get(placeholderValue);
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}

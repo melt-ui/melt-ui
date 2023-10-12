@@ -4,7 +4,13 @@ import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
 import DateFieldTest from './DateFieldTest.svelte';
-import { CalendarDate, CalendarDateTime, toZoned } from '@internationalized/date';
+import {
+	CalendarDate,
+	CalendarDateTime,
+	now,
+	parseAbsoluteToLocal,
+	toZoned,
+} from '@internationalized/date';
 
 const calendarDateOther = new CalendarDate(1980, 1, 20);
 const calendarDateTimeOther = new CalendarDateTime(1980, 1, 20, 12, 30, 0, 0);
@@ -466,4 +472,45 @@ describe('DateField', () => {
 		await user.keyboard(`{1}`);
 		expect(minuteSegment).toHaveTextContent('1');
 	});
+
+	test('displays correct timezone with ZonedDateTime value - now', async () => {
+		const { getByTestId } = render(DateFieldTest, {
+			defaultValue: now('America/Los_Angeles'),
+		});
+
+		const timeZoneSegment = getByTestId('timeZoneName');
+		if (isDaylightSavingsTime()) {
+			expect(timeZoneSegment).toHaveTextContent('PDT');
+		} else {
+			expect(timeZoneSegment).toHaveTextContent('PST');
+		}
+	});
+
+	test('displays correct timezone with ZonedDateTime value - absolute to local', async () => {
+		const { getByTestId } = render(DateFieldTest, {
+			defaultValue: parseAbsoluteToLocal('2023-10-12T12:30:00Z'),
+		});
+
+		const timeZoneSegment = getByTestId('timeZoneName');
+
+		expect(timeZoneSegment).toHaveTextContent(thisTimeZone());
+	});
 });
+
+function isDaylightSavingsTime(): boolean {
+	const now = new Date();
+	const january = new Date(now.getFullYear(), 0, 1);
+	const july = new Date(now.getFullYear(), 6, 1);
+	const timezoneOffset = now.getTimezoneOffset();
+	const isDaylightSavingsTime =
+		timezoneOffset < Math.max(january.getTimezoneOffset(), july.getTimezoneOffset());
+	return isDaylightSavingsTime;
+}
+
+function thisTimeZone(): string {
+	const timezone =
+		Intl.DateTimeFormat(undefined, { timeZoneName: 'short' })
+			.formatToParts(new Date())
+			.find((p) => p.type === 'timeZoneName')?.value ?? '';
+	return timezone;
+}

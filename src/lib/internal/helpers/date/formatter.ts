@@ -1,10 +1,5 @@
-import {
-	DateFormatter,
-	ZonedDateTime,
-	type DateValue,
-	getLocalTimeZone,
-} from '@internationalized/date';
-import { hasTime, toDate } from '.';
+import { DateFormatter, type DateValue } from '@internationalized/date';
+import { hasTime, isZonedDateTime, toDate } from '.';
 
 export type Formatter = ReturnType<typeof createFormatter>;
 
@@ -56,8 +51,16 @@ export function createFormatter(initialLocale: string) {
 		return new DateFormatter(locale, { year: 'numeric' }).format(date);
 	}
 
-	function toParts(date: Date, options?: Intl.DateTimeFormatOptions) {
-		return new DateFormatter(locale, options).formatToParts(date);
+	function toParts(date: DateValue, options?: Intl.DateTimeFormatOptions) {
+		if (isZonedDateTime(date)) {
+			console.log(date.timeZone);
+			return new DateFormatter(locale, {
+				...options,
+				timeZone: date.timeZone,
+			}).formatToParts(toDate(date));
+		} else {
+			return new DateFormatter(locale, options).formatToParts(toDate(date));
+		}
 	}
 
 	function dayOfWeek(date: Date, length: Intl.DateTimeFormatOptions['weekday'] = 'narrow') {
@@ -91,15 +94,7 @@ export function createFormatter(initialLocale: string) {
 		options: Intl.DateTimeFormatOptions = {}
 	) {
 		const opts = { ...defaultPartOptions, ...options };
-		let date: Date;
-
-		if (dateObj instanceof ZonedDateTime) {
-			date = dateObj.toDate();
-		} else {
-			date = dateObj.toDate(getLocalTimeZone());
-		}
-
-		const parts = toParts(date, opts);
+		const parts = toParts(dateObj, opts);
 		const part = parts.find((p) => p.type === type);
 		return part ? part.value : '';
 	}

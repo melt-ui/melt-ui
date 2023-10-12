@@ -117,11 +117,11 @@ function createContentObj(props: CreateContentObjProps) {
 
 function createContentArr(props: CreateContentArrProps) {
 	const { granularity, dateRef, formatter, contentObj, hideTimeZone, hourCycle } = props;
-
-	const parts = formatter.toParts(toDate(dateRef), getOptsByGranularity(granularity, hourCycle));
+	const parts = formatter.toParts(dateRef, getOptsByGranularity(granularity, hourCycle));
 	const segmentContentArr = parts
 		.map((part) => {
 			const defaultParts = ['literal', 'dayPeriod', 'timeZoneName', null];
+
 			if (defaultParts.includes(part.type) || !isSegmentPart(part.type)) {
 				return {
 					part: part.type,
