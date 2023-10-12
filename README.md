@@ -1,6 +1,4 @@
-<h1 align="center">
- <img align="center" src="https://raw.githubusercontent.com/melt-ui/melt-ui/main/static/banner.png"  />
-</h1>
+![](static/banner.png)
 
 [Melt UI](https://www.melt-ui.com/) is a set of headless, accessible component builders for Svelte.
 
@@ -59,6 +57,10 @@ been implemented yet or could be improved, do consider contributing to the proje
 enhance the experience of building with Svelte and improve the ecosystem for everyone.
 
 Check out our [Contributing guide](./CONTRIBUTING.md) to learn more.
+
+Melt UI is an open-source project built by the community for the community. It wouldn't be possible if it wasn't for the work of some amazing people.
+
+[![Contributors](https://contrib.rocks/image?repo=melt-ui/melt-ui)]([https://github.com/codemaniac-sahil/news-webapp-api](https://github.com/melt-ui/melt-ui)https://github.com/melt-ui/melt-ui/graphs/contributors)
 
 ## Community
 
