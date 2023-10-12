@@ -16,7 +16,7 @@ import {
 } from '$lib/internal/helpers/index.js';
 
 import { derived, get, writable } from 'svelte/store';
-import type { CalendarIds, CreateRangeCalendarProps } from './types.js';
+import type { RangeCalendarIds, CreateRangeCalendarProps } from './types.js';
 import { tick } from 'svelte';
 import {
 	getAnnouncer,
@@ -97,7 +97,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		calendar: generateId(),
 		grid: generateId(),
 		accessibleHeading: generateId(),
-	} satisfies CalendarIds;
+	} satisfies RangeCalendarIds;
 
 	const defaultDate = getDefaultDate({
 		defaultValue: withDefaults.defaultValue.start,

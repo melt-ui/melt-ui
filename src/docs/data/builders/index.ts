@@ -8,6 +8,7 @@ import { contextMenuData } from './context-menu.js';
 import { popoverData as calendarData } from './calendar.js';
 import { popoverData as dateFieldData } from './date-field.js';
 import { popoverData as dateRangeFieldData } from './date-range-field.js';
+import { popoverData as dateRangePickerData } from './date-range-picker.js';
 import { popoverData as rangeCalendarData } from './range-calendar.js';
 import { dialogData } from './dialog.js';
 import { dropdownMenuData } from './dropdown-menu.js';
@@ -41,9 +42,10 @@ export const builderList = [
 	'collapsible',
 	'combobox',
 	'context-menu',
-	'date-picker',
 	'date-field',
+	'date-picker',
 	'date-range-field',
+	'date-range-picker',
 	'dialog',
 	'dropdown-menu',
 	'label',
@@ -92,9 +94,10 @@ export const data: Builders = {
 	collapsible: collapsibleData,
 	combobox: comboboxData,
 	'context-menu': contextMenuData,
-	'date-picker': calendarData,
 	'date-field': dateFieldData,
+	'date-picker': calendarData,
 	'date-range-field': dateRangeFieldData,
+	'date-range-picker': dateRangePickerData,
 	dialog: dialogData,
 	'dropdown-menu': dropdownMenuData,
 	label: labelData,
