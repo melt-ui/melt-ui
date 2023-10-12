@@ -1,4 +1,10 @@
-import { effect, toWritableStores, omit } from '$lib/internal/helpers/index.js';
+import {
+	effect,
+	toWritableStores,
+	omit,
+	builder,
+	addMeltEventListener,
+} from '$lib/internal/helpers/index.js';
 import { get } from 'svelte/store';
 import { createRangeCalendar, createPopover } from '$lib/builders/index.js';
 import type { CreateDateRangePickerProps } from './types.js';
@@ -24,10 +30,6 @@ const defaults = {
 	locale: 'en',
 	granularity: 'day',
 } satisfies CreateDateRangePickerProps;
-
-const defaultTriggerAttrs = {
-	'data-segment': 'trigger',
-};
 
 export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 	const withDefaults = { ...defaults, ...props };
@@ -57,27 +59,12 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 		closeOnOutsideClick: withDefaults.closeOnOutsideClick,
 		portal: withDefaults.portal,
 		forceVisible: withDefaults.forceVisible,
-		attrs: {
-			trigger: {
-				...defaultTriggerAttrs,
-				'aria-label': 'Open date picker',
-			},
-		},
-		handlers: {
-			trigger: {
-				keydown: handleTriggerKeydown,
-			},
-		},
 		focusTrap: {
 			// We want to focus the focused date when the popover
 			// is open regardless of the DOM order
 			initialFocus: `[data-melt-calendar-cell][data-focused]`,
 		},
 	});
-
-	const {
-		states: { open },
-	} = popover;
 
 	const options = toWritableStores({
 		...omit(withDefaults, 'value', 'placeholderValue'),
@@ -99,12 +86,35 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 		withDefaults.defaultPlaceholderValue ?? defaultDate
 	);
 
+	const trigger = builder('popover-trigger', {
+		stores: [popover.elements.trigger],
+		returned: ([$trigger]) => {
+			return {
+				...omit($trigger, 'action'),
+				'aria-label': 'Open date picker',
+				'data-segment': 'trigger',
+			};
+		},
+		action: (node: HTMLElement) => {
+			const unsubKeydown = addMeltEventListener(node, 'keydown', handleTriggerKeydown);
+
+			const { destroy } = popover.elements.trigger(node);
+
+			return {
+				destroy() {
+					destroy?.();
+					unsubKeydown();
+				},
+			};
+		},
+	});
+
 	effect([locale], ([$locale]) => {
 		if (formatter.getLocale() === $locale) return;
 		formatter.setLocale($locale);
 	});
 
-	effect([open], ([$open]) => {
+	effect([popover.states.open], ([$open]) => {
 		if (!$open) {
 			const $value = get(value);
 			if ($value?.start) {
@@ -127,6 +137,7 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 			...calendar.elements,
 			...rangeField.elements,
 			...popover.elements,
+			trigger,
 		},
 		states: {
 			...rangeField.states,

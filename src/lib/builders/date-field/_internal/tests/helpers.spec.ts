@@ -38,7 +38,7 @@ describe('initSegmentStates', () => {
 		const properties = ['day', 'month', 'year', 'hour', 'minute', 'second', 'dayPeriod'];
 		const initState = {
 			lastKeyZero: false,
-			hasLeftFocus: false,
+			hasLeftFocus: true,
 			hasTouched: false,
 		};
 		expect(states).toEqual(Object.fromEntries(properties.map((prop) => [prop, initState])));

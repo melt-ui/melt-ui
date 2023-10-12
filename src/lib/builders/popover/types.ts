@@ -3,7 +3,6 @@ import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
 import type { createPopover } from './create.js';
 import type { BuilderReturn, IdObj } from '$lib/internal/types.js';
-import type { InternalPopoverHandlers } from './events.js';
 export type { PopoverComponentEvents } from './events.js';
 
 export type CreatePopoverProps = {
@@ -84,24 +83,6 @@ export type CreatePopoverProps = {
 	 * @default false
 	 */
 	forceVisible?: boolean;
-
-	/**
-	 * Additional attributes to programatically add to popover elements when
-	 * initialized internally within other builders.
-	 *
-	 * @internal
-	 */
-	attrs?: {
-		trigger?: Record<string, string>;
-		content?: Record<string, string>;
-	};
-
-	/**
-	 * Internal only event overrides for use with builders inside other builders.
-	 *
-	 * @internal
-	 */
-	handlers?: InternalPopoverHandlers;
 
 	/**
 	 * Options used to configure the focus trap behaviour.

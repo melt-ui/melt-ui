@@ -1,4 +1,10 @@
-import { effect, toWritableStores, omit } from '$lib/internal/helpers/index.js';
+import {
+	effect,
+	toWritableStores,
+	omit,
+	builder,
+	addMeltEventListener,
+} from '$lib/internal/helpers/index.js';
 import { get } from 'svelte/store';
 import { createCalendar, createDateField, createPopover } from '$lib/builders/index.js';
 import type { CreateDatePickerProps } from './types.js';
@@ -23,10 +29,6 @@ const defaults = {
 	locale: 'en',
 	granularity: 'day',
 } satisfies CreateDatePickerProps;
-
-const defaultTriggerAttrs = {
-	'data-segment': 'trigger',
-};
 
 export function createDatePicker(props?: CreateDatePickerProps) {
 	const withDefaults = { ...defaults, ...props };
@@ -56,21 +58,33 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		closeOnOutsideClick: withDefaults.closeOnOutsideClick,
 		portal: withDefaults.portal,
 		forceVisible: withDefaults.forceVisible,
-		attrs: {
-			trigger: {
-				...defaultTriggerAttrs,
-				'aria-label': 'Open date picker',
-			},
-		},
-		handlers: {
-			trigger: {
-				keydown: handleTriggerKeydown,
-			},
-		},
 		focusTrap: {
 			// We want to focus the focused date when the popover
 			// is open regardless of the DOM order
 			initialFocus: `[data-melt-calendar-cell][data-focused]`,
+		},
+	});
+
+	const trigger = builder('popover-trigger', {
+		stores: [popover.elements.trigger],
+		returned: ([$trigger]) => {
+			return {
+				...omit($trigger, 'action'),
+				'aria-label': 'Open date picker',
+				'data-segment': 'trigger',
+			};
+		},
+		action: (node: HTMLElement) => {
+			const unsubKeydown = addMeltEventListener(node, 'keydown', handleTriggerKeydown);
+
+			const { destroy } = popover.elements.trigger(node);
+
+			return {
+				destroy() {
+					destroy?.();
+					unsubKeydown();
+				},
+			};
 		},
 	});
 
@@ -125,6 +139,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			...calendar.elements,
 			...dateField.elements,
 			...popover.elements,
+			trigger,
 		},
 		states: {
 			...dateField.states,
