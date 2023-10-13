@@ -42,18 +42,18 @@
 	p {
 		@apply w-full text-left text-sm font-medium text-magnum-900;
 	}
-	[data-melt-field-label] {
+	[data-melt-datefield-label] {
 		@apply font-medium text-magnum-900;
 	}
 
-	[data-melt-field] {
+	[data-melt-datefield-field] {
 		@apply mt-0.5 flex w-full min-w-[200px] items-center rounded-lg border bg-white p-1.5 text-magnum-900;
 	}
 
-	[data-melt-field-segment]:not([data-segment='literal']) {
+	[data-melt-datefield-segment]:not([data-segment='literal']) {
 		@apply px-0.5;
 	}
-	[data-melt-field-segment] {
+	[data-melt-datefield-segment] {
 		@apply whitespace-nowrap data-[segment="dayPeriod"]:pl-0.5 data-[segment="hour"]:pl-1 data-[segment="timeZoneName"]:pl-1;
 	}
 </style>

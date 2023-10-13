@@ -7,7 +7,7 @@
 	};
 
 	const {
-		elements: { field, segment, label, hiddenInput },
+		elements: { field, segment, label, hiddenInput, validation },
 		states: { value, segmentContents, isInvalid },
 	} = createDateField({
 		name: 'appointmentDate',
@@ -28,10 +28,11 @@
 		</div>
 		<input use:melt={$hiddenInput} />
 	</div>
+	<small use:melt={$validation}
+		>Date must not be the 1st or 15th of the month.</small
+	>
 
-	{#if $isInvalid}
-		<p class="validation">Please select a valid date.</p>
-	{:else}
+	{#if !$isInvalid}
 		<p>
 			You Selected:
 			{#if $value}
@@ -50,10 +51,6 @@
 		@apply w-full text-left text-sm font-medium text-magnum-900;
 	}
 
-	p.validation {
-		@apply text-red-700;
-	}
-
 	[data-melt-datefield-label] {
 		@apply font-medium text-magnum-900;
 	}
@@ -62,7 +59,7 @@
 		@apply text-red-700;
 	}
 
-	[data-melt-datefield] {
+	[data-melt-datefield-field] {
 		@apply mt-0.5 flex w-full min-w-[200px] items-center rounded-lg border bg-white p-1.5 text-magnum-900;
 	}
 
@@ -75,5 +72,9 @@
 	}
 	[data-melt-datefield-segment] {
 		@apply whitespace-nowrap data-[segment="dayPeriod"]:pl-0.5 data-[segment="hour"]:pl-1 data-[segment="timeZoneName"]:pl-1;
+	}
+
+	[data-melt-datefield-validation] {
+		@apply text-red-700;
 	}
 </style>

@@ -140,12 +140,11 @@ date. Each object has a <C>part</C> property, which is the `SegmentPart` of the 
 </div>
 ```
 
-To actually use the value of the form, you can either use the `value` state directly, or if you're
+To actually use the value of the field, you can either use the `value` state directly, or if you're
 using it within a form, the `hiddenInput` element, which is a hidden input element containing an ISO
 8601 formatted string of the `value`.
 
-If you plan on using the `hiddenInput`, you'll need to pass the `name` prop to the `field` element,
-which will be used as the name of the input.
+If you plan on using the `hiddenInput`, you'll need to pass the `name` prop, which will be used as its name.
 
 ```svelte showLineNumbers {4-5,7,19,23-25}
 <script lang="ts">
@@ -387,7 +386,7 @@ Let's say that we don't want users to ever be able to select the 1st or the 15th
 those are the only two days we're not working on builder tutorials. We can setup a `Matcher`
 function to accomplish just that.
 
-```svelte showLineNumbers {2,4-6,13} /isInvalid/#hi
+```svelte showLineNumbers {2,4-6,13} /isInvalid/#hi /validation/#hi
 <script lang="ts">
 	import { createDateField, melt, type Matcher } from '@melt-ui/svelte'
 
@@ -396,7 +395,7 @@ function to accomplish just that.
 	}
 
 	const {
-		elements: { field, segment, label, hiddenInput },
+		elements: { field, segment, label, hiddenInput, validation },
 		states: { value, segmentContents, isInvalid }
 	} = createDateField({
 		name: 'appointmentDate',
@@ -424,8 +423,8 @@ If you have a few different matchers you want to use, you can simply combine the
 	}
 
 	const {
-		elements: { field, segment, label, hiddenInput },
-		states: { value, segmentContents }
+		elements: { field, segment, label, hiddenInput, validation },
+		states: { value, segmentContents, isInvalid }
 	} = createDateField({
 		name: 'appointmentDate',
 		isUnavailable
@@ -469,6 +468,33 @@ matchers which you could use throughout your app.
 When a field is marked as invalid, the `isInvalid` store will be set to `true`, and a `data-invalid`
 attribute will be added to all the elements that make up the field, which you can use to style the
 field however you'd like.
+
+You'll want to use the `validation` element to display a message to the user indicating why the date
+is invalid. It's automatically hidden when the field is valid, and is wired up via aria attributes
+to give screen readers the information they need.
+
+```svelte showLineNumbers {11,12,19}
+<form method="POST">
+	<span use:melt={$label}>Appointment Date</span>
+	<div use:melt={$field}>
+		{#each $segmentContents as seg, i (i)}
+			<div use:melt={$segment(seg.part)}>
+				{seg.value}
+			</div>
+		{/each}
+		<input use:melt={$hiddenInput} />
+	</div>
+	<small use:melt={$validation}> Date cannot be on the 1st or 15th of the month. </small>
+	{#if !$isInvalid}
+		<p>
+			You selected:
+			{#if $value}
+				{$value}
+			{/if}
+		</p>
+	{/if}
+</form>
+```
 
 Here's an example to get an idea of what you might do. Attempt to enter an unavailable date, and
 you'll see the behavior in action.
