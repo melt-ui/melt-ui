@@ -52,10 +52,9 @@ times in Melt, which you can read about <a href="/docs/dates" target="_blank" cl
 
 ## Tutorial
 
-Learn how to use the Date Field builder by starting off simple, and working your way up to more
-complex examples and use cases. The goal is to teach you the key features and concepts of the
-builder, so you aren't stuck reading through a bunch of API reference docs. (Although, those are
-available too!)
+Learn how to use the Date Field builder by starting simple and working your way up to more complex
+examples and use cases. The goal is to teach you the key features and concepts of the builder, so
+you won’t have to read through a bunch of API reference docs (Although, those are available too!)
 
 ### Building a Date Field
 
@@ -118,8 +117,8 @@ It's not recommended, as the formatting doesn't adapt to the locale and type of 
 represented, which is one of the more powerful features this builder provides.
 
 Instead, you can use the `segmentContents` state, which is an array of objects necessary to form the
-date. Each object has a <C>part</C> property, which is the `SegmentPart` of the segment, and a
-<C>value</C> property, which is the locale-aware string representation of the segment.
+date. Each object has a <C>part</C> property, which is the `SegmentPart`, and a <C>value</C>
+property, which is the locale-aware string representation of the segment.
 
 ```svelte showLineNumbers {11-15}
 <script lang="ts">
@@ -553,4 +552,5 @@ Here's an example showcasing a few different locales:
 	<svelte:component this={previews.tut9} />
 </Preview>
 
-Notice that they all have the same `defaultPlaceholder`, yet the segments are formatted differently depending on the locale, and all it took was changing the `locale` prop. Pretty cool, right?
+Notice that they all have the same `defaultPlaceholder`, yet the segments are formatted differently
+depending on the locale, and all it took was changing the `locale` prop. Pretty cool, right?

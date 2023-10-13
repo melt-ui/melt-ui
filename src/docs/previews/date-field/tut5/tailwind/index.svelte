@@ -24,21 +24,11 @@
 		</div>
 		<input use:melt={$hiddenInput} />
 	</div>
-	<p>
-		You Selected:
-		{#if $value}
-			{$value}
-		{/if}
-	</p>
 </form>
 
 <style lang="postcss">
 	form {
 		@apply flex w-full flex-col items-center gap-3;
-	}
-
-	p {
-		@apply w-full text-left text-sm font-medium text-neutral-200;
 	}
 
 	[data-melt-datefield-label] {

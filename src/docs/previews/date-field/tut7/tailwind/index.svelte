@@ -8,7 +8,7 @@
 
 	const {
 		elements: { field, segment, label, hiddenInput, validation },
-		states: { value, segmentContents, isInvalid },
+		states: { segmentContents },
 	} = createDateField({
 		name: 'appointmentDate',
 		defaultValue: new CalendarDate(2023, 10, 14),
@@ -31,24 +31,11 @@
 	<small use:melt={$validation}
 		>Date must not be the 1st or 15th of the month.</small
 	>
-
-	{#if !$isInvalid}
-		<p>
-			You Selected:
-			{#if $value}
-				{$value}
-			{/if}
-		</p>
-	{/if}
 </form>
 
 <style lang="postcss">
 	form {
 		@apply flex w-full flex-col items-center gap-3;
-	}
-
-	p {
-		@apply w-full text-left text-sm font-medium text-neutral-200;
 	}
 
 	[data-melt-datefield-label] {
