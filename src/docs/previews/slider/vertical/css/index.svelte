@@ -10,42 +10,44 @@
 	});
 </script>
 
-<span
-	use:melt={$root}
-	class="root"
->
+<span use:melt={$root} class="root">
 	<span class="slide-bar">
 		<span use:melt={$range} class="range" />
 	</span>
-	<span
-		use:melt={$thumb()}
-		class="thumb"
-	/>
+	<span use:melt={$thumb()} class="thumb" />
 </span>
-<style >
-	
-	.root{
+
+<style>
+	:root {
+		--black-50: #0006;
+	}
+
+	* {
+		all: unset;
+	}
+
+	.root {
 		position: relative;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		height: 200px;
+		height: 12.5rem;
 		width: 3px;
 	}
 
-	.slide-bar{
+	.slide-bar {
 		display: block;
-		height: 200px;
+		height: 12.5rem;
 		width: 100%;
-		background-color: #0006;
+		background-color: var(--black-50);
 	}
 
-	.range{
+	.range {
 		width: 100%;
 		background-color: white;
 	}
 
-	.thumb{
+	.thumb {
 		display: block;
 		height: 1.25rem;
 		width: 1.25rem;
@@ -55,8 +57,7 @@
 		z-index: 10;
 	}
 
-	.thumb:focus{
-		box-shadow: 0 0 0 4px #0006;		
+	.thumb:focus {
+		box-shadow: 0 0 0 4px var(--black-50);
 	}
-
 </style>

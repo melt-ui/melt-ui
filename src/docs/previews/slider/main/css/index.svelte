@@ -14,34 +14,39 @@
 	<span class="slide-bar">
 		<span use:melt={$range} class="range" />
 	</span>
-	<span
-		use:melt={$thumb()}
-		class="thumb"
-	/>
+	<span use:melt={$thumb()} class="thumb" />
 </span>
 
 <style>
-	.root{
+	:root {
+		--black-40: #0006;
+	}
+
+	* {
+		all: unset;
+	}
+
+	.root {
 		position: relative;
 		display: flex;
 		align-items: center;
-		height: 20px;
-		width: 200px;
+		height: 1.25rem;
+		width: 12.5rem;
 	}
 
-	.slide-bar{
+	.slide-bar {
 		display: block;
 		height: 3px;
 		width: 100%;
-		background-color: #0006;
+		background-color: var(--black-40);
 	}
 
-	.range{
+	.range {
 		height: 3px;
 		background-color: white;
 	}
 
-	.thumb{
+	.thumb {
 		display: block;
 		height: 1.25rem;
 		width: 1.25rem;
@@ -49,8 +54,7 @@
 		background-color: white;
 	}
 
-	.thumb:focus{
-		box-shadow: 0 0 0 4px #0006;		
+	.thumb:focus {
+		box-shadow: 0 0 0 4px var(--black-40);
 	}
-
 </style>

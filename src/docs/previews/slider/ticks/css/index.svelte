@@ -17,63 +17,66 @@
 		<span use:melt={$range} class="range" />
 	</span>
 
-	<span
-		use:melt={$thumb()}
-		class="thumb"
-	/>
+	<span use:melt={$thumb()} class="thumb" />
 
 	{#each { length: $ticks } as _}
-		<span
-			use:melt={$tick()}
-			class="thick"
-		/>
+		<span use:melt={$tick()} class="thick" />
 	{/each}
 </span>
-<style >
-	.root{
+
+<style>
+	* {
+		all: unset;
+	}
+
+	:root {
+		--black-40: #0006;
+		--white-50: #ffffff80;
+		--magnum-800-75: #964516bf;
+	}
+
+	.root {
 		position: relative;
 		display: flex;
 		align-items: center;
-		height: 20px;
-		width: 200px;
+		height: 1.25rem;
+		width: 12.5rem;
 	}
 
-	.slide-bar{
+	.slide-bar {
 		display: block;
 		height: 3px;
 		width: 100%;
-		background-color: #0006;
+		background-color: var(--black-40);
 	}
 
-	.range{
+	.range {
 		height: 3px;
 		background-color: white;
 	}
 
-	.thumb{
+	.thumb {
 		display: block;
-		height: 5px;
-		width: 5px;
+		height: 1.25rem;
+		width: 1.25rem;
 		border-radius: 100%;
 		background-color: white;
 
 		z-index: 10;
 	}
 
-	.thumb:focus{
-		box-shadow: 0 0 0 4px #0006;		
+	.thumb:focus {
+		box-shadow: 0 0 0 4px var(--black-40);
 	}
 
-	.thick{
+	.thick {
 		height: 3px;
 		width: 3px;
 		border-radius: 100%;
-		background-color: #ffffff80;
+		background-color: var(--white-50);
 	}
 
-	.thick[data-bounded]{
-		background-color: #964516bf;
+	[data-bounded].thick {
+		background-color: var(--magnum-800-75);
 	}
-
-
 </style>
