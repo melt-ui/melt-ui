@@ -9,7 +9,7 @@ module.exports = {
 		'plugin:storybook/recommended',
 		'prettier',
 	],
-	plugins: ['@typescript-eslint'],
+	plugins: ['@typescript-eslint', 'eslint-plugin-tsdoc'],
 	overrides: [
 		{
 			files: ['*.svelte'],
@@ -31,6 +31,9 @@ module.exports = {
 	},
 	rules: {
 		// eslint
+		rules: {
+			'tsdoc/syntax': 'warn',
+		},
 		'no-console': 'warn',
 
 		// @typescript-eslint

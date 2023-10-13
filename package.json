@@ -22,7 +22,8 @@
 		"build-storybook": "storybook build -s static",
 		"pw": "pnpm exec playwright test",
 		"pw:ui": "pnpm exec playwright test --ui",
-		"changeset": "changeset"
+		"changeset": "changeset",
+		"docs:watch": "pnpm typedoc --options typedoc.json --watch"
 	},
 	"exports": {
 		".": {
@@ -104,6 +105,7 @@
 		"eslint-config-prettier": "^8.9.0",
 		"eslint-plugin-storybook": "^0.6.13",
 		"eslint-plugin-svelte": "^2.33.0",
+		"eslint-plugin-tsdoc": "^0.2.17",
 		"fathom-client": "^3.5.0",
 		"glob": "^9.3.2",
 		"happy-dom": "^10.5.2",
@@ -139,6 +141,7 @@
 		"tailwind-variants": "^0.1.8",
 		"tailwindcss": "^3.3.3",
 		"tslib": "^2.6.1",
+		"typedoc": "^0.25.2",
 		"typescript": "^5.1.6",
 		"unist-util-visit": "^4.1.2",
 		"vite": "^4.4.7",
