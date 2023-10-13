@@ -213,8 +213,6 @@ as the `defaultPlaceholder` prop.
 		defaultPlaceholder: new CalendarDateTime(2023, 10, 11, 12, 30)
 	})
 </script>
-
-<!-- ... -->
 ```
 
 <Preview code={snippets.tut2} variant="dark" height="sm">
@@ -257,8 +255,6 @@ We can also just as easily convert the field into a Zoned Date & Time field, by 
 		defaultPlaceholder: now(getLocalTimeZone())
 	})
 </script>
-
-<!-- ... -->
 ```
 
 We're using the `now` parser function to create a `ZonedDateTime` object with the current date and
@@ -283,8 +279,6 @@ the argument to the `now` function.
 		defaultPlaceholder: now('America/Los_Angeles')
 	})
 </script>
-
-<!-- ... -->
 ```
 
 <Preview code={snippets.tut4} variant="dark" height="sm">
@@ -530,3 +524,33 @@ In this example, we're limiting the selection dates to between October 11th, 202
 <Preview code={snippets.tut8} variant="dark" height="sm">
 	<svelte:component this={previews.tut8} />
 </Preview>
+
+### Locale-aware Formatting
+
+One of the coolest features of the Date Field builder is the ability to automatically format the
+segments and placeholder based on the locale.
+
+Of course it's up to you to decide how you get your user's locale, but once you have it, it's as
+simple as passing it as the `locale` prop.
+
+```svelte showLineNumbers {9}
+<script lang="ts">
+	import { createDateField, melt } from '@melt-ui/svelte'
+
+	const {
+		elements: { field, segment, label, hiddenInput },
+		states: { value, segmentContents }
+	} = createDateField({
+		name: 'appointmentDate',
+		locale: 'de'
+	})
+</script>
+```
+
+Here's an example showcasing a few different locales:
+
+<Preview code={snippets.tut9} variant="dark" height="sm">
+	<svelte:component this={previews.tut9} />
+</Preview>
+
+Notice that they all have the same `defaultPlaceholder`, yet the segments are formatted differently depending on the locale, and all it took was changing the `locale` prop. Pretty cool, right?

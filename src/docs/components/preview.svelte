@@ -153,7 +153,7 @@
 			  })
 			: [];
 
-	export let viewCode = true;
+	export let viewCode = false;
 
 	$: codeOptions = Object.entries(normalizeCode(code)).map(([key, value]) => {
 		return {
@@ -170,7 +170,7 @@
 	}
 </script>
 
-<div class="mt-8 flex h-9 flex-row items-center justify-between">
+<div class="mt-4 flex h-9 flex-row items-center justify-between">
 	{#if viewCode}
 		<PreviewStyleSelect options={codeOptions} {codingStyle} />
 	{/if}
