@@ -15,6 +15,7 @@
 </script>
 
 <div class="container">
+
 	<div use:melt={$root} class="root">
 		{#each $tags as t}
 			<div use:melt={$tag(t)} class="tag">
@@ -24,12 +25,15 @@
 				</button>
 			</div>
 			<div use:melt={$edit(t)} class="tag-edit" />
+
 		{/each}
 
 		<input
 			use:melt={$input}
 			type="text"
+
 			placeholder="Enter tags..."
+
 			class="input"
 		/>
 	</div>
@@ -50,10 +54,12 @@
 	}
 
 	.container {
+
 		display: flex;
 		flex-direction: column;
 		align-items: start;
 		justify-content: center;
+
 		gap: 0.625rem;
 	}
 
@@ -75,6 +81,7 @@
 
 	.input {
 		min-width: 1.125rem;
+
 		flex-shrink: 1;
 		flex-grow: 1;
 		flex-basis: 0;
@@ -82,6 +89,7 @@
 		color: black;
 		outline: none;
 	}
+
 
 	.input:focus {
 		box-shadow: none !important;
@@ -101,6 +109,7 @@
 		word-break: break-word;
 	}
 
+
 	.tag[data-disabled] {
 		background-color: var(--magnum-300);
 	}
@@ -117,6 +126,7 @@
 		outline: none !important;
 		box-shadow: none !important;
 	}
+
 
 	.tag-value {
 		display: flex;
