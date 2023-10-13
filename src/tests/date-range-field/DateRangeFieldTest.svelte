@@ -21,7 +21,7 @@
 
 	const {
 		elements: { dateField, startSegment, endSegment, label },
-		states: { value: insideValue, segmentContents, isFieldInvalid },
+		states: { value: insideValue, segmentContents, isInvalid },
 	} = createDateRangeField({
 		value,
 		defaultValue,
@@ -49,13 +49,13 @@
 			<div
 				use:melt={$dateField}
 				data-testid="field"
-				class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800 {$isFieldInvalid &&
+				class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800 {$isInvalid &&
 					'border-2 border-red-600'}"
 			>
 				{#each $segmentContents.start as seg, i (i)}
 					<div
 						use:melt={$startSegment(seg.part)}
-						class="segment {$isFieldInvalid && 'text-red-600'}"
+						class="segment {$isInvalid && 'text-red-600'}"
 						data-testid="start-{seg.part}"
 					>
 						{seg.value}
@@ -65,7 +65,7 @@
 				{#each $segmentContents.end as seg, i (i)}
 					<div
 						use:melt={$endSegment(seg.part)}
-						class="segment {$isFieldInvalid && 'text-red-600'}"
+						class="segment {$isInvalid && 'text-red-600'}"
 						data-testid="end-{seg.part}"
 					>
 						{seg.value}

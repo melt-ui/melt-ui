@@ -84,7 +84,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	const {
 		elements: { segment: startSegment, hiddenInput: startHiddenInput },
 		states: {
-			isFieldInvalid: isStartInvalid,
+			isInvalid: isStartInvalid,
 			segmentContents: startSegmentContents,
 			segmentValues: startSegmentValues,
 		},
@@ -92,13 +92,13 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	const {
 		elements: { segment: endSegment, hiddenInput: endHiddenInput },
 		states: {
-			isFieldInvalid: isEndInvalid,
+			isInvalid: isEndInvalid,
 			segmentContents: endSegmentContents,
 			segmentValues: endSegmentValues,
 		},
 	} = endField;
 
-	const isFieldInvalid = derived(
+	const isInvalid = derived(
 		[value, isStartInvalid, isEndInvalid],
 		([$value, $isStartInvalid, $isEndInvalid]) => {
 			if ($isStartInvalid || $isEndInvalid) {
@@ -120,14 +120,14 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	});
 
 	const dateField = builder(name(), {
-		stores: [isCompleted, isFieldInvalid],
-		returned: ([$isCompleted, $isFieldInvalid]) => {
+		stores: [isCompleted, isInvalid],
+		returned: ([$isCompleted, $isInvalid]) => {
 			return {
 				role: 'group',
 				id: ids.field,
 				'aria-labelledby': ids.label,
 				'aria-describedby': $isCompleted ? ids.description : undefined,
-				'data-invalid': $isFieldInvalid ? '' : undefined,
+				'data-invalid': $isInvalid ? '' : undefined,
 			};
 		},
 		action: () => {
@@ -221,7 +221,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 			segmentContents,
 			endSegmentValues,
 			startSegmentValues,
-			isFieldInvalid,
+			isInvalid,
 		},
 		options,
 		ids,

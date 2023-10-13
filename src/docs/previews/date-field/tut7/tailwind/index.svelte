@@ -1,11 +1,18 @@
 <script lang="ts">
-	import { createDateField, melt } from '$lib';
+	import { createDateField, melt, type Matcher } from '$lib';
+	import { CalendarDate, CalendarDateTime } from '@internationalized/date';
+
+	const isFirstOrFifteenth: Matcher = (date) => {
+		return date.day === 1 || date.day === 15;
+	};
 
 	const {
 		elements: { dateField, segment, label, hiddenInput },
-		states: { value, segmentContents },
+		states: { value, segmentContents, isInvalid },
 	} = createDateField({
 		name: 'appointmentDate',
+		defaultValue: new CalendarDate(2023, 10, 14),
+		isUnavailable: isFirstOrFifteenth,
 	});
 </script>
 
@@ -21,12 +28,17 @@
 		</div>
 		<input use:melt={$hiddenInput} />
 	</div>
-	<p>
-		You Selected:
-		{#if $value}
-			{$value}
-		{/if}
-	</p>
+
+	{#if $isInvalid}
+		<p class="validation">Please select a valid date.</p>
+	{:else}
+		<p>
+			You Selected:
+			{#if $value}
+				{$value}
+			{/if}
+		</p>
+	{/if}
 </form>
 
 <style lang="postcss">
@@ -37,18 +49,31 @@
 	p {
 		@apply w-full text-left text-sm font-medium text-magnum-900;
 	}
-	[data-melt-dateField-label] {
+
+	p.validation {
+		@apply text-red-700;
+	}
+
+	[data-melt-datefield-label] {
 		@apply font-medium text-magnum-900;
 	}
 
-	[data-melt-dateField] {
+	[data-melt-datefield-label][data-invalid] {
+		@apply text-red-700;
+	}
+
+	[data-melt-datefield] {
 		@apply mt-0.5 flex w-full min-w-[200px] items-center rounded-lg border bg-white p-1.5 text-magnum-900;
 	}
 
-	[data-melt-dateField-segment]:not([data-segment='literal']) {
+	[data-melt-datefield][data-invalid] {
+		@apply border-2 border-red-700;
+	}
+
+	[data-melt-datefield-segment]:not([data-segment='literal']) {
 		@apply px-0.5;
 	}
-	[data-melt-dateField-segment] {
+	[data-melt-datefield-segment] {
 		@apply whitespace-nowrap data-[segment="dayPeriod"]:pl-0.5 data-[segment="hour"]:pl-1 data-[segment="timeZoneName"]:pl-1;
 	}
 </style>

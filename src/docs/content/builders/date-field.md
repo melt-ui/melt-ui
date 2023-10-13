@@ -52,18 +52,19 @@ times in Melt, which you can read about <a href="/docs/dates" target="_blank" cl
 
 ## Tutorial
 
-Learn how to use the Date Field in just a few minutes. We'll start off by creating a simple date
-field, and work our way up to building a more complex one, while learning about the different
-features and concepts along the way.
+Learn how to use the Date Field builder by starting off simple, and working your way up to more
+complex examples and use cases. The goal is to teach you the key features and concepts of the
+builder, so you aren't stuck reading through a bunch of API reference docs. (Although, those are
+available too!)
 
-### Build a Simple Date Field
+### Building a Date Field
 
 Let's initialize a new Date Field using the `createDateField` function, which returns an object
 consisting of the stores & methods needed to construct the field.
 
 To start off, we'll destructure the `dateField`, `segment`, and `label`, and `segmentContents`.
 
-```svelte
+```svelte showLineNumbers
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	const {
@@ -77,7 +78,7 @@ The `dateField` is responsible for containing the date segments. The `label` for
 not an actual `<label>` element, due to the way we interact with the field, but is still accessible
 to screen readers in the same way.
 
-```svelte
+```svelte showLineNumbers
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	const {
@@ -97,7 +98,7 @@ which is used to determine which segment this element represents.
 
 While it's possible to use the `segment` function to render each segment individually like so:
 
-```svelte
+```svelte showLineNumbers
 <span use:melt={$label}>Appointment Date</span>
 <div use:melt={$dateField}>
 	<div use:melt={$segment('day')}>
@@ -120,7 +121,7 @@ Instead, you can use the `segmentContents` state, which is an array of objects n
 date. Each object has a <C>part</C> property, which is the `SegmentPart` of the segment, and a
 <C>value</C> property, which is the locale-aware string representation of the segment.
 
-```svelte {11-15}
+```svelte showLineNumbers {11-15}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	const {
@@ -146,7 +147,7 @@ using it within a form, the `hiddenInput` element, which is a hidden input eleme
 If you plan on using the `hiddenInput`, you'll need to pass the `name` prop to the `dateField`
 element, which will be used as the name of the input.
 
-```svelte {4-5,7,19,23-25}
+```svelte showLineNumbers {4-5,7,19,23-25}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	const {
@@ -200,7 +201,7 @@ rendered/formatted.
 Let's convert our previous example into a Date & Time field, by passing a `CalendarDateTime` object
 as the `defaultPlaceholder` prop.
 
-```svelte {3,9}
+```svelte showLineNumbers {3,9}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	import { CalendarDateTime } from '@internationalized/date';
@@ -244,7 +245,7 @@ const date = parseDateTime('2023-10-11T12:30:00')
 We can also just as easily convert the field into a Zoned Date & Time field, by passing a
 `ZonedDateTime` object as the `defaultPlaceholder` prop.
 
-```svelte {3,9}
+```svelte showLineNumbers {3,9}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	import { now, getLocalTimeZone } from '@internationalized/date';
@@ -270,7 +271,7 @@ time, and we're getting the user's local timezone using the `getLocalTimeZone` f
 Alternatively, we can hardcode the timezone to something like `America/Los_Angeles` by passing it as
 the argument to the `now` function.
 
-```svelte {9}
+```svelte showLineNumbers {9}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	import { now } from '@internationalized/date';
@@ -308,7 +309,7 @@ passing a `CalendarDate` (without time) object as the `defaultValue` prop. It's 
 you ever set them to different types, but it's useful to understand how the placeholder & value
 props interact.
 
-```svelte {3,10}
+```svelte showLineNumbers {3,10}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	import { CalendarDateTime, CalendarDate } from '@internationalized/date';
@@ -335,34 +336,143 @@ conjunction with one another is when a `defaultValue` may or may not be present,
 ensure the field always represents a certain type of date.
 
 For example, let's say this field is for a user's birthday, which is optional, but you want to
-ensure that if they do enter a birthday, it's represented as a `CalendarDate` object. The code to accomplishing that may look something like this: 
+ensure that if they do enter a birthday, it's represented as a `CalendarDate` object. The code to
+accomplishing that may look something like this:
 
-```svelte {3,12-13}
+```svelte showLineNumbers {3,12-13}
 <script lang="ts">
-	import { createDateField, melt } from '$lib';
-	import { CalendarDate, parseDate } from '@internationalized/date';
+	import { createDateField, melt } from '@melt-ui/svelte'
+	import { CalendarDate, parseDate } from '@internationalized/date'
 
 	export let data
 
 	const {
 		elements: { dateField, segment, label, hiddenInput },
-		states: { value, segmentContents },
+		states: { value, segmentContents }
 	} = createDateField({
 		name: 'birthday',
 		defaultPlaceholder: new CalendarDate(2023, 10, 11),
-		defaultValue: data?.userBirthday ? parseDate(data?.userBirthday) : undefined,
-	});
+		defaultValue: data?.userBirthday ? parseDate(data?.userBirthday) : undefined
+	})
 </script>
 ```
 
-If the user has a birthday, we parse the ISO 8601 formatted string into a `CalendarDate` object, and if not, we pass `undefined` as the `defaultValue` prop, which will cause the field to default to the `defaultPlaceholder` prop, which we've set to a `CalendarDate` object.
+If the user has a birthday, we parse the ISO 8601 formatted string into a `CalendarDate` object, and
+if not, we pass `undefined` as the `defaultValue` prop, which will cause the field to default to the
+`defaultPlaceholder` prop, which we've set to a `CalendarDate` object.
 
-The following example demonstrates how it would work in both scenarios (with and without a birthday).
+The following example demonstrates how it would work in both scenarios (with and without a
+birthday).
 
 <Preview code={snippets.tut6}>
 	<svelte:component this={previews.tut6} />
 </Preview>
 
-
 ### Validating Dates
 
+This is where things start to get a lot more fun! The Date Field builder provides a few ways to
+validate dates, which we'll cover in this section, starting with the `isUnavailable` prop.
+
+The `isUnavailable` prop is a `Matcher` function, which takes a `DateValue` object as an argument,
+and returns a boolean indicating whether or not that date is unavailable.
+
+```ts
+type Matcher = (date: DateValue) => boolean
+```
+
+If the date the user selects is unavailable, is marked as invalid, and you can do whatever you'd
+like with that information.
+
+Let's say that we don't want users to ever be able to select the 1st or the 15th of any month, as
+those are the only two days we're not working on builder tutorials. We can setup a `Matcher`
+function to accomplish just that.
+
+```svelte showLineNumbers {2,4-6,13} /isInvalid/#hi
+<script lang="ts">
+	import { createDateField, melt, type Matcher } from '@melt-ui/svelte'
+
+	const noFirstOrFifteenth: Matcher = (date) => {
+		return date.day === 1 || date.day === 15
+	}
+
+	const {
+		elements: { dateField, segment, label, hiddenInput },
+		states: { value, segmentContents, isInvalid }
+	} = createDateField({
+		name: 'appointmentDate',
+		isUnavailable: noFirstOrFifteenth
+	})
+</script>
+```
+
+If you have a few different matchers you want to use, you can simply combine them like so:
+
+```svelte showLineNumbers {8-10,12-14,21}
+<script lang="ts">
+	import { createDateField, melt, type Matcher } from '@melt-ui/svelte'
+
+	const isFirstOrFifteenth: Matcher = (date) => {
+		return date.day === 1 || date.day === 15
+	}
+
+	const isWeekend: Matcher = (date) => {
+		return date.dayOfWeek === 0 || date.dayOfWeek === 6
+	}
+
+	const isUnavailable: Matcher = (date) => {
+		return isFirstOrFifteenth(date) || isWeekend(date)
+	}
+
+	const {
+		elements: { dateField, segment, label, hiddenInput },
+		states: { value, segmentContents }
+	} = createDateField({
+		name: 'appointmentDate',
+		isUnavailable
+	})
+</script>
+```
+
+Or if you want to get really fancy with it, you can create a helper function that takes an array of
+matchers which you could use throughout your app.
+
+```svelte showLineNumbers {12,14-18,25}
+<script lang="ts">
+	import { createDateField, melt, type Matcher } from '@melt-ui/svelte'
+
+	const isFirstOrFifteenth: Matcher = (date) => {
+		return date.day === 1 || date.day === 15
+	}
+
+	const isWeekend: Matcher = (date) => {
+		return date.dayOfWeek === 0 || date.dayOfWeek === 6
+	}
+
+	const matchers = [isFirstOrFifteenth, isWeekend]
+
+	const isUnavailable: (...matchers: Matcher[]) => Matcher = (...matchers) => {
+		return (date) => {
+			return matchers.some((matcher) => matcher(date))
+		}
+	}
+
+	const {
+		elements: { dateField, segment, label, hiddenInput },
+		states: { value, segmentContents }
+	} = createDateField({
+		name: 'appointmentDate',
+		isUnavailable: isUnavailable(matchers)
+	})
+</script>
+```
+
+When a field is marked as invalid, the `isInvalid` store will be set to `true`, and a `data-invalid`
+attribute will be added to all the elements that make up the field, which you can use to style the
+field however you'd like.
+
+Here's an example to get an idea of what you might do. Attempt to enter an unavailable date, and
+you'll see the behavior in action.
+
+<Preview code={snippets.tut7}>
+	<svelte:component this={previews.tut7} />
+</Preview>

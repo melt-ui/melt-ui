@@ -35,6 +35,13 @@
 </form>
 
 <style lang="postcss">
+	form {
+		@apply flex w-full flex-col items-center gap-3;
+	}
+
+	p {
+		@apply w-full text-left text-sm font-medium text-magnum-900;
+	}
 	[data-melt-dateField-label] {
 		@apply font-medium text-magnum-900;
 	}
@@ -43,22 +50,10 @@
 		@apply mt-0.5 flex w-full min-w-[200px] items-center rounded-lg border bg-white p-1.5 text-magnum-900;
 	}
 
-	form {
-		@apply flex w-full flex-col items-center gap-3;
-	}
-
-	p {
-		@apply w-full text-left text-sm font-medium text-magnum-900;
-	}
-
 	[data-melt-dateField-segment]:not([data-segment='literal']) {
 		@apply px-0.5;
 	}
 	[data-melt-dateField-segment] {
 		@apply whitespace-nowrap data-[segment="dayPeriod"]:pl-0.5 data-[segment="hour"]:pl-1 data-[segment="timeZoneName"]:pl-1;
-	}
-
-	.btn {
-		@apply rounded bg-magnum-600 p-1 text-xs text-white;
 	}
 </style>
