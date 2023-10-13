@@ -82,6 +82,24 @@ export type DateFieldProps = {
 	isUnavailable?: Matcher;
 
 	/**
+	 * The minimum acceptable date. When provided, the
+	 * date field will become invalid if the user enters
+	 * a date before this date.
+	 *
+	 * @default undefined
+	 */
+	minValue?: DateValue;
+
+	/**
+	 * The maximum acceptable date. When provided, the
+	 * date field will become invalid if the user enters
+	 * a date after this date.
+	 *
+	 * @default undefined
+	 */
+	maxValue?: DateValue;
+
+	/**
 	 * If true, the date field will be disabled and users
 	 * will not be able to interact with it. This also disables
 	 * the hidden input element.

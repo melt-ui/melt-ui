@@ -66,8 +66,8 @@ export const navConfig: NavConfig = {
 					items: [],
 				},
 				{
-					title: 'Dates & Times',
-					href: '/docs/dates-and-times',
+					title: 'Dates',
+					href: '/docs/dates',
 					items: [],
 				},
 			],

@@ -21,6 +21,7 @@ import {
 	toDate,
 	createFormatter,
 	getAnnouncer,
+	isBefore,
 } from '$lib/internal/helpers/date/index.js';
 import { derived, get, writable, type Updater } from 'svelte/store';
 import {
@@ -70,6 +71,8 @@ const defaults = {
 	readonly: false,
 	name: undefined,
 	required: false,
+	minValue: undefined,
+	maxValue: undefined,
 } satisfies CreateDateFieldProps;
 
 type DateFieldParts = 'segment' | 'label' | 'hidden-input';
@@ -90,6 +93,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 		readonly,
 		name: nameStore,
 		required,
+		minValue,
+		maxValue,
 	} = options;
 
 	const defaultDate = getDefaultDate({
@@ -101,11 +106,16 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
-	const isFieldInvalid = derived([value, isUnavailable], ([$value, $isUnavailable]) => {
-		if (!$value) return false;
-		if ($isUnavailable?.($value)) return true;
-		return false;
-	});
+	const isFieldInvalid = derived(
+		[value, isUnavailable, minValue, maxValue],
+		([$value, $isUnavailable, $minValue, $maxValue]) => {
+			if (!$value) return false;
+			if ($isUnavailable?.($value)) return true;
+			if ($minValue && isBefore($value, $minValue)) return true;
+			if ($maxValue && isBefore($maxValue, $value)) return true;
+			return false;
+		}
+	);
 
 	const placeholderWritable =
 		withDefaults.placeholder ?? writable(withDefaults.defaultPlaceholder ?? defaultDate);
