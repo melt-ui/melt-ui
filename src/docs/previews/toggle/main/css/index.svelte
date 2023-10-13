@@ -8,7 +8,7 @@
 </script>
 
 <button use:melt={$root} aria-label="Toggle italic" class="root">
-	<Italic class="square-4" />
+	<Italic class="icon" />
 </button>
 
 <style>
@@ -53,18 +53,18 @@
 		font-size: var(--fs-base);
 		line-height: var(--lh-4);
 	}
-	.root[data-state='on'] {
+	:global([data-state='on']).root {
 		background-color: var(--magnum-200);
 		color: var(--magnum-900);
 	}
-	.root[data-state='off']:hover {
+	:global([data-state='off']).root:hover {
 		background-color: var(--magnum-100);
 	}
-	.root[data-disabled] {
+	:global([data-disabled]).root {
 		cursor: not-allowed;
 	}
 
-	.icon {
+	.root :global(.icon) {
 		width: 1rem;
 		height: 1rem;
 	}

@@ -10,13 +10,25 @@
 </script>
 
 <div use:melt={$root} class="root" aria-label="Text alignment">
-	<button class="toggle-item" use:melt={$item('left')} aria-label="Left aligned">
+	<button
+		class="toggle-item"
+		use:melt={$item('left')}
+		aria-label="Left aligned"
+	>
 		<AlignLeft class="square-4" />
 	</button>
-	<button class="toggle-item" use:melt={$item('center')} aria-label="Center aligned">
+	<button
+		class="toggle-item"
+		use:melt={$item('center')}
+		aria-label="Center aligned"
+	>
 		<AlignCenter class="icon" />
 	</button>
-	<button class="toggle-item" use:melt={$item('right')} aria-label="Right aligned">
+	<button
+		class="toggle-item"
+		use:melt={$item('right')}
+		aria-label="Right aligned"
+	>
 		<AlignRight class="icon" />
 	</button>
 </div>
@@ -47,7 +59,7 @@
 		align-items: center;
 	}
 
-	.root[data-orientation='vertical'] {
+	:global([data-orientation='vertical']).root {
 		flex-direction: column;
 	}
 
@@ -63,6 +75,8 @@
 		color: var(--magnum-800);
 		font-size: var(--fs-base);
 		line-height: var(--lh-4);
+		border-left-style: solid;
+		border-right-style: solid;
 		outline: none;
 		cursor: pointer;
 	}
@@ -75,71 +89,70 @@
 		z-index: 10;
 	}
 
-	.toggle-item[data-disabled] {
+	:global([data-disabled]).toggle-item {
 		cursor: not-allowed;
 	}
 
-	.toggle-item[data-orientation='horizontal'] {
+	:global([data-orientation='horizontal']).toggle-item {
 		border-left-width: 1px;
 		border-right-width: 1px;
 		border-left-color: transparent;
 		border-right-color: var(--magnum-200);
 	}
 
-	.toggle-item[data-orientation='horizontal']:first-child {
+	:global([data-orientation='horizontal']).toggle-item:first-child {
 		border-top-left-radius: var(--radius-md);
 		border-bottom-left-radius: var(--radius-md);
 	}
 
-	.toggle-item[data-orientation='horizontal']:last-child {
-		/* CSS */
+	:global([data-orientation='horizontal']).toggle-item:last-child {
 		border-top-right-radius: var(--radius-md);
 		border-bottom-right-radius: var(--radius-md);
 		border-right-color: transparent;
 	}
 
-	.toggle-item[data-orientation='horizontal']:dir(rtl) {
+	:global([data-orientation='horizontal']).toggle-item:dir(rtl) {
 		border-left-width: 1px;
 		border-right-width: 1px;
 		border-left-color: var(--magnum-200);
 		border-right-color: transparent;
 	}
 
-	.toggle-item[data-orientation='horizontal']:dir(rtl):first-child {
+	:global([data-orientation='horizontal']).toggle-item:dir(rtl):first-child {
 		border-top-right-radius: var(--radius-md);
 		border-bottom-right-radius: var(--radius-md);
 	}
 
-	.toggle-item[data-orientation='horizontal']:dir(rtl):last-child {
+	:global([data-orientation='horizontal']).toggle-item:dir(rtl):last-child {
 		border-top-left-radius: var(--radius-md);
 		border-bottom-left-radius: var(--radius-md);
 		border-left-color: transparent;
 	}
 
-	.toggle-item[data-orientation='vertical'] {
+	:global([data-orientation='vertical']).toggle-item {
 		border-top-width: 1px;
 		border-bottom-width: 1px;
 		border-top-color: transparent;
 		border-bottom-color: var(--magnum-200);
 	}
 
-	.toggle-item[data-orientation='vertical']:first-child {
+	:global([data-orientation='vertical']).toggle-item:first-child {
 		border-top-left-radius: var(--radius-md);
 		border-top-right-radius: var(--radius-md);
 	}
 
-	.toggle-item[data-orientation='vertical']:last-child {
+	:global([data-orientation='vertical']).toggle-item:last-child {
 		border-bottom-left-radius: var(--radius-md);
 		border-bottom-right-radius: var(--radius-md);
 		border-bottom-color: transparent;
 	}
 
-	.toggle-item[data-state='on'] {
+	:global([data-state='on']).toggle-item {
 		background-color: var(--magnum-200);
 		color: var(--magnum-900);
 	}
 
-	.toggle-item > .icon {
+	.toggle-item :global(.icon) {
 		width: 1rem;
 		height: 1rem;
 	}
