@@ -20,7 +20,7 @@
 	export let granularity: CreateDateRangeFieldProps['granularity'] = undefined;
 
 	const {
-		elements: { dateField, startSegment, endSegment, label },
+		elements: { field, startSegment, endSegment, label },
 		states: { value: insideValue, segmentContents, isInvalid },
 	} = createDateRangeField({
 		value,
@@ -47,7 +47,7 @@
 		<div>
 			<span use:melt={$label} data-testid="label" class="text-magnum-800">Booking Dates</span>
 			<div
-				use:melt={$dateField}
+				use:melt={$field}
 				data-testid="field"
 				class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800 {$isInvalid &&
 					'border-2 border-red-600'}"

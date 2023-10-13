@@ -32,9 +32,9 @@ const defaults = {
 	},
 } satisfies CreateDateRangeFieldProps;
 
-type DateFieldParts = 'segment' | 'label';
+type DateFieldParts = 'segment' | 'label' | 'field';
 
-const { name } = createElHelpers<DateFieldParts>('dateField');
+const { name } = createElHelpers<DateFieldParts>('dateRangeField');
 
 export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	const withDefaults = { ...defaults, ...props };
@@ -44,6 +44,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		field: generateId(),
 		label: generateId(),
 		description: generateId(),
+		validation: generateId(),
 	};
 
 	const defaultDate = getDefaultDate({
@@ -119,7 +120,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		},
 	});
 
-	const dateField = builder(name(), {
+	const field = builder(name('field'), {
 		stores: [isCompleted, isInvalid],
 		returned: ([$isCompleted, $isInvalid]) => {
 			return {
@@ -208,7 +209,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 
 	return {
 		elements: {
-			dateField,
+			field,
 			label,
 			startSegment,
 			endSegment,

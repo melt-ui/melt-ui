@@ -10,7 +10,7 @@
 			heading,
 			grid,
 			cell,
-			dateField,
+			field,
 			prevButton,
 			nextButton,
 			segment,
@@ -34,7 +34,7 @@
 	<div>
 		<span use:melt={$label} class="cursor-default text-magnum-800">Date</span>
 		<div
-			use:melt={$dateField}
+			use:melt={$field}
 			class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
 		>
 			{#each $segmentContents as seg, i (`${i}-${$locale}`)}

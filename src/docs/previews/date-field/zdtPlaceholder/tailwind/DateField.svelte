@@ -5,7 +5,7 @@
 		undefined;
 
 	const {
-		elements: { dateField, segment, label },
+		elements: { field, segment, label },
 		states: { value, segmentContents },
 	} = createDateField({
 		defaultPlaceholder,
@@ -18,7 +18,7 @@
 			>Appointment Date</span
 		>
 		<div
-			use:melt={$dateField}
+			use:melt={$field}
 			class="mt-0.5 flex w-full min-w-[200px] items-center rounded-lg border bg-white p-1.5 text-magnum-900"
 		>
 			{#each $segmentContents as seg, i (i)}

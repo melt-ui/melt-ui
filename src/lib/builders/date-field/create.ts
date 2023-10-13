@@ -75,7 +75,7 @@ const defaults = {
 	maxValue: undefined,
 } satisfies CreateDateFieldProps;
 
-type DateFieldParts = 'segment' | 'label' | 'hidden-input';
+type DateFieldParts = 'segment' | 'label' | 'hidden-input' | 'field' | 'validation';
 
 const { name } = createElHelpers<DateFieldParts>('dateField');
 
@@ -153,6 +153,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		field: generateId(),
 		label: generateId(),
 		description: generateId(),
+		validation: generateId(),
 		...withDefaults.ids,
 	} satisfies DateFieldIds;
 
@@ -210,6 +211,21 @@ export function createDateField(props?: CreateDateFieldProps) {
 		},
 	});
 
+	const validation = builder(name('validation'), {
+		stores: [isInvalid],
+		returned: ([$isInvalid]) => {
+			const validStyle = styleToString({
+				display: 'none',
+			});
+
+			return {
+				id: ids.validation,
+				'data-invalid': $isInvalid ? '' : undefined,
+				style: $isInvalid ? undefined : validStyle,
+			};
+		},
+	});
+
 	const hiddenInput = builder(name('hidden-input'), {
 		stores: [value, nameStore, disabled, required],
 		returned: ([$value, $nameStore, $disabled, $required]) => {
@@ -235,14 +251,18 @@ export function createDateField(props?: CreateDateFieldProps) {
 	/**
 	 * The date field element which contains all the segments.
 	 */
-	const dateField = builder(name(), {
+	const field = builder(name('field'), {
 		stores: [value, isInvalid, disabled, readonly],
 		returned: ([$value, $isInvalid, $disabled, $readonly]) => {
+			const describedBy = $value
+				? `${ids.description} ${$isInvalid ? ids.validation : ''}`
+				: undefined;
+
 			return {
 				role: 'group',
 				id: ids.field,
 				'aria-labelledby': ids.label,
-				'aria-describedby': $value ? ids.description : undefined,
+				'aria-describedby': describedBy,
 				'data-invalid': $isInvalid ? '' : undefined,
 				'aria-disabled': $disabled ? 'true' : undefined,
 				'aria-readonly': $readonly ? 'true' : undefined,
@@ -333,14 +353,17 @@ export function createDateField(props?: CreateDateFieldProps) {
 					return defaultAttrs;
 				}
 				const id = ids[part];
-				const hasDescription = isFirstSegment(id, ids.field) && $value;
+				const hasDescription = isFirstSegment(id, ids.field) || $value;
+				const describedBy = hasDescription
+					? `${hasDescription} ${$isInvalid ? ids.validation : ''}`
+					: undefined;
 
 				return {
 					...defaultAttrs,
 					id: ids[part],
 					'aria-labelledby': getLabelledBy(part),
 					contentEditable: $readonly || $disabled ? false : true,
-					'aria-describedby': hasDescription ? ids.description : undefined,
+					'aria-describedby': describedBy,
 					tabindex: $disabled ? undefined : 0,
 				};
 			};
@@ -1745,10 +1768,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 
 	return {
 		elements: {
-			dateField,
+			field,
 			segment,
 			label,
 			hiddenInput,
+			validation,
 		},
 		states: {
 			value,

@@ -2,8 +2,8 @@
 	import { createDateRangeField, melt } from '$lib';
 
 	const {
-		elements: { dateField, startSegment, endSegment, label },
-		states: { segmentContents, isFieldInvalid, value },
+		elements: { field, startSegment, endSegment, label },
+		states: { segmentContents, isInvalid, value },
 	} = createDateRangeField();
 </script>
 
@@ -14,14 +14,14 @@
 	<div>
 		<span use:melt={$label} class="text-magnum-800">Booking Dates</span>
 		<div
-			use:melt={$dateField}
-			class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800 {$isFieldInvalid &&
+			use:melt={$field}
+			class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800 {$isInvalid &&
 				'border-2 border-red-600'}"
 		>
 			{#each $segmentContents.start as seg, i (i)}
 				<div
 					use:melt={$startSegment(seg.part)}
-					class="segment {$isFieldInvalid && 'text-red-600'}"
+					class="segment {$isInvalid && 'text-red-600'}"
 				>
 					{seg.value}
 				</div>
@@ -30,7 +30,7 @@
 			{#each $segmentContents.end as seg, i (i)}
 				<div
 					use:melt={$endSegment(seg.part)}
-					class="segment {$isFieldInvalid && 'text-red-600'}"
+					class="segment {$isInvalid && 'text-red-600'}"
 				>
 					{seg.value}
 				</div>

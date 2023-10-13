@@ -8,8 +8,7 @@
 	export let defaultValue: CreateDatePickerProps['defaultValue'] = undefined;
 	export let defaultPlaceholder: CreateDatePickerProps['defaultPlaceholder'] = undefined;
 	export let onValueChange: CreateDatePickerProps['onValueChange'] = undefined;
-	export let onPlaceholderChange: CreateDatePickerProps['onPlaceholderChange'] =
-		undefined;
+	export let onPlaceholderChange: CreateDatePickerProps['onPlaceholderChange'] = undefined;
 	export let isUnavailable: CreateDatePickerProps['isUnavailable'] = undefined;
 	export let isDisabled: CreateDatePickerProps['isDisabled'] = undefined;
 	export let disabled: CreateDatePickerProps['disabled'] = undefined;
@@ -34,7 +33,7 @@
 			heading,
 			grid,
 			cell,
-			dateField,
+			field,
 			prevButton,
 			nextButton,
 			segment,
@@ -77,7 +76,7 @@
 	<div>
 		<span use:melt={$label} class="cursor-default text-magnum-800" data-testid="label">Date</span>
 		<div
-			use:melt={$dateField}
+			use:melt={$field}
 			class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
 			data-testid="field"
 		>

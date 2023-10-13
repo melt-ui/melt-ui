@@ -2,7 +2,7 @@
 	import { createDateField, melt } from '$lib';
 
 	const {
-		elements: { dateField, segment, label, hiddenInput },
+		elements: { field, segment, label, hiddenInput },
 		states: { value, segmentContents },
 	} = createDateField({
 		name: 'appointmentDate',
@@ -12,7 +12,7 @@
 <form method="POST">
 	<div>
 		<span use:melt={$label}>Appointment Date</span>
-		<div use:melt={$dateField} class="">
+		<div use:melt={$field} class="">
 			{#each $segmentContents as seg, i (i)}
 				<div use:melt={$segment(seg.part)}>
 					{seg.value}
@@ -37,18 +37,18 @@
 	p {
 		@apply w-full text-left text-sm font-medium text-magnum-900;
 	}
-	[data-melt-dateField-label] {
+	[data-melt-field-label] {
 		@apply font-medium text-magnum-900;
 	}
 
-	[data-melt-dateField] {
+	[data-melt-field] {
 		@apply mt-0.5 flex w-full min-w-[200px] items-center rounded-lg border bg-white p-1.5 text-magnum-900;
 	}
 
-	[data-melt-dateField-segment]:not([data-segment='literal']) {
+	[data-melt-field-segment]:not([data-segment='literal']) {
 		@apply px-0.5;
 	}
-	[data-melt-dateField-segment] {
+	[data-melt-field-segment] {
 		@apply whitespace-nowrap data-[segment="dayPeriod"]:pl-0.5 data-[segment="hour"]:pl-1 data-[segment="timeZoneName"]:pl-1;
 	}
 </style>

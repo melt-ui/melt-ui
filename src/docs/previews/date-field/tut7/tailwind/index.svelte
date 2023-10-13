@@ -7,7 +7,7 @@
 	};
 
 	const {
-		elements: { dateField, segment, label, hiddenInput },
+		elements: { field, segment, label, hiddenInput },
 		states: { value, segmentContents, isInvalid },
 	} = createDateField({
 		name: 'appointmentDate',
@@ -19,7 +19,7 @@
 <form method="POST">
 	<div>
 		<span use:melt={$label}>Appointment Date</span>
-		<div use:melt={$dateField} class="">
+		<div use:melt={$field} class="">
 			{#each $segmentContents as seg, i (i)}
 				<div use:melt={$segment(seg.part)}>
 					{seg.value}

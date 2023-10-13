@@ -31,13 +31,13 @@ times in Melt, which you can read about <a href="/docs/dates" target="_blank" cl
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	const {
-		elements: { dateField, segment, label },
+		elements: { field, segment, label },
 		states: { value, segmentContents }
 	} = createDateField()
 </script>
 
 <span use:melt={$label}>Due Date</span>
-<div use:melt={$dateField}>
+<div use:melt={$field}>
 	{#each $segmentContents.arr as seg, i (i)}
 		<div use:melt={$segment(seg.part)}>
 			{seg.value}
@@ -46,7 +46,7 @@ times in Melt, which you can read about <a href="/docs/dates" target="_blank" cl
 </div>
 ```
 
-- **dateField**: The element which contains the date segments
+- **field**: The element which contains the date segments
 - **segment**: An individual segment of the date (day, month, year, etc.)
 - **label**: The label for the date field
 
@@ -62,33 +62,33 @@ available too!)
 Let's initialize a new Date Field using the `createDateField` function, which returns an object
 consisting of the stores & methods needed to construct the field.
 
-To start off, we'll destructure the `dateField`, `segment`, and `label`, and `segmentContents`.
+To start off, we'll destructure the `field`, `segment`, and `label`, and `segmentContents`.
 
 ```svelte showLineNumbers
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	const {
-		elements: { dateField, segment, label },
+		elements: { field, segment, label },
 		states: { segmentContents }
 	} = createDateField()
 </script>
 ```
 
-The `dateField` is responsible for containing the date segments. The `label` for the date field is
-not an actual `<label>` element, due to the way we interact with the field, but is still accessible
-to screen readers in the same way.
+The `field` is responsible for containing the date segments. The `label` for the date field is not
+an actual `<label>` element, due to the way we interact with the field, but is still accessible to
+screen readers in the same way.
 
 ```svelte showLineNumbers
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	const {
-		elements: { dateField, segment, label },
+		elements: { field, segment, label },
 		states: { segmentContents }
 	} = createDateField()
 </script>
 
 <span use:melt={$label}>Appointment Date</span>
-<div use:melt={$dateField}>
+<div use:melt={$field}>
 	<!-- ... -->
 </div>
 ```
@@ -100,7 +100,7 @@ While it's possible to use the `segment` function to render each segment individ
 
 ```svelte showLineNumbers
 <span use:melt={$label}>Appointment Date</span>
-<div use:melt={$dateField}>
+<div use:melt={$field}>
 	<div use:melt={$segment('day')}>
 		<!-- ... -->
 	</div>
@@ -125,13 +125,13 @@ date. Each object has a <C>part</C> property, which is the `SegmentPart` of the 
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	const {
-		elements: { dateField, segment, label },
+		elements: { field, segment, label },
 		states: { segmentContents }
 	} = createDateField()
 </script>
 
 <span use:melt={$label}>Appointment Date</span>
-<div use:melt={$dateField}>
+<div use:melt={$field}>
 	{#each $segmentContents as seg, i (i)}
 		<div use:melt={$segment(seg.part)}>
 			{seg.value}
@@ -144,14 +144,14 @@ To actually use the value of the form, you can either use the `value` state dire
 using it within a form, the `hiddenInput` element, which is a hidden input element containing an ISO
 8601 formatted string of the `value`.
 
-If you plan on using the `hiddenInput`, you'll need to pass the `name` prop to the `dateField`
-element, which will be used as the name of the input.
+If you plan on using the `hiddenInput`, you'll need to pass the `name` prop to the `field` element,
+which will be used as the name of the input.
 
 ```svelte showLineNumbers {4-5,7,19,23-25}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	const {
-		elements: { dateField, segment, label, hiddenInput },
+		elements: { field, segment, label, hiddenInput },
 		states: { segmentContents, value }
 	} = createDateField({
 		name: 'appointmentDate'
@@ -160,7 +160,7 @@ element, which will be used as the name of the input.
 
 <form method="POST">
 	<span use:melt={$label}>Appointment Date</span>
-	<div use:melt={$dateField}>
+	<div use:melt={$field}>
 		{#each $segmentContents as seg, i (i)}
 			<div use:melt={$segment(seg.part)}>
 				{seg.value}
@@ -206,7 +206,7 @@ as the `defaultPlaceholder` prop.
 	import { createDateField, melt } from '@melt-ui/svelte'
 	import { CalendarDateTime } from '@internationalized/date';
 	const {
-		elements: { dateField, segment, label, hiddenInput },
+		elements: { field, segment, label, hiddenInput },
 		states: { segmentContents, value }
 	} = createDateField({
 		name: 'appointmentDate'
@@ -250,7 +250,7 @@ We can also just as easily convert the field into a Zoned Date & Time field, by 
 	import { createDateField, melt } from '@melt-ui/svelte'
 	import { now, getLocalTimeZone } from '@internationalized/date';
 	const {
-		elements: { dateField, segment, label, hiddenInput },
+		elements: { field, segment, label, hiddenInput },
 		states: { segmentContents, value }
 	} = createDateField({
 		name: 'appointmentDate'
@@ -276,7 +276,7 @@ the argument to the `now` function.
 	import { createDateField, melt } from '@melt-ui/svelte'
 	import { now } from '@internationalized/date';
 	const {
-		elements: { dateField, segment, label, hiddenInput },
+		elements: { field, segment, label, hiddenInput },
 		states: { segmentContents, value }
 	} = createDateField({
 		name: 'appointmentDate'
@@ -314,7 +314,7 @@ props interact.
 	import { createDateField, melt } from '@melt-ui/svelte'
 	import { CalendarDateTime, CalendarDate } from '@internationalized/date';
 	const {
-		elements: { dateField, segment, label, hiddenInput },
+		elements: { field, segment, label, hiddenInput },
 		states: { segmentContents, value }
 	} = createDateField({
 		name: 'appointmentDate'
@@ -347,7 +347,7 @@ accomplishing that may look something like this:
 	export let data
 
 	const {
-		elements: { dateField, segment, label, hiddenInput },
+		elements: { field, segment, label, hiddenInput },
 		states: { value, segmentContents }
 	} = createDateField({
 		name: 'birthday',
@@ -396,7 +396,7 @@ function to accomplish just that.
 	}
 
 	const {
-		elements: { dateField, segment, label, hiddenInput },
+		elements: { field, segment, label, hiddenInput },
 		states: { value, segmentContents, isInvalid }
 	} = createDateField({
 		name: 'appointmentDate',
@@ -424,7 +424,7 @@ If you have a few different matchers you want to use, you can simply combine the
 	}
 
 	const {
-		elements: { dateField, segment, label, hiddenInput },
+		elements: { field, segment, label, hiddenInput },
 		states: { value, segmentContents }
 	} = createDateField({
 		name: 'appointmentDate',
@@ -457,7 +457,7 @@ matchers which you could use throughout your app.
 	}
 
 	const {
-		elements: { dateField, segment, label, hiddenInput },
+		elements: { field, segment, label, hiddenInput },
 		states: { value, segmentContents }
 	} = createDateField({
 		name: 'appointmentDate',
@@ -486,7 +486,7 @@ dates a user can select.
 	import { CalendarDate } from '@internationalized/date'
 
 	const {
-		elements: { dateField, segment, label, hiddenInput },
+		elements: { field, segment, label, hiddenInput },
 		states: { value, segmentContents }
 	} = createDateField({
 		name: 'appointmentDate',

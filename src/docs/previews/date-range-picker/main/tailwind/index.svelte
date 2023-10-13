@@ -10,7 +10,7 @@
 			heading,
 			grid,
 			cell,
-			dateField,
+			field,
 			prevButton,
 			nextButton,
 			endSegment,
@@ -26,7 +26,7 @@
 			daysOfWeek,
 			segmentContents,
 			open,
-			isFieldInvalid,
+			isInvalid,
 		},
 	} = createDateRangePicker({
 		forceVisible: true,
@@ -40,13 +40,13 @@
 	<div>
 		<span use:melt={$label} class="cursor-default text-magnum-800">Date</span>
 		<div
-			use:melt={$dateField}
+			use:melt={$field}
 			class="flex w-full items-center rounded-md border bg-white p-1.5 text-magnum-800"
 		>
 			{#each $segmentContents.start as seg, i (i)}
 				<div
 					use:melt={$startSegment(seg.part)}
-					class="segment {$isFieldInvalid && 'text-red-600'}"
+					class="segment {$isInvalid && 'text-red-600'}"
 				>
 					{seg.value}
 				</div>
@@ -55,7 +55,7 @@
 			{#each $segmentContents.end as seg, i (i)}
 				<div
 					use:melt={$endSegment(seg.part)}
-					class="segment {$isFieldInvalid && 'text-red-600'}"
+					class="segment {$isInvalid && 'text-red-600'}"
 				>
 					{seg.value}
 				</div>
