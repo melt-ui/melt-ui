@@ -13,20 +13,20 @@ import {
 
 type GetDefaultDateProps = {
 	defaultValue?: DateValue | undefined;
-	defaultPlaceholderValue?: DateValue | undefined;
+	defaultPlaceholder?: DateValue | undefined;
 	granularity?: Granularity;
 };
 
 const defaultDateDefaults = {
 	defaultValue: undefined,
-	defaultPlaceholderValue: undefined,
+	defaultPlaceholder: undefined,
 	granularity: 'day',
 };
 
 /**
  * A helper function used throughout the various date builders
  * to generate a default `DateValue` using the `defaultValue`,
- * `defaultPlaceholderValue`, and `granularity` props.
+ * `defaultPlaceholder`, and `granularity` props.
  *
  * It's important to match the `DateValue` type being used
  * elsewhere in the builder, so they behave according to the
@@ -35,12 +35,12 @@ const defaultDateDefaults = {
  */
 export function getDefaultDate(props?: GetDefaultDateProps): DateValue {
 	const withDefaults = { ...defaultDateDefaults, ...props };
-	const { defaultValue, defaultPlaceholderValue, granularity } = withDefaults;
+	const { defaultValue, defaultPlaceholder, granularity } = withDefaults;
 
 	if (defaultValue) {
 		return defaultValue;
-	} else if (defaultPlaceholderValue) {
-		return defaultPlaceholderValue;
+	} else if (defaultPlaceholder) {
+		return defaultPlaceholder;
 	} else {
 		const date = new Date();
 		const year = date.getFullYear();

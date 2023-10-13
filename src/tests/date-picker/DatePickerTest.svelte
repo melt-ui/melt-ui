@@ -6,9 +6,9 @@
 
 	export let value: CreateDatePickerProps['value'] = undefined;
 	export let defaultValue: CreateDatePickerProps['defaultValue'] = undefined;
-	export let defaultPlaceholderValue: CreateDatePickerProps['defaultPlaceholderValue'] = undefined;
+	export let defaultPlaceholder: CreateDatePickerProps['defaultPlaceholder'] = undefined;
 	export let onValueChange: CreateDatePickerProps['onValueChange'] = undefined;
-	export let onPlaceholderValueChange: CreateDatePickerProps['onPlaceholderValueChange'] =
+	export let onPlaceholderChange: CreateDatePickerProps['onPlaceholderChange'] =
 		undefined;
 	export let isUnavailable: CreateDatePickerProps['isUnavailable'] = undefined;
 	export let isDisabled: CreateDatePickerProps['isDisabled'] = undefined;
@@ -25,7 +25,7 @@
 	export let allowDeselect: CreateDatePickerProps['allowDeselect'] = undefined;
 	export let numberOfMonths: CreateDatePickerProps['numberOfMonths'] = undefined;
 	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = undefined;
-	export let placeholderValue: CreateDatePickerProps['placeholderValue'] = undefined;
+	export let placeholder: CreateDatePickerProps['placeholder'] = undefined;
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = undefined;
 
 	const {
@@ -47,9 +47,9 @@
 	} = createDatePicker({
 		value,
 		defaultValue,
-		defaultPlaceholderValue,
+		defaultPlaceholder,
 		onValueChange,
-		onPlaceholderValueChange,
+		onPlaceholderChange,
 		isUnavailable,
 		disabled,
 		readonly,
@@ -64,7 +64,7 @@
 		calendarLabel,
 		numberOfMonths,
 		pagedNavigation,
-		placeholderValue,
+		placeholder,
 		weekStartsOn,
 		isDisabled,
 	});

@@ -168,13 +168,10 @@ export function getSelectableCells(calendarId: string) {
  * Shared between the calendar and range calendar builders.
  *
  * @param node - The node to extract the date from.
- * @param placeholderValue - The placeholder value store which will be set to the extracted date.
+ * @param placeholder - The placeholder value store which will be set to the extracted date.
  */
-export function setPlaceholderToNodeValue(
-	node: HTMLElement,
-	placeholderValue: Writable<DateValue>
-) {
+export function setPlaceholderToNodeValue(node: HTMLElement, placeholder: Writable<DateValue>) {
 	const cellValue = node.getAttribute('data-value');
 	if (!cellValue) return;
-	placeholderValue.set(parseStringToDateValue(cellValue, get(placeholderValue)));
+	placeholder.set(parseStringToDateValue(cellValue, get(placeholder)));
 }

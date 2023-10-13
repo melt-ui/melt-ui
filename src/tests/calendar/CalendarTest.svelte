@@ -5,9 +5,9 @@
 
 	export let value: CreateCalendarProps['value'] = undefined;
 	export let defaultValue: CreateCalendarProps['defaultValue'] = undefined;
-	export let defaultPlaceholderValue: CreateCalendarProps['defaultPlaceholderValue'] = undefined;
+	export let defaultPlaceholder: CreateCalendarProps['defaultPlaceholder'] = undefined;
 	export let onValueChange: CreateCalendarProps['onValueChange'] = undefined;
-	export let onPlaceholderValueChange: CreateCalendarProps['onPlaceholderValueChange'] = undefined;
+	export let onPlaceholderChange: CreateCalendarProps['onPlaceholderChange'] = undefined;
 	export let isUnavailable: CreateCalendarProps['isUnavailable'] = undefined;
 	export let isDisabled: CreateCalendarProps['isDisabled'] = undefined;
 	export let locale: CreateCalendarProps['locale'] = 'en';
@@ -15,7 +15,7 @@
 	export let allowDeselect: CreateCalendarProps['allowDeselect'] = undefined;
 	export let numberOfMonths: CreateCalendarProps['numberOfMonths'] = undefined;
 	export let pagedNavigation: CreateCalendarProps['pagedNavigation'] = undefined;
-	export let placeholderValue: CreateCalendarProps['placeholderValue'] = undefined;
+	export let placeholder: CreateCalendarProps['placeholder'] = undefined;
 	export let weekStartsOn: CreateCalendarProps['weekStartsOn'] = undefined;
 	export let fixedWeeks: CreateCalendarProps['fixedWeeks'] = undefined;
 
@@ -26,9 +26,9 @@
 	} = createCalendar({
 		value,
 		defaultValue,
-		defaultPlaceholderValue,
+		defaultPlaceholder,
 		onValueChange,
-		onPlaceholderValueChange,
+		onPlaceholderChange,
 		isUnavailable,
 		isDisabled,
 		locale,
@@ -36,7 +36,7 @@
 		allowDeselect,
 		numberOfMonths,
 		pagedNavigation,
-		placeholderValue,
+		placeholder,
 		weekStartsOn,
 		fixedWeeks,
 	});

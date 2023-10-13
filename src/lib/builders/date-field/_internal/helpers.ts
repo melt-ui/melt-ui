@@ -1,5 +1,5 @@
 import {
-	getPlaceholderValue,
+	getPlaceholder,
 	type Formatter,
 	type Granularity,
 	toDate,
@@ -83,7 +83,7 @@ function createContentObj(props: CreateContentObjProps) {
 			if (!isNull(value)) {
 				obj[part] = value;
 			} else {
-				obj[part] = getPlaceholderValue(part, 'AM', locale);
+				obj[part] = getPlaceholder(part, 'AM', locale);
 			}
 		} else {
 			obj[part] = getPartContent(part);
@@ -100,7 +100,7 @@ function createContentObj(props: CreateContentObjProps) {
 					hourCycle: props.hourCycle === 24 ? 'h24' : undefined,
 				});
 			} else {
-				return getPlaceholderValue(part, '', locale);
+				return getPlaceholder(part, '', locale);
 			}
 		} else {
 			if (isDateSegmentPart(part)) {
@@ -108,7 +108,7 @@ function createContentObj(props: CreateContentObjProps) {
 				if (!isNull(value)) {
 					return formatter.part(dateRef.set({ [part]: value }), part);
 				} else {
-					return getPlaceholderValue(part, '', locale);
+					return getPlaceholder(part, '', locale);
 				}
 			}
 			return '';

@@ -17,7 +17,7 @@ const meta = {
 	title: 'Components/DateField',
 	component: DateField,
 	argTypes: {
-		defaultPlaceholderValue: {
+		defaultPlaceholder: {
 			options: Object.keys(dateOptions),
 			mapping: dateOptions,
 			control: 'select',
@@ -47,7 +47,7 @@ export const DateTime: Story = {
 		props: args,
 	}),
 	args: {
-		defaultPlaceholderValue: new CalendarDateTime(2021, 1, 1),
+		defaultPlaceholder: new CalendarDateTime(2021, 1, 1),
 	},
 };
 export const ZonedDateTime: Story = {
@@ -56,6 +56,6 @@ export const ZonedDateTime: Story = {
 		props: args,
 	}),
 	args: {
-		defaultPlaceholderValue: now(getLocalTimeZone()),
+		defaultPlaceholder: now(getLocalTimeZone()),
 	},
 };

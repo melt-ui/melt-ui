@@ -8,7 +8,7 @@ import type { DateFieldIds } from './_internal/types.js';
 export type DateFieldProps = {
 	/**
 	 * The default value for the date field. When provided,
-	 * the `placeholderValue` will also assume this value.
+	 * the `placeholder` will also assume this value.
 	 *
 	 * @default undefined;
 	 */
@@ -42,35 +42,35 @@ export type DateFieldProps = {
 	 *
 	 * @default CalendarDate - the current date at midnight.
 	 */
-	defaultPlaceholderValue?: DateValue;
+	defaultPlaceholder?: DateValue;
 
 	/**
 	 * A writable store that can be used to control the placeholder
 	 * date from outside the builder. When this prop is provided,
-	 * the `defaultPlaceholderValue` prop is ignored, and the value
+	 * the `defaultPlaceholder` prop is ignored, and the value
 	 * of this store is used instead.
 	 *
-	 * The `placeholderValue` store is not used to set the value of the
+	 * The `placeholder` store is not used to set the value of the
 	 * date field, it is only used to control the starting point for
-	 * the field. The `placeholderValue` store is used as the starting
+	 * the field. The `placeholder` store is used as the starting
 	 * point for cycling through the individual date segments.
 	 */
-	placeholderValue?: Writable<DateValue>;
+	placeholder?: Writable<DateValue>;
 
 	/**
 	 * A function called when the placeholder value changes. It receives
 	 * a single argument, which is an object containing `curr` and
 	 * `prev` properties, whose values are the current and previous
-	 * values of the `placeholderValue` store. Whatever you return from this
-	 * function will be set as the new value of the `placeholderValue` store.
+	 * values of the `placeholder` store. Whatever you return from this
+	 * function will be set as the new value of the `placeholder` store.
 	 *
-	 * The `placeholderValue` is kept in sync with the `value` store, so
+	 * The `placeholder` is kept in sync with the `value` store, so
 	 * ensure you know what you're doing if you intend on overriding the
 	 * value, as it may render the date field unusable.
 	 *
 	 * @default undefined
 	 */
-	onPlaceholderValueChange?: ChangeFn<DateValue>;
+	onPlaceholderChange?: ChangeFn<DateValue>;
 
 	/**
 	 * Any dates that match the provided matchers will be

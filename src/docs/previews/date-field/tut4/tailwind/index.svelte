@@ -1,15 +1,17 @@
 <script lang="ts">
 	import { createDateField, melt } from '$lib';
+	import { now } from '@internationalized/date';
 
 	const {
 		elements: { dateField, segment, label, hiddenInput },
 		states: { value, segmentContents },
 	} = createDateField({
 		name: 'appointmentName',
+		defaultPlaceholder: now('America/Los_Angeles'),
 	});
 </script>
 
-<form>
+<form method="POST">
 	<div>
 		<span use:melt={$label}>Appointment Date</span>
 		<div use:melt={$dateField} class="">
@@ -21,11 +23,12 @@
 		</div>
 		<input use:melt={$hiddenInput} />
 	</div>
-	{#if $value}
-		<p>
-			You Selected: {$value}
-		</p>
-	{/if}
+	<p>
+		You Selected:
+		{#if $value}
+			{$value}
+		{/if}
+	</p>
 </form>
 
 <style lang="postcss">
@@ -42,7 +45,7 @@
 	}
 
 	p {
-		@apply text-sm font-medium text-magnum-900;
+		@apply w-full text-left text-sm font-medium text-magnum-900;
 	}
 
 	[data-melt-dateField-segment]:not([data-segment='literal']) {

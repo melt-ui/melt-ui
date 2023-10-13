@@ -6,7 +6,7 @@
 		elements: { dateField, segment, label },
 		states: { value, segmentContents },
 	} = createDateField({
-		defaultPlaceholderValue: new CalendarDateTime(2023, 10, 11, 12, 30),
+		defaultPlaceholder: new CalendarDateTime(2023, 10, 11, 12, 30),
 	});
 </script>
 

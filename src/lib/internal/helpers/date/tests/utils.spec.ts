@@ -17,14 +17,12 @@ describe('Date Utils', () => {
 
 		it('should return the type of placeholder if no value', () => {
 			const placeholder = new CalendarDate(2021, 1, 1);
-			expect(getDefaultDate({ defaultPlaceholderValue: placeholder })).instanceOf(CalendarDate);
+			expect(getDefaultDate({ defaultPlaceholder: placeholder })).instanceOf(CalendarDate);
 			const placeholder2 = new CalendarDateTime(2021, 1, 1, 12, 0, 0);
-			expect(getDefaultDate({ defaultPlaceholderValue: placeholder2 })).instanceOf(
-				CalendarDateTime
-			);
+			expect(getDefaultDate({ defaultPlaceholder: placeholder2 })).instanceOf(CalendarDateTime);
 
 			const placeholder3 = toZoned(placeholder2, 'America/New_York');
-			expect(getDefaultDate({ defaultPlaceholderValue: placeholder3 })).instanceOf(ZonedDateTime);
+			expect(getDefaultDate({ defaultPlaceholder: placeholder3 })).instanceOf(ZonedDateTime);
 		});
 
 		it('should adjust the return type based on granularity with no values', () => {
@@ -34,17 +32,15 @@ describe('Date Utils', () => {
 			expect(getDefaultDate({ granularity: 'day' })).instanceOf(CalendarDate);
 		});
 
-		it('should give precedence to defaultValue over defaultPlaceholderValue', () => {
+		it('should give precedence to defaultValue over defaultPlaceholder', () => {
 			const placeholder = new CalendarDate(2021, 1, 1);
 			const value = new CalendarDate(2020, 1, 1);
-			expect(getDefaultDate({ defaultValue: value, defaultPlaceholderValue: placeholder })).toBe(
-				value
-			);
+			expect(getDefaultDate({ defaultValue: value, defaultPlaceholder: placeholder })).toBe(value);
 		});
 
 		it('should not change type if provided based on granularity', () => {
 			const placeholder = new CalendarDate(2021, 1, 1);
-			const dd = getDefaultDate({ defaultPlaceholderValue: placeholder, granularity: 'hour' });
+			const dd = getDefaultDate({ defaultPlaceholder: placeholder, granularity: 'hour' });
 			expect(dd).not.instanceof(CalendarDateTime);
 			expect(dd).instanceof(CalendarDate);
 
@@ -54,7 +50,7 @@ describe('Date Utils', () => {
 			expect(ddv).instanceof(CalendarDate);
 
 			const placeholder2 = new CalendarDateTime(2021, 1, 1, 12, 0, 0);
-			const dd2 = getDefaultDate({ defaultPlaceholderValue: placeholder2, granularity: 'day' });
+			const dd2 = getDefaultDate({ defaultPlaceholder: placeholder2, granularity: 'day' });
 			expect(dd2).not.instanceof(CalendarDate);
 			expect(dd2).instanceof(CalendarDateTime);
 

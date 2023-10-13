@@ -37,12 +37,12 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 	const rangeField = createDateRangeField(withDefaults);
 
 	const {
-		states: { value, placeholderValue: rfPlaceholderValue },
+		states: { value, placeholder: rfPlaceholder },
 	} = rangeField;
 
 	const calendar = createRangeCalendar({
 		...withDefaults,
-		placeholderValue: rfPlaceholderValue,
+		placeholder: rfPlaceholder,
 		value: value,
 		ids: withDefaults.calendarIds,
 	});
@@ -67,7 +67,7 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 	});
 
 	const options = toWritableStores({
-		...omit(withDefaults, 'value', 'placeholderValue'),
+		...omit(withDefaults, 'value', 'placeholder'),
 		...popover.options,
 	});
 
@@ -75,16 +75,13 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 
 	const defaultDate = getDefaultDate({
 		defaultValue: withDefaults.defaultValue?.start,
-		defaultPlaceholderValue: withDefaults.defaultPlaceholderValue,
+		defaultPlaceholder: withDefaults.defaultPlaceholder,
 		granularity: withDefaults.granularity,
 	});
 
 	const formatter = createFormatter(get(locale));
 
-	const placeholderValue = dateStore(
-		rfPlaceholderValue,
-		withDefaults.defaultPlaceholderValue ?? defaultDate
-	);
+	const placeholder = dateStore(rfPlaceholder, withDefaults.defaultPlaceholder ?? defaultDate);
 
 	const trigger = builder('popover-trigger', {
 		stores: [popover.elements.trigger],
@@ -118,9 +115,9 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 		if (!$open) {
 			const $value = get(value);
 			if ($value?.start) {
-				placeholderValue.set($value.start);
+				placeholder.set($value.start);
 			} else {
-				placeholderValue.reset();
+				placeholder.reset();
 			}
 		}
 	});
@@ -142,7 +139,7 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 		states: {
 			...rangeField.states,
 			...calendar.states,
-			placeholderValue: placeholderValue.toWritable(),
+			placeholder: placeholder.toWritable(),
 			value,
 			...popover.states,
 		},

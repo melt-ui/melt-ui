@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { createDateField, melt, type CreateDateFieldProps } from '$lib';
 
-	export let defaultPlaceholderValue: CreateDateFieldProps['defaultPlaceholderValue'] =
+	export let defaultPlaceholder: CreateDateFieldProps['defaultPlaceholder'] =
 		undefined;
 
 	const {
 		elements: { dateField, segment, label },
 		states: { value, segmentContents },
 	} = createDateField({
-		defaultPlaceholderValue,
+		defaultPlaceholder,
 	});
 </script>
 

@@ -7,6 +7,6 @@
 </script>
 
 <div class="flex flex-col gap-8">
-	<DateField defaultPlaceholderValue={withLocalTimeZone} />
-	<DateField defaultPlaceholderValue={withLosAngelesTimeZone} />
+	<DateField defaultPlaceholder={withLocalTimeZone} />
+	<DateField defaultPlaceholder={withLosAngelesTimeZone} />
 </div>

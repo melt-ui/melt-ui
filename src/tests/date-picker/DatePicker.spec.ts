@@ -171,7 +171,7 @@ describe('DatePicker', () => {
 		test('selection with mouse', async () => {
 			const user = userEvent.setup();
 			const { getByTestId } = render(DatePickerTest, {
-				defaultPlaceholderValue: zonedDateTimeOther,
+				defaultPlaceholder: zonedDateTimeOther,
 				allowDeselect: true,
 			});
 			const trigger = getByTestId('trigger');
@@ -190,7 +190,7 @@ describe('DatePicker', () => {
 		test('selection with keyboard', async () => {
 			const user = userEvent.setup();
 			const { getByTestId } = render(DatePickerTest, {
-				defaultPlaceholderValue: zonedDateTimeOther,
+				defaultPlaceholder: zonedDateTimeOther,
 			});
 			const trigger = getByTestId('trigger');
 			await user.click(trigger);
@@ -259,7 +259,7 @@ describe('DatePicker', () => {
 		test('increments segment on arrow up', async () => {
 			const user = userEvent.setup();
 			const { getByTestId } = render(DatePickerTest, {
-				defaultPlaceholderValue: calendarDateToday,
+				defaultPlaceholder: calendarDateToday,
 			});
 			const firstSegment = getByTestId('month');
 			await user.click(firstSegment);
@@ -276,7 +276,7 @@ describe('DatePicker', () => {
 		test('increments segment on arrow down', async () => {
 			const user = userEvent.setup();
 			const { getByTestId } = render(DatePickerTest, {
-				defaultPlaceholderValue: calendarDateToday,
+				defaultPlaceholder: calendarDateToday,
 			});
 
 			const firstSegment = getByTestId('month');
@@ -294,7 +294,7 @@ describe('DatePicker', () => {
 		test('increments segment on arrow down', async () => {
 			const user = userEvent.setup();
 			const { getByTestId } = render(DatePickerTest, {
-				defaultPlaceholderValue: calendarDateToday,
+				defaultPlaceholder: calendarDateToday,
 			});
 
 			const firstSegment = getByTestId('month');

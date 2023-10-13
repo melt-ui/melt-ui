@@ -7,11 +7,9 @@
 
 	export let value: CreateDateRangeFieldProps['value'] = undefined;
 	export let defaultValue: CreateDateRangeFieldProps['defaultValue'] = undefined;
-	export let defaultPlaceholderValue: CreateDateRangeFieldProps['defaultPlaceholderValue'] =
-		undefined;
+	export let defaultPlaceholder: CreateDateRangeFieldProps['defaultPlaceholder'] = undefined;
 	export let onValueChange: CreateDateRangeFieldProps['onValueChange'] = undefined;
-	export let onPlaceholderValueChange: CreateDateRangeFieldProps['onPlaceholderValueChange'] =
-		undefined;
+	export let onPlaceholderChange: CreateDateRangeFieldProps['onPlaceholderChange'] = undefined;
 	export let isUnavailable: CreateDateRangeFieldProps['isUnavailable'] = undefined;
 	export let disabled: CreateDateRangeFieldProps['disabled'] = undefined;
 	export let readonly: CreateDateRangeFieldProps['readonly'] = undefined;
@@ -27,9 +25,9 @@
 	} = createDateRangeField({
 		value,
 		defaultValue,
-		defaultPlaceholderValue,
+		defaultPlaceholder,
 		onValueChange,
-		onPlaceholderValueChange,
+		onPlaceholderChange,
 		isUnavailable,
 		disabled,
 		readonly,

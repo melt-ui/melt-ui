@@ -40,7 +40,7 @@ export type SegmentStateMap = {
 export type SegmentAttrProps = {
 	segmentValues: SegmentValueObj;
 	hourCycle: 12 | 24 | undefined;
-	placeholderValue: DateValue;
+	placeholder: DateValue;
 };
 
 export type SegmentAttrFn = (props: SegmentAttrProps) => Record<string, string | number | boolean>;

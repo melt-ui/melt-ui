@@ -11,7 +11,7 @@ import type { CreateRangeCalendarProps } from '../range-calendar/types.js';
 export type DateRangePickerProps = {
 	/**
 	 * The default value for the date field. When provided,
-	 * the `placeholderValue` will also assume this value.
+	 * the `placeholder` will also assume this value.
 	 *
 	 * @default undefined;
 	 */
@@ -51,45 +51,45 @@ export type DateRangePickerProps = {
 	 *
 	 * @default CalendarDate - the current date at midnight.
 	 */
-	defaultPlaceholderValue?: DateValue;
+	defaultPlaceholder?: DateValue;
 
 	/**
 	 * A writable store that can be used to control the placeholder
 	 * date from outside the builder. When this prop is provided,
-	 * the `defaultPlaceholderValue` prop is ignored, and the value
+	 * the `defaultPlaceholder` prop is ignored, and the value
 	 * of this store is used instead.
 	 *
-	 * The `placeholderValue` store is not used to set the value of the
+	 * The `placeholder` store is not used to set the value of the
 	 * date picker, it is only used to control the starting point for
-	 * the calendar. The `placeholderValue` store is used to determine
+	 * the calendar. The `placeholder` store is used to determine
 	 * where the calendar should start when it is first opened without
 	 * a value, as well as the starting point for cycling through the
 	 * individual date segments.
 	 *
 	 * When the date picker is first opened, if the `value` of the
-	 * date picker is set, the `placeholderValue` will be set
+	 * date picker is set, the `placeholder` will be set
 	 * to the same value as the `value` store. If the `value` store is
-	 * not set, the `placeholderValue` will initially be set to the same
-	 * value as the `defaultPlaceholderValue` prop.
+	 * not set, the `placeholder` will initially be set to the same
+	 * value as the `defaultPlaceholder` prop.
 	 *
 	 * @default Writable<CalendarDate> - the current date at midnight.
 	 */
-	placeholderValue?: Writable<DateValue>;
+	placeholder?: Writable<DateValue>;
 
 	/**
 	 * A function called when the placeholder value changes. It receives
 	 * a single argument, which is an object containing `curr` and
 	 * `prev` properties, whose values are the current and previous
-	 * values of the `placeholderValue` store. Whatever you return from this
-	 * function will be set as the new value of the `placeholderValue` store.
+	 * values of the `placeholder` store. Whatever you return from this
+	 * function will be set as the new value of the `placeholder` store.
 	 *
-	 * The `placeholderValue` is kept in sync with the `value` store, so
+	 * The `placeholder` is kept in sync with the `value` store, so
 	 * ensure you know what you're doing if you intend on overriding the
 	 * value, as it may render the date picker unusable.
 	 *
 	 * @default undefined
 	 */
-	onPlaceholderValueChange?: ChangeFn<DateValue>;
+	onPlaceholderChange?: ChangeFn<DateValue>;
 
 	/**
 	 * Any dates that match the provided matchers will

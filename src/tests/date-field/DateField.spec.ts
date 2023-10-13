@@ -127,7 +127,7 @@ describe('DateField', () => {
 	test('increments segment on arrow up', async () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(DateFieldTest, {
-			defaultPlaceholderValue: calendarDateOther,
+			defaultPlaceholder: calendarDateOther,
 		});
 		const firstSegment = getByTestId('month');
 		await user.click(firstSegment);
@@ -144,7 +144,7 @@ describe('DateField', () => {
 	test('increments segment on arrow down', async () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(DateFieldTest, {
-			defaultPlaceholderValue: calendarDateOther,
+			defaultPlaceholder: calendarDateOther,
 		});
 
 		const firstSegment = getByTestId('month');
@@ -162,7 +162,7 @@ describe('DateField', () => {
 	test('increments segment on arrow down', async () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(DateFieldTest, {
-			defaultPlaceholderValue: calendarDateOther,
+			defaultPlaceholder: calendarDateOther,
 		});
 
 		const firstSegment = getByTestId('month');

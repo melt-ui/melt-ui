@@ -36,12 +36,12 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	const dateField = createDateField(withDefaults);
 
 	const {
-		states: { value, placeholderValue: dfPlaceholderValue },
+		states: { value, placeholder: dfPlaceholder },
 	} = dateField;
 
 	const calendar = createCalendar({
 		...withDefaults,
-		placeholderValue: dfPlaceholderValue,
+		placeholder: dfPlaceholder,
 		value: value,
 		ids: withDefaults.calendarIds,
 	});
@@ -93,23 +93,20 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	} = popover;
 
 	const options = toWritableStores({
-		...omit(withDefaults, 'value', 'placeholderValue'),
+		...omit(withDefaults, 'value', 'placeholder'),
 		...popover.options,
 	});
 
 	const { locale } = options;
 
 	const defaultDate = getDefaultDate({
-		defaultPlaceholderValue: withDefaults.defaultPlaceholderValue,
+		defaultPlaceholder: withDefaults.defaultPlaceholder,
 		defaultValue: withDefaults.defaultValue,
 		granularity: withDefaults.granularity,
 	});
 	const formatter = createFormatter(get(locale));
 
-	const placeholderValue = dateStore(
-		dfPlaceholderValue,
-		withDefaults.defaultPlaceholderValue ?? defaultDate
-	);
+	const placeholder = dateStore(dfPlaceholder, withDefaults.defaultPlaceholder ?? defaultDate);
 
 	effect([locale], ([$locale]) => {
 		if (formatter.getLocale() === $locale) return;
@@ -120,9 +117,9 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		if (!$open) {
 			const $value = get(value);
 			if ($value) {
-				placeholderValue.set($value);
+				placeholder.set($value);
 			} else {
-				placeholderValue.reset();
+				placeholder.reset();
 			}
 		}
 	});
@@ -144,7 +141,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		states: {
 			...dateField.states,
 			...calendar.states,
-			placeholderValue: placeholderValue.toWritable(),
+			placeholder: placeholder.toWritable(),
 			value,
 			...popover.states,
 		},

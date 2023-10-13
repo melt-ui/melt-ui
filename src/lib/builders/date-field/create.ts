@@ -79,7 +79,7 @@ const { name } = createElHelpers<DateFieldParts>('dateField');
 export function createDateField(props?: CreateDateFieldProps) {
 	const withDefaults = { ...defaults, ...props };
 
-	const options = toWritableStores(omit(withDefaults, 'value', 'placeholderValue'));
+	const options = toWritableStores(omit(withDefaults, 'value', 'placeholder'));
 	const {
 		locale,
 		granularity,
@@ -93,7 +93,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	} = options;
 
 	const defaultDate = getDefaultDate({
-		defaultPlaceholderValue: withDefaults.defaultPlaceholderValue,
+		defaultPlaceholder: withDefaults.defaultPlaceholder,
 		granularity: withDefaults.granularity,
 		defaultValue: withDefaults.defaultValue,
 	});
@@ -107,20 +107,20 @@ export function createDateField(props?: CreateDateFieldProps) {
 		return false;
 	});
 
-	const placeholderValueWritable =
-		withDefaults.placeholderValue ?? writable(withDefaults.defaultPlaceholderValue ?? defaultDate);
-	const placeholderValue = dateStore(
-		overridable(placeholderValueWritable, withDefaults.onPlaceholderValueChange),
-		withDefaults.defaultPlaceholderValue ?? defaultDate
+	const placeholderWritable =
+		withDefaults.placeholder ?? writable(withDefaults.defaultPlaceholder ?? defaultDate);
+	const placeholder = dateStore(
+		overridable(placeholderWritable, withDefaults.onPlaceholderChange),
+		withDefaults.defaultPlaceholder ?? defaultDate
 	);
 
 	const inferredGranularity = derived(
-		[placeholderValue, granularity],
-		([$placeholderValue, $granularity]) => {
+		[placeholder, granularity],
+		([$placeholder, $granularity]) => {
 			if ($granularity) {
 				return $granularity;
 			} else {
-				return inferGranularity($placeholderValue, $granularity);
+				return inferGranularity($placeholder, $granularity);
 			}
 		}
 	);
@@ -173,7 +173,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				formatter,
 				locale: $locale,
 				granularity: $inferredGranularity,
-				dateRef: get(placeholderValue),
+				dateRef: get(placeholder),
 				hideTimeZone: $hideTimeZone,
 				hourCycle: $hourCycle,
 			});
@@ -294,7 +294,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		stores: [
 			segmentValues,
 			hourCycle,
-			placeholderValue,
+			placeholder,
 			value,
 			isFieldInvalid,
 			disabled,
@@ -304,7 +304,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		returned: ([
 			$segmentValues,
 			$hourCycle,
-			$placeholderValue,
+			$placeholder,
 			$value,
 			$isFieldInvalid,
 			$disabled,
@@ -314,7 +314,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			const props = {
 				segmentValues: $segmentValues,
 				hourCycle: $hourCycle,
-				placeholderValue: $placeholderValue,
+				placeholder: $placeholder,
 			};
 			return (part: SegmentPart) => {
 				const defaultAttrs = {
@@ -355,7 +355,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	) {
 		if (get(disabled) || get(readonly)) return;
 		segmentValues.update((prev) => {
-			const dateRef = get(placeholderValue);
+			const dateRef = get(placeholder);
 			if (isDateAndTimeSegmentObj(prev)) {
 				const pVal = prev[part];
 				const castCb = cb as Updater<DateAndTimeSegmentObj[T]>;
@@ -375,7 +375,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				} else if (part === 'dayPeriod') {
 					const next = castCb(pVal) as DateAndTimeSegmentObj['dayPeriod'];
 					updatingDayPeriod.set(next);
-					const date = get(placeholderValue);
+					const date = get(placeholder);
 					if ('hour' in date) {
 						const trueHour = date.hour;
 						if (next === 'AM') {
@@ -437,7 +437,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				getValueFromSegments({
 					segmentObj: $segmentValues,
 					id: ids.field,
-					dateRef: get(placeholderValue),
+					dateRef: get(placeholder),
 				})
 			);
 			updatingDayPeriod.set(null);
@@ -495,11 +495,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 	 */
 
 	function daySegmentAttrs(props: SegmentAttrProps) {
-		const { segmentValues, placeholderValue } = props;
+		const { segmentValues, placeholder } = props;
 		const isEmpty = segmentValues.day === null;
-		const date = segmentValues.day
-			? placeholderValue.set({ day: segmentValues.day })
-			: placeholderValue;
+		const date = segmentValues.day ? placeholder.set({ day: segmentValues.day }) : placeholder;
 
 		const valueNow = date.day;
 		const valueMin = 1;
@@ -537,20 +535,20 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 
 		const $segmentMonthValue = get(segmentValues).month;
-		const $placeholderValue = get(placeholderValue);
+		const $placeholder = get(placeholder);
 
 		const daysInMonth = $segmentMonthValue
-			? getDaysInMonth($placeholderValue.set({ month: $segmentMonthValue }))
-			: getDaysInMonth($placeholderValue);
+			? getDaysInMonth($placeholder.set({ month: $segmentMonthValue }))
+			: getDaysInMonth($placeholder);
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('day', (prev) => {
 				if (prev === null) {
-					const next = $placeholderValue.day;
+					const next = $placeholder.day;
 					announcer.announce(next);
 					return next;
 				}
-				const next = $placeholderValue.set({ day: prev }).cycle('day', 1).day;
+				const next = $placeholder.set({ day: prev }).cycle('day', 1).day;
 				announcer.announce(next);
 				return next;
 			});
@@ -559,11 +557,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('day', (prev) => {
 				if (prev === null) {
-					const next = $placeholderValue.day;
+					const next = $placeholder.day;
 					announcer.announce(next);
 					return next;
 				}
-				const next = $placeholderValue.set({ day: prev }).cycle('day', -1).day;
+				const next = $placeholder.set({ day: prev }).cycle('day', -1).day;
 				announcer.announce(next);
 				return next;
 			});
@@ -681,11 +679,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 	 */
 
 	function monthSegmentAttrs(props: SegmentAttrProps) {
-		const { segmentValues, placeholderValue } = props;
+		const { segmentValues, placeholder } = props;
 		const isEmpty = segmentValues.month === null;
 		const date = segmentValues.month
-			? placeholderValue.set({ month: segmentValues.month })
-			: placeholderValue;
+			? placeholder.set({ month: segmentValues.month })
+			: placeholder;
 		const valueNow = date.month;
 		const valueMin = 1;
 		const valueMax = 12;
@@ -722,9 +720,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 			return;
 		}
 
-		const $placeholderValue = get(placeholderValue);
+		const $placeholder = get(placeholder);
 		function getMonthAnnouncement(month: number) {
-			return `${month} - ${formatter.fullMonth(toDate($placeholderValue.set({ month })))}`;
+			return `${month} - ${formatter.fullMonth(toDate($placeholder.set({ month })))}`;
 		}
 
 		const max = 12;
@@ -734,11 +732,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('month', (prev) => {
 				if (prev === null) {
-					const next = $placeholderValue.month;
+					const next = $placeholder.month;
 					announcer.announce(getMonthAnnouncement(next));
 					return next;
 				}
-				const next = $placeholderValue.set({ month: prev }).cycle('month', 1);
+				const next = $placeholder.set({ month: prev }).cycle('month', 1);
 				announcer.announce(getMonthAnnouncement(next.month));
 				return next.month;
 			});
@@ -747,11 +745,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('month', (prev) => {
 				if (prev === null) {
-					const next = $placeholderValue.month;
+					const next = $placeholder.month;
 					announcer.announce(getMonthAnnouncement(next));
 					return next;
 				}
-				const next = $placeholderValue.set({ month: prev }).cycle('month', -1).month;
+				const next = $placeholder.set({ month: prev }).cycle('month', -1).month;
 				announcer.announce(getMonthAnnouncement(next));
 				return next;
 			});
@@ -869,11 +867,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 	 */
 
 	function yearSegmentAttrs(props: SegmentAttrProps) {
-		const { segmentValues, placeholderValue } = props;
+		const { segmentValues, placeholder } = props;
 		const isEmpty = segmentValues.year === null;
-		const date = segmentValues.year
-			? placeholderValue.set({ year: segmentValues.year })
-			: placeholderValue;
+		const date = segmentValues.year ? placeholder.set({ year: segmentValues.year }) : placeholder;
 		const valueMin = 1;
 		const valueMax = 9999;
 		const valueNow = date.year;
@@ -910,16 +906,16 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 
 		states.year.hasTouched = true;
-		const $placeholderValue = get(placeholderValue);
+		const $placeholder = get(placeholder);
 
 		if (e.key === kbd.ARROW_UP) {
 			updateSegment('year', (prev) => {
 				if (prev === null) {
-					const next = $placeholderValue.year;
+					const next = $placeholder.year;
 					announcer.announce(next);
 					return next;
 				}
-				const next = $placeholderValue.set({ year: prev }).cycle('year', 1).year;
+				const next = $placeholder.set({ year: prev }).cycle('year', 1).year;
 				announcer.announce(next);
 				return next;
 			});
@@ -928,11 +924,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 		if (e.key === kbd.ARROW_DOWN) {
 			updateSegment('year', (prev) => {
 				if (prev === null) {
-					const next = $placeholderValue.year;
+					const next = $placeholder.year;
 					announcer.announce(next);
 					return next;
 				}
-				const next = $placeholderValue.set({ year: prev }).cycle('year', -1).year;
+				const next = $placeholder.set({ year: prev }).cycle('year', -1).year;
 				announcer.announce(next);
 				return next;
 			});
@@ -1002,12 +998,10 @@ export function createDateField(props?: CreateDateFieldProps) {
 	 */
 
 	function hourSegmentAttrs(props: SegmentAttrProps) {
-		const { segmentValues, hourCycle, placeholderValue } = props;
-		if (!('hour' in segmentValues) || !('hour' in placeholderValue)) return {};
+		const { segmentValues, hourCycle, placeholder } = props;
+		if (!('hour' in segmentValues) || !('hour' in placeholder)) return {};
 		const isEmpty = segmentValues.hour === null;
-		const date = segmentValues.hour
-			? placeholderValue.set({ hour: segmentValues.hour })
-			: placeholderValue;
+		const date = segmentValues.hour ? placeholder.set({ hour: segmentValues.hour }) : placeholder;
 		const valueMin = hourCycle === 12 ? 1 : 0;
 		const valueMax = hourCycle === 12 ? 12 : 23;
 		const valueNow = date.hour;
@@ -1039,7 +1033,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	}
 
 	function handleHourSegmentKeydown(e: KeyboardEvent) {
-		const dateRef = get(placeholderValue);
+		const dateRef = get(placeholder);
 		if (!isAcceptableSegmentKey(e.key) || !('hour' in dateRef)) {
 			return;
 		}
@@ -1185,12 +1179,12 @@ export function createDateField(props?: CreateDateFieldProps) {
 	 */
 
 	function minuteSegmentAttrs(props: SegmentAttrProps) {
-		const { segmentValues, placeholderValue } = props;
-		if (!('minute' in segmentValues) || !('minute' in placeholderValue)) return {};
+		const { segmentValues, placeholder } = props;
+		if (!('minute' in segmentValues) || !('minute' in placeholder)) return {};
 		const isEmpty = segmentValues.minute === null;
 		const date = segmentValues.minute
-			? placeholderValue.set({ minute: segmentValues.minute })
-			: placeholderValue;
+			? placeholder.set({ minute: segmentValues.minute })
+			: placeholder;
 		const valueNow = date.minute;
 		const valueMin = 0;
 		const valueMax = 59;
@@ -1222,7 +1216,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	}
 
 	function handleMinuteSegmentKeydown(e: KeyboardEvent) {
-		const dateRef = get(placeholderValue);
+		const dateRef = get(placeholder);
 		if (!isAcceptableSegmentKey(e.key) || !('minute' in dateRef)) {
 			return;
 		}
@@ -1367,12 +1361,12 @@ export function createDateField(props?: CreateDateFieldProps) {
 	 */
 
 	function secondSegmentAttrs(props: SegmentAttrProps) {
-		const { segmentValues, placeholderValue } = props;
-		if (!('second' in segmentValues) || !('second' in placeholderValue)) return {};
+		const { segmentValues, placeholder } = props;
+		if (!('second' in segmentValues) || !('second' in placeholder)) return {};
 		const isEmpty = segmentValues.second === null;
 		const date = segmentValues.second
-			? placeholderValue.set({ second: segmentValues.second })
-			: placeholderValue;
+			? placeholder.set({ second: segmentValues.second })
+			: placeholder;
 		const valueNow = date.second;
 		const valueMin = 0;
 		const valueMax = 59;
@@ -1404,7 +1398,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 	}
 
 	function handleSecondSegmentKeydown(e: KeyboardEvent) {
-		const dateRef = get(placeholderValue);
+		const dateRef = get(placeholder);
 		if (!isAcceptableSegmentKey(e.key)) {
 			return;
 		}
@@ -1726,8 +1720,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 			// Set the description of the field for screen readers
 			setDescription(ids.description, formatter, $value);
 		}
-		if ($value && get(placeholderValue) !== $value) {
-			placeholderValue.set($value);
+		if ($value && get(placeholder) !== $value) {
+			placeholder.set($value);
 		}
 	});
 
@@ -1758,7 +1752,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			segmentValues,
 			segmentContents,
 			segmentContentsObj,
-			placeholderValue: placeholderValue.toWritable(),
+			placeholder: placeholder.toWritable(),
 			isFieldInvalid,
 		},
 		options,

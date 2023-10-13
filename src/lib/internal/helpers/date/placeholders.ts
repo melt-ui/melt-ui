@@ -103,7 +103,7 @@ function getPlaceholderObj(locale: SupportedLocale | (string & {})) {
 
 type Field = 'era' | 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second' | 'dayPeriod';
 
-export function getPlaceholderValue(
+export function getPlaceholder(
 	field: Field,
 	value: string,
 	// eslint-disable-next-line @typescript-eslint/ban-types

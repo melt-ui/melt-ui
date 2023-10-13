@@ -110,7 +110,7 @@ describe('DatePicker', () => {
 		test('selection with mouse', async () => {
 			const user = userEvent.setup();
 			const { getByTestId } = render(CalendarTest, {
-				defaultPlaceholderValue: zonedDateTimeOther,
+				defaultPlaceholder: zonedDateTimeOther,
 				allowDeselect: true,
 			});
 
@@ -128,7 +128,7 @@ describe('DatePicker', () => {
 		test('selection with keyboard', async () => {
 			const user = userEvent.setup();
 			const { getByTestId } = render(CalendarTest, {
-				defaultPlaceholderValue: zonedDateTimeOther,
+				defaultPlaceholder: zonedDateTimeOther,
 			});
 
 			const calendar = getByTestId('calendar');

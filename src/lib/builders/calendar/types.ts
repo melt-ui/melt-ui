@@ -35,7 +35,7 @@ export type CalendarProps = {
 
 	/**
 	 * The default value for the date picker. When provided,
-	 * the `placeholderValue` will assume this value so the calendar
+	 * the `placeholder` will assume this value so the calendar
 	 * will open to the month/year of this value.
 	 *
 	 * @default undefined;
@@ -76,38 +76,38 @@ export type CalendarProps = {
 	 *
 	 * @default CalendarDate - the current date at midnight.
 	 */
-	defaultPlaceholderValue?: DateValue;
+	defaultPlaceholder?: DateValue;
 
 	/**
 	 * A writable store that can be used to externally control the placeholder date.
-	 * When provided, it overrides the `defaultPlaceholderValue` prop.
+	 * When provided, it overrides the `defaultPlaceholder` prop.
 	 *
-	 * The `placeholderValue` store determines the initial display when the calendar is
+	 * The `placeholder` store determines the initial display when the calendar is
 	 * first opened without a value, and it serves as the starting point for cycling through
 	 * individual date segments.
 	 *
 	 * When the date picker is first opened, if the `value` of the date picker is set,
-	 * the `placeholderValue` will be set to the same value as the `value` store. If the
-	 * `value` store is not set, the `placeholderValue` will initially match the
-	 * `defaultPlaceholderValue` prop.
+	 * the `placeholder` will be set to the same value as the `value` store. If the
+	 * `value` store is not set, the `placeholder` will initially match the
+	 * `defaultPlaceholder` prop.
 	 *
 	 * @default Writable<CalendarDate> - set to the current date at midnight.
 	 */
-	placeholderValue?: Writable<DateValue>;
+	placeholder?: Writable<DateValue>;
 
 	/**
 	 * A function called when the placeholder value changes. It takes a single argument,
 	 * an object with `curr` and `prev` properties representing the current and previous
-	 * values of the `placeholderValue` store. Any value you return from this function
-	 * will replace the current value of the `placeholderValue` store.
+	 * values of the `placeholder` store. Any value you return from this function
+	 * will replace the current value of the `placeholder` store.
 	 *
-	 * It's important to note that the `placeholderValue` is synchronized with the `value`
+	 * It's important to note that the `placeholder` is synchronized with the `value`
 	 * store. Therefore, caution is required when overriding this value, as it may impact
 	 * the functionality of the date picker.
 	 *
 	 * @default undefined
 	 */
-	onPlaceholderValueChange?: ChangeFn<DateValue>;
+	onPlaceholderChange?: ChangeFn<DateValue>;
 
 	/**
 	 * Applicable only when `numberOfMonths` is greater than 1.

@@ -38,7 +38,7 @@ const { name } = createElHelpers<DateFieldParts>('dateField');
 
 export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	const withDefaults = { ...defaults, ...props };
-	const options = toWritableStores(omit(withDefaults, 'value', 'placeholderValue'));
+	const options = toWritableStores(omit(withDefaults, 'value', 'placeholder'));
 
 	const ids = {
 		field: generateId(),
@@ -48,7 +48,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 
 	const defaultDate = getDefaultDate({
 		defaultValue: withDefaults.defaultValue?.start,
-		defaultPlaceholderValue: withDefaults.defaultPlaceholderValue,
+		defaultPlaceholder: withDefaults.defaultPlaceholder,
 		granularity: withDefaults.granularity,
 	});
 
@@ -62,11 +62,11 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		return $value?.start && $value?.end;
 	});
 
-	const placeholderValueWritable =
-		withDefaults.placeholderValue ?? writable(withDefaults.defaultPlaceholderValue ?? defaultDate);
-	const placeholderValue = dateStore(
-		overridable(placeholderValueWritable, withDefaults.onPlaceholderValueChange),
-		withDefaults.defaultPlaceholderValue ?? defaultDate
+	const placeholderWritable =
+		withDefaults.placeholder ?? writable(withDefaults.defaultPlaceholder ?? defaultDate);
+	const placeholder = dateStore(
+		overridable(placeholderWritable, withDefaults.onPlaceholderChange),
+		withDefaults.defaultPlaceholder ?? defaultDate
 	);
 
 	const startField = createDateField({
@@ -217,7 +217,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		},
 		states: {
 			value,
-			placeholderValue: placeholderValue.toWritable(),
+			placeholder: placeholder.toWritable(),
 			segmentContents,
 			endSegmentValues,
 			startSegmentValues,

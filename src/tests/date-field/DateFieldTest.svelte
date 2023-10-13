@@ -4,9 +4,9 @@
 
 	export let value: CreateDateFieldProps['value'] = undefined;
 	export let defaultValue: CreateDateFieldProps['defaultValue'] = undefined;
-	export let defaultPlaceholderValue: CreateDateFieldProps['defaultPlaceholderValue'] = undefined;
+	export let defaultPlaceholder: CreateDateFieldProps['defaultPlaceholder'] = undefined;
 	export let onValueChange: CreateDateFieldProps['onValueChange'] = undefined;
-	export let onPlaceholderValueChange: CreateDateFieldProps['onPlaceholderValueChange'] = undefined;
+	export let onPlaceholderChange: CreateDateFieldProps['onPlaceholderChange'] = undefined;
 	export let isUnavailable: CreateDateFieldProps['isUnavailable'] = undefined;
 	export let disabled: CreateDateFieldProps['disabled'] = undefined;
 	export let readonly: CreateDateFieldProps['readonly'] = undefined;
@@ -22,9 +22,9 @@
 	} = createDateField({
 		value,
 		defaultValue,
-		defaultPlaceholderValue,
+		defaultPlaceholder,
 		onValueChange,
-		onPlaceholderValueChange,
+		onPlaceholderChange,
 		isUnavailable,
 		disabled,
 		readonly,

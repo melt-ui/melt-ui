@@ -62,7 +62,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	const withDefaults = { ...defaults, ...props };
 
 	const options = toWritableStores({
-		...omit(withDefaults, 'value', 'placeholderValue'),
+		...omit(withDefaults, 'value', 'placeholder'),
 	});
 
 	const {
@@ -86,7 +86,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	} satisfies CalendarIds;
 
 	const defaultDate = getDefaultDate({
-		defaultPlaceholderValue: withDefaults.defaultPlaceholderValue,
+		defaultPlaceholder: withDefaults.defaultPlaceholder,
 		defaultValue: withDefaults.defaultValue,
 	});
 
@@ -94,11 +94,11 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
-	const placeholderValueWritable =
-		withDefaults.placeholderValue ?? writable(withDefaults.defaultPlaceholderValue ?? defaultDate);
-	const placeholderValue = dateStore(
-		overridable(placeholderValueWritable, withDefaults.onPlaceholderValueChange),
-		withDefaults.defaultPlaceholderValue ?? defaultDate
+	const placeholderWritable =
+		withDefaults.placeholder ?? writable(withDefaults.defaultPlaceholder ?? defaultDate);
+	const placeholder = dateStore(
+		overridable(placeholderWritable, withDefaults.onPlaceholderChange),
+		withDefaults.defaultPlaceholder ?? defaultDate
 	);
 
 	/**
@@ -106,7 +106,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 */
 	const months = writable<Month<DateValue>[]>(
 		createMonths({
-			dateObj: withDefaults.defaultPlaceholderValue ?? defaultDate,
+			dateObj: withDefaults.defaultPlaceholder ?? defaultDate,
 			weekStartsOn: withDefaults.weekStartsOn,
 			locale: withDefaults.locale,
 			fixedWeeks: withDefaults.fixedWeeks,
@@ -316,14 +316,8 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * and interactivity.
 	 */
 	const cell = builder(name('cell'), {
-		stores: [value, isDisabled, isUnavailable, isOutsideVisibleMonths, placeholderValue],
-		returned: ([
-			$value,
-			$isDisabled,
-			$isUnavailable,
-			$isOutsideVisibleMonths,
-			$placeholderValue,
-		]) => {
+		stores: [value, isDisabled, isUnavailable, isOutsideVisibleMonths, placeholder],
+		returned: ([$value, $isDisabled, $isUnavailable, $isOutsideVisibleMonths, $placeholder]) => {
 			/**
 			 * Applies the appropriate attributes to each date cell in the calendar.
 			 *
@@ -338,7 +332,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 				const isDateToday = isToday(cellValue, getLocalTimeZone());
 				const isOutsideMonth = !isSameMonth(cellValue, monthValue);
 				const isOutsideVisibleMonths = $isOutsideVisibleMonths(cellValue);
-				const isFocusedDate = isSameDay(cellValue, $placeholderValue);
+				const isFocusedDate = isSameDay(cellValue, $placeholder);
 				const isSelectedDate = $value ? isSameDay(cellValue, $value) && !isOutsideMonth : false;
 
 				const labelText = formatter.custom(cellDate, {
@@ -385,7 +379,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 					const args = getElArgs();
 					if (args.disabled) return;
 					if (!args.value) return;
-					handleCellClick(parseStringToDateValue(args.value, get(placeholderValue)));
+					handleCellClick(parseStringToDateValue(args.value, get(placeholder)));
 				})
 			);
 
@@ -409,17 +403,17 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * which determines the months to show in the calendar.
 	 */
 	effect(
-		[placeholderValue, weekStartsOn, locale, fixedWeeks, numberOfMonths],
-		([$placeholderValue, $weekStartsOn, $locale, $fixedWeeks, $numberOfMonths]) => {
-			if (!isBrowser || !$placeholderValue) return;
+		[placeholder, weekStartsOn, locale, fixedWeeks, numberOfMonths],
+		([$placeholder, $weekStartsOn, $locale, $fixedWeeks, $numberOfMonths]) => {
+			if (!isBrowser || !$placeholder) return;
 
 			const $visibleMonths = get(visibleMonths);
 
 			/**
-			 * If the placeholderValue's month is already in the visible months,
+			 * If the placeholder's month is already in the visible months,
 			 * we don't need to do anything.
 			 */
-			if ($visibleMonths.some((month) => isSameMonth(month, $placeholderValue))) {
+			if ($visibleMonths.some((month) => isSameMonth(month, $placeholder))) {
 				return;
 			}
 
@@ -433,7 +427,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			months.set(
 				createMonths({
 					...defaultMonthProps,
-					dateObj: $placeholderValue,
+					dateObj: $placeholder,
 				})
 			);
 		}
@@ -454,8 +448,8 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * Synchronizing the placeholder value with the current value.
 	 */
 	effect([value], ([$value]) => {
-		if ($value && get(placeholderValue) !== $value) {
-			placeholderValue.set($value);
+		if ($value && get(placeholder) !== $value) {
+			placeholder.set($value);
 		}
 	});
 
@@ -570,7 +564,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		const $numberOfMonths = get(numberOfMonths);
 		if (get(pagedNavigation)) {
 			const firstMonth = $months[0].value;
-			placeholderValue.set(firstMonth.add({ months: $numberOfMonths }));
+			placeholder.set(firstMonth.add({ months: $numberOfMonths }));
 		} else {
 			const firstMonth = $months[0].value;
 			const newMonths = createMonths({
@@ -582,7 +576,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			});
 
 			months.set(newMonths);
-			placeholderValue.set(newMonths[0].value.set({ day: 1 }));
+			placeholder.set(newMonths[0].value.set({ day: 1 }));
 		}
 	}
 
@@ -611,7 +605,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		const $numberOfMonths = get(numberOfMonths);
 		if (get(pagedNavigation)) {
 			const firstMonth = $months[0].value;
-			placeholderValue.set(firstMonth.subtract({ months: $numberOfMonths }));
+			placeholder.set(firstMonth.subtract({ months: $numberOfMonths }));
 		} else {
 			const firstMonth = $months[0].value;
 			const newMonths = createMonths({
@@ -623,7 +617,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			});
 
 			months.set(newMonths);
-			placeholderValue.set(newMonths[0].value.set({ day: 1 }));
+			placeholder.set(newMonths[0].value.set({ day: 1 }));
 		}
 	}
 
@@ -648,7 +642,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * ```
 	 */
 	function nextYear() {
-		placeholderValue.add({ years: 1 });
+		placeholder.add({ years: 1 });
 	}
 
 	/**
@@ -669,7 +663,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * ```
 	 */
 	function prevYear() {
-		placeholderValue.subtract({ years: 1 });
+		placeholder.subtract({ years: 1 });
 	}
 
 	const ARROW_KEYS = [kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.ARROW_LEFT, kbd.ARROW_RIGHT];
@@ -700,7 +694,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * ```
 	 */
 	function setYear(year: number) {
-		placeholderValue.setDate({ year: year });
+		placeholder.setDate({ year: year });
 	}
 
 	/**
@@ -729,13 +723,13 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * ```
 	 */
 	function setMonth(month: number) {
-		placeholderValue.setDate({ month: month });
+		placeholder.setDate({ month: month });
 	}
 
 	function handleCellClick(date: DateValue) {
 		value.update((prev) => {
 			if (get(allowDeselect) && prev && isSameDay(prev, date)) {
-				placeholderValue.set(date);
+				placeholder.set(date);
 				announcer.announce('Selected date is now empty.', 'polite', 5000);
 				return undefined;
 			}
@@ -771,7 +765,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			const cellValue = currentCell.getAttribute('data-value');
 			if (!cellValue) return;
 
-			handleCellClick(parseStringToDateValue(cellValue, get(placeholderValue)));
+			handleCellClick(parseStringToDateValue(cellValue, get(placeholder)));
 		}
 	}
 
@@ -788,7 +782,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		 */
 		if (isValidIndex(nextIndex, candidateCells)) {
 			const nextCell = candidateCells[nextIndex];
-			setPlaceholderToNodeValue(nextCell, placeholderValue);
+			setPlaceholderToNodeValue(nextCell, placeholder);
 			return nextCell.focus();
 		}
 
@@ -811,7 +805,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			const $months = get(months);
 			const firstMonth = $months[0].value;
 			const $numberOfMonths = get(numberOfMonths);
-			placeholderValue.set(firstMonth.subtract({ months: $numberOfMonths }));
+			placeholder.set(firstMonth.subtract({ months: $numberOfMonths }));
 
 			// Without a tick here, it seems to be too fast for
 			// the DOM to update, with the tick it works great
@@ -830,7 +824,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 				const newIndex = newCandidateCells.length - Math.abs(nextIndex);
 				if (isValidIndex(newIndex, newCandidateCells)) {
 					const newCell = newCandidateCells[newIndex];
-					setPlaceholderToNodeValue(newCell, placeholderValue);
+					setPlaceholderToNodeValue(newCell, placeholder);
 					return newCell.focus();
 				}
 			});
@@ -847,7 +841,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			const $months = get(months);
 			const firstMonth = $months[0].value;
 			const $numberOfMonths = get(numberOfMonths);
-			placeholderValue.set(firstMonth.add({ months: $numberOfMonths }));
+			placeholder.set(firstMonth.add({ months: $numberOfMonths }));
 
 			tick().then(() => {
 				const newCandidateCells = getSelectableCells(ids.calendar);
@@ -896,13 +890,13 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * @returns `true` if the date is disabled, `false` otherwise
 	 */
 	const isDateDisabled = derived(
-		[isDisabled, placeholderValue, minValue, maxValue],
-		([$isDisabled, $placeholderValue, $minValue, $maxValue]) => {
+		[isDisabled, placeholder, minValue, maxValue],
+		([$isDisabled, $placeholder, $minValue, $maxValue]) => {
 			return (date: DateValue) => {
 				if ($isDisabled?.(date)) return true;
 				if ($minValue && isBefore(date, $minValue)) return true;
 				if ($maxValue && isAfter(date, $maxValue)) return true;
-				if (!isSameMonth(date, $placeholderValue)) return true;
+				if (!isSameMonth(date, $placeholder)) return true;
 				return false;
 			};
 		}
@@ -946,7 +940,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			prevButton,
 		},
 		states: {
-			placeholderValue: placeholderValue.toWritable(),
+			placeholder: placeholder.toWritable(),
 			months,
 			value,
 			daysOfWeek,
