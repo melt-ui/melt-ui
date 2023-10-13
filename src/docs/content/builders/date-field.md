@@ -391,7 +391,7 @@ function to accomplish just that.
 <script lang="ts">
 	import { createDateField, melt, type Matcher } from '@melt-ui/svelte'
 
-	const noFirstOrFifteenth: Matcher = (date) => {
+	const isFirstOrFifteenth: Matcher = (date) => {
 		return date.day === 1 || date.day === 15
 	}
 
@@ -400,7 +400,7 @@ function to accomplish just that.
 		states: { value, segmentContents, isInvalid }
 	} = createDateField({
 		name: 'appointmentDate',
-		isUnavailable: noFirstOrFifteenth
+		isUnavailable: isFirstOrFifteenth
 	})
 </script>
 ```
@@ -475,4 +475,31 @@ you'll see the behavior in action.
 
 <Preview code={snippets.tut7}>
 	<svelte:component this={previews.tut7} />
+</Preview>
+
+The Date Field builder also accepts `minValue` and `maxValue` props to set the minimum and maximum
+dates a user can select.
+
+```svelte showLineNumbers {11-12}
+<script lang="ts">
+	import { createDateField, melt } from '@melt-ui/svelte'
+	import { CalendarDate } from '@internationalized/date'
+
+	const {
+		elements: { dateField, segment, label, hiddenInput },
+		states: { value, segmentContents }
+	} = createDateField({
+		name: 'appointmentDate',
+		isUnavailable,
+		minValue: new CalendarDate(2023, 10, 11),
+		maxValue: new CalendarDate(2024, 10, 11)
+	})
+</script>
+```
+
+In this example, we're limiting the selection dates to between October 11th, 2023 and October
+11th, 2024.
+
+<Preview code={snippets.tut8}>
+	<svelte:component this={previews.tut8} />
 </Preview>

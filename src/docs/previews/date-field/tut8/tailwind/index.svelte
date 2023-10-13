@@ -2,17 +2,14 @@
 	import { createDateField, melt, type Matcher } from '$lib';
 	import { CalendarDate } from '@internationalized/date';
 
-	const isFirstOrFifteenth: Matcher = (date) => {
-		return date.day === 1 || date.day === 15;
-	};
-
 	const {
 		elements: { dateField, segment, label, hiddenInput },
 		states: { value, segmentContents, isInvalid },
 	} = createDateField({
 		name: 'appointmentDate',
 		defaultValue: new CalendarDate(2023, 10, 14),
-		isUnavailable: isFirstOrFifteenth,
+		minValue: new CalendarDate(2023, 10, 11),
+		maxValue: new CalendarDate(2024, 10, 11),
 	});
 </script>
 
