@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { melt } from '$lib';
-	import { createDateRangeField } from '$lib/builders/date-range-field';
+	import { createDateRangeField, melt } from '$lib';
 
 	const {
 		elements: { dateField, startSegment, endSegment, label },

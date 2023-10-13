@@ -2,41 +2,54 @@
 	import { createDateField, melt } from '$lib';
 
 	const {
-		elements: { dateField, segment, label },
+		elements: { dateField, segment, label, hiddenInput },
 		states: { value, segmentContents },
-	} = createDateField();
+	} = createDateField({
+		name: 'appointmentName',
+	});
 </script>
 
-<div class="flex w-full flex-col items-center gap-3">
+<form>
 	<div>
-		<span use:melt={$label} class="font-medium text-magnum-900">Due Date</span>
-		<div
-			use:melt={$dateField}
-			class="mt-0.5 flex w-full min-w-[200px] items-center rounded-lg border bg-white p-1.5 text-magnum-900"
-		>
+		<span use:melt={$label}>Appointment Date</span>
+		<div use:melt={$dateField} class="">
 			{#each $segmentContents as seg, i (i)}
-				<div use:melt={$segment(seg.part)} class="segment whitespace-nowrap">
+				<div use:melt={$segment(seg.part)}>
 					{seg.value}
 				</div>
 			{/each}
 		</div>
+		<input use:melt={$hiddenInput} />
 	</div>
-	<div class="flex w-full">
-		<p class="text-sm font-medium text-magnum-900">
-			<span> Selected Date: </span>
-			{#if $value}
-				{$value}
-			{/if}
+	{#if $value}
+		<p>
+			You Selected: {$value}
 		</p>
-	</div>
-</div>
+	{/if}
+</form>
 
 <style lang="postcss">
-	.segment:not([data-segment='literal']) {
+	[data-melt-dateField-label] {
+		@apply font-medium text-magnum-900;
+	}
+
+	[data-melt-dateField] {
+		@apply mt-0.5 flex w-full min-w-[200px] items-center rounded-lg border bg-white p-1.5 text-magnum-900;
+	}
+
+	form {
+		@apply flex w-full flex-col items-center gap-3;
+	}
+
+	p {
+		@apply text-sm font-medium text-magnum-900;
+	}
+
+	[data-melt-dateField-segment]:not([data-segment='literal']) {
 		@apply px-0.5;
 	}
-	.segment {
-		@apply data-[segment="dayPeriod"]:pl-0.5 data-[segment="hour"]:pl-1 data-[segment="timeZoneName"]:pl-1;
+	[data-melt-dateField-segment] {
+		@apply whitespace-nowrap data-[segment="dayPeriod"]:pl-0.5 data-[segment="hour"]:pl-1 data-[segment="timeZoneName"]:pl-1;
 	}
 
 	.btn {

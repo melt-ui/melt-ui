@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { createDateField } from '$lib/builders';
-	import { melt } from '$lib';
+	import { createDateField, melt } from '$lib';
 
 	const {
 		elements: { dateField, segment, label },

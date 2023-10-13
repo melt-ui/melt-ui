@@ -15,3 +15,4 @@ export { default as ol } from './ol.svelte';
 export { default as p } from './p.svelte';
 export { default as pre } from './pre.svelte';
 export { default as ul } from './ul.svelte';
+export { default as C } from './code.svelte';

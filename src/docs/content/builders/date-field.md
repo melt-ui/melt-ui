@@ -5,6 +5,7 @@ description: An enhanced alternative to a native date input.
 
 <script>
 	import { Preview, Callout } from '$docs/components'
+	import { C } from '$docs/components/markdown'
 	export let snippets
 	export let previews
 </script>
@@ -54,15 +55,15 @@ times in Melt, which you can read about <a href="/docs/dates-and-times" target="
 You can initialize a new Date Field using the `createDateField` function, which returns an object
 consisting of the stores & methods needed to construct the field.
 
-At a minimum, we'll want to destructure the `dateField`, `segment`, and `label` elements, as well
-as the `value` and `segmentContents` states.
+Let's start off simple by just destructuring the `dateField`, `segment`, and `label`, and
+`segmentContents`.
 
 ```svelte
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	const {
 		elements: { dateField, segment, label },
-		states: { value, segmentContents }
+		states: { segmentContents }
 	} = createDateField()
 </script>
 ```
@@ -76,7 +77,7 @@ to screen readers in the same way.
 	import { createDateField, melt } from '@melt-ui/svelte'
 	const {
 		elements: { dateField, segment, label },
-		states: { value, segmentContents }
+		states: { segmentContents }
 	} = createDateField()
 </script>
 
@@ -86,7 +87,7 @@ to screen readers in the same way.
 </div>
 ```
 
-Unlike the other elements, `segment` is a function which takes a `SegmentPart` as an argument,
+Unlike the other _elements_, `segment` is a function which takes a `SegmentPart` as an argument,
 which is used to determine which segment this element represents.
 
 While it's possible to use the `segment` function to render each segment individually like so:
@@ -107,17 +108,19 @@ While it's possible to use the `segment` function to render each segment individ
 </div>
 ```
 
-It's not recommended, as the formatting doesn't adapt the user's locale and the type of
-date being represented, which is one of the more powerful features of the Date Field.
+It's not recommended, as the formatting doesn't adapt to the locale and type of date being
+represented, which is one of the more powerful features this builder provides.
 
-Instead, we can use the `segmentContents` state, which is an array of segments objects necessary to form the date. Each object has a `part` property, which is the `SegmentPart` of the segment, and a `value` property, which is the value of the segment.
+Instead, we can use the `segmentContents` state, which is an array of objects necessary to form the
+date. Each object has a <C>part</C> property, which is the `SegmentPart` of the segment, and a
+<C>value</C> property, which is the locale-aware string representation of the segment.
 
 ```svelte {11-15}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	const {
 		elements: { dateField, segment, label },
-		states: { value, segmentContents }
+		states: { segmentContents }
 	} = createDateField()
 </script>
 
@@ -131,7 +134,40 @@ Instead, we can use the `segmentContents` state, which is an array of segments o
 </div>
 ```
 
-And that, along with some styling, is all you need to get a fully functional Date Field that looks like this:
+To actually use the value of the form, you can either use the `value` state directly, or if you're
+using it within a form, the `hiddenInput` element, which is a hidden input element containing an ISO
+8601 formatted string of the `value`.
+
+If you plan on using the `hiddenInput`, you'll need to pass the `name` prop to the `dateField`
+element, which will be used as the name of the input.
+
+```svelte {4-5,18,20-22} 
+<script lang="ts">
+	import { createDateField, melt } from '@melt-ui/svelte'
+	const {
+		elements: { dateField, segment, label, hiddenInput },
+		states: { segmentContents, value }
+	} = createDateField({
+		name: 'appointmentDate'
+	})
+</script>
+
+<span use:melt={$label}>Appointment Date</span>
+<div use:melt={$dateField}>
+	{#each $segmentContents as seg, i (i)}
+		<div use:melt={$segment(seg.part)}>
+			{seg.value}
+		</div>
+	{/each}
+	<input use:melt={$hiddenInput} />
+</div>
+{#if $value}
+	<span>You selected: {$value}</span>
+{/if}
+```
+
+And that, along with some styling, which you can learn about in the [Styling](/#styling) section, is all you need to get a fully functional Date Field that looks
+like this:
 
 <Preview code={snippets.quickStart}>
 	<svelte:component this={previews.quickStart} />
