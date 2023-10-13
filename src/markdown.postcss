@@ -51,6 +51,12 @@
 	}
 }
 
+[data-comp-preview] [data-rehype-pretty-code-fragment] {
+	& pre {
+		@apply mt-0 rounded-b-lg rounded-t-none;
+	}
+}
+
 [data-chars-id='ul'] {
 	@apply border-b border-b-magnum-500 font-bold !important;
 }
@@ -81,4 +87,12 @@
 
 [data-callout] > p:last-child {
 	@apply mb-0 !important;
+}
+
+[data-comp-preview] + p {
+	@apply mt-6;
+}
+
+[data-metadata]:not(:has(pre)) {
+	display: none;
 }

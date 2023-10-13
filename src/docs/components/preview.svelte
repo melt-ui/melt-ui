@@ -38,13 +38,18 @@
 	import CodeBlock from './code-block.svelte';
 	import PreviewWrapper from './preview-wrapper.svelte';
 	import Switch from './switch.svelte';
-	import { TabsList, TabsRoot } from './tabs/index.js';
+	import { TabsList, TabsRoot } from './file-tabs/index.js';
+	import type { PreviewVariants } from './preview-wrapper.svelte';
 
 	type $$Props = PreviewProps & {
 		viewCode: boolean;
+		variant?: PreviewVariants['variant'];
+		size?: PreviewVariants['size'];
 	};
 
 	export let code: $$Props['code'];
+	export let variant: $$Props['variant'] = 'default';
+	export let size: $$Props['size'] = 'default';
 
 	const usingPreprocessor = getUsingPreprocessor();
 
@@ -148,7 +153,7 @@
 			  })
 			: [];
 
-	export let viewCode = false;
+	export let viewCode = true;
 
 	$: codeOptions = Object.entries(normalizeCode(code)).map(([key, value]) => {
 		return {
@@ -165,7 +170,7 @@
 	}
 </script>
 
-<div class="mt-4 flex h-9 flex-row items-center justify-between">
+<div class="mt-8 flex h-9 flex-row items-center justify-between">
 	{#if viewCode}
 		<PreviewStyleSelect options={codeOptions} {codingStyle} />
 	{/if}
@@ -175,7 +180,7 @@
 	</div>
 </div>
 
-<div class="relative mt-2 rounded-md">
+<div class="relative mt-2" data-comp-preview>
 	{#if viewCode}
 		<TabsRoot tabs={files} let:tab>
 			<div class="flex flex-col-reverse gap-4">
@@ -192,7 +197,7 @@
 			{/key}
 		</TabsRoot>
 	{:else}
-		<PreviewWrapper>
+		<PreviewWrapper {variant} {size}>
 			<slot />
 		</PreviewWrapper>
 	{/if}
