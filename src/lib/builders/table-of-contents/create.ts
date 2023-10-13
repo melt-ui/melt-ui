@@ -1,5 +1,5 @@
 import {
-	addEventListener,
+	addMeltEventListener,
 	builder,
 	createElHelpers,
 	executeCallbacks,
@@ -313,7 +313,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 			const id = node.getAttribute('data-id');
 
 			const unsub = executeCallbacks(
-				addEventListener(node, 'click', (e) => {
+				addMeltEventListener(node, 'click', (e) => {
 					e.preventDefault();
 
 					if (scrollFn) {
