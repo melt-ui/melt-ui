@@ -22,7 +22,7 @@ created the most robust date components in terms of accessibility, user experien
 
 <Callout type="warning">
 Before jumping into the docs for this builder, it's recommended that you understand how we work with dates &
-times in Melt, which you can read about <a href="/docs/dates-and-times" target="_blank" class="underline">here</a>.
+times in Melt, which you can read about <a href="/docs/dates" target="_blank" class="underline">here</a>.
 </Callout>
 
 ## Anatomy
