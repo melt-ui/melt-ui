@@ -86,12 +86,12 @@ to screen readers in the same way.
 </div>
 ```
 
-Unlike the others "elements", `segment` is a function which takes a `DateSegment` as an argument,
-and returns that segment's element.
+Unlike the other elements, `segment` is a function which takes a `SegmentPart` as an argument,
+which is used to determine which segment this element represents.
 
 While it's possible to use the `segment` function to render each segment individually like so:
 
-```svelte {3,6,9}
+```svelte
 <span use:melt={$label}>Appointment Date</span>
 <div use:melt={$dateField}>
 	<div use:melt={$segment('day')}>
@@ -107,12 +107,12 @@ While it's possible to use the `segment` function to render each segment individ
 </div>
 ```
 
-It's not recommended, as the format doesn't automatically adapt the user's locale and the type of
+It's not recommended, as the formatting doesn't adapt the user's locale and the type of
 date being represented, which is one of the more powerful features of the Date Field.
 
-Instead, we can use the `segmentContents` state to loop through each segment and render it.
+Instead, we can use the `segmentContents` state, which is an array of segments objects necessary to form the date. Each object has a `part` property, which is the `SegmentPart` of the segment, and a `value` property, which is the value of the segment.
 
-```svelte
+```svelte {11-15}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	const {
@@ -130,6 +130,12 @@ Instead, we can use the `segmentContents` state to loop through each segment and
 	{/each}
 </div>
 ```
+
+And that, along with some styling, is all you need to get a fully functional Date Field that looks like this:
+
+<Preview code={snippets.quickStart}>
+	<svelte:component this={previews.quickStart} />
+</Preview>
 
 ## Values
 

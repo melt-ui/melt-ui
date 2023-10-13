@@ -47,7 +47,7 @@ import {
 } from '$lib/internal/helpers/date/index.js';
 import type {
 	AnyExceptLiteral,
-	AnySegmentPart,
+	SegmentPart,
 	DateAndTimeSegmentObj,
 	DateFieldIds,
 	DateSegmentObj,
@@ -68,9 +68,11 @@ const defaults = {
 	hideTimeZone: false,
 	disabled: false,
 	readonly: false,
+	name: undefined,
+	required: false,
 } satisfies CreateDateFieldProps;
 
-type DateFieldParts = 'segment' | 'label';
+type DateFieldParts = 'segment' | 'label' | 'hidden-input';
 
 const { name } = createElHelpers<DateFieldParts>('dateField');
 
@@ -78,8 +80,17 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const withDefaults = { ...defaults, ...props };
 
 	const options = toWritableStores(omit(withDefaults, 'value', 'placeholderValue'));
-	const { locale, granularity, hourCycle, hideTimeZone, isUnavailable, disabled, readonly } =
-		options;
+	const {
+		locale,
+		granularity,
+		hourCycle,
+		hideTimeZone,
+		isUnavailable,
+		disabled,
+		readonly,
+		name: nameStore,
+		required,
+	} = options;
 
 	const defaultDate = getDefaultDate({
 		defaultPlaceholderValue: withDefaults.defaultPlaceholderValue,
@@ -187,6 +198,28 @@ export function createDateField(props?: CreateDateFieldProps) {
 		},
 	});
 
+	const hiddenInput = builder(name('hidden-input'), {
+		stores: [value, nameStore, disabled, required],
+		returned: ([$value, $nameStore, $disabled, $required]) => {
+			return {
+				name: $nameStore,
+				value: $value?.toString(),
+				'aria-hidden': 'true',
+				hidden: true,
+				disabled: $disabled,
+				required: $required,
+				tabIndex: -1,
+				style: styleToString({
+					position: 'absolute',
+					opacity: 0,
+					'pointer-events': 'none',
+					margin: 0,
+					transform: 'translateX(-100%)',
+				}),
+			};
+		},
+	});
+
 	/**
 	 * The date field element which contains all the segments.
 	 */
@@ -283,7 +316,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 				hourCycle: $hourCycle,
 				placeholderValue: $placeholderValue,
 			};
-			return (part: AnySegmentPart) => {
+			return (part: SegmentPart) => {
 				const defaultAttrs = {
 					...getSegmentAttrs(part, props),
 					'aria-invalid': $isFieldInvalid ? 'true' : undefined,
@@ -1660,7 +1693,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 	}
 
-	function getSegmentAttrs(part: AnySegmentPart, props: SegmentAttrProps) {
+	function getSegmentAttrs(part: SegmentPart, props: SegmentAttrProps) {
 		return segmentBuilders[part]?.attrs(props);
 	}
 
@@ -1718,6 +1751,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			dateField,
 			segment,
 			label,
+			hiddenInput,
 		},
 		states: {
 			value,

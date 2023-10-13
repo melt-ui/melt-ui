@@ -82,7 +82,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	});
 
 	const {
-		elements: { segment: startSegment },
+		elements: { segment: startSegment, hiddenInput: startHiddenInput },
 		states: {
 			isFieldInvalid: isStartInvalid,
 			segmentContents: startSegmentContents,
@@ -90,7 +90,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		},
 	} = startField;
 	const {
-		elements: { segment: endSegment },
+		elements: { segment: endSegment, hiddenInput: endHiddenInput },
 		states: {
 			isFieldInvalid: isEndInvalid,
 			segmentContents: endSegmentContents,
@@ -212,6 +212,8 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 			label,
 			startSegment,
 			endSegment,
+			startHiddenInput,
+			endHiddenInput,
 		},
 		states: {
 			value,

@@ -54,8 +54,6 @@ export type DateFieldProps = {
 	 * date field, it is only used to control the starting point for
 	 * the field. The `placeholderValue` store is used as the starting
 	 * point for cycling through the individual date segments.
-	 *
-	 * @default Writable<CalendarDate> - the current date at midnight.
 	 */
 	placeholderValue?: Writable<DateValue>;
 
@@ -85,7 +83,10 @@ export type DateFieldProps = {
 
 	/**
 	 * If true, the date field will be disabled and users
-	 * will not be able to interact with it.
+	 * will not be able to interact with it. This also disables
+	 * the hidden input element.
+	 *
+	 * @default false
 	 */
 	disabled?: boolean;
 
@@ -93,6 +94,8 @@ export type DateFieldProps = {
 	 * If true, the date field will be readonly, and users
 	 * will not be able to edit the values of any of the
 	 * individual segments.
+	 *
+	 * @default false
 	 */
 	readonly?: boolean;
 
@@ -107,6 +110,8 @@ export type DateFieldProps = {
 	hourCycle?: 12 | 24;
 
 	/**
+	 * The locale to use for formatting the date field.
+	 *
 	 * @default 'en'
 	 */
 	locale?: string;
@@ -124,13 +129,35 @@ export type DateFieldProps = {
 	 * the value of the date field. You can have the same value synced
 	 * between multiple date fields with different granularities and they
 	 * will all contain the same value.
+	 *
+	 * @default 'day'
 	 */
 	granularity?: Granularity;
 
 	/**
 	 * Whether or not to hide the timeZoneName segment from the date field.
+	 *
+	 * @default false;
 	 */
 	hideTimeZone?: boolean;
+
+	/**
+	 * The name to use for the hidden input element of the date field,
+	 * which is used to submit the ISO string value of the date field
+	 * to a server.
+	 *
+	 * @default undefined;
+	 */
+	name?: string;
+
+	/**
+	 *
+	 * Whether or not the hidden input element of the date field requires
+	 * a value to be submitted.
+	 *
+	 * @default false
+	 */
+	required?: boolean;
 
 	/**
 	 * Override any of the element IDs set by the builder.

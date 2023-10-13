@@ -11,20 +11,20 @@ import type { DateValue } from '@internationalized/date';
 import type {
 	DateSegmentPart,
 	SegmentContentObj,
-	SegmentPart,
+	EditableSegmentPart,
 	SegmentStateMap,
 	SegmentValueObj,
 	TimeSegmentPart,
 	DateAndTimeSegmentObj,
 	DayPeriod,
-	AnySegmentPart,
+	SegmentPart,
 	AnyExceptLiteral,
 	HourCycle,
 } from './types.js';
 import {
 	ALL_SEGMENT_PARTS,
 	DATE_SEGMENT_PARTS,
-	INTERACTIVE_SEGMENT_PARTS,
+	EDITABLE_SEGMENT_PARTS,
 	TIME_SEGMENT_PARTS,
 } from './parts.js';
 import {
@@ -40,7 +40,7 @@ import type { IdObj } from '$lib/internal/types.js';
 
 export function initializeSegmentValues(granularity: Granularity) {
 	const calendarDateTimeGranularities = ['hour', 'minute', 'second'];
-	const initialParts = INTERACTIVE_SEGMENT_PARTS.map((part) => {
+	const initialParts = EDITABLE_SEGMENT_PARTS.map((part) => {
 		if (part === 'dayPeriod') {
 			return [part, 'AM'];
 		}
@@ -136,7 +136,7 @@ function createContentArr(props: CreateContentArrProps) {
 				value: contentObj[part.type],
 			};
 		})
-		.filter((segment): segment is { part: AnySegmentPart; value: string } => {
+		.filter((segment): segment is { part: SegmentPart; value: string } => {
 			if (isNull(segment.part) || isNull(segment.value)) return false;
 			if (segment.part === 'timeZoneName' && (!isZonedDateTime(dateRef) || hideTimeZone)) {
 				return false;
@@ -190,7 +190,7 @@ function getOptsByGranularity(granularity: Granularity, hourCycle: HourCycle) {
 }
 
 export function initSegmentStates() {
-	return INTERACTIVE_SEGMENT_PARTS.reduce((acc, key) => {
+	return EDITABLE_SEGMENT_PARTS.reduce((acc, key) => {
 		acc[key] = {
 			lastKeyZero: false,
 			hasLeftFocus: true,
@@ -212,12 +212,12 @@ export function isDateSegmentPart(part: unknown): part is DateSegmentPart {
 	return DATE_SEGMENT_PARTS.includes(part as DateSegmentPart);
 }
 
-export function isSegmentPart(part: string): part is SegmentPart {
-	return INTERACTIVE_SEGMENT_PARTS.includes(part as SegmentPart);
+export function isSegmentPart(part: string): part is EditableSegmentPart {
+	return EDITABLE_SEGMENT_PARTS.includes(part as EditableSegmentPart);
 }
 
-export function isAnySegmentPart(part: unknown): part is AnySegmentPart {
-	return ALL_SEGMENT_PARTS.includes(part as SegmentPart);
+export function isAnySegmentPart(part: unknown): part is SegmentPart {
+	return ALL_SEGMENT_PARTS.includes(part as EditableSegmentPart);
 }
 
 /**
@@ -230,8 +230,8 @@ function getUsedSegments(id: string) {
 	if (!isBrowser) return [];
 	const usedSegments = getSegments(id)
 		.map((el) => el.dataset.segment)
-		.filter((part): part is SegmentPart => {
-			return INTERACTIVE_SEGMENT_PARTS.includes(part as SegmentPart);
+		.filter((part): part is EditableSegmentPart => {
+			return EDITABLE_SEGMENT_PARTS.includes(part as EditableSegmentPart);
 		});
 	return usedSegments;
 }

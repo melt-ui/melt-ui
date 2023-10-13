@@ -1,20 +1,20 @@
 import type { DateValue } from '@internationalized/date';
 import type {
 	DATE_SEGMENT_PARTS,
-	NON_INTERACTIVE_SEGMENT_PARTS,
-	INTERACTIVE_SEGMENT_PARTS,
+	NON_EDITABLE_SEGMENT_PARTS,
+	EDITABLE_SEGMENT_PARTS as EDITABLE_SEGMENT_PARTS,
 	TIME_SEGMENT_PARTS,
 } from './parts.js';
 import type { Action } from 'svelte/action';
 import type { IdObj } from '$lib/internal/types.js';
 
-export type SegmentPart = (typeof INTERACTIVE_SEGMENT_PARTS)[number];
 export type DateSegmentPart = (typeof DATE_SEGMENT_PARTS)[number];
 export type TimeSegmentPart = (typeof TIME_SEGMENT_PARTS)[number];
-export type NonInteractiveSegmentPart = (typeof NON_INTERACTIVE_SEGMENT_PARTS)[number];
-export type AnySegmentPart = SegmentPart | NonInteractiveSegmentPart;
+export type EditableSegmentPart = (typeof EDITABLE_SEGMENT_PARTS)[number];
+export type NonEditableSegmentPart = (typeof NON_EDITABLE_SEGMENT_PARTS)[number];
+export type SegmentPart = EditableSegmentPart | NonEditableSegmentPart;
 
-export type AnyExceptLiteral = Exclude<AnySegmentPart, 'literal'>;
+export type AnyExceptLiteral = Exclude<SegmentPart, 'literal'>;
 
 export type DayPeriod = 'AM' | 'PM' | null;
 export type DateSegmentObj = {
@@ -25,7 +25,7 @@ export type TimeSegmentObj = {
 };
 export type DateAndTimeSegmentObj = DateSegmentObj & TimeSegmentObj;
 export type SegmentValueObj = DateSegmentObj | DateAndTimeSegmentObj;
-export type SegmentContentObj = Record<SegmentPart, string>;
+export type SegmentContentObj = Record<EditableSegmentPart, string>;
 
 export type SegmentState = {
 	lastKeyZero: boolean;
@@ -34,7 +34,7 @@ export type SegmentState = {
 };
 
 export type SegmentStateMap = {
-	[K in SegmentPart]: SegmentState;
+	[K in EditableSegmentPart]: SegmentState;
 };
 
 export type SegmentAttrProps = {
@@ -46,7 +46,7 @@ export type SegmentAttrProps = {
 export type SegmentAttrFn = (props: SegmentAttrProps) => Record<string, string | number | boolean>;
 
 export type SegmentBuilders = Record<
-	SegmentPart | NonInteractiveSegmentPart,
+	EditableSegmentPart | NonEditableSegmentPart,
 	{
 		attrs: SegmentAttrFn;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
