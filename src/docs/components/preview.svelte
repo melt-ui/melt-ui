@@ -39,12 +39,17 @@
 	import PreviewWrapper from './preview-wrapper.svelte';
 	import Switch from './switch.svelte';
 	import { TabsList, TabsRoot } from './tabs/index.js';
+	import type { PreviewVariants } from './preview-wrapper.svelte';
 
 	type $$Props = PreviewProps & {
 		viewCode: boolean;
+		variant?: PreviewVariants['variant'];
+		height?: PreviewVariants['height'];
 	};
 
 	export let code: $$Props['code'];
+	export let variant: $$Props['variant'] = 'default';
+	export let height: $$Props['height'] = 'default';
 
 	const usingPreprocessor = getUsingPreprocessor();
 
@@ -192,7 +197,7 @@
 			{/key}
 		</TabsRoot>
 	{:else}
-		<PreviewWrapper>
+		<PreviewWrapper {variant} {height}>
 			<slot />
 		</PreviewWrapper>
 	{/if}
