@@ -52,7 +52,7 @@ export async function highlightCode({ code, lang, classes = {}, fetcher }: Highl
 		elements: {
 			pre({ children }) {
 				return `<pre data-language="${lang}" data-theme="default" class="${
-					classes.pre ? classes.pre : '!mt-2'
+					classes.pre ? classes.pre : '!mt-0'
 				}">${children}</pre>`;
 			},
 			code({ children }) {

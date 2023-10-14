@@ -19,7 +19,7 @@
 	<slot />
 </div>
 <button
-	class={cn('absolute right-4 top-16 z-10', copyBtnClasses)}
+	class={cn('absolute right-4 top-12 z-10', copyBtnClasses)}
 	aria-label="copy"
 	on:click={copyCode}
 	data-code-copy
