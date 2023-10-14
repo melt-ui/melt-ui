@@ -76,6 +76,9 @@
 
 	* {
 		all: unset;
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
 	}
 
 	/* Remove docs' focus box-shadow styling. */
@@ -105,5 +108,10 @@
 	}
 	.item:focus {
 		background-color: var(--magnum-200);
+	}
+
+	ul,
+	li {
+		display: block;
 	}
 </style>

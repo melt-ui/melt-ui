@@ -85,10 +85,19 @@
 <style>
 	* {
 		all: unset;
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
 	}
 
 	:root {
 		--neutral-900: rgb(23, 23, 23, 1);
+	}
+
+	hr {
+		height: 1px;
+		background-color: #e5e7eb;
+		border-top-width: 1px;
 	}
 
 	.main {
@@ -101,7 +110,7 @@
 	.main-title {
 		font-weight: 700;
 		font-size: 1.125rem;
-		line-height: 1.125rem;
+		line-height: 1.75rem;
 	}
 
 	.container {
