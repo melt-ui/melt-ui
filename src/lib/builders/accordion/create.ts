@@ -29,6 +29,9 @@ const defaults = {
 	forceVisible: false,
 } satisfies CreateAccordionProps;
 
+/**
+ * @category Accordion
+ */
 export const createAccordion = <Multiple extends boolean = false>(
 	props?: CreateAccordionProps<Multiple>
 ) => {

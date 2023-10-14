@@ -4,8 +4,14 @@ import type { createAccordion } from './create.js';
 import type { ChangeFn } from '$lib/internal/helpers/index.js';
 export type { AccordionComponentEvents } from './events.js';
 
+/**
+ * @category Accordion
+ */
 type AccordionValue<Multiple extends boolean> = WhenTrue<Multiple, string[], string>;
 
+/**
+ * @category Accordion
+ */
 export type CreateAccordionProps<Multiple extends boolean = false> = {
 	/**
 	 * If `true`, multiple accordion items can be open at the same time.
@@ -52,6 +58,9 @@ export type CreateAccordionProps<Multiple extends boolean = false> = {
 	onValueChange?: ChangeFn<AccordionValue<Multiple> | undefined>;
 };
 
+/**
+ * @category Accordion
+ */
 export type AccordionItemProps =
 	| {
 			value: string;
@@ -59,24 +68,44 @@ export type AccordionItemProps =
 	  }
 	| string;
 
+/**
+ * @category Accordion
+ */
 export type AccordionHeadingProps =
 	| {
 			level: 1 | 2 | 3 | 4 | 5 | 6;
 	  }
 	| number;
 
+/**
+ * @category Accordion
+ */
 export type Accordion<Multiple extends boolean = false> = BuilderReturn<
 	typeof createAccordion<Multiple>
 >;
+/**
+ * @category Accordion
+ */
 export type AccordionElements<Multiple extends boolean = false> = BuilderReturn<
 	typeof createAccordion<Multiple>
 >['elements'];
+/**
+ * @category Accordion
+ */
 export type AccordionOptions<Multiple extends boolean = false> = BuilderReturn<
 	typeof createAccordion<Multiple>
 >['options'];
+/**
+ * @group Accordion
+ * @category Accordion
+ */
 export type AccordionStates<Multiple extends boolean = false> = BuilderReturn<
 	typeof createAccordion<Multiple>
 >['states'];
+/**
+ * @group Accordion
+ * @category Accordion
+ */
 export type AccordionHelpers<Multiple extends boolean = false> = BuilderReturn<
 	typeof createAccordion<Multiple>
 >['helpers'];

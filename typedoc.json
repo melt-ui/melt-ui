@@ -1,12 +1,5 @@
 {
-	// Comments are supported, like tsconfig.json
-	"entryPoints": ["./src/lib/index.ts"],
-	"entryPointStrategy": "expand",
-	"out": "type-docs",
-	"exclude": [
-		"./src/**/*.spec.ts",
-		"./src/**/*.test.ts",
-		"./src/**/*.stories.ts",
-		"./src/**/*.svelte"
-	]
+	"$schema": "https://typedoc.org/schema.json",
+	"entryPoints": ["./src/lib/builders/index.ts"],
+	"out": "docs"
 }

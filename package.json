@@ -23,7 +23,7 @@
 		"pw": "pnpm exec playwright test",
 		"pw:ui": "pnpm exec playwright test --ui",
 		"changeset": "changeset",
-		"docs:watch": "pnpm typedoc --options typedoc.json --watch"
+		"docs:watch": "typedoc --out docs src/lib/index.ts --tsconfig tsdoc-tsconfig.json --options typedoc.json --watch"
 	},
 	"exports": {
 		".": {
