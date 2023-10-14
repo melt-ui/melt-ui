@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.55.1
+
+### Patch Changes
+
+- The `melt` action now throws a helpful error if it's used without our [preprocessor](https://github.com/melt-ui/preprocessor) ([#616](https://github.com/melt-ui/melt-ui/pull/616))
+
 ## 0.55.0
 
 ### Minor Changes
