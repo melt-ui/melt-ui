@@ -26,7 +26,7 @@ const documentClickStore = readable<PointerEvent | undefined>(undefined, (set): 
 	}
 
 	// Adds a pointerdown event listener to the document, calling the clicked function when triggered.
-	const unsubscribe = addEventListener(document, 'pointerdown', clicked, {
+	const unsubscribe = addEventListener(document, 'pointerup', clicked, {
 		passive: false,
 		capture: true,
 	});
