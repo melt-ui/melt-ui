@@ -822,8 +822,7 @@ export function createCalendar<
 		const $preventDeselect = get(preventDeselect);
 
 		if (index === -1) {
-			prev.push(date as Value);
-			return prev;
+			return [...prev, date];
 		} else if ($preventDeselect) {
 			return prev;
 		} else {

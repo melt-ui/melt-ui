@@ -16,9 +16,11 @@
 		defaultValue,
 		multiple: true,
 		onValueChange: ({ curr, next }) => {
+			console.log({ curr });
+			console.log({ next });
+
 			if (next && next.length > 3) {
 				alert('You can only select 3 dates!');
-				console.log(curr);
 				return curr;
 			} else {
 				return next;

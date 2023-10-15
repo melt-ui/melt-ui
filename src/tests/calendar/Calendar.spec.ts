@@ -487,9 +487,61 @@ describe('Calendar', () => {
 		const calendar = getByTestId('calendar');
 		expect(calendar).toBeVisible();
 
-		await tick();
-
 		const selectedDays = container.querySelectorAll('[data-selected]');
 		expect(selectedDays).toHaveLength(2);
+	});
+
+	test('overridable with multiple', async () => {
+		const day1 = new CalendarDate(1980, 1, 10);
+		const { getByTestId, container } = render(CalendarMultiTest, {
+			defaultValue: [day1],
+			onValueChange: ({ curr, next }) => {
+				if (next && next.length > 2) {
+					return curr;
+				} else {
+					return next;
+				}
+			},
+		});
+
+		const calendar = getByTestId('calendar');
+		expect(calendar).toBeVisible();
+
+		const selectedDays = container.querySelectorAll('[data-selected]');
+		expect(selectedDays).toHaveLength(1);
+
+		const thirdDayInMonth = getByTestId('month-0-date-3');
+
+		await userEvent.click(thirdDayInMonth);
+
+		const selectedDaysAfterClick = container.querySelectorAll('[data-selected]');
+		expect(selectedDaysAfterClick).toHaveLength(2);
+
+		const fifthDayInMonth = getByTestId('month-0-date-5');
+
+		await userEvent.click(fifthDayInMonth);
+
+		const selectedDaysAfterClick2 = container.querySelectorAll('[data-selected]');
+		expect(selectedDaysAfterClick2).toHaveLength(2);
+	});
+
+	test('overridable with single', async () => {
+		const overrideDay = new CalendarDate(1980, 1, 25);
+
+		const { getByTestId, container } = render(CalendarTest, {
+			defaultValue: calendarDate,
+			onValueChange: () => {
+				return overrideDay;
+			},
+		});
+
+		const selectedDay = container.querySelector('[data-selected]');
+		expect(selectedDay).toHaveTextContent(String(calendarDate.day));
+
+		const thirdDayInMonth = getByTestId('month-0-date-3');
+		await userEvent.click(thirdDayInMonth);
+
+		const selectedDayAfterClick = container.querySelector('[data-selected]');
+		expect(selectedDayAfterClick).toHaveTextContent(String(overrideDay.day));
 	});
 });
