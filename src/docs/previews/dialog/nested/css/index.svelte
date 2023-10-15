@@ -38,7 +38,7 @@
 		<div
 			class="content"
 			transition:flyAndScale={{
-				duration: 150,
+				duration: 350,
 				y: 8,
 				start: 0.96,
 			}}
@@ -67,7 +67,7 @@
 		<div
 			class="content content-nested"
 			transition:flyAndScale={{
-				duration: 150,
+				duration: 350,
 				y: 8,
 				start: 0.96,
 			}}

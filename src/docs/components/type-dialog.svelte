@@ -27,7 +27,7 @@
     translate-x-[-50%] translate-y-[-50%] rounded-md
     bg-neutral-800 p-4 shadow-lg md:p-8"
 		transition:flyAndScale={{
-			duration: 150,
+			duration: 350,
 			y: 8,
 			start: 0.96,
 		}}

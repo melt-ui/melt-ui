@@ -30,7 +30,7 @@
 		<div
 			use:melt={$overlay}
 			class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
-			transition:fade={{ duration: 150 }}
+			transition:fade={{ duration: 350 }}
 		/>
 		<div
 			use:melt={$content}

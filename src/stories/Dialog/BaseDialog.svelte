@@ -53,7 +53,7 @@
 			class="fixed left-[50%] top-[50%] z-50 max-h-[85vh] w-[90vw] max-w-[450px]
 				translate-x-[-50%] translate-y-[-50%] rounded-md bg-white p-6
 				shadow-lg"
-			transition:flyAndScale={{ duration: 150, y: 8, start: 0.96 }}
+			transition:flyAndScale={{ duration: 350, y: 8, start: 0.96 }}
 			use:melt={$content}
 		>
 			<slot title={$title} description={$description} close={$close} />

@@ -27,7 +27,7 @@
 		<div
 			class="content"
 			transition:flyAndScale={{
-				duration: 150,
+				duration: 350,
 				y: 8,
 				start: 0.96,
 			}}

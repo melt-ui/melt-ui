@@ -24,7 +24,7 @@
 		<div
 			use:melt={$overlay}
 			class="overlay"
-			transition:fade={{ duration: 150 }}
+			transition:fade={{ duration: 350 }}
 		/>
 		<div
 			use:melt={$content}
