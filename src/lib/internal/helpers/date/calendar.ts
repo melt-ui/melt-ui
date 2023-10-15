@@ -91,7 +91,12 @@ function createMonth(props: CreateMonthProps): Month<DateValue> {
 	if (fixedWeeks && totalDays < 42) {
 		const extraDays = 42 - totalDays;
 
-		const startFrom = nextMonthDays[nextMonthDays.length - 1];
+		let startFrom = nextMonthDays[nextMonthDays.length - 1];
+
+		if (!startFrom) {
+			startFrom = dateObj.set({ day: 1 }).subtract({ days: 1 });
+		}
+
 		const extraDaysArray = Array.from({ length: extraDays }, (_, i) => {
 			const incr = i + 1;
 			return startFrom.add({ days: incr });

@@ -13,6 +13,7 @@
 			height: {
 				default: 'h-[20rem] lg:h-[28rem]',
 				sm: 'h-[12rem] lg:h-[20rem]',
+				md: 'h-[16rem] lg:h-[24rem]',
 				lg: 'h-[24rem] lg:h-[32rem]',
 			},
 		},

@@ -79,8 +79,8 @@
 							</tr>
 						</thead>
 						<tbody>
-							{#each weeks as days}
-								<tr>
+							{#each weeks as days, idx}
+								<tr data-testid="week-{idx+1}">
 									{#each days as date}
 										<td role="gridcell">
 											<div

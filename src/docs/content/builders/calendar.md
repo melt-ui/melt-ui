@@ -263,3 +263,52 @@ By default, the placeholder will be set to the current date, but you can overrid
 ```
 
 Now our calendar starts out in February 2021, rather than the current month.
+
+<Preview code={snippets.changePh} variant="dark" height="md">
+	<svelte:component this={previews.changePh} />
+</Preview>
+
+To have a date selected by default, we can use the `value` (controlled), or `defaultValue` (uncontrolled) props. If provided, the placeholder will assume this value and the prop will be ignored on initialization.
+
+```svelte showLineNumbers {10}
+<script lang="ts">
+	import { createCalendar, melt } from '@melt-ui/svelte'
+	import { CalendarDate } from '@internationalized/date'
+
+	const {
+		elements: { calendar, heading, grid, cell, prevButton, nextButton },
+		states: { months, headingValue, daysOfWeek },
+		helpers: { isDateDisabled, isDateUnavailable }
+	} = createCalendar({
+		defaultValue: new CalendarDate(2024, 1, 11)
+	})
+</script>
+```
+
+<Preview code={snippets.changeValue} variant="dark" height="md">
+	<svelte:component this={previews.changeValue} />
+</Preview>
+
+If you press the previous button on the example above, you'll notice something a little unappealing. The calendar navigates to the previous month, and since that month has an additional week, the calendar jumps in height.
+
+You could add the extra space to accomodate for such a jump, or you can set the `fixedWeeks` prop to `true`, which will ensure the calendar always has the same number of weeks, regardless of the month.
+
+```svelte showLineNumbers {11}
+<script lang="ts">
+	import { createCalendar, melt } from '@melt-ui/svelte'
+	import { CalendarDate } from '@internationalized/date'
+
+	const {
+		elements: { calendar, heading, grid, cell, prevButton, nextButton },
+		states: { months, headingValue, daysOfWeek },
+		helpers: { isDateDisabled, isDateUnavailable }
+	} = createCalendar({
+		defaultValue: new CalendarDate(2024, 1, 11),
+		fixedWeeks: true,
+	})
+</script>
+```
+
+<Preview code={snippets.fixedWeeks} variant="dark" height="md">
+	<svelte:component this={previews.fixedWeeks} />
+</Preview>
