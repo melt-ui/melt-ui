@@ -8,11 +8,11 @@ import {
 	executeCallbacks,
 	getDirectionalKeys,
 	getElemDirection,
+	hiddenInputAttrs,
 	isHTMLElement,
 	kbd,
 	omit,
 	overridable,
-	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
@@ -178,18 +178,10 @@ export function createRadioGroup(props?: CreateRadioGroupProps) {
 		stores: [disabled, value, required],
 		returned: ([$disabled, $value, $required]) => {
 			return {
-				'aria-hidden': true,
-				tabindex: -1,
+				...hiddenInputAttrs,
 				disabled: disabledAttr($disabled),
 				value: $value,
 				required: $required,
-				style: styleToString({
-					'pointer-events': 'none',
-					position: 'absolute',
-					opacity: 0,
-					width: 0,
-					height: 0,
-				}),
 			};
 		},
 		action: (_node: HTMLInputElement) => {

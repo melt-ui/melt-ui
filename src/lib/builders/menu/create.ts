@@ -1028,6 +1028,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		});
 
 		return {
+			ids: subIds,
 			elements: {
 				subTrigger,
 				subMenu,
@@ -1316,6 +1317,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	}
 
 	return {
+		ids: rootIds,
 		trigger: rootTrigger,
 		menu: rootMenu,
 		open: rootOpen,
@@ -1328,7 +1330,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		createSubmenu,
 		createMenuRadioGroup,
 		separator,
-		rootIds,
 		handleTypeaheadSearch,
 	};
 }
@@ -1443,7 +1444,8 @@ export function handleMenuNavigation(e: KeyboardEvent) {
 			nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : currentIndex;
 			break;
 		case kbd.ARROW_UP:
-			nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
+			nextIndex =
+				currentIndex < 0 ? candidateNodes.length - 1 : currentIndex > 0 ? currentIndex - 1 : 0;
 			break;
 		case kbd.HOME:
 			nextIndex = 0;

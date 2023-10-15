@@ -20,7 +20,9 @@ At a high level, the anatomy of a dialog looks like this:
 ```svelte
 <script lang="ts">
 	import { createDialog, melt } from '@melt-ui/svelte'
-	const { trigger, portal, overlay, content, title, description, close, open } = createDialog()
+	const {
+		elements: { trigger, portalled, overlay, content, title, description, close, open }
+	} = createDialog()
 </script>
 
 <button use:melt={$trigger}> Open Dialog </button>
@@ -38,6 +40,7 @@ At a high level, the anatomy of a dialog looks like this:
 ```
 
 - **Trigger**: The button(s) that open the dialog
+- **Portalled**: The container that is portalled (to `body`, by default)
 - **Overlay**: The dim background that is typically behind a dialog element.
 - **Content**: Container for the content within the dialog.
   - **Title**: The title of the dialog
@@ -63,7 +66,7 @@ By default, we set the `role` attribute to `dialog`. If you want it to be consid
 dialog, you can set the `role` builder prop to `alertdialog`.
 
 ```ts {2}
-const { trigger, portal, overlay, content } = createDialog({
+const dialog = createDialog({
 	role: 'alertdialog'
 })
 ```
@@ -74,7 +77,7 @@ By default, scrolling is prevented on the body when a dialog is open. You can di
 by setting the `preventScroll` builder prop to `false`.
 
 ```ts {2}
-const { trigger, portal, overlay, content } = createDialog({
+const dialog = createDialog({
 	preventScroll: false
 })
 ```
@@ -85,7 +88,9 @@ By default, clicking outside of the dialog will close it. You can disable this b
 the `closeOnOutsideClick` builder prop to `false`.
 
 ```ts {2}
-const { trigger, portal, overlay, content } = createDialog({
+const {
+	/* ... */
+} = createDialog({
 	closeOnOutsideClick: false
 })
 ```
@@ -96,7 +101,7 @@ By default, pressing the escape key will close the dialog. You can disable this 
 the `closeOnEscape` builder prop to `false`.
 
 ```ts {2}
-const { trigger, portal, overlay, content } = createDialog({
+const dialog = createDialog({
 	closeOnEscape: false
 })
 ```
@@ -137,7 +142,8 @@ Dialogs can be nested. For example, here's a dialog that opens another dialog.
 
 ## Accessibility
 
-Adheres to the [Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog/) &
+Adheres to the
+[Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) &
 [Alert Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/)
 
 <KbdTable {keyboard} />

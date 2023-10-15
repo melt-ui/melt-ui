@@ -5,6 +5,7 @@ import {
 	disabledAttr,
 	executeCallbacks,
 	generateId,
+	hiddenInputAttrs,
 	isBrowser,
 	isHTMLElement,
 	isHTMLInputElement,
@@ -13,7 +14,6 @@ import {
 	omit,
 	overridable,
 	prev,
-	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
@@ -232,12 +232,9 @@ export function createPinInput(props?: CreatePinInputProps) {
 	const hiddenInput = builder(name('hidden-input'), {
 		stores: [valueStr, nameStore],
 		returned: ([$valueStr, $nameStore]) => ({
+			...hiddenInputAttrs,
 			value: $valueStr,
 			name: $nameStore,
-			hidden: true,
-			style: styleToString({
-				display: 'none',
-			}),
 		}),
 	});
 
@@ -249,6 +246,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 	};
 
 	return {
+		ids,
 		elements: {
 			root,
 			input,

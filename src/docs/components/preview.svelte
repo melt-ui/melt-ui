@@ -44,12 +44,12 @@
 	type $$Props = PreviewProps & {
 		viewCode: boolean;
 		variant?: PreviewVariants['variant'];
-		height?: PreviewVariants['height'];
+		size?: PreviewVariants['size'];
 	};
 
 	export let code: $$Props['code'];
 	export let variant: $$Props['variant'] = 'default';
-	export let height: $$Props['height'] = 'default';
+	export let size: $$Props['size'] = 'default';
 
 	const usingPreprocessor = getUsingPreprocessor();
 
@@ -197,7 +197,7 @@
 			{/key}
 		</TabsRoot>
 	{:else}
-		<PreviewWrapper {variant} {height}>
+		<PreviewWrapper {variant} {size}>
 			<slot />
 		</PreviewWrapper>
 	{/if}

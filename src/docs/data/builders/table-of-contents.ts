@@ -1,6 +1,8 @@
-import { DESCRIPTIONS, KBD } from '$docs/constants';
+import { ATTRS, DESCRIPTIONS, KBD } from '$docs/constants';
 import type { APISchema, KeyboardSchema } from '$docs/types';
 import type { BuilderData } from '.';
+import { tableOfContentsEvents } from '$lib/builders/table-of-contents/events';
+import { elementSchema } from '$docs/utils';
 
 const builder: APISchema = {
 	title: 'createTableOfContents',
@@ -18,11 +20,11 @@ const builder: APISchema = {
 			type: 'Heading[]',
 			default: `['h1']`,
 			description:
-				"A list of headings that should be excluded from the ToC. Possible values: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'.",
+				"A list of headings that should be excluded from the ToC. Possible heading values: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'.",
 		},
 		{
 			name: 'activeType',
-			type: 'ActiveType',
+			type: "'all' | 'lowest' | 'highest' | 'lowest-parents' | 'highest-parents'",
 			default: 'lowest',
 			description:
 				"Describes which header should be considered active. 'none' means that no intersection observers are added and no headings are considered active. 'all' means that all headings with visible content are considered active. 'lowest' means that the heading of the lowest visible content is considered active. 'highest' means the opposite. 'lowest-parents' means that parents of the heading with the lowest visible content are also considered active, and the same goes for 'highest-parents'.",
@@ -36,7 +38,7 @@ const builder: APISchema = {
 		},
 		{
 			name: 'scrollBehaviour',
-			type: 'ScrollBehaviour',
+			type: "'smooth' | 'instant'",
 			default: 'smooth',
 			description: "Defines whether the scroll behaviour should be 'smooth' or 'instant'.",
 		},
@@ -53,7 +55,14 @@ const builder: APISchema = {
 				'Allows you to overwrite the default scroll function with your own custom one. The scroll function gets the heading id passed to it.',
 		},
 	],
-	returnedProps: [
+	builders: [
+		{
+			name: 'item',
+			description: 'The builder store used to create a table of contents item.',
+			link: '#item',
+		}
+	],
+	states: [
 		{
 			name: 'activeHeadingIdxs',
 			type: 'Writable<number[]>',
@@ -63,25 +72,25 @@ const builder: APISchema = {
 			name: 'headingsTree',
 			type: 'Writable<TableOfContentsItem[]>',
 			description: 'A writable store that lists all the headings within the specified container.',
-		},
-		{
-			name: 'item',
-			description: 'The builder store used to create a table of contents item.',
-			link: '#item',
-		},
+		}
 	],
 };
 
-const item: APISchema = {
+const item = elementSchema('item', {
 	title: 'item',
 	description: 'A table of contents item.',
 	dataAttributes: [
+		{
+			name: 'data-melt-table-of-contents-item',
+			value: ATTRS.MELT('item')
+		},
 		{
 			name: 'data-id',
 			value: 'The id of the heading element the item links to.',
 		},
 	],
-};
+	events: tableOfContentsEvents['item']
+});
 
 const schemas = [builder, item];
 

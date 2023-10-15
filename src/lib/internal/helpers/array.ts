@@ -93,8 +93,12 @@ export function wrapArray<T>(array: T[], startIndex: number): T[] {
  * // newArr = [1, 3]
  * ```
  */
-export function toggle<T>(item: T, array: T[]): T[] {
-	const itemIdx = array.findIndex((i) => deepEqual(i, item));
+export function toggle<T>(
+	item: T,
+	array: T[],
+	compare: (itemA: T, itemB: T) => boolean = deepEqual
+): T[] {
+	const itemIdx = array.findIndex((innerItem) => compare(innerItem, item));
 	if (itemIdx !== -1) {
 		array.splice(itemIdx, 1);
 	} else {

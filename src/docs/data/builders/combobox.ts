@@ -203,6 +203,16 @@ const label = elementSchema('label', {
 	],
 });
 
+const hiddenInput = elementSchema('hidden-input', {
+	description: 'The hidden input element. Used for form submission.',
+	dataAttributes: [
+		{
+			name: 'data-melt-combobox-hidden-input',
+			value: ATTRS.MELT('hidden-input'),
+		},
+	],
+});
+
 const arrow = getMenuArrowSchema(BUILDER_NAME);
 
 const keyboard: KeyboardSchema = [
@@ -241,7 +251,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, menu, input, item, label, arrow];
+const schemas = [builder, menu, input, item, label, arrow, hiddenInput];
 
 const features = [
 	'Full keyboard navigation',

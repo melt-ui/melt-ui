@@ -48,33 +48,18 @@ don't be shy—we appreciate all contributions and are happy to help those who a
 
 ## Creating a new component builder?
 
-The Builder API is fairly new in its conception. As such, there aren't strict conventions around it.
+Awesome! Builders vary quite a lot in complexity, but don't be afraid. It's pretty straight-forward.
+What I'd recommend, is to take a look at the existing builders and see how they work. You'll see
+that they all follow a similar pattern. I usually copy over an existing builder just to get started.
 
-Under the hood, the "elements" that builder exposes are nothing more than objects. The trick is,
-these objects contain an UUID that is used to identify them. This UUID is then used to get the
-element via document.querySelector and pass events to it.
+When creating a new builder, it's usually best to discuss it with us first. You can do so on GitHub,
+or on our Discord. This is recommended to see if this builder would be a welcome addition, how it
+should be approached, what are the accessibility concerns, etc.
 
-You'll see two methods commonly appearing inside builders. `elementDerived` and
-`elementMultiDerived`. In general, elementDerived is to be used when only a single instance of an
-element is expected to be used (e.g. `root`), while elementMultiDerived accepts multiple instances
-of an element (e.g. Tabs `trigger`). You pass in a store to them, and a callback that accepts both
-the store values, and an `attach` method for attaching event listeners. This callback must return an
-object in `elementDerived` and a function in `elementMultiDerived`.
-
-In case you don't need to use stores, you also have the `element` and `elementMulti` methods, which
-are just wrappers around the derived methods that don't accept a store.
-
-In some cases, you'll want to run an effect whenever an internal value changes. You have the
-`effect` method for that.
-
-In case of any doubts, you can always check the source code of existing builders, or reach out to us
-on Discord. We're more than happy to help!
+While we have some custom utilities to create our builders, they're mostly self-explanatory. As
+always, if you have any doubts, feel free to reach out to us anytime.
 
 ## Preparing a Pull Request
-
-[Pull Requests](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request)
-are always welcome, but before working on a large change, it is best to open an issue first to
-discuss it with maintainers, or check if there is already an issue for it.
 
 A good PR is small, focuses on a single feature or improvement, and clearly communicates the problem
 it solves. Try not to include more than one issue in a single PR. It's much easier for us to review
@@ -139,3 +124,10 @@ broken.
 
 Lastly, run `pnpm run lint` && `pnpm run check` to ensure that everything is in order before
 submitting the pull request.
+
+## Contribute from a browser IDE
+
+Make changes and contribute to OctoBot in a single click with an **already setup and ready to code
+developer environment** using Gitpod !
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/?autostart=true#https://github.com/melt-ui/melt-ui/tree/develop)

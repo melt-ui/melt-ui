@@ -28,11 +28,11 @@ export type CreatePinInputProps = {
 	disabled?: boolean;
 
 	/**
-	 * The type of the input.
+	 * The type of the input. Use `password` to mask the input.
 	 *
 	 * @default 'text'
 	 */
-	type?: string;
+	type?: 'text' | 'password';
 
 	/**
 	 * The uncontrolled default value of the pin input.
