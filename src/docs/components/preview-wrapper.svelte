@@ -12,9 +12,10 @@
 			},
 			height: {
 				default: 'h-[20rem] lg:h-[28rem]',
-				sm: 'h-[12rem] lg:h-[20rem]',
-				md: 'h-[16rem] lg:h-[24rem]',
-				lg: 'h-[24rem] lg:h-[32rem]',
+				sm: 'h-[12rem] sm:h-[20rem]',
+				md: 'h-[16rem] sm:h-[24rem]',
+				lg: 'h-[24rem] sm:h-[32rem]',
+				auto: 'h-auto py-6 lg:py-12',
 			},
 		},
 		defaultVariants: {

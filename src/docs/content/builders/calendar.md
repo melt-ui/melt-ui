@@ -29,13 +29,10 @@ times in Melt, which you can read about <A href="/docs/dates">here</A>.
 - **Next Button**: A button for navigating to the next page of the calendar
 - **Heading**: A visual heading for the calendar
 
-## Tutorial
+## Scaffold a Calendar
 
-The following tutorial is designed to help you get started using the **Calendar** builder. We'll
-cover some of the key concepts and features of the builder, and by the end you should have a good
-understanding of how to use it.
-
-### Build a Basic Calendar
+The following tutorial is designed to help you get started using the **Calendar** builder, and
+explain some of the concepts to help you understand how it works.
 
 Let's start by initializing a calendar with the `createCalendar` builder function, and destructuring
 everything we'll need to compose it. We'll cover what each of these properties are in more detail as
@@ -239,13 +236,18 @@ I know it may seem like it requires a lot of code to get a calendar up and runni
 functionality that the 43 lines of code above provide is quite powerful, which we'll learn more
 about in the following sections.
 
-### Customizing the View
+## Placeholder
 
-In this section, we'll learn how to customize the view of the calendar using a few useful props, starting with the placeholder props.
+In this section, we'll learn about the two props which control what dates are displayed in the
+calendar when it first renders, starting with the placeholder props.
 
-The Calendar has two placeholder props, `placeholder` (controlled), and `defaultPlaceholder` (uncontrolled), which are used to change what is displayed in the calendar when no date is selected.
+### Set the Starting Month
 
-By default, the placeholder will be set to the current date, but you can override this by passing a `DateValue` object to the `defaultPlaceholder` prop.
+The Calendar has two placeholder props, `placeholder` (controlled), and `defaultPlaceholder`
+(uncontrolled), which are used to change what is displayed in the calendar when no date is selected.
+
+By default, the placeholder will be set to the current date, but you can override this by passing a
+`DateValue` object to the `defaultPlaceholder` prop.
 
 ```svelte showLineNumbers {10}
 <script lang="ts">
@@ -257,18 +259,26 @@ By default, the placeholder will be set to the current date, but you can overrid
 		states: { months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable }
 	} = createCalendar({
-		defaultPlaceholder: new CalendarDate(2021, 2, 14)
+		defaultPlaceholder: new CalendarDate(2021, 2, 1)
 	})
 </script>
 ```
 
-Now our calendar starts out in February 2021, rather than the current month.
-
-<Preview code={snippets.changePh} variant="dark" height="md">
+<Preview code={snippets.changePh} variant="dark" height="auto">
 	<svelte:component this={previews.changePh} />
 </Preview>
 
-To have a date selected by default, we can use the `value` (controlled), or `defaultValue` (uncontrolled) props. If provided, the placeholder will assume this value and the prop will be ignored on initialization.
+Now our calendar starts out in February 2021, rather than the current month.
+
+
+## Values
+
+The Calendar has two value props, `value` (controlled), and `defaultValue` (uncontrolled), which are used to determine what date is selected in the calendar.
+
+### Setting a Default Value
+
+To have a date selected by default, we can use the `value` (controlled), or `defaultValue`
+(uncontrolled) props. If provided, the placeholder props will be set to this value.
 
 ```svelte showLineNumbers {10}
 <script lang="ts">
@@ -285,13 +295,60 @@ To have a date selected by default, we can use the `value` (controlled), or `def
 </script>
 ```
 
-<Preview code={snippets.changeValue} variant="dark" height="md">
+<Preview code={snippets.changeValue} variant="dark" height="auto">
 	<svelte:component this={previews.changeValue} />
 </Preview>
 
-If you press the previous button on the example above, you'll notice something a little unappealing. The calendar navigates to the previous month, and since that month has an additional week, the calendar jumps in height.
 
-You could add the extra space to accomodate for such a jump, or you can set the `fixedWeeks` prop to `true`, which will ensure the calendar always has the same number of weeks, regardless of the month.
+### Reacting to Value Changes
+
+To react to changes in the selected date, we have a few options available to us. We can pass in our own value store to the `value` prop, use the `onValueChange` [change function](/docs/controlled#change-functions), or use the `value` store returned as part of the `createCalendar` return object.
+
+Which option you choose is up to you, but for the sake of this example, we'll be using the `value` store returned from `createCalendar`. This is a writable store that will be updated whenever the selected date changes. It's also the store that the `value` prop uses under the hood, so you can use it to control the selected date programmatically.
+
+Let's say that when a user selects Halloween (October 31st), we want to display an alert that says "Happy Halloween!".
+
+```svelte showLineNumbers {3,5,9,15-17}
+<script lang="ts">
+	import { createCalendar, melt } from '@melt-ui/svelte'
+	import { CalendarDate, isSameDay } from '@internationalized/date'
+
+	const halloween = new CalendarDate(2023, 10, 31)
+
+	const {
+		elements: { calendar, heading, grid, cell, prevButton, nextButton },
+		states: { months, headingValue, daysOfWeek, value },
+		helpers: { isDateDisabled, isDateUnavailable }
+	} = createCalendar({
+		defaultPlaceholder: new CalendarDate(2023, 10, 1)
+	})
+
+	$: if ($value && isSameDay($value, halloween)) {
+		alert('Happy Halloween! 🎃')
+	}
+</script>
+```
+
+<Preview code={snippets.reactToVal} variant="dark" height="auto">
+	<svelte:component this={previews.reactToVal} />
+</Preview>
+
+
+## Appearance & Behavior
+
+### Fixed Weeks
+
+If you press the previous button on the example below, you'll notice something that may be unappealing.
+The calendar navigates to the previous month, and since that month has an additional week, the
+calendar jumps in height.
+
+<Preview code={snippets.changeValue} variant="dark" height="auto">
+	<svelte:component this={previews.changeValue} />
+</Preview>
+
+You could use CSS to add the extra space to accommodate for such a jump, or you can set the
+`fixedWeeks` prop to `true`, which will ensure the calendar always has the same number of weeks,
+regardless of the month.
 
 ```svelte showLineNumbers {11}
 <script lang="ts">
@@ -304,11 +361,104 @@ You could add the extra space to accomodate for such a jump, or you can set the 
 		helpers: { isDateDisabled, isDateUnavailable }
 	} = createCalendar({
 		defaultValue: new CalendarDate(2024, 1, 11),
-		fixedWeeks: true,
+		fixedWeeks: true
 	})
 </script>
 ```
 
-<Preview code={snippets.fixedWeeks} variant="dark" height="md">
+<Preview code={snippets.fixedWeeks} variant="dark" height="auto">
 	<svelte:component this={previews.fixedWeeks} />
+</Preview>
+
+### Multiple Months
+
+By default, the calendar will display one month, but it supports displaying as many months as you'd like, using the `numberOfMonths` prop.
+
+```svelte showLineNumbers {9}
+<script lang="ts">
+	import { createCalendar, melt } from '@melt-ui/svelte'
+
+	const {
+		elements: { calendar, heading, grid, cell, prevButton, nextButton },
+		states: { months, headingValue, daysOfWeek },
+		helpers: { isDateDisabled, isDateUnavailable }
+	} = createCalendar({
+		numberOfMonths: 2,
+	})
+</script>
+```
+
+<Preview code={snippets.multipleMonths} variant="dark" height="auto">
+	<svelte:component this={previews.multipleMonths} />
+</Preview>
+
+### Paged Navigation
+
+By default, when the calendar has more than one month, the previous and next buttons will shift the calendar forward or backward by one month. However, you can change this behavior by setting the `pagedNavigation` prop to `true`, which will shift the calendar forward or backward by the number of months being displayed.
+
+```svelte showLineNumbers {10}
+<script lang="ts">
+	import { createCalendar, melt } from '@melt-ui/svelte'
+
+	const {
+		elements: { calendar, heading, grid, cell, prevButton, nextButton },
+		states: { months, headingValue, daysOfWeek },
+		helpers: { isDateDisabled, isDateUnavailable }
+	} = createCalendar({
+		numberOfMonths: 2,
+		pagedNavigation: true,
+	})
+</script>
+```
+
+<Preview code={snippets.pagedNav} variant="dark" height="auto">
+	<svelte:component this={previews.pagedNav} />
+</Preview>
+
+
+### Localization
+
+The calendar will automatically format the content of the calendar according to the `locale` prop, which defaults to 'en-US', but can be changed to any locale supported by the [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat) constructor.
+
+```svelte showLineNumbers {9}
+<script lang="ts">
+	import { createCalendar, melt } from '@melt-ui/svelte'
+
+	const {
+		elements: { calendar, heading, grid, cell, prevButton, nextButton },
+		states: { months, headingValue, daysOfWeek },
+		helpers: { isDateDisabled, isDateUnavailable }
+	} = createCalendar({
+		locale: 'de',
+	})
+</script>
+```
+
+<Preview code={snippets.locale} variant="dark" height="auto">
+	<svelte:component this={previews.locale} />
+</Preview>
+
+
+### Allow Deselection
+
+By default, once a calendar date has been selected, the user cannot deselect it (which would result in the `value` being undefined). They can, however, select a different date, which will replace the current selection.
+
+If you'd like to disable this default behavior, you can set the `allowDeselect` prop to `true`, which will allow the user to deselect the whatever date they have selected.
+
+```svelte showLineNumbers {9}
+<script lang="ts">
+	import { createCalendar, melt } from '@melt-ui/svelte'
+
+	const {
+		elements: { calendar, heading, grid, cell, prevButton, nextButton },
+		states: { months, headingValue, daysOfWeek },
+		helpers: { isDateDisabled, isDateUnavailable }
+	} = createCalendar({
+		allowDeselect: true,
+	})
+</script>
+```
+
+<Preview code={snippets.allowDeselect} variant="dark" height="auto">
+	<svelte:component this={previews.allowDeselect} />
 </Preview>

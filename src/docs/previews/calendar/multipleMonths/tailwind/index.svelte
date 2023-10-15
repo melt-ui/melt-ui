@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { createCalendar, melt } from '$lib';
-	import { CalendarDate } from '@internationalized/date';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
 
 	const {
@@ -8,7 +7,8 @@
 		states: { months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable },
 	} = createCalendar({
-		defaultPlaceholder: new CalendarDate(2021, 2, 1),
+		numberOfMonths: 2,
+		fixedWeeks: true,
 	});
 </script>
 
@@ -70,7 +70,7 @@
 	}
 
 	header + div {
-		@apply flex items-center gap-8;
+		@apply flex items-center gap-6;
 	}
 
 	[data-melt-calendar-prevbutton] {
