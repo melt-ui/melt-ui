@@ -271,6 +271,5 @@ export function createPopover(args?: CreatePopoverProps) {
 			open,
 		},
 		options,
-		ids,
 	};
 }
