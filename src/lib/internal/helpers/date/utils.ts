@@ -12,7 +12,7 @@ import {
 } from '@internationalized/date';
 
 type GetDefaultDateProps = {
-	defaultValue?: DateValue | undefined;
+	defaultValue?: DateValue | DateValue[] | undefined;
 	defaultPlaceholder?: DateValue | undefined;
 	granularity?: Granularity;
 };
@@ -37,7 +37,11 @@ export function getDefaultDate(props?: GetDefaultDateProps): DateValue {
 	const withDefaults = { ...defaultDateDefaults, ...props };
 	const { defaultValue, defaultPlaceholder, granularity } = withDefaults;
 
-	if (defaultValue) {
+	if (Array.isArray(defaultValue) && defaultValue.length) {
+		return defaultValue[defaultValue.length - 1];
+	}
+
+	if (defaultValue && !Array.isArray(defaultValue)) {
 		return defaultValue;
 	} else if (defaultPlaceholder) {
 		return defaultPlaceholder;

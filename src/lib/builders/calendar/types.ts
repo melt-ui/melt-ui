@@ -5,11 +5,16 @@ import type { DateValue } from '@internationalized/date';
 import type { Matcher } from '$lib/index.js';
 import type { IdObj, WhenTrue } from '$lib/internal/types';
 
-export type CalendarValue<Multiple extends boolean> = WhenTrue<Multiple, DateValue[], DateValue>;
+export type CalendarValue<Multiple extends boolean, Value extends DateValue = DateValue> = WhenTrue<
+	Multiple,
+	Value[],
+	Value
+>;
 
-export type CalendarProps<
+export type CreateCalendarProps<
 	Multiple extends boolean = false,
-	Value extends CalendarValue<Multiple> = CalendarValue<Multiple>
+	Value extends DateValue = DateValue,
+	S extends CalendarValue<Multiple, Value> = CalendarValue<Multiple, Value>
 > = {
 	/**
 	 * Allow deselecting the selected date, which would set the
@@ -45,7 +50,7 @@ export type CalendarProps<
 	 *
 	 * @default undefined;
 	 */
-	defaultValue?: Value;
+	defaultValue?: S;
 
 	/**
 	 * A function called when the value of the date picker changes.
@@ -57,7 +62,7 @@ export type CalendarProps<
 	 *
 	 * @default undefined
 	 */
-	onValueChange?: ChangeFn<Value | undefined>;
+	onValueChange?: ChangeFn<S | undefined>;
 
 	/**
 	 * A writable store than can be used to control the value of the
@@ -67,7 +72,7 @@ export type CalendarProps<
 	 *
 	 * @default undefined;
 	 */
-	value?: Writable<Value | undefined>;
+	value?: Writable<S | undefined>;
 
 	/**
 	 * The date that is used to display the initial month and
@@ -225,5 +230,4 @@ export type CalendarProps<
 
 export type CalendarIds = IdObj<'calendar' | 'grid' | 'accessibleHeading'>;
 
-export type CreateCalendarProps = CalendarProps;
 export type Calendar = ReturnType<typeof createCalendar>;

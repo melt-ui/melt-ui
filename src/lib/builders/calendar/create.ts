@@ -16,7 +16,7 @@ import {
 } from '$lib/internal/helpers/index.js';
 
 import { derived, get, writable } from 'svelte/store';
-import type { CalendarIds, CreateCalendarProps } from './types.js';
+import type { CalendarIds, CalendarValue, CreateCalendarProps } from './types.js';
 import { tick } from 'svelte';
 import {
 	createMonths,
@@ -58,11 +58,16 @@ type CalendarParts = 'content' | 'nextButton' | 'prevButton' | 'grid' | 'cell' |
 
 const { name } = createElHelpers<CalendarParts>('calendar');
 
-export function createCalendar<T extends DateValue = DateValue>(props?: CreateCalendarProps) {
-	const withDefaults = { ...defaults, ...props };
+export function createCalendar<
+	Multiple extends boolean = false,
+	Value extends DateValue = DateValue,
+	S extends CalendarValue<Multiple, Value> = CalendarValue<Multiple, Value>
+>(props?: CreateCalendarProps<Multiple, Value, S>) {
+	const withDefaults = { ...defaults, ...props } satisfies CreateCalendarProps<Multiple, Value, S>;
 
 	const options = toWritableStores({
-		...omit(withDefaults, 'value', 'placeholder'),
+		...omit(withDefaults, 'value', 'placeholder', 'multiple'),
+		multiple: withDefaults.multiple ?? (false as Multiple),
 	});
 
 	const {
@@ -77,6 +82,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		locale,
 		minValue,
 		maxValue,
+		multiple,
 	} = options;
 
 	const ids = {
@@ -91,7 +97,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	});
 
 	const formatter = createFormatter(withDefaults.locale);
-	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const valueWritable = withDefaults.value ?? writable<S | undefined>(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
 	const placeholderWritable =
@@ -145,15 +151,35 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		return isBefore(lastMonthOfPrevPage, $minValue);
 	});
 
+	const isSelected = derived([value], ([$value]) => {
+		return (date: DateValue) => {
+			if (Array.isArray($value)) {
+				return $value.some((d) => isSameDay(d, date));
+			} else if (!$value) {
+				return false;
+			} else {
+				return isSameDay($value, date);
+			}
+		};
+	});
+
 	/**
-	 * A derived helper store that evaluates to true if the currently selected date is invalid.
+	 * A derived helper store that evaluates to true if a currently selected date is invalid.
 	 */
 	const isInvalid = derived(
 		[value, isDisabled, isUnavailable],
 		([$value, $isDisabled, $isUnavailable]) => {
-			if (!$value) return false;
-			if ($isDisabled?.($value)) return true;
-			if ($isUnavailable?.($value)) return true;
+			if (Array.isArray($value)) {
+				if (!$value.length) return false;
+				for (const date of $value) {
+					if ($isDisabled?.(date)) return true;
+					if ($isUnavailable?.(date)) return true;
+				}
+			} else {
+				if (!$value) return false;
+				if ($isDisabled?.($value)) return true;
+				if ($isUnavailable?.($value)) return true;
+			}
 			return false;
 		}
 	);
@@ -338,8 +364,14 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * and interactivity.
 	 */
 	const cell = builder(name('cell'), {
-		stores: [value, isDisabled, isUnavailable, isOutsideVisibleMonths, placeholder],
-		returned: ([$value, $isDisabled, $isUnavailable, $isOutsideVisibleMonths, $placeholder]) => {
+		stores: [isSelected, isDisabled, isUnavailable, isOutsideVisibleMonths, placeholder],
+		returned: ([
+			$isSelected,
+			$isDisabled,
+			$isUnavailable,
+			$isOutsideVisibleMonths,
+			$placeholder,
+		]) => {
 			/**
 			 * Applies the appropriate attributes to each date cell in the calendar.
 			 *
@@ -347,7 +379,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			 * @params monthValue - The `DateValue` for the current month, which is used
 			 * to determine if the current cell is outside the current month.
 			 */
-			return (cellValue: T, monthValue: T) => {
+			return (cellValue: DateValue, monthValue: DateValue) => {
 				const cellDate = toDate(cellValue);
 				const isDisabled = $isDisabled?.(cellValue);
 				const isUnavailable = $isUnavailable?.(cellValue);
@@ -355,7 +387,7 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 				const isOutsideMonth = !isSameMonth(cellValue, monthValue);
 				const isOutsideVisibleMonths = $isOutsideVisibleMonths(cellValue);
 				const isFocusedDate = isSameDay(cellValue, $placeholder);
-				const isSelectedDate = $value ? isSameDay(cellValue, $value) && !isOutsideMonth : false;
+				const isSelectedDate = $isSelected(cellValue) && !isOutsideMonth;
 
 				const labelText = formatter.custom(cellDate, {
 					weekday: 'long',
@@ -470,7 +502,12 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * Synchronizing the placeholder value with the current value.
 	 */
 	effect([value], ([$value]) => {
-		if ($value && get(placeholder) !== $value) {
+		if (Array.isArray($value) && $value.length) {
+			const lastValue = $value[$value.length - 1];
+			if (lastValue && get(placeholder) !== lastValue) {
+				placeholder.set(lastValue);
+			}
+		} else if (!Array.isArray($value) && $value && get(placeholder) !== $value) {
 			placeholder.set($value);
 		}
 	});
@@ -752,14 +789,50 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 
 	function handleCellClick(date: DateValue) {
 		value.update((prev) => {
-			if (get(allowDeselect) && prev && isSameDay(prev, date)) {
+			const $multiple = get(multiple);
+			if ($multiple) {
+				return handleMultipleUpdate(prev, date) as S;
+			} else {
+				const next = handleSingleUpdate(prev, date);
+				if (!next) {
+					announcer.announce('Selected date is now empty.', 'polite', 5000);
+				} else {
+					announcer.announce(`Selected Date: ${formatter.selectedDate(next, false)}`, 'polite');
+				}
+				return next as S;
+			}
+		});
+	}
+
+	function handleSingleUpdate(prev: S | undefined, date: DateValue) {
+		if (Array.isArray(prev)) throw new Error('Invalid value for multiple prop.');
+		if (!prev) return date;
+		const $allowDeselect = get(allowDeselect);
+		if ($allowDeselect && isSameDay(prev, date)) {
+			placeholder.set(date);
+			return undefined;
+		}
+		return date;
+	}
+
+	function handleMultipleUpdate(prev: S | undefined, date: DateValue) {
+		if (!prev) return [date];
+		if (!Array.isArray(prev)) throw new Error('Invalid value for multiple prop.');
+		const index = prev.findIndex((d) => isSameDay(d, date));
+		const $allowDeselect = get(allowDeselect);
+		if (index === -1) {
+			prev.push(date as Value);
+			return prev;
+		} else if ($allowDeselect) {
+			prev.splice(index, 1);
+			if (!prev.length) {
 				placeholder.set(date);
-				announcer.announce('Selected date is now empty.', 'polite', 5000);
 				return undefined;
 			}
-			announcer.announce(`Selected Date: ${formatter.selectedDate(date, false)}`, 'polite');
-			return date;
-		});
+			return prev;
+		} else {
+			return prev;
+		}
 	}
 
 	const SELECT_KEYS = [kbd.ENTER, kbd.SPACE];

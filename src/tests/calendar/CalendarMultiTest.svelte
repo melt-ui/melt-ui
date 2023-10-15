@@ -3,30 +3,31 @@
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
 	import { melt } from '$lib';
 
-	export let value: CreateCalendarProps['value'] = undefined;
-	export let defaultValue: CreateCalendarProps['defaultValue'] = undefined;
-	export let defaultPlaceholder: CreateCalendarProps['defaultPlaceholder'] = undefined;
-	export let onValueChange: CreateCalendarProps['onValueChange'] = undefined;
-	export let onPlaceholderChange: CreateCalendarProps['onPlaceholderChange'] = undefined;
-	export let isUnavailable: CreateCalendarProps['isUnavailable'] = undefined;
-	export let isDisabled: CreateCalendarProps['isDisabled'] = undefined;
-	export let locale: CreateCalendarProps['locale'] = 'en';
-	export let calendarLabel: CreateCalendarProps['calendarLabel'] = undefined;
-	export let allowDeselect: CreateCalendarProps['allowDeselect'] = undefined;
-	export let numberOfMonths: CreateCalendarProps['numberOfMonths'] = undefined;
-	export let pagedNavigation: CreateCalendarProps['pagedNavigation'] = undefined;
-	export let placeholder: CreateCalendarProps['placeholder'] = undefined;
-	export let weekStartsOn: CreateCalendarProps['weekStartsOn'] = undefined;
-	export let fixedWeeks: CreateCalendarProps['fixedWeeks'] = undefined;
-	export let minValue: CreateCalendarProps['minValue'] = undefined;
-	export let maxValue: CreateCalendarProps['maxValue'] = undefined;
-	export let multiple: boolean | undefined = undefined;
+	type CalendarProps = CreateCalendarProps<true>;
+
+	export let value: CalendarProps['value'] = undefined;
+	export let defaultValue: CalendarProps['defaultValue'] = undefined;
+	export let defaultPlaceholder: CalendarProps['defaultPlaceholder'] = undefined;
+	export let onValueChange: CalendarProps['onValueChange'] = undefined;
+	export let onPlaceholderChange: CalendarProps['onPlaceholderChange'] = undefined;
+	export let isUnavailable: CalendarProps['isUnavailable'] = undefined;
+	export let isDisabled: CalendarProps['isDisabled'] = undefined;
+	export let locale: CalendarProps['locale'] = 'en';
+	export let calendarLabel: CalendarProps['calendarLabel'] = undefined;
+	export let allowDeselect: CalendarProps['allowDeselect'] = undefined;
+	export let numberOfMonths: CalendarProps['numberOfMonths'] = undefined;
+	export let pagedNavigation: CalendarProps['pagedNavigation'] = undefined;
+	export let placeholder: CalendarProps['placeholder'] = undefined;
+	export let weekStartsOn: CalendarProps['weekStartsOn'] = undefined;
+	export let fixedWeeks: CalendarProps['fixedWeeks'] = undefined;
+	export let minValue: CalendarProps['minValue'] = undefined;
+	export let maxValue: CalendarProps['maxValue'] = undefined;
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
 		states: { value: insideValue, months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable },
-	} = createCalendar({
+	} = createCalendar<true>({
 		value,
 		defaultValue,
 		defaultPlaceholder,
@@ -44,7 +45,7 @@
 		fixedWeeks,
 		minValue,
 		maxValue,
-		multiple,
+		multiple: true,
 	});
 </script>
 

@@ -7,6 +7,7 @@ import CalendarTest from './CalendarTest.svelte';
 import { CalendarDate, CalendarDateTime, toZoned, type DateValue } from '@internationalized/date';
 import { writable } from 'svelte/store';
 import { tick } from 'svelte';
+import CalendarMultiTest from './CalendarMultiTest.svelte';
 
 const calendarDate = new CalendarDate(1980, 1, 20);
 const calendarDateTime = new CalendarDateTime(1980, 1, 20, 12, 30, 0, 0);
@@ -390,5 +391,113 @@ describe('DatePicker', () => {
 
 		await userEvent.click(nextButton);
 		expect(heading).toHaveTextContent('April 1980');
+	});
+
+	test('multiple select default Value', async () => {
+		const day1 = new CalendarDate(1980, 1, 2);
+		const day2 = new CalendarDate(1980, 1, 5);
+
+		const { getByTestId, container } = render(CalendarMultiTest, {
+			defaultValue: [day1, day2],
+		});
+
+		const calendar = getByTestId('calendar');
+		expect(calendar).toBeVisible();
+
+		const selectedDays = container.querySelectorAll('[data-selected]');
+		expect(selectedDays).toHaveLength(2);
+
+		expect(selectedDays[0]).toHaveTextContent(String(day1.day));
+		expect(selectedDays[1]).toHaveTextContent(String(day2.day));
+	});
+
+	test('multiple select controlled value', async () => {
+		const day1 = new CalendarDate(1980, 1, 2);
+		const day2 = new CalendarDate(1980, 1, 5);
+		const value = writable([day1, day2]);
+		const { getByTestId, container } = render(CalendarMultiTest, {
+			value,
+		});
+
+		const calendar = getByTestId('calendar');
+		expect(calendar).toBeVisible();
+
+		const selectedDays = container.querySelectorAll('[data-selected]');
+		expect(selectedDays).toHaveLength(2);
+
+		expect(selectedDays[0]).toHaveTextContent(String(day1.day));
+		expect(selectedDays[1]).toHaveTextContent(String(day2.day));
+	});
+
+	test('multiple select - allow deselect true', async () => {
+		const day1 = new CalendarDate(1980, 1, 2);
+		const day2 = new CalendarDate(1980, 1, 5);
+
+		const { getByTestId, container } = render(CalendarMultiTest, {
+			defaultValue: [day1, day2],
+			allowDeselect: true,
+		});
+
+		const calendar = getByTestId('calendar');
+		expect(calendar).toBeVisible();
+
+		const selectedDays = container.querySelectorAll('[data-selected]');
+		expect(selectedDays).toHaveLength(2);
+
+		expect(selectedDays[0]).toHaveTextContent(String(day1.day));
+		expect(selectedDays[1]).toHaveTextContent(String(day2.day));
+
+		await userEvent.click(selectedDays[0]);
+		const selectedDaysAfterClick = container.querySelectorAll('[data-selected]');
+		expect(selectedDaysAfterClick).toHaveLength(1);
+		expect(selectedDaysAfterClick[0]).toHaveTextContent(String(day2.day));
+	});
+
+	test('multiple select - allow deselect false (default)', async () => {
+		const day1 = new CalendarDate(1980, 1, 2);
+		const day2 = new CalendarDate(1980, 1, 5);
+
+		const { getByTestId, container } = render(CalendarMultiTest, {
+			defaultValue: [day1, day2],
+		});
+
+		const calendar = getByTestId('calendar');
+		expect(calendar).toBeVisible();
+
+		const selectedDays = container.querySelectorAll('[data-selected]');
+		expect(selectedDays).toHaveLength(2);
+
+		expect(selectedDays[0]).toHaveTextContent(String(day1.day));
+		expect(selectedDays[1]).toHaveTextContent(String(day2.day));
+
+		await userEvent.click(selectedDays[0]);
+		const selectedDaysAfterClick = container.querySelectorAll('[data-selected]');
+		expect(selectedDaysAfterClick).toHaveLength(2);
+		expect(selectedDaysAfterClick[0]).toHaveTextContent(String(day1.day));
+		expect(selectedDaysAfterClick[1]).toHaveTextContent(String(day2.day));
+	});
+
+	test('multiple select - allow deselect false (default)', async () => {
+		const day1 = new CalendarDate(1980, 1, 2);
+		const day2 = new CalendarDate(1980, 1, 5);
+
+		const { getByTestId, container } = render(CalendarMultiTest, {
+			defaultValue: [day1, day2],
+		});
+
+		const calendar = getByTestId('calendar');
+		expect(calendar).toBeVisible();
+
+		const selectedDays = container.querySelectorAll('[data-selected]');
+		expect(selectedDays).toHaveLength(2);
+
+		expect(selectedDays[0]).toHaveTextContent(String(day1.day));
+		expect(selectedDays[1]).toHaveTextContent(String(day2.day));
+
+		await userEvent.click(selectedDays[0]);
+		const selectedDaysAfterClick = container.querySelectorAll('[data-selected]');
+		expect(selectedDaysAfterClick).toHaveLength(2);
+		expect(selectedDaysAfterClick[0]).toHaveTextContent(String(day1.day));
+		expect(selectedDaysAfterClick[1]).toHaveTextContent(String(day2.day));
 	});
 });
