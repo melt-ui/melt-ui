@@ -264,7 +264,7 @@ By default, the placeholder will be set to the current date, but you can overrid
 </script>
 ```
 
-<Preview code={snippets.changePh} variant="dark" height="auto">
+<Preview code={snippets.changePh} variant="dark" size="auto">
 	<svelte:component this={previews.changePh} />
 </Preview>
 
@@ -295,7 +295,7 @@ To have a date selected by default, we can use the `value` (controlled), or `def
 </script>
 ```
 
-<Preview code={snippets.changeValue} variant="dark" height="auto">
+<Preview code={snippets.changeValue} variant="dark" size="auto">
 	<svelte:component this={previews.changeValue} />
 </Preview>
 
@@ -329,7 +329,7 @@ Let's say that when a user selects Halloween (October 31st), we want to display 
 </script>
 ```
 
-<Preview code={snippets.reactToVal} variant="dark" height="auto">
+<Preview code={snippets.reactToVal} variant="dark" size="auto">
 	<svelte:component this={previews.reactToVal} />
 </Preview>
 
@@ -342,7 +342,7 @@ If you press the previous button on the example below, you'll notice something t
 The calendar navigates to the previous month, and since that month has an additional week, the
 calendar jumps in height.
 
-<Preview code={snippets.changeValue} variant="dark" height="auto">
+<Preview code={snippets.changeValue} variant="dark" size="auto">
 	<svelte:component this={previews.changeValue} />
 </Preview>
 
@@ -366,7 +366,7 @@ regardless of the month.
 </script>
 ```
 
-<Preview code={snippets.fixedWeeks} variant="dark" height="auto">
+<Preview code={snippets.fixedWeeks} variant="dark" size="auto">
 	<svelte:component this={previews.fixedWeeks} />
 </Preview>
 
@@ -388,7 +388,7 @@ By default, the calendar will display one month, but it supports displaying as m
 </script>
 ```
 
-<Preview code={snippets.multipleMonths} variant="dark" height="auto">
+<Preview code={snippets.multipleMonths} variant="dark" size="auto">
 	<svelte:component this={previews.multipleMonths} />
 </Preview>
 
@@ -411,7 +411,7 @@ By default, when the calendar has more than one month, the previous and next but
 </script>
 ```
 
-<Preview code={snippets.pagedNav} variant="dark" height="auto">
+<Preview code={snippets.pagedNav} variant="dark" size="auto">
 	<svelte:component this={previews.pagedNav} />
 </Preview>
 
@@ -434,7 +434,7 @@ The calendar will automatically format the content of the calendar according to 
 </script>
 ```
 
-<Preview code={snippets.locale} variant="dark" height="auto">
+<Preview code={snippets.locale} variant="dark" size="auto">
 	<svelte:component this={previews.locale} />
 </Preview>
 
@@ -459,6 +459,6 @@ If you'd like to disable this default behavior, you can set the `allowDeselect` 
 </script>
 ```
 
-<Preview code={snippets.allowDeselect} variant="dark" height="auto">
+<Preview code={snippets.allowDeselect} variant="dark" size="auto">
 	<svelte:component this={previews.allowDeselect} />
 </Preview>

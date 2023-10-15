@@ -10,7 +10,7 @@
 				default: 'bg-magnum-400',
 				dark: 'bg-neutral-950/25',
 			},
-			height: {
+			size: {
 				default: 'h-[20rem] lg:h-[28rem]',
 				sm: 'h-[12rem] sm:h-[20rem]',
 				md: 'h-[16rem] sm:h-[24rem]',
@@ -29,10 +29,10 @@
 	import { cn } from '$docs/utils/index.js';
 
 	export let variant: PreviewVariants['variant'] = 'default';
-	export let height: PreviewVariants['height'] = 'default';
+	export let size: PreviewVariants['size'] = 'default';
 </script>
 
-<div class={cn(previewVariants({ variant, height }))} data-variant={variant}>
+<div class={cn(previewVariants({ variant, size }))} data-variant={variant}>
 	<div class={cn('relative z-10 mx-auto inline-block px-4')}>
 		<slot />
 	</div>

@@ -179,7 +179,7 @@ its name.
 And that, along with some additional structure and styles, is all you need to get a fully functional
 Date Field!
 
-<Preview code={snippets.tut1} variant="dark" height="sm">
+<Preview code={snippets.tut1} variant="dark" size="sm">
 	<svelte:component this={previews.tut1} />
 </Preview>
 
@@ -214,7 +214,7 @@ as the `defaultPlaceholder` prop.
 </script>
 ```
 
-<Preview code={snippets.tut2} variant="dark" height="sm">
+<Preview code={snippets.tut2} variant="dark" size="sm">
 	<svelte:component this={previews.tut2} />
 </Preview>
 
@@ -259,7 +259,7 @@ We can also just as easily convert the field into a Zoned Date & Time field, by 
 We're using the `now` parser function to create a `ZonedDateTime` object with the current date and
 time, and we're getting the user's local timezone using the `getLocalTimeZone` function.
 
-<Preview code={snippets.tut3} variant="dark" height="sm">
+<Preview code={snippets.tut3} variant="dark" size="sm">
 	<svelte:component this={previews.tut3} />
 </Preview>
 
@@ -280,7 +280,7 @@ the argument to the `now` function.
 </script>
 ```
 
-<Preview code={snippets.tut4} variant="dark" height="sm">
+<Preview code={snippets.tut4} variant="dark" size="sm">
 	<svelte:component this={previews.tut4} />
 </Preview>
 
@@ -317,7 +317,7 @@ props interact.
 </script>
 ```
 
-<Preview code={snippets.tut5} variant="dark" height="sm">
+<Preview code={snippets.tut5} variant="dark" size="sm">
 	<svelte:component this={previews.tut5} />
 </Preview>
 
@@ -357,7 +357,7 @@ if not, we pass `undefined` as the `defaultValue` prop, which will cause the fie
 The following example demonstrates how it would work in both scenarios (with and without a
 birthday).
 
-<Preview code={snippets.tut6} variant="dark" height="sm">
+<Preview code={snippets.tut6} variant="dark" size="sm">
 	<svelte:component this={previews.tut6} />
 </Preview>
 
@@ -493,7 +493,7 @@ to give screen readers the information they need.
 Here's an example to get an idea of what you might do. Attempt to enter an unavailable date, and
 you'll see the behavior in action.
 
-<Preview code={snippets.tut7} variant="dark" height="sm">
+<Preview code={snippets.tut7} variant="dark" size="sm">
 	<svelte:component this={previews.tut7} />
 </Preview>
 
@@ -520,7 +520,7 @@ dates a user can select.
 In this example, we're limiting the selection dates to between October 11th, 2023 and October
 11th, 2024.
 
-<Preview code={snippets.tut8} variant="dark" height="sm">
+<Preview code={snippets.tut8} variant="dark" size="sm">
 	<svelte:component this={previews.tut8} />
 </Preview>
 
@@ -548,7 +548,7 @@ simple as passing it as the `locale` prop.
 
 Here's an example showcasing a few different locales:
 
-<Preview code={snippets.tut9} variant="dark" height="sm">
+<Preview code={snippets.tut9} variant="dark" size="sm">
 	<svelte:component this={previews.tut9} />
 </Preview>
 
