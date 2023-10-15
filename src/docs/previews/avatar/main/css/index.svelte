@@ -41,6 +41,16 @@
 </div>
 
 <style>
+	* {
+		all: unset;
+		box-sizing: border-box;
+	}
+
+	:root {
+		--magnum-700: #bd5711;
+		--neutral-100: #f5f5f5;
+	}
+
 	.root {
 		display: flex;
 		width: 100%;
@@ -56,7 +66,7 @@
 		align-items: center;
 		justify-content: center;
 		border-radius: 9999px;
-		background-color: rgb(var(--color-neutral-100) / 1);
+		background-color: var(--neutral-100);
 	}
 
 	.item > .avatar {
@@ -69,6 +79,6 @@
 		font-size: 1.875rem;
 		line-height: 1.875rem;
 		font-weight: 500;
-		color: rgb(var(--color-magnum-700) / 1);
+		color: var(--magnum-700);
 	}
 </style>

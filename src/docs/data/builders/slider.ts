@@ -142,8 +142,8 @@ const tick = elementSchema('tick', {
 		},
 		{
 			name: 'data-bounded',
-			value: "Present when a tick is inside the `value`'s bounds."
-		}
+			value: "Present when a tick is inside the `value`'s bounds.",
+		},
 	],
 });
 

@@ -15,6 +15,7 @@
 	/* Reset */
 	* {
 		all: unset;
+		box-sizing: border-box;
 	}
 
 	/* CSS Variables */

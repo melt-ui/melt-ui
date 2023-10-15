@@ -18,12 +18,13 @@
 </span>
 
 <style>
-	:root {
-		--black-40: #0006;
-	}
-
 	* {
 		all: unset;
+		box-sizing: border-box;
+	}
+
+	:root {
+		--black-40: #0006;
 	}
 
 	.root {

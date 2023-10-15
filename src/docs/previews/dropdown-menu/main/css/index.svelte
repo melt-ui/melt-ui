@@ -124,6 +124,7 @@
 <style>
 	* {
 		all: unset;
+		box-sizing: border-box;
 	}
 
 	:root {

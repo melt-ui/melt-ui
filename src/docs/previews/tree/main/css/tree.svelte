@@ -94,11 +94,6 @@
 		user-select: none;
 	}
 
-	.square-4 {
-		width: 1rem;
-		height: 1rem;
-	}
-
 	.item {
 		display: flex;
 		align-items: center;

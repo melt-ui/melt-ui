@@ -76,7 +76,7 @@
 		background-color: var(--white-50);
 	}
 
-	[data-bounded].thick {
+	:global([data-bounded]).thick {
 		background-color: var(--magnum-800-75);
 	}
 </style>

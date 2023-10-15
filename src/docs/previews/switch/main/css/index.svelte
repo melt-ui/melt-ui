@@ -23,6 +23,7 @@
 <style>
 	* {
 		all: unset;
+		box-sizing: border-box;
 	}
 
 	/* CSS Variables */
@@ -145,11 +146,11 @@
 		transition-duration: 150ms;
 	}
 
-	button[data-state='checked'] {
+	:global([data-state='checked']):is(button) {
 		background-color: var(--magnum-950);
 	}
 
-	[data-state='checked'] .thumb {
+	:global([data-state='checked']) .thumb {
 		transform: translateX(calc(var(--w) - var(--size) - var(--padding)));
 	}
 </style>
