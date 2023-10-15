@@ -8,7 +8,6 @@
 		states: { value, months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable },
 	} = createRangeCalendar({
-		allowDeselect: true,
 		isDisabled: (date) => date.day === 15,
 	});
 </script>

@@ -12,7 +12,7 @@
 	export let isDisabled: CreateCalendarProps['isDisabled'] = undefined;
 	export let locale: CreateCalendarProps['locale'] = 'en';
 	export let calendarLabel: CreateCalendarProps['calendarLabel'] = undefined;
-	export let allowDeselect: CreateCalendarProps['allowDeselect'] = undefined;
+	export let preventDeselect: CreateCalendarProps['preventDeselect'] = undefined;
 	export let numberOfMonths: CreateCalendarProps['numberOfMonths'] = undefined;
 	export let pagedNavigation: CreateCalendarProps['pagedNavigation'] = undefined;
 	export let placeholder: CreateCalendarProps['placeholder'] = undefined;
@@ -25,7 +25,6 @@
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
 		states: { value: insideValue, months, headingValue, daysOfWeek },
-		helpers: { isDateDisabled, isDateUnavailable },
 	} = createCalendar({
 		value,
 		defaultValue,
@@ -36,7 +35,7 @@
 		isDisabled,
 		locale,
 		calendarLabel,
-		allowDeselect,
+		preventDeselect,
 		numberOfMonths,
 		pagedNavigation,
 		placeholder,

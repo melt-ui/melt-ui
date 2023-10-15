@@ -21,7 +21,7 @@
 	export let calendarIds: CreateDatePickerProps['calendarIds'] = undefined;
 	export let granularity: CreateDatePickerProps['granularity'] = undefined;
 	export let calendarLabel: CreateDatePickerProps['calendarLabel'] = undefined;
-	export let allowDeselect: CreateDatePickerProps['allowDeselect'] = undefined;
+	export let preventDeselect: CreateDatePickerProps['preventDeselect'] = undefined;
 	export let numberOfMonths: CreateDatePickerProps['numberOfMonths'] = undefined;
 	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = undefined;
 	export let placeholder: CreateDatePickerProps['placeholder'] = undefined;
@@ -59,7 +59,7 @@
 		dateFieldIds,
 		calendarIds,
 		popoverIds,
-		allowDeselect,
+		preventDeselect,
 		calendarLabel,
 		numberOfMonths,
 		pagedNavigation,

@@ -439,11 +439,9 @@ The calendar will automatically format the content of the calendar according to 
 </Preview>
 
 
-### Allow Deselection
+### Deselection
 
-By default, once a calendar date has been selected, the user cannot deselect it (which would result in the `value` being undefined). They can, however, select a different date, which will replace the current selection.
-
-If you'd like to disable this default behavior, you can set the `allowDeselect` prop to `true`, which will allow the user to deselect the whatever date they have selected.
+By default, users can deselect a selected date without selecting another, by selecting the date again. This results in the `value` potentially being `undefined`. If you'd like to disable this  behavior, you can set the `preventDeselect` prop to `true`, which will prevent the user from being able to deselect dates.
 
 ```svelte showLineNumbers {9}
 <script lang="ts">
@@ -454,11 +452,69 @@ If you'd like to disable this default behavior, you can set the `allowDeselect` 
 		states: { months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable }
 	} = createCalendar({
-		allowDeselect: true,
+		preventDeselect: true,
 	})
 </script>
 ```
 
-<Preview code={snippets.allowDeselect} variant="dark" size="auto">
-	<svelte:component this={previews.allowDeselect} />
+<Preview code={snippets.preventDeselect} variant="dark" size="auto">
+	<svelte:component this={previews.preventDeselect} />
+</Preview>
+
+
+### Multiple Selection
+
+Sometimes, you may want to allow the user to select multiple dates in the calendar. To enable this behavior, you can set the `multiple` prop to `true`.
+
+```svelte showLineNumbers {9}
+<script lang="ts">
+	import { createCalendar, melt } from '@melt-ui/svelte'
+
+	const {
+		elements: { calendar, heading, grid, cell, prevButton, nextButton },
+		states: { months, headingValue, daysOfWeek },
+		helpers: { isDateDisabled, isDateUnavailable }
+	} = createCalendar({
+		multiple: true,
+	})
+</script>
+```
+
+<Preview code={snippets.multipleSelect} variant="dark" size="auto">
+	<svelte:component this={previews.multipleSelect} />
+</Preview>
+
+### Limiting Selected Dates
+
+When allowing users to select multiple dates, you may want to limit the number of dates they can select. Since this could be handled in a variety of ways, the Calendar doesn't handle this for you, but does provide the means to do so.
+
+We can use the `onValueChange` [change function](/docs/controlled#change-functions) to limit the number of selected dates to 3.
+
+In this first example, we're just preventing the user from being able to select another date if they've already selected 3. They'll need to deselect one of the dates before they can select another.
+
+```svelte showLineNumbers {3,5,9,15-17}
+
+<script lang="ts">
+	import { createCalendar, melt } from '@melt-ui/svelte'
+
+	const {
+		elements: { calendar, heading, grid, cell, prevButton, nextButton },
+		states: { months, headingValue, daysOfWeek },
+		helpers: { isDateDisabled, isDateUnavailable }
+	} = createCalendar({
+		multiple: true,
+		onValueChange: ({ curr, next }) => {
+			if (next && next.length > 3) {
+				alert('You can only select 3 dates!')
+				return curr
+			} else {
+				return next
+			}
+		}
+	})
+</script>
+```
+
+<Preview code={snippets.limitSelectedA} variant="dark" size="auto">
+	<svelte:component this={previews.limitSelectedA} />
 </Preview>

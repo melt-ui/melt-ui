@@ -43,7 +43,7 @@ const defaults = {
 	isDisabled: undefined,
 	isUnavailable: undefined,
 	value: undefined,
-	allowDeselect: false,
+	preventDeselect: false,
 	numberOfMonths: 1,
 	pagedNavigation: false,
 	weekStartsOn: 0,
@@ -71,7 +71,7 @@ export function createCalendar<
 	});
 
 	const {
-		allowDeselect,
+		preventDeselect,
 		isDisabled,
 		numberOfMonths,
 		pagedNavigation,
@@ -807,8 +807,8 @@ export function createCalendar<
 	function handleSingleUpdate(prev: S | undefined, date: DateValue) {
 		if (Array.isArray(prev)) throw new Error('Invalid value for multiple prop.');
 		if (!prev) return date;
-		const $allowDeselect = get(allowDeselect);
-		if ($allowDeselect && isSameDay(prev, date)) {
+		const $preventDeselect = get(preventDeselect);
+		if (!$preventDeselect && isSameDay(prev, date)) {
 			placeholder.set(date);
 			return undefined;
 		}
@@ -819,19 +819,20 @@ export function createCalendar<
 		if (!prev) return [date];
 		if (!Array.isArray(prev)) throw new Error('Invalid value for multiple prop.');
 		const index = prev.findIndex((d) => isSameDay(d, date));
-		const $allowDeselect = get(allowDeselect);
+		const $preventDeselect = get(preventDeselect);
+
 		if (index === -1) {
 			prev.push(date as Value);
 			return prev;
-		} else if ($allowDeselect) {
-			prev.splice(index, 1);
-			if (!prev.length) {
+		} else if ($preventDeselect) {
+			return prev;
+		} else {
+			const next = prev.filter((d) => !isSameDay(d, date));
+			if (!next.length) {
 				placeholder.set(date);
 				return undefined;
 			}
-			return prev;
-		} else {
-			return prev;
+			return next;
 		}
 	}
 

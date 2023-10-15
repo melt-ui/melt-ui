@@ -7,13 +7,13 @@ import type { IdObj } from '$lib/internal/types';
 
 export type RangeCalendarProps = {
 	/**
-	 * Allow deselecting the selected date, which would set the
+	 * Prevent deselecting the selected date(s), which would set the
 	 * value to `undefined`. You can use this to ensure a date
 	 * is always selected in certain situations.
 	 *
-	 * @default true
+	 * @default false
 	 */
-	allowDeselect?: boolean;
+	preventDeselect?: boolean;
 
 	/**
 	 * The minimum selectable date. When provided, the

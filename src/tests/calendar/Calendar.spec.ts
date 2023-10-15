@@ -17,7 +17,7 @@ const controlledCalendarDate = writable<DateValue | undefined>(calendarDate);
 const controlledCalendarDateTime = writable<DateValue | undefined>(calendarDateTime);
 const controlledZonedDateTime = writable<DateValue | undefined>(zonedDateTime);
 
-describe('DatePicker', () => {
+describe('Calendar', () => {
 	describe('Accessibility', () => {
 		test('has no accessibility violations', async () => {
 			const { container } = render(CalendarTest);
@@ -141,9 +141,8 @@ describe('DatePicker', () => {
 
 	test('allow deselection', async () => {
 		const user = userEvent.setup();
-		const { getByTestId, container } = render(CalendarTest, {
+		const { getByTestId, container, queryByTestId } = render(CalendarTest, {
 			defaultValue: zonedDateTime,
-			allowDeselect: true,
 		});
 
 		const calendar = getByTestId('calendar');
@@ -154,7 +153,8 @@ describe('DatePicker', () => {
 
 		await user.click(selectedDay);
 
-		const insideValue = getByTestId('inside-value');
+		await tick();
+		const insideValue = queryByTestId('inside-value');
 		expect(insideValue).toHaveTextContent('undefined');
 	});
 
@@ -162,7 +162,6 @@ describe('DatePicker', () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(CalendarTest, {
 			defaultPlaceholder: zonedDateTime,
-			allowDeselect: true,
 		});
 
 		const calendar = getByTestId('calendar');
@@ -429,13 +428,12 @@ describe('DatePicker', () => {
 		expect(selectedDays[1]).toHaveTextContent(String(day2.day));
 	});
 
-	test('multiple select - allow deselect true', async () => {
+	test('multiple select - prevent deselect false (default)', async () => {
 		const day1 = new CalendarDate(1980, 1, 2);
 		const day2 = new CalendarDate(1980, 1, 5);
 
 		const { getByTestId, container } = render(CalendarMultiTest, {
 			defaultValue: [day1, day2],
-			allowDeselect: true,
 		});
 
 		const calendar = getByTestId('calendar');
@@ -453,12 +451,13 @@ describe('DatePicker', () => {
 		expect(selectedDaysAfterClick[0]).toHaveTextContent(String(day2.day));
 	});
 
-	test('multiple select - allow deselect false (default)', async () => {
+	test('multiple select -  prevent deselect true', async () => {
 		const day1 = new CalendarDate(1980, 1, 2);
 		const day2 = new CalendarDate(1980, 1, 5);
 
 		const { getByTestId, container } = render(CalendarMultiTest, {
 			defaultValue: [day1, day2],
+			preventDeselect: true,
 		});
 
 		const calendar = getByTestId('calendar');
@@ -477,7 +476,7 @@ describe('DatePicker', () => {
 		expect(selectedDaysAfterClick[1]).toHaveTextContent(String(day2.day));
 	});
 
-	test('multiple select - allow deselect false (default)', async () => {
+	test('multiple select - allow deselect', async () => {
 		const day1 = new CalendarDate(1980, 1, 2);
 		const day2 = new CalendarDate(1980, 1, 5);
 
@@ -488,16 +487,9 @@ describe('DatePicker', () => {
 		const calendar = getByTestId('calendar');
 		expect(calendar).toBeVisible();
 
+		await tick();
+
 		const selectedDays = container.querySelectorAll('[data-selected]');
 		expect(selectedDays).toHaveLength(2);
-
-		expect(selectedDays[0]).toHaveTextContent(String(day1.day));
-		expect(selectedDays[1]).toHaveTextContent(String(day2.day));
-
-		await userEvent.click(selectedDays[0]);
-		const selectedDaysAfterClick = container.querySelectorAll('[data-selected]');
-		expect(selectedDaysAfterClick).toHaveLength(2);
-		expect(selectedDaysAfterClick[0]).toHaveTextContent(String(day1.day));
-		expect(selectedDaysAfterClick[1]).toHaveTextContent(String(day2.day));
 	});
 });

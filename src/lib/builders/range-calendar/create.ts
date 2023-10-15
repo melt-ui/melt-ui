@@ -51,7 +51,7 @@ const defaults = {
 		start: undefined,
 		end: undefined,
 	},
-	allowDeselect: false,
+	preventDeselect: false,
 	numberOfMonths: 1,
 	pagedNavigation: false,
 	weekStartsOn: 0,
@@ -80,7 +80,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	});
 
 	const {
-		allowDeselect,
+		preventDeselect,
 		isDisabled,
 		numberOfMonths,
 		pagedNavigation,
@@ -592,6 +592,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * ```svelte
 	 * <script>
 	 * 	import { createCalendar } from '@melt-ui/svelte';
+	 *  import { prev } from '../../internal/helpers/array'
 	 * 	const { { ... }, helpers: { nextPage } } = createCalendar()
 	 * </script>
 	 *
@@ -701,7 +702,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		const $highlightedRange = get(highlightedRange);
 
 		if ($startValue && $highlightedRange === null) {
-			if (isSameDay($startValue, date) && get(allowDeselect) && !$endValue) {
+			if (isSameDay($startValue, date) && !get(preventDeselect) && !$endValue) {
 				startValue.set(undefined);
 				placeholder.set(date);
 				announcer.announce('Selected date is now empty.', 'polite');
@@ -713,7 +714,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			}
 		}
 
-		if ($startValue && isSameDay($startValue, date) && get(allowDeselect) && !$endValue) {
+		if ($startValue && isSameDay($startValue, date) && !get(preventDeselect) && !$endValue) {
 			startValue.set(undefined);
 			placeholder.set(date);
 			announcer.announce('Selected date is now empty.', 'polite');

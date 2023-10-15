@@ -146,11 +146,11 @@ describe('DatePicker', () => {
 			expect(heading).toHaveTextContent('December 1979');
 		});
 
-		test('allow deselection', async () => {
+		test('prevent deselection', async () => {
 			const user = userEvent.setup();
 			const { getByTestId, container } = render(DatePickerTest, {
 				defaultValue: zonedDateTimeOther,
-				allowDeselect: true,
+				preventDeselect: true,
 			});
 
 			const trigger = getByTestId('trigger');
@@ -164,15 +164,14 @@ describe('DatePicker', () => {
 
 			await user.click(selectedDay);
 
-			const insideValue = getByTestId('inside-value');
-			expect(insideValue).toHaveTextContent('undefined');
+			const selectedDayAfterClick = container.querySelector('[data-selected]') as HTMLElement;
+			expect(selectedDayAfterClick).toHaveTextContent(String(zonedDateTimeOther.day));
 		});
 
 		test('selection with mouse', async () => {
 			const user = userEvent.setup();
 			const { getByTestId } = render(DatePickerTest, {
 				defaultPlaceholder: zonedDateTimeOther,
-				allowDeselect: true,
 			});
 			const trigger = getByTestId('trigger');
 			await user.click(trigger);

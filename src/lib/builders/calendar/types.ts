@@ -17,13 +17,13 @@ export type CreateCalendarProps<
 	S extends CalendarValue<Multiple, Value> = CalendarValue<Multiple, Value>
 > = {
 	/**
-	 * Allow deselecting the selected date, which would set the
+	 * Prevent deselecting the selected date(s), which would set the
 	 * value to `undefined`. You can use this to ensure a date
 	 * is always selected in certain situations.
 	 *
-	 * @default true
+	 * @default false
 	 */
-	allowDeselect?: boolean;
+	preventDeselect?: boolean;
 
 	/**
 	 * The minimum selectable date. When provided, the
