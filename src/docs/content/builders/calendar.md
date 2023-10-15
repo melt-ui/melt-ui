@@ -232,8 +232,34 @@ Now we can finish off the calendar by rendering the weeks and days within each w
 </div>
 ```
 
-And that, along with your own styles and markup additions, is all you need to build a functional, fully accessible
-calendar component!
+And that, along with your own styles and markup additions, is all you need to build a functional,
+fully accessible calendar component!
 
-I know it may seem like it requires a lot of code to get a calendar up and running, but the functionality that the 43 lines of code above provide is quite powerful, which we'll learn more about in the following sections.
+I know it may seem like it requires a lot of code to get a calendar up and running, but the
+functionality that the 43 lines of code above provide is quite powerful, which we'll learn more
+about in the following sections.
 
+### Customizing the View
+
+In this section, we'll learn how to customize the view of the calendar using a few useful props, starting with the placeholder props.
+
+The Calendar has two placeholder props, `placeholder` (controlled), and `defaultPlaceholder` (uncontrolled), which are used to change what is displayed in the calendar when no date is selected.
+
+By default, the placeholder will be set to the current date, but you can override this by passing a `DateValue` object to the `defaultPlaceholder` prop.
+
+```svelte showLineNumbers {10}
+<script lang="ts">
+	import { createCalendar, melt } from '@melt-ui/svelte'
+	import { CalendarDate } from '@internationalized/date'
+
+	const {
+		elements: { calendar, heading, grid, cell, prevButton, nextButton },
+		states: { months, headingValue, daysOfWeek },
+		helpers: { isDateDisabled, isDateUnavailable }
+	} = createCalendar({
+		defaultPlaceholder: new CalendarDate(2021, 2, 14)
+	})
+</script>
+```
+
+Now our calendar starts out in February 2021, rather than the current month.
