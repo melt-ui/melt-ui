@@ -18,6 +18,8 @@
 	export let placeholder: CreateCalendarProps['placeholder'] = undefined;
 	export let weekStartsOn: CreateCalendarProps['weekStartsOn'] = undefined;
 	export let fixedWeeks: CreateCalendarProps['fixedWeeks'] = undefined;
+	export let minValue: CreateCalendarProps['minValue'] = undefined;
+	export let maxValue: CreateCalendarProps['maxValue'] = undefined;
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
@@ -39,6 +41,8 @@
 		placeholder,
 		weekStartsOn,
 		fixedWeeks,
+		minValue,
+		maxValue,
 	});
 </script>
 
@@ -80,7 +84,7 @@
 						</thead>
 						<tbody>
 							{#each weeks as days, idx}
-								<tr data-testid="week-{idx+1}">
+								<tr data-testid="week-{idx + 1}">
 									{#each days as date}
 										<td role="gridcell">
 											<div

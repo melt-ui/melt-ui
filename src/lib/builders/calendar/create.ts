@@ -131,6 +131,20 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 		};
 	});
 
+	const isNextButtonDisabled = derived([months, maxValue], ([$months, $maxValue]) => {
+		if (!$maxValue || !$months.length) return false;
+		const lastMonthInView = $months[$months.length - 1].value;
+		const firstMonthOfNextPage = lastMonthInView.add({ months: 1 }).set({ day: 1 });
+		return isAfter(firstMonthOfNextPage, $maxValue);
+	});
+
+	const isPrevButtonDisabled = derived([months, minValue], ([$months, $minValue]) => {
+		if (!$minValue || !$months.length) return false;
+		const firstMonthInView = $months[0].value;
+		const lastMonthOfPrevPage = firstMonthInView.subtract({ months: 1 }).set({ day: 35 });
+		return isBefore(lastMonthOfPrevPage, $minValue);
+	});
+
 	/**
 	 * A derived helper store that evaluates to true if the currently selected date is invalid.
 	 */
@@ -266,10 +280,14 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * In non-paged mode, it shifts the calendar back by one month.
 	 */
 	const prevButton = builder(name('prevButton'), {
-		returned: () => {
+		stores: [isPrevButtonDisabled],
+		returned: ([$isPrevButtonDisabled]) => {
+			const disabled = $isPrevButtonDisabled;
 			return {
 				role: 'button',
 				'aria-label': 'Previous',
+				'aria-disabled': disabled ? 'true' : undefined,
+				disabled: disabled ? true : undefined,
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -291,10 +309,14 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 	 * moves the calendar forward by one month.
 	 */
 	const nextButton = builder(name('nextButton'), {
-		returned: () => {
+		stores: [isNextButtonDisabled],
+		returned: ([$isNextButtonDisabled]) => {
+			const disabled = $isNextButtonDisabled;
 			return {
 				role: 'button',
 				'aria-label': 'Next',
+				'aria-disabled': disabled ? 'true' : undefined,
+				disabled: disabled ? true : undefined,
 			};
 		},
 		action: (node: HTMLElement) => {
