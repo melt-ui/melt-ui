@@ -356,8 +356,14 @@ describe('DatePicker', () => {
 		await userEvent.click(prevButton);
 		const heading = getByTestId('heading');
 		expect(heading).toHaveTextContent('December 1979');
+		expect(prevButton).not.toBeDisabled();
+		expect(prevButton).not.toHaveAttribute('aria-disabled', 'true');
 		await userEvent.click(prevButton);
 		expect(heading).toHaveTextContent('November 1979');
+
+		expect(prevButton).toBeDisabled();
+		expect(prevButton).toHaveAttribute('aria-disabled', 'true');
+
 		await userEvent.click(prevButton);
 		expect(heading).toHaveTextContent('November 1979');
 	});
@@ -374,8 +380,14 @@ describe('DatePicker', () => {
 		expect(heading).toHaveTextContent('February 1980');
 		await userEvent.click(nextButton);
 		expect(heading).toHaveTextContent('March 1980');
+		expect(nextButton).not.toBeDisabled();
+		expect(nextButton).not.toHaveAttribute('aria-disabled', 'true');
 		await userEvent.click(nextButton);
 		expect(heading).toHaveTextContent('April 1980');
+
+		expect(nextButton).toBeDisabled();
+		expect(nextButton).toHaveAttribute('aria-disabled', 'true');
+
 		await userEvent.click(nextButton);
 		expect(heading).toHaveTextContent('April 1980');
 	});

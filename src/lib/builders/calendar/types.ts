@@ -3,9 +3,14 @@ import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers';
 import type { DateValue } from '@internationalized/date';
 import type { Matcher } from '$lib/index.js';
-import type { IdObj } from '$lib/internal/types';
+import type { IdObj, WhenTrue } from '$lib/internal/types';
 
-export type CalendarProps = {
+export type CalendarValue<Multiple extends boolean> = WhenTrue<Multiple, DateValue[], DateValue>;
+
+export type CalendarProps<
+	Multiple extends boolean = false,
+	Value extends CalendarValue<Multiple> = CalendarValue<Multiple>
+> = {
 	/**
 	 * Allow deselecting the selected date, which would set the
 	 * value to `undefined`. You can use this to ensure a date
@@ -40,7 +45,7 @@ export type CalendarProps = {
 	 *
 	 * @default undefined;
 	 */
-	defaultValue?: DateValue;
+	defaultValue?: Value;
 
 	/**
 	 * A function called when the value of the date picker changes.
@@ -52,7 +57,7 @@ export type CalendarProps = {
 	 *
 	 * @default undefined
 	 */
-	onValueChange?: ChangeFn<DateValue | undefined>;
+	onValueChange?: ChangeFn<Value | undefined>;
 
 	/**
 	 * A writable store than can be used to control the value of the
@@ -62,7 +67,7 @@ export type CalendarProps = {
 	 *
 	 * @default undefined;
 	 */
-	value?: Writable<DateValue | undefined>;
+	value?: Writable<Value | undefined>;
 
 	/**
 	 * The date that is used to display the initial month and
@@ -200,6 +205,13 @@ export type CalendarProps = {
 	 * @default 'en'
 	 */
 	locale?: string;
+
+	/**
+	 * The default locale setting.
+	 *
+	 * @default 'en'
+	 */
+	multiple?: Multiple;
 
 	/**
 	 * Allows you to override any of the element IDs set by the builder.
