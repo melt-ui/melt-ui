@@ -67,7 +67,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 		return (itemId: string) => $expanded.includes(itemId);
 	});
 
-	const rootIds = {
+	const ids = {
 		tree: generateId(),
 	};
 
@@ -75,7 +75,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 		returned: () => {
 			return {
 				role: 'tree',
-				'data-melt-id': rootIds.tree,
+				'data-melt-id': ids.tree,
 			} as const;
 		},
 	});
@@ -124,7 +124,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 						return;
 					}
 
-					const rootEl = getElementByMeltId(rootIds.tree);
+					const rootEl = getElementByMeltId(ids.tree);
 					if (!rootEl || !isHTMLElement(node) || node.getAttribute('role') !== 'treeitem') {
 						return;
 					}
@@ -279,7 +279,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 
 	function getItems(): HTMLElement[] {
 		let items = [] as HTMLElement[];
-		const rootEl = getElementByMeltId(rootIds.tree);
+		const rootEl = getElementByMeltId(ids.tree);
 		if (!rootEl) return items;
 
 		// Select all 'treeitem' li elements within our root element.
@@ -322,6 +322,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 	}
 
 	return {
+		ids,
 		elements: {
 			tree: rootTree,
 			item,

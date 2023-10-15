@@ -233,6 +233,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 	}
 
 	return {
+		ids,
 		elements: {
 			root,
 			item,

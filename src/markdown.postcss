@@ -29,7 +29,7 @@
 	@apply relative;
 
 	& pre {
-		@apply mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border border-neutral-500/50 bg-neutral-950/60 py-4 text-sm font-semibold;
+		@apply mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border-x border-b border-neutral-500/50 bg-neutral-950/60 py-4 text-xs font-semibold lg:text-sm;
 	}
 
 	& code {
@@ -48,6 +48,12 @@
 
 	& [data-chars-id] {
 		@apply pb-0.5 shadow-none;
+	}
+}
+
+[data-comp-preview] [data-rehype-pretty-code-fragment] {
+	& pre {
+		@apply mt-0 rounded-b-lg rounded-t-none;
 	}
 }
 
@@ -81,4 +87,12 @@
 
 [data-callout] > p:last-child {
 	@apply mb-0 !important;
+}
+
+[data-comp-preview] + p {
+	@apply mt-6;
+}
+
+[data-metadata]:not(:has(pre)) {
+	display: none;
 }

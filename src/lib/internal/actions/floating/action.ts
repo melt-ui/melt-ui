@@ -37,7 +37,7 @@ export function useFloating(
 	floating: HTMLElement | undefined,
 	opts: FloatingConfig = {}
 ) {
-	if (!floating || !reference)
+	if (!floating || !reference || opts === null)
 		return {
 			destroy: noop,
 		};

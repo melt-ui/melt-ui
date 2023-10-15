@@ -22,7 +22,7 @@ of the element using `#if` blocks, which will allow you to apply transitions and
 
 At a high level, here's how you could use the `forceVisible` prop with the Collapsible builder.
 
-```svelte {10,19,23} /transition:slide/#hi
+```svelte {9,15,17} /transition:slide/#hi
 <script lang="ts">
 	import { createCollapsible, melt } from '@melt-ui/svelte'
 	import { slide } from 'svelte/transition'

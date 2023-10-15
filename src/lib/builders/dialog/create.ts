@@ -329,6 +329,7 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	return {
+		ids,
 		elements: {
 			content,
 			trigger,
