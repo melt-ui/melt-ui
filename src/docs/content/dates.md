@@ -3,13 +3,24 @@ title: Dates & Times
 description: How to work with dates and times in Melt's date-related builders.
 ---
 
-Each of the date-related builders we offer depend on the
+<script>
+  import { Callout } from '$docs/components';
+  import A from '$docs/components/markdown/a.svelte';
+</script>
+
+<Callout>
+The inner-workings of our date-related builders are heavily inspired by the research and work done
+by the <A href="https://react-spectrum.adobe.com/react-aria/">React Aria</A> team at Adobe, who have created
+robust date components that excel in terms of accessibility, user experience, and flexibility.
+</Callout>
+
+The builders we offer depend on the
 [@internationalized/date](https://react-spectrum.adobe.com/internationalized/date/index.html)
-package. There are countless jokes about how painful it is to work with dates in JavaScript, and
-this package solves a lot of those problems.
+package, which solves a lot of the problems that come with working with dates and times in
+JavaScript.
 
 We highly recommend reading through the documentation for the package to get a solid feel for how it
-works, but we'll cover enough here to get you started.
+works, but we hope to cover enough here to get you started.
 
 ## Date Objects
 

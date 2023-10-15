@@ -5,7 +5,7 @@ description: An enhanced alternative to a native date input.
 
 <script>
 	import { Preview, Callout } from '$docs/components'
-	import { C } from '$docs/components/markdown'
+	import { Code } from '$docs/components/markdown'
 	export let snippets
 	export let previews
 </script>
@@ -117,7 +117,7 @@ It's not recommended, as the formatting doesn't adapt to the locale and type of 
 represented, which is one of the more powerful features this builder provides.
 
 Instead, you can use the `segmentContents` state, which is an array of objects necessary to form the
-date. Each object has a <C>part</C> property, which is the `SegmentPart`, and a <C>value</C>
+date. Each object has a <Code>part</Code> property, which is the `SegmentPart`, and a <Code>value</Code>
 property, which is the locale-aware string representation of the segment.
 
 ```svelte showLineNumbers {11-15}

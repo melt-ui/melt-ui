@@ -1,15 +1,12 @@
 <script lang="ts">
-	import { createCalendar } from '$lib/builders';
+	import { createCalendar, melt } from '$lib';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
-	import { melt } from '$lib';
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
 		states: { value, months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable },
-	} = createCalendar({
-		numberOfMonths: 2,
-	});
+	} = createCalendar();
 </script>
 
 <div class="flex h-full">
@@ -24,9 +21,9 @@
 					<button use:melt={$prevButton}>
 						<ChevronLeft />
 					</button>
-					<h2 class="font-semibold text-magnum-800" use:melt={$heading}>
+					<div class="font-semibold text-magnum-800" use:melt={$heading}>
 						{$headingValue}
-					</h2>
+					</div>
 					<button use:melt={$nextButton}>
 						<ChevronRight />
 					</button>

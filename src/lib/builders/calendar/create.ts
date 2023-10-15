@@ -533,9 +533,11 @@ export function createCalendar<T extends DateValue = DateValue>(props?: CreateCa
 			'white-space': 'nowrap',
 			width: '1px',
 		});
-		const h2 = document.createElement('h2');
+		const h2 = document.createElement('div');
 		h2.textContent = label;
 		h2.id = ids.accessibleHeading;
+		h2.role = 'heading';
+		h2.ariaLevel = '2';
 		node.insertBefore(div, node.firstChild);
 		div.appendChild(h2);
 	}
