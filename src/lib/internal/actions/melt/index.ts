@@ -32,8 +32,8 @@ export function melt<
 	Attributes extends GetActionAttributes<Builder>,
 	A extends Record<string, any>,
 	Param = never
->(node: Element, params: Builder): ActionReturn<Builder, Attributes> {
+>(_node: Element, _params: Builder): ActionReturn<Builder, Attributes> {
 	throw new Error(
-		"[MELTUI ERROR]: The `use:melt` action cannot be used without MeltUI's Preprocessor. See: https://www.melt-ui.com/docs/preprocessor"
+		"[MELT_UI ERROR]: The `use:melt` action cannot be used without Melt UI's Preprocessor. See: https://www.melt-ui.com/docs/preprocessor"
 	);
 }
