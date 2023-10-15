@@ -1,15 +1,28 @@
 <script lang="ts">
 	import { createCalendar, melt } from '$lib';
-	import { getLocalTimeZone, today } from '@internationalized/date';
+	import { CalendarDate } from '@internationalized/date';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
+
+	const defaultValue = [
+		new CalendarDate(2023, 10, 1),
+		new CalendarDate(2023, 10, 12),
+	];
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
 		states: { months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable },
 	} = createCalendar({
-		preventDeselect: true,
-		defaultValue: today(getLocalTimeZone()),
+		defaultValue,
+		multiple: true,
+		onValueChange: ({ next }) => {
+			if (next && next.length > 3) {
+				next.shift();
+				return next;
+			} else {
+				return next;
+			}
+		},
 	});
 </script>
 
@@ -71,7 +84,7 @@
 	}
 
 	header + div {
-		@apply flex items-start gap-6;
+		@apply flex items-center gap-6;
 	}
 
 	[data-melt-calendar-prevbutton] {

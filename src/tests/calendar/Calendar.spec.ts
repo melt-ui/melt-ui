@@ -544,4 +544,19 @@ describe('Calendar', () => {
 		const selectedDayAfterClick = container.querySelector('[data-selected]');
 		expect(selectedDayAfterClick).toHaveTextContent(String(overrideDay.day));
 	});
+
+	test('unavailable dates behavior', async () => {
+		const { getByTestId } = render(CalendarTest, {
+			defaultPlaceholder: calendarDate,
+			isUnavailable: (date) => {
+				return date.day === 3;
+			},
+		});
+
+		const thirdDayInMonth = getByTestId('month-0-date-3');
+		expect(thirdDayInMonth).toHaveAttribute('data-unavailable');
+		expect(thirdDayInMonth).toHaveAttribute('aria-disabled', 'true');
+		await userEvent.click(thirdDayInMonth);
+		expect(thirdDayInMonth).not.toHaveAttribute('data-selected');
+	});
 });

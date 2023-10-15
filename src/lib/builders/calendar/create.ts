@@ -788,6 +788,10 @@ export function createCalendar<
 	}
 
 	function handleCellClick(date: DateValue) {
+		const $isDisabled = get(isDisabled);
+		const $isUnavailable = get(isUnavailable);
+		if ($isDisabled?.(date) || $isUnavailable?.(date)) return;
+
 		value.update((prev) => {
 			const $multiple = get(multiple);
 			if ($multiple) {

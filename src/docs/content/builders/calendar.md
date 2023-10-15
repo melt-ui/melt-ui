@@ -238,8 +238,8 @@ about in the following sections.
 
 ## Placeholder
 
-In this section, we'll learn about the two props which control what dates are displayed in the
-calendar when it first renders, starting with the placeholder props.
+In this section, we'll learn about the placeholder props, which are used to change what the calendar
+displays when no date is selected.
 
 ### Set the Starting Month
 
@@ -270,10 +270,10 @@ By default, the placeholder will be set to the current date, but you can overrid
 
 Now our calendar starts out in February 2021, rather than the current month.
 
-
 ## Values
 
-The Calendar has two value props, `value` (controlled), and `defaultValue` (uncontrolled), which are used to determine what date is selected in the calendar.
+The Calendar has two value props, `value` (controlled), and `defaultValue` (uncontrolled), which are
+used to determine what date is selected in the calendar.
 
 ### Setting a Default Value
 
@@ -299,14 +299,20 @@ To have a date selected by default, we can use the `value` (controlled), or `def
 	<svelte:component this={previews.changeValue} />
 </Preview>
 
-
 ### Reacting to Value Changes
 
-To react to changes in the selected date, we have a few options available to us. We can pass in our own value store to the `value` prop, use the `onValueChange` [change function](/docs/controlled#change-functions), or use the `value` store returned as part of the `createCalendar` return object.
+To react to changes in the selected date, we have a few options available to us. We can pass in our
+own value store to the `value` prop, use the `onValueChange`
+[change function](/docs/controlled#change-functions), or use the `value` store returned as part of
+the `createCalendar` return object.
 
-Which option you choose is up to you, but for the sake of this example, we'll be using the `value` store returned from `createCalendar`. This is a writable store that will be updated whenever the selected date changes. It's also the store that the `value` prop uses under the hood, so you can use it to control the selected date programmatically.
+Which option you choose is up to you, but for the sake of this example, we'll be using the `value`
+store returned from `createCalendar`. This is a writable store that will be updated whenever the
+selected date changes. It's also the store that the `value` prop uses under the hood, so you can use
+it to control the selected date programmatically.
 
-Let's say that when a user selects Halloween (October 31st), we want to display an alert that says "Happy Halloween!".
+Let's say that when a user selects Halloween (October 31st), we want to display an alert that says
+"Happy Halloween!".
 
 ```svelte showLineNumbers {3,5,9,15-17}
 <script lang="ts">
@@ -333,14 +339,13 @@ Let's say that when a user selects Halloween (October 31st), we want to display 
 	<svelte:component this={previews.reactToVal} />
 </Preview>
 
-
 ## Appearance & Behavior
 
 ### Fixed Weeks
 
-If you press the previous button on the example below, you'll notice something that may be unappealing.
-The calendar navigates to the previous month, and since that month has an additional week, the
-calendar jumps in height.
+If you press the previous button on the example below, you'll notice something that may be
+unappealing. The calendar navigates to the previous month, and since that month has an additional
+week, the calendar jumps in height.
 
 <Preview code={snippets.changeValue} variant="dark" size="auto">
 	<svelte:component this={previews.changeValue} />
@@ -372,7 +377,8 @@ regardless of the month.
 
 ### Multiple Months
 
-By default, the calendar will display one month, but it supports displaying as many months as you'd like, using the `numberOfMonths` prop.
+By default, the calendar will display one month, but it supports displaying as many months as you'd
+like, using the `numberOfMonths` prop.
 
 ```svelte showLineNumbers {9}
 <script lang="ts">
@@ -383,7 +389,7 @@ By default, the calendar will display one month, but it supports displaying as m
 		states: { months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable }
 	} = createCalendar({
-		numberOfMonths: 2,
+		numberOfMonths: 2
 	})
 </script>
 ```
@@ -394,7 +400,10 @@ By default, the calendar will display one month, but it supports displaying as m
 
 ### Paged Navigation
 
-By default, when the calendar has more than one month, the previous and next buttons will shift the calendar forward or backward by one month. However, you can change this behavior by setting the `pagedNavigation` prop to `true`, which will shift the calendar forward or backward by the number of months being displayed.
+By default, when the calendar has more than one month, the previous and next buttons will shift the
+calendar forward or backward by one month. However, you can change this behavior by setting the
+`pagedNavigation` prop to `true`, which will shift the calendar forward or backward by the number of
+months being displayed.
 
 ```svelte showLineNumbers {10}
 <script lang="ts">
@@ -406,7 +415,7 @@ By default, when the calendar has more than one month, the previous and next but
 		helpers: { isDateDisabled, isDateUnavailable }
 	} = createCalendar({
 		numberOfMonths: 2,
-		pagedNavigation: true,
+		pagedNavigation: true
 	})
 </script>
 ```
@@ -415,10 +424,12 @@ By default, when the calendar has more than one month, the previous and next but
 	<svelte:component this={previews.pagedNav} />
 </Preview>
 
-
 ### Localization
 
-The calendar will automatically format the content of the calendar according to the `locale` prop, which defaults to 'en-US', but can be changed to any locale supported by the [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat) constructor.
+The calendar will automatically format the content of the calendar according to the `locale` prop,
+which defaults to 'en-US', but can be changed to any locale supported by the
+[Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat)
+constructor.
 
 ```svelte showLineNumbers {9}
 <script lang="ts">
@@ -429,7 +440,7 @@ The calendar will automatically format the content of the calendar according to 
 		states: { months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable }
 	} = createCalendar({
-		locale: 'de',
+		locale: 'de'
 	})
 </script>
 ```
@@ -438,10 +449,12 @@ The calendar will automatically format the content of the calendar according to 
 	<svelte:component this={previews.locale} />
 </Preview>
 
-
 ### Deselection
 
-By default, users can deselect a selected date without selecting another, by selecting the date again. This results in the `value` potentially being `undefined`. If you'd like to disable this  behavior, you can set the `preventDeselect` prop to `true`, which will prevent the user from being able to deselect dates.
+By default, users can deselect a selected date without selecting another, by selecting the date
+again. This results in the `value` potentially being `undefined`. If you'd like to disable this
+behavior, you can set the `preventDeselect` prop to `true`, which will prevent the user from being
+able to deselect dates.
 
 ```svelte showLineNumbers {9}
 <script lang="ts">
@@ -452,7 +465,7 @@ By default, users can deselect a selected date without selecting another, by sel
 		states: { months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable }
 	} = createCalendar({
-		preventDeselect: true,
+		preventDeselect: true
 	})
 </script>
 ```
@@ -461,10 +474,10 @@ By default, users can deselect a selected date without selecting another, by sel
 	<svelte:component this={previews.preventDeselect} />
 </Preview>
 
-
 ### Multiple Selection
 
-Sometimes, you may want to allow the user to select multiple dates in the calendar. To enable this behavior, you can set the `multiple` prop to `true`.
+Sometimes, you may want to allow the user to select multiple dates in the calendar. To enable this
+behavior, you can set the `multiple` prop to `true`.
 
 ```svelte showLineNumbers {9}
 <script lang="ts">
@@ -475,7 +488,7 @@ Sometimes, you may want to allow the user to select multiple dates in the calend
 		states: { months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable }
 	} = createCalendar({
-		multiple: true,
+		multiple: true
 	})
 </script>
 ```
@@ -486,14 +499,18 @@ Sometimes, you may want to allow the user to select multiple dates in the calend
 
 ### Limiting Selected Dates
 
-When allowing users to select multiple dates, you may want to limit the number of dates they can select. Since this could be handled in a variety of ways, the Calendar doesn't handle this for you, but does provide the means to do so.
+When allowing users to select multiple dates, you may want to limit the number of dates they can
+select. Since this could be handled in a variety of ways, the Calendar doesn't handle this for you,
+but does provide the means to do so.
 
-We can use the `onValueChange` [change function](/docs/controlled#change-functions) to limit the number of selected dates to 3.
+We can use the `onValueChange` [change function](/docs/controlled#change-functions) to limit the
+number of selected dates to 3.
 
-In this first example, we're just preventing the user from being able to select another date if they've already selected 3. They'll need to deselect one of the dates before they can select another.
+In this first example, we're just preventing the user from being able to select another date if
+they've already selected 3. They'll need to deselect one of the dates before they can select
+another.
 
-```svelte showLineNumbers {3,5,9,15-17}
-
+```svelte showLineNumbers {11-17}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
@@ -517,4 +534,74 @@ In this first example, we're just preventing the user from being able to select 
 
 <Preview code={snippets.limitSelectedA} variant="dark" size="auto">
 	<svelte:component this={previews.limitSelectedA} />
+</Preview>
+
+An alternative, though not sure about the user experience implications, is to automatically deselect
+the oldest date when the user selects a new one after they've already selected 3.
+
+```svelte showLineNumbers {11-17}
+<script lang="ts">
+	import { createCalendar, melt } from '@melt-ui/svelte'
+
+	const {
+		elements: { calendar, heading, grid, cell, prevButton, nextButton },
+		states: { months, headingValue, daysOfWeek },
+		helpers: { isDateDisabled, isDateUnavailable }
+	} = createCalendar({
+		multiple: true,
+		onValueChange: ({ next }) => {
+			if (next && next.length > 3) {
+				next.shift()
+				return next
+			} else {
+				return next
+			}
+		}
+	})
+</script>
+```
+
+<Preview code={snippets.limitSelectedB} variant="dark" size="auto">
+	<svelte:component this={previews.limitSelectedB} />
+</Preview>
+
+Using [change functions](/docs/controlled#change-functions) is a powerful way to customize the way
+your calendar behaves!
+
+## Validation
+
+Although possible to implement your own validation logic using change functions, the Calendar
+provides a few props that make it a bit easier.
+
+### Unavailable Dates
+
+An unavailable date is a date that is not selectable, but is still visible and focusable in the
+calendar.
+
+You can pass a `Matcher` function to the `isUnavailable` prop, which will be used to determine if a
+date is unavailable. The `Matcher` function is called with a `DateValue` object, and should return a
+boolean indicating whether the date is unavailable.
+
+```svelte showLineNumbers {3,11}
+<script lang="ts">
+	import { createCalendar, melt } from '@melt-ui/svelte'
+	import { isWeekend } from '@internationalized/date'
+
+	const {
+		elements: { calendar, heading, grid, cell, prevButton, nextButton },
+		states: { months, headingValue, daysOfWeek, value },
+		helpers: { isDateDisabled, isDateUnavailable }
+	} = createCalendar({
+		isUnavailable: (date) => {
+			return isWeekend(date, 'en')
+		}
+	})
+</script>
+```
+
+The unavailable dates will have the `data-unavailable` attribute set, which you can use to style
+differently than the other dates.
+
+<Preview code={snippets.unavailable} variant="dark" size="auto">
+	<svelte:component this={previews.unavailable} />
 </Preview>

@@ -76,7 +76,7 @@
 	}
 
 	header + div {
-		@apply flex items-center gap-8;
+		@apply flex items-start gap-6;
 	}
 
 	[data-melt-calendar-prevbutton] {
@@ -104,10 +104,26 @@
 	}
 
 	[data-melt-calendar-cell] {
-		@apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded-lg p-4 hover:bg-magnum-500/20  focus:ring focus:ring-magnum-400 data-[outside-visible-months]:pointer-events-none data-[outside-visible-months]:cursor-default data-[range-highlighted]:bg-magnum-500/30 data-[selected]:bg-magnum-500/30  data-[disabled]:opacity-40 data-[outside-visible-months]:opacity-40 data-[outside-visible-months]:hover:bg-transparent;
+		@apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded-lg p-4 hover:bg-magnum-500/20  focus:ring focus:ring-magnum-400;
 	}
 
-	[data-melt-calendar-cell][data-outside-month='true'][data-outside-visible-months='true'] {
-		@apply opacity-0;
+	[data-melt-calendar-cell][data-disabled] {
+		@apply opacity-40;
+	}
+
+	[data-melt-calendar-cell][data-unavailable] {
+		@apply pointer-events-none text-red-400 line-through;
+	}
+
+	[data-melt-calendar-cell][data-selected] {
+		@apply bg-magnum-500/30;
+	}
+
+	[data-melt-calendar-cell][data-outside-visible-months] {
+		@apply pointer-events-none cursor-default opacity-40 hover:bg-transparent;
+	}
+
+	[data-melt-calendar-cell][data-outside-month] {
+		@apply pointer-events-none cursor-default opacity-0 hover:bg-transparent;
 	}
 </style>

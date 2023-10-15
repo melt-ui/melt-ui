@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createCalendar, melt } from '$lib';
-	import { getLocalTimeZone, today } from '@internationalized/date';
+	import { isWeekend } from '@internationalized/date';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
 
 	const {
@@ -8,8 +8,9 @@
 		states: { months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable },
 	} = createCalendar({
-		preventDeselect: true,
-		defaultValue: today(getLocalTimeZone()),
+		isUnavailable: (date) => {
+			return isWeekend(date, 'en');
+		},
 	});
 </script>
 
@@ -71,7 +72,7 @@
 	}
 
 	header + div {
-		@apply flex items-start gap-6;
+		@apply flex items-center gap-6;
 	}
 
 	[data-melt-calendar-prevbutton] {
