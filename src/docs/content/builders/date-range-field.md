@@ -395,7 +395,7 @@ Situations like this make using the `defaultValue` and `defaultPlaceholder` prop
 
 ### Validating Dates
 
-This is where things start to get a lot more fun! The Date Field builder provides a few ways to
+This is where things start to get a lot more fun! This builder provides a few ways to
 validate dates, which we'll cover in this section, starting with the `isDateUnavailable` prop.
 
 The `isDateUnavailable` prop is a `Matcher` function, which takes a `DateValue` object as an
@@ -524,17 +524,19 @@ you'll see the behavior in action.
 The Date Field builder also accepts `minValue` and `maxValue` props to set the minimum and maximum
 dates a user can select.
 
-```svelte showLineNumbers {11-12}
+```svelte showLineNumbers {13-14}
 <script lang="ts">
-	import { createDateField, melt } from '@melt-ui/svelte'
+	import { createDateRangeField, melt } from '@melt-ui/svelte'
 	import { CalendarDate } from '@internationalized/date'
 
 	const {
-		elements: { field, segment, label, hiddenInput },
-		states: { value, segmentContents }
-	} = createDateField({
-		name: 'appointmentDate',
-		isDateUnavailable,
+		elements: { field, startSegment, endSegment, label, validation },
+		states: { segmentContents }
+	} = createDateRangeField({
+		defaultValue: {
+			start: new CalendarDate(2023, 10, 11),
+			end: new CalendarDate(2023, 10, 13)
+		},
 		minValue: new CalendarDate(2023, 10, 11),
 		maxValue: new CalendarDate(2024, 10, 11)
 	})
@@ -544,14 +546,15 @@ dates a user can select.
 In this example, we're limiting the selection dates to between October 11th, 2023 and October
 11th, 2024.
 
-<!--
-<Preview code={snippets.tut8} variant="dark" size="sm">
-	<svelte:component this={previews.tut8} />
-</Preview> -->
+<Preview code={snippets.minMax} variant="dark" size="sm">
+	<svelte:component this={previews.minMax} />
+</Preview>
+
+If you increment the year of the end date to 2024, you'll see the validation message appear, as the range exceeds the maximum date.
 
 ### Locale-aware Formatting
 
-One of the coolest features of the Date Field builder is the ability to automatically format the
+One of the coolest features of this builder is the ability to automatically format the
 segments and placeholder based on the locale.
 
 Of course it's up to you to decide how you get your user's locale, but once you have it, it's as
@@ -559,13 +562,12 @@ simple as passing it as the `locale` prop.
 
 ```svelte showLineNumbers {9}
 <script lang="ts">
-	import { createDateField, melt } from '@melt-ui/svelte'
+	import { createDateRangeField, melt } from '@melt-ui/svelte'
 
 	const {
-		elements: { field, segment, label, hiddenInput },
-		states: { value, segmentContents }
-	} = createDateField({
-		name: 'appointmentDate',
+		elements: { field, startSegment, endSegment, label, validation },
+		states: { segmentContents }
+	} = createDateRangeField({
 		locale: 'de'
 	})
 </script>
@@ -573,9 +575,9 @@ simple as passing it as the `locale` prop.
 
 Here's an example showcasing a few different locales:
 
-<!-- <Preview code={snippets.tut9} variant="dark" size="sm">
-	<svelte:component this={previews.tut9} />
-</Preview> -->
+<Preview code={snippets.locales} variant="dark" size="default">
+	<svelte:component this={previews.locales} />
+</Preview>
 
 Notice that they all have the same `defaultPlaceholder`, yet the segments are formatted differently
 depending on the locale, and all it took was changing the `locale` prop. Pretty cool, right?

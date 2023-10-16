@@ -43,7 +43,7 @@
 	}
 
 	[data-melt-datefield-field] {
-		@apply mt-1.5 flex w-full min-w-[200px] items-center gap-2 rounded-lg border border-magnum-400/60 bg-neutral-800/80 p-1.5 text-magnum-400;
+		@apply mt-1.5 flex w-full min-w-[300px] items-center justify-center gap-2 rounded-lg border border-magnum-400/60 bg-neutral-800/80 p-1.5 text-magnum-400;
 
 		& > div {
 			@apply flex items-center;

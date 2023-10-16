@@ -1,30 +1,40 @@
 <script lang="ts">
-	import { createDateRangeField, melt } from '$lib';
+	import {
+		createDateRangeField,
+		melt,
+		type CreateDateRangeFieldProps,
+	} from '$lib';
 	import { CalendarDateTime } from '@internationalized/date';
+
+	export let locale: CreateDateRangeFieldProps['locale'] = 'en-US';
+
 	const {
 		elements: { field, startSegment, endSegment, label },
 		states: { segmentContents },
 	} = createDateRangeField({
-		defaultPlaceholder: new CalendarDateTime(2023, 10, 11, 12, 30),
+		defaultPlaceholder: new CalendarDateTime(2023, 10, 11),
+		locale,
 	});
 </script>
 
-<span use:melt={$label}>Trip Dates</span>
-<div use:melt={$field}>
-	<div>
-		{#each $segmentContents.start as seg, i (i)}
-			<div use:melt={$startSegment(seg.part)}>
-				{seg.value}
-			</div>
-		{/each}
-	</div>
-	<div aria-hidden="true">-</div>
-	<div>
-		{#each $segmentContents.end as seg, i (i)}
-			<div use:melt={$endSegment(seg.part)}>
-				{seg.value}
-			</div>
-		{/each}
+<div>
+	<span use:melt={$label}>Availability</span>
+	<div use:melt={$field}>
+		<div>
+			{#each $segmentContents.start as seg, i (i)}
+				<div use:melt={$startSegment(seg.part)}>
+					{seg.value}
+				</div>
+			{/each}
+		</div>
+		<div aria-hidden="true">-</div>
+		<div>
+			{#each $segmentContents.end as seg, i (i)}
+				<div use:melt={$endSegment(seg.part)}>
+					{seg.value}
+				</div>
+			{/each}
+		</div>
 	</div>
 </div>
 
@@ -38,7 +48,7 @@
 	}
 
 	[data-melt-datefield-field] {
-		@apply mt-1.5 flex w-full min-w-[300px] items-center justify-center gap-2 rounded-lg border border-magnum-400/60 bg-neutral-800/80 p-1.5 text-magnum-400;
+		@apply mt-1.5 flex w-full min-w-[200px] items-center gap-2 rounded-lg border border-magnum-400/60 bg-neutral-800/80 p-1.5 text-magnum-400;
 
 		& > div {
 			@apply flex items-center;
