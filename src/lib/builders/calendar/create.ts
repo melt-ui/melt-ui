@@ -111,7 +111,7 @@ export function createCalendar<
 	 */
 	const months = writable<Month<DateValue>[]>(
 		createMonths({
-			dateObj: withDefaults.defaultPlaceholder ?? defaultDate,
+			dateObj: get(placeholder),
 			weekStartsOn: withDefaults.weekStartsOn,
 			locale: withDefaults.locale,
 			fixedWeeks: withDefaults.fixedWeeks,

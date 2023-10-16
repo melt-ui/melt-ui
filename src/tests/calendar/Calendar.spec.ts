@@ -327,7 +327,7 @@ describe('Calendar', () => {
 	});
 
 	test('controlled placeholder should change view', async () => {
-		const placeholderStore = writable<DateValue>(undefined);
+		const placeholderStore = writable<DateValue>(calendarDate);
 		const { getByTestId } = render(CalendarTest, {
 			defaultValue: calendarDate,
 			placeholder: placeholderStore,
