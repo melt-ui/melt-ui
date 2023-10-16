@@ -3,6 +3,7 @@
 	import { Discord, GitHub, MobileNav } from '$docs/components/index.js';
 	import { navConfig, siteConfig } from '$docs/config.js';
 	import { cn } from '$docs/utils';
+	import Search from '$routes/(landing-ui)/search.svelte';
 	import Logo from './logo.svelte';
 
 	$: isRoot = $page.url.pathname === '/';
@@ -55,6 +56,7 @@
 				<GitHub class="h-5 w-5" />
 				<span class="sr-only">View the Melt UI GitHub Repository</span>
 			</a>
+			<Search />
 			<MobileNav />
 		</div>
 	</nav>
