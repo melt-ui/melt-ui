@@ -5,8 +5,7 @@ import {
 	builder,
 	createElHelpers,
 	effect,
-	executeCallbacks,
-	isHTMLInputElement,
+	executeCallbacks, isContentEditable, isHTMLElement, isHTMLInputElement,
 	kbd,
 	noop,
 	omit,
@@ -52,16 +51,21 @@ export function createCombobox<
 				value: $inputValue,
 			} as const;
 		},
-		action: (node: HTMLInputElement): MeltActionReturn<ComboboxEvents['input']> => {
+		action: (node: HTMLElement): MeltActionReturn<ComboboxEvents['input']> => {
 			const unsubscribe = executeCallbacks(
 				addMeltEventListener(node, 'input', (e) => {
-					if (!isHTMLInputElement(e.target)) return;
+					if(!isHTMLInputElement(e.target) && !(isContentEditable(e.target)) ) return
 					touchedInput.set(true);
 				}),
 				// This shouldn't be cancelled ever, so we don't use addMeltEventListener.
 				addEventListener(node, 'input', (e) => {
-					if (!isHTMLInputElement(e.target)) return;
-					inputValue.set(e.target.value);
+					if(isHTMLInputElement(e.target)) {
+						inputValue.set(e.target.value);
+					}
+					if(isContentEditable(e.target)) {
+						inputValue.set(e.target.innerText);
+					}
+					return
 				})
 			);
 
