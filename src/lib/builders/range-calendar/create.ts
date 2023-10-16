@@ -98,18 +98,18 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	} satisfies RangeCalendarIds;
 
 	const defaultDate = getDefaultDate({
-		defaultValue: withDefaults.defaultValue.start,
+		defaultValue: withDefaults.defaultValue?.start,
 		defaultPlaceholder: withDefaults.defaultPlaceholder,
 	});
 	const formatter = createFormatter(get(locale));
 
-	const defaultStart = withDefaults.value ? get(withDefaults.value).start : undefined;
+	const defaultStart = withDefaults.value ? get(withDefaults.value)?.start : undefined;
 	const startValue = writable<DateValue | undefined>(
-		defaultStart ?? withDefaults.defaultValue.start
+		defaultStart ?? withDefaults.defaultValue?.start
 	);
 
-	const defaultEnd = withDefaults.value ? get(withDefaults.value).end : undefined;
-	const endValue = writable<DateValue | undefined>(defaultEnd ?? withDefaults.defaultValue.end);
+	const defaultEnd = withDefaults.value ? get(withDefaults.value)?.end : undefined;
+	const endValue = writable<DateValue | undefined>(defaultEnd ?? withDefaults.defaultValue?.end);
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
@@ -714,6 +714,10 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	}
 
 	function handleCellClick(e: Event, date: DateValue) {
+		const $isDateDisabled = get(isDateDisabled);
+		const $isDateUnavailable = get(isDateUnavailable);
+		if ($isDateDisabled(date) || $isDateUnavailable(date)) return;
+
 		const $startValue = get(startValue);
 		const $endValue = get(endValue);
 		const $highlightedRange = get(highlightedRange);
@@ -941,7 +945,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		const $startValue = get(startValue);
 		const $endValue = get(endValue);
 
-		if ($value.start && $value.end) {
+		if ($value?.start && $value?.end) {
 			if ($value.start !== $startValue) {
 				startValue.set($value.start);
 			}
