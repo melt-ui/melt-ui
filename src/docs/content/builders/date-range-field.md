@@ -395,8 +395,8 @@ Situations like this make using the `defaultValue` and `defaultPlaceholder` prop
 
 ### Validating Dates
 
-This is where things start to get a lot more fun! This builder provides a few ways to
-validate dates, which we'll cover in this section, starting with the `isDateUnavailable` prop.
+This is where things start to get a lot more fun! This builder provides a few ways to validate
+dates, which we'll cover in this section, starting with the `isDateUnavailable` prop.
 
 The `isDateUnavailable` prop is a `Matcher` function, which takes a `DateValue` object as an
 argument, and returns a boolean indicating whether or not that date is unavailable.
@@ -550,12 +550,13 @@ In this example, we're limiting the selection dates to between October 11th, 202
 	<svelte:component this={previews.minMax} />
 </Preview>
 
-If you increment the year of the end date to 2024, you'll see the validation message appear, as the range exceeds the maximum date.
+If you increment the year of the end date to 2024, you'll see the validation message appear, as the
+range exceeds the maximum date.
 
 ### Locale-aware Formatting
 
-One of the coolest features of this builder is the ability to automatically format the
-segments and placeholder based on the locale.
+One of the coolest features of this builder is the ability to automatically format the segments and
+placeholder based on the locale.
 
 Of course it's up to you to decide how you get your user's locale, but once you have it, it's as
 simple as passing it as the `locale` prop.

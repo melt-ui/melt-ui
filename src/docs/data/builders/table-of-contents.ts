@@ -60,7 +60,7 @@ const builder: APISchema = {
 			name: 'item',
 			description: 'The builder store used to create a table of contents item.',
 			link: '#item',
-		}
+		},
 	],
 	states: [
 		{
@@ -72,7 +72,7 @@ const builder: APISchema = {
 			name: 'headingsTree',
 			type: 'Writable<TableOfContentsItem[]>',
 			description: 'A writable store that lists all the headings within the specified container.',
-		}
+		},
 	],
 };
 
@@ -82,14 +82,14 @@ const item = elementSchema('item', {
 	dataAttributes: [
 		{
 			name: 'data-melt-table-of-contents-item',
-			value: ATTRS.MELT('item')
+			value: ATTRS.MELT('item'),
 		},
 		{
 			name: 'data-id',
 			value: 'The id of the heading element the item links to.',
 		},
 	],
-	events: tableOfContentsEvents['item']
+	events: tableOfContentsEvents['item'],
 });
 
 const schemas = [builder, item];

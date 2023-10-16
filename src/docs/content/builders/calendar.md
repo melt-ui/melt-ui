@@ -339,13 +339,17 @@ Let's say that when a user selects Halloween (October 31st), we want to display 
 	<svelte:component this={previews.reactToVal} />
 </Preview>
 
-
 ### Using the Value
 
-The `value` store returned from the `createCalendar` builder is a `DateValue` object with whatever type of date object that was passed via the placeholder or value props, which default to a `CalendarDate` object.
+The `value` store returned from the `createCalendar` builder is a `DateValue` object with whatever
+type of date object that was passed via the placeholder or value props, which default to a
+`CalendarDate` object.
 
-You can use this value to display the selected date in your own markup, or use its value within a form. Although for forms we highly recommend using our [Date Picker](/docs/builders/date-picker), as it is a combination of the Calendar, [Date Field](/docs/builders/date-field), and [Popover](/docs/builders/popover) which makes it more similar to a native date picker, but with a lot more power.
-
+You can use this value to display the selected date in your own markup, or use its value within a
+form. Although for forms we highly recommend using our [Date Picker](/docs/builders/date-picker), as
+it is a combination of the Calendar, [Date Field](/docs/builders/date-field), and
+[Popover](/docs/builders/popover) which makes it more similar to a native date picker, but with a
+lot more power.
 
 ```svelte showLineNumbers {11,13}
 <script lang="ts">
@@ -362,7 +366,6 @@ You can use this value to display the selected date in your own markup, or use i
 <!-- or -->
 <input name="myDate" value={$value.toString()} />
 ```
-
 
 ## Appearance & Behavior
 
@@ -603,9 +606,9 @@ provides a few props that make it a bit easier.
 An unavailable date is a date that is not selectable, but is still visible and focusable in the
 calendar.
 
-You can pass a `Matcher` function to the `isDateUnavailable` prop, which will be used to determine if a
-date is unavailable. The `Matcher` function is called with a `DateValue` object, and should return a
-boolean indicating whether the date is unavailable.
+You can pass a `Matcher` function to the `isDateUnavailable` prop, which will be used to determine
+if a date is unavailable. The `Matcher` function is called with a `DateValue` object, and should
+return a boolean indicating whether the date is unavailable.
 
 ```svelte showLineNumbers {3,10-12}
 <script lang="ts">
@@ -666,7 +669,8 @@ In this example, we're disabling the first 10 days of each month.
 ### Minimum & Maximum Values
 
 While the `isDateDisabled` prop is useful for more complex logic, the Calendar also provides the
-`minValue` and `maxValue` props, which are used to set the min and max selectable dates, which is nice if you're just trying to limit the range of dates that can be selected.
+`minValue` and `maxValue` props, which are used to set the min and max selectable dates, which is
+nice if you're just trying to limit the range of dates that can be selected.
 
 If a date is before the `minValue`, or after the `maxValue`, it will be disabled.
 
