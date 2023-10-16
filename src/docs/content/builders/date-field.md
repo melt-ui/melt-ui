@@ -364,9 +364,9 @@ birthday).
 ### Validating Dates
 
 This is where things start to get a lot more fun! The Date Field builder provides a few ways to
-validate dates, which we'll cover in this section, starting with the `isUnavailable` prop.
+validate dates, which we'll cover in this section, starting with the `isDateUnavailable` prop.
 
-The `isUnavailable` prop is a `Matcher` function, which takes a `DateValue` object as an argument,
+The `isDateUnavailable` prop is a `Matcher` function, which takes a `DateValue` object as an argument,
 and returns a boolean indicating whether or not that date is unavailable.
 
 ```ts
@@ -393,7 +393,7 @@ function to accomplish just that.
 		states: { value, segmentContents, isInvalid }
 	} = createDateField({
 		name: 'appointmentDate',
-		isUnavailable: isFirstOrFifteenth
+		isDateUnavailable: isFirstOrFifteenth
 	})
 </script>
 ```
@@ -412,7 +412,7 @@ If you have a few different matchers you want to use, you can simply combine the
 		return date.dayOfWeek === 0 || date.dayOfWeek === 6
 	}
 
-	const isUnavailable: Matcher = (date) => {
+	const isDateUnavailable: Matcher = (date) => {
 		return isFirstOrFifteenth(date) || isWeekend(date)
 	}
 
@@ -421,7 +421,7 @@ If you have a few different matchers you want to use, you can simply combine the
 		states: { value, segmentContents, isInvalid }
 	} = createDateField({
 		name: 'appointmentDate',
-		isUnavailable
+		isDateUnavailable
 	})
 </script>
 ```
@@ -443,7 +443,7 @@ matchers which you could use throughout your app.
 
 	const matchers = [isFirstOrFifteenth, isWeekend]
 
-	const isUnavailable: (...matchers: Matcher[]) => Matcher = (...matchers) => {
+	const isDateUnavailable: (...matchers: Matcher[]) => Matcher = (...matchers) => {
 		return (date) => {
 			return matchers.some((matcher) => matcher(date))
 		}
@@ -454,7 +454,7 @@ matchers which you could use throughout your app.
 		states: { value, segmentContents }
 	} = createDateField({
 		name: 'appointmentDate',
-		isUnavailable: isUnavailable(matchers)
+		isDateUnavailable: isDateUnavailable(matchers)
 	})
 </script>
 ```
@@ -510,7 +510,7 @@ dates a user can select.
 		states: { value, segmentContents }
 	} = createDateField({
 		name: 'appointmentDate',
-		isUnavailable,
+		isDateUnavailable,
 		minValue: new CalendarDate(2023, 10, 11),
 		maxValue: new CalendarDate(2024, 10, 11)
 	})

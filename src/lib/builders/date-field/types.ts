@@ -79,7 +79,7 @@ export type DateFieldProps = {
 	 *
 	 * @default undefined;
 	 */
-	isUnavailable?: Matcher;
+	isDateUnavailable?: Matcher;
 
 	/**
 	 * The minimum acceptable date. When provided, the

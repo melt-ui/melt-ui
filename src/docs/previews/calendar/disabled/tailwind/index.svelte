@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { createCalendar, melt } from '$lib';
-	import { isWeekend } from '@internationalized/date';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
 
 	const {
@@ -8,8 +7,8 @@
 		states: { months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable },
 	} = createCalendar({
-		isDateUnavailable: (date) => {
-			return isWeekend(date, 'en');
+		isDateDisabled: (date) => {
+			return date.day <= 10;
 		},
 	});
 </script>
@@ -104,7 +103,7 @@
 	}
 
 	[data-melt-calendar-cell][data-disabled] {
-		@apply opacity-40;
+		@apply pointer-events-none opacity-40;
 	}
 
 	[data-melt-calendar-cell][data-unavailable] {

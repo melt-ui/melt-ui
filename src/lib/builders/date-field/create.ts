@@ -59,9 +59,10 @@ import type {
 	TimeSegmentObj,
 	TimeSegmentPart,
 } from './_internal/types.js';
+import type { DateValue } from '@internationalized/date';
 
 const defaults = {
-	isUnavailable: undefined,
+	isDateUnavailable: undefined,
 	value: undefined,
 	hourCycle: undefined,
 	locale: 'en',
@@ -88,7 +89,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		granularity,
 		hourCycle,
 		hideTimeZone,
-		isUnavailable,
+		isDateUnavailable,
 		disabled,
 		readonly,
 		name: nameStore,
@@ -107,10 +108,10 @@ export function createDateField(props?: CreateDateFieldProps) {
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
 	const isInvalid = derived(
-		[value, isUnavailable, minValue, maxValue],
-		([$value, $isUnavailable, $minValue, $maxValue]) => {
+		[value, isDateUnavailable, minValue, maxValue],
+		([$value, $isDateUnavailable, $minValue, $maxValue]) => {
 			if (!$value) return false;
-			if ($isUnavailable?.($value)) return true;
+			if ($isDateUnavailable?.($value)) return true;
 			if ($minValue && isBefore($value, $minValue)) return true;
 			if ($maxValue && isBefore($maxValue, $value)) return true;
 			return false;
@@ -1766,6 +1767,10 @@ export function createDateField(props?: CreateDateFieldProps) {
 		}
 	});
 
+	const _isDateUnavailable = derived(isDateUnavailable, ($isDateUnavailable) => {
+		return (date: DateValue) => $isDateUnavailable?.(date);
+	});
+
 	return {
 		elements: {
 			field,
@@ -1781,6 +1786,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			segmentContentsObj,
 			placeholder: placeholder.toWritable(),
 			isInvalid,
+			isDateUnavailable: _isDateUnavailable,
 		},
 		options,
 		ids,

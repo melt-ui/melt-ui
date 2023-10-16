@@ -10,8 +10,8 @@
 	export let defaultPlaceholder: CalendarProps['defaultPlaceholder'] = undefined;
 	export let onValueChange: CalendarProps['onValueChange'] = undefined;
 	export let onPlaceholderChange: CalendarProps['onPlaceholderChange'] = undefined;
-	export let isUnavailable: CalendarProps['isUnavailable'] = undefined;
-	export let isDisabled: CalendarProps['isDisabled'] = undefined;
+	export let isDateUnavailable: CalendarProps['isDateUnavailable'] = undefined;
+	export let isDateDisabled: CalendarProps['isDateDisabled'] = undefined;
 	export let locale: CalendarProps['locale'] = 'en';
 	export let calendarLabel: CalendarProps['calendarLabel'] = undefined;
 	export let preventDeselect: CalendarProps['preventDeselect'] = undefined;
@@ -32,8 +32,8 @@
 		defaultPlaceholder,
 		onValueChange,
 		onPlaceholderChange,
-		isUnavailable,
-		isDisabled,
+		isDateUnavailable,
+		isDateDisabled,
 		locale,
 		calendarLabel,
 		preventDeselect,

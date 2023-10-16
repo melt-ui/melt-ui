@@ -259,7 +259,7 @@ describe('DateField', () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(DateFieldTest, {
 			granularity: 'day',
-			isUnavailable: (date) => {
+			isDateUnavailable: (date) => {
 				return date.day === 20;
 			},
 		});

@@ -578,11 +578,11 @@ provides a few props that make it a bit easier.
 An unavailable date is a date that is not selectable, but is still visible and focusable in the
 calendar.
 
-You can pass a `Matcher` function to the `isUnavailable` prop, which will be used to determine if a
+You can pass a `Matcher` function to the `isDateUnavailable` prop, which will be used to determine if a
 date is unavailable. The `Matcher` function is called with a `DateValue` object, and should return a
 boolean indicating whether the date is unavailable.
 
-```svelte showLineNumbers {3,11}
+```svelte showLineNumbers {3,10-12}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
 	import { isWeekend } from '@internationalized/date'
@@ -592,7 +592,7 @@ boolean indicating whether the date is unavailable.
 		states: { months, headingValue, daysOfWeek, value },
 		helpers: { isDateDisabled, isDateUnavailable }
 	} = createCalendar({
-		isUnavailable: (date) => {
+		isDateUnavailable: (date) => {
 			return isWeekend(date, 'en')
 		}
 	})
@@ -604,4 +604,64 @@ differently than the other dates.
 
 <Preview code={snippets.unavailable} variant="dark" size="auto">
 	<svelte:component this={previews.unavailable} />
+</Preview>
+
+### Disabled Dates
+
+Disabled dates are not selectable, nor are they focusable in the calendar. Keyboard navigation will
+skip over them entirely, and should be used for dates that have no meaning in the context of the
+calendar.
+
+You can pass a `Matcher` function to the `isDateDisabled` prop, which will be used to determine if a
+date is disabled. The `Matcher` function is called with a `DateValue` object, and should return a
+boolean indicating whether the date is disabled.
+
+```svelte showLineNumbers {9-11}
+<script lang="ts">
+	import { createCalendar, melt } from '@melt-ui/svelte'
+
+	const {
+		elements: { calendar, heading, grid, cell, prevButton, nextButton },
+		states: { months, headingValue, daysOfWeek, value },
+		helpers: { isDateDisabled, isDateUnavailable }
+	} = createCalendar({
+		isDateDisabled: (date) => {
+			return date.day <= 10
+		}
+	})
+</script>
+```
+
+In this example, we're disabling the first 10 days of each month.
+
+<Preview code={snippets.disabled} variant="dark" size="auto">
+	<svelte:component this={previews.disabled} />
+</Preview>
+
+### Minimum & Maximum Values
+
+While the `isDateDisabled` prop is useful for more complex logic, the Calendar also provides the
+`minValue` and `maxValue` props, which are used to set the minimum and maximum selectable dates.
+
+If a date is before the `minValue`, or after the `maxValue`, it will be disabled.
+
+```svelte showLineNumbers {9-11}
+<script lang="ts">
+	import { createCalendar, melt } from '@melt-ui/svelte'
+	import { CalendarDate } from '@internationalized/date'
+
+	const {
+		elements: { calendar, heading, grid, cell, prevButton, nextButton },
+		states: { months, headingValue, daysOfWeek, value },
+		helpers: { isDateDisabled, isDateUnavailable }
+	} = createCalendar({
+		defaultPlaceholder: new CalendarDate(2023, 1, 25),
+		minValue: new CalendarDate(2023, 1, 15),
+		maxValue: new CalendarDate(2023, 2, 15)
+	})
+</script>
+```
+
+<Preview code={snippets.minMax} variant="dark" size="auto">
+	<svelte:component this={previews.minMax} />
 </Preview>

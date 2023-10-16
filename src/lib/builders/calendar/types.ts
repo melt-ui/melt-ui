@@ -155,7 +155,7 @@ export type CreateCalendarProps<
 	 *
 	 * @default undefined;
 	 */
-	isDisabled?: Matcher;
+	isDateDisabled?: Matcher;
 
 	/**
 	 * Dates matching the provided matchers are marked as "unavailable." Unlike disabled dates,
@@ -170,7 +170,7 @@ export type CreateCalendarProps<
 	 *
 	 * @default undefined;
 	 */
-	isUnavailable?: Matcher;
+	isDateUnavailable?: Matcher;
 
 	/**
 	 * Display 6 weeks per month, regardless the month's number of weeks.

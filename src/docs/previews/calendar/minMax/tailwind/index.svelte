@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { createCalendar, melt } from '$lib';
-	import { isWeekend } from '@internationalized/date';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
+	import { CalendarDate } from '@internationalized/date';
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek },
+		states: { months, headingValue, daysOfWeek, value },
 		helpers: { isDateDisabled, isDateUnavailable },
 	} = createCalendar({
-		isDateUnavailable: (date) => {
-			return isWeekend(date, 'en');
-		},
+		defaultPlaceholder: new CalendarDate(2023, 1, 25),
+		minValue: new CalendarDate(2023, 1, 15),
+		maxValue: new CalendarDate(2023, 2, 15),
 	});
 </script>
 
@@ -104,7 +104,7 @@
 	}
 
 	[data-melt-calendar-cell][data-disabled] {
-		@apply opacity-40;
+		@apply pointer-events-none opacity-40;
 	}
 
 	[data-melt-calendar-cell][data-unavailable] {

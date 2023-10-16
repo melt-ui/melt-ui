@@ -40,8 +40,8 @@ import {
 import { dateStore, createFormatter, getDefaultDate } from '$lib/internal/helpers/date/index.js';
 
 const defaults = {
-	isDisabled: undefined,
-	isUnavailable: undefined,
+	isDateDisabled: undefined,
+	isDateUnavailable: undefined,
 	value: undefined,
 	preventDeselect: false,
 	numberOfMonths: 1,
@@ -72,17 +72,16 @@ export function createCalendar<
 
 	const {
 		preventDeselect,
-		isDisabled,
 		numberOfMonths,
 		pagedNavigation,
 		weekStartsOn,
 		fixedWeeks,
 		calendarLabel,
-		isUnavailable,
 		locale,
 		minValue,
 		maxValue,
 		multiple,
+		isDateUnavailable,
 	} = options;
 
 	const ids = {
@@ -151,7 +150,23 @@ export function createCalendar<
 		return isBefore(lastMonthOfPrevPage, $minValue);
 	});
 
-	const isSelected = derived([value], ([$value]) => {
+	/**
+	 * A derived store function that determines if a date is disabled based
+	 * on the `isDateDisabled` prop, `minValue`, and `maxValue` props.
+	 */
+	const isDateDisabled = derived(
+		[options.isDateDisabled, minValue, maxValue],
+		([$isDateDisabled, $minValue, $maxValue]) => {
+			return (date: DateValue) => {
+				if ($isDateDisabled?.(date)) return true;
+				if ($minValue && isBefore(date, $minValue)) return true;
+				if ($maxValue && isBefore($maxValue, date)) return true;
+				return false;
+			};
+		}
+	);
+
+	const isDateSelected = derived([value], ([$value]) => {
 		return (date: DateValue) => {
 			if (Array.isArray($value)) {
 				return $value.some((d) => isSameDay(d, date));
@@ -167,18 +182,18 @@ export function createCalendar<
 	 * A derived helper store that evaluates to true if a currently selected date is invalid.
 	 */
 	const isInvalid = derived(
-		[value, isDisabled, isUnavailable],
-		([$value, $isDisabled, $isUnavailable]) => {
+		[value, isDateDisabled, options.isDateUnavailable],
+		([$value, $isDateDisabled, $isDateUnavailable]) => {
 			if (Array.isArray($value)) {
 				if (!$value.length) return false;
 				for (const date of $value) {
-					if ($isDisabled?.(date)) return true;
-					if ($isUnavailable?.(date)) return true;
+					if ($isDateDisabled?.(date)) return true;
+					if ($isDateUnavailable?.(date)) return true;
 				}
 			} else {
 				if (!$value) return false;
-				if ($isDisabled?.($value)) return true;
-				if ($isUnavailable?.($value)) return true;
+				if ($isDateDisabled?.($value)) return true;
+				if ($isDateUnavailable?.($value)) return true;
 			}
 			return false;
 		}
@@ -364,11 +379,17 @@ export function createCalendar<
 	 * and interactivity.
 	 */
 	const cell = builder(name('cell'), {
-		stores: [isSelected, isDisabled, isUnavailable, isOutsideVisibleMonths, placeholder],
+		stores: [
+			isDateSelected,
+			isDateDisabled,
+			isDateUnavailable,
+			isOutsideVisibleMonths,
+			placeholder,
+		],
 		returned: ([
-			$isSelected,
-			$isDisabled,
-			$isUnavailable,
+			$isDateSelected,
+			$isDateDisabled,
+			$isDateUnavailable,
 			$isOutsideVisibleMonths,
 			$placeholder,
 		]) => {
@@ -381,13 +402,13 @@ export function createCalendar<
 			 */
 			return (cellValue: DateValue, monthValue: DateValue) => {
 				const cellDate = toDate(cellValue);
-				const isDisabled = $isDisabled?.(cellValue);
-				const isUnavailable = $isUnavailable?.(cellValue);
+				const isDisabled = $isDateDisabled?.(cellValue);
+				const isUnavailable = $isDateUnavailable?.(cellValue);
 				const isDateToday = isToday(cellValue, getLocalTimeZone());
 				const isOutsideMonth = !isSameMonth(cellValue, monthValue);
 				const isOutsideVisibleMonths = $isOutsideVisibleMonths(cellValue);
 				const isFocusedDate = isSameDay(cellValue, $placeholder);
-				const isSelectedDate = $isSelected(cellValue) && !isOutsideMonth;
+				const isSelectedDate = $isDateSelected(cellValue) && !isOutsideMonth;
 
 				const labelText = formatter.custom(cellDate, {
 					weekday: 'long',
@@ -788,9 +809,9 @@ export function createCalendar<
 	}
 
 	function handleCellClick(date: DateValue) {
-		const $isDisabled = get(isDisabled);
-		const $isUnavailable = get(isUnavailable);
-		if ($isDisabled?.(date) || $isUnavailable?.(date)) return;
+		const $isDateDisabled = get(isDateDisabled);
+		const $isUnavailable = get(options.isDateUnavailable);
+		if ($isDateDisabled?.(date) || $isUnavailable?.(date)) return;
 
 		value.update((prev) => {
 			const $multiple = get(multiple);
@@ -967,11 +988,11 @@ export function createCalendar<
 	}
 
 	/**
-	 * A helper function to determine if a date is disabled,
+	 * A helper function to determine if a date cell is disabled,
 	 * which uses the `Matcher`(s) provided via the `isDisabled`
-	 * prop, as well as other internal logic, that determines
-	 * if a date is disabled, such as if it's outside of the
-	 * month, or if it's before/after the min/max values.
+	 * prop, as well as other internal logic, such as if it's
+	 * outside of the month, or if it's before/after the min/max
+	 * values.
 	 *
 	 * Although we set attributes on the cells themselves, for
 	 * easy styling this function is useful when you want to
@@ -990,11 +1011,11 @@ export function createCalendar<
 	 * @param date - The `DateValue` to check
 	 * @returns `true` if the date is disabled, `false` otherwise
 	 */
-	const isDateDisabled = derived(
-		[isDisabled, placeholder, minValue, maxValue],
-		([$isDisabled, $placeholder, $minValue, $maxValue]) => {
+	const _isDateDisabled = derived(
+		[isDateDisabled, placeholder, minValue, maxValue],
+		([$isDateDisabled, $placeholder, $minValue, $maxValue]) => {
 			return (date: DateValue) => {
-				if ($isDisabled?.(date)) return true;
+				if ($isDateDisabled?.(date)) return true;
 				if ($minValue && isBefore(date, $minValue)) return true;
 				if ($maxValue && isAfter(date, $maxValue)) return true;
 				if (!isSameMonth(date, $placeholder)) return true;
@@ -1015,20 +1036,20 @@ export function createCalendar<
 	 * @example
 	 * ```svelte
 	 * {#each dates as date}
-	 * <td role="gridcell">
-	 * 	{#if $isUnavailable(date)}
-	 * 		X
-	 * 	{/if}
-	 * 	<!-- ... -->
-	 * </td>
+	 * 	<td role="gridcell">
+	 * 		{#if $isUnavailable(date)}
+	 * 			<span>X</span>
+	 * 		{/if}
+	 * 		<!-- ... -->
+	 * 	</td>
 	 * {/each}
 	 * ```
 	 *
 	 * @param date - The `DateValue` to check
 	 * @returns `true` if the date is disabled, `false` otherwise
 	 */
-	const isDateUnavailable = derived(isUnavailable, ($isUnavailable) => {
-		return (date: DateValue) => $isUnavailable?.(date);
+	const _isDateUnavailable = derived(isDateUnavailable, ($isDateUnavailable) => {
+		return (date: DateValue) => $isDateUnavailable?.(date);
 	});
 
 	return {
@@ -1054,8 +1075,9 @@ export function createCalendar<
 			prevYear,
 			setYear,
 			setMonth,
-			isDateDisabled,
-			isDateUnavailable,
+			isDateDisabled: _isDateDisabled,
+			isDateSelected,
+			isDateUnavailable: _isDateUnavailable,
 		},
 		options,
 		ids,

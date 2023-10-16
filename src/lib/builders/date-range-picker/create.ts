@@ -17,8 +17,8 @@ import { dateStore, createFormatter, getDefaultDate } from '$lib/internal/helper
 import { createDateRangeField } from '../date-range-field/create.js';
 
 const defaults = {
-	isDisabled: undefined,
-	isUnavailable: undefined,
+	isDateDisabled: undefined,
+	isDateUnavailable: undefined,
 	value: undefined,
 	positioning: {
 		placement: 'bottom',

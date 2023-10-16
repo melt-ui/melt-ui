@@ -150,7 +150,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default undefined;
 	 */
-	isDisabled?: Matcher;
+	isDateDisabled?: Matcher;
 
 	/**
 	 * Any dates that match the provided matchers will be
@@ -167,7 +167,7 @@ export type RangeCalendarProps = {
 	 *
 	 * @default undefined;
 	 */
-	isUnavailable?: Matcher;
+	isDateUnavailable?: Matcher;
 
 	/**
 	 * Display 6 weeks per month, regardless the month's number of weeks.

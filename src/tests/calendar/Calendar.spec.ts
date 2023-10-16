@@ -548,7 +548,7 @@ describe('Calendar', () => {
 	test('unavailable dates behavior', async () => {
 		const { getByTestId } = render(CalendarTest, {
 			defaultPlaceholder: calendarDate,
-			isUnavailable: (date) => {
+			isDateUnavailable: (date) => {
 				return date.day === 3;
 			},
 		});

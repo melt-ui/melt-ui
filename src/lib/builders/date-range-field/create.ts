@@ -20,7 +20,7 @@ import { createDateField } from '$lib/index.js';
 import type { DateValue } from '@internationalized/date';
 
 const defaults = {
-	isUnavailable: undefined,
+	isDateUnavailable: undefined,
 	value: undefined,
 	hourCycle: undefined,
 	locale: 'en',

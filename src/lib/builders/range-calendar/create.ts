@@ -44,8 +44,8 @@ import {
 } from '@internationalized/date';
 
 const defaults = {
-	isDisabled: undefined,
-	isUnavailable: undefined,
+	isDateDisabled: undefined,
+	isDateUnavailable: undefined,
 	value: undefined,
 	defaultValue: {
 		start: undefined,
@@ -81,13 +81,11 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 
 	const {
 		preventDeselect,
-		isDisabled,
 		numberOfMonths,
 		pagedNavigation,
 		weekStartsOn,
 		fixedWeeks,
 		calendarLabel,
-		isUnavailable,
 		locale,
 		minValue,
 		maxValue,
@@ -152,18 +150,37 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		};
 	});
 
+	const isDateDisabled = derived(
+		[options.isDateDisabled, minValue, maxValue],
+		([$isDateDisabled, $minValue, $maxValue]) => {
+			return (date: DateValue) => {
+				if ($isDateDisabled?.(date)) return true;
+				if ($minValue && isBefore(date, $minValue)) return true;
+				if ($maxValue && isAfter(date, $maxValue)) return true;
+				return false;
+			};
+		}
+	);
+
+	const isDateUnavailable = derived([options.isDateUnavailable], ([$isDateUnavailable]) => {
+		return (date: DateValue) => {
+			if ($isDateUnavailable?.(date)) return true;
+			return false;
+		};
+	});
+
 	const isStartInvalid = derived(
-		[startValue, isUnavailable, isDisabled],
-		([$startValue, $isUnavailable, $isDisabled]) => {
+		[startValue, isDateUnavailable, isDateDisabled],
+		([$startValue, $isDateUnavailable, $isDateDisabled]) => {
 			if (!$startValue) return false;
-			return $isUnavailable?.($startValue) || $isDisabled?.($startValue);
+			return $isDateUnavailable($startValue) || $isDateDisabled($startValue);
 		}
 	);
 	const isEndInvalid = derived(
-		[endValue, isUnavailable, isDisabled],
-		([$endValue, $isUnavailable, $isDisabled]) => {
+		[endValue, isDateUnavailable, isDateDisabled],
+		([$endValue, $isDateUnavailable, $isDateDisabled]) => {
 			if (!$endValue) return false;
-			return $isUnavailable?.($endValue) || $isDisabled?.($endValue);
+			return $isDateUnavailable($endValue) || $isDateDisabled($endValue);
 		}
 	);
 
@@ -342,8 +359,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	});
 
 	const highlightedRange = derived(
-		[startValue, endValue, focusedValue, isDisabled, isUnavailable],
-		([$startValue, $endValue, $focusedValue, $isDisabled, $isUnavailable]) => {
+		[startValue, endValue, focusedValue, isDateDisabled, isDateUnavailable],
+		([$startValue, $endValue, $focusedValue, $isDateDisabled, $isDateUnavailable]) => {
 			if ($startValue && $endValue) return null;
 			if (!$startValue || !$focusedValue) return null;
 			const isStartBeforeFocused = isBefore($startValue, $focusedValue);
@@ -357,7 +374,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				};
 			}
 
-			const isValid = areAllDaysBetweenValid(start, end, $isUnavailable, $isDisabled);
+			const isValid = areAllDaysBetweenValid(start, end, $isDateUnavailable, $isDateDisabled);
 			if (isValid) {
 				return {
 					start: start,
@@ -378,8 +395,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			isSelectionEnd,
 			isSelectionStart,
 			highlightedRange,
-			isDisabled,
-			isUnavailable,
+			isDateDisabled,
+			isDateUnavailable,
 			placeholder,
 			isOutsideVisibleMonths,
 		],
@@ -388,15 +405,15 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			$isSelectionEnd,
 			$isSelectionStart,
 			$highlightedRange,
-			$disabled,
-			$unavailable,
+			$isDateDisabled,
+			$isDateUnavailable,
 			$placeholder,
 			$isOutsideVisibleMonths,
 		]) => {
 			return (cellValue: T, monthValue: T) => {
 				const cellDate = toDate(cellValue);
-				const isDisabled = $disabled?.(cellValue);
-				const isUnavailable = $unavailable?.(cellValue);
+				const isDisabled = $isDateDisabled(cellValue);
+				const isUnavailable = $isDateUnavailable(cellValue);
 				const isDateToday = isToday(cellValue, getLocalTimeZone());
 				const isOutsideMonth = !isSameMonth(cellValue, monthValue);
 				const isFocusedDate = isSameDay(cellValue, $placeholder);
@@ -896,11 +913,11 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * @param date - The `DateValue` to check
 	 * @returns `true` if the date is disabled, `false` otherwise
 	 */
-	const isDateDisabled = derived(
-		[isDisabled, placeholder, minValue, maxValue],
-		([$isDisabled, $placeholder, $minValue, $maxValue]) => {
+	const _isDateDisabled = derived(
+		[isDateDisabled, placeholder, minValue, maxValue],
+		([$isDateDisabled, $placeholder, $minValue, $maxValue]) => {
 			return (date: DateValue) => {
-				if ($isDisabled?.(date)) return true;
+				if ($isDateDisabled(date)) return true;
 				if ($minValue && isBefore(date, $minValue)) return true;
 				if ($maxValue && isAfter(date, $maxValue)) return true;
 				if (!isSameMonth(date, $placeholder)) return true;
@@ -908,34 +925,6 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			};
 		}
 	);
-
-	/**
-	 * A helper function to determine if a date is unavailable,
-	 * which uses the `Matcher`(s) provided via the `unavailable`
-	 * prop.
-	 *
-	 * Although we set attributes on the cells themselves, this
-	 * function is useful when you want to conditionally handle
-	 * something outside of the cell, such as its wrapping element.
-	 *
-	 * @example
-	 * ```svelte
-	 * {#each dates as date}
-	 * 	<td role="gridcell">
-	 * 		{#if $isUnavailable(date)}
-	 * 			<span>X</span>
-	 * 		{/if}
-	 * 		<!-- ... -->
-	 * 	</td>
-	 * {/each}
-	 * ```
-	 *
-	 * @param date - The `DateValue` to check
-	 * @returns `true` if the date is disabled, `false` otherwise
-	 */
-	const isDateUnavailable = derived(isUnavailable, ($isUnavailable) => {
-		return (date: DateValue) => $isUnavailable?.(date);
-	});
 
 	/**
 	 * Synchronize the `value` store with the individual `startValue`
@@ -1012,7 +1001,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			prevYear,
 			setYear,
 			setMonth,
-			isDateDisabled,
+			isDateDisabled: _isDateDisabled,
 			isDateUnavailable,
 		},
 		options,

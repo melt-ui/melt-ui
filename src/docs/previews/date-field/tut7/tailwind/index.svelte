@@ -12,7 +12,7 @@
 	} = createDateField({
 		name: 'appointmentDate',
 		defaultValue: new CalendarDate(2023, 10, 14),
-		isUnavailable: isFirstOrFifteenth,
+		isDateUnavailable: isFirstOrFifteenth,
 	});
 </script>
 
