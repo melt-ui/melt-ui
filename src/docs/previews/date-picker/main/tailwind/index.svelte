@@ -21,21 +21,19 @@
 		states: { value, months, headingValue, daysOfWeek, segmentContents, open },
 		options: { locale },
 	} = createDatePicker({
-		allowDeselect: true,
 		forceVisible: true,
 		granularity: 'minute',
 	});
 </script>
 
 <div class="flex w-full flex-col items-center gap-3">
-	<div class="flex w-full items-center justify-center">
-		<p class="text-xs">{$value}</p>
-	</div>
 	<div>
-		<span use:melt={$label} class="cursor-default text-magnum-800">Date</span>
+		<span use:melt={$label} class="cursor-default font-medium text-magnum-800"
+			>Date</span
+		>
 		<div
 			use:melt={$field}
-			class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
+			class="flex w-full min-w-[240px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
 		>
 			{#each $segmentContents as seg, i (`${i}-${$locale}`)}
 				<div use:melt={$segment(seg.part)} class="segment whitespace-nowrap">

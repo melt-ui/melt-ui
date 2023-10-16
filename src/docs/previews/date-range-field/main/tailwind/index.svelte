@@ -8,14 +8,13 @@
 </script>
 
 <div class="flex w-full flex-col items-center gap-3">
-	<div class="flex w-full items-center justify-center">
-		<p class="text-xs">{$value.start} - {$value.end}</p>
-	</div>
 	<div>
-		<span use:melt={$label} class="text-magnum-800">Booking Dates</span>
+		<span use:melt={$label} class="font-medium text-magnum-800"
+			>Booking Dates</span
+		>
 		<div
 			use:melt={$field}
-			class="flex w-full max-w-[300px] items-center rounded-md border bg-white p-1.5 text-magnum-800 {$isInvalid &&
+			class="flex w-[260px] items-center rounded-md border bg-white p-1.5 text-magnum-800 {$isInvalid &&
 				'border-2 border-red-600'}"
 		>
 			{#each $segmentContents.start as seg, i (i)}
