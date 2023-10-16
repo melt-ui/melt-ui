@@ -67,7 +67,6 @@ export function createCombobox<
 					if (isContentEditable(e.target)) {
 						inputValue.set(e.target.innerText);
 					}
-					return;
 				})
 			);
 
