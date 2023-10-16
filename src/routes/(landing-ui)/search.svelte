@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { createCombobox, createDialog, melt } from '$lib';
-	import { Check, Search } from 'lucide-svelte';
+	import { Check, CornerDownRight, Search } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import type { PagefindSearchFragment, Pagefind, PagefindSearchResult } from '../../pagefind.js';
 
@@ -11,27 +11,45 @@
 	onMount(async () => {
 		pagefind = await import('../../pagefind/pagefind.js');
 
-		pagefind.init();
+		await pagefind.init();
+		results = (await pagefind.search('')).results;
 	});
 
-	const {
-		elements: { trigger, portalled, content, close, overlay },
-		states: { open },
-	} = createDialog();
+	const sanitizeLink = (url: string) => {
+		return url.replace('.html', '').replace('src/', '');
+	};
+
+	const gotoLink = (url: string) => {
+		open.set(false);
+		cbOpen.set(false);
+		goto(sanitizeLink(url));
+	};
 
 	const {
-		elements: { trigger: cbTrigger, input, menu, option },
+		elements: { input, menu, option },
 		states: { open: cbOpen, inputValue },
-		helpers: { isSelected },
 	} = createCombobox<PagefindSearchFragment>({
 		onSelectedChange({ next }) {
 			if (next) {
-				cbOpen.set(false);
-				open.set(false);
-				goto(next.value.url.replace('.html', '').replace('src/', ''));
+				gotoLink(next.value.url);
 			}
 			return undefined;
 		},
+		forceVisible: true,
+	});
+
+	const {
+		elements: { trigger, portalled, content, overlay },
+		states: { open },
+	} = createDialog({
+		onOpenChange({ next }) {
+			if (!next) {
+				inputValue.set('');
+				results = [];
+			}
+			return next;
+		},
+		defaultOpen: true,
 	});
 
 	let debounceTimer: ReturnType<typeof setTimeout>;
@@ -52,6 +70,16 @@
 	}
 </script>
 
+<svelte:window
+	on:keydown={(e) => {
+		const isCtrl = e.ctrlKey || e.metaKey;
+		if (e.key === '/' || (e.key === 'k' && isCtrl)) {
+			e.preventDefault();
+			open.set(true);
+		}
+	}}
+/>
+
 <button class="ml-6 text-neutral-400 transition-colors hover:text-neutral-50" use:melt={$trigger}>
 	<Search class="h-5 w-5" />
 </button>
@@ -60,15 +88,15 @@
 	<div use:melt={$overlay} class="fixed inset-0 z-40 bg-black bg-opacity-50" />
 	<div
 		use:melt={$content}
-		class="fixed left-1/2 top-1/2 z-50 grid -translate-x-1/2 -translate-y-1/2 place-items-center"
+		class="fixed left-1/2 top-96 z-50 grid -translate-x-1/2 place-items-center"
 	>
 		<div class="flex flex-col gap-1">
 			<div class="relative">
 				<input
 					use:melt={$input}
-					class="flex h-10 items-center justify-between rounded-lg bg-white
-            px-3 pr-12 text-black"
-					placeholder="Best book ever"
+					class="flex h-10 w-[600px] items-center justify-between rounded-lg
+            border border-neutral-400 bg-neutral-800 px-3 pl-8 text-white focus:border-magnum-400"
+					placeholder="Search..."
 					on:keydown={(e) => {
 						if (e.key === 'Escape') {
 							cbOpen.set(false);
@@ -76,40 +104,66 @@
 						}
 					}}
 				/>
+
+				<Search class="absolute top-1/2 ml-2 -translate-y-1/2 square-4" />
 			</div>
 		</div>
 
-		<div class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-lg" use:melt={$menu}>
+		<div class="z-10 flex max-h-[600px] flex-col" use:melt={$menu} class:hidden={!$inputValue}>
 			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 			<div
-				class="flex max-h-full flex-col gap-0 overflow-y-auto bg-white px-2 py-2 text-black"
-				tabindex="0"
+				class="flex max-h-full flex-col gap-0 overflow-y-auto rounded-lg bg-neutral-800 px-2 py-2 text-white"
 			>
 				{#each results as result, index (index)}
 					{#await result.data()}
-						loading...
+						<!-- nothingness -->
 					{:then data}
-						<button
+						<div
 							use:melt={$option({ value: data, label: data.meta.title })}
-							class="relative cursor-pointer scroll-my-2 rounded-md py-2 pl-4 pr-4
-        hover:bg-magnum-100
-        data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900
-          data-[disabled]:opacity-50"
+							class="relative scroll-my-2 rounded-md px-4 py-2
+
+						data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900
+							data-[disabled]:opacity-50"
 						>
-							{#if $isSelected(data)}
-								<div class="check absolute left-2 top-1/2 z-10 text-magnum-900">
-									<Check class="square-4" />
+							<a
+								class="text-lg font-semibold hover:underline hover:opacity-75"
+								href={sanitizeLink(data.url)}>{data.meta.title}</a
+							>
+							<p class="mt-1 font-light">
+								{@html data.excerpt}
+							</p>
+							{#each data.sub_results.filter(({ title }) => title !== data.meta.title) as subresult}
+								<div class="py-2 pl-2">
+									<div class="flex items-center gap-2">
+										<CornerDownRight />
+										<a
+											class="font-semibold underline hover:opacity-75"
+											href={sanitizeLink(subresult.url)}
+										>
+											{subresult.title}
+										</a>
+									</div>
+									<p class="mt-2 text-sm font-light opacity-75">
+										{@html subresult.excerpt}
+									</p>
 								</div>
-							{/if}
-							<div class="pl-4">
-								<span class="font-medium">{data.meta.title}</span>
-							</div>
-						</button>
+							{/each}
+						</div>
 					{/await}
 				{:else}
-					<li class="relative cursor-pointer rounded-md py-1 pl-8 pr-4">No results found</li>
+					<li class="relative cursor-pointer rounded-md py-1 px-4">No results found</li>
 				{/each}
 			</div>
 		</div>
 	</div>
 </div>
+
+<style lang="postcss">
+	[data-melt-combobox-menu] :global(mark) {
+		background-color: theme('colors.magnum.400');
+		color: theme('colors.magnum.950');
+		border-radius: theme('borderRadius.sm');
+		padding-inline: 2px;
+		font-weight: 500;
+	}
+</style>

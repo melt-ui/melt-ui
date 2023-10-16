@@ -196,7 +196,7 @@ export type PagefindSearchAnchor = {
 };
 
 export type Pagefind = {
-	init: () => void;
+	init: () => Promise<void>;
 	search: (query: string, options?: PagefindSearchOptions) => Promise<PagefindSearchResults>;
 	options: (options: PagefindIndexOptions) => Promise<void>;
 };
