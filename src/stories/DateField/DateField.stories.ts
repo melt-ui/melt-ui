@@ -27,7 +27,7 @@ const meta = {
 				ZonedDateTime: 'ZonedDateTime',
 			},
 		},
-		fieldDisabled: { control: 'boolean' },
+		disabled: { control: 'boolean' },
 	},
 } satisfies Meta<DateField>;
 

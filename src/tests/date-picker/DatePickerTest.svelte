@@ -9,8 +9,8 @@
 	export let defaultPlaceholder: CreateDatePickerProps['defaultPlaceholder'] = undefined;
 	export let onValueChange: CreateDatePickerProps['onValueChange'] = undefined;
 	export let onPlaceholderChange: CreateDatePickerProps['onPlaceholderChange'] = undefined;
-	export let isUnavailable: CreateDatePickerProps['isUnavailable'] = undefined;
-	export let isDisabled: CreateDatePickerProps['isDisabled'] = undefined;
+	export let isDateUnavailable: CreateDatePickerProps['isDateUnavailable'] = undefined;
+	export let isDateDisabled: CreateDatePickerProps['isDateDisabled'] = undefined;
 	export let disabled: CreateDatePickerProps['disabled'] = undefined;
 	export let readonly: CreateDatePickerProps['readonly'] = undefined;
 	export let hourCycle: CreateDatePickerProps['hourCycle'] = undefined;
@@ -49,7 +49,7 @@
 		defaultPlaceholder,
 		onValueChange,
 		onPlaceholderChange,
-		isUnavailable,
+		isDateUnavailable,
 		disabled,
 		readonly,
 		hourCycle,
@@ -65,7 +65,7 @@
 		pagedNavigation,
 		placeholder,
 		weekStartsOn,
-		isDisabled,
+		isDateDisabled,
 	});
 </script>
 
