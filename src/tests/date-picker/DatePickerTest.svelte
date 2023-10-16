@@ -84,7 +84,7 @@
 				<div
 					use:melt={$segment(seg.part)}
 					class="segment whitespace-nowrap"
-					data-testid={seg.part === 'literal' ? undefined : seg.part}
+					data-testid={seg.part === 'literal' ? `literal=${i}` : seg.part}
 				>
 					{seg.value}
 				</div>
