@@ -3,7 +3,7 @@
 
 	const {
 		elements: { field, startSegment, endSegment, label },
-		states: { segmentContents, isInvalid, value },
+		states: { segmentContents, isInvalid },
 	} = createDateRangeField();
 </script>
 

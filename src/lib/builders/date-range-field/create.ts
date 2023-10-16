@@ -7,12 +7,15 @@ import {
 	toWritableStores,
 	omit,
 	effect,
+	styleToString,
 } from '$lib/internal/helpers/index.js';
 import {
 	dateStore,
 	getDefaultDate,
 	getAnnouncer,
 	isBefore,
+	getDaysBetween,
+	areAllDaysBetweenValid,
 } from '$lib/internal/helpers/date/index.js';
 import { derived, get, writable } from 'svelte/store';
 import { removeDescriptionElement } from './_internal/helpers.js';
@@ -30,11 +33,13 @@ const defaults = {
 		start: undefined,
 		end: undefined,
 	},
+	startName: undefined,
+	endName: undefined,
 } satisfies CreateDateRangeFieldProps;
 
-type DateFieldParts = 'segment' | 'label' | 'field';
+type DateFieldParts = 'segment' | 'label' | 'field' | 'validation';
 
-const { name } = createElHelpers<DateFieldParts>('dateRangeField');
+const { name } = createElHelpers<DateFieldParts>('dateField');
 
 export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	const withDefaults = { ...defaults, ...props };
@@ -71,14 +76,16 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	);
 
 	const startField = createDateField({
-		...omit(withDefaults, 'defaultValue', 'onValueChange'),
+		...omit(withDefaults, 'defaultValue', 'onValueChange', 'startName', 'endName'),
 		value: startValue,
+		name: withDefaults.startName,
 		ids,
 	});
 
 	const endField = createDateField({
-		...omit(withDefaults, 'defaultValue', 'onValueChange'),
+		...omit(withDefaults, 'defaultValue', 'onValueChange', 'endName', 'startName'),
 		value: endValue,
+		name: withDefaults.endName,
 		ids,
 	});
 
@@ -89,6 +96,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 			segmentContents: startSegmentContents,
 			segmentValues: startSegmentValues,
 		},
+		options: { name: startName },
 	} = startField;
 	const {
 		elements: { segment: endSegment, hiddenInput: endHiddenInput },
@@ -97,17 +105,27 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 			segmentContents: endSegmentContents,
 			segmentValues: endSegmentValues,
 		},
+		options: { name: endName },
 	} = endField;
 
 	const isInvalid = derived(
-		[value, isStartInvalid, isEndInvalid],
-		([$value, $isStartInvalid, $isEndInvalid]) => {
+		[value, isStartInvalid, isEndInvalid, options.isDateUnavailable],
+		([$value, $isStartInvalid, $isEndInvalid, $isDateUnavailable]) => {
 			if ($isStartInvalid || $isEndInvalid) {
 				return true;
 			}
-			if ($value.start && $value.end) {
-				return isBefore($value.end, $value.start);
+			if (!$value.start || !$value.end) {
+				return false;
 			}
+
+			if (isBefore($value.start, $value.end)) {
+				return true;
+			}
+
+			if ($isDateUnavailable) {
+				return areAllDaysBetweenValid($value.start, $value.end, $isDateUnavailable, undefined);
+			}
+
 			return false;
 		}
 	);
@@ -137,6 +155,21 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 				destroy() {
 					removeDescriptionElement(ids.description);
 				},
+			};
+		},
+	});
+
+	const validation = builder(name('validation'), {
+		stores: [isInvalid],
+		returned: ([$isInvalid]) => {
+			const validStyle = styleToString({
+				display: 'none',
+			});
+
+			return {
+				id: ids.validation,
+				'data-invalid': $isInvalid ? '' : undefined,
+				style: $isInvalid ? undefined : validStyle,
 			};
 		},
 	});
@@ -215,6 +248,7 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 			endSegment,
 			startHiddenInput,
 			endHiddenInput,
+			validation,
 		},
 		states: {
 			value,
@@ -224,7 +258,11 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 			startSegmentValues,
 			isInvalid,
 		},
-		options,
+		options: {
+			...options,
+			endName,
+			startName,
+		},
 		ids,
 	};
 }

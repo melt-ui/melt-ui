@@ -16,10 +16,6 @@ The **Date Field** is an enhanced alternative to the rather limited native date 
 more user-friendly interface for selecting dates and times, is fully accessible, and works in all
 modern browsers & devices.
 
-It's _very_ heavily inspired by the research and work done by the
-[React Aria](https://react-spectrum.adobe.com/react-aria/) team at Adobe, who we believe have
-created the most robust date components in terms of accessibility, user experience, and flexibility.
-
 <Callout type="warning">
 Before jumping into the docs for this builder, it's recommended that you understand how we work with dates &
 times in Melt, which you can read about <a href="/docs/dates" target="_blank" class="underline">here</a>.
@@ -117,8 +113,8 @@ It's not recommended, as the formatting doesn't adapt to the locale and type of 
 represented, which is one of the more powerful features this builder provides.
 
 Instead, you can use the `segmentContents` state, which is an array of objects necessary to form the
-date. Each object has a <Code>part</Code> property, which is the `SegmentPart`, and a <Code>value</Code>
-property, which is the locale-aware string representation of the segment.
+date. Each object has a <Code>part</Code> property, which is the `SegmentPart`, and a
+<Code>value</Code> property, which is the locale-aware string representation of the segment.
 
 ```svelte showLineNumbers {11-15}
 <script lang="ts">
@@ -366,8 +362,8 @@ birthday).
 This is where things start to get a lot more fun! The Date Field builder provides a few ways to
 validate dates, which we'll cover in this section, starting with the `isDateUnavailable` prop.
 
-The `isDateUnavailable` prop is a `Matcher` function, which takes a `DateValue` object as an argument,
-and returns a boolean indicating whether or not that date is unavailable.
+The `isDateUnavailable` prop is a `Matcher` function, which takes a `DateValue` object as an
+argument, and returns a boolean indicating whether or not that date is unavailable.
 
 ```ts
 type Matcher = (date: DateValue) => boolean

@@ -89,6 +89,18 @@ export type DateRangeFieldProps = {
 	locale?: string;
 
 	/**
+	 * The value to be used as the `name` attribute for the
+	 * `startHiddenInput` element.
+	 */
+	startName?: string;
+
+	/**
+	 * The value to be used as the `name` attribute for the
+	 * `endHiddenInput` element.
+	 */
+	endName?: string;
+
+	/**
 	 * Override any of the element IDs set by the builder.
 	 *
 	 * NOTE: you should only use this prop if you know what
@@ -105,6 +117,6 @@ type ModifiedDateFieldIds = Omit<DateFieldIds, 'label' | 'field' | 'description'
 
 export type CreateDateRangeFieldProps = Expand<
 	DateRangeFieldProps &
-		Omit<CreateDateFieldProps, 'value' | 'defaultValue' | 'onValueChange' | 'ids'>
+		Omit<CreateDateFieldProps, 'value' | 'defaultValue' | 'onValueChange' | 'ids' | 'name'>
 >;
 export type DateRangeField = ReturnType<typeof createDateRangeField>;
