@@ -14,7 +14,6 @@ import {
 	getDefaultDate,
 	getAnnouncer,
 	isBefore,
-	getDaysBetween,
 	areAllDaysBetweenValid,
 } from '$lib/internal/helpers/date/index.js';
 import { derived, get, writable } from 'svelte/store';
@@ -118,12 +117,20 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 				return false;
 			}
 
-			if (isBefore($value.start, $value.end)) {
+			if (!isBefore($value.start, $value.end)) {
 				return true;
 			}
 
-			if ($isDateUnavailable) {
-				return areAllDaysBetweenValid($value.start, $value.end, $isDateUnavailable, undefined);
+			if ($isDateUnavailable !== undefined) {
+				const allValid = areAllDaysBetweenValid(
+					$value.start,
+					$value.end,
+					$isDateUnavailable,
+					undefined
+				);
+				if (!allValid) {
+					return true;
+				}
 			}
 
 			return false;
