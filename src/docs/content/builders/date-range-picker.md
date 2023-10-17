@@ -181,7 +181,7 @@ In this section, we'll learn about the placeholder props, which are used to chan
 value the field represents, and what day the calendar displays when no date is selected.
 
 <Callout>
-	To learn more about how the placeholder affects the different parts of the Date Range Picker, checkout the placeholders docs for the <A href="/docs/builders/date-range-field">Date Range Field</A> & <A href="/docsbuilders/range-calendar">Range Calendar</A> builders.
+	To learn more about how the placeholder affects the different parts of the Date Range Picker, checkout the placeholders docs for the <A href="/docs/builders/date-range-field">Date Range Field</A> & <A href="/docs/builders/range-calendar">Range Calendar</A> builders.
 </Callout>
 
 ### Set the Placeholder Date
