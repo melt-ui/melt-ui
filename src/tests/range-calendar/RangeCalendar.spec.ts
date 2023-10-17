@@ -177,10 +177,6 @@ describe('Range Calendar', () => {
 		expect(container.querySelectorAll('[data-selected]')).toHaveLength(3);
 	});
 
-	test.todo('Selection through disabled with keyboard double select', async () => {
-		//
-	});
-
 	test('selection with keyboard', async () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(RangeCalendarTest, {
@@ -451,5 +447,27 @@ describe('Range Calendar', () => {
 		expect(thirdDayInMonth).toHaveAttribute('aria-disabled', 'true');
 		await userEvent.click(thirdDayInMonth);
 		expect(thirdDayInMonth).not.toHaveAttribute('data-selected');
+	});
+
+	test('Selection through disabled with double click doesnt select dates', async () => {
+		const user = userEvent.setup();
+		const { getByTestId, container } = render(RangeCalendarTest, {
+			defaultPlaceholder: calendarDateRange.start,
+			isDateDisabled: (date) => {
+				return date.day === 3;
+			},
+		});
+
+		const calendar = getByTestId('calendar');
+		expect(calendar).toBeVisible();
+
+		const firstDayInMonth = getByTestId('month-0-date-1');
+		await user.click(firstDayInMonth);
+		expect(firstDayInMonth).toHaveAttribute('data-selected');
+
+		const fifthDayInMonth = getByTestId('month-0-date-5');
+		await user.dblClick(fifthDayInMonth);
+
+		expect(container.querySelectorAll('[data-selected]')).toHaveLength(1);
 	});
 });

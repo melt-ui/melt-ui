@@ -123,6 +123,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 
 	const focusedValue = writable<DateValue | null>(null);
 
+	const lastPressedDateValue = writable<DateValue | null>(null);
+
 	const months = writable<Month<DateValue>[]>(
 		createMonths({
 			dateObj: get(placeholder),
@@ -719,6 +721,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		const $isDateDisabled = get(isDateDisabled);
 		const $isDateUnavailable = get(isDateUnavailable);
 		if ($isDateDisabled(date) || $isDateUnavailable(date)) return;
+		const $lastPressedDate = get(lastPressedDateValue);
+		lastPressedDateValue.set(date);
 
 		const $startValue = get(startValue);
 		const $endValue = get(endValue);
@@ -732,7 +736,10 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				return;
 			} else if (!$endValue) {
 				e.preventDefault();
-				focusedValue.set($startValue);
+				if ($lastPressedDate && isSameDay($lastPressedDate, date)) {
+					startValue.set(date);
+					announcer.announce(`Selected Date: ${formatter.selectedDate(date, false)}`, 'polite');
+				}
 				return;
 			}
 		}

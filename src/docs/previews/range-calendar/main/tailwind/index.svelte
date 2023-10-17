@@ -7,7 +7,11 @@
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
 		states: { value, months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable },
-	} = createRangeCalendar();
+	} = createRangeCalendar({
+		isDateDisabled: (date) => {
+			return date.day === 10;
+		},
+	});
 </script>
 
 <div class="flex h-full">
