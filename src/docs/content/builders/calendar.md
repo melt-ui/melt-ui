@@ -249,7 +249,7 @@ The Calendar has two placeholder props, `placeholder` (controlled), and `default
 By default, the placeholder will be set to the current date, but you can override this by passing a
 `DateValue` object to the `defaultPlaceholder` prop.
 
-```svelte showLineNumbers {10}
+```svelte showLineNumbers {8}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
 	import { CalendarDate } from '@internationalized/date'
@@ -278,7 +278,7 @@ used to determine what date is selected in the calendar.
 To have a date selected by default, we can use the `value` (controlled), or `defaultValue`
 (uncontrolled) props. If provided, the placeholder props will be set to this value.
 
-```svelte showLineNumbers {10}
+```svelte showLineNumbers {8}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
 	import { CalendarDate } from '@internationalized/date'
@@ -310,7 +310,7 @@ it to control the selected date programmatically.
 Let's say that when a user selects Halloween (October 31st), we want to display an alert that says
 "Happy Halloween!".
 
-```svelte showLineNumbers {3,5,9,15-17}
+```svelte showLineNumbers {3,5,9,14-16}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
 	import { CalendarDate, isSameDay } from '@internationalized/date'
@@ -346,7 +346,7 @@ it is a combination of the Calendar, [Date Field](/docs/builders/date-field), an
 [Popover](/docs/builders/popover) which makes it more similar to a native date picker, but with a
 lot more power.
 
-```svelte showLineNumbers {11,13}
+```svelte showLineNumbers {10,12}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
@@ -377,7 +377,7 @@ You could use CSS to add the extra space to accommodate for such a jump, or you 
 `fixedWeeks` prop to `true`, which will ensure the calendar always has the same number of weeks,
 regardless of the month.
 
-```svelte showLineNumbers {11}
+```svelte showLineNumbers {9}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
 	import { CalendarDate } from '@internationalized/date'
@@ -400,7 +400,7 @@ regardless of the month.
 By default, the calendar will display one month, but it supports displaying as many months as you'd
 like, using the `numberOfMonths` prop.
 
-```svelte showLineNumbers {9}
+```svelte showLineNumbers {7}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
@@ -423,7 +423,7 @@ calendar forward or backward by one month. However, you can change this behavior
 `pagedNavigation` prop to `true`, which will shift the calendar forward or backward by the number of
 months being displayed.
 
-```svelte showLineNumbers {10}
+```svelte showLineNumbers {8}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
@@ -447,7 +447,7 @@ which defaults to 'en-US', but can be changed to any locale supported by the
 [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat)
 constructor.
 
-```svelte showLineNumbers {9}
+```svelte showLineNumbers {7}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
@@ -470,7 +470,7 @@ again. This results in the `value` potentially being `undefined`. If you'd like 
 behavior, you can set the `preventDeselect` prop to `true`, which will prevent the user from being
 able to deselect dates.
 
-```svelte showLineNumbers {9}
+```svelte showLineNumbers {7}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
@@ -491,7 +491,7 @@ able to deselect dates.
 Sometimes, you may want to allow the user to select multiple dates in the calendar. To enable this
 behavior, you can set the `multiple` prop to `true`.
 
-```svelte showLineNumbers {9}
+```svelte showLineNumbers {7}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
@@ -520,7 +520,7 @@ In this first example, we're just preventing the user from being able to select 
 they've already selected 3. They'll need to deselect one of the dates before they can select
 another.
 
-```svelte showLineNumbers {11-17}
+```svelte showLineNumbers {8-15}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
@@ -547,7 +547,7 @@ another.
 An alternative, though not sure about the user experience implications, is to automatically deselect
 the oldest date when the user selects a new one after they've already selected 3.
 
-```svelte showLineNumbers {11-17}
+```svelte showLineNumbers {8-15}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
@@ -588,15 +588,13 @@ You can pass a `Matcher` function to the `isDateUnavailable` prop, which will be
 if a date is unavailable. The `Matcher` function is called with a `DateValue` object, and should
 return a boolean indicating whether the date is unavailable.
 
-```svelte showLineNumbers {3,10-12}
+```svelte showLineNumbers {3,8-10}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
 	import { isWeekend } from '@internationalized/date'
 
 	const {
-		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek, value },
-		helpers: { isDateDisabled, isDateUnavailable }
+		/* ... */
 	} = createCalendar({
 		isDateUnavailable: (date) => {
 			return isWeekend(date, 'en')
@@ -622,14 +620,12 @@ You can pass a `Matcher` function to the `isDateDisabled` prop, which will be us
 date is disabled. The `Matcher` function is called with a `DateValue` object, and should return a
 boolean indicating whether the date is disabled.
 
-```svelte showLineNumbers {9-11}
+```svelte showLineNumbers {7-9}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
 	const {
-		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek, value },
-		helpers: { isDateDisabled, isDateUnavailable }
+		/* ... */
 	} = createCalendar({
 		isDateDisabled: (date) => {
 			return date.day <= 10
@@ -652,7 +648,7 @@ nice if you're just trying to limit the range of dates that can be selected.
 
 If a date is before the `minValue`, or after the `maxValue`, it will be disabled.
 
-```svelte showLineNumbers {11-12}
+```svelte showLineNumbers {9-10}
 <script lang="ts">
 	import { createCalendar, melt } from '@melt-ui/svelte'
 	import { CalendarDate } from '@internationalized/date'

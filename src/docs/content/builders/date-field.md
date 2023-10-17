@@ -23,25 +23,6 @@ times in Melt, which you can read about <a href="/docs/dates" target="_blank" cl
 
 ## Anatomy
 
-```svelte
-<script lang="ts">
-	import { createDateField, melt } from '@melt-ui/svelte'
-	const {
-		elements: { field, segment, label },
-		states: { value, segmentContents }
-	} = createDateField()
-</script>
-
-<span use:melt={$label}>Due Date</span>
-<div use:melt={$field}>
-	{#each $segmentContents.arr as seg, i (i)}
-		<div use:melt={$segment(seg.part)}>
-			{seg.value}
-		</div>
-	{/each}
-</div>
-```
-
 - **Field**: The element which contains the date segments
 - **Segment**: An individual segment of the date (day, month, year, etc.)
 - **Label**: The label for the date field
@@ -64,6 +45,7 @@ To start off, we'll destructure the `field`, `segment`, and `label`, and `segmen
 ```svelte showLineNumbers
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
+
 	const {
 		elements: { field, segment, label },
 		states: { segmentContents }
@@ -78,6 +60,7 @@ screen readers in the same way.
 ```svelte showLineNumbers
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
+
 	const {
 		elements: { field, segment, label },
 		states: { segmentContents }
@@ -118,9 +101,10 @@ Instead, you can use the `segmentContents` state, which is an array of objects n
 date. Each object has a <Code>part</Code> property, which is the `SegmentPart`, and a
 <Code>value</Code> property, which is the locale-aware string representation of the segment.
 
-```svelte showLineNumbers {11-15}
+```svelte showLineNumbers {12-16}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
+
 	const {
 		elements: { field, segment, label },
 		states: { segmentContents }
@@ -144,9 +128,10 @@ using it within a form, the `hiddenInput` element, which is a hidden input eleme
 If you plan on using the `hiddenInput`, you'll need to pass the `name` prop, which will be used as
 its name.
 
-```svelte showLineNumbers {4-5,7,19,23-25}
+```svelte showLineNumbers {5-6,8,20,24-26}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
+
 	const {
 		elements: { field, segment, label, hiddenInput },
 		states: { segmentContents, value }
@@ -198,10 +183,11 @@ rendered/formatted.
 Let's convert our previous example into a Date & Time field, by passing a `CalendarDateTime` object
 as the `defaultPlaceholder` prop.
 
-```svelte showLineNumbers {3,9}
+```svelte showLineNumbers {3,10}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	import { CalendarDateTime } from '@internationalized/date';
+
 	const {
 		elements: { field, segment, label, hiddenInput },
 		states: { segmentContents, value }
@@ -240,10 +226,11 @@ const date = parseDateTime('2023-10-11T12:30:00')
 We can also just as easily convert the field into a Zoned Date & Time field, by passing a
 `ZonedDateTime` object as the `defaultPlaceholder` prop.
 
-```svelte showLineNumbers {3,9}
+```svelte showLineNumbers {3,10}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	import { now, getLocalTimeZone } from '@internationalized/date';
+
 	const {
 		elements: { field, segment, label, hiddenInput },
 		states: { segmentContents, value }
@@ -264,10 +251,11 @@ time, and we're getting the user's local timezone using the `getLocalTimeZone` f
 Alternatively, we can hardcode the timezone to something like `America/Los_Angeles` by passing it as
 the argument to the `now` function.
 
-```svelte showLineNumbers {9}
+```svelte showLineNumbers {10}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	import { now } from '@internationalized/date';
+
 	const {
 		elements: { field, segment, label, hiddenInput },
 		states: { segmentContents, value }
@@ -300,10 +288,11 @@ passing a `CalendarDate` (without time) object as the `defaultValue` prop. It's 
 you ever set them to different types, but it's useful to understand how the placeholder & value
 props interact.
 
-```svelte showLineNumbers {3,10}
+```svelte showLineNumbers {3,11}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	import { CalendarDateTime, CalendarDate } from '@internationalized/date';
+
 	const {
 		elements: { field, segment, label, hiddenInput },
 		states: { segmentContents, value }

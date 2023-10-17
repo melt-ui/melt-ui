@@ -24,31 +24,6 @@ times in Melt, which you can read about <a href="/docs/dates" target="_blank" cl
 
 ## Anatomy
 
-```svelte
-<script lang="ts">
-	import { createDateField, melt } from '@melt-ui/svelte'
-	const {
-		elements: { field, startSegment, endSegment, label },
-		states: { value, segmentContents }
-	} = createDateField()
-</script>
-
-<span use:melt={$label}>Trip Dates</span>
-<div use:melt={$field}>
-	{#each $segmentContents.start as seg, i (i)}
-		<div use:melt={$startSegment(seg.part)}>
-			{seg.value}
-		</div>
-	{/each}
-	<div aria-hidden="true">-</div>
-	{#each $segmentContents.end as seg, i (i)}
-		<div use:melt={$endSegment(seg.part)}>
-			{seg.value}
-		</div>
-	{/each}
-</div>
-```
-
 - **Field**: The element which contains the date segments
 - **Start Segment**: An individual segment of the start date (day, month, year, etc.)
 - **End Segment**: An individual segment of the end date (day, month, year, etc.)
@@ -76,6 +51,7 @@ To start off, we'll destructure the `field`, `startSegment`, `endSegment`, `labe
 ```svelte showLineNumbers
 <script lang="ts">
 	import { createDateRangeField, melt } from '@melt-ui/svelte'
+
 	const {
 		elements: { field, startSegment, endSegment, label },
 		states: { segmentContents }
@@ -90,6 +66,7 @@ screen readers in the same way.
 ```svelte showLineNumbers
 <script lang="ts">
 	import { createDateRangeField, melt } from '@melt-ui/svelte'
+
 	const {
 		elements: { field, startSegment, endSegment, label },
 		states: { segmentContents }
@@ -134,9 +111,10 @@ properties, whose values are an array of objects necessary to form the date. Eac
 <Code>part</Code> property, which is the `SegmentPart`, and a <Code>value</Code> property, which is
 the locale-aware string representation of the segment.
 
-```svelte showLineNumbers {11-15}
+```svelte showLineNumbers {12-16}
 <script lang="ts">
 	import { createDateRangeField, melt } from '@melt-ui/svelte'
+
 	const {
 		elements: { field, startSegment, endSegment, label },
 		states: { segmentContents }
@@ -166,9 +144,10 @@ elements containing an ISO 8601 formatted string of the value that input represe
 If you plan on using the hidden inputs, you'll need to pass the `startName` and `endName` props,
 which will be used as the respective input's name attribute.
 
-```svelte showLineNumbers {4-5,7,19,23-25}
+```svelte showLineNumbers {5-6,8-9,27-28}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
+
 	const {
 		elements: { field, startSegment, endSegment, label, startHiddenInput, endHiddenInput },
 		states: { segmentContents, value }
@@ -359,7 +338,7 @@ For example, let's say this field is selecting a contact availability range in a
 which is optional, but you want to ensure that if they do enter a range, it's represented as a
 `CalendarDateTime` object. The code to accomplishing that may look something like this:
 
-```svelte showLineNumbers {3,12-13}
+```svelte showLineNumbers {3,11-14}
 <script lang="ts">
 	import { createDateRangeField, melt } from '@melt-ui/svelte'
 	import { CalendarDateTime, CalendarDate, parseDateTime } from '@internationalized/date'
@@ -412,7 +391,7 @@ Let's say that we don't want users to ever be able to select the 1st or the 15th
 those are the only two days we're not working on builder tutorials. We can setup a `Matcher`
 function to accomplish just that.
 
-```svelte showLineNumbers {2,4-6,13} /isInvalid/#hi /validation/#hi
+```svelte showLineNumbers {2,4-6,12} /isInvalid/#hi /validation/#hi
 <script lang="ts">
 	import { createDateField, melt, type Matcher } from '@melt-ui/svelte'
 
@@ -431,7 +410,7 @@ function to accomplish just that.
 
 If you have a few different matchers you want to use, you can simply combine them like so:
 
-```svelte showLineNumbers {8-10,12-14,21}
+```svelte showLineNumbers {8-10,12-14,20}
 <script lang="ts">
 	import { createDateField, melt, type Matcher } from '@melt-ui/svelte'
 
@@ -459,7 +438,7 @@ If you have a few different matchers you want to use, you can simply combine the
 Or if you want to get really fancy with it, you can create a helper function that takes an array of
 matchers which you could use throughout your app.
 
-```svelte showLineNumbers {12,14-18,25}
+```svelte showLineNumbers {12,14-18,24}
 <script lang="ts">
 	import { createDateField, melt, type Matcher } from '@melt-ui/svelte'
 
@@ -496,7 +475,7 @@ You'll want to use the `validation` element to display a message to the user ind
 is invalid. It's automatically hidden when the field is valid, and is wired up via aria attributes
 to give screen readers the information they need.
 
-```svelte showLineNumbers {11,12,19}
+```svelte showLineNumbers {15}
 <span use:melt={$label}>Availability</span>
 <div use:melt={$field}>
 	{#each $segmentContents.start as seg, i (i)}
@@ -561,7 +540,7 @@ placeholder based on the locale.
 Of course it's up to you to decide how you get your user's locale, but once you have it, it's as
 simple as passing it as the `locale` prop.
 
-```svelte showLineNumbers {9}
+```svelte showLineNumbers {8}
 <script lang="ts">
 	import { createDateRangeField, melt } from '@melt-ui/svelte'
 

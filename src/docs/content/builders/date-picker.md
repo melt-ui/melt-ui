@@ -496,7 +496,7 @@ nice if you're just trying to limit the range of dates that can be selected.
 
 If a date is before the `minValue`, or after the `maxValue`, it will be disabled.
 
-```svelte showLineNumbers {9}
+```svelte showLineNumbers {8-9}
 <script lang="ts">
 	import { createDatePicker, melt } from '@melt-ui/svelte'
 	import { CalendarDate } from '@internationalized/date'
