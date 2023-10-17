@@ -319,7 +319,7 @@ Let's say that when a user selects Halloween (October 31st), we want to display 
 
 	const {
 		/* ... */
-		states: { value, /* ... */ }
+		states: { value /* ... */ }
 	} = createCalendar({
 		defaultPlaceholder: new CalendarDate(2023, 10, 1)
 	})
@@ -352,7 +352,7 @@ lot more power.
 
 	const {
 		/* ... */
-		states: { value, /* ... */ },
+		states: { value /* ... */ }
 	} = createCalendar()
 </script>
 

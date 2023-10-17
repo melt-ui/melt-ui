@@ -8,7 +8,7 @@
 		helpers: { isDateDisabled, isDateUnavailable },
 	} = createRangeCalendar({
 		fixedWeeks: true,
-		numberOfMonths: 2
+		numberOfMonths: 2,
 	});
 </script>
 

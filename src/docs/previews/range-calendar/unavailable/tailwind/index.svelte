@@ -10,8 +10,8 @@
 	} = createRangeCalendar({
 		fixedWeeks: true,
 		isDateUnavailable: (date) => {
-			return isWeekend(date, 'en')
-		}
+			return isWeekend(date, 'en');
+		},
 	});
 </script>
 
