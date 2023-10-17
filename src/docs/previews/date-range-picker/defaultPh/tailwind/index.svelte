@@ -29,7 +29,7 @@
 
 <div class="flex w-full flex-col items-center gap-3">
 	<div>
-		<span use:melt={$label}>Date</span>
+		<span use:melt={$label}>Hotel Nights</span>
 		<div use:melt={$field}>
 			{#each $segmentContents.start as seg}
 				<div use:melt={$startSegment(seg.part)}>

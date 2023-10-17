@@ -328,7 +328,7 @@ describe('Range Calendar', () => {
 	});
 
 	test('controlled placeholder should change view', async () => {
-		const placeholderStore = writable<DateValue>(undefined);
+		const placeholderStore = writable<DateValue>(calendarDateRange.start);
 		const { getByTestId } = render(RangeCalendarTest, {
 			defaultValue: calendarDateRange,
 			placeholder: placeholderStore,
