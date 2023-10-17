@@ -51,6 +51,8 @@ the pieces we need:
 
 ```svelte showLineNumbers
 <script lang="ts">
+	import { createDatePicker } from '@melt-ui/svelte'
+
 	const {
 		elements: {
 			calendar,
@@ -442,7 +444,6 @@ return a boolean indicating whether the date is unavailable.
 	const {
 		/* ... */
 	} = createDatePicker({
-		preventDeselect: true,
 		isDateUnavailable: (date) => {
 			return isWeekend(date, 'en')
 		}
@@ -474,7 +475,6 @@ boolean indicating whether the date is disabled.
 	const {
 		/* ... */
 	} = createDatePicker({
-		preventDeselect: true,
 		isDateDisabled: (date) => {
 			return date.day <= 10
 		}
@@ -499,11 +499,11 @@ If a date is before the `minValue`, or after the `maxValue`, it will be disabled
 ```svelte showLineNumbers {9}
 <script lang="ts">
 	import { createDatePicker, melt } from '@melt-ui/svelte'
+	import { CalendarDate } from '@internationalized/date'
 
 	const {
 		/* ... */
 	} = createDatePicker({
-		preventDeselect: true,
 		minValue: new CalendarDate(2023, 1, 15),
 		maxValue: new CalendarDate(2023, 2, 15)
 	})

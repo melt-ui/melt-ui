@@ -28,7 +28,7 @@ const defaults = {
 	preventScroll: false,
 	forceVisible: false,
 	locale: 'en',
-	granularity: 'day',
+	granularity: undefined,
 } satisfies CreateDateRangePickerProps;
 
 export function createDateRangePicker(props?: CreateDateRangePickerProps) {
