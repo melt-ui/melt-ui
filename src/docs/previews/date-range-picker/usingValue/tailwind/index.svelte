@@ -25,12 +25,12 @@
 		forceVisible: true,
 		defaultValue: {
 			start: new CalendarDate(2024, 1, 11),
-			end: new CalendarDate(2024, 1, 15)
-		}
+			end: new CalendarDate(2024, 1, 15),
+		},
 	});
 </script>
 
-<div class="flex w-full flex-col items-center gap-3">
+<div class="picker-container">
 	<div>
 		<span use:melt={$label}>Date</span>
 		<div use:melt={$field}>
@@ -107,6 +107,10 @@
 </div>
 
 <style lang="postcss">
+	.picker-container {
+		@apply flex w-full flex-col items-center gap-3;
+	}
+
 	.button-container {
 		@apply ml-4 flex w-full items-center justify-end;
 	}

@@ -33,7 +33,7 @@
 	});
 </script>
 
-<div class="flex w-full flex-col items-center gap-3">
+<div class="picker-container">
 	<div>
 		<span use:melt={$label} class="cursor-default font-medium text-magnum-800"
 			>Date</span

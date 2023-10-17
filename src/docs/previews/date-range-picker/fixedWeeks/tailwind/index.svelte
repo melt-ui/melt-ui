@@ -18,7 +18,7 @@
 			endSegment,
 			trigger,
 		},
-		states: { months, headingValue, daysOfWeek, segmentContents, open, value },
+		states: { months, headingValue, daysOfWeek, segmentContents, open },
 		helpers: { isDateDisabled, isDateUnavailable },
 	} = createDateRangePicker({
 		forceVisible: true,
@@ -26,7 +26,7 @@
 	});
 </script>
 
-<div class="flex w-full flex-col items-center gap-3">
+<div class="picker-container">
 	<div>
 		<span use:melt={$label}>Date</span>
 		<div use:melt={$field}>
@@ -48,7 +48,6 @@
 			</div>
 		</div>
 	</div>
-	<div>Selected: {$value.start} - {$value.end}</div>
 	{#if $open}
 		<div transition:fade={{ duration: 100 }} use:melt={$content}>
 			<div use:melt={$calendar}>
@@ -103,6 +102,10 @@
 </div>
 
 <style lang="postcss">
+	.picker-container {
+		@apply flex w-full flex-col items-center gap-3;
+	}
+
 	.button-container {
 		@apply ml-4 flex w-full items-center justify-end;
 	}

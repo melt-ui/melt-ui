@@ -24,12 +24,12 @@
 	} = createDateRangePicker({
 		forceVisible: true,
 		isDateUnavailable: (date) => {
-			return isWeekend(date, 'en')
-		}
+			return isWeekend(date, 'en');
+		},
 	});
 </script>
 
-<div class="flex w-full flex-col items-center gap-3">
+<div class="picker-container">
 	<div>
 		<span use:melt={$label}>Date</span>
 		<div use:melt={$field}>
@@ -105,6 +105,10 @@
 </div>
 
 <style lang="postcss">
+	.picker-container {
+		@apply flex w-full flex-col items-center gap-3;
+	}
+
 	.button-container {
 		@apply ml-4 flex w-full items-center justify-end;
 	}
