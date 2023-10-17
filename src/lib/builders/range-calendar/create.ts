@@ -808,8 +808,6 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	}
 
 	function shiftFocus(node: HTMLElement, add: number) {
-		// TODO: Determine if this is okay when using paged navigation
-		// with multiple months.
 		const candidateCells = getSelectableCells(ids.calendar);
 		if (!candidateCells.length) {
 			return;
