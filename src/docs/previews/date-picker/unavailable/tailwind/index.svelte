@@ -39,8 +39,8 @@
 				</div>
 			{/each}
 			<div class="button-container">
-				<button use:melt={$trigger} class="rounded bg-magnum-400 p-1">
-					<Calendar class="h-4 w-4 text-neutral-950" />
+				<button use:melt={$trigger}>
+					<Calendar size={16} />
 				</button>
 			</div>
 		</div>
@@ -106,6 +106,10 @@
 
 	[data-melt-popover-content] {
 		@apply z-10 min-w-[320px] rounded-lg bg-neutral-900 shadow-sm;
+	}
+
+	[data-melt-popover-trigger] {
+		@apply rounded-md bg-magnum-400 p-1 text-neutral-950 transition-all hover:bg-magnum-400/80;
 	}
 
 	[data-melt-datefield-label] {
