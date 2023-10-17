@@ -203,11 +203,12 @@ export function createDateField(props?: CreateDateFieldProps) {
 	);
 
 	const label = builder(name('label'), {
-		stores: [isInvalid],
-		returned: ([$isInvalid]) => {
+		stores: [isInvalid, disabled],
+		returned: ([$isInvalid, $disabled]) => {
 			return {
 				id: ids.label,
 				'data-invalid': $isInvalid ? '' : undefined,
+				'data-disabled': $disabled ? '' : undefined,
 			};
 		},
 	});
@@ -264,9 +265,10 @@ export function createDateField(props?: CreateDateFieldProps) {
 				id: ids.field,
 				'aria-labelledby': ids.label,
 				'aria-describedby': describedBy,
-				'data-invalid': $isInvalid ? '' : undefined,
 				'aria-disabled': $disabled ? 'true' : undefined,
 				'aria-readonly': $readonly ? 'true' : undefined,
+				'data-invalid': $isInvalid ? '' : undefined,
+				'data-disabled': $disabled ? '' : undefined,
 			};
 		},
 		action: () => {
