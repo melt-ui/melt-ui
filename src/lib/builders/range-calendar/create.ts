@@ -296,6 +296,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				'aria-label': 'Previous',
 				'aria-disabled': disabled ? 'true' : undefined,
 				disabled: disabled ? true : undefined,
+				'data-disabled': disabled ? '' : undefined,
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -319,6 +320,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				'aria-label': 'Next',
 				'aria-disabled': disabled ? 'true' : undefined,
 				disabled: disabled ? true : undefined,
+				'data-disabled': disabled ? '' : undefined,
 			};
 		},
 		action: (node: HTMLElement) => {

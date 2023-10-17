@@ -41,7 +41,7 @@
 			content,
 			label,
 		},
-		states: { value: insideValue, months, headingValue, daysOfWeek, segmentContents, open },
+		states: { value: insideValue, months, headingValue, daysOfWeek, segmentContents },
 		options: { locale: insideLocale },
 	} = createDatePicker({
 		value,

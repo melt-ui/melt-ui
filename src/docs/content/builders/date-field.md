@@ -42,9 +42,11 @@ times in Melt, which you can read about <a href="/docs/dates" target="_blank" cl
 </div>
 ```
 
-- **field**: The element which contains the date segments
-- **segment**: An individual segment of the date (day, month, year, etc.)
-- **label**: The label for the date field
+- **Field**: The element which contains the date segments
+- **Segment**: An individual segment of the date (day, month, year, etc.)
+- **Label**: The label for the date field
+- **Hidden Input**: A hidden input element containing the value of the field
+- **Validation**: The container for the
 
 ## Tutorial
 

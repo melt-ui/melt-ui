@@ -97,6 +97,7 @@ export function getSegments(id: string) {
 		(el): el is HTMLElement => {
 			if (!isHTMLElement(el)) return false;
 			const segment = el.dataset.segment;
+			if (segment === 'trigger') return true;
 			if (!isAnySegmentPart(segment) || segment === 'literal') return false;
 			return true;
 		}

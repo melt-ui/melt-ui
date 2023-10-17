@@ -316,12 +316,19 @@ describe('DatePicker', () => {
 			const monthSegment = getByTestId('month');
 			const daySegment = getByTestId('day');
 			const yearSegment = getByTestId('year');
+			const triggerSegment = getByTestId('trigger');
 
 			await user.click(monthSegment);
 			await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
 			expect(daySegment).toHaveFocus();
 
 			await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+			expect(yearSegment).toHaveFocus();
+
+			await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+			expect(triggerSegment).toHaveFocus();
+
+			await user.keyboard(`{${kbd.ARROW_LEFT}}`);
 			expect(yearSegment).toHaveFocus();
 
 			await user.keyboard(`{${kbd.ARROW_LEFT}}`);
@@ -338,6 +345,7 @@ describe('DatePicker', () => {
 			const monthSegment = getByTestId('month');
 			const daySegment = getByTestId('day');
 			const yearSegment = getByTestId('year');
+			const triggerSegment = getByTestId('trigger');
 
 			await user.click(monthSegment);
 			await user.keyboard(`{${kbd.TAB}}`);
@@ -345,11 +353,13 @@ describe('DatePicker', () => {
 
 			await user.keyboard(`{${kbd.TAB}}`);
 			expect(yearSegment).toHaveFocus();
+
+			await user.keyboard(`{${kbd.TAB}}`);
+			expect(triggerSegment).toHaveFocus();
 		});
 
 		test('when no time selected, selecting', async () => {
 			const user = userEvent.setup();
-			const td = today('America/New_York');
 			const { getByTestId, queryByTestId } = render(DatePickerTest, {
 				granularity: 'minute',
 			});
@@ -376,6 +386,18 @@ describe('DatePicker', () => {
 
 			expect(hourSegment).not.toHaveTextContent(String(undefined));
 			expect(minuteSegment).not.toHaveTextContent(String(undefined));
+		});
+
+		test('correct segments are rendered with placeholder', async () => {
+			const { getByTestId } = render(DatePickerTest, {
+				defaultPlaceholder: new CalendarDateTime(2021, 2, 1),
+			});
+
+			const segments = ['month', 'day', 'year', 'hour', 'minute', 'dayPeriod'];
+
+			for (const segment of segments) {
+				expect(getByTestId(segment)).not.toBeNull();
+			}
 		});
 	});
 });

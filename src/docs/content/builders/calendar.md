@@ -255,9 +255,7 @@ By default, the placeholder will be set to the current date, but you can overrid
 	import { CalendarDate } from '@internationalized/date'
 
 	const {
-		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek },
-		helpers: { isDateDisabled, isDateUnavailable }
+		/* ... */
 	} = createCalendar({
 		defaultPlaceholder: new CalendarDate(2021, 2, 1)
 	})
@@ -286,9 +284,7 @@ To have a date selected by default, we can use the `value` (controlled), or `def
 	import { CalendarDate } from '@internationalized/date'
 
 	const {
-		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek },
-		helpers: { isDateDisabled, isDateUnavailable }
+		/* ... */
 	} = createCalendar({
 		defaultValue: new CalendarDate(2024, 1, 11)
 	})
@@ -322,9 +318,8 @@ Let's say that when a user selects Halloween (October 31st), we want to display 
 	const halloween = new CalendarDate(2023, 10, 31)
 
 	const {
-		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek, value },
-		helpers: { isDateDisabled, isDateUnavailable }
+		/* ... */
+		states: { value, /* ... */ }
 	} = createCalendar({
 		defaultPlaceholder: new CalendarDate(2023, 10, 1)
 	})
@@ -356,9 +351,8 @@ lot more power.
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
 	const {
-		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek, value },
-		helpers: { isDateDisabled, isDateUnavailable }
+		/* ... */
+		states: { value, /* ... */ },
 	} = createCalendar()
 </script>
 
@@ -389,9 +383,7 @@ regardless of the month.
 	import { CalendarDate } from '@internationalized/date'
 
 	const {
-		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek },
-		helpers: { isDateDisabled, isDateUnavailable }
+		/* ... */
 	} = createCalendar({
 		defaultValue: new CalendarDate(2024, 1, 11),
 		fixedWeeks: true
@@ -413,9 +405,7 @@ like, using the `numberOfMonths` prop.
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
 	const {
-		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek },
-		helpers: { isDateDisabled, isDateUnavailable }
+		/* ... */
 	} = createCalendar({
 		numberOfMonths: 2
 	})
@@ -438,9 +428,7 @@ months being displayed.
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
 	const {
-		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek },
-		helpers: { isDateDisabled, isDateUnavailable }
+		/* ... */
 	} = createCalendar({
 		numberOfMonths: 2,
 		pagedNavigation: true
@@ -464,9 +452,7 @@ constructor.
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
 	const {
-		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek },
-		helpers: { isDateDisabled, isDateUnavailable }
+		/* ... */
 	} = createCalendar({
 		locale: 'de'
 	})
@@ -477,7 +463,7 @@ constructor.
 	<svelte:component this={previews.locale} />
 </Preview>
 
-### Deselection
+### Prevent Deselection
 
 By default, users can deselect a selected date without selecting another, by selecting the date
 again. This results in the `value` potentially being `undefined`. If you'd like to disable this
@@ -489,9 +475,7 @@ able to deselect dates.
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
 	const {
-		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek },
-		helpers: { isDateDisabled, isDateUnavailable }
+		/* ... */
 	} = createCalendar({
 		preventDeselect: true
 	})
@@ -512,9 +496,7 @@ behavior, you can set the `multiple` prop to `true`.
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
 	const {
-		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek },
-		helpers: { isDateDisabled, isDateUnavailable }
+		/* ... */
 	} = createCalendar({
 		multiple: true
 	})
@@ -543,9 +525,7 @@ another.
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
 	const {
-		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek },
-		helpers: { isDateDisabled, isDateUnavailable }
+		/* ... */
 	} = createCalendar({
 		multiple: true,
 		onValueChange: ({ curr, next }) => {
@@ -572,9 +552,7 @@ the oldest date when the user selects a new one after they've already selected 3
 	import { createCalendar, melt } from '@melt-ui/svelte'
 
 	const {
-		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek },
-		helpers: { isDateDisabled, isDateUnavailable }
+		/* ... */
 	} = createCalendar({
 		multiple: true,
 		onValueChange: ({ next }) => {
@@ -680,9 +658,7 @@ If a date is before the `minValue`, or after the `maxValue`, it will be disabled
 	import { CalendarDate } from '@internationalized/date'
 
 	const {
-		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek, value },
-		helpers: { isDateDisabled, isDateUnavailable }
+		/* ... */
 	} = createCalendar({
 		defaultPlaceholder: new CalendarDate(2023, 1, 25),
 		minValue: new CalendarDate(2023, 1, 15),

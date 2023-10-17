@@ -83,6 +83,14 @@
 		@apply rounded-lg p-1 transition-all hover:bg-magnum-500/20;
 	}
 
+	[data-melt-calendar-prevbutton][data-disabled] {
+		@apply pointer-events-none rounded-lg p-1 opacity-40;
+	}
+
+	[data-melt-calendar-nextbutton][data-disabled] {
+		@apply pointer-events-none rounded-lg p-1 opacity-40;
+	}
+
 	[data-melt-calendar-heading] {
 		@apply font-semibold;
 	}
@@ -104,7 +112,7 @@
 	}
 
 	[data-melt-calendar-cell][data-disabled] {
-		@apply opacity-40;
+		@apply pointer-events-none opacity-40;
 	}
 
 	[data-melt-calendar-cell][data-unavailable] {
@@ -112,7 +120,7 @@
 	}
 
 	[data-melt-calendar-cell][data-selected] {
-		@apply bg-magnum-500/30;
+		@apply bg-magnum-400 text-neutral-950;
 	}
 
 	[data-melt-calendar-cell][data-outside-visible-months] {

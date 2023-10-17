@@ -94,11 +94,11 @@ function createMonth(props: CreateMonthProps): Month<DateValue> {
 		let startFrom = nextMonthDays[nextMonthDays.length - 1];
 
 		if (!startFrom) {
-			startFrom = dateObj.set({ day: 1 }).subtract({ days: 1 });
+			startFrom = dateObj.add({ months: 1 }).set({ day: 1 });
 		}
 
 		const extraDaysArray = Array.from({ length: extraDays }, (_, i) => {
-			const incr = i + 1;
+			const incr = i;
 			return startFrom.add({ days: incr });
 		});
 		nextMonthDays.push(...extraDaysArray);

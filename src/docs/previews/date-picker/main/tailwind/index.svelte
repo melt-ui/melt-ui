@@ -18,7 +18,7 @@
 			segment,
 			trigger,
 		},
-		states: { value, months, headingValue, daysOfWeek, segmentContents, open },
+		states: { months, headingValue, daysOfWeek, segmentContents, open },
 		options: { locale },
 	} = createDatePicker({
 		forceVisible: true,
@@ -49,7 +49,7 @@
 	</div>
 	{#if $open}
 		<div
-			class="z-10 w-80 rounded-[4px] bg-white p-3 shadow-sm"
+			class="z-10 w-80 rounded-lg bg-white p-3 shadow-sm"
 			transition:fade={{ duration: 100 }}
 			use:melt={$content}
 		>

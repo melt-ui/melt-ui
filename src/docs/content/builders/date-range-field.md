@@ -170,7 +170,7 @@ which will be used as the respective input's name attribute.
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
 	const {
-		elements: { field, segment, label, startHiddenInput, endHiddenInput },
+		elements: { field, startSegment, endSegment, label, startHiddenInput, endHiddenInput },
 		states: { segmentContents, value }
 	} = createDateField({
 		startName: 'tripStart',
