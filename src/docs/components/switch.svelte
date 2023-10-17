@@ -4,7 +4,7 @@
 	import { generateId } from '$lib/internal/helpers/index.js';
 	import { writable } from 'svelte/store';
 
-	export let checked: boolean | undefined = true;
+	export let checked: boolean | undefined = false;
 	export let id: string = generateId();
 	export let keepState = false;
 	const checkedStore = writable(checked);
