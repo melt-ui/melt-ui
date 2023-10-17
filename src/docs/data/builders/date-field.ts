@@ -7,7 +7,7 @@ import type { BuilderData } from './index.js';
 /**
  * Props that are also returned in the form of stores via the `options` property.
  */
-const DF_PROPS = [
+const dateFieldProps = [
 	{
 		name: 'defaultValue',
 		type: 'DateValue | undefined',
@@ -86,8 +86,9 @@ const DF_PROPS = [
 	},
 	{
 		name: 'granularity',
-		type: 'Granularity',
-		description: 'The granularity of the date field.',
+		type: '"day" | "hour" | "minute" | "second"',
+		description:
+			'The granularity of the date field. Defaults to `"day"` if a CalendarDate is provided, otherwise defaults to `"minute"`. The field will render segments for each part of the date up to and including the specified granularity.',
 	},
 	{
 		name: 'name',
@@ -108,13 +109,13 @@ const DF_PROPS = [
 ];
 
 const excludedProps = ['value', 'placeholder'];
-const OPTIONS = DF_PROPS.filter((prop) => !excludedProps.includes(prop.name));
+const dateFieldOptions = dateFieldProps.filter((prop) => !excludedProps.includes(prop.name));
 
 const BUILDER_NAME = 'date field';
 
 const builder = builderSchema(BUILDER_NAME, {
 	title: 'createDateField',
-	props: DF_PROPS,
+	props: dateFieldProps,
 	elements: [
 		{
 			name: 'field',
@@ -175,7 +176,7 @@ const builder = builderSchema(BUILDER_NAME, {
 				'A readable store which returns a function that accepts a date and returns a boolean indicating whether the date is unavailable.',
 		},
 	],
-	options: OPTIONS,
+	options: dateFieldOptions,
 });
 
 const field = elementSchema('field', {
