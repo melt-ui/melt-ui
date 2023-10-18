@@ -593,7 +593,9 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			'white-space': 'nowrap',
 			width: '1px',
 		});
-		const h2 = document.createElement('h2');
+		const h2 = document.createElement('div');
+		h2.role = 'heading';
+		h2.ariaLevel = '2';
 		h2.textContent = label;
 		h2.id = ids.accessibleHeading;
 		node.insertBefore(div, node.firstChild);

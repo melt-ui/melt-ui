@@ -22,9 +22,9 @@
 					<button use:melt={$prevButton}>
 						<ChevronLeft />
 					</button>
-					<h2 class="font-semibold text-magnum-800" use:melt={$heading}>
+					<div class="font-semibold text-magnum-800" use:melt={$heading}>
 						{$headingValue}
-					</h2>
+					</div>
 					<button use:melt={$nextButton}>
 						<ChevronRight />
 					</button>
