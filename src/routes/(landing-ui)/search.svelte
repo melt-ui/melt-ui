@@ -4,6 +4,7 @@
 	import { Check, CornerDownRight, Search } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import type { PagefindSearchFragment, Pagefind, PagefindSearchResult } from '../../pagefind.js';
+	import { Tooltip } from '$docs/components/index.js';
 
 	let pagefind: Pagefind;
 	let results: PagefindSearchResult[] = [];
@@ -36,6 +37,7 @@
 			return undefined;
 		},
 		forceVisible: true,
+		preventScroll: false,
 	});
 
 	const {
@@ -49,7 +51,6 @@
 			}
 			return next;
 		},
-		defaultOpen: true,
 	});
 
 	let debounceTimer: ReturnType<typeof setTimeout>;
@@ -80,9 +81,11 @@
 	}}
 />
 
-<button class="ml-6 text-neutral-400 transition-colors hover:text-neutral-50" use:melt={$trigger}>
-	<Search class="h-5 w-5" />
-</button>
+<Tooltip text="Search">
+	<button class="text-neutral-400 transition-colors hover:text-neutral-50" use:melt={$trigger}>
+		<Search class="h-5 w-5" />
+	</button>
+</Tooltip>
 
 <div use:melt={$portalled} class="contents">
 	<div use:melt={$overlay} class="fixed inset-0 z-40 bg-black bg-opacity-50" />
@@ -94,8 +97,8 @@
 			<div class="relative">
 				<input
 					use:melt={$input}
-					class="flex h-10 w-[600px] items-center justify-between rounded-lg
-            border border-neutral-400 bg-neutral-800 px-3 pl-8 text-white focus:border-magnum-400"
+					class="flex h-10 w-[calc(100vw-2rem)] max-w-[600px] items-center justify-between rounded-lg border
+            border-neutral-400 bg-neutral-800 px-3 pl-8 text-white focus:border-magnum-400"
 					placeholder="Search..."
 					on:keydown={(e) => {
 						if (e.key === 'Escape') {
@@ -109,7 +112,11 @@
 			</div>
 		</div>
 
-		<div class="z-10 flex max-h-[600px] flex-col" use:melt={$menu} class:hidden={!$inputValue}>
+		<div
+			class="z-10 flex max-h-[min(600px,50vh)] flex-col"
+			use:melt={$menu}
+			class:hidden={!$inputValue}
+		>
 			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 			<div
 				class="flex max-h-full flex-col gap-0 overflow-y-auto rounded-lg bg-neutral-800 px-2 py-2 text-white"

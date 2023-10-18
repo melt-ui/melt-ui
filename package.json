@@ -23,7 +23,8 @@
 		"pw": "pnpm exec playwright test",
 		"pw:ui": "pnpm exec playwright test --ui",
 		"changeset": "changeset",
-		"pagefind": "node ./scripts/pagefind.js"
+		"pagefind": "node ./scripts/pagefind.js",
+		"pre-deploy": "pnpm run build && pnpm run pagefind"
 	},
 	"exports": {
 		".": {
