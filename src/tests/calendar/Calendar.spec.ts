@@ -356,13 +356,13 @@ describe('Calendar', () => {
 		await userEvent.click(prevButton);
 		const heading = getByTestId('heading');
 		expect(heading).toHaveTextContent('December 1979');
-		expect(prevButton).not.toBeDisabled();
 		expect(prevButton).not.toHaveAttribute('aria-disabled', 'true');
+		expect(prevButton).not.toHaveAttribute('data-disabled');
 		await userEvent.click(prevButton);
 		expect(heading).toHaveTextContent('November 1979');
 
-		expect(prevButton).toBeDisabled();
 		expect(prevButton).toHaveAttribute('aria-disabled', 'true');
+		expect(prevButton).toHaveAttribute('data-disabled');
 
 		await userEvent.click(prevButton);
 		expect(heading).toHaveTextContent('November 1979');
@@ -380,13 +380,15 @@ describe('Calendar', () => {
 		expect(heading).toHaveTextContent('February 1980');
 		await userEvent.click(nextButton);
 		expect(heading).toHaveTextContent('March 1980');
-		expect(nextButton).not.toBeDisabled();
+
 		expect(nextButton).not.toHaveAttribute('aria-disabled', 'true');
+		expect(nextButton).not.toHaveAttribute('data-disabled');
+
 		await userEvent.click(nextButton);
 		expect(heading).toHaveTextContent('April 1980');
 
-		expect(nextButton).toBeDisabled();
 		expect(nextButton).toHaveAttribute('aria-disabled', 'true');
+		expect(nextButton).toHaveAttribute('data-disabled');
 
 		await userEvent.click(nextButton);
 		expect(heading).toHaveTextContent('April 1980');
@@ -558,5 +560,42 @@ describe('Calendar', () => {
 		expect(thirdDayInMonth).toHaveAttribute('aria-disabled', 'true');
 		await userEvent.click(thirdDayInMonth);
 		expect(thirdDayInMonth).not.toHaveAttribute('data-selected');
+	});
+
+	test('disabled prop prevents calendar focus & interaction', async () => {
+		const { getByTestId } = render(CalendarTest, {
+			defaultPlaceholder: calendarDate,
+			disabled: true,
+		});
+
+		const calendar = getByTestId('calendar');
+		expect(calendar).toHaveAttribute('data-disabled');
+
+		const grid = getByTestId('grid-0');
+		expect(grid).toHaveAttribute('aria-disabled', 'true');
+		expect(grid).toHaveAttribute('data-disabled');
+
+		const firstDayOfMonth = getByTestId('month-0-date-1');
+		await userEvent.click(firstDayOfMonth);
+		expect(firstDayOfMonth).not.toHaveFocus();
+	});
+
+	test('readonly prop prevents selecting dates but allows focus', async () => {
+		const { getByTestId } = render(CalendarTest, {
+			defaultPlaceholder: calendarDate,
+			readonly: true,
+		});
+
+		const calendar = getByTestId('calendar');
+		expect(calendar).toHaveAttribute('data-readonly');
+
+		const grid = getByTestId('grid-0');
+		expect(grid).toHaveAttribute('aria-readonly', 'true');
+		expect(grid).toHaveAttribute('data-readonly');
+
+		const firstDayOfMonth = getByTestId('month-0-date-1');
+		await userEvent.click(firstDayOfMonth);
+		expect(firstDayOfMonth).toHaveFocus();
+		expect(firstDayOfMonth).not.toHaveAttribute('data-selected');
 	});
 });

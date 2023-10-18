@@ -52,6 +52,8 @@ const defaults = {
 	locale: 'en',
 	minValue: undefined,
 	maxValue: undefined,
+	disabled: false,
+	readonly: false,
 } satisfies CreateCalendarProps;
 
 type CalendarParts = 'content' | 'nextButton' | 'prevButton' | 'grid' | 'cell' | 'heading';
@@ -82,6 +84,8 @@ export function createCalendar<
 		maxValue,
 		multiple,
 		isDateUnavailable,
+		disabled,
+		readonly,
 	} = options;
 
 	const ids = {
@@ -136,29 +140,35 @@ export function createCalendar<
 		};
 	});
 
-	const isNextButtonDisabled = derived([months, maxValue], ([$months, $maxValue]) => {
-		if (!$maxValue || !$months.length) return false;
-		const lastMonthInView = $months[$months.length - 1].value;
-		const firstMonthOfNextPage = lastMonthInView.add({ months: 1 }).set({ day: 1 });
-		return isAfter(firstMonthOfNextPage, $maxValue);
-	});
+	const isNextButtonDisabled = derived(
+		[months, maxValue, disabled],
+		([$months, $maxValue, $disabled]) => {
+			if (!$maxValue || !$months.length || $disabled) return false;
+			const lastMonthInView = $months[$months.length - 1].value;
+			const firstMonthOfNextPage = lastMonthInView.add({ months: 1 }).set({ day: 1 });
+			return isAfter(firstMonthOfNextPage, $maxValue);
+		}
+	);
 
-	const isPrevButtonDisabled = derived([months, minValue], ([$months, $minValue]) => {
-		if (!$minValue || !$months.length) return false;
-		const firstMonthInView = $months[0].value;
-		const lastMonthOfPrevPage = firstMonthInView.subtract({ months: 1 }).set({ day: 35 });
-		return isBefore(lastMonthOfPrevPage, $minValue);
-	});
+	const isPrevButtonDisabled = derived(
+		[months, minValue, disabled],
+		([$months, $minValue, $disabled]) => {
+			if (!$minValue || !$months.length || $disabled) return false;
+			const firstMonthInView = $months[0].value;
+			const lastMonthOfPrevPage = firstMonthInView.subtract({ months: 1 }).set({ day: 35 });
+			return isBefore(lastMonthOfPrevPage, $minValue);
+		}
+	);
 
 	/**
 	 * A derived store function that determines if a date is disabled based
 	 * on the `isDateDisabled` prop, `minValue`, and `maxValue` props.
 	 */
 	const isDateDisabled = derived(
-		[options.isDateDisabled, minValue, maxValue],
-		([$isDateDisabled, $minValue, $maxValue]) => {
+		[options.isDateDisabled, minValue, maxValue, disabled],
+		([$isDateDisabled, $minValue, $maxValue, $disabled]) => {
 			return (date: DateValue) => {
-				if ($isDateDisabled?.(date)) return true;
+				if ($isDateDisabled?.(date) || $disabled) return true;
 				if ($minValue && isBefore(date, $minValue)) return true;
 				if ($maxValue && isBefore($maxValue, date)) return true;
 				return false;
@@ -257,13 +267,15 @@ export function createCalendar<
 	 * when using paged navigation.
 	 */
 	const calendar = builder(name(), {
-		stores: [fullCalendarLabel, isInvalid],
-		returned: ([$fullCalendarLabel, $isInvalid]) => {
+		stores: [fullCalendarLabel, isInvalid, disabled, readonly],
+		returned: ([$fullCalendarLabel, $isInvalid, $disabled, $readonly]) => {
 			return {
 				id: ids.calendar,
 				role: 'application',
 				'aria-label': $fullCalendarLabel,
 				'data-invalid': $isInvalid ? '' : undefined,
+				'data-disabled': $disabled ? '' : undefined,
+				'data-readonly': $readonly ? '' : undefined,
 			};
 		},
 		action: (node: HTMLElement) => {
@@ -311,7 +323,18 @@ export function createCalendar<
 	 * For more details about the structure of the month object, refer to {@link Month}.
 	 */
 	const grid = builder(name('grid'), {
-		returned: () => ({ tabindex: -1, id: ids.grid, role: 'grid' }),
+		stores: [readonly, disabled],
+		returned: ([$readonly, $disabled]) => {
+			return {
+				tabindex: -1,
+				id: ids.grid,
+				role: 'grid',
+				'aria-readonly': $readonly ? 'true' : undefined,
+				'aria-disabled': $disabled ? 'true' : undefined,
+				'data-readonly': $readonly ? '' : undefined,
+				'data-disabled': $disabled ? '' : undefined,
+			};
+		},
 	});
 
 	/**
@@ -328,13 +351,13 @@ export function createCalendar<
 				role: 'button',
 				'aria-label': 'Previous',
 				'aria-disabled': disabled ? 'true' : undefined,
-				disabled: disabled ? true : undefined,
 				'data-disabled': disabled ? '' : undefined,
 			};
 		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
+					if (get(isPrevButtonDisabled)) return;
 					prevPage();
 				})
 			);
@@ -358,13 +381,13 @@ export function createCalendar<
 				role: 'button',
 				'aria-label': 'Next',
 				'aria-disabled': disabled ? 'true' : undefined,
-				disabled: disabled ? true : undefined,
 				'data-disabled': disabled ? '' : undefined,
 			};
 		},
 		action: (node: HTMLElement) => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
+					if (get(isNextButtonDisabled)) return;
 					nextPage();
 				})
 			);
@@ -811,6 +834,8 @@ export function createCalendar<
 	}
 
 	function handleCellClick(date: DateValue) {
+		const $readonly = get(readonly);
+		if ($readonly) return;
 		const $isDateDisabled = get(isDateDisabled);
 		const $isUnavailable = get(options.isDateUnavailable);
 		if ($isDateDisabled?.(date) || $isUnavailable?.(date)) return;
@@ -1014,10 +1039,10 @@ export function createCalendar<
 	 * @returns `true` if the date is disabled, `false` otherwise
 	 */
 	const _isDateDisabled = derived(
-		[isDateDisabled, placeholder, minValue, maxValue],
-		([$isDateDisabled, $placeholder, $minValue, $maxValue]) => {
+		[isDateDisabled, placeholder, minValue, maxValue, disabled],
+		([$isDateDisabled, $placeholder, $minValue, $maxValue, $disabled]) => {
 			return (date: DateValue) => {
-				if ($isDateDisabled?.(date)) return true;
+				if ($isDateDisabled?.(date) || $disabled) return true;
 				if ($minValue && isBefore(date, $minValue)) return true;
 				if ($maxValue && isAfter(date, $maxValue)) return true;
 				if (!isSameMonth(date, $placeholder)) return true;

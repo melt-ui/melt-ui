@@ -21,6 +21,8 @@
 	export let minValue: CreateCalendarProps['minValue'] = undefined;
 	export let maxValue: CreateCalendarProps['maxValue'] = undefined;
 	export let multiple: boolean | undefined = undefined;
+	export let disabled: CreateCalendarProps['disabled'] = undefined
+	export let readonly: CreateCalendarProps['readonly'] = undefined
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
@@ -44,6 +46,8 @@
 		minValue,
 		maxValue,
 		multiple,
+		disabled,
+		readonly
 	});
 </script>
 
