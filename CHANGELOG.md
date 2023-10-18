@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.55.3
+
+### Patch Changes
+
+- Combobox: allow contenteditable ([#633](https://github.com/melt-ui/melt-ui/pull/633))
+
 ## 0.55.2
 
 ### Patch Changes
