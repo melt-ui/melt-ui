@@ -121,7 +121,9 @@ function remarkEscapeSvelte() {
 
 		function escape(node) {
 			for (let i = 0; i < entities.length; i += 1) {
-				node.value = node.value.replace(entities[i][0], entities[i][1]);
+				for (const entity of entities) {
+					node.value = node.value.replace(entity[0], entity[1]);
+				}
 			}
 		}
 	};
