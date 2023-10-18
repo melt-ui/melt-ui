@@ -45,7 +45,6 @@ module.exports = {
 		// eslint-plugin-svelte
 		'svelte/no-target-blank': 'error',
 		'svelte/no-immutable-reactive-statements': 'error',
-		'svelte/no-trailing-spaces': 'error',
 		'svelte/prefer-style-directive': 'error',
 		'svelte/no-reactive-literals': 'error',
 		'svelte/no-useless-mustaches': 'error',
