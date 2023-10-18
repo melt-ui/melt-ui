@@ -120,22 +120,19 @@
 					{:then data}
 						<div
 							use:melt={$option({ value: data, label: data.meta.title })}
-							class="relative scroll-my-2 rounded-md px-4 py-2
-
-						data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900
-							data-[disabled]:opacity-50"
+							class="group relative scroll-my-2 rounded-md px-4 py-2 data-[disabled]:opacity-50"
 						>
 							<a
-								class="text-lg font-semibold hover:underline hover:opacity-75"
+								class="title text-lg font-semibold underline hover:opacity-75"
 								href={sanitizeLink(data.url)}>{data.meta.title}</a
 							>
 							<p class="mt-1 font-light">
 								{@html data.excerpt}
 							</p>
 							{#each data.sub_results.filter(({ title }) => title !== data.meta.title) as subresult}
-								<div class="py-2 pl-2">
-									<div class="flex items-center gap-2">
-										<CornerDownRight />
+								<div class="subresult py-2 pl-2">
+									<div class="flex items-center gap-1">
+										<CornerDownRight class="opacity-75 square-4" />
 										<a
 											class="font-semibold underline hover:opacity-75"
 											href={sanitizeLink(subresult.url)}
@@ -160,10 +157,33 @@
 
 <style lang="postcss">
 	[data-melt-combobox-menu] :global(mark) {
-		background-color: theme('colors.magnum.400');
-		color: theme('colors.magnum.950');
+		background-color: theme('colors.magnum.400/0.5');
+		color: theme('colors.white');
 		border-radius: theme('borderRadius.sm');
-		padding-inline: 2px;
+		padding-inline: 1px;
 		font-weight: 500;
+	}
+
+	.subresult :global(mark) {
+		background-color: theme('colors.magnum.400/0.5');
+		color: theme('colors.white');
+		font-weight: 300;
+	}
+
+	[data-highlighted] .title {
+		position: relative;
+		color: theme('colors.magnum.400');
+
+		&::before {
+			content: '';
+			position: absolute;
+			top: 50%;
+			translate: 0 -30%;
+			left: -12px;
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background-color: theme('colors.magnum.400');
+		}
 	}
 </style>
