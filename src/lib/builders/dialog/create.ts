@@ -218,6 +218,7 @@ export function createDialog(props?: CreateDialogProps) {
 						enabled: $open,
 						handler: (e: PointerEvent) => {
 							if (e.defaultPrevented) return;
+
 							const $openDialogIds = get(openDialogIds);
 							const isLast = last($openDialogIds) === ids.content;
 							if ($closeOnOutsideClick && isLast) {

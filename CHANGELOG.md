@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.55.2
+
+### Patch Changes
+
+- Dialog: Fix touch event passing through overlay ([`9bf81b3b`](https://github.com/melt-ui/melt-ui/commit/9bf81b3bfbbdb7cc870bd71332e7afc6d6c54fbb))
+
 ## 0.55.1
 
 ### Patch Changes
