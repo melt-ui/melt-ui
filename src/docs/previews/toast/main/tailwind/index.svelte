@@ -38,7 +38,6 @@
 	function addRandomToast() {
 		addToast({
 			data: toastData[Math.floor(Math.random() * toastData.length)],
-			closeDelay: 0,
 		});
 	}
 </script>
