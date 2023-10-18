@@ -553,7 +553,6 @@ export function createListbox<
 					'data-selected': selected ? '' : undefined,
 					id: generateId(),
 					role: 'option',
-					style: styleToString({ cursor: props.disabled ? 'default' : 'pointer' }),
 				} as const;
 			},
 		action: (node: HTMLElement): MeltActionReturn<ListboxEvents['item']> => {

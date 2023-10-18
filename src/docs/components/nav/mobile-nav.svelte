@@ -20,7 +20,7 @@
 
 <button
 	use:melt={$trigger}
-	class="ml-6 text-neutral-400 transition-colors hover:text-neutral-50 md:hidden"
+	class="text-neutral-400 transition-colors hover:text-neutral-50 md:hidden"
 >
 	<Menu class="square-6" />
 	<span class="sr-only">Toggle Menu</span>

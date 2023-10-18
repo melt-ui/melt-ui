@@ -22,7 +22,9 @@
 		"build-storybook": "storybook build -s static",
 		"pw": "pnpm exec playwright test",
 		"pw:ui": "pnpm exec playwright test --ui",
-		"changeset": "changeset"
+		"changeset": "changeset",
+		"pagefind": "node ./scripts/pagefind.js",
+		"pre-deploy": "pnpm run build && pnpm run pagefind"
 	},
 	"exports": {
 		".": {
@@ -82,6 +84,7 @@
 		"@storybook/sveltekit": "^7.3.2",
 		"@storybook/testing-library": "^0.2.0",
 		"@sveltejs/adapter-auto": "^2.1.0",
+		"@sveltejs/adapter-static": "^2.0.3",
 		"@sveltejs/adapter-vercel": "^3.0.2",
 		"@sveltejs/kit": "^1.22.3",
 		"@sveltejs/package": "^2.2.0",
@@ -112,6 +115,7 @@
 		"jest-axe": "^8.0.0",
 		"jsdom": "^22.1.0",
 		"lucide-svelte": "^0.263.0",
+		"pagefind": "^1.0.3",
 		"postcss": "^8.4.27",
 		"postcss-load-config": "^4.0.1",
 		"prettier": "2.8.7",
