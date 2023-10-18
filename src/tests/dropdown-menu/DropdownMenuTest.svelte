@@ -51,7 +51,6 @@
 		<AlignJustify class="h-4 w-4" />
 		<span class="sr-only">Open Popover</span>
 	</button>
-	<!-- ['item1', 'checkboxItem1', 'checkboxItem2', 'subtrigger', 'item3' ] -->
 	<div class="menu" use:melt={$menu} data-testid="menu">
 		<div class="item" use:melt={$item} data-testid="item1">Item 1</div>
 		<div class="item" use:melt={$item} data-testid="item2" data-disabled>Item 2</div>
