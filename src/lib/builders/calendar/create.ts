@@ -308,9 +308,11 @@ export function createCalendar<
 	 * January 2021' for the same month and year.
 	 */
 	const heading = builder(name('heading'), {
-		returned: () => {
+		stores: [disabled],
+		returned: ([$disabled]) => {
 			return {
 				'aria-hidden': true,
+				'data-disabled': $disabled ? '' : undefined,
 			};
 		},
 	});

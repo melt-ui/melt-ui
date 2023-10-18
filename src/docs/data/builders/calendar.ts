@@ -1,7 +1,6 @@
 import { ATTRS, KBD } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
-import { popoverEvents } from '$lib/builders/popover/events.js';
 import type { BuilderData } from './index.js';
 
 /**
@@ -74,30 +73,50 @@ const calendarProps = [
 		description: 'Whether the calendar is readonly.',
 	},
 	{
-		name: 'hourCycle',
-		type: 'HourCycle',
-		description: 'The hour cycle to use when formatting the date.',
-	},
-	{
 		name: 'locale',
 		type: 'string',
 		default: '"en"',
 		description: 'The locale to use when formatting the date.',
 	},
 	{
-		name: 'name',
+		name: 'preventDeselect',
+		type: 'boolean',
+		default: 'false',
+		description: 'Whether to prevent the user from deselecting the current value by pressing it.',
+	},
+	{
+		name: 'pagedNavigation',
+		type: 'boolean',
+		default: 'false',
+		description: 'Whether to use paged navigation for the calendar.',
+	},
+	{
+		name: 'weekStartsOn',
+		type: '0 | 1 | 2 | 3 | 4 | 5 | 6',
+		default: '0',
+		description: 'The day of the week the calendar starts on. 0 is Sunday, 6 is Saturday, etc.',
+	},
+	{
+		name: 'fixedWeeks',
+		type: 'boolean',
+		default: 'false',
+		description: 'Whether to always show 6 weeks in the calendar.',
+	},
+	{
+		name: 'calendarLabel',
 		type: 'string',
-		description: 'The name of the hidden input element.',
+		default: '"Event date"',
+		description: 'An accessible label for the calendar.',
 	},
 	{
 		name: 'ids',
-		type: 'DateFieldIds',
+		type: 'CalendarIds',
 		description: 'Override the default ids used by the various elements within the calendar.',
 	},
 ];
 
 const excludedProps = ['value', 'placeholder'];
-const dateFieldOptions = calendarProps.filter((prop) => !excludedProps.includes(prop.name));
+const calendarOptions = calendarProps.filter((prop) => !excludedProps.includes(prop.name));
 
 const BUILDER_NAME = 'calendar';
 
@@ -157,18 +176,55 @@ const builder = builderSchema(BUILDER_NAME, {
 			type: 'Readable<boolean>',
 			description: 'A readable store which represents whether the calendar is invalid.',
 		},
+	],
+	options: calendarOptions,
+	helpers: [
+		{
+			name: 'nextPage',
+			description: 'A function that moves the calendar to the next page.',
+		},
+		{
+			name: 'prevPage',
+			description: 'A function that moves the calendar to the previous page.',
+		},
+		{
+			name: 'nextYear',
+			description: 'A function that moves the calendar to the next year.',
+		},
+		{
+			name: 'prevYear',
+			description: 'A function that moves the calendar to the previous year.',
+		},
+		{
+			name: 'setYear',
+			description: 'A function that sets the year of the calendar.',
+			type: '(year: number) => void',
+		},
+		{
+			name: 'setMonth',
+			description: 'A function that sets the month of the calendar.',
+			type: '(month: number) => void',
+		},
+		{
+			name: 'isDateDisabled',
+			description: 'A function that returns whether the given date is disabled.',
+			type: 'Readable<(date: DateValue) => boolean>',
+		},
 		{
 			name: 'isDateUnavailable',
-			type: 'Readable<Matcher | undefined>',
-			description:
-				'A readable store which returns a function that accepts a date and returns a boolean indicating whether the date is unavailable.',
+			description: 'A function that returns whether the given date is unavailable.',
+			type: 'Readable<(date: DateValue) => boolean>',
+		},
+		{
+			name: 'isDateSelected',
+			description: 'A function that returns whether the given date is selected.',
+			type: 'Readable<(date: DateValue) => boolean>',
 		},
 	],
-	options: dateFieldOptions,
 });
 
-const field = elementSchema('field', {
-	description: 'The element which contains the date segments',
+const calendar = elementSchema('calendar', {
+	description: 'The container of the months and days of the calendar',
 	dataAttributes: [
 		{
 			name: 'data-invalid',
@@ -179,75 +235,120 @@ const field = elementSchema('field', {
 			value: 'Present when the calendar is disabled.',
 		},
 		{
-			name: 'data-melt-datefield-field',
-			value: ATTRS.MELT('field'),
+			name: 'data-readonly',
+			value: 'Present when the calendar is readonly.',
+		},
+		{
+			name: 'data-melt-calendar',
+			value: ATTRS.MELT('calendar'),
 		},
 	],
-	// events: popoverEvents['trigger'],
 });
 
-const segment = elementSchema('segment', {
-	description: 'An individual segment of the date',
+const heading = elementSchema('heading', {
+	description: 'A visual heading for the calendar',
 	dataAttributes: [
 		{
 			name: 'data-invalid',
-			value: 'Present when the field is invalid.',
+			value: 'Present when the calendar is invalid.',
 		},
 		{
 			name: 'data-disabled',
-			value: 'Present when the field is disabled.',
+			value: 'Present when the calendar is disabled.',
 		},
 		{
-			name: 'data-segment',
-			value: 'SegmentPart',
-		},
-		{
-			name: 'data-melt-datefield-segment',
-			value: ATTRS.MELT('segment'),
+			name: 'data-melt-calendar-heading',
+			value: ATTRS.MELT('heading'),
 		},
 	],
 });
 
-const validation = elementSchema('validation', {
-	title: 'validation',
-	description: 'The element containing the validation message',
+const grid = elementSchema('grid', {
+	description: 'A grid representing a month of the calendar',
 	dataAttributes: [
 		{
-			name: 'data-invalid',
-			value: 'Present when the field is invalid.',
+			name: 'data-disabled',
+			value: 'Present when the calendar is disabled.',
 		},
 		{
-			name: 'data-melt-datefield-validation',
-			value: ATTRS.MELT('validation'),
+			name: 'data-melt-calendar-grid',
+			value: ATTRS.MELT('grid'),
 		},
 	],
 });
 
-const label = elementSchema('label', {
-	title: 'label',
-	description: 'The label for the calendar',
+const prevButton = elementSchema('prevButton', {
+	description: 'A button which moves the calendar to the previous page',
 	dataAttributes: [
 		{
-			name: 'data-invalid',
-			value: 'Present when the field is invalid.',
+			name: 'data-disabled',
+			value: 'Present when the calendar is disabled.',
 		},
 		{
-			name: 'data-melt-datefield-label',
-			value: ATTRS.MELT('label'),
+			name: 'data-melt-calendar-prevButton',
+			value: ATTRS.MELT('prevButton'),
 		},
 	],
 });
 
-const hiddenInput = elementSchema('hiddenInput', {
-	title: 'hiddenInput',
-	description: 'The hidden input for the calendar',
+const nextButton = elementSchema('nextButton', {
+	description: 'A button which moves the calendar to the next page',
 	dataAttributes: [
 		{
-			name: 'data-melt-datefield-hiddenInput',
-			value: ATTRS.MELT('hiddenInput'),
+			name: 'data-disabled',
+			value: 'Present when the calendar is disabled.',
+		},
+		{
+			name: 'data-melt-calendar-nextButton',
+			value: ATTRS.MELT('nextButton'),
 		},
 	],
-	events: popoverEvents['close'],
+});
+
+const cell = elementSchema('cell', {
+	description: 'A cell representing a single date in the calendar',
+	dataAttributes: [
+		{
+			name: 'data-disabled',
+			value: 'Present when the date is disabled.',
+		},
+		{
+			name: 'data-selected',
+			value: 'Present when the date is selected.',
+		},
+		{
+			name: 'data-value',
+			value: 'The ISO string value of the date.',
+		},
+		{
+			name: 'data-unavailable',
+			value: 'Present when the date is unavailable.',
+		},
+		{
+			name: 'data-today',
+			value: 'Present when the date is today.',
+		},
+		{
+			name: 'data-outside-month',
+			value: 'Present when the date is outside the current month it is displayed in.',
+		},
+		{
+			name: 'data-outside-visible-months',
+			value: 'Present when the date is outside the months that are visible on the calendar.',
+		},
+		{
+			name: 'data-focused',
+			value: 'Present when the date is focused.',
+		},
+		{
+			name: 'data-calendar-cell',
+			value: ATTRS.MELT('cell'),
+		},
+		{
+			name: 'data-melt-calendar-cell',
+			value: ATTRS.MELT('cell'),
+		},
+	],
 });
 
 const keyboard: KeyboardSchema = [
@@ -275,7 +376,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, field, segment, label, validation, hiddenInput];
+const schemas = [builder, calendar, grid, cell, heading, prevButton, nextButton];
 
 const features = [
 	'Full keyboard navigation',
@@ -285,7 +386,7 @@ const features = [
 	'Supports an optional arrow component',
 ];
 
-export const popoverData: BuilderData = {
+export const calendarData: BuilderData = {
 	schemas,
 	features,
 	keyboard,

@@ -297,7 +297,7 @@ const features = [
 	'Supports an optional arrow component',
 ];
 
-export const popoverData: BuilderData = {
+export const dateFieldData: BuilderData = {
 	schemas,
 	features,
 	keyboard,

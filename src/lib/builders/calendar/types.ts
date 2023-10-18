@@ -220,7 +220,7 @@ export type CreateCalendarProps<
 
 	/**
 	 * Whether the calendar is disabled. When true, the user will not
-	 * be able to focus or select dates. {@see readonly} for a similar prop
+	 * be able to focus or select dates. @see readonly for a similar prop
 	 * that allows focusing but not selecting dates.
 	 *
 	 * @default false
@@ -230,7 +230,7 @@ export type CreateCalendarProps<
 	/**
 	 * Whether the calendar is readonly. When true, the user will be able
 	 * to focus and navigate the calendar, but will not be able to select
-	 * dates. {@see disabled} for a similar prop that prevents focusing
+	 * dates. @see disabled for a similar prop that prevents focusing
 	 * and selecting dates.
 	 *
 	 * @default false

@@ -1788,6 +1788,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 			segmentContentsObj,
 			placeholder: placeholder.toWritable(),
 			isInvalid,
+		},
+		helpers: {
 			isDateUnavailable: _isDateUnavailable,
 		},
 		options,
