@@ -5,10 +5,11 @@ description:
 ---
 
 <script>
-	import { Preview, Callout } from '$docs/components'
+	import { APIReference, Preview, Callout } from '$docs/components'
 	import { Code } from '$docs/components/markdown'
 	export let snippets
 	export let previews
+	export let schemas
 </script>
 
 ## Overview
@@ -561,3 +562,7 @@ Here's an example showcasing a few different locales:
 
 Notice that they all have the same `defaultPlaceholder`, yet the segments are formatted differently
 depending on the locale, and all it took was changing the `locale` prop. Pretty cool, right?
+
+## API Reference
+
+<APIReference {schemas} />

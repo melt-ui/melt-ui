@@ -4,10 +4,11 @@ description: A date field with a calendar popover for selecting dates.
 ---
 
 <script>
-	import { Preview, Callout } from '$docs/components'
+	import { APIReference, Preview, Callout } from '$docs/components'
 	import { A } from '$docs/components/markdown';
 	export let snippets
 	export let previews
+	export let schemas
 </script>
 
 ## Overview
@@ -513,3 +514,7 @@ If a date is before the `minValue`, or after the `maxValue`, it will be disabled
 <Preview code={snippets.minMax} variant="dark" size="sm">
 	<svelte:component this={previews.minMax} />
 </Preview>
+
+## API Reference
+
+<APIReference {schemas} />

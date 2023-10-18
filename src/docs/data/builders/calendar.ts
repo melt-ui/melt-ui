@@ -3,9 +3,6 @@ import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
 import type { BuilderData } from './index.js';
 
-/**
- * Props that are also returned in the form of stores via the `options` property.
- */
 const calendarProps = [
 	{
 		name: 'defaultValue',
@@ -56,7 +53,7 @@ const calendarProps = [
 		description: 'The minimum date that can be selected.',
 	},
 	{
-		name: 'maxDate',
+		name: 'maxValue',
 		type: 'DateValue | undefined',
 		description: 'The maximum date that can be selected.',
 	},
@@ -125,6 +122,30 @@ const builder = builderSchema(BUILDER_NAME, {
 	props: calendarProps,
 	elements: [
 		{
+			name: 'calendar',
+			description: 'The container of the months and days of the calendar',
+		},
+		{
+			name: 'heading',
+			description: 'A visual heading for the calendar',
+		},
+		{
+			name: 'grid',
+			description: 'A grid representing a month of the calendar',
+		},
+		{
+			name: 'cell',
+			description: 'A cell representing a single date in the calendar',
+		},
+		{
+			name: 'nextButton',
+			description: 'A button which moves the calendar to the next page',
+		},
+		{
+			name: 'prevButton',
+			description: 'A button which moves the calendar to the previous page',
+		},
+		{
 			name: 'field',
 			description: 'The element which contains the date segments',
 		},
@@ -150,6 +171,23 @@ const builder = builderSchema(BUILDER_NAME, {
 			name: 'value',
 			type: 'Writable<DateValue>',
 			description: 'A writable store which represents the current value of the calendar.',
+		},
+		{
+			name: 'months',
+			type: 'Readable<Month[]>',
+			description: 'A readable store containing month objects for each month in the calendar.',
+		},
+		{
+			name: 'daysOfWeek',
+			type: 'Readable<string[]>',
+			description:
+				'A readable store containing the days of the week, formatted to the  `locale` prop.',
+		},
+		{
+			name: 'headingValue',
+			type: 'Readable<string>',
+			description:
+				'A readable store containing the heading for the calendar, formatted to the `locale` prop.',
 		},
 		{
 			name: 'segmentValues',

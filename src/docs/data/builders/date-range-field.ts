@@ -1,110 +1,272 @@
-// POPOVER STUFF USED AS PLACEHOLDER FOR TIME BEING
-
-import { ATTRS, KBD, PROPS } from '$docs/constants.js';
+import { ATTRS, KBD } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
 import { popoverEvents } from '$lib/builders/popover/events.js';
 import type { BuilderData } from './index.js';
 
-/**
- * Props that are also returned in the form of stores via the `options` property.
- */
-const OPTION_PROPS = [
-	PROPS.POSITIONING({ default: 'placement: "bottom"' }),
+const dateRangeFieldProps = [
 	{
-		name: 'disableFocusTrap',
+		name: 'defaultValue',
+		type: 'DateRange | undefined',
+		description:
+			'The default value for the date range field. When provided the `placeholder` will assume the start date of the default value.',
+	},
+	{
+		name: 'value',
+		type: 'Writable<DateRange | undefined>',
+		description:
+			'A writable store than can be used to control the value of the date range field from outside the builder. Useful if you want to sync the value of the date field with another store used in your app.',
+	},
+	{
+		name: 'onValueChange',
+		type: 'ChangeFn<DateRange | undefined>',
+		description:
+			'A function called when the value of the date range field changes. It receives a single argument, which is an object containing `curr` and `prev` properties, whose values are the current and previous values of the value store. Whatever you return from this function will be set as the new value of the value store.',
+	},
+	{
+		name: 'defaultPlaceholder',
+		type: 'DateValue',
+		default: 'CalendarDate',
+		description:
+			'The date that is used when the date range field is empty to determine what point in time the field should start at.',
+	},
+	{
+		name: 'placeholder',
+		type: 'Writable<DateValue>',
+		description:
+			'A writable store that can be used to control the placeholder date from outside the builder. When this prop is provided, the `defaultPlaceholder` prop is ignored, and the value of this store is used instead.',
+	},
+	{
+		name: 'onPlaceholderChange',
+		type: 'ChangeFn<DateValue>',
+		description:
+			'A function called when the placeholder value changes. It receives a single argument, which is an object containing `curr` and `prev` properties, whose values are the current and previous values of the `placeholder` store. Whatever you return from this function will be set as the new value of the `placeholder` store.',
+	},
+	{
+		name: 'isDateUnavailable',
+		type: 'Matcher | undefined',
+		description:
+			'A function that accepts a date and returns a boolean indicating whether the date is unavailable.',
+	},
+	{
+		name: 'minValue',
+		type: 'DateValue | undefined',
+		description: 'The minimum date that can be selected.',
+	},
+	{
+		name: 'maxValue',
+		type: 'DateValue | undefined',
+		description: 'The maximum date that can be selected.',
+	},
+	{
+		name: 'disabled',
 		type: 'boolean',
 		default: 'false',
-		description: 'Whether to disable the focus trap.',
+		description: 'Whether the date field is disabled.',
 	},
-	PROPS.ARROW_SIZE,
-	PROPS.CLOSE_ON_ESCAPE,
-	PROPS.CLOSE_ON_OUTSIDE_CLICK,
-	PROPS.PREVENT_SCROLL,
-	PROPS.PORTAL,
-	PROPS.FORCE_VISIBLE,
+	{
+		name: 'readonly',
+		type: 'boolean',
+		default: 'false',
+		description: 'Whether the date field is readonly.',
+	},
+	{
+		name: 'hourCycle',
+		type: 'HourCycle',
+		description: 'The hour cycle to use when formatting the date.',
+	},
+	{
+		name: 'locale',
+		type: 'string',
+		default: '"en"',
+		description: 'The locale to use when formatting the date.',
+	},
+	{
+		name: 'granularity',
+		type: '"day" | "hour" | "minute" | "second"',
+		description:
+			'The granularity of the date range field. Defaults to `"day"` if a CalendarDate is provided, otherwise defaults to `"minute"`. The field will render segments for each part of the date up to and including the specified granularity.',
+	},
+	{
+		name: 'name',
+		type: 'string',
+		description: 'The name of the hidden input element.',
+	},
+	{
+		name: 'required',
+		type: 'boolean',
+		default: 'false',
+		description: 'Whether the hidden input is required.',
+	},
+	{
+		name: 'ids',
+		type: 'DateRangeFieldIds',
+		description:
+			'Override the default ids used by the various elements within the date range field.',
+	},
 ];
 
-const BUILDER_NAME = 'popover';
+const excludedProps = ['value', 'placeholder'];
+const dateRangeFieldOptions = dateRangeFieldProps.filter(
+	(prop) => !excludedProps.includes(prop.name)
+);
+
+const BUILDER_NAME = 'date field';
 
 const builder = builderSchema(BUILDER_NAME, {
-	title: 'createPopover',
-	props: [...OPTION_PROPS, PROPS.DEFAULT_OPEN, PROPS.OPEN, PROPS.ON_OPEN_CHANGE],
+	title: 'createDateRangeField',
+	props: dateRangeFieldProps,
 	elements: [
 		{
-			name: 'trigger',
-			description: 'The builder store used to create the popover trigger.',
+			name: 'field',
+			description: 'The element which contains the date segments',
 		},
 		{
-			name: 'content',
-			description: 'The builder store used to create the popover content.',
+			name: 'startSegment',
+			description: 'An individual segment of the start date',
 		},
 		{
-			name: 'close',
-			description: 'The builder store used to create the popover close button.',
+			name: 'endSegment',
+			description: 'An individual segment of the end date',
 		},
 		{
-			name: 'arrow',
-			description: 'The builder store used to create the popover arrow.',
+			name: 'label',
+			description: 'The label for the date field',
+		},
+		{
+			name: 'validation',
+			description: 'The element containing the validation message',
+		},
+		{
+			name: 'startHiddenInput',
+			description: 'The hidden input used to submit the start value within a form',
+		},
+		{
+			name: 'endHiddenInput',
+			description: 'The hidden input used to submit the end value within a form',
 		},
 	],
 	states: [
 		{
-			name: 'open',
-			type: 'Writable<boolean>',
-			description: 'A writable store which represents the open state of the popover.',
+			name: 'value',
+			type: 'Writable<DateRange>',
+			description: 'A writable store which represents the current value of the date field.',
+		},
+		{
+			name: 'segmentValues',
+			type: 'Record<"start" | "end", Writable<DateSegmentObj | DateTimeSegmentObj>>',
+			description:
+				'An object of writable stores containing the current values of the date segments.',
+		},
+		{
+			name: 'segmentContents',
+			type: 'Record<"start" | "end", Readable<{ part: SegmentPart; value: string; }[]>>',
+			description: 'An object of readable stores used to dynamically render the date segments.',
+		},
+		{
+			name: 'segmentContentsObj',
+			type: 'Record<"start" | "end", Readable<SegmentContentsObj>>',
+			description:
+				'An object of readable stores containing the current values of the date segments.',
+		},
+		{
+			name: 'placeholder',
+			type: 'Writable<DateValue>',
+			description: 'A writable store which represents the placeholder value of the date field.',
+		},
+		{
+			name: 'isInvalid',
+			type: 'Readable<boolean>',
+			description: 'A readable store which represents whether the date field is invalid.',
+		},
+		{
+			name: 'isDateUnavailable',
+			type: 'Readable<Matcher | undefined>',
+			description:
+				'A readable store which returns a function that accepts a date and returns a boolean indicating whether the date is unavailable.',
 		},
 	],
-	options: OPTION_PROPS,
+	options: dateRangeFieldOptions,
 });
 
-const trigger = elementSchema('trigger', {
-	description: 'The button(s) which open/close the popover.',
+const field = elementSchema('field', {
+	description: 'The element which contains the date segments',
 	dataAttributes: [
 		{
-			name: 'data-state',
-			value: ATTRS.OPEN_CLOSED,
+			name: 'data-invalid',
+			value: 'Present when the date field is invalid.',
 		},
 		{
-			name: 'data-melt-popover-trigger',
-			value: ATTRS.MELT('trigger'),
+			name: 'data-disabled',
+			value: 'Present when the date field is disabled.',
+		},
+		{
+			name: 'data-melt-datefield-field',
+			value: ATTRS.MELT('field'),
 		},
 	],
-	events: popoverEvents['trigger'],
+	// events: popoverEvents['trigger'],
 });
 
-const content = elementSchema('content', {
-	description: 'The popover content.',
+const segment = elementSchema('segment', {
+	description: 'An individual segment of the date',
 	dataAttributes: [
 		{
-			name: 'data-melt-popover-content',
-			value: ATTRS.MELT('content'),
+			name: 'data-invalid',
+			value: 'Present when the field is invalid.',
+		},
+		{
+			name: 'data-disabled',
+			value: 'Present when the field is disabled.',
+		},
+		{
+			name: 'data-segment',
+			value: 'SegmentPart',
+		},
+		{
+			name: 'data-melt-datefield-segment',
+			value: ATTRS.MELT('segment'),
 		},
 	],
 });
 
-const arrow = elementSchema('arrow', {
-	title: 'arrow',
-	description: 'The optional arrow element.',
+const validation = elementSchema('validation', {
+	title: 'validation',
+	description: 'The element containing the validation message',
 	dataAttributes: [
 		{
-			name: 'data-arrow',
-			value: ATTRS.TRUE,
+			name: 'data-invalid',
+			value: 'Present when the field is invalid.',
 		},
 		{
-			name: 'data-melt-popover-arrow',
-			value: ATTRS.MELT('arrow'),
+			name: 'data-melt-datefield-validation',
+			value: ATTRS.MELT('validation'),
 		},
 	],
 });
 
-const close = elementSchema('close', {
-	title: 'close',
-	description: 'The button(s) which close the popover.',
+const label = elementSchema('label', {
+	title: 'label',
+	description: 'The label for the date field',
 	dataAttributes: [
 		{
-			name: 'data-melt-popover-close',
-			value: ATTRS.MELT('close'),
+			name: 'data-invalid',
+			value: 'Present when the field is invalid.',
+		},
+		{
+			name: 'data-melt-datefield-label',
+			value: ATTRS.MELT('label'),
+		},
+	],
+});
+
+const hiddenInput = elementSchema('hiddenInput', {
+	title: 'hiddenInput',
+	description: 'The hidden input for the date field',
+	dataAttributes: [
+		{
+			name: 'data-melt-datefield-hiddenInput',
+			value: ATTRS.MELT('hiddenInput'),
 		},
 	],
 	events: popoverEvents['close'],
@@ -135,7 +297,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, trigger, content, close, arrow];
+const schemas = [builder, field, segment, label, validation, hiddenInput];
 
 const features = [
 	'Full keyboard navigation',
@@ -145,7 +307,7 @@ const features = [
 	'Supports an optional arrow component',
 ];
 
-export const popoverData: BuilderData = {
+export const dateRangeFieldData: BuilderData = {
 	schemas,
 	features,
 	keyboard,

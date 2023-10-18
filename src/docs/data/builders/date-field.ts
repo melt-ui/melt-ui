@@ -4,9 +4,6 @@ import { builderSchema, elementSchema } from '$docs/utils/index.js';
 import { popoverEvents } from '$lib/builders/popover/events.js';
 import type { BuilderData } from './index.js';
 
-/**
- * Props that are also returned in the form of stores via the `options` property.
- */
 const dateFieldProps = [
 	{
 		name: 'defaultValue',
@@ -57,7 +54,7 @@ const dateFieldProps = [
 		description: 'The minimum date that can be selected.',
 	},
 	{
-		name: 'maxDate',
+		name: 'maxValue',
 		type: 'DateValue | undefined',
 		description: 'The maximum date that can be selected.',
 	},

@@ -7,7 +7,7 @@ import { comboboxData } from './combobox.js';
 import { contextMenuData } from './context-menu.js';
 import { calendarData } from './calendar.js';
 import { dateFieldData } from './date-field.js';
-import { popoverData as dateRangeFieldData } from './date-range-field.js';
+import { dateRangeFieldData } from './date-range-field.js';
 import { popoverData as dateRangePickerData } from './date-range-picker.js';
 import { popoverData as rangeCalendarData } from './range-calendar.js';
 import { dialogData } from './dialog.js';
