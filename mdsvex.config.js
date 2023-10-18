@@ -117,6 +117,14 @@ const entities = [
 
 function remarkEscapeSvelte() {
 	return async (tree) => {
+		visit(tree, 'text', (node) => {
+			node.value = node.value
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/{/g, '&#123;')
+				.replace(/}/g, '&#125;');
+		});
+
 		visit(tree, 'inlineCode', escape);
 
 		function escape(node) {
