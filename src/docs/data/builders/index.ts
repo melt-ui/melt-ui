@@ -9,7 +9,7 @@ import { calendarData } from './calendar.js';
 import { dateFieldData } from './date-field.js';
 import { dateRangeFieldData } from './date-range-field.js';
 import { popoverData as dateRangePickerData } from './date-range-picker.js';
-import { popoverData as rangeCalendarData } from './range-calendar.js';
+import { rangeCalendarData } from './range-calendar.js';
 import { dialogData } from './dialog.js';
 import { dropdownMenuData } from './dropdown-menu.js';
 import { labelData } from './label.js';
