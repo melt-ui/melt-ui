@@ -16,9 +16,10 @@ export function handleRovingFocus(nextElement: HTMLElement) {
 	if (currentFocusedElement === nextElement) return;
 
 	currentFocusedElement.tabIndex = -1;
-
-	nextElement.tabIndex = 0;
-	sleep(1).then(() => nextElement.focus());
+	if (nextElement) {
+		nextElement.tabIndex = 0;
+		sleep(1).then(() => nextElement.focus());
+	}
 }
 
 function getFocusableElements() {

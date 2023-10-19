@@ -31,3 +31,5 @@ storybook-static/**/*
 playwright.config.ts
 playwright-report
 .vercel
+
+src/pagefind
