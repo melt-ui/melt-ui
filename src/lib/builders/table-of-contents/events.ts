@@ -1,8 +1,7 @@
-import type { GroupedEvents, MeltComponentEvents } from "$lib/internal/types";
-
+import type { GroupedEvents, MeltComponentEvents } from '$lib/internal/types';
 
 export const tableOfContentsEvents = {
-    item: ['click'] as const
+	item: ['click'] as const,
 };
 
 export type TableOfContentsEvents = GroupedEvents<typeof tableOfContentsEvents>;
