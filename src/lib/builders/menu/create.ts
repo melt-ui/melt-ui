@@ -546,7 +546,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 						if (e.defaultPrevented) {
 							if (!isHTMLElement(itemEl)) return;
-
 							handleRovingFocus(itemEl);
 							return;
 						}
@@ -870,7 +869,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							if (!isHTMLElement(menuEl)) return;
 
 							const firstItem = getMenuItems(menuEl)[0];
-
 							handleRovingFocus(firstItem);
 						}
 					}),
@@ -882,7 +880,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
-
 						handleRovingFocus(triggerEl);
 
 						const openTimer = get(subOpenTimer);
@@ -1101,7 +1098,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				unsubs.push(removeScroll());
 			}
 
-			if (!$rootOpen && $rootActiveTrigger) {
+			if (!$rootOpen && $rootActiveTrigger && opts.disableTriggerRefocus === false) {
 				handleRovingFocus($rootActiveTrigger);
 			}
 
@@ -1120,6 +1117,9 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					handleRovingFocus(menuItems[0]);
 				} else if ($rootActiveTrigger) {
 					// Focus on active trigger trigger
+					if (opts.disableTriggerRefocus) {
+						return;
+					}
 					handleRovingFocus($rootActiveTrigger);
 				} else {
 					if (opts.disableTriggerRefocus) {
@@ -1216,7 +1216,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 		const parentMenuEl = getParentMenu(target);
 		if (!parentMenuEl) return;
-
 		handleRovingFocus(parentMenuEl);
 	}
 
@@ -1456,7 +1455,6 @@ export function handleMenuNavigation(e: KeyboardEvent) {
 		default:
 			return;
 	}
-
 	handleRovingFocus(candidateNodes[nextIndex]);
 }
 

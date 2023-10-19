@@ -99,6 +99,13 @@ export type _CreateMenuProps = {
 	 * @default true
 	 */
 	typeahead?: boolean;
+
+	/**
+	 * Whether to disable the functionality that the trigger element is refocused when the menu is closed.
+	 *
+	 * @type {boolean}
+	 */
+	disableTriggerRefocus?: boolean;
 };
 
 export type _CreateSubmenuProps = Pick<_CreateMenuProps, 'arrowSize' | 'positioning'> & {
