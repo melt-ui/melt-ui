@@ -48,8 +48,8 @@ export function createSwitch(props?: CreateSwitchProps) {
 				'data-state': $checked ? 'checked' : 'unchecked',
 				type: 'button',
 				role: 'switch',
-				'aria-checked': $checked,
-				'aria-required': $required,
+				'aria-checked': $checked ? 'true' : 'false',
+				'aria-required': $required ? 'true' : undefined,
 			} as const;
 		},
 		action(node: HTMLElement): MeltActionReturn<SwitchEvents['root']> {
