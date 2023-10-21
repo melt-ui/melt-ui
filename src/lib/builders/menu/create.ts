@@ -1413,7 +1413,7 @@ export function setMeltMenuAttribute(element: HTMLElement | null, selector: Sele
  * Keyboard event handler for menu navigation
  * @param e The keyboard event
  */
-export function handleMenuNavigation(e: KeyboardEvent, loop: boolean) {
+export function handleMenuNavigation(e: KeyboardEvent, loop?: boolean) {
 	e.preventDefault();
 
 	// currently focused menu item

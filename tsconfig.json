@@ -15,7 +15,8 @@
 		"*.ignore-ts",
 		"*.ignore-svelte",
 		"src/routes/old/builders/**/(css)/*",
-		"src/routes/old/builders/**/(tailwind)/*"
+		"src/routes/old/builders/**/(tailwind)/*",
+		"static/pagefind/**/*"
 	]
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	//

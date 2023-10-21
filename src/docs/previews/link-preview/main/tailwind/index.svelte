@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { createLinkPreview, melt } from '$lib/index.js';
-	import { writable } from 'svelte/store';
 	import { fly } from 'svelte/transition';
 
 	const {
@@ -8,11 +7,6 @@
 		states: { open },
 	} = createLinkPreview({
 		forceVisible: true,
-		open: writable(true),
-
-		onOpenChange() {
-			return true;
-		},
 	});
 </script>
 

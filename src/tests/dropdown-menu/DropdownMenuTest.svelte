@@ -6,7 +6,7 @@
 	const settingsSync = writable(true);
 	const hideMeltUI = writable(false);
 
-	export let loop: boolean = false;
+	export let loop = false;
 
 	const {
 		elements: { trigger, menu, item, separator, arrow },
