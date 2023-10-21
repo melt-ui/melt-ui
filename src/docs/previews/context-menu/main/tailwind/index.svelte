@@ -9,7 +9,9 @@
 	const {
 		elements: { trigger, menu, item, separator },
 		builders: { createSubmenu, createMenuRadioGroup, createCheckboxItem },
-	} = createContextMenu();
+	} = createContextMenu({
+		loop: true,
+	});
 
 	const {
 		elements: { subMenu: subMenuA, subTrigger: subTriggerA },

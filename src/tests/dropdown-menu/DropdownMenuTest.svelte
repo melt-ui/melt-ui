@@ -6,10 +6,14 @@
 	const settingsSync = writable(true);
 	const hideMeltUI = writable(false);
 
+	export let loop: boolean = false;
+
 	const {
 		elements: { trigger, menu, item, separator, arrow },
 		builders: { createSubmenu, createMenuRadioGroup, createCheckboxItem },
-	} = createDropdownMenu();
+	} = createDropdownMenu({
+		loop,
+	});
 
 	const {
 		elements: { checkboxItem: settingsSyncCheckbox },
@@ -47,7 +51,6 @@
 		<AlignJustify class="h-4 w-4" />
 		<span class="sr-only">Open Popover</span>
 	</button>
-
 	<div class="menu" use:melt={$menu} data-testid="menu">
 		<div class="item" use:melt={$item} data-testid="item1">Item 1</div>
 		<div class="item" use:melt={$item} data-testid="item2" data-disabled>Item 2</div>
@@ -97,10 +100,6 @@
 			<div class="rightSlot">⇧⌘N</div>
 		</div>
 		<div use:melt={$separator} class="separator" />
-		<div class="item" use:melt={$item}>
-			Quit Melt UI
-			<div class="rightSlot">⌘Q</div>
-		</div>
 		<div use:melt={$arrow} data-testid="arrow" />
 	</div>
 </main>

@@ -7,12 +7,15 @@
 	const settingsSync = writable(true);
 	const hideMeltUI = writable(false);
 
+	export let loop: boolean = false;
+
 	const {
 		elements: { trigger, menu, item, separator, arrow },
 		builders: { createSubmenu, createMenuRadioGroup, createCheckboxItem },
 		states: { open },
 	} = createDropdownMenu({
 		forceVisible: true,
+		loop,
 	});
 
 	const {
@@ -107,7 +110,7 @@
 					<div class="rightSlot">⇧⌘N</div>
 				</div>
 				<div use:melt={$separator} class="separator" />
-				<div class="item" use:melt={$item}>
+				<div class="item" use:melt={$item} data-testid="item3">
 					Quit Melt UI
 					<div class="rightSlot">⌘Q</div>
 				</div>
