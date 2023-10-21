@@ -17,7 +17,7 @@
 	rel="noopener noreferrer"
 	use:melt={$trigger}
 >
-	<img src="/logo-mark.svg" alt="Melt UI Logo" />
+	<img src="/logo_mark.svg" alt="Melt UI Logo" />
 	<span class="sr-only">Open Melt UI Details</span>
 </a>
 
@@ -29,7 +29,7 @@
 	>
 		<div class="content-wrapper">
 			<div class="preview">
-				<img src="/logo-mark.svg" alt="Melt UI Logo" class="preview-header" />
+				<img src="/logo_mark.svg" alt="Melt UI Logo" class="preview-header" />
 				<div class="preview-content">
 					<div>
 						<div class="title">Melt UI</div>
