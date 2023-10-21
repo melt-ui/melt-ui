@@ -113,13 +113,9 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 
 		const isClickInsideTrigger = target.closest(`#${ids.trigger}`) !== null;
 
-		if (isClickInsideTrigger && isLeftClick(e)) {
+		if (!isClickInsideTrigger || isLeftClick(e)) {
 			rootOpen.set(false);
 			return;
-		}
-
-		if (!isClickInsideTrigger) {
-			rootOpen.set(false);
 		}
 	}
 
