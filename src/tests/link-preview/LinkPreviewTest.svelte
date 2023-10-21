@@ -17,7 +17,7 @@
 	use:melt={$trigger}
 >
 	<img
-		src="/logo-mark.svg"
+		src="/logo_mark.svg"
 		alt="Melt UI Logo"
 		class="h-full w-full rounded-full bg-neutral-900 object-contain p-2"
 	/>
@@ -28,7 +28,7 @@
 	<div class="w-[300px] rounded-md bg-white p-5 shadow-sm">
 		<div class="flex flex-col gap-2">
 			<img
-				src="/logo-mark.svg"
+				src="/logo_mark.svg"
 				alt="Melt UI Logo"
 				class="object-fit block h-14 w-14 rounded-full bg-neutral-900 p-2"
 			/>
