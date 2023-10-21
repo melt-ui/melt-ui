@@ -4,13 +4,13 @@
 	import { createCombobox, createDialog, melt } from '$lib';
 	import { CornerDownRight, Search } from 'lucide-svelte';
 	import { onMount } from 'svelte';
-	import type { Pagefind, PagefindSearchFragment, PagefindSearchResult } from '../../pagefind.js';
+	import type { Pagefind, PagefindSearchFragment, PagefindSearchResult } from '../../pagefind';
 
 	let pagefind: Pagefind;
 	let results: PagefindSearchResult[] = [];
 
 	onMount(async () => {
-		pagefind = (await import('/pagefind/pagefind.js?url')) as unknown as Pagefind;
+		pagefind = await import('../../pagefind/pagefind.js');
 
 		await pagefind.init();
 		results = (await pagefind.search('')).results;

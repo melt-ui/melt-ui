@@ -28,4 +28,4 @@ storybook-static/**/*
 playwright.config.ts
 playwright-report
 
-static/pagefind/**/*
+src/pagefind/**/*

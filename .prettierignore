@@ -32,4 +32,4 @@ playwright.config.ts
 playwright-report
 .vercel
 
-static/pagefind/**/*
+src/pagefind/**/*
