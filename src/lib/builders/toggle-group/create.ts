@@ -65,6 +65,8 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 				const argDisabled = typeof props === 'string' ? false : !!props.disabled;
 				const disabled = $disabled || argDisabled;
 				const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
+				const isSingle = $type === 'single';
+				const isMultiple = $type === 'multiple' || $type === undefined;
 				return {
 					disabled: disabledAttr(disabled),
 					pressed,
@@ -72,10 +74,10 @@ export const createToggleGroup = <T extends ToggleGroupType = 'single'>(
 					'data-disabled': disabledAttr(disabled),
 					'data-state': pressed ? 'on' : 'off',
 					'data-value': itemValue,
-					'aria-pressed': $type === 'single' ? undefined : pressed,
-					'aria-checked': $type === 'multiple' || $type === undefined ? undefined : pressed,
+					'aria-pressed': isMultiple ? pressed : undefined,
+					'aria-checked': isSingle ? pressed : undefined,
 					type: 'button',
-					role: $type === 'single' ? 'radio' : undefined,
+					role: isSingle ? 'radio' : undefined,
 					tabindex: pressed ? 0 : -1,
 				} as const;
 			};
