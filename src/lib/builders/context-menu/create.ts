@@ -59,7 +59,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;
 
 	const rootOptions = toWritableStores(withDefaults);
-	const { positioning, closeOnOutsideClick, portal, forceVisible, closeOnEscape } = rootOptions;
+	const { positioning, closeOnOutsideClick, portal, forceVisible, closeOnEscape, loop } =
+		rootOptions;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const rootOpen = overridable(openWritable, withDefaults?.onOpenChange);
@@ -111,13 +112,11 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		const target = e.target;
 		if (!(target instanceof Element)) return;
 
-		if (target.id === ids.trigger && isLeftClick(e)) {
+		const isClickInsideTrigger = target.closest(`#${ids.trigger}`) !== null;
+
+		if (!isClickInsideTrigger || isLeftClick(e)) {
 			rootOpen.set(false);
 			return;
-		}
-
-		if (target.id !== ids.trigger && !target.closest(selector())) {
-			rootOpen.set(false);
 		}
 	}
 
@@ -195,7 +194,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					const isKeyDownInside = target.closest("[role='menu']") === menuEl;
 					if (!isKeyDownInside) return;
 					if (FIRST_LAST_KEYS.includes(e.key)) {
-						handleMenuNavigation(e);
+						handleMenuNavigation(e, get(loop));
 					}
 
 					/**

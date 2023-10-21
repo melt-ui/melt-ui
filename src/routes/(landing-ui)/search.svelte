@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { createCombobox, createDialog, melt } from '$lib';
-	import { Check, CornerDownRight, Search } from 'lucide-svelte';
-	import { onMount } from 'svelte';
-	import type { PagefindSearchFragment, Pagefind, PagefindSearchResult } from '../../pagefind.js';
 	import { Tooltip } from '$docs/components/index.js';
+	import { createCombobox, createDialog, melt } from '$lib';
+	import { CornerDownRight, Search } from 'lucide-svelte';
+	import { onMount } from 'svelte';
+	import type { Pagefind, PagefindSearchFragment, PagefindSearchResult } from '../../pagefind';
 
 	let pagefind: Pagefind;
 	let results: PagefindSearchResult[] = [];

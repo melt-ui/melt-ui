@@ -83,6 +83,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		portal,
 		forceVisible,
 		typeahead,
+		loop,
 	} = opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
@@ -208,7 +209,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 					if (!isKeyDownInside) return;
 					if (FIRST_LAST_KEYS.includes(e.key)) {
-						handleMenuNavigation(e);
+						handleMenuNavigation(e, get(loop) ?? false);
 					}
 
 					/**
@@ -733,7 +734,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						if (FIRST_LAST_KEYS.includes(e.key)) {
 							// prevent events from bubbling
 							e.stopImmediatePropagation();
-							handleMenuNavigation(e);
+							handleMenuNavigation(e, get(loop) ?? false);
 							return;
 						}
 
@@ -1412,7 +1413,7 @@ export function setMeltMenuAttribute(element: HTMLElement | null, selector: Sele
  * Keyboard event handler for menu navigation
  * @param e The keyboard event
  */
-export function handleMenuNavigation(e: KeyboardEvent) {
+export function handleMenuNavigation(e: KeyboardEvent, loop?: boolean) {
 	e.preventDefault();
 
 	// currently focused menu item
@@ -1441,11 +1442,19 @@ export function handleMenuNavigation(e: KeyboardEvent) {
 	let nextIndex: number;
 	switch (e.key) {
 		case kbd.ARROW_DOWN:
-			nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : currentIndex;
+			if (loop) {
+				nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : 0;
+			} else {
+				nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : currentIndex;
+			}
 			break;
 		case kbd.ARROW_UP:
-			nextIndex =
-				currentIndex < 0 ? candidateNodes.length - 1 : currentIndex > 0 ? currentIndex - 1 : 0;
+			if (loop) {
+				nextIndex = currentIndex > 0 ? currentIndex - 1 : candidateNodes.length - 1;
+			} else {
+				nextIndex =
+					currentIndex < 0 ? candidateNodes.length - 1 : currentIndex > 0 ? currentIndex - 1 : 0;
+			}
 			break;
 		case kbd.HOME:
 			nextIndex = 0;
