@@ -177,6 +177,7 @@
 
 	.trigger:hover {
 		opacity: 0.75;
+		cursor: pointer;
 	}
 
 	.container {
