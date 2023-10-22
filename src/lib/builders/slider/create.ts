@@ -194,13 +194,15 @@ export const createSlider = (props?: CreateSliderProps) => {
 				const $value = get(value);
 				const $orientation = get(orientation);
 
+				const $actual_max = add($min, (mul(Math.floor(div(sub($max, $min), $step)), $step)))
+
 				switch (event.key) {
 					case kbd.HOME: {
 						updatePosition($min, index);
 						break;
 					}
 					case kbd.END: {
-						updatePosition($max, index);
+						updatePosition($actual_max, index);
 						break;
 					}
 					case kbd.ARROW_LEFT: {
@@ -218,22 +220,25 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if ($orientation !== 'horizontal') break;
 
 						if (event.metaKey) {
-							updatePosition($max, index);
+							updatePosition($actual_max, index);
 						} else if ($value[index] < $max) {
 							const newValue = add($value[index], $step);
-							updatePosition(newValue, index);
-						}
+							if (newValue <= $max) {
+								updatePosition(newValue, index);}
+							}
 						break;
 					}
 					case kbd.ARROW_UP: {
 						if (event.metaKey) {
-							updatePosition($max, index);
+							updatePosition($actual_max, index);
 						} else if ($value[index] > $min && $orientation === 'vertical') {
 							const newValue = add($value[index], $step);
 							updatePosition(newValue, index);
 						} else if ($value[index] < $max) {
 							const newValue = add($value[index], $step);
-							updatePosition(newValue, index);
+							if (newValue <= $max) {
+								updatePosition(newValue, index);
+							}
 						}
 						break;
 					}
@@ -335,10 +340,12 @@ export const createSlider = (props?: CreateSliderProps) => {
 				const percent = div(sub(clientXY, leftOrBottom), sub(rightOrTop, leftOrBottom));
 				const val = add(mul(percent, sub($max, $min)), $min);
 
+				const $actual_max = add($min, (mul(Math.floor(div(sub($max, $min), $step)), $step)))
+
 				if (val < $min) {
 					updatePosition($min, activeThumbIdx);
 				} else if (val > $max) {
-					updatePosition($max, activeThumbIdx);
+					updatePosition($actual_max, activeThumbIdx);
 				} else {
 					const step = $step;
 					const newValue = mul(Math.round(div(val, step)), step);
