@@ -5,7 +5,7 @@
 	"repository": "github:melt-ui/melt-ui",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build && npm run package",
+		"build": "PREDEPLOY='0' && vite build && npm run package",
 		"preview": "vite preview",
 		"package": "svelte-kit sync && svelte-package && publint",
 		"prepublishOnly": "npm run package",
@@ -24,7 +24,7 @@
 		"pw:ui": "pnpm exec playwright test --ui",
 		"changeset": "changeset",
 		"pagefind": "node ./scripts/pagefind.js",
-		"pre-deploy": "pnpm run build && pnpm run pagefind"
+		"pre-deploy": "PREDEPLOY='1' && vite build && pnpm run pagefind"
 	},
 	"exports": {
 		".": {
