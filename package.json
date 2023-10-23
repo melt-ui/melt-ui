@@ -5,7 +5,8 @@
 	"repository": "github:melt-ui/melt-ui",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "PREDEPLOY='0' && vite build && npm run package",
+		"build": "vite build && npm run package",
+		"deploy": "PREDEPLOY='0' && vite build",
 		"preview": "vite preview",
 		"package": "svelte-kit sync && svelte-package && publint",
 		"prepublishOnly": "npm run package",
