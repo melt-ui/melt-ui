@@ -8,7 +8,10 @@ await index.addDirectory({
 	path: 'build',
 });
 
-// Or, write the index to disk
 await index.writeFiles({
 	outputPath: 'src/pagefind',
+});
+
+await index.writeFiles({
+	outputPath: 'static/pagefind',
 });

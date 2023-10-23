@@ -17,3 +17,6 @@ storybook-static
 /playwright-report/
 /playwright/.cache/
 /.pnpm-store/
+
+src/pagefind
+static/pagefind

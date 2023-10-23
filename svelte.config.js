@@ -6,7 +6,8 @@ import { mdsvex } from '@huntabyte/mdsvex';
 import { mdsvexOptions } from './mdsvex.config.js';
 import sequence from 'svelte-sequential-preprocessor';
 
-const IS_VERCEL = process.env.VERCEL === '1';
+// const IS_VERCEL = process.env.VERCEL === '1';
+const IS_VERCEL = false;
 
 const adapter = IS_VERCEL ? adapterVercel({ runtime: 'edge' }) : adapterStatic();
 
