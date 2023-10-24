@@ -6,8 +6,20 @@
 	const {
 		elements: { trigger, content, arrow, close },
 		states: { open },
+	} = createPopover();
+
+	const {
+		elements: {
+			trigger: triggerA,
+			content: contentA,
+			arrow: arrowA,
+			close: closeA,
+		},
+		states: { open: openA },
 	} = createPopover({
-		forceVisible: true,
+		positioning: {
+			placement: 'left',
+		},
 	});
 </script>
 
@@ -17,7 +29,7 @@
 	use:melt={$trigger}
 	aria-label="Update dimensions"
 >
-	<Settings2 style="height: 1rem; width: 1rem;" />
+	<Settings2 style="width: 1rem; height: 1rem;" />
 	<span class="sr-only">Open Popover</span>
 </button>
 
@@ -25,26 +37,69 @@
 	<div use:melt={$content} transition:fade={{ duration: 100 }} class="content">
 		<div use:melt={$arrow} />
 		<div class="wrapper">
-			<p>Dimensions</p>
-			<fieldset>
-				<label for="width">Width</label>
-				<input type="number" id="width" class="input" placeholder="Width" />
-			</fieldset>
-			<fieldset>
-				<label for="height">Height</label>
-				<input type="number" id="height" class="input" placeholder="Height" />
-			</fieldset>
-			<fieldset>
-				<label for="depth">Depth</label>
-				<input type="number" id="depth" class="input" placeholder="Depth" />
-			</fieldset>
-			<fieldset>
-				<label for="weight">Weight</label>
-				<input type="number" id="weight" class="input" placeholder="Weight" />
-			</fieldset>
+			<button
+				type="button"
+				class="trigger-inner"
+				use:melt={$triggerA}
+				aria-label="Change settings"
+			>
+				Open Nested
+			</button>
+
+			{#if $openA}
+				<div
+					use:melt={$contentA}
+					transition:fade={{ duration: 100 }}
+					class="content-inner"
+				>
+					<div use:melt={$arrowA} />
+					<div class="wrapper-inner">
+						<p>Dimensions</p>
+						<fieldset>
+							<label for="width">Width</label>
+							<input
+								type="number"
+								id="width"
+								class="input"
+								placeholder="Width"
+							/>
+						</fieldset>
+						<fieldset>
+							<label for="height">Height</label>
+							<input
+								type="number"
+								id="height"
+								class="input"
+								placeholder="Height"
+							/>
+						</fieldset>
+						<fieldset>
+							<label for="depth">Depth</label>
+							<input
+								type="number"
+								id="depth"
+								class="input"
+								placeholder="Depth"
+							/>
+						</fieldset>
+						<fieldset>
+							<label for="weight">Weight</label>
+							<input
+								type="number"
+								id="weight"
+								class="input"
+								placeholder="Weight"
+							/>
+						</fieldset>
+					</div>
+					<button class="close" use:melt={$closeA}>
+						<X style="width: 1rem; height: 1rem" />
+					</button>
+				</div>
+			{/if}
 		</div>
 		<button class="close" use:melt={$close}>
-			<X style="height: 1rem; width: 1rem;" />
+			<X style="width: 1rem; height: 1rem" />
 		</button>
 	</div>
 {/if}
@@ -142,6 +197,21 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.625rem;
+		padding: 1rem;
+	}
+
+	.wrapper-inner {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		padding-inline: 1rem;
+		padding-block: 0.5rem;
+	}
+
+	p {
+		margin-bottom: 0.5rem;
+		font-weight: var(--fw-medium);
+		color: var(--magnum-500);
 	}
 
 	fieldset {
@@ -153,7 +223,7 @@
 	label {
 		width: 75px;
 		font-size: var(--fs-sm);
-		color: var(--neutral-700);
+		color: var(--magnum-300);
 	}
 
 	p {
@@ -166,7 +236,6 @@
 		display: flex;
 		height: 2rem;
 		width: 100%;
-		max-width: 6.5rem;
 		border-radius: var(--radius-md);
 		border: 1px solid var(--magnum-800);
 		background-color: transparent;
@@ -196,15 +265,38 @@
 		line-height: 1.25rem;
 		font-weight: var(--fw-medium);
 		color: var(--magnum-900);
-		transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		transition-property: color, background-color, border-color,
 			text-decoration-color, fill, stroke;
+		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+		transition-duration: 150ms;
 	}
 	.trigger:hover {
 		background-color: rgb(255 255 255 / 0.9);
 	}
 	.trigger:focus-visible {
 		box-shadow: 0 0 0 5px rgb(243 141 28 / 0.5) !important;
+	}
+
+	.trigger-inner {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: var(--radius-md);
+		border-width: 1px;
+		background-color: white;
+		padding-inline: 1rem;
+		padding-block: 0.5rem;
+		font-weight: var(--fw-medium);
+		line-height: var(--lh-none);
+		color: var(--magnum-700);
+		box-shadow: var(--shadow-lg);
+		transition-property: color, background-color, border-color,
+			text-decoration-color, fill, stroke;
+		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+		transition-duration: 150ms;
+	}
+	.trigger-inner:hover {
+		background-color: var(--magnum-100);
 	}
 
 	.close {
@@ -222,7 +314,7 @@
 		transition-property: color, background-color, border-color,
 			text-decoration-color, fill, stroke;
 		background-color: white;
-		padding: 0px;
+		padding: 0;
 		font-size: var(--fs-sm);
 		line-height: 1.25rem;
 		font-weight: 500;
@@ -241,5 +333,15 @@
 		background-color: white;
 		padding: 1rem;
 		box-shadow: var(--shadow-sm);
+	}
+
+	.content-inner {
+		z-index: 20;
+		width: 16rem;
+		border-radius: var(--radius-md);
+		background-color: var(--neutral-900);
+		padding: 1.25rem;
+		color: white;
+		box-shadow: var(--shadow-lg);
 	}
 </style>
