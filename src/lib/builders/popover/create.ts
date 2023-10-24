@@ -80,16 +80,8 @@ export function createPopover(args?: CreatePopoverProps) {
 	function handleClose() {
 		open.set(false);
 		const triggerEl = document.getElementById(ids.trigger);
-		if (triggerEl) {
-			tick().then(() => {
-				const $closeFocus = get(closeFocus);
-				if ($closeFocus) {
-					handleFocus({ prop: $closeFocus, defaultEl: triggerEl });
-				} else {
-					triggerEl.focus();
-				}
-			});
-		}
+		if (!triggerEl) return;
+		handleFocus({ prop: get(closeFocus), defaultEl: triggerEl });
 	}
 
 	const isVisible = derivedVisible({ open, activeTrigger, forceVisible });
@@ -262,17 +254,10 @@ export function createPopover(args?: CreatePopoverProps) {
 				unsubs.push(removeScroll());
 			}
 
-			const $openFocus = get(openFocus);
-			tick().then(() => {
-				const triggerEl = $activeTrigger ?? document.getElementById(ids.trigger);
-				if (!triggerEl) return;
-
-				if ($openFocus) {
-					handleFocus({ prop: $openFocus, defaultEl: triggerEl });
-				} else {
-					triggerEl.focus();
-				}
-			});
+			const triggerEl = $activeTrigger ?? document.getElementById(ids.trigger);
+			if (triggerEl) {
+				handleFocus({ prop: get(openFocus), defaultEl: triggerEl });
+			}
 		}
 
 		return () => {

@@ -1,17 +1,27 @@
-import { isFunction, isHTMLElement } from '$lib/internal/helpers/index.js';
+import {
+	handleRovingFocus,
+	isFunction,
+	isHTMLElement,
+	sleep,
+} from '$lib/internal/helpers/index.js';
 
 export type FocusTarget = string | HTMLElement | SVGElement | null;
 export type FocusProp = FocusTarget | ((defaultEl?: HTMLElement) => FocusTarget);
 
 type HandleFocusArgs = {
 	prop?: FocusProp;
-	defaultEl?: HTMLElement;
+	defaultEl: HTMLElement;
+	roving?: boolean;
 };
 
-export function handleFocus(args: HandleFocusArgs = {}): void {
-	const { prop, defaultEl } = args;
+export function handleFocus(args: HandleFocusArgs): void {
+	const { prop, defaultEl, roving } = args;
 	if (prop === undefined) {
-		defaultEl?.focus();
+		if (roving) {
+			handleRovingFocus(defaultEl);
+		} else {
+			sleep(1).then(() => defaultEl.focus());
+		}
 		return;
 	}
 
@@ -21,9 +31,9 @@ export function handleFocus(args: HandleFocusArgs = {}): void {
 		// Get el by selector, focus it
 		const el = document.querySelector(returned);
 		if (!isHTMLElement(el)) return;
-		el.focus();
+		sleep(1).then(() => el.focus());
 	} else if (isHTMLElement(returned)) {
 		// Focus it
-		returned.focus();
+		sleep(1).then(() => returned.focus());
 	}
 }

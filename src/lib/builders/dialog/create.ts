@@ -95,19 +95,11 @@ export function createDialog(props?: CreateDialogProps) {
 	function handleClose() {
 		open.set(false);
 		const triggerEl = document.getElementById(ids.trigger);
-		if (triggerEl) {
-			tick().then(() => {
-				const $closeFocus = get(closeFocus);
-				if (get(closeFocus)) {
-					handleFocus({
-						prop: $closeFocus,
-						defaultEl: triggerEl,
-					});
-				} else {
-					triggerEl.focus();
-				}
-			});
-		}
+		if (!triggerEl) return;
+		handleFocus({
+			prop: get(closeFocus),
+			defaultEl: triggerEl,
+		});
 	}
 
 	onMount(() => {
@@ -346,12 +338,10 @@ export function createDialog(props?: CreateDialogProps) {
 		if ($preventScroll && $open) unsubs.push(removeScroll());
 
 		if ($open) {
-			const $openFocus = get(openFocus);
-			tick().then(() => {
-				const contentEl = document.getElementById(ids.content);
-				if (!contentEl) return;
-				handleFocus({ prop: $openFocus, defaultEl: contentEl });
-			});
+			const contentEl = document.getElementById(ids.content);
+			if (contentEl) {
+				handleFocus({ prop: get(openFocus), defaultEl: contentEl });
+			}
 		}
 
 		return () => {

@@ -1102,8 +1102,16 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			}
 
 			const $closeFocus = get(closeFocus);
-			if (!$rootOpen && $rootActiveTrigger && !$closeFocus) {
-				handleRovingFocus($rootActiveTrigger);
+
+			if (!$rootOpen && $rootActiveTrigger) {
+				handleFocus({ prop: $closeFocus, defaultEl: $rootActiveTrigger, roving: true });
+			}
+
+			if (!$rootOpen && !$rootActiveTrigger) {
+				const triggerEl = document.getElementById(rootIds.trigger);
+				if (!triggerEl) return;
+
+				handleFocus({ prop: $closeFocus, defaultEl: triggerEl, roving: true });
 			}
 
 			sleep(1).then(() => {
@@ -1119,27 +1127,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 					// Focus on first menu item
 					handleRovingFocus(menuItems[0]);
-				} else if ($rootActiveTrigger) {
-					const $closeFocus = get(closeFocus);
-					if ($closeFocus) {
-						return handleFocus({ prop: $closeFocus, defaultEl: $rootActiveTrigger });
-					}
-
-					if ($closeFocus) {
-						return handleFocus({ prop: $closeFocus, defaultEl: $rootActiveTrigger });
-					}
-					// Focus on active trigger
-					handleRovingFocus($rootActiveTrigger);
-				} else {
-					const $closeFocus = get(closeFocus);
-					const triggerEl = document.getElementById(rootIds.trigger);
-					if (!triggerEl) return;
-
-					if ($closeFocus) {
-						return handleFocus({ prop: $closeFocus, defaultEl: triggerEl });
-					}
-
-					handleRovingFocus(triggerEl);
 				}
 			});
 
