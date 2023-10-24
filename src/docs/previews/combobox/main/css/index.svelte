@@ -230,12 +230,16 @@
 		border-radius: 0.375rem;
 	}
 
-	.item[data-highlighted] {
+	.item:hover {
+		background-color: var(--magnum-100);
+	}
+
+	:global([data-highlighted]).item {
 		background-color: var(--magnum-200);
 		color: var(--magnum-900);
 	}
 
-	.item[data-disabled] {
+	:global([data-disabled]).item {
 		opacity: 50%;
 	}
 
@@ -244,7 +248,6 @@
 		left: 0.5rem;
 		top: 50%;
 		color: var(--magnum-500);
-		/*@apply absolute left-2 top-1/2 text-magnum-500;*/
 		translate: 0 calc(-50% + 1px);
 		z-index: 10;
 	}
@@ -260,7 +263,7 @@
 		color: var(--magnum-900);
 	}
 
-	.result-not-found[data-highlighted] {
+	:global([data-highlighted]).result-not-found {
 		background-color: var(--magnum-100);
 		color: var(--magnum-700);
 	}

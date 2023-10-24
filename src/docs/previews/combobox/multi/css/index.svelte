@@ -245,7 +245,6 @@
 		left: 0.5rem;
 		top: 50%;
 		color: var(--magnum-500);
-		/*@apply absolute left-2 top-1/2 text-magnum-500;*/
 		translate: 0 calc(-50% + 1px);
 		z-index: 10;
 	}
@@ -263,6 +262,6 @@
 
 	.result-not-found[data-highlighted] {
 		background-color: var(--magnum-100);
-		color: var(--magnum-700);
+		color: var(--magnum-700) !important;
 	}
 </style>
