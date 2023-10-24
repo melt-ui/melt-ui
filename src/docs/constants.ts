@@ -46,6 +46,12 @@ export const PROPS = {
 		description: DESCRIPTIONS.FORCE_VISIBLE(args.name ?? 'element'),
 		default: args.default ?? 'false',
 	}),
+	DISABLE_TRIGGER_REFOCUS: (args: PropArgs = {}): Prop => ({
+		name: 'disableTriggerRefocus',
+		type: 'boolean',
+		description: `Whether or not to refocus the trigger when the ${args.name ?? 'element'} closes`,
+		default: args.default ?? 'false',
+	}),
 	DISABLED: (args: PropArgs = {}): Prop => ({
 		name: 'disabled',
 		type: 'boolean',

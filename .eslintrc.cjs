@@ -57,6 +57,6 @@ module.exports = {
 	},
 	globals: {
 		NodeJS: true,
-		$$Generic: 'readable',
+		$$Generic: 'writable',
 	},
 };

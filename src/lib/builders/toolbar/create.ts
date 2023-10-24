@@ -130,6 +130,9 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 					const disabled = $disabled || argDisabled;
 
 					const pressed = Array.isArray($value) ? $value.includes(itemValue) : $value === itemValue;
+
+					const isSingle = $type === 'single';
+					const isMultiple = $type === 'multiple';
 					return {
 						disabled: disabledAttr(disabled),
 						pressed,
@@ -137,9 +140,10 @@ export const createToolbar = (props?: CreateToolbarProps) => {
 						'data-disabled': disabledAttr(disabled),
 						'data-value': itemValue,
 						'data-state': pressed ? 'on' : 'off',
-						'aria-pressed': pressed,
+						'aria-checked': isSingle ? pressed : undefined,
+						'aria-pressed': isMultiple ? pressed : undefined,
 						type: 'button',
-						role: $type === 'single' ? 'radio' : undefined,
+						role: isSingle ? 'radio' : undefined,
 						'data-melt-toolbar-item': '',
 					} as const;
 				};

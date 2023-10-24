@@ -23,6 +23,7 @@ export const menuBuilderProps = [
 	PROPS.DEFAULT_OPEN,
 	PROPS.OPEN,
 	PROPS.ON_OPEN_CHANGE,
+	PROPS.DISABLE_TRIGGER_REFOCUS
 ];
 
 export const menuBuilderOptions = [

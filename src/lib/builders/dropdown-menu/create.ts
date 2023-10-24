@@ -48,7 +48,7 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 		rootActiveTrigger,
 		nextFocusable,
 		prevFocusable,
-		disableTriggerRefocus: true,
+		disableTriggerRefocus: props?.disableTriggerRefocus ?? false,
 		selector: 'dropdown-menu',
 		removeScroll: true,
 	});

@@ -6,9 +6,12 @@ import { mdsvex } from '@huntabyte/mdsvex';
 import { mdsvexOptions } from './mdsvex.config.js';
 import sequence from 'svelte-sequential-preprocessor';
 
+const IS_PREDEPLOY = process.env.PREDEPLOY === '1';
 const IS_VERCEL = process.env.VERCEL === '1';
+// eslint-disable-next-line no-console
+console.log({ IS_PREDEPLOY, IS_VERCEL });
 
-const adapter = IS_VERCEL ? adapterVercel({ runtime: 'edge' }) : adapterStatic();
+const adapter = IS_PREDEPLOY || !IS_VERCEL ? adapterStatic() : adapterVercel({ runtime: 'edge' });
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {

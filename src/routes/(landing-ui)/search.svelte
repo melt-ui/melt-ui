@@ -4,7 +4,12 @@
 	import { createCombobox, createDialog, melt } from '$lib';
 	import { CornerDownRight, Search } from 'lucide-svelte';
 	import { onMount } from 'svelte';
-	import type { Pagefind, PagefindSearchFragment, PagefindSearchResult } from '../../pagefind';
+	import type {
+		Pagefind,
+		PagefindSearchFragment,
+		PagefindSearchResult,
+		PagefindSubResult,
+	} from '../../pagefind';
 
 	let pagefind: Pagefind;
 	let results: PagefindSearchResult[] = [];
@@ -29,7 +34,7 @@
 	const {
 		elements: { input, menu, option },
 		states: { open: cbOpen, inputValue },
-	} = createCombobox<PagefindSearchFragment>({
+	} = createCombobox<PagefindSearchFragment | PagefindSubResult>({
 		onSelectedChange({ next }) {
 			if (next) {
 				gotoLink(next.value.url);
@@ -122,12 +127,13 @@
 				class="flex max-h-full flex-col gap-0 overflow-y-auto rounded-lg bg-neutral-800 px-2 py-2 text-white"
 			>
 				{#each results as result, index (index)}
+					{@const isLast = index === results.length - 1}
 					{#await result.data()}
 						<!-- nothingness -->
 					{:then data}
 						<div
 							use:melt={$option({ value: data, label: data.meta.title })}
-							class="group relative scroll-my-2 rounded-md px-4 py-2 data-[disabled]:opacity-50"
+							class="relative scroll-my-2 rounded-md px-4 py-2 data-[disabled]:opacity-50"
 						>
 							<a
 								class="title text-lg font-semibold underline hover:opacity-75"
@@ -136,23 +142,29 @@
 							<p class="mt-1 font-light">
 								{@html data.excerpt}
 							</p>
-							{#each data.sub_results.filter(({ title }) => title !== data.meta.title) as subresult}
-								<div class="subresult py-2 pl-2">
-									<div class="flex items-center gap-1">
-										<CornerDownRight class="opacity-75 square-4" />
-										<a
-											class="font-semibold underline hover:opacity-75"
-											href={sanitizeLink(subresult.url)}
-										>
-											{subresult.title}
-										</a>
-									</div>
-									<p class="mt-2 text-sm font-light opacity-75">
-										{@html subresult.excerpt}
-									</p>
-								</div>
-							{/each}
 						</div>
+						{#each data.sub_results.filter(({ title }) => title !== data.meta.title) as subresult}
+							<div
+								class="subresult ml-3 scroll-my-2 rounded-md py-2 pl-3"
+								use:melt={$option({ value: subresult, label: subresult.title })}
+							>
+								<div class="flex items-center gap-1">
+									<CornerDownRight class="opacity-75 square-4" />
+									<a
+										class="font-semibold underline hover:opacity-75"
+										href={sanitizeLink(subresult.url)}
+									>
+										{subresult.title}
+									</a>
+								</div>
+								<p class="mt-2 text-sm font-light opacity-75">
+									{@html subresult.excerpt}
+								</p>
+							</div>
+						{/each}
+						{#if !isLast}
+							<hr class="mx-4 my-2 border-neutral-700" />
+						{/if}
 					{/await}
 				{:else}
 					<li class="relative cursor-pointer rounded-md py-1 px-4">No results found</li>
@@ -177,20 +189,13 @@
 		font-weight: 300;
 	}
 
-	[data-highlighted] .title {
-		position: relative;
-		color: theme('colors.magnum.400');
+	[data-highlighted] {
+		background-color: theme('colors.magnum.400/0.25');
+		color: theme('colors.white');
 
-		&::before {
-			content: '';
-			position: absolute;
-			top: 50%;
-			translate: 0 -30%;
-			left: -12px;
-			width: 6px;
-			height: 6px;
-			border-radius: 50%;
-			background-color: theme('colors.magnum.400');
-		}
+		/* :global(mark) {
+			background-color: theme('colors.magnum.500');
+			color: theme('colors.magnum.100');
+		} */
 	}
 </style>
