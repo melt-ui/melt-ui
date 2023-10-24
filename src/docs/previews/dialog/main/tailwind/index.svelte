@@ -18,8 +18,19 @@
 		states: { open },
 	} = createDialog({
 		forceVisible: false,
+		closeFocus: () => {
+			return document.getElementById('closeFocus');
+		},
+		openFocus: () => {
+			const el = document.getElementById('openFocus');
+			return el;
+		},
 	});
 </script>
+
+<button id="closeFocus" class="bg-white text-magnum-700">
+	focus me on close
+</button>
 
 <button
 	use:melt={$trigger}
@@ -99,6 +110,17 @@
 			>
 				<X class="square-4" />
 			</button>
+			<button
+				id="openFocus"
+				class="inline-flex h-8 items-center justify-center rounded-sm
+			bg-magnum-100 px-4 font-medium leading-none text-magnum-900">hello world</button
+			>
 		</div>
 	{/if}
 </div>
+
+<style lang="postcss">
+	#openFocus {
+		@apply focus:bg-green-500;
+	}
+</style>
