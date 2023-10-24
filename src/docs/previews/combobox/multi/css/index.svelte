@@ -242,9 +242,6 @@
 
 	.check {
 		position: absolute;
-		left: 0.5rem;
-		top: 50%;
-		color: var(--magnum-500);
 		translate: 0 calc(-50% + 1px);
 		z-index: 10;
 	}
