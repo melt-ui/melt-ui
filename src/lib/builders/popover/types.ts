@@ -85,13 +85,13 @@ export type CreatePopoverProps = {
 	forceVisible?: boolean;
 
 	/**
-	 * Override the default autofocus behavior of the dialog
+	 * Override the default autofocus behavior of the popover
 	 * on open.
 	 */
 	openFocus?: FocusProp;
 
 	/**
-	 * Override the default autofocus behavior of the dialog
+	 * Override the default autofocus behavior of the popover
 	 * on close.
 	 */
 	closeFocus?: FocusProp;
