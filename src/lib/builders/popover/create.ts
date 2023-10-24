@@ -6,6 +6,7 @@ import {
 	effect,
 	generateId,
 	getPortalDestination,
+	handleFocus,
 	isBrowser,
 	isHTMLElement,
 	kbd,
@@ -20,7 +21,7 @@ import {
 import { usePopper } from '$lib/internal/actions/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import { executeCallbacks } from '../../internal/helpers/callbacks.js';
 import type { PopoverEvents } from './events.js';
 import type { CreatePopoverProps } from './types.js';
@@ -38,6 +39,8 @@ const defaults = {
 	closeOnOutsideClick: true,
 	portal: undefined,
 	forceVisible: false,
+	openFocus: undefined,
+	closeFocus: undefined,
 } satisfies Defaults<CreatePopoverProps>;
 
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
@@ -56,6 +59,8 @@ export function createPopover(args?: CreatePopoverProps) {
 		closeOnOutsideClick,
 		portal,
 		forceVisible,
+		openFocus,
+		closeFocus,
 	} = options;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
@@ -77,7 +82,12 @@ export function createPopover(args?: CreatePopoverProps) {
 		const triggerEl = document.getElementById(ids.trigger);
 		if (triggerEl) {
 			tick().then(() => {
-				triggerEl.focus();
+				const $closeFocus = get(closeFocus);
+				if ($closeFocus) {
+					handleFocus({ prop: $closeFocus, defaultEl: triggerEl });
+				} else {
+					triggerEl.focus();
+				}
 			});
 		}
 	}
@@ -128,7 +138,11 @@ export function createPopover(args?: CreatePopoverProps) {
 						open,
 						options: {
 							floating: $positioning,
-							focusTrap: $disableFocusTrap ? null : undefined,
+							focusTrap: $disableFocusTrap
+								? null
+								: {
+										returnFocusOnDeactivate: false,
+								  },
 							clickOutside: $closeOnOutsideClick ? undefined : null,
 							escapeKeydown: $closeOnEscape
 								? {
@@ -247,6 +261,18 @@ export function createPopover(args?: CreatePopoverProps) {
 			if ($preventScroll) {
 				unsubs.push(removeScroll());
 			}
+
+			const $openFocus = get(openFocus);
+			tick().then(() => {
+				const triggerEl = $activeTrigger ?? document.getElementById(ids.trigger);
+				if (!triggerEl) return;
+
+				if ($openFocus) {
+					handleFocus({ prop: $openFocus, defaultEl: triggerEl });
+				} else {
+					triggerEl.focus();
+				}
+			});
 		}
 
 		return () => {

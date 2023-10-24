@@ -1,11 +1,19 @@
 <script lang="ts">
-	import { createPopover, melt } from '$lib/index.js';
+	import { createPopover, melt, type CreatePopoverProps } from '$lib/index.js';
 	import { Settings2, X } from 'lucide-svelte';
+
+	export let openFocus: CreatePopoverProps['openFocus'] = undefined;
+	export let closeFocus: CreatePopoverProps['closeFocus'] = undefined;
 
 	const {
 		elements: { trigger, content, arrow, close },
-	} = createPopover();
+	} = createPopover({
+		openFocus,
+		closeFocus,
+	});
 </script>
+
+<button data-testid="closeFocus" id="closeFocus"> focus me on close </button>
 
 <button
 	type="button"
@@ -42,6 +50,7 @@
 	<button class="close" use:melt={$close} data-testid="close">
 		<X class="h-4 w-4 " />
 	</button>
+	<button data-testid="openFocus" id="openFocus"> focus me on open </button>
 </div>
 <div data-testid="outside" />
 
