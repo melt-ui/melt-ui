@@ -71,6 +71,34 @@ export const createSlider = (props?: CreateSliderProps) => {
 		};
 	});
 
+	const ticks = derived([min, max, step], ([$min, $max, $step]) => {
+		const difference = sub($max, $min);
+
+		// min = 0, max = 8, step = 3:
+		// ----------------------------
+		// 0, 3, 6
+		// (8 - 0) / 3 = 2.666... = 3 ceiled
+		let count = Math.ceil(div(difference, $step));
+
+		// min = 0, max = 9, step = 3:
+		// ---------------------------
+		// 0, 3, 6, 9
+		// (9 - 0) / 3 = 3
+		// We need to add 1 because `difference` is a multiple of `step`.
+		if (difference % $step == 0) {
+			count++;
+		}
+
+		return count;
+	});
+
+	const actualMax = derived([min, step, ticks], ([$min, $step, $ticks]) => {
+		const numberOfSteps = $ticks - 1;
+		// Actual max value numberOfSteps multiplied by step and added to min.
+		const actualMax = add($min, mul(numberOfSteps, $step));
+		return actualMax;
+	});
+
 	const range = builder(name('range'), {
 		stores: [value, orientation, position],
 		returned: ([$value, $orientation, $position]) => {
@@ -165,6 +193,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 			const unsub = addMeltEventListener(node, 'keydown', (event) => {
 				const $min = get(min);
 				const $max = get(max);
+				const $actualMax = get(actualMax);
 				if (get(disabled)) return;
 
 				const target = event.currentTarget;
@@ -194,15 +223,13 @@ export const createSlider = (props?: CreateSliderProps) => {
 				const $value = get(value);
 				const $orientation = get(orientation);
 
-				const $actual_max = add($min, (mul(Math.floor(div(sub($max, $min), $step)), $step)))
-
 				switch (event.key) {
 					case kbd.HOME: {
 						updatePosition($min, index);
 						break;
 					}
 					case kbd.END: {
-						updatePosition($actual_max, index);
+						updatePosition($actualMax, index);
 						break;
 					}
 					case kbd.ARROW_LEFT: {
@@ -220,17 +247,18 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if ($orientation !== 'horizontal') break;
 
 						if (event.metaKey) {
-							updatePosition($actual_max, index);
+							updatePosition($actualMax, index);
 						} else if ($value[index] < $max) {
 							const newValue = add($value[index], $step);
 							if (newValue <= $max) {
-								updatePosition(newValue, index);}
+								updatePosition(newValue, index);
 							}
+						}
 						break;
 					}
 					case kbd.ARROW_UP: {
 						if (event.metaKey) {
-							updatePosition($actual_max, index);
+							updatePosition($actualMax, index);
 						} else if ($value[index] > $min && $orientation === 'vertical') {
 							const newValue = add($value[index], $step);
 							updatePosition(newValue, index);
@@ -261,27 +289,6 @@ export const createSlider = (props?: CreateSliderProps) => {
 				destroy: unsub,
 			};
 		},
-	});
-
-	const ticks = derived([min, max, step], ([$min, $max, $step]) => {
-		const difference = sub($max, $min);
-
-		// min = 0, max = 8, step = 3:
-		// ----------------------------
-		// 0, 3, 6
-		// (8 - 0) / 3 = 2.666... = 3 ceiled
-		let count = Math.ceil(div(difference, $step));
-
-		// min = 0, max = 9, step = 3:
-		// ---------------------------
-		// 0, 3, 6, 9
-		// (9 - 0) / 3 = 3
-		// We need to add 1 because `difference` is a multiple of `step`.
-		if (difference % $step == 0) {
-			count++;
-		}
-
-		return count;
 	});
 
 	const tick = builder(name('tick'), {
@@ -327,8 +334,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 	});
 
 	effect(
-		[root, min, max, disabled, orientation, step],
-		([$root, $min, $max, $disabled, $orientation, $step]) => {
+		[root, min, max, actualMax, disabled, orientation, step],
+		([$root, $min, $max, $actualMax, $disabled, $orientation, $step]) => {
 			if (!isBrowser || $disabled) return;
 
 			const applyPosition = (
@@ -340,17 +347,26 @@ export const createSlider = (props?: CreateSliderProps) => {
 				const percent = div(sub(clientXY, leftOrBottom), sub(rightOrTop, leftOrBottom));
 				const val = add(mul(percent, sub($max, $min)), $min);
 
-				const $actual_max = add($min, (mul(Math.floor(div(sub($max, $min), $step)), $step)))
-
 				if (val < $min) {
 					updatePosition($min, activeThumbIdx);
 				} else if (val > $max) {
-					updatePosition($actual_max, activeThumbIdx);
+					updatePosition($actualMax, activeThumbIdx);
 				} else {
 					const step = $step;
-					const newValue = mul(Math.round(div(val, step)), step);
+					const min = $min;
+					const actualMax = $actualMax;
 
-					updatePosition(newValue, activeThumbIdx);
+					const currentStep = Math.floor((val - min) / step);
+					const midpointOfCurrentStep = min + currentStep * step + step / 2;
+					const midpointOfNextStep = min + (currentStep + 1) * step + step / 2;
+					const newValue =
+						val >= midpointOfCurrentStep && val < midpointOfNextStep
+							? (currentStep + 1) * step + min
+							: currentStep * step + min;
+
+					if (newValue <= actualMax) {
+						updatePosition(newValue, activeThumbIdx);
+					}
 				}
 			};
 
