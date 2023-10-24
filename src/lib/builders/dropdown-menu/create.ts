@@ -17,6 +17,7 @@ const defaults = {
 	defaultOpen: false,
 	forceVisible: false,
 	typeahead: true,
+	closeFocus: undefined,
 } satisfies CreateDropdownMenuProps;
 
 export function createDropdownMenu(props?: CreateDropdownMenuProps) {
@@ -48,7 +49,6 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 		rootActiveTrigger,
 		nextFocusable,
 		prevFocusable,
-		disableTriggerRefocus: props?.disableTriggerRefocus ?? false,
 		selector: 'dropdown-menu',
 		removeScroll: true,
 	});

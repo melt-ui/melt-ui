@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDropdownMenu, melt } from '$lib/index.js';
+	import { createDropdownMenu, melt, type CreateDropdownMenuProps } from '$lib/index.js';
 	import { writable } from 'svelte/store';
 	import { AlignJustify, ChevronRight } from 'lucide-svelte';
 
@@ -7,12 +7,14 @@
 	const hideMeltUI = writable(false);
 
 	export let loop = false;
+	export let closeFocus: CreateDropdownMenuProps['closeFocus'] = undefined;
 
 	const {
 		elements: { trigger, menu, item, separator, arrow },
 		builders: { createSubmenu, createMenuRadioGroup, createCheckboxItem },
 	} = createDropdownMenu({
 		loop,
+		closeFocus,
 	});
 
 	const {
@@ -41,6 +43,7 @@
 </script>
 
 <main>
+	<button id="closeFocus" data-testid="closeFocus">close focus</button>
 	<button
 		type="button"
 		class="trigger"
