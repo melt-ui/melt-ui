@@ -1342,14 +1342,14 @@ export function handleTabNavigation(
 		const $prevFocusable = get(prevFocusable);
 		if ($prevFocusable) {
 			e.preventDefault();
-			$prevFocusable.focus();
+			sleep(1).then(() => $prevFocusable.focus());
 			prevFocusable.set(null);
 		}
 	} else {
 		const $nextFocusable = get(nextFocusable);
 		if ($nextFocusable) {
 			e.preventDefault();
-			$nextFocusable.focus();
+			sleep(1).then(() => $nextFocusable.focus());
 			nextFocusable.set(null);
 		}
 	}
