@@ -6,21 +6,21 @@ import {
 } from '$lib/internal/helpers/index.js';
 
 export type FocusTarget = string | HTMLElement | SVGElement | null;
-export type FocusProp = FocusTarget | ((defaultEl?: HTMLElement) => FocusTarget);
+export type FocusProp = FocusTarget | ((defaultEl?: HTMLElement | null) => FocusTarget);
 
 type HandleFocusArgs = {
 	prop?: FocusProp;
-	defaultEl: HTMLElement;
+	defaultEl: HTMLElement | null
 	roving?: boolean;
 };
 
 export function handleFocus(args: HandleFocusArgs): void {
 	const { prop, defaultEl, roving } = args;
 	if (prop === undefined) {
-		if (roving) {
+		if (roving && defaultEl) {
 			handleRovingFocus(defaultEl);
 		} else {
-			sleep(1).then(() => defaultEl.focus());
+			sleep(1).then(() => defaultEl?.focus());
 		}
 		return;
 	}

@@ -80,7 +80,6 @@ export function createPopover(args?: CreatePopoverProps) {
 	function handleClose() {
 		open.set(false);
 		const triggerEl = document.getElementById(ids.trigger);
-		if (!triggerEl) return;
 		handleFocus({ prop: get(closeFocus), defaultEl: triggerEl });
 	}
 
@@ -255,9 +254,7 @@ export function createPopover(args?: CreatePopoverProps) {
 			}
 
 			const triggerEl = $activeTrigger ?? document.getElementById(ids.trigger);
-			if (triggerEl) {
-				handleFocus({ prop: get(openFocus), defaultEl: triggerEl });
-			}
+			handleFocus({ prop: get(openFocus), defaultEl: triggerEl });
 		}
 
 		return () => {

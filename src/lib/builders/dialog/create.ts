@@ -95,7 +95,6 @@ export function createDialog(props?: CreateDialogProps) {
 	function handleClose() {
 		open.set(false);
 		const triggerEl = document.getElementById(ids.trigger);
-		if (!triggerEl) return;
 		handleFocus({
 			prop: get(closeFocus),
 			defaultEl: triggerEl,
@@ -339,9 +338,7 @@ export function createDialog(props?: CreateDialogProps) {
 
 		if ($open) {
 			const contentEl = document.getElementById(ids.content);
-			if (contentEl) {
-				handleFocus({ prop: get(openFocus), defaultEl: contentEl });
-			}
+			handleFocus({ prop: get(openFocus), defaultEl: contentEl });
 		}
 
 		return () => {
