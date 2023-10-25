@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.56.0
+
+### Minor Changes
+
+- Add `openFocus` & `closeFocus` props for controlled focus ([#663](https://github.com/melt-ui/melt-ui/pull/663))
+
 ## 0.55.4
 
 ### Patch Changes
