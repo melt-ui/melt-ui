@@ -33,11 +33,12 @@
 
 	[data-melt-tooltip-content] {
 		opacity: 0;
-
+		visibility: hidden;
 		transition: 150ms ease;
 
 		&[data-open] {
 			opacity: 1;
+			visibility: visible;
 		}
 	}
 </style>
