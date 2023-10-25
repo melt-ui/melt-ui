@@ -1104,17 +1104,18 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 			const $closeFocus = get(closeFocus);
 
-			if (!$rootOpen && $rootActiveTrigger) {
-				// If we already have a trigger, we'll focus on it
-				handleFocus({ prop: $closeFocus, defaultEl: $rootActiveTrigger, roving: true });
+			if (!$rootOpen) {
+				if ($rootActiveTrigger) {
+					// If we already have a reference to the trigger, focus it
+					handleFocus({ prop: $closeFocus, defaultEl: $rootActiveTrigger });
+				} else {
+					// otherwise we'll get the trigger el and focus it
+					handleFocus({ prop: $closeFocus, defaultEl: document.getElementById(rootIds.trigger) });
+				}
 			}
 
-			if (!$rootOpen && !$rootActiveTrigger) {
-				// If we don't have a trigger, we'll get the trigger el and focus it
-				const triggerEl = document.getElementById(rootIds.trigger);
-				handleFocus({ prop: $closeFocus, defaultEl: triggerEl, roving: true });
-			}
-
+			// if the menu is open, we'll sleep for a sec so the menu can render
+			// before we focus on either the first item or the menu itself.
 			sleep(1).then(() => {
 				const menuEl = document.getElementById(rootIds.menu);
 				if (menuEl && $rootOpen && get(isUsingKeyboard)) {
