@@ -86,6 +86,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		typeahead,
 		loop,
 		closeFocus,
+		disableFocusFirstItem,
 	} = opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
@@ -1117,7 +1118,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			sleep(1).then(() => {
 				const menuEl = document.getElementById(rootIds.menu);
 				if (menuEl && $rootOpen && get(isUsingKeyboard)) {
-					if (opts.disableFocusFirstItem) {
+					if (get(disableFocusFirstItem)) {
 						handleRovingFocus(menuEl);
 						return;
 					}

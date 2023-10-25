@@ -105,6 +105,11 @@ export type _CreateMenuProps = {
 	 * on close.
 	 */
 	closeFocus?: FocusProp;
+
+	/**
+	 * Optionally prevent focusing the first item in the menu
+	 */
+	disableFocusFirstItem?: boolean;
 };
 
 export type _CreateSubmenuProps = Pick<_CreateMenuProps, 'arrowSize' | 'positioning'> & {
@@ -159,8 +164,8 @@ export type _MenuBuilderOptions = {
 		forceVisible: Writable<boolean>;
 		typeahead: Writable<boolean>;
 		closeFocus: Writable<FocusProp | undefined>;
+		disableFocusFirstItem: Writable<boolean>;
 	};
-	disableFocusFirstItem?: boolean;
 
 	nextFocusable: Writable<HTMLElement | null>;
 	prevFocusable: Writable<HTMLElement | null>;

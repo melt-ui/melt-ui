@@ -51,6 +51,8 @@ const defaults = {
 	defaultOpen: false,
 	forceVisible: false,
 	typeahead: true,
+	disableFocusFirstItem: true,
+	closeFocus: undefined,
 } satisfies CreateContextMenuProps;
 
 const { name, selector } = createElHelpers<_MenuParts>('context-menu');
@@ -85,8 +87,6 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		rootOptions,
 		nextFocusable,
 		prevFocusable,
-		disableFocusFirstItem: true,
-		disableTriggerRefocus: true,
 		selector: 'context-menu',
 		removeScroll: true,
 	});
