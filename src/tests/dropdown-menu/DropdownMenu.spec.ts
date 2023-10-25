@@ -184,6 +184,22 @@ describe('Dropdown Menu (Default)', () => {
 		expect(subtrigger).toHaveFocus();
 	});
 
+	test('Respects the `closeFocus` prop', async () => {
+		const { getByTestId } = render(DropdownMenuTest, {
+			closeFocus: () => {
+				return document.getElementById('closeFocus');
+			},
+		});
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
+		expect(menu).not.toBeVisible();
+		await act(() => userEvent.click(trigger));
+		expect(menu).toBeVisible();
+		await act(() => userEvent.keyboard(`{${kbd.ESCAPE}}`));
+		const closeFocus = getByTestId('closeFocus');
+		expect(closeFocus).toHaveFocus();
+	});
+
 	test.todo('Radio items');
 });
 

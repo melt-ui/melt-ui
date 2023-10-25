@@ -1,12 +1,19 @@
 <script lang="ts">
-	import { createDialog, melt } from '$lib/index.js';
+	import { createDialog, melt, type CreateDialogProps } from '$lib/index.js';
+
+	export let closeFocus: CreateDialogProps['closeFocus'] = undefined;
+	export let openFocus: CreateDialogProps['openFocus'] = undefined;
 
 	const {
 		elements: { trigger, overlay, content, title, description, close, portalled },
-	} = createDialog();
+	} = createDialog({
+		closeFocus,
+		openFocus,
+	});
 </script>
 
 <main>
+	<button id="closeFocus" data-testid="closeFocus">Focus Me</button>
 	<button use:melt={$trigger} data-testid="trigger">Open</button>
 	<div use:melt={$portalled} data-testid="portalled">
 		<div use:melt={$overlay} data-testid="overlay" />
@@ -16,6 +23,7 @@
 
 			<button use:melt={$close} data-testid="closer">Close</button>
 			<button use:melt={$close} data-testid="last">Close</button>
+			<div tabindex="-1" role="button" id="openFocus" data-testid="openFocus">hello world</div>
 		</div>
 	</div>
 </main>

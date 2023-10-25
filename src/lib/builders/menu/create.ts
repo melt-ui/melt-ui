@@ -18,6 +18,7 @@ import {
 	getNextFocusable,
 	getPortalDestination,
 	getPreviousFocusable,
+	handleFocus,
 	handleRovingFocus,
 	isBrowser,
 	isElementDisabled,
@@ -84,6 +85,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		forceVisible,
 		typeahead,
 		loop,
+		closeFocus,
+		disableFocusFirstItem,
 	} = opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
@@ -1099,14 +1102,24 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				unsubs.push(removeScroll());
 			}
 
-			if (!$rootOpen && $rootActiveTrigger && opts.disableTriggerRefocus === false) {
-				handleRovingFocus($rootActiveTrigger);
+			const $closeFocus = get(closeFocus);
+
+			if (!$rootOpen) {
+				if ($rootActiveTrigger) {
+					// If we already have a reference to the trigger, focus it
+					handleFocus({ prop: $closeFocus, defaultEl: $rootActiveTrigger });
+				} else {
+					// otherwise we'll get the trigger el and focus it
+					handleFocus({ prop: $closeFocus, defaultEl: document.getElementById(rootIds.trigger) });
+				}
 			}
 
+			// if the menu is open, we'll sleep for a sec so the menu can render
+			// before we focus on either the first item or the menu itself.
 			sleep(1).then(() => {
 				const menuEl = document.getElementById(rootIds.menu);
 				if (menuEl && $rootOpen && get(isUsingKeyboard)) {
-					if (opts.disableFocusFirstItem) {
+					if (get(disableFocusFirstItem)) {
 						handleRovingFocus(menuEl);
 						return;
 					}
@@ -1116,19 +1129,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 					// Focus on first menu item
 					handleRovingFocus(menuItems[0]);
-				} else if ($rootActiveTrigger) {
-					// Focus on active trigger trigger
-					if (opts.disableTriggerRefocus) {
-						return;
-					}
-					handleRovingFocus($rootActiveTrigger);
-				} else {
-					if (opts.disableTriggerRefocus) {
-						return;
-					}
-					const triggerEl = document.getElementById(rootIds.trigger);
-					if (!triggerEl) return;
-					handleRovingFocus(triggerEl);
 				}
 			});
 
@@ -1343,14 +1343,14 @@ export function handleTabNavigation(
 		const $prevFocusable = get(prevFocusable);
 		if ($prevFocusable) {
 			e.preventDefault();
-			$prevFocusable.focus();
+			sleep(1).then(() => $prevFocusable.focus());
 			prevFocusable.set(null);
 		}
 	} else {
 		const $nextFocusable = get(nextFocusable);
 		if ($nextFocusable) {
 			e.preventDefault();
-			$nextFocusable.focus();
+			sleep(1).then(() => $nextFocusable.focus());
 			nextFocusable.set(null);
 		}
 	}
