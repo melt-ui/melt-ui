@@ -124,9 +124,9 @@
 						label: book.title,
 						disabled: book.disabled,
 					})}
-					class="relative cursor-pointer scroll-my-2 rounded-md py-2 pl-4 pr-4
-				data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900
-					data-[disabled]:opacity-50"
+					class="ata-[highlighted]:bg-magnum-50 data-[selected]:text-magnum-9000
+					relative cursor-pointer scroll-my-2 rounded-md py-2
+					pl-4 pr-4 data-[highlighted]:bg-magnum-50 data-[selected]:bg-magnum-200 data-[highlighted]:text-magnum-900 data-[selected]:text-magnum-900 data-[disabled]:opacity-50"
 				>
 					{#if $isSelected(book)}
 						<div class="check absolute left-2 top-1/2 z-10 text-magnum-900">

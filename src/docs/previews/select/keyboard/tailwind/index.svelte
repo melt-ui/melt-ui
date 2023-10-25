@@ -74,10 +74,7 @@
 					</div>
 					{#each arr as item}
 						<div
-							class="relative cursor-pointer rounded-lg py-1 pl-8 pr-4 text-neutral-800
-							focus:z-10 focus:text-magnum-700
-						data-[highlighted]:bg-magnum-50 data-[selected]:bg-magnum-100
-						data-[highlighted]:text-magnum-900 data-[selected]:text-magnum-900"
+							class="relative cursor-pointer rounded-lg py-1 pl-8 pr-4 text-neutral-800 focus:z-10 data-[highlighted]:bg-magnum-50 data-[selected]:bg-magnum-200 data-[highlighted]:text-magnum-900 data-[selected]:text-magnum-900"
 							use:melt={$option({ value: item, label: item })}
 						>
 							<div class="check {$isSelected(item) ? 'block' : 'hidden'}">

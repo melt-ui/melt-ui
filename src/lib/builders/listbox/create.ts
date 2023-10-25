@@ -568,6 +568,9 @@ export function createListbox<
 					if (!get(multiple)) {
 						closeMenu();
 					}
+				}),
+				addMeltEventListener(node, 'mouseover', () => {
+					highlightedItem.set(node);
 				})
 			);
 			return { destroy: unsubscribe };

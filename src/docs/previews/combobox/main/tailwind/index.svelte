@@ -134,9 +134,7 @@
 				<li
 					use:melt={$option(toOption(manga))}
 					class="relative cursor-pointer scroll-my-2 rounded-md py-2 pl-4 pr-4
-				hover:bg-magnum-100
-				data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900
-					data-[disabled]:opacity-50"
+					data-[highlighted]:bg-magnum-50 data-[selected]:bg-magnum-200 data-[highlighted]:text-magnum-900 data-[selected]:text-magnum-900 data-[disabled]:opacity-50"
 				>
 					{#if $isSelected(manga)}
 						<div class="check absolute left-2 top-1/2 z-10 text-magnum-900">
