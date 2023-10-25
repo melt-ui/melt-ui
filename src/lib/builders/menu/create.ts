@@ -1122,13 +1122,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						return;
 					}
 					handleRovingFocus($rootActiveTrigger);
-				} else {
-					if (opts.disableTriggerRefocus) {
-						return;
-					}
-					const triggerEl = document.getElementById(rootIds.trigger);
-					if (!triggerEl) return;
-					handleRovingFocus(triggerEl);
 				}
 			});
 
