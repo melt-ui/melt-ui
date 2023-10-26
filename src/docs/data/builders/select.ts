@@ -23,6 +23,13 @@ const OPTION_PROPS = [
 		type: 'string',
 		description: 'The name to be used for the select input.',
 	},
+	{
+		name: 'highlightOnHover',
+		type: 'boolean',
+		default: 'true',
+		description:
+			'When true, hovering an option will update the `highlightedItem` store, and when the cursor leaves an option the store will be set to `null`',
+	},
 ];
 
 const BUILDER_NAME = 'select';

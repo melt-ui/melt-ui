@@ -6,7 +6,7 @@
 		states: { open },
 	} = createTooltip({
 		forceVisible: true,
-		openDelay: 0,
+		openDelay: 500,
 	});
 
 	export let text = 'Tooltip text';
