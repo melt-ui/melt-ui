@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.57.0
+
+### Minor Changes
+
+- Combobox & Select: `highlightOnHover` option ([#671](https://github.com/melt-ui/melt-ui/pull/671))
+
 ## 0.56.0
 
 ### Minor Changes
