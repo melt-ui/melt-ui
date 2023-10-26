@@ -17,7 +17,7 @@
 		data: Promised<ReturnType<PagefindSearchResult['data']>>;
 	};
 
-	let pagefind: Pagefind;
+	let pagefind: Pagefind | null = null;
 	let results: AwaitedResult[] = [];
 
 	onMount(async () => {
@@ -85,7 +85,7 @@
 	$: {
 		if (pagefind) {
 			debounce(() => {
-				pagefind.search($inputValue).then(async (r) => {
+				pagefind?.search($inputValue).then(async (r) => {
 					results = await Promise.all(
 						r.results.map(async (result) => ({
 							...result,
