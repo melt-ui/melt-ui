@@ -69,6 +69,7 @@ const defaults = {
 	required: false,
 	name: undefined,
 	typeahead: true,
+	highlightOnHover: true,
 } satisfies Defaults<CreateListboxProps<unknown>>;
 
 /**
@@ -123,6 +124,7 @@ export function createListbox<
 		required,
 		typeahead,
 		name: nameProp,
+		highlightOnHover,
 	} = options;
 	const { name, selector } = createElHelpers(withDefaults.builder);
 
@@ -568,8 +570,22 @@ export function createListbox<
 					if (!get(multiple)) {
 						closeMenu();
 					}
+				}),
+				effect(highlightOnHover, ($highlightOnHover) => {
+					if (!$highlightOnHover) return;
+					const unsub = executeCallbacks(
+						addMeltEventListener(node, 'mouseover', () => {
+							highlightedItem.set(node);
+						}),
+						addMeltEventListener(node, 'mouseleave', () => {
+							highlightedItem.set(null);
+						})
+					);
+
+					return unsub;
 				})
 			);
+
 			return { destroy: unsubscribe };
 		},
 	});
@@ -648,6 +664,7 @@ export function createListbox<
 			open,
 			selected,
 			highlighted,
+			highlightedItem,
 		},
 		helpers: {
 			isSelected,

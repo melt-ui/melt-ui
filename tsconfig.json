@@ -16,7 +16,9 @@
 		"*.ignore-svelte",
 		"src/routes/old/builders/**/(css)/*",
 		"src/routes/old/builders/**/(tailwind)/*",
-		"src/pagefind/**/*"
+		"src/pagefind/**/*",
+		"src/pagefind/pagefind.js",
+		"static/pagefind/pagefind.js",
 	]
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	//
