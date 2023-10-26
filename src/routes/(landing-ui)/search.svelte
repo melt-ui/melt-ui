@@ -149,6 +149,9 @@
 			<div
 				class="flex max-h-full flex-col gap-0 overflow-y-auto rounded-lg bg-neutral-800 px-2 py-2 text-white"
 			>
+				<p aria-live="polite" class="px-4 py-1 font-light opacity-50">
+					{results.length === 0 ? 'No results' : `Found ${results.length} results`}
+				</p>
 				{#each results as { data }, index (index)}
 					{@const isLast = index === results.length - 1}
 
@@ -186,8 +189,6 @@
 					{#if !isLast}
 						<hr class="mx-4 my-2 border-neutral-700" />
 					{/if}
-				{:else}
-					<li class="relative cursor-pointer rounded-md py-1 px-4">No results found</li>
 				{/each}
 			</div>
 		</div>
