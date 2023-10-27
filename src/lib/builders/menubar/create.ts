@@ -99,6 +99,8 @@ export function createMenubar(props?: CreateMenubarProps) {
 		forceVisible: false,
 		defaultOpen: false,
 		typeahead: true,
+		closeFocus: undefined,
+		disableFocusFirstItem: false,
 	} satisfies CreateMenubarMenuProps;
 
 	const createMenu = (props?: CreateMenubarMenuProps) => {
@@ -114,8 +116,6 @@ export function createMenubar(props?: CreateMenubarProps) {
 			rootOptions: options,
 			rootOpen,
 			rootActiveTrigger,
-			disableTriggerRefocus: true,
-			disableFocusFirstItem: true,
 			nextFocusable,
 			prevFocusable,
 			selector: 'menubar-menu',
@@ -602,7 +602,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 	});
 
 	return {
-		ids: ids,
+		ids,
 		elements: {
 			menubar,
 		},
