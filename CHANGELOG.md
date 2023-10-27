@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.57.1
+
+### Patch Changes
+
+- Menus: Return Ids ([#674](https://github.com/melt-ui/melt-ui/pull/674))
+
 ## 0.57.0
 
 ### Minor Changes
