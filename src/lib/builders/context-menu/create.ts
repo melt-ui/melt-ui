@@ -304,6 +304,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	});
 
 	return {
+		ids,
 		elements: {
 			menu,
 			trigger,

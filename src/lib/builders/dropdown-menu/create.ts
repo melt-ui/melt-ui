@@ -44,6 +44,7 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 		separator,
 		group,
 		groupLabel,
+		ids,
 	} = createMenuBuilder({
 		rootOptions,
 		rootOpen,
@@ -55,6 +56,7 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 	});
 
 	return {
+		ids,
 		elements: {
 			trigger,
 			menu,
