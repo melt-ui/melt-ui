@@ -684,6 +684,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					id: subIds.menu,
 					'aria-labelledby': subIds.trigger,
 					'data-state': $subIsVisible ? 'open' : 'closed',
+					// unit tests fail on `.closest` if the id starts with a number
+					// so using a data attribute
 					'data-id': subIds.menu,
 					tabindex: -1,
 				} as const;
@@ -1506,6 +1508,8 @@ function isPointInPolygon(point: Point, polygon: Polygon) {
 function isFocusWithinSubmenu(submenuId: string) {
 	const activeEl = document.activeElement;
 	if (!isHTMLElement(activeEl)) return false;
+	// unit tests don't allow `.closest(#id)` to start with a number
+	// so we're using a data attribute.
 	const submenuEl = activeEl.closest(`[data-id="${submenuId}"]`);
 	return isHTMLElement(submenuEl);
 }
