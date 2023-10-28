@@ -114,7 +114,7 @@ export type _CreateMenuProps = {
 
 export type _CreateSubmenuProps = Pick<
 	_CreateMenuProps,
-	'arrowSize' | 'positioning' | 'open' | 'onOpenChange' | 'closeFocus'
+	'arrowSize' | 'positioning' | 'open' | 'onOpenChange'
 > & {
 	disabled?: boolean;
 };
