@@ -112,7 +112,10 @@ export type _CreateMenuProps = {
 	disableFocusFirstItem?: boolean;
 };
 
-export type _CreateSubmenuProps = Pick<_CreateMenuProps, 'arrowSize' | 'positioning'> & {
+export type _CreateSubmenuProps = Pick<
+	_CreateMenuProps,
+	'arrowSize' | 'positioning' | 'open' | 'onOpenChange'
+> & {
 	disabled?: boolean;
 };
 

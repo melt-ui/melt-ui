@@ -5,7 +5,8 @@
 
 	export let multiple = false;
 	export let defaultValue: string | undefined = undefined;
-
+	export let closeOnEscape = true;
+	export let closeOnOutsideClick = true;
 	const {
 		elements: { trigger, menu, option, group, groupLabel },
 		states: { selected, selectedLabel },
@@ -18,6 +19,8 @@
 					label: defaultValue,
 			  }
 			: undefined,
+		closeOnEscape,
+		closeOnOutsideClick,
 	});
 
 	let options = {
@@ -78,4 +81,5 @@
 			</div>
 		{/each}
 	</div>
+	<div data-testid="outside" />
 </main>

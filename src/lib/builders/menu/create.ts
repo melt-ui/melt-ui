@@ -639,8 +639,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	const createSubmenu = (args?: _CreateSubmenuProps) => {
 		const withDefaults = { ...subMenuDefaults, ...args } satisfies _CreateSubmenuProps;
 
-		const subOpen = writable(false);
-
+		const subOpenWritable = withDefaults.open ?? writable(false);
+		const subOpen = overridable(subOpenWritable, withDefaults?.onOpenChange);
 		// options
 		const options = toWritableStores(withDefaults);
 
@@ -684,6 +684,9 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					id: subIds.menu,
 					'aria-labelledby': subIds.trigger,
 					'data-state': $subIsVisible ? 'open' : 'closed',
+					// unit tests fail on `.closest` if the id starts with a number
+					// so using a data attribute
+					'data-id': subIds.menu,
 					tabindex: -1,
 				} as const;
 			},
@@ -708,6 +711,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 									portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
 									clickOutside: null,
 									focusTrap: null,
+									escapeKeydown: null,
 								},
 							});
 
@@ -884,7 +888,9 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
-						handleRovingFocus(triggerEl);
+						if (!isFocusWithinSubmenu(subIds.menu)) {
+							handleRovingFocus(triggerEl);
+						}
 
 						const openTimer = get(subOpenTimer);
 						if (!get(subOpen) && !openTimer && !isElementDisabled(triggerEl)) {
@@ -1144,7 +1150,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const handlePointer = () => isUsingKeyboard.set(false);
 		const handleKeyDown = (e: KeyboardEvent) => {
 			isUsingKeyboard.set(true);
-			if (e.key === kbd.ESCAPE && $rootOpen) {
+			if (e.key === kbd.ESCAPE && $rootOpen && get(closeOnEscape)) {
 				rootOpen.set(false);
 				return;
 			}
@@ -1498,4 +1504,13 @@ function isPointInPolygon(point: Point, polygon: Polygon) {
 	}
 
 	return inside;
+}
+
+function isFocusWithinSubmenu(submenuId: string) {
+	const activeEl = document.activeElement;
+	if (!isHTMLElement(activeEl)) return false;
+	// unit tests don't allow `.closest(#id)` to start with a number
+	// so we're using a data attribute.
+	const submenuEl = activeEl.closest(`[data-id="${submenuId}"]`);
+	return isHTMLElement(submenuEl);
 }

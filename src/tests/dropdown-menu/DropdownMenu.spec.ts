@@ -3,7 +3,7 @@ import { axe } from 'jest-axe';
 import { describe, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { sleep } from '$lib/internal/helpers/index.js';
-import { kbd } from '$lib/internal/helpers/index.js';
+import { testKbd as kbd } from '../utils.js';
 import DropdownMenuTest from './DropdownMenuTest.svelte';
 import DropdownMenuForceVisible from './DropdownMenuForceVisibleTest.svelte';
 import { tick } from 'svelte';
@@ -42,7 +42,7 @@ describe('Dropdown Menu (Default)', () => {
 
 		expect(menu).not.toBeVisible();
 		await act(() => trigger.focus());
-		await user.keyboard(`{${key}}`);
+		await user.keyboard(key);
 		expect(menu).toBeVisible();
 
 		const firstItem = getByTestId('item1');
@@ -62,13 +62,13 @@ describe('Dropdown Menu (Default)', () => {
 		const firstItem = getByTestId('item1');
 		expect(firstItem).not.toHaveFocus();
 
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ARROW_DOWN);
 
 		// focuses first item after arrow down
 		expect(firstItem).toHaveFocus();
 
 		// Doesnt focus disabled menu items
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ARROW_DOWN);
 		const disabledItem = getByTestId('item2');
 		expect(disabledItem).not.toHaveFocus();
 		expect(getByTestId('checkboxItem1')).toHaveFocus();
@@ -82,7 +82,7 @@ describe('Dropdown Menu (Default)', () => {
 
 		expect(menu).not.toBeVisible();
 		await act(() => trigger.focus());
-		await user.keyboard(`{${key}}`);
+		await user.keyboard(key);
 		expect(menu).toBeVisible();
 	});
 
@@ -92,7 +92,7 @@ describe('Dropdown Menu (Default)', () => {
 		const user = userEvent.setup();
 
 		await act(() => trigger.focus());
-		await user.keyboard(`{${kbd.ENTER}}`);
+		await user.keyboard(kbd.ENTER);
 		const checked1 = getByTestId('check1');
 		expect(checked1).toBeVisible();
 		expect(queryByTestId('check2')).toBeNull();
@@ -104,11 +104,11 @@ describe('Dropdown Menu (Default)', () => {
 		const user = userEvent.setup();
 
 		await act(() => trigger.focus());
-		await user.keyboard(`{${kbd.ENTER}}`);
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ENTER);
+		await user.keyboard(kbd.ARROW_DOWN);
 		expect(queryByTestId('check1')).not.toBeNull();
-		await user.keyboard(`{${kbd.ENTER}}`);
-		await user.keyboard(`{${kbd.ENTER}}`);
+		await user.keyboard(kbd.ENTER);
+		await user.keyboard(kbd.ENTER);
 		expect(queryByTestId('check1')).toBeNull();
 	});
 
@@ -118,12 +118,12 @@ describe('Dropdown Menu (Default)', () => {
 		const user = userEvent.setup();
 
 		await act(() => trigger.focus());
-		await user.keyboard(`{${kbd.ENTER}}`);
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ENTER);
+		await user.keyboard(kbd.ARROW_DOWN);
+		await user.keyboard(kbd.ARROW_DOWN);
 		expect(queryByTestId('check2')).toBeNull();
-		await user.keyboard(`{${kbd.ENTER}}`);
-		await user.keyboard(`{${kbd.ENTER}}`);
+		await user.keyboard(kbd.ENTER);
+		await user.keyboard(kbd.ENTER);
 		expect(queryByTestId('check2')).not.toBeNull();
 	});
 
@@ -155,7 +155,7 @@ describe('Dropdown Menu (Default)', () => {
 			await user.click(trigger);
 			const item = getByTestId(hoverItem);
 			await user.hover(item);
-			await user.keyboard(`{${key}}`);
+			await user.keyboard(key);
 			expect(item).not.toHaveFocus();
 			expect(getByTestId(`${endItem}`)).toHaveFocus();
 		}
@@ -172,13 +172,13 @@ describe('Dropdown Menu (Default)', () => {
 		const subtrigger = getByTestId('subtrigger');
 		await user.hover(subtrigger);
 		await sleep(100);
-		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(kbd.ARROW_RIGHT);
 		const subItem0 = getByTestId('subitem0');
 		expect(subItem0).toHaveFocus();
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ARROW_DOWN);
 		const subItem1 = getByTestId('subitem1');
 		expect(subItem1).toHaveFocus();
-		await user.keyboard(`{${kbd.ARROW_LEFT}}`);
+		await user.keyboard(kbd.ARROW_LEFT);
 		expect(subItem0).not.toHaveFocus();
 		expect(submenu).not.toBeVisible();
 		expect(subtrigger).toHaveFocus();
@@ -195,9 +195,37 @@ describe('Dropdown Menu (Default)', () => {
 		expect(menu).not.toBeVisible();
 		await act(() => userEvent.click(trigger));
 		expect(menu).toBeVisible();
-		await act(() => userEvent.keyboard(`{${kbd.ESCAPE}}`));
+		await act(() => userEvent.keyboard(kbd.ESCAPE));
 		const closeFocus = getByTestId('closeFocus');
 		expect(closeFocus).toHaveFocus();
+	});
+
+	test('respects `closeOnEscape` prop', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DropdownMenuTest, {
+			closeOnEscape: false,
+		});
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
+		await user.click(trigger);
+		expect(menu).toBeVisible();
+		await user.keyboard(kbd.ESCAPE);
+		expect(menu).toBeVisible();
+		await user.keyboard(kbd.ARROW_DOWN);
+	});
+
+	test('respects close on outside click prop', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(DropdownMenuTest, {
+			closeOnOutsideClick: false,
+		});
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
+		await user.click(trigger);
+		expect(menu).toBeVisible();
+		const outsideClick = getByTestId('outside-click');
+		await user.click(outsideClick);
+		expect(menu).toBeVisible();
 	});
 
 	test.todo('Radio items');
@@ -244,7 +272,7 @@ describe('Dropdown Menu (forceVisible)', () => {
 		const user = userEvent.setup();
 
 		await act(() => trigger.focus());
-		await user.keyboard(`{${key}}`);
+		await user.keyboard(key);
 		expect(getByTestId('menu')).toBeVisible();
 	});
 
@@ -262,13 +290,13 @@ describe('Dropdown Menu (forceVisible)', () => {
 		const firstItem = getByTestId('item1');
 		expect(firstItem).not.toHaveFocus();
 
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ARROW_DOWN);
 
 		// focuses first item after arrow down
 		expect(firstItem).toHaveFocus();
 
 		// Doesnt focus disabled menu items
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ARROW_DOWN);
 		const disabledItem = getByTestId('item2');
 		expect(disabledItem).not.toHaveFocus();
 		expect(getByTestId('checkboxItem1')).toHaveFocus();
@@ -281,13 +309,13 @@ describe('Dropdown Menu (forceVisible)', () => {
 
 		expect(queryByTestId('menu')).toBeNull();
 		await act(() => trigger.focus());
-		await user.keyboard(`{${kbd.ENTER}}`);
+		await user.keyboard(kbd.ENTER);
 		expect(getByTestId('menu')).toBeVisible();
 		// focuses first item when opened with a key
 		expect(getByTestId('item1')).toHaveFocus();
 
 		// Doesnt focus disabled menu items
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ARROW_DOWN);
 		const disabledItem = getByTestId('item2');
 		expect(disabledItem).not.toHaveFocus();
 		expect(getByTestId('checkboxItem1')).toHaveFocus();
@@ -299,7 +327,7 @@ describe('Dropdown Menu (forceVisible)', () => {
 		const user = userEvent.setup();
 
 		await act(() => trigger.focus());
-		await user.keyboard(`{${kbd.ENTER}}`);
+		await user.keyboard(kbd.ENTER);
 		const checked1 = getByTestId('check1');
 		expect(checked1).toBeVisible();
 		expect(queryByTestId('check2')).toBeNull();
@@ -311,11 +339,11 @@ describe('Dropdown Menu (forceVisible)', () => {
 		const user = userEvent.setup();
 
 		await act(() => trigger.focus());
-		await user.keyboard(`{${kbd.ENTER}}`);
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ENTER);
+		await user.keyboard(kbd.ARROW_DOWN);
 		expect(queryByTestId('check1')).not.toBeNull();
-		await user.keyboard(`{${kbd.ENTER}}`);
-		await user.keyboard(`{${kbd.ENTER}}`);
+		await user.keyboard(kbd.ENTER);
+		await user.keyboard(kbd.ENTER);
 		expect(queryByTestId('check1')).toBeNull();
 	});
 
@@ -325,12 +353,12 @@ describe('Dropdown Menu (forceVisible)', () => {
 		const user = userEvent.setup();
 
 		await act(() => trigger.focus());
-		await user.keyboard(`{${kbd.ENTER}}`);
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ENTER);
+		await user.keyboard(kbd.ARROW_DOWN);
+		await user.keyboard(kbd.ARROW_DOWN);
 		expect(queryByTestId('check2')).toBeNull();
-		await user.keyboard(`{${kbd.ENTER}}`);
-		await user.keyboard(`{${kbd.ENTER}}`);
+		await user.keyboard(kbd.ENTER);
+		await user.keyboard(kbd.ENTER);
 		expect(queryByTestId('check2')).not.toBeNull();
 	});
 
@@ -361,7 +389,7 @@ describe('Dropdown Menu (forceVisible)', () => {
 			await user.click(trigger);
 			const item = getByTestId(hoverItem);
 			await user.hover(item);
-			await user.keyboard(`{${key}}`);
+			await user.keyboard(key);
 			expect(item).not.toHaveFocus();
 			expect(getByTestId(`${endItem}`)).toHaveFocus();
 		}
@@ -377,19 +405,19 @@ describe('Dropdown Menu (forceVisible)', () => {
 		const subtrigger = getByTestId('subtrigger');
 		await user.hover(subtrigger);
 		await sleep(100);
-		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(kbd.ARROW_RIGHT);
 		const subItem0 = getByTestId('subitem0');
 		expect(subItem0).toHaveFocus();
 
 		// Arrow down inside submenu moves to next submenu item
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ARROW_DOWN);
 		const subItem1 = getByTestId('subitem1');
 		expect(subItem1).toHaveFocus();
 
 		await user.hover(subItem1);
 
 		// Arrow left inside submenu closes submenu and focuses subtrigger
-		await user.keyboard(`{${kbd.ARROW_LEFT}}`);
+		await user.keyboard(kbd.ARROW_LEFT);
 		expect(subItem0).not.toHaveFocus();
 		expect(subtrigger).toHaveFocus();
 	});
@@ -407,12 +435,12 @@ describe('Dropdown Menu (forceVisible)', () => {
 		expect(queryByTestId('menu')).not.toBeNull();
 
 		for (const item of menuItems) {
-			await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+			await user.keyboard(kbd.ARROW_DOWN);
 			expect(getByTestId(item)).toHaveFocus();
 		}
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ARROW_DOWN);
 		expect(getByTestId('item1')).toHaveFocus();
-		await user.keyboard(`{${kbd.ARROW_UP}}`);
+		await user.keyboard(kbd.ARROW_UP);
 		expect(getByTestId('subtrigger')).toHaveFocus();
 	});
 
@@ -427,19 +455,19 @@ describe('Dropdown Menu (forceVisible)', () => {
 		expect(queryByTestId('menu')).not.toBeNull();
 
 		for (const item of menuItems) {
-			await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+			await user.keyboard(kbd.ARROW_DOWN);
 			expect(getByTestId(item)).toHaveFocus();
 		}
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ARROW_DOWN);
 		expect(getByTestId('item1')).not.toHaveFocus();
 		expect(getByTestId('subtrigger')).toHaveFocus();
 
-		await user.keyboard(`{${kbd.ARROW_UP}}`);
-		await user.keyboard(`{${kbd.ARROW_UP}}`);
-		await user.keyboard(`{${kbd.ARROW_UP}}`);
+		await user.keyboard(kbd.ARROW_UP);
+		await user.keyboard(kbd.ARROW_UP);
+		await user.keyboard(kbd.ARROW_UP);
 		expect(getByTestId('item1')).toHaveFocus();
 
-		await user.keyboard(`{${kbd.ARROW_UP}}`);
+		await user.keyboard(kbd.ARROW_UP);
 		expect(getByTestId('subtrigger')).not.toHaveFocus();
 		expect(getByTestId('item1')).toHaveFocus();
 	});
