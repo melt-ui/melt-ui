@@ -8,6 +8,8 @@
 
 	export let loop = false;
 	export let closeFocus: CreateDropdownMenuProps['closeFocus'] = undefined;
+	export let closeOnEscape: CreateDropdownMenuProps['closeOnEscape'] = true;
+	export let closeOnOutsideClick: CreateDropdownMenuProps['closeOnOutsideClick'] = true;
 
 	const {
 		elements: { trigger, menu, item, separator, arrow },
@@ -15,6 +17,8 @@
 	} = createDropdownMenu({
 		loop,
 		closeFocus,
+		closeOnEscape,
+		closeOnOutsideClick,
 	});
 
 	const {
@@ -43,6 +47,7 @@
 </script>
 
 <main>
+	<div data-testid="outside-click">outside</div>
 	<button id="closeFocus" data-testid="closeFocus">close focus</button>
 	<button
 		type="button"

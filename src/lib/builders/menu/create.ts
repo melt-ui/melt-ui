@@ -179,6 +179,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					unsubPopper();
 					if (!$isVisible || !$rootActiveTrigger) return;
 					tick().then(() => {
+						console.log($closeOnEscape);
 						setMeltMenuAttribute(node, selector);
 						const popper = usePopper(node, {
 							anchorElement: $rootActiveTrigger,
@@ -711,6 +712,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 									portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
 									clickOutside: null,
 									focusTrap: null,
+									escapeKeydown: null,
 								},
 							});
 
@@ -1149,7 +1151,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const handlePointer = () => isUsingKeyboard.set(false);
 		const handleKeyDown = (e: KeyboardEvent) => {
 			isUsingKeyboard.set(true);
-			if (e.key === kbd.ESCAPE && $rootOpen) {
+			if (e.key === kbd.ESCAPE && $rootOpen && get(closeOnEscape)) {
 				rootOpen.set(false);
 				return;
 			}
