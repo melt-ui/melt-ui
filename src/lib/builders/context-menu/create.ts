@@ -232,8 +232,6 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		stores: rootOpen,
 		returned: ($rootOpen) => {
 			return {
-				'aria-controls': ids.menu,
-				'aria-expanded': $rootOpen,
 				'data-state': $rootOpen ? 'open' : 'closed',
 				id: ids.trigger,
 				style: styleToString({
