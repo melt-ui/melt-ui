@@ -179,7 +179,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					unsubPopper();
 					if (!$isVisible || !$rootActiveTrigger) return;
 					tick().then(() => {
-						console.log($closeOnEscape);
 						setMeltMenuAttribute(node, selector);
 						const popper = usePopper(node, {
 							anchorElement: $rootActiveTrigger,
