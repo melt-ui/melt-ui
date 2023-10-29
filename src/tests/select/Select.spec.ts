@@ -137,7 +137,7 @@ describe('Select', () => {
 		await user.click(trigger);
 		expect(menu).toBeVisible();
 
-		await user.keyboard(`{${kbd.ESCAPE}}`);
+		await user.keyboard(kbd.ESCAPE);
 		expect(menu).toBeVisible();
 	});
 
