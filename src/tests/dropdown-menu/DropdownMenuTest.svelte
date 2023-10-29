@@ -6,6 +6,8 @@
 	const settingsSync = writable(true);
 	const hideMeltUI = writable(false);
 
+	type $$Props = CreateDropdownMenuProps;
+
 	export let loop = false;
 	export let closeFocus: CreateDropdownMenuProps['closeFocus'] = undefined;
 	export let closeOnEscape: CreateDropdownMenuProps['closeOnEscape'] = true;
@@ -19,6 +21,7 @@
 		closeFocus,
 		closeOnEscape,
 		closeOnOutsideClick,
+		...$$restProps,
 	});
 
 	const {

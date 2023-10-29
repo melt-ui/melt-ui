@@ -1,14 +1,24 @@
-import { render, act } from '@testing-library/svelte';
+import { render, act, waitFor } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
 import { describe, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
-import { sleep } from '$lib/internal/helpers/index.js';
 import { testKbd as kbd } from '../utils.js';
 import DropdownMenuTest from './DropdownMenuTest.svelte';
 import DropdownMenuForceVisible from './DropdownMenuForceVisibleTest.svelte';
-import { tick } from 'svelte';
+import type { CreateDropdownMenuProps } from '$lib';
 
 const OPEN_KEYS = [kbd.ENTER, kbd.ARROW_DOWN, kbd.SPACE];
+
+function setup(props: CreateDropdownMenuProps = {}) {
+	const user = userEvent.setup();
+	const returned = render(DropdownMenuTest, props);
+	const trigger = returned.getByTestId('trigger');
+	return {
+		user,
+		trigger,
+		...returned,
+	};
+}
 
 describe('Dropdown Menu (Default)', () => {
 	test('No accessibility violations', async () => {
@@ -18,10 +28,8 @@ describe('Dropdown Menu (Default)', () => {
 	});
 
 	test('Opens when trigger is clicked', async () => {
-		const { getByTestId } = render(DropdownMenuTest);
-		const trigger = getByTestId('trigger');
+		const { user, trigger, getByTestId } = setup();
 		const menu = getByTestId('menu');
-		const user = userEvent.setup();
 
 		expect(menu).not.toBeVisible();
 		await user.click(trigger);
@@ -35,10 +43,8 @@ describe('Dropdown Menu (Default)', () => {
 	});
 
 	test.each(OPEN_KEYS)('Opens when %s is pressed', async (key) => {
-		const { getByTestId } = render(DropdownMenuTest);
-		const trigger = getByTestId('trigger');
+		const { user, trigger, getByTestId } = setup();
 		const menu = getByTestId('menu');
-		const user = userEvent.setup();
 
 		expect(menu).not.toBeVisible();
 		await act(() => trigger.focus());
@@ -50,10 +56,8 @@ describe('Dropdown Menu (Default)', () => {
 	});
 
 	test('Focus when opened with click', async () => {
-		const { getByTestId } = render(DropdownMenuTest);
-		const trigger = getByTestId('trigger');
+		const { user, trigger, getByTestId } = setup();
 		const menu = getByTestId('menu');
-		const user = userEvent.setup();
 
 		expect(menu).not.toBeVisible();
 		await user.click(trigger);
@@ -75,10 +79,8 @@ describe('Dropdown Menu (Default)', () => {
 	});
 
 	test.each(OPEN_KEYS)('Opens when %s is pressed', async (key) => {
-		const { getByTestId } = render(DropdownMenuTest);
-		const trigger = getByTestId('trigger');
+		const { user, trigger, getByTestId } = setup();
 		const menu = getByTestId('menu');
-		const user = userEvent.setup();
 
 		expect(menu).not.toBeVisible();
 		await act(() => trigger.focus());
@@ -87,9 +89,7 @@ describe('Dropdown Menu (Default)', () => {
 	});
 
 	test('Displays proper initial checked state for checkbox items', async () => {
-		const { getByTestId, queryByTestId } = render(DropdownMenuTest);
-		const trigger = getByTestId('trigger');
-		const user = userEvent.setup();
+		const { user, trigger, getByTestId, queryByTestId } = setup();
 
 		await act(() => trigger.focus());
 		await user.keyboard(kbd.ENTER);
@@ -99,11 +99,8 @@ describe('Dropdown Menu (Default)', () => {
 	});
 
 	test('Toggles checked to false for default checked checkbox items', async () => {
-		const { getByTestId, queryByTestId } = render(DropdownMenuTest);
-		const trigger = getByTestId('trigger');
-		const user = userEvent.setup();
-
-		await act(() => trigger.focus());
+		const { user, trigger, queryByTestId } = setup();
+		trigger.focus();
 		await user.keyboard(kbd.ENTER);
 		await user.keyboard(kbd.ARROW_DOWN);
 		expect(queryByTestId('check1')).not.toBeNull();
@@ -113,11 +110,9 @@ describe('Dropdown Menu (Default)', () => {
 	});
 
 	test('Toggles checked to true for default unchecked checkbox items', async () => {
-		const { getByTestId, queryByTestId } = render(DropdownMenuTest);
-		const trigger = getByTestId('trigger');
-		const user = userEvent.setup();
+		const { user, trigger, queryByTestId } = setup();
 
-		await act(() => trigger.focus());
+		trigger.focus();
 		await user.keyboard(kbd.ENTER);
 		await user.keyboard(kbd.ARROW_DOWN);
 		await user.keyboard(kbd.ARROW_DOWN);
@@ -128,17 +123,14 @@ describe('Dropdown Menu (Default)', () => {
 	});
 
 	test('Hovering over subtrigger opens submenu', async () => {
-		const { getByTestId } = render(DropdownMenuTest);
-		const trigger = getByTestId('trigger');
-		const user = userEvent.setup();
+		const { user, trigger, getByTestId } = setup();
 
 		await user.click(trigger);
 		const submenu = getByTestId('submenu');
 		expect(submenu).not.toBeVisible();
 		const subtrigger = getByTestId('subtrigger');
 		await user.hover(subtrigger);
-		await sleep(100);
-		expect(submenu).toBeVisible();
+		await waitFor(() => expect(submenu).toBeVisible());
 		expect(subtrigger).toHaveFocus();
 	});
 
@@ -148,9 +140,7 @@ describe('Dropdown Menu (Default)', () => {
 	])(
 		'Pressing arrow keys while hovering over item goes to next/prev item',
 		async (key, hoverItem, endItem) => {
-			const { getByTestId } = render(DropdownMenuTest);
-			const trigger = getByTestId('trigger');
-			const user = userEvent.setup();
+			const { user, trigger, getByTestId } = setup();
 
 			await user.click(trigger);
 			const item = getByTestId(hoverItem);
@@ -162,16 +152,13 @@ describe('Dropdown Menu (Default)', () => {
 	);
 
 	test('Arrow right when subtrigger hover focuses first item in submenu', async () => {
-		const { getByTestId } = render(DropdownMenuTest);
-		const trigger = getByTestId('trigger');
-		const user = userEvent.setup();
-
+		const { user, trigger, getByTestId } = setup();
 		await user.click(trigger);
 		const submenu = getByTestId('submenu');
 		expect(submenu).not.toBeVisible();
 		const subtrigger = getByTestId('subtrigger');
 		await user.hover(subtrigger);
-		await sleep(100);
+		await waitFor(() => expect(submenu).toBeVisible());
 		await user.keyboard(kbd.ARROW_RIGHT);
 		const subItem0 = getByTestId('subitem0');
 		expect(subItem0).toHaveFocus();
@@ -185,27 +172,24 @@ describe('Dropdown Menu (Default)', () => {
 	});
 
 	test('Respects the `closeFocus` prop', async () => {
-		const { getByTestId } = render(DropdownMenuTest, {
+		const { user, trigger, getByTestId } = setup({
 			closeFocus: () => {
 				return document.getElementById('closeFocus');
 			},
 		});
-		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
 		expect(menu).not.toBeVisible();
-		await act(() => userEvent.click(trigger));
+		await user.click(trigger);
 		expect(menu).toBeVisible();
-		await act(() => userEvent.keyboard(kbd.ESCAPE));
+		await user.keyboard(kbd.ESCAPE);
 		const closeFocus = getByTestId('closeFocus');
 		expect(closeFocus).toHaveFocus();
 	});
 
 	test('respects `closeOnEscape` prop', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DropdownMenuTest, {
+		const { user, trigger, getByTestId } = setup({
 			closeOnEscape: false,
 		});
-		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
 		await user.click(trigger);
 		expect(menu).toBeVisible();
@@ -215,11 +199,9 @@ describe('Dropdown Menu (Default)', () => {
 	});
 
 	test('respects close on outside click prop', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DropdownMenuTest, {
+		const { user, trigger, getByTestId } = setup({
 			closeOnOutsideClick: false,
 		});
-		const trigger = getByTestId('trigger');
 		const menu = getByTestId('menu');
 		await user.click(trigger);
 		expect(menu).toBeVisible();
@@ -230,6 +212,17 @@ describe('Dropdown Menu (Default)', () => {
 
 	test.todo('Radio items');
 });
+
+function setupForceVis(props: CreateDropdownMenuProps = {}) {
+	const user = userEvent.setup();
+	const returned = render(DropdownMenuForceVisible, props);
+	const trigger = returned.getByTestId('trigger');
+	return {
+		user,
+		trigger,
+		...returned,
+	};
+}
 
 describe('Dropdown Menu (forceVisible)', () => {
 	beforeEach(() => {
@@ -249,44 +242,34 @@ describe('Dropdown Menu (forceVisible)', () => {
 	});
 
 	test('Opens when trigger is clicked', async () => {
-		const { getByTestId } = render(DropdownMenuTest);
-		const trigger = getByTestId('trigger');
-		const menu = getByTestId('menu');
-		const user = userEvent.setup();
+		const { queryByTestId, user, trigger, getByTestId } = setupForceVis();
 
-		expect(menu).not.toBeVisible();
+		expect(queryByTestId('menu')).toBeNull();
 		await user.click(trigger);
-		expect(menu).toBeVisible();
+		await waitFor(() => expect(queryByTestId('menu')).not.toBeNull());
 
 		const arrow = getByTestId('arrow');
 		expect(arrow).toBeVisible();
 
 		await user.click(trigger);
-		expect(menu).not.toBeVisible();
+		await waitFor(() => expect(queryByTestId('menu')).toBeNull());
 	});
 
 	test.each(OPEN_KEYS)('Opens when %s is pressed', async (key) => {
-		const { getByTestId, queryByTestId } = render(DropdownMenuForceVisible);
-		const trigger = getByTestId('trigger');
+		const { queryByTestId, user, trigger } = setupForceVis();
 		expect(queryByTestId('menu')).toBeNull();
-		const user = userEvent.setup();
 
-		await act(() => trigger.focus());
+		trigger.focus();
 		await user.keyboard(key);
-		expect(getByTestId('menu')).toBeVisible();
+		await waitFor(() => expect(queryByTestId('menu')).not.toBeNull());
 	});
 
 	test('Focus when opened with click', async () => {
-		const { getByTestId, queryByTestId } = render(DropdownMenuForceVisible);
-		const trigger = getByTestId('trigger');
-		const user = userEvent.setup();
+		const { queryByTestId, user, trigger, getByTestId } = setupForceVis();
 
 		expect(queryByTestId('menu')).toBeNull();
 		await user.click(trigger);
-		await tick();
-		expect(queryByTestId('menu')).not.toBeNull();
-		expect(getByTestId('menu')).toBeVisible();
-
+		await waitFor(() => expect(queryByTestId('menu')).not.toBeNull());
 		const firstItem = getByTestId('item1');
 		expect(firstItem).not.toHaveFocus();
 
@@ -303,12 +286,10 @@ describe('Dropdown Menu (forceVisible)', () => {
 	});
 
 	test.todo('Doesnt focus disabled menu items', async () => {
-		const { getByTestId, queryByTestId } = render(DropdownMenuForceVisible);
-		const trigger = getByTestId('trigger');
-		const user = userEvent.setup();
+		const { queryByTestId, user, trigger, getByTestId } = setupForceVis();
 
 		expect(queryByTestId('menu')).toBeNull();
-		await act(() => trigger.focus());
+		trigger.focus();
 		await user.keyboard(kbd.ENTER);
 		expect(getByTestId('menu')).toBeVisible();
 		// focuses first item when opened with a key
@@ -322,11 +303,8 @@ describe('Dropdown Menu (forceVisible)', () => {
 	});
 
 	test('Displays proper initial checked state for checkbox items', async () => {
-		const { getByTestId, queryByTestId } = render(DropdownMenuForceVisible);
-		const trigger = getByTestId('trigger');
-		const user = userEvent.setup();
-
-		await act(() => trigger.focus());
+		const { queryByTestId, user, trigger, getByTestId } = setupForceVis();
+		trigger.focus();
 		await user.keyboard(kbd.ENTER);
 		const checked1 = getByTestId('check1');
 		expect(checked1).toBeVisible();
@@ -334,11 +312,9 @@ describe('Dropdown Menu (forceVisible)', () => {
 	});
 
 	test('Toggles checked to false for default checked checkbox items', async () => {
-		const { getByTestId, queryByTestId } = render(DropdownMenuForceVisible);
-		const trigger = getByTestId('trigger');
-		const user = userEvent.setup();
+		const { queryByTestId, user, trigger } = setupForceVis();
 
-		await act(() => trigger.focus());
+		trigger.focus();
 		await user.keyboard(kbd.ENTER);
 		await user.keyboard(kbd.ARROW_DOWN);
 		expect(queryByTestId('check1')).not.toBeNull();
@@ -348,11 +324,8 @@ describe('Dropdown Menu (forceVisible)', () => {
 	});
 
 	test('Toggles checked to true for default unchecked checkbox items', async () => {
-		const { getByTestId, queryByTestId } = render(DropdownMenuForceVisible);
-		const trigger = getByTestId('trigger');
-		const user = userEvent.setup();
-
-		await act(() => trigger.focus());
+		const { queryByTestId, user, trigger } = setupForceVis();
+		trigger.focus();
 		await user.keyboard(kbd.ENTER);
 		await user.keyboard(kbd.ARROW_DOWN);
 		await user.keyboard(kbd.ARROW_DOWN);
@@ -363,16 +336,13 @@ describe('Dropdown Menu (forceVisible)', () => {
 	});
 
 	test('Hovering over subtrigger opens submenu', async () => {
-		const { getByTestId, queryByTestId } = render(DropdownMenuForceVisible);
-		const trigger = getByTestId('trigger');
-		const user = userEvent.setup();
+		const { queryByTestId, user, trigger, getByTestId } = setupForceVis();
 
 		await user.click(trigger);
 		expect(queryByTestId('submenu')).toBeNull();
 		const subtrigger = getByTestId('subtrigger');
 		await user.hover(subtrigger);
-		await sleep(100);
-		expect(getByTestId('submenu')).toBeVisible();
+		await waitFor(() => expect(getByTestId('submenu')).toBeVisible());
 		expect(subtrigger).toHaveFocus();
 	});
 
@@ -382,9 +352,7 @@ describe('Dropdown Menu (forceVisible)', () => {
 	])(
 		'Pressing arrow keys while hovering over item goes to next/prev item',
 		async (key, hoverItem, endItem) => {
-			const { getByTestId } = render(DropdownMenuForceVisible);
-			const trigger = getByTestId('trigger');
-			const user = userEvent.setup();
+			const { user, trigger, getByTestId } = setupForceVis();
 
 			await user.click(trigger);
 			const item = getByTestId(hoverItem);
@@ -396,15 +364,13 @@ describe('Dropdown Menu (forceVisible)', () => {
 	);
 
 	test('Arrow right when subtrigger hover focuses first item in submenu', async () => {
-		const { getByTestId, queryByTestId } = render(DropdownMenuForceVisible);
-		const trigger = getByTestId('trigger');
-		const user = userEvent.setup();
+		const { queryByTestId, user, trigger, getByTestId } = setupForceVis();
 
 		await user.click(trigger);
 		expect(queryByTestId('submenu')).toBeNull();
 		const subtrigger = getByTestId('subtrigger');
 		await user.hover(subtrigger);
-		await sleep(100);
+		await waitFor(() => expect(getByTestId('submenu')).toBeVisible());
 		await user.keyboard(kbd.ARROW_RIGHT);
 		const subItem0 = getByTestId('subitem0');
 		expect(subItem0).toHaveFocus();
@@ -423,12 +389,7 @@ describe('Dropdown Menu (forceVisible)', () => {
 	});
 
 	test('loops through items when loop prop true', async () => {
-		const { queryByTestId, getByTestId } = render(DropdownMenuTest, {
-			loop: true,
-		});
-		const trigger = getByTestId('trigger');
-		const user = userEvent.setup();
-
+		const { queryByTestId, user, trigger, getByTestId } = setupForceVis({ loop: true });
 		const menuItems = ['item1', 'checkboxItem1', 'checkboxItem2', 'subtrigger'];
 
 		await user.click(trigger);
@@ -445,9 +406,7 @@ describe('Dropdown Menu (forceVisible)', () => {
 	});
 
 	test('does not loop through items when loop prop false/undefined', async () => {
-		const { queryByTestId, getByTestId } = render(DropdownMenuTest);
-		const trigger = getByTestId('trigger');
-		const user = userEvent.setup();
+		const { queryByTestId, user, trigger, getByTestId } = setupForceVis();
 
 		const menuItems = ['item1', 'checkboxItem1', 'checkboxItem2', 'subtrigger'];
 

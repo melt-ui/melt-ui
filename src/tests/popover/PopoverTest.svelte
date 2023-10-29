@@ -4,12 +4,14 @@
 
 	export let openFocus: CreatePopoverProps['openFocus'] = undefined;
 	export let closeFocus: CreatePopoverProps['closeFocus'] = undefined;
+	type $$Props = CreatePopoverProps;
 
 	const {
 		elements: { trigger, content, arrow, close },
 	} = createPopover({
 		openFocus,
 		closeFocus,
+		...$$restProps,
 	});
 </script>
 

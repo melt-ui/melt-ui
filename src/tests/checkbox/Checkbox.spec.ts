@@ -3,34 +3,35 @@ import { axe } from 'jest-axe';
 import { describe } from 'vitest';
 import CheckboxTest from './CheckboxTest.svelte';
 import userEvent from '@testing-library/user-event';
+import { testKbd as kbd } from '../utils';
 
 describe('Checkbox', () => {
 	test('No accessibility violations', async () => {
-		const { container } = await render(CheckboxTest);
+		const { container } = render(CheckboxTest);
 
 		expect(await axe(container)).toHaveNoViolations();
 	});
 
 	test('Toggles when clicked', async () => {
-		const { getByTestId } = await render(CheckboxTest);
+		const { getByTestId } = render(CheckboxTest);
 
 		const checkbox = getByTestId('checkbox');
 
-		await expect(checkbox.getAttribute('data-state')).toBe('indeterminate');
-		await checkbox.click();
-		await expect(checkbox.getAttribute('data-state')).toBe('checked');
-		await checkbox.click();
-		await expect(checkbox.getAttribute('data-state')).toBe('unchecked');
+		expect(checkbox.getAttribute('data-state')).toBe('indeterminate');
+		checkbox.click();
+		expect(checkbox.getAttribute('data-state')).toBe('checked');
+		checkbox.click();
+		expect(checkbox.getAttribute('data-state')).toBe('unchecked');
 	});
 
 	test('Should be checked when checked prop is true', async () => {
 		const { getByTestId } = render(CheckboxTest, { defaultChecked: true });
-		await expect(getByTestId('checkbox').getAttribute('data-state')).toBe('checked');
+		expect(getByTestId('checkbox').getAttribute('data-state')).toBe('checked');
 	});
 
 	test('Should be unchecked when checked prop is false', async () => {
 		const { getByTestId } = render(CheckboxTest, { defaultChecked: false });
-		await expect(getByTestId('checkbox').getAttribute('data-state')).toBe('unchecked');
+		expect(getByTestId('checkbox').getAttribute('data-state')).toBe('unchecked');
 	});
 
 	test('Should trigger on space keydown', async () => {
@@ -38,12 +39,12 @@ describe('Checkbox', () => {
 		const { getByTestId } = render(CheckboxTest);
 		const checkbox = getByTestId('checkbox');
 
-		await expect(checkbox.getAttribute('data-state')).toBe('indeterminate');
-		await checkbox.focus();
-		await user.keyboard(' ');
-		await expect(checkbox.getAttribute('data-state')).toBe('checked');
-		await user.keyboard(' ');
-		await expect(checkbox.getAttribute('data-state')).toBe('unchecked');
+		expect(checkbox.getAttribute('data-state')).toBe('indeterminate');
+		checkbox.focus();
+		await user.keyboard(kbd.SPACE);
+		expect(checkbox.getAttribute('data-state')).toBe('checked');
+		await user.keyboard(kbd.SPACE);
+		expect(checkbox.getAttribute('data-state')).toBe('unchecked');
 	});
 
 	test('Should not trigger on Enter keydown', async () => {
@@ -51,9 +52,9 @@ describe('Checkbox', () => {
 		const { getByTestId } = render(CheckboxTest);
 		const checkbox = getByTestId('checkbox');
 
-		await expect(checkbox.getAttribute('data-state')).toBe('indeterminate');
-		await checkbox.focus();
-		await user.keyboard('{enter}');
-		await expect(checkbox.getAttribute('data-state')).toBe('indeterminate');
+		expect(checkbox.getAttribute('data-state')).toBe('indeterminate');
+		checkbox.focus();
+		await user.keyboard(kbd.ENTER);
+		expect(checkbox.getAttribute('data-state')).toBe('indeterminate');
 	});
 });

@@ -1,12 +1,34 @@
-import { render, screen, waitFor, waitForElementToBeRemoved } from '@testing-library/svelte';
+import { render, waitFor } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe, vi, it, beforeEach, afterEach } from 'vitest';
-import { tick } from 'svelte';
-import { kbd, sleep } from '$lib/internal/helpers/index.js';
+import { sleep } from '$lib/internal/helpers/index.js';
+import { testKbd as kbd } from '../utils';
 import DialogTransitionTest from './DialogTransitionTest.svelte';
+import type { CreateDialogProps } from '$lib';
 
-describe.skip('Dialog with Transitions', () => {
+function setup(props: CreateDialogProps = {}) {
+	const user = userEvent.setup();
+	const returned = render(DialogTransitionTest, props);
+	const trigger = returned.getByTestId('trigger');
+	expect(trigger).toBeVisible();
+	return {
+		user,
+		trigger,
+		...returned,
+	};
+}
+
+async function open(props: CreateDialogProps = {}) {
+	const returned = setup(props);
+	const { queryByTestId, user, trigger } = returned;
+	expect(queryByTestId('content')).toBeNull();
+	await user.click(trigger);
+	await waitFor(() => expect(queryByTestId('content')).not.toBeNull());
+	return returned;
+}
+
+describe('Dialog with Transitions', () => {
 	beforeEach(() => {
 		vi.stubGlobal('requestAnimationFrame', (fn: FrameRequestCallback) => {
 			return window.setTimeout(() => fn(Date.now()), 16);
@@ -18,144 +40,77 @@ describe.skip('Dialog with Transitions', () => {
 	});
 
 	it('No accessibility violations', async () => {
-		const { container } = await render(DialogTransitionTest);
+		const { container } = render(DialogTransitionTest);
 
 		expect(await axe(container)).toHaveNoViolations();
 	});
 
 	it('Opens when trigger is clicked', async () => {
-		await render(DialogTransitionTest);
-
-		const trigger = screen.getByTestId('trigger');
-
-		await expect(screen.queryByTestId('content')).toBeNull();
-		await expect(trigger).toBeVisible();
-		await userEvent.click(trigger);
-		await waitFor(() => expect(screen.queryByTestId('content')).not.toBeNull());
-		await waitFor(() => expect(screen.queryByTestId('content')).toBeVisible());
+		const { queryByTestId } = await open();
+		await waitFor(() => expect(queryByTestId('content')).not.toBeNull());
 	});
 
-	it(
-		'Closes when closer is clicked',
-		async () => {
-			await render(DialogTransitionTest);
+	it('Closes when closer is clicked', async () => {
+		const { user, queryByTestId, getByTestId } = await open();
 
-			const user = userEvent.setup();
-			const trigger = screen.getByTestId('trigger');
+		await waitFor(() => getByTestId('closer'));
+		await user.click(getByTestId('closer'));
+		await waitFor(() => expect(queryByTestId('content')).toBeNull());
+	});
 
-			await expect(trigger).toBeVisible();
-			await expect(screen.queryByTestId('content')).toBeNull();
-			await expect(screen.queryByTestId('closer')).toBeNull();
-			await user.click(trigger);
-			await tick();
-			await tick();
-			await expect(screen.queryByTestId('content')).not.toBeNull();
-			await waitFor(() => screen.getByTestId('closer'));
-			await user.click(screen.getByTestId('closer'));
-			await tick();
-			await waitForElementToBeRemoved(() => screen.getByTestId('content'));
+	it('Closes when Escape is pressed', async () => {
+		const { user, queryByTestId } = await open();
+		await user.keyboard(kbd.ESCAPE);
+		await waitFor(() => expect(queryByTestId('content')).toBeNull());
+	});
 
-			expect(screen.queryByTestId('content')).toBeNull();
-		},
-		{ retry: 1 }
-	);
+	it('Closes when overlay is clicked', async () => {
+		const { user, queryByTestId, getByTestId } = await open();
+		await sleep(100);
+		await waitFor(() => expect(queryByTestId('content')).not.toBeNull());
+		await waitFor(() => expect(queryByTestId('overlay')).not.toBeNull());
+		await user.click(getByTestId('overlay'));
+		await waitFor(() => expect(queryByTestId('content')).toBeNull());
+	});
 
-	it(
-		'Closes when Escape is pressed',
-		async () => {
-			await render(DialogTransitionTest);
+	it('Portals the portalled el into the body when no portal prop is passed', async () => {
+		const { getByTestId } = await open();
 
-			const user = userEvent.setup();
-			const trigger = screen.getByTestId('trigger');
+		await waitFor(() => getByTestId('portalled'));
+		const portalled = getByTestId('portalled');
 
-			await expect(trigger).toBeVisible();
-			await expect(screen.queryByTestId('content')).toBeNull();
-			await user.click(trigger);
-			await expect(screen.queryByTestId('content')).toBeVisible();
-			await user.keyboard(`{${kbd.ESCAPE}}`);
-			await waitForElementToBeRemoved(() => screen.getByTestId('content'));
+		expect(portalled.parentElement).toEqual(document.body);
+	});
 
-			expect(screen.queryByTestId('content')).toBeNull();
-		},
-		{ retry: 1 }
-	);
+	it('Portals the portalled el into the correct target if one is passed via the `portal` prop', async () => {
+		const { getByTestId } = await open({ portal: '#portal-target' });
+		const portalTarget = getByTestId('portal-target');
+		await waitFor(() => getByTestId('portalled'));
+		const portalled = getByTestId('portalled');
+		expect(portalled.parentElement).toEqual(portalTarget);
+	});
 
-	it(
-		'Closes when overlay is clicked',
-		async () => {
-			await render(DialogTransitionTest);
-
-			const user = userEvent.setup();
-			const trigger = screen.getByTestId('trigger');
-
-			await expect(trigger).toBeVisible();
-			await expect(screen.queryByTestId('content')).toBeNull();
-			await expect(screen.queryByTestId('overlay')).toBeNull();
-			await user.click(trigger);
-			await tick();
-			await expect(screen.getByTestId('content')).toBeVisible();
-			await expect(screen.getByTestId('overlay')).toBeVisible();
-			await sleep(100);
-			await user.click(screen.getByTestId('overlay'));
-			await waitForElementToBeRemoved(() => screen.getByTestId('content'));
-
-			expect(screen.queryByTestId('content')).toBeNull();
-		},
-		{ retry: 1 }
-	);
-
-	it(
-		'Portalled el attaches dialog to body',
-		async () => {
-			render(DialogTransitionTest);
-
-			const user = userEvent.setup();
-			const trigger = screen.getByTestId('trigger');
-			await user.click(trigger);
-
-			await waitFor(() => screen.getByTestId('portalled'));
-			const portalled = screen.getByTestId('portalled');
-
-			await expect(portalled.parentElement).toEqual(document.body);
-		},
-		{
-			retry: 1,
-		}
-	);
+	it('Does not portal the portalled el if `null` is passed as the `portal` prop', async () => {
+		const { getByTestId } = await open({ portal: null });
+		const main = getByTestId('main');
+		await waitFor(() => getByTestId('portalled'));
+		const portalled = getByTestId('portalled');
+		expect(portalled.parentElement).toEqual(main);
+	});
 
 	it('Focuses first focusable item upon opening', async () => {
-		await render(DialogTransitionTest);
-
-		const user = userEvent.setup();
-		const trigger = screen.getByTestId('trigger');
-
-		await expect(trigger).toBeVisible();
-		await expect(screen.queryByTestId('content')).toBeNull();
-		await user.click(trigger);
-		await waitFor(() => expect(screen.getByTestId('content')).toBeVisible());
+		const { getByTestId } = await open();
 		// Testing focus-trap is a bit flaky. So the focusable element is
 		// always content here.
-		await expect(document.activeElement).toBe(screen.getByTestId('content'));
+		expect(document.activeElement).toBe(getByTestId('content'));
 	});
 
-	it(
-		'Tabbing on last item focuses first item',
-		async () => {
-			await render(DialogTransitionTest);
-
-			const user = userEvent.setup();
-			const trigger = screen.getByTestId('trigger');
-
-			await expect(trigger).toBeVisible();
-			await expect(screen.queryByTestId('content')).toBeNull();
-			await user.click(trigger);
-			await waitFor(() => expect(screen.getByTestId('content')).toBeVisible());
-			// Testing focus-trap is a bit flaky. So the focusable element is
-			// always content here.
-			await expect(document.activeElement).toBe(screen.getByTestId('content'));
-			await user.tab();
-			await expect(document.activeElement).toBe(screen.getByTestId('content'));
-		},
-		{ retry: 1 }
-	);
+	it('Tabbing on last item focuses first item', async () => {
+		const { user, getByTestId } = await open();
+		// Testing focus-trap is a bit flaky. So the focusable element is
+		// always content here.
+		expect(document.activeElement).toBe(getByTestId('content'));
+		await user.tab();
+		expect(document.activeElement).toBe(getByTestId('content'));
+	});
 });
