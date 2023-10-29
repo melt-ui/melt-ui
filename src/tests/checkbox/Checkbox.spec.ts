@@ -13,14 +13,14 @@ describe('Checkbox', () => {
 	});
 
 	test('Toggles when clicked', async () => {
+		const user = userEvent.setup();
 		const { getByTestId } = render(CheckboxTest);
-
 		const checkbox = getByTestId('checkbox');
 
 		expect(checkbox.getAttribute('data-state')).toBe('indeterminate');
-		checkbox.click();
+		await user.click(checkbox);
 		expect(checkbox.getAttribute('data-state')).toBe('checked');
-		checkbox.click();
+		await user.click(checkbox);
 		expect(checkbox.getAttribute('data-state')).toBe('unchecked');
 	});
 
