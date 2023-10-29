@@ -14,7 +14,6 @@
 	} = createDropdownMenu({
 		forceVisible: true,
 		loop: true,
-		closeOnEscape: false,
 	});
 
 	const {
