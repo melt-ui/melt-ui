@@ -1,5 +1,12 @@
 # @melt-ui/svelte
 
+## 0.57.2
+
+### Patch Changes
+
+- Menu: add controlled submenu props ([#676](https://github.com/melt-ui/melt-ui/pull/676))
+  Listbox: Respect `closeOnEscape`
+
 ## 0.57.1
 
 ### Patch Changes
