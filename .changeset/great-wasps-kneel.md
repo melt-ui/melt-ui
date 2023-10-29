@@ -2,4 +2,5 @@
 "@melt-ui/svelte": patch
 ---
 
-add controlled submenu props
+Menu: add controlled submenu props
+Listbox: Respect `closeOnEscape`
