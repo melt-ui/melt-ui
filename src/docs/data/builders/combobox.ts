@@ -22,6 +22,13 @@ const OPTION_PROPS = [
 	PROPS.PORTAL,
 	PROPS.POSITIONING,
 	PROPS.FORCE_VISIBLE,
+	{
+		name: 'highlightOnHover',
+		type: 'boolean',
+		default: 'true',
+		description:
+			'When true, hovering an option will update the `highlightedItem` store, and when the cursor leaves an option the store will be set to `null`',
+	},
 ];
 
 const BUILDER_NAME = 'combobox';

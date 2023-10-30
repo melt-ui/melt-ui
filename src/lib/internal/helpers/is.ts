@@ -43,3 +43,8 @@ export function isLeftClick(event: PointerEvent | MouseEvent): boolean {
 export function isFocusVisible(element: Element): boolean {
 	return element.matches(':focus-visible');
 }
+
+export function isContentEditable(element: unknown): element is HTMLElement {
+	if (!isHTMLElement(element)) return false;
+	return element.isContentEditable;
+}

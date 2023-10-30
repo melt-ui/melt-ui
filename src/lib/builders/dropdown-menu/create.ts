@@ -17,6 +17,8 @@ const defaults = {
 	defaultOpen: false,
 	forceVisible: false,
 	typeahead: true,
+	closeFocus: undefined,
+	disableFocusFirstItem: false,
 } satisfies CreateDropdownMenuProps;
 
 export function createDropdownMenu(props?: CreateDropdownMenuProps) {
@@ -42,18 +44,19 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 		separator,
 		group,
 		groupLabel,
+		ids,
 	} = createMenuBuilder({
 		rootOptions,
 		rootOpen,
 		rootActiveTrigger,
 		nextFocusable,
 		prevFocusable,
-		disableTriggerRefocus: true,
 		selector: 'dropdown-menu',
 		removeScroll: true,
 	});
 
 	return {
+		ids,
 		elements: {
 			trigger,
 			menu,

@@ -10,15 +10,16 @@ import { sleep } from './sleep.js';
 export function handleRovingFocus(nextElement: HTMLElement) {
 	if (!isBrowser) return;
 
-	const currentFocusedElement = document.activeElement;
-	if (!isHTMLElement(currentFocusedElement)) return;
+	sleep(1).then(() => {
+		const currentFocusedElement = document.activeElement;
+		if (!isHTMLElement(currentFocusedElement) || currentFocusedElement === nextElement) return;
 
-	if (currentFocusedElement === nextElement) return;
-
-	currentFocusedElement.tabIndex = -1;
-
-	nextElement.tabIndex = 0;
-	sleep(1).then(() => nextElement.focus());
+		currentFocusedElement.tabIndex = -1;
+		if (nextElement) {
+			nextElement.tabIndex = 0;
+			nextElement.focus();
+		}
+	});
 }
 
 function getFocusableElements() {

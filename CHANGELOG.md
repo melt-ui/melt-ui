@@ -1,5 +1,61 @@
 # @melt-ui/svelte
 
+## 0.57.2
+
+### Patch Changes
+
+- Menu: add controlled submenu props ([#676](https://github.com/melt-ui/melt-ui/pull/676))
+  Listbox: Respect `closeOnEscape`
+
+## 0.57.1
+
+### Patch Changes
+
+- Menus: Return Ids ([#674](https://github.com/melt-ui/melt-ui/pull/674))
+
+## 0.57.0
+
+### Minor Changes
+
+- Combobox & Select: `highlightOnHover` option ([#671](https://github.com/melt-ui/melt-ui/pull/671))
+
+## 0.56.0
+
+### Minor Changes
+
+- Add `openFocus` & `closeFocus` props for controlled focus ([#663](https://github.com/melt-ui/melt-ui/pull/663))
+
+## 0.55.4
+
+### Patch Changes
+
+- Fix bug where context menu wasn't treating elements within the trigger as part of the trigger ([#654](https://github.com/melt-ui/melt-ui/pull/654))
+
+- fix: loop prop in menus ([#643](https://github.com/melt-ui/melt-ui/pull/643))
+
+- DropdownMenu: Implement `disableTriggerRefocus` prop ([#647](https://github.com/melt-ui/melt-ui/pull/647))
+
+- Tooltip: Avoid calling openTooltip on every mousemove, fixing a couple of bugs: ([#660](https://github.com/melt-ui/melt-ui/pull/660))
+
+  - onOpenChange was being called for every mouse move within the tooltip.
+  - Overlapping grace areas were fighting over the group.
+
+- - Apply correct aria attributes depending on `type` of toolbar group ([#644](https://github.com/melt-ui/melt-ui/pull/644))
+
+- - Apply correct aria attribute depending on `type` of toggle group ([#645](https://github.com/melt-ui/melt-ui/pull/645))
+
+## 0.55.3
+
+### Patch Changes
+
+- Combobox: allow contenteditable ([#633](https://github.com/melt-ui/melt-ui/pull/633))
+
+## 0.55.2
+
+### Patch Changes
+
+- Dialog: Fix touch event passing through overlay ([`9bf81b3b`](https://github.com/melt-ui/melt-ui/commit/9bf81b3bfbbdb7cc870bd71332e7afc6d6c54fbb))
+
 ## 0.55.1
 
 ### Patch Changes

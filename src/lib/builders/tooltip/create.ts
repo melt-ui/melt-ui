@@ -302,9 +302,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 
 				if ($openReason !== 'pointer') return;
 
-				if (isMouseInTooltipArea) {
-					openTooltip('pointer');
-				} else {
+				if (!isMouseInTooltipArea) {
 					closeTooltip();
 				}
 			})

@@ -1,4 +1,4 @@
-import { kbd } from '$lib/internal/helpers/keyboard.js';
+import { testKbd as kbd } from '../utils.js';
 import { render } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -130,7 +130,7 @@ describe('Accordion', () => {
 		const triggerElement = getByTestId('trigger-1');
 
 		triggerElement.focus();
-		await user.keyboard(`{${kbd.ENTER}}`);
+		await user.keyboard(kbd.ENTER);
 
 		expect(item).toHaveAttribute('data-state', 'open');
 	});
@@ -143,7 +143,7 @@ describe('Accordion', () => {
 		const triggerElement = getByTestId('trigger-1');
 
 		triggerElement.focus();
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 
 		expect(item).toHaveAttribute('data-state', 'open');
 	});
@@ -156,7 +156,7 @@ describe('Accordion', () => {
 		const trigger2 = getByTestId('trigger-2');
 
 		trigger1.focus();
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ARROW_DOWN);
 
 		expect(trigger1).not.toHaveFocus();
 		expect(trigger2).toHaveFocus();
@@ -170,7 +170,7 @@ describe('Accordion', () => {
 		const trigger2 = getByTestId('trigger-2');
 
 		trigger2.focus();
-		await user.keyboard(`{${kbd.ARROW_UP}}`);
+		await user.keyboard(kbd.ARROW_UP);
 
 		expect(trigger2).not.toHaveFocus();
 		expect(trigger1).toHaveFocus();
@@ -184,7 +184,7 @@ describe('Accordion', () => {
 		const trigger3 = getByTestId('trigger-3');
 
 		trigger3.focus();
-		await user.keyboard(`{${kbd.HOME}}`);
+		await user.keyboard(kbd.HOME);
 
 		expect(trigger3).not.toHaveFocus();
 		expect(trigger1).toHaveFocus();
@@ -198,7 +198,7 @@ describe('Accordion', () => {
 		const trigger3 = getByTestId('trigger-3');
 
 		trigger1.focus();
-		await user.keyboard(`{${kbd.END}}`);
+		await user.keyboard(kbd.END);
 
 		expect(trigger1).not.toHaveFocus();
 		expect(trigger3).toHaveFocus();

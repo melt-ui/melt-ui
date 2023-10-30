@@ -1,5 +1,5 @@
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
+import type { ChangeFn, FocusProp } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
 import type { createPopover } from './create.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
@@ -83,6 +83,18 @@ export type CreatePopoverProps = {
 	 * @default false
 	 */
 	forceVisible?: boolean;
+
+	/**
+	 * Override the default autofocus behavior of the popover
+	 * on open.
+	 */
+	openFocus?: FocusProp;
+
+	/**
+	 * Override the default autofocus behavior of the popover
+	 * on close.
+	 */
+	closeFocus?: FocusProp;
 };
 
 export type Popover = BuilderReturn<typeof createPopover>;

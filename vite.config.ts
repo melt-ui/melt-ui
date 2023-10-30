@@ -11,7 +11,7 @@ export default defineConfig({
 		// in-source testing
 		includeSource: ['src/**/*.{js,ts,svelte}'],
 		// Add @testing-library/jest-dom matchers & mocks of SvelteKit modules
-		setupFiles: ['./setupTest.ts'],
+		setupFiles: ['./scripts/setupTest.ts'],
 		// Exclude files in v8
 		coverage: {
 			exclude: ['setupTest.ts'],

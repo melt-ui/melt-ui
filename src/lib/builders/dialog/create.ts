@@ -22,6 +22,7 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
+	handleFocus,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
@@ -47,6 +48,8 @@ const defaults = {
 	defaultOpen: false,
 	portal: 'body',
 	forceVisible: false,
+	openFocus: undefined,
+	closeFocus: undefined,
 } satisfies Defaults<CreateDialogProps>;
 
 const openDialogIds = writable<string[]>([]);
@@ -55,7 +58,16 @@ export function createDialog(props?: CreateDialogProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateDialogProps;
 
 	const options = toWritableStores(withDefaults);
-	const { preventScroll, closeOnEscape, closeOnOutsideClick, role, portal, forceVisible } = options;
+	const {
+		preventScroll,
+		closeOnEscape,
+		closeOnOutsideClick,
+		role,
+		portal,
+		forceVisible,
+		openFocus,
+		closeFocus,
+	} = options;
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
@@ -83,11 +95,10 @@ export function createDialog(props?: CreateDialogProps) {
 	function handleClose() {
 		open.set(false);
 		const triggerEl = document.getElementById(ids.trigger);
-		if (triggerEl) {
-			tick().then(() => {
-				triggerEl.focus();
-			});
-		}
+		handleFocus({
+			prop: get(closeFocus),
+			defaultEl: triggerEl,
+		});
 	}
 
 	onMount(() => {
@@ -196,6 +207,7 @@ export function createDialog(props?: CreateDialogProps) {
 			const destroy = executeCallbacks(
 				effect([open], ([$open]) => {
 					if (!$open) return;
+
 					const focusTrap = createFocusTrap({
 						immediate: false,
 						escapeDeactivates: false,
@@ -218,6 +230,7 @@ export function createDialog(props?: CreateDialogProps) {
 						enabled: $open,
 						handler: (e: PointerEvent) => {
 							if (e.defaultPrevented) return;
+
 							const $openDialogIds = get(openDialogIds);
 							const isLast = last($openDialogIds) === ids.content;
 							if ($closeOnOutsideClick && isLast) {
@@ -322,6 +335,11 @@ export function createDialog(props?: CreateDialogProps) {
 		const unsubs: Array<() => void> = [];
 
 		if ($preventScroll && $open) unsubs.push(removeScroll());
+
+		if ($open) {
+			const contentEl = document.getElementById(ids.content);
+			handleFocus({ prop: get(openFocus), defaultEl: contentEl });
+		}
 
 		return () => {
 			unsubs.forEach((unsub) => unsub());

@@ -13,6 +13,7 @@
 		states: { open },
 	} = createDropdownMenu({
 		forceVisible: true,
+		loop: true,
 	});
 
 	const {

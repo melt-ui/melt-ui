@@ -32,7 +32,8 @@ export function melt<
 	Attributes extends GetActionAttributes<Builder>,
 	A extends Record<string, any>,
 	Param = never
->(_node: Element, _params: Builder): ActionReturn<Builder, Attributes> {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+>(node: Element, params: Builder): ActionReturn<Builder, Attributes> {
 	throw new Error(
 		"[MELT_UI ERROR]: The `use:melt` action cannot be used without Melt UI's Preprocessor. See: https://www.melt-ui.com/docs/preprocessor"
 	);

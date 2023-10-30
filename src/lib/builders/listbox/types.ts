@@ -151,6 +151,13 @@ export type CreateListboxProps<
 	 * @default true
 	 */
 	typeahead?: boolean;
+
+	/**
+	 * IF true, whenever an option is hovered, the highlightedItem will be set to that option.
+	 *
+	 * @default true
+	 */
+	highlightOnHover?: boolean;
 };
 
 export type ListboxOptionProps<Value = unknown> = ListboxOption<Value> & {

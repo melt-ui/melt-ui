@@ -30,25 +30,37 @@
 	class="flex min-w-max items-center gap-4 rounded-md bg-white px-3 py-3 text-neutral-700 shadow-sm lg:w-[35rem]"
 >
 	<div class="flex items-center gap-1" use:melt={$fontGroup}>
-		<button class="item" use:melt={$fontItem('bold')}>
+		<button class="item" aria-label="bold" use:melt={$fontItem('bold')}>
 			<Bold class="square-5" />
 		</button>
-		<button class="item" use:melt={$fontItem('italic')}>
+		<button class="item" aria-label="italic" use:melt={$fontItem('italic')}>
 			<Italic class="square-5" />
 		</button>
-		<button class="item" use:melt={$fontItem('strikethrough')}>
+		<button
+			class="item"
+			aria-label="strikethrough"
+			use:melt={$fontItem('strikethrough')}
+		>
 			<Strikethrough class="square-5" />
 		</button>
 	</div>
 	<div class="separator" use:melt={$separator} />
 	<div class="flex items-center gap-1" use:melt={$alignGroup}>
-		<button class="item" use:melt={$alignItem('left')}>
+		<button class="item" aria-label="align left" use:melt={$alignItem('left')}>
 			<AlignLeft class="square-5" />
 		</button>
-		<button class="item" use:melt={$alignItem('center')}>
+		<button
+			class="item"
+			aria-label="align center"
+			use:melt={$alignItem('center')}
+		>
 			<AlignCenter class="square-5" />
 		</button>
-		<button class="item" use:melt={$alignItem('right')}>
+		<button
+			class="item"
+			aria-label="align-right"
+			use:melt={$alignItem('right')}
+		>
 			<AlignRight class="square-5" />
 		</button>
 	</div>
