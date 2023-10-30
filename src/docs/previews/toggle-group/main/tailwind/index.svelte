@@ -62,46 +62,46 @@
 	}
 
 	.toggle-item[data-disabled] {
-		--at-apply: cursor-not-allowed;
+		@apply cursor-not-allowed;
 	}
 
 	.toggle-item[data-orientation='horizontal'] {
-		--at-apply: border-x border-l-transparent border-r-magnum-200;
+		@apply border-x border-l-transparent border-r-magnum-200;
 
 		&:first-child {
-			--at-apply: rounded-l-md;
+			@apply rounded-l-md;
 		}
 
 		&:last-child {
-			--at-apply: rounded-r-md border-r-transparent;
+			@apply rounded-r-md border-r-transparent;
 		}
 	}
 
 	.toggle-item[data-orientation='horizontal']:dir(rtl) {
-		--at-apply: border-x border-l-magnum-200 border-r-transparent;
+		@apply border-x border-l-magnum-200 border-r-transparent;
 
 		&:first-child {
-			--at-apply: rounded-r-md;
+			@apply rounded-r-md;
 		}
 
 		&:last-child {
-			--at-apply: rounded-l-md border-l-transparent;
+			@apply rounded-l-md border-l-transparent;
 		}
 	}
 
 	.toggle-item[data-orientation='vertical'] {
-		--at-apply: border-y border-b-magnum-200 border-t-transparent;
+		@apply border-y border-b-magnum-200 border-t-transparent;
 
 		&:first-child {
-			--at-apply: rounded-t-md;
+			@apply rounded-t-md;
 		}
 
 		&:last-child {
-			--at-apply: rounded-b-md border-b-transparent;
+			@apply rounded-b-md border-b-transparent;
 		}
 	}
 
 	.toggle-item[data-state='on'] {
-		--at-apply: bg-magnum-200 text-magnum-900;
+		@apply bg-magnum-200 text-magnum-900;
 	}
 </style>

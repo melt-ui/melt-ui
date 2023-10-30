@@ -34,9 +34,9 @@
 
 <style lang="scss">
 	.trigger {
-		--at-apply:  inline-flex h-9 w-9 items-center justify-center rounded-full bg-white;
-		--at-apply:  text-magnum-900 transition-colors hover:bg-white/90;
-		--at-apply:  focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
-		--at-apply:  p-0 text-sm font-medium;
+		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white;
+		@apply text-magnum-900 transition-colors hover:bg-white/90;
+		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
+		@apply p-0 text-sm font-medium;
 	}
 </style>

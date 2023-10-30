@@ -85,22 +85,22 @@
 	*:not(body) {
 		outline: none !important;
 		&:focus-visible {
-			--at-apply: ring ring-magnum-400;
+			@apply ring ring-magnum-400;
 		}
 	}
 
 	.inline-code {
-		--at-apply: relative rounded-md bg-magnum-900/50 px-[0.25rem] py-[0.15rem] font-mono
+		@apply relative rounded-md bg-magnum-900/50 px-[0.25rem] py-[0.15rem] font-mono
 			text-[0.75rem] text-xs font-semibold leading-7 text-magnum-300;
 	}
 
 	.inline-code.neutral {
-		--at-apply: bg-neutral-800 text-neutral-100;
+		@apply bg-neutral-800 text-neutral-100;
 	}
 
 	@media (max-width: 640px) {
 		.container {
-			--at-apply: px-4;
+			@apply px-4;
 		}
 	}
 </style>

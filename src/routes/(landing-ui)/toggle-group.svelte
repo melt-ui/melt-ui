@@ -52,7 +52,7 @@
 
 		position: relative;
 
-		--at-apply: transition;
+		@apply transition;
 
 		&::after {
 			position: absolute;
@@ -65,7 +65,7 @@
 			/*			border-radius: _Theme('borderRadius.full');*/
 			/*			background-color: _Theme('colors.magnum.400');*/
 			opacity: 0;
-			--at-apply: transition;
+			@apply transition;
 		}
 
 		&:focus::after {
@@ -74,16 +74,16 @@
 	}
 
 	.toggle-item[data-disabled] {
-		--at-apply: cursor-not-allowed;
+		@apply cursor-not-allowed;
 	}
 
 	.toggle-item[data-orientation='horizontal'] {
 		&:first-child {
-			--at-apply: rounded-l-xl;
+			@apply rounded-l-xl;
 		}
 
 		&:last-child {
-			--at-apply: rounded-r-xl;
+			@apply rounded-r-xl;
 		}
 	}
 

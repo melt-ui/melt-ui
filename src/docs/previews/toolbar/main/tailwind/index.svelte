@@ -89,7 +89,7 @@
 		}
 
 		&:focus {
-			--at-apply: ring-2 ring-magnum-400;
+			@apply ring-2 ring-magnum-400;
 		}
 	}
 

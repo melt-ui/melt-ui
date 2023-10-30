@@ -107,15 +107,15 @@
 
 <style lang="scss">
 	#toc-builder-preview > h2 {
-		--at-apply: text-xl font-bold;
+		@apply text-xl font-bold;
 	}
 
 	#toc-builder-preview > h3 {
-		--at-apply: text-lg font-bold;
+		@apply text-lg font-bold;
 	}
 
 	#toc-builder-preview > h4 {
-		--at-apply: text-lg font-semibold;
+		@apply text-lg font-semibold;
 	}
 
 	.hide-heading {
@@ -130,7 +130,7 @@
 		line-height: 1;
 		/*		font-weight: _Theme(fontWeight.semibold);*/
 		/*		color: _Theme(colors.magnum.900);*/
-		--at-apply: transition;
+		@apply transition;
 
 		&:hover {
 			opacity: 0.75;

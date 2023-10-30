@@ -66,9 +66,9 @@
 
 <style lang="scss">
 	.trigger {
-		--at-apply:  flex h-12 w-12 items-center justify-center;
-		--at-apply:  rounded-full bg-white p-0 text-sm font-medium;
-		--at-apply:  text-magnum-900 transition-colors hover:bg-white/90;
-		--at-apply:  focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
+		@apply flex h-12 w-12 items-center justify-center;
+		@apply rounded-full bg-white p-0 text-sm font-medium;
+		@apply text-magnum-900 transition-colors hover:bg-white/90;
+		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
 	}
 </style>

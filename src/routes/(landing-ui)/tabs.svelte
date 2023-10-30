@@ -121,11 +121,11 @@
 		}
 
 		&:focus-visible {
-			--at-apply:  z-10 ring-2;
+			@apply z-10 ring-2;
 		}
 
 		&[data-state='active'] {
-			--at-apply:  focus:relative;
+			@apply focus:relative;
 			background-color: white;
 			/*			color: _Theme('colors.magnum.900');*/
 		}
@@ -158,14 +158,14 @@
 		line-height: 1;
 		/*		font-weight: _Theme(fontWeight.semibold);*/
 		/*		color: _Theme(colors.magnum.900);*/
-		--at-apply:  transition;
+		@apply transition;
 
 		&:hover {
 			opacity: 0.75;
 		}
 
 		&:focus {
-			--at-apply:  !ring-green-600;
+			@apply !ring-green-600;
 		}
 	}
 </style>

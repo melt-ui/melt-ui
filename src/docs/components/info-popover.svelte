@@ -35,6 +35,6 @@
 
 <style lang="scss">
 	div {
-		--at-apply: 'focus:ring-0' !important;
+		@apply 'focus:!ring-0';
 	}
 </style>

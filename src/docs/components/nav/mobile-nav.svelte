@@ -92,7 +92,7 @@
 <style lang="scss">
 	.menu,
 	.menu :global(*) {
-		--at-apply: !ring-0;
+		@apply '!ring-0';
 	}
 
 	.safe-area {
