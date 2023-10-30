@@ -3,8 +3,21 @@ import { defineConfig } from 'unocss';
 import transformerDirectives from '@unocss/transformer-directives';
 
 export default defineConfig({
-	// variants: [],
+	variants: [],
+	rules: [
+		[
+			/^square-(\d+)$/,
+			(match) => ({ width: `${+match[1] / 4}rem`, height: `${+match[1] / 4}rem` }),
+		],
+	],
 	theme: {
+		container: {
+			center: true,
+			padding: '2rem',
+			screens: {
+				'2xl': '1540px',
+			},
+		},
 		colors: {
 			magnum: {
 				'50': '#fff9ed',

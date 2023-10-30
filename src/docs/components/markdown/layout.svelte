@@ -65,7 +65,8 @@
 		@apply relative;
 
 		& pre {
-			@apply 'lg:text-sm' mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border-x border-b border-neutral-500/50 bg-neutral-950/60 py-4 text-xs font-semibold;
+			@apply 'lg:text-sm' '!font-mono' mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border-x border-b
+			border-neutral-500/50 bg-neutral-950/60 py-4 text-xs font-semibold;
 		}
 
 		& code {
