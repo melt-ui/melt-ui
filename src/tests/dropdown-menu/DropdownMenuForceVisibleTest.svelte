@@ -122,53 +122,53 @@
 	{/if}
 </main>
 
-<style lang="postcss">
+<style lang="scss">
 	.menu {
-		--_apply:  z-10 flex max-h-[300px] min-w-[220px] flex-col shadow-lg;
-		--_apply:  rounded-md bg-white p-1 shadow-neutral-900/30 lg:max-h-none;
-		--_apply:  ring-0 !important;
+		--at-apply:  z-10 flex max-h-[300px] min-w-[220px] flex-col shadow-lg;
+		--at-apply:  rounded-md bg-white p-1 shadow-neutral-900/30 lg:max-h-none;
+		--at-apply:  ring-0 !important;
 	}
 	.subMenu {
-		--_apply:  min-w-[220px] shadow-md shadow-neutral-900/30;
+		--at-apply:  min-w-[220px] shadow-md shadow-neutral-900/30;
 	}
 	.item {
-		--_apply:  relative h-6 min-h-[24px] select-none rounded-sm pl-6 pr-1;
-		--_apply:  z-20 text-magnum-900 outline-none;
-		--_apply:  data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900;
-		--_apply:  data-[disabled]:text-neutral-300;
-		--_apply:  flex items-center text-sm leading-none;
-		--_apply:  ring-0 !important;
+		--at-apply:  relative h-6 min-h-[24px] select-none rounded-sm pl-6 pr-1;
+		--at-apply:  z-20 text-magnum-900 outline-none;
+		--at-apply:  data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900;
+		--at-apply:  data-[disabled]:text-neutral-300;
+		--at-apply:  flex items-center text-sm leading-none;
+		--at-apply:  ring-0 !important;
 	}
 	.trigger {
-		--_apply:  inline-flex h-9 w-9 items-center justify-center rounded-full bg-white;
-		--_apply:  text-magnum-900 transition-colors hover:bg-white/90;
-		--_apply:  data-[highlighted]:ring-magnum-400 data-[highlighted]:ring-offset-2 !important;
-		--_apply:  p-0 text-sm font-medium focus:ring data-[highlighted]:outline-none;
+		--at-apply:  inline-flex h-9 w-9 items-center justify-center rounded-full bg-white;
+		--at-apply:  text-magnum-900 transition-colors hover:bg-white/90;
+		--at-apply:  data-[highlighted]:ring-magnum-400 data-[highlighted]:ring-offset-2 !important;
+		--at-apply:  p-0 text-sm font-medium focus:ring data-[highlighted]:outline-none;
 	}
 	.check {
-		--_apply:  absolute left-2 top-1/2 text-magnum-500;
+		--at-apply:  absolute left-2 top-1/2 text-magnum-500;
 		translate: 0 calc(-50% + 1px);
 	}
 
 	.dot {
-		--_apply:  h-[4.75px] w-[4.75px] rounded-full bg-magnum-900;
+		--at-apply:  h-[4.75px] w-[4.75px] rounded-full bg-magnum-900;
 	}
 
 	.separator {
-		--_apply:  m-[5px] h-[1px] bg-magnum-200;
+		--at-apply:  m-[5px] h-[1px] bg-magnum-200;
 	}
 
 	.rightSlot {
-		--_apply:  ml-auto pl-5;
+		--at-apply:  ml-auto pl-5;
 	}
 
 	.icon {
-		--_apply:  h-[13px] w-[13px];
+		--at-apply:  h-[13px] w-[13px];
 	}
 	.check {
-		--_apply:  absolute left-0 inline-flex w-6 items-center justify-center;
+		--at-apply:  absolute left-0 inline-flex w-6 items-center justify-center;
 	}
 	.text {
-		--_apply:  pl-6 text-xs leading-6 text-neutral-600;
+		--at-apply:  pl-6 text-xs leading-6 text-neutral-600;
 	}
 </style>

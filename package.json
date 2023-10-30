@@ -132,6 +132,7 @@
 		"remark-code-import": "^1.2.0",
 		"remark-gfm": "^3.0.1",
 		"resize-observer-polyfill": "^1.5.1",
+		"sass": "^1.69.5",
 		"shiki": "^0.14.3",
 		"shiki-es": "^0.14.0",
 		"storybook": "^7.3.2",

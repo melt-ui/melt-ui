@@ -71,7 +71,7 @@
 	</div>
 {/if}
 
-<style lang="postcss">
+<style lang="scss">
 	.avatar {
 		display: block;
 

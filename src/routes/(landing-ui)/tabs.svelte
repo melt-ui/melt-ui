@@ -96,7 +96,7 @@
 	</div>
 </div>
 
-<style lang="postcss">
+<style lang="scss">
 	.trigger {
 		display: flex;
 		align-items: center;
@@ -121,11 +121,11 @@
 		}
 
 		&:focus-visible {
-			--_apply:  z-10 ring-2;
+			--at-apply:  z-10 ring-2;
 		}
 
 		&[data-state='active'] {
-			--_apply:  focus:relative;
+			--at-apply:  focus:relative;
 			background-color: white;
 			/*			color: _Theme('colors.magnum.900');*/
 		}
@@ -158,14 +158,14 @@
 		line-height: 1;
 		/*		font-weight: _Theme(fontWeight.semibold);*/
 		/*		color: _Theme(colors.magnum.900);*/
-		--_apply:  transition;
+		--at-apply:  transition;
 
 		&:hover {
 			opacity: 0.75;
 		}
 
 		&:focus {
-			--_apply:  !ring-green-600;
+			--at-apply:  !ring-green-600;
 		}
 	}
 </style>

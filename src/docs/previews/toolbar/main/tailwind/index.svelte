@@ -74,7 +74,7 @@
 	>
 </div>
 
-<style lang="postcss">
+<style lang="scss">
 	.item {
 		/*		padding: _Theme('spacing.1');*/
 		/*		border-radius: _Theme('borderRadius.md');*/
@@ -89,7 +89,7 @@
 		}
 
 		&:focus {
-			--_apply: ring-2 ring-magnum-400;
+			--at-apply: ring-2 ring-magnum-400;
 		}
 	}
 

@@ -89,10 +89,10 @@
 	{/if}
 </div>
 
-<style lang="postcss">
+<style lang="scss">
 	.menu,
 	.menu :global(*) {
-		--_apply: !ring-0;
+		--at-apply: !ring-0;
 	}
 
 	.safe-area {

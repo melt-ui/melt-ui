@@ -195,7 +195,7 @@
 	</div>
 </div>
 
-<style lang="postcss">
+<style lang="scss">
 	[data-melt-combobox-menu] :global(mark) {
 		/*		background-color: _Theme('colors.magnum.400/0.5');*/
 		/*		color: _Theme('colors.white');*/

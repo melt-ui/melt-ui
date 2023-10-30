@@ -116,29 +116,29 @@
 	</div>
 {/if}
 
-<style lang="postcss">
+<style lang="scss">
 	fieldset {
-		--_apply:  flex items-center gap-5;
+		--at-apply:  flex items-center gap-5;
 	}
 
 	.input {
-		--_apply:  flex h-8 w-full rounded-md border border-magnum-800 bg-transparent px-2.5 text-sm;
-		--_apply:  ring-offset-magnum-300 focus-visible:ring;
-		--_apply:  focus-visible:ring-magnum-400 focus-visible:ring-offset-1;
-		--_apply:  flex-1 items-center justify-center;
-		--_apply:  px-2.5 text-sm leading-none text-magnum-700;
+		--at-apply:  flex h-8 w-full rounded-md border border-magnum-800 bg-transparent px-2.5 text-sm;
+		--at-apply:  ring-offset-magnum-300 focus-visible:ring;
+		--at-apply:  focus-visible:ring-magnum-400 focus-visible:ring-offset-1;
+		--at-apply:  flex-1 items-center justify-center;
+		--at-apply:  px-2.5 text-sm leading-none text-magnum-700;
 	}
 
 	.trigger {
-		--_apply:  inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0;
-		--_apply:  text-sm font-medium text-magnum-900 transition-colors hover:bg-white/90;
-		--_apply:  focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
+		--at-apply:  inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0;
+		--at-apply:  text-sm font-medium text-magnum-900 transition-colors hover:bg-white/90;
+		--at-apply:  focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
 	}
 
 	.close {
-		--_apply:  absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full;
-		--_apply:  text-magnum-900 transition-colors hover:bg-magnum-500/10;
-		--_apply:  focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
-		--_apply:  bg-white p-0 text-sm font-medium;
+		--at-apply:  absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full;
+		--at-apply:  text-magnum-900 transition-colors hover:bg-magnum-500/10;
+		--at-apply:  focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
+		--at-apply:  bg-white p-0 text-sm font-medium;
 	}
 </style>

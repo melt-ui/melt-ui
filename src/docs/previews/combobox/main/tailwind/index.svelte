@@ -157,9 +157,9 @@
 	</ul>
 {/if}
 
-<style lang="postcss">
+<style lang="scss">
 	.check {
-		--_apply: absolute left-2 top-1/2 text-magnum-500;
+		--at-apply: absolute left-2 top-1/2 text-magnum-500;
 		translate: 0 calc(-50% + 1px);
 	}
 </style>

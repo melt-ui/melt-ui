@@ -105,17 +105,17 @@
 	</div>
 </div>
 
-<style lang="postcss">
+<style lang="scss">
 	#toc-builder-preview > h2 {
-		--_apply: text-xl font-bold;
+		--at-apply: text-xl font-bold;
 	}
 
 	#toc-builder-preview > h3 {
-		--_apply: text-lg font-bold;
+		--at-apply: text-lg font-bold;
 	}
 
 	#toc-builder-preview > h4 {
-		--_apply: text-lg font-semibold;
+		--at-apply: text-lg font-semibold;
 	}
 
 	.hide-heading {
@@ -130,7 +130,7 @@
 		line-height: 1;
 		/*		font-weight: _Theme(fontWeight.semibold);*/
 		/*		color: _Theme(colors.magnum.900);*/
-		--_apply: transition;
+		--at-apply: transition;
 
 		&:hover {
 			opacity: 0.75;

@@ -72,7 +72,7 @@
 	{/if}
 </div>
 
-<style lang="postcss">
+<style lang="scss">
 	.check {
 		position: absolute;
 		/*		left: _Theme(spacing.2);*/

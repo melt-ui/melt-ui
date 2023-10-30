@@ -93,7 +93,7 @@
 	</div>
 </div>
 
-<style lang="postcss">
+<style lang="scss">
 	.dotted-bg {
 		background-image: radial-gradient(
 			circle at 1px 1px,

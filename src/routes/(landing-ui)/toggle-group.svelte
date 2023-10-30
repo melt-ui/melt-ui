@@ -36,7 +36,7 @@
 	</button>
 </div>
 
-<style lang="postcss">
+<style lang="scss">
 	.toggle-item {
 		display: grid;
 		place-items: center;
@@ -52,7 +52,7 @@
 
 		position: relative;
 
-		--_apply: transition;
+		--at-apply: transition;
 
 		&::after {
 			position: absolute;
@@ -65,7 +65,7 @@
 			/*			border-radius: _Theme('borderRadius.full');*/
 			/*			background-color: _Theme('colors.magnum.400');*/
 			opacity: 0;
-			--_apply: transition;
+			--at-apply: transition;
 		}
 
 		&:focus::after {
@@ -74,16 +74,16 @@
 	}
 
 	.toggle-item[data-disabled] {
-		--_apply: cursor-not-allowed;
+		--at-apply: cursor-not-allowed;
 	}
 
 	.toggle-item[data-orientation='horizontal'] {
 		&:first-child {
-			--_apply: rounded-l-xl;
+			--at-apply: rounded-l-xl;
 		}
 
 		&:last-child {
-			--_apply: rounded-r-xl;
+			--at-apply: rounded-r-xl;
 		}
 	}
 

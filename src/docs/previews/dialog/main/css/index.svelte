@@ -56,7 +56,7 @@
 	{/if}
 </div>
 
-<style lang="postcss">
+<style lang="scss">
 	.trigger {
 		display: inline-flex;
 		align-items: center;

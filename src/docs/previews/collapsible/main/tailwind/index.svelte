@@ -59,7 +59,7 @@
 	</div>
 </div>
 
-<style lang="postcss">
+<style lang="scss">
 	.abs-center {
 		position: absolute;
 		left: 50%;

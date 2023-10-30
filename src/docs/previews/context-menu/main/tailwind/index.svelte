@@ -103,49 +103,49 @@
 	</div>
 </div>
 
-<style lang="postcss">
+<style lang="scss">
 	.menu {
-		--_apply:  z-10 flex max-h-[300px] min-w-[220px] flex-col shadow;
-		--_apply:  rounded-lg bg-white p-1 lg:max-h-none;
-		--_apply:  ring-0 !important;
+		--at-apply:  z-10 flex max-h-[300px] min-w-[220px] flex-col shadow;
+		--at-apply:  rounded-lg bg-white p-1 lg:max-h-none;
+		--at-apply:  ring-0 !important;
 	}
 	.subMenu {
-		--_apply:  min-w-[220px] shadow-md shadow-neutral-900/30;
+		--at-apply:  min-w-[220px] shadow-md shadow-neutral-900/30;
 	}
 	.item {
-		--_apply:  relative h-6 min-h-[24px] select-none rounded-md pl-6 pr-1;
-		--_apply:  z-20 text-magnum-900 outline-none;
-		--_apply:  data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900;
-		--_apply:  data-[disabled]:text-neutral-300;
-		--_apply:  flex items-center text-sm leading-none;
-		--_apply:  ring-0 !important;
+		--at-apply:  relative h-6 min-h-[24px] select-none rounded-md pl-6 pr-1;
+		--at-apply:  z-20 text-magnum-900 outline-none;
+		--at-apply:  data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900;
+		--at-apply:  data-[disabled]:text-neutral-300;
+		--at-apply:  flex items-center text-sm leading-none;
+		--at-apply:  ring-0 !important;
 	}
 
 	.trigger {
-		--_apply:  block rounded-xl border-2 border-dashed border-magnum-900 font-semibold text-magnum-700;
-		--_apply:  w-[300px] bg-magnum-100 py-12 text-center shadow;
+		--at-apply:  block rounded-xl border-2 border-dashed border-magnum-900 font-semibold text-magnum-700;
+		--at-apply:  w-[300px] bg-magnum-100 py-12 text-center shadow;
 	}
 	.check {
-		--_apply:  absolute left-2 top-1/2 text-magnum-500;
+		--at-apply:  absolute left-2 top-1/2 text-magnum-500;
 		translate: 0 calc(-50% + 1px);
 	}
 
 	.dot {
-		--_apply:  h-[4.75px] w-[4.75px] rounded-full bg-magnum-900;
+		--at-apply:  h-[4.75px] w-[4.75px] rounded-full bg-magnum-900;
 	}
 
 	.separator {
-		--_apply:  m-[5px] h-[1px] bg-magnum-200;
+		--at-apply:  m-[5px] h-[1px] bg-magnum-200;
 	}
 
 	.rightSlot {
-		--_apply:  ml-auto pl-5;
+		--at-apply:  ml-auto pl-5;
 	}
 
 	.check {
-		--_apply:  absolute left-0 inline-flex w-6 items-center justify-center;
+		--at-apply:  absolute left-0 inline-flex w-6 items-center justify-center;
 	}
 	.text {
-		--_apply:  pl-6 text-xs leading-6 text-neutral-600;
+		--at-apply:  pl-6 text-xs leading-6 text-neutral-600;
 	}
 </style>

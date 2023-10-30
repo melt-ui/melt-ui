@@ -9,7 +9,7 @@
 	<slot />
 </ul>
 
-<style lang="postcss">
+<style lang="scss">
 	ul {
 		list-style-type: disc;
 		/*		margin-block: _Theme('spacing.6');*/

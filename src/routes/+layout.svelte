@@ -9,7 +9,7 @@
 	import '@fontsource/inter/800.css';
 	import '@fontsource/inter/900.css';
 	import '../fonts.css';
-	import '../app.postcss';
+	import '../app.scss';
 
 	import { browser, dev } from '$app/environment';
 	import { JsIndicator, SiteHeader, TailwindIndicator } from '$docs/components/index.js';
@@ -48,3 +48,59 @@
 		<JsIndicator />
 	{/if}
 </div>
+
+<style global>
+	html {
+		color-scheme: dark;
+	}
+
+	body {
+		background-color: theme('colors.neutral.900');
+		color: theme('colors.white');
+		min-height: 100vh;
+	}
+
+	.link {
+		text-decoration-line: underline;
+		-webkit-text-decoration-color: rgb(255 255 255 / 0.5);
+		text-decoration-color: rgb(255 255 255 / 0.5);
+		text-underline-offset: 4px;
+		opacity: 0.75;
+
+		&:active {
+			--un-translate-y: 1px;
+			transform: translateX(var(--un-translate-x)) translateY(var(--un-translate-y))
+				translateZ(var(--un-translate-z)) rotate(var(--un-rotate)) rotateX(var(--un-rotate-x))
+				rotateY(var(--un-rotate-y)) rotateZ(var(--un-rotate-z)) skewX(var(--un-skew-x))
+				skewY(var(--un-skew-y)) scaleX(var(--un-scale-x)) scaleY(var(--un-scale-y))
+				scaleZ(var(--un-scale-z));
+		}
+
+		&:is(:hover, :focus) {
+			text-decoration: theme('colors.magnum.500');
+			opacity: 1;
+		}
+	}
+
+	*:not(body) {
+		outline: none !important;
+		&:focus-visible {
+			--at-apply: ring ring-magnum-400;
+		}
+	}
+
+	.inline-code {
+		--at-apply: relative rounded-md bg-magnum-900/50 px-[0.25rem] py-[0.15rem] font-mono
+			text-[0.75rem] text-xs font-semibold leading-7 text-magnum-300;
+	}
+
+	.inline-code.neutral {
+		--at-apply: bg-neutral-800 text-neutral-100;
+	}
+
+	@media (max-width: 640px) {
+		.container {
+			--at-apply: px-4;
+		}
+	}
+</style>

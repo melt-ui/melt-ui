@@ -33,8 +33,8 @@
 	</div>
 {/if}
 
-<style lang="postcss">
+<style lang="scss">
 	div {
-		--_apply:  focus:ring-0 !important;
+		--at-apply: 'focus:ring-0';
 	}
 </style>

@@ -1,6 +1,6 @@
 import adapterVercel from '@sveltejs/adapter-vercel';
 import adapterStatic from '@sveltejs/adapter-static';
-import { vitePreprocess } from '@sveltejs/kit/vite';
+import sveltePreprocess from 'svelte-preprocess';
 import { preprocessMeltUI } from '@melt-ui/pp';
 import { mdsvex } from '@huntabyte/mdsvex';
 import { mdsvexOptions } from './mdsvex.config.js';
@@ -16,7 +16,7 @@ const config = {
 	extensions: ['.svelte', '.md'],
 	// Consult https://kit.svelte.dev/docs/integrations#preprocessors
 	// for more information about preprocessors
-	preprocess: sequence([mdsvex(mdsvexOptions), vitePreprocess(), preprocessMeltUI()]),
+	preprocess: sequence([mdsvex(mdsvexOptions), sveltePreprocess(), preprocessMeltUI()]),
 
 	kit: {
 		// adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.

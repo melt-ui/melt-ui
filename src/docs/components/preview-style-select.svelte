@@ -59,9 +59,9 @@
 	{/each}
 </ul>
 
-<style lang="postcss">
+<style lang="scss">
 	.check {
-		--_apply: absolute left-2 top-1/2;
+		--at-apply: absolute left-2 top-1/2;
 		translate: 0 calc(-50% + 1px);
 	}
 </style>

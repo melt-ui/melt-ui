@@ -32,11 +32,11 @@
 	</div>
 {/if}
 
-<style lang="postcss">
+<style lang="scss">
 	.trigger {
-		--_apply:  inline-flex h-9 w-9 items-center justify-center rounded-full bg-white;
-		--_apply:  text-magnum-900 transition-colors hover:bg-white/90;
-		--_apply:  focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
-		--_apply:  p-0 text-sm font-medium;
+		--at-apply:  inline-flex h-9 w-9 items-center justify-center rounded-full bg-white;
+		--at-apply:  text-magnum-900 transition-colors hover:bg-white/90;
+		--at-apply:  focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
+		--at-apply:  p-0 text-sm font-medium;
 	}
 </style>

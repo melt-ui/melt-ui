@@ -37,7 +37,7 @@
 	</button>
 </div>
 
-<style lang="postcss">
+<style lang="scss">
 	.toggle-item {
 		display: grid;
 		place-items: center;
@@ -62,46 +62,46 @@
 	}
 
 	.toggle-item[data-disabled] {
-		--_apply: cursor-not-allowed;
+		--at-apply: cursor-not-allowed;
 	}
 
 	.toggle-item[data-orientation='horizontal'] {
-		--_apply: border-x border-l-transparent border-r-magnum-200;
+		--at-apply: border-x border-l-transparent border-r-magnum-200;
 
 		&:first-child {
-			--_apply: rounded-l-md;
+			--at-apply: rounded-l-md;
 		}
 
 		&:last-child {
-			--_apply: rounded-r-md border-r-transparent;
+			--at-apply: rounded-r-md border-r-transparent;
 		}
 	}
 
 	.toggle-item[data-orientation='horizontal']:dir(rtl) {
-		--_apply: border-x border-l-magnum-200 border-r-transparent;
+		--at-apply: border-x border-l-magnum-200 border-r-transparent;
 
 		&:first-child {
-			--_apply: rounded-r-md;
+			--at-apply: rounded-r-md;
 		}
 
 		&:last-child {
-			--_apply: rounded-l-md border-l-transparent;
+			--at-apply: rounded-l-md border-l-transparent;
 		}
 	}
 
 	.toggle-item[data-orientation='vertical'] {
-		--_apply: border-y border-b-magnum-200 border-t-transparent;
+		--at-apply: border-y border-b-magnum-200 border-t-transparent;
 
 		&:first-child {
-			--_apply: rounded-t-md;
+			--at-apply: rounded-t-md;
 		}
 
 		&:last-child {
-			--_apply: rounded-b-md border-b-transparent;
+			--at-apply: rounded-b-md border-b-transparent;
 		}
 	}
 
 	.toggle-item[data-state='on'] {
-		--_apply: bg-magnum-200 text-magnum-900;
+		--at-apply: bg-magnum-200 text-magnum-900;
 	}
 </style>

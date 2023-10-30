@@ -70,14 +70,14 @@
 	>
 </div>
 
-<style lang="postcss">
+<style lang="scss">
 	.item {
 		/*		padding: _Theme('spacing.1');*/
 		/*		border-radius: _Theme('borderRadius.md');*/
 		/*		color: _Theme('colors.neutral.400');*/
 		position: relative;
 
-		--_apply: transition;
+		--at-apply: transition;
 
 		&:hover {
 			opacity: 0.75;
@@ -98,7 +98,7 @@
 			/*			border-radius: _Theme('borderRadius.full');*/
 			/*			background-color: _Theme('colors.magnum.400');*/
 			opacity: 0;
-			--_apply: transition;
+			--at-apply: transition;
 		}
 
 		&:focus::after {

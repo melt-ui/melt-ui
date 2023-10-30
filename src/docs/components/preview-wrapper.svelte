@@ -36,7 +36,7 @@
 	</div>
 </div>
 
-<style lang="postcss">
+<style lang="scss">
 	[data-variant='default'] {
 		&::before {
 			position: absolute;

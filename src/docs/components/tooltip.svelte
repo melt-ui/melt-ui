@@ -25,7 +25,7 @@
 	{text}
 </div>
 
-<style lang="postcss">
+<style lang="scss">
 	[data-melt-tooltip-trigger] {
 		display: grid;
 		place-items: center;

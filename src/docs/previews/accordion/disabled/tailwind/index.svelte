@@ -80,7 +80,7 @@
 	{/each}
 </div>
 
-<style lang="postcss">
+<style lang="scss">
 	.content {
 		/*		box-shadow: inset 0px 1px 0px _Theme('colors.neutral.300');*/
 	}
