@@ -78,7 +78,7 @@
 			<Accordion class="absolute left-1/2 top-[7rem] -translate-x-1/2 sm:top-[5rem]" />
 			<Slider class="absolute left-1/2 top-[25rem] translate-x-[calc(-50%+30px)]" />
 			<Switch class="absolute left-[52.5rem] top-[3.5rem] sm:left-[62.5rem] sm:top-[3.5rem]" />
-			<TagsInput class="absolute left-[70%] top-[10rem]" />
+			<TagsInput class="!absolute !left-[70%] !top-[10rem]" />
 			<PinInput class="absolute left-[62%] top-[15rem] sm:left-[67.5%] lg:left-[75%]" />
 			<Popover
 				class="absolute left-[25%] top-[10rem] hidden md:flex lg:left-[20%] "

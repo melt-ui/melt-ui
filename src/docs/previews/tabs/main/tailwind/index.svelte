@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { cn } from '$docs/utils';
 	import { createTabs, melt } from '$lib/index.js';
 	import { cubicInOut } from 'svelte/easing';
 	import { crossfade } from 'svelte/transition';
@@ -10,9 +9,6 @@
 	} = createTabs({
 		defaultValue: 'tab-1',
 	});
-
-	let className = '';
-	export { className as class };
 
 	const triggers = [
 		{ id: 'tab-1', title: 'Account' },
@@ -26,43 +22,25 @@
 	});
 </script>
 
-<div
-	use:melt={$root}
-	class={cn(
-		'flex max-w-[25rem] flex-col overflow-hidden rounded-xl shadow-lg	data-[orientation=vertical]:flex-row',
-		className,
-	)}
->
-	<div
-		use:melt={$list}
-		class="flex shrink-0 overflow-x-auto bg-neutral-100
-		data-[orientation=vertical]:flex-col data-[orientation=vertical]:border-r"
-		aria-label="Manage your account"
-	>
+<div use:melt={$root} class="root">
+	<div use:melt={$list} class="list" aria-label="Manage your account">
 		{#each triggers as triggerItem}
-			<button use:melt={$trigger(triggerItem.id)} class="trigger relative">
+			<button use:melt={$trigger(triggerItem.id)} class="trigger">
 				{triggerItem.title}
 				{#if $value === triggerItem.id}
 					<div
 						in:send={{ key: 'trigger' }}
 						out:receive={{ key: 'trigger' }}
-						class="absolute bottom-1 left-1/2 h-1 w-6 -translate-x-1/2 rounded-full bg-magnum-400"
+						class="trigger-indicator"
 					/>
 				{/if}
 			</button>
 		{/each}
 	</div>
-	<div use:melt={$content('tab-1')} class="grow bg-white p-5">
-		<p class="mb-5 leading-normal text-neutral-900">
-			Make changes to your account here. Click save when you're done.
-		</p>
-		<fieldset class="mb-4 flex w-full flex-col justify-start">
-			<label
-				class="mb-2.5 block text-sm leading-none text-neutral-900"
-				for="name"
-			>
-				Name
-			</label>
+	<div use:melt={$content('tab-1')} class="content">
+		<p>Make changes to your account here. Click save when you're done.</p>
+		<fieldset>
+			<label for="name"> Name </label>
 			<input id="name" value="Thomas G. Lopes" />
 		</fieldset>
 
@@ -70,35 +48,21 @@
 			<button class="save">Save changes</button>
 		</div>
 	</div>
-	<div use:melt={$content('tab-2')} class="grow bg-white p-5">
-		<p class="mb-5 leading-normal text-neutral-900">
-			Change your password here. Click save when you're done.
-		</p>
-		<fieldset class="mb-4 flex w-full flex-col justify-start">
-			<label
-				class="mb-2.5 block text-sm leading-none text-neutral-900"
-				for="new"
-			>
-				New password
-			</label>
+	<div use:melt={$content('tab-2')} class="content">
+		<p>Change your password here. Click save when you're done.</p>
+		<fieldset>
+			<label for="new"> New password </label>
 			<input id="new" type="password" />
 		</fieldset>
 		<div class="mt-5 flex justify-end">
 			<button class="save">Save changes</button>
 		</div>
 	</div>
-	<div use:melt={$content('tab-3')} class="grow bg-white p-5">
-		<p class="mb-5 leading-normal text-neutral-900">
-			Change your settings here. Click save when you're done.
-		</p>
+	<div use:melt={$content('tab-3')} class="content">
+		<p>Change your settings here. Click save when you're done.</p>
 
-		<fieldset class="mb-4 flex w-full flex-col justify-start">
-			<label
-				class="mb-2.5 block text-sm leading-none text-neutral-900"
-				for="new"
-			>
-				New email
-			</label>
+		<fieldset>
+			<label for="new"> New email </label>
 			<input id="new" type="password" />
 		</fieldset>
 		<div class="mt-5 flex justify-end">
@@ -107,7 +71,69 @@
 	</div>
 </div>
 
-<style lang="postcss">
+<style>
+	/* Reset */
+	* {
+		all: unset;
+	}
+
+	:global([hidden])* {
+		display: none;
+	}
+
+	/* CSS Vars */
+	:root {
+		--magnum-50: #fff9ed;
+		--magnum-100: #fef2d6;
+		--magnum-200: #fce0ac;
+		--magnum-300: #f9c978;
+		--magnum-400: #f7b155;
+		--magnum-500: #f38d1c;
+		--magnum-600: #e47312;
+		--magnum-700: #bd5711;
+		--magnum-800: #964516;
+		--magnum-900: #793a15;
+		--magnum-950: #411c09;
+
+		--neutral-50: #fafafa;
+		--neutral-100: #f5f5f5;
+		--neutral-200: #e5e5e5;
+		--neutral-300: #d4d4d4;
+		--neutral-400: #a3a3a3;
+		--neutral-500: #737373;
+		--neutral-600: #525252;
+		--neutral-700: #404040;
+		--neutral-800: #262626;
+		--neutral-900: #171717;
+		--neutral-950: #0a0a0a;
+
+		--radius-sm: 0.125rem;
+		--radius-base: 0.25rem;
+		--radius-md: 0.375rem;
+		--radius-lg: 0.5rem;
+		--radius-xl: 0.75rem;
+		--radius-2xl: 1rem;
+		--radius-3xl: 1.5rem;
+		--radius-full: 9999px;
+	}
+
+	/* Elements */
+	.root {
+		display: flex;
+		max-width: 25rem;
+		flex-direction: column;
+		overflow: hidden;
+		border-radius: 0.75rem;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
+
+	.list {
+		display: flex;
+		flex-shrink: 0;
+		overflow-x: auto;
+		background-color: var(--neutral-100);
+	}
+
 	.trigger {
 		display: flex;
 		align-items: center;
@@ -117,66 +143,96 @@
 		user-select: none;
 
 		border-radius: 0;
-		background-color: theme(colors.neutral.100);
+		background-color: var(--neutral-100);
 
-		color: theme(colors.neutral.900);
+		color: var(--neutral-900);
 		font-weight: 500;
 		line-height: 1;
 
 		flex: 1;
-		height: theme(spacing.12);
-		padding-inline: theme(spacing.2);
+		height: 3rem;
+		padding-inline: 0.5rem;
 
-		&:focus {
-			position: relative;
-		}
+		position: relative;
+		z-index: 10;
+	}
 
-		&:focus-visible {
-			@apply z-10 ring-2;
-		}
+	.trigger-indicator {
+		position: absolute;
+		bottom: 0.25rem;
+		left: 50%;
+		translate: -50%;
+		height: 0.25rem;
+		width: 1.5rem;
+		border-radius: 999px;
+		background-color: var(--magnum-400);
+	}
 
-		&[data-state='active'] {
-			@apply focus:relative;
-			background-color: white;
-			color: theme('colors.magnum.900');
-		}
+	.content {
+		flex-grow: 1;
+		padding: 1.25rem;
+		background-color: white;
+		color: black;
+	}
+
+	.content p {
+		display: inline-block;
+		margin-block-end: 1.25rem;
+		color: var(--neutral-900);
+	}
+
+	.content fieldset {
+		margin-block-end: 1rem;
+		display: flex;
+		flex-direction: column;
+		justify-content: start;
+	}
+
+	.content fieldset label {
+		/* "mb-2.5 block text-sm leading-none text-neutral-900" */
+		margin-block-end: 1.25rem;
+		display: block;
+	}
+
+	:global([data-state='active']).trigger {
+		background-color: white;
+		color: var(--magnum-900);
 	}
 
 	input {
-		height: theme(spacing.8);
+		height: 2rem;
 		flex-shrink: 0;
 		flex-grow: 1;
-		border-radius: theme(borderRadius.md);
-		border: 1px solid theme(colors.neutral.200);
-		padding-inline: theme(spacing[2.5]);
+		border-radius: var(--radius-md);
+		border: 1px solid var(--neutral-200);
+		padding-inline: 0.75rem;
 		line-height: 1;
-		color: theme(colors.neutral.900);
+		color: var(--neutral-900);
 
 		&:focus {
-			border-color: theme(colors.magnum.400);
+			border-color: var(--magnum-400);
 		}
 	}
 
 	.save {
 		display: inline-flex;
-		height: theme(spacing.8);
+		height: 2rem;
 		cursor: default;
 		align-items: center;
 		justify-content: center;
-		border-radius: theme(borderRadius.md);
-		background-color: theme(colors.magnum.200);
-		padding-inline: theme(spacing.4);
+		border-radius: var(--radius-md);
+		background-color: var(--magnum-200);
+		padding-inline: 1rem;
 		line-height: 1;
-		font-weight: theme(fontWeight.semibold);
-		color: theme(colors.magnum.900);
-		@apply transition;
+		font-weight: 600;
+		color: var(--magnum-900);
 
-		&:hover {
+		/* &:hover {
 			opacity: 0.75;
 		}
 
 		&:focus {
 			@apply !ring-green-600;
-		}
+		} */
 	}
 </style>

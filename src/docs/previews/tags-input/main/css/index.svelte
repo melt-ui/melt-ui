@@ -63,9 +63,9 @@
 		flex-direction: row;
 		flex-wrap: wrap;
 		gap: 0.625rem;
-		border-radius: 0.375rem;
+		border-radius: 0.75rem;
 		background-color: white;
-		padding: 0.5rem 0.75rem;
+		padding: 0.5rem;
 		color: var(--magnum-700);
 		min-width: 280px;
 	}
@@ -97,7 +97,7 @@
 		display: flex;
 		align-items: center;
 		overflow: hidden;
-		border-radius: 0.375rem;
+		border-radius: 0.5rem;
 		background-color: var(--magnum-200);
 		color: var(--magnum-900);
 		word-break: break-word;
@@ -105,10 +105,6 @@
 
 	:global([data-disabled]).tag {
 		background-color: var(--magnum-300);
-	}
-
-	:global([data-selected]).tag {
-		background-color: var(--magnum-400);
 	}
 
 	:global([data-disabled]).tag:hover {
@@ -120,16 +116,21 @@
 		box-shadow: none !important;
 	}
 
+	:global([data-selected]).tag {
+		background-color: var(--magnum-400);
+	}
+
 	.tag-value {
 		display: flex;
 		align-items: center;
-		border-right: 1px solid rgba(255, 255, 255, 0.1);
 		padding: 0 0.375rem;
 	}
 
 	.tag-close {
 		display: flex;
 		align-items: center;
+
+		cursor: pointer;
 		height: 100%;
 		padding: 0 0.25rem;
 	}
