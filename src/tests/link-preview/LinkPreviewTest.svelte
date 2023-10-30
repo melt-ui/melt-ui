@@ -1,10 +1,13 @@
 <script lang="ts">
-	import { createLinkPreview, melt } from '$lib/index.js';
+	import { createLinkPreview, melt, type CreateLinkPreviewProps } from '$lib/index.js';
+
+	type $$Props = CreateLinkPreviewProps;
 
 	const {
 		elements: { trigger, content, arrow },
 	} = createLinkPreview({
 		openDelay: 0,
+		...$$restProps,
 	});
 </script>
 
