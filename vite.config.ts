@@ -1,12 +1,12 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
-import UnoCSS from '@unocss/svelte-scoped/vite';
+import UnoCSS from 'unocss/vite';
+import extractorSvelte from '@unocss/extractor-svelte';
 
 export default defineConfig({
 	plugins: [
 		UnoCSS({
-			injectReset: `@unocss/reset/tailwind.css`, // see type definition for all included reset options or how to pass in your own
-			// ...other Svelte Scoped options
+			extractors: [extractorSvelte()],
 		}),
 		sveltekit(),
 	],

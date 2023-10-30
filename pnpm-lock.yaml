@@ -121,7 +121,13 @@ devDependencies:
   '@unocss/extractor-svelte':
     specifier: ^0.57.1
     version: 0.57.1
+  '@unocss/reset':
+    specifier: ^0.57.1
+    version: 0.57.1
   '@unocss/svelte-scoped':
+    specifier: ^0.57.1
+    version: 0.57.1
+  '@unocss/transformer-directives':
     specifier: ^0.57.1
     version: 0.57.1
   '@vitest/coverage-v8':

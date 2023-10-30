@@ -9,7 +9,9 @@
 	import '@fontsource/inter/800.css';
 	import '@fontsource/inter/900.css';
 	import '../fonts.css';
+	import '@unocss/reset/tailwind.css';
 	import '../app.scss';
+	import 'virtual:uno.css';
 
 	import { browser, dev } from '$app/environment';
 	import { JsIndicator, SiteHeader, TailwindIndicator } from '$docs/components/index.js';
@@ -58,6 +60,7 @@
 		@apply min-h-screen font-sans antialiased;
 		background-color: theme('colors.neutral.900');
 		color: theme('colors.white');
+
 		min-height: 100vh;
 	}
 
