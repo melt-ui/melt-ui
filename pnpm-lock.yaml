@@ -118,6 +118,9 @@ devDependencies:
   '@typescript-eslint/parser':
     specifier: ^5.62.0
     version: 5.62.0(eslint@8.45.0)(typescript@5.1.6)
+  '@unocss/extractor-svelte':
+    specifier: ^0.57.1
+    version: 0.57.1
   '@unocss/svelte-scoped':
     specifier: ^0.57.1
     version: 0.57.1
@@ -5041,6 +5044,10 @@ packages:
     resolution: {integrity: sha512-9s+azHhBnwjxm46TsD1RY0krDAwOR8tcw58Vtl3emd6C0VQsAOdoprt7UHE7GEXMvDVq7nMf8lAT0BM0LteW3w==}
     dependencies:
       '@unocss/core': 0.57.1
+    dev: true
+
+  /@unocss/extractor-svelte@0.57.1:
+    resolution: {integrity: sha512-Uz9ie+SMaTiF08i31nF5G4AzqNIGEF8ukOlBKC6NtOhCFAt1nN18UHHv20Wou68LvbPP7OgRlWc4kizihY123A==}
     dev: true
 
   /@unocss/inspector@0.57.1:

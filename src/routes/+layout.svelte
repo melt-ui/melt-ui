@@ -55,6 +55,7 @@
 	}
 
 	body {
+		@apply min-h-screen font-sans antialiased;
 		background-color: theme('colors.neutral.900');
 		color: theme('colors.white');
 		min-height: 100vh;
@@ -100,7 +101,7 @@
 
 	@media (max-width: 640px) {
 		.container {
-			@apply px-4;
+			padding-inline: 1rem;
 		}
 	}
 </style>

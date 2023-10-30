@@ -125,7 +125,7 @@
 		}
 
 		&[data-state='active'] {
-			@apply focus:relative;
+			@apply 'focus:relative';
 			background-color: white;
 			/*			color: _Theme('colors.magnum.900');*/
 		}
@@ -165,7 +165,7 @@
 		}
 
 		&:focus {
-			@apply !ring-green-600;
+			@apply '!ring-green-600';
 		}
 	}
 </style>
