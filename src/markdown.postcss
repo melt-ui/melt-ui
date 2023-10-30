@@ -1,9 +1,9 @@
 .mdsvex code:not(pre > code) {
-	@apply relative rounded-md bg-magnum-900/50 px-[0.25rem] py-[0.15rem] font-mono text-[0.75rem] text-xs font-semibold leading-7 text-magnum-300;
+	--_apply:  relative rounded-md bg-magnum-900/50 px-[0.25rem] py-[0.15rem] font-mono text-[0.75rem] text-xs font-semibold leading-7 text-magnum-300;
 }
 
 .mdsvex code.neutral {
-	@apply bg-neutral-700/50 text-neutral-50;
+	--_apply:  bg-neutral-700/50 text-neutral-50;
 }
 
 [data-theme='default'] {
@@ -12,7 +12,7 @@
 }
 
 [data-rehype-pretty-code-fragment] [data-line-numbers] > [data-line]::before {
-	@apply text-xs text-neutral-400/40;
+	--_apply:  text-xs text-neutral-400/40;
 	counter-increment: line;
 	content: counter(line);
 	display: inline-block;
@@ -22,75 +22,75 @@
 }
 
 [data-metadata] [data-code-copy] {
-	@apply top-16 !important;
+	--_apply:  top-16 !important;
 }
 
 [data-rehype-pretty-code-fragment] {
-	@apply relative;
+	--_apply:  relative;
 
 	& pre {
-		@apply mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border-x border-b border-neutral-500/50 bg-neutral-950/60 py-4 text-xs font-semibold lg:text-sm;
+		--_apply:  mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border-x border-b border-neutral-500/50 bg-neutral-950/60 py-4 text-xs font-semibold lg:text-sm;
 	}
 
 	& code {
-		@apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0;
+		--_apply:  grid min-w-full break-words rounded-none border-0 bg-transparent p-0;
 		counter-reset: line;
 		box-decoration-break: clone;
 	}
 
 	& [data-line] {
-		@apply inline-block w-full basis-4 border-l-[3px] border-l-transparent py-0.5 pl-2 pr-5;
+		--_apply:  inline-block w-full basis-4 border-l-[3px] border-l-transparent py-0.5 pl-2 pr-5;
 	}
 
 	& [data-highlighted-line] {
-		@apply border-l-magnum-300 bg-magnum-500/[0.1];
+		--_apply:  border-l-magnum-300 bg-magnum-500/[0.1];
 	}
 
 	& [data-chars-id] {
-		@apply pb-0.5 shadow-none;
+		--_apply:  pb-0.5 shadow-none;
 	}
 }
 
 [data-comp-preview] [data-rehype-pretty-code-fragment] {
 	& pre {
-		@apply mt-0 rounded-b-lg rounded-t-none;
+		--_apply:  mt-0 rounded-b-lg rounded-t-none;
 	}
 }
 
 [data-chars-id='ul'] {
-	@apply border-b border-b-magnum-500 font-bold !important;
+	--_apply:  border-b border-b-magnum-500 font-bold !important;
 }
 
 [data-chars-id='hi'] {
-	@apply rounded bg-magnum-500/[0.1] p-1 font-bold !important;
+	--_apply:  rounded bg-magnum-500/[0.1] p-1 font-bold !important;
 }
 
 [data-chars-id='r'] {
-	@apply border-b-magnum-600 font-bold !important;
+	--_apply:  border-b-magnum-600 font-bold !important;
 }
 
 [data-chars-id='t'] {
-	@apply border-b-magnum-600 font-bold !important;
+	--_apply:  border-b-magnum-600 font-bold !important;
 }
 
 [data-chars-id='c'] {
-	@apply border-b-magnum-600 font-bold !important;
+	--_apply:  border-b-magnum-600 font-bold !important;
 }
 
 [data-rehype-pretty-code-title] {
-	@apply mt-2 px-4 pt-6 text-sm font-medium;
+	--_apply:  mt-2 px-4 pt-6 text-sm font-medium;
 }
 
 [data-rehype-pretty-code-title] + pre {
-	@apply mt-2;
+	--_apply:  mt-2;
 }
 
 [data-callout] > p:last-child {
-	@apply mb-0 !important;
+	--_apply:  mb-0 !important;
 }
 
 [data-comp-preview] + p {
-	@apply mt-6;
+	--_apply:  mt-6;
 }
 
 [data-metadata]:not(:has(pre)) {

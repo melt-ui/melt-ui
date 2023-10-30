@@ -105,47 +105,47 @@
 
 <style lang="postcss">
 	.menu {
-		@apply z-10 flex max-h-[300px] min-w-[220px] flex-col shadow;
-		@apply rounded-lg bg-white p-1 lg:max-h-none;
-		@apply ring-0 !important;
+		--_apply:  z-10 flex max-h-[300px] min-w-[220px] flex-col shadow;
+		--_apply:  rounded-lg bg-white p-1 lg:max-h-none;
+		--_apply:  ring-0 !important;
 	}
 	.subMenu {
-		@apply min-w-[220px] shadow-md shadow-neutral-900/30;
+		--_apply:  min-w-[220px] shadow-md shadow-neutral-900/30;
 	}
 	.item {
-		@apply relative h-6 min-h-[24px] select-none rounded-md pl-6 pr-1;
-		@apply z-20 text-magnum-900 outline-none;
-		@apply data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900;
-		@apply data-[disabled]:text-neutral-300;
-		@apply flex items-center text-sm leading-none;
-		@apply ring-0 !important;
+		--_apply:  relative h-6 min-h-[24px] select-none rounded-md pl-6 pr-1;
+		--_apply:  z-20 text-magnum-900 outline-none;
+		--_apply:  data-[highlighted]:bg-magnum-200 data-[highlighted]:text-magnum-900;
+		--_apply:  data-[disabled]:text-neutral-300;
+		--_apply:  flex items-center text-sm leading-none;
+		--_apply:  ring-0 !important;
 	}
 
 	.trigger {
-		@apply block rounded-xl border-2 border-dashed border-magnum-900 font-semibold text-magnum-700;
-		@apply w-[300px] bg-magnum-100 py-12 text-center shadow;
+		--_apply:  block rounded-xl border-2 border-dashed border-magnum-900 font-semibold text-magnum-700;
+		--_apply:  w-[300px] bg-magnum-100 py-12 text-center shadow;
 	}
 	.check {
-		@apply absolute left-2 top-1/2 text-magnum-500;
+		--_apply:  absolute left-2 top-1/2 text-magnum-500;
 		translate: 0 calc(-50% + 1px);
 	}
 
 	.dot {
-		@apply h-[4.75px] w-[4.75px] rounded-full bg-magnum-900;
+		--_apply:  h-[4.75px] w-[4.75px] rounded-full bg-magnum-900;
 	}
 
 	.separator {
-		@apply m-[5px] h-[1px] bg-magnum-200;
+		--_apply:  m-[5px] h-[1px] bg-magnum-200;
 	}
 
 	.rightSlot {
-		@apply ml-auto pl-5;
+		--_apply:  ml-auto pl-5;
 	}
 
 	.check {
-		@apply absolute left-0 inline-flex w-6 items-center justify-center;
+		--_apply:  absolute left-0 inline-flex w-6 items-center justify-center;
 	}
 	.text {
-		@apply pl-6 text-xs leading-6 text-neutral-600;
+		--_apply:  pl-6 text-xs leading-6 text-neutral-600;
 	}
 </style>

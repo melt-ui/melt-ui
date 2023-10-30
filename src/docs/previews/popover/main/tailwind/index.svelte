@@ -51,39 +51,39 @@
 
 <style lang="postcss">
 	fieldset {
-		@apply flex items-center gap-5;
+		--_apply:  flex items-center gap-5;
 	}
 
 	label {
-		@apply w-[75px] text-sm text-neutral-700;
+		--_apply:  w-[75px] text-sm text-neutral-700;
 	}
 
 	p {
-		@apply mb-2 font-medium text-neutral-900;
+		--_apply:  mb-2 font-medium text-neutral-900;
 	}
 
 	.input {
-		@apply flex h-8 w-full rounded-md border border-magnum-800 bg-transparent px-2.5 text-sm;
-		@apply ring-offset-magnum-300 focus-visible:ring;
-		@apply focus-visible:ring-magnum-400 focus-visible:ring-offset-1;
-		@apply flex-1 items-center justify-center;
-		@apply px-2.5 text-sm leading-none text-magnum-700;
+		--_apply:  flex h-8 w-full rounded-md border border-magnum-800 bg-transparent px-2.5 text-sm;
+		--_apply:  ring-offset-magnum-300 focus-visible:ring;
+		--_apply:  focus-visible:ring-magnum-400 focus-visible:ring-offset-1;
+		--_apply:  flex-1 items-center justify-center;
+		--_apply:  px-2.5 text-sm leading-none text-magnum-700;
 	}
 
 	.trigger {
-		@apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0;
-		@apply text-sm font-medium text-magnum-900 transition-colors hover:bg-white/90;
-		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
+		--_apply:  inline-flex h-9 w-9 items-center justify-center rounded-full bg-white p-0;
+		--_apply:  text-sm font-medium text-magnum-900 transition-colors hover:bg-white/90;
+		--_apply:  focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
 	}
 
 	.close {
-		@apply absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full;
-		@apply text-magnum-900 transition-colors hover:bg-magnum-500/10;
-		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
-		@apply bg-white p-0 text-sm font-medium;
+		--_apply:  absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full;
+		--_apply:  text-magnum-900 transition-colors hover:bg-magnum-500/10;
+		--_apply:  focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
+		--_apply:  bg-white p-0 text-sm font-medium;
 	}
 
 	.content {
-		@apply z-10 w-60 rounded-[4px] bg-white p-5 shadow-sm;
+		--_apply:  z-10 w-60 rounded-[4px] bg-white p-5 shadow-sm;
 	}
 </style>

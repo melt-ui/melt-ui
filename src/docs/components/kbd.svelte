@@ -10,7 +10,7 @@
 <style>
 	kbd {
 		display: inline-block;
-		/*		padding: _Theme('spacing[0.5]') theme('spacing[1.5]');*/
+		/*		padding: _Theme('spacing[0.5]') _Theme('spacing[1.5]');*/
 		/*		color: _Theme('colors.neutral.100');*/
 		white-space: nowrap;
 

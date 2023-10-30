@@ -107,15 +107,15 @@
 
 <style lang="postcss">
 	#toc-builder-preview > h2 {
-		@apply text-xl font-bold;
+		--_apply: text-xl font-bold;
 	}
 
 	#toc-builder-preview > h3 {
-		@apply text-lg font-bold;
+		--_apply: text-lg font-bold;
 	}
 
 	#toc-builder-preview > h4 {
-		@apply text-lg font-semibold;
+		--_apply: text-lg font-semibold;
 	}
 
 	.hide-heading {
@@ -130,7 +130,7 @@
 		line-height: 1;
 		/*		font-weight: _Theme(fontWeight.semibold);*/
 		/*		color: _Theme(colors.magnum.900);*/
-		@apply transition;
+		--_apply: transition;
 
 		&:hover {
 			opacity: 0.75;

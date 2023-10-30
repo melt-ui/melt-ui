@@ -77,7 +77,7 @@
 		/*		color: _Theme('colors.neutral.400');*/
 		position: relative;
 
-		@apply transition;
+		--_apply: transition;
 
 		&:hover {
 			opacity: 0.75;
@@ -98,7 +98,7 @@
 			/*			border-radius: _Theme('borderRadius.full');*/
 			/*			background-color: _Theme('colors.magnum.400');*/
 			opacity: 0;
-			@apply transition;
+			--_apply: transition;
 		}
 
 		&:focus::after {

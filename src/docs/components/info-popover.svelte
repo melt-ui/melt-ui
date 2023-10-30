@@ -35,6 +35,6 @@
 
 <style lang="postcss">
 	div {
-		@apply focus:ring-0 !important;
+		--_apply:  focus:ring-0 !important;
 	}
 </style>

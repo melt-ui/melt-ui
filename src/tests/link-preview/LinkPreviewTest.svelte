@@ -62,9 +62,9 @@
 
 <style lang="postcss">
 	.trigger {
-		@apply flex h-12 w-12 items-center justify-center;
-		@apply rounded-full bg-white p-0 text-sm font-medium;
-		@apply text-magnum-900 transition-colors hover:bg-white/90;
-		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
+		--_apply:  flex h-12 w-12 items-center justify-center;
+		--_apply:  rounded-full bg-white p-0 text-sm font-medium;
+		--_apply:  text-magnum-900 transition-colors hover:bg-white/90;
+		--_apply:  focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
 	}
 </style>

@@ -15,27 +15,27 @@ body {
 
 @layer components {
 	.link {
-		@apply underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-magnum-500 hocus:opacity-100;
+		--_apply:  underline decoration-white/50 underline-offset-4 opacity-75 active:translate-y-px hocus:decoration-magnum-500 hocus:opacity-100;
 	}
 }
 
 *:not(body) {
 	outline: none !important;
 	&:focus-visible {
-		@apply !ring !ring-magnum-400;
+		--_apply:  !ring !ring-magnum-400;
 	}
 }
 
 .inline-code {
-	@apply relative rounded-md bg-magnum-900/50 px-[0.25rem] py-[0.15rem] font-mono text-[0.75rem] text-xs font-semibold leading-7 text-magnum-300;
+	--_apply:  relative rounded-md bg-magnum-900/50 px-[0.25rem] py-[0.15rem] font-mono text-[0.75rem] text-xs font-semibold leading-7 text-magnum-300;
 }
 
 .inline-code.neutral {
-	@apply bg-neutral-800 text-neutral-100;
+	--_apply:  bg-neutral-800 text-neutral-100;
 }
 
 @media (max-width: 640px) {
 	.container {
-		@apply px-4;
+		--_apply:  px-4;
 	}
 }

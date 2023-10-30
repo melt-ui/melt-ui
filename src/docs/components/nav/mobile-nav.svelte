@@ -92,7 +92,7 @@
 <style lang="postcss">
 	.menu,
 	.menu :global(*) {
-		@apply !ring-0;
+		--_apply: !ring-0;
 	}
 
 	.safe-area {

@@ -152,7 +152,7 @@
 
 <style lang="postcss">
 	.check {
-		@apply absolute left-2 top-1/2 text-magnum-500;
+		--_apply: absolute left-2 top-1/2 text-magnum-500;
 		translate: 0 calc(-50% + 1px);
 	}
 </style>

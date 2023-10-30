@@ -197,26 +197,26 @@
 
 <style lang="postcss">
 	[data-melt-combobox-menu] :global(mark) {
-/*		background-color: _Theme('colors.magnum.400/0.5');*/
-/*		color: _Theme('colors.white');*/
-/*		border-radius: _Theme('borderRadius.sm');*/
+		/*		background-color: _Theme('colors.magnum.400/0.5');*/
+		/*		color: _Theme('colors.white');*/
+		/*		border-radius: _Theme('borderRadius.sm');*/
 		padding-inline: 1px;
 		font-weight: 500;
 	}
 
 	.subresult :global(mark) {
-/*		background-color: _Theme('colors.magnum.400/0.5');*/
-/*		color: _Theme('colors.white');*/
+		/*		background-color: _Theme('colors.magnum.400/0.5');*/
+		/*		color: _Theme('colors.white');*/
 		font-weight: 300;
 	}
 
 	[data-highlighted] {
-/*		background-color: _Theme('colors.magnum.400/0.25');*/
-/*		color: _Theme('colors.white');*/
+		/*		background-color: _Theme('colors.magnum.400/0.25');*/
+		/*		color: _Theme('colors.white');*/
 
 		/* :global(mark) {
 /*			background-color: _Theme('colors.magnum.500');*/
-/*			color: _Theme('colors.magnum.100');*/
-		} */
+		/*			color: _Theme('colors.magnum.100');*/
+		/*		} */
 	}
 </style>

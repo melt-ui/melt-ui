@@ -61,7 +61,7 @@
 
 <style lang="postcss">
 	.check {
-		@apply absolute left-2 top-1/2;
+		--_apply: absolute left-2 top-1/2;
 		translate: 0 calc(-50% + 1px);
 	}
 </style>
