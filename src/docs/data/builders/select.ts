@@ -67,10 +67,14 @@ const builder = builderSchema(BUILDER_NAME, {
 			default: 'false',
 			description: 'Whether or not the select is a multiple select.',
 		},
-
 		PROPS.DEFAULT_OPEN,
 		PROPS.OPEN,
 		PROPS.ON_OPEN_CHANGE,
+		{
+			name: 'ids',
+			type: 'Record<"trigger" | "content", string>',
+			description: 'Override the internally generated ids for the elements.',
+		},
 	],
 	elements: [
 		{

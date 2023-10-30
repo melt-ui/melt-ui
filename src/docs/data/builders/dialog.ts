@@ -27,7 +27,17 @@ const BUILDER_NAME = 'dialog';
 
 const builder = builderSchema(BUILDER_NAME, {
 	title: 'createDialog',
-	props: [...OPTION_PROPS, PROPS.DEFAULT_OPEN, PROPS.OPEN, PROPS.ON_OPEN_CHANGE],
+	props: [
+		...OPTION_PROPS,
+		PROPS.DEFAULT_OPEN,
+		PROPS.OPEN,
+		PROPS.ON_OPEN_CHANGE,
+		{
+			name: 'ids',
+			type: 'Record<"content" | "title" | "description" | "trigger", string>',
+			description: 'Override the internally generated ids for the elements.',
+		},
+	],
 	elements: [
 		{
 			name: 'trigger',

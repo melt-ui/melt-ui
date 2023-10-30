@@ -63,6 +63,11 @@ const builder = builderSchema(BUILDER_NAME, {
 		PROPS.OPEN,
 		PROPS.ON_OPEN_CHANGE,
 		...OPTION_PROPS,
+		{
+			name: 'ids',
+			type: 'Record<"trigger" | "content", string>',
+			description: 'Override the internally generated ids for the elements.',
+		},
 	],
 	elements: [
 		{

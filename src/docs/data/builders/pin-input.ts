@@ -63,6 +63,11 @@ const builder = builderSchema(BUILDER_NAME, {
 				'A callback called when the value of the `value` store should be changed. This is useful for controlling the value of the pin-input from outside the pin-input.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
+		{
+			name: 'ids',
+			type: 'Record<"root", string>',
+			description: 'Override the internally generated ids for the elements.',
+		},
 	],
 	elements: [
 		{

@@ -11,7 +11,14 @@ const BUILDER_NAME = 'menubar';
 
 const builder = builderSchema(BUILDER_NAME, {
 	title: 'createMenubar',
-	props: OPTION_PROPS,
+	props: [
+		...OPTION_PROPS,
+		{
+			name: 'ids',
+			type: 'Record<"menubar", string>',
+			description: 'Override the internally generated ids for the elements.',
+		},
+	],
 	builders: [
 		{
 			name: 'createMenu',

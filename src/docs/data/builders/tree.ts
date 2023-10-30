@@ -9,7 +9,14 @@ const BUILDER_NAME = 'tree-view';
 const builder = builderSchema(BUILDER_NAME, {
 	title: 'createTreeViewBuilder',
 	description: DESCRIPTIONS.BUILDER('tree-view'),
-	props: [PROPS.FORCE_VISIBLE],
+	props: [
+		PROPS.FORCE_VISIBLE,
+		{
+			name: 'ids',
+			type: 'Record<"tree", string>',
+			description: 'Override the internally generated ids for the elements.',
+		},
+	],
 	elements: [
 		{
 			name: 'tree',

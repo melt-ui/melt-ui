@@ -59,6 +59,11 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'A callback that is called when the value of the slider changes.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
+		{
+			name: 'ids',
+			type: 'Record<"root", string>',
+			description: 'Override the internally generated ids for the elements.',
+		},
 	],
 	elements: [
 		{

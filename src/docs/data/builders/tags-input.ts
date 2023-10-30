@@ -114,6 +114,11 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'A function that is called when the tags change.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
+		{
+			name: 'ids',
+			type: 'Record<"root" | "input", string>',
+			description: 'Override the internally generated ids for the elements.',
+		},
 	],
 	elements: [
 		{
