@@ -5,7 +5,6 @@ import {
 	createElHelpers,
 	effect,
 	executeCallbacks,
-	generateId,
 	getPortalDestination,
 	isBrowser,
 	isTouch,
@@ -24,6 +23,7 @@ import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable, type Writable } from 'svelte/store';
 import type { TooltipEvents } from './events.js';
 import type { CreateTooltipProps } from './types.js';
+import { generateDefaultIds } from '../../internal/helpers/id';
 
 const defaults = {
 	positioning: {
@@ -47,10 +47,13 @@ const { name } = createElHelpers<TooltipParts>('tooltip');
 // Store a global map to get the currently open tooltip.
 const groupMap = new Map<string | true, Writable<boolean>>();
 
+const idParts = ['trigger', 'content'] as const;
+export type TooltipIdParts = (typeof idParts)[number];
+
 export function createTooltip(props?: CreateTooltipProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateTooltipProps;
 
-	const options = toWritableStores(omit(withDefaults, 'open'));
+	const options = toWritableStores(omit(withDefaults, 'open', 'ids'));
 	const {
 		positioning,
 		arrowSize,
@@ -70,10 +73,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 	type OpenReason = 'pointer' | 'focus';
 	const openReason = writable<null | OpenReason>(null);
 
-	const ids = {
-		content: generateId(),
-		trigger: generateId(),
-	} as const;
+	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
 
 	let clickedTrigger = false;
 

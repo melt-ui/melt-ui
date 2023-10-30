@@ -4,7 +4,6 @@ import {
 	createElHelpers,
 	derivedVisible,
 	effect,
-	generateId,
 	getPortalDestination,
 	handleFocus,
 	isBrowser,
@@ -25,6 +24,7 @@ import { get, writable } from 'svelte/store';
 import { executeCallbacks } from '../../internal/helpers/callbacks.js';
 import type { PopoverEvents } from './events.js';
 import type { CreatePopoverProps } from './types.js';
+import { generateDefaultIds } from '../../internal/helpers/id';
 
 const defaults = {
 	positioning: {
@@ -46,10 +46,13 @@ const defaults = {
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
 const { name } = createElHelpers<PopoverParts>('popover');
 
+const idParts = ['trigger', 'content'] as const;
+export type PopoverIdParts = (typeof idParts)[number];
+
 export function createPopover(args?: CreatePopoverProps) {
 	const withDefaults = { ...defaults, ...args } satisfies CreatePopoverProps;
 
-	const options = toWritableStores(omit(withDefaults, 'open'));
+	const options = toWritableStores(omit(withDefaults, 'open', 'ids'));
 	const {
 		positioning,
 		arrowSize,
@@ -68,10 +71,7 @@ export function createPopover(args?: CreatePopoverProps) {
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
-	const ids = {
-		content: generateId(),
-		trigger: generateId(),
-	};
+	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
 
 	onMount(() => {
 		activeTrigger.set(document.getElementById(ids.trigger));

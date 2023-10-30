@@ -7,7 +7,6 @@ import {
 	disabledAttr,
 	effect,
 	executeCallbacks,
-	generateId,
 	getElementByMeltId,
 	isBrowser,
 	isHTMLElement,
@@ -22,6 +21,7 @@ import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable } from 'svelte/store';
 import type { SliderEvents } from './events.js';
 import type { CreateSliderProps } from './types.js';
+import { generateDefaultIds } from '../../internal/helpers/id';
 
 const defaults = {
 	defaultValue: [],
@@ -34,10 +34,15 @@ const defaults = {
 
 const { name } = createElHelpers('slider');
 
+const idParts = ['root'] as const;
+export type SliderIdParts = (typeof idParts)[number];
+
 export const createSlider = (props?: CreateSliderProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSliderProps;
 
-	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
+	const options = toWritableStores(
+		omit(withDefaults, 'value', 'onValueChange', 'defaultValue', 'ids')
+	);
 	const { min, max, step, orientation, disabled } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
@@ -47,9 +52,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const currentThumbIndex = writable<number>(0);
 	const activeThumb = writable<{ thumb: HTMLElement; index: number } | null>(null);
 
-	const ids = {
-		root: generateId(),
-	};
+	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
 
 	const root = builder(name(), {
 		stores: [disabled, orientation],

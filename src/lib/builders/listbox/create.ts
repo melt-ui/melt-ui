@@ -41,6 +41,7 @@ import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
 import { createLabel } from '../label/create.js';
 import type { ListboxEvents } from './events.js';
+import { generateDefaultIds } from '../../internal/helpers/id';
 import type {
 	CreateListboxProps,
 	ListboxOption,
@@ -71,6 +72,9 @@ const defaults = {
 	typeahead: true,
 	highlightOnHover: true,
 } satisfies Defaults<CreateListboxProps<unknown>>;
+
+const idParts = ['trigger', 'menu', 'label'] as const;
+export type ListboxIdParts = (typeof idParts)[number];
 
 /**
  * Creates an ARIA-1.2-compliant listbox.
@@ -105,7 +109,7 @@ export function createListbox<
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
 
 	const options = toWritableStores({
-		...omit(withDefaults, 'open', 'defaultOpen', 'builder'),
+		...omit(withDefaults, 'open', 'defaultOpen', 'builder', 'ids'),
 		multiple: withDefaults.multiple ?? (false as Multiple),
 	});
 
@@ -128,11 +132,7 @@ export function createListbox<
 	} = options;
 	const { name, selector } = createElHelpers(withDefaults.builder);
 
-	const ids = {
-		trigger: generateId(),
-		menu: generateId(),
-		label: generateId(),
-	};
+	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
 
 	const { handleTypeaheadSearch } = createTypeaheadSearch({
 		onMatch: (element) => {

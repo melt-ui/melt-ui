@@ -14,7 +14,7 @@ import {
 	disabledAttr,
 	effect,
 	executeCallbacks,
-	generateId,
+	generateDefaultIds,
 	getNextFocusable,
 	getPortalDestination,
 	getPreviousFocusable,
@@ -56,6 +56,9 @@ export const SUB_CLOSE_KEYS: Record<TextDirection, string[]> = {
 	ltr: [kbd.ARROW_LEFT],
 	rtl: [kbd.ARROW_RIGHT],
 };
+
+const idParts = ['menu', 'trigger'] as const;
+export type _MenuIdParts = (typeof idParts)[number];
 
 const defaults = {
 	arrowSize: 8,
@@ -136,10 +139,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
 
-	const rootIds = {
-		menu: generateId(),
-		trigger: generateId(),
-	};
+	const rootIds = { ...generateDefaultIds(idParts), ...opts.ids };
 
 	const isVisible = derivedVisible({
 		open: rootOpen,
@@ -650,10 +650,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const subOpenTimer = writable<number | null>(null);
 		const pointerGraceTimer = writable(0);
 
-		const subIds = {
-			menu: generateId(),
-			trigger: generateId(),
-		};
+		const subIds = { ...generateDefaultIds(idParts), ...withDefaults.ids };
 
 		onMount(() => {
 			/**

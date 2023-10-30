@@ -1,6 +1,7 @@
-import type { ChangeFn } from '$lib/internal/helpers';
+import type { ChangeFn, IdObj } from '$lib/internal/helpers';
 import type { Writable } from 'svelte/store';
-import type { createTreeView } from './create';
+import type { TreeIdParts, createTreeView } from './create';
+import type { Expand } from '$lib/internal/types';
 
 export type CreateTreeViewProps = {
 	forceVisible?: boolean;
@@ -26,6 +27,11 @@ export type CreateTreeViewProps = {
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
 	onExpandedChange?: ChangeFn<string[]>;
+
+	/**
+	 * Optionally override the default ids we assign to the elements
+	 */
+	ids?: Expand<IdObj<TreeIdParts>>;
 };
 
 export type TreeParts = 'label' | 'item' | 'group';

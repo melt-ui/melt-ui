@@ -3,7 +3,6 @@ import {
 	builder,
 	createElHelpers,
 	executeCallbacks,
-	generateId,
 	getElementByMeltId,
 	isHTMLElement,
 	isHidden,
@@ -18,6 +17,7 @@ import { derived, writable, type Writable } from 'svelte/store';
 
 import type { TreeEvents } from './events';
 import type { CreateTreeViewProps, TreeParts } from './types';
+import { generateDefaultIds } from '../../internal/helpers/id';
 
 const defaults = {
 	forceVisible: false,
@@ -32,6 +32,9 @@ const ATTRS = {
 };
 
 const { name } = createElHelpers<TreeParts>('tree-view');
+
+const idParts = ['tree'] as const;
+export type TreeIdParts = (typeof idParts)[number];
 
 export function createTreeView(args?: CreateTreeViewProps) {
 	const withDefaults = { ...defaults, ...args };
@@ -67,9 +70,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 		return (itemId: string) => $expanded.includes(itemId);
 	});
 
-	const ids = {
-		tree: generateId(),
-	};
+	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
 
 	const rootTree = builder(name(), {
 		returned: () => {

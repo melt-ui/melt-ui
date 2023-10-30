@@ -18,7 +18,6 @@ import {
 	effect,
 	styleToString,
 	noop,
-	generateId,
 	isBrowser,
 	getNextFocusable,
 	getPreviousFocusable,
@@ -38,6 +37,8 @@ import { usePopper } from '$lib/internal/actions/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { CreateMenubarMenuProps, CreateMenubarProps } from './types.js';
 import type { MenubarEvents } from './events.js';
+import { omit } from '../../internal/helpers/object';
+import { generateDefaultIds } from '../../internal/helpers/id';
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
 
@@ -48,10 +49,13 @@ const defaults = {
 	closeOnEscape: true,
 } satisfies CreateMenubarProps;
 
+const idParts = ['menubar'] as const;
+export type MenubarIdParts = (typeof idParts)[number];
+
 export function createMenubar(props?: CreateMenubarProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateMenubarProps;
 
-	const options = toWritableStores(withDefaults);
+	const options = toWritableStores(omit(withDefaults, 'ids'));
 	const { loop, closeOnEscape } = options;
 	const activeMenu = writable<string>('');
 
@@ -61,9 +65,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 	const closeTimer = writable(0);
 	let scrollRemoved = false;
 
-	const ids = {
-		menubar: generateId(),
-	};
+	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
 
 	const menubar = builder(name(), {
 		returned() {

@@ -13,6 +13,7 @@ import {
 	toWritableStores,
 	type ChangeFn,
 	disabledAttr,
+	generateDefaultIds,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
@@ -21,6 +22,9 @@ import type { AccordionEvents } from './events.js';
 import type { AccordionHeadingProps, AccordionItemProps, CreateAccordionProps } from './types.js';
 
 type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
+const idParts = ['root'] as const;
+export type AccordionIdParts = (typeof idParts)[number];
+
 const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
 const defaults = {
@@ -33,7 +37,12 @@ export const createAccordion = <Multiple extends boolean = false>(
 	props?: CreateAccordionProps<Multiple>
 ) => {
 	const withDefaults = { ...defaults, ...props };
-	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
+	const options = toWritableStores(
+		omit(withDefaults, 'value', 'onValueChange', 'defaultValue', 'ids')
+	);
+
+	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
+
 	const { disabled, forceVisible } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
@@ -52,10 +61,6 @@ export const createAccordion = <Multiple extends boolean = false>(
 	const isSelectedStore = derived(value, ($value) => {
 		return (key: string) => isSelected(key, $value);
 	});
-
-	const ids = {
-		root: generateId(),
-	};
 
 	const root = builder(name(), {
 		returned: () => ({

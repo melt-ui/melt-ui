@@ -2,6 +2,7 @@ import { overridable, toWritableStores } from '$lib/internal/helpers/index.js';
 import { writable } from 'svelte/store';
 import { createMenuBuilder } from '../menu/index.js';
 import type { CreateDropdownMenuProps } from './types.js';
+import { omit } from '../../internal/helpers/object';
 
 const defaults = {
 	arrowSize: 8,
@@ -24,7 +25,7 @@ const defaults = {
 export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateDropdownMenuProps;
 
-	const rootOptions = toWritableStores(withDefaults);
+	const rootOptions = toWritableStores(omit(withDefaults, 'ids'));
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const rootOpen = overridable(openWritable, withDefaults?.onOpenChange);
@@ -53,6 +54,7 @@ export function createDropdownMenu(props?: CreateDropdownMenuProps) {
 		prevFocusable,
 		selector: 'dropdown-menu',
 		removeScroll: true,
+		ids: withDefaults.ids,
 	});
 
 	return {

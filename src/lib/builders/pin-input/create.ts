@@ -4,7 +4,6 @@ import {
 	createElHelpers,
 	disabledAttr,
 	executeCallbacks,
-	generateId,
 	hiddenInputAttrs,
 	isBrowser,
 	isHTMLElement,
@@ -21,6 +20,7 @@ import { tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
 import type { PinInputEvents } from './events.js';
 import type { CreatePinInputProps } from './types.js';
+import { generateDefaultIds } from '../../internal/helpers/id';
 
 const { name, selector } = createElHelpers<'input' | 'hidden-input'>('pin-input');
 
@@ -46,19 +46,20 @@ const defaults = {
 	defaultValue: [],
 } satisfies Defaults<CreatePinInputProps>;
 
+const idParts = ['root'] as const;
+export type PinInputIdParts = (typeof idParts)[number];
+
 export function createPinInput(props?: CreatePinInputProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreatePinInputProps;
 
-	const options = toWritableStores(omit(withDefaults, 'value'));
+	const options = toWritableStores(omit(withDefaults, 'value', 'ids'));
 	const { placeholder, disabled, type, name: nameStore } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 	const valueStr = derived(value, (v) => v.join(''));
 
-	const ids = {
-		root: generateId(),
-	};
+	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
 
 	const root = builder(name(), {
 		stores: value,

@@ -1,8 +1,8 @@
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
 import type { TextDirection } from '$lib/internal/types.js';
-import type { ChangeFn, FocusProp } from '$lib/internal/helpers/index.js';
+import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
-import type { createMenuBuilder } from './create.js';
+import type { _MenuIdParts, createMenuBuilder } from './create.js';
 
 export type _CreateMenuProps = {
 	/**
@@ -110,11 +110,16 @@ export type _CreateMenuProps = {
 	 * Optionally prevent focusing the first item in the menu
 	 */
 	disableFocusFirstItem?: boolean;
+
+	/**
+	 * Optionally override the default ids we assign to the elements
+	 */
+	ids?: Expand<IdObj<_MenuIdParts>>;
 };
 
 export type _CreateSubmenuProps = Pick<
 	_CreateMenuProps,
-	'arrowSize' | 'positioning' | 'open' | 'onOpenChange'
+	'arrowSize' | 'positioning' | 'open' | 'onOpenChange' | 'ids'
 > & {
 	disabled?: boolean;
 };
@@ -178,6 +183,8 @@ export type _MenuBuilderOptions = {
 	 * rather than in the menu builder factory.
 	 */
 	removeScroll: boolean;
+
+	ids?: Expand<IdObj<_MenuIdParts>>;
 };
 
 export type _MenuParts =

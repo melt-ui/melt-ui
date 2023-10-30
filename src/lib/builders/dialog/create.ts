@@ -10,7 +10,6 @@ import {
 	createElHelpers,
 	effect,
 	executeCallbacks,
-	generateId,
 	getPortalDestination,
 	isBrowser,
 	isHTMLElement,
@@ -23,12 +22,14 @@ import {
 	styleToString,
 	toWritableStores,
 	handleFocus,
+	generateDefaultIds,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';
+import { omit } from '../../internal/helpers/object';
 
 type DialogParts =
 	| 'trigger'
@@ -54,10 +55,14 @@ const defaults = {
 
 const openDialogIds = writable<string[]>([]);
 
+const idParts = ['content', 'title', 'description', 'trigger'] as const;
+export type DialogIdParts = (typeof idParts)[number];
+
 export function createDialog(props?: CreateDialogProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateDialogProps;
 
-	const options = toWritableStores(withDefaults);
+	const options = toWritableStores(omit(withDefaults, 'ids'));
+
 	const {
 		preventScroll,
 		closeOnEscape,
@@ -72,10 +77,8 @@ export function createDialog(props?: CreateDialogProps) {
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	const ids = {
-		content: generateId(),
-		title: generateId(),
-		description: generateId(),
-		trigger: generateId(),
+		...generateDefaultIds(idParts),
+		...withDefaults.ids,
 	};
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);

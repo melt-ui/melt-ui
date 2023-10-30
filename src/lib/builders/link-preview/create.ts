@@ -6,7 +6,6 @@ import {
 	derivedVisible,
 	effect,
 	executeCallbacks,
-	generateId,
 	getPortalDestination,
 	getTabbableNodes,
 	isBrowser,
@@ -25,6 +24,8 @@ import { onMount } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
 import type { LinkPreviewEvents } from './events.js';
 import type { CreateLinkPreviewProps } from './types.js';
+import { generateDefaultIds } from '../../internal/helpers/id';
+import { omit } from '../../internal/helpers/object';
 
 type LinkPreviewParts = 'trigger' | 'content' | 'arrow';
 const { name } = createElHelpers<LinkPreviewParts>('hover-card');
@@ -43,6 +44,9 @@ const defaults = {
 	closeOnEscape: true,
 } satisfies CreateLinkPreviewProps;
 
+const idParts = ['trigger', 'content'] as const;
+export type LinkPreviewIdParts = (typeof idParts)[number];
+
 export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateLinkPreviewProps;
 
@@ -56,7 +60,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	// type OpenReason = 'pointer' | 'focus';
 	// const openReason = writable<null | OpenReason>(null);
 
-	const options = toWritableStores(withDefaults);
+	const options = toWritableStores(omit(withDefaults, 'ids'));
 
 	const {
 		openDelay,
@@ -69,11 +73,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		closeOnEscape,
 	} = options;
 
-	const ids = {
-		content: generateId(),
-		trigger: generateId(),
-	};
-
+	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
 	let timeout: number | null = null;
 	let originalBodyUserSelect: string;
 
