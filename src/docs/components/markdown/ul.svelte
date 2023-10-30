@@ -12,14 +12,14 @@
 <style lang="postcss">
 	ul {
 		list-style-type: disc;
-		margin-block: theme('spacing.6');
-		margin-left: theme('spacing.6');
+		/*		margin-block: _Theme('spacing.6');*/
+		/*		margin-left: _Theme('spacing.6');*/
 
 		:global(ul) {
 			list-style-type: circle;
 
-			margin-block: theme('spacing.2');
-			margin-left: theme('spacing.6');
+			/*			margin-block: _Theme('spacing.2');*/
+			/*			margin-left: _Theme('spacing.6');*/
 		}
 	}
 </style>

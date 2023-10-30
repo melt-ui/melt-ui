@@ -72,9 +72,9 @@
 
 <style lang="postcss">
 	.item {
-		padding: theme('spacing.1');
-		border-radius: theme('borderRadius.md');
-		color: theme('colors.neutral.400');
+		/*		padding: _Theme('spacing.1');*/
+		/*		border-radius: _Theme('borderRadius.md');*/
+		/*		color: _Theme('colors.neutral.400');*/
 		position: relative;
 
 		@apply transition;
@@ -84,7 +84,7 @@
 		}
 
 		&[data-state='on'] {
-			color: theme('colors.magnum.800');
+			/*			color: _Theme('colors.magnum.800');*/
 		}
 
 		&::after {
@@ -95,8 +95,8 @@
 			content: '';
 			width: 0.25rem;
 			height: 0.25rem;
-			border-radius: theme('borderRadius.full');
-			background-color: theme('colors.magnum.400');
+			/*			border-radius: _Theme('borderRadius.full');*/
+			/*			background-color: _Theme('colors.magnum.400');*/
 			opacity: 0;
 			@apply transition;
 		}
@@ -108,7 +108,7 @@
 
 	.separator {
 		width: 1px;
-		background-color: theme('colors.neutral.300');
+		/*		background-color: _Theme('colors.neutral.300');*/
 		align-self: stretch;
 	}
 </style>

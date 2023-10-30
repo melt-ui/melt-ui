@@ -42,13 +42,13 @@
 		place-items: center;
 		align-items: center;
 
-		background-color: theme('colors.neutral.100');
-		color: theme('colors.neutral.400');
-		line-height: theme('lineHeight.4');
+		/*		background-color: _Theme('colors.neutral.100');*/
+		/*		color: _Theme('colors.neutral.400');*/
+		/*		line-height: _Theme('lineHeight.4');*/
 		outline: none;
 
-		height: theme('height.12');
-		width: theme('width.12');
+		/*		height: _Theme('height.12');*/
+		/*		width: _Theme('width.12');*/
 
 		position: relative;
 
@@ -62,8 +62,8 @@
 			content: '';
 			width: 0.25rem;
 			height: 0.25rem;
-			border-radius: theme('borderRadius.full');
-			background-color: theme('colors.magnum.400');
+			/*			border-radius: _Theme('borderRadius.full');*/
+			/*			background-color: _Theme('colors.magnum.400');*/
 			opacity: 0;
 			@apply transition;
 		}
@@ -88,7 +88,7 @@
 	}
 
 	.toggle-item[data-state='on'] {
-		background-color: theme('colors.white');
-		color: theme('colors.magnum.800');
+		/*		background-color: _Theme('colors.white');*/
+		/*		color: _Theme('colors.magnum.800');*/
 	}
 </style>

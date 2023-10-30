@@ -117,15 +117,15 @@
 		user-select: none;
 
 		border-radius: 0;
-		background-color: theme(colors.neutral.100);
+		/*		background-color: _Theme(colors.neutral.100);*/
 
-		color: theme(colors.neutral.900);
+		/*		color: _Theme(colors.neutral.900);*/
 		font-weight: 500;
 		line-height: 1;
 
 		flex: 1;
-		height: theme(spacing.12);
-		padding-inline: theme(spacing.2);
+		/*		height: _Theme(spacing.12);*/
+		/*		padding-inline: _Theme(spacing.2);*/
 
 		&:focus {
 			position: relative;
@@ -138,37 +138,37 @@
 		&[data-state='active'] {
 			@apply focus:relative;
 			background-color: white;
-			color: theme('colors.magnum.900');
+			/*			color: _Theme('colors.magnum.900');*/
 		}
 	}
 
 	input {
-		height: theme(spacing.8);
+		/*		height: _Theme(spacing.8);*/
 		flex-shrink: 0;
 		flex-grow: 1;
-		border-radius: theme(borderRadius.md);
-		border: 1px solid theme(colors.neutral.200);
-		padding-inline: theme(spacing[2.5]);
+		/*		border-radius: _Theme(borderRadius.md);*/
+		/*		border: 1px solid _Theme(colors.neutral.200);*/
+		/*		padding-inline: _Theme(spacing[2.5]);*/
 		line-height: 1;
-		color: theme(colors.neutral.900);
+		/*		color: _Theme(colors.neutral.900);*/
 
 		&:focus {
-			border-color: theme(colors.magnum.400);
+			/*			border-color: _Theme(colors.magnum.400);*/
 		}
 	}
 
 	.save {
 		display: inline-flex;
-		height: theme(spacing.8);
+		/*		height: _Theme(spacing.8);*/
 		cursor: default;
 		align-items: center;
 		justify-content: center;
-		border-radius: theme(borderRadius.md);
-		background-color: theme(colors.magnum.200);
-		padding-inline: theme(spacing.4);
+		/*		border-radius: _Theme(borderRadius.md);*/
+		/*		background-color: _Theme(colors.magnum.200);*/
+		/*		padding-inline: _Theme(spacing.4);*/
 		line-height: 1;
-		font-weight: theme(fontWeight.semibold);
-		color: theme(colors.magnum.900);
+		/*		font-weight: _Theme(fontWeight.semibold);*/
+		/*		color: _Theme(colors.magnum.900);*/
 		@apply transition;
 
 		&:hover {

@@ -44,8 +44,7 @@
 			inset: 0;
 			background-image: radial-gradient(
 				circle at 1px 1px,
-				theme('colors.magnum.700/0.25') 1px,
-				transparent 0
+				/*				_Theme('colors.magnum.700/0.25') 1px,*/ transparent 0
 			);
 			background-size: 1rem 1rem;
 			background-repeat: repeat;
@@ -60,8 +59,7 @@
 			inset: 0;
 			background-image: radial-gradient(
 				circle at 1px 1px,
-				theme('colors.neutral.800/0.5') 1px,
-				transparent 0
+				/*				_Theme('colors.neutral.800/0.5') 1px,*/ transparent 0
 			);
 			background-size: 1rem 1rem;
 			background-repeat: repeat;

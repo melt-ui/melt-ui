@@ -97,8 +97,7 @@
 	.dotted-bg {
 		background-image: radial-gradient(
 			circle at 1px 1px,
-			theme('colors.magnum.200/0.25') 2px,
-			transparent 0
+			/*			_Theme('colors.magnum.200/0.25') 2px,*/ transparent 0
 		);
 		background-size: 1.5rem 1.5rem;
 		background-repeat: repeat;
@@ -110,7 +109,7 @@
 			position: absolute;
 			content: '';
 			inset: 0;
-			background: linear-gradient(to bottom, theme('colors.neutral.900') 0%, transparent 25%);
+			/*			background: linear-gradient(to bottom, _Theme('colors.neutral.900') 0%, transparent 25%);*/
 		}
 	}
 </style>

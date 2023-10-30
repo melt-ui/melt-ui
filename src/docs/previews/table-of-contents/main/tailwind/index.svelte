@@ -120,16 +120,16 @@
 
 	.hide-heading {
 		display: inline-flex;
-		height: theme(spacing.8);
+		/*		height: _Theme(spacing.8);*/
 		cursor: default;
 		align-items: center;
 		justify-content: center;
-		border-radius: theme(borderRadius.md);
-		background-color: theme(colors.magnum.200);
-		padding-inline: theme(spacing.4);
+		/*		border-radius: _Theme(borderRadius.md);*/
+		/*		background-color: _Theme(colors.magnum.200);*/
+		/*		padding-inline: _Theme(spacing.4);*/
 		line-height: 1;
-		font-weight: theme(fontWeight.semibold);
-		color: theme(colors.magnum.900);
+		/*		font-weight: _Theme(fontWeight.semibold);*/
+		/*		color: _Theme(colors.magnum.900);*/
 		@apply transition;
 
 		&:hover {

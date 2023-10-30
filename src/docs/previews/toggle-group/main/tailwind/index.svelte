@@ -43,17 +43,17 @@
 		place-items: center;
 		align-items: center;
 
-		background-color: theme('colors.white');
-		color: theme('colors.magnum.800');
-		font-size: theme('fontSize.base');
-		line-height: theme('lineHeight.4');
+		/*		background-color: _Theme('colors.white');*/
+		/*		color: _Theme('colors.magnum.800');*/
+		/*		font-size: _Theme('fontSize.base');*/
+		/*		line-height: _Theme('lineHeight.4');*/
 		outline: none;
 
-		height: theme('height.9');
-		width: theme('width.9');
+		/*		height: _Theme('height.9');*/
+		/*		width: _Theme('width.9');*/
 
 		&:hover {
-			background-color: theme('colors.magnum.100');
+			/*			background-color: _Theme('colors.magnum.100');*/
 		}
 
 		&:focus {

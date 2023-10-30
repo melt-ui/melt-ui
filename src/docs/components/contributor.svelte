@@ -79,9 +79,9 @@
 		width: var(--size);
 		height: var(--size);
 
-		background: theme('colors.neutral.900');
+		/*		background: _Theme('colors.neutral.900');*/
 		border-radius: 100%;
-		border: 2px solid theme('colors.neutral.900');
+		/*		border: 2px solid _Theme('colors.neutral.900');*/
 
 		display: grid;
 		place-items: center;
@@ -96,8 +96,8 @@
 		.fallback {
 			font-size: 1.25rem;
 			font-weight: 600;
-			background-color: theme('colors.neutral.700');
-			color: theme('colors.magnum.300');
+			/*			background-color: _Theme('colors.neutral.700');*/
+			/*			color: _Theme('colors.magnum.300');*/
 
 			width: 100%;
 			height: 100%;

@@ -73,10 +73,10 @@
 <style lang="postcss">
 	.check {
 		position: absolute;
-		left: theme(spacing.2);
+		/*		left: _Theme(spacing.2);*/
 		top: 50%;
-		z-index: theme(zIndex.20);
+		/*		z-index: _Theme(zIndex.20);*/
 		translate: 0 calc(-50% + 1px);
-		color: theme(colors.magnum.500);
+		/*		color: _Theme(colors.magnum.500);*/
 	}
 </style>

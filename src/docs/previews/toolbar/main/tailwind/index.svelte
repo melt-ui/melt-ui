@@ -76,16 +76,16 @@
 
 <style lang="postcss">
 	.item {
-		padding: theme('spacing.1');
-		border-radius: theme('borderRadius.md');
+		/*		padding: _Theme('spacing.1');*/
+		/*		border-radius: _Theme('borderRadius.md');*/
 
 		&:hover {
-			background-color: theme('colors.magnum.100');
+			/*			background-color: _Theme('colors.magnum.100');*/
 		}
 
 		&[data-state='on'] {
-			background-color: theme('colors.magnum.200');
-			color: theme('colors.magnum.900');
+			/*			background-color: _Theme('colors.magnum.200');*/
+			/*			color: _Theme('colors.magnum.900');*/
 		}
 
 		&:focus {
@@ -95,7 +95,7 @@
 
 	.separator {
 		width: 1px;
-		background-color: theme('colors.neutral.300');
+		/*		background-color: _Theme('colors.neutral.300');*/
 		align-self: stretch;
 	}
 </style>

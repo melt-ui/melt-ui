@@ -82,6 +82,6 @@
 
 <style lang="postcss">
 	.content {
-		box-shadow: inset 0px 1px 0px theme('colors.neutral.300');
+		/*		box-shadow: inset 0px 1px 0px _Theme('colors.neutral.300');*/
 	}
 </style>
