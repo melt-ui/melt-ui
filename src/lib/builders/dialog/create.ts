@@ -10,7 +10,7 @@ import {
 	createElHelpers,
 	effect,
 	executeCallbacks,
-	generateId,
+	generateIds,
 	getPortalDestination,
 	isBrowser,
 	isHTMLElement,
@@ -71,12 +71,7 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
-	const ids = {
-		content: generateId(),
-		title: generateId(),
-		description: generateId(),
-		trigger: generateId(),
-	};
+	const ids = generateIds('content', 'title', 'description', 'trigger');
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
