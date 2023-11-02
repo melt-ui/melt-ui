@@ -12,6 +12,7 @@ import {
 	executeCallbacks,
 	generateIds,
 	getPortalDestination,
+	handleFocus,
 	isBrowser,
 	isHTMLElement,
 	kbd,
@@ -22,10 +23,9 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
-	handleFocus,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { onMount, tick } from 'svelte';
+import { tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';
@@ -71,7 +71,7 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
-	const ids = generateIds('content', 'title', 'description', 'trigger');
+	const ids = generateIds('content', 'title', 'description');
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
@@ -89,16 +89,12 @@ export function createDialog(props?: CreateDialogProps) {
 
 	function handleClose() {
 		open.set(false);
-		const triggerEl = document.getElementById(ids.trigger);
+
 		handleFocus({
 			prop: get(closeFocus),
-			defaultEl: triggerEl,
+			defaultEl: get(activeTrigger),
 		});
 	}
-
-	onMount(() => {
-		activeTrigger.set(document.getElementById(ids.trigger));
-	});
 
 	effect([open], ([$open]) => {
 		// Prevent double clicks from closing multiple dialogs
@@ -118,7 +114,6 @@ export function createDialog(props?: CreateDialogProps) {
 		stores: open,
 		returned: ($open) => {
 			return {
-				id: ids.trigger,
 				'aria-haspopup': 'dialog',
 				'aria-expanded': $open,
 				'aria-controls': ids.content,
