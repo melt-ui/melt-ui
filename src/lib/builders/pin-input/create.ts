@@ -20,7 +20,7 @@ import { tick } from 'svelte';
 import { derived, get, readonly, writable } from 'svelte/store';
 import type { PinInputEvents } from './events.js';
 import type { CreatePinInputProps } from './types.js';
-import { generateDefaultIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id';
 
 const { name, selector } = createElHelpers<'input' | 'hidden-input'>('pin-input');
 
@@ -59,7 +59,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 	const valueStr = derived(value, (v) => v.join(''));
 
-	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
+	const ids = { ...generateIds(idParts), ...withDefaults.ids };
 
 	const root = builder(name(), {
 		stores: value,

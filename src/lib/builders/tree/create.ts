@@ -17,7 +17,7 @@ import { derived, writable, type Writable } from 'svelte/store';
 
 import type { TreeEvents } from './events';
 import type { CreateTreeViewProps, TreeParts } from './types';
-import { generateDefaultIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id';
 
 const defaults = {
 	forceVisible: false,
@@ -70,7 +70,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 		return (itemId: string) => $expanded.includes(itemId);
 	});
 
-	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
+	const ids = { ...generateIds(idParts), ...withDefaults.ids };
 
 	const rootTree = builder(name(), {
 		returned: () => {

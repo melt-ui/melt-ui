@@ -24,7 +24,7 @@ import { get, writable } from 'svelte/store';
 import { executeCallbacks } from '../../internal/helpers/callbacks.js';
 import type { PopoverEvents } from './events.js';
 import type { CreatePopoverProps } from './types.js';
-import { generateDefaultIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id';
 
 const defaults = {
 	positioning: {
@@ -71,7 +71,7 @@ export function createPopover(args?: CreatePopoverProps) {
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
-	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
+	const ids = { ...generateIds(idParts), ...withDefaults.ids };
 
 	onMount(() => {
 		activeTrigger.set(document.getElementById(ids.trigger));

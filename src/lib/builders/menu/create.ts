@@ -14,7 +14,7 @@ import {
 	disabledAttr,
 	effect,
 	executeCallbacks,
-	generateDefaultIds,
+	generateIds,
 	getNextFocusable,
 	getPortalDestination,
 	getPreviousFocusable,
@@ -139,7 +139,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
 
-	const rootIds = { ...generateDefaultIds(idParts), ...opts.ids };
+	const rootIds = { ...generateIds(idParts), ...opts.ids };
 
 	const isVisible = derivedVisible({
 		open: rootOpen,
@@ -650,7 +650,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const subOpenTimer = writable<number | null>(null);
 		const pointerGraceTimer = writable(0);
 
-		const subIds = { ...generateDefaultIds(idParts), ...withDefaults.ids };
+		const subIds = { ...generateIds(idParts), ...withDefaults.ids };
 
 		onMount(() => {
 			/**

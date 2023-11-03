@@ -23,7 +23,7 @@ import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable, type Writable } from 'svelte/store';
 import type { TooltipEvents } from './events.js';
 import type { CreateTooltipProps } from './types.js';
-import { generateDefaultIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id';
 
 const defaults = {
 	positioning: {
@@ -73,7 +73,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 	type OpenReason = 'pointer' | 'focus';
 	const openReason = writable<null | OpenReason>(null);
 
-	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
+	const ids = { ...generateIds(idParts), ...withDefaults.ids };
 
 	let clickedTrigger = false;
 

@@ -21,7 +21,7 @@ import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable } from 'svelte/store';
 import type { SliderEvents } from './events.js';
 import type { CreateSliderProps } from './types.js';
-import { generateDefaultIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id';
 
 const defaults = {
 	defaultValue: [],
@@ -52,7 +52,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const currentThumbIndex = writable<number>(0);
 	const activeThumb = writable<{ thumb: HTMLElement; index: number } | null>(null);
 
-	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
+	const ids = { ...generateIds(idParts), ...withDefaults.ids };
 
 	const root = builder(name(), {
 		stores: [disabled, orientation],

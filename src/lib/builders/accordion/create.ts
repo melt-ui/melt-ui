@@ -13,7 +13,7 @@ import {
 	toWritableStores,
 	type ChangeFn,
 	disabledAttr,
-	generateDefaultIds,
+	generateIds,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
@@ -41,7 +41,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 		omit(withDefaults, 'value', 'onValueChange', 'defaultValue', 'ids')
 	);
 
-	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
+	const ids = { ...generateIds(idParts), ...withDefaults.ids };
 
 	const { disabled, forceVisible } = options;
 

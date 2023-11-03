@@ -24,7 +24,7 @@ import { onMount } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
 import type { LinkPreviewEvents } from './events.js';
 import type { CreateLinkPreviewProps } from './types.js';
-import { generateDefaultIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id';
 import { omit } from '../../internal/helpers/object';
 
 type LinkPreviewParts = 'trigger' | 'content' | 'arrow';
@@ -73,7 +73,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		closeOnEscape,
 	} = options;
 
-	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
+	const ids = { ...generateIds(idParts), ...withDefaults.ids };
 	let timeout: number | null = null;
 	let originalBodyUserSelect: string;
 

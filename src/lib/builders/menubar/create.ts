@@ -38,7 +38,7 @@ import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { CreateMenubarMenuProps, CreateMenubarProps } from './types.js';
 import type { MenubarEvents } from './events.js';
 import { omit } from '../../internal/helpers/object';
-import { generateDefaultIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id';
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
 
@@ -65,7 +65,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 	const closeTimer = writable(0);
 	let scrollRemoved = false;
 
-	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
+	const ids = { ...generateIds(idParts), ...withDefaults.ids };
 
 	const menubar = builder(name(), {
 		returned() {

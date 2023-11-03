@@ -41,7 +41,7 @@ import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
 import { createLabel } from '../label/create.js';
 import type { ListboxEvents } from './events.js';
-import { generateDefaultIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id';
 import type {
 	CreateListboxProps,
 	ListboxOption,
@@ -132,7 +132,7 @@ export function createListbox<
 	} = options;
 	const { name, selector } = createElHelpers(withDefaults.builder);
 
-	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
+	const ids = { ...generateIds(idParts), ...withDefaults.ids };
 
 	const { handleTypeaheadSearch } = createTypeaheadSearch({
 		onMatch: (element) => {

@@ -21,7 +21,7 @@ import { focusInput, highlightText, setSelectedFromEl } from './helpers.js';
 import type { CreateTagsInputProps, Tag, TagProps } from './types.js';
 import { tick } from 'svelte';
 import type { TagsInputEvents } from './events.js';
-import { generateDefaultIds } from '../../internal/helpers/id';
+import { generateIds } from '../../internal/helpers/id';
 
 const defaults = {
 	placeholder: '',
@@ -50,7 +50,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateTagsInputProps;
 
 	// UUID for specific containers
-	const ids = { ...generateDefaultIds(idParts), ...withDefaults.ids };
+	const ids = { ...generateIds(idParts), ...withDefaults.ids };
 
 	const options = toWritableStores(omit(withDefaults, 'tags', 'ids'));
 	const {

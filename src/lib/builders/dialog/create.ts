@@ -22,7 +22,7 @@ import {
 	styleToString,
 	toWritableStores,
 	handleFocus,
-	generateDefaultIds,
+	generateIds,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
@@ -77,7 +77,7 @@ export function createDialog(props?: CreateDialogProps) {
 	const activeTrigger = writable<HTMLElement | null>(null);
 
 	const ids = {
-		...generateDefaultIds(idParts),
+		...generateIds(idParts),
 		...withDefaults.ids,
 	};
 
