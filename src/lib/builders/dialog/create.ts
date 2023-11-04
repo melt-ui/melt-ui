@@ -123,13 +123,13 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const trigger = builder(name('trigger'), {
-		stores: open,
-		returned: ($open) => {
+		stores: [open, ids.trigger, ids.content],
+		returned: ([$open, $triggerId, $contentId]) => {
 			return {
-				id: ids.trigger,
+				id: $triggerId,
 				'aria-haspopup': 'dialog',
 				'aria-expanded': $open,
-				'aria-controls': ids.content,
+				'aria-controls': $contentId,
 				type: 'button',
 			} as const;
 		},
@@ -187,13 +187,13 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const content = builder(name('content'), {
-		stores: [isVisible],
-		returned: ([$isVisible]) => {
+		stores: [isVisible, ids.content, ids.description, ids.title],
+		returned: ([$isVisible, $contentId, $descriptionId, $titleId]) => {
 			return {
-				id: ids.content,
+				id: $contentId,
 				role: get(role),
-				'aria-describedby': ids.description,
-				'aria-labelledby': ids.title,
+				'aria-describedby': $descriptionId,
+				'aria-labelledby': $titleId,
 				'data-state': $isVisible ? 'open' : 'closed',
 				tabindex: -1,
 				hidden: $isVisible ? undefined : true,
@@ -299,14 +299,16 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const title = builder(name('title'), {
-		returned: () => ({
-			id: ids.title,
+		stores: [ids.title],
+		returned: ([$titleId]) => ({
+			id: $titleId,
 		}),
 	});
 
 	const description = builder(name('description'), {
-		returned: () => ({
-			id: ids.description,
+		stores: [ids.description],
+		returned: ([$descriptionId]) => ({
+			id: $descriptionId,
 		}),
 	});
 

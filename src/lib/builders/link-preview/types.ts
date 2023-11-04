@@ -1,8 +1,8 @@
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
-import type { BuilderReturn, Expand } from '$lib/internal/types.js';
+import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
+import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { LinkPreviewIdParts, createLinkPreview } from './create.js';
-import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 export type { LinkPreviewComponentEvents } from './events.js';
 export type CreateLinkPreviewProps = {
 	/**
@@ -92,7 +92,7 @@ export type CreateLinkPreviewProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Expand<IdObj<LinkPreviewIdParts>>;
+	ids?: IdObj<LinkPreviewIdParts>;
 };
 
 export type LinkPreview = BuilderReturn<typeof createLinkPreview>;

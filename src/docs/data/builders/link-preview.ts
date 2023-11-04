@@ -1,5 +1,6 @@
 import { ATTRS, PROPS } from '$docs/constants.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { linkPreviewIdParts } from '$lib';
 import { linkPreviewEvents } from '$lib/builders/link-preview/events.js';
 import type { BuilderData } from './index.js';
 import { getMenuArrowSchema } from './menu.js';
@@ -31,18 +32,9 @@ const OPTION_PROPS = [
 const BUILDER_NAME = 'link preview';
 
 const builder = builderSchema(BUILDER_NAME, {
+	ids: linkPreviewIdParts,
 	title: 'createLinkPreview',
-	props: [
-		...OPTION_PROPS,
-		PROPS.DEFAULT_OPEN,
-		PROPS.OPEN,
-		PROPS.ON_OPEN_CHANGE,
-		{
-			name: 'ids',
-			type: 'Record<"content" | "trigger", string>',
-			description: 'Override the internally generated ids for the elements.',
-		},
-	],
+	props: [...OPTION_PROPS, PROPS.DEFAULT_OPEN, PROPS.OPEN, PROPS.ON_OPEN_CHANGE],
 	elements: [
 		{
 			name: 'trigger',
