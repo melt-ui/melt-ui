@@ -18,6 +18,7 @@ import {
 	getNextFocusable,
 	getPortalDestination,
 	getPreviousFocusable,
+	handleFocus,
 	handleRovingFocus,
 	isBrowser,
 	isElementDisabled,
@@ -83,6 +84,9 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		portal,
 		forceVisible,
 		typeahead,
+		loop,
+		closeFocus,
+		disableFocusFirstItem,
 	} = opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
@@ -208,7 +212,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 					if (!isKeyDownInside) return;
 					if (FIRST_LAST_KEYS.includes(e.key)) {
-						handleMenuNavigation(e);
+						handleMenuNavigation(e, get(loop) ?? false);
 					}
 
 					/**
@@ -546,7 +550,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 						if (e.defaultPrevented) {
 							if (!isHTMLElement(itemEl)) return;
-
 							handleRovingFocus(itemEl);
 							return;
 						}
@@ -636,8 +639,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	const createSubmenu = (args?: _CreateSubmenuProps) => {
 		const withDefaults = { ...subMenuDefaults, ...args } satisfies _CreateSubmenuProps;
 
-		const subOpen = writable(false);
-
+		const subOpenWritable = withDefaults.open ?? writable(false);
+		const subOpen = overridable(subOpenWritable, withDefaults?.onOpenChange);
 		// options
 		const options = toWritableStores(withDefaults);
 
@@ -681,6 +684,9 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					id: subIds.menu,
 					'aria-labelledby': subIds.trigger,
 					'data-state': $subIsVisible ? 'open' : 'closed',
+					// unit tests fail on `.closest` if the id starts with a number
+					// so using a data attribute
+					'data-id': subIds.menu,
 					tabindex: -1,
 				} as const;
 			},
@@ -705,6 +711,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 									portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
 									clickOutside: null,
 									focusTrap: null,
+									escapeKeydown: null,
 								},
 							});
 
@@ -733,7 +740,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						if (FIRST_LAST_KEYS.includes(e.key)) {
 							// prevent events from bubbling
 							e.stopImmediatePropagation();
-							handleMenuNavigation(e);
+							handleMenuNavigation(e, get(loop) ?? false);
 							return;
 						}
 
@@ -870,7 +877,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							if (!isHTMLElement(menuEl)) return;
 
 							const firstItem = getMenuItems(menuEl)[0];
-
 							handleRovingFocus(firstItem);
 						}
 					}),
@@ -882,8 +888,9 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
-
-						handleRovingFocus(triggerEl);
+						if (!isFocusWithinSubmenu(subIds.menu)) {
+							handleRovingFocus(triggerEl);
+						}
 
 						const openTimer = get(subOpenTimer);
 						if (!get(subOpen) && !openTimer && !isElementDisabled(triggerEl)) {
@@ -1101,14 +1108,24 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				unsubs.push(removeScroll());
 			}
 
-			if (!$rootOpen && $rootActiveTrigger) {
-				handleRovingFocus($rootActiveTrigger);
+			const $closeFocus = get(closeFocus);
+
+			if (!$rootOpen) {
+				if ($rootActiveTrigger) {
+					// If we already have a reference to the trigger, focus it
+					handleFocus({ prop: $closeFocus, defaultEl: $rootActiveTrigger });
+				} else {
+					// otherwise we'll get the trigger el and focus it
+					handleFocus({ prop: $closeFocus, defaultEl: document.getElementById(rootIds.trigger) });
+				}
 			}
 
+			// if the menu is open, we'll sleep for a sec so the menu can render
+			// before we focus on either the first item or the menu itself.
 			sleep(1).then(() => {
 				const menuEl = document.getElementById(rootIds.menu);
 				if (menuEl && $rootOpen && get(isUsingKeyboard)) {
-					if (opts.disableFocusFirstItem) {
+					if (get(disableFocusFirstItem)) {
 						handleRovingFocus(menuEl);
 						return;
 					}
@@ -1118,16 +1135,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 					// Focus on first menu item
 					handleRovingFocus(menuItems[0]);
-				} else if ($rootActiveTrigger) {
-					// Focus on active trigger trigger
-					handleRovingFocus($rootActiveTrigger);
-				} else {
-					if (opts.disableTriggerRefocus) {
-						return;
-					}
-					const triggerEl = document.getElementById(rootIds.trigger);
-					if (!triggerEl) return;
-					handleRovingFocus(triggerEl);
 				}
 			});
 
@@ -1143,7 +1150,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const handlePointer = () => isUsingKeyboard.set(false);
 		const handleKeyDown = (e: KeyboardEvent) => {
 			isUsingKeyboard.set(true);
-			if (e.key === kbd.ESCAPE && $rootOpen) {
+			if (e.key === kbd.ESCAPE && $rootOpen && get(closeOnEscape)) {
 				rootOpen.set(false);
 				return;
 			}
@@ -1216,7 +1223,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 		const parentMenuEl = getParentMenu(target);
 		if (!parentMenuEl) return;
-
 		handleRovingFocus(parentMenuEl);
 	}
 
@@ -1343,14 +1349,14 @@ export function handleTabNavigation(
 		const $prevFocusable = get(prevFocusable);
 		if ($prevFocusable) {
 			e.preventDefault();
-			$prevFocusable.focus();
+			sleep(1).then(() => $prevFocusable.focus());
 			prevFocusable.set(null);
 		}
 	} else {
 		const $nextFocusable = get(nextFocusable);
 		if ($nextFocusable) {
 			e.preventDefault();
-			$nextFocusable.focus();
+			sleep(1).then(() => $nextFocusable.focus());
 			nextFocusable.set(null);
 		}
 	}
@@ -1412,7 +1418,7 @@ export function setMeltMenuAttribute(element: HTMLElement | null, selector: Sele
  * Keyboard event handler for menu navigation
  * @param e The keyboard event
  */
-export function handleMenuNavigation(e: KeyboardEvent) {
+export function handleMenuNavigation(e: KeyboardEvent, loop?: boolean) {
 	e.preventDefault();
 
 	// currently focused menu item
@@ -1441,11 +1447,19 @@ export function handleMenuNavigation(e: KeyboardEvent) {
 	let nextIndex: number;
 	switch (e.key) {
 		case kbd.ARROW_DOWN:
-			nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : currentIndex;
+			if (loop) {
+				nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : 0;
+			} else {
+				nextIndex = currentIndex < candidateNodes.length - 1 ? currentIndex + 1 : currentIndex;
+			}
 			break;
 		case kbd.ARROW_UP:
-			nextIndex =
-				currentIndex < 0 ? candidateNodes.length - 1 : currentIndex > 0 ? currentIndex - 1 : 0;
+			if (loop) {
+				nextIndex = currentIndex > 0 ? currentIndex - 1 : candidateNodes.length - 1;
+			} else {
+				nextIndex =
+					currentIndex < 0 ? candidateNodes.length - 1 : currentIndex > 0 ? currentIndex - 1 : 0;
+			}
 			break;
 		case kbd.HOME:
 			nextIndex = 0;
@@ -1456,7 +1470,6 @@ export function handleMenuNavigation(e: KeyboardEvent) {
 		default:
 			return;
 	}
-
 	handleRovingFocus(candidateNodes[nextIndex]);
 }
 
@@ -1491,4 +1504,13 @@ function isPointInPolygon(point: Point, polygon: Polygon) {
 	}
 
 	return inside;
+}
+
+function isFocusWithinSubmenu(submenuId: string) {
+	const activeEl = document.activeElement;
+	if (!isHTMLElement(activeEl)) return false;
+	// unit tests don't allow `.closest(#id)` to start with a number
+	// so we're using a data attribute.
+	const submenuEl = activeEl.closest(`[data-id="${submenuId}"]`);
+	return isHTMLElement(submenuEl);
 }

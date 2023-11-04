@@ -23,3 +23,4 @@ export * from './rovingFocus.js';
 export * from './typeahead.js';
 export * from './elements.js';
 export * from './ignore.js';
+export * from './focus.js';

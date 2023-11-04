@@ -10,12 +10,9 @@
 
 <form>
 	<div>
-		<label use:root for={inputId}>
-			<span
-				>Test
-				<span>*</span>
-			</span>
-			<input type="text" id={inputId} />
+		<label use:root for={inputId} data-testid="label">
+			<span>Test</span>
+			<input type="text" id={inputId} data-testid="input" />
 		</label>
 	</div>
 </form>

@@ -1,151 +1,179 @@
-import { render, screen } from '@testing-library/svelte';
+import { render, waitFor } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
 import { describe, it } from 'vitest';
 import DialogTest from './DialogTest.svelte';
 import userEvent from '@testing-library/user-event';
 import { sleep } from '$lib/internal/helpers/index.js';
-import { kbd } from '$lib/internal/helpers/index.js';
+import { testKbd as kbd } from '../utils';
+import type { CreateDialogProps } from '$lib';
+
+function setup(props: CreateDialogProps = {}) {
+	const user = userEvent.setup();
+	const returned = render(DialogTest, props);
+	const trigger = returned.getByTestId('trigger');
+	return {
+		trigger,
+		user,
+		...returned,
+	};
+}
 
 describe('Dialog', () => {
 	it('No accessibility violations', async () => {
-		const { container } = await render(DialogTest);
+		const { container } = render(DialogTest);
 
 		expect(await axe(container)).toHaveNoViolations();
 	});
 
 	it('Opens when trigger is clicked', async () => {
-		await render(DialogTest);
+		const { getByTestId, user, trigger } = setup();
+		const content = getByTestId('content');
 
-		const trigger = screen.getByTestId('trigger');
-		const content = screen.getByTestId('content');
-
-		await expect(content).not.toBeVisible();
-		await userEvent.click(trigger);
+		expect(content).not.toBeVisible();
+		await user.click(trigger);
 		const now = performance.now();
-		await expect(content).toBeVisible();
+		expect(content).toBeVisible();
 		const elapsed = performance.now() - now;
 		expect(elapsed).toBeLessThan(10);
 	});
 
 	it('Closes when closer is clicked', async () => {
-		await render(DialogTest);
+		const { getByTestId, user, trigger } = setup();
+		const closer = getByTestId('closer');
+		const content = getByTestId('content');
 
-		const user = userEvent.setup();
-		const trigger = screen.getByTestId('trigger');
-		const closer = screen.getByTestId('closer');
-		const content = screen.getByTestId('content');
-
-		await expect(trigger).toBeVisible();
-		await expect(content).not.toBeVisible();
+		expect(trigger).toBeVisible();
+		expect(content).not.toBeVisible();
 		await user.click(trigger);
-		await expect(content).toBeVisible();
+		expect(content).toBeVisible();
 		await user.click(closer);
-		await expect(content).not.toBeVisible();
+		expect(content).not.toBeVisible();
 	});
 
 	it('Closes when Escape is hit', async () => {
-		await render(DialogTest);
+		const { getByTestId, user, trigger } = setup();
+		const content = getByTestId('content');
 
-		const user = userEvent.setup();
-		const trigger = screen.getByTestId('trigger');
-		const content = screen.getByTestId('content');
-
-		await expect(trigger).toBeVisible();
-		await expect(content).not.toBeVisible();
+		expect(trigger).toBeVisible();
+		expect(content).not.toBeVisible();
 		await user.click(trigger);
-		await expect(content).toBeVisible();
-		await user.keyboard(`{${kbd.ESCAPE}}`);
-		await expect(content).not.toBeVisible();
+		expect(content).toBeVisible();
+		await user.keyboard(kbd.ESCAPE);
+		expect(content).not.toBeVisible();
 	});
 
 	it('Closes when overlay is clicked', async () => {
-		await render(DialogTest);
+		const { getByTestId, user, trigger } = setup();
+		const overlay = getByTestId('overlay');
+		const content = getByTestId('content');
 
-		const user = userEvent.setup();
-		const trigger = screen.getByTestId('trigger');
-		const overlay = screen.getByTestId('overlay');
-		const content = screen.getByTestId('content');
-
-		await expect(trigger).toBeVisible();
-		await expect(content).not.toBeVisible();
+		expect(trigger).toBeVisible();
+		expect(content).not.toBeVisible();
 		await user.click(trigger);
-		await expect(content).toBeVisible();
+		expect(content).toBeVisible();
 		await sleep(100);
-		await expect(overlay).toBeVisible();
+		expect(overlay).toBeVisible();
 		await user.click(overlay);
-		await sleep(100);
-		await expect(content).not.toBeVisible();
+		expect(content).not.toBeVisible();
 	});
 
 	it('Portalled el attaches dialog to body', async () => {
-		await render(DialogTest);
-
-		const user = userEvent.setup();
-		const trigger = screen.getByTestId('trigger');
+		const { getByTestId, user, trigger } = setup();
 		await user.click(trigger);
 
-		const portalled = screen.getByTestId('portalled');
+		const portalled = getByTestId('portalled');
 
-		await expect(portalled.parentElement).toEqual(document.body);
+		expect(portalled.parentElement).toEqual(document.body);
+	});
+
+	it('Attaches portal el to the portal target if prop provided', async () => {
+		const { getByTestId, user, trigger } = setup({
+			portal: '#portal-target',
+		});
+		await user.click(trigger);
+		const portalled = getByTestId('portalled');
+		const portalTarget = getByTestId('portal-target');
+
+		expect(portalled.parentElement).toEqual(portalTarget);
+	});
+
+	it('Does not portal if `null` is passed as portal prop', async () => {
+		const { getByTestId, user, trigger } = setup({
+			portal: null,
+		});
+		await user.click(trigger);
+		const portalled = getByTestId('portalled');
+		const main = getByTestId('main');
+
+		expect(portalled.parentElement).toEqual(main);
 	});
 
 	it('Focuses first focusable item upon opening', async () => {
-		await render(DialogTest);
+		const { getByTestId, user, trigger } = setup();
+		const content = getByTestId('content');
 
-		const user = userEvent.setup();
-		const trigger = screen.getByTestId('trigger');
-		const content = screen.getByTestId('content');
-
-		await expect(trigger).toBeVisible();
-		await expect(content).not.toBeVisible();
+		expect(trigger).toBeVisible();
+		expect(content).not.toBeVisible();
 		await user.click(trigger);
-		await expect(content).toBeVisible();
+		expect(content).toBeVisible();
 		// Testing focus-trap is a bit flaky. So the focusable element is
 		// always content here.
-		await expect(document.activeElement).toBe(content);
+		expect(document.activeElement).toBe(content);
 	});
 
 	it('Tabbing on last item focuses first item', async () => {
-		await render(DialogTest);
+		const { getByTestId, user, trigger } = setup();
+		const content = getByTestId('content');
 
-		const user = userEvent.setup();
-		const trigger = screen.getByTestId('trigger');
-		const content = screen.getByTestId('content');
-
-		await expect(trigger).toBeVisible();
-		await expect(content).not.toBeVisible();
+		expect(trigger).toBeVisible();
+		expect(content).not.toBeVisible();
 		await user.click(trigger);
-		await expect(content).toBeVisible();
+		expect(content).toBeVisible();
 		// Testing focus-trap is a bit flaky. So the focusable element is
 		// always content here.
-		await expect(document.activeElement).toBe(content);
+		expect(document.activeElement).toBe(content);
 		await user.tab();
-		await expect(document.activeElement).toBe(content);
+		expect(document.activeElement).toBe(content);
 	});
 
-	it("Doesn't close when cliking content", async () => {
-		await render(DialogTest);
+	it("Doesn't close when clicking content", async () => {
+		const { getByTestId, user, trigger } = setup();
+		const content = getByTestId('content');
+		const closer = getByTestId('closer');
 
-		const user = userEvent.setup();
-		const trigger = screen.getByTestId('trigger');
-		const content = screen.getByTestId('content');
-		const closer = screen.getByTestId('closer');
-
-		await expect(trigger).toBeVisible();
-		await expect(content).not.toBeVisible();
+		expect(trigger).toBeVisible();
+		expect(content).not.toBeVisible();
 		await user.click(trigger);
-		await expect(content).toBeVisible();
+		expect(content).toBeVisible();
 		await user.click(content);
-		await expect(content).toBeVisible();
+		expect(content).toBeVisible();
 
 		// Close
 		await user.click(closer);
-		await expect(content).not.toBeVisible();
+		expect(content).not.toBeVisible();
 
 		// Open again to retest
 		await user.click(trigger);
-		await expect(content).toBeVisible();
+		expect(content).toBeVisible();
 		await user.click(content);
-		await expect(content).toBeVisible();
+		expect(content).toBeVisible();
+	});
+
+	it('Respects the `openFocus` prop', async () => {
+		const { getByTestId, user, trigger } = setup({
+			openFocus: () => document.getElementById('openFocus'),
+		});
+
+		await user.click(trigger);
+		await waitFor(() => expect(getByTestId('openFocus')).toHaveFocus());
+	});
+
+	it('Respects the `closeFocus` prop', async () => {
+		const { getByTestId, user, trigger } = setup({
+			closeFocus: () => document.getElementById('closeFocus'),
+		});
+		await user.click(trigger);
+		await user.keyboard(kbd.ESCAPE);
+		await waitFor(() => expect(getByTestId('closeFocus')).toHaveFocus());
 	});
 });

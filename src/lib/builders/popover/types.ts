@@ -1,5 +1,5 @@
-import type { FloatingConfig, FocusTrapConfig } from '$lib/internal/actions/index.js';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
+import type { FloatingConfig } from '$lib/internal/actions/index.js';
+import type { ChangeFn, FocusProp } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
 import type { createPopover } from './create.js';
 import type { BuilderReturn, IdObj } from '$lib/internal/types.js';
@@ -85,24 +85,18 @@ export type CreatePopoverProps = {
 	forceVisible?: boolean;
 
 	/**
-	 * Options used to configure the focus trap behaviour.
-	 *
-	 * @see https://github.com/focus-trap/focus-trap#createoptions
+	 * Override the default autofocus behavior of the popover
+	 * on open.
 	 */
-	focusTrap?: FocusTrapConfig;
+	openFocus?: FocusProp;
 
 	/**
-	 * Override any of the element IDs set by the builder.
-	 *
-	 * NOTE: you should only use this prop if you know what
-	 * you're doing, as it could break the out-of-the-box
-	 * accessibility and functionality of the date field if
-	 * implemented incorrectly.
+	 * Override the default autofocus behavior of the popover
+	 * on close.
 	 */
-	ids?: Partial<PopoverIds>;
+	closeFocus?: FocusProp;
 };
 
-export type PopoverIds = IdObj<'trigger' | 'content'>;
 export type Popover = BuilderReturn<typeof createPopover>;
 export type PopoverElements = Popover['elements'];
 export type PopoverOptions = Popover['options'];

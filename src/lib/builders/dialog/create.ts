@@ -10,8 +10,9 @@ import {
 	createElHelpers,
 	effect,
 	executeCallbacks,
-	generateId,
+	generateIds,
 	getPortalDestination,
+	handleFocus,
 	isBrowser,
 	isHTMLElement,
 	kbd,
@@ -24,7 +25,7 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { onMount, tick } from 'svelte';
+import { tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';
@@ -47,6 +48,8 @@ const defaults = {
 	defaultOpen: false,
 	portal: 'body',
 	forceVisible: false,
+	openFocus: undefined,
+	closeFocus: undefined,
 } satisfies Defaults<CreateDialogProps>;
 
 const openDialogIds = writable<string[]>([]);
@@ -55,16 +58,20 @@ export function createDialog(props?: CreateDialogProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateDialogProps;
 
 	const options = toWritableStores(withDefaults);
-	const { preventScroll, closeOnEscape, closeOnOutsideClick, role, portal, forceVisible } = options;
+	const {
+		preventScroll,
+		closeOnEscape,
+		closeOnOutsideClick,
+		role,
+		portal,
+		forceVisible,
+		openFocus,
+		closeFocus,
+	} = options;
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
-	const ids = {
-		content: generateId(),
-		title: generateId(),
-		description: generateId(),
-		trigger: generateId(),
-	};
+	const ids = generateIds('content', 'title', 'description');
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
@@ -82,17 +89,12 @@ export function createDialog(props?: CreateDialogProps) {
 
 	function handleClose() {
 		open.set(false);
-		const triggerEl = document.getElementById(ids.trigger);
-		if (triggerEl) {
-			tick().then(() => {
-				triggerEl.focus();
-			});
-		}
-	}
 
-	onMount(() => {
-		activeTrigger.set(document.getElementById(ids.trigger));
-	});
+		handleFocus({
+			prop: get(closeFocus),
+			defaultEl: get(activeTrigger),
+		});
+	}
 
 	effect([open], ([$open]) => {
 		// Prevent double clicks from closing multiple dialogs
@@ -112,7 +114,6 @@ export function createDialog(props?: CreateDialogProps) {
 		stores: open,
 		returned: ($open) => {
 			return {
-				id: ids.trigger,
 				'aria-haspopup': 'dialog',
 				'aria-expanded': $open,
 				'aria-controls': ids.content,
@@ -196,6 +197,7 @@ export function createDialog(props?: CreateDialogProps) {
 			const destroy = executeCallbacks(
 				effect([open], ([$open]) => {
 					if (!$open) return;
+
 					const focusTrap = createFocusTrap({
 						immediate: false,
 						escapeDeactivates: false,
@@ -323,6 +325,11 @@ export function createDialog(props?: CreateDialogProps) {
 		const unsubs: Array<() => void> = [];
 
 		if ($preventScroll && $open) unsubs.push(removeScroll());
+
+		if ($open) {
+			const contentEl = document.getElementById(ids.content);
+			handleFocus({ prop: get(openFocus), defaultEl: contentEl });
+		}
 
 		return () => {
 			unsubs.forEach((unsub) => unsub());

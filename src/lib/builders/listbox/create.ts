@@ -69,6 +69,7 @@ const defaults = {
 	required: false,
 	name: undefined,
 	typeahead: true,
+	highlightOnHover: true,
 } satisfies Defaults<CreateListboxProps<unknown>>;
 
 /**
@@ -123,6 +124,7 @@ export function createListbox<
 		required,
 		typeahead,
 		name: nameProp,
+		highlightOnHover,
 	} = options;
 	const { name, selector } = createElHelpers(withDefaults.builder);
 
@@ -337,7 +339,7 @@ export function createListbox<
 					 * When the menu is open...
 					 */
 					// Pressing `esc` should close the menu.
-					if (e.key === kbd.TAB || e.key === kbd.ESCAPE) {
+					if (e.key === kbd.TAB || (e.key === kbd.ESCAPE && get(closeOnEscape))) {
 						closeMenu();
 						return;
 					}
@@ -414,7 +416,9 @@ export function createListbox<
 
 			const escape = useEscapeKeydown(node, {
 				handler: () => {
-					closeMenu();
+					if (get(closeOnEscape)) {
+						closeMenu();
+					}
 				},
 			});
 			if (escape && escape.destroy) {
@@ -553,7 +557,6 @@ export function createListbox<
 					'data-selected': selected ? '' : undefined,
 					id: generateId(),
 					role: 'option',
-					style: styleToString({ cursor: props.disabled ? 'default' : 'pointer' }),
 				} as const;
 			},
 		action: (node: HTMLElement): MeltActionReturn<ListboxEvents['item']> => {
@@ -569,8 +572,22 @@ export function createListbox<
 					if (!get(multiple)) {
 						closeMenu();
 					}
+				}),
+				effect(highlightOnHover, ($highlightOnHover) => {
+					if (!$highlightOnHover) return;
+					const unsub = executeCallbacks(
+						addMeltEventListener(node, 'mouseover', () => {
+							highlightedItem.set(node);
+						}),
+						addMeltEventListener(node, 'mouseleave', () => {
+							highlightedItem.set(null);
+						})
+					);
+
+					return unsub;
 				})
 			);
+
 			return { destroy: unsubscribe };
 		},
 	});
@@ -649,6 +666,7 @@ export function createListbox<
 			open,
 			selected,
 			highlighted,
+			highlightedItem,
 		},
 		helpers: {
 			isSelected,

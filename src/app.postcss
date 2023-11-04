@@ -3,6 +3,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+	/* color-scheme: dark; */
+}
+
 body {
 	background-color: theme('colors.neutral.900');
 	color: theme('colors.white');
@@ -20,68 +24,6 @@ body {
 	&:focus-visible {
 		@apply !ring !ring-magnum-400;
 	}
-}
-
-/* Firefox */
-* {
-	scrollbar-width: thin;
-	scrollbar-color: theme('colors.neutral.800') transparent;
-}
-
-/* Other browsers */
-*::-webkit-scrollbar {
-	width: 1rem;
-}
-
-*::-webkit-scrollbar-track {
-	background: transparent;
-}
-
-*::-webkit-scrollbar-thumb {
-	background: theme('colors.neutral.800');
-	background-clip: padding-box;
-	border-radius: 0.5rem;
-	border: 0.25rem solid transparent;
-}
-
-*::-webkit-scrollbar-thumb:hover {
-	background: theme('colors.neutral.600');
-	background-clip: padding-box;
-}
-
-*::-webkit-scrollbar-corner {
-	background: transparent;
-}
-
-/* Firefox */
-body {
-	scrollbar-width: thin;
-	scrollbar-color: theme('colors.stone.800') transparent;
-}
-
-/* Other browsers */
-body::-webkit-scrollbar {
-	width: 1rem;
-}
-
-body::-webkit-scrollbar-track {
-	background: theme('colors.stone.900');
-}
-
-body::-webkit-scrollbar-thumb {
-	background: theme('colors.neutral.600');
-	background-clip: padding-box;
-	border-radius: 0.5rem;
-	border: 0.25rem solid transparent;
-}
-
-body::-webkit-scrollbar-thumb:hover {
-	background: theme('colors.neutral.600');
-	background-clip: padding-box;
-}
-
-*::-webkit-scrollbar-corner {
-	background: transparent;
 }
 
 .inline-code {

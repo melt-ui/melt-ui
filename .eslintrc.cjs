@@ -38,14 +38,13 @@ module.exports = {
 			'warn',
 			{
 				argsIgnorePattern: '^_',
-				varsIgnorePattern: '^_',
+				varsIgnorePattern: '^(\\$\\$(Props|Events|Slots|Generic)|_)',
 			},
 		],
 
 		// eslint-plugin-svelte
 		'svelte/no-target-blank': 'error',
 		'svelte/no-immutable-reactive-statements': 'error',
-		'svelte/no-trailing-spaces': 'off', // I HATE THIS RULE
 		'svelte/prefer-style-directive': 'error',
 		'svelte/no-reactive-literals': 'error',
 		'svelte/no-useless-mustaches': 'error',
@@ -58,5 +57,6 @@ module.exports = {
 	},
 	globals: {
 		NodeJS: true,
+		$$Generic: 'writable',
 	},
 };
