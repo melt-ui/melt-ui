@@ -1,5 +1,5 @@
 import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
-import type { BuilderReturn, Expand } from '$lib/internal/types.js';
+import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { PinInputIdParts, createPinInput } from './create.js';
 export type { PinInputComponentEvents } from './events.js';
@@ -59,7 +59,7 @@ export type CreatePinInputProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Expand<IdObj<PinInputIdParts>>;
+	ids?: IdObj<PinInputIdParts>;
 };
 
 export type PinInput = BuilderReturn<typeof createPinInput>;

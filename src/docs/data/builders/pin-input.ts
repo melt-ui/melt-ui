@@ -1,6 +1,7 @@
 import { ATTRS, KBD, SEE } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { pinInputIdParts } from '$lib';
 import { pinInputEvents } from '$lib/builders/pin-input/events.js';
 import { isMac } from '$lib/internal/helpers/index.js';
 import type { BuilderData } from './index.js';
@@ -42,6 +43,7 @@ const OPTION_PROPS = [
 const BUILDER_NAME = 'pin input';
 
 const builder = builderSchema(BUILDER_NAME, {
+	ids: pinInputIdParts,
 	title: 'createPinInput',
 	props: [
 		...OPTION_PROPS,
@@ -62,11 +64,6 @@ const builder = builderSchema(BUILDER_NAME, {
 			description:
 				'A callback called when the value of the `value` store should be changed. This is useful for controlling the value of the pin-input from outside the pin-input.',
 			see: SEE.CHANGE_FUNCTIONS,
-		},
-		{
-			name: 'ids',
-			type: 'Record<"root", string>',
-			description: 'Override the internally generated ids for the elements.',
 		},
 	],
 	elements: [

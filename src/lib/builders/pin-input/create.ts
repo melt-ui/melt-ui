@@ -46,8 +46,8 @@ const defaults = {
 	defaultValue: [],
 } satisfies Defaults<CreatePinInputProps>;
 
-const idParts = ['root'] as const;
-export type PinInputIdParts = (typeof idParts)[number];
+export const pinInputIdParts = ['root'] as const;
+export type PinInputIdParts = typeof pinInputIdParts;
 
 export function createPinInput(props?: CreatePinInputProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreatePinInputProps;
@@ -59,13 +59,13 @@ export function createPinInput(props?: CreatePinInputProps) {
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
 	const valueStr = derived(value, (v) => v.join(''));
 
-	const ids = { ...generateIds(idParts), ...withDefaults.ids };
+	const ids = toWritableStores({ ...generateIds(pinInputIdParts), ...withDefaults.ids });
 
 	const root = builder(name(), {
-		stores: value,
-		returned: ($value) => {
+		stores: [value, ids.root],
+		returned: ([$value, $rootId]) => {
 			return {
-				id: ids.root,
+				id: $rootId,
 				'data-complete': $value.length && $value.every((v) => v.length > 0) ? '' : undefined,
 			};
 		},
@@ -75,7 +75,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 
 	const getTotalItems = () => {
 		if (!isBrowser) return Infinity;
-		const rootEl = document.getElementById(ids.root);
+		const rootEl = document.getElementById(get(ids.root));
 		if (!rootEl) return Infinity;
 
 		const inputs = Array.from(rootEl.querySelectorAll(selector('input')));
