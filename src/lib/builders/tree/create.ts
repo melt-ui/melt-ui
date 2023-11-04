@@ -11,14 +11,13 @@ import {
 	last,
 	overridable,
 	styleToString,
-	toWritableStores,
 } from '$lib/internal/helpers';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
-import { derived, get, writable, type Writable } from 'svelte/store';
+import { derived, writable, type Writable } from 'svelte/store';
 
+import { generateIds } from '../../internal/helpers/id';
 import type { TreeEvents } from './events';
 import type { CreateTreeViewProps, TreeParts } from './types';
-import { generateIds } from '../../internal/helpers/id';
 
 const defaults = {
 	forceVisible: false,
@@ -33,9 +32,6 @@ const ATTRS = {
 };
 
 const { name } = createElHelpers<TreeParts>('tree-view');
-
-export const treeIdParts = ['tree'] as const;
-export type TreeIdParts = typeof treeIdParts;
 
 export function createTreeView(args?: CreateTreeViewProps) {
 	const withDefaults = { ...defaults, ...args };
@@ -71,14 +67,13 @@ export function createTreeView(args?: CreateTreeViewProps) {
 		return (itemId: string) => $expanded.includes(itemId);
 	});
 
-	const ids = toWritableStores({ ...generateIds(treeIdParts), ...withDefaults.ids });
+	const metaIds = generateIds(['tree']);
 
 	const rootTree = builder(name(), {
-		stores: [ids.tree],
-		returned: ([$treeId]) => {
+		returned: () => {
 			return {
 				role: 'tree',
-				'data-melt-id': $treeId,
+				'data-melt-id': metaIds.tree,
 			} as const;
 		},
 	});
@@ -127,7 +122,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 						return;
 					}
 
-					const rootEl = getElementByMeltId(get(ids.tree));
+					const rootEl = getElementByMeltId(metaIds.tree);
 					if (!rootEl || !isHTMLElement(node) || node.getAttribute('role') !== 'treeitem') {
 						return;
 					}
@@ -282,7 +277,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 
 	function getItems(): HTMLElement[] {
 		let items = [] as HTMLElement[];
-		const rootEl = getElementByMeltId(get(ids.tree));
+		const rootEl = getElementByMeltId(metaIds.tree);
 		if (!rootEl) return items;
 
 		// Select all 'treeitem' li elements within our root element.
@@ -325,7 +320,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 	}
 
 	return {
-		ids,
+		ids: metaIds,
 		elements: {
 			tree: rootTree,
 			item,

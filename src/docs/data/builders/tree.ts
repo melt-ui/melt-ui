@@ -1,14 +1,12 @@
 import { DESCRIPTIONS, KBD, PROPS } from '$docs/constants';
 import type { KeyboardSchema } from '$docs/types';
 import { builderSchema, elementSchema } from '$docs/utils';
-import { treeIdParts } from '$lib';
 import { treeEvents } from '$lib/builders/tree/events';
 import type { BuilderData } from '.';
 
 const BUILDER_NAME = 'tree-view';
 
 const builder = builderSchema(BUILDER_NAME, {
-	ids: treeIdParts,
 	title: 'createTreeViewBuilder',
 	description: DESCRIPTIONS.BUILDER('tree-view'),
 	props: [PROPS.FORCE_VISIBLE],
