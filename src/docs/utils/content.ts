@@ -56,7 +56,7 @@ function genIds(ids: string[] | readonly string[]): ReturnedProps {
 	return ids.map((id) => {
 		return {
 			name: id,
-			description: `The writable store that represents the id of the ${id} element.`,
+			description: `The writable store that represents the id of the \`${id}\` element.`,
 			type: 'Writable<string>',
 		};
 	});

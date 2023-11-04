@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { dialogIdParts } from '$lib';
 import { dialogEvents } from '$lib/builders/dialog/events.js';
 import type { BuilderData } from './index.js';
 
@@ -26,18 +27,9 @@ const OPTION_PROPS = [
 const BUILDER_NAME = 'dialog';
 
 const builder = builderSchema(BUILDER_NAME, {
+	ids: dialogIdParts,
 	title: 'createDialog',
-	props: [
-		...OPTION_PROPS,
-		PROPS.DEFAULT_OPEN,
-		PROPS.OPEN,
-		PROPS.ON_OPEN_CHANGE,
-		{
-			name: 'ids',
-			type: 'Record<"content" | "title" | "description" | "trigger", string>',
-			description: 'Override the internally generated ids for the elements.',
-		},
-	],
+	props: [...OPTION_PROPS, PROPS.DEFAULT_OPEN, PROPS.OPEN, PROPS.ON_OPEN_CHANGE],
 	elements: [
 		{
 			name: 'trigger',

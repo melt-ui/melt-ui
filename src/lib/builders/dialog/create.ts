@@ -55,8 +55,8 @@ const defaults = {
 
 const openDialogIds = writable<string[]>([]);
 
-const idParts = ['content', 'title', 'description', 'trigger'] as const;
-export type DialogIdParts = (typeof idParts)[number];
+export const dialogIdParts = ['content', 'title', 'description', 'trigger'] as const;
+export type DialogIdParts = typeof dialogIdParts;
 
 export function createDialog(props?: CreateDialogProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateDialogProps;
@@ -76,10 +76,10 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
-	const ids = {
-		...generateIds(idParts),
+	const ids = toWritableStores({
+		...generateIds(dialogIdParts),
 		...withDefaults.ids,
-	};
+	});
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
@@ -97,7 +97,7 @@ export function createDialog(props?: CreateDialogProps) {
 
 	function handleClose() {
 		open.set(false);
-		const triggerEl = document.getElementById(ids.trigger);
+		const triggerEl = document.getElementById(get(ids.trigger));
 		handleFocus({
 			prop: get(closeFocus),
 			defaultEl: triggerEl,
@@ -105,7 +105,7 @@ export function createDialog(props?: CreateDialogProps) {
 	}
 
 	onMount(() => {
-		activeTrigger.set(document.getElementById(ids.trigger));
+		activeTrigger.set(document.getElementById(get(ids.trigger)));
 	});
 
 	effect([open], ([$open]) => {
@@ -113,11 +113,11 @@ export function createDialog(props?: CreateDialogProps) {
 		sleep(100).then(() => {
 			if ($open) {
 				openDialogIds.update((prev) => {
-					prev.push(ids.content);
+					prev.push(get(ids.content));
 					return prev;
 				});
 			} else {
-				openDialogIds.update((prev) => prev.filter((id) => id !== ids.content));
+				openDialogIds.update((prev) => prev.filter((id) => id !== get(ids.content)));
 			}
 		});
 	});
@@ -235,7 +235,7 @@ export function createDialog(props?: CreateDialogProps) {
 							if (e.defaultPrevented) return;
 
 							const $openDialogIds = get(openDialogIds);
-							const isLast = last($openDialogIds) === ids.content;
+							const isLast = last($openDialogIds) === get(ids.content);
 							if ($closeOnOutsideClick && isLast) {
 								handleClose();
 							}
@@ -340,7 +340,7 @@ export function createDialog(props?: CreateDialogProps) {
 		if ($preventScroll && $open) unsubs.push(removeScroll());
 
 		if ($open) {
-			const contentEl = document.getElementById(ids.content);
+			const contentEl = document.getElementById(get(ids.content));
 			handleFocus({ prop: get(openFocus), defaultEl: contentEl });
 		}
 
