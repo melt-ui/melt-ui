@@ -1,7 +1,7 @@
-import type { BuilderReturn, Expand } from '$lib/internal/types.js';
+import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
+import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { TagsInputIdParts, createTagsInput } from './create.js';
-import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 export type { TagsInputComponentEvents } from './events.js';
 export type CreateTagsInputProps = {
 	placeholder?: string;
@@ -52,7 +52,7 @@ export type CreateTagsInputProps = {
 	/**
 	 * Optionally override the default ids we apply to the elements.
 	 */
-	ids?: Expand<IdObj<TagsInputIdParts>>;
+	ids?: IdObj<TagsInputIdParts>;
 };
 
 export type Blur = 'nothing' | 'add' | 'clear';

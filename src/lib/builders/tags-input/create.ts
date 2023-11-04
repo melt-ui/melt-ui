@@ -43,14 +43,14 @@ const defaults = {
 type TagsInputParts = '' | 'tag' | 'delete-trigger' | 'edit' | 'input';
 const { name, attribute, selector } = createElHelpers<TagsInputParts>('tags-input');
 
-const idParts = ['root', 'input'] as const;
-export type TagsInputIdParts = (typeof idParts)[number];
+export const tagInputIdParts = ['root', 'input'] as const;
+export type TagsInputIdParts = typeof tagInputIdParts;
 
 export function createTagsInput(props?: CreateTagsInputProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateTagsInputProps;
 
 	// UUID for specific containers
-	const ids = { ...generateIds(idParts), ...withDefaults.ids };
+	const ids = toWritableStores({ ...generateIds(tagInputIdParts), ...withDefaults.ids });
 
 	const options = toWritableStores(omit(withDefaults, 'tags', 'ids'));
 	const {
@@ -230,10 +230,10 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	}
 
 	const root = builder(name(''), {
-		stores: disabled,
-		returned: ($disabled) => {
+		stores: [disabled, ids.root],
+		returned: ([$disabled, $rootId]) => {
 			return {
-				'data-melt-id': ids.root,
+				'data-melt-id': $rootId,
 				'data-disabled': disabledAttr($disabled),
 				disabled: disabledAttr($disabled),
 			} as const;
@@ -246,7 +246,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					if (!isHTMLElement(target)) return;
 					if (target.hasAttribute(attribute())) {
 						e.preventDefault();
-						focusInput(ids.input);
+						focusInput(get(ids.input));
 					}
 				})
 			);
@@ -258,10 +258,10 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	});
 
 	const input = builder(name('input'), {
-		stores: [disabled, placeholder],
-		returned: ([$disabled, $placeholder]) => {
+		stores: [disabled, placeholder, ids.input],
+		returned: ([$disabled, $placeholder, $inputId]) => {
 			return {
-				'data-melt-id': ids.input,
+				'data-melt-id': $inputId,
 				'data-disabled': disabledAttr($disabled),
 				disabled: disabledAttr($disabled),
 				placeholder: $placeholder,
@@ -269,7 +269,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 		},
 		action: (node: HTMLInputElement): MeltActionReturn<TagsInputEvents['input']> => {
 			const getTagsInfo = (id: string) => {
-				const rootEl = getElementByMeltId(ids.root);
+				const rootEl = getElementByMeltId(get(ids.root));
 
 				let tagsEl: Array<Element> = [];
 				let selectedIndex = -1;
@@ -296,13 +296,13 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'focus', () => {
 					// Set data-focus on root and input
-					const rootEl = getElementByMeltId(ids.root);
+					const rootEl = getElementByMeltId(get(ids.root));
 					if (rootEl) rootEl.setAttribute('data-focus', '');
 					node.setAttribute('data-focus', '');
 				}),
 				addMeltEventListener(node, 'blur', async () => {
 					// Clear data-focus from root and input
-					const rootEl = getElementByMeltId(ids.root);
+					const rootEl = getElementByMeltId(get(ids.root));
 					if (rootEl) rootEl.removeAttribute('data-focus');
 					node.removeAttribute('data-focus');
 
@@ -365,7 +365,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 							if (nextIndex === -1 || nextIndex >= tagsEl.length) {
 								selected.set(null);
-								focusInput(ids.input, 'start');
+								focusInput(get(ids.input), 'start');
 							} else {
 								setSelectedFromEl(tagsEl[nextIndex], selected);
 							}
@@ -378,7 +378,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 							// Jump to the input
 							e.preventDefault();
 							selected.set(null);
-							focusInput(ids.input);
+							focusInput(get(ids.input));
 						} else if (e.key === kbd.DELETE) {
 							// Delete this tag and move to the next element of tag or input
 							e.preventDefault();
@@ -388,7 +388,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 
 							if (nextIndex === -1 || nextIndex >= tagsEl.length) {
 								selected.set(null);
-								focusInput(ids.input);
+								focusInput(get(ids.input));
 							} else {
 								setSelectedFromEl(tagsEl[nextIndex], selected);
 							}
@@ -408,7 +408,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 							} else {
 								if (nextIndex === -1 || nextIndex >= tagsEl.length) {
 									selected.set(null);
-									focusInput(ids.input, 'start');
+									focusInput(get(ids.input), 'start');
 								} else {
 									setSelectedFromEl(tagsEl[nextIndex], selected);
 								}
@@ -520,7 +520,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					if ($editing && $editing.id !== getElProps().id) return;
 
 					// Focus on the input and set this as the selected tag
-					focusInput(ids.input);
+					focusInput(get(ids.input));
 					e.preventDefault();
 					setSelectedFromEl(node, selected);
 					editing.set(null);
@@ -531,7 +531,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					if ($editing && $editing.id === getElProps().id) return;
 
 					// Focus on the input and set this as the selected tag
-					focusInput(ids.input);
+					focusInput(get(ids.input));
 					e.preventDefault();
 					setSelectedFromEl(node, selected);
 					editing.set(null);
@@ -599,7 +599,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				const id = node.getAttribute('data-tag-id') ?? '';
 
 				removeTag({ id, value });
-				focusInput(ids.input);
+				focusInput(get(ids.input));
 			}
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
@@ -663,7 +663,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					// Stop editing, reset the value to the original and clear an invalid state
 					editing.set(null);
 					node.textContent = getElProps().value;
-					getElementByMeltId(ids.root)?.removeAttribute('data-invalid-edit');
+					getElementByMeltId(get(ids.root))?.removeAttribute('data-invalid-edit');
 					node.removeAttribute('data-invalid-edit');
 				}),
 				addMeltEventListener(node, 'keydown', async (e) => {
@@ -682,9 +682,9 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 						if (isInputValid(value) && (await updateTag(t, true))) {
 							node.textContent = t.value;
 							editValue.set('');
-							focusInput(ids.input);
+							focusInput(get(ids.input));
 						} else {
-							getElementByMeltId(ids.root)?.setAttribute('data-invalid-edit', '');
+							getElementByMeltId(get(ids.root))?.setAttribute('data-invalid-edit', '');
 							node.setAttribute('data-invalid-edit', '');
 						}
 					} else if (e.key === kbd.ESCAPE) {
@@ -694,7 +694,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 						node.textContent = getElProps().value;
 						editValue.set('');
 						setSelectedFromEl(node, selected);
-						focusInput(ids.input);
+						focusInput(get(ids.input));
 					}
 				}),
 				addMeltEventListener(node, 'input', () => {
@@ -723,18 +723,18 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 	// Flip the data-invalid attribute based upon the inputInvalid store
 	effect(inputInvalid, ($inputInvalid) => {
 		if ($inputInvalid) {
-			getElementByMeltId(ids.root)?.setAttribute('data-invalid', '');
-			getElementByMeltId(ids.input)?.setAttribute('data-invalid', '');
+			getElementByMeltId(get(ids.root))?.setAttribute('data-invalid', '');
+			getElementByMeltId(get(ids.input))?.setAttribute('data-invalid', '');
 		} else {
-			getElementByMeltId(ids.root)?.removeAttribute('data-invalid');
-			getElementByMeltId(ids.input)?.removeAttribute('data-invalid');
+			getElementByMeltId(get(ids.root))?.removeAttribute('data-invalid');
+			getElementByMeltId(get(ids.input))?.removeAttribute('data-invalid');
 		}
 	});
 
 	// When the input valid changes, clear any potential invalid states
 	effect(editValue, () => {
 		if (!isBrowser) return;
-		getElementByMeltId(ids.root)?.removeAttribute('data-invalid-edit');
+		getElementByMeltId(get(ids.root))?.removeAttribute('data-invalid-edit');
 
 		const invalidEl = Array.from(
 			document.querySelectorAll(selector('edit') + '[data-invalid-edit]')

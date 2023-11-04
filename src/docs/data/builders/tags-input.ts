@@ -1,6 +1,7 @@
 import { ATTRS, PROPS, SEE } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { tagInputIdParts } from '$lib';
 import { tagsInputEvents } from '$lib/builders/tags-input/events.js';
 import type { BuilderData } from './index.js';
 
@@ -94,6 +95,7 @@ const OPTION_PROPS = [
 const BUILDER_NAME = 'tags input';
 
 const builder = builderSchema(BUILDER_NAME, {
+	ids: tagInputIdParts,
 	title: 'createTags',
 	props: [
 		...OPTION_PROPS,
@@ -113,11 +115,6 @@ const builder = builderSchema(BUILDER_NAME, {
 			type: 'ChangeFn<Tags[]>',
 			description: 'A function that is called when the tags change.',
 			see: SEE.CHANGE_FUNCTIONS,
-		},
-		{
-			name: 'ids',
-			type: 'Record<"root" | "input", string>',
-			description: 'Override the internally generated ids for the elements.',
 		},
 	],
 	elements: [
