@@ -1,5 +1,5 @@
 import type { IdObj } from '$lib/internal/helpers/id.js';
-import type { BuilderReturn, Expand } from '$lib/internal/types.js';
+import type { BuilderReturn } from '$lib/internal/types.js';
 import type { _Menu } from '../menu/index.js';
 import type { MenubarIdParts, createMenubar } from './create.js';
 export type { MenubarComponentEvents } from './events.js';
@@ -21,7 +21,7 @@ export type CreateMenubarProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Expand<IdObj<MenubarIdParts>>;
+	ids?: IdObj<MenubarIdParts>;
 };
 export type CreateMenubarMenuProps = _Menu['builder'];
 export type CreateMenubarSubmenuProps = _Menu['submenu'];

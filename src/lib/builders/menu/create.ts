@@ -57,8 +57,8 @@ export const SUB_CLOSE_KEYS: Record<TextDirection, string[]> = {
 	rtl: [kbd.ARROW_RIGHT],
 };
 
-const idParts = ['menu', 'trigger'] as const;
-export type _MenuIdParts = (typeof idParts)[number];
+export const menuIdParts = ['menu', 'trigger'] as const;
+export type _MenuIdParts = typeof menuIdParts;
 
 const defaults = {
 	arrowSize: 8,
@@ -139,7 +139,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
 
-	const rootIds = { ...generateIds(idParts), ...opts.ids };
+	const rootIds = toWritableStores({ ...generateIds(menuIdParts), ...opts.ids });
 
 	const isVisible = derivedVisible({
 		open: rootOpen,
@@ -148,16 +148,16 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	});
 
 	const rootMenu = builder(name(), {
-		stores: [isVisible, portal],
-		returned: ([$isVisible, $portal]) => {
+		stores: [isVisible, portal, rootIds.menu, rootIds.trigger],
+		returned: ([$isVisible, $portal, $rootMenuId, $rootTriggerId]) => {
 			return {
 				role: 'menu',
 				hidden: $isVisible ? undefined : true,
 				style: styleToString({
 					display: $isVisible ? undefined : 'none',
 				}),
-				id: rootIds.menu,
-				'aria-labelledby': rootIds.trigger,
+				id: $rootMenuId,
+				'aria-labelledby': $rootTriggerId,
 				'data-state': $isVisible ? 'open' : 'closed',
 				'data-portal': $portal ? '' : undefined,
 				tabindex: -1,
@@ -247,13 +247,13 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	});
 
 	const rootTrigger = builder(name('trigger'), {
-		stores: [rootOpen],
-		returned: ([$rootOpen]) => {
+		stores: [rootOpen, rootIds.menu, rootIds.trigger],
+		returned: ([$rootOpen, $rootMenuId, $rootTriggerId]) => {
 			return {
-				'aria-controls': rootIds.menu,
+				'aria-controls': $rootMenuId,
 				'aria-expanded': $rootOpen,
 				'data-state': $rootOpen ? 'open' : 'closed',
-				id: rootIds.trigger,
+				id: $rootTriggerId,
 				tabindex: 0,
 			} as const;
 		},
@@ -650,7 +650,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const subOpenTimer = writable<number | null>(null);
 		const pointerGraceTimer = writable(0);
 
-		const subIds = { ...generateIds(idParts), ...withDefaults.ids };
+		const subIds = { ...generateIds(menuIdParts), ...withDefaults.ids };
 
 		onMount(() => {
 			/**
@@ -1051,7 +1051,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		 * case where the user sets the `open` store to `true` without
 		 * clicking on the trigger.
 		 */
-		const triggerEl = document.getElementById(rootIds.trigger);
+		const triggerEl = document.getElementById(get(rootIds.trigger));
 		if (isHTMLElement(triggerEl) && get(rootOpen)) {
 			rootActiveTrigger.set(triggerEl);
 		}
@@ -1113,14 +1113,17 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					handleFocus({ prop: $closeFocus, defaultEl: $rootActiveTrigger });
 				} else {
 					// otherwise we'll get the trigger el and focus it
-					handleFocus({ prop: $closeFocus, defaultEl: document.getElementById(rootIds.trigger) });
+					handleFocus({
+						prop: $closeFocus,
+						defaultEl: document.getElementById(get(rootIds.trigger)),
+					});
 				}
 			}
 
 			// if the menu is open, we'll sleep for a sec so the menu can render
 			// before we focus on either the first item or the menu itself.
 			sleep(1).then(() => {
-				const menuEl = document.getElementById(rootIds.menu);
+				const menuEl = document.getElementById(get(rootIds.menu));
 				if (menuEl && $rootOpen && get(isUsingKeyboard)) {
 					if (get(disableFocusFirstItem)) {
 						handleRovingFocus(menuEl);

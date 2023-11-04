@@ -114,7 +114,7 @@ export type _CreateMenuProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Expand<IdObj<_MenuIdParts>>;
+	ids?: IdObj<_MenuIdParts>;
 };
 
 export type _CreateSubmenuProps = Pick<
