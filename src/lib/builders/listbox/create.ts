@@ -73,8 +73,8 @@ const defaults = {
 	highlightOnHover: true,
 } satisfies Defaults<CreateListboxProps<unknown>>;
 
-const idParts = ['trigger', 'menu', 'label'] as const;
-export type ListboxIdParts = (typeof idParts)[number];
+export const listboxIdParts = ['trigger', 'menu', 'label'] as const;
+export type ListboxIdParts = typeof listboxIdParts;
 
 /**
  * Creates an ARIA-1.2-compliant listbox.
@@ -132,7 +132,7 @@ export function createListbox<
 	} = options;
 	const { name, selector } = createElHelpers(withDefaults.builder);
 
-	const ids = { ...generateIds(idParts), ...withDefaults.ids };
+	const ids = toWritableStores({ ...generateIds(listboxIdParts), ...withDefaults.ids });
 
 	const { handleTypeaheadSearch } = createTypeaheadSearch({
 		onMatch: (element) => {
@@ -190,7 +190,7 @@ export function createListbox<
 	async function openMenu() {
 		open.set(true);
 
-		const triggerEl = getElementByMeltId(ids.trigger);
+		const triggerEl = getElementByMeltId(get(ids.trigger));
 		if (!triggerEl) return;
 
 		// The active trigger is used to anchor the menu to the input element.
@@ -199,7 +199,7 @@ export function createListbox<
 		// Wait a tick for the menu to open then highlight the selected item.
 		await tick();
 
-		const menuElement = document.getElementById(ids.menu);
+		const menuElement = document.getElementById(get(ids.menu));
 		if (!isHTMLElement(menuElement)) return;
 
 		const selectedItem = menuElement.querySelector('[aria-selected=true]');
@@ -253,17 +253,17 @@ export function createListbox<
 
 	/** Action and attributes for the text input. */
 	const trigger = builder(name('trigger'), {
-		stores: [open, highlightedItem, disabled],
-		returned: ([$open, $highlightedItem, $disabled]) => {
+		stores: [open, highlightedItem, disabled, ids.menu, ids.trigger, ids.label],
+		returned: ([$open, $highlightedItem, $disabled, $menuId, $triggerId, $labelId]) => {
 			return {
 				'aria-activedescendant': $highlightedItem?.id,
 				'aria-autocomplete': 'list',
-				'aria-controls': ids.menu,
+				'aria-controls': $menuId,
 				'aria-expanded': $open,
-				'aria-labelledby': ids.label,
-				'data-melt-id': ids.trigger,
+				'aria-labelledby': $labelId,
+				'data-melt-id': $triggerId,
 				// autocomplete: 'off',
-				id: ids.trigger,
+				id: $triggerId,
 				role: 'combobox',
 				disabled: disabledAttr($disabled),
 			} as const;
@@ -315,7 +315,7 @@ export function createListbox<
 							const $selectedItem = get(selected);
 							if ($selectedItem) return;
 
-							const menuEl = document.getElementById(ids.menu);
+							const menuEl = document.getElementById(get(ids.menu));
 							if (!isHTMLElement(menuEl)) return;
 
 							const enabledItems = Array.from(
@@ -363,7 +363,7 @@ export function createListbox<
 					if (FIRST_LAST_KEYS.includes(e.key)) {
 						e.preventDefault();
 						// Get all the menu items.
-						const menuElement = document.getElementById(ids.menu);
+						const menuElement = document.getElementById(get(ids.menu));
 						if (!isHTMLElement(menuElement)) return;
 						const itemElements = getOptions(menuElement);
 						if (!itemElements.length) return;
@@ -404,7 +404,7 @@ export function createListbox<
 						highlightedItem.set(nextItem);
 						nextItem?.scrollIntoView({ block: $scrollAlignment });
 					} else if (get(typeahead)) {
-						const menuEl = document.getElementById(ids.menu);
+						const menuEl = document.getElementById(get(ids.menu));
 						if (!isHTMLElement(menuEl)) return;
 
 						handleTypeaheadSearch(e.key, getOptions(menuEl));
@@ -438,11 +438,11 @@ export function createListbox<
 	 * Action and attributes for the menu element.
 	 */
 	const menu = builder(name('menu'), {
-		stores: [isVisible],
-		returned: ([$isVisible]) => {
+		stores: [isVisible, ids.menu],
+		returned: ([$isVisible, $menuId]) => {
 			return {
 				hidden: $isVisible ? undefined : true,
-				id: ids.menu,
+				id: $menuId,
 				role: 'listbox',
 				style: styleToString({ display: $isVisible ? undefined : 'none' }),
 			} as const;
@@ -479,7 +479,7 @@ export function createListbox<
 							unsubScroll = removeScroll();
 						}
 
-						const ignoreHandler = createClickOutsideIgnore(ids.trigger);
+						const ignoreHandler = createClickOutsideIgnore(get(ids.trigger));
 
 						const popper = usePopper(node, {
 							anchorElement: $activeTrigger,
@@ -530,10 +530,11 @@ export function createListbox<
 	const { action: labelAction } = get(labelBuilder);
 
 	const label = builder(name('label'), {
-		returned: () => {
+		stores: [ids.label, ids.trigger],
+		returned: ([$labelId, $triggerId]) => {
 			return {
-				id: ids.label,
-				for: ids.trigger,
+				id: $labelId,
+				for: $triggerId,
 			};
 		},
 		action: labelAction,
@@ -623,10 +624,10 @@ export function createListbox<
 
 	onMount(() => {
 		if (!isBrowser) return;
-		const menuEl = document.getElementById(ids.menu);
+		const menuEl = document.getElementById(get(ids.menu));
 		if (!menuEl) return;
 
-		const triggerEl = getElementByMeltId(ids.trigger);
+		const triggerEl = getElementByMeltId(get(ids.trigger));
 		if (triggerEl) {
 			activeTrigger.set(triggerEl);
 		}
@@ -641,7 +642,7 @@ export function createListbox<
 	 */
 	effect([highlightedItem], ([$highlightedItem]) => {
 		if (!isBrowser) return;
-		const menuElement = document.getElementById(ids.menu);
+		const menuElement = document.getElementById(get(ids.menu));
 		if (!isHTMLElement(menuElement)) return;
 		getOptions(menuElement).forEach((node) => {
 			if (node === $highlightedItem) {
