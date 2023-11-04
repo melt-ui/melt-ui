@@ -419,8 +419,9 @@ constructor.
 
 ## Validation
 
-Although possible to implement your own logic using [change functions](/docs/controlled#change-functions), the
-Date Range Picker provides a few props that make it a bit easier.
+Although possible to implement your own logic using
+[change functions](/docs/controlled#change-functions), the Date Range Picker provides a few props
+that make it a bit easier.
 
 ### Unavailable Dates
 

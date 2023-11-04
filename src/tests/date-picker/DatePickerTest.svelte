@@ -16,7 +16,6 @@
 	export let hourCycle: CreateDatePickerProps['hourCycle'] = undefined;
 	export let locale: CreateDatePickerProps['locale'] = 'en';
 	export let hideTimeZone: CreateDatePickerProps['hideTimeZone'] = undefined;
-	export let popoverIds: CreateDatePickerProps['popoverIds'] = undefined;
 	export let dateFieldIds: CreateDatePickerProps['dateFieldIds'] = undefined;
 	export let calendarIds: CreateDatePickerProps['calendarIds'] = undefined;
 	export let granularity: CreateDatePickerProps['granularity'] = undefined;
@@ -58,7 +57,6 @@
 		granularity,
 		dateFieldIds,
 		calendarIds,
-		popoverIds,
 		preventDeselect,
 		calendarLabel,
 		numberOfMonths,

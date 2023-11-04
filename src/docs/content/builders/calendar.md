@@ -668,7 +668,6 @@ If a date is before the `minValue`, or after the `maxValue`, it will be disabled
 	<svelte:component this={previews.minMax} />
 </Preview>
 
-
 ## API Reference
 
 <APIReference {schemas} />

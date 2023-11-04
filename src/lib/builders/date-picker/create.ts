@@ -14,6 +14,7 @@ import {
 } from '$lib/internal/helpers/date/index.js';
 
 import { dateStore, createFormatter, getDefaultDate } from '$lib/internal/helpers/date/index.js';
+import { pickerOpenFocus } from '$lib/internal/helpers/date/focus.js';
 
 const defaults = {
 	isDateDisabled: undefined,
@@ -58,11 +59,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		closeOnOutsideClick: withDefaults.closeOnOutsideClick,
 		portal: withDefaults.portal,
 		forceVisible: withDefaults.forceVisible,
-		focusTrap: {
-			// We want to focus the focused date when the popover
-			// is open regardless of the DOM order
-			initialFocus: `[data-melt-calendar-cell][data-focused]`,
-		},
+		openFocus: pickerOpenFocus,
 	});
 
 	const trigger = builder('popover-trigger', {

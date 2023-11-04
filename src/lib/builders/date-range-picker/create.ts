@@ -15,6 +15,7 @@ import {
 
 import { dateStore, createFormatter, getDefaultDate } from '$lib/internal/helpers/date/index.js';
 import { createDateRangeField } from '../date-range-field/create.js';
+import { pickerOpenFocus } from '$lib/internal/helpers/date/focus.js';
 
 const defaults = {
 	isDateDisabled: undefined,
@@ -59,11 +60,7 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 		closeOnOutsideClick: withDefaults.closeOnOutsideClick,
 		portal: withDefaults.portal,
 		forceVisible: withDefaults.forceVisible,
-		focusTrap: {
-			// We want to focus the focused date when the popover
-			// is open regardless of the DOM order
-			initialFocus: `[data-melt-calendar-cell][data-focused]`,
-		},
+		openFocus: pickerOpenFocus,
 	});
 
 	const options = toWritableStores({
