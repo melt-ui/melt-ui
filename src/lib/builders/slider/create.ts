@@ -34,8 +34,8 @@ const defaults = {
 
 const { name } = createElHelpers('slider');
 
-const idParts = ['root'] as const;
-export type SliderIdParts = (typeof idParts)[number];
+export const sliderIdParts = ['root'] as const;
+export type SliderIdParts = typeof sliderIdParts;
 
 export const createSlider = (props?: CreateSliderProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSliderProps;
@@ -52,17 +52,17 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const currentThumbIndex = writable<number>(0);
 	const activeThumb = writable<{ thumb: HTMLElement; index: number } | null>(null);
 
-	const ids = { ...generateIds(idParts), ...withDefaults.ids };
+	const ids = toWritableStores({ ...generateIds(sliderIdParts), ...withDefaults.ids });
 
 	const root = builder(name(), {
-		stores: [disabled, orientation],
-		returned: ([$disabled, $orientation]) => {
+		stores: [disabled, orientation, ids.root],
+		returned: ([$disabled, $orientation, $rootId]) => {
 			return {
 				disabled: disabledAttr($disabled),
 				'aria-disabled': ariaDisabledAttr($disabled),
 				'data-orientation': $orientation,
 				style: $disabled ? undefined : 'touch-action: none;',
-				'data-melt-id': ids.root,
+				'data-melt-id': $rootId,
 			};
 		},
 	});
@@ -125,7 +125,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	};
 
 	const getAllThumbs = () => {
-		const root = getElementByMeltId(ids.root);
+		const root = getElementByMeltId(get(ids.root));
 		if (!root) return null;
 
 		return Array.from(root.querySelectorAll('[data-melt-part="thumb"]')).filter(

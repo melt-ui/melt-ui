@@ -1,7 +1,7 @@
-import type { BuilderReturn, Expand } from '$lib/internal/types.js';
+import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
+import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { SliderIdParts, createSlider } from './create.js';
-import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 export type { SliderComponentEvents } from './events.js';
 export type CreateSliderProps = {
 	/**
@@ -62,7 +62,7 @@ export type CreateSliderProps = {
 	/**
 	 * Optionally override the default ids we generate for the slider.
 	 */
-	ids?: Expand<IdObj<SliderIdParts>>;
+	ids?: IdObj<SliderIdParts>;
 };
 
 export type Slider = BuilderReturn<typeof createSlider>;
