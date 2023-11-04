@@ -39,6 +39,8 @@ jobs:
 
   Tests:
     runs-on: ubuntu-latest
+    env:
+      CI: true
     steps:
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2
