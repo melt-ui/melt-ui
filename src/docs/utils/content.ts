@@ -7,6 +7,7 @@ import type {
 	Props,
 	ReturnedProps,
 } from '$docs/types.js';
+import { stringifiedIdObjType } from '$lib/internal/helpers';
 
 export function propToOption(prop: Prop): ReturnedProps[0] {
 	const type = Array.isArray(prop.type) ? prop.type.join(' | ') : prop.type;
@@ -51,6 +52,16 @@ export function genElements(
 	});
 }
 
+function genIds(ids: string[] | readonly string[]): ReturnedProps {
+	return ids.map((id) => {
+		return {
+			name: id,
+			description: `The writable store that represents the id of the ${id} element.`,
+			type: 'Writable<string>',
+		};
+	});
+}
+
 type Element = {
 	name: string;
 	description: string;
@@ -67,6 +78,7 @@ type BuilderSchema = {
 	builders?: ReturnedProps;
 	actions?: ReturnedProps;
 	options?: PropGen[];
+	ids?: string[] | readonly string[];
 };
 
 type ElementSchema = {
@@ -78,20 +90,30 @@ type ElementSchema = {
 };
 
 export function builderSchema(name: string, schema: BuilderSchema): APISchema {
-	const { title, description, props, elements, helpers, states, builders, actions, options } =
+	const { title, description, props, elements, helpers, states, builders, actions, options, ids } =
 		schema;
+
+	const localProps = props ? [...props] : [];
+	if (ids) {
+		localProps?.push({
+			name: 'ids',
+			type: stringifiedIdObjType(ids),
+			description: 'Override the internally generated ids for the elements.',
+		});
+	}
 
 	return {
 		title: title ?? name,
 		description: description ?? DESCRIPTIONS.BUILDER(name),
 		isBuilder: true,
-		props: props ? genProps(name, props) : undefined,
+		props: localProps ? genProps(name, localProps) : undefined,
 		elements: elements ? genElements(name, elements) : undefined,
 		helpers,
 		states,
 		builders,
 		actions,
 		options: options ? propsToOptions(name, options) : undefined,
+		ids: ids ? genIds(ids) : undefined,
 	};
 }
 

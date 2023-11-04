@@ -126,6 +126,7 @@ export type APISchema = {
 	actions?: ReturnedProps;
 	options?: ReturnedProps;
 	returnedProps?: ReturnedProps;
+	ids?: ReturnedProps;
 };
 
 export type KeyboardSchema = Array<{

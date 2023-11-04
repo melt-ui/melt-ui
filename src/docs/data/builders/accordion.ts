@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS, SEE } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { accordionIdParts } from '$lib';
 import { accordionEvents } from '$lib/builders/accordion/events.js';
 import type { BuilderData } from './index.js';
 
@@ -22,6 +23,7 @@ const OPTION_PROPS = [
 const BUILDER_NAME = 'accordion';
 
 const builder = builderSchema(BUILDER_NAME, {
+	ids: accordionIdParts,
 	title: 'createAccordion',
 	props: [
 		...OPTION_PROPS,
@@ -55,11 +57,6 @@ const builder = builderSchema(BUILDER_NAME, {
 			description:
 				'A callback called when the value of the `value` store should be changed. This is useful for controlling the value of the accordion from outside the accordion.',
 			see: SEE.CHANGE_FUNCTIONS,
-		},
-		{
-			name: 'ids',
-			type: 'Record<"root", string>',
-			description: 'Override the internally generated ids for the elements.',
 		},
 	],
 	elements: [

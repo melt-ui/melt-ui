@@ -17,13 +17,13 @@ import {
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
-import { derived, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 import type { AccordionEvents } from './events.js';
 import type { AccordionHeadingProps, AccordionItemProps, CreateAccordionProps } from './types.js';
 
 type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
-const idParts = ['root'] as const;
-export type AccordionIdParts = (typeof idParts)[number];
+export const accordionIdParts = ['root'] as const;
+export type AccordionIdParts = typeof accordionIdParts;
 
 const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
@@ -41,7 +41,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 		omit(withDefaults, 'value', 'onValueChange', 'defaultValue', 'ids')
 	);
 
-	const ids = { ...generateIds(idParts), ...withDefaults.ids };
+	const ids = toWritableStores({ ...generateIds(accordionIdParts), ...withDefaults.ids });
 
 	const { disabled, forceVisible } = options;
 
@@ -63,8 +63,9 @@ export const createAccordion = <Multiple extends boolean = false>(
 	});
 
 	const root = builder(name(), {
-		returned: () => ({
-			'data-melt-id': ids.root,
+		stores: [ids.root],
+		returned: ([$rootId]) => ({
+			'data-melt-id': $rootId,
 		}),
 	});
 
@@ -139,7 +140,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 					}
 
 					const el = e.target;
-					const rootEl = getElementByMeltId(ids.root);
+					const rootEl = getElementByMeltId(get(ids.root));
 					if (!rootEl || !isHTMLElement(el)) return;
 
 					const items = Array.from(rootEl.querySelectorAll(selector('trigger')));
