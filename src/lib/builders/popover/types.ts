@@ -1,8 +1,8 @@
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
 import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js';
+import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { PopoverIdParts, createPopover } from './create.js';
-import type { BuilderReturn, Expand } from '$lib/internal/types.js';
 export type { PopoverComponentEvents } from './events.js';
 
 export type CreatePopoverProps = {
@@ -99,7 +99,7 @@ export type CreatePopoverProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Expand<IdObj<PopoverIdParts>>;
+	ids?: IdObj<PopoverIdParts>;
 };
 
 export type Popover = BuilderReturn<typeof createPopover>;

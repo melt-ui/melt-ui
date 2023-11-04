@@ -46,8 +46,8 @@ const defaults = {
 type PopoverParts = 'trigger' | 'content' | 'arrow' | 'close';
 const { name } = createElHelpers<PopoverParts>('popover');
 
-const idParts = ['trigger', 'content'] as const;
-export type PopoverIdParts = (typeof idParts)[number];
+export const popoverIdParts = ['trigger', 'content'] as const;
+export type PopoverIdParts = typeof popoverIdParts;
 
 export function createPopover(args?: CreatePopoverProps) {
 	const withDefaults = { ...defaults, ...args } satisfies CreatePopoverProps;
@@ -71,30 +71,30 @@ export function createPopover(args?: CreatePopoverProps) {
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
-	const ids = { ...generateIds(idParts), ...withDefaults.ids };
+	const ids = toWritableStores({ ...generateIds(popoverIdParts), ...withDefaults.ids });
 
 	onMount(() => {
-		activeTrigger.set(document.getElementById(ids.trigger));
+		activeTrigger.set(document.getElementById(get(ids.trigger)));
 	});
 
 	function handleClose() {
 		open.set(false);
-		const triggerEl = document.getElementById(ids.trigger);
+		const triggerEl = document.getElementById(get(ids.trigger));
 		handleFocus({ prop: get(closeFocus), defaultEl: triggerEl });
 	}
 
 	const isVisible = derivedVisible({ open, activeTrigger, forceVisible });
 
 	const content = builder(name('content'), {
-		stores: [isVisible, portal],
-		returned: ([$isVisible, $portal]) => {
+		stores: [isVisible, portal, ids.content],
+		returned: ([$isVisible, $portal, $contentId]) => {
 			return {
 				hidden: $isVisible && isBrowser ? undefined : true,
 				tabindex: -1,
 				style: styleToString({
 					display: $isVisible ? undefined : 'none',
 				}),
-				id: ids.content,
+				id: $contentId,
 				'data-state': $isVisible ? 'open' : 'closed',
 				'data-portal': $portal ? '' : undefined,
 			};
@@ -171,15 +171,15 @@ export function createPopover(args?: CreatePopoverProps) {
 	}
 
 	const trigger = builder(name('trigger'), {
-		stores: open,
-		returned: ($open) => {
+		stores: [open, ids.content, ids.trigger],
+		returned: ([$open, $contentId, $triggerId]) => {
 			return {
 				role: 'button',
 				'aria-haspopup': 'dialog',
 				'aria-expanded': $open,
 				'data-state': $open ? 'open' : 'closed',
-				'aria-controls': ids.content,
-				id: ids.trigger,
+				'aria-controls': $contentId,
+				id: $triggerId,
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<PopoverEvents['trigger']> => {
@@ -243,7 +243,7 @@ export function createPopover(args?: CreatePopoverProps) {
 		if ($open) {
 			if (!$activeTrigger) {
 				tick().then(() => {
-					const triggerEl = document.getElementById(ids.trigger);
+					const triggerEl = document.getElementById(get(ids.trigger));
 					if (!isHTMLElement(triggerEl)) return;
 					activeTrigger.set(triggerEl);
 				});
@@ -253,7 +253,7 @@ export function createPopover(args?: CreatePopoverProps) {
 				unsubs.push(removeScroll());
 			}
 
-			const triggerEl = $activeTrigger ?? document.getElementById(ids.trigger);
+			const triggerEl = $activeTrigger ?? document.getElementById(get(ids.trigger));
 			handleFocus({ prop: get(openFocus), defaultEl: triggerEl });
 		}
 
