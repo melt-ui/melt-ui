@@ -190,7 +190,7 @@ describe('DatePicker', () => {
 
 		test('selection with keyboard', async () => {
 			const user = userEvent.setup();
-			const { getByTestId, queryByTestId } = render(DatePickerTest, {
+			const { getByTestId } = render(DatePickerTest, {
 				defaultPlaceholder: zonedDateTime,
 			});
 			const trigger = getByTestId('trigger');

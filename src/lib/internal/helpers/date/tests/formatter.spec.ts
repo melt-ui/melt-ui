@@ -28,7 +28,9 @@ describe('Formatter', () => {
 		expect(formatter.selectedDate(withoutTime)).toBe('January 1, 2021');
 
 		const withTime = new CalendarDateTime(2021, 1, 1, 12, 0, 0);
-		expect(formatter.selectedDate(withTime)).toBe('January 1, 2021 at 12:00:00 PM EST');
+		const tz = thisTimeZone(withTime.toString());
+
+		expect(formatter.selectedDate(withTime)).toBe('January 1, 2021 at 12:00:00 PM ' + tz);
 	});
 
 	it('should properly format full months and years', () => {
@@ -103,3 +105,11 @@ describe('Formatter', () => {
 		expect(formatter.dayPeriod(toDate(am))).toBe('AM');
 	});
 });
+
+function thisTimeZone(date: string): string {
+	const timezone =
+		Intl.DateTimeFormat(undefined, { timeZoneName: 'short' })
+			.formatToParts(new Date(date))
+			.find((p) => p.type === 'timeZoneName')?.value ?? '';
+	return timezone;
+}
