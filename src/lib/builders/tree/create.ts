@@ -3,7 +3,6 @@ import {
 	builder,
 	createElHelpers,
 	executeCallbacks,
-	generateId,
 	getElementByMeltId,
 	isHTMLElement,
 	isHidden,
@@ -16,6 +15,7 @@ import {
 import type { Defaults, MeltActionReturn } from '$lib/internal/types';
 import { derived, writable, type Writable } from 'svelte/store';
 
+import { generateIds } from '../../internal/helpers/id';
 import type { TreeEvents } from './events';
 import type { CreateTreeViewProps, TreeParts } from './types';
 
@@ -67,15 +67,13 @@ export function createTreeView(args?: CreateTreeViewProps) {
 		return (itemId: string) => $expanded.includes(itemId);
 	});
 
-	const ids = {
-		tree: generateId(),
-	};
+	const metaIds = generateIds(['tree']);
 
 	const rootTree = builder(name(), {
 		returned: () => {
 			return {
 				role: 'tree',
-				'data-melt-id': ids.tree,
+				'data-melt-id': metaIds.tree,
 			} as const;
 		},
 	});
@@ -124,7 +122,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 						return;
 					}
 
-					const rootEl = getElementByMeltId(ids.tree);
+					const rootEl = getElementByMeltId(metaIds.tree);
 					if (!rootEl || !isHTMLElement(node) || node.getAttribute('role') !== 'treeitem') {
 						return;
 					}
@@ -279,7 +277,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 
 	function getItems(): HTMLElement[] {
 		let items = [] as HTMLElement[];
-		const rootEl = getElementByMeltId(ids.tree);
+		const rootEl = getElementByMeltId(metaIds.tree);
 		if (!rootEl) return items;
 
 		// Select all 'treeitem' li elements within our root element.
@@ -322,7 +320,7 @@ export function createTreeView(args?: CreateTreeViewProps) {
 	}
 
 	return {
-		ids,
+		ids: metaIds,
 		elements: {
 			tree: rootTree,
 			item,

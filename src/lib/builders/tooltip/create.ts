@@ -5,7 +5,6 @@ import {
 	createElHelpers,
 	effect,
 	executeCallbacks,
-	generateId,
 	getPortalDestination,
 	isBrowser,
 	isTouch,
@@ -24,6 +23,7 @@ import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable, type Writable } from 'svelte/store';
 import type { TooltipEvents } from './events.js';
 import type { CreateTooltipProps } from './types.js';
+import { generateIds } from '../../internal/helpers/id';
 
 const defaults = {
 	positioning: {
@@ -47,10 +47,13 @@ const { name } = createElHelpers<TooltipParts>('tooltip');
 // Store a global map to get the currently open tooltip.
 const groupMap = new Map<string | true, Writable<boolean>>();
 
+export const tooltipIdParts = ['trigger', 'content'] as const;
+export type TooltipIdParts = typeof tooltipIdParts;
+
 export function createTooltip(props?: CreateTooltipProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateTooltipProps;
 
-	const options = toWritableStores(omit(withDefaults, 'open'));
+	const options = toWritableStores(omit(withDefaults, 'open', 'ids'));
 	const {
 		positioning,
 		arrowSize,
@@ -70,16 +73,13 @@ export function createTooltip(props?: CreateTooltipProps) {
 	type OpenReason = 'pointer' | 'focus';
 	const openReason = writable<null | OpenReason>(null);
 
-	const ids = {
-		content: generateId(),
-		trigger: generateId(),
-	} as const;
+	const ids = toWritableStores({ ...generateIds(tooltipIdParts), ...withDefaults.ids });
 
 	let clickedTrigger = false;
 
 	const getEl = (part: keyof typeof ids) => {
 		if (!isBrowser) return null;
-		return document.getElementById(ids[part]);
+		return document.getElementById(get(ids[part]));
 	};
 
 	let openTimeout: number | null = null;
@@ -127,10 +127,11 @@ export function createTooltip(props?: CreateTooltipProps) {
 	}
 
 	const trigger = builder(name('trigger'), {
-		returned: () => {
+		stores: [ids.content, ids.trigger],
+		returned: ([$contentId, $triggerId]) => {
 			return {
-				'aria-describedby': ids.content,
-				id: ids.trigger,
+				'aria-describedby': $contentId,
+				id: $triggerId,
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<TooltipEvents['trigger']> => {
@@ -187,8 +188,8 @@ export function createTooltip(props?: CreateTooltipProps) {
 	});
 
 	const content = builder(name('content'), {
-		stores: [isVisible, portal],
-		returned: ([$isVisible, $portal]) => {
+		stores: [isVisible, portal, ids.content],
+		returned: ([$isVisible, $portal, $contentId]) => {
 			return {
 				role: 'tooltip',
 				hidden: $isVisible ? undefined : true,
@@ -196,7 +197,7 @@ export function createTooltip(props?: CreateTooltipProps) {
 				style: styleToString({
 					display: $isVisible ? undefined : 'none',
 				}),
-				id: ids.content,
+				id: $contentId,
 				'data-portal': $portal ? '' : undefined,
 			};
 		},

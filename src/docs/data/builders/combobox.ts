@@ -2,6 +2,7 @@ import { ATTRS, KBD, PROPS, SEE } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
 import { comboboxEvents } from '$lib/builders/combobox/events.js';
+import { listboxIdParts } from '$lib/builders/listbox/create.js';
 import type { BuilderData } from './index.js';
 import { getMenuArrowSchema } from './menu.js';
 
@@ -34,6 +35,7 @@ const OPTION_PROPS = [
 const BUILDER_NAME = 'combobox';
 
 const builder = builderSchema(BUILDER_NAME, {
+	ids: listboxIdParts,
 	title: 'createCombobox',
 	props: [
 		{
@@ -63,6 +65,11 @@ const builder = builderSchema(BUILDER_NAME, {
 		PROPS.OPEN,
 		PROPS.ON_OPEN_CHANGE,
 		...OPTION_PROPS,
+		{
+			name: 'ids',
+			type: 'Record<"trigger" | "content", string>',
+			description: 'Override the internally generated ids for the elements.',
+		},
 	],
 	elements: [
 		{

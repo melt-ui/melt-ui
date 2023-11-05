@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { tooltipIdParts } from '$lib';
 import { tooltipEvents } from '$lib/builders/tooltip/events.js';
 import type { BuilderData } from './index.js';
 
@@ -49,6 +50,7 @@ const OPTION_PROPS = [
 const BUILDER_NAME = 'tooltip';
 
 const builder = builderSchema(BUILDER_NAME, {
+	ids: tooltipIdParts,
 	title: 'createTooltip',
 	props: [...OPTION_PROPS, PROPS.DEFAULT_OPEN, PROPS.OPEN, PROPS.ON_OPEN_CHANGE],
 	elements: [

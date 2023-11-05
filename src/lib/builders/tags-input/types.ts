@@ -1,7 +1,7 @@
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { createTagsInput } from './create.js';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
 export type { TagsInputComponentEvents } from './events.js';
 export type CreateTagsInputProps = {
 	placeholder?: string;

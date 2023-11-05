@@ -1,7 +1,7 @@
+import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
-import type { createDialog } from './create.js';
-import type { ChangeFn, FocusProp } from '$lib/internal/helpers/index.js';
+import type { DialogIdParts, createDialog } from './create.js';
 export type { DialogComponentEvents } from './events.js';
 export type CreateDialogProps = {
 	preventScroll?: boolean;
@@ -31,6 +31,11 @@ export type CreateDialogProps = {
 	 * on close.
 	 */
 	closeFocus?: FocusProp;
+
+	/**
+	 * Optionally override the default ids we assign to the elements
+	 */
+	ids?: IdObj<DialogIdParts>;
 };
 
 export type Dialog = BuilderReturn<typeof createDialog>;

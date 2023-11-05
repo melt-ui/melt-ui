@@ -7,7 +7,6 @@ import {
 	disabledAttr,
 	effect,
 	executeCallbacks,
-	generateId,
 	getElementByMeltId,
 	isBrowser,
 	isHTMLElement,
@@ -17,10 +16,11 @@ import {
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
-import { add, sub, div, mul } from './helpers.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable } from 'svelte/store';
+import { generateIds } from '../../internal/helpers/id';
 import type { SliderEvents } from './events.js';
+import { add, div, mul, sub } from './helpers.js';
 import type { CreateSliderProps } from './types.js';
 
 const defaults = {
@@ -47,9 +47,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const currentThumbIndex = writable<number>(0);
 	const activeThumb = writable<{ thumb: HTMLElement; index: number } | null>(null);
 
-	const ids = {
-		root: generateId(),
-	};
+	const meltIds = generateIds(['root']);
 
 	const root = builder(name(), {
 		stores: [disabled, orientation],
@@ -59,7 +57,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 				'aria-disabled': ariaDisabledAttr($disabled),
 				'data-orientation': $orientation,
 				style: $disabled ? undefined : 'touch-action: none;',
-				'data-melt-id': ids.root,
+				'data-melt-id': meltIds.root,
 			};
 		},
 	});
@@ -122,7 +120,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	};
 
 	const getAllThumbs = () => {
-		const root = getElementByMeltId(ids.root);
+		const root = getElementByMeltId(meltIds.root);
 		if (!root) return null;
 
 		return Array.from(root.querySelectorAll('[data-melt-part="thumb"]')).filter(
@@ -428,7 +426,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	);
 
 	return {
-		ids,
+		ids: meltIds,
 		elements: {
 			root,
 			thumb,
