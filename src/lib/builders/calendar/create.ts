@@ -3,7 +3,7 @@ import {
 	builder,
 	createElHelpers,
 	effect,
-	generateId,
+	generateIds,
 	isBrowser,
 	isHTMLElement,
 	kbd,
@@ -16,7 +16,7 @@ import {
 } from '$lib/internal/helpers/index.js';
 
 import { derived, get, writable } from 'svelte/store';
-import type { CalendarIds, CalendarValue, CreateCalendarProps } from './types.js';
+import type { CalendarValue, CreateCalendarProps } from './types.js';
 import { tick } from 'svelte';
 import {
 	createMonths,
@@ -62,6 +62,9 @@ type CalendarParts = 'content' | 'nextButton' | 'prevButton' | 'grid' | 'cell' |
 
 const { name } = createElHelpers<CalendarParts>('calendar');
 
+export const calendarIdParts = ['calendar', 'grid', 'accessibleHeading'] as const;
+export type CalendarIdParts = typeof calendarIdParts;
+
 export function createCalendar<
 	Multiple extends boolean = false,
 	Value extends DateValue = DateValue,
@@ -70,7 +73,7 @@ export function createCalendar<
 	const withDefaults = { ...defaults, ...props } satisfies CreateCalendarProps<Multiple, Value, S>;
 
 	const options = toWritableStores({
-		...omit(withDefaults, 'value', 'placeholder', 'multiple'),
+		...omit(withDefaults, 'value', 'placeholder', 'multiple', 'ids'),
 		multiple: withDefaults.multiple ?? (false as Multiple),
 	});
 
@@ -90,11 +93,7 @@ export function createCalendar<
 		readonly,
 	} = options;
 
-	const ids = {
-		calendar: generateId(),
-		grid: generateId(),
-		accessibleHeading: generateId(),
-	} satisfies CalendarIds;
+	const ids = toWritableStores({ ...generateIds(calendarIdParts), ...withDefaults.ids });
 
 	const defaultDate = getDefaultDate({
 		defaultPlaceholder: withDefaults.defaultPlaceholder,
@@ -269,10 +268,10 @@ export function createCalendar<
 	 * when using paged navigation.
 	 */
 	const calendar = builder(name(), {
-		stores: [fullCalendarLabel, isInvalid, disabled, readonly],
-		returned: ([$fullCalendarLabel, $isInvalid, $disabled, $readonly]) => {
+		stores: [fullCalendarLabel, isInvalid, disabled, readonly, ids.calendar],
+		returned: ([$fullCalendarLabel, $isInvalid, $disabled, $readonly, $calendarId]) => {
 			return {
-				id: ids.calendar,
+				id: $calendarId,
 				role: 'application',
 				'aria-label': $fullCalendarLabel,
 				'data-invalid': $isInvalid ? '' : undefined,
@@ -327,11 +326,11 @@ export function createCalendar<
 	 * For more details about the structure of the month object, refer to {@link Month}.
 	 */
 	const grid = builder(name('grid'), {
-		stores: [readonly, disabled],
-		returned: ([$readonly, $disabled]) => {
+		stores: [readonly, disabled, ids.grid],
+		returned: ([$readonly, $disabled, $gridId]) => {
 			return {
 				tabindex: -1,
-				id: ids.grid,
+				id: $gridId,
 				role: 'grid',
 				'aria-readonly': $readonly ? 'true' : undefined,
 				'aria-disabled': $disabled ? 'true' : undefined,
@@ -543,7 +542,7 @@ export function createCalendar<
 	 */
 	effect([fullCalendarLabel], ([$fullCalendarLabel]) => {
 		if (!isBrowser) return;
-		const node = document.getElementById(ids.accessibleHeading);
+		const node = document.getElementById(get(ids.accessibleHeading));
 		if (!isHTMLElement(node)) return;
 		node.textContent = $fullCalendarLabel;
 	});
@@ -644,7 +643,7 @@ export function createCalendar<
 		});
 		const h2 = document.createElement('div');
 		h2.textContent = label;
-		h2.id = ids.accessibleHeading;
+		h2.id = get(ids.accessibleHeading);
 		h2.role = 'heading';
 		h2.ariaLevel = '2';
 		node.insertBefore(div, node.firstChild);
@@ -664,6 +663,7 @@ export function createCalendar<
 	 * ```svelte
 	 * <script>
 	 * 	import { createCalendar } from '@melt-ui/svelte';
+import { generateIds } from '../../internal/helpers/id'
 	 * 	const { { ... }, helpers: { nextPage } } = createCalendar()
 	 * </script>
 	 *
@@ -923,7 +923,7 @@ export function createCalendar<
 	}
 
 	function shiftFocus(node: HTMLElement, add: number) {
-		const candidateCells = getSelectableCells(ids.calendar);
+		const candidateCells = getSelectableCells(get(ids.calendar));
 		if (!candidateCells.length) return;
 
 		const index = candidateCells.indexOf(node);
@@ -963,7 +963,7 @@ export function createCalendar<
 			// Without a tick here, it seems to be too fast for
 			// the DOM to update, with the tick it works great
 			tick().then(() => {
-				const newCandidateCells = getSelectableCells(ids.calendar);
+				const newCandidateCells = getSelectableCells(get(ids.calendar));
 				if (!newCandidateCells.length) {
 					return;
 				}
@@ -997,7 +997,7 @@ export function createCalendar<
 			placeholder.set(firstMonth.add({ months: $numberOfMonths }));
 
 			tick().then(() => {
-				const newCandidateCells = getSelectableCells(ids.calendar);
+				const newCandidateCells = getSelectableCells(get(ids.calendar));
 				if (!newCandidateCells.length) {
 					return;
 				}

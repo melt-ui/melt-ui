@@ -1,9 +1,9 @@
-import type { createCalendar } from './create';
+import type { CalendarIdParts, createCalendar } from './create';
 import type { Writable } from 'svelte/store';
-import type { ChangeFn } from '$lib/internal/helpers';
+import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 import type { DateValue } from '@internationalized/date';
 import type { Matcher } from '$lib/index.js';
-import type { IdObj, WhenTrue } from '$lib/internal/types';
+import type { WhenTrue } from '$lib/internal/types.js';
 
 export type CalendarValue<Multiple extends boolean, Value extends DateValue = DateValue> = WhenTrue<
 	Multiple,
@@ -238,15 +238,9 @@ export type CreateCalendarProps<
 	readonly?: boolean;
 
 	/**
-	 * Allows you to override any of the element IDs set by the builder.
-	 *
-	 * NOTE: Use this prop with caution, and only if you have a deep understanding
-	 * of its implications, as incorrect usage may disrupt the out-of-the-box
-	 * accessibility and functionality of the calendar.
+	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: Partial<CalendarIds>;
+	ids?: IdObj<CalendarIdParts>;
 };
-
-export type CalendarIds = IdObj<'calendar' | 'grid' | 'accessibleHeading'>;
 
 export type Calendar = ReturnType<typeof createCalendar>;
