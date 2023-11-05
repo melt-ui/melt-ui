@@ -1,7 +1,7 @@
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn, WhenTrue } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { createAccordion } from './create.js';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
 export type { AccordionComponentEvents } from './events.js';
 
 type AccordionValue<Multiple extends boolean> = WhenTrue<Multiple, string[], string>;

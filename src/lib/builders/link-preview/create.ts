@@ -6,7 +6,6 @@ import {
 	derivedVisible,
 	effect,
 	executeCallbacks,
-	generateId,
 	getPortalDestination,
 	getTabbableNodes,
 	isBrowser,
@@ -23,6 +22,8 @@ import {
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { onMount } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
+import { generateIds } from '../../internal/helpers/id';
+import { omit } from '../../internal/helpers/object';
 import type { LinkPreviewEvents } from './events.js';
 import type { CreateLinkPreviewProps } from './types.js';
 
@@ -31,8 +32,8 @@ const { name } = createElHelpers<LinkPreviewParts>('hover-card');
 
 const defaults = {
 	defaultOpen: false,
-	openDelay: 700,
-	closeDelay: 300,
+	openDelay: 1000,
+	closeDelay: 100,
 	positioning: {
 		placement: 'bottom',
 	},
@@ -42,6 +43,9 @@ const defaults = {
 	portal: 'body',
 	closeOnEscape: true,
 } satisfies CreateLinkPreviewProps;
+
+export const linkPreviewIdParts = ['trigger', 'content'] as const;
+export type LinkPreviewIdParts = typeof linkPreviewIdParts;
 
 export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateLinkPreviewProps;
@@ -56,7 +60,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	// type OpenReason = 'pointer' | 'focus';
 	// const openReason = writable<null | OpenReason>(null);
 
-	const options = toWritableStores(withDefaults);
+	const options = toWritableStores(omit(withDefaults, 'ids'));
 
 	const {
 		openDelay,
@@ -69,11 +73,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		closeOnEscape,
 	} = options;
 
-	const ids = {
-		content: generateId(),
-		trigger: generateId(),
-	};
-
+	const ids = toWritableStores({ ...generateIds(linkPreviewIdParts), ...withDefaults.ids });
 	let timeout: number | null = null;
 	let originalBodyUserSelect: string;
 
@@ -108,15 +108,15 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	) as Readable<() => void>;
 
 	const trigger = builder(name('trigger'), {
-		stores: [open],
-		returned: ([$open]) => {
+		stores: [open, ids.trigger, ids.content],
+		returned: ([$open, $triggerId, $contentId]) => {
 			return {
 				role: 'button' as const,
 				'aria-haspopup': 'dialog' as const,
 				'aria-expanded': $open,
 				'data-state': $open ? 'open' : 'closed',
-				'aria-controls': ids.content,
-				id: ids.trigger,
+				'aria-controls': $contentId,
+				id: $triggerId,
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<LinkPreviewEvents['trigger']> => {
@@ -145,8 +145,8 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	const isVisible = derivedVisible({ open, forceVisible, activeTrigger });
 
 	const content = builder(name('content'), {
-		stores: [isVisible, portal],
-		returned: ([$isVisible, $portal]) => {
+		stores: [isVisible, portal, ids.content],
+		returned: ([$isVisible, $portal, $contentId]) => {
 			return {
 				hidden: $isVisible ? undefined : true,
 				tabindex: -1,
@@ -156,7 +156,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 					userSelect: 'text',
 					WebkitUserSelect: 'text',
 				}),
-				id: ids.content,
+				id: $contentId,
 				'data-state': $isVisible ? 'open' : 'closed',
 				'data-portal': $portal ? '' : undefined,
 			};
@@ -255,7 +255,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	effect([containSelection], ([$containSelection]) => {
 		if (!isBrowser || !$containSelection) return;
 		const body = document.body;
-		const contentElement = document.getElementById(ids.content);
+		const contentElement = document.getElementById(get(ids.content));
 		if (!contentElement) return;
 		// prefix for safari
 		originalBodyUserSelect = body.style.userSelect || body.style.webkitUserSelect;
@@ -275,7 +275,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 	});
 
 	onMount(() => {
-		const triggerEl = document.getElementById(ids.trigger);
+		const triggerEl = document.getElementById(get(ids.trigger));
 		if (!triggerEl) return;
 		activeTrigger.set(triggerEl);
 	});
@@ -300,7 +300,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 
 		document.addEventListener('pointerup', handlePointerUp);
 
-		const contentElement = document.getElementById(ids.content);
+		const contentElement = document.getElementById(get(ids.content));
 		if (!contentElement) return;
 		const tabbables = getTabbableNodes(contentElement);
 		tabbables.forEach((tabbable) => tabbable.setAttribute('tabindex', '-1'));

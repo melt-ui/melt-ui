@@ -27,6 +27,7 @@ import {
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
+import { omit } from '../../internal/helpers/object';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';
 
@@ -54,10 +55,14 @@ const defaults = {
 
 const openDialogIds = writable<string[]>([]);
 
+export const dialogIdParts = ['content', 'title', 'description'] as const;
+export type DialogIdParts = typeof dialogIdParts;
+
 export function createDialog(props?: CreateDialogProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateDialogProps;
 
-	const options = toWritableStores(withDefaults);
+	const options = toWritableStores(omit(withDefaults, 'ids'));
+
 	const {
 		preventScroll,
 		closeOnEscape,
@@ -71,7 +76,10 @@ export function createDialog(props?: CreateDialogProps) {
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
-	const ids = generateIds('content', 'title', 'description');
+	const ids = toWritableStores({
+		...generateIds(dialogIdParts),
+		...withDefaults.ids,
+	});
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
@@ -89,7 +97,6 @@ export function createDialog(props?: CreateDialogProps) {
 
 	function handleClose() {
 		open.set(false);
-
 		handleFocus({
 			prop: get(closeFocus),
 			defaultEl: get(activeTrigger),
@@ -101,22 +108,22 @@ export function createDialog(props?: CreateDialogProps) {
 		sleep(100).then(() => {
 			if ($open) {
 				openDialogIds.update((prev) => {
-					prev.push(ids.content);
+					prev.push(get(ids.content));
 					return prev;
 				});
 			} else {
-				openDialogIds.update((prev) => prev.filter((id) => id !== ids.content));
+				openDialogIds.update((prev) => prev.filter((id) => id !== get(ids.content)));
 			}
 		});
 	});
 
 	const trigger = builder(name('trigger'), {
-		stores: open,
-		returned: ($open) => {
+		stores: [open, ids.content],
+		returned: ([$open, $contentId]) => {
 			return {
 				'aria-haspopup': 'dialog',
 				'aria-expanded': $open,
-				'aria-controls': ids.content,
+				'aria-controls': $contentId,
 				type: 'button',
 			} as const;
 		},
@@ -174,13 +181,13 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const content = builder(name('content'), {
-		stores: [isVisible],
-		returned: ([$isVisible]) => {
+		stores: [isVisible, ids.content, ids.description, ids.title],
+		returned: ([$isVisible, $contentId, $descriptionId, $titleId]) => {
 			return {
-				id: ids.content,
+				id: $contentId,
 				role: get(role),
-				'aria-describedby': ids.description,
-				'aria-labelledby': ids.title,
+				'aria-describedby': $descriptionId,
+				'aria-labelledby': $titleId,
 				'data-state': $isVisible ? 'open' : 'closed',
 				tabindex: -1,
 				hidden: $isVisible ? undefined : true,
@@ -222,7 +229,7 @@ export function createDialog(props?: CreateDialogProps) {
 							if (e.defaultPrevented) return;
 
 							const $openDialogIds = get(openDialogIds);
-							const isLast = last($openDialogIds) === ids.content;
+							const isLast = last($openDialogIds) === get(ids.content);
 							if ($closeOnOutsideClick && isLast) {
 								handleClose();
 							}
@@ -286,14 +293,16 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const title = builder(name('title'), {
-		returned: () => ({
-			id: ids.title,
+		stores: [ids.title],
+		returned: ([$titleId]) => ({
+			id: $titleId,
 		}),
 	});
 
 	const description = builder(name('description'), {
-		returned: () => ({
-			id: ids.description,
+		stores: [ids.description],
+		returned: ([$descriptionId]) => ({
+			id: $descriptionId,
 		}),
 	});
 
@@ -327,7 +336,7 @@ export function createDialog(props?: CreateDialogProps) {
 		if ($preventScroll && $open) unsubs.push(removeScroll());
 
 		if ($open) {
-			const contentEl = document.getElementById(ids.content);
+			const contentEl = document.getElementById(get(ids.content));
 			handleFocus({ prop: get(openFocus), defaultEl: contentEl });
 		}
 
