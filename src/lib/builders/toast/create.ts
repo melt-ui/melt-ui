@@ -9,8 +9,9 @@ import {
 	toWritableStores,
 	addMeltEventListener,
 	kbd,
+	isElement,
 } from '$lib/internal/helpers/index.js';
-import type { AddToastProps, CreateToasterProps, Toast } from './types.js';
+import type { AddToastProps, CreateToasterProps, SwipeDirection, Toast } from './types.js';
 import { usePortal } from '$lib/internal/actions/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import type { ToastEvents } from './events.js';
@@ -21,13 +22,16 @@ const { name } = createElHelpers<ToastParts>('toast');
 const defaults = {
 	closeDelay: 5000,
 	type: 'foreground',
+	swipeDirection: 'right',
+	swipeThreshold: 50,
+	closeOnSwipe: true,
 } satisfies CreateToasterProps;
 
 export function createToaster<T = object>(props?: CreateToasterProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateToasterProps;
 
 	const options = toWritableStores(withDefaults);
-	const { closeDelay, type } = options;
+	const { closeDelay, type, swipeDirection, swipeThreshold, closeOnSwipe } = options;
 
 	const toastsMap = writable(new Map<string, Toast<T>>());
 
@@ -119,7 +123,65 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 		action: (node: HTMLElement): MeltActionReturn<ToastEvents['content']> => {
 			let destroy = noop;
 
+			const pointerStart = writable<{ x: number; y: number } | null>(null);
+			const swipeDelta = writable<{ x: number; y: number } | null>(null);
+
 			destroy = executeCallbacks(
+				addMeltEventListener(node, 'pointerdown', (e) => {
+					if (!get(closeOnSwipe) || e.button !== 0) return;
+					pointerStart.set({ x: e.clientX, y: e.clientY });
+				}),
+				addMeltEventListener(node, 'pointermove', (e) => {
+					if (!get(closeOnSwipe)) return;
+					const $pointerStart = get(pointerStart);
+					if (!$pointerStart) return;
+					const x = e.clientX - $pointerStart.x;
+					const y = e.clientY - $pointerStart.y;
+					const $swipeDirection = get(swipeDirection);
+					const hasSwipeMoveStarted = Boolean(get(swipeDelta));
+					const isHorizontalSwipe = ['left', 'right'].includes($swipeDirection);
+					const clamp = ['left', 'up'].includes($swipeDirection) ? Math.min : Math.max;
+
+					const clampedX = isHorizontalSwipe ? clamp(0, x) : 0;
+					const clampedY = !isHorizontalSwipe ? clamp(0, y) : 0;
+
+					const moveStartBuffer = e.pointerType === 'touch' ? 10 : 2;
+					const delta = {
+						x: clampedX,
+						y: clampedY,
+					};
+					if (hasSwipeMoveStarted) {
+						swipeDelta.set(delta);
+					} else if (isDeltaInDirection(delta, $swipeDirection, moveStartBuffer)) {
+						// onSwipeStart
+						swipeDelta.set(delta);
+						const target = e.target;
+						if (!isElement(target)) return;
+						target.setPointerCapture(e.pointerId);
+					} else if (Math.abs(x) > moveStartBuffer || Math.abs(y) > moveStartBuffer) {
+						// User is swiping in wrong direction so disable swipe gesture
+						pointerStart.set(null);
+					}
+				}),
+				addMeltEventListener(node, 'pointerup', (e) => {
+					if (!get(closeOnSwipe)) return;
+					const target = e.target;
+					if (!isElement(target)) return;
+					const $delta = get(swipeDelta);
+					const $swipeDirection = get(swipeDirection);
+					const $swipeThreshold = get(swipeThreshold);
+					if (target.hasPointerCapture(e.pointerId)) {
+						target.releasePointerCapture(e.pointerId);
+					}
+					if ($delta && isDeltaInDirection($delta, $swipeDirection, $swipeThreshold)) {
+						removeToast(node.id);
+					}
+					swipeDelta.set(null);
+					pointerStart.set(null);
+
+					// prevent click from triggering on items within the toast when swiping
+					node.addEventListener('click', (e) => e.preventDefault(), { once: true });
+				}),
 				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;
 					toastsMap.update((currentMap) => {
@@ -243,4 +305,19 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 		},
 		options,
 	};
+}
+
+function isDeltaInDirection(
+	delta: { x: number; y: number },
+	direction: SwipeDirection,
+	threshold = 0
+) {
+	const deltaX = Math.abs(delta.x);
+	const deltaY = Math.abs(delta.y);
+	const isDeltaX = deltaX > deltaY;
+	if (direction === 'left' || direction === 'right') {
+		return isDeltaX && deltaX > threshold;
+	} else {
+		return !isDeltaX && deltaY > threshold;
+	}
 }
