@@ -2,4 +2,4 @@
 "@melt-ui/svelte": minor
 ---
 
-- add datepicker builder
+- New Builder Suite: Date & Time
