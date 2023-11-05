@@ -14,7 +14,6 @@ import {
 	executeCallbacks,
 	forward,
 	generateId,
-	getElementByMeltId,
 	getOptions,
 	getPortalDestination,
 	hiddenInputAttrs,
@@ -39,9 +38,9 @@ import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { dequal as deepEqual } from 'dequal';
 import { onMount, tick } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
+import { generateIds } from '../../internal/helpers/id';
 import { createLabel } from '../label/create.js';
 import type { ListboxEvents } from './events.js';
-import { generateIds } from '../../internal/helpers/id';
 import type {
 	CreateListboxProps,
 	ListboxOption,
@@ -190,7 +189,7 @@ export function createListbox<
 	async function openMenu() {
 		open.set(true);
 
-		const triggerEl = getElementByMeltId(get(ids.trigger));
+		const triggerEl = document.getElementById(get(ids.trigger));
 		if (!triggerEl) return;
 
 		// The active trigger is used to anchor the menu to the input element.
@@ -261,7 +260,6 @@ export function createListbox<
 				'aria-controls': $menuId,
 				'aria-expanded': $open,
 				'aria-labelledby': $labelId,
-				'data-melt-id': $triggerId,
 				// autocomplete: 'off',
 				id: $triggerId,
 				role: 'combobox',
@@ -627,7 +625,7 @@ export function createListbox<
 		const menuEl = document.getElementById(get(ids.menu));
 		if (!menuEl) return;
 
-		const triggerEl = getElementByMeltId(get(ids.trigger));
+		const triggerEl = document.getElementById(get(ids.trigger));
 		if (triggerEl) {
 			activeTrigger.set(triggerEl);
 		}

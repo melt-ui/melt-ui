@@ -2,8 +2,10 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	disabledAttr,
 	executeCallbacks,
 	generateId,
+	generateIds,
 	getElementByMeltId,
 	isHTMLElement,
 	kbd,
@@ -12,18 +14,14 @@ import {
 	styleToString,
 	toWritableStores,
 	type ChangeFn,
-	disabledAttr,
-	generateIds,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
-import { derived, get, writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import type { AccordionEvents } from './events.js';
 import type { AccordionHeadingProps, AccordionItemProps, CreateAccordionProps } from './types.js';
 
 type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
-export const accordionIdParts = ['root'] as const;
-export type AccordionIdParts = typeof accordionIdParts;
 
 const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
@@ -37,11 +35,9 @@ export const createAccordion = <Multiple extends boolean = false>(
 	props?: CreateAccordionProps<Multiple>
 ) => {
 	const withDefaults = { ...defaults, ...props };
-	const options = toWritableStores(
-		omit(withDefaults, 'value', 'onValueChange', 'defaultValue', 'ids')
-	);
+	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
 
-	const ids = toWritableStores({ ...generateIds(accordionIdParts), ...withDefaults.ids });
+	const meltIds = generateIds(['root']);
 
 	const { disabled, forceVisible } = options;
 
@@ -63,9 +59,8 @@ export const createAccordion = <Multiple extends boolean = false>(
 	});
 
 	const root = builder(name(), {
-		stores: [ids.root],
-		returned: ([$rootId]) => ({
-			'data-melt-id': $rootId,
+		returned: () => ({
+			'data-melt-id': meltIds.root,
 		}),
 	});
 
@@ -140,7 +135,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 					}
 
 					const el = e.target;
-					const rootEl = getElementByMeltId(get(ids.root));
+					const rootEl = getElementByMeltId(meltIds.root);
 					if (!rootEl || !isHTMLElement(el)) return;
 
 					const items = Array.from(rootEl.querySelectorAll(selector('trigger')));
@@ -239,7 +234,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 	}
 
 	return {
-		ids,
+		ids: meltIds,
 		elements: {
 			root,
 			item,

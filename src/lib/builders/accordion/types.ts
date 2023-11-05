@@ -1,7 +1,7 @@
-import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn, WhenTrue } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
-import type { AccordionIdParts, createAccordion } from './create.js';
+import type { createAccordion } from './create.js';
 export type { AccordionComponentEvents } from './events.js';
 
 type AccordionValue<Multiple extends boolean> = WhenTrue<Multiple, string[], string>;
@@ -50,12 +50,6 @@ export type CreateAccordionProps<Multiple extends boolean = false> = {
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
 	onValueChange?: ChangeFn<AccordionValue<Multiple> | undefined>;
-
-	/**
-	 * Optionally override the default ids we assign to the elements
-	 * that make up the accordion.
-	 */
-	ids?: IdObj<AccordionIdParts>;
 };
 
 export type AccordionItemProps =

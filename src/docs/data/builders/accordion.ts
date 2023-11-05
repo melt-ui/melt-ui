@@ -1,7 +1,6 @@
 import { ATTRS, KBD, PROPS, SEE } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
-import { accordionIdParts } from '$lib';
 import { accordionEvents } from '$lib/builders/accordion/events.js';
 import type { BuilderData } from './index.js';
 
@@ -23,7 +22,6 @@ const OPTION_PROPS = [
 const BUILDER_NAME = 'accordion';
 
 const builder = builderSchema(BUILDER_NAME, {
-	ids: accordionIdParts,
 	title: 'createAccordion',
 	props: [
 		...OPTION_PROPS,
