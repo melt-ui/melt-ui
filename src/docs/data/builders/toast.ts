@@ -20,6 +20,24 @@ const OPTION_PROPS = [
 		default: "'foreground'",
 		description: 'The sensitivity of the toast for accessibility purposes.',
 	},
+	{
+		name: 'closeOnSwipe',
+		type: 'boolean',
+		default: 'true',
+		description: 'Whether the toast should be closed when the user swipes it.',
+	},
+	{
+		name: 'swipeDirection',
+		type: ["'up'", "'down'", "'left'", "'right'"],
+		default: "'right'",
+		description: 'The direction of the swipe gesture to close the toast.',
+	},
+	{
+		name: 'swipeThreshold',
+		type: 'number',
+		default: '50',
+		description: 'The minimum distance in pixels the swipe gesture must travel to close the toast.',
+	},
 ];
 
 const BUILDER_NAME = 'toast';
