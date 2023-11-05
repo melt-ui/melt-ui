@@ -13,6 +13,7 @@ import {
 	executeCallbacks,
 	isNumberString,
 	styleToString,
+	noop,
 } from '$lib/internal/helpers/index.js';
 import {
 	dateStore,
@@ -60,6 +61,9 @@ import type {
 	TimeSegmentPart,
 } from './_internal/types.js';
 import type { DateValue } from '@internationalized/date';
+import type { MeltActionReturn } from '$lib/internal/types';
+import type { DateFieldEvents } from './events';
+import type { ActionReturn } from 'svelte/action';
 
 const defaults = {
 	isDateUnavailable: undefined,
@@ -371,7 +375,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 				};
 			};
 		},
-		action: (node: HTMLElement) => getSegmentAction(node),
+		action: (node: HTMLElement): MeltActionReturn<DateFieldEvents['segment']> =>
+			getSegmentAction(node),
 	});
 
 	function updateSegment<T extends keyof DateAndTimeSegmentObj>(
@@ -1672,9 +1677,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 		};
 	}
 
-	function literalSegmentAction() {
+	function literalSegmentAction(_: HTMLElement): MeltActionReturn<DateFieldEvents['segment']> {
 		return {
-			// noop
+			destroy: noop,
 		};
 	}
 
@@ -1698,7 +1703,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		};
 	}
 
-	function timeZoneSegmentAction(node: HTMLElement) {
+	function timeZoneSegmentAction(node: HTMLElement): MeltActionReturn<DateFieldEvents['segment']> {
 		const unsubEvents = executeCallbacks(
 			addMeltEventListener(node, 'keydown', (e) => handleSegmentKeydown(e, 'timeZoneName')),
 			addMeltEventListener(node, 'click', handleSegmentClick)
@@ -1720,12 +1725,12 @@ export function createDateField(props?: CreateDateFieldProps) {
 		return segmentBuilders[part]?.attrs(props);
 	}
 
-	function getSegmentAction(node: HTMLElement) {
+	function getSegmentAction(node: HTMLElement): MeltActionReturn<DateFieldEvents['segment']> {
 		const part = getPartFromNode(node);
 		if (!part) {
 			throw new Error('No segment part found');
 		}
-		return segmentBuilders[part].action(node);
+		return segmentBuilders[part].action(node) as MeltActionReturn<DateFieldEvents['segment']>;
 	}
 
 	/**
