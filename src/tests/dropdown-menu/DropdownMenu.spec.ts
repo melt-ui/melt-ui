@@ -6,6 +6,7 @@ import { testKbd as kbd } from '../utils.js';
 import DropdownMenuTest from './DropdownMenuTest.svelte';
 import DropdownMenuForceVisible from './DropdownMenuForceVisibleTest.svelte';
 import type { CreateDropdownMenuProps } from '$lib';
+import { sleep } from '$lib/internal/helpers/sleep.js';
 
 const OPEN_KEYS = [kbd.ENTER, kbd.ARROW_DOWN, kbd.SPACE];
 
@@ -183,6 +184,7 @@ describe('Dropdown Menu (Default)', () => {
 		expect(menu).toBeVisible();
 		await user.keyboard(kbd.ESCAPE);
 		const closeFocus = getByTestId('closeFocus');
+		await sleep(1);
 		expect(closeFocus).toHaveFocus();
 	});
 

@@ -1,11 +1,12 @@
-import { kbd } from '$lib/internal/helpers/keyboard.js';
-import { render } from '@testing-library/svelte';
+import { testKbd as kbd } from './../utils.js';
+import { render, waitFor } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
 import DatePickerTest from './DatePickerTest.svelte';
 import { CalendarDate, CalendarDateTime, toZoned, today } from '@internationalized/date';
 import { tick } from 'svelte';
+import { sleep } from '$lib/internal/helpers';
 
 const calendarDateToday = today('America/New_York');
 const calendarDate = new CalendarDate(1980, 1, 20);
@@ -189,22 +190,25 @@ describe('DatePicker', () => {
 
 		test('selection with keyboard', async () => {
 			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest, {
+			const { getByTestId, queryByTestId } = render(DatePickerTest, {
 				defaultPlaceholder: zonedDateTime,
 			});
 			const trigger = getByTestId('trigger');
 			await user.click(trigger);
+			await sleep(1);
 			const calendar = getByTestId('calendar');
 			expect(calendar).toBeVisible();
+
 			const secondDayInMonth = getByTestId('month-0-date-2');
 			secondDayInMonth.focus();
-			await user.keyboard(`{${kbd.SPACE}}`);
-			expect(secondDayInMonth).toHaveAttribute('data-selected');
+			expect(secondDayInMonth).toHaveFocus();
+			await user.keyboard(kbd.SPACE);
+			await waitFor(() => expect(secondDayInMonth).toHaveAttribute('data-selected'));
 			const newDate = zonedDateTime.set({ day: 2 });
 			const insideValue = getByTestId('inside-value');
 			expect(insideValue).toHaveTextContent(newDate.toString());
-			await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
-			await user.keyboard(`{${kbd.ENTER}}`);
+			await user.keyboard(kbd.ARROW_RIGHT);
+			await user.keyboard(kbd.ENTER);
 
 			const thirdDayInMonth = getByTestId('month-0-date-3');
 			expect(thirdDayInMonth).toHaveAttribute('data-selected');
@@ -264,12 +268,12 @@ describe('DatePicker', () => {
 			const firstSegment = getByTestId('month');
 			await user.click(firstSegment);
 
-			await user.keyboard(`{${kbd.ARROW_UP}}`);
+			await user.keyboard(kbd.ARROW_UP);
 
 			const currentMonth = calendarDateToday.month;
 			expect(firstSegment).toHaveTextContent(String(currentMonth));
 
-			await user.keyboard(`{${kbd.ARROW_UP}}`);
+			await user.keyboard(kbd.ARROW_UP);
 			expect(firstSegment).toHaveTextContent(String(calendarDateToday.month + 1));
 		});
 
@@ -282,12 +286,12 @@ describe('DatePicker', () => {
 			const firstSegment = getByTestId('month');
 			await user.click(firstSegment);
 
-			await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+			await user.keyboard(kbd.ARROW_DOWN);
 
 			const currentMonth = calendarDateToday.month;
 			expect(firstSegment).toHaveTextContent(String(currentMonth));
 
-			await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+			await user.keyboard(kbd.ARROW_DOWN);
 			expect(firstSegment).toHaveTextContent(String(calendarDateToday.month - 1));
 		});
 
@@ -300,12 +304,12 @@ describe('DatePicker', () => {
 			const firstSegment = getByTestId('month');
 			await user.click(firstSegment);
 
-			await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+			await user.keyboard(kbd.ARROW_DOWN);
 
 			const currentMonth = calendarDateToday.month;
 			expect(firstSegment).toHaveTextContent(String(currentMonth));
 
-			await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+			await user.keyboard(kbd.ARROW_DOWN);
 			expect(firstSegment).toHaveTextContent(String(calendarDateToday.month - 1));
 		});
 
@@ -319,22 +323,22 @@ describe('DatePicker', () => {
 			const triggerSegment = getByTestId('trigger');
 
 			await user.click(monthSegment);
-			await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+			await user.keyboard(kbd.ARROW_RIGHT);
 			expect(daySegment).toHaveFocus();
 
-			await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+			await user.keyboard(kbd.ARROW_RIGHT);
 			expect(yearSegment).toHaveFocus();
 
-			await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+			await user.keyboard(kbd.ARROW_RIGHT);
 			expect(triggerSegment).toHaveFocus();
 
-			await user.keyboard(`{${kbd.ARROW_LEFT}}`);
+			await user.keyboard(kbd.ARROW_LEFT);
 			expect(yearSegment).toHaveFocus();
 
-			await user.keyboard(`{${kbd.ARROW_LEFT}}`);
+			await user.keyboard(kbd.ARROW_LEFT);
 			expect(daySegment).toHaveFocus();
 
-			await user.keyboard(`{${kbd.ARROW_LEFT}}`);
+			await user.keyboard(kbd.ARROW_LEFT);
 			expect(monthSegment).toHaveFocus();
 		});
 
@@ -348,13 +352,13 @@ describe('DatePicker', () => {
 			const triggerSegment = getByTestId('trigger');
 
 			await user.click(monthSegment);
-			await user.keyboard(`{${kbd.TAB}}`);
+			await user.keyboard(kbd.TAB);
 			expect(daySegment).toHaveFocus();
 
-			await user.keyboard(`{${kbd.TAB}}`);
+			await user.keyboard(kbd.TAB);
 			expect(yearSegment).toHaveFocus();
 
-			await user.keyboard(`{${kbd.TAB}}`);
+			await user.keyboard(kbd.TAB);
 			expect(triggerSegment).toHaveFocus();
 		});
 
