@@ -10,20 +10,22 @@ type HandleFocusArgs = {
 
 export function handleFocus(args: HandleFocusArgs): void {
 	const { prop, defaultEl } = args;
-	if (prop === undefined) {
-		sleep(1).then(() => defaultEl?.focus());
-		return;
-	}
+	sleep(1).then(() => {
+		if (prop === undefined) {
+			defaultEl?.focus();
+			return;
+		}
 
-	const returned = isFunction(prop) ? prop(defaultEl) : prop;
+		const returned = isFunction(prop) ? prop(defaultEl) : prop;
 
-	if (typeof returned === 'string') {
-		// Get el by selector, focus it
-		const el = document.querySelector(returned);
-		if (!isHTMLElement(el)) return;
-		sleep(1).then(() => el.focus());
-	} else if (isHTMLElement(returned)) {
-		// Focus it
-		sleep(1).then(() => returned.focus());
-	}
+		if (typeof returned === 'string') {
+			// Get el by selector, focus it
+			const el = document.querySelector(returned);
+			if (!isHTMLElement(el)) return;
+			el.focus();
+		} else if (isHTMLElement(returned)) {
+			// Focus it
+			returned.focus();
+		}
+	});
 }
