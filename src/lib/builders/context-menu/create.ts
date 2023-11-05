@@ -15,6 +15,7 @@ import {
 	isLeftClick,
 	kbd,
 	noop,
+	omit,
 	overridable,
 	styleToString,
 	toWritableStores,
@@ -60,7 +61,7 @@ const { name, selector } = createElHelpers<_MenuParts>('context-menu');
 export function createContextMenu(props?: CreateContextMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;
 
-	const rootOptions = toWritableStores(withDefaults);
+	const rootOptions = toWritableStores(omit(withDefaults, 'ids'));
 	const { positioning, closeOnOutsideClick, portal, forceVisible, closeOnEscape, loop } =
 		rootOptions;
 
@@ -89,6 +90,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		prevFocusable,
 		selector: 'context-menu',
 		removeScroll: true,
+		ids: withDefaults.ids,
 	});
 
 	const point = writable<Point | null>(null);
