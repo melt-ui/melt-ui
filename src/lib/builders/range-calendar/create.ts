@@ -42,6 +42,8 @@ import {
 	isSameMonth,
 	isSameDay,
 } from '@internationalized/date';
+import type { RangeCalendarEvents } from './events.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
 
 const defaults = {
 	isDateDisabled: undefined,
@@ -258,7 +260,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				'data-invalid': $isInvalid ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<RangeCalendarEvents['calendar']> => {
 			/**
 			 * Create the accessible heading for the calendar
 			 * when the grid is mounted. The label is updated
@@ -301,7 +303,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				'data-disabled': disabled ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<RangeCalendarEvents['prevButton']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
 					prevPage();
@@ -325,7 +327,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				'data-disabled': disabled ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<RangeCalendarEvents['nextButton']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
 					nextPage();
@@ -459,7 +461,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				} as const;
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<RangeCalendarEvents['cell']> => {
 			const getElArgs = () => {
 				const value = node.getAttribute('data-value');
 				const label = node.getAttribute('data-label');

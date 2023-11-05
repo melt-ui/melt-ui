@@ -63,7 +63,6 @@ import type {
 import type { DateValue } from '@internationalized/date';
 import type { MeltActionReturn } from '$lib/internal/types';
 import type { DateFieldEvents } from './events';
-import type { ActionReturn } from 'svelte/action';
 
 const defaults = {
 	isDateUnavailable: undefined,

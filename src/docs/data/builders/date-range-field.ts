@@ -1,7 +1,7 @@
 import { ATTRS, KBD } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
-import { popoverEvents } from '$lib/builders/popover/events.js';
+import { dateRangeFieldEvents } from '$lib/builders/date-range-field/events.js';
 import type { BuilderData } from './index.js';
 
 const dateRangeFieldProps = [
@@ -208,8 +208,8 @@ const field = elementSchema('field', {
 	// events: popoverEvents['trigger'],
 });
 
-const segment = elementSchema('segment', {
-	description: 'An individual segment of the date',
+const startSegment = elementSchema('startSegment', {
+	description: 'The start segment for the date range field',
 	dataAttributes: [
 		{
 			name: 'data-invalid',
@@ -228,6 +228,30 @@ const segment = elementSchema('segment', {
 			value: ATTRS.MELT('segment'),
 		},
 	],
+	events: dateRangeFieldEvents['startSegment'],
+});
+
+const endSegment = elementSchema('endSegment', {
+	description: 'The end segment for the date range field',
+	dataAttributes: [
+		{
+			name: 'data-invalid',
+			value: 'Present when the field is invalid.',
+		},
+		{
+			name: 'data-disabled',
+			value: 'Present when the field is disabled.',
+		},
+		{
+			name: 'data-segment',
+			value: 'SegmentPart',
+		},
+		{
+			name: 'data-melt-datefield-segment',
+			value: ATTRS.MELT('segment'),
+		},
+	],
+	events: dateRangeFieldEvents['endSegment'],
 });
 
 const validation = elementSchema('validation', {
@@ -260,16 +284,26 @@ const label = elementSchema('label', {
 	],
 });
 
-const hiddenInput = elementSchema('hiddenInput', {
-	title: 'hiddenInput',
-	description: 'The hidden input for the date field',
+const startHiddenInput = elementSchema('startHiddenInput', {
+	title: 'startHiddenInput',
+	description: 'The hidden input for the start date field.',
 	dataAttributes: [
 		{
 			name: 'data-melt-datefield-hiddenInput',
 			value: ATTRS.MELT('hiddenInput'),
 		},
 	],
-	events: popoverEvents['close'],
+});
+
+const endHiddenInput = elementSchema('endHiddenInput', {
+	title: 'endHiddenInput',
+	description: 'The hidden input for the start date field.',
+	dataAttributes: [
+		{
+			name: 'data-melt-datefield-hiddenInput',
+			value: ATTRS.MELT('hiddenInput'),
+		},
+	],
 });
 
 const keyboard: KeyboardSchema = [
@@ -297,7 +331,16 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, field, segment, label, validation, hiddenInput];
+const schemas = [
+	builder,
+	field,
+	startSegment,
+	endSegment,
+	label,
+	validation,
+	startHiddenInput,
+	endHiddenInput,
+];
 
 const features = [
 	'Full keyboard navigation',

@@ -38,6 +38,8 @@ import {
 	isSameDay,
 } from '@internationalized/date';
 import { dateStore, createFormatter, getDefaultDate } from '$lib/internal/helpers/date/index.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
+import type { CalendarEvents } from './events.js';
 
 const defaults = {
 	isDateDisabled: undefined,
@@ -278,7 +280,7 @@ export function createCalendar<
 				'data-readonly': $readonly ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<CalendarEvents['calendar']> => {
 			/**
 			 * Generates the accessible calendar heading when the grid is mounted.
 			 * The label is dynamically updated through an effect whenever there
@@ -356,7 +358,7 @@ export function createCalendar<
 				'data-disabled': disabled ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<CalendarEvents['prevButton']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
 					if (get(isPrevButtonDisabled)) return;
@@ -386,7 +388,7 @@ export function createCalendar<
 				'data-disabled': disabled ? '' : undefined,
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<CalendarEvents['nextButton']> => {
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
 					if (get(isNextButtonDisabled)) return;
@@ -464,7 +466,7 @@ export function createCalendar<
 				} as const;
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<CalendarEvents['cell']> => {
 			const getElArgs = () => {
 				const value = node.getAttribute('data-value');
 				const label = node.getAttribute('data-label');

@@ -16,6 +16,8 @@ import {
 import { dateStore, createFormatter, getDefaultDate } from '$lib/internal/helpers/date/index.js';
 import { createDateRangeField } from '../date-range-field/create.js';
 import { pickerOpenFocus } from '$lib/internal/helpers/date/focus.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
+import type { DateRangePickerEvents } from './events.js';
 
 const defaults = {
 	isDateDisabled: undefined,
@@ -89,7 +91,7 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 				'data-segment': 'trigger',
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<DateRangePickerEvents['trigger']> => {
 			const unsubKeydown = addMeltEventListener(node, 'keydown', handleTriggerKeydown);
 
 			const { destroy } = popover.elements.trigger(node);

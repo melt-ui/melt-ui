@@ -1,6 +1,7 @@
 import { ATTRS, KBD } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { rangeCalendarEvents } from '$lib/builders/range-calendar/events.js';
 import type { BuilderData } from './index.js';
 
 const rangeCalendarProps = [
@@ -275,6 +276,7 @@ const calendar = elementSchema('calendar', {
 			value: ATTRS.MELT('calendar'),
 		},
 	],
+	events: rangeCalendarEvents['calendar'],
 });
 
 const heading = elementSchema('heading', {
@@ -321,6 +323,7 @@ const prevButton = elementSchema('prevButton', {
 			value: ATTRS.MELT('prevButton'),
 		},
 	],
+	events: rangeCalendarEvents['prevButton'],
 });
 
 const nextButton = elementSchema('nextButton', {
@@ -335,6 +338,7 @@ const nextButton = elementSchema('nextButton', {
 			value: ATTRS.MELT('nextButton'),
 		},
 	],
+	events: rangeCalendarEvents['nextButton'],
 });
 
 const cell = elementSchema('cell', {
@@ -393,6 +397,7 @@ const cell = elementSchema('cell', {
 			value: ATTRS.MELT('cell'),
 		},
 	],
+	events: rangeCalendarEvents['cell'],
 });
 
 const keyboard: KeyboardSchema = [

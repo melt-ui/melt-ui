@@ -1,6 +1,7 @@
 import { ATTRS, KBD } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { dateFieldEvents } from '$lib/builders/date-field/events.js';
 import { popoverEvents } from '$lib/builders/popover/events.js';
 import type { BuilderData } from './index.js';
 
@@ -215,6 +216,7 @@ const segment = elementSchema('segment', {
 			value: ATTRS.MELT('segment'),
 		},
 	],
+	events: dateFieldEvents['segment'],
 });
 
 const validation = elementSchema('validation', {

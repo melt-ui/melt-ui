@@ -33,6 +33,7 @@ import { treeData } from './tree.js';
 import { tableOfContentsData } from './table-of-contents.js';
 import { toolbarData } from './toolbar.js';
 import { tooltipData } from './tooltip.js';
+import { datePickerData } from './date-picker.js';
 
 export const builderList = [
 	'accordion',
@@ -95,7 +96,7 @@ export const data: Builders = {
 	combobox: comboboxData,
 	'context-menu': contextMenuData,
 	'date-field': dateFieldData,
-	'date-picker': calendarData,
+	'date-picker': datePickerData,
 	'date-range-field': dateRangeFieldData,
 	'date-range-picker': dateRangePickerData,
 	dialog: dialogData,

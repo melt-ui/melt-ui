@@ -15,6 +15,8 @@ import {
 
 import { dateStore, createFormatter, getDefaultDate } from '$lib/internal/helpers/date/index.js';
 import { pickerOpenFocus } from '$lib/internal/helpers/date/focus.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
+import type { DatePickerEvents } from './events.js';
 
 const defaults = {
 	isDateDisabled: undefined,
@@ -71,7 +73,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 				'data-segment': 'trigger',
 			};
 		},
-		action: (node: HTMLElement) => {
+		action: (node: HTMLElement): MeltActionReturn<DatePickerEvents['trigger']> => {
 			const unsubKeydown = addMeltEventListener(node, 'keydown', handleTriggerKeydown);
 
 			const { destroy } = popover.elements.trigger(node);

@@ -1,8 +1,10 @@
-import { ATTRS, KBD } from '$docs/constants.js';
+import { KBD } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
-import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { builderSchema } from '$docs/utils/index.js';
 import type { BuilderData } from './index.js';
 import { dateFieldData } from './date-field.js';
+import { calendarData } from './calendar.js';
+import { popoverData } from './popover.js';
 
 const datePickerProps = [
 	{
@@ -116,7 +118,7 @@ const datePickerProps = [
 const excludedProps = ['value', 'placeholder'];
 const calendarOptions = datePickerProps.filter((prop) => !excludedProps.includes(prop.name));
 
-const BUILDER_NAME = 'calendar';
+const BUILDER_NAME = 'date picker';
 
 const builder = builderSchema(BUILDER_NAME, {
 	title: 'createDatePicker',
@@ -262,134 +264,6 @@ const builder = builderSchema(BUILDER_NAME, {
 	],
 });
 
-const calendar = elementSchema('calendar', {
-	description: 'The container of the months and days of the calendar',
-	dataAttributes: [
-		{
-			name: 'data-invalid',
-			value: 'Present when the calendar is invalid.',
-		},
-		{
-			name: 'data-disabled',
-			value: 'Present when the calendar is disabled.',
-		},
-		{
-			name: 'data-readonly',
-			value: 'Present when the calendar is readonly.',
-		},
-		{
-			name: 'data-melt-calendar',
-			value: ATTRS.MELT('calendar'),
-		},
-	],
-});
-
-const heading = elementSchema('heading', {
-	description: 'A visual heading for the calendar',
-	dataAttributes: [
-		{
-			name: 'data-invalid',
-			value: 'Present when the calendar is invalid.',
-		},
-		{
-			name: 'data-disabled',
-			value: 'Present when the calendar is disabled.',
-		},
-		{
-			name: 'data-melt-calendar-heading',
-			value: ATTRS.MELT('heading'),
-		},
-	],
-});
-
-const grid = elementSchema('grid', {
-	description: 'A grid representing a month of the calendar',
-	dataAttributes: [
-		{
-			name: 'data-disabled',
-			value: 'Present when the calendar is disabled.',
-		},
-		{
-			name: 'data-melt-calendar-grid',
-			value: ATTRS.MELT('grid'),
-		},
-	],
-});
-
-const prevButton = elementSchema('prevButton', {
-	description: 'A button which moves the calendar to the previous page',
-	dataAttributes: [
-		{
-			name: 'data-disabled',
-			value: 'Present when the calendar is disabled.',
-		},
-		{
-			name: 'data-melt-calendar-prevButton',
-			value: ATTRS.MELT('prevButton'),
-		},
-	],
-});
-
-const nextButton = elementSchema('nextButton', {
-	description: 'A button which moves the calendar to the next page',
-	dataAttributes: [
-		{
-			name: 'data-disabled',
-			value: 'Present when the calendar is disabled.',
-		},
-		{
-			name: 'data-melt-calendar-nextButton',
-			value: ATTRS.MELT('nextButton'),
-		},
-	],
-});
-
-const cell = elementSchema('cell', {
-	description: 'A cell representing a single date in the calendar',
-	dataAttributes: [
-		{
-			name: 'data-disabled',
-			value: 'Present when the date is disabled.',
-		},
-		{
-			name: 'data-selected',
-			value: 'Present when the date is selected.',
-		},
-		{
-			name: 'data-value',
-			value: 'The ISO string value of the date.',
-		},
-		{
-			name: 'data-unavailable',
-			value: 'Present when the date is unavailable.',
-		},
-		{
-			name: 'data-today',
-			value: 'Present when the date is today.',
-		},
-		{
-			name: 'data-outside-month',
-			value: 'Present when the date is outside the current month it is displayed in.',
-		},
-		{
-			name: 'data-outside-visible-months',
-			value: 'Present when the date is outside the months that are visible on the calendar.',
-		},
-		{
-			name: 'data-focused',
-			value: 'Present when the date is focused.',
-		},
-		{
-			name: 'data-calendar-cell',
-			value: ATTRS.MELT('cell'),
-		},
-		{
-			name: 'data-melt-calendar-cell',
-			value: ATTRS.MELT('cell'),
-		},
-	],
-});
-
 const keyboard: KeyboardSchema = [
 	{
 		key: KBD.SPACE,
@@ -417,18 +291,24 @@ const keyboard: KeyboardSchema = [
 
 function getDateFieldSchemas() {
 	if (!dateFieldData.schemas) return [];
-	return dateFieldData.schemas;
+	return dateFieldData.schemas.filter((schema) => !schema.isBuilder);
+}
+
+function getCalendarSchemas() {
+	if (!calendarData.schemas) return [];
+	return calendarData.schemas.filter((schema) => !schema.isBuilder);
+}
+
+function getPopoverSchemas() {
+	if (!popoverData.schemas) return [];
+	return popoverData.schemas.filter((schema) => !schema.isBuilder);
 }
 
 const schemas = [
 	builder,
-	calendar,
-	grid,
-	cell,
-	heading,
-	prevButton,
-	nextButton,
+	...getCalendarSchemas(),
 	...getDateFieldSchemas(),
+	...getPopoverSchemas(),
 ];
 
 const features = [
