@@ -334,7 +334,8 @@ describe('Dropdown Menu (forceVisible)', () => {
 		expect(queryByTestId('check2')).toBeNull();
 		await user.keyboard(kbd.ENTER);
 		await user.keyboard(kbd.ENTER);
-		expect(queryByTestId('check2')).not.toBeNull();
+
+		await waitFor(() => expect(queryByTestId('check2')).not.toBeNull());
 	});
 
 	test('Hovering over subtrigger opens submenu', async () => {
