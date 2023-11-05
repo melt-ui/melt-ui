@@ -1,4 +1,4 @@
-import { kbd } from '$lib/internal/helpers/keyboard.js';
+import { testKbd as kbd } from '../utils.js';
 import { render } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -132,12 +132,12 @@ describe('DateField', () => {
 		const firstSegment = getByTestId('month');
 		await user.click(firstSegment);
 
-		await user.keyboard(`{${kbd.ARROW_UP}}`);
+		await user.keyboard(kbd.ARROW_UP);
 
 		const currentMonth = calendarDateOther.month;
 		expect(firstSegment).toHaveTextContent(String(currentMonth));
 
-		await user.keyboard(`{${kbd.ARROW_UP}}`);
+		await user.keyboard(kbd.ARROW_UP);
 		expect(firstSegment).toHaveTextContent(String(calendarDateOther.month + 1));
 	});
 
@@ -150,12 +150,12 @@ describe('DateField', () => {
 		const firstSegment = getByTestId('month');
 		await user.click(firstSegment);
 
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ARROW_DOWN);
 
 		const currentMonth = calendarDateOther.month;
 		expect(firstSegment).toHaveTextContent(String(currentMonth));
 
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ARROW_DOWN);
 		expect(firstSegment).toHaveTextContent(String(12));
 	});
 
@@ -168,12 +168,12 @@ describe('DateField', () => {
 		const firstSegment = getByTestId('month');
 		await user.click(firstSegment);
 
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ARROW_DOWN);
 
 		const currentMonth = calendarDateOther.month;
 		expect(firstSegment).toHaveTextContent(String(currentMonth));
 
-		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(kbd.ARROW_DOWN);
 		expect(firstSegment).toHaveTextContent(String(12));
 	});
 
@@ -186,16 +186,16 @@ describe('DateField', () => {
 		const yearSegment = getByTestId('year');
 
 		await user.click(monthSegment);
-		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(kbd.ARROW_RIGHT);
 		expect(daySegment).toHaveFocus();
 
-		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(kbd.ARROW_RIGHT);
 		expect(yearSegment).toHaveFocus();
 
-		await user.keyboard(`{${kbd.ARROW_LEFT}}`);
+		await user.keyboard(kbd.ARROW_LEFT);
 		expect(daySegment).toHaveFocus();
 
-		await user.keyboard(`{${kbd.ARROW_LEFT}}`);
+		await user.keyboard(kbd.ARROW_LEFT);
 		expect(monthSegment).toHaveFocus();
 	});
 
@@ -208,10 +208,10 @@ describe('DateField', () => {
 		const yearSegment = getByTestId('year');
 
 		await user.click(monthSegment);
-		await user.keyboard(`{${kbd.TAB}}`);
+		await user.keyboard(kbd.TAB);
 		expect(daySegment).toHaveFocus();
 
-		await user.keyboard(`{${kbd.TAB}}`);
+		await user.keyboard(kbd.TAB);
 		expect(yearSegment).toHaveFocus();
 	});
 
@@ -226,9 +226,9 @@ describe('DateField', () => {
 
 		await user.click(monthSegment);
 		expect(monthSegment).not.toHaveFocus();
-		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(kbd.ARROW_RIGHT);
 		expect(daySegment).not.toHaveFocus();
-		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(kbd.ARROW_RIGHT);
 		expect(yearSegment).not.toHaveFocus();
 
 		await user.click(daySegment);
@@ -250,7 +250,7 @@ describe('DateField', () => {
 			expect(el).toHaveTextContent(String(calendarDateOther[segment]));
 			await user.click(el);
 			expect(el).toHaveFocus();
-			await user.keyboard(`{${kbd.ARROW_UP}}`);
+			await user.keyboard(kbd.ARROW_UP);
 			expect(el).toHaveTextContent(String(calendarDateOther[segment]));
 		}
 	});
@@ -300,7 +300,7 @@ describe('DateField', () => {
 		expect(hourSegment).toHaveTextContent('12');
 		await user.click(hourSegment);
 		expect(hourSegment).toHaveFocus();
-		await user.keyboard(`{${kbd.ARROW_UP}}`);
+		await user.keyboard(kbd.ARROW_UP);
 		expect(hourSegment).toHaveTextContent('13');
 	});
 
@@ -356,7 +356,7 @@ describe('DateField', () => {
 
 		await user.click(dayPeriodSegment);
 		expect(dayPeriodSegment).toHaveFocus();
-		await user.keyboard(`{${kbd.ARROW_UP}}`);
+		await user.keyboard(kbd.ARROW_UP);
 		expect(dayPeriodSegment).toHaveTextContent('AM');
 		expect(insideValue).toHaveTextContent('1980-01-20T00:30');
 	});
@@ -493,7 +493,7 @@ describe('DateField', () => {
 
 		const timeZoneSegment = getByTestId('timeZoneName');
 
-		expect(timeZoneSegment).toHaveTextContent(thisTimeZone());
+		expect(timeZoneSegment).toHaveTextContent(thisTimeZone('2023-10-12T12:30:00Z'));
 	});
 });
 
@@ -507,10 +507,10 @@ function isDaylightSavingsTime(): boolean {
 	return isDaylightSavingsTime;
 }
 
-function thisTimeZone(): string {
+function thisTimeZone(date: string): string {
 	const timezone =
 		Intl.DateTimeFormat(undefined, { timeZoneName: 'short' })
-			.formatToParts(new Date())
+			.formatToParts(new Date(date))
 			.find((p) => p.type === 'timeZoneName')?.value ?? '';
 	return timezone;
 }
