@@ -6,10 +6,10 @@
 </script>
 
 <div>
-	<DateField locale={'en-US'} {defaultPlaceholder} />
-	<DateField locale={'de'} {defaultPlaceholder} />
-	<DateField locale={'es'} {defaultPlaceholder} />
-	<DateField locale={'uk'} {defaultPlaceholder} />
+	<DateField locale="en-US" {defaultPlaceholder} />
+	<DateField locale="de" {defaultPlaceholder} />
+	<DateField locale="es" {defaultPlaceholder} />
+	<DateField locale="uk" {defaultPlaceholder} />
 </div>
 
 <style lang="postcss">
