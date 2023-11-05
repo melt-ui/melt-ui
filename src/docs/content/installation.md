@@ -27,7 +27,7 @@ Install Melt UI with your package manager of choice.
 <span slot="npm">
 
 ```bash /@melt-ui/#melt /svelte/#melt
-npm install @melt-ui/svelte
+npm install -D @melt-ui/svelte
 ```
 
 </span>
@@ -35,7 +35,7 @@ npm install @melt-ui/svelte
 <span slot="yarn">
 
 ```bash /@melt-ui/#melt /svelte/#melt
-yarn add @melt-ui/svelte
+yarn add -D @melt-ui/svelte
 ```
 
 </span>
@@ -43,7 +43,7 @@ yarn add @melt-ui/svelte
 <span slot="pnpm">
 
 ```bash /@melt-ui/#melt /svelte/#melt
-pnpm add @melt-ui/svelte
+pnpm add -D @melt-ui/svelte
 ```
 
 </span>

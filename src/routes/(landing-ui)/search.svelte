@@ -118,7 +118,7 @@
 	<div use:melt={$overlay} class="fixed inset-0 z-40 bg-black bg-opacity-50" />
 	<div
 		use:melt={$content}
-		class="fixed left-1/2 top-96 z-50 grid -translate-x-1/2 place-items-center"
+		class="fixed left-1/2 top-4 z-50 grid -translate-x-1/2 place-items-center md:top-96"
 	>
 		<div class="flex flex-col gap-1">
 			<div class="relative">

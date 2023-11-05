@@ -10,7 +10,9 @@ import {
 	createElHelpers,
 	effect,
 	executeCallbacks,
+	generateIds,
 	getPortalDestination,
+	handleFocus,
 	isBrowser,
 	isHTMLElement,
 	kbd,
@@ -21,15 +23,13 @@ import {
 	sleep,
 	styleToString,
 	toWritableStores,
-	handleFocus,
-	generateIds,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { onMount, tick } from 'svelte';
+import { tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
+import { omit } from '../../internal/helpers/object';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';
-import { omit } from '../../internal/helpers/object';
 
 type DialogParts =
 	| 'trigger'
@@ -55,7 +55,7 @@ const defaults = {
 
 const openDialogIds = writable<string[]>([]);
 
-export const dialogIdParts = ['content', 'title', 'description', 'trigger'] as const;
+export const dialogIdParts = ['content', 'title', 'description'] as const;
 export type DialogIdParts = typeof dialogIdParts;
 
 export function createDialog(props?: CreateDialogProps) {
@@ -97,16 +97,11 @@ export function createDialog(props?: CreateDialogProps) {
 
 	function handleClose() {
 		open.set(false);
-		const triggerEl = document.getElementById(get(ids.trigger));
 		handleFocus({
 			prop: get(closeFocus),
-			defaultEl: triggerEl,
+			defaultEl: get(activeTrigger),
 		});
 	}
-
-	onMount(() => {
-		activeTrigger.set(document.getElementById(get(ids.trigger)));
-	});
 
 	effect([open], ([$open]) => {
 		// Prevent double clicks from closing multiple dialogs
@@ -123,10 +118,9 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const trigger = builder(name('trigger'), {
-		stores: [open, ids.trigger, ids.content],
-		returned: ([$open, $triggerId, $contentId]) => {
+		stores: [open, ids.content],
+		returned: ([$open, $contentId]) => {
 			return {
-				id: $triggerId,
 				'aria-haspopup': 'dialog',
 				'aria-expanded': $open,
 				'aria-controls': $contentId,
