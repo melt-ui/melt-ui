@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.58.0
+
+### Minor Changes
+
+- Feat: ability to override internal ids via a prop ([#683](https://github.com/melt-ui/melt-ui/pull/683))
+
 ## 0.57.3
 
 ### Patch Changes
