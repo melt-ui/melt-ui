@@ -1,7 +1,7 @@
 import { ATTRS, KBD, PROPS, SEE, TYPES } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
-import { sliderIdParts } from '$lib';
+
 import { sliderEvents } from '$lib/builders/slider/events.js';
 import type { BuilderData } from './index.js';
 
@@ -38,7 +38,6 @@ const OPTION_PROPS = [
 const BUILDER_NAME = 'slider';
 
 const builder = builderSchema(BUILDER_NAME, {
-	ids: sliderIdParts,
 	title: 'createSlider',
 	props: [
 		...OPTION_PROPS,
