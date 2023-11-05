@@ -14,10 +14,11 @@ import {
 	disabledAttr,
 	effect,
 	executeCallbacks,
-	generateId,
+	generateIds,
 	getNextFocusable,
 	getPortalDestination,
 	getPreviousFocusable,
+	handleFocus,
 	handleRovingFocus,
 	isBrowser,
 	isElementDisabled,
@@ -56,6 +57,9 @@ export const SUB_CLOSE_KEYS: Record<TextDirection, string[]> = {
 	rtl: [kbd.ARROW_RIGHT],
 };
 
+export const menuIdParts = ['menu', 'trigger'] as const;
+export type _MenuIdParts = typeof menuIdParts;
+
 const defaults = {
 	arrowSize: 8,
 	positioning: {
@@ -84,6 +88,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		forceVisible,
 		typeahead,
 		loop,
+		closeFocus,
+		disableFocusFirstItem,
 	} = opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
@@ -133,10 +139,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 	const { typed, handleTypeaheadSearch } = createTypeaheadSearch();
 
-	const rootIds = {
-		menu: generateId(),
-		trigger: generateId(),
-	};
+	const rootIds = toWritableStores({ ...generateIds(menuIdParts), ...opts.ids });
 
 	const isVisible = derivedVisible({
 		open: rootOpen,
@@ -145,16 +148,16 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	});
 
 	const rootMenu = builder(name(), {
-		stores: [isVisible, portal],
-		returned: ([$isVisible, $portal]) => {
+		stores: [isVisible, portal, rootIds.menu, rootIds.trigger],
+		returned: ([$isVisible, $portal, $rootMenuId, $rootTriggerId]) => {
 			return {
 				role: 'menu',
 				hidden: $isVisible ? undefined : true,
 				style: styleToString({
 					display: $isVisible ? undefined : 'none',
 				}),
-				id: rootIds.menu,
-				'aria-labelledby': rootIds.trigger,
+				id: $rootMenuId,
+				'aria-labelledby': $rootTriggerId,
 				'data-state': $isVisible ? 'open' : 'closed',
 				'data-portal': $portal ? '' : undefined,
 				tabindex: -1,
@@ -244,13 +247,13 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	});
 
 	const rootTrigger = builder(name('trigger'), {
-		stores: [rootOpen],
-		returned: ([$rootOpen]) => {
+		stores: [rootOpen, rootIds.menu, rootIds.trigger],
+		returned: ([$rootOpen, $rootMenuId, $rootTriggerId]) => {
 			return {
-				'aria-controls': rootIds.menu,
+				'aria-controls': $rootMenuId,
 				'aria-expanded': $rootOpen,
 				'data-state': $rootOpen ? 'open' : 'closed',
-				id: rootIds.trigger,
+				id: $rootTriggerId,
 				tabindex: 0,
 			} as const;
 		},
@@ -636,8 +639,8 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 	const createSubmenu = (args?: _CreateSubmenuProps) => {
 		const withDefaults = { ...subMenuDefaults, ...args } satisfies _CreateSubmenuProps;
 
-		const subOpen = writable(false);
-
+		const subOpenWritable = withDefaults.open ?? writable(false);
+		const subOpen = overridable(subOpenWritable, withDefaults?.onOpenChange);
 		// options
 		const options = toWritableStores(withDefaults);
 
@@ -647,10 +650,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const subOpenTimer = writable<number | null>(null);
 		const pointerGraceTimer = writable(0);
 
-		const subIds = {
-			menu: generateId(),
-			trigger: generateId(),
-		};
+		const subIds = { ...generateIds(menuIdParts), ...withDefaults.ids };
 
 		onMount(() => {
 			/**
@@ -681,6 +681,9 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					id: subIds.menu,
 					'aria-labelledby': subIds.trigger,
 					'data-state': $subIsVisible ? 'open' : 'closed',
+					// unit tests fail on `.closest` if the id starts with a number
+					// so using a data attribute
+					'data-id': subIds.menu,
 					tabindex: -1,
 				} as const;
 			},
@@ -705,6 +708,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 									portal: isHTMLElement(parentMenuEl) ? parentMenuEl : undefined,
 									clickOutside: null,
 									focusTrap: null,
+									escapeKeydown: null,
 								},
 							});
 
@@ -881,7 +885,9 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
-						handleRovingFocus(triggerEl);
+						if (!isFocusWithinSubmenu(subIds.menu)) {
+							handleRovingFocus(triggerEl);
+						}
 
 						const openTimer = get(subOpenTimer);
 						if (!get(subOpen) && !openTimer && !isElementDisabled(triggerEl)) {
@@ -1045,7 +1051,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		 * case where the user sets the `open` store to `true` without
 		 * clicking on the trigger.
 		 */
-		const triggerEl = document.getElementById(rootIds.trigger);
+		const triggerEl = document.getElementById(get(rootIds.trigger));
 		if (isHTMLElement(triggerEl) && get(rootOpen)) {
 			rootActiveTrigger.set(triggerEl);
 		}
@@ -1099,14 +1105,27 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 				unsubs.push(removeScroll());
 			}
 
-			if (!$rootOpen && $rootActiveTrigger && opts.disableTriggerRefocus === false) {
-				handleRovingFocus($rootActiveTrigger);
+			const $closeFocus = get(closeFocus);
+
+			if (!$rootOpen) {
+				if ($rootActiveTrigger) {
+					// If we already have a reference to the trigger, focus it
+					handleFocus({ prop: $closeFocus, defaultEl: $rootActiveTrigger });
+				} else {
+					// otherwise we'll get the trigger el and focus it
+					handleFocus({
+						prop: $closeFocus,
+						defaultEl: document.getElementById(get(rootIds.trigger)),
+					});
+				}
 			}
 
+			// if the menu is open, we'll sleep for a sec so the menu can render
+			// before we focus on either the first item or the menu itself.
 			sleep(1).then(() => {
-				const menuEl = document.getElementById(rootIds.menu);
+				const menuEl = document.getElementById(get(rootIds.menu));
 				if (menuEl && $rootOpen && get(isUsingKeyboard)) {
-					if (opts.disableFocusFirstItem) {
+					if (get(disableFocusFirstItem)) {
 						handleRovingFocus(menuEl);
 						return;
 					}
@@ -1116,19 +1135,6 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 					// Focus on first menu item
 					handleRovingFocus(menuItems[0]);
-				} else if ($rootActiveTrigger) {
-					// Focus on active trigger trigger
-					if (opts.disableTriggerRefocus) {
-						return;
-					}
-					handleRovingFocus($rootActiveTrigger);
-				} else {
-					if (opts.disableTriggerRefocus) {
-						return;
-					}
-					const triggerEl = document.getElementById(rootIds.trigger);
-					if (!triggerEl) return;
-					handleRovingFocus(triggerEl);
 				}
 			});
 
@@ -1144,7 +1150,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const handlePointer = () => isUsingKeyboard.set(false);
 		const handleKeyDown = (e: KeyboardEvent) => {
 			isUsingKeyboard.set(true);
-			if (e.key === kbd.ESCAPE && $rootOpen) {
+			if (e.key === kbd.ESCAPE && $rootOpen && get(closeOnEscape)) {
 				rootOpen.set(false);
 				return;
 			}
@@ -1343,14 +1349,14 @@ export function handleTabNavigation(
 		const $prevFocusable = get(prevFocusable);
 		if ($prevFocusable) {
 			e.preventDefault();
-			$prevFocusable.focus();
+			sleep(1).then(() => $prevFocusable.focus());
 			prevFocusable.set(null);
 		}
 	} else {
 		const $nextFocusable = get(nextFocusable);
 		if ($nextFocusable) {
 			e.preventDefault();
-			$nextFocusable.focus();
+			sleep(1).then(() => $nextFocusable.focus());
 			nextFocusable.set(null);
 		}
 	}
@@ -1498,4 +1504,13 @@ function isPointInPolygon(point: Point, polygon: Polygon) {
 	}
 
 	return inside;
+}
+
+function isFocusWithinSubmenu(submenuId: string) {
+	const activeEl = document.activeElement;
+	if (!isHTMLElement(activeEl)) return false;
+	// unit tests don't allow `.closest(#id)` to start with a number
+	// so we're using a data attribute.
+	const submenuEl = activeEl.closest(`[data-id="${submenuId}"]`);
+	return isHTMLElement(submenuEl);
 }

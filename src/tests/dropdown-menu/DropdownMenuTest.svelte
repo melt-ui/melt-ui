@@ -1,18 +1,27 @@
 <script lang="ts">
-	import { createDropdownMenu, melt } from '$lib/index.js';
+	import { createDropdownMenu, melt, type CreateDropdownMenuProps } from '$lib/index.js';
 	import { writable } from 'svelte/store';
 	import { AlignJustify, ChevronRight } from 'lucide-svelte';
 
 	const settingsSync = writable(true);
 	const hideMeltUI = writable(false);
 
+	type $$Props = CreateDropdownMenuProps;
+
 	export let loop = false;
+	export let closeFocus: CreateDropdownMenuProps['closeFocus'] = undefined;
+	export let closeOnEscape: CreateDropdownMenuProps['closeOnEscape'] = true;
+	export let closeOnOutsideClick: CreateDropdownMenuProps['closeOnOutsideClick'] = true;
 
 	const {
 		elements: { trigger, menu, item, separator, arrow },
 		builders: { createSubmenu, createMenuRadioGroup, createCheckboxItem },
 	} = createDropdownMenu({
 		loop,
+		closeFocus,
+		closeOnEscape,
+		closeOnOutsideClick,
+		...$$restProps,
 	});
 
 	const {
@@ -41,6 +50,8 @@
 </script>
 
 <main>
+	<div data-testid="outside-click">outside</div>
+	<button id="closeFocus" data-testid="closeFocus">close focus</button>
 	<button
 		type="button"
 		class="trigger"

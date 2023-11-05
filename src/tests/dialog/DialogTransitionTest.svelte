@@ -1,19 +1,23 @@
 <script lang="ts">
-	import { createDialog, melt } from '$lib/index.js';
+	import { createDialog, melt, type CreateDialogProps } from '$lib/index.js';
 	import { fade } from 'svelte/transition';
+
+	type $$Props = CreateDialogProps;
 
 	const {
 		elements: { trigger, overlay, content, title, description, close, portalled },
 		states: { open },
-	} = createDialog({});
+	} = createDialog({
+		...$$restProps,
+	});
 </script>
 
-<main>
+<main data-testid="main">
 	<button use:melt={$trigger} data-testid="trigger">Open</button>
 	{#if $open}
 		<div use:melt={$portalled} data-testid="portalled">
 			<div use:melt={$overlay} data-testid="overlay" transition:fade />
-			<div use:melt={$content} data-testid="content">
+			<div use:melt={$content} data-testid="content" transition:fade>
 				<h2 use:melt={$title}>Title</h2>
 				<p use:melt={$description}>Description</p>
 
@@ -23,6 +27,7 @@
 		</div>
 	{/if}
 </main>
+<div id="portal-target" data-testid="portal-target" />
 
 <style>
 	[data-testid='overlay'] {

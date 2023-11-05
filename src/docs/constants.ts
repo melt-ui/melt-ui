@@ -1,4 +1,5 @@
 import rawFloatingConfig from '$docs/data/long-types/floating-config.js?raw';
+import rawFocusProp from '$docs/data/long-types/focus-prop.js?raw';
 import type { Prop } from './types.js';
 
 export const SEE = {
@@ -46,11 +47,21 @@ export const PROPS = {
 		description: DESCRIPTIONS.FORCE_VISIBLE(args.name ?? 'element'),
 		default: args.default ?? 'false',
 	}),
-	DISABLE_TRIGGER_REFOCUS: (args: PropArgs = {}): Prop => ({
-		name: 'disableTriggerRefocus',
-		type: 'boolean',
-		description: `Whether or not to refocus the trigger when the ${args.name ?? 'element'} closes`,
-		default: args.default ?? 'false',
+	OPEN_FOCUS: (): Prop => ({
+		name: 'openFocus',
+		type: 'FocusProp',
+		description: 'Override the default focus behavior on open',
+		longType: {
+			rawCode: rawFocusProp,
+		},
+	}),
+	CLOSE_FOCUS: (): Prop => ({
+		name: 'closeFocus',
+		type: 'FocusProp',
+		description: 'Override the default focus behavior on close',
+		longType: {
+			rawCode: rawFocusProp,
+		},
 	}),
 	DISABLED: (args: PropArgs = {}): Prop => ({
 		name: 'disabled',

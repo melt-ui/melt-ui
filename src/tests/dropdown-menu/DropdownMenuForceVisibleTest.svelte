@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createDropdownMenu, melt } from '$lib/index.js';
+	import { createDropdownMenu, melt, type CreateDropdownMenuProps } from '$lib/index.js';
 	import { writable } from 'svelte/store';
 	import { AlignJustify, ChevronRight } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
@@ -7,6 +7,7 @@
 	const settingsSync = writable(true);
 	const hideMeltUI = writable(false);
 
+	type $$Props = CreateDropdownMenuProps;
 	export let loop = false;
 
 	const {
@@ -16,6 +17,7 @@
 	} = createDropdownMenu({
 		forceVisible: true,
 		loop,
+		...$$restProps,
 	});
 
 	const {

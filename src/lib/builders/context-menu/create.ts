@@ -15,6 +15,7 @@ import {
 	isLeftClick,
 	kbd,
 	noop,
+	omit,
 	overridable,
 	styleToString,
 	toWritableStores,
@@ -51,6 +52,8 @@ const defaults = {
 	defaultOpen: false,
 	forceVisible: false,
 	typeahead: true,
+	disableFocusFirstItem: true,
+	closeFocus: undefined,
 } satisfies CreateContextMenuProps;
 
 const { name, selector } = createElHelpers<_MenuParts>('context-menu');
@@ -58,7 +61,7 @@ const { name, selector } = createElHelpers<_MenuParts>('context-menu');
 export function createContextMenu(props?: CreateContextMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;
 
-	const rootOptions = toWritableStores(withDefaults);
+	const rootOptions = toWritableStores(omit(withDefaults, 'ids'));
 	const { positioning, closeOnOutsideClick, portal, forceVisible, closeOnEscape, loop } =
 		rootOptions;
 
@@ -85,10 +88,9 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		rootOptions,
 		nextFocusable,
 		prevFocusable,
-		disableFocusFirstItem: true,
-		disableTriggerRefocus: true,
 		selector: 'context-menu',
 		removeScroll: true,
+		ids: withDefaults.ids,
 	});
 
 	const point = writable<Point | null>(null);
@@ -232,8 +234,6 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		stores: rootOpen,
 		returned: ($rootOpen) => {
 			return {
-				'aria-controls': ids.menu,
-				'aria-expanded': $rootOpen,
 				'data-state': $rootOpen ? 'open' : 'closed',
 				id: ids.trigger,
 				style: styleToString({
@@ -304,6 +304,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	});
 
 	return {
+		ids,
 		elements: {
 			menu,
 			trigger,
