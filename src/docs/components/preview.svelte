@@ -190,7 +190,7 @@
 			</div>
 			{#key `${$codingStyle}-${tab}`}
 				{#if codingStyleObj && codingStyleObj[tab]}
-					<CodeBlock>
+					<CodeBlock --copy-top={files.length === 1 ? '1rem' : undefined}>
 						{@html codingStyleObj[tab]}
 					</CodeBlock>
 				{/if}
