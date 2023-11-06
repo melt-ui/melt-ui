@@ -88,3 +88,13 @@
 		</div>
 	{/each}
 </div>
+
+<style lang="postcss">
+	[data-melt-toast-content][data-swipe='move'] {
+		transform: translateX(var(--melt-toast-swipe-move-x));
+	}
+	[data-melt-toast-content][data-swipe='cancel'] {
+		transform: translateX(0);
+		transition: transform 200ms ease-out;
+	}
+</style>

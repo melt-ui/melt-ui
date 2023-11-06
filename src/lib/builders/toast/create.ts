@@ -152,12 +152,15 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 					};
 					if (hasSwipeMoveStarted) {
 						swipeDelta.set(delta);
+						node.setAttribute('data-swipe', 'move');
+						node.style.setProperty('--melt-toast-swipe-move-x', `${delta.x}px`);
+						node.style.setProperty('--melt-toast-swipe-move-y', `${delta.y}px`);
 					} else if (isDeltaInDirection(delta, $swipeDirection, moveStartBuffer)) {
-						// onSwipeStart
 						swipeDelta.set(delta);
 						const target = e.target;
 						if (!isElement(target)) return;
 						target.setPointerCapture(e.pointerId);
+						node.setAttribute('data-swipe', 'start');
 					} else if (Math.abs(x) > moveStartBuffer || Math.abs(y) > moveStartBuffer) {
 						// User is swiping in wrong direction so disable swipe gesture
 						pointerStart.set(null);
@@ -173,14 +176,27 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 					if (target.hasPointerCapture(e.pointerId)) {
 						target.releasePointerCapture(e.pointerId);
 					}
-					if ($delta && isDeltaInDirection($delta, $swipeDirection, $swipeThreshold)) {
-						removeToast(node.id);
-					}
-					swipeDelta.set(null);
-					pointerStart.set(null);
+					if ($delta) {
+						if (isDeltaInDirection($delta, $swipeDirection, $swipeThreshold)) {
+							node.setAttribute('data-swipe', 'end');
+							node.style.removeProperty('--melt-toast-swipe-move-x');
+							node.style.removeProperty('--melt-toast-swipe-move-y');
+							node.style.setProperty('--melt-toast-swipe-end-x', `${$delta.x}px`);
+							node.style.setProperty('--melt-toast-swipe-end-y', `${$delta.y}px`);
+							removeToast(node.id);
+						} else {
+							node.setAttribute('data-swipe', 'cancel');
+							node.style.removeProperty('--melt-toast-swipe-move-x');
+							node.style.removeProperty('--melt-toast-swipe-move-y');
+							node.style.removeProperty('--melt-toast-swipe-end-x');
+							node.style.removeProperty('--melt-toast-swipe-end-y');
+							swipeDelta.set(null);
+							pointerStart.set(null);
+						}
 
-					// prevent click from triggering on items within the toast when swiping
-					node.addEventListener('click', (e) => e.preventDefault(), { once: true });
+						// prevent click from triggering on items within the toast when swiping
+						node.addEventListener('click', (e) => e.preventDefault(), { once: true });
+					}
 				}),
 				addMeltEventListener(node, 'pointerenter', (e) => {
 					if (isTouch(e)) return;

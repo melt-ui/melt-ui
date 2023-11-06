@@ -17,6 +17,7 @@ type FlyAndScaleOptions = {
 	start: number;
 	duration?: number;
 };
+
 export const flyAndScale = (node: HTMLElement, options: FlyAndScaleOptions): TransitionConfig => {
 	const style = getComputedStyle(node);
 	const transform = style.transform === 'none' ? '' : style.transform;
@@ -36,3 +37,30 @@ export const flyAndScale = (node: HTMLElement, options: FlyAndScaleOptions): Tra
 		easing: cubicOut,
 	};
 };
+export function split_css_unit(value: number | string): [number, string] {
+	const split = typeof value === 'string' && value.match(/^\s*(-?[\d.]+)([^\s]*)\s*$/);
+	return split ? [parseFloat(split[1]), split[2] || 'px'] : ([value, 'px'] as [number, string]);
+}
+
+export function customFly(
+	node: HTMLElement,
+	{ delay = 0, duration = 400, easing = cubicOut, x = 0, y = 0, opacity = 0 } = {}
+): TransitionConfig {
+	const style = getComputedStyle(node);
+	const target_opacity = +style.opacity;
+	const transform = style.transform === 'none' ? '' : style.transform;
+	const od = target_opacity * (1 - opacity);
+	const [xValue, xUnit] = split_css_unit(x);
+	const [yValue, yUnit] = split_css_unit(y);
+	const xDrag = node.style.getPropertyValue('--melt-toast-swipe-end-x');
+	return {
+		delay,
+		duration,
+		easing,
+		css: (t, u) => `
+			transform: ${transform} translate(${(1 - t) * xValue - Number(xDrag)}${xUnit}, ${
+			(1 - t) * yValue
+		}${yUnit});
+			opacity: ${target_opacity - od * u}`,
+	};
+}
