@@ -13,6 +13,7 @@ import {
 	kbd,
 	omit,
 	overridable,
+	snapValueToStep,
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
@@ -20,7 +21,7 @@ import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id';
 import type { SliderEvents } from './events.js';
-import { add, div, mul, sub } from './helpers.js';
+
 import type { CreateSliderProps } from './types.js';
 
 const defaults = {
@@ -49,46 +50,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 	const meltIds = generateIds(['root']);
 
-	const root = builder(name(), {
-		stores: [disabled, orientation],
-		returned: ([$disabled, $orientation]) => {
-			return {
-				disabled: disabledAttr($disabled),
-				'aria-disabled': ariaDisabledAttr($disabled),
-				'data-orientation': $orientation,
-				style: $disabled ? undefined : 'touch-action: none;',
-				'data-melt-id': meltIds.root,
-			};
-		},
-	});
-
-	const position = derived([min, max], ([$min, $max]) => {
-		return (val: number) => {
-			const pos = mul(div(sub(val, $min), sub($max, $min)), 100);
-			return pos;
-		};
-	});
-
-	const range = builder(name('range'), {
-		stores: [value, orientation, position],
-		returned: ([$value, $orientation, $position]) => {
-			const minimum = $value.length > 1 ? $position(Math.min(...$value) ?? 0) : 0;
-			const maximum = 100 - $position(Math.max(...$value) ?? 0);
-
-			const orientationStyles =
-				$orientation === 'horizontal'
-					? { left: `${minimum}%`, right: `${maximum}%` }
-					: { top: `${maximum}%`, bottom: `${minimum}%` };
-
-			return {
-				style: styleToString({
-					position: 'absolute',
-					...orientationStyles,
-				}),
-			};
-		},
-	});
-
+	// Helpers
 	const updatePosition = (val: number, index: number) => {
 		value.update((prev) => {
 			if (!prev) return [val];
@@ -113,7 +75,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 			}
 			const $min = get(min);
 			const $max = get(max);
-			newValue[index] = Math.min(Math.max(val, $min), $max);
+			const $step = get(step);
+			newValue[index] = snapValueToStep(val, $min, $max, $step);
 
 			return newValue;
 		});
@@ -127,6 +90,69 @@ export const createSlider = (props?: CreateSliderProps) => {
 			(thumb): thumb is HTMLElement => isHTMLElement(thumb)
 		);
 	};
+
+	// States
+	const position = derived([min, max], ([$min, $max]) => {
+		return (val: number) => {
+			const pos = ((val - $min) / ($max - $min)) * 100;
+			return pos;
+		};
+	});
+
+	const ticks = derived([min, max, step], ([$min, $max, $step]) => {
+		const difference = $max - $min;
+
+		// min = 0, max = 8, step = 3:
+		// ----------------------------
+		// 0, 3, 6
+		// (8 - 0) / 3 = 2.666... = 3 ceiled
+		let count = Math.ceil(difference / $step);
+
+		// min = 0, max = 9, step = 3:
+		// ---------------------------
+		// 0, 3, 6, 9
+		// (9 - 0) / 3 = 3
+		// We need to add 1 because `difference` is a multiple of `step`.
+		if (difference % $step == 0) {
+			count++;
+		}
+
+		return count;
+	});
+
+	// Elements
+	const root = builder(name(), {
+		stores: [disabled, orientation],
+		returned: ([$disabled, $orientation]) => {
+			return {
+				disabled: disabledAttr($disabled),
+				'aria-disabled': ariaDisabledAttr($disabled),
+				'data-orientation': $orientation,
+				style: $disabled ? undefined : 'touch-action: none;',
+				'data-melt-id': meltIds.root,
+			};
+		},
+	});
+
+	const range = builder(name('range'), {
+		stores: [value, orientation, position],
+		returned: ([$value, $orientation, $position]) => {
+			const minimum = $value.length > 1 ? $position(Math.min(...$value) ?? 0) : 0;
+			const maximum = 100 - $position(Math.max(...$value) ?? 0);
+
+			const orientationStyles =
+				$orientation === 'horizontal'
+					? { left: `${minimum}%`, right: `${maximum}%` }
+					: { top: `${maximum}%`, bottom: `${minimum}%` };
+
+			return {
+				style: styleToString({
+					position: 'absolute',
+					...orientationStyles,
+				}),
+			};
+		},
+	});
 
 	const thumb = builder(name('thumb'), {
 		stores: [value, position, min, max, disabled, orientation],
@@ -207,7 +233,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if (event.metaKey) {
 							updatePosition($min, index);
 						} else if ($value[index] > $min) {
-							const newValue = sub($value[index], $step);
+							const newValue = $value[index] - $step;
 							updatePosition(newValue, index);
 						}
 						break;
@@ -218,8 +244,11 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if (event.metaKey) {
 							updatePosition($max, index);
 						} else if ($value[index] < $max) {
-							const newValue = add($value[index], $step);
-							updatePosition(newValue, index);
+							const newValue = $value[index] + $step;
+
+							if (newValue <= $max) {
+								updatePosition(newValue, index);
+							}
 						}
 						break;
 					}
@@ -227,11 +256,13 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if (event.metaKey) {
 							updatePosition($max, index);
 						} else if ($value[index] > $min && $orientation === 'vertical') {
-							const newValue = add($value[index], $step);
+							const newValue = $value[index] + $step;
 							updatePosition(newValue, index);
 						} else if ($value[index] < $max) {
-							const newValue = add($value[index], $step);
-							updatePosition(newValue, index);
+							const newValue = $value[index] + $step;
+							if (newValue <= $max) {
+								updatePosition(newValue, index);
+							}
 						}
 						break;
 					}
@@ -239,10 +270,10 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if (event.metaKey) {
 							updatePosition($min, index);
 						} else if ($value[index] < $max && $orientation === 'vertical') {
-							const newValue = sub($value[index], $step);
+							const newValue = $value[index] - $step;
 							updatePosition(newValue, index);
 						} else if ($value[index] > $min) {
-							const newValue = sub($value[index], $step);
+							const newValue = $value[index] - $step;
 							updatePosition(newValue, index);
 						}
 						break;
@@ -254,27 +285,6 @@ export const createSlider = (props?: CreateSliderProps) => {
 				destroy: unsub,
 			};
 		},
-	});
-
-	const ticks = derived([min, max, step], ([$min, $max, $step]) => {
-		const difference = sub($max, $min);
-
-		// min = 0, max = 8, step = 3:
-		// ----------------------------
-		// 0, 3, 6
-		// (8 - 0) / 3 = 2.666... = 3 ceiled
-		let count = Math.ceil(div(difference, $step));
-
-		// min = 0, max = 9, step = 3:
-		// ---------------------------
-		// 0, 3, 6, 9
-		// (9 - 0) / 3 = 3
-		// We need to add 1 because `difference` is a multiple of `step`.
-		if (difference % $step == 0) {
-			count++;
-		}
-
-		return count;
 	});
 
 	const tick = builder(name('tick'), {
@@ -290,7 +300,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 				};
 
 				// The track is divided into sections of ratio `step / (max - min)`
-				const positionPercentage = mul(index, div($step, sub($max, $min)), 100);
+				const positionPercentage = index * ($step / ($max - $min)) * 100;
 				style[horizontal ? 'left' : 'bottom'] = `${positionPercentage}%`;
 
 				// Offset each tick by half its size to center it, except for
@@ -305,7 +315,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 					style.translate = horizontal ? '-50% 0' : '0 50%';
 				}
 
-				const tickValue = add($min, mul(index, $step));
+				const tickValue = $min + index * $step;
 				const bounded =
 					$value.length === 1
 						? tickValue <= $value[0]
@@ -319,6 +329,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 		},
 	});
 
+	// Effects
 	effect(
 		[root, min, max, disabled, orientation, step],
 		([$root, $min, $max, $disabled, $orientation, $step]) => {
@@ -330,8 +341,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 				leftOrBottom: number,
 				rightOrTop: number
 			) => {
-				const percent = div(sub(clientXY, leftOrBottom), sub(rightOrTop, leftOrBottom));
-				const val = add(mul(percent, sub($max, $min)), $min);
+				const percent = (clientXY - leftOrBottom) / (rightOrTop - leftOrBottom);
+				const val = percent * ($max - $min) + $min;
 
 				if (val < $min) {
 					updatePosition($min, activeThumbIdx);
@@ -339,9 +350,19 @@ export const createSlider = (props?: CreateSliderProps) => {
 					updatePosition($max, activeThumbIdx);
 				} else {
 					const step = $step;
-					const newValue = mul(Math.round(div(val, step)), step);
+					const min = $min;
 
-					updatePosition(newValue, activeThumbIdx);
+					const currentStep = Math.floor((val - min) / step);
+					const midpointOfCurrentStep = min + currentStep * step + step / 2;
+					const midpointOfNextStep = min + (currentStep + 1) * step + step / 2;
+					const newValue =
+						val >= midpointOfCurrentStep && val < midpointOfNextStep
+							? (currentStep + 1) * step + min
+							: currentStep * step + min;
+
+					if (newValue <= $max) {
+						updatePosition(newValue, activeThumbIdx);
+					}
 				}
 			};
 
@@ -424,6 +445,23 @@ export const createSlider = (props?: CreateSliderProps) => {
 			};
 		}
 	);
+
+	effect([step, min, max, value], function fixValue([$step, $min, $max, $value]) {
+		const isValidValue = (v: number) => {
+			const snappedValue = snapValueToStep(v, $min, $max, $step);
+			return snappedValue === v;
+		};
+
+		const gcv = (v: number) => {
+			return snapValueToStep(v, $min, $max, $step);
+		};
+
+		if ($value.some((v) => !isValidValue(v))) {
+			value.update((prev) => {
+				return [...prev].map(gcv);
+			});
+		}
+	});
 
 	return {
 		ids: meltIds,
