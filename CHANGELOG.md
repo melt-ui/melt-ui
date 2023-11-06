@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.58.2
+
+### Patch Changes
+
+- fix: timing issue with `handleFocus` ([#693](https://github.com/melt-ui/melt-ui/pull/693))
+
 ## 0.58.1
 
 ### Patch Changes
