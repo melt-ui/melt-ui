@@ -1,5 +1,13 @@
 # @melt-ui/svelte
 
+## 0.58.1
+
+### Patch Changes
+
+- Slider: fix overstep ([#659](https://github.com/melt-ui/melt-ui/pull/659))
+
+- Slider: fix precision issues ([`cbe8c3a4`](https://github.com/melt-ui/melt-ui/commit/cbe8c3a44221f38506175e84ab9915da0a1cf84c))
+
 ## 0.58.0
 
 ### Minor Changes
