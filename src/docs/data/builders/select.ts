@@ -87,7 +87,7 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'The builder store used to create the select options.',
 		},
 		{
-			name: 'hidden-input',
+			name: 'hiddenInput',
 			description: 'The builder store used to create the select hidden input.',
 		},
 		{
