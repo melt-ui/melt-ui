@@ -35,6 +35,6 @@
 	setTabsContext({ content, list, trigger, tabs: tabsStore });
 </script>
 
-<div use:melt={$root}>
+<div class="overflow-hidden rounded-lg border border-neutral-700/50" use:melt={$root}>
 	<slot tab={$value} />
 </div>

@@ -183,7 +183,7 @@
 <div class="relative mt-2" data-comp-preview>
 	{#if viewCode}
 		<TabsRoot tabs={files} let:tab>
-			<div class="flex flex-col-reverse gap-4">
+			<div class="flex flex-col-reverse gap-4 rounded-xl">
 				<div class={cn('overflow-x-auto', files.length === 1 && 'lg:hidden')}>
 					<TabsList />
 				</div>
