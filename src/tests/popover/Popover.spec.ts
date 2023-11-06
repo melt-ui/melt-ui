@@ -4,6 +4,7 @@ import PopoverTest from './PopoverTest.svelte';
 import userEvent from '@testing-library/user-event';
 import type { CreatePopoverProps } from '$lib';
 import { testKbd as kbd } from '../utils';
+import { sleep } from '$lib/internal/helpers';
 
 function setup(props: CreatePopoverProps = {}) {
 	const user = userEvent.setup();
@@ -66,6 +67,7 @@ describe('Popover (Default)', () => {
 		await user.click(trigger);
 		await waitFor(() => expect(content).toBeVisible());
 		const openFocus = getByTestId('openFocus');
+		await sleep(1);
 		expect(openFocus).toHaveFocus();
 	});
 
@@ -81,6 +83,7 @@ describe('Popover (Default)', () => {
 		await user.keyboard(kbd.ESCAPE);
 		await waitFor(() => expect(content).not.toBeVisible());
 		const closeFocus = getByTestId('closeFocus');
+		await sleep(1);
 		expect(closeFocus).toHaveFocus();
 	});
 });
