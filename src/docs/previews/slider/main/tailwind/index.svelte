@@ -5,6 +5,7 @@
 		elements: { root, range, thumb },
 	} = createSlider({
 		defaultValue: [30],
+		min: 0,
 		max: 100,
 		step: 1,
 	});

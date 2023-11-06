@@ -1,5 +1,17 @@
 # @melt-ui/svelte
 
+## 0.58.0
+
+### Minor Changes
+
+- Feat: ability to override internal ids via a prop ([#683](https://github.com/melt-ui/melt-ui/pull/683))
+
+## 0.57.3
+
+### Patch Changes
+
+- Dialog: improve trigger focus' ([`257deb36`](https://github.com/melt-ui/melt-ui/commit/257deb363b3614ee0aa5c11822f3e42d577d6466))
+
 ## 0.57.2
 
 ### Patch Changes
