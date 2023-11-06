@@ -1,57 +1,39 @@
-// reinterpretation of https://github.com/guipn/sinful.js/blob/master/sinful.js
-// to fix floating point arithmetic
-
-function multiplier(x: number) {
-	const parts = x.toString().split('.');
-	if (parts.length < 2) {
-		return 1;
-	}
-	return Math.pow(10, parts[1].length);
+export function getDecimalCount(value: number) {
+	return (String(value).split('.')[1] || '').length;
 }
 
-// Given a variable number of arguments, returns the maximum
-// multiplier that must be used to normalize an operation involving
-// all of them.
-
-function correctionFactor(...args: number[]) {
-	return Math.max(...args.map(multiplier));
+export function roundValue(value: number, decimalCount: number) {
+	const rounder = Math.pow(10, decimalCount);
+	return Math.round(value * rounder) / rounder;
 }
 
-export function add(...args: number[]) {
-	const factor = correctionFactor(...args);
-	let sum = 0;
-	for (const number of args) {
-		sum += number * factor;
-	}
-	return sum / factor;
-}
+export function snapValueToStep(value: number, min: number, max: number, step: number): number {
+	const remainder = (value - (isNaN(min) ? 0 : min)) % step;
+	let snappedValue =
+		Math.abs(remainder) * 2 >= step
+			? value + Math.sign(remainder) * (step - Math.abs(remainder))
+			: value - remainder;
 
-export function sub(...[first, ...args]: number[]) {
-	const factor = correctionFactor(...args);
-	let sum = first * factor;
-
-	for (const number of args) {
-		sum -= number * factor;
+	if (!isNaN(min)) {
+		if (snappedValue < min) {
+			snappedValue = min;
+		} else if (!isNaN(max) && snappedValue > max) {
+			snappedValue = min + Math.floor((max - min) / step) * step;
+		}
+	} else if (!isNaN(max) && snappedValue > max) {
+		snappedValue = Math.floor(max / step) * step;
 	}
-	return sum / factor;
-}
 
-export function mul(...args: number[]) {
-	let total = 1;
-	for (const number of args) {
-		const factor = correctionFactor(total, number);
-		total = (total * factor * (number * factor)) / (factor * factor);
-	}
-	return total;
-}
+	const string = step.toString();
+	const index = string.indexOf('.');
+	const precision = index >= 0 ? string.length - index : 0;
 
-export function div(...[first, ...args]: number[]) {
-	let total = first;
-	for (const number of args) {
-		const factor = correctionFactor(total, number);
-		total = (total * factor) / (number * factor);
+	if (precision > 0) {
+		const pow = Math.pow(10, precision);
+		snappedValue = Math.round(snappedValue * pow) / pow;
 	}
-	return total;
+
+	return snappedValue;
 }
 
 export function clamp(min: number, value: number, max: number) {
