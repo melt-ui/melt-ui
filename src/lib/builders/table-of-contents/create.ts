@@ -57,48 +57,13 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 	let mutationObserver: MutationObserver | null = null;
 
 	let observer: IntersectionObserver | null = null;
-	const observer_threshold = 0.25;
+	const observer_threshold = 0.01;
 
 	// Stores
 	const activeHeadingIdxs: Writable<number[]> = writable([]);
 	const headingsTree: Writable<TableOfContentsItem[]> = writable([]);
 
-	/**
-	 * Create a tree view of our headings so that the hierarchy is represented.
-	 * @param arr An array of heading elements.
-	 * @param startIndex The parent elements original index in the array.
-	 */
-	function createTree(arr: HTMLHeadingElement[], startIndex = 0): TableOfContentsItem[] {
-		const tree: TableOfContentsItem[] = [];
-
-		let i = 0;
-		while (i < arr.length) {
-			const node: TableOfContentsItem = {
-				title: arr[i].innerText,
-				index: startIndex + i,
-				id: arr[i].id,
-				node: arr[i],
-				children: [],
-			};
-
-			let j = i + 1;
-
-			while (
-				j < arr.length &&
-				parseInt(arr[j].tagName.charAt(1)) > parseInt(arr[i].tagName.charAt(1))
-			) {
-				j++;
-			}
-
-			// Recursive call.
-			node.children = createTree(arr.slice(i + 1, j), startIndex + i + 1);
-			tree.push(node);
-			i = j;
-		}
-
-		return tree;
-	}
-
+	// Helpers
 	function generateInitialLists(elementTarget: Element) {
 		let headingsList: HTMLHeadingElement[] = [];
 		let elementsList: Element[] = [];
@@ -145,41 +110,63 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 		};
 	}
 
-	function findParentIdxs(): void {
-		/** Get all parents for each heading element, by checking
-		 *  which previous headings in the list have a lower H value,
-		 *  so H1 < H2 < H3 < ...
-		 */
-		headingsList.forEach((h, i) => {
-			headingParentsLU[i] = null;
+	/**
+	 * Create a tree view of our headings so that the hierarchy is represented.
+	 * @param arr An array of heading elements.
+	 * @param startIndex The parent elements original index in the array.
+	 */
+	function createTree(arr: HTMLHeadingElement[], startIndex = 0): TableOfContentsItem[] {
+		const tree: TableOfContentsItem[] = [];
 
-			let current_heading: string = h.tagName;
-			let parents: number[] = [];
+		let i = 0;
+		while (i < arr.length) {
+			const node: TableOfContentsItem = {
+				title: arr[i].innerText,
+				index: startIndex + i,
+				id: arr[i].id,
+				node: arr[i],
+				children: [],
+			};
 
-			for (let j = i - 1; j >= 0; j--) {
-				if (headingsList[j].tagName < current_heading) {
-					current_heading = headingsList[j].tagName;
-					parents = [...parents, j];
-				}
+			let j = i + 1;
+
+			while (
+				j < arr.length &&
+				parseInt(arr[j].tagName.charAt(1)) > parseInt(arr[i].tagName.charAt(1))
+			) {
+				j++;
 			}
 
-			headingParentsLU[i] = parents.length > 0 ? parents : null;
-		});
+			// Recursive call.
+			node.children = createTree(arr.slice(i + 1, j), startIndex + i + 1);
+			tree.push(node);
+			i = j;
+		}
+
+		return tree;
 	}
 
-	function createElementHeadingLU() {
-		headingsList.forEach((h: Element, i: number) => {
-			// Find all elements between the current heading and the next one and assign them the current heading.
-			const startIndex = elementsList.indexOf(headingsList[i]);
-			const endIndex =
-				i !== headingsList.length - 1
-					? elementsList.indexOf(headingsList[i + 1])
-					: elementsList.length;
+	/**
+	 * Scrolls to the element specified by the selector.
+	 * The offset and scroll behaviour are determined by the
+	 * builder arguments.
+	 *
+	 * Source: https://stackoverflow.com/questions/49820013/javascript-scrollintoview-smooth-scroll-and-offset?answertab=scoredesc#tab-top
+	 *
+	 * @param selector The id of the element.
+	 */
+	function scrollToTargetAdjusted(selector: string): void {
+		const element = document.getElementById(selector);
 
-			for (let j = startIndex; j < endIndex; j++) {
-				elementHeadingLU[j] = i;
-			}
-		});
+		if (element) {
+			const elementPosition = element.getBoundingClientRect().top;
+			const offsetPosition = elementPosition + window.scrollY - scrollOffset;
+
+			window.scrollTo({
+				top: offsetPosition,
+				behavior: scrollBehaviour,
+			});
+		}
 	}
 
 	function handleElementObservation(entries: IntersectionObserverEntry[]) {
@@ -193,7 +180,6 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
 			if (entries[i].intersectionRatio >= observer_threshold) {
 				// Only add the observed element to the visibleElementIdxs list if it isn't added yet.
-
 				if (tempVisibleElementIdxs.indexOf(el_idx) === -1) {
 					tempVisibleElementIdxs = [...tempVisibleElementIdxs, el_idx];
 					visibleElementIdxs.set(tempVisibleElementIdxs);
@@ -257,29 +243,91 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 		activeHeadingIdxs.set(activeHeaderIdxs);
 	}
 
-	/**
-	 * Scrolls to the element specified by the selector.
-	 * The offset and scroll behaviour are determined by the
-	 * builder arguments.
-	 *
-	 * Source: https://stackoverflow.com/questions/49820013/javascript-scrollintoview-smooth-scroll-and-offset?answertab=scoredesc#tab-top
-	 *
-	 * @param selector The id of the element.
-	 */
-	function scrollToTargetAdjusted(selector: string): void {
-		const element = document.getElementById(selector);
+	function initialization() {
+		observer?.disconnect();
 
-		if (element) {
-			const elementPosition = element.getBoundingClientRect().top;
-			const offsetPosition = elementPosition + window.scrollY - scrollOffset;
+		/** Get all parents for each heading element, by checking
+		 *  which previous headings in the list have a lower H value,
+		 *  so H1 < H2 < H3 < ...
+		 */
+		headingsList.forEach((h, i) => {
+			headingParentsLU[i] = null;
 
-			window.scrollTo({
-				top: offsetPosition,
-				behavior: scrollBehaviour,
+			let current_heading: string = h.tagName;
+			let parents: number[] = [];
+
+			for (let j = i - 1; j >= 0; j--) {
+				if (headingsList[j].tagName < current_heading) {
+					current_heading = headingsList[j].tagName;
+					parents = [...parents, j];
+				}
+			}
+
+			headingParentsLU[i] = parents.length > 0 ? parents : null;
+
+			// Find all elements between the current heading and the next one and assign them the current heading.
+			const startIndex = elementsList.indexOf(headingsList[i]);
+			const endIndex =
+				i !== headingsList.length - 1
+					? elementsList.indexOf(headingsList[i + 1])
+					: elementsList.length;
+
+			for (let j = startIndex; j < endIndex; j++) {
+				elementHeadingLU[j] = i;
+			}
+		});
+
+		headingsTree.set(createTree(headingsList));
+
+		if (activeType !== 'none') {
+			// Create observer and observe all elements.
+			observer = new IntersectionObserver(handleElementObservation, {
+				root: null,
+				threshold: observer_threshold,
 			});
+			elementsList.forEach((el) => observer?.observe(el));
 		}
 	}
 
+	function mutationHandler() {
+		const newElementTarget = document.querySelector(selector);
+
+		if (!newElementTarget) return;
+
+		const { headingsList: newHeadingsList, elementsList: newElementsList } =
+			generateInitialLists(newElementTarget);
+
+		if (dequal(headingsList, newHeadingsList)) return;
+
+		// Update lists and LUs and re-run initialization.
+		headingsList = newHeadingsList;
+		elementsList = newElementsList;
+
+		headingParentsLU = {};
+		elementHeadingLU = {};
+
+		initialization();
+	}
+
+	onMount(() => {
+		elementTarget = document.querySelector(selector);
+
+		if (!elementTarget) return;
+
+		({ headingsList, elementsList } = generateInitialLists(elementTarget));
+
+		initialization();
+
+		mutationObserver = new MutationObserver(mutationHandler);
+		mutationObserver.observe(elementTarget, { childList: true, subtree: true });
+
+		return () => {
+			observer?.disconnect();
+			mutationObserver?.disconnect();
+		};
+	});
+
+	// Elements
 	const item = builder(name('item'), {
 		stores: activeHeadingIdxs,
 		returned: ($activeHeadingIdxs) => {
@@ -312,62 +360,6 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 				destroy: unsub,
 			};
 		},
-	});
-
-	function mutationHandler() {
-		const newElementTarget = document.querySelector(selector);
-
-		if (!newElementTarget) return;
-
-		const { headingsList: newHeadingsList, elementsList: newElementsList } =
-			generateInitialLists(newElementTarget);
-
-		if (dequal(headingsList, newHeadingsList)) return;
-
-		// Update lists and LUs and re-run initialization.
-		headingsList = newHeadingsList;
-		elementsList = newElementsList;
-
-		headingParentsLU = {};
-		elementHeadingLU = {};
-
-		initialization();
-	}
-
-	function initialization() {
-		observer?.disconnect();
-
-		findParentIdxs();
-		createElementHeadingLU();
-
-		headingsTree.set(createTree(headingsList));
-
-		if (activeType !== 'none') {
-			// Create observer and observe all elements.
-			observer = new IntersectionObserver(handleElementObservation, {
-				root: null,
-				threshold: observer_threshold,
-			});
-			elementsList.forEach((el) => observer?.observe(el));
-		}
-	}
-
-	onMount(() => {
-		elementTarget = document.querySelector(selector);
-
-		if (!elementTarget) return;
-
-		({ headingsList, elementsList } = generateInitialLists(elementTarget));
-
-		initialization();
-
-		mutationObserver = new MutationObserver(mutationHandler);
-		mutationObserver.observe(elementTarget, { childList: true, subtree: true });
-
-		return () => {
-			observer?.disconnect();
-			mutationObserver?.disconnect();
-		};
 	});
 
 	return {
