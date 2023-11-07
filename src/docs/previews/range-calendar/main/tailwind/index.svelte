@@ -10,60 +10,99 @@
 	} = createRangeCalendar();
 </script>
 
-<div class="flex h-full">
-	<div class="flex w-full flex-col items-center gap-3">
-		<div class="z-10 w-80 rounded-[4px] bg-white p-3 shadow-sm">
-			<div class="w-full text-magnum-800" use:melt={$calendar}>
-				<header class="flex items-center justify-between pb-4">
-					<button use:melt={$prevButton}>
-						<ChevronLeft />
-					</button>
-					<div class="font-semibold text-magnum-800" use:melt={$heading}>
-						{$headingValue}
-					</div>
-					<button use:melt={$nextButton}>
-						<ChevronRight />
-					</button>
-				</header>
-				{#each $months as month}
-					<table use:melt={$grid} class="w-full">
-						<thead aria-hidden="true">
-							<tr>
-								{#each $daysOfWeek as day}
-									<th class="text-sm font-semibold text-magnum-800">
-										<div class="flex h-6 w-6 items-center justify-center p-4">
-											{day}
-										</div>
-									</th>
-								{/each}
-							</tr>
-						</thead>
-						<tbody>
-							{#each month.weeks as dates}
-								<tr>
-									{#each dates as date}
-										<td
-											role="gridcell"
-											aria-disabled={$isDateDisabled(date) ||
-												$isDateUnavailable(date)}
-											class="my-1"
-										>
-											<div use:melt={$cell(date, month.value)} class="cell">
-												{date.day}
-											</div>
-										</td>
-									{/each}
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				{/each}
-			</div>
+<div use:melt={$calendar}>
+	<header>
+		<button use:melt={$prevButton}>
+			<ChevronLeft />
+		</button>
+		<div use:melt={$heading}>
+			{$headingValue}
 		</div>
+		<button use:melt={$nextButton}>
+			<ChevronRight />
+		</button>
+	</header>
+	<div>
+		{#each $months as month}
+			<table use:melt={$grid}>
+				<thead aria-hidden="true">
+					<tr>
+						{#each $daysOfWeek as day}
+							<th>
+								<div>
+									{day}
+								</div>
+							</th>
+						{/each}
+					</tr>
+				</thead>
+				<tbody>
+					{#each month.weeks as dates}
+						<tr>
+							{#each dates as date}
+								<td
+									role="gridcell"
+									aria-disabled={$isDateDisabled(date) ||
+										$isDateUnavailable(date)}
+								>
+									<div use:melt={$cell(date, month.value)}>
+										{date.day}
+									</div>
+								</td>
+							{/each}
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		{/each}
 	</div>
 </div>
 
 <style lang="postcss">
+	[data-melt-calendar] {
+		@apply w-full rounded-lg bg-white p-3 text-magnum-800 shadow-sm;
+	}
+
+	header {
+		@apply flex items-center justify-between pb-2;
+	}
+
+	header + div {
+		@apply flex items-center gap-8;
+	}
+
+	[data-melt-calendar-prevbutton] {
+		@apply rounded-lg p-1 transition-all hover:bg-magnum-100;
+	}
+
+	[data-melt-calendar-nextbutton] {
+		@apply rounded-lg p-1 transition-all hover:bg-magnum-100;
+	}
+
+	[data-melt-calendar-heading] {
+		@apply font-semibold text-magnum-800;
+	}
+
+	th {
+		@apply text-sm font-semibold text-magnum-800;
+
+		& div {
+			@apply flex h-6 w-6 items-center justify-center p-4;
+		}
+	}
+
+	[data-melt-calendar-grid] {
+		@apply w-full;
+	}
+
+	[data-melt-calendar-cell] {
+		@apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded-lg p-4 hover:bg-magnum-100 focus:ring focus:ring-magnum-400 data-[outside-month]:pointer-events-none data-[outside-visible-months]:pointer-events-none data-[outside-month]:cursor-default data-[outside-visible-months]:cursor-default data-[highlighted]:bg-magnum-200 data-[range-highlighted]:bg-magnum-200 data-[selected]:bg-magnum-300 data-[selected]:text-magnum-900 data-[disabled]:opacity-40 data-[outside-month]:opacity-40 data-[outside-visible-months]:opacity-40 data-[outside-month]:hover:bg-transparent data-[outside-visible-months]:hover:bg-transparent;
+	}
+
+	[data-melt-calendar-cell][data-outside-month='true'][data-outside-visible-months='true'] {
+		@apply opacity-0;
+	}
+
 	.input {
 		@apply flex h-8 w-full rounded-md border border-magnum-800 bg-transparent px-2.5 text-sm;
 		@apply ring-offset-magnum-300 focus-visible:ring;
@@ -101,7 +140,7 @@
 	}
 
 	.cell {
-		@apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded p-4 hover:bg-magnum-100 focus:ring focus:ring-magnum-400 data-[outside-month]:pointer-events-none data-[outside-month]:cursor-default data-[highlighted]:bg-magnum-200 data-[range-highlighted]:bg-magnum-200 data-[selected]:bg-magnum-300 data-[disabled]:opacity-40 data-[outside-month]:opacity-40 data-[outside-month]:hover:bg-transparent;
+		@apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded p-4 hover:bg-magnum-100 focus:ring focus:ring-magnum-400;
 	}
 
 	.segment {

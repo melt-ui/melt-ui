@@ -71,7 +71,7 @@
 	}
 
 	header + div {
-		@apply flex items-center gap-6;
+		@apply flex flex-col items-center gap-6 md:flex-row;
 	}
 
 	[data-melt-calendar-prevbutton] {
