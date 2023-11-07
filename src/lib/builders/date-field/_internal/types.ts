@@ -6,7 +6,8 @@ import type {
 	TIME_SEGMENT_PARTS,
 } from './parts.js';
 import type { Action } from 'svelte/action';
-import type { IdObj } from '$lib/internal/types.js';
+import type { IdObj } from '$lib/internal/helpers/index.js';
+import type { DateFieldIdParts } from '../create.js';
 
 export type DateSegmentPart = (typeof DATE_SEGMENT_PARTS)[number];
 export type TimeSegmentPart = (typeof TIME_SEGMENT_PARTS)[number];
@@ -41,6 +42,7 @@ export type SegmentAttrProps = {
 	segmentValues: SegmentValueObj;
 	hourCycle: 12 | 24 | undefined;
 	placeholder: DateValue;
+	ids: IdObj<DateFieldIdParts>;
 };
 
 export type SegmentAttrFn = (props: SegmentAttrProps) => Record<string, string | number | boolean>;
@@ -52,10 +54,6 @@ export type SegmentBuilders = Record<
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		action: Action<any, any, any>;
 	}
->;
-
-export type DateFieldIds = IdObj<
-	AnyExceptLiteral | 'field' | 'label' | 'description' | 'validation'
 >;
 
 export type HourCycle = 12 | 24 | undefined;

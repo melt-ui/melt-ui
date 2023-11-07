@@ -240,7 +240,7 @@ export type CreateCalendarProps<
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: IdObj<CalendarIdParts>;
+	ids?: Partial<IdObj<CalendarIdParts>>;
 };
 
 export type Calendar = ReturnType<typeof createCalendar>;

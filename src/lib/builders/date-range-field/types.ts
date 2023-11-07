@@ -1,9 +1,8 @@
 import type { Writable } from 'svelte/store';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
-import type { createDateRangeField } from './create.js';
+import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
+import type { DateRangeFieldIdParts, createDateRangeField } from './create.js';
 import type { DateValue } from '@internationalized/date';
-import type { CreateDateFieldProps, DateFieldIds, DateRange, Matcher } from '$lib/index.js';
-import type { RangeDateFieldIds } from './_internal/types.js';
+import type { CreateDateFieldProps, DateFieldIdParts, DateRange, Matcher } from '$lib/index.js';
 
 export type DateRangeFieldProps = {
 	/**
@@ -108,12 +107,10 @@ export type DateRangeFieldProps = {
 	 * accessibility and functionality of the date field if
 	 * implemented incorrectly.
 	 */
-	ids?: Partial<RangeDateFieldIds>;
-	startIds?: Partial<ModifiedDateFieldIds>;
-	endIds?: Partial<ModifiedDateFieldIds>;
+	ids?: Partial<IdObj<DateRangeFieldIdParts>>;
+	startIds?: Partial<IdObj<DateFieldIdParts>>;
+	endIds?: Partial<IdObj<DateFieldIdParts>>;
 };
-
-type ModifiedDateFieldIds = Omit<DateFieldIds, 'label' | 'field' | 'description'>;
 
 export type CreateDateRangeFieldProps = Expand<
 	DateRangeFieldProps &

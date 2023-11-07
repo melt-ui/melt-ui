@@ -18,7 +18,6 @@ import type {
 	DateAndTimeSegmentObj,
 	DayPeriod,
 	SegmentPart,
-	AnyExceptLiteral,
 	HourCycle,
 } from './types.js';
 import {
@@ -36,7 +35,8 @@ import {
 	styleToString,
 } from '$lib/internal/helpers/index.js';
 import { get, type Writable } from 'svelte/store';
-import type { IdObj } from '$lib/internal/types.js';
+import type { IdObj } from '$lib/internal/helpers/index.js';
+import type { DateFieldIdParts } from '../create.js';
 
 export function initializeSegmentValues(granularity: Granularity) {
 	const calendarDateTimeGranularities = ['hour', 'minute', 'second'];
@@ -205,7 +205,7 @@ export function initSegmentIds() {
 		ALL_SEGMENT_PARTS.map((part) => {
 			return [part, generateId()];
 		}).filter(([key]) => key !== 'literal')
-	) as IdObj<AnyExceptLiteral>;
+	) as IdObj<DateFieldIdParts>;
 }
 
 export function isDateSegmentPart(part: unknown): part is DateSegmentPart {

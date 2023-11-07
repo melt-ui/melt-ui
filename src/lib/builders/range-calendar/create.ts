@@ -3,7 +3,7 @@ import {
 	builder,
 	createElHelpers,
 	effect,
-	generateId,
+	generateIds,
 	isBrowser,
 	isHTMLElement,
 	kbd,
@@ -16,7 +16,7 @@ import {
 } from '$lib/internal/helpers/index.js';
 
 import { derived, get, writable } from 'svelte/store';
-import type { RangeCalendarIds, CreateRangeCalendarProps } from './types.js';
+import type { CreateRangeCalendarProps } from './types.js';
 import { tick } from 'svelte';
 import {
 	getAnnouncer,
@@ -69,8 +69,10 @@ const defaults = {
  * @internal
  */
 type CalendarParts = 'content' | 'nextButton' | 'prevButton' | 'grid' | 'cell' | 'heading';
-
 const { name } = createElHelpers<CalendarParts>('calendar');
+
+export const rangeCalendarIdParts = ['calendar', 'grid', 'accessibleHeading'] as const;
+export type RangeCalendarIdParts = typeof rangeCalendarIdParts;
 
 export function createRangeCalendar<T extends DateValue = DateValue>(
 	props?: CreateRangeCalendarProps
@@ -93,11 +95,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		maxValue,
 	} = options;
 
-	const ids = {
-		calendar: generateId(),
-		grid: generateId(),
-		accessibleHeading: generateId(),
-	} satisfies RangeCalendarIds;
+	const ids = toWritableStores({ ...generateIds(rangeCalendarIdParts), ...withDefaults.ids });
 
 	const defaultDate = getDefaultDate({
 		defaultValue: withDefaults.defaultValue?.start,
@@ -251,10 +249,10 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	);
 
 	const calendar = builder(name(), {
-		stores: [fullCalendarLabel, isInvalid],
-		returned: ([$fullCalendarLabel, $isInvalid]) => {
+		stores: [fullCalendarLabel, isInvalid, ids.calendar],
+		returned: ([$fullCalendarLabel, $isInvalid, $calendarId]) => {
 			return {
-				id: ids.calendar,
+				id: $calendarId,
 				role: 'application',
 				'aria-label': $fullCalendarLabel,
 				'data-invalid': $isInvalid ? '' : undefined,
@@ -288,7 +286,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	});
 
 	const grid = builder(name('grid'), {
-		returned: () => ({ tabindex: -1, id: ids.grid, role: 'grid' }),
+		stores: [ids.grid],
+		returned: ([$gridId]) => ({ tabindex: -1, id: $gridId, role: 'grid' }),
 	});
 
 	const prevButton = builder(name('prevButton'), {
@@ -546,7 +545,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 */
 	effect([fullCalendarLabel], ([$fullCalendarLabel]) => {
 		if (!isBrowser) return;
-		const node = document.getElementById(ids.accessibleHeading);
+		const node = document.getElementById(get(ids.accessibleHeading));
 		if (!isHTMLElement(node)) return;
 		node.textContent = $fullCalendarLabel;
 	});
@@ -599,7 +598,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		h2.role = 'heading';
 		h2.ariaLevel = '2';
 		h2.textContent = label;
-		h2.id = ids.accessibleHeading;
+		h2.id = get(ids.accessibleHeading);
 		node.insertBefore(div, node.firstChild);
 		div.appendChild(h2);
 	}
@@ -617,6 +616,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * ```svelte
 	 * <script>
 	 * 	import { createCalendar } from '@melt-ui/svelte';
+import { generateIds } from '../../internal/helpers/id'
 	 *  import { prev } from '../../internal/helpers/array'
 	 * 	const { { ... }, helpers: { nextPage } } = createCalendar()
 	 * </script>
@@ -812,7 +812,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	}
 
 	function shiftFocus(node: HTMLElement, add: number) {
-		const candidateCells = getSelectableCells(ids.calendar);
+		const $calendarId = get(ids.calendar);
+		const candidateCells = getSelectableCells($calendarId);
 		if (!candidateCells.length) {
 			return;
 		}
@@ -854,7 +855,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			// Without a tick here, it seems to be too fast for
 			// the DOM to update, with the tick it works great
 			tick().then(() => {
-				const newCandidateCells = getSelectableCells(ids.calendar);
+				const newCandidateCells = getSelectableCells($calendarId);
 				if (!newCandidateCells.length) {
 					return;
 				}
@@ -886,7 +887,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			placeholder.set(firstMonth.add({ months: $numberOfMonths }));
 
 			tick().then(() => {
-				const newCandidateCells = getSelectableCells(ids.calendar);
+				const newCandidateCells = getSelectableCells($calendarId);
 				if (!newCandidateCells.length) {
 					return;
 				}

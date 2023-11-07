@@ -1,9 +1,9 @@
-import type { createRangeCalendar } from './create';
+import type { RangeCalendarIdParts, createRangeCalendar } from './create';
 import type { Writable } from 'svelte/store';
 import type { ChangeFn } from '$lib/internal/helpers';
 import type { DateValue } from '@internationalized/date';
 import type { DateRange, Matcher } from '$lib/index.js';
-import type { IdObj } from '$lib/internal/types';
+import type { IdObj } from '$lib/internal/helpers/index.js';
 
 export type RangeCalendarProps = {
 	/**
@@ -219,9 +219,8 @@ export type RangeCalendarProps = {
 	 * accessibility and functionality of the date field if
 	 * implemented incorrectly.
 	 */
-	ids?: Partial<RangeCalendarIds>;
+	ids?: Partial<IdObj<RangeCalendarIdParts>>;
 };
 
-export type RangeCalendarIds = IdObj<'calendar' | 'grid' | 'accessibleHeading'>;
 export type CreateRangeCalendarProps = RangeCalendarProps;
 export type RangeCalendar = ReturnType<typeof createRangeCalendar>;

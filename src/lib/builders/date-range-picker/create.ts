@@ -124,7 +124,7 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 	function handleTriggerKeydown(e: KeyboardEvent) {
 		if (isSegmentNavigationKey(e.key)) {
 			e.preventDefault();
-			handleSegmentNavigation(e, rangeField.ids.field);
+			handleSegmentNavigation(e, get(rangeField.ids.field.field));
 		}
 	}
 

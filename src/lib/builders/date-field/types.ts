@@ -1,9 +1,8 @@
 import type { Writable } from 'svelte/store';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
-import type { createDateField } from './create.js';
+import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
+import type { DateFieldIdParts, createDateField } from './create.js';
 import type { DateValue } from '@internationalized/date';
 import type { Granularity, Matcher } from '$lib/index.js';
-import type { DateFieldIds } from './_internal/types.js';
 
 export type DateFieldProps = {
 	/**
@@ -185,9 +184,8 @@ export type DateFieldProps = {
 	 * accessibility and functionality of the date field if
 	 * implemented incorrectly.
 	 */
-	ids?: Partial<DateFieldIds>;
+	ids?: Partial<IdObj<DateFieldIdParts>>;
 };
 
-export type { DateFieldIds };
 export type CreateDateFieldProps = DateFieldProps;
 export type DateField = ReturnType<typeof createDateField>;

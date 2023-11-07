@@ -123,5 +123,3 @@ export type RenameProperties<T, NewNames extends Partial<Record<keyof T, string>
 			: K
 		: K]: T[K];
 }>;
-
-export type IdObj<T extends PropertyKey> = Record<T, string>;

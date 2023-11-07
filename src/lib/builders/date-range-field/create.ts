@@ -2,7 +2,6 @@ import type { CreateDateRangeFieldProps } from './types.js';
 import {
 	builder,
 	createElHelpers,
-	generateId,
 	overridable,
 	toWritableStores,
 	omit,
@@ -20,6 +19,7 @@ import { derived, get, writable } from 'svelte/store';
 import { removeDescriptionElement } from './_internal/helpers.js';
 import { createDateField } from '$lib/index.js';
 import type { DateValue } from '@internationalized/date';
+import { generateIds } from '../../internal/helpers/id';
 
 const defaults = {
 	isDateUnavailable: undefined,
@@ -37,19 +37,18 @@ const defaults = {
 } satisfies CreateDateRangeFieldProps;
 
 type DateFieldParts = 'segment' | 'label' | 'field' | 'validation';
-
 const { name } = createElHelpers<DateFieldParts>('dateField');
+
+const rangeFieldIdParts = ['field', 'label', 'description', 'validation'] as const;
+export type DateRangeFieldIdParts = typeof rangeFieldIdParts;
 
 export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	const withDefaults = { ...defaults, ...props };
 	const options = toWritableStores(omit(withDefaults, 'value', 'placeholder'));
 
-	const ids = {
-		field: generateId(),
-		label: generateId(),
-		description: generateId(),
-		validation: generateId(),
-	};
+	const generatedIds = generateIds(rangeFieldIdParts);
+
+	const ids = toWritableStores({ ...generatedIds, ...withDefaults.ids });
 
 	const defaultDate = getDefaultDate({
 		defaultValue: withDefaults.defaultValue?.start,
@@ -78,14 +77,20 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		...omit(withDefaults, 'defaultValue', 'onValueChange', 'startName', 'endName'),
 		value: startValue,
 		name: withDefaults.startName,
-		ids,
+		ids: {
+			...withDefaults.startIds,
+			...generatedIds,
+		},
 	});
 
 	const endField = createDateField({
 		...omit(withDefaults, 'defaultValue', 'onValueChange', 'endName', 'startName'),
 		value: endValue,
 		name: withDefaults.endName,
-		ids,
+		ids: {
+			...withDefaults.endIds,
+			...generatedIds,
+		},
 	});
 
 	const {
@@ -138,21 +143,33 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	);
 
 	const label = builder(name('label'), {
-		returned: () => {
+		stores: [ids.label],
+		returned: ([$labelId]) => {
 			return {
-				id: ids.label,
+				id: $labelId,
 			};
 		},
 	});
 
+	const fieldIdDeps = derived(
+		[ids.field, ids.label, ids.description],
+		([$fieldId, $labelId, $descriptionId]) => {
+			return {
+				field: $fieldId,
+				label: $labelId,
+				description: $descriptionId,
+			};
+		}
+	);
+
 	const field = builder(name('field'), {
-		stores: [isCompleted, isInvalid],
-		returned: ([$isCompleted, $isInvalid]) => {
+		stores: [isCompleted, isInvalid, fieldIdDeps],
+		returned: ([$isCompleted, $isInvalid, $ids]) => {
 			return {
 				role: 'group',
-				id: ids.field,
-				'aria-labelledby': ids.label,
-				'aria-describedby': $isCompleted ? ids.description : undefined,
+				id: $ids.field,
+				'aria-labelledby': $ids.label,
+				'aria-describedby': $isCompleted ? $ids.description : undefined,
 				'data-invalid': $isInvalid ? '' : undefined,
 			};
 		},
@@ -160,21 +177,21 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 			getAnnouncer();
 			return {
 				destroy() {
-					removeDescriptionElement(ids.description);
+					removeDescriptionElement(get(ids.description));
 				},
 			};
 		},
 	});
 
 	const validation = builder(name('validation'), {
-		stores: [isInvalid],
-		returned: ([$isInvalid]) => {
+		stores: [isInvalid, ids.validation],
+		returned: ([$isInvalid, $validationId]) => {
 			const validStyle = styleToString({
 				display: 'none',
 			});
 
 			return {
-				id: ids.validation,
+				id: $validationId,
 				'data-invalid': $isInvalid ? '' : undefined,
 				style: $isInvalid ? undefined : validStyle,
 			};
@@ -270,6 +287,10 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 			endName,
 			startName,
 		},
-		ids,
+		ids: {
+			field: ids,
+			start: startField.ids,
+			end: endField.ids,
+		},
 	};
 }

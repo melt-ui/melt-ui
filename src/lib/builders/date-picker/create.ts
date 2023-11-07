@@ -126,7 +126,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	function handleTriggerKeydown(e: KeyboardEvent) {
 		if (isSegmentNavigationKey(e.key)) {
 			e.preventDefault();
-			handleSegmentNavigation(e, dateField.ids.field);
+			handleSegmentNavigation(e, get(dateField.ids.field));
 		}
 	}
 
