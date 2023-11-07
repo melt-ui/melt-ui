@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.59.0
+
+### Minor Changes
+
+- TOC: 'all-parents' type ([`67307b2a`](https://github.com/melt-ui/melt-ui/commit/67307b2a64fae896bc6b3238f1477ad9e14fd40c))
+
 ## 0.58.2
 
 ### Patch Changes
