@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { createDatePicker } from '$lib/builders';
+	import { createDatePicker, melt } from '$lib';
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
-	import { melt } from '$lib';
 	import { fade } from 'svelte/transition';
+	import { CalendarDate } from '@internationalized/date';
 
 	const {
 		elements: {
@@ -19,135 +19,191 @@
 			trigger,
 		},
 		states: { months, headingValue, daysOfWeek, segmentContents, open },
-		options: { locale },
+		helpers: { isDateDisabled, isDateUnavailable },
 	} = createDatePicker({
 		forceVisible: true,
-		granularity: 'minute',
+		defaultValue: new CalendarDate(2024, 1, 11),
 	});
 </script>
 
-<div class="flex w-full flex-col items-center gap-3">
+<section>
 	<div>
-		<span use:melt={$label} class="cursor-default font-medium text-magnum-800"
-			>Date</span
-		>
-		<div
-			use:melt={$field}
-			class="flex w-full min-w-[240px] items-center rounded-md border bg-white p-1.5 text-magnum-800"
-		>
-			{#each $segmentContents as seg, i (`${i}-${$locale}`)}
-				<div use:melt={$segment(seg.part)} class="segment whitespace-nowrap">
+		<span use:melt={$label}>Date</span>
+		<div use:melt={$field}>
+			{#each $segmentContents as seg}
+				<div use:melt={$segment(seg.part)}>
 					{seg.value}
 				</div>
 			{/each}
-			<div class="ml-4 flex w-full items-center justify-end">
-				<button use:melt={$trigger} class="rounded bg-magnum-800 p-1">
-					<Calendar class="h-4 w-4 text-white" />
+			<div>
+				<button use:melt={$trigger}>
+					<Calendar size={16} />
 				</button>
 			</div>
 		</div>
 	</div>
 	{#if $open}
-		<div
-			class="z-10 w-80 rounded-lg bg-white p-3 shadow-sm"
-			transition:fade={{ duration: 100 }}
-			use:melt={$content}
-		>
-			<div class="w-full text-magnum-800" use:melt={$calendar}>
-				<header class="flex items-center justify-between pb-4">
+		<div transition:fade={{ duration: 100 }} use:melt={$content}>
+			<div use:melt={$calendar}>
+				<header>
 					<button use:melt={$prevButton}>
-						<ChevronLeft />
+						<ChevronLeft size={24} />
 					</button>
-					<h2 class="font-semibold text-magnum-800" use:melt={$heading}>
+					<div use:melt={$heading}>
 						{$headingValue}
-					</h2>
+					</div>
 					<button use:melt={$nextButton}>
-						<ChevronRight />
+						<ChevronRight size={24} />
 					</button>
 				</header>
-				{#each $months as month}
-					{@const { weeks } = month}
-					<table use:melt={$grid} class="w-full">
-						<thead aria-hidden="true">
-							<tr>
-								{#each $daysOfWeek as day}
-									<th class="text-sm font-semibold text-magnum-800">
-										<div class="flex h-6 w-6 items-center justify-center p-4">
-											{day}
-										</div>
-									</th>
-								{/each}
-							</tr>
-						</thead>
-						<tbody>
-							{#each weeks as days}
+				<div>
+					{#each $months as month}
+						<table use:melt={$grid}>
+							<thead aria-hidden="true">
 								<tr>
-									{#each days as date}
-										<td role="gridcell">
-											<div use:melt={$cell(date, month.value)} class="cell">
-												{date.day}
+									{#each $daysOfWeek as day}
+										<th>
+											<div>
+												{day}
 											</div>
-										</td>
+										</th>
 									{/each}
 								</tr>
-							{/each}
-						</tbody>
-					</table>
-				{/each}
+							</thead>
+							<tbody>
+								{#each month.weeks as weekDates}
+									<tr>
+										{#each weekDates as date}
+											<td
+												role="gridcell"
+												aria-disabled={$isDateDisabled(date) ||
+													$isDateUnavailable(date)}
+											>
+												<div use:melt={$cell(date, month.value)}>
+													{date.day}
+												</div>
+											</td>
+										{/each}
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					{/each}
+				</div>
 			</div>
 		</div>
 	{/if}
-</div>
+</section>
 
 <style lang="postcss">
-	.input {
-		@apply flex h-8 w-full rounded-md border border-magnum-800 bg-transparent px-2.5 text-sm;
-		@apply ring-offset-magnum-300 focus-visible:ring;
-		@apply focus-visible:ring-magnum-400 focus-visible:ring-offset-1;
-		@apply flex-1 items-center justify-center;
-		@apply px-2.5 text-sm leading-none text-magnum-700;
+	section {
+		@apply flex w-full flex-col items-center gap-3;
 	}
 
-	.trigger {
-		@apply inline-flex w-64 items-center  justify-center rounded bg-white p-0 px-2 py-1 text-sm font-medium;
-		@apply text-magnum-900 transition-colors hover:bg-white/90;
-		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
+	[data-melt-datefield-field] div:last-of-type {
+		@apply ml-4 flex w-full items-center justify-end;
 	}
 
-	.close {
-		@apply absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full;
-		@apply text-magnum-900 transition-colors hover:bg-magnum-500/10;
-		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
-		@apply bg-white p-0 text-sm font-medium;
+	[data-melt-popover-content] {
+		@apply z-10 min-w-[320px] rounded-lg bg-white shadow-sm;
 	}
 
-	.button {
-		@apply flex h-6 w-6 items-center justify-center rounded-full;
-		@apply text-magnum-900 transition-colors hover:bg-magnum-500/10;
-		@apply focus-visible:ring-1 focus-visible:ring-magnum-400;
-		@apply bg-white p-0 text-sm font-medium;
+	[data-melt-popover-trigger] {
+		@apply rounded-md bg-magnum-700 p-1 text-white transition-all hover:bg-magnum-700/90;
 	}
 
-	.content {
-		@apply z-10 w-60 rounded-[4px] bg-white p-5 shadow-sm;
+	[data-melt-datefield-label] {
+		@apply font-medium text-magnum-800;
 	}
 
-	.buttons-wrapper {
-		@apply flex items-center justify-between border-y border-magnum-700 py-1;
+	[data-melt-datefield-label][data-invalid] {
+		@apply text-red-500;
 	}
 
-	.cell {
-		@apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded p-4 hover:bg-magnum-100 focus:ring focus:ring-magnum-400 data-[outside-month]:pointer-events-none data-[outside-month]:cursor-default data-[range-highlighted]:bg-magnum-200 data-[selected]:bg-magnum-300 data-[disabled]:opacity-40 data-[outside-month]:opacity-40 data-[outside-month]:hover:bg-transparent;
+	[data-melt-datefield-field] {
+		@apply mt-0.5 flex w-full min-w-[160px] items-center rounded-lg border border-magnum-400/60 bg-white p-1.5 text-magnum-800 shadow-md;
 	}
 
-	.segment {
-		@apply data-[segment="dayPeriod"]:pl-0.5 data-[segment="hour"]:pl-1 data-[segment="timeZoneName"]:pl-1;
+	[data-melt-datefield-field][data-invalid] {
+		@apply border-red-400;
 	}
-	.segment:not([data-segment='literal']) {
+
+	[data-melt-datefield-segment][data-invalid] {
+		@apply text-red-500;
+	}
+
+	[data-melt-datefield-segment]:not([data-segment='literal']) {
 		@apply px-0.5;
 	}
 
-	.btn {
-		@apply rounded bg-magnum-600 p-1 text-xs text-white;
+	[data-melt-datefield-validation] {
+		@apply self-start text-red-500;
+	}
+
+	[data-melt-calendar] {
+		@apply w-full rounded-lg bg-white p-3 text-magnum-700 shadow-sm;
+	}
+
+	header {
+		@apply flex items-center justify-between pb-2;
+	}
+
+	header + div {
+		@apply flex items-center gap-6;
+	}
+
+	[data-melt-calendar-prevbutton] {
+		@apply rounded-lg p-1 transition-all hover:bg-magnum-500/20;
+	}
+
+	[data-melt-calendar-nextbutton] {
+		@apply rounded-lg p-1 transition-all hover:bg-magnum-500/20;
+	}
+
+	[data-melt-calendar-prevbutton][data-disabled] {
+		@apply pointer-events-none rounded-lg p-1 opacity-40;
+	}
+
+	[data-melt-calendar-nextbutton][data-disabled] {
+		@apply pointer-events-none rounded-lg p-1 opacity-40;
+	}
+
+	[data-melt-calendar-heading] {
+		@apply font-semibold;
+	}
+
+	th {
+		@apply text-sm font-semibold;
+
+		& div {
+			@apply flex h-6 w-6 items-center justify-center p-4;
+		}
+	}
+
+	[data-melt-calendar-grid] {
+		@apply w-full;
+	}
+
+	[data-melt-calendar-cell] {
+		@apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded-lg p-4 hover:bg-magnum-500/20  focus:ring focus:ring-magnum-400;
+	}
+
+	[data-melt-calendar-cell][data-disabled] {
+		@apply pointer-events-none opacity-40;
+	}
+	[data-melt-calendar-cell][data-unavailable] {
+		@apply pointer-events-none text-red-400 line-through;
+	}
+
+	[data-melt-calendar-cell][data-selected] {
+		@apply bg-magnum-300 text-magnum-700;
+	}
+
+	[data-melt-calendar-cell][data-outside-visible-months] {
+		@apply pointer-events-none cursor-default opacity-40 hover:bg-transparent;
+	}
+
+	[data-melt-calendar-cell][data-outside-month] {
+		@apply pointer-events-none cursor-default opacity-0 hover:bg-transparent;
 	}
 </style>

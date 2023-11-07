@@ -3,43 +3,53 @@
 
 	const {
 		elements: { field, segment, label },
-		states: { value, segmentContents },
+		states: { segmentContents },
 	} = createDateField();
 </script>
 
-<div class="flex w-full flex-col items-center gap-3">
+<section>
 	<div>
-		<span use:melt={$label} class="font-medium text-magnum-900">Due Date</span>
-		<div
-			use:melt={$field}
-			class="mt-0.5 flex w-full min-w-[200px] items-center rounded-lg border bg-white p-1.5 text-magnum-900"
-		>
-			{#each $segmentContents as seg, i (i)}
-				<div use:melt={$segment(seg.part)} class="segment whitespace-nowrap">
+		<span use:melt={$label}>Date</span>
+		<div use:melt={$field}>
+			{#each $segmentContents as seg}
+				<div use:melt={$segment(seg.part)}>
 					{seg.value}
 				</div>
 			{/each}
 		</div>
 	</div>
-	<div class="flex w-full">
-		<p class="text-sm font-medium text-magnum-900">
-			<span> Selected Date: </span>
-			{#if $value}
-				{$value}
-			{/if}
-		</p>
-	</div>
-</div>
+</section>
 
 <style lang="postcss">
-	.segment:not([data-segment='literal']) {
-		@apply px-0.5;
-	}
-	.segment {
-		@apply data-[segment="dayPeriod"]:pl-0.5 data-[segment="hour"]:pl-1 data-[segment="timeZoneName"]:pl-1;
+	section {
+		@apply flex w-full flex-col items-center gap-3;
 	}
 
-	.btn {
-		@apply rounded bg-magnum-600 p-1 text-xs text-white;
+	[data-melt-datefield-label] {
+		@apply font-medium text-magnum-800;
+	}
+
+	[data-melt-datefield-label][data-invalid] {
+		@apply text-red-500;
+	}
+
+	[data-melt-datefield-field] {
+		@apply mt-0.5 flex w-full min-w-[160px] items-center rounded-lg border border-magnum-400/60 bg-white p-1.5 text-magnum-800 shadow-md;
+	}
+
+	[data-melt-datefield-field][data-invalid] {
+		@apply border-red-400;
+	}
+
+	[data-melt-datefield-segment][data-invalid] {
+		@apply text-red-500;
+	}
+
+	[data-melt-datefield-segment]:not([data-segment='literal']) {
+		@apply px-0.5;
+	}
+
+	[data-melt-datefield-validation] {
+		@apply self-start text-red-500;
 	}
 </style>

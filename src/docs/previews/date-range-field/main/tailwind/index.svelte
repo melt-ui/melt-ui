@@ -3,50 +3,62 @@
 
 	const {
 		elements: { field, startSegment, endSegment, label },
-		states: { segmentContents, isInvalid },
+		states: { segmentContents },
 	} = createDateRangeField();
 </script>
 
-<div class="flex w-full flex-col items-center gap-3">
+<section>
 	<div>
-		<span use:melt={$label} class="pb-1 font-medium text-magnum-800"
-			>Booking Dates</span
-		>
-		<div
-			use:melt={$field}
-			class="flex w-[260px] items-center justify-center rounded-md border bg-white p-1.5 text-magnum-800 {$isInvalid &&
-				'border-2 border-red-600'}"
-		>
+		<span use:melt={$label}>Booking Dates</span>
+		<div use:melt={$field}>
 			{#each $segmentContents.start as seg, i (i)}
-				<div
-					use:melt={$startSegment(seg.part)}
-					class="segment {$isInvalid && 'text-red-600'}"
-				>
+				<div use:melt={$startSegment(seg.part)}>
 					{seg.value}
 				</div>
 			{/each}
-			<div aria-hidden="true" class="px-2">-</div>
+			<span aria-hidden="true">-</span>
 			{#each $segmentContents.end as seg, i (i)}
-				<div
-					use:melt={$endSegment(seg.part)}
-					class="segment {$isInvalid && 'text-red-600'}"
-				>
+				<div use:melt={$endSegment(seg.part)}>
 					{seg.value}
 				</div>
 			{/each}
 		</div>
 	</div>
-</div>
+</section>
 
 <style lang="postcss">
-	.segment:not([data-segment='literal']) {
-		@apply px-0.5;
-	}
-	.segment {
-		@apply whitespace-nowrap data-[segment="dayPeriod"]:pl-0.5 data-[segment="hour"]:pl-1 data-[segment="timeZoneName"]:pl-1;
+	section {
+		@apply flex w-full flex-col items-center gap-3;
 	}
 
-	.btn {
-		@apply rounded bg-magnum-600 p-1 text-xs text-white;
+	[data-melt-datefield-label] {
+		@apply font-medium text-magnum-800;
+	}
+
+	[data-melt-datefield-label][data-invalid] {
+		@apply text-red-500;
+	}
+
+	[data-melt-datefield-field] {
+		@apply mt-0.5 flex w-full min-w-[160px] items-center rounded-lg border border-magnum-400/60 bg-white p-1.5 text-magnum-800 shadow-md;
+	}
+	[data-melt-datefield-field] span {
+		@apply px-2;
+	}
+
+	[data-melt-datefield-field][data-invalid] {
+		@apply border-2 border-red-600;
+	}
+
+	[data-melt-datefield-field][data-invalid] {
+		@apply text-red-600;
+	}
+
+	[data-melt-datefield-segment]:not([data-segment='literal']) {
+		@apply px-0.5;
+	}
+
+	[data-melt-datefield-validation] {
+		@apply self-start text-red-500;
 	}
 </style>
