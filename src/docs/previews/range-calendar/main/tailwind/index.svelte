@@ -5,13 +5,9 @@
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: {  months, headingValue, daysOfWeek },
+		states: { months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable },
-	} = createRangeCalendar({
-		isDateDisabled: (date) => {
-			return date.day === 10;
-		},
-	});
+	} = createRangeCalendar();
 </script>
 
 <div class="flex h-full">
