@@ -67,11 +67,11 @@
 	}
 
 	header {
-		@apply flex items-center justify-between pb-2;
+		@apply flex items-center justify-between pb-2 text-xs sm:text-base;
 	}
 
 	header + div {
-		@apply flex items-start gap-6;
+		@apply flex flex-col items-start gap-6 sm:flex-row;
 	}
 
 	[data-melt-calendar-prevbutton] {
@@ -92,6 +92,10 @@
 
 	[data-melt-calendar-heading] {
 		@apply font-semibold;
+	}
+
+	thead {
+		@apply text-neutral-500;
 	}
 
 	th {
