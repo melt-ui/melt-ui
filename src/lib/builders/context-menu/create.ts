@@ -114,7 +114,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		const target = e.target;
 		if (!(target instanceof Element)) return;
 
-		const isClickInsideTrigger = target.closest(`#${ids.trigger}`) !== null;
+		const isClickInsideTrigger = target.closest(`#${get(ids.trigger)}`) !== null;
 
 		if (!isClickInsideTrigger || isLeftClick(e)) {
 			rootOpen.set(false);
@@ -138,8 +138,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				style: styleToString({
 					display: $isVisible ? undefined : 'none',
 				}),
-				id: ids.menu,
-				'aria-labelledby': ids.trigger,
+				id: get(ids.menu),
+				'aria-labelledby': get(ids.trigger),
 				'data-state': $isVisible ? 'open' : 'closed',
 				'data-portal': $portal ? '' : undefined,
 				tabindex: -1,
@@ -235,7 +235,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		returned: ($rootOpen) => {
 			return {
 				'data-state': $rootOpen ? 'open' : 'closed',
-				id: ids.trigger,
+				id: get(ids.trigger),
 				style: styleToString({
 					WebkitTouchCallout: 'none',
 				}),
