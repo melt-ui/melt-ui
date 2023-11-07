@@ -1,5 +1,5 @@
 ---
-title: Pin Input
+title: PIN Input
 description: A sequence of one-character alphanumeric inputs.
 ---
 

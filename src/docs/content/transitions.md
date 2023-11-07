@@ -1,9 +1,9 @@
 ---
 title: Transitions
-description: Learn how to use Svelte & other custom transitions and animations with Melt.
+description: Learn how to use Svelte and other custom transitions and animations with Melt.
 ---
 
-By default, the visibility of most elements you'd want to apply transitions to are controlled by
+By default, the visibility of most elements you'd want to apply transitions to is controlled by
 Melt internally. We set the element's `hidden` attribute to `true`, and the display to `none` when
 the open state is false. We do this to prevent flickering when the component is first rendered.
 

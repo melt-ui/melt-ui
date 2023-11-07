@@ -143,7 +143,7 @@ Dialogs can be nested. For example, here's a dialog that opens another dialog.
 ## Accessibility
 
 Adheres to the
-[Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) &
+[Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) and
 [Alert Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/)
 
 <KbdTable {keyboard} />

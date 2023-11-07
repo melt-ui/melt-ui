@@ -7,12 +7,12 @@ description: Simplifying the syntax of Melt UI using a custom preprocessor.
 
 We provide a custom preprocessor that aims to enhance the DX of Melt UI just a bit further. It
 introduces a new action, `melt`, that accepts our builders as values. This helps trim down on the
-boilerplate just enough to keep the markup nice and tidy. The PP will then transform our special
+boilerplate just enough to keep the markup nice and tidy. The preprocessor will then transform our special
 attribute into the proper Svelte syntax.
 
 ## How it works
 
-In the most simplest form, the PP will take the following code:
+In the simplest form, the preprocessor will take the following code:
 
 ```svelte
 <script>
