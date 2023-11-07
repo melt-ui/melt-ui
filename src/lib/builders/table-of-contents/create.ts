@@ -2,6 +2,7 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	effect,
 	executeCallbacks,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
@@ -62,6 +63,10 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 	// Stores
 	const activeHeadingIdxs: Writable<number[]> = writable([]);
 	const headingsTree: Writable<TableOfContentsItem[]> = writable([]);
+
+	effect(headingsTree, ($headingsTree) => {
+		console.log($headingsTree);
+	});
 
 	// Helpers
 	function generateInitialLists(elementTarget: Element) {
