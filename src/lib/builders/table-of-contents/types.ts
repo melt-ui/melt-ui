@@ -12,6 +12,7 @@ export type ActiveType =
 	| 'lowest'
 	| 'highest'
 	| 'all'
+	| 'all-parents'
 	| 'lowest-parents'
 	| 'highest-parents';
 
@@ -40,6 +41,7 @@ export type CreateTableOfContentsArgs = {
 	 * The type of headings to consider as active:
 	 * - 'none': No intersection observers are added, and no headings are considered active.
 	 * - 'all': All headings with visible content are considered active.
+	 * - 'all-parents': Parents of all headings with visible content are also considered active.
 	 * - 'lowest': The heading with the lowest visible content is considered active.
 	 * - 'highest': The heading with the highest visible content is considered active.
 	 * - 'lowest-parents': Parents of the heading with the lowest visible content are also considered active.

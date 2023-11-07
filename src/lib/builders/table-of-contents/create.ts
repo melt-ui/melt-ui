@@ -2,19 +2,18 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
-	effect,
 	executeCallbacks,
 } from '$lib/internal/helpers';
 import type { Defaults } from '$lib/internal/types';
 
+import { dequal } from 'dequal';
 import { onMount } from 'svelte';
 import { get, writable, type Writable } from 'svelte/store';
-import { dequal } from 'dequal';
 
 import type {
-	Heading,
 	CreateTableOfContentsArgs,
 	ElementHeadingLU,
+	Heading,
 	HeadingParentsLU,
 	TableOfContentsItem,
 } from './types';
@@ -63,10 +62,6 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 	// Stores
 	const activeHeadingIdxs: Writable<number[]> = writable([]);
 	const headingsTree: Writable<TableOfContentsItem[]> = writable([]);
-
-	effect(headingsTree, ($headingsTree) => {
-		console.log($headingsTree);
-	});
 
 	// Helpers
 	function generateInitialLists(elementTarget: Element) {
@@ -174,6 +169,11 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 		}
 	}
 
+	const shouldHighlightParents =
+		activeType === 'highest-parents' ||
+		activeType === 'lowest-parents' ||
+		activeType === 'all-parents';
+
 	function handleElementObservation(entries: IntersectionObserverEntry[]) {
 		// Iterate through all elements that crossed the observer_threshold.
 		for (let i = 0; i < entries.length; i++) {
@@ -190,12 +190,11 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 					visibleElementIdxs.set(tempVisibleElementIdxs);
 
 					// Only add active parents if parent headings should be highlighted.
-					activeParentIdxs.set(
-						(activeType === 'highest-parents' || activeType === 'lowest-parents') &&
-							headingParentsLU[toc_idx]
-							? [...get(activeParentIdxs), ...(<number[]>headingParentsLU[toc_idx])]
-							: []
-					);
+					if (shouldHighlightParents && headingParentsLU[toc_idx]) {
+						activeParentIdxs.update((prev) => {
+							return [...prev, ...(<number[]>headingParentsLU[toc_idx])];
+						});
+					}
 				}
 			} else {
 				// Remove the observed element from the visibleElementIdxs list if the intersection ratio is below the threshold.
@@ -203,15 +202,15 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 				visibleElementIdxs.set(tempVisibleElementIdxs);
 
 				// Remove all parents of obsIndex from the activeParentIdxs list.
-				if (
-					(activeType === 'highest-parents' || activeType === 'lowest-parents') &&
-					headingParentsLU[toc_idx]
-				) {
-					headingParentsLU[toc_idx]?.forEach((parent: number) => {
-						const tempActiveParentIdxs = get(activeParentIdxs);
-						const index = tempActiveParentIdxs.indexOf(parent);
-						tempActiveParentIdxs.splice(index, 1);
-						activeParentIdxs.set(tempActiveParentIdxs);
+				if (shouldHighlightParents && headingParentsLU[toc_idx]) {
+					activeParentIdxs.update((prev) => {
+						const newArr = [...prev];
+						headingParentsLU[toc_idx]?.forEach((parent: number) => {
+							const index = newArr.indexOf(parent);
+							newArr.splice(index, 1);
+						});
+
+						return newArr;
 					});
 				}
 			}
@@ -225,22 +224,34 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 
 		if (allActiveHeaderIdxs.length === 0) {
 			activeHeaderIdxs = [];
-		} else if (activeType === 'highest') {
-			activeHeaderIdxs = [Math.min(...allActiveHeaderIdxs)];
-		} else if (activeType === 'lowest') {
-			activeHeaderIdxs = [Math.max(...allActiveHeaderIdxs)];
-		} else if (activeType === 'all') {
-			activeHeaderIdxs = allActiveHeaderIdxs;
 		} else {
-			const activeHeaderIdx =
-				activeType === 'highest-parents'
-					? Math.min(...allActiveHeaderIdxs)
-					: Math.max(...allActiveHeaderIdxs);
+			switch (activeType) {
+				case 'highest':
+					activeHeaderIdxs = [Math.min(...allActiveHeaderIdxs)];
+					break;
+				case 'lowest':
+					activeHeaderIdxs = [Math.max(...allActiveHeaderIdxs)];
+					break;
+				case 'all':
+					activeHeaderIdxs = allActiveHeaderIdxs;
+					break;
+				case 'all-parents': {
+					const parentIdxs = allActiveHeaderIdxs.flatMap((idx) => headingParentsLU[idx] ?? []);
+					activeHeaderIdxs = [...allActiveHeaderIdxs, ...parentIdxs];
+					break;
+				}
+				default: {
+					const activeHeaderIdx =
+						activeType === 'highest-parents'
+							? Math.min(...allActiveHeaderIdxs)
+							: Math.max(...allActiveHeaderIdxs);
 
-			if (headingParentsLU[activeHeaderIdx]) {
-				activeHeaderIdxs = [...(<[]>headingParentsLU[activeHeaderIdx]), activeHeaderIdx];
-			} else {
-				activeHeaderIdxs = [activeHeaderIdx];
+					if (headingParentsLU[activeHeaderIdx]) {
+						activeHeaderIdxs = [...(<[]>headingParentsLU[activeHeaderIdx]), activeHeaderIdx];
+					} else {
+						activeHeaderIdxs = [activeHeaderIdx];
+					}
+				}
 			}
 		}
 

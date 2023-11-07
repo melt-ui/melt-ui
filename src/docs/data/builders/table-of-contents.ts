@@ -24,12 +24,13 @@ const builder: APISchema = {
 		},
 		{
 			name: 'activeType',
-			type: "'all' | 'lowest' | 'highest' | 'lowest-parents' | 'highest-parents'",
+			type: "'all' | | 'all-parents' | 'lowest' | 'highest' | 'lowest-parents' | 'highest-parents'",
 			default: 'lowest',
 			description:
 				"Describes which header should be considered active.\n\n\
 `'none'` means that no intersection observers are added and no headings are considered active.\n\
 `'all'` means that all headings with visible content are considered active.\n\
+`'all-parents'` means that parents of all headings with visible content are also considered active.\n\
 `'lowest'` means that the heading of the lowest visible content is considered active.\n\
 `'highest'` means the opposite.\n\
 `'lowest-parents'` means that parents of the heading with the lowest visible content are also considered active, and the same goes for `'highest-parents'`.",
