@@ -5,7 +5,7 @@
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek, value },
+		states: { months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable },
 	} = createCalendar({
 		defaultPlaceholder: new CalendarDate(2023, 1, 25),

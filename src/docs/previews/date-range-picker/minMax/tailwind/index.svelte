@@ -2,7 +2,7 @@
 	import { createDateRangePicker, melt } from '$lib';
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
 	import { fade } from 'svelte/transition';
-	import { CalendarDate, CalendarDateTime } from '@internationalized/date';
+	import { CalendarDate } from '@internationalized/date';
 
 	const {
 		elements: {

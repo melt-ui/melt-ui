@@ -20,7 +20,6 @@
 			label,
 		},
 		states: {
-			value,
 			months,
 			headingValue,
 			daysOfWeek,

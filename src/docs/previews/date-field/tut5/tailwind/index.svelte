@@ -4,7 +4,7 @@
 
 	const {
 		elements: { field, segment, label, hiddenInput },
-		states: { value, segmentContents },
+		states: { segmentContents },
 	} = createDateField({
 		name: 'appointmentDate',
 		defaultPlaceholder: new CalendarDateTime(2023, 10, 11, 12, 30),

@@ -5,7 +5,7 @@
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { value, months, headingValue, daysOfWeek },
+		states: {  months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable },
 	} = createRangeCalendar({
 		isDateDisabled: (date) => {
