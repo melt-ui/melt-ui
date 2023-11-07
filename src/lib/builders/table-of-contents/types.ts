@@ -19,22 +19,40 @@ export type HeadingFilterFn = (heading: HTMLHeadingElement) => boolean;
 
 export type ScrollFn = (id: string) => void;
 
-/**
- * Arguments to be passed to the Table of Contents builder.
- *
- * @typeParam selector - The id of the container in which the content of the page is.
- * @param exclude - A list of headings that should be excluded in the table.
- * @param scrollOffset - The pixel offset that should be added when scrolling to a heading.
- * @param scrollBehaviour - Describes whether the scroll behaviour should be smooth or not.
- * @param activeType - Describes which headings should be considered active.
- */
 export type CreateTableOfContentsArgs = {
+	/**
+	 * The ID of the container holding the page content.
+	 */
 	selector: string;
+	/**
+	 * An array of headings to exclude from the table.
+	 */
 	exclude?: Heading[];
+	/**
+	 * The pixel offset added when scrolling to a heading.
+	 */
 	scrollOffset?: number;
+	/**
+	 * The scroll behavior ('smooth' or 'instant').
+	 */
 	scrollBehaviour?: ScrollBehaviour;
+	/**
+	 * The type of headings to consider as active:
+	 * - 'none': No intersection observers are added, and no headings are considered active.
+	 * - 'all': All headings with visible content are considered active.
+	 * - 'lowest': The heading with the lowest visible content is considered active.
+	 * - 'highest': The heading with the highest visible content is considered active.
+	 * - 'lowest-parents': Parents of the heading with the lowest visible content are also considered active.
+	 * - 'highest-parents': Parents of the heading with the highest visible content are also considered active.
+	 */
 	activeType?: ActiveType;
+	/**
+	 * A custom filter function for headings.
+	 */
 	headingFilterFn?: HeadingFilterFn;
+	/**
+	 * A custom scroll function.
+	 */
 	scrollFn?: ScrollFn;
 };
 

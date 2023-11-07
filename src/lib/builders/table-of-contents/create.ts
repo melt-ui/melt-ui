@@ -25,22 +25,6 @@ const defaults = {
 	activeType: 'lowest',
 } satisfies Defaults<CreateTableOfContentsArgs>;
 
-/**
- * @param args Provide the arguments for the table of contents builder.
- * @param args.selector The id of the container in which the content of the page is.
- * @param args.exclude A list of headings that should be excluded in the table.
- * @param args.scrollOffset The offset that should be added when scrolling to a heading.
- * @param args.scrollBehaviour Describes whether the scroll behaviour should be 'smooth' or 'instant'.
- * @param args.headingFilterFn Allows you to pass a filter function to filter the headings that are returned in the 'headingsTree' store.
- * @param args.scrollFn Overwrite the default scroll function with your own.
- * @param args.activeType Describes which header should be considered active:
- *     - 'none': no intersection observers are added and no headings are considered active
- *     - 'all': all headings with visible content are considered active
- *     - 'lowest': the heading of the lowest visible content is considered active
- *     - 'highest': the heading of the highest visible content is considered active
- *     - 'lowest-parents': parents of the heading with the lowest visible content are also considered active
- *     - 'highest-parents': parents of the heading with the highest visible content are also considered active
- */
 export function createTableOfContents(args: CreateTableOfContentsArgs) {
 	const argsWithDefaults = { ...defaults, ...args };
 	const {
