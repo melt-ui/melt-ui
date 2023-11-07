@@ -187,13 +187,13 @@ as the `defaultPlaceholder` prop.
 ```svelte showLineNumbers {3,10}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
-	import { CalendarDateTime } from '@internationalized/date';
+	import { CalendarDateTime } from '@internationalized/date'
 
 	const {
 		elements: { field, segment, label, hiddenInput },
 		states: { segmentContents, value }
 	} = createDateField({
-		name: 'appointmentDate'
+		name: 'appointmentDate',
 		defaultPlaceholder: new CalendarDateTime(2023, 10, 11, 12, 30)
 	})
 </script>
@@ -230,13 +230,13 @@ We can also just as easily convert the field into a Zoned Date & Time field, by 
 ```svelte showLineNumbers {3,10}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
-	import { now, getLocalTimeZone } from '@internationalized/date';
+	import { now, getLocalTimeZone } from '@internationalized/date'
 
 	const {
 		elements: { field, segment, label, hiddenInput },
 		states: { segmentContents, value }
 	} = createDateField({
-		name: 'appointmentDate'
+		name: 'appointmentDate',
 		defaultPlaceholder: now(getLocalTimeZone())
 	})
 </script>
@@ -255,13 +255,13 @@ the argument to the `now` function.
 ```svelte showLineNumbers {10}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
-	import { now } from '@internationalized/date';
+	import { now } from '@internationalized/date'
 
 	const {
 		elements: { field, segment, label, hiddenInput },
 		states: { segmentContents, value }
 	} = createDateField({
-		name: 'appointmentDate'
+		name: 'appointmentDate',
 		defaultPlaceholder: now('America/Los_Angeles')
 	})
 </script>
@@ -292,13 +292,13 @@ props interact.
 ```svelte showLineNumbers {3,11}
 <script lang="ts">
 	import { createDateField, melt } from '@melt-ui/svelte'
-	import { CalendarDateTime, CalendarDate } from '@internationalized/date';
+	import { CalendarDateTime, CalendarDate } from '@internationalized/date'
 
 	const {
 		elements: { field, segment, label, hiddenInput },
 		states: { segmentContents, value }
 	} = createDateField({
-		name: 'appointmentDate'
+		name: 'appointmentDate',
 		defaultPlaceholder: new CalendarDateTime(2023, 10, 11, 12, 30),
 		defaultValue: new CalendarDate(2023, 10, 11)
 	})

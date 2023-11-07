@@ -668,16 +668,20 @@ If a date is before the `minValue`, or after the `maxValue`, it will be disabled
 	<svelte:component this={previews.minMax} />
 </Preview>
 
-
 ## Composition
 
-The calendar builder was designed to be as flexible as possible, and can be composed with other builders to create more complex components.
+The calendar builder was designed to be as flexible as possible, and can be composed with other
+builders to create more complex components.
 
 ### Month Selection
 
-The calendar builder provides a `prevButton` and `nextButton` to enable navigation between pages of the calendar, but you may want to provide a way for the user to select a month from a list of months, or a year from a list of years.
+The calendar builder provides a `prevButton` and `nextButton` to enable navigation between pages of
+the calendar, but you may want to provide a way for the user to select a month from a list of
+months, or a year from a list of years.
 
-This can be accomplished using the [Select](/docs/builders/select) builder, and the `setMonth` and/or `setYear` helper functions provided by the Calendar builder. Here's an example demonstrating how to add a "month selector" to your calendar:
+This can be accomplished using the [Select](/docs/builders/select) builder, and the `setMonth`
+and/or `setYear` helper functions provided by the Calendar builder. Here's an example demonstrating
+how to add a "month selector" to your calendar:
 
 <Preview code={snippets.monthSelect} variant="dark" size="auto">
 	<svelte:component this={previews.monthSelect} />
