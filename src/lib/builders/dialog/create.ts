@@ -55,7 +55,7 @@ const defaults = {
 
 const openDialogIds = writable<string[]>([]);
 
-export const dialogIdParts = ['content', 'title', 'description', 'portalled'] as const;
+export const dialogIdParts = ['content', 'title', 'description'] as const;
 export type DialogIdParts = typeof dialogIdParts;
 
 export function createDialog(props?: CreateDialogProps) {
@@ -272,10 +272,9 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const portalled = builder(name('portalled'), {
-		stores: [portal, ids.portalled],
-		returned: ([$portal, $portalledId]) => ({
+		stores: [portal],
+		returned: ([$portal]) => ({
 			'data-portal': $portal ? '' : undefined,
-			id: $portalledId,
 		}),
 		action: (node: HTMLElement) => {
 			const unsubPortal = effect([portal], ([$portal]) => {
