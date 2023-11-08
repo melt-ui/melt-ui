@@ -337,9 +337,7 @@ export function createDialog(props?: CreateDialogProps) {
 	effect([open, preventScroll], ([$open, $preventScroll]) => {
 		if (!isBrowser) return;
 
-		if ($preventScroll && $open) {
-			unsubScroll = removeScroll();
-		}
+		if ($preventScroll && $open) unsubScroll = removeScroll();
 
 		if ($open) {
 			const contentEl = document.getElementById(get(ids.content));
