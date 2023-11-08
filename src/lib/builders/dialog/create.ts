@@ -89,25 +89,6 @@ export function createDialog(props?: CreateDialogProps) {
 
 	let unsubScroll = noop;
 
-	// function onOpenChange(props: { curr: boolean; next: boolean }) {
-	// 	const next = withDefaults.onOpenChange ? withDefaults.onOpenChange(props) : props.next;
-	// 	if (next) return next;
-	// 	const modalEl = document.getElementById(get(ids.portalled));
-	// 	if (!modalEl) {
-	// 		console.log('no modal el');
-	// 		return next;
-	// 	}
-	// 	supportClosingAnimation(
-	// 		modalEl,
-	// 		() => {
-	// 			open.set(false);
-	// 			console.log('animation end just set open to false');
-	// 		},
-	// 		clearScrollLocks
-	// 	);
-	// 	return next;
-	// }
-
 	function handleOpen(e: Event) {
 		const el = e.currentTarget;
 		const triggerEl = e.currentTarget;
@@ -367,6 +348,8 @@ export function createDialog(props?: CreateDialogProps) {
 		}
 
 		return () => {
+			// we only want to remove the scroll lock if the dialog is not forced visible
+			// otherwise the scroll removal is handled in the `destroy` of the `content` builder
 			if (!get(forceVisible)) {
 				unsubScroll();
 			}
