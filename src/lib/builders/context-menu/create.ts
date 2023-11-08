@@ -114,7 +114,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		const target = e.target;
 		if (!(target instanceof Element)) return;
 
-		const isClickInsideTrigger = target.closest(`#${get(ids.trigger)}`) !== null;
+		const isClickInsideTrigger = target.closest(`[data-id="${get(ids.trigger)}"]`) !== null;
 
 		if (!isClickInsideTrigger || isLeftClick(e)) {
 			rootOpen.set(false);
@@ -239,6 +239,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				style: styleToString({
 					WebkitTouchCallout: 'none',
 				}),
+				'data-id': $triggerId,
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<ContextMenuEvents['trigger']> => {

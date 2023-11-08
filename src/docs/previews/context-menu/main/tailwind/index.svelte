@@ -9,12 +9,18 @@
 	const {
 		elements: { trigger, menu, item, separator },
 		builders: { createSubmenu, createMenuRadioGroup, createCheckboxItem },
+		states: { open },
 	} = createContextMenu({
 		loop: true,
+		forceVisible: true,
+		closeFocus: () => {
+			return document.getElementById('closeFocus');
+		},
 	});
 
 	const {
 		elements: { subMenu: subMenuA, subTrigger: subTriggerA },
+		states: { subOpen },
 	} = createSubmenu();
 
 	const {
@@ -44,64 +50,69 @@
 	];
 </script>
 
+<button id="closeFocus">closefocus</button>
+
 <span class="trigger" use:melt={$trigger} aria-label="Update dimensions">
 	Right click me.
 </span>
-
-<div class="menu" use:melt={$menu}>
-	<div class="item" use:melt={$item}>About Melt UI</div>
-	<div class="item" use:melt={$item}>Check for Updates...</div>
-	<div class="separator" use:melt={$separator} />
-	<div class="item" use:melt={$checkboxItem}>
-		<div class="check">
-			{#if $settingsSync}
-				<Check class="square-4" />
-			{/if}
+{#if $open}
+	<div class="menu" use:melt={$menu}>
+		<div class="item" use:melt={$item}>About Melt UI</div>
+		<div class="item" use:melt={$item}>Check for Updates...</div>
+		<div class="separator" use:melt={$separator} />
+		<div class="item" use:melt={$checkboxItem}>
+			<div class="check">
+				{#if $settingsSync}
+					<Check class="square-4" />
+				{/if}
+			</div>
+			Settings Sync is On
 		</div>
-		Settings Sync is On
-	</div>
-	<div class="item" use:melt={$subTriggerA}>
-		Profiles
-		<div class="rightSlot">
-			<ChevronRight class="square-4" />
+		<div class="item" use:melt={$subTriggerA}>
+			Profiles
+			<div class="rightSlot">
+				<ChevronRight class="square-4" />
+			</div>
 		</div>
-	</div>
-	<div class="menu subMenu" use:melt={$subMenuA}>
-		<div class="text">People</div>
-		<div use:melt={$radioGroup}>
-			{#each personsArr as person}
-				<div class="item" use:melt={$radioItem({ value: person })}>
-					<div class="check">
-						{#if $isChecked(person)}
-							<div class="dot" />
-						{/if}
-					</div>
-					{person}
+		{#if $subOpen}
+			<div class="menu subMenu" use:melt={$subMenuA}>
+				<div class="text">People</div>
+				<div use:melt={$radioGroup}>
+					{#each personsArr as person}
+						<div class="item" use:melt={$radioItem({ value: person })}>
+							<div class="check">
+								{#if $isChecked(person)}
+									<div class="dot" />
+								{/if}
+							</div>
+							{person}
+						</div>
+					{/each}
 				</div>
-			{/each}
-		</div>
-	</div>
-	<div use:melt={$separator} class="separator" />
+			</div>
+		{/if}
+		<div use:melt={$separator} class="separator" />
 
-	<div class="item" use:melt={$checkboxItemA}>
-		<div class="check">
-			{#if $hideMeltUI}
-				<Check class="square-4" />
-			{/if}
+		<div class="item" use:melt={$checkboxItemA}>
+			<div class="check">
+				{#if $hideMeltUI}
+					<Check class="square-4" />
+				{/if}
+			</div>
+			Hide Melt UI
+			<div class="rightSlot">⌘H</div>
 		</div>
-		Hide Melt UI
-		<div class="rightSlot">⌘H</div>
+		<div class="item" use:melt={$item} data-disabled>
+			Show All Components
+			<div class="rightSlot">⇧⌘N</div>
+		</div>
+		<div use:melt={$separator} class="separator" />
+		<div class="item" use:melt={$item}>
+			Quit Melt UI
+			<div class="rightSlot">⌘Q</div>
+		</div>
 	</div>
-	<div class="item" use:melt={$item} data-disabled>
-		Show All Components
-		<div class="rightSlot">⇧⌘N</div>
-	</div>
-	<div use:melt={$separator} class="separator" />
-	<div class="item" use:melt={$item}>
-		Quit Melt UI
-		<div class="rightSlot">⌘Q</div>
-	</div>
-</div>
+{/if}
 
 <style lang="postcss">
 	.menu {
