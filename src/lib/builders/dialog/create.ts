@@ -55,7 +55,7 @@ const defaults = {
 
 const openDialogIds = writable<string[]>([]);
 
-export const dialogIdParts = ['content', 'title', 'description'] as const;
+export const dialogIdParts = ['content', 'title', 'description', 'portalled'] as const;
 export type DialogIdParts = typeof dialogIdParts;
 
 export function createDialog(props?: CreateDialogProps) {
@@ -86,6 +86,27 @@ export function createDialog(props?: CreateDialogProps) {
 	const isVisible = derived([open, forceVisible], ([$open, $forceVisible]) => {
 		return $open || $forceVisible;
 	});
+
+	let unsubScroll = noop;
+
+	// function onOpenChange(props: { curr: boolean; next: boolean }) {
+	// 	const next = withDefaults.onOpenChange ? withDefaults.onOpenChange(props) : props.next;
+	// 	if (next) return next;
+	// 	const modalEl = document.getElementById(get(ids.portalled));
+	// 	if (!modalEl) {
+	// 		console.log('no modal el');
+	// 		return next;
+	// 	}
+	// 	supportClosingAnimation(
+	// 		modalEl,
+	// 		() => {
+	// 			open.set(false);
+	// 			console.log('animation end just set open to false');
+	// 		},
+	// 		clearScrollLocks
+	// 	);
+	// 	return next;
+	// }
 
 	function handleOpen(e: Event) {
 		const el = e.currentTarget;
@@ -261,15 +282,19 @@ export function createDialog(props?: CreateDialogProps) {
 			);
 
 			return {
-				destroy,
+				destroy: () => {
+					unsubScroll();
+					destroy();
+				},
 			};
 		},
 	});
 
 	const portalled = builder(name('portalled'), {
-		stores: portal,
-		returned: ($portal) => ({
+		stores: [portal, ids.portalled],
+		returned: ([$portal, $portalledId]) => ({
 			'data-portal': $portal ? '' : undefined,
+			id: $portalledId,
 		}),
 		action: (node: HTMLElement) => {
 			const unsubPortal = effect([portal], ([$portal]) => {
@@ -331,9 +356,10 @@ export function createDialog(props?: CreateDialogProps) {
 
 	effect([open, preventScroll], ([$open, $preventScroll]) => {
 		if (!isBrowser) return;
-		const unsubs: Array<() => void> = [];
 
-		if ($preventScroll && $open) unsubs.push(removeScroll());
+		if ($preventScroll && $open) {
+			unsubScroll = removeScroll();
+		}
 
 		if ($open) {
 			const contentEl = document.getElementById(get(ids.content));
@@ -341,7 +367,9 @@ export function createDialog(props?: CreateDialogProps) {
 		}
 
 		return () => {
-			unsubs.forEach((unsub) => unsub());
+			if (!get(forceVisible)) {
+				unsubScroll();
+			}
 		};
 	});
 
