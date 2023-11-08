@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.60.0
+
+### Minor Changes
+
+- TOC: isActive helper ([`c7618563`](https://github.com/melt-ui/melt-ui/commit/c7618563bcc836bd3bd14800cb1f1b964b1e0834))
+
 ## 0.59.1
 
 ### Patch Changes
