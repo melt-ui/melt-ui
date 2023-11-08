@@ -1,5 +1,13 @@
 # @melt-ui/svelte
 
+## 0.59.1
+
+### Patch Changes
+
+- Fix: prevent safari from minimizing when esc on dialogs ([#705](https://github.com/melt-ui/melt-ui/pull/705))
+
+- fix: context menu id issues ([#707](https://github.com/melt-ui/melt-ui/pull/707))
+
 ## 0.59.0
 
 ### Minor Changes
