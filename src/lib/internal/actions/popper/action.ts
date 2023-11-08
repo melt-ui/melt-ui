@@ -80,8 +80,7 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 		callbacks.push(
 			useEscapeKeydown(popperElement, {
 				enabled: open,
-				handler: (e: KeyboardEvent) => {
-					if (e.defaultPrevented) return;
+				handler: () => {
 					open.set(false);
 				},
 				...opts.escapeKeydown,
