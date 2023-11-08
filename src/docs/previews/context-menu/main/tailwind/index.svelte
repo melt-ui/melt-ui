@@ -13,9 +13,6 @@
 	} = createContextMenu({
 		loop: true,
 		forceVisible: true,
-		closeFocus: () => {
-			return document.getElementById('closeFocus');
-		},
 	});
 
 	const {
@@ -49,8 +46,6 @@
 		'Franck Poingt',
 	];
 </script>
-
-<button id="closeFocus">closefocus</button>
 
 <span class="trigger" use:melt={$trigger} aria-label="Update dimensions">
 	Right click me.
