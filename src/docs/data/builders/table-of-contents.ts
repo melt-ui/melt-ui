@@ -80,6 +80,13 @@ const builder: APISchema = {
 			description: 'A writable store that lists all the headings within the specified container.',
 		},
 	],
+	helpers: [
+		{
+			name: 'isActive',
+			type: '(headingId: string) => boolean',
+			description: 'Returns whether the heading with the given id is currently active.',
+		},
+	],
 };
 
 const item = elementSchema('item', {
@@ -93,6 +100,10 @@ const item = elementSchema('item', {
 		{
 			name: 'data-id',
 			value: 'The id of the heading element the item links to.',
+		},
+		{
+			name: 'data-active',
+			value: 'Whether the item is currently active.',
 		},
 	],
 	events: tableOfContentsEvents['item'],
