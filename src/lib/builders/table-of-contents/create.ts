@@ -8,7 +8,7 @@ import type { Defaults } from '$lib/internal/types';
 
 import { dequal } from 'dequal';
 import { onMount } from 'svelte';
-import { get, writable, type Writable } from 'svelte/store';
+import { derived, get, writable, type Writable } from 'svelte/store';
 
 import type {
 	CreateTableOfContentsArgs,
@@ -378,6 +378,14 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 		},
 	});
 
+	// Helpers
+	const isActive = derived(activeHeadingIdxs, ($activeHeadingIdxs) => {
+		return (headingId: string) => {
+			const idx = headingsList.findIndex((heading) => heading.id === headingId);
+			return $activeHeadingIdxs.includes(idx);
+		};
+	});
+
 	return {
 		elements: {
 			item,
@@ -385,6 +393,9 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 		states: {
 			activeHeadingIdxs,
 			headingsTree,
+		},
+		helpers: {
+			isActive,
 		},
 	};
 }
