@@ -129,8 +129,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	});
 
 	const menu = builder(name(), {
-		stores: [isVisible, portal],
-		returned: ([$isVisible, $portal]) => {
+		stores: [isVisible, portal, ids.menu, ids.trigger],
+		returned: ([$isVisible, $portal, $menuId, $triggerId]) => {
 			// We only want to render the menu when it's open and has an active trigger.
 			return {
 				role: 'menu',
@@ -138,8 +138,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				style: styleToString({
 					display: $isVisible ? undefined : 'none',
 				}),
-				id: get(ids.menu),
-				'aria-labelledby': get(ids.trigger),
+				id: $menuId,
+				'aria-labelledby': $triggerId,
 				'data-state': $isVisible ? 'open' : 'closed',
 				'data-portal': $portal ? '' : undefined,
 				tabindex: -1,
@@ -231,11 +231,11 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	});
 
 	const trigger = builder(name('trigger'), {
-		stores: rootOpen,
-		returned: ($rootOpen) => {
+		stores: [rootOpen, ids.trigger],
+		returned: ([$rootOpen, $triggerId]) => {
 			return {
 				'data-state': $rootOpen ? 'open' : 'closed',
-				id: get(ids.trigger),
+				id: $triggerId,
 				style: styleToString({
 					WebkitTouchCallout: 'none',
 				}),
