@@ -38,9 +38,11 @@
 		</div>
 		<div use:melt={$separator} class="my-4 md:my-6" />
 		<div class="mdsvex" id="mdsvex">
-			<Preview code={snippets.main} viewCode={false}>
-				<svelte:component this={mainPreview} />
-			</Preview>
+			{#if mainPreview}
+				<Preview code={snippets.main} viewCode={false}>
+					<svelte:component this={mainPreview} />
+				</Preview>
+			{/if}
 			<Features {features} />
 
 			<svelte:component this={component} {snippets} {schemas} {previews} {keyboard} />

@@ -66,6 +66,7 @@
 		align-items: center;
 		justify-content: center;
 		border-radius: 9999px;
+		overflow: hidden;
 		background-color: var(--neutral-100);
 	}
 

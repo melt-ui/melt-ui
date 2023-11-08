@@ -196,11 +196,11 @@ function isMainPreviewComponent(
 		return { type: 'css', path };
 	}
 
-	const tailwindRegexPattern = `${builder}/main/tailwind/index\\.svelte$`;
-	const tailwindRegex = new RegExp(tailwindRegexPattern);
-	if (tailwindRegex.test(path)) {
-		return { type: 'tailwind', path };
-	}
+	// const tailwindRegexPattern = `${builder}/main/tailwind/index\\.svelte$`;
+	// const tailwindRegex = new RegExp(tailwindRegexPattern);
+	// if (tailwindRegex.test(path)) {
+	// 	return { type: 'tailwind', path };
+	// }
 
 	return null;
 }
@@ -227,7 +227,8 @@ export async function getMainPreviewComponent(slug: string) {
 
 	const mainPreview = await mainPreviewObj.resolver?.();
 	if (!mainPreview) {
-		throw error(500);
+		// throw error(500);
+		return null;
 	}
 
 	return mainPreview.default;
