@@ -25,6 +25,7 @@ import {
 	isHTMLElement,
 	kbd,
 	noop,
+	omit,
 	overridable,
 	removeHighlight,
 	removeScroll,
@@ -642,7 +643,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const subOpenWritable = withDefaults.open ?? writable(false);
 		const subOpen = overridable(subOpenWritable, withDefaults?.onOpenChange);
 		// options
-		const options = toWritableStores(withDefaults);
+		const options = toWritableStores(omit(withDefaults, 'ids'));
 
 		const { positioning, arrowSize, disabled } = options;
 
@@ -650,14 +651,14 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		const subOpenTimer = writable<number | null>(null);
 		const pointerGraceTimer = writable(0);
 
-		const subIds = { ...generateIds(menuIdParts), ...withDefaults.ids };
+		const subIds = toWritableStores({ ...generateIds(menuIdParts), ...withDefaults.ids });
 
 		onMount(() => {
 			/**
 			 * Set active trigger on mount to handle controlled/forceVisible
 			 * state.
 			 */
-			const subTrigger = document.getElementById(subIds.trigger);
+			const subTrigger = document.getElementById(get(subIds.trigger));
 			if (subTrigger) {
 				subActiveTrigger.set(subTrigger);
 			}
@@ -670,20 +671,20 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		});
 
 		const subMenu = builder(name('submenu'), {
-			stores: [subIsVisible],
-			returned: ([$subIsVisible]) => {
+			stores: [subIsVisible, subIds.menu, subIds.trigger],
+			returned: ([$subIsVisible, $subMenuId, $subTriggerId]) => {
 				return {
 					role: 'menu',
 					hidden: $subIsVisible ? undefined : true,
 					style: styleToString({
 						display: $subIsVisible ? undefined : 'none',
 					}),
-					id: subIds.menu,
-					'aria-labelledby': subIds.trigger,
+					id: $subMenuId,
+					'aria-labelledby': $subTriggerId,
 					'data-state': $subIsVisible ? 'open' : 'closed',
 					// unit tests fail on `.closest` if the id starts with a number
 					// so using a data attribute
-					'data-id': subIds.menu,
+					'data-id': $subMenuId,
 					tabindex: -1,
 				} as const;
 			},
@@ -781,7 +782,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						const $subActiveTrigger = get(subActiveTrigger);
 						if (get(isUsingKeyboard)) {
 							const target = e.target;
-							const submenuEl = document.getElementById(subIds.menu);
+							const submenuEl = document.getElementById(get(subIds.menu));
 							if (!isHTMLElement(submenuEl) || !isHTMLElement(target)) return;
 
 							if (!submenuEl.contains(target) && target !== $subActiveTrigger) {
@@ -810,13 +811,13 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		});
 
 		const subTrigger = builder(name('subtrigger'), {
-			stores: [subOpen, disabled],
-			returned: ([$subOpen, $disabled]) => {
+			stores: [subOpen, disabled, subIds.menu, subIds.trigger],
+			returned: ([$subOpen, $disabled, $subMenuId, $subTriggerId]) => {
 				return {
 					role: 'menuitem',
-					id: subIds.trigger,
+					id: $subTriggerId,
 					tabindex: -1,
-					'aria-controls': subIds.menu,
+					'aria-controls': $subMenuId,
 					'aria-expanded': $subOpen,
 					'data-state': $subOpen ? 'open' : 'closed',
 					'data-disabled': disabledAttr($disabled),
@@ -885,7 +886,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 						const triggerEl = e.currentTarget;
 						if (!isHTMLElement(triggerEl)) return;
-						if (!isFocusWithinSubmenu(subIds.menu)) {
+						if (!isFocusWithinSubmenu(get(subIds.menu))) {
 							handleRovingFocus(triggerEl);
 						}
 
@@ -906,7 +907,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						if (!isMouse(e)) return;
 						clearTimerStore(subOpenTimer);
 
-						const submenuEl = document.getElementById(subIds.menu);
+						const submenuEl = document.getElementById(get(subIds.menu));
 						const contentRect = submenuEl?.getBoundingClientRect();
 
 						if (contentRect) {
@@ -1007,7 +1008,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			if (!isBrowser) return;
 
 			sleep(1).then(() => {
-				const menuEl = document.getElementById(subIds.menu);
+				const menuEl = document.getElementById(get(subIds.menu));
 				if (!menuEl) return;
 
 				if ($subOpen && get(isUsingKeyboard)) {
@@ -1024,7 +1025,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 					}
 				}
 				if (menuEl && !$subOpen) {
-					const subTriggerEl = document.getElementById(subIds.trigger);
+					const subTriggerEl = document.getElementById(get(subIds.trigger));
 					if (!subTriggerEl || document.activeElement === subTriggerEl) return;
 					removeHighlight(subTriggerEl);
 				}

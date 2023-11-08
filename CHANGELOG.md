@@ -1,5 +1,33 @@
 # @melt-ui/svelte
 
+## 0.59.1
+
+### Patch Changes
+
+- Fix: prevent safari from minimizing when esc on dialogs ([#705](https://github.com/melt-ui/melt-ui/pull/705))
+
+- fix: context menu id issues ([#707](https://github.com/melt-ui/melt-ui/pull/707))
+
+## 0.59.0
+
+### Minor Changes
+
+- TOC: 'all-parents' type ([`67307b2a`](https://github.com/melt-ui/melt-ui/commit/67307b2a64fae896bc6b3238f1477ad9e14fd40c))
+
+## 0.58.2
+
+### Patch Changes
+
+- fix: timing issue with `handleFocus` ([#693](https://github.com/melt-ui/melt-ui/pull/693))
+
+## 0.58.1
+
+### Patch Changes
+
+- Slider: fix overstep ([#659](https://github.com/melt-ui/melt-ui/pull/659))
+
+- Slider: fix precision issues ([`cbe8c3a4`](https://github.com/melt-ui/melt-ui/commit/cbe8c3a44221f38506175e84ab9915da0a1cf84c))
+
 ## 0.58.0
 
 ### Minor Changes
