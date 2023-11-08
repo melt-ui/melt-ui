@@ -17,6 +17,7 @@
 		states: { open },
 	} = createDialog({
 		role: 'alertdialog',
+		forceVisible: true,
 	});
 </script>
 

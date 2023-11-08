@@ -17,7 +17,7 @@
 		},
 		states: { open },
 	} = createDialog({
-		forceVisible: false,
+		forceVisible: true,
 	});
 </script>
 
