@@ -272,8 +272,8 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const portalled = builder(name('portalled'), {
-		stores: [portal],
-		returned: ([$portal]) => ({
+		stores: portal,
+		returned: ($portal) => ({
 			'data-portal': $portal ? '' : undefined,
 		}),
 		action: (node: HTMLElement) => {
