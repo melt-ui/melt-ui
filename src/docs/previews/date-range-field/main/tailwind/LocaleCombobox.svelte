@@ -37,15 +37,17 @@
 		$inputValue = $selected?.label ?? '';
 	}
 
-	$: filteredLocales = $touchedInput
-		? localeOptionsArr.filter(({ value, label }) => {
-				const normalizedInput = $inputValue.toLowerCase();
-				return (
-					value.toLowerCase().includes(normalizedInput) ||
-					label.toLowerCase().includes(normalizedInput)
-				);
-		  })
-		: localeOptionsArr;
+	$: _filteredLocales = localeOptionsArr.filter(({ value, label }) => {
+		const normalizedInput = $inputValue.toLowerCase();
+		return (
+			value.toLowerCase().includes(normalizedInput) ||
+			label.toLowerCase().includes(normalizedInput)
+		);
+	});
+
+	$: filteredLocales = $touchedInput ? _filteredLocales : localeOptionsArr;
+
+	$: isCustom = _filteredLocales.length === 0;
 </script>
 
 <div class="flex flex-col gap-1">
@@ -86,6 +88,25 @@
 			class="flex max-h-full flex-col gap-0 overflow-y-auto bg-white px-2 py-2 text-black"
 			tabindex="0"
 		>
+			{#if isCustom}
+				<li
+					use:melt={$option({ value: $inputValue, label: $inputValue })}
+					class="relative cursor-pointer scroll-my-2 rounded-md py-2 pl-4 pr-4
+			text-sm
+			hover:bg-magnum-100 data-[highlighted]:bg-magnum-200
+				data-[highlighted]:text-magnum-900 data-[disabled]:opacity-50"
+				>
+					{#if $isSelected($inputValue)}
+						<div class="check absolute left-2 top-1/2 z-10 text-magnum-900">
+							<Check class="square-4" />
+						</div>
+					{/if}
+					<div class="pl-4">
+						<span class="font-medium">Custom</span>
+						<span class="block text-sm opacity-75">{$inputValue}</span>
+					</div>
+				</li>
+			{/if}
 			{#each filteredLocales as locale, index (index)}
 				<li
 					use:melt={$option(locale)}
@@ -103,10 +124,6 @@
 						<span class="font-medium">{locale.label}</span>
 						<span class="block text-sm opacity-75">{locale.value}</span>
 					</div>
-				</li>
-			{:else}
-				<li class="relative cursor-pointer rounded-md py-1 pl-8 pr-4">
-					No results found
 				</li>
 			{/each}
 		</div>

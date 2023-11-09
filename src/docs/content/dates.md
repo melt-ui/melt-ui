@@ -4,7 +4,7 @@ description: How to work with dates and times in Melt's date-related builders.
 ---
 
 <script>
-  import { Callout } from '$docs/components';
+  import { Callout, InstallTabs } from '$docs/components';
   import A from '$docs/components/markdown/a.svelte';
 </script>
 
@@ -22,9 +22,32 @@ JavaScript.
 We highly recommend reading through the documentation for the package to get a solid feel for how it
 works, and you'll need to install it in your project to use the date-related builders.
 
-```shell
-npm install @internationalized/date
+<InstallTabs>
+<span slot="npm">
+
+```bash
+npm install -D @internationalized/date
 ```
+
+</span>
+
+<span slot="yarn">
+
+```bash
+yarn add -D @internationalized/date
+```
+
+</span>
+
+<span slot="pnpm">
+
+```bash
+pnpm add -D @internationalized/date
+```
+
+</span>
+
+</InstallTabs>
 
 ## Date Objects
 
