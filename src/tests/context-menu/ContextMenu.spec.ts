@@ -1,6 +1,6 @@
 import { render, waitFor } from '@testing-library/svelte';
 import { axe } from 'jest-axe';
-import { describe } from 'vitest';
+import { describe, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { testKbd as kbd } from '../utils.js';
 import ContextMenuTest from './ContextMenuTest.svelte';
@@ -34,6 +34,16 @@ async function open(props: CreateContextMenuProps = {}) {
 }
 
 describe('Context Menu', () => {
+	beforeEach(() => {
+		vi.stubGlobal('requestAnimationFrame', (fn: FrameRequestCallback) => {
+			return window.setTimeout(() => fn(Date.now()), 16);
+		});
+	});
+
+	afterEach(() => {
+		vi.unstubAllGlobals();
+	});
+
 	test('No accessibility violations', async () => {
 		const { container } = render(ContextMenuTest);
 
@@ -130,6 +140,19 @@ describe('Context Menu', () => {
 		await user.keyboard(kbd.ARROW_DOWN);
 		const subItem1 = getByTestId('subitem1');
 		expect(subItem1).toHaveFocus();
+	});
+
+	test('Should close on outside click by default', async () => {
+		const { user, getByTestId, queryByTestId } = await open();
+		const outsideClick = getByTestId('outside-click');
+		await user.click(outsideClick);
+		await waitFor(() => expect(queryByTestId('menu')).toBeNull());
+	});
+
+	test('Should close on escape', async () => {
+		const { user, queryByTestId } = await open();
+		await user.keyboard(kbd.ESCAPE);
+		await waitFor(() => expect(queryByTestId('menu')).toBeNull());
 	});
 
 	test('respects `closeOnEscape` prop', async () => {
