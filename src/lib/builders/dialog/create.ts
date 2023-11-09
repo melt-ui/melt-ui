@@ -87,6 +87,8 @@ export function createDialog(props?: CreateDialogProps) {
 		return $open || $forceVisible;
 	});
 
+	let unsubScroll = noop;
+
 	function handleOpen(e: Event) {
 		const el = e.currentTarget;
 		const triggerEl = e.currentTarget;
@@ -261,7 +263,10 @@ export function createDialog(props?: CreateDialogProps) {
 			);
 
 			return {
-				destroy,
+				destroy: () => {
+					unsubScroll();
+					destroy();
+				},
 			};
 		},
 	});
@@ -331,9 +336,8 @@ export function createDialog(props?: CreateDialogProps) {
 
 	effect([open, preventScroll], ([$open, $preventScroll]) => {
 		if (!isBrowser) return;
-		const unsubs: Array<() => void> = [];
 
-		if ($preventScroll && $open) unsubs.push(removeScroll());
+		if ($preventScroll && $open) unsubScroll = removeScroll();
 
 		if ($open) {
 			const contentEl = document.getElementById(get(ids.content));
@@ -341,7 +345,11 @@ export function createDialog(props?: CreateDialogProps) {
 		}
 
 		return () => {
-			unsubs.forEach((unsub) => unsub());
+			// we only want to remove the scroll lock if the dialog is not forced visible
+			// otherwise the scroll removal is handled in the `destroy` of the `content` builder
+			if (!get(forceVisible)) {
+				unsubScroll();
+			}
 		};
 	});
 

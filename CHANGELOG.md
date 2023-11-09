@@ -1,5 +1,17 @@
 # @melt-ui/svelte
 
+## 0.60.2
+
+### Patch Changes
+
+- Fix: Menubar Menu bring your own id ([#716](https://github.com/melt-ui/melt-ui/pull/716))
+
+## 0.60.1
+
+### Patch Changes
+
+- Fix: Dialog layout shift when using svelte transitions ([#706](https://github.com/melt-ui/melt-ui/pull/706))
+
 ## 0.60.0
 
 ### Minor Changes
