@@ -20,14 +20,20 @@ const builder: APISchema = {
 			type: 'Heading[]',
 			default: `['h1']`,
 			description:
-				"A list of headings that should be excluded from the ToC. Possible heading values: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'.",
+				"A list of headings that should be excluded from the ToC. Possible heading values: `'h1'` | `'h2'` | `'h3'` | `'h4'` | `'h5'` | `'h6'`.",
 		},
 		{
 			name: 'activeType',
-			type: "'all' | 'lowest' | 'highest' | 'lowest-parents' | 'highest-parents'",
+			type: "'all' | | 'all-parents' | 'lowest' | 'highest' | 'lowest-parents' | 'highest-parents'",
 			default: 'lowest',
 			description:
-				"Describes which header should be considered active. 'none' means that no intersection observers are added and no headings are considered active. 'all' means that all headings with visible content are considered active. 'lowest' means that the heading of the lowest visible content is considered active. 'highest' means the opposite. 'lowest-parents' means that parents of the heading with the lowest visible content are also considered active, and the same goes for 'highest-parents'.",
+				"Describes which header should be considered active.\n\n\
+`'none'` means that no intersection observers are added and no headings are considered active.\n\
+`'all'` means that all headings with visible content are considered active.\n\
+`'all-parents'` means that parents of all headings with visible content are also considered active.\n\
+`'lowest'` means that the heading of the lowest visible content is considered active.\n\
+`'highest'` means the opposite.\n\
+`'lowest-parents'` means that parents of the heading with the lowest visible content are also considered active, and the same goes for `'highest-parents'`.",
 		},
 		{
 			name: 'scrollOffset',
@@ -74,6 +80,13 @@ const builder: APISchema = {
 			description: 'A writable store that lists all the headings within the specified container.',
 		},
 	],
+	helpers: [
+		{
+			name: 'isActive',
+			type: '(headingId: string) => boolean',
+			description: 'Returns whether the heading with the given id is currently active.',
+		},
+	],
 };
 
 const item = elementSchema('item', {
@@ -87,6 +100,10 @@ const item = elementSchema('item', {
 		{
 			name: 'data-id',
 			value: 'The id of the heading element the item links to.',
+		},
+		{
+			name: 'data-active',
+			value: 'Whether the item is currently active.',
 		},
 	],
 	events: tableOfContentsEvents['item'],

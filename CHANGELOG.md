@@ -1,5 +1,37 @@
 # @melt-ui/svelte
 
+## 0.60.2
+
+### Patch Changes
+
+- Fix: Menubar Menu bring your own id ([#716](https://github.com/melt-ui/melt-ui/pull/716))
+
+## 0.60.1
+
+### Patch Changes
+
+- Fix: Dialog layout shift when using svelte transitions ([#706](https://github.com/melt-ui/melt-ui/pull/706))
+
+## 0.60.0
+
+### Minor Changes
+
+- TOC: isActive helper ([`c7618563`](https://github.com/melt-ui/melt-ui/commit/c7618563bcc836bd3bd14800cb1f1b964b1e0834))
+
+## 0.59.1
+
+### Patch Changes
+
+- Fix: prevent safari from minimizing when esc on dialogs ([#705](https://github.com/melt-ui/melt-ui/pull/705))
+
+- fix: context menu id issues ([#707](https://github.com/melt-ui/melt-ui/pull/707))
+
+## 0.59.0
+
+### Minor Changes
+
+- TOC: 'all-parents' type ([`67307b2a`](https://github.com/melt-ui/melt-ui/commit/67307b2a64fae896bc6b3238f1477ad9e14fd40c))
+
 ## 0.58.2
 
 ### Patch Changes
