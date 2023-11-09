@@ -20,7 +20,11 @@ package, which solves a lot of the problems that come with working with dates an
 JavaScript.
 
 We highly recommend reading through the documentation for the package to get a solid feel for how it
-works, but we hope to cover enough here to get you started.
+works, and you'll need to install it in your project to use the date-related builders.
+
+```shell
+npm install @internationalized/date
+```
 
 ## Date Objects
 
@@ -37,13 +41,18 @@ the type of date they represent:
 The benefit of using these objects is that we can be very specific about the type of date we want,
 and the behavior of the builder will adapt to that type.
 
+Additionally, you don't have to worry about wrangling timezones, daylight savings time, or any other
+date-related nuance.
+
 ## Parser Functions
 
-The [@internationalized/date](https://react-spectrum.adobe.com/internationalized/date/index.html)
-package provides a number of parser functions that can be used to:
+This package also provides a number of parser functions that can be used to:
 
 - convert an ISO 8601 formatted string into a `DateValue` object
 - convert one type of `DateValue` object into another type
 - convert a `DateValue` object into an ISO 8601 formatted string
 - convert a `DateValue` object into a JavaScript `Date` object
 - and many more...
+
+These functions are useful when you're getting dates from a database or API, and need to convert it
+prior to using it in a builder, or vice versa.
