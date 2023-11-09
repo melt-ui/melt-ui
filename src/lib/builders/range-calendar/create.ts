@@ -591,7 +591,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * you can do so by accessing the first week of the first month,
 	 * and mapping over the dates to get/format each day of the week.
 	 */
-	const daysOfWeek = derived([months], ([$months]) => {
+	const daysOfWeek = derived([months, locale], ([$months, _]) => {
 		if (!$months.length) return [];
 		return $months[0].weeks[0].map((date) => {
 			return formatter.dayOfWeek(toDate(date));
