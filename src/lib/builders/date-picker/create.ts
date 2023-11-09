@@ -31,10 +31,16 @@ const defaults = {
 	forceVisible: false,
 	locale: 'en',
 	granularity: undefined,
+	disabled: false,
+	readonly: false,
+	minValue: undefined,
+	maxValue: undefined,
 } satisfies CreateDatePickerProps;
 
 export function createDatePicker(props?: CreateDatePickerProps) {
 	const withDefaults = { ...defaults, ...props };
+
+	const options = toWritableStores(omit(withDefaults, 'value', 'placeholder'));
 
 	const dateField = createDateField(withDefaults);
 
@@ -86,31 +92,63 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			};
 		},
 	});
+	const formatter = createFormatter(get(options.locale));
+
+	effect([options.locale], ([$locale]) => {
+		dateField.options.locale.set($locale);
+		calendar.options.locale.set($locale);
+		if (formatter.getLocale() === $locale) return;
+		formatter.setLocale($locale);
+	});
+
+	effect([options.disabled], ([$disabled]) => {
+		dateField.options.disabled.set($disabled);
+		calendar.options.disabled.set($disabled);
+	});
+
+	effect([options.readonly], ([$readonly]) => {
+		dateField.options.readonly.set($readonly);
+		calendar.options.readonly.set($readonly);
+	});
+
+	effect([options.minValue], ([$minValue]) => {
+		dateField.options.minValue.set($minValue);
+		calendar.options.minValue.set($minValue);
+	});
+
+	effect([options.maxValue], ([$maxValue]) => {
+		dateField.options.maxValue.set($maxValue);
+		calendar.options.maxValue.set($maxValue);
+	});
+
+	const dateFieldOptions = omit(
+		dateField.options,
+		'locale',
+		'disabled',
+		'readonly',
+		'minValue',
+		'maxValue'
+	);
+	const calendarOptions = omit(
+		calendar.options,
+		'locale',
+		'disabled',
+		'readonly',
+		'minValue',
+		'maxValue'
+	);
 
 	const {
 		states: { open },
 	} = popover;
-
-	const options = toWritableStores({
-		...omit(withDefaults, 'value', 'placeholder'),
-		...popover.options,
-	});
-
-	const { locale } = options;
 
 	const defaultDate = getDefaultDate({
 		defaultPlaceholder: withDefaults.defaultPlaceholder,
 		defaultValue: withDefaults.defaultValue,
 		granularity: withDefaults.granularity,
 	});
-	const formatter = createFormatter(get(locale));
 
 	const placeholder = dateStore(dfPlaceholder, withDefaults.defaultPlaceholder ?? defaultDate);
-
-	effect([locale], ([$locale]) => {
-		if (formatter.getLocale() === $locale) return;
-		formatter.setLocale($locale);
-	});
 
 	effect([open], ([$open]) => {
 		if (!$open) {
@@ -147,7 +185,12 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		helpers: {
 			...calendar.helpers,
 		},
-		options,
+		options: {
+			...popover.options,
+			...dateFieldOptions,
+			...calendarOptions,
+			...options,
+		},
 		ids: {
 			dateField: dateField.ids,
 			calendar: calendar.ids,

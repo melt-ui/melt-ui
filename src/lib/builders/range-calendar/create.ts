@@ -62,6 +62,8 @@ const defaults = {
 	locale: 'en',
 	minValue: undefined,
 	maxValue: undefined,
+	disabled: false,
+	readonly: false,
 } satisfies CreateRangeCalendarProps;
 
 /**
@@ -93,6 +95,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		locale,
 		minValue,
 		maxValue,
+		disabled,
+		readonly,
 	} = options;
 
 	const ids = toWritableStores({ ...generateIds(rangeCalendarIdParts), ...withDefaults.ids });
@@ -199,19 +203,27 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		}
 	);
 
-	const isNextButtonDisabled = derived([months, maxValue], ([$months, $maxValue]) => {
-		if (!$maxValue || !$months.length) return false;
-		const lastMonthInView = $months[$months.length - 1].value;
-		const firstMonthOfNextPage = lastMonthInView.add({ months: 1 }).set({ day: 1 });
-		return isAfter(firstMonthOfNextPage, $maxValue);
-	});
+	const isNextButtonDisabled = derived(
+		[months, maxValue, disabled],
+		([$months, $maxValue, $disabled]) => {
+			if (!$maxValue || !$months.length) return false;
+			if ($disabled) return true;
+			const lastMonthInView = $months[$months.length - 1].value;
+			const firstMonthOfNextPage = lastMonthInView.add({ months: 1 }).set({ day: 1 });
+			return isAfter(firstMonthOfNextPage, $maxValue);
+		}
+	);
 
-	const isPrevButtonDisabled = derived([months, minValue], ([$months, $minValue]) => {
-		if (!$minValue || !$months.length) return false;
-		const firstMonthInView = $months[0].value;
-		const lastMonthOfPrevPage = firstMonthInView.subtract({ months: 1 }).set({ day: 35 });
-		return isBefore(lastMonthOfPrevPage, $minValue);
-	});
+	const isPrevButtonDisabled = derived(
+		[months, minValue, disabled],
+		([$months, $minValue, $disabled]) => {
+			if (!$minValue || !$months.length) return false;
+			if ($disabled) return true;
+			const firstMonthInView = $months[0].value;
+			const lastMonthOfPrevPage = firstMonthInView.subtract({ months: 1 }).set({ day: 35 });
+			return isBefore(lastMonthOfPrevPage, $minValue);
+		}
+	);
 
 	let announcer = getAnnouncer();
 
@@ -249,13 +261,15 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	);
 
 	const calendar = builder(name(), {
-		stores: [fullCalendarLabel, isInvalid, ids.calendar],
-		returned: ([$fullCalendarLabel, $isInvalid, $calendarId]) => {
+		stores: [fullCalendarLabel, isInvalid, ids.calendar, disabled, readonly],
+		returned: ([$fullCalendarLabel, $isInvalid, $calendarId, $disabled, $readonly]) => {
 			return {
 				id: $calendarId,
 				role: 'application',
 				'aria-label': $fullCalendarLabel,
 				'data-invalid': $isInvalid ? '' : undefined,
+				'data-disabled': $disabled ? '' : undefined,
+				'data-readonly': $readonly ? '' : undefined,
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<RangeCalendarEvents['calendar']> => {
@@ -278,16 +292,26 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	});
 
 	const heading = builder(name('heading'), {
-		returned: () => {
+		stores: [disabled],
+		returned: ([$disabled]) => {
 			return {
 				'aria-hidden': true,
+				'data-disabled': $disabled ? '' : undefined,
 			};
 		},
 	});
 
 	const grid = builder(name('grid'), {
-		stores: [ids.grid],
-		returned: ([$gridId]) => ({ tabindex: -1, id: $gridId, role: 'grid' }),
+		stores: [ids.grid, readonly, disabled],
+		returned: ([$gridId, $readonly, $disabled]) => ({
+			tabindex: -1,
+			id: $gridId,
+			role: 'grid',
+			'aria-readonly': $readonly ? 'true' : undefined,
+			'aria-disabled': $disabled ? 'true' : undefined,
+			'data-readonly': $readonly ? '' : undefined,
+			'data-disabled': $disabled ? '' : undefined,
+		}),
 	});
 
 	const prevButton = builder(name('prevButton'), {

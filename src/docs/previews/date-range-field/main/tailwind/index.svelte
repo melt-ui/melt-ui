@@ -1,27 +1,41 @@
 <script lang="ts">
 	import { createDateRangeField, melt } from '$lib';
+	import LocaleCombobox from './LocaleCombobox.svelte';
 
 	const {
 		elements: { field, startSegment, endSegment, label },
 		states: { segmentContents },
+		options: { locale },
 	} = createDateRangeField();
 </script>
 
 <section>
+	<div class="absolute left-4 top-4">
+		<LocaleCombobox
+			onSelectedChange={({ next }) => {
+				if (next) {
+					locale.set(next.value);
+				}
+				return next;
+			}}
+		/>
+	</div>
 	<div>
 		<span use:melt={$label}>Booking Dates</span>
 		<div use:melt={$field}>
-			{#each $segmentContents.start as seg, i (i)}
-				<div use:melt={$startSegment(seg.part)}>
-					{seg.value}
-				</div>
-			{/each}
-			<span aria-hidden="true">-</span>
-			{#each $segmentContents.end as seg, i (i)}
-				<div use:melt={$endSegment(seg.part)}>
-					{seg.value}
-				</div>
-			{/each}
+			{#key $locale}
+				{#each $segmentContents.start as seg, i (i)}
+					<div use:melt={$startSegment(seg.part)}>
+						{seg.value}
+					</div>
+				{/each}
+				<span aria-hidden="true">-</span>
+				{#each $segmentContents.end as seg, i (i)}
+					<div use:melt={$endSegment(seg.part)}>
+						{seg.value}
+					</div>
+				{/each}
+			{/key}
 		</div>
 	</div>
 </section>

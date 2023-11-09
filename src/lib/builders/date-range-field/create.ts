@@ -34,6 +34,10 @@ const defaults = {
 	},
 	startName: undefined,
 	endName: undefined,
+	disabled: false,
+	readonly: false,
+	minValue: undefined,
+	maxValue: undefined,
 } satisfies CreateDateRangeFieldProps;
 
 type DateFieldParts = 'segment' | 'label' | 'field' | 'validation';
@@ -262,6 +266,39 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 				end: undefined,
 			});
 		}
+	});
+
+	effect([options.disabled], ([$disabled]) => {
+		startField.options.disabled.set($disabled);
+		endField.options.disabled.set($disabled);
+	});
+	effect([options.readonly], ([$readonly]) => {
+		startField.options.readonly.set($readonly);
+		endField.options.readonly.set($readonly);
+	});
+	effect([options.minValue], ([$minValue]) => {
+		startField.options.minValue.set($minValue);
+		endField.options.minValue.set($minValue);
+	});
+	effect([options.maxValue], ([$maxValue]) => {
+		startField.options.maxValue.set($maxValue);
+		endField.options.maxValue.set($maxValue);
+	});
+	effect([options.granularity], ([$granularity]) => {
+		startField.options.granularity.set($granularity);
+		endField.options.granularity.set($granularity);
+	});
+	effect([options.hideTimeZone], ([$hideTimeZone]) => {
+		startField.options.hideTimeZone.set($hideTimeZone);
+		endField.options.hideTimeZone.set($hideTimeZone);
+	});
+	effect([options.hourCycle], ([$hourCycle]) => {
+		startField.options.hourCycle.set($hourCycle);
+		endField.options.hourCycle.set($hourCycle);
+	});
+	effect([options.locale], ([$locale]) => {
+		startField.options.locale.set($locale);
+		endField.options.locale.set($locale);
 	});
 
 	return {

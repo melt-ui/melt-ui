@@ -1,61 +1,75 @@
 <script lang="ts">
 	import { createCalendar, melt } from '$lib';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
+	import LocaleCombobox from './LocaleCombobox.svelte';
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
 		states: { months, headingValue, daysOfWeek },
 		helpers: { isDateDisabled, isDateUnavailable },
+		options: { locale },
 	} = createCalendar();
 </script>
 
-<div use:melt={$calendar}>
-	<header>
-		<button use:melt={$prevButton}>
-			<ChevronLeft size={24} />
-		</button>
-		<div use:melt={$heading}>
-			{$headingValue}
-		</div>
-		<button use:melt={$nextButton}>
-			<ChevronRight size={24} />
-		</button>
-	</header>
-	<div>
-		{#each $months as month}
-			<table use:melt={$grid}>
-				<thead aria-hidden="true">
-					<tr>
-						{#each $daysOfWeek as day}
-							<th>
-								<div>
-									{day}
-								</div>
-							</th>
-						{/each}
-					</tr>
-				</thead>
-				<tbody>
-					{#each month.weeks as weekDates}
+<section>
+	<div class="absolute left-4 top-4">
+		<LocaleCombobox
+			onSelectedChange={({ next }) => {
+				if (next) {
+					locale.set(next.value);
+				}
+				return next;
+			}}
+		/>
+	</div>
+	<div use:melt={$calendar}>
+		<header>
+			<button use:melt={$prevButton}>
+				<ChevronLeft size={24} />
+			</button>
+			<div use:melt={$heading}>
+				{$headingValue}
+			</div>
+			<button use:melt={$nextButton}>
+				<ChevronRight size={24} />
+			</button>
+		</header>
+		<div>
+			{#each $months as month}
+				<table use:melt={$grid}>
+					<thead aria-hidden="true">
 						<tr>
-							{#each weekDates as date}
-								<td
-									role="gridcell"
-									aria-disabled={$isDateDisabled(date) ||
-										$isDateUnavailable(date)}
-								>
-									<div use:melt={$cell(date, month.value)}>
-										{date.day}
+							{#each $daysOfWeek as day}
+								<th>
+									<div>
+										{day}
 									</div>
-								</td>
+								</th>
 							{/each}
 						</tr>
-					{/each}
-				</tbody>
-			</table>
-		{/each}
+					</thead>
+					<tbody>
+						{#each month.weeks as weekDates}
+							<tr>
+								{#each weekDates as date}
+									<td
+										role="gridcell"
+										aria-disabled={$isDateDisabled(date) ||
+											$isDateUnavailable(date)}
+									>
+										<div use:melt={$cell(date, month.value)}>
+											{date.day}
+										</div>
+									</td>
+								{/each}
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			{/each}
+		</div>
 	</div>
-</div>
+</section>
 
 <style lang="postcss">
 	[data-melt-calendar] {

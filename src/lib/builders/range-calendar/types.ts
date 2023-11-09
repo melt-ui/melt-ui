@@ -212,6 +212,25 @@ export type RangeCalendarProps = {
 	locale?: string;
 
 	/**
+	 * Whether the calendar is disabled. When true, the user will not
+	 * be able to focus or select dates. @see readonly for a similar prop
+	 * that allows focusing but not selecting dates.
+	 *
+	 * @default false
+	 */
+	disabled?: boolean;
+
+	/**
+	 * Whether the calendar is readonly. When true, the user will be able
+	 * to focus and navigate the calendar, but will not be able to select
+	 * dates. @see disabled for a similar prop that prevents focusing
+	 * and selecting dates.
+	 *
+	 * @default false
+	 */
+	readonly?: boolean;
+
+	/**
 	 * Override any of the element IDs set by the builder.
 	 *
 	 * NOTE: you should only use this prop if you know what

@@ -32,6 +32,10 @@ const defaults = {
 	forceVisible: false,
 	locale: 'en',
 	granularity: undefined,
+	disabled: false,
+	readonly: false,
+	minValue: undefined,
+	maxValue: undefined,
 } satisfies CreateDateRangePickerProps;
 
 export function createDateRangePicker(props?: CreateDateRangePickerProps) {
@@ -67,7 +71,6 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 
 	const options = toWritableStores({
 		...omit(withDefaults, 'value', 'placeholder'),
-		...popover.options,
 	});
 
 	const { locale } = options;
@@ -105,9 +108,31 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 		},
 	});
 
-	effect([locale], ([$locale]) => {
+	effect([options.locale], ([$locale]) => {
+		rangeField.options.locale.set($locale);
+		calendar.options.locale.set($locale);
 		if (formatter.getLocale() === $locale) return;
 		formatter.setLocale($locale);
+	});
+
+	effect([options.disabled], ([$disabled]) => {
+		rangeField.options.disabled.set($disabled);
+		calendar.options.disabled.set($disabled);
+	});
+
+	effect([options.readonly], ([$readonly]) => {
+		rangeField.options.readonly.set($readonly);
+		calendar.options.readonly.set($readonly);
+	});
+
+	effect([options.minValue], ([$minValue]) => {
+		rangeField.options.minValue.set($minValue);
+		calendar.options.minValue.set($minValue);
+	});
+
+	effect([options.maxValue], ([$maxValue]) => {
+		rangeField.options.maxValue.set($maxValue);
+		calendar.options.maxValue.set($maxValue);
 	});
 
 	effect([popover.states.open], ([$open]) => {
@@ -120,6 +145,24 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 			}
 		}
 	});
+
+	const rangeFieldOptions = omit(
+		rangeField.options,
+		'locale',
+		'disabled',
+		'readonly',
+		'minValue',
+		'maxValue'
+	);
+
+	const rangeCalendarOptions = omit(
+		calendar.options,
+		'locale',
+		'disabled',
+		'readonly',
+		'minValue',
+		'maxValue'
+	);
 
 	function handleTriggerKeydown(e: KeyboardEvent) {
 		if (isSegmentNavigationKey(e.key)) {
@@ -145,7 +188,12 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 		helpers: {
 			...calendar.helpers,
 		},
-		options,
+		options: {
+			...popover.options,
+			...rangeFieldOptions,
+			...rangeCalendarOptions,
+			...options,
+		},
 		ids: {
 			rangeField: rangeField.ids,
 			calendar: calendar.ids,

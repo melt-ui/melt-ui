@@ -3,6 +3,7 @@
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
 	import { fade } from 'svelte/transition';
 	import { CalendarDate } from '@internationalized/date';
+	import LocaleCombobox from './LocaleCombobox.svelte';
 
 	const {
 		elements: {
@@ -20,6 +21,7 @@
 		},
 		states: { months, headingValue, daysOfWeek, segmentContents, open },
 		helpers: { isDateDisabled, isDateUnavailable },
+		options: { locale },
 	} = createDatePicker({
 		forceVisible: true,
 		defaultValue: new CalendarDate(2024, 1, 11),
@@ -27,14 +29,26 @@
 </script>
 
 <section>
+	<div class="absolute left-4 top-4">
+		<LocaleCombobox
+			onSelectedChange={({ next }) => {
+				if (next) {
+					locale.set(next.value);
+				}
+				return next;
+			}}
+		/>
+	</div>
 	<div>
 		<span use:melt={$label}>Date</span>
 		<div use:melt={$field}>
-			{#each $segmentContents as seg}
-				<div use:melt={$segment(seg.part)}>
-					{seg.value}
-				</div>
-			{/each}
+			{#key $locale}
+				{#each $segmentContents as seg}
+					<div use:melt={$segment(seg.part)}>
+						{seg.value}
+					</div>
+				{/each}
+			{/key}
 			<div>
 				<button use:melt={$trigger}>
 					<Calendar size={16} />

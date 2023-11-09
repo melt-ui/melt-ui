@@ -96,9 +96,15 @@ const placeholders: PlaceholderMap = {
 // eslint-disable-next-line @typescript-eslint/ban-types
 function getPlaceholderObj(locale: SupportedLocale | (string & {})) {
 	if (!isSupportedLocale(locale)) {
-		return placeholders.en;
+		const localeLanguage = getLocaleLanguage(locale);
+		if (!isSupportedLocale(localeLanguage)) {
+			return placeholders.en;
+		} else {
+			return placeholders[localeLanguage];
+		}
+	} else {
+		return placeholders[locale];
 	}
-	return placeholders[locale];
 }
 
 type Field = 'era' | 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second' | 'dayPeriod';
@@ -135,4 +141,11 @@ function isTimeField(field: unknown): field is 'hour' | 'minute' | 'second' {
 
 function isDefaultField(field: unknown): field is 'era' | 'dayPeriod' {
 	return field === 'era' || field === 'dayPeriod';
+}
+
+function getLocaleLanguage(locale: string) {
+	if (Intl.Locale) {
+		return new Intl.Locale(locale).language;
+	}
+	return locale.split('-')[0];
 }

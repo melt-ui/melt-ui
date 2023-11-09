@@ -144,7 +144,8 @@ export function createCalendar<
 	const isNextButtonDisabled = derived(
 		[months, maxValue, disabled],
 		([$months, $maxValue, $disabled]) => {
-			if (!$maxValue || !$months.length || $disabled) return false;
+			if (!$maxValue || !$months.length) return false;
+			if ($disabled) return true;
 			const lastMonthInView = $months[$months.length - 1].value;
 			const firstMonthOfNextPage = lastMonthInView.add({ months: 1 }).set({ day: 1 });
 			return isAfter(firstMonthOfNextPage, $maxValue);
@@ -154,7 +155,8 @@ export function createCalendar<
 	const isPrevButtonDisabled = derived(
 		[months, minValue, disabled],
 		([$months, $minValue, $disabled]) => {
-			if (!$minValue || !$months.length || $disabled) return false;
+			if (!$minValue || !$months.length) return false;
+			if ($disabled) return true;
 			const firstMonthInView = $months[0].value;
 			const lastMonthOfPrevPage = firstMonthInView.subtract({ months: 1 }).set({ day: 35 });
 			return isBefore(lastMonthOfPrevPage, $minValue);
@@ -355,6 +357,7 @@ export function createCalendar<
 				'aria-label': 'Previous',
 				'aria-disabled': disabled ? 'true' : undefined,
 				'data-disabled': disabled ? '' : undefined,
+				disabled: disabled ? true : undefined,
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<CalendarEvents['prevButton']> => {
@@ -385,6 +388,7 @@ export function createCalendar<
 				'aria-label': 'Next',
 				'aria-disabled': disabled ? 'true' : undefined,
 				'data-disabled': disabled ? '' : undefined,
+				disabled: disabled ? true : undefined,
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<CalendarEvents['nextButton']> => {

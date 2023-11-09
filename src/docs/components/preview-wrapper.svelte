@@ -33,7 +33,7 @@
 </script>
 
 <div class={cn(previewVariants({ variant, size }))} data-variant={variant}>
-	<div class={cn('relative z-10 mx-auto inline-block px-4')}>
+	<div class={cn('z-10 mx-auto inline-block px-4')}>
 		<slot />
 	</div>
 </div>
