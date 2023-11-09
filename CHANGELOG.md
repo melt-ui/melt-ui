@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.60.2
+
+### Patch Changes
+
+- Fix: Menubar Menu bring your own id ([#716](https://github.com/melt-ui/melt-ui/pull/716))
+
 ## 0.60.1
 
 ### Patch Changes
