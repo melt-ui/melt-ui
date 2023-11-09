@@ -56,7 +56,7 @@ function expectPercentages({
 	expect(isCloseEnough(100 - higherPercentage, range.style.right)).toBeTruthy();
 }
 
-describe.skip('Slider (Default)', () => {
+describe('Slider (Default)', () => {
 	test('No accessibility violations', async () => {
 		const { container } = render(Slider);
 
@@ -133,7 +133,7 @@ describe.skip('Slider (Default)', () => {
 	});
 });
 
-describe.skip('Slider (Range)', () => {
+describe('Slider (Range)', () => {
 	test('No accessibility violations', async () => {
 		const { container } = render(RangeSlider);
 
@@ -332,7 +332,7 @@ describe.skip('Slider (Range)', () => {
 	});
 });
 
-describe.skip('Slider (Small min, max, step)', () => {
+describe('Slider (Small min, max, step)', () => {
 	test('Has a thumb positioned at 50% of the container', async () => {
 		const { getByTestId } = render(Slider, {
 			value: [0.5],
@@ -385,7 +385,7 @@ describe.skip('Slider (Small min, max, step)', () => {
 	});
 });
 
-describe.skip('Slider (negative min)', () => {
+describe('Slider (negative min)', () => {
 	test('Has a thumb positioned at 50% of the container', async () => {
 		const { getByTestId } = render(Slider, {
 			value: [0],
@@ -438,7 +438,7 @@ describe.skip('Slider (negative min)', () => {
 	});
 });
 
-describe.skip('Slider (value=[5], min=0, max=10, step=1)', () => {
+describe('Slider (value=[5], min=0, max=10, step=1)', () => {
 	const props = {
 		value: [5],
 		min: 0,
@@ -471,7 +471,7 @@ describe.skip('Slider (value=[5], min=0, max=10, step=1)', () => {
 	});
 });
 
-describe.skip('Slider (min=0, max=8, step=3)', () => {
+describe('Slider (min=0, max=8, step=3)', () => {
 	test('3 ticks are rendered', () => {
 		const { getAllByTestId } = render(Slider, {
 			min: 0,
@@ -483,7 +483,7 @@ describe.skip('Slider (min=0, max=8, step=3)', () => {
 	});
 });
 
-describe.skip('Slider (min=0, max=9, step=3)', () => {
+describe('Slider (min=0, max=9, step=3)', () => {
 	test('4 ticks are rendered', () => {
 		const { getAllByTestId } = render(Slider, {
 			min: 0,
@@ -495,7 +495,7 @@ describe.skip('Slider (min=0, max=9, step=3)', () => {
 	});
 });
 
-describe.skip('Slider (value=[3,6], min=0, max=10, step=3)', () => {
+describe('Slider (value=[3,6], min=0, max=10, step=3)', () => {
 	const props = {
 		value: [3, 6],
 		min: 0,
@@ -528,7 +528,7 @@ describe.skip('Slider (value=[3,6], min=0, max=10, step=3)', () => {
 	});
 });
 
-describe.skip('Slider changing options after building', () => {
+describe('Slider changing options after building', () => {
 	const props = {
 		value: [5],
 		min: 0,
@@ -541,7 +541,7 @@ describe.skip('Slider changing options after building', () => {
 
 		expect(getAllByTestId('tick')).toHaveLength(11);
 
-		await rerender({ ...props, resetMin: 2 });
+		rerender({ ...props, resetMin: 2 });
 
 		expect(getAllByTestId('tick')).toHaveLength(9);
 	});
@@ -551,7 +551,7 @@ describe.skip('Slider changing options after building', () => {
 
 		expect(getAllByTestId('tick')).toHaveLength(11);
 
-		await rerender({ ...props, resetMax: 8 });
+		rerender({ ...props, resetMax: 8 });
 
 		expect(getAllByTestId('tick')).toHaveLength(9);
 	});
@@ -561,7 +561,7 @@ describe.skip('Slider changing options after building', () => {
 
 		expect(getAllByTestId('tick')).toHaveLength(11);
 
-		await rerender({ ...props, resetStep: 2 });
+		rerender({ ...props, resetStep: 2 });
 
 		expect(getAllByTestId('tick')).toHaveLength(6);
 	});
@@ -578,7 +578,7 @@ describe('Slider (min=0, max=100, step=30)', () => {
 
 		const user = userEvent.setup();
 		const thumb = getByTestId('thumb');
-		await expect(thumb).toBeInTheDocument();
+		expect(thumb).toBeInTheDocument();
 
 		await act(() => thumb.focus());
 		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
