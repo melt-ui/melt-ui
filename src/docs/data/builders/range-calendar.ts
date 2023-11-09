@@ -429,10 +429,10 @@ const schemas = [builder, calendar, grid, cell, heading, prevButton, nextButton]
 
 const features = [
 	'Full keyboard navigation',
-	'Customize positioning of popover',
 	'Can be controlled or uncontrolled',
 	'Focus is fully managed',
-	'Supports an optional arrow component',
+	'Localization support',
+	'Highly composable',
 ];
 
 export const rangeCalendarData: BuilderData = {

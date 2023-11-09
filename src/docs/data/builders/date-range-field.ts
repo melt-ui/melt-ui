@@ -344,10 +344,11 @@ const schemas = [
 
 const features = [
 	'Full keyboard navigation',
-	'Customize positioning of popover',
+	'Localization support',
 	'Can be controlled or uncontrolled',
 	'Focus is fully managed',
-	'Supports an optional arrow component',
+	'Accessible by default',
+	'Supports both date and date-time formats',
 ];
 
 export const dateRangeFieldData: BuilderData = {
