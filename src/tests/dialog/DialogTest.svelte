@@ -3,14 +3,9 @@
 
 	type $$Props = CreateDialogProps;
 
-	export let closeFocus: CreateDialogProps['closeFocus'] = undefined;
-	export let openFocus: CreateDialogProps['openFocus'] = undefined;
-
 	const {
 		elements: { trigger, overlay, content, title, description, close, portalled },
 	} = createDialog({
-		closeFocus,
-		openFocus,
 		...$$restProps,
 	});
 </script>
