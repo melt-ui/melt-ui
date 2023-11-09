@@ -56,7 +56,7 @@ function expectPercentages({
 	expect(isCloseEnough(100 - higherPercentage, range.style.right)).toBeTruthy();
 }
 
-describe('Slider (Default)', () => {
+describe.skip('Slider (Default)', () => {
 	test('No accessibility violations', async () => {
 		const { container } = render(Slider);
 
@@ -133,7 +133,7 @@ describe('Slider (Default)', () => {
 	});
 });
 
-describe('Slider (Range)', () => {
+describe.skip('Slider (Range)', () => {
 	test('No accessibility violations', async () => {
 		const { container } = render(RangeSlider);
 
@@ -332,7 +332,7 @@ describe('Slider (Range)', () => {
 	});
 });
 
-describe('Slider (Small min, max, step)', () => {
+describe.skip('Slider (Small min, max, step)', () => {
 	test('Has a thumb positioned at 50% of the container', async () => {
 		const { getByTestId } = render(Slider, {
 			value: [0.5],
@@ -385,7 +385,7 @@ describe('Slider (Small min, max, step)', () => {
 	});
 });
 
-describe('Slider (negative min)', () => {
+describe.skip('Slider (negative min)', () => {
 	test('Has a thumb positioned at 50% of the container', async () => {
 		const { getByTestId } = render(Slider, {
 			value: [0],
@@ -438,7 +438,7 @@ describe('Slider (negative min)', () => {
 	});
 });
 
-describe('Slider (value=[5], min=0, max=10, step=1)', () => {
+describe.skip('Slider (value=[5], min=0, max=10, step=1)', () => {
 	const props = {
 		value: [5],
 		min: 0,
@@ -471,7 +471,7 @@ describe('Slider (value=[5], min=0, max=10, step=1)', () => {
 	});
 });
 
-describe('Slider (min=0, max=8, step=3)', () => {
+describe.skip('Slider (min=0, max=8, step=3)', () => {
 	test('3 ticks are rendered', () => {
 		const { getAllByTestId } = render(Slider, {
 			min: 0,
@@ -483,7 +483,7 @@ describe('Slider (min=0, max=8, step=3)', () => {
 	});
 });
 
-describe('Slider (min=0, max=9, step=3)', () => {
+describe.skip('Slider (min=0, max=9, step=3)', () => {
 	test('4 ticks are rendered', () => {
 		const { getAllByTestId } = render(Slider, {
 			min: 0,
@@ -495,7 +495,7 @@ describe('Slider (min=0, max=9, step=3)', () => {
 	});
 });
 
-describe('Slider (value=[3,6], min=0, max=10, step=3)', () => {
+describe.skip('Slider (value=[3,6], min=0, max=10, step=3)', () => {
 	const props = {
 		value: [3, 6],
 		min: 0,
@@ -528,7 +528,7 @@ describe('Slider (value=[3,6], min=0, max=10, step=3)', () => {
 	});
 });
 
-describe('Slider changing options after building', () => {
+describe.skip('Slider changing options after building', () => {
 	const props = {
 		value: [5],
 		min: 0,

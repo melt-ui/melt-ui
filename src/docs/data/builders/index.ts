@@ -5,6 +5,11 @@ import { checkboxData } from './checkbox.js';
 import { collapsibleData } from './collapsible.js';
 import { comboboxData } from './combobox.js';
 import { contextMenuData } from './context-menu.js';
+import { calendarData } from './calendar.js';
+import { dateFieldData } from './date-field.js';
+import { dateRangeFieldData } from './date-range-field.js';
+import { dateRangePickerData } from './date-range-picker.js';
+import { rangeCalendarData } from './range-calendar.js';
 import { dialogData } from './dialog.js';
 import { dropdownMenuData } from './dropdown-menu.js';
 import { labelData } from './label.js';
@@ -28,14 +33,20 @@ import { treeData } from './tree.js';
 import { tableOfContentsData } from './table-of-contents.js';
 import { toolbarData } from './toolbar.js';
 import { tooltipData } from './tooltip.js';
+import { datePickerData } from './date-picker.js';
 
 export const builderList = [
 	'accordion',
 	'avatar',
+	'calendar',
 	'checkbox',
 	'collapsible',
 	'combobox',
 	'context-menu',
+	'date-field',
+	'date-picker',
+	'date-range-field',
+	'date-range-picker',
 	'dialog',
 	'dropdown-menu',
 	'label',
@@ -46,6 +57,7 @@ export const builderList = [
 	'popover',
 	'progress',
 	'radio-group',
+	'range-calendar',
 	'select',
 	'separator',
 	'slider',
@@ -78,10 +90,15 @@ export type Builders = Record<(typeof builderList)[number], BuilderData>;
 export const data: Builders = {
 	accordion: accordionData,
 	avatar: avatarData,
+	calendar: calendarData,
 	checkbox: checkboxData,
 	collapsible: collapsibleData,
 	combobox: comboboxData,
 	'context-menu': contextMenuData,
+	'date-field': dateFieldData,
+	'date-picker': datePickerData,
+	'date-range-field': dateRangeFieldData,
+	'date-range-picker': dateRangePickerData,
 	dialog: dialogData,
 	'dropdown-menu': dropdownMenuData,
 	label: labelData,
@@ -92,6 +109,7 @@ export const data: Builders = {
 	popover: popoverData,
 	progress: progressData,
 	'radio-group': radioGroupData,
+	'range-calendar': rangeCalendarData,
 	select: selectData,
 	separator: separatorData,
 	slider: sliderData,

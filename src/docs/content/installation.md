@@ -47,7 +47,6 @@ pnpm add -D @melt-ui/svelte
 ```
 
 </span>
-
 </InstallTabs>
 
 <Callout>
