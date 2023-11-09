@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.61.1
+
+### Patch Changes
+
+- Fix: Days of week not updating with locale ([#722](https://github.com/melt-ui/melt-ui/pull/722))
+
 ## 0.61.0
 
 ### Minor Changes
