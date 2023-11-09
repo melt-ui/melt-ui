@@ -12,16 +12,14 @@
 </script>
 
 <section>
-	<div class="absolute left-4 top-4">
-		<LocaleCombobox
-			onSelectedChange={({ next }) => {
-				if (next) {
-					locale.set(next.value);
-				}
-				return next;
-			}}
-		/>
-	</div>
+	<LocaleCombobox
+		onSelectedChange={({ next }) => {
+			if (next) {
+				locale.set(next.value);
+			}
+			return next;
+		}}
+	/>
 	<div use:melt={$calendar}>
 		<header>
 			<button use:melt={$prevButton}>
