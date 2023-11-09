@@ -1,17 +1,55 @@
-export { default as a } from './a.svelte';
-export { default as blockquote } from './blockquote.svelte';
-export { default as h1 } from './h1.svelte';
-export { default as h2 } from './h2.svelte';
-export { default as h3 } from './h3.svelte';
-export { default as h4 } from './h4.svelte';
-export { default as h5 } from './h5.svelte';
-export { default as h6 } from './h6.svelte';
-export { default as hr } from './hr.svelte';
-export { default as img } from './img.svelte';
-export { default as kbd } from './kbd.svelte';
+import A from './a.svelte';
+import Blockquote from './blockquote.svelte';
+import H1 from './h1.svelte';
+import H2 from './h2.svelte';
+import H3 from './h3.svelte';
+import H4 from './h4.svelte';
+import H5 from './h5.svelte';
+import H6 from './h6.svelte';
+import Hr from './hr.svelte';
+import Img from './img.svelte';
+import Kbd from './kbd.svelte';
+import Li from './li.svelte';
+import Ol from './ol.svelte';
+import P from './p.svelte';
+import Pre from './pre.svelte';
+import Ul from './ul.svelte';
+import Code from './code.svelte';
+
 export { default as layout } from './layout.svelte';
-export { default as li } from './li.svelte';
-export { default as ol } from './ol.svelte';
-export { default as p } from './p.svelte';
-export { default as pre } from './pre.svelte';
-export { default as ul } from './ul.svelte';
+
+export {
+	A,
+	Blockquote,
+	Code,
+	H1,
+	H2,
+	H3,
+	H4,
+	H5,
+	H6,
+	Hr,
+	Img,
+	Kbd,
+	Li,
+	Ol,
+	P,
+	Pre,
+	Ul,
+	A as a,
+	Blockquote as blockquote,
+	H1 as h1,
+	H2 as h2,
+	H3 as h3,
+	H4 as h4,
+	H5 as h5,
+	H6 as h6,
+	Hr as hr,
+	Img as img,
+	Kbd as kbd,
+	Li as li,
+	Ol as ol,
+	P as p,
+	Pre as pre,
+	Ul as ul,
+};

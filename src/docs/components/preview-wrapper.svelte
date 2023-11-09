@@ -12,8 +12,10 @@
 			},
 			size: {
 				default: 'h-[20rem] lg:h-[28rem]',
-				sm: 'h-[12rem] lg:h-[20rem]',
-				lg: 'h-[24rem] lg:h-[32rem]',
+				sm: 'h-[12rem] sm:h-[20rem]',
+				md: 'h-[16rem] sm:h-[24rem]',
+				lg: 'h-[24rem] sm:h-[32rem]',
+				auto: 'h-auto py-6 lg:py-12',
 			},
 		},
 		defaultVariants: {
@@ -31,7 +33,7 @@
 </script>
 
 <div class={cn(previewVariants({ variant, size }))} data-variant={variant}>
-	<div class={cn('relative z-10 mx-auto inline-block px-4')}>
+	<div class={cn('z-10 mx-auto inline-block px-4')}>
 		<slot />
 	</div>
 </div>
