@@ -165,7 +165,7 @@ In this section, we'll learn about the placeholder props, which are used to chan
 value the field represents, and what day the calendar displays when no date is selected.
 
 <Callout>
-	To learn more about how the placeholder affects the different parts of the date picker, checkout the placeholders docs for t/he <A href="/docs/builders/date-field">Date Field</A> & <A href="/docs/builders/calendar">Calendar</A> builders.
+	To learn more about how the placeholder affects the different parts of the date picker, checkout the placeholders docs for the <A href="/docs/builders/date-field">Date Field</A> & <A href="/docs/builders/calendar">Calendar</A> builders.
 </Callout>
 
 ### Set the Placeholder Date

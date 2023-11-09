@@ -99,8 +99,8 @@ It's not recommended, as the formatting doesn't adapt to the locale and type of 
 represented, which is one of the more powerful features this builder provides.
 
 Instead, you can use the `segmentContents` state, which is an array of objects necessary to form the
-date. Each object has a <Code>part</Code> property, which is the `SegmentPart`, and a
-<Code>value</Code> property, which is the locale-aware string representation of the segment.
+date. Each object has a <Code>part</Code>, which is the `SegmentPart`, and a <Code>value</Code>,
+which is the locale-aware string representation of the segment.
 
 ```svelte showLineNumbers {12-16}
 <script lang="ts">
