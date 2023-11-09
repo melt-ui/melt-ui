@@ -58,12 +58,6 @@ export type CreateSliderProps = {
 	 * @default false
 	 */
 	disabled?: boolean;
-
-	/**
-	 * Optionally override the default ids that are automatically
-	 * generated for the slider elements.
-	 */
-	ids?: IdObj<SliderIdParts>;
 };
 
 export type Slider = BuilderReturn<typeof createSlider>;
