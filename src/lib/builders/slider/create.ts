@@ -35,10 +35,15 @@ const defaults = {
 
 const { name } = createElHelpers('slider');
 
+const sliderIdParts = ['root'] as const;
+export type SliderIdParts = typeof sliderIdParts;
+
 export const createSlider = (props?: CreateSliderProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSliderProps;
 
-	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
+	const options = toWritableStores(
+		omit(withDefaults, 'value', 'onValueChange', 'defaultValue', 'ids')
+	);
 	const { min, max, step, orientation, disabled } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
@@ -48,7 +53,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const currentThumbIndex = writable<number>(0);
 	const activeThumb = writable<{ thumb: HTMLElement; index: number } | null>(null);
 
-	const meltIds = generateIds(['root']);
+	const ids = toWritableStores({ ...generateIds(sliderIdParts), ...withDefaults.ids });
 
 	// Helpers
 	const updatePosition = (val: number, index: number) => {
@@ -83,7 +88,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	};
 
 	const getAllThumbs = () => {
-		const root = getElementByMeltId(meltIds.root);
+		const root = getElementByMeltId(get(ids.root));
 		if (!root) return null;
 
 		return Array.from(root.querySelectorAll('[data-melt-part="thumb"]')).filter(
@@ -122,14 +127,14 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 	// Elements
 	const root = builder(name(), {
-		stores: [disabled, orientation],
-		returned: ([$disabled, $orientation]) => {
+		stores: [disabled, orientation, ids.root],
+		returned: ([$disabled, $orientation, $rootId]) => {
 			return {
 				disabled: disabledAttr($disabled),
 				'aria-disabled': ariaDisabledAttr($disabled),
 				'data-orientation': $orientation,
 				style: $disabled ? undefined : 'touch-action: none;',
-				'data-melt-id': meltIds.root,
+				'data-melt-id': $rootId,
 			};
 		},
 	});
@@ -464,7 +469,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	});
 
 	return {
-		ids: meltIds,
+		ids,
 		elements: {
 			root,
 			thumb,
