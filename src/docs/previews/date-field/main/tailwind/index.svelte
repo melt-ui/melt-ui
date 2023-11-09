@@ -1,20 +1,12 @@
 <script lang="ts">
 	import { createDateField, melt } from '$lib';
-	import { onMount } from 'svelte';
 	import LocaleCombobox from './LocaleCombobox.svelte';
-	import { CalendarDate } from '@internationalized/date';
 
 	const {
 		elements: { field, segment, label },
 		states: { segmentContents },
 		options: { locale },
-	} = createDateField({
-		defaultValue: new CalendarDate(2024, 1, 11),
-	});
-
-	onMount(() => {
-		locale.set(navigator.language);
-	});
+	} = createDateField();
 </script>
 
 <section>
