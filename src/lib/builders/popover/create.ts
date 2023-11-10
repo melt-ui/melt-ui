@@ -15,13 +15,13 @@ import {
 	removeScroll,
 	styleToString,
 	toWritableStores,
+	executeCallbacks,
 } from '$lib/internal/helpers/index.js';
 
 import { usePopper } from '$lib/internal/actions/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { onMount, tick } from 'svelte';
 import { get, writable } from 'svelte/store';
-import { executeCallbacks } from '../../internal/helpers/callbacks.js';
 import type { PopoverEvents } from './events.js';
 import type { CreatePopoverProps } from './types.js';
 import { generateIds } from '../../internal/helpers/id';
@@ -219,10 +219,12 @@ export function createPopover(args?: CreatePopoverProps) {
 			} as const),
 		action: (node: HTMLElement): MeltActionReturn<PopoverEvents['close']> => {
 			const unsub = executeCallbacks(
-				addMeltEventListener(node, 'click', () => {
+				addMeltEventListener(node, 'click', (e) => {
+					if (e.defaultPrevented) return;
 					handleClose();
 				}),
 				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.defaultPrevented) return;
 					if (e.key !== kbd.ENTER && e.key !== kbd.SPACE) return;
 					e.preventDefault();
 					toggleOpen();

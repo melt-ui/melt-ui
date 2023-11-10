@@ -541,7 +541,7 @@ describe('Slider changing options after building', () => {
 
 		expect(getAllByTestId('tick')).toHaveLength(11);
 
-		await rerender({ ...props, resetMin: 2 });
+		rerender({ ...props, resetMin: 2 });
 
 		expect(getAllByTestId('tick')).toHaveLength(9);
 	});
@@ -551,7 +551,7 @@ describe('Slider changing options after building', () => {
 
 		expect(getAllByTestId('tick')).toHaveLength(11);
 
-		await rerender({ ...props, resetMax: 8 });
+		rerender({ ...props, resetMax: 8 });
 
 		expect(getAllByTestId('tick')).toHaveLength(9);
 	});
@@ -561,7 +561,7 @@ describe('Slider changing options after building', () => {
 
 		expect(getAllByTestId('tick')).toHaveLength(11);
 
-		await rerender({ ...props, resetStep: 2 });
+		rerender({ ...props, resetStep: 2 });
 
 		expect(getAllByTestId('tick')).toHaveLength(6);
 	});
@@ -578,7 +578,7 @@ describe('Slider (min=0, max=100, step=30)', () => {
 
 		const user = userEvent.setup();
 		const thumb = getByTestId('thumb');
-		await expect(thumb).toBeInTheDocument();
+		expect(thumb).toBeInTheDocument();
 
 		await act(() => thumb.focus());
 		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);

@@ -1,5 +1,23 @@
 # @melt-ui/svelte
 
+## 0.61.1
+
+### Patch Changes
+
+- Fix: Days of week not updating with locale ([#722](https://github.com/melt-ui/melt-ui/pull/722))
+
+## 0.61.0
+
+### Minor Changes
+
+- - New Builders: ([#527](https://github.com/melt-ui/melt-ui/pull/527))
+    - Calendar - build customizable, accessible, and powerful calendar components
+    - Date Field - an enhanced alternative to the native <input type="date" /> with an emphasis on localization & accessibility
+    - Date Picker - a combination of the Calendar, Date Field, & Popover builders
+    - Range Calendar - build a calendar with range selection. Extends the power & functionality of the Calendar
+    - Date Range Field - an enhanced alternative to using two native <input type="date" /> inputs for selecting start and end dates, with an emphasis on localization & accessibility
+    - Date Range Picker - a combination of the Range Calendar, Date Range Field, & Popover builders
+
 ## 0.60.2
 
 ### Patch Changes
