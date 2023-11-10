@@ -21,7 +21,8 @@ At a high level, the anatomy of a dialog looks like this:
 <script lang="ts">
 	import { createDialog, melt } from '@melt-ui/svelte'
 	const {
-		elements: { trigger, portalled, overlay, content, title, description, close, open }
+		elements: { trigger, portalled, overlay, content, title, description, close },
+		states: { open }
 	} = createDialog()
 </script>
 
