@@ -36,6 +36,10 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'The builder store used to create the dialog trigger.',
 		},
 		{
+			name: 'portalled',
+			description: 'The builder store used to create the portalled dialog container.',
+		},
+		{
 			name: 'overlay',
 			description: 'The builder store used to create the dialog overlay.',
 		},
