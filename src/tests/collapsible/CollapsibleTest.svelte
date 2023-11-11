@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { createCollapsible, melt } from '$lib/index.js';
+	import { createCollapsible, melt, type CreateCollapsibleProps } from '$lib/index.js';
 
-	export let open = false;
+	type $$Props = CreateCollapsibleProps;
 
 	const {
 		elements: { root, trigger, content },
 	} = createCollapsible({
-		defaultOpen: open,
+		...$$restProps,
 	});
 </script>
 

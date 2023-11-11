@@ -20,6 +20,7 @@
 		states: { open },
 	} = createDialog({
 		open: customOpen,
+		forceVisible: true,
 	});
 </script>
 

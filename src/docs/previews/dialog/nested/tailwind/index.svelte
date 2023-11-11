@@ -15,7 +15,7 @@
 			portalled,
 		},
 		states: { open },
-	} = createDialog();
+	} = createDialog({ forceVisible: true });
 
 	const {
 		elements: {
@@ -28,7 +28,7 @@
 			portalled: portalledNested,
 		},
 		states: { open: openNested },
-	} = createDialog();
+	} = createDialog({ forceVisible: true });
 </script>
 
 <button

@@ -48,3 +48,12 @@ export function isContentEditable(element: unknown): element is HTMLElement {
 	if (!isHTMLElement(element)) return false;
 	return element.isContentEditable;
 }
+
+export function isNull(value: unknown): value is null {
+	return value === null;
+}
+
+export function isNumberString(value: string) {
+	if (isNaN(parseInt(value))) return false;
+	return true;
+}

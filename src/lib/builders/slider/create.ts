@@ -48,7 +48,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const currentThumbIndex = writable<number>(0);
 	const activeThumb = writable<{ thumb: HTMLElement; index: number } | null>(null);
 
-	const meltIds = generateIds(['root']);
+	const meltIds = generateIds(['root'] as const);
 
 	// Helpers
 	const updatePosition = (val: number, index: number) => {
@@ -464,7 +464,6 @@ export const createSlider = (props?: CreateSliderProps) => {
 	});
 
 	return {
-		ids: meltIds,
 		elements: {
 			root,
 			thumb,

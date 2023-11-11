@@ -55,6 +55,8 @@ export const useEscapeKeydown = (node: HTMLElement, config: EscapeKeydownConfig 
 			return;
 		}
 
+		e.preventDefault();
+
 		// If an ignore function is passed, check if it returns true
 		if (options.ignore) {
 			if (isFunction(options.ignore)) {

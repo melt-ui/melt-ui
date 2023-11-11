@@ -1,6 +1,6 @@
 {
 	"name": "@melt-ui/svelte",
-	"version": "0.58.1",
+	"version": "0.61.1",
 	"license": "MIT",
 	"repository": "github:melt-ui/melt-ui",
 	"author": "Thomas G. Lopes",
@@ -65,6 +65,7 @@
 	"dependencies": {
 		"@floating-ui/core": "^1.3.1",
 		"@floating-ui/dom": "^1.4.5",
+		"@internationalized/date": "^3.5.0",
 		"dequal": "^2.0.3",
 		"focus-trap": "^7.5.2",
 		"nanoid": "^4.0.2"
@@ -107,7 +108,7 @@
 		"escape-html": "^1.0.3",
 		"eslint": "^8.45.0",
 		"eslint-config-prettier": "^8.9.0",
-		"eslint-plugin-storybook": "^0.6.13",
+		"eslint-plugin-storybook": "^0.6.15",
 		"eslint-plugin-svelte": "^2.33.0",
 		"fathom-client": "^3.5.0",
 		"glob": "^9.3.2",
@@ -133,7 +134,7 @@
 		"resize-observer-polyfill": "^1.5.1",
 		"shiki": "^0.14.3",
 		"shiki-es": "^0.14.0",
-		"storybook": "^7.3.2",
+		"storybook": "^7.4.6",
 		"svelte": "^4.0.0",
 		"svelte-action-balancer": "^1.0.4",
 		"svelte-check": "^3.4.6",

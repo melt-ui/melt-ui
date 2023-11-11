@@ -1,5 +1,61 @@
 # @melt-ui/svelte
 
+## 0.61.1
+
+### Patch Changes
+
+- Fix: Days of week not updating with locale ([#722](https://github.com/melt-ui/melt-ui/pull/722))
+
+## 0.61.0
+
+### Minor Changes
+
+- - New Builders: ([#527](https://github.com/melt-ui/melt-ui/pull/527))
+    - Calendar - build customizable, accessible, and powerful calendar components
+    - Date Field - an enhanced alternative to the native <input type="date" /> with an emphasis on localization & accessibility
+    - Date Picker - a combination of the Calendar, Date Field, & Popover builders
+    - Range Calendar - build a calendar with range selection. Extends the power & functionality of the Calendar
+    - Date Range Field - an enhanced alternative to using two native <input type="date" /> inputs for selecting start and end dates, with an emphasis on localization & accessibility
+    - Date Range Picker - a combination of the Range Calendar, Date Range Field, & Popover builders
+
+## 0.60.2
+
+### Patch Changes
+
+- Fix: Menubar Menu bring your own id ([#716](https://github.com/melt-ui/melt-ui/pull/716))
+
+## 0.60.1
+
+### Patch Changes
+
+- Fix: Dialog layout shift when using svelte transitions ([#706](https://github.com/melt-ui/melt-ui/pull/706))
+
+## 0.60.0
+
+### Minor Changes
+
+- TOC: isActive helper ([`c7618563`](https://github.com/melt-ui/melt-ui/commit/c7618563bcc836bd3bd14800cb1f1b964b1e0834))
+
+## 0.59.1
+
+### Patch Changes
+
+- Fix: prevent safari from minimizing when esc on dialogs ([#705](https://github.com/melt-ui/melt-ui/pull/705))
+
+- fix: context menu id issues ([#707](https://github.com/melt-ui/melt-ui/pull/707))
+
+## 0.59.0
+
+### Minor Changes
+
+- TOC: 'all-parents' type ([`67307b2a`](https://github.com/melt-ui/melt-ui/commit/67307b2a64fae896bc6b3238f1477ad9e14fd40c))
+
+## 0.58.2
+
+### Patch Changes
+
+- fix: timing issue with `handleFocus` ([#693](https://github.com/melt-ui/melt-ui/pull/693))
+
 ## 0.58.1
 
 ### Patch Changes
