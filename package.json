@@ -3,6 +3,7 @@
 	"version": "0.58.1",
 	"license": "MIT",
 	"repository": "github:melt-ui/melt-ui",
+	"author": "Thomas G. Lopes",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
