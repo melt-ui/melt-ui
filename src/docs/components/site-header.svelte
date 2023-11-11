@@ -5,6 +5,7 @@
 	import { cn } from '$docs/utils';
 	import Search from '$routes/(landing-ui)/search.svelte';
 	import Logo from './logo.svelte';
+	import ThemeSwitch from './nav/theme-switch';
 
 	$: isRoot = $page.url.pathname === '/';
 </script>
@@ -56,6 +57,7 @@
 				<GitHub class="h-5 w-5" />
 				<span class="sr-only">View the Melt UI GitHub Repository</span>
 			</a>
+			<ThemeSwitch />
 			<Search />
 			<MobileNav />
 		</div>
