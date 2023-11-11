@@ -20,6 +20,6 @@ export default defineConfig({
 		deps: {
 			inline: ['clsx'],
 		},
-		retry: 3
+		retry: 3,
 	},
 });
