@@ -18,6 +18,7 @@ import {
 	getPortalDestination,
 	hiddenInputAttrs,
 	isBrowser,
+	isElement,
 	isElementDisabled,
 	isHTMLElement,
 	isHTMLInputElement,
@@ -489,7 +490,10 @@ export function createListbox<
 									? {
 											handler: (e) => {
 												const target = e.target;
-												if (target === $activeTrigger) return;
+												if (!isElement(target)) return;
+												if (target === $activeTrigger || $activeTrigger.contains(target)) {
+													return;
+												}
 												closeMenu();
 											},
 											ignore: ignoreHandler,
