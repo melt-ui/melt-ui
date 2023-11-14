@@ -63,7 +63,11 @@
 		</div>
 	</div>
 	{#if $open}
-		<div transition:fade={{ duration: 100 }} use:melt={$content}>
+		<div
+			class="force-dark"
+			transition:fade={{ duration: 100 }}
+			use:melt={$content}
+		>
 			<div use:melt={$calendar}>
 				<header>
 					<button use:melt={$prevButton}>

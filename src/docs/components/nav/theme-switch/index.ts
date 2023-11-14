@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import { readable, writable } from 'svelte/store';
+import { derived, readable, writable } from 'svelte/store';
 import type { Theme } from './types';
 
 export { default } from './theme-switch.svelte';
@@ -28,3 +28,8 @@ function createThemeStore() {
 }
 
 export const theme = createThemeStore();
+
+export const darkMode = derived(theme, ($theme) => {
+	if ($theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches) return true;
+	return $theme === 'dark';
+});

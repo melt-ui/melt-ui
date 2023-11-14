@@ -32,8 +32,8 @@
 	<label class="font-semibold text-white" id={labelId} for={id}><slot /></label>
 	<button
 		use:melt={$root}
-		class="relative h-6 cursor-default rounded-full bg-magnum-900 outline-none
- data-[state=checked]:bg-magnum-700"
+		class="force-dark relative h-6 cursor-default rounded-full bg-magnum-800 outline-none
+ data-[state=checked]:bg-magnum-600 dark:bg-magnum-900 dark:data-[state=checked]:bg-magnum-700"
 		{id}
 		aria-labelledby={labelId}
 	>

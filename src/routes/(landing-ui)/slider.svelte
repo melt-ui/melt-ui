@@ -18,6 +18,6 @@
 	</span>
 	<span
 		use:melt={$thumb()}
-		class="block rounded-full bg-white square-6 focus:ring-4 focus:ring-magnum-600"
+		class="block rounded-full bg-black square-6 focus:ring-4 focus:ring-magnum-600 dark:bg-white"
 	/>
 </span>

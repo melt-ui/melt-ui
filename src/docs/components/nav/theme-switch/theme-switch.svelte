@@ -17,7 +17,7 @@
 
 <Tooltip text="Switch theme">
 	<button
-		class="text-neutral-400 transition-colors hover:text-neutral-50"
+		class="transition-colors hover:text-neutral-50"
 		aria-label="Open theme switcher"
 		use:melt={$trigger}
 	>
@@ -29,7 +29,7 @@
 {#if $open}
 	<div
 		use:melt={$content}
-		class="z-50 w-32 rounded-md bg-neutral-700 px-2 py-2 shadow-sm shadow-neutral-800"
+		class="force-dark z-50 w-32 rounded-md bg-neutral-700 px-2 py-2 shadow-sm shadow-neutral-800"
 		transition:flyAndScale={{
 			duration: 150,
 			y: 0,

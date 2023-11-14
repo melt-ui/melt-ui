@@ -82,7 +82,7 @@
 
 	{#if $open}
 		<ul
-			class="z-10 flex max-h-[300px] flex-col overflow-hidden rounded-lg"
+			class="force-dark z-10 flex max-h-[300px] flex-col overflow-hidden rounded-lg"
 			use:melt={$menu}
 			transition:fly={{ duration: 150, y: -5 }}
 		>

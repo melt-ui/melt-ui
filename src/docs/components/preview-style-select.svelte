@@ -23,8 +23,8 @@
 </script>
 
 <button
-	class="flex w-[140px] items-center justify-between rounded-md border border-magnum-700 bg-neutral-800 px-3 py-1
-  text-magnum-600 outline-none transition-opacity hover:opacity-75 focus:!border-magnum-400 focus:!text-magnum-400"
+	class="flex w-[140px] items-center justify-between rounded-md border border-magnum-500 bg-neutral-800 px-3 py-1 text-magnum-400
+  outline-none transition-opacity hover:opacity-75 focus:!border-magnum-400 focus:!text-magnum-400 dark:border-magnum-700 dark:text-magnum-600"
 	use:melt={$trigger}
 	aria-label="Select"
 >
@@ -33,15 +33,14 @@
 </button>
 
 <ul
-	class="0 z-10 flex max-h-[360px] flex-col
-  overflow-y-auto rounded-md bg-neutral-800 p-1 shadow-md focus:!ring-0"
+	class="z-10 flex max-h-[360px] flex-col overflow-y-auto rounded-md bg-neutral-800 p-1 shadow-md focus:!ring-0"
 	use:melt={$menu}
 >
 	{#each options as o}
 		<li
 			class="relative cursor-pointer rounded-md py-1 pl-8 pr-4 text-neutral-400 outline-none focus:!text-magnum-400
-			data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[selected]:text-magnum-600
-			data-[disabled]:line-through"
+			data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[selected]:text-magnum-400 data-[disabled]:line-through
+			dark:data-[selected]:text-magnum-600"
 			use:melt={$option({ ...o })}
 		>
 			{#if $isSelected(o.value)}

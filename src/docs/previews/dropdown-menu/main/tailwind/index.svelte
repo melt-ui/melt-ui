@@ -59,7 +59,11 @@
 </button>
 
 {#if $open}
-	<div class="menu" use:melt={$menu} transition:fly={{ duration: 150, y: -10 }}>
+	<div
+		class="force-dark menu"
+		use:melt={$menu}
+		transition:fly={{ duration: 150, y: -10 }}
+	>
 		<div class="item" use:melt={$item}>About Melt UI</div>
 		<div class="item" use:melt={$item}>Check for Updates...</div>
 		<div class="separator" use:melt={$separator} />
