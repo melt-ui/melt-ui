@@ -51,7 +51,7 @@ export const useEscapeKeydown = (node: HTMLElement, config: EscapeKeydownConfig 
 		if (!e || !isEnabled()) return;
 		const target = e.target;
 
-		if (!isHTMLElement(target) || target.closest('[data-escapee]') !== node) {
+		if (!isHTMLElement(target) || target.closest("[data-escapee][data-state='open']") !== node) {
 			return;
 		}
 
