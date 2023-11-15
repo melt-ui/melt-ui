@@ -19,6 +19,7 @@ import {
 	hiddenInputAttrs,
 	isBrowser,
 	isElementDisabled,
+	isHTMLButtonElement,
 	isHTMLElement,
 	isHTMLInputElement,
 	kbd,
@@ -302,7 +303,7 @@ export function createListbox<
 
 						// Clicking space on a button triggers a click event. We don't want to
 						// open the menu in this case, and we let the click handler handle it.
-						if (e.key === kbd.SPACE && node instanceof HTMLButtonElement) {
+						if (e.key === kbd.SPACE && isHTMLButtonElement(node)) {
 							return;
 						}
 
@@ -342,7 +343,7 @@ export function createListbox<
 						return;
 					}
 					// Pressing enter with a highlighted item should select it.
-					if (e.key === kbd.ENTER) {
+					if (e.key === kbd.ENTER || (e.key === kbd.SPACE && isHTMLButtonElement(node))) {
 						e.preventDefault();
 						const $highlightedItem = get(highlightedItem);
 						if ($highlightedItem) {
