@@ -49,7 +49,7 @@
 		<!-- <DocsPager /> -->
 	</div>
 	<div class="hidden text-sm xl:block">
-		<div class="fixed top-16 h-[calc(100vh-4rem)] overflow-visible pt-6">
+		<div class="fixed top-16 h-[calc(100vh-4rem)] overflow-x-visible overflow-y-auto pt-6">
 			{#key $page.url.pathname}
 				<TOC />
 			{/key}
