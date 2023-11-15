@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss';
 import plugin from 'tailwindcss/plugin';
 import typography from '@tailwindcss/typography';
+import tailwindScrollbar from 'tailwind-scrollbar';
 
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
@@ -103,5 +104,6 @@ export default {
 				{ values: theme('spacing') }
 			);
 		}),
+		tailwindScrollbar({ nocompatible: true }),
 	],
 } satisfies Config;

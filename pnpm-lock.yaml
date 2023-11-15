@@ -241,6 +241,9 @@ devDependencies:
   tailwind-merge:
     specifier: ^1.14.0
     version: 1.14.0
+  tailwind-scrollbar:
+    specifier: ^3.0.5
+    version: 3.0.5(tailwindcss@3.3.3)
   tailwind-variants:
     specifier: ^0.1.8
     version: 0.1.8(tailwindcss@3.3.3)
@@ -258,7 +261,7 @@ devDependencies:
     version: 4.1.2
   vite:
     specifier: ^4.4.7
-    version: 4.4.7(@types/node@20.3.1)(less@4.1.3)
+    version: 4.4.7(@types/node@20.9.0)(less@4.1.3)
   vitest:
     specifier: ^0.33.0
     version: 0.33.0(happy-dom@10.5.2)(jsdom@22.1.0)(less@4.1.3)
@@ -2263,7 +2266,7 @@ packages:
     dependencies:
       '@types/istanbul-lib-coverage': 2.0.4
       '@types/istanbul-reports': 3.0.1
-      '@types/node': 20.3.1
+      '@types/node': 20.9.0
       '@types/yargs': 16.0.5
       chalk: 4.1.2
     dev: true
@@ -2275,7 +2278,7 @@ packages:
       '@jest/schemas': 29.6.0
       '@types/istanbul-lib-coverage': 2.0.4
       '@types/istanbul-reports': 3.0.1
-      '@types/node': 20.3.1
+      '@types/node': 20.9.0
       '@types/yargs': 17.0.24
       chalk: 4.1.2
     dev: true
@@ -3511,7 +3514,7 @@ packages:
       remark-slug: 6.1.0
       rollup: 3.25.2
       typescript: 5.1.6
-      vite: 4.4.7(@types/node@20.3.1)(less@4.1.3)
+      vite: 4.4.7(@types/node@20.9.0)(less@4.1.3)
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -4202,7 +4205,7 @@ packages:
       svelte: 4.0.0
       sveltedoc-parser: 4.2.1
       ts-dedent: 2.2.0
-      vite: 4.4.7(@types/node@20.3.1)(less@4.1.3)
+      vite: 4.4.7(@types/node@20.9.0)(less@4.1.3)
     transitivePeerDependencies:
       - '@preact/preset-vite'
       - encoding
@@ -4243,7 +4246,7 @@ packages:
       '@storybook/svelte': 7.3.2(svelte@4.0.0)
       '@storybook/svelte-vite': 7.3.2(svelte@4.0.0)(typescript@5.1.6)(vite@4.4.7)
       svelte: 4.0.0
-      vite: 4.4.7(@types/node@20.3.1)(less@4.1.3)
+      vite: 4.4.7(@types/node@20.9.0)(less@4.1.3)
     transitivePeerDependencies:
       - '@preact/preset-vite'
       - encoding
@@ -4415,7 +4418,7 @@ packages:
       sirv: 2.0.2
       svelte: 4.0.0
       undici: 5.22.1
-      vite: 4.4.7(@types/node@20.3.1)(less@4.1.3)
+      vite: 4.4.7(@types/node@20.9.0)(less@4.1.3)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -4448,7 +4451,7 @@ packages:
       '@sveltejs/vite-plugin-svelte': 2.4.2(svelte@4.0.0)(vite@4.4.7)
       debug: 4.3.4
       svelte: 4.0.0
-      vite: 4.4.7(@types/node@20.3.1)(less@4.1.3)
+      vite: 4.4.7(@types/node@20.9.0)(less@4.1.3)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -4467,7 +4470,7 @@ packages:
       magic-string: 0.30.0
       svelte: 4.0.0
       svelte-hmr: 0.15.2(svelte@4.0.0)
-      vite: 4.4.7(@types/node@20.3.1)(less@4.1.3)
+      vite: 4.4.7(@types/node@20.9.0)(less@4.1.3)
       vitefu: 0.2.4(vite@4.4.7)
     transitivePeerDependencies:
       - supports-color
@@ -4591,7 +4594,7 @@ packages:
     resolution: {integrity: sha512-ALYone6pm6QmwZoAgeyNksccT9Q4AWZQ6PvfwR37GT6r6FWUPguq6sUmNGSMV2Wr761oQoBxwGGa6DR5o1DC9g==}
     dependencies:
       '@types/connect': 3.4.35
-      '@types/node': 20.3.1
+      '@types/node': 20.9.0
     dev: true
 
   /@types/chai-subset@1.3.3:
@@ -4607,7 +4610,7 @@ packages:
   /@types/connect@3.4.35:
     resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}
     dependencies:
-      '@types/node': 20.3.1
+      '@types/node': 20.9.0
     dev: true
 
   /@types/cookie@0.5.1:
@@ -4617,7 +4620,7 @@ packages:
   /@types/cross-spawn@6.0.2:
     resolution: {integrity: sha512-KuwNhp3eza+Rhu8IFI5HUXRP0LIhqH5cAjubUvGXXthh4YYBuP2ntwEX+Cz8GJoZUHlKo247wPWOfA9LYEq4cw==}
     dependencies:
-      '@types/node': 20.3.1
+      '@types/node': 20.9.0
     dev: true
 
   /@types/debug@4.1.8:
@@ -4663,7 +4666,7 @@ packages:
   /@types/express-serve-static-core@4.17.35:
     resolution: {integrity: sha512-wALWQwrgiB2AWTT91CB62b6Yt0sNHpznUXeZEcnPU3DRdlDIz74x8Qg1UUYKSVFi+va5vKOLYRBI1bRKiLLKIg==}
     dependencies:
-      '@types/node': 20.3.1
+      '@types/node': 20.9.0
       '@types/qs': 6.9.7
       '@types/range-parser': 1.2.4
       '@types/send': 0.17.1
@@ -4685,7 +4688,7 @@ packages:
   /@types/graceful-fs@4.1.6:
     resolution: {integrity: sha512-Sig0SNORX9fdW+bQuTEovKj3uHcUL6LQKbCrrqb1X7J6/ReAbhCXRAhc+SMejhLELFj2QcyuxmUooZ4bt5ReSw==}
     dependencies:
-      '@types/node': 20.3.1
+      '@types/node': 20.9.0
     dev: true
 
   /@types/hast@2.3.4:
@@ -4771,7 +4774,7 @@ packages:
   /@types/node-fetch@2.6.4:
     resolution: {integrity: sha512-1ZX9fcN4Rvkvgv4E6PAY5WXUFWFcRWxZa3EW83UjycOB9ljJCedb2CupIP4RZMEwF/M3eTcCihbBRgwtGbg5Rg==}
     dependencies:
-      '@types/node': 20.3.1
+      '@types/node': 20.9.0
       form-data: 3.0.1
     dev: true
 
@@ -4789,8 +4792,10 @@ packages:
       undici-types: 5.26.5
     dev: true
 
-  /@types/node@20.3.1:
-    resolution: {integrity: sha512-EhcH/wvidPy1WeML3TtYFGR83UzjxeWRen9V402T8aUGYsCHOmfoisV3ZSg03gAFIbLq8TnWOJ0f4cALtnSEUg==}
+  /@types/node@20.9.0:
+    resolution: {integrity: sha512-nekiGu2NDb1BcVofVcEKMIwzlx4NjHlcjhoxxKBNLtz15Y1z7MYf549DFvkHSId02Ax6kGwWntIBPC3l/JZcmw==}
+    dependencies:
+      undici-types: 5.26.5
     dev: true
 
   /@types/normalize-package-data@2.4.1:
@@ -4845,14 +4850,14 @@ packages:
     resolution: {integrity: sha512-Cwo8LE/0rnvX7kIIa3QHCkcuF21c05Ayb0ZfxPiv0W8VRiZiNW/WuRupHKpqqGVGf7SUA44QSOUKaEd9lIrd/Q==}
     dependencies:
       '@types/mime': 1.3.2
-      '@types/node': 20.3.1
+      '@types/node': 20.9.0
     dev: true
 
   /@types/serve-static@1.15.1:
     resolution: {integrity: sha512-NUo5XNiAdULrJENtJXZZ3fHtfMolzZwczzBbnAeBbqBwG+LaG6YaJtuwzwGSQZ2wsCrxjEhNNjAkKigy3n8teQ==}
     dependencies:
       '@types/mime': 3.0.1
-      '@types/node': 20.3.1
+      '@types/node': 20.9.0
     dev: true
 
   /@types/stack-utils@2.0.1:
@@ -8472,7 +8477,7 @@ packages:
     dependencies:
       '@jest/types': 29.6.1
       '@types/graceful-fs': 4.1.6
-      '@types/node': 20.3.1
+      '@types/node': 20.9.0
       anymatch: 3.1.3
       fb-watchman: 2.0.2
       graceful-fs: 4.2.11
@@ -8525,7 +8530,7 @@ packages:
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     dependencies:
       '@jest/types': 27.5.1
-      '@types/node': 20.3.1
+      '@types/node': 20.9.0
     dev: true
 
   /jest-regex-util@29.4.3:
@@ -8538,7 +8543,7 @@ packages:
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     dependencies:
       '@jest/types': 29.6.1
-      '@types/node': 20.3.1
+      '@types/node': 20.9.0
       chalk: 4.1.2
       ci-info: 3.8.0
       graceful-fs: 4.2.11
@@ -8549,7 +8554,7 @@ packages:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 20.3.1
+      '@types/node': 20.9.0
       merge-stream: 2.0.0
       supports-color: 8.1.1
     dev: true
@@ -8558,7 +8563,7 @@ packages:
     resolution: {integrity: sha512-NcrQnevGoSp4b5kg+akIpthoAFHxPBcb5P6mYPY0fUNT+sSvmtu6jlkEle3anczUKIKEbMxFimk9oTP/tpIPgA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     dependencies:
-      '@types/node': 20.3.1
+      '@types/node': 20.9.0
       jest-util: 29.6.2
       merge-stream: 2.0.0
       supports-color: 8.1.1
@@ -11835,6 +11840,15 @@ packages:
     resolution: {integrity: sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ==}
     dev: true
 
+  /tailwind-scrollbar@3.0.5(tailwindcss@3.3.3):
+    resolution: {integrity: sha512-0ZwxTivevqq9BY9fRP9zDjHl7Tu+J5giBGbln+0O1R/7nHtBUKnjQcA1aTIhK7Oyjp6Uc/Dj6/dn8Dq58k5Uww==}
+    engines: {node: '>=12.13.0'}
+    peerDependencies:
+      tailwindcss: 3.x
+    dependencies:
+      tailwindcss: 3.3.3
+    dev: true
+
   /tailwind-variants@0.1.8(tailwindcss@3.3.3):
     resolution: {integrity: sha512-U4wzqr3GN1lvHU4XKJ0Th7Rn007SKB4cLqU0eed4bUEiydw/83G48EQ8MPo2VwEiuFOGcL1IAlAHU81wxDB9fQ==}
     engines: {node: '>=16.x', pnpm: '>=7.x'}
@@ -12562,7 +12576,7 @@ packages:
       vfile-message: 3.1.4
     dev: true
 
-  /vite-node@0.33.0(@types/node@20.3.1)(less@4.1.3):
+  /vite-node@0.33.0(@types/node@20.9.0)(less@4.1.3):
     resolution: {integrity: sha512-19FpHYbwWWxDr73ruNahC+vtEdza52kA90Qb3La98yZ0xULqV8A5JLNPUff0f5zID4984tW7l3DH2przTJUZSw==}
     engines: {node: '>=v14.18.0'}
     hasBin: true
@@ -12572,7 +12586,7 @@ packages:
       mlly: 1.4.0
       pathe: 1.1.1
       picocolors: 1.0.0
-      vite: 4.4.7(@types/node@20.3.1)(less@4.1.3)
+      vite: 4.4.7(@types/node@20.9.0)(less@4.1.3)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -12584,7 +12598,7 @@ packages:
       - terser
     dev: true
 
-  /vite@4.4.7(@types/node@20.3.1)(less@4.1.3):
+  /vite@4.4.7(@types/node@20.9.0)(less@4.1.3):
     resolution: {integrity: sha512-6pYf9QJ1mHylfVh39HpuSfMPojPSKVxZvnclX1K1FyZ1PXDOcLBibdq5t1qxJSnL63ca8Wf4zts6mD8u8oc9Fw==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -12612,7 +12626,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 20.3.1
+      '@types/node': 20.9.0
       esbuild: 0.18.17
       less: 4.1.3
       postcss: 8.4.27
@@ -12629,7 +12643,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 4.4.7(@types/node@20.3.1)(less@4.1.3)
+      vite: 4.4.7(@types/node@20.9.0)(less@4.1.3)
     dev: true
 
   /vitest@0.33.0(happy-dom@10.5.2)(jsdom@22.1.0)(less@4.1.3):
@@ -12665,7 +12679,7 @@ packages:
     dependencies:
       '@types/chai': 4.3.5
       '@types/chai-subset': 1.3.3
-      '@types/node': 20.3.1
+      '@types/node': 20.9.0
       '@vitest/expect': 0.33.0
       '@vitest/runner': 0.33.0
       '@vitest/snapshot': 0.33.0
@@ -12686,8 +12700,8 @@ packages:
       strip-literal: 1.0.1
       tinybench: 2.5.0
       tinypool: 0.6.0
-      vite: 4.4.7(@types/node@20.3.1)(less@4.1.3)
-      vite-node: 0.33.0(@types/node@20.3.1)(less@4.1.3)
+      vite: 4.4.7(@types/node@20.9.0)(less@4.1.3)
+      vite-node: 0.33.0(@types/node@20.9.0)(less@4.1.3)
       why-is-node-running: 2.2.2
     transitivePeerDependencies:
       - less

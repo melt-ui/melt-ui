@@ -49,7 +49,9 @@
 		<!-- <DocsPager /> -->
 	</div>
 	<div class="hidden text-sm xl:block">
-		<div class="fixed top-16 h-[calc(100vh-4rem)] overflow-visible pt-6">
+		<div
+			class="fixed top-16 h-[calc(100vh-4rem)] overflow-y-auto overflow-x-visible py-6 pr-4 scrollbar-thin scrollbar-track-neutral-700 scrollbar-thumb-magnum-400 scrollbar-thumb-rounded-full"
+		>
 			{#key $page.url.pathname}
 				<TOC />
 			{/key}

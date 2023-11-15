@@ -8,8 +8,8 @@
 
 <div class="container flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6">
 	<aside
-		class="fixed top-16 z-30 -ml-2 hidden h-[calc(100vh-4rem)] w-full shrink-0
-		flex-col overflow-y-auto pb-2 md:sticky md:flex"
+		class="fixed top-16 z-30 -ml-2 hidden h-[calc(100vh-4rem)] w-full
+		shrink-0 flex-col overflow-y-auto pb-2 scrollbar scrollbar-track-neutral-700 scrollbar-thumb-magnum-400 scrollbar-thumb-rounded-full scrollbar-w-2 md:sticky md:flex"
 	>
 		<div class="py-6 pr-6 lg:py-8">
 			<SidebarNav />
