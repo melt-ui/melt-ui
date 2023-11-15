@@ -444,6 +444,7 @@ export function createListbox<
 				id: $menuId,
 				role: 'listbox',
 				style: styleToString({ display: $isVisible ? undefined : 'none' }),
+				'data-state': $isVisible ? 'open' : 'closed',
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<ListboxEvents['menu']> => {
