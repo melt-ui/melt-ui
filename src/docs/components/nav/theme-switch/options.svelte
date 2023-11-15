@@ -4,7 +4,7 @@
 	import ThemeIcon from './theme-icon.svelte';
 	import type { Theme } from './types';
 
-	export let onChange = () => {};
+	export let onChange: () => void;
 
 	const {
 		elements: { root, item },
