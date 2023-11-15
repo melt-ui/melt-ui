@@ -63,10 +63,10 @@
 			{#each Object.entries(months) as [value, label]}
 				<div
 					class="relative cursor-pointer rounded-lg py-1 pl-8 pr-4 text-neutral-100
-		hover:bg-neutral-700 focus:z-10
-		focus:text-white
-							data-[highlighted]:bg-neutral-600 data-[highlighted]:text-white
-							data-[disabled]:opacity-50"
+		data-[highlighted]:bg-neutral-600 data-[highlighted]:text-white
+		data-[disabled]:opacity-50
+							hover:bg-neutral-700 focus:z-10
+							focus:text-white"
 					use:melt={$option({ value, label })}
 				>
 					<div class="check {$isSelected(value) ? 'block' : 'hidden'}">

@@ -20,8 +20,8 @@
 		<button
 			use:melt={$trigger}
 			class="relative h-6 w-6 place-items-center rounded-md bg-white text-sm
-			  text-magnum-800 shadow hover:opacity-75 data-[disabled]:cursor-not-allowed
-			  data-[disabled]:opacity-75"
+			  text-magnum-800 shadow data-[disabled]:cursor-not-allowed data-[disabled]:opacity-75
+			  hover:opacity-75"
 			aria-label="Toggle"
 		>
 			<div class="abs-center">

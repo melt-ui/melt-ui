@@ -305,7 +305,7 @@
 
 	.trigger {
 		@apply inline-flex items-center justify-center rounded-md bg-white px-3 py-2;
-		@apply text-magnum-900 transition-colors hover:bg-white/90 data-[highlighted]:outline-none;
+		@apply text-magnum-900 transition-colors data-[highlighted]:outline-none hover:bg-white/90;
 		@apply overflow-visible data-[highlighted]:bg-magnum-200 data-[highlighted]:ring-magnum-400 !important;
 		@apply !cursor-default text-sm font-medium leading-none focus:z-30 focus:ring;
 	}

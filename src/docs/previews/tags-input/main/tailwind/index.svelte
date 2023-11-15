@@ -47,7 +47,7 @@
 			use:melt={$input}
 			type="text"
 			placeholder="Enter tags..."
-			class="min-w-[4.5rem] shrink grow basis-0 border-0 text-black outline-none focus:!ring-0 data-[invalid]:text-red-500"
+			class="min-w-[4.5rem] shrink grow basis-0 border-0 text-black outline-none data-[invalid]:text-red-500 focus:!ring-0"
 		/>
 	</div>
 </div>

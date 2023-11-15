@@ -55,7 +55,7 @@
 						'flex flex-1 cursor-pointer items-center justify-between ',
 						'bg-white px-5 py-5 text-base font-medium leading-none',
 						'text-black transition-colors hover:bg-neutral-100 focus:!ring-0',
-						'focus-visible:text-magnum-800 data-[disabled]:cursor-not-allowed data-[disabled]:text-neutral-400',
+						'data-[disabled]:cursor-not-allowed data-[disabled]:text-neutral-400 focus-visible:text-magnum-800',
 						i !== 0 && 'border-t border-t-neutral-300',
 					)}
 				>

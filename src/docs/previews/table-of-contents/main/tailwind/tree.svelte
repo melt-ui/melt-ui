@@ -19,7 +19,7 @@
 					href="#{heading.id}"
 					use:melt={$item(heading.id)}
 					class="inline-flex items-center justify-center gap-1 text-neutral-500 no-underline transition-colors
-					 hover:!text-magnum-600 data-[active]:text-magnum-700"
+					 data-[active]:text-magnum-700 hover:!text-magnum-600"
 				>
 					<!--
 						Along with the heading title, the original heading node
