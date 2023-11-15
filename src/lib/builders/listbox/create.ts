@@ -271,6 +271,7 @@ export function createListbox<
 
 			const unsubscribe = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
+					node.focus(); // Fix for safari not adding focus on trigger
 					const $open = get(open);
 					if ($open) {
 						closeMenu();
