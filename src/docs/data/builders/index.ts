@@ -35,59 +35,14 @@ import { toolbarData } from './toolbar.js';
 import { tooltipData } from './tooltip.js';
 import { datePickerData } from './date-picker.js';
 
-export const builderList = [
-	'accordion',
-	'avatar',
-	'calendar',
-	'checkbox',
-	'collapsible',
-	'combobox',
-	'context-menu',
-	'date-field',
-	'date-picker',
-	'date-range-field',
-	'date-range-picker',
-	'dialog',
-	'dropdown-menu',
-	'label',
-	'link-preview',
-	'menubar',
-	'pagination',
-	'PIN-input',
-	'popover',
-	'progress',
-	'radio-group',
-	'range-calendar',
-	'select',
-	'separator',
-	'slider',
-	'switch',
-	'table-of-contents',
-	'tabs',
-	'tags-input',
-	'toast',
-	'toggle',
-	'toggle-group',
-	'toolbar',
-	'tooltip',
-	'tree',
-] as const;
-
-export type Builder = (typeof builderList)[number];
-
-export function isBuilderName(key: string): key is (typeof builderList)[number] {
-	return builderList.includes(key as (typeof builderList)[number]);
-}
-
 export type BuilderData = {
 	schemas?: APISchema[];
 	features: string[];
 	keyboard?: KeyboardSchema;
+	name?: string;
 };
 
-export type Builders = Record<(typeof builderList)[number], BuilderData>;
-
-export const data: Builders = {
+export const builderMap = ({
 	accordion: accordionData,
 	avatar: avatarData,
 	calendar: calendarData,
@@ -105,7 +60,7 @@ export const data: Builders = {
 	'link-preview': linkPreviewData,
 	menubar: menubarData,
 	pagination: paginationData,
-	'PIN-input': pinInputData,
+	'pin-input': pinInputData,
 	popover: popoverData,
 	progress: progressData,
 	'radio-group': radioGroupData,
@@ -123,4 +78,16 @@ export const data: Builders = {
 	toolbar: toolbarData,
 	tooltip: tooltipData,
 	tree: treeData,
-};
+} as const) satisfies Record<string, BuilderData>;
+
+
+export type Builder = keyof typeof builderMap;
+
+export function isBuilderName(key: string): key is Builder {
+	return key in builderMap;
+}
+
+
+
+export type Builders = typeof builderMap;
+

@@ -1,5 +1,5 @@
 import type { NavItem, SidebarNavItem } from '$docs/types.js';
-import { builderList } from './data/builders/index.js';
+import { builderMap } from './data/builders/index.js';
 import { formatStr } from './utils/index.js';
 
 export const siteConfig = {
@@ -74,10 +74,10 @@ export const navConfig: NavConfig = {
 		},
 		{
 			title: 'Builders',
-			items: builderList.map((builder) => {
+			items: Object.entries(builderMap).map(([key, builder]) => {
 				return {
-					title: formatStr(builder),
-					href: `/docs/builders/${builder}`,
+					title: formatStr(builder.name ?? key),
+					href: `/docs/builders/${key}`,
 					items: [],
 				};
 			}),
