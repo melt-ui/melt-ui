@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.61.2
+
+### Patch Changes
+
+- Fix: Key events in Select don't work in Safari ([#741](https://github.com/melt-ui/melt-ui/pull/741))
+
+- fix: space to select select options ([#730](https://github.com/melt-ui/melt-ui/pull/730))
+
+- fix: Select - toggle when elements within trigger are clicked ([#735](https://github.com/melt-ui/melt-ui/pull/735))
+
 ## 0.61.1
 
 ### Patch Changes
