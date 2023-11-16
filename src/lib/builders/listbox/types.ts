@@ -136,7 +136,7 @@ export type CreateListboxProps<
 	 */
 	forceVisible?: boolean;
 
-	multiple?: Multiple;
+	multiple?: boolean;
 
 	/**
 	 * The name of the builder using listbox.
