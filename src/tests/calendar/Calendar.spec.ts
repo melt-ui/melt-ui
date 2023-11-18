@@ -410,32 +410,50 @@ describe('Calendar', () => {
 
 		// five keypresses to get to February 1980
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-8')).toHaveFocus();
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-15')).toHaveFocus();
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-22')).toHaveFocus();
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-29')).toHaveFocus();
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-5')).toHaveFocus();
 		expect(heading).toHaveTextContent('February 1980');
 
 		// four keypresses to get to March 1980
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-12')).toHaveFocus();
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-19')).toHaveFocus();
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-26')).toHaveFocus();
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-4')).toHaveFocus();
 		expect(heading).toHaveTextContent('March 1980');
 
 		// four keypresses to get to April 1980
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-11')).toHaveFocus();
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-18')).toHaveFocus();
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-25')).toHaveFocus();
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-1')).toHaveFocus();
 		expect(heading).toHaveTextContent('April 1980');
 
 		// should be five keypresses to get to May 1980, but we're at the max value
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-8')).toHaveFocus();
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-15')).toHaveFocus();
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-22')).toHaveFocus();
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-29')).toHaveFocus();
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-29')).toHaveFocus();
 		expect(heading).toHaveTextContent('April 1980');
 
 		// again for good measure
@@ -444,6 +462,7 @@ describe('Calendar', () => {
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
 		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(getByTestId('month-0-date-29')).toHaveFocus();
 		expect(heading).toHaveTextContent('April 1980');
 	});
 
