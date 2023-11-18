@@ -394,6 +394,59 @@ describe('Calendar', () => {
 		expect(heading).toHaveTextContent('April 1980');
 	});
 
+	test('calendar does not navigate after maxValue (with keyboard)', async () => {
+		const user = userEvent.setup();
+		const { getByTestId } = render(CalendarTest, {
+			defaultValue: calendarDate,
+			maxValue: new CalendarDate(1980, 4, 1),
+		});
+
+		const firstDayInMonth = getByTestId('month-0-date-1');
+		firstDayInMonth.focus();
+		expect(firstDayInMonth).toHaveFocus();
+
+		const heading = getByTestId('heading');
+		expect(heading).toHaveTextContent('January 1980');
+
+		// five keypresses to get to February 1980
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(heading).toHaveTextContent('February 1980');
+
+		// four keypresses to get to March 1980
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(heading).toHaveTextContent('March 1980');
+
+		// four keypresses to get to April 1980
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(heading).toHaveTextContent('April 1980');
+
+		// should be five keypresses to get to May 1980, but we're at the max value
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(heading).toHaveTextContent('April 1980');
+
+		// again for good measure
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		await user.keyboard(`{${kbd.ARROW_DOWN}}`);
+		expect(heading).toHaveTextContent('April 1980');
+	});
+
 	test('multiple select default Value', async () => {
 		const day1 = new CalendarDate(1980, 1, 2);
 		const day2 = new CalendarDate(1980, 1, 5);
