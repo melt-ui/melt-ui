@@ -10,6 +10,12 @@ export type TypeaheadArgs = {
 	 * @param element The element that matches the typed keys
 	 */
 	onMatch?: (element: HTMLElement) => void;
+	/**
+	 * Get the current item, usually the active element.
+	 * @returns The current item
+	 * @default () => document.activeElement
+	 */
+	getCurrentItem?: () => Element | null | undefined;
 };
 
 export type HandleTypeaheadSearch = {
@@ -27,6 +33,7 @@ export type HandleTypeaheadSearch = {
  */
 const defaults = {
 	onMatch: handleRovingFocus,
+	getCurrentItem: () => document.activeElement,
 } satisfies TypeaheadArgs;
 
 export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
@@ -38,14 +45,14 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 	});
 
 	const handleTypeaheadSearch = (key: string, items: HTMLElement[]) => {
-		const currentItem = document.activeElement;
-		if (!isHTMLElement(currentItem)) return;
+		const currentItem = withDefaults.getCurrentItem();
+
 		const $typed = get(typed);
 		if (!Array.isArray($typed)) {
 			return;
 		}
 		$typed.push(key.toLowerCase());
-		typed.update(() => $typed);
+		typed.set($typed);
 
 		const candidateItems = items.filter((item) => {
 			if (
@@ -60,7 +67,7 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 
 		const isRepeated = $typed.length > 1 && $typed.every((char) => char === $typed[0]);
 		const normalizeSearch = isRepeated ? $typed[0] : $typed.join('');
-		const currentItemIndex = currentItem ? candidateItems.indexOf(currentItem) : -1;
+		const currentItemIndex = isHTMLElement(currentItem) ? candidateItems.indexOf(currentItem) : -1;
 
 		let wrappedItems = wrapArray(candidateItems, Math.max(currentItemIndex, 0));
 		const excludeCurrentItem = normalizeSearch.length === 1;
@@ -68,8 +75,9 @@ export function createTypeaheadSearch(args: TypeaheadArgs = {}) {
 			wrappedItems = wrappedItems.filter((v) => v !== currentItem);
 		}
 
-		const nextItem = wrappedItems.find((item) =>
-			item.innerText.toLowerCase().startsWith(normalizeSearch.toLowerCase())
+		const nextItem = wrappedItems.find(
+			(item) =>
+				item?.innerText && item.innerText.toLowerCase().startsWith(normalizeSearch.toLowerCase())
 		);
 
 		if (isHTMLElement(nextItem) && nextItem !== currentItem) {

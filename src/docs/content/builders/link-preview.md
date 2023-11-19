@@ -85,6 +85,17 @@ events.
 
 ## Accessibility
 
-The link preview is only intended to be used with a mouse or other pointing device and the preview
-content cannot be accessed via the keyboard and is not exposed to screen readers. As a result the
-preview should contain content that is otherwise not visible elswhere.
+The link preview is only intended to be used with a mouse or other pointing device. The preview's
+content element cannot be accessed via the keyboard and is not exposed to screen readers. As a
+result the preview should not contain content that is otherwise not visible elsewhere.
+
+### Comparison with Tooltip
+
+The link preview is similar to the [Tooltip](/docs/builders/tooltip) builder, as both have floating
+contents that initially are hidden, and appear when hovering over the trigger, or focusing it with
+the keyboard.
+
+There are some key differences though. A Tooltip's content should not have any clickable elements
+inside it, while a Link Preview's content can contain them. Also, a Tooltip's content is exposed to
+screen readers, while a Link Preview's content is not. Keep this in mind when choosing which builder
+to use, as this has implications for accessibility.

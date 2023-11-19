@@ -1,8 +1,8 @@
 import type { FloatingConfig } from '$lib/internal/actions/index.js';
 import type { TextDirection } from '$lib/internal/types.js';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
+import type { ChangeFn, FocusProp, IdObj } from '$lib/internal/helpers/index.js';
 import type { Writable } from 'svelte/store';
-import type { createMenuBuilder } from './create.js';
+import type { _MenuIdParts, createMenuBuilder } from './create.js';
 
 export type _CreateMenuProps = {
 	/**
@@ -99,9 +99,28 @@ export type _CreateMenuProps = {
 	 * @default true
 	 */
 	typeahead?: boolean;
+
+	/**
+	 * Override the default autofocus behavior of the menu
+	 * on close.
+	 */
+	closeFocus?: FocusProp;
+
+	/**
+	 * Optionally prevent focusing the first item in the menu
+	 */
+	disableFocusFirstItem?: boolean;
+
+	/**
+	 * Optionally override the default ids we assign to the elements
+	 */
+	ids?: IdObj<_MenuIdParts>;
 };
 
-export type _CreateSubmenuProps = Pick<_CreateMenuProps, 'arrowSize' | 'positioning'> & {
+export type _CreateSubmenuProps = Pick<
+	_CreateMenuProps,
+	'arrowSize' | 'positioning' | 'open' | 'onOpenChange' | 'ids'
+> & {
 	disabled?: boolean;
 };
 
@@ -152,9 +171,10 @@ export type _MenuBuilderOptions = {
 		portal: Writable<string | HTMLElement | undefined | null>;
 		forceVisible: Writable<boolean>;
 		typeahead: Writable<boolean>;
+		closeFocus: Writable<FocusProp | undefined>;
+		disableFocusFirstItem: Writable<boolean>;
 	};
-	disableTriggerRefocus?: boolean;
-	disableFocusFirstItem?: boolean;
+
 	nextFocusable: Writable<HTMLElement | null>;
 	prevFocusable: Writable<HTMLElement | null>;
 	selector: string;
@@ -163,6 +183,8 @@ export type _MenuBuilderOptions = {
 	 * rather than in the menu builder factory.
 	 */
 	removeScroll: boolean;
+
+	ids?: Expand<IdObj<_MenuIdParts>>;
 };
 
 export type _MenuParts =

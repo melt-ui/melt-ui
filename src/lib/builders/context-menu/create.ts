@@ -15,6 +15,7 @@ import {
 	isLeftClick,
 	kbd,
 	noop,
+	omit,
 	overridable,
 	styleToString,
 	toWritableStores,
@@ -51,6 +52,8 @@ const defaults = {
 	defaultOpen: false,
 	forceVisible: false,
 	typeahead: true,
+	disableFocusFirstItem: true,
+	closeFocus: undefined,
 } satisfies CreateContextMenuProps;
 
 const { name, selector } = createElHelpers<_MenuParts>('context-menu');
@@ -58,8 +61,9 @@ const { name, selector } = createElHelpers<_MenuParts>('context-menu');
 export function createContextMenu(props?: CreateContextMenuProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateContextMenuProps;
 
-	const rootOptions = toWritableStores(withDefaults);
-	const { positioning, closeOnOutsideClick, portal, forceVisible, closeOnEscape } = rootOptions;
+	const rootOptions = toWritableStores(omit(withDefaults, 'ids'));
+	const { positioning, closeOnOutsideClick, portal, forceVisible, closeOnEscape, loop } =
+		rootOptions;
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const rootOpen = overridable(openWritable, withDefaults?.onOpenChange);
@@ -73,7 +77,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		arrow,
 		createSubmenu,
 		createMenuRadioGroup,
-		rootIds,
+		ids,
 		separator,
 		handleTypeaheadSearch,
 		group,
@@ -84,10 +88,9 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		rootOptions,
 		nextFocusable,
 		prevFocusable,
-		disableFocusFirstItem: true,
-		disableTriggerRefocus: true,
 		selector: 'context-menu',
 		removeScroll: true,
+		ids: withDefaults.ids,
 	});
 
 	const point = writable<Point | null>(null);
@@ -111,13 +114,11 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 		const target = e.target;
 		if (!(target instanceof Element)) return;
 
-		if (target.id === rootIds.trigger && isLeftClick(e)) {
+		const isClickInsideTrigger = target.closest(`[data-id="${get(ids.trigger)}"]`) !== null;
+
+		if (!isClickInsideTrigger || isLeftClick(e)) {
 			rootOpen.set(false);
 			return;
-		}
-
-		if (target.id !== rootIds.trigger && !target.closest(selector())) {
-			rootOpen.set(false);
 		}
 	}
 
@@ -128,8 +129,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	});
 
 	const menu = builder(name(), {
-		stores: [isVisible, portal],
-		returned: ([$isVisible, $portal]) => {
+		stores: [isVisible, portal, ids.menu, ids.trigger],
+		returned: ([$isVisible, $portal, $menuId, $triggerId]) => {
 			// We only want to render the menu when it's open and has an active trigger.
 			return {
 				role: 'menu',
@@ -137,8 +138,8 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 				style: styleToString({
 					display: $isVisible ? undefined : 'none',
 				}),
-				id: rootIds.menu,
-				'aria-labelledby': rootIds.trigger,
+				id: $menuId,
+				'aria-labelledby': $triggerId,
 				'data-state': $isVisible ? 'open' : 'closed',
 				'data-portal': $portal ? '' : undefined,
 				tabindex: -1,
@@ -195,7 +196,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 					const isKeyDownInside = target.closest("[role='menu']") === menuEl;
 					if (!isKeyDownInside) return;
 					if (FIRST_LAST_KEYS.includes(e.key)) {
-						handleMenuNavigation(e);
+						handleMenuNavigation(e, get(loop));
 					}
 
 					/**
@@ -230,16 +231,15 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	});
 
 	const trigger = builder(name('trigger'), {
-		stores: rootOpen,
-		returned: ($rootOpen) => {
+		stores: [rootOpen, ids.trigger],
+		returned: ([$rootOpen, $triggerId]) => {
 			return {
-				'aria-controls': rootIds.menu,
-				'aria-expanded': $rootOpen,
 				'data-state': $rootOpen ? 'open' : 'closed',
-				id: rootIds.trigger,
+				id: $triggerId,
 				style: styleToString({
 					WebkitTouchCallout: 'none',
 				}),
+				'data-id': $triggerId,
 			} as const;
 		},
 		action: (node: HTMLElement): MeltActionReturn<ContextMenuEvents['trigger']> => {
@@ -305,6 +305,7 @@ export function createContextMenu(props?: CreateContextMenuProps) {
 	});
 
 	return {
+		ids,
 		elements: {
 			menu,
 			trigger,

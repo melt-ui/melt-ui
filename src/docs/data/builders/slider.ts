@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS, SEE, TYPES } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
+
 import { sliderEvents } from '$lib/builders/slider/events.js';
 import type { BuilderData } from './index.js';
 
@@ -78,12 +79,21 @@ const builder = builderSchema(BUILDER_NAME, {
 			name: 'thumb',
 			description: 'The builder store used to create the slider thumb element.',
 		},
+		{
+			name: 'tick',
+			description: 'The builder store used to create the slider tick element.',
+		},
 	],
 	states: [
 		{
 			name: 'value',
 			type: 'Writable<number[]>',
 			description: 'A writable store that can be used to get the current value of the slider.',
+		},
+		{
+			name: 'ticks',
+			type: 'Readable<number>',
+			description: 'A readable store that can be used to get the current number of ticks.',
 		},
 	],
 	options: OPTION_PROPS,
@@ -124,7 +134,21 @@ const thumb = elementSchema('thumb', {
 	events: sliderEvents['thumb'],
 });
 
-const schemas = [builder, root, thumb, range];
+const tick = elementSchema('tick', {
+	description: 'The slider tick component.',
+	dataAttributes: [
+		{
+			name: 'data-melt-slider-tick',
+			value: ATTRS.MELT('slider tick'),
+		},
+		{
+			name: 'data-bounded',
+			value: "Present when a tick is inside the `value`'s bounds.",
+		},
+	],
+});
+
+const schemas = [builder, root, thumb, range, tick];
 
 const features = [
 	'Supports multiple thumbs',

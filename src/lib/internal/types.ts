@@ -80,6 +80,12 @@ type CustomMeltComponentEvents<Events extends keyof HTMLElementEventMap> = {
 		: never;
 };
 
+export type InternalCustomEvents<Events extends keyof HTMLElementEventMap> = {
+	[K in Events as K]?: K extends keyof HTMLElementEventMap
+		? EventHandler<HTMLElementEventMap[K]>
+		: never;
+};
+
 type ElementEvents<T> = T extends ReadonlyArray<infer U> ? U : never;
 
 export type GroupedEvents<T> = {
@@ -109,6 +115,14 @@ export type WhenTrue<TrueOrFalse, IfTrue, IfFalse, IfNeither = IfTrue | IfFalse>
 	: [TrueOrFalse] extends [false]
 	? IfFalse
 	: IfNeither;
+
+export type RenameProperties<T, NewNames extends Partial<Record<keyof T, string>>> = Expand<{
+	[K in keyof T as K extends keyof NewNames
+		? NewNames[K] extends PropertyKey
+			? NewNames[K]
+			: K
+		: K]: T[K];
+}>;
 
 
 // Colors

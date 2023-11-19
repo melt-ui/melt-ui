@@ -1,7 +1,7 @@
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
+import type { ChangeFn, IdObj } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
-import type { createPinInput } from './create.js';
+import type { PinInputIdParts, createPinInput } from './create.js';
 export type { PinInputComponentEvents } from './events.js';
 
 export type CreatePinInputProps = {
@@ -28,11 +28,11 @@ export type CreatePinInputProps = {
 	disabled?: boolean;
 
 	/**
-	 * The type of the input.
+	 * The type of the input. Use `password` to mask the input.
 	 *
 	 * @default 'text'
 	 */
-	type?: string;
+	type?: 'text' | 'password';
 
 	/**
 	 * The uncontrolled default value of the pin input.
@@ -55,6 +55,11 @@ export type CreatePinInputProps = {
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
 	onValueChange?: ChangeFn<string[]>;
+
+	/**
+	 * Optionally override the default ids we assign to the elements
+	 */
+	ids?: IdObj<PinInputIdParts>;
 };
 
 export type PinInput = BuilderReturn<typeof createPinInput>;

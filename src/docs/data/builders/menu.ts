@@ -23,6 +23,12 @@ export const menuBuilderProps = [
 	PROPS.DEFAULT_OPEN,
 	PROPS.OPEN,
 	PROPS.ON_OPEN_CHANGE,
+	PROPS.CLOSE_FOCUS,
+	{
+		name: 'ids',
+		type: 'Record<"trigger" | "menu", string>',
+		description: 'Override the internally generated ids for the elements.',
+	},
 ];
 
 export const menuBuilderOptions = [
@@ -35,6 +41,7 @@ export const menuBuilderOptions = [
 	PROPS.CLOSE_ON_OUTSIDE_CLICK,
 	PROPS.LOOP(),
 	PROPS.FORCE_VISIBLE,
+	PROPS.CLOSE_FOCUS,
 ];
 type Menu = 'context menu' | 'dropdown menu' | 'menubar menu';
 
@@ -296,6 +303,13 @@ function getMenuSubmenuBuilderSchema() {
 			PROPS.POSITIONING({ default: 'placement: "right-start"' }),
 			PROPS.ARROW_SIZE,
 			PROPS.DISABLED({ name: 'submenu' }),
+			PROPS.OPEN,
+			PROPS.ON_OPEN_CHANGE,
+			{
+				name: 'ids',
+				type: 'Record<"trigger" | "menu", string>',
+				description: 'Override the internally generated ids for the elements.',
+			},
 		],
 		elements: [
 			{

@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { tooltipIdParts } from '$lib';
 import { tooltipEvents } from '$lib/builders/tooltip/events.js';
 import type { BuilderData } from './index.js';
 
@@ -35,13 +36,21 @@ const OPTION_PROPS = [
 		name: 'disableHoverableContent',
 		type: 'boolean',
 		default: 'false',
-		description: 'Prevents the tooltip content element from remaining open when hovered. If `true`, the tooltip will only be open when hovering the trigger element.'
-	}
+		description:
+			'Prevents the tooltip content element from remaining open when hovered. If `true`, the tooltip will only be open when hovering the trigger element.',
+	},
+	{
+		name: 'group',
+		type: 'string | boolean',
+		description:
+			'If set to `true`, whenever you open this tooltip, all other tooltips with `group` also set to `true` will close. If you pass in a string instead, only tooltips with the same `group` value will be closed.',
+	},
 ];
 
 const BUILDER_NAME = 'tooltip';
 
 const builder = builderSchema(BUILDER_NAME, {
+	ids: tooltipIdParts,
 	title: 'createTooltip',
 	props: [...OPTION_PROPS, PROPS.DEFAULT_OPEN, PROPS.OPEN, PROPS.ON_OPEN_CHANGE],
 	elements: [

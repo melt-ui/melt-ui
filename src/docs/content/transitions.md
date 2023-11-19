@@ -1,9 +1,9 @@
 ---
 title: Transitions
-description: Learn how to use Svelte & other custom transitions and animations with Melt.
+description: Learn how to use Svelte and other custom transitions and animations with Melt.
 ---
 
-By default, the visibility of most elements you'd want to apply transitions to are controlled by
+By default, the visibility of most elements you'd want to apply transitions to is controlled by
 Melt internally. We set the element's `hidden` attribute to `true`, and the display to `none` when
 the open state is false. We do this to prevent flickering when the component is first rendered.
 
@@ -22,28 +22,23 @@ of the element using `#if` blocks, which will allow you to apply transitions and
 
 At a high level, here's how you could use the `forceVisible` prop with the Collapsible builder.
 
-```svelte {10,19,23} /transition:slide/#hi
+```svelte {9,15,17} /transition:slide/#hi
 <script lang="ts">
-	import { createCollapsible, melt } from '@melt-ui/svelte';
-	import { slide } from 'svelte/transition';
+	import { createCollapsible, melt } from '@melt-ui/svelte'
+	import { slide } from 'svelte/transition'
 
 	const {
 		elements: { root, content, trigger },
-		states: { open },
+		states: { open }
 	} = createCollapsible({
-        forceVisible: true
-    });
+		forceVisible: true
+	})
 </script>
 
 <div use:melt={$root}>
-	<button use:melt={$trigger} aria-label="Toggle">
-		Open
-	</button>
-    </div>
+	<button use:melt={$trigger} aria-label="Toggle"> Open </button>
 	{#if $open}
-		<div use:melt={$content} transition:slide>
-			Collapsible content
-		</div>
+		<div use:melt={$content} transition:slide>Collapsible content</div>
 	{/if}
 </div>
 ```

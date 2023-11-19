@@ -10,8 +10,9 @@ import {
 	createElHelpers,
 	effect,
 	executeCallbacks,
-	generateId,
+	generateIds,
 	getPortalDestination,
+	handleFocus,
 	isBrowser,
 	isHTMLElement,
 	kbd,
@@ -24,8 +25,9 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { onMount, tick } from 'svelte';
+import { tick } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
+import { omit } from '../../internal/helpers/object';
 import type { DialogEvents } from './events.js';
 import type { CreateDialogProps } from './types.js';
 
@@ -47,30 +49,45 @@ const defaults = {
 	defaultOpen: false,
 	portal: 'body',
 	forceVisible: false,
+	openFocus: undefined,
+	closeFocus: undefined,
 } satisfies Defaults<CreateDialogProps>;
 
 const openDialogIds = writable<string[]>([]);
 
+export const dialogIdParts = ['content', 'title', 'description'] as const;
+export type DialogIdParts = typeof dialogIdParts;
+
 export function createDialog(props?: CreateDialogProps) {
 	const withDefaults = { ...defaults, ...props } satisfies CreateDialogProps;
 
-	const options = toWritableStores(withDefaults);
-	const { preventScroll, closeOnEscape, closeOnOutsideClick, role, portal, forceVisible } = options;
+	const options = toWritableStores(omit(withDefaults, 'ids'));
+
+	const {
+		preventScroll,
+		closeOnEscape,
+		closeOnOutsideClick,
+		role,
+		portal,
+		forceVisible,
+		openFocus,
+		closeFocus,
+	} = options;
 
 	const activeTrigger = writable<HTMLElement | null>(null);
 
-	const ids = {
-		content: generateId(),
-		title: generateId(),
-		description: generateId(),
-		trigger: generateId(),
-	};
+	const ids = toWritableStores({
+		...generateIds(dialogIdParts),
+		...withDefaults.ids,
+	});
 
 	const openWritable = withDefaults.open ?? writable(withDefaults.defaultOpen);
 	const open = overridable(openWritable, withDefaults?.onOpenChange);
 	const isVisible = derived([open, forceVisible], ([$open, $forceVisible]) => {
 		return $open || $forceVisible;
 	});
+
+	let unsubScroll = noop;
 
 	function handleOpen(e: Event) {
 		const el = e.currentTarget;
@@ -82,40 +99,33 @@ export function createDialog(props?: CreateDialogProps) {
 
 	function handleClose() {
 		open.set(false);
-		const triggerEl = document.getElementById(ids.trigger);
-		if (triggerEl) {
-			tick().then(() => {
-				triggerEl.focus();
-			});
-		}
+		handleFocus({
+			prop: get(closeFocus),
+			defaultEl: get(activeTrigger),
+		});
 	}
-
-	onMount(() => {
-		activeTrigger.set(document.getElementById(ids.trigger));
-	});
 
 	effect([open], ([$open]) => {
 		// Prevent double clicks from closing multiple dialogs
 		sleep(100).then(() => {
 			if ($open) {
 				openDialogIds.update((prev) => {
-					prev.push(ids.content);
+					prev.push(get(ids.content));
 					return prev;
 				});
 			} else {
-				openDialogIds.update((prev) => prev.filter((id) => id !== ids.content));
+				openDialogIds.update((prev) => prev.filter((id) => id !== get(ids.content)));
 			}
 		});
 	});
 
 	const trigger = builder(name('trigger'), {
-		stores: open,
-		returned: ($open) => {
+		stores: [open, ids.content],
+		returned: ([$open, $contentId]) => {
 			return {
-				id: ids.trigger,
 				'aria-haspopup': 'dialog',
 				'aria-expanded': $open,
-				'aria-controls': ids.content,
+				'aria-controls': $contentId,
 				type: 'button',
 			} as const;
 		},
@@ -173,13 +183,13 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const content = builder(name('content'), {
-		stores: [isVisible],
-		returned: ([$isVisible]) => {
+		stores: [isVisible, ids.content, ids.description, ids.title],
+		returned: ([$isVisible, $contentId, $descriptionId, $titleId]) => {
 			return {
-				id: ids.content,
+				id: $contentId,
 				role: get(role),
-				'aria-describedby': ids.description,
-				'aria-labelledby': ids.title,
+				'aria-describedby': $descriptionId,
+				'aria-labelledby': $titleId,
 				'data-state': $isVisible ? 'open' : 'closed',
 				tabindex: -1,
 				hidden: $isVisible ? undefined : true,
@@ -196,6 +206,7 @@ export function createDialog(props?: CreateDialogProps) {
 			const destroy = executeCallbacks(
 				effect([open], ([$open]) => {
 					if (!$open) return;
+
 					const focusTrap = createFocusTrap({
 						immediate: false,
 						escapeDeactivates: false,
@@ -218,8 +229,9 @@ export function createDialog(props?: CreateDialogProps) {
 						enabled: $open,
 						handler: (e: PointerEvent) => {
 							if (e.defaultPrevented) return;
+
 							const $openDialogIds = get(openDialogIds);
-							const isLast = last($openDialogIds) === ids.content;
+							const isLast = last($openDialogIds) === get(ids.content);
 							if ($closeOnOutsideClick && isLast) {
 								handleClose();
 							}
@@ -251,7 +263,10 @@ export function createDialog(props?: CreateDialogProps) {
 			);
 
 			return {
-				destroy,
+				destroy: () => {
+					unsubScroll();
+					destroy();
+				},
 			};
 		},
 	});
@@ -283,14 +298,16 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const title = builder(name('title'), {
-		returned: () => ({
-			id: ids.title,
+		stores: [ids.title],
+		returned: ([$titleId]) => ({
+			id: $titleId,
 		}),
 	});
 
 	const description = builder(name('description'), {
-		returned: () => ({
-			id: ids.description,
+		stores: [ids.description],
+		returned: ([$descriptionId]) => ({
+			id: $descriptionId,
 		}),
 	});
 
@@ -319,16 +336,25 @@ export function createDialog(props?: CreateDialogProps) {
 
 	effect([open, preventScroll], ([$open, $preventScroll]) => {
 		if (!isBrowser) return;
-		const unsubs: Array<() => void> = [];
 
-		if ($preventScroll && $open) unsubs.push(removeScroll());
+		if ($preventScroll && $open) unsubScroll = removeScroll();
+
+		if ($open) {
+			const contentEl = document.getElementById(get(ids.content));
+			handleFocus({ prop: get(openFocus), defaultEl: contentEl });
+		}
 
 		return () => {
-			unsubs.forEach((unsub) => unsub());
+			// we only want to remove the scroll lock if the dialog is not forced visible
+			// otherwise the scroll removal is handled in the `destroy` of the `content` builder
+			if (!get(forceVisible)) {
+				unsubScroll();
+			}
 		};
 	});
 
 	return {
+		ids,
 		elements: {
 			content,
 			trigger,

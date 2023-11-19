@@ -437,3 +437,166 @@ describe('Slider (negative min)', () => {
 		expectPercentage({ percentage: 49, thumb, range });
 	});
 });
+
+describe('Slider (value=[5], min=0, max=10, step=1)', () => {
+	const props = {
+		value: [5],
+		min: 0,
+		max: 10,
+		step: 1,
+	};
+
+	test('11 ticks are rendered', () => {
+		const { getAllByTestId } = render(Slider, props);
+
+		expect(getAllByTestId('tick')).toHaveLength(11);
+	});
+
+	test('ticks 0-5 have a data-bounded attribute', () => {
+		const { getAllByTestId } = render(Slider, props);
+
+		const ticks = getAllByTestId('tick');
+		for (let i = 0; i <= 5; ++i) {
+			expect(ticks[i]).toHaveAttribute('data-bounded');
+		}
+	});
+
+	test('ticks 6-10 have no data-bounded attribute', () => {
+		const { getAllByTestId } = render(Slider, props);
+
+		const ticks = getAllByTestId('tick');
+		for (let i = 6; i <= 10; ++i) {
+			expect(ticks[i]).not.toHaveAttribute('data-bounded');
+		}
+	});
+});
+
+describe('Slider (min=0, max=8, step=3)', () => {
+	test('3 ticks are rendered', () => {
+		const { getAllByTestId } = render(Slider, {
+			min: 0,
+			max: 8,
+			step: 3,
+		});
+
+		expect(getAllByTestId('tick')).toHaveLength(3);
+	});
+});
+
+describe('Slider (min=0, max=9, step=3)', () => {
+	test('4 ticks are rendered', () => {
+		const { getAllByTestId } = render(Slider, {
+			min: 0,
+			max: 9,
+			step: 3,
+		});
+
+		expect(getAllByTestId('tick')).toHaveLength(4);
+	});
+});
+
+describe('Slider (value=[3,6], min=0, max=10, step=3)', () => {
+	const props = {
+		value: [3, 6],
+		min: 0,
+		max: 10,
+		step: 3,
+	};
+
+	test('4 ticks are rendered', () => {
+		const { getAllByTestId } = render(Slider, props);
+
+		expect(getAllByTestId('tick')).toHaveLength(4);
+	});
+
+	test('ticks 1,2 have a data-bounded attribute', () => {
+		const { getAllByTestId } = render(Slider, props);
+
+		const ticks = getAllByTestId('tick');
+		for (const i of [1, 2]) {
+			expect(ticks[i]).toHaveAttribute('data-bounded');
+		}
+	});
+
+	test('ticks 0,3 have no data-bounded attribute', () => {
+		const { getAllByTestId } = render(Slider, props);
+
+		const ticks = getAllByTestId('tick');
+		for (const i of [0, 3]) {
+			expect(ticks[i]).not.toHaveAttribute('data-bounded');
+		}
+	});
+});
+
+describe('Slider changing options after building', () => {
+	const props = {
+		value: [5],
+		min: 0,
+		max: 10,
+		step: 1,
+	};
+
+	test('Changing min', async () => {
+		const { getAllByTestId, rerender } = render(Slider, props);
+
+		expect(getAllByTestId('tick')).toHaveLength(11);
+
+		rerender({ ...props, resetMin: 2 });
+
+		expect(getAllByTestId('tick')).toHaveLength(9);
+	});
+
+	test('Changing max', async () => {
+		const { getAllByTestId, rerender } = render(Slider, props);
+
+		expect(getAllByTestId('tick')).toHaveLength(11);
+
+		rerender({ ...props, resetMax: 8 });
+
+		expect(getAllByTestId('tick')).toHaveLength(9);
+	});
+
+	test('Changing step', async () => {
+		const { getAllByTestId, rerender } = render(Slider, props);
+
+		expect(getAllByTestId('tick')).toHaveLength(11);
+
+		rerender({ ...props, resetStep: 2 });
+
+		expect(getAllByTestId('tick')).toHaveLength(6);
+	});
+});
+
+describe('Slider (min=0, max=100, step=30)', () => {
+	test('Does not overshoot to the max', async () => {
+		const { getByTestId } = render(Slider, {
+			min: 0,
+			max: 100,
+			step: 30,
+			value: [0],
+		});
+
+		const user = userEvent.setup();
+		const thumb = getByTestId('thumb');
+		expect(thumb).toBeInTheDocument();
+
+		await act(() => thumb.focus());
+		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+
+		expectPercentage({ percentage: 90, thumb, range: getByTestId('range') });
+	});
+
+	test('Autocorrects value outside of steps', () => {
+		const { getByTestId } = render(Slider, {
+			min: 0,
+			max: 100,
+			step: 30,
+			value: [40],
+		});
+
+		expectPercentage({ percentage: 30, thumb: getByTestId('thumb'), range: getByTestId('range') });
+	});
+});

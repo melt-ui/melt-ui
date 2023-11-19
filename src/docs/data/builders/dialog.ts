@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { dialogIdParts } from '$lib';
 import { dialogEvents } from '$lib/builders/dialog/events.js';
 import type { BuilderData } from './index.js';
 
@@ -19,17 +20,24 @@ const OPTION_PROPS = [
 	PROPS.CLOSE_ON_OUTSIDE_CLICK,
 	PROPS.PORTAL,
 	PROPS.FORCE_VISIBLE,
+	PROPS.OPEN_FOCUS,
+	PROPS.CLOSE_FOCUS,
 ];
 
 const BUILDER_NAME = 'dialog';
 
 const builder = builderSchema(BUILDER_NAME, {
+	ids: dialogIdParts,
 	title: 'createDialog',
 	props: [...OPTION_PROPS, PROPS.DEFAULT_OPEN, PROPS.OPEN, PROPS.ON_OPEN_CHANGE],
 	elements: [
 		{
 			name: 'trigger',
 			description: 'The builder store used to create the dialog trigger.',
+		},
+		{
+			name: 'portalled',
+			description: 'The builder store used to create the portalled dialog container.',
 		},
 		{
 			name: 'overlay',
@@ -71,6 +79,21 @@ const trigger = elementSchema('trigger', {
 		},
 	],
 	events: dialogEvents['trigger'],
+});
+
+const portalled = elementSchema('portalled', {
+	description:
+		'The element that will be portalled (or moved) to a different location in the DOM based on the `portal` prop value.',
+	dataAttributes: [
+		{
+			name: 'data-portal',
+			value: ATTRS.MELT('portalled'),
+		},
+		{
+			name: 'data-melt-dialog-portalled',
+			value: ATTRS.MELT('portalled'),
+		},
+	],
 });
 
 const overlay = elementSchema('overlay', {
@@ -155,7 +178,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, trigger, overlay, content, close, title, description];
+const schemas = [builder, trigger, portalled, overlay, content, close, title, description];
 const features = [
 	'Fully managed focus',
 	'Can be controlled or uncontrolled',

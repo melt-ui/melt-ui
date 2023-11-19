@@ -1,5 +1,257 @@
 # @melt-ui/svelte
 
+## 0.61.2
+
+### Patch Changes
+
+- Fix: Key events in Select don't work in Safari ([#741](https://github.com/melt-ui/melt-ui/pull/741))
+
+- fix: space to select select options ([#730](https://github.com/melt-ui/melt-ui/pull/730))
+
+- fix: Select - toggle when elements within trigger are clicked ([#735](https://github.com/melt-ui/melt-ui/pull/735))
+
+## 0.61.1
+
+### Patch Changes
+
+- Fix: Days of week not updating with locale ([#722](https://github.com/melt-ui/melt-ui/pull/722))
+
+## 0.61.0
+
+### Minor Changes
+
+- - New Builders: ([#527](https://github.com/melt-ui/melt-ui/pull/527))
+    - Calendar - build customizable, accessible, and powerful calendar components
+    - Date Field - an enhanced alternative to the native <input type="date" /> with an emphasis on localization & accessibility
+    - Date Picker - a combination of the Calendar, Date Field, & Popover builders
+    - Range Calendar - build a calendar with range selection. Extends the power & functionality of the Calendar
+    - Date Range Field - an enhanced alternative to using two native <input type="date" /> inputs for selecting start and end dates, with an emphasis on localization & accessibility
+    - Date Range Picker - a combination of the Range Calendar, Date Range Field, & Popover builders
+
+## 0.60.2
+
+### Patch Changes
+
+- Fix: Menubar Menu bring your own id ([#716](https://github.com/melt-ui/melt-ui/pull/716))
+
+## 0.60.1
+
+### Patch Changes
+
+- Fix: Dialog layout shift when using svelte transitions ([#706](https://github.com/melt-ui/melt-ui/pull/706))
+
+## 0.60.0
+
+### Minor Changes
+
+- TOC: isActive helper ([`c7618563`](https://github.com/melt-ui/melt-ui/commit/c7618563bcc836bd3bd14800cb1f1b964b1e0834))
+
+## 0.59.1
+
+### Patch Changes
+
+- Fix: prevent safari from minimizing when esc on dialogs ([#705](https://github.com/melt-ui/melt-ui/pull/705))
+
+- fix: context menu id issues ([#707](https://github.com/melt-ui/melt-ui/pull/707))
+
+## 0.59.0
+
+### Minor Changes
+
+- TOC: 'all-parents' type ([`67307b2a`](https://github.com/melt-ui/melt-ui/commit/67307b2a64fae896bc6b3238f1477ad9e14fd40c))
+
+## 0.58.2
+
+### Patch Changes
+
+- fix: timing issue with `handleFocus` ([#693](https://github.com/melt-ui/melt-ui/pull/693))
+
+## 0.58.1
+
+### Patch Changes
+
+- Slider: fix overstep ([#659](https://github.com/melt-ui/melt-ui/pull/659))
+
+- Slider: fix precision issues ([`cbe8c3a4`](https://github.com/melt-ui/melt-ui/commit/cbe8c3a44221f38506175e84ab9915da0a1cf84c))
+
+## 0.58.0
+
+### Minor Changes
+
+- Feat: ability to override internal ids via a prop ([#683](https://github.com/melt-ui/melt-ui/pull/683))
+
+## 0.57.3
+
+### Patch Changes
+
+- Dialog: improve trigger focus' ([`257deb36`](https://github.com/melt-ui/melt-ui/commit/257deb363b3614ee0aa5c11822f3e42d577d6466))
+
+## 0.57.2
+
+### Patch Changes
+
+- Menu: add controlled submenu props ([#676](https://github.com/melt-ui/melt-ui/pull/676))
+  Listbox: Respect `closeOnEscape`
+
+## 0.57.1
+
+### Patch Changes
+
+- Menus: Return Ids ([#674](https://github.com/melt-ui/melt-ui/pull/674))
+
+## 0.57.0
+
+### Minor Changes
+
+- Combobox & Select: `highlightOnHover` option ([#671](https://github.com/melt-ui/melt-ui/pull/671))
+
+## 0.56.0
+
+### Minor Changes
+
+- Add `openFocus` & `closeFocus` props for controlled focus ([#663](https://github.com/melt-ui/melt-ui/pull/663))
+
+## 0.55.4
+
+### Patch Changes
+
+- Fix bug where context menu wasn't treating elements within the trigger as part of the trigger ([#654](https://github.com/melt-ui/melt-ui/pull/654))
+
+- fix: loop prop in menus ([#643](https://github.com/melt-ui/melt-ui/pull/643))
+
+- DropdownMenu: Implement `disableTriggerRefocus` prop ([#647](https://github.com/melt-ui/melt-ui/pull/647))
+
+- Tooltip: Avoid calling openTooltip on every mousemove, fixing a couple of bugs: ([#660](https://github.com/melt-ui/melt-ui/pull/660))
+
+  - onOpenChange was being called for every mouse move within the tooltip.
+  - Overlapping grace areas were fighting over the group.
+
+- - Apply correct aria attributes depending on `type` of toolbar group ([#644](https://github.com/melt-ui/melt-ui/pull/644))
+
+- - Apply correct aria attribute depending on `type` of toggle group ([#645](https://github.com/melt-ui/melt-ui/pull/645))
+
+## 0.55.3
+
+### Patch Changes
+
+- Combobox: allow contenteditable ([#633](https://github.com/melt-ui/melt-ui/pull/633))
+
+## 0.55.2
+
+### Patch Changes
+
+- Dialog: Fix touch event passing through overlay ([`9bf81b3b`](https://github.com/melt-ui/melt-ui/commit/9bf81b3bfbbdb7cc870bd71332e7afc6d6c54fbb))
+
+## 0.55.1
+
+### Patch Changes
+
+- The `melt` action now throws a helpful error if it's used without our [preprocessor](https://github.com/melt-ui/preprocessor) ([#616](https://github.com/melt-ui/melt-ui/pull/616))
+
+## 0.55.0
+
+### Minor Changes
+
+- Select: use listbox builder ([#613](https://github.com/melt-ui/melt-ui/pull/613))
+
+- Combobox: Use listbox builder ([#613](https://github.com/melt-ui/melt-ui/pull/613))
+
+- Add new internal builder `listbox` ([#613](https://github.com/melt-ui/melt-ui/pull/613))
+
+## 0.54.1
+
+### Patch Changes
+
+- Combobox: fix highlightedItem behaviour ([`36d7526c`](https://github.com/melt-ui/melt-ui/commit/36d7526c9b414a6eb8bc6ccb5499eb3665d2a213))
+
+## 0.54.0
+
+### Minor Changes
+
+- Combobox: add hiddenInput element; refactor behaviours ([`a73b82c6`](https://github.com/melt-ui/melt-ui/commit/a73b82c68e83f31f092d010eb749d41a051f7432))
+
+### Patch Changes
+
+- Select: rename `input` to `hiddenInput` ([`4c53736c`](https://github.com/melt-ui/melt-ui/commit/4c53736c8c26e65dc3e8c709e7383bb7fff440aa))
+
+## 0.53.0
+
+### Minor Changes
+
+- Feat: Allow opting-out of floating UI ([`1614f12c`](https://github.com/melt-ui/melt-ui/commit/1614f12c5e09cdce8c0e19a94d4e52b8e591626f))
+
+## 0.52.0
+
+### Minor Changes
+
+- return an `ids` object from builders which contains the `id`s Melt applies to certain elements internally ([#591](https://github.com/melt-ui/melt-ui/pull/591))
+
+### Patch Changes
+
+- Tooltip: Fix bug with `group` parameter ([#590](https://github.com/melt-ui/melt-ui/pull/590))
+
+- Link Preview: Fix bug where content would not close ([`c882dfa5`](https://github.com/melt-ui/melt-ui/commit/c882dfa52f1f2005bf1afe7e345c83dffb9daf36))
+
+- Slider: Add `aria-disabled` to root ([#584](https://github.com/melt-ui/melt-ui/pull/584))
+
+- Tooltip: fix esc handler ([`178ef63e`](https://github.com/melt-ui/melt-ui/commit/178ef63ebc0e1382aa2bb2896a55d8345eb1e852))
+
+## 0.51.1
+
+### Patch Changes
+
+- Select: Fix defaultSelected clash when `multiple` is true ([`d0a1d4c8`](https://github.com/melt-ui/melt-ui/commit/d0a1d4c8514ca298b082f9ff62fe46b52d5d45ad))
+
+- Combobox: Fix defaultSelected clash when `multiple` is true ([`633bacf0`](https://github.com/melt-ui/melt-ui/commit/633bacf062b1affcab92f4148ae4609a1532e747))
+
+## 0.51.0
+
+### Minor Changes
+
+- Tooltip: Add `group` prop ([#575](https://github.com/melt-ui/melt-ui/pull/575))
+
+### Patch Changes
+
+- Combobox: Fixed focus management (#569) ([#570](https://github.com/melt-ui/melt-ui/pull/570))
+
+- fix: change JSDoc example for `melt` action ([#576](https://github.com/melt-ui/melt-ui/pull/576))
+
+- Tooltip: rework open & close behaviours ([`21bcf3d0`](https://github.com/melt-ui/melt-ui/commit/21bcf3d003af2e4d2fe0f066e6b2b255fc797629))
+
+- fix: add generics to exported types ([#579](https://github.com/melt-ui/melt-ui/pull/579))
+
+## 0.50.1
+
+### Patch Changes
+
+- Select: Fix `selected` prop type ([#539](https://github.com/melt-ui/melt-ui/pull/539))
+
+- Pin Input: bind `$valueStr` store to `hiddenInput` of `pin-input` builder ([#557](https://github.com/melt-ui/melt-ui/pull/557))
+
+- Combobox: Fix exported types ([`9e4c6a26`](https://github.com/melt-ui/melt-ui/commit/9e4c6a26b8623d4cb33fd939b80a140e15597cc1))
+
+- Dropdown Menu: Up key focuses last menu item if there is no selection ([#550](https://github.com/melt-ui/melt-ui/pull/550))
+
+- Pin Input: Change `type` prop's types (that's confusing!) ([#545](https://github.com/melt-ui/melt-ui/pull/545))
+
+## 0.50.0
+
+### Minor Changes
+
+- Combobox: Add multiple option ([#533](https://github.com/melt-ui/melt-ui/pull/533))
+
+- Slider: add ticks ([#534](https://github.com/melt-ui/melt-ui/pull/534))
+
+### Patch Changes
+
+- Select: fix deep equality on isSelected ([`ad02e18f`](https://github.com/melt-ui/melt-ui/commit/ad02e18f2029d573c2b99ee95dce46a9ddeb6e35))
+
+## 0.49.1
+
+### Patch Changes
+
+- ca04a433: Combobox: Pressing enter no longer submits form
+
 ## 0.49.0
 
 ### Minor Changes

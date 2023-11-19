@@ -2,6 +2,7 @@ import { ATTRS, KBD, PROPS, SEE } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
 import { comboboxEvents } from '$lib/builders/combobox/events.js';
+import { listboxIdParts } from '$lib/builders/listbox/create.js';
 import type { BuilderData } from './index.js';
 import { getMenuArrowSchema } from './menu.js';
 
@@ -22,11 +23,19 @@ const OPTION_PROPS = [
 	PROPS.PORTAL,
 	PROPS.POSITIONING,
 	PROPS.FORCE_VISIBLE,
+	{
+		name: 'highlightOnHover',
+		type: 'boolean',
+		default: 'true',
+		description:
+			'When true, hovering an option will update the `highlightedItem` store, and when the cursor leaves an option the store will be set to `null`',
+	},
 ];
 
 const BUILDER_NAME = 'combobox';
 
 const builder = builderSchema(BUILDER_NAME, {
+	ids: listboxIdParts,
 	title: 'createCombobox',
 	props: [
 		{
@@ -46,16 +55,21 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'A callback that is called when the selected item changes.',
 			see: SEE.CHANGE_FUNCTIONS,
 		},
+		{
+			name: 'multiple',
+			type: 'boolean',
+			default: 'false',
+			description: 'Whether or not the combobox is a multiple combobox.',
+		},
 		PROPS.DEFAULT_OPEN,
 		PROPS.OPEN,
 		PROPS.ON_OPEN_CHANGE,
-		{
-			name: 'debounce',
-			type: 'number',
-			default: '0',
-			description: 'The debounce time for the inputValue.',
-		},
 		...OPTION_PROPS,
+		{
+			name: 'ids',
+			type: 'Record<"trigger" | "content", string>',
+			description: 'Override the internally generated ids for the elements.',
+		},
 	],
 	elements: [
 		{
@@ -89,7 +103,7 @@ const builder = builderSchema(BUILDER_NAME, {
 		{
 			name: 'touchedInput',
 			type: 'Writable<boolean>',
-			description: `A writable store with the touched state of the input. When the menu closes, the state is reset to \`false\`. 
+			description: `A writable store with the touched state of the input. When the menu closes, the state is reset to \`false\`.
 			Whenever a key is pressed into the input, the state is set to \`true\`.`,
 		},
 		{
@@ -203,6 +217,16 @@ const label = elementSchema('label', {
 	],
 });
 
+const hiddenInput = elementSchema('hidden-input', {
+	description: 'The hidden input element. Used for form submission.',
+	dataAttributes: [
+		{
+			name: 'data-melt-combobox-hidden-input',
+			value: ATTRS.MELT('hidden-input'),
+		},
+	],
+});
+
 const arrow = getMenuArrowSchema(BUILDER_NAME);
 
 const keyboard: KeyboardSchema = [
@@ -241,7 +265,7 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, menu, input, item, label, arrow];
+const schemas = [builder, menu, input, item, label, arrow, hiddenInput];
 
 const features = [
 	'Full keyboard navigation',

@@ -20,6 +20,10 @@ export function isHTMLLabelElement(element: unknown): element is HTMLLabelElemen
 	return element instanceof HTMLLabelElement;
 }
 
+export function isHTMLButtonElement(element: unknown): element is HTMLButtonElement {
+	return element instanceof HTMLButtonElement;
+}
+
 export function isElementDisabled(element: HTMLElement): boolean {
 	const ariaDisabled = element.getAttribute('aria-disabled');
 	const disabled = element.getAttribute('disabled');
@@ -42,4 +46,18 @@ export function isLeftClick(event: PointerEvent | MouseEvent): boolean {
 
 export function isFocusVisible(element: Element): boolean {
 	return element.matches(':focus-visible');
+}
+
+export function isContentEditable(element: unknown): element is HTMLElement {
+	if (!isHTMLElement(element)) return false;
+	return element.isContentEditable;
+}
+
+export function isNull(value: unknown): value is null {
+	return value === null;
+}
+
+export function isNumberString(value: string) {
+	if (isNaN(parseInt(value))) return false;
+	return true;
 }

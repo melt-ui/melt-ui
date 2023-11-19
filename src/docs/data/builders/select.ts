@@ -1,6 +1,7 @@
 import { ATTRS, DESCRIPTIONS, KBD, PROPS, SEE } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { listboxIdParts } from '$lib/builders/listbox/create.js';
 import { selectEvents } from '$lib/builders/select/events.js';
 import type { BuilderData } from './index.js';
 
@@ -19,35 +20,25 @@ const OPTION_PROPS = [
 	PROPS.FORCE_VISIBLE,
 	PROPS.POSITIONING({ default: "placement: 'bottom'" }),
 	{
-		name: 'defaultValueLabel',
-		type: 'string',
-		description: 'The initial default value label of the select.',
-	},
-	{
 		name: 'name',
 		type: 'string',
 		description: 'The name to be used for the select input.',
+	},
+	{
+		name: 'highlightOnHover',
+		type: 'boolean',
+		default: 'true',
+		description:
+			'When true, hovering an option will update the `highlightedItem` store, and when the cursor leaves an option the store will be set to `null`',
 	},
 ];
 
 const BUILDER_NAME = 'select';
 
 const builder = builderSchema(BUILDER_NAME, {
+	ids: listboxIdParts,
 	title: 'createSelect',
 	props: [
-		...OPTION_PROPS,
-		{
-			name: 'preventScroll',
-			type: 'boolean',
-			default: 'true',
-			description: DESCRIPTIONS.PREVENT_SCROLL('select'),
-		},
-		{
-			name: 'multiple',
-			type: 'boolean',
-			default: 'false',
-			description: 'Whether or not the select is a multiple select.',
-		},
 		{
 			name: 'defaultSelected',
 			type: 'SelectOption<unknown>',
@@ -60,10 +51,23 @@ const builder = builderSchema(BUILDER_NAME, {
 			see: SEE.BRING_YOUR_OWN_STORE,
 		},
 		{
-			name: 'onSelectChange',
+			name: 'onSelectedChange',
 			type: 'ChangeFn<SelectOption<unknown>>',
 			description: 'A callback that is called when the selected option changes.',
 			see: SEE.CHANGE_FUNCTIONS,
+		},
+		...OPTION_PROPS,
+		{
+			name: 'preventScroll',
+			type: 'boolean',
+			default: 'true',
+			description: DESCRIPTIONS.PREVENT_SCROLL('select'),
+		},
+		{
+			name: 'multiple',
+			type: 'boolean',
+			default: 'false',
+			description: 'Whether or not the select is a multiple select.',
 		},
 		PROPS.DEFAULT_OPEN,
 		PROPS.OPEN,
@@ -83,8 +87,8 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'The builder store used to create the select options.',
 		},
 		{
-			name: 'input',
-			description: 'The builder store used to create the select input.',
+			name: 'hiddenInput',
+			description: 'The builder store used to create the select hidden input.',
 		},
 		{
 			name: 'label',
@@ -114,9 +118,14 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'A writable store that returns whether or not the select is open.',
 		},
 		{
-			name: 'value',
+			name: 'selected',
 			type: 'Writable<unknown>',
-			description: 'A writable store that returns the current value of the select.',
+			description: 'A writable store whose value is the selected option.',
+		},
+		{
+			name: 'selectedLabel',
+			type: 'Readable<string>',
+			description: "A readable store whose value is the selected option's label.",
 		},
 	],
 	helpers: [
@@ -189,12 +198,12 @@ const option = elementSchema('option', {
 	events: selectEvents['option'],
 });
 
-const input = elementSchema('input', {
+const hiddenInput = elementSchema('hidden-input', {
 	description: 'The hidden input element. Used for form submission.',
 	dataAttributes: [
 		{
-			name: 'data-melt-select-input',
-			value: ATTRS.MELT('input'),
+			name: 'data-melt-select-hidden-input',
+			value: ATTRS.MELT('hidden-input'),
 		},
 	],
 });
@@ -295,7 +304,18 @@ const keyboard: KeyboardSchema = [
 	},
 ];
 
-const schemas = [builder, trigger, label, menu, option, group, groupLabel, input, separator, arrow];
+const schemas = [
+	builder,
+	trigger,
+	label,
+	menu,
+	option,
+	group,
+	groupLabel,
+	separator,
+	arrow,
+	hiddenInput,
+];
 
 const features = [
 	'Full keyboard navigation',

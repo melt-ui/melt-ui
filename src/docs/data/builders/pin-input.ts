@@ -1,6 +1,7 @@
 import { ATTRS, KBD, SEE } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { pinInputIdParts } from '$lib';
 import { pinInputEvents } from '$lib/builders/pin-input/events.js';
 import { isMac } from '$lib/internal/helpers/index.js';
 import type { BuilderData } from './index.js';
@@ -35,13 +36,14 @@ const OPTION_PROPS = [
 		name: 'type',
 		type: 'string',
 		default: 'text',
-		description: 'The type of the pin-input.',
+		description: 'The type of the pin-input. Use `password` to mask the input.',
 	},
 ];
 
-const BUILDER_NAME = 'pin input';
+const BUILDER_NAME = 'PIN input';
 
 const builder = builderSchema(BUILDER_NAME, {
+	ids: pinInputIdParts,
 	title: 'createPinInput',
 	props: [
 		...OPTION_PROPS,
@@ -174,4 +176,5 @@ export const pinInputData: BuilderData = {
 	schemas,
 	features,
 	keyboard,
+	name: BUILDER_NAME,
 };

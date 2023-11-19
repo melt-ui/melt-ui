@@ -20,7 +20,7 @@
 	import { env } from '$env/dynamic/public';
 
 	onMount(() => {
-		if (!env.PUBLIC_FATHOM_ID || !env.PUBLIC_FATHOM_URL) return;
+		if (!env.PUBLIC_FATHOM_ID || !env.PUBLIC_FATHOM_URL || dev) return;
 		Fathom.load(env.PUBLIC_FATHOM_ID, {
 			url: env.PUBLIC_FATHOM_URL,
 		});

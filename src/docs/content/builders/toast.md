@@ -50,36 +50,22 @@ components.
 
 <script lang="ts">
 	import { createToaster, melt } from '@melt-ui/svelte'
-	import { flip } from 'svelte/animate'
-	import { fly } from 'svelte/transition'
-	import { X } from 'lucide-svelte'
 </script>
 
-<div class="fixed bottom-0 right-0 z-50 m-4 flex flex-col items-end gap-2" use:portal>
+<div use:portal>
 	{#each $toasts as { id, data } (id)}
-		<div
-			use:melt={$content(id)}
-			animate:flip={{ duration: 500 }}
-			in:fly={{ duration: 150, x: '100%' }}
-			out:fly={{ duration: 150, x: '100%' }}
-			class="rounded-lg bg-neutral-700 text-white shadow-md">
-			<div
-				class="relative flex w-[24rem] max-w-[calc(100vw-2rem)] items-center justify-between gap-4 p-5">
+		<div use:melt={$content(id)}>
+			<div>
 				<div>
-					<h3 use:melt={$title(id)} class="flex items-center gap-2 font-semibold">
+					<h3 use:melt={$title(id)}>
 						{data.title}
-						<span class="rounded-full square-1.5 {data.color}" />
+						<span style:color={data.color} />
 					</h3>
 					<div use:melt={$description(id)}>
 						{data.description}
 					</div>
 				</div>
-				<button
-					use:melt={$close(id)}
-					class="absolute right-4 top-4 grid place-items-center rounded-full text-magnum-500 square-6
-          hover:bg-magnum-900/50">
-					<X class="square-4" />
-				</button>
+				<button use:melt={$close(id)} aria-label="close notification"> X </button>
 			</div>
 		</div>
 	{/each}
@@ -110,18 +96,47 @@ the application.
 			data: {
 				title: 'Success',
 				description: 'The resource was created!',
-				color: 'bg-green-500'
+				color: 'green'
 			}
 		})
 	}
 </script>
 
-<button
-	class="inline-flex items-center justify-center rounded-md bg-white px-4 py-2 font-medium leading-none
-  text-magnum-700 shadow-lg hover:opacity-75"
-	on:click={create}>
-	Create
-</button>
+<button on:click={create}> Create </button>
+```
+
+### Overriding default values for individual toasts
+
+While you can define some global values for the Toaster on initialization, it is possible to
+override these defaults for individual toasts using the `addToast` helper function.
+
+```svelte
+<script lang="ts">
+	const { helpers } = createToaster({
+		closeDelay: 5000, // defaults to 5000
+		type: 'background' // defaults to 'background'
+	})
+
+	// an example using the default values
+	function create() {
+		addToast({
+			data
+		})
+	}
+
+	// an example overriding the default values
+	function createImportant() {
+		addToast({
+			data,
+			closeDelay: 10000, // override the default closeDelay
+			type: 'foreground' // override the default type
+		})
+	}
+</script>
+
+<button on:click={create}> Create </button>
+
+<button on:click={createImportant}> Create Important </button>
 ```
 
 ## Example Components

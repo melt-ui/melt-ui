@@ -32,14 +32,30 @@
 	<label class="font-semibold text-white" id={labelId} for={id}><slot /></label>
 	<button
 		use:melt={$root}
-		class="relative h-6 w-11 cursor-default rounded-full bg-magnum-900 outline-none
+		class="relative h-6 cursor-default rounded-full bg-magnum-900 outline-none
  data-[state=checked]:bg-magnum-700"
 		{id}
 		aria-labelledby={labelId}
 	>
-		<div
-			class="block h-5 w-5 translate-x-0.5 rounded-full bg-white transition-transform will-change-transform
-				{$isChecked && 'translate-x-[22px]'}"
-		/>
+		<div class="thumb block rounded-full bg-white transition-transform" />
 	</button>
 </div>
+
+<style>
+	button {
+		--w: 2.75rem;
+		--padding: 0.125rem;
+		width: var(--w);
+	}
+
+	.thumb {
+		--size: 1.25rem;
+		width: var(--size);
+		height: var(--size);
+		transform: translateX(var(--padding));
+	}
+
+	:global([data-state='checked']) .thumb {
+		transform: translateX(calc(var(--w) - var(--size) - var(--padding)));
+	}
+</style>

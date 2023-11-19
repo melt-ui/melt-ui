@@ -1,7 +1,7 @@
+import type { ChangeFn } from '$lib/internal/helpers/index.js';
 import type { BuilderReturn, WhenTrue } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { createAccordion } from './create.js';
-import type { ChangeFn } from '$lib/internal/helpers/index.js';
 export type { AccordionComponentEvents } from './events.js';
 
 type AccordionValue<Multiple extends boolean> = WhenTrue<Multiple, string[], string>;
@@ -65,8 +65,18 @@ export type AccordionHeadingProps =
 	  }
 	| number;
 
-export type Accordion = BuilderReturn<typeof createAccordion>;
-export type AccordionElements = Accordion['elements'];
-export type AccordionOptions = Accordion['options'];
-export type AccordionStates = Accordion['states'];
-export type AccordionHelpers = Accordion['helpers'];
+export type Accordion<Multiple extends boolean = false> = BuilderReturn<
+	typeof createAccordion<Multiple>
+>;
+export type AccordionElements<Multiple extends boolean = false> = BuilderReturn<
+	typeof createAccordion<Multiple>
+>['elements'];
+export type AccordionOptions<Multiple extends boolean = false> = BuilderReturn<
+	typeof createAccordion<Multiple>
+>['options'];
+export type AccordionStates<Multiple extends boolean = false> = BuilderReturn<
+	typeof createAccordion<Multiple>
+>['states'];
+export type AccordionHelpers<Multiple extends boolean = false> = BuilderReturn<
+	typeof createAccordion<Multiple>
+>['helpers'];

@@ -18,9 +18,9 @@
 	use:melt={$trigger}
 >
 	<img
-		src="/logo-mark.svg"
+		src="/logo_mark.svg"
 		alt="Melt UI Logo"
-		class="h-full w-full rounded-full bg-neutral-900 object-contain p-2"
+		class="h-full w-full rounded-full bg-neutral-900 object-contain p-1"
 	/>
 	<span class="sr-only">Open Melt UI Details</span>
 </a>
@@ -34,9 +34,9 @@
 		<div class="w-[300px] rounded-md bg-white p-5 shadow-sm">
 			<div class="flex flex-col gap-2">
 				<img
-					src="/logo-mark.svg"
+					src="/logo_mark.svg"
 					alt="Melt UI Logo"
-					class="object-fit block h-14 w-14 rounded-full bg-neutral-900 p-2"
+					class="object-fit block h-14 w-14 rounded-full bg-neutral-900 p-1"
 				/>
 				<div class="flex flex-col gap-4">
 					<div>
@@ -50,11 +50,11 @@
 				</div>
 				<div class="flex gap-4">
 					<div class="flex gap-1">
-						<div class="text-neutral-900">618</div>
+						<div class="text-neutral-900">2k</div>
 						<div class="text-neutral-400">Stars</div>
 					</div>
 					<div class="flex gap-1">
-						<div class="text-neutral-900">37</div>
+						<div class="text-neutral-900">103</div>
 						<div class="text-neutral-400">Forks</div>
 					</div>
 				</div>

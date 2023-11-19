@@ -10,14 +10,14 @@ description: Melt UI components are uncontrolled by default, but offer the abili
 <Callout type="warning">
 
 Controlled components are an optional advanced feature and should only be used when necessary. If
-you're unsure if you should be using the components in a controlled way, you likely don't.
+you're unsure if you should be using the components in a controlled way, you likely don't need to.
 
 </Callout>
 
 ## Controlled vs. Uncontrolled
 
 There are various definitions for controlled/uncontrolled components, but in the context of Melt UI,
-uncontrolled means that the state and stores of a component are created and managed by us.
+uncontrolled means that the state and stores of a component are created and managed automatically.
 Controlled means that the user (you) can create and manage the state and stores.
 
 All components are uncontrolled by default, and in most cases, this is more than enough. However,
@@ -32,7 +32,7 @@ available.
 
 </Callout>
 
-## Modify writable states
+## Modify Writable States
 
 By default, we provide an `open` store from the `Dialog` builder that will have its state updated
 whenever a `trigger` or `close` element is pressed.

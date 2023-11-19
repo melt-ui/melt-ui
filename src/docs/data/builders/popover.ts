@@ -1,6 +1,7 @@
 import { ATTRS, KBD, PROPS } from '$docs/constants.js';
 import type { KeyboardSchema } from '$docs/types.js';
 import { builderSchema, elementSchema } from '$docs/utils/index.js';
+import { popoverIdParts } from '$lib';
 import { popoverEvents } from '$lib/builders/popover/events.js';
 import type { BuilderData } from './index.js';
 
@@ -21,11 +22,14 @@ const OPTION_PROPS = [
 	PROPS.PREVENT_SCROLL,
 	PROPS.PORTAL,
 	PROPS.FORCE_VISIBLE,
+	PROPS.OPEN_FOCUS,
+	PROPS.CLOSE_FOCUS,
 ];
 
 const BUILDER_NAME = 'popover';
 
 const builder = builderSchema(BUILDER_NAME, {
+	ids: popoverIdParts,
 	title: 'createPopover',
 	props: [...OPTION_PROPS, PROPS.DEFAULT_OPEN, PROPS.OPEN, PROPS.ON_OPEN_CHANGE],
 	elements: [

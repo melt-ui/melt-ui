@@ -19,10 +19,11 @@ type GetActionAttributes<Builder> = Builder extends Record<string, any> & {
  * @example
  * ```svelte
  * <script>
- * 	const { builder, melt } = createBuilder();
+ * 	import { createLabel, melt } from '@melt-ui/svelte';
+ * 	const { elements: { root } } = createLabel();
  * </script>
  *
- * <div use:melt={$builder} />
+ * <label use:melt={$root} />
  * ```
  */
 export function melt<
@@ -31,7 +32,9 @@ export function melt<
 	Attributes extends GetActionAttributes<Builder>,
 	A extends Record<string, any>,
 	Param = never
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 >(node: Element, params: Builder): ActionReturn<Builder, Attributes> {
-	// @ts-expect-error calls the action for debugging purposes
-	return params.action(node);
+	throw new Error(
+		"[MELTUI ERROR]: The `use:melt` action cannot be used without MeltUI's Preprocessor. See: https://www.melt-ui.com/docs/preprocessor"
+	);
 }

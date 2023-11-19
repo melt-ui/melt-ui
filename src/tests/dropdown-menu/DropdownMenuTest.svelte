@@ -1,15 +1,28 @@
 <script lang="ts">
-	import { createDropdownMenu, melt } from '$lib/index.js';
+	import { createDropdownMenu, melt, type CreateDropdownMenuProps } from '$lib/index.js';
 	import { writable } from 'svelte/store';
 	import { AlignJustify, ChevronRight } from 'lucide-svelte';
 
 	const settingsSync = writable(true);
 	const hideMeltUI = writable(false);
 
+	type $$Props = CreateDropdownMenuProps;
+
+	export let loop = false;
+	export let closeFocus: CreateDropdownMenuProps['closeFocus'] = undefined;
+	export let closeOnEscape: CreateDropdownMenuProps['closeOnEscape'] = true;
+	export let closeOnOutsideClick: CreateDropdownMenuProps['closeOnOutsideClick'] = true;
+
 	const {
 		elements: { trigger, menu, item, separator, arrow },
 		builders: { createSubmenu, createMenuRadioGroup, createCheckboxItem },
-	} = createDropdownMenu();
+	} = createDropdownMenu({
+		loop,
+		closeFocus,
+		closeOnEscape,
+		closeOnOutsideClick,
+		...$$restProps,
+	});
 
 	const {
 		elements: { checkboxItem: settingsSyncCheckbox },
@@ -37,6 +50,8 @@
 </script>
 
 <main>
+	<div data-testid="outside-click">outside</div>
+	<button id="closeFocus" data-testid="closeFocus">close focus</button>
 	<button
 		type="button"
 		class="trigger"
@@ -47,7 +62,6 @@
 		<AlignJustify class="h-4 w-4" />
 		<span class="sr-only">Open Popover</span>
 	</button>
-
 	<div class="menu" use:melt={$menu} data-testid="menu">
 		<div class="item" use:melt={$item} data-testid="item1">Item 1</div>
 		<div class="item" use:melt={$item} data-testid="item2" data-disabled>Item 2</div>
@@ -97,10 +111,6 @@
 			<div class="rightSlot">⇧⌘N</div>
 		</div>
 		<div use:melt={$separator} class="separator" />
-		<div class="item" use:melt={$item}>
-			Quit Melt UI
-			<div class="rightSlot">⌘Q</div>
-		</div>
 		<div use:melt={$arrow} data-testid="arrow" />
 	</div>
 </main>

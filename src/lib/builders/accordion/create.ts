@@ -2,8 +2,10 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	disabledAttr,
 	executeCallbacks,
 	generateId,
+	generateIds,
 	getElementByMeltId,
 	isHTMLElement,
 	kbd,
@@ -12,7 +14,6 @@ import {
 	styleToString,
 	toWritableStores,
 	type ChangeFn,
-	disabledAttr,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { tick } from 'svelte';
@@ -21,6 +22,7 @@ import type { AccordionEvents } from './events.js';
 import type { AccordionHeadingProps, AccordionItemProps, CreateAccordionProps } from './types.js';
 
 type AccordionParts = 'trigger' | 'item' | 'content' | 'heading';
+
 const { name, selector } = createElHelpers<AccordionParts>('accordion');
 
 const defaults = {
@@ -34,6 +36,9 @@ export const createAccordion = <Multiple extends boolean = false>(
 ) => {
 	const withDefaults = { ...defaults, ...props };
 	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
+
+	const meltIds = generateIds(['root']);
+
 	const { disabled, forceVisible } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
@@ -53,13 +58,9 @@ export const createAccordion = <Multiple extends boolean = false>(
 		return (key: string) => isSelected(key, $value);
 	});
 
-	const ids = {
-		root: generateId(),
-	};
-
 	const root = builder(name(), {
 		returned: () => ({
-			'data-melt-id': ids.root,
+			'data-melt-id': meltIds.root,
 		}),
 	});
 
@@ -134,7 +135,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 					}
 
 					const el = e.target;
-					const rootEl = getElementByMeltId(ids.root);
+					const rootEl = getElementByMeltId(meltIds.root);
 					if (!rootEl || !isHTMLElement(el)) return;
 
 					const items = Array.from(rootEl.querySelectorAll(selector('trigger')));
@@ -233,6 +234,7 @@ export const createAccordion = <Multiple extends boolean = false>(
 	}
 
 	return {
+		ids: meltIds,
 		elements: {
 			root,
 			item,

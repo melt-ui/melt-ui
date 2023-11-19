@@ -1,12 +1,12 @@
 ---
 title: Introduction
 description:
-  An open-source collection of accessible & customizable component builders for creating user
+  An open-source collection of accessible and customizable component builders for creating user
   interfaces with Svelte.
 ---
 
 <script>
-    import { Construction } from '$docs/components'
+    import { Construction, Contributors } from '$docs/components'
 </script>
 
 Melt UI empowers developers to create accessible UIs that embody their unique style. With a strong
@@ -49,7 +49,7 @@ Melt UI puts accessibility front and center, making sure your UI components are 
 user-friendly. We follow [WAI-ARIA design patterns](https://www.w3.org/WAI/ARIA/apg/) and take care
 of all the nitty-gritty details like aria attributes, role management, focus handling, and keyboard
 navigation. Each builder's page includes a section on accessibility, with references to relevant
-WAI-ARIA guidelines & instructions for using the builder in an accessible manner.
+WAI-ARIA guidelines and instructions for using the builder in an accessible manner.
 
 ### Bring Your Own Styles
 
@@ -57,7 +57,7 @@ The builders ship with zero predefined styles, allowing you to customize them to
 integrate with your application's design system. Whether you prefer vanilla CSS, CSS preprocessors,
 or CSS-in-JS libraries, our components work harmoniously with your preferred styling solution.
 
-### Open & Extensible
+### Open and Extensible
 
 Melt UI embraces your desire for customization. The builder architecture is open and flexible,
 allowing you to tinker with every aspect of the components. Wrap them, extend their functionality,
@@ -70,20 +70,27 @@ freeing you from the burden of managing local states. However, if you prefer gre
 can switch to controlled components. We handle the behind-the-scenes complexity, ensuring a smooth
 developer experience.
 
-### TypeScript & SvelteKit Support
+### TypeScript and SvelteKit Support
 
-Melt UI offers a fully-typed API, safeguarding your code while providing autocompletion superpowers
+Melt UI offers a fully typed API, safeguarding your code while providing autocompletion superpowers
 in your preferred code editor. All our components share a consistent API, promoting familiarity and
 minimizing surprises. The components are also build with SSR in mind, making them a perfect fit for
 SvelteKit.
 
-## Inspiration & Credits
+## Built by the community
 
-We're big fans of open source and love working collaboratively. Over time, we've taken cues &
+Melt UI is an open-source project built by the community for the community. It wouldn't be possible
+if it wasn't for the amazing work of some amazing people.
+
+<Contributors />
+
+## Inspiration and Credits
+
+We're big fans of open source and love working collaboratively. Over time, we've taken cues and
 inspiration from some really amazing projects and people that have motivated us to continuously
 improve our ideas.
 
-Some of the project's we've been inspired by in no particular order:
+Some of the projects we've been inspired by in no particular order:
 
 - Zag - [https://zagjs.com](https://zagjs.com)
 - Radix UI - [https://radix-ui.com](https://radix-ui.com)
