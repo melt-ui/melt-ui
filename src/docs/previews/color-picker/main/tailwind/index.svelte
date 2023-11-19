@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createColorPicker } from '$lib';
+	import { createColorPicker, melt } from '$lib';
 
 	import { Pipette } from 'lucide-svelte';
 	import { writable } from 'svelte/store';
@@ -43,24 +43,25 @@
 	<div class="flex flex-col items-center justify-center gap-2">
 		<div class="canvas relative">
 			<canvas
-				{...$colorCanvas}
-				use:colorCanvas
+				use:melt={$colorCanvas}
 				class="color-canvas h-[175px] w-[175px] cursor-pointer rounded-sm"
 				aria-label="Color canvas for showing saturation and brightness."
 			/>
 			<button
-				{...$colorPicker}
-				use:colorPicker
+				use:melt={$colorPicker}
 				class="absolute h-3 w-3 rounded-full border border-black !outline !outline-1 !outline-white focus:outline-offset-2"
 				aria-label="Button on color canvas, used to select the saturation and brightness."
 			/>
 		</div>
 
 		<div class="hue relative h-[10px] w-[175px]">
-			<button {...$huePicker} use:huePicker class="hue-picker" aria-label="The button to select the hue color." />
+			<button
+				use:melt={$huePicker}
+				class="hue-picker"
+				aria-label="The button to select the hue color."
+			/>
 			<canvas
-				{...$hueSlider}
-				use:hueSlider
+				use:melt={$hueSlider}
 				class="h-[10px] w-[175px] cursor-pointer rounded-md"
 				aria-label="A canvas element showing all available hue colors."
 			/>
@@ -68,14 +69,12 @@
 
 		<div class="alpha relative h-[10px] w-[175px] rounded-full">
 			<button
-				{...$alphaPicker}
-				use:alphaPicker
+				use:melt={$alphaPicker}
 				class="alpha-picker"
 				aria-label="The button to select the alpha value for the color."
 			/>
 			<canvas
-				{...$alphaSlider}
-				use:alphaSlider
+				use:melt={$alphaSlider}
 				class="h-[10px] w-[175px] cursor-pointer rounded-full"
 				aria-label="A canvas element showing the alpha values for the color."
 			/>
@@ -83,8 +82,7 @@
 
 		<div class="flex gap-1">
 			<button
-				{...$eyeDropper}
-				use:eyeDropper
+				use:melt={$eyeDropper}
 				class="inline-flex items-center justify-center rounded-md bg-gray-900 p-1"
 				aria-label="An eye dropper button, allowing you to select any color on the screen."
 			>
@@ -93,8 +91,7 @@
 			</button>
 
 			<input
-				{...$hexInput}
-				use:hexInput
+				use:melt={$hexInput}
 				type="text"
 				value={$value}
 				class="w-24 rounded-md border border-gray-800 px-2 py-1 text-black"
