@@ -34,49 +34,7 @@ import { treeData } from './tree.js';
 import { tableOfContentsData } from './table-of-contents.js';
 import { toolbarData } from './toolbar.js';
 import { tooltipData } from './tooltip.js';
-<<<<<<< HEAD
-
-export const builderList = [
-	'accordion',
-	'avatar',
-	'checkbox',
-	'collapsible',
-	'color-picker',
-	'combobox',
-	'context-menu',
-	'dialog',
-	'dropdown-menu',
-	'label',
-	'link-preview',
-	'menubar',
-	'pagination',
-	'pin-input',
-	'popover',
-	'progress',
-	'radio-group',
-	'select',
-	'separator',
-	'slider',
-	'switch',
-	'table-of-contents',
-	'tabs',
-	'tags-input',
-	'toast',
-	'toggle',
-	'toggle-group',
-	'toolbar',
-	'tooltip',
-	'tree',
-] as const;
-
-export type Builder = (typeof builderList)[number];
-
-export function isBuilderName(key: string): key is (typeof builderList)[number] {
-	return builderList.includes(key as (typeof builderList)[number]);
-}
-=======
 import { datePickerData } from './date-picker.js';
->>>>>>> develop
 
 export type BuilderData = {
 	schemas?: APISchema[];
@@ -91,7 +49,7 @@ export const builderMap = ({
 	calendar: calendarData,
 	checkbox: checkboxData,
 	collapsible: collapsibleData,
-	"color-picker": colorPickerData,
+	'color-picker': colorPickerData,
 	combobox: comboboxData,
 	'context-menu': contextMenuData,
 	'date-field': dateFieldData,
@@ -134,4 +92,3 @@ export function isBuilderName(key: string): key is Builder {
 
 
 export type Builders = typeof builderMap;
-
