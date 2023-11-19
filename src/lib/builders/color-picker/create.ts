@@ -36,7 +36,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     let hueDragging = false;
     let alphaDragging = false;
     let insideUpdate = false;
-    let inputUpdate = false;
+    let inputUpdateHue = false;
+    let inputUpdatePickerPos = false;
     let lastValid = argsWithDefaults.defaultColor;
     const speedUpStep = 5;
 
@@ -111,7 +112,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
         stores: [hueAngle],
         returned: ([$hueAngle]) => {
             return {
-                'aria-label': 'Color canvas for showing saturation and brightness.',
                 style: styleToString({
                     'background-color': `hsl(${$hueAngle}, 100%, 50%)`,
                     'background-image': 'linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), linear-gradient(to right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0))'
@@ -186,7 +186,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             const left = Math.round($colorPickerPos.x - $colorPickerDims.width / 2);
 
             return {
-                'aria-label': 'Button on color canvas, used to select the saturation and brightness.',
                 style: styleToString({
                     position: 'absolute',
                     top: `${top}px`,
@@ -273,7 +272,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             }
 
             return {
-                'aria-label': 'A canvas element showing all available hue colors.',
                 style: styleToString({
                     background: `linear-gradient(to ${orientation}, ${hueColors.join(',')})`
                 })
@@ -375,7 +373,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             }
 
             return {
-                'aria-label': 'The button to select the hue color.',
                 style: styleToString({
                     position: 'absolute',
                     background: `hsl(${$hueAngle}, 100%, 50%)`,
@@ -448,7 +445,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             const color = `${r}, ${g}, ${b}`;
 
             return {
-                'aria-label': 'A canvas element showing the alpha values for the color.',
                 style: styleToString({
                     background: `linear-gradient(to ${orientation}, rgba(${color}, 0), ${$value})`
                 })
@@ -539,7 +535,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
             const { r, g, b } = rgb;
 
             return {
-                'aria-label': 'The button to select the alpha value for the color.',
                 style: styleToString({
                     position: 'absolute',
                     background: `rgba(${r}, ${g}, ${b}, ${$alphaValue / 100})`,
@@ -604,11 +599,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
     });
 
     const eyeDropper = builder(name('eye-dropper'), {
-        returned: () => {
-            return {
-                'aria-label': 'An eye dropper button, allowing you to select any color on the screen.'
-            }
-        },
         action: (node: HTMLButtonElement) => {
 
             const eyeWindow = <EyeDropperWindow>window;
@@ -877,11 +867,11 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
         /**
          * If the color is updated from outside we do not need to update the color again,
-         * so we check if inputUpdate = true.
+         * so we check if inputUpdatePickerPos = true.
          */
         const colorPickerUnsub = colorPickerPos.subscribe(() => {
-            if (inputUpdate) {
-                inputUpdate = false;
+            if (inputUpdatePickerPos) {
+                inputUpdatePickerPos = false;
                 return;
             }
 
@@ -892,17 +882,11 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
         /**
          * If the hue angle is being updated from outside we need to update the color value,
-         * else we can just return. Here we are not setting inputUpdate to false because
-         * that is done when colorPickerPos.subscribe is run.
+         * else we can just return.
          */
         const hueAngleUnsub = hueAngle.subscribe(() => {
-            if (inputUpdate) {
-                // console.log('hue angle not updating');
-                /**
-                 * Set the inputUpdate to false inside the colorPickerPos subscribe above.
-                 * Question... can we always rely on hueAngle subscribe to run first?
-                 */
-                // inputUpdate = false;
+            if (inputUpdateHue) {
+                inputUpdateHue = false;
                 return;
             }
 
@@ -926,7 +910,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
             lastValid = hex;
 
-            inputUpdate = true;
+            inputUpdateHue = true;
+            inputUpdatePickerPos = true;
             updateOnColorInput(hex);
         });
 
