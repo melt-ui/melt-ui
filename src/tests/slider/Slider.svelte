@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { createSlider, melt } from '$lib/index.js';
+	import { createSlider, melt, type CreateSliderProps } from '$lib/index.js';
 	export let value = [30];
 	export let max = 100;
 	export let min = 0;
 	export let step = 1;
+	export let onValueChange: CreateSliderProps['onValueChange'] = undefined;
 	export let resetMin: number | undefined = undefined;
 	export let resetMax: number | undefined = undefined;
 	export let resetStep: number | undefined = undefined;
@@ -17,6 +18,7 @@
 		max,
 		min,
 		step,
+		onValueChange,
 	});
 
 	$: if (resetMin) {

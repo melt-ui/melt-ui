@@ -123,3 +123,5 @@ export type RenameProperties<T, NewNames extends Partial<Record<keyof T, string>
 			: K
 		: K]: T[K];
 }>;
+
+export type NonEmptyArray<T> = [T, ...T[]];

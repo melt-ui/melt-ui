@@ -54,6 +54,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const updatePosition = (val: number, index: number) => {
 		value.update((prev) => {
 			if (!prev) return [val];
+			if (prev[index] === val) return prev;
 			const newValue = [...prev];
 
 			const direction = newValue[index] > val ? -1 : +1;
@@ -434,11 +435,12 @@ export const createSlider = (props?: CreateSliderProps) => {
 				isActive.set(false);
 			};
 
-			const unsub = executeCallbacks();
-			addEventListener(document, 'pointerdown', pointerDown),
+			const unsub = executeCallbacks(
+				addEventListener(document, 'pointerdown', pointerDown),
 				addEventListener(document, 'pointerup', pointerUp),
 				addEventListener(document, 'pointerleave', pointerUp),
-				addEventListener(document, 'pointermove', pointerMove);
+				addEventListener(document, 'pointermove', pointerMove)
+			);
 
 			return () => {
 				unsub();
