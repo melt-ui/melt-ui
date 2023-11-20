@@ -1,5 +1,17 @@
 # @melt-ui/svelte
 
+## 0.62.0
+
+### Minor Changes
+
+- TOC: Add hash to URl when clicking item (closes #592) ([`7d6f4e84`](https://github.com/melt-ui/melt-ui/commit/7d6f4e84dabf4054ffcc63fd98b80a81322bd38c))
+
+### Patch Changes
+
+- Slider: fix leaks ([`1b74c44e`](https://github.com/melt-ui/melt-ui/commit/1b74c44e9ddfdf5515ef05524098e396a9829cb4))
+
+- Slider: improve onChange handling (closes #521) ([`1b74c44e`](https://github.com/melt-ui/melt-ui/commit/1b74c44e9ddfdf5515ef05524098e396a9829cb4))
+
 ## 0.61.3
 
 ### Patch Changes
