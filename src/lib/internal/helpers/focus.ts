@@ -9,19 +9,17 @@ type HandleFocusArgs = {
 	defaultEl: HTMLElement | null;
 };
 
-export async function handleFocus(args: HandleFocusArgs): void {
+export async function handleFocus(args: HandleFocusArgs): Promise<void> {
 	const { prop, defaultEl } = args;
 
 	await Promise.all([sleep(1), tick]);
 
 	if (prop === undefined) {
-		console.log('defaultEl', defaultEl);
 		defaultEl?.focus();
 		return;
 	}
 
 	const returned = isFunction(prop) ? prop(defaultEl) : prop;
-	console.log('returned', returned);
 
 	if (typeof returned === 'string') {
 		// Get el by selector, focus it

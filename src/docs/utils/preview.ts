@@ -23,11 +23,11 @@ interface PreviewObj {
 	[cmpName: string]: {
 		[codingStyle: string]: {
 			[fileName: `${string}.svelte`]:
-			| {
-				pp: string;
-				base: string;
-			}
-			| undefined;
+				| {
+						pp: string;
+						base: string;
+				  }
+				| undefined;
 			'globals.css'?: string;
 			'tailwind.config.ts'?: string;
 		};
