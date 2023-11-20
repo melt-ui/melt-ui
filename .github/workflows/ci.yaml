@@ -16,15 +16,15 @@ permissions:
   contents: read # to fetch code (actions/checkout)
   
 jobs:
-  # Lint:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: pnpm/action-setup@v2
-  #       with:
-  #         version: 8.6.3
-  #         run_install: true
-  #     - run: pnpm run lint
+  Lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.6.3
+          run_install: true
+      - run: pnpm run lint
 
   Check:
     runs-on: ubuntu-latest

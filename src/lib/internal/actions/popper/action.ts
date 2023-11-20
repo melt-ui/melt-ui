@@ -49,6 +49,7 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 			allowOutsideClick: true,
 			returnFocusOnDeactivate: false,
 			fallbackFocus: popperElement,
+
 			...opts.focusTrap,
 		});
 
