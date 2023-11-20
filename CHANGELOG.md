@@ -1,5 +1,31 @@
 # @melt-ui/svelte
 
+## 0.61.3
+
+### Patch Changes
+
+- Dialog: closes #452 ([`f2e4fdbf`](https://github.com/melt-ui/melt-ui/commit/f2e4fdbf347f5b3249823cd2792173cfbea3a130))
+
+- Slider: improve scroll handling (closes #74) ([`6a23b0a1`](https://github.com/melt-ui/melt-ui/commit/6a23b0a1dce9dcd47fff700b749c0601534c92f6))
+
+- Popover: fix page jump in Safari (closes #198) ([`5e30e42f`](https://github.com/melt-ui/melt-ui/commit/5e30e42fe34825da7655b681095d87dbafc3a3ff))
+
+## 0.61.2
+
+### Patch Changes
+
+- Fix: Key events in Select don't work in Safari ([#741](https://github.com/melt-ui/melt-ui/pull/741))
+
+- fix: space to select select options ([#730](https://github.com/melt-ui/melt-ui/pull/730))
+
+- fix: Select - toggle when elements within trigger are clicked ([#735](https://github.com/melt-ui/melt-ui/pull/735))
+
+## 0.61.1
+
+### Patch Changes
+
+- Fix: Days of week not updating with locale ([#722](https://github.com/melt-ui/melt-ui/pull/722))
+
 ## 0.61.0
 
 ### Minor Changes

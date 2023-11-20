@@ -17,3 +17,9 @@ await index.writeFiles({
 await index.writeFiles({
 	outputPath: 'static/pagefind',
 });
+
+// Write ts-nocheck to the top of the file
+import fs from 'fs';
+const file = 'src/pagefind/pagefind.js';
+const data = fs.readFileSync(file);
+fs.writeFileSync(file, '// @ts-nocheck\n' + data);

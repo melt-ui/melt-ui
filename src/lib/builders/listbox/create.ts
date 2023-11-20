@@ -18,7 +18,9 @@ import {
 	getPortalDestination,
 	hiddenInputAttrs,
 	isBrowser,
+	isElement,
 	isElementDisabled,
+	isHTMLButtonElement,
 	isHTMLElement,
 	isHTMLInputElement,
 	kbd,
@@ -271,6 +273,7 @@ export function createListbox<
 
 			const unsubscribe = executeCallbacks(
 				addMeltEventListener(node, 'click', () => {
+					node.focus(); // Fix for safari not adding focus on trigger
 					const $open = get(open);
 					if ($open) {
 						closeMenu();
@@ -302,7 +305,7 @@ export function createListbox<
 
 						// Clicking space on a button triggers a click event. We don't want to
 						// open the menu in this case, and we let the click handler handle it.
-						if (e.key === kbd.SPACE && node instanceof HTMLButtonElement) {
+						if (e.key === kbd.SPACE && isHTMLButtonElement(node)) {
 							return;
 						}
 
@@ -342,7 +345,7 @@ export function createListbox<
 						return;
 					}
 					// Pressing enter with a highlighted item should select it.
-					if (e.key === kbd.ENTER) {
+					if (e.key === kbd.ENTER || (e.key === kbd.SPACE && isHTMLButtonElement(node))) {
 						e.preventDefault();
 						const $highlightedItem = get(highlightedItem);
 						if ($highlightedItem) {
@@ -489,7 +492,10 @@ export function createListbox<
 									? {
 											handler: (e) => {
 												const target = e.target;
-												if (target === $activeTrigger) return;
+												if (!isElement(target)) return;
+												if (target === $activeTrigger || $activeTrigger.contains(target)) {
+													return;
+												}
 												closeMenu();
 											},
 											ignore: ignoreHandler,

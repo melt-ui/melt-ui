@@ -54,6 +54,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const updatePosition = (val: number, index: number) => {
 		value.update((prev) => {
 			if (!prev) return [val];
+			if (prev[index] === val) return prev;
 			const newValue = [...prev];
 
 			const direction = newValue[index] > val ? -1 : +1;
@@ -128,7 +129,10 @@ export const createSlider = (props?: CreateSliderProps) => {
 				disabled: disabledAttr($disabled),
 				'aria-disabled': ariaDisabledAttr($disabled),
 				'data-orientation': $orientation,
-				style: $disabled ? undefined : 'touch-action: none;',
+				style: $disabled
+					? undefined
+					: `touch-action: ${$orientation === 'horizontal' ? 'pan-y' : 'pan-x'}`,
+
 				'data-melt-id': meltIds.root,
 			};
 		},
@@ -387,36 +391,10 @@ export const createSlider = (props?: CreateSliderProps) => {
 				return { thumb, index };
 			};
 
-			const pointerDown = (e: PointerEvent) => {
-				if (e.button !== 0) return;
-
-				const sliderEl = getElementByMeltId($root['data-melt-id']);
-				const closestThumb = getClosestThumb(e);
-				if (!closestThumb || !sliderEl) return;
-
-				const target = e.target;
-				if (!isHTMLElement(target) || !sliderEl.contains(target)) return;
-				e.preventDefault();
-
-				activeThumb.set(closestThumb);
-				closestThumb.thumb.focus();
-				isActive.set(true);
-
-				if ($orientation === 'horizontal') {
-					const { left, right } = sliderEl.getBoundingClientRect();
-					applyPosition(e.clientX, closestThumb.index, left, right);
-				} else {
-					const { top, bottom } = sliderEl.getBoundingClientRect();
-					applyPosition(e.clientY, closestThumb.index, bottom, top);
-				}
-			};
-
-			const pointerUp = () => {
-				isActive.set(false);
-			};
-
 			const pointerMove = (e: PointerEvent) => {
 				if (!get(isActive)) return;
+				e.preventDefault();
+				e.stopPropagation();
 
 				const sliderEl = getElementByMeltId($root['data-melt-id']);
 				const closestThumb = get(activeThumb);
@@ -431,6 +409,30 @@ export const createSlider = (props?: CreateSliderProps) => {
 					const { top, bottom } = sliderEl.getBoundingClientRect();
 					applyPosition(e.clientY, closestThumb.index, bottom, top);
 				}
+			};
+
+			const pointerDown = (e: PointerEvent) => {
+				if (e.button !== 0) return;
+
+				const sliderEl = getElementByMeltId($root['data-melt-id']);
+				const closestThumb = getClosestThumb(e);
+				if (!closestThumb || !sliderEl) return;
+
+				const target = e.target;
+				if (!isHTMLElement(target) || !sliderEl.contains(target)) {
+					return;
+				}
+				e.preventDefault();
+
+				activeThumb.set(closestThumb);
+				closestThumb.thumb.focus();
+				isActive.set(true);
+
+				pointerMove(e);
+			};
+
+			const pointerUp = () => {
+				isActive.set(false);
 			};
 
 			const unsub = executeCallbacks(

@@ -20,6 +20,10 @@ export function isHTMLLabelElement(element: unknown): element is HTMLLabelElemen
 	return element instanceof HTMLLabelElement;
 }
 
+export function isHTMLButtonElement(element: unknown): element is HTMLButtonElement {
+	return element instanceof HTMLButtonElement;
+}
+
 export function isElementDisabled(element: HTMLElement): boolean {
 	const ariaDisabled = element.getAttribute('aria-disabled');
 	const disabled = element.getAttribute('disabled');

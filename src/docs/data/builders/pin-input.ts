@@ -40,7 +40,7 @@ const OPTION_PROPS = [
 	},
 ];
 
-const BUILDER_NAME = 'pin input';
+const BUILDER_NAME = 'PIN input';
 
 const builder = builderSchema(BUILDER_NAME, {
 	ids: pinInputIdParts,
@@ -176,4 +176,5 @@ export const pinInputData: BuilderData = {
 	schemas,
 	features,
 	keyboard,
+	name: BUILDER_NAME,
 };

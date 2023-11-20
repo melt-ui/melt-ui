@@ -71,7 +71,7 @@
 			</div>
 			Settings Sync is On
 		</div>
-		<div class="item" use:melt={$subTrigger}>
+		<div class="item !hidden md:!flex" use:melt={$subTrigger}>
 			Profiles
 			<div class="rightSlot">
 				<ChevronRight class="square-4" />

@@ -1,33 +1,23 @@
 <script lang="ts">
 	import { createDateField, melt } from '$lib';
-	import { onMount } from 'svelte';
 	import LocaleCombobox from './LocaleCombobox.svelte';
-	import { CalendarDate } from '@internationalized/date';
 
 	const {
 		elements: { field, segment, label },
 		states: { segmentContents },
 		options: { locale },
-	} = createDateField({
-		defaultValue: new CalendarDate(2024, 1, 11),
-	});
-
-	onMount(() => {
-		locale.set(navigator.language);
-	});
+	} = createDateField();
 </script>
 
 <section>
-	<div class="absolute left-4 top-4">
-		<LocaleCombobox
-			onSelectedChange={({ next }) => {
-				if (next) {
-					locale.set(next.value);
-				}
-				return next;
-			}}
-		/>
-	</div>
+	<LocaleCombobox
+		onSelectedChange={({ next }) => {
+			if (next) {
+				locale.set(next.value);
+			}
+			return next;
+		}}
+	/>
 	<div class="flex h-full w-full flex-col">
 		<span use:melt={$label}>Date</span>
 		<div use:melt={$field}>

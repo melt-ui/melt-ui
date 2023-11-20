@@ -82,8 +82,8 @@ Melt's props, it's all good.
 
 ### Animations
 
-By passing the builder returned props to an element, certain data and aria attributes will
-automatically be added/and or altered for you. These changes can then be used for animation
+By passing the builder's returned props to an element, certain data and aria attributes will
+automatically be added and/or altered for you. These changes can then be used for animation
 purposes, should you desire to do so.
 
 ```svelte

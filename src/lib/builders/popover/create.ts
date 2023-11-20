@@ -133,8 +133,16 @@ export function createPopover(args?: CreatePopoverProps) {
 								? null
 								: {
 										returnFocusOnDeactivate: false,
+										clickOutsideDeactivates: true,
+										escapeDeactivates: true,
 								  },
-							clickOutside: $closeOnOutsideClick ? undefined : null,
+							clickOutside: $closeOnOutsideClick
+								? {
+										handler: () => {
+											handleClose();
+										},
+								  }
+								: null,
 							escapeKeydown: $closeOnEscape
 								? {
 										handler: () => {
@@ -263,6 +271,7 @@ export function createPopover(args?: CreatePopoverProps) {
 			unsubs.forEach((unsub) => unsub());
 		};
 	});
+
 	return {
 		ids,
 		elements: {

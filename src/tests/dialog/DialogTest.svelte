@@ -5,6 +5,7 @@
 
 	const {
 		elements: { trigger, overlay, content, title, description, close, portalled },
+		states: { open },
 	} = createDialog({
 		...$$restProps,
 	});
@@ -27,6 +28,11 @@
 </main>
 <div id="portal-target" data-testid="portal-target" />
 
+{#if $open}
+	<!-- Floating close -->
+	<button use:melt={$close} data-testid="floating-closer">Close</button>
+{/if}
+
 <style>
 	[data-testid='overlay'] {
 		position: fixed;
@@ -43,5 +49,12 @@
 		transform: translate(-50%, -50%);
 		background: white;
 		padding: 1rem;
+	}
+
+	[data-testid='floating-closer'] {
+		position: absolute;
+		top: 0;
+		right: 0;
+		z-index: 999;
 	}
 </style>

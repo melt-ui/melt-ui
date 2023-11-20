@@ -39,6 +39,34 @@ describe('Select', () => {
 		expect(menu).toBeVisible();
 	});
 
+	test('Toggles when trigger is clicked', async () => {
+		const { getByTestId } = render(SelectTest);
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
+		const user = userEvent.setup();
+
+		expect(menu).not.toBeVisible();
+		await user.click(trigger);
+		expect(menu).toBeVisible();
+
+		await user.click(trigger);
+		expect(menu).not.toBeVisible();
+	});
+
+	test('Toggles when icon within trigger is clicked', async () => {
+		const { getByTestId } = render(SelectTest);
+		const icon = getByTestId('icon');
+		const menu = getByTestId('menu');
+		const user = userEvent.setup();
+
+		expect(menu).not.toBeVisible();
+		await user.click(icon);
+		expect(menu).toBeVisible();
+
+		await user.click(icon);
+		expect(menu).not.toBeVisible();
+	});
+
 	test('Selects item when clicked', async () => {
 		const { getByTestId } = render(SelectTest);
 		const trigger = getByTestId('trigger');

@@ -5,7 +5,7 @@ import type { SvelteComponent } from 'svelte';
 import { writable } from 'svelte/store';
 import rawGlobalCSS from '../../../other/globalcss.html?raw';
 import rawTailwindConfig from '../../../other/tailwindconfig.html?raw';
-import { data, isBuilderName, type Builder } from '../data/builders/index.js';
+import { builderMap, isBuilderName, type Builder } from '../data/builders/index.js';
 import { processMeltAttributes } from '../pp.js';
 import type { DocResolver, PreviewFile, PreviewResolver } from '../types.js';
 
@@ -216,7 +216,7 @@ export async function getMainPreviewComponent(slug: string) {
 }
 
 export async function getBuilderData({ slug, fetcher }: GetBuilderDataArgs) {
-	const builderData = data[slug];
+	const builderData = builderMap[slug];
 	const schemas = builderData['schemas'];
 	if (!schemas) return builderData;
 

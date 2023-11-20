@@ -616,7 +616,7 @@ export function createCalendar<
 	 * ```
 	 *
 	 */
-	const daysOfWeek = derived([months], ([$months]) => {
+	const daysOfWeek = derived([months, locale], ([$months, _]) => {
 		if (!$months.length) return [];
 		return $months[0].weeks[0].map((date) => {
 			return formatter.dayOfWeek(toDate(date));
