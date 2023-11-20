@@ -369,6 +369,11 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 					} else {
 						scrollToTargetAdjusted(`${id}`);
 					}
+
+					// Add items hash to URL
+					if (id) {
+						window.location.hash = id;
+					}
 				})
 			);
 
