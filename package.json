@@ -125,8 +125,6 @@
 		"prettier-plugin-svelte": "2.10.1",
 		"prettier-plugin-tailwindcss": "0.2.7",
 		"publint": "^0.1.12",
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0",
 		"rehype-pretty-code": "^0.10.0",
 		"rehype-rewrite": "^3.0.6",
 		"remark-code-import": "^1.2.0",

@@ -187,12 +187,6 @@ devDependencies:
   publint:
     specifier: ^0.1.12
     version: 0.1.12
-  react:
-    specifier: ^18.2.0
-    version: 18.2.0
-  react-dom:
-    specifier: ^18.2.0
-    version: 18.2.0(react@18.2.0)
   rehype-pretty-code:
     specifier: ^0.10.0
     version: 0.10.0(shiki@0.14.3)

@@ -3,6 +3,9 @@ import type { BuilderReturn } from '$lib/internal/types.js';
 import type { Writable } from 'svelte/store';
 import type { createSlider } from './create.js';
 export type { SliderComponentEvents } from './events.js';
+
+export type SliderOrientation = 'horizontal' | 'vertical';
+
 export type CreateSliderProps = {
 	/**
 	 * The uncontrolled default value of the slider.
@@ -50,7 +53,7 @@ export type CreateSliderProps = {
 	 *
 	 * @default 'horizontal'
 	 */
-	orientation?: 'horizontal' | 'vertical';
+	orientation?: SliderOrientation;
 
 	/**
 	 * When `true`, prevents the user from interacting with the slider.
