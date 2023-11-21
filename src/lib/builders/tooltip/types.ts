@@ -32,7 +32,7 @@ export type CreateTooltipProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: IdObj<TooltipIdParts>;
+	ids?: Partial<IdObj<TooltipIdParts>>;
 };
 
 export type Tooltip = BuilderReturn<typeof createTooltip>;

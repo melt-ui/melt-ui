@@ -114,7 +114,7 @@ export type _CreateMenuProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: IdObj<_MenuIdParts>;
+	ids?: Partial<IdObj<_MenuIdParts>>;
 };
 
 export type _CreateSubmenuProps = Pick<
@@ -184,7 +184,7 @@ export type _MenuBuilderOptions = {
 	 */
 	removeScroll: boolean;
 
-	ids?: Expand<IdObj<_MenuIdParts>>;
+	ids?: Partial<IdObj<_MenuIdParts>>;
 };
 
 export type _MenuParts =

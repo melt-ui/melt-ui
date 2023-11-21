@@ -92,7 +92,7 @@ export type CreateLinkPreviewProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: IdObj<LinkPreviewIdParts>;
+	ids?: Partial<IdObj<LinkPreviewIdParts>>;
 };
 
 export type LinkPreview = BuilderReturn<typeof createLinkPreview>;

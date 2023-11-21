@@ -162,7 +162,7 @@ export type CreateListboxProps<
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: IdObj<ListboxIdParts>;
+	ids?: Partial<IdObj<ListboxIdParts>>;
 };
 
 export type ListboxOptionProps<Value = unknown> = ListboxOption<Value> & {
