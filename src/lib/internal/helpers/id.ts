@@ -8,7 +8,7 @@ export function generateId(): string {
 	return nanoid(10);
 }
 
-export type IdObj<T extends readonly string[]> = Expand<{ [K in T[number]]: string }>;
+export type IdObj<T extends readonly string[]> = Expand<{ [K in T[number]]?: string }>;
 
 export function generateIds<T extends readonly string[]>(args: T): IdObj<T> {
 	return args.reduce((acc, curr) => {
