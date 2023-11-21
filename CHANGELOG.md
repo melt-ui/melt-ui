@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.62.1
+
+### Patch Changes
+
+- Refactor: safe lifecycle methods (fixes [#567](https://github.com/melt-ui/melt-ui/issues/567)) ([`d01752cb`](https://github.com/melt-ui/melt-ui/commit/d01752cb67267fe04fef73997d52170eaa982e1c))
+
 ## 0.62.0
 
 ### Minor Changes
