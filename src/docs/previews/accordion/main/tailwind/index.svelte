@@ -1,6 +1,13 @@
+<script lang="ts" context="module">
+	safeOnMount(() => {
+		console.log('mounted');
+	});
+</script>
+
 <script lang="ts">
 	import { cn } from '$docs/utils';
 	import { createAccordion, melt } from '$lib/index.js';
+	import { safeOnMount } from '$lib/internal/helpers/lifecycle';
 	import { slide } from 'svelte/transition';
 
 	const {
