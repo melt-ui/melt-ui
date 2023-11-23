@@ -91,6 +91,18 @@ function getMenuBuilderEls(name = 'menu') {
 			name: 'arrow',
 			description: `The builder store used to create the ${name} arrow.`,
 		},
+		{
+			name: 'item',
+			description: `The builder store used to create the ${name} item`,
+		},
+		{
+			name: 'group',
+			description: `The builder store used to group menu items together.It takes in a unique key to group menu items together.`,
+		},
+		{
+			name: 'groupLabel',
+			description: `The builder store used to create the group label for the ${name}.`,
+		},
 	];
 }
 
