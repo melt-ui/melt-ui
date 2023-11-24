@@ -7,7 +7,6 @@ import { addEventListener } from '$lib/internal/helpers/event.js';
 import { get } from 'svelte/store';
 import { isFunction } from '$lib/internal/helpers/is.js';
 import type { ClickOutsideConfig } from './types.js';
-import { executeCallbacks } from '$lib/internal/helpers/callbacks.js';
 
 /**
  * Creates a readable store that tracks the latest PointerEvent that occurred on the document.
@@ -15,31 +14,22 @@ import { executeCallbacks } from '$lib/internal/helpers/callbacks.js';
  * @returns A function to unsubscribe from the event listener and stop tracking pointer events.
  */
 const documentClickStore = readable<PointerEvent | undefined>(undefined, (set): (() => void) => {
-	let targetElement: EventTarget | null = null;
-
 	/**
 	 * Event handler for pointerdown events on the document.
 	 * Updates the store's value with the latest PointerEvent and then resets it to undefined.
 	 */
-	function handlePointerUp(event: PointerEvent | undefined) {
-		if (targetElement === event?.target) {
-			// the `pointerup` target is the same as the `pointerdown` target
-			set(event);
-			// New subscriptions will not trigger immediately
-			set(undefined);
-		} else {
-			set(undefined);
-		}
+	function clicked(event: PointerEvent | undefined) {
+		set(event);
+
+		// New subscriptions will not trigger immediately
+		set(undefined);
 	}
 
-	function handlePointerDown(event: PointerEvent) {
-		targetElement = event.target;
-	}
-
-	const unsubscribe = executeCallbacks(
-		addEventListener(document, 'pointerup', handlePointerUp, { passive: false, capture: true }),
-		addEventListener(document, 'pointerdown', handlePointerDown, { passive: false, capture: true })
-	);
+	// Adds a pointerdown event listener to the document, calling the clicked function when triggered.
+	const unsubscribe = addEventListener(document, 'pointerdown', clicked, {
+		passive: false,
+		capture: true,
+	});
 
 	// Returns a function to unsubscribe from the event listener and stop tracking pointer events.
 	return unsubscribe;
