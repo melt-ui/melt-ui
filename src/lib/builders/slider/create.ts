@@ -460,7 +460,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 		if ($value.some((v) => !isValidValue(v))) {
 			value.update((prev) => {
-				return [...prev].map(gcv);
+				return prev.map(gcv);
 			});
 		}
 	});
