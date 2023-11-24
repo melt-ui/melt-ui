@@ -172,13 +172,15 @@ export const createSlider = (props?: CreateSliderProps) => {
 					currentThumbIndex.update((prev) => prev + 1);
 				}
 
-				const thumbPosition = `${$position($value[index])}%`;
+				const thumbValue = $value[index];
+				const thumbPosition = `${$position(thumbValue)}%`;
 				return {
 					role: 'slider',
 					'aria-valuemin': $min,
 					'aria-valuemax': $max,
-					'aria-valuenow': $value[index],
+					'aria-valuenow': thumbValue,
 					'data-melt-part': 'thumb',
+					'data-value': thumbValue,
 					style: styleToString({
 						position: 'absolute',
 						...($orientation === 'horizontal'
