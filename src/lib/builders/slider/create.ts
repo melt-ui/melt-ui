@@ -327,6 +327,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 				return {
 					'data-bounded': bounded ? true : undefined,
+					'data-value': tickValue,
 					style: styleToString(style),
 				};
 			};
