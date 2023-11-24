@@ -151,7 +151,7 @@ const tick = elementSchema('tick', {
 		},
 		{
 			name: 'data-bounded',
-			value: "Present when the tick is inside the active range.",
+			value: 'Present when the tick is inside the active range.',
 		},
 	],
 });
