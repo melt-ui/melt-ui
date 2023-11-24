@@ -8,6 +8,7 @@ import {
 	getPortalDestination,
 	handleFocus,
 	isBrowser,
+	isElement,
 	isHTMLElement,
 	kbd,
 	noop,
@@ -139,7 +140,9 @@ export function createPopover(args?: CreatePopoverProps) {
 								  },
 							clickOutside: $closeOnOutsideClick
 								? {
-										handler: () => {
+										handler: (e) => {
+											const target = e.target;
+											if (isElement(target) && target.id === get(ids.trigger)) return;
 											handleClose();
 										},
 								  }
