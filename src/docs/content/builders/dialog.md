@@ -27,7 +27,7 @@ At a high level, the anatomy of a dialog looks like this:
 
 <button use:melt={$trigger}> Open Dialog </button>
 
-<div use:portal>
+<div use:melt={$portalled}>
 	{#if $open}
 		<div use:melt={$overlay} />
 		<div use:melt={$content}>

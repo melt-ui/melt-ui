@@ -1,5 +1,5 @@
-import { onDestroy } from 'svelte';
 import { derived, type Readable, type Stores, type StoresValues } from 'svelte/store';
+import { safeOnDestroy } from '../lifecycle';
 
 /**
  * A utility function that creates a derived store that automatically
@@ -32,7 +32,7 @@ export function derivedWithUnsubscribe<S extends Stores, T>(
 		return fn($storeValues, onUnsubscribe);
 	});
 
-	onDestroy(unsubscribe);
+	safeOnDestroy(unsubscribe);
 
 	const subscribe: typeof derivedStore.subscribe = (...args) => {
 		const unsub = derivedStore.subscribe(...args);

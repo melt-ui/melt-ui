@@ -7,9 +7,9 @@ import {
 import type { Defaults } from '$lib/internal/types';
 
 import { dequal } from 'dequal';
-import { onMount } from 'svelte';
 import { derived, get, writable, type Writable } from 'svelte/store';
 
+import { safeOnMount } from '$lib/internal/helpers/lifecycle';
 import type {
 	CreateTableOfContentsArgs,
 	ElementHeadingLU,
@@ -325,7 +325,7 @@ export function createTableOfContents(args: CreateTableOfContentsArgs) {
 		initialization();
 	}
 
-	onMount(() => {
+	safeOnMount(() => {
 		elementTarget = document.querySelector(selector);
 
 		if (!elementTarget) return;

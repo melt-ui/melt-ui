@@ -1,5 +1,23 @@
 # @melt-ui/svelte
 
+## 0.63.0
+
+### Minor Changes
+
+- Slider: Add `data-value` attribute to thumb and tick ([`60312ee9`](https://github.com/melt-ui/melt-ui/commit/60312ee9962c93fd9b8eb5ef62815a400e5522fa))
+
+### Patch Changes
+
+- Popover: Fix trigger not toggling the `open` state (closes #763) ([#765](https://github.com/melt-ui/melt-ui/pull/765))
+
+- Fix: `aria-disabled` attr types (closes #764) ([#766](https://github.com/melt-ui/melt-ui/pull/766))
+
+## 0.62.1
+
+### Patch Changes
+
+- Refactor: safe lifecycle methods (fixes [#567](https://github.com/melt-ui/melt-ui/issues/567)) ([`d01752cb`](https://github.com/melt-ui/melt-ui/commit/d01752cb67267fe04fef73997d52170eaa982e1c))
+
 ## 0.62.0
 
 ### Minor Changes
