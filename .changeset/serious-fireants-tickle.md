@@ -2,4 +2,4 @@
 "@melt-ui/svelte": patch
 ---
 
-fix: `aria-disabled` attr types
+Fix: Change `aria-disabled` attr types to boolean values (closes #764)
