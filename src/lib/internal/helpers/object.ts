@@ -12,3 +12,11 @@ export function omit<T extends Record<string, unknown>, K extends keyof T>(
 	}
 	return result;
 }
+
+export function removeUndefinedValues(inputObject: { [key: string]: any }): { [key: string]: any } {
+	return Object.fromEntries(
+		Object.entries(inputObject)
+			.filter(([key, value]) => value !== undefined)
+			.map(([key, value]) => [key, value === Object(value) ? removeUndefinedValues(value) : value])
+	);
+}

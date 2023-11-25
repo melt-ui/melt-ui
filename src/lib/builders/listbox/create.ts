@@ -32,6 +32,7 @@ import {
 	prev,
 	removeHighlight,
 	removeScroll,
+	removeUndefinedValues,
 	styleToString,
 	toWritableStores,
 	toggle,
@@ -234,6 +235,9 @@ export function createListbox<
 		return (value: Value) => {
 			if (Array.isArray($selected)) {
 				return $selected.some((o) => deepEqual(o.value, value));
+			}
+			if (typeof value === 'object' && value !== null) {
+				return deepEqual($selected?.value, removeUndefinedValues(value));
 			}
 			return deepEqual($selected?.value, value);
 		};
