@@ -120,12 +120,11 @@ export function createDialog(props?: CreateDialogProps) {
 	});
 
 	const trigger = builder(name('trigger'), {
-		stores: [open, ids.content],
-		returned: ([$open, $contentId]) => {
+		stores: [open],
+		returned: ([$open]) => {
 			return {
 				'aria-haspopup': 'dialog',
 				'aria-expanded': $open,
-				'aria-controls': $contentId,
 				type: 'button',
 			} as const;
 		},
@@ -190,6 +189,7 @@ export function createDialog(props?: CreateDialogProps) {
 				role: get(role),
 				'aria-describedby': $descriptionId,
 				'aria-labelledby': $titleId,
+				'aria-modal': $isVisible ? 'true' : undefined,
 				'data-state': $isVisible ? 'open' : 'closed',
 				tabindex: -1,
 				hidden: $isVisible ? undefined : true,
