@@ -2,4 +2,4 @@
 "@melt-ui/svelte": patch
 ---
 
-fix: popover trigger toggle
+Popover: Fix trigger not toggling the `open` state (closes #763)
