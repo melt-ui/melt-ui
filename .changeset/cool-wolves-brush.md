@@ -2,4 +2,4 @@
 "@melt-ui/svelte": patch
 ---
 
-fix: remove aria controls from dialog
+Dialog: remove `aria-controls` and add `aria-modal` (closes #752)
