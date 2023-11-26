@@ -490,6 +490,14 @@ describe('DateField', () => {
 
 		expect(timeZoneSegment).toHaveTextContent(thisTimeZone('2023-10-12T12:30:00Z'));
 	});
+
+	test('clicking the label focuses the first segment', async () => {
+		const { getByTestId, user } = setup();
+		const label = getByTestId('label');
+		const monthSegment = getByTestId('month');
+		await user.click(label);
+		expect(monthSegment).toHaveFocus();
+	});
 });
 
 function isDaylightSavingsTime(): boolean {

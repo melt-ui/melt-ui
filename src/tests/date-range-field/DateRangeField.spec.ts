@@ -150,4 +150,12 @@ describe('DateField', () => {
 			}
 		}
 	});
+
+	test('clicking the label focuses the first segment', async () => {
+		const { getByTestId, user } = setup();
+		const label = getByTestId('label');
+		const monthSegment = getByTestId('start-month');
+		await user.click(label);
+		expect(monthSegment).toHaveFocus();
+	});
 });

@@ -394,4 +394,12 @@ describe('DatePicker', () => {
 			}
 		});
 	});
+
+	test('clicking the label focuses the first segment', async () => {
+		const { getByTestId, user } = setup();
+		const label = getByTestId('label');
+		const monthSegment = getByTestId('month');
+		await user.click(label);
+		expect(monthSegment).toHaveFocus();
+	});
 });
