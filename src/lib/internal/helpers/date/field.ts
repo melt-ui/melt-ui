@@ -104,3 +104,11 @@ export function getSegments(id: string) {
 	);
 	return segments;
 }
+
+/**
+ * Get the first interactive segment within the field identified by the provided ID.
+ */
+export function getFirstSegment(id: string) {
+	const segments = getSegments(id);
+	return segments[0];
+}

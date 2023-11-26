@@ -38,7 +38,7 @@
 	}
 
 	[data-melt-datefield-label] {
-		@apply font-medium text-magnum-800;
+		@apply font-medium text-magnum-800 select-none;
 	}
 
 	[data-melt-datefield-label][data-invalid] {
