@@ -11,10 +11,20 @@ import {
 	parseAbsoluteToLocal,
 	toZoned,
 } from '@internationalized/date';
+import type { CreateDateFieldProps } from '$lib';
 
 const calendarDateOther = new CalendarDate(1980, 1, 20);
 const calendarDateTimeOther = new CalendarDateTime(1980, 1, 20, 12, 30, 0, 0);
 const zonedDateTimeOther = toZoned(calendarDateTimeOther, 'America/New_York');
+
+function setup(props: CreateDateFieldProps = {}) {
+	const user = userEvent.setup();
+	const returned = render(DateFieldTest, props);
+	return {
+		...returned,
+		user,
+	};
+}
 
 describe('DateField', () => {
 	describe('Accessibility', () => {
@@ -26,7 +36,7 @@ describe('DateField', () => {
 	});
 
 	test('segments populated with defaultValue - CalendarDate', async () => {
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId } = setup({
 			defaultValue: calendarDateOther,
 		});
 
@@ -40,8 +50,9 @@ describe('DateField', () => {
 		expect(yearSegment).toHaveTextContent(String(calendarDateOther.year));
 		expect(insideValue).toHaveTextContent(calendarDateOther.toString());
 	});
+
 	test('segments populated with defaultValue - CalendarDateTime', async () => {
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId } = setup({
 			defaultValue: calendarDateTimeOther,
 		});
 
@@ -61,7 +72,7 @@ describe('DateField', () => {
 	});
 
 	test('segments populated with defaultValue - ZonedDateTime', async () => {
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId } = setup({
 			defaultValue: zonedDateTimeOther,
 		});
 
@@ -85,7 +96,7 @@ describe('DateField', () => {
 	});
 
 	test('locale changes segment positioning', async () => {
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId } = setup({
 			locale: 'en-UK',
 		});
 
@@ -101,7 +112,7 @@ describe('DateField', () => {
 	});
 
 	test('certain locales do not show day period segment', async () => {
-		const { queryByTestId } = render(DateFieldTest, {
+		const { queryByTestId } = setup({
 			locale: 'en-UK',
 			defaultValue: calendarDateTimeOther,
 		});
@@ -109,14 +120,13 @@ describe('DateField', () => {
 	});
 
 	test('certain locales do show day period segment', async () => {
-		const { queryByTestId } = render(DateFieldTest, {
+		const { queryByTestId } = setup({
 			defaultValue: calendarDateTimeOther,
 		});
 		expect(queryByTestId('dayPeriod')).not.toBeNull();
 	});
 	test('focuses first segment on click', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DateFieldTest);
+		const { getByTestId, user } = setup();
 
 		const firstSegment = getByTestId('month');
 		await user.click(firstSegment);
@@ -125,8 +135,7 @@ describe('DateField', () => {
 	});
 
 	test('increments segment on arrow up', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId, user } = setup({
 			defaultPlaceholder: calendarDateOther,
 		});
 		const firstSegment = getByTestId('month');
@@ -142,8 +151,7 @@ describe('DateField', () => {
 	});
 
 	test('increments segment on arrow down', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId, user } = setup({
 			defaultPlaceholder: calendarDateOther,
 		});
 
@@ -160,8 +168,7 @@ describe('DateField', () => {
 	});
 
 	test('increments segment on arrow down', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId, user } = setup({
 			defaultPlaceholder: calendarDateOther,
 		});
 
@@ -178,8 +185,7 @@ describe('DateField', () => {
 	});
 
 	test('navigates segments using arrow keys', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DateFieldTest);
+		const { getByTestId, user } = setup();
 
 		const monthSegment = getByTestId('month');
 		const daySegment = getByTestId('day');
@@ -200,8 +206,7 @@ describe('DateField', () => {
 	});
 
 	test('navigates segments using tab', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DateFieldTest);
+		const { getByTestId, user } = setup();
 
 		const monthSegment = getByTestId('month');
 		const daySegment = getByTestId('day');
@@ -216,8 +221,7 @@ describe('DateField', () => {
 	});
 
 	test('disabled prop prevents interaction', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId, user } = setup({
 			disabled: true,
 		});
 		const monthSegment = getByTestId('month');
@@ -238,8 +242,7 @@ describe('DateField', () => {
 	});
 
 	test('readonly prop prevents modifying segments', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId, user } = setup({
 			readonly: true,
 			defaultValue: calendarDateOther,
 		});
@@ -256,8 +259,7 @@ describe('DateField', () => {
 	});
 
 	test('if selected date unavailable, mark field as invalid', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId, user } = setup({
 			granularity: 'day',
 			isDateUnavailable: (date) => {
 				return date.day === 20;
@@ -288,8 +290,7 @@ describe('DateField', () => {
 	});
 
 	test('hourcycle prop changes the hour cycle', async () => {
-		const user = userEvent.setup();
-		const { getByTestId, queryByTestId } = render(DateFieldTest, {
+		const { getByTestId, queryByTestId, user } = setup({
 			defaultValue: calendarDateTimeOther,
 			hourCycle: 24,
 		});
@@ -305,7 +306,7 @@ describe('DateField', () => {
 	});
 
 	test('day granularity overrides default displayed segments', async () => {
-		const { getByTestId, queryByTestId } = render(DateFieldTest, {
+		const { getByTestId, queryByTestId } = setup({
 			defaultValue: calendarDateTimeOther,
 			granularity: 'day',
 		});
@@ -326,7 +327,7 @@ describe('DateField', () => {
 	});
 
 	test('minute granularity overrides default displayed segments', async () => {
-		const { queryByTestId } = render(DateFieldTest, {
+		const { queryByTestId } = setup({
 			defaultValue: calendarDateOther,
 			granularity: 'minute',
 		});
@@ -344,8 +345,7 @@ describe('DateField', () => {
 	});
 
 	test('changing the dayperiod segment changes the value', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId, user } = setup({
 			defaultValue: calendarDateTimeOther,
 		});
 
@@ -362,8 +362,7 @@ describe('DateField', () => {
 	});
 
 	test('spamming 3 takes you all the way through the segment', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId, user } = setup({
 			defaultValue: calendarDateTimeOther,
 			granularity: 'minute',
 		});
@@ -399,8 +398,7 @@ describe('DateField', () => {
 	});
 
 	test('fully overwrite on first click and type - month', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId, user } = setup({
 			defaultValue: calendarDateTimeOther,
 			granularity: 'second',
 		});
@@ -414,8 +412,7 @@ describe('DateField', () => {
 	});
 
 	test('fully overwrite on first click and type - day', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId, user } = setup({
 			defaultValue: calendarDateTimeOther,
 			granularity: 'second',
 		});
@@ -429,8 +426,7 @@ describe('DateField', () => {
 	});
 
 	test('fully overwrite on first click and type - year', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId, user } = setup({
 			defaultValue: calendarDateTimeOther,
 			granularity: 'second',
 		});
@@ -444,8 +440,7 @@ describe('DateField', () => {
 	});
 
 	test('fully overwrite on first click and type - hour', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId, user } = setup({
 			defaultValue: calendarDateTimeOther,
 			granularity: 'second',
 		});
@@ -460,7 +455,7 @@ describe('DateField', () => {
 
 	test('fully overwrite on first click and type - minute', async () => {
 		const user = userEvent.setup();
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId } = setup({
 			defaultValue: calendarDateTimeOther,
 			granularity: 'second',
 		});
@@ -474,7 +469,7 @@ describe('DateField', () => {
 	});
 
 	test('displays correct timezone with ZonedDateTime value - now', async () => {
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId } = setup({
 			defaultValue: now('America/Los_Angeles'),
 		});
 
@@ -487,13 +482,21 @@ describe('DateField', () => {
 	});
 
 	test('displays correct timezone with ZonedDateTime value - absolute to local', async () => {
-		const { getByTestId } = render(DateFieldTest, {
+		const { getByTestId } = setup({
 			defaultValue: parseAbsoluteToLocal('2023-10-12T12:30:00Z'),
 		});
 
 		const timeZoneSegment = getByTestId('timeZoneName');
 
 		expect(timeZoneSegment).toHaveTextContent(thisTimeZone('2023-10-12T12:30:00Z'));
+	});
+
+	test('clicking the label focuses the first segment', async () => {
+		const { getByTestId, user } = setup();
+		const label = getByTestId('label');
+		const monthSegment = getByTestId('month');
+		await user.click(label);
+		expect(monthSegment).toHaveFocus();
 	});
 });
 

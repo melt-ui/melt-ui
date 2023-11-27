@@ -7,7 +7,7 @@ import RangeCalendarTest from './RangeCalendarTest.svelte';
 import { CalendarDate, CalendarDateTime, toZoned, type DateValue } from '@internationalized/date';
 import { writable } from 'svelte/store';
 import { tick } from 'svelte';
-import type { DateRange } from '$lib';
+import type { CreateRangeCalendarProps, DateRange } from '$lib';
 
 const calendarDateRange = {
 	start: new CalendarDate(1980, 1, 20),
@@ -28,6 +28,18 @@ const controlledCalendarDateRange = writable<DateRange>(calendarDateRange);
 const controlledCalendarDateTimeRange = writable<DateRange>(calendarDateTimeRange);
 const controlledZonedDateTimeRange = writable<DateRange>(zonedDateTimeRange);
 
+function setup(props: CreateRangeCalendarProps = {}) {
+	const user = userEvent.setup();
+	const returned = render(RangeCalendarTest, props);
+	const calendar = returned.getByTestId('calendar');
+	expect(calendar).toBeVisible();
+	return {
+		...returned,
+		user,
+		calendar,
+	};
+}
+
 describe('Range Calendar', () => {
 	describe('Accessibility', () => {
 		test('has no accessibility violations', async () => {
@@ -37,28 +49,22 @@ describe('Range Calendar', () => {
 		});
 	});
 	test('populated with defaultValue - CalendarDate', async () => {
-		const { getByTestId, container } = render(RangeCalendarTest, {
+		const { getByTestId, calendar } = setup({
 			defaultValue: calendarDateRange,
 		});
 
-		const calendar = getByTestId('calendar');
-		expect(calendar).toBeVisible();
-
-		const selectedDays = container.querySelectorAll('[data-selected]');
+		const selectedDays = calendar.querySelectorAll('[data-selected]');
 		expect(selectedDays).toHaveLength(6);
 
 		const heading = getByTestId('heading');
 		expect(heading).toHaveTextContent('January 1980');
 	});
 	test('populated with defaultValue - CalendarDateTime', async () => {
-		const { getByTestId, container } = render(RangeCalendarTest, {
+		const { getByTestId, calendar } = setup({
 			defaultValue: calendarDateTimeRange,
 		});
 
-		const calendar = getByTestId('calendar');
-		expect(calendar).toBeVisible();
-
-		const selectedDays = container.querySelectorAll('[data-selected]');
+		const selectedDays = calendar.querySelectorAll('[data-selected]');
 		expect(selectedDays).toHaveLength(6);
 
 		const heading = getByTestId('heading');
@@ -66,14 +72,11 @@ describe('Range Calendar', () => {
 	});
 
 	test('populated with defaultValue - ZonedDateTime', async () => {
-		const { getByTestId, container } = render(RangeCalendarTest, {
+		const { getByTestId, calendar } = setup({
 			defaultValue: zonedDateTimeRange,
 		});
 
-		const calendar = getByTestId('calendar');
-		expect(calendar).toBeVisible();
-
-		const selectedDays = container.querySelectorAll('[data-selected]');
+		const selectedDays = calendar.querySelectorAll('[data-selected]');
 		expect(selectedDays).toHaveLength(6);
 
 		const heading = getByTestId('heading');
@@ -81,42 +84,35 @@ describe('Range Calendar', () => {
 	});
 
 	test('populated with controlled value - CalendarDate', async () => {
-		const { getByTestId, container } = render(RangeCalendarTest, {
+		const { getByTestId, calendar } = setup({
 			value: controlledCalendarDateRange,
 		});
 
-		const calendar = getByTestId('calendar');
-		expect(calendar).toBeVisible();
-
-		const selectedDays = container.querySelectorAll('[data-selected]');
+		const selectedDays = calendar.querySelectorAll('[data-selected]');
 		expect(selectedDays).toHaveLength(6);
 
 		const heading = getByTestId('heading');
 		expect(heading).toHaveTextContent('January 1980');
 	});
+
 	test('populated with controlled value - CalendarDateTime', async () => {
-		const { getByTestId, container } = render(RangeCalendarTest, {
+		const { getByTestId, calendar } = setup({
 			value: controlledCalendarDateTimeRange,
 		});
 
-		const calendar = getByTestId('calendar');
-		expect(calendar).toBeVisible();
-
-		const selectedDays = container.querySelectorAll('[data-selected]');
+		const selectedDays = calendar.querySelectorAll('[data-selected]');
 		expect(selectedDays).toHaveLength(6);
 
 		const heading = getByTestId('heading');
 		expect(heading).toHaveTextContent('January 1980');
 	});
+
 	test('populated with controlled value - CalendarDateTime', async () => {
-		const { getByTestId, container } = render(RangeCalendarTest, {
+		const { getByTestId, calendar } = setup({
 			value: controlledZonedDateTimeRange,
 		});
 
-		const calendar = getByTestId('calendar');
-		expect(calendar).toBeVisible();
-
-		const selectedDays = container.querySelectorAll('[data-selected]');
+		const selectedDays = calendar.querySelectorAll('[data-selected]');
 		expect(selectedDays).toHaveLength(6);
 
 		const heading = getByTestId('heading');
@@ -124,13 +120,9 @@ describe('Range Calendar', () => {
 	});
 
 	test('month navigation', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(RangeCalendarTest, {
+		const { getByTestId, user } = setup({
 			defaultValue: calendarDateRange,
 		});
-
-		const calendar = getByTestId('calendar');
-		expect(calendar).toBeVisible();
 
 		const heading = getByTestId('heading');
 		expect(heading).toHaveTextContent('January 1980');
@@ -149,13 +141,9 @@ describe('Range Calendar', () => {
 	});
 
 	test('selection after range selected resets range', async () => {
-		const user = userEvent.setup();
-		const { getByTestId, container } = render(RangeCalendarTest, {
+		const { getByTestId, calendar, user } = setup({
 			defaultValue: calendarDateRange,
 		});
-
-		const calendar = getByTestId('calendar');
-		expect(calendar).toBeVisible();
 
 		const startValue = getByTestId('start-value');
 		const endValue = getByTestId('end-value');
@@ -167,24 +155,21 @@ describe('Range Calendar', () => {
 		await user.click(fifthDayInMonth);
 		expect(fifthDayInMonth).toHaveFocus();
 
-		const selectedDays = container.querySelectorAll('[data-selected]');
+		const selectedDays = calendar.querySelectorAll('[data-selected]');
 		expect(selectedDays).toHaveLength(1);
 		expect(startValue).toHaveTextContent(String(undefined));
 		expect(endValue).toHaveTextContent(String(undefined));
 		const seventhDayInMonth = getByTestId('month-0-date-7');
 		await user.click(seventhDayInMonth);
 		await tick();
-		expect(container.querySelectorAll('[data-selected]')).toHaveLength(3);
+		expect(calendar.querySelectorAll('[data-selected]')).toHaveLength(3);
 	});
 
 	test('selection with keyboard', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(RangeCalendarTest, {
+		const { getByTestId, user, calendar } = setup({
 			defaultPlaceholder: calendarDateRange.start,
 		});
 
-		const calendar = getByTestId('calendar');
-		expect(calendar).toBeVisible();
 		const secondDayInMonth = getByTestId('month-0-date-2');
 		const thirdDayInMonth = getByTestId('month-0-date-3');
 		const fourthDayInMonth = getByTestId('month-0-date-4');
@@ -208,14 +193,10 @@ describe('Range Calendar', () => {
 	});
 
 	test('should display multiple months with numberOfMonths prop', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(RangeCalendarTest, {
+		const { getByTestId, user } = setup({
 			defaultValue: calendarDateRange,
 			numberOfMonths: 2,
 		});
-
-		const calendar = getByTestId('calendar');
-		expect(calendar).toBeVisible();
 
 		const heading = getByTestId('heading');
 		expect(heading).toHaveTextContent('January - February 1980');
@@ -240,15 +221,11 @@ describe('Range Calendar', () => {
 	});
 
 	test('multiple months (paged navigation)', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(RangeCalendarTest, {
+		const { getByTestId, user } = setup({
 			defaultValue: calendarDateRange,
 			numberOfMonths: 2,
 			pagedNavigation: true,
 		});
-
-		const calendar = getByTestId('calendar');
-		expect(calendar).toBeVisible();
 
 		const heading = getByTestId('heading');
 		expect(heading).toHaveTextContent('January - February 1980');
@@ -279,7 +256,7 @@ describe('Range Calendar', () => {
 	});
 
 	test('fixedWeeks always renders 6 weeks', async () => {
-		const { getByTestId, queryByTestId } = render(RangeCalendarTest, {
+		const { getByTestId, queryByTestId, user } = setup({
 			value: controlledCalendarDateRange,
 			fixedWeeks: true,
 		});
@@ -288,19 +265,19 @@ describe('Range Calendar', () => {
 		const prevButton = getByTestId('prev-button');
 
 		for (let i = 0; i < 12; i++) {
-			await userEvent.click(nextButton);
+			await user.click(nextButton);
 			expect(queryByTestId('week-6')).not.toBeNull();
 		}
 
 		for (let i = 0; i < 12; i++) {
-			await userEvent.click(prevButton);
+			await user.click(prevButton);
 			expect(queryByTestId('week-6')).not.toBeNull();
 		}
 	});
 	test('controlled value should update selected value', async () => {
 		const valueStore = writable<DateRange>(undefined);
 
-		const { getByTestId } = render(RangeCalendarTest, {
+		const { getByTestId } = setup({
 			value: valueStore,
 		});
 
@@ -325,7 +302,7 @@ describe('Range Calendar', () => {
 
 	test('controlled placeholder should change view', async () => {
 		const placeholderStore = writable<DateValue>(calendarDateRange.start);
-		const { getByTestId } = render(RangeCalendarTest, {
+		const { getByTestId } = setup({
 			defaultValue: calendarDateRange,
 			placeholder: placeholderStore,
 		});
@@ -347,48 +324,48 @@ describe('Range Calendar', () => {
 	});
 
 	test('calendar does not navigate before minValue', async () => {
-		const { getByTestId } = render(RangeCalendarTest, {
+		const { getByTestId, user } = setup({
 			defaultValue: calendarDateRange,
 			minValue: new CalendarDate(1979, 11, 25),
 		});
 
 		const prevButton = getByTestId('prev-button');
-		await userEvent.click(prevButton);
+		await user.click(prevButton);
 		const heading = getByTestId('heading');
 		expect(heading).toHaveTextContent('December 1979');
 		expect(prevButton).not.toBeDisabled();
 		expect(prevButton).not.toHaveAttribute('aria-disabled', 'true');
-		await userEvent.click(prevButton);
+		await user.click(prevButton);
 		expect(heading).toHaveTextContent('November 1979');
 
 		expect(prevButton).toBeDisabled();
 		expect(prevButton).toHaveAttribute('aria-disabled', 'true');
 
-		await userEvent.click(prevButton);
+		await user.click(prevButton);
 		expect(heading).toHaveTextContent('November 1979');
 	});
 
 	test('calendar does not navigate after maxValue', async () => {
-		const { getByTestId } = render(RangeCalendarTest, {
+		const { getByTestId, user } = setup({
 			defaultValue: calendarDateRange,
 			maxValue: new CalendarDate(1980, 4, 1),
 		});
 
 		const nextButton = getByTestId('next-button');
-		await userEvent.click(nextButton);
+		await user.click(nextButton);
 		const heading = getByTestId('heading');
 		expect(heading).toHaveTextContent('February 1980');
-		await userEvent.click(nextButton);
+		await user.click(nextButton);
 		expect(heading).toHaveTextContent('March 1980');
 		expect(nextButton).not.toBeDisabled();
 		expect(nextButton).not.toHaveAttribute('aria-disabled', 'true');
-		await userEvent.click(nextButton);
+		await user.click(nextButton);
 		expect(heading).toHaveTextContent('April 1980');
 
 		expect(nextButton).toBeDisabled();
 		expect(nextButton).toHaveAttribute('aria-disabled', 'true');
 
-		await userEvent.click(nextButton);
+		await user.click(nextButton);
 		expect(heading).toHaveTextContent('April 1980');
 	});
 
@@ -398,29 +375,29 @@ describe('Range Calendar', () => {
 			end: new CalendarDate(1980, 2, 27),
 		};
 
-		const { getByTestId, container } = render(RangeCalendarTest, {
+		const { getByTestId, calendar, user } = setup({
 			defaultValue: calendarDateRange,
 			onValueChange: () => {
 				return overrideDay;
 			},
 		});
 
-		const selectedDays = container.querySelectorAll('[data-selected]');
+		const selectedDays = calendar.querySelectorAll('[data-selected]');
 		expect(selectedDays).toHaveLength(6);
 
 		const thirdDayInMonth = getByTestId('month-0-date-3');
-		await userEvent.click(thirdDayInMonth);
+		await user.click(thirdDayInMonth);
 		await tick();
 		const fourthDayInMonth = getByTestId('month-0-date-4');
-		await userEvent.click(fourthDayInMonth);
+		await user.click(fourthDayInMonth);
 		await tick();
 
-		const selectedDaysAfterClick = container.querySelectorAll('[data-selected]');
+		const selectedDaysAfterClick = calendar.querySelectorAll('[data-selected]');
 		expect(selectedDaysAfterClick).toHaveLength(3);
 	});
 
 	test('unavailable dates behavior', async () => {
-		const { getByTestId } = render(RangeCalendarTest, {
+		const { getByTestId, user } = setup({
 			defaultPlaceholder: calendarDateRange.start,
 			isDateUnavailable: (date) => {
 				return date.day === 3;
@@ -430,12 +407,12 @@ describe('Range Calendar', () => {
 		const thirdDayInMonth = getByTestId('month-0-date-3');
 		expect(thirdDayInMonth).toHaveAttribute('data-unavailable');
 		expect(thirdDayInMonth).toHaveAttribute('aria-disabled', 'true');
-		await userEvent.click(thirdDayInMonth);
+		await user.click(thirdDayInMonth);
 		expect(thirdDayInMonth).not.toHaveAttribute('data-selected');
 	});
 
 	test('disabled dates behavior', async () => {
-		const { getByTestId } = render(RangeCalendarTest, {
+		const { getByTestId, user } = setup({
 			defaultPlaceholder: calendarDateRange.start,
 			isDateDisabled: (date) => {
 				return date.day === 3;
@@ -445,13 +422,12 @@ describe('Range Calendar', () => {
 		const thirdDayInMonth = getByTestId('month-0-date-3');
 		expect(thirdDayInMonth).toHaveAttribute('data-disabled');
 		expect(thirdDayInMonth).toHaveAttribute('aria-disabled', 'true');
-		await userEvent.click(thirdDayInMonth);
+		await user.click(thirdDayInMonth);
 		expect(thirdDayInMonth).not.toHaveAttribute('data-selected');
 	});
 
 	test('Selection through disabled with double click doesnt select dates', async () => {
-		const user = userEvent.setup();
-		const { getByTestId, container } = render(RangeCalendarTest, {
+		const { getByTestId, container, user } = setup({
 			defaultPlaceholder: calendarDateRange.start,
 			isDateDisabled: (date) => {
 				return date.day === 3;
