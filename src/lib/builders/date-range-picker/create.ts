@@ -135,6 +135,26 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 		calendar.options.maxValue.set($maxValue);
 	});
 
+	effect([options.positioning], ([$positioning]) => {
+		popover.options.positioning.set($positioning);
+	});
+
+	effect([options.forceVisible], ([$forceVisible]) => {
+		popover.options.forceVisible.set($forceVisible);
+	});
+
+	effect([options.closeOnEscape], ([$closeOnEscape]) => {
+		popover.options.closeOnEscape.set($closeOnEscape);
+	});
+
+	effect([options.closeOnOutsideClick], ([$closeOnOutsideClick]) => {
+		popover.options.closeOnOutsideClick.set($closeOnOutsideClick);
+	});
+
+	effect([options.preventScroll], ([$preventScroll]) => {
+		popover.options.preventScroll.set($preventScroll);
+	});
+
 	effect([popover.states.open], ([$open]) => {
 		if (!$open) {
 			const $value = get(value);
