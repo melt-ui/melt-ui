@@ -186,10 +186,10 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 			...calendar.helpers,
 		},
 		options: {
-			...popover.options,
 			...dateFieldOptions,
 			...calendarOptions,
 			...options,
+			...popover.options,
 		},
 		ids: {
 			dateField: dateField.ids,
