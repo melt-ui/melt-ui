@@ -1,5 +1,21 @@
 # @melt-ui/svelte
 
+## 0.63.1
+
+### Patch Changes
+
+- Calendars: remove unnecessary cell attributes in favor of `melt` attribute ([#778](https://github.com/melt-ui/melt-ui/pull/778))
+
+- Dialog: remove `aria-controls` and add `aria-modal` (closes #752) ([#769](https://github.com/melt-ui/melt-ui/pull/769))
+
+- Fix: Date Pickers option store reactivity ([#776](https://github.com/melt-ui/melt-ui/pull/776))
+
+- Combobox/Select: Fix undefined values not selecting ([#770](https://github.com/melt-ui/melt-ui/pull/770))
+
+- fix: label click selects first segment ([#773](https://github.com/melt-ui/melt-ui/pull/773))
+
+- fix: Toggle when items inside of popover trigger (like SVGs) are clicked ([#775](https://github.com/melt-ui/melt-ui/pull/775))
+
 ## 0.63.0
 
 ### Minor Changes
