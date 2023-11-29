@@ -13,10 +13,18 @@ export function omit<T extends Record<string, unknown>, K extends keyof T>(
 	return result;
 }
 
-export function removeUndefinedValues(inputObject: { [key: string]: any }): { [key: string]: any } {
+type StrippedKeys<T extends Record<string, unknown>, ToStrip> = {
+  [K in keyof T]: T[K] extends ToStrip ? never : K
+}
+
+type StripValues<T extends Record<string, unknown>, ToStrip> = {
+  [K in StrippedKeys<T, ToStrip>[keyof T]]: T[K]
+}
+
+export function removeUndefinedValues<T extends Record<string, unknown>>(inputObject: T) {
 	return Object.fromEntries(
 		Object.entries(inputObject)
 			.filter(([key, value]) => value !== undefined)
 			.map(([key, value]) => [key, value === Object(value) ? removeUndefinedValues(value) : value])
-	);
+	) as StripValues<T, undefined>
 }
