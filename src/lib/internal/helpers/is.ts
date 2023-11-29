@@ -61,3 +61,8 @@ export function isNumberString(value: string) {
 	if (isNaN(parseInt(value))) return false;
 	return true;
 }
+
+
+export function isObject(value: unknown): value is Record<string, unknown> {
+	return value !== null && typeof value === 'object';
+}

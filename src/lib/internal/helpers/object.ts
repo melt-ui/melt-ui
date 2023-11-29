@@ -1,4 +1,5 @@
 import type { ValueOf } from '$lib/internal/types.js';
+import { dequal } from 'dequal';
 
 export function omit<T extends Record<string, unknown>, K extends keyof T>(
 	obj: T,
@@ -14,17 +15,15 @@ export function omit<T extends Record<string, unknown>, K extends keyof T>(
 }
 
 type StrippedKeys<T extends Record<string, unknown>, ToStrip> = {
-  [K in keyof T]: T[K] extends ToStrip ? never : K
-}
+	[K in keyof T]: T[K] extends ToStrip ? never : K;
+};
 
 type StripValues<T extends Record<string, unknown>, ToStrip> = {
-  [K in StrippedKeys<T, ToStrip>[keyof T]]: T[K]
-}
+	[K in StrippedKeys<T, ToStrip>[keyof T]]: T[K];
+};
 
-export function removeUndefinedValues<T extends Record<string, unknown>>(inputObject: T) {
+export function stripValues<T extends Record<string, unknown>, ToStrip>(inputObject: T, toStrip: ToStrip) {
 	return Object.fromEntries(
-		Object.entries(inputObject)
-			.filter(([key, value]) => value !== undefined)
-			.map(([key, value]) => [key, value === Object(value) ? removeUndefinedValues(value) : value])
-	) as StripValues<T, undefined>
+		Object.entries(inputObject).filter(([_, value]) => !dequal(value, toStrip))
+	) as StripValues<T, ToStrip>;
 }

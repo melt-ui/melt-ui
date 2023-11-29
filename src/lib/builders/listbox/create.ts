@@ -23,6 +23,7 @@ import {
 	isHTMLButtonElement,
 	isHTMLElement,
 	isHTMLInputElement,
+	isObject,
 	kbd,
 	last,
 	next,
@@ -32,7 +33,9 @@ import {
 	prev,
 	removeHighlight,
 	removeScroll,
-	removeUndefinedValues,
+
+	stripValues,
+
 	styleToString,
 	toWritableStores,
 	toggle,
@@ -236,8 +239,8 @@ export function createListbox<
 			if (Array.isArray($selected)) {
 				return $selected.some((o) => deepEqual(o.value, value));
 			}
-			if (typeof value === 'object' && value !== null) {
-				return deepEqual($selected?.value, removeUndefinedValues(value));
+			if (isObject(value)) {
+				return deepEqual($selected?.value, stripValues(value, undefined));
 			}
 			return deepEqual($selected?.value, value);
 		};
@@ -495,23 +498,23 @@ export function createListbox<
 								focusTrap: null,
 								clickOutside: $closeOnOutsideClick
 									? {
-											handler: (e) => {
-												const target = e.target;
-												if (!isElement(target)) return;
-												if (target === $activeTrigger || $activeTrigger.contains(target)) {
-													return;
-												}
-												closeMenu();
-											},
-											ignore: ignoreHandler,
-									  }
+										handler: (e) => {
+											const target = e.target;
+											if (!isElement(target)) return;
+											if (target === $activeTrigger || $activeTrigger.contains(target)) {
+												return;
+											}
+											closeMenu();
+										},
+										ignore: ignoreHandler,
+									}
 									: null,
 								escapeKeydown: $closeOnEscape
 									? {
-											handler: () => {
-												closeMenu();
-											},
-									  }
+										handler: () => {
+											closeMenu();
+										},
+									}
 									: null,
 								portal: getPortalDestination(node, $portal),
 							},
@@ -553,22 +556,22 @@ export function createListbox<
 		stores: [selected],
 		returned:
 			([$selected]) =>
-			(props: ListboxOptionProps<Value>) => {
-				const selected = Array.isArray($selected)
-					? $selected.some((o) => deepEqual(o.value, props.value))
-					: deepEqual($selected?.value, props.value);
+				(props: ListboxOptionProps<Value>) => {
+					const selected = Array.isArray($selected)
+						? $selected.some((o) => deepEqual(o.value, props.value))
+						: deepEqual($selected?.value, props.value);
 
-				return {
-					'data-value': JSON.stringify(props.value),
-					'data-label': props.label,
-					'data-disabled': disabledAttr(props.disabled),
-					'aria-disabled': props.disabled ? true : undefined,
-					'aria-selected': selected,
-					'data-selected': selected ? '' : undefined,
-					id: generateId(),
-					role: 'option',
-				} as const;
-			},
+					return {
+						'data-value': JSON.stringify(props.value),
+						'data-label': props.label,
+						'data-disabled': disabledAttr(props.disabled),
+						'aria-disabled': props.disabled ? true : undefined,
+						'aria-selected': selected,
+						'data-selected': selected ? '' : undefined,
+						id: generateId(),
+						role: 'option',
+					} as const;
+				},
 		action: (node: HTMLElement): MeltActionReturn<ListboxEvents['item']> => {
 			const unsubscribe = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
