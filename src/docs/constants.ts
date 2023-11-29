@@ -113,7 +113,7 @@ export const PROPS = {
 	}),
 	POSITIONING: (args: PropArgs = {}): Prop => ({
 		name: 'positioning',
-		default: args.default ?? 'positioning: "bottom"',
+		default: args.default ?? 'placement: "bottom"',
 		description: DESCRIPTIONS.FLOATING_CONFIG,
 		type: 'FloatingConfig',
 		longType: {
