@@ -176,4 +176,38 @@ describe('Dialog', () => {
 		await user.keyboard(kbd.ESCAPE);
 		await waitFor(() => expect(getByTestId('closeFocus')).toHaveFocus());
 	});
+
+	it('Respects the `closeOnOutsideClick` prop', async () => {
+		const { getByTestId, user, trigger } = setup({
+			closeOnOutsideClick: false,
+		});
+		const content = getByTestId('content');
+		const overlay = getByTestId('overlay');
+
+		expect(trigger).toBeVisible();
+		expect(content).not.toBeVisible();
+		await user.click(trigger);
+		expect(content).toBeVisible();
+		await sleep(100);
+		expect(overlay).toBeVisible();
+		await user.click(overlay);
+		expect(content).toBeVisible();
+	});
+
+	it('When closeOnOutsideClick is false, clicking floating closer closes dialog', async () => {
+		const { getByTestId, user, trigger } = setup({
+			closeOnOutsideClick: false,
+		});
+		const content = getByTestId('content');
+
+		expect(trigger).toBeVisible();
+		expect(content).not.toBeVisible();
+		await user.click(trigger);
+		expect(content).toBeVisible();
+		await sleep(100);
+		const closer = getByTestId('floating-closer');
+		await waitFor(() => expect(closer).toBeVisible());
+		await user.click(closer);
+		await waitFor(() => expect(content).not.toBeVisible());
+	});
 });

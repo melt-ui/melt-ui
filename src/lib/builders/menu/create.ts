@@ -34,11 +34,13 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn, TextDirection } from '$lib/internal/types.js';
-import { onMount, tick } from 'svelte';
+import { tick } from 'svelte';
 import { derived, get, writable, type Writable } from 'svelte/store';
 
+import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { MenuEvents } from './events.js';
 import type {
+	Selector,
 	_CheckboxItemProps,
 	_CreateMenuProps,
 	_CreateRadioGroupProps,
@@ -46,7 +48,6 @@ import type {
 	_MenuBuilderOptions,
 	_MenuParts,
 	_RadioItemProps,
-	Selector,
 } from './types.js';
 
 export const SUB_OPEN_KEYS: Record<TextDirection, string[]> = {
@@ -653,7 +654,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 		const subIds = toWritableStores({ ...generateIds(menuIdParts), ...withDefaults.ids });
 
-		onMount(() => {
+		safeOnMount(() => {
 			/**
 			 * Set active trigger on mount to handle controlled/forceVisible
 			 * state.
@@ -1046,7 +1047,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		};
 	};
 
-	onMount(() => {
+	safeOnMount(() => {
 		/**
 		 * We need to set the active trigger on mount to cover the
 		 * case where the user sets the `open` store to `true` without

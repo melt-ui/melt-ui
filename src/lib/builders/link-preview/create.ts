@@ -19,8 +19,8 @@ import {
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
+import { safeOnMount } from '$lib/internal/helpers/lifecycle';
 import type { MeltActionReturn } from '$lib/internal/types.js';
-import { onMount } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id';
 import { omit } from '../../internal/helpers/object';
@@ -274,7 +274,7 @@ export function createLinkPreview(props: CreateLinkPreviewProps = {}) {
 		};
 	});
 
-	onMount(() => {
+	safeOnMount(() => {
 		const triggerEl = document.getElementById(get(ids.trigger));
 		if (!triggerEl) return;
 		activeTrigger.set(triggerEl);

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createSelect, melt } from '$lib/index.js';
-	import { Check, ChevronDown } from 'lucide-svelte';
+	import { Check } from 'lucide-svelte';
 	import { tick } from 'svelte';
 
 	export let multiple = false;

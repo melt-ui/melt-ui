@@ -36,9 +36,10 @@ import {
 	toWritableStores,
 	toggle,
 } from '$lib/internal/helpers/index.js';
+import { safeOnMount } from '$lib/internal/helpers/lifecycle';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { dequal as deepEqual } from 'dequal';
-import { onMount, tick } from 'svelte';
+import { tick } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id';
 import { createLabel } from '../label/create.js';
@@ -626,7 +627,7 @@ export function createListbox<
 	/* LIFECYCLE & EFFECTS */
 	/* ------------------- */
 
-	onMount(() => {
+	safeOnMount(() => {
 		if (!isBrowser) return;
 		const menuEl = document.getElementById(get(ids.menu));
 		if (!menuEl) return;
