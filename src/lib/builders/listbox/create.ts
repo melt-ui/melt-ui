@@ -553,13 +553,11 @@ export function createListbox<
 	});
 
 	const option = builder(name('option'), {
-		stores: [selected],
+		stores: [isSelected],
 		returned:
-			([$selected]) =>
+			([$isSelected]) =>
 				(props: ListboxOptionProps<Value>) => {
-					const selected = Array.isArray($selected)
-						? $selected.some((o) => deepEqual(o.value, props.value))
-						: deepEqual($selected?.value, props.value);
+					const selected = $isSelected(props.value);
 
 					return {
 						'data-value': JSON.stringify(props.value),
