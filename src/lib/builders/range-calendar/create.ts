@@ -478,9 +478,6 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 					'data-focused': isFocusedDate ? '' : undefined,
 					'data-highlighted': isHighlighted ? '' : undefined,
 					tabindex: isFocusedDate ? 0 : isOutsideMonth || isDisabled ? undefined : -1,
-					// We share selection logic between this & the calendar builder
-					// so we aren't using the `melt` attr to select
-					'data-calendar-cell': '',
 				} as const;
 			};
 		},

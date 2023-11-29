@@ -463,9 +463,6 @@ export function createCalendar<
 					'data-outside-visible-months': isOutsideVisibleMonths ? '' : undefined,
 					'data-focused': isFocusedDate ? '' : undefined,
 					tabindex: isFocusedDate ? 0 : isOutsideMonth || isDisabled ? undefined : -1,
-					// We share some selection logic between this and the range calendar
-					// so we use a common data attr that isn't a `melt` attr
-					'data-calendar-cell': '',
 				} as const;
 			};
 		},

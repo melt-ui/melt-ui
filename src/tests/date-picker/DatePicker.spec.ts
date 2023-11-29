@@ -7,24 +7,35 @@ import DatePickerTest from './DatePickerTest.svelte';
 import { CalendarDate, CalendarDateTime, toZoned, today } from '@internationalized/date';
 import { tick } from 'svelte';
 import { sleep } from '$lib/internal/helpers';
+import type { CreateDatePickerProps } from '$lib';
 
 const calendarDateToday = today('America/New_York');
 const calendarDate = new CalendarDate(1980, 1, 20);
 const calendarDateTime = new CalendarDateTime(1980, 1, 20, 12, 30, 0, 0);
 const zonedDateTime = toZoned(calendarDateTime, 'America/New_York');
 
+function setup(props: CreateDatePickerProps = {}) {
+	const user = userEvent.setup();
+	const returned = render(DatePickerTest, props);
+	const trigger = returned.getByTestId('trigger');
+	return {
+		...returned,
+		user,
+		trigger,
+	};
+}
+
 describe('DatePicker', () => {
 	describe('Accessibility', () => {
 		test('has no accessibility violations', async () => {
-			const { container } = render(DatePickerTest);
+			const { container } = setup();
 
 			expect(await axe(container)).toHaveNoViolations();
 		});
 	});
 	describe('Props', () => {
 		test('populated with defaultValue - CalendarDate', async () => {
-			const user = userEvent.setup();
-			const { getByTestId, container } = render(DatePickerTest, {
+			const { getByTestId, user, trigger } = setup({
 				defaultValue: calendarDate,
 			});
 
@@ -38,21 +49,19 @@ describe('DatePicker', () => {
 			expect(yearSegment).toHaveTextContent(String(calendarDate.year));
 			expect(insideValue).toHaveTextContent(calendarDate.toString());
 
-			const trigger = getByTestId('trigger');
 			await user.click(trigger);
 
 			const calendar = getByTestId('calendar');
 			expect(calendar).toBeVisible();
 
-			const selectedDay = container.querySelector('[data-selected]');
+			const selectedDay = calendar.querySelector('[data-selected]');
 			expect(selectedDay).toHaveTextContent(String(calendarDate.day));
 
 			const heading = getByTestId('heading');
 			expect(heading).toHaveTextContent('January 1980');
 		});
 		test('populated with defaultValue - CalendarDateTime', async () => {
-			const user = userEvent.setup();
-			const { getByTestId, container } = render(DatePickerTest, {
+			const { getByTestId, user, trigger } = setup({
 				defaultValue: calendarDateTime,
 			});
 
@@ -70,13 +79,12 @@ describe('DatePicker', () => {
 			expect(minuteSegment).toHaveTextContent(String(calendarDateTime.minute));
 			expect(insideValue).toHaveTextContent(calendarDateTime.toString());
 
-			const trigger = getByTestId('trigger');
 			await user.click(trigger);
 
 			const calendar = getByTestId('calendar');
 			expect(calendar).toBeVisible();
 
-			const selectedDay = container.querySelector('[data-selected]');
+			const selectedDay = calendar.querySelector('[data-selected]');
 			expect(selectedDay).toHaveTextContent(String(calendarDateTime.day));
 
 			const heading = getByTestId('heading');
@@ -84,8 +92,7 @@ describe('DatePicker', () => {
 		});
 
 		test('populated with defaultValue - ZonedDateTime', async () => {
-			const user = userEvent.setup();
-			const { getByTestId, container } = render(DatePickerTest, {
+			const { getByTestId, trigger, user } = setup({
 				defaultValue: zonedDateTime,
 			});
 
@@ -107,13 +114,12 @@ describe('DatePicker', () => {
 			expect(timeZoneSegment).toHaveTextContent(String('EST'));
 			expect(insideValue).toHaveTextContent(zonedDateTime.toString());
 
-			const trigger = getByTestId('trigger');
 			await user.click(trigger);
 
 			const calendar = getByTestId('calendar');
 			expect(calendar).toBeVisible();
 
-			const selectedDay = container.querySelector('[data-selected]');
+			const selectedDay = calendar.querySelector('[data-selected]');
 			expect(selectedDay).toHaveTextContent(String(zonedDateTime.day));
 
 			const heading = getByTestId('heading');
@@ -121,12 +127,10 @@ describe('DatePicker', () => {
 		});
 
 		test('month navigation', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest, {
+			const { getByTestId, user, trigger } = setup({
 				defaultValue: zonedDateTime,
 			});
 
-			const trigger = getByTestId('trigger');
 			await user.click(trigger);
 
 			const calendar = getByTestId('calendar');
@@ -149,33 +153,29 @@ describe('DatePicker', () => {
 		});
 
 		test('prevent deselection', async () => {
-			const user = userEvent.setup();
-			const { getByTestId, container } = render(DatePickerTest, {
+			const { getByTestId, user, trigger } = setup({
 				defaultValue: zonedDateTime,
 				preventDeselect: true,
 			});
 
-			const trigger = getByTestId('trigger');
 			await user.click(trigger);
 
 			const calendar = getByTestId('calendar');
 			expect(calendar).toBeVisible();
 
-			const selectedDay = container.querySelector('[data-selected]') as HTMLElement;
+			const selectedDay = calendar.querySelector('[data-selected]') as HTMLElement;
 			expect(selectedDay).toHaveTextContent(String(zonedDateTime.day));
 
 			await user.click(selectedDay);
 
-			const selectedDayAfterClick = container.querySelector('[data-selected]') as HTMLElement;
+			const selectedDayAfterClick = calendar.querySelector('[data-selected]') as HTMLElement;
 			expect(selectedDayAfterClick).toHaveTextContent(String(zonedDateTime.day));
 		});
 
 		test('selection with mouse', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest, {
+			const { getByTestId, user, trigger } = setup({
 				defaultPlaceholder: zonedDateTime,
 			});
-			const trigger = getByTestId('trigger');
 			await user.click(trigger);
 			const calendar = getByTestId('calendar');
 			expect(calendar).toBeVisible();
@@ -189,11 +189,9 @@ describe('DatePicker', () => {
 		});
 
 		test('selection with keyboard', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest, {
+			const { getByTestId, trigger, user } = setup({
 				defaultPlaceholder: zonedDateTime,
 			});
-			const trigger = getByTestId('trigger');
 			await user.click(trigger);
 			await sleep(1);
 			const calendar = getByTestId('calendar');
@@ -218,7 +216,7 @@ describe('DatePicker', () => {
 		});
 
 		test('locale changes segment positioning', async () => {
-			const { getByTestId } = render(DatePickerTest, {
+			const { getByTestId } = setup({
 				locale: 'en-UK',
 			});
 
@@ -234,7 +232,7 @@ describe('DatePicker', () => {
 		});
 
 		test('certain locales do not show day period segment', async () => {
-			const { queryByTestId } = render(DatePickerTest, {
+			const { queryByTestId } = setup({
 				locale: 'en-UK',
 				defaultValue: calendarDateTime,
 			});
@@ -242,7 +240,7 @@ describe('DatePicker', () => {
 		});
 
 		test('certain locales do show day period segment', async () => {
-			const { queryByTestId } = render(DatePickerTest, {
+			const { queryByTestId } = setup({
 				defaultValue: calendarDateTime,
 			});
 			expect(queryByTestId('dayPeriod')).not.toBeNull();
@@ -251,8 +249,7 @@ describe('DatePicker', () => {
 
 	describe('Navigation', () => {
 		test('focuses first segment on click', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest);
+			const { getByTestId, user } = setup();
 
 			const firstSegment = getByTestId('month');
 			await user.click(firstSegment);
@@ -261,8 +258,7 @@ describe('DatePicker', () => {
 		});
 
 		test('increments segment on arrow up', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest, {
+			const { getByTestId, user } = setup({
 				defaultPlaceholder: calendarDateToday,
 			});
 			const firstSegment = getByTestId('month');
@@ -279,7 +275,7 @@ describe('DatePicker', () => {
 
 		test('increments segment on arrow down', async () => {
 			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest, {
+			const { getByTestId } = setup({
 				defaultPlaceholder: calendarDateToday,
 			});
 
@@ -296,8 +292,7 @@ describe('DatePicker', () => {
 		});
 
 		test('increments segment on arrow down', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest, {
+			const { getByTestId, user } = setup({
 				defaultPlaceholder: calendarDateToday,
 			});
 
@@ -314,8 +309,7 @@ describe('DatePicker', () => {
 		});
 
 		test('navigates segments using arrow keys', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest);
+			const { getByTestId, user } = setup();
 
 			const monthSegment = getByTestId('month');
 			const daySegment = getByTestId('day');
@@ -343,13 +337,11 @@ describe('DatePicker', () => {
 		});
 
 		test('navigates segments using tab', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest);
+			const { getByTestId, user, trigger } = setup();
 
 			const monthSegment = getByTestId('month');
 			const daySegment = getByTestId('day');
 			const yearSegment = getByTestId('year');
-			const triggerSegment = getByTestId('trigger');
 
 			await user.click(monthSegment);
 			await user.keyboard(kbd.TAB);
@@ -359,16 +351,14 @@ describe('DatePicker', () => {
 			expect(yearSegment).toHaveFocus();
 
 			await user.keyboard(kbd.TAB);
-			expect(triggerSegment).toHaveFocus();
+			expect(trigger).toHaveFocus();
 		});
 
 		test('when no time selected, selecting', async () => {
-			const user = userEvent.setup();
-			const { getByTestId, queryByTestId } = render(DatePickerTest, {
+			const { getByTestId, queryByTestId, user, trigger } = setup({
 				granularity: 'minute',
 			});
 
-			const trigger = getByTestId('trigger');
 			await user.click(trigger);
 
 			const calendar = queryByTestId('calendar');
@@ -393,7 +383,7 @@ describe('DatePicker', () => {
 		});
 
 		test('correct segments are rendered with placeholder', async () => {
-			const { getByTestId } = render(DatePickerTest, {
+			const { getByTestId } = setup({
 				defaultPlaceholder: new CalendarDateTime(2021, 2, 1),
 			});
 
@@ -403,5 +393,13 @@ describe('DatePicker', () => {
 				expect(getByTestId(segment)).not.toBeNull();
 			}
 		});
+	});
+
+	test('clicking the label focuses the first segment', async () => {
+		const { getByTestId, user } = setup();
+		const label = getByTestId('label');
+		const monthSegment = getByTestId('month');
+		await user.click(label);
+		expect(monthSegment).toHaveFocus();
 	});
 });

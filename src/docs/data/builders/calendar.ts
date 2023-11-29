@@ -383,10 +383,6 @@ const cell = elementSchema('cell', {
 			value: 'Present when the date is focused.',
 		},
 		{
-			name: 'data-calendar-cell',
-			value: ATTRS.MELT('cell'),
-		},
-		{
 			name: 'data-melt-calendar-cell',
 			value: ATTRS.MELT('cell'),
 		},

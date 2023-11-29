@@ -189,10 +189,10 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 			...calendar.helpers,
 		},
 		options: {
-			...popover.options,
 			...rangeFieldOptions,
 			...rangeCalendarOptions,
 			...options,
+			...popover.options,
 		},
 		ids: {
 			rangeField: rangeField.ids,

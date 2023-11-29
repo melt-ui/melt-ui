@@ -8,6 +8,7 @@ import {
 	getPortalDestination,
 	handleFocus,
 	isBrowser,
+	isElement,
 	isHTMLElement,
 	kbd,
 	noop,
@@ -139,9 +140,7 @@ export function createPopover(args?: CreatePopoverProps) {
 								  },
 							clickOutside: $closeOnOutsideClick
 								? {
-										handler: () => {
-											handleClose();
-										},
+										handler: handleClickOutside,
 								  }
 								: null,
 							escapeKeydown: $closeOnEscape
@@ -177,6 +176,16 @@ export function createPopover(args?: CreatePopoverProps) {
 		if (triggerEl) {
 			activeTrigger.set(triggerEl);
 		}
+	}
+
+	function handleClickOutside(e: PointerEvent) {
+		const target = e.target;
+		const triggerEl = document.getElementById(get(ids.trigger));
+
+		if (triggerEl && isElement(target)) {
+			if (target === triggerEl || triggerEl.contains(target)) return;
+		}
+		handleClose();
 	}
 
 	const trigger = builder(name('trigger'), {

@@ -8,7 +8,7 @@ import { CalendarDate, CalendarDateTime, toZoned, type DateValue } from '@intern
 import { writable } from 'svelte/store';
 import { tick } from 'svelte';
 import CalendarMultiTest from './CalendarMultiTest.svelte';
-import type { CreateCalendarProps } from '$lib';
+import type { CreateCalendarProps } from '$lib/builders/index.js';
 
 const calendarDate = new CalendarDate(1980, 1, 20);
 const calendarDateTime = new CalendarDateTime(1980, 1, 20, 12, 30, 0, 0);

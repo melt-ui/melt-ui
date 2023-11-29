@@ -94,6 +94,7 @@ describe('Range Calendar', () => {
 		const heading = getByTestId('heading');
 		expect(heading).toHaveTextContent('January 1980');
 	});
+
 	test('populated with controlled value - CalendarDateTime', async () => {
 		const { getByTestId, calendar } = setup({
 			value: controlledCalendarDateTimeRange,
@@ -105,6 +106,7 @@ describe('Range Calendar', () => {
 		const heading = getByTestId('heading');
 		expect(heading).toHaveTextContent('January 1980');
 	});
+
 	test('populated with controlled value - CalendarDateTime', async () => {
 		const { getByTestId, calendar } = setup({
 			value: controlledZonedDateTimeRange,

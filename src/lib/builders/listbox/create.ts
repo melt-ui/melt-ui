@@ -23,6 +23,7 @@ import {
 	isHTMLButtonElement,
 	isHTMLElement,
 	isHTMLInputElement,
+	isObject,
 	kbd,
 	last,
 	next,
@@ -32,6 +33,7 @@ import {
 	prev,
 	removeHighlight,
 	removeScroll,
+	stripValues,
 	styleToString,
 	toWritableStores,
 	toggle,
@@ -234,6 +236,9 @@ export function createListbox<
 		return (value: Value) => {
 			if (Array.isArray($selected)) {
 				return $selected.some((o) => deepEqual(o.value, value));
+			}
+			if (isObject(value)) {
+				return deepEqual($selected?.value, stripValues(value, undefined, true));
 			}
 			return deepEqual($selected?.value, value);
 		};
@@ -546,13 +551,11 @@ export function createListbox<
 	});
 
 	const option = builder(name('option'), {
-		stores: [selected],
+		stores: [isSelected],
 		returned:
-			([$selected]) =>
+			([$isSelected]) =>
 			(props: ListboxOptionProps<Value>) => {
-				const selected = Array.isArray($selected)
-					? $selected.some((o) => deepEqual(o.value, props.value))
-					: deepEqual($selected?.value, props.value);
+				const selected = $isSelected(props.value);
 
 				return {
 					'data-value': JSON.stringify(props.value),

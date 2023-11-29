@@ -5,6 +5,7 @@ import { axe } from 'jest-axe';
 import { describe } from 'vitest';
 import DateRangeFieldTest from './DateRangeFieldTest.svelte';
 import { CalendarDate, CalendarDateTime, toZoned } from '@internationalized/date';
+import type { CreateDateRangeFieldProps } from '$lib';
 
 const exampleDate = {
 	start: new CalendarDate(2022, 1, 1),
@@ -21,6 +22,15 @@ const exampleZonedDateTime = {
 	end: toZoned(exampleDateTime.end, 'America/New_York'),
 };
 
+function setup(props: CreateDateRangeFieldProps = {}) {
+	const user = userEvent.setup();
+	const returned = render(DateRangeFieldTest, props);
+	return {
+		...returned,
+		user,
+	};
+}
+
 describe('DateField', () => {
 	describe('Accessibility', () => {
 		test('has no accessibility violations', async () => {
@@ -31,7 +41,7 @@ describe('DateField', () => {
 	});
 
 	test('segments populated with defaultValue - CalendarDate', async () => {
-		const { getByTestId } = render(DateRangeFieldTest, {
+		const { getByTestId } = setup({
 			defaultValue: exampleDate,
 		});
 
@@ -46,7 +56,7 @@ describe('DateField', () => {
 		});
 	});
 	test('segments populated with defaultValue - CalendarDateTime', async () => {
-		const { getByTestId } = render(DateRangeFieldTest, {
+		const { getByTestId } = setup({
 			defaultValue: exampleDateTime,
 		});
 
@@ -64,7 +74,7 @@ describe('DateField', () => {
 	});
 
 	test('segments populated with defaultValue - ZonedDateTime', async () => {
-		const { getByTestId } = render(DateRangeFieldTest, {
+		const { getByTestId } = setup({
 			defaultValue: exampleZonedDateTime,
 		});
 
@@ -81,15 +91,14 @@ describe('DateField', () => {
 	});
 
 	test('navigation between fields - left to right', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DateRangeFieldTest, {
+		const { getByTestId, user } = setup({
 			defaultValue: exampleDate,
 		});
 
 		const fields = ['start', 'end'] as const;
 		const segments = ['month', 'day', 'year'] as const;
 
-		await userEvent.click(getByTestId('start-month'));
+		await user.click(getByTestId('start-month'));
 
 		for (const field of fields) {
 			for (const segment of segments) {
@@ -100,7 +109,7 @@ describe('DateField', () => {
 			}
 		}
 
-		await userEvent.click(getByTestId('start-month'));
+		await user.click(getByTestId('start-month'));
 
 		for (const field of fields) {
 			for (const segment of segments) {
@@ -112,15 +121,14 @@ describe('DateField', () => {
 		}
 	});
 	test('navigation between fields - right to left', async () => {
-		const user = userEvent.setup();
-		const { getByTestId } = render(DateRangeFieldTest, {
+		const { getByTestId, user } = setup({
 			defaultValue: exampleDate,
 		});
 
 		const fields = ['end', 'start'] as const;
 		const segments = ['year', 'day', 'month'] as const;
 
-		await userEvent.click(getByTestId('end-year'));
+		await user.click(getByTestId('end-year'));
 
 		for (const field of fields) {
 			for (const segment of segments) {
@@ -131,7 +139,7 @@ describe('DateField', () => {
 			}
 		}
 
-		await userEvent.click(getByTestId('end-year'));
+		await user.click(getByTestId('end-year'));
 
 		for (const field of fields) {
 			for (const segment of segments) {
@@ -141,5 +149,13 @@ describe('DateField', () => {
 				expect(segmentEl).toHaveFocus();
 			}
 		}
+	});
+
+	test('clicking the label focuses the first segment', async () => {
+		const { getByTestId, user } = setup();
+		const label = getByTestId('label');
+		const monthSegment = getByTestId('start-month');
+		await user.click(label);
+		expect(monthSegment).toHaveFocus();
 	});
 });

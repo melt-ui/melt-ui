@@ -7,6 +7,9 @@ import {
 	omit,
 	effect,
 	styleToString,
+	executeCallbacks,
+	addMeltEventListener,
+	sleep,
 } from '$lib/internal/helpers/index.js';
 import {
 	dateStore,
@@ -14,6 +17,7 @@ import {
 	getAnnouncer,
 	isBefore,
 	areAllDaysBetweenValid,
+	getFirstSegment,
 } from '$lib/internal/helpers/date/index.js';
 import { derived, get, writable } from 'svelte/store';
 import { removeDescriptionElement } from './_internal/helpers.js';
@@ -147,10 +151,30 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	);
 
 	const label = builder(name('label'), {
-		stores: [ids.label],
-		returned: ([$labelId]) => {
+		stores: [isInvalid, options.disabled, ids.label],
+		returned: ([$isInvalid, $disabled, $labelId]) => {
 			return {
 				id: $labelId,
+				'data-invalid': $isInvalid ? '' : undefined,
+				'data-disabled': $disabled ? '' : undefined,
+			};
+		},
+		action: (node: HTMLElement) => {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					const firstSegment = getFirstSegment(get(ids.field));
+					if (!firstSegment) return;
+					sleep(1).then(() => firstSegment.focus());
+				}),
+				addMeltEventListener(node, 'mousedown', (e) => {
+					if (!e.defaultPrevented && e.detail > 1) {
+						e.preventDefault();
+					}
+				})
+			);
+
+			return {
+				destroy: unsub,
 			};
 		},
 	});

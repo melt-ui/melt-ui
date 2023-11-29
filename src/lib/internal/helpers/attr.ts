@@ -5,7 +5,7 @@ export function disabledAttr(disabled: boolean | undefined) {
 }
 
 export function ariaDisabledAttr(disabled: boolean | undefined) {
-	return disabled ? 'true' : undefined;
+	return disabled ? ('true' as const) : undefined;
 }
 
 export const hiddenInputAttrs = {
