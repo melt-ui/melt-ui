@@ -240,7 +240,7 @@ export function createListbox<
 				return $selected.some((o) => deepEqual(o.value, value));
 			}
 			if (isObject(value)) {
-				return deepEqual($selected?.value, stripValues(value, undefined));
+				return deepEqual($selected?.value, stripValues(value, undefined, true));
 			}
 			return deepEqual($selected?.value, value);
 		};
