@@ -62,7 +62,6 @@ export function isNumberString(value: string) {
 	return true;
 }
 
-
 export function isObject(value: unknown): value is Record<string, unknown> {
 	return value !== null && typeof value === 'object';
 }

@@ -81,7 +81,6 @@ describe('Combobox', () => {
 		expect(input).toHaveValue(options[1].label);
 	});
 
-
 	test('Shows correct label when defaultValue is provided', async () => {
 		const { getByTestId } = render(ComboboxTest, { defaultValue: 'Chocolate' });
 		const input = getByTestId('input');
@@ -91,11 +90,11 @@ describe('Combobox', () => {
 
 	test('Options with undefined values can be selected', async () => {
 		const options: ComboboxOptionProps[] = [
-			{ label: '1234', value: { id: 1234, station: undefined, lastTransmission: "2023-01-01" } },
-			{ label: '4321', value: { id: 4321, station: undefined, lastTransmission: "2023-01-01" } },
-			{ label: '2341', value: { id: 2341, station: undefined, lastTransmission: "2023-01-01" } },
-			{ label: '3412', value: { id: 3412, station: undefined, lastTransmission: "2023-01-01" } },
-			{ label: '5656', value: { id: 5656, station: "Station 1", lastTransmission: "2023-01-01" } },
+			{ label: '1234', value: { id: 1234, station: undefined, lastTransmission: '2023-01-01' } },
+			{ label: '4321', value: { id: 4321, station: undefined, lastTransmission: '2023-01-01' } },
+			{ label: '2341', value: { id: 2341, station: undefined, lastTransmission: '2023-01-01' } },
+			{ label: '3412', value: { id: 3412, station: undefined, lastTransmission: '2023-01-01' } },
+			{ label: '5656', value: { id: 5656, station: 'Station 1', lastTransmission: '2023-01-01' } },
 		];
 
 		const { getByTestId } = render(ComboboxTest, { options });
@@ -120,9 +119,9 @@ describe('Combobox', () => {
 		await user.click(input);
 		expect(menu).toBeVisible();
 		expect(firstItem).toHaveAttribute('data-selected');
-	})
+	});
 
-	test.todo('Selects multiple items when `multiple` is true')
+	test.todo('Selects multiple items when `multiple` is true');
 	test.todo('Manually setting the value updates the label');
 	test.todo('Updating options and setting the value updates the label');
 	test.todo('Respects the `closeOnEscape` prop');

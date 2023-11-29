@@ -24,13 +24,25 @@ type StripValues<T extends Record<string, unknown>, ToStrip> = {
 
 type StripValuesRecursive<T extends Record<string, unknown>, ToStrip> = {
 	[K in StrippedKeys<T, ToStrip>[keyof T]]: T[K] extends Record<string, unknown>
-	? StripValuesRecursive<T[K], ToStrip>
-	: T[K];
+		? StripValuesRecursive<T[K], ToStrip>
+		: T[K];
 };
 
-export function stripValues<T extends Record<string, unknown>, ToStrip>(inputObject: T, toStrip: ToStrip, recursive: false): StripValues<T, ToStrip>
-export function stripValues<T extends Record<string, unknown>, ToStrip>(inputObject: T, toStrip: ToStrip, recursive: true): StripValuesRecursive<T, ToStrip>
-export function stripValues<T extends Record<string, unknown>, ToStrip>(inputObject: T, toStrip: ToStrip, recursive: boolean) {
+export function stripValues<T extends Record<string, unknown>, ToStrip>(
+	inputObject: T,
+	toStrip: ToStrip,
+	recursive: false
+): StripValues<T, ToStrip>;
+export function stripValues<T extends Record<string, unknown>, ToStrip>(
+	inputObject: T,
+	toStrip: ToStrip,
+	recursive: true
+): StripValuesRecursive<T, ToStrip>;
+export function stripValues<T extends Record<string, unknown>, ToStrip>(
+	inputObject: T,
+	toStrip: ToStrip,
+	recursive: boolean
+) {
 	return Object.fromEntries(
 		Object.entries(inputObject).filter(([_, value]) => !dequal(value, toStrip))
 	) as typeof recursive extends true ? StripValuesRecursive<T, ToStrip> : StripValues<T, ToStrip>;
