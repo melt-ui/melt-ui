@@ -33,3 +33,7 @@ playwright-report
 .vercel
 
 src/pagefind/**/*
+
+deno.lock
+*.temp.css
+src/docs/previews/**/css-gen

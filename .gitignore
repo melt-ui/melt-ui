@@ -23,3 +23,7 @@ src/pagefind/**/*
 !src/pagefind/pagefind.js
 
 static/pagefind/**/*
+
+deno.lock
+*.temp.css
+src/docs/previews/**/css-gen

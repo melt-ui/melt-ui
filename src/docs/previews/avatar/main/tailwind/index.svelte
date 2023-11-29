@@ -23,43 +23,55 @@
 	});
 </script>
 
-<div class="flex w-full items-center justify-center gap-6">
+<div class="flex w-full items-center justify-center gap-6" data-class="root">
 	<div
 		class="flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100"
+		data-class="item"
 	>
 		<img
 			use:melt={$image}
 			alt="Avatar"
 			class="h-full w-full rounded-[inherit]"
+			data-class="avatar"
 		/>
-		<span use:melt={$fallback} class="text-3xl font-medium text-magnum-700"
-			>RH</span
+		<span
+			use:melt={$fallback}
+			class="text-3xl font-medium text-magnum-700"
+			data-class="fallback">RH</span
 		>
 	</div>
 
 	<div
 		class="flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100"
+		data-class="item"
 	>
 		<img
 			use:melt={$imageA}
 			alt="Avatar"
 			class="h-full w-full rounded-[inherit]"
+			data-class="avatar"
 		/>
-		<span use:melt={$fallbackA} class="text-3xl font-medium text-magnum-700"
-			>SH</span
+		<span
+			use:melt={$fallbackA}
+			class="text-3xl font-medium text-magnum-700"
+			data-class="fallback">SH</span
 		>
 	</div>
 
 	<div
 		class="flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100"
+		data-class="item"
 	>
 		<img
 			use:melt={$imageB}
 			alt="Avatar"
 			class="h-full w-full rounded-[inherit]"
+			data-class="avatar"
 		/>
-		<span use:melt={$fallbackB} class="text-3xl font-medium text-magnum-700"
-			>UI</span
+		<span
+			use:melt={$fallbackB}
+			class="text-3xl font-medium text-magnum-700"
+			data-class="fallback">UI</span
 		>
 	</div>
 </div>

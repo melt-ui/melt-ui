@@ -1,0 +1,5 @@
+{
+	"tasks": {
+		"dev": "deno run --allow-read --allow-write --allow-run ./scripts/generate-previews/index.ts"
+	}
+}
