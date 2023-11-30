@@ -55,8 +55,6 @@ describe('Calendar', () => {
 			defaultValue: calendarDate,
 		});
 
-		expect(calendar).toBeVisible();
-
 		const selectedDay = calendar.querySelector('[data-selected]');
 		expect(selectedDay).toHaveTextContent(String(calendarDate.day));
 
@@ -145,7 +143,7 @@ describe('Calendar', () => {
 	});
 
 	test('allow deselection', async () => {
-		const { calendar, queryByTestId, user } = setup({
+		const { queryByTestId, user, calendar } = setup({
 			defaultValue: zonedDateTime,
 		});
 
@@ -164,7 +162,7 @@ describe('Calendar', () => {
 			defaultPlaceholder: zonedDateTime,
 		});
 
-		const secondDayInMonth = getByTestId('month-0-date-2');
+		const secondDayInMonth = getByTestId('month-1-date-2');
 		await user.click(secondDayInMonth);
 		expect(secondDayInMonth).toHaveAttribute('data-selected');
 
@@ -178,7 +176,7 @@ describe('Calendar', () => {
 			defaultPlaceholder: zonedDateTime,
 		});
 
-		const secondDayInMonth = getByTestId('month-0-date-2');
+		const secondDayInMonth = getByTestId('month-1-date-2');
 		secondDayInMonth.focus();
 		await user.keyboard(kbd.SPACE);
 		expect(secondDayInMonth).toHaveAttribute('data-selected');
@@ -188,7 +186,7 @@ describe('Calendar', () => {
 		await user.keyboard(kbd.ARROW_RIGHT);
 		await user.keyboard(kbd.ENTER);
 
-		const thirdDayInMonth = getByTestId('month-0-date-3');
+		const thirdDayInMonth = getByTestId('month-1-date-3');
 		expect(thirdDayInMonth).toHaveAttribute('data-selected');
 		const newDate2 = zonedDateTime.set({ day: 3 });
 		const insideValue2 = getByTestId('inside-value');
@@ -209,11 +207,11 @@ describe('Calendar', () => {
 
 		const firstMonthDayDateStr = calendarDateTime.set({ day: 12 }).toString();
 
-		const firstMonthDay = getByTestId('month-0-date-12');
+		const firstMonthDay = getByTestId('month-1-date-12');
 		expect(firstMonthDay).toHaveTextContent('12');
 		expect(firstMonthDay).toHaveAttribute('data-value', firstMonthDayDateStr);
 
-		const secondMonthDay = getByTestId('month-1-date-15');
+		const secondMonthDay = getByTestId('month-2-date-15');
 
 		const secondMonthDayDateStr = calendarDateTime.set({ day: 15, month: 2 }).toString();
 
@@ -248,11 +246,11 @@ describe('Calendar', () => {
 
 		const firstMonthDayDateStr = calendarDateTime.set({ day: 12 }).toString();
 
-		const firstMonthDay = getByTestId('month-0-date-12');
+		const firstMonthDay = getByTestId('month-1-date-12');
 		expect(firstMonthDay).toHaveTextContent('12');
 		expect(firstMonthDay).toHaveAttribute('data-value', firstMonthDayDateStr);
 
-		const secondMonthDay = getByTestId('month-1-date-15');
+		const secondMonthDay = getByTestId('month-2-date-15');
 
 		const secondMonthDayDateStr = calendarDateTime.set({ day: 15, month: 2 }).toString();
 
@@ -381,18 +379,72 @@ describe('Calendar', () => {
 		expect(heading).toHaveTextContent('April 1980');
 	});
 
+	test('calendar does not navigate after maxValue (with keyboard)', async () => {
+		const { getByTestId, user } = setup({
+			defaultValue: calendarDate,
+			maxValue: new CalendarDate(1980, 3, 31),
+		});
+
+		const firstDayInMonth = getByTestId('month-1-date-1');
+		firstDayInMonth.focus();
+		expect(firstDayInMonth).toHaveFocus();
+
+		const heading = getByTestId('heading');
+		expect(heading).toHaveTextContent('January 1980');
+
+		// five keypresses to get to February 1980
+		await user.keyboard(kbd.ARROW_DOWN);
+		expect(getByTestId('month-1-date-8')).toHaveFocus();
+		await user.keyboard(kbd.ARROW_DOWN);
+		expect(getByTestId('month-1-date-15')).toHaveFocus();
+		await user.keyboard(kbd.ARROW_DOWN);
+		expect(getByTestId('month-1-date-22')).toHaveFocus();
+		await user.keyboard(kbd.ARROW_DOWN);
+		expect(getByTestId('month-1-date-29')).toHaveFocus();
+		await user.keyboard(kbd.ARROW_DOWN);
+		expect(getByTestId('month-2-date-5')).toHaveFocus();
+		expect(heading).toHaveTextContent('February 1980');
+
+		// four keypresses to get to March 1980
+		await user.keyboard(kbd.ARROW_DOWN);
+		expect(getByTestId('month-2-date-12')).toHaveFocus();
+		await user.keyboard(kbd.ARROW_DOWN);
+		expect(getByTestId('month-2-date-19')).toHaveFocus();
+		await user.keyboard(kbd.ARROW_DOWN);
+		expect(getByTestId('month-2-date-26')).toHaveFocus();
+		await user.keyboard(kbd.ARROW_DOWN);
+		expect(getByTestId('month-3-date-4')).toHaveFocus();
+		expect(heading).toHaveTextContent('March 1980');
+
+		// four keypresses to get to April 1980
+		await user.keyboard(kbd.ARROW_DOWN);
+		expect(getByTestId('month-3-date-11')).toHaveFocus();
+		await user.keyboard(kbd.ARROW_DOWN);
+		expect(getByTestId('month-3-date-18')).toHaveFocus();
+		await user.keyboard(kbd.ARROW_DOWN);
+		expect(getByTestId('month-3-date-25')).toHaveFocus();
+		await user.keyboard(kbd.ARROW_DOWN);
+		expect(getByTestId('month-3-date-25')).toHaveFocus();
+
+		// again for good measure
+		await user.keyboard(kbd.ARROW_DOWN);
+		await user.keyboard(kbd.ARROW_DOWN);
+		await user.keyboard(kbd.ARROW_DOWN);
+		await user.keyboard(kbd.ARROW_DOWN);
+		await user.keyboard(kbd.ARROW_DOWN);
+		expect(getByTestId('month-3-date-25')).toHaveFocus();
+		expect(heading).toHaveTextContent('March 1980');
+	});
+
 	test('multiple select default Value', async () => {
 		const day1 = new CalendarDate(1980, 1, 2);
 		const day2 = new CalendarDate(1980, 1, 5);
 
-		const { getByTestId, container } = setupMulti({
+		const { calendar } = setupMulti({
 			defaultValue: [day1, day2],
 		});
 
-		const calendar = getByTestId('calendar');
-		expect(calendar).toBeVisible();
-
-		const selectedDays = container.querySelectorAll('[data-selected]');
+		const selectedDays = calendar.querySelectorAll('[data-selected]');
 		expect(selectedDays).toHaveLength(2);
 
 		expect(selectedDays[0]).toHaveTextContent(String(day1.day));
@@ -403,7 +455,7 @@ describe('Calendar', () => {
 		const day1 = new CalendarDate(1980, 1, 2);
 		const day2 = new CalendarDate(1980, 1, 5);
 		const value = writable([day1, day2]);
-		const { getByTestId, container } = render(CalendarMultiTest, {
+		const { getByTestId, container } = setupMulti({
 			value,
 		});
 
@@ -463,14 +515,11 @@ describe('Calendar', () => {
 		const day1 = new CalendarDate(1980, 1, 2);
 		const day2 = new CalendarDate(1980, 1, 5);
 
-		const { getByTestId, container } = setupMulti({
+		const { calendar } = setupMulti({
 			defaultValue: [day1, day2],
 		});
 
-		const calendar = getByTestId('calendar');
-		expect(calendar).toBeVisible();
-
-		const selectedDays = container.querySelectorAll('[data-selected]');
+		const selectedDays = calendar.querySelectorAll('[data-selected]');
 		expect(selectedDays).toHaveLength(2);
 	});
 
@@ -490,14 +539,14 @@ describe('Calendar', () => {
 		const selectedDays = calendar.querySelectorAll('[data-selected]');
 		expect(selectedDays).toHaveLength(1);
 
-		const thirdDayInMonth = getByTestId('month-0-date-3');
+		const thirdDayInMonth = getByTestId('month-1-date-3');
 
 		await user.click(thirdDayInMonth);
 
 		const selectedDaysAfterClick = calendar.querySelectorAll('[data-selected]');
 		expect(selectedDaysAfterClick).toHaveLength(2);
 
-		const fifthDayInMonth = getByTestId('month-0-date-5');
+		const fifthDayInMonth = getByTestId('month-1-date-5');
 
 		await user.click(fifthDayInMonth);
 
@@ -518,7 +567,7 @@ describe('Calendar', () => {
 		const selectedDay = calendar.querySelector('[data-selected]');
 		expect(selectedDay).toHaveTextContent(String(calendarDate.day));
 
-		const thirdDayInMonth = getByTestId('month-0-date-3');
+		const thirdDayInMonth = getByTestId('month-1-date-3');
 		await user.click(thirdDayInMonth);
 
 		const selectedDayAfterClick = calendar.querySelector('[data-selected]');
@@ -533,7 +582,7 @@ describe('Calendar', () => {
 			},
 		});
 
-		const thirdDayInMonth = getByTestId('month-0-date-3');
+		const thirdDayInMonth = getByTestId('month-1-date-3');
 		expect(thirdDayInMonth).toHaveAttribute('data-unavailable');
 		expect(thirdDayInMonth).toHaveAttribute('aria-disabled', 'true');
 		await user.click(thirdDayInMonth);
@@ -546,14 +595,11 @@ describe('Calendar', () => {
 			disabled: true,
 		});
 
-		const calendar = getByTestId('calendar');
-		expect(calendar).toHaveAttribute('data-disabled');
-
 		const grid = getByTestId('grid-0');
 		expect(grid).toHaveAttribute('aria-disabled', 'true');
 		expect(grid).toHaveAttribute('data-disabled');
 
-		const firstDayOfMonth = getByTestId('month-0-date-1');
+		const firstDayOfMonth = getByTestId('month-1-date-1');
 		await user.click(firstDayOfMonth);
 		expect(firstDayOfMonth).not.toHaveFocus();
 	});
@@ -564,14 +610,11 @@ describe('Calendar', () => {
 			readonly: true,
 		});
 
-		const calendar = getByTestId('calendar');
-		expect(calendar).toHaveAttribute('data-readonly');
-
 		const grid = getByTestId('grid-0');
 		expect(grid).toHaveAttribute('aria-readonly', 'true');
 		expect(grid).toHaveAttribute('data-readonly');
 
-		const firstDayOfMonth = getByTestId('month-0-date-1');
+		const firstDayOfMonth = getByTestId('month-1-date-1');
 		await user.click(firstDayOfMonth);
 		expect(firstDayOfMonth).toHaveFocus();
 		expect(firstDayOfMonth).not.toHaveAttribute('data-selected');

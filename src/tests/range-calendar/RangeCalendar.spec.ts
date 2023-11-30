@@ -1,4 +1,4 @@
-import { kbd } from '$lib/internal/helpers/keyboard.js';
+import { testKbd as kbd } from '../utils.js';
 import { render } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -151,7 +151,7 @@ describe('Range Calendar', () => {
 		expect(startValue).toHaveTextContent(String(calendarDateRange.start));
 		expect(endValue).toHaveTextContent(String(calendarDateRange.end));
 
-		const fifthDayInMonth = getByTestId('month-0-date-5');
+		const fifthDayInMonth = getByTestId('month-1-date-5');
 		await user.click(fifthDayInMonth);
 		expect(fifthDayInMonth).toHaveFocus();
 
@@ -159,7 +159,7 @@ describe('Range Calendar', () => {
 		expect(selectedDays).toHaveLength(1);
 		expect(startValue).toHaveTextContent(String(undefined));
 		expect(endValue).toHaveTextContent(String(undefined));
-		const seventhDayInMonth = getByTestId('month-0-date-7');
+		const seventhDayInMonth = getByTestId('month-1-date-7');
 		await user.click(seventhDayInMonth);
 		await tick();
 		expect(calendar.querySelectorAll('[data-selected]')).toHaveLength(3);
@@ -170,22 +170,22 @@ describe('Range Calendar', () => {
 			defaultPlaceholder: calendarDateRange.start,
 		});
 
-		const secondDayInMonth = getByTestId('month-0-date-2');
-		const thirdDayInMonth = getByTestId('month-0-date-3');
-		const fourthDayInMonth = getByTestId('month-0-date-4');
+		const secondDayInMonth = getByTestId('month-1-date-2');
+		const thirdDayInMonth = getByTestId('month-1-date-3');
+		const fourthDayInMonth = getByTestId('month-1-date-4');
 		secondDayInMonth.focus();
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 		expect(secondDayInMonth).toHaveAttribute('data-selected');
 
-		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(kbd.ARROW_RIGHT);
 		expect(thirdDayInMonth).toHaveFocus();
 		await tick();
 		expect(thirdDayInMonth).toHaveAttribute('data-focused');
-		await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+		await user.keyboard(kbd.ARROW_RIGHT);
 		await tick();
 		expect(thirdDayInMonth).toHaveAttribute('data-highlighted');
 		expect(fourthDayInMonth).toHaveFocus();
-		await user.keyboard(`{${kbd.SPACE}}`);
+		await user.keyboard(kbd.SPACE);
 		expect(fourthDayInMonth).toHaveAttribute('data-selected');
 
 		const selectedDays = calendar.querySelectorAll('[data-selected]');
@@ -201,7 +201,7 @@ describe('Range Calendar', () => {
 		const heading = getByTestId('heading');
 		expect(heading).toHaveTextContent('January - February 1980');
 
-		const firstMonthDay = getByTestId('month-0-date-12');
+		const firstMonthDay = getByTestId('month-1-date-12');
 		expect(firstMonthDay).toHaveTextContent('12');
 
 		const secondMonthDay = getByTestId('month-1-date-15');
@@ -232,11 +232,11 @@ describe('Range Calendar', () => {
 
 		const firstMonthDayDateStr = calendarDateRange.start.set({ day: 12 }).toString();
 
-		const firstMonthDay = getByTestId('month-0-date-12');
+		const firstMonthDay = getByTestId('month-1-date-12');
 		expect(firstMonthDay).toHaveTextContent('12');
 		expect(firstMonthDay).toHaveAttribute('data-value', firstMonthDayDateStr);
 
-		const secondMonthDay = getByTestId('month-1-date-15');
+		const secondMonthDay = getByTestId('month-2-date-15');
 
 		const secondMonthDayDateStr = calendarDateRange.start.set({ day: 15, month: 2 }).toString();
 
@@ -385,10 +385,10 @@ describe('Range Calendar', () => {
 		const selectedDays = calendar.querySelectorAll('[data-selected]');
 		expect(selectedDays).toHaveLength(6);
 
-		const thirdDayInMonth = getByTestId('month-0-date-3');
+		const thirdDayInMonth = getByTestId('month-1-date-3');
 		await user.click(thirdDayInMonth);
 		await tick();
-		const fourthDayInMonth = getByTestId('month-0-date-4');
+		const fourthDayInMonth = getByTestId('month-1-date-4');
 		await user.click(fourthDayInMonth);
 		await tick();
 
@@ -404,7 +404,7 @@ describe('Range Calendar', () => {
 			},
 		});
 
-		const thirdDayInMonth = getByTestId('month-0-date-3');
+		const thirdDayInMonth = getByTestId('month-1-date-3');
 		expect(thirdDayInMonth).toHaveAttribute('data-unavailable');
 		expect(thirdDayInMonth).toHaveAttribute('aria-disabled', 'true');
 		await user.click(thirdDayInMonth);
@@ -419,7 +419,7 @@ describe('Range Calendar', () => {
 			},
 		});
 
-		const thirdDayInMonth = getByTestId('month-0-date-3');
+		const thirdDayInMonth = getByTestId('month-1-date-3');
 		expect(thirdDayInMonth).toHaveAttribute('data-disabled');
 		expect(thirdDayInMonth).toHaveAttribute('aria-disabled', 'true');
 		await user.click(thirdDayInMonth);
@@ -427,23 +427,20 @@ describe('Range Calendar', () => {
 	});
 
 	test('Selection through disabled with double click doesnt select dates', async () => {
-		const { getByTestId, container, user } = setup({
+		const { getByTestId, calendar, user } = setup({
 			defaultPlaceholder: calendarDateRange.start,
 			isDateDisabled: (date) => {
 				return date.day === 3;
 			},
 		});
 
-		const calendar = getByTestId('calendar');
-		expect(calendar).toBeVisible();
-
-		const firstDayInMonth = getByTestId('month-0-date-1');
+		const firstDayInMonth = getByTestId('month-1-date-1');
 		await user.click(firstDayInMonth);
 		expect(firstDayInMonth).toHaveAttribute('data-selected');
 
-		const fifthDayInMonth = getByTestId('month-0-date-5');
+		const fifthDayInMonth = getByTestId('month-1-date-5');
 		await user.dblClick(fifthDayInMonth);
 
-		expect(container.querySelectorAll('[data-selected]')).toHaveLength(1);
+		expect(calendar.querySelectorAll('[data-selected]')).toHaveLength(1);
 	});
 });
