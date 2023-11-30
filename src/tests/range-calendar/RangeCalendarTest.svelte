@@ -91,7 +91,7 @@
 											<div
 												use:melt={$cell(date, month.value)}
 												class="cell"
-												data-testid="month-{i}-date-{date.day}"
+												data-testid="month-{date.month}-date-{date.day}"
 											>
 												{date.day}
 											</div>

@@ -867,7 +867,9 @@ import { generateIds } from '../../internal/helpers/id'
 			 * focus by the difference between the nextIndex
 			 */
 
-			// shift the calendar back a month
+			// shift the calendar back a month unless previous month is disabled
+			if (get(isPrevButtonDisabled)) return;
+
 			const $months = get(months);
 			const firstMonth = $months[0].value;
 			const $numberOfMonths = get(numberOfMonths);
@@ -901,7 +903,9 @@ import { generateIds } from '../../internal/helpers/id'
 			 * shift focus by the nextIndex amount.
 			 */
 
-			// shift the calendar forward a month
+			// shift the calendar forward a month unless next month is disabled
+			if (get(isNextButtonDisabled)) return;
+
 			const $months = get(months);
 			const firstMonth = $months[0].value;
 			const $numberOfMonths = get(numberOfMonths);

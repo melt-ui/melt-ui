@@ -2,6 +2,7 @@
 	import { createCalendar, type CreateCalendarProps } from '$lib/builders';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
 	import { melt } from '$lib';
+	import { removeUndefined } from '../utils';
 
 	export let value: CreateCalendarProps['value'] = undefined;
 	export let defaultValue: CreateCalendarProps['defaultValue'] = undefined;
@@ -27,28 +28,30 @@
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
 		states: { value: insideValue, months, headingValue, daysOfWeek },
-	} = createCalendar({
-		value,
-		defaultValue,
-		defaultPlaceholder,
-		onValueChange,
-		onPlaceholderChange,
-		isDateUnavailable,
-		isDateDisabled,
-		locale,
-		calendarLabel,
-		preventDeselect,
-		numberOfMonths,
-		pagedNavigation,
-		placeholder,
-		weekStartsOn,
-		fixedWeeks,
-		minValue,
-		maxValue,
-		multiple,
-		disabled,
-		readonly,
-	});
+	} = createCalendar(
+		removeUndefined({
+			value,
+			defaultValue,
+			defaultPlaceholder,
+			onValueChange,
+			onPlaceholderChange,
+			isDateUnavailable,
+			isDateDisabled,
+			locale,
+			calendarLabel,
+			preventDeselect,
+			numberOfMonths,
+			pagedNavigation,
+			placeholder,
+			weekStartsOn,
+			fixedWeeks,
+			minValue,
+			maxValue,
+			multiple,
+			disabled,
+			readonly,
+		})
+	);
 </script>
 
 <main class="flex h-full">
@@ -70,93 +73,90 @@
 						<ChevronRight />
 					</button>
 				</header>
-				{#each $months as month, i (i)}
-					{@const { weeks } = month}
-					<table use:melt={$grid} class="w-full" data-testid="grid-{i}">
-						<thead aria-hidden="true">
-							<tr>
-								{#each $daysOfWeek as day, idx}
-									<th class="text-sm font-semibold text-magnum-800">
-										<div
-											class="flex h-6 w-6 items-center justify-center p-4"
-											data-testid="day-of-week-{idx}"
-										>
-											{day}
-										</div>
-									</th>
-								{/each}
-							</tr>
-						</thead>
-						<tbody>
-							{#each weeks as days, idx}
-								<tr data-testid="week-{idx + 1}">
-									{#each days as date}
-										<td role="gridcell">
+				<div>
+					{#each $months as month, i}
+						<table use:melt={$grid} class="w-full" data-testid="grid-{i}">
+							<thead aria-hidden="true">
+								<tr>
+									{#each $daysOfWeek as day, idx}
+										<th class="text-sm font-semibold text-magnum-800">
 											<div
-												use:melt={$cell(date, month.value)}
-												class="cell"
-												data-testid="month-{i}-date-{date.day}"
+												class="flex h-6 w-6 items-center justify-center p-4"
+												data-testid="day-of-week-{idx}"
 											>
-												{date.day}
+												{day}
 											</div>
-										</td>
+										</th>
 									{/each}
 								</tr>
-							{/each}
-						</tbody>
-					</table>
-				{/each}
+							</thead>
+							<tbody>
+								{#each month.weeks as days, idx}
+									<tr data-testid="week-{idx + 1}">
+										{#each days as date}
+											<td role="gridcell">
+												<div
+													use:melt={$cell(date, month.value)}
+													class="cell"
+													data-testid="month-{date.month}-date-{date.day}"
+												>
+													{date.day}
+												</div>
+											</td>
+										{/each}
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					{/each}
+				</div>
 			</div>
 		</div>
 	</div>
 </main>
 
 <style lang="postcss">
-	.input {
-		@apply flex h-8 w-full rounded-md border border-magnum-800 bg-transparent px-2.5 text-sm;
-		@apply ring-offset-magnum-300 focus-visible:ring;
-		@apply focus-visible:ring-magnum-400 focus-visible:ring-offset-1;
-		@apply flex-1 items-center justify-center;
-		@apply px-2.5 text-sm leading-none text-magnum-700;
+	[data-melt-calendar] {
+		@apply w-full rounded-lg bg-white p-3 text-magnum-800 shadow-sm;
 	}
 
-	.trigger {
-		@apply inline-flex w-64 items-center  justify-center rounded bg-white p-0 px-2 py-1 text-sm font-medium;
-		@apply text-magnum-900 transition-colors hover:bg-white/90;
-		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
+	header {
+		@apply flex items-center justify-between pb-2;
 	}
 
-	.close {
-		@apply absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full;
-		@apply text-magnum-900 transition-colors hover:bg-magnum-500/10;
-		@apply focus-visible:ring focus-visible:ring-magnum-400 focus-visible:ring-offset-2;
-		@apply bg-white p-0 text-sm font-medium;
+	header + div {
+		@apply flex items-center gap-8;
 	}
 
-	.button {
-		@apply flex h-6 w-6 items-center justify-center rounded-full;
-		@apply text-magnum-900 transition-colors hover:bg-magnum-500/10;
-		@apply focus-visible:ring-1 focus-visible:ring-magnum-400;
-		@apply bg-white p-0 text-sm font-medium;
+	[data-melt-calendar-prevbutton] {
+		@apply rounded-lg p-1 transition-all hover:bg-magnum-100;
 	}
 
-	.content {
-		@apply z-10 w-60 rounded-[4px] bg-white p-5 shadow-sm;
+	[data-melt-calendar-nextbutton] {
+		@apply rounded-lg p-1 transition-all hover:bg-magnum-100;
 	}
 
-	.buttons-wrapper {
-		@apply flex items-center justify-between border-y border-magnum-700 py-1;
+	[data-melt-calendar-heading] {
+		@apply font-semibold text-magnum-800;
 	}
 
-	.cell {
-		@apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded p-4 hover:bg-magnum-100 focus:ring focus:ring-magnum-400 data-[outside-month]:pointer-events-none data-[outside-month]:cursor-default data-[range-highlighted]:bg-magnum-200 data-[selected]:bg-magnum-300 data-[disabled]:opacity-40 data-[outside-month]:opacity-40 data-[outside-month]:hover:bg-transparent;
+	th {
+		@apply text-sm font-semibold text-magnum-800;
+
+		& div {
+			@apply flex h-6 w-6 items-center justify-center p-4;
+		}
 	}
 
-	.segment {
-		@apply data-[segment="dayPeriod"]:pl-0.5 data-[segment="hour"]:pl-1 data-[segment="timeZoneName"]:pl-1;
+	[data-melt-calendar-grid] {
+		@apply w-full;
 	}
 
-	.btn {
-		@apply rounded bg-magnum-600 p-1 text-xs text-white;
+	[data-melt-calendar-cell] {
+		@apply flex h-6 w-6 cursor-pointer select-none items-center justify-center rounded-lg p-4 hover:bg-magnum-100 focus:ring focus:ring-magnum-400 data-[outside-visible-months]:pointer-events-none data-[outside-visible-months]:cursor-default data-[range-highlighted]:bg-magnum-200 data-[selected]:bg-magnum-300 data-[selected]:text-magnum-900 data-[disabled]:opacity-40 data-[outside-visible-months]:opacity-40 data-[outside-visible-months]:hover:bg-transparent;
+	}
+
+	[data-melt-calendar-cell][data-outside-month='true'][data-outside-visible-months='true'] {
+		@apply opacity-0;
 	}
 </style>
