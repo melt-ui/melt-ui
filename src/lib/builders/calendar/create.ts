@@ -56,6 +56,7 @@ const defaults = {
 	maxValue: undefined,
 	disabled: false,
 	readonly: false,
+	weekdayFormat: 'narrow',
 } satisfies CreateCalendarProps;
 
 type CalendarParts = 'content' | 'nextButton' | 'prevButton' | 'grid' | 'cell' | 'heading';
@@ -91,6 +92,7 @@ export function createCalendar<
 		isDateUnavailable,
 		disabled,
 		readonly,
+		weekdayFormat,
 	} = options;
 
 	const ids = toWritableStores({ ...generateIds(calendarIdParts), ...withDefaults.ids });
@@ -613,10 +615,10 @@ export function createCalendar<
 	 * ```
 	 *
 	 */
-	const daysOfWeek = derived([months, locale], ([$months, _]) => {
+	const weekdays = derived([months, weekdayFormat, locale], ([$months, $weekdayFormat, _]) => {
 		if (!$months.length) return [];
 		return $months[0].weeks[0].map((date) => {
-			return formatter.dayOfWeek(toDate(date));
+			return formatter.dayOfWeek(toDate(date), $weekdayFormat);
 		});
 	});
 
@@ -1097,7 +1099,7 @@ import { generateIds } from '../../internal/helpers/id'
 			placeholder: placeholder.toWritable(),
 			months,
 			value,
-			daysOfWeek,
+			weekdays,
 			headingValue,
 		},
 		helpers: {

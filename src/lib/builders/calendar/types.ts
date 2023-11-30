@@ -144,6 +144,13 @@ export type CreateCalendarProps<
 	weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 	/**
+	 * How to format the days of the week provided via the `daysOfWeek` state store.
+	 *
+	 * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#weekday
+	 */
+	dayOfWeekFormat?: Intl.DateTimeFormatOptions['weekday'];
+
+	/**
 	 * A function that receives a date and returns `true` or `false` to indicate whether
 	 * the date is disabled.
 	 *

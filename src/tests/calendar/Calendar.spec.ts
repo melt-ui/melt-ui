@@ -2,7 +2,7 @@ import { testKbd as kbd } from '../utils.js';
 import { render } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
-import { describe } from 'vitest';
+import { describe, it } from 'vitest';
 import CalendarTest from './CalendarTest.svelte';
 import { CalendarDate, CalendarDateTime, toZoned, type DateValue } from '@internationalized/date';
 import { writable } from 'svelte/store';
@@ -44,13 +44,13 @@ function setupMulti(props: CreateCalendarProps<true> = {}) {
 
 describe('Calendar', () => {
 	describe('Accessibility', () => {
-		test('has no accessibility violations', async () => {
+		it('has no accessibility violations', async () => {
 			const { container } = render(CalendarTest);
 
 			expect(await axe(container)).toHaveNoViolations();
 		});
 	});
-	test('populated with defaultValue - CalendarDate', async () => {
+	it('populated with defaultValue - CalendarDate', async () => {
 		const { getByTestId, calendar } = setup({
 			defaultValue: calendarDate,
 		});
@@ -63,7 +63,7 @@ describe('Calendar', () => {
 		const heading = getByTestId('heading');
 		expect(heading).toHaveTextContent('January 1980');
 	});
-	test('populated with defaultValue - CalendarDateTime', async () => {
+	it('populated with defaultValue - CalendarDateTime', async () => {
 		const { getByTestId, calendar } = setup({
 			defaultValue: calendarDateTime,
 		});
@@ -75,7 +75,7 @@ describe('Calendar', () => {
 		expect(heading).toHaveTextContent('January 1980');
 	});
 
-	test('populated with defaultValue - ZonedDateTime', async () => {
+	it('populated with defaultValue - ZonedDateTime', async () => {
 		const { getByTestId, calendar } = setup({
 			defaultValue: zonedDateTime,
 		});
@@ -87,7 +87,7 @@ describe('Calendar', () => {
 		expect(heading).toHaveTextContent('January 1980');
 	});
 
-	test('populated with controlled value - CalendarDate', async () => {
+	it('populated with controlled value - CalendarDate', async () => {
 		const { getByTestId, calendar } = setup({
 			value: controlledCalendarDate,
 		});
@@ -99,7 +99,7 @@ describe('Calendar', () => {
 		expect(heading).toHaveTextContent('January 1980');
 	});
 
-	test('populated with controlled value - CalendarDateTime', async () => {
+	it('populated with controlled value - CalendarDateTime', async () => {
 		const { getByTestId, calendar } = setup({
 			value: controlledCalendarDateTime,
 		});
@@ -111,7 +111,7 @@ describe('Calendar', () => {
 		expect(heading).toHaveTextContent('January 1980');
 	});
 
-	test('populated with controlled value - ZonedDateTime', async () => {
+	it('populated with controlled value - ZonedDateTime', async () => {
 		const { getByTestId, calendar } = setup({
 			value: controlledZonedDateTime,
 		});
@@ -123,7 +123,7 @@ describe('Calendar', () => {
 		expect(heading).toHaveTextContent('January 1980');
 	});
 
-	test('month navigation', async () => {
+	it('month navigation', async () => {
 		const { getByTestId, user } = setup({
 			defaultValue: zonedDateTime,
 		});
@@ -144,7 +144,7 @@ describe('Calendar', () => {
 		expect(heading).toHaveTextContent('December 1979');
 	});
 
-	test('allow deselection', async () => {
+	it('allow deselection', async () => {
 		const { calendar, queryByTestId, user } = setup({
 			defaultValue: zonedDateTime,
 		});
@@ -159,7 +159,7 @@ describe('Calendar', () => {
 		expect(insideValue).toHaveTextContent('undefined');
 	});
 
-	test('selection with mouse', async () => {
+	it('selection with mouse', async () => {
 		const { getByTestId, user } = setup({
 			defaultPlaceholder: zonedDateTime,
 		});
@@ -173,7 +173,7 @@ describe('Calendar', () => {
 		expect(insideValue).toHaveTextContent(newDate.toString());
 	});
 
-	test('selection with keyboard', async () => {
+	it('selection with keyboard', async () => {
 		const { getByTestId, user } = setup({
 			defaultPlaceholder: zonedDateTime,
 		});
@@ -195,7 +195,7 @@ describe('Calendar', () => {
 		expect(insideValue2).toHaveTextContent(newDate2.toString());
 	});
 
-	test('should display multiple months with numberOfMonths prop', async () => {
+	it('should display multiple months with numberOfMonths prop', async () => {
 		const { getByTestId, calendar, user } = setup({
 			defaultValue: calendarDateTime,
 			numberOfMonths: 2,
@@ -233,7 +233,7 @@ describe('Calendar', () => {
 		expect(heading).toHaveTextContent('December 1979 - January 1980');
 	});
 
-	test('multiple months (paged navigation)', async () => {
+	it('multiple months (paged navigation)', async () => {
 		const { getByTestId, calendar, user } = setup({
 			defaultValue: calendarDateTime,
 			numberOfMonths: 2,
@@ -271,7 +271,7 @@ describe('Calendar', () => {
 		expect(heading).toHaveTextContent('November - December 1979');
 	});
 
-	test('fixedWeeks always renders 6 weeks', async () => {
+	it('fixedWeeks always renders 6 weeks', async () => {
 		const valueStore = writable(calendarDate);
 
 		const { getByTestId, queryByTestId, user } = setup({
@@ -294,7 +294,7 @@ describe('Calendar', () => {
 			expect(queryByTestId('week-6')).not.toBeNull();
 		}
 	});
-	test('controlled value should update selected value', async () => {
+	it('controlled value should update selected value', async () => {
 		const valueStore = writable<DateValue | undefined>(undefined);
 
 		const { getByTestId } = setup({
@@ -313,7 +313,7 @@ describe('Calendar', () => {
 		expect(insideValue).toHaveTextContent('2023-10-11');
 	});
 
-	test('controlled placeholder should change view', async () => {
+	it('controlled placeholder should change view', async () => {
 		const placeholderStore = writable<DateValue>(calendarDate);
 		const { getByTestId } = setup({
 			defaultValue: calendarDate,
@@ -333,7 +333,7 @@ describe('Calendar', () => {
 		expect(insideValue).toHaveTextContent('1980-01-20');
 	});
 
-	test('calendar does not navigate before minValue', async () => {
+	it('calendar does not navigate before minValue', async () => {
 		const { getByTestId, user } = setup({
 			defaultValue: calendarDate,
 			minValue: new CalendarDate(1979, 11, 25),
@@ -355,7 +355,7 @@ describe('Calendar', () => {
 		expect(heading).toHaveTextContent('November 1979');
 	});
 
-	test('calendar does not navigate after maxValue', async () => {
+	it('calendar does not navigate after maxValue', async () => {
 		const { getByTestId, user } = setup({
 			defaultValue: calendarDate,
 			maxValue: new CalendarDate(1980, 4, 1),
@@ -381,7 +381,7 @@ describe('Calendar', () => {
 		expect(heading).toHaveTextContent('April 1980');
 	});
 
-	test('multiple select default Value', async () => {
+	it('multiple select default Value', async () => {
 		const day1 = new CalendarDate(1980, 1, 2);
 		const day2 = new CalendarDate(1980, 1, 5);
 
@@ -399,7 +399,7 @@ describe('Calendar', () => {
 		expect(selectedDays[1]).toHaveTextContent(String(day2.day));
 	});
 
-	test('multiple select controlled value', async () => {
+	it('multiple select controlled value', async () => {
 		const day1 = new CalendarDate(1980, 1, 2);
 		const day2 = new CalendarDate(1980, 1, 5);
 		const value = writable([day1, day2]);
@@ -417,7 +417,7 @@ describe('Calendar', () => {
 		expect(selectedDays[1]).toHaveTextContent(String(day2.day));
 	});
 
-	test('multiple select - prevent deselect false (default)', async () => {
+	it('multiple select - prevent deselect false (default)', async () => {
 		const day1 = new CalendarDate(1980, 1, 2);
 		const day2 = new CalendarDate(1980, 1, 5);
 
@@ -437,7 +437,7 @@ describe('Calendar', () => {
 		expect(selectedDaysAfterClick[0]).toHaveTextContent(String(day2.day));
 	});
 
-	test('multiple select -  prevent deselect true', async () => {
+	it('multiple select -  prevent deselect true', async () => {
 		const day1 = new CalendarDate(1980, 1, 2);
 		const day2 = new CalendarDate(1980, 1, 5);
 
@@ -459,7 +459,7 @@ describe('Calendar', () => {
 		expect(selectedDaysAfterClick[1]).toHaveTextContent(String(day2.day));
 	});
 
-	test('multiple select - allow deselect', async () => {
+	it('multiple select - allow deselect', async () => {
 		const day1 = new CalendarDate(1980, 1, 2);
 		const day2 = new CalendarDate(1980, 1, 5);
 
@@ -474,7 +474,7 @@ describe('Calendar', () => {
 		expect(selectedDays).toHaveLength(2);
 	});
 
-	test('overridable with multiple', async () => {
+	it('overridable with multiple', async () => {
 		const day1 = new CalendarDate(1980, 1, 10);
 		const { getByTestId, calendar, user } = setupMulti({
 			defaultValue: [day1],
@@ -505,7 +505,7 @@ describe('Calendar', () => {
 		expect(selectedDaysAfterClick2).toHaveLength(2);
 	});
 
-	test('overridable with single', async () => {
+	it('overridable with single', async () => {
 		const overrideDay = new CalendarDate(1980, 1, 25);
 
 		const { getByTestId, calendar, user } = setup({
@@ -525,7 +525,7 @@ describe('Calendar', () => {
 		expect(selectedDayAfterClick).toHaveTextContent(String(overrideDay.day));
 	});
 
-	test('unavailable dates behavior', async () => {
+	it('unavailable dates behavior', async () => {
 		const { getByTestId, user } = setup({
 			defaultPlaceholder: calendarDate,
 			isDateUnavailable: (date) => {
@@ -540,7 +540,7 @@ describe('Calendar', () => {
 		expect(thirdDayInMonth).not.toHaveAttribute('data-selected');
 	});
 
-	test('disabled prop prevents calendar focus & interaction', async () => {
+	it('disabled prop prevents calendar focus & interaction', async () => {
 		const { getByTestId, user } = setup({
 			defaultPlaceholder: calendarDate,
 			disabled: true,
@@ -558,7 +558,7 @@ describe('Calendar', () => {
 		expect(firstDayOfMonth).not.toHaveFocus();
 	});
 
-	test('readonly prop prevents selecting dates but allows focus', async () => {
+	it('readonly prop prevents selecting dates but allows focus', async () => {
 		const { getByTestId, user } = setup({
 			defaultPlaceholder: calendarDate,
 			readonly: true,
@@ -576,4 +576,6 @@ describe('Calendar', () => {
 		expect(firstDayOfMonth).toHaveFocus();
 		expect(firstDayOfMonth).not.toHaveAttribute('data-selected');
 	});
+
+	it('');
 });
