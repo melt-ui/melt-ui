@@ -8,16 +8,17 @@
 	import '@fontsource/inter/700.css';
 	import '@fontsource/inter/800.css';
 	import '@fontsource/inter/900.css';
-	import '../fonts.css';
 	import '../app.postcss';
+	import '../fonts.css';
 
 	import { browser, dev } from '$app/environment';
-	import { JsIndicator, SiteHeader, TailwindIndicator } from '$docs/components/index.js';
-	import * as Fathom from 'fathom-client';
 	import { page } from '$app/stores';
+	import { JsIndicator, SiteHeader, TailwindIndicator } from '$docs/components/index.js';
 	import { cn } from '$docs/utils';
-	import { onMount } from 'svelte';
 	import { env } from '$env/dynamic/public';
+	import * as Fathom from 'fathom-client';
+	import { ModeWatcher } from 'mode-watcher';
+	import { onMount } from 'svelte';
 
 	onMount(() => {
 		if (!env.PUBLIC_FATHOM_ID || !env.PUBLIC_FATHOM_URL || dev) return;
@@ -29,6 +30,8 @@
 	$: $page.url.pathname, browser && Fathom.trackPageview();
 	$: isRoot = $page.url.pathname === '/';
 </script>
+
+<ModeWatcher defaultMode="dark" />
 
 <div class="relative flex min-h-screen flex-col md:flex-col-reverse" id="page">
 	<div class="flex flex-1">

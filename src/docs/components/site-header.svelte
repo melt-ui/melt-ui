@@ -4,8 +4,9 @@
 	import { navConfig, siteConfig } from '$docs/config.js';
 	import { cn } from '$docs/utils';
 	import Search from '$routes/(landing-ui)/search.svelte';
+	import { mode } from 'mode-watcher';
 	import Logo from './logo.svelte';
-	import ThemeSwitch, { darkMode } from './nav/theme-switch';
+	import ThemeSwitch from './nav/theme-switch';
 
 	$: isRoot = $page.url.pathname === '/';
 </script>
@@ -18,7 +19,7 @@
 >
 	<div class="flex">
 		<a href="/" class="mr-6 flex items-center transition-opacity hover:opacity-75">
-			<Logo class="h-9" withText textColor={$darkMode ? 'white' : 'black'} />
+			<Logo class="h-9" withText textColor={$mode === 'dark' ? 'white' : 'black'} />
 		</a>
 	</div>
 
@@ -38,7 +39,9 @@
 				</li>
 			{/each}
 		</ul>
-		<div class="ml-6 flex items-center gap-6 border-neutral-700 pl-6 text-neutral-400 md:border-l">
+		<div
+			class="flex items-center gap-6 border-neutral-700 text-neutral-400 sm:ml-6 sm:pl-6 md:border-l"
+		>
 			<a
 				href={siteConfig.links.discord}
 				target="_blank"

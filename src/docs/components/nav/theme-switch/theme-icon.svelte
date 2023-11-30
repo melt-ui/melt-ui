@@ -2,7 +2,7 @@
 	import { Monitor, Moon, Sun } from 'lucide-svelte';
 	import type { Theme } from './types';
 
-	export let theme: Theme;
+	export let theme: Theme = 'light';
 
 	$: component = theme === 'dark' ? Moon : theme === 'light' ? Sun : Monitor;
 </script>

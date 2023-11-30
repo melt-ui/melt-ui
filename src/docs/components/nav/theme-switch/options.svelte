@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createToggleGroup, melt } from '$lib';
-	import { theme } from './index';
+	import { userPrefersMode } from 'mode-watcher';
 	import ThemeIcon from './theme-icon.svelte';
 	import type { Theme } from './types';
 
@@ -11,11 +11,11 @@
 		helpers: { isPressed },
 	} = createToggleGroup({
 		orientation: 'vertical',
-		defaultValue: $theme,
+		defaultValue: $userPrefersMode,
 		loop: false,
 		onValueChange: ({ curr, next }) => {
 			const definedNext = (next || curr) as Theme;
-			$theme = definedNext;
+			$userPrefersMode = definedNext;
 			onChange();
 			return definedNext;
 		},

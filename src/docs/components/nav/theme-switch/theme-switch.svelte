@@ -2,7 +2,7 @@
 	import Tooltip from '$docs/components/tooltip.svelte';
 	import { flyAndScale } from '$docs/utils';
 	import { createPopover, melt } from '$lib';
-	import { theme } from '.';
+	import { mode } from 'mode-watcher';
 	import Options from './options.svelte';
 	import ThemeIcon from './theme-icon.svelte';
 
@@ -21,7 +21,7 @@
 		aria-label="Open theme switcher"
 		use:melt={$trigger}
 	>
-		<ThemeIcon theme={$theme} />
+		<ThemeIcon theme={$mode} />
 		<span class="sr-only">Open popover</span>
 	</button>
 </Tooltip>

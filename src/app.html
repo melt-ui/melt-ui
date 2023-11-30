@@ -30,30 +30,6 @@
 			content="An open-source Svelte component library for building high-quality, accessible design systems and web apps."
 		/>
 		<meta name="twitter:image" content="https://www.melt-ui.com/banner.png" />
-
-		<script>
-			// initialize dark mode
-			if (
-				localStorage.theme === 'dark' ||
-				((localStorage.theme === 'system' || !('theme' in localStorage)) &&
-					window.matchMedia('(prefers-color-scheme: dark)').matches)
-			) {
-				document.documentElement.classList.add('dark');
-			} else {
-				document.documentElement.classList.remove('dark');
-			}
-
-			// watch system change
-			window
-				.matchMedia('(prefers-color-scheme: dark)')
-				.addEventListener('change', (e) =>
-					localStorage.theme === 'system'
-						? e.matches
-							? document.documentElement.classList.add('dark')
-							: document.documentElement.classList.remove('dark')
-						: null
-				);
-		</script>
 		<script src="/pagefind/pagefind.js" type="module"></script>
 
 		%sveltekit.head%

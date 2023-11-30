@@ -68,6 +68,7 @@
 		"@internationalized/date": "^3.5.0",
 		"dequal": "^2.0.3",
 		"focus-trap": "^7.5.2",
+		"mode-watcher": "^0.1.2",
 		"nanoid": "^4.0.2"
 	},
 	"devDependencies": {
