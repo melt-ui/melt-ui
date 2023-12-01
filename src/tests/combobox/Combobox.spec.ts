@@ -121,6 +121,25 @@ describe('Combobox', () => {
 		expect(firstItem).toHaveAttribute('data-selected');
 	});
 
+	test('Applies custom ids when provided', async () => {
+		const ids = {
+			label: 'id-label',
+			menu: 'id-menu',
+			trigger: 'id-trigger',
+		};
+
+		const { getByTestId } = render(ComboboxTest, {
+			ids,
+		});
+
+		const trigger = getByTestId('input');
+		const menu = getByTestId('menu');
+		const label = getByTestId('label');
+		expect(trigger.id).toBe(ids.trigger);
+		expect(menu.id).toBe(ids.menu);
+		expect(label.id).toBe(ids.label);
+	});
+
 	test.todo('Selects multiple items when `multiple` is true');
 	test.todo('Manually setting the value updates the label');
 	test.todo('Updating options and setting the value updates the label');
