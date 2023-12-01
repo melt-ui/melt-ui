@@ -17,7 +17,9 @@ function setup(props: CreateContextMenuProps = {}) {
 	};
 }
 
-async function open(props: CreateContextMenuProps = {}) {
+async function open(
+	props: CreateContextMenuProps & { submenuIds?: CreateContextMenuProps['ids'] } = {}
+) {
 	const returned = setup(props);
 	const { queryByTestId, getByTestId, user, trigger } = returned;
 	expect(queryByTestId('menu')).toBeNull();
@@ -172,5 +174,35 @@ describe('Context Menu', () => {
 		const outsideClick = getByTestId('outside-click');
 		await user.click(outsideClick);
 		expect(menu).toBeVisible();
+	});
+
+	test('Applies custom ids if provided', async () => {
+		const ids = {
+			menu: 'id-menu',
+			trigger: 'id-trigger',
+		};
+
+		const subIds = {
+			menu: 'id-submenu',
+			trigger: 'id-subtrigger',
+		};
+
+		const { getByTestId, user, queryByTestId } = await open({
+			ids,
+			submenuIds: subIds,
+		});
+
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
+		const subtrigger = getByTestId('sub-trigger');
+
+		await user.hover(subtrigger);
+		await waitFor(() => expect(queryByTestId('submenu')).not.toBeNull());
+
+		expect(trigger.id).toBe(ids.trigger);
+		expect(menu.id).toBe(ids.menu);
+		expect(subtrigger.id).toBe(subIds.trigger);
+		const submenu = getByTestId('submenu');
+		expect(submenu.id).toBe(subIds.menu);
 	});
 });
