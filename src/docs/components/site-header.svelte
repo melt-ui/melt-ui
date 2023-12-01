@@ -19,7 +19,7 @@
 >
 	<div class="flex">
 		<a href="/" class="mr-6 flex items-center transition-opacity hover:opacity-75">
-			<Logo class="h-9" withText textColor={$mode === 'dark' ? 'white' : 'black'} />
+			<Logo class="h-9" withText textColor={$mode === 'light' ? 'black' : 'white'} />
 		</a>
 	</div>
 
