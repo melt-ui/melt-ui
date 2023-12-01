@@ -15,11 +15,11 @@
 	export { className as class };
 </script>
 
-<div class={cn('flex flex-col items-start justify-center gap-2', className)}>
+<div class={cn('flex flex-col items-start justify-center gap-2 ', className)}>
 	<div
 		use:melt={$root}
 		class="flex min-w-[240px] flex-row flex-wrap gap-2.5 rounded-xl bg-white px-3 py-2 text-magnum-700
-		focus-within:ring focus-within:ring-magnum-400"
+		shadow-sm focus-within:ring focus-within:ring-magnum-400"
 	>
 		{#each $tags as t}
 			<div

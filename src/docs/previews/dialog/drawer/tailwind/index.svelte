@@ -28,7 +28,7 @@
 >
 	View Notifications
 </button>
-<div use:melt={$portalled}>
+<div class="force-dark" use:melt={$portalled}>
 	{#if $open}
 		<div
 			use:melt={$overlay}

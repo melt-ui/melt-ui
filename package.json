@@ -71,6 +71,7 @@
 		"nanoid": "^4.0.2"
 	},
 	"devDependencies": {
+		"mode-watcher": "^0.1.2",
 		"@changesets/cli": "^2.26.2",
 		"@fontsource/inter": "^5.0.8",
 		"@huntabyte/mdsvex": "0.16.5",

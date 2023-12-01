@@ -22,7 +22,10 @@
 
 <div
 	use:melt={$root}
-	class={cn("flex items-center data-[orientation='vertical']:flex-col", className)}
+	class={cn(
+		"flex items-center overflow-hidden rounded-xl shadow-sm data-[orientation='vertical']:flex-col",
+		className
+	)}
 	aria-label="Text alignment"
 >
 	<button class="toggle-item" use:melt={$item('left')} aria-label="Left aligned">

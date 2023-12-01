@@ -19,7 +19,7 @@
 		<input
 			type="text"
 			id="email"
-			class="h-10 w-[240px] rounded-md px-3 py-2 text-magnum-700"
+			class="h-10 w-[240px] rounded-md bg-white px-3 py-2 text-magnum-700"
 			placeholder="vanilla@melt-ui.com"
 		/>
 	</div>

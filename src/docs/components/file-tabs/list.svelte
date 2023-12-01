@@ -12,7 +12,7 @@
 
 <div
 	class={cn(
-		'flex w-full items-center rounded-b-none rounded-tl-lg rounded-tr-lg border-x border-t border-neutral-700/50 border-b-transparent bg-neutral-700/30',
+		'flex w-full items-center rounded-b-none rounded-tl-lg rounded-tr-lg border-x border-t border-neutral-700/50 border-b-transparent bg-neutral-700 dark:bg-neutral-700/30',
 		className
 	)}
 	use:melt={$list}
