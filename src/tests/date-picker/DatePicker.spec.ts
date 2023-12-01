@@ -274,7 +274,12 @@ describe('DatePicker', () => {
 			expect(firstSegment).toHaveTextContent(String(currentMonth));
 
 			await user.keyboard(kbd.ARROW_UP);
-			expect(firstSegment).toHaveTextContent(String(calendarDateToday.month + 1));
+
+			if (currentMonth === 12) {
+				expect(firstSegment).toHaveTextContent(String(1));
+			} else {
+				expect(firstSegment).toHaveTextContent(String(calendarDateToday.month + 1));
+			}
 		});
 
 		test('increments segment on arrow down', async () => {
