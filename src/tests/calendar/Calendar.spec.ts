@@ -18,6 +18,10 @@ const controlledCalendarDate = writable<DateValue | undefined>(calendarDate);
 const controlledCalendarDateTime = writable<DateValue | undefined>(calendarDateTime);
 const controlledZonedDateTime = writable<DateValue | undefined>(zonedDateTime);
 
+const narrowWeekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const shortWeekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const longWeekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
 function setup(props: CreateCalendarProps = {}) {
 	const user = userEvent.setup();
 	const returned = render(CalendarTest, props);
@@ -618,5 +622,60 @@ describe('Calendar', () => {
 		await user.click(firstDayOfMonth);
 		expect(firstDayOfMonth).toHaveFocus();
 		expect(firstDayOfMonth).not.toHaveAttribute('data-selected');
+	});
+
+	test('weekdayFormat prop - `"narrow"` (default)', async () => {
+		const { getByTestId } = setup();
+
+		for (const [i, weekday] of narrowWeekdays.entries()) {
+			const weekdayElement = getByTestId(`weekday-${i}`);
+			expect(weekdayElement).toHaveTextContent(weekday);
+		}
+	});
+
+	test('weekdayFormat prop - `"short"`', async () => {
+		const { getByTestId } = setup({
+			weekdayFormat: 'short',
+		});
+
+		for (const [i, weekday] of shortWeekdays.entries()) {
+			const weekdayElement = getByTestId(`weekday-${i}`);
+			expect(weekdayElement).toHaveTextContent(weekday);
+		}
+	});
+
+	test('weekdayFormat prop - `"long"`', async () => {
+		const { getByTestId } = setup({
+			weekdayFormat: 'long',
+		});
+
+		for (const [i, weekday] of longWeekdays.entries()) {
+			const weekdayElement = getByTestId(`weekday-${i}`);
+			expect(weekdayElement).toHaveTextContent(weekday);
+		}
+	});
+
+	test('dynamically change weekdayFormat option', async () => {
+		const { getByTestId, user } = setup();
+
+		for (const [i, weekday] of narrowWeekdays.entries()) {
+			const weekdayElement = getByTestId(`weekday-${i}`);
+			expect(weekdayElement).toHaveTextContent(weekday);
+		}
+
+		const cycleButton = getByTestId('cycle-weekday-format');
+		await user.click(cycleButton);
+
+		for (const [i, weekday] of shortWeekdays.entries()) {
+			const weekdayElement = getByTestId(`weekday-${i}`);
+			expect(weekdayElement).toHaveTextContent(weekday);
+		}
+
+		await user.click(cycleButton);
+
+		for (const [i, weekday] of longWeekdays.entries()) {
+			const weekdayElement = getByTestId(`weekday-${i}`);
+			expect(weekdayElement).toHaveTextContent(weekday);
+		}
 	});
 });

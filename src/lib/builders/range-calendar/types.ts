@@ -142,6 +142,21 @@ export type RangeCalendarProps = {
 	weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 	/**
+	 * How the string representation of the weekdays provided via the `weekdays` state
+	 * store should be formatted.
+	 *
+	 * ```md
+	 * - "long": "Sunday", "Monday", "Tuesday", etc.
+	 * - "short": "Sun", "Mon", "Tue", etc.
+	 * - "narrow": "S", "M", "T", etc.
+	 *```
+	 * @default "narrow"
+	 *
+	 * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#weekday
+	 */
+	weekdayFormat?: Intl.DateTimeFormatOptions['weekday'];
+
+	/**
 	 * Any dates that match the provided matchers will
 	 * be marked as disabled, which means they cannot be
 	 * focused or selected. They will also include a data

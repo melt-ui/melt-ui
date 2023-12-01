@@ -64,6 +64,7 @@ const defaults = {
 	maxValue: undefined,
 	disabled: false,
 	readonly: false,
+	weekdayFormat: 'narrow',
 } satisfies CreateRangeCalendarProps;
 
 /**
@@ -97,6 +98,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		maxValue,
 		disabled,
 		readonly,
+		weekdayFormat,
 	} = options;
 
 	const ids = toWritableStores({ ...generateIds(rangeCalendarIdParts), ...withDefaults.ids });
@@ -588,10 +590,10 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * you can do so by accessing the first week of the first month,
 	 * and mapping over the dates to get/format each day of the week.
 	 */
-	const daysOfWeek = derived([months, locale], ([$months, _]) => {
+	const weekdays = derived([months, weekdayFormat, locale], ([$months, $weekdayFormat, _]) => {
 		if (!$months.length) return [];
 		return $months[0].weeks[0].map((date) => {
-			return formatter.dayOfWeek(toDate(date));
+			return formatter.dayOfWeek(toDate(date), $weekdayFormat);
 		});
 	});
 
@@ -1031,7 +1033,7 @@ import { generateIds } from '../../internal/helpers/id'
 		states: {
 			placeholder: placeholder.toWritable(),
 			months,
-			daysOfWeek,
+			weekdays,
 			headingValue,
 			value,
 		},

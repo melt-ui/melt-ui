@@ -3,6 +3,7 @@
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
 	import { melt } from '$lib';
 	import { fade } from 'svelte/transition';
+	import { removeUndefined } from '../utils';
 
 	export let value: CreateDatePickerProps['value'] = undefined;
 	export let defaultValue: CreateDatePickerProps['defaultValue'] = undefined;
@@ -25,6 +26,7 @@
 	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = undefined;
 	export let placeholder: CreateDatePickerProps['placeholder'] = undefined;
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = undefined;
+	export let weekdayFormat: CreateDatePickerProps['weekdayFormat'] = undefined;
 
 	const {
 		elements: {
@@ -40,31 +42,47 @@
 			content,
 			label,
 		},
-		states: { value: insideValue, months, headingValue, daysOfWeek, segmentContents },
-		options: { locale: insideLocale },
-	} = createDatePicker({
-		value,
-		defaultValue,
-		defaultPlaceholder,
-		onValueChange,
-		onPlaceholderChange,
-		isDateUnavailable,
-		disabled,
-		readonly,
-		hourCycle,
-		locale,
-		hideTimeZone,
-		granularity,
-		dateFieldIds,
-		calendarIds,
-		preventDeselect,
-		calendarLabel,
-		numberOfMonths,
-		pagedNavigation,
-		placeholder,
-		weekStartsOn,
-		isDateDisabled,
-	});
+		states: { value: insideValue, months, headingValue, weekdays, segmentContents },
+		options: { locale: insideLocale, weekdayFormat: weekdayFormatOption },
+	} = createDatePicker(
+		removeUndefined({
+			value,
+			defaultValue,
+			defaultPlaceholder,
+			onValueChange,
+			onPlaceholderChange,
+			isDateUnavailable,
+			disabled,
+			readonly,
+			hourCycle,
+			locale,
+			hideTimeZone,
+			granularity,
+			dateFieldIds,
+			calendarIds,
+			preventDeselect,
+			calendarLabel,
+			numberOfMonths,
+			pagedNavigation,
+			placeholder,
+			weekStartsOn,
+			isDateDisabled,
+			weekdayFormat,
+		})
+	);
+
+	function cycleWeekdayFormat() {
+		weekdayFormatOption.update((prev) => {
+			switch (prev) {
+				case 'narrow':
+					return 'short';
+				case 'short':
+					return 'long';
+				case 'long':
+					return 'short';
+			}
+		});
+	}
 </script>
 
 <main class="flex w-full flex-col items-center gap-3">
@@ -116,11 +134,11 @@
 				<table use:melt={$grid} class="w-full" data-testid="grid-{i}">
 					<thead aria-hidden="true">
 						<tr>
-							{#each $daysOfWeek as day, idx}
+							{#each $weekdays as day, idx}
 								<th class="text-sm font-semibold text-magnum-800">
 									<div
 										class="flex h-6 w-6 items-center justify-center p-4"
-										data-testid="day-of-week-{idx}"
+										data-testid="weekday-{idx}"
 									>
 										{day}
 									</div>
@@ -136,7 +154,7 @@
 										<div
 											use:melt={$cell(date, month.value)}
 											class="cell"
-											data-testid="month-{i}-date-{date.day}"
+											data-testid="month-{date.month}-date-{date.day}"
 										>
 											{date.day}
 										</div>
@@ -148,6 +166,9 @@
 				</table>
 			{/each}
 		</div>
+		<button on:click={cycleWeekdayFormat} data-testid="cycle-weekday-format">
+			Cycle weekdayFormat
+		</button>
 	</div>
 </main>
 

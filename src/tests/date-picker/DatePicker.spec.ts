@@ -14,6 +14,10 @@ const calendarDate = new CalendarDate(1980, 1, 20);
 const calendarDateTime = new CalendarDateTime(1980, 1, 20, 12, 30, 0, 0);
 const zonedDateTime = toZoned(calendarDateTime, 'America/New_York');
 
+const narrowWeekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const shortWeekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const longWeekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
 function setup(props: CreateDatePickerProps = {}) {
 	const user = userEvent.setup();
 	const returned = render(DatePickerTest, props);
@@ -179,7 +183,7 @@ describe('DatePicker', () => {
 			await user.click(trigger);
 			const calendar = getByTestId('calendar');
 			expect(calendar).toBeVisible();
-			const secondDayInMonth = getByTestId('month-0-date-2');
+			const secondDayInMonth = getByTestId('month-1-date-2');
 			await user.click(secondDayInMonth);
 			expect(secondDayInMonth).toHaveAttribute('data-selected');
 
@@ -197,7 +201,7 @@ describe('DatePicker', () => {
 			const calendar = getByTestId('calendar');
 			expect(calendar).toBeVisible();
 
-			const secondDayInMonth = getByTestId('month-0-date-2');
+			const secondDayInMonth = getByTestId('month-1-date-2');
 			secondDayInMonth.focus();
 			expect(secondDayInMonth).toHaveFocus();
 			await user.keyboard(kbd.SPACE);
@@ -208,7 +212,7 @@ describe('DatePicker', () => {
 			await user.keyboard(kbd.ARROW_RIGHT);
 			await user.keyboard(kbd.ENTER);
 
-			const thirdDayInMonth = getByTestId('month-0-date-3');
+			const thirdDayInMonth = getByTestId('month-1-date-3');
 			expect(thirdDayInMonth).toHaveAttribute('data-selected');
 			const newDate2 = zonedDateTime.set({ day: 3 });
 			const insideValue2 = getByTestId('inside-value');
@@ -373,7 +377,7 @@ describe('DatePicker', () => {
 			const minuteSegment = getByTestId('minute');
 			expect(minuteSegment).not.toHaveTextContent(String(undefined));
 
-			const firstDayInMonth = getByTestId('month-0-date-1');
+			const firstDayInMonth = getByTestId('month-1-date-1');
 			await user.click(firstDayInMonth);
 
 			await tick();
@@ -391,6 +395,61 @@ describe('DatePicker', () => {
 
 			for (const segment of segments) {
 				expect(getByTestId(segment)).not.toBeNull();
+			}
+		});
+
+		test('weekdayFormat prop - `"narrow"` (default)', async () => {
+			const { getByTestId } = setup();
+
+			for (const [i, weekday] of narrowWeekdays.entries()) {
+				const weekdayElement = getByTestId(`weekday-${i}`);
+				expect(weekdayElement).toHaveTextContent(weekday);
+			}
+		});
+
+		test('weekdayFormat prop - `"short"`', async () => {
+			const { getByTestId } = setup({
+				weekdayFormat: 'short',
+			});
+
+			for (const [i, weekday] of shortWeekdays.entries()) {
+				const weekdayElement = getByTestId(`weekday-${i}`);
+				expect(weekdayElement).toHaveTextContent(weekday);
+			}
+		});
+
+		test('weekdayFormat prop - `"long"`', async () => {
+			const { getByTestId } = setup({
+				weekdayFormat: 'long',
+			});
+
+			for (const [i, weekday] of longWeekdays.entries()) {
+				const weekdayElement = getByTestId(`weekday-${i}`);
+				expect(weekdayElement).toHaveTextContent(weekday);
+			}
+		});
+
+		test('dynamically change weekdayFormat option', async () => {
+			const { getByTestId, user } = setup();
+
+			for (const [i, weekday] of narrowWeekdays.entries()) {
+				const weekdayElement = getByTestId(`weekday-${i}`);
+				expect(weekdayElement).toHaveTextContent(weekday);
+			}
+
+			const cycleButton = getByTestId('cycle-weekday-format');
+			await user.click(cycleButton);
+
+			for (const [i, weekday] of shortWeekdays.entries()) {
+				const weekdayElement = getByTestId(`weekday-${i}`);
+				expect(weekdayElement).toHaveTextContent(weekday);
+			}
+
+			await user.click(cycleButton);
+
+			for (const [i, weekday] of longWeekdays.entries()) {
+				const weekdayElement = getByTestId(`weekday-${i}`);
+				expect(weekdayElement).toHaveTextContent(weekday);
 			}
 		});
 	});

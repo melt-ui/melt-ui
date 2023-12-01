@@ -2,6 +2,7 @@
 	import { createCalendar, type CreateCalendarProps } from '$lib/builders';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
 	import { melt } from '$lib';
+	import { removeUndefined } from '../utils';
 
 	type CalendarProps = CreateCalendarProps<true>;
 
@@ -22,30 +23,34 @@
 	export let fixedWeeks: CalendarProps['fixedWeeks'] = undefined;
 	export let minValue: CalendarProps['minValue'] = undefined;
 	export let maxValue: CalendarProps['maxValue'] = undefined;
+	export let weekdayFormat: CalendarProps['weekdayFormat'] = undefined;
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { value: insideValue, months, headingValue, daysOfWeek },
-	} = createCalendar<true>({
-		value,
-		defaultValue,
-		defaultPlaceholder,
-		onValueChange,
-		onPlaceholderChange,
-		isDateUnavailable,
-		isDateDisabled,
-		locale,
-		calendarLabel,
-		preventDeselect,
-		numberOfMonths,
-		pagedNavigation,
-		placeholder,
-		weekStartsOn,
-		fixedWeeks,
-		minValue,
-		maxValue,
-		multiple: true,
-	});
+		states: { value: insideValue, months, headingValue, weekdays },
+	} = createCalendar(
+		removeUndefined({
+			value,
+			defaultValue,
+			defaultPlaceholder,
+			onValueChange,
+			onPlaceholderChange,
+			isDateUnavailable,
+			isDateDisabled,
+			locale,
+			calendarLabel,
+			preventDeselect,
+			numberOfMonths,
+			pagedNavigation,
+			placeholder,
+			weekStartsOn,
+			fixedWeeks,
+			minValue,
+			maxValue,
+			multiple: true,
+			weekdayFormat,
+		})
+	);
 </script>
 
 <main class="flex h-full">
@@ -72,7 +77,7 @@
 					<table use:melt={$grid} class="w-full" data-testid="grid-{i}">
 						<thead aria-hidden="true">
 							<tr>
-								{#each $daysOfWeek as day, idx}
+								{#each $weekdays as day, idx}
 									<th class="text-sm font-semibold text-magnum-800">
 										<div
 											class="flex h-6 w-6 items-center justify-center p-4"

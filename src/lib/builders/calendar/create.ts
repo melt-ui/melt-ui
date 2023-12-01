@@ -576,7 +576,7 @@ export function createCalendar<
 	 * <table use:melt={$grid} class="w-full">
 	 * 	<thead aria-hidden="true">
 	 * 		<tr>
-	 * 			{#each $daysOfWeek as day}
+	 * 			{#each $weekdays as day}
 	 * 				<th class="text-sm font-semibold text-magnum-800">
 	 * 					<div class="flex h-6 w-6 items-center justify-center p-4">
 	 * 						{day}

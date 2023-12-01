@@ -28,6 +28,10 @@ const controlledCalendarDateRange = writable<DateRange>(calendarDateRange);
 const controlledCalendarDateTimeRange = writable<DateRange>(calendarDateTimeRange);
 const controlledZonedDateTimeRange = writable<DateRange>(zonedDateTimeRange);
 
+const narrowWeekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const shortWeekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const longWeekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
 function setup(props: CreateRangeCalendarProps = {}) {
 	const user = userEvent.setup();
 	const returned = render(RangeCalendarTest, props);
@@ -369,7 +373,7 @@ describe('Range Calendar', () => {
 		expect(heading).toHaveTextContent('April 1980');
 	});
 
-	test.todo('overridable store functions as expected', async () => {
+	test('overridable store functions as expected', async () => {
 		const overrideDay = {
 			start: new CalendarDate(1980, 2, 25),
 			end: new CalendarDate(1980, 2, 27),
@@ -392,8 +396,8 @@ describe('Range Calendar', () => {
 		await user.click(fourthDayInMonth);
 		await tick();
 
-		const selectedDaysAfterClick = calendar.querySelectorAll('[data-selected]');
-		expect(selectedDaysAfterClick).toHaveLength(3);
+		const selectedDaysAfterClick = getByTestId('calendar').querySelectorAll('[data-selected]');
+		expect(selectedDaysAfterClick).toHaveLength(2);
 	});
 
 	test('unavailable dates behavior', async () => {
@@ -442,5 +446,60 @@ describe('Range Calendar', () => {
 		await user.dblClick(fifthDayInMonth);
 
 		expect(calendar.querySelectorAll('[data-selected]')).toHaveLength(1);
+	});
+
+	test('weekdayFormat prop - `"narrow"` (default)', async () => {
+		const { getByTestId } = setup();
+
+		for (const [i, weekday] of narrowWeekdays.entries()) {
+			const weekdayElement = getByTestId(`weekday-${i}`);
+			expect(weekdayElement).toHaveTextContent(weekday);
+		}
+	});
+
+	test('weekdayFormat prop - `"short"`', async () => {
+		const { getByTestId } = setup({
+			weekdayFormat: 'short',
+		});
+
+		for (const [i, weekday] of shortWeekdays.entries()) {
+			const weekdayElement = getByTestId(`weekday-${i}`);
+			expect(weekdayElement).toHaveTextContent(weekday);
+		}
+	});
+
+	test('weekdayFormat prop - `"long"`', async () => {
+		const { getByTestId } = setup({
+			weekdayFormat: 'long',
+		});
+
+		for (const [i, weekday] of longWeekdays.entries()) {
+			const weekdayElement = getByTestId(`weekday-${i}`);
+			expect(weekdayElement).toHaveTextContent(weekday);
+		}
+	});
+
+	test('dynamically change weekdayFormat option', async () => {
+		const { getByTestId, user } = setup();
+
+		for (const [i, weekday] of narrowWeekdays.entries()) {
+			const weekdayElement = getByTestId(`weekday-${i}`);
+			expect(weekdayElement).toHaveTextContent(weekday);
+		}
+
+		const cycleButton = getByTestId('cycle-weekday-format');
+		await user.click(cycleButton);
+
+		for (const [i, weekday] of shortWeekdays.entries()) {
+			const weekdayElement = getByTestId(`weekday-${i}`);
+			expect(weekdayElement).toHaveTextContent(weekday);
+		}
+
+		await user.click(cycleButton);
+
+		for (const [i, weekday] of longWeekdays.entries()) {
+			const weekdayElement = getByTestId(`weekday-${i}`);
+			expect(weekdayElement).toHaveTextContent(weekday);
+		}
 	});
 });
