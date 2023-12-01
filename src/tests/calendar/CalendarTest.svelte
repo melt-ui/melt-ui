@@ -25,7 +25,7 @@
 	export let disabled: CreateCalendarProps['disabled'] = undefined;
 	export let readonly: CreateCalendarProps['readonly'] = undefined;
 	export let weekdayFormat: CreateCalendarProps['weekdayFormat'] = undefined;
-	export let ids: CreateCalendarProps["ids"] = undefined
+	export let ids: CreateCalendarProps['ids'] = undefined;
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
@@ -54,7 +54,7 @@
 			disabled,
 			readonly,
 			weekdayFormat,
-			ids
+			ids,
 		})
 	);
 
