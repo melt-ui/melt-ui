@@ -63,7 +63,7 @@ type CalendarParts = 'content' | 'nextButton' | 'prevButton' | 'grid' | 'cell' |
 
 const { name } = createElHelpers<CalendarParts>('calendar');
 
-export const calendarIdParts = ['calendar', 'grid', 'accessibleHeading'] as const;
+export const calendarIdParts = ['calendar', 'accessibleHeading'] as const;
 export type CalendarIdParts = typeof calendarIdParts;
 
 export function createCalendar<

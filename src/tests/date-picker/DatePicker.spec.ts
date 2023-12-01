@@ -29,6 +29,17 @@ function setup(props: CreateDatePickerProps = {}) {
 	};
 }
 
+async function open(props: CreateDatePickerProps = {}) {
+	const returned = setup(props);
+	await returned.user.click(returned.trigger);
+	const calendar = returned.getByTestId('calendar');
+	expect(calendar).toBeVisible();
+	return {
+		...returned,
+		calendar,
+	};
+}
+
 describe('DatePicker', () => {
 	describe('Accessibility', () => {
 		test('has no accessibility violations', async () => {
@@ -456,6 +467,79 @@ describe('DatePicker', () => {
 				const weekdayElement = getByTestId(`weekday-${i}`);
 				expect(weekdayElement).toHaveTextContent(weekday);
 			}
+		});
+
+		test('custom ids are applied when provided', async () => {
+			const dateFieldIds = {
+				field: 'id-field',
+				day: 'id-day',
+				month: 'id-month',
+				dayPeriod: 'id-dayPeriod',
+				hour: 'id-hour',
+				minute: 'id-minute',
+				year: 'id-year',
+				timeZoneName: 'id-timeZoneName',
+				description: 'id-description',
+				label: 'id-label',
+				second: 'id-second',
+				validation: 'id-validation',
+			};
+
+			const popoverIds = {
+				content: 'id-content',
+				trigger: 'id-trigger',
+			};
+
+			const calendarIds = {
+				accessibleHeading: 'id-heading',
+				calendar: 'id-calendar',
+			};
+
+			const { getByTestId } = await open({
+				defaultValue: zonedDateTime,
+				dateFieldIds,
+				popoverIds,
+				calendarIds,
+				granularity: 'second',
+			});
+
+			const field = getByTestId('field');
+			const label = getByTestId('label');
+			const validation = getByTestId('validation');
+			const monthSegment = getByTestId('month');
+			const daySegment = getByTestId('day');
+			const yearSegment = getByTestId('year');
+			const hourSegment = getByTestId('hour');
+			const secondSegment = getByTestId('second');
+			const minuteSegment = getByTestId('minute');
+			const dayPeriodSegment = getByTestId('dayPeriod');
+			const timeZoneSegment = getByTestId('timeZoneName');
+
+			const descriptionEl = document.getElementById(dateFieldIds.description);
+			expect(descriptionEl).toBeInTheDocument();
+
+			expect(field.id).toBe(dateFieldIds.field);
+			expect(label.id).toBe(dateFieldIds.label);
+			expect(validation.id).toBe(dateFieldIds.validation);
+			expect(monthSegment.id).toBe(dateFieldIds.month);
+			expect(daySegment.id).toBe(dateFieldIds.day);
+			expect(yearSegment.id).toBe(dateFieldIds.year);
+			expect(hourSegment.id).toBe(dateFieldIds.hour);
+			expect(secondSegment.id).toBe(dateFieldIds.second);
+			expect(minuteSegment.id).toBe(dateFieldIds.minute);
+			expect(dayPeriodSegment.id).toBe(dateFieldIds.dayPeriod);
+			expect(timeZoneSegment.id).toBe(dateFieldIds.timeZoneName);
+			expect(field.getAttribute('aria-describedby')).toBe(dateFieldIds.description);
+
+			const content = getByTestId('content');
+			const trigger = getByTestId('trigger');
+			expect(content.id).toBe(popoverIds.content);
+			expect(trigger.id).toBe(popoverIds.trigger);
+
+			const calendar = getByTestId('calendar');
+			expect(calendar.id).toBe(calendarIds.calendar);
+			const accessibleHeading = document.getElementById(calendarIds.accessibleHeading);
+			expect(accessibleHeading).toBeInTheDocument();
 		});
 	});
 

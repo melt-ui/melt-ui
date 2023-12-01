@@ -180,12 +180,13 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	});
 
 	const fieldIdDeps = derived(
-		[ids.field, ids.label, ids.description],
-		([$fieldId, $labelId, $descriptionId]) => {
+		[ids.field, ids.label, ids.description, ids.validation],
+		([$fieldId, $labelId, $descriptionId, $validationId]) => {
 			return {
 				field: $fieldId,
 				label: $labelId,
 				description: $descriptionId,
+				validation: $validationId,
 			};
 		}
 	);
@@ -193,11 +194,15 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	const field = builder(name('field'), {
 		stores: [isCompleted, isInvalid, fieldIdDeps],
 		returned: ([$isCompleted, $isInvalid, $ids]) => {
+			const describedBy = $isCompleted
+				? `${$ids.description}${$isInvalid ? ` ${$ids.validation}` : ''}`
+				: `${$ids.description}`;
+
 			return {
 				role: 'group',
 				id: $ids.field,
 				'aria-labelledby': $ids.label,
-				'aria-describedby': $isCompleted ? $ids.description : undefined,
+				'aria-describedby': describedBy,
 				'data-invalid': $isInvalid ? '' : undefined,
 			};
 		},

@@ -498,6 +498,57 @@ describe('DateField', () => {
 		await user.click(label);
 		expect(monthSegment).toHaveFocus();
 	});
+
+	test('custom ids are applied when provided', async () => {
+		const ids = {
+			field: 'id-field',
+			day: 'id-day',
+			month: 'id-month',
+			dayPeriod: 'id-dayPeriod',
+			hour: 'id-hour',
+			minute: 'id-minute',
+			year: 'id-year',
+			timeZoneName: 'id-timeZoneName',
+			description: 'id-description',
+			label: 'id-label',
+			second: 'id-second',
+			validation: 'id-validation',
+		};
+		const { getByTestId } = setup({
+			defaultValue: zonedDateTimeOther,
+			ids,
+			granularity: 'second',
+		});
+
+		const field = getByTestId('field');
+		const label = getByTestId('label');
+		const validation = getByTestId('validation');
+		const monthSegment = getByTestId('month');
+		const daySegment = getByTestId('day');
+		const yearSegment = getByTestId('year');
+		const hourSegment = getByTestId('hour');
+		const secondSegment = getByTestId('second');
+		const minuteSegment = getByTestId('minute');
+		const dayPeriodSegment = getByTestId('dayPeriod');
+		const timeZoneSegment = getByTestId('timeZoneName');
+
+		const descriptionEl = document.getElementById(ids.description);
+		expect(descriptionEl).toBeInTheDocument();
+
+		expect(field.id).toBe(ids.field);
+		expect(label.id).toBe(ids.label);
+		expect(validation.id).toBe(ids.validation);
+		expect(monthSegment.id).toBe(ids.month);
+		expect(daySegment.id).toBe(ids.day);
+		expect(yearSegment.id).toBe(ids.year);
+		expect(hourSegment.id).toBe(ids.hour);
+		expect(secondSegment.id).toBe(ids.second);
+		expect(minuteSegment.id).toBe(ids.minute);
+		expect(dayPeriodSegment.id).toBe(ids.dayPeriod);
+		expect(timeZoneSegment.id).toBe(ids.timeZoneName);
+
+		expect(field.getAttribute('aria-describedby')).toBe(ids.description);
+	});
 });
 
 function isDaylightSavingsTime(): boolean {

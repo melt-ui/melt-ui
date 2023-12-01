@@ -17,7 +17,7 @@
 	export let granularity: CreateDateFieldProps['granularity'] = undefined;
 
 	const {
-		elements: { field, segment, label },
+		elements: { field, segment, label, validation },
 		states: { value: insideValue, segmentContents },
 	} = createDateField({
 		value,
@@ -58,6 +58,7 @@
 					</div>
 				{/each}
 			</div>
+			<span use:melt={$validation} data-testid="validation">Validation</span>
 		</div>
 	</div>
 </main>

@@ -19,6 +19,7 @@
 	export let hideTimeZone: CreateDatePickerProps['hideTimeZone'] = undefined;
 	export let dateFieldIds: CreateDatePickerProps['dateFieldIds'] = undefined;
 	export let calendarIds: CreateDatePickerProps['calendarIds'] = undefined;
+	export let popoverIds: CreateDatePickerProps['popoverIds'] = undefined;
 	export let granularity: CreateDatePickerProps['granularity'] = undefined;
 	export let calendarLabel: CreateDatePickerProps['calendarLabel'] = undefined;
 	export let preventDeselect: CreateDatePickerProps['preventDeselect'] = undefined;
@@ -41,6 +42,7 @@
 			trigger,
 			content,
 			label,
+			validation,
 		},
 		states: { value: insideValue, months, headingValue, weekdays, segmentContents },
 		options: { locale: insideLocale, weekdayFormat: weekdayFormatOption },
@@ -68,6 +70,7 @@
 			weekStartsOn,
 			isDateDisabled,
 			weekdayFormat,
+			popoverIds,
 		})
 	);
 
@@ -111,11 +114,13 @@
 				</button>
 			</div>
 		</div>
+		<span use:melt={$validation} data-testid="validation">validation</span>
 	</div>
 	<div
 		class="z-10 w-80 rounded-[4px] bg-white p-3 shadow-sm"
 		transition:fade={{ duration: 100 }}
 		use:melt={$content}
+		data-testid="content"
 	>
 		<div class="w-full text-magnum-800" use:melt={$calendar} data-testid="calendar">
 			<header class="flex items-center justify-between pb-4">
