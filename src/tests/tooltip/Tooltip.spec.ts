@@ -35,6 +35,21 @@ describe('Tooltip', () => {
 		await waitFor(() => expect(content).not.toBeVisible());
 	});
 
+	test('Applies custom ids when provided', async () => {
+		const ids = {
+			trigger: 'id-trigger',
+			content: 'id-content',
+		};
+		const { getByTestId } = render(Tooltip, {
+			ids,
+		});
+
+		const trigger = getByTestId('trigger');
+		const content = getByTestId('content');
+		expect(trigger.id).toBe(ids.trigger);
+		expect(content.id).toBe(ids.content);
+	});
+
 	test.skip('When the tooltip was opened by focusing, leaving the trigger does not close it', async () => {
 		const { getByTestId } = render(Tooltip);
 		const user = userEvent.setup();

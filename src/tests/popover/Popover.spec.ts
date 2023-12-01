@@ -96,4 +96,19 @@ describe('Popover (Default)', () => {
 		await sleep(1);
 		expect(closeFocus).toHaveFocus();
 	});
+
+	test('Custom ids are applied when provided', async () => {
+		const ids = {
+			content: 'id-content',
+			trigger: 'id-trigger',
+		};
+		const { getByTestId } = setup({
+			ids,
+		});
+
+		const trigger = getByTestId('trigger');
+		const content = getByTestId('content');
+		expect(trigger.id).toBe(ids.trigger);
+		expect(content.id).toBe(ids.content);
+	});
 });
