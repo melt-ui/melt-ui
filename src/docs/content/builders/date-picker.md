@@ -68,7 +68,7 @@ the pieces we need:
 			segment,
 			trigger
 		},
-		states: { months, headingValue, daysOfWeek, segmentContents },
+		states: { months, headingValue, weekdays, segmentContents },
 		helpers: { isDateDisabled, isDateUnavailable }
 	} = createDatePicker()
 </script>
@@ -128,7 +128,7 @@ Once that's in place, we can setup our calendar, which will be contained within 
 			<table use:melt={$grid}>
 				<thead aria-hidden="true">
 					<tr>
-						{#each $daysOfWeek as day}
+						{#each $weekdays as day}
 							<th>
 								{$day}
 							</th>

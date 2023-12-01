@@ -37,7 +37,7 @@
 	<div
 		use:melt={$content}
 		transition:fade={{ duration: 100 }}
-		class="z-10 rounded-[4px] bg-white p-5 shadow-md"
+		class="force-dark z-10 rounded-[4px] bg-white p-5 shadow-md"
 	>
 		<div use:melt={$arrow} />
 		<div class="flex flex-col gap-2.5 p-4">
@@ -54,7 +54,7 @@
 				<div
 					use:melt={$contentA}
 					transition:fade={{ duration: 100 }}
-					class=" z-20 w-64 rounded-md bg-neutral-900 p-5 text-white shadow-lg"
+					class="force-dark z-20 w-64 rounded-md bg-neutral-900 p-5 text-white shadow-lg"
 				>
 					<div use:melt={$arrowA} />
 					<div class="flex flex-col gap-2 px-4 py-2">

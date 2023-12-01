@@ -36,7 +36,7 @@
 	</button>
 	{#if $open}
 		<div
-			class="z-10 flex max-h-[300px] flex-col
+			class="force-dark z-10 flex max-h-[300px] flex-col
 		overflow-y-auto rounded-lg bg-white p-1
 		shadow focus:!ring-0"
 			use:melt={$menu}

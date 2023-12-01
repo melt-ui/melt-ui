@@ -7,24 +7,50 @@ import DatePickerTest from './DatePickerTest.svelte';
 import { CalendarDate, CalendarDateTime, toZoned, today } from '@internationalized/date';
 import { tick } from 'svelte';
 import { sleep } from '$lib/internal/helpers';
+import type { CreateDatePickerProps } from '$lib';
 
 const calendarDateToday = today('America/New_York');
 const calendarDate = new CalendarDate(1980, 1, 20);
 const calendarDateTime = new CalendarDateTime(1980, 1, 20, 12, 30, 0, 0);
 const zonedDateTime = toZoned(calendarDateTime, 'America/New_York');
 
+const narrowWeekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const shortWeekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const longWeekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+function setup(props: CreateDatePickerProps = {}) {
+	const user = userEvent.setup();
+	const returned = render(DatePickerTest, props);
+	const trigger = returned.getByTestId('trigger');
+	return {
+		...returned,
+		user,
+		trigger,
+	};
+}
+
+async function open(props: CreateDatePickerProps = {}) {
+	const returned = setup(props);
+	await returned.user.click(returned.trigger);
+	const calendar = returned.getByTestId('calendar');
+	expect(calendar).toBeVisible();
+	return {
+		...returned,
+		calendar,
+	};
+}
+
 describe('DatePicker', () => {
 	describe('Accessibility', () => {
 		test('has no accessibility violations', async () => {
-			const { container } = render(DatePickerTest);
+			const { container } = setup();
 
 			expect(await axe(container)).toHaveNoViolations();
 		});
 	});
 	describe('Props', () => {
 		test('populated with defaultValue - CalendarDate', async () => {
-			const user = userEvent.setup();
-			const { getByTestId, container } = render(DatePickerTest, {
+			const { getByTestId, user, trigger } = setup({
 				defaultValue: calendarDate,
 			});
 
@@ -38,21 +64,19 @@ describe('DatePicker', () => {
 			expect(yearSegment).toHaveTextContent(String(calendarDate.year));
 			expect(insideValue).toHaveTextContent(calendarDate.toString());
 
-			const trigger = getByTestId('trigger');
 			await user.click(trigger);
 
 			const calendar = getByTestId('calendar');
 			expect(calendar).toBeVisible();
 
-			const selectedDay = container.querySelector('[data-selected]');
+			const selectedDay = calendar.querySelector('[data-selected]');
 			expect(selectedDay).toHaveTextContent(String(calendarDate.day));
 
 			const heading = getByTestId('heading');
 			expect(heading).toHaveTextContent('January 1980');
 		});
 		test('populated with defaultValue - CalendarDateTime', async () => {
-			const user = userEvent.setup();
-			const { getByTestId, container } = render(DatePickerTest, {
+			const { getByTestId, user, trigger } = setup({
 				defaultValue: calendarDateTime,
 			});
 
@@ -70,13 +94,12 @@ describe('DatePicker', () => {
 			expect(minuteSegment).toHaveTextContent(String(calendarDateTime.minute));
 			expect(insideValue).toHaveTextContent(calendarDateTime.toString());
 
-			const trigger = getByTestId('trigger');
 			await user.click(trigger);
 
 			const calendar = getByTestId('calendar');
 			expect(calendar).toBeVisible();
 
-			const selectedDay = container.querySelector('[data-selected]');
+			const selectedDay = calendar.querySelector('[data-selected]');
 			expect(selectedDay).toHaveTextContent(String(calendarDateTime.day));
 
 			const heading = getByTestId('heading');
@@ -84,8 +107,7 @@ describe('DatePicker', () => {
 		});
 
 		test('populated with defaultValue - ZonedDateTime', async () => {
-			const user = userEvent.setup();
-			const { getByTestId, container } = render(DatePickerTest, {
+			const { getByTestId, trigger, user } = setup({
 				defaultValue: zonedDateTime,
 			});
 
@@ -107,13 +129,12 @@ describe('DatePicker', () => {
 			expect(timeZoneSegment).toHaveTextContent(String('EST'));
 			expect(insideValue).toHaveTextContent(zonedDateTime.toString());
 
-			const trigger = getByTestId('trigger');
 			await user.click(trigger);
 
 			const calendar = getByTestId('calendar');
 			expect(calendar).toBeVisible();
 
-			const selectedDay = container.querySelector('[data-selected]');
+			const selectedDay = calendar.querySelector('[data-selected]');
 			expect(selectedDay).toHaveTextContent(String(zonedDateTime.day));
 
 			const heading = getByTestId('heading');
@@ -121,12 +142,10 @@ describe('DatePicker', () => {
 		});
 
 		test('month navigation', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest, {
+			const { getByTestId, user, trigger } = setup({
 				defaultValue: zonedDateTime,
 			});
 
-			const trigger = getByTestId('trigger');
 			await user.click(trigger);
 
 			const calendar = getByTestId('calendar');
@@ -149,37 +168,33 @@ describe('DatePicker', () => {
 		});
 
 		test('prevent deselection', async () => {
-			const user = userEvent.setup();
-			const { getByTestId, container } = render(DatePickerTest, {
+			const { getByTestId, user, trigger } = setup({
 				defaultValue: zonedDateTime,
 				preventDeselect: true,
 			});
 
-			const trigger = getByTestId('trigger');
 			await user.click(trigger);
 
 			const calendar = getByTestId('calendar');
 			expect(calendar).toBeVisible();
 
-			const selectedDay = container.querySelector('[data-selected]') as HTMLElement;
+			const selectedDay = calendar.querySelector('[data-selected]') as HTMLElement;
 			expect(selectedDay).toHaveTextContent(String(zonedDateTime.day));
 
 			await user.click(selectedDay);
 
-			const selectedDayAfterClick = container.querySelector('[data-selected]') as HTMLElement;
+			const selectedDayAfterClick = calendar.querySelector('[data-selected]') as HTMLElement;
 			expect(selectedDayAfterClick).toHaveTextContent(String(zonedDateTime.day));
 		});
 
 		test('selection with mouse', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest, {
+			const { getByTestId, user, trigger } = setup({
 				defaultPlaceholder: zonedDateTime,
 			});
-			const trigger = getByTestId('trigger');
 			await user.click(trigger);
 			const calendar = getByTestId('calendar');
 			expect(calendar).toBeVisible();
-			const secondDayInMonth = getByTestId('month-0-date-2');
+			const secondDayInMonth = getByTestId('month-1-date-2');
 			await user.click(secondDayInMonth);
 			expect(secondDayInMonth).toHaveAttribute('data-selected');
 
@@ -189,17 +204,15 @@ describe('DatePicker', () => {
 		});
 
 		test('selection with keyboard', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest, {
+			const { getByTestId, trigger, user } = setup({
 				defaultPlaceholder: zonedDateTime,
 			});
-			const trigger = getByTestId('trigger');
 			await user.click(trigger);
 			await sleep(1);
 			const calendar = getByTestId('calendar');
 			expect(calendar).toBeVisible();
 
-			const secondDayInMonth = getByTestId('month-0-date-2');
+			const secondDayInMonth = getByTestId('month-1-date-2');
 			secondDayInMonth.focus();
 			expect(secondDayInMonth).toHaveFocus();
 			await user.keyboard(kbd.SPACE);
@@ -210,7 +223,7 @@ describe('DatePicker', () => {
 			await user.keyboard(kbd.ARROW_RIGHT);
 			await user.keyboard(kbd.ENTER);
 
-			const thirdDayInMonth = getByTestId('month-0-date-3');
+			const thirdDayInMonth = getByTestId('month-1-date-3');
 			expect(thirdDayInMonth).toHaveAttribute('data-selected');
 			const newDate2 = zonedDateTime.set({ day: 3 });
 			const insideValue2 = getByTestId('inside-value');
@@ -218,7 +231,7 @@ describe('DatePicker', () => {
 		});
 
 		test('locale changes segment positioning', async () => {
-			const { getByTestId } = render(DatePickerTest, {
+			const { getByTestId } = setup({
 				locale: 'en-UK',
 			});
 
@@ -234,7 +247,7 @@ describe('DatePicker', () => {
 		});
 
 		test('certain locales do not show day period segment', async () => {
-			const { queryByTestId } = render(DatePickerTest, {
+			const { queryByTestId } = setup({
 				locale: 'en-UK',
 				defaultValue: calendarDateTime,
 			});
@@ -242,7 +255,7 @@ describe('DatePicker', () => {
 		});
 
 		test('certain locales do show day period segment', async () => {
-			const { queryByTestId } = render(DatePickerTest, {
+			const { queryByTestId } = setup({
 				defaultValue: calendarDateTime,
 			});
 			expect(queryByTestId('dayPeriod')).not.toBeNull();
@@ -251,8 +264,7 @@ describe('DatePicker', () => {
 
 	describe('Navigation', () => {
 		test('focuses first segment on click', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest);
+			const { getByTestId, user } = setup();
 
 			const firstSegment = getByTestId('month');
 			await user.click(firstSegment);
@@ -261,8 +273,7 @@ describe('DatePicker', () => {
 		});
 
 		test('increments segment on arrow up', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest, {
+			const { getByTestId, user } = setup({
 				defaultPlaceholder: calendarDateToday,
 			});
 			const firstSegment = getByTestId('month');
@@ -274,12 +285,17 @@ describe('DatePicker', () => {
 			expect(firstSegment).toHaveTextContent(String(currentMonth));
 
 			await user.keyboard(kbd.ARROW_UP);
-			expect(firstSegment).toHaveTextContent(String(calendarDateToday.month + 1));
+
+			if (calendarDateToday.month === 12) {
+				expect(firstSegment).toHaveTextContent(String(1));
+			} else {
+				expect(firstSegment).toHaveTextContent(String(calendarDateToday.month + 1));
+			}
 		});
 
 		test('increments segment on arrow down', async () => {
 			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest, {
+			const { getByTestId } = setup({
 				defaultPlaceholder: calendarDateToday,
 			});
 
@@ -296,8 +312,7 @@ describe('DatePicker', () => {
 		});
 
 		test('increments segment on arrow down', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest, {
+			const { getByTestId, user } = setup({
 				defaultPlaceholder: calendarDateToday,
 			});
 
@@ -314,8 +329,7 @@ describe('DatePicker', () => {
 		});
 
 		test('navigates segments using arrow keys', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest);
+			const { getByTestId, user } = setup();
 
 			const monthSegment = getByTestId('month');
 			const daySegment = getByTestId('day');
@@ -343,13 +357,11 @@ describe('DatePicker', () => {
 		});
 
 		test('navigates segments using tab', async () => {
-			const user = userEvent.setup();
-			const { getByTestId } = render(DatePickerTest);
+			const { getByTestId, user, trigger } = setup();
 
 			const monthSegment = getByTestId('month');
 			const daySegment = getByTestId('day');
 			const yearSegment = getByTestId('year');
-			const triggerSegment = getByTestId('trigger');
 
 			await user.click(monthSegment);
 			await user.keyboard(kbd.TAB);
@@ -359,16 +371,14 @@ describe('DatePicker', () => {
 			expect(yearSegment).toHaveFocus();
 
 			await user.keyboard(kbd.TAB);
-			expect(triggerSegment).toHaveFocus();
+			expect(trigger).toHaveFocus();
 		});
 
 		test('when no time selected, selecting', async () => {
-			const user = userEvent.setup();
-			const { getByTestId, queryByTestId } = render(DatePickerTest, {
+			const { getByTestId, queryByTestId, user, trigger } = setup({
 				granularity: 'minute',
 			});
 
-			const trigger = getByTestId('trigger');
 			await user.click(trigger);
 
 			const calendar = queryByTestId('calendar');
@@ -383,7 +393,7 @@ describe('DatePicker', () => {
 			const minuteSegment = getByTestId('minute');
 			expect(minuteSegment).not.toHaveTextContent(String(undefined));
 
-			const firstDayInMonth = getByTestId('month-0-date-1');
+			const firstDayInMonth = getByTestId('month-1-date-1');
 			await user.click(firstDayInMonth);
 
 			await tick();
@@ -393,7 +403,7 @@ describe('DatePicker', () => {
 		});
 
 		test('correct segments are rendered with placeholder', async () => {
-			const { getByTestId } = render(DatePickerTest, {
+			const { getByTestId } = setup({
 				defaultPlaceholder: new CalendarDateTime(2021, 2, 1),
 			});
 
@@ -403,5 +413,136 @@ describe('DatePicker', () => {
 				expect(getByTestId(segment)).not.toBeNull();
 			}
 		});
+
+		test('weekdayFormat prop - `"narrow"` (default)', async () => {
+			const { getByTestId } = setup();
+
+			for (const [i, weekday] of narrowWeekdays.entries()) {
+				const weekdayElement = getByTestId(`weekday-${i}`);
+				expect(weekdayElement).toHaveTextContent(weekday);
+			}
+		});
+
+		test('weekdayFormat prop - `"short"`', async () => {
+			const { getByTestId } = setup({
+				weekdayFormat: 'short',
+			});
+
+			for (const [i, weekday] of shortWeekdays.entries()) {
+				const weekdayElement = getByTestId(`weekday-${i}`);
+				expect(weekdayElement).toHaveTextContent(weekday);
+			}
+		});
+
+		test('weekdayFormat prop - `"long"`', async () => {
+			const { getByTestId } = setup({
+				weekdayFormat: 'long',
+			});
+
+			for (const [i, weekday] of longWeekdays.entries()) {
+				const weekdayElement = getByTestId(`weekday-${i}`);
+				expect(weekdayElement).toHaveTextContent(weekday);
+			}
+		});
+
+		test('dynamically change weekdayFormat option', async () => {
+			const { getByTestId, user } = setup();
+
+			for (const [i, weekday] of narrowWeekdays.entries()) {
+				const weekdayElement = getByTestId(`weekday-${i}`);
+				expect(weekdayElement).toHaveTextContent(weekday);
+			}
+
+			const cycleButton = getByTestId('cycle-weekday-format');
+			await user.click(cycleButton);
+
+			for (const [i, weekday] of shortWeekdays.entries()) {
+				const weekdayElement = getByTestId(`weekday-${i}`);
+				expect(weekdayElement).toHaveTextContent(weekday);
+			}
+
+			await user.click(cycleButton);
+
+			for (const [i, weekday] of longWeekdays.entries()) {
+				const weekdayElement = getByTestId(`weekday-${i}`);
+				expect(weekdayElement).toHaveTextContent(weekday);
+			}
+		});
+
+		test('custom ids are applied when provided', async () => {
+			const dateFieldIds = {
+				field: 'id-field',
+				day: 'id-day',
+				month: 'id-month',
+				dayPeriod: 'id-dayPeriod',
+				hour: 'id-hour',
+				minute: 'id-minute',
+				year: 'id-year',
+				timeZoneName: 'id-timeZoneName',
+				description: 'id-description',
+				label: 'id-label',
+				second: 'id-second',
+				validation: 'id-validation',
+			};
+
+			const popoverIds = {
+				content: 'id-content',
+				trigger: 'id-trigger',
+			};
+
+			const calendarIds = {
+				accessibleHeading: 'id-heading',
+				calendar: 'id-calendar',
+			};
+
+			const { getByTestId } = await open({
+				defaultValue: zonedDateTime,
+				dateFieldIds,
+				popoverIds,
+				calendarIds,
+				granularity: 'second',
+			});
+
+			const fieldParts = [
+				'month',
+				'day',
+				'year',
+				'hour',
+				'minute',
+				'dayPeriod',
+				'timeZoneName',
+				'field',
+				'label',
+				'validation',
+			] as const;
+			for (const part of fieldParts) {
+				const segmentEl = getByTestId(part);
+				expect(segmentEl.id).toBe(dateFieldIds[part]);
+				if (part === 'field') {
+					expect(segmentEl.getAttribute('aria-describedby')).toBe(dateFieldIds.description);
+				}
+			}
+
+			const descriptionEl = document.getElementById(dateFieldIds.description);
+			expect(descriptionEl).toBeInTheDocument();
+
+			const content = getByTestId('content');
+			const trigger = getByTestId('trigger');
+			expect(content.id).toBe(popoverIds.content);
+			expect(trigger.id).toBe(popoverIds.trigger);
+
+			const calendar = getByTestId('calendar');
+			expect(calendar.id).toBe(calendarIds.calendar);
+			const accessibleHeading = document.getElementById(calendarIds.accessibleHeading);
+			expect(accessibleHeading).toBeInTheDocument();
+		});
+	});
+
+	test('clicking the label focuses the first segment', async () => {
+		const { getByTestId, user } = setup();
+		const label = getByTestId('label');
+		const monthSegment = getByTestId('month');
+		await user.click(label);
+		expect(monthSegment).toHaveFocus();
 	});
 });

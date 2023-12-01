@@ -60,9 +60,15 @@ async function createPreviewsObject({
 
 		if (match) {
 			const [, groupKey, styleKey, fileKey] = match; // Destructure the matched parts
-			const { content } = obj;
+			const { content: clutteredContent } = obj;
 
 			if (!isSvelteFile(fileKey)) return;
+
+			const content = clutteredContent
+				.replaceAll(`\n\t\t\tclass="force-dark"`, '')
+				.replaceAll(`class="force-dark `, `class="`)
+				.replaceAll(' force-dark', '')
+				.replaceAll('force-dark', '');
 
 			// Create the structure in the returnedObj
 			if (!returnedObj[groupKey]) {

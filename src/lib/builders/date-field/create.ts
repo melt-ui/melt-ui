@@ -13,6 +13,7 @@ import {
 	isNumberString,
 	styleToString,
 	noop,
+	sleep,
 } from '$lib/internal/helpers/index.js';
 import {
 	dateStore,
@@ -22,6 +23,7 @@ import {
 	createFormatter,
 	getAnnouncer,
 	isBefore,
+	getFirstSegment,
 } from '$lib/internal/helpers/date/index.js';
 import { derived, get, writable, type Updater } from 'svelte/store';
 import {
@@ -267,6 +269,24 @@ export function createDateField(props?: CreateDateFieldProps) {
 				'data-disabled': $disabled ? '' : undefined,
 			};
 		},
+		action: (node: HTMLElement) => {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					const firstSegment = getFirstSegment(get(ids.field));
+					if (!firstSegment) return;
+					sleep(1).then(() => firstSegment.focus());
+				}),
+				addMeltEventListener(node, 'mousedown', (e) => {
+					if (!e.defaultPrevented && e.detail > 1) {
+						e.preventDefault();
+					}
+				})
+			);
+
+			return {
+				destroy: unsub,
+			};
+		},
 	});
 
 	const validation = builder(name('validation'), {
@@ -325,8 +345,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 		stores: [value, isInvalid, disabled, readonly, fieldIdDeps],
 		returned: ([$value, $isInvalid, $disabled, $readonly, $ids]) => {
 			const describedBy = $value
-				? `${$ids.description} ${$isInvalid ? $ids.validation : ''}`
-				: undefined;
+				? `${$ids.description}${$isInvalid ? ` ${$ids.validation}` : ''}`
+				: `${$ids.description}`;
 
 			return {
 				role: 'group',

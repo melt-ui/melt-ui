@@ -57,6 +57,16 @@ describe('Popover (Default)', () => {
 		await waitFor(() => expect(content).not.toBeVisible());
 	});
 
+	test('Toggles open state on trigger click', async () => {
+		const { content, trigger, user } = setup();
+
+		expect(content).not.toBeVisible();
+		await user.click(trigger);
+		await waitFor(() => expect(content).toBeVisible());
+		await user.click(trigger);
+		await waitFor(() => expect(content).not.toBeVisible());
+	});
+
 	test('Respects `openFocus` prop', async () => {
 		const { content, trigger, user, getByTestId } = setup({
 			openFocus: () => {
@@ -85,5 +95,20 @@ describe('Popover (Default)', () => {
 		const closeFocus = getByTestId('closeFocus');
 		await sleep(1);
 		expect(closeFocus).toHaveFocus();
+	});
+
+	test('Custom ids are applied when provided', async () => {
+		const ids = {
+			content: 'id-content',
+			trigger: 'id-trigger',
+		};
+		const { getByTestId } = setup({
+			ids,
+		});
+
+		const trigger = getByTestId('trigger');
+		const content = getByTestId('content');
+		expect(trigger.id).toBe(ids.trigger);
+		expect(content.id).toBe(ids.content);
 	});
 });

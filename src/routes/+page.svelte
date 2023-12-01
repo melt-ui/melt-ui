@@ -63,14 +63,14 @@
 		</button>
 		<a
 			href="/docs"
-			class="mt-4 rounded-xl bg-magnum-400 px-4 py-2 font-semibold text-magnum-900 transition
+			class="force-dark mt-4 rounded-xl bg-magnum-400 px-4 py-2 font-semibold text-magnum-900 transition
 		hover:opacity-75 active:translate-y-0.5"
 		>
 			Get started
 		</a>
 	</div>
 
-	<div class="dotted-bg mt-1 grid w-full grow overflow-hidden">
+	<div class="force-dark dotted-bg mt-1 grid w-full grow overflow-hidden">
 		<div
 			class="translate-y absolute -top-2 left-1/2 z-10 h-[50rem]
 			w-[90rem] -translate-x-1/2 translate-y-[clamp(0px,5vh,5rem)] md:block"
@@ -97,7 +97,7 @@
 	.dotted-bg {
 		background-image: radial-gradient(
 			circle at 1px 1px,
-			theme('colors.magnum.200/0.25') 2px,
+			theme('colors.magnum.200') 2px,
 			transparent 0
 		);
 		background-size: 1.5rem 1.5rem;
@@ -110,6 +110,18 @@
 			position: absolute;
 			content: '';
 			inset: 0;
+			background: linear-gradient(to bottom, theme('colors.neutral.100') 0%, transparent 25%);
+		}
+	}
+
+	:global(:root.dark) .dotted-bg {
+		background-image: radial-gradient(
+			circle at 1px 1px,
+			theme('colors.magnum.200/0.25') 2px,
+			transparent 0
+		);
+
+		&::after {
 			background: linear-gradient(to bottom, theme('colors.neutral.900') 0%, transparent 25%);
 		}
 	}

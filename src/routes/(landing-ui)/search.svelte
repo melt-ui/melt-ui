@@ -109,7 +109,7 @@
 />
 
 <Tooltip text="Search">
-	<button class="text-neutral-400 transition-colors hover:text-neutral-50" use:melt={$trigger}>
+	<button class="transition-colors hover:text-neutral-50" use:melt={$trigger}>
 		<SearchIcon class="h-5 w-5" />
 	</button>
 </Tooltip>

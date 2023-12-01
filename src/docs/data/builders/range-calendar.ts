@@ -173,7 +173,7 @@ const builder = builderSchema(BUILDER_NAME, {
 			description: 'A readable store containing month objects for each month in the calendar.',
 		},
 		{
-			name: 'daysOfWeek',
+			name: 'weekdays',
 			type: 'Readable<string[]>',
 			description:
 				'A readable store containing the days of the week, formatted to the  `locale` prop.',
@@ -387,10 +387,6 @@ const cell = elementSchema('cell', {
 		{
 			name: 'data-focused',
 			value: 'Present when the date is focused.',
-		},
-		{
-			name: 'data-calendar-cell',
-			value: ATTRS.MELT('cell'),
 		},
 		{
 			name: 'data-melt-calendar-cell',

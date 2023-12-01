@@ -210,4 +210,22 @@ describe('Dialog', () => {
 		await user.click(closer);
 		await waitFor(() => expect(content).not.toBeVisible());
 	});
+
+	it('Applies custom ids when provided', async () => {
+		const ids = {
+			content: 'id-content',
+			title: 'id-title',
+			description: 'id-description',
+		};
+		const { getByTestId } = setup({
+			ids,
+		});
+
+		const content = getByTestId('content');
+		const title = getByTestId('title');
+		const description = getByTestId('description');
+		expect(content.id).toBe(ids.content);
+		expect(title.id).toBe(ids.title);
+		expect(description.id).toBe(ids.description);
+	});
 });

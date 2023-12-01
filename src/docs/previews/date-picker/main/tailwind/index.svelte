@@ -19,7 +19,7 @@
 			segment,
 			trigger,
 		},
-		states: { months, headingValue, daysOfWeek, segmentContents, open },
+		states: { months, headingValue, weekdays, segmentContents, open },
 		helpers: { isDateDisabled, isDateUnavailable },
 		options: { locale },
 	} = createDatePicker({
@@ -55,7 +55,11 @@
 		</div>
 	</div>
 	{#if $open}
-		<div transition:fade={{ duration: 100 }} use:melt={$content}>
+		<div
+			class="force-dark"
+			transition:fade={{ duration: 100 }}
+			use:melt={$content}
+		>
 			<div use:melt={$calendar}>
 				<header>
 					<button use:melt={$prevButton}>
@@ -73,7 +77,7 @@
 						<table use:melt={$grid}>
 							<thead aria-hidden="true">
 								<tr>
-									{#each $daysOfWeek as day}
+									{#each $weekdays as day}
 										<th>
 											<div>
 												{day}
@@ -125,7 +129,7 @@
 	}
 
 	[data-melt-datefield-label] {
-		@apply font-medium text-magnum-800;
+		@apply select-none font-medium text-magnum-800;
 	}
 
 	[data-melt-datefield-label][data-invalid] {

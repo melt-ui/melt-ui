@@ -7,7 +7,7 @@
 		base: 'flex items-center rounded-xl relative md:px-12 overflow-x-auto lg:overflow-x-hidden',
 		variants: {
 			variant: {
-				default: 'bg-magnum-400',
+				default: 'bg-magnum-400 force-dark',
 				dark: 'bg-neutral-950/25',
 			},
 			size: {

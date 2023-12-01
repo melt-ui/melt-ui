@@ -36,6 +36,7 @@ const defaults = {
 	readonly: false,
 	minValue: undefined,
 	maxValue: undefined,
+	weekdayFormat: 'narrow',
 } satisfies CreateDateRangePickerProps;
 
 export function createDateRangePicker(props?: CreateDateRangePickerProps) {
@@ -115,6 +116,10 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 		formatter.setLocale($locale);
 	});
 
+	effect([options.weekdayFormat], ([$weekdayFormat]) => {
+		calendar.options.weekdayFormat.set($weekdayFormat);
+	});
+
 	effect([options.disabled], ([$disabled]) => {
 		rangeField.options.disabled.set($disabled);
 		calendar.options.disabled.set($disabled);
@@ -189,10 +194,10 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 			...calendar.helpers,
 		},
 		options: {
-			...popover.options,
 			...rangeFieldOptions,
 			...rangeCalendarOptions,
 			...options,
+			...popover.options,
 		},
 		ids: {
 			rangeField: rangeField.ids,

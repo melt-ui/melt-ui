@@ -172,13 +172,15 @@ export const createSlider = (props?: CreateSliderProps) => {
 					currentThumbIndex.update((prev) => prev + 1);
 				}
 
-				const thumbPosition = `${$position($value[index])}%`;
+				const thumbValue = $value[index];
+				const thumbPosition = `${$position(thumbValue)}%`;
 				return {
 					role: 'slider',
 					'aria-valuemin': $min,
 					'aria-valuemax': $max,
-					'aria-valuenow': $value[index],
+					'aria-valuenow': thumbValue,
 					'data-melt-part': 'thumb',
+					'data-value': thumbValue,
 					style: styleToString({
 						position: 'absolute',
 						...($orientation === 'horizontal'
@@ -327,6 +329,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 				return {
 					'data-bounded': bounded ? true : undefined,
+					'data-value': tickValue,
 					style: styleToString(style),
 				};
 			};
@@ -460,7 +463,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 		if ($value.some((v) => !isValidValue(v))) {
 			value.update((prev) => {
-				return [...prev].map(gcv);
+				return prev.map(gcv);
 			});
 		}
 	});

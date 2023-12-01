@@ -31,7 +31,7 @@
 
 <style lang="postcss">
 	[data-melt-datefield-label] {
-		@apply font-medium text-white;
+		@apply select-none font-medium text-white;
 	}
 
 	[data-melt-datefield-label][data-invalid] {

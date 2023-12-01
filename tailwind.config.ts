@@ -2,9 +2,31 @@ import type { Config } from 'tailwindcss';
 import plugin from 'tailwindcss/plugin';
 import typography from '@tailwindcss/typography';
 
+/**
+ * @param name Complete CSS variable name of the color (e.g. `magnum-100`)
+ * @returns The CSS string to use in a Tailwind config
+ */
+function getColorFromVariableName(name: string) {
+	return `rgb(var(--color-${name}) / <alpha-value>)`;
+}
+
+/**
+ * @param name CSS variable name of the colors (e.g. `magnum`)
+ * @param variants Variants of the color. Default is `[50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]`
+ * @returns The structured colors object
+ */
+function getColorsFromName(
+	name: string,
+	variants: number[] = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]
+) {
+	return Object.fromEntries(
+		variants.map((n) => [`${n}`, getColorFromVariableName(`${name}-${n}`)])
+	);
+}
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 
+	darkMode: 'class',
 	theme: {
 		container: {
 			center: true,
@@ -15,19 +37,11 @@ export default {
 		},
 		extend: {
 			colors: {
-				magnum: {
-					'50': '#fff9ed',
-					'100': '#fef2d6',
-					'200': '#fce0ac',
-					'300': '#f9c978',
-					'400': '#f7b155',
-					'500': '#f38d1c',
-					'600': '#e47312',
-					'700': '#bd5711',
-					'800': '#964516',
-					'900': '#793a15',
-					'950': '#411c09',
-				},
+				magnum: getColorsFromName('magnum'),
+				neutral: getColorsFromName('neutral'),
+				zinc: getColorsFromName('zinc'),
+				green: getColorsFromName('green', [400]),
+				white: getColorFromVariableName('white'),
 			},
 			fontFamily: {
 				sans: [

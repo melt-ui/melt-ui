@@ -104,7 +104,7 @@
 		File
 	</button>
 
-	<div class="menu" use:melt={$menu}>
+	<div class="force-dark menu" use:melt={$menu}>
 		<div class="item" use:melt={$item}>New Text File</div>
 		<div class="item" use:melt={$item}>
 			New File...
@@ -154,7 +154,7 @@
 		Edit
 	</button>
 
-	<div class="menu" use:melt={$menuA}>
+	<div class="force-dark menu" use:melt={$menuA}>
 		<div class="item" use:melt={$itemA}>
 			Undo
 			<div class="rightSlot">⌘Z</div>
@@ -201,7 +201,7 @@
 		View
 	</button>
 
-	<div class="menu" use:melt={$menuB}>
+	<div class="force-dark menu" use:melt={$menuB}>
 		<div class="item" use:melt={$itemB}>
 			Command Palette..
 			<div class="rightSlot">⇧⌘P</div>
@@ -253,7 +253,7 @@
 		Help
 	</button>
 
-	<div class="menu" use:melt={$menuC}>
+	<div class="force-dark menu" use:melt={$menuC}>
 		<div class="item" use:melt={$itemC}>About Melt UI</div>
 		<div class="item" use:melt={$itemC}>Check for Updates...</div>
 		<div class="separator" use:melt={$separatorC} />

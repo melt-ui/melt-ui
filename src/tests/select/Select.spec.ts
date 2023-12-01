@@ -184,6 +184,25 @@ describe('Select', () => {
 		expect(menu).toBeVisible();
 	});
 
+	test('Applies custom ids when provided', async () => {
+		const ids = {
+			label: 'id-label',
+			menu: 'id-menu',
+			trigger: 'id-trigger',
+		};
+
+		const { getByTestId } = render(SelectTest, {
+			ids,
+		});
+
+		const trigger = getByTestId('trigger');
+		const menu = getByTestId('menu');
+		const label = getByTestId('label');
+		expect(trigger.id).toBe(ids.trigger);
+		expect(menu.id).toBe(ids.menu);
+		expect(label.id).toBe(ids.label);
+	});
+
 	test.todo('Disabled select cannot be opened');
 	test.todo('Options loop when loop prop is set');
 });

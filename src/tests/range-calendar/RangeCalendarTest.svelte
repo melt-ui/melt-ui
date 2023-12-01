@@ -2,6 +2,7 @@
 	import { createRangeCalendar, type CreateRangeCalendarProps } from '$lib/builders';
 	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
 	import { melt } from '$lib';
+	import { removeUndefined } from '../utils';
 
 	export let value: CreateRangeCalendarProps['value'] = undefined;
 	export let defaultValue: CreateRangeCalendarProps['defaultValue'] = undefined;
@@ -20,29 +21,49 @@
 	export let fixedWeeks: CreateRangeCalendarProps['fixedWeeks'] = undefined;
 	export let minValue: CreateRangeCalendarProps['minValue'] = undefined;
 	export let maxValue: CreateRangeCalendarProps['maxValue'] = undefined;
+	export let weekdayFormat: CreateRangeCalendarProps['weekdayFormat'] = undefined;
+	export let ids: CreateRangeCalendarProps['ids'] = undefined;
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { value: insideValue, months, headingValue, daysOfWeek },
-	} = createRangeCalendar({
-		value,
-		defaultValue,
-		defaultPlaceholder,
-		onValueChange,
-		onPlaceholderChange,
-		isDateUnavailable,
-		isDateDisabled,
-		locale,
-		calendarLabel,
-		preventDeselect,
-		numberOfMonths,
-		pagedNavigation,
-		placeholder,
-		weekStartsOn,
-		fixedWeeks,
-		minValue,
-		maxValue,
-	});
+		states: { value: insideValue, months, headingValue, weekdays },
+		options: { weekdayFormat: weekdayFormatOption },
+	} = createRangeCalendar(
+		removeUndefined({
+			value,
+			defaultValue,
+			defaultPlaceholder,
+			onValueChange,
+			onPlaceholderChange,
+			isDateUnavailable,
+			isDateDisabled,
+			locale,
+			calendarLabel,
+			preventDeselect,
+			numberOfMonths,
+			pagedNavigation,
+			placeholder,
+			weekStartsOn,
+			fixedWeeks,
+			minValue,
+			maxValue,
+			weekdayFormat,
+			ids,
+		})
+	);
+
+	function cycleWeekdayFormat() {
+		weekdayFormatOption.update((prev) => {
+			switch (prev) {
+				case 'narrow':
+					return 'short';
+				case 'short':
+					return 'long';
+				case 'long':
+					return 'short';
+			}
+		});
+	}
 </script>
 
 <main class="flex h-full">
@@ -71,11 +92,11 @@
 					<table use:melt={$grid} class="w-full" data-testid="grid-{i}">
 						<thead aria-hidden="true">
 							<tr>
-								{#each $daysOfWeek as day, idx}
+								{#each $weekdays as day, idx}
 									<th class="text-sm font-semibold text-magnum-800">
 										<div
 											class="flex h-6 w-6 items-center justify-center p-4"
-											data-testid="day-of-week-{idx}"
+											data-testid="weekday-{idx}"
 										>
 											{day}
 										</div>
@@ -91,7 +112,7 @@
 											<div
 												use:melt={$cell(date, month.value)}
 												class="cell"
-												data-testid="month-{i}-date-{date.day}"
+												data-testid="month-{date.month}-date-{date.day}"
 											>
 												{date.day}
 											</div>
@@ -105,6 +126,9 @@
 			</div>
 		</div>
 	</div>
+	<button on:click={cycleWeekdayFormat} data-testid="cycle-weekday-format">
+		Cycle weekdayFormat
+	</button>
 </main>
 
 <style lang="postcss">

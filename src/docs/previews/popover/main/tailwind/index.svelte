@@ -22,7 +22,11 @@
 </button>
 
 {#if $open}
-	<div use:melt={$content} transition:fade={{ duration: 100 }} class="content">
+	<div
+		use:melt={$content}
+		transition:fade={{ duration: 100 }}
+		class="force-dark content"
+	>
 		<div use:melt={$arrow} />
 		<div class="flex flex-col gap-2.5">
 			<p>Dimensions</p>
