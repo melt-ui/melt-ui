@@ -45,7 +45,7 @@ we go.
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek },
+		states: { months, headingValue, weekdays },
 		helpers: { isDateDisabled, isDateUnavailable }
 	} = createCalendar()
 </script>
@@ -60,7 +60,7 @@ elements will be contained within it.
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek },
+		states: { months, headingValue, weekdays },
 		helpers: { isDateDisabled, isDateUnavailable }
 	} = createCalendar()
 </script>
@@ -79,7 +79,7 @@ buttons (`prevButton` & `nextButton`).
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek },
+		states: { months, headingValue, weekdays },
 		helpers: { isDateDisabled, isDateUnavailable }
 	} = createCalendar()
 </script>
@@ -143,8 +143,8 @@ export type Month = {
 
 Since we're taking the recommended approach of rendering the calendar grid using a table, we'll be
 using the `weeks` property of each month to render the rows of the table. We'll also use the
-`daysOfWeek` state to render the column headers of the table, which is an array of formatted day
-names according to the `locale` prop.
+`weekdays` state to render the column headers of the table, which is an array of formatted day names
+according to the `locale` prop.
 
 ```svelte showLineNumbers {19-29}
 <script lang="ts">
@@ -152,7 +152,7 @@ names according to the `locale` prop.
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek },
+		states: { months, headingValue, weekdays },
 		helpers: { isDateDisabled, isDateUnavailable }
 	} = createCalendar()
 </script>
@@ -169,7 +169,7 @@ names according to the `locale` prop.
 		<table use:melt={$grid}>
 			<thead aria-hidden="true">
 				<tr>
-					{#each $daysOfWeek as day}
+					{#each $weekdays as day}
 						<th>{day}</th>
 					{/each}
 				</tr>
@@ -190,7 +190,7 @@ Now we can finish off the calendar by rendering the weeks and days within each w
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek },
+		states: { months, headingValue, weekdays },
 		helpers: { isDateDisabled, isDateUnavailable }
 	} = createCalendar()
 </script>
@@ -207,7 +207,7 @@ Now we can finish off the calendar by rendering the weeks and days within each w
 		<table use:melt={$grid}>
 			<thead aria-hidden="true">
 				<tr>
-					{#each $daysOfWeek as day}
+					{#each $weekdays as day}
 						<th>{day}</th>
 					{/each}
 				</tr>

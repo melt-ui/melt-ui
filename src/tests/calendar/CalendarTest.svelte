@@ -24,10 +24,12 @@
 	export let multiple: boolean | undefined = undefined;
 	export let disabled: CreateCalendarProps['disabled'] = undefined;
 	export let readonly: CreateCalendarProps['readonly'] = undefined;
+	export let weekdayFormat: CreateCalendarProps['weekdayFormat'] = undefined;
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { value: insideValue, months, headingValue, daysOfWeek },
+		states: { value: insideValue, months, headingValue, weekdays },
+		options: { weekdayFormat: weekdayFormatOption },
 	} = createCalendar(
 		removeUndefined({
 			value,
@@ -50,8 +52,22 @@
 			multiple,
 			disabled,
 			readonly,
+			weekdayFormat,
 		})
 	);
+
+	function cycleWeekdayFormat() {
+		weekdayFormatOption.update((prev) => {
+			switch (prev) {
+				case 'narrow':
+					return 'short';
+				case 'short':
+					return 'long';
+				case 'long':
+					return 'short';
+			}
+		});
+	}
 </script>
 
 <main class="flex h-full">
@@ -78,11 +94,11 @@
 						<table use:melt={$grid} class="w-full" data-testid="grid-{i}">
 							<thead aria-hidden="true">
 								<tr>
-									{#each $daysOfWeek as day, idx}
+									{#each $weekdays as day, idx}
 										<th class="text-sm font-semibold text-magnum-800">
 											<div
 												class="flex h-6 w-6 items-center justify-center p-4"
-												data-testid="day-of-week-{idx}"
+												data-testid="weekday-{idx}"
 											>
 												{day}
 											</div>
@@ -113,6 +129,9 @@
 			</div>
 		</div>
 	</div>
+	<button on:click={cycleWeekdayFormat} data-testid="cycle-weekday-format">
+		Cycle weekdayFormat
+	</button>
 </main>
 
 <style lang="postcss">
