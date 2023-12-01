@@ -35,7 +35,7 @@ export type CreateDialogProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: IdObj<DialogIdParts>;
+	ids?: Partial<IdObj<DialogIdParts>>;
 };
 
 export type Dialog = BuilderReturn<typeof createDialog>;

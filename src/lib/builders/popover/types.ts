@@ -99,7 +99,7 @@ export type CreatePopoverProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: IdObj<PopoverIdParts>;
+	ids?: Partial<IdObj<PopoverIdParts>>;
 };
 
 export type Popover = BuilderReturn<typeof createPopover>;

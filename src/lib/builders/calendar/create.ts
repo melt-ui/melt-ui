@@ -665,7 +665,6 @@ export function createCalendar<
 	 * ```svelte
 	 * <script>
 	 * 	import { createCalendar } from '@melt-ui/svelte';
-import { generateIds } from '../../internal/helpers/id'
 	 * 	const { { ... }, helpers: { nextPage } } = createCalendar()
 	 * </script>
 	 *

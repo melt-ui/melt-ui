@@ -21,7 +21,7 @@ export type CreateMenubarProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: IdObj<MenubarIdParts>;
+	ids?: Partial<IdObj<MenubarIdParts>>;
 };
 export type CreateMenubarMenuProps = _Menu['builder'];
 export type CreateMenubarSubmenuProps = _Menu['submenu'];
