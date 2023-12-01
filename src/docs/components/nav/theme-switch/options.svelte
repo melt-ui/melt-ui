@@ -1,44 +1,21 @@
 <script lang="ts">
-	import { createToggleGroup, melt } from '$lib';
-	import { userPrefersMode } from 'mode-watcher';
+	import { melt } from '$lib';
 	import ThemeIcon from './theme-icon.svelte';
-	import type { Theme } from './types';
-
-	export let onChange: () => void;
+	import { getThemeCtx, themes } from './theme-switch.svelte';
 
 	const {
-		elements: { root, item },
-		helpers: { isPressed },
-	} = createToggleGroup({
-		orientation: 'vertical',
-		defaultValue: $userPrefersMode,
-		loop: false,
-		onValueChange: ({ curr, next }) => {
-			const definedNext = (next || curr) as Theme;
-			$userPrefersMode = definedNext;
-			onChange();
-			return definedNext;
-		},
-	});
-
-	const themes: { id: Theme; label: string }[] = [
-		{ id: 'dark', label: 'Dark' },
-		{ id: 'light', label: 'Light' },
-		{ id: 'system', label: 'System' },
-	];
+		elements: { option },
+	} = getThemeCtx();
 </script>
 
-<div use:melt={$root} class="flex flex-col gap-2" aria-label="Theme choice">
-	{#each themes as { id, label }}
-		<button
-			use:melt={$item(id)}
-			aria-labelledby="{id}-label"
-			class="flex items-center gap-2 transition-colors {$isPressed(id)
-				? 'text-white'
-				: 'text-neutral-400 hover:text-neutral-300'}"
-		>
-			<ThemeIcon theme={id} />
-			<span class="text-sm font-semibold">{label}</span>
-		</button>
-	{/each}
-</div>
+{#each themes as { value, label }}
+	<button
+		use:melt={$option({ value, label })}
+		class="flex items-center gap-2 rounded-md
+		px-2 py-1 text-neutral-400 transition-colors
+		data-[highlighted]:bg-neutral-800 data-[highlighted]:text-neutral-300 data-[selected]:!text-white"
+	>
+		<ThemeIcon theme={value} />
+		<span class="text-sm font-semibold">{label}</span>
+	</button>
+{/each}
