@@ -345,8 +345,8 @@ export function createDateField(props?: CreateDateFieldProps) {
 		stores: [value, isInvalid, disabled, readonly, fieldIdDeps],
 		returned: ([$value, $isInvalid, $disabled, $readonly, $ids]) => {
 			const describedBy = $value
-				? `${$ids.description} ${$isInvalid ? $ids.validation : ''}`
-				: undefined;
+				? `${$ids.description}${$isInvalid ? ` ${$ids.validation}` : ''}`
+				: `${$ids.description}`;
 
 			return {
 				role: 'group',

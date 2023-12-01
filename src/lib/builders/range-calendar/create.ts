@@ -74,7 +74,7 @@ const defaults = {
 type CalendarParts = 'content' | 'nextButton' | 'prevButton' | 'grid' | 'cell' | 'heading';
 const { name } = createElHelpers<CalendarParts>('calendar');
 
-export const rangeCalendarIdParts = ['calendar', 'grid', 'accessibleHeading'] as const;
+export const rangeCalendarIdParts = ['calendar', 'accessibleHeading'] as const;
 export type RangeCalendarIdParts = typeof rangeCalendarIdParts;
 
 export function createRangeCalendar<T extends DateValue = DateValue>(
@@ -304,10 +304,9 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	});
 
 	const grid = builder(name('grid'), {
-		stores: [ids.grid, readonly, disabled],
-		returned: ([$gridId, $readonly, $disabled]) => ({
+		stores: [readonly, disabled],
+		returned: ([$readonly, $disabled]) => ({
 			tabindex: -1,
-			id: $gridId,
 			role: 'grid',
 			'aria-readonly': $readonly ? 'true' : undefined,
 			'aria-disabled': $disabled ? 'true' : undefined,
@@ -618,10 +617,10 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			width: '1px',
 		});
 		const h2 = document.createElement('div');
-		h2.role = 'heading';
-		h2.ariaLevel = '2';
 		h2.textContent = label;
 		h2.id = get(ids.accessibleHeading);
+		h2.role = 'heading';
+		h2.ariaLevel = '2';
 		node.insertBefore(div, node.firstChild);
 		div.appendChild(h2);
 	}
@@ -639,7 +638,6 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * ```svelte
 	 * <script>
 	 * 	import { createCalendar } from '@melt-ui/svelte';
-import { generateIds } from '../../internal/helpers/id'
 	 *  import { prev } from '../../internal/helpers/array'
 	 * 	const { { ... }, helpers: { nextPage } } = createCalendar()
 	 * </script>

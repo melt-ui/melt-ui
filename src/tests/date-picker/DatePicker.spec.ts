@@ -29,6 +29,17 @@ function setup(props: CreateDatePickerProps = {}) {
 	};
 }
 
+async function open(props: CreateDatePickerProps = {}) {
+	const returned = setup(props);
+	await returned.user.click(returned.trigger);
+	const calendar = returned.getByTestId('calendar');
+	expect(calendar).toBeVisible();
+	return {
+		...returned,
+		calendar,
+	};
+}
+
 describe('DatePicker', () => {
 	describe('Accessibility', () => {
 		test('has no accessibility violations', async () => {
@@ -456,6 +467,74 @@ describe('DatePicker', () => {
 				const weekdayElement = getByTestId(`weekday-${i}`);
 				expect(weekdayElement).toHaveTextContent(weekday);
 			}
+		});
+
+		test('custom ids are applied when provided', async () => {
+			const dateFieldIds = {
+				field: 'id-field',
+				day: 'id-day',
+				month: 'id-month',
+				dayPeriod: 'id-dayPeriod',
+				hour: 'id-hour',
+				minute: 'id-minute',
+				year: 'id-year',
+				timeZoneName: 'id-timeZoneName',
+				description: 'id-description',
+				label: 'id-label',
+				second: 'id-second',
+				validation: 'id-validation',
+			};
+
+			const popoverIds = {
+				content: 'id-content',
+				trigger: 'id-trigger',
+			};
+
+			const calendarIds = {
+				accessibleHeading: 'id-heading',
+				calendar: 'id-calendar',
+			};
+
+			const { getByTestId } = await open({
+				defaultValue: zonedDateTime,
+				dateFieldIds,
+				popoverIds,
+				calendarIds,
+				granularity: 'second',
+			});
+
+			const fieldParts = [
+				'month',
+				'day',
+				'year',
+				'hour',
+				'minute',
+				'dayPeriod',
+				'timeZoneName',
+				'field',
+				'label',
+				'validation',
+			] as const;
+			for (const part of fieldParts) {
+				const segmentEl = getByTestId(part);
+				expect(segmentEl.id).toBe(dateFieldIds[part]);
+				if (part === 'field') {
+					expect(segmentEl.getAttribute('aria-describedby')).toBe(dateFieldIds.description);
+				}
+			}
+
+			const descriptionEl = document.getElementById(dateFieldIds.description);
+			expect(descriptionEl).toBeInTheDocument();
+
+			const content = getByTestId('content');
+			const trigger = getByTestId('trigger');
+			expect(content.id).toBe(popoverIds.content);
+			expect(trigger.id).toBe(popoverIds.trigger);
+
+			const calendar = getByTestId('calendar');
+			expect(calendar.id).toBe(calendarIds.calendar);
+			const accessibleHeading = document.getElementById(calendarIds.accessibleHeading);
+			expect(accessibleHeading).toBeInTheDocument();
 		});
 	});
 

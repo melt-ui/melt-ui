@@ -42,8 +42,10 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	const withDefaults = { ...defaults, ...props };
 
 	const options = toWritableStores(omit(withDefaults, 'value', 'placeholder'));
-
-	const dateField = createDateField(withDefaults);
+	const dateField = createDateField({
+		...withDefaults,
+		ids: withDefaults.dateFieldIds,
+	});
 
 	const {
 		states: { value, placeholder: dfPlaceholder },
@@ -69,6 +71,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 		portal: withDefaults.portal,
 		forceVisible: withDefaults.forceVisible,
 		openFocus: pickerOpenFocus,
+		ids: withDefaults.popoverIds,
 	});
 
 	const trigger = builder('popover-trigger', {

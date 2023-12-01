@@ -17,8 +17,8 @@
 	<div use:melt={$portalled} data-testid="portalled">
 		<div use:melt={$overlay} data-testid="overlay" />
 		<div use:melt={$content} data-testid="content">
-			<h2 use:melt={$title}>Title</h2>
-			<p use:melt={$description}>Description</p>
+			<h2 use:melt={$title} data-testid="title">Title</h2>
+			<p use:melt={$description} data-testid="description">Description</p>
 
 			<button use:melt={$close} data-testid="closer">Close</button>
 			<button use:melt={$close} data-testid="last">Close</button>

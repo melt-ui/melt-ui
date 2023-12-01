@@ -502,4 +502,19 @@ describe('Range Calendar', () => {
 			expect(weekdayElement).toHaveTextContent(weekday);
 		}
 	});
+
+	test('custom ids are applied when provided', async () => {
+		const ids = {
+			accessibleHeading: 'id-heading',
+			calendar: 'id-calendar',
+		};
+
+		const { container, calendar } = setup({
+			ids,
+		});
+
+		const heading = container.querySelector(`#${ids.accessibleHeading}`);
+		expect(heading).toBeInTheDocument();
+		expect(calendar.id).toBe(ids.calendar);
+	});
 });
