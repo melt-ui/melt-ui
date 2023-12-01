@@ -330,11 +330,10 @@ export function createCalendar<
 	 * For more details about the structure of the month object, refer to {@link Month}.
 	 */
 	const grid = builder(name('grid'), {
-		stores: [readonly, disabled, ids.grid],
-		returned: ([$readonly, $disabled, $gridId]) => {
+		stores: [readonly, disabled],
+		returned: ([$readonly, $disabled]) => {
 			return {
 				tabindex: -1,
-				id: $gridId,
 				role: 'grid',
 				'aria-readonly': $readonly ? 'true' : undefined,
 				'aria-disabled': $disabled ? 'true' : undefined,
