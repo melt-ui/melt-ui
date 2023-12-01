@@ -1,5 +1,21 @@
 # @melt-ui/svelte
 
+## 0.64.0
+
+### Minor Changes
+
+- - Calendars & Date Pickers: rename `daysOfWeek` to `weekdays` and add `weekdayFormat` prop (closes #782) ([#784](https://github.com/melt-ui/melt-ui/pull/784))
+
+### Patch Changes
+
+- Calendar: Fix bug where keyboard navigation would allow navigating to disabled months (closes #745) ([#748](https://github.com/melt-ui/melt-ui/pull/748))
+
+- fix: `ids` prop is not `Partial` ([#757](https://github.com/melt-ui/melt-ui/pull/757))
+
+- fix: bug causing custom ids to not always be applied ([#786](https://github.com/melt-ui/melt-ui/pull/786))
+
+- Date Picker & Date Range Picker: Fix `weekdayFormat` option reactivity ([#785](https://github.com/melt-ui/melt-ui/pull/785))
+
 ## 0.63.1
 
 ### Patch Changes
