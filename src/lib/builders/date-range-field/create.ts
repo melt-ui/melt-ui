@@ -86,8 +86,9 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		value: startValue,
 		name: withDefaults.startName,
 		ids: {
-			...withDefaults.startIds,
 			...generatedIds,
+			...withDefaults.ids,
+			...withDefaults.startIds,
 		},
 	});
 
@@ -96,8 +97,9 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		value: endValue,
 		name: withDefaults.endName,
 		ids: {
-			...withDefaults.endIds,
 			...generatedIds,
+			...withDefaults.ids,
+			...withDefaults.endIds,
 		},
 	});
 
