@@ -275,7 +275,7 @@ describe('DatePicker', () => {
 
 			await user.keyboard(kbd.ARROW_UP);
 
-			if (currentMonth === 12) {
+			if (calendarDateToday.month === 12) {
 				expect(firstSegment).toHaveTextContent(String(1));
 			} else {
 				expect(firstSegment).toHaveTextContent(String(calendarDateToday.month + 1));
