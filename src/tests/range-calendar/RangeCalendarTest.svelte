@@ -22,6 +22,7 @@
 	export let minValue: CreateRangeCalendarProps['minValue'] = undefined;
 	export let maxValue: CreateRangeCalendarProps['maxValue'] = undefined;
 	export let weekdayFormat: CreateRangeCalendarProps['weekdayFormat'] = undefined;
+	export let ids: CreateRangeCalendarProps['ids'] = undefined;
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
@@ -47,6 +48,7 @@
 			minValue,
 			maxValue,
 			weekdayFormat,
+			ids,
 		})
 	);
 

@@ -503,33 +503,28 @@ describe('DatePicker', () => {
 				granularity: 'second',
 			});
 
-			const field = getByTestId('field');
-			const label = getByTestId('label');
-			const validation = getByTestId('validation');
-			const monthSegment = getByTestId('month');
-			const daySegment = getByTestId('day');
-			const yearSegment = getByTestId('year');
-			const hourSegment = getByTestId('hour');
-			const secondSegment = getByTestId('second');
-			const minuteSegment = getByTestId('minute');
-			const dayPeriodSegment = getByTestId('dayPeriod');
-			const timeZoneSegment = getByTestId('timeZoneName');
+			const fieldParts = [
+				'month',
+				'day',
+				'year',
+				'hour',
+				'minute',
+				'dayPeriod',
+				'timeZoneName',
+				'field',
+				'label',
+				'validation',
+			] as const;
+			for (const part of fieldParts) {
+				const segmentEl = getByTestId(part);
+				expect(segmentEl.id).toBe(dateFieldIds[part]);
+				if (part === 'field') {
+					expect(segmentEl.getAttribute('aria-describedby')).toBe(dateFieldIds.description);
+				}
+			}
 
 			const descriptionEl = document.getElementById(dateFieldIds.description);
 			expect(descriptionEl).toBeInTheDocument();
-
-			expect(field.id).toBe(dateFieldIds.field);
-			expect(label.id).toBe(dateFieldIds.label);
-			expect(validation.id).toBe(dateFieldIds.validation);
-			expect(monthSegment.id).toBe(dateFieldIds.month);
-			expect(daySegment.id).toBe(dateFieldIds.day);
-			expect(yearSegment.id).toBe(dateFieldIds.year);
-			expect(hourSegment.id).toBe(dateFieldIds.hour);
-			expect(secondSegment.id).toBe(dateFieldIds.second);
-			expect(minuteSegment.id).toBe(dateFieldIds.minute);
-			expect(dayPeriodSegment.id).toBe(dateFieldIds.dayPeriod);
-			expect(timeZoneSegment.id).toBe(dateFieldIds.timeZoneName);
-			expect(field.getAttribute('aria-describedby')).toBe(dateFieldIds.description);
 
 			const content = getByTestId('content');
 			const trigger = getByTestId('trigger');

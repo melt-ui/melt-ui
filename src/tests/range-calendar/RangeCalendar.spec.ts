@@ -1,5 +1,5 @@
 import { testKbd as kbd } from '../utils.js';
-import { render } from '@testing-library/svelte';
+import { render, waitFor } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
@@ -501,5 +501,20 @@ describe('Range Calendar', () => {
 			const weekdayElement = getByTestId(`weekday-${i}`);
 			expect(weekdayElement).toHaveTextContent(weekday);
 		}
+	});
+
+	test('custom ids are applied when provided', async () => {
+		const ids = {
+			accessibleHeading: 'id-heading',
+			calendar: 'id-calendar',
+		};
+
+		const { container, calendar } = setup({
+			ids,
+		});
+
+		const heading = container.querySelector(ids.accessibleHeading);
+		console.log(heading);
+		expect(calendar.id).toBe(ids.calendar);
 	});
 });
