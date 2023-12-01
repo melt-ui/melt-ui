@@ -1,5 +1,5 @@
 import { testKbd as kbd } from '../utils.js';
-import { render, waitFor } from '@testing-library/svelte';
+import { render } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { describe } from 'vitest';
@@ -513,8 +513,8 @@ describe('Range Calendar', () => {
 			ids,
 		});
 
-		const heading = container.querySelector(ids.accessibleHeading);
-		console.log(heading);
+		const heading = container.querySelector(`#${ids.accessibleHeading}`);
+		expect(heading).toBeInTheDocument();
 		expect(calendar.id).toBe(ids.calendar);
 	});
 });

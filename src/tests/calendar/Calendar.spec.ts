@@ -689,7 +689,7 @@ describe('Calendar', () => {
 			ids,
 		});
 
-		const heading = container.querySelector(ids.accessibleHeading);
+		const heading = container.querySelector(`#${ids.accessibleHeading}`);
 		expect(heading).toBeInTheDocument();
 		expect(calendar.id).toBe(ids.calendar);
 	});
