@@ -478,12 +478,19 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			},
 		});
 
+		const isChecked = derived(checked, ($checked) => $checked === true);
+		const _isIndeterminate = derived(checked, ($checked) => $checked === 'indeterminate');
+
 		return {
 			elements: {
 				checkboxItem,
 			},
 			states: {
 				checked,
+			},
+			helpers: {
+				isChecked,
+				isIndeterminate: _isIndeterminate,
 			},
 			options: {
 				disabled,
