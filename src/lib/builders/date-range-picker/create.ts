@@ -49,7 +49,7 @@ export function createDateRangePicker(props?: CreateDateRangePickerProps) {
 	} = rangeField;
 
 	const calendar = createRangeCalendar({
-		...withDefaults,
+		...omit(withDefaults, 'onValueChange'),
 		placeholder: rfPlaceholder,
 		value: value,
 		ids: withDefaults.calendarIds,
