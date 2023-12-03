@@ -5,8 +5,6 @@
 	import { fade } from 'svelte/transition';
 	import LocaleCombobox from './LocaleCombobox.svelte';
 
-	let fired = 0;
-
 	const {
 		elements: {
 			calendar,
@@ -27,11 +25,6 @@
 		helpers: { isDateDisabled, isDateUnavailable },
 	} = createDateRangePicker({
 		forceVisible: true,
-		onValueChange: ({ next }) => {
-			fired = fired + 1;
-			console.log('onvaluechange', fired);
-			return next;
-		},
 	});
 </script>
 
