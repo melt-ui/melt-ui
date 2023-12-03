@@ -67,8 +67,12 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
-	const startValue = writable<DateValue | undefined>(withDefaults.defaultValue?.start);
-	const endValue = writable<DateValue | undefined>(withDefaults.defaultValue?.end);
+	const defaultStart = withDefaults.value ? get(withDefaults.value)?.start : undefined;
+	const startValue = writable<DateValue | undefined>(
+		defaultStart ?? withDefaults.defaultValue?.start
+	);
+	const defaultEnd = withDefaults.value ? get(withDefaults.value)?.end : undefined;
+	const endValue = writable<DateValue | undefined>(defaultEnd ?? withDefaults.defaultValue?.end);
 
 	const isCompleted = derived(value, ($value) => {
 		return $value?.start && $value?.end;
@@ -128,18 +132,18 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 			if ($isStartInvalid || $isEndInvalid) {
 				return true;
 			}
-			if (!$value.start || !$value.end) {
+			if (!$value?.start || !$value?.end) {
 				return false;
 			}
 
-			if (!isBefore($value.start, $value.end)) {
+			if (!isBefore($value?.start, $value?.end)) {
 				return true;
 			}
 
 			if ($isDateUnavailable !== undefined) {
 				const allValid = areAllDaysBetweenValid(
-					$value.start,
-					$value.end,
+					$value?.start,
+					$value?.end,
 					$isDateUnavailable,
 					undefined
 				);
@@ -281,8 +285,12 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	});
 
 	effect([startValue, endValue], ([$startValue, $endValue]) => {
+		const $value = get(value);
+
+		if ($value && $value?.start === $startValue && $value?.end === $endValue) return;
+
 		if ($startValue && $endValue) {
-			valueWritable.update((prev) => {
+			value.update((prev) => {
 				if (prev?.start === $startValue && prev?.end === $endValue) {
 					return prev;
 				}
@@ -291,8 +299,8 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 					end: $endValue,
 				};
 			});
-		} else {
-			valueWritable.set({
+		} else if ($value && $value?.start && $value?.end) {
+			value.set({
 				start: undefined,
 				end: undefined,
 			});

@@ -995,11 +995,11 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	effect([startValue, endValue], ([$startValue, $endValue]) => {
 		const $value = get(value);
 
-		if ($value && $value.start === $startValue && $value.end === $endValue) return;
+		if ($value && $value?.start === $startValue && $value?.end === $endValue) return;
 
 		if ($startValue && $endValue) {
 			value.update((prev) => {
-				if (prev.start === $startValue && prev.end === $endValue) {
+				if (prev?.start === $startValue && prev?.end === $endValue) {
 					return prev;
 				}
 				if (isBefore($endValue, $startValue)) {
@@ -1014,13 +1014,11 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 					};
 				}
 			});
-		} else {
-			if ($value && $value.start && $value.end) {
-				value.set({
-					start: undefined,
-					end: undefined,
-				});
-			}
+		} else if ($value && $value.start && $value.end) {
+			value.set({
+				start: undefined,
+				end: undefined,
+			});
 		}
 	});
 

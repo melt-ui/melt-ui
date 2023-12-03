@@ -6,7 +6,12 @@
 		elements: { field, startSegment, endSegment, label },
 		states: { segmentContents },
 		options: { locale },
-	} = createDateRangeField();
+	} = createDateRangeField({
+		onValueChange: ({ next }) => {
+			console.log('onValueChange');
+			return next;
+		},
+	});
 </script>
 
 <section>

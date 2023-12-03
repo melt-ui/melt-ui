@@ -50,6 +50,8 @@
 	<div class="flex w-full flex-col items-center gap-3">
 		<div class="flex w-full items-center justify-center">
 			<p class="text-xs" data-testid="inside-value">{$insideValue.start} - {$insideValue.end}</p>
+			<p data-testid="start-value">{$insideValue?.start}</p>
+			<p data-testid="end-value">{$insideValue?.end}</p>
 		</div>
 		<div>
 			<span use:melt={$label} data-testid="label" class="text-magnum-800">Booking Dates</span>

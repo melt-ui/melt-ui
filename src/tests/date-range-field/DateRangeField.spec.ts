@@ -1,4 +1,4 @@
-import { kbd } from '$lib/internal/helpers/keyboard.js';
+import { testKbd as kbd } from '../utils.js';
 import { render } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -104,7 +104,7 @@ describe('DateField', () => {
 			for (const segment of segments) {
 				if (field === 'start' && segment === 'month') continue;
 				const segmentEl = getByTestId(`${field}-${segment}`);
-				await user.keyboard(`{${kbd.ARROW_RIGHT}}`);
+				await user.keyboard(kbd.ARROW_RIGHT);
 				expect(segmentEl).toHaveFocus();
 			}
 		}
@@ -115,7 +115,7 @@ describe('DateField', () => {
 			for (const segment of segments) {
 				if (field === 'start' && segment === 'month') continue;
 				const segmentEl = getByTestId(`${field}-${segment}`);
-				await user.keyboard(`{${kbd.TAB}}`);
+				await user.keyboard(kbd.TAB);
 				expect(segmentEl).toHaveFocus();
 			}
 		}
@@ -134,7 +134,7 @@ describe('DateField', () => {
 			for (const segment of segments) {
 				if (field === 'end' && segment === 'year') continue;
 				const segmentEl = getByTestId(`${field}-${segment}`);
-				await user.keyboard(`{${kbd.ARROW_LEFT}}`);
+				await user.keyboard(kbd.ARROW_LEFT);
 				expect(segmentEl).toHaveFocus();
 			}
 		}
@@ -145,7 +145,7 @@ describe('DateField', () => {
 			for (const segment of segments) {
 				if (field === 'end' && segment === 'year') continue;
 				const segmentEl = getByTestId(`${field}-${segment}`);
-				await user.keyboard(`{Shift>}{${kbd.TAB}}`);
+				await user.keyboard(`{Shift>}${kbd.TAB}`);
 				expect(segmentEl).toHaveFocus();
 			}
 		}
@@ -232,5 +232,30 @@ describe('DateField', () => {
 		const monthSegment = getByTestId('start-month');
 		await user.click(label);
 		expect(monthSegment).toHaveFocus();
+	});
+
+	test('overridable store functions as expected', async () => {
+		const overrideDay = {
+			start: new CalendarDate(1980, 2, 25),
+			end: new CalendarDate(1980, 2, 26),
+		};
+
+		const { getByTestId, user } = setup({
+			defaultValue: exampleDate,
+			onValueChange: () => {
+				return overrideDay;
+			},
+		});
+
+		const startDay = getByTestId('start-day');
+
+		expect(getByTestId('start-value')).toHaveTextContent(exampleDate.start.toString());
+		expect(getByTestId('end-value')).toHaveTextContent(exampleDate.end.toString());
+
+		await user.click(startDay);
+		await user.keyboard(kbd.ARROW_DOWN);
+
+		expect(getByTestId('start-value')).toHaveTextContent(overrideDay.start.toString());
+		expect(getByTestId('end-value')).toHaveTextContent(overrideDay.end.toString());
 	});
 });
