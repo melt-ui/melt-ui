@@ -995,10 +995,6 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	effect([startValue, endValue], ([$startValue, $endValue]) => {
 		const $value = get(value);
 
-		console.log('$value', $value);
-		console.log('$startValue', $startValue);
-		console.log('$endValue', $endValue);
-
 		if ($value && $value.start === $startValue && $value.end === $endValue) return;
 
 		if ($startValue && $endValue) {
