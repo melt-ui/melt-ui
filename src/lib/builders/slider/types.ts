@@ -4,7 +4,7 @@ import type { Writable } from 'svelte/store';
 import type { createSlider } from './create.js';
 export type { SliderComponentEvents } from './events.js';
 
-export type SliderOrientation = 'horizontal' | 'vertical';
+export type SliderOrientation = 'horizontal' | 'horizontal-rl' | 'vertical' | 'vertical-tb';
 
 export type CreateSliderProps = {
 	/**

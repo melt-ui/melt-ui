@@ -1,12 +1,12 @@
 import {
 	addEventListener,
 	addMeltEventListener,
-	ariaDisabledAttr,
 	builder,
 	createElHelpers,
 	disabledAttr,
 	effect,
 	executeCallbacks,
+	generateIds,
 	getElementByMeltId,
 	isBrowser,
 	isHTMLElement,
@@ -19,10 +19,9 @@ import {
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id';
 import type { SliderEvents } from './events.js';
 
-import type { CreateSliderProps } from './types.js';
+import type { CreateSliderProps, SliderOrientation } from './types.js';
 
 const defaults = {
 	defaultValue: [],
@@ -34,6 +33,13 @@ const defaults = {
 } satisfies CreateSliderProps;
 
 const { name } = createElHelpers('slider');
+
+function isHorizontal(orientation: SliderOrientation) {
+	return orientation === 'horizontal' || orientation === 'horizontal-rl';
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+function assertNever(_: never) {}
 
 export const createSlider = (props?: CreateSliderProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSliderProps;
@@ -127,11 +133,12 @@ export const createSlider = (props?: CreateSliderProps) => {
 		returned: ([$disabled, $orientation]) => {
 			return {
 				disabled: disabledAttr($disabled),
-				'aria-disabled': ariaDisabledAttr($disabled),
+				'aria-disabled': disabledAttr($disabled),
+				// TODO: Is aria-orientation missing here?
 				'data-orientation': $orientation,
 				style: $disabled
 					? undefined
-					: `touch-action: ${$orientation === 'horizontal' ? 'pan-y' : 'pan-x'}`,
+					: `touch-action: ${isHorizontal($orientation) ? 'pan-y' : 'pan-x'}`,
 
 				'data-melt-id': meltIds.root,
 			};
@@ -144,16 +151,39 @@ export const createSlider = (props?: CreateSliderProps) => {
 			const minimum = $value.length > 1 ? $position(Math.min(...$value) ?? 0) : 0;
 			const maximum = 100 - $position(Math.max(...$value) ?? 0);
 
-			const orientationStyles =
-				$orientation === 'horizontal'
-					? { left: `${minimum}%`, right: `${maximum}%` }
-					: { top: `${maximum}%`, bottom: `${minimum}%` };
+			const style: Record<string, string> = {
+				position: 'absolute',
+			};
+
+			switch ($orientation) {
+				case 'horizontal': {
+					style.left = `${minimum}%`;
+					style.right = `${maximum}%`;
+					break;
+				}
+				case 'horizontal-rl': {
+					style.right = `${minimum}%`;
+					style.left = `${maximum}%`;
+					break;
+				}
+				case 'vertical': {
+					style.top = `${maximum}%`;
+					style.bottom = `${minimum}%`;
+					break;
+				}
+				case 'vertical-tb': {
+					style.top = `${minimum}%`;
+					style.bottom = `${maximum}%`;
+					break;
+				}
+				default: {
+					// Exhaustive check
+					assertNever($orientation);
+				}
+			}
 
 			return {
-				style: styleToString({
-					position: 'absolute',
-					...orientationStyles,
-				}),
+				style: styleToString(style),
 			};
 		},
 	});
@@ -174,6 +204,38 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 				const thumbValue = $value[index];
 				const thumbPosition = `${$position(thumbValue)}%`;
+
+				const style: Record<string, string> = {
+					position: 'absolute',
+				};
+
+				switch ($orientation) {
+					case 'horizontal': {
+						style.left = thumbPosition;
+						style.translate = '-50% 0';
+						break;
+					}
+					case 'horizontal-rl': {
+						style.right = thumbPosition;
+						style.translate = '50% 0';
+						break;
+					}
+					case 'vertical': {
+						style.bottom = thumbPosition;
+						style.translate = '0 50%';
+						break;
+					}
+					case 'vertical-tb': {
+						style.top = thumbPosition;
+						style.translate = '0 -50%';
+						break;
+					}
+					default: {
+						// Exhaustive check
+						assertNever($orientation);
+					}
+				}
+
 				return {
 					role: 'slider',
 					'aria-valuemin': $min,
@@ -181,12 +243,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 					'aria-valuenow': thumbValue,
 					'data-melt-part': 'thumb',
 					'data-value': thumbValue,
-					style: styleToString({
-						position: 'absolute',
-						...($orientation === 'horizontal'
-							? { left: thumbPosition, translate: '-50% 0' }
-							: { bottom: thumbPosition, translate: '0 50%' }),
-					}),
+					style: styleToString(style),
 					tabindex: $disabled ? -1 : 0,
 				} as const;
 			};
@@ -223,6 +280,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 				const $step = get(step);
 				const $value = get(value);
 				const $orientation = get(orientation);
+				const thumbValue = $value[index];
 
 				switch (event.key) {
 					case kbd.HOME: {
@@ -234,53 +292,54 @@ export const createSlider = (props?: CreateSliderProps) => {
 						break;
 					}
 					case kbd.ARROW_LEFT: {
-						if ($orientation !== 'horizontal') break;
+						if (!isHorizontal($orientation)) break;
 
 						if (event.metaKey) {
-							updatePosition($min, index);
-						} else if ($value[index] > $min) {
-							const newValue = $value[index] - $step;
+							const newValue = $orientation === 'horizontal-rl' ? $max : $min;
 							updatePosition(newValue, index);
+						} else if ($orientation === 'horizontal-rl' && thumbValue < $max) {
+							updatePosition(thumbValue + $step, index);
+						} else if ($orientation === 'horizontal' && thumbValue > $min) {
+							updatePosition(thumbValue - $step, index);
 						}
 						break;
 					}
 					case kbd.ARROW_RIGHT: {
-						if ($orientation !== 'horizontal') break;
+						if (!isHorizontal($orientation)) break;
 
 						if (event.metaKey) {
-							updatePosition($max, index);
-						} else if ($value[index] < $max) {
-							const newValue = $value[index] + $step;
-
-							if (newValue <= $max) {
-								updatePosition(newValue, index);
-							}
+							const newValue = $orientation === 'horizontal-rl' ? $min : $max;
+							updatePosition(newValue, index);
+						} else if ($orientation === 'horizontal-rl' && thumbValue > $min) {
+							updatePosition(thumbValue - $step, index);
+						} else if ($orientation === 'horizontal' && thumbValue < $max) {
+							updatePosition(thumbValue + $step, index);
 						}
 						break;
 					}
 					case kbd.ARROW_UP: {
 						if (event.metaKey) {
-							updatePosition($max, index);
-						} else if ($value[index] > $min && $orientation === 'vertical') {
-							const newValue = $value[index] + $step;
+							const newValue = $orientation === 'vertical-tb' ? $min : $max;
 							updatePosition(newValue, index);
-						} else if ($value[index] < $max) {
-							const newValue = $value[index] + $step;
-							if (newValue <= $max) {
-								updatePosition(newValue, index);
-							}
+						} else if (isHorizontal($orientation) && thumbValue < $max) {
+							updatePosition(thumbValue + $step, index);
+						} else if ($orientation === 'vertical-tb' && thumbValue > $min) {
+							updatePosition(thumbValue - $step, index);
+						} else if ($orientation === 'vertical' && thumbValue < $max) {
+							updatePosition(thumbValue + $step, index);
 						}
 						break;
 					}
 					case kbd.ARROW_DOWN: {
 						if (event.metaKey) {
-							updatePosition($min, index);
-						} else if ($value[index] < $max && $orientation === 'vertical') {
-							const newValue = $value[index] - $step;
+							const newValue = $orientation === 'vertical-tb' ? $max : $min;
 							updatePosition(newValue, index);
-						} else if ($value[index] > $min) {
-							const newValue = $value[index] - $step;
-							updatePosition(newValue, index);
+						} else if (isHorizontal($orientation) && thumbValue > $min) {
+							updatePosition(thumbValue - $step, index);
+						} else if ($orientation === 'vertical-tb' && thumbValue < $max) {
+							updatePosition(thumbValue + $step, index);
+						} else if ($orientation === 'vertical' && thumbValue > $min) {
+							updatePosition(thumbValue - $step, index);
 						}
 						break;
 					}
@@ -300,25 +359,45 @@ export const createSlider = (props?: CreateSliderProps) => {
 			return () => {
 				index++;
 
-				const horizontal = $orientation === 'horizontal';
+				// The track is divided into sections of ratio `step / (max - min)`
+				const tickPosition = `${index * ($step / ($max - $min)) * 100}%`;
+
+				// Offset each tick by -50% to center it, except the first and last ticks.
+				// The first tick is already positioned at the start of the slider.
+				// The last tick is offset by -100% to prevent it from being rendered outside.
+				const isFirst = index === 0;
+				const isLast = index === $ticks - 1;
+				const offsetPercentage = isFirst ? 0 : isLast ? -100 : -50;
+
 				const style: Record<string, string | number | undefined> = {
 					position: 'absolute',
 				};
 
-				// The track is divided into sections of ratio `step / (max - min)`
-				const positionPercentage = index * ($step / ($max - $min)) * 100;
-				style[horizontal ? 'left' : 'bottom'] = `${positionPercentage}%`;
-
-				// Offset each tick by half its size to center it, except for
-				// the first tick as it would be rendered outside the slider.
-				//
-				// As for the last tick, offset it by its full size rather than
-				// half also to prevent it from being rendered outside.
-				if (index === $ticks - 1) {
-					// Left is negative, down is positive.
-					style.translate = horizontal ? '-100% 0' : '0 100%';
-				} else if (index !== 0) {
-					style.translate = horizontal ? '-50% 0' : '0 50%';
+				switch ($orientation) {
+					case 'horizontal': {
+						style.left = tickPosition;
+						style.translate = `${offsetPercentage}% 0`;
+						break;
+					}
+					case 'horizontal-rl': {
+						style.right = tickPosition;
+						style.translate = `${-offsetPercentage}% 0`;
+						break;
+					}
+					case 'vertical': {
+						style.bottom = tickPosition;
+						style.translate = `0 ${-offsetPercentage}%`;
+						break;
+					}
+					case 'vertical-tb': {
+						style.top = tickPosition;
+						style.transform = `0 ${offsetPercentage}%)`;
+						break;
+					}
+					default: {
+						// Exhaustive check
+						assertNever($orientation);
+					}
 				}
 
 				const tickValue = $min + index * $step;
@@ -345,10 +424,10 @@ export const createSlider = (props?: CreateSliderProps) => {
 			const applyPosition = (
 				clientXY: number,
 				activeThumbIdx: number,
-				leftOrBottom: number,
-				rightOrTop: number
+				start: number,
+				end: number
 			) => {
-				const percent = (clientXY - leftOrBottom) / (rightOrTop - leftOrBottom);
+				const percent = (clientXY - start) / (end - start);
 				const val = percent * ($max - $min) + $min;
 
 				if (val < $min) {
@@ -379,7 +458,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 				thumbs.forEach((thumb) => thumb.blur());
 
 				const distances = thumbs.map((thumb) => {
-					if ($orientation === 'horizontal') {
+					if (isHorizontal($orientation)) {
 						const { left, right } = thumb.getBoundingClientRect();
 						return Math.abs(e.clientX - (left + right) / 2);
 					} else {
@@ -405,12 +484,29 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 				closestThumb.thumb.focus();
 
-				if ($orientation === 'horizontal') {
-					const { left, right } = sliderEl.getBoundingClientRect();
-					applyPosition(e.clientX, closestThumb.index, left, right);
-				} else {
-					const { top, bottom } = sliderEl.getBoundingClientRect();
-					applyPosition(e.clientY, closestThumb.index, bottom, top);
+				const { left, right, top, bottom } = sliderEl.getBoundingClientRect();
+
+				switch ($orientation) {
+					case 'horizontal': {
+						applyPosition(e.clientX, closestThumb.index, left, right);
+						break;
+					}
+					case 'horizontal-rl': {
+						applyPosition(e.clientX, closestThumb.index, right, left);
+						break;
+					}
+					case 'vertical': {
+						applyPosition(e.clientY, closestThumb.index, bottom, top);
+						break;
+					}
+					case 'vertical-tb': {
+						applyPosition(e.clientY, closestThumb.index, top, bottom);
+						break;
+					}
+					default: {
+						// Exhaustive check
+						assertNever($orientation);
+					}
 				}
 			};
 
