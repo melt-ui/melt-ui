@@ -70,8 +70,8 @@
 	<div class="flex w-full flex-col items-center gap-3">
 		<div class="flex w-full items-center justify-center">
 			<p class="text-xs" data-testid="inside-value">{$insideValue}</p>
-			<p data-testid="start-value">{$insideValue.start}</p>
-			<p data-testid="end-value">{$insideValue.end}</p>
+			<p data-testid="start-value">{$insideValue?.start}</p>
+			<p data-testid="end-value">{$insideValue?.end}</p>
 		</div>
 
 		<div class="z-10 w-80 rounded-[4px] bg-white p-3 shadow-sm">

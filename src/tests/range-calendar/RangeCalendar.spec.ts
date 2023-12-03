@@ -392,12 +392,9 @@ describe('Range Calendar', () => {
 		const thirdDayInMonth = getByTestId('month-1-date-3');
 		await user.click(thirdDayInMonth);
 		await tick();
-		const fourthDayInMonth = getByTestId('month-1-date-4');
-		await user.click(fourthDayInMonth);
-		await tick();
 
 		const selectedDaysAfterClick = getByTestId('calendar').querySelectorAll('[data-selected]');
-		expect(selectedDaysAfterClick).toHaveLength(2);
+		expect(selectedDaysAfterClick).toHaveLength(3);
 	});
 
 	test('unavailable dates behavior', async () => {

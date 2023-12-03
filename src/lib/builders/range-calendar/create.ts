@@ -108,6 +108,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		defaultPlaceholder: withDefaults.defaultPlaceholder,
 	});
 	const formatter = createFormatter(get(locale));
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const value = overridable(valueWritable, withDefaults.onValueChange);
 
 	const defaultStart = withDefaults.value ? get(withDefaults.value)?.start : undefined;
 	const startValue = writable<DateValue | undefined>(
@@ -116,9 +118,6 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 
 	const defaultEnd = withDefaults.value ? get(withDefaults.value)?.end : undefined;
 	const endValue = writable<DateValue | undefined>(defaultEnd ?? withDefaults.defaultValue?.end);
-
-	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-	const value = overridable(valueWritable, withDefaults.onValueChange);
 
 	const placeholderWritable =
 		withDefaults.placeholder ?? writable(withDefaults.defaultPlaceholder ?? defaultDate);
@@ -994,8 +993,12 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	});
 
 	effect([startValue, endValue], ([$startValue, $endValue]) => {
+		const $value = get(value);
+
+		if ($value && $value.start === $startValue && $value.end === $endValue) return;
+
 		if ($startValue && $endValue) {
-			valueWritable.update((prev) => {
+			value.update((prev) => {
 				if (prev.start === $startValue && prev.end === $endValue) {
 					return prev;
 				}
@@ -1012,10 +1015,12 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				}
 			});
 		} else {
-			valueWritable.set({
-				start: undefined,
-				end: undefined,
-			});
+			if ($value && $value.start && $value.end) {
+				value.set({
+					start: undefined,
+					end: undefined,
+				});
+			}
 		}
 	});
 
