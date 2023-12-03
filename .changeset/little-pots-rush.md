@@ -2,4 +2,4 @@
 "@melt-ui/svelte": patch
 ---
 
-fix: RangeField - bug causing `onValueChange` to not fire after init 
+fix: Range Field - bug causing `onValueChange` to not fire after init 
