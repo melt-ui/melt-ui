@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.64.1
+
+### Patch Changes
+
+- fix: bug with range calendar `onValueChange` ([#792](https://github.com/melt-ui/melt-ui/pull/792))
+
 ## 0.64.0
 
 ### Minor Changes
