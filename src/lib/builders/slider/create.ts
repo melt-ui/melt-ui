@@ -391,7 +391,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 					}
 					case 'vertical-tb': {
 						style.top = tickPosition;
-						style.transform = `0 ${offsetPercentage}%)`;
+						style.translate = `0 ${offsetPercentage}%`;
 						break;
 					}
 					default: {
