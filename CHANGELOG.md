@@ -1,5 +1,17 @@
 # @melt-ui/svelte
 
+## 0.64.2
+
+### Patch Changes
+
+- fix: Date Range Picker - bug causing `onValueChange` to fire twice ([#795](https://github.com/melt-ui/melt-ui/pull/795))
+
+- fix: Date Picker - bug causing `onValueChange` to fire twice ([#795](https://github.com/melt-ui/melt-ui/pull/795))
+
+- fix: Range Field - bug causing `onValueChange` to not fire after init ([#795](https://github.com/melt-ui/melt-ui/pull/795))
+
+- - Dialog: fix `aria-modal` attribute type ([#788](https://github.com/melt-ui/melt-ui/pull/788))
+
 ## 0.64.1
 
 ### Patch Changes
