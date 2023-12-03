@@ -37,6 +37,22 @@ example:
     <svelte:component this={previews.vertical} />
 </Preview>
 
+### RTL
+
+You can set the `orientation` prop to `horizontal-rl` for right-to-left orientation.
+Here's an example:
+
+<Preview code={snippets.horizontal_rl}>
+    <svelte:component this={previews.horizontal_rl} />
+</Preview>
+
+Top-to-bottom orientation is also supported by setting `orientation` to `vertical-tb`.
+Here's an example:
+
+<Preview code={snippets.vertical_tb}>
+    <svelte:component this={previews.vertical_tb} />
+</Preview>
+
 ### Slider ticks
 
 You can add slider ticks using the `ticks` state and the `tick` element returned by `createSlider`.
