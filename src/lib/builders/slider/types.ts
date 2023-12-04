@@ -57,7 +57,7 @@ export type CreateSliderProps = {
 
 	/**
 	 * The direction of the slider.
-	 * 
+	 *
 	 * For vertical sliders, setting `dir` to `rtl`
 	 * will cause the slider to be start from the top.
 	 *

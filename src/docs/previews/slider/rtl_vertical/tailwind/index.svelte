@@ -8,7 +8,7 @@
 		dir: 'rtl',
 		orientation: 'vertical',
 		defaultValue: [30],
-		max: 100
+		max: 100,
 	});
 </script>
 
