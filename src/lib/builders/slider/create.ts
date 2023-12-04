@@ -129,7 +129,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 				dir: $dir,
 				disabled: disabledAttr($disabled),
 				'aria-disabled': disabledAttr($disabled),
-				'aria-orientation': $orientation,
+				// TODO: Is aria-orientation missing here?
 				'data-orientation': $orientation,
 				style: $disabled
 					? undefined
