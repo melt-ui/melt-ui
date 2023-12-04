@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.64.3
+
+### Patch Changes
+
+- Dropdown Menu, Context Menu, Menubar: export the `createMenuCheckboxItem` return type ([#796](https://github.com/melt-ui/melt-ui/pull/796))
+
 ## 0.64.2
 
 ### Patch Changes
