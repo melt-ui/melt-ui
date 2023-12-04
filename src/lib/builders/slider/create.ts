@@ -21,7 +21,7 @@ import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable } from 'svelte/store';
 import type { SliderEvents } from './events.js';
 
-import type { CreateSliderProps, SliderOrientation } from './types.js';
+import type { CreateSliderProps } from './types.js';
 
 const defaults = {
 	defaultValue: [],
@@ -29,23 +29,17 @@ const defaults = {
 	max: 100,
 	step: 1,
 	orientation: 'horizontal',
+	dir: 'ltr',
 	disabled: false,
 } satisfies CreateSliderProps;
 
 const { name } = createElHelpers('slider');
 
-function isHorizontal(orientation: SliderOrientation) {
-	return orientation === 'horizontal' || orientation === 'horizontal-rl';
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-function assertNever(_: never) {}
-
 export const createSlider = (props?: CreateSliderProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSliderProps;
 
 	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
-	const { min, max, step, orientation, disabled } = options;
+	const { min, max, step, orientation, dir, disabled } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
@@ -129,16 +123,17 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 	// Elements
 	const root = builder(name(), {
-		stores: [disabled, orientation],
-		returned: ([$disabled, $orientation]) => {
+		stores: [disabled, orientation, dir],
+		returned: ([$disabled, $orientation, $dir]) => {
 			return {
+				dir: $dir,
 				disabled: disabledAttr($disabled),
 				'aria-disabled': disabledAttr($disabled),
 				// TODO: Is aria-orientation missing here?
 				'data-orientation': $orientation,
 				style: $disabled
 					? undefined
-					: `touch-action: ${isHorizontal($orientation) ? 'pan-y' : 'pan-x'}`,
+					: `touch-action: ${$orientation === 'horizontal' ? 'pan-y' : 'pan-x'}`,
 
 				'data-melt-id': meltIds.root,
 			};
@@ -146,8 +141,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 	});
 
 	const range = builder(name('range'), {
-		stores: [value, orientation, position],
-		returned: ([$value, $orientation, $position]) => {
+		stores: [value, orientation, dir, position],
+		returned: ([$value, $orientation, $dir, $position]) => {
 			const minimum = $value.length > 1 ? $position(Math.min(...$value) ?? 0) : 0;
 			const maximum = 100 - $position(Math.max(...$value) ?? 0);
 
@@ -155,31 +150,18 @@ export const createSlider = (props?: CreateSliderProps) => {
 				position: 'absolute',
 			};
 
-			switch ($orientation) {
-				case 'horizontal': {
-					style.left = `${minimum}%`;
-					style.right = `${maximum}%`;
-					break;
-				}
-				case 'horizontal-rl': {
-					style.right = `${minimum}%`;
-					style.left = `${maximum}%`;
-					break;
-				}
-				case 'vertical': {
-					style.top = `${maximum}%`;
-					style.bottom = `${minimum}%`;
-					break;
-				}
-				case 'vertical-tb': {
-					style.top = `${minimum}%`;
-					style.bottom = `${maximum}%`;
-					break;
-				}
-				default: {
-					// Exhaustive check
-					assertNever($orientation);
-				}
+			if ($orientation === 'horizontal' && $dir === 'rtl') {
+				style.right = `${minimum}%`;
+				style.left = `${maximum}%`;
+			} else if ($orientation === 'horizontal') {
+				style.left = `${minimum}%`;
+				style.right = `${maximum}%`;
+			} else if ($dir === 'rtl') {
+				style.top = `${minimum}%`;
+				style.bottom = `${maximum}%`;
+			} else {
+				style.bottom = `${minimum}%`;
+				style.top = `${maximum}%`;
 			}
 
 			return {
@@ -189,8 +171,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 	});
 
 	const thumb = builder(name('thumb'), {
-		stores: [value, position, min, max, disabled, orientation],
-		returned: ([$value, $position, $min, $max, $disabled, $orientation]) => {
+		stores: [value, position, min, max, disabled, orientation, dir],
+		returned: ([$value, $position, $min, $max, $disabled, $orientation, $dir]) => {
 			let index = -1;
 
 			return () => {
@@ -209,31 +191,18 @@ export const createSlider = (props?: CreateSliderProps) => {
 					position: 'absolute',
 				};
 
-				switch ($orientation) {
-					case 'horizontal': {
-						style.left = thumbPosition;
-						style.translate = '-50% 0';
-						break;
-					}
-					case 'horizontal-rl': {
-						style.right = thumbPosition;
-						style.translate = '50% 0';
-						break;
-					}
-					case 'vertical': {
-						style.bottom = thumbPosition;
-						style.translate = '0 50%';
-						break;
-					}
-					case 'vertical-tb': {
-						style.top = thumbPosition;
-						style.translate = '0 -50%';
-						break;
-					}
-					default: {
-						// Exhaustive check
-						assertNever($orientation);
-					}
+				if ($orientation === 'horizontal' && $dir === 'rtl') {
+					style.right = thumbPosition;
+					style.translate = '50% 0';
+				} else if ($orientation === 'horizontal') {
+					style.left = thumbPosition;
+					style.translate = '-50% 0';
+				} else if ($dir === 'rtl') {
+					style.top = thumbPosition;
+					style.translate = '0 -50%';
+				} else {
+					style.bottom = thumbPosition;
+					style.translate = '0 50%';
 				}
 
 				return {
@@ -250,8 +219,6 @@ export const createSlider = (props?: CreateSliderProps) => {
 		},
 		action: (node: HTMLElement): MeltActionReturn<SliderEvents['thumb']> => {
 			const unsub = addMeltEventListener(node, 'keydown', (event) => {
-				const $min = get(min);
-				const $max = get(max);
 				if (get(disabled)) return;
 
 				const target = event.currentTarget;
@@ -277,9 +244,12 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 				event.preventDefault();
 
+				const $min = get(min);
+				const $max = get(max);
 				const $step = get(step);
 				const $value = get(value);
 				const $orientation = get(orientation);
+				const $dir = get(dir);
 				const thumbValue = $value[index];
 
 				switch (event.key) {
@@ -292,53 +262,50 @@ export const createSlider = (props?: CreateSliderProps) => {
 						break;
 					}
 					case kbd.ARROW_LEFT: {
-						if (!isHorizontal($orientation)) break;
+						if ($orientation !== 'horizontal') break;
 
 						if (event.metaKey) {
-							const newValue = $orientation === 'horizontal-rl' ? $max : $min;
+							const newValue = $dir === 'rtl' ? $max : $min;
 							updatePosition(newValue, index);
-						} else if ($orientation === 'horizontal-rl' && thumbValue < $max) {
+						} else if ($dir === 'rtl' && thumbValue < $max) {
 							updatePosition(thumbValue + $step, index);
-						} else if ($orientation === 'horizontal' && thumbValue > $min) {
+						} else if ($dir !== 'rtl' && thumbValue > $min) {
 							updatePosition(thumbValue - $step, index);
 						}
 						break;
 					}
 					case kbd.ARROW_RIGHT: {
-						if (!isHorizontal($orientation)) break;
+						if ($orientation !== 'horizontal') break;
 
 						if (event.metaKey) {
-							const newValue = $orientation === 'horizontal-rl' ? $min : $max;
+							const newValue = $dir === 'rtl' ? $min : $max;
 							updatePosition(newValue, index);
-						} else if ($orientation === 'horizontal-rl' && thumbValue > $min) {
+						} else if ($dir === 'rtl' && thumbValue > $min) {
 							updatePosition(thumbValue - $step, index);
-						} else if ($orientation === 'horizontal' && thumbValue < $max) {
+						} else if ($dir !== 'rtl' && thumbValue < $max) {
 							updatePosition(thumbValue + $step, index);
 						}
 						break;
 					}
 					case kbd.ARROW_UP: {
 						if (event.metaKey) {
-							const newValue = $orientation === 'vertical-tb' ? $min : $max;
+							const newValue = $orientation === 'vertical' && $dir === 'rtl' ? $min : $max;
 							updatePosition(newValue, index);
-						} else if (isHorizontal($orientation) && thumbValue < $max) {
-							updatePosition(thumbValue + $step, index);
-						} else if ($orientation === 'vertical-tb' && thumbValue > $min) {
+							break;
+						} else if ($orientation === 'vertical' && $dir === 'rtl' && thumbValue > $min) {
 							updatePosition(thumbValue - $step, index);
-						} else if ($orientation === 'vertical' && thumbValue < $max) {
+						} else if (($orientation !== 'vertical' || $dir !== 'rtl') && thumbValue < $max) {
 							updatePosition(thumbValue + $step, index);
 						}
 						break;
 					}
 					case kbd.ARROW_DOWN: {
 						if (event.metaKey) {
-							const newValue = $orientation === 'vertical-tb' ? $max : $min;
+							const newValue = $orientation === 'vertical' && $dir === 'rtl' ? $max : $min;
 							updatePosition(newValue, index);
-						} else if (isHorizontal($orientation) && thumbValue > $min) {
-							updatePosition(thumbValue - $step, index);
-						} else if ($orientation === 'vertical-tb' && thumbValue < $max) {
+						} else if ($orientation === 'vertical' && $dir === 'rtl' && thumbValue < $max) {
 							updatePosition(thumbValue + $step, index);
-						} else if ($orientation === 'vertical' && thumbValue > $min) {
+						} else if (($orientation !== 'vertical' || $dir !== 'rtl') && thumbValue > $min) {
 							updatePosition(thumbValue - $step, index);
 						}
 						break;
@@ -353,8 +320,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 	});
 
 	const tick = builder(name('tick'), {
-		stores: [ticks, value, min, max, step, orientation],
-		returned: ([$ticks, $value, $min, $max, $step, $orientation]) => {
+		stores: [ticks, value, min, max, step, orientation, dir],
+		returned: ([$ticks, $value, $min, $max, $step, $orientation, $dir]) => {
 			let index = -1;
 			return () => {
 				index++;
@@ -373,31 +340,18 @@ export const createSlider = (props?: CreateSliderProps) => {
 					position: 'absolute',
 				};
 
-				switch ($orientation) {
-					case 'horizontal': {
-						style.left = tickPosition;
-						style.translate = `${offsetPercentage}% 0`;
-						break;
-					}
-					case 'horizontal-rl': {
-						style.right = tickPosition;
-						style.translate = `${-offsetPercentage}% 0`;
-						break;
-					}
-					case 'vertical': {
-						style.bottom = tickPosition;
-						style.translate = `0 ${-offsetPercentage}%`;
-						break;
-					}
-					case 'vertical-tb': {
-						style.top = tickPosition;
-						style.translate = `0 ${offsetPercentage}%`;
-						break;
-					}
-					default: {
-						// Exhaustive check
-						assertNever($orientation);
-					}
+				if ($orientation === 'horizontal' && $dir === 'rtl') {
+					style.right = tickPosition;
+					style.translate = `${-offsetPercentage}% 0`;
+				} else if ($orientation === 'horizontal') {
+					style.left = tickPosition;
+					style.translate = `${offsetPercentage}% 0`;
+				} else if ($dir === 'rtl') {
+					style.top = tickPosition;
+					style.translate = `0 ${offsetPercentage}%`;
+				} else {
+					style.bottom = tickPosition;
+					style.translate = `0 ${-offsetPercentage}%`;
 				}
 
 				const tickValue = $min + index * $step;
@@ -417,8 +371,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 	// Effects
 	effect(
-		[root, min, max, disabled, orientation, step],
-		([$root, $min, $max, $disabled, $orientation, $step]) => {
+		[root, min, max, disabled, orientation, dir, step],
+		([$root, $min, $max, $disabled, $orientation, $dir, $step]) => {
 			if (!isBrowser || $disabled) return;
 
 			const applyPosition = (
@@ -458,7 +412,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 				thumbs.forEach((thumb) => thumb.blur());
 
 				const distances = thumbs.map((thumb) => {
-					if (isHorizontal($orientation)) {
+					if ($orientation === 'horizontal') {
 						const { left, right } = thumb.getBoundingClientRect();
 						return Math.abs(e.clientX - (left + right) / 2);
 					} else {
@@ -486,27 +440,14 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 				const { left, right, top, bottom } = sliderEl.getBoundingClientRect();
 
-				switch ($orientation) {
-					case 'horizontal': {
-						applyPosition(e.clientX, closestThumb.index, left, right);
-						break;
-					}
-					case 'horizontal-rl': {
-						applyPosition(e.clientX, closestThumb.index, right, left);
-						break;
-					}
-					case 'vertical': {
-						applyPosition(e.clientY, closestThumb.index, bottom, top);
-						break;
-					}
-					case 'vertical-tb': {
-						applyPosition(e.clientY, closestThumb.index, top, bottom);
-						break;
-					}
-					default: {
-						// Exhaustive check
-						assertNever($orientation);
-					}
+				if ($orientation === 'horizontal' && $dir === 'rtl') {
+					applyPosition(e.clientX, closestThumb.index, right, left);
+				} else if ($orientation === 'horizontal') {
+					applyPosition(e.clientX, closestThumb.index, left, right);
+				} else if ($dir === 'rtl') {
+					applyPosition(e.clientY, closestThumb.index, top, bottom);
+				} else {
+					applyPosition(e.clientY, closestThumb.index, bottom, top);
 				}
 			};
 

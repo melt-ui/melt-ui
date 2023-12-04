@@ -33,6 +33,12 @@ const OPTION_PROPS = [
 		default: "'horizontal'",
 		description: 'The orientation of the slider.',
 	},
+	{
+		name: 'dir',
+		type: TYPES.DIR,
+		default: "'ltr'",
+		description: 'The direction of the slider.',
+	},
 	PROPS.DISABLED,
 ];
 const BUILDER_NAME = 'slider';

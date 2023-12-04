@@ -39,18 +39,18 @@ example:
 
 ### RTL
 
-You can set the `orientation` prop to `horizontal-rl` for right-to-left orientation. Here's an
-example:
+To enable Right-to-Left (RTL) support, you can set the `rtl` prop to `true. Here's an example of a
+horizontal slider with RTL enabled:
 
-<Preview code={snippets.horizontal_rl}>
-    <svelte:component this={previews.horizontal_rl} />
+<Preview code={snippets.rtl_horizontal}>
+    <svelte:component this={previews.rtl_horizontal} />
 </Preview>
 
-Top-to-bottom orientation is also supported by setting `orientation` to `vertical-tb`. Here's an
-example:
+In a Right-to-Left (RTL) context, vertical sliders function from top-to-bottom instead of bottom-to
+top. Here's an example of a vertical slider with RTL enabled:
 
-<Preview code={snippets.vertical_tb}>
-    <svelte:component this={previews.vertical_tb} />
+<Preview code={snippets.rtl_vertical}>
+    <svelte:component this={previews.rtl_vertical} />
 </Preview>
 
 ### Slider ticks

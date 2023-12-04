@@ -4,7 +4,7 @@ import type { Writable } from 'svelte/store';
 import type { createSlider } from './create.js';
 export type { SliderComponentEvents } from './events.js';
 
-export type SliderOrientation = 'horizontal' | 'horizontal-rl' | 'vertical' | 'vertical-tb';
+export type SliderOrientation = 'horizontal' | 'vertical';
 
 export type CreateSliderProps = {
 	/**
@@ -54,6 +54,16 @@ export type CreateSliderProps = {
 	 * @default 'horizontal'
 	 */
 	orientation?: SliderOrientation;
+
+	/**
+	 * The direction of the slider.
+	 * 
+	 * For vertical sliders, setting `dir` to `rtl`
+	 * will cause the slider to be start from the top.
+	 *
+	 * @default 'ltr'
+	 */
+	dir?: 'ltr' | 'rtl';
 
 	/**
 	 * When `true`, prevents the user from interacting with the slider.
