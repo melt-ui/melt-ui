@@ -441,7 +441,7 @@ export function createCalendar<
 				const isOutsideMonth = !isSameMonth(cellValue, monthValue);
 				const isOutsideVisibleMonths = $isOutsideVisibleMonths(cellValue);
 				const isFocusedDate = isSameDay(cellValue, $placeholder);
-				const isSelectedDate = $isDateSelected(cellValue)
+				const isSelectedDate = $isDateSelected(cellValue);
 
 				const labelText = formatter.custom(cellDate, {
 					weekday: 'long',
