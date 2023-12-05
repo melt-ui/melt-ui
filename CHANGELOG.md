@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.64.5
+
+### Patch Changes
+
+- enhancement: return `startValue` & `endValue` from range calendar ([#801](https://github.com/melt-ui/melt-ui/pull/801))
+
 ## 0.64.4
 
 ### Patch Changes
