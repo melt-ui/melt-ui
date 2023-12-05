@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.64.4
+
+### Patch Changes
+
+- Calendar/Range Calendar: apply `data-selected` attribute to `outside-month` days if selected ([#799](https://github.com/melt-ui/melt-ui/pull/799))
+
 ## 0.64.3
 
 ### Patch Changes
