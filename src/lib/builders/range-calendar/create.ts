@@ -1037,6 +1037,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			weekdays,
 			headingValue,
 			value,
+			startValue,
+			endValue,
 		},
 		helpers: {
 			nextPage,
