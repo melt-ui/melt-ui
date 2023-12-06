@@ -105,6 +105,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		typeahead: true,
 		closeFocus: undefined,
 		disableFocusFirstItem: false,
+		closeOnItemClick: true,
 	} satisfies CreateMenubarMenuProps;
 
 	const createMenu = (props?: CreateMenubarMenuProps) => {

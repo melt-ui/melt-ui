@@ -75,6 +75,7 @@ const defaults = {
 	dir: 'ltr',
 	defaultOpen: false,
 	typeahead: true,
+	closeOnItemClick: true,
 } satisfies Defaults<_CreateMenuProps>;
 
 export function createMenuBuilder(opts: _MenuBuilderOptions) {
@@ -92,6 +93,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		loop,
 		closeFocus,
 		disableFocusFirstItem,
+		closeOnItemClick,
 	} = opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
@@ -341,10 +343,13 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						handleRovingFocus(itemEl);
 						return;
 					}
-					// Allows forms to submit before the menu is removed from the DOM
-					sleep(1).then(() => {
-						rootOpen.set(false);
-					});
+
+					if (get(closeOnItemClick)) {
+						// Allows forms to submit before the menu is removed from the DOM
+						sleep(1).then(() => {
+							rootOpen.set(false);
+						});
+					}
 				}),
 				addMeltEventListener(node, 'keydown', (e) => {
 					onItemKeyDown(e);
@@ -439,13 +444,15 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							return !prev;
 						});
 
-						// We're waiting for a tick to let the checked store update
-						// before closing the menu. If we don't, and the user was to hit
-						// spacebar or enter twice really fast, the menu would close and
-						// reopen without the checked state being updated.
-						tick().then(() => {
-							rootOpen.set(false);
-						});
+						if (get(closeOnItemClick)) {
+							// We're waiting for a tick to let the checked store update
+							// before closing the menu. If we don't, and the user was to hit
+							// spacebar or enter twice really fast, the menu would close and
+							// reopen without the checked state being updated.
+							tick().then(() => {
+								rootOpen.set(false);
+							});
+						}
 					}),
 					addMeltEventListener(node, 'keydown', (e) => {
 						onItemKeyDown(e);
@@ -565,13 +572,15 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 						value.set(itemValue);
 
-						// We're waiting for a tick to let the checked store update
-						// before closing the menu. If we don't, and the user was to hit
-						// spacebar or enter twice really fast, the menu would close and
-						// reopen without the checked state being updated.
-						tick().then(() => {
-							rootOpen.set(false);
-						});
+						if (get(closeOnItemClick)) {
+							// We're waiting for a tick to let the checked store update
+							// before closing the menu. If we don't, and the user was to hit
+							// spacebar or enter twice really fast, the menu would close and
+							// reopen without the checked state being updated.
+							tick().then(() => {
+								rootOpen.set(false);
+							});
+						}
 					}),
 					addMeltEventListener(node, 'keydown', (e) => {
 						onItemKeyDown(e);

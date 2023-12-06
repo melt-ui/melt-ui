@@ -40,6 +40,13 @@ export type _CreateMenuProps = {
 	closeOnEscape?: boolean;
 
 	/**
+	 * Whether or not to close the menu when an internal item is clicked.
+	 *
+	 * @default true
+	 */
+	closeOnItemClick?: boolean;
+
+	/**
 	 * If not `undefined`, the menu will be rendered within the provided element or selector.
 	 *
 	 * @default 'body'
@@ -173,6 +180,7 @@ export type _MenuBuilderOptions = {
 		typeahead: Writable<boolean>;
 		closeFocus: Writable<FocusProp | undefined>;
 		disableFocusFirstItem: Writable<boolean>;
+		closeOnItemClick: Writable<boolean>;
 	};
 
 	nextFocusable: Writable<HTMLElement | null>;

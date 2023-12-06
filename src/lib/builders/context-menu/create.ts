@@ -54,6 +54,7 @@ const defaults = {
 	typeahead: true,
 	disableFocusFirstItem: true,
 	closeFocus: undefined,
+	closeOnItemClick: true,
 } satisfies CreateContextMenuProps;
 
 const { name, selector } = createElHelpers<_MenuParts>('context-menu');
