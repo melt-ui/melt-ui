@@ -1,5 +1,17 @@
 # @melt-ui/svelte
 
+## 0.65.1
+
+### Patch Changes
+
+- Select & Combobox: Fix `removeScroll` bugs (closes #733 & #808) ([#809](https://github.com/melt-ui/melt-ui/pull/809))
+
+## 0.65.0
+
+### Minor Changes
+
+- Menu: `closeOnItemClick` prop ([`ff6169ef`](https://github.com/melt-ui/melt-ui/commit/ff6169ef76b9e3088cb796a65fe78c6c5932cd08))
+
 ## 0.64.5
 
 ### Patch Changes
