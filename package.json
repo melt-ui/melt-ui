@@ -71,7 +71,6 @@
 		"nanoid": "^4.0.2"
 	},
 	"devDependencies": {
-		"mode-watcher": "^0.1.2",
 		"@changesets/cli": "^2.26.2",
 		"@fontsource/inter": "^5.0.8",
 		"@huntabyte/mdsvex": "0.16.5",
@@ -88,6 +87,7 @@
 		"@storybook/sveltekit": "^7.3.2",
 		"@storybook/testing-library": "^0.2.0",
 		"@sveltejs/adapter-auto": "^2.1.0",
+		"@sveltejs/adapter-cloudflare": "^2.3.4",
 		"@sveltejs/adapter-static": "^2.0.3",
 		"@sveltejs/adapter-vercel": "^3.0.2",
 		"@sveltejs/kit": "^1.22.3",
@@ -120,6 +120,7 @@
 		"jest-axe": "^8.0.0",
 		"jsdom": "^22.1.0",
 		"lucide-svelte": "^0.263.0",
+		"mode-watcher": "^0.1.2",
 		"pagefind": "^1.0.3",
 		"postcss": "^8.4.27",
 		"postcss-load-config": "^4.0.1",
