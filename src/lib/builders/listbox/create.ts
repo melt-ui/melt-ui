@@ -456,22 +456,12 @@ export function createListbox<
 		},
 		action: (node: HTMLElement): MeltActionReturn<ListboxEvents['menu']> => {
 			let unsubPopper = noop;
-			let unsubScroll = noop;
 			const unsubscribe = executeCallbacks(
 				// Bind the popper portal to the input element.
 				effect(
-					[
-						isVisible,
-						preventScroll,
-						closeOnEscape,
-						portal,
-						closeOnOutsideClick,
-						positioning,
-						activeTrigger,
-					],
+					[isVisible, closeOnEscape, portal, closeOnOutsideClick, positioning, activeTrigger],
 					([
 						$isVisible,
-						$preventScroll,
 						$closeOnEscape,
 						$portal,
 						$closeOnOutsideClick,
@@ -479,12 +469,8 @@ export function createListbox<
 						$activeTrigger,
 					]) => {
 						unsubPopper();
-						unsubScroll();
 
 						if (!$isVisible || !$activeTrigger) return;
-						if ($preventScroll) {
-							unsubScroll = removeScroll();
-						}
 
 						const ignoreHandler = createClickOutsideIgnore(get(ids.trigger));
 
@@ -527,7 +513,6 @@ export function createListbox<
 				destroy: () => {
 					unsubscribe();
 					unsubPopper();
-					unsubScroll();
 				},
 			};
 		},
@@ -659,6 +644,20 @@ export function createListbox<
 				removeHighlight(node);
 			}
 		});
+	});
+
+	effect([open], ([$open]) => {
+		if (!isBrowser) return;
+
+		let unsubScroll = noop;
+
+		if (get(preventScroll) && $open) {
+			unsubScroll = removeScroll();
+		}
+
+		return () => {
+			unsubScroll();
+		};
 	});
 
 	return {
