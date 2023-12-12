@@ -131,6 +131,7 @@ export function createPinInput(props?: CreatePinInputProps) {
 						e.preventDefault();
 						node.value = '';
 						tick().then(() => (node.placeholder = ''));
+						value.set(inputs.map((input) => input.value.slice(-1) ?? undefined));
 					}
 
 					if (e.key === 'ArrowLeft') {
