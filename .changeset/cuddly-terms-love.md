@@ -2,4 +2,4 @@
 '@melt-ui/svelte': patch
 ---
 
-fix: PIN Input - update `value` in delete keydown event
+PIN Input: fix `value` store not updating in delete keydown event
