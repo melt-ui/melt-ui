@@ -52,7 +52,7 @@ export function createDatePicker(props?: CreateDatePickerProps) {
 	} = dateField;
 
 	const calendar = createCalendar({
-		...withDefaults,
+		...omit(withDefaults, 'onValueChange'),
 		placeholder: dfPlaceholder,
 		value: value,
 		ids: withDefaults.calendarIds,

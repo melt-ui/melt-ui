@@ -140,32 +140,12 @@ const builder = builderSchema(BUILDER_NAME, {
 			name: 'prevButton',
 			description: 'A button which moves the calendar to the previous page',
 		},
-		{
-			name: 'field',
-			description: 'The element which contains the date segments',
-		},
-		{
-			name: 'segment',
-			description: 'An individual segment of the date',
-		},
-		{
-			name: 'label',
-			description: 'The label for the calendar',
-		},
-		{
-			name: 'validation',
-			description: 'The element containing the validation message',
-		},
-		{
-			name: 'hiddenInput',
-			description: 'The hidden input used to submit the value within a form',
-		},
 	],
 	states: [
 		{
 			name: 'value',
-			type: 'Writable<DateValue>',
-			description: 'A writable store which represents the current value of the calendar.',
+			type: 'Writable<DateRange>',
+			description: 'A writable store which represents the current value of the range calendar.',
 		},
 		{
 			name: 'months',
@@ -185,29 +165,21 @@ const builder = builderSchema(BUILDER_NAME, {
 				'A readable store containing the heading for the calendar, formatted to the `locale` prop.',
 		},
 		{
-			name: 'segmentValues',
-			type: 'Writable<DateSegmentObj | DateTimeSegmentObj>',
-			description: 'A writable store containing the current values of the date segments.',
-		},
-		{
-			name: 'segmentContents',
-			type: 'Readable<{ part: SegmentPart; value: string; }[]>',
-			description: 'A readable store used to dynamically render the date segments.',
-		},
-		{
-			name: 'segmentContentsObj',
-			type: 'Readable<SegmentContentsObj>',
-			description: 'A readable store containing the current values of the date segments.',
-		},
-		{
 			name: 'placeholder',
 			type: 'Writable<DateValue>',
 			description: 'A writable store which represents the placeholder value of the calendar.',
 		},
 		{
-			name: 'isInvalid',
-			type: 'Readable<boolean>',
-			description: 'A readable store which represents whether the calendar is invalid.',
+			name: 'startValue',
+			type: 'Readable<DateValue | undefined>',
+			description:
+				'A readable store containing the current start value of the calendar, which can exist before the actual `value` is set which requires both a start and end value.',
+		},
+		{
+			name: 'endValue',
+			type: 'Readable<DateValue | undefined>',
+			description:
+				'A readable store containing the current end value of the calendar, which can exist before the actual `value` is set which requires both a start and end value.',
 		},
 	],
 	options: calendarOptions,

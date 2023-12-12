@@ -1,5 +1,53 @@
 # @melt-ui/svelte
 
+## 0.65.1
+
+### Patch Changes
+
+- Select & Combobox: Fix `removeScroll` bugs (closes #733 & #808) ([#809](https://github.com/melt-ui/melt-ui/pull/809))
+
+## 0.65.0
+
+### Minor Changes
+
+- Menu: `closeOnItemClick` prop ([`ff6169ef`](https://github.com/melt-ui/melt-ui/commit/ff6169ef76b9e3088cb796a65fe78c6c5932cd08))
+
+## 0.64.5
+
+### Patch Changes
+
+- enhancement: return `startValue` & `endValue` from range calendar ([#801](https://github.com/melt-ui/melt-ui/pull/801))
+
+## 0.64.4
+
+### Patch Changes
+
+- Calendar/Range Calendar: apply `data-selected` attribute to `outside-month` days if selected ([#799](https://github.com/melt-ui/melt-ui/pull/799))
+
+## 0.64.3
+
+### Patch Changes
+
+- Dropdown Menu, Context Menu, Menubar: export the `createMenuCheckboxItem` return type ([#796](https://github.com/melt-ui/melt-ui/pull/796))
+
+## 0.64.2
+
+### Patch Changes
+
+- fix: Date Range Picker - bug causing `onValueChange` to fire twice ([#795](https://github.com/melt-ui/melt-ui/pull/795))
+
+- fix: Date Picker - bug causing `onValueChange` to fire twice ([#795](https://github.com/melt-ui/melt-ui/pull/795))
+
+- fix: Range Field - bug causing `onValueChange` to not fire after init ([#795](https://github.com/melt-ui/melt-ui/pull/795))
+
+- - Dialog: fix `aria-modal` attribute type ([#788](https://github.com/melt-ui/melt-ui/pull/788))
+
+## 0.64.1
+
+### Patch Changes
+
+- fix: bug with range calendar `onValueChange` ([#792](https://github.com/melt-ui/melt-ui/pull/792))
+
 ## 0.64.0
 
 ### Minor Changes

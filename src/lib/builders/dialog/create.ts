@@ -189,7 +189,7 @@ export function createDialog(props?: CreateDialogProps) {
 				role: get(role),
 				'aria-describedby': $descriptionId,
 				'aria-labelledby': $titleId,
-				'aria-modal': $isVisible ? 'true' : undefined,
+				'aria-modal': $isVisible ? ('true' as const) : undefined,
 				'data-state': $isVisible ? 'open' : 'closed',
 				tabindex: -1,
 				hidden: $isVisible ? undefined : true,
