@@ -11,23 +11,13 @@
 	import '../app.postcss';
 	import '../fonts.css';
 
-	import { browser, dev } from '$app/environment';
+	import { dev } from '$app/environment';
 	import { page } from '$app/stores';
 	import { JsIndicator, SiteHeader, TailwindIndicator } from '$docs/components/index.js';
 	import { cn } from '$docs/utils';
-	import { env } from '$env/dynamic/public';
-	import * as Fathom from 'fathom-client';
+
 	import { ModeWatcher } from 'mode-watcher';
-	import { onMount } from 'svelte';
 
-	onMount(() => {
-		if (!env.PUBLIC_FATHOM_ID || !env.PUBLIC_FATHOM_URL || dev) return;
-		Fathom.load(env.PUBLIC_FATHOM_ID, {
-			url: env.PUBLIC_FATHOM_URL,
-		});
-	});
-
-	$: $page.url.pathname, browser && Fathom.trackPageview();
 	$: isRoot = $page.url.pathname === '/';
 </script>
 
