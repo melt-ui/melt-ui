@@ -2,4 +2,4 @@
 "@melt-ui/svelte": patch
 ---
 
-fix: Listbox - ignore certain typeahead keys
+Listbox: ignore certain keys in typeahead (fixes #803)
