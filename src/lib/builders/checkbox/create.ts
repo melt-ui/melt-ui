@@ -37,6 +37,7 @@ export function createCheckbox(props?: CreateCheckboxProps) {
 		returned: ([$checked, $disabled, $required]) => {
 			return {
 				'data-disabled': disabledAttr($disabled),
+				disabled: disabledAttr($disabled),
 				'data-state':
 					$checked === 'indeterminate' ? 'indeterminate' : $checked ? 'checked' : 'unchecked',
 				type: 'button',
