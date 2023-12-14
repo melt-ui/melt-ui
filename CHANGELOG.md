@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.65.2
+
+### Patch Changes
+
+- Listbox: ignore certain keys in typeahead (fixes [#803](https://github.com/melt-ui/melt-ui/issues/803)) ([#804](https://github.com/melt-ui/melt-ui/pull/804))
+
+- PIN Input: fix `value` store not updating in delete keydown event ([#811](https://github.com/melt-ui/melt-ui/pull/811))
+
+- Combobox: remove trigger element ([`18b2440c`](https://github.com/melt-ui/melt-ui/commit/18b2440cd88cbaf9f3dd1a9c2287c67572ca156b))
+
 ## 0.65.1
 
 ### Patch Changes
