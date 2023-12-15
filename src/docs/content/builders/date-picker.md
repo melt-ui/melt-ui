@@ -130,7 +130,7 @@ Once that's in place, we can setup our calendar, which will be contained within 
 					<tr>
 						{#each $weekdays as day}
 							<th>
-								{$day}
+								{day}
 							</th>
 						{/each}
 					</tr>
