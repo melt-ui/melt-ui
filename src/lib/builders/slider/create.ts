@@ -16,6 +16,7 @@ import {
 	snapValueToStep,
 	styleToString,
 	toWritableStores,
+	type StyleObject,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable } from 'svelte/store';
@@ -100,6 +101,14 @@ export const createSlider = (props?: CreateSliderProps) => {
 		};
 	});
 
+	const direction = derived([orientation, dir], ([$orientation, $dir]) => {
+		if ($orientation === 'horizontal') {
+			return $dir === 'rtl' ? 'rl' : 'lr';
+		} else {
+			return $dir === 'rtl' ? 'tb' : 'bt';
+		}
+	});
+
 	const ticks = derived([min, max, step], ([$min, $max, $step]) => {
 		const difference = $max - $min;
 
@@ -141,27 +150,36 @@ export const createSlider = (props?: CreateSliderProps) => {
 	});
 
 	const range = builder(name('range'), {
-		stores: [value, orientation, dir, position],
-		returned: ([$value, $orientation, $dir, $position]) => {
+		stores: [value, direction, position],
+		returned: ([$value, $direction, $position]) => {
 			const minimum = $value.length > 1 ? $position(Math.min(...$value) ?? 0) : 0;
 			const maximum = 100 - $position(Math.max(...$value) ?? 0);
 
-			const style: Record<string, string> = {
+			const style: StyleObject = {
 				position: 'absolute',
 			};
 
-			if ($orientation === 'horizontal' && $dir === 'rtl') {
-				style.right = `${minimum}%`;
-				style.left = `${maximum}%`;
-			} else if ($orientation === 'horizontal') {
-				style.left = `${minimum}%`;
-				style.right = `${maximum}%`;
-			} else if ($dir === 'rtl') {
-				style.top = `${minimum}%`;
-				style.bottom = `${maximum}%`;
-			} else {
-				style.bottom = `${minimum}%`;
-				style.top = `${maximum}%`;
+			switch ($direction) {
+				case 'lr': {
+					style.left = `${minimum}%`;
+					style.right = `${maximum}%`;
+					break;
+				}
+				case 'rl': {
+					style.right = `${minimum}%`;
+					style.left = `${maximum}%`;
+					break;
+				}
+				case 'bt': {
+					style.bottom = `${minimum}%`;
+					style.top = `${maximum}%`;
+					break;
+				}
+				case 'tb': {
+					style.top = `${minimum}%`;
+					style.bottom = `${maximum}%`;
+					break;
+				}
 			}
 
 			return {
@@ -171,8 +189,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 	});
 
 	const thumb = builder(name('thumb'), {
-		stores: [value, position, min, max, disabled, orientation, dir],
-		returned: ([$value, $position, $min, $max, $disabled, $orientation, $dir]) => {
+		stores: [value, position, min, max, disabled, direction],
+		returned: ([$value, $position, $min, $max, $disabled, $direction]) => {
 			let index = -1;
 
 			return () => {
@@ -187,22 +205,31 @@ export const createSlider = (props?: CreateSliderProps) => {
 				const thumbValue = $value[index];
 				const thumbPosition = `${$position(thumbValue)}%`;
 
-				const style: Record<string, string> = {
+				const style: StyleObject = {
 					position: 'absolute',
 				};
 
-				if ($orientation === 'horizontal' && $dir === 'rtl') {
-					style.right = thumbPosition;
-					style.translate = '50% 0';
-				} else if ($orientation === 'horizontal') {
-					style.left = thumbPosition;
-					style.translate = '-50% 0';
-				} else if ($dir === 'rtl') {
-					style.top = thumbPosition;
-					style.translate = '0 -50%';
-				} else {
-					style.bottom = thumbPosition;
-					style.translate = '0 50%';
+				switch ($direction) {
+					case 'lr': {
+						style.left = thumbPosition;
+						style.translate = '-50% 0';
+						break;
+					}
+					case 'rl': {
+						style.right = thumbPosition;
+						style.translate = '50% 0';
+						break;
+					}
+					case 'bt': {
+						style.bottom = thumbPosition;
+						style.translate = '0 50%';
+						break;
+					}
+					case 'tb': {
+						style.top = thumbPosition;
+						style.translate = '0 -50%';
+						break;
+					}
 				}
 
 				return {
@@ -249,7 +276,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 				const $step = get(step);
 				const $value = get(value);
 				const $orientation = get(orientation);
-				const $dir = get(dir);
+				const $direction = get(direction);
 				const thumbValue = $value[index];
 
 				switch (event.key) {
@@ -265,11 +292,11 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if ($orientation !== 'horizontal') break;
 
 						if (event.metaKey) {
-							const newValue = $dir === 'rtl' ? $max : $min;
+							const newValue = $direction === 'rl' ? $max : $min;
 							updatePosition(newValue, index);
-						} else if ($dir === 'rtl' && thumbValue < $max) {
+						} else if ($direction === 'rl' && thumbValue < $max) {
 							updatePosition(thumbValue + $step, index);
-						} else if ($dir !== 'rtl' && thumbValue > $min) {
+						} else if ($direction === 'lr' && thumbValue > $min) {
 							updatePosition(thumbValue - $step, index);
 						}
 						break;
@@ -278,34 +305,33 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if ($orientation !== 'horizontal') break;
 
 						if (event.metaKey) {
-							const newValue = $dir === 'rtl' ? $min : $max;
+							const newValue = $direction === 'rl' ? $min : $max;
 							updatePosition(newValue, index);
-						} else if ($dir === 'rtl' && thumbValue > $min) {
+						} else if ($direction === 'rl' && thumbValue > $min) {
 							updatePosition(thumbValue - $step, index);
-						} else if ($dir !== 'rtl' && thumbValue < $max) {
+						} else if ($direction === 'lr' && thumbValue < $max) {
 							updatePosition(thumbValue + $step, index);
 						}
 						break;
 					}
 					case kbd.ARROW_UP: {
 						if (event.metaKey) {
-							const newValue = $orientation === 'vertical' && $dir === 'rtl' ? $min : $max;
+							const newValue = $direction === 'tb' ? $min : $max;
 							updatePosition(newValue, index);
-							break;
-						} else if ($orientation === 'vertical' && $dir === 'rtl' && thumbValue > $min) {
+						} else if ($direction === 'tb' && thumbValue > $min) {
 							updatePosition(thumbValue - $step, index);
-						} else if (($orientation !== 'vertical' || $dir !== 'rtl') && thumbValue < $max) {
+						} else if ($direction !== 'tb' && thumbValue < $max) {
 							updatePosition(thumbValue + $step, index);
 						}
 						break;
 					}
 					case kbd.ARROW_DOWN: {
 						if (event.metaKey) {
-							const newValue = $orientation === 'vertical' && $dir === 'rtl' ? $max : $min;
+							const newValue = $direction === 'tb' ? $max : $min;
 							updatePosition(newValue, index);
-						} else if ($orientation === 'vertical' && $dir === 'rtl' && thumbValue < $max) {
+						} else if ($direction === 'tb' && thumbValue < $max) {
 							updatePosition(thumbValue + $step, index);
-						} else if (($orientation !== 'vertical' || $dir !== 'rtl') && thumbValue > $min) {
+						} else if ($direction !== 'tb' && thumbValue > $min) {
 							updatePosition(thumbValue - $step, index);
 						}
 						break;
@@ -320,8 +346,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 	});
 
 	const tick = builder(name('tick'), {
-		stores: [ticks, value, min, max, step, orientation, dir],
-		returned: ([$ticks, $value, $min, $max, $step, $orientation, $dir]) => {
+		stores: [ticks, value, min, max, step, direction],
+		returned: ([$ticks, $value, $min, $max, $step, $direction]) => {
 			let index = -1;
 			return () => {
 				index++;
@@ -336,22 +362,31 @@ export const createSlider = (props?: CreateSliderProps) => {
 				const isLast = index === $ticks - 1;
 				const offsetPercentage = isFirst ? 0 : isLast ? -100 : -50;
 
-				const style: Record<string, string | number | undefined> = {
+				const style: StyleObject = {
 					position: 'absolute',
 				};
 
-				if ($orientation === 'horizontal' && $dir === 'rtl') {
-					style.right = tickPosition;
-					style.translate = `${-offsetPercentage}% 0`;
-				} else if ($orientation === 'horizontal') {
-					style.left = tickPosition;
-					style.translate = `${offsetPercentage}% 0`;
-				} else if ($dir === 'rtl') {
-					style.top = tickPosition;
-					style.translate = `0 ${offsetPercentage}%`;
-				} else {
-					style.bottom = tickPosition;
-					style.translate = `0 ${-offsetPercentage}%`;
+				switch ($direction) {
+					case 'lr': {
+						style.left = tickPosition;
+						style.translate = `${offsetPercentage}% 0`;
+						break;
+					}
+					case 'rl': {
+						style.right = tickPosition;
+						style.translate = `${-offsetPercentage}% 0`;
+						break;
+					}
+					case 'bt': {
+						style.bottom = tickPosition;
+						style.translate = `0 ${-offsetPercentage}%`;
+						break;
+					}
+					case 'tb': {
+						style.top = tickPosition;
+						style.translate = `0 ${offsetPercentage}%`;
+						break;
+					}
 				}
 
 				const tickValue = $min + index * $step;
@@ -371,8 +406,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 	// Effects
 	effect(
-		[root, min, max, disabled, orientation, dir, step],
-		([$root, $min, $max, $disabled, $orientation, $dir, $step]) => {
+		[root, min, max, disabled, orientation, direction, step],
+		([$root, $min, $max, $disabled, $orientation, $direction, $step]) => {
 			if (!isBrowser || $disabled) return;
 
 			const applyPosition = (
@@ -439,15 +474,23 @@ export const createSlider = (props?: CreateSliderProps) => {
 				closestThumb.thumb.focus();
 
 				const { left, right, top, bottom } = sliderEl.getBoundingClientRect();
-
-				if ($orientation === 'horizontal' && $dir === 'rtl') {
-					applyPosition(e.clientX, closestThumb.index, right, left);
-				} else if ($orientation === 'horizontal') {
-					applyPosition(e.clientX, closestThumb.index, left, right);
-				} else if ($dir === 'rtl') {
-					applyPosition(e.clientY, closestThumb.index, top, bottom);
-				} else {
-					applyPosition(e.clientY, closestThumb.index, bottom, top);
+				switch ($direction) {
+					case 'lr': {
+						applyPosition(e.clientX, closestThumb.index, left, right);
+						break;
+					}
+					case 'rl': {
+						applyPosition(e.clientX, closestThumb.index, right, left);
+						break;
+					}
+					case 'bt': {
+						applyPosition(e.clientY, closestThumb.index, bottom, top);
+						break;
+					}
+					case 'tb': {
+						applyPosition(e.clientY, closestThumb.index, top, bottom);
+						break;
+					}
 				}
 			};
 
