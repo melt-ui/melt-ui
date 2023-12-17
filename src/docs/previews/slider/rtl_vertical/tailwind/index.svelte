@@ -5,14 +5,19 @@
 		elements: { root, range, thumb },
 		states: { value },
 	} = createSlider({
-		defaultValue: [20, 80],
+		dir: 'rtl',
+		orientation: 'vertical',
+		defaultValue: [30],
 		max: 100,
 	});
 </script>
 
-<span use:melt={$root} class="relative flex h-[20px] w-[200px] items-center">
-	<span class="h-[3px] w-full bg-black/40">
-		<span use:melt={$range} class="h-[3px] bg-white" />
+<span
+	use:melt={$root}
+	class="relative flex h-[200px] w-[20px] flex-col items-center"
+>
+	<span class="h-full w-[3px] bg-black/40">
+		<span use:melt={$range} class="w-[3px] bg-white" />
 	</span>
 
 	{#each $value as _}

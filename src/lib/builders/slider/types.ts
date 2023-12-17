@@ -56,6 +56,16 @@ export type CreateSliderProps = {
 	orientation?: SliderOrientation;
 
 	/**
+	 * The direction of the slider.
+	 *
+	 * For vertical sliders, setting `dir` to `rtl`
+	 * will cause the slider to be start from the top.
+	 *
+	 * @default 'ltr'
+	 */
+	dir?: 'ltr' | 'rtl';
+
+	/**
 	 * When `true`, prevents the user from interacting with the slider.
 	 *
 	 * @default false

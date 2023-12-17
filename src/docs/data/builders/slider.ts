@@ -33,6 +33,12 @@ const OPTION_PROPS = [
 		default: "'horizontal'",
 		description: 'The orientation of the slider.',
 	},
+	{
+		name: 'dir',
+		type: TYPES.DIR,
+		default: "'ltr'",
+		description: 'The direction of the slider.',
+	},
 	PROPS.DISABLED,
 ];
 const BUILDER_NAME = 'slider';
@@ -105,6 +111,10 @@ const root = elementSchema('root', {
 		{
 			name: 'data-orientation',
 			value: ATTRS.ORIENTATION,
+		},
+		{
+			name: 'data-disabled',
+			value: ATTRS.DISABLED('slider'),
 		},
 		{
 			name: 'data-melt-slider',

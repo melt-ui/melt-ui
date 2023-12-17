@@ -1,12 +1,12 @@
 import {
 	addEventListener,
 	addMeltEventListener,
-	ariaDisabledAttr,
 	builder,
 	createElHelpers,
 	disabledAttr,
 	effect,
 	executeCallbacks,
+	generateIds,
 	getElementByMeltId,
 	isBrowser,
 	isHTMLElement,
@@ -16,10 +16,10 @@ import {
 	snapValueToStep,
 	styleToString,
 	toWritableStores,
+	type StyleObject,
 } from '$lib/internal/helpers/index.js';
 import type { MeltActionReturn } from '$lib/internal/types.js';
 import { derived, get, writable } from 'svelte/store';
-import { generateIds } from '../../internal/helpers/id';
 import type { SliderEvents } from './events.js';
 
 import type { CreateSliderProps } from './types.js';
@@ -30,6 +30,7 @@ const defaults = {
 	max: 100,
 	step: 1,
 	orientation: 'horizontal',
+	dir: 'ltr',
 	disabled: false,
 } satisfies CreateSliderProps;
 
@@ -39,7 +40,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 	const withDefaults = { ...defaults, ...props } satisfies CreateSliderProps;
 
 	const options = toWritableStores(omit(withDefaults, 'value', 'onValueChange', 'defaultValue'));
-	const { min, max, step, orientation, disabled } = options;
+	const { min, max, step, orientation, dir, disabled } = options;
 
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults?.onValueChange);
@@ -100,6 +101,14 @@ export const createSlider = (props?: CreateSliderProps) => {
 		};
 	});
 
+	const direction = derived([orientation, dir], ([$orientation, $dir]) => {
+		if ($orientation === 'horizontal') {
+			return $dir === 'rtl' ? 'rl' : 'lr';
+		} else {
+			return $dir === 'rtl' ? 'tb' : 'bt';
+		}
+	});
+
 	const ticks = derived([min, max, step], ([$min, $max, $step]) => {
 		const difference = $max - $min;
 
@@ -123,11 +132,16 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 	// Elements
 	const root = builder(name(), {
-		stores: [disabled, orientation],
-		returned: ([$disabled, $orientation]) => {
+		stores: [disabled, orientation, dir],
+		returned: ([$disabled, $orientation, $dir]) => {
 			return {
+				dir: $dir,
 				disabled: disabledAttr($disabled),
-				'aria-disabled': ariaDisabledAttr($disabled),
+				// TODO: Consider removing `aria-disabled` from here.
+				// `aria-disabled` doesn't make sense on the root
+				// because the slider `role` is on the thumb.
+				'aria-disabled': disabledAttr($disabled),
+				'data-disabled': disabledAttr($disabled),
 				'data-orientation': $orientation,
 				style: $disabled
 					? undefined
@@ -139,28 +153,47 @@ export const createSlider = (props?: CreateSliderProps) => {
 	});
 
 	const range = builder(name('range'), {
-		stores: [value, orientation, position],
-		returned: ([$value, $orientation, $position]) => {
+		stores: [value, direction, position],
+		returned: ([$value, $direction, $position]) => {
 			const minimum = $value.length > 1 ? $position(Math.min(...$value) ?? 0) : 0;
 			const maximum = 100 - $position(Math.max(...$value) ?? 0);
 
-			const orientationStyles =
-				$orientation === 'horizontal'
-					? { left: `${minimum}%`, right: `${maximum}%` }
-					: { top: `${maximum}%`, bottom: `${minimum}%` };
+			const style: StyleObject = {
+				position: 'absolute',
+			};
+
+			switch ($direction) {
+				case 'lr': {
+					style.left = `${minimum}%`;
+					style.right = `${maximum}%`;
+					break;
+				}
+				case 'rl': {
+					style.right = `${minimum}%`;
+					style.left = `${maximum}%`;
+					break;
+				}
+				case 'bt': {
+					style.bottom = `${minimum}%`;
+					style.top = `${maximum}%`;
+					break;
+				}
+				case 'tb': {
+					style.top = `${minimum}%`;
+					style.bottom = `${maximum}%`;
+					break;
+				}
+			}
 
 			return {
-				style: styleToString({
-					position: 'absolute',
-					...orientationStyles,
-				}),
+				style: styleToString(style),
 			};
 		},
 	});
 
 	const thumb = builder(name('thumb'), {
-		stores: [value, position, min, max, disabled, orientation],
-		returned: ([$value, $position, $min, $max, $disabled, $orientation]) => {
+		stores: [value, position, min, max, disabled, orientation, direction],
+		returned: ([$value, $position, $min, $max, $disabled, $orientation, $direction]) => {
 			let index = -1;
 
 			return () => {
@@ -174,27 +207,50 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 				const thumbValue = $value[index];
 				const thumbPosition = `${$position(thumbValue)}%`;
+
+				const style: StyleObject = {
+					position: 'absolute',
+				};
+
+				switch ($direction) {
+					case 'lr': {
+						style.left = thumbPosition;
+						style.translate = '-50% 0';
+						break;
+					}
+					case 'rl': {
+						style.right = thumbPosition;
+						style.translate = '50% 0';
+						break;
+					}
+					case 'bt': {
+						style.bottom = thumbPosition;
+						style.translate = '0 50%';
+						break;
+					}
+					case 'tb': {
+						style.top = thumbPosition;
+						style.translate = '0 -50%';
+						break;
+					}
+				}
+
 				return {
 					role: 'slider',
 					'aria-valuemin': $min,
 					'aria-valuemax': $max,
 					'aria-valuenow': thumbValue,
+					'aria-disabled': disabledAttr($disabled),
+					'aria-orientation': $orientation,
 					'data-melt-part': 'thumb',
 					'data-value': thumbValue,
-					style: styleToString({
-						position: 'absolute',
-						...($orientation === 'horizontal'
-							? { left: thumbPosition, translate: '-50% 0' }
-							: { bottom: thumbPosition, translate: '0 50%' }),
-					}),
+					style: styleToString(style),
 					tabindex: $disabled ? -1 : 0,
 				} as const;
 			};
 		},
 		action: (node: HTMLElement): MeltActionReturn<SliderEvents['thumb']> => {
 			const unsub = addMeltEventListener(node, 'keydown', (event) => {
-				const $min = get(min);
-				const $max = get(max);
 				if (get(disabled)) return;
 
 				const target = event.currentTarget;
@@ -220,9 +276,13 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 				event.preventDefault();
 
+				const $min = get(min);
+				const $max = get(max);
 				const $step = get(step);
 				const $value = get(value);
 				const $orientation = get(orientation);
+				const $direction = get(direction);
+				const thumbValue = $value[index];
 
 				switch (event.key) {
 					case kbd.HOME: {
@@ -237,10 +297,12 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if ($orientation !== 'horizontal') break;
 
 						if (event.metaKey) {
-							updatePosition($min, index);
-						} else if ($value[index] > $min) {
-							const newValue = $value[index] - $step;
+							const newValue = $direction === 'rl' ? $max : $min;
 							updatePosition(newValue, index);
+						} else if ($direction === 'rl' && thumbValue < $max) {
+							updatePosition(thumbValue + $step, index);
+						} else if ($direction === 'lr' && thumbValue > $min) {
+							updatePosition(thumbValue - $step, index);
 						}
 						break;
 					}
@@ -248,39 +310,34 @@ export const createSlider = (props?: CreateSliderProps) => {
 						if ($orientation !== 'horizontal') break;
 
 						if (event.metaKey) {
-							updatePosition($max, index);
-						} else if ($value[index] < $max) {
-							const newValue = $value[index] + $step;
-
-							if (newValue <= $max) {
-								updatePosition(newValue, index);
-							}
+							const newValue = $direction === 'rl' ? $min : $max;
+							updatePosition(newValue, index);
+						} else if ($direction === 'rl' && thumbValue > $min) {
+							updatePosition(thumbValue - $step, index);
+						} else if ($direction === 'lr' && thumbValue < $max) {
+							updatePosition(thumbValue + $step, index);
 						}
 						break;
 					}
 					case kbd.ARROW_UP: {
 						if (event.metaKey) {
-							updatePosition($max, index);
-						} else if ($value[index] > $min && $orientation === 'vertical') {
-							const newValue = $value[index] + $step;
+							const newValue = $direction === 'tb' ? $min : $max;
 							updatePosition(newValue, index);
-						} else if ($value[index] < $max) {
-							const newValue = $value[index] + $step;
-							if (newValue <= $max) {
-								updatePosition(newValue, index);
-							}
+						} else if ($direction === 'tb' && thumbValue > $min) {
+							updatePosition(thumbValue - $step, index);
+						} else if ($direction !== 'tb' && thumbValue < $max) {
+							updatePosition(thumbValue + $step, index);
 						}
 						break;
 					}
 					case kbd.ARROW_DOWN: {
 						if (event.metaKey) {
-							updatePosition($min, index);
-						} else if ($value[index] < $max && $orientation === 'vertical') {
-							const newValue = $value[index] - $step;
+							const newValue = $direction === 'tb' ? $max : $min;
 							updatePosition(newValue, index);
-						} else if ($value[index] > $min) {
-							const newValue = $value[index] - $step;
-							updatePosition(newValue, index);
+						} else if ($direction === 'tb' && thumbValue < $max) {
+							updatePosition(thumbValue + $step, index);
+						} else if ($direction !== 'tb' && thumbValue > $min) {
+							updatePosition(thumbValue - $step, index);
 						}
 						break;
 					}
@@ -294,31 +351,47 @@ export const createSlider = (props?: CreateSliderProps) => {
 	});
 
 	const tick = builder(name('tick'), {
-		stores: [ticks, value, min, max, step, orientation],
-		returned: ([$ticks, $value, $min, $max, $step, $orientation]) => {
+		stores: [ticks, value, min, max, step, direction],
+		returned: ([$ticks, $value, $min, $max, $step, $direction]) => {
 			let index = -1;
 			return () => {
 				index++;
 
-				const horizontal = $orientation === 'horizontal';
-				const style: Record<string, string | number | undefined> = {
+				// The track is divided into sections of ratio `step / (max - min)`
+				const tickPosition = `${index * ($step / ($max - $min)) * 100}%`;
+
+				// Offset each tick by -50% to center it, except the first and last ticks.
+				// The first tick is already positioned at the start of the slider.
+				// The last tick is offset by -100% to prevent it from being rendered outside.
+				const isFirst = index === 0;
+				const isLast = index === $ticks - 1;
+				const offsetPercentage = isFirst ? 0 : isLast ? -100 : -50;
+
+				const style: StyleObject = {
 					position: 'absolute',
 				};
 
-				// The track is divided into sections of ratio `step / (max - min)`
-				const positionPercentage = index * ($step / ($max - $min)) * 100;
-				style[horizontal ? 'left' : 'bottom'] = `${positionPercentage}%`;
-
-				// Offset each tick by half its size to center it, except for
-				// the first tick as it would be rendered outside the slider.
-				//
-				// As for the last tick, offset it by its full size rather than
-				// half also to prevent it from being rendered outside.
-				if (index === $ticks - 1) {
-					// Left is negative, down is positive.
-					style.translate = horizontal ? '-100% 0' : '0 100%';
-				} else if (index !== 0) {
-					style.translate = horizontal ? '-50% 0' : '0 50%';
+				switch ($direction) {
+					case 'lr': {
+						style.left = tickPosition;
+						style.translate = `${offsetPercentage}% 0`;
+						break;
+					}
+					case 'rl': {
+						style.right = tickPosition;
+						style.translate = `${-offsetPercentage}% 0`;
+						break;
+					}
+					case 'bt': {
+						style.bottom = tickPosition;
+						style.translate = `0 ${-offsetPercentage}%`;
+						break;
+					}
+					case 'tb': {
+						style.top = tickPosition;
+						style.translate = `0 ${offsetPercentage}%`;
+						break;
+					}
 				}
 
 				const tickValue = $min + index * $step;
@@ -338,17 +411,17 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 	// Effects
 	effect(
-		[root, min, max, disabled, orientation, step],
-		([$root, $min, $max, $disabled, $orientation, $step]) => {
+		[root, min, max, disabled, orientation, direction, step],
+		([$root, $min, $max, $disabled, $orientation, $direction, $step]) => {
 			if (!isBrowser || $disabled) return;
 
 			const applyPosition = (
 				clientXY: number,
 				activeThumbIdx: number,
-				leftOrBottom: number,
-				rightOrTop: number
+				start: number,
+				end: number
 			) => {
-				const percent = (clientXY - leftOrBottom) / (rightOrTop - leftOrBottom);
+				const percent = (clientXY - start) / (end - start);
 				const val = percent * ($max - $min) + $min;
 
 				if (val < $min) {
@@ -405,12 +478,24 @@ export const createSlider = (props?: CreateSliderProps) => {
 
 				closestThumb.thumb.focus();
 
-				if ($orientation === 'horizontal') {
-					const { left, right } = sliderEl.getBoundingClientRect();
-					applyPosition(e.clientX, closestThumb.index, left, right);
-				} else {
-					const { top, bottom } = sliderEl.getBoundingClientRect();
-					applyPosition(e.clientY, closestThumb.index, bottom, top);
+				const { left, right, top, bottom } = sliderEl.getBoundingClientRect();
+				switch ($direction) {
+					case 'lr': {
+						applyPosition(e.clientX, closestThumb.index, left, right);
+						break;
+					}
+					case 'rl': {
+						applyPosition(e.clientX, closestThumb.index, right, left);
+						break;
+					}
+					case 'bt': {
+						applyPosition(e.clientY, closestThumb.index, bottom, top);
+						break;
+					}
+					case 'tb': {
+						applyPosition(e.clientY, closestThumb.index, top, bottom);
+						break;
+					}
 				}
 			};
 

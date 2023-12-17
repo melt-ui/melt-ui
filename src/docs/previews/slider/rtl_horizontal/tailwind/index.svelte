@@ -3,11 +3,11 @@
 
 	const {
 		elements: { root, range, thumb },
+		states: { value },
 	} = createSlider({
+		dir: 'rtl',
 		defaultValue: [30],
-		min: 0,
 		max: 100,
-		step: 1,
 	});
 </script>
 
@@ -15,8 +15,11 @@
 	<span class="h-[3px] w-full bg-black/40">
 		<span use:melt={$range} class="h-[3px] bg-white" />
 	</span>
-	<span
-		use:melt={$thumb()}
-		class="h-5 w-5 rounded-full bg-white focus:ring-4 focus:!ring-black/40"
-	/>
+
+	{#each $value as _}
+		<span
+			use:melt={$thumb()}
+			class="h-5 w-5 rounded-full bg-white focus:ring-4 focus:!ring-black/40"
+		/>
+	{/each}
 </span>
