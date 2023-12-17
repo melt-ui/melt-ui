@@ -137,10 +137,6 @@ export const createSlider = (props?: CreateSliderProps) => {
 			return {
 				dir: $dir,
 				disabled: disabledAttr($disabled),
-				// TODO: Consider removing `aria-disabled` from here.
-				// `aria-disabled` doesn't make sense on the root
-				// because the slider `role` is on the thumb.
-				'aria-disabled': disabledAttr($disabled),
 				'data-disabled': disabledAttr($disabled),
 				'data-orientation': $orientation,
 				style: $disabled
