@@ -113,6 +113,10 @@ const root = elementSchema('root', {
 			value: ATTRS.ORIENTATION,
 		},
 		{
+			name: 'data-disabled',
+			value: ATTRS.DISABLED('slider'),
+		},
+		{
 			name: 'data-melt-slider',
 			value: ATTRS.MELT('slider'),
 		},
