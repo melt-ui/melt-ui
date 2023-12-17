@@ -192,8 +192,8 @@ export const createSlider = (props?: CreateSliderProps) => {
 	});
 
 	const thumb = builder(name('thumb'), {
-		stores: [value, position, min, max, disabled, direction],
-		returned: ([$value, $position, $min, $max, $disabled, $direction]) => {
+		stores: [value, position, min, max, disabled, orientation, direction],
+		returned: ([$value, $position, $min, $max, $disabled, $orientation, $direction]) => {
 			let index = -1;
 
 			return () => {
@@ -241,7 +241,7 @@ export const createSlider = (props?: CreateSliderProps) => {
 					'aria-valuemax': $max,
 					'aria-valuenow': thumbValue,
 					'aria-disabled': disabledAttr($disabled),
-					'aria-orientation': orientation,
+					'aria-orientation': $orientation,
 					'data-melt-part': 'thumb',
 					'data-value': thumbValue,
 					style: styleToString(style),
