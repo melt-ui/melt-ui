@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.66.0
+
+### Minor Changes
+
+- Slider: RTL support ([#791](https://github.com/melt-ui/melt-ui/pull/791))
+
+### Patch Changes
+
+- Checkbox: add `disabled` prop to button that wraps input ([#819](https://github.com/melt-ui/melt-ui/pull/819))
+
 ## 0.65.2
 
 ### Patch Changes
