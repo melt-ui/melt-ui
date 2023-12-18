@@ -263,6 +263,11 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		},
 		action: (node: HTMLElement): MeltActionReturn<MenuEvents['trigger']> => {
 			applyAttrsIfDisabled(node);
+			rootActiveTrigger.update((p) => {
+				if (p) return p;
+				return node;
+			});
+
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
 					const $rootOpen = get(rootOpen);
