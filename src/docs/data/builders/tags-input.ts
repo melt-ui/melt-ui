@@ -54,7 +54,7 @@ const OPTION_PROPS = [
 		name: 'addOnPaste',
 		type: 'boolean',
 		description: 'Whether or not the input should add tags on paste.',
-		default: 'true',
+		default: 'false',
 	},
 	{
 		name: 'maxTags',
