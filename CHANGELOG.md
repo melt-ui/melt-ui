@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.66.1
+
+### Patch Changes
+
+- Menu: Fix open.set not opening menu (fixes [#813](https://github.com/melt-ui/melt-ui/issues/813)) ([`26e41134`](https://github.com/melt-ui/melt-ui/commit/26e41134169528e22451782259be0b2506bdaec0))
+
+- Slider: remove `aria-disabled` from root ([#825](https://github.com/melt-ui/melt-ui/pull/825))
+
+- Select & Combobox: Fix focus preventing parents to close on escape (fixes [#739](https://github.com/melt-ui/melt-ui/issues/739)) ([`c401f6ff`](https://github.com/melt-ui/melt-ui/commit/c401f6ff49a4e4a506de39a206b50b0a3451b20b))
+
 ## 0.66.0
 
 ### Minor Changes
