@@ -307,8 +307,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		returned: ([$readonly, $disabled]) => ({
 			tabindex: -1,
 			role: 'grid',
-			'aria-readonly': $readonly ? 'true' : undefined,
-			'aria-disabled': $disabled ? 'true' : undefined,
+			'aria-readonly': $readonly ? ('true' as const) : undefined,
+			'aria-disabled': $disabled ? ('true' as const) : undefined,
 			'data-readonly': $readonly ? '' : undefined,
 			'data-disabled': $disabled ? '' : undefined,
 		}),
@@ -321,7 +321,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			return {
 				role: 'button',
 				'aria-label': 'Previous',
-				'aria-disabled': disabled ? 'true' : undefined,
+				'aria-disabled': disabled ? ('true' as const) : undefined,
 				disabled: disabled ? true : undefined,
 				'data-disabled': disabled ? '' : undefined,
 			};
@@ -345,7 +345,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			return {
 				role: 'button',
 				'aria-label': 'Next',
-				'aria-disabled': disabled ? 'true' : undefined,
+				'aria-disabled': disabled ? ('true' as const) : undefined,
 				disabled: disabled ? true : undefined,
 				'data-disabled': disabled ? '' : undefined,
 			};
