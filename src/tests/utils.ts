@@ -20,3 +20,12 @@ export function removeUndefined<T extends object>(obj: T): T {
 	}
 	return result;
 }
+
+export function exists(get: (id: string) => HTMLElement, testId: string) {
+	try {
+		get(testId);
+		return true;
+	} catch {
+		return false;
+	}
+}
