@@ -2,4 +2,4 @@
 "@melt-ui/svelte": patch
 ---
 
-fix: datepicker types
+Datepicker: fix types (closes #838)
