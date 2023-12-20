@@ -310,7 +310,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			return {
 				name: $nameStore,
 				value: $value?.toString(),
-				'aria-hidden': 'true',
+				'aria-hidden': 'true' as const,
 				hidden: true,
 				disabled: $disabled,
 				required: $required,
@@ -353,13 +353,15 @@ export function createDateField(props?: CreateDateFieldProps) {
 				id: $ids.field,
 				'aria-labelledby': $ids.label,
 				'aria-describedby': describedBy,
-				'aria-disabled': $disabled ? 'true' : undefined,
-				'aria-readonly': $readonly ? 'true' : undefined,
+				'aria-disabled': $disabled ? ('true' as const) : undefined,
+				'aria-readonly': $readonly ? ('true' as const) : undefined,
 				'data-invalid': $isInvalid ? '' : undefined,
 				'data-disabled': $disabled ? '' : undefined,
 			};
 		},
-		action: () => {
+		// even if we don't need the element we need to specify it
+		// or TS will complain when svelte tries to pass it
+		action: (_node: HTMLElement) => {
 			/**
 			 * Initialize the announcer here, where
 			 * we know we have access to the DOM.
@@ -445,9 +447,9 @@ export function createDateField(props?: CreateDateFieldProps) {
 			return (part: SegmentPart) => {
 				const defaultAttrs = {
 					...getSegmentAttrs(part, props),
-					'aria-invalid': $isInvalid ? 'true' : undefined,
-					'aria-disabled': $disabled ? 'true' : undefined,
-					'aria-readonly': $readonly ? 'true' : undefined,
+					'aria-invalid': $isInvalid ? ('true' as const) : undefined,
+					'aria-disabled': $disabled ? ('true' as const) : undefined,
+					'aria-readonly': $readonly ? ('true' as const) : undefined,
 					'data-invalid': $isInvalid ? '' : undefined,
 					'data-disabled': $disabled ? '' : undefined,
 					'data-segment': `${part}`,
