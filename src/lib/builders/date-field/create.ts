@@ -73,6 +73,7 @@ const defaults = {
 	hideTimeZone: false,
 	disabled: false,
 	readonly: false,
+	readonlySegments: undefined,
 	name: undefined,
 	required: false,
 	minValue: undefined,
@@ -111,6 +112,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 		isDateUnavailable,
 		disabled,
 		readonly,
+		readonlySegments,
 		name: nameStore,
 		required,
 		minValue,
@@ -167,6 +169,11 @@ export function createDateField(props?: CreateDateFieldProps) {
 	 * segments are filled.
 	 */
 	const updatingDayPeriod = writable<DayPeriod>(null);
+
+	const readonlySegmentsSet = derived(
+		readonlySegments,
+		($readonlySegments) => new Set<SegmentPart>($readonlySegments)
+	);
 
 	const ids = toWritableStores({ ...generateIds(dateFieldIdParts), ...withDefaults.ids });
 
@@ -424,6 +431,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			isInvalid,
 			disabled,
 			readonly,
+			readonlySegmentsSet,
 			idValues,
 			locale,
 		],
@@ -435,6 +443,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			$isInvalid,
 			$disabled,
 			$readonly,
+			$readonlySegmentsSet,
 			$idValues,
 			_,
 		]) => {
@@ -445,11 +454,12 @@ export function createDateField(props?: CreateDateFieldProps) {
 				ids: $idValues,
 			};
 			return (part: SegmentPart) => {
+				const inReadonlySegments = $readonlySegmentsSet.has(part);
 				const defaultAttrs = {
 					...getSegmentAttrs(part, props),
 					'aria-invalid': $isInvalid ? ('true' as const) : undefined,
 					'aria-disabled': $disabled ? ('true' as const) : undefined,
-					'aria-readonly': $readonly ? ('true' as const) : undefined,
+					'aria-readonly': $readonly || inReadonlySegments ? ('true' as const) : undefined,
 					'data-invalid': $isInvalid ? '' : undefined,
 					'data-disabled': $disabled ? '' : undefined,
 					'data-segment': `${part}`,
@@ -467,7 +477,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 					...defaultAttrs,
 					id: $idValues[part],
 					'aria-labelledby': getLabelledBy(part),
-					contentEditable: $readonly || $disabled ? false : true,
+					contenteditable: $readonly || inReadonlySegments || $disabled ? false : true,
 					'aria-describedby': describedBy,
 					tabindex: $disabled ? undefined : 0,
 				};
@@ -485,7 +495,7 @@ export function createDateField(props?: CreateDateFieldProps) {
 			? Updater<TimeSegmentObj[T]>
 			: Updater<DateAndTimeSegmentObj[T]>
 	) {
-		if (get(disabled) || get(readonly)) return;
+		if (get(disabled) || get(readonly) || get(readonlySegmentsSet).has(part)) return;
 		segmentValues.update((prev) => {
 			const dateRef = get(placeholder);
 			if (isDateAndTimeSegmentObj(prev)) {
