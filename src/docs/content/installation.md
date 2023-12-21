@@ -58,14 +58,13 @@ P.S. These tabs were built using Melt! Try using them with the arrow keys.
 Melt UI also provides a custom preprocessor that aims to enhance the DX of Melt UI. You can read
 more about it [here](/docs/preprocessor).
 
-Install our preprocessor, [@melt-ui/pp](https://github.com/melt-ui/preprocessor), along with
-[svelte-sequential-preprocessor](https://www.npmjs.com/package/svelte-sequential-preprocessor).
+Install our preprocessor, [@melt-ui/pp](https://github.com/melt-ui/preprocessor).
 
 <InstallTabs>
 <span slot="npm">
 
 ```bash
-npm install -D @melt-ui/pp svelte-sequential-preprocessor
+npm install -D @melt-ui/pp
 ```
 
 </span>
@@ -73,7 +72,7 @@ npm install -D @melt-ui/pp svelte-sequential-preprocessor
 <span slot="yarn">
 
 ```bash
-yarn add -D @melt-ui/pp svelte-sequential-preprocessor
+yarn add -D @melt-ui/pp
 ```
 
 </span>
@@ -81,20 +80,19 @@ yarn add -D @melt-ui/pp svelte-sequential-preprocessor
 <span slot="pnpm">
 
 ```bash
-pnpm add -D @melt-ui/pp svelte-sequential-preprocessor
+pnpm add -D @melt-ui/pp
 ```
 
 </span>
 
 </InstallTabs>
 
-Next, import both packages and add them to your `preprocess` array in `svelte.config.js`.
+Next, import both preprocessors and add them to your `preprocess` array in `svelte.config.js`.
 
 ```js
 // svelte.config.js
 
-import { preprocessMeltUI } from '@melt-ui/pp'
-import sequence from 'svelte-sequential-preprocessor'
+import { preprocessMeltUI, sequence } from '@melt-ui/pp'
 
 const config = {
 	// ... other svelte config options
