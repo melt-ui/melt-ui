@@ -1,5 +1,15 @@
 # @melt-ui/svelte
 
+## 0.66.2
+
+### Patch Changes
+
+- Datepicker: fix types (closes #838) ([#839](https://github.com/melt-ui/melt-ui/pull/839))
+
+- Collapsible: remove leftover log ([`31119cce`](https://github.com/melt-ui/melt-ui/commit/31119cce0b89cc0153f9160a1d8a074d075ff1bf))
+
+- Types: fix wrong builder return type for functions ([#844](https://github.com/melt-ui/melt-ui/pull/844))
+
 ## 0.66.1
 
 ### Patch Changes
