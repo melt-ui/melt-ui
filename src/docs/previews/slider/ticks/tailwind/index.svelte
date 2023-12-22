@@ -2,8 +2,7 @@
 	import { createSlider, melt } from '$lib/index.js';
 
 	const {
-		elements: { root, range, thumb, tick },
-		states: { ticks },
+		elements: { root, range, thumbs, ticks },
 	} = createSlider({
 		defaultValue: [5],
 		min: 0,
@@ -17,15 +16,17 @@
 		<span use:melt={$range} class="h-[3px] bg-white" />
 	</span>
 
-	{#each { length: $ticks } as _}
+	{#each $ticks as tick}
+		<!-- TODO: use pp when it supports builder arrays -->
 		<span
-			use:melt={$tick()}
+			{...tick}
+			use:tick.action
 			class="h-[3px] w-[3px] rounded-full bg-white/50 data-[bounded]:bg-magnum-800/75"
 		/>
 	{/each}
 
 	<span
-		use:melt={$thumb()}
+		use:melt={$thumbs[0]}
 		class="h-5 w-5 rounded-full bg-white focus:ring-4 focus:!ring-black/40"
 	/>
 </span>

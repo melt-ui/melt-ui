@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createSlider, melt, type CreateSliderProps } from '$lib/index.js';
+
 	export let value = [30];
 	export let max = 100;
 	export let min = 0;
@@ -10,8 +11,7 @@
 	export let resetStep: number | undefined = undefined;
 
 	const {
-		elements: { root, range, thumb, tick },
-		states: { ticks },
+		elements: { root, range, thumbs, ticks },
 		options: { min: optionsMin, max: optionsMax, step: optionsStep },
 	} = createSlider({
 		defaultValue: value,
@@ -37,14 +37,17 @@
 		<span class="block h-[3px] w-full bg-black/40">
 			<span data-testid="range" use:melt={$range} class="h-[3px] bg-white" />
 		</span>
+
+		{#each $ticks as tick}
+			<!-- TODO: use pp when it supports builder arrays -->
+			<span {...tick} use:tick.action data-testid="tick" />
+		{/each}
+
 		<span
 			aria-label="Volume"
 			data-testid="thumb"
-			use:melt={$thumb()}
+			use:melt={$thumbs[0]}
 			class="block h-5 w-5 rounded-full bg-white focus:ring-4 focus:ring-black/40"
 		/>
 	</span>
-	{#each { length: $ticks } as _}
-		<span use:melt={$tick()} data-testid="tick" />
-	{/each}
 </main>
