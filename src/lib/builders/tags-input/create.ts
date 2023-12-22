@@ -325,6 +325,7 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 				}),
 				addMeltEventListener(node, 'paste', async (e) => {
 					// Do nothing when there is nothing to paste
+					e.preventDefault();
 					if (!e.clipboardData) return;
 					const pastedText = e.clipboardData.getData('text');
 					if (!pastedText) return;
@@ -491,11 +492,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					tabindex: -1,
 					style: editing
 						? styleToString({
-								position: 'absolute',
-								opacity: 0,
-								'pointer-events': 'none',
-								margin: 0,
-						  })
+							position: 'absolute',
+							opacity: 0,
+							'pointer-events': 'none',
+							margin: 0,
+						})
 						: undefined,
 				};
 			};
@@ -632,11 +633,11 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					tabindex: -1,
 					style: !editing
 						? styleToString({
-								position: 'absolute',
-								opacity: 0,
-								'pointer-events': 'none',
-								margin: 0,
-						  })
+							position: 'absolute',
+							opacity: 0,
+							'pointer-events': 'none',
+							margin: 0,
+						})
 						: undefined,
 				};
 			};
