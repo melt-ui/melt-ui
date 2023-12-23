@@ -18,17 +18,14 @@
 		</span>
 
 		{#each $ticks as tick}
-			<!-- TODO: use pp when it supports builder arrays -->
-			<span {...tick} use:tick.action data-testid="tick" />
+			<span use:melt={tick} data-testid="tick" />
 		{/each}
 
 		{#each $thumbs as thumb, i}
-			<!-- TODO: use pp when it supports builder arrays -->
 			<span
 				aria-label="Volume"
 				data-testid="thumb-{i}"
-				{...thumb}
-				use:thumb.action
+				use:melt={thumb}
 				class="block h-5 w-5 rounded-full bg-white focus:ring-4 focus:ring-black/40"
 			/>
 		{/each}

@@ -17,10 +17,8 @@
 	</span>
 
 	{#each $ticks as tick}
-		<!-- TODO: use pp when it supports builder arrays -->
 		<span
-			{...tick}
-			use:tick.action
+			use:melt={tick}
 			class="h-[3px] w-[3px] rounded-full bg-white/50 data-[bounded]:bg-magnum-800/75"
 		/>
 	{/each}

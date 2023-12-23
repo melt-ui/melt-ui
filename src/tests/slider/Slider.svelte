@@ -39,8 +39,7 @@
 		</span>
 
 		{#each $ticks as tick}
-			<!-- TODO: use pp when it supports builder arrays -->
-			<span {...tick} use:tick.action data-testid="tick" />
+			<span use:melt={tick} data-testid="tick" />
 		{/each}
 
 		<span
