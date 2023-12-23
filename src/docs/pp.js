@@ -71,7 +71,7 @@ export function processMeltAttributes(input) {
 	while (meltAttribute !== null && tries < 100000) {
 		tries++;
 		const { builder } = meltAttribute;
-		const store = builder.startsWith("$") ? builder.slice(1) : builder;
+		const store = builder.startsWith('$') ? builder.slice(1) : builder;
 
 		let /** @type {string} */ oldMelt, /** @type {string} */ newMelt;
 		if ('args' in meltAttribute) {
@@ -82,7 +82,7 @@ export function processMeltAttributes(input) {
 			const { index } = meltAttribute;
 			oldMelt = `use:melt={${builder}[${index}]}`;
 			newMelt = `{...${builder}[${index}]} use:${store}`;
-		} else if (builder.startsWith("$")) {
+		} else if (builder.startsWith('$')) {
 			oldMelt = `use:melt={${builder}}`;
 			newMelt = `{...${builder}} use:${store}`;
 		} else {
