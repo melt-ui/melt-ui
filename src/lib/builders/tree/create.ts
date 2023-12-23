@@ -171,12 +171,12 @@ export function createTreeView(args?: CreateTreeViewProps) {
 							setFocusedItem(item as HTMLElement);
 						}
 					} else if (key === kbd.ARROW_RIGHT) {
-						if (elementIsExpanded(node)) {
-							// Focus first child
+						if (elementIsExpanded(node) || !elementHasChildren(node)) {
+							// Focus first child or next el
 							const nextItem = items[nodeIdx + 1];
 							if (!nextItem) return;
 							setFocusedItem(nextItem);
-						} else if (elementHasChildren(node)) {
+						} else {
 							// Expand group
 							toggleChildrenElements(node);
 						}
