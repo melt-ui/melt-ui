@@ -106,6 +106,9 @@ devDependencies:
   '@types/jest-axe':
     specifier: ^3.5.5
     version: 3.5.5
+  '@types/testing-library__jest-dom':
+    specifier: ^5.14.9
+    version: 5.14.9
   '@typescript-eslint/eslint-plugin':
     specifier: ^5.62.0
     version: 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.45.0)(typescript@5.1.6)
