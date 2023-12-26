@@ -21,11 +21,7 @@
 	let results: AwaitedResult[] = [];
 
 	async function getPagefind() {
-		const res = await fetch('/pagefind/pagefind.js', {
-			headers: {
-				contentType: 'application/javascript',
-			},
-		});
+		const res = await fetch('/pagefind/pagefind.js');
 		if (!res.ok) {
 			throw new Error('Failed to load pagefind');
 		}
