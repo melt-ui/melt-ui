@@ -20,8 +20,20 @@
 	let pagefind: Pagefind | null = null;
 	let results: AwaitedResult[] = [];
 
+	async function getPagefind() {
+		const res = await fetch('/pagefind/pagefind.js');
+		if (!res.ok) {
+			throw new Error('Failed to load pagefind');
+		}
+		const text = await res.text();
+		const blob = new Blob([text], { type: 'application/javascript' });
+		const url = URL.createObjectURL(blob);
+
+		return (await import(url)) as Pagefind;
+	}
+
 	onMount(async () => {
-		pagefind = await import('../../pagefind/pagefind.js');
+		pagefind = await getPagefind();
 
 		await pagefind.init();
 		const promisedResults = (await pagefind.search('')).results;
