@@ -23,7 +23,7 @@
 	async function getPagefind() {
 		const res = await fetch('/pagefind/pagefind.js');
 		if (!res.ok) {
-			throw new Error('Failed to load pagefind');
+			return null;
 		}
 		const text = await res.text();
 		const blob = new Blob([text], { type: 'application/javascript' });
@@ -34,6 +34,7 @@
 
 	onMount(async () => {
 		pagefind = await getPagefind();
+		if (!pagefind) return;
 
 		await pagefind.init();
 		const promisedResults = (await pagefind.search('')).results;
