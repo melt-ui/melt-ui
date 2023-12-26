@@ -29,7 +29,7 @@
 		const blob = new Blob([text], { type: 'application/javascript' });
 		const url = URL.createObjectURL(blob);
 
-		return (await import(url)) as Pagefind;
+		return (await import(/* @vite-ignore */ url)) as Pagefind;
 	}
 
 	onMount(async () => {
