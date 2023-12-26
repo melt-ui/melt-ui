@@ -1,5 +1,11 @@
 # @melt-ui/svelte
 
+## 0.66.3
+
+### Patch Changes
+
+- Menu: fix default active subtrigger ([`84270042`](https://github.com/melt-ui/melt-ui/commit/84270042ee257a9dff0efaa97eacd3ec9ce04a6c))
+
 ## 0.66.2
 
 ### Patch Changes
