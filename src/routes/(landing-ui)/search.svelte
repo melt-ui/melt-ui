@@ -26,7 +26,6 @@
 			throw new Error('Failed to load pagefind');
 		}
 		const text = await res.text();
-		console.log('text', text);
 		const blob = new Blob([text], { type: 'application/javascript' });
 		const url = URL.createObjectURL(blob);
 
