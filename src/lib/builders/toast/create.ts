@@ -111,7 +111,7 @@ export function createToaster<T = object>(props?: CreateToasterProps) {
 					role: 'alert',
 					'aria-describedby': toast.ids.description,
 					'aria-labelledby': toast.ids.title,
-					'aria-live': (toast.type === 'foreground' ? 'assertive' : 'polite') as const,
+					'aria-live': toast.type === 'foreground' ? ('assertive' as const) : ('polite' as const),
 					tabindex: -1,
 				};
 			};
