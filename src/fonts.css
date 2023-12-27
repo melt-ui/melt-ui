@@ -1,7 +1,7 @@
 @font-face {
 	font-family: 'GT Maru Mono';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-Black.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-Black.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaruMono-Black.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaruMono-Black.woff') format('woff');
 	font-weight: 900;
 	font-style: normal;
 	font-display: swap;
@@ -9,8 +9,8 @@
 
 @font-face {
 	font-family: 'GT Maru';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-Regular.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-Regular.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaru-Regular.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaru-Regular.woff') format('woff');
 	font-weight: normal;
 	font-style: normal;
 	font-display: swap;
@@ -18,8 +18,8 @@
 
 @font-face {
 	font-family: 'GT Maru';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-Black.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-Black.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaru-Black.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaru-Black.woff') format('woff');
 	font-weight: 900;
 	font-style: normal;
 	font-display: swap;
@@ -27,8 +27,8 @@
 
 @font-face {
 	font-family: 'GT Maru Mono';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-BoldOblique.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-BoldOblique.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaruMono-BoldOblique.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaruMono-BoldOblique.woff') format('woff');
 	font-weight: bold;
 	font-style: italic;
 	font-display: swap;
@@ -36,8 +36,8 @@
 
 @font-face {
 	font-family: 'GT Maru';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-BoldOblique.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-BoldOblique.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaru-BoldOblique.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaru-BoldOblique.woff') format('woff');
 	font-weight: bold;
 	font-style: italic;
 	font-display: swap;
@@ -45,8 +45,8 @@
 
 @font-face {
 	font-family: 'GT Maru';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-LightOblique.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-LightOblique.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaru-LightOblique.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaru-LightOblique.woff') format('woff');
 	font-weight: 300;
 	font-style: italic;
 	font-display: swap;
@@ -54,8 +54,8 @@
 
 @font-face {
 	font-family: 'GT Maru Mono';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-MediumOblique.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-MediumOblique.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaruMono-MediumOblique.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaruMono-MediumOblique.woff') format('woff');
 	font-weight: 500;
 	font-style: italic;
 	font-display: swap;
@@ -63,8 +63,8 @@
 
 @font-face {
 	font-family: 'GT Maru';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-Medium.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-Medium.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaru-Medium.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaru-Medium.woff') format('woff');
 	font-weight: 500;
 	font-style: normal;
 	font-display: swap;
@@ -72,8 +72,8 @@
 
 @font-face {
 	font-family: 'GT Maru Mono';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-Medium.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-Medium.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaruMono-Medium.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaruMono-Medium.woff') format('woff');
 	font-weight: 500;
 	font-style: normal;
 	font-display: swap;
@@ -81,8 +81,8 @@
 
 @font-face {
 	font-family: 'GT Maru';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-RegularOblique.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-RegularOblique.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaru-RegularOblique.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaru-RegularOblique.woff') format('woff');
 	font-weight: normal;
 	font-style: italic;
 	font-display: swap;
@@ -90,8 +90,8 @@
 
 @font-face {
 	font-family: 'GT Maru';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-MediumOblique.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-MediumOblique.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaru-MediumOblique.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaru-MediumOblique.woff') format('woff');
 	font-weight: 500;
 	font-style: italic;
 	font-display: swap;
@@ -99,8 +99,8 @@
 
 @font-face {
 	font-family: 'GT Maru Mono';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-Bold.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-Bold.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaruMono-Bold.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaruMono-Bold.woff') format('woff');
 	font-weight: bold;
 	font-style: normal;
 	font-display: swap;
@@ -108,8 +108,8 @@
 
 @font-face {
 	font-family: 'GT Maru Mono';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-Regular.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-Regular.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaruMono-Regular.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaruMono-Regular.woff') format('woff');
 	font-weight: normal;
 	font-style: normal;
 	font-display: swap;
@@ -117,8 +117,8 @@
 
 @font-face {
 	font-family: 'GT Maru';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-BlackOblique.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-BlackOblique.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaru-BlackOblique.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaru-BlackOblique.woff') format('woff');
 	font-weight: 900;
 	font-style: italic;
 	font-display: swap;
@@ -126,8 +126,8 @@
 
 @font-face {
 	font-family: 'GT Maru Mono';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-BlackOblique.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-BlackOblique.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaruMono-BlackOblique.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaruMono-BlackOblique.woff') format('woff');
 	font-weight: 900;
 	font-style: italic;
 	font-display: swap;
@@ -135,8 +135,8 @@
 
 @font-face {
 	font-family: 'GT Maru Mono';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-Light.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-Light.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaruMono-Light.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaruMono-Light.woff') format('woff');
 	font-weight: 300;
 	font-style: normal;
 	font-display: swap;
@@ -144,9 +144,8 @@
 
 @font-face {
 	font-family: 'GT Maru Mono';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-RegularOblique.woff2')
-			format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-RegularOblique.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaruMono-RegularOblique.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaruMono-RegularOblique.woff') format('woff');
 	font-weight: normal;
 	font-style: italic;
 	font-display: swap;
@@ -154,8 +153,8 @@
 
 @font-face {
 	font-family: 'GT Maru';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-Bold.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-Bold.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaru-Bold.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaru-Bold.woff') format('woff');
 	font-weight: bold;
 	font-style: normal;
 	font-display: swap;
@@ -163,8 +162,8 @@
 
 @font-face {
 	font-family: 'GT Maru';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-Light.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaru-Light.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaru-Light.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaru-Light.woff') format('woff');
 	font-weight: 300;
 	font-style: normal;
 	font-display: swap;
@@ -172,8 +171,8 @@
 
 @font-face {
 	font-family: 'GT Maru Mono';
-	src: url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-LightOblique.woff2') format('woff2'),
-		url('https://fonts-hazel-mu.vercel.app/fonts/GTMaruMono-LightOblique.woff') format('woff');
+	src: url('https://fonts-c75.pages.dev/fonts/GTMaruMono-LightOblique.woff2') format('woff2'),
+		url('https://fonts-c75.pages.dev/fonts/GTMaruMono-LightOblique.woff') format('woff');
 	font-weight: 300;
 	font-style: italic;
 	font-display: swap;
