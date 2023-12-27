@@ -1,5 +1,17 @@
 # @melt-ui/svelte
 
+## 0.66.4
+
+### Patch Changes
+
+- Toast: return `aria-live` type as `'assertive' | 'polite'` ([#859](https://github.com/melt-ui/melt-ui/pull/859))
+
+- Tags Input: Fix addOnPaste (closes #830) ([#847](https://github.com/melt-ui/melt-ui/pull/847))
+
+- escape-keydown: remove `capture` listener (fixes [#842](https://github.com/melt-ui/melt-ui/issues/842)) ([#845](https://github.com/melt-ui/melt-ui/pull/845))
+
+- Combobox: change default Value props type ([`835c285a`](https://github.com/melt-ui/melt-ui/commit/835c285a774cc00455980693a5978f0969ef05ee))
+
 ## 0.66.3
 
 ### Patch Changes
