@@ -43,7 +43,7 @@ export type BuilderData = {
 	name?: string;
 };
 
-export const builderMap = ({
+export const builderMap = {
 	accordion: accordionData,
 	avatar: avatarData,
 	calendar: calendarData,
@@ -80,15 +80,12 @@ export const builderMap = ({
 	toolbar: toolbarData,
 	tooltip: tooltipData,
 	tree: treeData,
-} as const) satisfies Record<string, BuilderData>;
-
+} as const satisfies Record<string, BuilderData>;
 
 export type Builder = keyof typeof builderMap;
 
 export function isBuilderName(key: string): key is Builder {
 	return key in builderMap;
 }
-
-
 
 export type Builders = typeof builderMap;

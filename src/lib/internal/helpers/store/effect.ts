@@ -1,5 +1,5 @@
-import { onDestroy } from 'svelte';
 import type { Stores, StoresValues } from 'svelte/store';
+import { safeOnDestroy } from '../lifecycle';
 import { derivedWithUnsubscribe } from './derivedWithUnsubscribe';
 
 /**
@@ -30,6 +30,6 @@ export function effect<S extends Stores>(
 	});
 
 	// Automatically unsubscribe the effect when the component is destroyed
-	onDestroy(unsub);
+	safeOnDestroy(unsub);
 	return unsub;
 }

@@ -4,9 +4,11 @@ import {
 	createElHelpers,
 	derivedVisible,
 	effect,
+	executeCallbacks,
 	getPortalDestination,
 	handleFocus,
 	isBrowser,
+	isElement,
 	isHTMLElement,
 	kbd,
 	noop,
@@ -15,16 +17,16 @@ import {
 	removeScroll,
 	styleToString,
 	toWritableStores,
-	executeCallbacks,
 } from '$lib/internal/helpers/index.js';
 
 import { usePopper } from '$lib/internal/actions/index.js';
+import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
-import { onMount, tick } from 'svelte';
+import { tick } from 'svelte';
 import { get, writable } from 'svelte/store';
+import { generateIds } from '../../internal/helpers/id';
 import type { PopoverEvents } from './events.js';
 import type { CreatePopoverProps } from './types.js';
-import { generateIds } from '../../internal/helpers/id';
 
 const defaults = {
 	positioning: {
@@ -73,7 +75,7 @@ export function createPopover(args?: CreatePopoverProps) {
 
 	const ids = toWritableStores({ ...generateIds(popoverIdParts), ...withDefaults.ids });
 
-	onMount(() => {
+	safeOnMount(() => {
 		activeTrigger.set(document.getElementById(get(ids.trigger)));
 	});
 
@@ -133,8 +135,14 @@ export function createPopover(args?: CreatePopoverProps) {
 								? null
 								: {
 										returnFocusOnDeactivate: false,
+										clickOutsideDeactivates: true,
+										escapeDeactivates: true,
 								  },
-							clickOutside: $closeOnOutsideClick ? undefined : null,
+							clickOutside: $closeOnOutsideClick
+								? {
+										handler: handleClickOutside,
+								  }
+								: null,
 							escapeKeydown: $closeOnEscape
 								? {
 										handler: () => {
@@ -168,6 +176,16 @@ export function createPopover(args?: CreatePopoverProps) {
 		if (triggerEl) {
 			activeTrigger.set(triggerEl);
 		}
+	}
+
+	function handleClickOutside(e: PointerEvent) {
+		const target = e.target;
+		const triggerEl = document.getElementById(get(ids.trigger));
+
+		if (triggerEl && isElement(target)) {
+			if (target === triggerEl || triggerEl.contains(target)) return;
+		}
+		handleClose();
 	}
 
 	const trigger = builder(name('trigger'), {
@@ -263,6 +281,7 @@ export function createPopover(args?: CreatePopoverProps) {
 			unsubs.forEach((unsub) => unsub());
 		};
 	});
+
 	return {
 		ids,
 		elements: {

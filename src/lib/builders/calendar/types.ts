@@ -139,9 +139,25 @@ export type CreateCalendarProps<
 	 * be a number between 0 and 6, where 0 is Sunday and 6 is
 	 * Saturday.
 	 *
-	 * @default 0 (Sunday)
+	 * @defaultValue 0 (Sunday)
 	 */
 	weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+	/**
+	 * How the string representation of the weekdays provided via the `weekdays` state store
+	 * should be formatted.
+	 *
+	 * ```md
+	 * - "long": "Sunday", "Monday", "Tuesday", etc.
+	 * - "short": "Sun", "Mon", "Tue", etc.
+	 * - "narrow": "S", "M", "T", etc.
+	 *```
+	 *
+	 * @default "narrow"
+	 *
+	 * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#weekday
+	 */
+	weekdayFormat?: Intl.DateTimeFormatOptions['weekday'];
 
 	/**
 	 * A function that receives a date and returns `true` or `false` to indicate whether

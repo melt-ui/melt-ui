@@ -5,7 +5,7 @@
 
 	const {
 		elements: { calendar, heading, grid, cell, prevButton, nextButton },
-		states: { months, headingValue, daysOfWeek },
+		states: { months, headingValue, weekdays },
 		helpers: { isDateDisabled, isDateUnavailable },
 	} = createCalendar({
 		defaultValue: new CalendarDate(2024, 1, 11),
@@ -29,7 +29,7 @@
 			<table use:melt={$grid}>
 				<thead aria-hidden="true">
 					<tr>
-						{#each $daysOfWeek as day}
+						{#each $weekdays as day}
 							<th>
 								<div>
 									{day}

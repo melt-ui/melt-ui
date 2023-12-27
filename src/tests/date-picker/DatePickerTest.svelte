@@ -3,6 +3,7 @@
 	import { ChevronRight, ChevronLeft, Calendar } from 'lucide-svelte';
 	import { melt } from '$lib';
 	import { fade } from 'svelte/transition';
+	import { removeUndefined } from '../utils';
 
 	export let value: CreateDatePickerProps['value'] = undefined;
 	export let defaultValue: CreateDatePickerProps['defaultValue'] = undefined;
@@ -18,6 +19,7 @@
 	export let hideTimeZone: CreateDatePickerProps['hideTimeZone'] = undefined;
 	export let dateFieldIds: CreateDatePickerProps['dateFieldIds'] = undefined;
 	export let calendarIds: CreateDatePickerProps['calendarIds'] = undefined;
+	export let popoverIds: CreateDatePickerProps['popoverIds'] = undefined;
 	export let granularity: CreateDatePickerProps['granularity'] = undefined;
 	export let calendarLabel: CreateDatePickerProps['calendarLabel'] = undefined;
 	export let preventDeselect: CreateDatePickerProps['preventDeselect'] = undefined;
@@ -25,6 +27,7 @@
 	export let pagedNavigation: CreateDatePickerProps['pagedNavigation'] = undefined;
 	export let placeholder: CreateDatePickerProps['placeholder'] = undefined;
 	export let weekStartsOn: CreateDatePickerProps['weekStartsOn'] = undefined;
+	export let weekdayFormat: CreateDatePickerProps['weekdayFormat'] = undefined;
 
 	const {
 		elements: {
@@ -39,32 +42,50 @@
 			trigger,
 			content,
 			label,
+			validation,
 		},
-		states: { value: insideValue, months, headingValue, daysOfWeek, segmentContents },
-		options: { locale: insideLocale },
-	} = createDatePicker({
-		value,
-		defaultValue,
-		defaultPlaceholder,
-		onValueChange,
-		onPlaceholderChange,
-		isDateUnavailable,
-		disabled,
-		readonly,
-		hourCycle,
-		locale,
-		hideTimeZone,
-		granularity,
-		dateFieldIds,
-		calendarIds,
-		preventDeselect,
-		calendarLabel,
-		numberOfMonths,
-		pagedNavigation,
-		placeholder,
-		weekStartsOn,
-		isDateDisabled,
-	});
+		states: { value: insideValue, months, headingValue, weekdays, segmentContents },
+		options: { locale: insideLocale, weekdayFormat: weekdayFormatOption },
+	} = createDatePicker(
+		removeUndefined({
+			value,
+			defaultValue,
+			defaultPlaceholder,
+			onValueChange,
+			onPlaceholderChange,
+			isDateUnavailable,
+			disabled,
+			readonly,
+			hourCycle,
+			locale,
+			hideTimeZone,
+			granularity,
+			dateFieldIds,
+			calendarIds,
+			preventDeselect,
+			calendarLabel,
+			numberOfMonths,
+			pagedNavigation,
+			placeholder,
+			weekStartsOn,
+			isDateDisabled,
+			weekdayFormat,
+			popoverIds,
+		})
+	);
+
+	function cycleWeekdayFormat() {
+		weekdayFormatOption.update((prev) => {
+			switch (prev) {
+				case 'narrow':
+					return 'short';
+				case 'short':
+					return 'long';
+				case 'long':
+					return 'short';
+			}
+		});
+	}
 </script>
 
 <main class="flex w-full flex-col items-center gap-3">
@@ -93,11 +114,13 @@
 				</button>
 			</div>
 		</div>
+		<span use:melt={$validation} data-testid="validation">validation</span>
 	</div>
 	<div
 		class="z-10 w-80 rounded-[4px] bg-white p-3 shadow-sm"
 		transition:fade={{ duration: 100 }}
 		use:melt={$content}
+		data-testid="content"
 	>
 		<div class="w-full text-magnum-800" use:melt={$calendar} data-testid="calendar">
 			<header class="flex items-center justify-between pb-4">
@@ -116,11 +139,11 @@
 				<table use:melt={$grid} class="w-full" data-testid="grid-{i}">
 					<thead aria-hidden="true">
 						<tr>
-							{#each $daysOfWeek as day, idx}
+							{#each $weekdays as day, idx}
 								<th class="text-sm font-semibold text-magnum-800">
 									<div
 										class="flex h-6 w-6 items-center justify-center p-4"
-										data-testid="day-of-week-{idx}"
+										data-testid="weekday-{idx}"
 									>
 										{day}
 									</div>
@@ -136,7 +159,7 @@
 										<div
 											use:melt={$cell(date, month.value)}
 											class="cell"
-											data-testid="month-{i}-date-{date.day}"
+											data-testid="month-{date.month}-date-{date.day}"
 										>
 											{date.day}
 										</div>
@@ -148,6 +171,9 @@
 				</table>
 			{/each}
 		</div>
+		<button on:click={cycleWeekdayFormat} data-testid="cycle-weekday-format">
+			Cycle weekdayFormat
+		</button>
 	</div>
 </main>
 

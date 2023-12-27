@@ -4,6 +4,7 @@
 		createDateRangeField,
 		type CreateDateRangeFieldProps,
 	} from '$lib/builders/date-range-field';
+	import { removeUndefined } from '../utils';
 
 	export let value: CreateDateRangeFieldProps['value'] = undefined;
 	export let defaultValue: CreateDateRangeFieldProps['defaultValue'] = undefined;
@@ -17,32 +18,40 @@
 	export let locale: CreateDateRangeFieldProps['locale'] = 'en';
 	export let hideTimeZone: CreateDateRangeFieldProps['hideTimeZone'] = undefined;
 	export let ids: CreateDateRangeFieldProps['ids'] = undefined;
+	export let startIds: CreateDateRangeFieldProps['startIds'] = undefined;
+	export let endIds: CreateDateRangeFieldProps['endIds'] = undefined;
 	export let granularity: CreateDateRangeFieldProps['granularity'] = undefined;
 
 	const {
-		elements: { field, startSegment, endSegment, label },
+		elements: { field, startSegment, endSegment, label, validation },
 		states: { value: insideValue, segmentContents, isInvalid },
-	} = createDateRangeField({
-		value,
-		defaultValue,
-		defaultPlaceholder,
-		onValueChange,
-		onPlaceholderChange,
-		isDateUnavailable,
-		disabled,
-		readonly,
-		hourCycle,
-		locale,
-		hideTimeZone,
-		ids,
-		granularity,
-	});
+	} = createDateRangeField(
+		removeUndefined({
+			value,
+			defaultValue,
+			defaultPlaceholder,
+			onValueChange,
+			onPlaceholderChange,
+			isDateUnavailable,
+			disabled,
+			readonly,
+			hourCycle,
+			locale,
+			hideTimeZone,
+			ids,
+			startIds,
+			endIds,
+			granularity,
+		})
+	);
 </script>
 
 <main>
 	<div class="flex w-full flex-col items-center gap-3">
 		<div class="flex w-full items-center justify-center">
 			<p class="text-xs" data-testid="inside-value">{$insideValue.start} - {$insideValue.end}</p>
+			<p data-testid="start-value">{$insideValue?.start}</p>
+			<p data-testid="end-value">{$insideValue?.end}</p>
 		</div>
 		<div>
 			<span use:melt={$label} data-testid="label" class="text-magnum-800">Booking Dates</span>
@@ -73,5 +82,6 @@
 				{/each}
 			</div>
 		</div>
+		<span use:melt={$validation} data-testid="validation">Validation</span>
 	</div>
 </main>

@@ -3,6 +3,7 @@ import type { BuilderReturn } from '$lib/internal/types.js';
 import type { _Menu } from '../menu/index.js';
 import type { MenubarIdParts, createMenubar } from './create.js';
 export type { MenubarComponentEvents } from './events.js';
+
 // Props
 export type CreateMenubarProps = {
 	/**
@@ -21,8 +22,9 @@ export type CreateMenubarProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: IdObj<MenubarIdParts>;
+	ids?: Partial<IdObj<MenubarIdParts>>;
 };
+
 export type CreateMenubarMenuProps = _Menu['builder'];
 export type CreateMenubarSubmenuProps = _Menu['submenu'];
 export type MenubarMenuItemProps = _Menu['item'];
@@ -52,3 +54,8 @@ export type MenubarMenuRadioGroup = BuilderReturn<MenubarMenuBuilders['createMen
 export type MenubarMenuRadioGroupElements = MenubarMenuRadioGroup['elements'];
 export type MenubarMenuRadioGroupStates = MenubarMenuRadioGroup['states'];
 export type MenubarMenuRadioGroupHelpers = MenubarMenuRadioGroup['helpers'];
+
+export type MenubarMenuCheckboxItem = BuilderReturn<MenubarMenuBuilders['createCheckboxItem']>;
+export type MenubarMenuCheckboxItemElements = MenubarMenuCheckboxItem['elements'];
+export type MenubarMenuCheckboxItemStates = MenubarMenuCheckboxItem['states'];
+export type MenubarMenuCheckboxItemHelpers = MenubarMenuCheckboxItem['helpers'];

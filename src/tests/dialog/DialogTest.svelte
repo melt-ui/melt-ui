@@ -5,6 +5,7 @@
 
 	const {
 		elements: { trigger, overlay, content, title, description, close, portalled },
+		states: { open },
 	} = createDialog({
 		...$$restProps,
 	});
@@ -16,8 +17,8 @@
 	<div use:melt={$portalled} data-testid="portalled">
 		<div use:melt={$overlay} data-testid="overlay" />
 		<div use:melt={$content} data-testid="content">
-			<h2 use:melt={$title}>Title</h2>
-			<p use:melt={$description}>Description</p>
+			<h2 use:melt={$title} data-testid="title">Title</h2>
+			<p use:melt={$description} data-testid="description">Description</p>
 
 			<button use:melt={$close} data-testid="closer">Close</button>
 			<button use:melt={$close} data-testid="last">Close</button>
@@ -26,6 +27,11 @@
 	</div>
 </main>
 <div id="portal-target" data-testid="portal-target" />
+
+{#if $open}
+	<!-- Floating close -->
+	<button use:melt={$close} data-testid="floating-closer">Close</button>
+{/if}
 
 <style>
 	[data-testid='overlay'] {
@@ -43,5 +49,12 @@
 		transform: translate(-50%, -50%);
 		background: white;
 		padding: 1rem;
+	}
+
+	[data-testid='floating-closer'] {
+		position: absolute;
+		top: 0;
+		right: 0;
+		z-index: 999;
 	}
 </style>

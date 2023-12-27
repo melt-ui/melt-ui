@@ -64,6 +64,7 @@ const defaults = {
 	maxValue: undefined,
 	disabled: false,
 	readonly: false,
+	weekdayFormat: 'narrow',
 } satisfies CreateRangeCalendarProps;
 
 /**
@@ -73,7 +74,7 @@ const defaults = {
 type CalendarParts = 'content' | 'nextButton' | 'prevButton' | 'grid' | 'cell' | 'heading';
 const { name } = createElHelpers<CalendarParts>('calendar');
 
-export const rangeCalendarIdParts = ['calendar', 'grid', 'accessibleHeading'] as const;
+export const rangeCalendarIdParts = ['calendar', 'accessibleHeading'] as const;
 export type RangeCalendarIdParts = typeof rangeCalendarIdParts;
 
 export function createRangeCalendar<T extends DateValue = DateValue>(
@@ -97,6 +98,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		maxValue,
 		disabled,
 		readonly,
+		weekdayFormat,
 	} = options;
 
 	const ids = toWritableStores({ ...generateIds(rangeCalendarIdParts), ...withDefaults.ids });
@@ -106,6 +108,8 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 		defaultPlaceholder: withDefaults.defaultPlaceholder,
 	});
 	const formatter = createFormatter(get(locale));
+	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
+	const value = overridable(valueWritable, withDefaults.onValueChange);
 
 	const defaultStart = withDefaults.value ? get(withDefaults.value)?.start : undefined;
 	const startValue = writable<DateValue | undefined>(
@@ -114,9 +118,6 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 
 	const defaultEnd = withDefaults.value ? get(withDefaults.value)?.end : undefined;
 	const endValue = writable<DateValue | undefined>(defaultEnd ?? withDefaults.defaultValue?.end);
-
-	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
-	const value = overridable(valueWritable, withDefaults.onValueChange);
 
 	const placeholderWritable =
 		withDefaults.placeholder ?? writable(withDefaults.defaultPlaceholder ?? defaultDate);
@@ -302,13 +303,12 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	});
 
 	const grid = builder(name('grid'), {
-		stores: [ids.grid, readonly, disabled],
-		returned: ([$gridId, $readonly, $disabled]) => ({
+		stores: [readonly, disabled],
+		returned: ([$readonly, $disabled]) => ({
 			tabindex: -1,
-			id: $gridId,
 			role: 'grid',
-			'aria-readonly': $readonly ? 'true' : undefined,
-			'aria-disabled': $disabled ? 'true' : undefined,
+			'aria-readonly': $readonly ? ('true' as const) : undefined,
+			'aria-disabled': $disabled ? ('true' as const) : undefined,
 			'data-readonly': $readonly ? '' : undefined,
 			'data-disabled': $disabled ? '' : undefined,
 		}),
@@ -321,7 +321,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			return {
 				role: 'button',
 				'aria-label': 'Previous',
-				'aria-disabled': disabled ? 'true' : undefined,
+				'aria-disabled': disabled ? ('true' as const) : undefined,
 				disabled: disabled ? true : undefined,
 				'data-disabled': disabled ? '' : undefined,
 			};
@@ -345,7 +345,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			return {
 				role: 'button',
 				'aria-label': 'Next',
-				'aria-disabled': disabled ? 'true' : undefined,
+				'aria-disabled': disabled ? ('true' as const) : undefined,
 				disabled: disabled ? true : undefined,
 				'data-disabled': disabled ? '' : undefined,
 			};
@@ -447,7 +447,7 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 				const isOutsideMonth = !isSameMonth(cellValue, monthValue);
 				const isFocusedDate = isSameDay(cellValue, $placeholder);
 				const isOutsideVisibleMonths = $isOutsideVisibleMonths(cellValue);
-				const isSelectedDate = $isSelected(cellValue) && !isOutsideMonth;
+				const isSelectedDate = $isSelected(cellValue);
 				const isSelectionStart = $isSelectionStart(cellValue);
 				const isSelectionEnd = $isSelectionEnd(cellValue);
 				const isHighlighted = $highlightedRange
@@ -478,9 +478,6 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 					'data-focused': isFocusedDate ? '' : undefined,
 					'data-highlighted': isHighlighted ? '' : undefined,
 					tabindex: isFocusedDate ? 0 : isOutsideMonth || isDisabled ? undefined : -1,
-					// We share selection logic between this & the calendar builder
-					// so we aren't using the `melt` attr to select
-					'data-calendar-cell': '',
 				} as const;
 			};
 		},
@@ -591,10 +588,10 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * you can do so by accessing the first week of the first month,
 	 * and mapping over the dates to get/format each day of the week.
 	 */
-	const daysOfWeek = derived([months, locale], ([$months, _]) => {
+	const weekdays = derived([months, weekdayFormat, locale], ([$months, $weekdayFormat, _]) => {
 		if (!$months.length) return [];
 		return $months[0].weeks[0].map((date) => {
-			return formatter.dayOfWeek(toDate(date));
+			return formatter.dayOfWeek(toDate(date), $weekdayFormat);
 		});
 	});
 
@@ -619,10 +616,10 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 			width: '1px',
 		});
 		const h2 = document.createElement('div');
-		h2.role = 'heading';
-		h2.ariaLevel = '2';
 		h2.textContent = label;
 		h2.id = get(ids.accessibleHeading);
+		h2.role = 'heading';
+		h2.ariaLevel = '2';
 		node.insertBefore(div, node.firstChild);
 		div.appendChild(h2);
 	}
@@ -640,7 +637,6 @@ export function createRangeCalendar<T extends DateValue = DateValue>(
 	 * ```svelte
 	 * <script>
 	 * 	import { createCalendar } from '@melt-ui/svelte';
-import { generateIds } from '../../internal/helpers/id'
 	 *  import { prev } from '../../internal/helpers/array'
 	 * 	const { { ... }, helpers: { nextPage } } = createCalendar()
 	 * </script>
@@ -870,7 +866,9 @@ import { generateIds } from '../../internal/helpers/id'
 			 * focus by the difference between the nextIndex
 			 */
 
-			// shift the calendar back a month
+			// shift the calendar back a month unless previous month is disabled
+			if (get(isPrevButtonDisabled)) return;
+
 			const $months = get(months);
 			const firstMonth = $months[0].value;
 			const $numberOfMonths = get(numberOfMonths);
@@ -904,7 +902,9 @@ import { generateIds } from '../../internal/helpers/id'
 			 * shift focus by the nextIndex amount.
 			 */
 
-			// shift the calendar forward a month
+			// shift the calendar forward a month unless next month is disabled
+			if (get(isNextButtonDisabled)) return;
+
 			const $months = get(months);
 			const firstMonth = $months[0].value;
 			const $numberOfMonths = get(numberOfMonths);
@@ -993,9 +993,13 @@ import { generateIds } from '../../internal/helpers/id'
 	});
 
 	effect([startValue, endValue], ([$startValue, $endValue]) => {
+		const $value = get(value);
+
+		if ($value && $value?.start === $startValue && $value?.end === $endValue) return;
+
 		if ($startValue && $endValue) {
-			valueWritable.update((prev) => {
-				if (prev.start === $startValue && prev.end === $endValue) {
+			value.update((prev) => {
+				if (prev?.start === $startValue && prev?.end === $endValue) {
 					return prev;
 				}
 				if (isBefore($endValue, $startValue)) {
@@ -1010,8 +1014,8 @@ import { generateIds } from '../../internal/helpers/id'
 					};
 				}
 			});
-		} else {
-			valueWritable.set({
+		} else if ($value && $value.start && $value.end) {
+			value.set({
 				start: undefined,
 				end: undefined,
 			});
@@ -1030,9 +1034,11 @@ import { generateIds } from '../../internal/helpers/id'
 		states: {
 			placeholder: placeholder.toWritable(),
 			months,
-			daysOfWeek,
+			weekdays,
 			headingValue,
 			value,
+			startValue,
+			endValue,
 		},
 		helpers: {
 			nextPage,

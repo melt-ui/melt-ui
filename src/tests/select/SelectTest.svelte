@@ -1,27 +1,33 @@
 <script lang="ts">
-	import { createSelect, melt } from '$lib/index.js';
-	import { Check, ChevronDown } from 'lucide-svelte';
+	import { createSelect, melt, type CreateSelectProps } from '$lib/index.js';
+	import { Check } from 'lucide-svelte';
 	import { tick } from 'svelte';
+	import { removeUndefined } from '../utils';
 
 	export let multiple = false;
 	export let defaultValue: string | undefined = undefined;
 	export let closeOnEscape = true;
 	export let closeOnOutsideClick = true;
+	export let ids: CreateSelectProps['ids'] = undefined;
 	const {
-		elements: { trigger, menu, option, group, groupLabel },
+		elements: { trigger, menu, option, group, groupLabel, label },
 		states: { selected, selectedLabel },
 		helpers: { isSelected },
-	} = createSelect({
-		multiple,
-		defaultSelected: defaultValue
-			? {
-					value: defaultValue,
-					label: defaultValue,
-			  }
-			: undefined,
-		closeOnEscape,
-		closeOnOutsideClick,
-	});
+		ids: { trigger: triggerId },
+	} = createSelect(
+		removeUndefined({
+			multiple,
+			defaultSelected: defaultValue
+				? {
+						value: defaultValue,
+						label: defaultValue,
+				  }
+				: undefined,
+			closeOnEscape,
+			closeOnOutsideClick,
+			ids,
+		})
+	);
 
 	let options = {
 		sweet: ['Caramel', 'Chocolate', 'Strawberry', 'Cookies & Cream'],
@@ -30,6 +36,7 @@
 </script>
 
 <main>
+	<label for={$triggerId} use:melt={$label} data-testid="label">Label</label>
 	<button
 		on:click={() => {
 			selected.set({ value: 'Chocolate', label: 'Chocolate' });

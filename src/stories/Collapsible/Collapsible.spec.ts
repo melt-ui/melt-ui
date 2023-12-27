@@ -1,15 +1,14 @@
-import { render } from '@testing-library/svelte';
-import { axe } from 'jest-axe';
-import { describe } from 'vitest';
-import CollapsibleTest from './CollapsibleTest.svelte';
-import userEvent from '@testing-library/user-event';
-import type { CreateCollapsibleProps } from '$lib';
-import { get, writable } from 'svelte/store';
 import { sleep, type ChangeFn } from '$lib/internal/helpers';
+import { render } from '@testing-library/svelte';
+import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
+import { get, writable } from 'svelte/store';
+import { describe } from 'vitest';
+import Meta, { Example, type StoryProps } from './Collapsible.stories';
 
-function setup(props: CreateCollapsibleProps = {}) {
+function setup(props: StoryProps = {}) {
 	const user = userEvent.setup();
-	const returned = render(CollapsibleTest, props);
+	const returned = render(Meta.component, { ...Example.args, ...props });
 	return {
 		...returned,
 		user,
@@ -18,7 +17,7 @@ function setup(props: CreateCollapsibleProps = {}) {
 
 describe('Collapsible', () => {
 	test('No accessibility violations', async () => {
-		const { container } = render(CollapsibleTest);
+		const { container } = setup();
 
 		expect(await axe(container)).toHaveNoViolations();
 	});

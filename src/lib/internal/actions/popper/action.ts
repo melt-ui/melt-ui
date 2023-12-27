@@ -49,6 +49,7 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 			allowOutsideClick: true,
 			returnFocusOnDeactivate: false,
 			fallbackFocus: popperElement,
+
 			...opts.focusTrap,
 		});
 
@@ -88,6 +89,7 @@ export const usePopper: Action<HTMLElement, PopperArgs> = (popperElement, args) 
 		);
 	}
 
+	// @ts-expect-error - This works and is correct, but TS doesn't like it
 	const unsubscribe = executeCallbacks(...callbacks);
 
 	return {

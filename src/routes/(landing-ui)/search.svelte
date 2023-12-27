@@ -20,8 +20,21 @@
 	let pagefind: Pagefind | null = null;
 	let results: AwaitedResult[] = [];
 
+	async function getPagefind() {
+		const res = await fetch('/pagefind/pagefind.js');
+		if (!res.ok) {
+			return null;
+		}
+		const text = await res.text();
+		const blob = new Blob([text], { type: 'application/javascript' });
+		const url = URL.createObjectURL(blob);
+
+		return (await import(/* @vite-ignore */ url)) as Pagefind;
+	}
+
 	onMount(async () => {
-		pagefind = await import('../../pagefind/pagefind.js');
+		pagefind = await getPagefind();
+		if (!pagefind) return;
 
 		await pagefind.init();
 		const promisedResults = (await pagefind.search('')).results;
@@ -109,7 +122,7 @@
 />
 
 <Tooltip text="Search">
-	<button class="text-neutral-400 transition-colors hover:text-neutral-50" use:melt={$trigger}>
+	<button class="transition-colors hover:text-neutral-50" use:melt={$trigger}>
 		<SearchIcon class="h-5 w-5" />
 	</button>
 </Tooltip>

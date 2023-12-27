@@ -9,7 +9,7 @@ import { writable } from 'svelte/store';
 
 const items = ['item-1', 'item-2', 'item-3'];
 
-describe('Accordion', () => {
+describe('Toggle Group', () => {
 	test('has no accessibility violations', async () => {
 		const { container } = render(ToggleGroupTest);
 

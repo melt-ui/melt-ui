@@ -40,6 +40,13 @@ export type _CreateMenuProps = {
 	closeOnEscape?: boolean;
 
 	/**
+	 * Whether or not to close the menu when an internal item is clicked.
+	 *
+	 * @default true
+	 */
+	closeOnItemClick?: boolean;
+
+	/**
 	 * If not `undefined`, the menu will be rendered within the provided element or selector.
 	 *
 	 * @default 'body'
@@ -114,7 +121,7 @@ export type _CreateMenuProps = {
 	/**
 	 * Optionally override the default ids we assign to the elements
 	 */
-	ids?: IdObj<_MenuIdParts>;
+	ids?: Partial<IdObj<_MenuIdParts>>;
 };
 
 export type _CreateSubmenuProps = Pick<
@@ -173,6 +180,7 @@ export type _MenuBuilderOptions = {
 		typeahead: Writable<boolean>;
 		closeFocus: Writable<FocusProp | undefined>;
 		disableFocusFirstItem: Writable<boolean>;
+		closeOnItemClick: Writable<boolean>;
 	};
 
 	nextFocusable: Writable<HTMLElement | null>;
@@ -184,7 +192,7 @@ export type _MenuBuilderOptions = {
 	 */
 	removeScroll: boolean;
 
-	ids?: Expand<IdObj<_MenuIdParts>>;
+	ids?: Partial<IdObj<_MenuIdParts>>;
 };
 
 export type _MenuParts =

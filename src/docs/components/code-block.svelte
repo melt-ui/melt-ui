@@ -15,22 +15,28 @@
 	};
 </script>
 
-<div use:setCodeString {...$$restProps} data-rehype-pretty-code-fragment use:preTabIndex>
+<div
+	use:setCodeString
+	class={cn($$restProps.class, 'force-dark')}
+	{...$$restProps}
+	data-rehype-pretty-code-fragment
+	use:preTabIndex
+>
 	<slot />
 </div>
 <button
-	class={cn('absolute right-4 top-12 z-10', copyBtnClasses)}
+	class={cn('force-dark absolute right-4 top-12 z-10 text-white', copyBtnClasses)}
 	aria-label="copy"
 	on:click={copyCode}
 	data-code-copy
 >
 	{#if $copied}
 		<div in:fly={{ y: -4 }}>
-			<Check class=" text-magnum-500 square-4" />
+			<Check class="text-magnum-500 square-4" />
 		</div>
 	{:else}
 		<div in:fly={{ y: 4 }}>
-			<Copy class=" square-4 hover:text-magnum-500" />
+			<Copy class="square-4 hover:text-magnum-500" />
 		</div>
 	{/if}
 </button>
@@ -38,6 +44,12 @@
 <style lang="postcss">
 	[data-rehype-pretty-code-fragment] :global(pre) {
 		font-weight: initial !important;
-		@apply border-neutral-700/50 bg-neutral-800/50;
+		@apply border-neutral-700 bg-neutral-800;
+	}
+
+	:global(:root.dark) {
+		[data-rehype-pretty-code-fragment] :global(pre) {
+			@apply border-neutral-700/50 bg-neutral-800/50;
+		}
 	}
 </style>

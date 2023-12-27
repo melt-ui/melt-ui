@@ -1,4 +1,35 @@
+import { usePopper } from '$lib/internal/actions/index.js';
+import {
+	FIRST_LAST_KEYS,
+	SELECTION_KEYS,
+	addEventListener,
+	addHighlight,
+	addMeltEventListener,
+	builder,
+	createElHelpers,
+	derivedVisible,
+	effect,
+	executeCallbacks,
+	getNextFocusable,
+	getPortalDestination,
+	getPreviousFocusable,
+	handleRovingFocus,
+	isBrowser,
+	isElement,
+	isHTMLElement,
+	kbd,
+	noop,
+	removeHighlight,
+	removeScroll,
+	styleToString,
+	toWritableStores,
+} from '$lib/internal/helpers/index.js';
+import { safeOnDestroy, safeOnMount } from '$lib/internal/helpers/lifecycle.js';
+import type { MeltActionReturn } from '$lib/internal/types.js';
+import { tick } from 'svelte';
 import { get, writable } from 'svelte/store';
+import { generateIds } from '../../internal/helpers/id';
+import { omit } from '../../internal/helpers/object';
 import {
 	applyAttrsIfDisabled,
 	createMenuBuilder,
@@ -7,38 +38,8 @@ import {
 	handleTabNavigation,
 	type _MenuParts,
 } from '../menu/index.js';
-import {
-	executeCallbacks,
-	isHTMLElement,
-	addEventListener,
-	kbd,
-	SELECTION_KEYS,
-	FIRST_LAST_KEYS,
-	handleRovingFocus,
-	effect,
-	styleToString,
-	noop,
-	isBrowser,
-	getNextFocusable,
-	getPreviousFocusable,
-	builder,
-	createElHelpers,
-	toWritableStores,
-	removeHighlight,
-	addHighlight,
-	derivedVisible,
-	addMeltEventListener,
-	getPortalDestination,
-	removeScroll,
-	isElement,
-} from '$lib/internal/helpers/index.js';
-import { onDestroy, onMount, tick } from 'svelte';
-import { usePopper } from '$lib/internal/actions/index.js';
-import type { MeltActionReturn } from '$lib/internal/types.js';
-import type { CreateMenubarMenuProps, CreateMenubarProps } from './types.js';
 import type { MenubarEvents } from './events.js';
-import { omit } from '../../internal/helpers/object';
-import { generateIds } from '../../internal/helpers/id';
+import type { CreateMenubarMenuProps, CreateMenubarProps } from './types.js';
 
 const MENUBAR_NAV_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.HOME, kbd.END];
 
@@ -104,6 +105,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		typeahead: true,
 		closeFocus: undefined,
 		disableFocusFirstItem: false,
+		closeOnItemClick: true,
 	} satisfies CreateMenubarMenuProps;
 
 	const createMenu = (props?: CreateMenubarMenuProps) => {
@@ -389,7 +391,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 			}
 		});
 
-		onMount(() => {
+		safeOnMount(() => {
 			if (!isBrowser) return;
 			const triggerEl = document.getElementById(get(m.ids.trigger));
 			if (isHTMLElement(triggerEl) && get(rootOpen)) {
@@ -546,7 +548,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 	/* Lifecycle & Effects */
 	/* --------------------*/
 
-	onMount(() => {
+	safeOnMount(() => {
 		if (!isBrowser) return;
 
 		const menubarEl = document.getElementById(get(ids.menubar));
@@ -600,7 +602,7 @@ export function createMenubar(props?: CreateMenubarProps) {
 		}
 	});
 
-	onDestroy(() => {
+	safeOnDestroy(() => {
 		unsubs.forEach((unsub) => unsub());
 	});
 

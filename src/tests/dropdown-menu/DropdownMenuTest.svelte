@@ -2,6 +2,7 @@
 	import { createDropdownMenu, melt, type CreateDropdownMenuProps } from '$lib/index.js';
 	import { writable } from 'svelte/store';
 	import { AlignJustify, ChevronRight } from 'lucide-svelte';
+	import { removeUndefined } from '../utils';
 
 	const settingsSync = writable(true);
 	const hideMeltUI = writable(false);
@@ -12,6 +13,7 @@
 	export let closeFocus: CreateDropdownMenuProps['closeFocus'] = undefined;
 	export let closeOnEscape: CreateDropdownMenuProps['closeOnEscape'] = true;
 	export let closeOnOutsideClick: CreateDropdownMenuProps['closeOnOutsideClick'] = true;
+	export let submenuIds: CreateDropdownMenuProps['ids'] = undefined;
 
 	const {
 		elements: { trigger, menu, item, separator, arrow },
@@ -37,7 +39,11 @@
 
 	const {
 		elements: { subMenu: subMenuA, subTrigger: subTriggerA },
-	} = createSubmenu();
+	} = createSubmenu(
+		removeUndefined({
+			ids: submenuIds,
+		})
+	);
 
 	const {
 		elements: { radioGroup, radioItem },

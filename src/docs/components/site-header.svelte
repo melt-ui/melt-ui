@@ -4,20 +4,22 @@
 	import { navConfig, siteConfig } from '$docs/config.js';
 	import { cn } from '$docs/utils';
 	import Search from '$routes/(landing-ui)/search.svelte';
+	import { mode } from 'mode-watcher';
 	import Logo from './logo.svelte';
+	import ThemeSwitch from './nav/theme-switch';
 
 	$: isRoot = $page.url.pathname === '/';
 </script>
 
 <div
 	class={cn(
-		'container flex h-14 items-center rounded-md bg-neutral-800',
-		isRoot && 'md:bg-transparent'
+		'container flex h-14 items-center rounded-md bg-neutral-800 text-white !outline outline-2 !outline-neutral-700 dark:!outline-none',
+		isRoot && '!outline-0 md:bg-transparent'
 	)}
 >
 	<div class="flex">
 		<a href="/" class="mr-6 flex items-center transition-opacity hover:opacity-75">
-			<Logo class="h-9" withText textColor="white" />
+			<Logo class="h-9" withText textColor={$mode === 'light' ? 'black' : 'white'} />
 		</a>
 	</div>
 
@@ -37,12 +39,14 @@
 				</li>
 			{/each}
 		</ul>
-		<div class="ml-6 flex items-center gap-6 border-neutral-700 pl-6 md:border-l">
+		<div
+			class="flex items-center gap-6 border-neutral-700 text-neutral-400 sm:ml-6 sm:pl-6 md:border-l"
+		>
 			<a
 				href={siteConfig.links.discord}
 				target="_blank"
 				rel="noopener noreferrer"
-				class=" text-neutral-400 transition-colors hover:text-neutral-50"
+				class="transition-colors hover:text-neutral-50"
 			>
 				<Discord class="h-5 w-5" />
 				<span class="sr-only">Join the Melt UI Discord</span>
@@ -51,11 +55,12 @@
 				href={siteConfig.links.github}
 				target="_blank"
 				rel="noopener noreferrer"
-				class="text-neutral-400 transition-colors hover:text-neutral-50"
+				class="transition-colors hover:text-neutral-50"
 			>
 				<GitHub class="h-5 w-5" />
 				<span class="sr-only">View the Melt UI GitHub Repository</span>
 			</a>
+			<ThemeSwitch />
 			<Search />
 			<MobileNav />
 		</div>

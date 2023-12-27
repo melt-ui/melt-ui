@@ -20,6 +20,7 @@ const defaults = {
 	typeahead: true,
 	closeFocus: undefined,
 	disableFocusFirstItem: false,
+	closeOnItemClick: true,
 } satisfies CreateDropdownMenuProps;
 
 export function createDropdownMenu(props?: CreateDropdownMenuProps) {

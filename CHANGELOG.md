@@ -1,5 +1,171 @@
 # @melt-ui/svelte
 
+## 0.66.3
+
+### Patch Changes
+
+- Menu: fix default active subtrigger ([`84270042`](https://github.com/melt-ui/melt-ui/commit/84270042ee257a9dff0efaa97eacd3ec9ce04a6c))
+
+## 0.66.2
+
+### Patch Changes
+
+- Datepicker: fix types (closes #838) ([#839](https://github.com/melt-ui/melt-ui/pull/839))
+
+- Collapsible: remove leftover log ([`31119cce`](https://github.com/melt-ui/melt-ui/commit/31119cce0b89cc0153f9160a1d8a074d075ff1bf))
+
+- Types: fix wrong builder return type for functions ([#844](https://github.com/melt-ui/melt-ui/pull/844))
+
+## 0.66.1
+
+### Patch Changes
+
+- Menu: Fix open.set not opening menu (fixes [#813](https://github.com/melt-ui/melt-ui/issues/813)) ([`26e41134`](https://github.com/melt-ui/melt-ui/commit/26e41134169528e22451782259be0b2506bdaec0))
+
+- Slider: remove `aria-disabled` from root ([#825](https://github.com/melt-ui/melt-ui/pull/825))
+
+- Select & Combobox: Fix focus preventing parents to close on escape (fixes [#739](https://github.com/melt-ui/melt-ui/issues/739)) ([`c401f6ff`](https://github.com/melt-ui/melt-ui/commit/c401f6ff49a4e4a506de39a206b50b0a3451b20b))
+
+## 0.66.0
+
+### Minor Changes
+
+- Slider: RTL support ([#791](https://github.com/melt-ui/melt-ui/pull/791))
+
+### Patch Changes
+
+- Checkbox: add `disabled` prop to button that wraps input ([#819](https://github.com/melt-ui/melt-ui/pull/819))
+
+## 0.65.2
+
+### Patch Changes
+
+- Listbox: ignore certain keys in typeahead (fixes [#803](https://github.com/melt-ui/melt-ui/issues/803)) ([#804](https://github.com/melt-ui/melt-ui/pull/804))
+
+- PIN Input: fix `value` store not updating in delete keydown event ([#811](https://github.com/melt-ui/melt-ui/pull/811))
+
+- Combobox: remove trigger element ([`18b2440c`](https://github.com/melt-ui/melt-ui/commit/18b2440cd88cbaf9f3dd1a9c2287c67572ca156b))
+
+## 0.65.1
+
+### Patch Changes
+
+- Select & Combobox: Fix `removeScroll` bugs (closes #733 & #808) ([#809](https://github.com/melt-ui/melt-ui/pull/809))
+
+## 0.65.0
+
+### Minor Changes
+
+- Menu: `closeOnItemClick` prop ([`ff6169ef`](https://github.com/melt-ui/melt-ui/commit/ff6169ef76b9e3088cb796a65fe78c6c5932cd08))
+
+## 0.64.5
+
+### Patch Changes
+
+- enhancement: return `startValue` & `endValue` from range calendar ([#801](https://github.com/melt-ui/melt-ui/pull/801))
+
+## 0.64.4
+
+### Patch Changes
+
+- Calendar/Range Calendar: apply `data-selected` attribute to `outside-month` days if selected ([#799](https://github.com/melt-ui/melt-ui/pull/799))
+
+## 0.64.3
+
+### Patch Changes
+
+- Dropdown Menu, Context Menu, Menubar: export the `createMenuCheckboxItem` return type ([#796](https://github.com/melt-ui/melt-ui/pull/796))
+
+## 0.64.2
+
+### Patch Changes
+
+- fix: Date Range Picker - bug causing `onValueChange` to fire twice ([#795](https://github.com/melt-ui/melt-ui/pull/795))
+
+- fix: Date Picker - bug causing `onValueChange` to fire twice ([#795](https://github.com/melt-ui/melt-ui/pull/795))
+
+- fix: Range Field - bug causing `onValueChange` to not fire after init ([#795](https://github.com/melt-ui/melt-ui/pull/795))
+
+- - Dialog: fix `aria-modal` attribute type ([#788](https://github.com/melt-ui/melt-ui/pull/788))
+
+## 0.64.1
+
+### Patch Changes
+
+- fix: bug with range calendar `onValueChange` ([#792](https://github.com/melt-ui/melt-ui/pull/792))
+
+## 0.64.0
+
+### Minor Changes
+
+- - Calendars & Date Pickers: rename `daysOfWeek` to `weekdays` and add `weekdayFormat` prop (closes #782) ([#784](https://github.com/melt-ui/melt-ui/pull/784))
+
+### Patch Changes
+
+- Calendar: Fix bug where keyboard navigation would allow navigating to disabled months (closes #745) ([#748](https://github.com/melt-ui/melt-ui/pull/748))
+
+- fix: `ids` prop is not `Partial` ([#757](https://github.com/melt-ui/melt-ui/pull/757))
+
+- fix: bug causing custom ids to not always be applied ([#786](https://github.com/melt-ui/melt-ui/pull/786))
+
+- Date Picker & Date Range Picker: Fix `weekdayFormat` option reactivity ([#785](https://github.com/melt-ui/melt-ui/pull/785))
+
+## 0.63.1
+
+### Patch Changes
+
+- Calendars: remove unnecessary cell attributes in favor of `melt` attribute ([#778](https://github.com/melt-ui/melt-ui/pull/778))
+
+- Dialog: remove `aria-controls` and add `aria-modal` (closes #752) ([#769](https://github.com/melt-ui/melt-ui/pull/769))
+
+- Fix: Date Pickers option store reactivity ([#776](https://github.com/melt-ui/melt-ui/pull/776))
+
+- Combobox/Select: Fix undefined values not selecting ([#770](https://github.com/melt-ui/melt-ui/pull/770))
+
+- fix: label click selects first segment ([#773](https://github.com/melt-ui/melt-ui/pull/773))
+
+- fix: Toggle when items inside of popover trigger (like SVGs) are clicked ([#775](https://github.com/melt-ui/melt-ui/pull/775))
+
+## 0.63.0
+
+### Minor Changes
+
+- Slider: Add `data-value` attribute to thumb and tick ([`60312ee9`](https://github.com/melt-ui/melt-ui/commit/60312ee9962c93fd9b8eb5ef62815a400e5522fa))
+
+### Patch Changes
+
+- Popover: Fix trigger not toggling the `open` state (closes #763) ([#765](https://github.com/melt-ui/melt-ui/pull/765))
+
+- Fix: `aria-disabled` attr types (closes #764) ([#766](https://github.com/melt-ui/melt-ui/pull/766))
+
+## 0.62.1
+
+### Patch Changes
+
+- Refactor: safe lifecycle methods (fixes [#567](https://github.com/melt-ui/melt-ui/issues/567)) ([`d01752cb`](https://github.com/melt-ui/melt-ui/commit/d01752cb67267fe04fef73997d52170eaa982e1c))
+
+## 0.62.0
+
+### Minor Changes
+
+- TOC: Add hash to URl when clicking item (closes #592) ([`7d6f4e84`](https://github.com/melt-ui/melt-ui/commit/7d6f4e84dabf4054ffcc63fd98b80a81322bd38c))
+
+### Patch Changes
+
+- Slider: fix leaks ([`1b74c44e`](https://github.com/melt-ui/melt-ui/commit/1b74c44e9ddfdf5515ef05524098e396a9829cb4))
+
+- Slider: improve onChange handling (closes #521) ([`1b74c44e`](https://github.com/melt-ui/melt-ui/commit/1b74c44e9ddfdf5515ef05524098e396a9829cb4))
+
+## 0.61.3
+
+### Patch Changes
+
+- Dialog: closes #452 ([`f2e4fdbf`](https://github.com/melt-ui/melt-ui/commit/f2e4fdbf347f5b3249823cd2792173cfbea3a130))
+
+- Slider: improve scroll handling (closes #74) ([`6a23b0a1`](https://github.com/melt-ui/melt-ui/commit/6a23b0a1dce9dcd47fff700b749c0601534c92f6))
+
+- Popover: fix page jump in Safari (closes #198) ([`5e30e42f`](https://github.com/melt-ui/melt-ui/commit/5e30e42fe34825da7655b681095d87dbafc3a3ff))
+
 ## 0.61.2
 
 ### Patch Changes

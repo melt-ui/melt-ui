@@ -56,13 +56,14 @@ const defaults = {
 	maxValue: undefined,
 	disabled: false,
 	readonly: false,
+	weekdayFormat: 'narrow',
 } satisfies CreateCalendarProps;
 
 type CalendarParts = 'content' | 'nextButton' | 'prevButton' | 'grid' | 'cell' | 'heading';
 
 const { name } = createElHelpers<CalendarParts>('calendar');
 
-export const calendarIdParts = ['calendar', 'grid', 'accessibleHeading'] as const;
+export const calendarIdParts = ['calendar', 'accessibleHeading'] as const;
 export type CalendarIdParts = typeof calendarIdParts;
 
 export function createCalendar<
@@ -91,6 +92,7 @@ export function createCalendar<
 		isDateUnavailable,
 		disabled,
 		readonly,
+		weekdayFormat,
 	} = options;
 
 	const ids = toWritableStores({ ...generateIds(calendarIdParts), ...withDefaults.ids });
@@ -328,14 +330,13 @@ export function createCalendar<
 	 * For more details about the structure of the month object, refer to {@link Month}.
 	 */
 	const grid = builder(name('grid'), {
-		stores: [readonly, disabled, ids.grid],
-		returned: ([$readonly, $disabled, $gridId]) => {
+		stores: [readonly, disabled],
+		returned: ([$readonly, $disabled]) => {
 			return {
 				tabindex: -1,
-				id: $gridId,
 				role: 'grid',
-				'aria-readonly': $readonly ? 'true' : undefined,
-				'aria-disabled': $disabled ? 'true' : undefined,
+				'aria-readonly': $readonly ? ('true' as const) : undefined,
+				'aria-disabled': $disabled ? ('true' as const) : undefined,
 				'data-readonly': $readonly ? '' : undefined,
 				'data-disabled': $disabled ? '' : undefined,
 			};
@@ -355,7 +356,7 @@ export function createCalendar<
 			return {
 				role: 'button',
 				'aria-label': 'Previous',
-				'aria-disabled': disabled ? 'true' : undefined,
+				'aria-disabled': disabled ? ('true' as const) : undefined,
 				'data-disabled': disabled ? '' : undefined,
 				disabled: disabled ? true : undefined,
 			};
@@ -386,7 +387,7 @@ export function createCalendar<
 			return {
 				role: 'button',
 				'aria-label': 'Next',
-				'aria-disabled': disabled ? 'true' : undefined,
+				'aria-disabled': disabled ? ('true' as const) : undefined,
 				'data-disabled': disabled ? '' : undefined,
 				disabled: disabled ? true : undefined,
 			};
@@ -440,7 +441,7 @@ export function createCalendar<
 				const isOutsideMonth = !isSameMonth(cellValue, monthValue);
 				const isOutsideVisibleMonths = $isOutsideVisibleMonths(cellValue);
 				const isFocusedDate = isSameDay(cellValue, $placeholder);
-				const isSelectedDate = $isDateSelected(cellValue) && !isOutsideMonth;
+				const isSelectedDate = $isDateSelected(cellValue);
 
 				const labelText = formatter.custom(cellDate, {
 					weekday: 'long',
@@ -463,9 +464,6 @@ export function createCalendar<
 					'data-outside-visible-months': isOutsideVisibleMonths ? '' : undefined,
 					'data-focused': isFocusedDate ? '' : undefined,
 					tabindex: isFocusedDate ? 0 : isOutsideMonth || isDisabled ? undefined : -1,
-					// We share some selection logic between this and the range calendar
-					// so we use a common data attr that isn't a `melt` attr
-					'data-calendar-cell': '',
 				} as const;
 			};
 		},
@@ -577,7 +575,7 @@ export function createCalendar<
 	 * <table use:melt={$grid} class="w-full">
 	 * 	<thead aria-hidden="true">
 	 * 		<tr>
-	 * 			{#each $daysOfWeek as day}
+	 * 			{#each $weekdays as day}
 	 * 				<th class="text-sm font-semibold text-magnum-800">
 	 * 					<div class="flex h-6 w-6 items-center justify-center p-4">
 	 * 						{day}
@@ -616,10 +614,10 @@ export function createCalendar<
 	 * ```
 	 *
 	 */
-	const daysOfWeek = derived([months, locale], ([$months, _]) => {
+	const weekdays = derived([months, weekdayFormat, locale], ([$months, $weekdayFormat, _]) => {
 		if (!$months.length) return [];
 		return $months[0].weeks[0].map((date) => {
-			return formatter.dayOfWeek(toDate(date));
+			return formatter.dayOfWeek(toDate(date), $weekdayFormat);
 		});
 	});
 
@@ -667,7 +665,6 @@ export function createCalendar<
 	 * ```svelte
 	 * <script>
 	 * 	import { createCalendar } from '@melt-ui/svelte';
-import { generateIds } from '../../internal/helpers/id'
 	 * 	const { { ... }, helpers: { nextPage } } = createCalendar()
 	 * </script>
 	 *
@@ -957,7 +954,8 @@ import { generateIds } from '../../internal/helpers/id'
 			 * of the array.
 			 */
 
-			// shift the calendar back a month
+			// shift the calendar back a month unless previous month is disabled
+			if (get(isPrevButtonDisabled)) return;
 
 			const $months = get(months);
 			const firstMonth = $months[0].value;
@@ -994,6 +992,9 @@ import { generateIds } from '../../internal/helpers/id'
 			 * month, and then starting at the beginning of that array,
 			 * shift focus by the nextIndex amount.
 			 */
+
+			// shift the calendar forward a month unless next month is disabled
+			if (get(isNextButtonDisabled)) return;
 
 			const $months = get(months);
 			const firstMonth = $months[0].value;
@@ -1100,7 +1101,7 @@ import { generateIds } from '../../internal/helpers/id'
 			placeholder: placeholder.toWritable(),
 			months,
 			value,
-			daysOfWeek,
+			weekdays,
 			headingValue,
 		},
 		helpers: {

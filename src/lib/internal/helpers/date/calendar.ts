@@ -159,7 +159,7 @@ export function createMonths(props: SetMonthProps) {
 export function getSelectableCells(calendarId: string) {
 	const node = document.getElementById(calendarId);
 	if (!node) return [];
-	const selectableSelector = `[data-calendar-cell]:not([data-disabled]):not([data-outside-visible-months])`;
+	const selectableSelector = `[data-melt-calendar-cell]:not([data-disabled]):not([data-outside-visible-months])`;
 
 	return Array.from(node.querySelectorAll(selectableSelector)).filter((el): el is HTMLElement =>
 		isHTMLElement(el)

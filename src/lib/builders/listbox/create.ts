@@ -23,6 +23,7 @@ import {
 	isHTMLButtonElement,
 	isHTMLElement,
 	isHTMLInputElement,
+	isObject,
 	kbd,
 	last,
 	next,
@@ -32,13 +33,15 @@ import {
 	prev,
 	removeHighlight,
 	removeScroll,
+	stripValues,
 	styleToString,
 	toWritableStores,
 	toggle,
 } from '$lib/internal/helpers/index.js';
+import { safeOnMount } from '$lib/internal/helpers/lifecycle';
 import type { Defaults, MeltActionReturn } from '$lib/internal/types.js';
 import { dequal as deepEqual } from 'dequal';
-import { onMount, tick } from 'svelte';
+import { tick } from 'svelte';
 import { derived, get, writable, type Readable } from 'svelte/store';
 import { generateIds } from '../../internal/helpers/id';
 import { createLabel } from '../label/create.js';
@@ -234,6 +237,9 @@ export function createListbox<
 			if (Array.isArray($selected)) {
 				return $selected.some((o) => deepEqual(o.value, value));
 			}
+			if (isObject(value)) {
+				return deepEqual($selected?.value, stripValues(value, undefined, true));
+			}
 			return deepEqual($selected?.value, value);
 		};
 	});
@@ -340,7 +346,7 @@ export function createListbox<
 					 * When the menu is open...
 					 */
 					// Pressing `esc` should close the menu.
-					if (e.key === kbd.TAB || (e.key === kbd.ESCAPE && get(closeOnEscape))) {
+					if (e.key === kbd.TAB) {
 						closeMenu();
 						return;
 					}
@@ -416,11 +422,10 @@ export function createListbox<
 			let unsubEscapeKeydown = noop;
 
 			const escape = useEscapeKeydown(node, {
-				handler: () => {
-					if (get(closeOnEscape)) {
-						closeMenu();
-					}
-				},
+				handler: closeMenu,
+				enabled: derived([open, closeOnEscape], ([$open, $closeOnEscape]) => {
+					return $open && $closeOnEscape;
+				}),
 			});
 			if (escape && escape.destroy) {
 				unsubEscapeKeydown = escape.destroy;
@@ -450,22 +455,12 @@ export function createListbox<
 		},
 		action: (node: HTMLElement): MeltActionReturn<ListboxEvents['menu']> => {
 			let unsubPopper = noop;
-			let unsubScroll = noop;
 			const unsubscribe = executeCallbacks(
 				// Bind the popper portal to the input element.
 				effect(
-					[
-						isVisible,
-						preventScroll,
-						closeOnEscape,
-						portal,
-						closeOnOutsideClick,
-						positioning,
-						activeTrigger,
-					],
+					[isVisible, closeOnEscape, portal, closeOnOutsideClick, positioning, activeTrigger],
 					([
 						$isVisible,
-						$preventScroll,
 						$closeOnEscape,
 						$portal,
 						$closeOnOutsideClick,
@@ -473,12 +468,8 @@ export function createListbox<
 						$activeTrigger,
 					]) => {
 						unsubPopper();
-						unsubScroll();
 
 						if (!$isVisible || !$activeTrigger) return;
-						if ($preventScroll) {
-							unsubScroll = removeScroll();
-						}
 
 						const ignoreHandler = createClickOutsideIgnore(get(ids.trigger));
 
@@ -521,7 +512,6 @@ export function createListbox<
 				destroy: () => {
 					unsubscribe();
 					unsubPopper();
-					unsubScroll();
 				},
 			};
 		},
@@ -545,13 +535,11 @@ export function createListbox<
 	});
 
 	const option = builder(name('option'), {
-		stores: [selected],
+		stores: [isSelected],
 		returned:
-			([$selected]) =>
+			([$isSelected]) =>
 			(props: ListboxOptionProps<Value>) => {
-				const selected = Array.isArray($selected)
-					? $selected.some((o) => deepEqual(o.value, props.value))
-					: deepEqual($selected?.value, props.value);
+				const selected = $isSelected(props.value);
 
 				return {
 					'data-value': JSON.stringify(props.value),
@@ -626,7 +614,7 @@ export function createListbox<
 	/* LIFECYCLE & EFFECTS */
 	/* ------------------- */
 
-	onMount(() => {
+	safeOnMount(() => {
 		if (!isBrowser) return;
 		const menuEl = document.getElementById(get(ids.menu));
 		if (!menuEl) return;
@@ -655,6 +643,20 @@ export function createListbox<
 				removeHighlight(node);
 			}
 		});
+	});
+
+	effect([open], ([$open]) => {
+		if (!isBrowser) return;
+
+		let unsubScroll = noop;
+
+		if (get(preventScroll) && $open) {
+			unsubScroll = removeScroll();
+		}
+
+		return () => {
+			unsubScroll();
+		};
 	});
 
 	return {

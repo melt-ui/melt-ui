@@ -3,6 +3,7 @@
 	import { writable } from 'svelte/store';
 	import { ChevronRight } from 'lucide-svelte';
 	import { fade } from 'svelte/transition';
+	import { removeUndefined } from '../utils';
 
 	const settingsSync = writable(true);
 	const hideMeltUI = writable(false);
@@ -13,6 +14,7 @@
 	export let closeFocus: CreateContextMenuProps['closeFocus'] = undefined;
 	export let closeOnEscape: CreateContextMenuProps['closeOnEscape'] = true;
 	export let closeOnOutsideClick: CreateContextMenuProps['closeOnOutsideClick'] = true;
+	export let submenuIds: CreateContextMenuProps['ids'] = undefined;
 
 	const {
 		elements: { trigger, menu, item, separator, arrow },
@@ -41,7 +43,11 @@
 	const {
 		elements: { subMenu: subMenuA, subTrigger: subTriggerA },
 		states: { subOpen },
-	} = createSubmenu();
+	} = createSubmenu(
+		removeUndefined({
+			ids: submenuIds,
+		})
+	);
 
 	const {
 		elements: { radioGroup, radioItem },

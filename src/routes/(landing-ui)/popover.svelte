@@ -33,7 +33,7 @@
 <button
 	type="button"
 	class={cn(
-		'inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-sm font-medium text-magnum-800',
+		'inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-sm font-medium text-magnum-800 shadow-sm dark:shadow-none',
 		'transition hover:opacity-75',
 		className
 	)}
@@ -47,9 +47,9 @@
 	<div
 		use:melt={$content}
 		transition:fly={{ duration: 250, y: 4 }}
-		class={cn('z-10 rounded-xl bg-white px-4 py-2 shadow-sm', contentClass)}
+		class={cn('force-dark z-10 rounded-xl bg-white px-4 py-2 shadow-sm', contentClass)}
 	>
 		<div use:melt={$arrow} />
-		<p class=" text-neutral-900">Add item to library</p>
+		<p class="text-neutral-900">Add item to library</p>
 	</div>
 {/if}

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/svelte';
 
 import Dialog from './Dialog.svelte';
 import NestedDialog from './NestedDialog.svelte';
+import WithSelectCmp from './WithSelect.svelte';
 
 // More on how to set up stories at: https://storybook.js.org/docs/svelte/writing-stories/introduction
 const meta = {
@@ -21,5 +22,11 @@ export const Example: Story = {
 export const Nested: Story = {
 	render: () => ({
 		Component: NestedDialog,
+	}),
+};
+
+export const WithSelect: Story = {
+	render: () => ({
+		Component: WithSelectCmp,
 	}),
 };

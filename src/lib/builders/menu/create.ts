@@ -34,11 +34,13 @@ import {
 	toWritableStores,
 } from '$lib/internal/helpers/index.js';
 import type { Defaults, MeltActionReturn, TextDirection } from '$lib/internal/types.js';
-import { onMount, tick } from 'svelte';
+import { tick } from 'svelte';
 import { derived, get, writable, type Writable } from 'svelte/store';
 
+import { safeOnMount } from '$lib/internal/helpers/lifecycle.js';
 import type { MenuEvents } from './events.js';
 import type {
+	Selector,
 	_CheckboxItemProps,
 	_CreateMenuProps,
 	_CreateRadioGroupProps,
@@ -46,7 +48,6 @@ import type {
 	_MenuBuilderOptions,
 	_MenuParts,
 	_RadioItemProps,
-	Selector,
 } from './types.js';
 
 export const SUB_OPEN_KEYS: Record<TextDirection, string[]> = {
@@ -74,6 +75,7 @@ const defaults = {
 	dir: 'ltr',
 	defaultOpen: false,
 	typeahead: true,
+	closeOnItemClick: true,
 } satisfies Defaults<_CreateMenuProps>;
 
 export function createMenuBuilder(opts: _MenuBuilderOptions) {
@@ -91,6 +93,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		loop,
 		closeFocus,
 		disableFocusFirstItem,
+		closeOnItemClick,
 	} = opts.rootOptions;
 
 	const rootOpen = opts.rootOpen;
@@ -260,6 +263,11 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		},
 		action: (node: HTMLElement): MeltActionReturn<MenuEvents['trigger']> => {
 			applyAttrsIfDisabled(node);
+			rootActiveTrigger.update((p) => {
+				if (p) return p;
+				return node;
+			});
+
 			const unsub = executeCallbacks(
 				addMeltEventListener(node, 'click', (e) => {
 					const $rootOpen = get(rootOpen);
@@ -340,10 +348,13 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 						handleRovingFocus(itemEl);
 						return;
 					}
-					// Allows forms to submit before the menu is removed from the DOM
-					sleep(1).then(() => {
-						rootOpen.set(false);
-					});
+
+					if (get(closeOnItemClick)) {
+						// Allows forms to submit before the menu is removed from the DOM
+						sleep(1).then(() => {
+							rootOpen.set(false);
+						});
+					}
 				}),
 				addMeltEventListener(node, 'keydown', (e) => {
 					onItemKeyDown(e);
@@ -438,13 +449,15 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 							return !prev;
 						});
 
-						// We're waiting for a tick to let the checked store update
-						// before closing the menu. If we don't, and the user was to hit
-						// spacebar or enter twice really fast, the menu would close and
-						// reopen without the checked state being updated.
-						tick().then(() => {
-							rootOpen.set(false);
-						});
+						if (get(closeOnItemClick)) {
+							// We're waiting for a tick to let the checked store update
+							// before closing the menu. If we don't, and the user was to hit
+							// spacebar or enter twice really fast, the menu would close and
+							// reopen without the checked state being updated.
+							tick().then(() => {
+								rootOpen.set(false);
+							});
+						}
 					}),
 					addMeltEventListener(node, 'keydown', (e) => {
 						onItemKeyDown(e);
@@ -477,12 +490,19 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			},
 		});
 
+		const isChecked = derived(checked, ($checked) => $checked === true);
+		const _isIndeterminate = derived(checked, ($checked) => $checked === 'indeterminate');
+
 		return {
 			elements: {
 				checkboxItem,
 			},
 			states: {
 				checked,
+			},
+			helpers: {
+				isChecked,
+				isIndeterminate: _isIndeterminate,
 			},
 			options: {
 				disabled,
@@ -557,13 +577,15 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 						value.set(itemValue);
 
-						// We're waiting for a tick to let the checked store update
-						// before closing the menu. If we don't, and the user was to hit
-						// spacebar or enter twice really fast, the menu would close and
-						// reopen without the checked state being updated.
-						tick().then(() => {
-							rootOpen.set(false);
-						});
+						if (get(closeOnItemClick)) {
+							// We're waiting for a tick to let the checked store update
+							// before closing the menu. If we don't, and the user was to hit
+							// spacebar or enter twice really fast, the menu would close and
+							// reopen without the checked state being updated.
+							tick().then(() => {
+								rootOpen.set(false);
+							});
+						}
 					}),
 					addMeltEventListener(node, 'keydown', (e) => {
 						onItemKeyDown(e);
@@ -653,7 +675,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 
 		const subIds = toWritableStores({ ...generateIds(menuIdParts), ...withDefaults.ids });
 
-		onMount(() => {
+		safeOnMount(() => {
 			/**
 			 * Set active trigger on mount to handle controlled/forceVisible
 			 * state.
@@ -827,6 +849,10 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			action: (node: HTMLElement): MeltActionReturn<MenuEvents['subTrigger']> => {
 				setMeltMenuAttribute(node, selector);
 				applyAttrsIfDisabled(node);
+				subActiveTrigger.update((p) => {
+					if (p) return p;
+					return node;
+				});
 
 				const unsubTimer = () => {
 					clearTimerStore(subOpenTimer);
@@ -1046,7 +1072,7 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 		};
 	};
 
-	onMount(() => {
+	safeOnMount(() => {
 		/**
 		 * We need to set the active trigger on mount to cover the
 		 * case where the user sets the `open` store to `true` without

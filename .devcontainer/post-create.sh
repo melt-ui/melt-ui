@@ -9,6 +9,7 @@ if [ -n "${REMOTE_CONTAINERS}" ] || [ -n "${CODESPACES}" ]; then
 
 	# perform additional one-time setup just after
 	# the devcontainer is created
+	pnpm config set store-dir /home/node/.local/share/pnpm/store
 	pnpm install --dir "${workspace_root}" # install workspace node dependencies
 	npx --yes playwright install           # install playwright browsers
 

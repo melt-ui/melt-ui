@@ -11,9 +11,9 @@ await index.addDirectory({
 });
 
 await index.writeFiles({
-	outputPath: 'src/pagefind',
+	outputPath: 'static/pagefind',
 });
 
 await index.writeFiles({
-	outputPath: 'static/pagefind',
+	outputPath: 'build/pagefind',
 });

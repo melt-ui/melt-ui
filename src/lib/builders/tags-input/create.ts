@@ -324,13 +324,12 @@ export function createTagsInput(props?: CreateTagsInputProps) {
 					}
 				}),
 				addMeltEventListener(node, 'paste', async (e) => {
-					// Do nothing when there is nothing to paste
-					if (!e.clipboardData) return;
-					const pastedText = e.clipboardData.getData('text');
+					const pastedText = e.clipboardData?.getData('text');
 					if (!pastedText) return;
 
 					// Do nothing when addOnPaste is false
 					if (!get(addOnPaste)) return;
+					e.preventDefault();
 
 					// Update value with the pasted text or set invalid
 					if (isInputValid(pastedText) && (await addTag(pastedText))) {

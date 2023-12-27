@@ -18,7 +18,7 @@
 					use:item
 					class="inline-block no-underline transition-colors hover:text-magnum-400 {active
 						? 'text-neutral-100'
-						: 'text-neutral-400'}"
+						: 'text-neutral-500 dark:text-neutral-400'}"
 				>
 					{heading.title}
 				</a>

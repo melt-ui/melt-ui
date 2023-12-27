@@ -7,6 +7,9 @@ import {
 	omit,
 	effect,
 	styleToString,
+	executeCallbacks,
+	addMeltEventListener,
+	sleep,
 } from '$lib/internal/helpers/index.js';
 import {
 	dateStore,
@@ -14,6 +17,7 @@ import {
 	getAnnouncer,
 	isBefore,
 	areAllDaysBetweenValid,
+	getFirstSegment,
 } from '$lib/internal/helpers/date/index.js';
 import { derived, get, writable } from 'svelte/store';
 import { removeDescriptionElement } from './_internal/helpers.js';
@@ -63,8 +67,12 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	const valueWritable = withDefaults.value ?? writable(withDefaults.defaultValue);
 	const value = overridable(valueWritable, withDefaults.onValueChange);
 
-	const startValue = writable<DateValue | undefined>(withDefaults.defaultValue?.start);
-	const endValue = writable<DateValue | undefined>(withDefaults.defaultValue?.end);
+	const defaultStart = withDefaults.value ? get(withDefaults.value)?.start : undefined;
+	const startValue = writable<DateValue | undefined>(
+		defaultStart ?? withDefaults.defaultValue?.start
+	);
+	const defaultEnd = withDefaults.value ? get(withDefaults.value)?.end : undefined;
+	const endValue = writable<DateValue | undefined>(defaultEnd ?? withDefaults.defaultValue?.end);
 
 	const isCompleted = derived(value, ($value) => {
 		return $value?.start && $value?.end;
@@ -82,8 +90,9 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		value: startValue,
 		name: withDefaults.startName,
 		ids: {
-			...withDefaults.startIds,
 			...generatedIds,
+			...withDefaults.ids,
+			...withDefaults.startIds,
 		},
 	});
 
@@ -92,8 +101,9 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 		value: endValue,
 		name: withDefaults.endName,
 		ids: {
-			...withDefaults.endIds,
 			...generatedIds,
+			...withDefaults.ids,
+			...withDefaults.endIds,
 		},
 	});
 
@@ -122,18 +132,18 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 			if ($isStartInvalid || $isEndInvalid) {
 				return true;
 			}
-			if (!$value.start || !$value.end) {
+			if (!$value?.start || !$value?.end) {
 				return false;
 			}
 
-			if (!isBefore($value.start, $value.end)) {
+			if (!isBefore($value?.start, $value?.end)) {
 				return true;
 			}
 
 			if ($isDateUnavailable !== undefined) {
 				const allValid = areAllDaysBetweenValid(
-					$value.start,
-					$value.end,
+					$value?.start,
+					$value?.end,
 					$isDateUnavailable,
 					undefined
 				);
@@ -147,21 +157,42 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	);
 
 	const label = builder(name('label'), {
-		stores: [ids.label],
-		returned: ([$labelId]) => {
+		stores: [isInvalid, options.disabled, ids.label],
+		returned: ([$isInvalid, $disabled, $labelId]) => {
 			return {
 				id: $labelId,
+				'data-invalid': $isInvalid ? '' : undefined,
+				'data-disabled': $disabled ? '' : undefined,
+			};
+		},
+		action: (node: HTMLElement) => {
+			const unsub = executeCallbacks(
+				addMeltEventListener(node, 'click', () => {
+					const firstSegment = getFirstSegment(get(ids.field));
+					if (!firstSegment) return;
+					sleep(1).then(() => firstSegment.focus());
+				}),
+				addMeltEventListener(node, 'mousedown', (e) => {
+					if (!e.defaultPrevented && e.detail > 1) {
+						e.preventDefault();
+					}
+				})
+			);
+
+			return {
+				destroy: unsub,
 			};
 		},
 	});
 
 	const fieldIdDeps = derived(
-		[ids.field, ids.label, ids.description],
-		([$fieldId, $labelId, $descriptionId]) => {
+		[ids.field, ids.label, ids.description, ids.validation],
+		([$fieldId, $labelId, $descriptionId, $validationId]) => {
 			return {
 				field: $fieldId,
 				label: $labelId,
 				description: $descriptionId,
+				validation: $validationId,
 			};
 		}
 	);
@@ -169,11 +200,15 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	const field = builder(name('field'), {
 		stores: [isCompleted, isInvalid, fieldIdDeps],
 		returned: ([$isCompleted, $isInvalid, $ids]) => {
+			const describedBy = $isCompleted
+				? `${$ids.description}${$isInvalid ? ` ${$ids.validation}` : ''}`
+				: `${$ids.description}`;
+
 			return {
 				role: 'group',
 				id: $ids.field,
 				'aria-labelledby': $ids.label,
-				'aria-describedby': $isCompleted ? $ids.description : undefined,
+				'aria-describedby': describedBy,
 				'data-invalid': $isInvalid ? '' : undefined,
 			};
 		},
@@ -250,8 +285,12 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 	});
 
 	effect([startValue, endValue], ([$startValue, $endValue]) => {
+		const $value = get(value);
+
+		if ($value && $value?.start === $startValue && $value?.end === $endValue) return;
+
 		if ($startValue && $endValue) {
-			valueWritable.update((prev) => {
+			value.update((prev) => {
 				if (prev?.start === $startValue && prev?.end === $endValue) {
 					return prev;
 				}
@@ -260,8 +299,8 @@ export function createDateRangeField(props?: CreateDateRangeFieldProps) {
 					end: $endValue,
 				};
 			});
-		} else {
-			valueWritable.set({
+		} else if ($value && $value?.start && $value?.end) {
+			value.set({
 				start: undefined,
 				end: undefined,
 			});
