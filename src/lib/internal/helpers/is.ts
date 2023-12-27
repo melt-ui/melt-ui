@@ -1,3 +1,5 @@
+import type { Readable, Writable } from 'svelte/store';
+
 export const isBrowser = typeof document !== 'undefined';
 // eslint-disable-next-line @typescript-eslint/ban-types
 export const isFunction = (v: unknown): v is Function => typeof v === 'function';
@@ -64,4 +66,12 @@ export function isNumberString(value: string) {
 
 export function isObject(value: unknown): value is Record<string, unknown> {
 	return value !== null && typeof value === 'object';
+}
+
+export function isReadable(value: unknown): value is Readable<unknown> {
+	return isObject(value) && 'subscribe' in value;
+}
+
+export function isWritable(value: unknown): value is Writable<unknown> {
+	return isReadable(value) && 'subscribe' in value;
 }

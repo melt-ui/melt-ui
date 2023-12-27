@@ -1,5 +1,31 @@
 # @melt-ui/svelte
 
+## 0.66.3
+
+### Patch Changes
+
+- Menu: fix default active subtrigger ([`84270042`](https://github.com/melt-ui/melt-ui/commit/84270042ee257a9dff0efaa97eacd3ec9ce04a6c))
+
+## 0.66.2
+
+### Patch Changes
+
+- Datepicker: fix types (closes #838) ([#839](https://github.com/melt-ui/melt-ui/pull/839))
+
+- Collapsible: remove leftover log ([`31119cce`](https://github.com/melt-ui/melt-ui/commit/31119cce0b89cc0153f9160a1d8a074d075ff1bf))
+
+- Types: fix wrong builder return type for functions ([#844](https://github.com/melt-ui/melt-ui/pull/844))
+
+## 0.66.1
+
+### Patch Changes
+
+- Menu: Fix open.set not opening menu (fixes [#813](https://github.com/melt-ui/melt-ui/issues/813)) ([`26e41134`](https://github.com/melt-ui/melt-ui/commit/26e41134169528e22451782259be0b2506bdaec0))
+
+- Slider: remove `aria-disabled` from root ([#825](https://github.com/melt-ui/melt-ui/pull/825))
+
+- Select & Combobox: Fix focus preventing parents to close on escape (fixes [#739](https://github.com/melt-ui/melt-ui/issues/739)) ([`c401f6ff`](https://github.com/melt-ui/melt-ui/commit/c401f6ff49a4e4a506de39a206b50b0a3451b20b))
+
 ## 0.66.0
 
 ### Minor Changes

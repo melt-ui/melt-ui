@@ -51,12 +51,10 @@ type BuilderStore<
 	Name extends string
 > = Readable<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	ReturnType<R> extends (...args: any) => any
+	ReturnType<R> extends infer F extends (...args: any) => any
 		? ((
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore - This is a valid type, but TS doesn't like it for some reason. TODO: Figure out why
-				...args: Parameters<ReturnType<R>>
-		  ) => ReturnType<R> & { [K in `data-melt-${Name}`]: '' } & { action: A }) & { action: A }
+				...args: Parameters<F>
+		  ) => ReturnType<F> & { [K in `data-melt-${Name}`]: '' } & { action: A }) & { action: A }
 		: ReturnType<R> & { [K in `data-melt-${Name}`]: '' } & { action: A }
 >;
 

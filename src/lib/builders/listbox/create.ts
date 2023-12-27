@@ -346,7 +346,7 @@ export function createListbox<
 					 * When the menu is open...
 					 */
 					// Pressing `esc` should close the menu.
-					if (e.key === kbd.TAB || (e.key === kbd.ESCAPE && get(closeOnEscape))) {
+					if (e.key === kbd.TAB) {
 						closeMenu();
 						return;
 					}
@@ -422,11 +422,10 @@ export function createListbox<
 			let unsubEscapeKeydown = noop;
 
 			const escape = useEscapeKeydown(node, {
-				handler: () => {
-					if (get(closeOnEscape)) {
-						closeMenu();
-					}
-				},
+				handler: closeMenu,
+				enabled: derived([open, closeOnEscape], ([$open, $closeOnEscape]) => {
+					return $open && $closeOnEscape;
+				}),
 			});
 			if (escape && escape.destroy) {
 				unsubEscapeKeydown = escape.destroy;

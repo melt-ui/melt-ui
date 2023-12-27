@@ -849,6 +849,10 @@ export function createMenuBuilder(opts: _MenuBuilderOptions) {
 			action: (node: HTMLElement): MeltActionReturn<MenuEvents['subTrigger']> => {
 				setMeltMenuAttribute(node, selector);
 				applyAttrsIfDisabled(node);
+				subActiveTrigger.update((p) => {
+					if (p) return p;
+					return node;
+				});
 
 				const unsubTimer = () => {
 					clearTimerStore(subOpenTimer);

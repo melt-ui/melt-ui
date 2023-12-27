@@ -30,9 +30,10 @@
 
 	export let variant: PreviewVariants['variant'] = 'default';
 	export let size: PreviewVariants['size'] = 'default';
+	export let id: string | undefined = undefined;
 </script>
 
-<div class={cn(previewVariants({ variant, size }))} data-variant={variant}>
+<div class={cn(previewVariants({ variant, size }))} data-variant={variant} {id}>
 	<div class={cn('z-10 mx-auto inline-block px-4')}>
 		<slot />
 	</div>
