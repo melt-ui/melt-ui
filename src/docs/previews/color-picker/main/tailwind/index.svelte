@@ -24,7 +24,7 @@
 		states: { value },
 		helpers: { derivedColors },
 	} = createColorPicker({
-		defaultColor,
+		defaultValue: defaultColor,
 		alphaValue,
 		hueAngle,
 		onValueChange: ({ curr, next }) => {
@@ -110,7 +110,7 @@
 			{#each savedColorsLimited as hex}
 				<button
 					class="h-6 w-6 rounded-md border border-gray-400"
-					style="background-color: {hex}"
+					style:background-color={hex}
 					on:click={() => ($value = hex)}
 				/>
 			{/each}
@@ -132,7 +132,7 @@
 			<h4 class="font-bold tracking-tight">History</h4>
 			<div class="h-36 overflow-hidden text-sm">
 				{#each history as h}
-					<p style="color: {h}">{h}</p>
+					<p style:color={h}>{h}</p>
 				{/each}
 			</div>
 		</div>
