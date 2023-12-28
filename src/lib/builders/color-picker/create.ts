@@ -430,8 +430,9 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 			return {
 				style: styleToString({
 					position: 'absolute',
-					top: `${top}px`,
-					left: `${left}px`,
+					transform: `translate(${left}px, ${top}px)`,
+					top: 0,
+					left: 0,
 					'background-color': `${$value}`,
 				}),
 			};
