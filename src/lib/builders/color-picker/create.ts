@@ -3,6 +3,7 @@ import {
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	effect,
 	executeCallbacks,
 	isBrowser,
 	isNumberString,
@@ -51,7 +52,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	let dragging = false;
 	let hueDragging = false;
 	let alphaDragging = false;
-	const lastValid: string = defaults.defaultValue;
+	let lastValid: string = defaults.defaultValue;
 	const speedUpStep = 5;
 
 	const keyDurations: KeyDurations = {
@@ -96,33 +97,51 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		}
 	};
 
+	const getColorFromPos = derived(
+		[colorCanvasDimensions, hueAngle, value],
+		([$colorCanvasDimensions, $hueAngle, $value]) => {
+			return (pos: { x: number; y: number }) => {
+				const x = pos.x / $colorCanvasDimensions.width;
+				const y = 1 - pos.y / $colorCanvasDimensions.height;
+
+				const c = colord({
+					h: $hueAngle,
+					s: x * 100,
+					v: y * 100,
+					a: getChannelValue('alpha', $value),
+				});
+
+				return convertColor(c, getColorFormat($value) ?? 'hex', true);
+			};
+		}
+	);
+
+	const getColorPos = derived([colorCanvasDimensions], ([$colorCanvasDimensions]) => {
+		return (color: string) => {
+			const c = colord(color);
+
+			const { s, v } = c.toHsv();
+
+			return {
+				x: (s / 100) * $colorCanvasDimensions.width,
+				y: (1 - v / 100) * $colorCanvasDimensions.height,
+			};
+		};
+	});
+
 	/**
 	 * Returns the current color of the color picker.
 	 * This function is used in some builder return parameters,
 	 * as well as the subscribe methods, since we sometimes need to
 	 * update the $colors value when the hue angle is changed.
 	 */
-	const updateByPos = derived(
-		[hueAngle, colorCanvasDimensions],
-		([$hueAngle, $colorCanvasDimensions]) => {
-			return (pos: { x: number; y: number }) => {
-				colorCanvasThumbPos.set(pos);
-				const x = pos.x / $colorCanvasDimensions.width;
-				const y = 1 - pos.y / $colorCanvasDimensions.height;
+	const updateByPos = derived(getColorFromPos, ($colorFromPos) => {
+		return (pos: { x: number; y: number }) => {
+			colorCanvasThumbPos.set(pos);
 
-				value.update((p) => {
-					const c = colord({
-						h: $hueAngle,
-						s: x * 100,
-						v: y * 100,
-						a: getChannelValue('alpha', p),
-					});
-
-					return convertColor(c, getColorFormat(p) ?? 'hex', true);
-				});
-			};
-		}
-	);
+			value.set($colorFromPos(pos));
+		};
+	});
 
 	function isEyeDropperSupported() {
 		return typeof window !== 'undefined' && 'EyeDropper' in window;
@@ -851,95 +870,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		},
 	});
 
-	const channelSlider = builder(name('channel-slider'), {
-		stores: value,
-		returned: ($value) => {
-			return (channel: ColorChannel, options?: { orientation: Orientation }) => {
-				const orientation = options?.orientation === 'horizontal' ? 'right' : 'bottom';
-
-				const rgb = convertColor($value, 'rgb');
-				const { r, g, b } = rgb;
-
-				const color = `${r}, ${g}, ${b}`;
-
-				return {
-					style: styleToString({
-						background: `linear-gradient(to ${orientation}, rgba(${color}, 0), ${$value})`,
-					}),
-				};
-			};
-		},
-		action: (node: HTMLCanvasElement) => {
-			const rect = node.getBoundingClientRect();
-
-			alphaSliderDimensions.set({
-				node,
-				width: rect.width,
-				height: rect.height,
-			});
-
-			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'click', (e) => {
-					const { offsetX: x, offsetY: y } = e;
-					setAlphaValue(x, y);
-				}),
-				addMeltEventListener(node, 'mousedown', () => {
-					alphaDragging = true;
-				}),
-				addMeltEventListener(node, 'mouseup', () => {
-					alphaDragging = false;
-				}),
-				addMeltEventListener(node, 'mousemove', (e) => {
-					if (!alphaDragging) return;
-
-					const { offsetX: x, offsetY: y } = e;
-					setAlphaValue(x, y);
-				}),
-				addMeltEventListener(node, 'touchstart', () => {
-					alphaDragging = true;
-				}),
-				addMeltEventListener(node, 'touchend', () => {
-					alphaDragging = false;
-				}),
-				addMeltEventListener(node, 'touchmove', (e) => {
-					if (!alphaDragging) return;
-
-					const as = get(alphaSliderDimensions);
-
-					if (!as.node) return;
-
-					e.preventDefault();
-
-					const { clientX: x, clientY: y } = e.touches[0];
-					const { width, height, node } = as;
-					const { x: nodeX, y: nodeY } = node.getBoundingClientRect();
-
-					if (x > nodeX && x < nodeX + width && y > nodeY && y < nodeY + height) {
-						alphaValue.set(Math.round(((x - nodeX) / width) * 100));
-					} else {
-						handleOutsideSliderMovement({
-							x,
-							y,
-							nodeX,
-							nodeY,
-							width,
-							height,
-							store: alphaValue,
-							orientation: argsWithDefaults.alphaSliderOrientation,
-							maxValue: 100,
-						});
-					}
-				})
-			);
-
-			return {
-				destroy() {
-					unsubEvents();
-				},
-			};
-		},
-	});
-
 	const channelInput = builder(name('channel-input'), {
 		stores: value,
 		returned: ($value) => {
@@ -1003,9 +933,13 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		},
 		action: (node: HTMLInputElement) => {
 			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'input', () => {
+				addMeltEventListener(node, 'keydown', (e) => {
+					if (e.key !== 'Enter') return;
+
 					if (isValidColor(node.value)) {
 						value.set(node.value);
+					} else {
+						node.value = lastValid;
 					}
 				}),
 				addMeltEventListener(node, 'blur', () => {
@@ -1035,55 +969,22 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		);
 	});
 
-	/**
-	 * If the color is updated from outside we do not need to update the color again,
-	 * so we check if inputUpdatePickerPos = true.
-	 */
-	// effect(colorPickerPos, () => {
-	// 	if (inputUpdatePickerPos) {
-	// 		inputUpdatePickerPos = false;
-	// 		return;
-	// 	}
+	effect([value, getColorFromPos, getColorPos], ([$value, $getColorFromPos, $getColorPos]) => {
+		colorCanvasThumbPos.update((pos) => {
+			const colorFromPos = $getColorFromPos(pos);
+			if (colorFromPos === $value) return pos;
+			return $getColorPos($value);
+		});
+	});
 
-	// 	const { hex } = get(getCurrentColor)();
-	// 	insideUpdate = true;
-	// 	value.set(hex);
-	// });
+	effect(hueAngle, ($hueAngle) => {
+		updateChannel($hueAngle, 'hue');
+	});
 
-	/**
-	 * If the hue angle is being updated from outside we need to update the color value,
-	 * else we can just return.
-	 */
-	// effect(hueAngle, () => {
-	// 	if (inputUpdateHue) {
-	// 		inputUpdateHue = false;
-	// 		return;
-	// 	}
-
-	// 	const { hex } = get(getCurrentColor)();
-	// 	insideUpdate = true;
-	// 	value.set(hex);
-	// });
-
-	/**
-	 * Check if the color is updated, and whether it was internally or externally.
-	 * If the source is external, we need to update the hue angle and the color
-	 * picker position.
-	 */
-	// effect(value, ($value) => {
-	// 	if (insideUpdate) {
-	// 		insideUpdate = false;
-	// 		return;
-	// 	}
-
-	// 	if (!isValidColor($value)) return;
-
-	// 	lastValid = $value;
-
-	// 	inputUpdateHue = true;
-	// 	inputUpdatePickerPos = true;
-	// 	updateOnColorInput(convertColor($value, 'hex'));
-	// });
+	effect(value, ($value) => {
+		hueAngle.set(colord($value).hue());
+		lastValid = $value;
+	});
 
 	return {
 		elements: {
