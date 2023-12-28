@@ -13,7 +13,7 @@
 	const {
 		elements: {
 			colorCanvas,
-			colorPicker,
+			colorCanvasThumb: colorPicker,
 			hueSlider,
 			huePicker,
 			alphaSlider,

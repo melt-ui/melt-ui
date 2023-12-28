@@ -65,13 +65,12 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	const value = overridable(valueWritable, argsWithDefaults?.onValueChange);
 	value.update((p) => (isValidColor(p) ? p : defaults.defaultValue));
 
-	const colorPickerPos = writable({ x: 0, y: 0 });
-
 	const colorCanvasDimensions: Writable<NodeElement<HTMLCanvasElement>> = writable({
 		height: 1,
 		width: 1,
 	});
-	const colorPickerDimensions: Writable<NodeSize> = writable({ height: 1, width: 1 });
+	const colorCanvasThumbPos = writable({ x: 0, y: 0 });
+	const colorCanvasThumbDimensions: Writable<NodeSize> = writable({ height: 1, width: 1 });
 
 	const hueSliderDimensions: Writable<NodeElement<HTMLCanvasElement>> = writable({
 		height: 1,
@@ -107,7 +106,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		[hueAngle, colorCanvasDimensions],
 		([$hueAngle, $colorCanvasDimensions]) => {
 			return (pos: { x: number; y: number }) => {
-				colorPickerPos.set(pos);
+				colorCanvasThumbPos.set(pos);
 				const x = pos.x / $colorCanvasDimensions.width;
 				const y = 1 - pos.y / $colorCanvasDimensions.height;
 
@@ -403,8 +402,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		},
 	});
 
-	const colorPicker = builder(name('color-picker'), {
-		stores: [colorPickerPos, colorPickerDimensions, value],
+	const colorCanvasThumb = builder(name('color-canvas-thumb'), {
+		stores: [colorCanvasThumbPos, colorCanvasThumbDimensions, value],
 		returned: ([$colorPickerPos, $colorPickerDimensions, $value]) => {
 			const top = Math.round($colorPickerPos.y - $colorPickerDimensions.height / 2);
 			const left = Math.round($colorPickerPos.x - $colorPickerDimensions.width / 2);
@@ -421,7 +420,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		action: (node: HTMLButtonElement) => {
 			const rect = node.getBoundingClientRect();
 
-			colorPickerDimensions.set({
+			colorCanvasThumbDimensions.set({
 				width: rect.width,
 				height: rect.height,
 			});
@@ -460,7 +459,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 					const step = duration > 1000 ? speedUpStep : 1;
 
-					const { x, y } = get(colorPickerPos);
+					const { x, y } = get(colorCanvasThumbPos);
 					const { height: canvasH, width: canvasW } = get(colorCanvasDimensions);
 
 					// Move the picker button and restrict movement to within the canvas.
@@ -1089,7 +1088,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	return {
 		elements: {
 			colorCanvas,
-			colorPicker,
+			colorCanvasThumb,
 			hueSlider,
 			huePicker,
 			alphaSlider,

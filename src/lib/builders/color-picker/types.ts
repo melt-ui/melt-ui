@@ -25,7 +25,7 @@ export type ColorHSV = {
 
 export type ColorPickerParts =
 	| 'color-canvas'
-	| 'color-picker'
+	| 'color-canvas-thumb'
 	| 'hue-slider'
 	| 'hue-picker'
 	| 'alpha-slider'
