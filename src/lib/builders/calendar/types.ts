@@ -5,6 +5,8 @@ import type { DateValue } from '@internationalized/date';
 import type { Matcher } from '$lib/index.js';
 import type { WhenTrue } from '$lib/internal/types.js';
 
+export type MonthsHeaderType = 'string' | 'array';
+
 export type CalendarValue<Multiple extends boolean, Value extends DateValue = DateValue> = WhenTrue<
 	Multiple,
 	Value[],
@@ -207,6 +209,14 @@ export type CreateCalendarProps<
 	 * @default 1
 	 */
 	numberOfMonths?: number;
+
+	/**
+	 * Define if the months header will be a range string like 'from - to' or an array of months like [ 'nov. 2023', 'dec. 2023', 'jan. 2024' ].
+	 * Only applies if `numberOfMonths > 1`.
+	 *
+	 * @default 'string'
+	 */
+	monthsHeaderType?: MonthsHeaderType;
 
 	/**
 	 * This label is exclusively used for accessibility, remaining hidden from the page.
