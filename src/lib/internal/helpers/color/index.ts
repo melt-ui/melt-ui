@@ -42,3 +42,26 @@ export function getColorFormat(color: string): ColorFormat | undefined {
 export function isValidColor(color: string) {
 	return colord(color).isValid();
 }
+
+export function getChannelValue(channel: ColorChannel, value: AnyColor | Colord) {
+	const c = colord(value);
+
+	switch (channel) {
+		case 'hue':
+			return c.hue();
+		case 'saturation':
+			return c.toHsl().s;
+		case 'lightness':
+			return c.toHsl().l;
+		case 'alpha':
+			return c.alpha();
+		case 'red':
+			return c.toRgb().r;
+		case 'green':
+			return c.toRgb().g;
+		case 'blue':
+			return c.toRgb().b;
+		default:
+			return 0;
+	}
+}
