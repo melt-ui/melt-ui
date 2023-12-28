@@ -113,7 +113,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 	function setColorCanvasThumbPos(pos: { x: number; y: number }) {
 		colorCanvasThumbPos.set(pos);
-		value.update((p) => getColorFromPos({ pos, value: p }));
+		value.update((p) => getColorFromPos({ pos, value: p, hueAngle: get(hueAngle) }));
 	}
 
 	// Handlers
@@ -919,7 +919,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		});
 		alphaValue.set(colord($value).alpha() * 100);
 		colorCanvasThumbPos.update((p) => {
-			const colorFromPos = getColorFromPos({ pos: p, value: $value });
+			const colorFromPos = getColorFromPos({ pos: p, value: $value, hueAngle: get(hueAngle) });
 			if (sameColor(colorFromPos, $value)) return p;
 			return getColorPos($value);
 		});

@@ -72,13 +72,13 @@ export function sameColor(a: AnyColor | Colord, b: AnyColor | Colord) {
 
 type GetColorFromPosArgs = {
 	pos: { x: number; y: number };
+	hueAngle: number;
 	value: string;
 };
 
-export function getColorFromPos({ pos, value }: GetColorFromPosArgs) {
+export function getColorFromPos({ pos, hueAngle, value }: GetColorFromPosArgs) {
 	const x = pos.x;
 	const y = 100 - pos.y;
-	const hueAngle = colord(value).hue();
 
 	const c = colord({
 		h: hueAngle,
