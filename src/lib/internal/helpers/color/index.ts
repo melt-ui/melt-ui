@@ -15,9 +15,9 @@ export function isColorChannel(value: unknown): value is ColorChannel {
 }
 
 export function convertColor(c: AnyColor | Colord, format: ColorFormat, string: true): string;
+export function convertColor(c: AnyColor | Colord, format: 'hex', string?: boolean): string;
 export function convertColor(c: AnyColor | Colord, format: 'rgb', string?: false): RgbaColor;
 export function convertColor(c: AnyColor | Colord, format: 'hsl', string?: false): HslaColor;
-export function convertColor(c: AnyColor | Colord, format: 'hex', string?: boolean): string;
 export function convertColor(c: AnyColor | Colord, format: ColorFormat, string?: boolean) {
 	switch (format) {
 		case 'rgb':

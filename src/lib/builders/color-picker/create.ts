@@ -7,8 +7,6 @@ import {
 	createElHelpers,
 	effect,
 	executeCallbacks,
-	hexToHSL,
-	hexToHSV,
 	hexToRGB,
 	isBrowser,
 	isNumberString,
@@ -41,7 +39,6 @@ import type {
 	NodeElement,
 	NodeSize,
 	Position,
-	ReturnedColor,
 } from './types';
 
 const defaults = {
