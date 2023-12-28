@@ -3,7 +3,7 @@
  * @property {string} builder - The builder of the melt attribute.
  *
  * @typedef {Object} Args
- * @property {string|null} args - The arguments of the melt attribute.
+ * @property {string} args - The arguments of the melt attribute.
  *
  * @typedef {Object} Index
  * @property {string} index - The index of the melt attribute in the string.
