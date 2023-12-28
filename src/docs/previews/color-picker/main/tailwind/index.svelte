@@ -20,6 +20,7 @@
 			alphaPicker,
 			eyeDropper,
 			hexInput,
+			channelInput,
 		},
 		states: { value },
 		helpers: { derivedColors },
@@ -39,8 +40,8 @@
 	$: ({ rgb, hsl, hsv } = $derivedColors);
 </script>
 
-<div class="flex w-[350px] gap-2 rounded-md bg-white p-2">
-	<div class="flex flex-col items-center justify-center gap-2">
+<div class="flex w-[350px] gap-2 overflow-hidden rounded-md bg-white p-2">
+	<div class="flex shrink flex-col items-center justify-center gap-2">
 		<div class="canvas relative">
 			<canvas
 				use:melt={$colorCanvas}
@@ -80,7 +81,7 @@
 			/>
 		</div>
 
-		<div class="flex gap-1">
+		<div class="flex w-full gap-1 overflow-hidden">
 			<button
 				use:melt={$eyeDropper}
 				class="inline-flex items-center justify-center rounded-md bg-gray-900 p-1"
@@ -93,7 +94,6 @@
 			<input
 				use:melt={$hexInput}
 				type="text"
-				value={$value}
 				class="w-24 rounded-md border border-gray-800 px-2 py-1 text-black"
 				aria-label="hex color value"
 			/>
@@ -104,6 +104,58 @@
 			>
 				Save
 			</button>
+		</div>
+
+		<div class="jus flex flex-wrap gap-1 overflow-hidden">
+			<label class="grid shrink gap-1 text-black">
+				H
+				<input
+					class="inline-block w-12 border border-black"
+					use:melt={$channelInput('hue')}
+				/>
+			</label>
+			<label class="grid shrink gap-1 text-black">
+				S
+				<input
+					class="inline-block w-12 border border-black"
+					use:melt={$channelInput('saturation')}
+				/>
+			</label>
+			<label class="grid shrink gap-1 text-black">
+				L
+				<input
+					class="inline-block w-12 border border-black"
+					use:melt={$channelInput('lightness')}
+				/>
+			</label>
+			<label class="grid shrink gap-1 text-black">
+				A
+				<input
+					class="inline-block w-12 border border-black"
+					use:melt={$channelInput('alpha')}
+				/>
+			</label>
+			<label class="grid shrink gap-1 text-black">
+				R
+				<input
+					class="inline-block w-12 border border-black"
+					use:melt={$channelInput('red')}
+				/>
+			</label>
+			<label class="grid shrink gap-1 text-black">
+				G
+				<input
+					class="inline-block w-12 border border-black"
+					use:melt={$channelInput('green')}
+				/>
+			</label>
+			<label class="grid shrink gap-1 text-black">
+				B
+				<input
+					class="inline-block w-12 border border-black"
+					use:melt={$channelInput('blue')}
+				/>
+			</label>
 		</div>
 
 		<div class="flex flex-wrap items-center justify-center gap-2">
@@ -117,7 +169,7 @@
 		</div>
 	</div>
 
-	<div class="text-gray-900">
+	<div class="shrink-0 text-gray-900">
 		<div class="flex flex-col">
 			<h4 class="font-bold tracking-tight">Derived Colors</h4>
 			<div class="text-sm">

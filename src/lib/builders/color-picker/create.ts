@@ -9,26 +9,33 @@ import {
 	hexToHSV,
 	hexToRGB,
 	isBrowser,
+	isNumberString,
 	isValidHexColor,
+	omit,
 	overridable,
 	styleToString,
+	toWritableStores,
 } from '$lib/internal/helpers';
+import { colord } from 'colord';
 
-import type { ColorRGB, Defaults, Orientation } from '$lib/internal/types';
+import type { Defaults, Orientation } from '$lib/internal/types';
 import { onMount } from 'svelte';
 
 import { derived, get, writable, type Readable, type Writable } from 'svelte/store';
-import type {
-	ArrowKeys,
-	ColorPickerParts,
-	CreateColorPickerProps,
-	EyeDropperType,
-	EyeDropperWindow,
-	KeyDurations,
-	NodeElement,
-	NodeSize,
-	Position,
-	ReturnedColor,
+import {
+	isColorChannel,
+	type ArrowKeys,
+	type ColorChannel,
+	type ColorPickerParts,
+	type ColorRGB,
+	type CreateColorPickerProps,
+	type EyeDropperType,
+	type EyeDropperWindow,
+	type KeyDurations,
+	type NodeElement,
+	type NodeSize,
+	type Position,
+	type ReturnedColor,
 } from './types';
 
 const defaults = {
@@ -41,7 +48,7 @@ const { name } = createElHelpers<ColorPickerParts>('color-picker');
 
 export function createColorPicker(args?: CreateColorPickerProps) {
 	const argsWithDefaults = { ...defaults, ...args };
-	// const options = toWritableStores(argsWithDefaults);
+	const options = toWritableStores(omit(argsWithDefaults, 'value', 'defaultValue'));
 
 	let dragging = false;
 	let hueDragging = false;
@@ -319,6 +326,51 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 			x: Math.round(hsv.s * width),
 			y: Math.round((1 - hsv.v) * height),
 		});
+	}
+
+	function updateChannel(v: number, channel: ColorChannel) {
+		value.update((p) => {
+			const c = colord(p);
+			switch (channel) {
+				case 'hue':
+					return c.hue(v).toHex();
+				case 'saturation':
+					return colord({ ...c.toHsl(), s: v }).toHex();
+				case 'lightness':
+					return colord({ ...c.toHsl(), l: v }).toHex();
+				case 'alpha':
+					return c.alpha(v).toHex();
+				case 'red':
+					return colord({ ...c.toRgb(), r: v }).toHex();
+				case 'green':
+					return colord({ ...c.toRgb(), g: v }).toHex();
+				case 'blue':
+					return colord({ ...c.toRgb(), b: v }).toHex();
+				default:
+					return p;
+			}
+		});
+	}
+
+	function getChannelValue(channel: ColorChannel, value: string) {
+		switch (channel) {
+			case 'hue':
+				return colord(value).hue();
+			case 'saturation':
+				return colord(value).toHsl().s;
+			case 'lightness':
+				return colord(value).toHsl().l;
+			case 'alpha':
+				return colord(value).alpha();
+			case 'red':
+				return colord(value).toRgb().r;
+			case 'green':
+				return colord(value).toRgb().g;
+			case 'blue':
+				return colord(value).toRgb().b;
+			default:
+				return 0;
+		}
 	}
 
 	// Builders
@@ -843,6 +895,34 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		},
 	});
 
+	const channelInput = builder(name('channel-input'), {
+		stores: value,
+		returned: ($value) => {
+			return (channel: ColorChannel) => {
+				return {
+					'data-channel': channel,
+					value: getChannelValue(channel, $value),
+					type: 'number',
+					step: channel === 'alpha' ? 0.01 : 1,
+					min: channel === 'alpha' ? 0 : undefined,
+					max: channel === 'alpha' ? 1 : undefined,
+				};
+			};
+		},
+		action: (node: HTMLInputElement) => {
+			const destroy = addMeltEventListener(node, 'input', () => {
+				const { value: v } = node;
+				const channel = node.dataset.channel;
+
+				if (!isColorChannel(channel) || !isNumberString(v)) return;
+
+				updateChannel(Number(v), channel);
+			});
+
+			return { destroy };
+		},
+	});
+
 	const eyeDropper = builder(name('eye-dropper'), {
 		action: (node: HTMLButtonElement) => {
 			if (!isEyeDropperSupported()) return;
@@ -870,6 +950,12 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	});
 
 	const hexInput = builder(name('hex-input'), {
+		stores: [value],
+		returned: ([$value]) => {
+			return {
+				value: $value,
+			};
+		},
 		action: (node: HTMLInputElement) => {
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'keydown', (e) => {
@@ -913,7 +999,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		// the default color if not.
 		argsWithDefaults.defaultValue = isValidHexColor(argsWithDefaults.defaultValue)
 			? argsWithDefaults.defaultValue
-			: defaults.defaultColor;
+			: defaults.defaultValue;
 
 		value.set(argsWithDefaults.defaultValue);
 
@@ -987,6 +1073,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 			huePicker,
 			alphaSlider,
 			alphaPicker,
+			channelInput,
 			eyeDropper,
 			hexInput,
 		},

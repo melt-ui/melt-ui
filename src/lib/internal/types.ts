@@ -124,24 +124,4 @@ export type RenameProperties<T, NewNames extends Partial<Record<keyof T, string>
 		: K]: T[K];
 }>;
 
-// Colors
-export type ColorRGB = {
-	r: number;
-	g: number;
-	b: number;
-	a?: number;
-};
-
-export type ColorHSL = {
-	h: number;
-	s: number;
-	l: number;
-};
-
-export type ColorHSV = {
-	h: number;
-	s: number;
-	v: number;
-};
-
 export type NonEmptyArray<T> = [T, ...T[]];
