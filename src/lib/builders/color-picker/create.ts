@@ -1,9 +1,11 @@
 import {
 	HSVtoRGB,
 	RGBtoHex,
+	addEventListener,
 	addMeltEventListener,
 	builder,
 	createElHelpers,
+	effect,
 	executeCallbacks,
 	hexToHSL,
 	hexToHSV,
@@ -16,26 +18,30 @@ import {
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers';
-import { colord } from 'colord';
+import { colord, getFormat } from 'colord';
 
 import type { Defaults, Orientation } from '$lib/internal/types';
-import { onMount } from 'svelte';
 
-import { derived, get, writable, type Readable, type Writable } from 'svelte/store';
 import {
 	isColorChannel,
-	type ArrowKeys,
+	convertColor,
 	type ColorChannel,
-	type ColorPickerParts,
-	type ColorRGB,
-	type CreateColorPickerProps,
-	type EyeDropperType,
-	type EyeDropperWindow,
-	type KeyDurations,
-	type NodeElement,
-	type NodeSize,
-	type Position,
-	type ReturnedColor,
+	isValidColor,
+} from '$lib/internal/helpers/color';
+import { safeOnMount } from '$lib/internal/helpers/lifecycle';
+import { derived, get, writable, type Readable, type Writable } from 'svelte/store';
+import type {
+	ArrowKeys,
+	ColorPickerParts,
+	ColorRGB,
+	CreateColorPickerProps,
+	EyeDropperType,
+	EyeDropperWindow,
+	KeyDurations,
+	NodeElement,
+	NodeSize,
+	Position,
+	ReturnedColor,
 } from './types';
 
 const defaults = {
@@ -56,7 +62,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	let insideUpdate = false;
 	let inputUpdateHue = false;
 	let inputUpdatePickerPos = false;
-	let lastValid = argsWithDefaults.defaultValue;
+	let lastValid: string = defaults.defaultValue;
 	const speedUpStep = 5;
 
 	const keyDurations: KeyDurations = {
@@ -68,6 +74,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 	const valueWritable = argsWithDefaults.value ?? writable(argsWithDefaults.defaultValue);
 	const value = overridable(valueWritable, argsWithDefaults?.onValueChange);
+	value.update((p) => (isValidColor(p) ? p : defaults.defaultValue));
 
 	const colorCanvasDims: Writable<NodeElement<HTMLCanvasElement>> = writable({
 		height: 1,
@@ -317,7 +324,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	}
 
 	function updateOnColorInput(hex: string) {
-		const hsv = hexToHSV(hex);
+		const hsv = colord(hex).toHsv();
 
 		const { width, height } = get(colorCanvasDims);
 		hueAngle.set(hsv.h);
@@ -331,21 +338,24 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	function updateChannel(v: number, channel: ColorChannel) {
 		value.update((p) => {
 			const c = colord(p);
+			const format = getFormat(p);
+			if (!format) return p;
+
 			switch (channel) {
 				case 'hue':
-					return c.hue(v).toHex();
+					return convertColor(c.hue(v), format);
 				case 'saturation':
-					return colord({ ...c.toHsl(), s: v }).toHex();
+					return convertColor(colord({ ...c.toHsl(), s: v }), format);
 				case 'lightness':
-					return colord({ ...c.toHsl(), l: v }).toHex();
+					return convertColor(colord({ ...c.toHsl(), l: v }), format);
 				case 'alpha':
-					return c.alpha(v).toHex();
+					return convertColor(c.alpha(v), format);
 				case 'red':
-					return colord({ ...c.toRgb(), r: v }).toHex();
+					return convertColor(colord({ ...c.toRgb(), r: v }), format);
 				case 'green':
-					return colord({ ...c.toRgb(), g: v }).toHex();
+					return convertColor(colord({ ...c.toRgb(), g: v }), format);
 				case 'blue':
-					return colord({ ...c.toRgb(), b: v }).toHex();
+					return convertColor(colord({ ...c.toRgb(), b: v }), format);
 				default:
 					return p;
 			}
@@ -895,7 +905,94 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		},
 	});
 
-	const channelSlider = builder(name('channel-slider'), {});
+	const channelSlider = builder(name('channel-slider'), {
+		stores: value,
+		returned: ($value) => {
+			return (channel: ColorChannel, options?: { orientation: Orientation }) => {
+				const orientation = options?.orientation === 'horizontal' ? 'right' : 'bottom';
+
+				const rgb = hexToRGB($value);
+				const { r, g, b } = rgb;
+
+				const color = `${r}, ${g}, ${b}`;
+
+				return {
+					style: styleToString({
+						background: `linear-gradient(to ${orientation}, rgba(${color}, 0), ${$value})`,
+					}),
+				};
+			};
+		},
+		action: (node: HTMLCanvasElement) => {
+			const rect = node.getBoundingClientRect();
+
+			alphaSliderDims.set({
+				node,
+				width: rect.width,
+				height: rect.height,
+			});
+
+			const unsubEvents = executeCallbacks(
+				addMeltEventListener(node, 'click', (e) => {
+					const { offsetX: x, offsetY: y } = e;
+					setAlphaValue(x, y);
+				}),
+				addMeltEventListener(node, 'mousedown', () => {
+					alphaDragging = true;
+				}),
+				addMeltEventListener(node, 'mouseup', () => {
+					alphaDragging = false;
+				}),
+				addMeltEventListener(node, 'mousemove', (e) => {
+					if (!alphaDragging) return;
+
+					const { offsetX: x, offsetY: y } = e;
+					setAlphaValue(x, y);
+				}),
+				addMeltEventListener(node, 'touchstart', () => {
+					alphaDragging = true;
+				}),
+				addMeltEventListener(node, 'touchend', () => {
+					alphaDragging = false;
+				}),
+				addMeltEventListener(node, 'touchmove', (e) => {
+					if (!alphaDragging) return;
+
+					const as = get(alphaSliderDims);
+
+					if (!as.node) return;
+
+					e.preventDefault();
+
+					const { clientX: x, clientY: y } = e.touches[0];
+					const { width, height, node } = as;
+					const { x: nodeX, y: nodeY } = node.getBoundingClientRect();
+
+					if (x > nodeX && x < nodeX + width && y > nodeY && y < nodeY + height) {
+						alphaValue.set(Math.round(((x - nodeX) / width) * 100));
+					} else {
+						handleOutsideSliderMovement({
+							x,
+							y,
+							nodeX,
+							nodeY,
+							width,
+							height,
+							store: alphaValue,
+							orientation: argsWithDefaults.alphaSliderOrientation,
+							maxValue: 100,
+						});
+					}
+				})
+			);
+
+			return {
+				destroy() {
+					unsubEvents();
+				},
+			};
+		},
+	});
 
 	const channelInput = builder(name('channel-input'), {
 		stores: value,
@@ -906,7 +1003,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 					value: getChannelValue(channel, $value),
 					type: 'number',
 					step: channel === 'alpha' ? 0.01 : 1,
-					min: channel === 'alpha' ? 0 : undefined,
+					min: 0,
 					max: channel === 'alpha' ? 1 : undefined,
 				};
 			};
@@ -951,7 +1048,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		},
 	});
 
-	const hexInput = builder(name('hex-input'), {
+	const input = builder(name('input'), {
 		stores: [value],
 		returned: ([$value]) => {
 			return {
@@ -960,24 +1057,16 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		},
 		action: (node: HTMLInputElement) => {
 			const unsubEvents = executeCallbacks(
-				addMeltEventListener(node, 'keydown', (e) => {
-					if (e.key !== 'Enter') return;
-
-					const { value: hexValue } = node;
-
-					if (!isValidHexColor(hexValue)) {
-						value.set(lastValid);
-						return;
+				addMeltEventListener(node, 'input', () => {
+					if (isValidColor(node.value)) {
+						value.set(node.value);
 					}
-
-					value.set(hexValue);
 				}),
 				addMeltEventListener(node, 'blur', () => {
-					const { value: hexValue } = node;
-
-					if (!isValidHexColor(hexValue)) {
+					if (isValidColor(node.value)) {
+						value.set(node.value);
+					} else {
 						node.value = lastValid;
-						return;
 					}
 				})
 			);
@@ -991,80 +1080,63 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	});
 
 	// Lifecycle
-	onMount(() => {
-		if (isBrowser) {
-			window.addEventListener('mousemove', handleWindowsMouseMove);
-			window.addEventListener('mouseup', handleWindowsMouseUp);
+	safeOnMount(() => {
+		if (!isBrowser) return;
+
+		return executeCallbacks(
+			addEventListener(window, 'mousemove', handleWindowsMouseMove),
+			addEventListener(window, 'mouseup', handleWindowsMouseUp)
+		);
+	});
+
+	/**
+	 * If the color is updated from outside we do not need to update the color again,
+	 * so we check if inputUpdatePickerPos = true.
+	 */
+	effect(colorPickerPos, () => {
+		if (inputUpdatePickerPos) {
+			inputUpdatePickerPos = false;
+			return;
 		}
 
-		// Check if the given color is valid and replace it with
-		// the default color if not.
-		argsWithDefaults.defaultValue = isValidHexColor(argsWithDefaults.defaultValue)
-			? argsWithDefaults.defaultValue
-			: defaults.defaultValue;
+		const { hex } = get(getCurrentColor)();
+		insideUpdate = true;
+		value.set(hex);
+	});
 
-		value.set(argsWithDefaults.defaultValue);
+	/**
+	 * If the hue angle is being updated from outside we need to update the color value,
+	 * else we can just return.
+	 */
+	effect(hueAngle, () => {
+		if (inputUpdateHue) {
+			inputUpdateHue = false;
+			return;
+		}
 
-		// Update the color and hue picker button positions to default one.
-		updateOnColorInput(argsWithDefaults.defaultValue);
+		const { hex } = get(getCurrentColor)();
+		insideUpdate = true;
+		value.set(hex);
+	});
 
-		/**
-		 * If the color is updated from outside we do not need to update the color again,
-		 * so we check if inputUpdatePickerPos = true.
-		 */
-		const colorPickerUnsub = colorPickerPos.subscribe(() => {
-			if (inputUpdatePickerPos) {
-				inputUpdatePickerPos = false;
-				return;
-			}
+	/**
+	 * Check if the color is updated, and whether it was internally or externally.
+	 * If the source is external, we need to update the hue angle and the color
+	 * picker position.
+	 */
+	effect(value, ($value) => {
+		if (insideUpdate) {
+			insideUpdate = false;
+			return;
+		}
 
-			const { hex } = get(getCurrentColor)();
-			insideUpdate = true;
-			value.set(hex);
-		});
+		if (!isValidColor($value)) return;
 
-		/**
-		 * If the hue angle is being updated from outside we need to update the color value,
-		 * else we can just return.
-		 */
-		const hueAngleUnsub = hueAngle.subscribe(() => {
-			if (inputUpdateHue) {
-				inputUpdateHue = false;
-				return;
-			}
+		lastValid = $value;
 
-			const { hex } = get(getCurrentColor)();
-			insideUpdate = true;
-			value.set(hex);
-		});
-
-		/**
-		 * Check if the color is updated, and whether it was internally or externally.
-		 * If the source is external, we need to update the hue angle and the color
-		 * picker position.
-		 */
-		const colorUnsub = value.subscribe((hex) => {
-			if (insideUpdate) {
-				insideUpdate = false;
-				return;
-			}
-
-			if (!isValidHexColor(hex)) return;
-
-			lastValid = hex;
-
-			inputUpdateHue = true;
-			inputUpdatePickerPos = true;
-			updateOnColorInput(hex);
-		});
-
-		return () => {
-			window.removeEventListener('mousemove', handleWindowsMouseMove);
-			window.removeEventListener('mouseup', handleWindowsMouseUp);
-			colorPickerUnsub();
-			hueAngleUnsub();
-			colorUnsub();
-		};
+		inputUpdateHue = true;
+		inputUpdatePickerPos = true;
+		updateOnColorInput(convertColor($value, 'hex'));
 	});
 
 	return {
@@ -1077,7 +1149,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 			alphaPicker,
 			channelInput,
 			eyeDropper,
-			hexInput,
+			input,
 		},
 		states: {
 			value,

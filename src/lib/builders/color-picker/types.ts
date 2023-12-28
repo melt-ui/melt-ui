@@ -34,7 +34,7 @@ export type ColorPickerParts =
 	| 'channel-slider-thumb'
 	| 'channel-input'
 	| 'eye-dropper'
-	| 'hex-input';
+	| 'input';
 
 export type ArrowKeys = 'ArrowUp' | 'ArrowLeft' | 'ArrowDown' | 'ArrowRight';
 
@@ -80,21 +80,6 @@ export interface EyeDropperConstructor {
 
 export interface EyeDropperWindow {
 	EyeDropper?: EyeDropperConstructor | undefined;
-}
-
-const colorChannels = [
-	'hue',
-	'saturation',
-	'brightness',
-	'lightness',
-	'red',
-	'green',
-	'blue',
-	'alpha',
-] as const;
-export type ColorChannel = (typeof colorChannels)[number];
-export function isColorChannel(value: unknown): value is ColorChannel {
-	return !!value && colorChannels.includes(value as ColorChannel);
 }
 
 export type CreateColorPickerProps = {

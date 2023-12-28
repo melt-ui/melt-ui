@@ -19,7 +19,7 @@
 			alphaSlider,
 			alphaPicker,
 			eyeDropper,
-			hexInput,
+			input: hexInput,
 			channelInput,
 		},
 		states: { value },
@@ -108,7 +108,7 @@
 				Save
 			</button>
 		</div>
-
+		<!-- 
 		<div class="jus flex flex-wrap gap-1 overflow-hidden">
 			<label class="grid shrink gap-1 text-black">
 				H
@@ -159,7 +159,7 @@
 					use:melt={$channelInput('blue')}
 				/>
 			</label>
-		</div>
+		</div> -->
 
 		<div class="flex flex-wrap items-center justify-center gap-2">
 			{#each savedColorsLimited as hex}
