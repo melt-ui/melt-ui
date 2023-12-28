@@ -65,6 +65,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	const value = overridable(valueWritable, argsWithDefaults?.onValueChange);
 	value.update((p) => (isValidColor(p) ? p : defaults.defaultValue));
 
+	const colorPickerPos = writable({ x: 0, y: 0 });
+
 	const colorCanvasDimensions: Writable<NodeElement<HTMLCanvasElement>> = writable({
 		height: 1,
 		width: 1,
@@ -104,9 +106,10 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	const updateByPos = derived(
 		[hueAngle, colorCanvasDimensions],
 		([$hueAngle, $colorCanvasDimensions]) => {
-			return ($colorPickerPos: { x: number; y: number }) => {
-				const x = $colorPickerPos.x / $colorCanvasDimensions.width;
-				const y = 1 - $colorPickerPos.y / $colorCanvasDimensions.height;
+			return (pos: { x: number; y: number }) => {
+				colorPickerPos.set(pos);
+				const x = pos.x / $colorCanvasDimensions.width;
+				const y = 1 - pos.y / $colorCanvasDimensions.height;
 
 				value.update((p) => {
 					const c = colord({
@@ -118,19 +121,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 					return convertColor(c, getColorFormat(p) ?? 'hex', true);
 				});
-			};
-		}
-	);
-
-	const colorPickerPos = derived(
-		[value, colorCanvasDimensions],
-		([$value, $colorCanvasDimensions]) => {
-			const hsv = colord($value).toHsv();
-			const { width, height } = $colorCanvasDimensions;
-
-			return {
-				x: Math.round((hsv.s / 100) * width),
-				y: Math.round((1 - hsv.v / 100) * height),
 			};
 		}
 	);
