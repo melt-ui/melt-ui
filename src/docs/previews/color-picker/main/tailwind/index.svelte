@@ -4,7 +4,7 @@
 	import { Pipette } from 'lucide-svelte';
 	import { writable } from 'svelte/store';
 
-	const defaultColor = 'hsla(200,50%,50%, 0.5)';
+	const defaultColor = '#04afde55';
 
 	let history: string[] = [];
 

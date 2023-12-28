@@ -99,3 +99,81 @@ export const getColorPos = (color: string) => {
 		y: 100 - v,
 	};
 };
+
+type UltimateColor = Record<ColorChannel, number> & {
+	format: ColorFormat;
+};
+
+export function ultimateColor(color: string) {
+	const c = colord(color);
+
+	const uc: UltimateColor = {
+		hue: c.hue(),
+		saturation: c.toHsl().s,
+		lightness: c.toHsl().l,
+
+		red: c.toRgb().r,
+		green: c.toRgb().g,
+		blue: c.toRgb().b,
+		alpha: c.alpha(),
+
+		format: getColorFormat(color) ?? 'hex',
+	};
+
+	function syncRGB(uc: UltimateColor) {
+		const copied = { ...uc };
+		const rgb = colord({ h: copied.hue, s: copied.saturation, l: copied.lightness }).toRgb();
+		copied.red = rgb.r;
+		copied.green = rgb.g;
+		copied.blue = rgb.b;
+		return copied;
+	}
+
+	function syncHSL(uc: UltimateColor) {
+		const copied = { ...uc };
+		const hsl = colord({ r: copied.red, g: copied.green, b: copied.blue }).toHsl();
+		copied.hue = hsl.h;
+		copied.saturation = hsl.s;
+		copied.lightness = hsl.l;
+		return copied;
+	}
+
+	function updateChannel(v: number, channel: ColorChannel): UltimateColor {
+		const copied = { ...uc };
+
+		switch (channel) {
+			case 'hue': {
+				copied.hue = v;
+				return syncRGB(copied);
+			}
+			case 'saturation': {
+				copied.saturation = v;
+				return syncRGB(copied);
+			}
+			case 'lightness': {
+				copied.lightness = v;
+				return syncRGB(copied);
+			}
+			case 'red': {
+				copied.red = v;
+				return syncHSL(copied);
+			}
+			case 'green': {
+				copied.green = v;
+				return syncHSL(copied);
+			}
+			case 'blue': {
+				copied.blue = v;
+				return syncHSL(copied);
+			}
+			case 'alpha': {
+				copied.alpha = v;
+				return copied;
+			}
+		}
+	}
+
+	return { ...uc, updateChannel };
+}
+
+ultimateColor.isValid = (color: string) => colord(color).isValid();

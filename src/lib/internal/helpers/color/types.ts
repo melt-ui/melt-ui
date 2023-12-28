@@ -1,5 +1,3 @@
-import type { getFormat } from 'colord';
-
 export const colorChannels = [
 	'hue',
 	'saturation',
