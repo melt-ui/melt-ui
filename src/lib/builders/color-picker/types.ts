@@ -110,18 +110,6 @@ export type CreateColorPickerProps = {
 	 * @see https://melt-ui.com/docs/controlled#change-functions
 	 */
 	onValueChange?: ChangeFn<string>;
-
-	/**
-	 * The controlled value store for the hue angle.
-	 * Should be a value between 0 and 360.
-	 */
-	hueAngle?: Writable<number>;
-
-	/**
-	 * The controlled value store for the alpha value.
-	 * Should be a value between 0 and 100.
-	 */
-	alphaValue?: Writable<number>;
 };
 
 export type ColorPicker = ReturnType<typeof createColorPicker>;

@@ -67,14 +67,14 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		width: 1,
 	});
 	const huePickerDimensions: Writable<NodeSize> = writable({ height: 1, width: 1 });
-	const hueAngle: Writable<number> = argsWithDefaults.hueAngle ?? writable(0);
+	const hueAngle = writable(getChannelValue('hue', get(value)));
 
 	const alphaSliderDimensions: Writable<NodeElement<HTMLCanvasElement>> = writable({
 		height: 1,
 		width: 1,
 	});
 	const alphaPickerDimensions: Writable<NodeSize> = writable({ height: 1, width: 1 });
-	const alphaValue: Writable<number> = argsWithDefaults.alphaValue ?? writable(100);
+	const alphaValue = writable(getChannelValue('alpha', get(value)));
 
 	let eye: EyeDropperType | null = null;
 

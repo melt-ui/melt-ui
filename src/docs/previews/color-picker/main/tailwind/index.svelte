@@ -4,9 +4,7 @@
 	import { Pipette } from 'lucide-svelte';
 	import { writable } from 'svelte/store';
 
-	const defaultColor = 'hsl(200,50%,50%)';
-	const alphaValue = writable(100);
-	const hueAngle = writable(0);
+	const defaultColor = 'hsla(200,50%,50%, 0.5)';
 
 	let history: string[] = [];
 
@@ -26,8 +24,6 @@
 		helpers: { convertColor, isEyeDropperSupported },
 	} = createColorPicker({
 		defaultValue: defaultColor,
-		alphaValue,
-		hueAngle,
 		onValueChange: ({ curr, next }) => {
 			history = [curr, ...history.slice(0, 20)];
 			return next;
