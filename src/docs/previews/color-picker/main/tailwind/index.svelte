@@ -23,7 +23,7 @@
 			channelInput,
 		},
 		states: { value },
-		helpers: { derivedColors, isEyeDropperSupported },
+		helpers: { convertColor, isEyeDropperSupported },
 	} = createColorPicker({
 		defaultValue: defaultColor,
 		alphaValue,
@@ -37,7 +37,11 @@
 	let savedColors: string[] = [];
 
 	$: savedColorsLimited = savedColors.slice(0, 5);
-	$: ({ rgb, hsl, hsv } = $derivedColors);
+	$: ({ rgb, hsl, hex } = {
+		rgb: convertColor($value, 'rgb'),
+		hsl: convertColor($value, 'hsl'),
+		hex: convertColor($value, 'hex'),
+	});
 </script>
 
 <div class="flex w-[350px] gap-2 overflow-hidden rounded-md bg-white p-2">
@@ -176,11 +180,9 @@
 		<div class="flex flex-col">
 			<h4 class="font-bold tracking-tight">Derived Colors</h4>
 			<div class="text-sm">
-				<p>RGB: {rgb.r}, {rgb.g}, {rgb.b}</p>
-				<p>
-					HSV: {hsv.h}, {(hsv.s * 100).toFixed(0)}%, {(hsv.v * 100).toFixed(0)}%
-				</p>
-				<p>HSL: {hsl.h}, {hsl.s.toFixed(0)}%, {hsl.l.toFixed(0)}%</p>
+				<p>RGBA: {rgb.r}, {rgb.g}, {rgb.b}, {rgb.a}</p>
+				<p>HSLA: {hsl.h}, {hsl.s.toFixed(0)}%, {hsl.l.toFixed(0)}%, {hsl.a}</p>
+				<p>HEX: {hex}</p>
 			</div>
 		</div>
 		<div class="mt-2">

@@ -1,4 +1,11 @@
-import { colord, type AnyColor, type Colord } from 'colord';
+import {
+	colord,
+	type AnyColor,
+	type Colord,
+	getFormat,
+	type RgbaColor,
+	type HslaColor,
+} from 'colord';
 import { colorChannels, type ColorChannel, type ColorFormat } from './types';
 
 export * from './types';
@@ -7,17 +14,29 @@ export function isColorChannel(value: unknown): value is ColorChannel {
 	return !!value && colorChannels.includes(value as ColorChannel);
 }
 
-export function convertColor(c: AnyColor | Colord, format: ColorFormat) {
+export function convertColor(c: AnyColor | Colord, format: ColorFormat, string: true): string;
+export function convertColor(c: AnyColor | Colord, format: 'rgb', string?: false): RgbaColor;
+export function convertColor(c: AnyColor | Colord, format: 'hsl', string?: false): HslaColor;
+export function convertColor(c: AnyColor | Colord, format: 'hex', string?: boolean): string;
+export function convertColor(c: AnyColor | Colord, format: ColorFormat, string?: boolean) {
 	switch (format) {
 		case 'rgb':
-			return colord(c).toRgbString();
+			return string ? colord(c).toRgbString() : colord(c).toRgb();
 		case 'hex':
 			return colord(c).toHex();
 		case 'hsl':
-			return colord(c).toHslString();
+			return string ? colord(c).toHslString() : colord(c).toHsl();
 		default:
-			return JSON.stringify(c);
+			return c;
 	}
+}
+
+export function getColorFormat(color: string): ColorFormat | undefined {
+	const format = getFormat(color);
+	if (format === 'rgb' || format === 'hex' || format === 'hsl') {
+		return format;
+	}
+	return undefined;
 }
 
 export function isValidColor(color: string) {

@@ -12,21 +12,21 @@ import {
 	hexToRGB,
 	isBrowser,
 	isNumberString,
-	isValidHexColor,
 	omit,
 	overridable,
 	styleToString,
 	toWritableStores,
 } from '$lib/internal/helpers';
-import { colord, getFormat } from 'colord';
+import { colord } from 'colord';
 
 import type { Defaults, Orientation } from '$lib/internal/types';
 
 import {
-	isColorChannel,
 	convertColor,
-	type ColorChannel,
+	getColorFormat,
+	isColorChannel,
 	isValidColor,
+	type ColorChannel,
 } from '$lib/internal/helpers/color';
 import { safeOnMount } from '$lib/internal/helpers/lifecycle';
 import { derived, get, writable, type Readable, type Writable } from 'svelte/store';
@@ -76,31 +76,34 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	const value = overridable(valueWritable, argsWithDefaults?.onValueChange);
 	value.update((p) => (isValidColor(p) ? p : defaults.defaultValue));
 
-	const colorCanvasDims: Writable<NodeElement<HTMLCanvasElement>> = writable({
+	const colorCanvasDimensions: Writable<NodeElement<HTMLCanvasElement>> = writable({
 		height: 1,
 		width: 1,
 	});
-	const colorPickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
+	const colorPickerDimensions: Writable<NodeSize> = writable({ height: 1, width: 1 });
 	const colorPickerPos: Writable<Position> = writable({ x: 0, y: 0 });
 
-	const hueSliderDims: Writable<NodeElement<HTMLCanvasElement>> = writable({ height: 1, width: 1 });
-	const huePickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
-	const hueAngle: Writable<number> = argsWithDefaults.hueAngle ?? writable(0);
-
-	const alphaSliderDims: Writable<NodeElement<HTMLCanvasElement>> = writable({
+	const hueSliderDimensions: Writable<NodeElement<HTMLCanvasElement>> = writable({
 		height: 1,
 		width: 1,
 	});
-	const alphaPickerDims: Writable<NodeSize> = writable({ height: 1, width: 1 });
+	const huePickerDimensions: Writable<NodeSize> = writable({ height: 1, width: 1 });
+	const hueAngle: Writable<number> = argsWithDefaults.hueAngle ?? writable(0);
+
+	const alphaSliderDimensions: Writable<NodeElement<HTMLCanvasElement>> = writable({
+		height: 1,
+		width: 1,
+	});
+	const alphaPickerDimensions: Writable<NodeSize> = writable({ height: 1, width: 1 });
 	const alphaValue: Writable<number> = argsWithDefaults.alphaValue ?? writable(100);
 
 	let eye: EyeDropperType | null = null;
 
 	const setAlphaValue = (x: number, y: number) => {
 		if (argsWithDefaults.alphaSliderOrientation === 'horizontal') {
-			alphaValue.set(Math.round((x / get(alphaSliderDims).width) * 100));
+			alphaValue.set(Math.round((x / get(alphaSliderDimensions).width) * 100));
 		} else {
-			alphaValue.set(Math.round((y / get(alphaSliderDims).height) * 100));
+			alphaValue.set(Math.round((y / get(alphaSliderDimensions).height) * 100));
 		}
 	};
 
@@ -111,36 +114,15 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	 * update the $colors value when the hue angle is changed.
 	 */
 	const getCurrentColor: Readable<() => { rgb: ColorRGB; hex: string }> = derived(
-		[hueAngle, colorPickerPos, colorCanvasDims, alphaValue],
-		([$hueAngle, $colorPickerPos, $colorCanvasDims, $alphaValue]) => {
-			const x = $colorPickerPos.x / $colorCanvasDims.width;
-			const y = 1 - $colorPickerPos.y / $colorCanvasDims.height;
+		[hueAngle, colorPickerPos, colorCanvasDimensions, alphaValue],
+		([$hueAngle, $colorPickerPos, $colorCanvasDimensions, $alphaValue]) => {
+			const x = $colorPickerPos.x / $colorCanvasDimensions.width;
+			const y = 1 - $colorPickerPos.y / $colorCanvasDimensions.height;
 
 			const rgb = HSVtoRGB({ h: $hueAngle / 360, s: x, v: y });
 			const hex = RGBtoHex(rgb);
 
 			return () => ({ rgb: { ...rgb, a: $alphaValue }, hex });
-		}
-	);
-
-	/**
-	 * A derived store that returns different color representations (RGB, HSV, HSL).
-	 */
-	const derivedColors: Readable<ReturnedColor> = derived(
-		[value, hueAngle, colorPickerPos, colorCanvasDims, alphaValue],
-		([$value, $hueAngle, $colorPickerPos, $colorCanvasDims]) => {
-			const x = $colorPickerPos.x / $colorCanvasDims.width;
-			const y = 1 - $colorPickerPos.y / $colorCanvasDims.height;
-
-			const rgb = HSVtoRGB({ h: $hueAngle / 360, s: x, v: y });
-			const hsv = hexToHSV($value);
-			const hsl = hexToHSL($value);
-
-			return {
-				rgb,
-				hsv,
-				hsl,
-			};
 		}
 	);
 
@@ -227,7 +209,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	 */
 	function handleWindowsMouseMove(e: MouseEvent) {
 		if (dragging) {
-			const cc = get(colorCanvasDims);
+			const cc = get(colorCanvasDimensions);
 
 			if (!cc.node) return;
 
@@ -239,7 +221,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 			handleOutsideColorCanvasMovement({ x, y, nodeX, nodeY, width, height });
 		} else if (hueDragging) {
-			const hs = get(hueSliderDims);
+			const hs = get(hueSliderDimensions);
 
 			if (!hs.node) return;
 
@@ -261,7 +243,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 				maxValue: 359,
 			});
 		} else if (alphaDragging) {
-			const as = get(alphaSliderDims);
+			const as = get(alphaSliderDimensions);
 
 			if (!as.node) return;
 
@@ -292,7 +274,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	 */
 	function handleWindowsMouseUp(e: MouseEvent) {
 		if (dragging) {
-			const cc = get(colorCanvasDims);
+			const cc = get(colorCanvasDimensions);
 
 			if (!cc.node) return;
 
@@ -306,7 +288,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 				dragging = false;
 			}
 		} else if (hueDragging || alphaDragging) {
-			const dims = hueDragging ? get(hueSliderDims) : get(alphaSliderDims);
+			const dims = hueDragging ? get(hueSliderDimensions) : get(alphaSliderDimensions);
 
 			if (!dims.node) return;
 
@@ -326,7 +308,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	function updateOnColorInput(hex: string) {
 		const hsv = colord(hex).toHsv();
 
-		const { width, height } = get(colorCanvasDims);
+		const { width, height } = get(colorCanvasDimensions);
 		hueAngle.set(hsv.h);
 
 		colorPickerPos.set({
@@ -338,24 +320,23 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	function updateChannel(v: number, channel: ColorChannel) {
 		value.update((p) => {
 			const c = colord(p);
-			const format = getFormat(p);
+			const format = getColorFormat(p);
 			if (!format) return p;
-
 			switch (channel) {
 				case 'hue':
-					return convertColor(c.hue(v), format);
+					return convertColor(c.hue(v), format, true);
 				case 'saturation':
-					return convertColor(colord({ ...c.toHsl(), s: v }), format);
+					return convertColor(colord({ ...c.toHsl(), s: v }), format, true);
 				case 'lightness':
-					return convertColor(colord({ ...c.toHsl(), l: v }), format);
+					return convertColor(colord({ ...c.toHsl(), l: v }), format, true);
 				case 'alpha':
-					return convertColor(c.alpha(v), format);
+					return convertColor(c.alpha(v), format, true);
 				case 'red':
-					return convertColor(colord({ ...c.toRgb(), r: v }), format);
+					return convertColor(colord({ ...c.toRgb(), r: v }), format, true);
 				case 'green':
-					return convertColor(colord({ ...c.toRgb(), g: v }), format);
+					return convertColor(colord({ ...c.toRgb(), g: v }), format, true);
 				case 'blue':
-					return convertColor(colord({ ...c.toRgb(), b: v }), format);
+					return convertColor(colord({ ...c.toRgb(), b: v }), format, true);
 				default:
 					return p;
 			}
@@ -398,7 +379,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		action: (node: HTMLCanvasElement) => {
 			const rect = node.getBoundingClientRect();
 
-			colorCanvasDims.set({
+			colorCanvasDimensions.set({
 				node,
 				width: rect.width,
 				height: rect.height,
@@ -430,7 +411,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 				addMeltEventListener(node, 'touchmove', (e) => {
 					if (!dragging) return;
 
-					const cc = get(colorCanvasDims);
+					const cc = get(colorCanvasDimensions);
 
 					if (!cc.node) return;
 
@@ -457,10 +438,10 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	});
 
 	const colorPicker = builder(name('color-picker'), {
-		stores: [colorPickerPos, colorPickerDims, value],
-		returned: ([$colorPickerPos, $colorPickerDims, $value]) => {
-			const top = Math.round($colorPickerPos.y - $colorPickerDims.height / 2);
-			const left = Math.round($colorPickerPos.x - $colorPickerDims.width / 2);
+		stores: [colorPickerPos, colorPickerDimensions, value],
+		returned: ([$colorPickerPos, $colorPickerDimensions, $value]) => {
+			const top = Math.round($colorPickerPos.y - $colorPickerDimensions.height / 2);
+			const left = Math.round($colorPickerPos.x - $colorPickerDimensions.width / 2);
 
 			return {
 				style: styleToString({
@@ -474,7 +455,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		action: (node: HTMLButtonElement) => {
 			const rect = node.getBoundingClientRect();
 
-			colorPickerDims.set({
+			colorPickerDimensions.set({
 				width: rect.width,
 				height: rect.height,
 			});
@@ -514,7 +495,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 					const step = duration > 1000 ? speedUpStep : 1;
 
 					const { x, y } = get(colorPickerPos);
-					const { height: canvasH, width: canvasW } = get(colorCanvasDims);
+					const { height: canvasH, width: canvasW } = get(colorCanvasDimensions);
 
 					// Move the picker button and restrict movement to within the canvas.
 					if (key === 'ArrowUp' && y - 1 >= 0) {
@@ -558,7 +539,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		action: (node: HTMLCanvasElement) => {
 			const rect = node.getBoundingClientRect();
 
-			hueSliderDims.set({
+			hueSliderDimensions.set({
 				node,
 				width: rect.width,
 				height: rect.height,
@@ -572,8 +553,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 					const angle =
 						orientation === 'horizontal'
-							? Math.round((x / get(hueSliderDims).width) * 360)
-							: Math.round((y / get(hueSliderDims).height) * 360);
+							? Math.round((x / get(hueSliderDimensions).width) * 360)
+							: Math.round((y / get(hueSliderDimensions).height) * 360);
 
 					hueAngle.set(angle);
 				}),
@@ -592,8 +573,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 					const angle =
 						orientation === 'horizontal'
-							? Math.round((x / get(hueSliderDims).width) * 360)
-							: Math.round((y / get(hueSliderDims).height) * 360);
+							? Math.round((x / get(hueSliderDimensions).width) * 360)
+							: Math.round((y / get(hueSliderDimensions).height) * 360);
 
 					hueAngle.set(angle);
 				}),
@@ -606,7 +587,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 				addMeltEventListener(node, 'touchmove', (e) => {
 					if (!hueDragging) return;
 
-					const hs = get(hueSliderDims);
+					const hs = get(hueSliderDimensions);
 
 					if (!hs.node) return;
 
@@ -643,8 +624,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	});
 
 	const huePicker = builder(name('hue-picker'), {
-		stores: [hueAngle, huePickerDims, hueSliderDims],
-		returned: ([$hueAngle, $huePickerDims, $hueSliderDims]) => {
+		stores: [hueAngle, huePickerDimensions, hueSliderDimensions],
+		returned: ([$hueAngle, $huePickerDimensions, $hueSliderDimensions]) => {
 			const { hueSliderOrientation: orientation } = argsWithDefaults;
 
 			let left = '';
@@ -653,14 +634,14 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 			if (orientation === 'horizontal') {
 				left = `${Math.round(
-					($hueAngle / 360) * $hueSliderDims.width - $huePickerDims.width / 2
+					($hueAngle / 360) * $hueSliderDimensions.width - $huePickerDimensions.width / 2
 				)}px`;
 				top = '50%';
 				transform = 'translateY(-50%)';
 			} else {
 				left = '50%';
 				top = `${Math.round(
-					($hueAngle / 360) * $hueSliderDims.height - $huePickerDims.height / 2
+					($hueAngle / 360) * $hueSliderDimensions.height - $huePickerDimensions.height / 2
 				)}px`;
 				transform = 'translateX(-50%)';
 			}
@@ -678,7 +659,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		action: (node: HTMLButtonElement) => {
 			const rect = node.getBoundingClientRect();
 
-			huePickerDims.set({
+			huePickerDimensions.set({
 				height: rect.height,
 				width: rect.width,
 			});
@@ -748,7 +729,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		action: (node: HTMLCanvasElement) => {
 			const rect = node.getBoundingClientRect();
 
-			alphaSliderDims.set({
+			alphaSliderDimensions.set({
 				node,
 				width: rect.width,
 				height: rect.height,
@@ -780,7 +761,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 				addMeltEventListener(node, 'touchmove', (e) => {
 					if (!alphaDragging) return;
 
-					const as = get(alphaSliderDims);
+					const as = get(alphaSliderDimensions);
 
 					if (!as.node) return;
 
@@ -817,8 +798,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	});
 
 	const alphaPicker = builder(name('alpha-picker'), {
-		stores: [alphaValue, alphaPickerDims, alphaSliderDims, getCurrentColor],
-		returned: ([$alphaValue, $alphaPickerDims, $alphaSliderDims, $getCurrentColor]) => {
+		stores: [alphaValue, alphaPickerDimensions, alphaSliderDimensions, getCurrentColor],
+		returned: ([$alphaValue, $alphaPickerDimensions, $alphaSliderDimensions, $getCurrentColor]) => {
 			const { alphaSliderOrientation: orientation } = argsWithDefaults;
 
 			let left = '';
@@ -827,14 +808,14 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 			if (orientation === 'horizontal') {
 				left = `${Math.round(
-					($alphaValue / 100) * $alphaSliderDims.width - $alphaPickerDims.width / 2
+					($alphaValue / 100) * $alphaSliderDimensions.width - $alphaPickerDimensions.width / 2
 				)}px`;
 				top = '50%';
 				transform = 'translateY(-50%)';
 			} else {
 				left = '50%';
 				top = `${Math.round(
-					($alphaValue / 100) * $alphaSliderDims.height - $alphaPickerDims.height / 2
+					($alphaValue / 100) * $alphaSliderDimensions.height - $alphaPickerDimensions.height / 2
 				)}px`;
 				transform = 'translateX(-50%)';
 			}
@@ -855,7 +836,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		action: (node: HTMLButtonElement) => {
 			const rect = node.getBoundingClientRect();
 
-			alphaPickerDims.set({
+			alphaPickerDimensions.set({
 				height: rect.height,
 				width: rect.width,
 			});
@@ -926,7 +907,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		action: (node: HTMLCanvasElement) => {
 			const rect = node.getBoundingClientRect();
 
-			alphaSliderDims.set({
+			alphaSliderDimensions.set({
 				node,
 				width: rect.width,
 				height: rect.height,
@@ -958,7 +939,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 				addMeltEventListener(node, 'touchmove', (e) => {
 					if (!alphaDragging) return;
 
-					const as = get(alphaSliderDims);
+					const as = get(alphaSliderDimensions);
 
 					if (!as.node) return;
 
@@ -1155,7 +1136,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 			value,
 		},
 		helpers: {
-			derivedColors,
+			convertColor,
 			isEyeDropperSupported,
 		},
 	};
