@@ -895,6 +895,8 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		},
 	});
 
+	const channelSlider = builder(name('channel-slider'), {});
+
 	const channelInput = builder(name('channel-input'), {
 		stores: value,
 		returned: ($value) => {
@@ -1082,6 +1084,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 		},
 		helpers: {
 			derivedColors,
+			isEyeDropperSupported,
 		},
 	};
 }

@@ -23,7 +23,7 @@
 			channelInput,
 		},
 		states: { value },
-		helpers: { derivedColors },
+		helpers: { derivedColors, isEyeDropperSupported },
 	} = createColorPicker({
 		defaultValue: defaultColor,
 		alphaValue,
@@ -84,7 +84,10 @@
 		<div class="flex w-full gap-1 overflow-hidden">
 			<button
 				use:melt={$eyeDropper}
-				class="inline-flex items-center justify-center rounded-md bg-gray-900 p-1"
+				class="transiition inline-flex items-center justify-center rounded-md bg-gray-900 p-1
+				{isEyeDropperSupported()
+					? 'hover:bg-gray-800'
+					: 'pointer-events-none cursor-not-allowed opacity-50'}"
 				aria-label="An eye dropper button, allowing you to select any color on the screen."
 			>
 				<Pipette class="square-5" />
