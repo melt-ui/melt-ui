@@ -9,6 +9,8 @@ import {
 	executeCallbacks,
 	getChannelValue,
 	getColorFormat,
+	getColorFromPos,
+	getColorPos,
 	isBrowser,
 	isColorChannel,
 	isNumberString,
@@ -19,8 +21,6 @@ import {
 	styleToString,
 	toWritableStores,
 	type ColorChannel,
-	getColorFromPos,
-	getColorPos,
 } from '$lib/internal/helpers';
 import { colord } from 'colord';
 
@@ -34,7 +34,6 @@ import type {
 	CreateColorPickerProps,
 	EyeDropperType,
 	EyeDropperWindow,
-	KeyDurations,
 	NodeElement,
 	NodeSize,
 } from './types';
@@ -55,14 +54,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	let hueDragging = false;
 	let alphaDragging = false;
 	let lastValid: string = defaults.defaultValue;
-	const speedUpStep = 5;
-
-	const keyDurations: KeyDurations = {
-		ArrowDown: null,
-		ArrowLeft: null,
-		ArrowUp: null,
-		ArrowRight: null,
-	};
 
 	const valueWritable = argsWithDefaults.value ?? writable(argsWithDefaults.defaultValue);
 	const value = overridable(valueWritable, argsWithDefaults?.onValueChange);
@@ -70,7 +61,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 	let colorCanvasEl: HTMLCanvasElement | null = null;
 	const colorCanvasThumbPos = writable({ x: 0, y: 0 });
-	const colorCanvasThumbDimensions: Writable<NodeSize> = writable({ height: 1, width: 1 });
 
 	const hueSliderDimensions: Writable<NodeElement<HTMLCanvasElement>> = writable({
 		height: 1,
@@ -378,13 +368,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 			};
 		},
 		action: (node: HTMLButtonElement) => {
-			const rect = node.getBoundingClientRect();
-
-			colorCanvasThumbDimensions.set({
-				width: rect.width,
-				height: rect.height,
-			});
-
 			const unsubEvents = executeCallbacks(
 				addMeltEventListener(node, 'mousedown', () => {
 					dragging = true;
@@ -397,8 +380,6 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 					const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
 					if (!keys.includes(key)) return;
-
-					keyDurations[<ArrowKeys>key] = null;
 				}),
 				addMeltEventListener(node, 'keydown', (e) => {
 					const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
@@ -409,15 +390,7 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 
 					e.preventDefault();
 
-					let duration = 0;
-
-					if (!keyDurations[key]) {
-						keyDurations[key] = Date.now();
-					} else {
-						duration = Date.now() - <number>keyDurations[key];
-					}
-
-					const step = duration > 1000 ? speedUpStep : 1;
+					const step = e.shiftKey ? 10 : 1;
 
 					const { x, y } = get(colorCanvasThumbPos);
 					if (!colorCanvasEl) return;
