@@ -984,6 +984,11 @@ export function createColorPicker(args?: CreateColorPickerProps) {
 	effect(value, ($value) => {
 		hueAngle.set(colord($value).hue());
 		lastValid = $value;
+		alphaValue.set(colord($value).alpha() * 100);
+	});
+
+	effect(alphaValue, ($alphaValue) => {
+		updateChannel($alphaValue / 100, 'alpha');
 	});
 
 	return {
